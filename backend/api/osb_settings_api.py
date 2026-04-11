@@ -155,6 +155,8 @@ def get_osb_settings(
             updated_at=settings.updated_at.isoformat(),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error getting OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları alınamadı")
@@ -225,6 +227,8 @@ def update_osb_settings(
             updated_at=settings.updated_at.isoformat(),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error updating OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları güncellenemedi")
@@ -270,6 +274,8 @@ def reset_osb_settings(
 
         return {"success": True, "message": "OSB ayarları varsayılana sıfırlandı"}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error resetting OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları sıfırlanamadı")

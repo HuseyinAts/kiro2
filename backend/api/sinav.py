@@ -309,6 +309,8 @@ async def get_my_exams(
         end_index = offset + limit
         return user_sessions[start_index:end_index]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Kullanıcı sınavları getirme hatası: {e}",
@@ -350,6 +352,8 @@ async def get_exam_configs(
             "message": "ÖSYM sınav konfigürasyonları",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sınav konfigürasyonları getirme hatası: {e}")
         raise HTTPException(
@@ -424,6 +428,8 @@ async def create_exam(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav oluşturma hatası: {e}",
@@ -504,6 +510,8 @@ async def start_exam(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav başlatma hatası: {e}",
@@ -1078,6 +1086,8 @@ async def complete_exam(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Beklenmeyen sınav tamamlama hatası: {e}",

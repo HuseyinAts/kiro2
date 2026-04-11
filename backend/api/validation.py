@@ -138,6 +138,8 @@ async def submit_content_for_validation(
             "message": "İçerik başarıyla doğrulamaya gönderildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "content_submission_failed", error=str(e), content_id=submission.content_id
@@ -505,6 +507,8 @@ async def get_pending_requests_for_expert(
             ],
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("get_pending_requests_failed", error=str(e), expert_id=expert_id)
         raise HTTPException(

@@ -179,6 +179,8 @@ async def create_question(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Soru oluşturma hatası: {e!s}")
         raise HTTPException(
@@ -215,6 +217,8 @@ async def bulk_create_questions(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Toplu oluşturma hatası: {e!s}")
         raise HTTPException(
@@ -315,6 +319,8 @@ async def get_question_history(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Geçmiş getirme hatası: {e!s}")
         raise HTTPException(
@@ -495,6 +501,8 @@ async def get_archived_questions(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Arşiv listeleme hatası: {e!s}")
         raise HTTPException(
@@ -612,6 +620,8 @@ async def search_questions(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Arama hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -673,6 +683,8 @@ async def elasticsearch_search(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Elasticsearch arama hatası: {e!s}")
         raise HTTPException(
@@ -705,6 +717,8 @@ async def get_statistics(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"İstatistik hatası: {e!s}")
         raise HTTPException(
@@ -810,6 +824,8 @@ async def get_random_questions(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Rastgele soru hatası: {e!s}")
         raise HTTPException(
@@ -850,6 +866,8 @@ async def list_source_books(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kitap listeleme hatası: {e!s}")
         raise HTTPException(
@@ -915,6 +933,8 @@ async def semantic_search(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Embedding servisi hata dondu",
             )
+        except HTTPException:
+            raise
         except Exception as embed_err:
             logger.error(f"Ollama embedding error: {embed_err}")
             raise HTTPException(

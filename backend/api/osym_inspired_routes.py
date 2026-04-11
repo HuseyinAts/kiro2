@@ -51,6 +51,8 @@ async def generate_osym_inspired_question(
             "message": f"Generated {request.subject} question inspired by OSYM",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(500, f"Generation failed: {e!s}")
 
@@ -73,6 +75,8 @@ async def get_osym_style_guide(subject: str, exam_type: str = Query("TYT")) -> d
             "message": f"OSYM style guide for {subject}",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(500, f"Analysis failed: {e!s}")
 
@@ -98,6 +102,8 @@ async def get_osym_examples(
             "message": f"Retrieved {len(examples)} OSYM examples",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(500, f"Failed to get examples: {e!s}")
 
@@ -118,5 +124,7 @@ async def get_training_statistics() -> dict:
             "message": "OSYM training data statistics",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(500, f"Failed to get statistics: {e!s}")

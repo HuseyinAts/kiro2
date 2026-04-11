@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.database import get_async_session
 from core.dependencies import get_current_user
 from core.structured_logger import get_logger
 from models.database import User

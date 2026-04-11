@@ -120,6 +120,8 @@ async def get_all_eba_content(
             "message": f"{content_collection.total_count} EBA TV videosu başarıyla getirildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"EBA TV içerik getirme hatası: {e}")
         raise HTTPException(
@@ -345,6 +347,8 @@ async def get_eba_recommendations(
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"EBA TV öneri hatası: {e}")
         raise HTTPException(
@@ -406,6 +410,8 @@ async def get_content_by_curriculum_topic(
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"EBA TV müfredat içerik hatası: {e}")
         raise HTTPException(
@@ -443,6 +449,8 @@ async def get_eba_statistics(ebatv_service: EBAtvService = Depends(get_ebatv_ser
             cache_status=stats["cache_status"],
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"EBA TV istatistik hatası: {e}")
         raise HTTPException(

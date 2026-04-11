@@ -122,6 +122,8 @@ async def get_prerequisite_dag(
             edges=result["edges"],
         )
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "DAG fetch error",
@@ -175,6 +177,8 @@ async def get_student_knowledge_state(
 
         return [KnowledgeStateItem(**s) for s in states]
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Knowledge state fetch error",
@@ -230,6 +234,8 @@ async def get_topic_suggestions(
 
         return [TopicSuggestionItem(**s) for s in suggestions]
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Topic suggestions error",
@@ -286,6 +292,8 @@ async def update_knowledge_state(
 
         return UpdateKnowledgeResponse(**result)
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Knowledge state update error",

@@ -192,6 +192,8 @@ async def index_text_document(
             message="Document indexed successfully",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Document indexing error: {e}")
         raise HTTPException(
@@ -277,6 +279,8 @@ async def index_file_document(
             message=f"File '{filename}' indexed successfully",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"File indexing error: {e}")
         raise HTTPException(
@@ -393,6 +397,8 @@ async def get_llm_context(
             success=True, context=context, sources=sources, token_count=token_count
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Context retrieval error: {e}")
         raise HTTPException(
@@ -490,6 +496,8 @@ async def list_documents(
             success=True, documents=documents, total_count=total_count
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Document listing error: {e}")
         raise HTTPException(
@@ -582,6 +590,8 @@ async def get_rag_stats(current_user: User = Depends(get_current_user)):
 
         return StatsResponse(success=True, stats=stats)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Stats error: {e}")
         raise HTTPException(

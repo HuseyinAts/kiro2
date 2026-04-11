@@ -106,6 +106,8 @@ async def get_student_cultural_adaptation(
         logger.warning(f"Öğrenci bulunamadı: {student_id} - {e}")
         raise HTTPException(status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kültürel adaptasyon getirme hatası: {e}")
         raise HTTPException(
@@ -167,6 +169,8 @@ async def update_student_behavioral_data(
         logger.warning(f"Davranış güncelleme hatası: {student_id} - {e}")
         raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Davranış güncelleme hatası: {e}")
         raise HTTPException(
@@ -208,6 +212,8 @@ async def get_current_cultural_period(
             message="Kültürel dönem bilgileri başarıyla getirildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kültürel dönem bilgisi getirme hatası: {e}")
         raise HTTPException(
@@ -241,6 +247,8 @@ async def get_regional_culture_info(
             message=f"{region} bölgesi kültür bilgileri başarıyla getirildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Bölgesel kültür bilgisi getirme hatası: {e}")
         raise HTTPException(
@@ -321,6 +329,8 @@ async def get_cultural_adaptation_summary(
             message="Kültürel adaptasyon sistemi özeti başarıyla getirildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sistem özeti getirme hatası: {e}")
         raise HTTPException(

@@ -183,6 +183,8 @@ async def get_subject_mastery_confidence(
             message_tr=_build_message_tr(confidence_level, response_count),
         )
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Subject confidence fetch error",
@@ -251,6 +253,8 @@ async def get_topic_mastery_confidence(
 
         return TopicConfidenceResponse(subject=subject.lower(), topics=topics)
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Topic confidence fetch error",

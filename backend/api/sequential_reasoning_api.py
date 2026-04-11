@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.auth_dependencies import AuthorizationDependency, authenticate_optional
 from core.database import get_async_session
+from core.dependencies import AuthenticatedUser, get_current_user
 
 get_current_admin_user = AuthorizationDependency(
     required_roles=["admin", "super_admin"]
@@ -204,6 +205,8 @@ async def solve_problem(
             ensemble_scores=result.get("ensemble_scores"),
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -367,6 +370,8 @@ async def decompose_problem(
             total_steps=result.get("total_steps", 0),
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -397,6 +402,8 @@ async def compare_providers(
             fastest_provider=result.get("fastest_provider"),
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

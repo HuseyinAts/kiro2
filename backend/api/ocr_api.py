@@ -237,6 +237,8 @@ async def extract_text(
 
         return ocr_result_to_response(result)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OCR error: {e}")
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
@@ -264,6 +266,8 @@ async def extract_text_base64(
 
         return ocr_result_to_response(result)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OCR error: {e}")
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
@@ -294,6 +298,8 @@ async def extract_text_batch(
 
         return [ocr_result_to_response(r) for r in results]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Batch OCR error: {e}")
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
@@ -333,6 +339,8 @@ async def process_question(
             raw_ocr=ocr_result_to_response(result.raw_ocr),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Question OCR error: {e}")
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
@@ -367,6 +375,8 @@ async def process_question_base64(
             raw_ocr=ocr_result_to_response(result.raw_ocr),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Question OCR error: {e}")
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
@@ -469,6 +479,8 @@ async def yolo_detect_and_ocr(
             "yolo_detections": detection_dict["detections"],
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"YOLO+OCR error: {e}")
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
@@ -532,5 +544,7 @@ async def get_service_info():
     try:
         ocr_service = get_ocr_service()
         return ocr_service.get_info()
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")

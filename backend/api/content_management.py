@@ -89,6 +89,8 @@ async def soru_bankasi_listele(
                 "message": f"{len(mock_sorular)} soru başarıyla getirildi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -178,6 +180,8 @@ async def soru_detay(
                 "message": "Soru detayları başarıyla getirildi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -207,6 +211,8 @@ async def soru_guncelle(
                 "message": "Soru başarıyla güncellendi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -228,6 +234,8 @@ async def soru_sil(
                 "message": "Soru başarıyla silindi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -285,6 +293,8 @@ async def egitim_materyalleri_listele(
                 "message": f"{len(mock_materyaller)} materyal başarıyla getirildi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -372,6 +382,8 @@ async def egitim_materyali_detay(
                 "message": "Eğitim materyali detayları başarıyla getirildi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -401,6 +413,8 @@ async def egitim_materyali_guncelle(
                 "message": "Eğitim materyali başarıyla güncellendi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -422,6 +436,8 @@ async def egitim_materyali_sil(
                 "message": "Eğitim materyali başarıyla silindi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -641,6 +657,8 @@ async def icerik_kategorileri_getir(
                 "message": "İçerik kategorileri başarıyla getirildi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -731,6 +749,8 @@ async def icerik_ara(
                 "message": f"'{q}' için {len(mock_sonuclar)} sonuç bulundu",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -770,6 +790,8 @@ async def filtre_secenekleri_getir(
                 "message": "Filtre seçenekleri başarıyla getirildi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -811,6 +833,8 @@ async def icerik_istatistikleri(current_user: MockUser = Depends(admin_yetki_kon
                 "message": "İçerik istatistikleri başarıyla getirildi",
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

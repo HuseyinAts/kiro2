@@ -120,6 +120,8 @@ async def get_suggestions(
 
         return [CoachingSuggestionItem(**s) for s in suggestions]
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Coaching suggestions error",
@@ -167,6 +169,8 @@ async def check_burnout(
 
         return BurnoutCheckResponse(**result)
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Burnout check error",
@@ -221,6 +225,8 @@ async def record_signal(
 
         return RecordSignalResponse(**result)
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Signal record error",

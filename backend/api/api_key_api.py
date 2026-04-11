@@ -91,6 +91,8 @@ async def create_api_key(
 
         return result
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[API KEY API] Create failed: {e}")
         raise HTTPException(
@@ -141,6 +143,8 @@ async def list_api_keys(
             for key in keys
         ]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[API KEY API] List failed: {e}")
         raise HTTPException(
@@ -229,6 +233,8 @@ async def rotate_api_key(
 
         return new_key
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[API KEY API] Rotate failed: {e}")
         raise HTTPException(

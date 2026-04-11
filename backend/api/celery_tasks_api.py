@@ -76,6 +76,8 @@ async def get_task_status(
 
         return TaskStatusResponse(**response)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("task_status_check_failed", task_id=task_id, error=str(e))
         raise HTTPException(
@@ -113,6 +115,8 @@ async def cancel_task(
             "message": "Task cancelled successfully",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("task_cancel_failed", task_id=task_id, error=str(e))
         raise HTTPException(
@@ -155,6 +159,8 @@ async def list_active_tasks(
 
         return {"active_tasks": tasks, "total_count": len(tasks)}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("active_tasks_list_failed", error=str(e))
         raise HTTPException(
@@ -186,6 +192,8 @@ async def get_task_stats(
             "scheduled_tasks": sum(len(tasks) for tasks in (scheduled or {}).values()),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("task_stats_failed", error=str(e))
         raise HTTPException(

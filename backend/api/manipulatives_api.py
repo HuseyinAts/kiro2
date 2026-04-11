@@ -94,6 +94,8 @@ def record_virtual_block_operation(
                 "duration": operation.duration_seconds,
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -119,6 +121,8 @@ def get_virtual_block_progress(
                 "accuracy_rate": 0.0,
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -146,6 +150,8 @@ def record_geogebra_activity(
                 "duration": activity.duration_seconds,
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -185,6 +191,8 @@ def get_geogebra_applets(
             applets = [a for a in applets if a["type"] == activity_type]
 
         return {"success": True, "data": applets}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -214,6 +222,8 @@ def record_geometry_tool_usage(
                 "duration": usage.duration_seconds,
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -268,6 +278,8 @@ def get_geometry_tools(current_user: User = Depends(get_current_user)):
         ]
 
         return {"success": True, "data": tools}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -298,6 +310,8 @@ def record_tangram_puzzle(
                 "pieces_used": len(puzzle.pieces_used),
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -355,6 +369,8 @@ def get_tangram_puzzles(
             puzzles = [p for p in puzzles if p["difficulty"] == difficulty]
 
         return {"success": True, "data": puzzles}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -382,5 +398,7 @@ def get_tangram_progress(
                 },
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

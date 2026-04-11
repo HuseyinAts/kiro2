@@ -84,6 +84,8 @@ async def health_check() -> dict[str, Any]:
             "message": "Health check completed",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Health check failed", exception=e)
         raise HTTPException(status_code=500, detail="Health check failed")
@@ -108,6 +110,8 @@ async def get_api_performance(
             "message": f"API performance metrics for last {hours} hours",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to get API performance metrics", exception=e)
         raise HTTPException(
@@ -136,6 +140,8 @@ async def get_database_performance(
             "message": f"Database performance metrics for last {hours} hours",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to get database performance metrics", exception=e)
         raise HTTPException(
@@ -162,6 +168,8 @@ async def get_system_performance(
             "message": f"System performance metrics for last {hours} hours",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to get system performance metrics", exception=e)
         raise HTTPException(
@@ -200,6 +208,8 @@ async def get_performance_summary(
             "message": f"Comprehensive performance summary for last {hours} hours",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to get performance summary", exception=e)
         raise HTTPException(
@@ -219,6 +229,8 @@ async def get_prometheus_metrics(_: None = Depends(require_role("ADMIN"))) -> st
 
         return metrics
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to export Prometheus metrics", exception=e)
         raise HTTPException(
@@ -308,6 +320,8 @@ async def detect_performance_bottlenecks(
             "message": f"Found {len(bottlenecks)} potential bottlenecks",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to detect performance bottlenecks", exception=e)
         raise HTTPException(
@@ -344,6 +358,8 @@ async def start_monitoring(
             "message": f"Performance monitoring started with {interval_seconds}s interval",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to start performance monitoring", exception=e)
         raise HTTPException(
@@ -366,6 +382,8 @@ async def stop_monitoring(_: None = Depends(require_role("ADMIN"))) -> dict[str,
 
         return {"success": True, "message": "Performance monitoring stopped"}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to stop performance monitoring", exception=e)
         raise HTTPException(
@@ -409,6 +427,8 @@ async def analyze_logs(
             "message": f"Log analysis for last {hours} hours completed",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Failed to analyze logs", exception=e)
         raise HTTPException(status_code=500, detail="Failed to analyze logs")

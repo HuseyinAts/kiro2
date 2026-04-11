@@ -184,6 +184,8 @@ def get_focus_task(
 
         return task
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error fetching focus task: {str(e)}")
         raise HTTPException(
@@ -240,6 +242,8 @@ def activate_focus_mode(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error activating focus mode: {str(e)}")
         raise HTTPException(
@@ -284,6 +288,8 @@ def deactivate_focus_mode(
             "focus_time_minutes": round(duration_minutes, 2),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error deactivating focus mode: {str(e)}")
         raise HTTPException(
@@ -311,6 +317,8 @@ def get_focus_stats(
 
         return stats
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error fetching focus stats: {str(e)}")
         raise HTTPException(
@@ -362,6 +370,8 @@ def get_focus_sessions(
 
         return sample_sessions[:limit]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error fetching focus sessions: {str(e)}")
         raise HTTPException(

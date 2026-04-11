@@ -80,6 +80,8 @@ async def get_current_rate_limit_status(
         status_info = await get_rate_limit_status(request)
         return status_info
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("get_rate_limit_status_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
@@ -129,6 +131,8 @@ async def get_rate_limit_config(
             }
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("get_rate_limit_config_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
@@ -183,6 +187,8 @@ async def get_my_tier(
             "upgrade_available": tier == UserTier.FREE
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("get_my_tier_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
@@ -268,6 +274,8 @@ async def reset_user_rate_limit(
                 "endpoint": "all"
             }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "reset_rate_limit_error",
@@ -331,6 +339,8 @@ async def get_rate_limit_statistics(
 
         return stats
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("get_rate_limit_stats_error", admin_id=current_user.sub, error=str(e))
         raise HTTPException(

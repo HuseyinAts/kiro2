@@ -156,6 +156,8 @@ async def sorular_listele(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -476,6 +478,8 @@ async def konu_listesi_getir(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -500,6 +504,8 @@ async def soru_bankasi_istatistikleri(db: AsyncSession = Depends(get_db_session)
             },
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -722,6 +728,8 @@ async def soru_ekle(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -875,6 +883,8 @@ async def toplu_soru_ekle(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

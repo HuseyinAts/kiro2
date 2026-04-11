@@ -145,6 +145,8 @@ async def get_comprehensive_metrics(
 
         return metrics
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Get comprehensive metrics error: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -172,6 +174,8 @@ async def get_llm_pool_stats(current_user: AuthenticatedUser = Depends(get_curre
         pool_metrics = llm_pool.get_metrics()
         return LLMPoolMetrics(**pool_metrics)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Get LLM pool stats error: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -201,6 +205,8 @@ async def get_vector_store_stats(
         vector_metrics = vector_store.get_metrics()
         return VectorStoreMetrics(**vector_metrics)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Get vector store stats error: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -230,6 +236,8 @@ async def get_cache_stats(current_user: AuthenticatedUser = Depends(get_current_
         cache_stats = cache_manager.get_metrics()
         return CacheMetrics(**cache_stats)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Get cache stats error: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -260,6 +268,8 @@ async def clear_cache_by_tag(
 
         return {"success": True, "message": f"Cache cleared for tag: {tag}", "tag": tag}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Clear cache by tag error: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -289,6 +299,8 @@ async def get_rag_pipeline_stats(
 
         return RAGPipelineMetrics(**rag_stats)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Get RAG pipeline stats error: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

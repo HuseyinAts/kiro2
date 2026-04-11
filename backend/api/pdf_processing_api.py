@@ -334,6 +334,8 @@ async def upload_pdf(
             estimated_time_seconds=estimated_time,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"PDF upload failed: {e!s}")
 

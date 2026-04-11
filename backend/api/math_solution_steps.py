@@ -125,6 +125,8 @@ async def generate_solution(
             "data": solution.to_dict(),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Solution generation error: {e}")
         raise HTTPException(
@@ -347,6 +349,8 @@ async def clear_cache(
 
         return {"success": True, "message": "Cache temizlendi"}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Clear cache error: {e}")
         raise HTTPException(
@@ -397,6 +401,8 @@ async def get_hint_statistics(
             "data": stats.to_dict(),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Get hint stats error: {e}")
         raise HTTPException(
@@ -430,6 +436,8 @@ async def get_hint_trends(
 
         return {"success": True, "message": "Trend analizi tamamlandı", "data": trends}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Get hint trends error: {e}")
         raise HTTPException(
@@ -492,6 +500,8 @@ async def check_answer(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Check answer error: {e}")
         raise HTTPException(
@@ -542,6 +552,8 @@ async def get_error_analysis(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Get error analysis error: {e}")
         raise HTTPException(

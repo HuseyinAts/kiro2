@@ -152,6 +152,8 @@ async def generate_question(
         raise HTTPException(
             status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -195,6 +197,8 @@ async def validate_question(
 
         return response
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -253,6 +257,8 @@ async def batch_generate(
 
         return response
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -271,6 +277,8 @@ async def health_check():
             "providers_available": ["openai", "claude", "qwen"],
         }
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

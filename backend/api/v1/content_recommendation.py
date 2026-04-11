@@ -194,6 +194,8 @@ async def get_recommendations(
             generated_at=result.generated_at,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Recommendations failed for user {request.user_id}: {e}")
         raise HTTPException(
@@ -318,6 +320,8 @@ async def get_ctr_stats(
             improvement_vs_baseline=improvement,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"CTR stats failed: {e}")
         raise HTTPException(
@@ -356,6 +360,8 @@ async def get_user_profile(
             embedding_dimension=len(profile.embedding),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"User profile failed for {user_id}: {e}")
         raise HTTPException(

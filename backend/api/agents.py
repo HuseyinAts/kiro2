@@ -42,6 +42,8 @@ async def get_agents(current_user: User = Depends(get_current_user)):
         logger.info(f"Returning {len(agents)} agents")
         return agents
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error getting agents: {e}")
         raise HTTPException(

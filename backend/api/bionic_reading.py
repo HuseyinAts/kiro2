@@ -150,6 +150,8 @@ async def process_multiple_texts(
 
         return result
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Çoklu Bionic Reading API hatası: {e}")
         raise HTTPException(

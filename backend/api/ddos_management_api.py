@@ -81,6 +81,8 @@ async def add_to_whitelist(
             "ip": request.ip,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to whitelist IP: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -107,6 +109,8 @@ async def remove_from_whitelist(
             "ip": request.ip,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to remove from whitelist: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -129,6 +133,8 @@ async def get_whitelist(current_admin: dict = Depends(get_current_admin_user)):
 
         return IPListResponse(ips=ips, count=len(ips))
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get whitelist: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -160,6 +166,8 @@ async def add_to_blacklist(
             "reason": reason,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to blacklist IP: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -186,6 +194,8 @@ async def remove_from_blacklist(
             "ip": request.ip,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to remove from blacklist: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -208,6 +218,8 @@ async def get_blacklist(current_admin: dict = Depends(get_current_admin_user)):
 
         return IPListResponse(ips=ips, count=len(ips))
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get blacklist: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -230,6 +242,8 @@ async def get_blocked_ips(current_admin: dict = Depends(get_current_admin_user))
 
         return IPListResponse(ips=ips, count=len(ips))
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get blocked IPs: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -256,6 +270,8 @@ async def unblock_ip(
             "ip": request.ip,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to unblock IP: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -319,6 +335,8 @@ async def get_ddos_statistics(current_admin: dict = Depends(get_current_admin_us
 
         return DDoSStatisticsResponse(**stats)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"[DDOS API] Failed to get statistics: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

@@ -373,6 +373,8 @@ async def oauth2_callback(
                 "details": e.details,
             },
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "oauth2_callback_unexpected_error",
@@ -658,6 +660,8 @@ async def list_devices(
             total_count=len(mock_devices),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "devices_list_error",
@@ -705,6 +709,8 @@ async def remove_device(
             "device_id": device_id,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "device_remove_error",
@@ -773,6 +779,8 @@ async def get_login_history(
             total_count=len(mock_history),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "login_history_error",
@@ -848,6 +856,8 @@ async def lock_account(
             locked_at=locked_at,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "account_lock_error",
@@ -1143,6 +1153,8 @@ async def list_sessions(
             total_count=len(mock_sessions),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "sessions_list_error",
@@ -1195,6 +1207,8 @@ async def revoke_session(
             message=f"Oturum {session_id[:8]}... basariyla sonlandirildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "session_revoke_error",

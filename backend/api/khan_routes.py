@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 # Session 137: swap sync get_db shim → async get_async_session.
 # Pattern A fix — handlers are AsyncSession so we must yield an AsyncSession.
+from core.database import get_async_session
 from core.dependencies import UserRole, get_current_user
 from models.database import User
 from services.khan_academy_client import KhanContentType, KhanSubject, get_khan_client
@@ -118,6 +119,8 @@ async def initiate_khan_oauth(
             "message": "Redirect user to authorization_url",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to initiate OAuth: {e}")
         raise HTTPException(status_code=500, detail="OAuth initialization failed")
@@ -186,6 +189,8 @@ async def khan_oauth_callback(
             "expires_at": token_data["expires_at"],
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OAuth callback failed: {e}")
         raise HTTPException(status_code=500, detail="OAuth callback failed")
@@ -196,7 +201,8 @@ async def khan_oauth_callback(
 
 @router.get("/oauth/status")
 async def get_oauth_status(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Check if user has connected Khan Academy account
@@ -305,7 +311,9 @@ async def get_khan_content(
 
 
 @router.get("/content/{content_id}", response_model=KhanContentResponse)
-async def get_khan_content_details(content_id: str, db: AsyncSession = Depends(get_async_session)):
+async def get_khan_content_details(
+    content_id: str, db: AsyncSession = Depends(get_async_session)
+):
     """Get specific Khan content details"""
     from sqlalchemy import select
 
@@ -341,7 +349,8 @@ async def get_khan_content_details(content_id: str, db: AsyncSession = Depends(g
 
 @router.post("/progress/sync")
 async def sync_user_progress(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 98.3: Bidirectional progress sync
@@ -378,6 +387,8 @@ async def sync_user_progress(
             "stats": stats,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Progress sync failed: {e}")
         raise HTTPException(status_code=500, detail="Senkronizasyon başarısız")
@@ -388,7 +399,8 @@ async def sync_user_progress(
 
 @router.get("/progress", response_model=list[KhanProgressResponse])
 async def get_user_progress(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 98.3: Get user's Khan Academy progress
@@ -434,7 +446,8 @@ async def get_user_progress(
 
 @router.get("/progress/analytics")
 async def get_progress_analytics(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 98.3: Get user progress analytics
@@ -490,7 +503,8 @@ async def get_progress_analytics(
 
 @router.get("/badges", response_model=list[KhanCertificateResponse])
 async def get_user_badges(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 98.4: Get user's Khan Academy badges/certificates
@@ -524,7 +538,8 @@ async def get_user_badges(
 
 @router.post("/badges/sync")
 async def sync_user_badges(
-    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_async_session)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Task 98.4: Sync badges from Khan Academy
@@ -582,6 +597,8 @@ async def sync_user_badges(
             "message": f"{new_badges} yeni rozet eklendi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Badge sync failed: {e}")
         raise HTTPException(status_code=500, detail="Rozet senkronizasyonu başarısız")
@@ -622,6 +639,8 @@ async def trigger_content_sync(
             errors=stats["errors"],
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Content sync failed: {e}")
         raise HTTPException(status_code=500, detail="Sync failed")

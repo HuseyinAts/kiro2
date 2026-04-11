@@ -157,6 +157,8 @@ async def get_student_analytics(
             "message": "Öğrenci analytics başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Student analytics error: {e!s}")
         raise HTTPException(
@@ -263,6 +265,8 @@ async def get_class_analytics(
             "message": "Sınıf analytics başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Class analytics error: {e!s}")
         raise HTTPException(
@@ -360,6 +364,8 @@ async def get_admin_dashboard_analytics(
 
         return result
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Admin dashboard analytics error: {e!s}")
         raise HTTPException(
@@ -425,6 +431,8 @@ async def get_d7_retention(
             "d7_retention_pct": d7_pct,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"D7 retention error: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz.")
@@ -502,6 +510,8 @@ async def export_analytics_pdf(
             "message": "PDF export başarıyla oluşturuldu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"PDF export error: {e!s}")
         raise HTTPException(
@@ -553,6 +563,8 @@ async def export_analytics_excel(
             "message": "Excel export başarıyla oluşturuldu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Excel export error: {e!s}")
         raise HTTPException(
@@ -603,6 +615,8 @@ async def export_analytics_csv(
             "message": "CSV export başarıyla oluşturuldu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"CSV export error: {e!s}")
         raise HTTPException(

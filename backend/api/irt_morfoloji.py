@@ -98,6 +98,8 @@ async def analyze_question(
             "message": "IRT + Morfoloji analizi başarıyla tamamlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"IRT + Morfoloji analiz hatası: {str(e)}")
         raise HTTPException(
@@ -134,6 +136,8 @@ async def batch_analyze_questions(
             "message": f"{len(request.questions)} soru toplu analizi başlatıldı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Toplu analiz hatası: {str(e)}")
         raise HTTPException(
@@ -160,6 +164,8 @@ async def get_morphology_insights(
             "message": "Morfoloji içgörüleri başarıyla oluşturuldu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Morfoloji içgörü hatası: {str(e)}")
         raise HTTPException(
@@ -200,6 +206,8 @@ async def get_difficulty_recommendation(
             "message": "Zorluk önerisi başarıyla hesaplandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Zorluk önerisi hatası: {str(e)}")
         raise HTTPException(
@@ -246,6 +254,8 @@ async def calculate_irt_probability(
             "message": "IRT olasılık başarıyla hesaplandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"IRT olasılık hesaplama hatası: {str(e)}")
         raise HTTPException(
@@ -270,6 +280,8 @@ async def get_service_stats(
             "message": "Servis istatistikleri başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Servis istatistik hatası: {str(e)}")
         raise HTTPException(
@@ -378,6 +390,8 @@ async def quick_assessment(
             "message": "Hızlı değerlendirme tamamlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Hızlı değerlendirme hatası: {str(e)}")
         raise HTTPException(
@@ -418,6 +432,8 @@ async def recommend_questions_for_student(
             "message": f"{len(recommendations)} uygun soru önerildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Soru önerisi hatası: {str(e)}")
         raise HTTPException(
@@ -450,6 +466,8 @@ async def bulk_quality_analysis(
             "message": f"{analysis_result['toplam_soru_sayisi']} soru kalite analizi tamamlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Toplu kalite analizi hatası: {str(e)}")
         raise HTTPException(
@@ -483,6 +501,8 @@ async def osym_ets_comparison(
             "message": "ÖSYM/ETS karşılaştırma raporu oluşturuldu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"ÖSYM/ETS karşılaştırma hatası: {str(e)}")
         raise HTTPException(

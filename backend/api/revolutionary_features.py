@@ -136,6 +136,8 @@ async def detect_learning_style(
             message="Hibrit öğrenme stili başarıyla tespit edildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Öğrenme stili tespit hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -169,6 +171,8 @@ async def detect_learning_style_get(
             message="Hibrit öğrenme stili başarıyla tespit edildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Öğrenme stili tespit hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -206,6 +210,8 @@ async def get_hybrid_codes():
             message="Hibrit kodlar listelendi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Hibrit kod listeleme hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -236,6 +242,8 @@ async def calculate_revolutionary_zpd(
             message="Devrimsel ZPD başarıyla hesaplandı",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"ZPD hesaplama hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -268,6 +276,8 @@ async def generate_revolutionary_recommendation(
             message="Devrimsel öneri başarıyla oluşturuldu",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Öneri oluşturma hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -293,6 +303,8 @@ async def detect_cultural_context(
             message="Kültürel bağlam başarıyla tespit edildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kültürel bağlam tespit hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -317,6 +329,8 @@ async def calculate_maarif_alignment(
             message="Maarif uyumu başarıyla hesaplandı",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Maarif uyumu hesaplama hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -399,6 +413,8 @@ async def get_revolutionary_demo(
             message="Devrimsel özellikler demo başarıyla oluşturuldu",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Demo oluşturma hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -433,6 +449,8 @@ async def check_revolutionary_health():
             message="Devrimsel özellikler sistemi sağlıklı çalışıyor",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sağlık kontrolü hatası: {e}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")

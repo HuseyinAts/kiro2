@@ -75,6 +75,8 @@ async def create_makale(
             "data": makale.dict(),
             "message": "Makale başarıyla oluşturuldu",
         }
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -305,6 +307,8 @@ async def create_video(
             "data": video.dict(),
             "message": "Video başarıyla oluşturuldu",
         }
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin."

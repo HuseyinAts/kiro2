@@ -200,6 +200,8 @@ async def analyze_sentiment(
             processing_time_ms=processing_time,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Duygu analizi API hatası: {e}")
         raise HTTPException(
@@ -316,6 +318,8 @@ async def detect_intent(
             processing_time_ms=processing_time,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Intent tespit API hatası: {e}")
         raise HTTPException(
@@ -364,6 +368,8 @@ async def extract_contextual_meaning(
             processing_time_ms=processing_time,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Bağlamsal anlam çıkarma API hatası: {e}")
         raise HTTPException(

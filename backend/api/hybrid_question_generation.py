@@ -437,6 +437,8 @@ async def generate_bulk_hybrid_questions(
             "generation_time_seconds": round(generation_time, 2),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Bulk generation error: {e}")
         raise HTTPException(

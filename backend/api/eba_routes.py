@@ -13,6 +13,7 @@ from core.auth_dependencies import require_role
 
 # Session 137: swap sync get_db shim → async get_async_session.
 # Pattern A fix — handlers are AsyncSession so we must yield an AsyncSession.
+from core.database import get_async_session
 from core.dependencies import get_current_user
 from models.database import User
 from services.eba_catalog_sync import EBACatalogSyncService
@@ -172,7 +173,9 @@ async def get_eba_videos(
 
 
 @router.get("/videos/{eba_video_id}", response_model=EBAVideoResponse)
-async def get_eba_video_details(eba_video_id: str, db: AsyncSession = Depends(get_async_session)):
+async def get_eba_video_details(
+    eba_video_id: str, db: AsyncSession = Depends(get_async_session)
+):
     """
     Get specific EBA video details
     """
@@ -224,6 +227,8 @@ async def get_subjects_taxonomy(
         taxonomy = await eba_client.get_subjects_taxonomy()
         return taxonomy
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to fetch taxonomy: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch taxonomy")
@@ -247,6 +252,8 @@ async def get_curriculum_alignment(
         alignment = await eba_client.get_curriculum_alignment(grade_level, subject)
         return alignment
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to fetch curriculum alignment: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch alignment")
@@ -256,7 +263,9 @@ async def get_curriculum_alignment(
 
 
 @router.get("/videos/by-kazanim/{kazanim_code}", response_model=list[EBAVideoResponse])
-async def get_videos_by_kazanim(kazanim_code: str, db: AsyncSession = Depends(get_async_session)):
+async def get_videos_by_kazanim(
+    kazanim_code: str, db: AsyncSession = Depends(get_async_session)
+):
     """
     Task 97.3: Get videos by curriculum kazanım code
 
@@ -331,6 +340,8 @@ async def start_watch_session(
         raise HTTPException(
             status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to start watch session: {e}")
         raise HTTPException(status_code=500, detail="Failed to start session")
@@ -362,6 +373,8 @@ async def update_watch_progress(
         raise HTTPException(
             status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to update progress: {e}")
         raise HTTPException(status_code=500, detail="Failed to update progress")
@@ -392,6 +405,8 @@ async def end_watch_session(
         raise HTTPException(
             status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to end session: {e}")
         raise HTTPException(status_code=500, detail="Failed to end session")
@@ -417,6 +432,8 @@ async def get_watch_history(
 
         return [WatchHistoryResponse(**item) for item in history]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to fetch watch history: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch history")
@@ -445,13 +462,17 @@ async def get_user_analytics(
 
         return analytics
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to fetch analytics: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch analytics")
 
 
 @router.get("/videos/{eba_video_id}/analytics")
-async def get_video_analytics(eba_video_id: str, db: AsyncSession = Depends(get_async_session)):
+async def get_video_analytics(
+    eba_video_id: str, db: AsyncSession = Depends(get_async_session)
+):
     """
     Task 97.4: Get video analytics (all users)
 
@@ -469,6 +490,8 @@ async def get_video_analytics(eba_video_id: str, db: AsyncSession = Depends(get_
         raise HTTPException(
             status_code=404, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to fetch video analytics: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch analytics")
@@ -511,6 +534,8 @@ async def get_popular_videos(
             for v in popular
         ]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to fetch popular videos: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch popular videos")
@@ -547,6 +572,8 @@ async def trigger_full_catalog_sync(
 
         return SyncStatsResponse(**stats)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Catalog sync failed: {e}")
         raise HTTPException(status_code=500, detail="Sync failed")
@@ -578,6 +605,8 @@ async def trigger_incremental_sync(
 
         return SyncStatsResponse(**stats)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Incremental sync failed: {e}")
         raise HTTPException(status_code=500, detail="Sync failed")
@@ -602,6 +631,8 @@ async def get_sync_status(
         status = await sync_service.get_sync_status()
         return status
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to get sync status: {e}")
         raise HTTPException(status_code=500, detail="Failed to get status")

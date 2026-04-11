@@ -351,6 +351,8 @@ async def ask_question(
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error processing question: {e}")
         raise HTTPException(
@@ -492,6 +494,8 @@ async def get_all_specialization_scores(
             needs_retraining=[DomainTypeEnum(d.value) for d in needs_retraining],
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error getting specialization scores: {e}")
         raise HTTPException(

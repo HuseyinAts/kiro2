@@ -86,6 +86,8 @@ async def create_multimodal_content(
             interactive_elements=request.interactive_elements,
         )
         return content
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -149,6 +151,8 @@ async def create_animation(
             duration_ms=request.duration_ms,
         )
         return animation
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -215,6 +219,8 @@ async def add_video(
             thumbnail_url=request.thumbnail_url,
         )
         return video
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -277,6 +283,8 @@ async def create_vr_content(
             interactions=request.interactions,
         )
         return content
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -297,6 +305,8 @@ async def create_ar_overlay(
             models_3d=request.models_3d,
         )
         return content
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

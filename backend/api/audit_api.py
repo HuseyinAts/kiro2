@@ -180,6 +180,8 @@ async def get_audit_logs(
             for log in logs
         ]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"[AUDIT API] Failed to get audit logs: {e}",
@@ -304,6 +306,8 @@ async def get_user_audit_trail(
             for log in logs_data
         ]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"[AUDIT API] Failed to get user audit trail: {e}",
@@ -375,6 +379,8 @@ async def get_security_events(
             for log in logs
         ]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"[AUDIT API] Failed to get security events: {e}",
@@ -423,6 +429,8 @@ async def cleanup_old_audit_logs(
             "retention_days": retention_days,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"[AUDIT API] Failed to cleanup old logs: {e}",
@@ -519,6 +527,8 @@ async def get_audit_statistics(
             "end_date": end_date.isoformat() if end_date else None,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"[AUDIT API] Failed to get audit statistics: {e}",

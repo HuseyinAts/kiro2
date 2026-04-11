@@ -232,6 +232,8 @@ async def run_quality_gates(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("quality_gates_run_failed", error=str(e))
         raise HTTPException(
@@ -294,6 +296,8 @@ async def get_pipeline_status(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("get_pipeline_status_failed", error=str(e))
         raise HTTPException(

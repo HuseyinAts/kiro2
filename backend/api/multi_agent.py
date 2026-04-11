@@ -12,7 +12,7 @@ Bu API:
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import (
     APIRouter,
@@ -25,7 +25,7 @@ from fastapi import (
 from pydantic import BaseModel, Field
 
 from algorithms.multi_agent_blackboard import EventType, Priority, get_blackboard
-from core.dependencies import get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -41,8 +41,8 @@ class WriteDataRequest(BaseModel):
 
     key: str = Field(..., description="Veri anahtarı")
     value: Any = Field(..., description="Veri değeri")
-    ttl_seconds: Optional[int] = Field(None, description="Yaşam süresi (saniye)")
-    metadata: Optional[Dict[str, Any]] = Field(None, description="Ek metadata")
+    ttl_seconds: int | None = Field(None, description="Yaşam süresi (saniye)")
+    metadata: dict[str, Any] | None = Field(None, description="Ek metadata")
     priority: str = Field(
         "MEDIUM", description="Olay önceliği (LOW, MEDIUM, HIGH, CRITICAL)"
     )
@@ -64,17 +64,17 @@ class SubscriptionRequest(BaseModel):
     """Abonelik isteği"""
 
     agent_name: str = Field(..., description="Agent adı")
-    event_types: List[str] = Field(..., description="Olay tipleri")
-    key_patterns: Optional[List[str]] = Field(None, description="Key pattern'leri")
-    priority_filter: Optional[str] = Field(None, description="Minimum öncelik seviyesi")
+    event_types: list[str] = Field(..., description="Olay tipleri")
+    key_patterns: list[str] | None = Field(None, description="Key pattern'leri")
+    priority_filter: str | None = Field(None, description="Minimum öncelik seviyesi")
 
 
 class CoordinationRequest(BaseModel):
     """Koordinasyon isteği"""
 
-    target_agents: List[str] = Field(..., description="Hedef agent'lar")
+    target_agents: list[str] = Field(..., description="Hedef agent'lar")
     coordination_type: str = Field(..., description="Koordinasyon tipi")
-    parameters: Dict[str, Any] = Field(..., description="Koordinasyon parametreleri")
+    parameters: dict[str, Any] = Field(..., description="Koordinasyon parametreleri")
     timeout_seconds: int = Field(30, description="Timeout süresi")
 
 
@@ -82,7 +82,7 @@ class CoordinationResponse(BaseModel):
     """Koordinasyon yanıtı"""
 
     coordination_id: str = Field(..., description="Koordinasyon ID'si")
-    response_data: Dict[str, Any] = Field(..., description="Yanıt verisi")
+    response_data: dict[str, Any] = Field(..., description="Yanıt verisi")
 
 
 class BlackboardResponse(BaseModel):
@@ -90,7 +90,7 @@ class BlackboardResponse(BaseModel):
 
     success: bool
     message: str
-    data: Optional[Any] = None
+    data: Any | None = None
     timestamp: datetime = Field(default_factory=datetime.now)
 
 
@@ -103,7 +103,7 @@ def _get_priority_enum(priority_str: str) -> Priority:
         return Priority.MEDIUM
 
 
-def _get_event_types(event_type_strings: List[str]) -> List[EventType]:
+def _get_event_types(event_type_strings: list[str]) -> list[EventType]:
     """String listesinden EventType listesine çevir"""
     event_types = []
     for event_str in event_type_strings:
@@ -118,7 +118,10 @@ def _get_event_types(event_type_strings: List[str]) -> List[EventType]:
 
 
 @router.post("/write", response_model=BlackboardResponse)
-async def write_data(request: WriteDataRequest, current_user: AuthenticatedUser = Depends(get_current_user)):
+async def write_data(
+    request: WriteDataRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Blackboard'a veri yaz
 
@@ -148,16 +151,21 @@ async def write_data(request: WriteDataRequest, current_user: AuthenticatedUser 
                 message=f"Data written successfully: {request.key}",
                 data={"key": request.key, "source_agent": source_agent},
             )
-        else:
-            raise HTTPException(status_code=500, detail="Failed to write data")
+        raise HTTPException(status_code=500, detail="Failed to write data")
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Write data API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/read/{key}", response_model=BlackboardResponse)
-async def read_data(key: str, current_user: AuthenticatedUser = Depends(get_current_user)):
+async def read_data(
+    key: str, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """
     Blackboard'dan veri oku
 
@@ -177,18 +185,23 @@ async def read_data(key: str, current_user: AuthenticatedUser = Depends(get_curr
                 message=f"Data read successfully: {key}",
                 data={"key": key, "value": value, "reader_agent": reader_agent},
             )
-        else:
-            return BlackboardResponse(
-                success=False, message=f"Data not found: {key}", data=None
-            )
+        return BlackboardResponse(
+            success=False, message=f"Data not found: {key}", data=None
+        )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Read data API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.delete("/delete/{key}", response_model=BlackboardResponse)
-async def delete_data(key: str, current_user: AuthenticatedUser = Depends(get_current_user)):
+async def delete_data(
+    key: str, current_user: AuthenticatedUser = Depends(get_current_user)
+):
     """
     Blackboard'dan veri sil
 
@@ -208,21 +221,25 @@ async def delete_data(key: str, current_user: AuthenticatedUser = Depends(get_cu
                 message=f"Data deleted successfully: {key}",
                 data={"key": key, "source_agent": source_agent},
             )
-        else:
-            return BlackboardResponse(
-                success=False,
-                message=f"Data not found or delete failed: {key}",
-                data=None,
-            )
+        return BlackboardResponse(
+            success=False,
+            message=f"Data not found or delete failed: {key}",
+            data=None,
+        )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Delete data API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/subscribe", response_model=BlackboardResponse)
 async def subscribe_agent(
-    request: SubscriptionRequest, current_user: AuthenticatedUser = Depends(get_current_user)
+    request: SubscriptionRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Agent'ı blackboard olaylarına abone et
@@ -256,19 +273,23 @@ async def subscribe_agent(
                     "key_patterns": request.key_patterns,
                 },
             )
-        else:
-            raise HTTPException(
-                status_code=400, detail="Subscription failed - agent not registered"
-            )
+        raise HTTPException(
+            status_code=400, detail="Subscription failed - agent not registered"
+        )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Subscribe API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/coordination/request", response_model=BlackboardResponse)
 async def request_coordination(
-    request: CoordinationRequest, current_user: AuthenticatedUser = Depends(get_current_user)
+    request: CoordinationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Agent koordinasyonu talep et
@@ -295,14 +316,19 @@ async def request_coordination(
             data=result,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Coordination request API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/coordination/respond", response_model=BlackboardResponse)
 async def respond_coordination(
-    response: CoordinationResponse, current_user: AuthenticatedUser = Depends(get_current_user)
+    response: CoordinationResponse,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Koordinasyon talebine yanıt ver
@@ -330,12 +356,15 @@ async def respond_coordination(
                     "responding_agent": responding_agent,
                 },
             )
-        else:
-            raise HTTPException(status_code=400, detail="Coordination response failed")
+        raise HTTPException(status_code=400, detail="Coordination response failed")
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Coordination response API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/metrics", response_model=BlackboardResponse)
@@ -353,9 +382,13 @@ async def get_metrics(current_user: AuthenticatedUser = Depends(get_current_user
             success=True, message="Metrics retrieved successfully", data=metrics
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Metrics API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/agents/status", response_model=BlackboardResponse)
@@ -373,16 +406,20 @@ async def get_agent_status(current_user: AuthenticatedUser = Depends(get_current
             success=True, message="Agent status retrieved successfully", data=status
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Agent status API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/events/history")
 async def get_event_history(
     limit: int = Query(100, description="Maksimum olay sayısı"),
-    event_type: Optional[str] = Query(None, description="Olay tipi filtresi"),
-    agent_name: Optional[str] = Query(None, description="Agent adı filtresi"),
+    event_type: str | None = Query(None, description="Olay tipi filtresi"),
+    agent_name: str | None = Query(None, description="Agent adı filtresi"),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -425,9 +462,13 @@ async def get_event_history(
             data=events_data,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Event history API error: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # WebSocket endpoint for real-time synchronization

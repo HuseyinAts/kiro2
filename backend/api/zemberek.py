@@ -180,6 +180,8 @@ async def analyze_morphology(
             complexity_score=round(analysis.complexity_score, 3),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Morphology analysis error: {e}")
         raise HTTPException(
@@ -238,6 +240,8 @@ async def batch_morphology_analysis(
             results=results, total_count=len(request.words), success_count=success_count
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Batch morphology error: {e}")
         raise HTTPException(
@@ -285,6 +289,8 @@ async def tokenize_text(
             tokens=token_responses, token_count=len(tokens), word_count=word_count
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Tokenization error: {e}")
         raise HTTPException(
@@ -319,6 +325,8 @@ async def spell_check(
             suggestions=result.get("suggestions", []),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Spell check error: {e}")
         raise HTTPException(
@@ -350,6 +358,8 @@ async def normalize_text(
 
         return NormalizeResponse(original=request.text, normalized=normalized)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Normalization error: {e}")
         raise HTTPException(
@@ -379,6 +389,8 @@ async def detect_sentences(
 
         return SentenceResponse(sentences=sentences, sentence_count=len(sentences))
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sentence detection error: {e}")
         raise HTTPException(
@@ -412,6 +424,8 @@ async def get_zemberek_stats(current_user: User = Depends(get_current_user)):
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Stats error: {e}")
         raise HTTPException(

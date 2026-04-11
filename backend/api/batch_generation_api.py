@@ -104,6 +104,8 @@ async def start_batch_generation(
             "message": f"Batch generation started: {request.batch_size} questions",
         }
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -147,6 +149,8 @@ async def get_batch_status(
 
         return response
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -195,6 +199,8 @@ async def cancel_batch_generation(
 
         return {"success": True, "task_id": task_id, "message": "Task cancelled"}
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -226,5 +232,7 @@ async def get_queue_stats(_=Depends(get_current_admin_user)) -> dict[str, Any]:
             "queues": ["default", "bulk", "emails", "reports"],
         }
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(500, "Islem basarisiz. Lutfen tekrar deneyin.")

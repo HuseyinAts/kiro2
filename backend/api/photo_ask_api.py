@@ -115,6 +115,8 @@ async def upload_and_search(
 
         return PhotoAskResponse(**result)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Photo ask error: {e}", extra_data={"user": current_user.id})
         raise HTTPException(

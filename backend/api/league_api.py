@@ -102,6 +102,8 @@ async def get_current_standings(
 
         return LeagueStandingsResponse(**result)
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "League standings error",
@@ -151,6 +153,8 @@ async def get_league_history(
 
         return [LeagueHistoryEntry(**r) for r in results]
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "League history error",
@@ -209,6 +213,8 @@ async def award_xp(
 
         return AwardXpResponse(**result)
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Award XP error",

@@ -149,6 +149,8 @@ async def get_content_recommendations(
             "message": f"{len(recommendation.recommended_content_types)} içerik türü önerildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"İçerik önerisi hatası: {e!s}")
         raise HTTPException(
@@ -327,6 +329,8 @@ async def get_learning_style_explanation(
             "message": "Öğrenme stili açıklaması hazırlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Açıklama hatası: {e!s}")
         raise HTTPException(
@@ -353,6 +357,8 @@ async def get_all_hybrid_codes():
             "message": f"{len(hybrid_codes)} hibrit kod kombinasyonu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Hibrit kodlar hatası: {e!s}")
         raise HTTPException(
@@ -376,6 +382,8 @@ async def get_learning_style_statistics():
             "message": "İstatistikler hazırlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"İstatistik hatası: {e!s}")
         raise HTTPException(
@@ -404,6 +412,8 @@ async def export_learning_profile(
             "message": "Öğrenme profili dışa aktarıldı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Dışa aktarma hatası: {e!s}")
         raise HTTPException(
@@ -437,6 +447,8 @@ async def get_content_explanation(hybrid_code: str, content_type: str):
             "message": "İçerik açıklaması hazırlandı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"İçerik açıklaması hatası: {e!s}")
         raise HTTPException(
@@ -488,6 +500,8 @@ async def update_recommendations_based_on_performance(
             "message": "Öneriler performans verilerine göre güncellendi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Performans tabanlı güncelleme hatası: {e!s}")
         raise HTTPException(
@@ -531,6 +545,8 @@ async def health_check():
             "message": "Hibrit öğrenme stili sistemi çalışıyor",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sağlık kontrolü hatası: {e!s}")
         raise HTTPException(

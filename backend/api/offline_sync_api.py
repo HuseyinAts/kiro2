@@ -155,6 +155,8 @@ async def get_sync_package(
         )
         return SyncPackageResponse(**package)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Sync package oluşturma hatası: {e}",
@@ -219,6 +221,8 @@ async def sync_results(
         )
         return SyncResultsResponse(**outcome)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Sync results işleme hatası: {e}",
@@ -261,6 +265,8 @@ async def get_sync_status(
 
         return SyncStatusResponse(**status_data)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Sync status sorgulama hatası: {e}",

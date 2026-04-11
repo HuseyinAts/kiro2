@@ -118,6 +118,8 @@ def classify_question_difficulty(
             metadata=classification.metadata,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error classifying question {question_id}: {e}")
         raise HTTPException(
@@ -260,6 +262,8 @@ def get_difficulty_distribution(
             "topic_id": topic_id,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error getting difficulty distribution: {e}")
         raise HTTPException(
@@ -305,6 +309,8 @@ def update_difficulty_realtime(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error updating difficulty realtime: {e}")
         raise HTTPException(
@@ -351,6 +357,8 @@ def batch_update_difficulties(
             "results": formatted_results,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error batch updating difficulties: {e}")
         raise HTTPException(
@@ -397,6 +405,8 @@ def get_difficulty_trend(
             "success_analysis": success_analysis,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error getting difficulty trend for {question_id}: {e}")
         raise HTTPException(

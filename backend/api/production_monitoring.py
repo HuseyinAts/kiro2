@@ -40,6 +40,8 @@ async def get_quality_stats(_: None = Depends(require_role("ADMIN"))):
         stats = monitor.get_stats_summary()
 
         return {"success": True, "data": stats, "timestamp": datetime.now().isoformat()}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -68,6 +70,8 @@ async def get_quality_report(
             "report": report,
             "timestamp": datetime.now().isoformat(),
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -113,6 +117,8 @@ async def monitoring_health():
             "issues": issues,
             "timestamp": datetime.now().isoformat(),
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -153,6 +159,8 @@ async def get_recent_questions(
                 for log in recent
             ],
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

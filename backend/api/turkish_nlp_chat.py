@@ -223,6 +223,8 @@ async def get_conversation_history(
             message=f"{len(limited_history)} mesaj getirildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Konuşma geçmişi alma hatası: {e}")
         raise HTTPException(
@@ -265,6 +267,8 @@ async def apply_bionic_reading(
             message="Bionic Reading başarıyla uygulandı",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Bionic Reading hatası: {e}")
         raise HTTPException(
@@ -425,6 +429,8 @@ async def generate_step_by_step_solution(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Adım adım çözüm hatası: {e}")
         raise HTTPException(

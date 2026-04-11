@@ -261,6 +261,8 @@ class SemanticSearchService:
                 latency_ms=round(latency_ms, 2),
             )
 
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"Search failed: {e}")
             raise HTTPException(

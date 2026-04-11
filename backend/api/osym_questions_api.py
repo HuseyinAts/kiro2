@@ -102,6 +102,8 @@ async def get_osym_statistics(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
@@ -141,6 +143,8 @@ async def get_available_subjects(
 
         return {"success": True, "data": subjects, "count": len(subjects)}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
@@ -229,6 +233,8 @@ async def get_random_questions(
             "message": f"Selected {len(questions)} random OSYM questions",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
@@ -328,6 +334,8 @@ async def generate_practice_exam(
             "message": f"Generated {exam_type} practice exam with {total_questions} questions",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
@@ -409,6 +417,8 @@ async def get_questions(
             "message": f"Found {len(questions)} OSYM questions",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")

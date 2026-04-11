@@ -191,6 +191,8 @@ async def create_or_update_plan(
 
         return StudyPlanResponse(**plan)
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Create plan error",
@@ -308,6 +310,8 @@ async def get_score_projection(
 
         return ScoreProjectionResponse(**result)
 
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
             "Score projection error",

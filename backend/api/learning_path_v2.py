@@ -509,6 +509,8 @@ async def create_student_profile(
             "message": "Öğrenci profili başarıyla oluşturuldu",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         await db.rollback()  # FIX: Add rollback on error
         logger.error(f"Error creating student profile: {e}")
@@ -1955,6 +1957,8 @@ async def get_review_queue(
             "count": len(due_questions),
             "student_id": student_id,
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error fetching review queue: {e}")
         raise HTTPException(
@@ -2045,6 +2049,8 @@ async def register_wrong_answers(
             "created": created,
             "total_submitted": len(request.question_ids),
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error registering wrong answers: {e}")
         await db.rollback()

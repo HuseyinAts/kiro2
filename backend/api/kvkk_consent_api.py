@@ -252,6 +252,8 @@ async def give_bulk_consent(
             "message": f"{len(created_consents)} consent(s) recorded",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("bulk_consent_error", user_id=current_user.sub, error=str(e))
         await db.rollback()
@@ -359,6 +361,8 @@ async def get_my_consents(
 
         return consents
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("get_consents_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
@@ -398,6 +402,8 @@ async def check_consent(
             else None,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("check_consent_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(

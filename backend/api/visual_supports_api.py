@@ -109,6 +109,8 @@ async def create_mind_map(
             user_id=str(current_user.id),
         )
         return mind_map
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -184,6 +186,8 @@ async def create_infographic(
             user_id=str(current_user.id),
         )
         return infographic
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -240,6 +244,8 @@ async def create_vocabulary_card(
             difficulty_level=request.difficulty_level,
         )
         return card
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -294,6 +300,8 @@ async def create_color_scheme(
             user_id=str(current_user.id),
         )
         return scheme
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

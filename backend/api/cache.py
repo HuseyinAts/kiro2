@@ -92,6 +92,8 @@ async def get_cache_stats(current_user=Depends(get_current_admin_user)):
             message="Cache istatistikleri başarıyla alındı",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Cache stats hatası: {str(e)}")
         raise HTTPException(
@@ -147,6 +149,8 @@ async def invalidate_by_event(
             "message": f"Event-based invalidation tamamlandı: {len(invalidated_keys)} key",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Event-based invalidation hatası: {str(e)}")
         raise HTTPException(
@@ -175,6 +179,8 @@ async def invalidate_by_pattern(
             "message": f"Pattern-based invalidation tamamlandı: {invalidated_count} key",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Pattern-based invalidation hatası: {str(e)}")
         raise HTTPException(
@@ -199,6 +205,8 @@ async def invalidate_user_cache(
             "message": f"Kullanıcı cache'i temizlendi: {invalidated_count} key",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kullanıcı cache temizleme hatası: {str(e)}")
         raise HTTPException(
@@ -229,6 +237,8 @@ async def invalidate_exam_cache(
             "message": f"Sınav cache'i temizlendi: {invalidated_count} key",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sınav cache temizleme hatası: {str(e)}")
         raise HTTPException(
@@ -255,6 +265,8 @@ async def get_cache_key(
             "message": "Cache key başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Cache key getirme hatası: {str(e)}")
         raise HTTPException(
@@ -290,6 +302,8 @@ async def set_cache_key(
             else "Cache key ayarlama başarısız",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Cache key ayarlama hatası: {str(e)}")
         raise HTTPException(
@@ -314,6 +328,8 @@ async def delete_cache_key(key: str, current_user=Depends(get_current_admin_user
             else "Cache key silme başarısız",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Cache key silme hatası: {str(e)}")
         raise HTTPException(
@@ -346,6 +362,8 @@ async def warm_up_cache(current_user=Depends(get_current_admin_user)):
             "message": f"Cache warm-up tamamlandı: {len(warmed_keys)} key",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Cache warm-up hatası: {str(e)}")
         raise HTTPException(

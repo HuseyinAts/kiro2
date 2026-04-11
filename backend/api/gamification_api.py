@@ -122,6 +122,8 @@ async def get_points_summary(
         cache.set(cache_key, result, ttl=300)
         return result
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Puan ozeti hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -154,6 +156,8 @@ async def get_point_history(
             "message": f"Son {days} gunluk puan gecmisi getirildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Puan gecmisi hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -200,6 +204,8 @@ async def award_points(
             "message": f"{points} puan basariyla verildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Puan verme hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -243,6 +249,8 @@ async def get_level_info(
             "message": "Seviye bilgisi basariyla getirildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Seviye bilgisi hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -283,6 +291,8 @@ async def get_level_progress(
             "message": "Seviye ilerlemesi basariyla getirildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Seviye ilerlemesi hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -345,6 +355,8 @@ async def get_all_badges(
             "message": "Rozetler basariyla getirildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Rozetler getirme hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -397,6 +409,8 @@ async def get_earned_badges(
             "message": "Kazanilan rozetler basariyla getirildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kazanilan rozetler hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -447,6 +461,8 @@ async def get_badge_categories(
             "message": "Kategori istatistikleri basariyla getirildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kategori istatistikleri hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -526,6 +542,8 @@ async def get_leaderboard(
         cache.set(cache_key, result_dict, ttl=60)
         return result_dict
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Liderlik tablosu hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -608,6 +626,8 @@ async def get_gamification_profile(
             "message": "Gamification profili basariyla getirildi",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Gamification profil hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -760,6 +780,8 @@ async def get_user_achievements(
             },
             "message": "Basarilar basariyla getirildi",
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Basarilar getirme hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -793,6 +815,8 @@ async def get_completed_achievements(
             },
             "message": "Tamamlanmis basarilar basariyla getirildi",
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Tamamlanmis basarilar hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -826,6 +850,8 @@ def get_nearby_users_in_leaderboard(
             "data": result,
             "message": "Yakindaki kullanicilar basariyla getirildi",
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Yakindaki kullanicilar hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -860,6 +886,8 @@ def get_user_leaderboard_rank(
             "data": rank_info,
             "message": "Kullanici siralamasi basariyla getirildi",
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kullanici siralamasi hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -885,6 +913,8 @@ def get_leaderboard_statistics(
             "data": stats,
             "message": "Liderlik tablosu istatistikleri basariyla getirildi",
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Liderlik tablosu istatistikleri hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -949,6 +979,8 @@ async def get_peer_group_leaderboard(
                 "period": period,
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Peer group leaderboard hatasi: {e!s}", exc_info=True)
         raise HTTPException(
@@ -991,6 +1023,8 @@ async def get_improvement_leaderboard(
             "success": True,
             "data": {"entries": entries, "period": "weekly"},
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Improvement leaderboard hatasi: {e!s}", exc_info=True)
         raise HTTPException(

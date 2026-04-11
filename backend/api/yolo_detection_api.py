@@ -194,6 +194,8 @@ async def detect_questions(
 
         return result.to_dict()
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Tespit hatası: {e}")
         raise HTTPException(
@@ -229,6 +231,8 @@ async def detect_questions_base64(
 
         return result.to_dict()
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Base64 tespit hatası: {e}")
         raise HTTPException(
@@ -280,6 +284,8 @@ async def detect_questions_batch(
 
         return results
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Toplu tespit hatası: {e}")
         raise HTTPException(
@@ -334,6 +340,8 @@ async def crop_questions(
 
         return results
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Kırpma hatası: {e}")
         raise HTTPException(
@@ -353,6 +361,8 @@ async def get_model_info() -> dict[str, Any]:
     try:
         detector = get_detector()
         return detector.get_model_info()
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Model bilgisi hatası: {e}")
         raise HTTPException(

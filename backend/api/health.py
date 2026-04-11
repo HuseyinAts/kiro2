@@ -154,6 +154,8 @@ async def database_health_check() -> dict[str, Any]:
             status_code=503,
             detail={"status": "unhealthy", "database": health_status},
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=503, detail={"status": "error", "error": str(e)}

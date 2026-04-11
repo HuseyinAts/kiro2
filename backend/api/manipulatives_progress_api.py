@@ -167,6 +167,8 @@ def get_progress_dashboard(
             }
 
         return {"success": True, "data": progress_data}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -390,6 +392,8 @@ def get_user_badges(
             )
 
         return {"success": True, "data": badges}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -549,6 +553,8 @@ def get_progress_summary(
         }
 
         return {"success": True, "data": summary}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
@@ -799,6 +805,8 @@ def get_weekly_progress(
                 "most_active_day": most_active_day,
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

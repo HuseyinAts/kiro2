@@ -164,6 +164,8 @@ async def calibrate_irt_batch(
                     logger.debug("Calibration skip q=%s: %s", q_id, e)
 
             await db.commit()
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("IRT batch calibration failed: %s", e)
         raise HTTPException(status_code=500, detail="IRT calibration failed")

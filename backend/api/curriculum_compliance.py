@@ -127,6 +127,8 @@ async def get_meb_standards_by_subject(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"MEB standartları getirme API hatası: {e}")
         raise HTTPException(
@@ -167,6 +169,8 @@ async def get_learning_outcomes(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Öğrenme kazanımları getirme API hatası: {e}")
         raise HTTPException(
@@ -202,6 +206,8 @@ async def add_osym_standard(
             status_code=400, detail="ÖSYM standardı eklenirken hata oluştu"
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"ÖSYM standardı ekleme API hatası: {e}")
         raise HTTPException(
@@ -245,6 +251,8 @@ async def get_osym_standards_by_priority(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"ÖSYM standartları getirme API hatası: {e}")
         raise HTTPException(
@@ -285,6 +293,8 @@ async def analyze_curriculum_alignment(
             }
         raise HTTPException(status_code=400, detail="Uyumluluk analizi yapılamadı")
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Uyumluluk analizi API hatası: {e}")
         raise HTTPException(
@@ -336,6 +346,8 @@ async def validate_question_bank_compliance(
             status_code=400, detail="Soru bankası uyumluluk kontrolü yapılamadı"
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Soru bankası uyumluluk API hatası: {e}")
         raise HTTPException(
@@ -391,6 +403,8 @@ async def generate_compliance_report(
             }
         raise HTTPException(status_code=400, detail="Uyumluluk raporu oluşturulamadı")
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Uyumluluk raporu API hatası: {e}")
         raise HTTPException(
@@ -433,6 +447,8 @@ async def handle_curriculum_update(
             status_code=400, detail="Müfredat güncelleme talebi işlenemedi"
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Müfredat güncelleme API hatası: {e}")
         raise HTTPException(
@@ -454,6 +470,8 @@ async def get_compliance_system_status(
 
         return {"success": True, "message": "Sistem durumu getirildi", "data": summary}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sistem durumu API hatası: {e}")
         raise HTTPException(
@@ -476,6 +494,8 @@ async def curriculum_compliance_health_check():
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sağlık kontrolü API hatası: {e}")
         raise HTTPException(
@@ -527,6 +547,8 @@ async def validate_all_subjects_compliance(
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Toplu uyumluluk kontrolü API hatası: {e}")
         raise HTTPException(
@@ -561,6 +583,8 @@ async def get_curriculum_statistics(
             "data": statistics,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"İstatistikler API hatası: {e}")
         raise HTTPException(

@@ -163,6 +163,8 @@ async def cluster_concepts(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Clustering failed: {e}")
         raise HTTPException(

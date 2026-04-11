@@ -297,6 +297,8 @@ async def get_export_requests(
 
         return requests
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("get_export_requests_error", user_id=current_user.sub, error=str(e))
         raise HTTPException(
@@ -453,6 +455,8 @@ async def get_deletion_requests(
 
         return requests
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             "get_deletion_requests_error", user_id=current_user.sub, error=str(e)

@@ -79,6 +79,8 @@ async def cocuk_listesi_getir(
         ]
         return {"success": True, "data": cocuklar, "message": f"{len(cocuklar)} çocuk bulundu"}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"cocuk_listesi_getir hata: {e}", exc_info=True)
         raise HTTPException(
@@ -135,6 +137,8 @@ async def cocuk_performansi_getir(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Servis geçici olarak kullanılamıyor",
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Unexpected error in cocuk_performansi_getir: {e}", exc_info=True)
         raise HTTPException(
@@ -169,6 +173,8 @@ async def haftalik_rapor_olustur(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -198,6 +204,8 @@ async def onay_talepleri_listesi(mevcut_veli: Kullanici = Depends(mevcut_veli_ge
             "message": f"{len(veli_talepleri)} onay talebi bulundu",
         }
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -235,6 +243,8 @@ async def onay_talebi_yanitla(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -260,6 +270,8 @@ async def veli_bildirimleri(mevcut_veli: Kullanici = Depends(mevcut_veli_getir))
             "message": f"{len(bildirimler)} bildirim bulundu",
         }
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -355,6 +367,8 @@ async def veli_dashboard_istatistikleri(
             "message": "İstatistikler başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -388,6 +402,8 @@ async def onay_talebi_olustur(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

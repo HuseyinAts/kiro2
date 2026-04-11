@@ -286,6 +286,8 @@ async def generate_question_full_pipeline(
             message="Question approved and ready for use",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -343,6 +345,8 @@ async def start_cat_session(
             estimated_questions="10-20 sorular",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -386,6 +390,8 @@ async def submit_cat_response(
             final_results=None,
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -421,6 +427,8 @@ async def get_question_recommendations(
 
         return {"recommendations": recommendations, "count": len(recommendations)}
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -436,6 +444,8 @@ async def get_knowledge_graph_stats(
     try:
         stats = kg_service.export_graph_stats()
         return stats
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -453,6 +463,8 @@ async def analyze_student_knowledge_gaps(
         _verify_student_access(current_user, student_id)
         gap_analysis = kg_service.analyze_student_gaps(student_id)
         return gap_analysis
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -480,6 +492,8 @@ async def create_review_task(
 
         return eval_result
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -498,6 +512,8 @@ async def assign_task_to_expert(
         assignment = hitl_service.assign_task_to_expert(task_id, expert_id)
         return assignment
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -527,6 +543,8 @@ async def submit_expert_review(
         result = hitl_service.submit_review(submission)
         return result
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -545,6 +563,8 @@ async def get_expert_dashboard(
         dashboard = hitl_service.get_expert_dashboard(expert_id)
         return dashboard
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -562,6 +582,8 @@ async def get_expert_leaderboard(
         leaderboard = hitl_service.get_leaderboard(limit)
         return {"leaderboard": leaderboard, "count": len(leaderboard)}
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

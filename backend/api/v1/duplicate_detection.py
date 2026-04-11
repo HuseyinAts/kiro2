@@ -268,6 +268,8 @@ async def check_duplicate(
             merge_candidates=result.merge_candidates,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Duplicate check failed: {e}")
         raise HTTPException(
@@ -347,6 +349,8 @@ async def add_with_duplicate_check(
             message=message,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Add with check failed: {e}")
         raise HTTPException(
@@ -391,6 +395,8 @@ async def merge_duplicates(
             message=result.message,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Merge failed: {e}")
         raise HTTPException(
@@ -494,6 +500,8 @@ async def get_pending_reviews(
 
         return items[:limit]
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Pending reviews failed: {e}")
         raise HTTPException(

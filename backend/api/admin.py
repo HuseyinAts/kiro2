@@ -88,6 +88,8 @@ async def kullanicilari_listele(
             params,
         )
         return [dict(r) for r in result.mappings().all()]
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error in kullanicilari_listele: {e}", exc_info=True)
         raise HTTPException(
@@ -267,6 +269,8 @@ async def dashboard_istatistikleri(
                 "cat_sessions": c,
             },
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"dashboard_istatistikleri error: {e}", exc_info=True)
         raise HTTPException(500, detail="Istatistikler alinamadi")
@@ -318,6 +322,8 @@ async def soru_bankasi_listesi(
             "data": [dict(r) for r in rows.mappings().all()],
             "total_count": cnt.scalar(),
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"soru_bankasi_listesi error: {e}", exc_info=True)
         raise HTTPException(500, detail="Sorular alinamadi")
@@ -372,6 +378,8 @@ async def soru_ekle(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception:
         logger.exception("admin /content/questions POST hatası")
         raise HTTPException(
@@ -397,6 +405,8 @@ async def soru_guncelle(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -419,6 +429,8 @@ async def soru_sil(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
         )
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -534,6 +546,8 @@ async def icerik_ara(
             "data": [dict(r) for r in rows.mappings().all()],
             "total_count": cnt.scalar(),
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"icerik_ara error: {e}", exc_info=True)
         raise HTTPException(500, detail="Arama basarisiz")

@@ -412,6 +412,8 @@ async def get_detailed_performance_analysis(
             },
         )
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Beklenmeyen performans analizi hatası: {e}",
@@ -487,6 +489,8 @@ async def get_subject_weaknesses(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Zayıflık analizi hatası: {e}",
@@ -556,6 +560,8 @@ async def get_study_recommendations(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Çalışma önerileri hatası: {e}",
@@ -615,6 +621,8 @@ async def get_performance_comparison(
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Performans karşılaştırması hatası: {e}",

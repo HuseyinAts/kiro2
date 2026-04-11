@@ -158,6 +158,8 @@ async def get_completion_statistics(
                 unanswered_question_orders=stats.unanswered_question_orders,
             )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Tamamlanma istatistikleri hatası: {e}",
@@ -220,6 +222,8 @@ async def get_all_answer_statuses(
 
             return response
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Cevap durumları hatası: {e}",
@@ -266,6 +270,8 @@ async def get_unanswered_questions(
 
             return stats.unanswered_question_orders
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Cevaplanmayan sorular hatası: {e}",
@@ -319,6 +325,8 @@ async def get_empty_answers(
 
             return empty_orders
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(
             f"Boş cevaplar hatası: {e}",

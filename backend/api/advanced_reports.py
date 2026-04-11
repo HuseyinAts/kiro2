@@ -289,6 +289,8 @@ async def download_pdf_report(
             path=file_path, filename=safe_name, media_type="application/pdf"
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"PDF indirme hatası - Dosya: {filename}, Hata: {e!s}")
         raise HTTPException(status_code=404, detail="Dosya bulunamadı")

@@ -119,6 +119,8 @@ async def analyze_morphology(
                 success=False, data=None, message="Kelime analiz edilemedi"
             )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Morfolojik analiz API hatası: {e}")
         raise HTTPException(
@@ -173,6 +175,8 @@ async def batch_morphology_analysis(
                 message=f"{len(results)} kelimenin morfolojik analizi tamamlandı",
             )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Toplu morfolojik analiz API hatası: {e}")
         raise HTTPException(
@@ -216,6 +220,8 @@ async def normalize_text(
                 message="Metin normalizasyonu başarıyla tamamlandı",
             )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Metin normalizasyon API hatası: {e}")
         raise HTTPException(
@@ -248,6 +254,8 @@ async def analyze_text_complexity(
                 message="Metin karmaşıklık analizi başarıyla tamamlandı",
             )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Metin karmaşıklık analizi API hatası: {e}")
         raise HTTPException(

@@ -129,6 +129,8 @@ async def detect_complex_words(
             message=f"{len(complex_words)} karmaşık kelime tespit edildi",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Karmaşık kelime tespiti hatası: {e}")
         raise HTTPException(
@@ -192,6 +194,8 @@ async def simplify_text(
             message=f"Metin başarıyla basitleştirildi (Okunabilirlik: {result.readability_improvement:+.2f})",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Metin basitleştirme hatası: {e}")
         raise HTTPException(
@@ -250,6 +254,8 @@ async def calculate_flesch_score(
             message=f"Okunabilirlik skoru: {flesch_result['flesch_reading_ease']:.2f} ({flesch_result['difficulty']})",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Flesch-Kincaid skoru hesaplama hatası: {e}")
         raise HTTPException(

@@ -167,6 +167,8 @@ async def hesapla_zpd(
             message=f"ZPD başarıyla hesaplandı. Optimal zorluk: {zpd_araligi.optimal_zorluk:.2f}",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -198,6 +200,8 @@ async def optimize_zpd(
             message=f"ZPD optimizasyonu tamamlandı. Önerilen zorluk: {optimizasyon_sonucu.onerilen_zorluk_seviyesi:.2f}",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -222,6 +226,8 @@ async def get_kulturel_profil(
             message="Kültürel profil başarıyla getirildi",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -246,6 +252,8 @@ async def get_maarif_profili(
             message="MEB Maarif profili başarıyla getirildi",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -271,6 +279,8 @@ async def update_kulturel_profil(
             message="Kültürel profil başarıyla güncellendi",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -296,6 +306,8 @@ async def update_maarif_profili(
             message="MEB Maarif profili başarıyla güncellendi",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -345,6 +357,8 @@ async def get_zorluk_seviyesi(
             message=f"Zorluk seviyesi belirlendi: {zorluk_seviyesi.value}",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -394,6 +408,8 @@ async def get_zpd_gecmisi(
             message=f"{len(gecmis_data)} ZPD geçmiş kaydı getirildi",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -457,6 +473,8 @@ async def get_zpd_istatistikleri(
             message="ZPD istatistikleri başarıyla hesaplandı",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -535,6 +553,8 @@ async def calculate_revolutionary_zpd(
             message=f"[ROCKET] DEVRİMSEL ZPD hesaplandı! Optimal zorluk: {zpd_range.optimal_challenge:.2f}",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -581,6 +601,8 @@ async def generate_revolutionary_recommendation(
             message=f"[ROCKET] DEVRİMSEL öneri oluşturuldu! Mod: {recommendation.learning_mode}",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -619,6 +641,8 @@ async def detect_cultural_context(
             message="[ROCKET] DEVRİMSEL kültürel bağlam tespit edildi!",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500,
@@ -658,6 +682,8 @@ async def adapt_difficulty_culturally(
             message=f"[ROCKET] DEVRİMSEL zorluk adaptasyonu: {request.current_difficulty:.2f} → {adapted_difficulty:.2f}",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -692,6 +718,8 @@ async def calculate_maarif_alignment(
             message=f"[ROCKET] DEVRİMSEL Maarif uyumu: {alignment.overall_alignment:.2f}",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -719,6 +747,8 @@ async def get_learning_balance(
             message=f"[ROCKET] DEVRİMSEL öğrenme dengesi: {balance_info['recommended_mode']}",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500,
@@ -747,6 +777,8 @@ async def monitor_cultural_patterns(
             message="[ROCKET] DEVRİMSEL kültürel kalıp analizi tamamlandı",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -859,6 +891,8 @@ async def revolutionary_demo(
             message="[ROCKET] DEVRİMSEL ZPD + MEB MAAİF sistemi başarıyla gösterildi!",
         )
 
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

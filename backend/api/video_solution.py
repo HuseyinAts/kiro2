@@ -190,6 +190,8 @@ async def upload_video(
             video=video_response,
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Video upload endpoint error: {e}")
         raise HTTPException(
@@ -908,6 +910,8 @@ async def list_transcripts(
             ],
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"List transcripts error: {e}")
         raise HTTPException(
@@ -1128,6 +1132,8 @@ async def search_videos(
 
         return {"query": q, "total": len(results), "results": results}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Video search error: {e}")
         raise HTTPException(

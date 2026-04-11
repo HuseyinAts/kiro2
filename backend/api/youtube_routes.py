@@ -97,6 +97,7 @@ from core.ddos_protection import limiter  # Task 12: Use global limiter
 from core.dependencies import (
     AuthenticatedUser,
     get_current_admin_user,
+    get_current_user,
 )
 from core.metrics_collector import get_metrics_collector
 
@@ -601,6 +602,8 @@ async def search_videos(
 
         return response_videos
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"YouTube arama hatası: {e!s}")
         raise HTTPException(
@@ -822,6 +825,8 @@ async def get_personalized_recommendations(
 
         return response_recommendations
 
+    except HTTPException:
+        raise
     except Exception as e:
         # 9. Response time measurement (error case)
         response_time_ms = int((time.time() - start_time) * 1000)
@@ -923,6 +928,8 @@ async def get_search_stats(
             supported_exam_types=[exam.value for exam in ExamType],
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Stats alma hatası: {e}")
         raise HTTPException(status_code=500, detail="İstatistikler alınamadı")
@@ -946,6 +953,8 @@ async def clear_cache(
 
         return {"message": "Cache başarıyla temizlendi"}
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Cache temizleme hatası: {e}")
         raise HTTPException(status_code=500, detail="Cache temizlenemedi")
@@ -1034,6 +1043,8 @@ async def health_check(
 
         return response
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Health check hatası: {e!s}")
         raise HTTPException(
@@ -1105,6 +1116,8 @@ async def get_prometheus_metrics():
 
         return Response(content=metrics_data, media_type=content_type)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Prometheus metrics hatası: {e!s}")
         raise HTTPException(
@@ -1153,6 +1166,8 @@ async def get_metrics_snapshot():
 
         return response
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Metrics snapshot hatası: {e!s}")
         raise HTTPException(

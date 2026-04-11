@@ -104,6 +104,8 @@ async def get_cache_metrics(
 
         return JSONResponse(status_code=status.HTTP_200_OK, content=response_data)
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("cache_metrics_error", error=str(e))
         raise HTTPException(
@@ -154,6 +156,8 @@ async def invalidate_cache_pattern(pattern: str, _=Depends(get_current_admin_use
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("cache_invalidation_error", pattern=pattern, error=str(e))
         raise HTTPException(
@@ -200,6 +204,8 @@ async def clear_all_caches(_=Depends(get_current_admin_user)):
             },
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("cache_clear_error", error=str(e))
         raise HTTPException(

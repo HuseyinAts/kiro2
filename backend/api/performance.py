@@ -78,6 +78,8 @@ async def get_performance_metrics(
             "message": "Performans metrikleri başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Performance metrics hatası: {str(e)}")
         raise HTTPException(
@@ -129,6 +131,8 @@ async def get_system_status(
             "message": f"Sistem durumu: {status}",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"System status hatası: {str(e)}")
         raise HTTPException(
@@ -176,6 +180,8 @@ async def get_cache_statistics(
             "message": "Cache istatistikleri başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Cache stats hatası: {str(e)}")
         raise HTTPException(
@@ -235,6 +241,8 @@ async def get_database_performance(
             "message": "Database performans metrikleri başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Database performance hatası: {str(e)}")
         raise HTTPException(
@@ -261,6 +269,8 @@ async def get_revolutionary_features_performance(
             "message": "Devrimsel özellik performans metrikleri başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Revolutionary features performance hatası: {str(e)}")
         raise HTTPException(
@@ -330,6 +340,8 @@ async def clear_cache(
             "message": f"Cache temizlendi: {', '.join(cleared_caches)}",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Cache temizleme hatası: {str(e)}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
@@ -407,6 +419,8 @@ async def get_api_response_times(
             "message": "API response time metrikleri başarıyla alındı",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"API response times hatası: {str(e)}")
         raise HTTPException(
@@ -484,6 +498,8 @@ async def optimize_system(
             "message": f"Sistem optimizasyonu tamamlandı: {', '.join(optimizations_applied)}",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Sistem optimizasyon hatası: {str(e)}")
         raise HTTPException(
@@ -565,6 +581,8 @@ async def performance_health_check():
             "message": f"Performans sistemleri sağlık durumu: {overall_health}",
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Performance health check hatası: {str(e)}")
         raise HTTPException(

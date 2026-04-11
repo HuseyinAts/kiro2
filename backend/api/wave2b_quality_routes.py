@@ -195,6 +195,8 @@ async def evaluate_question(
             execution_time_ms=round(execution_time, 2),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Evaluation failed: {e}")
         raise HTTPException(
@@ -257,6 +259,8 @@ async def evaluate_batch(
             execution_time_ms=round(execution_time, 2),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Batch evaluation failed: {e}")
         raise HTTPException(
@@ -357,6 +361,8 @@ async def get_evaluation_stats():
             },
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Stats retrieval failed: {e}")
         raise HTTPException(
