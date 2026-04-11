@@ -1153,6 +1153,9 @@ async def change_password(
         "message": string
     }
     """
+    # GF14: Business errors MUST raise HTTPException so the HTTP status
+    # reflects reality. Returning {"success": false} with implicit HTTP 200
+    # silently corrupts response.ok checks in clients and monitoring.
     try:
         # Get user from database
         result = await db.execute(
@@ -1161,16 +1164,16 @@ async def change_password(
         db_user = result.scalar_one_or_none()
 
         if not db_user:
-            return {"success": False, "message": "Kullanıcı bulunamadı"}
+            raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
 
         # Verify current password
         if not pwd_context.verify(request_data.currentPassword, db_user.password_hash):
-            return {"success": False, "message": "Mevcut şifre yanlış"}
+            raise HTTPException(status_code=401, detail="Mevcut şifre yanlış")
 
         # Validate new password (same policy as registration)
         pw_error = _validate_password(request_data.newPassword)
         if pw_error:
-            return {"success": False, "message": pw_error}
+            raise HTTPException(status_code=400, detail=pw_error)
 
         # Hash and update new password
         db_user.password_hash = pwd_context.hash(request_data.newPassword)
@@ -1178,13 +1181,15 @@ async def change_password(
         await db.commit()
 
         return {"success": True, "message": "Şifre başarıyla değiştirildi"}
+    except HTTPException:
+        raise
     except Exception as e:
         await db.rollback()
         logger.error(f"Password change failed: {e!s}")
-        return {
-            "success": False,
-            "message": "Şifre değiştirme başarısız. Lütfen tekrar deneyin.",
-        }
+        raise HTTPException(
+            status_code=500,
+            detail="Şifre değiştirme başarısız. Lütfen tekrar deneyin.",
+        ) from e
 
 
 class ForgotPasswordRequest(BaseModel):
