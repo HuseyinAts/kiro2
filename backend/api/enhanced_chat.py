@@ -392,12 +392,23 @@ async def _call_llm(
 @limiter.limit("10/minute")
 async def send_message(
     request: Request,
+    response: Response,
     payload: ChatMessageRequest,
     current_user: Any = _auth_dep,
     db: AsyncSession = _db_dep,
 ) -> dict[str, Any]:
-    """Send a chat message and get AI response."""
-    response = await _call_llm(payload.message, payload.subject, payload.teaching_mode)
+    """Send a chat message and get AI response.
+
+    GF24 fix: ``response: Response`` is required by slowapi's ``@limiter.limit``
+    wrapper — without it the decorator tries to attach rate-limit headers to
+    the dict return value and crashes 500 with
+    ``parameter 'response' must be an instance of starlette.responses.Response``.
+    The bug only surfaces when the upstream LLM responds fast enough that the
+    request doesn't time out first (GF24 was previously a state-dependent skip).
+    """
+    llm_response = await _call_llm(
+        payload.message, payload.subject, payload.teaching_mode
+    )
 
     now = datetime.now(UTC).isoformat()
     resp_id = f"resp-{uuid4().hex[:8]}"
@@ -422,9 +433,9 @@ async def send_message(
                 db,
                 session_id,
                 "assistant",
-                response.message,
+                llm_response.message,
                 model=os.getenv("OLLAMA_MODEL", "qwen3:8b"),
-                confidence=response.confidence_score,
+                confidence=llm_response.confidence_score,
             )
         except Exception as e:
             logger.warning(f"Chat DB persist failed: {e}")
@@ -433,15 +444,15 @@ async def send_message(
         "success": True,
         "data": {
             "response_id": resp_id,
-            "message": response.message,
+            "message": llm_response.message,
             "session_id": session_id,
         },
-        "response": response.message,
+        "response": llm_response.message,
         "agent": "turkish_nlp",
         "timestamp": now,
         "session_id": session_id,
-        "message_type": response.message_type.value,
-        "confidence_score": response.confidence_score,
+        "message_type": llm_response.message_type.value,
+        "confidence_score": llm_response.confidence_score,
     }
 
 
