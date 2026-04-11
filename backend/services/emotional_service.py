@@ -7,26 +7,28 @@ Confidence tracking, frustration detection, flow state ve mood visualization.
 
 import io
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
-from uuid import UUID
+from typing import Any
+from uuid import UUID, uuid4  # uuid4 used for GF49 fix below
 
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 try:
     import matplotlib
-    matplotlib.use('Agg')  # Non-interactive backend
-    import matplotlib.pyplot as plt
+
+    matplotlib.use("Agg")  # Non-interactive backend
     import matplotlib.dates as mdates
+    import matplotlib.pyplot as plt
+
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
 
-from models.diary import EmotionalState
 from api.schemas.diary import (
     EmotionalStateCreate,
     MoodTrendResponse,
 )
+from models.diary import EmotionalState
 
 
 class EmotionalService:
@@ -97,8 +99,14 @@ class EmotionalService:
         # Self-awareness score hesapla (REQ-5.6)
         self_awareness = await self._calculate_self_awareness(user_id)
 
+        # GF49 fix: ``EmotionalState.id`` and ``user_id`` are declared as
+        # VARCHAR (``Column(String, default=uuid4)``), but asyncpg refuses to
+        # bind a Python ``UUID`` object into a VARCHAR parameter with
+        # ``DataError: expected str, got UUID``. Coerce both at the caller —
+        # same pattern as GF26 (Goal model) and GF36 (LiveSession model).
         state = EmotionalState(
-            user_id=user_id,
+            id=str(uuid4()),
+            user_id=str(user_id),
             confidence_level=data.confidence_level,
             frustration_score=frustration_score,
             retry_count=data.retry_count,
@@ -140,10 +148,14 @@ class EmotionalService:
             float - Frustration skoru (0-1)
         """
         # Retry bazli frustration
-        retry_frustration = min(retry_count / self.FRUSTRATION_RETRY_THRESHOLD, 1.0) * 0.4
+        retry_frustration = (
+            min(retry_count / self.FRUSTRATION_RETRY_THRESHOLD, 1.0) * 0.4
+        )
 
         # Error bazli frustration
-        error_frustration = min(error_count / self.FRUSTRATION_ERROR_THRESHOLD, 1.0) * 0.4
+        error_frustration = (
+            min(error_count / self.FRUSTRATION_ERROR_THRESHOLD, 1.0) * 0.4
+        )
 
         # Kullanici skoru (eger verilmisse)
         user_contribution = provided_score * 0.2
@@ -156,7 +168,7 @@ class EmotionalService:
         self,
         user_id: UUID,
         days: int = 7,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Frustration patternlerini tespit et (REQ-5.2).
 
@@ -169,12 +181,16 @@ class EmotionalService:
         """
         start_date = datetime.now() - timedelta(days=days)
 
-        query = select(EmotionalState).where(
-            and_(
-                EmotionalState.user_id == user_id,
-                EmotionalState.timestamp >= start_date
+        query = (
+            select(EmotionalState)
+            .where(
+                and_(
+                    EmotionalState.user_id == user_id,
+                    EmotionalState.timestamp >= start_date,
+                )
             )
-        ).order_by(EmotionalState.timestamp)
+            .order_by(EmotionalState.timestamp)
+        )
 
         result = await self.db.execute(query)
         states = list(result.scalars().all())
@@ -191,13 +207,13 @@ class EmotionalService:
         high_frustration = [s for s in states if s.frustration_score > 0.6]
 
         # Trigger analizi
-        trigger_counts: Dict[str, int] = {}
+        trigger_counts: dict[str, int] = {}
         for state in high_frustration:
             for trigger in (state.trigger_factors or {}).keys():
                 trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
 
         # Task type analizi
-        task_frustration: Dict[str, List[float]] = {}
+        task_frustration: dict[str, list[float]] = {}
         for state in states:
             if state.task_type:
                 if state.task_type not in task_frustration:
@@ -213,21 +229,27 @@ class EmotionalService:
         return {
             "total_states": len(states),
             "high_frustration_events": len(high_frustration),
-            "high_frustration_percentage": round(len(high_frustration) / len(states) * 100, 1),
-            "avg_frustration": round(sum(s.frustration_score for s in states) / len(states), 3),
+            "high_frustration_percentage": round(
+                len(high_frustration) / len(states) * 100, 1
+            ),
+            "avg_frustration": round(
+                sum(s.frustration_score for s in states) / len(states), 3
+            ),
             "trigger_patterns": sorted(
                 [{"trigger": t, "count": c} for t, c in trigger_counts.items()],
                 key=lambda x: x["count"],
-                reverse=True
+                reverse=True,
             )[:5],
             "problematic_task_types": problematic_tasks,
-            "recommendation": self._generate_frustration_recommendation(high_frustration, problematic_tasks),
+            "recommendation": self._generate_frustration_recommendation(
+                high_frustration, problematic_tasks
+            ),
         }
 
     def _generate_frustration_recommendation(
         self,
-        high_frustration_events: List[EmotionalState],
-        problematic_tasks: List[Dict],
+        high_frustration_events: list[EmotionalState],
+        problematic_tasks: list[dict],
     ) -> str:
         """Frustration icin oneri olustur."""
         if not high_frustration_events:
@@ -267,9 +289,9 @@ class EmotionalService:
 
         # Otomatik tespit
         is_flow = (
-            confidence >= self.FLOW_CONFIDENCE_MIN and
-            productivity >= self.FLOW_PRODUCTIVITY_MIN and
-            tasks_completed >= self.FLOW_TASKS_MIN
+            confidence >= self.FLOW_CONFIDENCE_MIN
+            and productivity >= self.FLOW_PRODUCTIVITY_MIN
+            and tasks_completed >= self.FLOW_TASKS_MIN
         )
 
         return is_flow
@@ -278,7 +300,7 @@ class EmotionalService:
         self,
         user_id: UUID,
         days: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Flow state istatistiklerini getir (REQ-5.3).
 
@@ -294,7 +316,7 @@ class EmotionalService:
         query = select(EmotionalState).where(
             and_(
                 EmotionalState.user_id == user_id,
-                EmotionalState.timestamp >= start_date
+                EmotionalState.timestamp >= start_date,
             )
         )
 
@@ -313,10 +335,12 @@ class EmotionalService:
         flow_states = [s for s in states if s.flow_state]
 
         # Flow trigger analizi
-        flow_triggers: Dict[str, int] = {}
+        flow_triggers: dict[str, int] = {}
         for state in flow_states:
             if state.task_type:
-                flow_triggers[state.task_type] = flow_triggers.get(state.task_type, 0) + 1
+                flow_triggers[state.task_type] = (
+                    flow_triggers.get(state.task_type, 0) + 1
+                )
 
         return {
             "total_states": len(states),
@@ -324,14 +348,18 @@ class EmotionalService:
             "flow_percentage": round(len(flow_states) / len(states) * 100, 1),
             "avg_confidence_in_flow": round(
                 sum(s.confidence_level for s in flow_states) / len(flow_states), 1
-            ) if flow_states else 0,
+            )
+            if flow_states
+            else 0,
             "avg_productivity_in_flow": round(
                 sum(s.productivity_score for s in flow_states) / len(flow_states), 2
-            ) if flow_states else 0,
+            )
+            if flow_states
+            else 0,
             "flow_triggers": sorted(
                 [{"task_type": t, "count": c} for t, c in flow_triggers.items()],
                 key=lambda x: x["count"],
-                reverse=True
+                reverse=True,
             )[:5],
         }
 
@@ -343,7 +371,7 @@ class EmotionalService:
         self,
         user_id: UUID,
         days: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Duygusal patternleri analiz et (REQ-5.4).
 
@@ -356,12 +384,16 @@ class EmotionalService:
         """
         start_date = datetime.now() - timedelta(days=days)
 
-        query = select(EmotionalState).where(
-            and_(
-                EmotionalState.user_id == user_id,
-                EmotionalState.timestamp >= start_date
+        query = (
+            select(EmotionalState)
+            .where(
+                and_(
+                    EmotionalState.user_id == user_id,
+                    EmotionalState.timestamp >= start_date,
+                )
             )
-        ).order_by(EmotionalState.timestamp)
+            .order_by(EmotionalState.timestamp)
+        )
 
         result = await self.db.execute(query)
         states = list(result.scalars().all())
@@ -373,36 +405,44 @@ class EmotionalService:
                 "insights": ["Yeterli veri yok (en az 5 kayit gerekli)"],
             }
 
-        patterns: List[Dict[str, Any]] = []
-        insights: List[str] = []
+        patterns: list[dict[str, Any]] = []
+        insights: list[str] = []
 
         # Hafta ici vs hafta sonu analizi
         weekday_states = [s for s in states if s.timestamp.weekday() < 5]
         weekend_states = [s for s in states if s.timestamp.weekday() >= 5]
 
         if weekday_states and weekend_states:
-            weekday_conf = sum(s.confidence_level for s in weekday_states) / len(weekday_states)
-            weekend_conf = sum(s.confidence_level for s in weekend_states) / len(weekend_states)
+            weekday_conf = sum(s.confidence_level for s in weekday_states) / len(
+                weekday_states
+            )
+            weekend_conf = sum(s.confidence_level for s in weekend_states) / len(
+                weekend_states
+            )
 
             if weekday_conf > weekend_conf + 1:
-                patterns.append({
-                    "type": "weekday_preference",
-                    "description": "Hafta ici daha yuksek confidence",
-                    "weekday_avg": round(weekday_conf, 1),
-                    "weekend_avg": round(weekend_conf, 1),
-                })
+                patterns.append(
+                    {
+                        "type": "weekday_preference",
+                        "description": "Hafta ici daha yuksek confidence",
+                        "weekday_avg": round(weekday_conf, 1),
+                        "weekend_avg": round(weekend_conf, 1),
+                    }
+                )
                 insights.append("Hafta ici daha verimli calisiyorsunuz")
             elif weekend_conf > weekday_conf + 1:
-                patterns.append({
-                    "type": "weekend_preference",
-                    "description": "Hafta sonu daha yuksek confidence",
-                    "weekday_avg": round(weekday_conf, 1),
-                    "weekend_avg": round(weekend_conf, 1),
-                })
+                patterns.append(
+                    {
+                        "type": "weekend_preference",
+                        "description": "Hafta sonu daha yuksek confidence",
+                        "weekday_avg": round(weekday_conf, 1),
+                        "weekend_avg": round(weekend_conf, 1),
+                    }
+                )
                 insights.append("Hafta sonu daha verimli calisiyorsunuz")
 
         # Task type bazli pattern
-        task_confidence: Dict[str, List[int]] = {}
+        task_confidence: dict[str, list[int]] = {}
         for state in states:
             if state.task_type:
                 if state.task_type not in task_confidence:
@@ -416,11 +456,13 @@ class EmotionalService:
         ]
 
         for task_type, avg_conf in high_conf_tasks:
-            patterns.append({
-                "type": "high_confidence_task",
-                "task_type": task_type,
-                "avg_confidence": round(avg_conf, 1),
-            })
+            patterns.append(
+                {
+                    "type": "high_confidence_task",
+                    "task_type": task_type,
+                    "avg_confidence": round(avg_conf, 1),
+                }
+            )
             insights.append(f"'{task_type}' islerinde kendinize guveniyor sunuz")
 
         # Trend analizi
@@ -464,33 +506,43 @@ class EmotionalService:
         start_date = datetime.now() - timedelta(days=days)
         end_date = datetime.now()
 
-        query = select(EmotionalState).where(
-            and_(
-                EmotionalState.user_id == user_id,
-                EmotionalState.timestamp >= start_date
+        query = (
+            select(EmotionalState)
+            .where(
+                and_(
+                    EmotionalState.user_id == user_id,
+                    EmotionalState.timestamp >= start_date,
+                )
             )
-        ).order_by(EmotionalState.timestamp)
+            .order_by(EmotionalState.timestamp)
+        )
 
         result = await self.db.execute(query)
         states = list(result.scalars().all())
 
-        data_points: List[Dict[str, Any]] = []
+        data_points: list[dict[str, Any]] = []
 
         for state in states:
-            data_points.append({
-                "timestamp": state.timestamp.isoformat(),
-                "date": state.timestamp.date().isoformat(),
-                "confidence_level": state.confidence_level,
-                "frustration_score": state.frustration_score,
-                "flow_state": state.flow_state,
-                "productivity_score": state.productivity_score,
-            })
+            data_points.append(
+                {
+                    "timestamp": state.timestamp.isoformat(),
+                    "date": state.timestamp.date().isoformat(),
+                    "confidence_level": state.confidence_level,
+                    "frustration_score": state.frustration_score,
+                    "flow_state": state.flow_state,
+                    "productivity_score": state.productivity_score,
+                }
+            )
 
         # Ortalamalar
-        avg_confidence = sum(s.confidence_level for s in states) / len(states) if states else 0
+        avg_confidence = (
+            sum(s.confidence_level for s in states) / len(states) if states else 0
+        )
         flow_percentage = (
-            sum(1 for s in states if s.flow_state) / len(states) * 100
-        ) if states else 0
+            (sum(1 for s in states if s.flow_state) / len(states) * 100)
+            if states
+            else 0
+        )
         frustration_events = sum(1 for s in states if s.frustration_score > 0.6)
 
         return MoodTrendResponse(
@@ -506,7 +558,7 @@ class EmotionalService:
         self,
         user_id: UUID,
         days: int = 30,
-    ) -> Optional[bytes]:
+    ) -> bytes | None:
         """
         Mood chart PNG olustur (REQ-5.5).
 
@@ -528,13 +580,22 @@ class EmotionalService:
         # Verileri hazirla
         dates = [datetime.fromisoformat(dp["timestamp"]) for dp in trend.data_points]
         confidence = [dp["confidence_level"] for dp in trend.data_points]
-        frustration = [dp["frustration_score"] * 10 for dp in trend.data_points]  # 0-10 scale
+        frustration = [
+            dp["frustration_score"] * 10 for dp in trend.data_points
+        ]  # 0-10 scale
 
         # Chart olustur
         fig, ax = plt.subplots(figsize=(12, 6))
 
-        ax.plot(dates, confidence, 'b-', label='Guven (1-10)', linewidth=2)
-        ax.plot(dates, frustration, 'r--', label='Frustration (x10)', linewidth=1.5, alpha=0.7)
+        ax.plot(dates, confidence, "b-", label="Guven (1-10)", linewidth=2)
+        ax.plot(
+            dates,
+            frustration,
+            "r--",
+            label="Frustration (x10)",
+            linewidth=1.5,
+            alpha=0.7,
+        )
 
         # Flow state noktalari
         flow_dates = [
@@ -543,23 +604,28 @@ class EmotionalService:
             if dp["flow_state"]
         ]
         flow_confidence = [
-            dp["confidence_level"]
-            for dp in trend.data_points
-            if dp["flow_state"]
+            dp["confidence_level"] for dp in trend.data_points if dp["flow_state"]
         ]
 
         if flow_dates:
-            ax.scatter(flow_dates, flow_confidence, c='green', s=100, label='Flow State', zorder=5)
+            ax.scatter(
+                flow_dates,
+                flow_confidence,
+                c="green",
+                s=100,
+                label="Flow State",
+                zorder=5,
+            )
 
         # Formatting
-        ax.set_xlabel('Tarih')
-        ax.set_ylabel('Deger')
-        ax.set_title(f'Mood Trendi (Son {days} Gun)')
-        ax.legend(loc='upper left')
+        ax.set_xlabel("Tarih")
+        ax.set_ylabel("Deger")
+        ax.set_title(f"Mood Trendi (Son {days} Gun)")
+        ax.legend(loc="upper left")
         ax.grid(True, alpha=0.3)
 
         # X-axis formatting
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
         ax.xaxis.set_major_locator(mdates.DayLocator(interval=max(1, days // 10)))
         plt.xticks(rotation=45)
 
@@ -569,7 +635,7 @@ class EmotionalService:
 
         # PNG olarak kaydet
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=100)
+        plt.savefig(buf, format="png", dpi=100)
         buf.seek(0)
         plt.close(fig)
 
@@ -600,7 +666,7 @@ class EmotionalService:
         query = select(EmotionalState).where(
             and_(
                 EmotionalState.user_id == user_id,
-                EmotionalState.timestamp >= start_date
+                EmotionalState.timestamp >= start_date,
             )
         )
 
@@ -611,7 +677,7 @@ class EmotionalService:
             return 50.0  # Default
 
         # Prediction accuracy (predicted vs actual durumu var mi?)
-        prediction_scores: List[float] = []
+        prediction_scores: list[float] = []
         for state in states:
             if state.predicted_state and state.actual_state:
                 # Basit esleme: ayni = 1, farkli = 0
@@ -619,16 +685,17 @@ class EmotionalService:
                 prediction_scores.append(match)
 
         prediction_accuracy = (
-            sum(prediction_scores) / len(prediction_scores) * 40
-        ) if prediction_scores else 20
+            (sum(prediction_scores) / len(prediction_scores) * 40)
+            if prediction_scores
+            else 20
+        )
 
         # Emotional regulation: Frustration recovery
         high_frustration_indices = [
-            i for i, s in enumerate(states)
-            if s.frustration_score > 0.6
+            i for i, s in enumerate(states) if s.frustration_score > 0.6
         ]
 
-        recovery_scores: List[float] = []
+        recovery_scores: list[float] = []
         for idx in high_frustration_indices:
             if idx + 1 < len(states):
                 next_state = states[idx + 1]
@@ -640,13 +707,16 @@ class EmotionalService:
                     recovery_scores.append(0.0)
 
         regulation_score = (
-            sum(recovery_scores) / len(recovery_scores) * 30
-        ) if recovery_scores else 15
+            (sum(recovery_scores) / len(recovery_scores) * 30)
+            if recovery_scores
+            else 15
+        )
 
         # Consistency: Confidence variance
         conf_values = [s.confidence_level for s in states]
         if len(conf_values) >= 2:
             import statistics
+
             variance = statistics.variance(conf_values)
             # Dusuk variance = yuksek consistency
             consistency_score = max(0, 30 - variance * 3)
@@ -663,10 +733,10 @@ class EmotionalService:
     async def get_states(
         self,
         user_id: UUID,
-        from_date: Optional[datetime] = None,
-        to_date: Optional[datetime] = None,
+        from_date: datetime | None = None,
+        to_date: datetime | None = None,
         limit: int = 50,
-    ) -> List[EmotionalState]:
+    ) -> list[EmotionalState]:
         """
         Duygusal durumlari getir.
 
@@ -700,7 +770,7 @@ class EmotionalService:
         self,
         state_id: UUID,
         user_id: UUID,
-    ) -> Optional[EmotionalState]:
+    ) -> EmotionalState | None:
         """
         ID ile durum getir.
 
@@ -712,10 +782,7 @@ class EmotionalService:
             Optional[EmotionalState] - Durum veya None
         """
         query = select(EmotionalState).where(
-            and_(
-                EmotionalState.id == state_id,
-                EmotionalState.user_id == user_id
-            )
+            and_(EmotionalState.id == state_id, EmotionalState.user_id == user_id)
         )
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
