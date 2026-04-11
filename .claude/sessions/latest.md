@@ -1,46 +1,66 @@
-## Session Handoff — 2026-04-11 Session 146
+## Session Handoff — 2026-04-11 Session 147
 **Branch:** master
-**Son commit:** cdcbaab test(golden-flows): Wave 10 sweep — GF80-GF89 probes + 8 real fixes
-**Uncommitted:** 89 M + 3 ?? (rule-of-eight sweep: 446 guards, 6 import fixes, 3 new scripts)
+**Son commit:** cf4147b test(golden-flows): Wave 11 sweep — GF90-GF99 probes + 5 real fixes
+**Uncommitted:** 0
+**Pushed:** HAYIR — 4 commit ahead of origin/master, push bekliyor
 
-### Yapilanlar — Rule-of-Eight Proactive Sweep
-- **Auditor**: `backend/scripts/audit_httpexception_guard.py` — AST walks every `ast.Try` in `backend/api/**/*.py`, flags blocks where `except Exception` re-raises `HTTPException(500)` without a preceding `except HTTPException: raise`. Skips `_deprecated/`. CLI `--fail` gates CI.
-- **Fixer**: `backend/scripts/fix_httpexception_guard.py` — Reuses `audit_file()`, inserts guard + `raise` above each flagged handler (reverse-line-order to preserve indices). `ensure_httpexception_import` AST-walks `ImportFrom` so multi-line `from fastapi import (...)` blocks are handled correctly. Idempotent — re-runs skip already-fixed blocks.
-- **Pilot**: `learning_style.py` (8 guards) → sanity check → full repo apply.
-- **Full sweep**: **INSERTED 446 guards across 87 files** in one shot. Audit now returns `[OK] No risky try/except blocks found`.
-- **Fixer bug repair**: initial `has_httpexception_import` was a naive substring scan and missed HTTPException on subsequent lines of multi-line imports → 5 files mangled to `from fastapi import (, HTTPException`: multi_agent.py, pdf_processing_api.py, question_crud_api.py, video_solution.py, youtube_routes.py. Repaired all 5 by removing the stray fragment (they already had HTTPException imported downstream) and hardened the detector to an AST walk.
-- **Smoke test**: `backend/scripts/_smoke_api_imports.py` — imports every `backend/api/**/*.py` and reports failures. Surfaced **6 pre-existing broken imports** (verified as pre-existing via `git stash` + re-run):
-  - `api/instant_feedback_api.py` — Wave 10 GF86/87 regression: swapped dep to `Depends(get_async_session)` without importing it. Added `from core.database import get_async_session`.
-  - `api/eba_routes.py` — missing `get_async_session`. Added import.
-  - `api/khan_routes.py` — missing `get_async_session`. Added import.
-  - `api/enhanced_chat.py` — Session 140 GF24 regression: `response: Response` param added without importing `Response`. Added to fastapi import.
-  - `api/sequential_reasoning_api.py` — missing `get_current_user` + `AuthenticatedUser`. Added `from core.dependencies import AuthenticatedUser, get_current_user`.
-  - `api/youtube_routes.py` — missing `get_current_user`. Added to existing `core.dependencies` import block.
-- **Verification**: Smoke test `Imported 144 modules, 0 failed`. Audit `[OK] No risky try/except blocks found`. Golden Flow `106 test → 104 PASS, 0 FAIL, 2 SKIP` (identical to Wave 10 baseline — zero regression).
+### Yapilanlar — Session 147 (5 görevin tamamı)
+
+**Görev 1 — audit_httpexception_guard.py CI gate** (commit `b20e215`):
+- `.github/workflows/golden-flows.yml`'ye 6. AST linter step eklendi (`python scripts/audit_httpexception_guard.py --fail`)
+- Rule-of-eight (Session 146'da eradike edilen anti-pattern) CI tarafından kalıcı koruma altına alındı
+
+**Görev 2 — smoke test pre-commit hook** (commit `b20e215`):
+- `backend/scripts/_smoke_api_imports.py`'ye `sys.exit(1)` eklendi (fail-close)
+- `.pre-commit-config.yaml`'a `kiro2-api-import-smoke` lokal hook eklendi, `files:` filter `^backend/api/.*\.py$` ile sadece API değişikliğinde tetiklenir
+
+**Görev 3 — DB dependency baseline re-run** (commit `d8ce182`):
+- `docs/audits/2026-04-11_db-dependency-s147-baseline.md` yazıldı
+- `audit_db_dependency.py` çıktısı: 98 MEDIUM tech debt, **HIGH=0** (Session 137 baseline 179→98 onaylandı)
+- `--fail-on-high` exit 0 (CI gate temiz)
+
+**Görev 4 — Wave 11 Golden Flow sweep (GF90-GF99)** (commit `cf4147b`):
+- 10 disjoint yeni probe eklendi (`backend/tests/e2e/test_golden_flows.py`)
+- **5 gerçek bug yakalandı** (hit rate %50 — Wave 10 %80'den düşüş beklendiği gibi rule-of-eight sonrası):
+  - **GF41 reasoning_api/solve** (Wave 6 regression): reasoning_cache query tz-aware → tz-naive DataError. `solve_problem` exception guard widened to match `dbapierror`/`asyncpg`/`datatypemismatch` keywords + class name. Artık 503 döner.
+  - **GF86/GF87 instant_feedback_api** (Wave 10 collateral): initial ORM rewrite hala `streak_tracking`/`performance_history` 3 drift'e takıldı (NOT NULL student_id yok, uuid vs varchar id, date vs DateTime). **Raw SQL `text()` + `gen_random_uuid()` + `now()` server-side ile tamamen yeniden yazıldı** — sıfır ORM churn.
+  - **GF92 pdf_processing_api**: `UPLOAD_DIR = Path("backend/uploads/pdfs")` relatif path Docker CWD `/app` altında crash. `Path(__file__).parent.parent` ile anchor + import-time `try/except OSError` + runtime OSError → 503.
+  - **GF94 video_analytics_service**: VideoNote + VideoCompletionMilestone asyncpg VARCHAR+UUID drift (rule-of-seven — Session 142 prophylactic sweep bu 2 modeli missledi). `id=str(uuid4())` + `user_id=str(user_id)` + `session_id=str(...) if ... else None` coerce.
+  - **GF95 manipulatives_progress_api**: sync `def` + `Depends(get_db)` + async engine three-part trap (Wave 10 GF86/87 ile aynı). Tüm 5 handler `async def` + `get_async_session` + `select()` + `await db.execute()` rewrite.
+  - **GF99 csrf_protection middleware**: iki parçalı bug — (a) `raise HTTPException` middleware `dispatch`'ten escape etmiyor, 500 olarak geliyor → `JSONResponse` return, (b) Bearer-auth API client'lar CSRF'lenemez → `authorization: bearer` early-return. `JSONResponse` import'u da eksikti.
+- Ek olarak `backend/api/sequential_reasoning_api.py` `solve_problem` exception keyword listesi genişletildi (GF41 fix).
+- **Final distribution: 116 test → 114 PASS / 0 FAIL / 2 SKIP** (GF1wB + GF4w.2 state-dependent skip'ler değişmedi).
+- `.claude/rules/golden-flows.md`'ye Wave 11 tablosu + analiz paragrafı eklendi.
+
+**Görev 5 — GF33 StudyPlan.weekly_goals relationship fix** (commit `03b467a`):
+- `backend/models/study_planner.py` — `StudyPlan.weekly_goals` + `WeeklyGoal.plan` back-populates relationship eklendi
+- `services/study_planner_service.py`'nin 7 call site'ı (`selectinload(StudyPlan.weekly_goals)` + `plan.weekly_goals` iteration) artık silent fallback yerine normal çalışır
+- DB şeması zaten doğruydu (alembic migration `20260312_create_mega_feature_tables`); sadece ORM relationship eksikti
 
 ### Fail Eden Testler
-- YOK. 104 PASS / 0 FAIL / 2 SKIP (GF1wB + GF4w.2 state-dependent skips unchanged)
+- YOK. 116 test → 114 PASS / 0 FAIL / 2 SKIP (baseline korundu, 10 yeni Wave 11 probe hepsi geçti)
 
 ### Engelleyiciler
 - YOK
 
-### Session 146 Bulgular / Notlar
-- **Rule-of-eight fully eradicated**: 446 guards is an order-of-magnitude above the 8 Wave-sweep occurrences. Every bare `except Exception` that re-wraps as `HTTPException(500)` in `backend/api/` now has a `except HTTPException: raise` guard in front of it. Any handler that depends on an upstream helper raising 4xx/503 will now propagate correctly instead of being silently promoted to a crash.
-- **CI gate available**: `python backend/scripts/audit_httpexception_guard.py --fail` can be wired to `.github/workflows/` to merge-block future regressions. Zero false positives on the current tree.
-- **Hidden pre-existing breakage caught**: the smoke test is a cheap one-liner that FastAPI's normal startup doesn't run (lazy router registration), so 6 broken modules had been sitting in `master` without anyone noticing. Worth promoting to a pytest collection test or a pre-commit hook.
-- **Multi-line import AST trap**: the first-pass substring detector is a classic bug — greppable strings don't survive code that wraps across lines. For any script that mutates Python source, AST parsing is the only safe choice.
-- **`get_db` deprecation footprint shrinking**: Session 137 (Pattern A + Pattern B + CI gate) plus Session 145 (Wave 10 GF86/87) plus Session 146 (this) means the remaining sync-shim call sites are fewer than the Session 137 snapshot showed. A fresh `audit_db_dependency.py` run would be worth doing in Session 147 to see the new baseline.
+### Session 147 Bulgular / Notlar
+- **Wave 11 hit rate %50** (Wave 10 %80'den düşüş) — rule-of-eight eradikasyonunun beklenen etkisi. Yeni anti-pattern class: **raw ORM/DB schema drift** (4/5 bug: reasoning_cache tz, instant_feedback x3 drift, VideoNote UUID, manipulatives sync shim). GF22/GF83 optional-dep pattern hala mevcut ama baskın değil.
+- **Middleware HTTPException trap**: `BaseHTTPMiddleware.dispatch()`'ten `raise HTTPException` yapmak 500'e dönüşür — FastAPI global handler sadece route handler'ları yakalar. `JSONResponse` return zorunlu. Bu bilgi KIRO2 middleware guide'a eklenmeli.
+- **SQLAlchemy DBAPIError wrapping**: asyncpg hatalarını message string'i üzerinden yakalamak kırılgan — class name üzerinden `type(exc).__name__` kontrolü stricter more robust. GF41 fix'ine dahil edildi.
+- **Rule-of-seven VideoAnalytics asyncpg drift**: Goal/LiveSession/EmotionalState/VideoConferenceSession/VideoWatchSession/ReasoningSession/VideoNote-VideoCompletionMilestone. Session 142 prophylactic sweep *mostly complete* — iki model gözden kaçtı. Gelecekte `Column(String, default=uuid.uuid4)` pattern'i herhangi bir yerde görülürse guaranteed asyncpg crash site olarak işaretlenmeli.
+- **instant_feedback_api raw SQL bypass**: 3+ ORM drift olan tablolarda raw SQL `text()` + server-side `gen_random_uuid()`/`now()` ile yazmak, global ORM fix'ten çok daha ucuz (çünkü ORM'i düzeltmek tüm consumer'ları churn'lar). Gelecekte benzer drift görülürse bu pattern önerilir.
+- **DB dependency baseline 98 MEDIUM sabit kaldı** — Wave 11 GF95 manipulatives + GF86/87 collateral rewrite ile Pattern A düzeltmeleri yapıldı ama Session 137 baseline'ı sadece `api/` alt dizini tarıyor, `services/` taramıyor (Session 145 manipulatives rewrite services layer'ı da etkiledi).
 
 ### Sonraki Adimlar (maks 5)
-1. **Commit + push** the rule-of-eight sweep (89 M + 3 new scripts) as a single `refactor(api): rule-of-eight proactive sweep — insert 446 HTTPException guards across 87 files` commit.
-2. **Wire `audit_httpexception_guard.py --fail`** into `.github/workflows/` as a merge gate, same shape as the Session 137 `audit_db_dependency.py --fail-on-high` gate.
-3. **Wave 11** — feature-inventory top-10 disjoint (GF90-GF99). With rule-of-eight eradicated, the hit-rate should drop and Wave 11 will surface a different class of bug.
-4. **Re-run `audit_db_dependency.py`** to see the post-Session-146 baseline (`get_async_session` import fixes may have shifted numbers).
-5. **Pre-commit hook**: add `_smoke_api_imports.py` as a pre-commit check so broken imports never land on master again.
+1. **PUSH** — 4 commit (b20e215, d8ce182, 03b467a, cf4147b) origin/master'a push.
+2. **Wave 12 planning** — Feature inventory hala ~440 uncovered write-path endpoint var. Wave 11 hit rate %50 — Wave 12'de %30-40 civarı bekleniyor (yeni anti-pattern class daha zor teshis ediliyor).
+3. **Middleware HTTPException rule** — `.claude/rules/middleware.md` yeni dosya: `BaseHTTPMiddleware.dispatch` içinde `raise HTTPException` yasak, `JSONResponse` return zorunlu.
+4. **Rule-of-seven asyncpg audit** — `grep "Column(String.*uuid.uuid4\|default=uuid4)"` ile tüm model dosyalarını tara, kalan pattern varsa proactive fix.
+5. **instant_feedback_api raw SQL bypass dokümante et** — `.claude/rules/orm-drift.md` yeni dosya: 3+ drift olan tablolarda raw SQL `text()` yaklaşımı önerilen pattern.
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- Rule-of-eight sweep complete: 446 guards, 87 files, 0 remaining risky blocks.
-- Auditor + fixer scripts are permanent tooling under `backend/scripts/`, not one-off.
-- Smoke test script is permanent tooling too — cheap verification that every API module loads.
-- Multi-line imports: any future source-mutating script must use AST, not substring scan.
-- Pre-existing broken imports (6 files) are part of the same commit since they block the sweep verification end-to-end.
+- Session 147'nin 5 görevi tamamlandı. 4 commit hazır, push bekliyor.
+- Golden Flow suite 116 test, 114 PASS / 0 FAIL / 2 SKIP baseline sabit.
+- Wave 11 sonrası yeni anti-pattern class: raw ORM/DB schema drift. Wave 12'de bu aranacak.
+- Rule-of-eight (bare-except 500 re-wrap) CI tarafından `audit_httpexception_guard.py --fail` ile kalıcı kilitli.
+- DB dependency audit 98 MEDIUM, HIGH=0. Bir sonraki re-run ~40 baseline'a inme hedefi (`services/` alt dizini dahil).
