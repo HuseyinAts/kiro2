@@ -2,20 +2,31 @@
 Zorluk Seviyesi Sınıflandırma API
 Task 74: Difficulty Level Classification API Endpoints
 
+Session 149 (GF112): `DifficultyClassificationService` is a ~700-line sync ORM
+service that cannot be refactored in a single session. The `core.database.get_db`
+dependency is a sync shim over an async engine, so `db.query(...)` inside the
+service trips `MissingGreenlet` (same class as Wave 10/11 GF86/GF87/GF95 and
+Wave 13 GF115). Until the service is ported to async, all 8 handlers use the
+`_degrade_db_error()` helper to catch DBAPI / MissingGreenlet / AttributeError
+and return a structured 503, matching the GF22/GF41/GF106 optional-dep
+degradation pattern.
+
 API Endpoints:
-- GET /api/v1/difficulty/classify/{question_id} - Soru zorluğunu sınıflandır
-- GET /api/v1/difficulty/visual-indicator/{level} - Görsel gösterge bilgisi
-- POST /api/v1/difficulty/filter - Zorluğa göre soru filtrele
-- GET /api/v1/difficulty/distribution - Zorluk dağılımı
-- POST /api/v1/difficulty/update-realtime - Gerçek zamanlı güncelleme
-- POST /api/v1/difficulty/batch-update - Toplu güncelleme
-- GET /api/v1/difficulty/trend/{question_id} - Zorluk trendi
+- GET /api/v1/difficulty/classify/{question_id}
+- GET /api/v1/difficulty/visual-indicator/{level}
+- POST /api/v1/difficulty/filter
+- GET /api/v1/difficulty/distribution
+- POST /api/v1/difficulty/update-realtime
+- POST /api/v1/difficulty/batch-update
+- GET /api/v1/difficulty/trend/{question_id}
+- GET /api/v1/difficulty/calibrate-thresholds
 """
 
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+from sqlalchemy.exc import DBAPIError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -28,6 +39,27 @@ from services.difficulty_classification_service import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/difficulty", tags=["Difficulty Classification"])
+
+
+_DEGRADE_MSG = (
+    "Zorluk siniflandirma servisi gecici olarak kullanilamiyor: "
+    "veritabani katmani yeniden yapilandiriliyor."
+)
+
+
+def _degrade_db_error(exc: Exception, context: str) -> HTTPException:
+    """Convert async/sync mismatch or DB errors to structured 503.
+
+    The sync `DifficultyClassificationService` calls sync ORM against an
+    async engine, which raises:
+      - sqlalchemy.exc.MissingGreenlet (wrapped in DBAPIError)
+      - AttributeError on AsyncSession.query
+      - Any SQLAlchemyError subclass
+
+    Matches GF22/GF41/GF106 structured degradation pattern.
+    """
+    logger.error(f"{context}: {type(exc).__name__}: {exc}")
+    return HTTPException(status_code=503, detail=_DEGRADE_MSG)
 
 
 # ============================================================================
@@ -86,22 +118,13 @@ def classify_question_difficulty(
     ),
     db: Session = Depends(get_db),
 ):
-    """
-    Soruyu 5 seviyeli zorluk ölçeğinde sınıflandır
-
-    - **question_id**: Soru ID
-    - **force_recalculate**: Cache'i atla ve yeniden hesapla
-
-    Returns:
-        Zorluk sınıflandırma sonucu (seviye, skor, görsel gösterge)
-    """
+    """Soruyu 5 seviyeli zorluk ölçeğinde sınıflandır."""
     try:
         service = DifficultyClassificationService(db)
         classification = service.classify_question(
             question_id, force_recalculate=force_recalculate
         )
 
-        # Görsel gösterge bilgisi ekle
         visual_indicator = service.get_visual_difficulty_indicator(
             classification.difficulty_level
         )
@@ -120,6 +143,8 @@ def classify_question_difficulty(
 
     except HTTPException:
         raise
+    except (DBAPIError, SQLAlchemyError, AttributeError) as e:
+        raise _degrade_db_error(e, f"classify_question_difficulty({question_id})")
     except Exception as e:
         logger.error(f"Error classifying question {question_id}: {e}")
         raise HTTPException(
@@ -129,16 +154,8 @@ def classify_question_difficulty(
 
 @router.get("/visual-indicator/{level}")
 def get_visual_indicator(level: str):
-    """
-    Zorluk seviyesi için görsel gösterge bilgisi al
-
-    - **level**: Zorluk seviyesi (very_easy, easy, medium, hard, very_hard)
-
-    Returns:
-        Görsel gösterge bilgileri (renk, ikon, emoji, CSS class)
-    """
+    """Zorluk seviyesi için görsel gösterge bilgisi al."""
     try:
-        # String'i enum'a çevir
         level_map = {
             "very_easy": DifficultyLevel.VERY_EASY,
             "easy": DifficultyLevel.EASY,
@@ -171,18 +188,8 @@ def get_visual_indicator(level: str):
 def filter_questions_by_difficulty(
     request: FilterRequest, db: Session = Depends(get_db)
 ):
-    """
-    Zorluk seviyesine göre soruları filtrele
-
-    - **difficulty_levels**: İstenen zorluk seviyeleri
-    - **topic_id**: Opsiyonel konu filtresi
-    - **limit**: Maksimum sonuç sayısı
-
-    Returns:
-        Filtrelenmiş soru ID listesi
-    """
+    """Zorluk seviyesine göre soruları filtrele."""
     try:
-        # String'leri enum'a çevir
         level_map = {
             "very_easy": DifficultyLevel.VERY_EASY,
             "easy": DifficultyLevel.EASY,
@@ -221,6 +228,8 @@ def filter_questions_by_difficulty(
 
     except HTTPException:
         raise
+    except (DBAPIError, SQLAlchemyError, AttributeError) as e:
+        raise _degrade_db_error(e, "filter_questions_by_difficulty")
     except Exception as e:
         logger.error(f"Error filtering questions: {e}")
         raise HTTPException(
@@ -233,22 +242,13 @@ def get_difficulty_distribution(
     topic_id: str | None = Query(None, description="Opsiyonel konu filtresi"),
     db: Session = Depends(get_db),
 ):
-    """
-    Zorluk seviyesi dağılımını al
-
-    - **topic_id**: Opsiyonel konu filtresi
-
-    Returns:
-        Zorluk seviyesi dağılımı (her seviyede kaç soru var)
-    """
+    """Zorluk seviyesi dağılımını al."""
     try:
         service = DifficultyClassificationService(db)
         distribution = service.get_difficulty_distribution(topic_id=topic_id)
 
-        # Toplam soru sayısı
         total = sum(distribution.values())
 
-        # Yüzdelik dağılım
         percentages = {}
         if total > 0:
             for level, count in distribution.items():
@@ -264,6 +264,8 @@ def get_difficulty_distribution(
 
     except HTTPException:
         raise
+    except (DBAPIError, SQLAlchemyError, AttributeError) as e:
+        raise _degrade_db_error(e, "get_difficulty_distribution")
     except Exception as e:
         logger.error(f"Error getting difficulty distribution: {e}")
         raise HTTPException(
@@ -277,15 +279,7 @@ def update_difficulty_realtime(
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Yeni yanıt verisi geldiğinde zorluk seviyesini gerçek zamanlı güncelle
-
-    - **question_id**: Soru ID
-    - **new_response_data**: Yeni yanıt verisi
-
-    Returns:
-        Güncellenmiş zorluk sınıflandırması
-    """
+    """Yeni yanıt verisi geldiğinde zorluk seviyesini gerçek zamanlı güncelle."""
     try:
         service = DifficultyClassificationService(db)
         classification = service.update_difficulty_realtime(
@@ -311,6 +305,8 @@ def update_difficulty_realtime(
 
     except HTTPException:
         raise
+    except (DBAPIError, SQLAlchemyError, AttributeError) as e:
+        raise _degrade_db_error(e, "update_difficulty_realtime")
     except Exception as e:
         logger.error(f"Error updating difficulty realtime: {e}")
         raise HTTPException(
@@ -324,15 +320,7 @@ def batch_update_difficulties(
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Toplu zorluk güncellemesi yap
-
-    - **question_ids**: Güncellenecek soru ID listesi
-    - **update_threshold_days**: Kaç günden eski güncellemeler yenilensin
-
-    Returns:
-        Güncellenen soru sayısı ve sonuçlar
-    """
+    """Toplu zorluk güncellemesi yap."""
     try:
         service = DifficultyClassificationService(db)
         results = service.batch_update_difficulties(
@@ -340,7 +328,6 @@ def batch_update_difficulties(
             update_threshold_days=request.update_threshold_days,
         )
 
-        # Sonuçları formatla
         formatted_results = {}
         for question_id, classification in results.items():
             formatted_results[question_id] = {
@@ -359,6 +346,8 @@ def batch_update_difficulties(
 
     except HTTPException:
         raise
+    except (DBAPIError, SQLAlchemyError, AttributeError) as e:
+        raise _degrade_db_error(e, "batch_update_difficulties")
     except Exception as e:
         logger.error(f"Error batch updating difficulties: {e}")
         raise HTTPException(
@@ -375,16 +364,7 @@ def get_difficulty_trend(
     ),
     db: Session = Depends(get_db),
 ):
-    """
-    Soru için zorluk trendi analizi
-
-    - **question_id**: Soru ID
-    - **recent_days**: Son kaç günlük veri kullanılacak
-    - **historical_days**: Toplam kaç günlük geçmiş kullanılacak
-
-    Returns:
-        Zorluk trendi analizi (yükseliyor/düşüyor/stabil)
-    """
+    """Soru için zorluk trendi analizi."""
     try:
         service = DifficultyClassificationService(db)
         trend = service.analyze_difficulty_trend(
@@ -393,7 +373,6 @@ def get_difficulty_trend(
             historical_days=historical_days,
         )
 
-        # Başarı oranı analizi ekle
         success_analysis = service.get_success_rate_analysis(
             question_id=question_id, time_window_days=historical_days
         )
@@ -407,6 +386,8 @@ def get_difficulty_trend(
 
     except HTTPException:
         raise
+    except (DBAPIError, SQLAlchemyError, AttributeError) as e:
+        raise _degrade_db_error(e, f"get_difficulty_trend({question_id})")
     except Exception as e:
         logger.error(f"Error getting difficulty trend for {question_id}: {e}")
         raise HTTPException(
@@ -419,18 +400,10 @@ def calibrate_irt_thresholds(
     topic_id: str | None = Query(None, description="Belirli bir konu için kalibre et"),
     db: Session = Depends(get_db),
 ):
-    """
-    IRT eşiklerini soru havuzuna göre kalibre et
-
-    - **topic_id**: Opsiyonel konu filtresi
-
-    Returns:
-        Kalibre edilmiş eşik değerleri
-    """
+    """IRT eşiklerini soru havuzuna göre kalibre et."""
     try:
         from models.question_bank import QuestionBankItem
 
-        # Soruları al
         query = db.query(QuestionBankItem).filter(QuestionBankItem.is_active == True)
 
         if topic_id:
@@ -438,7 +411,6 @@ def calibrate_irt_thresholds(
 
         questions = query.all()
 
-        # Veriyi hazırla
         questions_data = [
             {"irt_difficulty": q.irt_difficulty}
             for q in questions
@@ -467,6 +439,8 @@ def calibrate_irt_thresholds(
 
     except HTTPException:
         raise
+    except (DBAPIError, SQLAlchemyError, AttributeError) as e:
+        raise _degrade_db_error(e, "calibrate_irt_thresholds")
     except Exception as e:
         logger.error(f"Error calibrating thresholds: {e}")
         raise HTTPException(

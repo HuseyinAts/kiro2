@@ -1,17 +1,43 @@
 """
 Task 93: OSB Settings API
 OSB (Otizm Spektrum Bozukluğu) kullanıcı ayarları API endpoints
+
+Session 149 (GF115): all 4 write/read handlers converted from the deprecated
+sync `def` + `Depends(get_db)` pattern to `async def` + `Depends(get_async_session)`
++ `select()` / `await db.execute(...)` / `await db.commit()`. The prior sync
+shim layered on top of the async engine tripped `MissingGreenlet` on every
+call. Same fix class as Wave 10/11 GF86/GF87/GF95.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.exc import DBAPIError, SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_async_session
 from core.dependencies import get_current_user
 from core.structured_logger import get_logger
 from models.database import User
 from models.osb_settings import OSBSettings
+
+# Session 149 (GF115): `osb_settings` DB table is missing columns the ORM
+# declares (e.g. `reduced_motion`, `no_animations`, `no_shadows`) — classic
+# schema drift. Until a migration adds them, degrade DBAPI errors to 503 at
+# the handler boundary, same as GF22/GF41/GF106/GF112 pattern.
+_SCHEMA_DRIFT_MSG = (
+    "OSB ayarlari servisi gecici olarak kullanilamiyor: "
+    "veritabani sema guncellemesi bekleniyor."
+)
+
+
+def _degrade_schema_error(exc: Exception, context: str) -> HTTPException:
+    """Convert DBAPI schema drift errors to structured 503."""
+    logger.error(f"{context}: {type(exc).__name__}: {exc}")
+    return HTTPException(status_code=503, detail=_SCHEMA_DRIFT_MSG)
+
+
+_DB_ERRORS = (DBAPIError, SQLAlchemyError)
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/api/v1/osb/settings", tags=["OSB Support - Settings"])
@@ -89,24 +115,50 @@ class OSBSettingsResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+def _serialize(settings: OSBSettings) -> OSBSettingsResponse:
+    return OSBSettingsResponse(
+        id=str(settings.id),
+        user_id=settings.user_id,
+        osb_mode_enabled=settings.osb_mode_enabled,
+        consistent_layout_enabled=settings.consistent_layout_enabled,
+        layout_type=settings.layout_type,
+        predictable_elements=settings.predictable_elements,
+        fixed_navigation_enabled=settings.fixed_navigation_enabled,
+        navigation_position=settings.navigation_position,
+        navigation_variant=settings.navigation_variant,
+        consistent_colors_enabled=settings.consistent_colors_enabled,
+        theme_changes_disabled=settings.theme_changes_disabled,
+        high_contrast_mode=settings.high_contrast_mode,
+        standard_icons_enabled=settings.standard_icons_enabled,
+        show_icon_labels=settings.show_icon_labels,
+        icon_size=settings.icon_size,
+        reduced_motion=settings.reduced_motion,
+        no_animations=settings.no_animations,
+        no_shadows=settings.no_shadows,
+        created_at=settings.created_at.isoformat(),
+        updated_at=settings.updated_at.isoformat(),
+    )
+
+
 # Endpoints
 
 
 @router.get("/", response_model=OSBSettingsResponse)
-def get_osb_settings(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+async def get_osb_settings(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Kullanıcının OSB ayarlarını getir
     Yoksa varsayılan ayarlar ile oluştur
     """
     try:
-        settings = (
-            db.query(OSBSettings).filter(OSBSettings.user_id == current_user.id).first()
+        result = await db.execute(
+            select(OSBSettings).where(OSBSettings.user_id == current_user.id)
         )
+        settings = result.scalar_one_or_none()
 
         if not settings:
-            # Varsayılan ayarlarla oluştur
             settings = OSBSettings(
                 user_id=current_user.id,
                 osb_mode_enabled=True,
@@ -127,61 +179,40 @@ def get_osb_settings(
                 no_shadows=True,
             )
             db.add(settings)
-            db.commit()
-            db.refresh(settings)
-
+            await db.commit()
+            await db.refresh(settings)
             logger.info(f"OSB settings created for user {current_user.id}")
 
-        return OSBSettingsResponse(
-            id=str(settings.id),
-            user_id=settings.user_id,
-            osb_mode_enabled=settings.osb_mode_enabled,
-            consistent_layout_enabled=settings.consistent_layout_enabled,
-            layout_type=settings.layout_type,
-            predictable_elements=settings.predictable_elements,
-            fixed_navigation_enabled=settings.fixed_navigation_enabled,
-            navigation_position=settings.navigation_position,
-            navigation_variant=settings.navigation_variant,
-            consistent_colors_enabled=settings.consistent_colors_enabled,
-            theme_changes_disabled=settings.theme_changes_disabled,
-            high_contrast_mode=settings.high_contrast_mode,
-            standard_icons_enabled=settings.standard_icons_enabled,
-            show_icon_labels=settings.show_icon_labels,
-            icon_size=settings.icon_size,
-            reduced_motion=settings.reduced_motion,
-            no_animations=settings.no_animations,
-            no_shadows=settings.no_shadows,
-            created_at=settings.created_at.isoformat(),
-            updated_at=settings.updated_at.isoformat(),
-        )
+        return _serialize(settings)
 
     except HTTPException:
         raise
+    except _DB_ERRORS as e:
+        raise _degrade_schema_error(e, "get_osb_settings")
     except Exception as e:
         logger.error(f"Error getting OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları alınamadı")
 
 
 @router.put("/", response_model=OSBSettingsResponse)
-def update_osb_settings(
+async def update_osb_settings(
     request: OSBSettingsRequest,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     OSB ayarlarını güncelle
     """
     try:
-        settings = (
-            db.query(OSBSettings).filter(OSBSettings.user_id == current_user.id).first()
+        result = await db.execute(
+            select(OSBSettings).where(OSBSettings.user_id == current_user.id)
         )
+        settings = result.scalar_one_or_none()
 
         if not settings:
-            # Yoksa oluştur
             settings = OSBSettings(user_id=current_user.id)
             db.add(settings)
 
-        # Update all fields
         settings.osb_mode_enabled = request.osb_mode_enabled
         settings.consistent_layout_enabled = request.consistent_layout_enabled
         settings.layout_type = request.layout_type
@@ -199,58 +230,39 @@ def update_osb_settings(
         settings.no_animations = request.no_animations
         settings.no_shadows = request.no_shadows
 
-        db.commit()
-        db.refresh(settings)
+        await db.commit()
+        await db.refresh(settings)
 
         logger.info(f"OSB settings updated for user {current_user.id}")
-
-        return OSBSettingsResponse(
-            id=str(settings.id),
-            user_id=settings.user_id,
-            osb_mode_enabled=settings.osb_mode_enabled,
-            consistent_layout_enabled=settings.consistent_layout_enabled,
-            layout_type=settings.layout_type,
-            predictable_elements=settings.predictable_elements,
-            fixed_navigation_enabled=settings.fixed_navigation_enabled,
-            navigation_position=settings.navigation_position,
-            navigation_variant=settings.navigation_variant,
-            consistent_colors_enabled=settings.consistent_colors_enabled,
-            theme_changes_disabled=settings.theme_changes_disabled,
-            high_contrast_mode=settings.high_contrast_mode,
-            standard_icons_enabled=settings.standard_icons_enabled,
-            show_icon_labels=settings.show_icon_labels,
-            icon_size=settings.icon_size,
-            reduced_motion=settings.reduced_motion,
-            no_animations=settings.no_animations,
-            no_shadows=settings.no_shadows,
-            created_at=settings.created_at.isoformat(),
-            updated_at=settings.updated_at.isoformat(),
-        )
+        return _serialize(settings)
 
     except HTTPException:
         raise
+    except _DB_ERRORS as e:
+        raise _degrade_schema_error(e, "update_osb_settings")
     except Exception as e:
         logger.error(f"Error updating OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları güncellenemedi")
 
 
 @router.post("/reset", response_model=dict)
-def reset_osb_settings(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+async def reset_osb_settings(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     OSB ayarlarını varsayılana sıfırla
     """
     try:
-        settings = (
-            db.query(OSBSettings).filter(OSBSettings.user_id == current_user.id).first()
+        result = await db.execute(
+            select(OSBSettings).where(OSBSettings.user_id == current_user.id)
         )
+        settings = result.scalar_one_or_none()
 
         if not settings:
             settings = OSBSettings(user_id=current_user.id)
             db.add(settings)
         else:
-            # Reset to defaults
             settings.osb_mode_enabled = True
             settings.consistent_layout_enabled = True
             settings.layout_type = "default"
@@ -268,14 +280,15 @@ def reset_osb_settings(
             settings.no_animations = False
             settings.no_shadows = True
 
-        db.commit()
+        await db.commit()
 
         logger.info(f"OSB settings reset for user {current_user.id}")
-
         return {"success": True, "message": "OSB ayarları varsayılana sıfırlandı"}
 
     except HTTPException:
         raise
+    except _DB_ERRORS as e:
+        raise _degrade_schema_error(e, "reset_osb_settings")
     except Exception as e:
         logger.error(f"Error resetting OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları sıfırlanamadı")
@@ -362,23 +375,20 @@ def get_osb_presets():
 
 
 @router.post("/apply-preset/{preset_id}", response_model=OSBSettingsResponse)
-def apply_osb_preset(
+async def apply_osb_preset(
     preset_id: str,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Hazır OSB profilini uygula
     """
-    # Get presets
     presets_data = get_osb_presets()
     presets = presets_data["presets"]
 
-    # Find preset
     preset = next((p for p in presets if p["id"] == preset_id), None)
     if not preset:
         raise HTTPException(status_code=404, detail="Profil bulunamadı")
 
-    # Apply preset
     preset_settings = OSBSettingsRequest(**preset["settings"])
-    return update_osb_settings(preset_settings, current_user, db)
+    return await update_osb_settings(preset_settings, current_user, db)

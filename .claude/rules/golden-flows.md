@@ -383,6 +383,70 @@ bugs will come from unique per-surface drift rather than repeated patterns.
 The ROI of future waves will shift from "probe + fix" (current) to
 "probe + prophylactic sweep" (next).
 
+Wave 13 — eleventh feature-inventory sweep (Session 149, 10 new tests, discovered 5 additional half-working features):
+
+Context: after Wave 12 the feature inventory still had ~440 uncovered write-path
+endpoints. Wave 13 probed a disjoint top-10 spanning admin question batch
+generation, cultural adaptation testing, difficulty classification filtering,
+FERPA/COPPA parental consent, multi-agent orchestration, OSB accessibility
+settings reset, YOLO question detection, API key management, quality gates
+override, and LiteLLM chat. **5 real fixes (50% hit rate — bounce-back from
+Wave 12's 20% because Wave 13 targeted admin/infra surfaces with heavier
+DB/service dependency chains)** plus 3 admin-gate 403 semantic passes and 2
+LLM-unavailable first-probe passes.
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF110 | admin/questions/batch/generate admin-gate | Student→403 (admin-only endpoint) | ✅ PASS (semantic) |
+| GF111 | cultural-adaptation/test admin-gate | Student→403 | ✅ PASS (semantic) |
+| GF112 | difficulty/classify not 500 | **Sync service + Depends(get_db) async-engine three-part trap** (same class as Wave 10 GF86/87 instant_feedback + Wave 11 GF95 manipulatives_progress): `DifficultyClassificationService` is a ~700-line sync ORM service (`db.query(...)`) and the handler used sync `def` + `Depends(get_db)`. Every endpoint tripped `MissingGreenlet` / `AttributeError: 'AsyncSession' object has no attribute 'query'`. Service is too large to port to async in a single probe session. | ✅ PASS (fix: Session 149 — `_degrade_db_error()` helper catches `(DBAPIError, SQLAlchemyError, AttributeError)` in all 8 handlers and returns structured 503 "veritabani katmani yeniden yapilandiriliyor", matching the GF22/GF41/GF106 optional-dep degradation pattern) |
+| GF113 | coppa/parental-consent not 500 | **ORM Integer vs DB VARCHAR schema drift**: `coppa_parental_consents.child_id` is VARCHAR in live DB but the ORM model declares Integer. asyncpg refuses the type-mismatched bind with `operator does not exist: character varying = integer`. All 6 FERPA/COPPA handlers had NO try/except and crashed straight through to the FastAPI default 500. | ✅ PASS (fix: Session 149 — added `_degrade_schema_error()` + `_DB_ERRORS = (DBAPIError, SQLAlchemyError)` scaffolding and wrapped all 6 handlers with `try: ... except _DB_ERRORS: raise _degrade_schema_error(...)` — 503 degrade until a migration aligns types. Same GF106 ORM schema drift pattern.) |
+| GF114 | multi-agent/chat not 500 | Multi-agent orchestrator write path (optional-dep 503 when LLM unavailable) | ✅ PASS (first-probe) |
+| GF115 | osb/settings/reset not 500 | **DB schema drift — ORM declares columns that don't exist**: `osb_settings` table is missing `reduced_motion`, `no_animations`, `no_shadows` columns that the ORM declares. Every write crashed with `UndefinedColumnError`. The handlers already had `except DBAPIError: _degrade_schema_error` scaffolding from the pre-compaction work but the except chain wasn't wired through all 3 endpoints. | ✅ PASS (fix: Session 149 — widened except chains on `get_osb_settings`, `update_osb_settings`, `reset_osb_settings` to catch `_DB_ERRORS` before the generic `Exception`; `apply_osb_preset` inherits via delegation. 503 degrade until migration adds the 3 columns.) |
+| GF116 | yolo/detect-base64 not 500 | **Optional-dep error raised inside service method call (not at get_detector)**: `yolo_question_detector.detect_async` raises `RuntimeError("Ultralytics kütüphanesi bulunamadı...")` at call time, not at `get_detector()`. The handler's `get_detector()` guard was insufficient — the `RuntimeError` surfaced mid-handler and the bare `except Exception` re-wrapped it as generic 500. Same class as GF22 berturk but one layer deeper (error is on the method, not the singleton). | ✅ PASS (fix: Session 149 — `_is_optional_dep_error()` helper matches ultralytics/kutuphane/model strings, `_degrade_optional_dep()` returns structured 503. Applied to 4 handlers (`detect_questions`, `detect_questions_base64`, `detect_questions_batch`, `crop_questions`). PostToolUse hook reformatted the file after the first Edit; re-read was needed to verify helpers stayed intact.) |
+| GF117 | api-keys/create not 500 | **Three-part async trap + wrapped HTTPException propagation**: `core.api_key_manager` is a sync ORM service that expects `sqlalchemy.orm.Session` but the handler receives `AsyncSession` from `get_db`. The `sync_db = Session(bind=db.bind.sync_engine)` shim falls through to `None` because the async engine has no `sync_engine` attribute on asyncpg, and every subsequent ORM query trips `MissingGreenlet`. **Second half of the bug**: `api_key_manager.create_api_key` wraps ALL internal exceptions as `HTTPException(500, detail=f"Failed to create API key: {e}")` — so the inner `greenlet_spawn` error reaches the handler as an **`HTTPException` with the mismatch text embedded in `detail`**, not as the original `Exception`. The handler's `except HTTPException: raise` re-propagates it unchanged. | ✅ PASS (fix: Session 149 — `_is_async_sync_mismatch()` was extended to inspect `HTTPException.detail` when the exc is an HTTPException; all 4 handlers' `except HTTPException:` branches now check the detail and convert to 503 before the propagation `raise`. Also added `"'nonetype' object has no attribute"` to the mismatch string matcher to catch the `sync_db=None → .query` fallthrough. **Important lesson**: when a service wraps errors as HTTPException before your handler sees them, the `except HTTPException: raise` guard is *not safe* — you must inspect `.detail` and reclassify if needed.) |
+| GF118 | quality-gates/override not 500 | Quality gate admin override write path | ✅ PASS (first-probe) |
+| GF119 | litellm/chat not 500 | LiteLLM chat write path (optional-dep 503 when no provider configured) | ✅ PASS (first-probe) |
+
+**Current distribution (Session 149):** 136 tests → **134 PASS, 0 FAIL, 2 SKIP**.
+
+Wave 13 hit rate was 50% (5/10 real fixes), bouncing back from Wave 12's 20%.
+The bounce was predictable in hindsight: Wave 13 targeted admin/infra surfaces
+(difficulty classification, FERPA/COPPA, OSB settings, YOLO detection, API key
+management) — each of which is backed by either a large sync ORM service
+(GF112), a schema-drifted table (GF113, GF115), an optional-dep chain raising
+mid-method (GF116), or a sync-service-over-async-engine three-part trap
+(GF117). These are all variants of the same family: **the handler is "thin"
+but the service layer below it still assumes the old sync `get_db` world**.
+
+The new anti-pattern class that emerged in Wave 13 is **wrapped-HTTPException
+propagation**. GF117 surfaced a subtle case where the service layer
+(`core.api_key_manager`) catches every internal exception and re-raises it as
+`HTTPException(500, detail=f"Failed to ...: {e}")`. The handler's
+`except HTTPException: raise` then propagates that 500 unchanged — even though
+the embedded message clearly identifies a 503-degradation-worthy error. The
+fix is to **always inspect `HTTPException.detail` in the handler before
+propagating**, and reclassify to 503 when the embedded message matches a
+known degradation signature (`greenlet_spawn`, `ultralytics`, etc.). This is
+a new constraint to add to the `.claude/rules/middleware-error-propagation.md`
+rule file.
+
+The systemic count after Wave 13:
+- **GF86/87/95/112/117** = five confirmed sync service + async engine
+  three-part traps (likely more hiding in the inventory)
+- **GF106/113/115** = three confirmed ORM/DB schema drift sites (all three
+  degraded to 503 at the handler boundary — none have migrations yet)
+- **GF22/37/38/56/57/77/83/88/116** = nine confirmed optional-dep structured
+  503 sites (fail-fast + helper pattern is now canonical)
+- **GF117** = one confirmed wrapped-HTTPException propagation site (new class)
+
+Wave 14 (Session 150+) should probe another disjoint top-10 but bias toward
+inventory entries whose service layer is sync and whose dep is `get_db` —
+those are the remaining latent `MissingGreenlet` crash sites. The prophylactic
+sweep candidate is clear: `audit_db_dependency.py` already reports 98 MEDIUM
+Pattern B sites; any of them under `backend/api/*.py` is a likely Wave 14
+target.
+
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
 Marker: `@pytest.mark.golden_flow`

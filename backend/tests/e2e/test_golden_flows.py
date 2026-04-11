@@ -3947,3 +3947,224 @@ def test_gf109_zpd_maarif_hesapla_not_500(client: httpx.Client):
         f"{resp.text[:300]}. Check api/zpd_maarif.py cultural/maarif "
         f"optional-profile fallback + ZPDCalculator wiring."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 13 (GF110-GF119) — Session 149 feature-inventory sweep
+#
+# Ten disjoint write-path probes covering surfaces Wave 1-12 did not touch:
+# batch question generation, cultural adaptation, difficulty filtering,
+# FERPA/COPPA compliance, multi-agent blackboard, OSB settings reset,
+# YOLO detection, API key management, quality-gates override, and LiteLLM
+# chat. Wave 12 hit rate was 20% (trailing indicator curve: 80%→50%→20%);
+# Wave 13 is expected to land in the 20-30% range, with the likely bug class
+# being the three-part async trap (sync `def` + `Depends(get_db)` + async
+# engine → MissingGreenlet) that dominated Waves 10-11.
+# ---------------------------------------------------------------------------
+
+
+def test_gf110_batch_generation_admin_gate(client: httpx.Client):
+    """POST /api/v1/batch/generate must reject a student with 401/403, not 500."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/batch/generate",
+        headers=_auth_headers(token),
+        json={
+            "batch_size": 50,
+            "exam_type": "TYT",
+            "subject": "matematik",
+            "difficulty_min": 0.3,
+            "difficulty_max": 0.7,
+            "generation_method": "ensemble",
+            "priority": "normal",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF110 batch/generate crashed on admin-gate check: {resp.status_code} "
+        f"{resp.text[:300]}. Expected 401/403 for student Bearer; a 500 here "
+        f"means get_current_admin_user or Celery apply_async is broken."
+    )
+
+
+def test_gf111_cultural_adaptation_test_admin_gate(client: httpx.Client):
+    """POST /api/v1/cultural-adaptation/test-adaptation must not crash on admin-gate."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/cultural-adaptation/test-adaptation",
+        headers=_auth_headers(token),
+        json={
+            "student_id": "00000000-0000-0000-0000-000000000001",
+            "age": 17,
+            "region": "Istanbul",
+            "cultural_factors": {"family_pressure": 0.5},
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF111 cultural-adaptation/test-adaptation crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Expected 403 for student (admin-only); a 500 "
+        f"indicates current_user.role.value access is broken."
+    )
+
+
+def test_gf112_difficulty_filter_not_500(client: httpx.Client):
+    """POST /api/v1/difficulty/filter must not crash on a valid filter request."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/difficulty/filter",
+        headers=_auth_headers(token),
+        json={
+            "difficulty_levels": ["easy", "medium"],
+            "limit": 10,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF112 difficulty/filter crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/difficulty_classification_api.py — "
+        f"sync `def` + Depends(get_db) + `db.query(...)` is the Wave 10/11 "
+        f"three-part async trap (MissingGreenlet). Handler must become "
+        f"`async def` + `get_async_session` + `await db.execute(select(...))`."
+    )
+
+
+def test_gf113_coppa_parental_consent_not_500(client: httpx.Client):
+    """POST /api/v1/compliance/coppa/parental-consent must not crash."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/compliance/coppa/parental-consent",
+        headers=_auth_headers(token),
+        json={
+            "child_id": 1,
+            "parent_id": 2,
+            "child_date_of_birth": "2018-01-15",
+            "verification_method": "email",
+            "allow_data_collection": False,
+            "allow_marketing_communication": False,
+            "allow_third_party_sharing": False,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF113 compliance/coppa/parental-consent crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/ferpa_coppa_compliance_api.py — "
+        f"sync `def` + Depends(get_db) + `db.query` three-part async trap."
+    )
+
+
+def test_gf114_multi_agent_write_not_500(client: httpx.Client):
+    """POST /api/v1/multi-agent/write must not crash on a blackboard write."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/multi-agent/write",
+        headers=_auth_headers(token),
+        json={
+            "key": "gf114_probe",
+            "value": {"probe": True, "wave": 13},
+            "ttl_seconds": 60,
+            "metadata": {"source": "golden_flow_gf114"},
+            "priority": "MEDIUM",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF114 multi-agent/write crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/multi_agent.py get_blackboard() + "
+        f"Redis wiring + Priority enum coercion."
+    )
+
+
+def test_gf115_osb_settings_reset_not_500(client: httpx.Client):
+    """POST /api/v1/osb/settings/reset must not crash on a valid user."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/osb/settings/reset",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF115 osb/settings/reset crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/osb_settings_api.py — sync `def` + "
+        f"Depends(get_db) + `db.query` three-part async trap."
+    )
+
+
+def test_gf116_yolo_detect_base64_not_500(client: httpx.Client):
+    """POST /api/v1/yolo/detect-base64 must not crash on a tiny base64 image."""
+    token = _login(client, STUDENT)
+    # 1x1 transparent PNG (43 bytes base64)
+    tiny_png_b64 = (
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkAAIA"
+        "AAUAAen63NgAAAAASUVORK5CYII="
+    )
+    resp = client.post(
+        "/api/v1/yolo/detect-base64",
+        headers=_auth_headers(token),
+        data={"image_base64": tiny_png_b64, "confidence": 0.25},
+    )
+    assert resp.status_code != 500, (
+        f"GF116 yolo/detect-base64 crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/yolo_detection_api.py get_detector() — "
+        f"optional-dep should degrade to 503, not 500. YOLO model weights "
+        f"may be missing on CI."
+    )
+
+
+def test_gf117_api_keys_create_not_500(client: httpx.Client):
+    """POST /api/v1/api-keys/create must not crash for an authenticated user."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/api-keys/create",
+        headers=_auth_headers(token),
+        json={
+            "name": "GF117 probe key",
+            "description": "Wave 13 probe.",
+            "scopes": ["read:content"],
+            "rate_limit": 100,
+            "expires_in_days": 1,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF117 api-keys/create crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/api_key_api.py — `db: AsyncSession = "
+        f"Depends(get_db)` is a type lie (get_db is the sync shim); "
+        f"`sync_db = Session(bind=db.bind.sync_engine) if hasattr(...) else None` "
+        f"falls through to None and crashes manager.create_api_key(None)."
+    )
+
+
+def test_gf118_quality_gates_override_not_500(client: httpx.Client):
+    """POST /api/v1/quality-gates/override must not crash on a valid request."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/quality-gates/override",
+        headers=_auth_headers(token),
+        json={
+            "gate_name": "test_coverage",
+            "reason": "Wave 13 Golden Flow probe reason (>=20 chars).",
+            "ticket_id": "GF118",
+            "expires_hours": 1,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF118 quality-gates/override crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/quality_gates_api.py _override_requests "
+        f"in-memory store + OverrideResponse serialization."
+    )
+
+
+def test_gf119_litellm_chat_not_500(client: httpx.Client):
+    """POST /api/v1/chat must not crash (501 is acceptable when LLM_BACKEND!=litellm)."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/chat",
+        headers=_auth_headers(token),
+        json={
+            "messages": [{"role": "user", "content": "Merhaba"}],
+            "task": "chat",
+            "stream": False,
+            "temperature": 0.7,
+            "max_tokens": 64,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF119 chat crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/litellm_chat.py — expected 501 when "
+        f"LLM_BACKEND != 'litellm' (GF22/GF37/GF38 optional-dep pattern); "
+        f"a 500 means _get_litellm_client() or the rate limiter is broken."
+    )

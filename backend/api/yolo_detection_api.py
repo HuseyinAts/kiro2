@@ -22,6 +22,33 @@ from core.dependencies import AuthenticatedUser, get_current_user
 
 logger = logging.getLogger(__name__)
 
+
+# Session 149 (GF116): The `yolo_question_detector.detect_async` method
+# raises RuntimeError("Ultralytics kütüphanesi bulunamadı...") at call time
+# (not at singleton construction), so the `get_detector()` guard alone is
+# insufficient. Widen handler except clauses to catch RuntimeError whose
+# message indicates the optional ultralytics / model-weights dep is missing,
+# and translate to structured 503 (GF22/GF56/GF57/GF115 pattern).
+def _is_optional_dep_error(exc: Exception) -> bool:
+    msg = str(exc).lower()
+    return (
+        "ultralytics" in msg
+        or "kütüphanesi bulunamadı" in msg
+        or "kutuphanesi bulunamadi" in msg
+        or "model dosyasi bulunamadi" in msg
+        or "model bulunamadi" in msg
+    )
+
+
+def _degrade_optional_dep(exc: Exception, context: str) -> HTTPException:
+    """Translate optional-dep errors from detect_async into structured 503."""
+    logger.error(f"{context}: {type(exc).__name__}: {exc}")
+    return HTTPException(
+        status_code=503,
+        detail="YOLO tespit servisi gecici olarak kullanilamiyor: ultralytics/model eksik.",
+    )
+
+
 router = APIRouter(
     prefix="/api/v1/yolo",
     tags=["YOLO Question Detection"],
@@ -117,7 +144,8 @@ def get_detector() -> Any:
         YOLO question detector instance
 
     Raises:
-        HTTPException: Model yüklenemezse
+        HTTPException: Model/ultralytics optional-dep yoksa 503 Service Unavailable.
+            GF22/GF37/GF38 optional-dep degradation pattern (Session 149 GF116).
     """
     try:
         from services.yolo_question_detector import get_question_detector
@@ -126,13 +154,23 @@ def get_detector() -> Any:
     except ImportError as e:
         logger.error(f"YOLO detector import hatası: {e}")
         raise HTTPException(
-            status_code=500, detail="YOLO modülü yüklenemedi. Ultralytics kurulu mu?"
+            status_code=503,
+            detail="YOLO tespit servisi gecici olarak kullanilamiyor: ultralytics kutuphanesi yuklenmemis.",
         )
     except FileNotFoundError as e:
         logger.error(f"YOLO model bulunamadı: {e}")
         raise HTTPException(
-            status_code=500,
-            detail="YOLO model dosyası bulunamadı (models/yolo11_best.pt)",
+            status_code=503,
+            detail="YOLO tespit servisi gecici olarak kullanilamiyor: model dosyasi bulunamadi.",
+        )
+    except RuntimeError as e:
+        # yolo_question_detector singleton raises RuntimeError when it fails to
+        # load ultralytics / weights at first access (caught as generic Exception
+        # otherwise, which gets re-wrapped as 500 by handler's bare except).
+        logger.error(f"YOLO detector runtime hatası: {e}")
+        raise HTTPException(
+            status_code=503,
+            detail=f"YOLO tespit servisi gecici olarak kullanilamiyor: {e}",
         )
 
 
@@ -197,6 +235,8 @@ async def detect_questions(
     except HTTPException:
         raise
     except Exception as e:
+        if _is_optional_dep_error(e):
+            raise _degrade_optional_dep(e, "detect_questions")
         logger.error(f"Tespit hatası: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -234,6 +274,8 @@ async def detect_questions_base64(
     except HTTPException:
         raise
     except Exception as e:
+        if _is_optional_dep_error(e):
+            raise _degrade_optional_dep(e, "detect_questions_base64")
         logger.error(f"Base64 tespit hatası: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -287,6 +329,8 @@ async def detect_questions_batch(
     except HTTPException:
         raise
     except Exception as e:
+        if _is_optional_dep_error(e):
+            raise _degrade_optional_dep(e, "detect_questions_batch")
         logger.error(f"Toplu tespit hatası: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -343,6 +387,8 @@ async def crop_questions(
     except HTTPException:
         raise
     except Exception as e:
+        if _is_optional_dep_error(e):
+            raise _degrade_optional_dep(e, "crop_questions")
         logger.error(f"Kırpma hatası: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."

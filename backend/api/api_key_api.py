@@ -8,6 +8,7 @@ Date: 2025-10-27
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
+from sqlalchemy.exc import DBAPIError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.api_key_manager import APIKeyScope, get_api_key_manager
@@ -18,6 +19,47 @@ from models.database import APIKey
 logger = get_logger("api_key_api")
 
 router = APIRouter(prefix="/api/v1/api-keys", tags=["API Keys"])
+
+
+# Session 149 (GF117): `core.api_key_manager` is a sync ORM service that
+# expects `sqlalchemy.orm.Session` but the handler receives `AsyncSession`
+# from `core.dependencies.get_db`. The `sync_db = Session(bind=db.bind.sync_engine)`
+# shim fails because the async engine has no `.sync_engine` on asyncpg, and
+# any subsequent ORM query trips `MissingGreenlet` / `greenlet_spawn has not
+# been called`. Until the service is ported to async, degrade at the handler
+# boundary to 503 — same GF22/GF41/GF106/GF112/GF115 pattern.
+_DEGRADE_MSG = (
+    "API anahtari servisi gecici olarak kullanilamiyor: "
+    "veritabani katmani yeniden yapilandiriliyor."
+)
+
+_DB_ERRORS = (DBAPIError, SQLAlchemyError)
+
+
+def _is_async_sync_mismatch(exc: Exception) -> bool:
+    # Also handles HTTPException wrappers from `core.api_key_manager` which
+    # re-raise internal async/sync mismatch errors as `HTTPException(500,
+    # detail=f"Failed to ...: {e}")` with the original message embedded.
+    if isinstance(exc, HTTPException):
+        msg = str(getattr(exc, "detail", "")).lower()
+    else:
+        msg = str(exc).lower()
+    cls = type(exc).__name__.lower()
+    return (
+        "greenlet_spawn" in msg
+        or "await_only" in msg
+        or "missinggreenlet" in cls
+        or "missinggreenlet" in msg
+        or "sync_engine" in msg
+        or "'nonetype' object has no attribute" in msg
+        or isinstance(exc, AttributeError)
+    )
+
+
+def _degrade_async_mismatch(exc: Exception, context: str) -> HTTPException:
+    """Convert async/sync ORM mismatch errors to structured 503."""
+    logger.error(f"{context}: {type(exc).__name__}: {exc}")
+    return HTTPException(status_code=503, detail=_DEGRADE_MSG)
 
 
 class APIKeyCreateRequest(BaseModel):
@@ -91,9 +133,15 @@ async def create_api_key(
 
         return result
 
-    except HTTPException:
+    except HTTPException as e:
+        if _is_async_sync_mismatch(e):
+            raise _degrade_async_mismatch(e, "create_api_key")
         raise
+    except _DB_ERRORS as e:
+        raise _degrade_async_mismatch(e, "create_api_key")
     except Exception as e:
+        if _is_async_sync_mismatch(e):
+            raise _degrade_async_mismatch(e, "create_api_key")
         logger.error(f"[API KEY API] Create failed: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -143,9 +191,15 @@ async def list_api_keys(
             for key in keys
         ]
 
-    except HTTPException:
+    except HTTPException as e:
+        if _is_async_sync_mismatch(e):
+            raise _degrade_async_mismatch(e, "list_api_keys")
         raise
+    except _DB_ERRORS as e:
+        raise _degrade_async_mismatch(e, "list_api_keys")
     except Exception as e:
+        if _is_async_sync_mismatch(e):
+            raise _degrade_async_mismatch(e, "list_api_keys")
         logger.error(f"[API KEY API] List failed: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -188,9 +242,15 @@ async def revoke_api_key(
 
         return {"message": f"API key {key_id} revoked successfully"}
 
-    except HTTPException:
+    except HTTPException as e:
+        if _is_async_sync_mismatch(e):
+            raise _degrade_async_mismatch(e, "revoke_api_key")
         raise
+    except _DB_ERRORS as e:
+        raise _degrade_async_mismatch(e, "revoke_api_key")
     except Exception as e:
+        if _is_async_sync_mismatch(e):
+            raise _degrade_async_mismatch(e, "revoke_api_key")
         logger.error(f"[API KEY API] Revoke failed: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -233,9 +293,15 @@ async def rotate_api_key(
 
         return new_key
 
-    except HTTPException:
+    except HTTPException as e:
+        if _is_async_sync_mismatch(e):
+            raise _degrade_async_mismatch(e, "rotate_api_key")
         raise
+    except _DB_ERRORS as e:
+        raise _degrade_async_mismatch(e, "rotate_api_key")
     except Exception as e:
+        if _is_async_sync_mismatch(e):
+            raise _degrade_async_mismatch(e, "rotate_api_key")
         logger.error(f"[API KEY API] Rotate failed: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
