@@ -27,3 +27,6 @@ for p in (ROOT / "api").rglob("*.py"):
 print(f"Imported {count} modules, {len(failed)} failed")
 for m, e in failed[:30]:
     print(f"  FAIL {m}: {e[:200]}")
+
+if failed:
+    sys.exit(1)

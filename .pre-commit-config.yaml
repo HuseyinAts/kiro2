@@ -137,6 +137,20 @@ repos:
         stages: [pre-push]
         verbose: true
 
+      # Session 146/147: Catch NameError/ImportError in backend/api/**/*.py
+      # before commit. The Session 146 sweep surfaced 6 pre-existing broken
+      # imports that had been sitting in master without anyone noticing
+      # (FastAPI lazy router registration hides them at startup). The smoke
+      # test imports every api module and exits non-zero on the first failure.
+      - id: kiro2-api-import-smoke
+        name: KIRO2 API module import smoke test
+        description: Catch NameError/ImportError in backend/api/**/*.py before commit
+        entry: python backend/scripts/_smoke_api_imports.py
+        language: system
+        pass_filenames: false
+        files: ^backend/api/.*\.py$
+        stages: [pre-commit]
+
   # Conventional commits
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v3.0.0

@@ -154,6 +154,21 @@ jobs:
           # Baseline: 0 HIGH after commit af74580 (sweep of 15 endpoints).
           python scripts/audit_missing_rate_limit.py --fail-on-high
 
+      - name: AST lint — HTTPException propagation guards (rule-of-eight)
+        working-directory: backend
+        run: |
+          # Session 146 CI gate (sixth linter in the family):
+          # Block any PR that adds a bare `except Exception` handler that re-
+          # wraps as HTTPException(500) without a preceding
+          # `except HTTPException: raise` guard. This anti-pattern silently
+          # promotes upstream 4xx/503 errors (from verify_student_access,
+          # optional-dep guards, service-layer helpers) to generic 500
+          # crashes. Confirmed 8+ times in Waves 1-10 (GF22/GF56/GF57/GF77/
+          # GF81/GF82/GF85/GF88) before being eradicated by the Session 146
+          # proactive sweep (446 guards inserted across 87 files).
+          # Baseline: 0 risky blocks across backend/api/**/*.py.
+          python scripts/audit_httpexception_guard.py --fail
+
       - name: Run migrations
         working-directory: backend
         run: |
