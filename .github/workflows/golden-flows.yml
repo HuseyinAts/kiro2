@@ -125,6 +125,19 @@ jobs:
           # tests/scripts/alembic are allow-listed.
           python scripts/audit_dual_table_trap.py --fail-on-high
 
+      - name: AST lint — Missing `is_active` filter on question read paths
+        working-directory: backend
+        run: |
+          # Session 139 CI gate:
+          # Block any PR that adds a public read-path handler querying
+          # `QuestionBankItem` / `Question` without an `is_active` filter.
+          # 13K+ inactive rows are soft-deleted in `question_bank` (Session
+          # 78 cleanup, intentionally reversible) — leaking them back to
+          # students breaks the production catalog invariant. testing.md
+          # lesson #24. Admin/CRUD handlers (update/delete/history/version/
+          # restore/audit/admin/bulk) are allow-listed by name and path.
+          python scripts/audit_missing_is_active.py --fail-on-high
+
       - name: Run migrations
         working-directory: backend
         run: |
