@@ -9,23 +9,45 @@ Models for:
 - Privacy policy versions
 - Audit logging
 """
+
 import uuid
 from datetime import datetime
-from typing import Optional
 from enum import Enum
 
-from sqlalchemy import (
-    Boolean, DateTime, Enum as SQLEnum,
-    ForeignKey, Integer, JSON, String, Text
-)
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
 from .base import Base
 
 
+def _pg_enum(py_enum, name: str) -> SQLEnum:
+    """Bind a Python enum to an existing PostgreSQL enum type.
+
+    The live DB was migrated with snake_case type names (`data_processing_purpose`,
+    `consent_status`, ...) and lowercase values (`service_provision`, `given`, ...).
+    SQLAlchemy's default ``SQLEnum(PyEnum)`` would instead use
+    ``pyenum.__name__.lower()`` as the type name and ``member.name`` (UPPERCASE)
+    as the value, which breaks at query time with
+    ``type "dataprocessingpurpose" does not exist``.
+
+    Always use this helper for KVKK enums so ORM and DB stay aligned.
+    ``create_type=False`` prevents Alembic/SQLAlchemy from trying to CREATE an
+    already-present type when metadata.create_all() runs in tests.
+    """
+    return SQLEnum(
+        py_enum,
+        name=name,
+        values_callable=lambda members: [m.value for m in members],
+        create_type=False,
+        native_enum=True,
+    )
+
+
 class ConsentStatus(str, Enum):
     """Consent status enum"""
+
     GIVEN = "given"
     WITHDRAWN = "withdrawn"
     EXPIRED = "expired"
@@ -33,6 +55,7 @@ class ConsentStatus(str, Enum):
 
 class DataProcessingPurpose(str, Enum):
     """KVKK data processing purposes"""
+
     # Temel hizmet sunumu
     SERVICE_PROVISION = "service_provision"  # Hizmet sunumu
     ACCOUNT_MANAGEMENT = "account_management"  # Hesap yönetimi
@@ -64,6 +87,7 @@ class DataProcessingPurpose(str, Enum):
 
 class DataRetentionPeriod(str, Enum):
     """KVKK data retention periods (in days)"""
+
     # Student data - 2 years after graduation (KVKK requirement)
     STUDENT_DATA = "730"  # 2 years
     # Exam results - 5 years for educational records
@@ -129,6 +153,7 @@ DATA_RETENTION_CONFIG = {
 
 class ExportRequestStatus(str, Enum):
     """Data export request status"""
+
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
@@ -138,6 +163,7 @@ class ExportRequestStatus(str, Enum):
 
 class DeletionRequestStatus(str, Enum):
     """Data deletion request status"""
+
     PENDING = "pending"
     APPROVED = "approved"
     PROCESSING = "processing"
@@ -149,12 +175,14 @@ class DeletionRequestStatus(str, Enum):
 # KVKK Consent Management
 # ============================================================================
 
+
 class KVKKConsent(Base):
     """
     KVKK user consent records
 
     Tracks user consent for specific data processing purposes
     """
+
     __tablename__ = "kvkk_consents"
 
     id: Mapped[str] = mapped_column(
@@ -166,10 +194,12 @@ class KVKKConsent(Base):
 
     # Consent details
     purpose: Mapped[DataProcessingPurpose] = mapped_column(
-        SQLEnum(DataProcessingPurpose), nullable=False
+        _pg_enum(DataProcessingPurpose, "data_processing_purpose"), nullable=False
     )
     status: Mapped[ConsentStatus] = mapped_column(
-        SQLEnum(ConsentStatus), nullable=False, default=ConsentStatus.GIVEN
+        _pg_enum(ConsentStatus, "consent_status"),
+        nullable=False,
+        default=ConsentStatus.GIVEN,
     )
 
     # Consent metadata
@@ -180,22 +210,20 @@ class KVKKConsent(Base):
     given_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
-    withdrawn_at: Mapped[Optional[datetime]] = mapped_column(
+    withdrawn_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    expires_at: Mapped[Optional[datetime]] = mapped_column(
+    expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
 
     # Metadata
-    ip_address: Mapped[Optional[str]] = mapped_column(String(45))  # IPv6 support
-    user_agent: Mapped[Optional[str]] = mapped_column(String(500))
-    additional_data: Mapped[Optional[dict]] = mapped_column(JSON)
+    ip_address: Mapped[str | None] = mapped_column(String(45))  # IPv6 support
+    user_agent: Mapped[str | None] = mapped_column(String(500))
+    additional_data: Mapped[dict | None] = mapped_column(JSON)
 
     # Indexes
-    __table_args__ = (
-        {"extend_existing": True}
-    )
+    __table_args__ = {"extend_existing": True}
 
 
 class KVKKPrivacyPolicyVersion(Base):
@@ -204,6 +232,7 @@ class KVKKPrivacyPolicyVersion(Base):
 
     Tracks different versions of privacy policy
     """
+
     __tablename__ = "kvkk_privacy_policy_versions"
 
     id: Mapped[str] = mapped_column(
@@ -222,14 +251,13 @@ class KVKKPrivacyPolicyVersion(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    created_by: Mapped[Optional[str]] = mapped_column(
-        String, ForeignKey("users.id")
-    )
+    created_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"))
 
 
 # ============================================================================
 # Data Subject Rights
 # ============================================================================
+
 
 class KVKKDataExportRequest(Base):
     """
@@ -237,6 +265,7 @@ class KVKKDataExportRequest(Base):
 
     Users can request export of their personal data
     """
+
     __tablename__ = "kvkk_data_export_requests"
 
     id: Mapped[str] = mapped_column(
@@ -248,23 +277,23 @@ class KVKKDataExportRequest(Base):
 
     # Request details
     status: Mapped[ExportRequestStatus] = mapped_column(
-        SQLEnum(ExportRequestStatus),
+        _pg_enum(ExportRequestStatus, "export_request_status"),
         nullable=False,
-        default=ExportRequestStatus.PENDING
+        default=ExportRequestStatus.PENDING,
     )
-    request_reason: Mapped[Optional[str]] = mapped_column(Text)
+    request_reason: Mapped[str | None] = mapped_column(Text)
 
     # Export details
     export_format: Mapped[str] = mapped_column(
         String(20), nullable=False, default="json"
     )  # json, csv, pdf
-    data_categories: Mapped[Optional[dict]] = mapped_column(JSON)  # Which data to export
+    data_categories: Mapped[dict | None] = mapped_column(JSON)  # Which data to export
 
     # File details
-    file_path: Mapped[Optional[str]] = mapped_column(String(500))
-    file_size_bytes: Mapped[Optional[int]] = mapped_column(Integer)
-    download_url: Mapped[Optional[str]] = mapped_column(String(500))
-    download_expires_at: Mapped[Optional[datetime]] = mapped_column(
+    file_path: Mapped[str | None] = mapped_column(String(500))
+    file_size_bytes: Mapped[int | None] = mapped_column(Integer)
+    download_url: Mapped[str | None] = mapped_column(String(500))
+    download_expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
 
@@ -272,15 +301,11 @@ class KVKKDataExportRequest(Base):
     requested_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    processed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True)
-    )
-    completed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True)
-    )
+    processed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Processing details
-    error_message: Mapped[Optional[str]] = mapped_column(Text)
+    error_message: Mapped[str | None] = mapped_column(Text)
 
 
 class KVKKDataDeletionRequest(Base):
@@ -289,6 +314,7 @@ class KVKKDataDeletionRequest(Base):
 
     Users can request deletion of their personal data
     """
+
     __tablename__ = "kvkk_data_deletion_requests"
 
     id: Mapped[str] = mapped_column(
@@ -300,9 +326,9 @@ class KVKKDataDeletionRequest(Base):
 
     # Request details
     status: Mapped[DeletionRequestStatus] = mapped_column(
-        SQLEnum(DeletionRequestStatus),
+        _pg_enum(DeletionRequestStatus, "deletion_request_status"),
         nullable=False,
-        default=DeletionRequestStatus.PENDING
+        default=DeletionRequestStatus.PENDING,
     )
     request_reason: Mapped[str] = mapped_column(Text, nullable=False)
     deletion_type: Mapped[str] = mapped_column(
@@ -310,33 +336,26 @@ class KVKKDataDeletionRequest(Base):
     )  # full, partial
 
     # Data to delete
-    data_categories: Mapped[Optional[dict]] = mapped_column(JSON)
+    data_categories: Mapped[dict | None] = mapped_column(JSON)
 
     # Review details
-    reviewed_by: Mapped[Optional[str]] = mapped_column(
-        String, ForeignKey("users.id")
-    )
-    review_notes: Mapped[Optional[str]] = mapped_column(Text)
-    rejection_reason: Mapped[Optional[str]] = mapped_column(Text)
+    reviewed_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"))
+    review_notes: Mapped[str | None] = mapped_column(Text)
+    rejection_reason: Mapped[str | None] = mapped_column(Text)
 
     # Timestamps
     requested_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    reviewed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True)
-    )
-    processed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True)
-    )
-    completed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True)
-    )
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    processed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 # ============================================================================
 # Audit Logging
 # ============================================================================
+
 
 class KVKKAuditLog(Base):
     """
@@ -344,6 +363,7 @@ class KVKKAuditLog(Base):
 
     Tracks all personal data access for compliance
     """
+
     __tablename__ = "kvkk_audit_logs"
 
     id: Mapped[str] = mapped_column(
@@ -351,10 +371,10 @@ class KVKKAuditLog(Base):
     )
 
     # Who accessed data
-    user_id: Mapped[Optional[str]] = mapped_column(
+    user_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id"), index=True
     )  # User whose data was accessed
-    accessed_by: Mapped[Optional[str]] = mapped_column(
+    accessed_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id"), index=True
     )  # Who accessed (admin, system, etc.)
 
@@ -363,21 +383,21 @@ class KVKKAuditLog(Base):
     # Actions: view, export, modify, delete, consent_given, consent_withdrawn
 
     resource_type: Mapped[str] = mapped_column(String(100))  # user, exam, question
-    resource_id: Mapped[Optional[str]] = mapped_column(String)
+    resource_id: Mapped[str | None] = mapped_column(String)
 
     # Processing purpose
-    purpose: Mapped[Optional[DataProcessingPurpose]] = mapped_column(
-        SQLEnum(DataProcessingPurpose)
+    purpose: Mapped[DataProcessingPurpose | None] = mapped_column(
+        _pg_enum(DataProcessingPurpose, "data_processing_purpose")
     )
 
     # Metadata
-    ip_address: Mapped[Optional[str]] = mapped_column(String(45))
-    user_agent: Mapped[Optional[str]] = mapped_column(String(500))
-    request_method: Mapped[Optional[str]] = mapped_column(String(10))
-    request_path: Mapped[Optional[str]] = mapped_column(String(500))
+    ip_address: Mapped[str | None] = mapped_column(String(45))
+    user_agent: Mapped[str | None] = mapped_column(String(500))
+    request_method: Mapped[str | None] = mapped_column(String(10))
+    request_path: Mapped[str | None] = mapped_column(String(500))
 
     # Additional data
-    details: Mapped[Optional[dict]] = mapped_column(JSON)
+    details: Mapped[dict | None] = mapped_column(JSON)
 
     # Timestamp
     created_at: Mapped[datetime] = mapped_column(
@@ -386,15 +406,15 @@ class KVKKAuditLog(Base):
 
 
 __all__ = [
+    "DATA_RETENTION_CONFIG",
     "ConsentStatus",
     "DataProcessingPurpose",
     "DataRetentionPeriod",
-    "DATA_RETENTION_CONFIG",
-    "ExportRequestStatus",
     "DeletionRequestStatus",
-    "KVKKConsent",
-    "KVKKPrivacyPolicyVersion",
-    "KVKKDataExportRequest",
-    "KVKKDataDeletionRequest",
+    "ExportRequestStatus",
     "KVKKAuditLog",
+    "KVKKConsent",
+    "KVKKDataDeletionRequest",
+    "KVKKDataExportRequest",
+    "KVKKPrivacyPolicyVersion",
 ]
