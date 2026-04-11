@@ -45,13 +45,31 @@ Wave 2 — domain write-path probes (Option B, 8 new tests, discovered 5 additio
 | GF7wA | video-solutions list not 500 | `video_solution.py` used sync `get_db` for `AsyncSession` handlers → `MissingGreenlet` 500 | ✅ PASS (fix: Session 136) |
 | GF8wA | kvkk consent list not 500 | `kvkk_consent_api.py` used sync `get_db` for `AsyncSession` handlers + `current_user.id` on Pydantic `TokenPayload` (should be `.sub`) | ✅ PASS (fix: Session 136) |
 
-**Current distribution (Session 136 final):** 21 tests → **19 PASS, 0 FAIL, 2 SKIP**.
+Wave 3 — feature-inventory sweep probes (Session 138, 10 new tests, discovered 2 additional half-working features):
 
-Wave 1 expected FAILs (GF1w, GF3w, GF6w) and all 5 Wave 2 half-working feature
-FAILs (GF2w, GF3wA, GF5w, GF7wA, GF8wA) are now PASS after Session 136 fixes.
-The 2 remaining SKIPs are state-dependent (GF1wB refresh-token persist has no
-deterministic probe; GF4w.2 needs a due FSRS card which only exists after the
-24h schedule window) — these are acceptable skips, not regressions.
+Context: `docs/audits/2026-04-11_feature-inventory.md` flagged 510 write-path
+endpoints without GF coverage. Top 10 were probed; 2 real bugs fell out.
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF10 | learning-path create-profile accepts canonical schema | Student profile write path (`learning_path_v2.py:190`) | ✅ PASS |
+| GF11 | learning-path quiz submit not 500 | Quiz write path (`learning_path_v2.py`) | ✅ PASS |
+| GF12 | FSRS review write not 500 | FSRS grading pipeline (`api/fsrs.py`) | ✅ PASS |
+| GF13 | CAT session start not 500 | CAT placement write path (`api/cat.py`) | ✅ PASS |
+| GF14 | auth change-password rejects wrong current | **HTTP 200 anti-pattern**: `auth.py:1156-1187` returned `{"success": false}` with HTTP 200 on all 4 error branches (user not found, wrong password, weak new password, generic exception). Broke `response.ok` in clients, hid regressions from monitoring. | ✅ PASS (fix: Session 138 — each branch now `raise HTTPException` with the correct 4xx/5xx) |
+| GF15 | auth 2FA setup not 500 | TOTP secret generation write path | ✅ PASS |
+| GF16 | kvkk consent give not 500 | **PG enum name + value mismatch**: ORM `SQLEnum(DataProcessingPurpose)` used SQLAlchemy default (type name `dataprocessingpurpose`, values = enum `.name` UPPERCASE), but live DB has `data_processing_purpose` with lowercase `.value` members. Query `$2::dataprocessingpurpose` crashed with `UndefinedObjectError`. Also affected 4 other KVKK enums (ConsentStatus, ExportRequestStatus, DeletionRequestStatus, audit purpose). | ✅ PASS (fix: Session 138 — `_pg_enum(py_enum, "snake_case_name")` helper binds Python enum to existing DB type with `values_callable=lambda m: [x.value for x in m]` + `create_type=False`) |
+| GF17 | cozum-duellosu create not 500 | Duel write path (`cozum_duellosu_api.py`) | ✅ PASS |
+| GF18 | daily-quests claim-bonus not 500 | Gamification daily bonus write path | ✅ PASS |
+| GF19 | parent notifications create not 500 | Parent notification write path | ✅ PASS |
+
+**Current distribution (Session 138):** 36 tests → **34 PASS, 0 FAIL, 2 SKIP**.
+
+All new Wave 3 probes PASS after the 2 Session 138 fixes (GF14 HTTP 200
+anti-pattern, GF16 PG enum binding). The 2 remaining SKIPs are unchanged and
+state-dependent (GF1wB refresh-token persist has no deterministic probe;
+GF4w.2 needs a due FSRS card which only exists after the 24h schedule window)
+— acceptable skips, not regressions.
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
