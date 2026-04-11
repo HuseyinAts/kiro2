@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_async_session
 from core.dependencies import AuthenticatedUser, get_current_admin_user
 from models.university_info import AccommodationType, CampusType, ScholarshipType
 from services.university_info_service import UniversityInfoService
@@ -155,7 +155,9 @@ class ScholarshipResponse(BaseModel):
 
 
 @router.get("/campus/{university_id}", response_model=list[CampusResponse])
-async def get_campus_info(university_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_campus_info(
+    university_id: UUID, db: AsyncSession = Depends(get_async_session)
+):
     """
     Get all campus information for a university
 
@@ -184,7 +186,7 @@ async def get_campus_info(university_id: UUID, db: AsyncSession = Depends(get_db
 async def create_campus_info(
     request: CampusCreateRequest,
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Create new campus information (Admin only)"""
     service = UniversityInfoService(db)
@@ -219,7 +221,7 @@ async def create_campus_info(
 
 @router.get("/campus/{university_id}/facilities", response_model=dict[str, Any])
 async def get_campus_facilities(
-    university_id: UUID, db: AsyncSession = Depends(get_db)
+    university_id: UUID, db: AsyncSession = Depends(get_async_session)
 ):
     """
     Get aggregate facilities for all campuses
@@ -241,7 +243,7 @@ async def get_campus_facilities(
 async def get_city_living_cost(
     city: str,
     year: int = Query(2024, description="Year for cost data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get living cost data for a city
@@ -272,7 +274,7 @@ async def get_city_living_cost(
 async def create_living_cost(
     request: LivingCostCreateRequest,
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Create new city living cost data (Admin only)"""
     service = UniversityInfoService(db)
@@ -303,7 +305,7 @@ async def create_living_cost(
 async def compare_city_costs(
     cities: str = Query(..., description="Comma-separated city names"),
     year: int = Query(2024, description="Year for cost data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Compare living costs across multiple cities
@@ -325,7 +327,7 @@ async def get_student_budget_estimate(
         "dormitory", description="Type: dormitory, studio, shared"
     ),
     year: int = Query(2024, description="Year for budget data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get estimated student budget for a city
@@ -356,7 +358,7 @@ async def get_dormitories(
         None, description="Filter by type"
     ),
     max_price: int | None = Query(None, description="Maximum monthly price"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get dormitory information with filters
@@ -390,7 +392,9 @@ async def get_dormitories(
 
 
 @router.get("/dormitories/{dormitory_id}", response_model=DormitoryResponse)
-async def get_dormitory_by_id(dormitory_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_dormitory_by_id(
+    dormitory_id: UUID, db: AsyncSession = Depends(get_async_session)
+):
     """Get specific dormitory information"""
     service = UniversityInfoService(db)
     dormitory = await service.get_dormitory_by_id(dormitory_id)
@@ -417,7 +421,7 @@ async def get_dormitory_by_id(dormitory_id: UUID, db: AsyncSession = Depends(get
 async def create_dormitory_info(
     request: DormitoryCreateRequest,
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Create new dormitory information (Admin only)"""
     service = UniversityInfoService(db)
@@ -452,7 +456,7 @@ async def create_dormitory_info(
 async def get_dormitory_statistics(
     university_id: UUID | None = Query(None, description="Filter by university"),
     city: str | None = Query(None, description="Filter by city"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get aggregate dormitory statistics
@@ -480,7 +484,7 @@ async def get_scholarships(
     ),
     min_coverage: float | None = Query(None, description="Minimum coverage percentage"),
     active_only: bool = Query(True, description="Show only active scholarships"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get scholarship programs with filters
@@ -515,7 +519,7 @@ async def get_scholarships(
 
 @router.get("/scholarships/{scholarship_id}", response_model=ScholarshipResponse)
 async def get_scholarship_by_id(
-    scholarship_id: UUID, db: AsyncSession = Depends(get_db)
+    scholarship_id: UUID, db: AsyncSession = Depends(get_async_session)
 ):
     """Get specific scholarship information"""
     service = UniversityInfoService(db)
@@ -543,7 +547,7 @@ async def get_scholarship_by_id(
 async def create_scholarship_program(
     request: ScholarshipCreateRequest,
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Create new scholarship program (Admin only)"""
     service = UniversityInfoService(db)
@@ -581,7 +585,7 @@ async def get_eligible_scholarships(
     exam_score: float = Query(..., description="Student's exam score"),
     high_school_gpa: float | None = Query(None, description="High school GPA"),
     family_income: int | None = Query(None, description="Family income (TRY)"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get scholarships the student is eligible for
@@ -616,7 +620,7 @@ async def get_eligible_scholarships(
 
 @router.get("/scholarships/statistics/{university_id}", response_model=dict[str, Any])
 async def get_scholarship_statistics(
-    university_id: UUID, db: AsyncSession = Depends(get_db)
+    university_id: UUID, db: AsyncSession = Depends(get_async_session)
 ):
     """
     Get aggregate scholarship statistics
@@ -638,7 +642,7 @@ async def get_scholarship_statistics(
 async def get_comprehensive_university_info(
     university_id: UUID,
     year: int = Query(2024, description="Year for data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get all university information in one call
@@ -660,7 +664,7 @@ async def get_comprehensive_university_info(
 async def get_university_statistics(
     university_id: UUID,
     year: int = Query(2024, description="Year for statistics"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Get aggregate statistics for a university"""
     service = UniversityInfoService(db)
@@ -687,7 +691,7 @@ async def generate_university_statistics(
     university_id: UUID,
     year: int = Query(2024, description="Year for statistics"),
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Generate or update aggregate statistics for a university"""
     service = UniversityInfoService(db)

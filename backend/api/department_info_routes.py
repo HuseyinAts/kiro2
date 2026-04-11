@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_async_session
 from core.dependencies import AuthenticatedUser, get_current_admin_user
 from models.department_info import ExperienceLevel, IndustryType
 from services.department_info_service import DepartmentInfoService
@@ -246,7 +246,7 @@ class ComprehensiveDepartmentInfoResponse(BaseModel):
 
 @router.get("/curriculum/{department_id}", response_model=Optional[CurriculumResponse])
 async def get_department_curriculum(
-    department_id: UUID, db: AsyncSession = Depends(get_db)
+    department_id: UUID, db: AsyncSession = Depends(get_async_session)
 ):
     """
     Get curriculum information for a department
@@ -266,7 +266,7 @@ async def get_department_curriculum(
 async def create_curriculum(
     request: CurriculumCreateRequest,
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Create curriculum information for a department (Admin only)
@@ -295,7 +295,7 @@ async def create_curriculum(
 
 @router.get("/curriculum/{department_id}/specializations", response_model=list[str])
 async def get_specialization_options(
-    department_id: UUID, db: AsyncSession = Depends(get_db)
+    department_id: UUID, db: AsyncSession = Depends(get_async_session)
 ):
     """
     Get specialization tracks available for a department
@@ -320,7 +320,7 @@ async def get_career_opportunities(
     demand_level: str | None = Query(
         None, description="Filter by demand level (high, medium, low)"
     ),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get career opportunities for a department
@@ -342,7 +342,7 @@ async def get_career_opportunities(
 async def create_career_opportunity(
     request: CareerOpportunityCreateRequest,
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Create a career opportunity entry for a department (Admin only)
@@ -372,7 +372,7 @@ async def create_career_opportunity(
     "/careers/{department_id}/statistics", response_model=EmploymentStatisticsResponse
 )
 async def get_employment_statistics(
-    department_id: UUID, db: AsyncSession = Depends(get_db)
+    department_id: UUID, db: AsyncSession = Depends(get_async_session)
 ):
     """
     Get employment statistics for a department
@@ -398,7 +398,7 @@ async def get_salary_expectations(
     ),
     city: str | None = Query(None, description="Filter by city"),
     year: int = Query(2024, description="Year for salary data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get salary expectations for a department
@@ -424,7 +424,7 @@ async def get_salary_progression(
     department_id: UUID,
     city: str | None = Query(None, description="Filter by city"),
     year: int = Query(2024, description="Year for salary data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get salary progression by experience level
@@ -450,7 +450,7 @@ async def get_regional_salary_comparison(
         ExperienceLevel.ENTRY, description="Experience level to compare"
     ),
     year: int = Query(2024, description="Year for salary data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Compare salaries across different regions
@@ -475,7 +475,7 @@ async def get_regional_salary_comparison(
 async def get_sector_analysis(
     industry_type: IndustryType,
     year: int = Query(2024, description="Year for sector data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get sector analysis for an industry
@@ -498,7 +498,7 @@ async def get_sector_analysis(
 async def get_related_sectors(
     department_id: UUID,
     year: int = Query(2024, description="Year for sector data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get sector analyses related to a department
@@ -518,7 +518,7 @@ async def get_related_sectors(
 async def get_job_market_trends(
     department_id: UUID,
     year: int = Query(2024, description="Year for trend data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get comprehensive job market trends for a department
@@ -541,7 +541,7 @@ async def get_job_market_trends(
 async def get_department_statistics(
     department_id: UUID,
     year: int = Query(2024, description="Year for statistics"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get aggregate statistics for a department
@@ -578,7 +578,7 @@ async def generate_department_statistics(
     department_id: UUID,
     year: int = Query(2024, description="Year for statistics"),
     _admin: AuthenticatedUser = Depends(get_current_admin_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Generate or update aggregate statistics for a department (Admin only)
@@ -613,7 +613,7 @@ async def generate_department_statistics(
 async def get_comprehensive_department_info(
     department_id: UUID,
     year: int = Query(2024, description="Year for data"),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get all department information in one call

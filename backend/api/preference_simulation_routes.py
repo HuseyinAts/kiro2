@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
+from core.database import get_async_session
 from core.dependencies import AuthenticatedUser, get_current_user
 from models.university import ScoreType
 from services.preference_simulation_service import PreferenceSimulationService
@@ -103,7 +103,7 @@ class SimulatePreferencesRequest(BaseModel):
 @router.post("/calculate-score")
 async def calculate_score(
     request: ScoreCalculationRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -148,7 +148,7 @@ async def calculate_bonus(
     diploma_grade: float | None = Query(None, ge=0, le=100),
     language_certificate: str | None = Query(None),
     special_talent: bool = Query(False),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -189,7 +189,7 @@ async def calculate_bonus(
 @router.post("/predict-placement")
 async def predict_placement(
     request: PlacementPredictionRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -213,7 +213,7 @@ async def get_placement_analysis(
     program_id: UUID,
     student_score: float = Query(..., ge=180, le=560),
     year: int = Query(2024),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -238,7 +238,7 @@ async def get_placement_analysis(
 @router.post("/recommend-departments")
 async def recommend_departments(
     request: DepartmentRecommendationRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -290,7 +290,7 @@ async def recommend_departments(
 @router.post("/predict-rank")
 async def predict_rank(
     request: RankPredictionRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -320,7 +320,7 @@ async def get_rank_analysis(
     score_type: str = Query(...),
     year: int = Query(2024),
     current_user: AuthenticatedUser = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get detailed rank analysis
@@ -349,7 +349,7 @@ async def get_rank_analysis(
 @router.post("/simulate-preferences")
 async def simulate_preferences(
     request: SimulatePreferencesRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
@@ -379,7 +379,7 @@ async def batch_predictions(
     student_score: float = Query(..., ge=180, le=560),
     program_ids: list[UUID] = Query(..., min_items=1, max_items=100),
     year: int = Query(2024),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """

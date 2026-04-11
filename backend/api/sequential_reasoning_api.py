@@ -15,10 +15,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.auth_dependencies import authenticate_optional, AuthorizationDependency
+from core.auth_dependencies import AuthorizationDependency, authenticate_optional
+from core.database import get_async_session
 
-get_current_admin_user = AuthorizationDependency(required_roles=["admin", "super_admin"])
-from core.database import get_db
+get_current_admin_user = AuthorizationDependency(
+    required_roles=["admin", "super_admin"]
+)
 from services.reasoning.visualization_service import get_visualization_service
 from services.sequential_reasoning_service import SequentialReasoningService
 
@@ -154,7 +156,7 @@ class MermaidResponse(BaseModel):
 @router.post("/solve", response_model=SolveResponse)
 async def solve_problem(
     request: SolveRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user=Depends(authenticate_optional),
 ):
     """
@@ -211,7 +213,7 @@ async def solve_problem(
 @router.get("/session/{session_id}")
 async def get_session(
     session_id: UUID,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user=Depends(authenticate_optional),
 ):
     """
@@ -244,7 +246,7 @@ async def get_session(
 @router.get("/session/{session_id}/steps")
 async def get_session_steps(
     session_id: UUID,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user=Depends(authenticate_optional),
 ):
     """
@@ -285,7 +287,7 @@ async def get_session_mermaid(
     include_tree_data: bool = Query(
         True, description="Include JSON tree for interactive UI"
     ),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user=Depends(authenticate_optional),
 ):
     """
@@ -341,7 +343,7 @@ async def get_session_mermaid(
 @router.post("/decompose", response_model=DecomposeResponse)
 async def decompose_problem(
     request: DecomposeRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user=Depends(authenticate_optional),
 ):
     """
@@ -374,7 +376,7 @@ async def decompose_problem(
 @router.post("/compare", response_model=CompareResponse)
 async def compare_providers(
     request: CompareRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user=Depends(authenticate_optional),
 ):
     """
@@ -404,7 +406,7 @@ async def compare_providers(
 @router.post("/cache/invalidate")
 async def invalidate_cache(
     request: CacheInvalidateRequest,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     _admin=Depends(get_current_admin_user),
 ):
     """
@@ -423,7 +425,7 @@ async def invalidate_cache(
 @router.get("/my-sessions")
 async def get_my_sessions(
     limit: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
     current_user=Depends(authenticate_optional),
 ):
     """

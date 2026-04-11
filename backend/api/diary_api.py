@@ -51,7 +51,7 @@ from api.schemas.diary import (
     SuccessResponse,
 )
 from core.auth_dependencies import AuthenticationDependency
-from core.database import get_db
+from core.database import get_async_session
 from core.service_dependencies import get_diary_service
 from models.diary import (
     DiaryEntry,
@@ -148,7 +148,7 @@ async def get_today_summary(
 async def get_summary_by_date(
     entry_date: date = Query(..., description="Kayit tarihi (YYYY-MM-DD)"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> DiaryEntryResponse | None:
     """
     Belirli bir tarihin gunluk ozetini getir.
@@ -190,7 +190,7 @@ async def get_summaries(
     end_date: date | None = Query(None, description="Bitis tarihi"),
     limit: int = Query(30, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[DiaryEntryResponse]:
     """
     Gunluk ozetleri listele.
@@ -239,7 +239,7 @@ async def create_summary(
     request: DiaryEntryCreate,
     persist_file: bool = Query(True, description="Dosyaya kaydet"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> DiaryEntryResponse:
     """
     Manuel gunluk ozeti olustur.
@@ -292,7 +292,7 @@ async def update_summary(
     entry_id: UUID,
     request: DiaryEntryUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> DiaryEntryResponse:
     """
     Gunluk ozetini guncelle.
@@ -339,7 +339,7 @@ async def update_summary(
 async def delete_summary(
     entry_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SuccessResponse:
     """
     Gunluk ozetini sil.
@@ -371,7 +371,7 @@ async def get_goals(
     category: str | None = Query(None, description="Kategori filtresi"),
     limit: int = Query(50, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[GoalResponse]:
     """
     Hedefleri listele.
@@ -399,7 +399,7 @@ async def get_goals(
 @router.get("/goals/active", response_model=list[GoalResponse])
 async def get_active_goals(
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[GoalResponse]:
     """
     Aktif hedefleri listele.
@@ -416,7 +416,7 @@ async def get_active_goals(
 @router.get("/goals/at-risk", response_model=list[GoalResponse])
 async def get_at_risk_goals(
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[GoalResponse]:
     """
     Risk altindaki hedefleri listele.
@@ -433,7 +433,7 @@ async def get_at_risk_goals(
 @router.get("/goals/statistics")
 async def get_goal_statistics(
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Hedef istatistiklerini getir.
@@ -450,7 +450,7 @@ async def get_goal_statistics(
 async def get_goal(
     goal_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> GoalResponse:
     """
     Belirli bir hedefi getir.
@@ -475,7 +475,7 @@ async def get_goal(
 async def create_goal(
     request: GoalCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> GoalResponse:
     """
     Yeni hedef olustur.
@@ -509,7 +509,7 @@ async def create_goal(
 async def validate_smart_criteria(
     request: GoalCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Hedef icin SMART kriterlerini dogrula.
@@ -529,7 +529,7 @@ async def update_goal(
     goal_id: UUID,
     request: GoalUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> GoalResponse:
     """
     Hedef guncelle.
@@ -556,7 +556,7 @@ async def update_goal_progress(
     goal_id: UUID,
     request: GoalProgressUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Hedef ilerlemesini guncelle.
@@ -594,7 +594,7 @@ async def update_goal_progress(
 async def get_goal_risk(
     goal_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> GoalRiskResponse:
     """
     Hedef risk analizini getir.
@@ -622,7 +622,7 @@ async def adjust_goal(
     new_target_value: float | None = Query(None, description="Yeni hedef degeri"),
     new_target_date: datetime | None = Query(None, description="Yeni hedef tarihi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> GoalResponse:
     """
     Hedefi ayarla (REQ-6.5).
@@ -660,7 +660,7 @@ async def create_goal_retrospective(
         default=[], description="Karsilasilan zorluklar"
     ),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> GoalResponse:
     """
     Hedef retrospektifi olustur (REQ-6.6).
@@ -693,7 +693,7 @@ async def create_goal_retrospective(
 async def delete_goal(
     goal_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SuccessResponse:
     """
     Hedef sil.
@@ -771,7 +771,7 @@ async def get_insights(
     min_confidence: float = Query(0.8, ge=0.0, le=1.0, description="Min guven skoru"),
     limit: int = Query(50, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[InsightResponse]:
     """
     Kullanici insightlarini listele.
@@ -800,7 +800,7 @@ async def analyze_entries_for_insights(
     start_date: date | None = Query(None, description="Baslangic tarihi"),
     end_date: date | None = Query(None, description="Bitis tarihi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[InsightResponse]:
     """
     Gunluk kayitlarini analiz edip yeni insightlar olustur.
@@ -826,7 +826,7 @@ async def analyze_entries_for_insights(
 async def get_insight(
     insight_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> InsightResponse:
     """
     Belirli bir insighti getir.
@@ -851,7 +851,7 @@ async def get_insight(
 async def delete_insight(
     insight_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SuccessResponse:
     """
     Insight sil.
@@ -899,7 +899,7 @@ def _insight_to_response(insight) -> InsightResponse:
 async def get_reflection_prompts(
     diary_entry_id: UUID | None = Query(None, description="Gunluk kaydi ID"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> ReflectionPromptsResponse:
     """
     Yansitma sorularini getir.
@@ -928,7 +928,7 @@ async def get_reflection_prompts(
 async def create_reflection(
     request: ReflectionCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> ReflectionResponse:
     """
     Yeni yansitma olustur.
@@ -953,7 +953,7 @@ async def get_reflections(
     depth: str | None = Query(None, description="Derinlik filtresi"),
     limit: int = Query(30, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[ReflectionResponse]:
     """
     Yansitmalari listele.
@@ -985,7 +985,7 @@ async def get_reflections(
 async def get_reflection(
     reflection_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> ReflectionResponse:
     """
     Belirli bir yansitmayi getir.
@@ -1035,7 +1035,7 @@ def _reflection_to_response(reflection) -> ReflectionResponse:
 async def create_learning_entry(
     request: LearningEntryCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> LearningEntryResponse:
     """
     Yeni ogrenme kaydi olustur.
@@ -1059,7 +1059,7 @@ async def get_learning_entries(
     tags: list[str] | None = Query(None, description="Etiket filtresi"),
     limit: int = Query(50, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[LearningEntryResponse]:
     """
     Ogrenme kayitlarini listele.
@@ -1089,7 +1089,7 @@ async def get_learning_entries(
 async def get_due_reviews(
     limit: int = Query(10, ge=1, le=50, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[LearningEntryResponse]:
     """
     Tekrar edilmesi gereken ogrenme kayitlarini getir.
@@ -1113,7 +1113,7 @@ async def record_review(
     remembered: bool = Query(..., description="Hatirlandi mi?"),
     quality: int = Query(..., ge=1, le=5, description="Kalite (1-5)"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> LearningReviewResponse:
     """
     Ogrenme tekrari kaydet (FSRS benzeri).
@@ -1150,7 +1150,7 @@ async def record_review(
 @router.get("/learning/graph")
 async def get_knowledge_graph(
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> dict[str, Any]:
     """
     Bilgi grafini getir.
@@ -1168,7 +1168,7 @@ async def get_knowledge_graph(
 @router.get("/learning/gaps")
 async def get_knowledge_gaps(
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[dict[str, Any]]:
     """
     Bilgi bosluklerini tespit et.
@@ -1187,7 +1187,7 @@ async def get_knowledge_gaps(
 async def get_learning_entry(
     entry_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> LearningEntryResponse:
     """
     Belirli bir ogrenme kaydini getir.
@@ -1213,7 +1213,7 @@ async def link_concepts(
     entry_id: UUID,
     concepts: list[str] = Query(..., description="Ilgili kavramlar"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SuccessResponse:
     """
     Ogrenme kaydina kavram baglantilari ekle.
@@ -1267,7 +1267,7 @@ def _learning_to_response(entry) -> LearningEntryResponse:
 async def track_emotional_state(
     request: EmotionalStateCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> EmotionalStateResponse:
     """
     Duygusal durum kaydet.
@@ -1291,7 +1291,7 @@ async def get_emotional_states(
     end_date: date | None = Query(None, description="Bitis tarihi"),
     limit: int = Query(50, ge=1, le=100, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[EmotionalStateResponse]:
     """
     Duygusal durum kayitlarini listele.
@@ -1321,7 +1321,7 @@ async def get_emotional_states(
 async def get_mood_trend(
     days: int = Query(30, ge=7, le=90, description="Kac gunluk trend"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> MoodTrendResponse:
     """
     Ruh hali trendini getir.
@@ -1350,7 +1350,7 @@ async def get_mood_trend(
 async def get_mood_chart(
     days: int = Query(30, ge=7, le=90, description="Kac gunluk chart"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     """
     Ruh hali grafigini PNG olarak getir.
@@ -1377,7 +1377,7 @@ async def get_mood_chart(
 async def get_frustration_alerts(
     threshold: float = Query(0.7, ge=0.5, le=1.0, description="Esik degeri"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[dict[str, Any]]:
     """
     Hayal kirikligi uyarilarini getir.
@@ -1423,7 +1423,7 @@ def _emotional_to_response(state) -> EmotionalStateResponse:
 async def get_peer_comparison(
     days: int = Query(30, ge=7, le=90, description="Kac gunluk karsilastirma"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> PeerComparisonResponse:
     """
     Akran karsilastirmasi yap (differential privacy ile).
@@ -1460,7 +1460,7 @@ async def get_peer_comparison(
 async def get_peer_comparison_history(
     limit: int = Query(10, ge=1, le=50, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[PeerComparisonResponse]:
     """
     Akran karsilastirma gecmisini getir.
@@ -1505,7 +1505,7 @@ async def get_peer_comparison_history(
 async def create_export(
     request: ExportRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> ExportResponse:
     """
     Gunluk verilerini export et.
@@ -1538,7 +1538,7 @@ async def create_export(
 async def download_export(
     export_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     """
     Export dosyasini indir.
@@ -1549,9 +1549,7 @@ async def download_export(
     Returns:
         StreamingResponse
     """
-    await _verify_ownership(
-        db, DiaryExport, export_id, current_user, "Export"
-    )
+    await _verify_ownership(db, DiaryExport, export_id, current_user, "Export")
     service = ExportService(db)
 
     export_data = await service.get_export(export_id)
@@ -1587,7 +1585,7 @@ async def download_export(
 async def create_share_link(
     request: ShareLinkCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> ShareLinkResponse:
     """
     Paylasim linki olustur.
@@ -1621,7 +1619,7 @@ async def create_share_link(
 @router.get("/export/shared/{share_token}")
 async def get_shared_export(
     share_token: str,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     """
     Paylasilan exportu getir.
@@ -1663,7 +1661,7 @@ async def get_shared_export(
 async def get_exports(
     limit: int = Query(20, ge=1, le=50, description="Maksimum kayit sayisi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> list[ExportResponse]:
     """
     Export gecmisini listele.
@@ -1699,7 +1697,7 @@ async def get_exports(
 async def create_encrypted_backup(
     password: str = Query(..., min_length=8, description="Sifreleme sifresi"),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ) -> dict[str, Any]:
     """
     Sifrelenmis yedek olustur.
