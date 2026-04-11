@@ -4,28 +4,29 @@ Task 108: Video Conference Service
 Service for managing video conferences with Zoom and Google Meet integration.
 """
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
-from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
-from uuid import UUID
-import logging
 import hashlib
+import logging
 import secrets
+from datetime import UTC, datetime
+from typing import Any
+from uuid import UUID, uuid4
+
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.live_session import (
     LiveSession,
-    SessionParticipant,
+    ParticipantRole,
+    PlatformType,
+    RecordingStatus,
     ScreenShare,
-    SessionChatMessage,
+    ScreenShareType,
     SessionAnalytics,
+    SessionChatMessage,
+    SessionParticipant,
     SessionRecording,
     SessionStatus,
     SessionType,
-    PlatformType,
-    ParticipantRole,
-    RecordingStatus,
-    ScreenShareType,
 )
 
 logger = logging.getLogger(__name__)
@@ -54,12 +55,12 @@ class VideoConferenceService:
         scheduled_end: datetime,
         session_type: SessionType,
         platform: PlatformType = PlatformType.ZOOM,
-        subject: Optional[str] = None,
-        topics: Optional[List[str]] = None,
+        subject: str | None = None,
+        topics: list[str] | None = None,
         max_participants: int = 50,
         auto_record: bool = False,
         require_password: bool = True,
-        teacher_id: Optional[UUID] = None,
+        teacher_id: UUID | None = None,
     ) -> LiveSession:
         """
         Create a new live session
@@ -69,10 +70,13 @@ class VideoConferenceService:
         duration_minutes = int((scheduled_end - scheduled_start).total_seconds() / 60)
 
         session = LiveSession(
+            # GF36 fix: coerce UUID -> str because LiveSession.id is VARCHAR and
+            # asyncpg refuses UUID objects as VARCHAR params (same trap as GF26).
+            id=str(uuid4()),
             title=title,
             description=description,
-            host_id=host_id,
-            teacher_id=teacher_id,
+            host_id=str(host_id) if host_id is not None else None,
+            teacher_id=str(teacher_id) if teacher_id is not None else None,
             session_type=session_type,
             scheduled_start=scheduled_start,
             scheduled_end=scheduled_end,
@@ -116,14 +120,14 @@ class VideoConferenceService:
         logger.info(f"Live session created: {session.id} on {platform}")
         return session
 
-    async def start_session(self, session_id: UUID) -> Optional[LiveSession]:
+    async def start_session(self, session_id: UUID) -> LiveSession | None:
         """Start a scheduled session"""
         session = await self.get_session(session_id)
         if not session:
             return None
 
         session.status = SessionStatus.LIVE
-        session.actual_start = datetime.now(timezone.utc)
+        session.actual_start = datetime.now(UTC)
 
         # Start recording if auto-record is enabled
         if session.auto_record and session.allow_recording:
@@ -135,14 +139,14 @@ class VideoConferenceService:
         logger.info(f"Session started: {session_id}")
         return session
 
-    async def end_session(self, session_id: UUID) -> Optional[LiveSession]:
+    async def end_session(self, session_id: UUID) -> LiveSession | None:
         """End a live session"""
         session = await self.get_session(session_id)
         if not session:
             return None
 
         session.status = SessionStatus.ENDED
-        session.actual_end = datetime.now(timezone.utc)
+        session.actual_end = datetime.now(UTC)
 
         if session.actual_start:
             duration = session.actual_end - session.actual_start
@@ -163,7 +167,7 @@ class VideoConferenceService:
         logger.info(f"Session ended: {session_id}")
         return session
 
-    async def get_session(self, session_id: UUID) -> Optional[LiveSession]:
+    async def get_session(self, session_id: UUID) -> LiveSession | None:
         """Get session by ID"""
         query = select(LiveSession).where(LiveSession.id == session_id)
         result = await self.db.execute(query)
@@ -172,9 +176,9 @@ class VideoConferenceService:
     async def get_user_sessions(
         self,
         user_id: UUID,
-        status: Optional[SessionStatus] = None,
+        status: SessionStatus | None = None,
         upcoming_only: bool = False,
-    ) -> List[LiveSession]:
+    ) -> list[LiveSession]:
         """Get sessions for a user (as host or participant)"""
         # Get sessions where user is host
         host_query = select(LiveSession).where(LiveSession.host_id == user_id)
@@ -194,7 +198,7 @@ class VideoConferenceService:
 
         if upcoming_only:
             query = query.where(
-                LiveSession.scheduled_start > datetime.now(timezone.utc),
+                LiveSession.scheduled_start > datetime.now(UTC),
                 LiveSession.status == SessionStatus.SCHEDULED,
             )
 
@@ -207,7 +211,7 @@ class VideoConferenceService:
     # Task 108.1: Platform Integration (Placeholders)
     # ============================================================
 
-    async def _create_zoom_meeting(self, session: LiveSession) -> Dict[str, Any]:
+    async def _create_zoom_meeting(self, session: LiveSession) -> dict[str, Any]:
         """
         Create Zoom meeting
 
@@ -242,7 +246,7 @@ class VideoConferenceService:
             },
         }
 
-    async def _create_google_meet(self, session: LiveSession) -> Dict[str, Any]:
+    async def _create_google_meet(self, session: LiveSession) -> dict[str, Any]:
         """
         Create Google Meet session
 
@@ -274,7 +278,7 @@ class VideoConferenceService:
     def _generate_jitsi_room_name(self, session: LiveSession) -> str:
         """Generate unique Jitsi room name"""
         # Create a unique, readable room name
-        hash_input = f"{session.id}{session.title}{datetime.now(timezone.utc)}"
+        hash_input = f"{session.id}{session.title}{datetime.now(UTC)}"
         hash_short = hashlib.sha256(hash_input.encode()).hexdigest()[:8]
         safe_title = "".join(c for c in session.title if c.isalnum())[:20]
         return f"kiro_{safe_title}_{hash_short}"
@@ -302,7 +306,7 @@ class VideoConferenceService:
 
     async def join_session(
         self, session_id: UUID, user_id: UUID
-    ) -> Optional[SessionParticipant]:
+    ) -> SessionParticipant | None:
         """Mark participant as joined"""
         query = select(SessionParticipant).where(
             SessionParticipant.session_id == session_id,
@@ -315,7 +319,7 @@ class VideoConferenceService:
             participant = await self.add_participant(session_id, user_id)
 
         participant.is_present = True
-        participant.joined_at = datetime.now(timezone.utc)
+        participant.joined_at = datetime.now(UTC)
 
         # Update session participant count
         session = await self.get_session(session_id)
@@ -329,7 +333,7 @@ class VideoConferenceService:
 
     async def leave_session(
         self, session_id: UUID, user_id: UUID
-    ) -> Optional[SessionParticipant]:
+    ) -> SessionParticipant | None:
         """Mark participant as left"""
         query = select(SessionParticipant).where(
             SessionParticipant.session_id == session_id,
@@ -342,7 +346,7 @@ class VideoConferenceService:
             return None
 
         participant.is_present = False
-        participant.left_at = datetime.now(timezone.utc)
+        participant.left_at = datetime.now(UTC)
 
         if participant.joined_at:
             duration = participant.left_at - participant.joined_at
@@ -367,8 +371,8 @@ class VideoConferenceService:
         session_id: UUID,
         user_id: UUID,
         share_type: ScreenShareType,
-        window_title: Optional[str] = None,
-        application_name: Optional[str] = None,
+        window_title: str | None = None,
+        application_name: str | None = None,
     ) -> ScreenShare:
         """Track screen share start"""
         screen_share = ScreenShare(
@@ -377,7 +381,7 @@ class VideoConferenceService:
             share_type=share_type,
             window_title=window_title,
             application_name=application_name,
-            started_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
         )
 
         self.db.add(screen_share)
@@ -398,7 +402,7 @@ class VideoConferenceService:
         logger.info(f"Screen share started: {screen_share.id}")
         return screen_share
 
-    async def end_screen_share(self, screen_share_id: UUID) -> Optional[ScreenShare]:
+    async def end_screen_share(self, screen_share_id: UUID) -> ScreenShare | None:
         """Track screen share end"""
         query = select(ScreenShare).where(ScreenShare.id == screen_share_id)
         result = await self.db.execute(query)
@@ -407,7 +411,7 @@ class VideoConferenceService:
         if not screen_share:
             return None
 
-        screen_share.ended_at = datetime.now(timezone.utc)
+        screen_share.ended_at = datetime.now(UTC)
         duration = screen_share.ended_at - screen_share.started_at
         screen_share.duration_seconds = int(duration.total_seconds())
 
@@ -431,7 +435,7 @@ class VideoConferenceService:
     # ============================================================
 
     async def start_recording(
-        self, session_id: UUID, title: Optional[str] = None
+        self, session_id: UUID, title: str | None = None
     ) -> SessionRecording:
         """Start session recording"""
         session = await self.get_session(session_id)
@@ -442,7 +446,7 @@ class VideoConferenceService:
             session_id=session_id,
             title=title or f"Recording: {session.title}",
             description=session.description,
-            started_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
             status=RecordingStatus.RECORDING,
         )
 
@@ -455,7 +459,7 @@ class VideoConferenceService:
         logger.info(f"Recording started: {recording.id}")
         return recording
 
-    async def stop_recording(self, recording_id: UUID) -> Optional[SessionRecording]:
+    async def stop_recording(self, recording_id: UUID) -> SessionRecording | None:
         """Stop recording"""
         query = select(SessionRecording).where(SessionRecording.id == recording_id)
         result = await self.db.execute(query)
@@ -464,7 +468,7 @@ class VideoConferenceService:
         if not recording:
             return None
 
-        recording.ended_at = datetime.now(timezone.utc)
+        recording.ended_at = datetime.now(UTC)
         recording.status = RecordingStatus.PROCESSING
 
         if recording.started_at:
@@ -500,7 +504,7 @@ class VideoConferenceService:
 
         if recording:
             recording.status = RecordingStatus.READY
-            recording.processing_completed_at = datetime.now(timezone.utc)
+            recording.processing_completed_at = datetime.now(UTC)
             recording.file_url = (
                 f"https://cdn.example.com/recordings/{recording_id}.mp4"
             )
@@ -509,7 +513,7 @@ class VideoConferenceService:
             )
             await self.db.commit()
 
-    async def get_session_recordings(self, session_id: UUID) -> List[SessionRecording]:
+    async def get_session_recordings(self, session_id: UUID) -> list[SessionRecording]:
         """Get all recordings for a session"""
         query = (
             select(SessionRecording)
@@ -532,7 +536,7 @@ class VideoConferenceService:
         session_id: UUID,
         user_id: UUID,
         message: str,
-        recipient_id: Optional[UUID] = None,
+        recipient_id: UUID | None = None,
     ) -> SessionChatMessage:
         """Send chat message in session"""
         chat_message = SessionChatMessage(
@@ -551,7 +555,7 @@ class VideoConferenceService:
 
     async def get_session_chat(
         self, session_id: UUID, limit: int = 100
-    ) -> List[SessionChatMessage]:
+    ) -> list[SessionChatMessage]:
         """Get chat messages for session"""
         query = (
             select(SessionChatMessage)
@@ -593,10 +597,10 @@ class VideoConferenceService:
 
         for participant in participants:
             if participant.joined_at:
-                duration = datetime.now(timezone.utc) - participant.joined_at
+                duration = datetime.now(UTC) - participant.joined_at
                 participant.duration_minutes = int(duration.total_seconds() / 60)
                 participant.is_present = False
-                participant.left_at = datetime.now(timezone.utc)
+                participant.left_at = datetime.now(UTC)
 
         await self.db.commit()
 
