@@ -221,6 +221,50 @@ semantic 503 when optional deps are unavailable — accepted under the GF22
 pattern. GF76 reasoning/decompose 404 is accepted as router-unwired semantic,
 matching the GF41 precedent.
 
+Wave 10 — eighth feature-inventory sweep (Session 145, 10 new tests, discovered 8 additional half-working features):
+
+Context: after Wave 9 the feature inventory still had ~460 uncovered write-path
+endpoints. Wave 10 probed a disjoint top-10 spanning league XP award, learning
+style questionnaire and behavioral-data submission, hybrid question generation,
+alternative solutions, MEB curriculum standard add, ADHD instant-feedback
+answer and performance, exam PDF report generate, and team challenges team
+create. 8 real bugs fell out — the largest single-wave haul yet.
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF80 | leagues/award-xp not 500 | League XP transaction + rate limiting write path | ✅ PASS |
+| GF81 | learning-style/questionnaire not 500 | **Bare `except Exception` swallowing HTTPException(403)**: `api/learning_style.py:248` caught the 403 from `verify_student_access` (test student has no `LearningPathStudentProfile` row — legit auth failure) and re-wrapped it as a generic 500. Same GF22/GF56/GF57/GF77 optional-dep propagation pattern, now at **sixth occurrence**. | ✅ PASS (fix: Session 145 — `except HTTPException: raise` guard before the generic exception) |
+| GF82 | learning-style/behavioral-data not 500 | **Bare `except Exception` swallowing HTTPException(403)** (identical to GF81 at `learning_style.py:189`). **Seventh occurrence** of the optional-dep propagation pattern. | ✅ PASS (fix: Session 145 — `except HTTPException: raise` guard) |
+| GF83 | questions/hybrid/generate not 500 | **Generic 500 for missing upstream dep**: `api/hybrid_question_generation.py` unconditionally called the LLM generator. When neither `ANTHROPIC_API_KEY` nor `OPENAI_API_KEY` is configured, the generator raised an inner error that the bare except at line 270 re-wrapped as a 500. Same class of bug as GF22/GF37/GF38 — the handler lacked a structured fallback. | ✅ PASS (fix: Session 145 — fail-fast 503 when neither API key is present, plus `except HTTPException: raise` guard) |
+| GF84 | questions/alternatives/solutions not 500 | Alternative solution write path (synthetic question_id → 404 expected) | ✅ PASS |
+| GF85 | curriculum/meb/standards not 500 | **`await` on async generator, not async function**: `api/curriculum_compliance.py:41` called `db_service = await get_database_service()`, but `get_database_service` is a FastAPI dependency-style `async def` with `yield` — i.e. an *async generator*, not a coroutine. `await` on a generator object raised `TypeError: object async_generator can't be used in 'await' expression` before the handler's try block even ran, so the handler's exception guard could not catch it. The outer 500 "Dahili sunucu hatasi" was Starlette's default middleware response, not the handler's own re-wrap. | ✅ PASS (fix: Session 145 — bypass the generator wrappers and resolve `db_manager` + `cache_manager` singletons directly from `core.database` / `core.cache`; this matches the Session 141 GF40 "enum `.upper()`" pattern where the bug was upstream of the handler's try/except, not inside it) |
+| GF86 | adhd-support/feedback/answer not 500 | **Sync `def` handler + async session + `get_db` sync shim (three-part trap)**: `api/instant_feedback_api.py` declared `def submit_answer_feedback(..., db: Session = Depends(get_db))`. `core.database.get_db` is a **DEPRECATED sync shim** that yields a `sqlalchemy.orm.Session` (see `core/database.py:415-449` — the docstring literally warns: *"Any `db: AsyncSession = Depends(get_db)` with an `await db.*` call will raise MissingGreenlet. Use `get_async_session`"*). The handler was using sync ORM calls (`db.query(...).filter(...).first()`) against the async engine's sync wrapper, but the underlying SQLAlchemy async driver still raised `greenlet_spawn has not been called` at the commit step because the engine was an async engine. Same GF7wA/GF8wA class bug from Wave 2, with an extra twist: just converting the handler to `async def` is **not enough** — you must *also* swap `get_db` → `get_async_session`, otherwise the FastAPI dependency still hands back a sync `Session` and the new `await db.execute(...)` calls explode with `MissingGreenlet`. | ✅ PASS (fix: Session 145 — all four handlers in the file converted to `async def`, `db.query(...).filter(...).first()` rewritten as `await db.execute(select(...))` + `scalar_one_or_none()`, `db.commit()` → `await db.commit()`, **and** the dependency swapped from `Depends(get_db)` to `Depends(get_async_session)`) |
+| GF87 | adhd-support/feedback/performance not 500 | Identical to GF86 — same file, same three-part trap. | ✅ PASS (fix: Session 145 — same rewrite) |
+| GF88 | reports/exam/generate-pdf not 500 | **Bare `except Exception` swallowing HTTPException(404)** (identical to GF81/82 but at `api/advanced_reports.py` `generate_pdf_report`): the handler called `session_to_sinav_sonucu(sinav_id)` which raises `HTTPException(404)` for synthetic sinav IDs. The bare except caught the 404 and re-wrapped it as 500. **Eighth occurrence** of the optional-dep propagation pattern. | ✅ PASS (fix: Session 145 — `except HTTPException: raise` guard) |
+| GF89 | challenges/teams/create not 500 | **Relative import beyond top-level package**: `api/team_challenges_api.py:36,50,72` declared `from ..services.team_challenges import TeamChallengeManager`. The `backend` package is the top-level at runtime, so `..` walked past the package root and raised `ImportError: attempted relative import beyond top-level package`. Compounded by a second bug: the service module had been moved to `services/_deprecated/team_challenges.py` during an earlier cleanup but the API was never updated. Also the handlers did `int(current_user.id)` on a UUID string — guaranteed `ValueError`. | ✅ PASS (fix: Session 145 — absolute `from services._deprecated.team_challenges import TeamChallengeManager` on all 5 call sites + `user_id = str(current_user.id)` since the dataclass type hints are not enforced at runtime) |
+
+**Current distribution (Session 145):** 106 tests → **104 PASS, 0 FAIL, 2 SKIP**.
+
+Wave 10 produced the largest single-wave bug count to date (8/10 probes caught
+real bugs, a 80% hit rate vs ~30% average across Waves 1-9). The headline is
+that the **optional-dep / bare-`except Exception` re-wrap anti-pattern is now
+at eight confirmed occurrences** (GF22/GF56/GF57/GF77/GF81/GF82/GF88 and, if
+you count the fail-fast in GF83, nine). This is no longer a scattered set of
+bugs — it is a systemic KIRO2 handler style. Every handler that has a generic
+`try: ... except Exception: raise HTTPException(500, ...)` must have
+`except HTTPException: raise` immediately before the generic catch, otherwise
+any inner 4xx/503 is silently promoted to a crash. Treat this as a merge-
+block rule for new API code: the CI gate here is the enforcement mechanism.
+
+The second surprise was GF86/GF87 — the `get_db` sync shim is *actively
+hostile* to the async FastAPI handler pattern that most of the rest of the
+codebase uses. The core/database.py docstring spells this out, but the shim
+still exists as a compatibility bridge for ~98 legacy call sites (see Session
+137 `audit_db_dependency.py` gate). Any handler whose dependency reads
+`db: AsyncSession = Depends(get_db)` is a latent MissingGreenlet, waiting for
+the first `await db.*` call to surface it. Wave 10 added two of these to the
+confirmed-broken list; there are likely more in the tech-debt queue.
+
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
 Marker: `@pytest.mark.golden_flow`

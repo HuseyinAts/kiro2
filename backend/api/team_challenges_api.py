@@ -33,9 +33,10 @@ async def create_team(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Yeni bir takim olusturur ve kullaniciyi takim lideri olarak atar."""
-    from ..services.team_challenges import TeamChallengeManager
+    from services._deprecated.team_challenges import TeamChallengeManager
 
-    user_id = int(current_user.id)
+    # current_user.id is a UUID string; dataclasses don't enforce int typing at runtime
+    user_id = str(current_user.id)
     manager = TeamChallengeManager()
     team = manager.create_team(request.team_name, user_id)
 
@@ -53,9 +54,9 @@ async def create_quiz_battle(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Yeni bir quiz savasi odasi olusturur. Oda kodu ile diger kullanicilar katilabilir."""
-    from ..services.team_challenges import TeamChallengeManager
+    from services._deprecated.team_challenges import TeamChallengeManager
 
-    host_id = int(current_user.id)
+    host_id = str(current_user.id)
     manager = TeamChallengeManager()
     battle = manager.create_quiz_battle(
         host_id=host_id, topic=request.topic, max_participants=request.max_participants
@@ -75,9 +76,9 @@ async def join_quiz_battle(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Oda kodu ile mevcut bir quiz savasina katilir."""
-    from ..services.team_challenges import TeamChallengeManager
+    from services._deprecated.team_challenges import TeamChallengeManager
 
-    user_id = int(current_user.id)
+    user_id = str(current_user.id)
     manager = TeamChallengeManager()
 
     # Find battle by room code
@@ -105,7 +106,7 @@ async def join_quiz_battle(
 @router.get("/battles/{battle_id}/leaderboard")
 async def get_battle_leaderboard(battle_id: str):
     """Belirli bir quiz savasinin skor tablosunu dondurur."""
-    from ..services.team_challenges import TeamChallengeManager
+    from services._deprecated.team_challenges import TeamChallengeManager
 
     manager = TeamChallengeManager()
     battle = manager.battles.get(battle_id)
@@ -119,7 +120,7 @@ async def get_battle_leaderboard(battle_id: str):
 @router.get("/teams/leaderboard")
 async def get_team_leaderboard(limit: int = 10):
     """Tum takimlarin genel siralamasini puan ve kazanilan yarisma sayisina gore dondurur."""
-    from ..services.team_challenges import TeamChallengeManager
+    from services._deprecated.team_challenges import TeamChallengeManager
 
     manager = TeamChallengeManager()
     teams = manager.get_team_leaderboard(limit)

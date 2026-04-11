@@ -12,8 +12,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
 from core.database import get_async_session
+from core.dependencies import (
+    get_current_user,  # fixed: was auth_dependencies (no blacklist)
+)
 from core.structured_logger import get_logger
 from models.database import User
 
@@ -22,7 +24,9 @@ from services.hybrid_question_generator import HybridQuestionGenerator
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/v1/questions/hybrid", tags=["Hybrid Question Generation"])
+router = APIRouter(
+    prefix="/api/v1/questions/hybrid", tags=["Hybrid Question Generation"]
+)
 
 
 # ==================== REQUEST/RESPONSE MODELS ====================
@@ -117,11 +121,21 @@ async def generate_hybrid_question(
     }
     ```
     """
-    import time
     import os
+    import time
+
     from sqlalchemy import text
 
     start_time = time.time()
+
+    # Fail fast with a structured 503 when the upstream LLM dependency is
+    # missing. Without this, the generator raises deep inside and the bare
+    # except at the bottom re-wraps as a generic 500 (GF22/GF56/GF57 pattern).
+    if not os.getenv("ANTHROPIC_API_KEY") and not os.getenv("OPENAI_API_KEY"):
+        raise HTTPException(
+            status_code=503,
+            detail="Hibrit soru üretimi şu an kullanılamıyor (LLM API key yapılandırılmamış).",
+        )
 
     try:
         # Load ÖSYM reference questions if Wave 2B is enabled
@@ -267,6 +281,10 @@ async def generate_hybrid_question(
             quality_metrics=quality_metrics,
         )
 
+    except HTTPException:
+        # Propagate 400/503 raised above (and any inner HTTPException) as-is;
+        # bare except previously re-wrapped them as 500 (GF22/GF77 pattern).
+        raise
     except Exception as e:
         logger.error(
             f"Hybrid question generation error: {e}",
@@ -303,8 +321,9 @@ async def generate_bulk_hybrid_questions(
 
     **Returns**: 15 soru (5 x 3 topic)
     """
-    import time
     import os
+    import time
+
     from sqlalchemy import text
 
     start_time = time.time()
@@ -371,7 +390,9 @@ async def generate_bulk_hybrid_questions(
                     all_questions.append(question)
 
                 except Exception as e:
-                    logger.error(f"Failed to generate question {i+1} for {topic}: {e}")
+                    logger.error(
+                        f"Failed to generate question {i + 1} for {topic}: {e}"
+                    )
                     continue
 
             topic_results[topic] = {
@@ -419,7 +440,8 @@ async def generate_bulk_hybrid_questions(
     except Exception as e:
         logger.error(f"Bulk generation error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 

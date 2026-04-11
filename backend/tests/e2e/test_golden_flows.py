@@ -3168,3 +3168,309 @@ def test_gf79_elasticsearch_questions_search_not_500(client: httpx.Client):
         f"{resp.text[:300]}. 503 is acceptable when ES unavailable "
         f"(GF22 pattern). Check api/elasticsearch.py."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 10 — Golden Flow sweep GF80-GF89 (Session 144)
+# ---------------------------------------------------------------------------
+# Disjoint top-10 from docs/audits/2026-04-11_feature-inventory.md after
+# Wave 9. Targets: league XP award, learning-style questionnaire + behavioral
+# data, hybrid question generation, alternative solutions, MEB curriculum
+# standard, ADHD instant-feedback answer + performance, exam PDF report,
+# team challenges create. All probes assert `status_code != 500` — semantic
+# 4xx/404/503 are acceptable, only 500 is a crash regression.
+
+
+def test_gf80_leagues_award_xp_not_500(client: httpx.Client):
+    """
+    POST /api/v1/leagues/award-xp must not crash.
+
+    Probes the league XP award write path. A 500 means the league
+    service, XP transaction persist, or rate-limit plumbing broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/leagues/award-xp",
+        headers=_auth_headers(token),
+        json={
+            "xp_amount": 50,
+            "source": "gf80_probe",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF80 leagues/award-xp crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/league_api.py award_xp."
+    )
+
+
+def test_gf81_learning_style_questionnaire_not_500(client: httpx.Client):
+    """
+    POST /api/v1/learning-style/questionnaire/{student_id} must not crash.
+
+    Probes the VARK questionnaire write path. A 500 means the VARK
+    score calculation, LearningPathStudentProfile update, or DB
+    commit broke.
+    """
+    token = _login(client, STUDENT)
+    # student_id taken from /auth/me since the handler does verify_student_access
+    me = client.get("/api/v1/auth/me", headers=_auth_headers(token)).json()
+    user = me.get("user") or me.get("kullanici") or me
+    student_id = str(user.get("id") or user.get("user_id") or "gf81-probe")
+    resp = client.post(
+        f"/api/v1/learning-style/questionnaire/{student_id}",
+        headers=_auth_headers(token),
+        json={
+            "student_id": student_id,
+            "questionnaire_type": "VARK",
+            "responses": {
+                "q1": "visual",
+                "q2": "auditory",
+                "q3": "reading",
+                "q4": "kinesthetic",
+                "q5": "visual",
+            },
+            "completion_time": 3.5,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF81 learning-style/questionnaire crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/learning_style.py submit_questionnaire."
+    )
+
+
+def test_gf82_learning_style_behavioral_data_not_500(client: httpx.Client):
+    """
+    POST /api/v1/learning-style/behavioral-data/{student_id} must not crash.
+
+    Probes the behavioral-data write path. A 500 means the
+    LearningStyleService.update_behavioral_data call, profile
+    recalculation, or DB commit broke.
+    """
+    token = _login(client, STUDENT)
+    me = client.get("/api/v1/auth/me", headers=_auth_headers(token)).json()
+    user = me.get("user") or me.get("kullanici") or me
+    student_id = str(user.get("id") or user.get("user_id") or "gf82-probe")
+    resp = client.post(
+        f"/api/v1/learning-style/behavioral-data/{student_id}",
+        headers=_auth_headers(token),
+        json={
+            "student_id": student_id,
+            "video_watch_time": 15.0,
+            "text_reading_time": 10.0,
+            "interactive_engagement": 5.0,
+            "quiz_completion_rate": 0.8,
+            "note_taking_frequency": 3,
+            "question_asking_frequency": 2,
+            "peer_interaction_count": 1,
+            "help_seeking_behavior": 1,
+            "visual_content_performance": 0.75,
+            "auditory_content_performance": 0.65,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF82 learning-style/behavioral-data crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/learning_style.py update_behavioral_data."
+    )
+
+
+def test_gf83_hybrid_question_generate_not_500(client: httpx.Client):
+    """
+    POST /api/v1/questions/hybrid/generate must not crash.
+
+    Probes the hybrid AI question-generation write path. The handler
+    calls an upstream LLM (claude provider); 503 is acceptable when
+    the optional provider key/model is unavailable (GF22 pattern),
+    and upstream timeout is acceptable as a skip (GF24 pattern).
+    """
+    token = _login(client, STUDENT)
+    try:
+        resp = client.post(
+            "/api/v1/questions/hybrid/generate",
+            headers=_auth_headers(token),
+            json={
+                "subject": "Matematik",
+                "topic": "Turev",
+                "difficulty": "orta",
+                "exam_type": "TYT",
+                "method": "osym_guided",
+                "provider": "claude",
+                "validate": False,
+                "enable_wave2b": False,
+            },
+        )
+    except httpx.ReadTimeout:
+        pytest.skip("GF83 upstream LLM timeout — state-dependent")
+    assert resp.status_code != 500, (
+        f"GF83 questions/hybrid/generate crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 503 is acceptable when provider key "
+        f"missing (GF22 pattern). Check api/hybrid_question_generation.py."
+    )
+
+
+def test_gf84_questions_alternatives_add_not_500(client: httpx.Client):
+    """
+    POST /api/v1/questions/alternatives/{question_id}/solutions must not crash.
+
+    Probes the alternative-solution add write path. Synthetic question
+    id is expected to return 404 — only 500 is a regression.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/questions/alternatives/gf84-probe-question/solutions",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF84 probe cozumu",
+            "category": "klasik",
+            "difficulty": "orta",
+            "estimated_time_seconds": 120,
+            "steps": [
+                {
+                    "step_number": 1,
+                    "description": "Denklemi tanimla",
+                },
+                {
+                    "step_number": 2,
+                    "description": "Degiskenleri cozumleyerek bul",
+                },
+            ],
+            "created_by_type": "student",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF84 questions/alternatives/solutions crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 404 acceptable for synthetic question_id. "
+        f"Check api/alternative_solutions_api.py add_alternative_solution."
+    )
+
+
+def test_gf85_curriculum_meb_standards_add_not_500(client: httpx.Client):
+    """
+    POST /api/v1/curriculum/meb/standards must not crash.
+
+    Probes the MEB curriculum standard add write path. A 500 means
+    the CurriculumComplianceSystem.add_meb_standard pipeline, cache
+    service init, or database service init broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/curriculum/meb/standards",
+        headers=_auth_headers(token),
+        json={
+            "id": "gf85-probe-standard",
+            "subject": "matematik",
+            "grade_level": "12",
+            "unit_name": "Turev",
+            "topic_name": "Turevin Geometrik Yorumu",
+            "learning_outcomes": ["Turev kavramini aciklar"],
+            "key_concepts": ["limit", "tegent"],
+            "skills": ["hesaplama"],
+            "duration_hours": 6,
+            "prerequisites": [],
+            "assessment_criteria": [],
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF85 curriculum/meb/standards crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/curriculum_compliance.py add_meb_standard."
+    )
+
+
+def test_gf86_adhd_feedback_answer_not_500(client: httpx.Client):
+    """
+    POST /api/v1/adhd-support/feedback/answer must not crash.
+
+    Probes the instant-feedback answer write path. The handler is
+    declared as sync `def` with a `Session = Depends(get_db)` — this
+    is the same GF7wA/GF8wA pattern (Wave 2) that crashed earlier
+    read endpoints with MissingGreenlet because KIRO2 uses AsyncSession.
+    If this fires, the fix is to convert the handler to async + use
+    the async `get_db_session_context` OR keep it sync but ensure
+    the dependency returns a real sync Session.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/adhd-support/feedback/answer",
+        headers=_auth_headers(token),
+        json={
+            "is_correct": True,
+            "question_id": "gf86-probe-question",
+            "subject": "matematik",
+            "difficulty": "orta",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF86 adhd-support/feedback/answer crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Sync handler + async session is a "
+        f"GF7wA/GF8wA-class bug. Check api/instant_feedback_api.py."
+    )
+
+
+def test_gf87_adhd_feedback_performance_not_500(client: httpx.Client):
+    """
+    POST /api/v1/adhd-support/feedback/performance must not crash.
+
+    Sibling of GF86 — probes the performance-record write path in
+    the same instant_feedback_api.py module. Same sync-handler /
+    async-session risk applies.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/adhd-support/feedback/performance",
+        headers=_auth_headers(token),
+        json={
+            "score": 85,
+            "questions_answered": 10,
+            "correct_answers": 8,
+            "subject": "matematik",
+            "difficulty": "orta",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF87 adhd-support/feedback/performance crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Sync handler + async session is a "
+        f"GF7wA/GF8wA-class bug. Check api/instant_feedback_api.py."
+    )
+
+
+def test_gf88_reports_exam_generate_pdf_not_500(client: httpx.Client):
+    """
+    POST /api/v1/reports/exam/{sinav_id}/generate-pdf must not crash.
+
+    Probes the advanced-exam-report PDF generation write path with a
+    synthetic sinav_id. 404 "Sınav sonucu bulunamadı" is the expected
+    happy-path reject; only 500 is a crash regression.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/reports/exam/gf88-probe-sinav-id/generate-pdf",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF88 reports/exam/generate-pdf crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 404 acceptable for synthetic sinav_id. "
+        f"Check api/advanced_reports.py generate_pdf_report."
+    )
+
+
+def test_gf89_team_challenges_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/challenges/teams/create must not crash.
+
+    Probes the team-challenge create write path. The handler does a
+    late `from ..services.team_challenges import TeamChallengeManager`
+    — if that relative import is stale the router load or call will
+    blow up. 404/503 acceptable, only 500 is a regression.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/challenges/teams/create",
+        headers=_auth_headers(token),
+        json={
+            "team_name": "GF89 Probe Team",
+            "is_public": True,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF89 challenges/teams/create crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/team_challenges_api.py create_team."
+    )

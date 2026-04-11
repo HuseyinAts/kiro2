@@ -260,6 +260,10 @@ async def generate_pdf_report(
             "download_url": f"/api/v1/reports/download/{pdf_filename}",
         }
 
+    except HTTPException:
+        # Propagate 404 from get_advanced_exam_report (sinav not found) as-is;
+        # bare except previously re-wrapped it as 500 (GF22/GF77 pattern).
+        raise
     except Exception as e:
         logger.error(f"PDF oluşturma hatası - Sınav: {sinav_id}, Hata: {e!s}")
         raise HTTPException(

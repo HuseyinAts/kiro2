@@ -2,14 +2,15 @@
 VARK + Felder-Silverman Hibrit Öğrenme Stili API Endpoints
 64 farklı öğrenme profili yönetimi
 """
+
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_db, get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from core.learning_path_auth import verify_student_access
 from models.learning_path_models import LearningPathStudentProfile
 from models.learning_style import BehavioralData, QuestionnaireResponse
@@ -24,7 +25,7 @@ router = APIRouter(prefix="/api/v1/learning-style", tags=["Öğrenme Stili"])
 learning_style_service = LearningStyleService()
 
 
-@router.get("/detect/{student_id}", response_model=Dict[str, Any])
+@router.get("/detect/{student_id}", response_model=dict[str, Any])
 async def detect_learning_style(
     student_id: str,
     force_recalculation: bool = Query(False, description="Zorla yeniden hesaplama"),
@@ -52,33 +53,41 @@ async def detect_learning_style(
             return {
                 "success": True,
                 "data": profile,
-                "message": f"Öğrenme stili tespit edildi",
+                "message": "Öğrenme stili tespit edildi",
             }
 
         # Legacy typed object support (backward compat)
         return {
             "success": True,
             "data": {
-                "student_id": getattr(profile, 'student_id', student_id),
-                "hybrid_code": getattr(profile, 'hybrid_code', 'V-Act-Sen-Vis-Seq'),
+                "student_id": getattr(profile, "student_id", student_id),
+                "hybrid_code": getattr(profile, "hybrid_code", "V-Act-Sen-Vis-Seq"),
                 "vark_profile": {
-                    "visual": getattr(getattr(profile, 'vark_profile', None), 'visual', 0.25),
-                    "auditory": getattr(getattr(profile, 'vark_profile', None), 'auditory', 0.25),
-                    "reading": getattr(getattr(profile, 'vark_profile', None), 'reading', 0.25),
-                    "kinesthetic": getattr(getattr(profile, 'vark_profile', None), 'kinesthetic', 0.25),
+                    "visual": getattr(
+                        getattr(profile, "vark_profile", None), "visual", 0.25
+                    ),
+                    "auditory": getattr(
+                        getattr(profile, "vark_profile", None), "auditory", 0.25
+                    ),
+                    "reading": getattr(
+                        getattr(profile, "vark_profile", None), "reading", 0.25
+                    ),
+                    "kinesthetic": getattr(
+                        getattr(profile, "vark_profile", None), "kinesthetic", 0.25
+                    ),
                     "dominant": "visual",
                 },
                 "confidence": {
-                    "score": getattr(profile, 'confidence_score', 0.3),
+                    "score": getattr(profile, "confidence_score", 0.3),
                     "level": "low",
                 },
-                "data_points_used": getattr(profile, 'data_points_used', 0),
+                "data_points_used": getattr(profile, "data_points_used", 0),
             },
-            "message": f"Öğrenme stili tespit edildi",
+            "message": "Öğrenme stili tespit edildi",
         }
 
     except Exception as e:
-        logger.error(f"Öğrenme stili tespiti hatası: {str(e)}")
+        logger.error(f"Öğrenme stili tespiti hatası: {e!s}")
         # Return default low-confidence profile instead of 500
         # This allows the frontend quiz flow to work properly
         return {
@@ -94,7 +103,7 @@ async def detect_learning_style(
         }
 
 
-@router.get("/recommendations/{student_id}", response_model=Dict[str, Any])
+@router.get("/recommendations/{student_id}", response_model=dict[str, Any])
 async def get_content_recommendations(
     student_id: str,
     subject_area: str = Query("matematik", description="Konu alanı"),
@@ -141,13 +150,13 @@ async def get_content_recommendations(
         }
 
     except Exception as e:
-        logger.error(f"İçerik önerisi hatası: {str(e)}")
+        logger.error(f"İçerik önerisi hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.post("/behavioral-data/{student_id}", response_model=Dict[str, Any])
+@router.post("/behavioral-data/{student_id}", response_model=dict[str, Any])
 async def update_behavioral_data(
     student_id: str,
     behavioral_data: BehavioralData,
@@ -179,21 +188,24 @@ async def update_behavioral_data(
                 },
                 "message": "Öğrenme stili güncellendi",
             }
-        else:
-            return {
-                "success": True,
-                "data": {"profile_updated": False, "data_recorded": True},
-                "message": "Davranışsal veri kaydedildi, profil değişikliği yok",
-            }
+        return {
+            "success": True,
+            "data": {"profile_updated": False, "data_recorded": True},
+            "message": "Davranışsal veri kaydedildi, profil değişikliği yok",
+        }
 
+    except HTTPException:
+        # Propagate auth/validation errors (e.g. 403 from verify_student_access)
+        # as-is; bare except previously re-wrapped them as 500 (GF22/GF77 pattern).
+        raise
     except Exception as e:
-        logger.error(f"Davranışsal veri güncelleme hatası: {str(e)}")
+        logger.error(f"Davranışsal veri güncelleme hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.post("/questionnaire/{student_id}", response_model=Dict[str, Any])
+@router.post("/questionnaire/{student_id}", response_model=dict[str, Any])
 async def submit_questionnaire(
     student_id: str,
     questionnaire_response: QuestionnaireResponse,
@@ -215,7 +227,9 @@ async def submit_questionnaire(
         # VARK skorlarını hesapla ve profil güncelle (DB persist)
         # NOTE: questionnaire_cache/profiles_cache removed — service refactored to DB-only
         vark_scores = _calculate_vark_scores(questionnaire_response)
-        dominant_style = max(vark_scores, key=vark_scores.get) if vark_scores else "mixed"
+        dominant_style = (
+            max(vark_scores, key=vark_scores.get) if vark_scores else "mixed"
+        )
 
         result = await db.execute(
             select(LearningPathStudentProfile).where(
@@ -231,7 +245,9 @@ async def submit_questionnaire(
             profile.vark_reading_score = vark_scores.get("reading", 0.0)
             profile.vark_kinesthetic_score = vark_scores.get("kinesthetic", 0.0)
             await db.commit()
-            logger.info(f"VARK skorları DB'ye kaydedildi: {student_id} → {dominant_style}")
+            logger.info(
+                f"VARK skorları DB'ye kaydedildi: {student_id} → {dominant_style}"
+            )
 
         return {
             "success": True,
@@ -245,12 +261,18 @@ async def submit_questionnaire(
             "message": "Anket yanıtları kaydedildi",
         }
 
+    except HTTPException:
+        # Propagate auth/validation errors (e.g. 403 from verify_student_access)
+        # as-is; bare except previously re-wrapped them as 500 (GF22/GF77 pattern).
+        raise
     except Exception as e:
-        logger.error(f"Anket kaydetme hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        logger.error(f"Anket kaydetme hatası: {e!s}")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
-def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
+def _calculate_vark_scores(response: QuestionnaireResponse) -> dict[str, float]:
     """VARK anket yanıtlarından 0-1 arası skorlar hesapla.
 
     Frontend format: {question_id: style_key} — e.g. {"q1": "visual", "q2": "auditory"}
@@ -269,7 +291,9 @@ def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
     elif isinstance(responses, list):
         # List format: [{answer: style}] — legacy/alternative
         for r in responses:
-            style = r.get("answer", "").lower() if isinstance(r, dict) else str(r).lower()
+            style = (
+                r.get("answer", "").lower() if isinstance(r, dict) else str(r).lower()
+            )
             if style in counts:
                 counts[style] += 1
                 total += 1
@@ -280,7 +304,7 @@ def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
     return {k: round(v / total, 3) for k, v in counts.items()}
 
 
-@router.get("/explanation/{student_id}", response_model=Dict[str, Any])
+@router.get("/explanation/{student_id}", response_model=dict[str, Any])
 async def get_learning_style_explanation(
     student_id: str,
     db: AsyncSession = Depends(get_db),
@@ -304,13 +328,13 @@ async def get_learning_style_explanation(
         }
 
     except Exception as e:
-        logger.error(f"Açıklama hatası: {str(e)}")
+        logger.error(f"Açıklama hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.get("/hybrid-codes", response_model=Dict[str, Any])
+@router.get("/hybrid-codes", response_model=dict[str, Any])
 async def get_all_hybrid_codes():
     """
     Tüm 64 hibrit kod ve açıklamalarını döndür
@@ -330,13 +354,13 @@ async def get_all_hybrid_codes():
         }
 
     except Exception as e:
-        logger.error(f"Hibrit kodlar hatası: {str(e)}")
+        logger.error(f"Hibrit kodlar hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.get("/statistics", response_model=Dict[str, Any])
+@router.get("/statistics", response_model=dict[str, Any])
 async def get_learning_style_statistics():
     """
     Öğrenme stili istatistikleri
@@ -353,13 +377,13 @@ async def get_learning_style_statistics():
         }
 
     except Exception as e:
-        logger.error(f"İstatistik hatası: {str(e)}")
+        logger.error(f"İstatistik hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.get("/export/{student_id}", response_model=Dict[str, Any])
+@router.get("/export/{student_id}", response_model=dict[str, Any])
 async def export_learning_profile(
     student_id: str,
     db: AsyncSession = Depends(get_db),
@@ -381,14 +405,14 @@ async def export_learning_profile(
         }
 
     except Exception as e:
-        logger.error(f"Dışa aktarma hatası: {str(e)}")
+        logger.error(f"Dışa aktarma hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
 @router.get(
-    "/content-explanation/{hybrid_code}/{content_type}", response_model=Dict[str, Any]
+    "/content-explanation/{hybrid_code}/{content_type}", response_model=dict[str, Any]
 )
 async def get_content_explanation(hybrid_code: str, content_type: str):
     """
@@ -414,16 +438,16 @@ async def get_content_explanation(hybrid_code: str, content_type: str):
         }
 
     except Exception as e:
-        logger.error(f"İçerik açıklaması hatası: {str(e)}")
+        logger.error(f"İçerik açıklaması hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.post("/update-recommendations/{student_id}", response_model=Dict[str, Any])
+@router.post("/update-recommendations/{student_id}", response_model=dict[str, Any])
 async def update_recommendations_based_on_performance(
     student_id: str,
-    performance_data: Dict[str, float],
+    performance_data: dict[str, float],
     db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
@@ -465,27 +489,32 @@ async def update_recommendations_based_on_performance(
         }
 
     except Exception as e:
-        logger.error(f"Performans tabanlı güncelleme hatası: {str(e)}")
+        logger.error(f"Performans tabanlı güncelleme hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
 # Sağlık kontrolü endpoint'i
-@router.get("/health", response_model=Dict[str, Any])
+@router.get("/health", response_model=dict[str, Any])
 async def health_check():
     """
     Hibrit öğrenme stili sistemi sağlık kontrolü
     """
     try:
         # Sistem durumu kontrolü (cache attributes removed after DB-only refactor)
-        total_profiles = len(getattr(learning_style_service, 'profiles_cache', {}))
+        total_profiles = len(getattr(learning_style_service, "profiles_cache", {}))
         total_behavioral_data = sum(
-            len(data) for data in getattr(learning_style_service, 'behavioral_data_cache', {}).values()
+            len(data)
+            for data in getattr(
+                learning_style_service, "behavioral_data_cache", {}
+            ).values()
         )
         total_questionnaires = sum(
             len(responses)
-            for responses in getattr(learning_style_service, 'questionnaire_cache', {}).values()
+            for responses in getattr(
+                learning_style_service, "questionnaire_cache", {}
+            ).values()
         )
 
         return {
@@ -503,7 +532,7 @@ async def health_check():
         }
 
     except Exception as e:
-        logger.error(f"Sağlık kontrolü hatası: {str(e)}")
+        logger.error(f"Sağlık kontrolü hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

@@ -2,18 +2,18 @@
 Task 92: Instant Feedback API
 DEHB için anında geri bildirim sistemi
 """
-from datetime import datetime, timedelta, timezone
-from typing import List, Dict
+
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db
 from core.dependencies import get_current_user
-from models.database import User
-from models.streak_tracking import StreakTracking, PerformanceHistory
 from core.structured_logger import get_logger
+from models.database import User
+from models.streak_tracking import PerformanceHistory, StreakTracking
 
 logger = get_logger(__name__)
 router = APIRouter(
@@ -53,19 +53,18 @@ class PerformanceRecordRequest(BaseModel):
 
 
 # Endpoints
-@router.post("/answer", response_model=Dict)
-def submit_answer_feedback(
+@router.post("/answer", response_model=dict)
+async def submit_answer_feedback(
     request: AnswerFeedbackRequest,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Cevap geri bildirimi - seri ve performans güncelleme"""
     try:
-        streak = (
-            db.query(StreakTracking)
-            .filter(StreakTracking.user_id == current_user.id)
-            .first()
+        result = await db.execute(
+            select(StreakTracking).where(StreakTracking.user_id == current_user.id)
         )
+        streak = result.scalar_one_or_none()
 
         if not streak:
             streak = StreakTracking(
@@ -80,13 +79,12 @@ def submit_answer_feedback(
         if request.is_correct:
             old_streak = streak.current_streak
             streak.current_streak += 1
-            streak.last_correct_answer = datetime.now(timezone.utc)
+            streak.last_correct_answer = datetime.now(UTC)
 
             if streak.current_streak == 1:
-                streak.streak_start_date = datetime.now(timezone.utc)
+                streak.streak_start_date = datetime.now(UTC)
 
-            if streak.current_streak > streak.best_streak:
-                streak.best_streak = streak.current_streak
+            streak.best_streak = max(streak.best_streak, streak.current_streak)
 
             # Check milestones
             for milestone in MILESTONES:
@@ -102,7 +100,7 @@ def submit_answer_feedback(
             streak.current_streak = 0
             streak.streak_start_date = None
 
-        db.commit()
+        await db.commit()
 
         multiplier = (
             1.0 + (streak.current_streak / 10) if streak.current_streak >= 5 else 1.0
@@ -120,22 +118,26 @@ def submit_answer_feedback(
             "points_multiplier": round(multiplier, 1),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to process answer feedback: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/streak", response_model=StreakResponse)
-def get_streak(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+async def get_streak(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Mevcut seri bilgisini getir"""
     try:
-        streak = (
-            db.query(StreakTracking)
-            .filter(StreakTracking.user_id == current_user.id)
-            .first()
+        result = await db.execute(
+            select(StreakTracking).where(StreakTracking.user_id == current_user.id)
         )
+        streak = result.scalar_one_or_none()
 
         if not streak:
             return StreakResponse(
@@ -153,24 +155,27 @@ def get_streak(
             multiplier=round(multiplier, 1),
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to get streak: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
-@router.post("/performance", response_model=Dict)
-def record_performance(
+@router.post("/performance", response_model=dict)
+async def record_performance(
     request: PerformanceRecordRequest,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Performans kaydı oluştur"""
     try:
-        streak = (
-            db.query(StreakTracking)
-            .filter(StreakTracking.user_id == current_user.id)
-            .first()
+        result = await db.execute(
+            select(StreakTracking).where(StreakTracking.user_id == current_user.id)
         )
+        streak = result.scalar_one_or_none()
 
         performance = PerformanceHistory(
             user_id=current_user.id,
@@ -183,34 +188,43 @@ def record_performance(
         )
 
         db.add(performance)
-        db.commit()
+        await db.commit()
+        await db.refresh(performance)
 
-        return {"success": True, "performance_id": str(performance.id), "score": request.score}
+        return {
+            "success": True,
+            "performance_id": str(performance.id),
+            "score": request.score,
+        }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to record performance: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
-@router.get("/performance/history", response_model=List[PerformanceDataPoint])
-def get_performance_history(
+@router.get("/performance/history", response_model=list[PerformanceDataPoint])
+async def get_performance_history(
     days: int = 7,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_session),
 ):
     """Performans geçmişini getir"""
     try:
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days)
 
-        performances = (
-            db.query(PerformanceHistory)
-            .filter(
+        result = await db.execute(
+            select(PerformanceHistory)
+            .where(
                 PerformanceHistory.user_id == current_user.id,
                 PerformanceHistory.recorded_at >= cutoff_date,
             )
             .order_by(PerformanceHistory.recorded_at)
-            .all()
         )
+        performances = result.scalars().all()
 
         # Calculate running average
         data = []
@@ -230,6 +244,10 @@ def get_performance_history(
 
         return data
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to get performance history: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )

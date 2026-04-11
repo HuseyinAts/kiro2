@@ -12,9 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from core.curriculum_compliance_system import CurriculumComplianceSystem
 from core.dependencies import (
     AuthenticatedUser,
-    get_cache_service,
     get_current_user,
-    get_database_service,
 )
 from models.curriculum import (
     CurriculumUpdateRequest,
@@ -35,12 +33,20 @@ curriculum_system = None
 
 
 async def get_curriculum_system():
-    """Curriculum Compliance System dependency"""
+    """Curriculum Compliance System dependency.
+
+    NOTE: `get_database_service` and `get_cache_service` are async generators
+    (FastAPI dependency-style `yield` functions). `await get_database_service()`
+    returns the generator object itself, not the yielded singleton, and crashes
+    with `TypeError: object async_generator can't be used in 'await' expression`.
+    Resolve the singletons directly from their modules instead.
+    """
     global curriculum_system
     if curriculum_system is None:
-        db_service = await get_database_service()
-        cache_service = await get_cache_service()
-        curriculum_system = CurriculumComplianceSystem(db_service, cache_service)
+        from core.cache import cache_manager
+        from core.database import db_manager
+
+        curriculum_system = CurriculumComplianceSystem(db_manager, cache_manager)
         await curriculum_system.initialize()
     return curriculum_system
 
@@ -77,6 +83,10 @@ async def add_meb_standard(
             status_code=400, detail="MEB standardı eklenirken hata oluştu"
         )
 
+    except HTTPException:
+        # Propagate 400 (above) and any inner HTTPException from the system
+        # as-is; bare except previously re-wrapped them as 500 (GF22/GF77 pattern).
+        raise
     except Exception as e:
         logger.error(f"MEB standardı ekleme API hatası: {e}")
         raise HTTPException(
