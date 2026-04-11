@@ -169,6 +169,22 @@ jobs:
           # Baseline: 0 risky blocks across backend/api/**/*.py.
           python scripts/audit_httpexception_guard.py --fail
 
+      - name: AST lint — Pydantic `user_id: int` type lie (rule-of-five)
+        working-directory: backend
+        run: |
+          # Session 148 CI gate (seventh linter in the family):
+          # Block any PR that adds a Pydantic BaseModel under backend/api/
+          # declaring `user_id: int`. KIRO2 auth returns AuthenticatedUser.id
+          # as a UUID string, so `Model(user_id=current_user.id, ...)` inside
+          # a handler raises pydantic.ValidationError — which bare `except
+          # Exception` handlers re-wrap as HTTPException(500), hiding the
+          # real cause. Confirmed 5 times across Waves 4/9/12 (GF20 x3 =
+          # AdhdPomodoroSessionResponse + InactivityAlert + FocusExerciseProgress,
+          # GF71 TaskResponse, GF107 VirtualBlockProgress + GeoGebraActivity +
+          # GeometryToolUsage + TangramPuzzle).
+          # Baseline: 0 risky Pydantic models under backend/api/**/*.py.
+          python scripts/audit_pydantic_user_id.py --fail
+
       - name: Run migrations
         working-directory: backend
         run: |
