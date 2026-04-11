@@ -16,8 +16,8 @@ Uses existing:
 
 import math
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import numpy as np
 from sqlalchemy import func, select
@@ -37,8 +37,14 @@ PRIOR_SD = 1.0
 
 # Subject-to-topic mapping for knowledge state
 SUBJECT_AREAS = [
-    "MATEMATIK", "FIZIK", "KIMYA", "BIYOLOJI",
-    "TURKCE", "TARIH", "COGRAFYA", "GEOMETRI",
+    "MATEMATIK",
+    "FIZIK",
+    "KIMYA",
+    "BIYOLOJI",
+    "TURKCE",
+    "TARIH",
+    "COGRAFYA",
+    "GEOMETRI",
 ]
 
 
@@ -50,7 +56,7 @@ def _normal_pdf(x: float, mu: float, sigma: float) -> float:
 class PlacementAssessment:
     """State for an in-progress placement assessment."""
 
-    def __init__(self, student_id: str, session_id: Optional[str] = None):
+    def __init__(self, student_id: str, session_id: str | None = None):
         self.session_id = session_id or str(uuid.uuid4())
         self.student_id = student_id
         self.model = FourParameterIRTModel()
@@ -65,7 +71,7 @@ class PlacementAssessment:
         self.responses: list[IRTResponse] = []
         self.answered_item_ids: list[str] = []
         self.items_pool: list[IRTItem] = []
-        self.started_at = datetime.now(timezone.utc)
+        self.started_at = datetime.now(UTC)
 
     @property
     def question_count(self) -> int:
@@ -93,7 +99,9 @@ class PlacementAssessment:
 
         # Prior contribution
         for i, theta in enumerate(THETA_GRID):
-            log_posterior[i] = math.log(max(_normal_pdf(theta, self.prior_mean, self.prior_sd), 1e-300))
+            log_posterior[i] = math.log(
+                max(_normal_pdf(theta, self.prior_mean, self.prior_sd), 1e-300)
+            )
 
         # Likelihood contribution from each response
         for resp in self.responses:
@@ -126,7 +134,7 @@ class PlacementAssessment:
         self.theta_se = se
         return self.theta_estimate, self.theta_se
 
-    def select_next_item(self) -> Optional[IRTItem]:
+    def select_next_item(self) -> IRTItem | None:
         """Select the most informative unanswered item."""
         return self.model.select_next_item_cat(
             current_theta=self.theta_estimate,
@@ -162,7 +170,7 @@ class PlacementAssessment:
         ci_width = 2 * 1.96 * self.theta_se
         if ci_width < 1.0:
             return "high"
-        elif ci_width < 2.0:
+        if ci_width < 2.0:
             return "medium"
         return "low"
 
@@ -171,10 +179,11 @@ class PlacementAssessment:
 # DB operations
 # ---------------------------------------------------------------------------
 
+
 async def load_assessment_items(
     *,
     db: AsyncSession,
-    subjects: Optional[list[str]] = None,
+    subjects: list[str] | None = None,
     max_per_subject: int = 50,
 ) -> list[IRTItem]:
     """Load IRT-calibrated questions from question_bank for the assessment pool.
@@ -183,20 +192,21 @@ async def load_assessment_items(
     """
     from models.question_bank import QuestionBankItem
 
-    query = (
-        select(QuestionBankItem)
-        .where(
-            QuestionBankItem.is_active == True,  # noqa: E712
-            QuestionBankItem.difficulty_level.isnot(None),
-        )
+    query = select(QuestionBankItem).where(
+        QuestionBankItem.is_active == True,  # noqa: E712
+        QuestionBankItem.difficulty_level.isnot(None),
     )
 
     if subjects:
-        query = query.where(QuestionBankItem.subject_area.in_([s.upper() for s in subjects]))
+        query = query.where(
+            QuestionBankItem.subject_area.in_([s.upper() for s in subjects])
+        )
 
     # Get a diverse sample: order by random, limit per subject
     # For simplicity, get a larger pool and filter
-    query = query.order_by(func.random()).limit(max_per_subject * len(subjects or SUBJECT_AREAS))
+    query = query.order_by(func.random()).limit(
+        max_per_subject * len(subjects or SUBJECT_AREAS)
+    )
 
     result = await db.execute(query)
     rows = result.scalars().all()
@@ -205,10 +215,22 @@ async def load_assessment_items(
     for q in rows:
         # Map difficulty_level string to IRT difficulty float
         difficulty_map = {
-            "COK_KOLAY": -2.0, "KOLAY": -1.0, "ORTA": 0.0,
-            "ZOR": 1.0, "COK_ZOR": 2.0,
+            "COK_KOLAY": -2.0,
+            "KOLAY": -1.0,
+            "ORTA": 0.0,
+            "ZOR": 1.0,
+            "COK_ZOR": 2.0,
         }
-        diff_str = getattr(q, "difficulty_level", "ORTA") or "ORTA"
+        # GF40 fix: ``difficulty_level`` is a ``QuestionDifficultyLevel`` enum
+        # on the ORM (via SQLAlchemy ``Enum``), not a plain str. Coerce to the
+        # underlying value — or fall back to the raw attribute — before string
+        # ops. ``str(enum)`` yields ``"QuestionDifficultyLevel.KOLAY"`` which is
+        # useless, so reach for ``.value`` first.
+        raw_diff = getattr(q, "difficulty_level", None)
+        if raw_diff is None:
+            diff_str = "ORTA"
+        else:
+            diff_str = str(getattr(raw_diff, "value", raw_diff))
         difficulty = difficulty_map.get(diff_str.upper().replace(" ", "_"), 0.0)
 
         try:
@@ -233,7 +255,7 @@ async def start_assessment(
     *,
     db: AsyncSession,
     student_id: str,
-    subjects: Optional[list[str]] = None,
+    subjects: list[str] | None = None,
 ) -> dict[str, Any]:
     """Start a new placement assessment session.
 
