@@ -93,6 +93,23 @@ jobs:
           # See docs/audits/2026-04-10_db-dependency-baseline.md
           python scripts/audit_db_dependency.py --fail-on-high
 
+      - name: AST lint — Missing-auth on write/compute endpoints
+        working-directory: backend
+        run: |
+          # Session 138/139 CI gate:
+          # Block any PR that introduces a new write/admin/compute endpoint
+          # without an authentication dependency. Catches three classes of
+          # silent regression:
+          #   - Category A: write/admin endpoints exposed anonymously (IDOR,
+          #     unauthorized DB mutations).
+          #   - Category B1: LLM/TTS/YouTube cost-abuse vectors (Gemini,
+          #     OpenAI, Claude, Qwen, gTTS, YouTube quota burn).
+          #   - Category B2: compute/search endpoints that touch the 77K
+          #     question bank or expensive NLP services anonymously.
+          # Legitimately public endpoints are allow-listed in
+          # PUBLIC_PATH_SUBSTRINGS at the top of the linter.
+          python scripts/audit_missing_auth.py --fail-on-high
+
       - name: Run migrations
         working-directory: backend
         run: |
