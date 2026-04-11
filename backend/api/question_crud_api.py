@@ -512,6 +512,7 @@ async def get_archived_questions(
 async def search_questions(
     request: QuestionSearchRequest,
     service: QuestionCRUDService = Depends(get_question_service),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Gelişmiş soru arama

@@ -3,7 +3,7 @@ Türkçe NLP API Endpoints
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -28,7 +28,7 @@ class MorphologyAnalysisResponse(BaseModel):
     """Morfolojik analiz yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
 
 
@@ -44,7 +44,7 @@ class TextNormalizationResponse(BaseModel):
     """Metin normalizasyon yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
 
 
@@ -60,14 +60,14 @@ class TextComplexityResponse(BaseModel):
     """Metin karmaşıklık analizi yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
 
 
 class BatchMorphologyRequest(BaseModel):
     """Toplu morfolojik analiz isteği"""
 
-    words: List[str] = Field(
+    words: list[str] = Field(
         ..., description="Analiz edilecek kelimeler", min_items=1, max_items=100
     )
 
@@ -76,12 +76,15 @@ class BatchMorphologyResponse(BaseModel):
     """Toplu morfolojik analiz yanıtı"""
 
     success: bool
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
     message: str
 
 
 @router.post("/morphology/analyze", response_model=MorphologyAnalysisResponse)
-async def analyze_morphology(request: MorphologyAnalysisRequest):
+async def analyze_morphology(
+    request: MorphologyAnalysisRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Kelimenin morfolojik analizini yap
 
@@ -111,10 +114,9 @@ async def analyze_morphology(request: MorphologyAnalysisRequest):
                     },
                     message="Morfolojik analiz başarıyla tamamlandı",
                 )
-            else:
-                return MorphologyAnalysisResponse(
-                    success=False, data=None, message="Kelime analiz edilemedi"
-                )
+            return MorphologyAnalysisResponse(
+                success=False, data=None, message="Kelime analiz edilemedi"
+            )
 
     except Exception as e:
         logger.error(f"Morfolojik analiz API hatası: {e}")
@@ -124,7 +126,10 @@ async def analyze_morphology(request: MorphologyAnalysisRequest):
 
 
 @router.post("/morphology/batch", response_model=BatchMorphologyResponse)
-async def batch_morphology_analysis(request: BatchMorphologyRequest):
+async def batch_morphology_analysis(
+    request: BatchMorphologyRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Birden fazla kelimenin morfolojik analizini yap
 
@@ -176,7 +181,10 @@ async def batch_morphology_analysis(request: BatchMorphologyRequest):
 
 
 @router.post("/text/normalize", response_model=TextNormalizationResponse)
-async def normalize_text(request: TextNormalizationRequest):
+async def normalize_text(
+    request: TextNormalizationRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Metni normalize et ve temizle
 
@@ -216,7 +224,10 @@ async def normalize_text(request: TextNormalizationRequest):
 
 
 @router.post("/text/complexity", response_model=TextComplexityResponse)
-async def analyze_text_complexity(request: TextComplexityRequest):
+async def analyze_text_complexity(
+    request: TextComplexityRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Metnin karmaşıklığını analiz et
 
@@ -325,7 +336,10 @@ async def get_word_complexity(word: str):
 
 
 @router.post("/text/clean")
-async def clean_text(request: dict):
+async def clean_text(
+    request: dict,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Metni temizle ve düzelt
 

@@ -181,6 +181,8 @@ PUBLIC_PATH_SUBSTRINGS = (
     "/analytics/web-vitals",
     "/telemetry/",
     "/errors/report",
+    # Public content browsing (makaleler, dersler — educational read path)
+    "/content/search",
 )
 
 

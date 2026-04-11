@@ -67,7 +67,6 @@ from api.schemas.learning_path_schemas import LearningPathCreateRequest
 from core.circuit_breaker import CircuitBreakerHalfOpenError, CircuitBreakerOpenError
 from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from core.learning_path_auth import (
-    get_current_user_optional,
     verify_student_access,
 )
 from core.learning_path_circuit_breakers import (
@@ -821,7 +820,7 @@ async def search_resources(
     request: Request,
     search: ResourceSearch,
     facade: LearningPathFacade = Depends(_get_facade),
-    current_user=Depends(get_current_user_optional),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> dict[str, Any]:
     """
     Eğitim kaynaklarını ara

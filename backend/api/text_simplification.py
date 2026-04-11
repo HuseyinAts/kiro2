@@ -81,7 +81,10 @@ class FleschScoreResponse(BaseModel):
 
 # Task 80.1: Karmaşık Kelime Tespiti Endpoint
 @router.post("/detect-complex-words", response_model=ComplexWordsResponse)
-async def detect_complex_words(request: ComplexWordsRequest):
+async def detect_complex_words(
+    request: ComplexWordsRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Metindeki karmaşık kelimeleri tespit et
 
@@ -135,7 +138,10 @@ async def detect_complex_words(request: ComplexWordsRequest):
 
 # Task 80.2 & 80.3 & 80.4: Tam Basitleştirme Endpoint
 @router.post("/simplify", response_model=SimplifyTextResponse)
-async def simplify_text(request: SimplifyTextRequest):
+async def simplify_text(
+    request: SimplifyTextRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Metni kapsamlı şekilde basitleştir
 
@@ -195,7 +201,10 @@ async def simplify_text(request: SimplifyTextRequest):
 
 # Task 80.4: Flesch-Kincaid Skoru Endpoint
 @router.post("/flesch-score", response_model=FleschScoreResponse)
-async def calculate_flesch_score(request: FleschScoreRequest):
+async def calculate_flesch_score(
+    request: FleschScoreRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Türkçe metin için Flesch-Kincaid okunabilirlik skorunu hesapla
 
@@ -226,9 +235,7 @@ async def calculate_flesch_score(request: FleschScoreRequest):
             "difficulty": flesch_result["difficulty"],
             "statistics": flesch_result["statistics"],
             "interpretation": {
-                "score_range": _get_score_range(
-                    flesch_result["flesch_reading_ease"]
-                ),
+                "score_range": _get_score_range(flesch_result["flesch_reading_ease"]),
                 "target_audience": _get_target_audience(
                     flesch_result["flesch_reading_ease"]
                 ),
@@ -254,36 +261,34 @@ def _get_score_range(score: float) -> str:
     """Skor aralığını belirle"""
     if score >= 90:
         return "90-100: Çok Kolay"
-    elif score >= 80:
+    if score >= 80:
         return "80-90: Kolay"
-    elif score >= 70:
+    if score >= 70:
         return "70-80: Oldukça Kolay"
-    elif score >= 60:
+    if score >= 60:
         return "60-70: Standart"
-    elif score >= 50:
+    if score >= 50:
         return "50-60: Oldukça Zor"
-    elif score >= 30:
+    if score >= 30:
         return "30-50: Zor"
-    else:
-        return "0-30: Çok Zor"
+    return "0-30: Çok Zor"
 
 
 def _get_target_audience(score: float) -> str:
     """Hedef kitleyi belirle"""
     if score >= 90:
         return "İlkokul 1-2. sınıf öğrencileri"
-    elif score >= 80:
+    if score >= 80:
         return "İlkokul 3-4. sınıf öğrencileri"
-    elif score >= 70:
+    if score >= 70:
         return "Ortaokul 5-6. sınıf öğrencileri"
-    elif score >= 60:
+    if score >= 60:
         return "Ortaokul 7-8. sınıf öğrencileri"
-    elif score >= 50:
+    if score >= 50:
         return "Lise 9-10. sınıf öğrencileri"
-    elif score >= 30:
+    if score >= 30:
         return "Lise 11-12. sınıf öğrencileri"
-    else:
-        return "Üniversite öğrencileri ve yetişkinler"
+    return "Üniversite öğrencileri ve yetişkinler"
 
 
 def _get_readability_recommendations(flesch_result: dict) -> list:
@@ -341,6 +346,6 @@ async def health_check():
         logger.error(f"Sağlık kontrolü hatası: {e}")
         return {
             "success": False,
-            "message": f"Sistem hatası: {str(e)}",
+            "message": f"Sistem hatası: {e!s}",
             "data": {"service_status": "unhealthy", "error": str(e)},
         }
