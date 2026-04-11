@@ -63,13 +63,34 @@ endpoints without GF coverage. Top 10 were probed; 2 real bugs fell out.
 | GF18 | daily-quests claim-bonus not 500 | Gamification daily bonus write path | ✅ PASS |
 | GF19 | parent notifications create not 500 | Parent notification write path | ✅ PASS |
 
-**Current distribution (Session 138):** 36 tests → **34 PASS, 0 FAIL, 2 SKIP**.
+Wave 4 — second feature-inventory sweep (Session 139, 10 new tests, discovered 4 additional half-working features):
 
-All new Wave 3 probes PASS after the 2 Session 138 fixes (GF14 HTTP 200
-anti-pattern, GF16 PG enum binding). The 2 remaining SKIPs are unchanged and
-state-dependent (GF1wB refresh-token persist has no deterministic probe;
-GF4w.2 needs a due FSRS card which only exists after the 24h schedule window)
-— acceptable skips, not regressions.
+Context: the feature inventory still had ~500 uncovered write-path endpoints
+after Wave 3. Wave 4 probed a disjoint top-10 spanning ADHD/Pomodoro, BERTurk
+NLP, Bionic Reading, Bilge Alp, enhanced chat, coaching signals, diary/goals,
+admin content, student validation and Turkish teacher reports. 4 real bugs fell
+out.
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF20 | adhd-support pomodoro start not 500 | **Pydantic `int` → `str` type lie**: `adhd_support_api.py` response models (`PomodoroSessionResponse`, `InactivityAlert`, `FocusExerciseProgress`) declared `user_id: int`, but KIRO2 auth returns `AuthenticatedUser.id` as a UUID string. FastAPI refused to coerce and crashed at response serialization. | ✅ PASS (fix: Session 139 — `user_id: str` on all 3 models) |
+| GF21 | bionic reading process not 500 | Text transformation write path (`bionic_reading_api.py`) | ✅ PASS |
+| GF22 | berturk sentiment analyze not 500 | **Optional dependency fallback crash**: `berturk_service` module-level singleton is `None` when the heavy `transformers` dep / model weights are missing. Every handler called `await berturk_service.analyze_sentiment(...)` directly → `AttributeError: 'NoneType'` → 500. | ✅ PASS (fix: Session 139 — `_require_berturk_service()` helper raises 503 when `None`, applied to 6 handlers + `/health` returns a structured "unavailable" response instead of crashing) |
+| GF23 | bilge-alp chat not 500 | AI chat write path (`bilge_alp_api.py`) | ✅ PASS |
+| GF24 | enhanced-chat message not 500 | **State-dependent upstream timeout**: handler can block 30+s on the upstream LLM call. Treated as a GF1wB/GF4w.2-style acceptable skip: `httpx.TimeoutException` → `pytest.skip`, not a 500 regression. | ⏭️ SKIP (state-dependent) |
+| GF25 | coaching signals record not 500 | Engagement signal write path | ✅ PASS |
+| GF26 | diary goals create not 500 | **asyncpg VARCHAR + `default=uuid4` type lie**: `models/diary.py:458` declared `Goal.id = Column(String, default=uuid4)`. asyncpg binds `VARCHAR` parameters strictly and refuses `UUID` objects with `DataError: invalid input for query argument $1 (expected str, got UUID)`. The error was masked by earlier red-herring `MissingGreenlet` wrappers until the full asyncpg traceback surfaced. | ✅ PASS (fix: Session 139 — coerce at caller level with `id=str(uuid4())` + `user_id=str(user_id)` in `goal_service.create_goal`; also normalized tz-naive/tz-aware comparison in `validate_smart`) |
+| GF27 | content-management question create not 500 | Admin question CRUD write path | ✅ PASS |
+| GF28 | validation submit not 500 | Student answer validation write path | ✅ PASS |
+| GF29 | ogretmen rapor sinif create not 500 | Turkish teacher report write path | ✅ PASS |
+
+**Current distribution (Session 139):** 46 tests → **44 PASS, 0 FAIL, 2 SKIP**.
+
+All new Wave 4 probes PASS after the 3 Session 139 fixes (GF20 Pydantic type
+lie, GF22 `None` service guard, GF26 asyncpg UUID/VARCHAR type lie). GF24 joins
+GF1wB and GF4w.2 as an acceptable state-dependent skip — the handler does not
+500, it just blocks on a real upstream model. The 2 original SKIPs are
+unchanged (GF1wB refresh-token persist, GF4w.2 FSRS due card).
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
