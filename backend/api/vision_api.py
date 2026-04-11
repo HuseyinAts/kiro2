@@ -18,18 +18,57 @@ import logging
 import time
 from typing import Any
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    status,
+)
 from pydantic import BaseModel, Field
 
 from core.ddos_protection import limiter
 from core.dependencies import AuthenticatedUser, get_current_user
 
 try:
-    from core.llm_service import llm_service
+    from core.llm_service import OllamaError, llm_service
 except (ImportError, TypeError):
     llm_service = None
 
+    class OllamaError(Exception):  # type: ignore[no-redef]
+        """Fallback stub when core.llm_service is unavailable."""
+
+
 logger = logging.getLogger(__name__)
+
+
+def _require_vision_service() -> Any:
+    """Return ``llm_service`` or raise 503 when unavailable.
+
+    The vision endpoints depend on an optional LLM runtime (Qwen3-VL via
+    ollama). Two failure modes that must not be surfaced as a generic 500:
+
+    1. ``llm_service`` could not be imported at module load time → sentinel
+       ``None``. Matches the GF22 berturk pattern.
+    2. The ollama upstream is reachable but the vision model is not pulled,
+       producing ``httpx.HTTPStatusError`` 404 on ``/api/generate``. GF57
+       caught this: a completed auth/ORM pipeline with a 500 wrapping an
+       upstream 404. Callers should translate those into 503 so monitoring
+       and clients can distinguish "bug" from "feature unavailable".
+    """
+    if llm_service is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Vision service unavailable: optional LLM dependency "
+                "(core.llm_service) is not installed."
+            ),
+        )
+    return llm_service
+
 
 router = APIRouter(prefix="/api/v1/vision", tags=["Vision AI"])
 
@@ -135,13 +174,67 @@ def validate_base64_image(b64_string: str) -> bool:
 async def analyze_with_vision(
     image_b64: str, prompt: str, **kwargs: Any
 ) -> tuple[str, float]:
-    """Vision modeli ile gorsel analiz yap"""
+    """Vision modeli ile gorsel analiz yap.
+
+    Raises:
+        HTTPException(503): when ``llm_service`` is missing (optional dep
+            fallback) or the upstream ollama runtime returns a 404/5xx for
+            the vision model. See ``_require_vision_service`` and the GF57
+            Wave 7 incident — upstream 404 must not bubble as a generic 500.
+    """
+    import httpx
+
+    service = _require_vision_service()
     start_time = time.time()
 
     cleaned_b64 = clean_base64(image_b64)
-    result = await llm_service.analyze_image(
-        prompt=prompt, image_base64=cleaned_b64, **kwargs
-    )
+    try:
+        result = await service.analyze_image(
+            prompt=prompt, image_base64=cleaned_b64, **kwargs
+        )
+    except OllamaError as exc:
+        # core.llm_service.analyze_image wraps upstream httpx errors in
+        # ``OllamaError(f"Image analysis error: {e}") from e``. The original
+        # httpx exception is preserved on ``__cause__`` for diagnostics but
+        # the outer type is OllamaError, so httpx-specific except clauses
+        # below would never fire. Translate to 503 here — this is the
+        # hot path for GF57 (upstream ollama 404 when the vision model is
+        # not pulled).
+        cause = exc.__cause__
+        logger.warning(
+            "vision upstream unavailable (OllamaError): %s (cause=%r)",
+            exc,
+            cause,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Vision model unavailable: upstream LLM runtime rejected "
+                "the request. The model may not be loaded."
+            ),
+        ) from exc
+    except httpx.HTTPStatusError as exc:
+        # Upstream ollama reachable but the vision model is not loaded /
+        # endpoint mismatched. Translate to 503 (GF22 / GF37 / GF38 pattern).
+        logger.warning(
+            "vision upstream unavailable: %s %s",
+            exc.response.status_code if exc.response is not None else "?",
+            exc.request.url if exc.request is not None else "?",
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Vision model unavailable: upstream LLM runtime rejected "
+                "the request. The model may not be loaded."
+            ),
+        ) from exc
+    except httpx.RequestError as exc:
+        # Connection refused / DNS failure / timeout → upstream is down.
+        logger.warning("vision upstream unreachable: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Vision model unavailable: upstream LLM runtime unreachable.",
+        ) from exc
 
     elapsed_ms = (time.time() - start_time) * 1000
     return result, elapsed_ms
@@ -191,6 +284,10 @@ async def analyze_image(
             metadata={"language": payload.language},
         )
 
+    except HTTPException:
+        # 503 from analyze_with_vision / _require_vision_service must
+        # propagate unchanged (GF57 pattern).
+        raise
     except Exception as e:
         logger.error(f"Vision analyze error: {e}")
         raise HTTPException(500, "Gorsel analizi basarisiz. Lutfen tekrar deneyin.")
@@ -268,6 +365,10 @@ Cozum adimlarini su formatta ver:
             },
         )
 
+    except HTTPException:
+        # 503 from analyze_with_vision / _require_vision_service must
+        # propagate unchanged (GF57 pattern).
+        raise
     except Exception as e:
         logger.error(f"Vision solve error: {e}")
         raise HTTPException(500, "Soru cozumu basarisiz. Lutfen tekrar deneyin.")
@@ -314,6 +415,8 @@ Sadece okudugun metni yaz, yorum ekleme."""
             metadata={"include_layout": payload.include_layout},
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Vision OCR error: {e}")
         raise HTTPException(500, "Metin cikarma basarisiz. Lutfen tekrar deneyin.")
@@ -384,6 +487,8 @@ ayri ayri belirt."""
             metadata={"subject": payload.subject, "detail_level": payload.detail_level},
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Vision diagram error: {e}")
         raise HTTPException(500, "Diyagram aciklama basarisiz. Lutfen tekrar deneyin.")
@@ -429,6 +534,8 @@ async def analyze_upload(
             metadata={"filename": file.filename},
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Vision upload error: {e}")
         raise HTTPException(500, "Gorsel analizi basarisiz. Lutfen tekrar deneyin.")
@@ -436,7 +543,17 @@ async def analyze_upload(
 
 @router.get("/health", response_model=VisionHealthResponse)
 async def health_check() -> VisionHealthResponse:
-    """Vision servisi saglik kontrolu — S-18: inference yapmadan durum döndür"""
+    """Vision servisi saglik kontrolu — S-18: inference yapmadan durum döndür."""
+    # Optional dependency fallback: don't crash on attribute access when
+    # llm_service is the None sentinel. Mirrors the GF22 berturk health.
+    if llm_service is None:
+        return VisionHealthResponse(
+            status="unavailable: optional LLM dependency not installed",
+            model="unavailable",
+            available=False,
+            latency_ms=None,
+        )
+
     try:
         # S-18: Her çağrıda gerçek inference yapmak DoS vektörü.
         # Sadece servisin ayakta olup olmadığını kontrol et.
@@ -451,7 +568,7 @@ async def health_check() -> VisionHealthResponse:
         logger.warning(f"Vision health check failed: {e}")
         return VisionHealthResponse(
             status=f"unhealthy: {e!s}",
-            model=llm_service.vision_model,
+            model=getattr(llm_service, "vision_model", "unknown"),
             available=False,
             latency_ms=None,
         )

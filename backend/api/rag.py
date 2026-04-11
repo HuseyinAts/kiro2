@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 RAG (Retrieval-Augmented Generation) API Endpoints
 Production-ready vector search and document retrieval
@@ -11,13 +10,20 @@ Features:
 - Caching and optimization
 """
 
+# Defer annotation evaluation: ``RAGService`` may be ``None`` at import time
+# (optional dependency fallback), and without PEP 563 the module-level
+# annotation ``_rag_service: RAGService | None`` would evaluate ``None | None``
+# and crash the whole router.
+from __future__ import annotations
+
 import time
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
+from core.dependencies import (
+    get_current_user,  # fixed: was auth_dependencies (no blacklist)
+)
 
 try:
     from core.rag_service import RAGService
@@ -32,12 +38,30 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/api/v1/rag", tags=["RAG - Retrieval Augmented Generation"])
 
 # Global RAG service instance
-_rag_service: Optional[RAGService] = None
+_rag_service: RAGService | None = None
 
 
 def get_rag_service() -> RAGService:
-    """Get or create RAG service instance"""
+    """Get or create RAG service instance.
+
+    Raises a 503 "Service Unavailable" if the optional RAG dependencies
+    (e.g. chromadb, embeddings) could not be imported. Without this guard
+    handlers would call ``RAGService()`` against the ``None`` sentinel set
+    at import time and the whole request would crash with
+    ``TypeError: 'NoneType' object is not callable`` (caught by the bare
+    ``except Exception`` block and surfaced as a generic 500 — a silent
+    regression). Matches the ``_require_berturk_service()`` pattern
+    introduced for GF22.
+    """
     global _rag_service
+    if RAGService is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "RAG service unavailable: optional dependencies "
+                "(chromadb / nomic-embed-text) are not installed."
+            ),
+        )
     if _rag_service is None:
         _rag_service = RAGService()
     return _rag_service
@@ -72,7 +96,7 @@ class SearchRequest(BaseModel):
 
     query: str = Field(..., min_length=1, max_length=1000, description="Search query")
     k: int = Field(default=4, ge=1, le=20, description="Number of results")
-    filter_metadata: Optional[dict] = Field(None, description="Metadata filters")
+    filter_metadata: dict | None = Field(None, description="Metadata filters")
 
 
 class SearchResult(BaseModel):
@@ -88,7 +112,7 @@ class SearchResponse(BaseModel):
     """Search response"""
 
     success: bool
-    results: List[SearchResult]
+    results: list[SearchResult]
     total_results: int
     query: str
 
@@ -106,7 +130,7 @@ class ContextResponse(BaseModel):
 
     success: bool
     context: str
-    sources: List[dict]
+    sources: list[dict]
     token_count: int
 
 
@@ -114,7 +138,7 @@ class DocumentListResponse(BaseModel):
     """Document list response"""
 
     success: bool
-    documents: List[dict]
+    documents: list[dict]
     total_count: int
 
 
@@ -206,8 +230,9 @@ async def index_file_document(
         elif file_ext == "pdf":
             # PDF extraction (requires PyPDF2)
             try:
-                from PyPDF2 import PdfReader
                 from io import BytesIO
+
+                from PyPDF2 import PdfReader
 
                 pdf = PdfReader(BytesIO(content))
                 text = "\n\n".join([page.extract_text() for page in pdf.pages])
@@ -255,7 +280,8 @@ async def index_file_document(
     except Exception as e:
         logger.error(f"File indexing error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -303,10 +329,14 @@ async def semantic_search(
             query=request.query,
         )
 
+    except HTTPException:
+        # 503 from get_rag_service() must propagate unchanged — see GF56.
+        raise
     except Exception as e:
         logger.error(f"Search error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -366,7 +396,8 @@ async def get_llm_context(
     except Exception as e:
         logger.error(f"Context retrieval error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -441,7 +472,7 @@ async def list_documents(
                                     {
                                         "id": doc_id,
                                         "title": metadata.get(
-                                            "title", f"Document {i+1}"
+                                            "title", f"Document {i + 1}"
                                         ),
                                         "source": metadata.get("source", "unknown"),
                                         "indexed_at": metadata.get("indexed_at", ""),
@@ -462,7 +493,8 @@ async def list_documents(
     except Exception as e:
         logger.error(f"Document listing error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -528,7 +560,8 @@ async def delete_document(
     except Exception as e:
         logger.error(f"Document deletion error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -552,7 +585,8 @@ async def get_rag_stats(current_user: User = Depends(get_current_user)):
     except Exception as e:
         logger.error(f"Stats error: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
@@ -573,5 +607,3 @@ async def health_check():
 
     except Exception as e:
         return {"status": "unhealthy", "error": str(e)}
-
-

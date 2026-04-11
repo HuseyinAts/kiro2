@@ -5,18 +5,18 @@ Service for video watch tracking, completion tracking, notes, and bookmarks
 """
 
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
-from uuid import UUID
+from typing import Any
+from uuid import UUID, uuid4
 
-from sqlalchemy import select, func, and_, or_, desc
+from sqlalchemy import and_, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.video_analytics import (
-    VideoWatchSession,
+    VideoAnalyticsSummary,
+    VideoBookmark,
     VideoCompletionMilestone,
     VideoNote,
-    VideoBookmark,
-    VideoAnalyticsSummary,
+    VideoWatchSession,
 )
 
 
@@ -55,8 +55,15 @@ class VideoAnalyticsService:
         Returns:
             New VideoWatchSession
         """
+        # asyncpg VARCHAR+uuid4 trap (GF26/GF36/GF49/GF59 rule-of-five):
+        # VideoWatchSession.id / .user_id are VARCHAR columns, but the ORM
+        # default is uuid.uuid4 which yields a UUID object. asyncpg refuses
+        # to bind a UUID to a VARCHAR parameter. Coerce at the caller level
+        # — identical to goal_service.create_goal / video_conference_service
+        # .create_session / emotional_service.track_state.
         session = VideoWatchSession(
-            user_id=user_id,
+            id=str(uuid4()),
+            user_id=str(user_id),
             video_id=video_id,
             video_source=video_source,
             video_duration=video_duration,
@@ -221,7 +228,7 @@ class VideoAnalyticsService:
 
     async def get_video_engagement_metrics(
         self, video_id: str, video_source: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get engagement metrics for a specific video
 
@@ -272,8 +279,8 @@ class VideoAnalyticsService:
         }
 
     def _create_drop_off_histogram(
-        self, positions: List[int], bucket_size: int = 30
-    ) -> List[Dict[str, Any]]:
+        self, positions: list[int], bucket_size: int = 30
+    ) -> list[dict[str, Any]]:
         """
         Create histogram of drop-off points
 
@@ -314,7 +321,7 @@ class VideoAnalyticsService:
 
     async def _check_and_award_milestone(
         self, user_id: UUID, video_id: str, video_source: str, milestone: int
-    ) -> Optional[VideoCompletionMilestone]:
+    ) -> VideoCompletionMilestone | None:
         """
         Check if milestone exists, if not create it
 
@@ -358,8 +365,8 @@ class VideoAnalyticsService:
         return new_milestone
 
     async def get_user_milestones(
-        self, user_id: UUID, video_id: Optional[str] = None
-    ) -> List[VideoCompletionMilestone]:
+        self, user_id: UUID, video_id: str | None = None
+    ) -> list[VideoCompletionMilestone]:
         """
         Get all milestones for a user
 
@@ -393,10 +400,10 @@ class VideoAnalyticsService:
         video_source: str,
         content: str,
         timestamp: int,
-        session_id: Optional[UUID] = None,
+        session_id: UUID | None = None,
         is_important: bool = False,
-        tags: Optional[List[str]] = None,
-        video_caption: Optional[str] = None,
+        tags: list[str] | None = None,
+        video_caption: str | None = None,
     ) -> VideoNote:
         """
         Create a timestamped note
@@ -436,9 +443,9 @@ class VideoAnalyticsService:
     async def update_note(
         self,
         note_id: UUID,
-        content: Optional[str] = None,
-        is_important: Optional[bool] = None,
-        tags: Optional[List[str]] = None,
+        content: str | None = None,
+        is_important: bool | None = None,
+        tags: list[str] | None = None,
     ) -> VideoNote:
         """Update a note"""
         result = await self.db.execute(select(VideoNote).where(VideoNote.id == note_id))
@@ -472,7 +479,7 @@ class VideoAnalyticsService:
 
     async def get_video_notes(
         self, user_id: UUID, video_id: str, video_source: str
-    ) -> List[VideoNote]:
+    ) -> list[VideoNote]:
         """
         Get all notes for a video
 
@@ -495,9 +502,9 @@ class VideoAnalyticsService:
         self,
         user_id: UUID,
         query: str,
-        video_id: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-    ) -> List[VideoNote]:
+        video_id: str | None = None,
+        tags: list[str] | None = None,
+    ) -> list[VideoNote]:
         """
         Search user's notes
 
@@ -543,8 +550,8 @@ class VideoAnalyticsService:
         video_source: str,
         timestamp: int,
         title: str,
-        description: Optional[str] = None,
-        session_id: Optional[UUID] = None,
+        description: str | None = None,
+        session_id: UUID | None = None,
         bookmark_type: str = "manual",
         is_public: bool = False,
     ) -> VideoBookmark:
@@ -586,9 +593,9 @@ class VideoAnalyticsService:
     async def update_bookmark(
         self,
         bookmark_id: UUID,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        is_public: Optional[bool] = None,
+        title: str | None = None,
+        description: str | None = None,
+        is_public: bool | None = None,
     ) -> VideoBookmark:
         """Update a bookmark"""
         result = await self.db.execute(
@@ -630,7 +637,7 @@ class VideoAnalyticsService:
         video_id: str,
         video_source: str,
         include_public: bool = False,
-    ) -> List[VideoBookmark]:
+    ) -> list[VideoBookmark]:
         """
         Get bookmarks for a video
 
@@ -788,25 +795,24 @@ class VideoAnalyticsService:
             await self.db.commit()
             await self.db.refresh(existing)
             return existing
-        else:
-            # Create new
-            summary = VideoAnalyticsSummary(
-                user_id=user_id,
-                period_type=period_type,
-                period_start=period_start,
-                period_end=period_end,
-                total_videos_watched=total_videos,
-                total_watch_time=total_watch_time,
-                total_videos_completed=total_completed,
-                average_completion_rate=avg_completion,
-                total_notes=total_notes,
-                total_bookmarks=total_bookmarks,
-                average_playback_speed=avg_speed,
-                source_breakdown=source_breakdown,
-            )
+        # Create new
+        summary = VideoAnalyticsSummary(
+            user_id=user_id,
+            period_type=period_type,
+            period_start=period_start,
+            period_end=period_end,
+            total_videos_watched=total_videos,
+            total_watch_time=total_watch_time,
+            total_videos_completed=total_completed,
+            average_completion_rate=avg_completion,
+            total_notes=total_notes,
+            total_bookmarks=total_bookmarks,
+            average_playback_speed=avg_speed,
+            source_breakdown=source_breakdown,
+        )
 
-            self.db.add(summary)
-            await self.db.commit()
-            await self.db.refresh(summary)
+        self.db.add(summary)
+        await self.db.commit()
+        await self.db.refresh(summary)
 
-            return summary
+        return summary

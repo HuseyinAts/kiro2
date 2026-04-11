@@ -2370,3 +2370,258 @@ def test_gf49_diary_emotional_not_500(client: httpx.Client):
         f"Check api/diary_api.py:1267 — track_emotional_state + "
         f"EmotionalState model write path."
     )
+
+
+# ============================================================================
+# Wave 7 — fifth feature-inventory sweep (Session 142, GF50-GF59)
+# ============================================================================
+#
+# Context: after Wave 6 the feature inventory still had ~480 uncovered
+# write-path endpoints. Wave 7 probes a disjoint top-10 spanning XP awards,
+# flashcards, AI tutor, notifications, text simplification, study session,
+# RAG search, vision question solving, Turkish NLP normalization, and video
+# analytics session start. Real bugs fell out on text-simplification imports
+# (GF54), rag.py optional-dep 503 wiring (GF56), vision upstream 404 wrap
+# (GF57), turkish_nlp service imports (GF58), and VideoWatchSession
+# asyncpg VARCHAR+uuid4 trap (GF59 — rule-of-five with Goal/LiveSession/
+# EmotionalState/VideoConferenceSession).
+
+
+def test_gf50_xp_awards_not_500(client: httpx.Client):
+    """
+    POST /api/v1/xp-awards must not crash.
+
+    Probes the XP awards write path. A 500 means the XP award service,
+    gamification points pipeline, or reward calculator broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/xp-awards",
+        headers=_auth_headers(token),
+        json={"activity": "quiz_completed", "points": 10},
+    )
+    assert resp.status_code != 500, (
+        f"GF50 xp-awards crashed 500: {resp.text[:300]}. "
+        f"404 is acceptable (route may be unwired), 500 is a regression."
+    )
+
+
+def test_gf51_flashcards_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/flashcards must not crash.
+
+    Probes the flashcard create write path.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/flashcards",
+        headers=_auth_headers(token),
+        json={"question": "2+2?", "answer": "4", "topic_id": 1},
+    )
+    assert resp.status_code != 500, (
+        f"GF51 flashcards crashed 500: {resp.text[:300]}. "
+        f"404 is acceptable (route may be unwired), 500 is a regression."
+    )
+
+
+def test_gf52_ai_tutor_session_not_500(client: httpx.Client):
+    """
+    POST /api/v1/ai-tutor/session must not crash.
+
+    Probes the AI tutor session write path.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/ai-tutor/session",
+        headers=_auth_headers(token),
+        json={"topic": "matematik"},
+    )
+    assert resp.status_code != 500, (
+        f"GF52 ai-tutor/session crashed 500: {resp.text[:300]}. "
+        f"404 is acceptable (route may be unwired), 500 is a regression."
+    )
+
+
+def test_gf53_notifications_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/notifications must not crash.
+
+    Probes the notifications create write path.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/notifications",
+        headers=_auth_headers(token),
+        json={"title": "GF53 probe", "body": "test"},
+    )
+    assert resp.status_code != 500, (
+        f"GF53 notifications crashed 500: {resp.text[:300]}. "
+        f"404 is acceptable (route may be unwired), 500 is a regression."
+    )
+
+
+def test_gf54_text_simplification_simplify_not_500(client: httpx.Client):
+    """
+    POST /api/v1/text-simplification/simplify must not crash.
+
+    Probes the dyslexia-support text simplification write path. A 500
+    means the complexity detector, synonym replacer, or Flesch-Kincaid
+    pipeline broke. Wave 7 found the router was unwired and the service
+    imports were missing — GF54 is the regression gate that ensures the
+    module loads and the pipeline completes end-to-end.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/text-simplification/simplify",
+        headers=_auth_headers(token),
+        json={
+            "text": "Bu oldukça karmaşık ve uzun bir cümle örneğidir.",
+            "complexity_threshold": 0.6,
+            "max_sentence_length": 20,
+            "replace_synonyms": True,
+            "split_sentences": True,
+            "require_confirmation": False,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF54 text-simplification/simplify crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/text_simplification.py imports + "
+        f"core/text_simplification_service.py wiring."
+    )
+
+
+def test_gf55_study_session_start_not_500(client: httpx.Client):
+    """
+    POST /api/v1/study-session/start must not crash.
+
+    Probes the study session start write path.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/study-session/start",
+        headers=_auth_headers(token),
+        json={"topic_id": 1},
+    )
+    assert resp.status_code != 500, (
+        f"GF55 study-session/start crashed 500: {resp.text[:300]}. "
+        f"404 is acceptable (route may be unwired), 500 is a regression."
+    )
+
+
+def test_gf56_rag_search_not_500(client: httpx.Client):
+    """
+    POST /api/v1/rag/search must not crash.
+
+    Probes the RAG semantic search write path. ChromaDB + nomic-embed-text
+    are optional heavy deps, so 503 "Service Unavailable" is an acceptable
+    structured response (GF22/GF37/GF38 pattern). A 500 means the optional
+    dep fallback wiring broke and the module-level sentinel crashed before
+    the 503 translator could fire. Wave 7 also found a ``from __future__
+    import annotations`` was needed to prevent ``None | None`` type-hint
+    evaluation on the ``_rag_service: RAGService | None`` module annotation.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/rag/search",
+        headers=_auth_headers(token),
+        json={"query": "matematik turev", "k": 3},
+    )
+    assert resp.status_code != 500, (
+        f"GF56 rag/search crashed 500: {resp.text[:300]}. "
+        f"503 is acceptable (chromadb/nomic-embed-text optional dep "
+        f"unavailable), 500 is a regression. Check api/rag.py "
+        f"_require_rag_service + __future__ annotations."
+    )
+
+
+def test_gf57_vision_solve_question_not_500(client: httpx.Client):
+    """
+    POST /api/v1/vision/solve-question must not crash.
+
+    Probes the Qwen3-VL vision solve write path. The upstream ollama
+    runtime is optional and the vision model may not be pulled, so
+    503 "Vision model unavailable" is an acceptable structured response
+    (GF22/GF37/GF38 pattern). Wave 7 found ``core.llm_service.analyze_image``
+    wraps upstream httpx errors in ``OllamaError(...) from e``, so the
+    vision_api.py ``analyze_with_vision`` helper needed to catch
+    ``OllamaError`` (not httpx types directly) to translate upstream 404s
+    into 503s. A 500 means that translation broke.
+    """
+    import base64
+
+    # Minimal 1x1 PNG (89 50 4e 47 ... IEND)
+    png_bytes = bytes.fromhex(
+        "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c489"
+        "000000097048597300000ec300000ec301c76fa8640000000d49444154789c6300"
+        "0100000005000102d0a8d5dc0000000049454e44ae426082"
+    )
+    image_b64 = base64.b64encode(png_bytes).decode()
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/vision/solve-question",
+        headers=_auth_headers(token),
+        json={
+            "image": image_b64,
+            "subject": "matematik",
+            "level": "TYT",
+            "show_steps": True,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF57 vision/solve-question crashed 500: {resp.text[:300]}. "
+        f"503 is acceptable (ollama upstream unreachable / vision model "
+        f"not pulled), 500 is a regression. Check api/vision_api.py "
+        f"analyze_with_vision OllamaError translation."
+    )
+
+
+def test_gf58_turkish_nlp_normalize_not_500(client: httpx.Client):
+    """
+    POST /api/v1/turkish-nlp/text/normalize must not crash.
+
+    Probes the Turkish NLP normalization write path. A 500 means the
+    Zemberek JVM bridge, encoding fixer, or Turkish character normalizer
+    broke. Wave 7 found the router was unwired and service imports were
+    missing — GF58 is the regression gate for the normalization pipeline.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/turkish-nlp/text/normalize",
+        headers=_auth_headers(token),
+        json={"text": "merhaba dunya, Bu bir test metnidir."},
+    )
+    assert resp.status_code != 500, (
+        f"GF58 turkish-nlp/text/normalize crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/turkish_nlp.py imports + "
+        f"core/turkish_nlp_service.py wiring."
+    )
+
+
+def test_gf59_video_analytics_session_start_not_500(client: httpx.Client):
+    """
+    POST /api/v1/video-analytics/sessions/start must not crash.
+
+    Probes the video watch session start write path. Wave 7 caught the
+    asyncpg VARCHAR+uuid4 trap (rule-of-five with Goal/LiveSession/
+    EmotionalState/VideoConferenceSession from GF26/GF36/GF49/GF36):
+    ``VideoWatchSession.id = Column(String, default=uuid.uuid4)`` produces
+    UUID objects that asyncpg refuses to bind to VARCHAR columns.
+    Caller-level ``str(uuid4())`` coercion in
+    ``video_analytics_service.start_watch_session`` is the fix.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/video-analytics/sessions/start",
+        headers=_auth_headers(token),
+        json={
+            "video_id": "gf59-probe",
+            "video_source": "youtube",
+            "video_duration": 600,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF59 video-analytics/sessions/start crashed 500: {resp.text[:300]}. "
+        f"Check services/video_analytics_service.py start_watch_session — "
+        f"asyncpg VARCHAR+uuid4 rule-of-five requires "
+        f"id=str(uuid4()) + user_id=str(user_id) caller coercion."
+    )

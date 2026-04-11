@@ -5,9 +5,10 @@ Türkçe NLP API Endpoints
 import logging
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from core.dependencies import AuthenticatedUser, get_current_user
 from core.turkish_nlp_service import turkish_nlp_service
 
 logger = logging.getLogger(__name__)

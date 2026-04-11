@@ -6,9 +6,10 @@ Requirements: REQ-50.57 - REQ-50.72
 
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from core.dependencies import AuthenticatedUser, get_current_user
 from core.text_simplification_service import text_simplification_service
 
 logger = logging.getLogger(__name__)

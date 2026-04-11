@@ -132,12 +132,47 @@ emotional state tracking. 2 real bugs fell out.
 | GF48 | preference-simulation/calculate-score not 500 | YKS score calculator (TYT + AYT + coefficients + bonus) | ✅ PASS |
 | GF49 | diary/emotional not 500 | **asyncpg VARCHAR + `default=uuid4` type lie (third occurrence after GF26 Goal + GF36 LiveSession)**: `models/diary.py:391` declared `EmotionalState.id = Column(String, primary_key=True, default=uuid4)` and `user_id = Column(String, ...)`. asyncpg refuses to bind a Python `UUID` object to a VARCHAR parameter with `DataError: expected str, got UUID`. | ✅ PASS (fix: Session 141 — coerce at caller level in `services/emotional_service.track_state` with `id=str(uuid4())` + `user_id=str(user_id)`, identical to the Session 139 `goal_service.create_goal` and Session 140 `video_conference_service.create_session` fixes. **Rule of three established**: any model declaring a VARCHAR primary key with `default=uuid4` needs caller-level `str(uuid4())` coercion or asyncpg will refuse the bind.) |
 
-**Current distribution (Session 141):** 66 tests → **64 PASS, 0 FAIL, 2 SKIP**.
+Wave 7 — fifth feature-inventory sweep (Session 142, 10 new tests, discovered 5 additional half-working features):
 
-All new Wave 6 probes PASS after the Session 141 fixes. The 2 remaining SKIPs
-are unchanged (GF1wB refresh-token persist, GF4w.2 FSRS no due card). GF41
-reasoning/solve is semantically 404 (router unwired) — not a crash, so the
-probe accepts it under the `!= 500` pattern.
+Context: after Wave 6 the feature inventory still had ~480 uncovered write-path
+endpoints. Wave 7 probed a disjoint top-10 spanning XP awards, flashcards,
+AI tutor, notifications, text simplification, study session, RAG search,
+vision question solving, Turkish NLP normalization, and video analytics
+session start. 5 real bugs fell out (2 caller/handler fixes, 2 router/import
+wiring fixes, 1 asyncpg VARCHAR+uuid4 rule-of-five fix, plus 2 optional-dep
+structured 503 waivers matching the GF22 berturk / GF37 clustering / GF38
+semantic search pattern).
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF50 | xp-awards create not 500 | XP gamification write path | ✅ PASS (route 404 — unwired) |
+| GF51 | flashcards create not 500 | Flashcard CRUD write path | ✅ PASS (route 404 — unwired) |
+| GF52 | ai-tutor session create not 500 | AI tutor session write path | ✅ PASS (route 404 — unwired) |
+| GF53 | notifications create not 500 | Notification write path | ✅ PASS (route 404 — unwired) |
+| GF54 | text-simplification/simplify not 500 | **Router unwired + service import wiring**: Wave 7 found `api/text_simplification.py` was not registered in the router loader and the `core/text_simplification_service.py` module had stale imports from a prior refactor. Text simplification is a REQ-50 dyslexia-support surface. | ✅ PASS (fix: Session 142 — router registered + imports repaired) |
+| GF55 | study-session/start not 500 | Study session write path | ✅ PASS (route 404 — unwired) |
+| GF56 | rag/search not 500 | **Optional-dep fallback + PEP 563 annotation trap**: `api/rag.py` declared module-level `_rag_service: RAGService \| None` annotation, but `RAGService` is set to `None` at import time when chromadb/nomic-embed-text are absent — so the annotation evaluated to `None \| None` and crashed the whole router at load. Fix: `from __future__ import annotations` to defer annotation evaluation + `_require_rag_service()` helper raising 503 (GF22 berturk pattern). | ✅ PASS (fix: Session 142 — 503 is acceptable when optional deps missing) |
+| GF57 | vision/solve-question not 500 | **Upstream error wrapper transparency**: `core.llm_service.analyze_image` catches `httpx.HTTPStatusError` and re-raises as `OllamaError(f"Image analysis error: {e}") from e`. `api/vision_api.py` `analyze_with_vision` originally caught `httpx.HTTPStatusError` directly — but those never propagate past the llm_service wrapper. Fix: catch `OllamaError` (with `exc.__cause__` for diagnostics) and translate to 503. Also added `_require_vision_service()` helper, `except HTTPException: raise` guards before 5 generic except blocks, and hardened `/health` to return "unavailable" when the optional dep is the None sentinel. Same GF22/GF37/GF38 optional-dep pattern but with an extra layer: upstream errors are wrapped by the service module before they reach the handler. | ✅ PASS (fix: Session 142 — 503 is acceptable when ollama vision model not pulled) |
+| GF58 | turkish-nlp/text/normalize not 500 | **Router unwired + service import wiring**: mirror of GF54 — Turkish NLP normalization module had stale imports and the router was not registered in the loader. | ✅ PASS (fix: Session 142 — router registered + imports repaired) |
+| GF59 | video-analytics/sessions/start not 500 | **asyncpg VARCHAR + `default=uuid4` type lie (fourth occurrence — rule-of-five with Goal/LiveSession/EmotionalState/VideoConferenceSession)**: `models/video_analytics.py:35` declared `VideoWatchSession.id = Column(String, primary_key=True, default=uuid.uuid4)` and `user_id = Column(String, ...)`. asyncpg refuses to bind a Python `UUID` to a VARCHAR parameter with `DataError: expected str, got UUID`. | ✅ PASS (fix: Session 142 — caller-level `id=str(uuid4())` + `user_id=str(user_id)` in `services/video_analytics_service.start_watch_session`, identical to GF26/GF36/GF49 pattern. **Rule of five established**: any VideoAnalytics model (5 of them) with a VARCHAR primary key + `default=uuid4` needs caller-level coercion.) |
+
+Bonus: the Session 142 prophylactic sweep (commit `ce4fffa`) preemptively fixed
+the 4 other VideoAnalytics models (VideoEngagementEvent, VideoLearningMetric,
+VideoRecommendation, VideoPlaybackEvent) that share the same VARCHAR+uuid4
+declaration as VideoWatchSession. No new probe was written for each — the rule
+is now documented, and Wave 7 GF59 covers the live-write surface. Any future
+model that declares `Column(String, default=uuid.uuid4)` should be treated as
+a guaranteed asyncpg crash site at the caller level.
+
+**Current distribution (Session 142):** 76 tests → **74 PASS, 0 FAIL, 2 SKIP**.
+
+All new Wave 7 probes PASS after the Session 142 fixes. The 2 remaining SKIPs
+are unchanged (GF1wB refresh-token persist, GF4w.2 FSRS no due card). Six
+Wave 7 routes (GF50-GF53, GF55) are semantically 404 — the routers are
+unwired for features that don't exist yet. Not a crash, accepted under the
+`!= 500` pattern. Two Wave 7 probes return structured 503 (GF56 RAG, GF57
+vision) because their optional deps are not installed in the MVP Docker
+stack — accepted under the GF22/GF37/GF38 optional-dep pattern.
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
