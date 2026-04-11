@@ -1467,3 +1467,309 @@ def test_gf19_parent_notifications_create_not_500(client: httpx.Client):
         f"Check backend/api/parent.py:158 and parent_service.py:321 — "
         f"ParentChildRelation FK lookup and async DB wiring."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 4 — feature-inventory sweep (Session 138, GF20–GF29)
+#
+# Context: docs/audits/2026-04-11_feature-inventory.md enumerated 545 write
+# endpoints. Waves 1-3 covered 35. Wave 4 picks 10 more across categories
+# (accessibility, ai, learning, content, admin, teacher) to find more
+# half-working features.
+# ---------------------------------------------------------------------------
+
+
+def test_gf20_adhd_pomodoro_start_not_500(client: httpx.Client):
+    """
+    POST /api/v1/adhd-support/pomodoro/start must return a semantic status.
+
+    REQ-52.1 ADHD support. Handler is sync + uses sync `Session = Depends(get_db)`
+    but annotates `current_user: User = Depends(get_current_user)` where the
+    dependency actually returns AuthenticatedUser (Pydantic). If PomodoroSettings
+    or the uuid/datetime wiring diverges from the response_model shape, FastAPI
+    coerces to 500.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/adhd-support/pomodoro/start",
+        headers=_auth_headers(token),
+        json={
+            "session_type": "work",
+            "custom_duration_minutes": 25,
+            "task_description": "GF20 probe — focus session",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF20 adhd-support/pomodoro/start crashed 500: {resp.text[:300]}. "
+        f"Check api/adhd_support_api.py:153 — sync handler + current_user type "
+        f"annotation drift (User vs AuthenticatedUser)."
+    )
+
+
+def test_gf21_bionic_reading_process_not_500(client: httpx.Client):
+    """
+    POST /api/v1/bionic-reading/process must return a semantic status.
+
+    Accessibility flagship (REQ-52 dyslexia support). Depends on
+    BionicReadingService and CacheService — either missing dependency or
+    Turkish NFC normalization bug would crash 500.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/bionic-reading/process",
+        headers=_auth_headers(token),
+        json={
+            "text": "Matematik sorularını çözerken odaklanmak çok önemli.",
+            "use_cache": False,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF21 bionic-reading/process crashed 500: {resp.text[:300]}. "
+        f"Check api/bionic_reading.py:85 and core/bionic_reading_service.py — "
+        f"service init + Turkish NFC normalization."
+    )
+
+
+def test_gf22_berturk_sentiment_analyze_not_500(client: httpx.Client):
+    """
+    POST /api/v1/berturk/sentiment/analyze must return a semantic status.
+
+    Turkish NLP flagship. Module-level `try/except (ImportError, TypeError):
+    berturk_service = None` — if the model fails to load, every call becomes
+    `None.analyze_sentiment(...)` → AttributeError → 500. This is the
+    quintessential 'half-working feature' the sweep is supposed to catch.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/berturk/sentiment/analyze",
+        headers=_auth_headers(token),
+        json={
+            "text": "Bugün matematik çalışırken kendimi çok motive hissettim.",
+            "include_emotions": True,
+            "educational_context": True,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF22 berturk/sentiment/analyze crashed 500: {resp.text[:300]}. "
+        f"Check api/berturk_api.py:142 — module-level berturk_service=None "
+        f"fallback when core/berturk_service import fails."
+    )
+
+
+def test_gf23_bilge_alp_chat_not_500(client: httpx.Client):
+    """
+    POST /api/v1/bilge-alp/chat must return a semantic status.
+
+    SSE streaming NPC mascot chat. Handler dispatches LLM call + BKTState DB
+    read; a sync-in-async path or missing BKTState row would crash before the
+    first SSE byte. httpx consumes the initial handshake status even for
+    StreamingResponse, so this probe is valid without needing a full stream.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/bilge-alp/chat",
+        headers=_auth_headers(token),
+        json={
+            "realm_slug": "matematik",
+            "quest_step": 0,
+            "message": "Merhaba Bilge Alp, matematik konusunda yardım eder misin?",
+            "history": [],
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF23 bilge-alp/chat crashed 500 on handshake: {resp.text[:300]}. "
+        f"Check api/bilge_alp.py:224 — BKTState query + LLM streaming wiring."
+    )
+
+
+def test_gf24_enhanced_chat_message_not_500(client: httpx.Client):
+    """
+    POST /api/v1/enhanced-chat/message must return a semantic status.
+
+    Multi-subject AI chat with Turkish prompt routing and bionic reading
+    integration. History of hidden 500s: session_id foreign-key drift,
+    subject case-mismatch (lowercase vs DB UPPERCASE), LLM fallback path.
+
+    State-dependent timeout handling: the handler issues a blocking upstream
+    LLM call that can take 30+s when a real provider is configured. That is
+    neither a 500 nor a regression — it is the same class of state-dependent
+    skip as GF1wB (refresh-token persist) and GF4w.2 (FSRS no due cards).
+    Session 138 observed ~30s end-to-end with status 200. We use a longer
+    per-request timeout and, if even that is exceeded, skip rather than fail.
+    """
+    token = _login(client, STUDENT)
+    try:
+        resp = client.post(
+            "/api/v1/enhanced-chat/message",
+            headers=_auth_headers(token),
+            json={
+                "student_id": "gf24-probe-student",
+                "message": "x^2 - 4 = 0 denklemini nasıl çözerim?",
+                "subject": "matematik",
+                "teaching_mode": "direct",
+                "include_bionic": False,
+            },
+            timeout=45.0,
+        )
+    except httpx.TimeoutException as exc:
+        pytest.skip(
+            f"GF24 enhanced-chat/message blocked on upstream LLM >45s "
+            f"({exc!r}). State-dependent — not a 500 regression."
+        )
+    assert resp.status_code != 500, (
+        f"GF24 enhanced-chat/message crashed 500: {resp.text[:300]}. "
+        f"Check api/enhanced_chat.py:391 — subject case convention, "
+        f"LLM fallback, BionicReadingService dependency."
+    )
+
+
+def test_gf25_coaching_signals_record_not_500(client: httpx.Client):
+    """
+    POST /api/v1/coaching/signals must return a semantic status.
+
+    Proactive coaching behavioral signal write path. ORM field mapping +
+    async DB wiring + get_db_session_context discipline. A silent 500 would
+    mean burnout detection has no training data.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/coaching/signals",
+        headers=_auth_headers(token),
+        json={
+            "signal_type": "session_duration",
+            "value": 1800.0,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF25 coaching/signals crashed 500: {resp.text[:300]}. "
+        f"Check api/coaching_api.py:191 and services/proactive_coaching_service.py "
+        f"— record_engagement_signal async DB wiring."
+    )
+
+
+def test_gf26_diary_goals_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/diary/goals must return a semantic status.
+
+    SMART goal create — write path into GoalService with AsyncSession. Historic
+    Pattern A trap: `db: AsyncSession = Depends(get_async_session)` is correct
+    async, but `current_user: User = Depends(get_current_user)` annotation lies
+    (AuthenticatedUser returned). `.id` access works either way; a 500 would
+    mean GoalService.create_goal or the model_validator on GoalCreate broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/diary/goals",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF26 Probe Goal",
+            "description": "Golden Flow write-path probe for diary goals",
+            "target_value": 10.0,
+            "target_date": "2026-12-31T00:00:00Z",
+            "unit": "task",
+            "category": "matematik",
+            "priority": 2,
+            "specific": "YKS matematik denklem çözme pratiği",
+            "measurable": "10 adet çözülmüş soru",
+            "achievable": "Günde 1 soru",
+            "relevant": "YKS hazırlık hedefi",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF26 diary/goals create crashed 500: {resp.text[:300]}. "
+        f"Check api/diary_api.py:474 and services/diary/goal_service.py — "
+        f"async GoalService wiring and SMART validator."
+    )
+
+
+def test_gf27_content_management_question_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/content-management/questions must return a semantic status.
+
+    Admin/teacher question add (mock impl). STUDENT token should get 403,
+    not 500. A 500 here means the role guard itself is broken — which
+    would be a silent privilege-escalation adjacent bug.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/content-management/questions",
+        headers=_auth_headers(token),
+        json={
+            "soru_metni": "GF27 probe question",
+            "secenekler": {"A": "A", "B": "B", "C": "C", "D": "D"},
+            "dogru_cevap": "A",
+            "sinav_tipi": "TYT",
+            "konu": "Matematik",
+            "zorluk_seviyesi": "medium",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF27 content-management/questions crashed 500: {resp.text[:300]}. "
+        f"Check api/content_management.py:99 — admin_yetki_kontrolu role guard "
+        f"must not generic-except the 403."
+    )
+    # Explicit role-guard expectation: STUDENT → 403
+    assert resp.status_code == 403, (
+        f"GF27 expected 403 for STUDENT, got {resp.status_code} {resp.text[:200]}. "
+        f"admin_yetki_kontrolu role guard is leaking privileges or misconfigured."
+    )
+
+
+def test_gf28_validation_submit_not_500(client: httpx.Client):
+    """
+    POST /api/v1/validation/submit must return a semantic status.
+
+    HITL expert validation submission — writes into
+    expert_validation_system (in-memory service). A 500 means the content
+    review workflow is broken; a 400 is fine (invalid ContentType).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/validation/submit",
+        headers=_auth_headers(token),
+        json={
+            "content_id": "gf28-probe",
+            "content_type": "question",
+            "content_data": {
+                "soru_metni": "GF28 probe question text",
+                "dogru_cevap": "A",
+            },
+            "submitter_id": "gf28-student",
+            "submitter_name": "GF28 Probe",
+            "subject": "matematik",
+            "exam_type": "TYT",
+            "difficulty_level": "medium",
+            "priority": 5,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF28 validation/submit crashed 500: {resp.text[:300]}. "
+        f"Check api/validation.py:82 and services/expert_validation_system — "
+        f"ContentType enum coercion + submit_content_for_validation wiring."
+    )
+
+
+def test_gf29_ogretmen_rapor_sinif_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/ogretmen/rapor/sinif must return a semantic status.
+
+    Deprecated Turkish teacher report path (in-memory backend). Probes
+    whether the TR naming legacy still works for authenticated TEACHER. A 500
+    would mean the Kullanici Pydantic field alias broke, or ogretmen_servisi
+    shared state corrupted across tests.
+    """
+    token = _login(client, TEACHER)
+    resp = client.post(
+        "/api/v1/ogretmen/rapor/sinif",
+        headers=_auth_headers(token),
+        json={
+            "baslangic_tarihi": "2026-01-01T00:00:00",
+            "bitis_tarihi": "2026-04-11T00:00:00",
+            "sinav_tipi": "TYT",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF29 ogretmen/rapor/sinif crashed 500: {resp.text[:300]}. "
+        f"Check api/ogretmen.py:169 — Kullanici.kullanici_id alias + "
+        f"services/ogretmen_service.sinif_raporu_olustur in-memory state."
+    )
