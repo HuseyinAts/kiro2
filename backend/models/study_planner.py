@@ -5,20 +5,19 @@ StudyPlan ve WeeklyGoal modelleri — ogrenci calisma plani takibi.
 """
 
 from datetime import date, datetime
-from typing import Optional
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     Date,
     DateTime,
     Float,
     ForeignKey,
     Integer,
-    JSON,
     String,
     Text,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from .base import Base
@@ -36,12 +35,26 @@ class StudyPlan(Base):
     yks_date: Mapped[date] = mapped_column(Date, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     total_weeks: Mapped[int] = mapped_column(Integer, default=0)
-    target_net: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    target_net: Mapped[float | None] = mapped_column(Float, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    # Session 147 (GF33): SQLAlchemy relationship to weekly_goals.
+    # Without this, `services/study_planner_service.py` 7 call sites that
+    # reference `selectinload(StudyPlan.weekly_goals)` and `plan.weekly_goals`
+    # silently fail with `StudyPlan has no attribute 'weekly_goals'`. The DB
+    # schema (study_plans + weekly_goals + FK cascade) was already correct
+    # via alembic migration 20260312_create_mega_feature_tables; only the
+    # ORM bidirectional relationship was missing.
+    weekly_goals: Mapped[list["WeeklyGoal"]] = relationship(
+        "WeeklyGoal",
+        back_populates="plan",
+        cascade="all, delete-orphan",
+        order_by="WeeklyGoal.week_number",
     )
 
     def __repr__(self) -> str:
@@ -58,13 +71,14 @@ class WeeklyGoal(Base):
         Integer, ForeignKey("study_plans.id", ondelete="CASCADE"), nullable=False
     )
     week_number: Mapped[int] = mapped_column(Integer, nullable=False)
-    topics: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    plan: Mapped["StudyPlan"] = relationship("StudyPlan", back_populates="weekly_goals")
+    topics: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     target_questions: Mapped[int] = mapped_column(Integer, default=0)
     target_reviews: Mapped[int] = mapped_column(Integer, default=0)
     completed_questions: Mapped[int] = mapped_column(Integer, default=0)
     completed_reviews: Mapped[int] = mapped_column(Integer, default=0)
-    accuracy_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    accuracy_rate: Mapped[float | None] = mapped_column(Float, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
