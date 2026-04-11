@@ -138,6 +138,22 @@ jobs:
           # restore/audit/admin/bulk) are allow-listed by name and path.
           python scripts/audit_missing_is_active.py --fail-on-high
 
+      - name: AST lint — Missing rate-limit on LLM/TTS/vision/search endpoints
+        working-directory: backend
+        run: |
+          # Session 139 CI gate (fifth linter in the family):
+          # Block any PR that adds a write/compute handler talking to an LLM,
+          # TTS, embedding, or vision sentinel module (core.llm_*, services.llm.*,
+          # openai, anthropic, google.generativeai, gtts, dashscope, litellm)
+          # without a @rate_limit / @limiter.limit decorator. Auth alone
+          # (Session 138/B1 gate) is not sufficient — an authenticated user
+          # can still issue 1000 req/min and burn the Gemini/OpenAI/Claude/
+          # gTTS quota. Status paths (/health, /info, /voices, /sessions,
+          # /metrics, /llm-pool, /vector-store, /cache, /rag-pipeline, /stats)
+          # are allow-listed.
+          # Baseline: 0 HIGH after commit af74580 (sweep of 15 endpoints).
+          python scripts/audit_missing_rate_limit.py --fail-on-high
+
       - name: Run migrations
         working-directory: backend
         run: |
