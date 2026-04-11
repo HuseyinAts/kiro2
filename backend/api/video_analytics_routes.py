@@ -511,7 +511,11 @@ async def get_video_bookmarks(
 
 
 @router.post("/bookmarks/{bookmark_id}/share")
-async def share_bookmark(bookmark_id: UUID, db: AsyncSession = Depends(get_db)):
+async def share_bookmark(
+    bookmark_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """Increment share count for a bookmark"""
     service = VideoAnalyticsService(db)
     await service.increment_bookmark_share(bookmark_id)

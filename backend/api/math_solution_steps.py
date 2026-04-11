@@ -8,7 +8,12 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+from core.dependencies import (
+    AuthenticatedUser,
+    UserRole,
+    get_current_admin_user,
+    get_current_user,
+)
 from services.math_solution_step_service import (
     DifficultyLevel,
     math_solution_step_service,
@@ -318,9 +323,11 @@ async def get_navigation_info(problem_id: str):
 
 
 @router.delete("/cache")
-async def clear_cache():
+async def clear_cache(
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+):
     """
-    Çözüm cache'ini temizle
+    Çözüm cache'ini temizle (admin only)
 
     Bu endpoint:
     - Tüm cache'lenmiş çözümleri siler

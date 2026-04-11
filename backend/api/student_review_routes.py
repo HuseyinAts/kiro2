@@ -283,7 +283,10 @@ async def delete_review(
 
 @router.post("/{review_id}/ratings")
 async def add_review_ratings(
-    review_id: UUID, request: ReviewRatingsRequest, db: AsyncSession = Depends(get_db)
+    review_id: UUID,
+    request: ReviewRatingsRequest,
+    db: AsyncSession = Depends(get_db),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Add multi-criteria ratings to a review
@@ -498,11 +501,12 @@ async def generate_review_statistics(
     university_id: UUID | None = Query(None, description="Filter by university"),
     department_id: UUID | None = Query(None, description="Filter by department"),
     db: AsyncSession = Depends(get_db),
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     Generate or update review statistics
 
-    Recalculates statistics from current reviews
+    Recalculates statistics from current reviews (admin only — heavy op)
     """
     service = StudentReviewService(db)
 

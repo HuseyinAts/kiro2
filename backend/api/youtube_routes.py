@@ -923,9 +923,12 @@ async def get_search_stats(
 
 
 @router.post("/cache/clear")
-async def clear_cache(discovery: YouTubeDiscovery = Depends(get_discovery_service)):
+async def clear_cache(
+    discovery: YouTubeDiscovery = Depends(get_discovery_service),
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
+):
     """
-    Video cache'ini temizle
+    Video cache'ini temizle (admin only)
     """
     try:
         import sqlite3
@@ -1036,9 +1039,10 @@ async def health_check(
 async def start_background_update(
     background_tasks: BackgroundTasks,
     discovery: YouTubeDiscovery = Depends(get_discovery_service),
+    _admin: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
-    Arka planda video database güncellemesi başlat
+    Arka planda video database güncellemesi başlat (admin only)
     """
 
     async def update_video_database():
@@ -1097,7 +1101,9 @@ async def get_prometheus_metrics():
 
     except Exception as e:
         logger.error(f"Prometheus metrics hatası: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/metrics/snapshot", response_model=MetricsSnapshotResponse)
