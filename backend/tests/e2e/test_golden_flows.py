@@ -1123,3 +1123,347 @@ def test_gf1wb_auth_refresh_token_is_persisted():
         assert new_token, (
             f"GF1wB auth/refresh returned no access_token: {refresh_resp.json()}"
         )
+
+
+# ===========================================================================
+# AŞAMA 1 BATCH 1 — WRITE-PATH DISCOVERY PROBES (Session 140, 11 Apr 2026)
+# ---------------------------------------------------------------------------
+# Ten new write-path probes targeting the highest-gap surfaces the Session 140
+# feature inventory (docs/audits/2026-04-11_feature-inventory.md) identified:
+# learning (91/2 GF cov), auth (34/4), social (25/0), integrations, KVKK,
+# parent. Each probe is a *discovery* probe — Session 136 lenient
+# ``status_code != 500`` style — because we do not yet know which half-working
+# features hide behind these endpoints. First-run failures become the
+# Aşama 2 fix backlog. Successful probes become fail-closed regression guards.
+# ===========================================================================
+
+
+# ---------------------------------------------------------------------------
+# GF10: learning-path create-profile must not 500 (student onboard write)
+# ---------------------------------------------------------------------------
+
+
+def test_gf10_learning_path_create_profile_not_500(client: httpx.Client):
+    """
+    POST /api/v1/learning-path/create-profile must return a semantic status.
+
+    Every new student hits this endpoint during onboarding. The handler
+    (learning_path_v2.py:421) depends on the orchestrator profile store,
+    topic_hierarchy seed, and DAG service — all high-risk surfaces.
+    A 500 here means a new student cannot even be registered into the
+    personalized learning pipeline; the user would see a dead signup flow.
+
+    Lenient ``!= 500`` check: 200/201 (created), 400/409 (profile already
+    exists for the seed student), 422 (schema drift) are all acceptable
+    semantic responses. On 500: check async DB dependency wiring and
+    orchestrator profile-store initialization.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/learning-path/create-profile",
+        headers=_auth_headers(token),
+        json={
+            "name": "GF10 Probe Student",
+            "grade": 11,
+            "subjects": ["MATEMATIK", "FIZIK"],
+            "goals": ["Tıp fakültesi", "TYT/AYT"],
+            "learning_style": "visual",
+            "available_time": 120,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF10 learning-path create-profile crashed 500: {resp.text[:300]}. "
+        f"Check backend/api/learning_path_v2.py:421 — orchestrator profile "
+        f"store init and async DB wiring."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF11: learning-path quiz/{id}/submit must not 500 for unknown quiz_id
+# ---------------------------------------------------------------------------
+
+
+def test_gf11_learning_path_quiz_submit_not_500(client: httpx.Client):
+    """
+    POST /api/v1/learning-path/quiz/{quiz_id}/submit must not 500 on an
+    unknown quiz_id. The canonical "quiz kaybolma" failure mode: user
+    posts answers, handler 500s, their work is lost. Expected semantics:
+    404 ``Quiz not found`` or 400 validation — never 500.
+
+    This probe deliberately uses a bogus UUID to exercise the handler's
+    existence check branch. Session 136 root-cause family: wrong get_db
+    flavor, missing is_active filter on QuestionBankItem, FSRS fire-and-
+    forget swallow (learning_path_v2.py:1223 vicinity).
+    """
+    token = _login(client, STUDENT)
+    bogus_quiz_id = "00000000-0000-0000-0000-000000000000"
+    resp = client.post(
+        f"/api/v1/learning-path/quiz/{bogus_quiz_id}/submit",
+        headers=_auth_headers(token),
+        json={
+            "answers": [{"question_id": bogus_quiz_id, "selected": "A"}],
+            "time_spent_seconds": 60,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF11 learning-path quiz submit crashed 500: {resp.text[:300]}. "
+        f"Expected 404 (unknown quiz_id) or 400/422 (schema). A 500 points "
+        f"at the handler's pre-validation path — check the session lookup "
+        f"and QuestionBankItem filter in learning_path_v2.py:1223."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF12: fsrs/review must not 500 for bogus question_id
+# ---------------------------------------------------------------------------
+
+
+def test_gf12_fsrs_review_not_500(client: httpx.Client):
+    """
+    POST /api/v1/fsrs/review must return a semantic status.
+
+    FSRS is the engine behind every spaced-repetition card the student
+    grades from the review queue. This probe exercises the app/api/fsrs.py:86
+    handler with a valid schema but a bogus question_id. Expected: 200
+    (FSRS creates a new card) or 404 (lookup fails) — never 500.
+
+    Session 121 surfaced a 3-layer path-alignment bug here (loader swap +
+    frontend sync). This probe is the regression guard.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/fsrs/review",
+        headers=_auth_headers(token),
+        json={
+            "question_id": "00000000-0000-0000-0000-000000000000",
+            "is_correct": False,
+            "response_ms": 5000,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF12 fsrs/review crashed 500: {resp.text[:300]}. "
+        f"Check backend/app/api/fsrs.py:86 — FSRSCard upsert path and "
+        f"UserItemFSRS unique constraint handling."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF13: cat/sessions start must not 500 (CAT engine cold start)
+# ---------------------------------------------------------------------------
+
+
+def test_gf13_cat_session_start_not_500(client: httpx.Client):
+    """
+    POST /api/v1/cat/sessions must return a semantic status.
+
+    Session 112 rewrote the CAT engine (7 new service files) but there is
+    zero Golden Flow coverage. This probe starts a session with the
+    MATEMATIK subject and asserts the handler does not crash. Expected:
+    200 (session created with first question) or 400 (IRT bootstrap not
+    ready, empty question bank). A 500 means the CAT → IRT → question_bank
+    pipeline is broken.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/cat/sessions",
+        headers=_auth_headers(token),
+        json={"subject_id": "MATEMATIK"},
+    )
+    assert resp.status_code != 500, (
+        f"GF13 cat/sessions start crashed 500: {resp.text[:300]}. "
+        f"Check backend/app/api/cat.py:76 — IRTEngine cold start, "
+        f"theta bootstrap, and topic_hierarchy seed."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF14: auth change-password must reject wrong currentPassword cleanly
+# ---------------------------------------------------------------------------
+
+
+def test_gf14_auth_change_password_rejects_wrong_current(client: httpx.Client):
+    """
+    POST /api/v1/auth/change-password with a wrong ``currentPassword``
+    must return 400/401/403, never 500. This probe deliberately sends an
+    incorrect current password so the handler takes the "verify failed"
+    branch WITHOUT mutating the seed student's credentials — other tests
+    depend on STUDENT["password"] being stable.
+
+    Pattern B risk family: ``current_user.id`` on a Pydantic TokenPayload
+    (field is ``sub``) would raise AttributeError and surface as 500.
+    The Session 137 2FA sweep already fixed the dual-trap in the same file;
+    this probe guards against regression.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/auth/change-password",
+        headers=_auth_headers(token),
+        json={
+            "currentPassword": "DefinitelyWrong2026!",
+            "newPassword": "DefinitelyWrong2026!!",
+        },
+    )
+    assert resp.status_code in (400, 401, 403, 422), (
+        f"GF14 change-password wrong-current HTTP {resp.status_code}: "
+        f"{resp.text[:300]}. Expected 400/401/403. A 500 points at Pattern B "
+        f"(TokenPayload.id) or a missing `is_active` filter in the User "
+        f"lookup at backend/api/auth.py:1141."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF15: auth 2fa setup must not 500 (post-Session 137 regression guard)
+# ---------------------------------------------------------------------------
+
+
+def test_gf15_auth_2fa_setup_not_500(client: httpx.Client):
+    """
+    POST /api/v1/auth/2fa/setup must return a semantic status, never 500.
+
+    Session 137 fixed the dual-trap in two_factor_auth_api.py (7 Pattern-A
+    broken handlers + 19 Pattern-B TokenPayload.id accesses). GF9wD covers
+    /status. This probe covers /setup — the first write-path handler in
+    the 2FA flow, which builds a TOTP secret and writes it to the user's
+    row. Expected: 200 (new QR code) or 400/409 (already enabled).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post("/api/v1/auth/2fa/setup", headers=_auth_headers(token))
+    assert resp.status_code != 500, (
+        f"GF15 2fa/setup crashed 500: {resp.text[:300]}. "
+        f"Session 137 dual-trap regression — check "
+        f"backend/api/two_factor_auth_api.py:94 for sync get_db or "
+        f"TokenPayload.id use on ORM-only fields."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF16: kvkk consent/give must not 500 (write-path companion to GF8wA)
+# ---------------------------------------------------------------------------
+
+
+def test_gf16_kvkk_consent_give_not_500(client: httpx.Client):
+    """
+    POST /api/v1/kvkk/consent/give must return a semantic status.
+
+    GF8wA guards the read path (``my-consents`` list). Session 136 fixed
+    that file's sync get_db + TokenPayload.id dual-trap. This probe
+    exercises the *write* path in the same file — /consent/give — which
+    inserts a row into the consent audit table. A 500 here means the legal
+    compliance write surface is broken and users cannot record consent.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/kvkk/consent/give",
+        headers=_auth_headers(token),
+        json={
+            "purpose": "service_provision",
+            "consent_text": "GF Golden Flow probe consent",
+            "privacy_policy_version": "1.0.0",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF16 kvkk/consent/give crashed 500: {resp.text[:300]}. "
+        f"Check backend/api/kvkk_consent_api.py:109 — async DB wiring and "
+        f"ConsentRecord insert path."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF17: cozum-duellosu create must not 500 (social category — 0 GF cov)
+# ---------------------------------------------------------------------------
+
+
+def test_gf17_cozum_duellosu_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/cozum-duellosu/create must return a semantic status.
+
+    The feature-inventory audit flagged social as 25 write endpoints with
+    zero Golden Flow coverage — the biggest untested user-facing surface.
+    This probe is the representative: cozum-duellosu is the "solution duel"
+    gamified write path (two students race to solve one question).
+
+    We post a reasonable payload with a bogus question_bank_id. Expected:
+    404 (unknown question), 400 (validation), 409 (already in duel) —
+    never 500. On 500: the handler likely uses the wrong question model
+    (dual-table trap: ``Question`` vs ``QuestionBankItem``) or misses the
+    is_active filter.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/cozum-duellosu/create",
+        headers=_auth_headers(token),
+        json={
+            "question_bank_id": "00000000-0000-0000-0000-000000000000",
+            "subject_area": "MATEMATIK",
+            "solve_time_seconds": 300,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF17 cozum-duellosu/create crashed 500: {resp.text[:300]}. "
+        f"Check backend/api/cozum_duellosu_api.py:60 — question_bank lookup, "
+        f"dual-table trap (testing.md lesson #23), and orphan FK constraints."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF18: daily-quests claim-bonus must not 500 (streak fire-and-forget path)
+# ---------------------------------------------------------------------------
+
+
+def test_gf18_daily_quests_claim_bonus_not_500(client: httpx.Client):
+    """
+    POST /api/v1/daily-quests/claim-bonus must return a semantic status.
+
+    GF5wB covers quest progress advance; this probe covers the *claim*
+    path, which depends on the streak fire-and-forget writer documented
+    in the Session 136 half-working features audit as a risk hot spot.
+    A 500 here means either the XP transactions write (VARCHAR source
+    overflow, Session 136 P0 family) or the streak table touch is broken.
+    Expected: 200 (claimed), 400 (nothing to claim, already claimed today).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/daily-quests/claim-bonus",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF18 daily-quests/claim-bonus crashed 500: {resp.text[:300]}. "
+        f"Check backend/api/daily_quest_api.py:247 — streak writer and "
+        f"xp_transactions.source VARCHAR overflow (Session 136 P0 family)."
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF19: parent notifications create must not 500 (parent write surface)
+# ---------------------------------------------------------------------------
+
+
+def test_gf19_parent_notifications_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/parent/notifications must return a semantic status.
+
+    Session 115 secured most of the veli API (hardcoded creds removed,
+    asyncpg→SQLAlchemy, IDOR fix) but the notification create path has
+    no GF coverage. This probe has a parent create a notification for
+    a bogus child_id — expected 403/404 (not your child / unknown child),
+    400/422 (validation), never 500.
+
+    On 500: check parent_service.py:321 for IDOR-adjacent bugs, the ORM
+    field mapping, and the ParentChildRelation foreign key lookup.
+    """
+    token = _login(client, PARENT)
+    resp = client.post(
+        "/api/v1/parent/notifications",
+        headers=_auth_headers(token),
+        json={
+            "child_id": "00000000-0000-0000-0000-000000000000",
+            "title": "GF19 Probe Notification",
+            "message": "Golden Flow write-path probe",
+            "notification_type": "reminder",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF19 parent/notifications create crashed 500: {resp.text[:300]}. "
+        f"Check backend/api/parent.py:158 and parent_service.py:321 — "
+        f"ParentChildRelation FK lookup and async DB wiring."
+    )
