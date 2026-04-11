@@ -190,16 +190,36 @@ test timeout).
 
 Note on target selection: GF66 was originally planned against `/api/v1/knowledge-map/update` but that endpoint was already covered by GF46 (Wave 6), so it was swapped for `/api/v1/moderation/reports` to keep the Wave 8 set strictly disjoint from earlier waves.
 
-**Current distribution (Session 143):** 86 tests → **84 PASS, 0 FAIL, 2 SKIP**.
+Wave 9 — seventh feature-inventory sweep (Session 144, 10 new tests, discovered 2 additional half-working features):
 
-All new Wave 8 probes PASS after the Session 143 fixes. The 2 remaining SKIPs
-are unchanged (GF1wB refresh-token persist, GF4w.2 FSRS no due card). GF62
-admin/orchestrator/dispatch returns semantic 403 for the student token —
-accepted under the `!= 500` pattern (admin gate works as designed). GF63
-berturk/intent/detect returns structured 503 — accepted under the
-GF22/GF37/GF38/GF56/GF57 optional-dep pattern. GF68 soru-meydani solution
-returns 404 for a synthetic question id — accepted as a semantic not-found
-signal.
+Context: after Wave 8 the feature inventory still had ~460 uncovered write-path
+endpoints. Wave 9 probed a disjoint top-10 spanning ADHD focus mode, ADHD task
+management, multisensory video upload, visual-supports infographics,
+visual-supports vocabulary cards, BERTurk motivation assessment, sequential
+reasoning decomposition, Turkish NLP chat message, analytics CSV export, and
+Elasticsearch question search. 2 real bugs fell out.
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF70 | adhd-support focus-mode/activate not 500 | ADHD focus mode settings write path | ✅ PASS |
+| GF71 | adhd-support tasks/create not 500 | **Pydantic `int` → `str` type lie (second occurrence after GF20 AdhdPomodoroSessionResponse)**: `api/adhd_task_management_api.py:159` declared `TaskResponse.user_id: int`, but KIRO2 auth returns `AuthenticatedUser.id` as a UUID string. FastAPI refused to coerce at response serialization: `ValidationError: Input should be a valid integer, unable to parse string as an integer [input_value='0d3b011a-8be9-49cb-9a87-f8a8317ccc3d']`. | ✅ PASS (fix: Session 144 — `user_id: str` on `TaskResponse`, identical to the Session 139 GF20 fix on 3 ADHD pomodoro models) |
+| GF72 | multisensory/videos create not 500 | Multisensory video upload write path | ✅ PASS |
+| GF73 | visual-supports/infographics create not 500 | Infographic creation write path | ✅ PASS |
+| GF74 | visual-supports/vocabulary-cards create not 500 | Vocabulary card write path | ✅ PASS |
+| GF75 | berturk motivation/assess not 500 | BERTurk motivation assessment (optional-dep 503 — GF22 pattern) | ✅ PASS |
+| GF76 | reasoning/decompose not 500 | Sequential reasoning decomposition (404 acceptable — router unwired like GF41) | ✅ PASS |
+| GF77 | turkish-nlp-chat/message not 500 | **Optional-dep 503 wrapped as 500 (GF22/GF56/GF57 pattern, fifth occurrence)**: `api/turkish_nlp_chat.py:172` had a bare `except Exception` that caught the `HTTPException(503)` raised by `_require_nlp_system()` / `_ensure_initialized()` when the optional `turkish_nlp_chat_system` singleton was `None` (import failed), and re-wrapped it as a generic 500. The helper was correct; the handler's exception guard was missing. | ✅ PASS (fix: Session 144 — `except HTTPException: raise` guard added before the generic `except Exception` in `send_chat_message`, identical to the GF22/GF56/GF57 optional-dep propagation pattern) |
+| GF78 | analytics/export/csv not 500 | Analytics CSV export write path | ✅ PASS |
+| GF79 | elasticsearch/questions/search not 500 | Elasticsearch question search write path | ✅ PASS |
+
+**Current distribution (Session 144):** 96 tests → **94 PASS, 0 FAIL, 2 SKIP**.
+
+All new Wave 9 probes PASS after the Session 144 fixes. The 2 remaining SKIPs
+are unchanged (GF1wB refresh-token persist, GF4w.2 FSRS no due card). GF75
+berturk/motivation/assess and GF77 turkish-nlp-chat/message both return
+semantic 503 when optional deps are unavailable — accepted under the GF22
+pattern. GF76 reasoning/decompose 404 is accepted as router-unwired semantic,
+matching the GF41 precedent.
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`

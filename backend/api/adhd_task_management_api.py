@@ -12,13 +12,13 @@ Requirements: REQ-52.41 - REQ-52.60
 Task: 90.3, 90.4
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
-from typing import Optional, List
+import uuid
 from datetime import datetime
 from enum import Enum
-import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 from core.database import get_db
 from core.dependencies import get_current_user
@@ -120,19 +120,19 @@ class CreateTaskRequest(BaseModel):
     """Görev oluşturma isteği"""
 
     title: str = Field(..., min_length=1, max_length=200, description="Görev başlığı")
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None, max_length=1000, description="Görev açıklaması"
     )
     category: TaskCategory = Field(
         default=TaskCategory.OTHER, description="Görev kategorisi"
     )
-    due_date: Optional[datetime] = Field(None, description="Bitiş tarihi")
-    estimated_duration_minutes: Optional[int] = Field(
+    due_date: datetime | None = Field(None, description="Bitiş tarihi")
+    estimated_duration_minutes: int | None = Field(
         None, ge=1, le=480, description="Tahmini süre (dakika)"
     )
     is_urgent: bool = Field(default=False, description="Acil mi?")
     is_important: bool = Field(default=False, description="Önemli mi?")
-    parent_task_id: Optional[str] = Field(
+    parent_task_id: str | None = Field(
         None, description="Ana görev ID (alt görev için)"
     )
 
@@ -140,37 +140,37 @@ class CreateTaskRequest(BaseModel):
 class UpdateTaskRequest(BaseModel):
     """Görev güncelleme isteği"""
 
-    title: Optional[str] = Field(None, min_length=1, max_length=200)
-    description: Optional[str] = Field(None, max_length=1000)
-    category: Optional[TaskCategory] = None
-    status: Optional[TaskStatus] = None
-    priority: Optional[TaskPriority] = None
-    due_date: Optional[datetime] = None
-    estimated_duration_minutes: Optional[int] = Field(None, ge=1, le=480)
-    is_urgent: Optional[bool] = None
-    is_important: Optional[bool] = None
-    completed_at: Optional[datetime] = None
+    title: str | None = Field(None, min_length=1, max_length=200)
+    description: str | None = Field(None, max_length=1000)
+    category: TaskCategory | None = None
+    status: TaskStatus | None = None
+    priority: TaskPriority | None = None
+    due_date: datetime | None = None
+    estimated_duration_minutes: int | None = Field(None, ge=1, le=480)
+    is_urgent: bool | None = None
+    is_important: bool | None = None
+    completed_at: datetime | None = None
 
 
 class TaskResponse(BaseModel):
     """Görev yanıtı"""
 
     task_id: str
-    user_id: int
+    user_id: str
     title: str
-    description: Optional[str]
+    description: str | None
     category: TaskCategory
     status: TaskStatus
     priority: TaskPriority
     eisenhower_quadrant: EisenhowerQuadrant
-    due_date: Optional[datetime]
-    estimated_duration_minutes: Optional[int]
+    due_date: datetime | None
+    estimated_duration_minutes: int | None
     is_urgent: bool
     is_important: bool
     created_at: datetime
     updated_at: datetime
-    completed_at: Optional[datetime]
-    parent_task_id: Optional[str]
+    completed_at: datetime | None
+    parent_task_id: str | None
     subtasks_count: int
     # Renk bilgileri
     priority_color: str
@@ -182,7 +182,7 @@ class TaskResponse(BaseModel):
 class TaskListResponse(BaseModel):
     """Görev listesi yanıtı"""
 
-    tasks: List[TaskResponse]
+    tasks: list[TaskResponse]
     total_count: int
     by_priority: dict
     by_status: dict
@@ -231,18 +231,17 @@ def calculate_eisenhower_quadrant(
     """
     if is_urgent and is_important:
         return EisenhowerQuadrant.Q1_URGENT_IMPORTANT
-    elif not is_urgent and is_important:
+    if not is_urgent and is_important:
         return EisenhowerQuadrant.Q2_NOT_URGENT_IMPORTANT
-    elif is_urgent and not is_important:
+    if is_urgent and not is_important:
         return EisenhowerQuadrant.Q3_URGENT_NOT_IMPORTANT
-    else:
-        return EisenhowerQuadrant.Q4_NOT_URGENT_NOT_IMPORTANT
+    return EisenhowerQuadrant.Q4_NOT_URGENT_NOT_IMPORTANT
 
 
 def calculate_automatic_priority(
     is_urgent: bool,
     is_important: bool,
-    due_date: Optional[datetime],
+    due_date: datetime | None,
     category: TaskCategory,
 ) -> TaskPriority:
     """
@@ -371,10 +370,10 @@ def create_task(
 
 @router.get("/list", response_model=TaskListResponse)
 def list_tasks(
-    status_filter: Optional[TaskStatus] = None,
-    priority_filter: Optional[TaskPriority] = None,
-    category_filter: Optional[TaskCategory] = None,
-    quadrant_filter: Optional[EisenhowerQuadrant] = None,
+    status_filter: TaskStatus | None = None,
+    priority_filter: TaskPriority | None = None,
+    category_filter: TaskCategory | None = None,
+    quadrant_filter: EisenhowerQuadrant | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -561,7 +560,7 @@ def delete_task(
     del tasks_db[task_id]
 
 
-@router.get("/{task_id}/subtasks", response_model=List[TaskResponse])
+@router.get("/{task_id}/subtasks", response_model=list[TaskResponse])
 def get_subtasks(
     task_id: str,
     current_user: User = Depends(get_current_user),

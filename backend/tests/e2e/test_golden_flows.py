@@ -2893,3 +2893,278 @@ def test_gf69_teacher_assignment_create_not_500(client: httpx.Client):
         f"{resp.text[:300]}. Check app/api/teacher_classroom.py "
         f"create_assignment + TeacherAssignment ORM write."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 9 — seventh feature-inventory sweep (Session 144)
+# ---------------------------------------------------------------------------
+
+
+def test_gf70_adhd_focus_mode_activate_not_500(client: httpx.Client):
+    """
+    POST /api/v1/adhd-support/focus-mode/activate must not crash.
+
+    Probes the ADHD focus-mode activation write path. A 500 means the
+    sync ORM session (get_db) or the FocusModeSession write broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/adhd-support/focus-mode/activate",
+        headers=_auth_headers(token),
+        json={
+            "task_id": None,
+            "settings": {
+                "hide_sidebar": True,
+                "hide_navigation": True,
+                "hide_notifications": True,
+                "fullscreen_mode": False,
+                "minimal_ui": True,
+                "show_timer": True,
+                "show_progress": True,
+            },
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF70 focus-mode/activate crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/adhd_focus_mode_api.py."
+    )
+
+
+def test_gf71_adhd_task_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/adhd-support/tasks/create must not crash.
+
+    Probes the ADHD task management create write path. A 500 means
+    CreateTaskRequest handler, User ORM lookup, or task persistence
+    broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/adhd-support/tasks/create",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF71 probe gorevi",
+            "description": "wave 9 probe",
+            "category": "study",
+            "estimated_duration_minutes": 30,
+            "is_urgent": False,
+            "is_important": True,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF71 adhd tasks/create crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/adhd_task_management_api.py."
+    )
+
+
+def test_gf72_multisensory_video_add_not_500(client: httpx.Client):
+    """
+    POST /api/v1/multisensory/videos must not crash.
+
+    Probes the multisensory video add write path (sibling of GF31
+    animations and GF60 multimodal). A 500 means the EducationalVideo
+    service write or ModalityMapping broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/multisensory/videos",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF72 probe video",
+            "description": "wave 9 probe",
+            "url": "https://example.com/video.mp4",
+            "duration_seconds": 120,
+            "subject": "MATEMATIK",
+            "topic": "Turev",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF72 multisensory/videos crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/multisensory_learning_api.py."
+    )
+
+
+def test_gf73_visual_supports_infographic_not_500(client: httpx.Client):
+    """
+    POST /api/v1/visual-supports/infographics must not crash.
+
+    Probes the infographic creation write path (sibling of GF61
+    mind-maps). A 500 means the visual_supports_service generator
+    or template resolution broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/visual-supports/infographics",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF73 probe infografik",
+            "subject": "MATEMATIK",
+            "topic": "Turev",
+            "template": "bar_chart",
+            "data": [
+                {"label": "2020", "value": 10},
+                {"label": "2021", "value": 15},
+            ],
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF73 visual-supports/infographics crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/visual_supports_api.py."
+    )
+
+
+def test_gf74_visual_supports_vocab_card_not_500(client: httpx.Client):
+    """
+    POST /api/v1/visual-supports/vocabulary-cards must not crash.
+
+    Probes the vocabulary card creation write path. A 500 means the
+    visual_supports_service write or field validation broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/visual-supports/vocabulary-cards",
+        headers=_auth_headers(token),
+        json={
+            "word": "integral",
+            "definition": "fonksiyonun toplam alanini bulan islem",
+            "image_url": "https://example.com/integral.png",
+            "category": "MATEMATIK",
+            "example_sentence": "f(x) fonksiyonunun integrali F(x)'dir.",
+            "difficulty_level": 3,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF74 visual-supports/vocabulary-cards crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/visual_supports_api.py."
+    )
+
+
+def test_gf75_berturk_motivation_assess_not_500(client: httpx.Client):
+    """
+    POST /api/v1/berturk/motivation/assess must not crash.
+
+    Probes the BERTurk motivation assessment write path (sibling of
+    GF22 sentiment and GF63 intent). A 503 is acceptable when
+    transformers / model weights are missing (GF22 optional-dep
+    pattern).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/berturk/motivation/assess",
+        headers=_auth_headers(token),
+        json={
+            "student_id": "gf75-probe-student",
+            "recent_texts": [
+                "Bugun matematik calisirken cok yorulmustum.",
+                "Ama turev konusunu sonunda anladim!",
+            ],
+            "time_window_hours": 24,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF75 berturk/motivation crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 503 is acceptable when optional deps "
+        f"are missing (GF22 pattern). Check api/berturk_api.py."
+    )
+
+
+def test_gf76_reasoning_decompose_not_500(client: httpx.Client):
+    """
+    POST /api/v1/reasoning/decompose must not crash.
+
+    Probes the sequential reasoning decompose write path (sibling of
+    GF41 solve). As noted in Wave 6, sequential_reasoning_api may
+    be unwired — 404 is acceptable, only 500 is a crash regression.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/reasoning/decompose",
+        headers=_auth_headers(token),
+        json={
+            "problem": (
+                "Bir dik ucgenin kenarlari 3-4-5 oldugunda alanini ve "
+                "cevresini hesaplayin."
+            ),
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF76 reasoning/decompose crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 404 is acceptable when router unwired "
+        f"(GF41 pattern). Check api/sequential_reasoning_api.py."
+    )
+
+
+def test_gf77_turkish_nlp_chat_message_not_500(client: httpx.Client):
+    """
+    POST /api/v1/turkish-nlp-chat/message must not crash.
+
+    Probes the Turkish NLP chat message write path. A 500 means the
+    chat session creation, LLM dispatch, or conversation persistence
+    broke. Optional upstream timeout is acceptable via skip (GF24 pattern).
+    """
+    token = _login(client, STUDENT)
+    try:
+        resp = client.post(
+            "/api/v1/turkish-nlp-chat/message",
+            headers=_auth_headers(token),
+            json={
+                "student_id": "gf77-probe-student",
+                "message": "Integral nedir?",
+                "subject": "matematik",
+            },
+        )
+    except httpx.ReadTimeout:
+        pytest.skip("GF77 upstream LLM timeout — state-dependent")
+    assert resp.status_code != 500, (
+        f"GF77 turkish-nlp-chat/message crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/turkish_nlp_chat.py."
+    )
+
+
+def test_gf78_analytics_export_csv_not_500(client: httpx.Client):
+    """
+    POST /api/v1/analytics/export/csv must not crash.
+
+    Probes the analytics CSV export write path. A 500 means the
+    CSV generator, data aggregation, or filter handling broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/analytics/export/csv",
+        headers=_auth_headers(token),
+        json={
+            "format": "csv",
+            "data_type": "student",
+            "filters": {},
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF78 analytics/export/csv crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/analytics.py export_analytics_csv."
+    )
+
+
+def test_gf79_elasticsearch_questions_search_not_500(client: httpx.Client):
+    """
+    POST /api/v1/elasticsearch/questions/search must not crash.
+
+    Probes the Elasticsearch question search write path (POST with
+    body, not GET). A 503 is acceptable when ES is not running in
+    the MVP Docker stack (GF22 optional-dep pattern).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/elasticsearch/questions/search",
+        headers=_auth_headers(token),
+        json={
+            "query": "turev",
+            "size": 10,
+            "from": 0,
+            "subject": "MATEMATIK",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF79 elasticsearch/questions/search crashed: {resp.status_code} "
+        f"{resp.text[:300]}. 503 is acceptable when ES unavailable "
+        f"(GF22 pattern). Check api/elasticsearch.py."
+    )

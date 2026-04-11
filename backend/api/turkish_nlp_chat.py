@@ -169,6 +169,10 @@ async def send_chat_message(
             data=response_data,
         )
 
+    except HTTPException:
+        # Optional-dep 503 from _require_nlp_system / _ensure_initialized must
+        # propagate as-is; do not re-wrap as 500 (GF22/GF56/GF57 pattern).
+        raise
     except Exception as e:
         logger.error(f"Chat mesajı işleme hatası: {e}")
         raise HTTPException(
