@@ -5,11 +5,11 @@ Fallback TTS servisi için backend endpoint
 Requirements: REQ-50.45 (Fallback TTS servisi)
 """
 
-from fastapi import APIRouter, HTTPException, Response
-from pydantic import BaseModel, Field
-from typing import Optional
 import logging
 from io import BytesIO
+
+from fastapi import APIRouter, HTTPException, Response
+from pydantic import BaseModel, Field
 
 # TTS kütüphaneleri
 try:
@@ -41,7 +41,7 @@ class TTSRequest(BaseModel):
     language: str = Field(default="tr-TR", description="Dil kodu (tr-TR, en-US, vb.)")
     rate: float = Field(default=1.0, ge=0.5, le=2.0, description="Ses hızı (0.5-2.0)")
     pitch: float = Field(default=1.0, ge=0.5, le=2.0, description="Ses tonu (0.5-2.0)")
-    voice_gender: Optional[str] = Field(
+    voice_gender: str | None = Field(
         default=None, description="Ses cinsiyeti (male/female)"
     )
 
@@ -87,7 +87,7 @@ class TTSService:
             return audio_stream
 
         except Exception as e:
-            logger.error(f"gTTS hatası: {str(e)}")
+            logger.error(f"gTTS hatası: {e!s}")
             raise
 
     @staticmethod
@@ -95,7 +95,7 @@ class TTSService:
         text: str,
         rate: float = 1.0,
         pitch: float = 1.0,
-        voice_gender: Optional[str] = None,
+        voice_gender: str | None = None,
     ) -> BytesIO:
         """
         pyttsx3 ile offline ses sentezleme
@@ -162,12 +162,15 @@ class TTSService:
             return audio_stream
 
         except Exception as e:
-            logger.error(f"pyttsx3 hatası: {str(e)}")
+            logger.error(f"pyttsx3 hatası: {e!s}")
             raise
 
 
 @router.post("/synthesize", response_class=Response)
-async def synthesize_speech(request: TTSRequest):
+async def synthesize_speech(
+    request: TTSRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Metin seslendir (Fallback TTS)
 
@@ -199,7 +202,7 @@ async def synthesize_speech(request: TTSRequest):
                     },
                 )
             except Exception as e:
-                logger.warning(f"gTTS başarısız, pyttsx3'e geçiliyor: {str(e)}")
+                logger.warning(f"gTTS başarısız, pyttsx3'e geçiliyor: {e!s}")
 
         # gTTS başarısız olursa pyttsx3 dene (offline)
         if PYTTSX3_AVAILABLE:
@@ -220,7 +223,7 @@ async def synthesize_speech(request: TTSRequest):
                     },
                 )
             except Exception as e:
-                logger.error(f"pyttsx3 başarısız: {str(e)}")
+                logger.error(f"pyttsx3 başarısız: {e!s}")
 
         # Hiçbir TTS servisi kullanılamıyorsa
         raise HTTPException(
@@ -231,8 +234,10 @@ async def synthesize_speech(request: TTSRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"TTS API hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        logger.error(f"TTS API hatası: {e!s}")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/voices")
@@ -285,7 +290,7 @@ async def get_available_voices():
                     }
                 )
         except Exception as e:
-            logger.error(f"pyttsx3 ses listesi alınamadı: {str(e)}")
+            logger.error(f"pyttsx3 ses listesi alınamadı: {e!s}")
 
     return voices
 

@@ -157,7 +157,7 @@ class MermaidResponse(BaseModel):
 async def solve_problem(
     request: SolveRequest,
     db: AsyncSession = Depends(get_async_session),
-    current_user=Depends(authenticate_optional),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Solve a problem with step-by-step reasoning
@@ -344,7 +344,7 @@ async def get_session_mermaid(
 async def decompose_problem(
     request: DecomposeRequest,
     db: AsyncSession = Depends(get_async_session),
-    current_user=Depends(authenticate_optional),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Decompose a complex problem into sub-problems
@@ -377,7 +377,7 @@ async def decompose_problem(
 async def compare_providers(
     request: CompareRequest,
     db: AsyncSession = Depends(get_async_session),
-    current_user=Depends(authenticate_optional),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Compare all providers on the same problem

@@ -84,7 +84,10 @@ class CheckAnswerRequest(BaseModel):
 
 
 @router.post("/generate")
-async def generate_solution(request: GenerateSolutionRequest):
+async def generate_solution(
+    request: GenerateSolutionRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Matematik problemi için adım adım çözüm oluştur
 
@@ -207,7 +210,11 @@ async def get_step(problem_id: str, step_number: int):
 
 
 @router.post("/hint")
-async def get_hint(request: GetHintRequest, student_id: str | None = None):
+async def get_hint(
+    request: GetHintRequest,
+    student_id: str | None = None,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Belirli bir adım için ipucu getir
 
@@ -431,7 +438,10 @@ async def get_hint_trends(
 
 
 @router.post("/check-answer")
-async def check_answer(request: CheckAnswerRequest):
+async def check_answer(
+    request: CheckAnswerRequest,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Öğrenci cevabını kontrol et ve hata varsa tespit et
 

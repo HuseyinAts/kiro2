@@ -94,6 +94,10 @@ except ImportError:
     RateLimitExceeded = Exception
 
 from core.ddos_protection import limiter  # Task 12: Use global limiter
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_admin_user,
+)
 from core.metrics_collector import get_metrics_collector
 
 # from core.elasticsearch_logger import get_elasticsearch_logger, LogLevel, LogCategory
@@ -433,6 +437,7 @@ async def search_videos(
     semantic_search: SemanticYouTubeSearch = Depends(get_semantic_search_service),
     real_youtube: RealYouTubeAPI = Depends(get_real_youtube_service),
     youtube_rate_limiter: YouTubeRateLimiter = Depends(get_youtube_rate_limiter),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Semantic/Hybrid YouTube video arama sistemi
@@ -629,6 +634,7 @@ async def get_personalized_recommendations(
         lambda: get_video_recommendation_service()
     ),
     youtube_rate_limiter: YouTubeRateLimiter = Depends(get_youtube_rate_limiter),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Kişiselleştirilmiş video önerileri - VideoRecommendationService ile
