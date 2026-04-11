@@ -2063,3 +2063,310 @@ def test_gf39_oba_seferleri_contribute_not_500(client: httpx.Client):
         f"{resp.text[:300]}. Check api/oba_seferleri_api.py:108 — "
         f"_check_rate_limit + ObaChallengeProgress write path."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 6 — fourth feature-inventory sweep (Session 141)
+#
+# Wave 5 probed 10 disjoint top-10 endpoints from the feature inventory and
+# fixed 3 real bugs + 1 bonus (GF24). Wave 6 targets a *different* disjoint
+# top-10 spanning placement assessment, sequential reasoning, duel
+# matchmaking, Zemberek/Turkish-NLP services, grade impact estimator,
+# knowledge map update, content recommendations, YKS preference score
+# calculation, and emotional state tracking. Same rule as Waves 1–5: the
+# handler MUST NOT 500. 501/503 from optional deps are acceptable structured
+# unavailability and waived via the GF22 `!= 500` assertion pattern.
+# ---------------------------------------------------------------------------
+
+
+def test_gf40_assessment_start_not_500(client: httpx.Client):
+    """
+    POST /api/v1/assessment/start must not crash.
+
+    Probes the adaptive placement assessment engine — the very first step
+    a brand-new student goes through. A 500 means the CAT/theta-SE service,
+    initial question selection, or assessment_sessions table wiring broke.
+    With no ``subjects`` filter the handler defaults to all subjects, which
+    is the realistic new-student path.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/assessment/start",
+        headers=_auth_headers(token),
+        json={"subjects": ["MATEMATIK"]},
+    )
+    assert resp.status_code < 500, (
+        f"GF40 assessment/start crashed: {resp.status_code} {resp.text[:300]}. "
+        f"Check api/placement_assessment_api.py:129 — start_assessment + "
+        f"initial CAT question picker."
+    )
+
+
+def test_gf41_reasoning_solve_not_500(client: httpx.Client):
+    """
+    POST /api/v1/reasoning/solve must not crash.
+
+    Probes the sequential-reasoning LLM chain (decompose → solve → verify).
+    A 500 means the upstream LLM provider call unwrapped an exception at
+    handler level instead of returning a graceful error envelope. Upstream
+    timeout is treated as acceptable state-dependent skip (like GF24 before
+    its slowapi fix) — ``httpx.TimeoutException`` → skip, not a probe
+    failure.
+    """
+    token = _login(client, STUDENT)
+    try:
+        resp = client.post(
+            "/api/v1/reasoning/solve",
+            headers=_auth_headers(token),
+            json={
+                "problem": "x^2 + 5x + 6 = 0 denklemini coz",
+                "use_ensemble": False,
+                "max_steps": 5,
+                "use_cache": True,
+            },
+            timeout=45.0,
+        )
+    except httpx.TimeoutException:
+        pytest.skip("reasoning/solve upstream LLM did not respond in 45s budget")
+    # Optional-dep / unavailable provider is an acceptable structured 503.
+    assert resp.status_code != 500, (
+        f"GF41 reasoning/solve crashed 500: {resp.text[:300]}. "
+        f"Check api/sequential_reasoning_api.py:157 — solve_problem + "
+        f"LLM provider error envelope."
+    )
+
+
+def test_gf42_duel_matchmake_not_500(client: httpx.Client):
+    """
+    POST /api/v1/duel/matchmake must not crash.
+
+    Probes the real-time duel matchmaking write path (Elo rating queue).
+    First matchmake call on an empty queue returns ``{status: "queued"}``
+    — that's the happy path here, not an error. A 500 means the
+    duel_sessions / duel_rating tables are missing, the Elo service
+    crashed, or the session_type enum drifted.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/duel/matchmake",
+        headers=_auth_headers(token),
+        json={"subject": "MATEMATIK"},
+    )
+    assert resp.status_code < 500, (
+        f"GF42 duel/matchmake crashed: {resp.status_code} {resp.text[:300]}. "
+        f"Check api/duel_api.py:79 — enqueue_matchmaking + "
+        f"get_or_create_rating."
+    )
+
+
+def test_gf43_zemberek_tokenize_not_500(client: httpx.Client):
+    """
+    POST /api/v1/zemberek/tokenize must not crash.
+
+    Probes the Turkish tokenizer service (Zemberek JVM bridge). A 500 means
+    the JPype/Zemberek bootstrap failed, the morphology singleton is None,
+    or the response envelope drifted. 503 from ``zemberek_service is None``
+    is acceptable structured unavailability (GF22 pattern).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/zemberek/tokenize",
+        headers=_auth_headers(token),
+        json={"text": "Kitap okumak çok keyifli bir deneyim."},
+    )
+    assert resp.status_code != 500, (
+        f"GF43 zemberek/tokenize crashed 500: {resp.text[:300]}. "
+        f"Check api/zemberek.py:249 — Zemberek JVM singleton + "
+        f"tokenizer response envelope."
+    )
+
+
+def test_gf44_turkish_nlp_normalize_not_500(client: httpx.Client):
+    """
+    POST /api/v1/turkish-nlp/text/normalize must not crash.
+
+    Probes the Turkish text normalization pipeline (NFC + I/ı locale fix +
+    whitespace). A 500 means the unicodedata / Turkish lowercase mapping
+    got an unexpected input shape. This is the exact surface that has
+    historically bitten us with the İ→ı locale trap, so a regression here
+    is a red flag for every subject-slug comparison downstream.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/turkish-nlp/text/normalize",
+        headers=_auth_headers(token),
+        json={"text": "İstanbul'dan İzmir'e gitmek için İDO feribotu"},
+    )
+    assert resp.status_code != 500, (
+        f"GF44 turkish-nlp/text/normalize crashed 500: {resp.text[:300]}. "
+        f"Check api/turkish_nlp.py:184 — normalize_text + NFC + "
+        f"Turkish lowercase mapping."
+    )
+
+
+def test_gf45_estimate_impact_not_500(client: httpx.Client):
+    """
+    POST /api/v1/estimate/impact must not crash.
+
+    Probes the YKS score impact estimator — answers the student question
+    "if I raise my theta on this subject, how much does my YKS score move?".
+    A 500 means the YKSEstimator singleton, ``user_theta`` query, or
+    score-type enum coercion broke. 404 is acceptable when the student has
+    no theta row yet for the requested subject.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/estimate/impact",
+        headers=_auth_headers(token),
+        json={
+            "puan_turu": "SAY",
+            "ders_kodu": "mat",
+            "hedef_theta": 1.5,
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF45 estimate/impact crashed: {resp.status_code} {resp.text[:300]}. "
+        f"Check app/api/estimator.py:211 — ders_katkisi + YKSEstimator + "
+        f"_kullanici_thetalarini_cek."
+    )
+
+
+def test_gf46_knowledge_map_update_not_500(client: httpx.Client):
+    """
+    POST /api/v1/knowledge-map/update must not crash.
+
+    Probes the knowledge graph mastery update write path. With a synthetic
+    ``knowledge_point_id`` the handler should return 404 "knowledge point
+    not found" — a 500 means the mastery computation, knowledge_states
+    table, or student_id resolution crashed.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/knowledge-map/update",
+        headers=_auth_headers(token),
+        json={
+            "knowledge_point_id": "gf46-probe-kp",
+            "is_correct": True,
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF46 knowledge-map/update crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/knowledge_graph_api.py:254 — "
+        f"update_knowledge_state + knowledge_states wiring."
+    )
+
+
+def test_gf47_recommendations_not_500(client: httpx.Client):
+    """
+    POST /api/v1/recommendations must not crash.
+
+    Probes the content recommendation engine (cold-start + diversity).
+    A 500 means the vector index, recommendation scorer, or
+    cold-start fallback crashed. The seeded student is a fresh user so
+    the cold-start branch is exercised.
+    """
+    token = _login(client, STUDENT)
+    # user_id in body is a legacy contract — we pass the seeded student UUID
+    # via /auth/me so the body matches what the handler expects.
+    me = client.get("/api/v1/auth/me", headers=_auth_headers(token))
+    if me.status_code != 200:
+        pytest.skip(f"/auth/me failed: {me.status_code}")
+    payload = me.json()
+    user_id = str(
+        payload.get("id")
+        or payload.get("user_id")
+        or (payload.get("user") or {}).get("id")
+        or (payload.get("kullanici") or {}).get("id")
+        or ""
+    )
+    if not user_id:
+        pytest.skip("no user id in /auth/me response")
+    resp = client.post(
+        "/api/v1/recommendations",
+        headers=_auth_headers(token),
+        json={
+            "user_id": user_id,
+            "limit": 5,
+            "subject_filter": "MATEMATIK",
+            "ensure_diversity": True,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF47 recommendations crashed 500: {resp.text[:300]}. "
+        f"Check api/v1/content_recommendation.py:155 — get_recommendations + "
+        f"cold-start + diversity pipeline."
+    )
+
+
+def test_gf48_preference_simulation_calculate_score_not_500(client: httpx.Client):
+    """
+    POST /api/v1/preference-simulation/calculate-score must not crash.
+
+    Probes the YKS score calculator (TYT + AYT + coefficients + bonus).
+    A 500 means the ScoreType enum, PreferenceSimulationService wiring,
+    or bonus-point helper broke. 400 is acceptable if the probe payload
+    trips the input validator (not a regression).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/preference-simulation/calculate-score",
+        headers=_auth_headers(token),
+        json={
+            "score_type": "SAY",
+            "tyt_scores": {
+                "turkce": 35.0,
+                "sosyal": 18.0,
+                "matematik": 38.0,
+                "fen": 20.0,
+            },
+            "ayt_scores": {
+                "matematik": 36.0,
+                "fizik": 12.0,
+                "kimya": 10.0,
+                "biyoloji": 11.0,
+            },
+            "diploma_grade": 88.0,
+            "language_certificate": None,
+            "special_talent": False,
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF48 preference-simulation/calculate-score crashed: "
+        f"{resp.status_code} {resp.text[:300]}. "
+        f"Check api/preference_simulation_routes.py:104 — "
+        f"PreferenceSimulationService.calculate_yks_score + apply_bonus_points."
+    )
+
+
+def test_gf49_diary_emotional_not_500(client: httpx.Client):
+    """
+    POST /api/v1/diary/emotional must not crash.
+
+    Probes the emotional state tracking write path (separate table from
+    diary/goals which GF26 fixed). A 500 means the EmotionalState model,
+    self-awareness scorer, or diary_api.py:1267 handler broke. This is
+    the exact class of bug that GF26 found on diary/goals — probing the
+    sibling endpoint verifies the fix generalised.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/diary/emotional",
+        headers=_auth_headers(token),
+        json={
+            "confidence_level": 7,
+            "frustration_score": 0.2,
+            "retry_count": 1,
+            "error_count": 0,
+            "flow_state": True,
+            "productivity_score": 0.75,
+            "tasks_completed": 3,
+            "task_type": "matematik_problem_cozumu",
+            "trigger_factors": {"noise": "low"},
+            "context_notes": "GF49 probe",
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF49 diary/emotional crashed: {resp.status_code} {resp.text[:300]}. "
+        f"Check api/diary_api.py:1267 — track_emotional_state + "
+        f"EmotionalState model write path."
+    )

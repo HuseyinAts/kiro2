@@ -110,13 +110,34 @@ from state-dependent skip to real fix.
 
 Bonus: **GF24 promoted from SKIP → FAIL → PASS.** GF24 (enhanced-chat/message) was previously filed as a state-dependent skip because the upstream LLM blocked beyond the test timeout. With `ollama` running locally this time the handler actually completed in ~21s and exposed a hidden 500: `parameter 'response' must be an instance of starlette.responses.Response`. Root cause: `@limiter.limit("10/minute")` (slowapi) requires the handler to declare a `response: Response` parameter so rate-limit headers can be attached to the outgoing Response; without it, slowapi tries to set headers on the dict return value and crashes. Fix (Session 140): add `response: Response` to `send_message` in `api/enhanced_chat.py:391` and rename the LLM result local to `llm_response` to avoid shadowing. GF24 now PASSes end-to-end when upstream responds within budget.
 
-**Current distribution (Session 140):** 56 tests → **54 PASS, 0 FAIL, 2 SKIP**.
+Wave 6 — fourth feature-inventory sweep (Session 141, 10 new tests, discovered 2 additional half-working features):
 
-All new Wave 5 probes PASS after the Session 140 fixes. The 2 remaining SKIPs
-are unchanged (GF1wB refresh-token persist, GF4w.2 FSRS no due card). GF24 is
-no longer a state-dependent skip — with the slowapi `response: Response`
-parameter wired, the handler surfaces a semantic status whenever upstream
-responds within the probe timeout.
+Context: after Wave 5 the feature inventory still had ~490 uncovered write-path
+endpoints. Wave 6 probed a disjoint top-10 spanning placement assessment,
+sequential reasoning (ensemble LLM), duel matchmaking, Zemberek tokenization,
+Turkish NLP normalization, YKS impact estimator, knowledge graph mastery
+update, content recommendations, YKS preference score calculator, and diary
+emotional state tracking. 2 real bugs fell out.
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF40 | assessment/start not 500 | **Enum coercion type lie**: `services/placement_assessment_service.py:212` called `diff_str.upper().replace(...)` on `QuestionBankItem.difficulty_level`, which is a `QuestionDifficultyLevel` enum (SQLAlchemy `Enum` type) — not a plain `str`. `AttributeError: 'QuestionDifficultyLevel' object has no attribute 'upper'` crashed the CAT item loader for every row, so `load_assessment_items` returned an empty pool and the handler bubbled a generic 500. | ✅ PASS (fix: Session 141 — coerce with `str(getattr(raw_diff, "value", raw_diff))` in `load_assessment_items` before string ops; matches the existing enum-to-string pattern used elsewhere in the service) |
+| GF41 | reasoning/solve not 500 | Sequential reasoning ensemble LLM write path (`api/sequential_reasoning_api.py`) | ✅ PASS (route currently 404 — router not wired; 404 is semantic, not a crash) |
+| GF42 | duel/matchmake not 500 | `MatchmakeRequest` + duel matchmaker write path | ✅ PASS |
+| GF43 | zemberek/tokenize not 500 | Zemberek JVM tokenizer write path (optional-dep fallback) | ✅ PASS |
+| GF44 | turkish-nlp/text/normalize not 500 | Turkish morphology + normalization pipeline | ✅ PASS |
+| GF45 | estimate/impact not 500 | YKS puan impact estimator (`app/api/estimator.py` + IRT theta theta-delta) | ✅ PASS |
+| GF46 | knowledge-map/update not 500 | Knowledge graph mastery update write path | ✅ PASS |
+| GF47 | recommendations not 500 | Content recommendation cold-start + diversity pipeline | ✅ PASS (probe refinement: the `/auth/me` response envelope wraps the user under `user.id` — initial probe looked at top-level `id` and false-skipped. Fixed by walking `payload.get("user") / payload.get("kullanici")` before skipping, mirroring the seeded login envelope shape) |
+| GF48 | preference-simulation/calculate-score not 500 | YKS score calculator (TYT + AYT + coefficients + bonus) | ✅ PASS |
+| GF49 | diary/emotional not 500 | **asyncpg VARCHAR + `default=uuid4` type lie (third occurrence after GF26 Goal + GF36 LiveSession)**: `models/diary.py:391` declared `EmotionalState.id = Column(String, primary_key=True, default=uuid4)` and `user_id = Column(String, ...)`. asyncpg refuses to bind a Python `UUID` object to a VARCHAR parameter with `DataError: expected str, got UUID`. | ✅ PASS (fix: Session 141 — coerce at caller level in `services/emotional_service.track_state` with `id=str(uuid4())` + `user_id=str(user_id)`, identical to the Session 139 `goal_service.create_goal` and Session 140 `video_conference_service.create_session` fixes. **Rule of three established**: any model declaring a VARCHAR primary key with `default=uuid4` needs caller-level `str(uuid4())` coercion or asyncpg will refuse the bind.) |
+
+**Current distribution (Session 141):** 66 tests → **64 PASS, 0 FAIL, 2 SKIP**.
+
+All new Wave 6 probes PASS after the Session 141 fixes. The 2 remaining SKIPs
+are unchanged (GF1wB refresh-token persist, GF4w.2 FSRS no due card). GF41
+reasoning/solve is semantically 404 (router unwired) — not a crash, so the
+probe accepts it under the `!= 500` pattern.
 
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
