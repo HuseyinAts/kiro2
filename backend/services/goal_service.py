@@ -6,19 +6,19 @@ SMART validation, progress tracking, milestone celebration, risk detection.
 """
 
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.diary import Goal, GoalStatus
 from api.schemas.diary import (
     GoalCreate,
-    GoalUpdate,
     GoalProgressUpdate,
     GoalRiskResponse,
+    GoalUpdate,
 )
+from models.diary import Goal, GoalStatus
 
 
 class GoalService:
@@ -54,7 +54,7 @@ class GoalService:
     # REQ-6.1: SMART Validation
     # =========================================================================
 
-    def validate_smart(self, goal: GoalCreate) -> Dict[str, Any]:
+    def validate_smart(self, goal: GoalCreate) -> dict[str, Any]:
         """
         SMART kriterlerini dogrula (REQ-6.1).
 
@@ -76,14 +76,16 @@ class GoalService:
             - warnings: List[str]
         """
         score = 0
-        missing: List[str] = []
-        warnings: List[str] = []
+        missing: list[str] = []
+        warnings: list[str] = []
 
         # Specific: Title ve description kontrolu
         if goal.title and len(goal.title) >= 10:
             score += 1
         else:
-            missing.append("Specific: Hedef basligi daha detayli olmali (min 10 karakter)")
+            missing.append(
+                "Specific: Hedef basligi daha detayli olmali (min 10 karakter)"
+            )
 
         if goal.specific:
             score += 0.5
@@ -114,8 +116,15 @@ class GoalService:
             warnings.append("Relevant: 'Neden onemli?' alani bos")
 
         # Time-bound: Target date kontrolu
+        # Pydantic parses ISO datetimes with `Z` suffix as tz-aware; normalize
+        # the "now" side to the same tzinfo to avoid TypeError on comparison.
         if goal.target_date:
-            if goal.target_date > datetime.now():
+            now = (
+                datetime.now(goal.target_date.tzinfo)
+                if goal.target_date.tzinfo
+                else datetime.now()
+            )
+            if goal.target_date > now:
                 score += 1
             else:
                 missing.append("Time-bound: Hedef tarihi gelecekte olmali")
@@ -136,11 +145,7 @@ class GoalService:
     # REQ-6.2: Progress Tracking
     # =========================================================================
 
-    def calculate_progress(
-        self,
-        current_value: float,
-        target_value: float
-    ) -> int:
+    def calculate_progress(self, current_value: float, target_value: float) -> int:
         """
         Ilerleme yuzdesini hesapla (REQ-6.2).
 
@@ -156,10 +161,7 @@ class GoalService:
         progress = (current_value / target_value) * 100
         return min(100, max(0, int(progress)))
 
-    def calculate_velocity(
-        self,
-        goal: Goal
-    ) -> float:
+    def calculate_velocity(self, goal: Goal) -> float:
         """
         Ilerleme hizini hesapla (gunluk).
 
@@ -178,7 +180,7 @@ class GoalService:
 
         return goal.progress / days_elapsed
 
-    def predict_completion(self, goal: Goal) -> Optional[datetime]:
+    def predict_completion(self, goal: Goal) -> datetime | None:
         """
         Tahmini tamamlanma tarihini hesapla.
 
@@ -201,11 +203,7 @@ class GoalService:
     # REQ-6.3: Milestone Celebration
     # =========================================================================
 
-    def check_milestones(
-        self,
-        goal: Goal,
-        new_progress: int
-    ) -> List[Dict[str, Any]]:
+    def check_milestones(self, goal: Goal, new_progress: int) -> list[dict[str, Any]]:
         """
         Ulasilan kilometre taslarini kontrol et (REQ-6.3).
 
@@ -216,7 +214,7 @@ class GoalService:
         Returns:
             List[Dict] - Ulasilan milestone'lar ve kutlama mesajlari
         """
-        achieved: List[Dict[str, Any]] = []
+        achieved: list[dict[str, Any]] = []
         old_progress = goal.progress
 
         # Mevcut milestone'lari kontrol et
@@ -231,12 +229,14 @@ class GoalService:
                     milestone_title=milestone.get("title", f"%{percentage} tamamlandi"),
                     percentage=percentage,
                 )
-                achieved.append({
-                    "percentage": percentage,
-                    "title": milestone.get("title"),
-                    "celebration": celebration,
-                    "achieved_at": datetime.now().isoformat(),
-                })
+                achieved.append(
+                    {
+                        "percentage": percentage,
+                        "title": milestone.get("title"),
+                        "celebration": celebration,
+                        "achieved_at": datetime.now().isoformat(),
+                    }
+                )
 
         # Default milestone'lar
         for pct in self.DEFAULT_MILESTONES:
@@ -247,20 +247,18 @@ class GoalService:
                         milestone_title=f"%{pct} tamamlandi",
                         percentage=pct,
                     )
-                    achieved.append({
-                        "percentage": pct,
-                        "title": f"%{pct} tamamlandi",
-                        "celebration": celebration,
-                        "achieved_at": datetime.now().isoformat(),
-                    })
+                    achieved.append(
+                        {
+                            "percentage": pct,
+                            "title": f"%{pct} tamamlandi",
+                            "celebration": celebration,
+                            "achieved_at": datetime.now().isoformat(),
+                        }
+                    )
 
         return achieved
 
-    def _generate_celebration(
-        self,
-        milestone_title: str,
-        percentage: int
-    ) -> str:
+    def _generate_celebration(self, milestone_title: str, percentage: int) -> str:
         """Kutlama mesaji olustur"""
         celebrations = {
             25: "🚀 Harika baslangiç! Ceyreği tamamladın!",
@@ -293,8 +291,8 @@ class GoalService:
         Returns:
             GoalRiskResponse - Risk analizi
         """
-        risk_factors: List[str] = []
-        recommendations: List[str] = []
+        risk_factors: list[str] = []
+        recommendations: list[str] = []
         is_at_risk = False
 
         # 1. Velocity kontrolü
@@ -304,13 +302,15 @@ class GoalService:
         if velocity < expected_velocity * self.RISK_VELOCITY_THRESHOLD:
             is_at_risk = True
             risk_factors.append(
-                f"Ilerleme hizi beklenenin %{int(velocity/expected_velocity*100)}'i"
+                f"Ilerleme hizi beklenenin %{int(velocity / expected_velocity * 100)}'i"
             )
             recommendations.append("Gunluk hedefler belirle ve takip et")
 
         # 2. Zaman baskısı
         if goal.target_date:
-            days_remaining = (goal.target_date - datetime.now(goal.target_date.tzinfo)).days
+            days_remaining = (
+                goal.target_date - datetime.now(goal.target_date.tzinfo)
+            ).days
 
             if days_remaining <= self.RISK_DAYS_THRESHOLD and goal.progress < 70:
                 is_at_risk = True
@@ -326,7 +326,9 @@ class GoalService:
 
         # 3. Güncelleme kontrolü
         if goal.updated_at:
-            days_since_update = (datetime.now(goal.updated_at.tzinfo) - goal.updated_at).days
+            days_since_update = (
+                datetime.now(goal.updated_at.tzinfo) - goal.updated_at
+            ).days
             if days_since_update > 7 and goal.progress < 100:
                 is_at_risk = True
                 risk_factors.append(f"{days_since_update} gundur guncelleme yok")
@@ -371,9 +373,9 @@ class GoalService:
         self,
         goal_id: UUID,
         reason: str,
-        new_target_value: Optional[float] = None,
-        new_target_date: Optional[datetime] = None,
-    ) -> Optional[Goal]:
+        new_target_value: float | None = None,
+        new_target_date: datetime | None = None,
+    ) -> Goal | None:
         """
         Hedefi ayarla ve kayit tut (REQ-6.5).
 
@@ -429,10 +431,10 @@ class GoalService:
     async def create_retrospective(
         self,
         goal_id: UUID,
-        lessons_learned: List[str],
-        success_factors: List[str],
-        challenges_faced: List[str],
-    ) -> Optional[Goal]:
+        lessons_learned: list[str],
+        success_factors: list[str],
+        challenges_faced: list[str],
+    ) -> Goal | None:
         """
         Retrospektif olustur (REQ-6.6).
 
@@ -461,11 +463,7 @@ class GoalService:
     # CRUD Operations
     # =========================================================================
 
-    async def create_goal(
-        self,
-        user_id: UUID,
-        goal_data: GoalCreate
-    ) -> Goal:
+    async def create_goal(self, user_id: UUID, goal_data: GoalCreate) -> Goal:
         """
         Yeni hedef olustur.
 
@@ -479,27 +477,42 @@ class GoalService:
         # Milestone'lari formatla
         milestones = []
         for m in goal_data.milestones:
-            milestones.append({
-                "percentage": m.percentage,
-                "title": m.title,
-                "achieved": False,
-                "achieved_at": None,
-            })
+            milestones.append(
+                {
+                    "percentage": m.percentage,
+                    "title": m.title,
+                    "achieved": False,
+                    "achieved_at": None,
+                }
+            )
 
         # Default milestone'lar ekle (yoksa)
         for pct in self.DEFAULT_MILESTONES:
             if not any(m["percentage"] == pct for m in milestones):
-                milestones.append({
-                    "percentage": pct,
-                    "title": f"%{pct} tamamlandi",
-                    "achieved": False,
-                    "achieved_at": None,
-                })
+                milestones.append(
+                    {
+                        "percentage": pct,
+                        "title": f"%{pct} tamamlandi",
+                        "achieved": False,
+                        "achieved_at": None,
+                    }
+                )
 
         milestones.sort(key=lambda x: x["percentage"])
 
+        # GF26 fix: Goal.id is a String PK with `default=uuid4`, which hands
+        # asyncpg a raw `UUID` object. asyncpg binds VARCHAR parameters
+        # strictly and rejects non-str values with
+        #     DataError: invalid input for query argument $1 (expected str, got UUID)
+        # so we must coerce the primary key to a plain string at creation
+        # time. Fixing it in the model's `default=` would require a touch
+        # of every caller's test fixtures, so we pre-generate it here. See
+        # GF26 in golden-flows.md.
+        from uuid import uuid4 as _uuid4
+
         goal = Goal(
-            user_id=user_id,
+            id=str(_uuid4()),
+            user_id=str(user_id),
             title=goal_data.title,
             description=goal_data.description,
             target_value=goal_data.target_value,
@@ -516,12 +529,17 @@ class GoalService:
             status=GoalStatus.ACTIVE,
         )
 
+        # `get_async_session()` wraps us in `db_manager.get_session()` which
+        # commits on successful handler return, so we only flush here to
+        # populate server-side defaults (created_at, updated_at) and let
+        # the outer wrapper own the commit. A second inner commit here
+        # surfaced as MissingGreenlet on the already-released connection.
         self.db.add(goal)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(goal)
         return goal
 
-    async def get_goal(self, goal_id: UUID) -> Optional[Goal]:
+    async def get_goal(self, goal_id: UUID) -> Goal | None:
         """
         Hedef getir.
 
@@ -538,10 +556,10 @@ class GoalService:
     async def get_goals(
         self,
         user_id: UUID,
-        status: Optional[GoalStatus] = None,
-        category: Optional[str] = None,
+        status: GoalStatus | None = None,
+        category: str | None = None,
         limit: int = 50,
-    ) -> List[Goal]:
+    ) -> list[Goal]:
         """
         Hedef listesi getir.
 
@@ -571,11 +589,11 @@ class GoalService:
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
-    async def get_active_goals(self, user_id: UUID) -> List[Goal]:
+    async def get_active_goals(self, user_id: UUID) -> list[Goal]:
         """Aktif hedefleri getir"""
         return await self.get_goals(user_id, status=GoalStatus.ACTIVE)
 
-    async def get_at_risk_goals(self, user_id: UUID) -> List[Goal]:
+    async def get_at_risk_goals(self, user_id: UUID) -> list[Goal]:
         """Risk altindaki hedefleri getir"""
         query = (
             select(Goal)
@@ -592,11 +610,7 @@ class GoalService:
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
-    async def update_goal(
-        self,
-        goal_id: UUID,
-        update_data: GoalUpdate
-    ) -> Optional[Goal]:
+    async def update_goal(self, goal_id: UUID, update_data: GoalUpdate) -> Goal | None:
         """
         Hedef guncelle.
 
@@ -617,12 +631,14 @@ class GoalService:
                 # Milestone'lari formatla
                 milestones = []
                 for m in value:
-                    milestones.append({
-                        "percentage": m.percentage,
-                        "title": m.title,
-                        "achieved": False,
-                        "achieved_at": None,
-                    })
+                    milestones.append(
+                        {
+                            "percentage": m.percentage,
+                            "title": m.title,
+                            "achieved": False,
+                            "achieved_at": None,
+                        }
+                    )
                 setattr(goal, key, milestones)
             elif hasattr(goal, key):
                 setattr(goal, key, value)
@@ -632,10 +648,8 @@ class GoalService:
         return goal
 
     async def update_progress(
-        self,
-        goal_id: UUID,
-        progress_data: GoalProgressUpdate
-    ) -> Optional[Dict[str, Any]]:
+        self, goal_id: UUID, progress_data: GoalProgressUpdate
+    ) -> dict[str, Any] | None:
         """
         Ilerleme guncelle ve milestone kontrolu yap.
 
@@ -656,8 +670,7 @@ class GoalService:
         if progress_data.current_value is not None:
             goal.current_value = progress_data.current_value
             goal.progress = self.calculate_progress(
-                progress_data.current_value,
-                goal.target_value
+                progress_data.current_value, goal.target_value
             )
         elif progress_data.progress is not None:
             goal.progress = progress_data.progress
@@ -732,7 +745,7 @@ class GoalService:
     # Statistics
     # =========================================================================
 
-    async def get_goal_statistics(self, user_id: UUID) -> Dict[str, Any]:
+    async def get_goal_statistics(self, user_id: UUID) -> dict[str, Any]:
         """
         Kullanici hedef istatistiklerini getir.
 
@@ -753,7 +766,7 @@ class GoalService:
         completion_rate = (completed / total * 100) if total > 0 else 0
 
         # Kategori dagilimi
-        categories: Dict[str, int] = {}
+        categories: dict[str, int] = {}
         for g in goals:
             cat = g.category or "Diger"
             categories[cat] = categories.get(cat, 0) + 1
