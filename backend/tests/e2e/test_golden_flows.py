@@ -1773,3 +1773,293 @@ def test_gf29_ogretmen_rapor_sinif_create_not_500(client: httpx.Client):
         f"Check api/ogretmen.py:169 — Kullanici.kullanici_id alias + "
         f"services/ogretmen_service.sinif_raporu_olustur in-memory state."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 5 (Session 140) — second feature-inventory sweep across disjoint
+# top-10 uncovered write-path endpoints. Each probe hits ONE handler with a
+# valid body and asserts `status_code < 500` — a 500 means the auth → ORM →
+# service → response pipeline is broken.
+#
+# Selection criteria: 10 disjoint endpoints spanning accessibility, learning,
+# social, search, and live-sessions categories, each in a different router
+# file, to maximize bug-discovery surface area.
+# ---------------------------------------------------------------------------
+
+
+def test_gf30_math_solution_steps_generate_not_500(client: httpx.Client):
+    """
+    POST /api/v1/math-solution-steps/generate must not crash.
+
+    Probes the diskalkuli support step generator. A 500 means the
+    math_solution_step_service pipeline broke (DifficultyLevel enum coercion,
+    service singleton missing, or response serializer mismatch).
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/math-solution-steps/generate",
+        headers=_auth_headers(token),
+        json={
+            "problem_id": "gf30-probe",
+            "problem_statement": "2x + 4 = 10 denklemini çöz",
+            "problem_type": "linear_equation",
+            "difficulty_level": "medium",
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF30 math-solution-steps/generate crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/math_solution_steps.py:87 — "
+        f"DifficultyLevel enum coercion and math_solution_step_service."
+    )
+
+
+def test_gf31_multisensory_animation_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/multisensory/animations must not crash.
+
+    Probes the interactive animation write path. A 500 would mean the
+    AnimationType enum is unhappy with the payload, or the
+    multisensory_learning_service singleton is missing, or the
+    response_model=InteractiveAnimation dataclass serialization broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/multisensory/animations",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF31 probe animation",
+            "animation_type": "step_by_step",
+            "steps": [
+                {"order": 1, "description": "Adım 1"},
+                {"order": 2, "description": "Adım 2"},
+            ],
+            "duration_ms": 5000,
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF31 multisensory/animations crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/multisensory_learning_api.py:139 — "
+        f"AnimationType enum + InteractiveAnimation response serialization."
+    )
+
+
+def test_gf32_productive_failure_pretest_start_not_500(client: httpx.Client):
+    """
+    POST /api/v1/productive-failure/pretest/start must not crash.
+
+    Probes the productive-failure pretest write path. A 500 means the
+    topic→question loader broke, the async get_pretest_questions service
+    crashed, or the backward-compatibility model_post_init validator broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/productive-failure/pretest/start",
+        headers=_auth_headers(token),
+        json={
+            "topic_id": "matematik-turev",
+            "subject": "MATEMATIK",
+            "count": 3,
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF32 productive-failure/pretest/start crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/productive_failure_api.py:109 — "
+        f"services/productive_failure_service.get_pretest_questions."
+    )
+
+
+def test_gf33_study_plan_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/study-plan/ must not crash.
+
+    Probes the F7 study planner write path. A 500 means the
+    create_or_update_plan service broke (IRT ability lookup, weekly goal
+    distribution, or StudyPlanResponse serializer). Trailing slash is
+    required by the router decorator.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/study-plan/",
+        headers=_auth_headers(token),
+        json={
+            "yks_date": "2026-06-20",
+            "weekly_hours": 20,
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF33 study-plan/ crashed: {resp.status_code} {resp.text[:300]}. "
+        f"Check api/study_planner_api.py:162 — "
+        f"services/study_planner_service.create_or_update_plan."
+    )
+
+
+def test_gf34_soru_meydani_ask_question_not_500(client: httpx.Client):
+    """
+    POST /api/v1/soru-meydani/questions must not crash.
+
+    Probes the F1 forum question write path. A 500 means the
+    social_content_filter choked, ForumQuestion model field mismatch, or
+    daily count subquery failed. 429 (daily limit) is a legitimate semantic
+    response.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/soru-meydani/questions",
+        headers=_auth_headers(token),
+        json={
+            "subject_area": "MATEMATIK",
+            "topic": "Türev",
+            "question_type": "how_to_solve",
+            "title": "GF34 probe: türev kuralı nasıl uygulanır?",
+            "body": "f(x) = x^2 fonksiyonunun türevini nasıl alırım?",
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF34 soru-meydani/questions crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/soru_meydani_api.py:77 — "
+        f"social_content_filter + ForumQuestion write path."
+    )
+
+
+def test_gf35_usta_cirak_request_not_500(client: httpx.Client):
+    """
+    POST /api/v1/usta-cirak/request must not crash.
+
+    Probes the F6 mentor matching write path. A 500 means the MentorPair
+    OR/SELECT query broke or the or_() SQLAlchemy import is missing in
+    prod. 400 (already has mentor) is a legitimate semantic response.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/usta-cirak/request",
+        headers=_auth_headers(token),
+        json={
+            "subject_area": "MATEMATIK",
+            "role": "mentee",
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF35 usta-cirak/request crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/usta_cirak_api.py:67 — "
+        f"MentorPair or_() query + active pair guard."
+    )
+
+
+def test_gf36_live_sessions_create_not_500(client: httpx.Client):
+    """
+    POST /api/v1/live-sessions must not crash.
+
+    Probes the Task 108 live Q&A session write path. A 500 means the
+    VideoConferenceService.create_session broke (Zoom/Meet adapter missing,
+    SessionType enum coercion, or live_sessions table missing). Uses TEACHER
+    because students typically cannot host, so 403 is also acceptable.
+    """
+    token = _login(client, TEACHER)
+    resp = client.post(
+        "/api/v1/live-sessions",
+        headers=_auth_headers(token),
+        json={
+            "title": "GF36 probe session",
+            "description": "Wave 5 golden-flow smoke",
+            "scheduled_start": "2026-05-01T10:00:00+00:00",
+            "scheduled_end": "2026-05-01T11:00:00+00:00",
+            "session_type": "group_session",
+            "platform": "jitsi",
+            "subject": "MATEMATIK",
+            "max_participants": 10,
+            "auto_record": False,
+            "require_password": False,
+        },
+    )
+    assert resp.status_code < 500, (
+        f"GF36 live-sessions crashed: {resp.status_code} {resp.text[:300]}. "
+        f"Check api/live_session_routes.py:147 — "
+        f"VideoConferenceService.create_session + live_sessions table wiring."
+    )
+
+
+def test_gf37_clustering_auto_not_500(client: httpx.Client):
+    """
+    POST /api/v1/clustering/auto must not crash.
+
+    Probes the embedding auto-clustering service. Body is a raw
+    list[list[float]] — FastAPI accepts it as the sole body param. A 500
+    means the auto_cluster service broke (sklearn missing, silhouette
+    calculator failed). 501 (ImportError on hdbscan) is an acceptable
+    semantic response.
+    """
+    token = _login(client, STUDENT)
+    # 6 tiny 4-dim embeddings — enough for auto_cluster to pick K=2
+    embeddings = [
+        [0.1, 0.2, 0.3, 0.4],
+        [0.15, 0.22, 0.31, 0.42],
+        [0.12, 0.19, 0.29, 0.39],
+        [0.9, 0.8, 0.7, 0.6],
+        [0.92, 0.81, 0.72, 0.61],
+        [0.88, 0.79, 0.69, 0.58],
+    ]
+    resp = client.post(
+        "/api/v1/clustering/auto",
+        headers=_auth_headers(token),
+        json=embeddings,
+    )
+    # GF22-style waiver: sklearn/hdbscan are optional heavy deps. When they
+    # are absent the handler returns a structured 501 "Not Implemented" — not
+    # a crash. Only an actual 500 indicates the pipeline is broken.
+    assert resp.status_code != 500, (
+        f"GF37 clustering/auto crashed 500: {resp.text[:300]}. "
+        f"Check api/clustering_api.py:288 — get_clustering_service().auto_cluster."
+    )
+
+
+def test_gf38_search_questions_semantic_not_500(client: httpx.Client):
+    """
+    POST /api/v1/search/questions must not crash.
+
+    Probes the semantic question search write-path (embedding + vector
+    query). A 500 means the ChromaDB / nomic-embed-text adapter broke, the
+    SemanticSearchService singleton init crashed, or the query embedding
+    pipeline is wired to a dead model. 429 (rate limit 30/min) is OK.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/search/questions",
+        headers=_auth_headers(token),
+        json={
+            "query": "türev kuralları ve uygulamaları",
+            "limit": 5,
+            "similarity_threshold": 0.5,
+            "subject": "MATEMATIK",
+            "exam_type": "AYT",
+        },
+    )
+    # GF22-style waiver: ChromaDB / nomic-embed-text are optional. When they
+    # are unavailable the handler returns a structured 503 "Service
+    # Unavailable" — a semantic signal, not a pipeline crash. Only 500
+    # indicates a real regression.
+    assert resp.status_code != 500, (
+        f"GF38 search/questions crashed 500: {resp.text[:300]}. "
+        f"Check api/v1/semantic_search.py:577 — "
+        f"SemanticSearchService singleton + embedding pipeline."
+    )
+
+
+def test_gf39_oba_seferleri_contribute_not_500(client: httpx.Client):
+    """
+    POST /api/v1/oba-seferleri/contribute/{challenge_id} must not crash.
+
+    Probes the F3 team mission write path. With a synthetic challenge_id
+    the handler should return 404 "Aktif gorev bulunamadi" — a 500 means
+    the query / rate-limit helper / ObaChallengeProgress model broke.
+    """
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/oba-seferleri/contribute/gf39-probe-challenge",
+        headers=_auth_headers(token),
+        json={"amount": 5},
+    )
+    assert resp.status_code < 500, (
+        f"GF39 oba-seferleri/contribute crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/oba_seferleri_api.py:108 — "
+        f"_check_rate_limit + ObaChallengeProgress write path."
+    )
