@@ -6,24 +6,24 @@ Author: KIRO AI Team
 Date: 2026-01-16
 """
 
+import uuid
 from datetime import datetime
 from enum import Enum as PyEnum
-import uuid
 
 from sqlalchemy import (
+    JSON,
+    Boolean,
     Column,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
     String,
     Text,
-    Integer,
-    Float,
-    Boolean,
-    DateTime,
-    ForeignKey,
-    JSON,
-    Enum,
-    Index,
 )
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -71,7 +71,7 @@ class ReasoningSession(Base):
     __tablename__ = "reasoning_sessions"
 
     # Primary key
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Problem and context
     problem = Column(Text, nullable=False, comment="Original problem text")
@@ -87,9 +87,7 @@ class ReasoningSession(Base):
         comment="LLM provider used",
     )
     model_name = Column(String(100), nullable=True, comment="Specific model used")
-    use_ensemble = Column(
-        Boolean, default=False, comment="Whether ensemble was used"
-    )
+    use_ensemble = Column(Boolean, default=False, comment="Whether ensemble was used")
 
     # Session status
     status = Column(
@@ -102,9 +100,7 @@ class ReasoningSession(Base):
     understanding = Column(Text, nullable=True, comment="Problem understanding")
     final_answer = Column(Text, nullable=True, comment="Final answer")
     verification = Column(Text, nullable=True, comment="Verification result")
-    confidence = Column(
-        Float, default=0.0, comment="Confidence score 0-1"
-    )
+    confidence = Column(Float, default=0.0, comment="Confidence score 0-1")
 
     # Metrics
     total_steps = Column(Integer, default=0, comment="Total reasoning steps")
@@ -113,9 +109,7 @@ class ReasoningSession(Base):
     cost_usd = Column(Float, default=0.0, comment="Total cost in USD")
 
     # Ensemble voting info (if ensemble used)
-    ensemble_scores = Column(
-        JSON, nullable=True, comment="Scores from each provider"
-    )
+    ensemble_scores = Column(JSON, nullable=True, comment="Scores from each provider")
     winning_provider = Column(
         String(50), nullable=True, comment="Winning provider in ensemble"
     )
@@ -176,7 +170,9 @@ class ReasoningSession(Base):
             "ensemble_scores": self.ensemble_scores,
             "winning_provider": self.winning_provider,
             "created_at": self.created_at.isoformat() if self.created_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": self.completed_at.isoformat()
+            if self.completed_at
+            else None,
             "steps": [s.to_dict() for s in self.steps] if self.steps else [],
         }
 
@@ -192,11 +188,11 @@ class ReasoningStep(Base):
     __tablename__ = "reasoning_steps"
 
     # Primary key
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Session reference
     session_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("reasoning_sessions.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -216,7 +212,7 @@ class ReasoningStep(Base):
 
     # Parent step for hierarchical numbering (1.1, 1.2, etc.)
     parent_step_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("reasoning_steps.id", ondelete="SET NULL"),
         nullable=True,
     )
@@ -277,11 +273,11 @@ class SubProblem(Base):
     __tablename__ = "sub_problems"
 
     # Primary key
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Session reference
     session_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("reasoning_sessions.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -348,7 +344,7 @@ class ReasoningCache(Base):
     __tablename__ = "reasoning_cache"
 
     # Primary key
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Problem embedding key
     problem_hash = Column(String(64), unique=True, nullable=False, index=True)

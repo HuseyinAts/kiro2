@@ -4,6 +4,11 @@ CAT (Computerized Adaptive Testing) ORM Models
 Tables: kiro2_cat_sessions, kiro2_learning_events, topic_prerequisites
 These tables were previously only accessed via raw SQL (text("INSERT INTO ...")).
 ORM models enable alembic --autogenerate drift detection.
+
+Session 155 Cluster 2 fix (inverse rule-of-seven): id / user_id / session_id
+columns declared `Column(String, ...)` but live DB has `uuid` columns. Every
+INSERT through the ORM would trip asyncpg DatatypeMismatchError. Fix is at
+the model declaration — no migration needed (DB already correct).
 """
 
 import uuid
@@ -22,6 +27,7 @@ from sqlalchemy import (
     Text,
     func,
 )
+from sqlalchemy.dialects.postgresql import UUID
 
 from .base import Base
 
@@ -32,12 +38,12 @@ class CatSession(Base):
     __tablename__ = "kiro2_cat_sessions"
 
     id = Column(
-        String,
+        UUID(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
         server_default=func.gen_random_uuid(),
     )
-    user_id = Column(String, nullable=False)
+    user_id = Column(UUID(as_uuid=True), nullable=False)
     subject_id = Column(Text, nullable=False)
     theta_final = Column(Numeric, nullable=False, server_default="0.0")
     se_final = Column(Numeric, nullable=False, server_default="1.0")
@@ -66,14 +72,14 @@ class LearningEvent(Base):
     __tablename__ = "kiro2_learning_events"
 
     id = Column(
-        String,
+        UUID(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
         server_default=func.gen_random_uuid(),
     )
-    user_id = Column(String, nullable=False)
+    user_id = Column(UUID(as_uuid=True), nullable=False)
     question_id = Column(Text, nullable=False)
-    session_id = Column(String, nullable=True)
+    session_id = Column(UUID(as_uuid=True), nullable=True)
     event_type = Column(Text, nullable=False, server_default="cat_answer")
     is_correct = Column(Boolean, nullable=True)
     theta_after = Column(Numeric, nullable=True)
@@ -94,7 +100,7 @@ class TopicPrerequisite(Base):
     __tablename__ = "topic_prerequisites"
 
     id = Column(
-        String,
+        UUID(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
         server_default=func.gen_random_uuid(),

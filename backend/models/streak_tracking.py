@@ -7,6 +7,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -65,7 +66,7 @@ class PerformanceHistory(Base):
 
     __tablename__ = "performance_history"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Performance data

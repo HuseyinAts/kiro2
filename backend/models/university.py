@@ -4,23 +4,26 @@ Task 101: University Preference Advisory System - Database Models
 Models for universities, departments, base scores, and quotas
 """
 
+import enum
+import uuid
+from datetime import datetime
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
     Boolean,
+    Column,
     DateTime,
-    ForeignKey,
-    Text,
     Float,
+    ForeignKey,
     Index,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy import (
     Enum as SQLEnum,
 )
-from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import relationship
-from datetime import datetime
-import uuid
-import enum
 
 from .database import Base
 
@@ -62,7 +65,7 @@ class University(Base):
 
     __tablename__ = "universities"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Basic info
     name = Column(String(255), nullable=False, unique=True, index=True)
@@ -136,7 +139,7 @@ class Department(Base):
 
     __tablename__ = "departments"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Basic info
     name = Column(String(255), nullable=False, index=True)
@@ -203,14 +206,14 @@ class UniversityProgram(Base):
 
     __tablename__ = "university_programs"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # References
     university_id = Column(
-        String, ForeignKey("universities.id"), nullable=False, index=True
+        UUID(as_uuid=True), ForeignKey("universities.id"), nullable=False, index=True
     )
     department_id = Column(
-        String, ForeignKey("departments.id"), nullable=False, index=True
+        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True
     )
 
     # Program info
@@ -298,11 +301,11 @@ class ProgramScoreHistory(Base):
 
     __tablename__ = "program_score_history"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Reference
     program_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("university_programs.id"),
         nullable=False,
         index=True,
@@ -351,12 +354,10 @@ class UserUniversityPreference(Base):
 
     __tablename__ = "user_university_preferences"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # User
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Preferences
     preferred_cities = Column(ARRAY(String), default=list)

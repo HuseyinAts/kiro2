@@ -4,23 +4,26 @@ Task 103: Department Information Models
 Models for curriculum, career opportunities, salary expectations, and sector analysis
 """
 
+import enum
+import uuid
+from datetime import datetime
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
     Boolean,
+    Column,
     DateTime,
-    ForeignKey,
-    Text,
     Float,
+    ForeignKey,
     Index,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy import (
     Enum as SQLEnum,
 )
-from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import relationship
-from datetime import datetime
-import uuid
-import enum
 
 from .database import Base
 
@@ -64,11 +67,11 @@ class DepartmentCurriculum(Base):
 
     __tablename__ = "department_curricula"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Department reference
     department_id = Column(
-        String, ForeignKey("departments.id"), nullable=False, index=True
+        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True
     )
 
     # Basic info
@@ -129,11 +132,11 @@ class CareerOpportunity(Base):
 
     __tablename__ = "career_opportunities"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Department reference
     department_id = Column(
-        String, ForeignKey("departments.id"), nullable=False, index=True
+        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True
     )
 
     # Job info
@@ -186,14 +189,14 @@ class SalaryExpectation(Base):
 
     __tablename__ = "salary_expectations"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Department/Career reference
     department_id = Column(
-        String, ForeignKey("departments.id"), nullable=False, index=True
+        UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True
     )
     career_opportunity_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("career_opportunities.id"),
         nullable=True,
         index=True,
@@ -262,7 +265,7 @@ class SectorAnalysis(Base):
 
     __tablename__ = "sector_analyses"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Sector info
     industry_type = Column(SQLEnum(IndustryType), nullable=False, index=True)
@@ -337,11 +340,11 @@ class DepartmentStatistics(Base):
 
     __tablename__ = "department_statistics"
 
-    id = Column(String, primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     # Department reference
     department_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("departments.id"),
         nullable=False,
         unique=True,
