@@ -3,6 +3,29 @@ DINA Cognitive Diagnostic API — F11 Endpoints
 
 Deterministic Input, Noisy-And-gate (DINA) model for diagnosing
 student mastery of fine-grained nano-skills underlying each question.
+
+Session 151 (prophylactic `list[dict]` sweep): two sibling bugs in the
+same file as Session 143 GF65 `estimate_student_mastery`.
+
+1. `get_skill_profile` — `get_student_skill_profile` returns `list[dict]`
+   of per-nano-skill mastery rows (or `[]` for a new student). The
+   handler did `SkillProfileResponse(**result)` which crashes with
+   `TypeError: argument after ** must be a mapping, not list`. Same class
+   as Session 143 GF65 DINA (`estimate_student_mastery`) and Session 150
+   GF125 error-clusters — now **rule-of-four** for service/caller
+   `list[dict]` contract drift (GF65 + GF125 + GF151a + GF151b below).
+
+2. `calibrate_parameters` — three-part bug: (a) the service function is a
+   pure sync math routine taking `responses`, `skill_masteries`,
+   `q_matrix` — not the `db`, `subject`, `requested_by` kwargs the
+   handler passed; (b) the handler `await`ed a sync function; (c) the
+   service returns `tuple[dict, dict]`, which `CalibrateResponse(**result)`
+   also cannot unpack. The endpoint was unfinished glue code. Degrade to
+   503 with a clear "admin calibration pipeline not wired" message,
+   matching the GF106/GF113/GF115 schema-drift pattern — a follow-up
+   should either wire the full EM pipeline (load responses/masteries/
+   q-matrix from DB, call the sync function, persist slip/guess) or
+   delete the endpoint.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -95,20 +118,11 @@ async def get_skill_profile(
 
     try:
         async with get_db_session_context() as db:
-            result = await get_student_skill_profile(
+            rows = await get_student_skill_profile(
                 db=db,
-                student_id=current_user.id,
+                student_id=str(current_user.id),
                 subject=subject.upper(),
             )
-
-        if result is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"{subject} için beceri profili bulunamadı",
-            )
-
-        return SkillProfileResponse(**result)
-
     except HTTPException:
         raise
     except Exception as e:
@@ -120,6 +134,34 @@ async def get_skill_profile(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Beceri profili alınırken hata oluştu",
         )
+
+    # Service returns list[dict] with shape:
+    #   {"nano_skill_id", "skill_name", "subject", "mastery",
+    #    "confidence", "response_count", "knowledge_point_id"}
+    # Empty list = student has no mastery records yet → 404, so clients
+    # can distinguish "no profile data" from a crash.
+    if not rows:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"{subject} için beceri profili bulunamadı",
+        )
+
+    skills = [
+        SkillMasteryItem(
+            skill_id=str(row["nano_skill_id"]),
+            skill_name=str(row.get("skill_name") or row["nano_skill_id"])[:64],
+            mastery_prob=float(row["mastery"]),
+            mastered=float(row["mastery"]) >= 0.5,
+        )
+        for row in rows
+    ]
+
+    return SkillProfileResponse(
+        student_id=str(current_user.id),
+        subject=subject.upper(),
+        skills=skills,
+        profile_updated_at=None,
+    )
 
 
 @router.post(
@@ -237,33 +279,29 @@ async def calibrate_parameters(
     Raises:
         HTTPException: 403 if not admin, 500 on error.
     """
-    from services.dina_service import calibrate_parameters
-
-    try:
-        async with get_db_session_context() as db:
-            result = await calibrate_parameters(
-                db=db,
-                subject=request.subject.upper(),
-                max_iterations=request.max_iterations,
-                requested_by=current_user.id,
-            )
-
-        if "error" in result:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=result["error"],
-            )
-
-        return CalibrateResponse(**result)
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"DINA kalibrasyon hatası: {e}",
-            extra_data={"user": current_user.id, "subject": request.subject},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Kalibrasyon sırasında hata oluştu",
-        )
+    # Session 151: this handler never worked — the service function is a
+    # pure sync math routine with a completely different signature
+    # (`responses`, `skill_masteries`, `q_matrix`, `max_iterations`,
+    # `convergence_threshold`) and returns `tuple[dict, dict]`, not a
+    # response envelope. Wiring the full EM pipeline requires loading
+    # responses, current masteries, and the q-matrix from the DB, calling
+    # the sync function off the event loop, and persisting the resulting
+    # slip/guess parameters — out of scope for a prophylactic fix. Degrade
+    # to 503 in the GF106/GF113/GF115 schema-drift pattern until the
+    # admin calibration pipeline is either wired or the endpoint is
+    # removed.
+    logger.warning(
+        "DINA calibration endpoint called but pipeline is not wired",
+        extra_data={
+            "user": current_user.id,
+            "subject": request.subject,
+            "max_iterations": request.max_iterations,
+        },
+    )
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail=(
+            "DINA kalibrasyon pipeline'ı henüz aktif değil: "
+            "admin EM iş akışı yeniden yapılandırılıyor."
+        ),
+    )
