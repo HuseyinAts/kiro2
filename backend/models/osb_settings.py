@@ -7,6 +7,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
 
 from .base import Base
 
@@ -19,7 +20,19 @@ class OSBSettings(Base):
 
     __tablename__ = "osb_settings"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    # Session 153 (GF115 real fix): the live DB column is `uuid` with
+    # `gen_random_uuid()` default, but the ORM used to declare `Column(String,
+    # default=lambda: str(uuid4()))`. asyncpg bound the parameter as
+    # `$1::VARCHAR` and Postgres refused the cast with `DatatypeMismatchError:
+    # column "id" is of type uuid but expression is of type character varying`
+    # on every INSERT. Session 152's `osb_access_001` migration only added the
+    # 3 Boolean accessibility columns — the `id` column type drift was
+    # untouched. Fix: use `UUID(as_uuid=True)` with `default=uuid4` so
+    # SQLAlchemy binds a native UUID object that asyncpg can serialize as
+    # `$1::UUID`. Matches the pattern used by the other UUID-keyed models in
+    # `models/_deprecated/*.py`. No migration needed — the DB has been `uuid`
+    # all along.
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True)
 
     # Genel OSB modu
