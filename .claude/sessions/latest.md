@@ -1,35 +1,53 @@
-## Session Handoff — 2026-04-12 Session 152
+## Session Handoff — 2026-04-12 Session 153
 **Branch:** master
-**Son commit:** 2d64ddc (Wave 15 + prophylactic sweep) — Wave 16 commit bekliyor
-**Uncommitted:** Wave 16 edits (test_golden_flows.py + golden-flows.md + latest.md)
-**Pushed:** 2d64ddc origin/master'da; Wave 16 commit push bekliyor
+**Son commit:** 546cd84 (GF115 osb_settings.id uuid type alignment)
+**Pushed:** 546cd84 origin/master'da. Clean tree.
+**Golden Flow:** 166 test → 164 PASS / 0 FAIL / 2 SKIP
 
-### Yapilanlar — Session 152 (Wave 16 + suite saturation declaration)
+### Yapilanlar — Session 153 (Task D + GF115 schema drift)
 
-**Wave 16 — 10 probe, 0 real fix (%0 hit rate — Wave 15 ile aynı, suite saturation sinyal):**
+Session 152'nin pre-compaction direktifi `A+B → D → C` sırasıyla:
 
-Uncovered pool yeniden hesaplandı: 120 frontend fetch path - 169 GF-covered = 84 raw, 44 static (templated `${...}` filtrelenmiş). Seçim: düşük-trafik cluster bias (monitoring/*, admin/content, visual-supports/*, parsed-questions, batch/queue, TR ogretmen/*, productive-failure, learning-path/interleaved-practice, study-rooms).
+**Task D — GF117 api_key_manager AsyncSession port (commit f3608c8):**
 
-- **GF140** monitoring/token-stats: first-probe PASS
-- **GF141** monitoring/ab-test-results: first-probe PASS
-- **GF142** admin/content/educational (admin-gate): first-probe PASS (403 semantic)
-- **GF143** visual-supports/color-schemes: first-probe PASS
-- **GF144** parsed-questions/stats: first-probe PASS
-- **GF145** batch/queue/stats: first-probe PASS
-- **GF146** ogretmen/ogrenciler (TEACHER login): first-probe PASS
-- **GF147** productive-failure/growth: first-probe PASS
-- **GF148** learning-path/interleaved-practice (POST): first-probe PASS
-- **GF149** study-rooms: first-probe PASS (semantic 404 — known missing-feature)
+`core/api_key_manager.py` sync `Session` → async `AsyncSession`'a komple port edildi:
+- Tüm query'ler `await self.db.execute(select(APIKey).where(...))` + `scalar_one_or_none()` pattern'ine geçti.
+- `create_api_key`, `verify_api_key`, `revoke_api_key`, `rotate_api_key` — 4 handler'da sarılı HTTPException re-raise'ler (Session 149 shim) kaldırıldı. Legitimate 401/403/404/429 olduğu gibi propagate.
+- `_check_rate_limit` sync kaldı (sadece Redis, DB temasi yok).
+- Factory: `get_api_key_manager(db: AsyncSession, ...) -> APIKeyManager`.
 
-**Final distribution:** 166 test → **164 PASS / 0 FAIL / 2 SKIP** (+10 Wave 16 probes hepsi first-probe PASS).
+`api/api_key_api.py` handler rewrite:
+- Session 149'ın `_is_async_sync_mismatch` / `_degrade_async_mismatch` / `_DB_ERRORS` / `Session(bind=db.bind.sync_engine)` shim'i komple söküldü.
+- 4 handler async manager'ı doğrudan çağırıyor.
+- `list_api_keys` `await db.execute(select(APIKey).where(...))` kullanıyor.
+- `revoke_api_key` + `rotate_api_key` önce async ownership check, sonra manager'a delege.
+- Rule-of-eight `except HTTPException: raise` guard korundu.
 
-**Suite saturation tescil edildi.** İki ardışık %0 hit rate (Wave 15 frontend-traffic bias + Wave 16 low-traffic breadth bias) farklı target strategy üzerinde: Golden Flow suite **single-handler bug discovery için doygun**. Trailing indicator curve:
+Smoke test: 144/144 module import. Golden Flow Session 152 baseline korundu — ama verification sırasında beklenmedik bir regression açığa çıktı.
 
+**GF115 — osb_settings.id schema drift (commit 546cd84):**
+
+Task D verification'ı GF115 FAIL sinyali verdi. Root cause: Session 152'nin `osb_access_001` migration'ı sadece 3 Boolean accessibility kolonunu ekledi (`reduced_motion`, `no_animations`, `no_shadows`); `id` kolonunun tip drift'i dokunulmamıştı.
+
+- Live DB: `osb_settings.id` = `uuid NOT NULL DEFAULT gen_random_uuid()` (her zaman böyleydi).
+- ORM: `Column(String, default=lambda: str(uuid4()))` yanlış deklare ediyordu.
+- asyncpg INSERT parametresini `$1::VARCHAR` olarak bind ediyor, Postgres cast'i reddediyor: `DatatypeMismatchError: column "id" is of type uuid but expression is of type character varying`.
+
+Fix: ORM-only değişiklik, Alembic migration GEREKSİZ (DB zaten doğru).
+
+```python
+from sqlalchemy.dialects.postgresql import UUID
+# ...
+id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 ```
-10: 80%  11: 50%  12: 20%  13: 50%  14: 10%  15: 0%  16: 0%
-```
 
-`.claude/rules/golden-flows.md` Wave 16 tablosu + suite saturation declaration + Session 153+ migration/port backlog prioritization eklendi.
+`osb_settings_api.py` uyumluluk: hiçbir yerde explicit `id=` kwarg yok, `str(settings.id)` (serializer satır 106) UUID nesnesi üzerinde çalışıyor.
+
+Docker backend rebuild + recreate (source volume mount yok). İzole test PASS (1.33s). Full Golden Flow suite 164 PASS / 2 SKIP — baseline restored.
+
+**Task C — GF106 StudentReview (DEFERRED):**
+
+Kullanıcı direktifi "C en sona, en büyük risk". ~18 eksik kolon (professor_id, course_id, pros, cons, tags, ..., published_at) için dedicated migration gerekiyor. Handler boundary'de 503 shim yerinde kalıyor. Session 154'e bırakıldı.
 
 ### Fail Eden Testler
 - YOK. 166 test → 164 PASS / 0 FAIL / 2 SKIP.
@@ -37,23 +55,23 @@ Uncovered pool yeniden hesaplandı: 120 frontend fetch path - 169 GF-covered = 8
 ### Engelleyiciler
 - YOK
 
-### Session 152 Bulgular / Notlar
+### Session 153 Bulgular / Notlar
 
-- **Suite saturated (Wave 15 + 16 = iki ardışık %0)**. Sistemik anti-pattern class'ların hepsi eradike veya CI-guard'lı: rule-of-eight (Session 146), rule-of-seven VideoAnalytics VARCHAR+uuid4 (Session 147), rule-of-five `user_id: int` Pydantic (Session 148), rule-of-four `list[dict]` contract drift (Session 151 prophylactic), three-part async trap (Wave 10/11/13), wrapped-HTTPException propagation (Session 149 `.claude/rules/middleware.md`).
-- **Next phase shift**: "probe + fix" döngüsü (Wave 1-16) tamamlandı. Session 153+ "migration backlog + sync-service async port backlog" ağırlıklı.
-- **Uncovered pool hala büyük**: 44 static + ~40 templated path kaldı, Wave 17 mümkün ama ≤%10 bekleniyor. Reserve for incident-driven probes, not prophylactic.
+- **Inverse rule-of-seven pattern**: Wave 11 GF94 + rule-of-seven (Goal/LiveSession/EmotionalState/...) "DB=VARCHAR, ORM=UUID default → caller coerce `str(uuid4())`" pattern'iydi. GF115 bunun **tersi**: "DB=uuid, ORM=String → ORM'u UUID tipine çevir". Fix lokasyonu farklı: caller değil, model deklarasyonu. İki pattern de asyncpg'nin strict bind kurallarından türüyor ama yönleri zıt.
+- **Session 152 migration incomplete sinyali**: `osb_access_001` sadece görünür schema drift (missing columns) üzerine yazıldı; tip drift'i (`id` sütunu) kapsam dışında kaldı. Migration yazarken tablonun full schema'sı `information_schema.columns` ile alınıp ORM ile tam karşılaştırma yapılmalı — Aşama 4 DB audit baseline'ı (98 → 0 MEDIUM) bu tip drift'lerini yakalayamıyor çünkü asyncpg bind-time errors runtime'da gerçekleşiyor.
+- **Task D lesson**: Wrapped-HTTPException shim'lerin (Session 149) sadece servis katmanı sync'ten async'e port edilene kadar köprü. Session 146'nın rule-of-eight global sweep'i artık rule'u sabitliyor, shim'ler güvenle temizlenebilir.
 
 ### Sonraki Adimlar (maks 5)
 
-1. **COMMIT + PUSH** — Wave 16 + Session 152 handoff commit + origin/master'a push.
-2. **Schema drift migration backlog (P1)** — üç migration: StudentReview (GF106 ~18 kolon), COPPA child_id VARCHAR→Integer (GF113), OSB settings 3 kolon (GF115). Her biri `alembic revision --autogenerate` + 503 shim kaldırma.
-3. **Sync service async port backlog (P1)** — DifficultyClassificationService ~700 satır (GF112), api_key_manager ~300 satır (GF117, wrapped-HTTPException audit dahil), DINA EM calibration pipeline wiring (GF151b).
-4. **Wave 17 (opsiyonel, P2)** — sadece production incident'ten doğan probe'lar için rezerv; prophylactic breadth sweep değil.
-5. **CI gate genişletme** — `audit_httpexception_guard.py --fail` zaten aktif. Rule-of-four `list[dict]` için bir `audit_response_unpack.py` düşünülebilir: `grep "Response\(\*\*"` + service return type AST check.
+1. **Task C — GF106 StudentReview migration (P1)** — `alembic revision -m "student_reviews add missing columns"` + ~18 kolon (professor_id, course_id, pros, cons, tags, ...) + `api/student_review_routes.py` 503 shim kaldırma. En büyük risk, dedicated session.
+2. **Sync service async port backlog (P1)** — DifficultyClassificationService ~700 satır (GF112), DINA EM calibration pipeline wiring (GF151b). Task D (api_key_manager) tamamlandı.
+3. **Rule-of-four `list[dict]` audit (P2)** — `audit_response_unpack.py` script: `grep "Response\(\*\*"` + service return type AST check. Session 151 prophylactic sweep iki surface fix etti (DINA, error-clusters), kalan ~5-10 aday olabilir.
+4. **Migration integrity check (P2)** — yeni migration'lar için `information_schema.columns` diff + ORM cross-check zorunlu (GF115 drift Session 152'de yakalanmalıydı). `backend/scripts/audit_orm_schema_drift.py` yazılabilir.
+5. **Wave 17 rezervli (P3)** — sadece incident-driven probe. Prophylactic breadth sweep YASAK.
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- Wave 16 tamamlandı: 10 probe, 0 real fix, hit rate %0.
-- **Golden Flow suite single-handler bug için DOYGUN** ilan edildi. Wave 15 + 16 iki ardışık %0 (farklı strategy) bu kararın kanıtı.
-- Golden Flow suite 166 test, 164 PASS / 0 FAIL / 2 SKIP baseline sabit.
-- Session 153+ ana iş: schema drift migration backlog + sync-service async port backlog.
-- Wave 17 ertelenmiş: sadece incident-driven, prophylactic breadth değil.
+- Task D (GF117) tamamlandı: api_key_manager async port + Session 149 shim temizlik. Commit f3608c8.
+- GF115 (osb_settings.id uuid drift) fix'lendi. Commit 546cd84. Alembic migration gereksizdi — DB zaten doğruydu, sadece ORM yanlıştı.
+- Task C (GF106 StudentReview) Session 154'e ertelendi — user direktifi "en sona, en büyük risk".
+- Golden Flow baseline: 164 PASS / 0 FAIL / 2 SKIP sabit. Session 152 suite saturation declaration hâlâ geçerli.
+- Inverse-drift pattern (DB=uuid, ORM=String) rule-of-seven'ın ters varyantı olarak kaydedildi. Migration audit script adayı.
