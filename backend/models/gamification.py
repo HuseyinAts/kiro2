@@ -183,7 +183,7 @@ class Badge(Base):
 
     __tablename__ = "badges"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(String, primary_key=True)
     slug = Column(String(50), unique=True, nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(String, nullable=True)
@@ -198,9 +198,9 @@ class UserBadge(Base):
 
     __tablename__ = "user_badges"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(String, primary_key=True)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
-    badge_id = Column(Integer, ForeignKey("badges.id"), nullable=False)
+    badge_id = Column(String, ForeignKey("badges.id"), nullable=False)
     earned_at = Column(DateTime(timezone=True), server_default=func.now())
     auto_awarded = Column(Boolean, default=True)
 
