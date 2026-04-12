@@ -573,6 +573,83 @@ touched. If Wave 16 also returns ≤10%, the Golden Flow suite should be
 declared **saturated for single-handler bugs** and the next development
 phase should be the migration backlog + sync-service async port backlog.
 
+Wave 16 — fourteenth feature-inventory sweep (Session 152, 10 new tests, discovered 0 additional half-working features):
+
+Context: Wave 15 (Session 151) hit 0% on frontend-traffic-biased targets.
+Wave 16 regenerated the uncovered pool — 120 frontend fetch paths minus
+169 GF-covered paths yielded 84 raw uncovered, filtered to **44 static
+paths** after stripping templated `${var}` segments. Selection biased
+toward low-traffic clusters that frontend does NOT call on hot paths:
+monitoring/* (×2), admin/content (×1 admin-gate), visual-supports/* (×1),
+parsed-questions/* (×1), batch/queue/* (×1), TR teacher ogretmen/* (×1),
+productive-failure read (×1), learning-path/interleaved-practice write
+(×1), and study-rooms (×1 — known missing-feature from path-naming.md
+backlog).
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF140 | monitoring/token-stats not 500 | LLM cost/token aggregation read | ✅ PASS (first-probe) |
+| GF141 | monitoring/ab-test-results not 500 | A/B experiment bucket read | ✅ PASS (first-probe) |
+| GF142 | admin/content/educational admin-gate | Student→403 (admin-only) | ✅ PASS (semantic) |
+| GF143 | visual-supports/color-schemes not 500 | OSB color preset read | ✅ PASS (first-probe) |
+| GF144 | parsed-questions/stats not 500 | OCR pipeline stats read | ✅ PASS (first-probe) |
+| GF145 | batch/queue/stats not 500 | Redis queue inspection read | ✅ PASS (first-probe) |
+| GF146 | ogretmen/ogrenciler not 500 | TR teacher student-list read | ✅ PASS (first-probe) |
+| GF147 | productive-failure/growth not 500 | Growth metric read | ✅ PASS (first-probe) |
+| GF148 | learning-path/interleaved-practice not 500 | Karisik-pratik write path | ✅ PASS (first-probe) |
+| GF149 | study-rooms not 500 | Known missing-feature 404 | ✅ PASS (semantic 404) |
+
+**Current distribution (Session 152):** 166 tests → **164 PASS, 0 FAIL, 2 SKIP**.
+
+Wave 16 hit rate was **0%** — identical to Wave 15. The trailing indicator
+curve now reads:
+
+```
+Wave 10: 80%  (rule-of-eight harvest)
+Wave 11: 50%  (three-part async traps + schema drift)
+Wave 12: 20%  (idiosyncratic ORM drift)
+Wave 13: 50%  (infra/admin bias bounce-back)
+Wave 14: 10%  (breadth sweep, GF125 stacked exception)
+Wave 15:  0%  (frontend-traffic bias)
+Wave 16:  0%  (low-traffic breadth bias)
+```
+
+**Suite saturation declared.** Two consecutive 0% waves on disjoint target
+strategies (high-traffic frontend mapping → low-traffic uncovered breadth)
+is the signal the rule itself predicted: *the Golden Flow suite is now
+saturated for single-handler bug discovery*. The remaining uncovered-164
+pool will continue to yield mostly first-probe PASSes — the systemic
+anti-pattern classes (rule-of-eight bare-except, rule-of-seven VARCHAR+
+uuid4, rule-of-five `user_id: int`, rule-of-four `list[dict]` contract
+drift, three-part async traps, wrapped-HTTPException propagation) have
+all been eradicated or guarded by a CI linter. Idiosyncratic per-surface
+drift remains but lands outside the frontend's hot paths.
+
+**Next development phase** (Session 153+) — shift from "probe + fix" to
+**migration backlog + sync-service async port backlog**:
+
+1. **Schema drift migration backlog** (P1, long-running):
+   - GF106 StudentReview — ~18 missing columns, needs `alembic
+     revision --autogenerate` migration. 503 shim currently in place.
+   - GF113 COPPA — `coppa_parental_consents.child_id` VARCHAR vs Integer
+     type-mismatch, needs ALTER COLUMN migration. 503 shim in place.
+   - GF115 OSB — `osb_settings` missing `reduced_motion`/`no_animations`/
+     `no_shadows` columns, needs additive migration. 503 shim in place.
+
+2. **Sync service async port backlog** (P1, refactor-heavy):
+   - GF112 DifficultyClassificationService (~700 sync lines) — port to
+     async or carve out a thin async wrapper. 503 shim in place.
+   - GF117 core/api_key_manager (~300 sync lines) — same pattern.
+     503 shim in place. **Also audit wrapped-HTTPException propagation
+     at call sites per middleware.md.**
+   - GF151b DINA EM calibration pipeline — wire load/persist around the
+     pure sync math routine or delete the endpoint. 503 shim in place.
+
+3. **Optional continued Wave work** (P2, low ROI):
+   - A Wave 17 sweep is permitted but expected to stay at ≤10% hit rate.
+     Reserve for surfaces that explicitly land in production incident
+     reports, not prophylactic coverage expansion.
+
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
 Marker: `@pytest.mark.golden_flow`

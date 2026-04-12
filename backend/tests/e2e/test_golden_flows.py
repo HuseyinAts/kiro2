@@ -4542,3 +4542,182 @@ def test_gf139_push_subscribe_not_500(client: httpx.Client):
         f"VideoNote + Session 142 GF59) or VAPID key env-var missing. "
         f"422/400 on payload shape is acceptable; a crash is not."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 16 — low-traffic uncovered pool sweep (Session 152)
+#
+# After Wave 15 hit 0% on frontend-traffic-biased targets, Wave 16 shifts back
+# to breadth sweep with bias toward surfaces frontend does NOT call on hot
+# paths: monitoring/*, admin/content/*, visual-supports/*, parsed-questions,
+# TR teacher rapor (veli/ogretmen cluster), productive-failure read,
+# learning-path/interleaved-practice write, study-rooms (known missing).
+# Expected hit rate 10-20%. If ≤10%, declare suite saturated for
+# single-handler bugs and shift to migration/port backlogs.
+# ---------------------------------------------------------------------------
+
+
+def test_gf140_monitoring_token_stats_not_500(client: httpx.Client):
+    """GET /api/v1/monitoring/token-stats must not crash — LLM token usage read."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/monitoring/token-stats",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF140 monitoring/token-stats crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/monitoring*.py — LLM cost/token "
+        f"aggregation read path. 403 (admin-gate) is acceptable; a 500 "
+        f"is usually a stale SQL query against a removed cost-tracking "
+        f"table or asyncpg tz-naive/aware drift on rolling-window filters."
+    )
+
+
+def test_gf141_monitoring_ab_test_results_not_500(client: httpx.Client):
+    """GET /api/v1/monitoring/ab-test-results must not crash — A/B bucket read."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/monitoring/ab-test-results",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF141 monitoring/ab-test-results crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/monitoring*.py ab-test read path. "
+        f"403 (admin-gate) acceptable; a 500 usually means the ab_test "
+        f"experiment table has schema drift or the aggregation does a "
+        f"`list[dict]` return that the handler tried to `Response(**result)`. "
+        f"Rule-of-four alert (GF65 + GF125 x3 + GF151a + GF151b)."
+    )
+
+
+def test_gf142_admin_content_educational_admin_gate(client: httpx.Client):
+    """GET /api/v1/admin/content/educational must not crash for student."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/admin/content/educational",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF142 admin/content/educational crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Expect 403 (admin-only) not 500. A 500 here "
+        f"means the dependency-resolution order is wrong: the handler "
+        f"is touching the DB before require_admin kicks in. See GF120 / "
+        f"GF129 pattern — require_admin should run first."
+    )
+
+
+def test_gf143_visual_supports_color_schemes_not_500(client: httpx.Client):
+    """GET /api/v1/visual-supports/color-schemes must not crash — OSB preset read."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/visual-supports/color-schemes",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF143 visual-supports/color-schemes crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/visual_supports_api.py color-scheme "
+        f"read path. A 500 is usually enum/OSB settings schema drift "
+        f"(related to Session 149 GF115 osb_settings missing columns) or "
+        f"a stale service dependency import."
+    )
+
+
+def test_gf144_parsed_questions_stats_not_500(client: httpx.Client):
+    """GET /api/v1/parsed-questions/stats must not crash — OCR pipeline stats."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/parsed-questions/stats",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF144 parsed-questions/stats crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/parsed_questions*.py — OCR pipeline "
+        f"stats read. 403 (admin-gate) acceptable. A 500 usually means "
+        f"aggregation query touches a removed or renamed OCR staging table."
+    )
+
+
+def test_gf145_batch_queue_stats_not_500(client: httpx.Client):
+    """GET /api/v1/batch/queue/stats must not crash — batch job queue read."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/batch/queue/stats",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF145 batch/queue/stats crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/batch*.py — queue inspection read "
+        f"path. 403 (admin-gate) acceptable. A 500 usually means Redis "
+        f"queue adapter singleton is None (optional-dep pattern GF22) "
+        f"or sync-service-over-async-engine (Wave 10 GF86/87 pattern)."
+    )
+
+
+def test_gf146_ogretmen_ogrenciler_not_500(client: httpx.Client):
+    """GET /api/v1/ogretmen/ogrenciler must not crash for a teacher."""
+    token = _login(client, TEACHER)
+    resp = client.get(
+        "/api/v1/ogretmen/ogrenciler",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF146 ogretmen/ogrenciler crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Turkish teacher student-list read path. A "
+        f"500 here is typically a TR/EN duplicate-implementation drift "
+        f"(path-naming.md ban) — ogretmen/* version may be a legacy "
+        f"stub calling removed service helpers. Empty list (200) or 404 "
+        f"acceptable; a crash is not."
+    )
+
+
+def test_gf147_productive_failure_growth_not_500(client: httpx.Client):
+    """GET /api/v1/productive-failure/growth must not crash — growth metric read."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/productive-failure/growth",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF147 productive-failure/growth crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/productive_failure_api.py growth "
+        f"metric read. Related to Session 140 GF32 caller/service contract "
+        f"drift on the same module — service may still return list[dict] "
+        f"and handler unpacks with **. Rule-of-four alert."
+    )
+
+
+def test_gf148_learning_path_interleaved_practice_not_500(client: httpx.Client):
+    """POST /api/v1/learning-path/interleaved-practice must not crash."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/learning-path/interleaved-practice",
+        headers={**_auth_headers(token), "Content-Type": "application/json"},
+        json={
+            "subject": "MATEMATIK",
+            "topic_ids": [],
+            "question_count": 5,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF148 learning-path/interleaved-practice crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Interleaved practice is a karisik-pratik write "
+        f"path frontend exposes on the learning-path page. A 500 here is "
+        f"usually subject-key normalization drift (case-convention.md) or "
+        f"FSRS card-selection query failing on empty topic_ids."
+    )
+
+
+def test_gf149_study_rooms_not_500(client: httpx.Client):
+    """GET /api/v1/study-rooms must not crash — study-rooms backlog probe."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/study-rooms",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF149 study-rooms crashed: {resp.status_code} "
+        f"{resp.text[:300]}. study-rooms is flagged in path-naming.md as "
+        f"a known missing-feature (~40 frontend 404 sites call it). 404 "
+        f"or 503 is the expected semantic response; a 500 would mean "
+        f"someone added a partial router that imports a broken helper."
+    )
