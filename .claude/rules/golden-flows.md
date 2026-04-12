@@ -503,6 +503,76 @@ than infrastructure audit targets. Expected hit rate: 10-20% baseline
 with occasional spikes when a probe lands on a file with multiple
 stacked bugs (the GF125 pattern).
 
+Wave 15 — thirteenth feature-inventory sweep (Session 151, 10 new tests, discovered 0 additional half-working features):
+
+Context: Session 150 established the trailing indicator curve (Wave 10 %80
+→ 11 %50 → 12 %20 → 13 %50 → 14 %10). Session 151 changed the target
+selection strategy: instead of picking disjoint probes from the backend
+write-path inventory, Wave 15 extracted **173 unique frontend fetch paths**
+via `grep -rhoE "fetch|axios" frontend/src/` and computed a prefix-aware
+set difference against the GF-covered list (150 paths), yielding **164
+uncovered paths**. The top 10 were selected for surface diversity across
+student/teacher/parent dashboards, FSRS reads, gamification profile,
+manipulatives, GDPR export, and push subscription.
+
+| # | Flow | Surfaces | Status |
+|---|------|----------|--------|
+| GF130 | fsrs/flashcards/due not 500 | FSRS due card read | ✅ PASS (first-probe) |
+| GF131 | learning-path/status not 500 | LP readiness read | ✅ PASS (first-probe) |
+| GF132 | gamification/profile not 500 | XP/level/badge profile read (post-IDOR fix) | ✅ PASS (first-probe) |
+| GF133 | parent/dashboard not 500 | Parent aggregation (PARENT login) | ✅ PASS (first-probe) |
+| GF134 | ogretmen/dashboard not 500 | TR teacher aggregation (TEACHER login) | ✅ PASS (first-probe) |
+| GF135 | student-dashboard/hedefler not 500 | Goals list read (post-GF26 VARCHAR+uuid4 fix) | ✅ PASS (first-probe) |
+| GF136 | manipulatives/progress/dashboard not 500 | Badge/progress aggregation (post-GF95 async rewrite) | ✅ PASS (first-probe) |
+| GF137 | teachers/my-appointments not 500 | TeacherAppointment filter by current_user.id | ✅ PASS (first-probe) |
+| GF138 | user/export-data not 500 | GDPR/KVKK aggregation across ~10 tables | ✅ PASS (first-probe) |
+| GF139 | push/subscribe not 500 | WebPush VAPID subscription write | ✅ PASS (first-probe) |
+
+**Current distribution (Session 151):** 156 tests → **154 PASS, 0 FAIL, 2 SKIP**.
+
+Wave 15 hit rate was **0% (0/10 real fixes — lowest of any wave)**. This
+is the signal the Wave 10-14 trailing indicator curve predicted: once the
+target pool shifts from "backend coverage gap" to "real frontend traffic",
+the probes land on surfaces that are **already production-working** because
+users would have hit them already. The curve now reads:
+
+```
+Wave 10: 80%  (rule-of-eight harvest)
+Wave 11: 50%  (three-part async traps + schema drift)
+Wave 12: 20%  (idiosyncratic ORM drift)
+Wave 13: 50%  (infra/admin bias bounce-back)
+Wave 14: 10%  (breadth sweep, one stacked-bug exception GF125)
+Wave 15:  0%  (frontend-traffic bias — production-proven surfaces)
+```
+
+**Meta-lesson**: hit rate is a **probe selection artifact**, not a quality
+metric. Wave 15's 0% does NOT mean the codebase is bug-free — it means
+the set of endpoints users actually hit is under continuous implicit
+validation. Bugs now hide in:
+
+1. Endpoints users don't hit yet (pre-launch surfaces, admin dashboards,
+   seldom-used flows). Wave 16 should probe the `veli/*`, `zpd-maarif/*`,
+   `monitoring/*`, `admin/content/*`, `text-simplification/*`, and
+   `visual-supports/*` clusters — all appear in the uncovered-164 list but
+   are lower-traffic.
+2. Multi-surface stacked bugs (GF125 pattern): three bugs in one file,
+   no probe had touched the file, discovered by coincidence. These won't
+   come out of frontend-path mapping at all — they need either the
+   `list[dict]` prophylactic sweep style (Session 151's sweep found 2
+   more in dina_api.py before Wave 15 ran) or raw-traffic log replay.
+3. Schema drift migrations (GF106 StudentReview, GF113 COPPA, GF115
+   OSB settings) — degraded to 503 at the handler boundary, not crashing
+   but not actually delivering the feature either. These need the
+   separate migration backlog, not more probes.
+
+**Wave 16 target strategy**: shift back to breadth sweep but bias toward
+the remaining uncovered-164 paths that are lower-traffic surfaces (admin
+tools, compliance tooling, i18n). Expected hit rate: 10-20%, with a GF125-
+style spike if the probe lands on a write-path file that has never been
+touched. If Wave 16 also returns ≤10%, the Golden Flow suite should be
+declared **saturated for single-handler bugs** and the next development
+phase should be the migration backlog + sync-service async port backlog.
+
 Implementation: `backend/tests/e2e/test_golden_flows.py`
 CI gate: `.github/workflows/golden-flows.yml`
 Marker: `@pytest.mark.golden_flow`

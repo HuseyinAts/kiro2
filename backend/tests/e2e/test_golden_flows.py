@@ -4359,3 +4359,186 @@ def test_gf129_orchestrator_status_admin_gate(client: httpx.Client):
         f"a 500 means the `import orchestrator` side-effect at module load "
         f"blew up or the admin-guard dep chain is broken."
     )
+
+
+# ---------------------------------------------------------------------------
+# Wave 15 — Frontend fetch mapping-driven disjoint top-10 (Session 151)
+#
+# Targets selected by computing the set difference between frontend fetch
+# paths (`grep -rhoE "fetch|axios" frontend/src/`) and the GF-covered path
+# list. Of 173 unique frontend paths, 150 were already covered by Waves
+# 1-14 (GF1-GF129); 164 were uncovered after prefix-aware matching. The 10
+# below were chosen for diversity across student/teacher/parent surfaces
+# and real production-traffic relevance, NOT backend coverage. Expected
+# hit rate %10-20 per the Wave 14 trailing indicator curve (Wave 14 %10).
+# ---------------------------------------------------------------------------
+
+
+def test_gf130_fsrs_flashcards_due_not_500(client: httpx.Client):
+    """GET /api/v1/fsrs/flashcards/due must not crash — FSRS due card list."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/fsrs/flashcards/due",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF130 fsrs/flashcards/due crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/fsrs.py — the due query uses "
+        f"`datetime.utcnow()` against a tz-aware TIMESTAMP column; a 500 "
+        f"is usually asyncpg tz-naive/aware mismatch or `get_db` sync-shim "
+        f"drift. Empty list is acceptable; a crash is not."
+    )
+
+
+def test_gf131_learning_path_status_not_500(client: httpx.Client):
+    """GET /api/v1/learning-path/status must not crash — LP readiness read."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/learning-path/status",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF131 learning-path/status crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/learning_path_v2.py — a student "
+        f"without a LearningPathStudentProfile row should get a semantic "
+        f"shape ({{'ready': false, ...}}) or 404, not a 500. Bare "
+        f"`except Exception` re-wrapping upstream 4xx is the usual class."
+    )
+
+
+def test_gf132_gamification_profile_not_500(client: httpx.Client):
+    """GET /api/v1/gamification/profile must not crash — XP/level read."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/gamification/profile",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF132 gamification/profile crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Gamification endpoints were IDOR-fixed in "
+        f"Session 84 (all use current_user). A 500 means Depends(get_db) "
+        f"async-drift or a raw SQL binding issue on xp_transactions."
+    )
+
+
+def test_gf133_parent_dashboard_not_500(client: httpx.Client):
+    """GET /api/v1/parent/dashboard must not crash for a seeded parent."""
+    token = _login(client, PARENT)
+    resp = client.get(
+        "/api/v1/parent/dashboard",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF133 parent/dashboard crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/parent*.py — parent auth + consent "
+        f"+ children list. A 500 usually means `current_user.rol` enum "
+        f"drift or a missing `except HTTPException: raise` guard over an "
+        f"upstream 404 from `parent_service.get_children`."
+    )
+
+
+def test_gf134_ogretmen_dashboard_not_500(client: httpx.Client):
+    """GET /api/v1/ogretmen/dashboard must not crash for a seeded teacher."""
+    token = _login(client, TEACHER)
+    resp = client.get(
+        "/api/v1/ogretmen/dashboard",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF134 ogretmen/dashboard crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/ogretmen*.py (TR surface) — "
+        f"the dashboard aggregates sinif + ogrenci + bildirim reads; a "
+        f"500 usually means async/sync ORM drift on one of those joins "
+        f"or a `current_user.kullanici_id` attribute that doesn't exist "
+        f"on AuthenticatedUser (should be `.id`)."
+    )
+
+
+def test_gf135_student_dashboard_hedefler_not_500(client: httpx.Client):
+    """GET /api/v1/student-dashboard/hedefler must not crash — goals list."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/student-dashboard/hedefler",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF135 student-dashboard/hedefler crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/student_dashboard*.py — Goal model "
+        f"was fixed in Session 139 (GF26) for VARCHAR+uuid4 bind, but the "
+        f"list-side read may still hit tz-aware target_date bind drift. "
+        f"Empty goals list is acceptable; a crash is not."
+    )
+
+
+def test_gf136_manipulatives_progress_dashboard_not_500(client: httpx.Client):
+    """GET /api/v1/manipulatives/progress/dashboard must not crash."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/manipulatives/progress/dashboard",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF136 manipulatives/progress/dashboard crashed: {resp.status_code} "
+        f"{resp.text[:300]}. manipulatives_progress_api was rewritten to "
+        f"async + get_async_session in Session 147 (Wave 11 GF95). A new "
+        f"500 here would be a regression of that rewrite or dashboard-"
+        f"specific aggregation (SUM/GROUP BY) on the badge tables."
+    )
+
+
+def test_gf137_teachers_my_appointments_not_500(client: httpx.Client):
+    """GET /api/v1/teachers/my-appointments must not crash for teacher."""
+    token = _login(client, TEACHER)
+    resp = client.get(
+        "/api/v1/teachers/my-appointments",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF137 teachers/my-appointments crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/teachers*.py — `my-appointments` "
+        f"filters TeacherAppointment by current_user.id. A 500 is usually "
+        f"the `user_id: int` vs UUID string Pydantic response type lie "
+        f"(rule-of-five: Session 148 GF107 + GF71 + GF20 x3)."
+    )
+
+
+def test_gf138_user_export_data_not_500(client: httpx.Client):
+    """GET /api/v1/user/export-data must not crash — GDPR/KVKK export."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/user/export-data",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code != 500, (
+        f"GF138 user/export-data crashed: {resp.status_code} "
+        f"{resp.text[:300]}. GDPR/KVKK data export aggregates across "
+        f"~10 tables; a 500 usually means one of them has schema drift "
+        f"(Session 149 GF113 COPPA, Session 148 GF106 StudentReview). "
+        f"Expected: 200 with a JSON or file envelope, or 503 if a "
+        f"sub-query degrades gracefully."
+    )
+
+
+def test_gf139_push_subscribe_not_500(client: httpx.Client):
+    """POST /api/v1/push/subscribe must not crash on a synthetic subscription."""
+    token = _login(client, STUDENT)
+    resp = client.post(
+        "/api/v1/push/subscribe",
+        headers={**_auth_headers(token), "Content-Type": "application/json"},
+        json={
+            "endpoint": "https://fcm.googleapis.com/fcm/send/test-endpoint",
+            "keys": {
+                "p256dh": "BPqF" + "A" * 84,
+                "auth": "C" * 22,
+            },
+            "user_agent": "pytest-golden-flow",
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF139 push/subscribe crashed: {resp.status_code} "
+        f"{resp.text[:300]}. Check api/push*.py — WebPush subscription "
+        f"write path. A 500 is usually VARCHAR+uuid4 bind drift on the "
+        f"PushSubscription model (rule-of-seven: Session 147 GF94 "
+        f"VideoNote + Session 142 GF59) or VAPID key env-var missing. "
+        f"422/400 on payload shape is acceptable; a crash is not."
+    )
