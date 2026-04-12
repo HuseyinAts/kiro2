@@ -2,13 +2,22 @@
 API Key Management Endpoints (Task 48.6)
 CRUD operations for API keys
 
+Session 153 (GF117 real fix): `core.api_key_manager` has been ported to
+AsyncSession, so the `Session(bind=db.bind.sync_engine)` shim, the
+`_is_async_sync_mismatch` / `_degrade_async_mismatch` helpers, and the 503
+degradation path that Session 149 installed are no longer needed. Handlers
+now call the async manager directly with the AsyncSession from
+`core.dependencies.get_db`. The `except HTTPException: raise` guard
+(rule-of-eight, Session 146) is preserved so legitimate 4xx's (401/403/404/429
+from the manager) propagate unchanged instead of being re-wrapped as 500s.
+
 Author: Claude
-Date: 2025-10-27
+Date: 2025-10-27 (original) / 2026-04-12 (async rewrite)
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
-from sqlalchemy.exc import DBAPIError, SQLAlchemyError
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.api_key_manager import APIKeyScope, get_api_key_manager
@@ -19,47 +28,6 @@ from models.database import APIKey
 logger = get_logger("api_key_api")
 
 router = APIRouter(prefix="/api/v1/api-keys", tags=["API Keys"])
-
-
-# Session 149 (GF117): `core.api_key_manager` is a sync ORM service that
-# expects `sqlalchemy.orm.Session` but the handler receives `AsyncSession`
-# from `core.dependencies.get_db`. The `sync_db = Session(bind=db.bind.sync_engine)`
-# shim fails because the async engine has no `.sync_engine` on asyncpg, and
-# any subsequent ORM query trips `MissingGreenlet` / `greenlet_spawn has not
-# been called`. Until the service is ported to async, degrade at the handler
-# boundary to 503 — same GF22/GF41/GF106/GF112/GF115 pattern.
-_DEGRADE_MSG = (
-    "API anahtari servisi gecici olarak kullanilamiyor: "
-    "veritabani katmani yeniden yapilandiriliyor."
-)
-
-_DB_ERRORS = (DBAPIError, SQLAlchemyError)
-
-
-def _is_async_sync_mismatch(exc: Exception) -> bool:
-    # Also handles HTTPException wrappers from `core.api_key_manager` which
-    # re-raise internal async/sync mismatch errors as `HTTPException(500,
-    # detail=f"Failed to ...: {e}")` with the original message embedded.
-    if isinstance(exc, HTTPException):
-        msg = str(getattr(exc, "detail", "")).lower()
-    else:
-        msg = str(exc).lower()
-    cls = type(exc).__name__.lower()
-    return (
-        "greenlet_spawn" in msg
-        or "await_only" in msg
-        or "missinggreenlet" in cls
-        or "missinggreenlet" in msg
-        or "sync_engine" in msg
-        or "'nonetype' object has no attribute" in msg
-        or isinstance(exc, AttributeError)
-    )
-
-
-def _degrade_async_mismatch(exc: Exception, context: str) -> HTTPException:
-    """Convert async/sync ORM mismatch errors to structured 503."""
-    logger.error(f"{context}: {type(exc).__name__}: {exc}")
-    return HTTPException(status_code=503, detail=_DEGRADE_MSG)
 
 
 class APIKeyCreateRequest(BaseModel):
@@ -103,22 +71,11 @@ async def create_api_key(
     **Requires authentication**: Only authenticated users can create API keys.
     """
     try:
-        from sqlalchemy.orm import Session
-
-        sync_db = (
-            Session(bind=db.bind.sync_engine)
-            if hasattr(db.bind, "sync_engine")
-            else None
-        )
-
-        # Get user_id from authenticated user
-        user_id = current_user.id
-
-        manager = get_api_key_manager(sync_db)
+        manager = get_api_key_manager(db)
         scopes = [APIKeyScope(s) for s in request_body.scopes]
 
-        result = manager.create_api_key(
-            user_id=user_id,
+        return await manager.create_api_key(
+            user_id=current_user.id,
             name=request_body.name,
             scopes=scopes,
             description=request_body.description,
@@ -128,20 +85,9 @@ async def create_api_key(
             request=request,
         )
 
-        if sync_db:
-            sync_db.close()
-
-        return result
-
-    except HTTPException as e:
-        if _is_async_sync_mismatch(e):
-            raise _degrade_async_mismatch(e, "create_api_key")
+    except HTTPException:
         raise
-    except _DB_ERRORS as e:
-        raise _degrade_async_mismatch(e, "create_api_key")
     except Exception as e:
-        if _is_async_sync_mismatch(e):
-            raise _degrade_async_mismatch(e, "create_api_key")
         logger.error(f"[API KEY API] Create failed: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -158,21 +104,10 @@ async def list_api_keys(
     **Requires authentication**: Only shows keys owned by the authenticated user.
     """
     try:
-        from sqlalchemy.orm import Session
-
-        sync_db = (
-            Session(bind=db.bind.sync_engine)
-            if hasattr(db.bind, "sync_engine")
-            else None
+        result = await db.execute(
+            select(APIKey).where(APIKey.user_id == current_user.id)
         )
-
-        # Get user_id from authenticated user
-        user_id = current_user.id
-
-        keys = sync_db.query(APIKey).filter(APIKey.user_id == user_id).all()
-
-        if sync_db:
-            sync_db.close()
+        keys = result.scalars().all()
 
         return [
             APIKeyResponse(
@@ -191,15 +126,9 @@ async def list_api_keys(
             for key in keys
         ]
 
-    except HTTPException as e:
-        if _is_async_sync_mismatch(e):
-            raise _degrade_async_mismatch(e, "list_api_keys")
+    except HTTPException:
         raise
-    except _DB_ERRORS as e:
-        raise _degrade_async_mismatch(e, "list_api_keys")
     except Exception as e:
-        if _is_async_sync_mismatch(e):
-            raise _degrade_async_mismatch(e, "list_api_keys")
         logger.error(f"[API KEY API] List failed: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -218,39 +147,22 @@ async def revoke_api_key(
     **Requires authentication**: Only the owner can revoke their API keys.
     """
     try:
-        from sqlalchemy.orm import Session
-
-        sync_db = (
-            Session(bind=db.bind.sync_engine)
-            if hasattr(db.bind, "sync_engine")
-            else None
-        )
-
         # Ownership check — only key owner can revoke
-        if sync_db:
-            key_obj = sync_db.query(APIKey).filter(APIKey.id == key_id).first()
-            if not key_obj:
-                raise HTTPException(status_code=404, detail="API key bulunamadi")
-            if str(key_obj.user_id) != str(current_user.id):
-                raise HTTPException(status_code=403, detail="Bu API key size ait degil")
+        result = await db.execute(select(APIKey).where(APIKey.id == key_id))
+        key_obj = result.scalar_one_or_none()
+        if not key_obj:
+            raise HTTPException(status_code=404, detail="API key bulunamadi")
+        if str(key_obj.user_id) != str(current_user.id):
+            raise HTTPException(status_code=403, detail="Bu API key size ait degil")
 
-        manager = get_api_key_manager(sync_db)
-        manager.revoke_api_key(key_id, reason)
-
-        if sync_db:
-            sync_db.close()
+        manager = get_api_key_manager(db)
+        await manager.revoke_api_key(key_id, reason)
 
         return {"message": f"API key {key_id} revoked successfully"}
 
-    except HTTPException as e:
-        if _is_async_sync_mismatch(e):
-            raise _degrade_async_mismatch(e, "revoke_api_key")
+    except HTTPException:
         raise
-    except _DB_ERRORS as e:
-        raise _degrade_async_mismatch(e, "revoke_api_key")
     except Exception as e:
-        if _is_async_sync_mismatch(e):
-            raise _degrade_async_mismatch(e, "revoke_api_key")
         logger.error(f"[API KEY API] Revoke failed: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -269,39 +181,20 @@ async def rotate_api_key(
     **Requires authentication**: Only the owner can rotate their API keys.
     """
     try:
-        from sqlalchemy.orm import Session
-
-        sync_db = (
-            Session(bind=db.bind.sync_engine)
-            if hasattr(db.bind, "sync_engine")
-            else None
-        )
-
         # Ownership check — only key owner can rotate
-        if sync_db:
-            key_obj = sync_db.query(APIKey).filter(APIKey.id == key_id).first()
-            if not key_obj:
-                raise HTTPException(status_code=404, detail="API key bulunamadi")
-            if str(key_obj.user_id) != str(current_user.id):
-                raise HTTPException(status_code=403, detail="Bu API key size ait degil")
+        result = await db.execute(select(APIKey).where(APIKey.id == key_id))
+        key_obj = result.scalar_one_or_none()
+        if not key_obj:
+            raise HTTPException(status_code=404, detail="API key bulunamadi")
+        if str(key_obj.user_id) != str(current_user.id):
+            raise HTTPException(status_code=403, detail="Bu API key size ait degil")
 
-        manager = get_api_key_manager(sync_db)
-        new_key = manager.rotate_api_key(key_id, request)
+        manager = get_api_key_manager(db)
+        return await manager.rotate_api_key(key_id, request)
 
-        if sync_db:
-            sync_db.close()
-
-        return new_key
-
-    except HTTPException as e:
-        if _is_async_sync_mismatch(e):
-            raise _degrade_async_mismatch(e, "rotate_api_key")
+    except HTTPException:
         raise
-    except _DB_ERRORS as e:
-        raise _degrade_async_mismatch(e, "rotate_api_key")
     except Exception as e:
-        if _is_async_sync_mismatch(e):
-            raise _degrade_async_mismatch(e, "rotate_api_key")
         logger.error(f"[API KEY API] Rotate failed: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
