@@ -4,23 +4,23 @@ Task 105: Student Review Service
 Service layer for review management, moderation, and statistics
 """
 
-from typing import List, Optional, Dict
+from datetime import UTC, datetime
 from uuid import UUID
-from sqlalchemy import select, and_, desc
+
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timezone
 
 from models.student_review import (
-    StudentReview,
+    ModerationQueue,
+    RatingCategory,
+    ReportReason,
     ReviewRating,
-    ReviewVote,
     ReviewReport,
     ReviewStatistics,
-    ModerationQueue,
-    ReviewType,
     ReviewStatus,
-    ReportReason,
-    RatingCategory,
+    ReviewType,
+    ReviewVote,
+    StudentReview,
 )
 
 
@@ -41,8 +41,8 @@ class StudentReviewService:
         title: str,
         content: str,
         overall_rating: float,
-        university_id: Optional[UUID] = None,
-        department_id: Optional[UUID] = None,
+        university_id: UUID | None = None,
+        department_id: UUID | None = None,
         **kwargs,
     ) -> StudentReview:
         """Create a new review"""
@@ -89,16 +89,16 @@ class StudentReviewService:
 
     async def get_reviews(
         self,
-        review_type: Optional[ReviewType] = None,
-        university_id: Optional[UUID] = None,
-        department_id: Optional[UUID] = None,
-        status: Optional[ReviewStatus] = None,
-        min_rating: Optional[float] = None,
+        review_type: ReviewType | None = None,
+        university_id: UUID | None = None,
+        department_id: UUID | None = None,
+        status: ReviewStatus | None = None,
+        min_rating: float | None = None,
         verified_only: bool = False,
         limit: int = 20,
         offset: int = 0,
         sort_by: str = "recent",  # "recent", "helpful", "rating"
-    ) -> List[StudentReview]:
+    ) -> list[StudentReview]:
         """Get reviews with filters"""
         conditions = []
 
@@ -135,7 +135,7 @@ class StudentReviewService:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def get_review_by_id(self, review_id: UUID) -> Optional[StudentReview]:
+    async def get_review_by_id(self, review_id: UUID) -> StudentReview | None:
         """Get specific review by ID"""
         query = select(StudentReview).where(StudentReview.id == review_id)
         result = await self.db.execute(query)
@@ -148,9 +148,7 @@ class StudentReviewService:
 
         return review
 
-    async def update_review(
-        self, review_id: UUID, **updates
-    ) -> Optional[StudentReview]:
+    async def update_review(self, review_id: UUID, **updates) -> StudentReview | None:
         """Update a review"""
         query = select(StudentReview).where(StudentReview.id == review_id)
         result = await self.db.execute(query)
@@ -185,8 +183,8 @@ class StudentReviewService:
     # ============================================================
 
     async def add_review_ratings(
-        self, review_id: UUID, ratings: Dict[RatingCategory, float]
-    ) -> List[ReviewRating]:
+        self, review_id: UUID, ratings: dict[RatingCategory, float]
+    ) -> list[ReviewRating]:
         """Add multi-criteria ratings to a review"""
         rating_objects = []
 
@@ -205,7 +203,7 @@ class StudentReviewService:
         )
         return result.scalars().all()
 
-    async def get_review_ratings(self, review_id: UUID) -> List[ReviewRating]:
+    async def get_review_ratings(self, review_id: UUID) -> list[ReviewRating]:
         """Get multi-criteria ratings for a review"""
         query = select(ReviewRating).where(ReviewRating.review_id == review_id)
         result = await self.db.execute(query)
@@ -250,9 +248,7 @@ class StudentReviewService:
         await self.db.refresh(vote)
         return vote
 
-    async def _get_user_vote(
-        self, review_id: UUID, user_id: UUID
-    ) -> Optional[ReviewVote]:
+    async def _get_user_vote(self, review_id: UUID, user_id: UUID) -> ReviewVote | None:
         """Get user's vote for a review"""
         query = select(ReviewVote).where(
             and_(ReviewVote.review_id == review_id, ReviewVote.user_id == user_id)
@@ -269,7 +265,7 @@ class StudentReviewService:
         review_id: UUID,
         reporter_id: UUID,
         reason: ReportReason,
-        description: Optional[str] = None,
+        description: str | None = None,
     ) -> ReviewReport:
         """Report a review"""
         report = ReviewReport(
@@ -296,10 +292,10 @@ class StudentReviewService:
     async def moderate_review(
         self,
         review_id: UUID,
-        moderator_id: UUID,
+        moderator_id: str,
         new_status: ReviewStatus,
-        notes: Optional[str] = None,
-    ) -> Optional[StudentReview]:
+        notes: str | None = None,
+    ) -> StudentReview | None:
         """Moderate a review (approve/reject)"""
         review = await self.get_review_by_id(review_id)
         if not review:
@@ -308,10 +304,10 @@ class StudentReviewService:
         review.status = new_status
         review.moderation_notes = notes
         review.moderated_by = moderator_id
-        review.moderated_at = datetime.now(timezone.utc)
+        review.moderated_at = datetime.now(UTC)
 
         if new_status == ReviewStatus.APPROVED:
-            review.published_at = datetime.now(timezone.utc)
+            review.published_at = datetime.now(UTC)
 
         await self.db.commit()
         await self.db.refresh(review)
@@ -323,7 +319,7 @@ class StudentReviewService:
 
     async def get_moderation_queue(
         self, status: str = "pending", limit: int = 50
-    ) -> List[StudentReview]:
+    ) -> list[StudentReview]:
         """Get reviews in moderation queue"""
         # Get queue entries
         queue_query = (
@@ -397,9 +393,9 @@ class StudentReviewService:
     async def get_review_statistics(
         self,
         review_type: ReviewType,
-        university_id: Optional[UUID] = None,
-        department_id: Optional[UUID] = None,
-    ) -> Optional[ReviewStatistics]:
+        university_id: UUID | None = None,
+        department_id: UUID | None = None,
+    ) -> ReviewStatistics | None:
         """Get review statistics"""
         conditions = [ReviewStatistics.review_type == review_type]
 
@@ -415,8 +411,8 @@ class StudentReviewService:
     async def generate_review_statistics(
         self,
         review_type: ReviewType,
-        university_id: Optional[UUID] = None,
-        department_id: Optional[UUID] = None,
+        university_id: UUID | None = None,
+        department_id: UUID | None = None,
     ) -> ReviewStatistics:
         """Generate or update review statistics"""
         # Get all approved reviews
@@ -479,36 +475,35 @@ class StudentReviewService:
             await self.db.commit()
             await self.db.refresh(existing_stats)
             return existing_stats
-        else:
-            # Create new
-            stats = ReviewStatistics(
-                review_type=review_type,
-                university_id=university_id,
-                department_id=department_id,
-                total_reviews=total_reviews,
-                verified_reviews=verified_reviews,
-                average_rating=avg_rating,
-                rating_1_count=rating_dist[1],
-                rating_2_count=rating_dist[2],
-                rating_3_count=rating_dist[3],
-                rating_4_count=rating_dist[4],
-                rating_5_count=rating_dist[5],
-                category_averages=category_averages,
-                total_helpful_votes=total_helpful,
-                total_views=total_views,
-                top_tags=top_tags,
-            )
-            self.db.add(stats)
-            await self.db.commit()
-            await self.db.refresh(stats)
-            return stats
+        # Create new
+        stats = ReviewStatistics(
+            review_type=review_type,
+            university_id=university_id,
+            department_id=department_id,
+            total_reviews=total_reviews,
+            verified_reviews=verified_reviews,
+            average_rating=avg_rating,
+            rating_1_count=rating_dist[1],
+            rating_2_count=rating_dist[2],
+            rating_3_count=rating_dist[3],
+            rating_4_count=rating_dist[4],
+            rating_5_count=rating_dist[5],
+            category_averages=category_averages,
+            total_helpful_votes=total_helpful,
+            total_views=total_views,
+            top_tags=top_tags,
+        )
+        self.db.add(stats)
+        await self.db.commit()
+        await self.db.refresh(stats)
+        return stats
 
     async def _calculate_category_averages(
         self,
         review_type: ReviewType,
-        university_id: Optional[UUID],
-        department_id: Optional[UUID],
-    ) -> Dict[str, float]:
+        university_id: UUID | None,
+        department_id: UUID | None,
+    ) -> dict[str, float]:
         """Calculate average ratings for each category"""
         # Get all reviews
         reviews = await self.get_reviews(
@@ -533,7 +528,7 @@ class StudentReviewService:
         category_counts = {}
 
         for rating in ratings:
-            category = rating.category.value
+            category = rating.category
             if category not in category_sums:
                 category_sums[category] = 0
                 category_counts[category] = 0
@@ -548,7 +543,7 @@ class StudentReviewService:
 
         return category_averages
 
-    def _get_top_tags(self, reviews: List[StudentReview], limit: int = 10) -> List[str]:
+    def _get_top_tags(self, reviews: list[StudentReview], limit: int = 10) -> list[str]:
         """Get most common tags from reviews"""
         tag_counts = {}
 

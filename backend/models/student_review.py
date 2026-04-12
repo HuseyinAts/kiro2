@@ -2,6 +2,36 @@
 Task 105: Student Review Models
 
 Database models for review system, ratings, moderation, and filtering
+
+Session 154 (GF106 Task C): the live `student_reviews` / `review_ratings` /
+`review_votes` / `review_reports` / `review_statistics` / `moderation_queue`
+tables had massive schema drift vs this ORM (Wave 12 Session 148 flagged 26+
+missing columns in student_reviews alone). All 6 tables had `id` declared as
+`Column(String, default=lambda: str(uuid4()))`, but the live DB's `id` column
+was `uuid NOT NULL DEFAULT gen_random_uuid()` — asyncpg refused the
+`$1::VARCHAR` bind with `DatatypeMismatchError: column "id" is of type uuid
+but expression is of type character varying` on every INSERT. This is the
+**inverse rule-of-seven** pattern (Session 153 GF115 osb_settings precedent):
+DB=uuid, ORM=String → fix is at the model declaration, not at caller level.
+
+Migration `student_review_drift_001` drops and recreates all 6 tables to
+match this ORM exactly (0 rows across all tables at time of migration, so
+the drop is safe).
+
+Additional fixes:
+- `SQLEnum(ReviewType/ReviewStatus/RatingCategory/ReportReason)` replaced
+  with `String(n)` columns. Python enum validation still happens at the
+  API layer; this avoids creating native PG enum types that conflict with
+  existing varchar columns and matches the canonical KIRO2 enum-as-string
+  pattern.
+- `university_id`, `department_id`, `dormitory_id` FK columns changed to
+  `UUID(as_uuid=True)` because `universities.id` / `departments.id` /
+  `dormitory_info.id` are all `uuid` in live DB.
+- `user_id`, `moderated_by`, `reporter_id`, `resolved_by`, `assigned_to`
+  kept as `String` because `users.id` is `varchar` in live DB.
+- `default=lambda: str(uuid4())` → `default=uuid4` on all 6 `id` columns
+  so SQLAlchemy binds a native UUID object that asyncpg serializes as
+  `$1::UUID` instead of `$1::VARCHAR`.
 """
 
 from enum import Enum
@@ -17,10 +47,7 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy import (
-    Enum as SQLEnum,
-)
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
@@ -94,16 +121,22 @@ class StudentReview(Base):
 
     __tablename__ = "student_reviews"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Review target
-    review_type = Column(SQLEnum(ReviewType), nullable=False)
-    university_id = Column(String, ForeignKey("universities.id", ondelete="CASCADE"))
-    department_id = Column(String, ForeignKey("departments.id", ondelete="CASCADE"))
+    review_type = Column(String(50), nullable=False)
+    university_id = Column(
+        UUID(as_uuid=True), ForeignKey("universities.id", ondelete="CASCADE")
+    )
+    department_id = Column(
+        UUID(as_uuid=True), ForeignKey("departments.id", ondelete="CASCADE")
+    )
     professor_id = Column(String)  # Could add professors table later
     course_id = Column(String)  # Could add courses table later
-    dormitory_id = Column(String, ForeignKey("dormitory_info.id", ondelete="CASCADE"))
+    dormitory_id = Column(
+        UUID(as_uuid=True), ForeignKey("dormitory_info.id", ondelete="CASCADE")
+    )
 
     # Review content
     title = Column(String(255), nullable=False)
@@ -124,7 +157,7 @@ class StudentReview(Base):
     is_alumni = Column(Boolean, default=False)
 
     # Task 105.3: Moderation
-    status = Column(SQLEnum(ReviewStatus), default=ReviewStatus.PENDING)
+    status = Column(String(20), default="pending")
     moderation_notes = Column(Text)
     moderated_by = Column(String, ForeignKey("users.id", ondelete="SET NULL"))
     moderated_at = Column(DateTime(timezone=True))
@@ -199,15 +232,15 @@ class ReviewRating(Base):
 
     __tablename__ = "review_ratings"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     review_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     # Rating category and value
-    category = Column(SQLEnum(RatingCategory), nullable=False)
+    category = Column(String(50), nullable=False)
     rating = Column(Float, nullable=False)  # 1.0 - 5.0
 
     # Optional comment for this specific category
@@ -246,9 +279,9 @@ class ReviewVote(Base):
 
     __tablename__ = "review_votes"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     review_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -286,9 +319,9 @@ class ReviewReport(Base):
 
     __tablename__ = "review_reports"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     review_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -297,7 +330,7 @@ class ReviewReport(Base):
     )
 
     # Report details
-    reason = Column(SQLEnum(ReportReason), nullable=False)
+    reason = Column(String(50), nullable=False)
     description = Column(Text)
 
     # Report status
@@ -337,13 +370,19 @@ class ReviewStatistics(Base):
 
     __tablename__ = "review_statistics"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
 
     # Target
-    review_type = Column(SQLEnum(ReviewType), nullable=False)
-    university_id = Column(String, ForeignKey("universities.id", ondelete="CASCADE"))
-    department_id = Column(String, ForeignKey("departments.id", ondelete="CASCADE"))
-    dormitory_id = Column(String, ForeignKey("dormitory_info.id", ondelete="CASCADE"))
+    review_type = Column(String(50), nullable=False)
+    university_id = Column(
+        UUID(as_uuid=True), ForeignKey("universities.id", ondelete="CASCADE")
+    )
+    department_id = Column(
+        UUID(as_uuid=True), ForeignKey("departments.id", ondelete="CASCADE")
+    )
+    dormitory_id = Column(
+        UUID(as_uuid=True), ForeignKey("dormitory_info.id", ondelete="CASCADE")
+    )
 
     # Overall statistics
     total_reviews = Column(Integer, default=0)
@@ -402,9 +441,9 @@ class ModerationQueue(Base):
 
     __tablename__ = "moderation_queue"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     review_id = Column(
-        String,
+        UUID(as_uuid=True),
         ForeignKey("student_reviews.id", ondelete="CASCADE"),
         nullable=False,
     )

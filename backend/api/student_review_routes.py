@@ -9,7 +9,6 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session as get_db
@@ -77,7 +76,7 @@ class ReviewResponse(BaseModel):
     """Response model for review"""
 
     id: UUID
-    user_id: UUID
+    user_id: str
     review_type: str
     title: str
     content: str
@@ -130,61 +129,37 @@ async def create_review(
     user_id = current_user.id
     service = StudentReviewService(db)
 
-    # Session 148 (GF106): the ORM `StudentReview` model declares ~18 columns
-    # (professor_id, course_id, pros, cons, tags, student_year,
-    # enrollment_year, is_current_student, is_alumni, status,
-    # moderation_notes, moderated_at, spam_score, quality_score,
-    # contains_profanity, contains_contact_info, is_too_short,
-    # verification_method, verified_at, not_helpful_count, report_count,
-    # view_count, language, ip_address, user_agent, published_at) that do
-    # NOT exist in the live `student_reviews` table — the schema drift is
-    # massive and fixing it requires a dedicated migration out of probe
-    # scope. Until then, any INSERT crashes with asyncpg
-    # `UndefinedColumnError` wrapped as SQLAlchemy `ProgrammingError`.
-    # Degrade to 503 at the handler boundary instead (GF22/GF41 pattern).
-    try:
-        review = await service.create_review(
-            user_id=user_id,
-            review_type=request.review_type,
-            title=request.title,
-            content=request.content,
-            overall_rating=request.overall_rating,
-            university_id=request.university_id,
-            department_id=request.department_id,
-            dormitory_id=request.dormitory_id,
-            pros=request.pros,
-            cons=request.cons,
-            tags=request.tags,
-            student_year=request.student_year,
-            enrollment_year=request.enrollment_year,
-            is_current_student=request.is_current_student,
-        )
-    except HTTPException:
-        raise
-    except ProgrammingError as exc:
-        import logging as _log
-
-        _log.getLogger(__name__).warning(
-            "Student review create failed due to schema drift: %s", exc
-        )
-        raise HTTPException(
-            status_code=503,
-            detail=(
-                "Ogrenci yorumu olusturulamadi: veritabani sema guncellemesi "
-                "bekleniyor."
-            ),
-        ) from exc
+    # Session 154 (GF106 Task C): Session 148's 503 shim is removed now that
+    # migration `student_review_drift_001` has dropped-and-recreated the 6
+    # tables to match the fixed ORM. asyncpg native UUID binding works
+    # end-to-end.
+    review = await service.create_review(
+        user_id=user_id,
+        review_type=request.review_type,
+        title=request.title,
+        content=request.content,
+        overall_rating=request.overall_rating,
+        university_id=request.university_id,
+        department_id=request.department_id,
+        dormitory_id=request.dormitory_id,
+        pros=request.pros,
+        cons=request.cons,
+        tags=request.tags,
+        student_year=request.student_year,
+        enrollment_year=request.enrollment_year,
+        is_current_student=request.is_current_student,
+    )
 
     return ReviewResponse(
         id=review.id,
         user_id=review.user_id,
-        review_type=review.review_type.value,
+        review_type=review.review_type,
         title=review.title,
         content=review.content,
         overall_rating=review.overall_rating,
         university_id=review.university_id,
         department_id=review.department_id,
-        status=review.status.value,
+        status=review.status,
         is_verified=review.is_verified,
         helpful_count=review.helpful_count,
         not_helpful_count=review.not_helpful_count,
@@ -229,13 +204,13 @@ async def get_reviews(
         ReviewResponse(
             id=r.id,
             user_id=r.user_id,
-            review_type=r.review_type.value,
+            review_type=r.review_type,
             title=r.title,
             content=r.content,
             overall_rating=r.overall_rating,
             university_id=r.university_id,
             department_id=r.department_id,
-            status=r.status.value,
+            status=r.status,
             is_verified=r.is_verified,
             helpful_count=r.helpful_count,
             not_helpful_count=r.not_helpful_count,
@@ -262,13 +237,13 @@ async def get_review_by_id(review_id: UUID, db: AsyncSession = Depends(get_db)):
     return ReviewResponse(
         id=review.id,
         user_id=review.user_id,
-        review_type=review.review_type.value,
+        review_type=review.review_type,
         title=review.title,
         content=review.content,
         overall_rating=review.overall_rating,
         university_id=review.university_id,
         department_id=review.department_id,
-        status=review.status.value,
+        status=review.status,
         is_verified=review.is_verified,
         helpful_count=review.helpful_count,
         not_helpful_count=review.not_helpful_count,
@@ -328,9 +303,7 @@ async def add_review_ratings(
 
     return {
         "message": "Ratings added successfully",
-        "ratings": [
-            {"category": r.category.value, "rating": r.rating} for r in ratings
-        ],
+        "ratings": [{"category": r.category, "rating": r.rating} for r in ratings],
     }
 
 
@@ -343,7 +316,7 @@ async def get_review_ratings(review_id: UUID, db: AsyncSession = Depends(get_db)
 
     return {
         "ratings": [
-            {"category": r.category.value, "rating": r.rating, "comment": r.comment}
+            {"category": r.category, "rating": r.rating, "comment": r.comment}
             for r in ratings
         ]
     }
@@ -414,7 +387,7 @@ async def moderate_review(
 
     review = await service.moderate_review(
         review_id=review_id,
-        moderator_id=UUID(admin.id),
+        moderator_id=admin.id,
         new_status=request.new_status,
         notes=request.notes,
     )
@@ -425,7 +398,7 @@ async def moderate_review(
     return {
         "message": "Review moderated successfully",
         "review_id": review.id,
-        "new_status": review.status.value,
+        "new_status": review.status,
     }
 
 
@@ -451,13 +424,13 @@ async def get_moderation_queue(
         ReviewResponse(
             id=r.id,
             user_id=r.user_id,
-            review_type=r.review_type.value,
+            review_type=r.review_type,
             title=r.title,
             content=r.content,
             overall_rating=r.overall_rating,
             university_id=r.university_id,
             department_id=r.department_id,
-            status=r.status.value,
+            status=r.status,
             is_verified=r.is_verified,
             helpful_count=r.helpful_count,
             not_helpful_count=r.not_helpful_count,
