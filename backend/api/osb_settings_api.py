@@ -7,12 +7,16 @@ sync `def` + `Depends(get_db)` pattern to `async def` + `Depends(get_async_sessi
 + `select()` / `await db.execute(...)` / `await db.commit()`. The prior sync
 shim layered on top of the async engine tripped `MissingGreenlet` on every
 call. Same fix class as Wave 10/11 GF86/GF87/GF95.
+
+Session 152: migration `osb_access_001` added the three missing columns
+(`reduced_motion`, `no_animations`, `no_shadows`) with NOT NULL + server
+defaults, so the Session 149 503 schema-drift shim has been removed. The
+ORM and DB are now in sync.
 """
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
-from sqlalchemy.exc import DBAPIError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_async_session
@@ -20,24 +24,6 @@ from core.dependencies import get_current_user
 from core.structured_logger import get_logger
 from models.database import User
 from models.osb_settings import OSBSettings
-
-# Session 149 (GF115): `osb_settings` DB table is missing columns the ORM
-# declares (e.g. `reduced_motion`, `no_animations`, `no_shadows`) — classic
-# schema drift. Until a migration adds them, degrade DBAPI errors to 503 at
-# the handler boundary, same as GF22/GF41/GF106/GF112 pattern.
-_SCHEMA_DRIFT_MSG = (
-    "OSB ayarlari servisi gecici olarak kullanilamiyor: "
-    "veritabani sema guncellemesi bekleniyor."
-)
-
-
-def _degrade_schema_error(exc: Exception, context: str) -> HTTPException:
-    """Convert DBAPI schema drift errors to structured 503."""
-    logger.error(f"{context}: {type(exc).__name__}: {exc}")
-    return HTTPException(status_code=503, detail=_SCHEMA_DRIFT_MSG)
-
-
-_DB_ERRORS = (DBAPIError, SQLAlchemyError)
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/api/v1/osb/settings", tags=["OSB Support - Settings"])
@@ -187,8 +173,6 @@ async def get_osb_settings(
 
     except HTTPException:
         raise
-    except _DB_ERRORS as e:
-        raise _degrade_schema_error(e, "get_osb_settings")
     except Exception as e:
         logger.error(f"Error getting OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları alınamadı")
@@ -238,8 +222,6 @@ async def update_osb_settings(
 
     except HTTPException:
         raise
-    except _DB_ERRORS as e:
-        raise _degrade_schema_error(e, "update_osb_settings")
     except Exception as e:
         logger.error(f"Error updating OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları güncellenemedi")
@@ -287,8 +269,6 @@ async def reset_osb_settings(
 
     except HTTPException:
         raise
-    except _DB_ERRORS as e:
-        raise _degrade_schema_error(e, "reset_osb_settings")
     except Exception as e:
         logger.error(f"Error resetting OSB settings: {e}")
         raise HTTPException(status_code=500, detail="OSB ayarları sıfırlanamadı")
