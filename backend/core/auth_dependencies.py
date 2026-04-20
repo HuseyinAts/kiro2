@@ -121,6 +121,12 @@ class AuthenticationDependency:
         return hashlib.sha256(fingerprint_data.encode()).hexdigest()[:16]
 
 
+# Tekil örnek: AuthorizationDependency ve dependency_overrides aynı auth örneğini paylaşır
+authenticate_user = AuthenticationDependency(required=True)
+authenticate_optional = AuthenticationDependency(required=False)
+get_current_user = authenticate_user
+
+
 class AuthorizationDependency:
     """FastAPI dependency for authorization"""
 
@@ -142,7 +148,7 @@ class AuthorizationDependency:
     async def __call__(
         self,
         request: Request,
-        current_user: User = Depends(AuthenticationDependency(required=True)),
+        current_user: User = Depends(authenticate_user),
     ) -> User:
         """Check user authorization"""
 
@@ -160,6 +166,15 @@ class AuthorizationDependency:
             if self.allow_self and resource_id and str(current_user.id) == resource_id:
                 return current_user
 
+            # İstek meta (auth_context yoksa boş AuthenticationContext() kullanma — dataclass user_id ister)
+            _req_auth = getattr(request.state, "auth_context", None)
+            if _req_auth is not None:
+                _ip = getattr(_req_auth, "ip_address", None)
+                _ua = getattr(_req_auth, "user_agent", None)
+            else:
+                _ip = request.client.host if request.client else None
+                _ua = request.headers.get("user-agent")
+
             # Create authorization context
             auth_context = AuthorizationContext(
                 user_id=current_user.id,
@@ -169,12 +184,8 @@ class AuthorizationDependency:
                 resource_type=self.resource_type or "general",
                 resource_id=resource_id,
                 resource_owner_id=resource_id if self.allow_self else None,
-                ip_address=getattr(
-                    request.state, "auth_context", AuthenticationContext()
-                ).ip_address,
-                user_agent=getattr(
-                    request.state, "auth_context", AuthenticationContext()
-                ).user_agent,
+                ip_address=_ip,
+                user_agent=_ua,
                 request_path=str(request.url.path),
                 request_method=request.method,
                 additional_context={
@@ -218,13 +229,6 @@ class AuthorizationDependency:
                 },
             )
 
-
-# Pre-configured dependency instances
-authenticate_user = AuthenticationDependency(required=True)
-authenticate_optional = AuthenticationDependency(required=False)
-
-# Alias for backward compatibility (many files use get_current_user)
-get_current_user = authenticate_user
 
 # Common authorization dependencies
 require_admin = AuthorizationDependency(required_roles=["admin", "super_admin"])
@@ -315,14 +319,20 @@ def require_authorization(
     return decorator
 
 
-def require_role(*roles: str):
-    """Decorator to require specific roles"""
-    return require_authorization(roles=list(roles))
+def require_role(*roles: str) -> AuthorizationDependency:
+    """FastAPI dependency: kullanıcının verilen rollerden birine sahip olmasını zorunlu kılar.
+
+    RBAC rol id'leri küçük harf (örn. ``admin``, ``teacher``). ``"ADMIN"`` gibi
+    büyük harf değerler otomatik küçültülür.
+    """
+    normalized = [str(r).strip().lower() for r in roles if str(r).strip()]
+    return AuthorizationDependency(required_roles=normalized or ["admin"])
 
 
-def require_permission(*permissions: str):
-    """Decorator to require specific permissions"""
-    return require_authorization(permissions=list(permissions))
+def require_permission(*permissions: str) -> AuthorizationDependency:
+    """FastAPI dependency: verilen izinlerden en az birini zorunlu kılar."""
+    perms = [str(p).strip() for p in permissions if str(p).strip()]
+    return AuthorizationDependency(required_permissions=perms or ["read"])
 
 
 # Utility functions for manual authentication/authorization

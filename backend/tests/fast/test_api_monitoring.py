@@ -8,6 +8,21 @@ from fastapi.testclient import TestClient
 from unittest.mock import patch, AsyncMock, MagicMock
 import sys
 
+from core.auth_dependencies import authenticate_user
+from core.dependencies import AuthenticatedUser
+from models.enums_db import UserRole
+
+
+async def _monitoring_test_user() -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id="monitor-test-admin",
+        username="monitor_admin",
+        role=UserRole.ADMIN,
+        email=None,
+        permissions=["*"],
+        exp=None,
+    )
+
 
 # Mock missing modules before importing
 @pytest.fixture(scope="module", autouse=True)
@@ -27,6 +42,19 @@ def setup_mocks():
         performance_monitor=mock_monitor
     )
 
+    # RBAC: test kullanıcısı gerçek DB rol kaydı olmadan admin uçlarına erişsin
+    from core.rbac_system import AuthorizationResult, get_rbac_manager
+
+    _rbac = get_rbac_manager()
+    _rbac_orig_check = _rbac.check_permission
+    _rbac.check_permission = AsyncMock(
+        return_value=AuthorizationResult(granted=True, reason="test_allow")
+    )
+
+    yield
+
+    _rbac.check_permission = _rbac_orig_check
+
 
 @pytest.fixture
 def test_app():
@@ -35,6 +63,7 @@ def test_app():
 
     app = FastAPI()
     app.include_router(router)
+    app.dependency_overrides[authenticate_user] = _monitoring_test_user
     return app
 
 

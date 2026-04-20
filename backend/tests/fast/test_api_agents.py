@@ -6,14 +6,29 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from core.dependencies import AuthenticatedUser, get_current_user
+from models.enums_db import UserRole
+
 
 @pytest.fixture
 def test_app():
     """Create test app with agents router"""
+
+    async def _override_user() -> AuthenticatedUser:
+        return AuthenticatedUser(
+            id="test-user-1",
+            username="tester",
+            role=UserRole.STUDENT,
+            email=None,
+            permissions=[],
+            exp=None,
+        )
+
     from api.agents import router
 
     app = FastAPI()
     app.include_router(router)
+    app.dependency_overrides[get_current_user] = _override_user
     return app
 
 
