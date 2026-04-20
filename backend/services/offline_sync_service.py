@@ -7,11 +7,12 @@ that were recorded while the student had no network connectivity.
 
 from __future__ import annotations
 
+import json
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.structured_logger import get_logger
@@ -139,6 +140,30 @@ async def build_sync_package(
 
     total = len(questions)
     estimated_minutes = total * _MINUTES_PER_QUESTION
+    question_ids = [q["id"] for q in questions] or None
+
+    await db.execute(
+        text(
+            """
+            INSERT INTO offline_sync_packages (
+                package_id,
+                student_id,
+                question_ids
+            )
+            VALUES (
+                :package_id,
+                :student_id,
+                CAST(:question_ids AS jsonb)
+            )
+            """
+        ),
+        {
+            "package_id": package_id,
+            "student_id": student_id,
+            "question_ids": json.dumps(question_ids) if question_ids else None,
+        },
+    )
+    await db.commit()
 
     return {
         "package_id": package_id,
@@ -181,6 +206,44 @@ async def process_sync_results(
 
     synced = 0
     failed = 0
+    package_row = await db.execute(
+        text(
+            """
+            SELECT student_id, consumed_at
+            FROM offline_sync_packages
+            WHERE package_id = :package_id
+            """
+        ),
+        {"package_id": package_id},
+    )
+    package = package_row.mappings().first()
+
+    if package is None:
+        return _reject_batch(
+            reason="unknown_package",
+            level="warning",
+            student_id=student_id,
+            package_id=package_id,
+            result_count=len(results),
+        )
+
+    if package["student_id"] != student_id:
+        return _reject_batch(
+            reason="ownership_mismatch",
+            level="error",
+            student_id=student_id,
+            package_id=package_id,
+            result_count=len(results),
+        )
+
+    if package["consumed_at"] is not None:
+        return _reject_batch(
+            reason="already_consumed",
+            level="warning",
+            student_id=student_id,
+            package_id=package_id,
+            result_count=len(results),
+        )
 
     for item in results:
         try:
@@ -241,16 +304,53 @@ async def process_sync_results(
             )
             failed += 1
 
+    await db.execute(
+        text(
+            """
+            UPDATE offline_sync_packages
+            SET consumed_at = NOW()
+            WHERE package_id = :package_id
+            """
+        ),
+        {"package_id": package_id},
+    )
     await db.commit()
-
-    # Recommend next sync in ~6 hours
-    next_sync = datetime.now(timezone.utc) + timedelta(hours=6)
 
     return {
         "synced_count": synced,
         "failed_count": failed,
-        "next_sync_recommended_at": next_sync.isoformat(),
+        "next_sync_recommended_at": _next_sync_at_iso(),
     }
+
+
+def _reject_batch(
+    *,
+    reason: str,
+    level: str,
+    student_id: str,
+    package_id: str,
+    result_count: int,
+) -> dict[str, Any]:
+    log_message = (
+        "Offline sync batch rejected: "
+        f"{reason} (student={student_id}, package_id={package_id})"
+    )
+    if level == "error":
+        logger.error(log_message, extra_data={"reason": reason})
+    else:
+        logger.warning(log_message, extra_data={"reason": reason})
+
+    return {
+        "synced_count": 0,
+        "failed_count": result_count,
+        "next_sync_recommended_at": _next_sync_at_iso(),
+    }
+
+
+def _next_sync_at_iso() -> str:
+    # Recommend next sync in ~6 hours
+    next_sync = datetime.now(timezone.utc) + timedelta(hours=6)
+    return next_sync.isoformat()
 
 
 def _apply_fsrs_grade(*, card: Any, is_correct: bool, time_seconds: float) -> None:
