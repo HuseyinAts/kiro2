@@ -13,6 +13,12 @@
   - `question_crud_api.py`: geçmişte kalmış P0 TODO yorumu kaldırıldı (endpoint zaten `get_current_user`).
   - `CAPABILITY_MATRIX.md`, bu log, `backend/_pilots/20260421_chroma_stack_state.md` oluşturuldu.
 - **Test:** `python -m pytest tests/fast/ -q --maxfail=5` — `test_api_agents.py` içinde 401/200 beklentisi uyumsuzluğu (5 fail); bu blokta değiştirilen dosyalarla doğrudan ilişkili görünmüyor. Hedefli test: `pytest tests/unit/test_zero_cov_batch6.py -q --tb=no -k session_participant` (isteğe bağlı).
-- **Push:** Ortamda `origin` ve kimlik doğrulama hazırsa `git push` (kullanıcı/CI).
+- **Push:** `autopilot/student-ready-20260421` → `origin` (yeni dal, takip ayarlı).
+- **Docker:** `docker compose build backend` tamamlandı (chromadb + volume değişikliği imaja yansıdı).
 
-**Sonraki blok önerisi (B-01):** Chroma ADIM 0 doğrulama (import + `initialize()`), ardından ingest veya `HttpClient` + compose `chroma` servisi kararı.
+## B-20260421-01 — Otonom düzeltme (kullanıcıya iş bırakma yok)
+
+- Dal + commit: `a1b12e9` (9 dosya).
+- Push ve backend image rebuild bu oturumda çalıştırıldı.
+
+**Sonraki blok (B-02):** Chroma import/smoke (container `up` ile) veya offline_sync plan adımı — ajan sürdürür.
