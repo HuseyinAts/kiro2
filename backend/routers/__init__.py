@@ -17,6 +17,7 @@ ROUTER_CATEGORIES = {
     "exam": "Sınav yönetimi ve değerlendirme",
     "learning": "Öğrenme yolları ve stil analizleri",
     "content": "İçerik yönetimi ve soru bankası",
+    "search": "Vektör arama ve ChromaDB (semantic, öneri, kümeleme, duplicate)",
     "ai": "Yapay zeka ve NLP servisleri",
     "integrations": "Dış servis entegrasyonları",
     "admin": "Yönetici paneli işlemleri",

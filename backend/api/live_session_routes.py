@@ -69,7 +69,7 @@ async def _verify_session_participant(
         return  # Host always has access
     part = await db.execute(
         text(
-            "SELECT 1 FROM live_session_participants "
+            "SELECT 1 FROM session_participants "
             "WHERE session_id = :sid AND user_id = :uid"
         ),
         {"sid": str(session_id), "uid": current_user.id},
