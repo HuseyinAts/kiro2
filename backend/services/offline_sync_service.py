@@ -113,8 +113,16 @@ async def build_sync_package(
 
     questions: list[dict[str, Any]] = []
     for q in questions_db:
-        # options is stored as a JSON dict {"A": "...", "B": "...", ...}
-        raw_options = q.options if isinstance(q.options, dict) else {}
+        # QuestionBankItem ORM has option_a..option_e columns (Text).
+        # Compose into a dict for the OfflineQuestion.options payload.
+        raw_options: dict[str, str] = {
+            "A": q.option_a or "",
+            "B": q.option_b or "",
+            "C": q.option_c or "",
+            "D": q.option_d or "",
+        }
+        if q.option_e:
+            raw_options["E"] = q.option_e
         questions.append(
             {
                 "id": q.id,
