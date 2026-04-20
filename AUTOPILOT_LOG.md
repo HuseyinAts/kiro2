@@ -22,3 +22,11 @@
 - Push ve backend image rebuild bu oturumda çalıştırıldı.
 
 **Sonraki blok (B-02):** Chroma import/smoke (container `up` ile) veya offline_sync plan adımı — ajan sürdürür.
+
+## B-20260421-02 — Auth + test + Docker
+
+- `require_role` / `require_permission`: artık gerçek `AuthorizationDependency` döndürüyor (Depends ile kullanılabilir).
+- `authenticate_user` tekil örnek + `AuthorizationDependency` içinde `Depends(authenticate_user)` — test `dependency_overrides` ile uyumlu.
+- `AuthorizationContext` oluştururken boş `AuthenticationContext()` kaldırıldı; IP/UA istekten alınıyor.
+- `test_api_agents.py`, `test_api_monitoring.py` düzeltildi; `docker compose up -d backend` + container içi `import chromadb` OK.
+- Commit/push: bu blok sonrası.

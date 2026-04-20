@@ -7,7 +7,7 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 
 | Journey | API/Route | FE route | Son test | Durum | Not |
 |---------|-----------|----------|----------|-------|-----|
-| J10–J13 Chroma | `api.v1.semantic_search`, clustering, recommendation, duplicate | TBD | — | **Sarı** | `chromadb` minimal image’a eklendi; `vector_db` Docker volume; ingest/smoke sırada |
+| J10–J13 Chroma | `api.v1.semantic_search`, clustering, recommendation, duplicate | TBD | — | **Sarı** | Container’da `chromadb` import OK (0.5.23); ingest/smoke sırada |
 | J6 Offline | `api.offline_sync_api` | TBD | — | Sarı | Borç planları: `.cursor/plans/20260423_offline_sync_debt_2_package_persist.md` |
 | J7 PWA | `api.pwa_sync_api` | TBD | — | Sarı | Prefix `/api/pwa-sync-api` |
 | Live session | `api.live_session_routes` | TBD | — | **Sarı→Yeşil aday** | `session_participants` tablo adı düzeltildi (kod) |
