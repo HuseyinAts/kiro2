@@ -23,6 +23,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - backend-logs:/app/logs
+      - kiro2-vector-db:/app/vector_db
       - ./d-dataset/output/crops:/app/static/crops:ro
     environment:
       - CROP_IMAGE_DIR=/app/static/crops
@@ -110,6 +111,7 @@ services:
 
 volumes:
   backend-logs:
+  kiro2-vector-db:
 
 networks:
   default:

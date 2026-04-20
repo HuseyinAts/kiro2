@@ -101,6 +101,9 @@ Pillow>=10.0.0
 # Semantik arama (pgvector yanÄ±nda Elasticsearch desteÄŸi)
 elasticsearch[async]==8.11.0
 
+# ChromaDB — semantic_search / content_recommendation / clustering / duplicate_detection
+chromadb>=0.4.22,<0.6
+
 
 # Text-to-Speech
 gtts>=2.4.0
