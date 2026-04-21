@@ -1758,11 +1758,24 @@ class TestAdminCoverage:
         assert r.status_code != 405
 
     def test_create_user_admin(self):
-        """Admin creates a new user."""
-        with patch(
-            "api.admin.kullanici_servisi.kullanici_olustur", new_callable=AsyncMock
-        ) as mock_create:
-            mock_create.return_value = MagicMock(id=str(uuid4()), email="new@k.com")
+        """POST /admin/users — kayit auth uzerinden; endpoint 501 doner."""
+        from api import admin as admin_mod
+        from core.dependencies import AuthenticatedUser, UserRole
+
+        async def _fake_admin_kullanici() -> AuthenticatedUser:
+            return AuthenticatedUser(
+                id="adm-b14",
+                username="admin",
+                role=UserRole.ADMIN,
+                email=None,
+                permissions=[],
+                exp=None,
+            )
+
+        self.app.dependency_overrides[admin_mod.admin_kullanici_getir] = (
+            _fake_admin_kullanici
+        )
+        try:
             r = self.client.post(
                 "/api/v1/admin/users",
                 json={
@@ -1773,7 +1786,9 @@ class TestAdminCoverage:
                     "role": "STUDENT",
                 },
             )
-        assert r.status_code != 405
+            assert r.status_code == 501
+        finally:
+            self.app.dependency_overrides.pop(admin_mod.admin_kullanici_getir, None)
 
     def test_dashboard_stats(self):
         """Admin dashboard statistics."""

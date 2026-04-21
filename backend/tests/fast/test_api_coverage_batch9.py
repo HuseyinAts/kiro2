@@ -212,14 +212,20 @@ class TestAnalyticsDeepCoverage:
         mock_svc.analytics_service.log_event = AsyncMock()
         mock_es.return_value = mock_svc
 
-        with patch(
-            "api.analytics._get_analytics_data_for_export",
-            new_callable=AsyncMock,
-            return_value={"data": []},
+        with (
+            patch(
+                "api.analytics._get_admin_analytics_for_export",
+                new_callable=AsyncMock,
+                return_value={"summary": []},
+            ),
+            patch(
+                "api.analytics._generate_pdf_content",
+                new_callable=AsyncMock,
+            ),
         ):
             r = self.client.post(
                 "/api/v1/analytics/export/pdf",
-                json={"format": "pdf", "data_type": "student"},
+                json={"format": "pdf", "data_type": "admin", "filters": {}},
             )
             assert r.status_code in (200, 500)
 

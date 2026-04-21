@@ -30,3 +30,10 @@
 - `AuthorizationContext` oluştururken boş `AuthenticationContext()` kaldırıldı; IP/UA istekten alınıyor.
 - `test_api_agents.py`, `test_api_monitoring.py` düzeltildi; `docker compose up -d backend` + container içi `import chromadb` OK.
 - Commit/push: bu blok sonrası.
+
+## B-20260421-03 — Test + script + Chroma health pytest
+
+- `test_api_coverage_batch14::test_create_user_admin`: `admin_kullanici_getir` override + 501 assertion.
+- `test_api_coverage_batch9::test_export_pdf_deep`: `data_type=admin`, `_get_admin_analytics_for_export` + `_generate_pdf_content` patch.
+- `scripts/test_endpoints.ps1`: `access_token` (+ eski `.token` fallback), `/api/v1/search/health` hedef listesine eklendi.
+- `tests/fast/test_chroma_semantic_health.py`: GET `/api/v1/search/health` router smoke.
