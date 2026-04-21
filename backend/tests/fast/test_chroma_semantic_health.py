@@ -41,3 +41,16 @@ def test_duplicate_detection_health_route():
     data = r.json()
     assert "status" in data
     assert "chromadb_available" in data
+
+
+def test_clustering_health_route():
+    import api.clustering_api as mod
+
+    app = FastAPI()
+    app.include_router(mod.router)
+    client = TestClient(app)
+    r = client.get("/api/v1/clustering/health")
+    assert r.status_code == 200
+    data = r.json()
+    assert "status" in data
+    assert "chromadb_available" in data

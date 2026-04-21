@@ -32,6 +32,9 @@ $targetPaths = @(
   "/api/v1/notifications/list",
   "/api/v1/search/quick",
   "/api/v1/search/health",
+  "/api/v1/recommendations/health",
+  "/api/v1/duplicates/health",
+  "/api/v1/clustering/health",
   "/api/v1/yks-roadmap/status"
 )
 

@@ -37,3 +37,17 @@
 - `test_api_coverage_batch9::test_export_pdf_deep`: `data_type=admin`, `_get_admin_analytics_for_export` + `_generate_pdf_content` patch.
 - `scripts/test_endpoints.ps1`: `access_token` (+ eski `.token` fallback), `/api/v1/search/health` hedef listesine eklendi.
 - `tests/fast/test_chroma_semantic_health.py`: GET `/api/v1/search/health` router smoke.
+
+## B-20260421-04 — F1 altyapı + Chroma dörtlü health tamamlama
+
+- **Faz:** F1 (Altyapı + Chroma), F7 kanıt güncellemesi.
+- **Yapılan:**
+  - `docker compose up -d celery-worker celery-beat frontend` ile compose servisleri tam ayağa kaldırıldı.
+  - `docker compose ps`: backend/worker/frontend healthy, beat running.
+  - Alembic doğrulama: `python -m alembic heads` ve `python -m alembic current` → tek head `offline_sync_pkg_20260420`.
+  - `api.clustering_api` için yeni `GET /api/v1/clustering/health` endpoint eklendi (dörtlü smoke tamamlandı).
+  - `tests/fast/test_chroma_semantic_health.py`: clustering health testi eklendi.
+  - `scripts/test_endpoints.ps1`: recommendations/duplicates/clustering health endpointleri hedef listeye eklendi.
+- **Test/Smoke:**
+  - `pytest tests/fast/test_chroma_semantic_health.py -q` → `4 passed`.
+  - PowerShell smoke: `/api/v1/search/health`, `/api/v1/recommendations/health`, `/api/v1/duplicates/health`, `/api/v1/clustering/health` → 200.
