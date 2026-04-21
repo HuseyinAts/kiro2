@@ -51,3 +51,17 @@
 - **Test/Smoke:**
   - `pytest tests/fast/test_chroma_semantic_health.py -q` → `4 passed`.
   - PowerShell smoke: `/api/v1/search/health`, `/api/v1/recommendations/health`, `/api/v1/duplicates/health`, `/api/v1/clustering/health` → 200.
+
+## B-20260421-05 — F2/F5 doğrulama turu (drift + frontend gate)
+
+- **Faz:** F2 (drift doğrulama), F5 (frontend kalite kapıları).
+- **Yapılan:**
+  - DB canlı kontrol: `psql` ile `diary_%` tabloları listelendi (`diary_entries`, `diary_exports`).
+  - Alembic doğrulama tekrarlandı: tek head/cuurent `offline_sync_pkg_20260420`.
+  - Frontend kalite kapıları çalıştırıldı:
+    - `npm run lint` → **kırmızı** (`462 error`, `977 warning`).
+    - `npm run type-check` → **yeşil**.
+    - `npm run test` uzun koşuda başarısız; hedefli koşuda iki dosya da fail:
+      - `src/components/Manipulatives/__tests__/InteractiveGeometry.test.tsx`
+      - `src/components/VideoAnalytics/__tests__/VideoAnalyticsDashboard.test.tsx`
+- **Not:** F5 DoD kutusu henüz kapalı değil; sıradaki blokta bu iki test dosyasından başlayarak FE test kırmızısı temizlenecek.

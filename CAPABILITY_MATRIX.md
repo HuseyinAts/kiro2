@@ -13,6 +13,7 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 | Live session | `api.live_session_routes` | TBD | — | **Sarı→Yeşil aday** | `session_participants` tablo adı düzeltildi (kod) |
 | Router log | `loader` + `ROUTER_CATEGORIES` | — | — | **Yeşil** | `"search"` kategorisi eklendi |
 | J3 Search CRUD | `POST .../search` question_crud | TBD | — | Yeşil | Zaten `Depends(get_current_user)`; eski TODO kaldırıldı |
+| FE Quality Gates | `frontend` lint/test/type-check | FE app | B-05 (`59639f4` sonrası doğrulama) | **Kırmızı** | `npm run type-check` yeşil; `npm run lint` 462 error/977 warning; vitest'te en az `InteractiveGeometry` + `VideoAnalyticsDashboard` fail |
 
 **Durum:** Kırmızı / Sarı / Yeşil — plan §3 terimleri.
 
