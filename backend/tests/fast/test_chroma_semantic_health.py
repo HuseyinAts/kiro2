@@ -15,3 +15,29 @@ def test_semantic_search_health_route():
     data = r.json()
     assert "status" in data
     assert "chromadb_available" in data
+
+
+def test_content_recommendation_health_route():
+    from api.v1 import content_recommendation as mod
+
+    app = FastAPI()
+    app.include_router(mod.router)
+    client = TestClient(app)
+    r = client.get("/api/v1/recommendations/health")
+    assert r.status_code == 200
+    data = r.json()
+    assert "status" in data
+    assert "chromadb_available" in data
+
+
+def test_duplicate_detection_health_route():
+    from api.v1 import duplicate_detection as mod
+
+    app = FastAPI()
+    app.include_router(mod.router)
+    client = TestClient(app)
+    r = client.get("/api/v1/duplicates/health")
+    assert r.status_code == 200
+    data = r.json()
+    assert "status" in data
+    assert "chromadb_available" in data

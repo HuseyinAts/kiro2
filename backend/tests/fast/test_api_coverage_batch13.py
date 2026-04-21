@@ -1546,13 +1546,45 @@ class TestAnalyticsSupplementCoverage:
     """Supplement batch9 analytics coverage."""
 
     @pytest.fixture(autouse=True)
+    def _allow_rbac_admin_routes(self):
+        """Admin dashboard uses require_role → authenticate_user + RBAC (no DB role rows in tests)."""
+        from unittest.mock import AsyncMock
+
+        from core.rbac_system import AuthorizationResult, get_rbac_manager
+
+        mgr = get_rbac_manager()
+        prev = mgr.check_permission
+        mgr.check_permission = AsyncMock(
+            return_value=AuthorizationResult(
+                granted=True, reason="test_allow", message="test_allow"
+            )
+        )
+        yield
+        mgr.check_permission = prev
+
+    @pytest.fixture(autouse=True)
     def setup(self):
         import api.analytics as mod
+
+        from core.auth_dependencies import authenticate_user
+        from core.dependencies import AuthenticatedUser
+        from models.enums_db import UserRole
+
+        async def _admin_bearer_user():
+            return AuthenticatedUser(
+                id="test-user-123",
+                username="testuser",
+                role=UserRole.ADMIN,
+                email="test@kiro2.com",
+                permissions=["*"],
+                exp=None,
+            )
 
         self.mod = mod
         self.app = FastAPI()
         self.app.include_router(mod.router)
         self.mock_db = _setup_overrides(self.app)
+        self.app.dependency_overrides[authenticate_user] = _admin_bearer_user
         self.client = TestClient(self.app, raise_server_exceptions=False)
 
     @patch("api.analytics.get_elasticsearch_service")
