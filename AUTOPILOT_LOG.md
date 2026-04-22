@@ -31,6 +31,13 @@
 - **Matris / kanıt:** `CAPABILITY_MATRIX.md` J7 **Yeşil** (health + yol notu). Health kanıtı: GF150, offline commit `2ec932f` ile uyumlu stack.
 - **Test:** `pytest tests/e2e/test_golden_flows.py::test_gf150_public_journey_health_probes_not_500` (önceki oturumda yeşil; bu diff sonrası tekrar).
 
+## B-20260423-01 — F1 + F3 health: GF150 + matris (Chroma, live-sessions, clustering)
+
+- **Plan:** `20260421_student_ready_autonomous_master.md` F1 (Chroma) + F3; DoD §4.3.
+- **Ortam:** `localhost:8000`; Chroma: `chroma_connection_mode: embedded`, `chromadb_available: true`, `document_count: 0` (search).
+- **Test:** `pytest tests/e2e/test_golden_flows.py::test_gf150_public_journey_health_probes_not_500` — **PASS** (0.94s).
+- **Matris:** `CAPABILITY_MATRIX.md` — J10–J13 **Yeşil (health)**; **Live session** **Yeşil (health)**; F1 §8 full ingest/uygulama ayrı blok.
+
 ## B-20260421-02 — Auth + test + Docker
 
 - `require_role` / `require_permission`: artık gerçek `AuthorizationDependency` döndürüyor (Depends ile kullanılabilir).
