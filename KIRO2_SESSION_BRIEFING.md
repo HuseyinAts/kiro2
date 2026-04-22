@@ -1,4 +1,4 @@
-# KIRO2 SESSION BRIEFING - 24 Nisan 2026 (v15)
+# KIRO2 SESSION BRIEFING - 22 Nisan 2026 (v16)
 
 ## YENİ SOHBET BAŞLATMAK İÇİN
 ```
@@ -10,7 +10,11 @@ KIRO2 projesine devam et. C:\Users\husey\kiro2\KIRO2_SESSION_BRIEFING.md dosyasi
 ## PROJE
 YKS hazirlik platformu. 100K+ kullanici. TUBITAK BIGG planli.
 Konum: C:\Users\husey\kiro2
-Stack: FastAPI+PostgreSQL(5434)+Redis(6379)+React18+Docker+ES(9200)+Ollama(11434)
+Stack: FastAPI+PostgreSQL(5434, native Windows)+Redis(6379)+React18+Docker+ES(9200)+Ollama(11434)
+Backend DSN: postgresql+asyncpg://postgres:postgres@host.docker.internal:5434/kiro2
+(DİKKAT: backend native Windows PostgreSQL'e bağlanır. `kiro2_postgres` Docker
+konteyneri — varsa — AYRI instance'dır, `kiro2` DB'si orada YOK. Bu ayrım
+22.04 Round 2 smoke'da doğrulandı.)
 
 ---
 
@@ -45,8 +49,8 @@ question_bank: 77.401 toplam / 64.270 aktif
   is_calibrated=TRUE : 360  (IRT 3PL gerçek kalibrasyon)
   is_calib_pool=TRUE : 1909 (her ders x zorluk 30 soru)
 users: 65
-Alembic head: offline_sync_pkg_20260420 (tek head, çift head yok)
-Son Alembic zinciri (Nisan): 20260406_uni_dept → 20260410_* (4) → 20260412_* (2) → student_review_drift_001 → offline_sync_pkg_20260420 (24 Nisan)
+Alembic head: diary_drift_recovery_20260422 (tek head, çift head yok — 22.04 Round 2 teyit)
+Son Alembic zinciri (Nisan): 20260406_uni_dept → 20260410_* (4) → 20260412_* (2) → student_review_drift_001 → offline_sync_pkg_20260420 → diary_drift_recovery_20260422 (22 Nisan Round 2)
 ALTIN KURAL: alembic revision --autogenerate YASAK (IRT kolonlarini DROP eder)
 ALTIN KURAL: alembic revision ID'si `alembic_version` kolonunda **32 char sınırı**. Uzun ID'ler truncate olup zincir kırılır (Lesson 10).
 
@@ -61,7 +65,7 @@ Bazı tablolar (örn. 8 diary tablosu) DB'de FİZİKSEL olarak mevcut ama Alembi
 
 ## KRİTİK KOLON ADLARI (YANLIŞ VARSAYIMDAN KAÇIN)
 ExamSession : student_id (NOT user_id), raw_score (NOT score)
-users.role  : BUYUK HARF (STUDENT/TEACHER/PARENT/ADMIN)
+users.role  : BUYUK HARF (STUDENT/TEACHER/PARENT/ADMIN) — runtime teyit 22.04 Round 2 (DISTINCT: STUDENT, TEACHER, ADMIN, PARENT). require_role kodu içindeki `.lower()` normalize sadece input hoşgörüsü, DB enum BÜYÜK HARF saklar.
 users.id    : VARCHAR (NOT UUID!) — FK'ler sa.String olmali, UUID degil
 user_badges.id : VARCHAR (NOT UUID!)
 video_watch_sessions.id : UUID
@@ -429,6 +433,16 @@ C:\Users\husey\kiro2\scripts\test_endpoints.ps1
 Calistir: powershell -ExecutionPolicy Bypass -File scripts\test_endpoints.ps1
 
 ---
+
+## v16 DEĞİŞİKLİK NOTU (v15'ten, 22 Nisan — Borç #6 Round 2 sonrası)
+- Tarih: gerçek = 22.04.2026 (önceki v15 header'ı "24 Nisan" senaryo bağlamı içindi)
+- Alembic head güncellendi: `offline_sync_pkg_20260420` → `diary_drift_recovery_20260422` (22 Nisan Round 2 teyit, state.md §A2)
+- Stack özetine netlik: backend DSN = `host.docker.internal:5434/kiro2` (native Windows PostgreSQL). `kiro2_postgres` Docker konteyneri AYRI instance, backend ona bağlanmıyor. Round 1'deki `docker exec kiro2_postgres -d kiro2` sorgusu yanlış hedef bir D-12 varyantıydı.
+- users.role BÜYÜK HARF iddiası runtime doğrulandı (DISTINCT: STUDENT/TEACHER/ADMIN/PARENT). require_role `.lower()` normalize input hoşgörüsü, DB enum değişmez.
+- Borç #6 Round 2 PASS: A1.a deploy fix + A2 alembic teşhis + A3 DB/seed + A4 auth pattern → pilot kısmi başarı ile KAPANDI. TEACHER/PARENT seed hunt + 3 rol runtime smoke ayrı mini-pilota bırakıldı.
+- 40_OPEN_DEBTS §Borç #6 kapsam revizyonu pending (A4 karma pattern: A4.i baskın + PARENT için A4.iii, hiyerarşik required_roles listesi).
+- A5 (20610e9 cherry-pick) ayrı pilot bekliyor.
+- 30_DERSLER §1.12 eklendi: Plan yazımı Pre-Flight (literal envanteri + sorgu failure-mode + sınıflandırma boyutluluğu).
 
 ## v15 DEĞİŞİKLİK NOTU (v13'ten, 24 Nisan)
 - Tarih 20.04 → 24.04, versiyon v13 → v15 (v14 sessiz: gün içi tutulan ara taşlak)
