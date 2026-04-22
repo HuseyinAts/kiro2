@@ -1,7 +1,7 @@
 # KIRO2 — Capability Matrix (öğrenci tam kapsam planı)
 
 **Plan:** `.cursor/plans/20260421_student_ready_autonomous_master.md`  
-**Son güncelleme:** 2026-04-23 — **Kanıt kilidi** (GF1+GF3, kod ağacı `2a1aa56`); bu satırları içeren `CAPABILITY_MATRIX` sürümleri: `95b6122` (kanıt kilidi commit) → `4ac61c3` (SHA/HEAD netliği) — aşağı §.  
+**Son güncelleme:** 2026-04-23 — **Kanıt kilidi** (GF1+GF3, kod `2a1aa56`); matris metni: ilk kilit `95b6122`, sonraki commit’ler yalnız doküman (SHA/HEAD netliği). Güncel hash: `git log -1 --format=%H -- CAPABILITY_MATRIX.md`.  
 
 Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 
@@ -26,7 +26,7 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 | Öğe | Değer |
 |-----|--------|
 | **Kod (GF koşuldu)** | `2a1aa56` / `2a1aa56dac34ec19aee88a1ec79ae0f2dce82a6e` — golden’ların dayandığı ağaç. |
-| **Matris / doküman (en son)** | `4ac61c3` / `4ac61c3786a2bf01aff89719a485d87876e64b5d` — `CAPABILITY_MATRIX.md` (önce `95b6122` ile kilit, sonra `4ac61c3` ile SHA ayrımı). |
+| **Matris / doküman** | **İlk** `95b6122` (Kanıt kilidi bölümü eklendi). Sonraki: `4ac61c3` (Kod vs matris SHA ayrımı) ve yalnız metin commit’leri — migration **yok**. Anlık: `git log -1 --format=%h` bu dosyada. |
 | **Backend** | `http://localhost:8000` (lokal; koşu anında çalışır durumda) |
 | **Seed** | `python scripts/seed_mvp_data.py` — `DATABASE_URL` `backend/.env` ile; `test@kiro2.com` zaten mevcuttu (idempotent) |
 | **Komut** | `cd backend` → `$env:BACKEND_URL="http://localhost:8000"` → `python -m pytest tests/e2e/test_golden_flows.py::test_gf1_login_and_me tests/e2e/test_golden_flows.py::test_gf3_exam_configs_list -v --tb=short` |
@@ -36,8 +36,8 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 
 ## Otomatik üçlü doğrulama (2026-04-23)
 
-- **Güncel repo `HEAD`:** `4ac61c3` / `4ac61c3786a2bf01aff89719a485d87876e64b5d`.  
-- **Aşağıdaki tarama** (`alembic` / `loader`) o oturumda **kod ağacı** `2a1aa56…` iken alındı. `2a1aa56` → `4ac61c3` arası yalnız **doküman** (migration yok) ise `alembic heads` sonucu aynı kalmalıdır; migration dosyaları eklendiyse yeniden çalıştır.
+- **Doküman** bu dosyadaki tarama notları: **kod ağacı** o oturumda `2a1aa56…` iken alındı. `2a1aa56`’dan sonraki commit’lerde yalnız `CAPABILITY_MATRIX.md` (ve benzeri dok) değiştiyseniz `alembic heads` sonucu aynı kalır; **migration** eklendiyse yeniden `alembic heads` çalıştır.  
+- **Güncel `HEAD`:** repoda `git rev-parse HEAD` — doküman-only commit’ler matrix içeriğini değil, yalnız bu paragrafın “en son sürüm” anlamını etkiler.
 
 ### 1) CI son durumu (tanım + bu ortamda sınır)
 
