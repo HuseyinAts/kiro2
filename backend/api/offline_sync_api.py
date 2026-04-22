@@ -5,6 +5,7 @@ Endpoints for PWA offline mode: download study packages for offline use and
 upload results that were recorded while the device had no connectivity.
 
 Endpoints:
+  GET  /api/v1/offline/health         — Liveness + DB ping (no auth)
   GET  /api/v1/offline/sync-package   — Download offline study package
   POST /api/v1/offline/sync-results   — Upload offline study results
   GET  /api/v1/offline/sync-status    — Check last sync time and pending items
@@ -16,6 +17,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
+from sqlalchemy import text
 
 from core.database import get_db_session_context
 from core.dependencies import AuthenticatedUser, get_current_user
@@ -100,6 +102,30 @@ class SyncStatusResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
+
+
+@router.get(
+    "/health",
+    summary="Offline sync modulu saglik (DB ping)",
+    tags=["health"],
+)
+async def offline_sync_health() -> dict[str, str | bool]:
+    """Liveness: ``SELECT 1`` — auth yok; orchestration / load balancer icin."""
+    try:
+        async with get_db_session_context() as db:
+            await db.execute(text("SELECT 1"))
+        return {
+            "status": "ok",
+            "service": "offline_sync",
+            "database": True,
+        }
+    except Exception as e:
+        logger.warning(f"Offline sync health DB ping failed: {e!s}")
+        return {
+            "status": "degraded",
+            "service": "offline_sync",
+            "database": False,
+        }
 
 
 @router.get(
