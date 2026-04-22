@@ -1,0 +1,106 @@
+---
+description: KIRO2 backend FastAPI kuralları — Session 6-148 öğrenilen dersler
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Backend FastAPI Kuralları
+
+## Workflow Tetikleyicileri (Cursor 3.x)
+
+Bu rule trigger olduğunda (yani backend Python dosyası açıldığında):
+- **3+ dosya etkilenecek değişiklik** → `Shift+Tab` ile Plan Mode zorunlu
+- **Bug raporu / failing test** → `/debug-mode` komutu, INFRA-FIRST öncelikli
+- **Belirsiz güvenlik yaklaşımı** → `/best-of-n` ile paralel model karşılaştır
+- **Risky refactor** → `/worktree` ile izole et
+
+## Dual Table Trap (Session 78 — KRİTİK)
+
+KIRO2'de `Question` için iki model/tablo var:
+- `models.database.Question` → `questions` tablosu (BOŞ, legacy)
+- `models.question_bank.QuestionBankItem` → `question_bank` tablosu (77,336 soru)
+
+Yeni endpoint yazarken:
+```python
+# YANLIŞ
+from models.database import Question  # boş tablo
+# DOĞRU
+from models.question_bank import QuestionBankItem as Question
+result = db.query(Question).filter(Question.is_active == True).all()
+```
+Her sorguda `is_active == True` filtresi zorunlu (Session 78: 22 sorgunun 14'ü eksikti).
+
+## Async Session Kullanımı (Session 78)
+
+- `get_async_session()` = async GENERATOR (FastAPI Depends için)
+- `get_db_session_context()` = async CONTEXT MANAGER (manuel kullanım için)
+
+```python
+# FastAPI endpoint
+async def my_endpoint(db: AsyncSession = Depends(get_db)):
+    await db.execute(...)
+
+# Manuel kullanım
+async with get_db_session_context() as session:
+    await session.execute(...)
+```
+
+## Middleware HTTPException (Session 148 — GF99)
+
+`BaseHTTPMiddleware.dispatch()` içinde `raise HTTPException` YASAKTIR — 500 olarak döner, 4xx olarak değil. Yerine `JSONResponse` döndür:
+
+```python
+# YANLIŞ
+raise HTTPException(status_code=403, detail="...")
+# DOĞRU
+return JSONResponse(status_code=403, content={"detail": "..."})
+```
+
+## Yeni Router Kaydı (Session 120)
+
+`backend/app/api/` altında yeni router dosyası eklediysen `routers/loader.py` ROUTER_MAPPING'e ekle, `test_router_registration.py` çalıştır.
+
+## Güvenlik (her endpoint için)
+
+- `Depends(get_current_user)` — auth
+- `resource.user_id == current_user.id` — IDOR ownership
+- Parameterized query — SQL injection
+- Rate limit — login 5/dk, API 100/dk
+- JWT: httpOnly cookie, 24h max
+- Sensitive data loglamayı yasak (password, token, PII)
+
+## Test Zorunluluğu
+
+- Yeni kod = yeni pytest testi (Session 9: 5 agent yazıldı, testi yok — tekrar etme)
+- Session 11 dersi: `scope="session"` fixture içinde try/except ile graceful degradation
+- Session 17 dersi: `pytest.skip(allow_module_level=True)` — `pytestmark` değil
+- Reward hacking yasak: `assert True`, `assert 1 == 1`, `expect(true).toBe(true)` hepsi YASAK
+
+## Case/Enum Convention (Session 78)
+
+- `question_bank.exam_type` → UPPERCASE ("TYT", "AYT")
+- `ExamType` enum → lowercase ("tyt", "ayt")
+- Sorguda: `exam_config.exam_type.value.upper()`
+
+KIRO2 enum'ları Türkçe: `SubjectType.MATEMATIK` (MATHEMATICS değil), `DifficultyLevel.COK_KOLAY`.
+
+## Commit Öncesi Self-Review
+
+Büyük backend değişikliği commit etmeden önce:
+1. `/lint` — ruff + mypy
+2. `/test backend/tests/test_<değişen_modül>.py`
+3. `/review` — Agent Review ile self-check
+4. Gerekirse `/checkpoint` — ilerlemeyi kaydet
+
+## Detaylı Referans
+
+Derin context için:
+- `.claude/rules/security.md` — güvenlik, KVKK, YKS soru güvenliği
+- `.claude/rules/testing.md` — 30 "öğrenilen ders"
+- `.claude/rules/middleware.md` — GF99 root cause
+- `.claude/rules/debugging-first.md` — root cause analizi
+- `.claude/rules/plan-before-execute.md` — 3+ dosya = plan zorunlu
+- `.cursor/skills/plan-mode/SKILL.md` — Plan Mode + KIRO2 sağlık kontrol listesi
+- `.cursor/commands/debug-mode.md` — INFRA-FIRST debug workflow
+
+Yukarıdakinden birini @attach ederek tam içerik yüklenebilir.

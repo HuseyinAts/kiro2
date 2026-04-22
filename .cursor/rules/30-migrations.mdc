@@ -1,0 +1,107 @@
+---
+description: Alembic migration kuralları — Session 120 dersleri
+globs: alembic/versions/**/*.py,backend/alembic/versions/**/*.py,migrations/**/*.py
+alwaysApply: false
+---
+
+# Alembic Migration Kuralları
+
+## Plan Mode ZORUNLU (Cursor 3.x)
+
+Migration her zaman 3+ dosyayı etkiler (model + migration + test + opsiyonel schema).
+Bu yüzden her migration için **Plan Mode zorunlu**:
+
+1. `Shift+Tab` → Plan Mode
+2. Planı `.cursor/plans/YYYYMMDD_migration_<konu>.md` olarak kaydet
+3. Revision chain, reversibility, backfill stratejisi plan'da açıkça yer almalı
+4. Onay sonrası Build
+
+Risky migration (data backfill, enum değişikliği, CONCURRENTLY index) ise
+`/worktree` ile izole branch'te test et.
+
+## Zorunlu Doğrulama (Session 120)
+
+`op.execute()` raw SQL yazdıktan sonra DB'deki gerçek şema ile karşılaştır.
+`CREATE TABLE IF NOT EXISTS` şema farkını GİZLER — tablo varsa sessizce geçer.
+
+```bash
+# Migration sonrası doğrulama
+psql -p 5434 -d kiro2 -U postgres -c "
+  SELECT column_name, data_type, is_nullable, column_default
+  FROM information_schema.columns
+  WHERE table_name = 'tablo_adi'
+  ORDER BY ordinal_position
+"
+```
+
+## Revision Chain
+
+- `revision` ve `down_revision` zinciri bozulmaz
+- `alembic heads` tek head göstermeli (branch varsa merge)
+- Manuel revision adı: snake_case, ne yaptığı net (`add_slug_to_subjects`, `create_irt_params_table`)
+
+## Reversible Migration
+
+- `downgrade()` boş bırakılmaz — mutlaka geri alma implementasyonu olur
+- Reversible olmayan değişiklik varsa (örn. enum değeri silme) PR description'da açıkça belirt
+- Data migration için: önce schema, sonra data (iki ayrı revision)
+
+## CONCURRENTLY Index
+
+Production tablolarda:
+```python
+# YANLIŞ (lock tablosu, downtime)
+op.create_index('ix_questions_subject', 'questions', ['subject_id'])
+
+# DOĞRU
+op.execute('CREATE INDEX CONCURRENTLY ix_questions_subject ON questions(subject_id)')
+```
+
+Not: `CONCURRENTLY` transaction içinde kullanılamaz. Migration'da `upgrade()` fonksiyonunda `op.get_bind().commit()` sonra execute gerekebilir.
+
+## Nullable → Non-Null Dönüşümü
+
+Üç adımlı:
+1. Kolon ekle `nullable=True`, default değer
+2. Data backfill (ayrı revision veya aynı migration'da `op.execute`)
+3. `nullable=False` yap
+
+## Phantom Sorun Filtresi (Session 121)
+
+"Kolon X yok" veya "tablo Y eksik" denildiğinde ÖNCE doğrula, sonra migration yaz:
+
+```bash
+# Kod gerçekten kullanıyor mu?
+grep -r 'kolon_adi' backend/app/
+
+# DB'de gerçekten eksik mi?
+psql -c "\d+ tablo_adi"
+
+# Tablo gerçekten yok mu yoksa SQL alias mı?
+grep -r 'CREATE TABLE tablo_adi' backend/
+```
+
+%30-70 sorun phantom çıkıyor. 30 saniyelik doğrulama, saatlerce yanlış fix'i önler.
+
+## Docker Image Freshness (Session 121)
+
+Container'da 404 veya ImportError → kod değiştirmeden ÖNCE image rebuild:
+```bash
+docker exec kiro2-backend grep -c 'PATTERN' /app/FILE
+# Farklıysa:
+docker compose build --no-cache backend && docker compose up -d
+```
+
+## Test Zorunluluğu
+
+Her migration için:
+- `pytest tests/migrations/` üzerine test (alembic upgrade → downgrade → upgrade)
+- Modeli etkiliyorsa model testleri regresyon kontrolü
+- `/test tests/migrations/test_<revision>.py` workflow'unu kullan
+
+## Detaylı Referans
+
+- `.cursor/skills/plan-mode/SKILL.md` — migration için plan template'i
+- `.cursor/commands/plan.md` — Plan Mode workflow
+- `.cursor/commands/worktree.md` — izole migration testi
+- `.claude/rules/migrations.md` — eğer varsa detaylı rehber

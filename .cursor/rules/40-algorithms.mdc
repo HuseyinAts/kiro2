@@ -1,0 +1,106 @@
+---
+description: FSRS / IRT / BKT algoritma kuralları — kalibre edilmiş parametreler
+globs: backend/app/services/fsrs/**/*.py,backend/app/services/irt/**/*.py,backend/app/services/bkt/**/*.py,ai_ml/**/*.py
+alwaysApply: false
+---
+
+# Eğitim Algoritmaları — Koruma Kuralları
+
+## Workflow (Cursor 3.x) — Algoritma Değişiklikleri
+
+Eğitim algoritmaları KIRO2'nin **core IP**'sidir. Değişiklik protokolü:
+
+1. **Plan Mode zorunlu** — Shift+Tab → gerekçe, alternatifler, rollback plan'ı
+2. **Belirsiz yaklaşım varsa `/best-of-n`** — 3-4 model paralel karşılaştır:
+   - Composer 2 (KIRO2 pattern'larına hakim)
+   - Opus 4.6 (deep reasoning)
+   - GPT-5.4 (alternatif perspektif)
+3. **Risky experiment için `/worktree`** — golden dataset farkını izole ölç
+4. **Plan'ı `.cursor/plans/` kaydet** — audit trail
+
+## Genel Kural
+
+Bu modüllerde parametre/formül değişikliği yapmadan önce:
+1. `.claude/skills/education-algorithms/` veya `.claude/skills/irt-validation/` SKILL.md'sini oku
+2. Golden dataset testleri (`tests/irt/`, `tests/fsrs/`) mevcut durumunu kontrol et
+3. Değişikliğin gerekçesini PR description'da ZORUNLU yaz
+4. Rollback planı belirt
+
+## IRT 3PL Parametre Validasyonu
+
+```python
+# Parametrik sınırlar (KIRO2 kalibrasyonu)
+# difficulty (b): [-5.0, 4.0]
+# discrimination (a): [0.1, 4.0]
+# guessing (c): [0.0, 0.4]
+
+@pytest.mark.parametrize("difficulty", [-5.1, 4.1, 10.0])
+def test_invalid_difficulty_rejected(difficulty):
+    with pytest.raises(ValueError):
+        create_question(difficulty=difficulty)
+```
+
+## ZPD (Zone of Proximal Development)
+
+Soru seçiminde ZPD kontrolü zorunlu — success probability 0.15-0.85 aralığında olmalı:
+
+```python
+def test_zpd_optimal_selection():
+    prob = calculate_success_probability(ability=0.0, difficulty=0.0)
+    assert 0.15 <= prob <= 0.85, "Soru ZPD dışında"
+```
+
+ZPD dışındaki sorular: %0.85'ten büyük → çok kolay (motivasyon düşer), %0.15'ten küçük → çok zor (öğrenilmez).
+
+## Empirical vs Platt Scaling (Session 48)
+
+>10 örnekli bucket'larda empirical mean (bucket ortalaması), Platt scaling'den DAHA güvenilir:
+
+```python
+# DOĞRU — Empirical-first, Platt fallback
+if high_mask.sum() > 10:
+    overrides["opus_high"] = float(labels[high_mask].mean())
+else:
+    overrides["opus_high"] = platt_calibrated(0.95)
+```
+
+## FSRS-6 Parametreleri
+
+- Parametreler `app/services/fsrs/params.py`'de
+- Her kullanıcının kendi kalibre parametreleri olabilir (personalized FSRS)
+- Default → research-based, dokunmadan önce benchmark karşılaştırma
+
+## BKT (Bayesian Knowledge Tracing)
+
+- Skill-level tracking, question-level değil
+- prior, learn, slip, guess parametreleri
+- `slip + guess < 1` kısıtı (aksi halde impossible)
+
+## Turkish NLP Tokenizer
+
+- Qwen3-8B tokenizer KIRO2-özel (extended vocab: `qwen_extended_vocab/`)
+- Türkçe agglutinative morfoloji — BPE tek başına yetersiz
+- Yeni token eklerken: `.claude/skills/turkish-nlp/SKILL.md` referans
+
+## Windows Path Replace (Session 48)
+
+`str(Path(...))` Windows'ta backslash. Prompt replace sessizce fail olur:
+
+```python
+# YANLIŞ
+prompt = prompt.replace(str(screenshot), str(enhanced))
+
+# DOĞRU
+old_fwd = str(screenshot).replace("\\", "/")
+new_fwd = str(enhanced).replace("\\", "/")
+prompt = prompt.replace(str(screenshot), str(enhanced))
+prompt = prompt.replace(old_fwd, new_fwd)
+```
+
+## Detaylı Referans
+
+- `.cursor/skills/education-algorithms/SKILL.md` — IRT/FSRS/BKT/ZPD sınırları
+- `.cursor/skills/irt-validation/SKILL.md` — IRT 3PL detaylı + CAT + MLE
+- `.cursor/commands/best-of-n.md` — paralel model karşılaştırma workflow'u
+- `.claude/skills/question-quality-multi/SKILL.md` — çok boyutlu kalite analiz
+- `.claude/skills/retrieval-schedule/SKILL.md` — FSRS + retrieval practice

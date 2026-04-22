@@ -1,0 +1,105 @@
+---
+description: KIRO2 frontend React/TypeScript kuralları
+globs: frontend/**/*.ts,frontend/**/*.tsx
+alwaysApply: false
+---
+
+# Frontend React + TypeScript Kuralları
+
+## Workflow Tetikleyicileri (Cursor 3.x)
+
+Frontend dosyası açıldığında:
+- **UI iteration** (styling, layout, component) → Integrated Browser + `⌘+Shift+D` Design Mode
+  - `.cursor/skills/design-mode/SKILL.md` rehberi
+- **Mockup → Implementation** → Design Mode + Figma MCP + Plan Mode
+- **Yeni component** → `/component` komutu (KIRO2 pattern iskeleti)
+- **Responsive debug** → Integrated Browser'da viewport resize + Design Mode
+
+## Component Pattern
+
+- Functional component + hooks
+- Props: `interface FooProps {...}` + default export
+- Dosya: PascalCase.tsx, co-located `.test.tsx` + `.module.css`
+- TypeScript strict mode: `any` yasak, `unknown` + type guard kullan
+
+## State Management
+
+- Local: `useState` / `useReducer`
+- Server state: TanStack Query (React Query)
+- Global: Zustand — **dizin `store/` (tekil), `stores/` DEĞİL**
+
+```typescript
+// ✅ DOĞRU
+import { useAuthStore } from '@/store/authStore';
+
+// ❌ YASAK — useAuth.ts kullanma
+import { useAuth } from '@/hooks/useAuth';
+
+// ❌ YASAK — stores/ (çoğul) DEĞİL
+import { useAuthStore } from '@/stores/authStore';
+```
+
+## API Katmanı
+
+- `src/api/client.ts` axios instance, interceptor auth header ekliyor
+- Endpoint wrapper'ları `src/api/endpoints/` modüler
+- Tipler `openapi-typescript` ile backend'den üretiliyor — el ile yazma
+
+## Test (Vitest + RTL + MSW)
+
+```typescript
+// DOĞRU
+test('should create user', () => {
+  const user = createUser({ email: 'test@example.com' });
+  expect(user.email).toBe('test@example.com');
+});
+
+// YASAK (reward hacking)
+expect(true).toBe(true);
+it.skip('without reason');
+```
+
+Yeni endpoint için MSW handler ekle, yoksa PR blocked.
+
+## XSS / Input Güvenliği
+
+```tsx
+// YASAK
+<div dangerouslySetInnerHTML={{__html: userInput}} />
+
+// DOĞRU
+<div>{escapeHtml(userInput)}</div>
+```
+
+## Hooks Kuralları
+
+- Top-level call zorunlu (conditional hook yasak)
+- `useEffect` cleanup: subscription, timer, AbortController
+- `useMemo` / `useCallback` premature optimization olabilir — gerçekten render bound'sa kullan
+
+## Türkçe i18n
+
+- `react-i18next`, default locale `tr`
+- String literal component'te yasak, `t('key')` kullan
+- YKS domain terimleri: TYT, AYT, MATEMATİK, FİZİK (büyük harf doğru Türkçe)
+- `.toLocaleUpperCase('tr-TR')` / `.toLocaleLowerCase('tr-TR')` — İngilizce `.toUpperCase()` İstanbul → ISTANBUL (yanlış)
+
+## Accessibility
+
+- `aria-*` zorunlu, semantic HTML (`<button>` vs `<div onClick>`)
+- Keyboard navigation: focus trap modal'larda, Esc ile kapat
+- Design Mode'da screen reader-friendly element tree kontrol et
+
+## Dark Mode
+
+- Tailwind `dark:` variant kullan
+- CSS variable'lar `:root` + `.dark` — inline color hex YASAK
+- Integrated Browser'da dark mode toggle edip her durumu doğrula
+
+## Detaylı Referans
+
+- `.cursor/skills/design-mode/SKILL.md` — Design Mode workflow + KIRO2 use case'leri
+- `.cursor/commands/component.md` — yeni component iskeleti
+- `.claude/rules/frontend.md` — detaylı frontend rehberi (varsa)
+
+`.claude/skills/` altında frontend-özel detaylı rehber için @attach.

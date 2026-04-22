@@ -1,0 +1,223 @@
+---
+description: KIRO2 pilot protokolü ve Claude/Composer 2 meta-davranış kuralları (20 Nisan 2026 oturumunda kurumlaştırıldı)
+globs:
+alwaysApply: true
+---
+
+# KIRO2 — Meta Pilot Protokolü
+
+**Kaynak:** 20 Nisan 2026 diary_api pilot oturumu + batch ADIM 0 deneyimi
+**Tamamlayıcı dosya:** `DERSLER.md` (proje kökünde, narrative açıklamalar)
+**İlgili kurallar:** `00-core.mdc` (altın kurallar), `30-migrations.mdc` (DB kuralları)
+
+---
+
+## 🚦 Pilot Protokolü — Router/Feature Aktivasyonu için Standart
+
+Mekanik pattern işi (router aktifleştirme, tablo ekleme, migration yazma) **"pilot"** olarak yürütülür. Her pilot **3 dosya** üretir:
+
+```
+.cursor/plans/YYYYMMDD_<iş>.md              ← PLAN — Claude yazar, insan onaylar
+backend/_pilots/YYYYMMDD_<iş>_state.md      ← ADIM 0 durum tespiti — Composer 2 yazar
+.cursor/plans/YYYYMMDD_<iş>_RESULT.md       ← Sonuç raporu — Composer 2 yazar
+```
+
+Planın minimum 6 adımı:
+
+1. **ADIM 0 — Gerçek Durum Tespiti** (kod/DB okumadan karar alma YASAK)
+2. **Aşama Kararı** — A/B/C/D/E sınıflandırması (insan onayı)
+3. **Arşivleme** — eski `.disabled` dosyalar `_archive/`'a
+4. **Uygulama** (migration, kod değişikliği)
+5. **Runtime Doğrulama** — auth + smoke endpoint testleri
+6. **Commit + Rapor** — kapsam dar, hook'suz amend
+
+### Aşama Sınıflandırması (Batch ADIM 0'dan kanonlaşmış)
+
+| Aşama | Durum | Eylem |
+|---|---|---|
+| **A** | Tablo yok | Migration yaz, standart pattern |
+| **B** | Tablolar var, tip doğru, Alembic drift olabilir | Genelde doğrudan loader + smoke yeterli |
+| **C** | Tablolar var, tip yanlış (UUID vs VARCHAR) | Ciddi: drop+recreate veya ALTER |
+| **D** | Dış bağımlılık (ChromaDB, YOLO, agent deploy) | Altyapı kararı önce, pilot değil |
+| **E** | Belirsiz / kod uyumsuz (SQL tablo adı drift'i gibi) | Manuel kod review gerekli |
+
+---
+
+## 👥 İş Bölümü — Kim Hangi Komutu Çalıştırır
+
+**Composer 2'ye verilebilir:**
+- `psql` SELECT sorguları (okuma)
+- `docker logs`, `docker exec ... grep ...` (okuma)
+- `Select-String`, `Get-Content` (okuma)
+- Migration dosyası yazma (lokalde, pattern'den)
+- Dosya taşıma (`_archive/`, `_pilots/`)
+- Smoke test (`curl`, `Invoke-WebRequest`)
+- Rapor üretimi (`_state.md`, `_RESULT.md`)
+
+**Sadece insan:**
+- `pg_dump` (backup alma)
+- `alembic upgrade` / `downgrade` (geri dönüşsüz)
+- `docker cp` migration dosyası → container (deploy)
+- `docker restart kiro2-backend`
+- `git push`
+- Aşama kararı (A/B/C/D/E seçimi)
+- Kapsam genişletme onayı
+- Production DB dokunuşu (hiçbir koşulda Composer 2'ye verme)
+
+**Yasaklı (hem Composer 2 hem insan dikkat):**
+- `alembic revision --autogenerate` — IRT kolonlarını DROP eder
+- `DISABLED_ROUTERS` set'ine dokunma — boş tut
+- `backend/models/` ve `backend/api/schemas/` içinde ezbere kolonlar/alanlar uydurma
+- Production DB'ye doğrudan bağlanma
+
+---
+
+## 🧠 Prior Knowledge Pattern
+
+Yeni pilot başlatırken Composer 2'ye verilecek prompt şablonu:
+
+```
+@.cursor/plans/<yeni_plan>.md dosyasını oku ve uygula.
+
+Prior Knowledge (önce oku, soruları tekrarlama):
+- backend/_pilots/ dizinindeki tüm _state.md dosyaları
+- KIRO2_SESSION_BRIEFING.md (v13+)
+
+Aynı ortamdaki bilinen gerçekleri yeniden sorgulama:
+- users.id = VARCHAR (UUID değil)
+- DISABLED_ROUTERS = {} (boş)
+- Alembic head için alembic current çalıştır, briefing'e güvenme
+```
+
+Böylece her pilotta `users.id` tipini 10 kez sorgulamak yerine delta sorularına odaklanılır.
+
+---
+
+## 🔍 ADIM 0 Zorunluluğu — Briefing Değil, Gerçek Kaynak
+
+**Önceki briefing'ler zamanla güncelliğini yitirir.** Her pilotta gerçek kaynak:
+
+1. `backend/routers/loader.py` — `DISABLED_ROUTERS` ve `ROUTER_MAPPING`
+2. `docker logs kiro2-backend` — "Registered" / "Failed to import"
+3. `alembic current` + `alembic heads` (çift head varsa merge gerekli)
+4. `information_schema.tables` + `information_schema.columns`
+
+**Briefing'de yazan sayılar ("13 disabled router" gibi) kanıt değil, başlangıç hipotezi.** Pilot başarılı olduğunda briefing güncellenmeli (diary pilotunda 3 çelişki bulundu, v13'e düzeltildi).
+
+Pilotta **6 durma noktası** (bana sor, sonra devam et):
+
+1. Beklenmedik tablolar (modelde yok ama DB'de var)
+2. UUID FK bulursan (tip uyumsuzluğu)
+3. Docker container durmuşsa
+4. Alembic'te birden fazla head (merge gerek)
+5. `users.id` VARCHAR değilse (briefing kuralı ihlal)
+6. `DISABLED_ROUTERS` boş değilse (briefing güncel)
+
+---
+
+## 💾 Backup Zorunluluğu
+
+Her pilot ADIM 0 ÖNCESİ insan elle:
+
+```powershell
+$env:PGPASSWORD='postgres'
+& "C:\Program Files\PostgreSQL\18\bin\pg_dump.exe" `
+  -h localhost -p 5434 -U postgres -d kiro2 -F c `
+  -f "C:\Users\husey\kiro2\backups\kiro2_pre_<iş>_<tarih>.dump"
+```
+
+Backup yoksa pilot başlatma. Staging DB yok; dev DB backup = tek güvence.
+
+---
+
+## 📝 Commit Hijyeni
+
+**Her commit:**
+- Kapsam dar — tek mantıksal grup
+- Mesaj: subject + boş satır + gövde paragrafları (çoklu `-m` kullanma)
+- "Made-with: Cursor" footer istenmiyor:
+
+```powershell
+git -c core.hooksPath=.git/hooks-empty commit -m "tek_satir_subject" -m "gövde..."
+# veya amend ile düzeltme
+git -c core.hooksPath=.git/hooks-empty commit --amend
+```
+
+**Pilot commit'lerinde standart kapsam:**
+- Migration dosyası (varsa)
+- `_pilots/*_state.md` (ADIM 0 çıktısı)
+- `.cursor/plans/*_RESULT.md` (sonuç)
+- `backend/routers/loader.py` (sadece gerekirse)
+
+Push'u insan karar verir; commit hazır olsa da otomatik push etme.
+
+---
+
+## 🚫 Anti-pattern'lar — Composer 2'ye Vermekten Kaçın
+
+Aşağıdaki işler Composer 2'nin güçlü olduğu alan değil; **insan karar veya farklı model** kullan:
+
+1. **Test coverage artırma "toplu"** — `pytest.skip(True)` ve `assert x is not None` fake test fabrikası riski. Kullanıcının 138 fake test silme geçmişi var. Tek tek, her test insan review'dan geçmeli.
+2. **Mimari karar** — auth konsolidasyon, orchestrator LLM entegrasyonu gibi işler. Composer 2'yi uygulama aşamasında çağır, kararı değil.
+3. **Policy engine stub'ları** — her validator farklı business logic, pattern matching değil.
+4. **Yaratıcı/estetik tasarım** — renk seçimi, UX flow — insan.
+5. **Production deployment** — hiçbir koşulda.
+
+---
+
+## 📊 Yasaklı İfadeler — Claude/Composer 2 Kullanmamalı
+
+Bu sohbette yakalanmış ezber kalıpları:
+
+- ❌ "CursorBench 61.3", "SWE-Bench 73.7" — doğrulayamıyorsan kaynak göster veya yazma
+- ❌ "EN parlak noktası" — çoğu iş için "yeterli" yeterli, abartı yapma
+- ❌ "Pro'da ≈$0" — Pro havuz sınırsız değil, quota var
+- ❌ "13 disabled router" gibi briefing alıntıları — ADIM 0 olmadan iddia etme
+- ❌ "5 alternatif öneriyorum" — tek net öneri + gerekçe yeterli
+- ❌ "users.id UUID" — KIRO2'de VARCHAR, aksi kanıtlanmadıkça
+- ❌ "Token alanı `.token`" — `access_token`
+- ❌ "İşe yarıyor" — kanıt ver, smoke test sonucu yapıştır
+
+---
+
+## ✅ İsteniyorsa Sorulacak Kontroller
+
+Claude bir öneri sunarken, öneri öncesinde kendine şunları sor:
+
+1. **Audit raporlarını okudum mu?** (`BACKEND_AUDIT.md`, `FRONTEND_AUDIT.md`, `AUTH_*.md`, `REPO_MAP.md`)
+2. **Son commit tarihlerine baktım mı?** (`git log --since='2 weeks ago'`)
+3. **`backend/_pilots/` dizinindeki mevcut state dosyalarını okudum mu?**
+4. **Öneri tek mi, yoksa menü mü?** — Menü ise tek net önerime indirgemem lazım
+5. **Risk analizi var mı?** — "Ne ters gidebilir" — en az 2 madde
+6. **Komutları hangi tarafa verdim?** — insan/Composer 2 ayrımı net mi
+
+Bu kontroller geçmeden öneri sunma.
+
+---
+
+## 🔄 Alembic Drift Farkındalığı
+
+Diary pilotunda tespit edildi: **Tablolar DB'de fiziksel var ama Alembic revision graph'ta kayıtlı değil.** Bu bir tip:
+
+- Mevcut DB'de endpoint'ler çalışır ✅
+- Taze DB'de `alembic upgrade head` → tablolar gelmez ❌
+- Staging/production deploy → 500 riski
+
+**Tespit:** Model + tablo isimlendirmesi eşleşiyor ama `alembic/versions/` içinde ilgili migration yok veya `.disabled`.
+
+**Çözüm seçenekleri (pilot bazlı karar):**
+- **A** Yok say, doküman et
+- **B** Idempotent recovery migration (`CREATE TABLE IF NOT EXISTS`)
+- **C** Resmi migration + mevcut DB'de `alembic stamp`
+
+Her seçenek farklı risk taşır; pilot başına insan kararı.
+
+---
+
+## 📚 Referans
+
+- `DERSLER.md` (proje kökünde) — bu dosyaların hikayesi, kullanıcı tercihleri, narrative
+- `KIRO2_SESSION_BRIEFING.md` (v13+) — statik proje bilgisi
+- `.cursor/rules/00-core.mdc` — altın kurallar (Plan Mode, chat isimlendirme)
+- `.cursor/rules/30-migrations.mdc` — migration detay kuralları
+- `backend/_pilots/README.md` — pilot artifact konvansiyonu

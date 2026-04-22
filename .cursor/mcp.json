@@ -1,0 +1,59 @@
+{
+  "_comment_1": "Cursor-özel MCP server'lar. Claude Desktop config'inden cmd /c wrapper pattern'i kopyalandı (Windows PATH'in doğru çalıştığı doğrulanmış).",
+  "_comment_2": "Mevcut .mcp.json'daki KIRO2 server'ları (kiro2-orchestrator, zemberek-mcp, claude-md-improvement) Cursor tarafından ayrıca okunuyor — burada duplicate etmedim.",
+  "_comment_3": "GitHub MCP eklemek için: GITHUB_PAT env var'ını Windows system environment'a ekle, sonra alttaki commented-out bloğu aktif et.",
+  "mcpServers": {
+    "filesystem": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:/Users/husey/kiro2"
+      ]
+    },
+    "postgres": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://postgres:1470@localhost:5434/kiro2"
+      ]
+    },
+    "playwright": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    },
+    "sequential-thinking": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    }
+  },
+  "_github_when_ready": {
+    "github": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PAT}"
+      }
+    }
+  }
+}

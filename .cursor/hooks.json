@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "python .cursor/hooks/post-edit-ruff.py"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "python .cursor/hooks/guard-shell.py",
+        "timeout": 10,
+        "failClosed": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+# Python
+.venv/
+.venv-paddle/
+.venv_ocr/
+.venv_ocr_gpu/
+.venv_win/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+htmlcov/
+.coverage
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+.next/
+.vite/
+frontend/build/
+frontend/dist/
+
+# SQL dumps ve büyük veri
+**/*.sql
+*.sqlite
+*.db
+d-dataset/
+data/
+veriseti/
+uploads/
+content/
+cache/
+vector_db/
+
+# KARAY / ML artifacts
+yolo_dataset/
+runs/
+models/
+*.pt
+*.onnx
+qwen_extended_vocab/
+wheelhouse/
+wheelhouse_linux/
+
+# Logs
+logs/
+*.log
+kiro2_backend.log
+frontend_build.log
+build_log.txt
+deploy_log.txt
+question_bank_population.log
+
+# Env / secrets
+.env
+.env.*
+.secrets.baseline
+tmp_token.txt
+
+# Eski snapshot/archive
+.archive/
+archive/
+temp_pages/
+raporlar/
+reports/
+test_results/
+
+# Docker/infra
+.mcp_pids/
+htmlcov/
+__pycache__/
+
+# Cursor'ın kendi backup'ları
+.cursor/backups/
+
+# Büyük/özel klasörler
+cUsershuseykiro2*/
+CUsershuseykiro2*/
