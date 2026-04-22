@@ -21,6 +21,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from core.chroma_client import chromadb_connection_mode
 from core.auth_dependencies import AuthenticationDependency, AuthorizationDependency
 from core.dependencies import AuthenticatedUser
+from models.enums_db import UserRole
 
 get_current_user = AuthenticationDependency(required=True)
 get_current_admin_user = AuthorizationDependency(required_roles=["admin", "super_admin"])
@@ -48,6 +49,24 @@ router = APIRouter(
     tags=["recommendations", "chromadb"],
     responses={404: {"description": "Not found"}},
 )
+
+# F4: Öğrenci başkası adına `user_id` gönderemez (IDOR). Öğretmen / admin hedef kullanabilir.
+_STAFF_CAN_ACT_FOR_USER = frozenset(
+    {UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.TEACHER}
+)
+
+
+def _authorized_target_user_id(
+    body_user_id: str, current_user: AuthenticatedUser
+) -> str:
+    if str(body_user_id) == str(current_user.id):
+        return str(body_user_id)
+    if current_user.role in _STAFF_CAN_ACT_FOR_USER:
+        return str(body_user_id)
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="user_id does not match authenticated user",
+    )
 
 
 # ============================================================================
@@ -168,8 +187,9 @@ async def get_recommendations(
     try:
         service = get_recommendation_service()
 
+        target_uid = _authorized_target_user_id(request.user_id, current_user)
         result = await service.get_recommendations(
-            user_id=request.user_id,
+            user_id=target_uid,
             limit=request.limit,
             subject_filter=request.subject_filter,
             ensure_diversity=request.ensure_diversity,
@@ -247,8 +267,9 @@ async def record_interaction(
 
         service = get_recommendation_service()
 
+        target_uid = _authorized_target_user_id(request.user_id, current_user)
         interaction = UserInteraction(
-            user_id=request.user_id,
+            user_id=target_uid,
             content_id=request.content_id,
             interaction_type=interaction_type,
             duration_seconds=request.duration_seconds,
@@ -266,7 +287,7 @@ async def record_interaction(
         return InteractionResponse(
             success=True,
             message="Etkilesim basariyla kaydedildi",
-            user_id=request.user_id,
+            user_id=target_uid,
             content_id=request.content_id,
             interaction_type=request.interaction_type,
             recorded_at=datetime.now(),
@@ -342,11 +363,10 @@ async def get_user_profile(
     user_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
 ) -> UserProfileResponse:
     """Kullanici profilini getir."""
-    if str(current_user.id) != user_id and current_user.role.value not in (
-        "admin",
-        "teacher",
-    ):
-        raise HTTPException(status_code=403, detail="Bu profile erisim yetkiniz yok")
+    if str(current_user.id) != str(user_id) and current_user.role not in _STAFF_CAN_ACT_FOR_USER:
+        raise HTTPException(
+            status_code=403, detail="Bu profile erisim yetkiniz yok"
+        )
     try:
         service = get_recommendation_service()
 

@@ -52,6 +52,13 @@
 - **Doğrulama (canlı):** `test_gf37_clustering_auto_not_500`, `test_gf47_recommendations_not_500`, `test_gf152_*` — **PASS**.
 - **Matris:** `CAPABILITY_MATRIX.md` J10–J13 sütun Son test: `553bacf` + GF150/38/37/47/152.
 
+## B-20260423-04 — F4: recommendations `user_id` + Dalga A script
+
+- **Güvenlik:** `api/v1/content_recommendation.py` — `POST /` ve `POST /interaction` gövdesinde `user_id` artık öğrenci için yalnızca `current_user.id`; staff (`ADMIN`, `SUPER_ADMIN`, `TEACHER`) başka kullanıcı adına. `GET .../user/{user_id}/profile` rol eşlemesi `UserRole` enum ile (önceden `"admin"` küçük harf hatalı eşleşmiyordu).
+- **Test:** `tests/unit/test_content_recommendation_idor.py` (3); `test_gf47_recommendations_not_500` PASS.
+- **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
+- **Matris:** F4 notu J10–J13 satırında.
+
 ## B-20260421-02 — Auth + test + Docker
 
 - `require_role` / `require_permission`: artık gerçek `AuthorizationDependency` döndürüyor (Depends ile kullanılabilir).
