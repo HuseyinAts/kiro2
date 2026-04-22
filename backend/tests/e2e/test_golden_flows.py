@@ -170,6 +170,30 @@ def test_gf3_exam_configs_list(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF3b: OSYM question bank — subjects (J3 student list surface)
+# ---------------------------------------------------------------------------
+
+
+def test_gf3b_osym_subjects_reachable(client: httpx.Client):
+    """Student can list subject buckets from the OSYM question bank (read path)."""
+    token = _login(client, STUDENT)
+    resp = client.get(
+        "/api/v1/osym/subjects",
+        params={"exam_type": "TYT"},
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code == 200, (
+        f"GF3b osym/subjects returned {resp.status_code}: {resp.text[:300]}. "
+        f"Router: /api/v1/osym (backend/api/osym_questions_api.py)."
+    )
+    body = resp.json()
+    assert body.get("success") is True, f"GF3b expected success, got: {body!r}"
+    assert "data" in body and isinstance(body["data"], list), (
+        f"GF3b expected data list: {body!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF4: Review queue endpoint responds (FSRS surface)
 # ---------------------------------------------------------------------------
 
