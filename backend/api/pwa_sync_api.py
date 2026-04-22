@@ -1,7 +1,11 @@
 """
 PWA Sync & Push API — endpoints for frontend backgroundSyncService.ts and sw.ts
 
+Public JSON paths (``sync_router`` / ``push_router``); there is no ``/api/pwa-sync-api`` API.
+
 Frontend calls:
+  GET  /api/v1/sync/health          — liveness + DB ping (no auth)
+  GET  /api/v1/push/health         — push router liveness (no auth, no DB)
   POST /api/v1/sync/exam-sessions   — implemented (Sprint 1E)
   POST /api/v1/sync/progress       — implemented (Sprint 1G)
   POST /api/v1/push/subscribe      — stub
@@ -20,6 +24,7 @@ from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.database import get_db_session_context
 from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from models.exam_db import ExamSession, StudentAnswer
 
@@ -28,6 +33,26 @@ logger = logging.getLogger(__name__)
 # Two routers: one for /sync, one for /push
 sync_router = APIRouter(prefix="/api/v1/sync", tags=["PWA Sync"])
 push_router = APIRouter(prefix="/api/v1/push", tags=["PWA Push"])
+
+
+@sync_router.get("/health", tags=["health"])
+async def pwa_sync_health() -> dict[str, str | bool]:
+    """Liveness: ``SELECT 1`` — auth yok."""
+    try:
+        async with get_db_session_context() as db:
+            await db.execute(text("SELECT 1"))
+        return {
+            "status": "ok",
+            "service": "pwa_sync",
+            "database": True,
+        }
+    except Exception as e:
+        logger.warning(f"PWA sync health DB ping failed: {e!s}")
+        return {
+            "status": "degraded",
+            "service": "pwa_sync",
+            "database": False,
+        }
 
 
 # --- Request Schemas ---
@@ -63,6 +88,16 @@ class PushSubscriptionPayload(BaseModel):
 
     endpoint: str
     keys: dict[str, str] = Field(default_factory=dict)
+
+
+@push_router.get("/health", tags=["health"])
+async def pwa_push_health() -> dict[str, str | bool]:
+    """Push API rotası açık; auth yok, DB sorgusu yok (subscribe stub)."""
+    return {
+        "status": "ok",
+        "service": "pwa_push",
+        "subscribe_implemented": False,
+    }
 
 
 # --- Stub Endpoints (study-notes, push/subscribe) ---

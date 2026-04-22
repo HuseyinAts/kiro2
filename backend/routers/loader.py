@@ -262,10 +262,15 @@ class RouterLoader:
                 router = module.router
                 name = module_path.split(".")[-1]
 
-                # Prefix'i belirle - boş string ise default kullan
-                prefix = (
-                    getattr(router, "prefix", None) or f"/api/{name.replace('_', '-')}"
-                )
+                # Prefix: APIRouter() kökü bazen "" — ``or`` ile yanıltıcı default'a düşmeyin
+                # (ör. pwa_sync_api: gerçek yollar /api/v1/sync, /api/v1/push).
+                raw_prefix = getattr(router, "prefix", None)
+                if raw_prefix is None:
+                    prefix = f"/api/{name.replace('_', '-')}"
+                elif raw_prefix == "":
+                    prefix = f"(multi-prefix module {name})"
+                else:
+                    prefix = raw_prefix
 
                 router_registry.register(category, name, router, prefix)
                 self.loaded_count += 1
