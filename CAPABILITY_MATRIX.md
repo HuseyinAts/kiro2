@@ -1,13 +1,13 @@
 # KIRO2 — Capability Matrix (öğrenci tam kapsam planı)
 
 **Plan:** `.cursor/plans/20260421_student_ready_autonomous_master.md`  
-**Son güncelleme:** 2026-04-23 — **Kanıt kilidi:** lokal `BACKEND_URL=http://localhost:8000` üzerinde **GF1 + GF3 PASS** (`2a1aa56`). Aşağıdaki § Kanıt kilidi.  
+**Son güncelleme:** 2026-04-23 — **Kanıt kilidi** (GF1+GF3, kod ağacı `2a1aa56`); bu dosya ve SHA notları: `95b6122` — aşağı § Kanıt kilidi.  
 
 Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 
 | Journey | API/Route | FE route | Son test | Durum | Not |
 |---------|-----------|----------|----------|-------|-----|
-| **J1** Kayıt / giriş / çıkış / refresh | `api.auth` — `POST /api/v1/auth/giris`, `/api/v1/auth/login` (EN), `POST /api/v1/auth/kayit`, `/register`, refresh/cookie path `backend/api/auth.py` | `/login`, `/register` (`App.tsx`) | `2a1aa56` — **`test_gf1_login_and_me` PASS** (lokal :8000) | **Yeşil (lokal golden)** | `STUDENT` login → token. **CI hâlâ** uvicorn olmadan golden çoğunlukla skip; prod kanıtı ayrı. |
+| **J1** Kayıt / giriş / çıkış / refresh | `api.auth` — `POST /api/v1/auth/giris`, `/api/v1/auth/login` (EN), `POST /api/v1/auth/kayit`, `/register`, refresh/cookie path `backend/api/auth.py` | `/login`, `/register` (`App.tsx`) | `2a1aa56` — **`test_gf1_login_and_me` PASS** (lokal :8000) | **Yeşil (lokal golden)** | GF1 yalnızca **giriş** + token; **kayıt / çıkış / refresh** ayrı golden/CI yok. **CI hâlâ** uvicorn olmadan skip; prod kanıtı ayrı. |
 | **J2** Profil, STUDENT | `api.auth` — `GET /api/v1/auth/profil`, `/api/v1/auth/me`, `PUT /api/v1/auth/profile` | `/profile` (çok rollü `ProfilePage`) | `2a1aa56` — **GF1** içinde `GET /api/v1/auth/me` 200, `test@kiro2.com` | **Yeşil (lokal golden)** | Aynı koşu; `PUT /profile` ve FE sayfası ayrı doğrulama isteyebilir. |
 | **J3** Soru bankası (liste / çöz / kaydet) | `api.question_bank_v2_routes` (`/api/v2/...`), `api.question_crud` (search vb.), `api.osym_questions_api` | `/soru-meydani`, `/learning-path` (ilgili akışlar) | `2a1aa56` (kod) | **Sarı** | Ayrı golden yok; öğrenci soru bankası uçtan uca hâlâ kilitlenmedi. |
 | **J4** Sınav oturumu + cevaplar | `api.sinav` — `/api/v1/osym-exam/...`, `api.exam_answer_tracking`, `api.exam_performance` | `/exam/start`, `/exam/:sinavId`, `/exam/history`, `/exams` | `2a1aa56` — **`test_gf3_exam_configs_list` PASS** → `GET /api/v1/osym-exam/exam-configs` 200 | **Yeşil (lokal golden, giriş yüzeyi)** | Sınav **başlat / cevap gönder** için ayrı golden veya E2E gerekir; bu satır config listesini kilitle. |
@@ -25,15 +25,19 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 
 | Öğe | Değer |
 |-----|--------|
-| **Commit** | `2a1aa56` / `2a1aa56dac34ec19aee88a1ec79ae0f2dce82a6e` |
-| **Backend** | `http://localhost:8000` (çalışır durumda) |
+| **Kod (GF koşuldu)** | `2a1aa56` / `2a1aa56dac34ec19aee88a1ec79ae0f2dce82a6e` — golden’ların dayandığı ağaç. |
+| **Matris / doküman** | `95b6122` / `95b6122e102260b3483739e955f420eebb97b213` — bu `CAPABILITY_MATRIX.md` değişikliği. |
+| **Backend** | `http://localhost:8000` (lokal; koşu anında çalışır durumda) |
 | **Seed** | `python scripts/seed_mvp_data.py` — `DATABASE_URL` `backend/.env` ile; `test@kiro2.com` zaten mevcuttu (idempotent) |
 | **Komut** | `cd backend` → `$env:BACKEND_URL="http://localhost:8000"` → `python -m pytest tests/e2e/test_golden_flows.py::test_gf1_login_and_me tests/e2e/test_golden_flows.py::test_gf3_exam_configs_list -v --tb=short` |
 | **Sonuç** | **2 passed** (süre ~1.5–2s) |
 
 ---
 
-## Otomatik üçlü doğrulama (2026-04-23, repo `HEAD=2a1aa56dac34ec19aee88a1ec79ae0f2dce82a6e`)
+## Otomatik üçlü doğrulama (2026-04-23)
+
+- **Güncel repo `HEAD` (bu dosyayı değiştiren dal):** `95b6122` / `95b6122e102260b3483739e955f420eebb97b213`.  
+- **Aşağıdaki tarama/komutlar** `alembic` / yükleyici taraması için **kod ağacı** o sırada `2a1aa56…` iken alındı; `alembic heads` tekrarlandığında aynı head beklenir (migration dosyaları 2a1aa56..95b6122’de farklı değilse).
 
 ### 1) CI son durumu (tanım + bu ortamda sınır)
 
