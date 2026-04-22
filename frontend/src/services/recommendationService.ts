@@ -27,20 +27,94 @@ export interface RecommendationFilter {
 }
 
 class RecommendationService {
+  private _titleForContentType(tip: string): string {
+    const map: Record<string, string> = {
+      video_lecture: 'Video ders ve özet',
+      infographic: 'Görsel infografik çalışması',
+      visual_aid: 'Görsel destekli konu tekrarı',
+      audio_content: 'Sesli içerik / dinleme',
+      group_discussion: 'Grup tartışması / sesli tekrar',
+      podcast: 'Podcast / sesli not',
+      reading: 'Metin ve okuma odaklı çalışma',
+      text_summary: 'Metin özeti ve notlar',
+      flashcards: 'Kart tekrarları',
+      interactive_simulation: 'Etkileşimli alıştırma',
+      practice_test: 'Test ve deneme',
+      hands_on_lab: 'Uygulamalı alıştırma',
+    };
+    if (map[tip]) {return map[tip];}
+    return tip.replace(/_/g, ' ');
+  }
+
+  /**
+   * Learning-style API yanıtını dashboard kartlarına dönüştürür
+   */
+  private mapFromLearningStylePayload(
+    data: {
+      recommended_content_types?: string[];
+      hybrid_code?: string;
+      confidence_score?: number;
+      content_weights?: Record<string, number>;
+      subject_area?: string;
+      difficulty_level?: string;
+    },
+    filter?: RecommendationFilter,
+  ): Recommendation[] {
+    const types = data.recommended_content_types || [];
+    const conf = Math.min(1, Math.max(0, data.confidence_score ?? 0.7));
+    let rows: Recommendation[] = types.map((t, i) => {
+      const w = data.content_weights?.[t];
+      const match = w != null ? Math.min(1, 0.5 * conf + 0.5 * w) : conf;
+      return {
+        id: `rec-ls-${i}-${t}`,
+        tip: t,
+        title: this._titleForContentType(t),
+        source: `Öğrenme stili${data.hybrid_code ? ` (${data.hybrid_code})` : ''}`,
+        duration: 20,
+        match_score: match,
+        difficulty: (filter?.difficulty as string | undefined) || data.difficulty_level || 'orta',
+        tags: [data.subject_area || 'genel'],
+      };
+    });
+    if (filter?.maxDuration) {
+      rows = rows.filter(rec => (rec.duration || 0) <= filter.maxDuration!);
+    }
+    if (filter?.limit) {
+      rows = rows.slice(0, filter.limit);
+    }
+    return rows;
+  }
+
   /**
    * Öğrenci için kişiselleştirilmiş önerileri getir
    */
   async getRecommendations(studentId: string, filter?: RecommendationFilter): Promise<Recommendation[]> {
     try {
-      const response = await apiClient.get(`/api/v1/recommendations/${studentId}`, {
-        params: filter,
-      });
-      return response.data;
+      const response = await apiClient.get(
+        `/api/v1/learning-style/recommendations/${studentId}`,
+        {
+          params: {
+            subject_area: filter?.subject || 'matematik',
+            difficulty_level: filter?.difficulty || 'orta',
+            force_refresh: false,
+          },
+        },
+      );
+      const root = response.data;
+      const payload = root?.data != null ? root.data : root;
+      if (payload && Array.isArray((payload as { recommended_content_types?: string[] }).recommended_content_types)) {
+        return this.mapFromLearningStylePayload(
+          payload as { recommended_content_types: string[]; hybrid_code?: string; confidence_score?: number; content_weights?: Record<string, number>; subject_area?: string; difficulty_level?: string },
+          filter,
+        );
+      }
+      if (Array.isArray(response.data)) {
+        return response.data as Recommendation[];
+      }
     } catch (error) {
       console.warn('Öneri servisi API hatası, mock data kullanılıyor:', error);
-      // Backend hazır değilse mock data döndür
-      return this.getMockRecommendations(studentId, filter);
     }
+    return this.getMockRecommendations(studentId, filter);
   }
 
   /**
@@ -54,13 +128,7 @@ class RecommendationService {
    * Günlük önerilen çalışma planını getir
    */
   async getDailyPlan(studentId: string): Promise<Recommendation[]> {
-    try {
-      const response = await apiClient.get(`/api/v1/recommendations/${studentId}/daily`);
-      return response.data;
-    } catch {
-      console.warn('Günlük plan API hatası, mock data kullanılıyor');
-      return this.getMockRecommendations(studentId, { limit: 3 });
-    }
+    return this.getRecommendations(studentId, { limit: 3 });
   }
 
   /**
@@ -87,7 +155,7 @@ class RecommendationService {
         title: 'Türev ve İntegral - Temel Kavramlar',
         source: 'EBA TV',
         duration: 25,
-        match_score: 95,
+        match_score: 0.95,
         difficulty: 'orta',
         tags: ['matematik', 'türev', 'integral'],
       },
@@ -97,7 +165,7 @@ class RecommendationService {
         title: 'Geometri - Üçgenler Test',
         source: 'KIRO2',
         duration: 15,
-        match_score: 88,
+        match_score: 0.88,
         difficulty: 'kolay',
         tags: ['matematik', 'geometri'],
       },
@@ -107,7 +175,7 @@ class RecommendationService {
         title: 'Osmanlı Devleti - Kuruluş Dönemi',
         source: 'Khan Academy',
         duration: 20,
-        match_score: 82,
+        match_score: 0.82,
         difficulty: 'orta',
         tags: ['tarih', 'osmanlı'],
       },
@@ -117,7 +185,7 @@ class RecommendationService {
         title: 'Fizik - Kuvvet ve Hareket',
         source: 'EBA TV',
         duration: 30,
-        match_score: 79,
+        match_score: 0.79,
         difficulty: 'zor',
         tags: ['fizik', 'mekanik'],
       },
@@ -127,7 +195,7 @@ class RecommendationService {
         title: 'Paragraf Yorumlama Teknikleri',
         source: 'KIRO2',
         duration: 25,
-        match_score: 75,
+        match_score: 0.75,
         difficulty: 'orta',
         tags: ['türkçe', 'paragraf'],
       },

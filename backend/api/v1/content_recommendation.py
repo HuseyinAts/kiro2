@@ -17,6 +17,8 @@ import logging
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from core.chroma_client import chromadb_connection_mode
 from core.auth_dependencies import AuthenticationDependency, AuthorizationDependency
 from core.dependencies import AuthenticatedUser
 
@@ -381,6 +383,7 @@ async def health_check() -> dict:
             "status": "healthy" if initialized else "degraded",
             "service": "content_recommendation",
             "chromadb_available": initialized,
+            "chroma_connection_mode": chromadb_connection_mode(),
             "timestamp": datetime.now().isoformat(),
         }
 
@@ -389,6 +392,7 @@ async def health_check() -> dict:
         return {
             "status": "unhealthy",
             "service": "content_recommendation",
+            "chroma_connection_mode": chromadb_connection_mode(),
             "error": "Internal error",
             "timestamp": datetime.now().isoformat(),
         }

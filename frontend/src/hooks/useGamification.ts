@@ -98,11 +98,14 @@ export function usePoints() {
     try {
       setLoading(true);
       const response = await api.post(`${API_BASE}/points/award`, {
-        points: amount,
+        points: Math.min(100, Math.max(1, amount)),
         reason,
         metadata,
       });
-      setPoints(response?.data?.total_points ?? 0);
+      const d = response.data?.data;
+      const next =
+        d?.total_points ?? d?.new_total ?? response.data?.total_points;
+      setPoints(typeof next === 'number' ? next : 0);
       setError(null);
       return response?.data;
     } catch (err: unknown) {

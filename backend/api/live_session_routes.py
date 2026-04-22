@@ -2,8 +2,12 @@
 Task 108: Live Q&A Sessions API Routes
 
 API endpoints for video conferences, screen sharing, whiteboard, and recording.
+
+Public liveness:
+  GET /api/v1/live-sessions/health — DB ping (no auth)
 """
 
+import logging
 from datetime import datetime
 from typing import Any
 from uuid import UUID
@@ -13,7 +17,7 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db_session as get_db
+from core.database import get_db_session as get_db, get_db_session_context
 from core.dependencies import AuthenticatedUser, get_current_user
 from models.live_session import (
     PlatformType,
@@ -24,6 +28,8 @@ from models.live_session import (
 )
 from services.video_conference_service import VideoConferenceService
 from services.whiteboard_service import WhiteboardService
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/live-sessions", tags=["live-sessions"])
 
@@ -76,6 +82,32 @@ async def _verify_session_participant(
     )
     if not part.first():
         raise HTTPException(status_code=403, detail="Not a session participant")
+
+
+async def _verify_whiteboard_participant(
+    whiteboard_id: UUID,
+    current_user: AuthenticatedUser,
+    db: AsyncSession,
+) -> None:
+    """Ensure user may access this whiteboard (host or session participant)."""
+    service = WhiteboardService(db)
+    wb = await service.get_whiteboard(whiteboard_id)
+    if not wb:
+        raise HTTPException(status_code=404, detail="Whiteboard not found")
+    await _verify_session_participant(wb.session_id, current_user, db)
+
+
+async def _verify_stroke_participant(
+    stroke_id: UUID,
+    current_user: AuthenticatedUser,
+    db: AsyncSession,
+) -> None:
+    """Resolve stroke -> whiteboard -> session and verify membership."""
+    service = WhiteboardService(db)
+    stroke = await service.get_stroke(stroke_id)
+    if not stroke:
+        raise HTTPException(status_code=404, detail="Stroke not found")
+    await _verify_whiteboard_participant(stroke.whiteboard_id, current_user, db)
 
 
 # ============================================================
@@ -141,6 +173,26 @@ class EquationRequest(BaseModel):
 # ============================================================
 # Task 108.1: Video Conference & Session Management
 # ============================================================
+
+
+@router.get("/health", tags=["health"])
+async def live_sessions_health() -> dict[str, str | bool]:
+    """Liveness: ``SELECT 1`` — kimlik doğrulama yok."""
+    try:
+        async with get_db_session_context() as db:
+            await db.execute(text("SELECT 1"))
+        return {
+            "status": "ok",
+            "service": "live_sessions",
+            "database": True,
+        }
+    except Exception as e:
+        logger.warning("Live sessions health DB ping failed: %s", e)
+        return {
+            "status": "degraded",
+            "service": "live_sessions",
+            "database": False,
+        }
 
 
 @router.post("")
@@ -361,6 +413,7 @@ async def get_whiteboard(
     db: AsyncSession = Depends(get_db),
 ):
     """Get whiteboard details"""
+    await _verify_whiteboard_participant(whiteboard_id, current_user, db)
     service = WhiteboardService(db)
     whiteboard = await service.get_whiteboard(whiteboard_id)
 
@@ -385,6 +438,7 @@ async def add_stroke(
     db: AsyncSession = Depends(get_db),
 ):
     """Add drawing stroke to whiteboard"""
+    await _verify_whiteboard_participant(whiteboard_id, current_user, db)
     user_id = current_user.id
     service = WhiteboardService(db)
 
@@ -415,6 +469,7 @@ async def add_equation(
     db: AsyncSession = Depends(get_db),
 ):
     """Add math equation to whiteboard"""
+    await _verify_whiteboard_participant(whiteboard_id, current_user, db)
     user_id = current_user.id
     service = WhiteboardService(db)
 
@@ -444,6 +499,7 @@ async def get_page_content(
     db: AsyncSession = Depends(get_db),
 ):
     """Get complete page content (strokes + equations)"""
+    await _verify_whiteboard_participant(whiteboard_id, current_user, db)
     service = WhiteboardService(db)
     content = await service.get_page_content(whiteboard_id, page_number)
 
@@ -457,6 +513,7 @@ async def add_page(
     db: AsyncSession = Depends(get_db),
 ):
     """Add new page to whiteboard"""
+    await _verify_whiteboard_participant(whiteboard_id, current_user, db)
     service = WhiteboardService(db)
     whiteboard = await service.add_page(whiteboard_id)
 
@@ -476,6 +533,7 @@ async def delete_stroke(
     db: AsyncSession = Depends(get_db),
 ):
     """Delete stroke"""
+    await _verify_stroke_participant(stroke_id, current_user, db)
     service = WhiteboardService(db)
     success = await service.delete_stroke(stroke_id)
 

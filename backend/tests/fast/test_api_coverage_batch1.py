@@ -133,7 +133,11 @@ class TestGamificationAPI:
     @patch("api.gamification_api.GamificationDBService")
     def test_award_points(self, mock_svc):
         mock_svc.award_xp = AsyncMock(return_value=150)
-        r = self.client.post("/api/v1/gamification/points/award?points=10&reason=test")
+        mock_svc.update_leaderboard = AsyncMock()
+        r = self.client.post(
+            "/api/v1/gamification/points/award",
+            json={"points": 10, "reason": "test"},
+        )
         assert r.status_code in (200, 500)
 
     @patch("api.gamification_api.GamificationDBService")

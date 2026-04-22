@@ -84,6 +84,8 @@ secrets/
 # Backups
 backups/*.rdb
 backups/*.aof
+backups/*.dump
+backups/*.sql
 *.backup
 
 # Vector DB (binary data, regenerated at runtime)

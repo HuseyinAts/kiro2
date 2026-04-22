@@ -356,6 +356,7 @@ class TestSearchHealth:
             result = await search_health()
 
             assert "status" in result
+            assert result.get("service") == "semantic_search"
             assert "chromadb_available" in result
             assert result["chromadb_available"] is False
             assert result["status"] == "unhealthy"

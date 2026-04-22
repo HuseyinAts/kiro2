@@ -296,6 +296,7 @@ async def update_question(
 @router.get("/{question_id}/history", status_code=status.HTTP_200_OK)
 async def get_question_history(
     question_id: str,
+    _current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -470,6 +471,7 @@ async def restore_question(
 async def get_archived_questions(
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -564,7 +566,7 @@ async def search_questions(
             offset=request.offset,
         )
 
-        # Response formatina donustur (auth: get_current_user Depends yukarida)
+        # Response formatina donustur
         questions_data = []
         for q in result["questions"]:
             item: dict[str, Any] = {
@@ -636,6 +638,7 @@ async def elasticsearch_search(
     subject: str | None = Query(None, description="Konu"),
     difficulty: str | None = Query(None, description="Zorluk"),
     limit: int = Query(100, ge=1, le=500),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -699,6 +702,7 @@ async def elasticsearch_search(
 
 @router.get("/statistics/overview", status_code=status.HTTP_200_OK)
 async def get_statistics(
+    _current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """
@@ -842,6 +846,7 @@ async def get_random_questions(
 async def list_source_books(
     subject_area: str | None = Query(None, description="Konu filtresi"),
     exam_type: str | None = Query(None, description="Sınav türü filtresi"),
+    _current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
     """

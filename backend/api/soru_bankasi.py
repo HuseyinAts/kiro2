@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
 from core.dependencies import AuthenticatedUser, get_current_user
+from models.enums_db import UserRole
 from core.multi_layer_cache import MultiLayerCache
 from services.soru_bankasi_service import soru_bankasi_servisi
 
@@ -749,7 +750,11 @@ async def soru_guncelle(
 
     - **soru_id**: Güncellenecek soru ID'si
     """
-    if current_user.role.value not in ("admin", "teacher"):
+    if current_user.role not in (
+        UserRole.ADMIN,
+        UserRole.SUPER_ADMIN,
+        UserRole.TEACHER,
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu islem icin yetkiniz yok",
@@ -822,7 +827,11 @@ async def soru_sil(
 
     - **soru_id**: Silinecek soru ID'si
     """
-    if current_user.role.value not in ("admin", "teacher"):
+    if current_user.role not in (
+        UserRole.ADMIN,
+        UserRole.SUPER_ADMIN,
+        UserRole.TEACHER,
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu islem icin yetkiniz yok",

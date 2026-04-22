@@ -1,0 +1,836 @@
+{
+  "timestamp": "2026-04-21T01:25:54.303264",
+  "total": 103,
+  "by_priority": {
+    "P2_MEDIUM": 82,
+    "P1_HIGH": 12,
+    "P0_CRITICAL": 3,
+    "P3_LOW": 6
+  },
+  "todos": [
+    {
+      "file": "backend\\api\\auth.py",
+      "line": 377,
+      "marker": "TODO",
+      "text": "Add profile image support",
+      "full_line": "\"profil_resmi\": None,  # TODO: Add profile image support",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\auth.py",
+      "line": 1013,
+      "marker": "TODO",
+      "text": "Add profile image support",
+      "full_line": "\"profil_resmi\": None,  # TODO: Add profile image support",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\auth.py",
+      "line": 1327,
+      "marker": "TODO",
+      "text": "Send email with reset link",
+      "full_line": "# TODO: Send email with reset link",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\enhanced_auth_api.py",
+      "line": 635,
+      "marker": "TODO",
+      "text": "Gercek cihaz listesi veritabanindan alinmali",
+      "full_line": "# TODO: Gercek cihaz listesi veritabanindan alinmali",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\enhanced_auth_api.py",
+      "line": 699,
+      "marker": "TODO",
+      "text": "Gercek cihaz silme islemi",
+      "full_line": "# TODO: Gercek cihaz silme islemi",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\enhanced_auth_api.py",
+      "line": 756,
+      "marker": "TODO",
+      "text": "Gercek giris gecmisi veritabanindan alinmali",
+      "full_line": "# TODO: Gercek giris gecmisi veritabanindan alinmali",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\enhanced_auth_api.py",
+      "line": 840,
+      "marker": "TODO",
+      "text": "Tum aktif oturumlari sonlandir",
+      "full_line": "# TODO: Tum aktif oturumlari sonlandir",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\enhanced_auth_api.py",
+      "line": 930,
+      "marker": "TODO",
+      "text": "E-posta ile kodu gonder (production'da gercek email servisi)",
+      "full_line": "# TODO: E-posta ile kodu gonder (production'da gercek email servisi)",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\api\\enhanced_auth_api.py",
+      "line": 1129,
+      "marker": "TODO",
+      "text": "Gercek oturum listesi veritabani/Redis'ten alinmali",
+      "full_line": "# TODO: Gercek oturum listesi veritabani/Redis'ten alinmali",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\enhanced_auth_api.py",
+      "line": 1195,
+      "marker": "TODO",
+      "text": "Gercek oturum iptal islemi",
+      "full_line": "# TODO: Gercek oturum iptal islemi",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\hybrid_question_generation.py",
+      "line": 518,
+      "marker": "TODO",
+      "text": "Implement actual database queries",
+      "full_line": "# TODO: Implement actual database queries",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\kvkk_privacy_api.py",
+      "line": 126,
+      "marker": "TODO",
+      "text": "Implement actual data collection",
+      "full_line": "# TODO: Implement actual data collection",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\api\\question_crud_api.py",
+      "line": 568,
+      "marker": "TODO",
+      "text": "Production icin auth zorunlu yapilmali (get_current_user)",
+      "full_line": "# TODO: Production icin auth zorunlu yapilmali (get_current_user)",
+      "priority": "P0_CRITICAL"
+    },
+    {
+      "file": "backend\\core\\account_security.py",
+      "line": 1223,
+      "marker": "TODO",
+      "text": "Integrate with email service",
+      "full_line": "# TODO: Integrate with email service",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\core\\jwt_auth.py",
+      "line": 828,
+      "marker": "TODO",
+      "text": "Add database check for user active status if needed",
+      "full_line": "# TODO: Add database check for user active status if needed",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\core\\passwordless_auth.py",
+      "line": 757,
+      "marker": "TODO",
+      "text": "Gercek email servisi entegrasyonu",
+      "full_line": "# TODO: Gercek email servisi entegrasyonu",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\core\\realtime_cultural_analyzer.py",
+      "line": 9,
+      "marker": "TODO",
+      "text": ".\"\"\"",
+      "full_line": "\"\"\"Placeholder \u2014 gercek implementasyon icin TODO.\"\"\"",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking_hook.py",
+      "line": 25,
+      "marker": "TODO",
+      "text": "",
+      "full_line": "- pass # placeholder / # TODO:",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\hybrid_question_generator.py",
+      "line": 397,
+      "marker": "TODO",
+      "text": "Add fine-tuned model generation when available",
+      "full_line": "# TODO: Add fine-tuned model generation when available",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\hybrid_question_generator.py",
+      "line": 440,
+      "marker": "TODO",
+      "text": "Check if fine-tuned model exists",
+      "full_line": "# TODO: Check if fine-tuned model exists",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\irt_analysis_service.py",
+      "line": 24,
+      "marker": "TODO",
+      "text": "Create SoruRepository and SinavCevabiRepository in repositories/",
+      "full_line": "# TODO: Create SoruRepository and SinavCevabiRepository in repositories/",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\irt_analysis_service.py",
+      "line": 73,
+      "marker": "TODO",
+      "text": "Replace with proper repository when available",
+      "full_line": "# TODO: Replace with proper repository when available",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\irt_analysis_service.py",
+      "line": 141,
+      "marker": "TODO",
+      "text": "Replace with proper repository when available",
+      "full_line": "# TODO: Replace with proper repository when available",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\irt_analysis_service.py",
+      "line": 202,
+      "marker": "TODO",
+      "text": "Replace with proper repository when available",
+      "full_line": "# TODO: Replace with proper repository when available",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\irt_analysis_service.py",
+      "line": 235,
+      "marker": "TODO",
+      "text": "Replace with proper repository when available",
+      "full_line": "# TODO: Replace with proper repository when available",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\irt_analysis_service.py",
+      "line": 286,
+      "marker": "TODO",
+      "text": "Replace with proper repository when available",
+      "full_line": "# TODO: Replace with proper repository when available",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\irt_analysis_service.py",
+      "line": 386,
+      "marker": "TODO",
+      "text": "Replace with proper repository when available",
+      "full_line": "# TODO: Replace with proper repository when available",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\bulk_tasks.py",
+      "line": 58,
+      "marker": "TODO",
+      "text": "Implement batch database insert",
+      "full_line": "# TODO: Implement batch database insert",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\bulk_tasks.py",
+      "line": 116,
+      "marker": "TODO",
+      "text": "Implement KVKK-compliant data export",
+      "full_line": "# TODO: Implement KVKK-compliant data export",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\bulk_tasks.py",
+      "line": 154,
+      "marker": "TODO",
+      "text": "Implement cache cleanup",
+      "full_line": "# TODO: Implement cache cleanup",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\bulk_tasks.py",
+      "line": 188,
+      "marker": "TODO",
+      "text": "Implement statistics update",
+      "full_line": "# TODO: Implement statistics update",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\bulk_tasks.py",
+      "line": 225,
+      "marker": "TODO",
+      "text": "Implement log archival",
+      "full_line": "# TODO: Implement log archival",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\email_tasks.py",
+      "line": 36,
+      "marker": "TODO",
+      "text": "Integrate with email service (SendGrid, AWS SES, etc.)",
+      "full_line": "# TODO: Integrate with email service (SendGrid, AWS SES, etc.)",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\email_tasks.py",
+      "line": 122,
+      "marker": "TODO",
+      "text": "Template-based email generation",
+      "full_line": "# TODO: Template-based email generation",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\email_tasks.py",
+      "line": 176,
+      "marker": "TODO",
+      "text": "Use bulk email API if available",
+      "full_line": "# TODO: Use bulk email API if available",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\push_tasks.py",
+      "line": 52,
+      "marker": "TODO",
+      "text": "VAPID push notification entegrasyonu",
+      "full_line": "# TODO: VAPID push notification entegrasyonu",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\report_tasks.py",
+      "line": 48,
+      "marker": "TODO",
+      "text": "Implement actual report generation",
+      "full_line": "# TODO: Implement actual report generation",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\report_tasks.py",
+      "line": 109,
+      "marker": "TODO",
+      "text": "Implement class analytics aggregation",
+      "full_line": "# TODO: Implement class analytics aggregation",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\report_tasks.py",
+      "line": 152,
+      "marker": "TODO",
+      "text": "Aggregate platform metrics",
+      "full_line": "# TODO: Aggregate platform metrics",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\report_tasks.py",
+      "line": 198,
+      "marker": "TODO",
+      "text": "Aggregate weekly data",
+      "full_line": "# TODO: Aggregate weekly data",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\video_tasks.py",
+      "line": 42,
+      "marker": "TODO",
+      "text": "Implement video processing",
+      "full_line": "# TODO: Implement video processing",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\video_tasks.py",
+      "line": 91,
+      "marker": "TODO",
+      "text": "Use ffmpeg or similar to extract frame",
+      "full_line": "# TODO: Use ffmpeg or similar to extract frame",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\video_tasks.py",
+      "line": 121,
+      "marker": "TODO",
+      "text": "Implement cache warming",
+      "full_line": "# TODO: Implement cache warming",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tasks\\video_tasks.py",
+      "line": 159,
+      "marker": "TODO",
+      "text": "Implement subtitle extraction",
+      "full_line": "# TODO: Implement subtitle extraction",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\test_irt_psychometric_analysis.py",
+      "line": 60,
+      "marker": "TODO",
+      "text": "Implement test cases for 4PL IRT model",
+      "full_line": "pass  # TODO: Implement test cases for 4PL IRT model",
+      "priority": "P3_LOW"
+    },
+    {
+      "file": "backend\\tests\\fast\\test_webb_dok_classifier.py",
+      "line": 110,
+      "marker": "TODO",
+      "text": "KEstimation:",
+      "full_line": "class TestBloomToDoKEstimation:",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\services\\test_webb_dok_classifier.py",
+      "line": 100,
+      "marker": "TODO",
+      "text": "KEstimation:",
+      "full_line": "class TestBloomToDoKEstimation:",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_admin_api.py",
+      "line": 816,
+      "marker": "TODO",
+      "text": "change to 404 once the bare-except bug is fixed in soru_sil",
+      "full_line": "# TODO: change to 404 once the bare-except bug is fixed in soru_sil",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_zero_cov_batch6.py",
+      "line": 224,
+      "marker": "TODO",
+      "text": ",",
+      "full_line": "\"status\": adhd_api.TaskStatus.TODO,",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_zero_cov_batch6.py",
+      "line": 284,
+      "marker": "TODO",
+      "text": "",
+      "full_line": "assert result.status == adhd_api.TaskStatus.TODO",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_zero_cov_batch6.py",
+      "line": 346,
+      "marker": "TODO",
+      "text": ",",
+      "full_line": "\"status\": adhd_api.TaskStatus.TODO,",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_zero_cov_batch6.py",
+      "line": 427,
+      "marker": "TODO",
+      "text": ",",
+      "full_line": "\"status\": adhd_api.TaskStatus.TODO,",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_zero_cov_batch6.py",
+      "line": 469,
+      "marker": "TODO",
+      "text": ",",
+      "full_line": "\"status\": adhd_api.TaskStatus.TODO,",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_zero_cov_batch6.py",
+      "line": 521,
+      "marker": "TODO",
+      "text": ",",
+      "full_line": "\"status\": adhd_api.TaskStatus.TODO,",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_zero_cov_batch6.py",
+      "line": 663,
+      "marker": "TODO",
+      "text": ",",
+      "full_line": "\"status\": adhd_api.TaskStatus.TODO,",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\unit\\test_zero_cov_batch6.py",
+      "line": 827,
+      "marker": "TODO",
+      "text": ",",
+      "full_line": "else adhd_api.TaskStatus.TODO,",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\hooks\\reward_hacking\\test_detectors.py",
+      "line": 160,
+      "marker": "TODO",
+      "text": "_comment(self, detector):",
+      "full_line": "async def test_detects_todo_comment(self, detector):",
+      "priority": "P3_LOW"
+    },
+    {
+      "file": "backend\\tests\\hooks\\reward_hacking\\test_detectors.py",
+      "line": 161,
+      "marker": "TODO",
+      "text": "comments.\"\"\"",
+      "full_line": "\"\"\"REQ-3.2: Detect # TODO: comments.\"\"\"",
+      "priority": "P3_LOW"
+    },
+    {
+      "file": "backend\\tests\\hooks\\reward_hacking\\test_detectors.py",
+      "line": 164,
+      "marker": "TODO",
+      "text": "implement this",
+      "full_line": "# TODO: implement this",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\tests\\hooks\\reward_hacking\\test_detectors.py",
+      "line": 168,
+      "marker": "TODO",
+      "text": "or pass placeholder",
+      "full_line": "# Should detect either TODO or pass placeholder",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\_deprecated\\content_management_service.py",
+      "line": 551,
+      "marker": "TODO",
+      "text": "Refactor soru_bankasi_servisi to accept session parameter for true batch commits",
+      "full_line": "# TODO: Refactor soru_bankasi_servisi to accept session parameter for true batch commits",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\services\\_deprecated\\tyt_optical_form_service.py",
+      "line": 8,
+      "marker": "TODO",
+      "text": "Implement TYT optical form processing",
+      "full_line": "# TODO: Implement TYT optical form processing",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\claude_md_improvement\\orchestrator.py",
+      "line": 285,
+      "marker": "TODO",
+      "text": "Ger\u00e7ek implementasyon Phase 3'te yap\u0131lacak",
+      "full_line": "# TODO: Ger\u00e7ek implementasyon Phase 3'te yap\u0131lacak",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\analyzers\\context_analyzer.py",
+      "line": 49,
+      "marker": "FIXME",
+      "text": "', 'todo', 'hack', 'workaround'",
+      "full_line": "'fixme', 'todo', 'hack', 'workaround'",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\analyzers\\context_analyzer.py",
+      "line": 223,
+      "marker": "TODO",
+      "text": "/FIXME patterns)",
+      "full_line": "# Ignore matches in comments (except for TODO/FIXME patterns)",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\config\\patterns.py",
+      "line": 50,
+      "marker": "TODO",
+      "text": "\",               # pass # TODO",
+      "full_line": "r\"pass\\s*#\\s*TODO\",               # pass # TODO",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\config\\patterns.py",
+      "line": 51,
+      "marker": "FIXME",
+      "text": "\",              # pass # FIXME",
+      "full_line": "r\"pass\\s*#\\s*FIXME\",              # pass # FIXME",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\config\\patterns.py",
+      "line": 52,
+      "marker": "TODO",
+      "text": "\\s*implement\",         # # TODO: implement",
+      "full_line": "r\"#\\s*TODO:\\s*implement\",         # # TODO: implement",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\config\\patterns.py",
+      "line": 53,
+      "marker": "FIXME",
+      "text": "\\s*implement\",        # # FIXME: implement",
+      "full_line": "r\"#\\s*FIXME:\\s*implement\",        # # FIXME: implement",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\config\\patterns.py",
+      "line": 58,
+      "marker": "TODO",
+      "text": "\",      # return None # TODO",
+      "full_line": "r\"return\\s+None\\s*#\\s*TODO\",      # return None # TODO",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\config\\patterns.py",
+      "line": 187,
+      "marker": "TODO",
+      "text": ".*\"\"\"',                  # In docstring",
+      "full_line": "r'\"\"\".*TODO.*\"\"\"',                  # In docstring",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\config\\patterns.py",
+      "line": 188,
+      "marker": "TODO",
+      "text": "\\s*\\w+\\s*-\",             # Tracked TODO with ticket",
+      "full_line": "r\"#\\s*TODO:\\s*\\w+\\s*-\",             # Tracked TODO with ticket",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 26,
+      "marker": "TODO",
+      "text": "implement",
+      "full_line": "- # TODO: implement",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 27,
+      "marker": "FIXME",
+      "text": "implement",
+      "full_line": "- # FIXME: implement",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 64,
+      "marker": "TODO",
+      "text": "/FIXME and explicit placeholders",
+      "full_line": "# 1. Regex-based detection for TODO/FIXME and explicit placeholders",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 71,
+      "marker": "TODO",
+      "text": "/FIXME are warnings, others are critical",
+      "full_line": "# Classify results - TODO/FIXME are warnings, others are critical",
+      "priority": "P0_CRITICAL"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 76,
+      "marker": "TODO",
+      "text": "/FIXME (warning) vs actual placeholders (critical)",
+      "full_line": "# Adjust severity for TODO/FIXME (warning) vs actual placeholders (critical)",
+      "priority": "P0_CRITICAL"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 78,
+      "marker": "TODO",
+      "text": "' in code_lower or 'fixme' in code_lower:",
+      "full_line": "if 'todo' in code_lower or 'fixme' in code_lower:",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 81,
+      "marker": "TODO",
+      "text": "s are just info",
+      "full_line": "# Tracked TODOs are just info",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 83,
+      "marker": "TODO",
+      "text": "/FIXME (has reference)\"",
+      "full_line": "result.message = \"Tracked TODO/FIXME (has reference)\"",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 86,
+      "marker": "TODO",
+      "text": "/FIXME - consider adding ticket reference\"",
+      "full_line": "result.message = \"Untracked TODO/FIXME - consider adding ticket reference\"",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\hooks\\reward_hacking\\detectors\\placeholder_detector.py",
+      "line": 172,
+      "marker": "TODO",
+      "text": "/FIXME has a tracking reference (ticket number).",
+      "full_line": "Check if TODO/FIXME has a tracking reference (ticket number).",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\db\\validation\\schema_checker.py",
+      "line": 510,
+      "marker": "TODO",
+      "text": "Create table '{mismatch.table_name}'\")",
+      "full_line": "lines.append(f\"    # TODO: Create table '{mismatch.table_name}'\")",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\db\\validation\\schema_checker.py",
+      "line": 521,
+      "marker": "TODO",
+      "text": "Alter column type for '{mismatch.table_name}.{mismatch.column_name}'\"",
+      "full_line": "f\"    # TODO: Alter column type for '{mismatch.table_name}.{mismatch.column_name}'\"",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\db\\validation\\schema_checker.py",
+      "line": 537,
+      "marker": "TODO",
+      "text": "Create foreign key '{mismatch.constraint_name}' on '{mismatch.table_name}'\"",
+      "full_line": "f\"    # TODO: Create foreign key '{mismatch.constraint_name}' on '{mismatch.table_name}'\"",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\app\\health\\checker.py",
+      "line": 352,
+      "marker": "TODO",
+      "text": "Slack/Email/SMS alert g\u00f6nderme",
+      "full_line": "# TODO: Slack/Email/SMS alert g\u00f6nderme",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\app\\health\\sla_monitor.py",
+      "line": 296,
+      "marker": "TODO",
+      "text": "Incident ticket olu\u015fturma (Jira, PagerDuty, vb.)",
+      "full_line": "# TODO: Incident ticket olu\u015fturma (Jira, PagerDuty, vb.)",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\alembic\\versions\\20251117_044637_add_student_profile_fields.py",
+      "line": 7,
+      "marker": "TODO",
+      "text": "Fix Implementation - Add missing profile fields",
+      "full_line": "TODO Fix Implementation - Add missing profile fields",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "backend\\agents\\learning_path\\facade.py",
+      "line": 263,
+      "marker": "TODO",
+      "text": "Load from database",
+      "full_line": "# TODO: Load from database",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\agents\\learning_path\\facade.py",
+      "line": 534,
+      "marker": "TODO",
+      "text": "Implement completion tracking",
+      "full_line": "# TODO: Implement completion tracking",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "backend\\agents\\learning_path\\facade.py",
+      "line": 552,
+      "marker": "TODO",
+      "text": "Load from database",
+      "full_line": "# TODO: Load from database",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "frontend\\src\\types\\api.generated.ts",
+      "line": 19968,
+      "marker": "TODO",
+      "text": "\" | \"in_progress\" | \"completed\" | \"cancelled\" | \"on_hold\";",
+      "full_line": "TaskStatus: \"todo\" | \"in_progress\" | \"completed\" | \"cancelled\" | \"on_hold\";",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "frontend\\src\\hooks\\queries\\useDashboardQueries.ts",
+      "line": 17,
+      "marker": "TODO",
+      "text": "Uncomment when dashboardService is implemented",
+      "full_line": "* TODO: Uncomment when dashboardService is implemented",
+      "priority": "P3_LOW"
+    },
+    {
+      "file": "frontend\\src\\hooks\\queries\\useDashboardQueries.ts",
+      "line": 45,
+      "marker": "TODO",
+      "text": "Uncomment when dashboardService is implemented",
+      "full_line": "* TODO: Uncomment when dashboardService is implemented",
+      "priority": "P3_LOW"
+    },
+    {
+      "file": "frontend\\src\\hooks\\queries\\useDashboardQueries.ts",
+      "line": 68,
+      "marker": "TODO",
+      "text": "Uncomment when dashboardService is implemented",
+      "full_line": "* TODO: Uncomment when dashboardService is implemented",
+      "priority": "P3_LOW"
+    },
+    {
+      "file": "frontend\\src\\pages\\FSRSReviewPage.tsx",
+      "line": 143,
+      "marker": "TODO",
+      "text": "implement correct answer highlighting",
+      "full_line": "void _isCorrectOpt; // TODO: implement correct answer highlighting",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "frontend\\src\\pages\\QuestionUploadPage.tsx",
+      "line": 79,
+      "marker": "TODO",
+      "text": "Implement saving to question bank",
+      "full_line": "// TODO: Implement saving to question bank",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "frontend\\src\\components\\Exam\\OSYMExamInterfaceRefactored.tsx",
+      "line": 151,
+      "marker": "TODO",
+      "text": "Wire this to the exit confirmation dialog",
+      "full_line": "// TODO: Wire this to the exit confirmation dialog",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "frontend\\src\\components\\Exam\\Results\\ComparisonTab.tsx",
+      "line": 29,
+      "marker": "TODO",
+      "text": "Implement full \u00d6SYM/ETS comparison UI */}",
+      "full_line": "{/* TODO: Implement full \u00d6SYM/ETS comparison UI */}",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "frontend\\src\\components\\Exam\\Results\\IRTMorphologyTab.tsx",
+      "line": 29,
+      "marker": "TODO",
+      "text": "Implement full IRT + Morphology analysis UI */}",
+      "full_line": "{/* TODO: Implement full IRT + Morphology analysis UI */}",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "frontend\\src\\components\\Exam\\Results\\LearningStyleTab.tsx",
+      "line": 29,
+      "marker": "TODO",
+      "text": "Implement full learning style analysis UI */}",
+      "full_line": "{/* TODO: Implement full learning style analysis UI */}",
+      "priority": "P2_MEDIUM"
+    },
+    {
+      "file": "frontend\\src\\components\\Exam\\Results\\PerformanceTrendTab.tsx",
+      "line": 29,
+      "marker": "TODO",
+      "text": "Implement full performance trend analysis UI */}",
+      "full_line": "{/* TODO: Implement full performance trend analysis UI */}",
+      "priority": "P1_HIGH"
+    },
+    {
+      "file": "frontend\\src\\components\\Exam\\Results\\ZPDAnalysisTab.tsx",
+      "line": 29,
+      "marker": "TODO",
+      "text": "Implement full ZPD analysis UI */}",
+      "full_line": "{/* TODO: Implement full ZPD analysis UI */}",
+      "priority": "P2_MEDIUM"
+    }
+  ]
+}

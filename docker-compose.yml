@@ -8,6 +8,8 @@
 #
 # NOTE: Redis runs natively on host (port 6379). Docker Redis disabled to avoid port conflict.
 # NOTE: Elasticsearch runs in turkiye_sinav_elasticsearch container (external network).
+# Chroma (optional): set in shell or .env.mvp e.g. CHROMADB_HOST=chroma CHROMADB_PORT=8000
+# for HttpClient; leave CHROMADB_HOST empty for embedded persist (CHROMADB_PERSIST_DIR=/app/vector_db).
 
 services:
   backend:
@@ -27,6 +29,9 @@ services:
       - ./d-dataset/output/crops:/app/static/crops:ro
     environment:
       - CROP_IMAGE_DIR=/app/static/crops
+      - CHROMADB_HOST=${CHROMADB_HOST:-}
+      - CHROMADB_PORT=${CHROMADB_PORT:-8000}
+      - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
     restart: unless-stopped
     networks:
       - default
@@ -48,10 +53,14 @@ services:
       - .env.mvp
     environment:
       - PYTHONPATH=/app
+      - CHROMADB_HOST=${CHROMADB_HOST:-}
+      - CHROMADB_PORT=${CHROMADB_PORT:-8000}
+      - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - backend-logs:/app/logs
+      - kiro2-vector-db:/app/vector_db
     depends_on:
       backend:
         condition: service_healthy
@@ -76,6 +85,9 @@ services:
       - .env.mvp
     environment:
       - PYTHONPATH=/app
+      - CHROMADB_HOST=${CHROMADB_HOST:-}
+      - CHROMADB_PORT=${CHROMADB_PORT:-8000}
+      - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

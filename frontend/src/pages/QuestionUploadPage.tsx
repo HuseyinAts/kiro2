@@ -74,11 +74,18 @@ const QuestionUploadPage: React.FC = () => {
     setCroppedQuestions(cropped);
   };
 
-  // Save questions to bank (placeholder)
+  // Kırpılmış görsellerde henüz metin/şık yok; kalıcı kayıt question-crud + OCR/elle giriş gerektirir
   const handleSaveToBank = async () => {
-    // TODO: Implement saving to question bank
-    setSavedCount(croppedQuestions.length);
-    alert(`${croppedQuestions.length} soru soru bankasına kaydedildi!`);
+    if (croppedQuestions.length === 0) {
+      alert('Önce soruları kırpın.');
+      return;
+    }
+    setSavedCount(0);
+    alert(
+      `${croppedQuestions.length} görüntü hazır. ` +
+        'Soru metni ve şıklar tespit edilmediği için toplu kayıt bu ekranda yapılmaz; ' +
+        'soruları soru yönetimi ekranından girin veya görüntüyü dışa aktarın.',
+    );
   };
 
   return (

@@ -1,0 +1,31 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+build/
+.next/
+.vite/
+
+# Data / artifacts
+datasets/
+**/*.sql
+*.sqlite
+*.db
+logs/
+.cursor/backups/
+
+# KARAY LoRA
+karay/runs/
+karay/outputs/
+karay/checkpoints/
+
+# Env
+.env
+.env.*

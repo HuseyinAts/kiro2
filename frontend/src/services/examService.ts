@@ -587,7 +587,7 @@ class ExamService {
    */
   async getStudentStats(): Promise<Record<string, unknown>> {
     try {
-      const response = await apiClient.get('/api/v1/students/stats');
+      const response = await apiClient.get('/api/v1/student-dashboard/istatistikler');
       return response.data;
     } catch (error) {
       console.error('Öğrenci istatistikleri getirme hatası:', error);

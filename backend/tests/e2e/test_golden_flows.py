@@ -660,19 +660,8 @@ def test_gf6w_admin_question_create_returns_success(client: httpx.Client):
 
 def test_gf2w_gamification_points_award_advances_balance(client: httpx.Client):
     """
-    POST /gamification/points/award must increase the caller's total_points.
-
-    Session 136 probe: the endpoint rejects a JSON body with 422
-    (``points`` and ``reason`` are declared as *query* parameters, not body
-    fields — which is an unusual FastAPI choice). The frontend sends JSON
-    and silently fails; the user never sees the points. This test uses the
-    backend's expected query-param schema, so it PASSES today and becomes
-    a regression guard for any future change that breaks the balance update.
-
-    If this starts failing: check
-    ``backend/api/gamification.py`` award_points handler, the schema
-    mismatch is almost certainly the root cause (frontend vs. backend
-    contract drift) — see docs/audits/2026-04-10_half-working-features.md.
+    POST /gamification/points/award (JSON body: points, reason) must increase
+    the caller's total_points.
     """
     token = _login(client, STUDENT)
     headers = _auth_headers(token)
@@ -689,16 +678,14 @@ def test_gf2w_gamification_points_award_advances_balance(client: httpx.Client):
         f"GF2w gamification points: no total_points in response {before_resp.json()}"
     )
 
-    # Award via query params (the backend's actual contract).
     award_resp = client.post(
-        "/api/v1/gamification/points/award"
-        "?points=3&reason=golden_flow_write_test&category=quiz",
-        headers=headers,
+        "/api/v1/gamification/points/award",
+        headers={**headers, "Content-Type": "application/json"},
+        json={"points": 3, "reason": "golden_flow_write_test"},
     )
     assert award_resp.status_code == 200, (
         f"GF2w gamification award HTTP {award_resp.status_code}: "
-        f"{award_resp.text[:300]}. If 422, the frontend JSON body vs backend "
-        f"query-param contract has drifted."
+        f"{award_resp.text[:300]}"
     )
     award_body = award_resp.json()
     assert award_body.get("success") is True, f"GF2w award success=False: {award_body}"
@@ -4721,3 +4708,74 @@ def test_gf149_study_rooms_not_500(client: httpx.Client):
         f"or 503 is the expected semantic response; a 500 would mean "
         f"someone added a partial router that imports a broken helper."
     )
+
+
+def test_gf150_public_journey_health_probes_not_500(client: httpx.Client):
+    """
+    (A) J6 / J7 / live-session / clustering: liveness + DB ping (no auth).
+    (B) Chroma stack health: semantic search, duplicate detection, content
+    recommendation — no auth; 200 with ``chroma_connection_mode`` and service id.
+    (C) Push: ``GET /api/v1/push/health`` — stub surface, no DB.
+
+    Probes that router include paths from ``routers/loader`` and Chroma
+    client factory wiring; degraded/unhealthy service status is OK, 500 is not.
+    """
+    paths = (
+        ("/api/v1/offline/health", "offline_sync"),
+        ("/api/v1/sync/health", "pwa_sync"),
+        ("/api/v1/live-sessions/health", "live_sessions"),
+        ("/api/v1/clustering/health", "clustering"),
+    )
+    for path, expected_service in paths:
+        resp = client.get(path)
+        assert resp.status_code == 200, (
+            f"GF150 {path} must return 200, got {resp.status_code} "
+            f"{resp.text[:300]}. Check get_db_session_context + route mount."
+        )
+        data = resp.json()
+        assert data.get("status") in ("ok", "degraded"), (
+            f"GF150 {path} missing status: {data!r}"
+        )
+        assert data.get("service") == expected_service, (
+            f"GF150 {path} service mismatch: {data!r}"
+        )
+        assert "database" in data, f"GF150 {path} missing database flag: {data!r}"
+
+    chroma_paths = (
+        ("/api/v1/search/health", "semantic_search"),
+        ("/api/v1/duplicates/health", "duplicate_detection"),
+        ("/api/v1/recommendations/health", "content_recommendation"),
+    )
+    for path, expected_service in chroma_paths:
+        resp = client.get(path)
+        assert resp.status_code == 200, (
+            f"GF150 {path} must return 200, got {resp.status_code} "
+            f"{resp.text[:300]}. Chroma/loader probe."
+        )
+        data = resp.json()
+        assert "status" in data, f"GF150 {path} missing status: {data!r}"
+        assert data.get("status") in (
+            "ok",
+            "degraded",
+            "healthy",
+            "unhealthy",
+        ), f"GF150 {path} unexpected status: {data!r}"
+        assert data.get("service") == expected_service, (
+            f"GF150 {path} service mismatch: {data!r}"
+        )
+        assert data.get("chroma_connection_mode") in (
+            "http",
+            "embedded",
+        ), f"GF150 {path} missing chroma_connection_mode: {data!r}"
+
+    r_push = client.get("/api/v1/push/health")
+    assert r_push.status_code == 200, (
+        f"GF150 /api/v1/push/health must return 200, got {r_push.status_code} "
+        f"{r_push.text[:300]}."
+    )
+    push_data = r_push.json()
+    assert push_data.get("status") in ("ok", "degraded"), (
+        f"GF150 push/health: {push_data!r}"
+    )
+    assert push_data.get("service") == "pwa_push", push_data
+    assert "subscribe_implemented" in push_data, push_data

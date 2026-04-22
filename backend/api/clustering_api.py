@@ -3,6 +3,8 @@ Clustering API Endpoints - KIRO2 YKS Platform
 REST API for concept clustering operations.
 
 Spec: REQ-6 Concept Clustering
+
+GET /api/v1/clustering/health — liveness + DB ping (no auth)
 """
 
 import logging
@@ -10,7 +12,9 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
+from sqlalchemy import text
 
+from core.database import get_db_session_context
 from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
 from services.concept_clustering_service import (
     get_clustering_service,
@@ -107,6 +111,26 @@ class VisualizationResponse(BaseModel):
     y: list[float]
     labels: list[int]
     document_ids: list[str] | None = None
+
+
+@router.get("/health", tags=["health"])
+async def clustering_health() -> dict[str, str | bool]:
+    """Liveness: ``SELECT 1`` — kimlik doğrulama yok (REQ-6 yönlü smoke)."""
+    try:
+        async with get_db_session_context() as db:
+            await db.execute(text("SELECT 1"))
+        return {
+            "status": "ok",
+            "service": "clustering",
+            "database": True,
+        }
+    except Exception as e:
+        logger.warning("Clustering health DB ping failed: %s", e)
+        return {
+            "status": "degraded",
+            "service": "clustering",
+            "database": False,
+        }
 
 
 @router.post("/concepts", response_model=ClusterResponse)

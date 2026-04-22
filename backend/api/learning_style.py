@@ -123,6 +123,7 @@ async def get_content_recommendations(
 
         recommendation = await learning_style_service.generate_content_recommendations(
             student_id=student_id,
+            db=db,
             subject_area=subject_area,
             difficulty_level=difficulty_level,
             force_refresh=force_refresh,
@@ -472,21 +473,36 @@ async def update_recommendations_based_on_performance(
             f"Performans tabanlı öneri güncelleme API çağrısı - Öğrenci: {student_id}"
         )
 
-        # Mevcut öneriyi al
         current_recommendation = (
-            await learning_style_service.generate_content_recommendations(student_id)
+            await learning_style_service.generate_content_recommendations(
+                student_id=student_id,
+                db=db,
+                subject_area="matematik",
+                difficulty_level="orta",
+            )
         )
 
-        # Performans tabanlı güncelleme
-        updated_recommendation = await learning_style_service.recommender.update_recommendations_based_on_performance(
-            student_id=student_id,
-            current_recommendation=current_recommendation,
-            performance_data=performance_data,
-        )
+        acc = performance_data.get("recent_accuracy", performance_data.get("accuracy"))
+        try:
+            acc_val = float(acc) if acc is not None else 0.65
+        except (TypeError, ValueError):
+            acc_val = 0.65
 
-        # Cache'i güncelle
-        cache_key = f"{student_id}_matematik_orta"  # Varsayılan değerler
-        learning_style_service.recommendations_cache[cache_key] = updated_recommendation
+        diff_adj = current_recommendation.difficulty_adjustment
+        pace_adj = current_recommendation.pace_adjustment
+        if acc_val < 0.45:
+            diff_adj = max(-0.5, diff_adj - 0.1)
+            pace_adj = min(0.5, pace_adj - 0.1)
+        elif acc_val > 0.85:
+            diff_adj = min(0.5, diff_adj + 0.1)
+            pace_adj = max(-0.5, pace_adj + 0.1)
+
+        updated_recommendation = current_recommendation.model_copy(
+            update={
+                "difficulty_adjustment": round(diff_adj, 3),
+                "pace_adjustment": round(pace_adj, 3),
+            }
+        )
 
         return {
             "success": True,

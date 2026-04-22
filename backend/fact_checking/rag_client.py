@@ -12,9 +12,12 @@ Requirements: REQ-4.1, REQ-4.2
 """
 
 import logging
+import os
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+
+from core.chroma_client import create_chromadb_client
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +81,8 @@ class RAGClient:
                     port=self.chromadb_port,
                 )
             else:
-                self._client = chromadb.Client()
+                persist = os.environ.get("CHROMADB_PERSIST_DIR", "./vector_db")
+                self._client = create_chromadb_client(persist_directory=persist)
 
             # Collection'ı al veya oluştur
             self._collection = self._client.get_or_create_collection(

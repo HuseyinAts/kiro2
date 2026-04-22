@@ -9,7 +9,8 @@ import sys
 
 sys.path.insert(0, "C:/Users/husey/kiro2/backend")
 
-from datetime import datetime
+from datetime import datetime, timezone
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -695,33 +696,23 @@ class TestSoruEkle:
 
 
 class TestSoruGuncelle:
-    """PUT /soru-guncelle/{soru_id} — requires admin or teacher role.
-
-    NOTE: The endpoint compares role.value against lowercase ("admin", "teacher").
-    UserRole enum stores uppercase values ("ADMIN", "TEACHER"), so the check
-    never passes via standard enum values. All roles currently receive 403.
-    Tests document this actual behaviour.
-    """
+    """PUT /soru-guncelle/{soru_id} — requires admin, super_admin veya teacher."""
 
     def test_soru_guncelle_student_role_returns_403(self, client):
         """Student role is rejected with 403."""
         response = client.put("/soru-guncelle/qid-001", json={"dogru_cevap": "A"})
         assert response.status_code == 403
 
-    @pytest.mark.xfail(
-        reason="BUG: role guard compares UPPERCASE enum value against lowercase string literal",
-        strict=True,
-    )
     def test_soru_guncelle_admin_role_should_return_200(self, admin_client):
-        """Admin should be able to update questions — currently blocked by case mismatch.
-
-        Production bug: role.value ('ADMIN') compared against 'admin' literal.
-        Fix: change guard to role.value.lower() or compare against ('ADMIN', 'TEACHER').
-        When fixed, this test will start passing and xfail will flag it.
-        """
+        """Admin should be able to update questions (UserRole enum vs guard)."""
+        mock_soru = SimpleNamespace(
+            id="qid-001", updated_at=datetime.now(timezone.utc)
+        )
         mc = _make_cache_mock()
         with (
-            patch(_SERVISI + ".soru_guncelle", new=AsyncMock(return_value=None)),
+            patch(
+                _SERVISI + ".soru_guncelle", new=AsyncMock(return_value=mock_soru)
+            ),
             patch(_CACHE_OBJ, mc),
         ):
             response = admin_client.put(
@@ -743,23 +734,15 @@ class TestSoruGuncelle:
 
 
 class TestSoruSil:
-    """DELETE /soru-sil/{soru_id} — requires admin or teacher role.
-
-    Same role-case mismatch as TestSoruGuncelle: all roles currently receive 403.
-    Tests document the actual runtime behaviour.
-    """
+    """DELETE /soru-sil/{soru_id} — requires admin, super_admin veya teacher."""
 
     def test_soru_sil_student_role_returns_403(self, client):
         """Student role is rejected with 403."""
         response = client.delete("/soru-sil/qid-001")
         assert response.status_code == 403
 
-    @pytest.mark.xfail(
-        reason="BUG: role guard compares UPPERCASE enum value against lowercase string literal",
-        strict=True,
-    )
     def test_soru_sil_admin_role_should_return_200(self, admin_client):
-        """Admin should be able to delete questions — currently blocked by case mismatch."""
+        """Admin should be able to delete questions."""
         with patch(_SERVISI + ".soru_sil", new=AsyncMock(return_value=True)):
             response = admin_client.delete("/soru-sil/qid-001")
         assert response.status_code == 200

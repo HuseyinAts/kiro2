@@ -29,7 +29,6 @@ except ImportError:
 
 try:
     import chromadb
-    from chromadb.config import Settings as ChromaSettings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -40,6 +39,7 @@ try:
 except ImportError:
     EMBEDDINGS_AVAILABLE = False
 
+from core.chroma_client import create_chromadb_client
 from core.config import EmbeddingConfig
 
 logger = logging.getLogger(__name__)
@@ -133,17 +133,21 @@ class ContentRecommendationService:
 
     def __init__(
         self,
-        persist_directory: str = "./vector_db",
+        persist_directory: str | None = None,
         collection_name: str = "kiro2_content"
     ):
         """
         ContentRecommendationService başlat.
 
         Args:
-            persist_directory: ChromaDB persist dizini
+            persist_directory: ChromaDB persist dizini (env: CHROMADB_PERSIST_DIR)
             collection_name: Content collection adı
         """
-        self.persist_directory = persist_directory
+        import os
+
+        self.persist_directory = persist_directory or os.getenv(
+            "CHROMADB_PERSIST_DIR", "./vector_db"
+        )
         self.collection_name = collection_name
         self._client: Optional["chromadb.Client"] = None
         self._collection = None
@@ -165,10 +169,9 @@ class ContentRecommendationService:
             return False
 
         try:
-            self._client = chromadb.Client(ChromaSettings(
+            self._client = create_chromadb_client(
                 persist_directory=self.persist_directory,
-                anonymized_telemetry=False
-            ))
+            )
 
             self._collection = self._client.get_or_create_collection(
                 name=self.collection_name,

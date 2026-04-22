@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.cache import cache_manager
 from models import ExamSession, LearningAnalytics, StudentLearningProfile
+from models.learning_style import ContentRecommendation
 
 logger = logging.getLogger(__name__)
 
@@ -416,6 +417,111 @@ class LearningStyleService:
             "tespit_tarihi": profile.detected_at.isoformat(),
             "profil_aciklamasi": profile.profile_description,
         }
+
+    async def generate_content_recommendations(
+        self,
+        student_id: str,
+        db: AsyncSession,
+        subject_area: str = "matematik",
+        difficulty_level: str = "orta",
+        force_refresh: bool = False,
+    ) -> ContentRecommendation:
+        """
+        Hibrit profile ve VARK baskinina gore icerik onerileri (API ile uyumlu).
+        """
+        result = await db.execute(
+            select(StudentLearningProfile).where(
+                StudentLearningProfile.student_id == student_id
+            )
+        )
+        profile_model = result.scalar_one_or_none()
+
+        if not profile_model or force_refresh:
+            await self.detect_learning_style(student_id, db, behavioral_data={})
+            result = await db.execute(
+                select(StudentLearningProfile).where(
+                    StudentLearningProfile.student_id == student_id
+                )
+            )
+            profile_model = result.scalar_one_or_none()
+
+        if not profile_model:
+            w = 1.0 / 3.0
+            return ContentRecommendation(
+                student_id=student_id,
+                hybrid_code="M-MM-MM",
+                recommended_content_types=[
+                    "video_lecture",
+                    "quiz_practice",
+                    "reading",
+                ],
+                content_weights={
+                    "video_lecture": w,
+                    "quiz_practice": w,
+                    "reading": w,
+                },
+                learning_strategies=["active_learning", "spaced_repetition"],
+                study_techniques=["pomodoro", "note_taking", "retrieval_practice"],
+                difficulty_adjustment=0.0,
+                pace_adjustment=0.0,
+                confidence_score=0.35,
+            )
+
+        dom = (profile_model.dominant_vark_style or "visual").lower()
+        if dom == "visual":
+            content_types = ["video_lecture", "infographic", "visual_aid"]
+            learning_strategies = ["visual_aids", "mind_mapping", "color_coding"]
+            study_techniques = ["diagram_notes", "video_summaries", "sketching"]
+        elif dom == "auditory":
+            content_types = ["audio_content", "group_discussion", "podcast"]
+            learning_strategies = ["verbal_repetition", "teach_back", "debate"]
+            study_techniques = ["read_aloud", "audio_notes", "rhythm_phrasing"]
+        elif dom == "reading":
+            content_types = ["reading", "text_summary", "flashcards"]
+            learning_strategies = ["annotated_reading", "outlines", "self_quizzing"]
+            study_techniques = ["SQ3R", "keyword_lists", "margin_notes"]
+        else:  # kinesthetic
+            content_types = [
+                "interactive_simulation",
+                "practice_test",
+                "hands_on_lab",
+            ]
+            learning_strategies = [
+                "active_learning",
+                "problem_sets",
+                "spaced_repetition",
+            ]
+            study_techniques = [
+                "pomodoro",
+                "retrieval_practice",
+                "interleaving",
+            ]
+
+        w = 1.0 / len(content_types)
+        content_weights = {c: w for c in content_types}
+
+        dl = (difficulty_level or "orta").lower()
+        if dl in ("kolay", "easy", "dusuk"):
+            diff_adj = -0.15
+        elif dl in ("zor", "hard", "yuksek"):
+            diff_adj = 0.15
+        else:
+            diff_adj = 0.0
+
+        conf = float(profile_model.confidence_score or 0.5)
+        conf = max(0.0, min(1.0, conf))
+
+        return ContentRecommendation(
+            student_id=student_id,
+            hybrid_code=profile_model.hybrid_code or "M-MM-MM",
+            recommended_content_types=content_types,
+            content_weights=content_weights,
+            learning_strategies=learning_strategies,
+            study_techniques=study_techniques,
+            difficulty_adjustment=diff_adj,
+            pace_adjustment=0.0,
+            confidence_score=conf,
+        )
 
     async def get_learning_recommendations(
         self, student_id: str, db: AsyncSession, subject: str = "genel"

@@ -10,7 +10,18 @@ from enum import Enum
 from typing import Any
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, File, Form, Query, Request, Response, UploadFile
+from fastapi import (
+    APIRouter,
+    Body,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    UploadFile,
+)
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import text
@@ -959,3 +970,28 @@ async def message_with_attachment(
         },
         "session_id": resp_session_id,
     }
+
+
+# ---------------------------------------------------------------------------
+# Bionic reading — FE beklentisi: POST /api/v1/enhanced-chat/bionic-reading
+# (aynı cevap şekli: success + data.bionic_text)
+# ---------------------------------------------------------------------------
+
+
+@router.post("/bionic-reading")
+async def bionic_reading_enhanced_chat(
+    body: dict[str, Any] = Body(...),
+    current_user: Any = _auth_dep,
+) -> dict[str, Any]:
+    text = (body or {}).get("text")
+    if not text or not str(text).strip():
+        raise HTTPException(status_code=400, detail="Metin gerekli")
+
+    from core.bionic_reading_service import BionicReadingService
+    from core.cache import cache_manager
+
+    svc = BionicReadingService(cache_service=cache_manager)
+    user_id = str(getattr(current_user, "id", "anonymous") if current_user else "anonymous")
+    return await svc.process_text(
+        text=str(text).strip(), user_id=user_id, use_cache=True
+    )

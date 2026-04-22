@@ -17,7 +17,6 @@ from typing import Any
 
 try:
     import chromadb
-    from chromadb.config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -125,20 +124,21 @@ class ChromaDBCollectionManager:
         self._initialize_client()
 
     def _initialize_client(self) -> None:
-        """Initialize ChromaDB client with persistence."""
+        """Initialize ChromaDB client with persistence (or remote HttpClient via env)."""
         try:
-            settings = Settings(
-                chroma_db_impl="duckdb+parquet",
+            from core.chroma_client import create_chromadb_client
+
+            self._client = create_chromadb_client(
                 persist_directory=self.persist_directory,
-                anonymized_telemetry=False,
             )
-            self._client = chromadb.Client(settings)
-            logger.info(f"ChromaDB client initialized at {self.persist_directory}")
+            logger.info("ChromaDB client initialized (shared factory) at %s", self.persist_directory)
         except Exception as e:
-            # Fallback for newer chromadb versions
-            logger.warning(f"Legacy settings failed, trying new API: {e}")
+            logger.warning("Shared Chroma factory failed, trying PersistentClient: %s", e)
             self._client = chromadb.PersistentClient(path=self.persist_directory)
-            logger.info(f"ChromaDB PersistentClient initialized at {self.persist_directory}")
+            logger.info(
+                "ChromaDB PersistentClient initialized at %s",
+                self.persist_directory,
+            )
 
     def get_or_create_collection(
         self,

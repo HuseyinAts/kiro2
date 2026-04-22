@@ -11,13 +11,13 @@ Endpoints:
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from redis import Redis
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -165,18 +165,31 @@ async def get_point_history(
         )
 
 
+class AwardPointsRequest(BaseModel):
+    """Client JSON body (POST) — tercihen tek kaynak; query ile istismar zor ve cache-friendly."""
+
+    points: int = Field(
+        ..., ge=1, le=100, description="Verilecek puan miktari (max 100 per istek)"
+    )
+    reason: str = Field(
+        ...,
+        min_length=1,
+        max_length=200,
+        description="Puan verme nedeni (or: interleaved_practice, manual)",
+    )
+
+
 @router.post("/points/award", response_model=dict[str, Any])
 async def award_points(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
-    points: int = Query(
-        ..., ge=1, le=100, description="Verilecek puan miktari (max 100)"
-    ),
-    reason: str = Query(..., description="Puan verme nedeni"),
+    body: AwardPointsRequest = Body(...),
 ):
-    """Kullaniciya puan ver (DB-backed)."""
+    """Kullaniciya puan ver (DB-backed, JSON body). Max 100 puan/istek."""
     try:
         user_id = str(current_user.id)
+        points = body.points
+        reason = body.reason
 
         new_total = await GamificationDBService.award_xp(
             student_id=user_id,
@@ -184,6 +197,7 @@ async def award_points(
             source=reason,
             db=db,
         )
+        await GamificationDBService.update_leaderboard(student_id=user_id, db=db)
         await db.commit()
 
         # Invalidate points cache
@@ -200,6 +214,7 @@ async def award_points(
                     "timestamp": datetime.now(UTC).isoformat(),
                 },
                 "new_total": new_total,
+                "total_points": new_total,
             },
             "message": f"{points} puan basariyla verildi",
         }
@@ -488,22 +503,43 @@ async def get_leaderboard(
     try:
         user_id = str(current_user.id)
         cache = get_cache()
-        cache_key = f"leaderboard:{period}:{limit}"
+        pnorm = (period or "alltime").lower().replace("-", "")
+        cache_key = f"leaderboard:{pnorm}:{limit}"
 
         cached_result = cache.get(cache_key)
         if cached_result:
             return cached_result
 
-        # Query top users by total_xp
-
         from models.database import User
+        from models.gamification import XPTransaction
 
-        stmt = (
-            select(User.id, User.email, User.total_xp)
-            .where(User.total_xp > 0)
-            .order_by(User.total_xp.desc())
-            .limit(limit)
-        )
+        if pnorm in ("all", "alltime", "total"):
+            stmt = (
+                select(User.id, User.email, User.total_xp)
+                .where(User.total_xp > 0)
+                .order_by(User.total_xp.desc())
+                .limit(limit)
+            )
+        else:
+            if pnorm in ("week", "weekly"):
+                days = 7
+            elif pnorm in ("month", "monthly"):
+                days = 30
+            elif pnorm in ("year", "yearly", "ytd"):
+                days = 365
+            else:
+                days = 30
+            cutoff = datetime.now(UTC) - timedelta(days=days)
+            px_sum = func.coalesce(func.sum(XPTransaction.amount), 0)
+            stmt = (
+                select(User.id, User.email, px_sum.label("px"))
+                .join(XPTransaction, User.id == XPTransaction.student_id)
+                .where(XPTransaction.created_at >= cutoff)
+                .group_by(User.id, User.email)
+                .order_by(px_sum.desc())
+                .limit(limit)
+            )
+
         result = await db.execute(stmt)
         rows = result.fetchall()
 
@@ -511,7 +547,7 @@ async def get_leaderboard(
         user_rank = None
         for rank, row in enumerate(rows, 1):
             uid = str(row[0])
-            xp = row[2] or 0
+            xp = int(row[2] or 0)
             level = calculate_level(xp)
             entries.append(
                 LeaderboardEntry(

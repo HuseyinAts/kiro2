@@ -32,6 +32,22 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes
 
+  # Chroma (optional) — `docker compose -f docker-compose.dev.yml --profile chroma up`
+  # In .env: CHROMADB_HOST=chroma  CHROMADB_PORT=8000  (in-network; host maps 8001→8000)
+  chroma:
+    image: chromadb/chroma:0.5.23
+    container_name: kiro2_chroma_dev
+    ports:
+      - "127.0.0.1:8001:8000"
+    volumes:
+      - chroma_dev_data:/chroma/chroma
+    networks:
+      - kiro2-dev-network
+    restart: unless-stopped
+    profiles: [chroma]
+    environment:
+      - ANONYMIZED_TELEMETRY=False
+
   # Backend API (Development with hot reload)
   backend:
     build:
@@ -54,6 +70,9 @@ services:
       - HUGGINGFACE_ENDPOINT=${HUGGINGFACE_ENDPOINT:-https://cf781mfqobm2ynkk.us-east-1.aws.endpoints.huggingface.cloud}
       - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN:-}
       - USE_MOCK_RESPONSES=${USE_MOCK_RESPONSES:-true}
+      # Chroma: set CHROMADB_HOST=chroma when using --profile chroma (see chroma service)
+      - CHROMADB_HOST=${CHROMADB_HOST:-}
+      - CHROMADB_PORT=${CHROMADB_PORT:-8000}
     depends_on:
       - postgres
       - redis
@@ -91,6 +110,7 @@ services:
 volumes:
   postgres_dev_data:
   redis_dev_data:
+  chroma_dev_data:
 
 networks:
   kiro2-dev-network:

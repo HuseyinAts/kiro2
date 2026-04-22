@@ -72,6 +72,11 @@ from .services.path_generation import (
 from .services.resource_discovery import (
     DiscoveryRequest,
 )
+from .facade_persistence import (
+    load_student_path_from_db,
+    load_student_profile_from_db,
+    persist_student_path,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -243,6 +248,9 @@ class LearningPathFacade:
         # Cache the path
         if result.success and result.path:
             self._paths_cache[student_id] = result.path
+            await persist_student_path(
+                result.path, subject, profile
+            )
 
         return result
 
@@ -260,7 +268,10 @@ class LearningPathFacade:
         if student_id in self._paths_cache:
             return self._paths_cache[student_id]
 
-        # TODO: Load from database
+        loaded = await load_student_path_from_db(student_id)
+        if loaded is not None:
+            self._paths_cache[student_id] = loaded
+            return loaded
         return None
 
     async def adapt_student_path(
@@ -303,6 +314,9 @@ class LearningPathFacade:
         # Update cache
         if result.success and result.adapted_path:
             self._paths_cache[student_id] = result.adapted_path
+            subj = (result.adapted_path.metadata or {}).get("subject", "genel")
+            prof = await self._get_or_create_profile(student_id)
+            await persist_student_path(result.adapted_path, str(subj), prof)
 
         return result
 
@@ -549,7 +563,10 @@ class LearningPathFacade:
         if student_id in self._profiles_cache:
             return self._profiles_cache[student_id]
 
-        # TODO: Load from database
+        loaded = await load_student_profile_from_db(student_id)
+        if loaded is not None:
+            self._profiles_cache[student_id] = loaded
+            return loaded
 
         # Create default profile
         profile = StudentProfile(

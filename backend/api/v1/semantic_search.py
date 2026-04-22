@@ -36,7 +36,6 @@ except ImportError:
 
 try:
     import chromadb
-    from chromadb.config import Settings as ChromaSettings
 
     CHROMADB_AVAILABLE = True
 except (ImportError, TypeError, OSError, Exception) as e:
@@ -158,10 +157,10 @@ class SemanticSearchService:
             return False
 
         try:
-            self._client = chromadb.Client(
-                ChromaSettings(
-                    persist_directory=self.persist_directory, anonymized_telemetry=False
-                )
+            from core.chroma_client import create_chromadb_client
+
+            self._client = create_chromadb_client(
+                persist_directory=self.persist_directory,
             )
 
             self._collection = self._client.get_or_create_collection(
@@ -640,6 +639,8 @@ async def find_similar_questions(
 @router.get("/health")
 async def search_health():
     """Search service sağlık kontrolü."""
+    from core.chroma_client import chromadb_connection_mode
+
     service = get_search_service()
     initialized = await service.initialize()
 
@@ -652,7 +653,9 @@ async def search_health():
 
     return {
         "status": "healthy" if initialized else "unhealthy",
+        "service": "semantic_search",
         "chromadb_available": CHROMADB_AVAILABLE,
+        "chroma_connection_mode": chromadb_connection_mode(),
         "collection_name": service.collection_name,
         "document_count": collection_count,
     }

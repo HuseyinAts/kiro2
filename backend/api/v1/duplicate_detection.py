@@ -20,6 +20,8 @@ from datetime import datetime
 from enum import Enum
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from core.chroma_client import chromadb_connection_mode
 from core.auth_dependencies import AuthenticationDependency, AuthorizationDependency
 
 get_current_user = AuthenticationDependency(required=True)
@@ -621,6 +623,7 @@ async def health_check() -> dict:
             "status": "healthy" if initialized else "degraded",
             "service": "duplicate_detection",
             "chromadb_available": initialized,
+            "chroma_connection_mode": chromadb_connection_mode(),
             "pending_review_count": review_service.get_pending_count(),
             "timestamp": datetime.now().isoformat(),
         }
@@ -630,6 +633,7 @@ async def health_check() -> dict:
         return {
             "status": "unhealthy",
             "service": "duplicate_detection",
+            "chroma_connection_mode": chromadb_connection_mode(),
             "error": "Internal error",
             "timestamp": datetime.now().isoformat(),
         }

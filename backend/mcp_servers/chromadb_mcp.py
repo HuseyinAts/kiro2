@@ -221,7 +221,6 @@ except ImportError:
 # ChromaDB import
 try:
     import chromadb
-    from chromadb.config import Settings
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
@@ -280,11 +279,9 @@ class ChromaDBService:
             return False
 
         try:
-            # Initialize ChromaDB client
-            self.client = chromadb.Client(Settings(
-                persist_directory=PERSIST_DIR,
-                anonymized_telemetry=False
-            ))
+            from core.chroma_client import create_chromadb_client
+
+            self.client = create_chromadb_client(persist_directory=PERSIST_DIR)
 
             # Get or create collection
             self.collection = self.client.get_or_create_collection(
@@ -870,9 +867,12 @@ async def health_check_tool() -> str:
     if is_allowed:
         _rate_limiter._requests["global"].pop()  # Bu çağrıyı sayma
 
+    from core.chroma_client import chromadb_connection_mode
+
     return json.dumps({
         "status": "healthy" if initialized else "unhealthy",
         "chromadb_available": CHROMADB_AVAILABLE,
+        "chroma_connection_mode": chromadb_connection_mode(),
         "embeddings_available": EMBEDDINGS_AVAILABLE,
         "embedding_model": EMBEDDING_MODEL if EMBEDDINGS_AVAILABLE else None,
         "persist_directory": PERSIST_DIR,
@@ -895,9 +895,12 @@ async def health_check() -> str:
         except Exception:
             pass
 
+    from core.chroma_client import chromadb_connection_mode
+
     return json.dumps({
         "status": "healthy" if initialized else "unhealthy",
         "chromadb_available": CHROMADB_AVAILABLE,
+        "chroma_connection_mode": chromadb_connection_mode(),
         "embeddings_available": EMBEDDINGS_AVAILABLE,
         "embedding_model": EMBEDDING_MODEL if EMBEDDINGS_AVAILABLE else None,
         "persist_directory": PERSIST_DIR,

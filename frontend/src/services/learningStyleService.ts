@@ -114,7 +114,10 @@ class LearningStyleService {
       const response = await api.get(
         `/api/v1/learning-style/recommendations/${studentId}`,
         {
-          params: { subject },
+          params: {
+            subject_area: subject || 'matematik',
+            difficulty_level: 'orta',
+          },
         },
       );
       return response.data.data || response.data;

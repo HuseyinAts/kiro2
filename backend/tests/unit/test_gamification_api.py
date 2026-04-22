@@ -312,7 +312,7 @@ class TestAwardPoints:
     """Tests for POST /points/award endpoint."""
 
     async def test_award_returns_new_total(self):
-        from api.gamification_api import award_points
+        from api.gamification_api import AwardPointsRequest, award_points
 
         db = AsyncMock()
 
@@ -321,20 +321,25 @@ class TestAwardPoints:
                 "api.gamification_api.GamificationDBService.award_xp",
                 new=AsyncMock(return_value=50),
             ),
+            patch(
+                "api.gamification_api.GamificationDBService.update_leaderboard",
+                new=AsyncMock(),
+            ),
             patch("api.gamification_api.get_cache", return_value=_make_cache_miss()),
         ):
             result = await award_points(
                 current_user=_make_test_user("award-user"),
                 db=db,
-                points=50,
-                reason="quiz_completion",
+                body=AwardPointsRequest(
+                    points=50, reason="quiz_completion"
+                ),
             )
 
         assert result["success"] is True
         assert result["data"]["new_total"] == 50
 
     async def test_cumulative_awards_accumulate(self):
-        from api.gamification_api import award_points
+        from api.gamification_api import AwardPointsRequest, award_points
 
         db = AsyncMock()
 
@@ -343,19 +348,24 @@ class TestAwardPoints:
                 "api.gamification_api.GamificationDBService.award_xp",
                 new=AsyncMock(return_value=125),
             ),
+            patch(
+                "api.gamification_api.GamificationDBService.update_leaderboard",
+                new=AsyncMock(),
+            ),
             patch("api.gamification_api.get_cache", return_value=_make_cache_miss()),
         ):
             result = await award_points(
                 current_user=_make_test_user("cumul-user"),
                 db=db,
-                points=25,
-                reason="streak_bonus",
+                body=AwardPointsRequest(
+                    points=25, reason="streak_bonus"
+                ),
             )
 
         assert result["data"]["new_total"] == 125
 
     async def test_transaction_has_required_fields(self):
-        from api.gamification_api import award_points
+        from api.gamification_api import AwardPointsRequest, award_points
 
         db = AsyncMock()
 
@@ -364,13 +374,18 @@ class TestAwardPoints:
                 "api.gamification_api.GamificationDBService.award_xp",
                 new=AsyncMock(return_value=5),
             ),
+            patch(
+                "api.gamification_api.GamificationDBService.update_leaderboard",
+                new=AsyncMock(),
+            ),
             patch("api.gamification_api.get_cache", return_value=_make_cache_miss()),
         ):
             result = await award_points(
                 current_user=_make_test_user("field-test"),
                 db=db,
-                points=5,
-                reason="reason",
+                body=AwardPointsRequest(
+                    points=5, reason="reason"
+                ),
             )
 
         txn = result["data"]["transaction"]

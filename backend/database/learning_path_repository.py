@@ -20,8 +20,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
 from models.learning_path_models import (
-    StudentProfile,
     LearningPath,
+    LearningPathStudentProfile,
     TopicCompletion,
     TopicProgress,
     QuizSubmission,
@@ -38,10 +38,10 @@ class LearningPathRepository:
 
     async def create_student_profile(
         self, session: AsyncSession, profile_data: Dict[str, Any]
-    ) -> StudentProfile:
+    ) -> LearningPathStudentProfile:
         """Create new student profile"""
         try:
-            profile = StudentProfile(**profile_data)
+            profile = LearningPathStudentProfile(**profile_data)
             session.add(profile)
             await session.commit()
             await session.refresh(profile)
@@ -59,11 +59,13 @@ class LearningPathRepository:
 
     async def get_student_profile(
         self, session: AsyncSession, student_id: str
-    ) -> Optional[StudentProfile]:
+    ) -> Optional[LearningPathStudentProfile]:
         """Get student profile by ID"""
         try:
             result = await session.execute(
-                select(StudentProfile).where(StudentProfile.student_id == student_id)
+                select(LearningPathStudentProfile).where(
+                    LearningPathStudentProfile.student_id == student_id
+                )
             )
             return result.scalar_one_or_none()
         except Exception as e:
@@ -72,14 +74,14 @@ class LearningPathRepository:
 
     async def update_student_profile(
         self, session: AsyncSession, student_id: str, update_data: Dict[str, Any]
-    ) -> Optional[StudentProfile]:
+    ) -> Optional[LearningPathStudentProfile]:
         """Update student profile"""
         try:
             update_data["updated_at"] = datetime.now()
 
             await session.execute(
-                update(StudentProfile)
-                .where(StudentProfile.student_id == student_id)
+                update(LearningPathStudentProfile)
+                .where(LearningPathStudentProfile.student_id == student_id)
                 .values(**update_data)
             )
             await session.commit()
@@ -96,7 +98,9 @@ class LearningPathRepository:
         """Delete student profile (cascade deletes related data)"""
         try:
             result = await session.execute(
-                delete(StudentProfile).where(StudentProfile.student_id == student_id)
+                delete(LearningPathStudentProfile).where(
+                    LearningPathStudentProfile.student_id == student_id
+                )
             )
             await session.commit()
 

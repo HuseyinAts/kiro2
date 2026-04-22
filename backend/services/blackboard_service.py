@@ -134,24 +134,23 @@ async def _on_mastery_event(content: dict[str, Any]) -> None:
         except Exception as e:
             logger.warning("LP cache invalidation failed: %s", e)
 
-        # XP award for mastery achievement
+        # XP award for mastery achievement (async DB — sync Session/callback deadlock riski yok)
         try:
-            from uuid import UUID
+            from core.database import get_db_session_context
+            from services.learning_event_service import GamificationDBService
 
-            from core.database import get_db
-            from core.gamification.experience_manager import ExperienceManager
-
-            db_gen = get_db()
-            db_session = next(db_gen)
-            try:
-                xp_mgr = ExperienceManager(db=db_session, redis_client=None)
-                xp_mgr.add_xp(UUID(student_id), 50, "mastery")
-                logger.info("XP awarded: student=%s +50 (mastery)", student_id)
-            finally:
-                try:
-                    next(db_gen)
-                except StopIteration:
-                    pass
+            async with get_db_session_context() as adb:
+                await GamificationDBService.award_xp(
+                    student_id=str(student_id),
+                    amount=50,
+                    source="mastery",
+                    db=adb,
+                )
+                await GamificationDBService.update_leaderboard(
+                    student_id=str(student_id), db=adb
+                )
+                await adb.commit()
+            logger.info("XP awarded: student=%s +50 (mastery)", student_id)
         except Exception as e:
             logger.warning("Mastery XP award failed: %s", e)
 

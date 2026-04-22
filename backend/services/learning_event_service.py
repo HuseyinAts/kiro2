@@ -286,6 +286,19 @@ class GamificationDBService:
         row = result.first()
         new_total = row[0] if row else amount
         await db.flush()
+        # User.level, GET /level ile ayni formule esitle (api.gamification_api.calculate_level)
+        try:
+            from api.gamification_api import calculate_level
+
+            new_level = calculate_level(int(new_total or 0))
+            await db.execute(
+                update(User)
+                .where(User.id == student_id)
+                .values(level=new_level)
+            )
+            await db.flush()
+        except Exception as e:
+            logger.warning("User.level sync after XP failed: %s", e)
         return new_total
 
     @staticmethod

@@ -196,6 +196,12 @@ class WhiteboardService:
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
+    async def get_stroke(self, stroke_id: UUID) -> Optional[WhiteboardStroke]:
+        """Load stroke by id (for session membership checks)."""
+        query = select(WhiteboardStroke).where(WhiteboardStroke.id == stroke_id)
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
+
     async def delete_stroke(self, stroke_id: UUID, soft_delete: bool = True) -> bool:
         """Delete stroke (soft or hard delete)"""
         if soft_delete:

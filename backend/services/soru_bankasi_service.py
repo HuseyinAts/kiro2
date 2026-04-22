@@ -407,7 +407,7 @@ class SoruBankasiServisi:
             try:
                 # Base query - questions tablosundan (Question modeli)
                 stmt = select(Question).where(
-                    (Question.is_active == True) | (Question.is_active == None)
+                    Question.is_active.is_(True)
                 )
 
                 # Sınav tipi filtresi — DB UPPERCASE: "TYT", "AYT"
@@ -499,7 +499,7 @@ class SoruBankasiServisi:
                 # FIX N+1: Tek sorguda tüm konuların sorularını getir
                 sinav_upper = sinav_tipi.upper() if sinav_tipi else None
                 stmt = select(Question).where(
-                    (Question.is_active == True) | (Question.is_active == None)
+                    Question.is_active.is_(True)
                 )
                 if sinav_upper:
                     stmt = stmt.where(Question.exam_type == sinav_upper)

@@ -862,14 +862,21 @@ export function ModernLearningPathPage() {
                               console.error('FSRS kaydi basarisiz:', err);
                             }
                           }
-                          // Award gamification points
+                          // Interleaved: tek kaynak FE award (LP quiz submit = backend on_quiz_completed)
                           if (studentId) {
-                            const points = results.correctCount * 10 + (results.percentage >= 60 ? 50 : 0);
+                            const raw =
+                              results.correctCount * 10 + (results.percentage >= 60 ? 50 : 0);
+                            const points = Math.min(100, Math.max(0, raw));
                             if (points > 0) {
                               try {
-                                await fetch(`/api/v1/gamification/points/award?points=${points}&reason=interleaved_practice`, {
+                                await fetch('/api/v1/gamification/points/award', {
                                   method: 'POST',
                                   credentials: 'include',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    points,
+                                    reason: 'interleaved_practice',
+                                  }),
                                 });
                               } catch (err) {
                                 console.error('Gamification puan hatasi:', err);
