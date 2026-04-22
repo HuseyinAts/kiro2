@@ -13,7 +13,8 @@ $backend = Join-Path $repo "backend"
 
 Write-Host "=== P0 Golden (4 test) -> $BackendUrl ===" -ForegroundColor Cyan
 try {
-    $h = Invoke-WebRequest -Uri "$BackendUrl/health" -UseBasicParsing -TimeoutSec 5
+    # İlk yanıt DB/ES kontrolleriyle 5s+ sürebilir (TimeoutSec 30)
+    $h = Invoke-WebRequest -Uri "$BackendUrl/health" -UseBasicParsing -TimeoutSec 30
     if ($h.StatusCode -ne 200) { throw "HTTP $($h.StatusCode)" }
 } catch {
     Write-Host "HATA: $BackendUrl health yok. Once: cd backend; uvicorn main:app --host 0.0.0.0 --port 8000" -ForegroundColor Red
