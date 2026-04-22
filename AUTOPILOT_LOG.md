@@ -50,7 +50,7 @@
 - **Amaç:** J10–J13 satırında sadece health değil, `clustering` + `recommendations` + `duplicates` mutating/okuma yollarının 500 vermediğini golden flow ile kilitlemek.
 - **Ek test:** `test_gf152_duplicates_check_not_500` — `POST /api/v1/duplicates/check` (ADMIN), `test_golden_flows.py`.
 - **Doğrulama (canlı):** `test_gf37_clustering_auto_not_500`, `test_gf47_recommendations_not_500`, `test_gf152_*` — **PASS**.
-- **Matris:** `CAPABILITY_MATRIX.md` J10–J13 sütun Son test: `27ed47b` + GF150/38/37/47/152.
+- **Matris:** `CAPABILITY_MATRIX.md` J10–J13 sütun Son test: `553bacf` + GF150/38/37/47/152.
 
 ## B-20260421-02 — Auth + test + Docker
 
