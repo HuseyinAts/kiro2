@@ -17,6 +17,7 @@ import logging
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from starlette.responses import Response
 
 from core.auth_dependencies import AuthenticationDependency
 from core.ddos_protection import limiter
@@ -31,8 +32,20 @@ try:
 
     NUMPY_AVAILABLE = True
 except ImportError:
+    np = None  # type: ignore[assignment, misc]
     NUMPY_AVAILABLE = False
     logger.warning("numpy not available for semantic search")
+
+
+def _coerce_embedding_list(raw: object) -> list[float] | None:
+    """Chroma 0.5+ bazen numpy ndarray döndürür; `if arr` boolean hatası verir."""
+    if raw is None:
+        return None
+    if NUMPY_AVAILABLE and np is not None and isinstance(raw, np.ndarray):
+        return np.asarray(raw, dtype=np.float64).reshape(-1).tolist()
+    if isinstance(raw, (list, tuple)):
+        return [float(x) for x in raw]
+    return None
 
 try:
     import chromadb
@@ -316,10 +329,13 @@ class SemanticSearchService:
             if difficulty_max is not None and difficulty > difficulty_max:
                 continue
 
-            # Embedding'i sakla (MMR için)
+            # Embedding'i sakla (MMR için); Chroma ndarray → list
             embedding = None
-            if results.get("embeddings") and results["embeddings"][0]:
-                embedding = results["embeddings"][0][i]
+            emb_outer = results.get("embeddings")
+            if emb_outer is not None and len(emb_outer) > 0:
+                row = emb_outer[0]
+                if row is not None and i < len(row):
+                    embedding = _coerce_embedding_list(row[i])
 
             search_results.append(
                 SearchResult(
@@ -365,7 +381,7 @@ class SemanticSearchService:
 
             for result in remaining:
                 embedding = result.metadata.get("_embedding")
-                if not embedding:
+                if embedding is None:
                     relevance = result.similarity
                 else:
                     relevance = cosine_sim(query_embedding, embedding)
@@ -375,12 +391,15 @@ class SemanticSearchService:
                     max_sim = (
                         max(
                             cosine_sim(
-                                embedding or [], s.metadata.get("_embedding", [])
+                                embedding
+                                if embedding is not None
+                                else [],
+                                s.metadata.get("_embedding") or [],
                             )
                             for s in selected
-                            if s.metadata.get("_embedding")
+                            if s.metadata.get("_embedding") is not None
                         )
-                        if embedding
+                        if embedding is not None
                         else 0.0
                     )
                 else:
@@ -489,9 +508,15 @@ class SemanticSearchService:
 
             source_doc = source["documents"][0]
             source_meta = source["metadatas"][0] if source.get("metadatas") else {}
-            source_embedding = (
-                source["embeddings"][0] if source.get("embeddings") else None
-            )
+            source_embedding: list[float] | None = None
+            if source.get("embeddings") is not None and len(source["embeddings"]) > 0:
+                e0 = source["embeddings"][0]
+                if e0 is not None:
+                    if NUMPY_AVAILABLE and np is not None and isinstance(
+                        e0, np.ndarray
+                    ):
+                        e0 = e0.reshape(-1)
+                    source_embedding = _coerce_embedding_list(e0)
 
             # Embedding yoksa oluştur
             if source_embedding is None:
@@ -577,6 +602,7 @@ def get_search_service() -> SemanticSearchService:
 @limiter.limit("30/minute")
 async def search_questions(
     request: Request,
+    response: Response,
     payload: SearchRequest,
     _current_user=Depends(get_current_user),
 ):
@@ -598,6 +624,7 @@ async def search_questions(
 @limiter.limit("30/minute")
 async def search_content(
     request: Request,
+    response: Response,
     payload: SearchRequest,
     _current_user=Depends(get_current_user),
 ):
@@ -620,6 +647,7 @@ async def search_content(
 @limiter.limit("30/minute")
 async def find_similar_questions(
     request: Request,
+    response: Response,
     payload: SimilarRequest,
     _current_user=Depends(get_current_user),
 ):

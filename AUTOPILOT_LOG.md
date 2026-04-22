@@ -38,6 +38,13 @@
 - **Test:** `pytest tests/e2e/test_golden_flows.py::test_gf150_public_journey_health_probes_not_500` — **PASS** (0.94s).
 - **Matris:** `CAPABILITY_MATRIX.md` — J10–J13 **Yeşil (health)**; **Live session** **Yeşil (health)**; F1 §8 full ingest/uygulama ayrı blok.
 
+## B-20260423-02 — F1: Chroma 0.5 `PersistentClient` + semantic search 500 + GF38
+
+- **Sorun:** (1) Eski `chroma.Client(Settings(persist=…))` + 0.4 sqlite → `KeyError: '_type'`; yanlış Docker volume adı (`kiro2-vector-db` vs `kiro2_kiro2-vector-db`). (2) Chroma 0.5 `query` embedding’leri ndarray → `if arr` boolean hatası. (3) slowapi: `@limiter.limit` + `SearchResponse` Pydantic dönüşü → `response: Response` zorunlu (GF24 pattern).
+- **Düzeltme:** `core/chroma_client.py` → `PersistentClient`. `api/v1/semantic_search.py` → `_coerce_embedding_list`, MMR `is None` kontrolleri, `find_similar` flatten, üç route’a `response: Response`.
+- **Araç:** `backend/scripts/chroma_seed_kiro2_questions.py` — `kiro2_questions` upsert (dev; volume izin: `chown` gerekirse).
+- **Test (canlı 8000):** `test_gf38_search_questions_semantic_not_500` PASS, `test_gf150` PASS; `tests/unit/services/test_semantic_search.py` 20 PASS.
+
 ## B-20260421-02 — Auth + test + Docker
 
 - `require_role` / `require_permission`: artık gerçek `AuthorizationDependency` döndürüyor (Depends ile kullanılabilir).

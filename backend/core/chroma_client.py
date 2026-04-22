@@ -47,9 +47,9 @@ def create_chromadb_client(*, persist_directory: str) -> Any:
                 exc,
             )
 
-    return chromadb.Client(
-        ChromaSettings(
-            persist_directory=persist_directory,
-            anonymized_telemetry=False,
-        )
+    # Chroma >=0.4: yerel disk için `PersistentClient` (Settings+Client artık aynı sqlite
+    # sürümünü taşımıyor; eski chroma.sqlite3 0.5'te _type/segment uyuşmazlığı üretebilir).
+    return chromadb.PersistentClient(
+        path=persist_directory,
+        settings=ChromaSettings(anonymized_telemetry=False),
     )
