@@ -2,8 +2,8 @@
 dosya_adi: 30_DERSLER.md
 amac: Yaşayan dersler — Claude hataları + doğru pattern'ler + kullanıcı tercihleri + tuzaklar
 ne_zaman_oku: Yeni pilot planı yazarken; sapma şüphesinde; Claude yanlış yaptığında düzeltme için
-versiyon: v4 (2026-04-22)
-guncellendi: 2026-04-22
+versiyon: v5 (2026-04-25)
+guncellendi: 2026-04-25
 durum: aktif — yaşayan doküman, her yeni ders eklenir
 ilgili_dosyalar: [00_INDEX, 10_BRIEFING, 20_PILOT_PROTOCOL, 40_OPEN_DEBTS]
 kaynak: Repo `DERSLER.md` (20 Nisan) + 21-24 Nisan sohbet kazanımları + 22 Nisan Borç #6 Round 2 + Files rewrite oturumu
@@ -61,7 +61,7 @@ Bu doküman o yolculuğun meta kaydıdır.
 
 ---
 
-## Bölüm 1 — Claude'un Tekrar Etmemesi Gereken 18 Hata
+## Bölüm 1 — Claude'un Tekrar Etmemesi Gereken 19 Hata
 
 ### 1. Audit Raporlarını Okumadan Öneri Üretmek
 
@@ -282,6 +282,26 @@ maddelik liste yazdım — aslında 4-5 gerçek ders + 6 kanıt/rapor içeriyord
 
 **Ders**: "10 madde" ≠ "10 ders". §1.18 bu dokümanın kendi bakım disiplini
 olarak da geçerli.
+
+### 19. Plan Yazılmadan Ajan Commit+Push Zinciri Çalıştırması (25 Nisan)
+
+A5 cherry-pick pilot planı için "git show 20610e9 --stat ve tam diff getir"
+dedim. Cursor Agent diffi okudu, sonra diff içeriğini talimat olarak yorumladı:
+cherry-pick + commit + push zincirini plan yazılmadan çalıştırdı. Commit teknik
+olarak doğruydu (tek dosya, doğru kapsam, footer temiz), ama süreç ihlaliydi.
+
+Kök neden: "Oku" talimatı ile "Uygula" talimatı arasındaki sınır Cursor Agent
+için belirsiz. git show, docker exec grep, Select-String gibi READ komutları
+içerik döndürür — agent içerik + bağlam birleştirince "oku" adımını "oku + uygula"
+adımına dönüştürebilir.
+
+Ders: Diff, grep, log okuması gibi salt gözlem adımlarında plan'a şu satır zorunlu:
+
+    ADIM X — SADECE OKU, ÇIKTIYI GETİR. UYGULAMA YAPMA.
+    Commit / cherry-pick / push / docker cp bu adımda YASAK.
+
+Bu satır eksikse agent "mantıklı sıradaki adım" diye devam eder. D-14 sapma
+örüntüsü — 20_PILOT_PROTOCOL §Sapma Örüntüleri'ne eklenmesi gerekiyor.
 
 ---
 
@@ -513,6 +533,17 @@ Dinamik dosyaları yazarken canlı kaynakları bizzat aç. §1.9 dersi.
 Handoff "X yapılmadı" diyorsa da repo bizzat teyit et. §1.16 canlı kanıt:
 handoff `b5fab34` beklerken local `81aa2e2` çıktı.
 
+### Tuzak 11: "Oku" ile "Uygula"nın Karışması (25 Nisan)
+
+Cursor Agent mode'a "diff oku, çıktıyı getir" denildi, agent diffi okuyup
+cherry-pick + commit + push zinciri çalıştırdı. §1.19 dersi bu olaydan.
+
+Tuzak davranış: Salt gözlem talimatı (git show, grep, docker exec) ile eylem
+talimatını plan'da ayırmamak. Agent bağlam + içerik birleştirince "oku" → "uygula" olur.
+
+Önlem: Gözlem adımlarına "SADECE OKU, UYGULAMA YAPMA" satırı zorunlu. Commit /
+cherry-pick / push o adımda listelenirse yasak olduğu da açıkça yazılır.
+
 ---
 
 ## Bölüm 7 — Bu Dokümanın Bakımı
@@ -534,6 +565,9 @@ Bu cümle dersin tamamı. Gerisi detay.
 ---
 
 ## Versiyon Notu
+
+- **v5 (2026-04-25)**: §1.19 eklendi (D-14: plan yazılmadan ajan commit+push).
+  Tuzak 11 eklendi. §Bölüm 1 başlık 18→19 güncellendi.
 
 - **v4 (2026-04-22)**: §1.11-§1.18 formalize. Bölüm 1 "18 Hata" güncellendi.
   §1.11 stack literal ezber yasağı. §1.12 Pre-Flight 3 kural (patch entegre).
