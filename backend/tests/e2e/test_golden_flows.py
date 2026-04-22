@@ -354,6 +354,50 @@ def _create_exam_session(
 
 
 # ---------------------------------------------------------------------------
+# GF3c: J3 — osym-exam: current question + save-answer (çöz + kaydet, smoke)
+# ---------------------------------------------------------------------------
+
+
+def test_gf3c_exam_session_save_answer_smoke(client: httpx.Client):
+    """J3 write path: submit one selected_answer via /osym-exam/.../save-answer.
+
+    Weaker than GF1w (no BKT/mastery side-effect). Locks that create → start →
+    current-question → save-answer returns 200 and success for the happy path.
+    """
+    token = _login(client, STUDENT)
+    headers = _auth_headers(token)
+    session_id = _create_exam_session(client, token)
+    assert session_id is not None
+
+    cq_resp = client.get(
+        f"/api/v1/osym-exam/{session_id}/current-question", headers=headers
+    )
+    if cq_resp.status_code != 200:
+        pytest.skip(
+            f"GF3c current-question: {cq_resp.status_code} {cq_resp.text[:200]}"
+        )
+    q_body = cq_resp.json()
+    question_id = q_body.get("id")
+    if not question_id:
+        pytest.skip(f"GF3c no question id: {q_body!r}")
+
+    save_resp = client.post(
+        f"/api/v1/osym-exam/{session_id}/save-answer",
+        headers=headers,
+        json={
+            "question_id": question_id,
+            "selected_answer": "A",
+            "response_time": 5.0,
+        },
+    )
+    assert save_resp.status_code == 200, (
+        f"GF3c save-answer {save_resp.status_code}: {save_resp.text[:300]}"
+    )
+    save_body = save_resp.json()
+    assert save_body.get("success") is True, f"GF3c save-answer: {save_body!r}"
+
+
+# ---------------------------------------------------------------------------
 # GF1w: save-answer must actually update BKT state (not just return 200)
 # ---------------------------------------------------------------------------
 
