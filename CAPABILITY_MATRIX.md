@@ -32,6 +32,7 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 | **Komut (API)** | `cd backend`; `$env:BACKEND_URL="http://localhost:8000"`; `python -m pytest tests/e2e/test_golden_flows.py::test_gf1_login_and_me tests/e2e/test_golden_flows.py::test_gf3_exam_configs_list tests/e2e/test_golden_flows.py::test_gf3b_osym_subjects_reachable tests/e2e/test_golden_flows.py::test_gf3c_exam_session_save_answer_smoke -v --tb=short` |
 | **Sonuç** | **4+ passed** (GF1, GF3, GF3b, GF3c; lokal) |
 | **FE (opsiyonel)** | `cd frontend` → `E2E_TEST_PASSWORD=...` → `npx playwright test j3-learning-path-smoke` — dev sunucu `VITE_APP_URL` / :3001 |
+| **Tek komut (lokal, optimum)** | `powershell -ExecutionPolicy Bypass -File scripts/run_p0_golden_local.ps1` — önce :8000 health; 4 P0 test. **CI’da** aynı 4 test `uvicorn` + `seed` sonrası `backend-test` job’unda koşar. |
 
 ---
 

@@ -213,6 +213,12 @@ jobs:
           source .venv/bin/activate
           cd backend && alembic upgrade head
 
+      - name: Seed MVP users (P0 golden prerequisite)
+        run: |
+          source .venv/bin/activate
+          export DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2_test
+          cd backend && python scripts/seed_mvp_data.py
+
       - name: Run Tests with Coverage
         run: |
           source .venv/bin/activate
@@ -227,6 +233,33 @@ jobs:
             --junit-xml=pytest-report.xml \
             -v \
             -x
+
+      - name: P0 Golden Flow smoke (httpx, live backend)
+        run: |
+          source .venv/bin/activate
+          cd backend
+          nohup python -m uvicorn main:app --host 127.0.0.1 --port 8000 > /tmp/uvicorn_p0_golden.log 2>&1 &
+          echo $! > /tmp/uvicorn_p0_golden.pid
+          for i in $(seq 1 90); do
+            if curl -sf "http://127.0.0.1:8000/health" > /dev/null; then
+              break
+            fi
+            if [ "$i" -eq 90 ]; then
+              echo "uvicorn failed to become healthy. Log:" >&2
+              cat /tmp/uvicorn_p0_golden.log >&2
+              exit 1
+            fi
+            sleep 1
+          done
+          export BACKEND_URL=http://127.0.0.1:8000
+          python -m pytest \
+            tests/e2e/test_golden_flows.py::test_gf1_login_and_me \
+            tests/e2e/test_golden_flows.py::test_gf3_exam_configs_list \
+            tests/e2e/test_golden_flows.py::test_gf3b_osym_subjects_reachable \
+            tests/e2e/test_golden_flows.py::test_gf3c_exam_session_save_answer_smoke \
+            -v --tb=short
+          kill $(cat /tmp/uvicorn_p0_golden.pid) 2>/dev/null || true
+          wait $(cat /tmp/uvicorn_p0_golden.pid) 2>/dev/null || true
 
       - name: Run D-Dataset Unit Tests
         run: |
