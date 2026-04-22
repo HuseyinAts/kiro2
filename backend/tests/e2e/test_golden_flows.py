@@ -2289,6 +2289,32 @@ def test_gf47_recommendations_not_500(client: httpx.Client):
     )
 
 
+def test_gf152_duplicates_check_not_500(client: httpx.Client):
+    """
+    POST /api/v1/duplicates/check must not crash (admin).
+
+    Probes duplicate vector + embedding path (REQ-5). 403/401/503 are acceptable
+    (auth or service unavailable); 500 is a regression.
+    """
+    token = _login(client, ADMIN)
+    resp = client.post(
+        "/api/v1/duplicates/check",
+        headers=_auth_headers(token),
+        json={
+            "content": (
+                "Benzersiz prob metni: belirli integral alaninda tanimli "
+                "fonksiyon icin test icerigi."
+            ),
+            "check_paraphrase": False,
+        },
+    )
+    assert resp.status_code != 500, (
+        f"GF152 duplicates/check crashed 500: {resp.text[:300]}. "
+        f"Check api/v1/duplicate_detection.py — check_duplicate + "
+        f"DuplicateDetectionService."
+    )
+
+
 def test_gf48_preference_simulation_calculate_score_not_500(client: httpx.Client):
     """
     POST /api/v1/preference-simulation/calculate-score must not crash.
