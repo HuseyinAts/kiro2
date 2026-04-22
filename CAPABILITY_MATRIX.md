@@ -1,14 +1,14 @@
 # KIRO2 — Capability Matrix (öğrenci tam kapsam planı)
 
 **Plan:** `.cursor/plans/20260421_student_ready_autonomous_master.md`  
-**Son güncelleme:** 2026-04-23 — Faz 3 / J7: PWA yolları netleştirildi, `loader` boş prefix log düzeltmesi  
+**Son güncelleme:** 2026-04-23 — Faz 3 / J6: offline sync kanıt (canlı S1+S2 + unit); J7 PWA yolları netleştirildi, `loader` boş prefix log düzeltmesi  
 
 Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 
 | Journey | API/Route | FE route | Son test | Durum | Not |
 |---------|-----------|----------|----------|-------|-----|
 | J10–J13 Chroma | `api.v1.semantic_search`, clustering, recommendation, duplicate | TBD | GF150 (health) | **Sarı** | `GET /api/v1/search|duplicates|recommendations/health` + `chroma_connection_mode` (`core/chroma_client.py`) |
-| J6 Offline | `api.offline_sync_api` | TBD | GF150 | Sarı | `GET /api/v1/offline/health` (auth yok, `SELECT 1`); borç: `.cursor/plans/20260423_offline_sync_debt_2_package_persist.md` |
+| J6 Offline | `api.offline_sync_api` | TBD | `c401e35` | **Yeşil** | `GET /api/v1/offline/health` (200, DB ping). Canlı: S1 `sync-status`, S2 `sync-package?limit=5` → `package_id` + `total_questions=5` (2026-04-23). `tests/unit/services/test_offline_sync_service.py` (6 PASS). Tam HTTP matrisi (S1–S6): `.cursor/plans/20260420_offline_sync_debt_2_RESULT.md` (Round 2). Plan: `.cursor/plans/20260423_offline_sync_debt_2_package_persist.md`. |
 | J7 PWA | `api.pwa_sync_api` — `GET /api/v1/sync/health`, `GET /api/v1/push/health`, `POST /api/v1/sync/*`, `POST /api/v1/push/subscribe` | `backgroundSyncService.ts`, `sw.ts` | GF150, `2ec932f`+ | **Yeşil** (health) | Public path yok: `/api/pwa-sync-api` sadece eski log yanlışlığı; `routers/loader` kök `APIRouter` için boş prefix artık default’a dönmüyor. Subscribe stub, mutating uç F4. |
 | Live session | `api.live_session_routes` | TBD | GF150 | **Sarı→Yeşil aday** | `GET /api/v1/live-sessions/health` (auth yok, `SELECT 1`); `session_participants` |
 | Router log | `loader` + `ROUTER_CATEGORIES` | — | — | **Yeşil** | `"search"` kategorisi eklendi |
