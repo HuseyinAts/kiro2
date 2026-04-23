@@ -12,7 +12,12 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_admin_user, get_current_user, get_db
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_admin_user,
+    get_current_user,
+    get_db,
+)
 from core.learning_path_auth import assert_can_access_body_student_id
 from integrations.ebatv_service import (
     EBAContentCategory,
@@ -534,7 +539,8 @@ async def analyze_video_quality(
     response_model=EBAContentModerationResponse,
 )
 async def moderate_eba_content(
-    request: EBAContentModerationRequest, _=Depends(get_current_admin_user)
+    request: EBAContentModerationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     EBA TV içerik moderasyonu (sadece admin)
@@ -543,6 +549,9 @@ async def moderate_eba_content(
     - **action**: Moderasyon aksiyonu (approve, reject, flag)
     - **reason**: Moderasyon nedeni
     - **notes**: Moderatör notları
+
+    Yanıttaki ``moderator_id`` her zaman oturumdaki admin kullanıcıdır;
+    gövdedeki ``moderator_id`` alanı geriye dönük uyumluluk için kalır, yok sayılır.
     """
 
     try:
@@ -563,7 +572,7 @@ async def moderate_eba_content(
         return EBAContentModerationResponse(
             video_id=request.video_id,
             status=new_status,
-            moderator_id=request.moderator_id,
+            moderator_id=str(current_user.id),
             moderation_date=datetime.now(),
             action_taken=request.action,
         )

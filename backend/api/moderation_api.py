@@ -369,9 +369,9 @@ async def check_user_status(
 @router.post("/filter-test", response_model=dict[str, Any])
 async def test_content_filter(
     body: FilterTestRequest,
-    current_user: AuthenticatedUser = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_admin_user),
 ):
-    """Content filter'i test et (admin/debug)."""
+    """Content filter'i test et (yalnizca admin)."""
     content_filter = get_social_content_filter()
     result = await content_filter.filter_content(
         text=body.text,
