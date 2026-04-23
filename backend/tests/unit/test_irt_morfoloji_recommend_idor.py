@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from fastapi import HTTPException
 
-import api.irt_morfoloji as irt_mod
 from api.irt_morfoloji import (
     StudentQuestionRecommendationRequest,
     recommend_questions_for_student,
@@ -22,8 +21,8 @@ async def test_recommend_questions_teacher_skips_verify() -> None:
         id=1, username="t", role=UserRole.TEACHER, email=None
     )
     db = AsyncMock()
-    with patch.object(
-        irt_mod, "verify_student_access", new_callable=AsyncMock
+    with patch(
+        "core.learning_path_auth.verify_student_access", new_callable=AsyncMock
     ) as v:
         with patch(
             "services.irt_morfoloji_service.IRTMorfolojiService",
@@ -45,8 +44,8 @@ async def test_recommend_questions_student_other_id_invokes_verify() -> None:
         id=50, username="s", role=UserRole.STUDENT, email=None
     )
     db = AsyncMock()
-    with patch.object(
-        irt_mod, "verify_student_access", new_callable=AsyncMock
+    with patch(
+        "core.learning_path_auth.verify_student_access", new_callable=AsyncMock
     ) as v:
         v.side_effect = HTTPException(status_code=403, detail="no")
         with pytest.raises(HTTPException) as ei:

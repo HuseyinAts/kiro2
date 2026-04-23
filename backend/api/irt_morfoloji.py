@@ -11,29 +11,12 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from algorithms.irt_morfoloji_service import IRTParameters, irt_morfoloji_service
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user, get_db
-from core.learning_path_auth import verify_student_access
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
+from core.learning_path_auth import assert_can_access_body_student_id
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/irt-morfoloji", tags=["IRT Morfoloji"])
-
-_STAFF_STUDENT_TARGET = frozenset(
-    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
-)
-
-
-async def _assert_can_access_body_student_id(
-    student_id: str,
-    current_user: AuthenticatedUser,
-    db: AsyncSession,
-) -> None:
-    """Gövde `student_id`: personel, kendi users.id veya sahip olunan learning-path student_id."""
-    if current_user.role in _STAFF_STUDENT_TARGET:
-        return
-    if str(current_user.id) == str(student_id):
-        return
-    await verify_student_access(student_id, current_user, db)
 
 
 class QuestionAnalysisRequest(BaseModel):
@@ -431,7 +414,7 @@ async def recommend_questions_for_student(
     IRT parametreleri ve morfoloji uyumu bazında optimal sorular önerir.
     """
     try:
-        await _assert_can_access_body_student_id(
+        await assert_can_access_body_student_id(
             request.student_id, current_user, db
         )
         from services.irt_morfoloji_service import IRTMorfolojiService

@@ -85,6 +85,35 @@ async def _verify_session_participant(
         raise HTTPException(status_code=403, detail="Not a session participant")
 
 
+async def _verify_private_chat_recipient(
+    session_id: UUID,
+    recipient_id: UUID,
+    db: AsyncSession,
+) -> None:
+    """Özel mesaj yalnızca oturum sahibine veya kayıtlı katılımcıya gidebilir."""
+    result = await db.execute(
+        text("SELECT host_id FROM live_sessions WHERE id = :sid"),
+        {"sid": str(session_id)},
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Session not found")
+    if str(row.host_id) == str(recipient_id):
+        return
+    part = await db.execute(
+        text(
+            "SELECT 1 FROM session_participants "
+            "WHERE session_id = :sid AND user_id = :rid"
+        ),
+        {"sid": str(session_id), "rid": str(recipient_id)},
+    )
+    if not part.first():
+        raise HTTPException(
+            status_code=403,
+            detail="Chat recipient must be a participant in this session",
+        )
+
+
 async def _verify_whiteboard_participant(
     whiteboard_id: UUID,
     current_user: AuthenticatedUser,
@@ -631,6 +660,13 @@ async def send_chat_message(
     """Send chat message"""
     await _verify_session_participant(session_id, current_user, db)
     user_id = current_user.id
+    if request.recipient_id is not None:
+        if str(request.recipient_id) == str(user_id):
+            raise HTTPException(
+                status_code=400,
+                detail="Private chat recipient cannot be yourself",
+            )
+        await _verify_private_chat_recipient(session_id, request.recipient_id, db)
     service = VideoConferenceService(db)
 
     message = await service.send_chat_message(

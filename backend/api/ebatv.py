@@ -10,8 +10,10 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_admin_user, get_current_user
+from core.dependencies import get_current_admin_user, get_current_user, get_db
+from core.learning_path_auth import assert_can_access_body_student_id
 from integrations.ebatv_service import (
     EBAContentCategory,
     EBAGradeLevel,
@@ -258,6 +260,7 @@ async def search_eba_content(
 async def get_eba_recommendations(
     request: EBAContentRecommendationRequest,
     current_user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
     ebatv_service: EBAtvService = Depends(get_ebatv_service),
 ):
     """
@@ -271,6 +274,10 @@ async def get_eba_recommendations(
     """
 
     try:
+        await assert_can_access_body_student_id(
+            request.student_id, current_user, db
+        )
+
         # Enum dönüşümleri
         grade_enum = EBAGradeLevel(request.grade_level)
         category_enums = [EBAContentCategory(cat) for cat in request.weak_subjects]

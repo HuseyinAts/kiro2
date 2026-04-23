@@ -18,6 +18,14 @@ from models.database import User
 router = APIRouter(prefix="/api/v1/manipulatives", tags=["manipulatives"])
 
 
+def _require_body_user_id_matches(current_user: User, body_user_id: str) -> None:
+    if str(body_user_id).strip() != str(current_user.id).strip():
+        raise HTTPException(
+            status_code=403,
+            detail="user_id must match authenticated user",
+        )
+
+
 # Pydantic Models
 class VirtualBlockOperation(BaseModel):
     """Sanal blok işlemi"""
@@ -153,6 +161,7 @@ def record_geogebra_activity(
     REQ-51.86-51.90: GeoGebra embed, interactive geometry, dynamic mathematics
     """
     try:
+        _require_body_user_id_matches(current_user, activity.user_id)
         activity.user_id = current_user.id
 
         return {
@@ -227,6 +236,7 @@ def record_geometry_tool_usage(
     REQ-51.91-51.95: Construction tools, measurement tools, transformation tools
     """
     try:
+        _require_body_user_id_matches(current_user, usage.user_id)
         usage.user_id = current_user.id
 
         return {
@@ -316,6 +326,7 @@ def record_tangram_puzzle(
     REQ-51.96-51.100: Tangram puzzle interface, shape recognition, spatial reasoning
     """
     try:
+        _require_body_user_id_matches(current_user, puzzle.user_id)
         puzzle.user_id = current_user.id
 
         return {

@@ -140,6 +140,28 @@ async def verify_student_access(
     return True
 
 
+async def assert_can_access_body_student_id(
+    student_id: str,
+    current_user,
+    db: AsyncSession,
+) -> None:
+    """Dalga B: request body ``student_id`` — staff, own ``users.id``, veya profil sahipliği.
+
+    Öğretmen/yönetici herhangi bir öğrenci kimliği gönderebilir; öğrenci ya
+    gövdede kendi kullanıcı id'sini kullanır ya da sahip olduğu learning-path
+    ``student_id`` değerini (verify_student_access).
+    """
+    role = getattr(current_user, "role", None)
+    if role in (UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN):
+        return
+    if _user_role_slug(current_user) in _PRIVILEGED_STUDENT_ACCESS_SLUGS:
+        return
+    user_id = getattr(current_user, "id", None) or getattr(current_user, "sub", None)
+    if str(user_id) == str(student_id):
+        return
+    await verify_student_access(student_id, current_user, db)
+
+
 async def get_learning_path_profile_user_id(student_id: str, db: AsyncSession) -> str:
     """Platform `user_id` (string) for this learning-path ``student_id`` (e.g. STU_…)."""
     result = await db.execute(
