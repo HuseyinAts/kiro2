@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db_session
 from core.dependencies import (
     AuthenticatedUser,
+    UserRole,
     get_current_admin_user,
     get_current_user,
 )
@@ -307,6 +308,15 @@ async def check_user_status(
     db: AsyncSession = Depends(get_db_session),
 ):
     """Kullanicinin mute/ban durumunu kontrol et."""
+    if str(user_id) != str(current_user.id) and current_user.role not in (
+        UserRole.ADMIN,
+        UserRole.SUPER_ADMIN,
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="Yalnizca kendi moderasyon durumunuzu goruntuleyebilirsiniz",
+        )
+
     now = datetime.now(UTC)
 
     # Active mute

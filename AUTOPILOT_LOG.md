@@ -59,6 +59,12 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-17 — F4: moderasyon `check-status` IDOR (okuma)
+
+- **Sorun:** `GET /api/v1/moderation/check-status/{user_id}` her giriş yapmış kullanıcıya **herhangi bir** `user_id` için mute/ban özetini döndürüyordu (gizlilik + hesap numaralandırma).
+- **Düzeltme:** `moderation_api.check_user_status` — path `user_id` yalnızca `current_user.id` ile eşleşirse veya rol `ADMIN` / `SUPER_ADMIN` ise.
+- **Test:** `tests/unit/test_moderation_check_status_auth.py` (3).
+
 ## B-20260423-16 — F4: `ask-question` student_id + `verify_student_access` rol normalizasyonu
 
 - **Sorun:** `POST /api/v1/ask-question` gövdesindeki `student_id` performans takibi için kullanılıyordu; başka öğrenci ID’si ile çağrı engellenmiyordu. `verify_student_access` yalnızca `UserRole` enum eşlemesi yapınca ORM `User.role` string (`"teacher"`) personelde 403 üretiyordu.

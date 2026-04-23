@@ -68,7 +68,13 @@ cd backend && rg "@router\.(post|put|patch|delete)\(" api --glob "*.py" -c
 | `api.enhanced_chat` | `POST /message-with-attachment` | Form `student_id` zorunlu (auth varken); `verify_student_access` |
 | `api.v1.expert_agents_api` | `POST /api/v1/ask-question` (`student_id` opsiyonel gövde) | Dolu ise `verify_student_access` + ORM `User` string rol desteği (`learning_path_auth`) |
 
-Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`, `tests/unit/test_exam_performance_session_guard.py`, `tests/unit/test_ferpa_coppa_guards.py`, `tests/unit/test_analytics_student_access.py`, `tests/unit/test_enhanced_user_management_auth.py`, `tests/unit/test_enhanced_chat_student_guard.py`, `tests/unit/test_learning_path_auth_roles.py`.
+Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`, `tests/unit/test_exam_performance_session_guard.py`, `tests/unit/test_ferpa_coppa_guards.py`, `tests/unit/test_analytics_student_access.py`, `tests/unit/test_enhanced_user_management_auth.py`, `tests/unit/test_enhanced_chat_student_guard.py`, `tests/unit/test_learning_path_auth_roles.py`, `tests/unit/test_moderation_check_status_auth.py`.
+
+## Okuma / durum sorgusu (F4 — IDOR)
+
+| Modül | Uç | Düzeltme |
+|--------|-----|----------|
+| `api.moderation_api` | `GET /api/v1/moderation/check-status/{user_id}` | Yalnızca **self** veya `ADMIN` / `SUPER_ADMIN` (önceden her auth kullanıcı başkasının mute/ban durumunu sorgulayabiliyordu) |
 
 ## Sonraki adım
 
