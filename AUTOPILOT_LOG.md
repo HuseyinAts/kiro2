@@ -59,6 +59,13 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-08 — F4 Dalga B: `zpd_maarif` + `turkish_nlp_chat` IDOR
+
+- **Sorun:** `api/zpd_maarif.py` altındaki `POST /revolutionary/*` (calculate, recommend, cultural-context, adapt-difficulty, learning-balance, cultural-patterns) gövdede `student_id` taşıyordu; `verify_student_access` yoktu. `turkish_nlp_chat`: `/message` ve `/context/manage` sonradan korunmuştu; `/step-by-step-solution` aynı `ChatMessageRequest` ile **korunmasızdı**.
+- **Düzeltme:** ZPD devrimsel uçlarda `Depends(get_db)` + iş kuralından önce `await verify_student_access(...)`. Türkçe NLP: `step-by-step-solution` için aynı desen.
+- **Test:** `tests/unit/test_zpd_maarif_revolutionary_idor.py` (6 PASS); `tests/unit/test_turkish_nlp_chat_idor.py` (3 PASS).
+- **Envanter:** `docs/security/mutating_route_inventory_20260423.md` tablo genişletildi.
+
 ## B-20260423-07 — F4 Dalga B: `revolutionary_features` IDOR + auth log
 
 - **Sorun:** `POST /zpd-maarif/revolutionary/{calculate,recommend,cultural-context}` gövdede `student_id` vardı; `verify_student_access` yoktu — başka öğrenci adına ZPD/öneri/kültür çağrısı mümkündü.

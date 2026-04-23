@@ -14,8 +14,10 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user, get_db
+from core.learning_path_auth import verify_student_access
 from models.zpd_maarif import (
     KulturelBaglamProfili,
     MaarifDegerleriProfili,
@@ -142,14 +144,7 @@ async def hesapla_zpd(
     - MEB Maarif değerleri entegrasyonu
     - Kültürel bağlam farkındalıklı hesaplama
     """
-    # Ownership check — users can only calculate ZPD for themselves
-    if request.ogrenci_id != str(current_user.id) and current_user.role.value not in (
-        "admin",
-        "teacher",
-    ):
-        raise HTTPException(
-            status_code=403, detail="Bu ogrenci icin ZPD hesaplama yetkiniz yok"
-        )
+    _verify_student_access(current_user, request.ogrenci_id)
 
     try:
         zpd_araligi = await zpd_service.hesapla_turk_zpd(
@@ -500,6 +495,7 @@ async def _get_zorluk_seviyesi_onerisi(zorluk_seviyesi: ZPDSeviyesi) -> str:
 async def calculate_revolutionary_zpd(
     request: RevolutionaryZPDRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     [ROCKET] DEVRİMSEL: Türk kültürüne uyarlanmış ZPD hesaplama
@@ -514,6 +510,7 @@ async def calculate_revolutionary_zpd(
     - Grup vs bireysel öğrenme dengeleme
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         zpd_range = await zpd_service.calculate_revolutionary_zpd(
             student_id=request.student_id,
             subject=request.subject,
@@ -565,6 +562,7 @@ async def calculate_revolutionary_zpd(
 async def generate_revolutionary_recommendation(
     request: RevolutionaryRecommendationRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     [ROCKET] DEVRİMSEL: ZPD tabanlı kişiselleştirilmiş öğrenme önerisi
@@ -572,6 +570,7 @@ async def generate_revolutionary_recommendation(
     Türk kültürü faktörleri ile optimize edilmiş öğrenme önerileri sunar.
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         recommendation = await zpd_service.generate_revolutionary_recommendation(
             student_id=request.student_id,
             subject=request.subject,
@@ -613,6 +612,7 @@ async def generate_revolutionary_recommendation(
 async def detect_cultural_context(
     request: LearningBalanceRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     [ROCKET] DEVRİMSEL: Türk öğrenci kültürel bağlam tespiti
@@ -620,6 +620,7 @@ async def detect_cultural_context(
     Öğrencinin Türk kültürü faktörlerini analiz eder.
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         cultural_context = await zpd_service.detect_cultural_context_revolutionary(
             student_id=request.student_id, behavioral_data=request.behavioral_data
         )
@@ -654,6 +655,7 @@ async def detect_cultural_context(
 async def adapt_difficulty_culturally(
     request: CulturalAdaptationRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     [ROCKET] DEVRİMSEL: Kültürel faktörlere göre zorluk adaptasyonu
@@ -661,6 +663,7 @@ async def adapt_difficulty_culturally(
     Türk öğrenci davranış kalıplarına göre zorluk seviyesini dinamik olarak ayarlar.
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         adapted_difficulty = (
             await zpd_service.adapt_difficulty_culturally_revolutionary(
                 student_id=request.student_id,
@@ -730,6 +733,7 @@ async def calculate_maarif_alignment(
 async def get_learning_balance(
     request: LearningBalanceRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     [ROCKET] DEVRİMSEL: Grup vs bireysel öğrenme dengesi analizi
@@ -737,6 +741,7 @@ async def get_learning_balance(
     Türk kültürü faktörleri ile optimize edilmiş öğrenme dengesi analizi.
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         balance_info = await zpd_service.get_revolutionary_learning_balance(
             student_id=request.student_id, behavioral_data=request.behavioral_data
         )
@@ -760,6 +765,7 @@ async def get_learning_balance(
 async def monitor_cultural_patterns(
     request: CulturalPatternAnalysisRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     [ROCKET] DEVRİMSEL: Kültürel öğrenme kalıpları analizi
@@ -767,6 +773,7 @@ async def monitor_cultural_patterns(
     Türk öğrenci davranış kalıplarının derinlemesine analizi.
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         patterns = await zpd_service.monitor_cultural_learning_patterns_revolutionary(
             student_id=request.student_id, learning_sessions=request.learning_sessions
         )

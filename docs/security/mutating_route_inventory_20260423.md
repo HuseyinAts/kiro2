@@ -36,8 +36,17 @@ cd backend && rg "@router\.(post|put|patch|delete)\(" api --glob "*.py" -c
 | `api.revolutionary_features` | `POST .../zpd-maarif/revolutionary/calculate` | `verify_student_access` |
 | `api.revolutionary_features` | `POST .../zpd-maarif/revolutionary/recommend` | `verify_student_access` |
 | `api.revolutionary_features` | `POST .../zpd-maarif/revolutionary/cultural-context` | `verify_student_access` |
+| `api.zpd_maarif` | `POST /api/v1/zpd-maarif/revolutionary/calculate` | `verify_student_access` + `get_db` |
+| `api.zpd_maarif` | `POST .../revolutionary/recommend` | aynı |
+| `api.zpd_maarif` | `POST .../revolutionary/cultural-context` | aynı |
+| `api.zpd_maarif` | `POST .../revolutionary/adapt-difficulty` | aynı |
+| `api.zpd_maarif` | `POST .../revolutionary/learning-balance` | aynı |
+| `api.zpd_maarif` | `POST .../revolutionary/cultural-patterns` | aynı |
+| `api.turkish_nlp_chat` | `POST .../turkish-nlp-chat/message` | aynı |
+| `api.turkish_nlp_chat` | `POST .../turkish-nlp-chat/context/manage` | aynı |
+| `api.turkish_nlp_chat` | `POST .../turkish-nlp-chat/step-by-step-solution` | aynı (2026-04-23 ek) |
 
-Birim: `tests/unit/test_revolutionary_features_idor.py`.
+Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`.
 
 ## Sonraki adım
 

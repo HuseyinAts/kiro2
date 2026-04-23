@@ -9,8 +9,10 @@ from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
+from core.learning_path_auth import verify_student_access
 
 try:
     from core.turkish_nlp_chat_system import turkish_nlp_chat_system
@@ -107,6 +109,7 @@ async def send_chat_message(
     request: ChatMessageRequest,
     background_tasks: BackgroundTasks,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Türkçe NLP Chat sistemine mesaj gönder
@@ -118,6 +121,7 @@ async def send_chat_message(
     - Adım adım çözümler sunar
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         logger.info(
             f"Chat mesajı alındı - Öğrenci: {request.student_id}, Mesaj uzunluğu: {len(request.message)}"
         )
@@ -280,6 +284,7 @@ async def apply_bionic_reading(
 async def manage_conversation_context(
     request: ContextManagementRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Konuşma bağlamını yönet
@@ -290,6 +295,7 @@ async def manage_conversation_context(
     - Bağlam durumunu kontrol edebilir
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         logger.info(
             f"Bağlam yönetimi - Öğrenci: {request.student_id}, Eylem: {request.action}"
         )
@@ -384,6 +390,7 @@ async def health_check():
 async def generate_step_by_step_solution(
     request: ChatMessageRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Adım adım çözüm üret
@@ -391,6 +398,7 @@ async def generate_step_by_step_solution(
     Bu endpoint özellikle adım adım çözüm talepleri için optimize edilmiştir
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         logger.info(f"Adım adım çözüm isteği - Öğrenci: {request.student_id}")
 
         # Chat sisteminin başlatıldığından emin ol
