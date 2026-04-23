@@ -12,11 +12,13 @@ from pydantic import BaseModel, Field, field_validator
 
 from core.bionic_reading_service import BionicReadingService
 from core.cache import CacheService
-from core.dependencies import AuthenticatedUser, get_cache_service, get_current_user
+from core.dependencies import AuthenticatedUser, UserRole, get_cache_service, get_current_user
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/bionic-reading", tags=["Bionic Reading"])
+
+_BIONIC_ADMIN_ROLES = frozenset({UserRole.ADMIN, UserRole.SUPER_ADMIN})
 
 
 # Pydantic modelleri
@@ -263,8 +265,7 @@ async def get_service_stats(
     """
 
     try:
-        # Admin kontrolü
-        if current_user.role.value != "admin":
+        if current_user.role not in _BIONIC_ADMIN_ROLES:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu işlem için admin yetkisi gerekli",
@@ -297,16 +298,16 @@ async def clear_cache(
 
     try:
         user_id = current_user.id
-        user_role = current_user.role.value
+        is_admin = current_user.role in _BIONIC_ADMIN_ROLES
 
-        if clear_all and user_role != "admin":
+        if clear_all and not is_admin:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Tüm cache'i temizlemek için admin yetkisi gerekli",
             )
 
         # Admin tüm cache'i temizleyebilir, normal kullanıcı sadece kendi cache'ini
-        target_user_id = None if (clear_all and user_role == "admin") else user_id
+        target_user_id = None if (clear_all and is_admin) else user_id
 
         result = await bionic_service.clear_cache(target_user_id)
 

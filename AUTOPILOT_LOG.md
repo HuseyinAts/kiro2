@@ -59,6 +59,15 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-12 — F4: analytics student path + rol enum sweep (video, bionic, content, ES)
+
+- **analytics:** `GET /student/{student_id}` artık yalnızca `users.id` ile değil; **`verify_student_access`** ile learning-path `student_id` sahipliğini de kabul ediyor.
+- **elasticsearch:** `GET /admin/indices/stats` — `UserRole` ile `ADMIN`/`SUPER_ADMIN`.
+- **video_solution:** `AuthenticatedUser` + yükleme dışı işlemler için **`ADMIN`/`SUPER_ADMIN`** (önceden yalnızca `"admin"` string).
+- **bionic_reading:** `/stats` ve tam cache temizliği — **`ADMIN`/`SUPER_ADMIN`**.
+- **content_api:** makale güncelle/sil — yazar veya **`ADMIN`/`SUPER_ADMIN`**.
+- **Test:** `tests/unit/test_analytics_student_access.py` (4).
+
 ## B-20260423-11 — F4: exam session IDOR + ES analytics + FERPA/COPPA
 
 - **exam_performance:** `exam_session_id` ile dönen tüm detay/zayıflık/öneri/karşılaştırma GET’leri servis düzeyinde sahiplik kontrolü yapmıyordu; `_assert_exam_session_authorized` eklendi (sahip veya `TEACHER`/`ADMIN`/`SUPER_ADMIN`).

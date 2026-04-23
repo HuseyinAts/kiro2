@@ -12,8 +12,11 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 
 from core.dependencies import (
     AuthenticatedUser,
+    UserRole,
     get_current_user,
 )
+
+_CONTENT_ADMIN_ROLES = frozenset({UserRole.ADMIN, UserRole.SUPER_ADMIN})
 from core.turkish_nlp_utils import normalize_tr
 from models.content_models import (
     BulkContentImport,
@@ -176,7 +179,7 @@ async def update_makale(
     if (
         hasattr(makale, "yazar_id")
         and makale.yazar_id != str(current_user.id)
-        and current_user.role.value != "admin"
+        and current_user.role not in _CONTENT_ADMIN_ROLES
     ):
         raise HTTPException(
             status_code=403, detail="Bu makaleyi duzenleme yetkiniz yok"
@@ -213,7 +216,7 @@ async def delete_makale(
     if (
         hasattr(makale, "yazar_id")
         and makale.yazar_id != str(current_user.id)
-        and current_user.role.value != "admin"
+        and current_user.role not in _CONTENT_ADMIN_ROLES
     ):
         raise HTTPException(status_code=403, detail="Bu makaleyi silme yetkiniz yok")
 

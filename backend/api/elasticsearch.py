@@ -460,13 +460,7 @@ async def get_indices_stats(
 
     Mevcut tüm Elasticsearch indekslerinin doc sayısı ve boyutunu döner.
     """
-    # Manuel admin kontrolü (require_role decorator değil, FastAPI dependency)
-    user_role = getattr(current_user, "role", "")
-    if isinstance(user_role, str):
-        role_val = user_role.lower()
-    else:
-        role_val = str(user_role).lower()
-    if role_val not in ("admin", "super_admin"):
+    if current_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
         raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
 
     try:

@@ -19,20 +19,39 @@ from sqlalchemy import text
 try:
     from core.auth_dependencies import require_role
     from core.database import get_db_session_context
-    from core.dependencies import get_current_user
+    from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+    from core.learning_path_auth import verify_student_access
     from core.redis_cache import get_cache
     from models.database import User
     from services.elasticsearch_service import get_elasticsearch_service
 except ImportError:
     from core.auth_dependencies import require_role
     from core.database import get_db_session_context
-    from core.dependencies import get_current_user
+    from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+    from core.learning_path_auth import verify_student_access
     from core.redis_cache import get_cache
     from models.database import User
     from services.elasticsearch_service import get_elasticsearch_service
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
+
+_STUDENT_ANALYTICS_STAFF = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
+
+
+async def _assert_can_read_student_analytics(
+    student_id: str,
+    current_user: AuthenticatedUser,
+) -> None:
+    """Öğrenci analytics: personel, kendi users.id veya learning-path student_id sahipliği."""
+    if current_user.role in _STUDENT_ANALYTICS_STAFF:
+        return
+    if str(current_user.id) == str(student_id):
+        return
+    async with get_db_session_context() as db:
+        await verify_student_access(student_id, current_user, db)
 
 
 # Pydantic modelleri
@@ -69,7 +88,7 @@ async def get_student_analytics(
     start_date: datetime | None = Query(None, description="Başlangıç tarihi"),
     end_date: datetime | None = Query(None, description="Bitiş tarihi"),
     include_detailed: bool = Query(False, description="Detaylı analiz dahil et"),
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenci analytics verilerini getir
@@ -77,16 +96,7 @@ async def get_student_analytics(
     Requirements: 1.4, 1.5 - Öğrenci performans analizi ve raporlama
     """
     try:
-        # IDOR koruması: öğrenci sadece kendi verisini görebilir
-        user_role = getattr(current_user, "role", None)
-        role_str = user_role.value if hasattr(user_role, "value") else str(user_role)
-        if role_str.lower() not in ("admin", "teacher", "super_admin"):
-            user_id = str(getattr(current_user, "id", ""))
-            if user_id != student_id:
-                raise HTTPException(
-                    status_code=403,
-                    detail="Bu öğrencinin analytics verilerine erişim yetkiniz yok",
-                )
+        await _assert_can_read_student_analytics(student_id, current_user)
 
         # Tarih aralığı ayarla
         if not end_date:

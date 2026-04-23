@@ -25,8 +25,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_async_session
-from core.dependencies import get_current_user
-from models.database import User
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 from models.video_solution import (
     VideoProcessingStatus,
     VideoSolution,
@@ -36,6 +35,8 @@ from services.video_solution_service import VideoSolutionService
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/video-solutions", tags=["Video Solutions"])
+
+_VIDEO_PRIVILEGED_ROLES = frozenset({UserRole.ADMIN, UserRole.SUPER_ADMIN})
 
 
 # ============================================================================
@@ -131,7 +132,7 @@ async def upload_video(
         None, description="Çözüm yöntemi (hızlı, klasik, vb.)"
     ),
     file: UploadFile = File(..., description="Video dosyası"),
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -213,7 +214,7 @@ async def upload_video(
 )
 async def get_video(
     video_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Video detaylarını getir"""
@@ -265,7 +266,7 @@ async def get_video(
 )
 async def get_videos_by_question(
     question_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Soruya ait videoları listele"""
@@ -326,7 +327,7 @@ async def list_videos(
         None, description="İşleme durumu filtresi"
     ),
     approved_only: bool = Query(False, description="Sadece onaylı videoları getir"),
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Videoları listele"""
@@ -403,7 +404,7 @@ async def list_videos(
 )
 async def delete_video(
     video_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Videoyu sil"""
@@ -416,7 +417,7 @@ async def delete_video(
         )
 
     # Sadece yükleyen kullanıcı veya admin silebilir
-    if video.uploaded_by != current_user.id and current_user.role.value != "admin":
+    if video.uploaded_by != current_user.id and current_user.role not in _VIDEO_PRIVILEGED_ROLES:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu videoyu silme yetkiniz yok",
@@ -434,12 +435,11 @@ async def delete_video(
 )
 async def approve_video(
     video_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Videoyu onayla"""
-    # Admin kontrolü
-    if current_user.role.value != "admin":
+    if current_user.role not in _VIDEO_PRIVILEGED_ROLES:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem için admin yetkisi gerekli",
@@ -513,7 +513,7 @@ async def generate_streaming_formats(
     generate_hls: bool = Query(True, description="HLS formatı oluştur"),
     generate_dash: bool = Query(False, description="DASH formatı oluştur"),
     upload_to_cdn: bool = Query(False, description="CDN'e yükle"),
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -535,7 +535,7 @@ async def generate_streaming_formats(
             )
 
         # Sadece yükleyen kullanıcı veya admin işlem yapabilir
-        if video.uploaded_by != current_user.id and current_user.role.value != "admin":
+        if video.uploaded_by != current_user.id and current_user.role not in _VIDEO_PRIVILEGED_ROLES:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu video için streaming formatları oluşturma yetkiniz yok",
@@ -672,7 +672,7 @@ async def track_video_view(
     device_type: str | None = Form(None, description="Cihaz tipi"),
     browser: str | None = Form(None, description="Tarayıcı"),
     os: str | None = Form(None, description="İşletim sistemi"),
-    current_user: User | None = Depends(get_current_user),
+    current_user: AuthenticatedUser | None = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -720,7 +720,7 @@ async def track_video_view(
 )
 async def get_video_analytics(
     video_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Video analytics getir"""
@@ -797,7 +797,7 @@ async def get_video_analytics(
 async def generate_transcript(
     video_id: str,
     language: str = Query("tr", description="Dil kodu"),
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -877,7 +877,7 @@ async def _generate_transcript_async(
 )
 async def list_transcripts(
     video_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Video transkriptlerini listele"""
@@ -927,7 +927,7 @@ async def list_transcripts(
 )
 async def get_transcript(
     transcript_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Transkript detaylarını getir"""
@@ -978,7 +978,7 @@ async def update_transcript(
     transcript_id: str,
     full_text: str | None = Form(None, description="Yeni tam metin"),
     timestamped_segments: str | None = Form(None, description="Yeni segmentler (JSON)"),
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """Transkripti düzenle"""
@@ -1044,7 +1044,7 @@ async def search_videos(
     topic: str | None = Query(None, description="Konu filtresi"),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
