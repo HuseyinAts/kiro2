@@ -12,8 +12,11 @@ Endpoints:
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.auth_dependencies import AuthenticationDependency
+from core.dependencies import get_db
+from core.learning_path_auth import verify_student_access
 
 get_current_user = AuthenticationDependency(required=True)
 
@@ -261,7 +264,8 @@ async def ask_question(
     coordinator: AgentCoordinator = Depends(get_coordinator),
     scorer: SpecializationScorer = Depends(get_scorer),
     tracker: PerformanceTracker = Depends(get_tracker),
-    _current_user=Depends(get_current_user),
+    current_user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> QuestionResponse:
     """
     Soru sor ve cevap al
@@ -272,6 +276,10 @@ async def ask_question(
     - Yanitlari birlestirip dondurur
     """
     try:
+        sid = (request.student_id or "").strip()
+        if sid:
+            await verify_student_access(sid, current_user, db)
+
         # Map preferred domain if provided
         preferred_domain = None
         if request.preferred_domain:
@@ -288,7 +296,7 @@ async def ask_question(
         # Process question
         result = await coordinator.process_question(
             question=request.question_text,
-            student_id=request.student_id,
+            student_id=sid or None,
             preferred_domain=preferred_domain,
         )
 

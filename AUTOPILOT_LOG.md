@@ -59,6 +59,12 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-16 — F4: `ask-question` student_id + `verify_student_access` rol normalizasyonu
+
+- **Sorun:** `POST /api/v1/ask-question` gövdesindeki `student_id` performans takibi için kullanılıyordu; başka öğrenci ID’si ile çağrı engellenmiyordu. `verify_student_access` yalnızca `UserRole` enum eşlemesi yapınca ORM `User.role` string (`"teacher"`) personelde 403 üretiyordu.
+- **Düzeltme:** `expert_agents_api.ask_question` — `student_id` doluysa `verify_student_access` + `get_db`. `learning_path_auth` — ayrıcalıklı roller için slug kümesi (`teacher` / `admin` / `super_admin` / `superadmin`) ve enum ile birleşik kontrol.
+- **Test:** `tests/unit/test_learning_path_auth_roles.py` (3).
+
 ## B-20260423-15 — F4 Dalga B: `enhanced_chat` student_id IDOR
 
 - **Sorun:** `POST /message` ve `POST /stream` gövdesindeki `student_id` doğrulanmıyordu; `GET /history/{student_id}` path parametresi sorguda yanlışlıkla yok sayılıp anonimde path ile sızıntı riski vardı. Ek uç: `message-with-attachment` öğrenci bağlamı taşımıyordu.

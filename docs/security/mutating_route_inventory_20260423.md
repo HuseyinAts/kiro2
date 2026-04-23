@@ -66,8 +66,9 @@ cd backend && rg "@router\.(post|put|patch|delete)\(" api --glob "*.py" -c
 | `api.enhanced_chat` | `POST /message`, `POST /stream` (`student_id` gövde) | `verify_student_access`; kimliği doğrulanmış + DB yoksa 503 |
 | `api.enhanced_chat` | `GET /history/{student_id}` | 401 (anon); `verify_student_access` + sohbet sorgusu profil sahibi `user_id` ile |
 | `api.enhanced_chat` | `POST /message-with-attachment` | Form `student_id` zorunlu (auth varken); `verify_student_access` |
+| `api.v1.expert_agents_api` | `POST /api/v1/ask-question` (`student_id` opsiyonel gövde) | Dolu ise `verify_student_access` + ORM `User` string rol desteği (`learning_path_auth`) |
 
-Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`, `tests/unit/test_exam_performance_session_guard.py`, `tests/unit/test_ferpa_coppa_guards.py`, `tests/unit/test_analytics_student_access.py`, `tests/unit/test_enhanced_user_management_auth.py`, `tests/unit/test_enhanced_chat_student_guard.py`.
+Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`, `tests/unit/test_exam_performance_session_guard.py`, `tests/unit/test_ferpa_coppa_guards.py`, `tests/unit/test_analytics_student_access.py`, `tests/unit/test_enhanced_user_management_auth.py`, `tests/unit/test_enhanced_chat_student_guard.py`, `tests/unit/test_learning_path_auth_roles.py`.
 
 ## Sonraki adım
 

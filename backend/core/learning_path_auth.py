@@ -23,6 +23,25 @@ logger = logging.getLogger(__name__)
 
 security = HTTPBearer(auto_error=True)
 
+# Slugs for staff who may access any learning-path student (ORM User or JWT payload).
+_PRIVILEGED_STUDENT_ACCESS_SLUGS = frozenset(
+    {
+        UserRole.TEACHER.value.lower(),
+        UserRole.ADMIN.value.lower(),
+        UserRole.SUPER_ADMIN.value.lower(),
+        "superadmin",
+    }
+)
+
+
+def _user_role_slug(user) -> str:
+    r = getattr(user, "role", None)
+    if r is None:
+        return ""
+    if hasattr(r, "value"):
+        return str(r.value).lower().strip()
+    return str(r).lower().strip()
+
 
 async def get_current_user_from_token(
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -85,13 +104,15 @@ async def verify_student_access(
         HTTPException: 403 if access is denied
     """
     # Privileged roles (teacher, admin) can access any student
-    if allow_privileged and current_user.role in [
-        UserRole.TEACHER,
-        UserRole.ADMIN,
-        UserRole.SUPER_ADMIN,
-    ]:
+    if allow_privileged and (
+        getattr(current_user, "role", None)
+        in (UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN)
+        or _user_role_slug(current_user) in _PRIVILEGED_STUDENT_ACCESS_SLUGS
+    ):
         logger.info(
-            f"Privileged access granted: {current_user.role.value} accessing student {student_id}"
+            "Privileged access granted: %s accessing student %s",
+            _user_role_slug(current_user) or getattr(current_user, "role", "?"),
+            student_id,
         )
         return True
 
