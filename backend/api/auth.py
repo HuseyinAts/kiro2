@@ -1779,6 +1779,9 @@ async def refresh_token(
     except HTTPException:
         raise
     except Exception:
+        logger.exception(
+            "refresh_token: beklenmeyen hata (istemciye genel 401 donuldu)"
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_user, get_db
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from core.learning_path_auth import verify_student_access
 from services.revolutionary_features_service import revolutionary_features_service
 
@@ -224,13 +224,16 @@ async def get_hybrid_codes():
 # ZPD + Maarif Endpoint'leri
 @router.post("/zpd-maarif/revolutionary/calculate", response_model=ApiResponse)
 async def calculate_revolutionary_zpd(
-    request: ZPDCalculationRequest, current_user=Depends(get_current_user)
+    request: ZPDCalculationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Devrimsel ZPD hesaplama
     Vygotsky + MEB Maarif + Türk kültürü
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         zpd_range = await revolutionary_features_service.calculate_revolutionary_zpd(
             student_id=request.student_id,
             subject=request.subject,
@@ -255,13 +258,16 @@ async def calculate_revolutionary_zpd(
 
 @router.post("/zpd-maarif/revolutionary/recommend", response_model=ApiResponse)
 async def generate_revolutionary_recommendation(
-    request: RecommendationRequest, current_user=Depends(get_current_user)
+    request: RecommendationRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Devrimsel öneri oluşturma
     ZPD + Öğrenme stili + Kültürel bağlam
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         recommendation = (
             await revolutionary_features_service.generate_revolutionary_recommendation(
                 student_id=request.student_id,
@@ -289,13 +295,16 @@ async def generate_revolutionary_recommendation(
 
 @router.post("/zpd-maarif/revolutionary/cultural-context", response_model=ApiResponse)
 async def detect_cultural_context(
-    request: CulturalContextRequest, current_user=Depends(get_current_user)
+    request: CulturalContextRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Kültürel bağlam tespiti
     Türk eğitim kültürü analizi
     """
     try:
+        await verify_student_access(request.student_id, current_user, db)
         cultural_context = await revolutionary_features_service.detect_cultural_context(
             student_id=request.student_id,
             behavioral_data=request.behavioral_data.dict(),

@@ -29,7 +29,17 @@
 cd backend && rg "@router\.(post|put|patch|delete)\(" api --glob "*.py" -c
 ```
 
+## Dalga B — kapanan örnek (2026-04-23)
+
+| Modül | Uç | Düzeltme |
+|--------|-----|----------|
+| `api.revolutionary_features` | `POST .../zpd-maarif/revolutionary/calculate` | `verify_student_access` |
+| `api.revolutionary_features` | `POST .../zpd-maarif/revolutionary/recommend` | `verify_student_access` |
+| `api.revolutionary_features` | `POST .../zpd-maarif/revolutionary/cultural-context` | `verify_student_access` |
+
+Birim: `tests/unit/test_revolutionary_features_idor.py`.
+
 ## Sonraki adım
 
-- Dalga B: öğrenci yüzeyi için CSV (path, method, `student_id` param, auth guard).  
-- Her düzeltme sonrası ilgili `test_golden_flows` veya birim test.
+- Dalga B: kalan `student_id` / `user_id` gövdeli POST’lar için CSV + sırayla guard.  
+- Her düzeltme sonrası `test_golden_flows` veya birim test.

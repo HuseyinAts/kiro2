@@ -59,6 +59,15 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-07 — F4 Dalga B: `revolutionary_features` IDOR + auth log
+
+- **Sorun:** `POST /zpd-maarif/revolutionary/{calculate,recommend,cultural-context}` gövdede `student_id` vardı; `verify_student_access` yoktu — başka öğrenci adına ZPD/öneri/kültür çağrısı mümkündü.
+- **Düzeltme:** Üç uçta `Depends(get_db)` + iş kuralından önce `await verify_student_access(...)`.
+- **Test:** `tests/unit/test_revolutionary_features_idor.py` (3 PASS).
+- **Auth:** `POST /auth/refresh` genel `except` artık `logger.exception` ile gerçek hatayı kaydeder (istemci yine genel 401).
+- **Pilot:** `backend/_pilots/20260423_f1_chroma_stack_state.md` (F1 ADIM 0 özeti).
+- **Envanter:** `docs/security/mutating_route_inventory_20260423.md` Dalga B tablosu.
+
 ## B-20260423-06 — J1 P0: JSON refresh (`POST /auth/refresh`)
 
 - **Plan:** `20260421_student_ready_autonomous_master.md` §6 J1 (refresh); `GF1wB` cookie yolunu test eder fakat standart `/login` JSON döner — **GF1z** ile `refreshToken` gövdesi + `/me` doğrulaması P0’ya alındı.
