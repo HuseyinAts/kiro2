@@ -45,8 +45,11 @@ cd backend && rg "@router\.(post|put|patch|delete)\(" api --glob "*.py" -c
 | `api.turkish_nlp_chat` | `POST .../turkish-nlp-chat/message` | aynı |
 | `api.turkish_nlp_chat` | `POST .../turkish-nlp-chat/context/manage` | aynı |
 | `api.turkish_nlp_chat` | `POST .../turkish-nlp-chat/step-by-step-solution` | aynı (2026-04-23 ek) |
+| `api.berturk_api` | `POST .../berturk/motivation/assess` (`student_id`) | `UserRole` staff + `str(id)` self; önceden `["teacher","admin"]` + `SUPER_ADMIN` dışı |
+| `api.berturk_api` | `GET .../performance/stats`, `POST .../cache/clear` | `ADMIN` \| `SUPER_ADMIN` |
+| `api.cultural_adaptation_api` | `GET/PUT .../student/{student_id}*` | `UserRole` staff + self; `SUPER_ADMIN` eklendi; `/test-adaptation` `ADMIN`\|`SUPER_ADMIN` |
 
-Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`.
+Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`.
 
 ## Sonraki adım
 

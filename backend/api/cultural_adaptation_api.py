@@ -12,7 +12,11 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+
+_STAFF_STUDENT_ACCESS = frozenset(
+    {UserRole.ADMIN, UserRole.TEACHER, UserRole.SUPER_ADMIN}
+)
 from services.cultural_adaptation_service import CulturalAdaptationService
 
 logger = logging.getLogger(__name__)
@@ -82,11 +86,9 @@ async def get_student_cultural_adaptation(
     sağlar.
     """
     try:
-        # Yetkilendirme kontrolü
-        if (
-            current_user.role.value not in ["admin", "teacher"]
-            and current_user.id != student_id
-        ):
+        if current_user.role not in _STAFF_STUDENT_ACCESS and str(
+            current_user.id
+        ) != str(student_id):
             raise HTTPException(
                 status_code=403,
                 detail="Bu öğrencinin kültürel adaptasyon bilgilerine erişim yetkiniz yok",
@@ -133,11 +135,9 @@ async def update_student_behavioral_data(
     - Kişiselleştirilmiş deneyimi optimize eder
     """
     try:
-        # Yetkilendirme kontrolü
-        if (
-            current_user.role.value not in ["admin", "teacher"]
-            and current_user.id != student_id
-        ):
+        if current_user.role not in _STAFF_STUDENT_ACCESS and str(
+            current_user.id
+        ) != str(student_id):
             raise HTTPException(
                 status_code=403,
                 detail="Bu öğrencinin davranış verilerini güncelleme yetkiniz yok",
@@ -349,8 +349,7 @@ async def test_cultural_adaptation(
     Gerçek öğrenci verisi kullanmadan sistem davranışını test etmek için kullanılır.
     """
     try:
-        # Sadece admin kullanıcılar test edebilir
-        if current_user.role.value != "admin":
+        if current_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
             raise HTTPException(
                 status_code=403,
                 detail="Bu endpoint sadece admin kullanıcılar tarafından kullanılabilir",

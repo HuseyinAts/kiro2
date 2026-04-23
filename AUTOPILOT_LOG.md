@@ -59,6 +59,12 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-09 — F4 Dalga B: BERTurk motivasyon + kültürel adaptasyon rolleri
+
+- **Sorun:** `POST /api/v1/berturk/motivation/assess` yetkisi `["teacher","admin"]` string listesiyle yapılıyordu; `UserRole.SUPER_ADMIN` dışarıda kalıyordu, tip de `User` idi. `cultural_adaptation_api` path `student_id` için yalnızca `admin`/`teacher` string + `super_admin` yoktu; `/test-adaptation` yalnızca `admin` string.
+- **Düzeltme:** `AuthenticatedUser` + `UserRole` frozen set (`TEACHER`, `ADMIN`, `SUPER_ADMIN`); öğrenci için `str(current_user.id) == str(student_id)` (BERTurk gövde `student_id`; kültürel uçlar path). BERTurk performans/cache: `ADMIN` \| `SUPER_ADMIN`.
+- **Test:** `tests/unit/test_berturk_motivation_idor.py` (3), `tests/unit/test_cultural_adaptation_auth.py` (4).
+
 ## B-20260423-08 — F4 Dalga B: `zpd_maarif` + `turkish_nlp_chat` IDOR
 
 - **Sorun:** `api/zpd_maarif.py` altındaki `POST /revolutionary/*` (calculate, recommend, cultural-context, adapt-difficulty, learning-balance, cultural-patterns) gövdede `student_id` taşıyordu; `verify_student_access` yoktu. `turkish_nlp_chat`: `/message` ve `/context/manage` sonradan korunmuştu; `/step-by-step-solution` aynı `ChatMessageRequest` ile **korunmasızdı**.

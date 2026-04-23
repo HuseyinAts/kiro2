@@ -15,8 +15,12 @@ try:
 except (ImportError, TypeError):
     berturk_service = None
 
-from core.dependencies import UserRole, get_current_user
-from models.database import User
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+
+_STAFF_CAN_TARGET_STUDENT = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
+_BERTURK_ADMIN_ROLES = frozenset({UserRole.ADMIN, UserRole.SUPER_ADMIN})
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +162,8 @@ class PerformanceStatsResponse(BaseModel):
 
 @router.post("/sentiment/analyze", response_model=SentimentAnalysisResponse)
 async def analyze_sentiment(
-    request: SentimentAnalysisRequest, current_user: User = Depends(get_current_user)
+    request: SentimentAnalysisRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Metinin duygu analizini yap
@@ -211,7 +216,8 @@ async def analyze_sentiment(
 
 @router.post("/motivation/assess", response_model=MotivationAssessmentResponse)
 async def assess_student_motivation(
-    request: MotivationAssessmentRequest, current_user: User = Depends(get_current_user)
+    request: MotivationAssessmentRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Öğrenci motivasyon durumunu değerlendir
@@ -233,11 +239,9 @@ async def assess_student_motivation(
     try:
         start_time = datetime.now()
 
-        # Yetki kontrolü - sadece öğretmen, admin veya kendi verisi
-        if (
-            current_user.role not in ["teacher", "admin"]
-            and current_user.id != request.student_id
-        ):
+        if current_user.role not in _STAFF_CAN_TARGET_STUDENT and str(
+            current_user.id
+        ) != str(request.student_id):
             raise HTTPException(
                 status_code=403,
                 detail="Bu öğrencinin motivasyon verilerine erişim yetkiniz yok",
@@ -281,7 +285,8 @@ async def assess_student_motivation(
 
 @router.post("/intent/detect", response_model=IntentDetectionResponse)
 async def detect_intent(
-    request: IntentDetectionRequest, current_user: User = Depends(get_current_user)
+    request: IntentDetectionRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Metindeki niyeti tespit et
@@ -329,7 +334,8 @@ async def detect_intent(
 
 @router.post("/contextual/extract", response_model=ContextualMeaningResponse)
 async def extract_contextual_meaning(
-    request: ContextualMeaningRequest, current_user: User = Depends(get_current_user)
+    request: ContextualMeaningRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Bağlamsal anlam çıkarma
@@ -382,7 +388,7 @@ async def extract_contextual_meaning(
 async def batch_analysis(
     request: BatchAnalysisRequest,
     background_tasks: BackgroundTasks,
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Toplu metin analizi
@@ -496,7 +502,9 @@ async def batch_analysis(
 
 
 @router.get("/performance/stats", response_model=PerformanceStatsResponse)
-async def get_performance_stats(current_user: User = Depends(get_current_user)):
+async def get_performance_stats(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     BERTurk servisi performans istatistiklerini getir
 
@@ -511,8 +519,7 @@ async def get_performance_stats(current_user: User = Depends(get_current_user)):
     """
     _require_berturk_service()
     try:
-        # Admin kontrolü
-        if current_user.role != UserRole.ADMIN:
+        if current_user.role not in _BERTURK_ADMIN_ROLES:
             raise HTTPException(
                 status_code=403,
                 detail="Performans istatistiklerine sadece admin kullanıcıları erişebilir",
@@ -537,7 +544,9 @@ async def get_performance_stats(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/cache/clear")
-async def clear_cache(current_user: User = Depends(get_current_user)):
+async def clear_cache(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     BERTurk servisi cache'ini temizle
 
@@ -545,8 +554,7 @@ async def clear_cache(current_user: User = Depends(get_current_user)):
     """
     _require_berturk_service()
     try:
-        # Admin kontrolü
-        if current_user.role != UserRole.ADMIN:
+        if current_user.role not in _BERTURK_ADMIN_ROLES:
             raise HTTPException(
                 status_code=403,
                 detail="Cache temizleme işlemine sadece admin kullanıcıları erişebilir",
