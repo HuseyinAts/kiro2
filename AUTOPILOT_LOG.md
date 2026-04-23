@@ -59,6 +59,12 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-06 — J1 P0: JSON refresh (`POST /auth/refresh`)
+
+- **Plan:** `20260421_student_ready_autonomous_master.md` §6 J1 (refresh); `GF1wB` cookie yolunu test eder fakat standart `/login` JSON döner — **GF1z** ile `refreshToken` gövdesi + `/me` doğrulaması P0’ya alındı.
+- **Golden:** `test_gf1z_refresh_token_json_returns_usable_access` — `ci.yml` + `run_p0_golden_local.ps1` (11 test).
+- **Matris:** `CAPABILITY_MATRIX.md` J1 + P0 sayımı.
+
 ## B-20260423-05 — J2 P0: `PUT /api/v1/auth/profile` + matris
 
 - **Plan:** `20260421_student_ready_autonomous_master.md` §6 J2 (P0); gap analizi J2 “PUT kanıtı” boşluğu.

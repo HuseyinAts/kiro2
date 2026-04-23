@@ -475,6 +475,39 @@ def test_gf1y_profile_put_smoke(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF1z: J1 — JSON refreshToken ile /auth/refresh (cookie zorunlu değil)
+# ---------------------------------------------------------------------------
+
+
+def test_gf1z_refresh_token_json_returns_usable_access(client: httpx.Client):
+    """
+    J1 refresh: login gövdesindeki refreshToken ile POST /auth/refresh.
+
+    ``GF1wB`` httpOnly cookie akışını test eder; çoğu golden ``/login`` ise
+    token JSON'da döner — bu test o yolu kilitler.
+    """
+    login = client.post("/api/v1/auth/login", json=STUDENT)
+    assert login.status_code == 200, (
+        f"GF1z login HTTP {login.status_code}: {login.text[:300]}"
+    )
+    lj = login.json()
+    rt = lj.get("refreshToken") or lj.get("refresh_token")
+    assert rt, f"GF1z login missing refreshToken, keys={list(lj.keys())}"
+    ref = client.post("/api/v1/auth/refresh", json={"refreshToken": rt})
+    assert ref.status_code == 200, (
+        f"GF1z refresh HTTP {ref.status_code}: {ref.text[:400]}"
+    )
+    rj = ref.json()
+    new_access = rj.get("access_token") or rj.get("token")
+    assert new_access, f"GF1z refresh missing access: {rj!r}"
+    me = client.get("/api/v1/auth/me", headers=_auth_headers(str(new_access)))
+    assert me.status_code == 200, f"GF1z /me after refresh: {me.text[:300]}"
+    body = me.json()
+    user = body.get("user") if isinstance(body.get("user"), dict) else body
+    assert user.get("email") == STUDENT["email"], f"GF1z /me email: {body}"
+
+
+# ---------------------------------------------------------------------------
 # GF1w: save-answer must actually update BKT state (not just return 200)
 # ---------------------------------------------------------------------------
 

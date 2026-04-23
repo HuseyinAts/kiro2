@@ -5,8 +5,8 @@ Teknofest 2025 - Türkiye Üniversite Sınav Hazırlık Platformu
 
 import logging
 import os
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from collections.abc import AsyncGenerator, Generator
+from contextlib import asynccontextmanager, contextmanager
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -221,10 +221,10 @@ def get_sync_session() -> Session:
     return SessionLocal()
 
 
-# Context manager için sync session
-@asynccontextmanager
-async def get_sync_session_context() -> Session:
-    """Context manager ile sync session kullanımı"""
+# Context manager için sync session (auth /refresh vb. senkron ``with`` ile kullanır)
+@contextmanager
+def get_sync_session_context() -> Generator[Session, None, None]:
+    """Context manager ile sync session kullanımı."""
     session = SessionLocal()
     try:
         yield session

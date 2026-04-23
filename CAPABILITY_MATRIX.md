@@ -1,13 +1,13 @@
 # KIRO2 — Capability Matrix (öğrenci tam kapsam planı)
 
 **Plan:** `.cursor/plans/20260421_student_ready_autonomous_master.md`  
-**Son güncelleme:** 2026-04-23 — CI §1: `backend-test` içinde **P0 Golden** (uvicorn+**10** test: GF1, GF3, GF3b, GF3c, **GF1x**, **GF1y**, **GF3d**, **GF6w**, **GF1w**, **GF3w**) — J1 çıkış, **J2 PUT profil**, J4 complete, K4 admin soru, K2/K3 BKT/regresyon. Önceki: 9 test. Matris: `git log -1 -- CAPABILITY_MATRIX.md`.  
+**Son güncelleme:** 2026-04-23 — CI §1: `backend-test` içinde **P0 Golden** (uvicorn+**11** test: GF1, GF3, GF3b, GF3c, **GF1x**, **GF1y**, **GF1z**, **GF3d**, **GF6w**, **GF1w**, **GF3w**) — J1 çıkış + **refresh (JSON)**, **J2 PUT profil**, J4 complete, K4 admin soru, K2/K3 BKT/regresyon. Önceki: 10 test. Matris: `git log -1 -- CAPABILITY_MATRIX.md`.  
 
 Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 
 | Journey | API/Route | FE route | Son test | Durum | Not |
 |---------|-----------|----------|----------|-------|-----|
-| **J1** Kayıt / giriş / çıkış / refresh | `api.auth` — `POST /api/v1/auth/giris`, `/api/v1/auth/login` (EN), `POST /api/v1/auth/kayit`, `/register`, `POST /api/v1/auth/cikis`, refresh/cookie path `backend/api/auth.py` | `/login`, `/register` (`App.tsx`) | `ee3f30a` — **`test_gf1_login_and_me`** + **`test_gf1x_logout_invalidates_bearer_token`** (P0) | **Yeşil (CI P0)** | Çıkış + blacklist **GF1x** ile kilitli. Kayıt / cookie-refresh ayrı golden isteyebilir. |
+| **J1** Kayıt / giriş / çıkış / refresh | `api.auth` — `POST .../login`, `.../cikis`, `.../refresh`, `.../login/secure` (cookie) | `/login`, `/register` (`App.tsx`) | **P0:** GF1 + GF1x + **`test_gf1z_refresh_token_json_returns_usable_access`** | **Yeşil (CI P0)** | **GF1z** = JSON `refreshToken` → yeni access; cookie akışı **GF1wB** (isteğe bağlı). Kayıt golden ayrı. |
 | **J2** Profil, STUDENT | `api.auth` — `GET /api/v1/auth/profil`, `/api/v1/auth/me`, `PUT /api/v1/auth/profile` | `/profile` (çok rollü `ProfilePage`) | **GF1** + **`test_gf1y_profile_put_smoke`** (P0) | **Yeşil (CI P0)** | FE `ProfilePage` E2E isteğe bağlı. |
 | **J3** Soru bankası (liste / çöz / kaydet) | Liste: `GET /api/v1/osym/subjects`. Çöz+kaydet: `POST /api/v1/osym-exam/{id}/save-answer` (oturum: `create` → `start` → `current-question`) | `/learning-path` (FE duman: `j3-learning-path-smoke.spec.ts`); Not: `/soru-meydani` = **Soru Meydanı forumu** (sosyal), OSYM bankası değil. | **GF3b+GF3c** `PASS` lokal; FE: `npx playwright test j3-learning-path-smoke` + `E2E_TEST_PASSWORD` | **Yeşil (lokal: liste + save smoke; FE isteğe bağlı)** | BKT/detay: `test_gf1w_save_answer_updates_mastery` (daha sıkı). |
 | **J4** Sınav oturumu + cevaplar | `api.sinav` — `/api/v1/osym-exam/...`, `api.exam_answer_tracking`, `api.exam_performance` | `/exam/start`, `/exam/:sinavId`, `/exam/history`, `/exams` | `ee3f30a` — **GF3** (config) + **GF3c** (save-answer) + **GF3d** (`POST .../complete`, P0) | **Yeşil (CI P0)** | Tam oturum smoke: oluştur → cevap → **complete** (`test_gf3d_exam_session_complete_smoke`). |
@@ -29,10 +29,10 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 | **Matris / doküman** | **İlk** `95b6122` (Kanıt kilidi bölümü eklendi). Sonraki: `4ac61c3` (Kod vs matris SHA ayrımı) ve yalnız metin commit’leri — migration **yok**. Anlık: `git log -1 --format=%h` bu dosyada. |
 | **Backend** | `http://localhost:8000` (lokal; koşu anında çalışır durumda) |
 | **Seed** | `python scripts/seed_mvp_data.py` — `DATABASE_URL` `backend/.env` ile; `test@kiro2.com` zaten mevcuttu (idempotent) |
-| **Komut (API)** | `cd backend`; `$env:BACKEND_URL="http://localhost:8000"`; **10** test — tam liste: `.github/workflows/ci.yml` `P0 Golden Flow smoke` veya `scripts/run_p0_golden_local.ps1` |
-| **Sonuç** | **10 passed** (GF1, GF3, GF3b, GF3c, GF1x, GF1y, GF3d, GF6w, GF1w, GF3w; lokal/CI) |
+| **Komut (API)** | `cd backend`; `$env:BACKEND_URL="http://localhost:8000"`; **11** test — tam liste: `.github/workflows/ci.yml` `P0 Golden Flow smoke` veya `scripts/run_p0_golden_local.ps1` |
+| **Sonuç** | **11 passed** (GF1, GF3, GF3b, GF3c, GF1x, GF1y, GF1z, GF3d, GF6w, GF1w, GF3w; lokal/CI) |
 | **FE (opsiyonel)** | `cd frontend` → `E2E_TEST_PASSWORD=...` → `npx playwright test j3-learning-path-smoke` — dev sunucu `VITE_APP_URL` / :3001 |
-| **Tek komut (lokal, optimum)** | `powershell -ExecutionPolicy Bypass -File scripts/run_p0_golden_local.ps1` — önce :8000 health; **10** P0 test (J1/J2/J4/K4 + K2/K3). **CI’da** aynı set `uvicorn` + `seed` sonrası `backend-test` job’unda koşar. |
+| **Tek komut (lokal, optimum)** | `powershell -ExecutionPolicy Bypass -File scripts/run_p0_golden_local.ps1` — önce :8000 health; **11** P0 test (J1/J2/J4/K4 + K2/K3). **CI’da** aynı set `uvicorn` + `seed` sonrası `backend-test` job’unda koşar. |
 
 ---
 
@@ -47,7 +47,7 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 - **Zincir:** `quality` (ruff, mypy, bandit, safety, semgrep) → `backend-test` (Postgres hizmeti, `alembic upgrade head`, `pytest tests/` `--cov-fail-under=60`, `-x`) → `frontend-test` (lint, `type-check`, `npm test` coverage eşiği, `build`). `summary` job başarısız job’larda fail.
 - **`e2e-test` (Playwright):** yalnızca `pull_request` ve `backend-test` + `frontend-test` sonrası; `push` pipeline’ında koşmaz.
 - **Bu makinede:** `gh` CLI yok — GitHub’daki **son run** manuel açılmalı: [Actions](https://github.com/HuseyinAts/kiro2/actions/workflows/ci.yml).
-- **P0 golden (güncel):** Aynı `backend-test` job’unda migration → **MVP seed** → tam `pytest` → **`P0 Golden Flow smoke`**: `uvicorn` :8000 + **10** `httpx` testi (GF1, GF3, GF3b, GF3c, GF1x, GF1y, GF3d, GF6w, GF1w, GF3w). **Not:** İlk `pytest tests/` adımında sunucu yok; `test_golden_flows` içindeki **diğer** golden’lar çoğunlukla **skip** kalır — merge gate bu 10’luk paketle sınırlı.
+- **P0 golden (güncel):** Aynı `backend-test` job’unda migration → **MVP seed** → tam `pytest` → **`P0 Golden Flow smoke`**: `uvicorn` :8000 + **11** `httpx` testi (GF1, GF3, GF3b, GF3c, GF1x, GF1y, GF1z, GF3d, GF6w, GF1w, GF3w). **Not:** İlk `pytest tests/` adımında sunucu yok; diğer golden’lar çoğunlukla **skip** — merge gate bu paketle sınırlı.
 
 ### 2) `alembic heads` + taze DB hipotezi
 
