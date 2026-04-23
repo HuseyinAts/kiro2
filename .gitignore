@@ -7,6 +7,8 @@ cookies*.txt
 # Python
 __pycache__/
 *.py[cod]
+# Local OpenAPI dump for security audits (regenerate with backend/scripts/dump_openapi.py)
+openapi_snapshot.json
 *.pyc
 .Python
 venv/

@@ -36,9 +36,12 @@ from models import (
     KullaniciGiris,
     KullaniciOlustur,
     KullaniciRolu,
+    OgrenciProfilOlusturGirdi,
     OgrenciProfili,
+    OgretmenProfilOlusturGirdi,
     OgretmenProfili,
     TokenYaniti,
+    VeliProfilOlusturGirdi,
     VeliProfili,
 )
 from models.database import User as DBUser
@@ -1498,7 +1501,7 @@ async def update_profile(
     },
 )
 async def ogrenci_profil_olustur(
-    profil_data: OgrenciProfili,
+    body: OgrenciProfilOlusturGirdi,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
 ) -> OgrenciProfili:
     """
@@ -1507,8 +1510,21 @@ async def ogrenci_profil_olustur(
     Hedef sinav (TYT/AYT/YDT), konu tercihleri ve ogrenme stilini icerir.
     """
     try:
-        # Kullanıcı ID'yi otomatik ata
-        profil_data.kullanici_id = mevcut_kullanici.kullanici_id
+        uid = mevcut_kullanici.kullanici_id
+        profil_data = OgrenciProfili(
+            ogrenci_id=uid,
+            kullanici_id=uid,
+            sinif_seviyesi=body.sinif_seviyesi,
+            okul_adi=body.okul_adi,
+            hedef_sinav=body.hedef_sinav,
+            hedef_universiteler=body.hedef_universiteler,
+            ogrenme_stili=body.ogrenme_stili,
+            guclu_alanlar=body.guclu_alanlar,
+            zayif_alanlar=body.zayif_alanlar,
+            gunluk_calisma_hedefi=body.gunluk_calisma_hedefi,
+            veli_onay=False,
+            veli_kullanici_id=None,
+        )
 
         return await kullanici_servisi.ogrenci_profili_olustur(profil_data)
     except ValueError as e:
@@ -1568,7 +1584,7 @@ async def ogrenci_profil_getir(
     },
 )
 async def ogretmen_profil_olustur(
-    profil_data: OgretmenProfili,
+    body: OgretmenProfilOlusturGirdi,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
 ) -> OgretmenProfili:
     """
@@ -1577,8 +1593,15 @@ async def ogretmen_profil_olustur(
     Brans, okul ve deneyim bilgilerini icerir.
     """
     try:
-        # Kullanıcı ID'yi otomatik ata
-        profil_data.kullanici_id = mevcut_kullanici.kullanici_id
+        uid = mevcut_kullanici.kullanici_id
+        profil_data = OgretmenProfili(
+            ogretmen_id=uid,
+            kullanici_id=uid,
+            okul_adi=body.okul_adi,
+            brans=body.brans,
+            deneyim_yili=body.deneyim_yili,
+            sinif_listesi=body.sinif_listesi,
+        )
 
         return await kullanici_servisi.ogretmen_profili_olustur(profil_data)
     except ValueError as e:
@@ -1592,7 +1615,10 @@ async def ogretmen_profil_olustur(
     "/veli-profil",
     response_model=VeliProfili,
     summary="Veli Profili Olustur",
-    description="Yeni veli profili olusturma - cocuk bilgileri ve iletisim tercihleri",
+    description=(
+        "Yeni veli profili olusturma — iletisim tercihleri. "
+        "Cocuk kullanici baglantisı ayrı onaylı uçlar üzerinden yapılır (gövdede ogrenci ID yok)."
+    ),
     responses={
         200: {"description": "Veli profili basariyla olusturuldu"},
         400: {"description": "Gecersiz profil verisi"},
@@ -1600,7 +1626,7 @@ async def ogretmen_profil_olustur(
     },
 )
 async def veli_profil_olustur(
-    profil_data: VeliProfili,
+    body: VeliProfilOlusturGirdi,
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
 ) -> VeliProfili:
     """
@@ -1609,8 +1635,14 @@ async def veli_profil_olustur(
     Cocuk bilgileri ve iletisim tercihlerini icerir.
     """
     try:
-        # Kullanıcı ID'yi otomatik ata
-        profil_data.kullanici_id = mevcut_kullanici.kullanici_id
+        uid = mevcut_kullanici.kullanici_id
+        profil_data = VeliProfili(
+            veli_id=uid,
+            kullanici_id=uid,
+            cocuk_ogrenci_ids=[],
+            email_bildirimleri=body.email_bildirimleri,
+            sms_bildirimleri=body.sms_bildirimleri,
+        )
 
         return await kullanici_servisi.veli_profili_olustur(profil_data)
     except ValueError as e:

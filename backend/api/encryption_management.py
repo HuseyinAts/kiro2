@@ -10,7 +10,7 @@ from datetime import UTC, datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+from core.dependencies import AuthenticatedUser, get_current_admin_user
 from core.encryption_service import EncryptionService, get_encryption_service
 
 router = APIRouter(prefix="/admin/encryption", tags=["Admin - Encryption"])
@@ -43,17 +43,8 @@ class EncryptionStatusResponse(BaseModel):
     recommendation: str
 
 
-def require_admin(current_user: AuthenticatedUser = Depends(get_current_user)) -> AuthenticatedUser:
-    """Dependency to require admin role"""
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
-        )
-    return current_user
-
-
 @router.get("/status", response_model=EncryptionStatusResponse)
-async def get_encryption_status(admin: AuthenticatedUser = Depends(require_admin)):
+async def get_encryption_status(admin: AuthenticatedUser = Depends(get_current_admin_user)):
     """
     Get encryption service status
 
@@ -142,7 +133,7 @@ async def get_encryption_status(admin: AuthenticatedUser = Depends(require_admin
 
 @router.post("/rotate-key", response_model=KeyRotationResponse)
 async def rotate_encryption_key(
-    request: KeyRotationRequest, admin: AuthenticatedUser = Depends(require_admin)
+    request: KeyRotationRequest, admin: AuthenticatedUser = Depends(get_current_admin_user)
 ):
     """
     Rotate encryption key
@@ -239,7 +230,7 @@ async def rotate_encryption_key(
 
 
 @router.post("/generate-key")
-async def generate_new_key(admin: AuthenticatedUser = Depends(require_admin)) -> dict:
+async def generate_new_key(admin: AuthenticatedUser = Depends(get_current_admin_user)) -> dict:
     """
     Generate a new encryption key
 
@@ -269,7 +260,7 @@ async def generate_new_key(admin: AuthenticatedUser = Depends(require_admin)) ->
 
 
 @router.post("/test-encryption")
-async def test_encryption(admin: AuthenticatedUser = Depends(require_admin)) -> dict:
+async def test_encryption(admin: AuthenticatedUser = Depends(get_current_admin_user)) -> dict:
     """
     Test encryption service
 

@@ -162,6 +162,43 @@ class Kullanici(KullaniciBase):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
+
+
+class OgrenciProfilOlusturGirdi(BaseModel):
+    """POST /auth/ogrenci-profil gövdesi — öğrenci/kullanıcı ID istemciden kabul edilmez."""
+
+    sinif_seviyesi: int = Field(..., ge=9, le=12, description="Sınıf seviyesi (9-12)")
+    okul_adi: str | None = Field(None, max_length=200, description="Okul adı")
+    hedef_sinav: SinavTipi = Field(..., description="Hedeflenen sınav türü")
+    hedef_universiteler: list[str] = Field(default_factory=list)
+    ogrenme_stili: OgrenmeStili | None = None
+    guclu_alanlar: list[str] = Field(default_factory=list)
+    zayif_alanlar: list[str] = Field(default_factory=list)
+    gunluk_calisma_hedefi: int | None = Field(None, ge=30, le=600)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OgretmenProfilOlusturGirdi(BaseModel):
+    """POST /auth/ogretmen-profil gövdesi — öğretmen/kullanıcı ID istemciden kabul edilmez."""
+
+    okul_adi: str = Field(..., max_length=200)
+    brans: str = Field(..., max_length=50)
+    deneyim_yili: int | None = Field(None, ge=0, le=50)
+    sinif_listesi: list[str] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class VeliProfilOlusturGirdi(BaseModel):
+    """POST /auth/veli-profil gövdesi — çocuk listesi ayrı eşleştirme uçlarından; oluşturmada gönderilmez."""
+
+    email_bildirimleri: bool = True
+    sms_bildirimleri: bool = False
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class OgrenciProfili(BaseModel):
     """Öğrenci profil bilgileri.
     

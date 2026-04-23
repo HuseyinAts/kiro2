@@ -491,6 +491,19 @@ class TestRoleBasedDependencies:
         assert result.role == UserRole.ADMIN
 
     @pytest.mark.asyncio
+    async def test_admin_dependency_allows_super_admin(self):
+        """get_current_admin_user must return SUPER_ADMIN user unchanged."""
+        from core.dependencies import get_current_admin_user
+        from models.enums_db import UserRole
+
+        super_user = self._make_user("super_admin")
+
+        result = await get_current_admin_user(current_user=super_user)
+
+        assert result is super_user
+        assert result.role == UserRole.SUPER_ADMIN
+
+    @pytest.mark.asyncio
     async def test_admin_dependency_rejects_teacher(self):
         """get_current_admin_user must raise 403 for TEACHER."""
         from fastapi import HTTPException
@@ -544,6 +557,18 @@ class TestRoleBasedDependencies:
         assert result.role == UserRole.ADMIN
 
     @pytest.mark.asyncio
+    async def test_teacher_dependency_allows_super_admin(self):
+        """get_current_teacher_user must also allow SUPER_ADMIN."""
+        from core.dependencies import get_current_teacher_user
+        from models.enums_db import UserRole
+
+        super_user = self._make_user("super_admin")
+
+        result = await get_current_teacher_user(current_user=super_user)
+
+        assert result.role == UserRole.SUPER_ADMIN
+
+    @pytest.mark.asyncio
     async def test_teacher_dependency_rejects_student(self):
         """get_current_teacher_user must raise 403 for STUDENT."""
         from fastapi import HTTPException
@@ -593,6 +618,18 @@ class TestRoleBasedDependencies:
         result = await get_current_student_user(current_user=admin_user)
 
         assert result.role == UserRole.ADMIN
+
+    @pytest.mark.asyncio
+    async def test_student_dependency_allows_super_admin(self):
+        """get_current_student_user must also allow SUPER_ADMIN."""
+        from core.dependencies import get_current_student_user
+        from models.enums_db import UserRole
+
+        super_user = self._make_user("super_admin")
+
+        result = await get_current_student_user(current_user=super_user)
+
+        assert result.role == UserRole.SUPER_ADMIN
 
     @pytest.mark.asyncio
     async def test_student_dependency_rejects_parent(self):

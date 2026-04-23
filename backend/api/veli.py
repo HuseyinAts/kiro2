@@ -10,7 +10,10 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.security import HTTPBearer
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.database import get_db_session
 from core.dependencies import get_current_user
 from models import Kullanici, KullaniciRolu
 from models.dashboard import Bildirim
@@ -46,6 +49,25 @@ async def mevcut_veli_getir(
         id=str(getattr(current_user, "id", "")),
     )
     return veli
+
+
+async def _require_parent_child(
+    db: AsyncSession, veli_id: str, ogrenci_id: str
+) -> None:
+    """Onaylı parent_child kaydı yoksa veli çocuk verisine erişemez (F4)."""
+    row = await db.execute(
+        text(
+            "SELECT 1 FROM parent_child "
+            "WHERE parent_id::text = :p AND child_id::text = :c AND approved = TRUE "
+            "LIMIT 1"
+        ),
+        {"p": str(veli_id), "c": str(ogrenci_id)},
+    )
+    if row.first() is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu öğrencinin verilerine erişim yetkiniz yok",
+        )
 
 
 @router.get("/cocuklar", summary="Çocuk Listesi")
@@ -103,6 +125,7 @@ async def cocuk_performansi_getir(
         example="ogrenci_12345",
     ),
     mevcut_veli: Kullanici = Depends(mevcut_veli_getir),
+    db: AsyncSession = Depends(get_db_session),
 ):
     """
     Belirli bir çocuğun detaylı performans verilerini getir
@@ -112,6 +135,7 @@ async def cocuk_performansi_getir(
     """
     try:
         veli_id = mevcut_veli.kullanici_id
+        await _require_parent_child(db, veli_id, ogrenci_id)
 
         performans = await veli_servisi.cocuk_performansini_getir(veli_id, ogrenci_id)
 
@@ -153,7 +177,9 @@ async def cocuk_performansi_getir(
     summary="Haftalık Rapor Oluştur",
 )
 async def haftalik_rapor_olustur(
-    ogrenci_id: str, mevcut_veli: Kullanici = Depends(mevcut_veli_getir)
+    ogrenci_id: str,
+    mevcut_veli: Kullanici = Depends(mevcut_veli_getir),
+    db: AsyncSession = Depends(get_db_session),
 ):
     """
     Çocuk için haftalık performans raporu oluştur
@@ -163,6 +189,7 @@ async def haftalik_rapor_olustur(
     """
     try:
         veli_id = mevcut_veli.kullanici_id
+        await _require_parent_child(db, veli_id, ogrenci_id)
 
         rapor = await veli_servisi.haftalik_rapor_olustur(veli_id, ogrenci_id)
 

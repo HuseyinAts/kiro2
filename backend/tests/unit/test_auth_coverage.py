@@ -1491,61 +1491,51 @@ class TestUpdateProfile:
 class TestProfileCreateEndpoints:
     """Tests for ogrenci/ogretmen/veli profil olustur endpoints."""
 
-    def _make_ogrenci_profil(self) -> Any:
-        from models.enums import SinavTipi
-        from models.user import OgrenciProfili
-
-        return OgrenciProfili(
-            ogrenci_id="og-1",
-            kullanici_id="user-1",
-            sinif_seviyesi=11,
-            hedef_sinav=SinavTipi.TYT,
-        )
-
-    def _make_ogretmen_profil(self) -> Any:
-        from models.user import OgretmenProfili
-
-        return OgretmenProfili(
-            ogretmen_id="ot-1",
-            kullanici_id="user-2",
-            okul_adi="Atatürk Lisesi",
-            brans="Matematik",
-        )
-
-    def _make_veli_profil(self) -> Any:
-        from models.user import VeliProfili
-
-        return VeliProfili(
-            veli_id="v-1",
-            kullanici_id="user-3",
-        )
-
     @pytest.mark.asyncio
     async def test_ogrenci_profil_olustur_success(self) -> None:
         """Happy path: assigns kullanici_id and returns profile."""
         import api.auth as auth_mod
 
-        kullanici = _make_kullanici(user_id="user-abc")
-        profil = self._make_ogrenci_profil()
+        from models import OgrenciProfilOlusturGirdi, OgrenciProfili
+        from models.enums import SinavTipi
 
-        returned_profil = self._make_ogrenci_profil()
-        returned_profil.kullanici_id = "user-abc"
+        kullanici = _make_kullanici(user_id="user-abc")
+        body = OgrenciProfilOlusturGirdi(
+            sinif_seviyesi=11,
+            okul_adi="Lise",
+            hedef_sinav=SinavTipi.TYT,
+        )
+
+        returned_profil = OgrenciProfili(
+            ogrenci_id="user-abc",
+            kullanici_id="user-abc",
+            sinif_seviyesi=11,
+            okul_adi="Lise",
+            hedef_sinav=SinavTipi.TYT,
+        )
 
         mock_servisi = AsyncMock()
         mock_servisi.ogrenci_profili_olustur = AsyncMock(return_value=returned_profil)
 
         with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
-            result = await auth_mod.ogrenci_profil_olustur(profil, kullanici)
+            result = await auth_mod.ogrenci_profil_olustur(body, kullanici)
 
         assert result.kullanici_id == "user-abc"
+        mock_servisi.ogrenci_profili_olustur.assert_awaited_once()
+        call_profil = mock_servisi.ogrenci_profili_olustur.await_args[0][0]
+        assert call_profil.ogrenci_id == "user-abc"
+        assert call_profil.kullanici_id == "user-abc"
 
     @pytest.mark.asyncio
     async def test_ogrenci_profil_olustur_raises_400_on_value_error(self) -> None:
         """ValueError from service → 400 HTTPException."""
         import api.auth as auth_mod
 
+        from models import OgrenciProfilOlusturGirdi
+        from models.enums import SinavTipi
+
         kullanici = _make_kullanici()
-        profil = self._make_ogrenci_profil()
+        body = OgrenciProfilOlusturGirdi(sinif_seviyesi=10, hedef_sinav=SinavTipi.TYT)
 
         mock_servisi = AsyncMock()
         mock_servisi.ogrenci_profili_olustur = AsyncMock(
@@ -1554,7 +1544,7 @@ class TestProfileCreateEndpoints:
 
         with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
             with pytest.raises(HTTPException) as exc_info:
-                await auth_mod.ogrenci_profil_olustur(profil, kullanici)
+                await auth_mod.ogrenci_profil_olustur(body, kullanici)
 
         assert exc_info.value.status_code == 400
 
@@ -1563,17 +1553,26 @@ class TestProfileCreateEndpoints:
         """Happy path for teacher profile creation."""
         import api.auth as auth_mod
 
-        kullanici = _make_kullanici(user_id="teacher-1", role_str="ogretmen")
-        profil = self._make_ogretmen_profil()
+        from models import OgretmenProfilOlusturGirdi, OgretmenProfili
 
-        returned = self._make_ogretmen_profil()
-        returned.kullanici_id = "teacher-1"
+        kullanici = _make_kullanici(user_id="teacher-1", role_str="ogretmen")
+        body = OgretmenProfilOlusturGirdi(
+            brans="Matematik",
+            okul_adi="Atatürk Lisesi",
+        )
+
+        returned = OgretmenProfili(
+            ogretmen_id="teacher-1",
+            kullanici_id="teacher-1",
+            brans="Matematik",
+            okul_adi="Atatürk Lisesi",
+        )
 
         mock_servisi = AsyncMock()
         mock_servisi.ogretmen_profili_olustur = AsyncMock(return_value=returned)
 
         with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
-            result = await auth_mod.ogretmen_profil_olustur(profil, kullanici)
+            result = await auth_mod.ogretmen_profil_olustur(body, kullanici)
 
         assert result.kullanici_id == "teacher-1"
 
@@ -1582,8 +1581,10 @@ class TestProfileCreateEndpoints:
         """ValueError → 400 for teacher profile."""
         import api.auth as auth_mod
 
+        from models import OgretmenProfilOlusturGirdi
+
         kullanici = _make_kullanici(role_str="ogretmen")
-        profil = self._make_ogretmen_profil()
+        body = OgretmenProfilOlusturGirdi(brans="Matematik", okul_adi="Okul")
 
         mock_servisi = AsyncMock()
         mock_servisi.ogretmen_profili_olustur = AsyncMock(
@@ -1592,7 +1593,7 @@ class TestProfileCreateEndpoints:
 
         with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
             with pytest.raises(HTTPException) as exc_info:
-                await auth_mod.ogretmen_profil_olustur(profil, kullanici)
+                await auth_mod.ogretmen_profil_olustur(body, kullanici)
 
         assert exc_info.value.status_code == 400
 
@@ -1601,17 +1602,22 @@ class TestProfileCreateEndpoints:
         """Happy path for parent profile creation."""
         import api.auth as auth_mod
 
-        kullanici = _make_kullanici(user_id="veli-1", role_str="veli")
-        profil = self._make_veli_profil()
+        from models import VeliProfilOlusturGirdi, VeliProfili
 
-        returned = self._make_veli_profil()
-        returned.kullanici_id = "veli-1"
+        kullanici = _make_kullanici(user_id="veli-1", role_str="veli")
+        body = VeliProfilOlusturGirdi()
+
+        returned = VeliProfili(
+            veli_id="veli-1",
+            kullanici_id="veli-1",
+            cocuk_ogrenci_ids=[],
+        )
 
         mock_servisi = AsyncMock()
         mock_servisi.veli_profili_olustur = AsyncMock(return_value=returned)
 
         with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
-            result = await auth_mod.veli_profil_olustur(profil, kullanici)
+            result = await auth_mod.veli_profil_olustur(body, kullanici)
 
         assert result.kullanici_id == "veli-1"
 
@@ -1620,8 +1626,10 @@ class TestProfileCreateEndpoints:
         """ValueError → 400 for parent profile."""
         import api.auth as auth_mod
 
+        from models import VeliProfilOlusturGirdi
+
         kullanici = _make_kullanici(role_str="veli")
-        profil = self._make_veli_profil()
+        body = VeliProfilOlusturGirdi()
 
         mock_servisi = AsyncMock()
         mock_servisi.veli_profili_olustur = AsyncMock(
@@ -1630,7 +1638,7 @@ class TestProfileCreateEndpoints:
 
         with patch.object(auth_mod, "kullanici_servisi", mock_servisi):
             with pytest.raises(HTTPException) as exc_info:
-                await auth_mod.veli_profil_olustur(profil, kullanici)
+                await auth_mod.veli_profil_olustur(body, kullanici)
 
         assert exc_info.value.status_code == 400
 

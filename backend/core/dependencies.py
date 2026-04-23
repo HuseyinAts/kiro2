@@ -204,11 +204,17 @@ async def get_current_user(
         )
 
 
+# Admin-only dependencies: SUPER_ADMIN must match ADMIN API surface (F4 / operasyon).
+PLATFORM_ADMIN_ROLES: frozenset[UserRole] = frozenset(
+    {UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
+
+
 async def get_current_admin_user(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> AuthenticatedUser:
-    """Admin yetkisi olan kullanıcıyı al."""
-    if current_user.role != UserRole.ADMIN:
+    """Admin veya süper admin yetkisi olan kullanıcıyı al."""
+    if current_user.role not in PLATFORM_ADMIN_ROLES:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
         )
@@ -219,7 +225,11 @@ async def get_current_teacher_user(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> AuthenticatedUser:
     """Öğretmen yetkisi olan kullanıcıyı al."""
-    if current_user.role not in [UserRole.TEACHER, UserRole.ADMIN]:
+    if current_user.role not in [
+        UserRole.TEACHER,
+        UserRole.ADMIN,
+        UserRole.SUPER_ADMIN,
+    ]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Teacher access required"
         )
@@ -229,8 +239,13 @@ async def get_current_teacher_user(
 async def get_current_student_user(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> AuthenticatedUser:
-    """Öğrenci yetkisi olan kullanıcıyı al."""
-    if current_user.role not in [UserRole.STUDENT, UserRole.TEACHER, UserRole.ADMIN]:
+    """Öğrenci yüzeyi: öğrenci, öğretmen veya yönetim rolleri."""
+    if current_user.role not in [
+        UserRole.STUDENT,
+        UserRole.TEACHER,
+        UserRole.ADMIN,
+        UserRole.SUPER_ADMIN,
+    ]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Student access required"
         )

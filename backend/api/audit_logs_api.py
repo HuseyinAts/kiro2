@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from core.audit_logging import AuditEventType, AuditLog
 from core.database import get_db
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+from core.dependencies import AuthenticatedUser, get_current_admin_user
 
 router = APIRouter(prefix="/admin/audit-logs", tags=["Admin - Audit Logs"])
 
@@ -59,15 +59,6 @@ class AuditStatsResponse(BaseModel):
     security_events_24h: int
 
 
-def require_admin(current_user: AuthenticatedUser = Depends(get_current_user)) -> AuthenticatedUser:
-    """Require admin role"""
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
-        )
-    return current_user
-
-
 @router.get("/", response_model=AuditLogListResponse)
 def get_audit_logs(
     page: int = Query(1, ge=1),
@@ -79,7 +70,7 @@ def get_audit_logs(
     end_date: datetime | None = None,
     search: str | None = None,
     db: Session = Depends(get_db),
-    admin: AuthenticatedUser = Depends(require_admin),
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     Get audit logs with filtering and pagination
@@ -137,7 +128,7 @@ def get_audit_logs(
 def get_audit_stats(
     days: int = Query(7, ge=1, le=90),
     db: Session = Depends(get_db),
-    admin: AuthenticatedUser = Depends(require_admin),
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     Get audit statistics
@@ -228,7 +219,7 @@ def export_audit_logs(
     start_date: datetime | None = None,
     end_date: datetime | None = None,
     db: Session = Depends(get_db),
-    admin: AuthenticatedUser = Depends(require_admin),
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     Export audit logs
@@ -347,7 +338,7 @@ def export_audit_logs(
 def cleanup_old_logs(
     days: int = Query(90, ge=30, le=365),
     db: Session = Depends(get_db),
-    admin: AuthenticatedUser = Depends(require_admin),
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     Delete audit logs older than specified days

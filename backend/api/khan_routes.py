@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # Session 137: swap sync get_db shim → async get_async_session.
 # Pattern A fix — handlers are AsyncSession so we must yield an AsyncSession.
 from core.database import get_async_session
-from core.dependencies import UserRole, get_current_user
+from core.dependencies import PLATFORM_ADMIN_ROLES, UserRole, get_current_user
 from models.database import User
 from services.khan_academy_client import KhanContentType, KhanSubject, get_khan_client
 from services.khan_content_sync import KhanContentSyncService, KhanProgressSyncService
@@ -622,7 +622,7 @@ async def trigger_content_sync(
     """
     Admin: Trigger Khan Academy content sync
     """
-    if current_user.role != UserRole.ADMIN:
+    if current_user.role not in PLATFORM_ADMIN_ROLES:
         raise HTTPException(status_code=403, detail="Admin only")
 
     sync_service = KhanContentSyncService(db, use_mock=use_mock)

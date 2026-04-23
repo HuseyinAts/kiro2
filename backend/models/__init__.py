@@ -183,9 +183,12 @@ from .user import (
     Kullanici,
     KullaniciGiris,
     KullaniciOlustur,
+    OgrenciProfilOlusturGirdi,
     OgrenciProfili,
+    OgretmenProfilOlusturGirdi,
     OgretmenProfili,
     TokenYaniti,
+    VeliProfilOlusturGirdi,
     VeliProfili,
 )
 from .usta_cirak import MentorFeedback, MentorPair, MentorSession
@@ -298,8 +301,11 @@ __all__ = [
     "KullaniciOlustur",
     "KullaniciGiris",
     "OgrenciProfili",
+    "OgrenciProfilOlusturGirdi",
     "OgretmenProfili",
+    "OgretmenProfilOlusturGirdi",
     "VeliProfili",
+    "VeliProfilOlusturGirdi",
     "TokenYaniti",
     # Exam models
     "SinavSorusu",
