@@ -59,6 +59,13 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-15 — F4 Dalga B: `enhanced_chat` student_id IDOR
+
+- **Sorun:** `POST /message` ve `POST /stream` gövdesindeki `student_id` doğrulanmıyordu; `GET /history/{student_id}` path parametresi sorguda yanlışlıkla yok sayılıp anonimde path ile sızıntı riski vardı. Ek uç: `message-with-attachment` öğrenci bağlamı taşımıyordu.
+- **Düzeltme:** `verify_student_access` + `get_learning_path_profile_user_id` (`learning_path_auth`); geçmiş listesi öğrenme yolu profilinin platform `user_id` değeriyle (`chat_sessions.user_id`). Auth varken attachment için Form `student_id` zorunlu.
+- **Golden:** `test_gf24_*` önce `POST /learning-path/create-profile` ile gerçek `student_id` alıyor.
+- **Test:** `tests/unit/test_enhanced_chat_student_guard.py` (3).
+
 ## B-20260423-14 — F4: `rate_limit_config` rol → tier hizası
 
 - **Sorun:** `get_user_tier_from_roles` yalnızca `"admin"` / `"superadmin"` string eşlemesi yapıyordu; **`super_admin`** ve **`UserRole` enum** öğeleri ADMIN tier’a düşmüyordu; öğretmen rolü FREE kalıyordu.

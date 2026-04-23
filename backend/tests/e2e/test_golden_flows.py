@@ -1767,12 +1767,35 @@ def test_gf24_enhanced_chat_message_not_500(client: httpx.Client):
     per-request timeout and, if even that is exceeded, skip rather than fail.
     """
     token = _login(client, STUDENT)
+    prof = client.post(
+        "/api/v1/learning-path/create-profile",
+        headers=_auth_headers(token),
+        json={
+            "name": "GF24 Chat Probe",
+            "grade": 11,
+            "subjects": ["MATEMATIK"],
+            "goals": ["TYT"],
+            "learning_style": "visual",
+            "available_time": 60,
+        },
+    )
+    assert prof.status_code != 500, (
+        f"GF24 prerequisite create-profile failed: {prof.text[:300]}"
+    )
+    try:
+        body = prof.json()
+    except Exception:
+        body = {}
+    sid = body.get("student_id")
+    if not sid:
+        pytest.skip("GF24: learning-path create-profile did not return student_id")
+
     try:
         resp = client.post(
             "/api/v1/enhanced-chat/message",
             headers=_auth_headers(token),
             json={
-                "student_id": "gf24-probe-student",
+                "student_id": sid,
                 "message": "x^2 - 4 = 0 denklemini nasıl çözerim?",
                 "subject": "matematik",
                 "teaching_mode": "direct",

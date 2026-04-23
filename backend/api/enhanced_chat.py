@@ -28,6 +28,10 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.ddos_protection import limiter
+from core.learning_path_auth import (
+    get_learning_path_profile_user_id,
+    verify_student_access,
+)
 from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
@@ -77,6 +81,22 @@ def _get_db_dependency():
 
 
 _db_dep = _get_db_dependency()
+
+
+async def _verify_enhanced_chat_student_context(
+    student_id: str,
+    current_user: Any,
+    db: AsyncSession | None,
+) -> None:
+    """IDOR guard: require DB + ownership (or staff) when authenticated."""
+    if current_user is None:
+        return
+    if db is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Öğrenci doğrulaması için veritabanı gerekli.",
+        )
+    await verify_student_access(student_id, current_user, db)
 
 
 # ---------------------------------------------------------------------------
@@ -417,6 +437,10 @@ async def send_message(
     The bug only surfaces when the upstream LLM responds fast enough that the
     request doesn't time out first (GF24 was previously a state-dependent skip).
     """
+    await _verify_enhanced_chat_student_context(
+        payload.student_id, current_user, db
+    )
+
     llm_response = await _call_llm(
         payload.message, payload.subject, payload.teaching_mode
     )
@@ -520,6 +544,10 @@ async def stream_message(
     db: AsyncSession = _db_dep,
 ) -> StreamingResponse:
     """Stream AI response as Server-Sent Events."""
+
+    await _verify_enhanced_chat_student_context(
+        payload.student_id, current_user, db
+    )
 
     # Resolve session before streaming starts
     session_id = payload.session_id
@@ -662,9 +690,11 @@ async def get_history(
     db: AsyncSession = _db_dep,
 ) -> dict[str, Any]:
     """Get chat history for a student (legacy endpoint)."""
-    user_id = (
-        str(getattr(current_user, "id", student_id)) if current_user else student_id
-    )
+    if current_user is None:
+        raise HTTPException(
+            status_code=401,
+            detail="Bu kaynak için kimlik doğrulama gerekli",
+        )
     if db is None:
         return {
             "success": True,
@@ -672,6 +702,9 @@ async def get_history(
             "student_id": student_id,
             "messages": [],
         }
+
+    await verify_student_access(student_id, current_user, db)
+    owner_uid = await get_learning_path_profile_user_id(student_id, db)
 
     r = await db.execute(
         text(
@@ -681,7 +714,7 @@ async def get_history(
             "WHERE cs.user_id = :uid "
             "ORDER BY cm.created_at DESC LIMIT 50"
         ),
-        {"uid": user_id},
+        {"uid": owner_uid},
     )
     history = [
         {
@@ -853,8 +886,18 @@ async def message_with_attachment(
     session_id: str | None = Form(default=None),
     teaching_mode: str = Form(default="direct"),
     url: str | None = Form(default=None),
+    student_id: str = Form(default=""),
 ) -> dict[str, Any]:
     """Send a chat message with an optional file or URL attachment."""
+
+    if current_user is not None and not (student_id or "").strip():
+        raise HTTPException(
+            status_code=400,
+            detail="student_id gerekli (kimliği doğrulanmış istekler için)",
+        )
+    await _verify_enhanced_chat_student_context(
+        (student_id or "").strip(), current_user, db
+    )
 
     # --- Determine attachment type and extract context ---
     attachment_context = ""

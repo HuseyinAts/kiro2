@@ -119,6 +119,22 @@ async def verify_student_access(
     return True
 
 
+async def get_learning_path_profile_user_id(student_id: str, db: AsyncSession) -> str:
+    """Platform `user_id` (string) for this learning-path ``student_id`` (e.g. STU_…)."""
+    result = await db.execute(
+        select(LearningPathStudentProfile.user_id).where(
+            LearningPathStudentProfile.student_id == student_id
+        )
+    )
+    uid = result.scalar_one_or_none()
+    if uid is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Öğrenci profili bulunamadı",
+        )
+    return str(uid)
+
+
 class RequireStudentOwnership:
     """
     Dependency class to require student ownership or privileged role
