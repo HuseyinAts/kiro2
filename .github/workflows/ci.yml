@@ -259,6 +259,7 @@ jobs:
             tests/e2e/test_golden_flows.py::test_gf3b_osym_subjects_reachable \
             tests/e2e/test_golden_flows.py::test_gf3c_exam_session_save_answer_smoke \
             tests/e2e/test_golden_flows.py::test_gf1x_logout_invalidates_bearer_token \
+            tests/e2e/test_golden_flows.py::test_gf1y_profile_put_smoke \
             tests/e2e/test_golden_flows.py::test_gf3d_exam_session_complete_smoke \
             tests/e2e/test_golden_flows.py::test_gf6w_admin_question_create_returns_success \
             tests/e2e/test_golden_flows.py::test_gf1w_save_answer_updates_mastery \

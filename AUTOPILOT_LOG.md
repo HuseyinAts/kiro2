@@ -59,6 +59,13 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-05 — J2 P0: `PUT /api/v1/auth/profile` + matris
+
+- **Plan:** `20260421_student_ready_autonomous_master.md` §6 J2 (P0); gap analizi J2 “PUT kanıtı” boşluğu.
+- **Golden:** `test_gf1y_profile_put_smoke` — `/auth/me` ile mevcut `ad`/`soyad` okunur, `PUT /api/v1/auth/profile` ile idempotent güncelleme, `success` + e-posta doğrulaması.
+- **Kapı:** `ci.yml` P0 adımı + `scripts/run_p0_golden_local.ps1` — paket **10** test.
+- **Matris:** `CAPABILITY_MATRIX.md` J2 satırı ve P0 sayımı güncellendi.
+
 ## B-20260421-02 — Auth + test + Docker
 
 - `require_role` / `require_permission`: artık gerçek `AuthorizationDependency` döndürüyor (Depends ile kullanılabilir).

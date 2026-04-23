@@ -444,6 +444,37 @@ def test_gf1x_logout_invalidates_bearer_token(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF1y: J2 — PUT /api/v1/auth/profile (allowed alanlar)
+# ---------------------------------------------------------------------------
+
+
+def test_gf1y_profile_put_smoke(client: httpx.Client):
+    """J2: profil güncelleme 200 + success; idempotent-friendly (aynı ad/soyad)."""
+    token = _login(client, STUDENT)
+    headers = _auth_headers(token)
+    me = client.get("/api/v1/auth/me", headers=headers)
+    assert me.status_code == 200, f"GF1y pre /me: {me.text[:200]}"
+    body = me.json()
+    user = body.get("user") if isinstance(body.get("user"), dict) else body
+    ad = str(user.get("ad") or user.get("first_name") or "Test")
+    soyad = str(user.get("soyad") or user.get("last_name") or "User")
+
+    put = client.put(
+        "/api/v1/auth/profile",
+        headers=headers,
+        json={"ad": ad, "soyad": soyad},
+    )
+    assert put.status_code == 200, (
+        f"GF1y PUT profile HTTP {put.status_code}: {put.text[:400]}"
+    )
+    pbody = put.json()
+    assert pbody.get("success") is True, f"GF1y profile success=False: {pbody!r}"
+    u2 = pbody.get("user")
+    assert isinstance(u2, dict), f"GF1y missing user in response: {pbody!r}"
+    assert u2.get("email") == STUDENT["email"], f"GF1y email drift: {u2!r}"
+
+
+# ---------------------------------------------------------------------------
 # GF1w: save-answer must actually update BKT state (not just return 200)
 # ---------------------------------------------------------------------------
 
