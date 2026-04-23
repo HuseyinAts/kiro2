@@ -1,7 +1,7 @@
 # KIRO2 — Capability Matrix (öğrenci tam kapsam planı)
 
 **Plan:** `.cursor/plans/20260421_student_ready_autonomous_master.md`  
-**Son güncelleme:** 2026-04-23 — **J3:** GF3b (liste) + **GF3c** (`save-answer` smoke) + isteğe bağlı Playwright `j3-learning-path-smoke`. Matris: `git log -1 -- CAPABILITY_MATRIX.md`.  
+**Son güncelleme:** 2026-04-23 — CI §1: `backend-test` içinde **P0 Golden** (uvicorn+4 test) metni güncellendi (eski “uvicorn yok” maddesi kaldırıldı). Önceki: J3 GF3b/GF3c, P0 script, F4 POST `learning-style` IDOR. Matris: `git log -1 -- CAPABILITY_MATRIX.md`.  
 
 Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 
@@ -47,7 +47,7 @@ Sütunlar: `Journey | API/Route | FE route | Son test (SHA) | Durum | Not`
 - **Zincir:** `quality` (ruff, mypy, bandit, safety, semgrep) → `backend-test` (Postgres hizmeti, `alembic upgrade head`, `pytest tests/` `--cov-fail-under=60`, `-x`) → `frontend-test` (lint, `type-check`, `npm test` coverage eşiği, `build`). `summary` job başarısız job’larda fail.
 - **`e2e-test` (Playwright):** yalnızca `pull_request` ve `backend-test` + `frontend-test` sonrası; `push` pipeline’ında koşmaz.
 - **Bu makinede:** `gh` CLI yok — GitHub’daki **son run** manuel açılmalı: [Actions](https://github.com/HuseyinAts/kiro2/actions/workflows/ci.yml).
-- **Kritik bulgu:** `backend-test` **uvicorn başlatmaz**; `tests/e2e/test_golden_flows.py` `httpx` ile `localhost:8000`’e bağlanamazsa testler **skip**. J1–J2 “yeşil” iddiası **CI backend job’u ile tek başına kanıtlanmaz**; lokal veya ayrı E2E job gerekir.
+- **P0 golden (güncel):** Aynı `backend-test` job’unda migration → **MVP seed** → tam `pytest` → **`P0 Golden Flow smoke`**: `uvicorn` :8000 + 4 `httpx` testi (GF1, GF3, GF3b, GF3c). Yani P0 çekirdeği **CI’da da** koşuyor. **Not:** İlk `pytest tests/` adımında sunucu yok; `test_golden_flows` içindeki **diğer** golden’lar çoğunlukla yine **skip** kalır — tam golden seti CI’da değil, bu 4’lü ile sınırlı.
 
 ### 2) `alembic heads` + taze DB hipotezi
 
