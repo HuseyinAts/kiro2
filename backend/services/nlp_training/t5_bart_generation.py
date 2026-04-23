@@ -6,16 +6,16 @@ Requirements: REQ-48.25-48.28
 """
 
 import logging
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 import torch
 from transformers import (
     AutoTokenizer,
-    T5ForConditionalGeneration,
     BartForConditionalGeneration,
     GenerationConfig,
+    T5ForConditionalGeneration,
 )
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class GenerationResult:
     generated_text: str
     score: float
     model_type: ModelType
-    beam_scores: Optional[List[float]] = None
+    beam_scores: list[float] | None = None
 
 
 class T5BARTGenerationService:
@@ -56,8 +56,8 @@ class T5BARTGenerationService:
         self,
         t5_model_name: str = "google/mt5-base",
         bart_model_name: str = "facebook/mbart-large-50",
-        device: Optional[str] = None,
-        cache_dir: Optional[str] = None,
+        device: str | None = None,
+        cache_dir: str | None = None,
     ):
         """
         Initialize T5/BART Generation Service
@@ -120,7 +120,7 @@ class T5BARTGenerationService:
         bloom_level: str = "uygulama",
         num_beams: int = 5,
         num_return_sequences: int = 1,
-    ) -> List[GenerationResult]:
+    ) -> list[GenerationResult]:
         """
         T5 ile Türkçe soru üret
 
@@ -197,7 +197,7 @@ Soru:"""
 
     def paraphrase_bart(
         self, text: str, num_beams: int = 5, num_return_sequences: int = 3
-    ) -> List[GenerationResult]:
+    ) -> list[GenerationResult]:
         """
         BART ile paraphrasing yap
 
@@ -262,7 +262,7 @@ Soru:"""
 
     def generate_question_with_options(
         self, topic: str, subject: str, difficulty: str = "orta", num_options: int = 4
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Seçenekli soru üret (ÖSYM formatı)
 
@@ -386,8 +386,8 @@ Soru:"""
         return compliance
 
     def batch_generate_questions(
-        self, topics: List[Dict[str, str]], batch_size: int = 4
-    ) -> List[Dict[str, Any]]:
+        self, topics: list[dict[str, str]], batch_size: int = 4
+    ) -> list[dict[str, Any]]:
         """
         Batch soru üretimi
 
@@ -419,8 +419,8 @@ Soru:"""
         return results
 
     def optimize_beam_search(
-        self, text: str, num_beams_list: List[int] = [3, 5, 7, 10]
-    ) -> Tuple[int, List[GenerationResult]]:
+        self, text: str, num_beams_list: list[int] = [3, 5, 7, 10]
+    ) -> tuple[int, list[GenerationResult]]:
         """
         Beam search optimization - en iyi beam sayısını bul
 
@@ -453,7 +453,7 @@ Soru:"""
         logger.info(f"Optimal beam count: {best_beams} (score: {best_score:.4f})")
         return best_beams, all_results
 
-    def get_model_info(self) -> Dict[str, Any]:
+    def get_model_info(self) -> dict[str, Any]:
         """
         Model bilgilerini getir
 

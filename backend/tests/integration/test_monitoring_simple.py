@@ -3,20 +3,20 @@ Simplified tests for Monitoring System components
 Target: 80%+ test coverage
 """
 
-import pytest
 from datetime import datetime
 
+import pytest
 
 # Import individual components to avoid bcrypt issues
 from core.unified.monitoring_system import (
-    MonitoringConfig,
-    MetricType,
     AlertLevel,
-    MonitoringCategory,
-    MetricPoint,
-    SystemMetrics,
-    MetricsAggregator,
     AlertManager,
+    MetricPoint,
+    MetricsAggregator,
+    MetricType,
+    MonitoringCategory,
+    MonitoringConfig,
+    SystemMetrics,
 )
 
 

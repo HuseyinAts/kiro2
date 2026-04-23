@@ -11,4 +11,3 @@ Bu modül henüz tamamlanmamıştır. Placeholder olarak bırakılmıştır.
 # - Scoring algorithms
 # - Result generation
 
-pass

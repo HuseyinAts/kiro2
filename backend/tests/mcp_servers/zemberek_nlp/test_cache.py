@@ -2,8 +2,9 @@
 Unit Tests for Zemberek NLP Redis Cache
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestCacheKeyGeneration:
@@ -11,7 +12,9 @@ class TestCacheKeyGeneration:
 
     def test_basic_key_generation(self):
         """Test basic cache key generation"""
-        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import generate_cache_key
+        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import (
+            generate_cache_key,
+        )
 
         key = generate_cache_key("zemberek", "morphology", "test input")
 
@@ -20,7 +23,9 @@ class TestCacheKeyGeneration:
 
     def test_deterministic_keys(self):
         """Test cache keys are deterministic"""
-        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import generate_cache_key
+        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import (
+            generate_cache_key,
+        )
 
         key1 = generate_cache_key("zemberek", "morphology", "same input")
         key2 = generate_cache_key("zemberek", "morphology", "same input")
@@ -29,7 +34,9 @@ class TestCacheKeyGeneration:
 
     def test_different_inputs_different_keys(self):
         """Test different inputs produce different keys"""
-        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import generate_cache_key
+        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import (
+            generate_cache_key,
+        )
 
         key1 = generate_cache_key("zemberek", "morphology", "input one")
         key2 = generate_cache_key("zemberek", "morphology", "input two")
@@ -38,7 +45,9 @@ class TestCacheKeyGeneration:
 
     def test_case_normalization(self):
         """Test case normalization in key generation"""
-        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import generate_cache_key
+        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import (
+            generate_cache_key,
+        )
 
         key1 = generate_cache_key("zemberek", "morphology", "Test Input")
         key2 = generate_cache_key("zemberek", "morphology", "test input")
@@ -47,7 +56,9 @@ class TestCacheKeyGeneration:
 
     def test_whitespace_normalization(self):
         """Test whitespace normalization"""
-        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import generate_cache_key
+        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import (
+            generate_cache_key,
+        )
 
         key1 = generate_cache_key("zemberek", "morphology", "  test input  ")
         key2 = generate_cache_key("zemberek", "morphology", "test input")

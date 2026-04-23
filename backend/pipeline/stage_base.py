@@ -9,8 +9,8 @@ Boris Cherny Standards:
 """
 
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -18,15 +18,15 @@ from pydantic import BaseModel, Field
 class StageInput(BaseModel):
     """Pipeline aşaması için input modeli"""
 
-    question_data: Dict[str, Any] = Field(
+    question_data: dict[str, Any] = Field(
         default_factory=dict,
         description="Soru verileri"
     )
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Pipeline metadata"
     )
-    previous_scores: Dict[str, float] = Field(
+    previous_scores: dict[str, float] = Field(
         default_factory=dict,
         description="Önceki aşamaların skorları"
     )
@@ -38,7 +38,7 @@ class StageInput(BaseModel):
 class StageOutput(BaseModel):
     """Pipeline aşaması için output modeli"""
 
-    question_data: Dict[str, Any] = Field(
+    question_data: dict[str, Any] = Field(
         default_factory=dict,
         description="Güncellenmiş soru verileri"
     )
@@ -51,19 +51,19 @@ class StageOutput(BaseModel):
         default=False,
         description="Aşama başarılı mı"
     )
-    errors: List[str] = Field(
+    errors: list[str] = Field(
         default_factory=list,
         description="Hata mesajları"
     )
-    warnings: List[str] = Field(
+    warnings: list[str] = Field(
         default_factory=list,
         description="Uyarı mesajları"
     )
-    suggestions: List[str] = Field(
+    suggestions: list[str] = Field(
         default_factory=list,
         description="İyileştirme önerileri"
     )
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Aşama metadata"
     )
@@ -92,8 +92,8 @@ class BasePipelineStage(ABC):
     def __init__(
         self,
         stage_name: str,
-        llm_client: Optional[Any] = None,
-        config: Optional[Dict[str, Any]] = None
+        llm_client: Any | None = None,
+        config: dict[str, Any] | None = None
     ):
         """
         Pipeline aşaması başlat
@@ -106,7 +106,7 @@ class BasePipelineStage(ABC):
         self.stage_name = stage_name
         self.llm = llm_client
         self.config = config or {}
-        self._initialized_at = datetime.now(timezone.utc)
+        self._initialized_at = datetime.now(UTC)
 
     @abstractmethod
     async def process(self, input_data: StageInput) -> StageOutput:
@@ -119,7 +119,6 @@ class BasePipelineStage(ABC):
         Returns:
             StageOutput: Aşama çıkışı
         """
-        pass
 
     @abstractmethod
     def get_stage_weight(self) -> float:
@@ -136,9 +135,8 @@ class BasePipelineStage(ABC):
         - Compliance: 0.20 (20%)
         - Language: 0.15 (15%)
         """
-        pass
 
-    def get_stage_info(self) -> Dict[str, Any]:
+    def get_stage_info(self) -> dict[str, Any]:
         """Aşama bilgilerini döndür"""
         return {
             "stage_name": self.stage_name,

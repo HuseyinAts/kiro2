@@ -5,11 +5,8 @@ Revises: 004_adv_perf_idx, add_taxonomy_fields, b49a86e335e5
 Create Date: 2026-02-07 15:37:26.479462
 
 """
-from typing import Sequence, Union
-
-from alembic import op
-import sqlalchemy as sa
-
+from collections.abc import Sequence
+from typing import Union
 
 # revision identifiers, used by Alembic.
 revision: str = '63ca2329af07'

@@ -6,7 +6,6 @@ Tests for YKS exam duration and timer logic.
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Optional
 
 # Add backend directory to path
 backend_dir = Path(__file__).parent.parent.parent.parent
@@ -40,15 +39,15 @@ class ExamTimer:
     def __init__(
         self,
         exam_type: str,
-        start_time: Optional[datetime] = None,
+        start_time: datetime | None = None,
     ):
         """Initialize exam timer."""
         self.exam_type = exam_type
         self.duration_minutes = EXAM_DURATIONS[exam_type]
         self.start_time = start_time
-        self.end_time: Optional[datetime] = None
+        self.end_time: datetime | None = None
         self.state = ExamState.PENDING
-        self.answers: Dict[str, str] = {}
+        self.answers: dict[str, str] = {}
 
     def start(self) -> None:
         """Start the exam."""

@@ -4,13 +4,13 @@ Sprint 7: Test Coverage
 
 Tests for FastAPI rate limiting middleware.
 """
-import pytest
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
+import pytest
 from fastapi import Request, Response
 
+from core.advanced_rate_limiter import AdvancedRateLimiter, UserTier
 from core.rate_limit_middleware import RateLimitMiddleware, get_rate_limit_status
-from core.advanced_rate_limiter import UserTier, AdvancedRateLimiter
 
 
 @pytest.fixture

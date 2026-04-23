@@ -5,18 +5,19 @@ Learning Path Video Yükleme Sorunu - Circuit Breaker Tests
 Requirements: 5.18, 4.11
 """
 
-import pytest
 import asyncio
 from datetime import datetime
+
+import pytest
 
 from backend.core.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerConfig,
-    CircuitBreakerStats,
-    CircuitState,
-    CircuitBreakerOpenError,
     CircuitBreakerHalfOpenError,
     CircuitBreakerManager,
+    CircuitBreakerOpenError,
+    CircuitBreakerStats,
+    CircuitState,
 )
 
 

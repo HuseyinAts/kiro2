@@ -4,18 +4,23 @@ Target: 95%+ coverage for exception handling
 """
 
 import pytest
+
 from core.exceptions import (
-    ServiceError as TurkishEducationPlatformException,
-    ValidationError,
     AuthenticationError,
     AuthorizationError,
+    BusinessLogicError,
+    ConfigurationError,
+    ContentError,
     DatabaseError,
     ExternalServiceError,
-    ConfigurationError,
-    BusinessLogicError,
-    NotFoundError as ResourceNotFoundError,
     RateLimitError,
-    ContentError,
+    ValidationError,
+)
+from core.exceptions import (
+    NotFoundError as ResourceNotFoundError,
+)
+from core.exceptions import (
+    ServiceError as TurkishEducationPlatformException,
 )
 
 # Aliases for removed exception classes
@@ -693,7 +698,7 @@ class TestExceptionIntegration:
         exc = ValidationError("Türkçe içerik hatası", details=details)
 
         assert "Türkçe" in exc.details["mesaj"]
-        assert "öğrenci_numarası" == exc.details["alan"]
+        assert exc.details["alan"] == "öğrenci_numarası"
         assert "açıklama" in exc.details
 
 

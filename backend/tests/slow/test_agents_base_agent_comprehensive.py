@@ -2,18 +2,20 @@
 Comprehensive tests for agents.base_agent module
 Target: 75%+ coverage for base agent functionality
 """
-import pytest
 import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
 from agents.base_agent import (
-    BaseAgent,
-    AgentType,
-    AgentStatus,
-    MessageType,
-    AgentMessage,
     AgentCapability,
+    AgentMessage,
     AgentMetrics,
+    AgentStatus,
+    AgentType,
+    BaseAgent,
+    MessageType,
 )
 
 

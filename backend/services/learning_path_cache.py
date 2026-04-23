@@ -14,11 +14,11 @@ Features:
 
 import hashlib
 import json
-from typing import Optional, Dict, Any, List
+from typing import Any
 
+from core.metrics_collector import get_metrics_collector
 from core.multi_layer_cache import MultiLayerCache
 from core.structured_logger import get_logger
-from core.metrics_collector import get_metrics_collector
 
 logger = get_logger(__name__)
 
@@ -95,7 +95,7 @@ class LearningPathCache:
         await self.cache.close()
         logger.info("learning_path_cache_closed")
 
-    def _make_profile_hash(self, student_profile: Dict[str, Any]) -> str:
+    def _make_profile_hash(self, student_profile: dict[str, Any]) -> str:
         """
         Create hash from student profile for cache key
 
@@ -126,7 +126,7 @@ class LearningPathCache:
         return hashlib.md5(profile_json.encode()).hexdigest()[:16]
 
     def _make_search_hash(
-        self, subject: str, difficulty: Optional[str], keywords: Optional[List[str]]
+        self, subject: str, difficulty: str | None, keywords: list[str] | None
     ) -> str:
         """
         Create hash for resource search parameters
@@ -153,8 +153,8 @@ class LearningPathCache:
     # ============================================================================
 
     async def get_learning_path(
-        self, student_id: str, subject: str, student_profile: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+        self, student_id: str, subject: str, student_profile: dict[str, Any]
+    ) -> dict[str, Any] | None:
         """
         Get cached learning path
 
@@ -185,8 +185,8 @@ class LearningPathCache:
         self,
         student_id: str,
         subject: str,
-        student_profile: Dict[str, Any],
-        learning_path: Dict[str, Any],
+        student_profile: dict[str, Any],
+        learning_path: dict[str, Any],
     ) -> bool:
         """
         Cache learning path
@@ -219,7 +219,7 @@ class LearningPathCache:
         return success
 
     async def invalidate_learning_path(
-        self, student_id: str, subject: Optional[str] = None, cascade: bool = True
+        self, student_id: str, subject: str | None = None, cascade: bool = True
     ) -> int:
         """
         Invalidate learning path cache for student
@@ -289,9 +289,9 @@ class LearningPathCache:
     async def get_resource_search(
         self,
         subject: str,
-        difficulty: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
-    ) -> Optional[List[Dict[str, Any]]]:
+        difficulty: str | None = None,
+        keywords: list[str] | None = None,
+    ) -> list[dict[str, Any]] | None:
         """
         Get cached resource search results
 
@@ -321,9 +321,9 @@ class LearningPathCache:
     async def set_resource_search(
         self,
         subject: str,
-        resources: List[Dict[str, Any]],
-        difficulty: Optional[str] = None,
-        keywords: Optional[List[str]] = None,
+        resources: list[dict[str, Any]],
+        difficulty: str | None = None,
+        keywords: list[str] | None = None,
     ) -> bool:
         """
         Cache resource search results
@@ -360,7 +360,7 @@ class LearningPathCache:
     # Quiz Cache
     # ============================================================================
 
-    async def get_quiz(self, quiz_id: str) -> Optional[Dict[str, Any]]:
+    async def get_quiz(self, quiz_id: str) -> dict[str, Any] | None:
         """
         Get cached quiz data
 
@@ -378,7 +378,7 @@ class LearningPathCache:
 
         return result
 
-    async def set_quiz(self, quiz_id: str, quiz_data: Dict[str, Any]) -> bool:
+    async def set_quiz(self, quiz_id: str, quiz_data: dict[str, Any]) -> bool:
         """
         Cache quiz data
 
@@ -420,7 +420,7 @@ class LearningPathCache:
     # Student Progress Cache
     # ============================================================================
 
-    async def get_progress(self, path_id: str) -> Optional[Dict[str, Any]]:
+    async def get_progress(self, path_id: str) -> dict[str, Any] | None:
         """
         Get cached student progress
 
@@ -438,7 +438,7 @@ class LearningPathCache:
 
         return result
 
-    async def set_progress(self, path_id: str, progress: Dict[str, Any]) -> bool:
+    async def set_progress(self, path_id: str, progress: dict[str, Any]) -> bool:
         """
         Cache student progress
 
@@ -480,7 +480,7 @@ class LearningPathCache:
     # Completion Status Cache
     # ============================================================================
 
-    async def get_completion(self, path_id: str) -> Optional[Dict[str, Any]]:
+    async def get_completion(self, path_id: str) -> dict[str, Any] | None:
         """
         Get cached completion status
 
@@ -498,7 +498,7 @@ class LearningPathCache:
 
         return result
 
-    async def set_completion(self, path_id: str, completion: Dict[str, Any]) -> bool:
+    async def set_completion(self, path_id: str, completion: dict[str, Any]) -> bool:
         """
         Cache completion status
 
@@ -540,7 +540,7 @@ class LearningPathCache:
     # Student Profile Cache
     # ============================================================================
 
-    async def get_student_profile(self, student_id: str) -> Optional[Dict[str, Any]]:
+    async def get_student_profile(self, student_id: str) -> dict[str, Any] | None:
         """
         Get cached student profile
 
@@ -559,7 +559,7 @@ class LearningPathCache:
         return result
 
     async def set_student_profile(
-        self, student_id: str, profile: Dict[str, Any]
+        self, student_id: str, profile: dict[str, Any]
     ) -> bool:
         """
         Cache student profile
@@ -611,7 +611,7 @@ class LearningPathCache:
     # Cache Statistics & Health
     # ============================================================================
 
-    def get_cache_metrics(self) -> Dict[str, Any]:
+    def get_cache_metrics(self) -> dict[str, Any]:
         """
         Get cache performance metrics
 
@@ -620,7 +620,7 @@ class LearningPathCache:
         """
         return self.cache.metrics.to_dict()
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """
         Check cache health
 
@@ -653,7 +653,7 @@ class LearningPathCache:
 # Singleton instance
 # ============================================================================
 
-_learning_path_cache_instance: Optional[LearningPathCache] = None
+_learning_path_cache_instance: LearningPathCache | None = None
 
 
 def get_learning_path_cache(

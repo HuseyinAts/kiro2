@@ -13,7 +13,7 @@ import asyncio
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 
 @dataclass
@@ -27,7 +27,7 @@ class SimplificationResult:
     complexity_reduction: float  # 0-1 arası
     readability_score: float  # 0-10 arası
     processing_time_ms: float
-    applied_rules: List[str]
+    applied_rules: list[str]
 
 
 @dataclass
@@ -187,7 +187,7 @@ class ThreeLevelTurkishSimplification:
             applied_rules=applied_rules,
         )
 
-    async def _lexical_simplification(self, text: str) -> Tuple[str, List[str]]:
+    async def _lexical_simplification(self, text: str) -> tuple[str, list[str]]:
         """Seviye 1: Kelime değiştirme"""
 
         simplified_text = text
@@ -217,7 +217,7 @@ class ThreeLevelTurkishSimplification:
 
         return simplified_text, applied_rules
 
-    async def _syntactic_simplification(self, text: str) -> Tuple[str, List[str]]:
+    async def _syntactic_simplification(self, text: str) -> tuple[str, list[str]]:
         """Seviye 2: Cümle yapısı basitleştirme"""
 
         sentences = self._split_sentences(text)
@@ -249,7 +249,7 @@ class ThreeLevelTurkishSimplification:
 
     async def _split_complex_turkish_sentence(
         self, sentence: str
-    ) -> Tuple[List[str], List[str]]:
+    ) -> tuple[list[str], list[str]]:
         """Karmaşık Türkçe cümleleri böl"""
 
         split_sentences = []
@@ -288,7 +288,7 @@ class ThreeLevelTurkishSimplification:
 
     async def _split_by_conjunctions(
         self, sentence: str
-    ) -> Tuple[List[str], List[str]]:
+    ) -> tuple[list[str], list[str]]:
         """Bağlaçlarla cümle bölme"""
 
         conjunctions = [
@@ -314,7 +314,7 @@ class ThreeLevelTurkishSimplification:
 
     async def _semantic_restructuring(
         self, text: str, target_level: str
-    ) -> Tuple[str, List[str]]:
+    ) -> tuple[str, list[str]]:
         """Seviye 3: Anlam korunumu ile yeniden yazma"""
 
         applied_rules = []
@@ -337,7 +337,7 @@ class ThreeLevelTurkishSimplification:
 
         return explained_text, applied_rules
 
-    def _simplify_metaphors(self, text: str) -> Tuple[str, List[str]]:
+    def _simplify_metaphors(self, text: str) -> tuple[str, list[str]]:
         """Metaforları basitleştir"""
 
         metaphor_replacements = {
@@ -361,7 +361,7 @@ class ThreeLevelTurkishSimplification:
 
         return simplified_text, applied_rules
 
-    def _add_concrete_examples(self, text: str) -> Tuple[str, List[str]]:
+    def _add_concrete_examples(self, text: str) -> tuple[str, list[str]]:
         """Soyut kavramlara somut örnekler ekle"""
 
         abstract_concepts = {
@@ -385,7 +385,7 @@ class ThreeLevelTurkishSimplification:
 
         return explained_text, applied_rules
 
-    def _shorten_sentences(self, text: str, target_level: str) -> Tuple[str, List[str]]:
+    def _shorten_sentences(self, text: str, target_level: str) -> tuple[str, list[str]]:
         """Cümleleri kısalt"""
 
         target_config = self.target_levels.get(
@@ -415,7 +415,7 @@ class ThreeLevelTurkishSimplification:
 
         return ". ".join(shortened_sentences), applied_rules
 
-    def _explain_technical_terms(self, text: str) -> Tuple[str, List[str]]:
+    def _explain_technical_terms(self, text: str) -> tuple[str, list[str]]:
         """Teknik terimleri açıkla"""
 
         technical_terms = {
@@ -439,7 +439,7 @@ class ThreeLevelTurkishSimplification:
 
         return explained_text, applied_rules
 
-    def _convert_passive_to_active(self, sentence: str) -> Tuple[str, List[str]]:
+    def _convert_passive_to_active(self, sentence: str) -> tuple[str, list[str]]:
         """Pasif cümleleri aktif yap"""
 
         applied_rules = []
@@ -460,7 +460,7 @@ class ThreeLevelTurkishSimplification:
 
         return active_sentence, applied_rules
 
-    async def _find_long_word_replacements(self, text: str) -> Dict[str, str]:
+    async def _find_long_word_replacements(self, text: str) -> dict[str, str]:
         """Uzun kelimelerin kısa karşılıklarını bul"""
 
         words = re.findall(r"\b\w+\b", text)
@@ -478,7 +478,7 @@ class ThreeLevelTurkishSimplification:
 
         return replacements
 
-    def _split_sentences(self, text: str) -> List[str]:
+    def _split_sentences(self, text: str) -> list[str]:
         """Metni cümlelere böl"""
         sentences = re.split(r"[.!?]+", text)
         return [s.strip() for s in sentences if s.strip()]
@@ -569,8 +569,8 @@ class ThreeLevelTurkishSimplification:
         return max(1, syllable_count)  # En az 1 hece
 
     async def batch_simplify(
-        self, texts: List[str], target_level: str = "intermediate"
-    ) -> List[SimplificationResult]:
+        self, texts: list[str], target_level: str = "intermediate"
+    ) -> list[SimplificationResult]:
         """Toplu basitleştirme"""
 
         tasks = [
@@ -603,7 +603,7 @@ class ThreeLevelTurkishSimplification:
 
     def get_simplification_statistics(
         self, result: SimplificationResult
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Basitleştirme istatistikleri"""
 
         original_words = len(result.original_text.split())

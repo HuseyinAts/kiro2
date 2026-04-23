@@ -4,7 +4,7 @@ Redis cache yönetimi ve monitoring endpoint'leri
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -24,7 +24,7 @@ class CacheStatsResponse(BaseModel):
     """Cache istatistikleri response modeli"""
 
     success: bool
-    data: Dict[str, Any]
+    data: dict[str, Any]
     message: str
 
 
@@ -32,7 +32,7 @@ class CacheHealthResponse(BaseModel):
     """Cache sağlık durumu response modeli"""
 
     success: bool
-    data: Dict[str, Any]
+    data: dict[str, Any]
     message: str
 
 
@@ -40,14 +40,14 @@ class InvalidationRequest(BaseModel):
     """Cache invalidation request modeli"""
 
     event_name: str = Field(..., description="Event adı")
-    context: Optional[Dict[str, Any]] = Field(default=None, description="Event context")
+    context: dict[str, Any] | None = Field(default=None, description="Event context")
 
 
 class PatternInvalidationRequest(BaseModel):
     """Pattern-based invalidation request modeli"""
 
     pattern: str = Field(..., description="Cache key pattern'i")
-    scope: Optional[str] = Field(
+    scope: str | None = Field(
         default=None, description="Cache scope (global, user, exam, content, session)"
     )
 
@@ -56,9 +56,9 @@ class CacheKeyRequest(BaseModel):
     """Cache key işlemi request modeli"""
 
     key: str = Field(..., description="Cache key")
-    value: Optional[Any] = Field(default=None, description="Cache value")
-    expire: Optional[int] = Field(default=None, description="Expire süresi (saniye)")
-    serialize: Optional[str] = Field(default="json", description="Serialization tipi")
+    value: Any | None = Field(default=None, description="Cache value")
+    expire: int | None = Field(default=None, description="Expire süresi (saniye)")
+    serialize: str | None = Field(default="json", description="Serialization tipi")
 
 
 @router.get("/stats", response_model=CacheStatsResponse)
@@ -95,7 +95,7 @@ async def get_cache_stats(current_user=Depends(get_current_admin_user)):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Cache stats hatası: {str(e)}")
+        logger.error(f"Cache stats hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -117,7 +117,7 @@ async def get_cache_health():
         )
 
     except Exception as e:
-        logger.error(f"Cache health check hatası: {str(e)}")
+        logger.error(f"Cache health check hatası: {e!s}")
         return CacheHealthResponse(
             success=False,
             data={"error": str(e)},
@@ -152,7 +152,7 @@ async def invalidate_by_event(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Event-based invalidation hatası: {str(e)}")
+        logger.error(f"Event-based invalidation hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -182,7 +182,7 @@ async def invalidate_by_pattern(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Pattern-based invalidation hatası: {str(e)}")
+        logger.error(f"Pattern-based invalidation hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -208,7 +208,7 @@ async def invalidate_user_cache(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Kullanıcı cache temizleme hatası: {str(e)}")
+        logger.error(f"Kullanıcı cache temizleme hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -216,7 +216,7 @@ async def invalidate_user_cache(
 
 @router.delete("/exam")
 async def invalidate_exam_cache(
-    exam_type: Optional[str] = Query(None, description="Sınav tipi (TYT, AYT, YDT)"),
+    exam_type: str | None = Query(None, description="Sınav tipi (TYT, AYT, YDT)"),
     current_user=Depends(get_current_admin_user),
 ):
     """
@@ -240,7 +240,7 @@ async def invalidate_exam_cache(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Sınav cache temizleme hatası: {str(e)}")
+        logger.error(f"Sınav cache temizleme hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -268,7 +268,7 @@ async def get_cache_key(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Cache key getirme hatası: {str(e)}")
+        logger.error(f"Cache key getirme hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -305,7 +305,7 @@ async def set_cache_key(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Cache key ayarlama hatası: {str(e)}")
+        logger.error(f"Cache key ayarlama hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -331,7 +331,7 @@ async def delete_cache_key(key: str, current_user=Depends(get_current_admin_user
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Cache key silme hatası: {str(e)}")
+        logger.error(f"Cache key silme hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -365,7 +365,7 @@ async def warm_up_cache(current_user=Depends(get_current_admin_user)):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Cache warm-up hatası: {str(e)}")
+        logger.error(f"Cache warm-up hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

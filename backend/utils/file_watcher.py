@@ -8,13 +8,12 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
-from typing import List, Optional, Set
 
 
 class FileWatcher:
     """Detects changed files using git diff."""
 
-    def __init__(self, repo_root: Optional[Path] = None):
+    def __init__(self, repo_root: Path | None = None):
         """
         Initialize file watcher.
 
@@ -40,7 +39,7 @@ class FileWatcher:
         self,
         staged_only: bool = False,
         include_untracked: bool = True
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Get list of changed files.
 
@@ -51,7 +50,7 @@ class FileWatcher:
         Returns:
             List of changed file paths
         """
-        changed: Set[str] = set()
+        changed: set[str] = set()
 
         if staged_only:
             # Get staged files
@@ -69,7 +68,7 @@ class FileWatcher:
         self,
         staged_only: bool = False,
         include_untracked: bool = True
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Get list of changed Python files.
 
@@ -83,7 +82,7 @@ class FileWatcher:
         all_changed = self.get_changed_files(staged_only, include_untracked)
         return [f for f in all_changed if f.endswith(".py")]
 
-    def _get_staged_files(self) -> List[str]:
+    def _get_staged_files(self) -> list[str]:
         """Get staged files from git."""
         try:
             result = subprocess.run(
@@ -102,7 +101,7 @@ class FileWatcher:
             pass
         return []
 
-    def _get_modified_files(self) -> List[str]:
+    def _get_modified_files(self) -> list[str]:
         """Get modified files (staged + unstaged)."""
         try:
             result = subprocess.run(
@@ -121,7 +120,7 @@ class FileWatcher:
             pass
         return []
 
-    def _get_untracked_files(self) -> List[str]:
+    def _get_untracked_files(self) -> list[str]:
         """Get untracked files."""
         try:
             result = subprocess.run(
@@ -155,7 +154,7 @@ class FileWatcher:
         return abs_path in changed_files or file_path in changed_files
 
 
-def get_changed_python_files(repo_root: Optional[Path] = None) -> List[str]:
+def get_changed_python_files(repo_root: Path | None = None) -> list[str]:
     """
     Convenience function to get changed Python files.
 

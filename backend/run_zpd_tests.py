@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 ZPD Maarif Service - Test Runner
 Comprehensive testing for Turkish cultural ZPD calculation service
@@ -8,8 +7,8 @@ Comprehensive testing for Turkish cultural ZPD calculation service
 import asyncio
 import sys
 
-from services.zpd_maarif_service import ZPDMaarifService
 from models.zpd_maarif import KulturelBaglamProfili, MaarifDegerleriProfili
+from services.zpd_maarif_service import ZPDMaarifService
 
 
 class ZPDTestRunner:

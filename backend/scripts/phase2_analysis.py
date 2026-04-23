@@ -7,7 +7,6 @@ Target: 35% overall coverage focusing on core business logic
 import json
 import sys
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass
@@ -16,8 +15,8 @@ class Phase2Target:
 
     phase: str
     target_percentage: float
-    focus_areas: List[str]
-    test_types: List[str]
+    focus_areas: list[str]
+    test_types: list[str]
     estimated_effort: str
     priority_level: str
 
@@ -55,7 +54,7 @@ class Phase2AnalysisStrategy:
 
         try:
             # Baseline coverage oku
-            with open("coverage.json", "r") as f:
+            with open("coverage.json") as f:
                 coverage_data = json.load(f)
         except FileNotFoundError:
             print("Coverage.json bulunamadı. Önce coverage raporu oluşturun.")
@@ -245,20 +244,19 @@ class Phase2AnalysisStrategy:
 
         if "api/" in path_lower or "endpoint" in path_lower:
             return "API Layer"
-        elif "service" in path_lower:
+        if "service" in path_lower:
             return "Service Layer"
-        elif "model" in path_lower or "schema" in path_lower:
+        if "model" in path_lower or "schema" in path_lower:
             return "Data Models"
-        elif "auth" in path_lower or "security" in path_lower:
+        if "auth" in path_lower or "security" in path_lower:
             return "Security"
-        elif "database" in path_lower or "db" in path_lower:
+        if "database" in path_lower or "db" in path_lower:
             return "Database"
-        elif "handler" in path_lower or "controller" in path_lower:
+        if "handler" in path_lower or "controller" in path_lower:
             return "Controllers"
-        elif "middleware" in path_lower:
+        if "middleware" in path_lower:
             return "Middleware"
-        else:
-            return "Core Logic"
+        return "Core Logic"
 
     def get_test_focus(self, category: str) -> str:
         """Kategori için test odak noktasını belirle"""

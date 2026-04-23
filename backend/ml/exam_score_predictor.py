@@ -13,14 +13,14 @@ Technology:
 - Statistical analysis
 - Time-series forecasting
 """
-import numpy as np
-from typing import Dict, List, Optional
+import logging
 from datetime import datetime
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+
+import joblib
+import numpy as np
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler
-import joblib
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class ExamScorePredictor:
         self.scaler = StandardScaler()
         self.is_trained = False
 
-    def prepare_features(self, student_data: Dict) -> np.ndarray:
+    def prepare_features(self, student_data: dict) -> np.ndarray:
         """
         Prepare features from student practice test data
 
@@ -192,7 +192,7 @@ class ExamScorePredictor:
 
         return np.array(features).reshape(1, -1)
 
-    def train(self, training_data: List[Dict], labels: List[float]):
+    def train(self, training_data: list[dict], labels: list[float]):
         """
         Train the prediction model
 
@@ -224,8 +224,8 @@ class ExamScorePredictor:
         logger.info("Training complete")
 
     def predict(
-        self, student_data: Dict, return_confidence: bool = True
-    ) -> Dict[str, float]:
+        self, student_data: dict, return_confidence: bool = True
+    ) -> dict[str, float]:
         """
         Predict exam score for a student
 
@@ -285,10 +285,9 @@ class ExamScorePredictor:
                 "confidence_level": 0.95,
                 "model_confidence": round(model_confidence, 2),
             }
-        else:
-            return {"predicted_score": round(predicted_score, 2)}
+        return {"predicted_score": round(predicted_score, 2)}
 
-    def get_feature_importance(self) -> Dict[str, float]:
+    def get_feature_importance(self) -> dict[str, float]:
         """Get feature importance for interpretation"""
         if not self.is_trained:
             raise ValueError("Model must be trained first")
@@ -335,8 +334,8 @@ class ExamScorePredictor:
         return dict(zip(feature_names, importances))
 
     def generate_recommendations(
-        self, student_data: Dict, prediction: Dict
-    ) -> List[str]:
+        self, student_data: dict, prediction: dict
+    ) -> list[str]:
         """
         Generate study recommendations based on prediction
 
@@ -449,7 +448,7 @@ class ExamScorePredictor:
 
 
 # Global instance
-_predictor: Optional[ExamScorePredictor] = None
+_predictor: ExamScorePredictor | None = None
 
 
 def get_exam_score_predictor() -> ExamScorePredictor:

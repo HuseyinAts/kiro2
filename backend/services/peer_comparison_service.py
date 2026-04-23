@@ -6,11 +6,11 @@ Differential privacy ile anonymized performance benchmarking.
 """
 
 from datetime import date, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 import numpy as np
-from sqlalchemy import select, and_, func
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 try:
@@ -61,8 +61,8 @@ class PeerComparisonService:
         self,
         period_start: date,
         period_end: date,
-        exclude_user_id: Optional[UUID] = None,
-    ) -> List[Dict[str, Any]]:
+        exclude_user_id: UUID | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Anonymized peer verilerini getir (REQ-7.1).
 
@@ -100,7 +100,7 @@ class PeerComparisonService:
         result = await self.db.execute(query)
         rows = result.all()
 
-        peer_data: List[Dict[str, Any]] = []
+        peer_data: list[dict[str, Any]] = []
 
         for row in rows:
             total_tasks = row.total_tasks or 0
@@ -131,7 +131,7 @@ class PeerComparisonService:
     def _calculate_percentile(
         self,
         value: float,
-        all_values: List[float],
+        all_values: list[float],
     ) -> float:
         """
         Percentile hesapla (REQ-7.2).
@@ -160,7 +160,7 @@ class PeerComparisonService:
         user_id: UUID,
         period_start: date,
         period_end: date,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Kullanici percentile'larini hesapla (REQ-7.2).
 
@@ -244,8 +244,8 @@ class PeerComparisonService:
 
     def _identify_strengths(
         self,
-        percentiles: Dict[str, float],
-    ) -> List[Dict[str, Any]]:
+        percentiles: dict[str, float],
+    ) -> list[dict[str, Any]]:
         """
         Guclu alanlari belirle (REQ-7.3).
 
@@ -257,7 +257,7 @@ class PeerComparisonService:
         Returns:
             List[Dict] - Guclu alanlar
         """
-        strengths: List[Dict[str, Any]] = []
+        strengths: list[dict[str, Any]] = []
 
         metrics = {
             "success_rate": ("Başarı Oranı", percentiles.get("success_rate_percentile")),
@@ -282,8 +282,8 @@ class PeerComparisonService:
 
     def _identify_improvements(
         self,
-        percentiles: Dict[str, float],
-    ) -> List[Dict[str, Any]]:
+        percentiles: dict[str, float],
+    ) -> list[dict[str, Any]]:
         """
         Gelisim alanlarini belirle (REQ-7.4).
 
@@ -295,7 +295,7 @@ class PeerComparisonService:
         Returns:
             List[Dict] - Gelisim alanlari
         """
-        improvements: List[Dict[str, Any]] = []
+        improvements: list[dict[str, Any]] = []
 
         metrics = {
             "success_rate": (
@@ -335,7 +335,7 @@ class PeerComparisonService:
         self,
         period_start: date,
         period_end: date,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Top performer stratejilerini analiz et (REQ-7.5).
 
@@ -357,7 +357,7 @@ class PeerComparisonService:
         top_count = max(1, len(sorted_peers) // 5)
         top_performers = sorted_peers[:top_count]
 
-        best_practices: List[str] = []
+        best_practices: list[str] = []
 
         # Analiz
         avg_tasks_top = sum(p["total_tasks"] for p in top_performers) / len(top_performers)
@@ -422,10 +422,9 @@ class PeerComparisonService:
         if DIFFPRIV_AVAILABLE:
             mechanism = Laplace(epsilon=self.EPSILON, sensitivity=self.SENSITIVITY)
             return mechanism.randomise(value)
-        else:
-            # Fallback: Basit noise
-            noise = np.random.laplace(0, self.SENSITIVITY / self.EPSILON)
-            return value + noise
+        # Fallback: Basit noise
+        noise = np.random.laplace(0, self.SENSITIVITY / self.EPSILON)
+        return value + noise
 
     def _verify_k_anonymity(
         self,
@@ -449,9 +448,9 @@ class PeerComparisonService:
     async def compare_performance(
         self,
         user_id: UUID,
-        period_start: Optional[date] = None,
-        period_end: Optional[date] = None,
-    ) -> Optional[PeerComparison]:
+        period_start: date | None = None,
+        period_end: date | None = None,
+    ) -> PeerComparison | None:
         """
         Performans karsilastirmasi yap ve kaydet.
 
@@ -526,7 +525,7 @@ class PeerComparisonService:
         self,
         user_id: UUID,
         limit: int = 10,
-    ) -> List[PeerComparison]:
+    ) -> list[PeerComparison]:
         """
         Karsilastirma gecmisini getir.
 
@@ -553,7 +552,7 @@ class PeerComparisonService:
         self,
         comparison_id: UUID,
         user_id: UUID,
-    ) -> Optional[PeerComparison]:
+    ) -> PeerComparison | None:
         """
         ID ile karsilastirma getir.
 
@@ -576,7 +575,7 @@ class PeerComparisonService:
     async def get_latest_comparison(
         self,
         user_id: UUID,
-    ) -> Optional[PeerComparison]:
+    ) -> PeerComparison | None:
         """
         En son karsilastirmayi getir.
 

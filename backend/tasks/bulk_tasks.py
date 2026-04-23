@@ -8,8 +8,9 @@ Lowest-priority bulk tasks:
 - Data export
 - Batch processing
 """
-from typing import Dict, Any, List
 from datetime import datetime, timedelta
+from typing import Any
+
 from core.celery_app import celery_app
 from core.structured_logger import get_logger
 
@@ -22,8 +23,8 @@ logger = get_logger(__name__)
     soft_time_limit=1800,  # 30 minutes
 )
 def bulk_import_questions(
-    self, questions_data: List[Dict[str, Any]], import_source: str, user_id: str
-) -> Dict[str, Any]:
+    self, questions_data: list[dict[str, Any]], import_source: str, user_id: str
+) -> dict[str, Any]:
     """
     Bulk import questions to database
 
@@ -64,7 +65,7 @@ def bulk_import_questions(
             except Exception as e:
                 logger.warning("bulk_import_batch_failed", batch_start=i, error=str(e))
                 failed_count += len(batch)
-                errors.append(f"Batch {i}-{i+batch_size}: {str(e)}")
+                errors.append(f"Batch {i}-{i+batch_size}: {e!s}")
 
         logger.info(
             "bulk_import_completed",
@@ -97,7 +98,7 @@ def export_user_data(
     export_format: str = "json",
     include_answers: bool = True,
     include_progress: bool = True,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Export user data (KVKK compliance)
 
@@ -138,7 +139,7 @@ def export_user_data(
 
 
 @celery_app.task(bind=True, name="tasks.bulk_tasks.cleanup_expired_cache_entries")
-def cleanup_expired_cache_entries(self) -> Dict[str, Any]:
+def cleanup_expired_cache_entries(self) -> dict[str, Any]:
     """
     Cleanup expired cache entries (scheduled task)
 
@@ -172,7 +173,7 @@ def cleanup_expired_cache_entries(self) -> Dict[str, Any]:
     name="tasks.bulk_tasks.bulk_update_question_statistics",
     soft_time_limit=600,  # 10 minutes
 )
-def bulk_update_question_statistics(self) -> Dict[str, Any]:
+def bulk_update_question_statistics(self) -> dict[str, Any]:
     """
     Bulk update question statistics (success rate, IRT parameters)
 
@@ -207,7 +208,7 @@ def bulk_update_question_statistics(self) -> Dict[str, Any]:
     name="tasks.bulk_tasks.archive_old_audit_logs",
     soft_time_limit=1800,  # 30 minutes
 )
-def archive_old_audit_logs(self, days_to_keep: int = 90) -> Dict[str, Any]:
+def archive_old_audit_logs(self, days_to_keep: int = 90) -> dict[str, Any]:
     """
     Archive old audit logs to cold storage
 

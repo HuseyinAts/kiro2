@@ -14,7 +14,12 @@ from typing import Any
 
 import aio_pika
 from aio_pika import ExchangeType, Message, connect_robust
-from aio_pika.abc import AbstractChannel, AbstractConnection, AbstractExchange, AbstractQueue
+from aio_pika.abc import (
+    AbstractChannel,
+    AbstractConnection,
+    AbstractExchange,
+    AbstractQueue,
+)
 
 from core.events import MicroserviceEventType, ServiceEvent, ServiceName
 

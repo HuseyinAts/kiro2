@@ -6,7 +6,6 @@ Author: Claude
 Date: 2025-10-27
 """
 import secrets
-from typing import Optional
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -66,7 +65,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
         return response
 
-    def _add_security_headers(self, response: Response, nonce: Optional[str] = None):
+    def _add_security_headers(self, response: Response, nonce: str | None = None):
         """Add all security headers to response"""
 
         # Content-Security-Policy (CSP)
@@ -105,7 +104,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # X-Permitted-Cross-Domain-Policies (control cross-domain policies)
         response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
 
-    def _build_csp_header(self, nonce: Optional[str] = None) -> str:
+    def _build_csp_header(self, nonce: str | None = None) -> str:
         """
         Build Content-Security-Policy header (Task 51.6)
 

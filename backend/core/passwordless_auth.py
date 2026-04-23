@@ -20,9 +20,9 @@ Requirements: REQ-5.1, REQ-5.2, REQ-5.3, REQ-5.4, REQ-5.5, REQ-5.6
 import secrets
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 from core.structured_logger import get_logger
 
@@ -78,8 +78,8 @@ class MagicLinkToken:
     created_at: datetime
     expires_at: datetime
     is_used: bool = False
-    ip_address: Optional[str] = None
-    user_agent: Optional[str] = None
+    ip_address: str | None = None
+    user_agent: str | None = None
 
 
 @dataclass
@@ -96,10 +96,10 @@ class MagicLinkResult:
     """
 
     success: bool
-    email: Optional[str] = None
-    token: Optional[str] = None
-    error_code: Optional[str] = None
-    error_message: Optional[str] = None
+    email: str | None = None
+    token: str | None = None
+    error_code: str | None = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -115,9 +115,9 @@ class TokenVerificationResult:
     """
 
     valid: bool
-    email: Optional[str] = None
-    error_code: Optional[str] = None
-    error_message: Optional[str] = None
+    email: str | None = None
+    error_code: str | None = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -134,8 +134,8 @@ class RateLimitEntry:
 
     email: str
     attempts: int = 0
-    first_attempt: Optional[datetime] = None
-    blocked_until: Optional[datetime] = None
+    first_attempt: datetime | None = None
+    blocked_until: datetime | None = None
 
 
 @dataclass
@@ -156,9 +156,9 @@ class AuditLogEntry:
 
     id: str
     event: PasswordlessAuthEvent
-    email: Optional[str]
-    ip_address: Optional[str]
-    user_agent: Optional[str]
+    email: str | None
+    ip_address: str | None
+    user_agent: str | None
     timestamp: datetime
     success: bool
     details: dict[str, Any] = field(default_factory=dict)
@@ -179,7 +179,7 @@ class TokenStorageProtocol(Protocol):
         """Token sakla."""
         ...
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Token getir."""
         ...
 
@@ -225,10 +225,10 @@ class InMemoryTokenStorage:
             Basarili ise True
         """
         self._storage[key] = value
-        self._expiry[key] = datetime.now(timezone.utc) + timedelta(seconds=expires_in)
+        self._expiry[key] = datetime.now(UTC) + timedelta(seconds=expires_in)
         return True
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """
         Token getirir.
 
@@ -243,7 +243,7 @@ class InMemoryTokenStorage:
 
         # Gecerlilik kontrolu
         expiry = self._expiry.get(key)
-        if expiry and datetime.now(timezone.utc) > expiry:
+        if expiry and datetime.now(UTC) > expiry:
             # Suresi dolmus, temizle
             await self.delete(key)
             return None
@@ -283,7 +283,7 @@ class InMemoryTokenStorage:
         Returns:
             Temizlenen token sayisi
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expired_keys = [
             key for key, expiry in self._expiry.items()
             if expiry < now
@@ -356,7 +356,7 @@ class PasswordlessAuthService:
 
     def __init__(
         self,
-        storage: Optional[InMemoryTokenStorage] = None,
+        storage: InMemoryTokenStorage | None = None,
     ) -> None:
         """
         Passwordless auth service baslatir.
@@ -383,8 +383,8 @@ class PasswordlessAuthService:
     async def generate_magic_link_token(
         self,
         email: str,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
     ) -> MagicLinkResult:
         """
         Magic link icin guvenli token olusturur.
@@ -456,7 +456,7 @@ class PasswordlessAuthService:
         # Guvenli token uret - secrets.token_urlsafe kullanir
         token = secrets.token_urlsafe(self.TOKEN_LENGTH)
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expires_at = now + timedelta(minutes=self.MAGIC_LINK_EXPIRE_MINUTES)
 
         # Token verisini olustur
@@ -530,8 +530,8 @@ class PasswordlessAuthService:
     async def verify_magic_link_token(
         self,
         token: str,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
     ) -> TokenVerificationResult:
         """
         Magic link token'i dogrular.
@@ -564,7 +564,7 @@ class PasswordlessAuthService:
 
         # Token verisini getir
         token_key = f"magic_link:token:{token}"
-        token_data: Optional[MagicLinkToken] = await self._storage.get(token_key)
+        token_data: MagicLinkToken | None = await self._storage.get(token_key)
 
         if token_data is None:
             self._log_audit_event(
@@ -613,7 +613,7 @@ class PasswordlessAuthService:
             )
 
         # Suresi dolmus mu?
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if now > token_data.expires_at:
             self._log_audit_event(
                 event=PasswordlessAuthEvent.MAGIC_LINK_EXPIRED,
@@ -687,7 +687,7 @@ class PasswordlessAuthService:
         token_key = f"magic_link:token:{token}"
 
         # Token verisini getir (email icin)
-        token_data: Optional[MagicLinkToken] = await self._storage.get(token_key)
+        token_data: MagicLinkToken | None = await self._storage.get(token_key)
 
         if token_data:
             # Email mapping'i de sil
@@ -786,9 +786,9 @@ class PasswordlessAuthService:
     async def log_fallback_to_password(
         self,
         email: str,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        reason: Optional[str] = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
+        reason: str | None = None,
     ) -> None:
         """
         Geleneksel girise geri donus olayini loglar.
@@ -818,7 +818,7 @@ class PasswordlessAuthService:
 
     # ==================== RATE LIMITING ====================
 
-    def _check_rate_limit(self, email: str) -> tuple[bool, Optional[int]]:
+    def _check_rate_limit(self, email: str) -> tuple[bool, int | None]:
         """
         Rate limiting kontrolu yapar.
 
@@ -830,7 +830,7 @@ class PasswordlessAuthService:
         Returns:
             (izin_var_mi, kalan_saniye): Rate limit durumu
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         email_lower = email.lower()
 
         if email_lower not in self._rate_limits:
@@ -891,11 +891,11 @@ class PasswordlessAuthService:
     def _log_audit_event(
         self,
         event: PasswordlessAuthEvent,
-        email: Optional[str],
-        ip_address: Optional[str],
-        user_agent: Optional[str],
+        email: str | None,
+        ip_address: str | None,
+        user_agent: str | None,
         success: bool,
-        details: Optional[dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ) -> AuditLogEntry:
         """
         Audit log kaydeder.
@@ -917,7 +917,7 @@ class PasswordlessAuthService:
             email=email,
             ip_address=ip_address,
             user_agent=user_agent,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             success=success,
             details=details or {},
         )
@@ -932,8 +932,8 @@ class PasswordlessAuthService:
 
     def get_recent_audit_logs(
         self,
-        email: Optional[str] = None,
-        event_type: Optional[PasswordlessAuthEvent] = None,
+        email: str | None = None,
+        event_type: PasswordlessAuthEvent | None = None,
         limit: int = 100,
     ) -> list[AuditLogEntry]:
         """
@@ -966,7 +966,7 @@ class PasswordlessAuthService:
         Returns:
             Istatistik sozlugu
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         last_hour = now - timedelta(hours=1)
         last_day = now - timedelta(days=1)
 
@@ -1013,7 +1013,7 @@ class PasswordlessAuthService:
 # ==================== GLOBAL INSTANCE ====================
 
 
-_passwordless_service: Optional[PasswordlessAuthService] = None
+_passwordless_service: PasswordlessAuthService | None = None
 
 
 def get_passwordless_auth_service() -> PasswordlessAuthService:
@@ -1074,9 +1074,9 @@ class WebAuthnCredential:
     public_key: str
     sign_count: int = 0
     transports: list[str] = field(default_factory=list)
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_used_at: Optional[datetime] = None
-    device_name: Optional[str] = None
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_used_at: datetime | None = None
+    device_name: str | None = None
     is_active: bool = True
 
 
@@ -1113,9 +1113,9 @@ class WebAuthnResult:
     """WebAuthn islem sonucu."""
 
     success: bool
-    data: Optional[Any] = None
-    error_code: Optional[str] = None
-    error_message: Optional[str] = None
+    data: Any | None = None
+    error_code: str | None = None
+    error_message: str | None = None
 
 
 # ==================== WEBAUTHN SERVICE ====================
@@ -1149,7 +1149,7 @@ class WebAuthnService:
         self,
         user_id: int,
         user_name: str,
-        user_display_name: Optional[str] = None,
+        user_display_name: str | None = None,
     ) -> WebAuthnResult:
         """Passkey kayit seceneklerini olusturur."""
         import base64
@@ -1182,7 +1182,7 @@ class WebAuthnService:
         self._challenges[challenge] = {
             "type": "registration",
             "user_id": user_id,
-            "expires_at": datetime.now(timezone.utc) + timedelta(minutes=5),
+            "expires_at": datetime.now(UTC) + timedelta(minutes=5),
         }
 
         logger.info("webauthn_registration_options_created", user_id=user_id)
@@ -1194,8 +1194,8 @@ class WebAuthnService:
         client_data_json: str,
         attestation_object: str,
         expected_challenge: str,
-        transports: Optional[list[str]] = None,
-        device_name: Optional[str] = None,
+        transports: list[str] | None = None,
+        device_name: str | None = None,
     ) -> WebAuthnResult:
         """Passkey kayit yanitini dogrular."""
         import base64
@@ -1209,7 +1209,7 @@ class WebAuthnService:
                 error_message="Challenge bulunamadi",
             )
 
-        if datetime.now(timezone.utc) > challenge_data["expires_at"]:
+        if datetime.now(UTC) > challenge_data["expires_at"]:
             del self._challenges[expected_challenge]
             return WebAuthnResult(
                 success=False,
@@ -1249,7 +1249,7 @@ class WebAuthnService:
 
     async def generate_authentication_options(
         self,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
     ) -> WebAuthnResult:
         """Passkey dogrulama seceneklerini olusturur."""
         challenge = secrets.token_urlsafe(32)
@@ -1269,7 +1269,7 @@ class WebAuthnService:
         self._challenges[challenge] = {
             "type": "authentication",
             "user_id": user_id,
-            "expires_at": datetime.now(timezone.utc) + timedelta(minutes=5),
+            "expires_at": datetime.now(UTC) + timedelta(minutes=5),
         }
 
         logger.info("webauthn_authentication_options_created", user_id=user_id)
@@ -1295,7 +1295,7 @@ class WebAuthnService:
                 error_message="Challenge bulunamadi",
             )
 
-        if datetime.now(timezone.utc) > challenge_data["expires_at"]:
+        if datetime.now(UTC) > challenge_data["expires_at"]:
             del self._challenges[expected_challenge]
             return WebAuthnResult(
                 success=False,
@@ -1329,7 +1329,7 @@ class WebAuthnService:
             )
 
         credential.sign_count += 1
-        credential.last_used_at = datetime.now(timezone.utc)
+        credential.last_used_at = datetime.now(UTC)
         del self._challenges[expected_challenge]
 
         logger.info("webauthn_authentication_verified", user_id=credential.user_id)
@@ -1357,7 +1357,7 @@ class WebAuthnService:
 # ==================== WEBAUTHN GLOBAL INSTANCE ====================
 
 
-_webauthn_service: Optional[WebAuthnService] = None
+_webauthn_service: WebAuthnService | None = None
 
 
 def get_webauthn_service() -> WebAuthnService:

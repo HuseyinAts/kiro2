@@ -9,21 +9,21 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Dict, Any, List
 import logging
 from dataclasses import dataclass
-from enum import Enum
 from datetime import datetime
+from enum import Enum
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..core.student_profiler import StudentProfiler
 
+from ..config import get_learning_path_config
 from ..models import (
-    StudentProfile,
     KnowledgeLevel,
     LearningStyle,
+    StudentProfile,
 )
-from ..config import get_learning_path_config
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +51,11 @@ class FormField:
     required: bool = True
     placeholder: str = ""
     help_text: str = ""
-    options: Optional[List[Dict[str, str]]] = None
-    min_value: Optional[float] = None
-    max_value: Optional[float] = None
-    default_value: Optional[Any] = None
-    validation_rules: Optional[List[str]] = None
+    options: list[dict[str, str]] | None = None
+    min_value: float | None = None
+    max_value: float | None = None
+    default_value: Any | None = None
+    validation_rules: list[str] | None = None
 
     def __post_init__(self):
         if self.options is None:
@@ -71,7 +71,7 @@ class FormDefinition:
     form_id: str
     title: str
     description: str
-    fields: List[FormField]
+    fields: list[FormField]
     submit_button_text: str = "Gönder"
     cancel_button_text: str = "İptal"
 
@@ -82,8 +82,8 @@ class FormSubmission:
 
     form_id: str
     student_id: str
-    data: Dict[str, Any]
-    submitted_at: Optional[datetime] = None
+    data: dict[str, Any]
+    submitted_at: datetime | None = None
 
     def __post_init__(self):
         if self.submitted_at is None:
@@ -95,8 +95,8 @@ class FormValidationResult:
     """Result of form validation."""
 
     is_valid: bool
-    errors: Optional[Dict[str, str]] = None
-    warnings: Optional[Dict[str, str]] = None
+    errors: dict[str, str] | None = None
+    warnings: dict[str, str] | None = None
 
     def __post_init__(self):
         if self.errors is None:
@@ -111,8 +111,8 @@ class FormSubmissionResult:
 
     success: bool
     message: str
-    profile: Optional[StudentProfile] = None
-    errors: Optional[Dict[str, str]] = None
+    profile: StudentProfile | None = None
+    errors: dict[str, str] | None = None
 
     def __post_init__(self):
         if self.errors is None:
@@ -126,7 +126,7 @@ class FormIntegrationService:
     student onboarding and profile management.
     """
 
-    def __init__(self, student_profiler: Optional[StudentProfiler] = None):
+    def __init__(self, student_profiler: StudentProfiler | None = None):
         """Initialize form integration service.
 
         Args:
@@ -391,7 +391,7 @@ class FormIntegrationService:
             submit_button_text="Hedefleri Kaydet",
         )
 
-    def validate_form(self, form_id: str, data: Dict[str, Any]) -> FormValidationResult:
+    def validate_form(self, form_id: str, data: dict[str, Any]) -> FormValidationResult:
         """Validate form submission data.
 
         Args:
@@ -401,8 +401,8 @@ class FormIntegrationService:
         Returns:
             FormValidationResult with validation status
         """
-        errors: Dict[str, str] = {}
-        warnings: Dict[str, str] = {}
+        errors: dict[str, str] = {}
+        warnings: dict[str, str] = {}
 
         # Get form definition
         form = self._get_form_by_id(form_id)
@@ -480,7 +480,7 @@ class FormIntegrationService:
         except Exception as e:
             logger.error(f"Profile form submission failed: {e}")
             return FormSubmissionResult(
-                success=False, message=f"Bir hata oluştu: {str(e)}"
+                success=False, message=f"Bir hata oluştu: {e!s}"
             )
 
     async def submit_learning_style_form(
@@ -519,7 +519,7 @@ class FormIntegrationService:
         except Exception as e:
             logger.error(f"Learning style form submission failed: {e}")
             return FormSubmissionResult(
-                success=False, message=f"Bir hata oluştu: {str(e)}"
+                success=False, message=f"Bir hata oluştu: {e!s}"
             )
 
     async def submit_goal_setting_form(
@@ -553,10 +553,10 @@ class FormIntegrationService:
         except Exception as e:
             logger.error(f"Goal setting form submission failed: {e}")
             return FormSubmissionResult(
-                success=False, message=f"Bir hata oluştu: {str(e)}"
+                success=False, message=f"Bir hata oluştu: {e!s}"
             )
 
-    def _get_form_by_id(self, form_id: str) -> Optional[FormDefinition]:
+    def _get_form_by_id(self, form_id: str) -> FormDefinition | None:
         """Get form definition by ID.
 
         Args:
@@ -572,7 +572,7 @@ class FormIntegrationService:
         }
         return forms.get(form_id)
 
-    def _validate_field(self, field: FormField, value: Any) -> Optional[str]:
+    def _validate_field(self, field: FormField, value: Any) -> str | None:
         """Validate a single field value.
 
         Args:
@@ -621,7 +621,7 @@ class FormIntegrationService:
 
         return None
 
-    def _cross_validate(self, form_id: str, data: Dict[str, Any]) -> Dict[str, str]:
+    def _cross_validate(self, form_id: str, data: dict[str, Any]) -> dict[str, str]:
         """Perform cross-field validation.
 
         Args:
@@ -631,7 +631,7 @@ class FormIntegrationService:
         Returns:
             Dictionary of field errors
         """
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
 
         if form_id == "profile_creation":
             # Grade and exam consistency
@@ -648,7 +648,7 @@ class FormIntegrationService:
         return errors
 
     def _create_profile_from_form(
-        self, student_id: str, data: Dict[str, Any]
+        self, student_id: str, data: dict[str, Any]
     ) -> StudentProfile:
         """Create StudentProfile from form data.
 
@@ -684,7 +684,7 @@ class FormIntegrationService:
             available_time=int(data.get("available_time", 120)),
         )
 
-    def _calculate_learning_style(self, data: Dict[str, Any]) -> LearningStyle:
+    def _calculate_learning_style(self, data: dict[str, Any]) -> LearningStyle:
         """Calculate learning style from questionnaire answers.
 
         Args:
@@ -693,7 +693,7 @@ class FormIntegrationService:
         Returns:
             Determined LearningStyle
         """
-        style_counts: Dict[str, int] = {
+        style_counts: dict[str, int] = {
             "visual": 0,
             "auditory": 0,
             "reading": 0,
@@ -744,22 +744,22 @@ class FormIntegration:
         self.service = form_service
         logger.info("FormIntegration initialized")
 
-    def get_form(self, form_type: str) -> Dict[str, Any]:
+    def get_form(self, form_type: str) -> dict[str, Any]:
         """Get form definition."""
         try:
             return self.service.get_form(form_type=form_type)
         except Exception as e:
-            logger.error(f"Get form error: {str(e)}")
+            logger.error(f"Get form error: {e!s}")
             return {}
 
     async def submit_form(
-        self, form_type: str, student_id: str, data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, form_type: str, student_id: str, data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Submit form data."""
         try:
             return await self.service.submit_form(
                 form_type=form_type, student_id=student_id, form_data=data
             )
         except Exception as e:
-            logger.error(f"Submit form error: {str(e)}")
+            logger.error(f"Submit form error: {e!s}")
             return {"error": str(e)}

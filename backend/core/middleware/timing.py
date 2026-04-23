@@ -9,13 +9,13 @@ Date: 2026-01-14
 Requirements: REQ-6.2, REQ-6.5
 """
 
-import time
 import logging
 import statistics
-from typing import Optional, Callable
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+import time
 from collections import deque
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -50,7 +50,7 @@ class EndpointStats:
         self.request_count += 1
         if is_error:
             self.error_count += 1
-        self.last_updated = datetime.now(timezone.utc)
+        self.last_updated = datetime.now(UTC)
 
     def get_percentile(self, p: float) -> float:
         """P-th percentile hesaplar."""
@@ -160,7 +160,7 @@ class TimingStatsManager:
                 f"(threshold: {self.slow_threshold_ms}ms, status: {status_code})"
             )
 
-    def get_stats(self, endpoint: str, method: str) -> Optional[EndpointStats]:
+    def get_stats(self, endpoint: str, method: str) -> EndpointStats | None:
         """
         Endpoint stats döndürür.
 
@@ -178,7 +178,7 @@ class TimingStatsManager:
         """Tüm endpoint stats'larını döndürür."""
         return [stats.to_dict() for stats in self._stats.values()]
 
-    def get_slow_endpoints(self, threshold_ms: Optional[float] = None) -> list[dict]:
+    def get_slow_endpoints(self, threshold_ms: float | None = None) -> list[dict]:
         """
         Slow endpoint'leri döndürür.
 
@@ -222,8 +222,8 @@ class TimingMiddleware(BaseHTTPMiddleware):
     def __init__(
         self,
         app,
-        stats_manager: Optional[TimingStatsManager] = None,
-        exclude_paths: Optional[list[str]] = None
+        stats_manager: TimingStatsManager | None = None,
+        exclude_paths: list[str] | None = None
     ):
         """
         TimingMiddleware başlatır.
@@ -315,7 +315,7 @@ class CORSPreflightCache:
 
         logger.info(f"CORSPreflightCache initialized: TTL={ttl_seconds}s")
 
-    def get(self, origin: str) -> Optional[dict]:
+    def get(self, origin: str) -> dict | None:
         """
         Cached preflight response döndürür.
 
@@ -331,7 +331,7 @@ class CORSPreflightCache:
         headers, cached_at = self._cache[origin]
 
         # Check expiration
-        if datetime.now(timezone.utc) - cached_at > timedelta(seconds=self.ttl_seconds):
+        if datetime.now(UTC) - cached_at > timedelta(seconds=self.ttl_seconds):
             del self._cache[origin]
             return None
 
@@ -345,7 +345,7 @@ class CORSPreflightCache:
             origin: Request origin
             headers: CORS headers
         """
-        self._cache[origin] = (headers, datetime.now(timezone.utc))
+        self._cache[origin] = (headers, datetime.now(UTC))
 
     def clear(self) -> None:
         """Cache'i temizler."""
@@ -386,7 +386,7 @@ class JWTTokenCache:
         import hashlib
         return hashlib.sha256(token.encode()).hexdigest()[:32]
 
-    def get(self, token: str) -> Optional[dict]:
+    def get(self, token: str) -> dict | None:
         """
         Cached user data döndürür.
 
@@ -403,13 +403,13 @@ class JWTTokenCache:
 
         user_data, expiry = self._cache[token_hash]
 
-        if datetime.now(timezone.utc) > expiry:
+        if datetime.now(UTC) > expiry:
             del self._cache[token_hash]
             return None
 
         return user_data
 
-    def set(self, token: str, user_data: dict, ttl: Optional[int] = None) -> None:
+    def set(self, token: str, user_data: dict, ttl: int | None = None) -> None:
         """
         Token validation sonucunu cache'ler.
 
@@ -423,7 +423,7 @@ class JWTTokenCache:
             self._evict_expired()
 
         token_hash = self._hash_token(token)
-        expiry = datetime.now(timezone.utc) + timedelta(seconds=ttl or self.default_ttl)
+        expiry = datetime.now(UTC) + timedelta(seconds=ttl or self.default_ttl)
         self._cache[token_hash] = (user_data, expiry)
 
     def invalidate(self, token: str) -> None:
@@ -433,7 +433,7 @@ class JWTTokenCache:
 
     def _evict_expired(self) -> None:
         """Expired entry'leri temizler."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expired = [k for k, (_, exp) in self._cache.items() if now > exp]
         for key in expired:
             del self._cache[key]
@@ -447,7 +447,7 @@ class JWTTokenCache:
 # SINGLETON INSTANCES
 # =============================================================================
 
-_timing_stats_manager: Optional[TimingStatsManager] = None
+_timing_stats_manager: TimingStatsManager | None = None
 
 
 def get_timing_stats_manager() -> TimingStatsManager:

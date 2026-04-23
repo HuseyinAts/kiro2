@@ -14,6 +14,7 @@ Date: 2026-01-19
 """
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Load test: ChromaDB not available, ZeroDivisionError on empty results", allow_module_level=True)
 
 import asyncio
@@ -22,7 +23,6 @@ import statistics
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from typing import Optional
 
 import pytest
 
@@ -154,7 +154,7 @@ class ChromaDBLoadTester:
         self,
         num_queries: int = 1000,
         concurrent_workers: int = 10,
-        query_texts: Optional[list[str]] = None
+        query_texts: list[str] | None = None
     ) -> LoadTestResult:
         """
         Throughput testi calistir.

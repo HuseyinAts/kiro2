@@ -3,10 +3,11 @@ Optimal Hybrid AI API Endpoints
 FastAPI entegrasyonu
 """
 
-from typing import Optional, Dict, Any
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Any
+
 import structlog
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, ConfigDict, Field
 
 try:
     from optimal_hybrid_system import OptimalHybridSystem, SmartRouter
@@ -20,7 +21,7 @@ logger = structlog.get_logger()
 router = APIRouter(prefix="/api/v1/ai", tags=["Optimal AI"])
 
 # Global sistem instance
-_system_instance: Optional[OptimalHybridSystem] = None
+_system_instance: OptimalHybridSystem | None = None
 
 
 def get_system() -> OptimalHybridSystem:
@@ -35,9 +36,9 @@ def get_system() -> OptimalHybridSystem:
 class AIQueryRequest(BaseModel):
     """AI sorgu isteği"""
     query: str = Field(..., description="Kullanıcı sorusu", min_length=1, max_length=10000)
-    context: Optional[Dict[str, Any]] = Field(None, description="Ek bağlam bilgisi")
+    context: dict[str, Any] | None = Field(None, description="Ek bağlam bilgisi")
     use_cache: bool = Field(True, description="Cache kullan")
-    
+
     model_config = ConfigDict(json_schema_extra={
         "example": {
             "query": "Python'da async/await nasıl kullanılır?",
@@ -58,13 +59,13 @@ class AIQueryResponse(BaseModel):
     cached: bool
     duration: float
     cost: float
-    routing_info: Dict[str, Any]
+    routing_info: dict[str, Any]
 
 
 class RoutingInfoRequest(BaseModel):
     """Routing bilgi isteği"""
     query: str = Field(..., description="Analiz edilecek sorgu")
-    context: Optional[Dict[str, Any]] = Field(None, description="Ek bağlam")
+    context: dict[str, Any] | None = Field(None, description="Ek bağlam")
 
 
 class RoutingInfoResponse(BaseModel):
@@ -82,7 +83,7 @@ class SystemMetricsResponse(BaseModel):
     total_time: float
     avg_time: float
     avg_cost: float
-    cache_hit_rate: Dict[str, float]
+    cache_hit_rate: dict[str, float]
 
 
 # Endpoints
@@ -105,7 +106,7 @@ async def ai_query(
             context=request.context,
             use_cache=request.use_cache
         )
-        
+
         return AIQueryResponse(
             success=True,
             response=result["response"],
@@ -115,14 +116,14 @@ async def ai_query(
             cost=result["cost"],
             routing_info=result["routing_info"]
         )
-    
+
     except ValueError as e:
         logger.error("api_key_missing", error=str(e))
         raise HTTPException(
             status_code=500,
             detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
-    
+
     except Exception as e:
         logger.error("query_failed", error=str(e), query=request.query[:100])
         raise HTTPException(
@@ -141,9 +142,9 @@ async def get_routing_info(request: RoutingInfoRequest):
     try:
         router = SmartRouter()
         info = router.get_routing_info(request.query, request.context)
-        
+
         return RoutingInfoResponse(**info)
-    
+
     except Exception as e:
         logger.error("routing_info_failed", error=str(e))
         raise HTTPException(
@@ -162,7 +163,7 @@ async def get_metrics(system: OptimalHybridSystem = Depends(get_system)):
     try:
         metrics = system.get_metrics()
         return SystemMetricsResponse(**metrics)
-    
+
     except Exception as e:
         logger.error("metrics_failed", error=str(e))
         raise HTTPException(
@@ -177,10 +178,10 @@ async def health_check():
     Sistem sağlık kontrolü
     """
     import os
-    
+
     gemini_key = os.getenv("GOOGLE_API_KEY")
     claude_key = os.getenv("ANTHROPIC_API_KEY")
-    
+
     return {
         "status": "healthy",
         "gemini_configured": bool(gemini_key),

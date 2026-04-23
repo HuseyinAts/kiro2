@@ -4,7 +4,7 @@ Generic CRUD operations for all models
 """
 
 import logging
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar
+from typing import Any, Generic, TypeVar
 
 from sqlalchemy import delete, func, or_, select, update
 from sqlalchemy.exc import SQLAlchemyError
@@ -21,7 +21,7 @@ ModelType = TypeVar("ModelType", bound=Base)
 class BaseRepository(Generic[ModelType]):
     """Generic repository for CRUD operations"""
 
-    def __init__(self, model: Type[ModelType], session: AsyncSession):
+    def __init__(self, model: type[ModelType], session: AsyncSession):
         self.model = model
         self.session = session
 
@@ -34,11 +34,11 @@ class BaseRepository(Generic[ModelType]):
             await self.session.refresh(instance)
             return instance
         except SQLAlchemyError as e:
-            logger.error(f"Error creating {self.model.__name__}: {str(e)}")
+            logger.error(f"Error creating {self.model.__name__}: {e!s}")
             await self.session.rollback()
             raise
 
-    async def get_by_id(self, id: str) -> Optional[ModelType]:
+    async def get_by_id(self, id: str) -> ModelType | None:
         """Get record by ID"""
         try:
             result = await self.session.execute(
@@ -46,10 +46,10 @@ class BaseRepository(Generic[ModelType]):
             )
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
-            logger.error(f"Error getting {self.model.__name__} by id {id}: {str(e)}")
+            logger.error(f"Error getting {self.model.__name__} by id {id}: {e!s}")
             raise
 
-    async def get_by_field(self, field_name: str, value: Any) -> Optional[ModelType]:
+    async def get_by_field(self, field_name: str, value: Any) -> ModelType | None:
         """Get record by specific field"""
         try:
             field = getattr(self.model, field_name)
@@ -59,7 +59,7 @@ class BaseRepository(Generic[ModelType]):
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
             logger.error(
-                f"Error getting {self.model.__name__} by {field_name}: {str(e)}"
+                f"Error getting {self.model.__name__} by {field_name}: {e!s}"
             )
             raise
 
@@ -67,9 +67,9 @@ class BaseRepository(Generic[ModelType]):
         self,
         skip: int = 0,
         limit: int = 100,
-        order_by: Optional[str] = None,
-        filters: Optional[Dict[str, Any]] = None,
-    ) -> List[ModelType]:
+        order_by: str | None = None,
+        filters: dict[str, Any] | None = None,
+    ) -> list[ModelType]:
         """Get all records with pagination and filtering"""
         try:
             query = select(self.model)
@@ -95,10 +95,10 @@ class BaseRepository(Generic[ModelType]):
             result = await self.session.execute(query)
             return result.scalars().all()
         except SQLAlchemyError as e:
-            logger.error(f"Error getting all {self.model.__name__}: {str(e)}")
+            logger.error(f"Error getting all {self.model.__name__}: {e!s}")
             raise
 
-    async def update(self, id: str, **kwargs) -> Optional[ModelType]:
+    async def update(self, id: str, **kwargs) -> ModelType | None:
         """Update record by ID"""
         try:
             # Remove None values
@@ -113,7 +113,7 @@ class BaseRepository(Generic[ModelType]):
 
             return await self.get_by_id(id)
         except SQLAlchemyError as e:
-            logger.error(f"Error updating {self.model.__name__} {id}: {str(e)}")
+            logger.error(f"Error updating {self.model.__name__} {id}: {e!s}")
             await self.session.rollback()
             raise
 
@@ -125,20 +125,19 @@ class BaseRepository(Generic[ModelType]):
             )
             return result.rowcount > 0
         except SQLAlchemyError as e:
-            logger.error(f"Error deleting {self.model.__name__} {id}: {str(e)}")
+            logger.error(f"Error deleting {self.model.__name__} {id}: {e!s}")
             await self.session.rollback()
             raise
 
-    async def soft_delete(self, id: str) -> Optional[ModelType]:
+    async def soft_delete(self, id: str) -> ModelType | None:
         """Soft delete record (set is_active = False)"""
         if hasattr(self.model, "is_active"):
             return await self.update(id, is_active=False)
-        else:
-            raise NotImplementedError(
-                f"{self.model.__name__} does not support soft delete"
-            )
+        raise NotImplementedError(
+            f"{self.model.__name__} does not support soft delete"
+        )
 
-    async def count(self, filters: Optional[Dict[str, Any]] = None) -> int:
+    async def count(self, filters: dict[str, Any] | None = None) -> int:
         """Count records with optional filtering"""
         try:
             query = select(func.count(self.model.id))
@@ -156,7 +155,7 @@ class BaseRepository(Generic[ModelType]):
             result = await self.session.execute(query)
             return result.scalar()
         except SQLAlchemyError as e:
-            logger.error(f"Error counting {self.model.__name__}: {str(e)}")
+            logger.error(f"Error counting {self.model.__name__}: {e!s}")
             raise
 
     async def exists(self, **kwargs) -> bool:
@@ -172,10 +171,10 @@ class BaseRepository(Generic[ModelType]):
             result = await self.session.execute(query.limit(1))
             return result.scalar() is not None
         except SQLAlchemyError as e:
-            logger.error(f"Error checking existence in {self.model.__name__}: {str(e)}")
+            logger.error(f"Error checking existence in {self.model.__name__}: {e!s}")
             raise
 
-    async def bulk_create(self, objects: List[Dict[str, Any]]) -> List[ModelType]:
+    async def bulk_create(self, objects: list[dict[str, Any]]) -> list[ModelType]:
         """Bulk create multiple records"""
         try:
             instances = [self.model(**obj) for obj in objects]
@@ -188,11 +187,11 @@ class BaseRepository(Generic[ModelType]):
 
             return instances
         except SQLAlchemyError as e:
-            logger.error(f"Error bulk creating {self.model.__name__}: {str(e)}")
+            logger.error(f"Error bulk creating {self.model.__name__}: {e!s}")
             await self.session.rollback()
             raise
 
-    async def bulk_update(self, updates: List[Dict[str, Any]]) -> int:
+    async def bulk_update(self, updates: list[dict[str, Any]]) -> int:
         """Bulk update multiple records"""
         try:
             updated_count = 0
@@ -210,17 +209,17 @@ class BaseRepository(Generic[ModelType]):
 
             return updated_count
         except SQLAlchemyError as e:
-            logger.error(f"Error bulk updating {self.model.__name__}: {str(e)}")
+            logger.error(f"Error bulk updating {self.model.__name__}: {e!s}")
             await self.session.rollback()
             raise
 
     async def search(
         self,
         search_term: str,
-        search_fields: List[str],
+        search_fields: list[str],
         skip: int = 0,
         limit: int = 100,
-    ) -> List[ModelType]:
+    ) -> list[ModelType]:
         """Search records by text in specified fields"""
         try:
             query = select(self.model)
@@ -241,12 +240,12 @@ class BaseRepository(Generic[ModelType]):
             result = await self.session.execute(query)
             return result.scalars().all()
         except SQLAlchemyError as e:
-            logger.error(f"Error searching {self.model.__name__}: {str(e)}")
+            logger.error(f"Error searching {self.model.__name__}: {e!s}")
             raise
 
     async def get_with_relations(
-        self, id: str, relations: List[str]
-    ) -> Optional[ModelType]:
+        self, id: str, relations: list[str]
+    ) -> ModelType | None:
         """Get record with specified relationships loaded"""
         try:
             query = select(self.model).where(self.model.id == id)
@@ -260,7 +259,7 @@ class BaseRepository(Generic[ModelType]):
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
             logger.error(
-                f"Error getting {self.model.__name__} with relations: {str(e)}"
+                f"Error getting {self.model.__name__} with relations: {e!s}"
             )
             raise
 
@@ -269,7 +268,7 @@ class BaseRepository(Generic[ModelType]):
         try:
             await self.session.commit()
         except SQLAlchemyError as e:
-            logger.error(f"Error committing transaction: {str(e)}")
+            logger.error(f"Error committing transaction: {e!s}")
             await self.session.rollback()
             raise
 

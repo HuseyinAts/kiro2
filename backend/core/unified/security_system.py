@@ -16,7 +16,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Tuple
+from typing import Any
 
 import bcrypt
 from cryptography.fernet import Fernet
@@ -336,7 +336,7 @@ class UnifiedSecurityManager:
     # Input Validation
     def validate_request(
         self, request_data: Any, content_type: str = "application/json"
-    ) -> Tuple[bool, list[str]]:
+    ) -> tuple[bool, list[str]]:
         """Validate incoming request data"""
         errors = []
 

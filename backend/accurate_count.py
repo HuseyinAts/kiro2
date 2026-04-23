@@ -1,4 +1,7 @@
-import subprocess, sys, os, re
+import os
+import re
+import subprocess
+import sys
 
 env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONIOENCODING': 'utf-8'}
 cwd = r"C:\Users\husey\kiro2\backend"
@@ -28,7 +31,7 @@ with open(outfile, 'w', encoding='utf-8', errors='replace') as fout:
     result = subprocess.run(args, cwd=cwd, stdout=fout, stderr=subprocess.STDOUT,
                            timeout=600, env=env)
 
-with open(outfile, 'r', encoding='utf-8', errors='replace') as f:
+with open(outfile, encoding='utf-8', errors='replace') as f:
     content = f.read()
 
 clean = re.sub(r'\x1b\[[0-9;]*m', '', content)
@@ -52,6 +55,7 @@ for l in lines[-20:]:
 
 # Failures by file
 from collections import Counter
+
 ff = Counter()
 for l in lines:
     if ' FAILED' in l and '::' in l:

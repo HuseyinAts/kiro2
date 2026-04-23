@@ -7,10 +7,12 @@ property-based testler içerir.
 Property 2: Circuit Breaker State Transition - 5 failure → OPEN state
 """
 
-import pytest
-from hypothesis import given, strategies as st, settings
-
 import sys
+
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from app.health.circuit_breaker import CircuitBreaker

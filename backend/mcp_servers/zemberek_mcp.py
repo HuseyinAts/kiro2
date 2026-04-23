@@ -3,10 +3,10 @@ Zemberek NLP MCP Server
 Model Context Protocol wrapper for Zemberek HTTP service
 """
 
-from fastmcp import FastMCP
-import httpx
 import os
-from typing import List
+
+import httpx
+from fastmcp import FastMCP
 
 # Initialize MCP server
 mcp = FastMCP("Zemberek NLP")
@@ -15,7 +15,7 @@ ZEMBEREK_URL = os.getenv("ZEMBEREK_SERVICE_URL", "http://localhost:8081")
 
 
 @mcp.tool()
-async def tokenize_turkish_text(text: str) -> List[str]:
+async def tokenize_turkish_text(text: str) -> list[str]:
     """
     Tokenize Turkish text into words and punctuation.
 
@@ -38,7 +38,7 @@ async def tokenize_turkish_text(text: str) -> List[str]:
             data = response.json()
             return data.get("tokens", [])
     except Exception as e:
-        return [f"Error: {str(e)}"]
+        return [f"Error: {e!s}"]
 
 
 @mcp.tool()
@@ -65,7 +65,7 @@ async def normalize_turkish_text(text: str) -> str:
             data = response.json()
             return data.get("normalized", text)
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 @mcp.tool()
@@ -99,11 +99,11 @@ async def analyze_turkish_word(word: str) -> str:
                 return f"Lemma: {lemma}, POS: {pos}, Morphemes: {morphemes}"
             return "No analysis found"
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 @mcp.tool()
-async def extract_sentences(text: str) -> List[str]:
+async def extract_sentences(text: str) -> list[str]:
     """
     Extract sentences from Turkish text.
 
@@ -126,7 +126,7 @@ async def extract_sentences(text: str) -> List[str]:
             data = response.json()
             return data.get("sentences", [])
     except Exception as e:
-        return [f"Error: {str(e)}"]
+        return [f"Error: {e!s}"]
 
 
 @mcp.resource("zemberek://health")
@@ -139,7 +139,7 @@ async def zemberek_health() -> str:
             data = response.json()
             return f"Status: {data.get('status')}, Available: {data.get('zemberek_available')}"
     except Exception as e:
-        return f"Zemberek service unavailable: {str(e)}"
+        return f"Zemberek service unavailable: {e!s}"
 
 
 if __name__ == "__main__":

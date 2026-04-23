@@ -16,7 +16,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from hypothesis import assume, given, settings, strategies as st
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 # Add backend directory to path
 backend_dir = Path(__file__).parent.parent.parent
@@ -28,7 +29,6 @@ from algorithms.turkish_optimized_fsrs import (  # noqa: E402
     StudentContext,
     TurkishOptimizedFSRS,
 )
-
 
 # ============================================================================
 # STRATEGY DEFINITIONS

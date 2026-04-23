@@ -11,8 +11,9 @@ backend_path = Path(__file__).parent
 sys.path.insert(0, str(backend_path))
 
 try:
-    from main import app
     from fastapi.openapi.utils import get_openapi
+
+    from main import app
 
     # Generate OpenAPI schema
     schema = get_openapi(

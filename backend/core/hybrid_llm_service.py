@@ -7,14 +7,14 @@ Bu servis optimal_hybrid_system.py'yi gerçek API'larla entegre eder.
 
 import asyncio
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+import openai
 import structlog
+from anthropic import AsyncAnthropic
 
 # API clients
 from google import genai
-from google.genai import types as genai_types
-from anthropic import AsyncAnthropic
-import openai
 
 logger = structlog.get_logger()
 
@@ -32,15 +32,15 @@ class HybridLLMService:
     def __init__(self) -> None:
         """Servisi başlat ve API client'ları yapılandır"""
         # API Keys
-        self.google_api_key: Optional[str] = os.getenv("GOOGLE_API_KEY")
-        self.anthropic_api_key: Optional[str] = os.getenv("ANTHROPIC_API_KEY")
-        self.openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")
+        self.google_api_key: str | None = os.getenv("GOOGLE_API_KEY")
+        self.anthropic_api_key: str | None = os.getenv("ANTHROPIC_API_KEY")
+        self.openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
         # Clients
-        self.gemini_client: Optional[genai.Client] = None
+        self.gemini_client: genai.Client | None = None
         self.gemini_model_name: str = "gemini-2.5-flash"
-        self.claude_client: Optional[AsyncAnthropic] = None
-        self.openai_client: Optional[openai.AsyncOpenAI] = None
+        self.claude_client: AsyncAnthropic | None = None
+        self.openai_client: openai.AsyncOpenAI | None = None
 
         # Initialize
         self._initialize_clients()
@@ -84,7 +84,7 @@ class HybridLLMService:
         prompt: str,
         temperature: float = 0.7,
         max_tokens: int = 4000,
-        system_prompt: Optional[str] = None
+        system_prompt: str | None = None
     ) -> str:
         """
         Claude ile yanıt üret (hızlı, basit sorgular için)
@@ -105,9 +105,9 @@ class HybridLLMService:
             raise ValueError("Claude API key yapılandırılmamış")
 
         try:
-            messages: List[Dict[str, str]] = [{"role": "user", "content": prompt}]
+            messages: list[dict[str, str]] = [{"role": "user", "content": prompt}]
 
-            kwargs: Dict[str, Any] = {
+            kwargs: dict[str, Any] = {
                 "model": os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514"),
                 "max_tokens": max_tokens,
                 "temperature": temperature,
@@ -138,7 +138,7 @@ class HybridLLMService:
         self,
         prompt: str,
         thinking_mode: bool = True,
-        context: Optional[str] = None
+        context: str | None = None
     ) -> str:
         """
         Gemini ile yanıt üret (karmaşık analiz için)
@@ -197,7 +197,7 @@ class HybridLLMService:
         prompt: str,
         temperature: float = 0.7,
         max_tokens: int = 4000,
-        system_prompt: Optional[str] = None
+        system_prompt: str | None = None
     ) -> str:
         """
         OpenAI ile yanıt üret (fallback)
@@ -218,7 +218,7 @@ class HybridLLMService:
             raise ValueError("OpenAI API key yapılandırılmamış")
 
         try:
-            messages: List[Dict[str, str]] = []
+            messages: list[dict[str, str]] = []
 
             if system_prompt:
                 messages.append({"role": "system", "content": system_prompt})
@@ -248,7 +248,7 @@ class HybridLLMService:
 
     async def chat(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         model: str = "claude",
         temperature: float = 0.7,
         max_tokens: int = 4000
@@ -279,7 +279,7 @@ class HybridLLMService:
                 last_message,
                 context=context
             )
-        elif model == "openai":
+        if model == "openai":
             return await self.openai_client.chat.completions.create(  # type: ignore[return-value, union-attr]
                 model=os.getenv("OPENAI_MODEL", "gpt-4"),
                 messages=messages,  # type: ignore[arg-type]
@@ -290,14 +290,14 @@ class HybridLLMService:
                 temperature=temperature,
                 max_tokens=max_tokens
             )
-        else:  # default: claude
-            return await self.generate_with_claude(
-                last_message,
-                temperature=temperature,
-                max_tokens=max_tokens
-            )
+        # default: claude
+        return await self.generate_with_claude(
+            last_message,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
 
-    def get_available_models(self) -> Dict[str, bool]:
+    def get_available_models(self) -> dict[str, bool]:
         """
         Kullanılabilir modelleri döndür
 
@@ -325,7 +325,7 @@ class HybridLLMService:
         prompt: str,
         temperature: float = 0.7,
         max_tokens: int = 4000,
-        system_prompt: Optional[str] = None
+        system_prompt: str | None = None
     ) -> str:
         """
         Fallback chain ile yanıt üret: Claude -> Gemini -> OpenAI -> Ollama
@@ -342,7 +342,7 @@ class HybridLLMService:
         Raises:
             RuntimeError: Hiçbir provider çalışmazsa
         """
-        errors: List[str] = []
+        errors: list[str] = []
 
         # 1. Claude
         if self.claude_client:
@@ -396,7 +396,7 @@ class HybridLLMService:
 
 
 # Global singleton instance
-_hybrid_llm_service: Optional[HybridLLMService] = None
+_hybrid_llm_service: HybridLLMService | None = None
 
 
 def get_hybrid_llm_service() -> HybridLLMService:

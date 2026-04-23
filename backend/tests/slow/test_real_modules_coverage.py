@@ -3,10 +3,11 @@ GERÇEK MODÜL COVERAGE TESTLERİ
 Bu testler gerçek modülleri import edip çalıştırarak coverage'ı arttırır
 Target: %50+ toplam coverage
 """
-import pytest
 import asyncio
-from unittest.mock import patch, MagicMock
 from datetime import datetime
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -52,10 +53,10 @@ class TestRealCoreModules:
     def test_real_database_module_usage(self):
         """Database modülünü gerçekten kullan"""
         from core.database import (
-            DatabaseManager,
             Base,
-            get_db,
+            DatabaseManager,
             db_manager,
+            get_db,
         )
 
         # DatabaseManager instance'ını test et
@@ -78,12 +79,12 @@ class TestRealCoreModules:
     def test_real_dependencies_module_usage(self):
         """Dependencies modülünü gerçekten kullan"""
         from core.dependencies import (
+            ACCESS_TOKEN_EXPIRE_MINUTES,
+            JWT_ALGORITHM,
+            JWT_SECRET,
+            create_access_token,
             get_current_user,
             verify_token,
-            create_access_token,
-            JWT_SECRET,
-            JWT_ALGORITHM,
-            ACCESS_TOKEN_EXPIRE_MINUTES,
         )
 
         # Konstanları test et
@@ -106,11 +107,11 @@ class TestRealCoreModules:
         """Encoding modülünü gerçekten kullan"""
         from core.encoding import (
             ensure_utf8_encoding,
-            turkish_safe_encode,
-            turkish_safe_decode,
-            safe_json_encode,
-            safe_json_decode,
             get_system_encoding,
+            safe_json_decode,
+            safe_json_encode,
+            turkish_safe_decode,
+            turkish_safe_encode,
         )
 
         # Türkçe test verileri
@@ -181,13 +182,13 @@ class TestRealAgentsModules:
     def test_real_base_agent_comprehensive(self):
         """BaseAgent'ı kapsamlı şekilde test et"""
         from agents.base_agent import (
-            BaseAgent,
-            AgentType,
-            AgentStatus,
-            MessageType,
-            AgentMessage,
             AgentCapability,
+            AgentMessage,
             AgentMetrics,
+            AgentStatus,
+            AgentType,
+            BaseAgent,
+            MessageType,
         )
 
         # Concrete implementation
@@ -202,7 +203,7 @@ class TestRealAgentsModules:
                         "sonuç": f"Türkçe işlem tamamlandı: {parameters.get('metin', '')}",
                         "işlenme_zamanı": datetime.now().isoformat(),
                     }
-                elif request_type == "analyze_content":
+                if request_type == "analyze_content":
                     return {
                         "status": "success",
                         "analysis": {
@@ -211,8 +212,7 @@ class TestRealAgentsModules:
                             "language": "turkish",
                         },
                     }
-                else:
-                    return {"status": "unknown_request", "request_type": request_type}
+                return {"status": "unknown_request", "request_type": request_type}
 
         # Agent oluştur
         agent = RealTestAgent(
@@ -607,9 +607,10 @@ class TestRealAPIModules:
 
     def test_real_auth_api_usage(self):
         """Auth API'sini gerçekten kullan"""
-        from api.auth import router
-        from fastapi.testclient import TestClient
         from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+
+        from api.auth import router
 
         # Test app oluştur
         app = FastAPI()
@@ -630,9 +631,10 @@ class TestRealAPIModules:
 
     def test_real_health_api_usage(self):
         """Health API'sini gerçekten kullan"""
-        from api.health import router
-        from fastapi.testclient import TestClient
         from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+
+        from api.health import router
 
         # Test app oluştur
         app = FastAPI()
@@ -736,7 +738,7 @@ class TestRealMainApplication:
 
         # FastAPI app varsa test et
         if "app" in main_attrs:
-            app = getattr(main, "app")
+            app = main.app
             assert app is not None
             if hasattr(app, "routes"):
                 routes = app.routes

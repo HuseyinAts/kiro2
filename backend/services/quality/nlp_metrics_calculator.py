@@ -7,11 +7,10 @@ Soru üretim kalitesini değerlendirmek için kullanılır.
 Requirements: REQ-48.53 - REQ-48.56
 """
 
-from typing import List, Dict, Optional
-from dataclasses import dataclass
+import math
 import re
 from collections import Counter
-import math
+from dataclasses import dataclass
 
 
 @dataclass
@@ -24,7 +23,7 @@ class NLPMetrics:
     rouge_l: float  # 0-1 arası, longest common subsequence
     bert_score: float  # 0-1 arası, semantik benzerlik
     combined_score: float  # Ağırlıklı ortalama
-    details: Dict[str, any]  # Detaylı bilgiler
+    details: dict[str, any]  # Detaylı bilgiler
 
 
 class NLPMetricsCalculator:
@@ -46,7 +45,7 @@ class NLPMetricsCalculator:
 
     def __init__(
         self,
-        weights: Optional[Dict[str, float]] = None,
+        weights: dict[str, float] | None = None,
         use_bert: bool = False,  # BERTScore hesaplama (opsiyonel, yavaş)
     ):
         """
@@ -161,7 +160,7 @@ class NLPMetricsCalculator:
 
     def calculate_rouge(
         self, generated_text: str, reference_text: str
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         ROUGE (Recall-Oriented Understudy for Gisting Evaluation) skorları hesapla
 
@@ -199,7 +198,7 @@ class NLPMetricsCalculator:
             },
         }
 
-    def _tokenize(self, text: str) -> List[str]:
+    def _tokenize(self, text: str) -> list[str]:
         """Metni tokenize et (Türkçe uyumlu)"""
         # Küçük harfe çevir
         text = text.lower()
@@ -219,11 +218,10 @@ class NLPMetricsCalculator:
         """BLEU brevity penalty hesapla"""
         if gen_length >= ref_length:
             return 1.0
-        else:
-            return math.exp(1 - ref_length / gen_length)
+        return math.exp(1 - ref_length / gen_length)
 
     def _ngram_precision(
-        self, gen_tokens: List[str], ref_tokens: List[str], n: int
+        self, gen_tokens: list[str], ref_tokens: list[str], n: int
     ) -> float:
         """N-gram precision hesapla"""
         gen_ngrams = self._get_ngrams(gen_tokens, n)
@@ -244,7 +242,7 @@ class NLPMetricsCalculator:
 
         return clipped_count / total_count
 
-    def _get_ngrams(self, tokens: List[str], n: int) -> Counter:
+    def _get_ngrams(self, tokens: list[str], n: int) -> Counter:
         """N-gram'ları çıkar ve say"""
         ngrams = []
         for i in range(len(tokens) - n + 1):
@@ -252,7 +250,7 @@ class NLPMetricsCalculator:
             ngrams.append(ngram)
         return Counter(ngrams)
 
-    def _rouge_n(self, gen_tokens: List[str], ref_tokens: List[str], n: int) -> float:
+    def _rouge_n(self, gen_tokens: list[str], ref_tokens: list[str], n: int) -> float:
         """ROUGE-N skoru hesapla (F1-score)"""
         gen_ngrams = self._get_ngrams(gen_tokens, n)
         ref_ngrams = self._get_ngrams(ref_tokens, n)
@@ -278,7 +276,7 @@ class NLPMetricsCalculator:
         f1 = 2 * (precision * recall) / (precision + recall)
         return f1
 
-    def _rouge_l(self, gen_tokens: List[str], ref_tokens: List[str]) -> float:
+    def _rouge_l(self, gen_tokens: list[str], ref_tokens: list[str]) -> float:
         """ROUGE-L skoru hesapla (longest common subsequence)"""
         lcs_length = self._lcs_length(gen_tokens, ref_tokens)
 
@@ -298,7 +296,7 @@ class NLPMetricsCalculator:
         f1 = 2 * (precision * recall) / (precision + recall)
         return f1
 
-    def _lcs_length(self, seq1: List[str], seq2: List[str]) -> int:
+    def _lcs_length(self, seq1: list[str], seq2: list[str]) -> int:
         """Longest Common Subsequence uzunluğunu hesapla"""
         m, n = len(seq1), len(seq2)
 
@@ -370,8 +368,8 @@ class NLPMetricsCalculator:
             )
 
     def batch_calculate(
-        self, generated_texts: List[str], reference_texts: List[str]
-    ) -> List[NLPMetrics]:
+        self, generated_texts: list[str], reference_texts: list[str]
+    ) -> list[NLPMetrics]:
         """
         Toplu metrik hesaplama
 
@@ -392,7 +390,7 @@ class NLPMetricsCalculator:
 
         return results
 
-    def get_average_metrics(self, metrics_list: List[NLPMetrics]) -> Dict[str, float]:
+    def get_average_metrics(self, metrics_list: list[NLPMetrics]) -> dict[str, float]:
         """
         Ortalama metrikleri hesapla
 

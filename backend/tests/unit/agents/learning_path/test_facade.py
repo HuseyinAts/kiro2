@@ -5,32 +5,33 @@ KIRO2 - YKS Hazırlık Platformu
 Unit tests for the facade layer that coordinates learning path services.
 """
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock
 from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from agents.learning_path.facade import (
-    LearningPathFacade,
     FacadeConfig,
+    LearningPathFacade,
     get_learning_path_facade,
 )
 from agents.learning_path.models import (
-    LearningPath,
-    LearningResource,
-    LearningPhase,
-    StudentProfile,
     KnowledgeLevel,
+    LearningPath,
+    LearningPhase,
+    LearningResource,
     LearningStyle,
     PathNode,
+    StudentProfile,
+)
+from agents.learning_path.services.path_adaptation import (
+    AdaptationAction,
+    AdaptationResult,
+    AdaptationType,
+    PerformanceMetrics,
 )
 from agents.learning_path.services.path_generation import (
     PathGenerationResult,
-)
-from agents.learning_path.services.path_adaptation import (
-    AdaptationResult,
-    AdaptationAction,
-    AdaptationType,
-    PerformanceMetrics,
 )
 from agents.learning_path.services.resource_discovery import (
     DiscoveryResult,

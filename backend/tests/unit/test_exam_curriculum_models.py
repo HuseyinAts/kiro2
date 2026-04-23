@@ -15,57 +15,57 @@ Test Groups:
 3. Learning Models (HybridLearningProfile, TurkishZPDRange, Question, Student, Flashcard, etc.)
 """
 
-import pytest
-from datetime import datetime, timedelta
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
+
+import pytest
 
 # Add backend to path
 backend_path = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(backend_path))
 
-from models.exam import (
-    SinavSorusu,
-    SinavOturumu,
-    SinavCevabi,
-    KonuPerformansi,
-    SinavSonucu,
-    PerformansRaporu,
-)
 from models.curriculum import (
-    SubjectType,
-    ExamType,
-    GradeLevel,
-    MEBCurriculumStandard,
-    OSYMStandard,
     CurriculumAlignment,
-    LearningOutcome,
-    QuestionBankCompliance,
     CurriculumComplianceReport,
     CurriculumUpdateRequest,
-)
-from models.learning_models import (
-    LearningStyleType,
-    FelderDimension,
-    HybridLearningProfile,
-    TurkishZPDRange,
-    Question,
-    Student,
-    Flashcard,
-    LearningSession,
-    CulturalContext,
-    MorphologyAnalysis,
-    FSRSCard,
-    SimplificationLevel,
-    BionicReadingResult,
-    AgentMessage,
-    BlackboardEntry,
-    create_sample_hybrid_profile,
-    create_sample_zpd_range,
-    create_sample_student,
+    ExamType,
+    GradeLevel,
+    LearningOutcome,
+    MEBCurriculumStandard,
+    OSYMStandard,
+    QuestionBankCompliance,
+    SubjectType,
 )
 from models.enums import SinavDurumu, SinavTipi, ZorlukSeviyesi
-
+from models.exam import (
+    KonuPerformansi,
+    PerformansRaporu,
+    SinavCevabi,
+    SinavOturumu,
+    SinavSonucu,
+    SinavSorusu,
+)
+from models.learning_models import (
+    AgentMessage,
+    BionicReadingResult,
+    BlackboardEntry,
+    CulturalContext,
+    FelderDimension,
+    Flashcard,
+    FSRSCard,
+    HybridLearningProfile,
+    LearningSession,
+    LearningStyleType,
+    MorphologyAnalysis,
+    Question,
+    SimplificationLevel,
+    Student,
+    TurkishZPDRange,
+    create_sample_hybrid_profile,
+    create_sample_student,
+    create_sample_zpd_range,
+)
 
 # ============================================================================
 # EXAM MODELS TESTS

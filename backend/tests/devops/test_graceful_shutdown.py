@@ -24,8 +24,8 @@ def test_app_has_lifespan():
 
         # Check if app has lifespan
         has_lifespan = (
-            hasattr(app, "router") and
-            hasattr(app.router, "lifespan_context") or
+            (hasattr(app, "router") and
+            hasattr(app.router, "lifespan_context")) or
             hasattr(app, "lifespan_context")
         )
 

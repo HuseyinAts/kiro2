@@ -7,15 +7,14 @@ Validates: Requirements 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
 from __future__ import annotations
 
 import re
-from typing import List
 
-from ..base_detector import BaseDetector
-from ..models.enums import SeverityLevel, PatternType
-from ..models.detection_result import DetectionResult
 from ..analyzers.ast_analyzer import ASTAnalyzer
 from ..analyzers.context_analyzer import ContextAnalyzer
+from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
 from ..exceptions import ASTParseError
+from ..models.detection_result import DetectionResult
+from ..models.enums import PatternType, SeverityLevel
 
 
 class CICDBypassDetector(BaseDetector):
@@ -33,7 +32,7 @@ class CICDBypassDetector(BaseDetector):
     pattern_type = PatternType.CICD_BYPASS
     default_severity = SeverityLevel.CRITICAL
 
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """Get regex patterns for CI/CD bypass detection."""
         return REWARD_HACKING_PATTERNS.get("cicd_bypass", [])
 
@@ -41,7 +40,7 @@ class CICDBypassDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect CI/CD bypass patterns.
 
@@ -55,7 +54,7 @@ class CICDBypassDetector(BaseDetector):
         if not self.is_enabled():
             return []
 
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Initialize context analyzer
         context_analyzer = ContextAnalyzer(content, file_path)
@@ -98,7 +97,7 @@ class CICDBypassDetector(BaseDetector):
         file_path: str,
         content: str,
         context_analyzer: ContextAnalyzer
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect skip decorators without reason using AST.
 
@@ -110,7 +109,7 @@ class CICDBypassDetector(BaseDetector):
         Returns:
             List of DetectionResult for skip decorators
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         try:
             ast_analyzer = ASTAnalyzer(content, file_path)
@@ -180,7 +179,7 @@ class CICDBypassDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect attempts to disable quality gates.
 
@@ -191,7 +190,7 @@ class CICDBypassDetector(BaseDetector):
         Returns:
             List of DetectionResult for quality gate bypasses
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Patterns for quality gate bypassing
         bypass_patterns = [
@@ -221,7 +220,7 @@ class CICDBypassDetector(BaseDetector):
 
         return results
 
-    def detect_in_commit_message(self, commit_message: str) -> List[DetectionResult]:
+    def detect_in_commit_message(self, commit_message: str) -> list[DetectionResult]:
         """
         Detect CI skip patterns in commit messages.
 
@@ -234,7 +233,7 @@ class CICDBypassDetector(BaseDetector):
         Returns:
             List of DetectionResult for bypass attempts
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         skip_patterns = [
             (r'\[skip\s*ci\]', '[skip ci] in commit message'),

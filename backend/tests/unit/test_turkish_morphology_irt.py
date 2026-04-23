@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -10,12 +11,13 @@ Coverage target: 80%+
 """
 
 import pytest
+
 from algorithms.turkish_morphology_aware_irt import (
-    TurkishMorphologyAwareIRT,
+    MockAnalysis,
+    MorphologyComplexityResult,
     Question,
     Student,
-    MorphologyComplexityResult,
-    MockAnalysis,
+    TurkishMorphologyAwareIRT,
 )
 
 

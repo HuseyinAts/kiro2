@@ -18,34 +18,31 @@ pytestmark = pytest.mark.skipif(
 )
 
 import time
-from typing import Dict, List
 from collections import defaultdict
 
 import pytest
 
-from agents.domain_experts import (
-    DomainType,
-    DomainResponse,
-    MatematikAgent,
-    FizikAgent,
-    TurkceAgent,
-    SosyalAgent,
-    BiyolojiAgent,
-    YabanciDilAgent,
-)
 from agents.coordination import (
-    QuestionClassifier,
     AgentCoordinator,
     DomainBlackboard,
+    QuestionClassifier,
 )
-from agents.scoring import SpecializationScorer, PerformanceTracker
-
+from agents.domain_experts import (
+    BiyolojiAgent,
+    DomainResponse,
+    DomainType,
+    FizikAgent,
+    MatematikAgent,
+    SosyalAgent,
+    TurkceAgent,
+    YabanciDilAgent,
+)
+from agents.scoring import PerformanceTracker, SpecializationScorer
 from tests.fixtures.yks_questions import (
     ALL_QUESTIONS,
     MULTI_DOMAIN_QUESTIONS,
     calculate_contamination_rate,
 )
-
 
 # Success Metric Thresholds
 MIN_SPECIALIZATION_SCORE = 0.85
@@ -93,7 +90,7 @@ def tracker():
 
 def _calculate_response_accuracy(
     response: DomainResponse,
-    expected_keywords: List[str],
+    expected_keywords: list[str],
 ) -> float:
     """
     Calculate response accuracy based on keyword matching.
@@ -178,7 +175,7 @@ class TestSpecializationScoreMetric:
         self, full_coordinator: AgentCoordinator, scorer: SpecializationScorer
     ):
         """All agents should have specialization score >= 0.85"""
-        domain_scores: Dict[str, List[float]] = defaultdict(list)
+        domain_scores: dict[str, list[float]] = defaultdict(list)
 
         for domain_name, questions in ALL_QUESTIONS.items():
             for question in questions[:3]:  # Test first 3 per domain
@@ -236,7 +233,7 @@ class TestCrossDomainContaminationMetric:
         self, full_coordinator: AgentCoordinator
     ):
         """All agents should have < 5% cross-domain contamination"""
-        domain_rates: Dict[str, List[float]] = defaultdict(list)
+        domain_rates: dict[str, list[float]] = defaultdict(list)
 
         for domain_name, questions in ALL_QUESTIONS.items():
             for question in questions[:2]:  # Test first 2 per domain

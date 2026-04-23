@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 import pytest
 
+from core.quality_gates.gates.base import BaseGate, GateContext
 from core.quality_gates.models import (
     GateConfig,
     GateResult,
@@ -24,8 +25,6 @@ from core.quality_gates.orchestrator import (
     QualityGatesOrchestrator,
     run_quality_gates,
 )
-from core.quality_gates.gates.base import BaseGate, GateContext
-
 
 # =============================================================================
 # Mock Gate for Testing

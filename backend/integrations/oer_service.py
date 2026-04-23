@@ -13,7 +13,7 @@ import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import quote
 
 import aiohttp
@@ -33,23 +33,23 @@ class OERResource:
     url: str
     source_platform: str  # OER Commons, MIT OCW, etc.
     content_type: str  # course, lesson, article, video, etc.
-    subject_areas: List[str]
+    subject_areas: list[str]
     educational_level: str  # K-12, undergraduate, graduate
     language: str
     license_type: str  # CC BY, CC BY-SA, etc.
-    author: Optional[str]
-    institution: Optional[str]
-    created_date: Optional[datetime]
-    last_updated: Optional[datetime]
-    file_formats: List[str]  # PDF, HTML, Video, etc.
-    download_url: Optional[str]
-    thumbnail_url: Optional[str]
-    rating: Optional[float]
-    view_count: Optional[int]
-    download_count: Optional[int]
-    tags: List[str]
+    author: str | None
+    institution: str | None
+    created_date: datetime | None
+    last_updated: datetime | None
+    file_formats: list[str]  # PDF, HTML, Video, etc.
+    download_url: str | None
+    thumbnail_url: str | None
+    rating: float | None
+    view_count: int | None
+    download_count: int | None
+    tags: list[str]
     educational_quality_score: float  # 0-1 arası
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class OERService:
@@ -76,7 +76,7 @@ class OERService:
         # Educational platforms
         self.oer_platforms = self._load_oer_platforms()
 
-    def _load_oer_platforms(self) -> Dict[str, Dict[str, Any]]:
+    def _load_oer_platforms(self) -> dict[str, dict[str, Any]]:
         """OER platformlarını yükle"""
         return {
             "oer_commons": {
@@ -120,12 +120,12 @@ class OERService:
     async def search_oer_resources(
         self,
         query: str,
-        subject: Optional[str] = None,
-        educational_level: Optional[str] = None,
-        content_type: Optional[str] = None,
+        subject: str | None = None,
+        educational_level: str | None = None,
+        content_type: str | None = None,
         language: str = "en",
         limit: int = 20,
-    ) -> List[OERResource]:
+    ) -> list[OERResource]:
         """
         OER kaynaklarını ara
 
@@ -169,18 +169,18 @@ class OERService:
             return result
 
         except Exception as e:
-            logger.error(f"Error searching OER resources: {str(e)}")
+            logger.error(f"Error searching OER resources: {e!s}")
             return []
 
     async def _search_oer_commons(
         self,
         query: str,
-        subject: Optional[str],
-        educational_level: Optional[str],
-        content_type: Optional[str],
+        subject: str | None,
+        educational_level: str | None,
+        content_type: str | None,
         language: str,
         limit: int,
-    ) -> List[OERResource]:
+    ) -> list[OERResource]:
         """OER Commons'da arama yap"""
         try:
             # Cache kontrolü
@@ -214,15 +214,14 @@ class OERService:
                     # Cache'e kaydet
                     self.content_cache[cache_key] = resources
                     return resources
-                else:
-                    logger.warning(f"OER Commons API returned status {response.status}")
-                    return self._get_fallback_oer_commons_resources(query, limit)
+                logger.warning(f"OER Commons API returned status {response.status}")
+                return self._get_fallback_oer_commons_resources(query, limit)
 
         except Exception as e:
-            logger.error(f"Error searching OER Commons: {str(e)}")
+            logger.error(f"Error searching OER Commons: {e!s}")
             return self._get_fallback_oer_commons_resources(query, limit)
 
-    def _parse_oer_commons_response(self, data: Dict[str, Any]) -> List[OERResource]:
+    def _parse_oer_commons_response(self, data: dict[str, Any]) -> list[OERResource]:
         """OER Commons API yanıtını parse et"""
         resources = []
 
@@ -270,13 +269,13 @@ class OERService:
                 resources.append(resource)
 
         except Exception as e:
-            logger.error(f"Error parsing OER Commons response: {str(e)}")
+            logger.error(f"Error parsing OER Commons response: {e!s}")
 
         return resources
 
     async def _search_mit_ocw(
-        self, query: str, subject: Optional[str], limit: int
-    ) -> List[OERResource]:
+        self, query: str, subject: str | None, limit: int
+    ) -> list[OERResource]:
         """MIT OpenCourseWare'de arama yap"""
         try:
             # MIT OCW için simüle edilmiş arama (gerçek API yok)
@@ -284,12 +283,12 @@ class OERService:
             return resources
 
         except Exception as e:
-            logger.error(f"Error searching MIT OCW: {str(e)}")
+            logger.error(f"Error searching MIT OCW: {e!s}")
             return []
 
     async def _search_wikimedia_commons(
-        self, query: str, content_type: Optional[str], language: str, limit: int
-    ) -> List[OERResource]:
+        self, query: str, content_type: str | None, language: str, limit: int
+    ) -> list[OERResource]:
         """Wikimedia Commons'da arama yap"""
         try:
             session = await self._get_session()
@@ -314,17 +313,16 @@ class OERService:
                     data = await response.json()
                     resources = self._parse_wikimedia_response(data, query)
                     return resources
-                else:
-                    logger.warning(f"Wikimedia API returned status {response.status}")
-                    return []
+                logger.warning(f"Wikimedia API returned status {response.status}")
+                return []
 
         except Exception as e:
-            logger.error(f"Error searching Wikimedia Commons: {str(e)}")
+            logger.error(f"Error searching Wikimedia Commons: {e!s}")
             return []
 
     def _parse_wikimedia_response(
-        self, data: Dict[str, Any], query: str
-    ) -> List[OERResource]:
+        self, data: dict[str, Any], query: str
+    ) -> list[OERResource]:
         """Wikimedia Commons API yanıtını parse et"""
         resources = []
 
@@ -362,13 +360,13 @@ class OERService:
                 resources.append(resource)
 
         except Exception as e:
-            logger.error(f"Error parsing Wikimedia response: {str(e)}")
+            logger.error(f"Error parsing Wikimedia response: {e!s}")
 
         return resources
 
     def _get_fallback_oer_commons_resources(
         self, query: str, limit: int
-    ) -> List[OERResource]:
+    ) -> list[OERResource]:
         """OER Commons için fallback kaynaklar"""
         fallback_resources = [
             {
@@ -429,8 +427,8 @@ class OERService:
         return resources
 
     def _get_fallback_mit_ocw_resources(
-        self, query: str, subject: Optional[str], limit: int
-    ) -> List[OERResource]:
+        self, query: str, subject: str | None, limit: int
+    ) -> list[OERResource]:
         """MIT OCW için fallback kaynaklar"""
         mit_courses = [
             {
@@ -480,7 +478,7 @@ class OERService:
 
         return resources
 
-    def _calculate_oer_quality_score(self, material: Dict[str, Any]) -> float:
+    def _calculate_oer_quality_score(self, material: dict[str, Any]) -> float:
         """OER kaynağının kalite skorunu hesapla"""
         score = 0.0
 
@@ -522,14 +520,13 @@ class OERService:
             ext in filename_lower for ext in [".jpg", ".jpeg", ".png", ".gif", ".svg"]
         ):
             return "image"
-        elif any(ext in filename_lower for ext in [".mp4", ".avi", ".mov", ".webm"]):
+        if any(ext in filename_lower for ext in [".mp4", ".avi", ".mov", ".webm"]):
             return "video"
-        elif any(ext in filename_lower for ext in [".mp3", ".wav", ".ogg"]):
+        if any(ext in filename_lower for ext in [".mp3", ".wav", ".ogg"]):
             return "audio"
-        elif any(ext in filename_lower for ext in [".pdf", ".doc", ".docx"]):
+        if any(ext in filename_lower for ext in [".pdf", ".doc", ".docx"]):
             return "document"
-        else:
-            return "file"
+        return "file"
 
     def _extract_file_format(self, filename: str) -> str:
         """Dosya formatını çıkar"""
@@ -537,7 +534,7 @@ class OERService:
             return filename.split(".")[-1].upper()
         return "UNKNOWN"
 
-    def _parse_date(self, date_string: Optional[str]) -> Optional[datetime]:
+    def _parse_date(self, date_string: str | None) -> datetime | None:
         """Tarih string'ini parse et"""
         if not date_string:
             return None
@@ -554,7 +551,7 @@ class OERService:
 
     async def get_resource_details(
         self, resource_id: str, platform: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Kaynak detaylarını getir
 
@@ -568,20 +565,19 @@ class OERService:
         try:
             if platform == "oer_commons":
                 return await self._get_oer_commons_details(resource_id)
-            elif platform == "mit_ocw":
+            if platform == "mit_ocw":
                 return await self._get_mit_ocw_details(resource_id)
-            elif platform == "wikimedia":
+            if platform == "wikimedia":
                 return await self._get_wikimedia_details(resource_id)
-            else:
-                return None
+            return None
 
         except Exception as e:
-            logger.error(f"Error getting resource details: {str(e)}")
+            logger.error(f"Error getting resource details: {e!s}")
             return None
 
     async def _get_oer_commons_details(
         self, resource_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """OER Commons kaynak detayları"""
         try:
             session = await self._get_session()
@@ -592,14 +588,13 @@ class OERService:
             async with session.get(url) as response:
                 if response.status == 200:
                     return await response.json()
-                else:
-                    return None
+                return None
 
         except Exception as e:
-            logger.error(f"Error getting OER Commons details: {str(e)}")
+            logger.error(f"Error getting OER Commons details: {e!s}")
             return None
 
-    async def _get_mit_ocw_details(self, resource_id: str) -> Optional[Dict[str, Any]]:
+    async def _get_mit_ocw_details(self, resource_id: str) -> dict[str, Any] | None:
         """MIT OCW kaynak detayları (simüle edilmiş)"""
         return {
             "id": resource_id,
@@ -613,7 +608,7 @@ class OERService:
 
     async def _get_wikimedia_details(
         self, resource_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Wikimedia kaynak detayları"""
         try:
             session = await self._get_session()
@@ -631,20 +626,19 @@ class OERService:
             async with session.get(self.wikimedia_base, params=params) as response:
                 if response.status == 200:
                     return await response.json()
-                else:
-                    return None
+                return None
 
         except Exception as e:
-            logger.error(f"Error getting Wikimedia details: {str(e)}")
+            logger.error(f"Error getting Wikimedia details: {e!s}")
             return None
 
     async def search_by_subject(
         self,
         subject: str,
-        educational_level: Optional[str] = None,
+        educational_level: str | None = None,
         language: str = "en",
         limit: int = 15,
-    ) -> List[OERResource]:
+    ) -> list[OERResource]:
         """
         Konuya göre OER kaynakları ara
 
@@ -666,8 +660,8 @@ class OERService:
         )
 
     async def get_trending_resources(
-        self, subject: Optional[str] = None, limit: int = 10
-    ) -> List[OERResource]:
+        self, subject: str | None = None, limit: int = 10
+    ) -> list[OERResource]:
         """
         Popüler OER kaynaklarını getir
 
@@ -711,14 +705,14 @@ class OERService:
             return all_resources[:limit]
 
         except Exception as e:
-            logger.error(f"Error getting trending resources: {str(e)}")
+            logger.error(f"Error getting trending resources: {e!s}")
             return []
 
-    def get_platform_info(self, platform_name: str) -> Optional[Dict[str, Any]]:
+    def get_platform_info(self, platform_name: str) -> dict[str, Any] | None:
         """Platform bilgilerini getir"""
         return self.oer_platforms.get(platform_name)
 
-    def get_supported_platforms(self) -> List[str]:
+    def get_supported_platforms(self) -> list[str]:
         """Desteklenen platformları getir"""
         return list(self.oer_platforms.keys())
 
@@ -731,10 +725,10 @@ class OERService:
                 return response.status == 200
 
         except Exception as e:
-            logger.error(f"Error validating URL {url}: {str(e)}")
+            logger.error(f"Error validating URL {url}: {e!s}")
             return False
 
-    def generate_oer_analytics(self) -> Dict[str, Any]:
+    def generate_oer_analytics(self) -> dict[str, Any]:
         """OER analitikleri oluştur"""
         try:
             total_cached = len(self.content_cache)
@@ -766,7 +760,7 @@ class OERService:
             }
 
         except Exception as e:
-            logger.error(f"Error generating OER analytics: {str(e)}")
+            logger.error(f"Error generating OER analytics: {e!s}")
             return {"error": str(e)}
 
 

@@ -12,7 +12,6 @@ from __future__ import annotations
 import re
 import unicodedata
 from dataclasses import dataclass
-from typing import Optional
 
 from models.question_generation import WebbDOKLevel
 
@@ -151,7 +150,7 @@ def _match_patterns(
 
 def classify_webb_dok(
     question_text: str,
-    options: Optional[list[str]] = None,
+    options: list[str] | None = None,
 ) -> WebbDOKResult:
     """Soru icin Webb DOK seviyesini siniflandir.
 
@@ -293,15 +292,14 @@ def estimate_dok_from_bloom(bloom_level: str) -> WebbDOKLevel:
         for keyword in ["remember", "hatirlama", "understand", "anlama", "kavrama"]
     ):
         return WebbDOKLevel.RECALL
-    elif any(keyword in bloom_norm for keyword in ["apply", "uygulama"]):
+    if any(keyword in bloom_norm for keyword in ["apply", "uygulama"]):
         return WebbDOKLevel.SKILL
-    elif any(
+    if any(
         keyword in bloom_norm
         for keyword in ["analyze", "analiz", "evaluate", "degerlendirme"]
     ):
         return WebbDOKLevel.STRATEGIC
-    elif any(keyword in bloom_norm for keyword in ["create", "yaratma", "sentez"]):
+    if any(keyword in bloom_norm for keyword in ["create", "yaratma", "sentez"]):
         return WebbDOKLevel.EXTENDED
-    else:
-        # Varsayilan: SKILL (cogu egitim icerigi)
-        return WebbDOKLevel.SKILL
+    # Varsayilan: SKILL (cogu egitim icerigi)
+    return WebbDOKLevel.SKILL

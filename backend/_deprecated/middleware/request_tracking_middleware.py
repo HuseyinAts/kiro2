@@ -12,15 +12,15 @@ Features:
 
 import time
 import uuid
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
 from core.learning_path_logger import (
-    request_id_var,
     get_learning_path_logger,
+    request_id_var,
 )
 
 

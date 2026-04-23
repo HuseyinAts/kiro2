@@ -25,7 +25,7 @@ Features:
 
 import json
 from datetime import datetime, timedelta
-from typing import Any, List
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -49,20 +49,6 @@ from core.response_models import (
     turkish_success_response,
 )
 
-# User models
-from models.user import (
-    Kullanici,
-    KullaniciBase,
-    KullaniciOlustur,
-    OgrenciProfili,
-)
-
-# Exam models
-from models.exam import (
-    SinavOturumu,
-    SinavSorusu,
-)
-
 # Content models
 from models.content_models import (
     BulkContentImport,
@@ -72,6 +58,27 @@ from models.content_models import (
     InteractionType,
     MakaleIcerik,
     VideoIcerik,
+)
+
+# Dashboard models
+from models.dashboard import (
+    Bildirim,
+    DashboardIstatistikleri,
+    Hedef,
+)
+
+# Enums
+from models.enums import (
+    KullaniciRolu,
+    SinavDurumu,
+    SinavTipi,
+    ZorlukSeviyesi,
+)
+
+# Exam models
+from models.exam import (
+    SinavOturumu,
+    SinavSorusu,
 )
 
 # Learning style models
@@ -93,21 +100,13 @@ from models.question_generation import (
     QuestionType,
 )
 
-# Dashboard models
-from models.dashboard import (
-    Bildirim,
-    DashboardIstatistikleri,
-    Hedef,
+# User models
+from models.user import (
+    Kullanici,
+    KullaniciBase,
+    KullaniciOlustur,
+    OgrenciProfili,
 )
-
-# Enums
-from models.enums import (
-    KullaniciRolu,
-    SinavDurumu,
-    SinavTipi,
-    ZorlukSeviyesi,
-)
-
 
 # =============================================================================
 # CORE RESPONSE MODELS TESTS (80+ cases)
@@ -689,7 +688,7 @@ class TestSinavSorusu:
             ["1", "2", "3", "4"],
         ],
     )
-    def test_valid_secenekler(self, secenekler: List[str]):
+    def test_valid_secenekler(self, secenekler: list[str]):
         """Test valid options count (4-5)"""
         soru = SinavSorusu(
             soru_id="q-1",
@@ -711,7 +710,7 @@ class TestSinavSorusu:
             [],  # Empty
         ],
     )
-    def test_invalid_secenekler(self, invalid_secenekler: List[str]):
+    def test_invalid_secenekler(self, invalid_secenekler: list[str]):
         """Test invalid options count"""
         with pytest.raises(ValidationError):
             SinavSorusu(
@@ -816,7 +815,7 @@ class TestMakaleIcerik:
             ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"],  # 10 tags
         ],
     )
-    def test_valid_etiketler(self, etiketler: List[str]):
+    def test_valid_etiketler(self, etiketler: list[str]):
         """Test valid tags"""
         makale = MakaleIcerik(
             baslik="Test",
@@ -1143,7 +1142,7 @@ class TestOSYMQuestionFormat:
             ["A", "B", "C", "D", "E"],
         ],
     )
-    def test_valid_options(self, options: List[str]):
+    def test_valid_options(self, options: list[str]):
         """Test valid option counts (4-5)"""
         question = OSYMQuestionFormat(
             question_number=1,
@@ -1163,7 +1162,7 @@ class TestOSYMQuestionFormat:
             [],
         ],
     )
-    def test_invalid_options(self, invalid_options: List[str]):
+    def test_invalid_options(self, invalid_options: list[str]):
         """Test invalid option counts"""
         with pytest.raises(ValidationError):
             OSYMQuestionFormat(
@@ -1239,7 +1238,7 @@ class TestQuestionGenerationRequest:
     @pytest.mark.parametrize("count", [1, 10, 100, 500, 1000, 5000, 10000])
     def test_valid_question_count(self, count: int):
         """Test valid question count (1-10000)"""
-        from models.curriculum import SubjectType, ExamType
+        from models.curriculum import ExamType, SubjectType
 
         request = QuestionGenerationRequest(
             subject=SubjectType.MATEMATIK,
@@ -1256,7 +1255,7 @@ class TestQuestionGenerationRequest:
     @pytest.mark.parametrize("invalid_count", [0, -1, 10001, 100000])
     def test_invalid_question_count(self, invalid_count: int):
         """Test invalid question count"""
-        from models.curriculum import SubjectType, ExamType
+        from models.curriculum import ExamType, SubjectType
 
         with pytest.raises(ValidationError):
             QuestionGenerationRequest(

@@ -11,14 +11,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from alembic import command
 from alembic.config import Config
 from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.exc import OperationalError
 
+from alembic import command
+
 if TYPE_CHECKING:
     from collections.abc import Generator
+
     from sqlalchemy.engine import Engine
 
 # Add backend to path

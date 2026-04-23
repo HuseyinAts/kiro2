@@ -9,10 +9,10 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
-from sqlalchemy import select, func, and_, text
+from sqlalchemy import and_, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.structured_logger import get_logger
@@ -27,7 +27,7 @@ async def build_sync_package(
     *,
     db: AsyncSession,
     student_id: str,
-    subject: Optional[str],
+    subject: str | None,
     limit: int,
 ) -> dict[str, Any]:
     """Build an offline study package for the given student.
@@ -49,7 +49,7 @@ async def build_sync_package(
     from models.fsrs_models import FSRSCard
     from models.question_bank import QuestionBankItem
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     package_id = str(uuid.uuid4())
 
     # ------------------------------------------------------------------
@@ -201,8 +201,8 @@ async def process_sync_results(
     Returns:
         Dict with synced_count, failed_count, next_sync_recommended_at.
     """
-    from models.question_bank import QuestionBankItem
     from models.fsrs_models import FSRSCard
+    from models.question_bank import QuestionBankItem
 
     synced = 0
     failed = 0
@@ -349,7 +349,7 @@ def _reject_batch(
 
 def _next_sync_at_iso() -> str:
     # Recommend next sync in ~6 hours
-    next_sync = datetime.now(timezone.utc) + timedelta(hours=6)
+    next_sync = datetime.now(UTC) + timedelta(hours=6)
     return next_sync.isoformat()
 
 
@@ -366,9 +366,9 @@ def _apply_fsrs_grade(*, card: Any, is_correct: bool, time_seconds: float) -> No
         is_correct: Whether the student answered correctly.
         time_seconds: Response time in seconds.
     """
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timedelta
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     if not is_correct:
         # Again — reset stability slightly, shorten interval
@@ -401,7 +401,7 @@ async def get_sync_status(*, db: AsyncSession, student_id: str) -> dict[str, Any
     """
     from models.fsrs_models import FSRSCard
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # Count FSRS cards that are currently due (proxy for pending review work)
     pending_result = await db.execute(
@@ -420,7 +420,7 @@ async def get_sync_status(*, db: AsyncSession, student_id: str) -> dict[str, Any
             FSRSCard.student_id == student_id
         )
     )
-    last_review: Optional[datetime] = last_review_result.scalar_one_or_none()
+    last_review: datetime | None = last_review_result.scalar_one_or_none()
 
     return {
         "last_sync_at": last_review.isoformat() if last_review else None,

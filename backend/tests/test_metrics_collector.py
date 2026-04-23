@@ -3,13 +3,15 @@ Test suite for MetricsCollector
 Tests Prometheus integration and metrics tracking
 """
 
-import pytest
 import time
+
+import pytest
+
 from core.metrics_collector import (
     MetricsCollector,
+    MetricSnapshot,
     get_metrics_collector,
     reset_metrics_collector,
-    MetricSnapshot,
 )
 
 

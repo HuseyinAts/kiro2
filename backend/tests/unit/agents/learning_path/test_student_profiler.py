@@ -7,12 +7,13 @@ Tests for student profile creation, analysis, and management.
 Coverage Target: 90%+
 """
 
-import pytest
-from unittest.mock import Mock, AsyncMock
+import os
 
 # Import the module to test
 import sys
-import os
+from unittest.mock import AsyncMock, Mock
+
+import pytest
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../.."))
@@ -20,11 +21,10 @@ sys.path.insert(
 
 from backend.agents.learning_path.core.student_profiler import StudentProfiler
 from backend.agents.learning_path.models import (
-    StudentProfile,
-    LearningStyle,
     KnowledgeLevel,
+    LearningStyle,
+    StudentProfile,
 )
-
 
 # Fixtures
 

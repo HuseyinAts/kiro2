@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
 """
 Elasticsearch Client
 Manages Elasticsearch connections and operations for search functionality
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from elasticsearch import AsyncElasticsearch, NotFoundError
 from dataclasses import dataclass
+from typing import Any
+
+from elasticsearch import AsyncElasticsearch, NotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 class SearchResult:
     """Elasticsearch search result"""
 
-    hits: List[Dict[str, Any]]
+    hits: list[dict[str, Any]]
     total: int
     took: int
-    max_score: Optional[float] = None
+    max_score: float | None = None
 
     @property
     def results(self):
@@ -43,9 +43,9 @@ class ElasticsearchClient:
 
     def __init__(
         self,
-        hosts: List[str] = None,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        hosts: list[str] = None,
+        username: str | None = None,
+        password: str | None = None,
         verify_certs: bool = True,
     ):
         """
@@ -61,7 +61,7 @@ class ElasticsearchClient:
         self.username = username
         self.password = password
         self.verify_certs = verify_certs
-        self._client: Optional[AsyncElasticsearch] = None
+        self._client: AsyncElasticsearch | None = None
 
     async def _ensure_connected(self) -> None:
         """Lazy-init the AsyncElasticsearch client if not already done"""
@@ -111,8 +111,8 @@ class ElasticsearchClient:
     async def create_index(
         self,
         index_name: str,
-        mappings: Optional[Dict[str, Any]] = None,
-        settings: Optional[Dict[str, Any]] = None,
+        mappings: dict[str, Any] | None = None,
+        settings: dict[str, Any] | None = None,
     ) -> bool:
         """Create an index with optional mappings and settings"""
         await self._ensure_connected()
@@ -134,8 +134,8 @@ class ElasticsearchClient:
     async def index_document(
         self,
         index_name: str,
-        document: Dict[str, Any],
-        doc_id: Optional[str] = None,
+        document: dict[str, Any],
+        doc_id: str | None = None,
     ) -> bool:
         """Index a document"""
         await self._ensure_connected()
@@ -154,7 +154,7 @@ class ElasticsearchClient:
     async def search(
         self,
         index_name: str,
-        query: Dict[str, Any],
+        query: dict[str, Any],
         size: int = 10,
         from_: int = 0,
     ) -> SearchResult:
@@ -194,7 +194,7 @@ class ElasticsearchClient:
             logger.error(f"Failed to delete index {index_name}: {e}")
             return False
 
-    async def get_index_stats(self, index_name: str) -> Optional[IndexStats]:
+    async def get_index_stats(self, index_name: str) -> IndexStats | None:
         """Get index statistics"""
         await self._ensure_connected()
         try:
@@ -280,7 +280,7 @@ class ElasticsearchClient:
             logger.error(f"Bulk index failed: {e}")
             return {"indexed": 0, "errors": len(documents)}
 
-    async def list_indices(self) -> List[str]:
+    async def list_indices(self) -> list[str]:
         """List all user-created indices (skips system indices starting with '.')"""
         await self._ensure_connected()
         try:
@@ -306,7 +306,7 @@ class ElasticsearchClient:
 
 
 # Singleton instance
-_elasticsearch_client: Optional[ElasticsearchClient] = None
+_elasticsearch_client: ElasticsearchClient | None = None
 
 
 def get_elasticsearch_client() -> ElasticsearchClient:
@@ -324,7 +324,7 @@ def get_elasticsearch_client() -> ElasticsearchClient:
 # Export classes and functions
 __all__ = [
     "ElasticsearchClient",
-    "SearchResult",
     "IndexStats",
+    "SearchResult",
     "get_elasticsearch_client",
 ]

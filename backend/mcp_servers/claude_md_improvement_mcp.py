@@ -23,12 +23,12 @@ Date: 2026-01-17
 """
 
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # MCP imports
 try:
     from mcp.server import Server
-    from mcp.types import Tool, TextContent
+    from mcp.types import TextContent, Tool
     MCP_AVAILABLE = True
 except ImportError:
     MCP_AVAILABLE = False
@@ -43,8 +43,8 @@ except ImportError:
     FastMCP = None  # type: ignore
 
 # Rate limiting
-from collections import defaultdict
 import time
+from collections import defaultdict
 
 
 class RateLimiter:
@@ -60,7 +60,7 @@ class RateLimiter:
         """
         self.max_requests = max_requests
         self.window = window
-        self._requests: Dict[str, List[float]] = defaultdict(list)
+        self._requests: dict[str, list[float]] = defaultdict(list)
 
     def is_allowed(self, key: str = "global") -> tuple[bool, int]:
         """Check if request is allowed."""
@@ -92,11 +92,11 @@ else:
 async def record_feedback_impl(
     task_id: str,
     success: bool,
-    rule_id: Optional[str] = None,
-    rating: Optional[int] = None,
-    comment: Optional[str] = None,
+    rule_id: str | None = None,
+    rating: int | None = None,
+    comment: str | None = None,
     execution_time: float = 0.0,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Task feedback kaydeder.
 
@@ -158,7 +158,7 @@ async def record_feedback_impl(
         }
 
 
-async def get_effectiveness_impl(rule_id: str) -> Dict[str, Any]:
+async def get_effectiveness_impl(rule_id: str) -> dict[str, Any]:
     """
     Rule effectiveness skorunu getirir.
 
@@ -200,7 +200,7 @@ async def get_effectiveness_impl(rule_id: str) -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
-async def trigger_analysis_impl() -> Dict[str, Any]:
+async def trigger_analysis_impl() -> dict[str, Any]:
     """
     Manuel analiz tetikler.
 
@@ -230,8 +230,8 @@ async def trigger_analysis_impl() -> Dict[str, Any]:
 
 
 async def check_safety_impl(
-    action: str, rule_id: Optional[str] = None
-) -> Dict[str, Any]:
+    action: str, rule_id: str | None = None
+) -> dict[str, Any]:
     """
     Safety guardrails kontrol eder.
 
@@ -279,7 +279,7 @@ async def check_safety_impl(
     }
 
 
-async def get_status_impl() -> Dict[str, Any]:
+async def get_status_impl() -> dict[str, Any]:
     """
     Orchestrator durumunu getirir.
 

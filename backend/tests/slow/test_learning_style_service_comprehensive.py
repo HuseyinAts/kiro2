@@ -6,23 +6,25 @@ Teknofest 2025 - YKS Hazırlık Platformu
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 
-import pytest
 import asyncio
+
+import pytest
 
 # Test edilecek modülleri import et
 try:
+    from models.learning_style import (
+        FelderSilvermanProfile,
+        HybridLearningProfile,
+        LearningStyle,
+        VARKProfile,
+    )
     from services.learning_style_service import (
         LearningStyleService,
         learning_style_service,
-    )
-    from models.learning_style import (
-        LearningStyle,
-        VARKProfile,
-        FelderSilvermanProfile,
-        HybridLearningProfile,
     )
 except ImportError:
     # Mock classes if imports fail

@@ -4,9 +4,10 @@ KIRO2 Router Registry
 Tüm router'ların merkezi yönetimi ve organizasyonu.
 """
 
-from typing import Dict, List, Tuple, Optional
-from fastapi import APIRouter
 import logging
+from typing import Dict, List, Optional, Tuple
+
+from fastapi import APIRouter
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +29,13 @@ ROUTER_CATEGORIES = {
 
 class RouterRegistry:
     """Router kayıt ve yönetim sistemi."""
-    
+
     def __init__(self):
-        self.routers: Dict[str, List[Tuple[str, APIRouter, str]]] = {
+        self.routers: dict[str, list[tuple[str, APIRouter, str]]] = {
             category: [] for category in ROUTER_CATEGORIES
         }
-        self.failed_imports: List[str] = []
-    
+        self.failed_imports: list[str] = []
+
     def register(self, category: str, name: str, router: APIRouter, prefix: str = None):
         """Router'ı kaydet."""
         if category not in self.routers:
@@ -42,26 +43,26 @@ class RouterRegistry:
             category = "misc"
             if category not in self.routers:
                 self.routers[category] = []
-        
+
         if prefix is None:
             prefix = f"/api/{name.replace('_', '-')}"
-        
+
         self.routers[category].append((name, router, prefix))
         logger.info(f"✅ Registered {category}/{name} at {prefix}")
-    
+
     def register_failed(self, name: str, error: str):
         """Başarısız import'u kaydet."""
         self.failed_imports.append(f"{name}: {error}")
         logger.warning(f"⚠️ Failed to import {name}: {error}")
-    
-    def get_all_routers(self) -> List[Tuple[str, APIRouter, str]]:
+
+    def get_all_routers(self) -> list[tuple[str, APIRouter, str]]:
         """Tüm router'ları düz liste olarak döndür."""
         all_routers = []
         for category_routers in self.routers.values():
             all_routers.extend(category_routers)
         return all_routers
-    
-    def get_summary(self) -> Dict[str, int]:
+
+    def get_summary(self) -> dict[str, int]:
         """Özet istatistikleri döndür."""
         return {
             "total": sum(len(r) for r in self.routers.values()),

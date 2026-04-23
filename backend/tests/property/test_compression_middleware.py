@@ -10,8 +10,10 @@ Requirements: REQ-2.1, REQ-2.4
 import gzip
 import io
 import json
+
 import pytest
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 
 def compress_content(content: bytes, level: int = 6) -> bytes:

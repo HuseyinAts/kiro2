@@ -30,7 +30,7 @@ def _load_mapping() -> dict[str, tuple[str, str]]:
 def _check_module(module_path: str) -> tuple[bool, str]:
     try:
         module = importlib.import_module(module_path)
-    except Exception as exc:  # noqa: BLE001 - we need the full failure reason
+    except Exception as exc:
         return False, f"import failed: {exc!r}"
 
     if not hasattr(module, "router"):

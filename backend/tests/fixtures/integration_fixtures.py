@@ -2,14 +2,15 @@
 Integration Test Fixtures and Utilities
 Reusable fixtures for integration testing
 """
-import pytest
-from datetime import datetime
 import uuid
-from unittest.mock import Mock, AsyncMock
+from datetime import datetime
+from unittest.mock import AsyncMock, Mock
+
+import pytest
 
 # Import centralized JWT helper from conftest (DRY)
 try:
-    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+    from tests.conftest import TEST_JWT_ALGORITHM, TEST_JWT_SECRET, _generate_test_jwt
 except ImportError:
     import jwt as _jwt
     TEST_JWT_SECRET = "test-secret-key-for-testing"

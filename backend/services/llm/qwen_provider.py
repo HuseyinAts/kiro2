@@ -6,17 +6,18 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-from typing import Optional, Dict, Any, List
+import asyncio
+import json
 import time
 import uuid
-import json
-import asyncio
+from typing import Any
+
 import httpx
-from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
-from services.llm.multi_llm_config import LLMProvider, LLMModelConfig, LLMCapability
+from services.llm.multi_llm_config import LLMCapability, LLMModelConfig, LLMProvider
 
 
 class QwenProvider(BaseLLMProvider):
@@ -84,7 +85,7 @@ class QwenProvider(BaseLLMProvider):
             print("Qwen model loaded successfully")
 
         except Exception as e:
-            raise RuntimeError(f"Failed to load Qwen model: {str(e)}")
+            raise RuntimeError(f"Failed to load Qwen model: {e!s}")
 
     def _init_cloud_api(self):
         """Initialize cloud API client (DashScope/Alibaba Cloud)"""
@@ -103,8 +104,7 @@ class QwenProvider(BaseLLMProvider):
         """
         if self.use_local:
             return await self._generate_local(request)
-        else:
-            return await self._generate_cloud(request)
+        return await self._generate_cloud(request)
 
     async def _generate_local(self, request: LLMRequest) -> LLMResponse:
         """Generate text using local Qwen model"""
@@ -165,7 +165,7 @@ class QwenProvider(BaseLLMProvider):
             )
 
         except Exception as e:
-            raise RuntimeError(f"Qwen local generation error: {str(e)}")
+            raise RuntimeError(f"Qwen local generation error: {e!s}")
 
     async def _generate_cloud(self, request: LLMRequest) -> LLMResponse:
         """Generate text using Qwen cloud API (DashScope)"""
@@ -230,9 +230,9 @@ class QwenProvider(BaseLLMProvider):
             )
 
         except Exception as e:
-            raise RuntimeError(f"Qwen cloud API error: {str(e)}")
+            raise RuntimeError(f"Qwen cloud API error: {e!s}")
 
-    async def generate_batch(self, requests: List[LLMRequest]) -> List[LLMResponse]:
+    async def generate_batch(self, requests: list[LLMRequest]) -> list[LLMResponse]:
         """Generate text for multiple requests"""
         tasks = [self.generate(request) for request in requests]
         return await asyncio.gather(*tasks)
@@ -251,7 +251,7 @@ class QwenProvider(BaseLLMProvider):
         return capability in self.config.capabilities
 
     async def fine_tune(
-        self, training_file: str, validation_file: Optional[str] = None, **kwargs
+        self, training_file: str, validation_file: str | None = None, **kwargs
     ) -> str:
         """
         Fine-tune Qwen model using LoRA
@@ -270,9 +270,9 @@ class QwenProvider(BaseLLMProvider):
             )
 
         try:
+            import pandas as pd
             from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
             from transformers import Trainer, TrainingArguments
-            import pandas as pd
 
             # Load training data
             train_data = pd.read_json(training_file, lines=True)
@@ -376,7 +376,7 @@ class QwenProvider(BaseLLMProvider):
             return fine_tuned_path
 
         except Exception as e:
-            raise RuntimeError(f"Qwen fine-tuning error: {str(e)}")
+            raise RuntimeError(f"Qwen fine-tuning error: {e!s}")
 
     async def create_osym_question(
         self,
@@ -385,7 +385,7 @@ class QwenProvider(BaseLLMProvider):
         difficulty: float,
         bloom_level: int,
         exam_type: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate ÖSYM question using Qwen"""
         from services.llm.multi_llm_config import MultiLLMConfig
 
@@ -417,12 +417,11 @@ class QwenProvider(BaseLLMProvider):
                 json_str = content[start_idx:end_idx]
                 question_data = json.loads(json_str)
                 return question_data
-            else:
-                raise ValueError("No JSON object found in response")
+            raise ValueError("No JSON object found in response")
 
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(
-                f"Failed to parse JSON response: {response.content}\nError: {str(e)}"
+                f"Failed to parse JSON response: {response.content}\nError: {e!s}"
             )
 
     def __del__(self):

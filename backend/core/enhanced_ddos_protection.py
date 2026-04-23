@@ -9,7 +9,6 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 import redis
 
@@ -82,7 +81,7 @@ class EnhancedDDoSProtection:
 
     def __init__(
         self,
-        redis_client: Optional[redis.Redis] = None,
+        redis_client: redis.Redis | None = None,
         burst_threshold: int = 100,
         sustained_threshold: int = 1000,
         endpoint_threshold: int = 50,
@@ -143,7 +142,7 @@ class EnhancedDDoSProtection:
         user_agent: str,
         request_size: int = 0,
         connection_duration: float = 0.0,
-    ) -> tuple[bool, Optional[str]]:
+    ) -> tuple[bool, str | None]:
         """
         Analyze request for DDoS patterns
 
@@ -217,7 +216,7 @@ class EnhancedDDoSProtection:
 
     def _analyze_patterns(
         self, ip: str, endpoint: str, now: float
-    ) -> tuple[bool, Optional[str]]:
+    ) -> tuple[bool, str | None]:
         """Analyze request patterns for DDoS indicators"""
         connections = self.active_connections[ip]
 
@@ -258,13 +257,13 @@ class EnhancedDDoSProtection:
         """Calculate threat level based on IP reputation"""
         if reputation.blocked_count >= 5:
             return ThreatLevel.CRITICAL
-        elif reputation.blocked_count >= 3:
+        if reputation.blocked_count >= 3:
             return ThreatLevel.HIGH
-        elif reputation.blocked_count >= 1:
+        if reputation.blocked_count >= 1:
             return ThreatLevel.MEDIUM
         return ThreatLevel.LOW
 
-    def _block_ip(self, ip: str, reason: BlockReason, duration: Optional[int] = None):
+    def _block_ip(self, ip: str, reason: BlockReason, duration: int | None = None):
         """
         Block an IP address
 
@@ -371,7 +370,7 @@ class EnhancedDDoSProtection:
 
         logger.info(f"[DDOS] IP removed from blacklist: {ip}")
 
-    def get_ip_reputation(self, ip: str) -> Optional[IPReputation]:
+    def get_ip_reputation(self, ip: str) -> IPReputation | None:
         """Get reputation information for an IP"""
         return self.ip_reputations.get(ip)
 
@@ -414,11 +413,11 @@ class EnhancedDDoSProtection:
 
 
 # Global instance
-_ddos_protection: Optional[EnhancedDDoSProtection] = None
+_ddos_protection: EnhancedDDoSProtection | None = None
 
 
 def get_ddos_protection(
-    redis_client: Optional[redis.Redis] = None,
+    redis_client: redis.Redis | None = None,
 ) -> EnhancedDDoSProtection:
     """Get global DDoS protection instance"""
     global _ddos_protection

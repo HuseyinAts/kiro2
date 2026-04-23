@@ -19,7 +19,6 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 try:
     import numpy as np
@@ -149,7 +148,7 @@ class ContentRecommendationService:
             "CHROMADB_PERSIST_DIR", "./vector_db"
         )
         self.collection_name = collection_name
-        self._client: Optional["chromadb.Client"] = None
+        self._client: chromadb.Client | None = None
         self._collection = None
         self._embedding_model = None
         self._initialized = False
@@ -712,7 +711,7 @@ class ContentRecommendationService:
 
 
 # Singleton instance
-_recommendation_service: Optional[ContentRecommendationService] = None
+_recommendation_service: ContentRecommendationService | None = None
 
 
 def get_recommendation_service(

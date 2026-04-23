@@ -15,7 +15,7 @@ Requirements: REQ-3.1 - REQ-3.6
 
 import logging
 import statistics
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from backend.validators.base_response_validator import (
     AgentResponse,
@@ -67,9 +67,9 @@ class ExamAgentValidator(BaseResponseValidator):
         Returns:
             ValidationResult: Doğrulama sonucu
         """
-        errors: List[str] = []
-        warnings: List[str] = []
-        suggestions: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
+        suggestions: list[str] = []
         score = 1.0
 
         evaluation = response.response_data.get("evaluation", {})
@@ -157,7 +157,7 @@ class ExamAgentValidator(BaseResponseValidator):
 
     def _extract_evaluation_from_text(
         self, text: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Metin yanıtından değerlendirme bilgilerini çıkar.
 
@@ -182,7 +182,7 @@ class ExamAgentValidator(BaseResponseValidator):
         text_lower = text.lower()
 
         # Sayıları çıkar
-        def extract_number(pattern: str) -> Optional[int]:
+        def extract_number(pattern: str) -> int | None:
             match = re.search(pattern, text_lower)
             if match:
                 return int(match.group(1))
@@ -220,8 +220,8 @@ class ExamAgentValidator(BaseResponseValidator):
         return evaluation
 
     def _check_scoring_consistency(
-        self, evaluation: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, evaluation: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Puanlama tutarlılığını kontrol et.
 
@@ -240,7 +240,7 @@ class ExamAgentValidator(BaseResponseValidator):
             }
 
         # Zorluk seviyesine göre grupla
-        by_difficulty: Dict[str, List[Dict]] = {}
+        by_difficulty: dict[str, list[dict]] = {}
 
         for result in question_results:
             difficulty = result.get("difficulty", "orta")
@@ -284,8 +284,8 @@ class ExamAgentValidator(BaseResponseValidator):
         }
 
     def _verify_math_calculations(
-        self, evaluation: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, evaluation: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Matematiksel hesaplamaları doğrula.
 
@@ -345,8 +345,8 @@ class ExamAgentValidator(BaseResponseValidator):
         }
 
     def _verify_statistics(
-        self, evaluation: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, evaluation: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         İstatistiksel hesaplamaları doğrula.
 
@@ -414,8 +414,8 @@ class ExamAgentValidator(BaseResponseValidator):
         }
 
     def _validate_weak_area_detection(
-        self, evaluation: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, evaluation: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Zayıf alan tespitlerini doğrula.
 
@@ -471,9 +471,9 @@ class ExamAgentValidator(BaseResponseValidator):
 
     def _check_recommendation_appropriateness(
         self,
-        evaluation: Dict[str, Any],
-        student_profile: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        evaluation: dict[str, Any],
+        student_profile: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Önerilerin öğrenci profiline uygunluğunu kontrol et.
 

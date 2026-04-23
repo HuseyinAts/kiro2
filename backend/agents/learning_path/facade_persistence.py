@@ -9,14 +9,14 @@ Full round-trip uses `agent_metadata.facade_domain_path` JSON (from `LearningPat
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from core.database import get_db_session_context
 from database.learning_path_repository import LearningPathRepository
 
 if TYPE_CHECKING:
-    from agents.learning_path.models import LearningPath, StudentProfile
+    pass
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def _domain_path_to_row(
     path: Any, subject: str, extra_metadata: dict[str, Any] | None = None
 ) -> dict[str, Any]:
     """Map domain LearningPath + subject to `learning_paths` insert dict."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     created = path.created_at
     if isinstance(created, str):
         created = datetime.fromisoformat(created.replace("Z", "+00:00"))

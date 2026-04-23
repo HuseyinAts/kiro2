@@ -33,7 +33,6 @@ from core.jwt_auth import (
     UserRole,
 )
 
-
 # ==================== Fixtures ====================
 
 
@@ -645,7 +644,7 @@ class TestCreateTokenPair:
     """create_token_pair must return both tokens with correct metadata."""
 
     def test_returns_jwt_tokens_model(self, manager: JWTManager) -> None:
-        from core.jwt_auth import JWTTokens  # noqa: PLC0415
+        from core.jwt_auth import JWTTokens
         result = manager.create_token_pair("1", "u@test.com", UserRole.STUDENT)
         assert isinstance(result, JWTTokens)
 
@@ -860,7 +859,7 @@ def _make_token_payload(
     email: str = "u@test.com",
 ) -> TokenPayload:
     """Build a TokenPayload without going through JWTManager."""
-    from datetime import UTC, datetime, timedelta  # noqa: PLC0415
+    from datetime import UTC, datetime, timedelta
     return TokenPayload(
         sub=sub,
         email=email,
@@ -878,14 +877,14 @@ class TestRequireRole:
 
     @pytest.mark.asyncio
     async def test_matching_role_returns_user(self) -> None:
-        from core.jwt_auth import require_role  # noqa: PLC0415
+        from core.jwt_auth import require_role
         user = _make_token_payload(role=UserRole.ADMIN)
         result = await require_role([UserRole.ADMIN], user)
         assert result is user
 
     @pytest.mark.asyncio
     async def test_non_matching_role_raises_403(self) -> None:
-        from core.jwt_auth import require_role  # noqa: PLC0415
+        from core.jwt_auth import require_role
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_role([UserRole.ADMIN, UserRole.SUPER_ADMIN], user)
@@ -893,14 +892,14 @@ class TestRequireRole:
 
     @pytest.mark.asyncio
     async def test_super_admin_allowed_when_in_list(self) -> None:
-        from core.jwt_auth import require_role  # noqa: PLC0415
+        from core.jwt_auth import require_role
         user = _make_token_payload(role=UserRole.SUPER_ADMIN)
         result = await require_role([UserRole.ADMIN, UserRole.SUPER_ADMIN], user)
         assert result is user
 
     @pytest.mark.asyncio
     async def test_error_message_includes_required_roles(self) -> None:
-        from core.jwt_auth import require_role  # noqa: PLC0415
+        from core.jwt_auth import require_role
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_role([UserRole.ADMIN], user)
@@ -912,14 +911,14 @@ class TestRequirePermission:
 
     @pytest.mark.asyncio
     async def test_user_with_permission_passes(self) -> None:
-        from core.jwt_auth import require_permission  # noqa: PLC0415
+        from core.jwt_auth import require_permission
         user = _make_token_payload(permissions=["exam:create"])
         result = await require_permission("exam:create", user)
         assert result is user
 
     @pytest.mark.asyncio
     async def test_user_without_permission_raises_403(self) -> None:
-        from core.jwt_auth import require_permission  # noqa: PLC0415
+        from core.jwt_auth import require_permission
         user = _make_token_payload(permissions=["exam:take"])
         with pytest.raises(HTTPException) as exc_info:
             await require_permission("exam:create", user)
@@ -927,14 +926,14 @@ class TestRequirePermission:
 
     @pytest.mark.asyncio
     async def test_super_admin_bypasses_permission_check(self) -> None:
-        from core.jwt_auth import require_permission  # noqa: PLC0415
+        from core.jwt_auth import require_permission
         user = _make_token_payload(role=UserRole.SUPER_ADMIN, permissions=["*"])
         result = await require_permission("any:secret:action", user)
         assert result is user
 
     @pytest.mark.asyncio
     async def test_wildcard_permission_grants_access(self) -> None:
-        from core.jwt_auth import require_permission  # noqa: PLC0415
+        from core.jwt_auth import require_permission
         # Even a student-role user with explicit "*" perm should pass.
         user = _make_token_payload(role=UserRole.STUDENT, permissions=["*"])
         result = await require_permission("exam:create", user)
@@ -942,7 +941,7 @@ class TestRequirePermission:
 
     @pytest.mark.asyncio
     async def test_error_detail_includes_required_permission(self) -> None:
-        from core.jwt_auth import require_permission  # noqa: PLC0415
+        from core.jwt_auth import require_permission
         user = _make_token_payload(permissions=[])
         with pytest.raises(HTTPException) as exc_info:
             await require_permission("reports:admin", user)
@@ -954,21 +953,21 @@ class TestRequireAdmin:
 
     @pytest.mark.asyncio
     async def test_admin_passes(self) -> None:
-        from core.jwt_auth import require_admin  # noqa: PLC0415
+        from core.jwt_auth import require_admin
         user = _make_token_payload(role=UserRole.ADMIN)
         result = await require_admin(user)
         assert result is user
 
     @pytest.mark.asyncio
     async def test_super_admin_passes(self) -> None:
-        from core.jwt_auth import require_admin  # noqa: PLC0415
+        from core.jwt_auth import require_admin
         user = _make_token_payload(role=UserRole.SUPER_ADMIN)
         result = await require_admin(user)
         assert result is user
 
     @pytest.mark.asyncio
     async def test_student_raises_403(self) -> None:
-        from core.jwt_auth import require_admin  # noqa: PLC0415
+        from core.jwt_auth import require_admin
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_admin(user)
@@ -976,7 +975,7 @@ class TestRequireAdmin:
 
     @pytest.mark.asyncio
     async def test_teacher_raises_403(self) -> None:
-        from core.jwt_auth import require_admin  # noqa: PLC0415
+        from core.jwt_auth import require_admin
         user = _make_token_payload(role=UserRole.TEACHER)
         with pytest.raises(HTTPException) as exc_info:
             await require_admin(user)
@@ -984,7 +983,7 @@ class TestRequireAdmin:
 
     @pytest.mark.asyncio
     async def test_parent_raises_403(self) -> None:
-        from core.jwt_auth import require_admin  # noqa: PLC0415
+        from core.jwt_auth import require_admin
         user = _make_token_payload(role=UserRole.PARENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_admin(user)
@@ -992,7 +991,7 @@ class TestRequireAdmin:
 
     @pytest.mark.asyncio
     async def test_error_detail_mentions_admin(self) -> None:
-        from core.jwt_auth import require_admin  # noqa: PLC0415
+        from core.jwt_auth import require_admin
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_admin(user)
@@ -1004,14 +1003,14 @@ class TestGetCurrentActiveUser:
 
     @pytest.mark.asyncio
     async def test_returns_same_user(self) -> None:
-        from core.jwt_auth import get_current_active_user  # noqa: PLC0415
+        from core.jwt_auth import get_current_active_user
         user = _make_token_payload(role=UserRole.STUDENT)
         result = await get_current_active_user(user)
         assert result is user
 
     @pytest.mark.asyncio
     async def test_works_for_all_roles(self) -> None:
-        from core.jwt_auth import get_current_active_user  # noqa: PLC0415
+        from core.jwt_auth import get_current_active_user
         for role in UserRole:
             user = _make_token_payload(role=role)
             result = await get_current_active_user(user)

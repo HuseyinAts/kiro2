@@ -15,10 +15,10 @@ Requirements:
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Dict, List, Optional, Callable
 
 import httpx
 
@@ -45,7 +45,7 @@ class SmokeTestResult:
     success: bool
     status_code: int
     response_time_ms: float
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 @dataclass
@@ -55,13 +55,13 @@ class DeploymentReport:
     version: str
     status: DeploymentStatus
     started_at: datetime
-    completed_at: Optional[datetime] = None
-    smoke_test_results: List[SmokeTestResult] = field(default_factory=list)
+    completed_at: datetime | None = None
+    smoke_test_results: list[SmokeTestResult] = field(default_factory=list)
     health_check_passed: bool = False
     rollback_performed: bool = False
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Dict'e dönüştürür."""
         return {
             "deployment_id": self.deployment_id,
@@ -106,7 +106,7 @@ class PostDeployHook:
         base_url: str,
         redis_client=None,
         timeout: int = 10,
-        critical_endpoints: Optional[List[EndpointMetadata]] = None
+        critical_endpoints: list[EndpointMetadata] | None = None
     ):
         """
         PostDeployHook sınıfını başlatır.
@@ -123,9 +123,9 @@ class PostDeployHook:
         self.critical_endpoints = critical_endpoints or []
 
         # Callbacks
-        self._on_success_callbacks: List[Callable] = []
-        self._on_failure_callbacks: List[Callable] = []
-        self._rollback_callback: Optional[Callable] = None
+        self._on_success_callbacks: list[Callable] = []
+        self._on_failure_callbacks: list[Callable] = []
+        self._rollback_callback: Callable | None = None
 
         logger.info(f"PostDeployHook başlatıldı: {base_url}")
 
@@ -215,7 +215,7 @@ class PostDeployHook:
 
             return report
 
-    async def _run_smoke_tests(self) -> List[SmokeTestResult]:
+    async def _run_smoke_tests(self) -> list[SmokeTestResult]:
         """
         Kritik endpoint'lere smoke test yapar.
 

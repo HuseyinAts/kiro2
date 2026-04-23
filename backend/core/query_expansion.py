@@ -4,8 +4,8 @@ Expand user queries using LLM for better retrieval
 """
 
 import logging
-from typing import List, Optional, Dict, Any
 from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +15,9 @@ class ExpandedQuery:
     """Expanded query result"""
 
     original: str
-    expanded: List[str]
-    keywords: List[str]
-    synonyms: Dict[str, List[str]]
+    expanded: list[str]
+    keywords: list[str]
+    synonyms: dict[str, list[str]]
 
 
 class LLMQueryExpander:
@@ -158,7 +158,7 @@ Alternatif sorular (her satırda bir tane):"""
             synonyms={},
         )
 
-    def _extract_keywords(self, query: str) -> List[str]:
+    def _extract_keywords(self, query: str) -> list[str]:
         """Extract important keywords from query"""
 
         # Turkish stopwords
@@ -205,8 +205,8 @@ Alternatif sorular (her satırda bir tane):"""
         return keywords
 
     def _extract_synonyms(
-        self, query: str, expanded_queries: List[str]
-    ) -> Dict[str, List[str]]:
+        self, query: str, expanded_queries: list[str]
+    ) -> dict[str, list[str]]:
         """Extract potential synonyms from expanded queries"""
 
         query_words = set(query.lower().split())
@@ -249,7 +249,7 @@ class MultiQueryRetriever:
         k: int = 5,
         num_expansions: int = 3,
         aggregation: str = "ranked_fusion",
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Retrieve using multiple expanded queries
 
@@ -294,14 +294,13 @@ class MultiQueryRetriever:
         # Aggregate results
         if aggregation == "ranked_fusion":
             return self._ranked_fusion(all_results, k)
-        elif aggregation == "unique":
+        if aggregation == "unique":
             return self._unique_results(all_results, k)
-        else:
-            return self._merge_results(all_results, k)
+        return self._merge_results(all_results, k)
 
     def _ranked_fusion(
-        self, results: List[Dict[str, Any]], k: int
-    ) -> List[Dict[str, Any]]:
+        self, results: list[dict[str, Any]], k: int
+    ) -> list[dict[str, Any]]:
         """
         Reciprocal Rank Fusion (RRF)
         Combines rankings from multiple queries
@@ -338,8 +337,8 @@ class MultiQueryRetriever:
         return fused[:k]
 
     def _unique_results(
-        self, results: List[Dict[str, Any]], k: int
-    ) -> List[Dict[str, Any]]:
+        self, results: list[dict[str, Any]], k: int
+    ) -> list[dict[str, Any]]:
         """Return unique results by content"""
 
         seen = set()
@@ -357,8 +356,8 @@ class MultiQueryRetriever:
         return unique
 
     def _merge_results(
-        self, results: List[Dict[str, Any]], k: int
-    ) -> List[Dict[str, Any]]:
+        self, results: list[dict[str, Any]], k: int
+    ) -> list[dict[str, Any]]:
         """Simple merge - deduplicate and sort by score"""
 
         # Group by content
@@ -367,12 +366,8 @@ class MultiQueryRetriever:
         for result in results:
             content = result["content"]
 
-            if content not in content_map:
+            if content not in content_map or result["score"] > content_map[content]["score"]:
                 content_map[content] = result
-            else:
-                # Keep higher score
-                if result["score"] > content_map[content]["score"]:
-                    content_map[content] = result
 
         # Sort by score
         merged = list(content_map.values())
@@ -382,7 +377,7 @@ class MultiQueryRetriever:
 
 
 # Global expander instance
-_global_expander: Optional[LLMQueryExpander] = None
+_global_expander: LLMQueryExpander | None = None
 
 
 def get_query_expander(llm_service=None) -> LLMQueryExpander:

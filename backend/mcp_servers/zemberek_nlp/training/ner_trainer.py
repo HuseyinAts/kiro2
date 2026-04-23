@@ -9,7 +9,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class NERTrainingConfig:
     seed: int = 42
 
     # Entity types for Turkish education domain
-    entity_types: List[str] = field(default_factory=lambda: [
+    entity_types: list[str] = field(default_factory=lambda: [
         "PERSON",       # Kişi isimleri
         "LOCATION",     # Yer isimleri
         "ORGANIZATION", # Kurum/kuruluş
@@ -57,10 +57,10 @@ class NERTrainer:
     Optimized for YKS/TYT/AYT exam content.
     """
 
-    def __init__(self, config: Optional[NERTrainingConfig] = None):
+    def __init__(self, config: NERTrainingConfig | None = None):
         self.config = config or NERTrainingConfig()
         self._model = None
-        self._training_data: List[Dict[str, Any]] = []
+        self._training_data: list[dict[str, Any]] = []
 
     def load_training_data(self, data_path: Path) -> int:
         """
@@ -78,7 +78,7 @@ class NERTrainer:
         """
         self._training_data = []
 
-        with open(data_path, "r", encoding="utf-8") as f:
+        with open(data_path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -93,7 +93,7 @@ class NERTrainer:
         logger.info(f"Loaded {len(self._training_data)} training examples")
         return len(self._training_data)
 
-    def _validate_training_example(self, data: Dict[str, Any]) -> bool:
+    def _validate_training_example(self, data: dict[str, Any]) -> bool:
         """Validate training example format."""
         if "text" not in data or "entities" not in data:
             return False
@@ -107,8 +107,8 @@ class NERTrainer:
         return True
 
     def prepare_features(
-        self, text: str, entities: List[Dict[str, Any]]
-    ) -> List[Tuple[str, str, str]]:
+        self, text: str, entities: list[dict[str, Any]]
+    ) -> list[tuple[str, str, str]]:
         """
         Prepare features for training in BIO format.
 
@@ -140,7 +140,7 @@ class NERTrainer:
 
         return list(zip(tokens, pos_tags, labels))
 
-    def train(self) -> Dict[str, Any]:
+    def train(self) -> dict[str, Any]:
         """
         Train NER model on loaded data.
 
@@ -187,8 +187,8 @@ class NERTrainer:
         return metrics
 
     def evaluate(
-        self, test_data: List[Dict[str, Any]]
-    ) -> Dict[str, float]:
+        self, test_data: list[dict[str, Any]]
+    ) -> dict[str, float]:
         """
         Evaluate model on test data.
 
@@ -202,7 +202,7 @@ class NERTrainer:
             "note": "Evaluation requires trained model",
         }
 
-    def save_model(self, path: Optional[Path] = None) -> Path:
+    def save_model(self, path: Path | None = None) -> Path:
         """Save trained model to disk."""
         save_path = path or (self.config.output_dir / f"{self.config.model_name}.model")
         save_path.parent.mkdir(parents=True, exist_ok=True)

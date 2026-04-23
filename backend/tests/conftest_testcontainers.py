@@ -3,11 +3,11 @@ Testcontainers configuration for real integration tests
 Uses Docker containers for PostgreSQL and Redis
 """
 import pytest
+import redis
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from testcontainers.postgres import PostgresContainer
 from testcontainers.redis import RedisContainer
-import redis
 
 
 # Module-scoped containers (shared across all tests in session)

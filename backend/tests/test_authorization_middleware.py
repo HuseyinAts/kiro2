@@ -1,19 +1,19 @@
 """Tests for AuthorizationMiddleware, RateLimiter, SecurityValidator,
 and ComprehensiveSecurityMiddleware from security_middleware.py"""
 
-import pytest
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 from starlette.datastructures import Headers, QueryParams
 from starlette.responses import JSONResponse
 
+import backend.core.security_middleware as sec_mod
+
 # Patch broken fastapi.middleware.base import before loading the module
 import backend.tests.conftest_security  # noqa: F401
-import backend.core.security_middleware as sec_mod
 from backend.core.rbac_system import Action, ResourceType
-
 
 # ---------------------------------------------------------------------------
 # Helpers

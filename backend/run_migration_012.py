@@ -2,8 +2,9 @@
 Run Migration 012: Add visual_content column for visual questions
 """
 import asyncio
-import asyncpg
 import os
+
+import asyncpg
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,7 +35,7 @@ async def run_migration():
         migration_path = os.path.join(
             os.path.dirname(__file__), "migrations", "012_add_visual_content_column.sql"
         )
-        with open(migration_path, "r", encoding="utf-8") as f:
+        with open(migration_path, encoding="utf-8") as f:
             migration_sql = f.read()
         print("      [OK] Migration file loaded\n")
 
@@ -105,7 +106,7 @@ async def run_migration():
         return True
 
     except Exception as e:
-        print(f"\n[ERROR] Migration failed: {str(e)}\n")
+        print(f"\n[ERROR] Migration failed: {e!s}\n")
         import traceback
 
         traceback.print_exc()

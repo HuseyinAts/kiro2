@@ -3,34 +3,35 @@
 Coverage target: learning_models.py (201 statements, 0% → 80%+)
 """
 
-import pytest
 import sys
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
+
+import pytest
 
 # Add backend to path and import directly to avoid SQLAlchemy metadata conflicts
 backend_path = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(backend_path))
 
 from models.learning_models import (
-    LearningStyleType,
-    FelderDimension,
-    HybridLearningProfile,
-    TurkishZPDRange,
-    Question,
-    Student,
-    Flashcard,
-    LearningSession,
-    CulturalContext,
-    MorphologyAnalysis,
-    FSRSCard,
-    SimplificationLevel,
-    BionicReadingResult,
     AgentMessage,
+    BionicReadingResult,
     BlackboardEntry,
+    CulturalContext,
+    FelderDimension,
+    Flashcard,
+    FSRSCard,
+    HybridLearningProfile,
+    LearningSession,
+    LearningStyleType,
+    MorphologyAnalysis,
+    Question,
+    SimplificationLevel,
+    Student,
+    TurkishZPDRange,
     create_sample_hybrid_profile,
-    create_sample_zpd_range,
     create_sample_student,
+    create_sample_zpd_range,
 )
 
 

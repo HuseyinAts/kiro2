@@ -51,10 +51,9 @@ try:
 except ImportError:
     from langchain_community.embeddings import HuggingFaceEmbeddings
 
-from langchain.tools import Tool
-
 # Global langchain cache setting
 import langchain
+from langchain.tools import Tool
 
 # OpenAIFunctionsAgent import removed - deprecated
 
@@ -324,8 +323,11 @@ class LangChainLLMService:
                 )
 
             # Create agent using modern LangChain patterns
-            from langchain.agents import create_openai_functions_agent, create_react_agent
             from langchain import hub
+            from langchain.agents import (
+                create_openai_functions_agent,
+                create_react_agent,
+            )
 
             if self.chat_model and ChatOpenAI is not None:
                 # Use OpenAI functions agent for compatible models

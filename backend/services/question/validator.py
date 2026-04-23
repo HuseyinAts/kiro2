@@ -8,7 +8,7 @@ kontrol eder ve SymPy ile sembolik hesaplamalar yapar.
 
 import logging
 import re
-from typing import Any, Dict, List
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -25,13 +25,13 @@ class MathematicalValidationEngine:
             import sympy as sp
 
             self.sp = sp
-            self.symbols_cache: Dict[str, Any] = {}
+            self.symbols_cache: dict[str, Any] = {}
             logger.info("SymPy basariyla yuklendi")
         except ImportError:
             logger.warning("SymPy yuklu degil. Matematiksel dogrulama devre disi.")
             self.sp = None
 
-    def validate_equation(self, equation_str: str) -> Dict[str, Any]:
+    def validate_equation(self, equation_str: str) -> dict[str, Any]:
         """
         REQ-48.42: Equation validation - Matematiksel tutarliligi kontrol etmek
 
@@ -61,16 +61,15 @@ class MathematicalValidationEngine:
                     "right_side": str(right_expr),
                     "error": None,
                 }
-            else:
-                # Tek tarafli ifade
-                expr = self.sp.sympify(equation_str.strip())
-                return {"valid": True, "expression": str(expr), "error": None}
+            # Tek tarafli ifade
+            expr = self.sp.sympify(equation_str.strip())
+            return {"valid": True, "expression": str(expr), "error": None}
 
         except Exception as e:
             logger.error(f"Denklem dogrulama hatasi: {e}")
             return {"valid": False, "error": str(e)}
 
-    def solve_equation(self, equation_str: str, variable: str = "x") -> Dict[str, Any]:
+    def solve_equation(self, equation_str: str, variable: str = "x") -> dict[str, Any]:
         """
         REQ-48.41: SymPy symbolic math engine - Denklemleri sembolik olarak cozmek
 
@@ -113,7 +112,7 @@ class MathematicalValidationEngine:
 
     def verify_solution(
         self, equation_str: str, proposed_solution: str, variable: str = "x"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         REQ-48.43: Solution verification - Dogru cevabi dogrulamak
 
@@ -167,8 +166,8 @@ class MathematicalValidationEngine:
             return {"verified": False, "error": str(e)}
 
     def validate_math_question(
-        self, question_text: str, correct_answer: str, options: List[str]
-    ) -> Dict[str, Any]:
+        self, question_text: str, correct_answer: str, options: list[str]
+    ) -> dict[str, Any]:
         """
         REQ-48.44: Matematiksel hata tespit edildiginde soruyu reddetmek
 
@@ -183,7 +182,7 @@ class MathematicalValidationEngine:
                 "warnings": ["SymPy yuklu degil, matematiksel dogrulama yapilamadi"],
             }
 
-        validation_result: Dict[str, Any] = {"valid": True, "errors": [], "warnings": []}
+        validation_result: dict[str, Any] = {"valid": True, "errors": [], "warnings": []}
 
         try:
             # 1. Soru metninde denklem var mi kontrol et
@@ -219,11 +218,11 @@ class MathematicalValidationEngine:
 
         except Exception as e:
             logger.error(f"Matematik soru dogrulama hatasi: {e}")
-            validation_result["warnings"].append(f"Dogrulama hatasi: {str(e)}")
+            validation_result["warnings"].append(f"Dogrulama hatasi: {e!s}")
 
         return validation_result
 
-    def _extract_equations(self, text: str) -> List[str]:
+    def _extract_equations(self, text: str) -> list[str]:
         """Metinden denklemleri cikar"""
         # Basit denklem pattern'leri
         patterns = [

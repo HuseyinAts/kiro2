@@ -4,10 +4,10 @@ OSYM Diagram Styles - KIRO2
 Contains style configurations and geographic data for diagram generation.
 """
 
-from typing import Any, Dict
+from typing import Any
 
 # OSYM Diagram Styling
-OSYM_DIAGRAM_STYLE: Dict[str, Any] = {
+OSYM_DIAGRAM_STYLE: dict[str, Any] = {
     "figure.facecolor": "white",
     "axes.facecolor": "white",
     "axes.edgecolor": "black",
@@ -41,7 +41,7 @@ COLORS = {
 }
 
 # Turkey Geographic Data
-TURKEY_REGIONS: Dict[str, Dict[str, Any]] = {
+TURKEY_REGIONS: dict[str, dict[str, Any]] = {
     "Marmara": {
         "bbox": [(26, 40), (32, 42)],
         "cities": ["Istanbul", "Bursa", "Kocaeli", "Edirne", "Tekirdag"],
@@ -72,7 +72,7 @@ TURKEY_REGIONS: Dict[str, Dict[str, Any]] = {
     },
 }
 
-TURKEY_MAJOR_CITIES: Dict[str, Dict[str, Any]] = {
+TURKEY_MAJOR_CITIES: dict[str, dict[str, Any]] = {
     "Istanbul": {"coords": (29.0, 41.0), "population": 15840000},
     "Ankara": {"coords": (32.85, 39.93), "population": 5747325},
     "Izmir": {"coords": (27.14, 38.42), "population": 4425789},
@@ -81,7 +81,7 @@ TURKEY_MAJOR_CITIES: Dict[str, Dict[str, Any]] = {
 }
 
 # World Continents Data
-CONTINENTS: Dict[str, Dict[str, Any]] = {
+CONTINENTS: dict[str, dict[str, Any]] = {
     "Asya": {"bbox": (70, 10, 70, 50), "label_pos": (105, 30)},
     "Avrupa": {"bbox": (10, 35, 40, 35), "label_pos": (30, 52.5)},
     "Afrika": {"bbox": (15, -35, 40, 50), "label_pos": (35, 7.5)},

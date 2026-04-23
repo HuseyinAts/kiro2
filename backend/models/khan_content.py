@@ -3,19 +3,20 @@ Task 98: Khan Academy Database Models
 Content catalog, progress tracking, and certificates
 """
 
+import uuid
+from datetime import datetime
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
     Boolean,
+    Column,
     DateTime,
     ForeignKey,
+    Integer,
+    String,
     Text,
 )
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
-from datetime import datetime
-import uuid
 
 from .database import Base
 

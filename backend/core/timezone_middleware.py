@@ -18,21 +18,22 @@ Usage:
     add_timezone_middleware(app)
 """
 
-from typing import Dict, Any
-from fastapi import Request
-from starlette.responses import Response
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.types import ASGIApp
 import json
 import logging
+from typing import Any
+
+from fastapi import Request
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.responses import Response
+from starlette.types import ASGIApp
 
 from core.timezone_utils import (
-    parse_datetime,
-    format_datetime_utc,
+    convert_dict_datetimes_to_utc,
     format_datetime_turkish,
     format_datetime_turkish_display,
-    convert_dict_datetimes_to_utc,
+    format_datetime_utc,
     format_dict_datetimes_for_api,
+    parse_datetime,
 )
 
 logger = logging.getLogger(__name__)
@@ -197,11 +198,10 @@ class TimezoneMiddleware(BaseHTTPMiddleware):
                     result[key] = value
             return result
 
-        elif isinstance(data, list):
+        if isinstance(data, list):
             return [self._convert_request_datetimes_to_utc(item) for item in data]
 
-        else:
-            return data
+        return data
 
     async def _process_response_datetimes(
         self, response: Response, request: Request
@@ -317,7 +317,7 @@ class TimezoneMiddleware(BaseHTTPMiddleware):
 
             return result
 
-        elif isinstance(data, list):
+        if isinstance(data, list):
             return [
                 self._add_turkish_timezone_fields(item)
                 if isinstance(item, (dict, list))
@@ -325,8 +325,7 @@ class TimezoneMiddleware(BaseHTTPMiddleware):
                 for item in data
             ]
 
-        else:
-            return data
+        return data
 
 
 # ================================================================
@@ -378,7 +377,7 @@ def add_timezone_middleware(
 # MANUAL TIMEZONE CONVERSION FOR ENDPOINTS
 # ================================================================
 
-def ensure_request_datetimes_utc(request_data: Dict[str, Any]) -> Dict[str, Any]:
+def ensure_request_datetimes_utc(request_data: dict[str, Any]) -> dict[str, Any]:
     """
     Manually ensure all datetimes in request data are UTC
 
@@ -394,7 +393,7 @@ def ensure_request_datetimes_utc(request_data: Dict[str, Any]) -> Dict[str, Any]
     return convert_dict_datetimes_to_utc(request_data)
 
 
-def add_turkish_timezone_to_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
+def add_turkish_timezone_to_response(response_data: dict[str, Any]) -> dict[str, Any]:
     """
     Manually add Turkish timezone versions to response data
 
@@ -444,17 +443,17 @@ class ManualTimezoneConverter:
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.ManualTimezoneConverter")
 
-    def convert_request_to_utc(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def convert_request_to_utc(self, data: dict[str, Any]) -> dict[str, Any]:
         """Convert all datetimes in request to UTC"""
         return ensure_request_datetimes_utc(data)
 
-    def add_turkish_to_response(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def add_turkish_to_response(self, data: dict[str, Any]) -> dict[str, Any]:
         """Add Turkish timezone versions to response"""
         return add_turkish_timezone_to_response(data)
 
     def format_for_api(
-        self, data: Dict[str, Any], use_turkish: bool = False
-    ) -> Dict[str, Any]:
+        self, data: dict[str, Any], use_turkish: bool = False
+    ) -> dict[str, Any]:
         """Format all datetimes in data for API response"""
         return format_dict_datetimes_for_api(data, use_turkish=use_turkish)
 
@@ -464,9 +463,9 @@ class ManualTimezoneConverter:
 # ================================================================
 
 __all__ = [
+    "ManualTimezoneConverter",
     "TimezoneMiddleware",
     "add_timezone_middleware",
-    "ensure_request_datetimes_utc",
     "add_turkish_timezone_to_response",
-    "ManualTimezoneConverter",
+    "ensure_request_datetimes_utc",
 ]

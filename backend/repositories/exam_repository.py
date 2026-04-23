@@ -4,16 +4,17 @@ Phase 2.8: Replaces in-memory storage in sinav_motoru_service.py
 
 IMPORTANT: Using synchronous Session (not AsyncSession) for consistency with SessionRepository pattern
 """
-from datetime import datetime, timedelta, timezone
-from typing import Optional, List, Dict, Any
-from sqlalchemy.orm import Session as DBSession
+from datetime import UTC, datetime, timedelta
+from typing import Any
+
 from sqlalchemy import and_, func
+from sqlalchemy.orm import Session as DBSession
 
 from models.database import (
-    ExamSession,
     ExamQuestion,
-    StudentAnswer,
+    ExamSession,
     ExamType,
+    StudentAnswer,
 )
 
 
@@ -34,7 +35,7 @@ class ExamSessionRepository:
         exam_name: str,
         total_questions: int,
         duration_minutes: int,
-        question_ids: List[str],
+        question_ids: list[str],
     ) -> ExamSession:
         """
         Create new exam session
@@ -73,14 +74,14 @@ class ExamSessionRepository:
 
         return session
 
-    def get_session(self, session_id: str) -> Optional[ExamSession]:
+    def get_session(self, session_id: str) -> ExamSession | None:
         """
         Get exam session by ID
         Replaces: self.aktif_oturumlar.get(sinav_id)
         """
         return self.db.query(ExamSession).filter_by(id=session_id).first()
 
-    def get_active_sessions_for_student(self, student_id: str) -> List[ExamSession]:
+    def get_active_sessions_for_student(self, student_id: str) -> list[ExamSession]:
         """Get all active (not completed) sessions for a student"""
         return (
             self.db.query(ExamSession)
@@ -99,7 +100,7 @@ class ExamSessionRepository:
         student_id: str,
         limit: int = 100,
         offset: int = 0
-    ) -> List[ExamSession]:
+    ) -> list[ExamSession]:
         """
         Get all exam sessions for a student
         Replaces: [oturum for oturum in self.aktif_oturumlar.values() if oturum.ogrenci_id == ogrenci_id]
@@ -113,7 +114,7 @@ class ExamSessionRepository:
             .all()
         )
 
-    def start_session(self, session_id: str) -> Optional[ExamSession]:
+    def start_session(self, session_id: str) -> ExamSession | None:
         """
         Start exam session
         Updates status and timing fields
@@ -127,8 +128,8 @@ class ExamSessionRepository:
 
         # Update session
         session.status = "in_progress"
-        session.started_at = datetime.now(timezone.utc)
-        session.updated_at = datetime.now(timezone.utc)
+        session.started_at = datetime.now(UTC)
+        session.updated_at = datetime.now(UTC)
 
         self.db.commit()
         self.db.refresh(session)
@@ -137,14 +138,14 @@ class ExamSessionRepository:
 
     def update_current_question(
         self, session_id: str, question_index: int
-    ) -> Optional[ExamSession]:
+    ) -> ExamSession | None:
         """Update current question index"""
         session = self.get_session(session_id)
         if not session:
             return None
 
         session.current_question_index = question_index
-        session.updated_at = datetime.now(timezone.utc)
+        session.updated_at = datetime.now(UTC)
 
         self.db.commit()
         self.db.refresh(session)
@@ -159,7 +160,7 @@ class ExamSessionRepository:
         total_empty: int,
         raw_score: float,
         time_spent_seconds: int,
-    ) -> Optional[ExamSession]:
+    ) -> ExamSession | None:
         """
         Complete exam session and store results
         Replaces: self.sinav_sonuclari[sinav_id] = sonuc
@@ -170,20 +171,20 @@ class ExamSessionRepository:
 
         # Update session with results
         session.status = "completed"
-        session.completed_at = datetime.now(timezone.utc)
+        session.completed_at = datetime.now(UTC)
         session.time_spent_seconds = time_spent_seconds
         session.total_correct = total_correct
         session.total_wrong = total_wrong
         session.total_empty = total_empty
         session.raw_score = raw_score
-        session.updated_at = datetime.now(timezone.utc)
+        session.updated_at = datetime.now(UTC)
 
         self.db.commit()
         self.db.refresh(session)
 
         return session
 
-    def abandon_session(self, session_id: str) -> Optional[ExamSession]:
+    def abandon_session(self, session_id: str) -> ExamSession | None:
         """
         Mark session as abandoned (cancelled)
         Replaces: oturum.durum = SinavDurumu.IPTAL_EDILDI
@@ -193,14 +194,14 @@ class ExamSessionRepository:
             return None
 
         session.status = "abandoned"
-        session.updated_at = datetime.now(timezone.utc)
+        session.updated_at = datetime.now(UTC)
 
         self.db.commit()
         self.db.refresh(session)
 
         return session
 
-    def get_session_with_questions(self, session_id: str) -> Optional[ExamSession]:
+    def get_session_with_questions(self, session_id: str) -> ExamSession | None:
         """Get session with eager-loaded questions"""
         from sqlalchemy.orm import selectinload
 
@@ -211,7 +212,7 @@ class ExamSessionRepository:
             .first()
         )
 
-    def get_question_ids_for_session(self, session_id: str) -> List[str]:
+    def get_question_ids_for_session(self, session_id: str) -> list[str]:
         """Get ordered list of question IDs for an exam session"""
         exam_questions = (
             self.db.query(ExamQuestion)
@@ -227,7 +228,7 @@ class ExamSessionRepository:
         session_id: str,
         estimated_ability: float,
         ability_confidence: float,
-    ) -> Optional[ExamSession]:
+    ) -> ExamSession | None:
         """Update IRT analysis results"""
         session = self.get_session(session_id)
         if not session:
@@ -235,7 +236,7 @@ class ExamSessionRepository:
 
         session.estimated_ability = estimated_ability
         session.ability_confidence = ability_confidence
-        session.updated_at = datetime.now(timezone.utc)
+        session.updated_at = datetime.now(UTC)
 
         self.db.commit()
         self.db.refresh(session)
@@ -244,7 +245,7 @@ class ExamSessionRepository:
 
     def get_sessions_by_type(
         self, exam_type: ExamType, limit: int = 100
-    ) -> List[ExamSession]:
+    ) -> list[ExamSession]:
         """Get all sessions of a specific exam type"""
         return (
             self.db.query(ExamSession)
@@ -267,7 +268,7 @@ class ExamSessionRepository:
             .count()
         )
 
-    def get_average_score(self, student_id: str, exam_type: Optional[ExamType] = None) -> float:
+    def get_average_score(self, student_id: str, exam_type: ExamType | None = None) -> float:
         """Get average score for a student (optionally filtered by exam type)"""
         query = self.db.query(func.avg(ExamSession.raw_score)).filter(
             and_(
@@ -296,7 +297,7 @@ class ExamAnswerRepository:
         self,
         exam_session_id: str,
         question_id: str,
-        selected_answer: Optional[str] = None,
+        selected_answer: str | None = None,
         response_time_seconds: float = 0.0,
     ) -> StudentAnswer:
         """
@@ -320,29 +321,28 @@ class ExamAnswerRepository:
             existing_answer.selected_answer = selected_answer
             existing_answer.response_time_seconds = response_time_seconds
             existing_answer.answer_changes += 1
-            existing_answer.answered_at = datetime.now(timezone.utc)
+            existing_answer.answered_at = datetime.now(UTC)
 
             self.db.commit()
             self.db.refresh(existing_answer)
             return existing_answer
-        else:
-            # Create new answer
-            answer = StudentAnswer(
-                exam_session_id=exam_session_id,
-                question_id=question_id,
-                selected_answer=selected_answer,
-                response_time_seconds=response_time_seconds,
-                answer_changes=0,
-                time_to_first_answer=response_time_seconds,
-            )
+        # Create new answer
+        answer = StudentAnswer(
+            exam_session_id=exam_session_id,
+            question_id=question_id,
+            selected_answer=selected_answer,
+            response_time_seconds=response_time_seconds,
+            answer_changes=0,
+            time_to_first_answer=response_time_seconds,
+        )
 
-            self.db.add(answer)
-            self.db.commit()
-            self.db.refresh(answer)
+        self.db.add(answer)
+        self.db.commit()
+        self.db.refresh(answer)
 
-            return answer
+        return answer
 
-    def get_answers_for_session(self, exam_session_id: str) -> List[StudentAnswer]:
+    def get_answers_for_session(self, exam_session_id: str) -> list[StudentAnswer]:
         """
         Get all answers for an exam session
         Replaces: self.sinav_cevaplari.get(sinav_id, [])
@@ -355,7 +355,7 @@ class ExamAnswerRepository:
 
     def get_answer(
         self, exam_session_id: str, question_id: str
-    ) -> Optional[StudentAnswer]:
+    ) -> StudentAnswer | None:
         """Get specific answer for a question in an exam"""
         return (
             self.db.query(StudentAnswer)
@@ -373,7 +373,7 @@ class ExamAnswerRepository:
         exam_session_id: str,
         question_id: str,
         is_correct: bool,
-    ) -> Optional[StudentAnswer]:
+    ) -> StudentAnswer | None:
         """Mark answer as correct/incorrect (for grading)"""
         answer = self.get_answer(exam_session_id, question_id)
         if not answer:
@@ -388,7 +388,7 @@ class ExamAnswerRepository:
 
     def get_answer_statistics(
         self, exam_session_id: str
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """Get answer statistics (correct, wrong, empty)"""
         answers = self.get_answers_for_session(exam_session_id)
 
@@ -424,7 +424,7 @@ class ExamAnswerRepository:
         return int(result) if result else 0
 
     def bulk_mark_answers(
-        self, exam_session_id: str, correct_answers: Dict[str, str]
+        self, exam_session_id: str, correct_answers: dict[str, str]
     ) -> int:
         """
         Bulk mark answers as correct/incorrect
@@ -457,7 +457,7 @@ class ExamResultRepository:
     def __init__(self, db: DBSession):
         self.db = db
 
-    def get_result(self, session_id: str) -> Optional[ExamSession]:
+    def get_result(self, session_id: str) -> ExamSession | None:
         """
         Get exam result
         Replaces: self.sinav_sonuclari.get(sinav_id)
@@ -476,9 +476,9 @@ class ExamResultRepository:
     def get_student_results(
         self,
         student_id: str,
-        exam_type: Optional[ExamType] = None,
+        exam_type: ExamType | None = None,
         limit: int = 20,
-    ) -> List[ExamSession]:
+    ) -> list[ExamSession]:
         """Get all completed exam results for a student"""
         query = self.db.query(ExamSession).filter(
             and_(
@@ -492,9 +492,9 @@ class ExamResultRepository:
 
         return query.order_by(ExamSession.completed_at.desc()).limit(limit).all()
 
-    def get_recent_results(self, days: int = 30, limit: int = 100) -> List[ExamSession]:
+    def get_recent_results(self, days: int = 30, limit: int = 100) -> list[ExamSession]:
         """Get recent exam results (last N days)"""
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days)
 
         return (
             self.db.query(ExamSession)
@@ -511,7 +511,7 @@ class ExamResultRepository:
 
     def get_performance_trend(
         self, student_id: str, exam_type: ExamType, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get performance trend (scores over time)"""
         results = (
             self.db.query(ExamSession)

@@ -20,7 +20,7 @@ STRATEGY:
 """
 
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import Mock, patch
 
 import jwt as pyjwt
@@ -29,20 +29,19 @@ import pytest
 from fastapi import HTTPException, status
 
 # ==================== IMPORTS ====================
-
 from core.security_utils import (
-    XSSProtection,
-    SQLInjectionProtection,
-    PathTraversalProtection,
     CommandInjectionProtection,
-    LDAPInjectionProtection,
     ComprehensiveInputSanitizer,
+    LDAPInjectionProtection,
+    PathTraversalProtection,
+    SQLInjectionProtection,
+    XSSProtection,
 )
 
 try:
     from core.input_validation import (
-        SecurityValidator,
         InputValidationError,
+        SecurityValidator,
     )
     # Alias for backward compatibility
     InputSanitizer = SecurityValidator
@@ -52,44 +51,38 @@ try:
 except Exception as e:
     pytest.skip(f"Cannot import input_validation: {e}", allow_module_level=True)
 
-from core.jwt_auth import (
-    JWTManager,
-    TokenType,
-    UserRole,
-    JWTTokens,
-)
-
-from core.rate_limiting import (
-    RateLimitStrategy,
-    RateLimitScope,
-    RateLimitRule,
-    TokenBucket,
-    SlidingWindow,
-    AdvancedRateLimiter,
-)
-
-from core.llm_cache import (
-    LLMCache,
-    LLMCacheConfig,
-    LLMCacheStats,
-)
-
 from core.embedding_cache import (
     EmbeddingEntry,
     EmbeddingIndex,
     LRUCache,
 )
-
+from core.jwt_auth import (
+    JWTManager,
+    JWTTokens,
+    TokenType,
+    UserRole,
+)
+from core.llm_cache import (
+    LLMCache,
+    LLMCacheConfig,
+    LLMCacheStats,
+)
 from core.query_optimizer import (
-    QueryOptimizer,
     RECOMMENDED_INDEXES,
+    QueryOptimizer,
     log_query_performance,
 )
-
+from core.rate_limiting import (
+    AdvancedRateLimiter,
+    RateLimitRule,
+    RateLimitScope,
+    RateLimitStrategy,
+    SlidingWindow,
+    TokenBucket,
+)
 from core.structured_logger import (
     get_logger,
 )
-
 
 # ==================== XSS PROTECTION TESTS ====================
 
@@ -660,7 +653,7 @@ class TestJWTAuthentication:
     def test_verify_expired_token(self, jwt_manager):
         """Test verification of expired token"""
         # Create token with immediate expiration
-        past_time = datetime.now(timezone.utc) - timedelta(hours=1)
+        past_time = datetime.now(UTC) - timedelta(hours=1)
         token = pyjwt.encode(
             {
                 "sub": "user123",
@@ -681,7 +674,7 @@ class TestJWTAuthentication:
     def test_verify_invalid_signature(self, jwt_manager):
         """Test verification with invalid signature"""
         token = pyjwt.encode(
-            {"sub": "user123", "exp": datetime.now(timezone.utc) + timedelta(hours=1)},
+            {"sub": "user123", "exp": datetime.now(UTC) + timedelta(hours=1)},
             "wrong-secret-key",
             algorithm="HS256",
         )

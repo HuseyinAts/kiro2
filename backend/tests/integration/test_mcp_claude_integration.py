@@ -12,20 +12,21 @@ Test Scenarios:
 5. Cache integration
 """
 
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock
+
+from mcp_servers.zemberek_nlp.config import ZemberekConfig
+from mcp_servers.zemberek_nlp.tools.health import HealthHandler
+from mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
 
 # Import tool handlers
 from mcp_servers.zemberek_nlp.tools.morphology import MorphologyHandler
-from mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
+from mcp_servers.zemberek_nlp.tools.ner import NERHandler
+from mcp_servers.zemberek_nlp.tools.normalization import NormalizationHandler
+from mcp_servers.zemberek_nlp.tools.segmentation import SegmentationHandler
 from mcp_servers.zemberek_nlp.tools.spell_check import SpellCheckHandler
 from mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
-from mcp_servers.zemberek_nlp.tools.ner import NERHandler
-from mcp_servers.zemberek_nlp.tools.segmentation import SegmentationHandler
-from mcp_servers.zemberek_nlp.tools.normalization import NormalizationHandler
-from mcp_servers.zemberek_nlp.tools.health import HealthHandler
-
-from mcp_servers.zemberek_nlp.config import ZemberekConfig
 
 # Test data
 TURKISH_TEST_CASES = [

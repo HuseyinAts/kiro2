@@ -9,7 +9,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Tuple
+from typing import Any
 
 from core.application_metrics import MetricType, get_metrics_collector
 from core.auth_middleware import AuthContext, AuthUser, UserRole
@@ -988,7 +988,7 @@ def create_exam_session_middleware(
 # Middleware configuration
 
 
-def get_turkish_exam_middleware_stack() -> list[Tuple[str, Callable, int]]:
+def get_turkish_exam_middleware_stack() -> list[tuple[str, Callable, int]]:
     """Get Turkish exam specific middleware stack"""
     return [
         ("exam_security", create_exam_security_middleware(), 200),

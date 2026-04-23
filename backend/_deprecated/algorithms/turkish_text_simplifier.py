@@ -12,7 +12,6 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ class SimplificationResult:
     level: SimplificationLevel
     complexity_score: float
     readability_score: float
-    changes_made: List[str]
+    changes_made: list[str]
     processing_time: float
 
 
@@ -49,7 +48,7 @@ class TurkishTextSimplifier:
         self.complex_patterns = self._load_complex_patterns()
         self.metaphor_patterns = self._load_metaphor_patterns()
 
-    def _load_lexical_mappings(self) -> Dict[str, str]:
+    def _load_lexical_mappings(self) -> dict[str, str]:
         """Kelime seviyesi değişim haritası"""
         return {
             # Osmanlıca → Modern Türkçe
@@ -87,7 +86,7 @@ class TurkishTextSimplifier:
             "istikbal": "gelecek",
         }
 
-    def _load_complex_patterns(self) -> List[Dict]:
+    def _load_complex_patterns(self) -> list[dict]:
         """Karmaşık cümle kalıpları"""
         return [
             {
@@ -117,7 +116,7 @@ class TurkishTextSimplifier:
             },
         ]
 
-    def _load_metaphor_patterns(self) -> Dict[str, str]:
+    def _load_metaphor_patterns(self) -> dict[str, str]:
         """Metafor ve soyut kavram basitleştirme"""
         return {
             "bilginin denizi": "çok fazla bilgi",
@@ -200,7 +199,7 @@ class TurkishTextSimplifier:
             logger.error(f"Metin basitleştirme hatası: {e}")
             raise
 
-    async def _lexical_simplification(self, text: str) -> Tuple[str, List[str]]:
+    async def _lexical_simplification(self, text: str) -> tuple[str, list[str]]:
         """Level 1: Kelime seviyesi basitleştirme"""
         changes = []
         simplified = text
@@ -231,7 +230,7 @@ class TurkishTextSimplifier:
 
         return simplified, changes
 
-    async def _syntactic_simplification(self, text: str) -> Tuple[str, List[str]]:
+    async def _syntactic_simplification(self, text: str) -> tuple[str, list[str]]:
         """Level 2: Sözdizimi basitleştirme"""
         changes = []
         simplified = text
@@ -272,7 +271,7 @@ class TurkishTextSimplifier:
 
     async def _semantic_simplification(
         self, text: str, preserve_meaning: bool
-    ) -> Tuple[str, List[str]]:
+    ) -> tuple[str, list[str]]:
         """Level 3: Anlam seviyesi basitleştirme"""
         changes = []
         simplified = text
@@ -362,9 +361,9 @@ class TurkishTextSimplifier:
 
     async def batch_simplify(
         self,
-        texts: List[str],
+        texts: list[str],
         target_level: SimplificationLevel = SimplificationLevel.SEMANTIC,
-    ) -> List[SimplificationResult]:
+    ) -> list[SimplificationResult]:
         """Toplu metin basitleştirme"""
         tasks = [self.simplify_text(text, target_level) for text in texts]
 
@@ -380,7 +379,7 @@ class TurkishTextSimplifier:
 
         return valid_results
 
-    def get_simplification_stats(self, result: SimplificationResult) -> Dict:
+    def get_simplification_stats(self, result: SimplificationResult) -> dict:
         """Basitleştirme istatistikleri"""
         return {
             "original_length": len(result.original_text),

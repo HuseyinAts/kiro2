@@ -9,7 +9,7 @@ import statistics
 from collections import defaultdict
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from analytics.unified_analytics_data_model import (
     AnalyticsDataValidator,
@@ -38,14 +38,14 @@ class LearningPattern:
     confidence: float  # 0.0 to 1.0
 
     # Time patterns
-    optimal_study_hours: List[int] = field(default_factory=list)
+    optimal_study_hours: list[int] = field(default_factory=list)
     session_duration_preference: int = 45  # minutes
     break_frequency: int = 10  # minutes
 
     # Content preferences
     preferred_difficulty_progression: str = "gradual"  # gradual, steep, mixed
-    question_type_preferences: Dict[str, float] = field(default_factory=dict)
-    subject_affinity: Dict[str, float] = field(default_factory=dict)
+    question_type_preferences: dict[str, float] = field(default_factory=dict)
+    subject_affinity: dict[str, float] = field(default_factory=dict)
 
     # Behavioral patterns
     procrastination_tendency: float = 0.0  # 0.0 (never) to 1.0 (always)
@@ -66,8 +66,8 @@ class PredictiveModel:
     confidence: float
 
     # Model parameters
-    features: List[str] = field(default_factory=list)
-    weights: Dict[str, float] = field(default_factory=dict)
+    features: list[str] = field(default_factory=list)
+    weights: dict[str, float] = field(default_factory=dict)
     bias: float = 0.0
 
     # Performance metrics
@@ -82,7 +82,7 @@ class PredictiveModel:
     curriculum_year_adjustment: float = 0.0
 
     # Prediction outputs
-    predictions: Dict[str, Any] = field(default_factory=dict)
+    predictions: dict[str, Any] = field(default_factory=dict)
     recommendation_strength: float = 0.0
 
 
@@ -102,20 +102,20 @@ class PerformanceInsight:
     description_tr: str
 
     # Supporting data
-    supporting_metrics: Dict[str, Any] = field(default_factory=dict)
+    supporting_metrics: dict[str, Any] = field(default_factory=dict)
     confidence: float = 0.0
 
     # Recommendations
-    recommendations: List[str] = field(default_factory=list)
-    recommendations_tr: List[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
+    recommendations_tr: list[str] = field(default_factory=list)
 
     # Timeline
-    estimated_improvement_weeks: Optional[int] = None
-    target_score_improvement: Optional[float] = None
+    estimated_improvement_weeks: int | None = None
+    target_score_improvement: float | None = None
 
     # Turkish education context
-    curriculum_topics: List[str] = field(default_factory=list)
-    affected_subjects: List[str] = field(default_factory=list)
+    curriculum_topics: list[str] = field(default_factory=list)
+    affected_subjects: list[str] = field(default_factory=list)
 
 
 class StudentPerformanceAnalyzer:
@@ -153,8 +153,8 @@ class StudentPerformanceAnalyzer:
     async def analyze_student_performance(
         self,
         student_id: int,
-        exam_history: List[ExamMetrics],
-        learning_events: List[AnalyticsEvent],
+        exam_history: list[ExamMetrics],
+        learning_events: list[AnalyticsEvent],
     ) -> StudentPerformanceProfile:
         """Comprehensive student performance analysis"""
         try:
@@ -215,7 +215,7 @@ class StudentPerformanceAnalyzer:
         )
 
     async def _create_base_profile(
-        self, student_id: int, exam_history: List[ExamMetrics]
+        self, student_id: int, exam_history: list[ExamMetrics]
     ) -> StudentPerformanceProfile:
         """Create base performance profile"""
 
@@ -291,7 +291,7 @@ class StudentPerformanceAnalyzer:
             )
 
     async def _analyze_performance_trends(
-        self, profile: StudentPerformanceProfile, exam_history: List[ExamMetrics]
+        self, profile: StudentPerformanceProfile, exam_history: list[ExamMetrics]
     ):
         """Analyze performance trends over time"""
         try:
@@ -352,7 +352,7 @@ class StudentPerformanceAnalyzer:
             logger.error(f"Performance trend analysis failed: {e}")
             profile.performance_trend = "unknown"
 
-    def _calculate_trend(self, values: List[float]) -> float:
+    def _calculate_trend(self, values: list[float]) -> float:
         """Calculate linear trend (slope) for a series of values"""
         if len(values) < 2:
             return 0.0
@@ -370,7 +370,7 @@ class StudentPerformanceAnalyzer:
         return numerator / denominator if denominator != 0 else 0.0
 
     async def _analyze_subject_performance(
-        self, profile: StudentPerformanceProfile, exam_history: List[ExamMetrics]
+        self, profile: StudentPerformanceProfile, exam_history: list[ExamMetrics]
     ):
         """Analyze performance by subject"""
         try:
@@ -447,19 +447,18 @@ class StudentPerformanceAnalyzer:
         """Get performance level for subject based on success rate"""
         if success_rate >= 90:
             return "excellent"
-        elif success_rate >= 80:
+        if success_rate >= 80:
             return "very_good"
-        elif success_rate >= 70:
+        if success_rate >= 70:
             return "good"
-        elif success_rate >= 60:
+        if success_rate >= 60:
             return "average"
-        elif success_rate >= 50:
+        if success_rate >= 50:
             return "below_average"
-        else:
-            return "weak"
+        return "weak"
 
     async def _analyze_tyt_subjects(
-        self, profile: StudentPerformanceProfile, exam_history: List[ExamMetrics]
+        self, profile: StudentPerformanceProfile, exam_history: list[ExamMetrics]
     ):
         """Analyze TYT-specific subject breakdown"""
         try:
@@ -479,7 +478,7 @@ class StudentPerformanceAnalyzer:
 
             # Aggregate TYT subject scores
             for exam in tyt_exams:
-                for subject in tyt_subjects.keys():
+                for subject in tyt_subjects:
                     if subject in exam.subject_scores:
                         subject_score = exam.subject_scores[subject].get("score", 0)
                         tyt_subjects[subject]["scores"].append(subject_score)
@@ -512,19 +511,18 @@ class StudentPerformanceAnalyzer:
         """Get performance level based on score"""
         if score >= 90:
             return "excellent"
-        elif score >= 80:
+        if score >= 80:
             return "very_good"
-        elif score >= 70:
+        if score >= 70:
             return "good"
-        elif score >= 60:
+        if score >= 60:
             return "average"
-        elif score >= 50:
+        if score >= 50:
             return "below_average"
-        else:
-            return "weak"
+        return "weak"
 
     async def _analyze_learning_patterns(
-        self, profile: StudentPerformanceProfile, learning_events: List[AnalyticsEvent]
+        self, profile: StudentPerformanceProfile, learning_events: list[AnalyticsEvent]
     ):
         """Analyze learning patterns from user behavior"""
         try:
@@ -569,7 +567,7 @@ class StudentPerformanceAnalyzer:
             logger.error(f"Learning pattern analysis failed: {e}")
 
     async def _analyze_behavioral_patterns(
-        self, profile: StudentPerformanceProfile, learning_events: List[AnalyticsEvent]
+        self, profile: StudentPerformanceProfile, learning_events: list[AnalyticsEvent]
     ):
         """Analyze behavioral patterns"""
         try:
@@ -647,7 +645,7 @@ class StudentPerformanceAnalyzer:
             logger.error(f"Behavioral pattern analysis failed: {e}")
 
     async def _generate_performance_insights(
-        self, profile: StudentPerformanceProfile, exam_history: List[ExamMetrics]
+        self, profile: StudentPerformanceProfile, exam_history: list[ExamMetrics]
     ):
         """Generate performance insights and recommendations"""
         try:
@@ -735,7 +733,7 @@ class StudentPerformanceAnalyzer:
 
     async def predict_future_performance(
         self, profile: StudentPerformanceProfile, prediction_days: int = 30
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Predict future performance based on current trends"""
         try:
             if not profile.current_tyt_score:
@@ -777,7 +775,7 @@ class StudentPerformanceAnalyzer:
 
     async def generate_study_recommendations(
         self, profile: StudentPerformanceProfile
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Generate personalized study recommendations"""
         try:
             recommendations = []
@@ -873,7 +871,7 @@ class PerformanceComparator:
         self,
         student_profile: StudentPerformanceProfile,
         comparison_group: str = "grade_level",  # "grade_level", "school", "region", "national"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Compare student performance with peer groups"""
         try:
             # This would typically query aggregated statistics from database
@@ -970,7 +968,7 @@ class PerformanceComparator:
 
     async def benchmark_against_universities(
         self, student_profile: StudentPerformanceProfile
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Benchmark student performance against university requirements"""
         try:
             # Mock university data (based on real YKS statistics)
@@ -1050,8 +1048,8 @@ class PerformanceComparator:
             return {"error": str(e)}
 
     def _generate_university_recommendations(
-        self, benchmarks: Dict[str, Any]
-    ) -> List[Dict[str, str]]:
+        self, benchmarks: dict[str, Any]
+    ) -> list[dict[str, str]]:
         """Generate university admission recommendations"""
         recommendations = []
 
@@ -1101,8 +1099,8 @@ async def create_performance_analyzer() -> StudentPerformanceAnalyzer:
 
 
 async def analyze_student_batch(
-    student_ids: List[int], analyzer: StudentPerformanceAnalyzer
-) -> Dict[int, StudentPerformanceProfile]:
+    student_ids: list[int], analyzer: StudentPerformanceAnalyzer
+) -> dict[int, StudentPerformanceProfile]:
     """Analyze performance for multiple students"""
     results = {}
 

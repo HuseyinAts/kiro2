@@ -4,12 +4,12 @@ Task 102: Preference Simulation Service
 Service for university preference simulation, score calculation, placement prediction
 """
 
-from typing import List, Optional, Dict, Any
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.university import UniversityProgram, ScoreType
+from models.university import ScoreType, UniversityProgram
 from services.university_advisory_service import UniversityAdvisoryService
 
 
@@ -65,10 +65,10 @@ class PreferenceSimulationService:
     def calculate_yks_score(
         self,
         score_type: ScoreType,
-        tyt_scores: Dict[str, float],
-        ayt_scores: Dict[str, float],
+        tyt_scores: dict[str, float],
+        ayt_scores: dict[str, float],
         bonus_points: float = 0.0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Calculate YKS score with coefficients and bonus points
 
@@ -121,8 +121,8 @@ class PreferenceSimulationService:
     def apply_bonus_points(
         self,
         base_score: float,
-        diploma_grade: Optional[float] = None,
-        language_certificate: Optional[str] = None,
+        diploma_grade: float | None = None,
+        language_certificate: str | None = None,
         special_talent: bool = False,
     ) -> float:
         """
@@ -161,7 +161,7 @@ class PreferenceSimulationService:
 
     async def predict_placement(
         self, student_score: float, program_id: UUID, year: int = 2024
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Predict placement probability for a program
 
@@ -211,7 +211,7 @@ class PreferenceSimulationService:
         }
 
     def _calculate_placement_probability(
-        self, student_score: float, program: UniversityProgram, history: List[Any]
+        self, student_score: float, program: UniversityProgram, history: list[Any]
     ) -> float:
         """
         Calculate placement probability using multiple factors
@@ -292,16 +292,15 @@ class PreferenceSimulationService:
             return (
                 "Bu program için çok uygunsunuz! Kesinlikle tercih listenize ekleyin."
             )
-        elif probability >= 60:
+        if probability >= 60:
             return "İyi bir seçim. Tercih listenizin üst sıralarında değerlendirebilirsiniz."
-        elif probability >= 40:
+        if probability >= 40:
             return "Orta derece risk var. Tercih listenizin orta sıralarında değerlendirin."
-        elif probability >= 20:
+        if probability >= 20:
             return "Riskli bir tercih. Yedek olarak listenizin alt sıralarına ekleyebilirsiniz."
-        else:
-            return "Çok riskli. Bu programı tercih etmemenizi öneriyoruz."
+        return "Çok riskli. Bu programı tercih etmemenizi öneriyoruz."
 
-    def _analyze_historical_trend(self, history: List[Any]) -> str:
+    def _analyze_historical_trend(self, history: list[Any]) -> str:
         """Analyze historical trend"""
         if not history or len(history) < 2:
             return "Yetersiz veri"
@@ -316,14 +315,13 @@ class PreferenceSimulationService:
 
         if avg_change > 5:
             return "Taban puan hızla yükseliyor"
-        elif avg_change > 2:
+        if avg_change > 2:
             return "Taban puan artış eğiliminde"
-        elif avg_change > -2:
+        if avg_change > -2:
             return "Taban puan stabil"
-        elif avg_change > -5:
+        if avg_change > -5:
             return "Taban puan azalış eğiliminde"
-        else:
-            return "Taban puan hızla düşüyor"
+        return "Taban puan hızla düşüyor"
 
     # ============================================================
     # Task 102.3: Department Recommendations (Interest Matching)
@@ -333,12 +331,12 @@ class PreferenceSimulationService:
         self,
         student_score: float,
         score_type: ScoreType,
-        interests: List[str],
-        career_goals: List[str],
-        preferred_cities: Optional[List[str]] = None,
+        interests: list[str],
+        career_goals: list[str],
+        preferred_cities: list[str] | None = None,
         year: int = 2024,
         limit: int = 30,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get personalized department recommendations based on interests and career goals
 
@@ -391,8 +389,8 @@ class PreferenceSimulationService:
     async def _calculate_interest_match(
         self,
         program: UniversityProgram,
-        interests: List[str],
-        career_goals: List[str],
+        interests: list[str],
+        career_goals: list[str],
         student_score: float,
     ) -> float:
         """
@@ -447,7 +445,7 @@ class PreferenceSimulationService:
         return min(score, 100.0)
 
     async def _calculate_career_alignment(
-        self, program: UniversityProgram, career_goals: List[str]
+        self, program: UniversityProgram, career_goals: list[str]
     ) -> float:
         """Calculate career alignment score (0-100)"""
         if not program.department or not hasattr(
@@ -477,7 +475,7 @@ class PreferenceSimulationService:
 
     async def predict_rank(
         self, student_score: float, score_type: ScoreType, year: int = 2024
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Predict student's rank based on score
 
@@ -545,31 +543,29 @@ class PreferenceSimulationService:
         """Get peer comparison description"""
         if percentile >= 99:
             return "Top 1% - Mükemmel performans"
-        elif percentile >= 95:
+        if percentile >= 95:
             return "Top 5% - Çok iyi performans"
-        elif percentile >= 90:
+        if percentile >= 90:
             return "Top 10% - İyi performans"
-        elif percentile >= 75:
+        if percentile >= 75:
             return "Top 25% - Ortanın üstü performans"
-        elif percentile >= 50:
+        if percentile >= 50:
             return "Top 50% - Ortalama üstü performans"
-        elif percentile >= 25:
+        if percentile >= 25:
             return "Ortalama performans"
-        else:
-            return "Ortalama altı performans"
+        return "Ortalama altı performans"
 
     def _get_rank_interpretation(self, percentile: float) -> str:
         """Get rank interpretation"""
         if percentile >= 95:
             return "Tüm üniversitelerin tüm bölümlerini tercih edebilirsiniz."
-        elif percentile >= 85:
+        if percentile >= 85:
             return "Çoğu prestijli üniversite ve bölümü tercih edebilirsiniz."
-        elif percentile >= 70:
+        if percentile >= 70:
             return "İyi üniversitelerin çoğu bölümünü tercih edebilirsiniz."
-        elif percentile >= 50:
+        if percentile >= 50:
             return "Orta derece üniversiteleri ve bölümleri tercih edebilirsiniz."
-        else:
-            return "Taban puanlı programları tercih etmelisiniz."
+        return "Taban puanlı programları tercih etmelisiniz."
 
     # ============================================================
     # Batch Simulation
@@ -579,9 +575,9 @@ class PreferenceSimulationService:
         self,
         student_score: float,
         score_type: ScoreType,
-        preference_list: List[UUID],
+        preference_list: list[UUID],
         year: int = 2024,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Simulate placement for a list of preferences
 

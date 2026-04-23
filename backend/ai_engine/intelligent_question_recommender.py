@@ -5,14 +5,14 @@ AI-powered question recommendations based on student performance and learning pa
 
 import logging
 import math
-import numpy as np
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
+from typing import Any
 
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingClassifier
+import numpy as np
 from sklearn.cluster import KMeans
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
@@ -56,17 +56,17 @@ class StudentProfile:
 
     student_id: str
     grade_level: int
-    subjects: List[str]
+    subjects: list[str]
 
     # Performance metrics
     overall_performance: float  # 0-1
-    subject_performances: Dict[str, float]
-    topic_performances: Dict[str, float]
-    difficulty_preferences: Dict[DifficultyLevel, float]
+    subject_performances: dict[str, float]
+    topic_performances: dict[str, float]
+    difficulty_preferences: dict[DifficultyLevel, float]
 
     # Learning patterns
     learning_style: str  # visual, auditory, kinesthetic, mixed
-    study_time_patterns: Dict[str, float]  # hour of day -> efficiency
+    study_time_patterns: dict[str, float]  # hour of day -> efficiency
     optimal_session_length: int  # minutes
     attention_span: float  # 0-1
 
@@ -77,17 +77,17 @@ class StudentProfile:
     motivation_level: float  # 0-1
 
     # Recent activity
-    recent_topics: List[str]
-    recent_difficulties: List[DifficultyLevel]
+    recent_topics: list[str]
+    recent_difficulties: list[DifficultyLevel]
     recent_performance_trend: float  # -1 to 1 (declining to improving)
     last_activity: datetime
 
     # Weaknesses and strengths
-    weak_areas: List[str]
-    strong_areas: List[str]
-    learning_gaps: List[str]
+    weak_areas: list[str]
+    strong_areas: list[str]
+    learning_gaps: list[str]
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -97,7 +97,7 @@ class QuestionMetadata:
     question_id: str
     subject: str
     topic: str
-    subtopic: Optional[str]
+    subtopic: str | None
 
     # Content characteristics
     difficulty_level: DifficultyLevel
@@ -107,15 +107,15 @@ class QuestionMetadata:
 
     # Educational attributes
     bloom_taxonomy_level: str  # remember, understand, apply, analyze, evaluate, create
-    prerequisite_topics: List[str]
-    learning_objectives: List[LearningObjective]
-    concepts_tested: List[str]
+    prerequisite_topics: list[str]
+    learning_objectives: list[LearningObjective]
+    concepts_tested: list[str]
 
     # Statistical data
     average_performance: float  # 0-1
     completion_rate: float  # 0-1
     discrimination_index: float  # -1 to 1
-    item_response_theory_params: Dict[str, float]  # a, b, c parameters
+    item_response_theory_params: dict[str, float]  # a, b, c parameters
 
     # Engagement metrics
     student_ratings: float  # 0-5
@@ -124,10 +124,10 @@ class QuestionMetadata:
 
     # Adaptive features
     adaptive_difficulty: float  # 0-1 (dynamically adjusted)
-    success_rate_by_ability: Dict[str, float]  # ability_level -> success_rate
+    success_rate_by_ability: dict[str, float]  # ability_level -> success_rate
 
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -135,11 +135,11 @@ class RecommendationContext:
     """Context for generating recommendations"""
 
     learning_objective: LearningObjective
-    target_subject: Optional[str] = None
-    target_topic: Optional[str] = None
-    session_duration: Optional[int] = None  # minutes
+    target_subject: str | None = None
+    target_topic: str | None = None
+    session_duration: int | None = None  # minutes
     max_questions: int = 10
-    difficulty_range: Tuple[DifficultyLevel, DifficultyLevel] = (
+    difficulty_range: tuple[DifficultyLevel, DifficultyLevel] = (
         DifficultyLevel.EASY,
         DifficultyLevel.HARD,
     )
@@ -159,7 +159,7 @@ class QuestionRecommendation:
 
     # Reasoning
     primary_reason: str
-    reasoning_factors: Dict[str, float]
+    reasoning_factors: dict[str, float]
     expected_performance: float  # 0-1
     learning_value: float  # 0-1
 
@@ -168,7 +168,7 @@ class QuestionRecommendation:
     interest_match: float  # 0-1
     timing_appropriateness: float  # 0-1
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class IntelligentQuestionRecommender:
@@ -270,7 +270,7 @@ class IntelligentQuestionRecommender:
 
     async def recommend_questions(
         self, student_id: str, context: RecommendationContext
-    ) -> List[QuestionRecommendation]:
+    ) -> list[QuestionRecommendation]:
         """Generate intelligent question recommendations"""
 
         if not self.ready:
@@ -314,7 +314,7 @@ class IntelligentQuestionRecommender:
 
     async def _filter_candidate_questions(
         self, student_profile: StudentProfile, context: RecommendationContext
-    ) -> List[QuestionMetadata]:
+    ) -> list[QuestionMetadata]:
         """Filter questions based on basic criteria"""
 
         candidates = []
@@ -353,9 +353,9 @@ class IntelligentQuestionRecommender:
     async def _extract_candidate_features(
         self,
         student_profile: StudentProfile,
-        candidates: List[QuestionMetadata],
+        candidates: list[QuestionMetadata],
         context: RecommendationContext,
-    ) -> Dict[str, np.ndarray]:
+    ) -> dict[str, np.ndarray]:
         """Extract features for candidate questions"""
 
         features = {
@@ -398,7 +398,7 @@ class IntelligentQuestionRecommender:
 
     async def _extract_performance_features(
         self, student_profile: StudentProfile, question: QuestionMetadata
-    ) -> List[float]:
+    ) -> list[float]:
         """Extract performance-related features"""
 
         features = []
@@ -439,7 +439,7 @@ class IntelligentQuestionRecommender:
 
     async def _extract_content_features(
         self, question: QuestionMetadata, context: RecommendationContext
-    ) -> List[float]:
+    ) -> list[float]:
         """Extract content-related features"""
 
         features = []
@@ -488,7 +488,7 @@ class IntelligentQuestionRecommender:
 
     async def _extract_temporal_features(
         self, student_profile: StudentProfile, question: QuestionMetadata
-    ) -> List[float]:
+    ) -> list[float]:
         """Extract temporal features"""
 
         features = []
@@ -519,7 +519,7 @@ class IntelligentQuestionRecommender:
 
     async def _extract_interaction_features(
         self, student_profile: StudentProfile, question: QuestionMetadata
-    ) -> List[float]:
+    ) -> list[float]:
         """Extract interaction history features"""
 
         features = []
@@ -547,9 +547,9 @@ class IntelligentQuestionRecommender:
     async def _score_candidates(
         self,
         student_profile: StudentProfile,
-        features: Dict[str, np.ndarray],
+        features: dict[str, np.ndarray],
         context: RecommendationContext,
-    ) -> List[Tuple[QuestionMetadata, float, Dict[str, float]]]:
+    ) -> list[tuple[QuestionMetadata, float, dict[str, float]]]:
         """Score candidate questions using ML models"""
 
         scored_candidates = []
@@ -731,9 +731,9 @@ class IntelligentQuestionRecommender:
 
     async def _optimize_recommendation_sequence(
         self,
-        scored_candidates: List[Tuple[QuestionMetadata, float, Dict[str, float]]],
+        scored_candidates: list[tuple[QuestionMetadata, float, dict[str, float]]],
         context: RecommendationContext,
-    ) -> List[Tuple[QuestionMetadata, float, Dict[str, float]]]:
+    ) -> list[tuple[QuestionMetadata, float, dict[str, float]]]:
         """Optimize the sequence of recommendations for diversity and flow"""
 
         if len(scored_candidates) <= context.max_questions:
@@ -766,10 +766,10 @@ class IntelligentQuestionRecommender:
 
     async def _enrich_recommendations(
         self,
-        recommendations: List[Tuple[QuestionMetadata, float, Dict[str, float]]],
+        recommendations: list[tuple[QuestionMetadata, float, dict[str, float]]],
         student_profile: StudentProfile,
         context: RecommendationContext,
-    ) -> List[QuestionRecommendation]:
+    ) -> list[QuestionRecommendation]:
         """Enrich recommendations with explanations and reasoning"""
 
         enriched = []
@@ -815,7 +815,7 @@ class IntelligentQuestionRecommender:
     async def _generate_primary_reason(
         self,
         question: QuestionMetadata,
-        component_scores: Dict[str, float],
+        component_scores: dict[str, float],
         context: RecommendationContext,
     ) -> str:
         """Generate primary reason for recommendation"""
@@ -881,7 +881,7 @@ class IntelligentQuestionRecommender:
                 return False
         return True
 
-    async def _generate_sample_student_profiles(self) -> List[StudentProfile]:
+    async def _generate_sample_student_profiles(self) -> list[StudentProfile]:
         """Generate sample student profiles for testing"""
         profiles = []
 
@@ -928,7 +928,7 @@ class IntelligentQuestionRecommender:
 
         return profiles
 
-    async def _generate_sample_questions(self) -> List[QuestionMetadata]:
+    async def _generate_sample_questions(self) -> list[QuestionMetadata]:
         """Generate sample questions for testing"""
         questions = []
         subjects = ["matematik", "fizik", "kimya"]

@@ -10,7 +10,6 @@ Run this before deploying to production.
 import re
 import sys
 from pathlib import Path
-from typing import List
 
 
 class Colors:
@@ -57,8 +56,8 @@ class SecurityVerifier:
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.backend_root = project_root / "backend"
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def verify_all(self) -> bool:
         """Run all verification checks"""
@@ -80,7 +79,7 @@ class SecurityVerifier:
             try:
                 check_func()
             except Exception as e:
-                self.errors.append(f"{check_name}: {str(e)}")
+                self.errors.append(f"{check_name}: {e!s}")
                 print_error(f"Check failed: {e}")
 
         # Print summary
@@ -126,7 +125,7 @@ class SecurityVerifier:
                 "DATABASE_URL",
             ]
 
-            with open(env_example, "r", encoding="utf-8") as f:
+            with open(env_example, encoding="utf-8") as f:
                 content = f.read()
                 for key in required_keys:
                     if key in content:
@@ -158,7 +157,7 @@ class SecurityVerifier:
             if py_file.name == "verify_security.py":
                 continue
 
-            with open(py_file, "r", encoding="utf-8", errors="ignore") as f:
+            with open(py_file, encoding="utf-8", errors="ignore") as f:
                 content = f.read()
                 for pattern, key_type in patterns:
                     matches = re.findall(pattern, content)
@@ -189,7 +188,7 @@ class SecurityVerifier:
                 continue
 
             found_gitignore = True
-            with open(gitignore_path, "r", encoding="utf-8") as f:
+            with open(gitignore_path, encoding="utf-8") as f:
                 content = f.read()
 
                 # Check for .env protection
@@ -226,7 +225,7 @@ class SecurityVerifier:
                 print_warning(f"{config_file.name} not found")
                 continue
 
-            with open(config_file, "r", encoding="utf-8") as f:
+            with open(config_file, encoding="utf-8") as f:
                 content = f.read()
 
                 # Check for wildcard CORS
@@ -257,7 +256,7 @@ class SecurityVerifier:
                 print_success(f"{module_path} exists ({description})")
 
                 # Check for key classes/functions
-                with open(full_path, "r", encoding="utf-8") as f:
+                with open(full_path, encoding="utf-8") as f:
                     content = f.read()
 
                     if "security_utils" in module_path:
@@ -304,7 +303,7 @@ class SecurityVerifier:
             print_error("main.py not found")
             return
 
-        with open(main_py, "r", encoding="utf-8") as f:
+        with open(main_py, encoding="utf-8") as f:
             content = f.read()
 
             # Check for DDoS protection import and setup
@@ -330,7 +329,7 @@ class SecurityVerifier:
             print_error("requirements.txt not found")
             return
 
-        with open(requirements_txt, "r", encoding="utf-8") as f:
+        with open(requirements_txt, encoding="utf-8") as f:
             content = f.read()
 
             required_packages = [

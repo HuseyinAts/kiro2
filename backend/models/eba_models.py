@@ -5,7 +5,6 @@ database.py'den ayrıştırıldı (2026-01-10)
 
 import uuid
 from datetime import date, datetime
-from typing import List, Optional
 
 from sqlalchemy import (
     JSON,
@@ -26,7 +25,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from .base import Base
-from .enums_db import EBAContentCategory, EBAGradeLevel, EBAVideoQuality, QuestionDifficulty
+from .enums_db import (
+    EBAContentCategory,
+    EBAGradeLevel,
+    EBAVideoQuality,
+    QuestionDifficulty,
+)
 
 
 class EBAVideo(Base):
@@ -66,25 +70,25 @@ class EBAVideo(Base):
     grade_level: Mapped[EBAGradeLevel] = mapped_column(
         Enum(EBAGradeLevel), nullable=False
     )
-    subject_topics: Mapped[Optional[dict]] = mapped_column(JSON)
+    subject_topics: Mapped[dict | None] = mapped_column(JSON)
     difficulty_level: Mapped[QuestionDifficulty] = mapped_column(
         Enum(QuestionDifficulty), nullable=False
     )
 
     # URL ve medya
     video_url: Mapped[str] = mapped_column(String(500), nullable=False)
-    thumbnail_url: Mapped[Optional[str]] = mapped_column(String(500))
-    transcript: Mapped[Optional[str]] = mapped_column(Text)
+    thumbnail_url: Mapped[str | None] = mapped_column(String(500))
+    transcript: Mapped[str | None] = mapped_column(Text)
 
     # Kalite ve değerlendirme
     quality_score: Mapped[float] = mapped_column(Float, default=0.0)
     quality_category: Mapped[EBAVideoQuality] = mapped_column(
         Enum(EBAVideoQuality), default=EBAVideoQuality.MEDIUM
     )
-    curriculum_alignment: Mapped[Optional[dict]] = mapped_column(JSON)
+    curriculum_alignment: Mapped[dict | None] = mapped_column(JSON)
 
     # Erişilebilirlik
-    accessibility_features: Mapped[Optional[dict]] = mapped_column(JSON)
+    accessibility_features: Mapped[dict | None] = mapped_column(JSON)
     has_subtitles: Mapped[bool] = mapped_column(Boolean, default=False)
     has_transcript: Mapped[bool] = mapped_column(Boolean, default=False)
 
@@ -103,11 +107,11 @@ class EBAVideo(Base):
 
     # Moderasyon
     moderation_status: Mapped[str] = mapped_column(String(50), default="pending")
-    moderated_by: Mapped[Optional[str]] = mapped_column(
+    moderated_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE")
     )
-    moderation_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
-    moderation_notes: Mapped[Optional[str]] = mapped_column(Text)
+    moderation_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    moderation_notes: Mapped[str | None] = mapped_column(Text)
 
     # Sistem alanları
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -119,10 +123,10 @@ class EBAVideo(Base):
     )
 
     # İlişkiler
-    usage_analytics: Mapped[List["EBAVideoUsage"]] = relationship(
+    usage_analytics: Mapped[list["EBAVideoUsage"]] = relationship(
         "EBAVideoUsage", back_populates="video"
     )
-    recommendations: Mapped[List["EBAVideoRecommendation"]] = relationship(
+    recommendations: Mapped[list["EBAVideoRecommendation"]] = relationship(
         "EBAVideoRecommendation", back_populates="video"
     )
 
@@ -162,7 +166,7 @@ class EBAVideoUsage(Base):
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
-    ended_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     watch_duration_seconds: Mapped[int] = mapped_column(Integer, default=0)
     completion_percentage: Mapped[float] = mapped_column(Float, default=0.0)
 
@@ -172,13 +176,13 @@ class EBAVideoUsage(Base):
     fast_forwarded_count: Mapped[int] = mapped_column(Integer, default=0)
 
     # Değerlendirme
-    user_rating: Mapped[Optional[float]] = mapped_column(Float)
-    user_feedback: Mapped[Optional[str]] = mapped_column(Text)
+    user_rating: Mapped[float | None] = mapped_column(Float)
+    user_feedback: Mapped[str | None] = mapped_column(Text)
 
     # Öğrenme etkisi
-    pre_knowledge_score: Mapped[Optional[float]] = mapped_column(Float)
-    post_knowledge_score: Mapped[Optional[float]] = mapped_column(Float)
-    learning_effectiveness: Mapped[Optional[float]] = mapped_column(Float)
+    pre_knowledge_score: Mapped[float | None] = mapped_column(Float)
+    post_knowledge_score: Mapped[float | None] = mapped_column(Float)
+    learning_effectiveness: Mapped[float | None] = mapped_column(Float)
 
     # İlişkiler
     video: Mapped["EBAVideo"] = relationship(
@@ -230,8 +234,8 @@ class EBAVideoRecommendation(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    shown_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
-    clicked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    shown_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    clicked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # İlişkiler
     video: Mapped["EBAVideo"] = relationship(
@@ -255,7 +259,7 @@ class EBAContentCollection(Base):
 
     # Koleksiyon bilgileri
     name: Mapped[str] = mapped_column(String(200), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
     category: Mapped[EBAContentCategory] = mapped_column(
         Enum(EBAContentCategory), nullable=False
     )
@@ -264,7 +268,7 @@ class EBAContentCollection(Base):
     )
 
     # Video listesi (JSON array of video IDs)
-    video_ids: Mapped[Optional[dict]] = mapped_column(JSON)
+    video_ids: Mapped[dict | None] = mapped_column(JSON)
 
     # İstatistikler
     total_videos: Mapped[int] = mapped_column(Integer, default=0)
@@ -276,7 +280,7 @@ class EBAContentCollection(Base):
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Sistem alanları
-    created_by: Mapped[Optional[str]] = mapped_column(
+    created_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE")
     )
     created_at: Mapped[datetime] = mapped_column(

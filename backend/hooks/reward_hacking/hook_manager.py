@@ -10,23 +10,27 @@ from __future__ import annotations
 import asyncio
 import time
 from pathlib import Path
-from typing import List, Dict, Optional, Type
 
 from .base_detector import BaseDetector
-from .models.enums import SeverityLevel, ExitCode
-from .models.detection_result import DetectionResult, HookResult, DetectorConfig, GlobalConfig
 
 # Import all detectors
 from .detectors import (
     AssertTrueDetector,
-    EchoSuccessDetector,
-    PlaceholderDetector,
+    CICDBypassDetector,
     CoverageManipulationDetector,
-    MockAbuseDetector,
+    EchoSuccessDetector,
     EmptyExceptionDetector,
     HardcodedTestDataDetector,
-    CICDBypassDetector,
+    MockAbuseDetector,
+    PlaceholderDetector,
 )
+from .models.detection_result import (
+    DetectionResult,
+    DetectorConfig,
+    GlobalConfig,
+    HookResult,
+)
+from .models.enums import ExitCode, SeverityLevel
 
 
 class HookManager:
@@ -37,7 +41,7 @@ class HookManager:
     """
 
     # All available detector classes
-    DETECTOR_CLASSES: List[Type[BaseDetector]] = [
+    DETECTOR_CLASSES: list[type[BaseDetector]] = [
         AssertTrueDetector,
         EchoSuccessDetector,
         PlaceholderDetector,
@@ -51,7 +55,7 @@ class HookManager:
     # Supported file extensions
     SUPPORTED_EXTENSIONS = {'.py', '.sh', '.yml', '.yaml', '.js', '.ts', '.tsx'}
 
-    def __init__(self, config: Optional[GlobalConfig] = None):
+    def __init__(self, config: GlobalConfig | None = None):
         """
         Initialize HookManager with optional configuration.
 
@@ -59,7 +63,7 @@ class HookManager:
             config: Optional global configuration
         """
         self.config = config or GlobalConfig()
-        self.detectors: List[BaseDetector] = []
+        self.detectors: list[BaseDetector] = []
         self._register_detectors()
 
     def _register_detectors(self) -> None:
@@ -81,7 +85,7 @@ class HookManager:
                 # Log but don't fail - other detectors can still work
                 print(f"Warning: Failed to initialize {detector_name}: {e}")
 
-    async def run_hooks(self, file_paths: List[str]) -> HookResult:
+    async def run_hooks(self, file_paths: list[str]) -> HookResult:
         """
         Run all detectors on given files.
 
@@ -98,7 +102,7 @@ class HookManager:
             )
 
         start_time = time.perf_counter()
-        all_results: List[DetectionResult] = []
+        all_results: list[DetectionResult] = []
         files_analyzed = 0
 
         # Filter to supported files
@@ -138,7 +142,7 @@ class HookManager:
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Run all enabled detectors on a single file.
 
@@ -149,7 +153,7 @@ class HookManager:
         Returns:
             List of DetectionResult objects
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Create tasks for all detectors
         tasks = []
@@ -178,7 +182,7 @@ class HookManager:
         detector: BaseDetector,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Run a single detector with timeout.
 
@@ -195,7 +199,7 @@ class HookManager:
                 detector.detect(file_path, content),
                 timeout=self.config.timeout_seconds
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print(f"Warning: {detector.name} timed out on {file_path}")
             return []
         except Exception as e:
@@ -215,7 +219,7 @@ class HookManager:
         path = Path(file_path)
         return path.suffix.lower() in self.SUPPORTED_EXTENSIONS
 
-    def _read_file(self, file_path: str) -> Optional[str]:
+    def _read_file(self, file_path: str) -> str | None:
         """
         Read file content safely.
 
@@ -232,7 +236,7 @@ class HookManager:
 
     def _aggregate_results(
         self,
-        results: List[DetectionResult],
+        results: list[DetectionResult],
         execution_time_ms: float,
         files_analyzed: int
     ) -> HookResult:
@@ -253,9 +257,7 @@ class HookManager:
         info_count = sum(1 for r in results if r.severity == SeverityLevel.INFO)
 
         # Determine exit code
-        if critical_count > 0:
-            exit_code = ExitCode.BLOCKING_ERROR
-        elif warning_count > 0 and self.config.fail_on_warning:
+        if critical_count > 0 or (warning_count > 0 and self.config.fail_on_warning):
             exit_code = ExitCode.BLOCKING_ERROR
         elif warning_count > 0:
             exit_code = ExitCode.WARNING
@@ -279,7 +281,7 @@ class HookManager:
 
     def _generate_summary(
         self,
-        results: List[DetectionResult],
+        results: list[DetectionResult],
         critical_count: int,
         warning_count: int,
         info_count: int
@@ -311,7 +313,7 @@ class HookManager:
         lines.append("")
 
         # Group by file
-        by_file: Dict[str, List[DetectionResult]] = {}
+        by_file: dict[str, list[DetectionResult]] = {}
         for result in results:
             if result.file_path not in by_file:
                 by_file[result.file_path] = []
@@ -334,7 +336,7 @@ class HookManager:
 
         return "\n".join(lines)
 
-    def get_detector_names(self) -> List[str]:
+    def get_detector_names(self) -> list[str]:
         """Get names of all registered detectors."""
         return [d.name for d in self.detectors]
 
@@ -356,8 +358,8 @@ class HookManager:
 
 
 async def run_reward_hacking_detection(
-    file_paths: List[str],
-    config: Optional[GlobalConfig] = None
+    file_paths: list[str],
+    config: GlobalConfig | None = None
 ) -> HookResult:
     """
     Convenience function to run reward hacking detection.

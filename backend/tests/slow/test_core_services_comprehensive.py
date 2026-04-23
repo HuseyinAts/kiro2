@@ -21,8 +21,6 @@ except ImportError:
     AdvancedMonitoringService = MagicMock
 from core.rag_service import RAGService
 
-
-
 pytestmark = pytest.mark.skipif(
     True,
     reason="Core services API changed, 20/27 fail + 5E",
@@ -392,7 +390,7 @@ class TestAnalyticsManagerComprehensive:
         # Export dosyası içeriği kontrolü
         import json
 
-        with open(export_file, "r", encoding="utf-8") as f:
+        with open(export_file, encoding="utf-8") as f:
             data = json.load(f)
 
         assert "exported_at" in data

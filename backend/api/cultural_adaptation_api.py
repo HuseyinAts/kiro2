@@ -7,7 +7,7 @@ API endpoint'lerini sağlar.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -27,32 +27,32 @@ cultural_service = CulturalAdaptationService()
 class BehavioralUpdateRequest(BaseModel):
     """Davranış güncelleme isteği"""
 
-    study_time_preference: Optional[str] = Field(
+    study_time_preference: str | None = Field(
         None, description="Çalışma zamanı tercihi"
     )
-    group_study_sessions: Optional[int] = Field(
+    group_study_sessions: int | None = Field(
         None, description="Grup çalışması sayısı"
     )
-    individual_study_time: Optional[int] = Field(
+    individual_study_time: int | None = Field(
         None, description="Bireysel çalışma süresi (dakika)"
     )
-    parent_account_activity: Optional[float] = Field(
+    parent_account_activity: float | None = Field(
         None, ge=0.0, le=1.0, description="Veli hesap aktivitesi"
     )
-    recommendation_compliance: Optional[float] = Field(
+    recommendation_compliance: float | None = Field(
         None, ge=0.0, le=1.0, description="Öneri uyumu"
     )
-    leaderboard_engagement: Optional[float] = Field(
+    leaderboard_engagement: float | None = Field(
         None, ge=0.0, le=1.0, description="Liderlik tablosu katılımı"
     )
-    help_requests_sent: Optional[int] = Field(
+    help_requests_sent: int | None = Field(
         None, description="Gönderilen yardım istekleri"
     )
-    help_provided_to_peers: Optional[int] = Field(
+    help_provided_to_peers: int | None = Field(
         None, description="Akranlara sağlanan yardım"
     )
-    attention_span: Optional[int] = Field(None, description="Dikkat süresi (dakika)")
-    study_schedule_regularity: Optional[float] = Field(
+    attention_span: int | None = Field(None, description="Dikkat süresi (dakika)")
+    study_schedule_regularity: float | None = Field(
         None, ge=0.0, le=1.0, description="Çalışma programı düzenliliği"
     )
 
@@ -61,7 +61,7 @@ class CulturalAdaptationResponse(BaseModel):
     """Kültürel adaptasyon yanıtı"""
 
     success: bool
-    data: Dict[str, Any]
+    data: dict[str, Any]
     message: str
 
 
@@ -180,7 +180,7 @@ async def update_student_behavioral_data(
 
 @router.get("/cultural-period", response_model=CulturalAdaptationResponse)
 async def get_current_cultural_period(
-    date: Optional[str] = Query(
+    date: str | None = Query(
         None, description="Kontrol edilecek tarih (YYYY-MM-DD formatında)"
     ),
     current_user: AuthenticatedUser = Depends(get_current_user),
@@ -340,7 +340,7 @@ async def get_cultural_adaptation_summary(
 
 @router.post("/test-adaptation", response_model=CulturalAdaptationResponse)
 async def test_cultural_adaptation(
-    test_data: Dict[str, Any], current_user: AuthenticatedUser = Depends(get_current_user)
+    test_data: dict[str, Any], current_user: AuthenticatedUser = Depends(get_current_user)
 ):
     """
     Kültürel adaptasyon testi (sadece admin kullanıcılar için)

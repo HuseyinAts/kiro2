@@ -11,9 +11,9 @@ Bu sistem:
 """
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -88,11 +88,11 @@ class ValidationFeedback(BaseModel):
     expert_id: str
     expert_name: str
     expert_role: ExpertRole
-    criterion_id: Optional[str] = None
-    score: Optional[float] = None  # 0-100
+    criterion_id: str | None = None
+    score: float | None = None  # 0-100
     passed: bool
     comment: str
-    suggestions: List[str] = Field(default_factory=list)
+    suggestions: list[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -102,40 +102,40 @@ class ValidationRequest(BaseModel):
     request_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     content_id: str
     content_type: ContentType
-    content_data: Dict[str, Any]
+    content_data: dict[str, Any]
     submitter_id: str
     submitter_name: str
 
     # MEB uyumluluk bilgileri
-    grade_level: Optional[str] = None  # Sınıf seviyesi
-    subject: Optional[str] = None  # Ders
-    topic: Optional[str] = None  # Konu
-    learning_outcomes: List[str] = Field(default_factory=list)  # Kazanımlar
+    grade_level: str | None = None  # Sınıf seviyesi
+    subject: str | None = None  # Ders
+    topic: str | None = None  # Konu
+    learning_outcomes: list[str] = Field(default_factory=list)  # Kazanımlar
 
     # ÖSYM uyumluluk bilgileri
-    exam_type: Optional[str] = None  # TYT, AYT, YDT
-    difficulty_level: Optional[str] = None
-    estimated_time_seconds: Optional[int] = None
+    exam_type: str | None = None  # TYT, AYT, YDT
+    difficulty_level: str | None = None
+    estimated_time_seconds: int | None = None
 
     # Durum
     status: ValidationStatus = ValidationStatus.PENDING
     priority: int = 5  # 1-10, 10 en yüksek
 
     # İş akışı
-    required_expert_roles: List[ExpertRole] = Field(default_factory=list)
-    assigned_experts: List[str] = Field(default_factory=list)
-    feedbacks: List[ValidationFeedback] = Field(default_factory=list)
+    required_expert_roles: list[ExpertRole] = Field(default_factory=list)
+    assigned_experts: list[str] = Field(default_factory=list)
+    feedbacks: list[ValidationFeedback] = Field(default_factory=list)
 
     # Zaman
     submitted_at: datetime = Field(default_factory=datetime.utcnow)
-    review_deadline: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    review_deadline: datetime | None = None
+    completed_at: datetime | None = None
 
     # Sonuçlar
-    overall_score: Optional[float] = None
-    compliance_level: Optional[ComplianceLevel] = None
-    final_decision: Optional[str] = None
-    revision_notes: List[str] = Field(default_factory=list)
+    overall_score: float | None = None
+    compliance_level: ComplianceLevel | None = None
+    final_decision: str | None = None
+    revision_notes: list[str] = Field(default_factory=list)
 
 
 class ContentComplianceReport(BaseModel):
@@ -147,28 +147,28 @@ class ContentComplianceReport(BaseModel):
 
     # MEB Uyumluluk
     meb_compliance: ComplianceLevel
-    meb_standards_matched: List[str] = Field(default_factory=list)
-    meb_issues: List[str] = Field(default_factory=list)
+    meb_standards_matched: list[str] = Field(default_factory=list)
+    meb_issues: list[str] = Field(default_factory=list)
     meb_score: float = 0.0  # 0-100
 
     # ÖSYM Uyumluluk
     osym_compliance: ComplianceLevel
-    osym_standards_matched: List[str] = Field(default_factory=list)
-    osym_issues: List[str] = Field(default_factory=list)
+    osym_standards_matched: list[str] = Field(default_factory=list)
+    osym_issues: list[str] = Field(default_factory=list)
     osym_score: float = 0.0  # 0-100
 
     # Pedagojik Uygunluk
     pedagogy_score: float = 0.0  # 0-100
-    pedagogy_notes: List[str] = Field(default_factory=list)
+    pedagogy_notes: list[str] = Field(default_factory=list)
 
     # Kalite Metrikleri
     quality_score: float = 0.0  # 0-100
-    quality_issues: List[str] = Field(default_factory=list)
+    quality_issues: list[str] = Field(default_factory=list)
 
     # Genel
     overall_compliance: ComplianceLevel
     overall_score: float = 0.0  # 0-100
-    recommendations: List[str] = Field(default_factory=list)
+    recommendations: list[str] = Field(default_factory=list)
 
     generated_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -190,12 +190,12 @@ class ExpertContentValidationSystem:
     """
 
     def __init__(self):
-        self.validation_requests: Dict[str, ValidationRequest] = {}
-        self.validation_criteria: Dict[str, List[ValidationCriteria]] = {}
-        self.compliance_reports: Dict[str, ContentComplianceReport] = {}
+        self.validation_requests: dict[str, ValidationRequest] = {}
+        self.validation_criteria: dict[str, list[ValidationCriteria]] = {}
+        self.compliance_reports: dict[str, ContentComplianceReport] = {}
 
         # Expert pools
-        self.expert_pool: Dict[ExpertRole, List[str]] = {
+        self.expert_pool: dict[ExpertRole, list[str]] = {
             role: [] for role in ExpertRole
         }
 
@@ -257,7 +257,7 @@ class ExpertContentValidationSystem:
         self,
         content_id: str,
         content_type: ContentType,
-        content_data: Dict[str, Any],
+        content_data: dict[str, Any],
         submitter_id: str,
         submitter_name: str,
         **kwargs,
@@ -281,7 +281,7 @@ class ExpertContentValidationSystem:
         required_roles = self._determine_required_experts(content_type)
 
         # Review deadline hesaplama (48 saat)
-        review_deadline = datetime.now(timezone.utc) + timedelta(hours=48)
+        review_deadline = datetime.now(UTC) + timedelta(hours=48)
 
         # Validation request oluştur
         request = ValidationRequest(
@@ -313,21 +313,20 @@ class ExpertContentValidationSystem:
 
     def _determine_required_experts(
         self, content_type: ContentType
-    ) -> List[ExpertRole]:
+    ) -> list[ExpertRole]:
         """İçerik tipine göre gerekli uzmanları belirle"""
 
         if content_type == ContentType.QUESTION:
             return [ExpertRole.SUBJECT_EXPERT, ExpertRole.CURRICULUM_EXPERT]
-        elif content_type == ContentType.EXAM:
+        if content_type == ContentType.EXAM:
             return [
                 ExpertRole.SUBJECT_EXPERT,
                 ExpertRole.CURRICULUM_EXPERT,
                 ExpertRole.QUALITY_ASSURANCE,
             ]
-        elif content_type == ContentType.LEARNING_PATH:
+        if content_type == ContentType.LEARNING_PATH:
             return [ExpertRole.CURRICULUM_EXPERT, ExpertRole.PEDAGOGY_EXPERT]
-        else:
-            return [ExpertRole.SUBJECT_EXPERT]
+        return [ExpertRole.SUBJECT_EXPERT]
 
     async def _assign_experts(self, request: ValidationRequest):
         """Doğrulama talebine uzman ata"""
@@ -359,7 +358,7 @@ class ExpertContentValidationSystem:
         expert_id: str,
         expert_name: str,
         expert_role: ExpertRole,
-        feedbacks: List[Dict[str, Any]],
+        feedbacks: list[dict[str, Any]],
     ) -> bool:
         """
         Uzman geri bildirimi gönder
@@ -438,7 +437,7 @@ class ExpertContentValidationSystem:
             request.status = ValidationStatus.REJECTED
             request.final_decision = "rejected"
 
-        request.completed_at = datetime.now(timezone.utc)
+        request.completed_at = datetime.now(UTC)
 
         # Compliance report oluştur
         await self._generate_compliance_report(request)
@@ -502,15 +501,14 @@ class ExpertContentValidationSystem:
         """Skora göre uyumluluk seviyesi belirle"""
         if score >= 90:
             return ComplianceLevel.FULLY_COMPLIANT
-        elif score >= 75:
+        if score >= 75:
             return ComplianceLevel.MOSTLY_COMPLIANT
-        elif score >= 60:
+        if score >= 60:
             return ComplianceLevel.PARTIALLY_COMPLIANT
-        else:
-            return ComplianceLevel.NON_COMPLIANT
+        return ComplianceLevel.NON_COMPLIANT
 
     async def register_expert(
-        self, expert_id: str, expert_roles: List[ExpertRole]
+        self, expert_id: str, expert_roles: list[ExpertRole]
     ) -> bool:
         """Uzman kaydı yap"""
 
@@ -526,19 +524,19 @@ class ExpertContentValidationSystem:
 
         return True
 
-    def get_validation_request(self, request_id: str) -> Optional[ValidationRequest]:
+    def get_validation_request(self, request_id: str) -> ValidationRequest | None:
         """Doğrulama talebini getir"""
         return self.validation_requests.get(request_id)
 
     def get_compliance_report(
         self, report_id: str
-    ) -> Optional[ContentComplianceReport]:
+    ) -> ContentComplianceReport | None:
         """Uyumluluk raporunu getir"""
         return self.compliance_reports.get(report_id)
 
     def get_pending_requests_for_expert(
         self, expert_id: str
-    ) -> List[ValidationRequest]:
+    ) -> list[ValidationRequest]:
         """Uzman için bekleyen talepleri getir"""
         return [
             req
@@ -553,13 +551,13 @@ expert_validation_system = ExpertContentValidationSystem()
 
 
 __all__ = [
-    "ContentType",
-    "ValidationStatus",
-    "ExpertRole",
     "ComplianceLevel",
-    "ValidationRequest",
-    "ValidationFeedback",
     "ContentComplianceReport",
+    "ContentType",
     "ExpertContentValidationSystem",
+    "ExpertRole",
+    "ValidationFeedback",
+    "ValidationRequest",
+    "ValidationStatus",
     "expert_validation_system",
 ]

@@ -3,11 +3,12 @@ Tests for IRT Psychometric Analysis Service
 Task 57: IRT Parametreleri ve Psikometrik Analiz
 """
 
-import pytest
 import numpy as np
+import pytest
+
 from services.irt_psychometric_analysis import (
-    IRTPsychometricAnalysis,
     IRTParameters,
+    IRTPsychometricAnalysis,
 )
 
 
@@ -57,4 +58,4 @@ def sample_responses():
 class TestFourParameterIRTModel:
     """Tests for 4-parameter IRT model implementation."""
 
-    pass  # TODO: Implement test cases for 4PL IRT model
+    # TODO: Implement test cases for 4PL IRT model

@@ -7,13 +7,12 @@ Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.5, 4.6
 from __future__ import annotations
 
 import re
-from typing import List
 
-from ..base_detector import BaseDetector
-from ..models.enums import SeverityLevel, PatternType
-from ..models.detection_result import DetectionResult
 from ..analyzers.context_analyzer import ContextAnalyzer
+from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
+from ..models.detection_result import DetectionResult
+from ..models.enums import PatternType, SeverityLevel
 
 
 class CoverageManipulationDetector(BaseDetector):
@@ -31,7 +30,7 @@ class CoverageManipulationDetector(BaseDetector):
     pattern_type = PatternType.COVERAGE_MANIPULATION
     default_severity = SeverityLevel.CRITICAL
 
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """Get regex patterns for coverage manipulation detection."""
         return REWARD_HACKING_PATTERNS.get("coverage_manipulation", [])
 
@@ -39,7 +38,7 @@ class CoverageManipulationDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect coverage manipulation patterns.
 
@@ -53,7 +52,7 @@ class CoverageManipulationDetector(BaseDetector):
         if not self.is_enabled():
             return []
 
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Initialize context analyzer
         context_analyzer = ContextAnalyzer(content, file_path)

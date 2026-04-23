@@ -13,7 +13,7 @@ Requirements: REQ-4.1, REQ-4.2
 
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -27,8 +27,8 @@ class RAGVerificationResult(BaseModel):
     found: bool = Field(description="Bilgi bulundu mu")
     confidence: float = Field(ge=0.0, le=1.0, description="Güven skoru")
     status: str = Field(description="true/false/partially_true/unverified")
-    evidence: Optional[str] = Field(default=None, description="Kanıt metni")
-    source_documents: List[Dict[str, Any]] = Field(
+    evidence: str | None = Field(default=None, description="Kanıt metni")
+    source_documents: list[dict[str, Any]] = Field(
         default_factory=list,
         description="Kaynak dökümanlar"
     )
@@ -49,7 +49,7 @@ class RAGClient:
     def __init__(
         self,
         collection_name: str = "kiro2_knowledge_base",
-        chromadb_host: Optional[str] = None,
+        chromadb_host: str | None = None,
         chromadb_port: int = 8100,
     ):
         """
@@ -195,9 +195,9 @@ class RAGClient:
 
     async def add_to_knowledge_base(
         self,
-        documents: List[str],
-        metadatas: Optional[List[Dict[str, Any]]] = None,
-        ids: Optional[List[str]] = None,
+        documents: list[str],
+        metadatas: list[dict[str, Any]] | None = None,
+        ids: list[str] | None = None,
     ) -> bool:
         """
         Bilgi tabanına döküman ekle.
@@ -239,8 +239,8 @@ class RAGClient:
         self,
         query: str,
         n_results: int = 5,
-        filter_metadata: Optional[Dict[str, Any]] = None,
-    ) -> List[Dict[str, Any]]:
+        filter_metadata: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Benzer dökümanları ara.
 

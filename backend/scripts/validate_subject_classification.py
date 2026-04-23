@@ -27,7 +27,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import asyncpg
 
-
 DB_URL = "postgresql://postgres:postgres@localhost:5434/kiro2"
 
 # Subject-specific keyword patterns for classification validation
@@ -229,8 +228,8 @@ async def main():
                 count = await deactivate_questions(conn, misclassified_ids)
                 print(f"\n  Deactivated {count} misclassified questions")
 
-            print(f"\n  Done! Changes are reversible via:")
-            print(f"  UPDATE question_bank SET is_active = true WHERE id IN (...)")
+            print("\n  Done! Changes are reversible via:")
+            print("  UPDATE question_bank SET is_active = true WHERE id IN (...)")
 
         # Summary
         print("\n" + "=" * 60)

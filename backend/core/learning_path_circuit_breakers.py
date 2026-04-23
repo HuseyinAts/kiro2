@@ -12,7 +12,7 @@ Requirements: P1.4, 5.18, 4.11
 """
 
 import logging
-from typing import Optional, Any, Dict
+from typing import Any
 
 from core.circuit_breaker import (
     CircuitBreaker,
@@ -154,7 +154,7 @@ def get_resource_search_circuit_breaker() -> CircuitBreaker:
 # ==================== Circuit Breaker Status ====================
 
 
-def get_all_circuit_breaker_status() -> Dict[str, Dict[str, Any]]:
+def get_all_circuit_breaker_status() -> dict[str, dict[str, Any]]:
     """
     Get status of all Learning Path circuit breakers
 
@@ -200,7 +200,7 @@ def reset_all_learning_path_circuit_breakers():
 
 async def ai_agent_fallback_handler(
     error: Exception, student_id: str, subject: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Fallback handler when AI Agent circuit is open
 
@@ -251,8 +251,8 @@ async def ai_agent_fallback_handler(
 
 
 async def resource_search_fallback_handler(
-    error: Exception, subject: str, topic: Optional[str] = None
-) -> Dict[str, Any]:
+    error: Exception, subject: str, topic: str | None = None
+) -> dict[str, Any]:
     """
     Fallback handler when Resource Search circuit is open
 
@@ -280,7 +280,7 @@ async def resource_search_fallback_handler(
 # ==================== Health Check ====================
 
 
-def check_circuit_breaker_health() -> Dict[str, Any]:
+def check_circuit_breaker_health() -> dict[str, Any]:
     """
     Check health of all Learning Path circuit breakers
 

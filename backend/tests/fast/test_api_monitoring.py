@@ -2,11 +2,12 @@
 Comprehensive tests for api/monitoring.py
 Tests monitoring API endpoints - Clean rewrite
 """
+import sys
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from unittest.mock import patch, AsyncMock, MagicMock
-import sys
 
 from core.auth_dependencies import authenticate_user
 from core.dependencies import AuthenticatedUser

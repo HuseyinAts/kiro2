@@ -24,18 +24,17 @@ Usage:
     0 2 * * * cd /path/to/backend && python scripts/backup_database.py >> logs/backup.log 2>&1
 """
 
-import os
-import sys
-import gzip
-import shutil
 import argparse
-import subprocess
-from pathlib import Path
-from datetime import datetime, timedelta
-from typing import Optional
+import gzip
+import os
+import shutil
 import smtplib
-from email.mime.text import MIMEText
+import subprocess
+import sys
+from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from pathlib import Path
 
 # Add backend to path
 backend_path = Path(__file__).parent.parent
@@ -56,7 +55,7 @@ class DatabaseBackup:
         self,
         backup_dir: str = "backups",
         retention_days: int = 30,
-        s3_bucket: Optional[str] = None,
+        s3_bucket: str | None = None,
         verify: bool = True,
     ):
         self.backup_dir = Path(backup_dir)
@@ -79,7 +78,7 @@ class DatabaseBackup:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         return f"backup_{self.db_name}_{timestamp}.sql.gz"
 
-    def create_backup(self) -> Optional[Path]:
+    def create_backup(self) -> Path | None:
         """Create database backup"""
         backup_file = self.backup_dir / self.get_backup_filename()
         temp_file = backup_file.with_suffix(".sql")
@@ -229,7 +228,7 @@ class DatabaseBackup:
             print(f"{YELLOW}[WARNING]{RESET} Cleanup failed: {e}")
 
     def send_notification(
-        self, success: bool, backup_file: Optional[Path] = None, error: str = ""
+        self, success: bool, backup_file: Path | None = None, error: str = ""
     ):
         """Send email notification"""
         if not os.getenv("SMTP_HOST"):

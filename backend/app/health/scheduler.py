@@ -17,13 +17,13 @@ Requirements:
 
 import asyncio
 import logging
-from datetime import datetime, UTC
-from typing import Callable, List, Optional
+from collections.abc import Callable
+from datetime import UTC, datetime
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.interval import IntervalTrigger
-from apscheduler.triggers.cron import CronTrigger
 from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +53,9 @@ class HealthCheckScheduler:
         self.is_running = False
 
         # Job callbacks
-        self._health_check_callback: Optional[Callable] = None
-        self._dependency_check_callback: Optional[Callable] = None
-        self._sla_check_callback: Optional[Callable] = None
+        self._health_check_callback: Callable | None = None
+        self._dependency_check_callback: Callable | None = None
+        self._sla_check_callback: Callable | None = None
 
         # Event listeners
         self.scheduler.add_listener(
@@ -310,7 +310,7 @@ class HealthCheckScheduler:
             f"Job hatası: {event.job_id} - {event.exception}"
         )
 
-    def get_jobs(self) -> List[dict]:
+    def get_jobs(self) -> list[dict]:
         """Tüm zamanlanmış job'ları listeler."""
         jobs = []
         for job in self.scheduler.get_jobs():
@@ -367,7 +367,7 @@ class HealthCheckScheduler:
 
 
 # Singleton instance
-_scheduler_instance: Optional[HealthCheckScheduler] = None
+_scheduler_instance: HealthCheckScheduler | None = None
 
 
 def get_scheduler() -> HealthCheckScheduler:

@@ -14,7 +14,6 @@ import statistics
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 from uuid import uuid4
 
 logger = logging.getLogger(__name__)
@@ -35,7 +34,7 @@ class ReadingSession:
     mode: ReadingMode
     word_count: int
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime | None = None
     wpm: float = 0.0
     completed: bool = False
     pause_duration_ms: int = 0
@@ -89,7 +88,7 @@ class ReadingSpeedTracker:
         """
         self.user_id = user_id
         self.sessions: list[ReadingSession] = []
-        self._active_session: Optional[ReadingSession] = None
+        self._active_session: ReadingSession | None = None
 
         # Geçmiş veriler için (DB'den yüklenebilir)
         self.historical_normal_wpm: list[float] = []
@@ -130,7 +129,7 @@ class ReadingSpeedTracker:
 
         return session
 
-    def end_session(self, regression_count: int = 0) -> Optional[ReadingSession]:
+    def end_session(self, regression_count: int = 0) -> ReadingSession | None:
         """
         Okuma oturumunu bitir
 
@@ -194,7 +193,7 @@ class ReadingSpeedTracker:
 
         return round(wpm, 1)
 
-    def get_comparison(self) -> Optional[SpeedComparison]:
+    def get_comparison(self) -> SpeedComparison | None:
         """
         Normal vs Bionic hız karşılaştırması
 
@@ -224,7 +223,7 @@ class ReadingSpeedTracker:
             confidence_level=confidence
         )
 
-    def get_metrics(self, mode: Optional[ReadingMode] = None) -> ReadingMetrics:
+    def get_metrics(self, mode: ReadingMode | None = None) -> ReadingMetrics:
         """
         Okuma metriklerini hesapla
 

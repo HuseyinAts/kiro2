@@ -17,7 +17,8 @@ from pydantic import BaseModel
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_db_session as get_db, get_db_session_context
+from core.database import get_db_session as get_db
+from core.database import get_db_session_context
 from core.dependencies import AuthenticatedUser, get_current_user
 from models.live_session import (
     PlatformType,

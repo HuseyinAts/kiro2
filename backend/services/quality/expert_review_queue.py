@@ -7,11 +7,10 @@ incelenmesi ve onaylanması için kuyruk yönetimi sağlar.
 Requirements: REQ-48.57 - REQ-48.60
 """
 
-from typing import List, Dict, Optional
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import uuid
 
 
 class ReviewStatus(Enum):
@@ -40,20 +39,20 @@ class ReviewItem:
     id: str
     question_id: str
     question_text: str
-    options: List[str]
+    options: list[str]
     correct_answer: int
-    explanation: Optional[str]
+    explanation: str | None
     subject: str
     difficulty_level: str
     quality_score: float
     status: ReviewStatus
     priority: ReviewPriority
-    assigned_to: Optional[str] = None  # Uzman ID
+    assigned_to: str | None = None  # Uzman ID
     created_at: datetime = field(default_factory=datetime.now)
-    assigned_at: Optional[datetime] = None
-    reviewed_at: Optional[datetime] = None
-    feedback: List[str] = field(default_factory=list)
-    reviewer_comments: Optional[str] = None
+    assigned_at: datetime | None = None
+    reviewed_at: datetime | None = None
+    feedback: list[str] = field(default_factory=list)
+    reviewer_comments: str | None = None
     revision_count: int = 0
 
 
@@ -64,7 +63,7 @@ class ExpertProfile:
     id: str
     name: str
     email: str
-    expertise_subjects: List[str]  # Uzmanlık alanları
+    expertise_subjects: list[str]  # Uzmanlık alanları
     max_concurrent_reviews: int = 10  # Aynı anda maksimum inceleme sayısı
     current_review_count: int = 0
     total_reviews_completed: int = 0
@@ -84,17 +83,17 @@ class ExpertReviewQueue:
 
     def __init__(self):
         """Kuyruk sistemini başlat"""
-        self.review_queue: List[ReviewItem] = []
-        self.experts: Dict[str, ExpertProfile] = {}
-        self.completed_reviews: List[ReviewItem] = []
+        self.review_queue: list[ReviewItem] = []
+        self.experts: dict[str, ExpertProfile] = {}
+        self.completed_reviews: list[ReviewItem] = []
 
     def add_to_queue(
         self,
         question_id: str,
         question_text: str,
-        options: List[str],
+        options: list[str],
         correct_answer: int,
-        explanation: Optional[str],
+        explanation: str | None,
         subject: str,
         difficulty_level: str,
         quality_score: float,
@@ -143,7 +142,7 @@ class ExpertReviewQueue:
         expert_id: str,
         name: str,
         email: str,
-        expertise_subjects: List[str],
+        expertise_subjects: list[str],
         max_concurrent_reviews: int = 10,
     ) -> ExpertProfile:
         """
@@ -230,8 +229,8 @@ class ExpertReviewQueue:
         review_id: str,
         expert_id: str,
         status: ReviewStatus,
-        reviewer_comments: Optional[str] = None,
-        feedback: Optional[List[str]] = None,
+        reviewer_comments: str | None = None,
+        feedback: list[str] | None = None,
     ) -> bool:
         """
         İnceleme sonucunu gönder (REQ-48.59)
@@ -315,8 +314,8 @@ class ExpertReviewQueue:
         return True
 
     def get_pending_reviews(
-        self, subject: Optional[str] = None, priority: Optional[ReviewPriority] = None
-    ) -> List[ReviewItem]:
+        self, subject: str | None = None, priority: ReviewPriority | None = None
+    ) -> list[ReviewItem]:
         """
         Bekleyen incelemeleri getir
 
@@ -341,8 +340,8 @@ class ExpertReviewQueue:
         return reviews
 
     def get_expert_reviews(
-        self, expert_id: str, status: Optional[ReviewStatus] = None
-    ) -> List[ReviewItem]:
+        self, expert_id: str, status: ReviewStatus | None = None
+    ) -> list[ReviewItem]:
         """
         Uzmanın incelemelerini getir
 
@@ -361,8 +360,8 @@ class ExpertReviewQueue:
         return reviews
 
     def get_approved_questions(
-        self, subject: Optional[str] = None, since: Optional[datetime] = None
-    ) -> List[ReviewItem]:
+        self, subject: str | None = None, since: datetime | None = None
+    ) -> list[ReviewItem]:
         """
         Onaylanmış soruları getir (REQ-48.60)
 
@@ -385,7 +384,7 @@ class ExpertReviewQueue:
 
         return approved
 
-    def get_queue_statistics(self) -> Dict:
+    def get_queue_statistics(self) -> dict:
         """
         Kuyruk istatistiklerini getir
 
@@ -436,7 +435,7 @@ class ExpertReviewQueue:
             ),
         }
 
-    def get_expert_statistics(self, expert_id: str) -> Optional[Dict]:
+    def get_expert_statistics(self, expert_id: str) -> dict | None:
         """
         Uzman istatistiklerini getir
 
@@ -463,7 +462,7 @@ class ExpertReviewQueue:
             ),
         }
 
-    def _find_review_item(self, review_id: str) -> Optional[ReviewItem]:
+    def _find_review_item(self, review_id: str) -> ReviewItem | None:
         """İnceleme öğesini bul"""
         for review in self.review_queue:
             if review.id == review_id:
@@ -471,8 +470,8 @@ class ExpertReviewQueue:
         return None
 
     def export_approved_to_question_bank(
-        self, since: Optional[datetime] = None
-    ) -> List[Dict]:
+        self, since: datetime | None = None
+    ) -> list[dict]:
         """
         Onaylanmış soruları soru bankası formatında dışa aktar (REQ-48.60)
 

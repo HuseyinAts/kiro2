@@ -12,21 +12,22 @@ Tests all 8 tool handlers with mocked JPype bridge:
 - HealthHandler
 """
 
-import pytest
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
-# Import handlers
-from mcp_servers.zemberek_nlp.tools.morphology import MorphologyHandler
-from mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
-from mcp_servers.zemberek_nlp.tools.spell_check import SpellCheckHandler
-from mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
-from mcp_servers.zemberek_nlp.tools.ner import NERHandler
-from mcp_servers.zemberek_nlp.tools.segmentation import SegmentationHandler
-from mcp_servers.zemberek_nlp.tools.normalization import NormalizationHandler
-from mcp_servers.zemberek_nlp.tools.health import HealthHandler
+import pytest
 
 # Import config
 from mcp_servers.zemberek_nlp.config import ZemberekConfig
+from mcp_servers.zemberek_nlp.tools.health import HealthHandler
+from mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
+
+# Import handlers
+from mcp_servers.zemberek_nlp.tools.morphology import MorphologyHandler
+from mcp_servers.zemberek_nlp.tools.ner import NERHandler
+from mcp_servers.zemberek_nlp.tools.normalization import NormalizationHandler
+from mcp_servers.zemberek_nlp.tools.segmentation import SegmentationHandler
+from mcp_servers.zemberek_nlp.tools.spell_check import SpellCheckHandler
+from mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
 
 
 @pytest.fixture

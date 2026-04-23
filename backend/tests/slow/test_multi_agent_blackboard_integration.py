@@ -18,11 +18,13 @@ import pytest
 
 try:
     from agents.accessibility_agent import AccessibilityAgent
-    from agents.learning_path_agent import LearningPathAgent
     from agents.study_buddy_agent import StudyBuddyAgent
+
+    from agents.learning_path_agent import LearningPathAgent
 except ImportError:
     pytest.skip("archived agent modules not available", allow_module_level=True)
 from algorithms.multi_agent_blackboard import MultiAgentBlackboard
+
 try:
     from core.websocket_manager import WebSocketManager
 except ImportError:

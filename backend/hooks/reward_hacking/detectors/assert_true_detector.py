@@ -6,15 +6,13 @@ Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5, 1.6
 
 from __future__ import annotations
 
-from typing import List
-
-from ..base_detector import BaseDetector
-from ..models.enums import SeverityLevel, PatternType
-from ..models.detection_result import DetectionResult
 from ..analyzers.ast_analyzer import ASTAnalyzer
 from ..analyzers.context_analyzer import ContextAnalyzer
+from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
 from ..exceptions import ASTParseError
+from ..models.detection_result import DetectionResult
+from ..models.enums import PatternType, SeverityLevel
 
 
 class AssertTrueDetector(BaseDetector):
@@ -32,7 +30,7 @@ class AssertTrueDetector(BaseDetector):
     pattern_type = PatternType.ASSERT_TRUE
     default_severity = SeverityLevel.CRITICAL
 
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """Get regex patterns for assert True detection."""
         return REWARD_HACKING_PATTERNS.get("assert_true", [])
 
@@ -40,7 +38,7 @@ class AssertTrueDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect assert True patterns using both regex and AST analysis.
 
@@ -54,7 +52,7 @@ class AssertTrueDetector(BaseDetector):
         if not self.is_enabled():
             return []
 
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Initialize context analyzer for false positive reduction
         context_analyzer = ContextAnalyzer(content, file_path)
@@ -88,7 +86,7 @@ class AssertTrueDetector(BaseDetector):
         file_path: str,
         content: str,
         context_analyzer: ContextAnalyzer
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Perform AST-based detection for deeper analysis.
 
@@ -100,7 +98,7 @@ class AssertTrueDetector(BaseDetector):
         Returns:
             List of DetectionResult objects
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         try:
             ast_analyzer = ASTAnalyzer(content, file_path)
@@ -136,10 +134,10 @@ class AssertTrueDetector(BaseDetector):
 
         return results
 
-    def _deduplicate(self, results: List[DetectionResult]) -> List[DetectionResult]:
+    def _deduplicate(self, results: list[DetectionResult]) -> list[DetectionResult]:
         """Remove duplicate detections on the same line."""
         seen_lines: set = set()
-        unique_results: List[DetectionResult] = []
+        unique_results: list[DetectionResult] = []
 
         for result in results:
             key = (result.file_path, result.line_number)

@@ -7,19 +7,20 @@ Kullanıcı başarı takip modeli
 - İlerleme takibi
 - Ödül sistemi
 """
+import uuid
+from datetime import UTC, datetime
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    DateTime,
-    Boolean,
-    ForeignKey,
-    Text,
     JSON,
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime, timezone
-import uuid
 
 from .base import Base
 
@@ -129,10 +130,10 @@ class UserAchievement(Base):
         current = int(self.progress_current or 0)
         if current >= target and not self.is_completed:
             self.is_completed = True  # type: ignore[assignment]
-            self.completed_at = datetime.now(timezone.utc)  # type: ignore[assignment]
+            self.completed_at = datetime.now(UTC)  # type: ignore[assignment]
             return True
 
-        self.updated_at = datetime.now(timezone.utc)  # type: ignore[assignment]
+        self.updated_at = datetime.now(UTC)  # type: ignore[assignment]
         return False
 
     def increment_progress(self, increment: int = 1) -> bool:

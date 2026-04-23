@@ -132,11 +132,10 @@ def verify_sha256(file_path: Path, expected_hash: str) -> bool:
     if actual_hash == expected_hash:
         logger.info("SHA256 hash verified successfully")
         return True
-    else:
-        logger.error("SHA256 mismatch!")
-        logger.error(f"Expected: {expected_hash}")
-        logger.error(f"Actual:   {actual_hash}")
-        return False
+    logger.error("SHA256 mismatch!")
+    logger.error(f"Expected: {expected_hash}")
+    logger.error(f"Actual:   {actual_hash}")
+    return False
 
 
 def verify_jar(file_path: Path) -> bool:
@@ -207,8 +206,7 @@ def download_zemberek(
         if verify_jar(output_path):
             logger.info("Existing JAR is valid")
             return output_path
-        else:
-            logger.warning("Existing JAR is invalid, re-downloading...")
+        logger.warning("Existing JAR is invalid, re-downloading...")
 
     # Download
     if not download_with_progress(

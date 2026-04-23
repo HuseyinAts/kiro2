@@ -14,21 +14,21 @@ pytestmark = pytest.mark.skipif(True, reason="AsyncClient(app=...) deprecated in
 
 # Service imports
 try:
-    from services.video_recommendation_service import (
-        VideoRecommendationService,
-        StudentProfile,
-        VideoRecommendation,
-    )
-    from services.turkish_content_filter import (
-        TurkishContentFilter,
-        TurkishValidationResult,
-        FilterResult,
-    )
     from services.health_check_service import (
+        ComponentHealth,
         HealthCheckService,
         HealthStatus,
-        ComponentHealth,
         SystemHealth,
+    )
+    from services.turkish_content_filter import (
+        FilterResult,
+        TurkishContentFilter,
+        TurkishValidationResult,
+    )
+    from services.video_recommendation_service import (
+        StudentProfile,
+        VideoRecommendation,
+        VideoRecommendationService,
     )
 
     SERVICES_AVAILABLE = True

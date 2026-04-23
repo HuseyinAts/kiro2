@@ -8,12 +8,12 @@ Usage:
     cd backend && py evaluate_graph_questions_wave2b.py
 """
 
-import sys
-import json
 import asyncio
-from pathlib import Path
 import io
-from datetime import datetime, timezone
+import json
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 # UTF-8 encoding
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -30,7 +30,7 @@ async def load_graph_questions():
     json_file = "demo_graph_questions_20251107_193531.json"
 
     try:
-        with open(json_file, "r", encoding="utf-8") as f:
+        with open(json_file, encoding="utf-8") as f:
             questions = json.load(f)
 
         print(f"[OK] Loaded {len(questions)} graph questions from {json_file}")
@@ -40,7 +40,7 @@ async def load_graph_questions():
         print("[INFO] Please run demo_graph_generation.py first to generate questions")
         return []
     except Exception as e:
-        print(f"[ERROR] Failed to load questions: {str(e)}")
+        print(f"[ERROR] Failed to load questions: {e!s}")
         return []
 
 
@@ -56,7 +56,7 @@ async def evaluate_questions():
 
     if not questions:
         print("[ERROR] No questions to evaluate")
-        return
+        return None
 
     # Initialize evaluator
     print("[1/4] Initializing Wave 2B evaluator...")
@@ -144,12 +144,12 @@ async def evaluate_questions():
                     "grade": eval_result.overall_grade,
                     "decision": eval_result.decision,
                     "status": status,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
             )
 
         except Exception as e:
-            print(f"\n[ERROR] Evaluation failed: {str(e)}")
+            print(f"\n[ERROR] Evaluation failed: {e!s}")
             import traceback
 
             traceback.print_exc()
@@ -245,10 +245,10 @@ async def evaluate_questions():
         print("[ERROR] No valid scores obtained")
 
     # Save results
-    output_file = f"wave2b_graph_questions_evaluation_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
+    output_file = f"wave2b_graph_questions_evaluation_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
 
     evaluation_report = {
-        "evaluation_date": datetime.now(timezone.utc).isoformat(),
+        "evaluation_date": datetime.now(UTC).isoformat(),
         "phase": "Phase 2 - Graphs",
         "total_questions": len(results),
         "valid_evaluations": len(valid_scores),

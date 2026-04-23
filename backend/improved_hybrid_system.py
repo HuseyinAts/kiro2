@@ -5,8 +5,9 @@ Her modelin güçlü yönlerini optimal kullanım
 """
 
 import asyncio
-from typing import Optional, Dict, Any, List
 from enum import Enum
+from typing import Any
+
 import structlog
 
 logger = structlog.get_logger()
@@ -35,45 +36,45 @@ class ModelRole(Enum):
 
 class ImprovedRouter:
     """İyileştirilmiş akıllı router - Her modelin güçlü yönlerini kullanır"""
-    
-    def classify_query(self, query: str, context: Optional[Dict] = None) -> QueryType:
+
+    def classify_query(self, query: str, context: dict | None = None) -> QueryType:
         """Query tipini belirle"""
         query_lower = query.lower()
-        
+
         # Diagram analizi mi?
         if context and context.get("image_path"):
             return QueryType.DIAGRAM_ANALYSIS
-        
+
         # Kod review mu?
         if any(kw in query_lower for kw in ["kod", "code", "incele", "review"]):
             if context and context.get("code"):
                 return QueryType.CODE_REVIEW
-        
+
         # Multi-tool mu?
         if context and len(context.keys()) > 2:  # Birden fazla dosya
             return QueryType.MULTI_TOOL
-        
+
         # Türkçe içerik mi?
         turkish_keywords = ["lgs", "yks", "soru üret", "türkçe", "eğitim"]
         if any(kw in query_lower for kw in turkish_keywords):
             return QueryType.TURKISH_CONTENT
-        
+
         # Derin analiz mi?
         analysis_keywords = ["analiz", "değerlendir", "detaylı", "adım adım"]
         if any(kw in query_lower for kw in analysis_keywords):
             return QueryType.DEEP_ANALYSIS
-        
+
         # Tool orchestration mu?
         if "ve" in query_lower and len(query.split()) > 15:
             return QueryType.TOOL_ORCHESTRATION
-        
+
         # Default: Basit soru
         return QueryType.SIMPLE_QUESTION
-    
+
     def analyze_code_complexity(self, code: str) -> int:
         """Kod karmaşıklığını analiz et (0-10)"""
         score = 0
-        
+
         # Satır sayısı
         lines = len(code.split('\n'))
         if lines > 100:
@@ -82,28 +83,28 @@ class ImprovedRouter:
             score += 2
         elif lines > 20:
             score += 1
-        
+
         # Fonksiyon sayısı
         func_count = code.count('def ') + code.count('function ')
         if func_count > 5:
             score += 2
         elif func_count > 2:
             score += 1
-        
+
         # Class sayısı
         class_count = code.count('class ')
         if class_count > 3:
             score += 2
         elif class_count > 1:
             score += 1
-        
+
         # Nested yapılar
         if '    ' * 4 in code:  # 4+ level indentation
             score += 2
-        
+
         return min(score, 10)
-    
-    def route(self, query: str, context: Optional[Dict] = None) -> Dict[str, Any]:
+
+    def route(self, query: str, context: dict | None = None) -> dict[str, Any]:
         """
         Optimal routing - Her modelin güçlü yönlerini kullan
         
@@ -117,7 +118,7 @@ class ImprovedRouter:
             }
         """
         query_type = self.classify_query(query, context)
-        
+
         # Simple Question → Claude (Hız)
         if query_type == QueryType.SIMPLE_QUESTION:
             return {
@@ -127,12 +128,12 @@ class ImprovedRouter:
                 "estimated_cost": 0.003,
                 "reason": "Basit soru - Claude hızlı ve yeterli"
             }
-        
+
         # Code Review → Complexity-based
-        elif query_type == QueryType.CODE_REVIEW:
+        if query_type == QueryType.CODE_REVIEW:
             code = context.get("code", "")
             complexity = self.analyze_code_complexity(code)
-            
+
             if complexity < 5:
                 return {
                     "primary": "claude",
@@ -141,17 +142,16 @@ class ImprovedRouter:
                     "estimated_cost": 0.004,
                     "reason": f"Basit kod (complexity: {complexity}) - Claude yeterli ve hızlı"
                 }
-            else:
-                return {
-                    "primary": "gemini",
-                    "role": ModelRole.GEMINI_THINKING,
-                    "estimated_time": 10.0,
-                    "estimated_cost": 0.008,
-                    "reason": f"Karmaşık kod (complexity: {complexity}) - Gemini thinking gerekli"
-                }
-        
+            return {
+                "primary": "gemini",
+                "role": ModelRole.GEMINI_THINKING,
+                "estimated_time": 10.0,
+                "estimated_cost": 0.008,
+                "reason": f"Karmaşık kod (complexity: {complexity}) - Gemini thinking gerekli"
+            }
+
         # Multi-Tool → Claude Orchestrator + Gemini Executor
-        elif query_type == QueryType.MULTI_TOOL:
+        if query_type == QueryType.MULTI_TOOL:
             return {
                 "primary": "claude",
                 "role": ModelRole.CLAUDE_ORCHESTRATOR,
@@ -160,9 +160,9 @@ class ImprovedRouter:
                 "estimated_cost": 0.012,
                 "reason": "Multi-tool - Claude orchestrate, Gemini execute (parallel)"
             }
-        
+
         # Diagram Analysis → Gemini Multimodal
-        elif query_type == QueryType.DIAGRAM_ANALYSIS:
+        if query_type == QueryType.DIAGRAM_ANALYSIS:
             return {
                 "primary": "gemini",
                 "role": ModelRole.GEMINI_MULTIMODAL,
@@ -170,9 +170,9 @@ class ImprovedRouter:
                 "estimated_cost": 0.007,
                 "reason": "Diagram analizi - Gemini multimodal yeteneği"
             }
-        
+
         # Deep Analysis → Gemini Thinking
-        elif query_type == QueryType.DEEP_ANALYSIS:
+        if query_type == QueryType.DEEP_ANALYSIS:
             return {
                 "primary": "gemini",
                 "role": ModelRole.GEMINI_THINKING,
@@ -180,9 +180,9 @@ class ImprovedRouter:
                 "estimated_cost": 0.010,
                 "reason": "Derin analiz - Gemini thinking mode"
             }
-        
+
         # Turkish Content → Gemini
-        elif query_type == QueryType.TURKISH_CONTENT:
+        if query_type == QueryType.TURKISH_CONTENT:
             return {
                 "primary": "gemini",
                 "role": ModelRole.GEMINI_STANDARD,
@@ -190,9 +190,9 @@ class ImprovedRouter:
                 "estimated_cost": 0.006,
                 "reason": "Türkçe içerik - Gemini native Turkish support"
             }
-        
+
         # Tool Orchestration → Claude
-        elif query_type == QueryType.TOOL_ORCHESTRATION:
+        if query_type == QueryType.TOOL_ORCHESTRATION:
             return {
                 "primary": "claude",
                 "role": ModelRole.CLAUDE_ORCHESTRATOR,
@@ -201,25 +201,24 @@ class ImprovedRouter:
                 "estimated_cost": 0.010,
                 "reason": "Tool orchestration - Claude'un güçlü yönü"
             }
-        
+
         # Default
-        else:
-            return {
-                "primary": "claude",
-                "role": ModelRole.CLAUDE_DIRECT,
-                "estimated_time": 2.0,
-                "estimated_cost": 0.003,
-                "reason": "Default routing"
-            }
+        return {
+            "primary": "claude",
+            "role": ModelRole.CLAUDE_DIRECT,
+            "estimated_time": 2.0,
+            "estimated_cost": 0.003,
+            "reason": "Default routing"
+        }
 
 
 class ClaudeOrchestrator:
     """Claude'un tool orchestration yeteneğini kullan"""
-    
+
     async def orchestrate_parallel_analysis(
         self,
-        tasks: List[Dict[str, Any]]
-    ) -> List[Any]:
+        tasks: list[dict[str, Any]]
+    ) -> list[Any]:
         """
         Paralel analiz orchestration
         
@@ -237,7 +236,7 @@ class ClaudeOrchestrator:
             "claude_orchestration_started",
             task_count=len(tasks)
         )
-        
+
         # Paralel execution
         async_tasks = []
         for task in tasks:
@@ -247,27 +246,27 @@ class ClaudeOrchestrator:
                 async_tasks.append(self._gemini_design_analysis(task["data"]))
             elif task["type"] == "requirements_analysis":
                 async_tasks.append(self._gemini_requirements_analysis(task["data"]))
-        
+
         # Paralel çalıştır
         results = await asyncio.gather(*async_tasks, return_exceptions=True)
-        
+
         logger.info(
             "claude_orchestration_completed",
             success_count=sum(1 for r in results if not isinstance(r, Exception))
         )
-        
+
         return results
-    
+
     async def _gemini_code_review(self, code: str) -> str:
         """Gemini kod review (simulated)"""
         await asyncio.sleep(0.1)
         return f"[Gemini Code Review] {code[:50]}..."
-    
+
     async def _gemini_design_analysis(self, design: str) -> str:
         """Gemini design analysis (simulated)"""
         await asyncio.sleep(0.1)
         return f"[Gemini Design Analysis] {design[:50]}..."
-    
+
     async def _gemini_requirements_analysis(self, requirements: str) -> str:
         """Gemini requirements analysis (simulated)"""
         await asyncio.sleep(0.1)
@@ -276,11 +275,11 @@ class ClaudeOrchestrator:
 
 class ImprovedHybridSystem:
     """İyileştirilmiş hibrit sistem - Her modelin güçlü yönlerini kullanır"""
-    
+
     def __init__(self):
         self.router = ImprovedRouter()
         self.orchestrator = ClaudeOrchestrator()
-        
+
         # Metrics
         self.metrics = {
             "claude_direct": 0,
@@ -290,24 +289,24 @@ class ImprovedHybridSystem:
             "gemini_multimodal": 0,
             "gemini_standard": 0
         }
-    
+
     async def process_query(
         self,
         query: str,
-        context: Optional[Dict] = None
-    ) -> Dict[str, Any]:
+        context: dict | None = None
+    ) -> dict[str, Any]:
         """Query'yi optimal şekilde işle"""
-        
+
         # Routing
         routing = self.router.route(query, context)
-        
+
         logger.info(
             "query_routed",
             query_type=routing.get("reason"),
             primary=routing["primary"],
             role=routing["role"].value
         )
-        
+
         # Model çağrısı
         if routing["role"] == ModelRole.CLAUDE_ORCHESTRATOR:
             # Multi-tool orchestration
@@ -315,66 +314,66 @@ class ImprovedHybridSystem:
         else:
             # Single model
             result = await self._handle_single_model(query, context, routing)
-        
+
         # Metrics
         self.metrics[routing["role"].value] += 1
-        
+
         return result
-    
+
     async def _handle_orchestration(
         self,
         query: str,
-        context: Dict,
-        routing: Dict
-    ) -> Dict[str, Any]:
+        context: dict,
+        routing: dict
+    ) -> dict[str, Any]:
         """Claude orchestration handling"""
-        
+
         # Hangi task'lar gerekli?
         tasks = []
-        
+
         if context.get("code"):
             tasks.append({"type": "code_review", "data": context["code"]})
         if context.get("design"):
             tasks.append({"type": "design_analysis", "data": context["design"]})
         if context.get("requirements"):
             tasks.append({"type": "requirements_analysis", "data": context["requirements"]})
-        
+
         # Paralel execution
         results = await self.orchestrator.orchestrate_parallel_analysis(tasks)
-        
+
         # Claude synthesizes results
         synthesis = f"[Claude Synthesis] Combined {len(results)} analyses"
-        
+
         return {
             "response": synthesis,
             "details": results,
             "routing": routing,
             "parallel": True
         }
-    
+
     async def _handle_single_model(
         self,
         query: str,
-        context: Optional[Dict],
-        routing: Dict
-    ) -> Dict[str, Any]:
+        context: dict | None,
+        routing: dict
+    ) -> dict[str, Any]:
         """Single model handling"""
-        
+
         # Simulated API call
         await asyncio.sleep(0.1)
-        
+
         response = f"[{routing['primary'].upper()}] Response to: {query[:50]}..."
-        
+
         return {
             "response": response,
             "routing": routing,
             "parallel": False
         }
-    
-    def get_metrics(self) -> Dict[str, Any]:
+
+    def get_metrics(self) -> dict[str, Any]:
         """Kullanım metriklerini döndür"""
         total = sum(self.metrics.values())
-        
+
         return {
             "total_requests": total,
             "usage_breakdown": self.metrics,
@@ -389,7 +388,7 @@ class ImprovedHybridSystem:
 async def main():
     """Test scenarios"""
     system = ImprovedHybridSystem()
-    
+
     test_cases = [
         {
             "name": "Basit Soru",
@@ -421,17 +420,17 @@ async def main():
             "context": None
         }
     ]
-    
+
     print("\n" + "=" * 80)
     print("İYİLEŞTİRİLMİŞ HİBRİT SİSTEM TEST")
     print("=" * 80 + "\n")
-    
+
     for test in test_cases:
         print(f"\n📝 Test: {test['name']}")
         print(f"Query: {test['query']}")
-        
+
         result = await system.process_query(test['query'], test['context'])
-        
+
         routing = result['routing']
         print(f"✓ Primary: {routing['primary']}")
         print(f"✓ Role: {routing['role'].value}")
@@ -439,14 +438,14 @@ async def main():
         print(f"✓ Cost: ${routing['estimated_cost']:.4f}")
         print(f"✓ Reason: {routing['reason']}")
         print(f"✓ Parallel: {result.get('parallel', False)}")
-    
+
     print("\n" + "=" * 80)
     print("KULLANIM METRİKLERİ")
     print("=" * 80 + "\n")
-    
+
     metrics = system.get_metrics()
     print(f"Total Requests: {metrics['total_requests']}\n")
-    
+
     print("Usage Breakdown:")
     for role, count in metrics['usage_breakdown'].items():
         percentage = metrics['usage_percentage'][role]

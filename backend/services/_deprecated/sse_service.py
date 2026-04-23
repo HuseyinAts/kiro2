@@ -80,7 +80,7 @@ class SSEManager:
     # ------------------------------------------------------------------
 
     @classmethod
-    def get_instance(cls) -> "SSEManager":
+    def get_instance(cls) -> SSEManager:
         """Uygulama genelinde tek SSEManager örneğini döndür."""
         if cls._instance is None:
             cls._instance = cls()
@@ -200,7 +200,7 @@ class SSEManager:
                         pubsub.get_message(ignore_subscribe_messages=True),
                         timeout=_PUBSUB_TIMEOUT,
                     )
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # Zaman asimi normaldir; donguye devam et
                     continue
 

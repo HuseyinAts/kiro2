@@ -498,7 +498,7 @@ class LearningStyleService:
             ]
 
         w = 1.0 / len(content_types)
-        content_weights = {c: w for c in content_types}
+        content_weights = dict.fromkeys(content_types, w)
 
         dl = (difficulty_level or "orta").lower()
         if dl in ("kolay", "easy", "dusuk"):

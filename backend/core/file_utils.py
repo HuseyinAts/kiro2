@@ -150,7 +150,7 @@ async def read_file(
     """
     await validate_file_size(path, max_size)
 
-    async with aiofiles.open(path, mode="r", encoding=encoding) as f:
+    async with aiofiles.open(path, encoding=encoding) as f:
         content = await f.read()
 
     logger.debug(f"Dosya okundu: {path} ({len(content)} chars)")
@@ -236,7 +236,7 @@ async def read_lines(
     """
     await validate_file_size(path, max_size)
 
-    async with aiofiles.open(path, mode="r", encoding=encoding) as f:
+    async with aiofiles.open(path, encoding=encoding) as f:
         async for line in f:
             yield line.rstrip("\n\r")
 

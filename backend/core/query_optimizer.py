@@ -3,11 +3,11 @@ N+1 Query Optimization Utilities
 ARCHITECTURE FIX: Prevent N+1 query problems with eager loading
 """
 
-from typing import Any, List, Type, TypeVar
+from typing import Any, TypeVar
 
 from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload, joinedload, subqueryload
+from sqlalchemy.orm import joinedload, selectinload, subqueryload
 
 from .structured_logger import get_logger
 
@@ -41,7 +41,7 @@ class QueryOptimizer:
         self._joined_loads = []
         self._subquery_loads = []
 
-    def select(self, model: Type[T]) -> "QueryOptimizer":
+    def select(self, model: type[T]) -> "QueryOptimizer":
         """
         Start a new query
 
@@ -170,7 +170,7 @@ class QueryOptimizer:
 
         return query
 
-    async def all(self) -> List[T]:
+    async def all(self) -> list[T]:
         """
         Execute query and return all results
 
@@ -281,7 +281,7 @@ def log_query_performance(query_name: str, duration: float, row_count: int):
 
 import functools
 import time
-from typing import Callable
+from collections.abc import Callable
 from contextlib import contextmanager
 
 
@@ -411,7 +411,7 @@ class BatchLoader:
         users = await loader.load_many([1, 2, 3, 4, 5])
     """
 
-    def __init__(self, session: AsyncSession, model: Type[T], key_attr: str = "id"):
+    def __init__(self, session: AsyncSession, model: type[T], key_attr: str = "id"):
         self.session = session
         self.model = model
         self.key_attr = key_attr
@@ -423,7 +423,7 @@ class BatchLoader:
             await self.load_many([key])
         return self._cache.get(key)
 
-    async def load_many(self, keys: List[Any]) -> List[T]:
+    async def load_many(self, keys: list[Any]) -> list[T]:
         """Load multiple items by keys in a single query"""
         # Find keys not in cache
         missing_keys = [k for k in keys if k not in self._cache]

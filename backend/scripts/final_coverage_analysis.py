@@ -13,11 +13,11 @@ def analyze_final_coverage():
 
     try:
         # Load baseline coverage
-        with open("coverage.json", "r") as f:
+        with open("coverage.json") as f:
             baseline = json.load(f)
 
         # Load final coverage
-        with open("coverage_final.json", "r") as f:
+        with open("coverage_final.json") as f:
             final = json.load(f)
 
         print("FINAL CODECOV COVERAGE ANALYSIS")

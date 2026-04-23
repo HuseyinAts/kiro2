@@ -2,17 +2,17 @@
 Task 91: Gamification System - Backend Tests
 Comprehensive tests for all gamification managers and API endpoints
 """
-import pytest
-from uuid import uuid4
 from unittest.mock import MagicMock
+from uuid import uuid4
+
+import pytest
 
 from core.gamification import (
-    PointsManager,
-    ExperienceManager,
     BadgeManager,
+    ExperienceManager,
     LeaderboardManager,
+    PointsManager,
 )
-
 
 # ============================================================================
 # Fixtures

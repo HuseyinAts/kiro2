@@ -22,7 +22,6 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from sqlalchemy import MetaData, text
 from sqlalchemy.ext.asyncio import AsyncEngine
@@ -65,8 +64,8 @@ class ColumnMismatch:
     table_name: str
     column_name: str
     mismatch_type: MismatchType
-    expected: Optional[str] = None
-    actual: Optional[str] = None
+    expected: str | None = None
+    actual: str | None = None
     message: str = ""
 
     def __str__(self) -> str:

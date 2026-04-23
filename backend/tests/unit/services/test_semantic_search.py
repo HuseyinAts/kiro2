@@ -13,13 +13,13 @@ Author: KIRO2 Team
 Date: 2026-01-18
 """
 
-import os
-import pytest
-from unittest.mock import patch, MagicMock
-from datetime import datetime, timedelta
-
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
 # Mock chromadb before import to avoid Windows directory creation issues
@@ -398,7 +398,10 @@ class TestIntegrationScenarios:
                     mock_emb_service.embed.return_value = [0.1] * 768
                     mock_emb.return_value = mock_emb_service
 
-                    from api.v1.semantic_search import SemanticSearchService, SearchRequest
+                    from api.v1.semantic_search import (
+                        SearchRequest,
+                        SemanticSearchService,
+                    )
 
                     service = SemanticSearchService()
                     request = SearchRequest(

@@ -15,9 +15,9 @@ from abc import abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from ..base_agent import BaseAgent, AgentType, AgentStatus
+from ..base_agent import AgentStatus, AgentType, BaseAgent
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +44,9 @@ class DomainContext:
     domain: DomainType
     max_tokens: int = 200_000  # CRITICAL: 200K limit per agent
     current_tokens: int = 0
-    domain_knowledge: Dict[str, Any] = field(default_factory=dict)
-    conversation_history: List[Dict[str, str]] = field(default_factory=list)
-    shared_context: Dict[str, Any] = field(default_factory=dict)  # From blackboard
+    domain_knowledge: dict[str, Any] = field(default_factory=dict)
+    conversation_history: list[dict[str, str]] = field(default_factory=list)
+    shared_context: dict[str, Any] = field(default_factory=dict)  # From blackboard
     created_at: datetime = field(default_factory=datetime.now)
     last_updated: datetime = field(default_factory=datetime.now)
 
@@ -138,7 +138,7 @@ class DomainContext:
         self.add_tokens(estimated_tokens)
         return True
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Context durumunu dondur"""
         return {
             "domain": self.domain.value,
@@ -151,7 +151,7 @@ class DomainContext:
             "last_updated": self.last_updated.isoformat(),
         }
 
-    def update_shared_context(self, data: Dict[str, Any]):
+    def update_shared_context(self, data: dict[str, Any]):
         """Blackboard'dan gelen paylasilan context'i guncelle"""
         self.shared_context.update(data)
         self.last_updated = datetime.now()
@@ -222,21 +222,21 @@ class DomainResponse:
     domain: DomainType
     content: str
     confidence: float = 0.0  # [0, 1]
-    tools_used: List[str] = field(default_factory=list)
-    visualizations: List[Dict[str, Any]] = field(default_factory=list)
-    references: List[str] = field(default_factory=list)
-    context_additions: Dict[str, Any] = field(default_factory=dict)
+    tools_used: list[str] = field(default_factory=list)
+    visualizations: list[dict[str, Any]] = field(default_factory=list)
+    references: list[str] = field(default_factory=list)
+    context_additions: dict[str, Any] = field(default_factory=dict)
     response_time_ms: float = 0.0
     tokens_used: int = 0
-    step_by_step_solution: List[str] = field(default_factory=list)
-    latex_expressions: List[str] = field(default_factory=list)
-    error: Optional[str] = None
+    step_by_step_solution: list[str] = field(default_factory=list)
+    latex_expressions: list[str] = field(default_factory=list)
+    error: str | None = None
 
     def is_successful(self) -> bool:
         """Yanit basarili mi?"""
         return self.error is None and len(self.content) > 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Dict'e donustur"""
         return {
             "domain": self.domain.value,
@@ -269,7 +269,7 @@ class BaseDomainAgent(BaseAgent):
         self,
         agent_id: str,
         domain: DomainType,
-        specialization_areas: List[str],
+        specialization_areas: list[str],
         llm_service: Any = None,
     ):
         """
@@ -296,7 +296,7 @@ class BaseDomainAgent(BaseAgent):
         self.context = DomainContext(domain=domain)
 
         # Domain-specific tools
-        self.tools: Dict[str, callable] = {}
+        self.tools: dict[str, callable] = {}
 
         # Performance tracking
         self.total_questions_answered = 0
@@ -338,7 +338,7 @@ class BaseDomainAgent(BaseAgent):
     async def solve_question(
         self,
         question: str,
-        shared_context: Optional[Dict[str, Any]] = None,
+        shared_context: dict[str, Any] | None = None,
     ) -> DomainResponse:
         """
         Soruyu coz (alt siniflar implement eder)
@@ -354,9 +354,9 @@ class BaseDomainAgent(BaseAgent):
     async def process_request(
         self,
         request_type: str,
-        parameters: Dict[str, Any],
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        parameters: dict[str, Any],
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         BaseAgent abstract metodunu implement et
 
@@ -395,14 +395,14 @@ class BaseDomainAgent(BaseAgent):
                     "processing_time_ms": (time.perf_counter() - start_time) * 1000,
                 }
 
-            elif request_type == "get_specialization_areas":
+            if request_type == "get_specialization_areas":
                 return {
                     "success": True,
                     "domain": self.domain.value,
                     "areas": self.specialization_areas,
                 }
 
-            elif request_type == "get_context_status":
+            if request_type == "get_context_status":
                 return {
                     "success": True,
                     "current_tokens": self.context.current_tokens,
@@ -410,11 +410,10 @@ class BaseDomainAgent(BaseAgent):
                     "remaining_tokens": self.context.get_remaining_tokens(),
                 }
 
-            else:
-                return {
-                    "success": False,
-                    "error": f"Unknown request type: {request_type}",
-                }
+            return {
+                "success": False,
+                "error": f"Unknown request type: {request_type}",
+            }
 
         except Exception as e:
             logger.error(f"Error processing request: {e}")
@@ -429,7 +428,7 @@ class BaseDomainAgent(BaseAgent):
         self,
         base_confidence: float,
         question_difficulty: float,
-        student_theta: Optional[float] = None,
+        student_theta: float | None = None,
     ) -> float:
         """
         Adjust response confidence using IRT model parameters.
@@ -474,7 +473,7 @@ class BaseDomainAgent(BaseAgent):
         )
         return adjusted
 
-    def get_tool(self, tool_name: str) -> Optional[callable]:
+    def get_tool(self, tool_name: str) -> callable | None:
         """Kayitli araci al"""
         return self.tools.get(tool_name)
 
@@ -483,7 +482,7 @@ class BaseDomainAgent(BaseAgent):
         self.tools[name] = func
         logger.debug(f"Registered tool '{name}' for {self.domain.value} agent")
 
-    async def update_context_from_blackboard(self, shared_context: Dict[str, Any]):
+    async def update_context_from_blackboard(self, shared_context: dict[str, Any]):
         """Blackboard'dan gelen context ile guncelle"""
         if shared_context:
             self.context.shared_context.update(shared_context)
@@ -493,7 +492,7 @@ class BaseDomainAgent(BaseAgent):
             self.context.add_tokens(token_estimate)
             logger.debug(f"Updated shared context, added ~{token_estimate} tokens")
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Agent performans metriklerini al"""
         return {
             "agent_id": self.agent_id,

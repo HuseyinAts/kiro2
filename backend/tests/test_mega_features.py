@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Mega Feature Tests — F1, F2, F4, F6, F7, F11, F15 + Error Taxonomy
 Tests for 18 new database models across 8 feature domains.
@@ -19,7 +18,7 @@ to verify constructor defaults, field types, constraint metadata, and business l
 from __future__ import annotations
 
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 import pytest
 
@@ -100,7 +99,7 @@ except Exception:
 
 
 def _now() -> datetime:
-    return datetime.now(tz=timezone.utc)
+    return datetime.now(tz=UTC)
 
 
 def _make_uuid() -> str:
@@ -136,9 +135,8 @@ def _col_default(model_class, col_name):
         ]
         if len(params) == 0:
             return arg()
-        else:
-            # Context-sensitive default — pass None as the execution context
-            return arg(None)
+        # Context-sensitive default — pass None as the execution context
+        return arg(None)
     except (ValueError, TypeError):
         # inspect.signature may fail for built-ins; try zero-arg first
         try:
@@ -214,7 +212,7 @@ class TestF2LeagueSystem:
         promotion_cutoff = int(cohort_size * 0.10)  # top 10 %
         assert promotion_cutoff == 5
         # A student ranked 5 (1-indexed) is in the promotion zone
-        assert 5 <= promotion_cutoff
+        assert promotion_cutoff >= 5
 
     def test_league_unique_student_per_week(self) -> None:
         """The UniqueConstraint uq_league_membership_student_week is declared."""

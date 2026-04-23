@@ -24,8 +24,8 @@ For full Schemathesis property-based testing, consider downgrading to OpenAPI 3.
 
 from __future__ import annotations
 
-import pytest
 import httpx
+import pytest
 from httpx import AsyncClient
 
 from main import app

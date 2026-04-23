@@ -10,10 +10,11 @@ Requirements: REQ-1.1
 """
 
 import asyncio
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Optional, TypeVar, Callable, Any
-from functools import wraps
 import logging
+from collections.abc import AsyncGenerator, Callable
+from contextlib import asynccontextmanager
+from functools import wraps
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ async def async_timeout(seconds: float) -> AsyncGenerator[None, None]:
     try:
         async with asyncio.timeout(seconds):
             yield
-    except asyncio.TimeoutError:
+    except TimeoutError:
         logger.error(f"Operation timed out after {seconds} seconds")
         raise
 
@@ -73,8 +74,8 @@ def async_retry(
         @wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             current_delay = delay
-            last_exception: Optional[Exception] = None
-            
+            last_exception: Exception | None = None
+
             for attempt in range(1, max_attempts + 1):
                 try:
                     return await func(*args, **kwargs)
@@ -85,18 +86,18 @@ def async_retry(
                             f"Function {func.__name__} failed after {max_attempts} attempts: {e}"
                         )
                         raise
-                    
+
                     logger.warning(
                         f"Attempt {attempt}/{max_attempts} failed for {func.__name__}: {e}. "
                         f"Retrying in {current_delay}s..."
                     )
                     await asyncio.sleep(current_delay)
                     current_delay *= backoff
-            
+
             # Bu noktaya ulaşılmamalı ama type checker için
             if last_exception:
                 raise last_exception
-                
+
         return wrapper
     return decorator
 
@@ -127,11 +128,11 @@ async def gather_with_concurrency(
         )
     """
     semaphore = asyncio.Semaphore(n)
-    
+
     async def sem_task(task: Callable) -> Any:
         async with semaphore:
             return await task
-    
+
     return await asyncio.gather(
         *[sem_task(task) for task in tasks],
         return_exceptions=return_exceptions
@@ -147,7 +148,7 @@ class AsyncConnectionPool:
         max_overflow: Pool dolu olduğunda ek connection sayısı
         timeout: Connection alma timeout'u (saniye)
     """
-    
+
     def __init__(
         self,
         pool_size: int = 20,
@@ -167,12 +168,12 @@ class AsyncConnectionPool:
         self.timeout = timeout
         self._semaphore = asyncio.Semaphore(pool_size + max_overflow)
         self._active_connections = 0
-        
+
         logger.info(
             f"AsyncConnectionPool initialized: pool_size={pool_size}, "
             f"max_overflow={max_overflow}, timeout={timeout}s"
         )
-    
+
     @asynccontextmanager
     async def acquire(self) -> AsyncGenerator[None, None]:
         """
@@ -199,15 +200,15 @@ class AsyncConnectionPool:
                     finally:
                         self._active_connections -= 1
                         logger.debug(f"Connection released. Active: {self._active_connections}")
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error(f"Failed to acquire connection within {self.timeout}s")
             raise
-    
+
     @property
     def active_connections(self) -> int:
         """Aktif connection sayısını döndürür."""
         return self._active_connections
-    
+
     @property
     def available_connections(self) -> int:
         """Kullanılabilir connection sayısını döndürür."""
@@ -241,7 +242,7 @@ class AsyncBatchProcessor:
         batch_size: Her batch'teki item sayısı
         max_concurrent: Maksimum concurrent batch sayısı
     """
-    
+
     def __init__(self, batch_size: int = 10, max_concurrent: int = 5):
         """
         Batch processor initialize eder.
@@ -256,7 +257,7 @@ class AsyncBatchProcessor:
             f"AsyncBatchProcessor initialized: batch_size={batch_size}, "
             f"max_concurrent={max_concurrent}"
         )
-    
+
     async def process_items(
         self,
         items: list[T],
@@ -282,15 +283,15 @@ class AsyncBatchProcessor:
             items[i:i + self.batch_size]
             for i in range(0, len(items), self.batch_size)
         ]
-        
+
         logger.info(f"Processing {len(items)} items in {len(batches)} batches")
-        
+
         results = await gather_with_concurrency(
             self.max_concurrent,
             *[processor(batch) for batch in batches],
             return_exceptions=True
         )
-        
+
         # Flatten results
         flattened = []
         for result in results:
@@ -301,6 +302,6 @@ class AsyncBatchProcessor:
                 flattened.extend(result)
             else:
                 flattened.append(result)
-        
+
         logger.info(f"Batch processing complete. Processed {len(flattened)} items")
         return flattened

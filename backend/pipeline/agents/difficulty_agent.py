@@ -14,7 +14,7 @@ Requirements (REQ-2.x):
 """
 
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 from ..stage_base import BasePipelineStage, StageInput, StageOutput
 from ..tools.irt_calculator import IRTCalculator
@@ -40,9 +40,9 @@ class DifficultyAgent(BasePipelineStage):
 
     def __init__(
         self,
-        llm_client: Optional[Any] = None,
-        irt_calculator: Optional[IRTCalculator] = None,
-        config: Optional[Dict[str, Any]] = None
+        llm_client: Any | None = None,
+        irt_calculator: IRTCalculator | None = None,
+        config: dict[str, Any] | None = None
     ):
         """
         Difficulty Agent başlat
@@ -170,7 +170,7 @@ class DifficultyAgent(BasePipelineStage):
 
         except Exception as e:
             return self._create_error_output(
-                f"Zorluk kalibrasyon hatası: {str(e)}",
+                f"Zorluk kalibrasyon hatası: {e!s}",
                 input_data,
                 time.time() - start_time
             )
@@ -183,7 +183,7 @@ class DifficultyAgent(BasePipelineStage):
         self,
         question_text: str,
         target_difficulty: str
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         IRT parametrelerini hesapla
 
@@ -259,7 +259,7 @@ class DifficultyAgent(BasePipelineStage):
             "guessing": 0.25  # 4 seçenekli soru için
         }
 
-    def _clamp_parameters(self, params: Dict[str, float]) -> Dict[str, float]:
+    def _clamp_parameters(self, params: dict[str, float]) -> dict[str, float]:
         """Parametreleri geçerli aralıklara sınırla"""
         return {
             "difficulty": max(-4.0, min(4.0, params["difficulty"])),
@@ -270,9 +270,9 @@ class DifficultyAgent(BasePipelineStage):
     async def _optimize_for_difficulty(
         self,
         question_text: str,
-        current_params: Dict[str, float],
+        current_params: dict[str, float],
         target_difficulty: str
-    ) -> Tuple[str, Optional[Dict[str, float]]]:
+    ) -> tuple[str, dict[str, float] | None]:
         """
         Soruyu hedef zorluğa göre optimize et
 

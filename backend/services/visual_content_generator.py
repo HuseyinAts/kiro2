@@ -46,10 +46,11 @@ Usage:
     )
 """
 
-from typing import Dict, List, Optional, Literal
 import random
-from services.graph_generator import GraphGenerator
+from typing import Literal
+
 from services.geometry_generator import GeometryGenerator
+from services.graph_generator import GraphGenerator
 from services.map_diagram_generator import MapDiagramGenerator
 
 
@@ -84,7 +85,7 @@ class VisualContentGenerator:
         ] = "frequency_table",
         rows: int = 4,
         columns: int = 3,
-    ) -> Dict:
+    ) -> dict:
         """
         Generate markdown table for questions
 
@@ -100,20 +101,19 @@ class VisualContentGenerator:
         """
         if data_type == "frequency_table":
             return self._generate_frequency_table(rows)
-        elif data_type == "comparison_table":
+        if data_type == "comparison_table":
             return self._generate_comparison_table(rows, columns)
-        elif data_type == "statistics_table":
+        if data_type == "statistics_table":
             return self._generate_statistics_table()
-        elif data_type == "price_table":
+        if data_type == "price_table":
             return self._generate_price_table(rows)
-        elif data_type == "grade_table":
+        if data_type == "grade_table":
             return self._generate_grade_table(rows)
-        elif data_type == "schedule_table":
+        if data_type == "schedule_table":
             return self._generate_schedule_table()
-        else:
-            return self._generate_generic_table(rows, columns)
+        return self._generate_generic_table(rows, columns)
 
-    def _generate_frequency_table(self, rows: int = 4) -> Dict:
+    def _generate_frequency_table(self, rows: int = 4) -> dict:
         """Generate frequency distribution table"""
         # Example: Age distribution, test scores, etc.
         categories = ["A", "B", "C", "D", "E"][:rows]
@@ -147,7 +147,7 @@ class VisualContentGenerator:
             },
         }
 
-    def _generate_comparison_table(self, rows: int = 4, columns: int = 3) -> Dict:
+    def _generate_comparison_table(self, rows: int = 4, columns: int = 3) -> dict:
         """Generate comparison table (products, options, features)"""
         headers = ["Ürün"] + [f"Özellik {i+1}" for i in range(columns - 1)]
 
@@ -173,7 +173,7 @@ class VisualContentGenerator:
             },
         }
 
-    def _generate_statistics_table(self) -> Dict:
+    def _generate_statistics_table(self) -> dict:
         """Generate statistics summary table"""
         stats = [
             ("Ortalama", round(random.uniform(50, 90), 2)),
@@ -201,7 +201,7 @@ class VisualContentGenerator:
             },
         }
 
-    def _generate_price_table(self, rows: int = 4) -> Dict:
+    def _generate_price_table(self, rows: int = 4) -> dict:
         """Generate price/cost table"""
         products = ["Kalem", "Defter", "Silgi", "Kalemtraş", "Cetvel"][:rows]
 
@@ -228,7 +228,7 @@ class VisualContentGenerator:
             },
         }
 
-    def _generate_grade_table(self, rows: int = 5) -> Dict:
+    def _generate_grade_table(self, rows: int = 5) -> dict:
         """Generate student grades table"""
         students = [f"Öğrenci {i+1}" for i in range(rows)]
         subjects = ["Matematik", "Türkçe", "Fen"]
@@ -256,7 +256,7 @@ class VisualContentGenerator:
             },
         }
 
-    def _generate_schedule_table(self) -> Dict:
+    def _generate_schedule_table(self) -> dict:
         """Generate schedule/timetable"""
         days = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"]
         times = ["09:00-10:00", "10:00-11:00", "11:00-12:00"]
@@ -285,7 +285,7 @@ class VisualContentGenerator:
             },
         }
 
-    def _generate_generic_table(self, rows: int = 4, columns: int = 3) -> Dict:
+    def _generate_generic_table(self, rows: int = 4, columns: int = 3) -> dict:
         """Generate generic data table"""
         headers = [f"Sütun {i+1}" for i in range(columns)]
         table_rows = []
@@ -308,7 +308,7 @@ class VisualContentGenerator:
             },
         }
 
-    def _build_markdown_table(self, headers: List[str], rows: List[str]) -> str:
+    def _build_markdown_table(self, headers: list[str], rows: list[str]) -> str:
         """Build markdown table from headers and rows"""
         # Header row
         header_row = "| " + " | ".join(headers) + " |"
@@ -329,7 +329,7 @@ class VisualContentGenerator:
         topic: str,
         graph_type: Literal["line", "bar", "pie", "scatter", "histogram"] = "line",
         complexity: str = "medium",
-    ) -> Dict:
+    ) -> dict:
         """
         Generate contextual graph for question
 
@@ -380,25 +380,24 @@ class VisualContentGenerator:
             y_label=y_label,
         )
 
-    def _generate_line_data(self, subject: str, topic: str, complexity: str) -> Dict:
+    def _generate_line_data(self, subject: str, topic: str, complexity: str) -> dict:
         """Generate realistic line graph data based on subject"""
         if "fizik" in subject.lower() or "hareket" in topic.lower():
             # Physics: Motion graphs (time vs velocity/position)
-            x = list(range(0, 6))
+            x = list(range(6))
             y = [0, 10, 20, 25, 35, 40]
             return {"x": x, "y": y}
-        elif "matematik" in subject.lower():
+        if "matematik" in subject.lower():
             # Math: Function graphs
             x = list(range(-5, 6))
             y = [x_val**2 for x_val in x]
             return {"x": x, "y": y}
-        else:
-            # Generic trend data
-            x = list(range(2015, 2021))
-            y = [random.randint(50, 100) for _ in x]
-            return {"x": x, "y": y}
+        # Generic trend data
+        x = list(range(2015, 2021))
+        y = [random.randint(50, 100) for _ in x]
+        return {"x": x, "y": y}
 
-    def _generate_bar_data(self, subject: str, topic: str, complexity: str) -> Dict:
+    def _generate_bar_data(self, subject: str, topic: str, complexity: str) -> dict:
         """Generate realistic bar chart data based on subject"""
         if "matematik" in subject.lower() or "istatistik" in topic.lower():
             # Statistics comparison
@@ -409,7 +408,7 @@ class VisualContentGenerator:
                 "values": values,
                 "orientation": "vertical",
             }
-        elif "cografya" in subject.lower():
+        if "cografya" in subject.lower():
             # Geographic data
             categories = ["Bölge 1", "Bölge 2", "Bölge 3"]
             values = [random.randint(100, 500) for _ in categories]
@@ -418,87 +417,81 @@ class VisualContentGenerator:
                 "values": values,
                 "orientation": "vertical",
             }
-        else:
-            # Generic categories
-            categories = ["Grup A", "Grup B", "Grup C", "Grup D"]
-            values = [random.randint(15, 40) for _ in categories]
-            return {
-                "categories": categories,
-                "values": values,
-                "orientation": "vertical",
-            }
+        # Generic categories
+        categories = ["Grup A", "Grup B", "Grup C", "Grup D"]
+        values = [random.randint(15, 40) for _ in categories]
+        return {
+            "categories": categories,
+            "values": values,
+            "orientation": "vertical",
+        }
 
-    def _generate_pie_data(self, subject: str, topic: str, complexity: str) -> Dict:
+    def _generate_pie_data(self, subject: str, topic: str, complexity: str) -> dict:
         """Generate realistic pie chart data based on subject"""
         if "cografya" in subject.lower() or "nufus" in topic.lower():
             # Population distribution
             labels = ["Kıta A", "Kıta B", "Kıta C", "Kıta D"]
             values = [30, 25, 25, 20]
             return {"labels": labels, "values": values, "show_percentages": True}
-        elif "turkce" in subject.lower():
+        if "turkce" in subject.lower():
             # Literary analysis
             labels = ["Roman", "Hikaye", "Şiir", "Deneme"]
             values = [35, 30, 20, 15]
             return {"labels": labels, "values": values, "show_percentages": True}
-        else:
-            # Generic distribution
-            labels = ["A", "B", "C", "D"]
-            values = [40, 30, 20, 10]
-            return {"labels": labels, "values": values, "show_percentages": True}
+        # Generic distribution
+        labels = ["A", "B", "C", "D"]
+        values = [40, 30, 20, 10]
+        return {"labels": labels, "values": values, "show_percentages": True}
 
-    def _generate_scatter_data(self, subject: str, topic: str, complexity: str) -> Dict:
+    def _generate_scatter_data(self, subject: str, topic: str, complexity: str) -> dict:
         """Generate realistic scatter plot data based on subject"""
         if "matematik" in subject.lower() or "korelasyon" in topic.lower():
             # Math: Correlation data
             x = [1, 2, 3, 4, 5, 6, 7, 8]
             y = [2.1, 3.8, 6.3, 7.9, 10.2, 12.1, 13.8, 16.1]
             return {"x": x, "y": y, "show_trendline": True}
-        else:
-            # Generic correlation
-            x = list(range(1, 11))
-            y = [x_val * 2 + random.uniform(-1, 1) for x_val in x]
-            return {"x": x, "y": y, "show_trendline": True}
+        # Generic correlation
+        x = list(range(1, 11))
+        y = [x_val * 2 + random.uniform(-1, 1) for x_val in x]
+        return {"x": x, "y": y, "show_trendline": True}
 
     def _generate_histogram_data(
         self, subject: str, topic: str, complexity: str
-    ) -> Dict:
+    ) -> dict:
         """Generate realistic histogram data based on subject"""
         if "biyoloji" in subject.lower():
             # Biology: Measurement distribution
             values = [random.randint(150, 200) for _ in range(50)]
             return {"values": values, "bins": 8}
-        elif "matematik" in subject.lower():
+        if "matematik" in subject.lower():
             # Math: Score distribution
             values = [random.randint(0, 100) for _ in range(40)]
             return {"values": values, "bins": 10}
-        else:
-            # Generic frequency distribution
-            values = [random.randint(10, 50) for _ in range(30)]
-            return {"values": values, "bins": 6}
+        # Generic frequency distribution
+        values = [random.randint(10, 50) for _ in range(30)]
+        return {"values": values, "bins": 6}
 
     def _get_x_label(self, subject: str, graph_type: str) -> str:
         """Get appropriate X-axis label based on subject"""
         if "fizik" in subject.lower():
             return "Zaman (s)"
-        elif "matematik" in subject.lower():
+        if "matematik" in subject.lower():
             return "x"
-        elif "cografya" in subject.lower():
+        if "cografya" in subject.lower():
             return "Yıl"
-        else:
-            return "X Ekseni"
+        return "X Ekseni"
 
     def _get_y_label(self, subject: str, graph_type: str) -> str:
         """Get appropriate Y-axis label based on subject"""
         if "fizik" in subject.lower():
             return "Hız (m/s)"
-        elif "matematik" in subject.lower():
+        if "matematik" in subject.lower():
             if graph_type == "bar":
                 return "Frekans"
             return "y"
-        elif "cografya" in subject.lower():
+        if "cografya" in subject.lower():
             return "Değer"
-        else:
-            return "Y Ekseni"
+        return "Y Ekseni"
 
     # ==================== PHASE 3: GEOMETRY ====================
 
@@ -509,9 +502,9 @@ class VisualContentGenerator:
         geometry_type: Literal[
             "triangle", "circle", "quadrilateral", "polygon", "3d_shape"
         ] = "triangle",
-        shape_subtype: Optional[str] = None,
+        shape_subtype: str | None = None,
         complexity: str = "medium",
-    ) -> Dict:
+    ) -> dict:
         """
         Generate contextual geometry figure for question
 
@@ -560,50 +553,45 @@ class VisualContentGenerator:
         if geometry_type == "triangle":
             if "dik" in topic.lower() or "pisagor" in topic.lower():
                 return "right_triangle"
-            elif "eskenar" in topic.lower():
+            if "eskenar" in topic.lower():
                 return "equilateral_triangle"
-            elif "ikizkenar" in topic.lower():
+            if "ikizkenar" in topic.lower():
                 return "isosceles_triangle"
-            else:
-                return "right_triangle"  # Default
+            return "right_triangle"  # Default
 
-        elif geometry_type == "circle":
+        if geometry_type == "circle":
             if "dilim" in topic.lower() or "sektor" in topic.lower():
                 return "sector"
-            else:
-                return "complete_circle"
+            return "complete_circle"
 
-        elif geometry_type == "quadrilateral":
+        if geometry_type == "quadrilateral":
             if "kare" in topic.lower():
                 return "square"
-            elif "dikdortgen" in topic.lower():
+            if "dikdortgen" in topic.lower():
                 return "rectangle"
-            elif "yamuk" in topic.lower():
+            if "yamuk" in topic.lower():
                 return "trapezoid"
-            else:
-                return "rectangle"  # Default
+            return "rectangle"  # Default
 
-        elif geometry_type == "polygon":
+        if geometry_type == "polygon":
             if "besgen" in topic.lower():
                 return "pentagon"
-            elif "altigen" in topic.lower():
+            if "altigen" in topic.lower():
                 return "hexagon"
-            elif "sekizgen" in topic.lower():
+            if "sekizgen" in topic.lower():
                 return "octagon"
-            else:
-                return "hexagon"  # Default
+            return "hexagon"  # Default
 
-        elif geometry_type == "3d_shape":
+        if geometry_type == "3d_shape":
             if "kup" in topic.lower() or "zar" in topic.lower():
                 return "cube"
-            elif "dikdortgen" in topic.lower() and "prizma" in topic.lower():
+            if "dikdortgen" in topic.lower() and "prizma" in topic.lower():
                 return "rectangular_prism"
-            elif "silindir" in topic.lower():
+            if "silindir" in topic.lower():
                 return "cylinder"
-            elif "kure" in topic.lower():
+            if "kure" in topic.lower():
                 return "sphere"
-            else:
-                return "cube"  # Default
+            return "cube"  # Default
 
         return "square"  # Fallback
 
@@ -614,7 +602,7 @@ class VisualContentGenerator:
         subject: str,
         topic: str,
         complexity: str,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Generate realistic dimensions based on geometry type and context"""
         import random
 
@@ -624,36 +612,34 @@ class VisualContentGenerator:
                 triples = [(3, 4, 5), (5, 12, 13), (6, 8, 10), (8, 15, 17)]
                 base, height, _ = random.choice(triples)
                 return {"base": float(base), "height": float(height)}
-            elif shape_subtype == "equilateral_triangle":
+            if shape_subtype == "equilateral_triangle":
                 side = random.choice([4, 5, 6, 8, 10])
                 return {"side": float(side)}
-            elif shape_subtype == "isosceles_triangle":
+            if shape_subtype == "isosceles_triangle":
                 base = random.randint(4, 8)
                 equal_side = random.randint(6, 12)
                 return {"base": float(base), "equal_side": float(equal_side)}
-            else:
-                return {"base": 6.0, "height": 8.0}
+            return {"base": 6.0, "height": 8.0}
 
-        elif geometry_type == "circle":
+        if geometry_type == "circle":
             if shape_subtype == "complete_circle":
                 radius = random.choice([3, 4, 5, 6, 7])
                 return {"radius": float(radius), "show_diameter": True}
-            elif shape_subtype == "sector":
+            if shape_subtype == "sector":
                 radius = random.choice([4, 5, 6])
                 angle = random.choice([30, 45, 60, 90, 120])
                 return {"radius": float(radius), "angle": float(angle)}
-            else:
-                return {"radius": 5.0}
+            return {"radius": 5.0}
 
-        elif geometry_type == "quadrilateral":
+        if geometry_type == "quadrilateral":
             if shape_subtype == "square":
                 side = random.choice([4, 5, 6, 8, 10])
                 return {"side": float(side)}
-            elif shape_subtype == "rectangle":
+            if shape_subtype == "rectangle":
                 width = random.randint(6, 12)
                 height = random.randint(4, 8)
                 return {"width": float(width), "height": float(height)}
-            elif shape_subtype == "trapezoid":
+            if shape_subtype == "trapezoid":
                 base1 = random.randint(8, 12)
                 base2 = random.randint(4, 7)
                 height = random.randint(4, 6)
@@ -662,18 +648,17 @@ class VisualContentGenerator:
                     "base2": float(base2),
                     "height": float(height),
                 }
-            else:
-                return {"width": 8.0, "height": 5.0}
+            return {"width": 8.0, "height": 5.0}
 
-        elif geometry_type == "polygon":
+        if geometry_type == "polygon":
             side = random.choice([4, 5, 6, 7])
             return {"side": float(side)}
 
-        elif geometry_type == "3d_shape":
+        if geometry_type == "3d_shape":
             if shape_subtype == "cube":
                 side = random.choice([4, 5, 6, 8])
                 return {"side": float(side)}
-            elif shape_subtype == "rectangular_prism":
+            if shape_subtype == "rectangular_prism":
                 width = random.randint(5, 10)
                 height = random.randint(4, 8)
                 depth = random.randint(4, 8)
@@ -682,33 +667,31 @@ class VisualContentGenerator:
                     "height": float(height),
                     "depth": float(depth),
                 }
-            elif shape_subtype == "cylinder":
+            if shape_subtype == "cylinder":
                 radius = random.choice([3, 4, 5])
                 height = random.randint(6, 10)
                 return {"radius": float(radius), "height": float(height)}
-            elif shape_subtype == "sphere":
+            if shape_subtype == "sphere":
                 radius = random.choice([4, 5, 6, 7])
                 return {"radius": float(radius)}
-            else:
-                return {"side": 5.0}
+            return {"side": 5.0}
 
         return {}  # Fallback
 
     def _generate_geometry_labels(
         self, geometry_type: str, shape_subtype: str
-    ) -> Dict[str, List[str]]:
+    ) -> dict[str, list[str]]:
         """Generate vertex labels for geometry"""
         if geometry_type == "triangle":
             return {"vertex_labels": ["A", "B", "C"]}
-        elif geometry_type == "quadrilateral":
+        if geometry_type == "quadrilateral":
             return {"vertex_labels": ["A", "B", "C", "D"]}
-        elif geometry_type == "polygon":
+        if geometry_type == "polygon":
             n_sides = {"pentagon": 5, "hexagon": 6, "octagon": 8}.get(shape_subtype, 6)
             return {
                 "vertex_labels": [chr(65 + i) for i in range(n_sides)]
             }  # A, B, C, ...
-        else:
-            return {}
+        return {}
 
     # ==================== PHASE 4: MAPS & DIAGRAMS ====================
 
@@ -719,9 +702,9 @@ class VisualContentGenerator:
         diagram_type: Literal[
             "geographic_map", "process_diagram", "classification_diagram", "timeline"
         ] = "geographic_map",
-        diagram_subtype: Optional[str] = None,
+        diagram_subtype: str | None = None,
         complexity: str = "medium",
-    ) -> Dict:
+    ) -> dict:
         """
         Generate contextual map or diagram for question
 
@@ -763,36 +746,33 @@ class VisualContentGenerator:
         if diagram_type == "geographic_map":
             if "bölge" in topic_lower or "coğrafi" in topic_lower:
                 return "turkey_regions"
-            elif "şehir" in topic_lower or "il" in topic_lower:
+            if "şehir" in topic_lower or "il" in topic_lower:
                 return "turkey_cities"
-            elif "kıta" in topic_lower or "dünya" in topic_lower:
+            if "kıta" in topic_lower or "dünya" in topic_lower:
                 return "continents"
-            else:
-                return "turkey_regions"  # Default
+            return "turkey_regions"  # Default
 
-        elif diagram_type == "process_diagram":
+        if diagram_type == "process_diagram":
             if "döngü" in topic_lower or "cycle" in topic_lower:
                 return "cycle_diagram"
-            elif "sistem" in topic_lower:
+            if "sistem" in topic_lower:
                 return "system_diagram"
-            else:
-                return "flowchart"  # Default
+            return "flowchart"  # Default
 
-        elif diagram_type == "classification_diagram":
+        if diagram_type == "classification_diagram":
             if (
                 "sınıflandırma" in topic_lower
                 or "tür" in topic_lower
                 or "taksonomi" in topic_lower
             ):
                 return "tree_diagram"
-            elif "küme" in topic_lower or "venn" in topic_lower:
+            if "küme" in topic_lower or "venn" in topic_lower:
                 return "venn_diagram"
-            elif "matris" in topic_lower or "karşılaştırma" in topic_lower:
+            if "matris" in topic_lower or "karşılaştırma" in topic_lower:
                 return "matrix_diagram"
-            else:
-                return "venn_diagram"  # Default for Matematik
+            return "venn_diagram"  # Default for Matematik
 
-        elif diagram_type == "timeline":
+        if diagram_type == "timeline":
             return "horizontal_timeline"  # Default
 
         return "turkey_regions"  # Fallback
@@ -804,7 +784,7 @@ class VisualContentGenerator:
         subject: str,
         topic: str,
         complexity: str,
-    ) -> Dict:
+    ) -> dict:
         """Generate contextual content for diagram"""
 
         if diagram_type == "geographic_map":
@@ -812,24 +792,24 @@ class VisualContentGenerator:
                 diagram_subtype, subject, topic
             )
 
-        elif diagram_type == "process_diagram":
+        if diagram_type == "process_diagram":
             return self._generate_process_diagram_content(
                 diagram_subtype, subject, topic
             )
 
-        elif diagram_type == "classification_diagram":
+        if diagram_type == "classification_diagram":
             return self._generate_classification_diagram_content(
                 diagram_subtype, subject, topic
             )
 
-        elif diagram_type == "timeline":
+        if diagram_type == "timeline":
             return self._generate_timeline_content(diagram_subtype, subject, topic)
 
         return {}
 
     def _generate_geographic_map_content(
         self, subtype: str, subject: str, topic: str
-    ) -> Dict:
+    ) -> dict:
         """Generate content for geographic maps"""
         if subtype == "turkey_regions":
             # Randomly select 1-3 regions to highlight
@@ -849,14 +829,14 @@ class VisualContentGenerator:
                 "highlight_regions": highlight,
             }
 
-        elif subtype == "turkey_cities":
+        if subtype == "turkey_cities":
             # Select 3-5 cities
             all_cities = ["İstanbul", "Ankara", "İzmir", "Bursa", "Antalya"]
             num_cities = random.randint(3, 5)
             cities = random.sample(all_cities, num_cities)
             return {"title": "Türkiye Büyük Şehirleri", "cities": cities}
 
-        elif subtype == "continents":
+        if subtype == "continents":
             # Highlight 1-2 continents
             all_continents = [
                 "Asya",
@@ -874,7 +854,7 @@ class VisualContentGenerator:
 
     def _generate_process_diagram_content(
         self, subtype: str, subject: str, topic: str
-    ) -> Dict:
+    ) -> dict:
         """Generate content for process diagrams"""
         if subtype == "flowchart":
             # Example: Water cycle
@@ -935,7 +915,7 @@ class VisualContentGenerator:
                 ],
             }
 
-        elif subtype == "cycle_diagram":
+        if subtype == "cycle_diagram":
             return {
                 "title": "Döngüsel Süreç",
                 "steps": [
@@ -946,7 +926,7 @@ class VisualContentGenerator:
                 ],
             }
 
-        elif subtype == "system_diagram":
+        if subtype == "system_diagram":
             return {
                 "title": "Sistem Bileşenleri",
                 "components": [
@@ -985,7 +965,7 @@ class VisualContentGenerator:
 
     def _generate_classification_diagram_content(
         self, subtype: str, subject: str, topic: str
-    ) -> Dict:
+    ) -> dict:
         """Generate content for classification diagrams"""
         if subtype == "tree_diagram":
             return {
@@ -1006,7 +986,7 @@ class VisualContentGenerator:
                 },
             }
 
-        elif subtype == "venn_diagram":
+        if subtype == "venn_diagram":
             # Generate sets with elements
             set1_only = [str(random.randint(1, 10)) for _ in range(2)]
             set2_only = [str(random.randint(11, 20)) for _ in range(2)]
@@ -1021,7 +1001,7 @@ class VisualContentGenerator:
                 "intersection": intersection,
             }
 
-        elif subtype == "matrix_diagram":
+        if subtype == "matrix_diagram":
             return {
                 "title": "2x2 Karşılaştırma Matrisi",
                 "rows": 2,
@@ -1040,7 +1020,7 @@ class VisualContentGenerator:
 
     def _generate_timeline_content(
         self, subtype: str, subject: str, topic: str
-    ) -> Dict:
+    ) -> dict:
         """Generate content for timelines"""
         # Turkish Republic history
         events = [
@@ -1061,8 +1041,8 @@ class VisualContentGenerator:
     # ==================== HELPER METHODS ====================
 
     def create_question_with_visual(
-        self, stem: str, visual_content: Dict, options: List[str], correct_answer: str
-    ) -> Dict:
+        self, stem: str, visual_content: dict, options: list[str], correct_answer: str
+    ) -> dict:
         """
         Create a complete question with visual content
 

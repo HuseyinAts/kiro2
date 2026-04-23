@@ -7,7 +7,7 @@ import logging
 import os
 import signal
 import subprocess
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiohttp
 
@@ -21,11 +21,11 @@ class ZemberekServer:
 
     def __init__(self, port: int = 6789):
         self.port = port
-        self.process: Optional[subprocess.Popen] = None
+        self.process: subprocess.Popen | None = None
         self.server_url = f"http://localhost:{port}"
         self.jar_path = self._find_zemberek_jar()
 
-    def _find_zemberek_jar(self) -> Optional[str]:
+    def _find_zemberek_jar(self) -> str | None:
         """Zemberek JAR dosyasını bul"""
         possible_paths = [
             "zemberek-full.jar",
@@ -120,11 +120,10 @@ class ZemberekServer:
     async def _is_server_running(self) -> bool:
         """Server çalışıyor mu kontrol et"""
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    f"{self.server_url}/health", timeout=aiohttp.ClientTimeout(total=5)
-                ) as response:
-                    return response.status == 200
+            async with aiohttp.ClientSession() as session, session.get(
+                f"{self.server_url}/health", timeout=aiohttp.ClientTimeout(total=5)
+            ) as response:
+                return response.status == 200
         except Exception:
             return False
 
@@ -145,7 +144,7 @@ class ZemberekClient:
 
     def __init__(self, server_url: str = "http://localhost:6789"):
         self.server_url = server_url
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         """Async context manager entry"""
@@ -157,7 +156,7 @@ class ZemberekClient:
         if self.session:
             await self.session.close()
 
-    async def analyze_morphology(self, word: str) -> Optional[Dict[str, Any]]:
+    async def analyze_morphology(self, word: str) -> dict[str, Any] | None:
         """
         Kelimenin morfolojik analizini yap
 
@@ -178,15 +177,14 @@ class ZemberekClient:
             ) as response:
                 if response.status == 200:
                     return await response.json()
-                else:
-                    logger.warning(f"Zemberek API hatası: {response.status}")
-                    return None
+                logger.warning(f"Zemberek API hatası: {response.status}")
+                return None
 
         except Exception as e:
             logger.error(f"Zemberek morphology API hatası: {e}")
             return None
 
-    async def normalize_text(self, text: str) -> Optional[Dict[str, Any]]:
+    async def normalize_text(self, text: str) -> dict[str, Any] | None:
         """
         Metni normalize et
 
@@ -207,17 +205,16 @@ class ZemberekClient:
             ) as response:
                 if response.status == 200:
                     return await response.json()
-                else:
-                    logger.warning(
-                        f"Zemberek normalization API hatası: {response.status}"
-                    )
-                    return None
+                logger.warning(
+                    f"Zemberek normalization API hatası: {response.status}"
+                )
+                return None
 
         except Exception as e:
             logger.error(f"Zemberek normalization API hatası: {e}")
             return None
 
-    async def tokenize(self, text: str) -> Optional[List[str]]:
+    async def tokenize(self, text: str) -> List[str] | None:
         """
         Metni tokenize et
 
@@ -239,17 +236,16 @@ class ZemberekClient:
                 if response.status == 200:
                     result = await response.json()
                     return result.get("tokens", [])
-                else:
-                    logger.warning(
-                        f"Zemberek tokenization API hatası: {response.status}"
-                    )
-                    return None
+                logger.warning(
+                    f"Zemberek tokenization API hatası: {response.status}"
+                )
+                return None
 
         except Exception as e:
             logger.error(f"Zemberek tokenization API hatası: {e}")
             return None
 
-    async def spell_check(self, word: str) -> Optional[Dict[str, Any]]:
+    async def spell_check(self, word: str) -> dict[str, Any] | None:
         """
         Yazım kontrolü yap
 
@@ -270,11 +266,10 @@ class ZemberekClient:
             ) as response:
                 if response.status == 200:
                     return await response.json()
-                else:
-                    logger.warning(
-                        f"Zemberek spell check API hatası: {response.status}"
-                    )
-                    return None
+                logger.warning(
+                    f"Zemberek spell check API hatası: {response.status}"
+                )
+                return None
 
         except Exception as e:
             logger.error(f"Zemberek spell check API hatası: {e}")
@@ -335,34 +330,33 @@ async def test_zemberek_integration():
     Zemberek entegrasyonunu test et
     """
     try:
-        async with ZemberekServer() as server:
-            async with ZemberekClient() as client:
-                # Health check
-                if not await client.health_check():
-                    logger.error("Zemberek server sağlık kontrolü başarısız")
-                    return False
+        async with ZemberekServer() as server, ZemberekClient() as client:
+            # Health check
+            if not await client.health_check():
+                logger.error("Zemberek server sağlık kontrolü başarısız")
+                return False
 
-                # Morphology test
-                test_word = "kitaplarımızdan"
-                morphology_result = await client.analyze_morphology(test_word)
+            # Morphology test
+            test_word = "kitaplarımızdan"
+            morphology_result = await client.analyze_morphology(test_word)
 
-                if morphology_result:
-                    logger.info(
-                        f"Morphology test başarılı: {test_word} -> {morphology_result}"
-                    )
-                else:
-                    logger.warning("Morphology test başarısız")
+            if morphology_result:
+                logger.info(
+                    f"Morphology test başarılı: {test_word} -> {morphology_result}"
+                )
+            else:
+                logger.warning("Morphology test başarısız")
 
-                # Normalization test
-                test_text = "merhaba  dünya!  nasılsın?"
-                normalization_result = await client.normalize_text(test_text)
+            # Normalization test
+            test_text = "merhaba  dünya!  nasılsın?"
+            normalization_result = await client.normalize_text(test_text)
 
-                if normalization_result:
-                    logger.info(f"Normalization test başarılı: {normalization_result}")
-                else:
-                    logger.warning("Normalization test başarısız")
+            if normalization_result:
+                logger.info(f"Normalization test başarılı: {normalization_result}")
+            else:
+                logger.warning("Normalization test başarısız")
 
-                return True
+            return True
 
     except Exception as e:
         logger.error(f"Zemberek entegrasyon testi hatası: {e}")

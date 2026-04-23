@@ -12,7 +12,6 @@ Task 17: Integration Testing
 """
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
 
 @dataclass
@@ -23,14 +22,14 @@ class TestQuestion:
     domain: str
     subdomain: str
     question_text: str
-    expected_keywords: List[str]  # Yanitte beklenen anahtar kelimeler
+    expected_keywords: list[str]  # Yanitte beklenen anahtar kelimeler
     difficulty: str  # kolay, orta, zor
     is_multi_domain: bool = False
-    secondary_domain: Optional[str] = None
+    secondary_domain: str | None = None
 
 
 # Matematik Sorulari (REQ-1)
-MATEMATIK_QUESTIONS: List[TestQuestion] = [
+MATEMATIK_QUESTIONS: list[TestQuestion] = [
     TestQuestion(
         question_id="mat_cebir_001",
         domain="matematik",
@@ -90,7 +89,7 @@ MATEMATIK_QUESTIONS: List[TestQuestion] = [
 ]
 
 # Fizik Sorulari (REQ-2)
-FIZIK_QUESTIONS: List[TestQuestion] = [
+FIZIK_QUESTIONS: list[TestQuestion] = [
     TestQuestion(
         question_id="fiz_mekanik_001",
         domain="fizik",
@@ -142,7 +141,7 @@ FIZIK_QUESTIONS: List[TestQuestion] = [
 ]
 
 # Turkce Sorulari (REQ-3)
-TURKCE_QUESTIONS: List[TestQuestion] = [
+TURKCE_QUESTIONS: list[TestQuestion] = [
     TestQuestion(
         question_id="tur_dilbilgisi_001",
         domain="turkce",
@@ -194,7 +193,7 @@ TURKCE_QUESTIONS: List[TestQuestion] = [
 ]
 
 # Sosyal Bilimler Sorulari (REQ-4)
-SOSYAL_QUESTIONS: List[TestQuestion] = [
+SOSYAL_QUESTIONS: list[TestQuestion] = [
     TestQuestion(
         question_id="sos_tarih_001",
         domain="sosyal",
@@ -246,7 +245,7 @@ SOSYAL_QUESTIONS: List[TestQuestion] = [
 ]
 
 # Biyoloji Sorulari (REQ-5)
-BIYOLOJI_QUESTIONS: List[TestQuestion] = [
+BIYOLOJI_QUESTIONS: list[TestQuestion] = [
     TestQuestion(
         question_id="bio_hucre_001",
         domain="biyoloji",
@@ -298,7 +297,7 @@ BIYOLOJI_QUESTIONS: List[TestQuestion] = [
 ]
 
 # Yabanci Dil Sorulari (REQ-6)
-YABANCI_DIL_QUESTIONS: List[TestQuestion] = [
+YABANCI_DIL_QUESTIONS: list[TestQuestion] = [
     TestQuestion(
         question_id="eng_grammar_001",
         domain="yabanci_dil",
@@ -350,7 +349,7 @@ YABANCI_DIL_QUESTIONS: List[TestQuestion] = [
 ]
 
 # Multi-Domain Sorular (REQ-7.5)
-MULTI_DOMAIN_QUESTIONS: List[TestQuestion] = [
+MULTI_DOMAIN_QUESTIONS: list[TestQuestion] = [
     TestQuestion(
         question_id="multi_mat_fiz_001",
         domain="matematik",
@@ -384,7 +383,7 @@ MULTI_DOMAIN_QUESTIONS: List[TestQuestion] = [
 ]
 
 # Tum sorulari domain'e gore grupla
-ALL_QUESTIONS: Dict[str, List[TestQuestion]] = {
+ALL_QUESTIONS: dict[str, list[TestQuestion]] = {
     "matematik": MATEMATIK_QUESTIONS,
     "fizik": FIZIK_QUESTIONS,
     "turkce": TURKCE_QUESTIONS,
@@ -394,7 +393,7 @@ ALL_QUESTIONS: Dict[str, List[TestQuestion]] = {
 }
 
 # Domain-specific keywords for contamination detection
-DOMAIN_SPECIFIC_KEYWORDS: Dict[str, List[str]] = {
+DOMAIN_SPECIFIC_KEYWORDS: dict[str, list[str]] = {
     "matematik": [
         "denklem",
         "turev",
@@ -495,12 +494,12 @@ DOMAIN_SPECIFIC_KEYWORDS: Dict[str, List[str]] = {
 }
 
 
-def get_questions_by_domain(domain: str) -> List[TestQuestion]:
+def get_questions_by_domain(domain: str) -> list[TestQuestion]:
     """Belirli domain icin sorulari dondur"""
     return ALL_QUESTIONS.get(domain, [])
 
 
-def get_all_single_domain_questions() -> List[TestQuestion]:
+def get_all_single_domain_questions() -> list[TestQuestion]:
     """Tum tek-domain sorularini dondur"""
     questions = []
     for domain_questions in ALL_QUESTIONS.values():
@@ -508,12 +507,12 @@ def get_all_single_domain_questions() -> List[TestQuestion]:
     return questions
 
 
-def get_multi_domain_questions() -> List[TestQuestion]:
+def get_multi_domain_questions() -> list[TestQuestion]:
     """Multi-domain sorularini dondur"""
     return MULTI_DOMAIN_QUESTIONS
 
 
-def get_domain_keywords(domain: str) -> List[str]:
+def get_domain_keywords(domain: str) -> list[str]:
     """Domain-specific anahtar kelimeleri dondur"""
     return DOMAIN_SPECIFIC_KEYWORDS.get(domain, [])
 

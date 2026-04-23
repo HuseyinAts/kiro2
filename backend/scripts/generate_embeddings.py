@@ -55,7 +55,7 @@ def generate_embeddings_batch(texts: list[str], ollama_url: str, model: str) -> 
 
     embeddings = result.get("embeddings")
     if not embeddings or not isinstance(embeddings, list):
-        raise RuntimeError(f"Ollama returned invalid response: missing 'embeddings' key")
+        raise RuntimeError("Ollama returned invalid response: missing 'embeddings' key")
 
     return embeddings
 

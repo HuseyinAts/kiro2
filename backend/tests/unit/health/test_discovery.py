@@ -4,12 +4,13 @@ Unit Tests - Endpoint Discovery
 Bu modül, EndpointDiscovery sınıfı için unit testler içerir.
 """
 
-import pytest
+import sys
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from app.health.discovery import EndpointDiscovery

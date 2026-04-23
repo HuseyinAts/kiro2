@@ -13,7 +13,6 @@ import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional
 
 from sqlalchemy import and_, func, select
 
@@ -45,7 +44,7 @@ class TYTExamConfig:
 
     total_questions: int = 120
     duration_minutes: int = 165
-    subject_distribution: Dict[str, int] = None
+    subject_distribution: dict[str, int] = None
 
     def __post_init__(self):
         """Varsayılan konu dağılımını ayarla"""
@@ -117,8 +116,8 @@ class TYTTimer:
     """
 
     total_duration_minutes: int = 165
-    started_at: Optional[datetime] = None
-    warning_times_minutes: List[int] = None
+    started_at: datetime | None = None
+    warning_times_minutes: list[int] = None
 
     def __post_init__(self):
         """Varsayılan uyarı zamanlarını ayarla"""
@@ -137,7 +136,7 @@ class TYTTimer:
             },
         )
 
-    def get_remaining_seconds(self) -> Optional[int]:
+    def get_remaining_seconds(self) -> int | None:
         """
         Kalan süreyi saniye cinsinden getir
 
@@ -153,7 +152,7 @@ class TYTTimer:
 
         return max(0, int(remaining.total_seconds()))
 
-    def get_remaining_minutes(self) -> Optional[int]:
+    def get_remaining_minutes(self) -> int | None:
         """
         Kalan süreyi dakika cinsinden getir
 
@@ -166,7 +165,7 @@ class TYTTimer:
 
         return remaining_seconds // 60
 
-    def should_show_warning(self) -> Optional[int]:
+    def should_show_warning(self) -> int | None:
         """
         Uyarı gösterilmeli mi kontrol et
 
@@ -210,8 +209,7 @@ class TYTTimer:
 
         if hours > 0:
             return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-        else:
-            return f"{minutes:02d}:{seconds:02d}"
+        return f"{minutes:02d}:{seconds:02d}"
 
 
 class TYTExamService:
@@ -227,7 +225,7 @@ class TYTExamService:
 
     def __init__(self):
         self.config = TYTExamConfig()
-        self.timers: Dict[str, TYTTimer] = {}
+        self.timers: dict[str, TYTTimer] = {}
 
     async def validate_tyt_format(self, session_id: str) -> bool:
         """
@@ -292,7 +290,7 @@ class TYTExamService:
             )
             return False
 
-    async def select_tyt_questions(self) -> List[Question]:
+    async def select_tyt_questions(self) -> list[Question]:
         """
         TYT soruları seç (konu dağılımına göre)
 
@@ -382,7 +380,7 @@ class TYTExamService:
 
         return timer
 
-    def get_timer(self, session_id: str) -> Optional[TYTTimer]:
+    def get_timer(self, session_id: str) -> TYTTimer | None:
         """
         Zamanlayıcıyı getir
 
@@ -429,7 +427,7 @@ class TYTExamService:
                 extra_data={"session_id": session_id},
             )
 
-    def get_subject_distribution_info(self) -> Dict[str, Dict[str, int]]:
+    def get_subject_distribution_info(self) -> dict[str, dict[str, int]]:
         """
         Konu dağılımı bilgisini getir
 

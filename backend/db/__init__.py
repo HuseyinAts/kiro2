@@ -16,20 +16,20 @@ Modules:
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .hooks.pre_migration import PreMigrationHook
-    from .testing.dry_run import DryRunTester
-    from .validation.schema_checker import SchemaConsistencyChecker
-    from .validation.integrity_validator import DataIntegrityValidator
-    from .rollback.manager import RollbackManager
-    from .history.tracker import MigrationHistoryTracker
     from .analysis.performance import PerformanceAnalyzer
+    from .history.tracker import MigrationHistoryTracker
+    from .hooks.pre_migration import PreMigrationHook
+    from .rollback.manager import RollbackManager
+    from .testing.dry_run import DryRunTester
+    from .validation.integrity_validator import DataIntegrityValidator
+    from .validation.schema_checker import SchemaConsistencyChecker
 
 __all__ = [
-    "PreMigrationHook",
-    "DryRunTester",
-    "SchemaConsistencyChecker",
     "DataIntegrityValidator",
-    "RollbackManager",
+    "DryRunTester",
     "MigrationHistoryTracker",
     "PerformanceAnalyzer",
+    "PreMigrationHook",
+    "RollbackManager",
+    "SchemaConsistencyChecker",
 ]

@@ -18,13 +18,15 @@ Date: 2026-01-19
 """
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("ChromaDB property tests require Redis + SentenceTransformer (segfault on Windows/Python 3.13)", allow_module_level=True)
 
 import logging
 
 # hypothesis import kontrolu
 try:
-    from hypothesis import given, settings, strategies as st, assume
+    from hypothesis import assume, given, settings
+    from hypothesis import strategies as st
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
@@ -229,12 +231,13 @@ def test_duplicate_detection(text: str):
     assume(len(text.strip()) >= 20)
 
     try:
+        import os
+        import tempfile
+
         from services.duplicate_detection_service import (
             DuplicateDetectionService,
-            DuplicateStatus
+            DuplicateStatus,
         )
-        import tempfile
-        import os
 
         # Her test icin izole bir collection olustur
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -301,8 +304,9 @@ def test_topk_ordering(k: int):
     ```
     """
     try:
-        from services.chromadb_collection_manager import ChromaDBCollectionManager
         import asyncio
+
+        from services.chromadb_collection_manager import ChromaDBCollectionManager
 
         manager = ChromaDBCollectionManager()
         query = "Matematik turev integral hesaplama"
@@ -361,9 +365,10 @@ def test_collection_consistency(doc_id: str, content: str):
     assume(doc_id.strip() and content.strip())
 
     try:
-        from services.chromadb_collection_manager import ChromaDBCollectionManager
-        import tempfile
         import asyncio
+        import tempfile
+
+        from services.chromadb_collection_manager import ChromaDBCollectionManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
             loop = asyncio.new_event_loop()
@@ -419,8 +424,9 @@ def test_recommendation_diversity(limit: int):
     Spec REQ-4.5: Minimum 3 farkli konu.
     """
     try:
-        from services.content_recommendation_service import ContentRecommendationService
         import asyncio
+
+        from services.content_recommendation_service import ContentRecommendationService
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -480,8 +486,9 @@ def test_cluster_consistency(k: int):
         pytest.skip("NumPy not available")
 
     try:
-        from services.concept_clustering_service import ConceptClusteringService
         import asyncio
+
+        from services.concept_clustering_service import ConceptClusteringService
 
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)

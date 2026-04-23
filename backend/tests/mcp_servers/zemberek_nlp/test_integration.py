@@ -2,8 +2,9 @@
 Integration Tests for Zemberek NLP MCP Server
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 
 class TestMCPServerIntegration:
@@ -74,7 +75,9 @@ class TestModelSchemas:
 
     def test_morphology_result_schema(self):
         """Test MorphologyResult schema"""
-        from backend.mcp_servers.zemberek_nlp.models.tool_schemas import MorphologyResult
+        from backend.mcp_servers.zemberek_nlp.models.tool_schemas import (
+            MorphologyResult,
+        )
 
         result = MorphologyResult(
             text="test",
@@ -87,7 +90,11 @@ class TestModelSchemas:
 
     def test_ner_result_schema(self):
         """Test NERResult schema"""
-        from backend.mcp_servers.zemberek_nlp.models.tool_schemas import NERResult, NamedEntity, EntityType
+        from backend.mcp_servers.zemberek_nlp.models.tool_schemas import (
+            EntityType,
+            NamedEntity,
+            NERResult,
+        )
 
         entity = NamedEntity(
             text="Istanbul",

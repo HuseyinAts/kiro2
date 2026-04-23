@@ -3,13 +3,15 @@ Comprehensive tests for api.auth module
 Target: 90%+ coverage for authentication API endpoints
 """
 
-import pytest
-import jwt
 from unittest.mock import patch
-from fastapi.testclient import TestClient
+
+import jwt
+import pytest
 from fastapi import FastAPI, status
+from fastapi.testclient import TestClient
+
 from api.auth import router as auth_router
-from core.dependencies import JWT_SECRET, JWT_ALGORITHM
+from core.dependencies import JWT_ALGORITHM, JWT_SECRET
 
 # Skip entire module: API has been rewritten with Turkish function names
 # Old API: create_user, authenticate_user, invalidate_token, etc.

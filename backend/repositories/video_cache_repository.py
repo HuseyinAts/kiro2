@@ -4,13 +4,13 @@ High-performance repository for video cache operations with prepared statements
 """
 
 import logging
-from datetime import datetime, timedelta, timezone
-from typing import List, Optional, Dict, Any
+from datetime import UTC, datetime, timedelta
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, delete, func, and_, text
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import and_, delete, func, select, text
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.video_cache_model import VideoCache
 from repositories.base import BaseRepository
@@ -42,7 +42,7 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
         min_relevance: float = 0.7,
         limit: int = 20,
         offset: int = 0,
-    ) -> List[VideoCache]:
+    ) -> list[VideoCache]:
         """
         Optimized video search using composite index
 
@@ -99,12 +99,12 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             return videos
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in find_videos_optimized: {str(e)}")
+            logger.error(f"Error in find_videos_optimized: {e!s}")
             raise
 
     async def find_videos_by_subject(
         self, subject: str, min_quality: float = 7.0, limit: int = 50
-    ) -> List[VideoCache]:
+    ) -> list[VideoCache]:
         """
         Find videos by subject only (broader search)
 
@@ -127,7 +127,7 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             return result.scalars().all()
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in find_videos_by_subject: {str(e)}")
+            logger.error(f"Error in find_videos_by_subject: {e!s}")
             raise
 
     async def find_videos_flexible(
@@ -139,7 +139,7 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
         min_quality: float = 6.0,
         difficulty_tolerance: int = 1,
         limit: int = 20,
-    ) -> List[VideoCache]:
+    ) -> list[VideoCache]:
         """
         Flexible video search with difficulty tolerance
 
@@ -202,12 +202,12 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             return result.scalars().all()
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in find_videos_flexible: {str(e)}")
+            logger.error(f"Error in find_videos_flexible: {e!s}")
             raise
 
     async def get_top_quality_videos(
-        self, subject: Optional[str] = None, limit: int = 100
-    ) -> List[VideoCache]:
+        self, subject: str | None = None, limit: int = 100
+    ) -> list[VideoCache]:
         """
         Get top quality videos (for cache warming)
 
@@ -225,19 +225,19 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             return result.scalars().all()
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in get_top_quality_videos: {str(e)}")
+            logger.error(f"Error in get_top_quality_videos: {e!s}")
             raise
 
     async def get_recently_updated(
         self, hours: int = 24, limit: int = 100
-    ) -> List[VideoCache]:
+    ) -> list[VideoCache]:
         """
         Get recently updated videos
 
         Uses idx_video_last_updated index
         """
         try:
-            cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+            cutoff_time = datetime.now(UTC) - timedelta(hours=hours)
 
             query = (
                 select(VideoCache)
@@ -250,10 +250,10 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             return result.scalars().all()
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in get_recently_updated: {str(e)}")
+            logger.error(f"Error in get_recently_updated: {e!s}")
             raise
 
-    async def get_expired_entries(self, limit: int = 1000) -> List[VideoCache]:
+    async def get_expired_entries(self, limit: int = 1000) -> list[VideoCache]:
         """
         Get expired cache entries for cleanup
 
@@ -284,7 +284,7 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             return videos
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in get_expired_entries: {str(e)}")
+            logger.error(f"Error in get_expired_entries: {e!s}")
             raise
 
     async def evict_lru_entries(
@@ -337,11 +337,11 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             return evicted_count
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in evict_lru_entries: {str(e)}")
+            logger.error(f"Error in evict_lru_entries: {e!s}")
             await self.session.rollback()
             raise
 
-    async def _update_access_batch(self, video_ids: List[UUID]) -> None:
+    async def _update_access_batch(self, video_ids: list[UUID]) -> None:
         """
         Update access tracking for multiple videos (batch operation)
 
@@ -366,10 +366,10 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             )
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in _update_access_batch: {str(e)}")
+            logger.error(f"Error in _update_access_batch: {e!s}")
             # Don't raise - access tracking is not critical
 
-    async def bulk_upsert(self, videos: List[Dict[str, Any]]) -> int:
+    async def bulk_upsert(self, videos: list[dict[str, Any]]) -> int:
         """
         Bulk upsert videos (insert or update if exists)
 
@@ -425,11 +425,11 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             return len(videos)
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in bulk_upsert: {str(e)}")
+            logger.error(f"Error in bulk_upsert: {e!s}")
             await self.session.rollback()
             raise
 
-    async def get_cache_statistics(self) -> Dict[str, Any]:
+    async def get_cache_statistics(self) -> dict[str, Any]:
         """
         Get cache statistics for monitoring
 
@@ -471,5 +471,5 @@ class OptimizedVideoRepository(BaseRepository[VideoCache]):
             }
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in get_cache_statistics: {str(e)}")
+            logger.error(f"Error in get_cache_statistics: {e!s}")
             raise

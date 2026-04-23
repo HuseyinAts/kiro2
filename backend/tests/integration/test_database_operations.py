@@ -10,8 +10,8 @@ from sqlalchemy import select
 # (kullanicilar, sorular, ogrenme_profilleri) which don't exist in SQLite in-memory.
 pytestmark = pytest.mark.skipif(True, reason="Kullanici model API changed (ad_soyad removed) and requires real PostgreSQL tables")
 
-from models_unified import Kullanici, Soru, OgrenmeProfili
 from models.enums import KullaniciRolu
+from models_unified import Kullanici, OgrenmeProfili, Soru
 
 
 class TestUserDatabaseOperations:

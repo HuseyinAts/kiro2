@@ -14,7 +14,7 @@ Model: dbmdz/bert-base-turkish-cased
 
 import logging
 import os
-from typing import Dict, List, Optional
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -136,7 +136,7 @@ class BERTScoreEvaluator:
 
     def evaluate_single(
         self, candidate: str, reference: str
-    ) -> Optional[Dict[str, float]]:
+    ) -> dict[str, float] | None:
         """
         Evaluate semantic similarity between one candidate and one reference
 
@@ -177,8 +177,8 @@ class BERTScoreEvaluator:
             return None
 
     def evaluate_batch(
-        self, candidates: List[str], references: List[str]
-    ) -> Optional[Dict]:
+        self, candidates: list[str], references: list[str]
+    ) -> dict | None:
         """
         Evaluate semantic similarity for multiple question pairs
 
@@ -247,8 +247,8 @@ class BERTScoreEvaluator:
             return None
 
     def find_best_match(
-        self, candidate: str, reference_pool: List[str], top_k: int = 5
-    ) -> Optional[List[Dict]]:
+        self, candidate: str, reference_pool: list[str], top_k: int = 5
+    ) -> list[dict] | None:
         """
         Find most similar ÖSYM questions from a pool
 
@@ -312,16 +312,15 @@ class BERTScoreEvaluator:
         """Interpret F1 score based on thresholds"""
         if f1_score >= 0.85:
             return "Excellent"
-        elif f1_score >= 0.80:
+        if f1_score >= 0.80:
             return "Good"
-        elif f1_score >= 0.75:
+        if f1_score >= 0.75:
             return "Acceptable"
-        elif f1_score >= 0.70:
+        if f1_score >= 0.70:
             return "Marginal"
-        else:
-            return "Needs Improvement"
+        return "Needs Improvement"
 
-    def _quality_distribution(self, f1_scores: np.ndarray) -> Dict[str, int]:
+    def _quality_distribution(self, f1_scores: np.ndarray) -> dict[str, int]:
         """Calculate distribution of quality levels"""
         return {
             "excellent": int(np.sum(f1_scores >= 0.85)),
@@ -335,7 +334,7 @@ class BERTScoreEvaluator:
 # Convenience function for quick evaluation
 def evaluate_question_similarity(
     ai_question: str, osym_question: str
-) -> Optional[float]:
+) -> float | None:
     """
     Quick semantic similarity check
 

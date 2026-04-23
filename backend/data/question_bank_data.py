@@ -2,7 +2,7 @@
 Gerçek soru bankası verileri - TYT, AYT, YDT
 ÖSYM formatında hazırlanmış sorular ve IRT parametreleri
 """
-from typing import Any, Dict, List
+from typing import Any
 
 
 class QuestionBankData:
@@ -13,7 +13,7 @@ class QuestionBankData:
         self.ayt_questions = self._load_ayt_questions()
         self.ydt_questions = self._load_ydt_questions()
 
-    def _load_tyt_questions(self) -> List[Dict[str, Any]]:
+    def _load_tyt_questions(self) -> list[dict[str, Any]]:
         """TYT soruları - Minimum 1000 soru (Matematik, Türkçe, Fen, Sosyal)"""
 
         questions = []
@@ -305,7 +305,7 @@ class QuestionBankData:
 
         return questions
 
-    def _load_ayt_questions(self) -> List[Dict[str, Any]]:
+    def _load_ayt_questions(self) -> list[dict[str, Any]]:
         """AYT soruları - Minimum 800 soru (Matematik, Fizik, Kimya, Biyoloji)"""
 
         questions = []
@@ -460,7 +460,7 @@ class QuestionBankData:
 
         return questions
 
-    def _load_ydt_questions(self) -> List[Dict[str, Any]]:
+    def _load_ydt_questions(self) -> list[dict[str, Any]]:
         """YDT soruları - Minimum 500 İngilizce sorusu"""
 
         questions = []
@@ -541,7 +541,7 @@ class QuestionBankData:
 
         return questions
 
-    def get_all_questions(self) -> List[Dict[str, Any]]:
+    def get_all_questions(self) -> list[dict[str, Any]]:
         """Tüm soruları birleştirip döndür"""
         all_questions = []
         all_questions.extend(self.tyt_questions)
@@ -549,23 +549,22 @@ class QuestionBankData:
         all_questions.extend(self.ydt_questions)
         return all_questions
 
-    def get_questions_by_exam_type(self, exam_type: str) -> List[Dict[str, Any]]:
+    def get_questions_by_exam_type(self, exam_type: str) -> list[dict[str, Any]]:
         """Sınav tipine göre soruları döndür"""
         if exam_type.upper() == "TYT":
             return self.tyt_questions
-        elif exam_type.upper() == "AYT":
+        if exam_type.upper() == "AYT":
             return self.ayt_questions
-        elif exam_type.upper() == "YDT":
+        if exam_type.upper() == "YDT":
             return self.ydt_questions
-        else:
-            return []
+        return []
 
-    def get_questions_by_subject(self, subject: str) -> List[Dict[str, Any]]:
+    def get_questions_by_subject(self, subject: str) -> list[dict[str, Any]]:
         """Konuya göre soruları döndür"""
         all_questions = self.get_all_questions()
         return [q for q in all_questions if q["konu"].lower() == subject.lower()]
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Soru bankası istatistikleri"""
         all_questions = self.get_all_questions()
 

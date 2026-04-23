@@ -65,23 +65,22 @@ def install_package(package: str, version: str = None) -> bool:
         if result.returncode == 0:
             print_colored(f"   [CHECK] {package} installed successfully", Colors.GREEN)
             return True
-        else:
-            # Try without version if specified version fails
-            if version:
-                print("   Trying without version specification...")
-                result = subprocess.run(
-                    [sys.executable, "-m", "pip", "install", package],
-                    capture_output=True,
-                    text=True,
+        # Try without version if specified version fails
+        if version:
+            print("   Trying without version specification...")
+            result = subprocess.run(
+                [sys.executable, "-m", "pip", "install", package],
+                capture_output=True,
+                text=True,
+            )
+            if result.returncode == 0:
+                print_colored(
+                    f"   [CHECK] {package} installed (latest version)", Colors.GREEN
                 )
-                if result.returncode == 0:
-                    print_colored(
-                        f"   [CHECK] {package} installed (latest version)", Colors.GREEN
-                    )
-                    return True
+                return True
 
-            print_colored(f"   ⚠️  {package} installation failed", Colors.YELLOW)
-            return False
+        print_colored(f"   ⚠️  {package} installation failed", Colors.YELLOW)
+        return False
 
     except Exception as e:
         print_colored(f"   [X] Error installing {package}: {e}", Colors.RED)

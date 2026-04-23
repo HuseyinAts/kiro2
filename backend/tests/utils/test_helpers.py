@@ -17,13 +17,12 @@ Usage:
         result = await service.get_user("1")
         assert result.email == "test@test.com"
 """
-from typing import Any, Dict, List, Optional, Type, Callable, TypeVar
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock
-import uuid
 import json
-
+import uuid
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from typing import Any, TypeVar
+from unittest.mock import MagicMock
 
 T = TypeVar("T")
 
@@ -44,7 +43,7 @@ class FakeDatabase:
         db.users.add({"id": "1", "email": "test@example.com"})
         user = db.users.get("1")
     """
-    _storage: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    _storage: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def collection(self, name: str) -> "FakeCollection":
         """Get or create a collection."""
@@ -72,7 +71,7 @@ class FakeDatabase:
         """Clear all data."""
         self._storage.clear()
 
-    def seed(self, collection: str, items: List[Dict[str, Any]]) -> None:
+    def seed(self, collection: str, items: list[dict[str, Any]]) -> None:
         """Bulk add items to a collection."""
         coll = self.collection(collection)
         for item in items:
@@ -83,22 +82,22 @@ class FakeDatabase:
 class FakeCollection:
     """Collection within FakeDatabase."""
     name: str
-    _data: Dict[str, Any]
+    _data: dict[str, Any]
 
-    def add(self, item: Dict[str, Any]) -> str:
+    def add(self, item: dict[str, Any]) -> str:
         """Add item, auto-generate ID if missing."""
         item_id = item.get("id") or str(uuid.uuid4())
         item["id"] = item_id
-        item.setdefault("created_at", datetime.now(timezone.utc).isoformat())
-        item.setdefault("updated_at", datetime.now(timezone.utc).isoformat())
+        item.setdefault("created_at", datetime.now(UTC).isoformat())
+        item.setdefault("updated_at", datetime.now(UTC).isoformat())
         self._data[item_id] = item
         return item_id
 
-    def get(self, item_id: str) -> Optional[Dict[str, Any]]:
+    def get(self, item_id: str) -> dict[str, Any] | None:
         """Get item by ID."""
         return self._data.get(item_id)
 
-    def find(self, **filters) -> List[Dict[str, Any]]:
+    def find(self, **filters) -> list[dict[str, Any]]:
         """Find items matching filters."""
         results = []
         for item in self._data.values():
@@ -107,17 +106,17 @@ class FakeCollection:
                 results.append(item)
         return results
 
-    def find_one(self, **filters) -> Optional[Dict[str, Any]]:
+    def find_one(self, **filters) -> dict[str, Any] | None:
         """Find first item matching filters."""
         items = self.find(**filters)
         return items[0] if items else None
 
-    def update(self, item_id: str, updates: Dict[str, Any]) -> bool:
+    def update(self, item_id: str, updates: dict[str, Any]) -> bool:
         """Update item by ID."""
         if item_id not in self._data:
             return False
         self._data[item_id].update(updates)
-        self._data[item_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
+        self._data[item_id]["updated_at"] = datetime.now(UTC).isoformat()
         return True
 
     def delete(self, item_id: str) -> bool:
@@ -131,7 +130,7 @@ class FakeCollection:
         """Count items."""
         return len(self._data)
 
-    def all(self) -> List[Dict[str, Any]]:
+    def all(self) -> list[dict[str, Any]]:
         """Get all items."""
         return list(self._data.values())
 
@@ -153,24 +152,24 @@ class FakeCache:
     """
 
     def __init__(self):
-        self._data: Dict[str, Any] = {}
-        self._ttls: Dict[str, datetime] = {}
+        self._data: dict[str, Any] = {}
+        self._ttls: dict[str, datetime] = {}
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value, checking TTL."""
         if key in self._ttls:
-            if datetime.now(timezone.utc) > self._ttls[key]:
+            if datetime.now(UTC) > self._ttls[key]:
                 del self._data[key]
                 del self._ttls[key]
                 return None
         return self._data.get(key)
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set value with optional TTL."""
         self._data[key] = value
         if ttl:
-            self._ttls[key] = datetime.now(timezone.utc).replace(
-                second=datetime.now(timezone.utc).second + ttl
+            self._ttls[key] = datetime.now(UTC).replace(
+                second=datetime.now(UTC).second + ttl
             )
         return True
 
@@ -191,7 +190,7 @@ class FakeCache:
         self._data.clear()
         self._ttls.clear()
 
-    async def keys(self, pattern: str = "*") -> List[str]:
+    async def keys(self, pattern: str = "*") -> list[str]:
         """Get keys matching pattern (simplified)."""
         if pattern == "*":
             return list(self._data.keys())
@@ -199,7 +198,7 @@ class FakeCache:
         return [k for k in self._data.keys() if k.startswith(prefix)]
 
     # Sync aliases for compatibility
-    def get_sync(self, key: str) -> Optional[Any]:
+    def get_sync(self, key: str) -> Any | None:
         return self._data.get(key)
 
     def set_sync(self, key: str, value: Any) -> bool:
@@ -216,11 +215,11 @@ class FakeCache:
 class FakeResponse:
     """Fake HTTP response."""
     status_code: int = 200
-    json_data: Optional[Dict[str, Any]] = None
+    json_data: dict[str, Any] | None = None
     text: str = ""
-    headers: Dict[str, str] = field(default_factory=dict)
+    headers: dict[str, str] = field(default_factory=dict)
 
-    def json(self) -> Dict[str, Any]:
+    def json(self) -> dict[str, Any]:
         return self.json_data or {}
 
     def raise_for_status(self) -> None:
@@ -240,14 +239,14 @@ class FakeHTTPClient:
     """
 
     def __init__(self):
-        self._responses: Dict[str, FakeResponse] = {}
-        self._calls: List[Dict[str, Any]] = []
+        self._responses: dict[str, FakeResponse] = {}
+        self._calls: list[dict[str, Any]] = []
 
     def add_response(
         self,
         method: str,
         url: str,
-        json_data: Optional[Dict[str, Any]] = None,
+        json_data: dict[str, Any] | None = None,
         status_code: int = 200,
         text: str = ""
     ) -> None:
@@ -285,7 +284,7 @@ class FakeHTTPClient:
         return len(self._calls)
 
     @property
-    def calls(self) -> List[Dict[str, Any]]:
+    def calls(self) -> list[dict[str, Any]]:
         return self._calls
 
 
@@ -294,7 +293,7 @@ class FakeHTTPClient:
 # ============================================================================
 
 
-def create_service_stub(service_class: Type[T], **method_returns) -> T:
+def create_service_stub(service_class: type[T], **method_returns) -> T:
     """
     Create a stub of a service class with predefined returns.
 
@@ -377,7 +376,7 @@ class UserBuilder:
         self._data["is_verified"] = False
         return self
 
-    def build(self) -> Dict[str, Any]:
+    def build(self) -> dict[str, Any]:
         return self._data.copy()
 
 
@@ -461,7 +460,7 @@ class QuestionBuilder:
         self._data["correct_answer"] = answer
         return self
 
-    def build(self) -> Dict[str, Any]:
+    def build(self) -> dict[str, Any]:
         return self._data.copy()
 
 
@@ -533,7 +532,7 @@ def assert_json_equal(actual: Any, expected: Any) -> None:
     assert actual_json == expected_json, f"JSON mismatch:\nActual: {actual_json}\nExpected: {expected_json}"
 
 
-def assert_contains_keys(data: Dict, *keys: str) -> None:
+def assert_contains_keys(data: dict, *keys: str) -> None:
     """Assert dictionary contains all specified keys."""
     missing = [k for k in keys if k not in data]
     if missing:

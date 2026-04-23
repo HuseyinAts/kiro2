@@ -8,13 +8,13 @@ pytestmark = pytest.mark.skipif(
     True,
     reason="BaseService API changed: format_error_response→create_error_response, format_response removed, KullaniciOlustur Pydantic validation changed",
 )
-from datetime import datetime
 import uuid
+from datetime import datetime
 
 # Test imports with graceful fallbacks
 try:
-    from models.user import KullaniciOlustur, Kullanici
     from models.enums import KullaniciRolu, SinavTipi, ZorlukSeviyesi
+    from models.user import Kullanici, KullaniciOlustur
 
     USER_MODELS_AVAILABLE = True
 except ImportError:

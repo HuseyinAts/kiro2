@@ -4,10 +4,11 @@ Sprint 7: Test Coverage
 
 Runs all tests with coverage reporting.
 """
-import sys
-import subprocess
 import os
+import subprocess
+import sys
 from pathlib import Path
+
 
 # Colors for terminal output
 class Colors:
@@ -60,12 +61,11 @@ def run_command(command, description):
         if result.returncode == 0:
             print_success(f"{description} - PASSED")
             return True
-        else:
-            print_error(f"{description} - FAILED (exit code: {result.returncode})")
-            return False
+        print_error(f"{description} - FAILED (exit code: {result.returncode})")
+        return False
 
     except Exception as e:
-        print_error(f"{description} - ERROR: {str(e)}")
+        print_error(f"{description} - ERROR: {e!s}")
         return False
 
 
@@ -197,10 +197,9 @@ def main():
     if all_passed:
         print_success("\n🎉 ALL TESTS PASSED!")
         return 0
-    else:
-        print_error("\n❌ SOME TESTS FAILED")
-        print_warning("   Check the output above for details")
-        return 1
+    print_error("\n❌ SOME TESTS FAILED")
+    print_warning("   Check the output above for details")
+    return 1
 
 
 if __name__ == "__main__":

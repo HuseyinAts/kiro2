@@ -5,8 +5,9 @@ PERFORMANCE FIX: Prevent thundering herd problem when cache expires
 import asyncio
 import hashlib
 import logging
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class CacheStampedePreventor:
     """
 
     def __init__(self):
-        self.locks: Dict[str, asyncio.Lock] = {}
+        self.locks: dict[str, asyncio.Lock] = {}
         self.lock_creation_lock = asyncio.Lock()
 
     async def get_lock(self, key: str) -> asyncio.Lock:
@@ -84,7 +85,7 @@ class CacheStampedePreventor:
 _stampede_preventor = CacheStampedePreventor()
 
 
-def cached_with_lock(ttl: int = 3600, key_prefix: Optional[str] = None) -> Callable:
+def cached_with_lock(ttl: int = 3600, key_prefix: str | None = None) -> Callable:
     """
     Decorator for caching with stampede prevention
 
@@ -108,7 +109,7 @@ def cached_with_lock(ttl: int = 3600, key_prefix: Optional[str] = None) -> Calla
             from core.cache import cache_manager
 
             # Define cache operations
-            async def cache_get(key: str) -> Optional[Any]:
+            async def cache_get(key: str) -> Any | None:
                 if not cache_manager.enabled:
                     return None
                 return await cache_manager.get(key)
@@ -158,7 +159,7 @@ async def get_cached_with_stampede_prevention(
     """
     from core.cache import cache_manager
 
-    async def cache_get(key: str) -> Optional[Any]:
+    async def cache_get(key: str) -> Any | None:
         if not cache_manager.enabled:
             return None
         return await cache_manager.get(key)

@@ -18,18 +18,18 @@ This module provides comprehensive detection of reward hacking patterns:
 from __future__ import annotations
 
 from .base_detector import BaseDetector
-from .hook_manager import HookManager
 from .exceptions import (
-    RewardHackingError,
-    DetectorError,
     ASTParseError,
+    DetectorError,
+    RewardHackingError,
 )
-from .models.enums import SeverityLevel, PatternType
+from .hook_manager import HookManager
 from .models.detection_result import (
     DetectionResult,
-    HookResult,
     DetectorConfig,
+    HookResult,
 )
+from .models.enums import PatternType, SeverityLevel
 
 __all__ = [
     # Core

@@ -9,10 +9,9 @@ Bu servis:
 """
 
 import logging
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional
-from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,7 @@ class HintUsage:
     hint_level: int
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "student_id": self.student_id,
             "problem_id": self.problem_id,
@@ -43,12 +42,12 @@ class StudentHintStats:
 
     student_id: str
     total_hints_used: int = 0
-    hints_by_level: Dict[int, int] = field(default_factory=lambda: {1: 0, 2: 0, 3: 0})
-    problems_with_hints: List[str] = field(default_factory=list)
+    hints_by_level: dict[int, int] = field(default_factory=lambda: {1: 0, 2: 0, 3: 0})
+    problems_with_hints: list[str] = field(default_factory=list)
     average_hint_level: float = 0.0
     hint_dependency_score: float = 0.0  # 0-1 arası, yüksek = çok bağımlı
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "student_id": self.student_id,
             "total_hints_used": self.total_hints_used,
@@ -64,8 +63,8 @@ class HintTrackingService:
 
     def __init__(self):
         # In-memory storage (production'da database kullanılmalı)
-        self.hint_usage_log: List[HintUsage] = []
-        self.student_stats: Dict[str, StudentHintStats] = {}
+        self.hint_usage_log: list[HintUsage] = []
+        self.student_stats: dict[str, StudentHintStats] = {}
         logger.info("HintTrackingService initialized")
 
     def track_hint_usage(
@@ -132,13 +131,13 @@ class HintTrackingService:
         level_3_ratio = stats.hints_by_level.get(3, 0) / max(stats.total_hints_used, 1)
         stats.hint_dependency_score = min(1.0, level_3_ratio * 2)
 
-    def get_student_stats(self, student_id: str) -> Optional[StudentHintStats]:
+    def get_student_stats(self, student_id: str) -> StudentHintStats | None:
         """Öğrenci istatistiklerini getir"""
         return self.student_stats.get(student_id)
 
     def get_problem_hint_usage(
-        self, problem_id: str, student_id: Optional[str] = None
-    ) -> List[HintUsage]:
+        self, problem_id: str, student_id: str | None = None
+    ) -> list[HintUsage]:
         """
         Belirli bir problem için ipucu kullanımlarını getir
 
@@ -159,8 +158,8 @@ class HintTrackingService:
         return usages
 
     def get_step_hint_usage(
-        self, problem_id: str, step_number: int, student_id: Optional[str] = None
-    ) -> List[HintUsage]:
+        self, problem_id: str, step_number: int, student_id: str | None = None
+    ) -> list[HintUsage]:
         """
         Belirli bir adım için ipucu kullanımlarını getir
 
@@ -184,8 +183,8 @@ class HintTrackingService:
         return usages
 
     def get_hint_level_distribution(
-        self, student_id: Optional[str] = None
-    ) -> Dict[int, int]:
+        self, student_id: str | None = None
+    ) -> dict[int, int]:
         """
         İpucu seviye dağılımını getir
 
@@ -205,7 +204,7 @@ class HintTrackingService:
 
         return dict(distribution)
 
-    def get_hint_usage_trends(self, student_id: str, limit: int = 10) -> Dict:
+    def get_hint_usage_trends(self, student_id: str, limit: int = 10) -> dict:
         """
         Öğrencinin ipucu kullanım trendlerini analiz et
 

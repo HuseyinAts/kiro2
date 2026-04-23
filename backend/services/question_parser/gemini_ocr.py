@@ -1,13 +1,14 @@
-import os
+import asyncio
 import base64
 import json
-from typing import Dict, List, Optional, Any
-import cv2
-import numpy as np
-import google.generativeai as genai
-from dataclasses import dataclass
-import asyncio
 import logging
+import os
+from dataclasses import dataclass
+from typing import Any
+
+import cv2
+import google.generativeai as genai
+import numpy as np
 from PIL import Image
 
 logger = logging.getLogger(__name__)
@@ -17,19 +18,19 @@ class OCRResult:
     """OCR sonucu için veri sınıfı"""
     text: str
     confidence: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 @dataclass
 class QuestionData:
     """Soru verisi için yapılandırılmış sınıf"""
     question_number: int
     question_text: str
-    options: Dict[str, str]  # A, B, C, D, E
+    options: dict[str, str]  # A, B, C, D, E
     subject: str
     topic: str
     test_id: str
     page_number: int
-    correct_answer: Optional[str] = None
+    correct_answer: str | None = None
 
 class GeminiOCRService:
     """
@@ -91,7 +92,7 @@ class GeminiOCRService:
         _, buffer = cv2.imencode('.png', image)
         return base64.b64encode(buffer).decode('utf-8')
 
-    async def extract_question(self, image: np.ndarray) -> Optional[Dict]:
+    async def extract_question(self, image: np.ndarray) -> dict | None:
         """
         Soru görüntüsünden yapılandırılmış veri çıkar
 
@@ -190,7 +191,7 @@ class GeminiOCRService:
             logger.error(f"Metadata OCR hatası: {e}")
             return ""
 
-    async def batch_process(self, images: List[np.ndarray], types: List[str]) -> List[Any]:
+    async def batch_process(self, images: list[np.ndarray], types: list[str]) -> list[Any]:
         """
         Birden fazla görüntüyü paralel işle
 
@@ -215,9 +216,9 @@ class GeminiOCRService:
 
     async def batch_ocr_with_retry(
         self,
-        images: List[np.ndarray],
+        images: list[np.ndarray],
         max_retries: int = 3
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Batch OCR with retry mechanism"""
 
         results = []
@@ -240,7 +241,7 @@ class GeminiOCRService:
 
         return [r for r in results if r is not None]
 
-    async def _ocr_single_image(self, image: np.ndarray, idx: int) -> Dict:
+    async def _ocr_single_image(self, image: np.ndarray, idx: int) -> dict:
         """Tek görüntü için OCR"""
 
         # NumPy array'i PIL Image'e çevir
@@ -257,7 +258,7 @@ class GeminiOCRService:
         # Yanıtı parse et
         return self._parse_ocr_response(response.text, idx)
 
-    def _parse_ocr_response(self, text: str, idx: int) -> Dict:
+    def _parse_ocr_response(self, text: str, idx: int) -> dict:
         """OCR yanıtını yapılandırılmış formata çevir"""
 
         # Tezdeki veri yapısı
@@ -290,10 +291,9 @@ class GeminiOCRService:
                  line.startswith('E)'):
                 option = line[0]
                 result['options'][option] = line[2:].strip()
-            else:
-                # Soru metni
-                if not any(line.startswith(x) for x in ['Soru', 'Konu:', 'Ders:', 'Test']):
-                    result['question_text'] += line + ' '
+            # Soru metni
+            elif not any(line.startswith(x) for x in ['Soru', 'Konu:', 'Ders:', 'Test']):
+                result['question_text'] += line + ' '
 
         # LaTeX ve görsel tespiti
         result['has_equation'] = '\\' in result['question_text'] or '$' in result['question_text']

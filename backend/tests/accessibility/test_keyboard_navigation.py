@@ -9,10 +9,11 @@ Requirements: 9.1, 9.2, 2.1.1, 2.1.2
 """
 
 import os
-import sys
-import pytest
-from typing import Dict, Any
 import re
+import sys
+from typing import Any
+
+import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -33,7 +34,7 @@ class KeyboardNavigationTester:
             "End": "Son elemente git",
         }
 
-    def test_tab_order(self, html_content: str) -> Dict[str, Any]:
+    def test_tab_order(self, html_content: str) -> dict[str, Any]:
         """Tab sırası testi - Mantıklı ve tutarlı odak sırası"""
         result = {
             "test_name": "Tab Order",
@@ -87,7 +88,7 @@ class KeyboardNavigationTester:
         self.test_results.append(result)
         return result
 
-    def test_keyboard_trap(self, html_content: str) -> Dict[str, Any]:
+    def test_keyboard_trap(self, html_content: str) -> dict[str, Any]:
         """Klavye tuzağı testi - WCAG 2.1.2"""
         result = {
             "test_name": "No Keyboard Trap",
@@ -130,7 +131,7 @@ class KeyboardNavigationTester:
         self.test_results.append(result)
         return result
 
-    def test_focus_indicators(self, css_content: str) -> Dict[str, Any]:
+    def test_focus_indicators(self, css_content: str) -> dict[str, Any]:
         """Odak göstergeleri testi - WCAG 2.4.7"""
         result = {
             "test_name": "Focus Indicators",
@@ -169,7 +170,7 @@ class KeyboardNavigationTester:
         self.test_results.append(result)
         return result
 
-    def test_skip_links(self, html_content: str) -> Dict[str, Any]:
+    def test_skip_links(self, html_content: str) -> dict[str, Any]:
         """İçeriğe atla linkleri testi - WCAG 2.4.1"""
         result = {
             "test_name": "Skip Links",
@@ -203,7 +204,7 @@ class KeyboardNavigationTester:
 
     def test_interactive_elements_keyboard_accessible(
         self, html_content: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """İnteraktif elementlerin klavye erişilebilirliği"""
         result = {
             "test_name": "Interactive Elements Keyboard Accessible",
@@ -243,7 +244,7 @@ class KeyboardNavigationTester:
         self.test_results.append(result)
         return result
 
-    def test_form_keyboard_navigation(self, html_content: str) -> Dict[str, Any]:
+    def test_form_keyboard_navigation(self, html_content: str) -> dict[str, Any]:
         """Form klavye navigasyonu testi"""
         result = {
             "test_name": "Form Keyboard Navigation",
@@ -285,7 +286,7 @@ class KeyboardNavigationTester:
         self.test_results.append(result)
         return result
 
-    def test_modal_keyboard_interaction(self, html_content: str) -> Dict[str, Any]:
+    def test_modal_keyboard_interaction(self, html_content: str) -> dict[str, Any]:
         """Modal klavye etkileşimi testi"""
         result = {
             "test_name": "Modal Keyboard Interaction",
@@ -329,7 +330,7 @@ class KeyboardNavigationTester:
 
     def test_custom_controls_keyboard_support(
         self, html_content: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Özel kontrollerin klavye desteği testi"""
         result = {
             "test_name": "Custom Controls Keyboard Support",
@@ -371,7 +372,7 @@ class KeyboardNavigationTester:
         self.test_results.append(result)
         return result
 
-    def generate_keyboard_navigation_report(self) -> Dict[str, Any]:
+    def generate_keyboard_navigation_report(self) -> dict[str, Any]:
         """Klavye navigasyon raporu oluştur"""
         total_tests = len(self.test_results)
         passed_tests = sum(1 for r in self.test_results if r.get("passed", False))

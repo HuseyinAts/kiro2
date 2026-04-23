@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -29,6 +30,9 @@ import pytest
 
 # ML algorithm imports
 from algorithms.irt_model import FourParameterIRTModel, IRTItem, IRTResponse
+from algorithms.personalized_content_recommender import (
+    PersonalizedContentRecommender,
+)
 from algorithms.turkish_optimized_fsrs import (
     CulturalFactorCalculator,
     FSRSCard,
@@ -39,9 +43,6 @@ from algorithms.turkish_optimized_fsrs import (
 from algorithms.turkish_zpd_maarif_system import (
     TurkishCulturalContext,
     TurkishZPDMaarifSystem,
-)
-from algorithms.personalized_content_recommender import (
-    PersonalizedContentRecommender,
 )
 
 # Note: Learning style model tests removed due to complex model dependencies

@@ -2,12 +2,13 @@
 
 This module tests OER Commons API integration for learning path recommendations.
 """
-import pytest
+from typing import Any
 from unittest.mock import AsyncMock, patch
-from typing import Dict, Any
 
+import pytest
+
+from agents.learning_path.models import KnowledgeLevel, LearningResource
 from agents.learning_path.strategies.oer_strategy import OERSearchStrategy
-from agents.learning_path.models import LearningResource, KnowledgeLevel
 
 
 class TestOERSearchStrategy:
@@ -29,14 +30,14 @@ class TestOERSearchStrategy:
     def test_normalize_result_valid(
         self,
         strategy: OERSearchStrategy,
-        mock_oer_response: Dict[str, Any]
+        mock_oer_response: dict[str, Any]
     ) -> None:
         """Should convert OER API response to LearningResource."""
         resource = strategy.normalize_result(mock_oer_response)
 
         assert resource is not None
         assert isinstance(resource, LearningResource)
-        assert "oer-oer-123" == resource.resource_id
+        assert resource.resource_id == "oer-oer-123"
         assert resource.source == "oer_commons"
         assert resource.title == "Introduction to Calculus"
         assert resource.resource_type == "document"
@@ -44,7 +45,7 @@ class TestOERSearchStrategy:
     def test_normalize_result_with_all_fields(
         self,
         strategy: OERSearchStrategy,
-        mock_oer_response: Dict[str, Any]
+        mock_oer_response: dict[str, Any]
     ) -> None:
         """Should extract all available fields."""
         resource = strategy.normalize_result(mock_oer_response)
@@ -200,7 +201,7 @@ class TestOERSearchStrategy:
     def test_estimate_difficulty_higher_education(
         self,
         strategy: OERSearchStrategy,
-        mock_oer_multilevel_response: Dict[str, Any]
+        mock_oer_multilevel_response: dict[str, Any]
     ) -> None:
         """Should estimate higher education difficulty."""
         difficulty = strategy._estimate_difficulty(mock_oer_multilevel_response)
@@ -273,7 +274,7 @@ class TestOERSearchStrategy:
     def test_extract_topics_from_subjects(
         self,
         strategy: OERSearchStrategy,
-        mock_oer_response: Dict[str, Any]
+        mock_oer_response: dict[str, Any]
     ) -> None:
         """Should extract topics from subjects."""
         topics = strategy._extract_topics(mock_oer_response)
@@ -311,7 +312,7 @@ class TestOERSearchStrategy:
     def test_extract_rating_valid(
         self,
         strategy: OERSearchStrategy,
-        mock_oer_response: Dict[str, Any]
+        mock_oer_response: dict[str, Any]
     ) -> None:
         """Should extract valid rating."""
         rating = strategy._extract_rating(mock_oer_response)
@@ -476,7 +477,6 @@ class TestOERSearchStrategy:
         """Should handle network operations properly."""
         # Network error handling is tested in test_search_oer_network_error
         # Complex async mock setup is tested via higher-level search tests
-        pass
 
     @pytest.mark.asyncio
     async def test_search_oer_with_subject_mapping(

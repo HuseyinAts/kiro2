@@ -9,10 +9,10 @@ import hashlib
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from analytics.unified_analytics_data_model import (
     TurkishExamType,
@@ -78,32 +78,32 @@ class ContentMetadata:
     # Basic info
     title: str
     description: str
-    keywords: List[str] = field(default_factory=list)
+    keywords: list[str] = field(default_factory=list)
     language: str = "tr"
 
     # Educational context
     subject: TurkishSubject
-    exam_types: List[TurkishExamType] = field(default_factory=list)
-    grade_levels: List[int] = field(default_factory=list)  # 9-12
-    topics: List[str] = field(default_factory=list)
-    subtopics: List[str] = field(default_factory=list)
+    exam_types: list[TurkishExamType] = field(default_factory=list)
+    grade_levels: list[int] = field(default_factory=list)  # 9-12
+    topics: list[str] = field(default_factory=list)
+    subtopics: list[str] = field(default_factory=list)
 
     # Learning classification
     difficulty_level: DifficultyLevel = DifficultyLevel.INTERMEDIATE
-    learning_objectives: List[LearningObjective] = field(default_factory=list)
-    prerequisites: List[str] = field(default_factory=list)
+    learning_objectives: list[LearningObjective] = field(default_factory=list)
+    prerequisites: list[str] = field(default_factory=list)
 
     # Content properties
     estimated_duration_minutes: int = 0
     interaction_required: bool = False
-    accessibility_features: List[str] = field(default_factory=list)
+    accessibility_features: list[str] = field(default_factory=list)
 
     # Turkish curriculum alignment
-    curriculum_code: Optional[str] = None
-    curriculum_outcome: Optional[str] = None
-    bloom_taxonomy_level: Optional[str] = None
+    curriculum_code: str | None = None
+    curriculum_outcome: str | None = None
+    bloom_taxonomy_level: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "title": self.title,
@@ -145,14 +145,14 @@ class ContentFile:
     # Processing status
     processed: bool = False
     processing_status: str = "pending"
-    processing_errors: List[str] = field(default_factory=list)
+    processing_errors: list[str] = field(default_factory=list)
 
     # Media-specific properties (for videos, images, etc.)
-    width: Optional[int] = None
-    height: Optional[int] = None
-    duration_seconds: Optional[float] = None
-    bitrate: Optional[int] = None
-    format_info: Dict[str, Any] = field(default_factory=dict)
+    width: int | None = None
+    height: int | None = None
+    duration_seconds: float | None = None
+    bitrate: int | None = None
+    format_info: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.file_id:
@@ -167,7 +167,7 @@ class ContentFile:
                 return hashlib.md5(f.read()).hexdigest()
         return ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "file_id": self.file_id,
@@ -197,24 +197,24 @@ class ContentItem:
     metadata: ContentMetadata
 
     # Content data
-    content_data: Dict[str, Any] = field(default_factory=dict)
-    files: List[ContentFile] = field(default_factory=list)
+    content_data: dict[str, Any] = field(default_factory=dict)
+    files: list[ContentFile] = field(default_factory=list)
 
     # Lifecycle management
     status: ContentStatus = ContentStatus.DRAFT
     version: str = "1.0"
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Authorship and ownership
     created_by: int = 0
     last_modified_by: int = 0
     owner_id: int = 0
-    collaborators: List[int] = field(default_factory=list)
+    collaborators: list[int] = field(default_factory=list)
 
     # Publishing and access
-    published_at: Optional[datetime] = None
-    published_by: Optional[int] = None
+    published_at: datetime | None = None
+    published_by: int | None = None
     access_level: str = "public"  # public, private, school, premium
 
     # Analytics
@@ -224,13 +224,13 @@ class ContentItem:
     rating_count: int = 0
 
     # Relationships
-    parent_content_id: Optional[str] = None  # For content hierarchies
-    child_content_ids: List[str] = field(default_factory=list)
-    related_content_ids: List[str] = field(default_factory=list)
+    parent_content_id: str | None = None  # For content hierarchies
+    child_content_ids: list[str] = field(default_factory=list)
+    related_content_ids: list[str] = field(default_factory=list)
 
     # Turkish localization
-    title_tr: Optional[str] = None
-    description_tr: Optional[str] = None
+    title_tr: str | None = None
+    description_tr: str | None = None
 
     def __post_init__(self):
         if not self.content_id:
@@ -244,10 +244,10 @@ class ContentItem:
         """Update content status"""
         self.status = new_status
         self.last_modified_by = user_id
-        self.updated_at = datetime.now(timezone.utc)
+        self.updated_at = datetime.now(UTC)
 
         if new_status == ContentStatus.PUBLISHED:
-            self.published_at = datetime.now(timezone.utc)
+            self.published_at = datetime.now(UTC)
             self.published_by = user_id
 
         logger.info(
@@ -257,7 +257,7 @@ class ContentItem:
     def add_file(self, content_file: ContentFile) -> None:
         """Add file to content"""
         self.files.append(content_file)
-        self.updated_at = datetime.now(timezone.utc)
+        self.updated_at = datetime.now(UTC)
         logger.info(f"File {content_file.file_id} added to content {self.content_id}")
 
     def remove_file(self, file_id: str) -> bool:
@@ -265,12 +265,12 @@ class ContentItem:
         for i, file in enumerate(self.files):
             if file.file_id == file_id:
                 removed_file = self.files.pop(i)
-                self.updated_at = datetime.now(timezone.utc)
+                self.updated_at = datetime.now(UTC)
                 logger.info(f"File {file_id} removed from content {self.content_id}")
                 return True
         return False
 
-    def get_primary_file(self) -> Optional[ContentFile]:
+    def get_primary_file(self) -> ContentFile | None:
         """Get primary file for content"""
         if not self.files:
             return None
@@ -301,7 +301,7 @@ class ContentItem:
         rating_score = self.rating / 5.0 * 40 if self.rating_count > 0 else 0
 
         # Recency bonus (newer content gets slight boost)
-        days_since_creation = (datetime.now(timezone.utc) - self.created_at).days
+        days_since_creation = (datetime.now(UTC) - self.created_at).days
         recency_score = max(0, 30 - days_since_creation) / 30 * 20
 
         # Duration appropriateness (content with appropriate duration gets bonus)
@@ -316,7 +316,7 @@ class ContentItem:
         self.engagement_score = min(100, total_score)
         return self.engagement_score
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "content_id": self.content_id,
@@ -358,26 +358,26 @@ class ContentCollection:
     description: str
 
     # Collection properties
-    content_ids: List[str] = field(default_factory=list)
+    content_ids: list[str] = field(default_factory=list)
     collection_type: str = "manual"  # manual, auto_generated, curated
 
     # Educational context
-    subject: Optional[TurkishSubject] = None
-    exam_types: List[TurkishExamType] = field(default_factory=list)
+    subject: TurkishSubject | None = None
+    exam_types: list[TurkishExamType] = field(default_factory=list)
     difficulty_progression: bool = True  # Whether content is ordered by difficulty
 
     # Metadata
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     created_by: int = 0
-    updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Access control
     access_level: str = "public"
     owner_id: int = 0
 
     # Turkish localization
-    name_tr: Optional[str] = None
-    description_tr: Optional[str] = None
+    name_tr: str | None = None
+    description_tr: str | None = None
 
     def __post_init__(self):
         if not self.collection_id:
@@ -391,25 +391,25 @@ class ContentCollection:
         """Add content to collection"""
         if content_id not in self.content_ids:
             self.content_ids.append(content_id)
-            self.updated_at = datetime.now(timezone.utc)
+            self.updated_at = datetime.now(UTC)
 
     def remove_content(self, content_id: str) -> bool:
         """Remove content from collection"""
         if content_id in self.content_ids:
             self.content_ids.remove(content_id)
-            self.updated_at = datetime.now(timezone.utc)
+            self.updated_at = datetime.now(UTC)
             return True
         return False
 
-    def reorder_content(self, new_order: List[str]) -> bool:
+    def reorder_content(self, new_order: list[str]) -> bool:
         """Reorder content in collection"""
         if set(new_order) == set(self.content_ids):
             self.content_ids = new_order
-            self.updated_at = datetime.now(timezone.utc)
+            self.updated_at = datetime.now(UTC)
             return True
         return False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "collection_id": self.collection_id,
@@ -434,9 +434,9 @@ class ContentRepository:
     """Repository for content storage and retrieval"""
 
     def __init__(self):
-        self.content_items: Dict[str, ContentItem] = {}
-        self.collections: Dict[str, ContentCollection] = {}
-        self.content_index: Dict[str, Set[str]] = {
+        self.content_items: dict[str, ContentItem] = {}
+        self.collections: dict[str, ContentCollection] = {}
+        self.content_index: dict[str, set[str]] = {
             "subject": {},
             "exam_type": {},
             "difficulty": {},
@@ -445,7 +445,7 @@ class ContentRepository:
         }
 
         # Caching
-        self.search_cache: Dict[str, List[str]] = {}
+        self.search_cache: dict[str, list[str]] = {}
         self.cache_ttl = config.get_setting("content.cache_ttl", 3600)
 
     async def store_content(self, content: ContentItem) -> str:
@@ -459,27 +459,27 @@ class ContentRepository:
         logger.info(f"Stored content {content.content_id}: {content.metadata.title}")
         return content.content_id
 
-    async def get_content(self, content_id: str) -> Optional[ContentItem]:
+    async def get_content(self, content_id: str) -> ContentItem | None:
         """Retrieve content by ID"""
         content = self.content_items.get(content_id)
         if content:
             # Increment view count
             content.view_count += 1
-            content.updated_at = datetime.now(timezone.utc)
+            content.updated_at = datetime.now(UTC)
         return content
 
     async def search_content(
         self,
-        query: Optional[str] = None,
-        subject: Optional[TurkishSubject] = None,
-        exam_types: Optional[List[TurkishExamType]] = None,
-        difficulty_level: Optional[DifficultyLevel] = None,
-        content_type: Optional[ContentType] = None,
-        status: Optional[ContentStatus] = None,
-        grade_levels: Optional[List[int]] = None,
+        query: str | None = None,
+        subject: TurkishSubject | None = None,
+        exam_types: list[TurkishExamType] | None = None,
+        difficulty_level: DifficultyLevel | None = None,
+        content_type: ContentType | None = None,
+        status: ContentStatus | None = None,
+        grade_levels: list[int] | None = None,
         limit: int = 20,
         offset: int = 0,
-    ) -> List[ContentItem]:
+    ) -> list[ContentItem]:
         """Search content with various filters"""
 
         # Create cache key
@@ -581,7 +581,7 @@ class ContentRepository:
 
     async def get_related_content(
         self, content_id: str, limit: int = 5
-    ) -> List[ContentItem]:
+    ) -> list[ContentItem]:
         """Get content related to the given content"""
         content = await self.get_content(content_id)
         if not content:
@@ -599,7 +599,7 @@ class ContentRepository:
         related_content = [c for c in related_content if c.content_id != content_id]
         return related_content[:limit]
 
-    async def get_content_by_collection(self, collection_id: str) -> List[ContentItem]:
+    async def get_content_by_collection(self, collection_id: str) -> list[ContentItem]:
         """Get all content in a collection"""
         collection = self.collections.get(collection_id)
         if not collection:
@@ -628,7 +628,7 @@ class ContentRepository:
         total_rating = content.rating * content.rating_count + rating
         content.rating_count += 1
         content.rating = total_rating / content.rating_count
-        content.updated_at = datetime.now(timezone.utc)
+        content.updated_at = datetime.now(UTC)
 
         return True
 
@@ -671,7 +671,7 @@ class ContentRepository:
         """Invalidate search cache"""
         self.search_cache.clear()
 
-    def get_content_statistics(self) -> Dict[str, Any]:
+    def get_content_statistics(self) -> dict[str, Any]:
         """Get repository statistics"""
         total_content = len(self.content_items)
         status_counts = {}
@@ -708,7 +708,7 @@ class ContentManager:
         self.repository = repository
         self.content_validators = self._initialize_validators()
 
-    def _initialize_validators(self) -> Dict[ContentType, Callable]:
+    def _initialize_validators(self) -> dict[ContentType, Callable]:
         """Initialize content type validators"""
         return {
             ContentType.QUESTION: self._validate_question_content,
@@ -722,8 +722,8 @@ class ContentManager:
         self,
         content_type: ContentType,
         metadata: ContentMetadata,
-        content_data: Dict[str, Any],
-        files: List[ContentFile] = None,
+        content_data: dict[str, Any],
+        files: list[ContentFile] = None,
         created_by: int = 0,
     ) -> ContentItem:
         """Create new content item"""
@@ -758,9 +758,9 @@ class ContentManager:
     async def _validate_content(
         self,
         content_type: ContentType,
-        content_data: Dict[str, Any],
-        files: List[ContentFile],
-    ) -> List[str]:
+        content_data: dict[str, Any],
+        files: list[ContentFile],
+    ) -> list[str]:
         """Validate content data based on type"""
         errors = []
 
@@ -773,8 +773,8 @@ class ContentManager:
         return errors
 
     async def _validate_question_content(
-        self, content_data: Dict[str, Any], files: List[ContentFile]
-    ) -> List[str]:
+        self, content_data: dict[str, Any], files: list[ContentFile]
+    ) -> list[str]:
         """Validate question content"""
         errors = []
 
@@ -808,8 +808,8 @@ class ContentManager:
         return errors
 
     async def _validate_video_content(
-        self, content_data: Dict[str, Any], files: List[ContentFile]
-    ) -> List[str]:
+        self, content_data: dict[str, Any], files: list[ContentFile]
+    ) -> list[str]:
         """Validate video content"""
         errors = []
 
@@ -827,8 +827,8 @@ class ContentManager:
         return errors
 
     async def _validate_document_content(
-        self, content_data: Dict[str, Any], files: List[ContentFile]
-    ) -> List[str]:
+        self, content_data: dict[str, Any], files: list[ContentFile]
+    ) -> list[str]:
         """Validate document content"""
         errors = []
 
@@ -840,8 +840,8 @@ class ContentManager:
         return errors
 
     async def _validate_quiz_content(
-        self, content_data: Dict[str, Any], files: List[ContentFile]
-    ) -> List[str]:
+        self, content_data: dict[str, Any], files: list[ContentFile]
+    ) -> list[str]:
         """Validate quiz content"""
         errors = []
 
@@ -859,8 +859,8 @@ class ContentManager:
         return errors
 
     async def _validate_interactive_content(
-        self, content_data: Dict[str, Any], files: List[ContentFile]
-    ) -> List[str]:
+        self, content_data: dict[str, Any], files: list[ContentFile]
+    ) -> list[str]:
         """Validate interactive content"""
         errors = []
 
@@ -874,8 +874,8 @@ class ContentManager:
         return errors
 
     async def update_content(
-        self, content_id: str, updates: Dict[str, Any], updated_by: int
-    ) -> Optional[ContentItem]:
+        self, content_id: str, updates: dict[str, Any], updated_by: int
+    ) -> ContentItem | None:
         """Update existing content"""
         content = await self.repository.get_content(content_id)
         if not content:
@@ -893,10 +893,10 @@ class ContentManager:
                 content.content_data[key] = value
 
         content.last_modified_by = updated_by
-        content.updated_at = datetime.now(timezone.utc)
+        content.updated_at = datetime.now(UTC)
 
         # Re-validate if content_data changed
-        if any(k in content.content_data for k in updates.keys()):
+        if any(k in content.content_data for k in updates):
             validation_errors = await self._validate_content(
                 content.content_type, content.content_data, content.files
             )
@@ -943,7 +943,7 @@ class ContentManager:
         logger.info(f"Archived content {content_id}: {content.metadata.title}")
         return True
 
-    async def get_content_analytics(self, content_id: str) -> Dict[str, Any]:
+    async def get_content_analytics(self, content_id: str) -> dict[str, Any]:
         """Get analytics for specific content"""
         content = await self.repository.get_content(content_id)
         if not content:
@@ -956,10 +956,10 @@ class ContentManager:
             "rating": content.rating,
             "rating_count": content.rating_count,
             "days_since_creation": (
-                datetime.now(timezone.utc) - content.created_at
+                datetime.now(UTC) - content.created_at
             ).days,
             "days_since_published": (
-                (datetime.now(timezone.utc) - content.published_at).days
+                (datetime.now(UTC) - content.published_at).days
                 if content.published_at
                 else None
             ),

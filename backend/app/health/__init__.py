@@ -15,12 +15,9 @@ Modules:
     - dashboard_api: Dashboard API endpoints
 """
 
-from .discovery import EndpointDiscovery
 from .checker import HealthChecker
-from .sla_monitor import SLAMonitor
 from .circuit_breaker import CircuitBreaker
-from .score_calculator import HealthScoreCalculator
-from .scheduler import HealthCheckScheduler, get_scheduler
+from .discovery import EndpointDiscovery
 from .models import (
     CircuitState,
     EndpointMetadata,
@@ -29,6 +26,9 @@ from .models import (
     HealthStatus,
     SLAMetrics,
 )
+from .scheduler import HealthCheckScheduler, get_scheduler
+from .score_calculator import HealthScoreCalculator
+from .sla_monitor import SLAMonitor
 
 __all__ = [
     # Models

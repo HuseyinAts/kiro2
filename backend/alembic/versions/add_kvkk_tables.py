@@ -11,8 +11,9 @@ KVKK (Kişisel Verilerin Korunması Kanunu) compliance tables:
 - kvkk_data_breaches: Veri ihlali kayıtları
 """
 
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "kvkk_compliance_001"

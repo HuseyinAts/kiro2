@@ -6,10 +6,10 @@ Türkiye Üniversite Sınavları Hazırlık Platformu - Analitik Veri Modeli
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from core.structured_logging import LogCategory, get_logger
 from core.unified_config import get_unified_config
@@ -107,12 +107,12 @@ class TurkishEducationContext:
     school_type: str  # Okul türü (anadolu_lisesi, fen_lisesi, meslek_lisesi, etc.)
     city: str  # Şehir
     region: str  # Bölge (marmara, ege, akdeniz, etc.)
-    school_name: Optional[str] = None
-    district: Optional[str] = None  # İlçe
+    school_name: str | None = None
+    district: str | None = None  # İlçe
     education_year: str = "2024-2025"  # Eğitim öğretim yılı
     curriculum_type: str = "2018"  # Müfredat türü
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "grade_level": self.grade_level,
@@ -139,21 +139,21 @@ class ExamMetrics:
     empty_answers: int
     score: Decimal
     max_possible_score: Decimal
-    percentile: Optional[float] = None  # Yüzdelik dilim
+    percentile: float | None = None  # Yüzdelik dilim
 
     # Time metrics
     total_time_seconds: int
     average_time_per_question: float
-    fastest_answer_time: Optional[float] = None
-    slowest_answer_time: Optional[float] = None
+    fastest_answer_time: float | None = None
+    slowest_answer_time: float | None = None
 
     # Subject breakdown
-    subject_scores: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    subject_scores: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     # Turkish exam specific metrics
-    net_score: Optional[Decimal] = None  # Net puan (doğru - yanlış/4)
-    raw_score: Optional[Decimal] = None  # Ham puan
-    weighted_score: Optional[Decimal] = None  # Ağırlıklı puan
+    net_score: Decimal | None = None  # Net puan (doğru - yanlış/4)
+    raw_score: Decimal | None = None  # Ham puan
+    weighted_score: Decimal | None = None  # Ağırlıklı puan
 
     # Difficulty analysis
     easy_questions_correct: int = 0
@@ -179,22 +179,21 @@ class ExamMetrics:
 
         if score_float >= 450:
             return PerformanceLevel.EXCELLENT
-        elif score_float >= 400:
+        if score_float >= 400:
             return PerformanceLevel.VERY_GOOD
-        elif score_float >= 350:
+        if score_float >= 350:
             return PerformanceLevel.GOOD
-        elif score_float >= 300:
+        if score_float >= 300:
             return PerformanceLevel.AVERAGE
-        elif score_float >= 250:
+        if score_float >= 250:
             return PerformanceLevel.BELOW_AVERAGE
-        elif score_float >= 200:
+        if score_float >= 200:
             return PerformanceLevel.WEAK
-        elif score_float >= 150:
+        if score_float >= 150:
             return PerformanceLevel.VERY_WEAK
-        else:
-            return PerformanceLevel.CRITICAL
+        return PerformanceLevel.CRITICAL
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "exam_id": self.exam_id,
@@ -230,39 +229,39 @@ class StudentPerformanceProfile:
     overall_success_rate: float = 0.0
 
     # Current performance
-    current_tyt_score: Optional[Decimal] = None
-    current_ayt_score: Optional[Decimal] = None
-    current_yks_score: Optional[Decimal] = None
-    current_ranking: Optional[int] = None
+    current_tyt_score: Decimal | None = None
+    current_ayt_score: Decimal | None = None
+    current_yks_score: Decimal | None = None
+    current_ranking: int | None = None
 
     # Subject strengths and weaknesses
-    subject_performance: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    strongest_subjects: List[str] = field(default_factory=list)
-    weakest_subjects: List[str] = field(default_factory=list)
+    subject_performance: dict[str, dict[str, Any]] = field(default_factory=dict)
+    strongest_subjects: list[str] = field(default_factory=list)
+    weakest_subjects: list[str] = field(default_factory=list)
 
     # Progress tracking
     performance_trend: str = "stable"  # improving, declining, stable
-    last_30_days_progress: Dict[str, float] = field(default_factory=dict)
-    goal_progress: Dict[str, float] = field(default_factory=dict)
+    last_30_days_progress: dict[str, float] = field(default_factory=dict)
+    goal_progress: dict[str, float] = field(default_factory=dict)
 
     # Time analytics
     average_study_session_minutes: float = 0.0
-    preferred_study_times: List[str] = field(default_factory=list)
-    most_productive_hours: List[int] = field(default_factory=list)
+    preferred_study_times: list[str] = field(default_factory=list)
+    most_productive_hours: list[int] = field(default_factory=list)
 
     # Turkish exam specific
-    tyt_subject_breakdown: Dict[str, Any] = field(default_factory=dict)
-    ayt_field_preference: Optional[str] = None  # sayisal, sozel, esit_agirlik
-    target_university: Optional[str] = None
-    target_department: Optional[str] = None
-    probability_of_success: Optional[float] = None
+    tyt_subject_breakdown: dict[str, Any] = field(default_factory=dict)
+    ayt_field_preference: str | None = None  # sayisal, sozel, esit_agirlik
+    target_university: str | None = None
+    target_department: str | None = None
+    probability_of_success: float | None = None
 
     # Behavioral analytics
-    question_answering_patterns: Dict[str, Any] = field(default_factory=dict)
-    exam_taking_behavior: Dict[str, Any] = field(default_factory=dict)
-    learning_preferences: Dict[str, Any] = field(default_factory=dict)
+    question_answering_patterns: dict[str, Any] = field(default_factory=dict)
+    exam_taking_behavior: dict[str, Any] = field(default_factory=dict)
+    learning_preferences: dict[str, Any] = field(default_factory=dict)
 
-    def calculate_yks_prediction(self) -> Dict[str, Any]:
+    def calculate_yks_prediction(self) -> dict[str, Any]:
         """Calculate YKS success prediction"""
         if not self.current_tyt_score:
             return {"prediction": "insufficient_data"}
@@ -301,16 +300,15 @@ class StudentPerformanceProfile:
         """Generate study recommendation in Turkish"""
         if yks_score >= 450:
             return "Mükemmel performans! Hedef üniversitenizi rahatça kazanabilirsiniz."
-        elif yks_score >= 400:
+        if yks_score >= 400:
             return "Çok iyi durumdayız! Zayıf alanlarınızı güçlendirmeye odaklanın."
-        elif yks_score >= 350:
+        if yks_score >= 350:
             return "İyi seviyede! Düzenli çalışma ile hedeflerinize ulaşabilirsiniz."
-        elif yks_score >= 300:
+        if yks_score >= 300:
             return "Daha fazla çaba gerekli. Zayıf konularınızı tespit edip yoğunlaşın."
-        else:
-            return "Temel konuları güçlendirmeniz şart. Sistematik çalışma planı yapın."
+        return "Temel konuları güçlendirmeniz şart. Sistematik çalışma planı yapın."
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "student_id": self.student_id,
@@ -344,34 +342,34 @@ class AnalyticsEvent:
     event_type: AnalyticsEventType
     timestamp: datetime
     user_id: int
-    session_id: Optional[str] = None
+    session_id: str | None = None
 
     # Event data
-    event_data: Dict[str, Any] = field(default_factory=dict)
+    event_data: dict[str, Any] = field(default_factory=dict)
 
     # Context
-    exam_context: Optional[Dict[str, Any]] = None
-    question_context: Optional[Dict[str, Any]] = None
-    user_agent: Optional[str] = None
-    ip_address: Optional[str] = None
+    exam_context: dict[str, Any] | None = None
+    question_context: dict[str, Any] | None = None
+    user_agent: str | None = None
+    ip_address: str | None = None
 
     # Performance data
-    response_time_ms: Optional[float] = None
+    response_time_ms: float | None = None
     success: bool = True
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     # Turkish education specific
-    subject: Optional[TurkishSubject] = None
-    difficulty_level: Optional[str] = None
-    curriculum_topic: Optional[str] = None
+    subject: TurkishSubject | None = None
+    difficulty_level: str | None = None
+    curriculum_topic: str | None = None
 
     def __post_init__(self):
         if not self.event_id:
             self.event_id = str(uuid.uuid4())
         if not self.timestamp:
-            self.timestamp = datetime.now(timezone.utc)
+            self.timestamp = datetime.now(UTC)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for storage"""
         return {
             "event_id": self.event_id,
@@ -413,22 +411,22 @@ class AggregatedMetrics:
     # Performance aggregates
     average_score: Decimal = Decimal("0")
     median_score: Decimal = Decimal("0")
-    score_distribution: Dict[str, int] = field(default_factory=dict)
+    score_distribution: dict[str, int] = field(default_factory=dict)
 
     # Subject performance
-    subject_performance: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    subject_performance: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     # Turkish education specific
-    tyt_performance: Dict[str, Any] = field(default_factory=dict)
-    ayt_performance: Dict[str, Any] = field(default_factory=dict)
-    regional_performance: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    school_type_performance: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    tyt_performance: dict[str, Any] = field(default_factory=dict)
+    ayt_performance: dict[str, Any] = field(default_factory=dict)
+    regional_performance: dict[str, dict[str, Any]] = field(default_factory=dict)
+    school_type_performance: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     # Trends
-    growth_metrics: Dict[str, float] = field(default_factory=dict)
-    comparative_metrics: Dict[str, Any] = field(default_factory=dict)
+    growth_metrics: dict[str, float] = field(default_factory=dict)
+    comparative_metrics: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "metric_id": self.metric_id,
@@ -458,24 +456,24 @@ class TeacherAnalytics:
     # Student management
     total_students: int = 0
     active_students: int = 0
-    student_performance_overview: Dict[str, Any] = field(default_factory=dict)
+    student_performance_overview: dict[str, Any] = field(default_factory=dict)
 
     # Content creation
     content_created: int = 0
     questions_created: int = 0
     exams_created: int = 0
-    content_engagement: Dict[str, Any] = field(default_factory=dict)
+    content_engagement: dict[str, Any] = field(default_factory=dict)
 
     # Class performance
-    class_average_scores: Dict[str, Decimal] = field(default_factory=dict)
-    subject_teaching_effectiveness: Dict[str, float] = field(default_factory=dict)
-    improvement_trends: Dict[str, List[float]] = field(default_factory=dict)
+    class_average_scores: dict[str, Decimal] = field(default_factory=dict)
+    subject_teaching_effectiveness: dict[str, float] = field(default_factory=dict)
+    improvement_trends: dict[str, list[float]] = field(default_factory=dict)
 
     # Turkish education insights
-    curriculum_coverage: Dict[str, float] = field(default_factory=dict)
-    topic_difficulty_analysis: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    curriculum_coverage: dict[str, float] = field(default_factory=dict)
+    topic_difficulty_analysis: dict[str, dict[str, Any]] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "teacher_id": self.teacher_id,
@@ -507,25 +505,25 @@ class SchoolAnalytics:
     active_users: int = 0
 
     # Performance metrics
-    school_average_tyt: Optional[Decimal] = None
-    school_average_ayt: Optional[Decimal] = None
-    regional_ranking: Optional[int] = None
-    national_ranking: Optional[int] = None
+    school_average_tyt: Decimal | None = None
+    school_average_ayt: Decimal | None = None
+    regional_ranking: int | None = None
+    national_ranking: int | None = None
 
     # Subject performance
-    subject_averages: Dict[str, Decimal] = field(default_factory=dict)
-    subject_rankings: Dict[str, int] = field(default_factory=dict)
+    subject_averages: dict[str, Decimal] = field(default_factory=dict)
+    subject_rankings: dict[str, int] = field(default_factory=dict)
 
     # Trends
-    yearly_improvement: Dict[str, float] = field(default_factory=dict)
-    monthly_progress: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    yearly_improvement: dict[str, float] = field(default_factory=dict)
+    monthly_progress: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     # Turkish education specific
     university_placement_rate: float = 0.0
     top_tier_placement_rate: float = 0.0
-    yks_success_metrics: Dict[str, Any] = field(default_factory=dict)
+    yks_success_metrics: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "school_id": self.school_id,
@@ -553,7 +551,7 @@ class AnalyticsDataValidator:
     """Validator for analytics data"""
 
     @staticmethod
-    def validate_exam_metrics(metrics: ExamMetrics) -> List[str]:
+    def validate_exam_metrics(metrics: ExamMetrics) -> list[str]:
         """Validate exam metrics data"""
         errors = []
 
@@ -580,7 +578,7 @@ class AnalyticsDataValidator:
     @staticmethod
     def validate_turkish_education_context(
         context: TurkishEducationContext,
-    ) -> List[str]:
+    ) -> list[str]:
         """Validate Turkish education context"""
         errors = []
 
@@ -604,7 +602,7 @@ class AnalyticsDataValidator:
         return errors
 
     @staticmethod
-    def validate_performance_profile(profile: StudentPerformanceProfile) -> List[str]:
+    def validate_performance_profile(profile: StudentPerformanceProfile) -> list[str]:
         """Validate student performance profile"""
         errors = []
 
@@ -628,7 +626,7 @@ class AnalyticsDataFactory:
 
     @staticmethod
     def create_exam_metrics(
-        exam_data: Dict[str, Any], performance_data: Dict[str, Any]
+        exam_data: dict[str, Any], performance_data: dict[str, Any]
     ) -> ExamMetrics:
         """Create exam metrics from raw data"""
         return ExamMetrics(
@@ -650,14 +648,14 @@ class AnalyticsDataFactory:
     def create_analytics_event(
         event_type: AnalyticsEventType,
         user_id: int,
-        event_data: Dict[str, Any],
-        session_id: Optional[str] = None,
+        event_data: dict[str, Any],
+        session_id: str | None = None,
     ) -> AnalyticsEvent:
         """Create analytics event"""
         return AnalyticsEvent(
             event_id=str(uuid.uuid4()),
             event_type=event_type,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             user_id=user_id,
             session_id=session_id,
             event_data=event_data,
@@ -665,7 +663,7 @@ class AnalyticsDataFactory:
 
     @staticmethod
     def create_student_profile(
-        student_id: int, education_data: Dict[str, Any]
+        student_id: int, education_data: dict[str, Any]
     ) -> StudentPerformanceProfile:
         """Create student performance profile"""
         education_context = TurkishEducationContext(
@@ -843,29 +841,26 @@ def calculate_turkish_percentile(
     if exam_type == TurkishExamType.TYT:
         if score >= 450:
             return 99.0
-        elif score >= 400:
+        if score >= 400:
             return 95.0
-        elif score >= 350:
+        if score >= 350:
             return 85.0
-        elif score >= 300:
+        if score >= 300:
             return 70.0
-        elif score >= 250:
+        if score >= 250:
             return 50.0
-        else:
-            return max(0, (score / 500) * 50)
-    else:  # AYT
-        if score >= 450:
-            return 99.5
-        elif score >= 400:
-            return 97.0
-        elif score >= 350:
-            return 90.0
-        elif score >= 300:
-            return 75.0
-        elif score >= 250:
-            return 55.0
-        else:
-            return max(0, (score / 500) * 55)
+        return max(0, (score / 500) * 50)
+    if score >= 450:
+        return 99.5
+    if score >= 400:
+        return 97.0
+    if score >= 350:
+        return 90.0
+    if score >= 300:
+        return 75.0
+    if score >= 250:
+        return 55.0
+    return max(0, (score / 500) * 55)
 
 
 if __name__ == "__main__":

@@ -10,16 +10,15 @@ Expanded metrics collection covering all platform aspects:
 - Security metrics (auth, rate limiting)
 """
 import logging
-import psutil
-from typing import Optional
 
+import psutil
 from prometheus_client import (
-    Counter,
-    Histogram,
-    Gauge,
-    generate_latest,
     REGISTRY,
     CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
 )
 
 logger = logging.getLogger(__name__)
@@ -32,7 +31,7 @@ class EnhancedPrometheusMetrics:
     Comprehensive metrics for Kiro2 platform monitoring
     """
 
-    def __init__(self, registry: Optional[CollectorRegistry] = None):
+    def __init__(self, registry: CollectorRegistry | None = None):
         """
         Initialize enhanced metrics
 
@@ -655,7 +654,7 @@ class EnhancedPrometheusMetrics:
 
 
 # Global instance
-_enhanced_metrics: Optional[EnhancedPrometheusMetrics] = None
+_enhanced_metrics: EnhancedPrometheusMetrics | None = None
 
 
 def get_enhanced_metrics() -> EnhancedPrometheusMetrics:

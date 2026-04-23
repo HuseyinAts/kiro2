@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -7,22 +8,21 @@ Enhanced Resource Recommendation Engine Tests
 Teknofest 2025 - Eğitim Eylemci Projesi
 """
 
-import pytest
-from unittest.mock import AsyncMock
 from datetime import datetime
+from unittest.mock import AsyncMock
 
+import pytest
+
+from backend.integrations.youtube_service import YouTubeVideo
 from services.enhanced_resource_recommendation_engine import (
     EnhancedResourceRecommendationEngine,
     RecommendedVideo,
     enhanced_recommendation_engine,
     get_enhanced_recommendation_engine,
 )
-from backend.integrations.youtube_service import YouTubeVideo
-from services.turkish_content_filter import TurkishValidationResult
 from services.subject_relevance_scorer import RelevanceScore
+from services.turkish_content_filter import TurkishValidationResult
 from services.video_quality_validator import VideoAccessibilityResult
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -476,8 +476,7 @@ class TestEnhancedResourceRecommendationEngine:
                     caption_available=False,
                     definition="sd",
                 )
-            else:
-                raise Exception("Processing error")
+            raise Exception("Processing error")
 
         engine._process_single_video = mock_process
 

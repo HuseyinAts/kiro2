@@ -7,7 +7,6 @@ Date: 2025-10-27
 """
 import json
 import time
-from typing import Optional
 
 from fastapi import Request, Response, status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -178,7 +177,7 @@ class EnhancedRateLimitMiddleware(BaseHTTPMiddleware):
 
     def _extract_user_info(
         self, request: Request
-    ) -> tuple[Optional[str], UserTier, Optional[list]]:
+    ) -> tuple[str | None, UserTier, list | None]:
         """
         Extract user information from request
 

@@ -4,18 +4,18 @@ Efficient bulk loading and query optimization patterns for SQLAlchemy
 """
 
 import logging
-from typing import List, Optional, Any, Type, TypeVar
 from datetime import datetime
+from typing import Any, TypeVar
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import (
+    defer,
     joinedload,
+    load_only,
     selectinload,
     subqueryload,
-    load_only,
-    defer,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -43,15 +43,15 @@ class QueryOptimizer:
 
     async def load_with_relationships(
         self,
-        model: Type[T],
+        model: type[T],
         *,
-        joined: Optional[List[str]] = None,
-        subquery: Optional[List[str]] = None,
-        selectin: Optional[List[str]] = None,
-        filters: Optional[Any] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
-    ) -> List[T]:
+        joined: list[str] | None = None,
+        subquery: list[str] | None = None,
+        selectin: list[str] | None = None,
+        filters: Any | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
+    ) -> list[T]:
         """
         Load entities with optimized relationship loading
 
@@ -114,12 +114,12 @@ class QueryOptimizer:
 
     async def load_students_with_data(
         self,
-        student_ids: Optional[List[int]] = None,
+        student_ids: list[int] | None = None,
         include_exam_results: bool = True,
         include_learning_path: bool = True,
         include_profile: bool = True,
-        limit: Optional[int] = None,
-    ) -> List:
+        limit: int | None = None,
+    ) -> list:
         """
         Optimized student data loading
 
@@ -191,8 +191,8 @@ class QueryOptimizer:
     # ========================================================================
 
     async def load_with_selected_columns(
-        self, model: Type[T], columns: List[str], filters: Optional[Any] = None
-    ) -> List[T]:
+        self, model: type[T], columns: list[str], filters: Any | None = None
+    ) -> list[T]:
         """
         Load only specific columns (deferred loading)
 
@@ -217,8 +217,8 @@ class QueryOptimizer:
         return result.scalars().all()
 
     async def load_with_deferred_columns(
-        self, model: Type[T], defer_columns: List[str], filters: Optional[Any] = None
-    ) -> List[T]:
+        self, model: type[T], defer_columns: list[str], filters: Any | None = None
+    ) -> list[T]:
         """
         Load all columns except specified ones
 
@@ -248,7 +248,7 @@ class QueryOptimizer:
     # ========================================================================
 
     async def bulk_insert(
-        self, model: Type[T], data: List[dict], batch_size: int = 1000
+        self, model: type[T], data: list[dict], batch_size: int = 1000
     ) -> int:
         """
         Efficient bulk insert
@@ -290,7 +290,7 @@ class QueryOptimizer:
         return total_inserted
 
     async def bulk_update(
-        self, model: Type[T], updates: List[dict], id_field: str = "id"
+        self, model: type[T], updates: list[dict], id_field: str = "id"
     ) -> int:
         """
         Efficient bulk update
@@ -319,8 +319,8 @@ class QueryOptimizer:
     # ========================================================================
 
     async def get_students_with_exam_stats(
-        self, class_id: Optional[int] = None, min_exam_count: int = 0
-    ) -> List[dict]:
+        self, class_id: int | None = None, min_exam_count: int = 0
+    ) -> list[dict]:
         """
         Complex aggregation query example
 
@@ -363,12 +363,12 @@ class QueryOptimizer:
         ]
 
     async def get_top_performers(
-        self, subject: Optional[str] = None, limit: int = 10
-    ) -> List[dict]:
+        self, subject: str | None = None, limit: int = 10
+    ) -> list[dict]:
         """
         Get top performing students with efficient loading
         """
-        from models_unified import Kullanici, SinavSonucu, Sinav
+        from models_unified import Kullanici, Sinav, SinavSonucu
 
         query = (
             select(
@@ -510,8 +510,9 @@ class CommonQueryPatterns:
         """
         Get class-wide performance summary with aggregations
         """
-        from models_unified import Kullanici, SinavSonucu
         from sqlalchemy import func
+
+        from models_unified import Kullanici, SinavSonucu
 
         # Student count
         student_count_query = select(func.count(Kullanici.id)).where(

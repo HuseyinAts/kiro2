@@ -3,13 +3,13 @@ Wave 2B - Tam Veritabanı Değerlendirmesi
 Tüm soruları BERTScore ile tara, benzer soruları tespit et, kalite raporu oluştur
 """
 
-import sys
-import json
 import asyncio
-from pathlib import Path
 import io
-from datetime import datetime
+import json
+import sys
 from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
 
 # UTF-8 kodlama
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -23,10 +23,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
-from services.bertscore_evaluator import BERTScoreEvaluator
-from core.database import get_db_session
 from sqlalchemy import text
+
+from core.database import get_db_session
+from services.bertscore_evaluator import BERTScoreEvaluator
+from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
 
 
 async def load_all_questions(limit: int = 100):
@@ -361,8 +362,7 @@ async def main():
             )
             print("\n🎉 Wave 2B tüm özelliklerle çalışıyor!")
             return 0
-        else:
-            return 1
+        return 1
 
     except Exception as e:
         print(f"\n❌ Hata: {e}")

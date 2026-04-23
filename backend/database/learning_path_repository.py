@@ -13,19 +13,19 @@ Provides CRUD operations for:
 
 import logging
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import Any
 
-from sqlalchemy import select, update, delete, and_
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import and_, delete, select, update
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.learning_path_models import (
+    FallbackVideo,
     LearningPath,
     LearningPathStudentProfile,
+    QuizSubmission,
     TopicCompletion,
     TopicProgress,
-    QuizSubmission,
-    FallbackVideo,
 )
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ class LearningPathRepository:
     # ==================== Student Profile Operations ====================
 
     async def create_student_profile(
-        self, session: AsyncSession, profile_data: Dict[str, Any]
+        self, session: AsyncSession, profile_data: dict[str, Any]
     ) -> LearningPathStudentProfile:
         """Create new student profile"""
         try:
@@ -59,7 +59,7 @@ class LearningPathRepository:
 
     async def get_student_profile(
         self, session: AsyncSession, student_id: str
-    ) -> Optional[LearningPathStudentProfile]:
+    ) -> LearningPathStudentProfile | None:
         """Get student profile by ID"""
         try:
             result = await session.execute(
@@ -73,8 +73,8 @@ class LearningPathRepository:
             raise
 
     async def update_student_profile(
-        self, session: AsyncSession, student_id: str, update_data: Dict[str, Any]
-    ) -> Optional[LearningPathStudentProfile]:
+        self, session: AsyncSession, student_id: str, update_data: dict[str, Any]
+    ) -> LearningPathStudentProfile | None:
         """Update student profile"""
         try:
             update_data["updated_at"] = datetime.now()
@@ -116,7 +116,7 @@ class LearningPathRepository:
     # ==================== Learning Path Operations ====================
 
     async def create_learning_path(
-        self, session: AsyncSession, path_data: Dict[str, Any]
+        self, session: AsyncSession, path_data: dict[str, Any]
     ) -> LearningPath:
         """Create new learning path"""
         try:
@@ -140,7 +140,7 @@ class LearningPathRepository:
 
     async def get_learning_path(
         self, session: AsyncSession, path_id: str
-    ) -> Optional[LearningPath]:
+    ) -> LearningPath | None:
         """Get learning path by ID"""
         try:
             result = await session.execute(
@@ -152,8 +152,8 @@ class LearningPathRepository:
             raise
 
     async def get_student_learning_paths(
-        self, session: AsyncSession, student_id: str, subject: Optional[str] = None
-    ) -> List[LearningPath]:
+        self, session: AsyncSession, student_id: str, subject: str | None = None
+    ) -> list[LearningPath]:
         """Get all learning paths for a student"""
         try:
             query = select(LearningPath).where(LearningPath.student_id == student_id)
@@ -175,7 +175,7 @@ class LearningPathRepository:
         path_id: str,
         completed_modules: int,
         completed_topics: int,
-    ) -> Optional[LearningPath]:
+    ) -> LearningPath | None:
         """Update learning path progress"""
         try:
             # Get current path to calculate overall progress
@@ -241,18 +241,17 @@ class LearningPathRepository:
                 )
                 await session.commit()
                 return await self.get_topic_completion(session, student_id, node_id)
-            else:
-                # Insert
-                completion = TopicCompletion(
-                    student_id=student_id,
-                    node_id=node_id,
-                    completed=completed,
-                    completion_date=datetime.now() if completed else None,
-                )
-                session.add(completion)
-                await session.commit()
-                await session.refresh(completion)
-                return completion
+            # Insert
+            completion = TopicCompletion(
+                student_id=student_id,
+                node_id=node_id,
+                completed=completed,
+                completion_date=datetime.now() if completed else None,
+            )
+            session.add(completion)
+            await session.commit()
+            await session.refresh(completion)
+            return completion
         except Exception as e:
             await session.rollback()
             logger.error(f"Error setting topic completion {student_id}/{node_id}: {e}")
@@ -260,7 +259,7 @@ class LearningPathRepository:
 
     async def get_topic_completion(
         self, session: AsyncSession, student_id: str, node_id: str
-    ) -> Optional[TopicCompletion]:
+    ) -> TopicCompletion | None:
         """Get topic completion status"""
         try:
             result = await session.execute(
@@ -278,7 +277,7 @@ class LearningPathRepository:
 
     async def get_student_completions(
         self, session: AsyncSession, student_id: str
-    ) -> Dict[str, bool]:
+    ) -> dict[str, bool]:
         """Get all topic completions for a student"""
         try:
             result = await session.execute(
@@ -292,7 +291,7 @@ class LearningPathRepository:
             raise
 
     async def batch_set_completions(
-        self, session: AsyncSession, student_id: str, completions: Dict[str, bool]
+        self, session: AsyncSession, student_id: str, completions: dict[str, bool]
     ) -> int:
         """
         Batch set topic completions
@@ -402,19 +401,18 @@ class LearningPathRepository:
                     select(TopicProgress).where(TopicProgress.id == existing.id)
                 )
                 return result.scalar_one()
-            else:
-                # Insert
-                progress_obj = TopicProgress(
-                    student_id=student_id,
-                    node_id=node_id,
-                    progress=progress,
-                    time_spent=time_spent,
-                    completed=completed,
-                )
-                session.add(progress_obj)
-                await session.commit()
-                await session.refresh(progress_obj)
-                return progress_obj
+            # Insert
+            progress_obj = TopicProgress(
+                student_id=student_id,
+                node_id=node_id,
+                progress=progress,
+                time_spent=time_spent,
+                completed=completed,
+            )
+            session.add(progress_obj)
+            await session.commit()
+            await session.refresh(progress_obj)
+            return progress_obj
         except Exception as e:
             await session.rollback()
             logger.error(f"Error updating topic progress {student_id}/{node_id}: {e}")
@@ -422,7 +420,7 @@ class LearningPathRepository:
 
     async def get_student_progress(
         self, session: AsyncSession, student_id: str
-    ) -> List[TopicProgress]:
+    ) -> list[TopicProgress]:
         """Get all progress for a student"""
         try:
             result = await session.execute(
@@ -438,7 +436,7 @@ class LearningPathRepository:
     # ==================== Quiz Submission Operations ====================
 
     async def create_quiz_submission(
-        self, session: AsyncSession, submission_data: Dict[str, Any]
+        self, session: AsyncSession, submission_data: dict[str, Any]
     ) -> QuizSubmission:
         """Create quiz submission"""
         try:
@@ -457,8 +455,8 @@ class LearningPathRepository:
             raise
 
     async def get_student_quiz_submissions(
-        self, session: AsyncSession, student_id: str, quiz_id: Optional[str] = None
-    ) -> List[QuizSubmission]:
+        self, session: AsyncSession, student_id: str, quiz_id: str | None = None
+    ) -> list[QuizSubmission]:
         """Get quiz submissions for a student"""
         try:
             query = select(QuizSubmission).where(
@@ -479,7 +477,7 @@ class LearningPathRepository:
     # ==================== Fallback Video Operations ====================
 
     async def create_fallback_video(
-        self, session: AsyncSession, video_data: Dict[str, Any]
+        self, session: AsyncSession, video_data: dict[str, Any]
     ) -> FallbackVideo:
         """Create fallback video"""
         try:
@@ -503,9 +501,9 @@ class LearningPathRepository:
         self,
         session: AsyncSession,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         limit: int = 10,
-    ) -> List[FallbackVideo]:
+    ) -> list[FallbackVideo]:
         """Get fallback videos for subject/topic"""
         try:
             query = select(FallbackVideo).where(
@@ -528,7 +526,7 @@ class LearningPathRepository:
             raise
 
     async def batch_create_fallback_videos(
-        self, session: AsyncSession, videos: List[Dict[str, Any]]
+        self, session: AsyncSession, videos: list[dict[str, Any]]
     ) -> int:
         """Batch create fallback videos"""
         try:

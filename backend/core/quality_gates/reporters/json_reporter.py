@@ -8,9 +8,9 @@ Machine-readable JSON output for CI/CD integration.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from ..models import GateResult, PipelineResult
 
@@ -28,7 +28,7 @@ class JsonReporter:
 
     def __init__(
         self,
-        output_path: Optional[Path] = None,
+        output_path: Path | None = None,
         pretty: bool = True,
         include_details: bool = True,
     ):
@@ -96,7 +96,7 @@ class JsonReporter:
                 "approver": result.override_approver,
             } if result.overridden else None,
             "metadata": {
-                "report_generated_at": datetime.now(timezone.utc).isoformat(),
+                "report_generated_at": datetime.now(UTC).isoformat(),
                 "reporter_version": "1.0.0",
             },
         }
@@ -158,7 +158,7 @@ class JsonSummaryReporter(JsonReporter):
     Useful for dashboards and quick status checks.
     """
 
-    def __init__(self, output_path: Optional[Path] = None):
+    def __init__(self, output_path: Path | None = None):
         super().__init__(output_path, pretty=True, include_details=False)
 
     def _serialize_result(self, result: PipelineResult) -> dict[str, Any]:
@@ -172,7 +172,7 @@ class JsonSummaryReporter(JsonReporter):
             "duration_ms": result.total_execution_time_ms,
             "commit": result.commit_hash,
             "branch": result.branch,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "gates": {
                 g.gate_name: {
                     "status": g.status.value,

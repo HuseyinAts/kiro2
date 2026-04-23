@@ -145,7 +145,7 @@ class TestTurkishFileIO:
             temp_path = f.name
 
         try:
-            with open(temp_path, "r", encoding="utf-8") as f:
+            with open(temp_path, encoding="utf-8") as f:
                 read_text = f.read()
 
             assert read_text == text

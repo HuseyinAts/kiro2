@@ -2,12 +2,13 @@
 Tests for Database Query Optimizer
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
+
 from core.database_query_optimizer import (
-    QueryOptimizer,
     CommonQueryPatterns,
+    QueryOptimizer,
     explain_loading_strategy,
     get_optimizer,
 )

@@ -6,24 +6,24 @@ Teknofest 2025 Eğitim Eylemci Platformu
 Target: Pure data model testing with no mocks
 """
 
-import pytest
 from datetime import datetime
-from pydantic import ValidationError
 from uuid import UUID
 
+import pytest
+from pydantic import ValidationError
+
 from models.content_models import (
+    BulkContentImport,
+    ContentFilter,
+    ContentInteraction,
+    ContentSearchRequest,
+    ContentStats,
     ContentType,
     InteractionType,
     MakaleIcerik,
-    VideoIcerik,
     QuizIcerik,
-    ContentInteraction,
-    ContentStats,
-    ContentFilter,
-    ContentSearchRequest,
-    BulkContentImport,
+    VideoIcerik,
 )
-
 
 # ==============================================================================
 # ENUM TESTS - ContentType

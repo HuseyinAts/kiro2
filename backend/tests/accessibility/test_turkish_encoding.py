@@ -8,12 +8,13 @@ tüm platformda doğru şekilde kodlandığını ve görüntülendiğini test ed
 Requirements: 7.4, 9.1
 """
 
-import os
-import sys
-import pytest
-from typing import Dict, Any
 import json
+import os
 import re
+import sys
+from typing import Any
+
+import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -37,7 +38,7 @@ class TurkishEncodingValidator:
             "Üniversite sınavına hazırlanıyorum.",
         ]
 
-    def test_utf8_encoding(self, content: str) -> Dict[str, Any]:
+    def test_utf8_encoding(self, content: str) -> dict[str, Any]:
         """UTF-8 encoding testi"""
         result = {
             "test_name": "UTF-8 Encoding",
@@ -73,18 +74,18 @@ class TurkishEncodingValidator:
                 )
 
         except UnicodeEncodeError as e:
-            result["issues"].append(f"UTF-8 encoding hatası: {str(e)}")
+            result["issues"].append(f"UTF-8 encoding hatası: {e!s}")
             result["recommendations"].append(
                 "Dosya encoding'ini UTF-8 olarak ayarlayın"
             )
         except UnicodeDecodeError as e:
-            result["issues"].append(f"UTF-8 decoding hatası: {str(e)}")
+            result["issues"].append(f"UTF-8 decoding hatası: {e!s}")
             result["recommendations"].append("Dosya encoding'ini kontrol edin")
 
         self.test_results.append(result)
         return result
 
-    def test_html_meta_charset(self, html_content: str) -> Dict[str, Any]:
+    def test_html_meta_charset(self, html_content: str) -> dict[str, Any]:
         """HTML meta charset testi"""
         result = {
             "test_name": "HTML Meta Charset",
@@ -113,7 +114,7 @@ class TurkishEncodingValidator:
         self.test_results.append(result)
         return result
 
-    def test_database_encoding(self, db_config: Dict[str, Any]) -> Dict[str, Any]:
+    def test_database_encoding(self, db_config: dict[str, Any]) -> dict[str, Any]:
         """Veritabanı encoding testi"""
         result = {
             "test_name": "Database Encoding",
@@ -142,8 +143,8 @@ class TurkishEncodingValidator:
         return result
 
     def test_api_response_encoding(
-        self, response_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, response_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """API response encoding testi"""
         result = {
             "test_name": "API Response Encoding",
@@ -187,7 +188,7 @@ class TurkishEncodingValidator:
                 result["passed"] = True
 
         except (json.JSONDecodeError, UnicodeEncodeError) as e:
-            result["issues"].append(f"JSON encoding hatası: {str(e)}")
+            result["issues"].append(f"JSON encoding hatası: {e!s}")
             result["recommendations"].append(
                 "API response'larında ensure_ascii=False kullanın"
             )
@@ -195,7 +196,7 @@ class TurkishEncodingValidator:
         self.test_results.append(result)
         return result
 
-    def test_url_encoding(self, url: str) -> Dict[str, Any]:
+    def test_url_encoding(self, url: str) -> dict[str, Any]:
         """URL encoding testi (Türkçe karakterler için)"""
         result = {
             "test_name": "URL Encoding",
@@ -227,7 +228,7 @@ class TurkishEncodingValidator:
         self.test_results.append(result)
         return result
 
-    def test_file_system_encoding(self, file_path: str) -> Dict[str, Any]:
+    def test_file_system_encoding(self, file_path: str) -> dict[str, Any]:
         """Dosya sistemi encoding testi"""
         result = {
             "test_name": "File System Encoding",
@@ -256,7 +257,7 @@ class TurkishEncodingValidator:
                 result["passed"] = True
 
         except (UnicodeEncodeError, UnicodeDecodeError) as e:
-            result["issues"].append(f"Dosya adı encoding hatası: {str(e)}")
+            result["issues"].append(f"Dosya adı encoding hatası: {e!s}")
             result["recommendations"].append(
                 "Dosya adlarında Türkçe karakter kullanmaktan kaçının"
             )
@@ -264,7 +265,7 @@ class TurkishEncodingValidator:
         self.test_results.append(result)
         return result
 
-    def test_form_data_encoding(self, form_data: Dict[str, str]) -> Dict[str, Any]:
+    def test_form_data_encoding(self, form_data: dict[str, str]) -> dict[str, Any]:
         """Form data encoding testi"""
         result = {
             "test_name": "Form Data Encoding",
@@ -276,7 +277,7 @@ class TurkishEncodingValidator:
 
         try:
             # Form data'yı URL encode et
-            from urllib.parse import urlencode, parse_qs
+            from urllib.parse import parse_qs, urlencode
 
             encoded = urlencode(form_data)
             decoded = parse_qs(encoded)
@@ -297,7 +298,7 @@ class TurkishEncodingValidator:
                 result["passed"] = True
 
         except Exception as e:
-            result["issues"].append(f"Form data encoding hatası: {str(e)}")
+            result["issues"].append(f"Form data encoding hatası: {e!s}")
             result["recommendations"].append(
                 "Form encoding'ini application/x-www-form-urlencoded; charset=UTF-8 olarak ayarlayın"
             )
@@ -305,7 +306,7 @@ class TurkishEncodingValidator:
         self.test_results.append(result)
         return result
 
-    def test_console_output_encoding(self, text: str) -> Dict[str, Any]:
+    def test_console_output_encoding(self, text: str) -> dict[str, Any]:
         """Console output encoding testi"""
         result = {
             "test_name": "Console Output Encoding",
@@ -335,7 +336,7 @@ class TurkishEncodingValidator:
                 )
 
         except UnicodeEncodeError as e:
-            result["issues"].append(f"Console encoding hatası: {str(e)}")
+            result["issues"].append(f"Console encoding hatası: {e!s}")
             result["recommendations"].append(
                 "Console encoding'ini UTF-8 olarak ayarlayın"
             )
@@ -343,7 +344,7 @@ class TurkishEncodingValidator:
         self.test_results.append(result)
         return result
 
-    def generate_encoding_report(self) -> Dict[str, Any]:
+    def generate_encoding_report(self) -> dict[str, Any]:
         """Encoding doğrulama raporu oluştur"""
         total_tests = len(self.test_results)
         passed_tests = sum(1 for r in self.test_results if r.get("passed", False))

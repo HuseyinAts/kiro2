@@ -13,10 +13,10 @@ Date: 2026-01-18
 
 import os
 import sys
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
-from unittest.mock import patch, MagicMock
 
 # Add backend directory to path for imports
 backend_dir = os.path.dirname(

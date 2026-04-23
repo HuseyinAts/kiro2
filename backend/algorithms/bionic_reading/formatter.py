@@ -13,9 +13,9 @@ Desteklenen formatlar:
 import html
 import logging
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable
 
 from .fixation import FixationPoint, FixationPointDetector
 

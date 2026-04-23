@@ -4,20 +4,21 @@ Task 104: University Information Service
 Service layer for campus info, living costs, dormitories, and scholarships
 """
 
-from typing import List, Optional, Dict, Any
+from typing import Any
 from uuid import UUID
-from sqlalchemy import select, and_, or_
+
+from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.university_info import (
+    AccommodationType,
     CampusInfo,
+    CampusType,
     CityLivingCost,
     DormitoryInfo,
     ScholarshipProgram,
-    UniversityStatistics,
-    CampusType,
-    AccommodationType,
     ScholarshipType,
+    UniversityStatistics,
 )
 
 
@@ -31,13 +32,13 @@ class UniversityInfoService:
     # Task 104.1: Campus Information
     # ============================================================
 
-    async def get_campus_info(self, university_id: UUID) -> List[CampusInfo]:
+    async def get_campus_info(self, university_id: UUID) -> list[CampusInfo]:
         """Get all campus information for a university"""
         query = select(CampusInfo).where(CampusInfo.university_id == university_id)
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def get_campus_by_id(self, campus_id: UUID) -> Optional[CampusInfo]:
+    async def get_campus_by_id(self, campus_id: UUID) -> CampusInfo | None:
         """Get specific campus information"""
         query = select(CampusInfo).where(CampusInfo.id == campus_id)
         result = await self.db.execute(query)
@@ -64,7 +65,7 @@ class UniversityInfoService:
         await self.db.refresh(campus)
         return campus
 
-    async def get_campus_facilities(self, university_id: UUID) -> Dict[str, Any]:
+    async def get_campus_facilities(self, university_id: UUID) -> dict[str, Any]:
         """Get aggregate facilities information for all campuses"""
         campuses = await self.get_campus_info(university_id)
 
@@ -119,7 +120,7 @@ class UniversityInfoService:
 
     async def get_city_living_cost(
         self, city: str, year: int = 2024
-    ) -> Optional[CityLivingCost]:
+    ) -> CityLivingCost | None:
         """Get living cost data for a city"""
         query = select(CityLivingCost).where(
             and_(CityLivingCost.city == city, CityLivingCost.year == year)
@@ -129,7 +130,7 @@ class UniversityInfoService:
 
     async def get_all_cities_living_costs(
         self, year: int = 2024
-    ) -> List[CityLivingCost]:
+    ) -> list[CityLivingCost]:
         """Get living costs for all cities"""
         query = (
             select(CityLivingCost)
@@ -150,8 +151,8 @@ class UniversityInfoService:
         return living_cost
 
     async def compare_city_costs(
-        self, cities: List[str], year: int = 2024
-    ) -> List[Dict[str, Any]]:
+        self, cities: list[str], year: int = 2024
+    ) -> list[dict[str, Any]]:
         """Compare living costs across multiple cities"""
         query = (
             select(CityLivingCost)
@@ -179,7 +180,7 @@ class UniversityInfoService:
 
     async def get_student_budget_estimate(
         self, city: str, accommodation_type: str = "dormitory", year: int = 2024
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Calculate estimated student budget for a city
 
@@ -241,11 +242,11 @@ class UniversityInfoService:
 
     async def get_dormitories(
         self,
-        university_id: Optional[UUID] = None,
-        city: Optional[str] = None,
-        accommodation_type: Optional[AccommodationType] = None,
-        max_price: Optional[int] = None,
-    ) -> List[DormitoryInfo]:
+        university_id: UUID | None = None,
+        city: str | None = None,
+        accommodation_type: AccommodationType | None = None,
+        max_price: int | None = None,
+    ) -> list[DormitoryInfo]:
         """Get dormitory information with filters"""
         conditions = []
 
@@ -267,7 +268,7 @@ class UniversityInfoService:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def get_dormitory_by_id(self, dormitory_id: UUID) -> Optional[DormitoryInfo]:
+    async def get_dormitory_by_id(self, dormitory_id: UUID) -> DormitoryInfo | None:
         """Get specific dormitory information"""
         query = select(DormitoryInfo).where(DormitoryInfo.id == dormitory_id)
         result = await self.db.execute(query)
@@ -278,7 +279,7 @@ class UniversityInfoService:
         name: str,
         accommodation_type: AccommodationType,
         city: str,
-        university_id: Optional[UUID] = None,
+        university_id: UUID | None = None,
         **kwargs,
     ) -> DormitoryInfo:
         """Create new dormitory information"""
@@ -295,8 +296,8 @@ class UniversityInfoService:
         return dormitory
 
     async def get_dormitory_statistics(
-        self, university_id: Optional[UUID] = None, city: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, university_id: UUID | None = None, city: str | None = None
+    ) -> dict[str, Any]:
         """Get aggregate dormitory statistics"""
         conditions = []
         if university_id:
@@ -350,11 +351,11 @@ class UniversityInfoService:
 
     async def get_scholarships(
         self,
-        university_id: Optional[UUID] = None,
-        scholarship_type: Optional[ScholarshipType] = None,
-        min_coverage: Optional[float] = None,
+        university_id: UUID | None = None,
+        scholarship_type: ScholarshipType | None = None,
+        min_coverage: float | None = None,
         active_only: bool = True,
-    ) -> List[ScholarshipProgram]:
+    ) -> list[ScholarshipProgram]:
         """Get scholarship programs with filters"""
         conditions = []
 
@@ -378,7 +379,7 @@ class UniversityInfoService:
 
     async def get_scholarship_by_id(
         self, scholarship_id: UUID
-    ) -> Optional[ScholarshipProgram]:
+    ) -> ScholarshipProgram | None:
         """Get specific scholarship information"""
         query = select(ScholarshipProgram).where(
             ScholarshipProgram.id == scholarship_id
@@ -390,7 +391,7 @@ class UniversityInfoService:
         self,
         name: str,
         scholarship_type: ScholarshipType,
-        university_id: Optional[UUID] = None,
+        university_id: UUID | None = None,
         **kwargs,
     ) -> ScholarshipProgram:
         """Create new scholarship program"""
@@ -409,9 +410,9 @@ class UniversityInfoService:
         self,
         university_id: UUID,
         exam_score: float,
-        high_school_gpa: Optional[float] = None,
-        family_income: Optional[int] = None,
-    ) -> List[ScholarshipProgram]:
+        high_school_gpa: float | None = None,
+        family_income: int | None = None,
+    ) -> list[ScholarshipProgram]:
         """Get scholarships the student is eligible for"""
         conditions = [
             ScholarshipProgram.university_id == university_id,
@@ -453,7 +454,7 @@ class UniversityInfoService:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def get_scholarship_statistics(self, university_id: UUID) -> Dict[str, Any]:
+    async def get_scholarship_statistics(self, university_id: UUID) -> dict[str, Any]:
         """Get aggregate scholarship statistics"""
         query = select(ScholarshipProgram).where(
             and_(
@@ -508,7 +509,7 @@ class UniversityInfoService:
 
     async def get_comprehensive_university_info(
         self, university_id: UUID, year: int = 2024
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get all university information in one call"""
 
         # Get campus info
@@ -555,7 +556,7 @@ class UniversityInfoService:
 
     async def get_university_statistics(
         self, university_id: UUID, year: int = 2024
-    ) -> Optional[UniversityStatistics]:
+    ) -> UniversityStatistics | None:
         """Get university statistics"""
         query = select(UniversityStatistics).where(
             and_(
@@ -634,40 +635,39 @@ class UniversityInfoService:
             await self.db.commit()
             await self.db.refresh(existing_stats)
             return existing_stats
-        else:
-            # Create new
-            stats = UniversityStatistics(
-                university_id=university_id,
-                year=year,
-                total_campuses=total_campuses,
-                total_campus_area_sqm=total_area,
-                total_student_clubs=total_clubs,
-                has_health_center=has_health,
-                has_career_center=has_career,
-                city=city,
-                avg_monthly_cost=living_cost.total_avg_budget if living_cost else None,
-                avg_rent=living_cost.rent_studio_avg if living_cost else None,
-                cost_of_living_index=living_cost.cost_of_living_index
-                if living_cost
-                else None,
-                total_dormitory_capacity=dorm_stats["total_capacity"],
-                avg_dormitory_cost=dorm_stats["avg_price"],
-                total_scholarships=scholarship_stats["total_scholarships"],
-                full_scholarships=scholarship_stats["full_scholarships"],
-                partial_scholarships=scholarship_stats["partial_scholarships"],
-                avg_scholarship_amount=scholarship_stats["avg_amount"],
-                affordability_score=affordability_score,
-            )
-            self.db.add(stats)
-            await self.db.commit()
-            await self.db.refresh(stats)
-            return stats
+        # Create new
+        stats = UniversityStatistics(
+            university_id=university_id,
+            year=year,
+            total_campuses=total_campuses,
+            total_campus_area_sqm=total_area,
+            total_student_clubs=total_clubs,
+            has_health_center=has_health,
+            has_career_center=has_career,
+            city=city,
+            avg_monthly_cost=living_cost.total_avg_budget if living_cost else None,
+            avg_rent=living_cost.rent_studio_avg if living_cost else None,
+            cost_of_living_index=living_cost.cost_of_living_index
+            if living_cost
+            else None,
+            total_dormitory_capacity=dorm_stats["total_capacity"],
+            avg_dormitory_cost=dorm_stats["avg_price"],
+            total_scholarships=scholarship_stats["total_scholarships"],
+            full_scholarships=scholarship_stats["full_scholarships"],
+            partial_scholarships=scholarship_stats["partial_scholarships"],
+            avg_scholarship_amount=scholarship_stats["avg_amount"],
+            affordability_score=affordability_score,
+        )
+        self.db.add(stats)
+        await self.db.commit()
+        await self.db.refresh(stats)
+        return stats
 
     # ============================================================
     # Helper methods to convert models to dicts
     # ============================================================
 
-    def _campus_to_dict(self, campus: CampusInfo) -> Dict[str, Any]:
+    def _campus_to_dict(self, campus: CampusInfo) -> dict[str, Any]:
         """Convert CampusInfo to dict"""
         return {
             "id": campus.id,
@@ -682,7 +682,7 @@ class UniversityInfoService:
             "shuttle_service": campus.shuttle_service,
         }
 
-    def _living_cost_to_dict(self, cost: CityLivingCost) -> Dict[str, Any]:
+    def _living_cost_to_dict(self, cost: CityLivingCost) -> dict[str, Any]:
         """Convert CityLivingCost to dict"""
         return {
             "city": cost.city,
@@ -693,7 +693,7 @@ class UniversityInfoService:
             "cost_of_living_index": cost.cost_of_living_index,
         }
 
-    def _dormitory_to_dict(self, dorm: DormitoryInfo) -> Dict[str, Any]:
+    def _dormitory_to_dict(self, dorm: DormitoryInfo) -> dict[str, Any]:
         """Convert DormitoryInfo to dict"""
         return {
             "id": dorm.id,
@@ -705,7 +705,7 @@ class UniversityInfoService:
             "distance_to_campus_km": dorm.distance_to_campus_km,
         }
 
-    def _scholarship_to_dict(self, scholarship: ScholarshipProgram) -> Dict[str, Any]:
+    def _scholarship_to_dict(self, scholarship: ScholarshipProgram) -> dict[str, Any]:
         """Convert ScholarshipProgram to dict"""
         return {
             "id": scholarship.id,
@@ -719,7 +719,7 @@ class UniversityInfoService:
             "covers_accommodation": scholarship.covers_accommodation,
         }
 
-    def _statistics_to_dict(self, stats: UniversityStatistics) -> Dict[str, Any]:
+    def _statistics_to_dict(self, stats: UniversityStatistics) -> dict[str, Any]:
         """Convert UniversityStatistics to dict"""
         return {
             "total_campuses": stats.total_campuses,

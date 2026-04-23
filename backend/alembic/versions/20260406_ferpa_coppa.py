@@ -5,8 +5,9 @@ Revises: 20260406_kvkk_recreate
 Create Date: 2026-04-06
 """
 
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 revision = "20260406_ferpa_coppa"
 down_revision = "20260406_kvkk_recreate"

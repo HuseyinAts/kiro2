@@ -3,18 +3,19 @@ Fast tests for Expert Content Validation System
 Tests core validation workflow, expert assignment, and compliance reporting
 """
 
+from datetime import UTC, datetime
+
 import pytest
-from datetime import datetime, timezone
 
 from core.expert_content_validation import (
     ComplianceLevel,
-    ContentType,
-    ExpertRole,
-    ValidationStatus,
-    ExpertContentValidationSystem,
-    ValidationRequest,
-    ValidationFeedback,
     ContentComplianceReport,
+    ContentType,
+    ExpertContentValidationSystem,
+    ExpertRole,
+    ValidationFeedback,
+    ValidationRequest,
+    ValidationStatus,
 )
 
 
@@ -141,7 +142,7 @@ class TestContentSubmission:
         assert request.exam_type == "tyt"
         assert request.priority == 8
         # Uzmanlar otomatik atandığında status IN_REVIEW olur
-        assert ValidationStatus.IN_REVIEW == request.status
+        assert request.status == ValidationStatus.IN_REVIEW
 
     @pytest.mark.asyncio
     async def test_high_priority_content_gets_more_experts(
@@ -471,7 +472,7 @@ class TestDataModels:
             required_expert_roles=[ExpertRole.SUBJECT_EXPERT],
             assigned_experts=[],
             feedbacks=[],
-            submitted_at=datetime.now(timezone.utc),
+            submitted_at=datetime.now(UTC),
             priority=5,
         )
 
@@ -491,7 +492,7 @@ class TestDataModels:
             score=90.0,
             comment="Good work",
             suggestions=[],
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
         assert feedback.expert_id == "expert_1"
@@ -519,7 +520,7 @@ class TestDataModels:
             overall_compliance=ComplianceLevel.FULLY_COMPLIANT,
             overall_score=89.5,
             recommendations=[],
-            generated_at=datetime.now(timezone.utc),
+            generated_at=datetime.now(UTC),
         )
 
         assert report.meb_compliance == ComplianceLevel.FULLY_COMPLIANT

@@ -3,8 +3,6 @@ Eager Loading Strategy Configuration
 PERFORMANCE FIX: Centralized eager loading patterns for all models
 """
 
-from typing import Dict
-
 
 # Eager loading strategy map
 # Format: {model_name: {relationship_name: loading_strategy}}
@@ -14,7 +12,7 @@ from typing import Dict
 # - joinedload: Single JOIN query (good for single objects, may cause cartesian product)
 # - subqueryload: Separate subquery (good for large collections)
 
-EAGER_LOADING_STRATEGIES: Dict[str, Dict[str, str]] = {
+EAGER_LOADING_STRATEGIES: dict[str, dict[str, str]] = {
     # User model
     "User": {
         "student_profile": "joinedload",  # One-to-one relationship
@@ -226,7 +224,7 @@ ENDPOINT_OPTIMIZATIONS = {
 }
 
 
-def get_endpoint_optimization(endpoint: str) -> Dict:
+def get_endpoint_optimization(endpoint: str) -> dict:
     """
     Get optimization recommendations for an endpoint
 

@@ -3,10 +3,9 @@
 Mock Usage Quality Gate
 Prevents excessive mock usage in tests
 """
+import re
 import sys
 from pathlib import Path
-import re
-
 
 # Thresholds
 MAX_MOCKS_PER_FILE = 5  # Max mocks allowed per test file

@@ -22,28 +22,27 @@ import pytest
 
 # Validators import
 from hooks.claude_md_improvement.validators import (
+    TURKISH_CHARS,
     # IRT Validation
     IRTBounds,
+    # Question Quality
+    QuestionQualityMetrics,
+    # ZPD Validation
+    ZPDBounds,
+    calculate_zpd_score,
+    fix_turkish_encoding,
+    is_turkish_text,
+    suggest_difficulty_adjustment,
+    # Turkish Normalization
+    turkish_lower,
+    turkish_normalize,
+    turkish_upper,
     validate_irt_difficulty,
     validate_irt_discrimination,
     validate_irt_guessing,
     validate_irt_params,
-    # Turkish Normalization
-    turkish_lower,
-    turkish_upper,
-    turkish_normalize,
-    is_turkish_text,
-    fix_turkish_encoding,
-    TURKISH_CHARS,
-    # ZPD Validation
-    ZPDBounds,
     validate_zpd_probability,
-    calculate_zpd_score,
-    suggest_difficulty_adjustment,
-    # Question Quality
-    QuestionQualityMetrics,
 )
-
 
 # =============================================================================
 # IRT PARAMETRE TESTLERİ (REQ-10.1)

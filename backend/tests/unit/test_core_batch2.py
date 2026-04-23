@@ -49,9 +49,9 @@ from core.exceptions import (
     AuthenticationError,
     AuthorizationError,
     BusinessLogicError,
+    ConcurrencyError,
     ConfigurationError,
     ContentError,
-    ConcurrencyError,
     DatabaseError,
     EnhancedServiceError,
     ErrorChain,
@@ -72,7 +72,6 @@ from core.exceptions import (
     ValidationError,
 )
 from core.unified_config import Environment, UnifiedConfig
-
 
 # ==================== TEST: CONFIG VALIDATOR ====================
 

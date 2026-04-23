@@ -18,8 +18,8 @@ Features:
 - Context-aware content generation
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, Literal, Optional
+from datetime import UTC, datetime
+from typing import Any, Literal
 
 from .base import BaseDiagramGenerator
 from .classification import ClassificationMixin
@@ -55,10 +55,10 @@ class MapDiagramGenerator(
             "geographic_map", "process_diagram", "classification_diagram", "timeline"
         ],
         diagram_subtype: str,
-        content: Dict[str, Any],
-        labels: Optional[Dict[str, str]] = None,
+        content: dict[str, Any],
+        labels: dict[str, str] | None = None,
         show_legend: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate map or diagram in SVG format.
 
@@ -108,7 +108,7 @@ class MapDiagramGenerator(
                 "diagram_type": diagram_type,
                 "diagram_subtype": diagram_subtype,
                 "description": metadata.get("description", ""),
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
                 **metadata,
             },
         }
@@ -116,10 +116,10 @@ class MapDiagramGenerator(
     def generate(
         self,
         subtype: str,
-        content: Dict[str, Any],
-        labels: Optional[Dict[str, str]] = None,
+        content: dict[str, Any],
+        labels: dict[str, str] | None = None,
         **kwargs: Any,
-    ) -> tuple[str, Dict[str, Any]]:
+    ) -> tuple[str, dict[str, Any]]:
         """
         Abstract method implementation for BaseDiagramGenerator.
 

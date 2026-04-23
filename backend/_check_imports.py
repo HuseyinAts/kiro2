@@ -4,9 +4,9 @@ Import Check Script
 Verifies that all 9 router files can be imported without TypeErrors.
 """
 
-import sys
 import importlib
 import os
+import sys
 
 # Change to backend directory
 os.chdir(r"c:\Users\husey\kiro2\backend")
@@ -40,7 +40,7 @@ for router_module in routers:
         print(f"[OK]   {router_module}")
     except Exception as e:
         fail += 1
-        error_msg = f"{type(e).__name__}: {str(e)}"
+        error_msg = f"{type(e).__name__}: {e!s}"
         errors.append((router_module, error_msg))
         print(f"[FAIL] {router_module}")
         print(f"       {error_msg}")

@@ -23,7 +23,7 @@ Kullanim: Dogrudan IRTService yerine IRTMorfolojiService kullanin.
 import logging
 import math
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 import scipy.optimize as opt
@@ -53,8 +53,8 @@ class IRTService:
 
     def __init__(self):
         """IRT servisini başlat"""
-        self.kalibrasyon_gecmisi: Dict[str, List[IRTKalibrasyonSonucu]] = {}
-        self.ogrenci_profilleri: Dict[str, OgrenciMorfolojiProfili] = {}
+        self.kalibrasyon_gecmisi: dict[str, list[IRTKalibrasyonSonucu]] = {}
+        self.ogrenci_profilleri: dict[str, OgrenciMorfolojiProfili] = {}
 
         # IRT model parametreleri
         self.default_discrimination = 1.0
@@ -79,9 +79,9 @@ class IRTService:
     async def hesapla_irt_parametreleri(
         self,
         soru_id: str,
-        cevap_verileri: List[Dict[str, Any]],
+        cevap_verileri: list[dict[str, Any]],
         morfoloji_analizi: SoruMorfolojiAnalizi,
-        onceki_parametreler: Optional[IRTParametreleri] = None,
+        onceki_parametreler: IRTParametreleri | None = None,
     ) -> IRTKalibrasyonSonucu:
         """
         Soru için IRT parametrelerini hesapla ve kalibre et
@@ -166,14 +166,14 @@ class IRTService:
             return kalibrasyon_sonucu
 
         except Exception as e:
-            logger.error(f"IRT kalibrasyon hatası - Soru: {soru_id}, Hata: {str(e)}")
+            logger.error(f"IRT kalibrasyon hatası - Soru: {soru_id}, Hata: {e!s}")
             raise
 
     async def hesapla_cevap_olasiligi(
         self,
         theta: float,
         irt_parametreleri: IRTParametreleri,
-        ogrenci_morfoloji_profili: Optional[OgrenciMorfolojiProfili] = None,
+        ogrenci_morfoloji_profili: OgrenciMorfolojiProfili | None = None,
     ) -> float:
         """
         Öğrenci yetenek seviyesi için doğru cevap verme olasılığını hesapla
@@ -203,14 +203,14 @@ class IRTService:
             return temel_olasilik
 
         except Exception as e:
-            logger.error(f"Olasılık hesaplama hatası: {str(e)}")
+            logger.error(f"Olasılık hesaplama hatası: {e!s}")
             return 0.5  # Varsayılan olasılık
 
     async def hesapla_optimal_zorluk(
         self,
         hedef_ogrenci_theta: float,
         hedef_basari_orani: float = 0.7,
-        morfoloji_analizi: Optional[SoruMorfolojiAnalizi] = None,
+        morfoloji_analizi: SoruMorfolojiAnalizi | None = None,
     ) -> float:
         """
         Hedef öğrenci seviyesi için optimal soru zorluğunu hesapla
@@ -258,13 +258,13 @@ class IRTService:
             return max(-4.0, min(4.0, optimal_zorluk))
 
         except Exception as e:
-            logger.error(f"Optimal zorluk hesaplama hatası: {str(e)}")
+            logger.error(f"Optimal zorluk hesaplama hatası: {e!s}")
             return hedef_ogrenci_theta
 
     async def guncelle_ogrenci_morfoloji_profili(
         self,
         ogrenci_id: str,
-        soru_cevabi: Dict[str, Any],
+        soru_cevabi: dict[str, Any],
         soru_morfoloji_analizi: SoruMorfolojiAnalizi,
     ) -> OgrenciMorfolojiProfili:
         """
@@ -314,15 +314,14 @@ class IRTService:
                         ogrenme_orani * profil.orta_morfoloji_performansi
                     )
 
-            else:  # Karmaşık morfoloji
-                if dogru:
-                    profil.karmasik_morfoloji_performansi += ogrenme_orani * (
-                        1.0 - profil.karmasik_morfoloji_performansi
-                    )
-                else:
-                    profil.karmasik_morfoloji_performansi -= (
-                        ogrenme_orani * profil.karmasik_morfoloji_performansi
-                    )
+            elif dogru:
+                profil.karmasik_morfoloji_performansi += ogrenme_orani * (
+                    1.0 - profil.karmasik_morfoloji_performansi
+                )
+            else:
+                profil.karmasik_morfoloji_performansi -= (
+                    ogrenme_orani * profil.karmasik_morfoloji_performansi
+                )
 
             # Genel yetkinlikleri güncelle
             await self._guncelle_genel_yetkinlikler(
@@ -333,10 +332,9 @@ class IRTService:
             profil.cevaplanan_soru_sayisi += 1
             if dogru:
                 profil.dogru_cevap_sayisi += 1
-            else:
-                # Morfoloji odaklı hata mı kontrol et
-                if await self._morfoloji_odakli_hata_mi(soru_morfoloji_analizi):
-                    profil.morfoloji_odakli_hata_sayisi += 1
+            # Morfoloji odaklı hata mı kontrol et
+            elif await self._morfoloji_odakli_hata_mi(soru_morfoloji_analizi):
+                profil.morfoloji_odakli_hata_sayisi += 1
 
             # Profil güvenini güncelle
             profil.profil_guveni = min(1.0, profil.cevaplanan_soru_sayisi / 50.0)
@@ -354,7 +352,7 @@ class IRTService:
 
         except Exception as e:
             logger.error(
-                f"Profil güncelleme hatası - Öğrenci: {ogrenci_id}, Hata: {str(e)}"
+                f"Profil güncelleme hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}"
             )
             raise
 
@@ -363,7 +361,7 @@ class IRTService:
         soru_id: str,
         irt_parametreleri: IRTParametreleri,
         morfoloji_analizi: SoruMorfolojiAnalizi,
-        cevap_verileri: List[Dict[str, Any]],
+        cevap_verileri: list[dict[str, Any]],
     ) -> TurkceIRTSoruAnalizi:
         """
         Soru kalitesini kapsamlı analiz et
@@ -430,7 +428,7 @@ class IRTService:
             return soru_analizi
 
         except Exception as e:
-            logger.error(f"Soru kalite analizi hatası - ID: {soru_id}, Hata: {str(e)}")
+            logger.error(f"Soru kalite analizi hatası - ID: {soru_id}, Hata: {e!s}")
             raise
 
     # Yardımcı metodlar
@@ -458,8 +456,8 @@ class IRTService:
         return (kombinasyon_faktoru - 1.0) * 2.0
 
     def _get_baslangic_parametreleri(
-        self, onceki_parametreler: Optional[IRTParametreleri], morfoloji_faktoru: float
-    ) -> Dict[str, float]:
+        self, onceki_parametreler: IRTParametreleri | None, morfoloji_faktoru: float
+    ) -> dict[str, float]:
         """Kalibrasyon için başlangıç parametrelerini belirle"""
         if onceki_parametreler:
             return {
@@ -468,20 +466,19 @@ class IRTService:
                 "guessing": onceki_parametreler.guessing,
                 "upper_asymptote": onceki_parametreler.upper_asymptote,
             }
-        else:
-            return {
-                "discrimination": self.default_discrimination,
-                "difficulty": self.default_difficulty + morfoloji_faktoru * 0.5,
-                "guessing": self.default_guessing,
-                "upper_asymptote": self.default_upper_asymptote,
-            }
+        return {
+            "discrimination": self.default_discrimination,
+            "difficulty": self.default_difficulty + morfoloji_faktoru * 0.5,
+            "guessing": self.default_guessing,
+            "upper_asymptote": self.default_upper_asymptote,
+        }
 
     async def _irt_kalibrasyonu(
         self,
-        cevap_verileri: List[Dict[str, Any]],
-        baslangic_parametreleri: Dict[str, float],
+        cevap_verileri: list[dict[str, Any]],
+        baslangic_parametreleri: dict[str, float],
         morfoloji_faktoru: float,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """IRT parametrelerini kalibre et"""
         try:
             # Veriyi numpy array'e çevir
@@ -543,7 +540,7 @@ class IRTService:
             }
 
         except Exception as e:
-            logger.error(f"IRT kalibrasyon hatası: {str(e)}")
+            logger.error(f"IRT kalibrasyon hatası: {e!s}")
             # Hata durumunda başlangıç parametrelerini döndür
             return {
                 "discrimination": baslangic_parametreleri["discrimination"],
@@ -556,8 +553,8 @@ class IRTService:
             }
 
     async def _hesapla_model_uyumu(
-        self, cevap_verileri: List[Dict[str, Any]], parametreler: IRTParametreleri
-    ) -> Dict[str, Any]:
+        self, cevap_verileri: list[dict[str, Any]], parametreler: IRTParametreleri
+    ) -> dict[str, Any]:
         """Model uyum istatistiklerini hesapla"""
         try:
             n = len(cevap_verileri)
@@ -601,7 +598,7 @@ class IRTService:
             }
 
         except Exception as e:
-            logger.error(f"Model uyum hesaplama hatası: {str(e)}")
+            logger.error(f"Model uyum hesaplama hatası: {e!s}")
             return {
                 "log_likelihood": -1000.0,
                 "aic": 2000.0,
@@ -643,41 +640,38 @@ class IRTService:
         """Ayırt edicilik seviyesini belirle"""
         if discrimination >= 2.5:
             return "çok yüksek"
-        elif discrimination >= 1.5:
+        if discrimination >= 1.5:
             return "yüksek"
-        elif discrimination >= 0.8:
+        if discrimination >= 0.8:
             return "orta"
-        else:
-            return "düşük"
+        return "düşük"
 
     def _belirle_zorluk_seviyesi(self, difficulty: float) -> str:
         """Zorluk seviyesini belirle"""
         if difficulty >= 2.0:
             return "çok zor"
-        elif difficulty >= 1.0:
+        if difficulty >= 1.0:
             return "zor"
-        elif difficulty >= -1.0:
+        if difficulty >= -1.0:
             return "orta"
-        elif difficulty >= -2.0:
+        if difficulty >= -2.0:
             return "kolay"
-        else:
-            return "çok kolay"
+        return "çok kolay"
 
     def _belirle_morfoloji_etkisi(self, morfoloji_faktoru: float) -> str:
         """Morfoloji etkisini belirle"""
         abs_faktor = abs(morfoloji_faktoru)
         if abs_faktor >= 1.5:
             return "yüksek"
-        elif abs_faktor >= 0.5:
+        if abs_faktor >= 0.5:
             return "orta"
-        else:
-            return "düşük"
+        return "düşük"
 
     async def _olustur_iyilestirme_onerileri(
         self,
         irt_parametreleri: IRTParametreleri,
         morfoloji_analizi: SoruMorfolojiAnalizi,
-    ) -> List[str]:
+    ) -> list[str]:
         """İyileştirme önerilerini oluştur"""
         oneriler = []
 
@@ -713,18 +707,17 @@ class IRTService:
         """Hedef öğrenci seviyesini belirle"""
         if difficulty >= 1.5:
             return "ileri"
-        elif difficulty >= 0.5:
+        if difficulty >= 0.5:
             return "orta-ileri"
-        elif difficulty >= -0.5:
+        if difficulty >= -0.5:
             return "orta"
-        elif difficulty >= -1.5:
+        if difficulty >= -1.5:
             return "temel-orta"
-        else:
-            return "temel"
+        return "temel"
 
     async def _hesapla_osym_karsilastirma(
         self, irt_parametreleri: IRTParametreleri
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """ÖSYM standartları ile karşılaştırma"""
         return {
             "ayirt_edicilik_skoru": min(100.0, irt_parametreleri.discrimination * 50),
@@ -734,7 +727,7 @@ class IRTService:
 
     async def _hesapla_ets_karsilastirma(
         self, irt_parametreleri: IRTParametreleri
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """ETS standartları ile karşılaştırma"""
         return {
             "ayirt_edicilik_skoru": min(100.0, irt_parametreleri.discrimination * 45),

@@ -13,9 +13,9 @@ Agirlikli Uzmanlik Skoru:
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from ..domain_experts.base_domain_agent import DomainType, DomainResponse
+from ..domain_experts.base_domain_agent import DomainResponse, DomainType
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class SpecializationScore:
     total_score: float  # [0, 1]
     calculated_at: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "domain": self.domain.value,
             "domain_relevance": self.domain_relevance,
@@ -66,7 +66,7 @@ class SpecializationScorer:
 
     def __init__(self):
         """SpecializationScorer olustur"""
-        self._scores: Dict[DomainType, List[SpecializationScore]] = {}
+        self._scores: dict[DomainType, list[SpecializationScore]] = {}
         logger.info("SpecializationScorer initialized")
 
     def calculate_score(
@@ -174,14 +174,14 @@ class SpecializationScorer:
             satisfaction=user_satisfaction,
         )
 
-    def get_average_score(self, domain: DomainType) -> Optional[float]:
+    def get_average_score(self, domain: DomainType) -> float | None:
         """Domain icin ortalama skoru al"""
         scores = self._scores.get(domain, [])
         if not scores:
             return None
         return sum(s.total_score for s in scores) / len(scores)
 
-    def get_latest_score(self, domain: DomainType) -> Optional[SpecializationScore]:
+    def get_latest_score(self, domain: DomainType) -> SpecializationScore | None:
         """Domain icin son skoru al"""
         scores = self._scores.get(domain, [])
         if not scores:
@@ -200,7 +200,7 @@ class SpecializationScorer:
             return False
         return avg_score < self.RETRAINING_THRESHOLD
 
-    def get_all_scores(self) -> Dict[DomainType, SpecializationScore]:
+    def get_all_scores(self) -> dict[DomainType, SpecializationScore]:
         """Tum domain'ler icin son skorlari al"""
         return {
             domain: scores[-1]
@@ -208,7 +208,7 @@ class SpecializationScorer:
             if scores
         }
 
-    def get_domains_needing_retraining(self) -> List[DomainType]:
+    def get_domains_needing_retraining(self) -> list[DomainType]:
         """Yeniden egitim gereken domain'leri al"""
         return [
             domain
@@ -216,7 +216,7 @@ class SpecializationScorer:
             if self.needs_retraining(domain)
         ]
 
-    def get_best_performing_domain(self) -> Optional[DomainType]:
+    def get_best_performing_domain(self) -> DomainType | None:
         """En iyi performans gosteren domain'i al"""
         best_domain = None
         best_score = 0.0
@@ -229,7 +229,7 @@ class SpecializationScorer:
 
         return best_domain
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Scorer metriklerini al"""
         return {
             "total_scores_calculated": sum(len(s) for s in self._scores.values()),

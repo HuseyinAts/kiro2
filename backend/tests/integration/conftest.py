@@ -4,10 +4,10 @@ Use existing Docker PostgreSQL container for faster testing
 """
 
 import os
+
 import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-
 
 # Set test environment variables before any imports that load config
 os.environ.setdefault("ENVIRONMENT", "testing")

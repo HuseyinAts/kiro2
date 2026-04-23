@@ -9,8 +9,10 @@ Validates:
 Boris Cherny Standards: Property tests with 100+ iterations
 """
 
-from hypothesis import given, strategies as st, settings, assume
 from typing import Literal
+
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 # Decision Thresholds from spec
 APPROVAL_THRESHOLD = 0.85
@@ -37,10 +39,9 @@ def make_decision(score: float) -> Decision:
     """
     if score >= APPROVAL_THRESHOLD:
         return "approved"
-    elif score >= REVIEW_THRESHOLD:
+    if score >= REVIEW_THRESHOLD:
         return "review"
-    else:
-        return "rejected"
+    return "rejected"
 
 
 def decision_to_rank(decision: Decision) -> int:

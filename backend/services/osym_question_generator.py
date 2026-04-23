@@ -6,10 +6,10 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-from typing import List, Dict, Any
-from datetime import datetime, timezone
-from uuid import UUID, uuid4
+from datetime import UTC, datetime
 from enum import Enum
+from typing import Any
+from uuid import UUID, uuid4
 
 from models.osym_question import (
     OSYMQuestion,
@@ -19,10 +19,10 @@ from models.question_generation import DifficultyLevel
 from services.llm.ensemble_manager import MultiLLMEnsembleManager
 from services.llm.multi_llm_config import LLMProvider
 from services.llm.turkish_optimizer import TurkishPromptOptimizer
-from services.psychometrics.irt_model import IRTModel
 from services.psychometrics.calibration import AdaptiveCalibrator
-from services.quality.osym_quality_scorer import OSYMQualityScorer
+from services.psychometrics.irt_model import IRTModel
 from services.quality.metrics import QualityMetrics
+from services.quality.osym_quality_scorer import OSYMQualityScorer
 
 
 # QuestionStatus enum for question generation status
@@ -72,7 +72,7 @@ class OSYMQuestionGenerator:
         bloom_level: int,
         generation_method: str = "ensemble",
         save_to_db: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate a single OSYM question
 
@@ -185,7 +185,7 @@ class OSYMQuestionGenerator:
             "metadata": {
                 "quality_feedback": quality_score.feedback,
                 "quality_improvements": quality_score.improvements,
-                "generation_timestamp": datetime.now(timezone.utc).isoformat(),
+                "generation_timestamp": datetime.now(UTC).isoformat(),
             },
         }
 
@@ -202,11 +202,11 @@ class OSYMQuestionGenerator:
         self,
         exam_type: str,
         subject: str,
-        topics: List[Dict[str, Any]],
+        topics: list[dict[str, Any]],
         target_count: int,
         generation_method: str = "ensemble",
         quality_threshold: float = 70.0,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate batch of OSYM questions
 
@@ -222,7 +222,7 @@ class OSYMQuestionGenerator:
             Batch generation results
         """
         batch_id = uuid4()
-        batch_start = datetime.now(timezone.utc)
+        batch_start = datetime.now(UTC)
 
         # Create batch record
         if self.db:
@@ -256,7 +256,7 @@ class OSYMQuestionGenerator:
 
             for _ in range(count):
                 try:
-                    start_time = datetime.now(timezone.utc)
+                    start_time = datetime.now(UTC)
 
                     question = await self.generate_question(
                         topic=topic,
@@ -269,7 +269,7 @@ class OSYMQuestionGenerator:
                         save_to_db=True,
                     )
 
-                    end_time = datetime.now(timezone.utc)
+                    end_time = datetime.now(UTC)
                     generation_time = (end_time - start_time).total_seconds()
                     generation_times.append(generation_time)
 
@@ -299,7 +299,7 @@ class OSYMQuestionGenerator:
         # Update batch record
         if self.db:
             batch.status = "completed"
-            batch.completed_at = datetime.now(timezone.utc)
+            batch.completed_at = datetime.now(UTC)
             batch.generated_count = len(generated_questions)
             batch.approved_count = len(
                 [q for q in generated_questions if q["quality_score_total"] >= 80]
@@ -335,18 +335,17 @@ class OSYMQuestionGenerator:
         """Categorize difficulty 0-1 to label"""
         if difficulty < 0.2:
             return DifficultyLevel.VERY_EASY.value
-        elif difficulty < 0.4:
+        if difficulty < 0.4:
             return DifficultyLevel.EASY.value
-        elif difficulty < 0.6:
+        if difficulty < 0.6:
             return DifficultyLevel.MEDIUM.value
-        elif difficulty < 0.8:
+        if difficulty < 0.8:
             return DifficultyLevel.HARD.value
-        else:
-            return DifficultyLevel.VERY_HARD.value
+        return DifficultyLevel.VERY_HARD.value
 
     async def calibrate_question(
-        self, question_id: UUID, student_responses: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, question_id: UUID, student_responses: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Calibrate IRT parameters based on student responses
 

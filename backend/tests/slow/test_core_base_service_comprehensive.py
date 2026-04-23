@@ -4,10 +4,12 @@ Target: 90%+ coverage for base service functionality
 """
 
 import pytest
+
 pytest.skip("BaseService API changed - 41/43 tests fail due to removed methods", allow_module_level=True)
 
 import asyncio
 from unittest.mock import patch
+
 from core.base_service import BaseService
 
 

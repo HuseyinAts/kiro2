@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ZPD + MEB Maarif Service - Fixed Tests
 Doğru API metodları kullanan testler
@@ -11,13 +10,11 @@ Gerçek metodlar:
 
 import pytest
 
-from services.zpd_maarif_service import ZPDMaarifService
 from models.zpd_maarif import (
     KulturelBaglamProfili,
     MaarifDegerleriProfili,
 )
-
-
+from services.zpd_maarif_service import ZPDMaarifService
 
 pytestmark = pytest.mark.skipif(
     True,

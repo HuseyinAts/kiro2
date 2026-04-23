@@ -4,9 +4,9 @@ Task 106.3: OCR Service
 Service for image processing, OCR, and math formula recognition
 """
 
-from typing import Dict, Any, Optional, Tuple
-from pathlib import Path
 import re
+from pathlib import Path
+from typing import Any
 
 
 class OCRService:
@@ -16,13 +16,12 @@ class OCRService:
         """Initialize OCR service"""
         # In production, initialize OCR engines here
         # e.g., pytesseract, Google Vision API, etc.
-        pass
 
     # ============================================================
     # Image Preprocessing
     # ============================================================
 
-    def preprocess_image(self, image_path: str) -> Dict[str, Any]:
+    def preprocess_image(self, image_path: str) -> dict[str, Any]:
         """
         Preprocess image for OCR
 
@@ -36,7 +35,7 @@ class OCRService:
         # Mock preprocessing
         return {"preprocessed": True, "width": 800, "height": 600, "format": "PNG"}
 
-    def get_image_metadata(self, image_path: str) -> Dict[str, Any]:
+    def get_image_metadata(self, image_path: str) -> dict[str, Any]:
         """
         Extract image metadata
 
@@ -55,7 +54,7 @@ class OCRService:
     # OCR Processing
     # ============================================================
 
-    def perform_ocr(self, image_path: str, language: str = "tur+eng") -> Dict[str, Any]:
+    def perform_ocr(self, image_path: str, language: str = "tur+eng") -> dict[str, Any]:
         """
         Perform OCR on image
 
@@ -82,7 +81,7 @@ class OCRService:
             "line_count": len(mock_text.strip().split("\n")),
         }
 
-    def detect_handwriting(self, image_path: str) -> Dict[str, Any]:
+    def detect_handwriting(self, image_path: str) -> dict[str, Any]:
         """
         Detect if image contains handwriting
 
@@ -121,7 +120,7 @@ class OCRService:
 
         return False
 
-    def extract_math_latex(self, image_path: str) -> Dict[str, Any]:
+    def extract_math_latex(self, image_path: str) -> dict[str, Any]:
         """
         Extract mathematical formulas and convert to LaTeX
 
@@ -138,7 +137,7 @@ class OCRService:
             "formulas_found": 1,
         }
 
-    def parse_math_expression(self, expression: str) -> Dict[str, Any]:
+    def parse_math_expression(self, expression: str) -> dict[str, Any]:
         """
         Parse mathematical expression
 
@@ -157,7 +156,7 @@ class OCRService:
     # Image Analysis
     # ============================================================
 
-    def analyze_image_content(self, image_path: str) -> Dict[str, Any]:
+    def analyze_image_content(self, image_path: str) -> dict[str, Any]:
         """
         Analyze image content using AI
 
@@ -226,7 +225,7 @@ class OCRService:
 
     async def process_image_complete(
         self, image_path: str, language: str = "tur+eng"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Complete image processing pipeline
 
@@ -282,7 +281,7 @@ class OCRService:
     # Utility Methods
     # ============================================================
 
-    def validate_image_file(self, file_path: str) -> Tuple[bool, Optional[str]]:
+    def validate_image_file(self, file_path: str) -> tuple[bool, str | None]:
         """
         Validate image file
 

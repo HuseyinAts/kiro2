@@ -4,16 +4,17 @@ API Endpoint Sağlık Doğrulama Sistemi - Model Testleri
 Bu modül, health check sistemi Pydantic modellerinin unit testlerini içerir.
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
 from pydantic import ValidationError
 
 from app.health.models import (
-    HealthStatus,
     CircuitState,
     EndpointMetadata,
     HealthCheckResult,
     HealthScore,
+    HealthStatus,
     SLAMetrics,
 )
 

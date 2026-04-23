@@ -19,7 +19,6 @@ from backend.db.hooks.pre_migration import (
     ValidationResult,
 )
 
-
 # ==================== FIXTURES ====================
 
 

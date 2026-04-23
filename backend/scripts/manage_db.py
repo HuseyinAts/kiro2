@@ -54,13 +54,12 @@ class DatabaseManager:
                 logger.info("[CHECK] Migration başarıyla oluşturuldu")
                 logger.info(result.stdout)
                 return True
-            else:
-                logger.error("[X] Migration oluşturma hatası")
-                logger.error(result.stderr)
-                return False
+            logger.error("[X] Migration oluşturma hatası")
+            logger.error(result.stderr)
+            return False
 
         except Exception as e:
-            logger.error(f"[X] Migration oluşturma hatası: {str(e)}")
+            logger.error(f"[X] Migration oluşturma hatası: {e!s}")
             return False
 
     async def run_migrations(self):
@@ -78,13 +77,12 @@ class DatabaseManager:
                 logger.info("[CHECK] Migration'lar başarıyla çalıştırıldı")
                 logger.info(result.stdout)
                 return True
-            else:
-                logger.error("[X] Migration çalıştırma hatası")
-                logger.error(result.stderr)
-                return False
+            logger.error("[X] Migration çalıştırma hatası")
+            logger.error(result.stderr)
+            return False
 
         except Exception as e:
-            logger.error(f"[X] Migration çalıştırma hatası: {str(e)}")
+            logger.error(f"[X] Migration çalıştırma hatası: {e!s}")
             return False
 
     async def rollback_migration(self, revision: str = None):
@@ -103,13 +101,12 @@ class DatabaseManager:
                 logger.info("[CHECK] Migration başarıyla geri alındı")
                 logger.info(result.stdout)
                 return True
-            else:
-                logger.error("[X] Migration geri alma hatası")
-                logger.error(result.stderr)
-                return False
+            logger.error("[X] Migration geri alma hatası")
+            logger.error(result.stderr)
+            return False
 
         except Exception as e:
-            logger.error(f"[X] Migration geri alma hatası: {str(e)}")
+            logger.error(f"[X] Migration geri alma hatası: {e!s}")
             return False
 
     async def show_current_revision(self):
@@ -127,13 +124,12 @@ class DatabaseManager:
                 logger.info("[CHART] Mevcut Revision:")
                 logger.info(result.stdout)
                 return True
-            else:
-                logger.error("[X] Revision kontrol hatası")
-                logger.error(result.stderr)
-                return False
+            logger.error("[X] Revision kontrol hatası")
+            logger.error(result.stderr)
+            return False
 
         except Exception as e:
-            logger.error(f"[X] Revision kontrol hatası: {str(e)}")
+            logger.error(f"[X] Revision kontrol hatası: {e!s}")
             return False
 
     async def show_migration_history(self):
@@ -151,13 +147,12 @@ class DatabaseManager:
                 logger.info("[CHART] Migration Geçmişi:")
                 logger.info(result.stdout)
                 return True
-            else:
-                logger.error("[X] Migration geçmişi hatası")
-                logger.error(result.stderr)
-                return False
+            logger.error("[X] Migration geçmişi hatası")
+            logger.error(result.stderr)
+            return False
 
         except Exception as e:
-            logger.error(f"[X] Migration geçmişi hatası: {str(e)}")
+            logger.error(f"[X] Migration geçmişi hatası: {e!s}")
             return False
 
     async def seed_development_data(self):
@@ -182,13 +177,12 @@ class DatabaseManager:
                 logger.info("[CHECK] Development verileri başarıyla seed edildi")
                 logger.info(result.stdout)
                 return True
-            else:
-                logger.error("[X] Development seed hatası")
-                logger.error(result.stderr)
-                return False
+            logger.error("[X] Development seed hatası")
+            logger.error(result.stderr)
+            return False
 
         except Exception as e:
-            logger.error(f"[X] Development seed hatası: {str(e)}")
+            logger.error(f"[X] Development seed hatası: {e!s}")
             return False
 
     async def seed_production_data(self):
@@ -217,13 +211,12 @@ class DatabaseManager:
                 logger.info("[CHECK] Production verileri başarıyla seed edildi")
                 logger.info(result.stdout)
                 return True
-            else:
-                logger.error("[X] Production seed hatası")
-                logger.error(result.stderr)
-                return False
+            logger.error("[X] Production seed hatası")
+            logger.error(result.stderr)
+            return False
 
         except Exception as e:
-            logger.error(f"[X] Production seed hatası: {str(e)}")
+            logger.error(f"[X] Production seed hatası: {e!s}")
             return False
 
     async def backup_database(self, backup_path: str = None):
@@ -246,7 +239,7 @@ class DatabaseManager:
                 logger.info(f"[CHECK] SQLite backup başarılı: {backup_path}")
                 return True
             except Exception as e:
-                logger.error(f"[X] SQLite backup hatası: {str(e)}")
+                logger.error(f"[X] SQLite backup hatası: {e!s}")
                 return False
 
         # PostgreSQL için pg_dump

@@ -9,7 +9,6 @@ P(correct | missing any required skill) = guess
 from __future__ import annotations
 
 import math
-from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -207,8 +206,8 @@ def calibrate_parameters(
     """
     # Initialize
     question_ids = set(r["question_id"] for r in responses)
-    slip = {qid: 0.1 for qid in question_ids}
-    guess = {qid: 0.2 for qid in question_ids}
+    slip = dict.fromkeys(question_ids, 0.1)
+    guess = dict.fromkeys(question_ids, 0.2)
 
     for iteration in range(max_iterations):
         new_slip, new_guess = em_step(
@@ -323,7 +322,7 @@ async def get_student_skill_profile(
     *,
     db: AsyncSession,
     student_id: str,
-    subject: Optional[str] = None,
+    subject: str | None = None,
 ) -> list[dict]:
     """Get all nano-skill mastery states for a student."""
     query = (

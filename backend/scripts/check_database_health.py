@@ -4,9 +4,10 @@ Verifies database schema, migrations, and data integrity
 """
 
 import asyncio
-import asyncpg
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
+
+import asyncpg
 
 
 class DatabaseHealthChecker:
@@ -27,7 +28,7 @@ class DatabaseHealthChecker:
             self.issues.append(f"[X] Database connection failed: {e}")
             return False
 
-    async def check_all(self) -> Dict[str, Any]:
+    async def check_all(self) -> dict[str, Any]:
         """Run all health checks"""
         if not await self.connect():
             return self._build_report()
@@ -279,7 +280,7 @@ class DatabaseHealthChecker:
         except Exception:
             pass  # Stats not available
 
-    def _build_report(self) -> Dict[str, Any]:
+    def _build_report(self) -> dict[str, Any]:
         """Build health check report"""
         return {
             "timestamp": datetime.now().isoformat(),
@@ -290,7 +291,7 @@ class DatabaseHealthChecker:
             "warnings_count": len(self.warnings),
         }
 
-    def print_summary(self, report: Dict[str, Any]):
+    def print_summary(self, report: dict[str, Any]):
         """Print summary report"""
         print("\n" + "=" * 60)
         print("DATABASE HEALTH CHECK SUMMARY")

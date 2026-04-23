@@ -14,11 +14,12 @@ Requirements: REQ-5.1, REQ-5.5
 
 import asyncio
 import logging
-from typing import Any, Generic, Sequence, TypeVar, Optional
+from collections.abc import Sequence
+from typing import Any, Generic, TypeVar
 
 from sqlalchemy import Column, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import load_only, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, load_only
 from sqlalchemy.sql import Select
 
 logger = logging.getLogger(__name__)
@@ -102,7 +103,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
         self,
         model: type[ModelType],
         session: AsyncSession,
-        default_columns: Optional[list[Column[Any]]] = None,
+        default_columns: list[Column[Any]] | None = None,
         query_timeout: float = DEFAULT_QUERY_TIMEOUT,
         max_results: int = DEFAULT_MAX_RESULTS,
     ):
@@ -150,7 +151,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
     async def _execute_with_timeout(
         self,
         query: Select[tuple[Any, ...]],
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
     ) -> Sequence[Any]:
         """
         Sorguyu timeout ile çalıştır.
@@ -174,7 +175,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
             )
             return result.scalars().all()
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error(
                 f"Sorgu timeout: {effective_timeout}s - Model: {self.model.__name__}"
             )
@@ -186,11 +187,11 @@ class OptimizedBaseRepository(Generic[ModelType]):
     async def select_columns(
         self,
         columns: list[Column[Any]],
-        filters: Optional[dict[str, Any]] = None,
-        order_by: Optional[Column[Any]] = None,
+        filters: dict[str, Any] | None = None,
+        order_by: Column[Any] | None = None,
         limit: int = 100,
         offset: int = 0,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
     ) -> Sequence[tuple[Any, ...]]:
         """
         Sadece belirtilen kolonları seç (SELECT * YERİNE).
@@ -247,7 +248,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
             )
             return result.all()
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise QueryTimeoutError(
                 timeout=self.query_timeout,
                 query_info=f"select_columns - Model: {self.model.__name__}",
@@ -256,11 +257,11 @@ class OptimizedBaseRepository(Generic[ModelType]):
     async def select_with_load_only(
         self,
         columns: list[Column[Any]],
-        filters: Optional[dict[str, Any]] = None,
-        order_by: Optional[Column[Any]] = None,
+        filters: dict[str, Any] | None = None,
+        order_by: Column[Any] | None = None,
         limit: int = 100,
         offset: int = 0,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
     ) -> Sequence[ModelType]:
         """
         load_only() ile kısmi obje yükleme.
@@ -311,9 +312,9 @@ class OptimizedBaseRepository(Generic[ModelType]):
     async def get_by_id_partial(
         self,
         id_value: Any,
-        columns: Optional[list[Column[Any]]] = None,
-        timeout: Optional[float] = None,
-    ) -> Optional[ModelType]:
+        columns: list[Column[Any]] | None = None,
+        timeout: float | None = None,
+    ) -> ModelType | None:
         """
         ID ile kısmi obje yükle.
 
@@ -349,7 +350,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
             )
             return result.scalar_one_or_none()
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise QueryTimeoutError(
                 timeout=self.query_timeout,
                 query_info=f"get_by_id_partial - Model: {self.model.__name__}",
@@ -357,8 +358,8 @@ class OptimizedBaseRepository(Generic[ModelType]):
 
     async def count_with_timeout(
         self,
-        filters: Optional[dict[str, Any]] = None,
-        timeout: Optional[float] = None,
+        filters: dict[str, Any] | None = None,
+        timeout: float | None = None,
     ) -> int:
         """
         Kayıt sayısını timeout ile say.
@@ -389,7 +390,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
             )
             return result.scalar() or 0
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise QueryTimeoutError(
                 timeout=self.query_timeout,
                 query_info=f"count - Model: {self.model.__name__}",
@@ -398,7 +399,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
     async def exists_with_timeout(
         self,
         filters: dict[str, Any],
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
     ) -> bool:
         """
         Kayıt varlığını timeout ile kontrol et.
@@ -427,7 +428,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
             )
             return result.scalar() is not None
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise QueryTimeoutError(
                 timeout=self.query_timeout,
                 query_info=f"exists - Model: {self.model.__name__}",
@@ -435,7 +436,7 @@ class OptimizedBaseRepository(Generic[ModelType]):
 
     def create_optimized_query(
         self,
-        columns: Optional[list[Column[Any]]] = None,
+        columns: list[Column[Any]] | None = None,
     ) -> Select[tuple[Any, ...]]:
         """
         Optimize edilmiş sorgu başlat.
@@ -452,9 +453,9 @@ class OptimizedBaseRepository(Generic[ModelType]):
 
 
 __all__ = [
-    "OptimizedBaseRepository",
-    "QueryTimeoutError",
-    "QueryLimitExceededError",
-    "DEFAULT_QUERY_TIMEOUT",
     "DEFAULT_MAX_RESULTS",
+    "DEFAULT_QUERY_TIMEOUT",
+    "OptimizedBaseRepository",
+    "QueryLimitExceededError",
+    "QueryTimeoutError",
 ]

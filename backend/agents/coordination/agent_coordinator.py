@@ -12,15 +12,15 @@ Agent routing ve multi-domain soru islemesi:
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..domain_experts.base_domain_agent import (
     BaseDomainAgent,
-    DomainType,
     DomainResponse,
+    DomainType,
 )
-from .question_classifier import QuestionClassifier, DomainClassification
 from .blackboard import DomainBlackboard
+from .question_classifier import DomainClassification, QuestionClassifier
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +30,9 @@ class CoordinationResult:
     """Koordinasyon sonucu"""
 
     classification: DomainClassification
-    responses: List[DomainResponse]
+    responses: list[DomainResponse]
     total_time_ms: float
-    agents_called: List[str]
+    agents_called: list[str]
     is_multi_domain: bool
 
 
@@ -51,9 +51,9 @@ class AgentCoordinator:
 
     def __init__(
         self,
-        agents: Dict[DomainType, BaseDomainAgent],
-        classifier: Optional[QuestionClassifier] = None,
-        blackboard: Optional[DomainBlackboard] = None,
+        agents: dict[DomainType, BaseDomainAgent],
+        classifier: QuestionClassifier | None = None,
+        blackboard: DomainBlackboard | None = None,
     ):
         """
         AgentCoordinator olustur
@@ -73,14 +73,14 @@ class AgentCoordinator:
 
         logger.info(
             f"AgentCoordinator initialized with {len(agents)} agents: "
-            f"{[d.value for d in agents.keys()]}"
+            f"{[d.value for d in agents]}"
         )
 
     async def process_question(
         self,
         question: str,
-        student_id: Optional[str] = None,
-        preferred_domain: Optional[DomainType] = None,
+        student_id: str | None = None,
+        preferred_domain: DomainType | None = None,
     ) -> CoordinationResult:
         """
         Soruyu isle ve sonucu dondur
@@ -167,11 +167,11 @@ class AgentCoordinator:
         self.agents[domain] = agent
         logger.info(f"Registered agent for domain: {domain.value}")
 
-    def get_agent(self, domain: DomainType) -> Optional[BaseDomainAgent]:
+    def get_agent(self, domain: DomainType) -> BaseDomainAgent | None:
         """Domain icin agent al"""
         return self.agents.get(domain)
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Koordinator metriklerini al"""
         return {
             "total_questions_processed": self.total_questions_processed,

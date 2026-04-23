@@ -15,18 +15,18 @@ Usage:
     report = await monitor.generate_report()
 """
 
-import json
 import asyncio
+import json
+import statistics
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
-from dataclasses import dataclass, asdict
-import statistics
 
-from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
-from database.connection import async_engine
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.connection import async_engine
+from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
 
 
 @dataclass
@@ -49,8 +49,8 @@ class ProductionQualityMonitor:
 
     def __init__(self, log_file: str = "production_quality_log.json"):
         self.log_file = Path(__file__).parent.parent / log_file
-        self.logs: List[QuestionLog] = []
-        self.evaluator: Optional[ComprehensiveQualityEvaluator] = None
+        self.logs: list[QuestionLog] = []
+        self.evaluator: ComprehensiveQualityEvaluator | None = None
 
         # Load existing logs
         self._load_logs()
@@ -59,7 +59,7 @@ class ProductionQualityMonitor:
         """Load existing logs from file"""
         if self.log_file.exists():
             try:
-                with open(self.log_file, "r", encoding="utf-8") as f:
+                with open(self.log_file, encoding="utf-8") as f:
                     data = json.load(f)
                     self.logs = [QuestionLog(**log) for log in data]
             except Exception as e:
@@ -110,7 +110,7 @@ class ProductionQualityMonitor:
 
     async def log_question(
         self,
-        question: Dict,
+        question: dict,
         subject: str,
         topic: str,
         question_id: str,
@@ -183,7 +183,7 @@ class ProductionQualityMonitor:
 
             print(f"[OK] Report saved: {report_file}")
 
-    async def generate_report(self, last_n: Optional[int] = None) -> str:
+    async def generate_report(self, last_n: int | None = None) -> str:
         """
         Generate production quality report
 
@@ -387,7 +387,7 @@ Suggested Actions:
 
         return report
 
-    def get_stats_summary(self) -> Dict:
+    def get_stats_summary(self) -> dict:
         """Get quick stats summary (for API/dashboard)"""
         if not self.logs:
             return {"total": 0, "message": "No questions logged"}

@@ -3,17 +3,18 @@ KAPSAMLI API COVERAGE TESTLERİ
 Bu testler tüm API endpointlerini çalıştırarak coverage'ı maksimum arttırır
 Target: API modüllerinin %50+ coverage'ı için comprehensive endpoint testing
 """
-import pytest
 from unittest.mock import patch
-from fastapi.testclient import TestClient
+
+import pytest
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 # Import centralized JWT helper from conftest (DRY)
 try:
     from tests.conftest import (
-        _generate_test_jwt,
-        TEST_JWT_SECRET,
         TEST_JWT_ALGORITHM,
+        TEST_JWT_SECRET,
+        _generate_test_jwt,
     )
 except ImportError:
     import jwt as _jwt

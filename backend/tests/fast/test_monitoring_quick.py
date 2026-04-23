@@ -30,13 +30,14 @@ class TestMonitoringQuick:
     def test_metrics_collection(self):
         """Test 3: Metrik toplama"""
         try:
+            from datetime import datetime
+
             from core.unified.monitoring_system import (
-                UnifiedMonitoringManager,
                 MetricPoint,
                 MetricType,
                 MonitoringCategory,
+                UnifiedMonitoringManager,
             )
-            from datetime import datetime
 
             manager = UnifiedMonitoringManager()
 
@@ -73,11 +74,12 @@ class TestMonitoringQuick:
     def test_performance_tracking(self):
         """Test 5: Performans takibi"""
         try:
-            from core.unified.monitoring_system import (
-                UnifiedMonitoringManager,
-                APIMetrics,
-            )
             from datetime import datetime
+
+            from core.unified.monitoring_system import (
+                APIMetrics,
+                UnifiedMonitoringManager,
+            )
 
             manager = UnifiedMonitoringManager()
 

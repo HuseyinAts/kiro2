@@ -13,7 +13,6 @@ from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from core.enhanced_authentication import (
-    AuthenticationContext,
     get_authentication_manager,
 )
 from core.rbac_system import AuthorizationContext, get_rbac_manager
@@ -61,13 +60,14 @@ class AuthenticationDependency:
         try:
             # FIX: AuthenticationContext constructor mismatch â€” use working JWT path
             import jwt as _jwt
+
             from core.config import settings as _settings
             _payload = _jwt.decode(
                 token,
                 _settings.jwt_secret_key,
                 algorithms=[_settings.jwt_algorithm],
             )
-            from core.dependencies import AuthenticatedUser, UserRole
+            from core.dependencies import AuthenticatedUser
             _user = AuthenticatedUser(
                 id=_payload.get("sub", ""),
                 username=_payload.get("username", ""),

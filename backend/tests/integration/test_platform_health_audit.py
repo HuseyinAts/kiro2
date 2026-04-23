@@ -6,8 +6,8 @@ Comprehensive health audit after critical file modifications
 import asyncio
 import json
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict, List
+from datetime import UTC, datetime
+from typing import Any
 
 import pytest
 
@@ -26,15 +26,15 @@ class HealthAuditReport:
     """Platform sağlık denetim raporu"""
 
     def __init__(self):
-        self.timestamp = datetime.now(timezone.utc).isoformat()
-        self.checks: Dict[str, Dict[str, Any]] = {}
+        self.timestamp = datetime.now(UTC).isoformat()
+        self.checks: dict[str, dict[str, Any]] = {}
         self.score = 0.0
         self.status = "unknown"
-        self.critical_issues: List[str] = []
-        self.warnings: List[str] = []
-        self.recommendations: List[str] = []
+        self.critical_issues: list[str] = []
+        self.warnings: list[str] = []
+        self.recommendations: list[str] = []
 
-    def add_check(self, category: str, result: Dict[str, Any]):
+    def add_check(self, category: str, result: dict[str, Any]):
         """Denetim sonucu ekle"""
         self.checks[category] = result
 
@@ -79,7 +79,7 @@ class HealthAuditReport:
         else:
             self.status = "critical"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Raporu dict'e çevir"""
         return {
             "timestamp": self.timestamp,
@@ -99,7 +99,7 @@ class PlatformHealthAuditor:
         self.base_url = base_url
         self.report = HealthAuditReport()
 
-    async def audit_api_health(self, client: AsyncClient) -> Dict[str, Any]:
+    async def audit_api_health(self, client: AsyncClient) -> dict[str, Any]:
         """REQ-26: API sağlık kontrolü"""
         logger.info("🏥 API Sağlık Kontrolü başlatılıyor...")
         start_time = time.time()
@@ -154,14 +154,14 @@ class PlatformHealthAuditor:
 
         except Exception as e:
             logger.error(f"API sağlık kontrolü başarısız: {e}")
-            self.report.critical_issues.append(f"API sağlık kontrolü hatası: {str(e)}")
+            self.report.critical_issues.append(f"API sağlık kontrolü hatası: {e!s}")
             return {
                 "healthy": False,
                 "status": "error",
                 "error": str(e),
             }
 
-    async def audit_ai_agents(self) -> Dict[str, Any]:
+    async def audit_ai_agents(self) -> dict[str, Any]:
         """REQ-27: AI Agent kontrolü"""
         logger.info("🤖 AI Agent Kontrolü başlatılıyor...")
 
@@ -204,7 +204,7 @@ class PlatformHealthAuditor:
             "agents": agent_results,
         }
 
-    async def audit_external_services(self, client: AsyncClient) -> Dict[str, Any]:
+    async def audit_external_services(self, client: AsyncClient) -> dict[str, Any]:
         """REQ-28: Harici servis kontrolü"""
         logger.info("🌐 Harici Servis Kontrolü başlatılıyor...")
 
@@ -250,7 +250,7 @@ class PlatformHealthAuditor:
             "services": service_results,
         }
 
-    async def audit_database(self, client: AsyncClient) -> Dict[str, Any]:
+    async def audit_database(self, client: AsyncClient) -> dict[str, Any]:
         """REQ-29: Veritabanı kontrolü"""
         logger.info("💾 Veritabanı Kontrolü başlatılıyor...")
 
@@ -270,14 +270,14 @@ class PlatformHealthAuditor:
             }
 
         except Exception as e:
-            self.report.critical_issues.append(f"Veritabanı kontrolü hatası: {str(e)}")
+            self.report.critical_issues.append(f"Veritabanı kontrolü hatası: {e!s}")
             return {
                 "healthy": False,
                 "status": "critical",
                 "error": str(e),
             }
 
-    async def audit_security(self, client: AsyncClient) -> Dict[str, Any]:
+    async def audit_security(self, client: AsyncClient) -> dict[str, Any]:
         """REQ-31, REQ-45: Güvenlik kontrolü"""
         logger.info("🛡️ Güvenlik Kontrolü başlatılıyor...")
 
@@ -342,7 +342,7 @@ class PlatformHealthAuditor:
             "checks": security_checks,
         }
 
-    async def audit_performance(self, client: AsyncClient) -> Dict[str, Any]:
+    async def audit_performance(self, client: AsyncClient) -> dict[str, Any]:
         """REQ-35: Performans kontrolü"""
         logger.info("⚡ Performans Kontrolü başlatılıyor...")
 
@@ -373,7 +373,7 @@ class PlatformHealthAuditor:
             "avg_threshold_ok": avg_ok,
         }
 
-    async def audit_health_endpoints(self, client: AsyncClient) -> Dict[str, Any]:
+    async def audit_health_endpoints(self, client: AsyncClient) -> dict[str, Any]:
         """REQ-40: Health endpoint kontrolü"""
         logger.info("🏥 Health Endpoint Kontrolü başlatılıyor...")
 

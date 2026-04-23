@@ -2,13 +2,14 @@
 Real integration tests for message queue system
 Tests actual code paths without mocks to improve coverage
 """
-from datetime import datetime, UTC
+from datetime import UTC, datetime
+
 from core.message_queue_system import (
+    BackgroundJob,
+    JobStatus,
     QueueMessage,
     QueuePriority,
     QueueType,
-    JobStatus,
-    BackgroundJob,
 )
 
 

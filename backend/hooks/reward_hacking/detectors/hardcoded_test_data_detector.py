@@ -7,13 +7,12 @@ Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5, 7.6
 from __future__ import annotations
 
 import re
-from typing import List
 
-from ..base_detector import BaseDetector
-from ..models.enums import SeverityLevel, PatternType
-from ..models.detection_result import DetectionResult
 from ..analyzers.context_analyzer import ContextAnalyzer
+from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
+from ..models.detection_result import DetectionResult
+from ..models.enums import PatternType, SeverityLevel
 
 
 class HardcodedTestDataDetector(BaseDetector):
@@ -34,7 +33,7 @@ class HardcodedTestDataDetector(BaseDetector):
     # Magic number threshold - below this is suspicious
     MAGIC_NUMBER_THRESHOLD = 5
 
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """Get regex patterns for hardcoded test data detection."""
         return REWARD_HACKING_PATTERNS.get("hardcoded_test_data", [])
 
@@ -42,7 +41,7 @@ class HardcodedTestDataDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect hardcoded test data patterns.
 
@@ -60,7 +59,7 @@ class HardcodedTestDataDetector(BaseDetector):
         if not self._is_test_file(file_path):
             return []
 
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Initialize context analyzer
         context_analyzer = ContextAnalyzer(content, file_path)
@@ -100,7 +99,7 @@ class HardcodedTestDataDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect magic numbers in test assertions.
 
@@ -111,7 +110,7 @@ class HardcodedTestDataDetector(BaseDetector):
         Returns:
             List of DetectionResult for magic numbers
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Patterns for suspicious magic numbers in test context
         magic_patterns = [
@@ -147,7 +146,7 @@ class HardcodedTestDataDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect hardcoded credentials in tests.
 
@@ -158,7 +157,7 @@ class HardcodedTestDataDetector(BaseDetector):
         Returns:
             List of DetectionResult for hardcoded credentials
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Credential patterns
         credential_patterns = [
@@ -193,7 +192,7 @@ class HardcodedTestDataDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Check if tests have sufficient data variety.
 
@@ -204,7 +203,7 @@ class HardcodedTestDataDetector(BaseDetector):
         Returns:
             List of DetectionResult for low variety
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Count test functions
         test_count = len(re.findall(r'def test_\w+', content))

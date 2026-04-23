@@ -7,8 +7,8 @@ Provides deep code analysis beyond regex pattern matching.
 from __future__ import annotations
 
 import ast
+from collections.abc import Generator
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Generator
 
 from ..exceptions import ASTParseError
 
@@ -45,8 +45,8 @@ class ASTAnalyzer:
         """
         self.content = content
         self.file_path = file_path
-        self._tree: Optional[ast.AST] = None
-        self._lines: List[str] = content.split('\n')
+        self._tree: ast.AST | None = None
+        self._lines: list[str] = content.split('\n')
 
     def parse(self) -> bool:
         """
@@ -80,7 +80,7 @@ class ASTAnalyzer:
             return self._lines[lineno - 1]
         return ""
 
-    def find_assert_true(self) -> List[ASTMatch]:
+    def find_assert_true(self) -> list[ASTMatch]:
         """
         Find assert True statements using AST analysis.
 
@@ -95,7 +95,7 @@ class ASTAnalyzer:
         if self._tree is None:
             self.parse()
 
-        results: List[ASTMatch] = []
+        results: list[ASTMatch] = []
 
         for node in self._walk():
             if isinstance(node, ast.Assert):
@@ -136,7 +136,7 @@ class ASTAnalyzer:
 
         return False
 
-    def find_empty_functions(self) -> List[ASTMatch]:
+    def find_empty_functions(self) -> list[ASTMatch]:
         """
         Find functions with only pass or ellipsis body.
 
@@ -146,7 +146,7 @@ class ASTAnalyzer:
         if self._tree is None:
             self.parse()
 
-        results: List[ASTMatch] = []
+        results: list[ASTMatch] = []
 
         for node in self._walk():
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -165,7 +165,7 @@ class ASTAnalyzer:
 
         return results
 
-    def _is_placeholder_body(self, body: List[ast.stmt]) -> bool:
+    def _is_placeholder_body(self, body: list[ast.stmt]) -> bool:
         """Check if function body is just a placeholder."""
         if not body:
             return True
@@ -192,7 +192,7 @@ class ASTAnalyzer:
 
         return False
 
-    def find_empty_except_handlers(self) -> List[ASTMatch]:
+    def find_empty_except_handlers(self) -> list[ASTMatch]:
         """
         Find except handlers with empty or pass-only bodies.
 
@@ -202,7 +202,7 @@ class ASTAnalyzer:
         if self._tree is None:
             self.parse()
 
-        results: List[ASTMatch] = []
+        results: list[ASTMatch] = []
 
         for node in self._walk():
             if isinstance(node, ast.ExceptHandler):
@@ -219,7 +219,7 @@ class ASTAnalyzer:
 
         return results
 
-    def find_skip_decorators(self) -> List[ASTMatch]:
+    def find_skip_decorators(self) -> list[ASTMatch]:
         """
         Find @pytest.mark.skip and similar decorators without reason.
 
@@ -229,7 +229,7 @@ class ASTAnalyzer:
         if self._tree is None:
             self.parse()
 
-        results: List[ASTMatch] = []
+        results: list[ASTMatch] = []
 
         for node in self._walk():
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -267,7 +267,7 @@ class ASTAnalyzer:
 
         return False
 
-    def find_raise_not_implemented(self) -> List[ASTMatch]:
+    def find_raise_not_implemented(self) -> list[ASTMatch]:
         """
         Find raise NotImplementedError statements.
 
@@ -277,7 +277,7 @@ class ASTAnalyzer:
         if self._tree is None:
             self.parse()
 
-        results: List[ASTMatch] = []
+        results: list[ASTMatch] = []
 
         for node in self._walk():
             if isinstance(node, ast.Raise):
@@ -307,7 +307,7 @@ class ASTAnalyzer:
 
         return results
 
-    def count_mock_usage(self) -> Tuple[int, int]:
+    def count_mock_usage(self) -> tuple[int, int]:
         """
         Count mock usage vs total function calls in test files.
 

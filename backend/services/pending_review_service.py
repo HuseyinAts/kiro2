@@ -14,7 +14,6 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +39,8 @@ class PendingReviewItem:
     flagged_at: datetime = field(default_factory=datetime.now)
     status: ReviewStatus = ReviewStatus.PENDING
     reviewer_notes: str = ""
-    reviewed_at: Optional[datetime] = None
-    reviewed_by: Optional[str] = None
+    reviewed_at: datetime | None = None
+    reviewed_by: str | None = None
 
 
 class PendingReviewService:
@@ -90,7 +89,7 @@ class PendingReviewService:
         logger.info(f"Added question {question_id} for review (similarity: {similarity_score})")
         return item
 
-    def get_review(self, question_id: str) -> Optional[PendingReviewItem]:
+    def get_review(self, question_id: str) -> PendingReviewItem | None:
         """
         Get a pending review item by question ID.
 
@@ -111,8 +110,8 @@ class PendingReviewService:
         question_id: str,
         status: ReviewStatus,
         reviewer_notes: str = "",
-        reviewed_by: Optional[str] = None,
-    ) -> Optional[PendingReviewItem]:
+        reviewed_by: str | None = None,
+    ) -> PendingReviewItem | None:
         """
         Update the status of a pending review.
 
@@ -140,7 +139,7 @@ class PendingReviewService:
     def list_pending(
         self,
         limit: int = 20,
-        status_filter: Optional[ReviewStatus] = ReviewStatus.PENDING,
+        status_filter: ReviewStatus | None = ReviewStatus.PENDING,
     ) -> list[PendingReviewItem]:
         """
         List pending review items.
@@ -226,7 +225,7 @@ class PendingReviewService:
 # Singleton Instance (Dependency Injection Pattern)
 # =============================================================================
 
-_pending_review_service: Optional[PendingReviewService] = None
+_pending_review_service: PendingReviewService | None = None
 
 
 def get_pending_review_service() -> PendingReviewService:

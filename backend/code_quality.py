@@ -4,10 +4,10 @@ Sprint 8: Code Quality & Standardization
 
 Runs all code quality checks: formatting, linting, type checking, security.
 """
-import sys
 import subprocess
+import sys
 from pathlib import Path
-from typing import List, Tuple
+
 
 # Colors for terminal output
 class Colors:
@@ -48,7 +48,7 @@ def print_info(message: str):
     print(f"{Colors.OKCYAN}ℹ {message}{Colors.ENDC}")
 
 
-def run_command(command: List[str], description: str, allow_failure: bool = False) -> bool:
+def run_command(command: list[str], description: str, allow_failure: bool = False) -> bool:
     """Run command and return success status"""
     print(f"\n{Colors.OKCYAN}► Running: {description}{Colors.ENDC}")
     print(f"  Command: {' '.join(command)}\n")
@@ -66,25 +66,24 @@ def run_command(command: List[str], description: str, allow_failure: bool = Fals
             if result.stdout:
                 print(result.stdout)
             return True
+        if allow_failure:
+            print_warning(f"{description} - FAILED (allowed)")
         else:
-            if allow_failure:
-                print_warning(f"{description} - FAILED (allowed)")
-            else:
-                print_error(f"{description} - FAILED")
+            print_error(f"{description} - FAILED")
 
-            if result.stdout:
-                print(result.stdout)
-            if result.stderr:
-                print(result.stderr)
+        if result.stdout:
+            print(result.stdout)
+        if result.stderr:
+            print(result.stderr)
 
-            return allow_failure
+        return allow_failure
 
     except FileNotFoundError:
         print_error(f"{description} - COMMAND NOT FOUND")
         print(f"  Please install: {command[0]}")
         return allow_failure
     except Exception as e:
-        print_error(f"{description} - ERROR: {str(e)}")
+        print_error(f"{description} - ERROR: {e!s}")
         return allow_failure
 
 
@@ -93,7 +92,7 @@ def main():
     print_header("KIRO2 CODE QUALITY CHECKER - SPRINT 8")
 
     all_passed = True
-    results: List[Tuple[str, bool]] = []
+    results: list[tuple[str, bool]] = []
 
     # =================================================================
     # Phase 1: Code Formatting
@@ -219,11 +218,10 @@ def main():
         print_success("\n🎉 ALL CRITICAL CHECKS PASSED!")
         print_info("   Your code meets quality standards.")
         return 0
-    else:
-        print_warning("\n⚠ SOME CHECKS FAILED")
-        print_info("   Review the output above and apply fixes.")
-        print_info("   Non-critical checks are allowed to fail during development.")
-        return 1
+    print_warning("\n⚠ SOME CHECKS FAILED")
+    print_info("   Review the output above and apply fixes.")
+    print_info("   Non-critical checks are allowed to fail during development.")
+    return 1
 
 
 if __name__ == "__main__":

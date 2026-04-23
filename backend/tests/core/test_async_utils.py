@@ -10,15 +10,16 @@ Requirements: REQ-1.1, REQ-1.5
 """
 
 import asyncio
+
 import pytest
 
 from app.core.async_utils import (
-    async_timeout,
-    async_retry,
-    gather_with_concurrency,
-    AsyncConnectionPool,
-    run_in_threadpool,
     AsyncBatchProcessor,
+    AsyncConnectionPool,
+    async_retry,
+    async_timeout,
+    gather_with_concurrency,
+    run_in_threadpool,
 )
 
 
@@ -95,7 +96,7 @@ class TestAsyncRetry:
 
         with pytest.raises(ValueError, match="Persistent error"):
             await always_fails()
-        
+
         assert call_count == 3
 
     @pytest.mark.asyncio
@@ -113,7 +114,7 @@ class TestAsyncRetry:
 
         with pytest.raises(TypeError, match="Not retryable"):
             await raises_different_error()
-        
+
         assert call_count == 2
 
     @pytest.mark.asyncio
@@ -206,7 +207,7 @@ class TestAsyncConnectionPool:
     async def test_pool_initialization(self):
         """Pool doğru initialize edilmeli."""
         pool = AsyncConnectionPool(pool_size=5, max_overflow=2, timeout=10.0)
-        
+
         assert pool.pool_size == 5
         assert pool.max_overflow == 2
         assert pool.timeout == 10.0
@@ -217,13 +218,13 @@ class TestAsyncConnectionPool:
     async def test_pool_acquire_release(self):
         """Connection acquire ve release çalışmalı."""
         pool = AsyncConnectionPool(pool_size=2)
-        
+
         assert pool.active_connections == 0
-        
+
         async with pool.acquire():
             assert pool.active_connections == 1
             assert pool.available_connections == 11
-        
+
         assert pool.active_connections == 0
         assert pool.available_connections == 12
 
@@ -231,7 +232,7 @@ class TestAsyncConnectionPool:
     async def test_pool_concurrent_acquire(self):
         """Concurrent connection acquisition çalışmalı."""
         pool = AsyncConnectionPool(pool_size=3, max_overflow=0)
-        
+
         async def use_connection(delay: float):
             async with pool.acquire():
                 await asyncio.sleep(delay)
@@ -252,10 +253,10 @@ class TestAsyncConnectionPool:
     async def test_pool_timeout_exceeded(self):
         """Pool timeout aşıldığında TimeoutError fırlatılmalı."""
         pool = AsyncConnectionPool(pool_size=1, max_overflow=0, timeout=0.05)
-        
+
         # İlk connection'ı tut ve bırakma
         acquired = asyncio.Event()
-        
+
         async def hold_connection():
             async with pool.acquire():
                 acquired.set()
@@ -264,24 +265,24 @@ class TestAsyncConnectionPool:
         # İlk task'ı başlat
         task1 = asyncio.create_task(hold_connection())
         await acquired.wait()  # Connection alınana kadar bekle
-        
+
         # İkinci connection timeout olmalı (pool dolu)
         with pytest.raises(asyncio.TimeoutError):
             async with pool.acquire():
                 pass
-        
+
         # Cleanup
         task1.cancel()
         try:
             await task1
-        except (asyncio.CancelledError, asyncio.TimeoutError):
+        except (TimeoutError, asyncio.CancelledError):
             pass
 
     @pytest.mark.asyncio
     async def test_pool_max_overflow(self):
         """Max overflow limiti çalışmalı."""
         pool = AsyncConnectionPool(pool_size=2, max_overflow=1)
-        
+
         async def use_connection():
             async with pool.acquire():
                 await asyncio.sleep(0.1)
@@ -292,7 +293,7 @@ class TestAsyncConnectionPool:
             use_connection(),
             use_connection(),
         )
-        
+
         assert pool.active_connections == 0
 
 
@@ -334,7 +335,7 @@ class TestAsyncBatchProcessor:
     async def test_batch_processor_initialization(self):
         """Batch processor doğru initialize edilmeli."""
         processor = AsyncBatchProcessor(batch_size=5, max_concurrent=3)
-        
+
         assert processor.batch_size == 5
         assert processor.max_concurrent == 3
 
@@ -342,28 +343,28 @@ class TestAsyncBatchProcessor:
     async def test_process_items_single_batch(self):
         """Tek batch işleme çalışmalı."""
         processor = AsyncBatchProcessor(batch_size=10, max_concurrent=2)
-        
+
         async def process_batch(batch: list[int]) -> list[int]:
             await asyncio.sleep(0.01)
             return [x * 2 for x in batch]
 
         items = [1, 2, 3, 4, 5]
         results = await processor.process_items(items, process_batch)
-        
+
         assert results == [2, 4, 6, 8, 10]
 
     @pytest.mark.asyncio
     async def test_process_items_multiple_batches(self):
         """Çoklu batch işleme çalışmalı."""
         processor = AsyncBatchProcessor(batch_size=3, max_concurrent=2)
-        
+
         async def process_batch(batch: list[int]) -> list[int]:
             await asyncio.sleep(0.01)
             return [x * 2 for x in batch]
 
         items = list(range(1, 11))  # 1-10
         results = await processor.process_items(items, process_batch)
-        
+
         assert len(results) == 10
         assert results == [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
 
@@ -371,7 +372,7 @@ class TestAsyncBatchProcessor:
     async def test_process_items_with_errors(self):
         """Batch processing error'ları handle etmeli."""
         processor = AsyncBatchProcessor(batch_size=2, max_concurrent=2)
-        
+
         async def process_batch(batch: list[int]) -> list[int]:
             if 5 in batch:
                 raise ValueError("Error processing batch")
@@ -379,7 +380,7 @@ class TestAsyncBatchProcessor:
 
         items = [1, 2, 3, 4, 5, 6]
         results = await processor.process_items(items, process_batch)
-        
+
         # Error olan batch hariç diğerleri işlenmeli
         assert len(results) < 12  # Bazı item'lar skip edildi
 
@@ -387,7 +388,7 @@ class TestAsyncBatchProcessor:
     async def test_process_items_empty_list(self):
         """Boş liste işleme çalışmalı."""
         processor = AsyncBatchProcessor(batch_size=5, max_concurrent=2)
-        
+
         async def process_batch(batch: list[int]) -> list[int]:
             return [x * 2 for x in batch]
 
@@ -398,7 +399,7 @@ class TestAsyncBatchProcessor:
     async def test_process_items_concurrency_limit(self):
         """Concurrency limiti uygulanmalı."""
         processor = AsyncBatchProcessor(batch_size=2, max_concurrent=2)
-        
+
         active_batches = 0
         max_active = 0
 
@@ -412,7 +413,7 @@ class TestAsyncBatchProcessor:
 
         items = list(range(1, 21))  # 20 items = 10 batches
         await processor.process_items(items, process_batch)
-        
+
         # Max 2 concurrent batch olmalı
         assert max_active <= 2
 
@@ -444,7 +445,7 @@ class TestIntegration:
         """Batch processor ve connection pool birlikte çalışmalı."""
         pool = AsyncConnectionPool(pool_size=3)
         processor = AsyncBatchProcessor(batch_size=5, max_concurrent=2)
-        
+
         async def process_with_connection(batch: list[int]) -> list[int]:
             async with pool.acquire():
                 await asyncio.sleep(0.01)
@@ -452,7 +453,7 @@ class TestIntegration:
 
         items = list(range(1, 16))
         results = await processor.process_items(items, process_with_connection)
-        
+
         assert len(results) == 15
         assert pool.active_connections == 0
 
@@ -491,14 +492,14 @@ class TestPerformance:
 
         import time
         start = time.time()
-        
+
         results = await gather_with_concurrency(
             5,
             *[task(i) for i in range(20)],
         )
-        
+
         elapsed = time.time() - start
-        
+
         # 20 task, 5 concurrent, her biri 0.01s = ~0.04s (4 batch)
         assert elapsed < 0.2  # Generous upper bound
         assert len(results) == 20
@@ -507,19 +508,19 @@ class TestPerformance:
     async def test_batch_processor_performance(self):
         """Batch processor performans testi."""
         processor = AsyncBatchProcessor(batch_size=10, max_concurrent=5)
-        
+
         async def process_batch(batch: list[int]) -> list[int]:
             await asyncio.sleep(0.01)
             return [x * 2 for x in batch]
 
         import time
         start = time.time()
-        
+
         items = list(range(100))
         results = await processor.process_items(items, process_batch)
-        
+
         elapsed = time.time() - start
-        
+
         # 100 items, batch_size=10 = 10 batches, max_concurrent=5
         # 2 rounds of 5 batches = ~0.02s
         assert elapsed < 0.2

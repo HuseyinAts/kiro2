@@ -4,16 +4,16 @@ Coverage Automation Runner
 Comprehensive script to run automated coverage analysis and reporting
 """
 
-import os
-import sys
-import subprocess
 import argparse
-import webbrowser
-from pathlib import Path
-from datetime import datetime
-import logging
 import json
-from typing import Optional, Dict, Any
+import logging
+import os
+import subprocess
+import sys
+import webbrowser
+from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 # Setup logging
 logging.basicConfig(
@@ -62,7 +62,7 @@ class CoverageAutomationRunner:
 
     def run_coverage_analysis(
         self, test_type: str = "all", verbose: bool = False
-    ) -> Optional[str]:
+    ) -> str | None:
         """Run automated coverage analysis"""
         logger.info(f"🧪 Starting coverage analysis (test type: {test_type})...")
 
@@ -101,16 +101,14 @@ class CoverageAutomationRunner:
                     latest_report = max(report_files, key=lambda p: p.stat().st_mtime)
                     logger.info(f"📋 Report generated: {latest_report}")
                     return str(latest_report)
-                else:
-                    logger.warning("No report file found")
-                    return None
-            else:
-                logger.error(
-                    f"❌ Coverage analysis failed (exit code: {result.returncode})"
-                )
-                logger.error(f"STDOUT: {result.stdout}")
-                logger.error(f"STDERR: {result.stderr}")
+                logger.warning("No report file found")
                 return None
+            logger.error(
+                f"❌ Coverage analysis failed (exit code: {result.returncode})"
+            )
+            logger.error(f"STDOUT: {result.stdout}")
+            logger.error(f"STDERR: {result.stderr}")
+            return None
 
         except subprocess.TimeoutExpired:
             logger.error("⏱️ Coverage analysis timed out")
@@ -171,7 +169,7 @@ class CoverageAutomationRunner:
             logger.error(f"❌ Dashboard error: {e}")
             return False
 
-    def generate_quick_report(self) -> Dict[str, Any]:
+    def generate_quick_report(self) -> dict[str, Any]:
         """Generate a quick coverage summary"""
         logger.info("📊 Generating quick coverage summary...")
 
@@ -182,7 +180,7 @@ class CoverageAutomationRunner:
             return {}
 
         try:
-            with open(coverage_json, "r") as f:
+            with open(coverage_json) as f:
                 coverage_data = json.load(f)
 
             totals = coverage_data.get("totals", {})

@@ -7,7 +7,6 @@ Target (requirements.md):
 """
 
 import re
-from typing import List, Tuple
 
 from pydantic import BaseModel
 
@@ -21,7 +20,7 @@ class ReadabilityResult(BaseModel):
     avg_sentence_length: float
     avg_syllables_per_word: float
     grade_level: str
-    suggestions: List[str]
+    suggestions: list[str]
 
 
 class TurkishReadabilityScorer:
@@ -49,7 +48,6 @@ class TurkishReadabilityScorer:
 
     def __init__(self):
         """Scorer başlat"""
-        pass
 
     def count_syllables(self, word: str) -> int:
         """
@@ -155,20 +153,19 @@ class TurkishReadabilityScorer:
         """
         if score >= 90:
             return "İlkokul 1-2"
-        elif score >= 80:
+        if score >= 80:
             return "İlkokul 3-4"
-        elif score >= 70:
+        if score >= 70:
             return "Ortaokul 5-6"
-        elif score >= 60:
+        if score >= 60:
             return "Ortaokul 7-8"
-        elif score >= 50:
+        if score >= 50:
             return "Lise 9-10"
-        elif score >= 40:
+        if score >= 40:
             return "Lise 11-12"
-        elif score >= 30:
+        if score >= 30:
             return "Üniversite"
-        else:
-            return "Akademik/Uzman"
+        return "Akademik/Uzman"
 
     def analyze(self, text: str) -> ReadabilityResult:
         """
@@ -216,7 +213,7 @@ class TurkishReadabilityScorer:
         score: float,
         avg_sentence_length: float,
         avg_syllables_per_word: float
-    ) -> List[str]:
+    ) -> list[str]:
         """
         İyileştirme önerileri üret
 
@@ -262,7 +259,7 @@ class TurkishReadabilityScorer:
 
         return suggestions
 
-    def check_high_school_level(self, text: str) -> Tuple[bool, float, str]:
+    def check_high_school_level(self, text: str) -> tuple[bool, float, str]:
         """
         Lise seviyesine uygunluk kontrolü
 
@@ -280,7 +277,7 @@ class TurkishReadabilityScorer:
                 1.0,
                 f"Lise seviyesine uygun (skor: {result.flesch_score:.0f})"
             )
-        elif result.flesch_score < self.TARGET_MIN:
+        if result.flesch_score < self.TARGET_MIN:
             # Çok zor
             deviation = (self.TARGET_MIN - result.flesch_score) / self.TARGET_MIN
             score = max(0.5, 1.0 - deviation)
@@ -289,12 +286,11 @@ class TurkishReadabilityScorer:
                 score,
                 f"Metin lise seviyesi için çok karmaşık (skor: {result.flesch_score:.0f})"
             )
-        else:
-            # Çok kolay
-            deviation = (result.flesch_score - self.TARGET_MAX) / self.TARGET_MAX
-            score = max(0.6, 1.0 - deviation * 0.5)
-            return (
-                False,
-                score,
-                f"Metin lise seviyesi için çok basit (skor: {result.flesch_score:.0f})"
-            )
+        # Çok kolay
+        deviation = (result.flesch_score - self.TARGET_MAX) / self.TARGET_MAX
+        score = max(0.6, 1.0 - deviation * 0.5)
+        return (
+            False,
+            score,
+            f"Metin lise seviyesi için çok basit (skor: {result.flesch_score:.0f})"
+        )

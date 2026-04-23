@@ -28,7 +28,6 @@ import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 try:
     import sqlparse
@@ -77,11 +76,11 @@ class BackupResult:
     """Backup islem sonucu."""
 
     success: bool
-    backup_path: Optional[Path] = None
+    backup_path: Path | None = None
     size_bytes: int = 0
     duration_seconds: float = 0.0
-    checksum: Optional[str] = None
-    error_message: Optional[str] = None
+    checksum: str | None = None
+    error_message: str | None = None
 
     @property
     def size_mb(self) -> float:
@@ -95,7 +94,7 @@ class ValidationResult:
 
     is_valid: bool
     revision: str
-    backup_result: Optional[BackupResult] = None
+    backup_result: BackupResult | None = None
     syntax_errors: list[SyntaxError] = field(default_factory=list)
     dependency_errors: list[DependencyError] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
@@ -180,11 +179,11 @@ class PreMigrationHook:
         self,
         backup_dir: str = "backups/migrations",
         retention_days: int = 7,
-        db_host: Optional[str] = None,
-        db_port: Optional[str] = None,
-        db_name: Optional[str] = None,
-        db_user: Optional[str] = None,
-        db_password: Optional[str] = None,
+        db_host: str | None = None,
+        db_port: str | None = None,
+        db_name: str | None = None,
+        db_user: str | None = None,
+        db_password: str | None = None,
     ):
         """
         PreMigrationHook olustur.
@@ -212,8 +211,8 @@ class PreMigrationHook:
     async def validate_migration(
         self,
         revision: str,
-        migration_script: Optional[str] = None,
-        session: Optional[AsyncSession] = None,
+        migration_script: str | None = None,
+        session: AsyncSession | None = None,
         skip_backup: bool = False,
     ) -> ValidationResult:
         """
@@ -234,7 +233,7 @@ class PreMigrationHook:
         syntax_errors: list[SyntaxError] = []
         dependency_errors: list[DependencyError] = []
         warnings: list[str] = []
-        backup_result: Optional[BackupResult] = None
+        backup_result: BackupResult | None = None
 
         logger.info(f"PreMigration validation starting for revision: {revision}")
 
@@ -385,9 +384,8 @@ class PreMigrationHook:
 
     def _compress_file(self, source: Path, dest: Path) -> None:
         """Dosyayi gzip ile sikistir."""
-        with open(source, "rb") as f_in:
-            with gzip.open(dest, "wb") as f_out:
-                shutil.copyfileobj(f_in, f_out)
+        with open(source, "rb") as f_in, gzip.open(dest, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
         source.unlink()  # Remove original
 
     def _calculate_checksum(self, file_path: Path) -> str:

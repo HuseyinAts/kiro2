@@ -12,7 +12,7 @@ Bu servis sınav performansı analizi, zayıflık tespiti ve çalışma önerile
 import statistics
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import and_, desc, func, select
 from sqlalchemy.orm import selectinload
@@ -61,7 +61,7 @@ class SubjectWeakness:
     wrong_answers: int
     empty_answers: int
     average_response_time: float
-    difficulty_distribution: Dict[str, int]
+    difficulty_distribution: dict[str, int]
     improvement_potential: float  # 0-1 arası gelişim potansiyeli
 
 
@@ -73,7 +73,7 @@ class StudyRecommendation:
     topic: str
     priority: StudyPriority
     recommended_study_hours: int
-    recommended_resources: List[Dict[str, Any]]
+    recommended_resources: list[dict[str, Any]]
     practice_question_count: int
     difficulty_focus: QuestionDifficultyLevel
     explanation: str
@@ -84,11 +84,11 @@ class PerformanceComparison:
     """Performans karşılaştırması"""
 
     student_score: float
-    class_average: Optional[float]
-    school_average: Optional[float]
+    class_average: float | None
+    school_average: float | None
     national_average: float
     percentile: float
-    ranking_info: Dict[str, Any]
+    ranking_info: dict[str, Any]
 
 
 @dataclass
@@ -98,14 +98,14 @@ class DetailedPerformanceAnalysis:
     exam_session_id: str
     student_id: str
     exam_type: ExamType
-    overall_performance: Dict[str, Any]
-    subject_performances: List[Dict[str, Any]]
-    weaknesses: List[SubjectWeakness]
-    study_recommendations: List[StudyRecommendation]
+    overall_performance: dict[str, Any]
+    subject_performances: list[dict[str, Any]]
+    weaknesses: list[SubjectWeakness]
+    study_recommendations: list[StudyRecommendation]
     performance_comparison: PerformanceComparison
-    time_analysis: Dict[str, Any]
-    improvement_trends: Dict[str, Any]
-    next_exam_prediction: Dict[str, Any]
+    time_analysis: dict[str, Any]
+    improvement_trends: dict[str, Any]
+    next_exam_prediction: dict[str, Any]
 
 
 class ExamPerformanceService:
@@ -261,7 +261,7 @@ class ExamPerformanceService:
 
     async def _analyze_overall_performance(
         self, db_session, exam_session: ExamSession
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Genel performans analizi"""
 
         # Temel metrikler
@@ -313,7 +313,7 @@ class ExamPerformanceService:
 
     async def _analyze_subject_performances(
         self, db_session, exam_session: ExamSession
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Konu bazlı performans analizi"""
 
         # Konu bazlı istatistikleri getir
@@ -416,8 +416,8 @@ class ExamPerformanceService:
         self,
         db_session,
         exam_session: ExamSession,
-        subject_performances: List[Dict[str, Any]],
-    ) -> List[SubjectWeakness]:
+        subject_performances: list[dict[str, Any]],
+    ) -> list[SubjectWeakness]:
         """Zayıflık tespiti"""
 
         weaknesses = []
@@ -462,7 +462,7 @@ class ExamPerformanceService:
         return weaknesses
 
     def _calculate_improvement_potential(
-        self, performance: Dict[str, Any], exam_type: ExamType
+        self, performance: dict[str, Any], exam_type: ExamType
     ) -> float:
         """Gelişim potansiyeli hesaplama"""
 
@@ -503,8 +503,8 @@ class ExamPerformanceService:
         return min(1.0, max(0.0, potential))
 
     async def _generate_study_recommendations(
-        self, db_session, exam_session: ExamSession, weaknesses: List[SubjectWeakness]
-    ) -> List[StudyRecommendation]:
+        self, db_session, exam_session: ExamSession, weaknesses: list[SubjectWeakness]
+    ) -> list[StudyRecommendation]:
         """Çalışma önerileri üretimi"""
 
         recommendations = []
@@ -551,7 +551,7 @@ class ExamPerformanceService:
 
     async def _get_recommended_resources(
         self, db_session, subject: str, topic: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Önerilen kaynakları getir"""
 
         # Basit implementasyon - gerçek uygulamada içerik veritabanından çekilecek
@@ -585,7 +585,7 @@ class ExamPerformanceService:
         return resources
 
     async def _compare_performance(
-        self, db_session, exam_session: ExamSession, overall_performance: Dict[str, Any]
+        self, db_session, exam_session: ExamSession, overall_performance: dict[str, Any]
     ) -> PerformanceComparison:
         """Performans karşılaştırması"""
 
@@ -631,7 +631,7 @@ class ExamPerformanceService:
 
     async def _analyze_time_usage(
         self, db_session, exam_session: ExamSession
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Zaman kullanım analizi"""
 
         # Toplam süre
@@ -702,7 +702,7 @@ class ExamPerformanceService:
 
     async def _analyze_improvement_trends(
         self, db_session, exam_session: ExamSession
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Gelişim trendi analizi"""
 
         # Son 5 sınavdaki performansı getir
@@ -770,8 +770,8 @@ class ExamPerformanceService:
         }
 
     async def _predict_next_exam_performance(
-        self, db_session, exam_session: ExamSession, improvement_trends: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, db_session, exam_session: ExamSession, improvement_trends: dict[str, Any]
+    ) -> dict[str, Any]:
         """Sonraki sınav performans tahmini"""
 
         current_score = exam_session.raw_score

@@ -10,15 +10,15 @@ STRATEGY:
 - Target: 400+ tests
 """
 
-import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, AsyncMock, patch
 from datetime import datetime, timedelta
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # Import FastAPI app - avoid circular imports and dependency issues
 # We'll create a test app instance instead of importing from main
 from fastapi import FastAPI
-
+from fastapi.testclient import TestClient
 
 # Create test app instance
 
@@ -76,19 +76,17 @@ app = create_test_app()
 # Import models
 from models import (
     Kullanici,
-    TokenYaniti,
-    OgrenciProfili,
     KullaniciRolu,
+    OgrenciProfili,
     SinavTipi,
 )
 from models.dashboard import (
-    DashboardIstatistikleri,
-    SinavSonucu,
-    Hedef,
     Bildirim,
+    DashboardIstatistikleri,
+    Hedef,
     PerformansVerisi,
+    SinavSonucu,
 )
-
 
 # ==================== FIXTURES ====================
 
@@ -607,23 +605,22 @@ class TestHealthAPI:
             with patch(
                 "core.comprehensive_health_check.health_checker.check_all",
                 new_callable=AsyncMock,
-            ) as mock_check:
-                with patch("core.redis_cache.get_cache") as mock_cache_fn:
-                    mock_cache = MagicMock()
-                    mock_cache.get.return_value = None
-                    mock_cache_fn.return_value = mock_cache
+            ) as mock_check, patch("core.redis_cache.get_cache") as mock_cache_fn:
+                mock_cache = MagicMock()
+                mock_cache.get.return_value = None
+                mock_cache_fn.return_value = mock_cache
 
-                    mock_check.return_value = MagicMock(
-                        status=MagicMock(value="unhealthy"),
-                        timestamp=datetime.now().isoformat(),
-                        response_time_ms=150.0,
-                        components=[],
-                        summary={"total": 1, "healthy": 0, "unhealthy": 1},
-                    )
+                mock_check.return_value = MagicMock(
+                    status=MagicMock(value="unhealthy"),
+                    timestamp=datetime.now().isoformat(),
+                    response_time_ms=150.0,
+                    components=[],
+                    summary={"total": 1, "healthy": 0, "unhealthy": 1},
+                )
 
-                    response = client.get("/health/")
+                response = client.get("/health/")
 
-                    assert response.status_code == 503
+                assert response.status_code == 503
         finally:
             app.dependency_overrides.clear()
 

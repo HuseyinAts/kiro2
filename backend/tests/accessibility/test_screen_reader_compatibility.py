@@ -9,10 +9,11 @@ Requirements: 9.2, 9.3, 9.4
 """
 
 import os
-import sys
-import pytest
-from typing import Dict, Any
 import re
+import sys
+from typing import Any
+
+import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -24,7 +25,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results = []
         self.supported_screen_readers = ["NVDA", "JAWS", "VoiceOver", "TalkBack"]
 
-    def test_aria_live_regions(self, html_content: str) -> Dict[str, Any]:
+    def test_aria_live_regions(self, html_content: str) -> dict[str, Any]:
         """ARIA live regions testi - Dinamik içerik güncellemeleri"""
         result = {
             "test_name": "ARIA Live Regions",
@@ -65,7 +66,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results.append(result)
         return result
 
-    def test_form_field_descriptions(self, html_content: str) -> Dict[str, Any]:
+    def test_form_field_descriptions(self, html_content: str) -> dict[str, Any]:
         """Form alanları için açıklayıcı etiketler testi"""
         result = {
             "test_name": "Form Field Descriptions",
@@ -102,7 +103,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results.append(result)
         return result
 
-    def test_heading_structure(self, html_content: str) -> Dict[str, Any]:
+    def test_heading_structure(self, html_content: str) -> dict[str, Any]:
         """Başlık hiyerarşisi testi - Ekran okuyucu navigasyonu için"""
         result = {
             "test_name": "Heading Structure",
@@ -141,7 +142,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results.append(result)
         return result
 
-    def test_landmark_regions(self, html_content: str) -> Dict[str, Any]:
+    def test_landmark_regions(self, html_content: str) -> dict[str, Any]:
         """Landmark regions testi - Sayfa yapısı navigasyonu"""
         result = {
             "test_name": "Landmark Regions",
@@ -170,7 +171,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results.append(result)
         return result
 
-    def test_button_and_link_labels(self, html_content: str) -> Dict[str, Any]:
+    def test_button_and_link_labels(self, html_content: str) -> dict[str, Any]:
         """Button ve link etiketleri testi"""
         result = {
             "test_name": "Button and Link Labels",
@@ -204,7 +205,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results.append(result)
         return result
 
-    def test_table_accessibility(self, html_content: str) -> Dict[str, Any]:
+    def test_table_accessibility(self, html_content: str) -> dict[str, Any]:
         """Tablo erişilebilirliği testi"""
         result = {
             "test_name": "Table Accessibility",
@@ -244,7 +245,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results.append(result)
         return result
 
-    def test_math_formula_accessibility(self, html_content: str) -> Dict[str, Any]:
+    def test_math_formula_accessibility(self, html_content: str) -> dict[str, Any]:
         """Matematiksel formül erişilebilirliği testi"""
         result = {
             "test_name": "Math Formula Accessibility",
@@ -258,9 +259,7 @@ class ScreenReaderCompatibilityTester:
         has_math = any(indicator in html_content for indicator in math_indicators)
 
         if has_math:
-            if "<math" in html_content:  # MathML kullanımı
-                result["passed"] = True
-            elif "aria-label" in html_content:  # Alternatif metin
+            if "<math" in html_content or "aria-label" in html_content:  # MathML kullanımı
                 result["passed"] = True
             else:
                 result["issues"].append(
@@ -276,7 +275,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results.append(result)
         return result
 
-    def test_status_messages(self, html_content: str) -> Dict[str, Any]:
+    def test_status_messages(self, html_content: str) -> dict[str, Any]:
         """Durum mesajları testi (WCAG 4.1.3)"""
         result = {
             "test_name": "Status Messages",
@@ -307,7 +306,7 @@ class ScreenReaderCompatibilityTester:
         self.test_results.append(result)
         return result
 
-    def generate_compatibility_report(self) -> Dict[str, Any]:
+    def generate_compatibility_report(self) -> dict[str, Any]:
         """Ekran okuyucu uyumluluk raporu oluştur"""
         total_tests = len(self.test_results)
         passed_tests = sum(1 for r in self.test_results if r.get("passed", False))

@@ -4,7 +4,7 @@ REQ-49.45-49.48: Ulusal ortalama karşılaştırma, percentile ranking, performa
 """
 
 import logging
-from typing import Dict, List
+
 from services.test_types import BaseTestType, TestConfiguration
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class BenchmarkTest(BaseTestType):
         percentile = norm.cdf(z_score) * 100
         return percentile
 
-    def predict_performance(self, current_score: float) -> Dict:
+    def predict_performance(self, current_score: float) -> dict:
         """REQ-49.47: Performance prediction"""
         percentile = self.calculate_percentile(current_score)
 
@@ -62,7 +62,7 @@ class BenchmarkTest(BaseTestType):
             "estimated_rank": f"Üst %{100-percentile:.0f}",
         }
 
-    def generate_feedback(self, session_data: Dict) -> Dict:
+    def generate_feedback(self, session_data: dict) -> dict:
         """REQ-49.45: National average comparison"""
         responses = session_data.get("responses", [])
         total_correct = sum(1 for r in responses if r.get("is_correct", False))
@@ -98,7 +98,7 @@ class BenchmarkTest(BaseTestType):
             "weak_topics": weak_topics,
         }
 
-    def calculate_recommendations(self, session_data: Dict) -> List[str]:
+    def calculate_recommendations(self, session_data: dict) -> list[str]:
         """Öneriler"""
         feedback = self.generate_feedback(session_data)
         recommendations = []

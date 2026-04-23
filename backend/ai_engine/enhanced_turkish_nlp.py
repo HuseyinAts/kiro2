@@ -6,12 +6,13 @@ Advanced Turkish language processing with machine learning
 import logging
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
 from enum import Enum
+from typing import Any
+
 import numpy as np
+import torch
 from sklearn.feature_extraction.text import TfidfVectorizer
 from transformers import pipeline
-import torch
 
 logger = logging.getLogger(__name__)
 
@@ -55,16 +56,16 @@ class TurkishTextAnalysis:
     technical_term_ratio: float
 
     # Educational features
-    educational_context: Optional[EducationalContext]
-    key_concepts: List[str]
-    prerequisite_concepts: List[str]
-    difficulty_factors: List[str]
+    educational_context: EducationalContext | None
+    key_concepts: list[str]
+    prerequisite_concepts: list[str]
+    difficulty_factors: list[str]
 
     # Suggestions for improvement
-    simplification_suggestions: List[str] = field(default_factory=list)
-    vocabulary_alternatives: Dict[str, List[str]] = field(default_factory=dict)
+    simplification_suggestions: list[str] = field(default_factory=list)
+    vocabulary_alternatives: dict[str, list[str]] = field(default_factory=dict)
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -74,10 +75,10 @@ class ConceptEntity:
     concept: str
     category: str  # matematik, fizik, kimya, etc.
     difficulty_level: float
-    prerequisites: List[str]
-    related_concepts: List[str]
-    definition: Optional[str] = None
-    examples: List[str] = field(default_factory=list)
+    prerequisites: list[str]
+    related_concepts: list[str]
+    definition: str | None = None
+    examples: list[str] = field(default_factory=list)
 
 
 class EnhancedTurkishNLP:
@@ -220,7 +221,7 @@ class EnhancedTurkishNLP:
             stop_words=self._get_turkish_stop_words(),
         )
 
-    def _get_turkish_stop_words(self) -> List[str]:
+    def _get_turkish_stop_words(self) -> list[str]:
         """Get Turkish stop words"""
         return [
             "ve",
@@ -266,7 +267,7 @@ class EnhancedTurkishNLP:
         ]
 
     async def analyze_text_complexity(
-        self, text: str, context: Optional[EducationalContext] = None
+        self, text: str, context: EducationalContext | None = None
     ) -> TurkishTextAnalysis:
         """Comprehensive text complexity analysis"""
         if not self.ready:
@@ -323,7 +324,7 @@ class EnhancedTurkishNLP:
             vocabulary_alternatives=vocabulary_alternatives,
         )
 
-    def _tokenize_turkish(self, text: str) -> List[str]:
+    def _tokenize_turkish(self, text: str) -> list[str]:
         """Tokenize Turkish text considering morphological structure"""
         # Remove punctuation and normalize
         text = re.sub(r"[^\w\s]", " ", text)
@@ -337,7 +338,7 @@ class EnhancedTurkishNLP:
 
         return words
 
-    def _split_sentences(self, text: str) -> List[str]:
+    def _split_sentences(self, text: str) -> list[str]:
         """Split text into sentences"""
         # Turkish sentence endings
         sentence_endings = r"[.!?…]"
@@ -346,7 +347,7 @@ class EnhancedTurkishNLP:
         return sentences
 
     async def _calculate_readability(
-        self, text: str, words: List[str], sentences: List[str]
+        self, text: str, words: list[str], sentences: list[str]
     ) -> float:
         """Calculate readability score for Turkish text"""
         if not sentences or not words:
@@ -380,7 +381,7 @@ class EnhancedTurkishNLP:
 
         return max(1, syllables)
 
-    async def _analyze_vocabulary_difficulty(self, words: List[str]) -> float:
+    async def _analyze_vocabulary_difficulty(self, words: list[str]) -> float:
         """Analyze vocabulary difficulty"""
         if not words:
             return 0.0
@@ -424,7 +425,7 @@ class EnhancedTurkishNLP:
 
         return min(1.0, difficulty)
 
-    async def _analyze_syntactic_complexity(self, sentences: List[str]) -> float:
+    async def _analyze_syntactic_complexity(self, sentences: list[str]) -> float:
         """Analyze syntactic complexity"""
         if not sentences:
             return 0.0
@@ -469,7 +470,7 @@ class EnhancedTurkishNLP:
         # Normalize TTR (higher is more diverse)
         return min(1.0, ttr * 2)
 
-    async def _analyze_morphological_complexity(self, words: List[str]) -> float:
+    async def _analyze_morphological_complexity(self, words: list[str]) -> float:
         """Analyze morphological complexity of Turkish words"""
         if not words:
             return 0.0
@@ -492,7 +493,7 @@ class EnhancedTurkishNLP:
 
         return complex_morphology_count / len(words) if words else 0.0
 
-    def _calculate_compound_word_ratio(self, words: List[str]) -> float:
+    def _calculate_compound_word_ratio(self, words: list[str]) -> float:
         """Calculate ratio of compound words"""
         if not words:
             return 0.0
@@ -501,7 +502,7 @@ class EnhancedTurkishNLP:
         compound_count = sum(1 for word in words if len(word) > 12)
         return compound_count / len(words)
 
-    def _calculate_foreign_word_ratio(self, words: List[str]) -> float:
+    def _calculate_foreign_word_ratio(self, words: list[str]) -> float:
         """Calculate ratio of foreign words in Turkish text"""
         if not words:
             return 0.0
@@ -524,7 +525,7 @@ class EnhancedTurkishNLP:
         return foreign_count / len(words)
 
     async def _calculate_technical_term_ratio(
-        self, text: str, context: Optional[EducationalContext]
+        self, text: str, context: EducationalContext | None
     ) -> float:
         """Calculate ratio of technical terms"""
         technical_count = 0
@@ -536,7 +537,7 @@ class EnhancedTurkishNLP:
         word_count = len(self._tokenize_turkish(text))
         return technical_count / word_count if word_count > 0 else 0.0
 
-    async def _extract_key_concepts(self, text: str) -> List[str]:
+    async def _extract_key_concepts(self, text: str) -> list[str]:
         """Extract key educational concepts from text"""
         concepts = []
         text_lower = text.lower()
@@ -566,7 +567,7 @@ class EnhancedTurkishNLP:
 
         return list(set(concepts))
 
-    async def _identify_prerequisites(self, concepts: List[str]) -> List[str]:
+    async def _identify_prerequisites(self, concepts: list[str]) -> list[str]:
         """Identify prerequisite concepts"""
         prerequisites = []
 
@@ -577,7 +578,7 @@ class EnhancedTurkishNLP:
 
         return list(set(prerequisites))
 
-    async def _identify_difficulty_factors(self, text: str) -> List[str]:
+    async def _identify_difficulty_factors(self, text: str) -> list[str]:
         """Identify factors that make text difficult"""
         factors = []
 
@@ -616,16 +617,15 @@ class EnhancedTurkishNLP:
 
         if overall_score >= 80:
             return TextComplexityLevel.BEGINNER
-        elif overall_score >= 60:
+        if overall_score >= 60:
             return TextComplexityLevel.ELEMENTARY
-        elif overall_score >= 40:
+        if overall_score >= 40:
             return TextComplexityLevel.INTERMEDIATE
-        elif overall_score >= 20:
+        if overall_score >= 20:
             return TextComplexityLevel.ADVANCED
-        else:
-            return TextComplexityLevel.EXPERT
+        return TextComplexityLevel.EXPERT
 
-    async def _generate_simplification_suggestions(self, text: str) -> List[str]:
+    async def _generate_simplification_suggestions(self, text: str) -> list[str]:
         """Generate suggestions to simplify text"""
         suggestions = []
 
@@ -647,8 +647,8 @@ class EnhancedTurkishNLP:
         return suggestions
 
     async def _suggest_vocabulary_alternatives(
-        self, words: List[str]
-    ) -> Dict[str, List[str]]:
+        self, words: list[str]
+    ) -> dict[str, list[str]]:
         """Suggest simpler vocabulary alternatives"""
         alternatives = {}
 

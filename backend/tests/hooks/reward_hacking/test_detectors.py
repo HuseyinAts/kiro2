@@ -10,16 +10,15 @@ import pytest
 
 from backend.hooks.reward_hacking.detectors import (
     AssertTrueDetector,
-    EchoSuccessDetector,
-    PlaceholderDetector,
+    CICDBypassDetector,
     CoverageManipulationDetector,
-    MockAbuseDetector,
+    EchoSuccessDetector,
     EmptyExceptionDetector,
     HardcodedTestDataDetector,
-    CICDBypassDetector,
+    MockAbuseDetector,
+    PlaceholderDetector,
 )
-from backend.hooks.reward_hacking.models.enums import SeverityLevel, PatternType
-
+from backend.hooks.reward_hacking.models.enums import PatternType, SeverityLevel
 
 # =============================================================================
 # ASSERT TRUE DETECTOR TESTS

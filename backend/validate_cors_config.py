@@ -226,7 +226,7 @@ def validate_cors_configuration():
         print("CORS Configuration Validation Failed")
         print("=" * 80)
         print()
-        print(f"Error: {str(e)}")
+        print(f"Error: {e!s}")
         print()
         import traceback
 

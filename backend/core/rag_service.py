@@ -12,10 +12,10 @@ import uuid
 from functools import lru_cache
 from typing import Any
 
-from langchain_core.documents import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Configure logging (must be before any logger usage)
 logging.basicConfig(level=logging.INFO)
@@ -112,8 +112,8 @@ class RAGService:
 
             # Vector store - use optimized factory with HNSW support
             try:
-                from core.vector_store_factory import VectorStoreFactory
                 from core.rag_config import get_rag_config
+                from core.vector_store_factory import VectorStoreFactory
 
                 config = get_rag_config()
                 store_type = config.vector_store.store_type
@@ -373,8 +373,8 @@ class RAGService:
             if langchain_docs:
                 # Handle vector store initialization on first add
                 if self.vector_store is None:
-                    from core.vector_store_factory import VectorStoreFactory
                     from core.rag_config import get_rag_config
+                    from core.vector_store_factory import VectorStoreFactory
 
                     config = get_rag_config()
 
@@ -502,7 +502,7 @@ class RAGService:
             Fused search results
         """
         try:
-            from core.query_expansion import get_query_expander, MultiQueryRetriever
+            from core.query_expansion import MultiQueryRetriever, get_query_expander
 
             # Get expander
             expander = get_query_expander()

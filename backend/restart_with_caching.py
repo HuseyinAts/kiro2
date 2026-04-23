@@ -4,10 +4,10 @@ Redis Caching ile Backend Restart
 Tüm eski process'leri kapatır ve yeni backend başlatır
 """
 
-import subprocess
-import time
-import sys
 import os
+import subprocess
+import sys
+import time
 
 
 def kill_all_python_processes():

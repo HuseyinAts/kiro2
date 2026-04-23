@@ -12,7 +12,7 @@ Diagnostic Test özellikleri:
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List
+
 import numpy as np
 
 from services.test_types import BaseTestType, TestConfiguration
@@ -42,7 +42,7 @@ class TopicPerformance:
     total: int
     status: str  # 'excellent', 'good', 'needs_improvement', 'critical'
     avg_response_time: float
-    difficulty_distribution: Dict[str, int]
+    difficulty_distribution: dict[str, int]
 
 
 class DiagnosticTest(BaseTestType):
@@ -101,7 +101,7 @@ class DiagnosticTest(BaseTestType):
             osym_format_compliance=False,
         )
 
-    def identify_weak_areas(self, session_data: Dict) -> List[WeakArea]:
+    def identify_weak_areas(self, session_data: dict) -> list[WeakArea]:
         """
         Zayıf alanları tespit et.
 
@@ -167,7 +167,7 @@ class DiagnosticTest(BaseTestType):
 
         return weak_areas
 
-    def generate_feedback(self, session_data: Dict) -> Dict:
+    def generate_feedback(self, session_data: dict) -> dict:
         """
         Konu bazlı detaylı geri bildirim oluştur.
 
@@ -232,7 +232,7 @@ class DiagnosticTest(BaseTestType):
             else 0.0,
         }
 
-    def calculate_recommendations(self, session_data: Dict) -> List[str]:
+    def calculate_recommendations(self, session_data: dict) -> list[str]:
         """
         Özel çalışma planı öner.
 
@@ -322,10 +322,9 @@ class DiagnosticTest(BaseTestType):
         """Zayıflık şiddetini belirle"""
         if accuracy < 0.3:
             return "critical"
-        elif accuracy < 0.45:
+        if accuracy < 0.45:
             return "high"
-        else:
-            return "medium"
+        return "medium"
 
     def _calculate_priority(self, accuracy: float, question_count: int) -> int:
         """İyileştirme önceliğini hesapla (düşük sayı = yüksek öncelik)"""
@@ -337,7 +336,7 @@ class DiagnosticTest(BaseTestType):
         confidence_penalty = max(0, 10 - question_count)  # Az soru = ceza
         return base_priority + confidence_penalty
 
-    def _analyze_topics(self, responses: List[Dict]) -> Dict[str, Dict]:
+    def _analyze_topics(self, responses: list[dict]) -> dict[str, dict]:
         """Konuları detaylı analiz et"""
         topic_data = {}
 
@@ -377,25 +376,23 @@ class DiagnosticTest(BaseTestType):
         """Performans durumunu belirle"""
         if accuracy >= self.excellent_threshold:
             return "excellent"
-        elif accuracy >= self.good_threshold:
+        if accuracy >= self.good_threshold:
             return "good"
-        elif accuracy >= self.needs_improvement_threshold:
+        if accuracy >= self.needs_improvement_threshold:
             return "needs_improvement"
-        else:
-            return "critical"
+        return "critical"
 
     def _generate_topic_feedback_message(self, topic: str, accuracy: float) -> str:
         """Konu için feedback mesajı oluştur"""
         if accuracy >= 0.8:
             return f"{topic} konusunda çok başarılısınız! Bu seviyeyi koruyun ve daha zor sorularla kendinizi zorlayın."
-        elif accuracy >= 0.6:
+        if accuracy >= 0.6:
             return f"{topic} konusunda iyi durumdasınız. Biraz daha pratikle mükemmel olabilirsiniz."
-        elif accuracy >= 0.4:
+        if accuracy >= 0.4:
             return f"{topic} konusunda gelişmeye ihtiyacınız var. Temel kavramları tekrar edin ve düzenli pratik yapın."
-        else:
-            return f"{topic} konusunda ciddi eksiklikler var. Acil çalışma gerekli! Konu anlatımlarından başlayın."
+        return f"{topic} konusunda ciddi eksiklikler var. Acil çalışma gerekli! Konu anlatımlarından başlayın."
 
-    def _identify_improvement_areas(self, topic: str, analysis: Dict) -> List[str]:
+    def _identify_improvement_areas(self, topic: str, analysis: dict) -> list[str]:
         """İyileştirme alanlarını belirle"""
         areas = []
 
@@ -445,7 +442,7 @@ class DiagnosticTest(BaseTestType):
         return areas
 
     def _generate_overall_assessment(
-        self, session_data: Dict, weak_areas: List[WeakArea], topic_analysis: Dict
+        self, session_data: dict, weak_areas: list[WeakArea], topic_analysis: dict
     ) -> str:
         """Genel değerlendirme oluştur"""
         responses = session_data.get("responses", [])
@@ -504,7 +501,6 @@ class DiagnosticTest(BaseTestType):
         """Konu için çalışma stratejisi öner"""
         if accuracy < 0.3:
             return "Konu anlatım videoları izleyin, temel kavramları not alın, kolay sorularla başlayın"
-        elif accuracy < 0.45:
+        if accuracy < 0.45:
             return "Temel formülleri ezberleyin, örnek sorular çözün, yanlışlarınızı analiz edin"
-        else:
-            return "Orta seviye sorular çözün, hız çalışması yapın, farklı soru tipleriyle pratik yapın"
+        return "Orta seviye sorular çözün, hız çalışması yapın, farklı soru tipleriyle pratik yapın"

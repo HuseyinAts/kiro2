@@ -4,23 +4,23 @@ Advanced analytics for student performance prediction and insights
 """
 
 import logging
-import numpy as np
-import pandas as pd
+import warnings
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
+from typing import Any
 
+import numpy as np
+import pandas as pd
 from sklearn.ensemble import (
-    RandomForestRegressor,
     GradientBoostingClassifier,
     IsolationForest,
+    RandomForestRegressor,
 )
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import mean_squared_error, accuracy_score
+from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.model_selection import train_test_split
-import warnings
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 warnings.filterwarnings("ignore")
 
@@ -90,14 +90,14 @@ class StudentPerformanceData:
     # Engagement metrics
     attention_score: float  # 0-1
     interaction_frequency: float
-    resource_usage: Dict[str, int]
+    resource_usage: dict[str, int]
 
     # Environmental factors
     time_of_day: str
     day_of_week: str
     device_type: str
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -111,16 +111,16 @@ class PerformancePrediction:
     timeframe: PredictionTimeframe
 
     # Contributing factors
-    key_factors: List[Tuple[str, float]]  # (factor_name, importance)
-    risk_factors: List[str]
-    improvement_opportunities: List[str]
+    key_factors: list[tuple[str, float]]  # (factor_name, importance)
+    risk_factors: list[str]
+    improvement_opportunities: list[str]
 
     # Prediction metadata
     model_used: str
     prediction_date: datetime
     data_points_used: int
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -135,8 +135,8 @@ class AnalyticsInsight:
     # Insight content
     title: str
     description: str
-    evidence: List[str]
-    recommendations: List[str]
+    evidence: list[str]
+    recommendations: list[str]
 
     # Metrics
     confidence: float
@@ -144,11 +144,11 @@ class AnalyticsInsight:
     urgency: float  # 0-1
 
     # Context
-    affected_subjects: List[str]
+    affected_subjects: list[str]
     timeframe: str
     created_at: datetime = field(default_factory=datetime.now)
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class MLPerformanceAnalytics:
@@ -419,7 +419,7 @@ class MLPerformanceAnalytics:
         return df
 
     async def _train_single_model(
-        self, model_name: str, config: Dict, df: pd.DataFrame
+        self, model_name: str, config: dict, df: pd.DataFrame
     ):
         """Train a single ML model"""
         model = config["model"]
@@ -491,8 +491,8 @@ class MLPerformanceAnalytics:
         self,
         student_id: str,
         timeframe: PredictionTimeframe,
-        context: Optional[Dict[str, Any]] = None,
-    ) -> List[PerformancePrediction]:
+        context: dict[str, Any] | None = None,
+    ) -> list[PerformancePrediction]:
         """Predict student performance"""
         if not self.ready:
             await self.initialize()
@@ -530,9 +530,9 @@ class MLPerformanceAnalytics:
     async def _extract_prediction_features(
         self,
         latest_data: StudentPerformanceData,
-        student_history: List[StudentPerformanceData],
-        context: Optional[Dict[str, Any]],
-    ) -> Dict[str, float]:
+        student_history: list[StudentPerformanceData],
+        context: dict[str, Any] | None,
+    ) -> dict[str, float]:
         """Extract features for prediction"""
         features = {}
 
@@ -597,9 +597,9 @@ class MLPerformanceAnalytics:
         student_id: str,
         metric: PerformanceMetric,
         timeframe: PredictionTimeframe,
-        features: Dict[str, float],
-        student_history: List[StudentPerformanceData],
-    ) -> Optional[PerformancePrediction]:
+        features: dict[str, float],
+        student_history: list[StudentPerformanceData],
+    ) -> PerformancePrediction | None:
         """Predict a single performance metric"""
 
         # Map metric to model
@@ -697,8 +697,8 @@ class MLPerformanceAnalytics:
         return predicted_value * adjustment
 
     async def _identify_risk_factors(
-        self, features: Dict[str, float], student_history: List[StudentPerformanceData]
-    ) -> List[str]:
+        self, features: dict[str, float], student_history: list[StudentPerformanceData]
+    ) -> list[str]:
         """Identify risk factors for the student"""
         risk_factors = []
 
@@ -725,8 +725,8 @@ class MLPerformanceAnalytics:
         return risk_factors
 
     async def _identify_opportunities(
-        self, features: Dict[str, float], student_history: List[StudentPerformanceData]
-    ) -> List[str]:
+        self, features: dict[str, float], student_history: list[StudentPerformanceData]
+    ) -> list[str]:
         """Identify improvement opportunities"""
         opportunities = []
 
@@ -759,7 +759,7 @@ class MLPerformanceAnalytics:
 
     async def generate_insights(
         self, student_id: str, analysis_period: int = 30  # days
-    ) -> List[AnalyticsInsight]:
+    ) -> list[AnalyticsInsight]:
         """Generate analytics insights for a student"""
         if not self.ready:
             await self.initialize()
@@ -794,8 +794,8 @@ class MLPerformanceAnalytics:
         return insights
 
     async def _analyze_performance_trends(
-        self, student_id: str, data: List[StudentPerformanceData]
-    ) -> List[AnalyticsInsight]:
+        self, student_id: str, data: list[StudentPerformanceData]
+    ) -> list[AnalyticsInsight]:
         """Analyze performance trends"""
         insights = []
 
@@ -860,8 +860,8 @@ class MLPerformanceAnalytics:
         return insights
 
     async def _analyze_learning_patterns(
-        self, student_id: str, data: List[StudentPerformanceData]
-    ) -> List[AnalyticsInsight]:
+        self, student_id: str, data: list[StudentPerformanceData]
+    ) -> list[AnalyticsInsight]:
         """Analyze learning patterns"""
         insights = []
 
@@ -908,8 +908,8 @@ class MLPerformanceAnalytics:
         return insights
 
     async def _detect_anomalies(
-        self, student_id: str, data: List[StudentPerformanceData]
-    ) -> List[AnalyticsInsight]:
+        self, student_id: str, data: list[StudentPerformanceData]
+    ) -> list[AnalyticsInsight]:
         """Detect performance anomalies"""
         insights = []
 
@@ -959,8 +959,8 @@ class MLPerformanceAnalytics:
         return insights
 
     async def _identify_risk_students(
-        self, student_id: str, data: List[StudentPerformanceData]
-    ) -> List[AnalyticsInsight]:
+        self, student_id: str, data: list[StudentPerformanceData]
+    ) -> list[AnalyticsInsight]:
         """Identify students at risk"""
         insights = []
 

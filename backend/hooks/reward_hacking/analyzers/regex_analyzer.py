@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import List, Dict, Optional, Pattern
+from re import Pattern
 
-from ..config.patterns import REWARD_HACKING_PATTERNS, LEGITIMATE_EXCEPTIONS
+from ..config.patterns import LEGITIMATE_EXCEPTIONS, REWARD_HACKING_PATTERNS
 
 
 @dataclass
@@ -34,8 +34,8 @@ class RegexAnalyzer:
 
     def __init__(self):
         """Initialize regex analyzer with compiled patterns."""
-        self._compiled_patterns: Dict[str, List[Pattern]] = {}
-        self._compiled_exceptions: Dict[str, List[Pattern]] = {}
+        self._compiled_patterns: dict[str, list[Pattern]] = {}
+        self._compiled_exceptions: dict[str, list[Pattern]] = {}
         self._compile_all_patterns()
 
     def _compile_all_patterns(self) -> None:
@@ -64,7 +64,7 @@ class RegexAnalyzer:
         self,
         content: str,
         pattern_type: str
-    ) -> List[RegexMatch]:
+    ) -> list[RegexMatch]:
         """
         Find all matches of a specific pattern type in content.
 
@@ -78,7 +78,7 @@ class RegexAnalyzer:
         if pattern_type not in self._compiled_patterns:
             return []
 
-        results: List[RegexMatch] = []
+        results: list[RegexMatch] = []
         lines = content.split('\n')
 
         for pattern in self._compiled_patterns[pattern_type]:
@@ -109,7 +109,7 @@ class RegexAnalyzer:
 
         return results
 
-    def find_all_patterns(self, content: str) -> Dict[str, List[RegexMatch]]:
+    def find_all_patterns(self, content: str) -> dict[str, list[RegexMatch]]:
         """
         Find all patterns of all types in content.
 
@@ -119,7 +119,7 @@ class RegexAnalyzer:
         Returns:
             Dictionary mapping pattern type to list of matches
         """
-        results: Dict[str, List[RegexMatch]] = {}
+        results: dict[str, list[RegexMatch]] = {}
 
         for pattern_type in self._compiled_patterns:
             matches = self.find_patterns(content, pattern_type)
@@ -182,7 +182,7 @@ class RegexAnalyzer:
         return len(self.find_patterns(content, pattern_type))
 
     @staticmethod
-    def compile_custom_pattern(pattern: str) -> Optional[Pattern]:
+    def compile_custom_pattern(pattern: str) -> Pattern | None:
         """
         Compile a custom pattern.
 

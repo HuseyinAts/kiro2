@@ -8,7 +8,7 @@ tutarli ve kapsamli bir yanit olusturur.
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from ..domain_experts.base_domain_agent import DomainResponse
 
@@ -39,7 +39,7 @@ class ResponseSynthesizer:
 
     def synthesize(
         self,
-        responses: List[DomainResponse],
+        responses: list[DomainResponse],
         question: str,
     ) -> str:
         """
@@ -60,13 +60,12 @@ class ResponseSynthesizer:
 
         if self.merge_strategy == "sequential":
             return self._merge_sequential(responses, question)
-        elif self.merge_strategy == "weighted":
+        if self.merge_strategy == "weighted":
             return self._merge_weighted(responses, question)
-        else:
-            return self._merge_sequential(responses, question)
+        return self._merge_sequential(responses, question)
 
     def _merge_sequential(
-        self, responses: List[DomainResponse], question: str
+        self, responses: list[DomainResponse], question: str
     ) -> str:
         """
         Yanitlari sirasiyla birlestir
@@ -95,7 +94,7 @@ class ResponseSynthesizer:
         return "\n\n".join(parts)
 
     def _merge_weighted(
-        self, responses: List[DomainResponse], question: str
+        self, responses: list[DomainResponse], question: str
     ) -> str:
         """
         Yanitlari confidence skorlarina gore agirlikli birlestir
@@ -113,7 +112,7 @@ class ResponseSynthesizer:
 
         return "\n\n".join(parts)
 
-    def _generate_summary(self, responses: List[DomainResponse]) -> str:
+    def _generate_summary(self, responses: list[DomainResponse]) -> str:
         """
         Yanitlarin ozetini olustur
         """
@@ -129,8 +128,8 @@ class ResponseSynthesizer:
         )
 
     def extract_combined_visualizations(
-        self, responses: List[DomainResponse]
-    ) -> List[Dict[str, Any]]:
+        self, responses: list[DomainResponse]
+    ) -> list[dict[str, Any]]:
         """
         Tum yanitlardan gorselleri topla
 
@@ -146,8 +145,8 @@ class ResponseSynthesizer:
         return visualizations
 
     def extract_combined_references(
-        self, responses: List[DomainResponse]
-    ) -> List[str]:
+        self, responses: list[DomainResponse]
+    ) -> list[str]:
         """
         Tum yanitlardan kaynaklari topla
 
@@ -164,7 +163,7 @@ class ResponseSynthesizer:
         return references
 
     def calculate_combined_confidence(
-        self, responses: List[DomainResponse]
+        self, responses: list[DomainResponse]
     ) -> float:
         """
         Birlesik guven skoru hesapla

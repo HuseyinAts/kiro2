@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import asyncio
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from core.celery_app import celery_app
@@ -159,7 +159,7 @@ async def _run_daily_coaching_suggestions() -> dict[str, Any]:
     events_created = 0
     students_skipped = 0
 
-    cutoff = datetime.now(timezone.utc) - timedelta(days=14)
+    cutoff = datetime.now(UTC) - timedelta(days=14)
 
     async with get_db_session_context() as db:
         # Collect distinct active student IDs (active = exam session in last 14 days)
@@ -185,7 +185,7 @@ async def _run_daily_coaching_suggestions() -> dict[str, Any]:
                         event_type=suggestion["type"],
                         trigger_data={
                             "source": "daily_task",
-                            "generated_at": datetime.now(timezone.utc).isoformat(),
+                            "generated_at": datetime.now(UTC).isoformat(),
                         },
                         message=suggestion["message"],
                         priority=suggestion.get("priority", 0),
@@ -304,7 +304,7 @@ async def _run_weekly_error_clustering() -> dict[str, Any]:
         "clusters_created": total_created,
         "clusters_updated": total_updated,
         "recommendations_created": total_recommendations,
-        "run_at": datetime.now(timezone.utc).isoformat(),
+        "run_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -318,7 +318,8 @@ async def _build_peer_recommendations(*, db: Any, subject: str) -> int:
 
     Returns the number of PeerRecommendation rows created or updated.
     """
-    from sqlalchemy import and_, case, func as sa_func, select
+    from sqlalchemy import and_, case, select
+    from sqlalchemy import func as sa_func
 
     from models.error_cluster import ErrorCluster, PeerRecommendation
     from models.exam_db import ExamSession, StudentAnswer

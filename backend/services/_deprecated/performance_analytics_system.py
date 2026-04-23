@@ -13,7 +13,7 @@ Bu modül adaptif test sistemine performans analitikleri ekler:
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+
 import numpy as np
 from scipy import stats
 from scipy.optimize import curve_fit
@@ -27,12 +27,12 @@ logger = logging.getLogger(__name__)
 class LearningCurveData:
     """Öğrenme eğrisi verileri"""
 
-    timestamps: List[datetime] = field(default_factory=list)
-    theta_values: List[float] = field(default_factory=list)
-    accuracy_values: List[float] = field(default_factory=list)
+    timestamps: list[datetime] = field(default_factory=list)
+    theta_values: list[float] = field(default_factory=list)
+    accuracy_values: list[float] = field(default_factory=list)
     growth_rate: float = 0.0
     plateau_detected: bool = False
-    plateau_start_index: Optional[int] = None
+    plateau_start_index: int | None = None
 
 
 @dataclass
@@ -57,7 +57,7 @@ class AnomalyDetection:
     severity: float  # 0-1 arası
     description: str
     timestamp: datetime
-    affected_questions: List[str] = field(default_factory=list)
+    affected_questions: list[str] = field(default_factory=list)
 
 
 class PerformanceAnalyticsSystem:
@@ -90,7 +90,7 @@ class PerformanceAnalyticsSystem:
     def track_progress_over_time(
         self,
         session: TestSession,
-        historical_sessions: Optional[List[TestSession]] = None,
+        historical_sessions: list[TestSession] | None = None,
     ) -> LearningCurveData:
         """
         Zaman içinde ilerlemeyi izle.
@@ -158,7 +158,7 @@ class PerformanceAnalyticsSystem:
 
         return curve_data
 
-    def calculate_growth_rate(self, theta_values: List[float]) -> float:
+    def calculate_growth_rate(self, theta_values: list[float]) -> float:
         """
         Öğrenme hızını hesapla.
 
@@ -183,8 +183,8 @@ class PerformanceAnalyticsSystem:
         return float(slope)
 
     def detect_plateau(
-        self, theta_values: List[float], window_size: Optional[int] = None
-    ) -> Dict:
+        self, theta_values: list[float], window_size: int | None = None
+    ) -> dict:
         """
         Durağan dönemleri tespit et.
 
@@ -236,7 +236,7 @@ class PerformanceAnalyticsSystem:
 
     def generate_learning_curve_visualization(
         self, curve_data: LearningCurveData
-    ) -> Dict:
+    ) -> dict:
         """
         Öğrenme eğrisi görselleştirme verisi oluştur.
 
@@ -421,8 +421,8 @@ class PerformanceAnalyticsSystem:
         )
 
     def predict_university_placement(
-        self, session: TestSession, target_programs: List[Dict]
-    ) -> List[Dict]:
+        self, session: TestSession, target_programs: list[dict]
+    ) -> list[dict]:
         """
         Üniversite yerleşme olasılığı hesapla.
 
@@ -502,14 +502,13 @@ class PerformanceAnalyticsSystem:
         """Yerleşme önerisi oluştur"""
         if placement_prob >= 0.8:
             return "Yüksek yerleşme olasılığı! Bu program senin için uygun."
-        elif placement_prob >= 0.5:
+        if placement_prob >= 0.5:
             return f"Orta yerleşme olasılığı. {abs(score_gap):.0f} puan daha çalışman gerekiyor."
-        elif placement_prob >= 0.3:
+        if placement_prob >= 0.3:
             return f"Düşük yerleşme olasılığı. {abs(score_gap):.0f} puan fark var. Yoğun çalışma gerekli."
-        else:
-            return "Çok düşük yerleşme olasılığı. Alternatif programları değerlendir."
+        return "Çok düşük yerleşme olasılığı. Alternatif programları değerlendir."
 
-    def estimate_score_range(self, session: TestSession) -> Dict:
+    def estimate_score_range(self, session: TestSession) -> dict:
         """
         Puan aralığı tahmini yap.
 
@@ -558,7 +557,7 @@ class PerformanceAnalyticsSystem:
 
     # ==================== SUBTASK 64.3: Anomaly Detection ====================
 
-    def detect_unusual_patterns(self, session: TestSession) -> List[AnomalyDetection]:
+    def detect_unusual_patterns(self, session: TestSession) -> list[AnomalyDetection]:
         """
         Olağandışı performans paternlerini tespit et.
 
@@ -740,7 +739,7 @@ class PerformanceAnalyticsSystem:
 
         return cheating_score
 
-    def _check_data_quality(self, session: TestSession) -> List[str]:
+    def _check_data_quality(self, session: TestSession) -> list[str]:
         """
         Veri kalitesini kontrol et.
 
@@ -787,7 +786,7 @@ class PerformanceAnalyticsSystem:
 
         return issues
 
-    def _notify_admin(self, session: TestSession, anomalies: List[AnomalyDetection]):
+    def _notify_admin(self, session: TestSession, anomalies: list[AnomalyDetection]):
         """
         Yöneticiye bildirim gönder.
 
@@ -830,8 +829,8 @@ class PerformanceAnalyticsSystem:
     # ==================== SUBTASK 64.4: Cohort Analysis ====================
 
     def compare_group_performance(
-        self, sessions: List[TestSession], group_by: str = "test_type"
-    ) -> Dict:
+        self, sessions: list[TestSession], group_by: str = "test_type"
+    ) -> dict:
         """
         Grup performanslarını karşılaştır.
 
@@ -930,8 +929,8 @@ class PerformanceAnalyticsSystem:
         }
 
     def analyze_demographic_factors(
-        self, sessions: List[TestSession], demographic_data: Dict[str, Dict]
-    ) -> Dict:
+        self, sessions: list[TestSession], demographic_data: dict[str, dict]
+    ) -> dict:
         """
         Demografik faktörleri analiz et.
 
@@ -997,9 +996,9 @@ class PerformanceAnalyticsSystem:
 
     def evaluate_intervention_effectiveness(
         self,
-        pre_intervention_sessions: List[TestSession],
-        post_intervention_sessions: List[TestSession],
-    ) -> Dict:
+        pre_intervention_sessions: list[TestSession],
+        post_intervention_sessions: list[TestSession],
+    ) -> dict:
         """
         Müdahale etkinliğini değerlendir.
 
@@ -1090,8 +1089,8 @@ class PerformanceAnalyticsSystem:
         }
 
     def generate_cohort_report(
-        self, sessions: List[TestSession], demographic_data: Optional[Dict] = None
-    ) -> Dict:
+        self, sessions: list[TestSession], demographic_data: dict | None = None
+    ) -> dict:
         """
         Detaylı cohort raporu oluştur.
 

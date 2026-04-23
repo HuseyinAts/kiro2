@@ -3,18 +3,20 @@ Test Structured Logging ve Metrics Collection Integration
 Task 10 verification tests
 """
 
-import pytest
 import time
+
+import pytest
+
+from backend.core.metrics_collector import (
+    MetricsCollector,
+    get_metrics_collector,
+    reset_metrics_collector,
+)
 from backend.core.structured_logger import (
     get_logger,
     log_api_request,
     log_api_response,
     log_error_with_context,
-)
-from backend.core.metrics_collector import (
-    MetricsCollector,
-    get_metrics_collector,
-    reset_metrics_collector,
 )
 
 

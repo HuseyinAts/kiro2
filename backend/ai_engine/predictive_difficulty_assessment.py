@@ -4,17 +4,17 @@ AI-powered system for predicting and adjusting content difficulty
 """
 
 import logging
-import numpy as np
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
+from typing import Any
 
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+import numpy as np
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
 
@@ -87,11 +87,11 @@ class ContentFeatures:
     scaffolding_level: float = 0  # 0-1
 
     # Historical data
-    avg_completion_time: Optional[float] = None  # minutes
-    success_rate: Optional[float] = None  # 0-1
-    hint_usage_rate: Optional[float] = None  # 0-1
+    avg_completion_time: float | None = None  # minutes
+    success_rate: float | None = None  # 0-1
+    hint_usage_rate: float | None = None  # 0-1
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -102,7 +102,7 @@ class StudentProfile:
 
     # Academic performance
     overall_gpa: float  # 0-4 scale
-    domain_performance: Dict[ContentDomain, float]  # 0-1 performance per domain
+    domain_performance: dict[ContentDomain, float]  # 0-1 performance per domain
     recent_performance_trend: float  # -1 to 1 (declining to improving)
 
     # Cognitive abilities
@@ -118,15 +118,15 @@ class StudentProfile:
     preferred_difficulty: float  # 0-1 (easy to challenging)
 
     # Experience factors
-    content_familiarity: Dict[str, float]  # topic -> familiarity (0-1)
+    content_familiarity: dict[str, float]  # topic -> familiarity (0-1)
     study_time_available: int  # minutes per session
     motivation_level: float  # 0-1
 
     # Adaptation history
-    difficulty_adjustments: List[Dict[str, Any]] = field(default_factory=list)
-    performance_history: List[Dict[str, Any]] = field(default_factory=list)
+    difficulty_adjustments: list[dict[str, Any]] = field(default_factory=list)
+    performance_history: list[dict[str, Any]] = field(default_factory=list)
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -135,33 +135,33 @@ class DifficultyPrediction:
 
     prediction_id: str
     content_id: str
-    student_id: Optional[str]
+    student_id: str | None
 
     # Prediction results
     predicted_difficulty: float  # 1-5 scale
-    confidence_interval: Tuple[float, float]  # (lower, upper) bounds
+    confidence_interval: tuple[float, float]  # (lower, upper) bounds
     prediction_confidence: float  # 0-1
 
     # Component predictions
     objective_difficulty: float  # Content-based difficulty
-    subjective_difficulty: Optional[float]  # Student-specific difficulty
+    subjective_difficulty: float | None  # Student-specific difficulty
     cognitive_load: float  # Expected cognitive load (0-1)
 
     # Supporting information
-    key_difficulty_factors: List[Tuple[str, float]]  # (factor, weight)
-    recommended_adjustments: List[str]
-    alternative_difficulty_levels: Dict[float, str]  # difficulty -> description
+    key_difficulty_factors: list[tuple[str, float]]  # (factor, weight)
+    recommended_adjustments: list[str]
+    alternative_difficulty_levels: dict[float, str]  # difficulty -> description
 
     # Prediction metadata
     model_used: str
-    feature_importance: Dict[str, float]
+    feature_importance: dict[str, float]
     prediction_date: datetime = field(default_factory=datetime.now)
 
     # Validation
-    actual_difficulty: Optional[float] = None  # Set after student performance
-    prediction_error: Optional[float] = None
+    actual_difficulty: float | None = None  # Set after student performance
+    prediction_error: float | None = None
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -178,20 +178,20 @@ class DifficultyAdjustment:
     adjustment_magnitude: float  # How much to change
 
     # Adjustment strategies
-    content_modifications: Dict[str, Any]
-    scaffolding_adjustments: Dict[str, Any]
-    support_level_changes: Dict[str, Any]
+    content_modifications: dict[str, Any]
+    scaffolding_adjustments: dict[str, Any]
+    support_level_changes: dict[str, Any]
 
     # Reasoning
-    adjustment_reasoning: List[str]
-    expected_outcomes: Dict[str, float]  # metric -> expected value
+    adjustment_reasoning: list[str]
+    expected_outcomes: dict[str, float]  # metric -> expected value
 
     # Implementation
     implementation_priority: float  # 0-1 (low to high priority)
     estimated_effort: str  # "low", "medium", "high"
 
     timestamp: datetime = field(default_factory=datetime.now)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class PredictiveDifficultyAssessment:
@@ -559,7 +559,7 @@ class PredictiveDifficultyAssessment:
             except Exception as e:
                 logger.error(f"Failed to train {model_name}: {e}")
 
-    async def _prepare_training_data(self) -> Dict[str, Any]:
+    async def _prepare_training_data(self) -> dict[str, Any]:
         """Prepare training data from historical assessments"""
         feature_rows = []
         target_values = {
@@ -619,7 +619,7 @@ class PredictiveDifficultyAssessment:
         return {"features": feature_rows, "targets": target_values}
 
     async def _train_single_model(
-        self, model_name: str, config: Dict, training_data: Dict
+        self, model_name: str, config: dict, training_data: dict
     ):
         """Train a single prediction model"""
         model = config["model"]
@@ -712,7 +712,7 @@ class PredictiveDifficultyAssessment:
     async def predict_difficulty(
         self,
         content_id: str,
-        student_id: Optional[str] = None,
+        student_id: str | None = None,
         assessment_type: AssessmentType = AssessmentType.PREDICTIVE,
     ) -> DifficultyPrediction:
         """Predict difficulty for content and optionally for specific student"""
@@ -909,7 +909,7 @@ class PredictiveDifficultyAssessment:
 
     def _calculate_confidence_interval(
         self, predicted_difficulty: float, content_features: ContentFeatures
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """Calculate confidence interval for prediction"""
 
         # Simple confidence interval calculation
@@ -931,7 +931,7 @@ class PredictiveDifficultyAssessment:
 
     async def _identify_difficulty_factors(
         self, content_features: ContentFeatures
-    ) -> List[Tuple[str, float]]:
+    ) -> list[tuple[str, float]]:
         """Identify key factors contributing to difficulty"""
 
         factors = []
@@ -980,8 +980,8 @@ class PredictiveDifficultyAssessment:
         self,
         content_features: ContentFeatures,
         objective_difficulty: float,
-        subjective_difficulty: Optional[float],
-    ) -> List[str]:
+        subjective_difficulty: float | None,
+    ) -> list[str]:
         """Generate recommendations for difficulty adjustment"""
 
         recommendations = []
@@ -1101,7 +1101,7 @@ class PredictiveDifficultyAssessment:
 
     async def _generate_content_modifications(
         self, content_features: ContentFeatures, adjustment_magnitude: float
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate content modification suggestions"""
         modifications = {}
 
@@ -1130,7 +1130,7 @@ class PredictiveDifficultyAssessment:
 
     async def _generate_scaffolding_adjustments(
         self, adjustment_magnitude: float, student_profile: StudentProfile
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate scaffolding adjustment suggestions"""
         adjustments = {}
 
@@ -1160,7 +1160,7 @@ class PredictiveDifficultyAssessment:
 
     async def _generate_support_adjustments(
         self, adjustment_magnitude: float, student_profile: StudentProfile
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate support level adjustment suggestions"""
         adjustments = {}
 
@@ -1194,7 +1194,7 @@ class PredictiveDifficultyAssessment:
         current_difficulty: float,
         target_difficulty: float,
         student_profile: StudentProfile,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate reasoning for difficulty adjustments"""
         reasoning = []
 
@@ -1232,8 +1232,8 @@ class PredictiveDifficultyAssessment:
         self,
         prediction_id: str,
         actual_performance: float,
-        actual_completion_time: Optional[float] = None,
-        student_feedback: Optional[Dict[str, Any]] = None,
+        actual_completion_time: float | None = None,
+        student_feedback: dict[str, Any] | None = None,
     ):
         """Update difficulty assessment with actual performance data"""
 

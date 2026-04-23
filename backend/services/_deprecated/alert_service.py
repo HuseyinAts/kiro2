@@ -14,9 +14,9 @@ import asyncio
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from elasticsearch import AsyncElasticsearch
 
@@ -60,12 +60,12 @@ class AlertRule:
 
     name: str
     description: str
-    query: Dict[str, Any]
+    query: dict[str, Any]
     threshold: int
     time_window_minutes: int = 5
     severity: AlertSeverity = AlertSeverity.WARNING
     throttle_minutes: int = 5
-    notification_channels: List[str] = field(default_factory=lambda: ["slack"])
+    notification_channels: list[str] = field(default_factory=lambda: ["slack"])
     enabled: bool = True
 
 
@@ -92,13 +92,13 @@ class Alert:
     severity: AlertSeverity
     title: str
     message: str
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.utcnow)
     status: AlertStatus = AlertStatus.ACTIVE
-    acknowledged_by: Optional[str] = None
-    acknowledged_at: Optional[datetime] = None
+    acknowledged_by: str | None = None
+    acknowledged_at: datetime | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for storage/serialization."""
         return {
             "id": self.id,
@@ -122,12 +122,10 @@ class NotificationChannel(ABC):
     @abstractmethod
     async def send(self, alert: Alert) -> bool:
         """Send alert notification."""
-        pass
 
     @abstractmethod
     def get_name(self) -> str:
         """Get channel name."""
-        pass
 
 
 class SlackNotificationChannel(NotificationChannel):
@@ -205,16 +203,14 @@ class SlackNotificationChannel(NotificationChannel):
                 ],
             }
 
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    self.webhook_url, json=payload, timeout=10
-                ) as response:
-                    if response.status == 200:
-                        logger.info(f"Slack alert sent: {alert.id}")
-                        return True
-                    else:
-                        logger.error(f"Slack alert failed: {response.status}")
-                        return False
+            async with aiohttp.ClientSession() as session, session.post(
+                self.webhook_url, json=payload, timeout=10
+            ) as response:
+                if response.status == 200:
+                    logger.info(f"Slack alert sent: {alert.id}")
+                    return True
+                logger.error(f"Slack alert failed: {response.status}")
+                return False
 
         except ImportError:
             logger.warning("aiohttp not installed, Slack notifications disabled")
@@ -234,7 +230,7 @@ class EmailNotificationChannel(NotificationChannel):
         username: str,
         password: str,
         from_email: str,
-        to_emails: List[str],
+        to_emails: list[str],
     ):
         """
         Initialize Email channel.
@@ -260,9 +256,10 @@ class EmailNotificationChannel(NotificationChannel):
     async def send(self, alert: Alert) -> bool:
         """Send alert via email."""
         try:
-            import aiosmtplib
-            from email.mime.text import MIMEText
             from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+
+            import aiosmtplib
 
             # Create message
             msg = MIMEMultipart("alternative")
@@ -462,10 +459,10 @@ class AlertService:
             es_client: Async Elasticsearch client
         """
         self.es_client = es_client
-        self.rules: Dict[str, AlertRule] = {}
-        self.channels: Dict[str, NotificationChannel] = {}
-        self.last_alert_times: Dict[str, datetime] = {}
-        self.active_alerts: Dict[str, Alert] = {}
+        self.rules: dict[str, AlertRule] = {}
+        self.channels: dict[str, NotificationChannel] = {}
+        self.last_alert_times: dict[str, datetime] = {}
+        self.active_alerts: dict[str, Alert] = {}
         self.alert_index = "kiro2-alerts"
 
         # Load default rules
@@ -496,7 +493,7 @@ class AlertService:
         if not last_time:
             return False
 
-        elapsed = datetime.now(timezone.utc) - last_time
+        elapsed = datetime.now(UTC) - last_time
         return elapsed < timedelta(minutes=throttle_minutes)
 
     def _generate_alert_id(self) -> str:
@@ -530,7 +527,7 @@ class AlertService:
             logger.error(f"Alert storage error: {e}")
             return False
 
-    async def _send_notifications(self, alert: Alert, channels: List[str]) -> None:
+    async def _send_notifications(self, alert: Alert, channels: list[str]) -> None:
         """Send notifications to specified channels."""
         tasks = []
         for channel_name in channels:
@@ -544,7 +541,7 @@ class AlertService:
                 if isinstance(result, Exception):
                     logger.error(f"Notification error: {result}")
 
-    async def check_rule(self, rule: AlertRule) -> Optional[Alert]:
+    async def check_rule(self, rule: AlertRule) -> Alert | None:
         """
         Check a single rule and create alert if triggered.
 
@@ -581,7 +578,7 @@ class AlertService:
             )
 
             # Update throttle time
-            self.last_alert_times[rule.name] = datetime.now(timezone.utc)
+            self.last_alert_times[rule.name] = datetime.now(UTC)
 
             # Store and notify
             await self._store_alert(alert)
@@ -595,7 +592,7 @@ class AlertService:
 
         return None
 
-    async def check_all_rules(self) -> List[Alert]:
+    async def check_all_rules(self) -> list[Alert]:
         """
         Check all enabled rules.
 
@@ -612,7 +609,7 @@ class AlertService:
 
     async def acknowledge_alert(
         self, alert_id: str, acknowledged_by: str
-    ) -> Optional[Alert]:
+    ) -> Alert | None:
         """
         Acknowledge an alert.
 
@@ -629,7 +626,7 @@ class AlertService:
 
         alert.status = AlertStatus.ACKNOWLEDGED
         alert.acknowledged_by = acknowledged_by
-        alert.acknowledged_at = datetime.now(timezone.utc)
+        alert.acknowledged_at = datetime.now(UTC)
 
         await self._store_alert(alert)
         logger.info(f"Alert acknowledged: {alert_id} by {acknowledged_by}")
@@ -648,14 +645,14 @@ class AlertService:
         """
         if rule_name in self.rules:
             # Set last alert time to future to prevent triggering
-            self.last_alert_times[rule_name] = datetime.now(timezone.utc) + timedelta(
+            self.last_alert_times[rule_name] = datetime.now(UTC) + timedelta(
                 minutes=duration_minutes
             )
             logger.info(f"Rule silenced: {rule_name} for {duration_minutes} minutes")
             return True
         return False
 
-    async def get_active_alerts(self) -> List[Alert]:
+    async def get_active_alerts(self) -> list[Alert]:
         """Get all active alerts."""
         try:
             response = await self.es_client.search(
@@ -690,7 +687,7 @@ class AlertService:
 
     async def get_alert_statistics(
         self, start_date: datetime, end_date: datetime
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get alert statistics for a time period.
 
@@ -755,7 +752,7 @@ class AlertService:
 
 
 # Global service instance
-_alert_service: Optional[AlertService] = None
+_alert_service: AlertService | None = None
 
 
 async def get_alert_service() -> AlertService:
@@ -769,6 +766,7 @@ async def get_alert_service() -> AlertService:
 
     if _alert_service is None:
         from elasticsearch import AsyncElasticsearch
+
         from core.config import settings
 
         es_client = AsyncElasticsearch(

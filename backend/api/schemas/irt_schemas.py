@@ -14,7 +14,6 @@ ZPD Optimal Range:
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -140,24 +139,24 @@ class IRTParameters(IRTParametersBase):
     )
 
     # Calibration metadata
-    calibration_sample_size: Optional[int] = Field(
+    calibration_sample_size: int | None = Field(
         default=None,
         ge=0,
         description="Number of responses used for calibration"
     )
 
-    calibration_date: Optional[datetime] = Field(
+    calibration_date: datetime | None = Field(
         default=None,
         description="Date of last calibration"
     )
 
-    standard_error: Optional[float] = Field(
+    standard_error: float | None = Field(
         default=None,
         ge=0.0,
         description="Standard error of the difficulty estimate"
     )
 
-    fit_statistics: Optional[Dict[str, float]] = Field(
+    fit_statistics: dict[str, float] | None = Field(
         default=None,
         description="Model fit statistics (infit, outfit, etc.)"
     )
@@ -202,7 +201,7 @@ class QuestionIRTData(BaseModel):
     irt_params: IRTParameters = Field(..., description="IRT parameters")
 
     # Derived values
-    difficulty_level: Optional[DifficultyLevel] = Field(
+    difficulty_level: DifficultyLevel | None = Field(
         default=None,
         description="Human-readable difficulty level"
     )
@@ -212,7 +211,7 @@ class QuestionIRTData(BaseModel):
         description="Whether item is in ZPD optimal range (15-85% success probability)"
     )
 
-    information_at_zero: Optional[float] = Field(
+    information_at_zero: float | None = Field(
         default=None,
         ge=0.0,
         description="Item information at theta=0 (average ability)"
@@ -266,19 +265,19 @@ class IRTParametersUpdateRequest(BaseModel):
     """Request to update IRT parameters for a question"""
 
     question_id: str = Field(..., description="Question ID to update")
-    difficulty: Optional[float] = Field(
+    difficulty: float | None = Field(
         default=None,
         ge=-4.0,
         le=4.0,
         description="New difficulty parameter"
     )
-    discrimination: Optional[float] = Field(
+    discrimination: float | None = Field(
         default=None,
         ge=0.2,
         le=4.0,
         description="New discrimination parameter"
     )
-    guessing: Optional[float] = Field(
+    guessing: float | None = Field(
         default=None,
         ge=0.0,
         le=0.35,
@@ -300,7 +299,7 @@ class IRTParametersUpdateRequest(BaseModel):
 class IRTBatchUpdateRequest(BaseModel):
     """Request to update IRT parameters for multiple questions"""
 
-    updates: List[IRTParametersUpdateRequest] = Field(
+    updates: list[IRTParametersUpdateRequest] = Field(
         ...,
         min_length=1,
         max_length=100,
@@ -311,7 +310,7 @@ class IRTBatchUpdateRequest(BaseModel):
 class IRTCalibrationRequest(BaseModel):
     """Request to recalibrate IRT parameters from response data"""
 
-    question_ids: List[str] = Field(
+    question_ids: list[str] = Field(
         ...,
         min_length=1,
         description="Questions to recalibrate"
@@ -347,7 +346,7 @@ class IRTAnalysisResponse(BaseModel):
     is_well_calibrated: bool = Field(
         description="Whether calibration meets quality standards"
     )
-    quality_warnings: List[str] = Field(
+    quality_warnings: list[str] = Field(
         default_factory=list,
         description="Quality warnings for this item"
     )
@@ -427,7 +426,7 @@ class ZPDRecommendation(BaseModel):
     student_ability: float = Field(ge=-4.0, le=4.0)
     zpd_range: ZPDOptimalRange
 
-    recommended_questions: List[str] = Field(
+    recommended_questions: list[str] = Field(
         default_factory=list,
         description="Question IDs in ZPD optimal range"
     )

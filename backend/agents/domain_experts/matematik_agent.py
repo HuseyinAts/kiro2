@@ -17,12 +17,12 @@ Araclar:
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .base_domain_agent import (
     BaseDomainAgent,
-    DomainType,
     DomainResponse,
+    DomainType,
 )
 
 logger = logging.getLogger(__name__)
@@ -136,7 +136,7 @@ class MatematikAgent(BaseDomainAgent):
     async def solve_question(
         self,
         question: str,
-        shared_context: Optional[Dict[str, Any]] = None,
+        shared_context: dict[str, Any] | None = None,
     ) -> DomainResponse:
         """
         Matematik sorusunu coz
@@ -297,7 +297,7 @@ class MatematikAgent(BaseDomainAgent):
 
     def _generate_step_by_step(
         self, question: str, question_type: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Adim adim cozum olustur"""
         steps_templates = {
             "denklem": [
@@ -339,7 +339,7 @@ class MatematikAgent(BaseDomainAgent):
             "Hesapla ve kontrol et",
         ])
 
-    def _extract_latex(self, solution: str) -> List[str]:
+    def _extract_latex(self, solution: str) -> list[str]:
         """LaTeX ifadelerini cikar"""
         # Simple extraction - look for common patterns
         latex_patterns = []
@@ -386,7 +386,7 @@ class MatematikAgent(BaseDomainAgent):
         sympy_keywords = ["denklem", "çöz", "türev", "integral", "limit", "sadeleştir"]
         return any(kw in question.lower() for kw in sympy_keywords)
 
-    async def _verify_with_sympy(self, question: str) -> Optional[str]:
+    async def _verify_with_sympy(self, question: str) -> str | None:
         """SymPy ile dogrula"""
         if not self._sympy_available:
             return None
@@ -440,13 +440,14 @@ class MatematikAgent(BaseDomainAgent):
         except Exception as e:
             return f"Hata: {e}"
 
-    async def _plot_function(self, expression: str) -> Dict[str, Any]:
+    async def _plot_function(self, expression: str) -> dict[str, Any]:
         """Fonksiyon grafigi ciz"""
         try:
+            import base64
+            import io
+
             import matplotlib.pyplot as plt
             import numpy as np
-            import io
-            import base64
 
             # Create plot
             x = np.linspace(-10, 10, 100)

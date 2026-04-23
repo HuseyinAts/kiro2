@@ -9,10 +9,10 @@ import mimetypes
 import tempfile
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import aiofiles
 import cv2
@@ -20,12 +20,13 @@ import docx
 import librosa
 import numpy as np
 import soundfile as sf
-from content.unified_content_management import ContentFile
-from core.structured_logging import LogCategory, get_logger
-from core.unified_config import get_unified_config
 from moviepy.editor import VideoFileClip
 from PIL import Image
 from PyPDF2 import PdfReader
+
+from content.unified_content_management import ContentFile
+from core.structured_logging import LogCategory, get_logger
+from core.unified_config import get_unified_config
 
 logger = get_logger(__name__, LogCategory.CONTENT)
 config = get_unified_config()
@@ -90,18 +91,18 @@ class ProcessingTask:
     task_id: str
     content_file: ContentFile
     processing_type: str  # compress, convert, extract, analyze
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: dict[str, Any] = field(default_factory=dict)
 
     # Status and timing
     status: ProcessingStatus = ProcessingStatus.PENDING
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     progress_percentage: float = 0.0
 
     # Results
-    output_files: List[ContentFile] = field(default_factory=list)
-    extracted_data: Dict[str, Any] = field(default_factory=dict)
-    processing_errors: List[str] = field(default_factory=list)
+    output_files: list[ContentFile] = field(default_factory=list)
+    extracted_data: dict[str, Any] = field(default_factory=dict)
+    processing_errors: list[str] = field(default_factory=list)
 
     # Resource usage
     cpu_time_seconds: float = 0.0
@@ -114,12 +115,12 @@ class ProcessingTask:
     def start_processing(self) -> None:
         """Mark task as started"""
         self.status = ProcessingStatus.IN_PROGRESS
-        self.started_at = datetime.now(timezone.utc)
+        self.started_at = datetime.now(UTC)
 
     def complete_processing(self, success: bool = True) -> None:
         """Mark task as completed"""
         self.status = ProcessingStatus.COMPLETED if success else ProcessingStatus.FAILED
-        self.completed_at = datetime.now(timezone.utc)
+        self.completed_at = datetime.now(UTC)
         self.progress_percentage = 100.0
 
     def update_progress(self, percentage: float) -> None:
@@ -131,7 +132,7 @@ class ProcessingTask:
         self.processing_errors.append(error)
         logger.error(f"Processing error in task {self.task_id}: {error}")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "task_id": self.task_id,
@@ -160,23 +161,23 @@ class MediaAnalysis:
     analysis_type: str
 
     # Technical properties
-    format_info: Dict[str, Any] = field(default_factory=dict)
-    quality_metrics: Dict[str, float] = field(default_factory=dict)
+    format_info: dict[str, Any] = field(default_factory=dict)
+    quality_metrics: dict[str, float] = field(default_factory=dict)
 
     # Content analysis
-    content_features: Dict[str, Any] = field(default_factory=dict)
-    accessibility_info: Dict[str, Any] = field(default_factory=dict)
+    content_features: dict[str, Any] = field(default_factory=dict)
+    accessibility_info: dict[str, Any] = field(default_factory=dict)
 
     # Educational content analysis (for Turkish exam content)
-    turkish_content_analysis: Dict[str, Any] = field(default_factory=dict)
-    detected_text: Optional[str] = None
+    turkish_content_analysis: dict[str, Any] = field(default_factory=dict)
+    detected_text: str | None = None
     detected_language: str = "tr"
 
     # Performance recommendations
-    optimization_suggestions: List[str] = field(default_factory=list)
-    compression_recommendations: Dict[str, Any] = field(default_factory=dict)
+    optimization_suggestions: list[str] = field(default_factory=list)
+    compression_recommendations: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "file_id": self.file_id,
@@ -265,7 +266,7 @@ class VideoProcessor:
         output_path: str,
         compression_level: CompressionLevel = CompressionLevel.MEDIUM,
         target_format: MediaFormat = MediaFormat.MP4,
-        progress_callback: Optional[callable] = None,
+        progress_callback: callable | None = None,
     ) -> bool:
         """Compress video with specified parameters"""
 
@@ -316,9 +317,8 @@ class VideoProcessor:
                     f"Successfully compressed video: {input_path} -> {output_path}"
                 )
                 return True
-            else:
-                logger.error(f"Video compression failed: {stderr.decode()}")
-                return False
+            logger.error(f"Video compression failed: {stderr.decode()}")
+            return False
 
         except Exception as e:
             logger.error(f"Error compressing video: {e}")
@@ -329,8 +329,8 @@ class VideoProcessor:
         video_path: str,
         output_dir: str,
         count: int = 5,
-        timestamps: List[float] = None,
-    ) -> List[str]:
+        timestamps: list[float] = None,
+    ) -> list[str]:
         """Extract thumbnails from video"""
         thumbnail_paths = []
 
@@ -391,9 +391,8 @@ class VideoProcessor:
                     f"Successfully extracted audio: {video_path} -> {audio_output_path}"
                 )
                 return True
-            else:
-                logger.error(f"Audio extraction failed: {stderr.decode()}")
-                return False
+            logger.error(f"Audio extraction failed: {stderr.decode()}")
+            return False
 
         except Exception as e:
             logger.error(f"Error extracting audio: {e}")
@@ -406,29 +405,27 @@ class VideoProcessor:
         # Score based on common resolutions
         if pixel_count >= 3840 * 2160:  # 4K
             return 100
-        elif pixel_count >= 1920 * 1080:  # Full HD
+        if pixel_count >= 1920 * 1080:  # Full HD
             return 90
-        elif pixel_count >= 1280 * 720:  # HD
+        if pixel_count >= 1280 * 720:  # HD
             return 75
-        elif pixel_count >= 854 * 480:  # 480p
+        if pixel_count >= 854 * 480:  # 480p
             return 60
-        elif pixel_count >= 640 * 360:  # 360p
+        if pixel_count >= 640 * 360:  # 360p
             return 40
-        else:
-            return 20
+        return 20
 
     def _calculate_framerate_score(self, fps: float) -> float:
         """Calculate frame rate quality score (0-100)"""
         if fps >= 60:
             return 100
-        elif fps >= 30:
+        if fps >= 30:
             return 90
-        elif fps >= 24:
+        if fps >= 24:
             return 75
-        elif fps >= 15:
+        if fps >= 15:
             return 50
-        else:
-            return 25
+        return 25
 
     async def _estimate_video_bitrate(self, file_path: str) -> float:
         """Estimate video bitrate"""
@@ -444,7 +441,7 @@ class VideoProcessor:
 
     def _get_compression_parameters(
         self, compression_level: CompressionLevel, target_format: MediaFormat
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get compression parameters for given level and format"""
         base_params = {
             MediaFormat.MP4: {
@@ -483,7 +480,7 @@ class VideoProcessor:
 
     def _generate_video_optimization_suggestions(
         self, width: int, height: int, duration: float, fps: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate optimization suggestions for video"""
         suggestions = []
 
@@ -612,7 +609,7 @@ class AudioProcessor:
         output_path: str,
         compression_level: CompressionLevel = CompressionLevel.MEDIUM,
         target_format: MediaFormat = MediaFormat.MP3,
-        progress_callback: Optional[callable] = None,
+        progress_callback: callable | None = None,
     ) -> bool:
         """Compress audio file"""
         try:
@@ -690,9 +687,9 @@ class AudioProcessor:
     def _generate_audio_optimization_suggestions(
         self,
         duration: float,
-        quality_metrics: Dict[str, float],
-        content_features: Dict[str, Any],
-    ) -> List[str]:
+        quality_metrics: dict[str, float],
+        content_features: dict[str, Any],
+    ) -> list[str]:
         """Generate optimization suggestions for audio"""
         suggestions = []
 
@@ -864,8 +861,8 @@ class ImageProcessor:
             return False
 
     async def generate_thumbnails(
-        self, input_path: str, output_dir: str, sizes: List[Tuple[int, int]] = None
-    ) -> List[str]:
+        self, input_path: str, output_dir: str, sizes: list[tuple[int, int]] = None
+    ) -> list[str]:
         """Generate multiple thumbnail sizes"""
         if sizes is None:
             sizes = [(150, 150), (300, 300), (600, 400)]
@@ -901,14 +898,13 @@ class ImageProcessor:
 
         if pixel_count >= 1920 * 1080:  # Full HD
             return 100
-        elif pixel_count >= 1280 * 720:  # HD
+        if pixel_count >= 1280 * 720:  # HD
             return 85
-        elif pixel_count >= 800 * 600:  # SVGA
+        if pixel_count >= 800 * 600:  # SVGA
             return 70
-        elif pixel_count >= 640 * 480:  # VGA
+        if pixel_count >= 640 * 480:  # VGA
             return 55
-        else:
-            return 30
+        return 30
 
     def _detect_text_regions(self, img: Image.Image) -> bool:
         """Detect if image likely contains text (simplified)"""
@@ -923,7 +919,7 @@ class ImageProcessor:
 
         return edge_ratio > 0.05  # Threshold for text detection
 
-    def _extract_dominant_colors(self, img: Image.Image, k: int = 5) -> List[List[int]]:
+    def _extract_dominant_colors(self, img: Image.Image, k: int = 5) -> list[list[int]]:
         """Extract dominant colors from image"""
         # Resize for faster processing
         img_small = img.resize((150, 150))
@@ -960,7 +956,7 @@ class ImageProcessor:
 
     def _generate_image_optimization_suggestions(
         self, width: int, height: int, file_size: int, format: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate optimization suggestions for image"""
         suggestions = []
 
@@ -1131,7 +1127,7 @@ class DocumentProcessor:
         self, file_path: str, analysis: MediaAnalysis
     ) -> MediaAnalysis:
         """Analyze plain text document"""
-        async with aiofiles.open(file_path, "r", encoding="utf-8") as file:
+        async with aiofiles.open(file_path, encoding="utf-8") as file:
             full_text = await file.read()
 
         analysis.detected_text = full_text
@@ -1196,8 +1192,8 @@ class DocumentProcessor:
         return any(keyword in text_lower for keyword in academic_keywords)
 
     def _generate_document_suggestions(
-        self, page_count: int, word_count: int, turkish_analysis: Dict[str, Any]
-    ) -> List[str]:
+        self, page_count: int, word_count: int, turkish_analysis: dict[str, Any]
+    ) -> list[str]:
         """Generate optimization suggestions for document"""
         suggestions = []
 
@@ -1239,8 +1235,8 @@ class MultimediaContentProcessor:
 
         # Processing queues
         self.processing_queue: asyncio.Queue = asyncio.Queue()
-        self.active_tasks: Dict[str, ProcessingTask] = {}
-        self.completed_tasks: Dict[str, ProcessingTask] = {}
+        self.active_tasks: dict[str, ProcessingTask] = {}
+        self.completed_tasks: dict[str, ProcessingTask] = {}
 
         # Configuration
         self.max_concurrent_tasks = config.get_setting("media.max_concurrent_tasks", 4)
@@ -1315,18 +1311,17 @@ class MultimediaContentProcessor:
 
             if task.processing_type == "analyze":
                 return await self._analyze_content(task)
-            elif task.processing_type == "compress":
+            if task.processing_type == "compress":
                 return await self._compress_content(task)
-            elif task.processing_type == "convert":
+            if task.processing_type == "convert":
                 return await self._convert_content(task)
-            elif task.processing_type == "extract":
+            if task.processing_type == "extract":
                 return await self._extract_content_features(task)
-            else:
-                task.add_error(f"Unknown processing type: {task.processing_type}")
-                return False
+            task.add_error(f"Unknown processing type: {task.processing_type}")
+            return False
 
         except Exception as e:
-            task.add_error(f"Processing failed: {str(e)}")
+            task.add_error(f"Processing failed: {e!s}")
             return False
 
     async def _analyze_content(self, task: ProcessingTask) -> bool:
@@ -1354,7 +1349,7 @@ class MultimediaContentProcessor:
                 return True
 
         except Exception as e:
-            task.add_error(f"Analysis failed: {str(e)}")
+            task.add_error(f"Analysis failed: {e!s}")
 
         return False
 
@@ -1403,7 +1398,7 @@ class MultimediaContentProcessor:
                     file_path=str(output_path),
                     file_size=output_path.stat().st_size,
                     mime_type=mimetypes.guess_type(str(output_path))[0] or mime_type,
-                    upload_date=datetime.now(timezone.utc),
+                    upload_date=datetime.now(UTC),
                     uploaded_by=task.content_file.uploaded_by,
                     processed=True,
                     processing_status="compressed",
@@ -1413,7 +1408,7 @@ class MultimediaContentProcessor:
                 return True
 
         except Exception as e:
-            task.add_error(f"Compression failed: {str(e)}")
+            task.add_error(f"Compression failed: {e!s}")
 
         return False
 
@@ -1447,7 +1442,7 @@ class MultimediaContentProcessor:
                         file_path=thumb_path,
                         file_size=Path(thumb_path).stat().st_size,
                         mime_type="image/jpeg",
-                        upload_date=datetime.now(timezone.utc),
+                        upload_date=datetime.now(UTC),
                         uploaded_by=task.content_file.uploaded_by,
                         processed=True,
                         processing_status="thumbnail",
@@ -1456,7 +1451,7 @@ class MultimediaContentProcessor:
 
                 return len(thumbnail_paths) > 0
 
-            elif feature_type == "audio" and mime_type.startswith("video/"):
+            if feature_type == "audio" and mime_type.startswith("video/"):
                 # Extract audio from video
                 audio_path = self.temp_dir / f"audio_{uuid.uuid4()}.mp3"
 
@@ -1471,7 +1466,7 @@ class MultimediaContentProcessor:
                         file_path=str(audio_path),
                         file_size=audio_path.stat().st_size,
                         mime_type="audio/mpeg",
-                        upload_date=datetime.now(timezone.utc),
+                        upload_date=datetime.now(UTC),
                         uploaded_by=task.content_file.uploaded_by,
                         processed=True,
                         processing_status="extracted_audio",
@@ -1495,7 +1490,7 @@ class MultimediaContentProcessor:
                         file_path=thumb_path,
                         file_size=Path(thumb_path).stat().st_size,
                         mime_type="image/jpeg",
-                        upload_date=datetime.now(timezone.utc),
+                        upload_date=datetime.now(UTC),
                         uploaded_by=task.content_file.uploaded_by,
                         processed=True,
                         processing_status="thumbnail",
@@ -1505,20 +1500,19 @@ class MultimediaContentProcessor:
                 return len(thumbnail_paths) > 0
 
         except Exception as e:
-            task.add_error(f"Feature extraction failed: {str(e)}")
+            task.add_error(f"Feature extraction failed: {e!s}")
 
         return False
 
-    async def get_task_status(self, task_id: str) -> Optional[Dict[str, Any]]:
+    async def get_task_status(self, task_id: str) -> dict[str, Any] | None:
         """Get status of processing task"""
         if task_id in self.active_tasks:
             return self.active_tasks[task_id].to_dict()
-        elif task_id in self.completed_tasks:
+        if task_id in self.completed_tasks:
             return self.completed_tasks[task_id].to_dict()
-        else:
-            return None
+        return None
 
-    async def get_processing_statistics(self) -> Dict[str, Any]:
+    async def get_processing_statistics(self) -> dict[str, Any]:
         """Get processing service statistics"""
         return {
             "queue_size": self.processing_queue.qsize(),
@@ -1570,7 +1564,7 @@ if __name__ == "__main__":
             file_path="/path/to/sample/video.mp4",  # Would be real path
             file_size=10000000,  # 10MB
             mime_type="video/mp4",
-            upload_date=datetime.now(timezone.utc),
+            upload_date=datetime.now(UTC),
             uploaded_by=1001,
         )
 

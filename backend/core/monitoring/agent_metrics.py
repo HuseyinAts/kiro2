@@ -12,16 +12,16 @@ Metrics exported:
 """
 
 import logging
-from contextlib import contextmanager
 import time
+from contextlib import contextmanager
 
 from prometheus_client import (
-    Counter,
-    Histogram,
-    Gauge,
-    Summary,
-    Info,
     REGISTRY,
+    Counter,
+    Gauge,
+    Histogram,
+    Info,
+    Summary,
     generate_latest,
 )
 
@@ -268,7 +268,6 @@ class AgentMetricsExporter:
     def reset_metrics(self) -> None:
         """Reset all metrics (for testing)."""
         # Note: In production, metrics persist across requests
-        pass
 
 
 # Global exporter instance

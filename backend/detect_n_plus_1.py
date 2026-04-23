@@ -4,12 +4,13 @@ N+1 Query Detection Script - Sprint 1 Phase 2
 Detects real N+1 query patterns vs false positives.
 """
 import re
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 
 def detect_n_plus_1_patterns(file_path):
     """Detect N+1 query patterns in a Python file"""
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         try:
             content = f.read()
         except:

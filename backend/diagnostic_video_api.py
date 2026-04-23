@@ -66,24 +66,23 @@ class VideoAPIDiagnostic:
         try:
             import aiohttp
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    f"{self.backend_url}/health", timeout=5
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        logger.info("✅ Backend servisi çalışıyor")
-                        logger.info(f"   Status: {data.get('status', 'unknown')}")
-                        self.results["checks"]["backend_service"] = {
-                            "status": "OK",
-                            "details": data,
-                        }
-                    else:
-                        logger.error(f"❌ Backend servisi hata döndü: {response.status}")
-                        self.results["checks"]["backend_service"] = {
-                            "status": "ERROR",
-                            "error": f"HTTP {response.status}",
-                        }
+            async with aiohttp.ClientSession() as session, session.get(
+                f"{self.backend_url}/health", timeout=5
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    logger.info("✅ Backend servisi çalışıyor")
+                    logger.info(f"   Status: {data.get('status', 'unknown')}")
+                    self.results["checks"]["backend_service"] = {
+                        "status": "OK",
+                        "details": data,
+                    }
+                else:
+                    logger.error(f"❌ Backend servisi hata döndü: {response.status}")
+                    self.results["checks"]["backend_service"] = {
+                        "status": "ERROR",
+                        "error": f"HTTP {response.status}",
+                    }
         except Exception as e:
             logger.error(f"❌ Backend servisine bağlanılamadı: {e}")
             self.results["checks"]["backend_service"] = {
@@ -102,24 +101,23 @@ class VideoAPIDiagnostic:
         try:
             import aiohttp
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    f"{self.backend_url}/api/youtube/test", timeout=5
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        logger.info("✅ Test endpoint çalışıyor")
-                        logger.info(f"   Response: {data}")
-                        self.results["checks"]["test_endpoint"] = {
-                            "status": "OK",
-                            "response": data,
-                        }
-                    else:
-                        logger.error(f"❌ Test endpoint hata döndü: {response.status}")
-                        self.results["checks"]["test_endpoint"] = {
-                            "status": "ERROR",
-                            "error": f"HTTP {response.status}",
-                        }
+            async with aiohttp.ClientSession() as session, session.get(
+                f"{self.backend_url}/api/youtube/test", timeout=5
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    logger.info("✅ Test endpoint çalışıyor")
+                    logger.info(f"   Response: {data}")
+                    self.results["checks"]["test_endpoint"] = {
+                        "status": "OK",
+                        "response": data,
+                    }
+                else:
+                    logger.error(f"❌ Test endpoint hata döndü: {response.status}")
+                    self.results["checks"]["test_endpoint"] = {
+                        "status": "ERROR",
+                        "error": f"HTTP {response.status}",
+                    }
         except Exception as e:
             logger.error(f"❌ Test endpoint'e erişilemedi: {e}")
             self.results["checks"]["test_endpoint"] = {
@@ -145,34 +143,33 @@ class VideoAPIDiagnostic:
 
             logger.info(f"   Test payload: {json.dumps(test_payload, indent=2)}")
 
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    f"{self.backend_url}/api/youtube/recommendations",
-                    json=test_payload,
-                    timeout=30,
-                ) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        video_count = sum(len(rec.get("videos", [])) for rec in data)
-                        logger.info("✅ Recommendations endpoint çalışıyor")
-                        logger.info(f"   Toplam video: {video_count}")
-                        self.results["checks"]["recommendations_endpoint"] = {
-                            "status": "OK",
-                            "video_count": video_count,
-                            "response_sample": data[:1] if data else [],
-                        }
-                    else:
-                        error_text = await response.text()
-                        logger.error(
-                            f"❌ Recommendations endpoint hata döndü: {response.status}"
-                        )
-                        logger.error(f"   Error: {error_text}")
-                        self.results["checks"]["recommendations_endpoint"] = {
-                            "status": "ERROR",
-                            "error": f"HTTP {response.status}",
-                            "details": error_text,
-                        }
-        except asyncio.TimeoutError:
+            async with aiohttp.ClientSession() as session, session.post(
+                f"{self.backend_url}/api/youtube/recommendations",
+                json=test_payload,
+                timeout=30,
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    video_count = sum(len(rec.get("videos", [])) for rec in data)
+                    logger.info("✅ Recommendations endpoint çalışıyor")
+                    logger.info(f"   Toplam video: {video_count}")
+                    self.results["checks"]["recommendations_endpoint"] = {
+                        "status": "OK",
+                        "video_count": video_count,
+                        "response_sample": data[:1] if data else [],
+                    }
+                else:
+                    error_text = await response.text()
+                    logger.error(
+                        f"❌ Recommendations endpoint hata döndü: {response.status}"
+                    )
+                    logger.error(f"   Error: {error_text}")
+                    self.results["checks"]["recommendations_endpoint"] = {
+                        "status": "ERROR",
+                        "error": f"HTTP {response.status}",
+                        "details": error_text,
+                    }
+        except TimeoutError:
             logger.error("❌ Recommendations endpoint timeout (30s)")
             self.results["checks"]["recommendations_endpoint"] = {
                 "status": "ERROR",
@@ -273,7 +270,7 @@ class VideoAPIDiagnostic:
                 }
                 return
 
-            with open(main_tsx_path, "r", encoding="utf-8") as f:
+            with open(main_tsx_path, encoding="utf-8") as f:
                 content = f.read()
 
             # API_BASE_URL kontrolü
@@ -359,7 +356,7 @@ class VideoAPIDiagnostic:
                 return
 
             # Son 50 satırı oku
-            with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
+            with open(log_file, encoding="utf-8", errors="ignore") as f:
                 lines = f.readlines()
                 recent_lines = lines[-50:] if len(lines) > 50 else lines
 

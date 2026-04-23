@@ -3,16 +3,17 @@ Integration Test Utilities
 Helper functions and classes for integration testing
 """
 import asyncio
-import time
 import logging
-from typing import Dict, List, Any, Callable
-from datetime import datetime, timedelta, timezone
-from contextlib import asynccontextmanager
+import time
 import uuid
+from collections.abc import Callable
+from contextlib import asynccontextmanager
+from datetime import datetime, timedelta
+from typing import Any
 
 # Import centralized JWT helper from conftest (DRY)
 try:
-    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+    from tests.conftest import TEST_JWT_ALGORITHM, TEST_JWT_SECRET, _generate_test_jwt
 except ImportError:
     import jwt as _jwt
     TEST_JWT_SECRET = "test-secret-key-for-testing"
@@ -70,7 +71,7 @@ class APITestClient:
         if "Authorization" in self.headers:
             del self.headers["Authorization"]
 
-    async def request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
+    async def request(self, method: str, endpoint: str, **kwargs) -> dict[str, Any]:
         """Make HTTP request (mock implementation for testing)"""
         # Mock implementation - would use real HTTP client in production
         url = f"{self.base_url}{endpoint}"
@@ -81,14 +82,13 @@ class APITestClient:
         # Mock response based on endpoint
         if endpoint.startswith("/api/v1/auth/kayit"):
             return self._mock_registration_response(kwargs.get("json", {}))
-        elif endpoint.startswith("/api/v1/auth/giris"):
+        if endpoint.startswith("/api/v1/auth/giris"):
             return self._mock_login_response(kwargs.get("json", {}))
-        elif endpoint.startswith("/api/v1/content"):
+        if endpoint.startswith("/api/v1/content"):
             return self._mock_content_response(method, kwargs.get("json", {}))
-        else:
-            return {"status_code": 404, "json": {"error": "Endpoint not found"}}
+        return {"status_code": 404, "json": {"error": "Endpoint not found"}}
 
-    def _mock_registration_response(self, data: Dict) -> Dict:
+    def _mock_registration_response(self, data: dict) -> dict:
         """Mock user registration response"""
         if not data.get("email") or not data.get("sifre"):
             return {"status_code": 422, "json": {"error": "Missing required fields"}}
@@ -107,7 +107,7 @@ class APITestClient:
             },
         }
 
-    def _mock_login_response(self, data: Dict) -> Dict:
+    def _mock_login_response(self, data: dict) -> dict:
         """Mock user login response"""
         if not data.get("email") or not data.get("sifre"):
             return {"status_code": 422, "json": {"error": "Missing credentials"}}
@@ -126,7 +126,7 @@ class APITestClient:
             },
         }
 
-    def _mock_content_response(self, method: str, data: Dict) -> Dict:
+    def _mock_content_response(self, method: str, data: dict) -> dict:
         """Mock content API response"""
         if method == "POST":
             if not data.get("baslik"):
@@ -140,13 +140,12 @@ class APITestClient:
                     "message": "Content created successfully",
                 },
             }
-        elif method == "GET":
+        if method == "GET":
             return {
                 "status_code": 200,
                 "json": {"success": True, "data": [], "total": 0},
             }
-        else:
-            return {"status_code": 405, "json": {"error": "Method not allowed"}}
+        return {"status_code": 405, "json": {"error": "Method not allowed"}}
 
 
 class WorkflowTestRunner:
@@ -163,7 +162,7 @@ class WorkflowTestRunner:
             {"name": name, "func": step_func, "args": args, "kwargs": kwargs}
         )
 
-    async def run(self) -> List[Dict[str, Any]]:
+    async def run(self) -> list[dict[str, Any]]:
         """Run all workflow steps"""
         self.results.clear()
 
@@ -214,7 +213,7 @@ class WorkflowTestRunner:
 
         return self.results
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get workflow execution summary"""
         total_steps = len(self.results)
         successful_steps = len([r for r in self.results if r["success"]])
@@ -270,7 +269,7 @@ class PerformanceMonitor:
         if not success:
             self.error_count += 1
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get current performance metrics"""
         if not self.metrics["response_times"]:
             return self.metrics
@@ -296,7 +295,7 @@ class DataValidator:
     """Validate data integrity during integration tests"""
 
     @staticmethod
-    def validate_user_data(user_data: Dict) -> List[str]:
+    def validate_user_data(user_data: dict) -> list[str]:
         """Validate user data structure"""
         errors = []
 
@@ -319,7 +318,7 @@ class DataValidator:
         return errors
 
     @staticmethod
-    def validate_content_data(content_data: Dict) -> List[str]:
+    def validate_content_data(content_data: dict) -> list[str]:
         """Validate content data structure"""
         errors = []
 
@@ -334,7 +333,7 @@ class DataValidator:
         return errors
 
     @staticmethod
-    def validate_exam_data(exam_data: Dict) -> List[str]:
+    def validate_exam_data(exam_data: dict) -> list[str]:
         """Validate exam data structure"""
         errors = []
 
@@ -371,7 +370,7 @@ class SecurityTester:
     ]
 
     @classmethod
-    def test_xss_protection(cls, test_func: Callable, field_name: str) -> List[str]:
+    def test_xss_protection(cls, test_func: Callable, field_name: str) -> list[str]:
         """Test XSS protection for a field"""
         vulnerabilities = []
 
@@ -391,7 +390,7 @@ class SecurityTester:
     @classmethod
     def test_sql_injection_protection(
         cls, test_func: Callable, field_name: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Test SQL injection protection for a field"""
         vulnerabilities = []
 
@@ -418,7 +417,7 @@ class TestDataGenerator:
     """Generate test data for integration tests"""
 
     @staticmethod
-    def generate_users(count: int) -> List[Dict]:
+    def generate_users(count: int) -> list[dict]:
         """Generate test user data"""
         users = []
 
@@ -437,7 +436,7 @@ class TestDataGenerator:
         return users
 
     @staticmethod
-    def generate_content(count: int) -> List[Dict]:
+    def generate_content(count: int) -> list[dict]:
         """Generate test content data"""
         content = []
         categories = ["Matematik", "Fizik", "Kimya", "Biyoloji", "Türkçe"]
@@ -458,7 +457,7 @@ class TestDataGenerator:
         return content
 
     @staticmethod
-    def generate_exam_questions(count: int) -> List[Dict]:
+    def generate_exam_questions(count: int) -> list[dict]:
         """Generate test exam questions"""
         questions = []
         subjects = ["Matematik", "Fizik", "Kimya", "Türkçe", "Tarih"]
@@ -505,7 +504,7 @@ async def integration_test_context():
 
 
 def assert_performance_acceptable(
-    metrics: Dict[str, Any], max_response_time: float = 1.0, max_error_rate: float = 5.0
+    metrics: dict[str, Any], max_response_time: float = 1.0, max_error_rate: float = 5.0
 ):
     """Assert that performance metrics are acceptable"""
     assert (
@@ -517,13 +516,13 @@ def assert_performance_acceptable(
     assert metrics["requests_per_second"] > 0, "No requests processed"
 
 
-def assert_security_clean(vulnerabilities: List[str]):
+def assert_security_clean(vulnerabilities: list[str]):
     """Assert that no security vulnerabilities were found"""
     assert (
         len(vulnerabilities) == 0
     ), f"Security vulnerabilities found: {vulnerabilities}"
 
 
-def assert_data_integrity(validation_errors: List[str]):
+def assert_data_integrity(validation_errors: list[str]):
     """Assert that data integrity is maintained"""
     assert len(validation_errors) == 0, f"Data integrity errors: {validation_errors}"

@@ -4,11 +4,11 @@ Unit tests for PeerComparisonService (REQ-7)
 Privacy-preserving peer comparison and benchmarking tests.
 """
 
-import pytest
-from datetime import timedelta, date
+from datetime import date, timedelta
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
+import pytest
 
 
 class TestPeerComparisonServiceComparison:

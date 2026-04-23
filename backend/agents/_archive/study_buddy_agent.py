@@ -10,7 +10,6 @@ Bu ajan:
 - Özetler çıkarır
 """
 
-import asyncio
 import json
 import logging
 import os
@@ -21,7 +20,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.llm_service import llm_service
@@ -61,12 +60,12 @@ class Flashcard:
     back: str  # Arka yüz (cevap/açıklama)
     category: str
     difficulty: DifficultyLevel
-    tags: List[str]
+    tags: list[str]
     review_count: int = 0  # Tekrar sayısı
     success_rate: float = 0.0  # Başarı oranı
-    last_reviewed: Optional[datetime] = None  # Son tekrar tarihi
-    next_review: Optional[datetime] = None  # Sonraki tekrar tarihi
-    metadata: Optional[Dict[str, Any]] = None
+    last_reviewed: datetime | None = None  # Son tekrar tarihi
+    next_review: datetime | None = None  # Sonraki tekrar tarihi
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -82,8 +81,8 @@ class Question:
     subject: str
     topic: str
     points: int
-    options: Optional[List[str]] = None  # Seçenekler (çoktan seçmeli için)
-    metadata: Optional[Dict[str, Any]] = None
+    options: list[str] | None = None  # Seçenekler (çoktan seçmeli için)
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -93,12 +92,12 @@ class Quiz:
     quiz_id: str
     title: str
     description: str
-    questions: List[Question]
+    questions: list[Question]
     total_points: int
-    time_limit: Optional[int]  # Dakika
+    time_limit: int | None  # Dakika
     difficulty: DifficultyLevel
     adaptive: bool  # Adaptif mi?
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -107,8 +106,8 @@ class StudentPerformance:
 
     student_id: str
     quiz_id: str = ""
-    answers: Dict[str, str] = None  # {question_id: answer}
-    scores: Dict[str, float] = None  # {question_id: score}
+    answers: dict[str, str] = None  # {question_id: answer}
+    scores: dict[str, float] = None  # {question_id: score}
     total_score: float = 0.0
     percentage: float = 0.0
     time_spent: int = 0  # Saniye
@@ -118,10 +117,10 @@ class StudentPerformance:
     correct_answers: int = 0  # Doğru cevap sayısı
     incorrect_answers: int = 0  # Yanlış cevap sayısı
     streak: int = 0  # Ardışık doğru sayısı
-    topics_covered: Optional[Any] = None  # Kapsanan konular (dict or list)
-    difficulty_performance: Optional[Dict[str, float]] = None  # Zorluk performansı
-    last_updated: Optional[datetime] = None  # Son güncelleme
-    metadata: Dict[str, Any] = None
+    topics_covered: Any | None = None  # Kapsanan konular (dict or list)
+    difficulty_performance: dict[str, float] | None = None  # Zorluk performansı
+    last_updated: datetime | None = None  # Son güncelleme
+    metadata: dict[str, Any] = None
 
 
 class StudyBuddyAgent:
@@ -140,8 +139,8 @@ class StudyBuddyAgent:
         self,
         content: str,
         count: int = 10,
-        difficulty: Optional[DifficultyLevel] = None,
-    ) -> List[Flashcard]:
+        difficulty: DifficultyLevel | None = None,
+    ) -> list[Flashcard]:
         """
         İçerikten bilgi kartları oluştur
 
@@ -200,7 +199,7 @@ class StudyBuddyAgent:
                         flashcards.append(flashcard)
                         self.flashcards[flashcard.card_id] = flashcard
                 except Exception as e:
-                    logger.error(f"Flashcard parsing error: {str(e)}")
+                    logger.error(f"Flashcard parsing error: {e!s}")
 
             # Yeterli kart oluşturulamazsa basit kartlar ekle
             while len(flashcards) < count:
@@ -230,19 +229,19 @@ class StudyBuddyAgent:
             return flashcards[:count]
 
         except Exception as e:
-            logger.error(f"Generate flashcards error: {str(e)}")
+            logger.error(f"Generate flashcards error: {e!s}")
             return []
 
     async def generate_questions(
         self,
         content: str,
-        question_types: List[QuestionType],
+        question_types: list[QuestionType],
         count: int = 5,
         difficulty: DifficultyLevel = DifficultyLevel.MEDIUM,
         subject: str = "Genel",
         topic: str = "",
         language: str = "tr",
-    ) -> List[Question]:
+    ) -> list[Question]:
         """
         İçerikten soru oluştur
 
@@ -333,13 +332,13 @@ class StudyBuddyAgent:
                         questions.append(question)
                         self.questions[question.question_id] = question
                 except Exception as e:
-                    logger.error(f"Question parsing error: {str(e)}")
+                    logger.error(f"Question parsing error: {e!s}")
 
             logger.info(f"Generated {len(questions)} questions")
             return questions
 
         except Exception as e:
-            logger.error(f"Generate questions error: {str(e)}")
+            logger.error(f"Generate questions error: {e!s}")
             return []
 
     def _calculate_points(self, difficulty: DifficultyLevel) -> int:
@@ -357,7 +356,7 @@ class StudyBuddyAgent:
         title: str,
         content: str,
         question_count: int = 10,
-        time_limit: Optional[int] = None,
+        time_limit: int | None = None,
         adaptive: bool = False,
         difficulty: DifficultyLevel = DifficultyLevel.MEDIUM,
     ) -> Quiz:
@@ -425,12 +424,12 @@ class StudyBuddyAgent:
             return quiz
 
         except Exception as e:
-            logger.error(f"Create quiz error: {str(e)}")
+            logger.error(f"Create quiz error: {e!s}")
             raise
 
     async def evaluate_answer(
         self, question: Question, student_answer: str
-    ) -> Tuple[float, str]:
+    ) -> tuple[float, str]:
         """
         Cevabı değerlendir
 
@@ -447,13 +446,12 @@ class StudyBuddyAgent:
                 # Çoktan seçmeli - tam eşleşme
                 if student_answer.upper() == question.correct_answer.upper():
                     return (question.points, "[CHECK] Doğru! " + question.explanation)
-                else:
-                    return (
-                        0,
-                        f"[X] Yanlış. Doğru cevap: {question.correct_answer}\n{question.explanation}",
-                    )
+                return (
+                    0,
+                    f"[X] Yanlış. Doğru cevap: {question.correct_answer}\n{question.explanation}",
+                )
 
-            elif question.question_type == QuestionType.TRUE_FALSE:
+            if question.question_type == QuestionType.TRUE_FALSE:
                 # Doğru/Yanlış
                 student_bool = student_answer.lower() in ["doğru", "true", "d", "evet"]
                 correct_bool = question.correct_answer.lower() in [
@@ -464,36 +462,32 @@ class StudyBuddyAgent:
                 ]
                 if student_bool == correct_bool:
                     return (question.points, "[CHECK] Doğru! " + question.explanation)
-                else:
-                    return (0, f"[X] Yanlış. {question.explanation}")
+                return (0, f"[X] Yanlış. {question.explanation}")
 
-            elif question.question_type == QuestionType.FILL_BLANK:
+            if question.question_type == QuestionType.FILL_BLANK:
                 # Boşluk doldurma - benzerlik kontrolü
                 if (
                     student_answer.lower().strip()
                     == question.correct_answer.lower().strip()
                 ):
                     return (question.points, "[CHECK] Doğru! " + question.explanation)
-                else:
-                    # Kısmi puan verebiliriz
-                    similarity = self._calculate_similarity(
-                        student_answer, question.correct_answer
+                # Kısmi puan verebiliriz
+                similarity = self._calculate_similarity(
+                    student_answer, question.correct_answer
+                )
+                if similarity > 0.8:
+                    partial_points = question.points * similarity
+                    return (
+                        partial_points,
+                        f"⚠️ Kısmen doğru ({partial_points:.1f} puan). Tam cevap: {question.correct_answer}",
                     )
-                    if similarity > 0.8:
-                        partial_points = question.points * similarity
-                        return (
-                            partial_points,
-                            f"⚠️ Kısmen doğru ({partial_points:.1f} puan). Tam cevap: {question.correct_answer}",
-                        )
-                    else:
-                        return (
-                            0,
-                            f"[X] Yanlış. Doğru cevap: {question.correct_answer}\n{question.explanation}",
-                        )
+                return (
+                    0,
+                    f"[X] Yanlış. Doğru cevap: {question.correct_answer}\n{question.explanation}",
+                )
 
-            else:
-                # Kısa cevap veya essay - LLM ile değerlendirme
-                eval_prompt = f"""
+            # Kısa cevap veya essay - LLM ile değerlendirme
+            eval_prompt = f"""
                 Öğrenci cevabını değerlendir:
                 
                 Soru: {question.question_text}
@@ -509,22 +503,22 @@ class StudyBuddyAgent:
                 }}
                 """
 
-                result = await llm_service.generate(prompt=eval_prompt, temperature=0.3)
+            result = await llm_service.generate(prompt=eval_prompt, temperature=0.3)
 
-                if result["success"]:
-                    try:
-                        eval_data = json.loads(result["text"])
-                        score = min(eval_data.get("score", 0), question.points)
-                        feedback = eval_data.get("feedback", "")
-                        return (score, feedback)
-                    except (json.JSONDecodeError, TypeError, KeyError) as e:
-                        logger.debug(f"Evaluation JSON parsing failed: {e}")
-                        return (0, "Değerlendirme yapılamadı")
-                else:
-                    return (0, "Değerlendirme hatası")
+            if result["success"]:
+                try:
+                    eval_data = json.loads(result["text"])
+                    score = min(eval_data.get("score", 0), question.points)
+                    feedback = eval_data.get("feedback", "")
+                    return (score, feedback)
+                except (json.JSONDecodeError, TypeError, KeyError) as e:
+                    logger.debug(f"Evaluation JSON parsing failed: {e}")
+                    return (0, "Değerlendirme yapılamadı")
+            else:
+                return (0, "Değerlendirme hatası")
 
         except Exception as e:
-            logger.error(f"Evaluate answer error: {str(e)}")
+            logger.error(f"Evaluate answer error: {e!s}")
             return (0, "Değerlendirme hatası")
 
     def _calculate_similarity(self, text1: str, text2: str) -> float:
@@ -539,8 +533,8 @@ class StudyBuddyAgent:
         return len(intersection) / len(union)
 
     async def get_adaptive_question(
-        self, quiz_id: str, previous_performance: Optional[float] = None
-    ) -> Optional[Question]:
+        self, quiz_id: str, previous_performance: float | None = None
+    ) -> Question | None:
         """
         Adaptif soru seç
 
@@ -607,7 +601,7 @@ class StudyBuddyAgent:
             return None
 
         except Exception as e:
-            logger.error(f"Get adaptive question error: {str(e)}")
+            logger.error(f"Get adaptive question error: {e!s}")
             return None
 
     async def summarize_content(self, content: str, max_length: int = 500) -> str:
@@ -630,22 +624,21 @@ class StudyBuddyAgent:
 
             if result["success"]:
                 return result["content"]
-            else:
-                # Basit özet
-                sentences = content.split(". ")
-                if len(sentences) > 3:
-                    return ". ".join(sentences[:3]) + "..."
-                return content[:max_length]
+            # Basit özet
+            sentences = content.split(". ")
+            if len(sentences) > 3:
+                return ". ".join(sentences[:3]) + "..."
+            return content[:max_length]
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("Summarize error: Timeout")
             return ""  # Return empty string on timeout
         except Exception as e:
-            logger.error(f"Summarize error: {str(e)}")
+            logger.error(f"Summarize error: {e!s}")
             return ""  # Return empty string on error
 
     async def provide_feedback(
-        self, student_id: str, quiz_id: str, answers: Dict[str, str]
+        self, student_id: str, quiz_id: str, answers: dict[str, str]
     ) -> StudentPerformance:
         """
         Öğrenci performansını değerlendir ve geri bildirim ver
@@ -726,26 +719,26 @@ class StudyBuddyAgent:
             return performance
 
         except Exception as e:
-            logger.error(f"Provide feedback error: {str(e)}")
+            logger.error(f"Provide feedback error: {e!s}")
             raise
 
-    def get_flashcards_by_category(self, category: str) -> List[Flashcard]:
+    def get_flashcards_by_category(self, category: str) -> list[Flashcard]:
         """Kategoriye göre flashcard'ları getir"""
         return [fc for fc in self.flashcards.values() if fc.category == category]
 
-    def get_quiz(self, quiz_id: str) -> Optional[Quiz]:
+    def get_quiz(self, quiz_id: str) -> Quiz | None:
         """Quiz getir"""
         return self.quizzes.get(quiz_id)
 
     def get_student_performance(
         self, student_id: str, quiz_id: str
-    ) -> Optional[StudentPerformance]:
+    ) -> StudentPerformance | None:
         """Öğrenci performansını getir"""
         perf_id = f"{student_id}_{quiz_id}"
         return self.performances.get(perf_id)
 
     def adjust_difficulty(
-        self, quiz_id: str, student_id: Optional[str] = None
+        self, quiz_id: str, student_id: str | None = None
     ) -> DifficultyLevel:
         """
         Öğrenci performansına göre zorluk seviyesini ayarla
@@ -760,16 +753,15 @@ class StudyBuddyAgent:
         # Check adaptive state first
         if quiz_id in self.adaptive_state:
             state = self.adaptive_state[quiz_id]
-            if "performance_history" in state and state["performance_history"]:
+            if state.get("performance_history"):
                 avg_performance = sum(state["performance_history"]) / len(
                     state["performance_history"]
                 )
                 if avg_performance >= 0.8:
                     return DifficultyLevel.HARD
-                elif avg_performance >= 0.6:
+                if avg_performance >= 0.6:
                     return DifficultyLevel.MEDIUM
-                else:
-                    return DifficultyLevel.EASY
+                return DifficultyLevel.EASY
 
         # Fall back to student performance
         if student_id:
@@ -777,10 +769,9 @@ class StudyBuddyAgent:
             if perf:
                 if perf.percentage >= 80:
                     return DifficultyLevel.HARD
-                elif perf.percentage >= 60:
+                if perf.percentage >= 60:
                     return DifficultyLevel.MEDIUM
-                else:
-                    return DifficultyLevel.EASY
+                return DifficultyLevel.EASY
 
         quiz = self.get_quiz(quiz_id)
         if quiz:
@@ -804,8 +795,8 @@ class StudyBuddyAgent:
         return 0
 
     async def generate_quiz_review(
-        self, quiz_id: str, student_answers: Dict[str, str]
-    ) -> Dict[str, Any]:
+        self, quiz_id: str, student_answers: dict[str, str]
+    ) -> dict[str, Any]:
         """
         Quiz için detaylı gözden geçirme raporu oluştur
 
@@ -870,18 +861,17 @@ class StudyBuddyAgent:
         """Yüzdeye göre geri bildirim oluştur"""
         if percentage >= 90:
             return "Mükemmel! Harika bir performans gösterdiniz."
-        elif percentage >= 75:
+        if percentage >= 75:
             return "Çok iyi! Konuya hakim olduğunuz görülüyor."
-        elif percentage >= 60:
+        if percentage >= 60:
             return "İyi! Biraz daha çalışmayla daha da iyileştirebilirsiniz."
-        elif percentage >= 50:
+        if percentage >= 50:
             return "Fena değil! Zayıf olduğunuz konulara odaklanın."
-        else:
-            return (
-                "Daha fazla çalışmaya ihtiyacınız var. Yanlış cevapları gözden geçirin."
-            )
+        return (
+            "Daha fazla çalışmaya ihtiyacınız var. Yanlış cevapları gözden geçirin."
+        )
 
-    def get_questions_by_topic(self, topic: str) -> List[Question]:
+    def get_questions_by_topic(self, topic: str) -> list[Question]:
         """Konuya göre soruları getir"""
         result = []
         for q_id, question in self.question_bank.items():
@@ -902,14 +892,13 @@ class StudyBuddyAgent:
                 elapsed = datetime.now().timestamp() - quiz.metadata["start_time"]
                 return elapsed > quiz.time_limit
             # If start_time is ISO string, parse and check
-            elif isinstance(quiz.metadata["start_time"], str):
+            if isinstance(quiz.metadata["start_time"], str):
                 try:
                     start = datetime.fromisoformat(quiz.metadata["start_time"])
                     elapsed = (datetime.now() - start).total_seconds()
                     return elapsed > quiz.time_limit
                 except (ValueError, TypeError) as e:
                     logger.debug(f"Failed to parse quiz start_time: {e}")
-                    pass
 
         return False
 
@@ -929,7 +918,7 @@ class StudyBuddyAgent:
 
     def get_questions_by_criteria(
         self, subject: str = None, difficulty: DifficultyLevel = None
-    ) -> List[Question]:
+    ) -> list[Question]:
         """Kriterlere göre soruları getir"""
         result = []
         for q_id, question in self.question_bank.items():
@@ -957,7 +946,6 @@ class StudyBuddyAgent:
                 return result["content"]
         except (KeyError, TypeError, AttributeError) as e:
             logger.debug(f"LLM hint generation failed: {e}")
-            pass
 
         # Fallback hints
         hints = {
@@ -969,7 +957,7 @@ class StudyBuddyAgent:
 
     async def get_performance_insights(
         self, student_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Öğrenci performans analitiği"""
         if student_id not in self.student_performances:
             return None

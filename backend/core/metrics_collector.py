@@ -11,16 +11,15 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from threading import Lock
-from typing import Dict, List, Optional
 
 from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    CollectorRegistry,
     Counter,
     Gauge,
     Histogram,
     Info,
     generate_latest,
-    CONTENT_TYPE_LATEST,
-    CollectorRegistry,
 )
 
 logger = logging.getLogger(__name__)
@@ -58,7 +57,7 @@ class MetricsCollector:
     - active_requests: Aktif istek sayısı (Gauge)
     """
 
-    def __init__(self, registry: Optional[CollectorRegistry] = None):
+    def __init__(self, registry: CollectorRegistry | None = None):
         """
         MetricsCollector başlat
 
@@ -69,11 +68,11 @@ class MetricsCollector:
         self._lock = Lock()
 
         # Response time tracking için internal storage
-        self._response_times: List[float] = []
+        self._response_times: list[float] = []
         self._max_response_times = 10000  # Son 10k istek
 
         # Request tracking
-        self._request_start_times: Dict[str, float] = {}
+        self._request_start_times: dict[str, float] = {}
 
         # Cache tracking
         self._cache_hits = 0
@@ -84,7 +83,7 @@ class MetricsCollector:
         self._youtube_quota_limit = 10000  # Günlük limit
 
         # Error tracking
-        self._errors_by_type: Dict[str, int] = defaultdict(int)
+        self._errors_by_type: dict[str, int] = defaultdict(int)
 
         # Initialize Prometheus metrics
         self._init_prometheus_metrics()
@@ -453,7 +452,7 @@ class MetricsCollector:
             return 0.0
         return self._cache_hits / total
 
-    def get_response_time_percentiles(self) -> Dict[str, float]:
+    def get_response_time_percentiles(self) -> dict[str, float]:
         """
         Response time percentile'larını hesapla (P50, P95, P99)
 
@@ -749,7 +748,7 @@ class MetricsCollector:
 
 
 # Global metrics collector instance
-_global_metrics_collector: Optional[MetricsCollector] = None
+_global_metrics_collector: MetricsCollector | None = None
 _collector_lock = Lock()
 
 

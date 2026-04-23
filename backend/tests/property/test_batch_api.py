@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -13,13 +14,15 @@ Requirements: REQ-3.5
 
 import asyncio
 import time
+
 import pytest
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from services.batch_processing import (
-    BatchProcessor,
     BatchOperation,
     BatchOperationType,
+    BatchProcessor,
 )
 
 

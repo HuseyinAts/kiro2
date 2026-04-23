@@ -6,7 +6,6 @@ Validates video availability and content relevance
 import asyncio
 import logging
 import re
-from typing import Dict, Tuple
 
 import aiohttp
 
@@ -25,7 +24,7 @@ class YouTubeVideoValidator:
         if self.session:
             await self.session.close()
 
-    async def validate_video(self, video_id: str) -> Tuple[bool, str, Dict]:
+    async def validate_video(self, video_id: str) -> tuple[bool, str, dict]:
         """Validate if video exists and get metadata"""
         try:
             # Check if video is accessible
@@ -61,7 +60,7 @@ class YouTubeVideoValidator:
             logger.error(f"Error validating video {video_id}: {e}")
             return False, f"Validation error: {e}", {}
 
-    def _extract_metadata(self, html: str) -> Dict:
+    def _extract_metadata(self, html: str) -> dict:
         """Extract video metadata from HTML"""
         metadata = {}
 
@@ -82,7 +81,7 @@ class YouTubeVideoValidator:
 
         return metadata
 
-    def _is_educational_content(self, metadata: Dict) -> bool:
+    def _is_educational_content(self, metadata: dict) -> bool:
         """Check if content is educational based on metadata"""
         title = metadata.get("title", "").lower()
         channel = metadata.get("channel", "").lower()

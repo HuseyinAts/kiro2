@@ -12,12 +12,13 @@ Creates tables for Turkish GDPR compliance:
 - kvkk_data_deletion_requests - Right to erasure
 - kvkk_audit_logs - Data access audit trail
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSON
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '3ec73c2c6d97'

@@ -9,11 +9,11 @@ Features:
 - Data preparation utilities
 """
 
-from .ner_trainer import NERTrainer, NERTrainingConfig
 from .dictionary_trainer import DictionaryTrainer
+from .ner_trainer import NERTrainer, NERTrainingConfig
 
 __all__ = [
+    "DictionaryTrainer",
     "NERTrainer",
     "NERTrainingConfig",
-    "DictionaryTrainer",
 ]

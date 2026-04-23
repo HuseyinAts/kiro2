@@ -6,10 +6,11 @@ Requirements: 2.1, 2.5
 Target: 100 concurrent users, P95 < 3s
 """
 
-from locust import HttpUser, task, between, events
 import random
 import time
 from datetime import datetime
+
+from locust import HttpUser, between, events, task
 
 
 class VideoAPIUser(HttpUser):

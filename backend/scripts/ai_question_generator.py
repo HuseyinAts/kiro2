@@ -4,15 +4,15 @@ Araştırma temelli best practices ile soru üretimi
 """
 import asyncio
 import json
-from typing import List, Dict, Optional
-from datetime import datetime
-import anthropic
-import openai
-from pydantic import BaseModel
 
 # API Keys from environment
 import os
+from datetime import datetime
+
+import anthropic
+import openai
 from dotenv import load_dotenv
+from pydantic import BaseModel
 
 load_dotenv()
 
@@ -24,15 +24,15 @@ class QuestionData(BaseModel):
     """Soru verisi modeli"""
 
     metin: str
-    secenekler: Dict[str, str]  # {"A": "...", "B": "...", ...}
+    secenekler: dict[str, str]  # {"A": "...", "B": "...", ...}
     dogru_cevap: str
     sinav_tipi: str  # TYT, AYT
     konu: str
-    alt_konu: Optional[str]
+    alt_konu: str | None
     kazanim: str
     zorluk: str  # easy, medium, hard
     bloom_level: str  # remember, understand, apply, analyze, evaluate, create
-    cozum_adimlari: List[str]
+    cozum_adimlari: list[str]
     sure_tahmini: int  # saniye
 
 
@@ -167,15 +167,14 @@ class HybridQuestionGenerator:
 
         if any(subj in konu_lower for subj in self.technical_subjects):
             return "gpt-5"
-        elif any(subj in konu_lower for subj in self.creative_subjects):
+        if any(subj in konu_lower for subj in self.creative_subjects):
             return "claude"
-        else:
-            # Default: GPT-5 (daha hızlı ve güçlü)
-            return "gpt-5"
+        # Default: GPT-5 (daha hızlı ve güçlü)
+        return "gpt-5"
 
     async def generate_with_gpt5(
         self, konu: str, alt_konu: str, kazanim: str, zorluk: str, bloom_level: str
-    ) -> Dict:
+    ) -> dict:
         """GPT-5 ile soru üretimi"""
         prompt = GPT5_TECHNICAL_PROMPT.format(
             konu=konu,
@@ -212,7 +211,7 @@ class HybridQuestionGenerator:
 
     async def generate_with_claude(
         self, konu: str, alt_konu: str, kazanim: str, zorluk: str, bloom_level: str
-    ) -> Dict:
+    ) -> dict:
         """Claude AI Pro ile soru üretimi"""
         if not self.claude_client:
             print("Claude API key not configured, falling back to GPT-5")
@@ -255,8 +254,8 @@ class HybridQuestionGenerator:
         kazanim: str,
         zorluk: str = "medium",
         bloom_level: str = "apply",
-        force_model: Optional[str] = None,
-    ) -> Dict:
+        force_model: str | None = None,
+    ) -> dict:
         """
         Ana soru üretim fonksiyonu
         BEST PRACTICE: Otomatik model seçimi
@@ -290,8 +289,8 @@ class HybridQuestionGenerator:
         return result
 
     async def generate_batch(
-        self, specifications: List[Dict], concurrent_limit: int = 5
-    ) -> List[Dict]:
+        self, specifications: list[dict], concurrent_limit: int = 5
+    ) -> list[dict]:
         """
         Toplu soru üretimi (paralel)
         BEST PRACTICE: Rate limiting ile API limitleri aşılmaz

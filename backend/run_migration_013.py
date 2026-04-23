@@ -3,9 +3,10 @@
 Run migration 013: Create sorular table
 """
 import asyncio
-import asyncpg
 import logging
 from pathlib import Path
+
+import asyncpg
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

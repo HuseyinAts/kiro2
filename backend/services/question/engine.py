@@ -10,7 +10,6 @@ Bu modul soru uretim sisteminin orkestratoru olarak calisir:
 """
 
 import logging
-from typing import Optional
 
 from models.curriculum import SubjectType
 from models.question_generation import (
@@ -53,7 +52,7 @@ class QuestionGenerationEngine:
         difficulty_level: DifficultyLevel,
         cognitive_level: CognitiveLevel,
         include_visual: bool = False,
-    ) -> Optional[GeneratedQuestion]:
+    ) -> GeneratedQuestion | None:
         """
         Tam bir soru uret (soru + celdiriciler + dogrulama + gorsel)
 

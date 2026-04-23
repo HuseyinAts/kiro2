@@ -3,7 +3,7 @@
 Soru bankası, eğitim materyalleri ve içerik onay/reddetme sistemi
 """
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -41,12 +41,12 @@ async def admin_yetki_kontrolu(
 # ==================== SORU BANKASI CRUD API'LERİ ====================
 
 
-@router.get("/questions", response_model=Dict[str, Any])
+@router.get("/questions", response_model=dict[str, Any])
 async def soru_bankasi_listele(
-    sinav_tipi: Optional[str] = Query(None, description="Sınav türü (TYT, AYT, YDT)"),
-    konu: Optional[str] = Query(None, description="Konu filtresi"),
-    zorluk_seviyesi: Optional[str] = Query(None, description="Zorluk seviyesi"),
-    onay_durumu: Optional[str] = Query(
+    sinav_tipi: str | None = Query(None, description="Sınav türü (TYT, AYT, YDT)"),
+    konu: str | None = Query(None, description="Konu filtresi"),
+    zorluk_seviyesi: str | None = Query(None, description="Zorluk seviyesi"),
+    onay_durumu: str | None = Query(
         None, description="Onay durumu (pending, approved, rejected)"
     ),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
@@ -91,16 +91,16 @@ async def soru_bankasi_listele(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.post("/questions", response_model=Dict[str, Any])
+@router.post("/questions", response_model=dict[str, Any])
 async def soru_ekle(
-    soru_data: Dict[str, Any], current_user: MockUser = Depends(admin_yetki_kontrolu)
+    soru_data: dict[str, Any], current_user: MockUser = Depends(admin_yetki_kontrolu)
 ):
     """Soru bankasına yeni soru ekle"""
     try:
@@ -140,14 +140,14 @@ async def soru_ekle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get("/questions/{soru_id}", response_model=Dict[str, Any])
+@router.get("/questions/{soru_id}", response_model=dict[str, Any])
 async def soru_detay(
     soru_id: str, current_user: MockUser = Depends(admin_yetki_kontrolu)
 ):
@@ -182,17 +182,17 @@ async def soru_detay(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.put("/questions/{soru_id}", response_model=Dict[str, Any])
+@router.put("/questions/{soru_id}", response_model=dict[str, Any])
 async def soru_guncelle(
     soru_id: str,
-    soru_data: Dict[str, Any],
+    soru_data: dict[str, Any],
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
     """Mevcut soruyu güncelle"""
@@ -213,14 +213,14 @@ async def soru_guncelle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.delete("/questions/{soru_id}", response_model=Dict[str, Any])
+@router.delete("/questions/{soru_id}", response_model=dict[str, Any])
 async def soru_sil(
     soru_id: str, current_user: MockUser = Depends(admin_yetki_kontrolu)
 ):
@@ -236,7 +236,7 @@ async def soru_sil(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -246,17 +246,17 @@ async def soru_sil(
 # ==================== EĞİTİM MATERYALİ CRUD API'LERİ ====================
 
 
-@router.get("/educational", response_model=Dict[str, Any])
+@router.get("/educational", response_model=dict[str, Any])
 async def egitim_materyalleri_listele(
-    icerik_turu: Optional[str] = Query(
+    icerik_turu: str | None = Query(
         None, description="İçerik türü (video, article, interactive, quiz)"
     ),
-    konu: Optional[str] = Query(None, description="Konu filtresi"),
-    platform: Optional[str] = Query(
+    konu: str | None = Query(None, description="Konu filtresi"),
+    platform: str | None = Query(
         None, description="Platform filtresi (youtube, khan_academy, eba_tv)"
     ),
-    zorluk_seviyesi: Optional[str] = Query(None, description="Zorluk seviyesi"),
-    onay_durumu: Optional[str] = Query(None, description="Onay durumu"),
+    zorluk_seviyesi: str | None = Query(None, description="Zorluk seviyesi"),
+    onay_durumu: str | None = Query(None, description="Onay durumu"),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
     sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
     current_user: MockUser = Depends(admin_yetki_kontrolu),
@@ -295,16 +295,16 @@ async def egitim_materyalleri_listele(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.post("/educational", response_model=Dict[str, Any])
+@router.post("/educational", response_model=dict[str, Any])
 async def egitim_materyali_ekle(
-    materyal_data: Dict[str, Any],
+    materyal_data: dict[str, Any],
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
     """Yeni eğitim materyali ekle"""
@@ -346,14 +346,14 @@ async def egitim_materyali_ekle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get("/educational/{materyal_id}", response_model=Dict[str, Any])
+@router.get("/educational/{materyal_id}", response_model=dict[str, Any])
 async def egitim_materyali_detay(
     materyal_id: str, current_user: MockUser = Depends(admin_yetki_kontrolu)
 ):
@@ -384,17 +384,17 @@ async def egitim_materyali_detay(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.put("/educational/{materyal_id}", response_model=Dict[str, Any])
+@router.put("/educational/{materyal_id}", response_model=dict[str, Any])
 async def egitim_materyali_guncelle(
     materyal_id: str,
-    materyal_data: Dict[str, Any],
+    materyal_data: dict[str, Any],
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
     """Mevcut eğitim materyalini güncelle"""
@@ -415,14 +415,14 @@ async def egitim_materyali_guncelle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.delete("/educational/{materyal_id}", response_model=Dict[str, Any])
+@router.delete("/educational/{materyal_id}", response_model=dict[str, Any])
 async def egitim_materyali_sil(
     materyal_id: str, current_user: MockUser = Depends(admin_yetki_kontrolu)
 ):
@@ -438,7 +438,7 @@ async def egitim_materyali_sil(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -448,10 +448,10 @@ async def egitim_materyali_sil(
 # ==================== İÇERİK ONAY/REDDETME API'LERİ ====================
 
 
-@router.put("/questions/{soru_id}/approve", response_model=Dict[str, Any])
+@router.put("/questions/{soru_id}/approve", response_model=dict[str, Any])
 async def soru_onay_durumu_guncelle(
     soru_id: str,
-    onay_data: Dict[str, Any],
+    onay_data: dict[str, Any],
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
     """Soru onay durumunu güncelle"""
@@ -485,17 +485,17 @@ async def soru_onay_durumu_guncelle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.put("/educational/{materyal_id}/approve", response_model=Dict[str, Any])
+@router.put("/educational/{materyal_id}/approve", response_model=dict[str, Any])
 async def egitim_materyali_onay_durumu_guncelle(
     materyal_id: str,
-    onay_data: Dict[str, Any],
+    onay_data: dict[str, Any],
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
     """Eğitim materyali onay durumunu güncelle"""
@@ -523,7 +523,7 @@ async def egitim_materyali_onay_durumu_guncelle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -533,9 +533,9 @@ async def egitim_materyali_onay_durumu_guncelle(
 # ==================== TOPLU İÇERİK YÜKLEME API'Sİ ====================
 
 
-@router.post("/questions/bulk-upload", response_model=Dict[str, Any])
+@router.post("/questions/bulk-upload", response_model=dict[str, Any])
 async def toplu_soru_yukle(
-    sorular_data: List[Dict[str, Any]],
+    sorular_data: list[dict[str, Any]],
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
     """Toplu soru yükleme"""
@@ -570,16 +570,16 @@ async def toplu_soru_yukle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.post("/educational/bulk-upload", response_model=Dict[str, Any])
+@router.post("/educational/bulk-upload", response_model=dict[str, Any])
 async def toplu_egitim_materyali_yukle(
-    materyaller_data: List[Dict[str, Any]],
+    materyaller_data: list[dict[str, Any]],
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
     """Toplu eğitim materyali yükleme"""
@@ -614,7 +614,7 @@ async def toplu_egitim_materyali_yukle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -624,7 +624,7 @@ async def toplu_egitim_materyali_yukle(
 # ==================== İÇERİK KATEGORİLENDİRME API'LERİ ====================
 
 
-@router.get("/categories", response_model=Dict[str, Any])
+@router.get("/categories", response_model=dict[str, Any])
 async def icerik_kategorileri_getir(
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
@@ -659,16 +659,16 @@ async def icerik_kategorileri_getir(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.post("/categories", response_model=Dict[str, Any])
+@router.post("/categories", response_model=dict[str, Any])
 async def icerik_kategorisi_ekle(
-    kategori_data: Dict[str, Any],
+    kategori_data: dict[str, Any],
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
     """Yeni içerik kategorisi ekle"""
@@ -695,7 +695,7 @@ async def icerik_kategorisi_ekle(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -705,14 +705,14 @@ async def icerik_kategorisi_ekle(
 # ==================== İÇERİK ARAMA VE FİLTRELEME API'LERİ ====================
 
 
-@router.get("/search", response_model=Dict[str, Any])
+@router.get("/search", response_model=dict[str, Any])
 async def icerik_ara(
     q: str = Query(..., min_length=2, description="Arama terimi"),
-    icerik_turu: Optional[str] = Query(
+    icerik_turu: str | None = Query(
         None, description="İçerik türü (question, educational)"
     ),
-    konu: Optional[str] = Query(None, description="Konu filtresi"),
-    zorluk_seviyesi: Optional[str] = Query(
+    konu: str | None = Query(None, description="Konu filtresi"),
+    zorluk_seviyesi: str | None = Query(
         None, description="Zorluk seviyesi filtresi"
     ),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
@@ -751,14 +751,14 @@ async def icerik_ara(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get("/filter-options", response_model=Dict[str, Any])
+@router.get("/filter-options", response_model=dict[str, Any])
 async def filtre_secenekleri_getir(
     current_user: MockUser = Depends(admin_yetki_kontrolu),
 ):
@@ -792,7 +792,7 @@ async def filtre_secenekleri_getir(
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -802,7 +802,7 @@ async def filtre_secenekleri_getir(
 # ==================== İÇERİK İSTATİSTİKLERİ ====================
 
 
-@router.get("/statistics", response_model=Dict[str, Any])
+@router.get("/statistics", response_model=dict[str, Any])
 async def icerik_istatistikleri(current_user: MockUser = Depends(admin_yetki_kontrolu)):
     """İçerik yönetimi istatistikleri"""
     try:
@@ -835,7 +835,7 @@ async def icerik_istatistikleri(current_user: MockUser = Depends(admin_yetki_kon
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

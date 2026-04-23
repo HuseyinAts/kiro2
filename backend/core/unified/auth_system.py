@@ -296,6 +296,7 @@ class UnifiedAuthManager:
         try:
             if db_session:
                 from sqlalchemy import select
+
                 from models.database import User
 
                 result = await db_session.execute(
@@ -460,6 +461,7 @@ class UnifiedAuthManager:
             # Get user from database
             if db_session:
                 from sqlalchemy import select
+
                 from models.database import User
 
                 result = await db_session.execute(
@@ -501,14 +503,13 @@ class UnifiedAuthManager:
                     authenticated=True,
                     ip_address=ip_address,
                 )
-            else:
-                # SECURITY: Hardcoded test credentials removed
-                # Database session is required for authentication
-                logger.error(
-                    "No database session provided for authentication - cannot authenticate"
-                )
-                self.record_login_attempt(username, ip_address, False)
-                return None
+            # SECURITY: Hardcoded test credentials removed
+            # Database session is required for authentication
+            logger.error(
+                "No database session provided for authentication - cannot authenticate"
+            )
+            self.record_login_attempt(username, ip_address, False)
+            return None
 
         except Exception as e:
             logger.error(f"Authentication error for {username}: {e}")

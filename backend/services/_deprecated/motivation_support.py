@@ -14,7 +14,6 @@ import logging
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -61,9 +60,9 @@ class MotivationState:
     consecutive_incorrect: int  # Ardışık yanlış sayısı
     total_questions: int  # Toplam soru sayısı
     correct_answers: int  # Doğru cevap sayısı
-    milestones_reached: List[str]  # Ulaşılan milestone'lar
-    messages_shown: List[MotivationMessage]  # Gösterilen mesajlar
-    last_message_time: Optional[datetime] = None
+    milestones_reached: list[str]  # Ulaşılan milestone'lar
+    messages_shown: list[MotivationMessage]  # Gösterilen mesajlar
+    last_message_time: datetime | None = None
     motivation_level: MotivationLevel = MotivationLevel.OPTIMAL
 
 
@@ -180,14 +179,13 @@ class MotivationSupportSystem:
         """
         if success_rate < 0.30:
             return MotivationLevel.VERY_LOW
-        elif success_rate < 0.40:
+        if success_rate < 0.40:
             return MotivationLevel.LOW
-        elif success_rate <= 0.80:
+        if success_rate <= 0.80:
             return MotivationLevel.OPTIMAL  # Hedef aralık
-        elif success_rate <= 0.90:
+        if success_rate <= 0.90:
             return MotivationLevel.HIGH
-        else:
-            return MotivationLevel.VERY_HIGH
+        return MotivationLevel.VERY_HIGH
 
     def is_success_rate_optimal(self, state: MotivationState) -> bool:
         """
@@ -211,7 +209,7 @@ class MotivationSupportSystem:
 
     def generate_encouragement_message(
         self, state: MotivationState, is_correct: bool
-    ) -> Optional[MotivationMessage]:
+    ) -> MotivationMessage | None:
         """
         Teşvik mesajı oluştur (pozitif pekiştirme).
 
@@ -286,7 +284,7 @@ class MotivationSupportSystem:
 
     def check_and_celebrate_milestones(
         self, state: MotivationState
-    ) -> Optional[MotivationMessage]:
+    ) -> MotivationMessage | None:
         """
         Milestone'ları kontrol et ve kutla.
 
@@ -392,7 +390,7 @@ class MotivationSupportSystem:
 
     def generate_support_message(
         self, state: MotivationState
-    ) -> Optional[MotivationMessage]:
+    ) -> MotivationMessage | None:
         """
         Motivasyon düştüğünde destek mesajı oluştur.
 
@@ -499,7 +497,7 @@ class MotivationSupportSystem:
             motivation_level=MotivationLevel.OPTIMAL,
         )
 
-    def process_response(self, state: MotivationState, is_correct: bool) -> Dict:
+    def process_response(self, state: MotivationState, is_correct: bool) -> dict:
         """
         Yanıtı işle ve tüm motivasyon mesajlarını oluştur.
 
@@ -539,7 +537,7 @@ class MotivationSupportSystem:
             "is_optimal": self.is_success_rate_optimal(state),
         }
 
-    def get_motivation_summary(self, state: MotivationState) -> Dict:
+    def get_motivation_summary(self, state: MotivationState) -> dict:
         """
         Motivasyon özetini al.
 

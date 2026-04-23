@@ -4,6 +4,7 @@ from __future__ import annotations
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 pytestmark = pytest.mark.skipif(

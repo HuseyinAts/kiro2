@@ -7,8 +7,8 @@ import hashlib
 import json
 import logging
 from datetime import datetime
-from typing import Any, Optional, Dict
 from functools import wraps
+from typing import Any
 
 import redis.asyncio as redis
 from pydantic import BaseModel
@@ -45,9 +45,9 @@ class CacheEntry(BaseModel):
     prompt_hash: str
     model: str
     timestamp: datetime
-    token_count: Optional[int] = None
-    cost: Optional[float] = None
-    metadata: Dict[str, Any] = {}
+    token_count: int | None = None
+    cost: float | None = None
+    metadata: dict[str, Any] = {}
 
 
 class LLMCacheStats(BaseModel):
@@ -86,15 +86,15 @@ class LLMCache:
     - Statistics tracking
     """
 
-    def __init__(self, config: Optional[LLMCacheConfig] = None):
+    def __init__(self, config: LLMCacheConfig | None = None):
         self.config = config or LLMCacheConfig()
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self.stats = LLMCacheStats()
 
         # In-memory fallback cache (LRU with max size)
-        self._memory_cache: Dict[str, CacheEntry] = {}
+        self._memory_cache: dict[str, CacheEntry] = {}
         self._memory_cache_max_size = 100
-        self._memory_cache_access: Dict[str, datetime] = {}
+        self._memory_cache_access: dict[str, datetime] = {}
 
         # Connection status
         self._redis_available = False
@@ -183,7 +183,7 @@ class LLMCache:
 
         return cache_key
 
-    async def get(self, prompt: str, model: str = "default", **kwargs) -> Optional[str]:
+    async def get(self, prompt: str, model: str = "default", **kwargs) -> str | None:
         """
         Get cached LLM response
 
@@ -238,10 +238,10 @@ class LLMCache:
         prompt: str,
         response: str,
         model: str = "default",
-        ttl: Optional[int] = None,
-        token_count: Optional[int] = None,
-        cost: Optional[float] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        ttl: int | None = None,
+        token_count: int | None = None,
+        cost: float | None = None,
+        metadata: dict[str, Any] | None = None,
         **kwargs,
     ) -> bool:
         """
@@ -336,7 +336,7 @@ class LLMCache:
             logger.error(f"Cache invalidation error: {e}")
             return 0
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get comprehensive cache statistics"""
         stats_dict = {
             "total_requests": self.stats.total_requests,
@@ -385,7 +385,7 @@ class LLMCache:
 
 
 def cached_llm(
-    ttl: int = 3600, model: str = "default", cache_instance: Optional[LLMCache] = None
+    ttl: int = 3600, model: str = "default", cache_instance: LLMCache | None = None
 ):
     """
     Decorator for caching LLM function calls
@@ -423,7 +423,7 @@ def cached_llm(
 
 
 # Global cache instance
-_global_llm_cache: Optional[LLMCache] = None
+_global_llm_cache: LLMCache | None = None
 
 
 async def get_llm_cache() -> LLMCache:

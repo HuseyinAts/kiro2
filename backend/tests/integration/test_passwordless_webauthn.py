@@ -4,14 +4,15 @@ Passwordless/WebAuthn Integration Tests - KIRO2 Auth Enhancement
 Task 6.2 gereksinimlerini karsilar.
 """
 
-import pytest
 import base64
 import json
 
+import pytest
+
 from core.passwordless_auth import (
+    PasswordlessAuthEvent,
     PasswordlessAuthService,
     WebAuthnService,
-    PasswordlessAuthEvent,
 )
 
 

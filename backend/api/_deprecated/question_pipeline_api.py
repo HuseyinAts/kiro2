@@ -10,10 +10,10 @@ Endpoints:
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 from pipeline import PipelineOrchestrator
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/question-pipeline", tags=["Question Pipeline"])
 
 # Global orchestrator instance
-_orchestrator: Optional[PipelineOrchestrator] = None
+_orchestrator: PipelineOrchestrator | None = None
 
 
 def get_orchestrator() -> PipelineOrchestrator:
@@ -44,8 +44,8 @@ class GenerateQuestionRequest(BaseModel):
     grade_level: int = Field(11, ge=9, le=12, description="Sınıf seviyesi")
     target_difficulty: str = Field("orta", description="Hedef zorluk: kolay, orta, zor")
     question_type: str = Field("çoktan_seçmeli", description="Soru tipi")
-    correct_answer: Optional[str] = Field(None, description="Doğru cevap (opsiyonel)")
-    context: Optional[str] = Field(None, description="Ek bağlam")
+    correct_answer: str | None = Field(None, description="Doğru cevap (opsiyonel)")
+    context: str | None = Field(None, description="Ek bağlam")
 
     model_config = ConfigDict(json_schema_extra={
         "example": {
@@ -71,26 +71,26 @@ class PipelineStatusResponse(BaseModel):
     """Pipeline durum yanıtı"""
     pipeline_id: str
     status: str
-    current_stage: Optional[str]
+    current_stage: str | None
     progress: float = Field(ge=0, le=1)
     stages_completed: int
-    final_score: Optional[float]
-    decision: Optional[str]
+    final_score: float | None
+    decision: str | None
     total_duration: float
-    errors: List[Dict[str, Any]] = []
+    errors: list[dict[str, Any]] = []
 
 
 class GeneratedQuestionResponse(BaseModel):
     """Üretilen soru yanıtı"""
     pipeline_id: str
-    question_id: Optional[str]
+    question_id: str | None
     question_text: str
-    context: Optional[str]
-    options: List[Dict[str, Any]]
+    context: str | None
+    options: list[dict[str, Any]]
     correct_answer: str
     bloom_level: str
-    irt_parameters: Dict[str, float]
-    quality_scores: Dict[str, float]
+    irt_parameters: dict[str, float]
+    quality_scores: dict[str, float]
     final_score: float
     status: str
     created_at: datetime
@@ -105,11 +105,11 @@ class PipelineMetricsResponse(BaseModel):
     avg_duration: float
     avg_score: float
     questions_per_hour: float
-    stages: List[str]
+    stages: list[str]
 
 
 # In-memory storage (production'da Redis/DB kullanılmalı)
-_generated_questions: Dict[str, Dict] = {}
+_generated_questions: dict[str, dict] = {}
 
 
 # Endpoints
@@ -211,7 +211,7 @@ async def generate_question_sync(
             quality_scores=question.get("stage_scores", {}),
             final_score=result.get("final_score", 0.0),
             status=result.get("decision", "rejected"),
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(UTC)
         )
 
     except HTTPException:
@@ -299,7 +299,7 @@ async def get_generated_question(pipeline_id: str):
             quality_scores=question.get("stage_scores", {}),
             final_score=result.get("final_score", 0.0),
             status=result.get("decision", "rejected"),
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(UTC)
         )
 
     except HTTPException:
@@ -358,11 +358,10 @@ async def cancel_pipeline(
 
         if success:
             return {"message": f"Pipeline {pipeline_id} iptal edildi"}
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail="Pipeline iptal edilemedi (tamamlanmış veya bulunamadı)"
-            )
+        raise HTTPException(
+            status_code=400,
+            detail="Pipeline iptal edilemedi (tamamlanmış veya bulunamadı)"
+        )
 
     except HTTPException:
         raise

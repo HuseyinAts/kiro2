@@ -6,10 +6,10 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-import numpy as np
-from typing import Optional, List, Tuple
 from dataclasses import dataclass
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 @dataclass
@@ -122,8 +122,7 @@ class FourParameterIRT:
 
         if response == 1:
             return prob
-        else:
-            return 1 - prob
+        return 1 - prob
 
     def log_likelihood(self, theta: float, response: int) -> float:
         """Calculate log-likelihood"""
@@ -147,10 +146,10 @@ class ItemCharacteristicCurve:
 
     def plot(
         self,
-        theta_range: Tuple[float, float] = (-4, 4),
+        theta_range: tuple[float, float] = (-4, 4),
         num_points: int = 200,
-        title: Optional[str] = None,
-        save_path: Optional[str] = None,
+        title: str | None = None,
+        save_path: str | None = None,
     ) -> plt.Figure:
         """
         Plot Item Characteristic Curve
@@ -214,14 +213,13 @@ class ItemCharacteristicCurve:
 
         if a < 0.5:
             return "Very Low"
-        elif a < 1.0:
+        if a < 1.0:
             return "Low"
-        elif a < 1.5:
+        if a < 1.5:
             return "Moderate"
-        elif a < 2.0:
+        if a < 2.0:
             return "High"
-        else:
-            return "Very High"
+        return "Very High"
 
 
 class TestInformationFunction:
@@ -230,7 +228,7 @@ class TestInformationFunction:
     Aggregates information from multiple items
     """
 
-    def __init__(self, irt_models: List[FourParameterIRT]):
+    def __init__(self, irt_models: list[FourParameterIRT]):
         """
         Initialize TIF
 
@@ -291,10 +289,10 @@ class TestInformationFunction:
 
     def plot(
         self,
-        theta_range: Tuple[float, float] = (-4, 4),
+        theta_range: tuple[float, float] = (-4, 4),
         num_points: int = 200,
-        title: Optional[str] = None,
-        save_path: Optional[str] = None,
+        title: str | None = None,
+        save_path: str | None = None,
     ) -> plt.Figure:
         """
         Plot Test Information Function
@@ -339,7 +337,7 @@ class TestInformationFunction:
 
     def get_optimal_measurement_range(
         self, min_reliability: float = 0.7
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """
         Find ability range where test is most reliable
 
@@ -371,7 +369,7 @@ class IRTModel:
 
     @staticmethod
     def estimate_initial_parameters(
-        responses: List[int], thetas: Optional[List[float]] = None
+        responses: list[int], thetas: list[float] | None = None
     ) -> IRTParameters:
         """
         Estimate initial IRT parameters from response data
@@ -454,11 +452,10 @@ class IRTModel:
         """
         if b < -1.5:
             return "Very Easy"
-        elif b < -0.5:
+        if b < -0.5:
             return "Easy"
-        elif b < 0.5:
+        if b < 0.5:
             return "Medium"
-        elif b < 1.5:
+        if b < 1.5:
             return "Hard"
-        else:
-            return "Very Hard"
+        return "Very Hard"

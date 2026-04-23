@@ -7,9 +7,9 @@ Bu servis matematik problemlerinin adım adım çözümlerini oluşturur ve yön
 
 import logging
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, List, Optional
 from datetime import datetime
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -44,13 +44,13 @@ class MathSolutionStep:
     description: str
     math_expression: str  # LaTeX formatında
     explanation: str
-    visual_aids: Optional[List[str]] = None  # Görsel yardımcılar (URL'ler)
-    color_coding: Optional[Dict[str, str]] = None  # Renk kodlama
-    hints: List[str] = field(default_factory=list)  # İpuçları (3 seviye)
-    common_errors: List[str] = field(default_factory=list)  # Yaygın hatalar
+    visual_aids: list[str] | None = None  # Görsel yardımcılar (URL'ler)
+    color_coding: dict[str, str] | None = None  # Renk kodlama
+    hints: list[str] = field(default_factory=list)  # İpuçları (3 seviye)
+    common_errors: list[str] = field(default_factory=list)  # Yaygın hatalar
     duration_estimate_seconds: int = 30  # Tahmini süre
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Dictionary'e dönüştür"""
         return {
             "step_number": self.step_number,
@@ -75,14 +75,14 @@ class MathSolution:
     problem_statement: str
     problem_type: str  # algebra, geometry, calculus, etc.
     difficulty_level: DifficultyLevel
-    steps: List[MathSolutionStep]
+    steps: list[MathSolutionStep]
     total_duration_estimate_seconds: int
-    prerequisites: List[str] = field(default_factory=list)  # Ön koşul konular
-    related_concepts: List[str] = field(default_factory=list)  # İlgili kavramlar
-    alternative_methods: List[str] = field(default_factory=list)  # Alternatif yöntemler
+    prerequisites: list[str] = field(default_factory=list)  # Ön koşul konular
+    related_concepts: list[str] = field(default_factory=list)  # İlgili kavramlar
+    alternative_methods: list[str] = field(default_factory=list)  # Alternatif yöntemler
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Dictionary'e dönüştür"""
         return {
             "problem_id": self.problem_id,
@@ -103,7 +103,7 @@ class MathSolutionStepService:
     """Matematik adım adım çözüm servisi"""
 
     def __init__(self):
-        self.solutions_cache: Dict[str, MathSolution] = {}
+        self.solutions_cache: dict[str, MathSolution] = {}
         logger.info("MathSolutionStepService initialized")
 
     def generate_solution(
@@ -536,7 +536,7 @@ class MathSolutionStepService:
             alternative_methods=[],
         )
 
-    def get_step(self, problem_id: str, step_number: int) -> Optional[MathSolutionStep]:
+    def get_step(self, problem_id: str, step_number: int) -> MathSolutionStep | None:
         """Belirli bir adımı getir"""
         solution = self.solutions_cache.get(problem_id)
         if not solution:
@@ -550,7 +550,7 @@ class MathSolutionStepService:
 
     def get_hint(
         self, problem_id: str, step_number: int, hint_level: int = 1
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Belirli bir adım için ipucu getir
 

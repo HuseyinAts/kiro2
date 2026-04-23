@@ -9,14 +9,13 @@ from __future__ import annotations
 
 import ast
 import re
-from typing import List, Optional, Set
 
 from .base import BaseHook
 from .models import (
-    QualityCheckResult,
-    HookConfig,
-    ExitCode,
     DocstringInfo,
+    ExitCode,
+    HookConfig,
+    QualityCheckResult,
 )
 
 
@@ -39,7 +38,7 @@ class DocstringHook(BaseHook):
     RETURNS_PATTERN = re.compile(r"^\s*Returns:\s*$", re.MULTILINE)
     PARAM_PATTERN = re.compile(r"^\s+(\w+)(?:\s*\([^)]+\))?:\s*.+$", re.MULTILINE)
 
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Validate docstrings in files.
 
@@ -56,16 +55,16 @@ class DocstringHook(BaseHook):
             return self._create_success_result(0, self._stop_timer())
 
         # Analyze all files
-        all_functions: List[DocstringInfo] = []
-        errors: List[str] = []
-        warnings: List[str] = []
+        all_functions: list[DocstringInfo] = []
+        errors: list[str] = []
+        warnings: list[str] = []
 
         for file_path in python_files:
             try:
                 file_info = self._analyze_file(file_path)
                 all_functions.extend(file_info)
             except Exception as e:
-                warnings.append(f"Could not analyze {file_path}: {str(e)}")
+                warnings.append(f"Could not analyze {file_path}: {e!s}")
 
         # Calculate coverage
         total = len(all_functions)
@@ -107,12 +106,12 @@ class DocstringHook(BaseHook):
             files_checked=len(python_files)
         )
 
-    def _analyze_file(self, file_path: str) -> List[DocstringInfo]:
+    def _analyze_file(self, file_path: str) -> list[DocstringInfo]:
         """Analyze a single file for docstrings."""
-        functions: List[DocstringInfo] = []
+        functions: list[DocstringInfo] = []
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 source = f.read()
 
             tree = ast.parse(source)
@@ -144,7 +143,7 @@ class DocstringHook(BaseHook):
         docstring = ast.get_docstring(node)
 
         # Get function parameters (excluding self, cls)
-        params: Set[str] = set()
+        params: set[str] = set()
         for arg in node.args.args:
             if arg.arg not in ("self", "cls"):
                 params.add(arg.arg)
@@ -178,8 +177,8 @@ class DocstringHook(BaseHook):
 
 
 async def run_docstring_check(
-    files: List[str],
-    config: Optional[HookConfig] = None
+    files: list[str],
+    config: HookConfig | None = None
 ) -> QualityCheckResult:
     """
     Convenience function to run docstring validation.

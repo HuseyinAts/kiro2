@@ -1,5 +1,4 @@
 ﻿
-# -*- coding: utf-8 -*-
 """
 End-to-End Platform Test Suite
 KapsamlÄ± platform entegrasyon testleri

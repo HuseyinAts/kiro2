@@ -19,7 +19,6 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 try:
     import chromadb
@@ -101,7 +100,7 @@ class DuplicateDetectionService:
             "CHROMADB_PERSIST_DIR", "./vector_db"
         )
         self.collection_name = collection_name
-        self._client: Optional["chromadb.Client"] = None
+        self._client: chromadb.Client | None = None
         self._collection = None
         self._embedding_model = None
         self._initialized = False
@@ -198,8 +197,7 @@ class DuplicateDetectionService:
                     distance = results["distances"][0][i] if results.get("distances") else 1.0
                     similarity = 1 - distance
 
-                    if similarity > max_similarity:
-                        max_similarity = similarity
+                    max_similarity = max(max_similarity, similarity)
 
                     doc_id = results["ids"][0][i] if results.get("ids") else None
                     metadata = results["metadatas"][0][i] if results.get("metadatas") else {}
@@ -237,7 +235,7 @@ class DuplicateDetectionService:
                 status=DuplicateStatus.UNIQUE,
                 is_duplicate=False,
                 similarity_score=0.0,
-                recommendation=f"Error: {str(e)}",
+                recommendation=f"Error: {e!s}",
                 can_add=False
             )
 
@@ -346,7 +344,7 @@ class DuplicateDetectionService:
 
         except Exception as e:
             logger.error(f"Add failed: {e}")
-            check_result.recommendation = f"Ekleme hatası: {str(e)}"
+            check_result.recommendation = f"Ekleme hatası: {e!s}"
             return False, "", check_result
 
     async def merge_duplicates(
@@ -439,7 +437,7 @@ class DuplicateDetectionService:
                 success=False,
                 merged_id=primary_id,
                 merged_metadata={},
-                message=f"Merge error: {str(e)}"
+                message=f"Merge error: {e!s}"
             )
 
     def _merge_metadata(
@@ -567,7 +565,7 @@ class DuplicateDetectionService:
 
 
 # Singleton instance
-_duplicate_service: Optional[DuplicateDetectionService] = None
+_duplicate_service: DuplicateDetectionService | None = None
 
 
 def get_duplicate_service(

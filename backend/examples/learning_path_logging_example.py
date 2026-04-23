@@ -5,13 +5,15 @@ P1.9: Error Tracking & Structured Logging
 This file shows how to integrate enhanced logging into Learning Path API
 """
 
+import time
+
 from fastapi import APIRouter, HTTPException
+
 from core.learning_path_logger import (
+    ErrorCategory,
     get_learning_path_logger,
     track_operation,
-    ErrorCategory,
 )
-import time
 
 router = APIRouter(prefix="/api/learning-path", tags=["Learning Path"])
 logger = get_learning_path_logger(__name__)
@@ -312,7 +314,7 @@ async def simulate_ai_agent_call(student_id: str, subject: str):
 
 async def get_from_cache(subject: str, difficulty: str):
     """Simulate cache get"""
-    return None  # Cache miss
+    return  # Cache miss
 
 
 async def search_youtube_api(subject: str, difficulty: str):
@@ -322,7 +324,6 @@ async def search_youtube_api(subject: str, difficulty: str):
 
 async def set_cache(subject: str, difficulty: str, data):
     """Simulate cache set"""
-    pass
 
 
 def calculate_quiz_score(quiz_id: str, answers: list) -> int:
@@ -332,7 +333,6 @@ def calculate_quiz_score(quiz_id: str, answers: list) -> int:
 
 async def update_progress_in_db(path_id, node_id, progress, completed):
     """Simulate database update"""
-    pass
 
 
 async def create_ai_path(student_id: str, subject: str):

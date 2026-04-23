@@ -5,15 +5,17 @@ NO MOCKS - Pure business logic testing
 Coverage target: 80%+ for algorithms
 """
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
+
 from algorithms.turkish_optimized_fsrs import (
-    TurkishOptimizedFSRS,
+    CulturalPeriod,
     FSRSCard,
     FSRSGrade,
     FSRSSchedule,
     StudentContext,
-    CulturalPeriod,
+    TurkishOptimizedFSRS,
 )
 
 

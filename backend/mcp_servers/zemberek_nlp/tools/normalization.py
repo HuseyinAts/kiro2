@@ -5,9 +5,9 @@ Turkce metin normalizasyonu - informal -> formal
 Supports both JPype (direct Zemberek access) and HTTP backend.
 """
 
-import re
 import logging
-from typing import Any, Dict, List, Tuple
+import re
+from typing import Any
 
 from .base import BaseToolHandler
 
@@ -163,7 +163,7 @@ class NormalizationHandler(BaseToolHandler):
 
     tool_name = "normalization"
 
-    async def _call_jpype(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_jpype(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Normalize text using JPype bridge.
 
@@ -176,7 +176,7 @@ class NormalizationHandler(BaseToolHandler):
         if not self.bridge:
             raise RuntimeError("JPype bridge not initialized")
 
-        changes: List[Dict[str, str]] = []
+        changes: list[dict[str, str]] = []
         normalized = text
 
         # Try JPype normalization first
@@ -205,7 +205,7 @@ class NormalizationHandler(BaseToolHandler):
             "change_count": len(changes),
         }
 
-    async def _call_backend(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_backend(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Normalize Turkish text
 
@@ -215,7 +215,7 @@ class NormalizationHandler(BaseToolHandler):
         Returns:
             NormalizationResult as dictionary
         """
-        changes: List[Dict[str, str]] = []
+        changes: list[dict[str, str]] = []
         normalized = text
 
         # Try backend normalization first
@@ -246,7 +246,7 @@ class NormalizationHandler(BaseToolHandler):
 
     def _apply_normalizations(
         self, text: str
-    ) -> Tuple[str, List[Dict[str, str]]]:
+    ) -> tuple[str, list[dict[str, str]]]:
         """Apply all normalization rules"""
         changes = []
         normalized = text
@@ -271,7 +271,7 @@ class NormalizationHandler(BaseToolHandler):
 
     def _fix_repeated_chars(
         self, text: str
-    ) -> Tuple[str, List[Dict[str, str]]]:
+    ) -> tuple[str, list[dict[str, str]]]:
         """Fix repeated characters (çoooook -> çok)"""
         changes = []
 
@@ -296,7 +296,7 @@ class NormalizationHandler(BaseToolHandler):
 
     def _convert_informal(
         self, text: str
-    ) -> Tuple[str, List[Dict[str, str]]]:
+    ) -> tuple[str, list[dict[str, str]]]:
         """Convert informal text to formal"""
         changes = []
         normalized = text
@@ -326,7 +326,7 @@ class NormalizationHandler(BaseToolHandler):
 
     def _convert_emojis(
         self, text: str
-    ) -> Tuple[str, List[Dict[str, str]]]:
+    ) -> tuple[str, list[dict[str, str]]]:
         """Convert emoji/emoticons to text"""
         changes = []
         normalized = text
@@ -344,7 +344,7 @@ class NormalizationHandler(BaseToolHandler):
 
     def _fix_turkish_case(
         self, text: str
-    ) -> Tuple[str, List[Dict[str, str]]]:
+    ) -> tuple[str, list[dict[str, str]]]:
         """Apply Turkish uppercase/lowercase rules"""
         changes = []
 

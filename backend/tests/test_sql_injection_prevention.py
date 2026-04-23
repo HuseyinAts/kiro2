@@ -9,19 +9,18 @@ Tests:
 - Middleware blocking behavior
 - Audit logging integration
 """
+from unittest.mock import Mock, patch
+
 import pytest
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
-from unittest.mock import Mock, patch
 
 from core.sql_injection_prevention import (
+    ParameterizedQueryValidator,
     SQLInjectionDetector,
     SQLInjectionPreventionMiddleware,
-    ParameterizedQueryValidator,
     SQLInjectionSeverity,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

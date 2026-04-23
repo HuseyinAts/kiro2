@@ -15,17 +15,17 @@ Sınıflar:
 Model: YOLO11m (mAP@50: 97.5%)
 """
 
+import asyncio
+import io
 import logging
-from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from enum import Enum
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+from typing import Any
 
 # PIL for image processing
 from PIL import Image
-import io
 
 logger = logging.getLogger(__name__)
 
@@ -48,24 +48,24 @@ class BoundingBox:
     y1: int
     x2: int
     y2: int
-    
+
     @property
     def width(self) -> int:
         return self.x2 - self.x1
-    
+
     @property
     def height(self) -> int:
         return self.y2 - self.y1
-    
+
     @property
-    def center(self) -> Tuple[int, int]:
+    def center(self) -> tuple[int, int]:
         return ((self.x1 + self.x2) // 2, (self.y1 + self.y2) // 2)
-    
+
     @property
     def area(self) -> int:
         return self.width * self.height
-    
-    def to_dict(self) -> Dict[str, int]:
+
+    def to_dict(self) -> dict[str, int]:
         return {
             "x1": self.x1,
             "y1": self.y1,
@@ -83,8 +83,8 @@ class Detection:
     class_name: str
     confidence: float
     bbox: BoundingBox
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "class_id": self.class_id,
             "class_name": self.class_name,
@@ -96,15 +96,15 @@ class Detection:
 @dataclass
 class PageDetectionResult:
     """Sayfa tespit sonucu"""
-    image_path: Optional[str]
+    image_path: str | None
     image_width: int
     image_height: int
-    detections: List[Detection]
-    questions: List[Detection]
-    metadata: Dict[str, Any]
+    detections: list[Detection]
+    questions: list[Detection]
+    metadata: dict[str, Any]
     processing_time_ms: float
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "image_path": self.image_path,
             "image_size": {
@@ -131,7 +131,7 @@ class YOLOQuestionDetector:
         # Async kullanım
         result = await detector.detect_async("sayfa.png")
     """
-    
+
     CLASS_NAMES = {
         0: "soru",
         1: "konu",
@@ -141,10 +141,10 @@ class YOLOQuestionDetector:
         5: "cozum",
         6: "kitap"
     }
-    
+
     def __init__(
         self,
-        model_path: Optional[str] = None,
+        model_path: str | None = None,
         confidence_threshold: float = 0.25,
         iou_threshold: float = 0.45,
         device: str = "auto"
@@ -161,36 +161,36 @@ class YOLOQuestionDetector:
         self.device = device
         self.model = None
         self._executor = ThreadPoolExecutor(max_workers=2)
-        
+
         # Model yolu
         if model_path is None:
             # Proje kök dizinini bul
             backend_dir = Path(__file__).parent.parent
             project_root = backend_dir.parent
             model_path = project_root / "models" / "yolo11_best.pt"
-        
+
         self.model_path = Path(model_path)
-        
+
         # Model'i lazy load et
         self._model_loaded = False
-    
+
     def _load_model(self) -> None:
         """YOLO modelini yükle (lazy loading)"""
         if self._model_loaded:
             return
-        
+
         try:
             from ultralytics import YOLO
-            
+
             if not self.model_path.exists():
                 raise FileNotFoundError(
                     f"YOLO model bulunamadı: {self.model_path}\n"
                     "Lütfen modeli 'models/yolo11_best.pt' konumuna kopyalayın."
                 )
-            
+
             logger.info(f"YOLO model yükleniyor: {self.model_path}")
             self.model = YOLO(str(self.model_path))
-            
+
             # Device ayarı
             if self.device == "auto":
                 import torch
@@ -200,21 +200,21 @@ class YOLOQuestionDetector:
                     self.device = "mps"
                 else:
                     self.device = "cpu"
-            
+
             logger.info(f"YOLO model yüklendi. Device: {self.device}")
             self._model_loaded = True
-            
+
         except ImportError:
             raise ImportError(
                 "Ultralytics kütüphanesi bulunamadı. "
                 "Lütfen 'pip install ultralytics' komutunu çalıştırın."
             )
-    
+
     def detect(
         self,
         image_source: str | Path | Image.Image | bytes,
         save_result: bool = False,
-        output_dir: Optional[str] = None
+        output_dir: str | None = None
     ) -> PageDetectionResult:
         """
         Görsel üzerinde soru tespiti yap.
@@ -229,10 +229,10 @@ class YOLOQuestionDetector:
         """
         import time
         start_time = time.time()
-        
+
         # Model yükle
         self._load_model()
-        
+
         # Görsel yükle
         image_path = None
         if isinstance(image_source, (str, Path)):
@@ -244,9 +244,9 @@ class YOLOQuestionDetector:
             image = image_source
         else:
             raise ValueError(f"Desteklenmeyen görsel türü: {type(image_source)}")
-        
+
         img_width, img_height = image.size
-        
+
         # YOLO inference
         results = self.model.predict(
             source=image,
@@ -257,7 +257,7 @@ class YOLOQuestionDetector:
             save=save_result,
             project=output_dir if save_result else None
         )
-        
+
         # Sonuçları parse et
         detections = []
         questions = []
@@ -269,18 +269,18 @@ class YOLOQuestionDetector:
             "cevaplar": None,
             "cozum": None
         }
-        
+
         if results and len(results) > 0:
             result = results[0]
-            
+
             if result.boxes is not None:
                 for box in result.boxes:
                     class_id = int(box.cls[0])
                     confidence = float(box.conf[0])
                     x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
-                    
+
                     class_name = self.CLASS_NAMES.get(class_id, f"unknown_{class_id}")
-                    
+
                     detection = Detection(
                         class_id=class_id,
                         class_name=class_name,
@@ -288,7 +288,7 @@ class YOLOQuestionDetector:
                         bbox=BoundingBox(x1, y1, x2, y2)
                     )
                     detections.append(detection)
-                    
+
                     # Sınıflara göre ayır
                     if class_id == DetectionClass.SORU.value:
                         questions.append(detection)
@@ -304,12 +304,12 @@ class YOLOQuestionDetector:
                         metadata["cozum"] = detection.to_dict()
                     elif class_id == DetectionClass.KITAP.value:
                         metadata["kitap"] = detection.to_dict()
-        
+
         # Soruları y koordinatına göre sırala (yukarıdan aşağıya)
         questions.sort(key=lambda q: q.bbox.y1)
-        
+
         processing_time = (time.time() - start_time) * 1000
-        
+
         return PageDetectionResult(
             image_path=image_path,
             image_width=img_width,
@@ -319,12 +319,12 @@ class YOLOQuestionDetector:
             metadata=metadata,
             processing_time_ms=processing_time
         )
-    
+
     async def detect_async(
         self,
         image_source: str | Path | Image.Image | bytes,
         save_result: bool = False,
-        output_dir: Optional[str] = None
+        output_dir: str | None = None
     ) -> PageDetectionResult:
         """
         Async soru tespiti.
@@ -342,13 +342,13 @@ class YOLOQuestionDetector:
             self._executor,
             lambda: self.detect(image_source, save_result, output_dir)
         )
-    
+
     def detect_batch(
         self,
-        image_sources: List[str | Path],
+        image_sources: list[str | Path],
         save_results: bool = False,
-        output_dir: Optional[str] = None
-    ) -> List[PageDetectionResult]:
+        output_dir: str | None = None
+    ) -> list[PageDetectionResult]:
         """
         Birden fazla görsel için toplu tespit.
         
@@ -377,15 +377,15 @@ class YOLOQuestionDetector:
                     metadata={},
                     processing_time_ms=0
                 ))
-        
+
         return results
-    
+
     async def detect_batch_async(
         self,
-        image_sources: List[str | Path],
+        image_sources: list[str | Path],
         save_results: bool = False,
-        output_dir: Optional[str] = None
-    ) -> List[PageDetectionResult]:
+        output_dir: str | None = None
+    ) -> list[PageDetectionResult]:
         """
         Async toplu tespit.
         """
@@ -394,13 +394,13 @@ class YOLOQuestionDetector:
             for source in image_sources
         ]
         return await asyncio.gather(*tasks, return_exceptions=True)
-    
+
     def crop_questions(
         self,
         image_source: str | Path | Image.Image,
-        result: Optional[PageDetectionResult] = None,
+        result: PageDetectionResult | None = None,
         padding: int = 10
-    ) -> List[Tuple[Image.Image, Detection]]:
+    ) -> list[tuple[Image.Image, Detection]]:
         """
         Tespit edilen soruları kırp.
         
@@ -417,30 +417,30 @@ class YOLOQuestionDetector:
             image = Image.open(image_source)
         else:
             image = image_source
-        
+
         # Tespit yap
         if result is None:
             result = self.detect(image)
-        
+
         cropped = []
         for question in result.questions:
             bbox = question.bbox
-            
+
             # Padding ekle
             x1 = max(0, bbox.x1 - padding)
             y1 = max(0, bbox.y1 - padding)
             x2 = min(image.width, bbox.x2 + padding)
             y2 = min(image.height, bbox.y2 + padding)
-            
+
             cropped_img = image.crop((x1, y1, x2, y2))
             cropped.append((cropped_img, question))
-        
+
         return cropped
-    
-    def get_model_info(self) -> Dict[str, Any]:
+
+    def get_model_info(self) -> dict[str, Any]:
         """Model bilgilerini döndür"""
         self._load_model()
-        
+
         return {
             "model_path": str(self.model_path),
             "model_loaded": self._model_loaded,
@@ -453,11 +453,11 @@ class YOLOQuestionDetector:
 
 
 # Singleton instance
-_detector_instance: Optional[YOLOQuestionDetector] = None
+_detector_instance: YOLOQuestionDetector | None = None
 
 
 def get_question_detector(
-    model_path: Optional[str] = None,
+    model_path: str | None = None,
     confidence_threshold: float = 0.25,
     **kwargs
 ) -> YOLOQuestionDetector:
@@ -472,14 +472,14 @@ def get_question_detector(
         YOLOQuestionDetector: Detector instance
     """
     global _detector_instance
-    
+
     if _detector_instance is None:
         _detector_instance = YOLOQuestionDetector(
             model_path=model_path,
             confidence_threshold=confidence_threshold,
             **kwargs
         )
-    
+
     return _detector_instance
 
 

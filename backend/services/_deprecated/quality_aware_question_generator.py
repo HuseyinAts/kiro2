@@ -10,9 +10,8 @@ Bu modül, Wave 2B değerlendirme modüllerini soru üretim sürecine entegre ed
 - Akıllı yeniden deneme
 """
 
-import logging
-from typing import Dict, List, Optional
 import asyncio
+import logging
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -33,7 +32,7 @@ class QualityAwareQuestionGenerator:
 
     def __init__(
         self,
-        osym_reference_questions: Optional[List[Dict]] = None,
+        osym_reference_questions: list[dict] | None = None,
         enable_bertscore: bool = True,
         enable_benchmark: bool = True,
         quality_threshold: float = 0.80,
@@ -110,10 +109,10 @@ class QualityAwareQuestionGenerator:
         subject: str,
         topic: str,
         difficulty: str = "orta",
-        bloom_level: Optional[str] = None,
+        bloom_level: str | None = None,
         max_retries: int = 3,
         evaluation_stage: str = "standard",
-    ) -> Optional[Dict]:
+    ) -> dict | None:
         """
         Kalite kontrolü ile soru üret
 
@@ -196,19 +195,18 @@ class QualityAwareQuestionGenerator:
                 f"⚠️  Max retries reached. Using best question: " f"{best_score:.3f}"
             )
             return best_question
-        else:
-            logger.error(
-                f"✗ Failed to generate quality question after {max_retries} attempts. "
-                f"Best score: {best_score:.3f}"
-            )
-            return None
+        logger.error(
+            f"✗ Failed to generate quality question after {max_retries} attempts. "
+            f"Best score: {best_score:.3f}"
+        )
+        return None
 
     async def _evaluate_question(
         self,
-        question: Dict,
+        question: dict,
         stage: str = "standard",
-        expected_bloom: Optional[str] = None,
-    ) -> Optional[Dict]:
+        expected_bloom: str | None = None,
+    ) -> dict | None:
         """Soruyu değerlendir"""
         if not self.evaluator:
             # Evaluator yoksa basit kontrol
@@ -259,7 +257,7 @@ class QualityAwareQuestionGenerator:
             logger.error(f"Evaluation error: {e}")
             return None
 
-    def _bloom_name_to_number(self, name: str) -> Optional[int]:
+    def _bloom_name_to_number(self, name: str) -> int | None:
         """Bloom isimden numaraya"""
         mapping = {
             "hatırlama": 1,
@@ -272,8 +270,8 @@ class QualityAwareQuestionGenerator:
         return mapping.get(name.lower())
 
     async def generate_batch_with_quality(
-        self, requirements: List[Dict], evaluation_stage: str = "standard"
-    ) -> Dict:
+        self, requirements: list[dict], evaluation_stage: str = "standard"
+    ) -> dict:
         """
         Toplu kaliteli soru üret
 
@@ -350,8 +348,8 @@ async def generate_single_quality_question(
     subject: str,
     topic: str,
     difficulty: str = "orta",
-    osym_reference: Optional[List[Dict]] = None,
-) -> Optional[Dict]:
+    osym_reference: list[dict] | None = None,
+) -> dict | None:
     """
     Tek kaliteli soru üret (kolaylık fonksiyonu)
 

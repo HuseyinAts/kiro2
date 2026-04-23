@@ -12,7 +12,6 @@ Features:
 
 import os
 import time
-from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel, Field
@@ -32,7 +31,7 @@ class VideoRecommendationRequest(BaseModel):
     """Video öneri isteği"""
 
     subject: str = Field(..., description="Ders adı (örn: matematik, fizik, kimya)")
-    topic: Optional[str] = Field(None, description="Konu başlığı (opsiyonel)")
+    topic: str | None = Field(None, description="Konu başlığı (opsiyonel)")
     exam_type: str = Field(default="TYT", description="Sınav tipi (TYT, AYT, LGS)")
     max_results: int = Field(
         default=5, ge=1, le=20, description="Maksimum sonuç sayısı"
@@ -46,9 +45,9 @@ class YouTubeVideo(BaseModel):
     title: str
     channel_name: str
     thumbnail_url: str
-    duration: Optional[str] = None
-    view_count: Optional[int] = None
-    published_at: Optional[str] = None
+    duration: str | None = None
+    view_count: int | None = None
+    published_at: str | None = None
 
 
 class VideoRecommendationResponse(BaseModel):
@@ -56,7 +55,7 @@ class VideoRecommendationResponse(BaseModel):
 
     subject: str
     exam_type: str
-    videos: List[YouTubeVideo]
+    videos: list[YouTubeVideo]
     response_time_ms: float
     source: str  # "youtube_api" or "curated_fallback"
     cached: bool = False
@@ -133,20 +132,19 @@ class SimpleCache:
     """Basit in-memory cache"""
 
     def __init__(self, ttl_seconds: int = 3600):
-        self.cache: Dict[str, Dict] = {}
+        self.cache: dict[str, dict] = {}
         self.ttl = ttl_seconds
 
-    def get(self, key: str) -> Optional[Dict]:
+    def get(self, key: str) -> dict | None:
         """Cache'den değer al"""
         if key in self.cache:
             entry = self.cache[key]
             if time.time() - entry["timestamp"] < self.ttl:
                 return entry["data"]
-            else:
-                del self.cache[key]
+            del self.cache[key]
         return None
 
-    def set(self, key: str, value: Dict):
+    def set(self, key: str, value: dict):
         """Cache'e değer kaydet"""
         self.cache[key] = {"data": value, "timestamp": time.time()}
 
@@ -162,7 +160,7 @@ video_cache = SimpleCache(ttl_seconds=3600)  # 1 saat cache
 # ==================== HELPER FUNCTIONS ====================
 
 
-def get_curated_videos(subject: str, max_results: int = 5) -> List[YouTubeVideo]:
+def get_curated_videos(subject: str, max_results: int = 5) -> list[YouTubeVideo]:
     """Curated video listesi döndür"""
     subject_lower = subject.lower()
 
@@ -194,8 +192,8 @@ def get_curated_videos(subject: str, max_results: int = 5) -> List[YouTubeVideo]
 
 
 async def fetch_from_youtube_api(
-    subject: str, topic: Optional[str], exam_type: str, max_results: int
-) -> List[YouTubeVideo]:
+    subject: str, topic: str | None, exam_type: str, max_results: int
+) -> list[YouTubeVideo]:
     """YouTube Data API v3'ten video getir"""
     api_key = os.getenv("YOUTUBE_API_KEY", "")
 
@@ -321,7 +319,7 @@ async def search_videos(
     matching_subject = None
     q_lower = q.lower()
 
-    for subject_key in CURATED_VIDEOS.keys():
+    for subject_key in CURATED_VIDEOS:
         if subject_key in q_lower or q_lower in subject_key:
             matching_subject = subject_key
             break

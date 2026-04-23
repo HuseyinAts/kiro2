@@ -5,21 +5,21 @@ Service for university search, base score analysis, and recommendations
 """
 
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, func, and_, or_, desc, asc
+from sqlalchemy import and_, asc, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.university import (
-    University,
     Department,
-    UniversityProgram,
     ProgramScoreHistory,
-    UserUniversityPreference,
-    UniversityType,
     ProgramType,
     ScoreType,
+    University,
+    UniversityProgram,
+    UniversityType,
+    UserUniversityPreference,
 )
 
 
@@ -51,7 +51,7 @@ class UniversityAdvisoryService:
 
         return university
 
-    async def get_university(self, university_id: UUID) -> Optional[University]:
+    async def get_university(self, university_id: UUID) -> University | None:
         """Get university by ID"""
         result = await self.db.execute(
             select(University).where(University.id == university_id)
@@ -60,12 +60,12 @@ class UniversityAdvisoryService:
 
     async def search_universities(
         self,
-        query: Optional[str] = None,
-        city: Optional[str] = None,
-        university_type: Optional[UniversityType] = None,
+        query: str | None = None,
+        city: str | None = None,
+        university_type: UniversityType | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> List[University]:
+    ) -> list[University]:
         """
         Search universities with filters
 
@@ -94,7 +94,7 @@ class UniversityAdvisoryService:
         result = await self.db.execute(stmt)
         return result.scalars().all()
 
-    async def get_all_cities(self) -> List[str]:
+    async def get_all_cities(self) -> list[str]:
         """Get all cities with universities"""
         result = await self.db.execute(
             select(University.city)
@@ -120,7 +120,7 @@ class UniversityAdvisoryService:
 
         return department
 
-    async def get_department(self, department_id: UUID) -> Optional[Department]:
+    async def get_department(self, department_id: UUID) -> Department | None:
         """Get department by ID"""
         result = await self.db.execute(
             select(Department).where(Department.id == department_id)
@@ -129,11 +129,11 @@ class UniversityAdvisoryService:
 
     async def search_departments(
         self,
-        query: Optional[str] = None,
-        degree_type: Optional[str] = None,
+        query: str | None = None,
+        degree_type: str | None = None,
         limit: int = 100,
         offset: int = 0,
-    ) -> List[Department]:
+    ) -> list[Department]:
         """
         Search departments with filters
 
@@ -187,7 +187,7 @@ class UniversityAdvisoryService:
 
         return program
 
-    async def get_program(self, program_id: UUID) -> Optional[UniversityProgram]:
+    async def get_program(self, program_id: UUID) -> UniversityProgram | None:
         """Get program by ID with relationships"""
         result = await self.db.execute(
             select(UniversityProgram).where(UniversityProgram.id == program_id)
@@ -197,19 +197,19 @@ class UniversityAdvisoryService:
     async def search_programs(
         self,
         year: int = 2024,
-        score_type: Optional[ScoreType] = None,
-        min_score: Optional[float] = None,
-        max_score: Optional[float] = None,
-        city: Optional[str] = None,
-        university_type: Optional[UniversityType] = None,
-        department_name: Optional[str] = None,
-        program_type: Optional[ProgramType] = None,
-        has_scholarship: Optional[bool] = None,
+        score_type: ScoreType | None = None,
+        min_score: float | None = None,
+        max_score: float | None = None,
+        city: str | None = None,
+        university_type: UniversityType | None = None,
+        department_name: str | None = None,
+        program_type: ProgramType | None = None,
+        has_scholarship: bool | None = None,
         limit: int = 100,
         offset: int = 0,
         order_by: str = "base_score",
         order_desc: bool = True,
-    ) -> List[UniversityProgram]:
+    ) -> list[UniversityProgram]:
         """
         Search programs with comprehensive filters
 
@@ -285,7 +285,7 @@ class UniversityAdvisoryService:
 
     async def get_base_score_statistics(
         self, year: int, score_type: ScoreType
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get base score statistics for a year and score type
 
@@ -319,7 +319,7 @@ class UniversityAdvisoryService:
 
     async def get_historical_scores(
         self, program_id: UUID, years: int = 5
-    ) -> List[ProgramScoreHistory]:
+    ) -> list[ProgramScoreHistory]:
         """
         Get historical base scores for trend analysis
 
@@ -340,7 +340,7 @@ class UniversityAdvisoryService:
 
     async def predict_base_score(
         self, program_id: UUID, target_year: int
-    ) -> Optional[float]:
+    ) -> float | None:
         """
         Predict base score for target year using linear regression on historical data
 
@@ -384,8 +384,8 @@ class UniversityAdvisoryService:
     # ============================================================
 
     async def get_quota_statistics(
-        self, year: int, score_type: Optional[ScoreType] = None
-    ) -> Dict[str, Any]:
+        self, year: int, score_type: ScoreType | None = None
+    ) -> dict[str, Any]:
         """
         Get quota statistics
 
@@ -424,7 +424,7 @@ class UniversityAdvisoryService:
 
     async def get_competitive_programs(
         self, year: int, score_type: ScoreType, limit: int = 50
-    ) -> List[UniversityProgram]:
+    ) -> list[UniversityProgram]:
         """
         Get most competitive programs (highest acceptance rate / lowest quota)
 
@@ -461,7 +461,7 @@ class UniversityAdvisoryService:
         score_type: ScoreType,
         year: int = 2024,
         limit: int = 50,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get personalized program recommendations
 
@@ -553,7 +553,7 @@ class UniversityAdvisoryService:
         self,
         program: UniversityProgram,
         student_score: float,
-        preferences: Optional[UserUniversityPreference],
+        preferences: UserUniversityPreference | None,
     ) -> float:
         """
         Calculate match score (0-100) for a program
@@ -660,17 +660,16 @@ class UniversityAdvisoryService:
             await self.db.commit()
             await self.db.refresh(existing)
             return existing
-        else:
-            # Create
-            new_pref = UserUniversityPreference(user_id=user_id, **preferences)
-            self.db.add(new_pref)
-            await self.db.commit()
-            await self.db.refresh(new_pref)
-            return new_pref
+        # Create
+        new_pref = UserUniversityPreference(user_id=user_id, **preferences)
+        self.db.add(new_pref)
+        await self.db.commit()
+        await self.db.refresh(new_pref)
+        return new_pref
 
     async def get_user_preferences(
         self, user_id: UUID
-    ) -> Optional[UserUniversityPreference]:
+    ) -> UserUniversityPreference | None:
         """Get user preferences"""
         result = await self.db.execute(
             select(UserUniversityPreference).where(

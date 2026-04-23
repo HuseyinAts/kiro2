@@ -6,10 +6,11 @@ REQ-48.49 - REQ-48.52 gereksinimlerini test eder.
 """
 
 import pytest
+
 from services.quality.question_quality_scorer import (
-    QuestionQualityScorer,
     QualityCriterion,
     QualityScore,
+    QuestionQualityScorer,
 )
 
 

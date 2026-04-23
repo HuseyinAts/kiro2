@@ -64,9 +64,9 @@ class TestHybridLearningProfile:
     def test_hybrid_profile_creation(self):
         """Test hybrid profile can be created"""
         from services.revolutionary_features_service import (
+            FelderProfile,
             HybridLearningProfile,
             VARKProfile,
-            FelderProfile,
         )
 
         vark = VARKProfile(0.8, 0.6, 0.7, 0.5, "visual")

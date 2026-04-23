@@ -3,18 +3,19 @@
 Compare AI-generated questions with ÖSYM gold standard questions
 """
 import asyncio
-import asyncpg
 import json
-from pathlib import Path
-import sys
-from typing import List, Dict
-from datetime import datetime
 import statistics
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import asyncpg
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.config import settings
 import re
+
+from core.config import settings
 
 
 class OSYMBenchmarkSystem:
@@ -25,7 +26,7 @@ class OSYMBenchmarkSystem:
         self.output_dir = Path("C:/Users/husey/kiro2/backend/benchmark_reports")
         self.output_dir.mkdir(exist_ok=True)
 
-    def parse_database_url(self, url: str) -> Dict[str, any]:
+    def parse_database_url(self, url: str) -> dict[str, any]:
         """Parse PostgreSQL connection URL"""
         pattern = r"postgresql\+?.*://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)"
         match = re.match(pattern, url)
@@ -61,7 +62,7 @@ class OSYMBenchmarkSystem:
             await self.conn.close()
             print("\n[OK] Database connection closed")
 
-    async def fetch_questions_by_source(self, source: str) -> List[Dict]:
+    async def fetch_questions_by_source(self, source: str) -> list[dict]:
         """Fetch questions by source"""
 
         query = """
@@ -102,7 +103,7 @@ class OSYMBenchmarkSystem:
 
         return questions
 
-    def calculate_question_metrics(self, question: Dict) -> Dict:
+    def calculate_question_metrics(self, question: dict) -> dict:
         """Calculate quality metrics for a question"""
 
         metrics = {
@@ -121,8 +122,8 @@ class OSYMBenchmarkSystem:
         return metrics
 
     def compare_datasets(
-        self, osym_questions: List[Dict], ai_questions: List[Dict]
-    ) -> Dict:
+        self, osym_questions: list[dict], ai_questions: list[dict]
+    ) -> dict:
         """Compare ÖSYM and AI question datasets"""
 
         print("\n" + "=" * 80)
@@ -234,7 +235,7 @@ class OSYMBenchmarkSystem:
 
         return comparison
 
-    def print_comparison_report(self, comparison: Dict):
+    def print_comparison_report(self, comparison: dict):
         """Print formatted comparison report"""
 
         print("\n" + "=" * 80)
@@ -295,7 +296,7 @@ class OSYMBenchmarkSystem:
 
         print("\n" + "=" * 80 + "\n")
 
-    def save_benchmark_report(self, comparison: Dict):
+    def save_benchmark_report(self, comparison: dict):
         """Save benchmark report to JSON"""
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

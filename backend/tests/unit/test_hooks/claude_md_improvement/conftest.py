@@ -12,8 +12,9 @@ backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
 
 
 @pytest.fixture

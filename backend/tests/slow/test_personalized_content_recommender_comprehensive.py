@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -6,24 +7,23 @@ pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 Comprehensive tests for PersonalizedContentRecommender
 Test coverage for 64-profile hybrid learning content recommendation system
 """
-import pytest
 from unittest.mock import Mock, patch
 
+import pytest
+
 from algorithms.personalized_content_recommender import (
-    PersonalizedContentRecommender,
     ContentType,
     LearningStrategy,
+    PersonalizedContentRecommender,
 )
 from models.learning_style import (
-    HybridLearningProfile,
-    VARKProfile,
-    FelderProfile,
-    VARKDimension,
-    LearningStyleConfidence,
     ContentRecommendation,
+    FelderProfile,
+    HybridLearningProfile,
+    LearningStyleConfidence,
+    VARKDimension,
+    VARKProfile,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

@@ -4,14 +4,13 @@ TASK 48.3: Data encryption at rest - Tests
 """
 import pytest
 from cryptography.fernet import Fernet
+
 from core.encryption_service import (
     EncryptionService,
-    encrypt_dict,
     decrypt_dict,
+    encrypt_dict,
     get_encryption_service,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

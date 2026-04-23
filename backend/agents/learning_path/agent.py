@@ -13,33 +13,33 @@ Main Responsibilities:
 """
 
 import logging
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from typing import Any
 
 from cachetools import TTLCache
 
-from .models import (
-    StudentProfile,
-    LearningResource,
-    LearningPath,
-    LearningStyle,
-    KnowledgeLevel,
-)
 from .core import (
-    StudentProfiler,
     AssessmentCreator,
-    ResourceFinder,
     PathGenerator,
     PathOptimizer,
+    ResourceFinder,
+    StudentProfiler,
 )
-from .strategies import LearningStyleStrategy, DifficultyAdapter, TimePlanner
 from .integrations import (
-    YouTubeIntegration,
-    KhanIntegration,
-    OERIntegration,
     ChatIntegration,
     FormIntegration,
+    KhanIntegration,
+    OERIntegration,
+    YouTubeIntegration,
 )
+from .models import (
+    KnowledgeLevel,
+    LearningPath,
+    LearningResource,
+    LearningStyle,
+    StudentProfile,
+)
+from .strategies import DifficultyAdapter, LearningStyleStrategy, TimePlanner
 
 logger = logging.getLogger(__name__)
 
@@ -156,8 +156,8 @@ class LearningPathAgent:
         logger.info("LearningPathAgent initialized with TTLCache (paths=500/1h, sessions=1000/2h)")
 
     async def create_learning_path(
-        self, student_id: str, student_data: Dict[str, Any], goal: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, student_id: str, student_data: dict[str, Any], goal: str | None = None
+    ) -> dict[str, Any]:
         """
         Main workflow: Create personalized learning path for student
 
@@ -237,7 +237,7 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Error creating learning path: {str(e)}", exc_info=True)
+            logger.error(f"Error creating learning path: {e!s}", exc_info=True)
             return {
                 "success": False,
                 "error": str(e),
@@ -246,7 +246,7 @@ class LearningPathAgent:
 
     async def _search_personalized_resources(
         self, profile: StudentProfile, goal: str, max_resources: int = 30
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Search resources personalized for student profile
 
@@ -282,9 +282,9 @@ class LearningPathAgent:
     async def update_path_progress(
         self,
         student_id: str,
-        completed_resource_ids: List[str],
-        performance_data: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        completed_resource_ids: list[str],
+        performance_data: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Update student's learning path progress
 
@@ -343,12 +343,12 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Error updating path progress: {str(e)}")
+            logger.error(f"Error updating path progress: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def get_next_recommendations(
         self, student_id: str, count: int = 5
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get next recommended resources for student
 
@@ -378,16 +378,16 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Error getting recommendations: {str(e)}")
+            logger.error(f"Error getting recommendations: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def create_quick_assessment(
         self,
         student_id: str,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         question_count: int = 5,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create quick assessment for specific topic
 
@@ -403,7 +403,7 @@ class LearningPathAgent:
             return result
 
         except Exception as e:
-            logger.error(f"Error creating quick assessment: {str(e)}")
+            logger.error(f"Error creating quick assessment: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def search_videos(
@@ -411,8 +411,8 @@ class LearningPathAgent:
         query: str,
         max_results: int = 10,
         language: str = "tr",
-        difficulty: Optional[KnowledgeLevel] = None,
-    ) -> Dict[str, Any]:
+        difficulty: KnowledgeLevel | None = None,
+    ) -> dict[str, Any]:
         """
         Search YouTube videos with optional difficulty filtering
 
@@ -465,12 +465,12 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Error searching videos: {str(e)}")
+            logger.error(f"Error searching videos: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def chat_with_student(
-        self, session_id: str, message: str, context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, session_id: str, message: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Process chat message from student
 
@@ -502,20 +502,20 @@ class LearningPathAgent:
             return result
 
         except Exception as e:
-            logger.error(f"Error in chat: {str(e)}")
+            logger.error(f"Error in chat: {e!s}")
             return {"success": False, "error": str(e)}
 
-    def get_student_profile(self, student_id: str) -> Optional[StudentProfile]:
+    def get_student_profile(self, student_id: str) -> StudentProfile | None:
         """Get cached student profile"""
         return self.student_profiler.get_profile(student_id)
 
-    def get_learning_path(self, student_id: str) -> Optional[LearningPath]:
+    def get_learning_path(self, student_id: str) -> LearningPath | None:
         """Get cached learning path"""
         return self.paths_cache.get(student_id)
 
     async def regenerate_path(
-        self, student_id: str, preferences: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, student_id: str, preferences: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Regenerate learning path with new preferences
 
@@ -573,12 +573,12 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Error regenerating path: {str(e)}")
+            logger.error(f"Error regenerating path: {e!s}")
             return {"success": False, "error": str(e)}
 
     async def analyze_learning_gaps(
-        self, student_id: str, assessment_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, student_id: str, assessment_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Analyze learning gaps from assessment results
 
@@ -620,10 +620,10 @@ class LearningPathAgent:
             }
 
         except Exception as e:
-            logger.error(f"Error analyzing learning gaps: {str(e)}")
+            logger.error(f"Error analyzing learning gaps: {e!s}")
             return {"success": False, "error": str(e)}
 
-    def get_agent_stats(self) -> Dict[str, Any]:
+    def get_agent_stats(self) -> dict[str, Any]:
         """Get agent statistics and health metrics"""
         return {
             "version": "2.0.0",
@@ -646,7 +646,7 @@ class LearningPathAgent:
             },
         }
 
-    def clear_cache(self, student_id: Optional[str] = None):
+    def clear_cache(self, student_id: str | None = None):
         """Clear cached data for student or all"""
         if student_id:
             self.student_profiler.profiles_cache.pop(student_id, None)

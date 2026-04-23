@@ -6,17 +6,17 @@ Author: KIRO AI Team
 Date: 2026-01-16
 """
 
-from typing import Optional, Dict, Any, List
+import asyncio
+import json
 import time
 import uuid
-import json
-import asyncio
+from typing import Any
 
 import google.generativeai as genai
 from google.generativeai.types import GenerateContentResponse
 
 from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
-from services.llm.multi_llm_config import LLMProvider, LLMModelConfig, LLMCapability
+from services.llm.multi_llm_config import LLMCapability, LLMModelConfig, LLMProvider
 
 
 class GeminiProvider(BaseLLMProvider):
@@ -124,7 +124,7 @@ class GeminiProvider(BaseLLMProvider):
             )
 
         except Exception as e:
-            raise RuntimeError(f"Gemini API error: {str(e)}")
+            raise RuntimeError(f"Gemini API error: {e!s}")
 
     def _build_prompt(self, request: LLMRequest) -> str:
         """Build prompt with optional thinking mode prefix"""
@@ -163,7 +163,7 @@ class GeminiProvider(BaseLLMProvider):
 
         return await self._retry_with_backoff(_call, max_retries=max_retries)
 
-    async def generate_batch(self, requests: List[LLMRequest]) -> List[LLMResponse]:
+    async def generate_batch(self, requests: list[LLMRequest]) -> list[LLMResponse]:
         """
         Generate text for multiple requests concurrently
 
@@ -195,7 +195,7 @@ class GeminiProvider(BaseLLMProvider):
         return capability in self.config.capabilities
 
     async def fine_tune(
-        self, training_file: str, validation_file: Optional[str] = None, **kwargs
+        self, training_file: str, validation_file: str | None = None, **kwargs
     ) -> str:
         """
         Fine-tune Gemini model (not supported yet)
@@ -216,9 +216,9 @@ class GeminiProvider(BaseLLMProvider):
     async def think_step_by_step(
         self,
         problem: str,
-        max_steps: Optional[int] = None,
+        max_steps: int | None = None,
         include_verification: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Solve problem with step-by-step thinking
 
@@ -289,7 +289,7 @@ Maksimum {max_steps} adim kullan. JSON formatinda yanit ver."""
                 "parse_error": True,
             }
 
-    async def decompose_problem(self, problem: str) -> Dict[str, Any]:
+    async def decompose_problem(self, problem: str) -> dict[str, Any]:
         """
         Decompose complex problem into sub-problems
 
@@ -352,7 +352,7 @@ JSON formatinda yanit ver."""
 
     async def solve_math_problem(
         self, problem: str, show_all_steps: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Solve mathematical problem with detailed steps
 
@@ -424,7 +424,7 @@ JSON formatinda yanit ver."""
         difficulty: float,
         bloom_level: int,
         exam_type: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate OSYM question with sequential thinking
 

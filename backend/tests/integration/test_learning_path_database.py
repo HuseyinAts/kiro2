@@ -12,10 +12,10 @@ Tests cover:
 - Connection failure handling
 """
 
-import pytest
 import asyncio
 import uuid
 
+import pytest
 
 try:
     from database.connection import get_async_session_context

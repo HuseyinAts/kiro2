@@ -14,9 +14,9 @@ Usage:
     print(f"Migrated {stats['student_profiles_migrated']} profiles")
 """
 
-from typing import Optional, Any, Dict
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy.orm import Session
 
@@ -119,7 +119,7 @@ class ProfileMigrationService:
         self,
         batch_size: int = 100,
         skip_existing: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Migrate all legacy profiles.
 
@@ -134,7 +134,7 @@ class ProfileMigrationService:
                 - errors: List[str]
                 - skipped: int
         """
-        stats: Dict[str, Any] = {
+        stats: dict[str, Any] = {
             "student_profiles_migrated": 0,
             "student_learning_profiles_migrated": 0,
             "errors": [],
@@ -165,7 +165,7 @@ class ProfileMigrationService:
                     stats["student_profiles_migrated"] += 1
 
                 except Exception as e:
-                    error_msg = f"StudentProfile {legacy.id}: {str(e)}"
+                    error_msg = f"StudentProfile {legacy.id}: {e!s}"
                     stats["errors"].append(error_msg)
                     logger.error(error_msg)
 
@@ -198,7 +198,7 @@ class ProfileMigrationService:
                     stats["student_learning_profiles_migrated"] += 1
 
                 except Exception as e:
-                    error_msg = f"StudentLearningProfile {legacy.id}: {str(e)}"
+                    error_msg = f"StudentLearningProfile {legacy.id}: {e!s}"
                     stats["errors"].append(error_msg)
                     logger.error(error_msg)
 
@@ -213,7 +213,7 @@ class ProfileMigrationService:
             logger.info(f"Migration complete: {stats}")
         except Exception as e:
             self.db.rollback()
-            error_msg = f"Commit failed: {str(e)}"
+            error_msg = f"Commit failed: {e!s}"
             stats["errors"].append(error_msg)
             logger.error(error_msg)
 
@@ -222,7 +222,7 @@ class ProfileMigrationService:
     def migrate_specific_student(
         self,
         student_id: str
-    ) -> Optional[LearningPathStudentProfile]:
+    ) -> LearningPathStudentProfile | None:
         """
         Migrate a specific student by ID.
 
@@ -262,7 +262,7 @@ class ProfileMigrationService:
         return None
 
 
-def check_migration_status(db: Session) -> Dict[str, Any]:
+def check_migration_status(db: Session) -> dict[str, Any]:
     """
     Check the current migration status.
 
@@ -291,20 +291,20 @@ def check_migration_status(db: Session) -> Dict[str, Any]:
             "legacy_learning_profiles": legacy_slp_count,
             "migration_complete": canonical_count > 0 and total_legacy == 0,
             "migration_percentage": round(migration_percentage, 2),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     except Exception as e:
         logger.error(f"Error checking migration status: {e}")
         return {
             "error": str(e),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 
 def validate_canonical_profile(
     profile: LearningPathStudentProfile
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Validate a canonical profile for completeness.
 

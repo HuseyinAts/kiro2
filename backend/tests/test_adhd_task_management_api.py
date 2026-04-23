@@ -14,31 +14,34 @@ Bu test modülü DEHB (ADHD) desteği için görev yönetimi API'sini test eder:
 """
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
 
 import pytest
+
 pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
 
 
+import uuid
+from datetime import datetime, timedelta
+
 import pytest
 from fastapi.testclient import TestClient
-from datetime import datetime, timedelta, timezone
-import uuid
 
-from backend.main import app
 from api.adhd_task_management_api import (
-    TaskPriority,
-    TaskCategory,
     EisenhowerQuadrant,
-    calculate_eisenhower_quadrant,
+    TaskCategory,
+    TaskPriority,
     calculate_automatic_priority,
+    calculate_eisenhower_quadrant,
 )
+from backend.main import app
 
 # Import centralized JWT constants from conftest (DRY)
 try:
-    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+    from tests.conftest import TEST_JWT_ALGORITHM, TEST_JWT_SECRET, _generate_test_jwt
 except ImportError:
     import jwt as _jwt
     TEST_JWT_SECRET = "test-secret-key-for-testing"

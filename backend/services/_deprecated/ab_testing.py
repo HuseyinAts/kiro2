@@ -6,14 +6,14 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-import random
 import hashlib
 import json
+import random
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from pathlib import Path
-from typing import Dict, Optional, Any
 from enum import Enum
-from dataclasses import dataclass, asdict
+from pathlib import Path
+from typing import Any
 
 
 class ModelVersion(Enum):
@@ -31,7 +31,7 @@ class ABTestResult:
 
     test_id: str
     timestamp: str
-    user_id: Optional[str]
+    user_id: str | None
     version: str
     provider: str
 
@@ -48,7 +48,7 @@ class ABTestResult:
     # Question metadata
     topic: str
     exam_type: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class ABTestManager:
@@ -79,7 +79,7 @@ class ABTestManager:
         self.optimized_percentage = optimized_percentage
 
     def assign_version(
-        self, user_id: Optional[str] = None, provider: str = "openai"
+        self, user_id: str | None = None, provider: str = "openai"
     ) -> ModelVersion:
         """
         Assign model version to user
@@ -101,20 +101,15 @@ class ABTestManager:
                 if provider == "qwen":
                     # Qwen can use full optimization (vocab + prompt)
                     return ModelVersion.OPTIMIZED_FULL
-                else:
-                    # OpenAI/Claude only use prompt optimization
-                    return ModelVersion.OPTIMIZED_PROMPT
-            else:
-                return ModelVersion.BASE
-        else:
-            # Random assignment
-            if random.random() < (self.optimized_percentage / 100):
-                if provider == "qwen":
-                    return ModelVersion.OPTIMIZED_FULL
-                else:
-                    return ModelVersion.OPTIMIZED_PROMPT
-            else:
-                return ModelVersion.BASE
+                # OpenAI/Claude only use prompt optimization
+                return ModelVersion.OPTIMIZED_PROMPT
+            return ModelVersion.BASE
+        # Random assignment
+        if random.random() < (self.optimized_percentage / 100):
+            if provider == "qwen":
+                return ModelVersion.OPTIMIZED_FULL
+            return ModelVersion.OPTIMIZED_PROMPT
+        return ModelVersion.BASE
 
     def log_result(
         self,
@@ -128,8 +123,8 @@ class ABTestManager:
         bloom_level: int,
         topic: str,
         exam_type: str,
-        user_id: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ABTestResult:
         """
         Log A/B test result
@@ -179,8 +174,8 @@ class ABTestManager:
         return result
 
     def analyze_results(
-        self, provider: Optional[str] = None, days: int = 7
-    ) -> Dict[str, Any]:
+        self, provider: str | None = None, days: int = 7
+    ) -> dict[str, Any]:
         """
         Analyze A/B test results
 
@@ -200,7 +195,7 @@ class ABTestManager:
         cutoff_date = datetime.now() - timedelta(days=days)
         results_by_version = {}
 
-        with open(self.log_path, "r", encoding="utf-8") as f:
+        with open(self.log_path, encoding="utf-8") as f:
             for line in f:
                 try:
                     result = json.loads(line.strip())
@@ -305,7 +300,7 @@ class ABTestManager:
             "versions": analysis,
         }
 
-    def generate_report(self, provider: Optional[str] = None, days: int = 7) -> str:
+    def generate_report(self, provider: str | None = None, days: int = 7) -> str:
         """
         Generate human-readable report
 
@@ -375,7 +370,7 @@ Provider: {provider or 'All'}
 
         return report
 
-    def _empty_analysis(self) -> Dict[str, Any]:
+    def _empty_analysis(self) -> dict[str, Any]:
         """Return empty analysis structure"""
         return {"analysis_period_days": 0, "provider_filter": None, "versions": {}}
 
@@ -394,8 +389,8 @@ def get_ab_test_manager() -> ABTestManager:
 
 # Example usage
 if __name__ == "__main__":
-    import sys
     import io
+    import sys
 
     # Fix UTF-8 encoding for Windows
     if sys.platform == "win32":

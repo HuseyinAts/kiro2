@@ -9,7 +9,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 
@@ -35,8 +35,8 @@ class Arm:
     name: str
     content_type: str  # video, article, quiz, etc.
     difficulty: str
-    features: Dict[str, Any]
-    metadata: Dict[str, Any]
+    features: dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -49,7 +49,7 @@ class ArmStatistics:
     successes: int  # Başarılı sonuçlar
     avg_reward: float  # Ortalama ödül
     confidence: float  # Güven aralığı
-    last_pulled: Optional[datetime] = None
+    last_pulled: datetime | None = None
 
 
 class MultiArmedBandit:
@@ -92,7 +92,7 @@ class MultiArmedBandit:
         )
         logger.info(f"Arm added: {arm.arm_id}")
 
-    def select_arm(self, context: Optional[Dict[str, Any]] = None) -> str:
+    def select_arm(self, context: dict[str, Any] | None = None) -> str:
         """
         Kol seç
 
@@ -107,24 +107,22 @@ class MultiArmedBandit:
 
         if self.algorithm == BanditAlgorithm.EPSILON_GREEDY:
             return self._epsilon_greedy_select()
-        elif self.algorithm == BanditAlgorithm.UCB:
+        if self.algorithm == BanditAlgorithm.UCB:
             return self._ucb_select()
-        elif self.algorithm == BanditAlgorithm.THOMPSON_SAMPLING:
+        if self.algorithm == BanditAlgorithm.THOMPSON_SAMPLING:
             return self._thompson_sampling_select()
-        elif self.algorithm == BanditAlgorithm.EXP3:
+        if self.algorithm == BanditAlgorithm.EXP3:
             return self._exp3_select()
-        else:
-            return self._random_select()
+        return self._random_select()
 
     def _epsilon_greedy_select(self) -> str:
         """Epsilon-greedy algoritması ile seçim"""
         if np.random.random() < self.epsilon:
             # Keşif: Rastgele seç
             return np.random.choice(list(self.arms.keys()))
-        else:
-            # Sömürü: En iyi kolu seç
-            best_arm = max(self.statistics.values(), key=lambda s: s.avg_reward)
-            return best_arm.arm_id
+        # Sömürü: En iyi kolu seç
+        best_arm = max(self.statistics.values(), key=lambda s: s.avg_reward)
+        return best_arm.arm_id
 
     def _ucb_select(self) -> str:
         """Upper Confidence Bound algoritması ile seçim"""
@@ -224,7 +222,7 @@ class MultiArmedBandit:
             f"Updated arm {arm_id}: reward={reward:.2f}, avg={stats.avg_reward:.2f}"
         )
 
-    def get_statistics(self) -> Dict[str, ArmStatistics]:
+    def get_statistics(self) -> dict[str, ArmStatistics]:
         """Tüm kol istatistiklerini getir"""
         return self.statistics.copy()
 
@@ -259,7 +257,7 @@ class ContextualBandit(MultiArmedBandit):
         self.context_features = []
         self.context_weights = {}
 
-    def learn_context_weights(self, history: List[Dict[str, Any]]):
+    def learn_context_weights(self, history: list[dict[str, Any]]):
         """
         Geçmiş veriden bağlam ağırlıklarını öğren
 
@@ -286,7 +284,7 @@ class ContextualBandit(MultiArmedBandit):
 
         logger.info("Context weights learned")
 
-    def select_arm_with_context(self, context: Dict[str, Any]) -> str:
+    def select_arm_with_context(self, context: dict[str, Any]) -> str:
         """
         Bağlam bilgisi ile kol seç
 
@@ -323,9 +321,8 @@ class ContextualBandit(MultiArmedBandit):
         if np.random.random() < self.epsilon:
             # Keşif
             return np.random.choice(list(self.arms.keys()))
-        else:
-            # Sömürü
-            return max(combined_scores, key=combined_scores.get)
+        # Sömürü
+        return max(combined_scores, key=combined_scores.get)
 
 
 class AdaptiveLearningSystem:
@@ -382,7 +379,7 @@ class AdaptiveLearningSystem:
 
         return bandit
 
-    def select_content_type(self, student_id: str, context: Dict[str, Any]) -> str:
+    def select_content_type(self, student_id: str, context: dict[str, Any]) -> str:
         """
         Öğrenci için içerik tipi seç
 
@@ -415,7 +412,7 @@ class AdaptiveLearningSystem:
         return selected_arm
 
     def update_performance(
-        self, student_id: str, content_type: str, performance_data: Dict[str, Any]
+        self, student_id: str, content_type: str, performance_data: dict[str, Any]
     ):
         """
         Performans güncellemesi
@@ -451,7 +448,7 @@ class AdaptiveLearningSystem:
             f"Updated performance for {student_id}: {content_type} -> {reward:.2f}"
         )
 
-    def _calculate_reward(self, performance_data: Dict[str, Any]) -> float:
+    def _calculate_reward(self, performance_data: dict[str, Any]) -> float:
         """
         Performans verisinden ödül hesapla
 
@@ -477,12 +474,11 @@ class AdaptiveLearningSystem:
         hour = datetime.now().hour
         if hour < 6:
             return "night"
-        elif hour < 12:
+        if hour < 12:
             return "morning"
-        elif hour < 18:
+        if hour < 18:
             return "afternoon"
-        else:
-            return "evening"
+        return "evening"
 
     def _get_recent_performance(self, student_id: str) -> str:
         """Son performansı özetle"""
@@ -495,12 +491,11 @@ class AdaptiveLearningSystem:
 
         if avg_reward > 0.7:
             return "high"
-        elif avg_reward > 0.4:
+        if avg_reward > 0.4:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
-    def get_recommendations(self, student_id: str, n: int = 3) -> List[Dict[str, Any]]:
+    def get_recommendations(self, student_id: str, n: int = 3) -> list[dict[str, Any]]:
         """
         Öğrenci için içerik önerileri
 

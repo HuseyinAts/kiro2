@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test: ZPD + MEB Maarif Service - Türk Kültürü Adaptif Öğrenme
 Coverage hedefi: %65-75
@@ -720,7 +719,6 @@ def test_zpd_maarif_summary():
     cd backend
     pytest tests/test_zpd_maarif_service.py -v --cov=services.zpd_maarif_service --cov-report=html
     """
-    pass
 
 
 if __name__ == "__main__":

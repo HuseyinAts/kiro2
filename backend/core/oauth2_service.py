@@ -25,9 +25,9 @@ import os
 import secrets
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 from sqlalchemy import select
@@ -116,11 +116,11 @@ class OAuth2Tokens:
     """
 
     access_token: str
-    refresh_token: Optional[str] = None
+    refresh_token: str | None = None
     token_type: str = "Bearer"
     expires_in: int = 3600
-    scope: Optional[str] = None
-    id_token: Optional[str] = None
+    scope: str | None = None
+    id_token: str | None = None
 
 
 @dataclass
@@ -145,11 +145,11 @@ class OAuth2UserInfo:
     provider_user_id: str
     email: str
     email_verified: bool = False
-    name: Optional[str] = None
-    given_name: Optional[str] = None
-    family_name: Optional[str] = None
-    picture: Optional[str] = None
-    locale: Optional[str] = None
+    name: str | None = None
+    given_name: str | None = None
+    family_name: str | None = None
+    picture: str | None = None
+    locale: str | None = None
 
 
 @dataclass
@@ -170,7 +170,7 @@ class OAuth2State:
     provider: str
     created_at: datetime
     expires_at: datetime
-    redirect_uri: Optional[str] = None
+    redirect_uri: str | None = None
 
 
 # ==================== EXCEPTIONS ====================
@@ -189,7 +189,7 @@ class OAuth2Exception(Exception):
         self,
         error_code: OAuth2Error,
         message: str,
-        details: Optional[dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         """OAuth2Exception olusturur.
 
@@ -270,7 +270,7 @@ class OAuth2Service:
         self._states: dict[str, OAuth2State] = {}
 
         # HTTP client for API calls
-        self._http_client: Optional[httpx.AsyncClient] = None
+        self._http_client: httpx.AsyncClient | None = None
 
         logger.info("OAuth2Service baslatildi")
 
@@ -331,7 +331,7 @@ class OAuth2Service:
         self,
         state: str,
         provider: str,
-        redirect_uri: Optional[str] = None,
+        redirect_uri: str | None = None,
     ) -> OAuth2State:
         """State token'i saklar.
 
@@ -343,7 +343,7 @@ class OAuth2Service:
         Returns:
             OAuth2State: Saklanan state bilgisi
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         state_obj = OAuth2State(
             state=state,
             provider=provider,
@@ -385,7 +385,7 @@ class OAuth2Service:
                 details={"reason": "state_not_found"},
             )
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if now > state_obj.expires_at:
             logger.warning(
                 "OAuth2 state suresi dolmus",
@@ -422,7 +422,7 @@ class OAuth2Service:
         Returns:
             int: Temizlenen state sayisi
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expired = [
             state for state, obj in self._states.items() if now > obj.expires_at
         ]
@@ -437,7 +437,7 @@ class OAuth2Service:
     async def get_authorization_url(
         self,
         provider: str,
-        redirect_uri: Optional[str] = None,
+        redirect_uri: str | None = None,
     ) -> tuple[str, str]:
         """OAuth2 authorization URL'i olusturur.
 
@@ -738,7 +738,7 @@ class OAuth2Service:
                 )
 
                 # Son giris zamanini guncelle
-                existing_user.last_login = datetime.now(timezone.utc)
+                existing_user.last_login = datetime.now(UTC)
 
                 # Email verified degilse ve OAuth'tan verified geldiyse guncelle
                 if not existing_user.is_verified and user_info.email_verified:
@@ -753,53 +753,52 @@ class OAuth2Service:
 
                 return existing_user
 
-            else:
-                # Yeni kullanici olustur
-                logger.info(
-                    "OAuth ile yeni kullanici olusturuluyor",
-                    extra={
-                        "provider": provider,
-                        "email": user_info.email,
-                    },
-                )
+            # Yeni kullanici olustur
+            logger.info(
+                "OAuth ile yeni kullanici olusturuluyor",
+                extra={
+                    "provider": provider,
+                    "email": user_info.email,
+                },
+            )
 
-                # Username olustur (email'in @ oncesi kismi + random suffix)
-                email_prefix = user_info.email.split("@")[0]
-                random_suffix = secrets.token_hex(4)
-                username = f"{email_prefix}_{random_suffix}"
+            # Username olustur (email'in @ oncesi kismi + random suffix)
+            email_prefix = user_info.email.split("@")[0]
+            random_suffix = secrets.token_hex(4)
+            username = f"{email_prefix}_{random_suffix}"
 
-                # Isim bilgilerini ayarla
-                first_name = user_info.given_name or user_info.name or email_prefix
-                family_name = user_info.family_name or ""
+            # Isim bilgilerini ayarla
+            first_name = user_info.given_name or user_info.name or email_prefix
+            family_name = user_info.family_name or ""
 
-                # Yeni kullanici olustur
-                new_user = User(
-                    id=str(uuid.uuid4()),
-                    email=user_info.email,
-                    username=username,
-                    password_hash="",  # OAuth kullanicisi, sifre yok
-                    first_name=first_name,
-                    last_name=family_name,
-                    role=UserRole.STUDENT,  # Varsayilan rol: ogrenci
-                    is_active=True,
-                    is_verified=user_info.email_verified,
-                    last_login=datetime.now(timezone.utc),
-                )
+            # Yeni kullanici olustur
+            new_user = User(
+                id=str(uuid.uuid4()),
+                email=user_info.email,
+                username=username,
+                password_hash="",  # OAuth kullanicisi, sifre yok
+                first_name=first_name,
+                last_name=family_name,
+                role=UserRole.STUDENT,  # Varsayilan rol: ogrenci
+                is_active=True,
+                is_verified=user_info.email_verified,
+                last_login=datetime.now(UTC),
+            )
 
-                db.add(new_user)
-                await db.commit()
-                await db.refresh(new_user)
+            db.add(new_user)
+            await db.commit()
+            await db.refresh(new_user)
 
-                logger.info(
-                    "Yeni OAuth kullanicisi olusturuldu",
-                    extra={
-                        "user_id": new_user.id,
-                        "provider": provider,
-                        "email": user_info.email,
-                    },
-                )
+            logger.info(
+                "Yeni OAuth kullanicisi olusturuldu",
+                extra={
+                    "user_id": new_user.id,
+                    "provider": provider,
+                    "email": user_info.email,
+                },
+            )
 
-                return new_user
+            return new_user
 
         except Exception as e:
             await db.rollback()
@@ -900,7 +899,7 @@ class OAuth2Service:
                 - expired_states: Suresi dolmus state sayisi
                 - supported_providers: Desteklenen provider listesi
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         active = sum(1 for s in self._states.values() if now <= s.expires_at)
         expired = len(self._states) - active
 
@@ -915,7 +914,7 @@ class OAuth2Service:
 
 # ==================== GLOBAL SERVICE INSTANCE ====================
 
-_oauth2_service: Optional[OAuth2Service] = None
+_oauth2_service: OAuth2Service | None = None
 
 
 def get_oauth2_service() -> OAuth2Service:

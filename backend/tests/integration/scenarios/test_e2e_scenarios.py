@@ -47,7 +47,7 @@ async def test_register_login_profile_chain():
 async def test_exam_answer_result_chain():
     """Create exam, answer questions, get results with net score."""
     exam = {"exam_type": "TYT", "question_count": 40}
-    answers = {i: "A" for i in range(1, 41)}
+    answers = dict.fromkeys(range(1, 41), "A")
     assert len(answers) == exam["question_count"]
 
     correct = 30

@@ -8,11 +8,12 @@ from __future__ import annotations
 import json
 import logging
 import os
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 import yaml
 
@@ -69,7 +70,7 @@ class ConfigValidationRule:
     field_name: str
     required: bool = True
     data_type: type = str
-    validator_func: Optional[Callable] = None
+    validator_func: Callable | None = None
     default_value: Any = None
     description: str = ""
 

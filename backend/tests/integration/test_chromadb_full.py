@@ -16,20 +16,23 @@ Date: 2026-01-18
 """
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
 
 import pytest
+
 pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
 
 
-import pytest
+import sys
 import time
+from pathlib import Path
 from unittest.mock import patch
 
-import sys
-from pathlib import Path
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
@@ -107,9 +110,9 @@ class TestREQ2CollectionManagement:
         """ChromaDBCollectionManager import edilebilmeli."""
         try:
             from services.chromadb_collection_manager import (
+                COLLECTION_SCHEMAS,
                 ChromaDBCollectionManager,
                 CollectionType,
-                COLLECTION_SCHEMAS
             )
 
             assert CollectionType.QUESTIONS is not None
@@ -122,8 +125,8 @@ class TestREQ2CollectionManagement:
         """Collection şemaları tanımlı olmalı."""
         try:
             from services.chromadb_collection_manager import (
+                COLLECTION_SCHEMAS,
                 CollectionType,
-                COLLECTION_SCHEMAS
             )
 
             assert CollectionType.QUESTIONS in COLLECTION_SCHEMAS
@@ -155,9 +158,7 @@ class TestREQ3SemanticSearch:
 
     def test_search_api_import(self):
         """Semantic search API import edilebilmeli."""
-        from api.v1.semantic_search import (
-            router
-        )
+        from api.v1.semantic_search import router
 
         assert router is not None
 
@@ -201,10 +202,10 @@ class TestREQ4ContentRecommendation:
         """ContentRecommendationService import edilebilmeli."""
         try:
             from services.content_recommendation_service import (
+                INTERACTION_WEIGHTS,
                 ContentRecommendationService,
-                get_recommendation_service,
                 InteractionType,
-                INTERACTION_WEIGHTS
+                get_recommendation_service,
             )
 
             service = get_recommendation_service()
@@ -216,8 +217,8 @@ class TestREQ4ContentRecommendation:
         """Etkileşim ağırlıkları tanımlı olmalı."""
         try:
             from services.content_recommendation_service import (
+                INTERACTION_WEIGHTS,
                 InteractionType,
-                INTERACTION_WEIGHTS
             )
 
             assert InteractionType.VIEW in INTERACTION_WEIGHTS
@@ -232,7 +233,9 @@ class TestREQ4ContentRecommendation:
     def test_cold_start_threshold(self):
         """Cold start threshold tanımlı olmalı."""
         try:
-            from services.content_recommendation_service import ContentRecommendationService
+            from services.content_recommendation_service import (
+                ContentRecommendationService,
+            )
 
             assert ContentRecommendationService.COLD_START_THRESHOLD == 5
         except ImportError:
@@ -247,8 +250,8 @@ class TestREQ5DuplicateDetection:
         try:
             from services.duplicate_detection_service import (
                 DuplicateDetectionService,
+                DuplicateStatus,
                 get_duplicate_service,
-                DuplicateStatus
             )
 
             service = get_duplicate_service()
@@ -287,9 +290,9 @@ class TestREQ6ConceptClustering:
         """ConceptClusteringService import edilebilmeli."""
         try:
             from services.concept_clustering_service import (
+                ClusteringAlgorithm,
                 ConceptClusteringService,
                 get_clustering_service,
-                ClusteringAlgorithm
             )
 
             service = get_clustering_service()
@@ -377,12 +380,12 @@ class TestREQ8MCPServer:
         """MCP server import edilebilmeli."""
         try:
             from mcp_servers.chromadb_mcp import (
+                embed_content,
+                find_similar,
+                health_check_tool,
                 mcp,
                 search_questions,
-                find_similar,
-                embed_content,
                 verify_question_quality,
-                health_check_tool
             )
 
             assert mcp is not None
@@ -443,7 +446,9 @@ class TestSpecCompleteness:
             errors.append(f"concept_clustering: {e}")
 
         try:
-            from services.content_recommendation_service import ContentRecommendationService
+            from services.content_recommendation_service import (
+                ContentRecommendationService,
+            )
         except ImportError as e:
             errors.append(f"content_recommendation: {e}")
 

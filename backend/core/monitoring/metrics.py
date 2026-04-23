@@ -9,22 +9,23 @@ Date: 2026-01-14
 Requirements: REQ-8.1, REQ-8.4, REQ-8.5
 """
 
-import time
 import logging
-from typing import Optional, Callable, Any
-from functools import wraps
+import time
+from collections.abc import Callable
 from contextlib import contextmanager
+from functools import wraps
+from typing import Any
 
 try:
     from prometheus_client import (
-        Histogram,
+        CONTENT_TYPE_LATEST,
+        REGISTRY,
+        CollectorRegistry,
         Counter,
         Gauge,
+        Histogram,
         Summary,
         generate_latest,
-        CONTENT_TYPE_LATEST,
-        CollectorRegistry,
-        REGISTRY,
     )
     PROMETHEUS_AVAILABLE = True
 except ImportError:
@@ -461,7 +462,7 @@ class MetricsCollector:
 # SINGLETON INSTANCE
 # =============================================================================
 
-_metrics_collector: Optional[MetricsCollector] = None
+_metrics_collector: MetricsCollector | None = None
 
 
 def get_metrics_collector() -> MetricsCollector:
@@ -481,7 +482,7 @@ def get_metrics_collector() -> MetricsCollector:
 # DECORATOR FOR AUTOMATIC METRICS
 # =============================================================================
 
-def track_metrics(endpoint: Optional[str] = None):
+def track_metrics(endpoint: str | None = None):
     """
     Fonksiyon için otomatik metrics tracking decorator.
 

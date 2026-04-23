@@ -19,17 +19,17 @@ Responsibilities:
 """
 
 import logging
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timezone
 import uuid
+from datetime import UTC, datetime
+from typing import Any
 
 from ..models import (
-    StudentProfile,
-    LearningResource,
+    KnowledgeLevel,
     LearningPath,
     LearningPhase,
+    LearningResource,
     LearningStyle,
-    KnowledgeLevel,
+    StudentProfile,
 )
 
 # KnowledgeLevel to numeric mapping for difficulty comparison
@@ -125,11 +125,11 @@ def is_resource_in_zpd(
 
 
 def filter_resources_by_zpd(
-    resources: List[LearningResource],
+    resources: list[LearningResource],
     student_ability: float,
     min_prob: float = ZPD_MIN_PROBABILITY,
     max_prob: float = ZPD_MAX_PROBABILITY,
-) -> List[LearningResource]:
+) -> list[LearningResource]:
     """
     Filter resources to those within student's ZPD.
 
@@ -192,7 +192,7 @@ class PathGenerator:
         logger.info("PathGenerator initialized")
 
     async def generate_path(
-        self, profile: StudentProfile, resources: List[LearningResource], goal: str
+        self, profile: StudentProfile, resources: list[LearningResource], goal: str
     ) -> LearningPath:
         """
         Generate complete learning path
@@ -284,15 +284,15 @@ class PathGenerator:
             return path
 
         except Exception as e:
-            logger.error(f"Generate path error: {str(e)}")
+            logger.error(f"Generate path error: {e!s}")
             raise
 
     async def adapt_path(
         self,
         current_path: LearningPath,
-        performance_data: Dict[str, Any],
-        profile: Optional[StudentProfile] = None,
-        new_resources: Optional[List[LearningResource]] = None,
+        performance_data: dict[str, Any],
+        profile: StudentProfile | None = None,
+        new_resources: list[LearningResource] | None = None,
     ) -> LearningPath:
         """
         Adapt existing path based on performance
@@ -425,11 +425,11 @@ class PathGenerator:
             return adapted_path
 
         except Exception as e:
-            logger.error(f"Adapt path error: {str(e)}")
+            logger.error(f"Adapt path error: {e!s}")
             raise
 
     async def create_structured_path(
-        self, profile: StudentProfile, subject: str, topics: List[str]
+        self, profile: StudentProfile, subject: str, topics: list[str]
     ) -> LearningPath:
         """
         Create structured learning path with predefined progression
@@ -469,7 +469,7 @@ class PathGenerator:
                     goal=f"{subject} - {', '.join(topics[:3])}",
                     resources=path_data.get("resources", []),
                     phases=path_data.get("phases", []),
-                    created_at=datetime.now(timezone.utc),
+                    created_at=datetime.now(UTC),
                     reasoning=path_data.get("reasoning", "Structured path generated"),
                     metadata={
                         "subject": subject,
@@ -485,14 +485,14 @@ class PathGenerator:
             return path_data
 
         except Exception as e:
-            logger.error(f"Create structured path error: {str(e)}")
+            logger.error(f"Create structured path error: {e!s}")
             raise
 
     # Private methods
 
     def _create_phases(
-        self, resources: List[LearningResource], profile: StudentProfile
-    ) -> List[Dict[str, Any]]:
+        self, resources: list[LearningResource], profile: StudentProfile
+    ) -> list[dict[str, Any]]:
         """
         Create learning phases from resources
 
@@ -535,9 +535,9 @@ class PathGenerator:
 
     def _convert_phases_to_objects(
         self,
-        phase_dicts: List[Dict[str, Any]],
-        resources: List[LearningResource],
-    ) -> List[LearningPhase]:
+        phase_dicts: list[dict[str, Any]],
+        resources: list[LearningResource],
+    ) -> list[LearningPhase]:
         """
         Convert phase dictionaries to LearningPhase objects.
 
@@ -583,23 +583,21 @@ class PathGenerator:
         """Get name for learning phase"""
         if phase_number == 1:
             return "Temel Kavramlar"
-        elif phase_number == total_phases:
+        if phase_number == total_phases:
             return "İleri Düzey ve Uygulama"
-        elif phase_number == total_phases // 2:
+        if phase_number == total_phases // 2:
             return "Orta Seviye"
-        else:
-            return f"Faz {phase_number}"
+        return f"Faz {phase_number}"
 
     def _get_phase_description(self, phase_number: int, total_phases: int) -> str:
         """Get description for learning phase"""
         if phase_number == 1:
             return "Konunun temel kavramlarını öğrenme"
-        elif phase_number == total_phases:
+        if phase_number == total_phases:
             return "İleri düzey konuları anlama ve uygulama"
-        else:
-            return f"Faz {phase_number} - Devam eden öğrenme"
+        return f"Faz {phase_number} - Devam eden öğrenme"
 
-    def _get_phase_objectives(self, phase_number: int, total_phases: int) -> List[str]:
+    def _get_phase_objectives(self, phase_number: int, total_phases: int) -> list[str]:
         """Get objectives for learning phase"""
         if phase_number == 1:
             return [
@@ -607,21 +605,20 @@ class PathGenerator:
                 "Konuya giriş yapma",
                 "Ön bilgileri pekiştirme",
             ]
-        elif phase_number == total_phases:
+        if phase_number == total_phases:
             return [
                 "İleri düzey problemleri çözme",
                 "Gerçek hayat uygulamaları",
                 "Konuda uzmanlaşma",
             ]
-        else:
-            return [
-                f"Faz {phase_number} hedeflerini tamamlama",
-                "Bilgiyi pekiştirme",
-                "Bir sonraki faza hazırlanma",
-            ]
+        return [
+            f"Faz {phase_number} hedeflerini tamamlama",
+            "Bilgiyi pekiştirme",
+            "Bir sonraki faza hazırlanma",
+        ]
 
     async def _generate_reasoning(
-        self, profile: StudentProfile, resources: List[LearningResource], goal: str
+        self, profile: StudentProfile, resources: list[LearningResource], goal: str
     ) -> str:
         """
         Generate reasoning for why this path was created
@@ -648,15 +645,14 @@ Neden bu kaynaklar seçildi ve nasıl sıralandı? Kısa ve net açıkla (2-3 c�
 
             if result.get("success"):
                 return result["text"]
-            else:
-                return self._get_generic_reasoning(profile, resources, goal)
+            return self._get_generic_reasoning(profile, resources, goal)
 
         except Exception as e:
-            logger.warning(f"LLM reasoning failed: {str(e)}")
+            logger.warning(f"LLM reasoning failed: {e!s}")
             return self._get_generic_reasoning(profile, resources, goal)
 
     def _get_generic_reasoning(
-        self, profile: StudentProfile, resources: List[LearningResource], goal: str
+        self, profile: StudentProfile, resources: list[LearningResource], goal: str
     ) -> str:
         """Get generic reasoning without LLM"""
         return (

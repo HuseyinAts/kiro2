@@ -11,7 +11,7 @@ Responsibilities:
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any
 
 from ..models import KnowledgeLevel
 
@@ -33,7 +33,7 @@ class DifficultyAdapter:
         logger.info("DifficultyAdapter initialized")
 
     def calculate_next_difficulty(
-        self, current_difficulty: KnowledgeLevel, performance_data: Dict[str, Any]
+        self, current_difficulty: KnowledgeLevel, performance_data: dict[str, Any]
     ) -> KnowledgeLevel:
         """Calculate next appropriate difficulty level"""
         avg_score = performance_data.get("avg_score", 0)
@@ -53,19 +53,19 @@ class DifficultyAdapter:
 
         return self.difficulty_order[new_index]
 
-    def detect_struggle(self, performance_data: Dict[str, Any]) -> bool:
+    def detect_struggle(self, performance_data: dict[str, Any]) -> bool:
         """Detect if student is struggling"""
         avg_score = performance_data.get("avg_score", 0)
         return avg_score < 60
 
-    def detect_mastery(self, performance_data: Dict[str, Any]) -> bool:
+    def detect_mastery(self, performance_data: dict[str, Any]) -> bool:
         """Detect if student has mastered current level"""
         avg_score = performance_data.get("avg_score", 0)
         consistency = performance_data.get("consistency", 0)
         return avg_score > 85 and consistency > 0.7
 
     def adapt_difficulty(
-        self, current_difficulty: KnowledgeLevel, performance_data: Dict[str, Any]
+        self, current_difficulty: KnowledgeLevel, performance_data: dict[str, Any]
     ) -> tuple[KnowledgeLevel, str]:
         """Adapt difficulty and return reason"""
         next_difficulty = self.calculate_next_difficulty(

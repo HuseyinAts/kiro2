@@ -11,7 +11,6 @@ Bu modül YDT sınavlarına özel işlevleri yönetir:
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional
 
 from core.structured_logger import get_logger
 
@@ -48,9 +47,9 @@ class YDTPassage:
     topic: str  # Konu (örn: "Science", "History", "Literature")
 
     # Meta veriler
-    source: Optional[str] = None
-    author: Optional[str] = None
-    year: Optional[int] = None
+    source: str | None = None
+    author: str | None = None
+    year: int | None = None
 
 
 @dataclass
@@ -65,14 +64,14 @@ class YDTQuestion:
     difficulty_level: str
     topic: str
     skill_tested: str  # Test edilen beceri (örn: "inference", "main idea", "vocabulary in context")
-    options: List[str] = None  # A, B, C, D, E seçenekleri
+    options: list[str] = None  # A, B, C, D, E seçenekleri
 
     # Passage-based sorular için
-    passage_id: Optional[str] = None
-    passage_reference: Optional[str] = None  # Metinde hangi bölüme atıfta bulunuyor
+    passage_id: str | None = None
+    passage_reference: str | None = None  # Metinde hangi bölüme atıfta bulunuyor
 
     # Metadata
-    explanation: Optional[str] = None
+    explanation: str | None = None
 
     def __post_init__(self):
         """Post-initialization to set default mutable values"""
@@ -145,7 +144,7 @@ class YDTExamService:
         return self.ydt_config["question_distribution"]
 
     def validate_ydt_exam_structure(
-        self, questions: List[YDTQuestion], language: YDTLanguage
+        self, questions: list[YDTQuestion], language: YDTLanguage
     ) -> tuple[bool, str]:
         """
         YDT sınav yapısını doğrula
@@ -223,7 +222,7 @@ class YDTExamService:
             return True, "YDT sınav yapısı geçerli"
 
         except Exception as e:
-            error_msg = f"Doğrulama hatası: {str(e)}"
+            error_msg = f"Doğrulama hatası: {e!s}"
             logger.error(f"YDT sınav yapısı doğrulama hatası: {error_msg}")
             return False, error_msg
 
@@ -255,7 +254,7 @@ class YDTExamService:
 
         return max(5, int(total_time))  # Minimum 5 dakika
 
-    def get_time_warnings(self, remaining_minutes: int) -> Optional[str]:
+    def get_time_warnings(self, remaining_minutes: int) -> str | None:
         """
         Süre uyarıları getir - REQ-1.3, REQ-1.6
 
@@ -267,16 +266,16 @@ class YDTExamService:
         """
         if remaining_minutes <= 5:
             return "⚠️ Son 5 dakika! Lütfen cevaplarınızı kontrol edin."
-        elif remaining_minutes <= 15:
+        if remaining_minutes <= 15:
             return "⏰ 15 dakika kaldı. Boş bıraktığınız soruları gözden geçirin."
-        elif remaining_minutes <= 30:
+        if remaining_minutes <= 30:
             return "📝 30 dakika kaldı. Zamanınızı iyi yönetin."
 
         return None
 
     def generate_completion_warning(
         self, answered_count: int, total_questions: int, remaining_minutes: int
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Tamamlama uyarısı oluştur - REQ-1.3, REQ-1.6
 

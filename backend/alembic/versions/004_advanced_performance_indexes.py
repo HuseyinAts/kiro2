@@ -14,8 +14,9 @@ Adds:
 
 Expected impact: 3-10x faster text search, 2-5x faster dashboard queries
 """
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 revision = '004_adv_perf_idx'
 down_revision = '003_real_perf_idx'

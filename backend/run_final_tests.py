@@ -2,10 +2,11 @@
 """
 Final test runner with capture disabled and coverage measurement.
 """
+import re
 import subprocess
 import sys
-import re
 from pathlib import Path
+
 
 def run_pytest_with_coverage():
     """Run pytest with coverage and extract results."""
@@ -73,7 +74,7 @@ def run_pytest_with_coverage():
     print()
 
     # Read the file to extract collection info and test counts
-    with open(output_file, "r", encoding="utf-8", errors="replace") as f:
+    with open(output_file, encoding="utf-8", errors="replace") as f:
         content = f.read()
 
     # Extract collection info first
@@ -83,7 +84,7 @@ def run_pytest_with_coverage():
     if collection_match:
         collected = int(collection_match.group(1))
         collection_errors = int(collection_match.group(2) or 0)
-        print(f"Test Collection:")
+        print("Test Collection:")
         print(f"  - Collected: {collected} items")
         if collection_errors > 0:
             print(f"  - Collection errors: {collection_errors}")
@@ -119,7 +120,7 @@ def run_pytest_with_coverage():
                 warnings = int(match.group(5) or 0)
             break
 
-    print(f"Test Results:")
+    print("Test Results:")
     print(f"  - Passed:   {passed}")
     print(f"  - Failed:   {failed}")
     print(f"  - Errors:   {errors}")
@@ -160,15 +161,14 @@ def run_pytest_with_coverage():
 
         # Check if coverage meets minimum requirement (60%)
         if coverage_pct >= 60:
-            print(f"[OK] Coverage meets requirement (>= 60%)")
+            print("[OK] Coverage meets requirement (>= 60%)")
         else:
-            print(f"[WARNING] Coverage below requirement (< 60%)")
+            print("[WARNING] Coverage below requirement (< 60%)")
 
         print("=" * 80)
         return 0 if failed == 0 and errors == 0 else 1
-    else:
-        print("[ERROR] Could not extract coverage percentage")
-        return 1
+    print("[ERROR] Could not extract coverage percentage")
+    return 1
 
 if __name__ == "__main__":
     sys.exit(run_pytest_with_coverage())

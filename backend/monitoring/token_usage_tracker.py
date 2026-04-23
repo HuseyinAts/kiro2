@@ -7,11 +7,11 @@ Date: 2025-10-19
 """
 
 import json
+import statistics
+from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, Optional, Any
-from collections import defaultdict
-import statistics
+from typing import Any
 
 
 class TokenUsageTracker:
@@ -43,7 +43,7 @@ class TokenUsageTracker:
         optimized_tokens: int,
         cost_per_1k: float,
         optimization_method: str = "turkish_optimizer",
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """
         Log token usage
@@ -90,10 +90,10 @@ class TokenUsageTracker:
 
     def get_stats(
         self,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
-        provider: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
+        provider: str | None = None,
+    ) -> dict[str, Any]:
         """
         Get token usage statistics
 
@@ -110,7 +110,7 @@ class TokenUsageTracker:
 
         # Read all entries
         entries = []
-        with open(self.log_path, "r", encoding="utf-8") as f:
+        with open(self.log_path, encoding="utf-8") as f:
             for line in f:
                 try:
                     entry = json.loads(line.strip())
@@ -175,7 +175,7 @@ class TokenUsageTracker:
             },
         }
 
-    def get_daily_stats(self, days: int = 7) -> Dict[str, Any]:
+    def get_daily_stats(self, days: int = 7) -> dict[str, Any]:
         """
         Get daily statistics for last N days
 
@@ -190,7 +190,7 @@ class TokenUsageTracker:
 
         return self.get_stats(start_date=start_date, end_date=end_date)
 
-    def get_monthly_projection(self) -> Dict[str, Any]:
+    def get_monthly_projection(self) -> dict[str, Any]:
         """
         Get monthly cost savings projection based on recent usage
 
@@ -272,7 +272,7 @@ Projected Annual Savings: ${projection['projected_annual_cost_saved']:.2f}/year
 """
         return report
 
-    def _empty_stats(self) -> Dict[str, Any]:
+    def _empty_stats(self) -> dict[str, Any]:
         """Return empty stats structure"""
         return {
             "total_requests": 0,
@@ -302,7 +302,7 @@ Projected Annual Savings: ${projection['projected_annual_cost_saved']:.2f}/year
             return
 
         entries = []
-        with open(self.log_path, "r", encoding="utf-8") as f:
+        with open(self.log_path, encoding="utf-8") as f:
             for line in f:
                 try:
                     entry = json.loads(line.strip())

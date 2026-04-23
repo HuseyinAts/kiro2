@@ -4,30 +4,30 @@ Task 107: Teacher Service
 Service layer for teacher registration, profile management, availability, and appointments.
 """
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func, delete
-from sqlalchemy.orm import selectinload
-from datetime import datetime, date, time, timedelta, timezone
-from typing import Optional, List
-from uuid import UUID
 import logging
+from datetime import UTC, date, datetime, time, timedelta
+from uuid import UUID
+
+from sqlalchemy import and_, delete, func, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from models.teacher_pool import (
-    TeacherPoolProfile,  # Renamed from TeacherProfile to avoid conflict with models.database.TeacherProfile
-    TeacherExpertise,
-    TeacherCertification,
-    TeacherAvailability,
     Appointment,
     AppointmentReminder,
-    TeacherReview,
-    TeacherStatus,
-    VerificationStatus,
-    SubjectExpertise,
-    CertificationType,
-    DayOfWeek,
-    TimeSlotStatus,
     AppointmentStatus,
     AppointmentType,
+    CertificationType,
+    DayOfWeek,
+    SubjectExpertise,
+    TeacherAvailability,
+    TeacherCertification,
+    TeacherExpertise,
+    TeacherPoolProfile,  # Renamed from TeacherProfile to avoid conflict with models.database.TeacherProfile
+    TeacherReview,
+    TeacherStatus,
+    TimeSlotStatus,
+    VerificationStatus,
 )
 
 # Alias for backward compatibility in this file
@@ -62,7 +62,7 @@ class TeacherService:
         department: str,
         graduation_year: int,
         hourly_rate: float,
-        application_notes: Optional[str] = None,
+        application_notes: str | None = None,
     ) -> TeacherProfile:
         """
         Register a new teacher
@@ -96,7 +96,7 @@ class TeacherService:
         logger.info(f"Teacher registered: {teacher.id} ({full_name})")
         return teacher
 
-    async def get_teacher_profile(self, teacher_id: UUID) -> Optional[TeacherProfile]:
+    async def get_teacher_profile(self, teacher_id: UUID) -> TeacherProfile | None:
         """Get teacher profile by ID with all relationships"""
         query = (
             select(TeacherProfile)
@@ -111,7 +111,7 @@ class TeacherService:
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
-    async def get_teacher_by_user_id(self, user_id: UUID) -> Optional[TeacherProfile]:
+    async def get_teacher_by_user_id(self, user_id: UUID) -> TeacherProfile | None:
         """Get teacher profile by user ID"""
         query = select(TeacherProfile).where(TeacherProfile.user_id == user_id)
         result = await self.db.execute(query)
@@ -119,7 +119,7 @@ class TeacherService:
 
     async def update_teacher_profile(
         self, teacher_id: UUID, **kwargs
-    ) -> Optional[TeacherProfile]:
+    ) -> TeacherProfile | None:
         """Update teacher profile"""
         teacher = await self.get_teacher_profile(teacher_id)
         if not teacher:
@@ -129,7 +129,7 @@ class TeacherService:
             if hasattr(teacher, key):
                 setattr(teacher, key, value)
 
-        teacher.updated_at = datetime.now(timezone.utc)
+        teacher.updated_at = datetime.now(UTC)
         await self.db.commit()
         await self.db.refresh(teacher)
 
@@ -140,8 +140,8 @@ class TeacherService:
         teacher_id: UUID,
         verified_by: UUID,
         approved: bool,
-        rejection_reason: Optional[str] = None,
-    ) -> Optional[TeacherProfile]:
+        rejection_reason: str | None = None,
+    ) -> TeacherProfile | None:
         """
         Verify or reject teacher application
 
@@ -154,7 +154,7 @@ class TeacherService:
         if approved:
             teacher.status = TeacherStatus.VERIFIED
             teacher.verification_status = VerificationStatus.APPROVED
-            teacher.verified_at = datetime.now(timezone.utc)
+            teacher.verified_at = datetime.now(UTC)
             teacher.verified_by = verified_by
         else:
             teacher.status = TeacherStatus.REJECTED
@@ -169,15 +169,15 @@ class TeacherService:
 
     async def search_teachers(
         self,
-        subject: Optional[SubjectExpertise] = None,
-        grade_level: Optional[str] = None,
-        min_rating: Optional[float] = None,
-        city: Optional[str] = None,
+        subject: SubjectExpertise | None = None,
+        grade_level: str | None = None,
+        min_rating: float | None = None,
+        city: str | None = None,
         online_only: bool = False,
-        max_hourly_rate: Optional[float] = None,
+        max_hourly_rate: float | None = None,
         limit: int = 20,
         offset: int = 0,
-    ) -> List[TeacherProfile]:
+    ) -> list[TeacherProfile]:
         """
         Search for teachers with filters
         """
@@ -222,11 +222,11 @@ class TeacherService:
         self,
         teacher_id: UUID,
         subject: SubjectExpertise,
-        grade_levels: List[str],
+        grade_levels: list[str],
         proficiency_level: str,
         years_teaching_subject: int,
-        specializations: Optional[List[str]] = None,
-        exam_types: Optional[List[str]] = None,
+        specializations: list[str] | None = None,
+        exam_types: list[str] | None = None,
     ) -> TeacherExpertise:
         """Add subject expertise for teacher"""
         expertise = TeacherExpertise(
@@ -245,7 +245,7 @@ class TeacherService:
 
         return expertise
 
-    async def get_teacher_expertise(self, teacher_id: UUID) -> List[TeacherExpertise]:
+    async def get_teacher_expertise(self, teacher_id: UUID) -> list[TeacherExpertise]:
         """Get all expertise areas for a teacher"""
         query = select(TeacherExpertise).where(
             TeacherExpertise.teacher_id == teacher_id
@@ -255,7 +255,7 @@ class TeacherService:
 
     async def update_expertise(
         self, expertise_id: UUID, **kwargs
-    ) -> Optional[TeacherExpertise]:
+    ) -> TeacherExpertise | None:
         """Update expertise details"""
         query = select(TeacherExpertise).where(TeacherExpertise.id == expertise_id)
         result = await self.db.execute(query)
@@ -291,10 +291,10 @@ class TeacherService:
         title: str,
         issuing_organization: str,
         issue_date: date,
-        expiry_date: Optional[date] = None,
-        credential_id: Optional[str] = None,
-        document_url: Optional[str] = None,
-        description: Optional[str] = None,
+        expiry_date: date | None = None,
+        credential_id: str | None = None,
+        document_url: str | None = None,
+        description: str | None = None,
     ) -> TeacherCertification:
         """Add certification for teacher"""
         certification = TeacherCertification(
@@ -320,8 +320,8 @@ class TeacherService:
         certification_id: UUID,
         verified_by: UUID,
         approved: bool,
-        rejection_reason: Optional[str] = None,
-    ) -> Optional[TeacherCertification]:
+        rejection_reason: str | None = None,
+    ) -> TeacherCertification | None:
         """Verify or reject certification"""
         query = select(TeacherCertification).where(
             TeacherCertification.id == certification_id
@@ -334,7 +334,7 @@ class TeacherService:
 
         if approved:
             certification.verification_status = VerificationStatus.APPROVED
-            certification.verified_at = datetime.now(timezone.utc)
+            certification.verified_at = datetime.now(UTC)
             certification.verified_by = verified_by
         else:
             certification.verification_status = VerificationStatus.REJECTED
@@ -347,7 +347,7 @@ class TeacherService:
 
     async def get_teacher_certifications(
         self, teacher_id: UUID
-    ) -> List[TeacherCertification]:
+    ) -> list[TeacherCertification]:
         """Get all certifications for a teacher"""
         query = (
             select(TeacherCertification)
@@ -370,9 +370,9 @@ class TeacherService:
         day_of_week: DayOfWeek,
         start_time: time,
         end_time: time,
-        specific_date: Optional[date] = None,
-        valid_from: Optional[date] = None,
-        valid_until: Optional[date] = None,
+        specific_date: date | None = None,
+        valid_from: date | None = None,
+        valid_until: date | None = None,
         max_students: int = 1,
         is_recurring: bool = True,
     ) -> TeacherAvailability:
@@ -398,9 +398,9 @@ class TeacherService:
     async def get_teacher_availability(
         self,
         teacher_id: UUID,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None,
-    ) -> List[TeacherAvailability]:
+        start_date: date | None = None,
+        end_date: date | None = None,
+    ) -> list[TeacherAvailability]:
         """Get teacher availability slots"""
         query = select(TeacherAvailability).where(
             TeacherAvailability.teacher_id == teacher_id,
@@ -426,7 +426,7 @@ class TeacherService:
 
     async def update_availability_slot(
         self, slot_id: UUID, **kwargs
-    ) -> Optional[TeacherAvailability]:
+    ) -> TeacherAvailability | None:
         """Update availability slot"""
         query = select(TeacherAvailability).where(TeacherAvailability.id == slot_id)
         result = await self.db.execute(query)
@@ -451,7 +451,7 @@ class TeacherService:
         await self.db.commit()
         return result.rowcount > 0
 
-    async def block_time_slot(self, slot_id: UUID) -> Optional[TeacherAvailability]:
+    async def block_time_slot(self, slot_id: UUID) -> TeacherAvailability | None:
         """Block a time slot (make unavailable)"""
         return await self.update_availability_slot(
             slot_id, status=TimeSlotStatus.BLOCKED
@@ -471,8 +471,8 @@ class TeacherService:
         appointment_type: AppointmentType,
         subject: SubjectExpertise,
         topic: str,
-        description: Optional[str] = None,
-        availability_slot_id: Optional[UUID] = None,
+        description: str | None = None,
+        availability_slot_id: UUID | None = None,
     ) -> Appointment:
         """
         Create new appointment (booking)
@@ -522,8 +522,8 @@ class TeacherService:
         self,
         appointment_id: UUID,
         confirmed_by: UUID,
-        meeting_url: Optional[str] = None,
-    ) -> Optional[Appointment]:
+        meeting_url: str | None = None,
+    ) -> Appointment | None:
         """Teacher confirms appointment"""
         query = select(Appointment).where(Appointment.id == appointment_id)
         result = await self.db.execute(query)
@@ -533,7 +533,7 @@ class TeacherService:
             return None
 
         appointment.status = AppointmentStatus.CONFIRMED
-        appointment.confirmed_at = datetime.now(timezone.utc)
+        appointment.confirmed_at = datetime.now(UTC)
         appointment.confirmed_by = confirmed_by
 
         if meeting_url:
@@ -549,7 +549,7 @@ class TeacherService:
 
     async def cancel_appointment(
         self, appointment_id: UUID, cancelled_by: UUID, cancellation_reason: str
-    ) -> Optional[Appointment]:
+    ) -> Appointment | None:
         """Cancel appointment"""
         query = select(Appointment).where(Appointment.id == appointment_id)
         result = await self.db.execute(query)
@@ -559,7 +559,7 @@ class TeacherService:
             return None
 
         appointment.status = AppointmentStatus.CANCELLED
-        appointment.cancelled_at = datetime.now(timezone.utc)
+        appointment.cancelled_at = datetime.now(UTC)
         appointment.cancelled_by = cancelled_by
         appointment.cancellation_reason = cancellation_reason
 
@@ -575,9 +575,9 @@ class TeacherService:
     async def complete_appointment(
         self,
         appointment_id: UUID,
-        session_summary: Optional[str] = None,
-        homework_assigned: Optional[str] = None,
-    ) -> Optional[Appointment]:
+        session_summary: str | None = None,
+        homework_assigned: str | None = None,
+    ) -> Appointment | None:
         """Mark appointment as completed"""
         query = select(Appointment).where(Appointment.id == appointment_id)
         result = await self.db.execute(query)
@@ -587,7 +587,7 @@ class TeacherService:
             return None
 
         appointment.status = AppointmentStatus.COMPLETED
-        appointment.completed_at = datetime.now(timezone.utc)
+        appointment.completed_at = datetime.now(UTC)
         appointment.session_summary = session_summary
         appointment.homework_assigned = homework_assigned
 
@@ -602,10 +602,10 @@ class TeacherService:
     async def get_teacher_appointments(
         self,
         teacher_id: UUID,
-        status: Optional[AppointmentStatus] = None,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None,
-    ) -> List[Appointment]:
+        status: AppointmentStatus | None = None,
+        start_date: date | None = None,
+        end_date: date | None = None,
+    ) -> list[Appointment]:
         """Get teacher's appointments"""
         query = select(Appointment).where(Appointment.teacher_id == teacher_id)
 
@@ -623,8 +623,8 @@ class TeacherService:
         return list(result.scalars().all())
 
     async def get_student_appointments(
-        self, student_id: UUID, status: Optional[AppointmentStatus] = None
-    ) -> List[Appointment]:
+        self, student_id: UUID, status: AppointmentStatus | None = None
+    ) -> list[Appointment]:
         """Get student's appointments"""
         query = select(Appointment).where(Appointment.student_id == student_id)
 
@@ -648,7 +648,7 @@ class TeacherService:
         remind_24h = datetime.combine(
             appointment.scheduled_date, appointment.start_time
         ) - timedelta(hours=24)
-        if remind_24h > datetime.now(timezone.utc):
+        if remind_24h > datetime.now(UTC):
             await self._create_reminder(
                 appointment.id,
                 appointment.student_id,
@@ -668,7 +668,7 @@ class TeacherService:
         remind_1h = datetime.combine(
             appointment.scheduled_date, appointment.start_time
         ) - timedelta(hours=1)
-        if remind_1h > datetime.now(timezone.utc):
+        if remind_1h > datetime.now(UTC):
             await self._create_reminder(
                 appointment.id,
                 appointment.student_id,
@@ -705,17 +705,17 @@ class TeacherService:
         self.db.add(reminder)
         await self.db.commit()
 
-    async def get_pending_reminders(self) -> List[AppointmentReminder]:
+    async def get_pending_reminders(self) -> list[AppointmentReminder]:
         """Get reminders that need to be sent"""
         query = select(AppointmentReminder).where(
             AppointmentReminder.is_sent == False,
-            AppointmentReminder.remind_at <= datetime.now(timezone.utc),
+            AppointmentReminder.remind_at <= datetime.now(UTC),
         )
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
     async def mark_reminder_sent(
-        self, reminder_id: UUID, success: bool, error_message: Optional[str] = None
+        self, reminder_id: UUID, success: bool, error_message: str | None = None
     ):
         """Mark reminder as sent"""
         query = select(AppointmentReminder).where(AppointmentReminder.id == reminder_id)
@@ -724,7 +724,7 @@ class TeacherService:
 
         if reminder:
             reminder.is_sent = True
-            reminder.sent_at = datetime.now(timezone.utc)
+            reminder.sent_at = datetime.now(UTC)
             reminder.delivery_status = "sent" if success else "failed"
             reminder.error_message = error_message
             await self.db.commit()
@@ -741,10 +741,10 @@ class TeacherService:
         overall_rating: int,
         title: str,
         content: str,
-        teaching_quality: Optional[int] = None,
-        communication: Optional[int] = None,
-        punctuality: Optional[int] = None,
-        helpfulness: Optional[int] = None,
+        teaching_quality: int | None = None,
+        communication: int | None = None,
+        punctuality: int | None = None,
+        helpfulness: int | None = None,
     ) -> TeacherReview:
         """Add student review for teacher"""
         review = TeacherReview(
@@ -771,7 +771,7 @@ class TeacherService:
 
     async def get_teacher_reviews(
         self, teacher_id: UUID, limit: int = 20, offset: int = 0
-    ) -> List[TeacherReview]:
+    ) -> list[TeacherReview]:
         """Get reviews for a teacher"""
         query = (
             select(TeacherReview)
@@ -832,4 +832,3 @@ class TeacherService:
         """Update teacher statistics after session completion"""
         # This would update TeacherStatistics table
         # Implementation can be expanded based on requirements
-        pass

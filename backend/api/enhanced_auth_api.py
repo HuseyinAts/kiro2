@@ -12,8 +12,8 @@ REQ-2.1 - REQ-6.3: Enhanced Authentication Features
 """
 
 import secrets
-from datetime import datetime, timezone
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -22,15 +22,15 @@ from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_db, get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
+from core.jwt_auth import get_jwt_manager
 from core.oauth2_service import (
     OAuth2Exception,
     get_oauth2_service,
 )
 from core.passwordless_auth import get_passwordless_auth_service
-from core.two_factor_auth import two_factor_auth
-from core.jwt_auth import get_jwt_manager
 from core.structured_logger import get_logger
+from core.two_factor_auth import two_factor_auth
 from models.database import User
 
 logger = get_logger(__name__)
@@ -60,9 +60,9 @@ class MagicLinkVerifyResponse(BaseModel):
 
     success: bool
     message: str
-    token: Optional[str] = None
-    refreshToken: Optional[str] = None
-    user: Optional[dict[str, Any]] = None
+    token: str | None = None
+    refreshToken: str | None = None
+    user: dict[str, Any] | None = None
 
 
 class DeviceInfo(BaseModel):
@@ -95,7 +95,7 @@ class LoginHistoryEntry(BaseModel):
     ip_address: str
     user_agent: str
     device_type: str
-    location: Optional[str] = None
+    location: str | None = None
     status: str  # 'success', 'failed', 'blocked'
 
 
@@ -110,7 +110,7 @@ class LoginHistoryResponse(BaseModel):
 class AccountLockRequest(BaseModel):
     """Hesap kilitleme istegi."""
 
-    reason: Optional[str] = Field(None, description="Kilitleme nedeni")
+    reason: str | None = Field(None, description="Kilitleme nedeni")
 
 
 class AccountLockResponse(BaseModel):
@@ -172,7 +172,7 @@ class SessionInfo(BaseModel):
     created_at: datetime
     last_activity: datetime
     expires_at: datetime
-    device_id: Optional[str] = None
+    device_id: str | None = None
     ip_address: str
     user_agent: str
     is_current: bool = False
@@ -207,7 +207,7 @@ class SessionRevokeResponse(BaseModel):
 )
 async def start_oauth2_flow(
     provider: str,
-    redirect_uri: Optional[str] = Query(
+    redirect_uri: str | None = Query(
         None, description="Basarili giris sonrasi yonlendirilecek URL"
     ),
 ):
@@ -554,7 +554,7 @@ async def verify_magic_link(
             )
 
         # Son giris guncelle
-        user.last_login = datetime.now(timezone.utc)
+        user.last_login = datetime.now(UTC)
         await db.commit()
 
         # JWT token olustur
@@ -641,7 +641,7 @@ async def list_devices(
                 device_type="Desktop",
                 os="Windows 11",
                 browser="Chrome 120",
-                last_seen=datetime.now(timezone.utc),
+                last_seen=datetime.now(UTC),
                 ip_address="192.168.1.100",
                 is_current=True,
                 is_trusted=True,
@@ -758,7 +758,7 @@ async def get_login_history(
         mock_history = [
             LoginHistoryEntry(
                 id=str(uuid4()),
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 ip_address="192.168.1.100",
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120",
                 device_type="Desktop",
@@ -841,7 +841,7 @@ async def lock_account(
         # jwt_manager = get_jwt_manager()
         # jwt_manager.revoke_all_user_tokens(db, user_id)
 
-        locked_at = datetime.now(timezone.utc)
+        locked_at = datetime.now(UTC)
 
         logger.warning(
             "account_self_locked",
@@ -1131,9 +1131,9 @@ async def list_sessions(
         mock_sessions = [
             SessionInfo(
                 session_id=str(uuid4()),
-                created_at=datetime.now(timezone.utc),
-                last_activity=datetime.now(timezone.utc),
-                expires_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                last_activity=datetime.now(UTC),
+                expires_at=datetime.now(UTC),
                 device_id="dev_001",
                 ip_address="192.168.1.100",
                 user_agent="Chrome/120",

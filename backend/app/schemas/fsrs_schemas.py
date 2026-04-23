@@ -1,16 +1,17 @@
 """KIRO2 — FSRS API Schemas"""
 from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 
 class ReviewRequest(BaseModel):
     question_id: UUID
     is_correct:  bool
-    response_ms: Optional[int] = Field(None, ge=0, le=300_000)
-    item_b:      Optional[float] = Field(None, description="IRT güçlük (opsiyonel)")
+    response_ms: int | None = Field(None, ge=0, le=300_000)
+    item_b:      float | None = Field(None, description="IRT güçlük (opsiyonel)")
 
 
 class ReviewResponse(BaseModel):
@@ -34,9 +35,9 @@ class DueItemResponse(BaseModel):
     reps:           int
     lapses:         int
     # Soru icerik alanlari (FSRS UI icin)
-    stem:           Optional[str] = None
-    options:        Optional[dict] = None
-    subject_id:     Optional[str] = None
+    stem:           str | None = None
+    options:        dict | None = None
+    subject_id:     str | None = None
 
 
 class DueCountResponse(BaseModel):

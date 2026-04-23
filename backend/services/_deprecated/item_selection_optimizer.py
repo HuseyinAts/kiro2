@@ -14,9 +14,8 @@ import logging
 import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Set, Tuple
-import numpy as np
 
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ class ExposureRecord:
     total_exposures: int = 0
     total_tests: int = 0
     exposure_rate: float = 0.0
-    last_used: Optional[datetime] = None
+    last_used: datetime | None = None
     rotation_group: int = 0  # Rotasyon grubu (0-9)
 
 
@@ -86,8 +85,8 @@ class ItemSelectionOptimizer:
         self.forgetting_curve_factor = 0.5  # Ebbinghaus faktörü
 
         # Veri yapıları
-        self.exposure_records: Dict[str, ExposureRecord] = {}
-        self.spaced_schedules: Dict[Tuple[str, str], SpacedRepetitionSchedule] = {}
+        self.exposure_records: dict[str, ExposureRecord] = {}
+        self.spaced_schedules: dict[tuple[str, str], SpacedRepetitionSchedule] = {}
 
         logger.info("Item Selection Optimizer başlatıldı")
 
@@ -95,10 +94,10 @@ class ItemSelectionOptimizer:
 
     def apply_content_balancing(
         self,
-        question_pool: List[Dict],
-        content_constraints: List[ContentConstraint],
-        current_coverage: Dict[str, int],
-    ) -> List[Dict]:
+        question_pool: list[dict],
+        content_constraints: list[ContentConstraint],
+        current_coverage: dict[str, int],
+    ) -> list[dict]:
         """
         Konu dağılımı dengesini uygula.
 
@@ -169,8 +168,8 @@ class ItemSelectionOptimizer:
     def _calculate_topic_balance_score(
         self,
         topic: str,
-        current_coverage: Dict[str, int],
-        constraints: List[ContentConstraint],
+        current_coverage: dict[str, int],
+        constraints: list[ContentConstraint],
     ) -> float:
         """
         Konu dengesi skorunu hesapla.
@@ -214,7 +213,7 @@ class ItemSelectionOptimizer:
         return score * constraint.priority
 
     def _calculate_difficulty_balance_score(
-        self, difficulty: str, current_coverage: Dict[str, int]
+        self, difficulty: str, current_coverage: dict[str, int]
     ) -> float:
         """
         Zorluk dengesi skorunu hesapla.
@@ -251,11 +250,10 @@ class ItemSelectionOptimizer:
         if deficit > 0:
             # Eksik var, yüksek skor
             return 0.5 + min(0.5, deficit * 2)
-        else:
-            # Fazla var, düşük skor
-            return 0.5 - min(0.4, abs(deficit) * 2)
+        # Fazla var, düşük skor
+        return 0.5 - min(0.4, abs(deficit) * 2)
 
-    def _calculate_curriculum_alignment_score(self, question: Dict) -> float:
+    def _calculate_curriculum_alignment_score(self, question: dict) -> float:
         """
         Müfredat uygunluk skorunu hesapla.
 
@@ -286,7 +284,7 @@ class ItemSelectionOptimizer:
         return min(1.0, score)
 
     def enforce_content_constraints(
-        self, selected_questions: List[Dict], constraints: List[ContentConstraint]
+        self, selected_questions: list[dict], constraints: list[ContentConstraint]
     ) -> bool:
         """
         İçerik kısıtlarının karşılandığını doğrula.
@@ -373,8 +371,8 @@ class ItemSelectionOptimizer:
         return record
 
     def apply_sympson_hetter_method(
-        self, question_pool: List[Dict], target_exposure_rate: float = 0.2
-    ) -> List[Dict]:
+        self, question_pool: list[dict], target_exposure_rate: float = 0.2
+    ) -> list[dict]:
         """
         Sympson-Hetter metodu ile exposure control uygula.
 
@@ -456,8 +454,8 @@ class ItemSelectionOptimizer:
         return max(0.1, min(1.0, probability))  # [0.1, 1.0] aralığında sınırla
 
     def rotate_item_pool(
-        self, question_pool: List[Dict], active_rotation_groups: Set[int]
-    ) -> List[Dict]:
+        self, question_pool: list[dict], active_rotation_groups: set[int]
+    ) -> list[dict]:
         """
         Soru havuzunu döngüsel olarak kullan.
 
@@ -508,8 +506,8 @@ class ItemSelectionOptimizer:
         return rotated_pool
 
     def disable_overexposed_items(
-        self, question_pool: List[Dict], max_exposure_rate: Optional[float] = None
-    ) -> List[Dict]:
+        self, question_pool: list[dict], max_exposure_rate: float | None = None
+    ) -> list[dict]:
         """
         Aşırı maruz kalmış soruları geçici olarak devre dışı bırak.
 
@@ -557,7 +555,7 @@ class ItemSelectionOptimizer:
 
         return filtered_pool
 
-    def get_exposure_statistics(self) -> Dict:
+    def get_exposure_statistics(self) -> dict:
         """
         Maruz kalma istatistiklerini al.
 
@@ -589,10 +587,10 @@ class ItemSelectionOptimizer:
 
     def select_within_zpd(
         self,
-        question_pool: List[Dict],
+        question_pool: list[dict],
         student_theta: float,
-        zpd_range: Optional[float] = None,
-    ) -> List[Dict]:
+        zpd_range: float | None = None,
+    ) -> list[dict]:
         """
         Zone of Proximal Development (ZPD) içinde soru seç.
 
@@ -695,10 +693,10 @@ class ItemSelectionOptimizer:
 
     def prevent_frustration(
         self,
-        question_pool: List[Dict],
+        question_pool: list[dict],
         student_theta: float,
-        frustration_threshold: Optional[float] = None,
-    ) -> List[Dict]:
+        frustration_threshold: float | None = None,
+    ) -> list[dict]:
         """
         Frustration (hayal kırıklığı) önleme filtresi uygula.
 
@@ -742,7 +740,7 @@ class ItemSelectionOptimizer:
         return filtered_pool
 
     def adjust_zpd_range(
-        self, student_performance: Dict, current_zpd_range: float
+        self, student_performance: dict, current_zpd_range: float
     ) -> float:
         """
         Öğrenci performansına göre ZPD aralığını ayarla.
@@ -786,10 +784,10 @@ class ItemSelectionOptimizer:
 
     def apply_spacing_effect(
         self,
-        question_pool: List[Dict],
+        question_pool: list[dict],
         student_id: str,
-        current_time: Optional[datetime] = None,
-    ) -> List[Dict]:
+        current_time: datetime | None = None,
+    ) -> list[dict]:
         """
         Spacing effect (aralıklı tekrar) uygula.
 
@@ -899,7 +897,7 @@ class ItemSelectionOptimizer:
         question_id: str,
         is_correct: bool,
         response_quality: float,
-        current_time: Optional[datetime] = None,
+        current_time: datetime | None = None,
     ) -> SpacedRepetitionSchedule:
         """
         Yanıta göre spacing schedule'ı güncelle.
@@ -1087,8 +1085,8 @@ class ItemSelectionOptimizer:
         return max(0.0, min(1.0, priority))
 
     def get_due_reviews(
-        self, student_id: str, current_time: Optional[datetime] = None
-    ) -> List[str]:
+        self, student_id: str, current_time: datetime | None = None
+    ) -> list[str]:
         """
         Tekrar zamanı gelmiş soruları al.
 
@@ -1114,7 +1112,7 @@ class ItemSelectionOptimizer:
 
         return due_questions
 
-    def get_spacing_statistics(self, student_id: str) -> Dict:
+    def get_spacing_statistics(self, student_id: str) -> dict:
         """
         Spacing istatistiklerini al.
 

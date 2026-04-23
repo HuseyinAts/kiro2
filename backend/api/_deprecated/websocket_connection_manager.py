@@ -16,9 +16,10 @@ import logging
 import time
 import uuid
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 from fastapi import WebSocket
 
@@ -38,7 +39,7 @@ class ConnectionInfo:
     connected_at: datetime = field(default_factory=datetime.now)
     last_activity: datetime = field(default_factory=datetime.now)
     is_open: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -46,9 +47,9 @@ class ConnectionResult:
     """Baglanti sonucu."""
 
     connected: bool
-    connection_id: Optional[str] = None
-    closed_connection: Optional[str] = None
-    reason: Optional[str] = None
+    connection_id: str | None = None
+    closed_connection: str | None = None
+    reason: str | None = None
     current_count: int = 0
 
 
@@ -76,7 +77,7 @@ class WebSocketConnectionManager:
     def __init__(
         self,
         max_connections_per_user: int = MAX_CONNECTIONS_PER_USER,
-        redis_client: Optional[Any] = None,
+        redis_client: Any | None = None,
     ):
         """
         WebSocketConnectionManager olustur.
@@ -89,15 +90,15 @@ class WebSocketConnectionManager:
         self.redis_client = redis_client
 
         # In-memory storage (used when Redis unavailable)
-        self._connections: Dict[str, Dict[str, ConnectionInfo]] = defaultdict(dict)
-        self._connection_order: Dict[str, List[str]] = defaultdict(list)
+        self._connections: dict[str, dict[str, ConnectionInfo]] = defaultdict(dict)
+        self._connection_order: dict[str, list[str]] = defaultdict(list)
 
         # Metrics
         self.metrics = ConnectionMetrics()
 
         # Callbacks
-        self._on_connect_callbacks: List[Callable] = []
-        self._on_disconnect_callbacks: List[Callable] = []
+        self._on_connect_callbacks: list[Callable] = []
+        self._on_disconnect_callbacks: list[Callable] = []
 
         logger.info(
             f"WebSocketConnectionManager initialized: "
@@ -108,8 +109,8 @@ class WebSocketConnectionManager:
         self,
         user_id: str,
         websocket: WebSocket,
-        connection_id: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        connection_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ConnectionResult:
         """
         Yeni WebSocket baglantisi kaydet (REQ-2.6).
@@ -158,8 +159,7 @@ class WebSocketConnectionManager:
         self.metrics.total_connections += 1
         self.metrics.active_connections += 1
 
-        if self.metrics.active_connections > self.metrics.peak_connections:
-            self.metrics.peak_connections = self.metrics.active_connections
+        self.metrics.peak_connections = max(self.metrics.peak_connections, self.metrics.active_connections)
 
         if user_id not in self._get_all_user_ids() or current_count == 0:
             self.metrics.total_users += 1
@@ -266,7 +266,7 @@ class WebSocketConnectionManager:
 
             await self.disconnect(user_id, connection_id, reason)
 
-    async def _get_oldest_connection(self, user_id: str) -> Optional[str]:
+    async def _get_oldest_connection(self, user_id: str) -> str | None:
         """
         En eski baglantiyi al (FIFO).
 
@@ -291,7 +291,7 @@ class WebSocketConnectionManager:
         """
         return len(self._connections.get(user_id, {}))
 
-    def get_user_connections(self, user_id: str) -> List[str]:
+    def get_user_connections(self, user_id: str) -> list[str]:
         """
         Kullanici baglanti ID listesi.
 
@@ -305,7 +305,7 @@ class WebSocketConnectionManager:
 
     def get_connection(
         self, user_id: str, connection_id: str
-    ) -> Optional[ConnectionInfo]:
+    ) -> ConnectionInfo | None:
         """
         Baglanti bilgisini al.
 
@@ -322,7 +322,7 @@ class WebSocketConnectionManager:
         """Toplam aktif baglanti sayisi."""
         return sum(len(conns) for conns in self._connections.values())
 
-    def _get_all_user_ids(self) -> Set[str]:
+    def _get_all_user_ids(self) -> set[str]:
         """Tum kullanici ID'leri."""
         return set(self._connections.keys())
 
@@ -330,7 +330,7 @@ class WebSocketConnectionManager:
         self,
         user_id: str,
         message: str,
-        exclude_connection: Optional[str] = None,
+        exclude_connection: str | None = None,
     ) -> int:
         """
         Kullanicinin tum baglantilarina mesaj gonder.
@@ -363,7 +363,7 @@ class WebSocketConnectionManager:
     async def broadcast_to_all(
         self,
         message: str,
-        exclude_users: Optional[Set[str]] = None,
+        exclude_users: set[str] | None = None,
     ) -> int:
         """
         Tum baglantilara mesaj gonder.
@@ -463,7 +463,7 @@ class WebSocketConnectionManager:
             except Exception as e:
                 logger.error(f"Disconnect callback error: {e}")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """
         Metrikleri al.
 
@@ -481,7 +481,7 @@ class WebSocketConnectionManager:
 
 
 # Singleton instance
-_connection_manager: Optional[WebSocketConnectionManager] = None
+_connection_manager: WebSocketConnectionManager | None = None
 
 
 def get_connection_manager() -> WebSocketConnectionManager:

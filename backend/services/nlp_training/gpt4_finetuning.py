@@ -8,10 +8,10 @@ Requirements: REQ-48.17-48.20
 import json
 import logging
 import time
-from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from openai import OpenAI
 
@@ -55,7 +55,7 @@ class GPT4FineTuningService:
     - REQ-48.20: Model evaluation metrics
     """
 
-    def __init__(self, api_key: str, organization: Optional[str] = None):
+    def __init__(self, api_key: str, organization: str | None = None):
         """
         Initialize GPT-4 Fine-tuning Service
 
@@ -64,13 +64,13 @@ class GPT4FineTuningService:
             organization: OpenAI organization ID (optional)
         """
         self.client = OpenAI(api_key=api_key, organization=organization)
-        self.training_jobs: Dict[str, Any] = {}
-        self.metrics_history: List[TrainingMetrics] = []
+        self.training_jobs: dict[str, Any] = {}
+        self.metrics_history: list[TrainingMetrics] = []
 
         logger.info("GPT-4 Fine-tuning Service initialized")
 
     def prepare_training_data(
-        self, questions: List[Dict[str, Any]], output_file: str = "training_data.jsonl"
+        self, questions: list[dict[str, Any]], output_file: str = "training_data.jsonl"
     ) -> str:
         """
         ÖSYM formatına uygun training data hazırla
@@ -115,7 +115,7 @@ class GPT4FineTuningService:
         )
         return str(output_path)
 
-    def _create_osym_prompt(self, question: Dict[str, Any]) -> str:
+    def _create_osym_prompt(self, question: dict[str, Any]) -> str:
         """ÖSYM formatında prompt oluştur"""
         return f"""Konu: {question.get('subject', '')}
 Alt Konu: {question.get('topic', '')}
@@ -124,7 +124,7 @@ Bloom Seviyesi: {question.get('bloom_level', 'uygulama')}
 
 Bu konuda ÖSYM formatında bir soru oluştur."""
 
-    def _create_osym_completion(self, question: Dict[str, Any]) -> str:
+    def _create_osym_completion(self, question: dict[str, Any]) -> str:
         """ÖSYM formatında completion oluştur"""
         stem = question.get("stem", "")
         options = question.get("options", [])
@@ -164,8 +164,8 @@ Seçenekler:
         self,
         training_file_id: str,
         model: str = "gpt-4-0613",
-        hyperparameters: Optional[HyperParameters] = None,
-        suffix: Optional[str] = None,
+        hyperparameters: HyperParameters | None = None,
+        suffix: str | None = None,
     ) -> str:
         """
         Fine-tuning işlemini başlat
@@ -207,7 +207,7 @@ Seçenekler:
         logger.info(f"Fine-tuning job started: {job_id}")
         return job_id
 
-    def check_training_status(self, job_id: str) -> Dict[str, Any]:
+    def check_training_status(self, job_id: str) -> dict[str, Any]:
         """
         Training durumunu kontrol et
 
@@ -267,18 +267,18 @@ Seçenekler:
                 logger.info(f"Fine-tuning completed: {status['fine_tuned_model']}")
                 return status["fine_tuned_model"]
 
-            elif status["status"] == "failed":
+            if status["status"] == "failed":
                 error_msg = status.get("error", "Unknown error")
                 raise RuntimeError(f"Fine-tuning failed: {error_msg}")
 
-            elif status["status"] in ["cancelled", "expired"]:
+            if status["status"] in ["cancelled", "expired"]:
                 raise RuntimeError(f"Fine-tuning {status['status']}: {job_id}")
 
             logger.info(f"Fine-tuning in progress: {status['status']}")
             time.sleep(check_interval)
 
     def evaluate_model(
-        self, model_id: str, test_questions: List[Dict[str, Any]]
+        self, model_id: str, test_questions: list[dict[str, Any]]
     ) -> TrainingMetrics:
         """
         Model performansını değerlendir
@@ -350,7 +350,7 @@ Seçenekler:
         )
         return metrics
 
-    def list_fine_tuned_models(self) -> List[Dict[str, Any]]:
+    def list_fine_tuned_models(self) -> list[dict[str, Any]]:
         """
         Fine-tuned modelleri listele
 
@@ -393,7 +393,7 @@ Seçenekler:
             logger.error(f"Failed to cancel fine-tuning: {e}")
             return False
 
-    def get_metrics_history(self) -> List[TrainingMetrics]:
+    def get_metrics_history(self) -> list[TrainingMetrics]:
         """
         Metrik geçmişini getir
 

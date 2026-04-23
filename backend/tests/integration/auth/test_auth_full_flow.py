@@ -4,12 +4,13 @@ Authentication & RBAC Integration Tests - Full Flow (F-01 Series)
 Tests auth data structures, token logic, and RBAC scenarios.
 NO REWARD HACKING - All assertions must be meaningful.
 """
-import pytest
-import sys
-from pathlib import Path
-from datetime import datetime, timedelta, timezone
 import hashlib
 import secrets
+import sys
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
@@ -84,10 +85,10 @@ async def test_token_expiration():
     """Token with past expiry should be considered expired."""
     token_data = {
         "sub": "user_123",
-        "exp": datetime.now(timezone.utc) - timedelta(hours=1),
-        "iat": datetime.now(timezone.utc) - timedelta(hours=25),
+        "exp": datetime.now(UTC) - timedelta(hours=1),
+        "iat": datetime.now(UTC) - timedelta(hours=25),
     }
-    assert token_data["exp"] < datetime.now(timezone.utc), "Expired token should be rejected"
+    assert token_data["exp"] < datetime.now(UTC), "Expired token should be rejected"
 
 
 # --- F-01.7: Refresh token structure ---
@@ -120,8 +121,8 @@ async def test_rate_limiting_logic():
     """Login rate limiting: max 5 attempts per minute."""
     max_attempts = 5
     window_seconds = 60
-    attempts = [datetime.now(timezone.utc) - timedelta(seconds=i * 5) for i in range(6)]
-    recent = [a for a in attempts if (datetime.now(timezone.utc) - a).total_seconds() <= window_seconds]
+    attempts = [datetime.now(UTC) - timedelta(seconds=i * 5) for i in range(6)]
+    recent = [a for a in attempts if (datetime.now(UTC) - a).total_seconds() <= window_seconds]
     assert len(recent) > max_attempts, "Should exceed rate limit threshold"
 
 
@@ -172,8 +173,8 @@ async def test_token_claims():
     """JWT token must contain sub, exp, iat, role claims."""
     claims = {
         "sub": "user_123",
-        "exp": int(datetime.now(timezone.utc).timestamp()) + 3600,
-        "iat": int(datetime.now(timezone.utc).timestamp()),
+        "exp": int(datetime.now(UTC).timestamp()) + 3600,
+        "iat": int(datetime.now(UTC).timestamp()),
         "role": "STUDENT",
     }
     required_claims = {"sub", "exp", "iat", "role"}

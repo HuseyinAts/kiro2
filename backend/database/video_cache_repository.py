@@ -10,7 +10,6 @@ Task 8: Database Optimization ve Indexing
 """
 
 import logging
-from typing import Dict, List, Optional
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -164,7 +163,7 @@ class OptimizedVideoCacheRepository:
         language: str = "tr",
         min_quality: float = 0.0,
         limit: int = 10,
-    ) -> List[VideoCache]:
+    ) -> list[VideoCache]:
         """
         Optimized video search using composite index
 
@@ -199,10 +198,10 @@ class OptimizedVideoCacheRepository:
             return videos
 
         except Exception as e:
-            logger.error(f"[ERROR] Video search failed: {str(e)}")
+            logger.error(f"[ERROR] Video search failed: {e!s}")
             raise
 
-    async def get_by_video_id(self, video_id: str) -> Optional[VideoCache]:
+    async def get_by_video_id(self, video_id: str) -> VideoCache | None:
         """
         Get video by video_id (uses UNIQUE index)
 
@@ -220,10 +219,10 @@ class OptimizedVideoCacheRepository:
             return None
 
         except Exception as e:
-            logger.error(f"[ERROR] Get video by ID failed: {str(e)}")
+            logger.error(f"[ERROR] Get video by ID failed: {e!s}")
             raise
 
-    async def batch_upsert_videos(self, videos: List[Dict]) -> int:
+    async def batch_upsert_videos(self, videos: list[dict]) -> int:
         """
         Batch upsert videos (INSERT ... ON CONFLICT DO UPDATE)
 
@@ -276,7 +275,7 @@ class OptimizedVideoCacheRepository:
 
         except Exception as e:
             await self.session.rollback()
-            logger.error(f"[ERROR] Batch upsert failed: {str(e)}")
+            logger.error(f"[ERROR] Batch upsert failed: {e!s}")
             raise
 
     async def update_access_stats(self, video_id: str) -> None:
@@ -295,10 +294,10 @@ class OptimizedVideoCacheRepository:
 
         except Exception as e:
             await self.session.rollback()
-            logger.error(f"[ERROR] Update access stats failed: {str(e)}")
+            logger.error(f"[ERROR] Update access stats failed: {e!s}")
             raise
 
-    async def get_cache_statistics(self) -> Dict:
+    async def get_cache_statistics(self) -> dict:
         """
         Get cache statistics for monitoring
 
@@ -335,7 +334,7 @@ class OptimizedVideoCacheRepository:
             }
 
         except Exception as e:
-            logger.error(f"[ERROR] Get cache statistics failed: {str(e)}")
+            logger.error(f"[ERROR] Get cache statistics failed: {e!s}")
             return {}
 
     async def evict_lru_entries(self, max_entries: int = 10000) -> int:
@@ -381,7 +380,7 @@ class OptimizedVideoCacheRepository:
 
         except Exception as e:
             await self.session.rollback()
-            logger.error(f"[ERROR] LRU eviction failed: {str(e)}")
+            logger.error(f"[ERROR] LRU eviction failed: {e!s}")
             raise
 
     async def cleanup_expired_entries(self) -> int:
@@ -409,7 +408,7 @@ class OptimizedVideoCacheRepository:
 
         except Exception as e:
             await self.session.rollback()
-            logger.error(f"[ERROR] Cleanup expired entries failed: {str(e)}")
+            logger.error(f"[ERROR] Cleanup expired entries failed: {e!s}")
             raise
 
     def _row_to_video_cache(self, row) -> VideoCache:
@@ -443,8 +442,8 @@ class OptimizedVideoCacheRepository:
         )
 
     async def get_popular_videos(
-        self, subject: Optional[str] = None, limit: int = 20
-    ) -> List[VideoCache]:
+        self, subject: str | None = None, limit: int = 20
+    ) -> list[VideoCache]:
         """
         Get popular videos based on access count
 
@@ -482,16 +481,16 @@ class OptimizedVideoCacheRepository:
             return videos
 
         except Exception as e:
-            logger.error(f"[ERROR] Get popular videos failed: {str(e)}")
+            logger.error(f"[ERROR] Get popular videos failed: {e!s}")
             raise
 
     async def get_videos_by_subject_batch(
         self,
-        subjects: List[str],
+        subjects: list[str],
         difficulty: str,
         exam_type: str,
         limit_per_subject: int = 5,
-    ) -> Dict[str, List[VideoCache]]:
+    ) -> dict[str, list[VideoCache]]:
         """
         Get videos for multiple subjects in a single query
 
@@ -551,7 +550,7 @@ class OptimizedVideoCacheRepository:
             return videos_by_subject
 
         except Exception as e:
-            logger.error(f"[ERROR] Batch fetch by subject failed: {str(e)}")
+            logger.error(f"[ERROR] Batch fetch by subject failed: {e!s}")
             raise
 
 
@@ -562,7 +561,7 @@ class OptimizedVideoCacheRepository:
 
 async def benchmark_query_performance(
     repository: OptimizedVideoCacheRepository, iterations: int = 100
-) -> Dict:
+) -> dict:
     """
     Benchmark query performance
 

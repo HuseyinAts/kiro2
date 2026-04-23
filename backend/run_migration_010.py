@@ -2,8 +2,9 @@
 Run Migration 010: Question Bank v2.0 Upgrade
 """
 import asyncio
-import asyncpg
 import os
+
+import asyncpg
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,7 +30,7 @@ async def run_migration():
         migration_path = "migrations/010_upgrade_question_bank_v2.sql"
         print(f"Reading migration file: {migration_path}")
 
-        with open(migration_path, "r", encoding="utf-8") as f:
+        with open(migration_path, encoding="utf-8") as f:
             migration_sql = f.read()
 
         # Execute migration

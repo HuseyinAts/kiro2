@@ -2,10 +2,11 @@
 Comprehensive tests for api/cache.py
 Tests cache management API endpoints
 """
+from unittest.mock import AsyncMock, patch
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from unittest.mock import patch, AsyncMock
 
 
 @pytest.fixture

@@ -7,7 +7,6 @@ Analyzes code context to determine if a pattern match is legitimate.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Set
 from enum import Enum
 
 
@@ -30,8 +29,8 @@ class ContextInfo:
     is_in_string: bool
     is_test_file: bool
     surrounding_code: str
-    function_name: Optional[str] = None
-    class_name: Optional[str] = None
+    function_name: str | None = None
+    class_name: str | None = None
 
 
 class ContextAnalyzer:
@@ -43,14 +42,14 @@ class ContextAnalyzer:
     """
 
     # Keywords that indicate legitimate use
-    LEGITIMATE_KEYWORDS: Set[str] = {
+    LEGITIMATE_KEYWORDS: set[str] = {
         'example', 'demo', 'tutorial', 'documentation',
         'doc', 'docstring', 'comment', 'note', 'warning',
         'fixme', 'todo', 'hack', 'workaround'
     }
 
     # Test file patterns
-    TEST_FILE_PATTERNS: Set[str] = {
+    TEST_FILE_PATTERNS: set[str] = {
         'test_', '_test.py', 'tests/', 'test/', 'spec_',
         '_spec.py', 'conftest.py'
     }
@@ -147,14 +146,14 @@ class ContextAnalyzer:
                 if count == 2 and i == line_number:
                     # Single line docstring on current line
                     return True
-                elif count % 2 == 1:
+                if count % 2 == 1:
                     in_docstring = not in_docstring
                     docstring_char = '"""'
             elif "'''" in line:
                 count = line.count("'''")
                 if count == 2 and i == line_number:
                     return True
-                elif count % 2 == 1:
+                if count % 2 == 1:
                     in_docstring = not in_docstring
                     docstring_char = "'''"
 
@@ -175,7 +174,7 @@ class ContextAnalyzer:
         # If odd number of quotes, might be in string
         return (single_quotes % 2 == 1) or (double_quotes % 2 == 1)
 
-    def _get_enclosing_scope(self, line_number: int) -> tuple[Optional[str], Optional[str]]:
+    def _get_enclosing_scope(self, line_number: int) -> tuple[str | None, str | None]:
         """Get the function and class names that enclose this line."""
         function_name = None
         class_name = None

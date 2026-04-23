@@ -4,11 +4,12 @@ Teknofest 2025 - YKS Hazırlık Platformu
 Generated: 2025-09-28 16:03:56
 """
 
-import pytest
 import asyncio
-from unittest.mock import Mock, patch
-from pathlib import Path
 import sys
+from pathlib import Path
+from unittest.mock import Mock
+
+import pytest
 
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent))

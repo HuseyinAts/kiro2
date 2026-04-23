@@ -19,14 +19,14 @@ Migration Path:
 - Use: ensure_utc(dt) to guarantee UTC timezone
 """
 
-from datetime import datetime, date, timezone, timedelta
-from typing import Optional, Any, Dict
-from zoneinfo import ZoneInfo
 import re
+from datetime import UTC, date, datetime, timedelta
+from typing import Any
+from zoneinfo import ZoneInfo
 
 # Turkish timezone (Europe/Istanbul = UTC+3)
 TURKISH_TIMEZONE = ZoneInfo("Europe/Istanbul")
-UTC_TIMEZONE = timezone.utc
+UTC_TIMEZONE = UTC
 
 
 # ================================================================
@@ -93,7 +93,7 @@ def today_turkish() -> date:
 # TIMEZONE CONVERSION UTILITIES
 # ================================================================
 
-def ensure_utc(dt: Optional[datetime]) -> Optional[datetime]:
+def ensure_utc(dt: datetime | None) -> datetime | None:
     """
     Ensure datetime is in UTC timezone
 
@@ -129,7 +129,7 @@ def ensure_utc(dt: Optional[datetime]) -> Optional[datetime]:
     return dt.astimezone(UTC_TIMEZONE)
 
 
-def to_turkish_time(dt: Optional[datetime]) -> Optional[datetime]:
+def to_turkish_time(dt: datetime | None) -> datetime | None:
     """
     Convert datetime to Turkish timezone (Europe/Istanbul)
 
@@ -154,7 +154,7 @@ def to_turkish_time(dt: Optional[datetime]) -> Optional[datetime]:
     return utc_dt.astimezone(TURKISH_TIMEZONE)
 
 
-def from_turkish_time(dt: Optional[datetime]) -> Optional[datetime]:
+def from_turkish_time(dt: datetime | None) -> datetime | None:
     """
     Convert Turkish timezone datetime to UTC
 
@@ -185,9 +185,9 @@ def from_turkish_time(dt: Optional[datetime]) -> Optional[datetime]:
 # ================================================================
 
 def parse_datetime(
-    dt_str: Optional[str],
+    dt_str: str | None,
     assume_utc: bool = True
-) -> Optional[datetime]:
+) -> datetime | None:
     """
     Safely parse datetime string to timezone-aware datetime
 
@@ -231,7 +231,7 @@ def parse_datetime(
         return None
 
 
-def parse_date(date_str: Optional[str]) -> Optional[date]:
+def parse_date(date_str: str | None) -> date | None:
     """
     Safely parse date string to date object
 
@@ -261,7 +261,7 @@ def parse_date(date_str: Optional[str]) -> Optional[date]:
 # DATETIME FORMATTING UTILITIES
 # ================================================================
 
-def format_datetime_utc(dt: Optional[datetime]) -> Optional[str]:
+def format_datetime_utc(dt: datetime | None) -> str | None:
     """
     Format datetime as ISO 8601 UTC string
 
@@ -283,7 +283,7 @@ def format_datetime_utc(dt: Optional[datetime]) -> Optional[str]:
     return utc_dt.isoformat()
 
 
-def format_datetime_turkish(dt: Optional[datetime]) -> Optional[str]:
+def format_datetime_turkish(dt: datetime | None) -> str | None:
     """
     Format datetime as ISO 8601 Turkish timezone string
 
@@ -305,7 +305,7 @@ def format_datetime_turkish(dt: Optional[datetime]) -> Optional[str]:
     return tr_dt.isoformat()
 
 
-def format_datetime_turkish_display(dt: Optional[datetime]) -> Optional[str]:
+def format_datetime_turkish_display(dt: datetime | None) -> str | None:
     """
     Format datetime for Turkish user display (DD.MM.YYYY HH:MM)
 
@@ -327,7 +327,7 @@ def format_datetime_turkish_display(dt: Optional[datetime]) -> Optional[str]:
     return tr_dt.strftime("%d.%m.%Y %H:%M")
 
 
-def format_date_turkish(d: Optional[date]) -> Optional[str]:
+def format_date_turkish(d: date | None) -> str | None:
     """
     Format date for Turkish display (DD.MM.YYYY)
 
@@ -352,7 +352,7 @@ def format_date_turkish(d: Optional[date]) -> Optional[str]:
 # DICTIONARY/JSON DATETIME CONVERSION
 # ================================================================
 
-def convert_dict_datetimes_to_utc(data: Dict[str, Any]) -> Dict[str, Any]:
+def convert_dict_datetimes_to_utc(data: dict[str, Any]) -> dict[str, Any]:
     """
     Recursively convert all datetime values in dictionary to UTC
 
@@ -388,7 +388,7 @@ def convert_dict_datetimes_to_utc(data: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
-def convert_dict_datetimes_to_turkish(data: Dict[str, Any]) -> Dict[str, Any]:
+def convert_dict_datetimes_to_turkish(data: dict[str, Any]) -> dict[str, Any]:
     """
     Recursively convert all datetime values in dictionary to Turkish timezone
 
@@ -424,7 +424,7 @@ def convert_dict_datetimes_to_turkish(data: Dict[str, Any]) -> Dict[str, Any]:
     return result
 
 
-def format_dict_datetimes_for_api(data: Dict[str, Any], use_turkish: bool = False) -> Dict[str, Any]:
+def format_dict_datetimes_for_api(data: dict[str, Any], use_turkish: bool = False) -> dict[str, Any]:
     """
     Format all datetime values in dictionary to ISO strings for API responses
 
@@ -489,7 +489,7 @@ def get_current_utc_for_db() -> datetime:
     return now_utc()
 
 
-def convert_db_datetime_to_utc(dt: Optional[datetime]) -> Optional[datetime]:
+def convert_db_datetime_to_utc(dt: datetime | None) -> datetime | None:
     """
     Convert database datetime to UTC (handles both naive and aware)
 
@@ -583,7 +583,7 @@ def days_between(dt1: datetime, dt2: datetime) -> float:
 # VALIDATION UTILITIES
 # ================================================================
 
-def is_timezone_aware(dt: Optional[datetime]) -> bool:
+def is_timezone_aware(dt: datetime | None) -> bool:
     """
     Check if datetime is timezone-aware
 
@@ -605,7 +605,7 @@ def is_timezone_aware(dt: Optional[datetime]) -> bool:
     return dt.tzinfo is not None and dt.tzinfo.utcoffset(dt) is not None
 
 
-def is_utc(dt: Optional[datetime]) -> bool:
+def is_utc(dt: datetime | None) -> bool:
     """
     Check if datetime is in UTC timezone
 

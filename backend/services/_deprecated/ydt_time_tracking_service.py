@@ -11,7 +11,6 @@ Bu modül YDT sınavları için süre takibi ve uyarı işlevlerini yönetir:
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional
 
 from core.structured_logger import get_logger
 
@@ -42,8 +41,8 @@ class PassageTimeTracking:
     """Metin okuma süresi takibi"""
 
     passage_id: str
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     time_spent_seconds: float = 0.0
     suggested_time_minutes: int = 0
     questions_answered: int = 0
@@ -59,14 +58,14 @@ class YDTTimeTracking:
 
     # Sınav süreleri
     total_duration_minutes: int = 120  # REQ-1.3: YDT 120 dakika
-    started_at: Optional[datetime] = None
-    expected_end_time: Optional[datetime] = None
+    started_at: datetime | None = None
+    expected_end_time: datetime | None = None
 
     # Metin bazlı süre takibi
-    passage_tracking: Dict[str, PassageTimeTracking] = field(default_factory=dict)
+    passage_tracking: dict[str, PassageTimeTracking] = field(default_factory=dict)
 
     # Uyarılar
-    warnings_sent: List[TimeWarning] = field(default_factory=list)
+    warnings_sent: list[TimeWarning] = field(default_factory=list)
 
     # İstatistikler
     total_time_spent_seconds: float = 0.0
@@ -233,7 +232,7 @@ class YDTTimeTrackingService:
 
     def complete_passage_tracking(
         self, tracking: YDTTimeTracking, passage_id: str, questions_answered: int
-    ) -> Optional[PassageTimeTracking]:
+    ) -> PassageTimeTracking | None:
         """
         Metin okuma takibini tamamla - REQ-1.3, REQ-1.6
 
@@ -271,7 +270,7 @@ class YDTTimeTrackingService:
 
     def check_and_generate_warnings(
         self, tracking: YDTTimeTracking, answered_count: int, total_questions: int = 80
-    ) -> List[TimeWarning]:
+    ) -> list[TimeWarning]:
         """
         Uyarıları kontrol et ve oluştur - REQ-1.3, REQ-1.6
 
@@ -304,7 +303,7 @@ class YDTTimeTrackingService:
 
     def _check_time_warnings(
         self, tracking: YDTTimeTracking, remaining_minutes: int
-    ) -> List[TimeWarning]:
+    ) -> list[TimeWarning]:
         """
         Zaman bazlı uyarıları kontrol et - REQ-1.3, REQ-1.6
 
@@ -365,7 +364,7 @@ class YDTTimeTrackingService:
         remaining_minutes: int,
         answered_count: int,
         unanswered: int,
-    ) -> List[TimeWarning]:
+    ) -> list[TimeWarning]:
         """
         Tamamlanma bazlı uyarıları kontrol et - REQ-1.3, REQ-1.6
 
@@ -450,7 +449,7 @@ class YDTTimeTrackingService:
 
     def get_time_management_suggestions(
         self, tracking: YDTTimeTracking, answered_count: int, total_questions: int = 80
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Zaman yönetimi önerileri getir - REQ-1.3, REQ-1.6
 
@@ -500,7 +499,7 @@ class YDTTimeTrackingService:
 
         return suggestions
 
-    def calculate_statistics(self, tracking: YDTTimeTracking) -> Dict[str, any]:
+    def calculate_statistics(self, tracking: YDTTimeTracking) -> dict[str, any]:
         """
         Zaman istatistiklerini hesapla - REQ-1.3, REQ-1.6
 

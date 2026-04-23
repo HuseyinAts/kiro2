@@ -4,7 +4,7 @@ REQ-49.41-49.44: Final değerlendirme, ÖSYM uyumluluğu, kapsamlı puanlama, se
 """
 
 import logging
-from typing import Dict, List
+
 from services.test_types import BaseTestType, TestConfiguration
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class SummativeTest(BaseTestType):
             osym_format_compliance=True,  # REQ-49.42
         )
 
-    def generate_feedback(self, session_data: Dict) -> Dict:
+    def generate_feedback(self, session_data: dict) -> dict:
         """REQ-49.43: Comprehensive scoring"""
         responses = session_data.get("responses", [])
         total_correct = sum(1 for r in responses if r.get("is_correct", False))
@@ -56,7 +56,7 @@ class SummativeTest(BaseTestType):
             "certificate_eligible": accuracy >= 0.7,
         }
 
-    def calculate_recommendations(self, session_data: Dict) -> List[str]:
+    def calculate_recommendations(self, session_data: dict) -> list[str]:
         """REQ-49.44: Sertifika oluşturma"""
         feedback = self.generate_feedback(session_data)
         recommendations = []

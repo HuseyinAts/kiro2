@@ -4,18 +4,19 @@ Port 8081 - Turkish NLP Service
 Teknofest 2025 - Eğitim Eylemci Projesi
 """
 
-import os
 import logging
+import os
+
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import uvicorn
 
 # Zemberek imports
 try:
     from zemberek import (
         TurkishMorphology,
-        TurkishSentenceNormalizer,
         TurkishSentenceExtractor,
+        TurkishSentenceNormalizer,
         TurkishTokenizer,
     )
 

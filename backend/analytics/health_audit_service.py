@@ -17,10 +17,11 @@ import json
 import logging
 import os
 import time
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
+
 import aiohttp
 import psycopg2
 import redis
@@ -37,7 +38,7 @@ class HealthCheckResult:
     status: str  # "pass", "warning", "fail"
     score: int  # 0-100
     message: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
     timestamp: float
 
 
@@ -74,7 +75,7 @@ class PlatformHealthAudit:
         self.report_dir.mkdir(parents=True, exist_ok=True)
 
         # Check results
-        self.latest_results: List[HealthCheckResult] = []
+        self.latest_results: list[HealthCheckResult] = []
         self.health_score: float = 100.0
 
         # Configuration
@@ -85,7 +86,7 @@ class PlatformHealthAudit:
             f"(interval: {check_interval}s, threshold: {alert_threshold})"
         )
 
-    def _load_config(self) -> Dict:
+    def _load_config(self) -> dict:
         """Load configuration from environment"""
         return {
             "database_url": os.getenv(
@@ -98,7 +99,7 @@ class PlatformHealthAudit:
             "api_base_url": os.getenv("API_BASE_URL", "http://localhost:8000"),
         }
 
-    async def run_full_audit(self) -> Dict[str, Any]:
+    async def run_full_audit(self) -> dict[str, Any]:
         """
         Tam platform denetimi gerçekleştir (47 kontrol)
 
@@ -161,7 +162,7 @@ class PlatformHealthAudit:
 
         return report
 
-    async def _check_security(self) -> List[HealthCheckResult]:
+    async def _check_security(self) -> list[HealthCheckResult]:
         """Güvenlik kontrolleri (REQ-48, REQ-49, REQ-50, REQ-45)"""
         checks = []
 
@@ -244,18 +245,17 @@ class PlatformHealthAudit:
 
         return checks
 
-    async def _check_performance(self) -> List[HealthCheckResult]:
+    async def _check_performance(self) -> list[HealthCheckResult]:
         """Performans kontrolleri (REQ-7, REQ-8)"""
         checks = []
 
         # REQ-7: API Response Time
         try:
             start = time.time()
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    f"{self.config['api_base_url']}/health", timeout=5
-                ) as resp:
-                    response_time = (time.time() - start) * 1000  # ms
+            async with aiohttp.ClientSession() as session, session.get(
+                f"{self.config['api_base_url']}/health", timeout=5
+            ) as resp:
+                response_time = (time.time() - start) * 1000  # ms
 
             status = (
                 "pass"
@@ -328,7 +328,7 @@ class PlatformHealthAudit:
 
         return checks
 
-    async def _check_database(self) -> List[HealthCheckResult]:
+    async def _check_database(self) -> list[HealthCheckResult]:
         """Veritabanı kontrolleri"""
         checks = []
 
@@ -406,7 +406,7 @@ class PlatformHealthAudit:
 
         return checks
 
-    async def _check_api_endpoints(self) -> List[HealthCheckResult]:
+    async def _check_api_endpoints(self) -> list[HealthCheckResult]:
         """API endpoint kontrolleri"""
         checks = []
 
@@ -462,7 +462,7 @@ class PlatformHealthAudit:
 
         return checks
 
-    async def _check_services(self) -> List[HealthCheckResult]:
+    async def _check_services(self) -> list[HealthCheckResult]:
         """Servis kontrolleri"""
         checks = []
 
@@ -530,7 +530,7 @@ class PlatformHealthAudit:
 
         return checks
 
-    async def _check_infrastructure(self) -> List[HealthCheckResult]:
+    async def _check_infrastructure(self) -> list[HealthCheckResult]:
         """Altyapı kontrolleri"""
         checks = []
 
@@ -557,7 +557,7 @@ class PlatformHealthAudit:
 
         return checks
 
-    def _calculate_health_score(self, results: List[HealthCheckResult]) -> float:
+    def _calculate_health_score(self, results: list[HealthCheckResult]) -> float:
         """Overall health score hesapla"""
         if not results:
             return 0.0
@@ -566,7 +566,7 @@ class PlatformHealthAudit:
         max_score = len(results) * 100
         return (total_score / max_score) * 100 if max_score > 0 else 0.0
 
-    def _group_by_category(self, results: List[HealthCheckResult]) -> Dict:
+    def _group_by_category(self, results: list[HealthCheckResult]) -> dict:
         """Kategorilere göre grupla"""
         categories = {}
         for result in results:
@@ -597,7 +597,7 @@ class PlatformHealthAudit:
 
         return categories
 
-    async def _save_report(self, report: Dict):
+    async def _save_report(self, report: dict):
         """Raporu kaydet"""
         # Save timestamped report
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -617,7 +617,7 @@ class PlatformHealthAudit:
 
         logger.info(f"Health report saved: {report_file}")
 
-    def _generate_html_report(self, report: Dict, output_file: Path):
+    def _generate_html_report(self, report: dict, output_file: Path):
         """HTML raporu oluştur"""
         html = f"""<!DOCTYPE html>
 <html>
@@ -681,7 +681,7 @@ class PlatformHealthAudit:
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(html)
 
-    async def _send_alert(self, report: Dict):
+    async def _send_alert(self, report: dict):
         """Alarm gönder (health score < threshold)"""
         logger.warning(
             f"ALERT: Health score {report['health_score']:.1f}% "
@@ -702,7 +702,7 @@ class PlatformHealthAudit:
         await self._send_slack_alert(alert_message)
         await self._send_email_alert(alert_message)
 
-    async def _send_slack_alert(self, alert_message: Dict):
+    async def _send_slack_alert(self, alert_message: dict):
         """Send alert to Slack webhook"""
         slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
 
@@ -739,18 +739,17 @@ class PlatformHealthAudit:
                 ],
             }
 
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    slack_webhook_url, json=payload, timeout=10
-                ) as response:
-                    if response.status == 200:
-                        logger.info("Slack alert sent successfully")
-                    else:
-                        logger.error(f"Failed to send Slack alert: {response.status}")
+            async with aiohttp.ClientSession() as session, session.post(
+                slack_webhook_url, json=payload, timeout=10
+            ) as response:
+                if response.status == 200:
+                    logger.info("Slack alert sent successfully")
+                else:
+                    logger.error(f"Failed to send Slack alert: {response.status}")
         except Exception as e:
             logger.error(f"Error sending Slack alert: {e}")
 
-    async def _send_email_alert(self, alert_message: Dict):
+    async def _send_email_alert(self, alert_message: dict):
         """Send alert via email"""
         email_recipients = os.getenv("ALERT_EMAIL_RECIPIENTS")
         smtp_server = os.getenv("SMTP_SERVER")
@@ -764,8 +763,8 @@ class PlatformHealthAudit:
 
         try:
             import smtplib
-            from email.mime.text import MIMEText
             from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
 
             # Create message
             msg = MIMEMultipart("alternative")

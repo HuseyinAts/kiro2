@@ -5,10 +5,16 @@ REQ-1 - REQ-8 arası tüm gereksinimlerin testleri
 
 import pytest
 
-from algorithms.bionic_reading.syllabifier import (
-    TurkishSyllabifier,
-    SyllableWeight,
-    VowelHarmony,
+from algorithms.bionic_reading.accessibility import (
+    AccessibilityManager,
+    AccessibilityMode,
+    AccessibilitySettings,
+    ContrastLevel,
+    FontFamily,
+)
+from algorithms.bionic_reading.comprehension import (
+    ComprehensionValidator,
+    QuestionType,
 )
 from algorithms.bionic_reading.fixation import (
     FixationPointDetector,
@@ -19,19 +25,13 @@ from algorithms.bionic_reading.formatter import (
     OutputFormat,
 )
 from algorithms.bionic_reading.speed_tracker import (
-    ReadingSpeedTracker,
     ReadingMode,
+    ReadingSpeedTracker,
 )
-from algorithms.bionic_reading.comprehension import (
-    ComprehensionValidator,
-    QuestionType,
-)
-from algorithms.bionic_reading.accessibility import (
-    AccessibilityManager,
-    AccessibilityMode,
-    AccessibilitySettings,
-    ContrastLevel,
-    FontFamily,
+from algorithms.bionic_reading.syllabifier import (
+    SyllableWeight,
+    TurkishSyllabifier,
+    VowelHarmony,
 )
 
 

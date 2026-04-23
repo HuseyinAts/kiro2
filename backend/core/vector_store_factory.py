@@ -5,7 +5,6 @@ Centralized creation of optimized vector stores with HNSW support
 
 import logging
 import os
-from typing import Optional
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ class VectorStoreFactory:
         embeddings,
         index_type: str = "hnsw",
         dimension: int = 384,
-        persist_directory: Optional[str] = None,
+        persist_directory: str | None = None,
         **kwargs,
     ):
         """
@@ -154,8 +153,8 @@ class VectorStoreFactory:
     def create_qdrant_store(
         embeddings,
         collection_name: str = "documents",
-        url: Optional[str] = None,
-        path: Optional[str] = None,
+        url: str | None = None,
+        path: str | None = None,
         **kwargs,
     ):
         """
@@ -259,18 +258,17 @@ class VectorStoreFactory:
                 **kwargs,
             )
 
-        elif store_type == "chroma":
+        if store_type == "chroma":
             return VectorStoreFactory.create_chroma_store(
                 embeddings=embeddings, persist_directory=persist_directory, **kwargs
             )
 
-        elif store_type == "qdrant":
+        if store_type == "qdrant":
             return VectorStoreFactory.create_qdrant_store(
                 embeddings=embeddings, path=persist_directory, **kwargs
             )
 
-        else:
-            raise ValueError(f"Unknown store type: {store_type}")
+        raise ValueError(f"Unknown store type: {store_type}")
 
     @staticmethod
     def load_faiss_store(

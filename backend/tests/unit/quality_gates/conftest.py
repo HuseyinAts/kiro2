@@ -14,6 +14,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from backend.core.quality_gates.gates.base import CommandResult, GateContext
 from backend.core.quality_gates.models import (
     GateConfig,
     GateIssue,
@@ -24,8 +25,6 @@ from backend.core.quality_gates.models import (
     PipelineConfig,
     PipelineResult,
 )
-from backend.core.quality_gates.gates.base import GateContext, CommandResult
-
 
 # =============================================================================
 # Path Fixtures

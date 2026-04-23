@@ -20,8 +20,8 @@ import pytest
 
 pytestmark = pytest.mark.skipif(True, reason="async_client fixture uses AsyncClient(app=...) deprecated in httpx 0.27+ (needs ASGITransport)")
 
-from httpx import AsyncClient
 from fastapi import status
+from httpx import AsyncClient
 
 # Test data for learning path operations
 VALID_STUDENT_DATA = {

@@ -12,11 +12,11 @@ def analyze_phase1_final():
 
     try:
         # Baseline coverage
-        with open("coverage.json", "r") as f:
+        with open("coverage.json") as f:
             baseline = json.load(f)
 
         # Phase 1 complete coverage
-        with open("coverage_phase1_complete.json", "r") as f:
+        with open("coverage_phase1_complete.json") as f:
             phase1 = json.load(f)
 
         print("PHASE 1 QUICK WINS - FINAL ANALYSIS")

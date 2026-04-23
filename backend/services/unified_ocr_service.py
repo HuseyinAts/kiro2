@@ -29,10 +29,10 @@ import logging
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Union
 
 import cv2
 import numpy as np
@@ -59,8 +59,8 @@ class OCRBox:
     """OCR tarafından tespit edilen metin kutusu"""
     text: str
     confidence: float
-    bbox: Tuple[int, int, int, int]  # x1, y1, x2, y2
-    
+    bbox: tuple[int, int, int, int]  # x1, y1, x2, y2
+
     @property
     def area(self) -> int:
         x1, y1, x2, y2 = self.bbox
@@ -73,27 +73,27 @@ class OCRResult:
     text: str
     raw_text: str  # Temizlenmemiş metin
     confidence: float
-    boxes: List[OCRBox]
+    boxes: list[OCRBox]
     engine: str
     language: str
     processing_time_ms: float
     has_math: bool = False
-    latex: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    latex: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class QuestionOCRResult:
     """Soru için OCR sonucu"""
-    question_number: Optional[int]
+    question_number: int | None
     question_text: str
-    options: Dict[str, str]  # A, B, C, D, E
+    options: dict[str, str]  # A, B, C, D, E
     has_image: bool
     has_equation: bool
-    latex_content: Optional[str]
+    latex_content: str | None
     confidence: float
     raw_ocr: OCRResult
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 # ============================================================
@@ -102,12 +102,12 @@ class QuestionOCRResult:
 
 class EasyOCREngine:
     """EasyOCR implementation - Türkçe ve matematik için optimize"""
-    
-    def __init__(self, languages: List[str] = None, gpu: bool = True):
+
+    def __init__(self, languages: list[str] = None, gpu: bool = True):
         self.languages = languages or ['tr', 'en']
         self.gpu = gpu
         self._reader = None
-        
+
     @property
     def reader(self):
         if self._reader is None:
@@ -126,11 +126,11 @@ class EasyOCREngine:
                 logger.error(f"Failed to initialize EasyOCR: {e}")
                 raise
         return self._reader
-    
-    def extract(self, image: np.ndarray) -> List[OCRBox]:
+
+    def extract(self, image: np.ndarray) -> list[OCRBox]:
         """Görüntüden metin çıkar"""
         results = self.reader.readtext(image)
-        
+
         boxes = []
         for bbox, text, conf in results:
             # bbox: [[x1,y1], [x2,y1], [x2,y2], [x1,y2]]
@@ -138,24 +138,24 @@ class EasyOCREngine:
             y1 = int(min(p[1] for p in bbox))
             x2 = int(max(p[0] for p in bbox))
             y2 = int(max(p[1] for p in bbox))
-            
+
             boxes.append(OCRBox(
                 text=text,
                 confidence=conf,
                 bbox=(x1, y1, x2, y2)
             ))
-        
+
         return boxes
 
 
 class PaddleOCREngine:
     """PaddleOCR implementation - Hızlı ve doğru"""
-    
+
     def __init__(self, lang: str = 'tr', use_gpu: bool = True):
         self.lang = lang
         self.use_gpu = use_gpu
         self._ocr = None
-        
+
     @property
     def ocr(self):
         if self._ocr is None:
@@ -172,11 +172,11 @@ class PaddleOCREngine:
                 logger.error("PaddleOCR not installed. Run: pip install paddlepaddle paddleocr")
                 raise
         return self._ocr
-    
-    def extract(self, image: np.ndarray) -> List[OCRBox]:
+
+    def extract(self, image: np.ndarray) -> list[OCRBox]:
         """Görüntüden metin çıkar"""
         result = self.ocr.ocr(image, cls=True)
-        
+
         boxes = []
         if result and result[0]:
             for line in result[0]:
@@ -186,55 +186,55 @@ class PaddleOCREngine:
                 y1 = int(min(p[1] for p in bbox_points))
                 x2 = int(max(p[0] for p in bbox_points))
                 y2 = int(max(p[1] for p in bbox_points))
-                
+
                 boxes.append(OCRBox(
                     text=text,
                     confidence=conf,
                     bbox=(x1, y1, x2, y2)
                 ))
-        
+
         return boxes
 
 
 class TesseractEngine:
     """Tesseract OCR fallback"""
-    
+
     def __init__(self, lang: str = 'tur+eng'):
         self.lang = lang
-        
-    def extract(self, image: np.ndarray) -> List[OCRBox]:
+
+    def extract(self, image: np.ndarray) -> list[OCRBox]:
         """Görüntüden metin çıkar"""
         try:
             import pytesseract
-            
+
             # Tesseract data
             data = pytesseract.image_to_data(
                 image,
                 lang=self.lang,
                 output_type=pytesseract.Output.DICT
             )
-            
+
             boxes = []
             n_boxes = len(data['text'])
-            
+
             for i in range(n_boxes):
                 text = data['text'][i].strip()
                 conf = float(data['conf'][i]) / 100.0
-                
+
                 if text and conf > 0:
                     x = data['left'][i]
                     y = data['top'][i]
                     w = data['width'][i]
                     h = data['height'][i]
-                    
+
                     boxes.append(OCRBox(
                         text=text,
                         confidence=conf,
                         bbox=(x, y, x + w, y + h)
                     ))
-            
+
             return boxes
-            
+
         except ImportError:
             logger.error("pytesseract not installed")
             return []
@@ -242,11 +242,11 @@ class TesseractEngine:
 
 class ClaudeVisionEngine:
     """Claude Vision API for premium OCR"""
-    
+
     def __init__(self, api_key: str = None):
         self.api_key = api_key or os.getenv('ANTHROPIC_API_KEY')
         self._client = None
-        
+
     @property
     def client(self):
         if self._client is None and self.api_key:
@@ -257,16 +257,16 @@ class ClaudeVisionEngine:
             except ImportError:
                 logger.error("anthropic not installed")
         return self._client
-    
-    async def extract_async(self, image: np.ndarray) -> Tuple[str, float]:
+
+    async def extract_async(self, image: np.ndarray) -> tuple[str, float]:
         """Claude Vision ile OCR"""
         if not self.client:
             return "", 0.0
-        
+
         # Image to base64
         _, buffer = cv2.imencode('.png', image)
         b64_image = base64.b64encode(buffer).decode('utf-8')
-        
+
         prompt = """Bu görüntüdeki tüm metni oku ve aynen döndür.
 
 Kurallar:
@@ -277,7 +277,7 @@ Kurallar:
 5. Türkçe karakterleri doğru yaz
 
 Sadece görüntüdeki metni döndür, başka açıklama yapma."""
-        
+
         try:
             response = await asyncio.to_thread(
                 self.client.messages.create,
@@ -301,10 +301,10 @@ Sadece görüntüdeki metni döndür, başka açıklama yapma."""
                     ]
                 }]
             )
-            
+
             text = response.content[0].text
             return text, 0.95  # Claude genellikle yüksek kalite
-            
+
         except Exception as e:
             logger.error(f"Claude Vision error: {e}")
             return "", 0.0
@@ -316,7 +316,7 @@ Sadece görüntüdeki metni döndür, başka açıklama yapma."""
 
 class TextProcessor:
     """OCR sonuçlarını işleyen yardımcı sınıf"""
-    
+
     # Matematiksel ifade kalıpları
     MATH_PATTERNS = [
         r'\d+[+\-×÷*/^=]\d+',  # Temel işlemler
@@ -327,37 +327,37 @@ class TextProcessor:
         r'∫|∑|∏|lim|sin|cos|tan|log|ln',  # Matematik sembolleri
         r'[αβγδεζηθικλμνξπρστυφχψω]',  # Yunan harfleri
     ]
-    
+
     # Soru numarası kalıpları
     QUESTION_NUMBER_PATTERNS = [
         r'^(\d+)[\.\)]\s*',  # "1." veya "1)"
         r'^Soru\s*(\d+)',  # "Soru 1"
         r'^S\.?\s*(\d+)',  # "S.1" veya "S 1"
     ]
-    
+
     # Şık kalıpları
     OPTION_PATTERNS = [
         r'^([A-E])[\.\)]\s*(.+)$',  # "A." veya "A)"
         r'^([A-E])\s+(.+)$',  # "A metin"
     ]
-    
+
     @classmethod
     def clean_text(cls, text: str) -> str:
         """OCR metnini temizle"""
         if not text:
             return ""
-        
+
         # Çoklu boşlukları teke indir
         text = re.sub(r'\s+', ' ', text)
-        
+
         # Satır başı/sonu boşlukları temizle
         text = '\n'.join(line.strip() for line in text.split('\n'))
-        
+
         # Boş satırları teke indir
         text = re.sub(r'\n{3,}', '\n\n', text)
-        
+
         return text.strip()
-    
+
     @classmethod
     def detect_math(cls, text: str) -> bool:
         """Metinde matematik var mı?"""
@@ -365,9 +365,9 @@ class TextProcessor:
             if re.search(pattern, text, re.IGNORECASE):
                 return True
         return False
-    
+
     @classmethod
-    def extract_question_number(cls, text: str) -> Optional[int]:
+    def extract_question_number(cls, text: str) -> int | None:
         """Soru numarasını çıkar"""
         for pattern in cls.QUESTION_NUMBER_PATTERNS:
             match = re.search(pattern, text, re.MULTILINE | re.IGNORECASE)
@@ -377,13 +377,13 @@ class TextProcessor:
                 except (ValueError, IndexError):
                     pass
         return None
-    
+
     @classmethod
-    def extract_options(cls, text: str) -> Dict[str, str]:
+    def extract_options(cls, text: str) -> dict[str, str]:
         """Şıkları çıkar (A, B, C, D, E)"""
         options = {}
         lines = text.split('\n')
-        
+
         for line in lines:
             line = line.strip()
             for pattern in cls.OPTION_PATTERNS:
@@ -393,44 +393,44 @@ class TextProcessor:
                     content = match.group(2).strip()
                     options[letter] = content
                     break
-        
+
         return options
-    
+
     @classmethod
     def convert_to_latex(cls, text: str) -> str:
         """Basit matematik ifadelerini LaTeX'e çevir"""
         # Üst simgeler
         text = re.sub(r'(\d+)²', r'$\1^2$', text)
         text = re.sub(r'(\d+)³', r'$\1^3$', text)
-        
+
         # Karekök
         text = re.sub(r'√(\d+)', r'$\\sqrt{\1}$', text)
-        
+
         # Kesirler (basit)
         text = re.sub(r'(\d+)/(\d+)', r'$\\frac{\1}{\2}$', text)
-        
+
         # Çarpı işareti
         text = text.replace('×', r'$\times$')
         text = text.replace('÷', r'$\div$')
-        
+
         return text
-    
+
     @classmethod
-    def merge_boxes_to_text(cls, boxes: List[OCRBox], image_height: int = None) -> str:
+    def merge_boxes_to_text(cls, boxes: list[OCRBox], image_height: int = None) -> str:
         """OCR kutularını satır sırasına göre birleştir"""
         if not boxes:
             return ""
-        
+
         # Y koordinatına göre grupla (satır tespiti)
         # Yakın y değerlerini aynı satır say
         threshold = 15  # piksel
-        
+
         sorted_boxes = sorted(boxes, key=lambda b: (b.bbox[1], b.bbox[0]))
-        
+
         lines = []
         current_line = []
         current_y = sorted_boxes[0].bbox[1] if sorted_boxes else 0
-        
+
         for box in sorted_boxes:
             if abs(box.bbox[1] - current_y) > threshold:
                 # Yeni satır
@@ -443,13 +443,13 @@ class TextProcessor:
                 current_y = box.bbox[1]
             else:
                 current_line.append(box)
-        
+
         # Son satır
         if current_line:
             current_line.sort(key=lambda b: b.bbox[0])
             line_text = ' '.join(b.text for b in current_line)
             lines.append(line_text)
-        
+
         return '\n'.join(lines)
 
 
@@ -468,24 +468,24 @@ class UnifiedOCRService:
     - Batch processing
     - Async support
     """
-    
+
     def __init__(
         self,
         primary_engine: OCREngine = OCREngine.EASYOCR,
         fallback_engine: OCREngine = OCREngine.TESSERACT,
         use_gpu: bool = True,
-        languages: List[str] = None
+        languages: list[str] = None
     ):
         self.primary_engine = primary_engine
         self.fallback_engine = fallback_engine
         self.use_gpu = use_gpu
         self.languages = languages or ['tr', 'en']
-        
-        self._engines: Dict[OCREngine, Any] = {}
+
+        self._engines: dict[OCREngine, Any] = {}
         self._executor = ThreadPoolExecutor(max_workers=4)
-        
+
         logger.info(f"UnifiedOCRService initialized: primary={primary_engine.value}, fallback={fallback_engine.value}")
-    
+
     def _get_engine(self, engine_type: OCREngine):
         """OCR motorunu lazy load et"""
         if engine_type not in self._engines:
@@ -505,29 +505,29 @@ class UnifiedOCRService:
                 self._engines[engine_type] = ClaudeVisionEngine()
             else:
                 raise ValueError(f"Unknown engine: {engine_type}")
-        
+
         return self._engines[engine_type]
-    
+
     def _load_image(self, image_input: Union[str, Path, bytes, np.ndarray, Image.Image]) -> np.ndarray:
         """Farklı input tiplerini numpy array'e çevir"""
         if isinstance(image_input, np.ndarray):
             return image_input
-        
+
         if isinstance(image_input, Image.Image):
             return cv2.cvtColor(np.array(image_input), cv2.COLOR_RGB2BGR)
-        
+
         if isinstance(image_input, bytes):
             nparr = np.frombuffer(image_input, np.uint8)
             return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        
+
         if isinstance(image_input, (str, Path)):
             path = str(image_input)
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Image not found: {path}")
             return cv2.imread(path)
-        
+
         raise TypeError(f"Unsupported image type: {type(image_input)}")
-    
+
     def extract_text(
         self,
         image: Union[str, Path, bytes, np.ndarray, Image.Image],
@@ -545,31 +545,31 @@ class UnifiedOCRService:
         """
         import time
         start_time = time.time()
-        
+
         # Görüntüyü yükle
         img_array = self._load_image(image)
-        
+
         # Motor seç
         engine_type = engine or self.primary_engine
         ocr_engine = self._get_engine(engine_type)
-        
+
         try:
             # OCR çalıştır
             boxes = ocr_engine.extract(img_array)
-            
+
             # Metni birleştir
             raw_text = TextProcessor.merge_boxes_to_text(boxes, img_array.shape[0])
             clean_text = TextProcessor.clean_text(raw_text)
-            
+
             # Ortalama güven skoru
             avg_confidence = sum(b.confidence for b in boxes) / len(boxes) if boxes else 0.0
-            
+
             # Matematik tespiti
             has_math = TextProcessor.detect_math(clean_text)
             latex = TextProcessor.convert_to_latex(clean_text) if has_math else None
-            
+
             processing_time = (time.time() - start_time) * 1000
-            
+
             return OCRResult(
                 text=clean_text,
                 raw_text=raw_text,
@@ -581,15 +581,15 @@ class UnifiedOCRService:
                 has_math=has_math,
                 latex=latex
             )
-            
+
         except Exception as e:
             logger.error(f"OCR error with {engine_type.value}: {e}")
-            
+
             # Fallback dene
             if engine_type != self.fallback_engine:
                 logger.info(f"Trying fallback engine: {self.fallback_engine.value}")
                 return self.extract_text(image, self.fallback_engine)
-            
+
             # Hata döndür
             return OCRResult(
                 text="",
@@ -601,7 +601,7 @@ class UnifiedOCRService:
                 processing_time_ms=(time.time() - start_time) * 1000,
                 metadata={"error": str(e)}
             )
-    
+
     async def extract_text_async(
         self,
         image: Union[str, Path, bytes, np.ndarray, Image.Image],
@@ -613,7 +613,7 @@ class UnifiedOCRService:
             self._executor,
             lambda: self.extract_text(image, engine)
         )
-    
+
     def process_question(
         self,
         image: Union[str, Path, bytes, np.ndarray, Image.Image],
@@ -631,21 +631,21 @@ class UnifiedOCRService:
         """
         # OCR çalıştır
         ocr_result = self.extract_text(image, engine)
-        
+
         # Soru bilgilerini çıkar
         question_number = TextProcessor.extract_question_number(ocr_result.text)
         options = TextProcessor.extract_options(ocr_result.text)
-        
+
         # Soru metnini temizle (şıkları çıkar)
         question_text = ocr_result.text
         for letter, content in options.items():
             question_text = question_text.replace(f"{letter})", "").replace(f"{letter}.", "")
             question_text = question_text.replace(content, "")
         question_text = TextProcessor.clean_text(question_text)
-        
+
         # Görsel/denklem tespiti
         has_image = any(kw in ocr_result.text.lower() for kw in ['şekil', 'grafik', 'tablo', 'diyagram'])
-        
+
         return QuestionOCRResult(
             question_number=question_number,
             question_text=question_text,
@@ -656,7 +656,7 @@ class UnifiedOCRService:
             confidence=ocr_result.confidence,
             raw_ocr=ocr_result
         )
-    
+
     async def process_question_async(
         self,
         image: Union[str, Path, bytes, np.ndarray, Image.Image],
@@ -668,13 +668,13 @@ class UnifiedOCRService:
             self._executor,
             lambda: self.process_question(image, engine)
         )
-    
+
     async def process_yolo_detections(
         self,
-        detection_result: Dict[str, Any],
-        image_path: Optional[str] = None,
+        detection_result: dict[str, Any],
+        image_path: str | None = None,
         crop_padding: int = 10
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         YOLO detection sonuçlarını OCR ile işle
         
@@ -687,7 +687,7 @@ class UnifiedOCRService:
             OCR sonuçları ile zenginleştirilmiş detection
         """
         from services.yolo_question_detector import get_question_detector
-        
+
         # Orijinal görüntüyü yükle
         if image_path:
             original_image = self._load_image(image_path)
@@ -695,42 +695,42 @@ class UnifiedOCRService:
             original_image = self._load_image(detection_result['image_path'])
         else:
             raise ValueError("Image path required for YOLO detection processing")
-        
+
         # YOLO detector'dan kırpılmış soruları al
         detector = get_question_detector()
-        
+
         results = {
             'questions': [],
             'metadata': {},
             'processing_time_ms': 0
         }
-        
+
         import time
         start_time = time.time()
-        
+
         # Her detection için OCR çalıştır
         detections = detection_result.get('detections', [])
-        
+
         tasks = []
         for det in detections:
             class_name = det.get('class_name', '')
             bbox = det.get('bbox', {})
-            
+
             # Bounding box'tan kırp
             x1 = max(0, int(bbox.get('x1', 0)) - crop_padding)
             y1 = max(0, int(bbox.get('y1', 0)) - crop_padding)
             x2 = min(original_image.shape[1], int(bbox.get('x2', 0)) + crop_padding)
             y2 = min(original_image.shape[0], int(bbox.get('y2', 0)) + crop_padding)
-            
+
             cropped = original_image[y1:y2, x1:x2]
-            
+
             if class_name == 'soru':
                 # Soru için tam OCR
                 tasks.append(('question', cropped, det))
             elif class_name in ['konu', 'kitap', 'test_no', 'sayfa']:
                 # Metadata için basit OCR
                 tasks.append(('metadata', cropped, det))
-        
+
         # Paralel OCR
         for task_type, cropped, det in tasks:
             try:
@@ -745,19 +745,19 @@ class UnifiedOCRService:
                     ocr_result = await self.extract_text_async(cropped)
                     class_name = det.get('class_name', 'unknown')
                     results['metadata'][class_name] = ocr_result.text
-                    
+
             except Exception as e:
                 logger.error(f"OCR error for detection: {e}")
-        
+
         results['processing_time_ms'] = (time.time() - start_time) * 1000
-        
+
         return results
-    
+
     async def batch_process(
         self,
-        images: List[Union[str, Path, bytes, np.ndarray]],
+        images: list[Union[str, Path, bytes, np.ndarray]],
         max_concurrent: int = 5
-    ) -> List[OCRResult]:
+    ) -> list[OCRResult]:
         """
         Batch görüntü işleme
         
@@ -769,14 +769,14 @@ class UnifiedOCRService:
             OCRResult listesi
         """
         semaphore = asyncio.Semaphore(max_concurrent)
-        
+
         async def process_with_semaphore(img):
             async with semaphore:
                 return await self.extract_text_async(img)
-        
+
         tasks = [process_with_semaphore(img) for img in images]
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Exception'ları handle et
         processed = []
         for i, result in enumerate(results):
@@ -794,10 +794,10 @@ class UnifiedOCRService:
                 ))
             else:
                 processed.append(result)
-        
+
         return processed
-    
-    def get_info(self) -> Dict[str, Any]:
+
+    def get_info(self) -> dict[str, Any]:
         """Servis bilgilerini döndür"""
         return {
             "primary_engine": self.primary_engine.value,
@@ -813,7 +813,7 @@ class UnifiedOCRService:
 # Singleton Instance
 # ============================================================
 
-_ocr_service_instance: Optional[UnifiedOCRService] = None
+_ocr_service_instance: UnifiedOCRService | None = None
 
 
 def get_ocr_service(
@@ -831,13 +831,13 @@ def get_ocr_service(
         UnifiedOCRService instance
     """
     global _ocr_service_instance
-    
+
     if _ocr_service_instance is None:
         _ocr_service_instance = UnifiedOCRService(
             primary_engine=primary_engine,
             **kwargs
         )
-    
+
     return _ocr_service_instance
 
 

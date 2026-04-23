@@ -2,10 +2,9 @@
 Öğrenci Dashboard API endpoint'leri
 SPRINT 2: Multi-layer cache integration (L1 Memory + L2 Redis)
 """
-import os
-from typing import List, Optional
 import hashlib
 import json
+import os
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -84,18 +83,18 @@ async def dashboard_istatistikleri_getir(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Dashboard istatistikleri hatası: {str(e)}")
+        logger.error(f"Dashboard istatistikleri hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get("/sinav-gecmisi", response_model=List[SinavSonucu], summary="Sınav Geçmişi")
+@router.get("/sinav-gecmisi", response_model=list[SinavSonucu], summary="Sınav Geçmişi")
 async def sinav_gecmisi_getir(
     limit: int = Query(20, ge=1, le=100, description="Sonuç sayısı limiti"),
     offset: int = Query(0, ge=0, description="Sayfalama offset'i"),
-    sinav_tipi: Optional[str] = Query(None, description="Sınav türü filtresi"),
+    sinav_tipi: str | None = Query(None, description="Sınav türü filtresi"),
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
     db: AsyncSession = Depends(get_db),
 ):
@@ -144,7 +143,7 @@ async def sinav_gecmisi_getir(
         return sinav_gecmisi
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -153,7 +152,7 @@ async def sinav_gecmisi_getir(
 
 @router.get(
     "/performans-trendi",
-    response_model=List[PerformansVerisi],
+    response_model=list[PerformansVerisi],
     summary="Performans Trendi",
 )
 async def performans_trendi_getir(
@@ -195,14 +194,14 @@ async def performans_trendi_getir(
         return performans_verisi
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get("/hedefler", response_model=List[Hedef], summary="Öğrenci Hedefleri")
+@router.get("/hedefler", response_model=list[Hedef], summary="Öğrenci Hedefleri")
 async def hedefler_getir(
     aktif_sadece: bool = Query(False, description="Sadece aktif hedefleri getir"),
     mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
@@ -222,7 +221,7 @@ async def hedefler_getir(
         return hedefler
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -247,11 +246,11 @@ async def hedef_olustur(
             kullanici_id=mevcut_kullanici.kullanici_id, db=db, hedef_data=hedef_data
         )
         return yeni_hedef
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -278,11 +277,11 @@ async def hedef_guncelle(
             hedef_data=hedef_data,
         )
         return guncellenen_hedef
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -304,20 +303,19 @@ async def hedef_sil(
         )
         if basarili:
             return {"message": "Hedef başarıyla silindi"}
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Hedef bulunamadı"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Hedef bulunamadı"
+        )
     except HTTPException:
         raise  # Re-raise HTTPException without wrapping
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get("/bildirimler", response_model=List[Bildirim], summary="Bildirimler")
+@router.get("/bildirimler", response_model=list[Bildirim], summary="Bildirimler")
 async def bildirimler_getir(
     okunmamis_sadece: bool = Query(
         False, description="Sadece okunmamış bildirimleri getir"
@@ -370,7 +368,7 @@ async def bildirimler_getir(
         return bildirimler
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -394,13 +392,12 @@ async def bildirim_okundu_isaretle(
         )
         if basarili:
             return {"message": "Bildirim okundu olarak işaretlendi"}
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Bildirim bulunamadı"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Bildirim bulunamadı"
+        )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -449,7 +446,7 @@ async def ogrenci_profili_getir(
         return profil
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -485,11 +482,11 @@ async def profil_guncelle(
             logger.info(f"Profile cache invalidated for user {mevcut_kullanici.kullanici_id}")
 
         return guncellenen_profil
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -541,7 +538,7 @@ async def dashboard_ozeti(
         }
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

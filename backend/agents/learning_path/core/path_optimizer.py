@@ -18,10 +18,10 @@ Responsibilities:
 """
 
 import logging
-from typing import List, Dict, Any
 from datetime import datetime
+from typing import Any
 
-from ..models import LearningPath, LearningResource, KnowledgeLevel
+from ..models import KnowledgeLevel, LearningPath, LearningResource
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class PathOptimizer:
             return optimized_path
 
         except Exception as e:
-            logger.error(f"Optimize sequence error: {str(e)}")
+            logger.error(f"Optimize sequence error: {e!s}")
             return path  # Return original on error
 
     def balance_difficulty(self, path: LearningPath) -> LearningPath:
@@ -125,7 +125,7 @@ class PathOptimizer:
             return balanced_path
 
         except Exception as e:
-            logger.error(f"Balance difficulty error: {str(e)}")
+            logger.error(f"Balance difficulty error: {e!s}")
             return path
 
     def optimize_time(self, path: LearningPath, target_time: int) -> LearningPath:
@@ -183,14 +183,14 @@ class PathOptimizer:
             return optimized_path
 
         except Exception as e:
-            logger.error(f"Optimize time error: {str(e)}")
+            logger.error(f"Optimize time error: {e!s}")
             return path
 
     # Private optimization methods
 
     def _optimize_resource_order(
-        self, resources: List[LearningResource]
-    ) -> List[LearningResource]:
+        self, resources: list[LearningResource]
+    ) -> list[LearningResource]:
         """
         Optimize resource order for learning efficiency
 
@@ -243,8 +243,8 @@ class PathOptimizer:
         return optimized
 
     def _balance_difficulty_order(
-        self, resources: List[LearningResource]
-    ) -> List[LearningResource]:
+        self, resources: list[LearningResource]
+    ) -> list[LearningResource]:
         """
         Balance difficulty progression
 
@@ -266,8 +266,8 @@ class PathOptimizer:
         return sorted_resources
 
     def _select_resources_for_time(
-        self, resources: List[LearningResource], target_time: int
-    ) -> List[LearningResource]:
+        self, resources: list[LearningResource], target_time: int
+    ) -> list[LearningResource]:
         """
         Select subset of resources that fit target time
 
@@ -311,8 +311,8 @@ class PathOptimizer:
         return selected
 
     def _recreate_phases(
-        self, resources: List[LearningResource], original_phases: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, resources: list[LearningResource], original_phases: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """
         Recreate phases with new resource order
 

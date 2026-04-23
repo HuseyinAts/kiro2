@@ -14,9 +14,9 @@ Araclar:
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from .base_domain_agent import BaseDomainAgent, DomainType, DomainResponse
+from .base_domain_agent import BaseDomainAgent, DomainResponse, DomainType
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ class TurkceAgent(BaseDomainAgent):
     async def solve_question(
         self,
         question: str,
-        shared_context: Optional[Dict[str, Any]] = None,
+        shared_context: dict[str, Any] | None = None,
     ) -> DomainResponse:
         """Turkce sorusunu coz"""
         start_time = time.perf_counter()
@@ -143,7 +143,7 @@ class TurkceAgent(BaseDomainAgent):
                 return q_type
         return "genel"
 
-    def _generate_step_by_step(self, question_type: str) -> List[str]:
+    def _generate_step_by_step(self, question_type: str) -> list[str]:
         steps = {
             "dilbilgisi": ["Sözcüğü/cümleyi analiz et", "Ek ve kökleri ayır", "Kuralı uygula", "Sonucu belirle"],
             "edebiyat": ["Dönemi belirle", "Yazarı/eseri tanı", "Özellikleri listele", "Cevabı belirle"],

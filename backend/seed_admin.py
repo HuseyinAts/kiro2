@@ -18,7 +18,7 @@ Security:
 
 import asyncio
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # Add backend to Python path
@@ -96,8 +96,8 @@ async def create_admin_user(session: AsyncSession) -> User:
         last_name="User",
         is_active=True,
         is_verified=True,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
         # Gamification defaults
         total_xp=0,
         level=1,

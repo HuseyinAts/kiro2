@@ -11,18 +11,18 @@ Aşamalar:
 6. QualityGateAgent - Final karar
 """
 
+from .compliance_agent import ComplianceAgent
 from .content_generator import ContentGeneratorAgent
 from .difficulty_agent import DifficultyAgent
 from .distractor_agent import DistractorAgent
-from .compliance_agent import ComplianceAgent
 from .language_qa_agent import LanguageQAAgent
 from .quality_gate_agent import QualityGateAgent
 
 __all__ = [
+    "ComplianceAgent",
     "ContentGeneratorAgent",
     "DifficultyAgent",
     "DistractorAgent",
-    "ComplianceAgent",
     "LanguageQAAgent",
     "QualityGateAgent"
 ]

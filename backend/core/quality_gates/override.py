@@ -15,12 +15,10 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Optional
 
 from .models import OverrideApproval, OverrideRequest
-
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +34,7 @@ class OverrideManager:
     - Expiration handling
     """
 
-    def __init__(self, storage_path: Optional[Path] = None):
+    def __init__(self, storage_path: Path | None = None):
         """
         Initialize override manager.
 
@@ -116,7 +114,7 @@ class OverrideManager:
         gate_name: str,
         reason: str,
         requestor: str,
-        ticket_id: Optional[str] = None,
+        ticket_id: str | None = None,
         expires_in_days: int = 7,
     ) -> OverrideRequest:
         """
@@ -135,7 +133,7 @@ class OverrideManager:
         if len(reason) < 20:
             raise ValueError("Override reason must be at least 20 characters")
 
-        expires_at = datetime.now(timezone.utc) + timedelta(days=expires_in_days)
+        expires_at = datetime.now(UTC) + timedelta(days=expires_in_days)
 
         request = OverrideRequest(
             gate_name=gate_name,
@@ -163,7 +161,7 @@ class OverrideManager:
         self,
         gate_name: str,
         approver: str,
-        comments: Optional[str] = None,
+        comments: str | None = None,
     ) -> OverrideApproval:
         """
         Approve a pending override request.
@@ -206,7 +204,7 @@ class OverrideManager:
         self,
         gate_name: str,
         approver: str,
-        comments: Optional[str] = None,
+        comments: str | None = None,
     ) -> OverrideApproval:
         """
         Deny a pending override request.
@@ -258,20 +256,20 @@ class OverrideManager:
                 },
             )
 
-    def get_override(self, gate_name: str) -> Optional[OverrideApproval]:
+    def get_override(self, gate_name: str) -> OverrideApproval | None:
         """Get active override for a gate."""
         approval = self._overrides.get(gate_name)
 
         if approval:
             # Check expiration
-            if approval.request.expires_at and approval.request.expires_at < datetime.now(timezone.utc):
+            if approval.request.expires_at and approval.request.expires_at < datetime.now(UTC):
                 logger.info(f"Override for {gate_name} has expired")
                 self.revoke(gate_name)
                 return None
 
         return approval
 
-    def get_pending_request(self, gate_name: str) -> Optional[OverrideRequest]:
+    def get_pending_request(self, gate_name: str) -> OverrideRequest | None:
         """Get pending request for a gate."""
         return self._pending_requests.get(gate_name)
 
@@ -280,7 +278,7 @@ class OverrideManager:
         # Clean up expired overrides
         expired = []
         for gate_name, approval in self._overrides.items():
-            if approval.request.expires_at and approval.request.expires_at < datetime.now(timezone.utc):
+            if approval.request.expires_at and approval.request.expires_at < datetime.now(UTC):
                 expired.append(gate_name)
 
         for gate_name in expired:

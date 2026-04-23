@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test - Gelismis Oneri Sistemi
 Learning Style Service'in detayli oneri sistemi testleri
@@ -6,9 +5,8 @@ Kapsanmayan 310-364 satirlarini test eder
 """
 
 import pytest
+
 from services.learning_style_service import LearningStyleService
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

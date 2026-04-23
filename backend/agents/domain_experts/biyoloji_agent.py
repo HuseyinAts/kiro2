@@ -12,9 +12,9 @@ Uzmanlik Alanlari:
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from .base_domain_agent import BaseDomainAgent, DomainType, DomainResponse
+from .base_domain_agent import BaseDomainAgent, DomainResponse, DomainType
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ class BiyolojiAgent(BaseDomainAgent):
     async def solve_question(
         self,
         question: str,
-        shared_context: Optional[Dict[str, Any]] = None,
+        shared_context: dict[str, Any] | None = None,
     ) -> DomainResponse:
         """Biyoloji sorusunu coz"""
         start_time = time.perf_counter()
@@ -138,7 +138,7 @@ class BiyolojiAgent(BaseDomainAgent):
                 return q_type
         return "genel"
 
-    def _generate_step_by_step(self, question_type: str) -> List[str]:
+    def _generate_step_by_step(self, question_type: str) -> list[str]:
         steps = {
             "hucre": ["Organeli/yapıyı belirle", "Fonksiyonunu açıkla", "İlişkileri kur", "Sonuçla"],
             "genetik": ["Genleri belirle", "Alelleri tanımla", "Punnett karesi çiz", "Oranları hesapla"],

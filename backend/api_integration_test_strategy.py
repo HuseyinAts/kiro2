@@ -2,7 +2,6 @@
 API Integration Test Strategy for Coverage
 Comprehensive testing strategy for API endpoints with coverage optimization
 """
-from typing import Dict, List
 
 
 class APIIntegrationTestStrategy:
@@ -157,7 +156,7 @@ class APIIntegrationTestStrategy:
     }
 
     @classmethod
-    def generate_test_matrix(cls) -> Dict[str, List[Dict]]:
+    def generate_test_matrix(cls) -> dict[str, list[dict]]:
         """Generate comprehensive test matrix for API endpoints"""
         test_matrix = {}
 
@@ -182,7 +181,7 @@ class APIIntegrationTestStrategy:
         return test_matrix
 
     @classmethod
-    def _get_test_types_for_scenario(cls, scenario: str) -> List[str]:
+    def _get_test_types_for_scenario(cls, scenario: str) -> list[str]:
         """Get test types required for a specific scenario"""
         scenario_mappings = {
             "valid_credentials": ["unit", "integration", "security"],
@@ -199,7 +198,7 @@ class APIIntegrationTestStrategy:
 
     @classmethod
     def create_integration_test_template(
-        cls, api_group: str, endpoint_config: Dict
+        cls, api_group: str, endpoint_config: dict
     ) -> str:
         """Create integration test template for API group"""
         template = f'''
@@ -291,7 +290,7 @@ class Test{api_group.title().replace("_", "")}Integration:
 """
 
     @classmethod
-    def create_performance_test_suite(cls) -> Dict[str, str]:
+    def create_performance_test_suite(cls) -> dict[str, str]:
         """Create performance test suite for critical API endpoints"""
         performance_tests = {}
 

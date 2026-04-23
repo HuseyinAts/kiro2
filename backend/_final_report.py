@@ -1,4 +1,5 @@
-import subprocess, sys, os
+import os
+import subprocess
 
 env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONIOENCODING': 'utf-8'}
 cwd = r"c:\Users\husey\kiro2\backend"

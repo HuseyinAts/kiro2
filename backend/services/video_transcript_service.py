@@ -12,9 +12,8 @@ Requirements: REQ-14.1, REQ-14.2
 
 import logging
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -41,7 +40,7 @@ class VideoTranscriptService:
 
     async def generate_auto_transcript(
         self, video_id: str, video_path: Path, language: str = "tr"
-    ) -> Tuple[bool, Optional[str], Optional[VideoTranscript]]:
+    ) -> tuple[bool, str | None, VideoTranscript | None]:
         """
         Otomatik transkript oluştur (TASK 72.3: Auto-generated transcripts)
 
@@ -88,7 +87,7 @@ class VideoTranscriptService:
                 transcript_status=TranscriptStatus.AUTO_GENERATED,
                 auto_generated_by="Whisper AI (Mock)",
                 auto_generation_confidence=0.95,
-                auto_generated_at=datetime.now(timezone.utc),
+                auto_generated_at=datetime.now(UTC),
                 word_count=len(full_text.split()),
                 average_words_per_minute=150.0,
                 readability_score=75.0,
@@ -114,15 +113,15 @@ class VideoTranscriptService:
         except Exception as e:
             logger.error(f"Auto transcript generation error: {e}")
             await self.db.rollback()
-            return False, f"Transkript oluşturma hatası: {str(e)}", None
+            return False, f"Transkript oluşturma hatası: {e!s}", None
 
     async def update_transcript(
         self,
         transcript_id: str,
         user_id: str,
-        full_text: Optional[str] = None,
-        timestamped_segments: Optional[Dict] = None,
-    ) -> Tuple[bool, Optional[str], Optional[VideoTranscript]]:
+        full_text: str | None = None,
+        timestamped_segments: dict | None = None,
+    ) -> tuple[bool, str | None, VideoTranscript | None]:
         """
         Transkripti manuel olarak düzenle (TASK 72.3: Manual transcript editing)
 
@@ -155,7 +154,7 @@ class VideoTranscriptService:
             # Manuel düzenleme bilgilerini güncelle
             transcript.transcript_status = TranscriptStatus.MANUALLY_EDITED
             transcript.manually_edited_by = user_id
-            transcript.manually_edited_at = datetime.now(timezone.utc)
+            transcript.manually_edited_at = datetime.now(UTC)
             transcript.edit_count += 1
 
             await self.db.commit()
@@ -167,11 +166,11 @@ class VideoTranscriptService:
         except Exception as e:
             logger.error(f"Transcript update error: {e}")
             await self.db.rollback()
-            return False, f"Transkript güncelleme hatası: {str(e)}", None
+            return False, f"Transkript güncelleme hatası: {e!s}", None
 
     async def search_transcripts(
-        self, query: str, video_id: Optional[str] = None, language: str = "tr"
-    ) -> List[Dict]:
+        self, query: str, video_id: str | None = None, language: str = "tr"
+    ) -> list[dict]:
         """
         Transkriptlerde arama yap (TASK 72.3: Searchable transcripts)
 
@@ -243,7 +242,7 @@ class VideoTranscriptService:
 
     async def extract_keywords(
         self, transcript_id: str
-    ) -> Tuple[bool, Optional[str], Optional[List[str]]]:
+    ) -> tuple[bool, str | None, list[str] | None]:
         """
         Transkriptten anahtar kelimeleri çıkar
 
@@ -309,4 +308,4 @@ class VideoTranscriptService:
         except Exception as e:
             logger.error(f"Keyword extraction error: {e}")
             await self.db.rollback()
-            return False, f"Anahtar kelime çıkarma hatası: {str(e)}", None
+            return False, f"Anahtar kelime çıkarma hatası: {e!s}", None

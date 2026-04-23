@@ -517,18 +517,17 @@ class TestTurkishNLPProcessingPipeline:
                             "confidence": 0.6,
                             "method": "rule_based",
                         }
-                    elif negative_count > positive_count:
+                    if negative_count > positive_count:
                         return {
                             "sentiment": "negative",
                             "confidence": 0.6,
                             "method": "rule_based",
                         }
-                    else:
-                        return {
-                            "sentiment": "neutral",
-                            "confidence": 0.5,
-                            "method": "rule_based",
-                        }
+                    return {
+                        "sentiment": "neutral",
+                        "confidence": 0.5,
+                        "method": "rule_based",
+                    }
 
                 # Test rule-based fallback
                 test_texts = [

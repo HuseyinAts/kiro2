@@ -3,7 +3,7 @@ import json
 
 
 def analyze_coverage(json_file):
-    with open(json_file, "r", encoding="utf-8") as f:
+    with open(json_file, encoding="utf-8") as f:
         d = json.load(f)
 
     files = d.get("files", {})

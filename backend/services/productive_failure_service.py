@@ -6,8 +6,6 @@ BEFORE learning, then learns, then takes post-test to measure growth.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -35,7 +33,7 @@ async def get_pretest_questions(
     *,
     db: AsyncSession,
     topic_id: str,
-    subject: Optional[str] = None,
+    subject: str | None = None,
     count: int = 3,
 ) -> list[dict]:
     """Select pretest questions for an upcoming topic.

@@ -9,9 +9,9 @@ Requirements (REQ-8.2, REQ-8.5):
 
 import logging
 from collections import defaultdict
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Tuple
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class BottleneckInfo:
     p95_duration: float
     severity: str  # low, medium, high, critical
     impact_score: float  # 0-1
-    recommendations: List[str]
+    recommendations: list[str]
 
 
 class BottleneckDetector:
@@ -59,7 +59,7 @@ class BottleneckDetector:
 
     def __init__(self):
         """Detector başlat"""
-        self._timing_history: Dict[str, List[Tuple[datetime, float]]] = defaultdict(list)
+        self._timing_history: dict[str, list[tuple[datetime, float]]] = defaultdict(list)
         self._max_history = 500
 
     def record_timing(self, stage_name: str, duration: float) -> None:
@@ -70,13 +70,13 @@ class BottleneckDetector:
             stage_name: Aşama adı
             duration: Süre (saniye)
         """
-        self._timing_history[stage_name].append((datetime.now(timezone.utc), duration))
+        self._timing_history[stage_name].append((datetime.now(UTC), duration))
 
         # History sınırla
         if len(self._timing_history[stage_name]) > self._max_history:
             self._timing_history[stage_name] = self._timing_history[stage_name][-self._max_history:]
 
-    def detect_bottlenecks(self, threshold_multiplier: float = 1.0) -> List[BottleneckInfo]:
+    def detect_bottlenecks(self, threshold_multiplier: float = 1.0) -> list[BottleneckInfo]:
         """
         Bottleneck'leri tespit et
 
@@ -135,14 +135,13 @@ class BottleneckDetector:
 
         if adjusted_p95 >= self.THRESHOLDS["critical"]:
             return "critical"
-        elif adjusted_p95 >= self.THRESHOLDS["high"]:
+        if adjusted_p95 >= self.THRESHOLDS["high"]:
             return "high"
-        elif adjusted_p95 >= self.THRESHOLDS["medium"]:
+        if adjusted_p95 >= self.THRESHOLDS["medium"]:
             return "medium"
-        elif adjusted_p95 >= self.THRESHOLDS["low"]:
+        if adjusted_p95 >= self.THRESHOLDS["low"]:
             return "low"
-        else:
-            return "normal"
+        return "normal"
 
     def _calculate_impact(self, stage_name: str, avg_duration: float) -> float:
         """
@@ -177,7 +176,7 @@ class BottleneckDetector:
         avg_duration: float,
         max_duration: float,
         severity: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Optimization önerileri üret"""
         recommendations = []
 
@@ -235,7 +234,7 @@ class BottleneckDetector:
 
         return recommendations[:4]
 
-    def get_stage_analysis(self, stage_name: str) -> Dict[str, Any]:
+    def get_stage_analysis(self, stage_name: str) -> dict[str, Any]:
         """
         Detaylı stage analizi
 
@@ -290,7 +289,7 @@ class BottleneckDetector:
             "is_bottleneck": p95 > self.THRESHOLDS["medium"]
         }
 
-    def get_optimization_priority(self) -> List[Dict[str, Any]]:
+    def get_optimization_priority(self) -> list[dict[str, Any]]:
         """
         Optimization öncelik listesi
 

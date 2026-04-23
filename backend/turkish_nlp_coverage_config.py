@@ -3,7 +3,6 @@ Turkish NLP Module Specific Coverage Configuration
 Special configuration for Turkish language processing modules
 """
 from pathlib import Path
-from typing import Dict, List
 
 
 class TurkishNLPCoverageConfig:
@@ -127,7 +126,7 @@ class TurkishNLPCoverageConfig:
     }
 
     @classmethod
-    def get_all_turkish_modules(cls) -> Dict[str, Dict]:
+    def get_all_turkish_modules(cls) -> dict[str, dict]:
         """Get all Turkish NLP modules with their configurations"""
         all_modules = {}
         all_modules.update(cls.CORE_NLP_MODULES)
@@ -161,7 +160,7 @@ class TurkishNLPCoverageConfig:
             return False
 
     @classmethod
-    def generate_turkish_test_data(cls) -> Dict[str, List[str]]:
+    def generate_turkish_test_data(cls) -> dict[str, list[str]]:
         """Generate comprehensive test data for Turkish NLP modules"""
         return {
             "basic_texts": ["Merhaba", "Türkçe", "Eğitim", "Öğrenci", "Öğretmen"],
@@ -193,7 +192,7 @@ class TurkishNLPCoverageConfig:
         }
 
     @classmethod
-    def create_turkish_nlp_test_suite(cls) -> Dict[str, str]:
+    def create_turkish_nlp_test_suite(cls) -> dict[str, str]:
         """Create comprehensive test suite for Turkish NLP modules"""
         test_template = '''
 @pytest.mark.turkish_nlp_critical

@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -14,7 +15,8 @@ pytestmark = pytest.mark.skipif(
     reason="QuestionGenerationService API completely changed: SubjectType.MATHEMATICS→MATEMATIK, missing get_generated_question_by_id method, AsyncMock DB patterns incompatible",
 )
 from datetime import datetime
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import AsyncMock, Mock, patch
+
 from services.question_generation_service import QuestionGenerationService
 
 # Mock imports if they fail
@@ -31,9 +33,9 @@ try:
     )
 except ImportError:
     # Mock enum classes
-    from enum import Enum
     from dataclasses import dataclass
-    from typing import Any, Dict, List, Optional
+    from enum import Enum
+    from typing import Any
 
     class ExamType(Enum):
         LGS = "lgs"
@@ -78,14 +80,14 @@ except ImportError:
 
     @dataclass
     class GeneratedQuestion:
-        id: Optional[str]
+        id: str | None
         subject: SubjectType
         topic_id: str
         topic_name: str
         subtopic: str
         question_type: QuestionType
         question_text: str
-        options: Optional[List[str]]
+        options: list[str] | None
         correct_answer: str
         explanation: str
         difficulty_level: DifficultyLevel
@@ -97,8 +99,8 @@ except ImportError:
         readability_score: float
         uniqueness_score: float
         generation_method: str
-        metadata: Dict[str, Any]
-        tags: List[str]
+        metadata: dict[str, Any]
+        tags: list[str]
         created_at: datetime
         updated_at: datetime
         is_validated: bool
@@ -108,14 +110,14 @@ except ImportError:
 
     @dataclass
     class QuestionTemplate:
-        id: Optional[str]
+        id: str | None
         template_name: str
         subject: SubjectType
-        topic_patterns: List[str]
+        topic_patterns: list[str]
         question_structure: str
-        placeholder_rules: Dict[str, Any]
-        difficulty_mapping: Dict[str, DifficultyLevel]
-        cognitive_targets: List[CognitiveLevel]
+        placeholder_rules: dict[str, Any]
+        difficulty_mapping: dict[str, DifficultyLevel]
+        cognitive_targets: list[CognitiveLevel]
         success_rate: float
         usage_count: int
         created_at: datetime
@@ -126,13 +128,13 @@ except ImportError:
         subject: SubjectType
         topic_id: str
         question_count: int
-        difficulty_distribution: Dict[DifficultyLevel, float]
-        question_types: List[QuestionType]
-        cognitive_levels: List[CognitiveLevel]
+        difficulty_distribution: dict[DifficultyLevel, float]
+        question_types: list[QuestionType]
+        cognitive_levels: list[CognitiveLevel]
         exam_type: ExamType
         grade_level: GradeLevel
-        time_limit_minutes: Optional[int]
-        special_requirements: Dict[str, Any]
+        time_limit_minutes: int | None
+        special_requirements: dict[str, Any]
         quality_threshold: float
         uniqueness_threshold: float
 
@@ -143,9 +145,9 @@ except ImportError:
         readability_score: float
         compliance_score: float
         uniqueness_score: float
-        validation_errors: List[str]
-        validation_warnings: List[str]
-        suggestions: List[str]
+        validation_errors: list[str]
+        validation_warnings: list[str]
+        suggestions: list[str]
         auto_fix_applied: bool
 
 

@@ -16,16 +16,16 @@ Requirements:
 - REQ-4.4: Role validity time constraints
 """
 
-from datetime import datetime, timedelta
-from datetime import UTC
-from dataclasses import dataclass, field
-from enum import Enum
+import sys
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from enum import Enum
 
 import pytest
-from hypothesis import assume, given, settings, strategies as st
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 

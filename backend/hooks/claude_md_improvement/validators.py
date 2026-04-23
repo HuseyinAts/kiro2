@@ -15,10 +15,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Tuple
 
 from pydantic import BaseModel, Field, field_validator
-
 
 # =============================================================================
 # REQ-10.1: IRT PARAMETRE VALİDASYONU
@@ -48,7 +46,7 @@ class IRTBounds:
     SLIP_MAX: float = 0.25
 
 
-def validate_irt_difficulty(difficulty: float) -> Tuple[bool, str]:
+def validate_irt_difficulty(difficulty: float) -> tuple[bool, str]:
     """
     IRT difficulty parametresini doğrula.
 
@@ -74,7 +72,7 @@ def validate_irt_difficulty(difficulty: float) -> Tuple[bool, str]:
     return True, "OK"
 
 
-def validate_irt_discrimination(discrimination: float) -> Tuple[bool, str]:
+def validate_irt_discrimination(discrimination: float) -> tuple[bool, str]:
     """
     IRT discrimination parametresini doğrula.
 
@@ -100,7 +98,7 @@ def validate_irt_discrimination(discrimination: float) -> Tuple[bool, str]:
     return True, "OK"
 
 
-def validate_irt_guessing(guessing: float) -> Tuple[bool, str]:
+def validate_irt_guessing(guessing: float) -> tuple[bool, str]:
     """
     IRT guessing parametresini doğrula.
 
@@ -130,7 +128,7 @@ def validate_irt_params(
     difficulty: float,
     discrimination: float,
     guessing: float = 0.0
-) -> Tuple[bool, List[str]]:
+) -> tuple[bool, list[str]]:
     """
     Tüm IRT parametrelerini toplu doğrula.
 
@@ -230,10 +228,9 @@ def turkish_normalize(text: str, case: str = "lower") -> str:
     """
     if case == "lower":
         return turkish_lower(text)
-    elif case == "upper":
+    if case == "upper":
         return turkish_upper(text)
-    else:
-        raise ValueError(f"Geçersiz case: {case}, 'lower' veya 'upper' olmalı")
+    raise ValueError(f"Geçersiz case: {case}, 'lower' veya 'upper' olmalı")
 
 
 def is_turkish_text(text: str, threshold: float = 0.1) -> bool:
@@ -310,7 +307,7 @@ class ZPDBounds:
     EXTENDED_MAX: float = 0.90
 
 
-def validate_zpd_probability(probability: float, strict: bool = True) -> Tuple[bool, str]:
+def validate_zpd_probability(probability: float, strict: bool = True) -> tuple[bool, str]:
     """
     ZPD olasılık değerini doğrula.
 
@@ -371,7 +368,7 @@ def calculate_zpd_score(probability: float) -> float:
 def suggest_difficulty_adjustment(
     current_probability: float,
     target_probability: float = 0.50
-) -> Tuple[str, float]:
+) -> tuple[str, float]:
     """
     Zorluk ayarlama önerisi.
 
@@ -386,12 +383,11 @@ def suggest_difficulty_adjustment(
 
     if abs(diff) < 0.05:
         return "optimal", 0.0
-    elif diff > 0:
+    if diff > 0:
         # Mevcut çok zor, kolaylaştır
         return "easier", abs(diff)
-    else:
-        # Mevcut çok kolay, zorlaştır
-        return "harder", abs(diff)
+    # Mevcut çok kolay, zorlaştır
+    return "harder", abs(diff)
 
 
 # =============================================================================
@@ -482,8 +478,8 @@ class KIRO2ValidationResult(BaseModel):
     """KIRO2 validasyon sonucu."""
 
     is_valid: bool = Field(..., description="Genel geçerlilik")
-    errors: List[str] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
 
     # Alt validasyonlar
     irt_valid: bool = Field(default=True)
@@ -496,7 +492,7 @@ class KIRO2ValidationResult(BaseModel):
     zpd_score: float = Field(default=0.0, ge=0.0, le=1.0)
 
     # Öneriler
-    suggestions: List[str] = Field(default_factory=list)
+    suggestions: list[str] = Field(default_factory=list)
 
 
 def validate_kiro2_question(
@@ -504,7 +500,7 @@ def validate_kiro2_question(
     difficulty: float,
     discrimination: float,
     guessing: float = 0.0,
-    success_probability: Optional[float] = None,
+    success_probability: float | None = None,
     strict: bool = True
 ) -> KIRO2ValidationResult:
     """
@@ -595,7 +591,7 @@ def validate_kiro2_question(
 # HELPER FUNCTIONS FOR HOOKS
 # =============================================================================
 
-def validate_feedback_content(content: str) -> Tuple[bool, List[str]]:
+def validate_feedback_content(content: str) -> tuple[bool, list[str]]:
     """
     Feedback içeriğini KIRO2 kurallarına göre doğrula.
 
@@ -621,7 +617,7 @@ def validate_rule_update(
     old_text: str,
     new_text: str,
     rule_type: str = "general"
-) -> Tuple[bool, List[str], List[str]]:
+) -> tuple[bool, list[str], list[str]]:
     """
     CLAUDE.md kural güncellemesini doğrula.
 

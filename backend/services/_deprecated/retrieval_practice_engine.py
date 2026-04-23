@@ -18,7 +18,6 @@ import random
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 
 class RetrievalType(str, Enum):
@@ -49,7 +48,7 @@ class RetrievalItem:
     retrieval_type: RetrievalType
     fsrs_stability: float = 1.0
     fsrs_difficulty: float = 5.0
-    last_reviewed: Optional[datetime] = None
+    last_reviewed: datetime | None = None
     success_count: int = 0
     fail_count: int = 0
 

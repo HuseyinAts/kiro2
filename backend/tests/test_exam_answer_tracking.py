@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Sınav Cevap Takip Testleri
 Türkiye Üniversite Sınavları Hazırlık Platformu
@@ -11,25 +10,23 @@ Task 69.2: Boş bırakma testleri
 REQ-1.6: Sınav arayüzü gereksinimleri
 """
 
+import os
+
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.database import (
-    ExamSession,
     ExamQuestion,
+    ExamSession,
+    ExamType,
     StudentAnswer,
     StudentProfile,
     User,
     UserRole,
-    ExamType,
 )
 from services.exam_answer_tracking_service import (
     create_answer_tracking_service,
 )
-
-
-
-import os
 
 _db_url = os.environ.get("DATABASE_URL", "")
 pytestmark = pytest.mark.skipif(
@@ -85,7 +82,7 @@ async def test_exam_session(db_session: AsyncSession, test_student):
 @pytest.fixture
 async def test_exam_questions(db_session: AsyncSession, test_exam_session):
     """Test sınav soruları oluştur"""
-    from models.database import Question, SubjectArea, QuestionDifficulty
+    from models.database import Question, QuestionDifficulty, SubjectArea
 
     questions = []
     exam_questions = []

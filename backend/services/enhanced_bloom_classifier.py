@@ -23,8 +23,8 @@ Bloom Levels (Revised):
 import logging
 import pickle
 import re
-from typing import Dict, List, Optional
 from dataclasses import dataclass
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ class BloomPrediction:
     level_name: str  # Turkish name
     confidence: float  # 0-1
     method: str  # Which method was used
-    level_probabilities: Dict[str, float] = None  # All level probabilities
+    level_probabilities: dict[str, float] = None  # All level probabilities
 
 
 class EnhancedBloomClassifier:
@@ -163,8 +163,8 @@ class EnhancedBloomClassifier:
 
         # Try to import ML libraries
         try:
-            from sklearn.feature_extraction.text import TfidfVectorizer
             from sklearn.ensemble import RandomForestClassifier
+            from sklearn.feature_extraction.text import TfidfVectorizer
 
             self._TfidfVectorizer = TfidfVectorizer
             self._RandomForestClassifier = RandomForestClassifier
@@ -203,16 +203,15 @@ class EnhancedBloomClassifier:
         """
         if method == "keyword" or not self._sklearn_available:
             return self._classify_keyword(question_text)
-        elif method == "tfidf" and self._tfidf_model and self._ml_model:
+        if method == "tfidf" and self._tfidf_model and self._ml_model:
             return self._classify_tfidf(question_text)
-        elif method == "bert" and self._bert_model:
+        if method == "bert" and self._bert_model:
             return self._classify_bert(question_text)
-        elif method == "ensemble":
+        if method == "ensemble":
             return self._classify_ensemble(question_text)
-        else:
-            # Fallback to keyword
-            logger.warning(f"Method '{method}' not available, using keyword")
-            return self._classify_keyword(question_text)
+        # Fallback to keyword
+        logger.warning(f"Method '{method}' not available, using keyword")
+        return self._classify_keyword(question_text)
 
     def _classify_keyword(self, question_text: str) -> BloomPrediction:
         """
@@ -347,11 +346,11 @@ class EnhancedBloomClassifier:
 
     def train_tfidf_model(
         self,
-        training_questions: List[str],
-        training_labels: List[int],
-        test_questions: Optional[List[str]] = None,
-        test_labels: Optional[List[int]] = None,
-    ) -> Dict:
+        training_questions: list[str],
+        training_labels: list[int],
+        test_questions: list[str] | None = None,
+        test_labels: list[int] | None = None,
+    ) -> dict:
         """
         Train TF-IDF + RandomForest model
 

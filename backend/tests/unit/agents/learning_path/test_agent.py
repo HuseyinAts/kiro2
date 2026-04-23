@@ -5,20 +5,20 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 Tests the main LearningPathAgent orchestrator that coordinates all components.
 """
 
-import pytest
-from unittest.mock import Mock, AsyncMock, patch
 from datetime import datetime
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 
 from backend.agents.learning_path.agent import LearningPathAgent
 from backend.agents.learning_path.models import (
-    StudentProfile,
-    LearningResource,
+    KnowledgeLevel,
     LearningPath,
     LearningPhase,
+    LearningResource,
     LearningStyle,
-    KnowledgeLevel,
+    StudentProfile,
 )
-
 
 # Fixtures
 
@@ -245,41 +245,38 @@ async def test_create_learning_path_success(learning_path_agent, sample_student_
         learning_path_agent.student_profiler,
         "analyze_student",
         new=AsyncMock(return_value=mock_profile),
+    ), patch.object(
+        learning_path_agent.assessment_creator,
+        "create_diagnostic_assessment",
+        new=AsyncMock(return_value={"success": True, "questions": []}),
+    ), patch.object(
+        learning_path_agent,
+        "_search_personalized_resources",
+        new=AsyncMock(return_value=[]),
+    ), patch.object(
+        learning_path_agent.path_generator,
+        "generate_path",
+        new=AsyncMock(
+            return_value=LearningPath(
+                path_id="path123",
+                student_id="student123",
+                goal="Test goal",
+                resources=[],
+                phases=[],
+                created_at=datetime.now(),
+                reasoning="Test reasoning",
+            )
+        ),
     ):
-        with patch.object(
-            learning_path_agent.assessment_creator,
-            "create_diagnostic_assessment",
-            new=AsyncMock(return_value={"success": True, "questions": []}),
-        ):
-            with patch.object(
-                learning_path_agent,
-                "_search_personalized_resources",
-                new=AsyncMock(return_value=[]),
-            ):
-                with patch.object(
-                    learning_path_agent.path_generator,
-                    "generate_path",
-                    new=AsyncMock(
-                        return_value=LearningPath(
-                            path_id="path123",
-                            student_id="student123",
-                            goal="Test goal",
-                            resources=[],
-                            phases=[],
-                            created_at=datetime.now(),
-                            reasoning="Test reasoning",
-                        )
-                    ),
-                ):
-                    result = await learning_path_agent.create_learning_path(
-                        student_id="student123", student_data=sample_student_data
-                    )
+        result = await learning_path_agent.create_learning_path(
+            student_id="student123", student_data=sample_student_data
+        )
 
-                    assert result["success"] is True
-                    assert "student_profile" in result
-                    assert "learning_path" in result
-                    assert "assessment" in result
-                    assert result["student_profile"]["student_id"] == "student123"
+        assert result["success"] is True
+        assert "student_profile" in result
+        assert "learning_path" in result
+        assert "assessment" in result
+        assert result["student_profile"]["student_id"] == "student123"
 
 
 @pytest.mark.asyncio
@@ -301,40 +298,37 @@ async def test_create_learning_path_with_goal(learning_path_agent, sample_studen
         learning_path_agent.student_profiler,
         "analyze_student",
         new=AsyncMock(return_value=mock_profile),
+    ), patch.object(
+        learning_path_agent.assessment_creator,
+        "create_diagnostic_assessment",
+        new=AsyncMock(return_value={"success": True, "questions": []}),
+    ), patch.object(
+        learning_path_agent,
+        "_search_personalized_resources",
+        new=AsyncMock(return_value=[]),
+    ), patch.object(
+        learning_path_agent.path_generator,
+        "generate_path",
+        new=AsyncMock(
+            return_value=LearningPath(
+                path_id="path123",
+                student_id="student123",
+                goal="Custom goal",
+                resources=[],
+                phases=[],
+                created_at=datetime.now(),
+                reasoning="Test",
+            )
+        ),
     ):
-        with patch.object(
-            learning_path_agent.assessment_creator,
-            "create_diagnostic_assessment",
-            new=AsyncMock(return_value={"success": True, "questions": []}),
-        ):
-            with patch.object(
-                learning_path_agent,
-                "_search_personalized_resources",
-                new=AsyncMock(return_value=[]),
-            ):
-                with patch.object(
-                    learning_path_agent.path_generator,
-                    "generate_path",
-                    new=AsyncMock(
-                        return_value=LearningPath(
-                            path_id="path123",
-                            student_id="student123",
-                            goal="Custom goal",
-                            resources=[],
-                            phases=[],
-                            created_at=datetime.now(),
-                            reasoning="Test",
-                        )
-                    ),
-                ):
-                    result = await learning_path_agent.create_learning_path(
-                        student_id="student123",
-                        student_data=sample_student_data,
-                        goal="Custom goal",
-                    )
+        result = await learning_path_agent.create_learning_path(
+            student_id="student123",
+            student_data=sample_student_data,
+            goal="Custom goal",
+        )
 
-                    assert result["success"] is True
-                    assert result["learning_path"]["goal"] == "Custom goal"
+        assert result["success"] is True
+        assert result["learning_path"]["goal"] == "Custom goal"
 
 
 @pytest.mark.asyncio
@@ -554,28 +548,27 @@ async def test_regenerate_path_success(learning_path_agent, sample_student_profi
         learning_path_agent,
         "_search_personalized_resources",
         new=AsyncMock(return_value=[]),
-    ):
-        with patch.object(
-            learning_path_agent.path_generator,
-            "generate_path",
-            new=AsyncMock(
-                return_value=LearningPath(
-                    path_id="path_new",
-                    student_id="student123",
-                    goal="New goal",
-                    resources=[],
-                    phases=[],
-                    created_at=datetime.now(),
-                    reasoning="Regenerated",
-                )
-            ),
-        ):
-            result = await learning_path_agent.regenerate_path(
-                student_id="student123", preferences={"difficulty": "advanced"}
+    ), patch.object(
+        learning_path_agent.path_generator,
+        "generate_path",
+        new=AsyncMock(
+            return_value=LearningPath(
+                path_id="path_new",
+                student_id="student123",
+                goal="New goal",
+                resources=[],
+                phases=[],
+                created_at=datetime.now(),
+                reasoning="Regenerated",
             )
+        ),
+    ):
+        result = await learning_path_agent.regenerate_path(
+            student_id="student123", preferences={"difficulty": "advanced"}
+        )
 
-            assert result["success"] is True
-            assert "learning_path" in result
+        assert result["success"] is True
+        assert "learning_path" in result
 
 
 @pytest.mark.asyncio

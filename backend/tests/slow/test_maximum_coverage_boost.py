@@ -15,17 +15,18 @@ En büyük dosyalar:
 """
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
 import pytest
+
 pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
 
 
-import pytest
 from datetime import datetime
 
-
+import pytest
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -649,10 +650,9 @@ class TestMaximumAPIComponents:
     def test_massive_enhanced_chat_api_coverage(self):
         """Enhanced chat API (467 lines) maksimum test et"""
         try:
-            from api.enhanced_chat import router
-
             # Import all functions and classes from the module
             import api.enhanced_chat as chat_module
+            from api.enhanced_chat import router
 
             # Get all callable attributes
             module_callables = [

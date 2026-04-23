@@ -10,7 +10,9 @@ Boris Cherny Standards: Property tests with 100+ iterations
 """
 
 import math
-from hypothesis import given, strategies as st, settings, assume
+
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 # IRT Parameter Ranges (from spec)
 DIFFICULTY_MIN = -4.0
@@ -42,7 +44,7 @@ def calculate_probability(theta: float, difficulty: float, discrimination: float
     # Overflow protection
     if exponent > 700:
         return guessing
-    elif exponent < -700:
+    if exponent < -700:
         return 1.0
 
     return guessing + (1 - guessing) / (1 + math.exp(exponent))

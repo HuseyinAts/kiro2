@@ -4,19 +4,19 @@ Target: 80%+ test coverage
 ÖSYM ve ETS standartlarını aşan soru analizi servisi testi
 """
 
-import pytest
 from unittest.mock import Mock, patch
 
+import pytest
+
 from algorithms.irt_morfoloji_service import (
+    IRTModel,
     IRTMorfolojiService,
     IRTParameters,
     MorphologyComplexity,
     QuestionAnalysis,
-    IRTModel,
     irt_morfoloji_service,
 )
 from core.turkish_nlp_service import MorphologicalAnalysis
-
 
 
 @pytest.mark.skip(reason="IRT Morfoloji service API changed - 9/49 tests fail due to service refactoring")
@@ -70,24 +70,23 @@ class TestIRTMorfolojiService:
             service,
             "_analyze_turkish_morphology_complexity",
             return_value=mock_morphology,
-        ):
-            with patch.object(
-                service, "_calculate_base_irt_parameters"
-            ) as mock_base_irt:
-                mock_base_irt.return_value = IRTParameters(
-                    difficulty=0.5,
-                    discrimination=1.2,
-                    guessing=0.2,
-                    upper_asymptote=1.0,
-                )
+        ), patch.object(
+            service, "_calculate_base_irt_parameters"
+        ) as mock_base_irt:
+            mock_base_irt.return_value = IRTParameters(
+                difficulty=0.5,
+                discrimination=1.2,
+                guessing=0.2,
+                upper_asymptote=1.0,
+            )
 
-                result = await service.analyze_question_irt_morphology(
-                    question_id="q001",
-                    question_text="Öğretmenlerimizden matematik dersi almak istiyorum.",
-                    correct_answer="A",
-                    student_responses=[{"is_correct": True}, {"is_correct": False}],
-                    base_difficulty=0.5,
-                )
+            result = await service.analyze_question_irt_morphology(
+                question_id="q001",
+                question_text="Öğretmenlerimizden matematik dersi almak istiyorum.",
+                correct_answer="A",
+                student_responses=[{"is_correct": True}, {"is_correct": False}],
+                base_difficulty=0.5,
+            )
 
         assert isinstance(result, QuestionAnalysis)
         assert result.question_id == "q001"

@@ -16,13 +16,14 @@ Integration:
     setup_timezone_listeners(Base)
 """
 
-from datetime import datetime
-from sqlalchemy import event, inspect
-from sqlalchemy.orm import Session, Mapper
-from typing import Any, Dict
 import logging
+from datetime import datetime
+from typing import Any
 
-from core.timezone_utils import now_utc, ensure_utc, is_timezone_aware
+from sqlalchemy import event, inspect
+from sqlalchemy.orm import Mapper, Session
+
+from core.timezone_utils import ensure_utc, is_timezone_aware, now_utc
 
 logger = logging.getLogger(__name__)
 
@@ -341,7 +342,7 @@ def set_all_timestamps(instance: Any):
 # DEBUGGING UTILITIES
 # ================================================================
 
-def check_instance_timezone_compliance(instance: Any) -> Dict[str, Any]:
+def check_instance_timezone_compliance(instance: Any) -> dict[str, Any]:
     """
     Check if all datetime fields in instance are timezone-aware
 
@@ -390,7 +391,7 @@ def check_instance_timezone_compliance(instance: Any) -> Dict[str, Any]:
     }
 
 
-def audit_session_timezone_compliance(session: Session) -> Dict[str, Any]:
+def audit_session_timezone_compliance(session: Session) -> dict[str, Any]:
     """
     Audit all instances in session for timezone compliance
 

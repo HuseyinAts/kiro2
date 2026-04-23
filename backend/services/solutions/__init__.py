@@ -25,7 +25,7 @@ from .fastest import FastestSolutionMixin
 from .voting import SolutionVotingMixin
 
 __all__ = [
-    "SolutionComparisonMixin",
     "FastestSolutionMixin",
+    "SolutionComparisonMixin",
     "SolutionVotingMixin",
 ]

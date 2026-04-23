@@ -10,13 +10,13 @@ Kullanım:
     python run_accessibility_tests.py --report-format json
 """
 
-import os
-import sys
-import subprocess
-import json
-from datetime import datetime
-from typing import Dict, Any
 import argparse
+import json
+import os
+import subprocess
+import sys
+from datetime import datetime
+from typing import Any
 
 # Test modüllerini import et
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -42,7 +42,7 @@ class AccessibilityTestRunner:
             "modules": {},
         }
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Tüm erişilebilirlik testlerini çalıştır"""
         print("=" * 80)
         print("ACCESSIBILITY AND COMPLIANCE TEST SUITE")
@@ -98,7 +98,7 @@ class AccessibilityTestRunner:
                 print(f"  Atlanan: {module_result['skipped']}")
 
             except Exception as e:
-                print(f"HATA: {module} çalıştırılırken hata oluştu: {str(e)}")
+                print(f"HATA: {module} çalıştırılırken hata oluştu: {e!s}")
                 self.results["modules"][module] = {
                     "error": str(e),
                     "total": 0,
@@ -109,7 +109,7 @@ class AccessibilityTestRunner:
 
         return self.results
 
-    def _parse_pytest_output(self, stdout: str, stderr: str) -> Dict[str, Any]:
+    def _parse_pytest_output(self, stdout: str, stderr: str) -> dict[str, Any]:
         """pytest çıktısını parse et"""
         result = {"total": 0, "passed": 0, "failed": 0, "skipped": 0, "duration": 0.0}
 

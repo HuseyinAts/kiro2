@@ -14,6 +14,8 @@ Test Coverage:
 
 import pytest
 
+from backend.scoring.confidence_scorer import ConfidenceScorer
+
 # Import models
 from backend.validators.base_response_validator import (
     AgentResponse,
@@ -21,7 +23,6 @@ from backend.validators.base_response_validator import (
     ValidationAction,
     ValidationResult,
 )
-from backend.scoring.confidence_scorer import ConfidenceScorer
 
 
 class TestValidationResult:

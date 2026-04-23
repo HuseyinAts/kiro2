@@ -5,7 +5,7 @@ database.py'den ayrıştırıldı (2026-01-10)
 
 import uuid
 from datetime import date, datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import (
     JSON,
@@ -27,14 +27,22 @@ from .base import Base
 from .enums_db import LearningStyle, UserRole
 
 if TYPE_CHECKING:
-    from .exam_db import ExamSession
     from .analytics_db import LearningAnalytics
-    from .fsrs_models import (
-        FSRSCard, FSRSSchedule, FSRSReview,
-        FSRSStudentProfile, FSRSStudySession, FSRSSubjectStats
-    )
-    from .gamification_db import ManipulativeProgress, ManipulativeActivity, WeeklyProgress
     from .content_db import ClassRoom
+    from .exam_db import ExamSession
+    from .fsrs_models import (
+        FSRSCard,
+        FSRSReview,
+        FSRSSchedule,
+        FSRSStudentProfile,
+        FSRSStudySession,
+        FSRSSubjectStats,
+    )
+    from .gamification_db import (
+        ManipulativeActivity,
+        ManipulativeProgress,
+        WeeklyProgress,
+    )
     from .learning_path_models import LearningPathStudentProfile
 
 
@@ -68,13 +76,13 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
     # Sprint 4: Two-Factor Authentication (2FA) fields
-    secret_2fa: Mapped[Optional[str]] = mapped_column(
+    secret_2fa: Mapped[str | None] = mapped_column(
         String(32), nullable=True, comment="TOTP secret key for 2FA"
     )
     is_2fa_enabled: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False, comment="2FA enabled status"
     )
-    backup_codes_hashed: Mapped[Optional[dict]] = mapped_column(
+    backup_codes_hashed: Mapped[dict | None] = mapped_column(
         JSON, nullable=True, comment="Hashed backup codes for 2FA recovery"
     )
 
@@ -82,7 +90,7 @@ class User(Base):
     is_premium: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False, comment="Premium subscription status"
     )
-    premium_expires_at: Mapped[Optional[datetime]] = mapped_column(
+    premium_expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, comment="Premium subscription expiry"
     )
 
@@ -94,13 +102,13 @@ class User(Base):
     )
 
     # Contact information
-    phone: Mapped[Optional[str]] = mapped_column(String(20))
-    birth_date: Mapped[Optional[date]] = mapped_column(Date)
+    phone: Mapped[str | None] = mapped_column(String(20))
+    birth_date: Mapped[date | None] = mapped_column(Date)
 
     # Gamification fields (Task 91)
     total_xp: Mapped[int] = mapped_column(Integer, default=0)
     level: Mapped[int] = mapped_column(Integer, default=1)
-    last_level_up_at: Mapped[Optional[datetime]] = mapped_column(
+    last_level_up_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
 
@@ -113,7 +121,7 @@ class User(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    last_login: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    last_login: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # DB'de mevcut kolonlar — Alembic dışı migration ile eklendi
     elo_rating: Mapped[int] = mapped_column(Integer, default=1000)
@@ -131,42 +139,42 @@ class User(Base):
     )
 
     # Gamification relationships (Task 91, P2.2)
-    badges: Mapped[List["UserBadge"]] = relationship("UserBadge", back_populates="user")
-    achievements: Mapped[List["UserAchievement"]] = relationship(
+    badges: Mapped[list["UserBadge"]] = relationship("UserBadge", back_populates="user")
+    achievements: Mapped[list["UserAchievement"]] = relationship(
         "UserAchievement", back_populates="user"
     )
-    point_transactions: Mapped[List["PointTransaction"]] = relationship(
+    point_transactions: Mapped[list["PointTransaction"]] = relationship(
         "models.point_transaction.PointTransaction", back_populates="user"
     )
 
     # FSRS relationships
-    fsrs_cards: Mapped[List["FSRSCard"]] = relationship(
+    fsrs_cards: Mapped[list["FSRSCard"]] = relationship(
         "FSRSCard", back_populates="student"
     )
-    fsrs_schedules: Mapped[List["FSRSSchedule"]] = relationship(
+    fsrs_schedules: Mapped[list["FSRSSchedule"]] = relationship(
         "FSRSSchedule", back_populates="student"
     )
-    fsrs_reviews: Mapped[List["FSRSReview"]] = relationship(
+    fsrs_reviews: Mapped[list["FSRSReview"]] = relationship(
         "FSRSReview", back_populates="student"
     )
     fsrs_profile: Mapped[Optional["FSRSStudentProfile"]] = relationship(
         "FSRSStudentProfile", back_populates="student", uselist=False
     )
-    fsrs_study_sessions: Mapped[List["FSRSStudySession"]] = relationship(
+    fsrs_study_sessions: Mapped[list["FSRSStudySession"]] = relationship(
         "FSRSStudySession", back_populates="student"
     )
-    fsrs_subject_stats: Mapped[List["FSRSSubjectStats"]] = relationship(
+    fsrs_subject_stats: Mapped[list["FSRSSubjectStats"]] = relationship(
         "FSRSSubjectStats", back_populates="student"
     )
 
     # Manipulatives relationships (Task 87.9)
-    manipulative_progress: Mapped[List["ManipulativeProgress"]] = relationship(
+    manipulative_progress: Mapped[list["ManipulativeProgress"]] = relationship(
         "ManipulativeProgress", back_populates="user"
     )
-    manipulative_activities: Mapped[List["ManipulativeActivity"]] = relationship(
+    manipulative_activities: Mapped[list["ManipulativeActivity"]] = relationship(
         "ManipulativeActivity", back_populates="user"
     )
-    weekly_progress: Mapped[List["WeeklyProgress"]] = relationship(
+    weekly_progress: Mapped[list["WeeklyProgress"]] = relationship(
         "WeeklyProgress", back_populates="user"
     )
 
@@ -204,16 +212,16 @@ class StudentProfile(Base):
 
     # Academic information
     grade_level: Mapped[int] = mapped_column(Integer, nullable=False)  # 9, 10, 11, 12
-    school_name: Mapped[Optional[str]] = mapped_column(String(200))
-    target_university: Mapped[Optional[str]] = mapped_column(String(200))
-    target_department: Mapped[Optional[str]] = mapped_column(String(200))
-    hedef_sinav: Mapped[Optional[str]] = mapped_column(String(20))
+    school_name: Mapped[str | None] = mapped_column(String(200))
+    target_university: Mapped[str | None] = mapped_column(String(200))
+    target_department: Mapped[str | None] = mapped_column(String(200))
+    hedef_sinav: Mapped[str | None] = mapped_column(String(20))
     veli_onay: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Learning preferences
-    learning_style: Mapped[Optional[LearningStyle]] = mapped_column(Enum(LearningStyle))
-    study_hours_per_day: Mapped[Optional[int]] = mapped_column(Integer)
-    preferred_study_time: Mapped[Optional[str]] = mapped_column(String(50))
+    learning_style: Mapped[LearningStyle | None] = mapped_column(Enum(LearningStyle))
+    study_hours_per_day: Mapped[int | None] = mapped_column(Integer)
+    preferred_study_time: Mapped[str | None] = mapped_column(String(50))
 
     # Performance tracking
     current_level: Mapped[float] = mapped_column(Float, default=0.0)
@@ -222,10 +230,10 @@ class StudentProfile(Base):
     correct_answers: Mapped[int] = mapped_column(Integer, default=0)
 
     # Devrimsel özellikler
-    vark_profile: Mapped[Optional[dict]] = mapped_column(JSON)
-    zpd_range: Mapped[Optional[dict]] = mapped_column(JSON)
+    vark_profile: Mapped[dict | None] = mapped_column(JSON)
+    zpd_range: Mapped[dict | None] = mapped_column(JSON)
     irt_ability: Mapped[float] = mapped_column(Float, default=0.0)
-    fsrs_parameters: Mapped[Optional[dict]] = mapped_column(JSON)
+    fsrs_parameters: Mapped[dict | None] = mapped_column(JSON)
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -239,10 +247,10 @@ class StudentProfile(Base):
     user: Mapped["User"] = relationship(
         "User", back_populates="student_profile", lazy="selectin"
     )
-    exam_sessions: Mapped[List["ExamSession"]] = relationship(
+    exam_sessions: Mapped[list["ExamSession"]] = relationship(
         "ExamSession", back_populates="student", lazy="selectin"
     )
-    learning_analytics: Mapped[List["LearningAnalytics"]] = relationship(
+    learning_analytics: Mapped[list["LearningAnalytics"]] = relationship(
         "LearningAnalytics", back_populates="student", lazy="selectin"
     )
 
@@ -271,9 +279,9 @@ class TeacherProfile(Base):
 
     # Professional information
     school_name: Mapped[str] = mapped_column(String(200), nullable=False)
-    subject_areas: Mapped[Optional[dict]] = mapped_column(JSON)
+    subject_areas: Mapped[dict | None] = mapped_column(JSON)
     experience_years: Mapped[int] = mapped_column(Integer, default=0)
-    education_level: Mapped[Optional[str]] = mapped_column(String(100))
+    education_level: Mapped[str | None] = mapped_column(String(100))
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -285,7 +293,7 @@ class TeacherProfile(Base):
 
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="teacher_profile")
-    classes: Mapped[List["ClassRoom"]] = relationship(
+    classes: Mapped[list["ClassRoom"]] = relationship(
         "ClassRoom", back_populates="teacher"
     )
 
@@ -303,7 +311,7 @@ class ParentProfile(Base):
     )
 
     # Children information (JSON array of student IDs)
-    children_ids: Mapped[Optional[dict]] = mapped_column(JSON)
+    children_ids: Mapped[dict | None] = mapped_column(JSON)
 
     # Notification preferences
     email_notifications: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -323,6 +331,6 @@ class ParentProfile(Base):
 
 
 # Import gamification models at the end to avoid circular imports
-from .user_badge import UserBadge  # noqa: E402, F401
-from .user_achievement import UserAchievement  # noqa: E402, F401
-from .point_transaction import PointTransaction  # noqa: E402, F401
+from .point_transaction import PointTransaction  # noqa: E402
+from .user_achievement import UserAchievement  # noqa: E402
+from .user_badge import UserBadge  # noqa: E402

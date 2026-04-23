@@ -6,20 +6,21 @@ Devrimsel özellikler için kapsamlı testler
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 
-import pytest
 import asyncio
-from unittest.mock import Mock, patch, AsyncMock
-from typing import Dict, List
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 
 # Import centralized JWT helper from conftest (DRY)
 try:
     from tests.conftest import (
-        _generate_test_jwt,
-        TEST_JWT_SECRET,
         TEST_JWT_ALGORITHM,
+        TEST_JWT_SECRET,
+        _generate_test_jwt,
     )
 except ImportError:
     import jwt as _jwt
@@ -45,16 +46,17 @@ def patch_jwt_secrets(monkeypatch):
 
 # Test edilecek modülleri import et
 try:
-    from api.revolutionary_features import (
-        router,
-        activate_bionic_reading,
-        multi_agent_coordination,
-        cultural_adaptation,
-        three_level_simplification,
-        get_revolutionary_status,
-        configure_feature,
-    )
     from fastapi.testclient import TestClient
+
+    from api.revolutionary_features import (
+        activate_bionic_reading,
+        configure_feature,
+        cultural_adaptation,
+        get_revolutionary_status,
+        multi_agent_coordination,
+        router,
+        three_level_simplification,
+    )
     from main import app
 
     client = TestClient(app)
@@ -63,7 +65,7 @@ except ImportError:
     def activate_bionic_reading(text: str, level: str = "medium"):
         return {"bionic_text": text, "level": level}
 
-    def multi_agent_coordination(task: str, agents: List[str]):
+    def multi_agent_coordination(task: str, agents: list[str]):
         return {"task": task, "agents": agents, "status": "completed"}
 
     def cultural_adaptation(content: str, culture: str = "turkish"):
@@ -75,7 +77,7 @@ except ImportError:
     def get_revolutionary_status():
         return {"active_features": [], "total_features": 10}
 
-    def configure_feature(feature_name: str, config: Dict):
+    def configure_feature(feature_name: str, config: dict):
         return {"feature": feature_name, "config": config}
 
     class TestClient:

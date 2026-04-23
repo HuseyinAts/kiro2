@@ -10,7 +10,7 @@ import hashlib
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -19,7 +19,7 @@ class CacheEntry(BaseModel):
     """A single cache entry."""
 
     file_hash: str
-    result: Dict[str, Any]
+    result: dict[str, Any]
     timestamp: float = Field(default_factory=time.time)
     tool: str
 
@@ -37,7 +37,7 @@ class CacheManager:
 
     def __init__(
         self,
-        cache_dir: Optional[Path] = None,
+        cache_dir: Path | None = None,
         max_age: float = 3600.0
     ):
         """
@@ -49,7 +49,7 @@ class CacheManager:
         """
         self.cache_dir = cache_dir or Path(".quality_cache")
         self.max_age = max_age
-        self._cache: Dict[str, CacheEntry] = {}
+        self._cache: dict[str, CacheEntry] = {}
         self._ensure_cache_dir()
         self._load_cache()
 
@@ -66,7 +66,7 @@ class CacheManager:
         cache_file = self._get_cache_file()
         if cache_file.exists():
             try:
-                with open(cache_file, "r", encoding="utf-8") as f:
+                with open(cache_file, encoding="utf-8") as f:
                     data = json.load(f)
                     for key, entry_data in data.items():
                         self._cache[key] = CacheEntry(**entry_data)
@@ -99,7 +99,7 @@ class CacheManager:
         self,
         tool: str,
         file_path: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Get cached result if valid.
 
@@ -132,7 +132,7 @@ class CacheManager:
         self,
         tool: str,
         file_path: str,
-        result: Dict[str, Any]
+        result: dict[str, Any]
     ) -> None:
         """
         Cache a result.
@@ -187,7 +187,7 @@ class CacheManager:
         self._cache = {}
         self._save_cache()
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         expired = sum(
             1 for e in self._cache.values()
@@ -203,11 +203,11 @@ class CacheManager:
 
 
 # Singleton instance
-_cache_manager: Optional[CacheManager] = None
+_cache_manager: CacheManager | None = None
 
 
 def get_cache_manager(
-    cache_dir: Optional[Path] = None
+    cache_dir: Path | None = None
 ) -> CacheManager:
     """
     Get or create cache manager singleton.

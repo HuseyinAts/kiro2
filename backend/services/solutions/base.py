@@ -9,7 +9,7 @@ into modular components.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,13 +28,13 @@ class BaseSolutionService:
     def __init__(self, db_session: AsyncSession):
         self.db = db_session
 
-    async def _get_question(self, question_id: str) -> Optional[QuestionBankItem]:
+    async def _get_question(self, question_id: str) -> QuestionBankItem | None:
         """Get question by ID."""
         stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def _get_solutions_data(self, question_id: str) -> Optional[Dict[str, Any]]:
+    async def _get_solutions_data(self, question_id: str) -> dict[str, Any] | None:
         """Get solutions data from question."""
         question = await self._get_question(question_id)
         if not question:
@@ -43,7 +43,7 @@ class BaseSolutionService:
 
     async def _get_solutions_list(
         self, question_id: str, active_only: bool = True
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get list of solutions for a question."""
         solutions_data = await self._get_solutions_data(question_id)
         if not solutions_data:
@@ -57,7 +57,7 @@ class BaseSolutionService:
         return solutions
 
     async def _update_solutions(
-        self, question_id: str, solutions_data: Dict[str, Any]
+        self, question_id: str, solutions_data: dict[str, Any]
     ) -> bool:
         """Update solutions data for a question."""
         try:
@@ -73,12 +73,12 @@ class BaseSolutionService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Solutions update error: {str(e)}")
+            logger.error(f"Solutions update error: {e!s}")
             return False
 
     def _sort_solutions(
-        self, solutions: List[Dict[str, Any]], sort_by: str = "difficulty"
-    ) -> List[Dict[str, Any]]:
+        self, solutions: list[dict[str, Any]], sort_by: str = "difficulty"
+    ) -> list[dict[str, Any]]:
         """
         Sort solutions by criteria.
 
@@ -96,30 +96,29 @@ class BaseSolutionService:
                 solutions,
                 key=lambda x: difficulty_order.get(x.get("difficulty", "orta"), 2),
             )
-        elif sort_by == "time":
+        if sort_by == "time":
             return sorted(
                 solutions,
                 key=lambda x: x.get("estimated_time_seconds", 999999),
             )
-        elif sort_by == "votes":
+        if sort_by == "votes":
             return sorted(
                 solutions,
                 key=lambda x: x.get("votes", {}).get("total", 0),
                 reverse=True,
             )
-        elif sort_by == "popularity":
+        if sort_by == "popularity":
             return sorted(
                 solutions, key=lambda x: x.get("usage_count", 0), reverse=True
             )
-        else:
-            return solutions
+        return solutions
 
     def _filter_solutions(
         self,
-        solutions: List[Dict[str, Any]],
-        category: Optional[str] = None,
-        difficulty: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        solutions: list[dict[str, Any]],
+        category: str | None = None,
+        difficulty: str | None = None,
+    ) -> list[dict[str, Any]]:
         """Filter solutions by category and/or difficulty."""
         result = solutions
 

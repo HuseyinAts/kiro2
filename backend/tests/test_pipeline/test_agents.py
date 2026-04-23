@@ -5,16 +5,16 @@ Tüm pipeline agent'ları için testler
 
 import pytest
 
-# Note: conftest.py adds backend dir to sys.path
-
-from pipeline.stage_base import StageInput, StageOutput
 from pipeline.agents import (
+    ComplianceAgent,
     ContentGeneratorAgent,
     DifficultyAgent,
     DistractorAgent,
-    ComplianceAgent,
-    LanguageQAAgent
+    LanguageQAAgent,
 )
+
+# Note: conftest.py adds backend dir to sys.path
+from pipeline.stage_base import StageInput, StageOutput
 
 
 class TestContentGeneratorAgent:

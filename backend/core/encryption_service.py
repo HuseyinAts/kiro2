@@ -5,12 +5,13 @@ TASK 48.3: Data encryption at rest
 Fernet (symmetric encryption) kullanarak PII field encryption.
 REQ-7.3: Security and Privacy
 """
-import os
 import logging
-from typing import Optional, Any
-from cryptography.fernet import Fernet, InvalidToken
-from sqlalchemy import TypeDecorator, String, Text
+import os
 from functools import lru_cache
+from typing import Any
+
+from cryptography.fernet import Fernet, InvalidToken
+from sqlalchemy import String, Text, TypeDecorator
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class EncryptionService:
     Key rotation ve multiple key desteği sağlar.
     """
 
-    def __init__(self, primary_key: Optional[bytes] = None):
+    def __init__(self, primary_key: bytes | None = None):
         """
         Initialize encryption service
 
@@ -173,13 +174,13 @@ class EncryptedString(TypeDecorator):
         super().__init__(length, *args, **kwargs)
         self.encryption_service = get_encryption_service()
 
-    def process_bind_param(self, value: Optional[str], dialect) -> Optional[str]:
+    def process_bind_param(self, value: str | None, dialect) -> str | None:
         """Veritabanına yazarken şifrele"""
         if value is not None:
             return self.encryption_service.encrypt(value)
         return value
 
-    def process_result_value(self, value: Optional[str], dialect) -> Optional[str]:
+    def process_result_value(self, value: str | None, dialect) -> str | None:
         """Veritabanından okurken şifreyi çöz"""
         if value is not None:
             try:
@@ -206,13 +207,13 @@ class EncryptedText(TypeDecorator):
         super().__init__(*args, **kwargs)
         self.encryption_service = get_encryption_service()
 
-    def process_bind_param(self, value: Optional[str], dialect) -> Optional[str]:
+    def process_bind_param(self, value: str | None, dialect) -> str | None:
         """Veritabanına yazarken şifrele"""
         if value is not None:
             return self.encryption_service.encrypt(value)
         return value
 
-    def process_result_value(self, value: Optional[str], dialect) -> Optional[str]:
+    def process_result_value(self, value: str | None, dialect) -> str | None:
         """Veritabanından okurken şifreyi çöz"""
         if value is not None:
             try:
@@ -239,7 +240,7 @@ def encrypt_dict(data: dict[str, Any], fields_to_encrypt: list[str]) -> dict[str
     encrypted_data = data.copy()
 
     for field in fields_to_encrypt:
-        if field in encrypted_data and encrypted_data[field]:
+        if encrypted_data.get(field):
             encrypted_data[field] = encryption_service.encrypt(
                 str(encrypted_data[field])
             )
@@ -262,7 +263,7 @@ def decrypt_dict(data: dict[str, Any], fields_to_decrypt: list[str]) -> dict[str
     decrypted_data = data.copy()
 
     for field in fields_to_decrypt:
-        if field in decrypted_data and decrypted_data[field]:
+        if decrypted_data.get(field):
             try:
                 decrypted_data[field] = encryption_service.decrypt(
                     decrypted_data[field]

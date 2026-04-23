@@ -8,8 +8,9 @@ Medium-priority report tasks:
 - Exam performance reports
 - Weekly/monthly summaries
 """
-from typing import Dict, Any
 from datetime import datetime, timedelta
+from typing import Any
+
 from core.celery_app import celery_app
 from core.structured_logger import get_logger
 
@@ -23,7 +24,7 @@ logger = get_logger(__name__)
 )
 def generate_student_progress_report(
     self, student_id: str, start_date: str, end_date: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate comprehensive student progress report
 
@@ -86,7 +87,7 @@ def generate_student_progress_report(
 )
 def generate_class_analytics_report(
     self, class_id: str, teacher_id: str, report_type: str = "weekly"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate class-wide analytics report for teachers
 
@@ -135,7 +136,7 @@ def generate_class_analytics_report(
 
 
 @celery_app.task(bind=True, name="tasks.report_tasks.generate_daily_analytics_report")
-def generate_daily_analytics_report(self) -> Dict[str, Any]:
+def generate_daily_analytics_report(self) -> dict[str, Any]:
     """
     Generate platform-wide daily analytics report (scheduled task)
 
@@ -179,7 +180,7 @@ def generate_daily_analytics_report(self) -> Dict[str, Any]:
 
 
 @celery_app.task(bind=True, name="tasks.report_tasks.generate_weekly_summary_report")
-def generate_weekly_summary_report(self) -> Dict[str, Any]:
+def generate_weekly_summary_report(self) -> dict[str, Any]:
     """
     Generate weekly summary report (scheduled task)
 

@@ -7,10 +7,10 @@ Türkiye Üniversite Sınavları Hazırlık Platformu - YKS Başarı Takip ve Ta
 import asyncio
 import statistics
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from analytics.unified_analytics_data_model import (
     ExamMetrics,
@@ -67,7 +67,7 @@ class UniversityProgram:
     # Requirements
     yks_field: YKSField
     minimum_tyt_score: Decimal
-    minimum_ayt_score: Optional[Decimal] = None
+    minimum_ayt_score: Decimal | None = None
     minimum_yks_score: Decimal = Decimal("0")
 
     # Statistics
@@ -92,7 +92,7 @@ class UniversityProgram:
         if not self.university_name_tr:
             self.university_name_tr = self.university_name
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "university_code": self.university_code,
@@ -125,27 +125,27 @@ class YKSPrediction:
 
     # Current scores and predictions
     current_tyt_score: Decimal
-    current_ayt_score: Optional[Decimal] = None
+    current_ayt_score: Decimal | None = None
     predicted_tyt_score: Decimal = Decimal("0")
-    predicted_ayt_score: Optional[Decimal] = None
+    predicted_ayt_score: Decimal | None = None
     predicted_yks_score: Decimal = Decimal("0")
 
     # Field and preferences
     preferred_field: YKSField = YKSField.SAYISAL
-    target_programs: List[UniversityProgram] = field(default_factory=list)
+    target_programs: list[UniversityProgram] = field(default_factory=list)
 
     # Prediction analysis
-    placement_probability: Dict[str, float] = field(default_factory=dict)
+    placement_probability: dict[str, float] = field(default_factory=dict)
     confidence_level: PredictionConfidence = PredictionConfidence.MEDIUM
-    improvement_needed: Dict[str, Decimal] = field(default_factory=dict)
+    improvement_needed: dict[str, Decimal] = field(default_factory=dict)
 
     # Recommendations
-    study_recommendations: List[Dict[str, Any]] = field(default_factory=list)
-    timeline_recommendations: Dict[str, Any] = field(default_factory=dict)
+    study_recommendations: list[dict[str, Any]] = field(default_factory=list)
+    timeline_recommendations: dict[str, Any] = field(default_factory=dict)
 
     # Turkish localization
-    analysis_tr: Dict[str, str] = field(default_factory=dict)
-    recommendations_tr: List[str] = field(default_factory=list)
+    analysis_tr: dict[str, str] = field(default_factory=dict)
+    recommendations_tr: list[str] = field(default_factory=list)
 
     def calculate_placement_probabilities(self) -> None:
         """Calculate placement probabilities for target programs"""
@@ -182,20 +182,19 @@ class YKSPrediction:
         # Simple probability calculation based on score difference
         if score_difference >= 50:
             return 0.95
-        elif score_difference >= 30:
+        if score_difference >= 30:
             return 0.85
-        elif score_difference >= 15:
+        if score_difference >= 15:
             return 0.70
-        elif score_difference >= 5:
+        if score_difference >= 5:
             return 0.55
-        elif score_difference >= -5:
+        if score_difference >= -5:
             return 0.35
-        elif score_difference >= -15:
+        if score_difference >= -15:
             return 0.20
-        else:
-            return 0.05
+        return 0.05
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "student_id": self.student_id,
@@ -229,27 +228,27 @@ class YKSTrackingMetrics:
     tracking_date: datetime
 
     # Performance tracking
-    tyt_progress: Dict[str, Decimal] = field(default_factory=dict)
-    ayt_progress: Dict[str, Decimal] = field(default_factory=dict)
-    subject_improvements: Dict[str, Decimal] = field(default_factory=dict)
+    tyt_progress: dict[str, Decimal] = field(default_factory=dict)
+    ayt_progress: dict[str, Decimal] = field(default_factory=dict)
+    subject_improvements: dict[str, Decimal] = field(default_factory=dict)
 
     # Study tracking
-    daily_study_minutes: Dict[str, int] = field(default_factory=dict)  # Date -> minutes
+    daily_study_minutes: dict[str, int] = field(default_factory=dict)  # Date -> minutes
     weekly_study_hours: Decimal = Decimal("0")
     monthly_study_hours: Decimal = Decimal("0")
 
     # Exam tracking
     practice_exams_taken: int = 0
     mock_exams_taken: int = 0
-    question_solve_count: Dict[str, int] = field(
+    question_solve_count: dict[str, int] = field(
         default_factory=dict
     )  # Subject -> count
 
     # Goal tracking
-    target_tyt_score: Optional[Decimal] = None
-    target_ayt_score: Optional[Decimal] = None
-    current_tyt_score: Optional[Decimal] = None
-    current_ayt_score: Optional[Decimal] = None
+    target_tyt_score: Decimal | None = None
+    target_ayt_score: Decimal | None = None
+    current_tyt_score: Decimal | None = None
+    current_ayt_score: Decimal | None = None
 
     # Progress indicators
     on_track_for_goal: bool = False
@@ -257,7 +256,7 @@ class YKSTrackingMetrics:
     study_consistency_score: float = 0.0
 
     # Turkish insights
-    insights_tr: List[str] = field(default_factory=list)
+    insights_tr: list[str] = field(default_factory=list)
     motivation_message_tr: str = ""
 
     def calculate_progress_indicators(self) -> None:
@@ -267,14 +266,13 @@ class YKSTrackingMetrics:
             tyt_gap = float(self.target_tyt_score - self.current_tyt_score)
             if tyt_gap <= 0:
                 self.on_track_for_goal = True
-            else:
-                # Calculate if improvement rate is sufficient
-                if self.days_until_yks > 0:
-                    daily_improvement_needed = tyt_gap / self.days_until_yks
-                    current_improvement_rate = self._calculate_daily_improvement_rate()
-                    self.on_track_for_goal = (
-                        current_improvement_rate >= daily_improvement_needed
-                    )
+            # Calculate if improvement rate is sufficient
+            elif self.days_until_yks > 0:
+                daily_improvement_needed = tyt_gap / self.days_until_yks
+                current_improvement_rate = self._calculate_daily_improvement_rate()
+                self.on_track_for_goal = (
+                    current_improvement_rate >= daily_improvement_needed
+                )
 
         # Calculate study consistency
         self.study_consistency_score = self._calculate_study_consistency()
@@ -361,7 +359,7 @@ class YKSTrackingMetrics:
         else:
             self.motivation_message_tr = "🌱 Temeli sağlam atma zamanı, sabırlı olun!"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "student_id": self.student_id,
@@ -392,10 +390,10 @@ class YKSSuccessTracker:
     def __init__(self):
         self.university_programs = self._initialize_university_programs()
         self.yks_date = datetime(2024, 6, 15)  # YKS exam date
-        self.prediction_cache: Dict[int, YKSPrediction] = {}
-        self.tracking_cache: Dict[int, YKSTrackingMetrics] = {}
+        self.prediction_cache: dict[int, YKSPrediction] = {}
+        self.tracking_cache: dict[int, YKSTrackingMetrics] = {}
 
-    def _initialize_university_programs(self) -> List[UniversityProgram]:
+    def _initialize_university_programs(self) -> list[UniversityProgram]:
         """Initialize university programs database"""
         programs = []
 
@@ -533,12 +531,12 @@ class YKSSuccessTracker:
         self,
         student_id: int,
         current_performance: StudentPerformanceProfile,
-        target_programs: List[str] = None,
+        target_programs: list[str] = None,
     ) -> YKSPrediction:
         """Create comprehensive YKS prediction for student"""
         prediction = YKSPrediction(
             student_id=student_id,
-            prediction_date=datetime.now(timezone.utc),
+            prediction_date=datetime.now(UTC),
             current_tyt_score=current_performance.current_tyt_score or Decimal("0"),
             current_ayt_score=current_performance.current_ayt_score or Decimal("0"),
             preferred_field=self._determine_preferred_field(current_performance),
@@ -602,10 +600,9 @@ class YKSSuccessTracker:
         # Determine field based on stronger performance
         if sayisal_avg > sozel_avg + 10:
             return YKSField.SAYISAL
-        elif sozel_avg > sayisal_avg + 10:
+        if sozel_avg > sayisal_avg + 10:
             return YKSField.SOZEL
-        else:
-            return YKSField.ESIT_AGIRLIK
+        return YKSField.ESIT_AGIRLIK
 
     async def _predict_future_scores(
         self, prediction: YKSPrediction, performance: StudentPerformanceProfile
@@ -667,7 +664,7 @@ class YKSSuccessTracker:
 
         return min(100, total_improvement)  # Cap at 100 points improvement
 
-    def _recommend_programs(self, prediction: YKSPrediction) -> List[UniversityProgram]:
+    def _recommend_programs(self, prediction: YKSPrediction) -> list[UniversityProgram]:
         """Recommend suitable programs based on predicted performance"""
         suitable_programs = []
         predicted_score = float(prediction.predicted_yks_score)
@@ -745,7 +742,7 @@ class YKSSuccessTracker:
         prediction.recommendations_tr = recommendations_tr
 
     async def track_student_progress(
-        self, student_id: int, new_exam_result: ExamMetrics, study_data: Dict[str, Any]
+        self, student_id: int, new_exam_result: ExamMetrics, study_data: dict[str, Any]
     ) -> YKSTrackingMetrics:
         """Track and update student's YKS preparation progress"""
         # Get or create tracking metrics
@@ -753,7 +750,7 @@ class YKSSuccessTracker:
         if not tracking:
             tracking = YKSTrackingMetrics(
                 student_id=student_id,
-                tracking_date=datetime.now(timezone.utc),
+                tracking_date=datetime.now(UTC),
                 days_until_yks=(self.yks_date - datetime.now().date()).days,
             )
 
@@ -791,7 +788,7 @@ class YKSSuccessTracker:
         logger.info(f"Updated YKS tracking for student {student_id}")
         return tracking
 
-    async def get_student_yks_analysis(self, student_id: int) -> Dict[str, Any]:
+    async def get_student_yks_analysis(self, student_id: int) -> dict[str, Any]:
         """Get comprehensive YKS analysis for a student"""
         prediction = self.prediction_cache.get(student_id)
         tracking = self.tracking_cache.get(student_id)
@@ -801,7 +798,7 @@ class YKSSuccessTracker:
 
         analysis = {
             "student_id": student_id,
-            "analysis_date": datetime.now(timezone.utc).isoformat(),
+            "analysis_date": datetime.now(UTC).isoformat(),
             "prediction": prediction.to_dict() if prediction else None,
             "tracking": tracking.to_dict() if tracking else None,
             "summary": {
@@ -819,8 +816,8 @@ class YKSSuccessTracker:
 
     def _calculate_readiness_score(
         self,
-        prediction: Optional[YKSPrediction],
-        tracking: Optional[YKSTrackingMetrics],
+        prediction: YKSPrediction | None,
+        tracking: YKSTrackingMetrics | None,
     ) -> float:
         """Calculate overall YKS readiness score (0-100)"""
         if not prediction and not tracking:
@@ -856,7 +853,7 @@ class YKSSuccessTracker:
 
         return score / factors if factors > 0 else 0.0
 
-    async def generate_yks_report(self, student_id: int) -> Dict[str, Any]:
+    async def generate_yks_report(self, student_id: int) -> dict[str, Any]:
         """Generate comprehensive YKS preparation report"""
         analysis = await self.get_student_yks_analysis(student_id)
 
@@ -869,7 +866,7 @@ class YKSSuccessTracker:
         # Generate Turkish report
         report = {
             "student_id": student_id,
-            "report_date": datetime.now(timezone.utc).isoformat(),
+            "report_date": datetime.now(UTC).isoformat(),
             "yks_date": self.yks_date.isoformat(),
             "days_remaining": (self.yks_date - datetime.now().date()).days,
             "current_status": {

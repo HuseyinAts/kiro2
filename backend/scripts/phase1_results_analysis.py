@@ -12,11 +12,11 @@ def analyze_phase1_results():
 
     try:
         # Baseline coverage
-        with open("coverage.json", "r") as f:
+        with open("coverage.json") as f:
             baseline = json.load(f)
 
         # Phase 1 final coverage
-        with open("coverage_phase1_final.json", "r") as f:
+        with open("coverage_phase1_final.json") as f:
             phase1 = json.load(f)
 
         print("PHASE 1 PROGRESSIVE COVERAGE RESULTS")

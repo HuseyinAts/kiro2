@@ -10,18 +10,18 @@ from typing import TYPE_CHECKING
 
 # Lazy imports to avoid circular dependencies
 if TYPE_CHECKING:
-    from .config import Settings, settings, get_settings
-    from .database import db_manager, get_async_session, Base
-    from .auth import AuthService
     from .application import create_app
+    from .auth import AuthService
+    from .config import Settings, get_settings, settings
+    from .database import Base, db_manager, get_async_session
     from .exceptions import (
-        ServiceError,
-        ValidationError,
         AuthorizationError,
-        NotFoundError,
+        ConfigurationError,
         DatabaseError,
         ExternalServiceError,
-        ConfigurationError,
+        NotFoundError,
+        ServiceError,
+        ValidationError,
     )
 
 # Export list - kullanım: from core import settings
@@ -58,7 +58,7 @@ def __getattr__(name: str):
     """
     # Config exports
     if name in ("Settings", "settings", "get_settings"):
-        from .config import Settings, settings, get_settings
+        from .config import Settings, get_settings, settings
         mapping = {
             "Settings": Settings,
             "settings": settings,
@@ -102,13 +102,13 @@ def __getattr__(name: str):
         "ConfigurationError",
     ):
         from .exceptions import (
-            ServiceError,
-            ValidationError,
             AuthorizationError,
-            NotFoundError,
+            ConfigurationError,
             DatabaseError,
             ExternalServiceError,
-            ConfigurationError,
+            NotFoundError,
+            ServiceError,
+            ValidationError,
         )
         exceptions = {
             "ServiceError": ServiceError,

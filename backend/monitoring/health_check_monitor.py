@@ -10,9 +10,8 @@ import asyncio
 import logging
 import time
 from datetime import datetime
-from typing import Dict, Optional
 
-from prometheus_client import Gauge, Counter, Histogram
+from prometheus_client import Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ class HealthCheckMonitor:
 
         # Monitoring state
         self._running = False
-        self._last_check_time: Optional[datetime] = None
+        self._last_check_time: datetime | None = None
         self._consecutive_failures = 0
 
         # Initialize Prometheus metrics
@@ -209,7 +208,7 @@ class HealthCheckMonitor:
                     f"health check failures!"
                 )
 
-    def get_status(self) -> Dict:
+    def get_status(self) -> dict:
         """
         Get current monitoring status
 
@@ -227,10 +226,10 @@ class HealthCheckMonitor:
 
 
 # Global health check monitor instance
-_global_health_monitor: Optional[HealthCheckMonitor] = None
+_global_health_monitor: HealthCheckMonitor | None = None
 
 
-def get_health_monitor() -> Optional[HealthCheckMonitor]:
+def get_health_monitor() -> HealthCheckMonitor | None:
     """
     Get global health check monitor instance
 

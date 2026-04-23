@@ -1,10 +1,11 @@
 """Progress monitor guard - detects stalls and tracks progress."""
 import logging
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
-from .base_guard import BaseGuard
 from ..models import GuardResult, GuardStatus
+from .base_guard import BaseGuard
 
 logger = logging.getLogger(__name__)
 

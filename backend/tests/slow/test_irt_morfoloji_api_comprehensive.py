@@ -6,28 +6,29 @@ Target: 80%+ test coverage
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 
-import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
-from fastapi import HTTPException, BackgroundTasks
+import pytest
+from fastapi import BackgroundTasks, HTTPException
 
 # API endpoint imports
 from api.irt_morfoloji import (
+    BatchAnalysisRequest,
+    DifficultyRecommendationRequest,
+    MorphologyInsightsRequest,
+    QuestionAnalysisRequest,
+    _process_batch_analysis,
     analyze_question,
     batch_analyze_questions,
-    get_morphology_insights,
-    get_difficulty_recommendation,
     calculate_irt_probability,
+    get_difficulty_recommendation,
+    get_morphology_insights,
     get_service_stats,
     health_check,
-    _process_batch_analysis,
-    QuestionAnalysisRequest,
-    BatchAnalysisRequest,
-    MorphologyInsightsRequest,
-    DifficultyRecommendationRequest,
 )
 
 # Mock algorithm service

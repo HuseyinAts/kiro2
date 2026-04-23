@@ -15,7 +15,6 @@ Tests cover:
 import ast
 import sys
 from pathlib import Path
-from typing import List, Set
 
 import pytest
 
@@ -41,7 +40,7 @@ def alembic_versions_dir(alembic_dir: Path) -> Path:
 
 
 @pytest.fixture
-def migration_files(alembic_versions_dir: Path) -> List[Path]:
+def migration_files(alembic_versions_dir: Path) -> list[Path]:
     """Get all migration files."""
     if not alembic_versions_dir.exists():
         return []
@@ -64,7 +63,7 @@ def test_alembic_config_exists(backend_root: Path) -> None:
     assert "[alembic]" in content, "alembic.ini must contain [alembic] section"
 
 
-def test_migration_files_exist(migration_files: List[Path]) -> None:
+def test_migration_files_exist(migration_files: list[Path]) -> None:
     """Test that at least 3 migration files exist in versions directory."""
     assert (
         len(migration_files) >= 3
@@ -75,7 +74,7 @@ def test_migration_files_exist(migration_files: List[Path]) -> None:
         assert migration_file.suffix == ".py", f"{migration_file.name} must be a .py file"
 
 
-def test_migration_has_upgrade_function(migration_files: List[Path]) -> None:
+def test_migration_has_upgrade_function(migration_files: list[Path]) -> None:
     """Test that each migration file has an upgrade() function."""
     for migration_file in migration_files:
         content = migration_file.read_text(encoding="utf-8")
@@ -94,7 +93,7 @@ def test_migration_has_upgrade_function(migration_files: List[Path]) -> None:
         ), f"Migration {migration_file.name} must have upgrade() function"
 
 
-def test_migration_has_downgrade_function(migration_files: List[Path]) -> None:
+def test_migration_has_downgrade_function(migration_files: list[Path]) -> None:
     """Test that each migration file has a downgrade() function."""
     for migration_file in migration_files:
         content = migration_file.read_text(encoding="utf-8")
@@ -113,10 +112,10 @@ def test_migration_has_downgrade_function(migration_files: List[Path]) -> None:
         ), f"Migration {migration_file.name} must have downgrade() function"
 
 
-def test_migration_revision_chain(migration_files: List[Path]) -> None:
+def test_migration_revision_chain(migration_files: list[Path]) -> None:
     """Test that migration revision IDs are unique (no duplicates in chain)."""
-    revisions: Set[str] = set()
-    duplicate_revisions: List[str] = []
+    revisions: set[str] = set()
+    duplicate_revisions: list[str] = []
 
     for migration_file in migration_files:
         content = migration_file.read_text(encoding="utf-8")
@@ -165,13 +164,13 @@ def test_env_py_has_async_support(alembic_dir: Path) -> None:
 
 
 def test_migration_imports_valid(
-    migration_files: List[Path], backend_root: Path
+    migration_files: list[Path], backend_root: Path
 ) -> None:
     """Test that each migration can be imported without syntax errors."""
     # Add backend to sys.path for imports
     sys.path.insert(0, str(backend_root))
 
-    errors: List[str] = []
+    errors: list[str] = []
 
     for migration_file in migration_files:
         # Skip disabled migrations

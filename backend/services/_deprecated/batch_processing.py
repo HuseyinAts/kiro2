@@ -16,10 +16,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -337,6 +338,7 @@ class QuestionBatchService:
             Soru listesi
         """
         from sqlalchemy import select
+
         from models.question_bank import QuestionBankItem as Question
 
         if not question_ids:
@@ -383,6 +385,7 @@ class QuestionBatchService:
             Guncellenen soru sayisi
         """
         from sqlalchemy import update
+
         from models.question_bank import QuestionBankItem as Question
 
         updated_count = 0
@@ -397,7 +400,7 @@ class QuestionBatchService:
             result = await self.session.execute(
                 update(Question)
                 .where(Question.id == str(question_id))
-                .values(difficulty=difficulty, updated_at=datetime.now(timezone.utc))
+                .values(difficulty=difficulty, updated_at=datetime.now(UTC))
             )
             updated_count += result.rowcount
 
@@ -446,6 +449,7 @@ class ExamBatchService:
             Gonderim sonucu
         """
         from sqlalchemy import select
+
         from models.database import ExamAnswer
         from models.question_bank import QuestionBankItem as Question
 
@@ -485,7 +489,7 @@ class ExamBatchService:
                 question_id=str(question_id),
                 given_answer=given_answer,
                 is_correct=is_correct,
-                answered_at=datetime.now(timezone.utc),
+                answered_at=datetime.now(UTC),
             )
             self.session.add(exam_answer)
 
@@ -516,7 +520,8 @@ class ExamBatchService:
         Returns:
             Sinav sonuclari listesi
         """
-        from sqlalchemy import select, func
+        from sqlalchemy import func, select
+
         from models.database import ExamAnswer
 
         if not exam_ids:

@@ -1,10 +1,11 @@
 """Tests for RuffHook."""
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
+import pytest
+
+from backend.hooks.models import ErrorCategory, ExitCode, HookConfig
 from backend.hooks.ruff_hook import RuffHook
-from backend.hooks.models import HookConfig, ExitCode, ErrorCategory
 
 
 class TestRuffHook:

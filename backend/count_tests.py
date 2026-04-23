@@ -5,7 +5,7 @@ import ast
 
 
 def count_test_cases(filename):
-    with open(filename, "r", encoding="utf-8") as f:
+    with open(filename, encoding="utf-8") as f:
         content = f.read()
 
     tree = ast.parse(content)
@@ -24,9 +24,7 @@ def count_test_cases(filename):
                         # Get the second argument (the list of parameters)
                         if len(decorator.args) >= 2:
                             params_arg = decorator.args[1]
-                            if isinstance(params_arg, ast.List):
-                                param_count = len(params_arg.elts)
-                            elif isinstance(params_arg, ast.Tuple):
+                            if isinstance(params_arg, ast.List) or isinstance(params_arg, ast.Tuple):
                                 param_count = len(params_arg.elts)
 
             total_tests += param_count

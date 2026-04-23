@@ -4,10 +4,9 @@ Target: 576 lines, 0% → 60%+ coverage
 """
 
 import os
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 
@@ -65,6 +64,7 @@ class TestMainApplicationStartup:
                 with patch('core.application.setup_routers', mock_all_dependencies['setup_routers']):
                     import sys
                     from pathlib import Path
+
                     import main
 
                     backend_path = Path(main.__file__).parent

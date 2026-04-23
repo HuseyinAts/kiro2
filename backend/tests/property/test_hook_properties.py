@@ -4,16 +4,16 @@ Uses hypothesis for property-based testing with 100 iterations.
 Tests the correctness properties defined in design.md.
 """
 
-from hypothesis import given, strategies as st, settings
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from backend.hooks.models import (
-    QualityCheckResult,
     AggregatedResult,
-    ExitCode,
     ErrorCategory,
+    ExitCode,
     LintError,
+    QualityCheckResult,
 )
-
 
 # Property 1: Exit Code Consistency
 # For any quality check with errors, exit code must be 2.

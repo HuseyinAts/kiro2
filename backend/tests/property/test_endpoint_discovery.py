@@ -15,20 +15,20 @@ Requirements Tested:
     REQ-1.4: Endpoint silindiginde monitoring listesinden cikarir
 """
 
-import pytest
 import string
-from hypothesis import given, strategies as st, settings, assume
-from unittest.mock import MagicMock
-from typing import List
-
 import sys
+from unittest.mock import MagicMock
+
+import pytest
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
 from app.health.discovery import EndpointDiscovery
-
 
 # =====================================================================
 # Hypothesis Strategies
@@ -94,7 +94,7 @@ def endpoint_config(draw):
 # Helper Functions
 # =====================================================================
 
-def create_mock_fastapi_app(endpoint_configs: List[dict]) -> FastAPI:
+def create_mock_fastapi_app(endpoint_configs: list[dict]) -> FastAPI:
     """Create a FastAPI app with mock routes."""
     app = FastAPI()
 
@@ -119,7 +119,7 @@ def create_mock_fastapi_app(endpoint_configs: List[dict]) -> FastAPI:
     return app
 
 
-def make_real_fastapi_app(paths_and_methods: List[tuple]) -> FastAPI:
+def make_real_fastapi_app(paths_and_methods: list[tuple]) -> FastAPI:
     """Create a real FastAPI app with actual routes."""
     app = FastAPI()
 
@@ -246,8 +246,8 @@ class TestEndpointDiscoveryCompleteness:
     @pytest.mark.asyncio
     async def test_new_endpoint_detection(
         self,
-        initial_paths: List[str],
-        new_paths: List[str]
+        initial_paths: list[str],
+        new_paths: list[str]
     ):
         """
         Property: Yeni eklenen endpoint'ler tespit edilir.
@@ -308,7 +308,7 @@ class TestEndpointDiscoveryCompleteness:
     @pytest.mark.asyncio
     async def test_removed_endpoint_detection(
         self,
-        paths: List[str],
+        paths: list[str],
         remove_count: int
     ):
         """
@@ -489,7 +489,7 @@ class TestDiscoveryIdempotency:
     )
     @settings(max_examples=30)
     @pytest.mark.asyncio
-    async def test_discovery_is_idempotent(self, paths: List[str]):
+    async def test_discovery_is_idempotent(self, paths: list[str]):
         """
         Property: Ayni endpoint'leri birden fazla kez kesfetme idempotent olmali.
         """
@@ -527,7 +527,7 @@ class TestDiscoveryIdempotency:
     )
     @settings(max_examples=30)
     @pytest.mark.asyncio
-    async def test_discovered_set_no_duplicates(self, paths: List[str]):
+    async def test_discovered_set_no_duplicates(self, paths: list[str]):
         """
         Property: discovered_endpoints set'inde duplicate olmamali.
         """

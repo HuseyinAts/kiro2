@@ -7,7 +7,7 @@ Boris Cherny Standards - Verification Feedback Loops
 from __future__ import annotations
 
 from enum import Enum
-from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -34,11 +34,11 @@ class QualityCheckResult(BaseModel):
         default=0,
         description="Exit code: 0=success, 2=blocking error"
     )
-    errors: List[str] = Field(
+    errors: list[str] = Field(
         default_factory=list,
         description="List of error messages"
     )
-    warnings: List[str] = Field(
+    warnings: list[str] = Field(
         default_factory=list,
         description="List of warning messages"
     )
@@ -110,11 +110,11 @@ class TypeErrorInfo(BaseModel):
 
     file: str
     line: int
-    column: Optional[int] = None
+    column: int | None = None
     message: str
-    error_code: Optional[str] = None
-    expected_type: Optional[str] = None
-    actual_type: Optional[str] = None
+    error_code: str | None = None
+    expected_type: str | None = None
+    actual_type: str | None = None
 
 
 class TestResult(BaseModel):
@@ -123,8 +123,8 @@ class TestResult(BaseModel):
     test_name: str
     passed: bool
     duration: float = 0.0
-    error_message: Optional[str] = None
-    traceback: Optional[str] = None
+    error_message: str | None = None
+    traceback: str | None = None
 
 
 class DocstringInfo(BaseModel):
@@ -136,7 +136,7 @@ class DocstringInfo(BaseModel):
     has_docstring: bool = False
     has_args_doc: bool = False
     has_returns_doc: bool = False
-    missing_params: List[str] = Field(default_factory=list)
+    missing_params: list[str] = Field(default_factory=list)
     style: str = "google"  # google, numpy, sphinx
 
 
@@ -151,7 +151,7 @@ class AggregatedResult(BaseModel):
     total_auto_fixed: int = 0
     total_execution_time: float = 0.0
     exit_code: int = 0
-    results: List[QualityCheckResult] = Field(default_factory=list)
+    results: list[QualityCheckResult] = Field(default_factory=list)
 
     @property
     def all_passed(self) -> bool:

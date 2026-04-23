@@ -16,8 +16,8 @@ backend_path = Path(__file__).parent.parent.parent
 if str(backend_path) not in sys.path:
     sys.path.insert(0, str(backend_path))
 
-import pytest  # noqa: E402
 import httpx  # noqa: E402
+import pytest  # noqa: E402
 from httpx import ASGITransport  # noqa: E402
 
 

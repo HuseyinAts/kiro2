@@ -11,7 +11,7 @@ import os
 import re
 import secrets
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
 from typing import Any
 from urllib.parse import urlparse
@@ -330,14 +330,14 @@ class TokenManager:
 
     def create_access_token(self, data: dict[str, Any]) -> str:
         """Create JWT access token"""
-        expire = datetime.now(timezone.utc) + timedelta(
+        expire = datetime.now(UTC) + timedelta(
             minutes=self.config.jwt_access_token_expire_minutes
         )
 
         payload = {
             **data,
             "exp": expire,
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
             "type": "access",
             "jti": secrets.token_urlsafe(32),  # JWT ID
         }
@@ -348,14 +348,14 @@ class TokenManager:
 
     def create_refresh_token(self, data: dict[str, Any]) -> str:
         """Create JWT refresh token"""
-        expire = datetime.now(timezone.utc) + timedelta(
+        expire = datetime.now(UTC) + timedelta(
             days=self.config.jwt_refresh_token_expire_days
         )
 
         payload = {
             **data,
             "exp": expire,
-            "iat": datetime.now(timezone.utc),
+            "iat": datetime.now(UTC),
             "type": "refresh",
             "jti": secrets.token_urlsafe(32),
         }
@@ -460,7 +460,7 @@ class SecurityAuditor:
     ):
         """Log security event"""
         event = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "event_type": event_type,
             "severity": severity.value,
             "description": description,
@@ -490,7 +490,7 @@ class SecurityAuditor:
             for event in self.security_events
             if event["user_id"] == user_id
             and datetime.fromisoformat(event["timestamp"])
-            > datetime.now(timezone.utc) - timedelta(hours=1)
+            > datetime.now(UTC) - timedelta(hours=1)
         ]
 
         # Multiple failed login attempts
@@ -514,7 +514,7 @@ class SecurityAuditor:
                 event
                 for event in recent_events
                 if datetime.fromisoformat(event["timestamp"])
-                > datetime.now(timezone.utc) - timedelta(minutes=1)
+                > datetime.now(UTC) - timedelta(minutes=1)
             ]
         )
 
@@ -555,7 +555,7 @@ class SecurityAuditor:
 
     def get_security_report(self, hours: int = 24) -> dict[str, Any]:
         """Generate security report"""
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
+        cutoff = datetime.now(UTC) - timedelta(hours=hours)
         recent_events = [
             event
             for event in self.security_events
@@ -718,9 +718,9 @@ class SecurityManager:
             "session_id": session_id,
             "user_id": user_id,
             "csrf_token": csrf_token,
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
             "expires_at": (
-                datetime.now(timezone.utc)
+                datetime.now(UTC)
                 + timedelta(minutes=self.config.session_timeout_minutes)
             ).isoformat(),
         }

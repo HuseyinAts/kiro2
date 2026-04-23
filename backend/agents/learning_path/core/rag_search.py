@@ -36,8 +36,10 @@ def _check_services() -> bool:
 
     _SERVICES_CHECKED = True
     try:
+        from services.chromadb_collection_manager import (
+            ChromaDBCollectionManager,  # noqa: F401
+        )
         from services.embedding_service import EmbeddingService  # noqa: F401
-        from services.chromadb_collection_manager import ChromaDBCollectionManager  # noqa: F401
         _SERVICES_AVAILABLE = True
     except ImportError as e:
         logger.warning(f"RAG services not available: {e}")
@@ -91,11 +93,11 @@ class RAGSearchService:
 
         try:
             # Import services
-            from services.embedding_service import EmbeddingService
             from services.chromadb_collection_manager import (
                 ChromaDBCollectionManager,
                 CollectionType,
             )
+            from services.embedding_service import EmbeddingService
 
             # Initialize embedding service if not provided
             if self._embedding_service is None:

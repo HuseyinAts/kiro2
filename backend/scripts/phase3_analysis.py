@@ -7,7 +7,6 @@ Target: 50% overall coverage focusing on critical business workflows
 import json
 import sys
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass
@@ -16,8 +15,8 @@ class Phase3Target:
 
     phase: str
     target_percentage: float
-    focus_areas: List[str]
-    test_types: List[str]
+    focus_areas: list[str]
+    test_types: list[str]
     estimated_effort: str
     priority_level: str
 
@@ -55,7 +54,7 @@ class Phase3AnalysisStrategy:
 
         try:
             # Phase 2 coverage oku
-            with open("coverage_phase2_complete.json", "r") as f:
+            with open("coverage_phase2_complete.json") as f:
                 coverage_data = json.load(f)
         except FileNotFoundError:
             print("Phase 2 coverage bulunamadi. Onceki phase'leri tamamlayin.")
@@ -332,22 +331,21 @@ class Phase3AnalysisStrategy:
 
         if "sinav" in path_lower or "exam" in path_lower:
             return "Exam Workflows"
-        elif "irt" in path_lower:
+        if "irt" in path_lower:
             return "IRT Analysis"
-        elif "analytics" in path_lower:
+        if "analytics" in path_lower:
             return "Learning Analytics"
-        elif "recommendation" in path_lower:
+        if "recommendation" in path_lower:
             return "Recommendation Engine"
-        elif "agent" in path_lower:
+        if "agent" in path_lower:
             return "Multi-Agent Systems"
-        elif "evaluation" in path_lower:
+        if "evaluation" in path_lower:
             return "Evaluation Pipelines"
-        elif "generation" in path_lower:
+        if "generation" in path_lower:
             return "Content Generation"
-        elif "pipeline" in path_lower:
+        if "pipeline" in path_lower:
             return "Processing Pipelines"
-        else:
-            return "Business Logic"
+        return "Business Logic"
 
 
 def main():

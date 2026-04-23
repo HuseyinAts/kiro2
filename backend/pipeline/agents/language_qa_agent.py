@@ -15,11 +15,11 @@ Requirements (REQ-5.x):
 
 import re
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from ..stage_base import BasePipelineStage, StageInput, StageOutput
-from ..tools.zemberek_client import ZemberekClient
 from ..tools.readability_scorer import TurkishReadabilityScorer
+from ..tools.zemberek_client import ZemberekClient
 
 
 class LanguageQAAgent(BasePipelineStage):
@@ -46,10 +46,10 @@ class LanguageQAAgent(BasePipelineStage):
 
     def __init__(
         self,
-        llm_client: Optional[Any] = None,
-        zemberek_client: Optional[ZemberekClient] = None,
-        readability_scorer: Optional[TurkishReadabilityScorer] = None,
-        config: Optional[Dict[str, Any]] = None
+        llm_client: Any | None = None,
+        zemberek_client: ZemberekClient | None = None,
+        readability_scorer: TurkishReadabilityScorer | None = None,
+        config: dict[str, Any] | None = None
     ):
         """
         Language QA Agent başlat
@@ -177,7 +177,7 @@ class LanguageQAAgent(BasePipelineStage):
 
         except Exception as e:
             return self._create_error_output(
-                f"Dil kalitesi kontrol hatası: {str(e)}",
+                f"Dil kalitesi kontrol hatası: {e!s}",
                 input_data,
                 time.time() - start_time
             )
@@ -186,7 +186,7 @@ class LanguageQAAgent(BasePipelineStage):
         """Stage ağırlığı: 15%"""
         return self.STAGE_WEIGHT
 
-    async def _check_morphology(self, text: str) -> Tuple[bool, List[str]]:
+    async def _check_morphology(self, text: str) -> tuple[bool, list[str]]:
         """
         Morfolojik analiz
 
@@ -199,7 +199,7 @@ class LanguageQAAgent(BasePipelineStage):
         is_valid, errors, score = await self.zemberek.validate_turkish_text(text)
         return is_valid, errors
 
-    async def _check_spelling(self, text: str) -> Tuple[bool, List[str]]:
+    async def _check_spelling(self, text: str) -> tuple[bool, list[str]]:
         """
         Yazım kontrolü
 
@@ -213,7 +213,7 @@ class LanguageQAAgent(BasePipelineStage):
         spelling_errors = [r.word for r in results if not r.is_correct]
         return len(spelling_errors) == 0, spelling_errors
 
-    def _check_readability(self, flesch_score: float) -> Tuple[bool, float]:
+    def _check_readability(self, flesch_score: float) -> tuple[bool, float]:
         """
         Okunabilirlik kontrolü
 
@@ -244,7 +244,7 @@ class LanguageQAAgent(BasePipelineStage):
         self,
         text: str,
         grade_level: int
-    ) -> Tuple[bool, List[str]]:
+    ) -> tuple[bool, list[str]]:
         """
         Kelime seviyesi kontrolü
 
@@ -275,7 +275,7 @@ class LanguageQAAgent(BasePipelineStage):
 
         return len(warnings) == 0, warnings
 
-    def _check_punctuation(self, text: str) -> Tuple[bool, List[str]]:
+    def _check_punctuation(self, text: str) -> tuple[bool, list[str]]:
         """
         Noktalama kontrolü
 

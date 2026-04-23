@@ -9,9 +9,10 @@ Requirements: 7.1, 7.2, 7.3
 
 import asyncio
 import logging
+from collections.abc import Callable
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
@@ -38,7 +39,7 @@ class DatabaseAlert:
         metric_name: str,
         current_value: Any,
         threshold_value: Any,
-        timestamp: Optional[datetime] = None,
+        timestamp: datetime | None = None,
     ):
         self.severity = severity
         self.message = message
@@ -47,7 +48,7 @@ class DatabaseAlert:
         self.threshold_value = threshold_value
         self.timestamp = timestamp or datetime.now()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Alert'i dictionary'e çevir"""
         return {
             "severity": self.severity.value,
@@ -80,12 +81,12 @@ class DatabaseMonitor:
     def __init__(
         self,
         engine: AsyncEngine,
-        alert_callback: Optional[Callable[[DatabaseAlert], None]] = None,
+        alert_callback: Callable[[DatabaseAlert], None] | None = None,
     ):
         self.engine = engine
         self.alert_callback = alert_callback or self._default_alert_handler
-        self.alerts: List[DatabaseAlert] = []
-        self.metrics_history: List[Dict[str, Any]] = []
+        self.alerts: list[DatabaseAlert] = []
+        self.metrics_history: list[dict[str, Any]] = []
 
         # Alert thresholds
         self.thresholds = {
@@ -128,7 +129,7 @@ class DatabaseMonitor:
 
         return alert
 
-    async def check_pool_health(self) -> Dict[str, Any]:
+    async def check_pool_health(self) -> dict[str, Any]:
         """
         Connection pool sağlığını kontrol et
 
@@ -176,7 +177,7 @@ class DatabaseMonitor:
             logger.error(f"Pool health check başarısız: {e}")
             return {"error": str(e), "healthy": False}
 
-    async def check_connection_health(self, session: AsyncSession) -> Dict[str, Any]:
+    async def check_connection_health(self, session: AsyncSession) -> dict[str, Any]:
         """
         Veritabanı bağlantı sağlığını kontrol et
 
@@ -227,7 +228,7 @@ class DatabaseMonitor:
             logger.error(f"Connection health check başarısız: {e}")
             return {"error": str(e), "healthy": False}
 
-    async def check_disk_usage(self, session: AsyncSession) -> Dict[str, Any]:
+    async def check_disk_usage(self, session: AsyncSession) -> dict[str, Any]:
         """
         Veritabanı disk kullanımını kontrol et (PostgreSQL)
 
@@ -282,7 +283,7 @@ class DatabaseMonitor:
             logger.error(f"Disk usage check başarısız: {e}")
             return {"error": str(e)}
 
-    async def check_replication_status(self, session: AsyncSession) -> Dict[str, Any]:
+    async def check_replication_status(self, session: AsyncSession) -> dict[str, Any]:
         """
         Replication durumunu kontrol et (PostgreSQL)
 
@@ -375,7 +376,7 @@ class DatabaseMonitor:
                 "message": "Replication yapılandırılmamış veya erişilemiyor",
             }
 
-    async def check_query_performance(self, session: AsyncSession) -> Dict[str, Any]:
+    async def check_query_performance(self, session: AsyncSession) -> dict[str, Any]:
         """
         Query performans istatistiklerini kontrol et (PostgreSQL)
 
@@ -452,7 +453,7 @@ class DatabaseMonitor:
                 "slow_queries": [],
             }
 
-    async def comprehensive_health_check(self, session: AsyncSession) -> Dict[str, Any]:
+    async def comprehensive_health_check(self, session: AsyncSession) -> dict[str, Any]:
         """
         Kapsamlı sağlık kontrolü - tüm metrikleri topla
 
@@ -522,7 +523,7 @@ class DatabaseMonitor:
                 logger.error(f"Monitoring hatası: {e}")
                 await asyncio.sleep(interval_seconds)
 
-    def get_metrics_summary(self) -> Dict[str, Any]:
+    def get_metrics_summary(self) -> dict[str, Any]:
         """
         Toplanan metriklerin özetini getir
 
@@ -552,12 +553,12 @@ class DatabaseMonitor:
 
 
 # Global monitor instance
-_monitor: Optional[DatabaseMonitor] = None
+_monitor: DatabaseMonitor | None = None
 
 
 def get_database_monitor(
     engine: AsyncEngine,
-    alert_callback: Optional[Callable[[DatabaseAlert], None]] = None,
+    alert_callback: Callable[[DatabaseAlert], None] | None = None,
 ) -> DatabaseMonitor:
     """Global database monitor instance'ı al"""
     global _monitor

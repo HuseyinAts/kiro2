@@ -26,8 +26,6 @@ Create Date: 2026-04-01
 from collections.abc import Sequence
 from typing import Union
 
-from alembic import op
-
 revision: str = "freeze_baseline_20260401"
 down_revision: Union[str, None] = "learning_events_001"
 branch_labels: Union[str, Sequence[str], None] = None

@@ -5,22 +5,22 @@ Arama, indeksleme ve analytics API'leri
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
 try:
-    from core.dependencies import AuthenticatedUser, get_current_user
     from core.auth_dependencies import require_role
+    from core.dependencies import AuthenticatedUser, get_current_user
     from services.elasticsearch_service import (
         ElasticsearchService,
         get_elasticsearch_service,
     )
 except ImportError:
     # Import the canonical get_current_user function from core.dependencies
-    from core.dependencies import AuthenticatedUser, get_current_user
     from core.auth_dependencies import require_role
+    from core.dependencies import AuthenticatedUser, get_current_user
     from services.elasticsearch_service import (
         ElasticsearchService,
         get_elasticsearch_service,
@@ -38,19 +38,19 @@ class SearchRequest(BaseModel):
     query: str = Field(..., description="Arama sorgusu")
     size: int = Field(default=20, ge=1, le=100, description="Sonuç sayısı")
     from_: int = Field(default=0, ge=0, alias="from", description="Başlangıç indeksi")
-    filters: Optional[Dict[str, Any]] = Field(default=None, description="Filtreler")
+    filters: dict[str, Any] | None = Field(default=None, description="Filtreler")
 
 
 class QuestionSearchRequest(SearchRequest):
     """Soru arama isteği"""
 
-    subject: Optional[str] = Field(default=None, description="Ders")
-    topic: Optional[str] = Field(default=None, description="Konu")
-    exam_type: Optional[str] = Field(default=None, description="Sınav türü")
-    difficulty_min: Optional[float] = Field(
+    subject: str | None = Field(default=None, description="Ders")
+    topic: str | None = Field(default=None, description="Konu")
+    exam_type: str | None = Field(default=None, description="Sınav türü")
+    difficulty_min: float | None = Field(
         default=None, ge=0, le=10, description="Min zorluk"
     )
-    difficulty_max: Optional[float] = Field(
+    difficulty_max: float | None = Field(
         default=None, ge=0, le=10, description="Max zorluk"
     )
 
@@ -58,18 +58,18 @@ class QuestionSearchRequest(SearchRequest):
 class ContentSearchRequest(SearchRequest):
     """İçerik arama isteği"""
 
-    content_type: Optional[str] = Field(default=None, description="İçerik türü")
-    subject: Optional[str] = Field(default=None, description="Ders")
-    difficulty_level: Optional[str] = Field(default=None, description="Zorluk seviyesi")
+    content_type: str | None = Field(default=None, description="İçerik türü")
+    subject: str | None = Field(default=None, description="Ders")
+    difficulty_level: str | None = Field(default=None, description="Zorluk seviyesi")
 
 
 class SearchResponse(BaseModel):
     """Arama yanıt modeli"""
 
     total: int
-    max_score: Optional[float]
+    max_score: float | None
     took: int
-    results: List[Dict[str, Any]]
+    results: list[dict[str, Any]]
 
 
 class IndexStatsResponse(BaseModel):
@@ -84,10 +84,10 @@ class HealthResponse(BaseModel):
     """Sağlık kontrolü yanıtı"""
 
     status: str
-    cluster_name: Optional[str] = None
-    cluster_status: Optional[str] = None
-    indices: Optional[Dict[str, Dict[str, Any]]] = None
-    error: Optional[str] = None
+    cluster_name: str | None = None
+    cluster_status: str | None = None
+    indices: dict[str, dict[str, Any]] | None = None
+    error: str | None = None
 
 
 # Soru arama endpoint'leri
@@ -156,7 +156,7 @@ async def search_questions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Soru arama hatası: {str(e)}")
+        logger.error(f"Soru arama hatası: {e!s}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
@@ -197,7 +197,7 @@ async def get_similar_questions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Benzer soru arama hatası: {str(e)}")
+        logger.error(f"Benzer soru arama hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -259,7 +259,7 @@ async def search_content(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"İçerik arama hatası: {str(e)}")
+        logger.error(f"İçerik arama hatası: {e!s}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
@@ -304,7 +304,7 @@ async def get_user_analytics(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Analytics getirme hatası: {str(e)}")
+        logger.error(f"Analytics getirme hatası: {e!s}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
@@ -328,8 +328,9 @@ async def reindex_questions(
 
         # Database'den tüm soruları çek ve indeksle
         try:
-            from core.database import get_db_session_context
             from sqlalchemy import select
+
+            from core.database import get_db_session_context
             from models.osym_question import OSYMQuestion
             from models.question_bank import QuestionBankItem as Question
 
@@ -386,7 +387,7 @@ async def reindex_questions(
 
                 except Exception as e:
                     logger.error(f"Error indexing OSYM questions: {e}")
-                    errors.append(f"OSYM questions error: {str(e)}")
+                    errors.append(f"OSYM questions error: {e!s}")
 
                 # Index regular questions
                 try:
@@ -415,17 +416,17 @@ async def reindex_questions(
                             )
                             indexed_count += 1
                         except Exception as e:
-                            errors.append(f"Question {question.id}: {str(e)}")
+                            errors.append(f"Question {question.id}: {e!s}")
 
                     logger.info(f"Indexed {len(regular_questions)} regular questions")
 
                 except Exception as e:
                     logger.error(f"Error indexing regular questions: {e}")
-                    errors.append(f"Regular questions error: {str(e)}")
+                    errors.append(f"Regular questions error: {e!s}")
 
         except Exception as e:
             logger.error(f"Database indexing error: {e}")
-            errors.append(f"Database error: {str(e)}")
+            errors.append(f"Database error: {e!s}")
 
         return {
             "success": True,
@@ -438,13 +439,13 @@ async def reindex_questions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Yeniden indeksleme hatası: {str(e)}")
+        logger.error(f"Yeniden indeksleme hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.get("/admin/indices/stats", response_model=Dict[str, IndexStatsResponse])
+@router.get("/admin/indices/stats", response_model=dict[str, IndexStatsResponse])
 async def get_indices_stats(
     current_user: AuthenticatedUser = Depends(get_current_user),
     es_service: ElasticsearchService = Depends(get_elasticsearch_service),
@@ -484,7 +485,7 @@ async def get_indices_stats(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"İndeks istatistik hatası: {str(e)}")
+        logger.error(f"İndeks istatistik hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -506,5 +507,5 @@ async def elasticsearch_health(
         return HealthResponse(**health_data)
 
     except Exception as e:
-        logger.error(f"Sağlık kontrolü hatası: {str(e)}")
+        logger.error(f"Sağlık kontrolü hatası: {e!s}")
         return HealthResponse(status="error", error=str(e))

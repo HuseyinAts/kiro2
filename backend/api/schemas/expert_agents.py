@@ -6,7 +6,7 @@ REQ-1 to REQ-8
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -44,10 +44,10 @@ class QuestionRequest(BaseModel):
         description="Soru metni (minimum 10 karakter)",
         examples=["2x + 3 = 7 denklemini cozunuz."],
     )
-    student_id: Optional[str] = Field(
+    student_id: str | None = Field(
         None, description="Ogrenci ID (performans takibi icin)"
     )
-    preferred_domain: Optional[DomainTypeEnum] = Field(
+    preferred_domain: DomainTypeEnum | None = Field(
         None, description="Tercih edilen domain (bos birakilirsa auto-detect)"
     )
     include_visualizations: bool = Field(
@@ -56,7 +56,7 @@ class QuestionRequest(BaseModel):
     include_step_by_step: bool = Field(
         True, description="Adim adim cozum goster"
     )
-    exam_type: Optional[str] = Field(
+    exam_type: str | None = Field(
         None,
         description="Sinav tipi (TYT, AYT-SAY, AYT-EA, AYT-SOZ, YDT)",
         examples=["TYT", "AYT-SAY"],
@@ -93,8 +93,8 @@ class DomainClassification(BaseModel):
 
     primary_domain: DomainTypeEnum
     primary_confidence: float = Field(..., ge=0.0, le=1.0)
-    secondary_domain: Optional[DomainTypeEnum] = None
-    secondary_confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
+    secondary_domain: DomainTypeEnum | None = None
+    secondary_confidence: float | None = Field(None, ge=0.0, le=1.0)
     is_multi_domain: bool = False
 
 
@@ -103,10 +103,10 @@ class Visualization(BaseModel):
 
     type: str = Field(..., description="Gorsel tipi (graph, diagram, table)")
     title: str = Field("", description="Gorsel basligi")
-    data: Dict[str, Any] = Field(
+    data: dict[str, Any] = Field(
         default_factory=dict, description="Gorsel verisi (plotly, matplotlib JSON)"
     )
-    base64_image: Optional[str] = Field(None, description="Base64 encoded image")
+    base64_image: str | None = Field(None, description="Base64 encoded image")
 
 
 class AgentResponse(BaseModel):
@@ -129,11 +129,11 @@ class AgentResponse(BaseModel):
     domain: DomainTypeEnum
     content: str
     confidence: float = Field(..., ge=0.0, le=1.0)
-    tools_used: List[str] = Field(default_factory=list)
-    step_by_step_solution: List[str] = Field(default_factory=list)
-    latex_expressions: List[str] = Field(default_factory=list)
-    visualizations: List[Visualization] = Field(default_factory=list)
-    references: List[str] = Field(default_factory=list)
+    tools_used: list[str] = Field(default_factory=list)
+    step_by_step_solution: list[str] = Field(default_factory=list)
+    latex_expressions: list[str] = Field(default_factory=list)
+    visualizations: list[Visualization] = Field(default_factory=list)
+    references: list[str] = Field(default_factory=list)
     response_time_ms: float = Field(0.0, ge=0.0)
     tokens_used: int = Field(0, ge=0)
 
@@ -154,12 +154,12 @@ class QuestionResponse(BaseModel):
 
     success: bool
     classification: DomainClassification
-    responses: List[AgentResponse]
+    responses: list[AgentResponse]
     synthesized_response: str = Field("", description="Birlestirilmis final yanit")
     specialization_score: float = Field(0.0, ge=0.0, le=1.0)
     total_response_time_ms: float = Field(0.0, ge=0.0)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-    error: Optional[str] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    error: str | None = None
 
 
 # ==================== Performance & Metrics Models ====================
@@ -224,16 +224,16 @@ class AgentPerformance(BaseModel):
 
     agent_id: str
     domain: DomainTypeEnum
-    specialization_areas: List[str]
+    specialization_areas: list[str]
     total_questions_answered: int = 0
     successful_answers: int = 0
     failed_answers: int = 0
     average_response_time_ms: float = 0.0
     average_confidence: float = Field(0.0, ge=0.0, le=1.0)
-    current_specialization_score: Optional[SpecializationScore] = None
-    context_usage: Dict[str, Any] = Field(default_factory=dict)
-    tools_available: List[str] = Field(default_factory=list)
-    last_activity: Optional[datetime] = None
+    current_specialization_score: SpecializationScore | None = None
+    context_usage: dict[str, Any] = Field(default_factory=dict)
+    tools_available: list[str] = Field(default_factory=list)
+    last_activity: datetime | None = None
 
 
 class AllAgentsScores(BaseModel):
@@ -243,10 +243,10 @@ class AllAgentsScores(BaseModel):
     Tum agent'larin uzmanlik skorlari
     """
 
-    scores: List[SpecializationScore]
+    scores: list[SpecializationScore]
     average_score: float = Field(0.0, ge=0.0, le=1.0)
-    best_performing_domain: Optional[DomainTypeEnum] = None
-    needs_retraining: List[DomainTypeEnum] = Field(default_factory=list)
+    best_performing_domain: DomainTypeEnum | None = None
+    needs_retraining: list[DomainTypeEnum] = Field(default_factory=list)
     generated_at: datetime = Field(default_factory=datetime.now)
 
 
@@ -273,9 +273,9 @@ class BlackboardMessage(BaseModel):
 
     message_id: str
     source_agent: DomainTypeEnum
-    target_agent: Optional[DomainTypeEnum] = None  # None = broadcast
+    target_agent: DomainTypeEnum | None = None  # None = broadcast
     message_type: str
-    content: Dict[str, Any]
+    content: dict[str, Any]
     priority: int = Field(0, ge=0, le=2)
     ttl_seconds: int = Field(3600, ge=0)  # 1 hour default
     timestamp: datetime = Field(default_factory=datetime.now)
@@ -286,6 +286,6 @@ class SharedContext(BaseModel):
 
     context_id: str
     source_agent: DomainTypeEnum
-    data: Dict[str, Any]
+    data: dict[str, Any]
     ttl_seconds: int = Field(600, ge=0)  # 10 minutes for shared context
     created_at: datetime = Field(default_factory=datetime.now)

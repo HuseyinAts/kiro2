@@ -30,12 +30,14 @@ Bu dosya silinmeyecek, ancak yeni kod icin
 core/cache/ kullanilmali. Sync-only kod icin
 bu dosya gecici olarak kullanilabilir.
 """
+import hashlib
 import json
 import logging
-import redis
-from typing import Optional, Any, Dict, Callable
+from collections.abc import Callable
 from functools import wraps
-import hashlib
+from typing import Any
+
+import redis
 
 # SECURITY: Use centralized Settings for all configuration
 from core.config import get_settings
@@ -104,7 +106,7 @@ class RedisCache:
         except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return False
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """
         Get value from cache
 
@@ -203,7 +205,7 @@ class RedisCache:
         except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return False
 
-    def incr(self, key: str, amount: int = 1) -> Optional[int]:
+    def incr(self, key: str, amount: int = 1) -> int | None:
         """Increment counter"""
         if not self.connected:
             return None
@@ -223,7 +225,7 @@ class RedisCache:
         except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return False
 
-    def get_stats(self) -> Dict:
+    def get_stats(self) -> dict:
         """Get Redis statistics"""
         if not self.connected:
             return {"connected": False}
@@ -242,7 +244,7 @@ class RedisCache:
         except (redis.ConnectionError, redis.TimeoutError, redis.RedisError):
             return {"connected": False}
 
-    def _calculate_hit_rate(self, info: Dict) -> str:
+    def _calculate_hit_rate(self, info: dict) -> str:
         """Calculate cache hit rate"""
         hits = info.get("keyspace_hits", 0)
         misses = info.get("keyspace_misses", 0)
@@ -267,7 +269,7 @@ class RedisCache:
 
 
 # Global cache instance
-_cache_instance: Optional[RedisCache] = None
+_cache_instance: RedisCache | None = None
 
 
 def get_cache() -> RedisCache:
@@ -309,7 +311,7 @@ def cache_key(*args, prefix: str = "", **kwargs) -> str:
     return key_str
 
 
-def cached(ttl: int = 3600, prefix: str = "", key_func: Optional[Callable] = None):
+def cached(ttl: int = 3600, prefix: str = "", key_func: Callable | None = None):
     """
     Decorator to cache function results
 

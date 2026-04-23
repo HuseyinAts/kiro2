@@ -6,9 +6,10 @@ Adds 50+ indexes to improve query performance
 Expected gain: 40-80% faster on common queries
 """
 import asyncio
-import asyncpg
-from pathlib import Path
 import logging
+from pathlib import Path
+
+import asyncpg
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -101,7 +102,7 @@ async def run_migration():
         await conn.close()
 
     except Exception as e:
-        logger.error(f"❌ Migration failed: {str(e)}")
+        logger.error(f"❌ Migration failed: {e!s}")
         import traceback
 
         traceback.print_exc()

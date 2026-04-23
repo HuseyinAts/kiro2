@@ -13,7 +13,7 @@ def analyze_phase3_completion():
 
     try:
         # Load coverage data from all phases
-        with open("coverage_phase3_complete.json", "r") as f:
+        with open("coverage_phase3_complete.json") as f:
             phase3_data = json.load(f)
 
         print("PROGRESSIVE COVERAGE STRATEGY - FINAL ANALYSIS")

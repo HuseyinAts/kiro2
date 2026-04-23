@@ -13,8 +13,6 @@ from integrations.wikipedia_service import WikipediaArticle, WikipediaService
 # Test edilecek modüller
 from integrations.youtube_service import YouTubeService, YouTubeVideo
 
-
-
 pytestmark = pytest.mark.skipif(
     True,
     reason="YouTube/Wikipedia service API changed, 5/11 fail",
@@ -382,21 +380,20 @@ class TestIntegrationCombined:
 
             with patch.object(
                 youtube_service, "_simulate_api_call", return_value=mock_videos
+            ), patch.object(
+                wikipedia_service, "_simulate_search", return_value=mock_articles
             ):
-                with patch.object(
-                    wikipedia_service, "_simulate_search", return_value=mock_articles
-                ):
-                    # Search both services
-                    youtube_results = await youtube_service.search_educational_videos(
-                        topic
-                    )
-                    wikipedia_results = await wikipedia_service.search_articles(topic)
+                # Search both services
+                youtube_results = await youtube_service.search_educational_videos(
+                    topic
+                )
+                wikipedia_results = await wikipedia_service.search_articles(topic)
 
-                    # Verify both returned results
-                    assert isinstance(youtube_results, list)
-                    assert isinstance(wikipedia_results, list)
-                    assert "Quantum" in youtube_results[0].title
-                    assert "Quantum" in wikipedia_results[0].title
+                # Verify both returned results
+                assert isinstance(youtube_results, list)
+                assert isinstance(wikipedia_results, list)
+                assert "Quantum" in youtube_results[0].title
+                assert "Quantum" in wikipedia_results[0].title
 
     @pytest.mark.asyncio
     async def test_educational_content_aggregation(self):

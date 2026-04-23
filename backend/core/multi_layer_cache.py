@@ -30,12 +30,14 @@ import asyncio
 import json
 import time
 from collections import OrderedDict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional, Dict, Callable
 from enum import Enum
+from typing import Any
 
 from redis import asyncio as aioredis
+
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
@@ -65,7 +67,7 @@ class CacheEntry:
 
     value: Any
     created_at: float
-    expires_at: Optional[float] = None
+    expires_at: float | None = None
     access_count: int = 0
     last_accessed: float = field(default_factory=time.time)
     size_bytes: int = 0
@@ -119,7 +121,7 @@ class CacheMetrics:
         total_requests = self.l1_hits + self.l1_misses
         return (total_hits / total_requests * 100) if total_requests > 0 else 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert metrics to dictionary"""
         return {
             "l1_hits": self.l1_hits,
@@ -188,7 +190,7 @@ class MultiLayerCache:
         self._l1_lock = asyncio.Lock()
 
         # L2 Cache: Redis
-        self._redis: Optional[aioredis.Redis] = None
+        self._redis: aioredis.Redis | None = None
         self._redis_enabled = True
 
         # Metrics
@@ -273,7 +275,7 @@ class MultiLayerCache:
         except (TypeError, ValueError, OverflowError):
             return 0
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """
         Get value from cache (L1 → L2 hierarchy)
 
@@ -393,7 +395,7 @@ class MultiLayerCache:
             age_seconds=time.time() - evicted_entry.created_at,
         )
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """
         Set value in cache (L1 + L2)
 
@@ -556,7 +558,7 @@ class MultiLayerCache:
         return key == pattern
 
     async def get_or_compute(
-        self, key: str, compute_fn: Callable, ttl: Optional[int] = None
+        self, key: str, compute_fn: Callable, ttl: int | None = None
     ) -> Any:
         """
         Get from cache or compute if missing
@@ -585,7 +587,7 @@ class MultiLayerCache:
 
         return value
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """
         Get cache performance metrics
 
@@ -644,7 +646,7 @@ class MultiLayerCache:
 
         logger.info("cache_cleared")
 
-    def get_l1_stats(self) -> Dict[str, Any]:
+    def get_l1_stats(self) -> dict[str, Any]:
         """Get L1 cache statistics"""
         entries = list(self._l1_cache.values())
 
@@ -673,7 +675,7 @@ class MultiLayerCache:
 
 # ==================== GLOBAL INSTANCE ====================
 
-_global_cache: Optional[MultiLayerCache] = None
+_global_cache: MultiLayerCache | None = None
 
 
 async def get_multi_layer_cache(
@@ -703,7 +705,7 @@ async def get_multi_layer_cache(
     return _global_cache
 
 
-def get_cache_instance() -> Optional[MultiLayerCache]:
+def get_cache_instance() -> MultiLayerCache | None:
     """
     Get global cache instance (for metrics/monitoring)
 
@@ -715,10 +717,10 @@ def get_cache_instance() -> Optional[MultiLayerCache]:
 
 
 __all__ = [
-    "MultiLayerCache",
     "CacheEntry",
-    "CacheMetrics",
     "CacheLayer",
-    "get_multi_layer_cache",
+    "CacheMetrics",
+    "MultiLayerCache",
     "get_cache_instance",
+    "get_multi_layer_cache",
 ]

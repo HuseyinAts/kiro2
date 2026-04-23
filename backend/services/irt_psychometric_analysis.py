@@ -8,15 +8,16 @@ Requirements: REQ-48.65-48.80
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+
+import matplotlib
 import numpy as np
 from scipy.optimize import minimize
-import matplotlib
 
 matplotlib.use("Agg")  # Non-interactive backend
-import matplotlib.pyplot as plt
-from io import BytesIO
 import base64
+from io import BytesIO
+
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +47,8 @@ class CalibrationResult:
     convergence: bool
     iterations: int
     log_likelihood: float
-    standard_errors: Dict[str, float]
-    confidence_intervals: Dict[str, Tuple[float, float]]
+    standard_errors: dict[str, float]
+    confidence_intervals: dict[str, tuple[float, float]]
 
 
 @dataclass
@@ -57,9 +58,9 @@ class ICCAnalysis:
     theta_range: np.ndarray
     probabilities: np.ndarray
     inflection_point: float
-    optimal_difficulty_range: Tuple[float, float]
+    optimal_difficulty_range: tuple[float, float]
     discrimination_quality: str
-    plot_base64: Optional[str] = None
+    plot_base64: str | None = None
 
 
 @dataclass
@@ -72,7 +73,7 @@ class TIFAnalysis:
     max_information_value: float
     reliability_estimate: float
     standard_errors: np.ndarray
-    plot_base64: Optional[str] = None
+    plot_base64: str | None = None
 
 
 class IRTPsychometricAnalysis:
@@ -121,7 +122,7 @@ class IRTPsychometricAnalysis:
         self,
         theta_values: np.ndarray,
         responses: np.ndarray,
-        initial_params: Optional[IRTParameters] = None,
+        initial_params: IRTParameters | None = None,
     ) -> CalibrationResult:
         """
         Maximum Likelihood Estimation ile IRT parametrelerini tahmin et.
@@ -236,7 +237,7 @@ class IRTPsychometricAnalysis:
 
     def _calculate_standard_errors(
         self, theta_values: np.ndarray, responses: np.ndarray, params: IRTParameters
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Fisher Information Matrix'ten standard error'ları hesapla.
 
@@ -397,7 +398,7 @@ class IRTPsychometricAnalysis:
 
     def calculate_tif(
         self,
-        items_params: List[IRTParameters],
+        items_params: list[IRTParameters],
         title: str = "Test Information Function",
     ) -> TIFAnalysis:
         """
@@ -527,7 +528,7 @@ class IRTPsychometricAnalysis:
         self,
         question_id: str,
         current_params: IRTParameters,
-        new_responses: List[Dict[str, any]],
+        new_responses: list[dict[str, any]],
         min_sample_size: int = 200,
     ) -> CalibrationResult:
         """
@@ -603,8 +604,8 @@ class IRTPsychometricAnalysis:
         return updated_result
 
     def batch_adaptive_calibration(
-        self, questions_data: List[Dict[str, any]], update_threshold: int = 100
-    ) -> Dict[str, CalibrationResult]:
+        self, questions_data: list[dict[str, any]], update_threshold: int = 100
+    ) -> dict[str, CalibrationResult]:
         """
         Toplu adaptive calibration - birden fazla soru için.
 

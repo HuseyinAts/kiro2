@@ -6,9 +6,9 @@ Supports both JPype (direct Zemberek access) and HTTP backend.
 Includes BPE subword tokenization support (REQ-4.6).
 """
 
-import re
 import logging
-from typing import Any, Dict, List, Optional
+import re
+from typing import Any
 
 from .base import BaseToolHandler
 
@@ -48,7 +48,7 @@ class TokenizationHandler(BaseToolHandler):
 
     async def _call_jpype(
         self, text: str, use_subword: bool = False, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Tokenize text using JPype bridge.
 
@@ -75,8 +75,8 @@ class TokenizationHandler(BaseToolHandler):
         has_abbreviation = bool(ABBREVIATION_PATTERN.search(text))
 
         # BPE subword tokenization (REQ-4.6)
-        subword_tokens: Optional[List[str]] = None
-        subword_token_count: Optional[int] = None
+        subword_tokens: list[str] | None = None
+        subword_token_count: int | None = None
         if use_subword:
             subword_tokens = self._bpe_tokenize(text)
             subword_token_count = len(subword_tokens) if subword_tokens else None
@@ -95,7 +95,7 @@ class TokenizationHandler(BaseToolHandler):
 
     async def _call_backend(
         self, text: str, use_subword: bool = False, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Tokenize Turkish text
 
@@ -122,8 +122,8 @@ class TokenizationHandler(BaseToolHandler):
         has_abbreviation = bool(ABBREVIATION_PATTERN.search(text))
 
         # BPE subword tokenization (REQ-4.6)
-        subword_tokens: Optional[List[str]] = None
-        subword_token_count: Optional[int] = None
+        subword_tokens: list[str] | None = None
+        subword_token_count: int | None = None
         if use_subword:
             subword_tokens = self._bpe_tokenize(text)
             subword_token_count = len(subword_tokens) if subword_tokens else None
@@ -140,7 +140,7 @@ class TokenizationHandler(BaseToolHandler):
             "has_abbreviation": has_abbreviation,
         }
 
-    def _simple_tokenize(self, text: str) -> List[str]:
+    def _simple_tokenize(self, text: str) -> list[str]:
         """
         Simple fallback tokenizer
 
@@ -202,7 +202,7 @@ class TokenizationHandler(BaseToolHandler):
 
         return tokens
 
-    def _bpe_tokenize(self, text: str) -> Optional[List[str]]:
+    def _bpe_tokenize(self, text: str) -> list[str] | None:
         """
         Perform BPE subword tokenization using HuggingFace tokenizers.
 

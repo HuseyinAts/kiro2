@@ -16,7 +16,6 @@ Weight in total confidence: 30%
 
 import logging
 import re
-from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -62,7 +61,7 @@ class ConsistencyChecker:
 
     def __init__(
         self,
-        history_manager: Optional[ResponseHistoryManager] = None,
+        history_manager: ResponseHistoryManager | None = None,
         use_embeddings: bool = True,
     ):
         """
@@ -86,9 +85,9 @@ class ConsistencyChecker:
         Returns:
             ValidationResult: Tutarlılık sonucu
         """
-        errors: List[str] = []
-        warnings: List[str] = []
-        suggestions: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
+        suggestions: list[str] = []
         score = 1.0
 
         # Geçmiş yanıtları al
@@ -114,7 +113,7 @@ class ConsistencyChecker:
             )
 
         # Çelişkileri tespit et
-        contradictions: List[Contradiction] = []
+        contradictions: list[Contradiction] = []
 
         # 1. Direct contradiction detection
         direct_contradictions = await self._detect_direct_contradictions(
@@ -171,8 +170,8 @@ class ConsistencyChecker:
     async def _detect_direct_contradictions(
         self,
         current: AgentResponse,
-        previous: List[AgentResponse],
-    ) -> List[Contradiction]:
+        previous: list[AgentResponse],
+    ) -> list[Contradiction]:
         """
         Doğrudan çelişkileri tespit et.
 
@@ -221,8 +220,8 @@ class ConsistencyChecker:
     async def _detect_semantic_contradictions(
         self,
         current: AgentResponse,
-        previous: List[AgentResponse],
-    ) -> List[Contradiction]:
+        previous: list[AgentResponse],
+    ) -> list[Contradiction]:
         """
         Semantik çelişkileri tespit et (embedding tabanlı).
 
@@ -297,7 +296,7 @@ class ConsistencyChecker:
 
         return contradictions
 
-    def _extract_topics(self, text: str) -> Dict[str, str]:
+    def _extract_topics(self, text: str) -> dict[str, str]:
         """
         Metinden konu-ifade çiftlerini çıkar.
 
@@ -318,7 +317,7 @@ class ConsistencyChecker:
 
         return topics
 
-    def _extract_main_topic(self, sentence: str) -> Optional[str]:
+    def _extract_main_topic(self, sentence: str) -> str | None:
         """
         Cümleden ana konuyu çıkar.
 
@@ -350,7 +349,7 @@ class ConsistencyChecker:
 
         return " ".join(topic_words) if topic_words else None
 
-    def _split_sentences(self, text: str) -> List[str]:
+    def _split_sentences(self, text: str) -> list[str]:
         """
         Metni cümlelere ayır.
 
@@ -367,7 +366,7 @@ class ConsistencyChecker:
         self,
         statement1: str,
         statement2: str,
-    ) -> Tuple[bool, float]:
+    ) -> tuple[bool, float]:
         """
         İki ifade arasında doğrudan çelişki var mı kontrol et.
 
@@ -423,8 +422,8 @@ class ConsistencyChecker:
 
     def _generate_consistency_suggestions(
         self,
-        contradictions: List[Contradiction],
-    ) -> List[str]:
+        contradictions: list[Contradiction],
+    ) -> list[str]:
         """
         Tutarlılık önerileri oluştur.
 

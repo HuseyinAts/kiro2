@@ -12,13 +12,13 @@ import hashlib
 import json
 import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel
-from sqlalchemy import Column, DateTime, Integer, String, Text, Boolean, JSON
+from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class KVKKEncryption:
     Uses Fernet symmetric encryption (AES-128-CBC with HMAC-SHA256)
     """
 
-    def __init__(self, key: Optional[bytes] = None):
+    def __init__(self, key: bytes | None = None):
         """
         Initialize encryption with key.
 
@@ -74,7 +74,7 @@ class KVKKEncryption:
             logger.warning("No encryption key provided, PII encryption disabled")
             self._fernet = None
 
-    def _get_key_from_env(self) -> Optional[bytes]:
+    def _get_key_from_env(self) -> bytes | None:
         """Load encryption key from environment variable."""
         key_str = os.getenv("KVKK_ENCRYPTION_KEY")
         if key_str:
@@ -163,10 +163,10 @@ class KVKKEncryption:
             return ""
 
         salt = os.getenv("KVKK_HASH_SALT", "kiro2_kvkk_hash_2024")
-        salted = f"{salt}:{data}".encode("utf-8")
+        salted = f"{salt}:{data}".encode()
         return hashlib.sha256(salted).hexdigest()
 
-    def encrypt_dict(self, data: Dict[str, Any], pii_fields: List[str]) -> Dict[str, Any]:
+    def encrypt_dict(self, data: dict[str, Any], pii_fields: list[str]) -> dict[str, Any]:
         """
         Encrypt specific PII fields in a dictionary.
 
@@ -179,12 +179,12 @@ class KVKKEncryption:
         """
         result = data.copy()
         for field in pii_fields:
-            if field in result and result[field]:
+            if result.get(field):
                 if isinstance(result[field], str):
                     result[field] = self.encrypt_pii(result[field])
         return result
 
-    def decrypt_dict(self, data: Dict[str, Any], pii_fields: List[str]) -> Dict[str, Any]:
+    def decrypt_dict(self, data: dict[str, Any], pii_fields: list[str]) -> dict[str, Any]:
         """
         Decrypt specific PII fields in a dictionary.
 
@@ -197,7 +197,7 @@ class KVKKEncryption:
         """
         result = data.copy()
         for field in pii_fields:
-            if field in result and result[field]:
+            if result.get(field):
                 if isinstance(result[field], str):
                     result[field] = self.decrypt_pii(result[field])
         return result
@@ -223,7 +223,7 @@ PII_FIELDS = {
 
 
 # Global encryption instance
-_kvkk_encryption: Optional[KVKKEncryption] = None
+_kvkk_encryption: KVKKEncryption | None = None
 
 
 def get_kvkk_encryption() -> KVKKEncryption:
@@ -234,12 +234,12 @@ def get_kvkk_encryption() -> KVKKEncryption:
     return _kvkk_encryption
 
 
-def encrypt_user_pii(data: Dict[str, Any]) -> Dict[str, Any]:
+def encrypt_user_pii(data: dict[str, Any]) -> dict[str, Any]:
     """Convenience function to encrypt user PII fields."""
     return get_kvkk_encryption().encrypt_dict(data, PII_FIELDS["user"])
 
 
-def decrypt_user_pii(data: Dict[str, Any]) -> Dict[str, Any]:
+def decrypt_user_pii(data: dict[str, Any]) -> dict[str, Any]:
     """Convenience function to decrypt user PII fields."""
     return get_kvkk_encryption().decrypt_dict(data, PII_FIELDS["user"])
 
@@ -457,9 +457,9 @@ class ConsentRequest(BaseModel):
     consent_type: ConsentType = ConsentType.EXPLICIT
     consent_text: str
     consent_version: str = "1.0"
-    expires_in_days: Optional[int] = None
-    ip_address: Optional[str] = None
-    user_agent: Optional[str] = None
+    expires_in_days: int | None = None
+    ip_address: str | None = None
+    user_agent: str | None = None
     consent_method: str = "web"
 
 
@@ -468,8 +468,8 @@ class ConsentResponse(BaseModel):
 
     consent_id: str
     status: ConsentStatus
-    granted_at: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
+    granted_at: datetime | None = None
+    expires_at: datetime | None = None
 
 
 class DataProcessingLogRequest(BaseModel):
@@ -479,12 +479,12 @@ class DataProcessingLogRequest(BaseModel):
     data_category: DataCategory
     purpose: DataProcessingPurpose
     operation: str  # create, read, update, delete
-    data_fields: List[str]
+    data_fields: list[str]
     legal_basis: str
-    consent_id: Optional[str] = None
-    ip_address: Optional[str] = None
-    user_agent: Optional[str] = None
-    service_name: Optional[str] = None
+    consent_id: str | None = None
+    ip_address: str | None = None
+    user_agent: str | None = None
+    service_name: str | None = None
 
 
 class DataSubjectRequestModel(BaseModel):
@@ -492,7 +492,7 @@ class DataSubjectRequestModel(BaseModel):
 
     user_id: int
     request_type: DataSubjectRight
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class DataBreachReport(BaseModel):
@@ -501,9 +501,9 @@ class DataBreachReport(BaseModel):
     severity: str  # low, medium, high, critical
     description: str
     affected_users_count: int
-    data_categories: List[DataCategory]
+    data_categories: list[DataCategory]
     detected_at: datetime
-    mitigation_actions: Optional[List[str]] = None
+    mitigation_actions: list[str] | None = None
 
 
 # KVKK Compliance Manager
@@ -550,7 +550,7 @@ class KVKKComplianceManager:
             status=ConsentStatus.GRANTED.value,
             consent_text=request.consent_text,
             consent_version=request.consent_version,
-            granted_at=datetime.now(timezone.utc),
+            granted_at=datetime.now(UTC),
             ip_address=request.ip_address,
             user_agent=request.user_agent,
             consent_method=request.consent_method,
@@ -558,7 +558,7 @@ class KVKKComplianceManager:
 
         # Süre sonu belirle
         if request.expires_in_days:
-            consent.expires_at = datetime.now(timezone.utc) + timedelta(
+            consent.expires_at = datetime.now(UTC) + timedelta(
                 days=request.expires_in_days
             )
 
@@ -592,7 +592,7 @@ class KVKKComplianceManager:
             return False
 
         consent.status = ConsentStatus.WITHDRAWN.value
-        consent.withdrawn_at = datetime.now(timezone.utc)
+        consent.withdrawn_at = datetime.now(UTC)
 
         await self.db.commit()
 
@@ -620,7 +620,7 @@ class KVKKComplianceManager:
             return False
 
         # Süre kontrolü
-        if consent.expires_at and consent.expires_at < datetime.now(timezone.utc):
+        if consent.expires_at and consent.expires_at < datetime.now(UTC):
             consent.status = ConsentStatus.EXPIRED.value
             await self.db.commit()
             return False
@@ -655,7 +655,7 @@ class KVKKComplianceManager:
         """Veri sahibi talebi oluştur"""
 
         # KVKK Madde 13: 30 gün içinde yanıt
-        deadline = datetime.now(timezone.utc) + timedelta(days=30)
+        deadline = datetime.now(UTC) + timedelta(days=30)
 
         data_request = KVKKDataSubjectRequest(
             user_id=request.user_id,
@@ -692,10 +692,10 @@ class KVKKComplianceManager:
 
         data_request.status = status
         data_request.response = response
-        data_request.response_date = datetime.now(timezone.utc)
+        data_request.response_date = datetime.now(UTC)
 
         if status == "completed":
-            data_request.completed_at = datetime.now(timezone.utc)
+            data_request.completed_at = datetime.now(UTC)
 
         await self.db.commit()
 
@@ -749,7 +749,7 @@ class KVKKComplianceManager:
             "affected_users_count": report.affected_users_count,
             "breach_type": breach.breach_type,
             "description": breach.description,
-            "notification_timestamp": datetime.now(timezone.utc).isoformat(),
+            "notification_timestamp": datetime.now(UTC).isoformat(),
             "organization": {
                 "name": os.getenv("ORGANIZATION_NAME", "KIRO2 Platform"),
                 "registration_number": os.getenv("ORGANIZATION_REG_NUMBER", ""),
@@ -758,7 +758,7 @@ class KVKKComplianceManager:
             },
             "mitigation_actions": report.mitigation_actions,
             "expected_resolution_date": (
-                datetime.now(timezone.utc) + timedelta(days=7)
+                datetime.now(UTC) + timedelta(days=7)
             ).isoformat(),
         }
 
@@ -776,12 +776,12 @@ class KVKKComplianceManager:
         # Log to audit trail
         await self._log_kvkk_notification(breach, notification_data)
 
-    async def _send_kvkk_email_notification(self, notification_data: Dict):
+    async def _send_kvkk_email_notification(self, notification_data: dict):
         """Send KVKK notification via email"""
         import os
         import smtplib
-        from email.mime.text import MIMEText
         from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
 
         kvkk_email = os.getenv("KVKK_AUTHORITY_EMAIL")
         smtp_server = os.getenv("SMTP_SERVER")
@@ -864,9 +864,10 @@ class KVKKComplianceManager:
         except Exception as e:
             logger.error(f"Error preparing KVKK email notification: {e}")
 
-    async def _send_kvkk_api_notification(self, notification_data: Dict):
+    async def _send_kvkk_api_notification(self, notification_data: dict):
         """Send KVKK notification via API (if configured)"""
         import os
+
         import aiohttp
 
         kvkk_api_url = os.getenv("KVKK_API_NOTIFICATION_URL")
@@ -882,27 +883,26 @@ class KVKKComplianceManager:
             if kvkk_api_key:
                 headers["Authorization"] = f"Bearer {kvkk_api_key}"
 
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    kvkk_api_url, json=notification_data, headers=headers, timeout=30
-                ) as response:
-                    if response.status in [200, 201, 202]:
-                        logger.info(
-                            f"KVKK API notification sent successfully: {response.status}"
-                        )
-                    else:
-                        logger.error(f"KVKK API notification failed: {response.status}")
+            async with aiohttp.ClientSession() as session, session.post(
+                kvkk_api_url, json=notification_data, headers=headers, timeout=30
+            ) as response:
+                if response.status in [200, 201, 202]:
+                    logger.info(
+                        f"KVKK API notification sent successfully: {response.status}"
+                    )
+                else:
+                    logger.error(f"KVKK API notification failed: {response.status}")
 
         except Exception as e:
             logger.error(f"Error sending KVKK API notification: {e}")
 
-    async def _log_kvkk_notification(self, breach, notification_data: Dict):
+    async def _log_kvkk_notification(self, breach, notification_data: dict):
         """Log KVKK notification to database for audit trail"""
         try:
             notification_record = {
                 "breach_id": breach.breach_id,
                 "notification_type": "kvkk_authority",
-                "notification_date": datetime.now(timezone.utc),
+                "notification_date": datetime.now(UTC),
                 "notification_data": json.dumps(notification_data, ensure_ascii=False),
                 "status": "sent",
             }
@@ -921,13 +921,13 @@ class KVKKComplianceManager:
         except Exception as e:
             logger.error(f"Error logging KVKK notification: {e}")
 
-    async def get_user_data_export(self, user_id: int) -> Dict[str, Any]:
+    async def get_user_data_export(self, user_id: int) -> dict[str, Any]:
         """Kullanıcı verilerini dışa aktar (KVKK Madde 11 - Veri Taşınabilirliği)"""
 
         # Tüm kullanıcı verilerini topla
         user_data = {
             "user_id": user_id,
-            "export_date": datetime.now(timezone.utc).isoformat(),
+            "export_date": datetime.now(UTC).isoformat(),
             "consents": [],
             "processing_logs": [],
             "requests": [],
@@ -956,7 +956,7 @@ class KVKKComplianceManager:
             )
 
         # İşleme kayıtları (son 90 gün)
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=90)
+        cutoff_date = datetime.now(UTC) - timedelta(days=90)
         logs = (
             await self.db.query(KVKKDataProcessingLog)
             .filter(
@@ -1035,7 +1035,7 @@ class KVKKComplianceManager:
 
         return True
 
-    def _anonymize_ip(self, ip_address: Optional[str]) -> str:
+    def _anonymize_ip(self, ip_address: str | None) -> str:
         """IP adresini anonimleştir"""
         if not ip_address:
             return "0.0.0.0"
@@ -1054,7 +1054,7 @@ class KVKKComplianceManager:
 
     async def get_compliance_report(
         self, start_date: datetime, end_date: datetime
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """KVKK uyumluluk raporu"""
 
         report = {
@@ -1139,7 +1139,7 @@ class KVKKComplianceManager:
         )
 
         report["data_subject_requests"]["total"] = len(requests)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         for req in requests:
             if req.status == "pending":
                 report["data_subject_requests"]["pending"] += 1
@@ -1172,7 +1172,7 @@ class KVKKComplianceManager:
 
 
 # Global instance
-kvkk_manager: Optional[KVKKComplianceManager] = None
+kvkk_manager: KVKKComplianceManager | None = None
 
 
 def get_kvkk_manager(db_session) -> KVKKComplianceManager:

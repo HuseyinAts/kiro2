@@ -10,7 +10,7 @@ import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +22,9 @@ class DictionaryEntry:
     word: str
     lemma: str
     pos: str  # Part of speech: Noun, Verb, Adj, etc.
-    root: Optional[str] = None
-    attributes: List[str] = field(default_factory=list)
-    pronunciation: Optional[str] = None
+    root: str | None = None
+    attributes: list[str] = field(default_factory=list)
+    pronunciation: str | None = None
     frequency: int = 0
 
     def to_zemberek_format(self) -> str:
@@ -52,10 +52,10 @@ class DictionaryTrainer:
     - Export to Zemberek-compatible format
     """
 
-    def __init__(self, output_dir: Optional[Path] = None):
+    def __init__(self, output_dir: Path | None = None):
         self.output_dir = output_dir or Path("dictionaries")
-        self._entries: Dict[str, DictionaryEntry] = {}
-        self._informal_mappings: Dict[str, str] = {}
+        self._entries: dict[str, DictionaryEntry] = {}
+        self._informal_mappings: dict[str, str] = {}
 
         # Educational domain terms (pre-loaded)
         self._load_educational_terms()
@@ -111,7 +111,7 @@ class DictionaryTrainer:
         self,
         word: str,
         pos: str = "Noun",
-        attributes: Optional[List[str]] = None
+        attributes: list[str] | None = None
     ) -> None:
         """Add a simple word entry."""
         entry = DictionaryEntry(
@@ -145,7 +145,7 @@ class DictionaryTrainer:
             "tmm": "tamam"
         }
         """
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             mappings = json.load(f)
 
         for informal, formal in mappings.items():
@@ -153,7 +153,7 @@ class DictionaryTrainer:
 
         return len(mappings)
 
-    def learn_from_text(self, text: str, min_frequency: int = 3) -> List[str]:
+    def learn_from_text(self, text: str, min_frequency: int = 3) -> list[str]:
         """
         Learn new words from text corpus.
 
@@ -163,7 +163,7 @@ class DictionaryTrainer:
         words = re.findall(r"\b[a-zA-ZçğıöşüÇĞİÖŞÜ]+\b", text.lower())
 
         # Count frequencies
-        word_freq: Dict[str, int] = {}
+        word_freq: dict[str, int] = {}
         for word in words:
             word_freq[word] = word_freq.get(word, 0) + 1
 
@@ -176,7 +176,7 @@ class DictionaryTrainer:
         logger.info(f"Found {len(unknown_words)} unknown words (freq >= {min_frequency})")
         return unknown_words
 
-    def export_zemberek_dictionary(self, path: Optional[Path] = None) -> Path:
+    def export_zemberek_dictionary(self, path: Path | None = None) -> Path:
         """
         Export dictionary in Zemberek-compatible format.
 
@@ -195,7 +195,7 @@ class DictionaryTrainer:
         logger.info(f"Exported {len(self._entries)} entries to {output_path}")
         return output_path
 
-    def export_informal_mappings(self, path: Optional[Path] = None) -> Path:
+    def export_informal_mappings(self, path: Path | None = None) -> Path:
         """Export informal -> formal mappings to JSON."""
         output_path = path or (self.output_dir / "informal_mappings.json")
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -206,9 +206,9 @@ class DictionaryTrainer:
         logger.info(f"Exported {len(self._informal_mappings)} mappings to {output_path}")
         return output_path
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get dictionary statistics."""
-        pos_counts: Dict[str, int] = {}
+        pos_counts: dict[str, int] = {}
         for entry in self._entries.values():
             pos_counts[entry.pos] = pos_counts.get(entry.pos, 0) + 1
 
@@ -274,16 +274,16 @@ class CrowdsourcedCollector:
     """
 
     def __init__(self):
-        self._corrections: List[Dict[str, Any]] = []
-        self._new_terms: List[Dict[str, Any]] = []
-        self._votes: Dict[str, int] = {}
+        self._corrections: list[dict[str, Any]] = []
+        self._new_terms: list[dict[str, Any]] = []
+        self._votes: dict[str, int] = {}
 
     def submit_correction(
         self,
         original: str,
         corrected: str,
-        context: Optional[str] = None,
-        user_id: Optional[str] = None
+        context: str | None = None,
+        user_id: str | None = None
     ) -> str:
         """Submit a spelling correction."""
         correction = {
@@ -302,8 +302,8 @@ class CrowdsourcedCollector:
         self,
         term: str,
         pos: str,
-        definition: Optional[str] = None,
-        user_id: Optional[str] = None
+        definition: str | None = None,
+        user_id: str | None = None
     ) -> str:
         """Submit a new domain term."""
         new_term = {
@@ -324,7 +324,7 @@ class CrowdsourcedCollector:
         self._votes[item_id] = self._votes.get(item_id, 0) + delta
         return self._votes[item_id]
 
-    def get_approved_corrections(self, min_votes: int = 3) -> List[Dict[str, Any]]:
+    def get_approved_corrections(self, min_votes: int = 3) -> list[dict[str, Any]]:
         """Get corrections with enough votes for approval."""
         approved = []
         for corr in self._corrections:

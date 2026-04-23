@@ -3,10 +3,11 @@ Multisensory Learning Service - Çoklu Duyusal Öğrenme Servisi
 Task 82: Çoklu Duyusal Öğrenme (REQ-50.89 - REQ-50.104)
 """
 
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timezone
-from pydantic import BaseModel, Field
+from datetime import UTC, datetime
 from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 
 class LearningModality(str, Enum):
@@ -37,12 +38,12 @@ class MultimodalContent(BaseModel):
     title: str
     subject: str
     topic: str
-    modalities: List[LearningModality]
-    visual_content: Optional[Dict[str, Any]] = None
-    audio_content: Optional[Dict[str, Any]] = None
-    kinesthetic_content: Optional[Dict[str, Any]] = None
+    modalities: list[LearningModality]
+    visual_content: dict[str, Any] | None = None
+    audio_content: dict[str, Any] | None = None
+    kinesthetic_content: dict[str, Any] | None = None
     synchronized: bool = True
-    interactive_elements: List[Dict[str, Any]] = Field(default_factory=list)
+    interactive_elements: list[dict[str, Any]] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -50,9 +51,9 @@ class InteractiveAnimation(BaseModel):
     id: str
     title: str
     animation_type: AnimationType
-    steps: List[Dict[str, Any]]
+    steps: list[dict[str, Any]]
     duration_ms: int
-    controls: Dict[str, bool] = Field(
+    controls: dict[str, bool] = Field(
         default_factory=lambda: {
             "play": True,
             "pause": True,
@@ -74,12 +75,12 @@ class EducationalVideo(BaseModel):
     duration_seconds: int
     subject: str
     topic: str
-    subtitles: List[Dict[str, Any]] = Field(default_factory=list)
-    playback_speeds: List[float] = Field(
+    subtitles: list[dict[str, Any]] = Field(default_factory=list)
+    playback_speeds: list[float] = Field(
         default_factory=lambda: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
     )
     wcag_compliant: bool = True
-    thumbnail_url: Optional[str] = None
+    thumbnail_url: str | None = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -89,10 +90,10 @@ class VRARContent(BaseModel):
     content_type: MediaType
     description: str
     scene_url: str
-    models_3d: List[Dict[str, Any]] = Field(default_factory=list)
-    interactions: List[str] = Field(default_factory=list)
+    models_3d: list[dict[str, Any]] = Field(default_factory=list)
+    interactions: list[str] = Field(default_factory=list)
     immersive_level: int = 1
-    device_requirements: List[str] = Field(default_factory=list)
+    device_requirements: list[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -100,10 +101,10 @@ class MultisensoryLearningService:
     """Çoklu duyusal öğrenme servisi"""
 
     def __init__(self):
-        self.multimodal_contents: Dict[str, MultimodalContent] = {}
-        self.animations: Dict[str, InteractiveAnimation] = {}
-        self.videos: Dict[str, EducationalVideo] = {}
-        self.vr_ar_contents: Dict[str, VRARContent] = {}
+        self.multimodal_contents: dict[str, MultimodalContent] = {}
+        self.animations: dict[str, InteractiveAnimation] = {}
+        self.videos: dict[str, EducationalVideo] = {}
+        self.vr_ar_contents: dict[str, VRARContent] = {}
 
     # REQ-50.89: Multimodal content
     def create_multimodal_content(
@@ -111,11 +112,11 @@ class MultisensoryLearningService:
         title: str,
         subject: str,
         topic: str,
-        modalities: List[LearningModality],
-        visual_content: Optional[Dict] = None,
-        audio_content: Optional[Dict] = None,
-        kinesthetic_content: Optional[Dict] = None,
-        interactive_elements: Optional[List[Dict]] = None,
+        modalities: list[LearningModality],
+        visual_content: dict | None = None,
+        audio_content: dict | None = None,
+        kinesthetic_content: dict | None = None,
+        interactive_elements: list[dict] | None = None,
     ) -> MultimodalContent:
         content_id = self._generate_id(f"{title}_{subject}")
         content = MultimodalContent(
@@ -133,7 +134,7 @@ class MultisensoryLearningService:
         return content
 
     # REQ-50.90: Synchronized media
-    def synchronize_media(self, content_id: str, sync_points: List[Dict]) -> bool:
+    def synchronize_media(self, content_id: str, sync_points: list[dict]) -> bool:
         content = self.multimodal_contents.get(content_id)
         if not content:
             return False
@@ -145,7 +146,7 @@ class MultisensoryLearningService:
 
     # REQ-50.91: Interactive elements
     def add_interactive_element(
-        self, content_id: str, element_type: str, element_data: Dict
+        self, content_id: str, element_type: str, element_data: dict
     ) -> bool:
         content = self.multimodal_contents.get(content_id)
         if not content:
@@ -153,15 +154,15 @@ class MultisensoryLearningService:
         element = {
             "type": element_type,
             "data": element_data,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
         content.interactive_elements.append(element)
         return True
 
     # REQ-50.92: Save preferences
     def save_user_preferences(
-        self, user_id: str, preferred_modalities: List[LearningModality], settings: Dict
-    ) -> Dict:
+        self, user_id: str, preferred_modalities: list[LearningModality], settings: dict
+    ) -> dict:
         return {
             "success": True,
             "user_id": user_id,
@@ -174,7 +175,7 @@ class MultisensoryLearningService:
         self,
         title: str,
         animation_type: AnimationType,
-        steps: List[Dict],
+        steps: list[dict],
         duration_ms: int = 5000,
     ) -> InteractiveAnimation:
         animation_id = self._generate_id(f"{title}_{animation_type.value}")
@@ -189,14 +190,14 @@ class MultisensoryLearningService:
         return animation
 
     # REQ-50.94: Get animation steps
-    def get_animation_steps(self, animation_id: str) -> List[Dict]:
+    def get_animation_steps(self, animation_id: str) -> list[dict]:
         animation = self.animations.get(animation_id)
         return animation.steps if animation else []
 
     # REQ-50.95: Control animation
     def control_animation(
-        self, animation_id: str, action: str, value: Optional[Any] = None
-    ) -> Dict:
+        self, animation_id: str, action: str, value: Any | None = None
+    ) -> dict:
         animation = self.animations.get(animation_id)
         if not animation:
             return {"success": False, "error": "Animation not found"}
@@ -229,8 +230,8 @@ class MultisensoryLearningService:
         duration_seconds: int,
         subject: str,
         topic: str,
-        subtitles: Optional[List[Dict]] = None,
-        thumbnail_url: Optional[str] = None,
+        subtitles: list[dict] | None = None,
+        thumbnail_url: str | None = None,
     ) -> EducationalVideo:
         video_id = self._generate_id(f"{title}_{subject}")
         video = EducationalVideo(
@@ -249,7 +250,7 @@ class MultisensoryLearningService:
 
     # REQ-50.98: Add subtitles
     def add_subtitles(
-        self, video_id: str, language: str, subtitle_data: List[Dict]
+        self, video_id: str, language: str, subtitle_data: list[dict]
     ) -> bool:
         video = self.videos.get(video_id)
         if not video:
@@ -272,7 +273,7 @@ class MultisensoryLearningService:
         return False
 
     # REQ-50.100: WCAG compliance
-    def ensure_wcag_compliance(self, video_id: str) -> Dict:
+    def ensure_wcag_compliance(self, video_id: str) -> dict:
         video = self.videos.get(video_id)
         if not video:
             return {"compliant": False, "error": "Video not found"}
@@ -296,8 +297,8 @@ class MultisensoryLearningService:
         title: str,
         description: str,
         scene_url: str,
-        models_3d: List[Dict],
-        interactions: List[str],
+        models_3d: list[dict],
+        interactions: list[str],
     ) -> VRARContent:
         content_id = self._generate_id(f"vr_{title}")
         content = VRARContent(
@@ -316,7 +317,7 @@ class MultisensoryLearningService:
 
     # REQ-50.102: AR overlay
     def create_ar_overlay(
-        self, title: str, description: str, overlay_data: Dict, models_3d: List[Dict]
+        self, title: str, description: str, overlay_data: dict, models_3d: list[dict]
     ) -> VRARContent:
         content_id = self._generate_id(f"ar_{title}")
         content = VRARContent(
@@ -335,7 +336,7 @@ class MultisensoryLearningService:
 
     # REQ-50.103: 3D interaction
     def enable_3d_interaction(
-        self, content_id: str, interaction_type: str, settings: Dict
+        self, content_id: str, interaction_type: str, settings: dict
     ) -> bool:
         content = self.vr_ar_contents.get(content_id)
         if not content:
@@ -350,8 +351,8 @@ class MultisensoryLearningService:
 
     # REQ-50.104: Save immersive experience
     def save_immersive_experience(
-        self, content_id: str, user_id: str, experience_data: Dict
-    ) -> Dict:
+        self, content_id: str, user_id: str, experience_data: dict
+    ) -> dict:
         content = self.vr_ar_contents.get(content_id)
         if not content:
             return {"success": False, "error": "Content not found"}
@@ -362,14 +363,14 @@ class MultisensoryLearningService:
             "content_type": content.content_type.value,
             "immersive_level": content.immersive_level,
             "experience_data": experience_data,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     def _generate_id(self, seed: str) -> str:
         import hashlib
 
         return hashlib.md5(
-            f"{seed}_{datetime.now(timezone.utc).isoformat()}".encode()
+            f"{seed}_{datetime.now(UTC).isoformat()}".encode()
         ).hexdigest()[:16]
 
 

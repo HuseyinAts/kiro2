@@ -5,11 +5,11 @@ Performans test sonuçlarını analiz edip rapor oluşturur
 Requirements: 2.1, 2.5, 2.12, 6.6
 """
 
+import glob
 import json
 import os
 from datetime import datetime
-from typing import Dict, Any
-import glob
+from typing import Any
 
 
 class PerformanceReportGenerator:
@@ -23,12 +23,12 @@ class PerformanceReportGenerator:
             "recommendations": [],
         }
 
-    def load_benchmark_results(self, filepath: str) -> Dict[str, Any]:
+    def load_benchmark_results(self, filepath: str) -> dict[str, Any]:
         """Load benchmark results from JSON file"""
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             return json.load(f)
 
-    def analyze_response_time(self, data: Dict[str, Any]):
+    def analyze_response_time(self, data: dict[str, Any]):
         """Analyze response time benchmark"""
         rt = data.get("response_time", {})
 
@@ -61,7 +61,7 @@ class PerformanceReportGenerator:
 
         return analysis
 
-    def analyze_cache_performance(self, data: Dict[str, Any]):
+    def analyze_cache_performance(self, data: dict[str, Any]):
         """Analyze cache performance"""
         cache = data.get("cache_performance", {})
 
@@ -93,7 +93,7 @@ class PerformanceReportGenerator:
 
         return analysis
 
-    def analyze_database_queries(self, data: Dict[str, Any]):
+    def analyze_database_queries(self, data: dict[str, Any]):
         """Analyze database query performance"""
         db = data.get("database_queries", {})
 
@@ -125,7 +125,7 @@ class PerformanceReportGenerator:
 
         return analysis
 
-    def analyze_memory_usage(self, data: Dict[str, Any]):
+    def analyze_memory_usage(self, data: dict[str, Any]):
         """Analyze memory usage"""
         mem = data.get("memory_usage", {})
 
@@ -157,7 +157,7 @@ class PerformanceReportGenerator:
 
         return analysis
 
-    def analyze_parallel_processing(self, data: Dict[str, Any]):
+    def analyze_parallel_processing(self, data: dict[str, Any]):
         """Analyze parallel processing performance"""
         parallel = data.get("parallel_processing", {})
 

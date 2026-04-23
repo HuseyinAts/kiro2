@@ -7,11 +7,11 @@ scikit-learn ile pattern analysis, confidence scoring ve recommendation generati
 
 from collections import Counter
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 import numpy as np
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 try:
@@ -21,10 +21,10 @@ try:
 except ImportError:
     SKLEARN_AVAILABLE = False
 
-from models.diary import DiaryEntry, Insight, InsightCategory
 from api.schemas.diary import (
     InsightCreate,
 )
+from models.diary import DiaryEntry, Insight, InsightCategory
 
 
 class InsightService:
@@ -65,9 +65,9 @@ class InsightService:
 
     def detect_success_patterns(
         self,
-        entries: List[DiaryEntry],
+        entries: list[DiaryEntry],
         min_occurrences: int = 3
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Tekrarlayan basari faktorlerini tespit et (REQ-2.1).
 
@@ -78,11 +78,11 @@ class InsightService:
         Returns:
             List[Dict] - Basari patternleri
         """
-        patterns: List[Dict[str, Any]] = []
+        patterns: list[dict[str, Any]] = []
 
         # Task tiplerini analiz et
-        task_type_success: Dict[str, List[int]] = {}
-        task_type_total: Dict[str, int] = Counter()
+        task_type_success: dict[str, list[int]] = {}
+        task_type_total: dict[str, int] = Counter()
 
         for entry in entries:
             tasks_data = entry.tasks_data or []
@@ -123,7 +123,7 @@ class InsightService:
 
         return patterns
 
-    def _analyze_time_patterns(self, entries: List[DiaryEntry]) -> List[Dict[str, Any]]:
+    def _analyze_time_patterns(self, entries: list[DiaryEntry]) -> list[dict[str, Any]]:
         """
         Zaman bazli basari patternlerini analiz et.
 
@@ -133,10 +133,10 @@ class InsightService:
         Returns:
             List[Dict] - Zaman patternleri
         """
-        patterns: List[Dict[str, Any]] = []
+        patterns: list[dict[str, Any]] = []
 
         # Gun bazli basari oranlari
-        day_success: Dict[int, List[float]] = {i: [] for i in range(7)}
+        day_success: dict[int, list[float]] = {i: [] for i in range(7)}
 
         for entry in entries:
             day_of_week = entry.date.weekday()
@@ -173,9 +173,9 @@ class InsightService:
 
     def identify_failure_root_causes(
         self,
-        entries: List[DiaryEntry],
+        entries: list[DiaryEntry],
         min_occurrences: int = 2
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Basarisizlik root cause'larini belirle (REQ-2.2).
 
@@ -186,11 +186,11 @@ class InsightService:
         Returns:
             List[Dict] - Root cause'lar
         """
-        root_causes: List[Dict[str, Any]] = []
+        root_causes: list[dict[str, Any]] = []
 
         # Challenge'lari analiz et
-        challenge_keywords: Dict[str, int] = Counter()
-        challenge_tasks: Dict[str, List[str]] = {}
+        challenge_keywords: dict[str, int] = Counter()
+        challenge_tasks: dict[str, list[str]] = {}
 
         for entry in entries:
             challenges = entry.challenges or []
@@ -229,9 +229,9 @@ class InsightService:
 
     def _analyze_failure_patterns(
         self,
-        entries: List[DiaryEntry],
+        entries: list[DiaryEntry],
         min_occurrences: int
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Task failure patternlerini analiz et.
 
@@ -242,11 +242,11 @@ class InsightService:
         Returns:
             List[Dict] - Failure patternleri
         """
-        patterns: List[Dict[str, Any]] = []
+        patterns: list[dict[str, Any]] = []
 
         # Task tipi bazli failure'lar
-        task_type_failures: Dict[str, int] = Counter()
-        task_type_total: Dict[str, int] = Counter()
+        task_type_failures: dict[str, int] = Counter()
+        task_type_total: dict[str, int] = Counter()
 
         for entry in entries:
             tasks_data = entry.tasks_data or []
@@ -280,7 +280,7 @@ class InsightService:
 
         return patterns
 
-    def _extract_keywords(self, text: str) -> List[str]:
+    def _extract_keywords(self, text: str) -> list[str]:
         """
         Metinden anahtar kelimeleri cikar.
 
@@ -315,8 +315,8 @@ class InsightService:
 
     def detect_correlations(
         self,
-        entries: List[DiaryEntry],
-    ) -> List[Dict[str, Any]]:
+        entries: list[DiaryEntry],
+    ) -> list[dict[str, Any]]:
         """
         Cause-effect iliskilerini tespit et (REQ-2.3).
 
@@ -326,7 +326,7 @@ class InsightService:
         Returns:
             List[Dict] - Korelasyonlar
         """
-        correlations: List[Dict[str, Any]] = []
+        correlations: list[dict[str, Any]] = []
 
         if len(entries) < 5:
             return correlations
@@ -345,8 +345,8 @@ class InsightService:
 
     def _calculate_duration_success_correlation(
         self,
-        entries: List[DiaryEntry]
-    ) -> Optional[Dict[str, Any]]:
+        entries: list[DiaryEntry]
+    ) -> dict[str, Any] | None:
         """
         Sure ile basari arasindaki korelasyonu hesapla.
 
@@ -406,8 +406,8 @@ class InsightService:
 
     def _calculate_count_success_correlation(
         self,
-        entries: List[DiaryEntry]
-    ) -> Optional[Dict[str, Any]]:
+        entries: list[DiaryEntry]
+    ) -> dict[str, Any] | None:
         """
         Task sayisi ile basari arasindaki korelasyonu hesapla.
 
@@ -504,10 +504,10 @@ class InsightService:
 
     def generate_recommendations(
         self,
-        patterns: List[Dict[str, Any]],
-        root_causes: List[Dict[str, Any]],
-        correlations: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
+        patterns: list[dict[str, Any]],
+        root_causes: list[dict[str, Any]],
+        correlations: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
         """
         Actionable recommendationlar olustur (REQ-2.5).
 
@@ -519,7 +519,7 @@ class InsightService:
         Returns:
             List[Dict] - Recommendation'lar
         """
-        recommendations: List[Dict[str, Any]] = []
+        recommendations: list[dict[str, Any]] = []
 
         # Success pattern'lerden recommendation
         for pattern in patterns:
@@ -607,7 +607,7 @@ class InsightService:
     # REQ-2.6: Categorization
     # =========================================================================
 
-    def categorize_insight(self, pattern: Dict[str, Any]) -> InsightCategory:
+    def categorize_insight(self, pattern: dict[str, Any]) -> InsightCategory:
         """
         Insight'i kategorize et (REQ-2.6).
 
@@ -625,7 +625,7 @@ class InsightService:
         text_to_analyze = f"{description} {task_type} {keyword}"
 
         # Kategori eslesme skoru
-        scores: Dict[InsightCategory, int] = {
+        scores: dict[InsightCategory, int] = {
             InsightCategory.TECHNICAL: 0,
             InsightCategory.PROCESS: 0,
             InsightCategory.COMMUNICATION: 0,
@@ -652,9 +652,9 @@ class InsightService:
     async def analyze_entries(
         self,
         user_id: UUID,
-        entries: Optional[List[DiaryEntry]] = None,
+        entries: list[DiaryEntry] | None = None,
         days: int = 30,
-    ) -> List[Insight]:
+    ) -> list[Insight]:
         """
         Diary entry'leri analiz et ve insight'lar olustur.
 
@@ -695,7 +695,7 @@ class InsightService:
         )
 
         # Insight'lar olustur
-        insights: List[Insight] = []
+        insights: list[Insight] = []
 
         # Success pattern insight'lari
         for pattern in success_patterns:
@@ -787,10 +787,10 @@ class InsightService:
     async def get_insights(
         self,
         user_id: UUID,
-        category: Optional[InsightCategory] = None,
+        category: InsightCategory | None = None,
         min_confidence: float = 0.8,
         limit: int = 20,
-    ) -> List[Insight]:
+    ) -> list[Insight]:
         """
         Kullanici insight'larini getir.
 
@@ -859,7 +859,7 @@ class InsightService:
         self,
         insight_id: UUID,
         user_id: UUID,
-    ) -> Optional[Insight]:
+    ) -> Insight | None:
         """
         ID ile insight getir.
 

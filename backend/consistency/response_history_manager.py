@@ -13,7 +13,6 @@ Requirements: REQ-5.1
 """
 
 import logging
-from typing import List, Optional
 
 from backend.validators.base_response_validator import AgentResponse
 
@@ -34,7 +33,7 @@ class ResponseHistoryManager:
     def __init__(
         self,
         redis_client=None,
-        redis_url: Optional[str] = None,
+        redis_url: str | None = None,
         key_prefix: str = "response_history",
         max_history_size: int = 50,
         ttl_seconds: int = 30 * 24 * 60 * 60,
@@ -154,7 +153,7 @@ class ResponseHistoryManager:
         user_id: str,
         agent_type: str,
         limit: int = 10,
-    ) -> List[AgentResponse]:
+    ) -> list[AgentResponse]:
         """
         Son yanıtları al.
 
@@ -196,7 +195,7 @@ class ResponseHistoryManager:
 
     def _get_from_memory(
         self, key: str, limit: int
-    ) -> List[AgentResponse]:
+    ) -> list[AgentResponse]:
         """
         Memory'den yanıtları al (fallback).
 

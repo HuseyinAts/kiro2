@@ -7,7 +7,6 @@ Custom exception classes for JPype bridge operations
 class ZemberekError(Exception):
     """Base exception for all Zemberek operations"""
 
-    pass
 
 
 class JVMInitializationError(ZemberekError):

@@ -12,7 +12,7 @@ import asyncio
 import math
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Zemberek NLP integration with proper error handling
 try:
@@ -101,7 +101,7 @@ class MockAnalysis:
         # Fallback: take first 60% of word as root
         return word[: max(2, int(len(word) * 0.6))]
 
-    def _extract_suffixes(self, word: str) -> List[str]:
+    def _extract_suffixes(self, word: str) -> list[str]:
         """Extract probable suffixes"""
         root = self._extract_root(word)
         if len(word) > len(root):
@@ -110,7 +110,7 @@ class MockAnalysis:
             return [suffix_part] if suffix_part else []
         return []
 
-    def _get_compound_parts(self, word: str) -> List[str]:
+    def _get_compound_parts(self, word: str) -> list[str]:
         """Get compound word parts"""
         if not self.is_compound:
             return [word]
@@ -123,7 +123,7 @@ class MockAnalysis:
         """Get lemma (root form)"""
         return self.root
 
-    def getMorphemes(self) -> List[str]:
+    def getMorphemes(self) -> list[str]:
         """Get morphemes"""
         return [self.root] + self.suffixes
 
@@ -137,7 +137,7 @@ class Question:
     discrimination: float  # 0.5 to 2.5
     subject: str
     topic: str
-    id: Optional[str] = None
+    id: str | None = None
 
 
 @dataclass
@@ -197,12 +197,11 @@ class TurkishMorphologyAwareIRT:
             if hasattr(TurkishMorphology, "createWithDefaults"):
                 # New Zemberek API
                 return TurkishMorphology.createWithDefaults()
-            elif hasattr(TurkishMorphology, "builder"):
+            if hasattr(TurkishMorphology, "builder"):
                 # Builder pattern API
                 return TurkishMorphology.builder().build()
-            else:
-                # Try direct initialization
-                return TurkishMorphology()
+            # Try direct initialization
+            return TurkishMorphology()
 
         except Exception as e:
             print(f"Failed to initialize Zemberek: {e}")
@@ -336,7 +335,7 @@ class TurkishMorphologyAwareIRT:
             total_complexity=min(1.0, total_complexity),  # 0-1 arası sınırla
         )
 
-    def _extract_words(self, text: str) -> List[str]:
+    def _extract_words(self, text: str) -> list[str]:
         """Metinden kelimeleri çıkar"""
         # Türkçe karakterleri koruyarak kelime çıkarma
         words = re.findall(r"[a-zA-ZçğıöşüÇĞIİÖŞÜ]+", text)
@@ -428,8 +427,8 @@ class TurkishMorphologyAwareIRT:
         return 0.7  # Orta-yüksek seviye
 
     async def batch_analyze_questions(
-        self, questions: List[Question]
-    ) -> Dict[str, float]:
+        self, questions: list[Question]
+    ) -> dict[str, float]:
         """Toplu soru analizi"""
 
         results = {}
@@ -452,7 +451,7 @@ class TurkishMorphologyAwareIRT:
 
     async def compare_with_international_standards(
         self, question: Question, student: Student
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """ÖSYM/ETS standartları ile karşılaştırma"""
 
         # Türkçe morfoloji farkında IRT
@@ -488,14 +487,13 @@ class TurkishMorphologyAwareIRT:
 
         if advantage > 0.1:
             return "Morfolojik farkındalığınız yüksek. Karmaşık Türkçe sorularda avantajınız var."
-        elif advantage < -0.1:
+        if advantage < -0.1:
             return "Morfolojik yapıları çalışmanız önerilir. Kelime kökü ve ek analizi pratiği yapın."
-        else:
-            return "Morfolojik becerileriniz orta seviyede. Düzenli pratik ile geliştirebilirsiniz."
+        return "Morfolojik becerileriniz orta seviyede. Düzenli pratik ile geliştirebilirsiniz."
 
 
 # Utility functions
-async def create_sample_questions() -> List[Question]:
+async def create_sample_questions() -> list[Question]:
     """Test için örnek sorular oluştur"""
 
     questions = [

@@ -12,8 +12,9 @@ Logs all security-relevant events for compliance and forensics:
 import logging
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Dict, Any
-from sqlalchemy import Column, Integer, String, DateTime, Text, JSON
+from typing import Any
+
+from sqlalchemy import JSON, Column, DateTime, Integer, String, Text
 
 from core.database import Base
 
@@ -151,22 +152,22 @@ class AuditLogger:
     def log_event(
         self,
         event_type: AuditEventType,
-        user_id: Optional[str] = None,
-        user_email: Optional[str] = None,
-        user_role: Optional[str] = None,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        resource_type: Optional[str] = None,
-        resource_id: Optional[str] = None,
-        action: Optional[str] = None,
-        description: Optional[str] = None,
-        before_state: Optional[Dict[str, Any]] = None,
-        after_state: Optional[Dict[str, Any]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        user_email: str | None = None,
+        user_role: str | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
+        resource_type: str | None = None,
+        resource_id: str | None = None,
+        action: str | None = None,
+        description: str | None = None,
+        before_state: dict[str, Any] | None = None,
+        after_state: dict[str, Any] | None = None,
+        metadata: dict[str, Any] | None = None,
         success: bool = True,
-        error_message: Optional[str] = None,
+        error_message: str | None = None,
         severity: AuditSeverity = AuditSeverity.INFO,
-        request_id: Optional[str] = None,
+        request_id: str | None = None,
     ):
         """
         Log an audit event
@@ -238,10 +239,10 @@ class AuditLogger:
     def _format_log_message(
         self,
         event_type: AuditEventType,
-        user_id: Optional[str],
-        resource_type: Optional[str],
-        resource_id: Optional[str],
-        action: Optional[str],
+        user_id: str | None,
+        resource_type: str | None,
+        resource_id: str | None,
+        action: str | None,
         success: bool,
     ) -> str:
         """Format audit log message"""
@@ -301,7 +302,7 @@ class AuditLogger:
         resource_type: str,
         resource_id: str,
         action: str,
-        ip_address: Optional[str] = None,
+        ip_address: str | None = None,
     ):
         """Log data access"""
         self.log_event(
@@ -321,9 +322,9 @@ class AuditLogger:
         resource_type: str,
         resource_id: str,
         action: str,
-        before_state: Optional[Dict] = None,
-        after_state: Optional[Dict] = None,
-        ip_address: Optional[str] = None,
+        before_state: dict | None = None,
+        after_state: dict | None = None,
+        ip_address: str | None = None,
     ):
         """Log data modification"""
         event_type = {
@@ -349,9 +350,9 @@ class AuditLogger:
         self,
         admin_id: str,
         action: str,
-        target_user_id: Optional[str] = None,
-        description: Optional[str] = None,
-        metadata: Optional[Dict] = None,
+        target_user_id: str | None = None,
+        description: str | None = None,
+        metadata: dict | None = None,
     ):
         """Log admin action"""
         self.log_event(
@@ -368,9 +369,9 @@ class AuditLogger:
         self,
         event_type: AuditEventType,
         description: str,
-        user_id: Optional[str] = None,
-        ip_address: Optional[str] = None,
-        metadata: Optional[Dict] = None,
+        user_id: str | None = None,
+        ip_address: str | None = None,
+        metadata: dict | None = None,
         severity: AuditSeverity = AuditSeverity.WARNING,
     ):
         """Log security event"""
@@ -385,7 +386,7 @@ class AuditLogger:
 
 
 # Global audit logger instance
-_audit_logger: Optional[AuditLogger] = None
+_audit_logger: AuditLogger | None = None
 
 
 def get_audit_logger(db_session=None) -> AuditLogger:
@@ -399,8 +400,8 @@ def get_audit_logger(db_session=None) -> AuditLogger:
 # Decorator for automatic audit logging
 def audit_log(
     event_type: AuditEventType,
-    resource_type: Optional[str] = None,
-    action: Optional[str] = None,
+    resource_type: str | None = None,
+    action: str | None = None,
 ):
     """
     Decorator to automatically log function calls

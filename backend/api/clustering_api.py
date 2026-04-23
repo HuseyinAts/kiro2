@@ -15,10 +15,12 @@ from pydantic import BaseModel, Field
 from sqlalchemy import text
 
 from core.database import get_db_session_context
-from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
+from core.dependencies import (
+    get_current_user,  # fixed: was auth_dependencies (no blacklist)
+)
 from services.concept_clustering_service import (
-    get_clustering_service,
     ClusteringAlgorithm,
+    get_clustering_service,
 )
 
 logger = logging.getLogger(__name__)
@@ -177,12 +179,12 @@ async def cluster_concepts(
             noise_points=result.noise_points,
         )
 
-    except ImportError as e:
+    except ImportError:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -224,12 +226,12 @@ async def find_optimal_clusters(
             elbow_point=result.elbow_point,
         )
 
-    except ImportError as e:
+    except ImportError:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -270,7 +272,7 @@ async def get_visualization_data(
             document_ids=result.original_ids,
         )
 
-    except ImportError as e:
+    except ImportError:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -303,7 +305,7 @@ async def calculate_silhouette(
         score = service.calculate_silhouette(embeddings, labels)
         return {"silhouette_score": score}
 
-    except ImportError as e:
+    except ImportError:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -335,12 +337,12 @@ async def auto_cluster(
             noise_points=result.noise_points,
         )
 
-    except ImportError as e:
+    except ImportError:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

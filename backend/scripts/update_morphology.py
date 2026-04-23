@@ -11,10 +11,8 @@ Usage:
 """
 
 import argparse
-import math
 import os
 import re
-import sys
 import unicodedata
 from pathlib import Path
 from time import time

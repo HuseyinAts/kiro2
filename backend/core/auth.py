@@ -50,13 +50,12 @@ Features:
 
 import logging
 import secrets
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -94,19 +93,19 @@ class AuthService:
 
     @staticmethod
     def create_access_token(
-        data: dict, expires_delta: Optional[timedelta] = None
+        data: dict, expires_delta: timedelta | None = None
     ) -> str:
         """Create JWT access token"""
         to_encode = data.copy()
 
         if expires_delta:
-            expire = datetime.now(timezone.utc) + expires_delta
+            expire = datetime.now(UTC) + expires_delta
         else:
-            expire = datetime.now(timezone.utc) + timedelta(
+            expire = datetime.now(UTC) + timedelta(
                 minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES
             )
 
-        to_encode.update({"exp": expire, "iat": datetime.now(timezone.utc), "type": "access"})
+        to_encode.update({"exp": expire, "iat": datetime.now(UTC), "type": "access"})
 
         encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
         return encoded_jwt
@@ -270,6 +269,7 @@ async def verify_student_ownership(
     if current_user.rol == KullaniciRolu.OGRENCI:
         # Fetch student profile to verify ownership
         from sqlalchemy import select
+
         from models.learning_path_models import LearningPathStudentProfile
 
         result = await session.execute(
@@ -297,8 +297,8 @@ async def verify_student_ownership(
 
 # Optional authentication (for public endpoints that benefit from user context)
 async def get_current_user_optional(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
-) -> Optional[Kullanici]:
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),
+) -> Kullanici | None:
     """
     Get current user if token provided, otherwise None
     Does not raise exception if no token

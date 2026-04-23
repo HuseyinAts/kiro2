@@ -24,7 +24,7 @@ import gzip
 import io
 import logging
 import time
-from typing import Callable, Set
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -34,7 +34,7 @@ from starlette.types import ASGIApp
 logger = logging.getLogger(__name__)
 
 
-EXCLUDED_CONTENT_TYPES: Set[str] = {
+EXCLUDED_CONTENT_TYPES: set[str] = {
     "image/jpeg",
     "image/jpg",
     "image/png",
@@ -69,7 +69,7 @@ EXCLUDED_CONTENT_TYPES: Set[str] = {
     "application/octet-stream",
 }
 
-COMPRESSIBLE_CONTENT_TYPES: Set[str] = {
+COMPRESSIBLE_CONTENT_TYPES: set[str] = {
     "application/json",
     "application/xml",
     "text/plain",
@@ -169,4 +169,4 @@ def get_gzip_middleware(minimum_size: int = 1000, compression_level: int = 6) ->
     return ConfiguredGZipMiddleware
 
 
-__all__ = ["GZipMiddleware", "get_gzip_middleware", "EXCLUDED_CONTENT_TYPES", "COMPRESSIBLE_CONTENT_TYPES"]
+__all__ = ["COMPRESSIBLE_CONTENT_TYPES", "EXCLUDED_CONTENT_TYPES", "GZipMiddleware", "get_gzip_middleware"]

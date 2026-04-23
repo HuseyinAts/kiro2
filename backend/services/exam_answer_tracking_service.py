@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Sınav Cevap Takip Servisi
 Türkiye Üniversite Sınavları Hazırlık Platformu
@@ -14,7 +13,6 @@ REQ-1.6: Sınav arayüzü gereksinimleri
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional, Set
 
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,10 +30,10 @@ class AnswerStatus:
     question_id: str
     question_order: int
     is_answered: bool
-    selected_answer: Optional[str]
+    selected_answer: str | None
     is_empty: bool
     response_time_seconds: float
-    answered_at: Optional[datetime]
+    answered_at: datetime | None
 
 
 @dataclass
@@ -47,8 +45,8 @@ class CompletionStats:
     unanswered_questions: int
     empty_answers: int
     completion_percentage: float
-    unanswered_question_ids: List[str]
-    unanswered_question_orders: List[int]
+    unanswered_question_ids: list[str]
+    unanswered_question_orders: list[int]
 
 
 class ExamAnswerTrackingService:
@@ -65,7 +63,7 @@ class ExamAnswerTrackingService:
 
     async def get_answer_status(
         self, exam_session_id: str, question_id: str
-    ) -> Optional[AnswerStatus]:
+    ) -> AnswerStatus | None:
         """
         Belirli bir sorunun cevap durumunu getir
 
@@ -173,7 +171,7 @@ class ExamAnswerTrackingService:
             # Cevaplanan ve boş soruları say
             answered_count = 0
             empty_count = 0
-            answered_question_ids: Set[str] = set()
+            answered_question_ids: set[str] = set()
 
             for answer in answers:
                 answered_question_ids.add(answer.question_id)
@@ -250,7 +248,7 @@ class ExamAnswerTrackingService:
                 unanswered_question_orders=[],
             )
 
-    async def get_all_answer_statuses(self, exam_session_id: str) -> List[AnswerStatus]:
+    async def get_all_answer_statuses(self, exam_session_id: str) -> list[AnswerStatus]:
         """
         Sınavdaki tüm soruların cevap durumlarını getir
 
@@ -284,7 +282,7 @@ class ExamAnswerTrackingService:
             answers = answers_result.scalars().all()
 
             # Cevapları soru ID'sine göre eşle
-            answer_map: Dict[str, StudentAnswer] = {
+            answer_map: dict[str, StudentAnswer] = {
                 answer.question_id: answer for answer in answers
             }
 

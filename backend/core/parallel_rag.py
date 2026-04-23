@@ -7,7 +7,7 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -19,10 +19,10 @@ class RAGQueryResult:
     """RAG query result"""
 
     query: str
-    documents: List[Dict[str, Any]]
-    scores: List[float]
-    llm_response: Optional[str] = None
-    metadata: Dict[str, Any] = None
+    documents: list[dict[str, Any]]
+    scores: list[float]
+    llm_response: str | None = None
+    metadata: dict[str, Any] = None
     latency_ms: float = 0.0
 
 
@@ -126,7 +126,7 @@ class ParallelRAGPipeline:
             latency_ms=latency,
         )
 
-    async def batch_query(self, queries: List[str], k: int = 5) -> List[RAGQueryResult]:
+    async def batch_query(self, queries: list[str], k: int = 5) -> list[RAGQueryResult]:
         """
         Process multiple queries in parallel
 
@@ -163,7 +163,7 @@ class ParallelRAGPipeline:
         async with self.semaphore:
             return await self.query(query, k, expand_queries=False, use_reranking=False)
 
-    async def _expand_query(self, query: str, num_expansions: int = 3) -> List[str]:
+    async def _expand_query(self, query: str, num_expansions: int = 3) -> list[str]:
         """
         Expand query into multiple variations
 
@@ -188,7 +188,7 @@ class ParallelRAGPipeline:
         # Limit expansions
         return expansions[:num_expansions]
 
-    async def _generate_embeddings_batch(self, texts: List[str]) -> List[np.ndarray]:
+    async def _generate_embeddings_batch(self, texts: list[str]) -> list[np.ndarray]:
         """
         Generate embeddings for multiple texts in parallel
 
@@ -208,8 +208,8 @@ class ParallelRAGPipeline:
             return embeddings
 
     async def _parallel_vector_search(
-        self, embeddings: List[np.ndarray], k: int
-    ) -> List[List[Tuple[Dict[str, Any], float]]]:
+        self, embeddings: list[np.ndarray], k: int
+    ) -> list[list[tuple[dict[str, Any], float]]]:
         """
         Execute multiple vector searches in parallel
 
@@ -228,8 +228,8 @@ class ParallelRAGPipeline:
             return results
 
     def _merge_results(
-        self, all_results: List[List[Tuple[Dict[str, Any], float]]], k: int
-    ) -> List[Tuple[Dict[str, Any], float]]:
+        self, all_results: list[list[tuple[dict[str, Any], float]]], k: int
+    ) -> list[tuple[dict[str, Any], float]]:
         """
         Merge and deduplicate results from multiple searches
 
@@ -239,8 +239,8 @@ class ParallelRAGPipeline:
         RRF_K = 60
 
         # Calculate RRF scores
-        rrf_scores: Dict[str, float] = {}
-        doc_map: Dict[str, Dict[str, Any]] = {}
+        rrf_scores: dict[str, float] = {}
+        doc_map: dict[str, dict[str, Any]] = {}
 
         for results in all_results:
             for rank, (doc, score) in enumerate(results, start=1):
@@ -262,8 +262,8 @@ class ParallelRAGPipeline:
         return [(doc_map[doc_id], score) for doc_id, score in sorted_docs]
 
     async def _rerank_results(
-        self, query: str, results: List[Tuple[Dict[str, Any], float]], k: int
-    ) -> List[Tuple[Dict[str, Any], float]]:
+        self, query: str, results: list[tuple[dict[str, Any], float]], k: int
+    ) -> list[tuple[dict[str, Any], float]]:
         """
         Rerank results using cross-encoder
 
@@ -302,7 +302,7 @@ class ParallelRAGPipeline:
         return 0.5
 
     async def _generate_llm_response(
-        self, query: str, documents: List[Tuple[Dict[str, Any], float]]
+        self, query: str, documents: list[tuple[dict[str, Any], float]]
     ) -> str:
         """
         Generate LLM response based on retrieved documents
@@ -374,7 +374,7 @@ Cevap:"""
         # Final result
         yield {"type": "completed"}
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get pipeline metrics"""
         avg_latency = (
             self.total_latency / self.total_queries if self.total_queries > 0 else 0.0
@@ -398,8 +398,8 @@ Cevap:"""
 # Example usage
 async def example_parallel_rag():
     """Example usage of parallel RAG pipeline"""
-    from core.vector_optimizations import get_vector_store
     from core.llm_pool import OpenAIPool
+    from core.vector_optimizations import get_vector_store
 
     # Initialize components
     vector_store = await get_vector_store()
@@ -433,7 +433,7 @@ async def example_parallel_rag():
 
 
 # Global RAG pipeline instance
-_global_rag_pipeline: Optional[ParallelRAGPipeline] = None
+_global_rag_pipeline: ParallelRAGPipeline | None = None
 _rag_metrics = {
     "total_queries": 0,
     "avg_query_time_ms": 0.0,
@@ -444,7 +444,7 @@ _rag_metrics = {
 }
 
 
-def get_rag_pipeline_stats() -> Optional[Dict[str, Any]]:
+def get_rag_pipeline_stats() -> dict[str, Any] | None:
     """
     Get RAG pipeline statistics for monitoring
 

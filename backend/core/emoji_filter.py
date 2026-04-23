@@ -1,5 +1,6 @@
 """Emoji filter processor for structlog"""
 import re
+
 from structlog.types import EventDict
 
 

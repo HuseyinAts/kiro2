@@ -9,8 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from core.database import get_db_session
 from sqlalchemy import text
+
+from core.database import get_db_session
 
 
 async def count():

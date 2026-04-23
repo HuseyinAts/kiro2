@@ -2,12 +2,12 @@
 ÖSYM Question Extractor
 Extracts questions from ÖSYM PDF files and structures them for database import
 """
-import pdfplumber
-import re
-from pathlib import Path
-from typing import Dict, List, Optional
 import json
+import re
 from datetime import datetime
+from pathlib import Path
+
+import pdfplumber
 
 
 class OSYMQuestionExtractor:
@@ -41,7 +41,7 @@ class OSYMQuestionExtractor:
             "total_questions": 0,
         }
 
-    def extract_exam_info(self, text: str) -> Dict[str, str]:
+    def extract_exam_info(self, text: str) -> dict[str, str]:
         """Extract exam type and year from PDF"""
         info = {"exam_type": "TYT", "year": None}  # Default
 
@@ -58,7 +58,7 @@ class OSYMQuestionExtractor:
 
         return info
 
-    def extract_current_subject(self, text: str) -> Optional[str]:
+    def extract_current_subject(self, text: str) -> str | None:
         """Detect current subject from page header"""
         for keyword, subject in self.SUBJECT_KEYWORDS.items():
             if keyword in text.upper():
@@ -67,7 +67,7 @@ class OSYMQuestionExtractor:
 
     def extract_questions_from_page(
         self, page_text: str, current_subject: str
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Extract questions from a single page"""
         questions = []
 
@@ -104,7 +104,7 @@ class OSYMQuestionExtractor:
 
         return questions
 
-    def extract_options(self, question_block: str) -> Dict[str, str]:
+    def extract_options(self, question_block: str) -> dict[str, str]:
         """Extract A), B), C), D), E) options"""
         options = {}
 
@@ -126,7 +126,7 @@ class OSYMQuestionExtractor:
             options if len(options) >= 4 else {}
         )  # Valid question has at least 4 options
 
-    def extract_stem(self, question_block: str, options: Dict[str, str]) -> str:
+    def extract_stem(self, question_block: str, options: dict[str, str]) -> str:
         """Extract question stem (text before options)"""
 
         # Find first option position
@@ -145,7 +145,7 @@ class OSYMQuestionExtractor:
 
         return stem.strip()
 
-    def extract_answer_key(self, pdf) -> Dict[int, str]:
+    def extract_answer_key(self, pdf) -> dict[int, str]:
         """
         Extract answer key from PDF (Wave 2A improvement)
 
@@ -166,7 +166,7 @@ class OSYMQuestionExtractor:
 
         return answer_key
 
-    def extract_all_questions(self) -> List[Dict]:
+    def extract_all_questions(self) -> list[dict]:
         """Main extraction method"""
 
         print(f"\n{'='*80}")
@@ -236,7 +236,7 @@ class OSYMQuestionExtractor:
 
         print(f"Questions saved to: {output_path}")
 
-    def get_database_format(self) -> List[Dict]:
+    def get_database_format(self) -> list[dict]:
         """Convert to database-ready format"""
         db_questions = []
 

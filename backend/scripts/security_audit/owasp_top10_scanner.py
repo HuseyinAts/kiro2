@@ -18,14 +18,12 @@ A10:2021 - Server-Side Request Forgery (SSRF)
 
 import asyncio
 import json
-import os
 import re
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 # Add parent directories to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -54,8 +52,8 @@ class Finding:
     severity: Severity
     status: VulnerabilityStatus
     description: str
-    file_path: Optional[str] = None
-    line_number: Optional[int] = None
+    file_path: str | None = None
+    line_number: int | None = None
     recommendation: str = ""
     evidence: str = ""
 
@@ -797,7 +795,7 @@ class OWASPTop10Scanner:
         with open(md_path, "w", encoding="utf-8") as f:
             f.write(md_content)
 
-        print(f"\n[REPORT] Reports exported to:")
+        print("\n[REPORT] Reports exported to:")
         print(f"   - {json_path}")
         print(f"   - {md_path}")
 

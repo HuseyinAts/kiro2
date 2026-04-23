@@ -14,10 +14,11 @@ Boris Cherny Standards: Verification feedback loops
 import asyncio
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -44,12 +45,12 @@ class AgentHealthStatus:
     agent_id: str
     status: AgentStatus = AgentStatus.UNKNOWN
     last_seen: datetime = field(default_factory=datetime.now)
-    last_check: Optional[datetime] = None
+    last_check: datetime | None = None
     consecutive_failures: int = 0
     total_checks: int = 0
     successful_checks: int = 0
     response_time_ms: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def success_rate(self) -> float:
@@ -66,7 +67,7 @@ class HealthCheckResult:
     agent_id: str
     is_healthy: bool
     response_time_ms: float = 0.0
-    error: Optional[str] = None
+    error: str | None = None
     timestamp: datetime = field(default_factory=datetime.now)
 
 
@@ -104,29 +105,29 @@ class AgentHealthChecker:
         self.ping_timeout = ping_timeout
 
         # Agent health status tracking
-        self._agent_health: Dict[str, AgentHealthStatus] = {}
+        self._agent_health: dict[str, AgentHealthStatus] = {}
 
         # Agent registry reference (set externally)
-        self._agent_registry: Dict[str, Any] = {}
+        self._agent_registry: dict[str, Any] = {}
 
         # Background task
         self._running = False
-        self._task: Optional[asyncio.Task] = None
+        self._task: asyncio.Task | None = None
 
         # Callbacks
-        self._on_unhealthy_callbacks: List[Callable] = []
-        self._on_healthy_callbacks: List[Callable] = []
-        self._on_deregister_callbacks: List[Callable] = []
+        self._on_unhealthy_callbacks: list[Callable] = []
+        self._on_healthy_callbacks: list[Callable] = []
+        self._on_deregister_callbacks: list[Callable] = []
 
         # Blackboard reference for event publishing
-        self._blackboard: Optional[Any] = None
+        self._blackboard: Any | None = None
 
         logger.info(
             f"AgentHealthChecker initialized: interval={check_interval}s, "
             f"unhealthy={unhealthy_threshold}s, deregister={deregister_threshold}s"
         )
 
-    def set_agent_registry(self, registry: Dict[str, Any]) -> None:
+    def set_agent_registry(self, registry: dict[str, Any]) -> None:
         """
         Agent registry referansini ayarla.
 
@@ -237,7 +238,7 @@ class AgentHealthChecker:
                 response_time_ms=response_time,
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return HealthCheckResult(
                 agent_id=agent_id,
                 is_healthy=False,
@@ -452,7 +453,7 @@ class AgentHealthChecker:
         self._agent_health.pop(agent_id, None)
         logger.debug(f"Agent {agent_id} unregistered from health monitoring")
 
-    def get_agent_status(self, agent_id: str) -> Optional[AgentHealthStatus]:
+    def get_agent_status(self, agent_id: str) -> AgentHealthStatus | None:
         """
         Agent saglik durumunu al.
 
@@ -464,11 +465,11 @@ class AgentHealthChecker:
         """
         return self._agent_health.get(agent_id)
 
-    def get_all_statuses(self) -> Dict[str, AgentHealthStatus]:
+    def get_all_statuses(self) -> dict[str, AgentHealthStatus]:
         """Tum agent durumlari."""
         return self._agent_health.copy()
 
-    def get_healthy_agents(self) -> List[str]:
+    def get_healthy_agents(self) -> list[str]:
         """Healthy agent listesi."""
         return [
             agent_id
@@ -476,7 +477,7 @@ class AgentHealthChecker:
             if status.status == AgentStatus.HEALTHY
         ]
 
-    def get_unhealthy_agents(self) -> List[str]:
+    def get_unhealthy_agents(self) -> list[str]:
         """Unhealthy agent listesi."""
         return [
             agent_id
@@ -497,7 +498,7 @@ class AgentHealthChecker:
         """Deregister callback kaydet."""
         self._on_deregister_callbacks.append(callback)
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """
         Metrikleri al.
 
@@ -526,7 +527,7 @@ class AgentHealthChecker:
 
 
 # Singleton instance
-_health_checker: Optional[AgentHealthChecker] = None
+_health_checker: AgentHealthChecker | None = None
 
 
 def get_health_checker() -> AgentHealthChecker:

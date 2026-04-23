@@ -6,10 +6,11 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-from enum import Enum
-from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, ConfigDict, Field
 import os
+from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class LLMProvider(str, Enum):
@@ -39,16 +40,16 @@ class LLMModelConfig(BaseModel):
 
     provider: LLMProvider
     model_name: str
-    api_key: Optional[str] = None
-    api_base: Optional[str] = None
+    api_key: str | None = None
+    api_base: str | None = None
     max_tokens: int = 2048
     temperature: float = 0.7
     top_p: float = 0.9
-    capabilities: List[LLMCapability] = Field(default_factory=list)
+    capabilities: list[LLMCapability] = Field(default_factory=list)
 
     # Fine-tuning specific
-    fine_tuned_model_id: Optional[str] = None
-    training_config: Optional[Dict[str, Any]] = None
+    fine_tuned_model_id: str | None = None
+    training_config: dict[str, Any] | None = None
 
     # Cost and performance
     cost_per_1k_tokens: float = 0.0
@@ -303,28 +304,27 @@ Değerlendirme Kriterleri:
         ]:
             if capability in cls.GEMINI_CONFIG.capabilities:
                 return LLMProvider.GEMINI
-            elif capability in cls.CLAUDE_CONFIG.capabilities:
+            if capability in cls.CLAUDE_CONFIG.capabilities:
                 return LLMProvider.CLAUDE
 
         if prefer_cost_effective:
             # Prefer Gemini (free) > Qwen (free if self-hosted) > Claude (cheap)
             if capability in cls.GEMINI_CONFIG.capabilities:
                 return LLMProvider.GEMINI
-            elif capability in cls.QWEN_CONFIG.capabilities:
+            if capability in cls.QWEN_CONFIG.capabilities:
                 return LLMProvider.QWEN
-            elif capability in cls.CLAUDE_CONFIG.capabilities:
+            if capability in cls.CLAUDE_CONFIG.capabilities:
                 return LLMProvider.CLAUDE
-            elif capability in cls.OPENAI_CONFIG.capabilities:
+            if capability in cls.OPENAI_CONFIG.capabilities:
                 return LLMProvider.OPENAI
-        else:
-            # Prefer quality: Gemini (thinking) > OpenAI > Claude > Qwen
-            if capability in cls.GEMINI_CONFIG.capabilities:
-                return LLMProvider.GEMINI
-            elif capability in cls.OPENAI_CONFIG.capabilities:
-                return LLMProvider.OPENAI
-            elif capability in cls.CLAUDE_CONFIG.capabilities:
-                return LLMProvider.CLAUDE
-            elif capability in cls.QWEN_CONFIG.capabilities:
-                return LLMProvider.QWEN
+        # Prefer quality: Gemini (thinking) > OpenAI > Claude > Qwen
+        elif capability in cls.GEMINI_CONFIG.capabilities:
+            return LLMProvider.GEMINI
+        elif capability in cls.OPENAI_CONFIG.capabilities:
+            return LLMProvider.OPENAI
+        elif capability in cls.CLAUDE_CONFIG.capabilities:
+            return LLMProvider.CLAUDE
+        elif capability in cls.QWEN_CONFIG.capabilities:
+            return LLMProvider.QWEN
 
         raise ValueError(f"No provider supports capability: {capability}")

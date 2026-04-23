@@ -3,11 +3,11 @@ AI-Generated Question Quality Validator
 BEST PRACTICE: QUEST Framework + Bloom's Taxonomy + IRT Analysis
 Araştırma: BMC Medical Education 2025, arxiv.org/abs/2508.08314
 """
-from typing import Dict, List, Optional, Tuple
 from enum import Enum
-from pydantic import BaseModel
+
 import anthropic
 import openai
+from pydantic import BaseModel
 
 
 class QualityLevel(Enum):
@@ -36,9 +36,9 @@ class ValidationResult(BaseModel):
     pedagogical_value: float  # 0-100
 
     # Feedback
-    strengths: List[str]
-    weaknesses: List[str]
-    revision_suggestions: List[str]
+    strengths: list[str]
+    weaknesses: list[str]
+    revision_suggestions: list[str]
 
     # IRT prediction
     predicted_difficulty: float  # 0.0-1.0 (IRT b parameter)
@@ -65,7 +65,7 @@ class QuestionValidator:
     # RULE-BASED VALIDATION (Fast, Deterministic)
     # ========================================================================
 
-    def validate_format(self, question: Dict) -> Tuple[bool, List[str]]:
+    def validate_format(self, question: dict) -> tuple[bool, list[str]]:
         """Format kontrolü"""
         errors = []
 
@@ -92,7 +92,7 @@ class QuestionValidator:
 
         return len(errors) == 0, errors
 
-    def validate_language(self, question: Dict) -> Tuple[float, List[str]]:
+    def validate_language(self, question: dict) -> tuple[float, list[str]]:
         """
         Dil kalitesi kontrolü
         BEST PRACTICE: Otomatik gramer kontrolü
@@ -128,7 +128,7 @@ class QuestionValidator:
 
         return max(score, 0), issues
 
-    def validate_distractors(self, question: Dict) -> Tuple[float, List[str]]:
+    def validate_distractors(self, question: dict) -> tuple[float, list[str]]:
         """
         Distractor (yanlış seçenekler) kalitesi
         BEST PRACTICE: Plausible distractors
@@ -159,7 +159,7 @@ class QuestionValidator:
 
         return max(score, 0), issues
 
-    def predict_difficulty_irt(self, question: Dict) -> float:
+    def predict_difficulty_irt(self, question: dict) -> float:
         """
         IRT b parametresi (zorluk) tahmini
         BEST PRACTICE: AutoIRT approach (ML-based)
@@ -199,7 +199,7 @@ class QuestionValidator:
 
         return min(difficulty, 1.0)
 
-    def predict_discrimination_irt(self, question: Dict) -> float:
+    def predict_discrimination_irt(self, question: dict) -> float:
         """
         IRT a parametresi (ayırt edicilik) tahmini
         Yüksek = soru iyi öğrenciyi ayırt eder
@@ -224,7 +224,7 @@ class QuestionValidator:
     # AI-POWERED VALIDATION (Slow, Intelligent)
     # ========================================================================
 
-    async def validate_with_claude(self, question: Dict) -> Dict:
+    async def validate_with_claude(self, question: dict) -> dict:
         """
         Claude ile pedagojik kalite analizi
         BEST PRACTICE: Claude'un empati ve pedagojik anlayışı
@@ -284,7 +284,7 @@ class QuestionValidator:
     # MAIN VALIDATION PIPELINE
     # ========================================================================
 
-    async def validate(self, question: Dict) -> ValidationResult:
+    async def validate(self, question: dict) -> ValidationResult:
         """
         Ana validasyon pipeline
         BEST PRACTICE: Multi-stage validation
@@ -382,8 +382,8 @@ class QuestionValidator:
 
 
 async def validate_batch(
-    questions: List[Dict], validator: Optional[QuestionValidator] = None
-) -> List[ValidationResult]:
+    questions: list[dict], validator: QuestionValidator | None = None
+) -> list[ValidationResult]:
     """Toplu validasyon"""
     if validator is None:
         validator = QuestionValidator(use_ai_validator=True)

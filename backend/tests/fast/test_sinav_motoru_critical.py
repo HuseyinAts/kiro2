@@ -2,8 +2,10 @@
 Sınav Motoru Servisi - Kritik Fonksiyonlar Test Suite
 Coverage Hedefi: %85+
 """
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
+
 from models import SinavDurumu
 
 

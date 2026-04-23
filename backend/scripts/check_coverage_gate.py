@@ -7,7 +7,6 @@ import json
 import sys
 from pathlib import Path
 
-
 # Coverage thresholds by module type
 THRESHOLDS = {
     "security": 90,  # Security modules need 90%+
@@ -35,16 +34,15 @@ def get_module_threshold(file_path: str) -> int:
     """Determine coverage threshold based on file path"""
     if any(sec_mod in file_path for sec_mod in SECURITY_MODULES):
         return THRESHOLDS["security"]
-    elif file_path.startswith("core/"):
+    if file_path.startswith("core/"):
         return THRESHOLDS["core"]
-    elif file_path.startswith("api/"):
+    if file_path.startswith("api/"):
         return THRESHOLDS["api"]
-    elif file_path.startswith("services/"):
+    if file_path.startswith("services/"):
         return THRESHOLDS["services"]
-    elif file_path.startswith("models/"):
+    if file_path.startswith("models/"):
         return THRESHOLDS["models"]
-    else:
-        return THRESHOLDS["default"]
+    return THRESHOLDS["default"]
 
 
 def check_coverage():

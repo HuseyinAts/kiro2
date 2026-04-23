@@ -20,11 +20,12 @@ Date: 2026-01-28
 import asyncio
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from sqlalchemy import text
-from sqlalchemy.exc import OperationalError, TimeoutError as SQLAlchemyTimeoutError
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import TimeoutError as SQLAlchemyTimeoutError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 # Try to import from project, skip tests if not available
@@ -165,7 +166,7 @@ async def create_test_question(session: AsyncSession, index: int) -> str:
             "irt_discrimination": 1.0,
             "irt_guessing": 0.2,
             "aktif": True,
-            "olusturma_tarihi": datetime.now(timezone.utc),
+            "olusturma_tarihi": datetime.now(UTC),
         },
     )
     await session.commit()
@@ -362,7 +363,7 @@ class TestDBWriteContention:
                                 "sinav_tipi": "TYT",
                                 "konu": "Test",
                                 "aktif": True,
-                                "olusturma_tarihi": datetime.now(timezone.utc),
+                                "olusturma_tarihi": datetime.now(UTC),
                             },
                         )
                         inserted_ids.append(question_id)
@@ -432,7 +433,7 @@ class TestDBWriteContention:
                     "dogru_cevap": "A",
                     "sinav_tipi": "TYT",
                     "konu": "Test",
-                    "olusturma_tarihi": datetime.now(timezone.utc),
+                    "olusturma_tarihi": datetime.now(UTC),
                 },
             )
             await session.commit()
@@ -781,7 +782,7 @@ async def test_comprehensive_stress_summary(test_engine, db_initialized):
                                 "dogru_cevap": "A",
                                 "sinav_tipi": "TYT",
                                 "konu": "StressTest",
-                                "olusturma_tarihi": datetime.now(timezone.utc),
+                                "olusturma_tarihi": datetime.now(UTC),
                             },
                         )
                         await session.commit()

@@ -9,7 +9,7 @@ IRT Parametreleri (CLAUDE.md):
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, validator
 
@@ -128,7 +128,7 @@ class QualityScores(BaseModel):
 class Question(BaseModel):
     """Tam soru modeli"""
 
-    question_id: Optional[str] = None
+    question_id: str | None = None
 
     # Kazanım ve konu
     kazanim: str
@@ -139,12 +139,12 @@ class Question(BaseModel):
 
     # Soru içeriği
     question_text: str
-    context: Optional[str] = None
+    context: str | None = None
     bloom_level: str
     question_type: str
 
     # Seçenekler
-    options: List[QuestionOption] = Field(..., min_items=4, max_items=4)
+    options: list[QuestionOption] = Field(..., min_items=4, max_items=4)
     correct_answer: Literal["A", "B", "C", "D"]
 
     # IRT parametreleri
@@ -157,7 +157,7 @@ class Question(BaseModel):
 
     # Metadata
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    pipeline_id: Optional[str] = None
+    pipeline_id: str | None = None
 
     @validator("options")
     def validate_options(cls, v):
@@ -181,7 +181,7 @@ class PipelineResult(BaseModel):
 
     pipeline_id: str
     question: Question
-    stage_results: List[Dict[str, Any]]
+    stage_results: list[dict[str, Any]]
     final_score: float = Field(..., ge=0, le=1)
     decision: Literal["approved", "review", "rejected"]
     total_duration: float = Field(..., ge=0)
@@ -215,11 +215,11 @@ class GenerationRequest(BaseModel):
         "çoktan_seçmeli",
         description="Soru tipi"
     )
-    correct_answer: Optional[str] = Field(
+    correct_answer: str | None = Field(
         None,
         description="Doğru cevap (opsiyonel)"
     )
-    context: Optional[str] = Field(
+    context: str | None = Field(
         None,
         description="Ek bağlam"
     )

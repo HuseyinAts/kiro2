@@ -11,10 +11,12 @@ Boris Cherny Standards: Minimum 100 iterations per property test
 """
 
 import re
-import pytest
-from hypothesis import given, settings, strategies as st, assume
-
 import sys
+
+import pytest
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 

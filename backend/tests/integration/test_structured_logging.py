@@ -63,7 +63,7 @@ class TestStructuredLogger:
         assert log_file.exists()
 
         # Log içeriğini kontrol et
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             logs = f.readlines()
 
         assert len(logs) >= 4  # debug hariç (console level INFO)
@@ -82,7 +82,7 @@ class TestStructuredLogger:
         self.logger.info("API test", LogCategory.API, endpoint="/test")
 
         log_file = Path(self.temp_dir) / "test-logger.log"
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             logs = [json.loads(line) for line in f.readlines()]
 
         categories = [log.get("category") for log in logs]
@@ -98,7 +98,7 @@ class TestStructuredLogger:
             self.logger.log_exception("Test exception occurred", e, LogCategory.SYSTEM)
 
         log_file = Path(self.temp_dir) / "test-logger.log"
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             log_data = json.loads(f.readline())
 
         assert log_data["level"] == "ERROR"
@@ -115,7 +115,7 @@ class TestStructuredLogger:
         )
 
         log_file = Path(self.temp_dir) / "test-logger.log"
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             log_data = json.loads(f.readline())
 
         assert log_data["category"] == "user_action"
@@ -133,7 +133,7 @@ class TestStructuredLogger:
         )
 
         log_file = Path(self.temp_dir) / "test-logger.log"
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             log_data = json.loads(f.readline())
 
         assert log_data["category"] == "performance"
@@ -152,7 +152,7 @@ class TestStructuredLogger:
         )
 
         log_file = Path(self.temp_dir) / "test-logger.log"
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             log_data = json.loads(f.readline())
 
         assert log_data["category"] == "api"
@@ -171,7 +171,7 @@ class TestStructuredLogger:
         )
 
         log_file = Path(self.temp_dir) / "test-logger.log"
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             log_data = json.loads(f.readline())
 
         assert log_data["category"] == "agent"
@@ -245,7 +245,7 @@ class TestLogExecutionTimeDecorator:
         log_file = Path(self.temp_dir) / "teknofest-platform.log"
         assert log_file.exists()
 
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             logs = [json.loads(line) for line in f.readlines()]
 
         performance_logs = [log for log in logs if log.get("category") == "performance"]
@@ -293,7 +293,7 @@ class TestDatabaseLoggingMiddleware:
         )
 
         log_file = Path(self.temp_dir) / "teknofest-platform.log"
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             log_data = json.loads(f.readline())
 
         assert log_data["category"] == "database"
@@ -311,7 +311,7 @@ class TestDatabaseLoggingMiddleware:
         )
 
         log_file = Path(self.temp_dir) / "teknofest-platform.log"
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             log_data = json.loads(f.readline())
 
         assert log_data["level"] == "WARNING"

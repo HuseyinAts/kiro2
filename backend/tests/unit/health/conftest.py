@@ -1,8 +1,8 @@
 """
 Conftest for unit health tests
 """
-import sys
 import os
+import sys
 
 # Add backend path to sys.path
 backend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))

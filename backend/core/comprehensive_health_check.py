@@ -301,9 +301,9 @@ class HealthChecker:
         start_time = time.time()
 
         try:
-            from elasticsearch import AsyncElasticsearch
-
             import os
+
+            from elasticsearch import AsyncElasticsearch
             _es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
             es = AsyncElasticsearch(
                 [_es_url],

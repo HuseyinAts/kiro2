@@ -2,15 +2,16 @@
 İçerik modelleri test dosyası
 Test kapsamı: MakaleIcerik ve VideoIcerik Pydantic modelleri
 """
-import pytest
 from datetime import datetime
+
+import pytest
 from pydantic import ValidationError
 
 # Module skip: Tests written against old model schema (missing required fields like
 # yayinlayan, icerik min_length=50, auto-calculated okunma_suresi). Needs rewrite.
 pytestmark = pytest.mark.skipif(True, reason="Content model schema changed: missing required fields, min_length constraints, auto-calculated fields")
 
-from models.content import MakaleIcerik, VideoIcerik, ContentType
+from models.content import ContentType, MakaleIcerik, VideoIcerik
 
 
 class TestContentType:

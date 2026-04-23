@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -8,6 +9,7 @@ Task 61.2: Formative Test
 """
 
 import pytest
+
 from services.formative_test import FormativeTest, ImmediateFeedback
 
 

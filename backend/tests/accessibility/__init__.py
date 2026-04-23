@@ -15,8 +15,8 @@ Requirements: 9.1-9.5, 7.4
 
 __version__ = "1.0.0"
 __all__ = [
-    "WCAGComplianceChecker",
-    "ScreenReaderCompatibilityTester",
     "KeyboardNavigationTester",
+    "ScreenReaderCompatibilityTester",
     "TurkishEncodingValidator",
+    "WCAGComplianceChecker",
 ]

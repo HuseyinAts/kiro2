@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -40,12 +40,12 @@ class GateIssue(BaseModel):
     """Single issue found by a gate."""
 
     file: str = Field(..., description="File path where issue found")
-    line: Optional[int] = Field(None, description="Line number")
-    column: Optional[int] = Field(None, description="Column number")
+    line: int | None = Field(None, description="Line number")
+    column: int | None = Field(None, description="Column number")
     rule: str = Field(..., description="Rule/check identifier")
     message: str = Field(..., description="Issue description")
     severity: GateSeverity = Field(GateSeverity.MEDIUM, description="Severity level")
-    suggestion: Optional[str] = Field(None, description="Fix suggestion")
+    suggestion: str | None = Field(None, description="Fix suggestion")
 
     model_config = ConfigDict(frozen=True)
 
@@ -54,46 +54,46 @@ class GateMetrics(BaseModel):
     """Metrics collected by a gate."""
 
     # Code quality metrics
-    lint_score: Optional[float] = Field(None, ge=0, le=10)
-    type_coverage: Optional[float] = Field(None, ge=0, le=100)
-    complexity_avg: Optional[float] = Field(None, ge=0)
-    complexity_max: Optional[int] = Field(None, ge=0)
-    docstring_coverage: Optional[float] = Field(None, ge=0, le=100)
-    duplication_percent: Optional[float] = Field(None, ge=0, le=100)
+    lint_score: float | None = Field(None, ge=0, le=10)
+    type_coverage: float | None = Field(None, ge=0, le=100)
+    complexity_avg: float | None = Field(None, ge=0)
+    complexity_max: int | None = Field(None, ge=0)
+    docstring_coverage: float | None = Field(None, ge=0, le=100)
+    duplication_percent: float | None = Field(None, ge=0, le=100)
 
     # Test coverage metrics
-    line_coverage: Optional[float] = Field(None, ge=0, le=100)
-    branch_coverage: Optional[float] = Field(None, ge=0, le=100)
-    function_coverage: Optional[float] = Field(None, ge=0, le=100)
-    new_code_coverage: Optional[float] = Field(None, ge=0, le=100)
+    line_coverage: float | None = Field(None, ge=0, le=100)
+    branch_coverage: float | None = Field(None, ge=0, le=100)
+    function_coverage: float | None = Field(None, ge=0, le=100)
+    new_code_coverage: float | None = Field(None, ge=0, le=100)
 
     # Performance metrics
-    p50_ms: Optional[float] = Field(None, ge=0)
-    p95_ms: Optional[float] = Field(None, ge=0)
-    p99_ms: Optional[float] = Field(None, ge=0)
-    throughput_rps: Optional[float] = Field(None, ge=0)
-    memory_mb: Optional[float] = Field(None, ge=0)
-    memory_leak_detected: Optional[bool] = Field(None)
-    n_plus_one_count: Optional[int] = Field(None, ge=0)
+    p50_ms: float | None = Field(None, ge=0)
+    p95_ms: float | None = Field(None, ge=0)
+    p99_ms: float | None = Field(None, ge=0)
+    throughput_rps: float | None = Field(None, ge=0)
+    memory_mb: float | None = Field(None, ge=0)
+    memory_leak_detected: bool | None = Field(None)
+    n_plus_one_count: int | None = Field(None, ge=0)
 
     # Architecture metrics
-    circular_deps_count: Optional[int] = Field(None, ge=0)
-    layer_violations_count: Optional[int] = Field(None, ge=0)
-    coupling_score: Optional[float] = Field(None, ge=0, le=1)
-    cohesion_score: Optional[float] = Field(None, ge=0, le=1)
+    circular_deps_count: int | None = Field(None, ge=0)
+    layer_violations_count: int | None = Field(None, ge=0)
+    coupling_score: float | None = Field(None, ge=0, le=1)
+    cohesion_score: float | None = Field(None, ge=0, le=1)
 
     # Security metrics
-    critical_vulns: Optional[int] = Field(None, ge=0)
-    high_vulns: Optional[int] = Field(None, ge=0)
-    medium_vulns: Optional[int] = Field(None, ge=0)
-    low_vulns: Optional[int] = Field(None, ge=0)
-    secrets_found: Optional[int] = Field(None, ge=0)
+    critical_vulns: int | None = Field(None, ge=0)
+    high_vulns: int | None = Field(None, ge=0)
+    medium_vulns: int | None = Field(None, ge=0)
+    low_vulns: int | None = Field(None, ge=0)
+    secrets_found: int | None = Field(None, ge=0)
 
     # Compliance metrics
-    gdpr_compliant: Optional[bool] = Field(None)
-    kvkk_compliant: Optional[bool] = Field(None)
-    audit_logs_complete: Optional[bool] = Field(None)
-    pii_encrypted: Optional[bool] = Field(None)
+    gdpr_compliant: bool | None = Field(None)
+    kvkk_compliant: bool | None = Field(None)
+    audit_logs_complete: bool | None = Field(None)
+    pii_encrypted: bool | None = Field(None)
 
 
 class GateResult(BaseModel):
@@ -107,7 +107,7 @@ class GateResult(BaseModel):
 
     # Detailed data
     issues: list[GateIssue] = Field(default_factory=list, description="Issues found")
-    metrics: Optional[GateMetrics] = Field(None, description="Collected metrics")
+    metrics: GateMetrics | None = Field(None, description="Collected metrics")
     details: dict[str, Any] = Field(default_factory=dict, description="Additional details")
 
     # Execution info
@@ -118,7 +118,7 @@ class GateResult(BaseModel):
 
     # Timestamps
     started_at: datetime = Field(default_factory=datetime.utcnow)
-    completed_at: Optional[datetime] = Field(None)
+    completed_at: datetime | None = Field(None)
 
     @property
     def passed(self) -> bool:
@@ -213,18 +213,18 @@ class PipelineResult(BaseModel):
     parallel_execution_used: bool = Field(False, description="Was parallel execution used?")
 
     # Context
-    commit_hash: Optional[str] = Field(None, description="Git commit hash")
-    branch: Optional[str] = Field(None, description="Git branch")
-    triggered_by: Optional[str] = Field(None, description="Who triggered the pipeline")
+    commit_hash: str | None = Field(None, description="Git commit hash")
+    branch: str | None = Field(None, description="Git branch")
+    triggered_by: str | None = Field(None, description="Who triggered the pipeline")
 
     # Timestamps
     started_at: datetime = Field(default_factory=datetime.utcnow)
-    completed_at: Optional[datetime] = Field(None)
+    completed_at: datetime | None = Field(None)
 
     # Override info
     overridden: bool = Field(False, description="Was result overridden?")
-    override_reason: Optional[str] = Field(None, description="Override justification")
-    override_approver: Optional[str] = Field(None, description="Who approved override")
+    override_reason: str | None = Field(None, description="Override justification")
+    override_approver: str | None = Field(None, description="Who approved override")
 
     @property
     def passed(self) -> bool:
@@ -236,7 +236,7 @@ class PipelineResult(BaseModel):
         """Get blocking gate failures."""
         return [g for g in self.gates if not g.passed and g.blocking]
 
-    def get_gate(self, name: str) -> Optional[GateResult]:
+    def get_gate(self, name: str) -> GateResult | None:
         """Get result for specific gate."""
         for gate in self.gates:
             if gate.gate_name == name:
@@ -252,8 +252,8 @@ class OverrideRequest(BaseModel):
     gate_name: str = Field(..., description="Gate to override")
     reason: str = Field(..., min_length=20, description="Justification (min 20 chars)")
     requestor: str = Field(..., description="Who is requesting")
-    ticket_id: Optional[str] = Field(None, description="Related ticket/issue")
-    expires_at: Optional[datetime] = Field(None, description="Override expiration")
+    ticket_id: str | None = Field(None, description="Related ticket/issue")
+    expires_at: datetime | None = Field(None, description="Override expiration")
 
     model_config = ConfigDict(frozen=True)
 
@@ -264,7 +264,7 @@ class OverrideApproval(BaseModel):
     request: OverrideRequest = Field(..., description="Original request")
     approved: bool = Field(..., description="Was it approved?")
     approver: str = Field(..., description="Who approved/denied")
-    comments: Optional[str] = Field(None, description="Approver comments")
+    comments: str | None = Field(None, description="Approver comments")
     approved_at: datetime = Field(default_factory=datetime.utcnow)
 
     model_config = ConfigDict(frozen=True)

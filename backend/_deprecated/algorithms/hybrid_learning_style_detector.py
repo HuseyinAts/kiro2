@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 # import numpy as np  # Lazy import
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from models.learning_style import (
     BehavioralData,
@@ -62,7 +62,7 @@ class HybridLearningStyleDetector:
             "Hibrit Öğrenme Stili Tespit Sistemi başlatıldı - 64 profil kombinasyonu hazır"
         )
 
-    def _generate_hybrid_codes(self) -> Dict[str, Dict[str, Any]]:
+    def _generate_hybrid_codes(self) -> dict[str, dict[str, Any]]:
         """64 farklı hibrit kod kombinasyonu oluştur"""
         codes = {}
 
@@ -121,8 +121,8 @@ class HybridLearningStyleDetector:
     async def detect_hybrid_profile(
         self,
         student_id: str,
-        behavioral_data: List[BehavioralData],
-        questionnaire_responses: List[QuestionnaireResponse],
+        behavioral_data: list[BehavioralData],
+        questionnaire_responses: list[QuestionnaireResponse],
     ) -> HybridLearningProfile:
         """
         64 farklı profil kombinasyonundan birini tespit et
@@ -169,8 +169,8 @@ class HybridLearningStyleDetector:
 
     async def _analyze_vark_preferences(
         self,
-        behavioral_data: List[BehavioralData],
-        questionnaire_responses: List[QuestionnaireResponse],
+        behavioral_data: list[BehavioralData],
+        questionnaire_responses: list[QuestionnaireResponse],
     ) -> VARKProfile:
         """VARK duyusal tercih analizi"""
 
@@ -208,8 +208,8 @@ class HybridLearningStyleDetector:
         )
 
     async def _calculate_vark_behavioral_scores(
-        self, behavioral_data: List[BehavioralData]
-    ) -> Dict[str, float]:
+        self, behavioral_data: list[BehavioralData]
+    ) -> dict[str, float]:
         """Davranışsal veriden VARK skorları hesapla"""
 
         scores = {"visual": 0.0, "auditory": 0.0, "reading": 0.0, "kinesthetic": 0.0}
@@ -271,8 +271,8 @@ class HybridLearningStyleDetector:
         return scores
 
     async def _calculate_vark_questionnaire_scores(
-        self, questionnaire_responses: List[QuestionnaireResponse]
-    ) -> Dict[str, float]:
+        self, questionnaire_responses: list[QuestionnaireResponse]
+    ) -> dict[str, float]:
         """Anket yanıtlarından VARK skorları hesapla"""
 
         scores = {"visual": 0.0, "auditory": 0.0, "reading": 0.0, "kinesthetic": 0.0}
@@ -309,8 +309,8 @@ class HybridLearningStyleDetector:
 
     async def _analyze_felder_dimensions(
         self,
-        behavioral_data: List[BehavioralData],
-        questionnaire_responses: List[QuestionnaireResponse],
+        behavioral_data: list[BehavioralData],
+        questionnaire_responses: list[QuestionnaireResponse],
     ) -> FelderProfile:
         """Felder-Silverman 4 boyut analizi"""
 
@@ -348,8 +348,8 @@ class HybridLearningStyleDetector:
         )
 
     async def _calculate_felder_behavioral_scores(
-        self, behavioral_data: List[BehavioralData]
-    ) -> Dict[str, float]:
+        self, behavioral_data: list[BehavioralData]
+    ) -> dict[str, float]:
         """Davranışsal veriden Felder skorları hesapla"""
 
         scores = {
@@ -443,8 +443,8 @@ class HybridLearningStyleDetector:
         return scores
 
     async def _calculate_felder_questionnaire_scores(
-        self, questionnaire_responses: List[QuestionnaireResponse]
-    ) -> Dict[str, float]:
+        self, questionnaire_responses: list[QuestionnaireResponse]
+    ) -> dict[str, float]:
         """Anket yanıtlarından Felder skorları hesapla"""
 
         scores = {
@@ -521,7 +521,7 @@ class HybridLearningStyleDetector:
 
     def _calculate_confidence(
         self, vark_profile: VARKProfile, felder_profile: FelderProfile, data_points: int
-    ) -> Tuple[float, LearningStyleConfidence]:
+    ) -> tuple[float, LearningStyleConfidence]:
         """Tespit güven seviyesi hesapla"""
 
         # VARK güven hesaplama
@@ -568,7 +568,7 @@ class HybridLearningStyleDetector:
         student_id: str,
         new_behavioral_data: BehavioralData,
         current_profile: HybridLearningProfile,
-    ) -> Optional[HybridLearningProfile]:
+    ) -> HybridLearningProfile | None:
         """Davranışsal veri ile öğrenme stilini güncelle"""
 
         logger.info(f"Öğrenme stili güncelleme kontrolü - Öğrenci: {student_id}")

@@ -3,7 +3,7 @@ Advanced Database Fixtures
 Transaction rollback, async support, test data isolation
 """
 
-from typing import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
@@ -13,7 +13,6 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool, StaticPool
 
 from models.base import Base
-
 
 # ==================== SYNC DATABASE FIXTURES ====================
 
@@ -324,4 +323,3 @@ def reset_db_state():
 
     # Cleanup any lingering connections
     # This is handled by fixture teardown
-    pass

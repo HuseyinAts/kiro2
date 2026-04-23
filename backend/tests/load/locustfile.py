@@ -17,7 +17,8 @@ Run headless (CI/CD):
 import random
 import time
 from datetime import datetime
-from locust import HttpUser, task, between, events
+
+from locust import HttpUser, between, events, task
 
 
 class VideoRecommendationUser(HttpUser):
@@ -125,7 +126,7 @@ class VideoRecommendationUser(HttpUser):
                         response.failure("No videos returned")
 
                 except Exception as e:
-                    response.failure(f"Response parsing error: {str(e)}")
+                    response.failure(f"Response parsing error: {e!s}")
 
             elif response.status_code == 429:
                 response.failure("Rate limit exceeded")
@@ -178,7 +179,7 @@ class VideoRecommendationUser(HttpUser):
                 if response.status_code == 200:
                     response.success()
                     return
-                elif response.status_code == 429:
+                if response.status_code == 429:
                     retry_count += 1
                     if retry_count <= max_retries:
                         time.sleep(2**retry_count)  # Exponential backoff
@@ -537,4 +538,3 @@ def track_video_api_metrics(
     """
     # Custom metrics can be collected here
     # In production, use Prometheus or similar for detailed metrics
-    pass

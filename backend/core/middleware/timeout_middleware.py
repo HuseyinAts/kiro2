@@ -10,12 +10,13 @@ Different endpoints have different timeout requirements:
 """
 
 import asyncio
+import logging
 import time
-from typing import Callable
+from collections.abc import Callable
+
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +119,7 @@ class TimeoutMiddleware(BaseHTTPMiddleware):
 
             return response
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Request exceeded timeout
             process_time = time.time() - start_time
 
@@ -148,7 +149,7 @@ class TimeoutMiddleware(BaseHTTPMiddleware):
 
         except Exception as e:
             # Other errors - log and re-raise
-            logger.error(f"Error processing request: {request.method} {request.url.path}: {str(e)}")
+            logger.error(f"Error processing request: {request.method} {request.url.path}: {e!s}")
             raise
 
 

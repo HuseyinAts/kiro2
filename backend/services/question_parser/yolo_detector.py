@@ -1,11 +1,11 @@
-import torch
+import logging
+from dataclasses import dataclass
+from pathlib import Path
+
 import cv2
 import numpy as np
-from pathlib import Path
-from typing import List, Tuple, Optional
-from dataclasses import dataclass
+import torch
 from ultralytics import YOLO
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +14,8 @@ class DetectionResult:
     """Tespit edilen nesne için sonuç sınıfı"""
     label: str
     confidence: float
-    bbox: Tuple[int, int, int, int]  # x1, y1, x2, y2
-    cropped_image: Optional[np.ndarray] = None
+    bbox: tuple[int, int, int, int]  # x1, y1, x2, y2
+    cropped_image: np.ndarray | None = None
 
 class YKSQuestionDetector:
     """
@@ -106,7 +106,7 @@ class YKSQuestionDetector:
 
         return tiles, positions
 
-    def detect_objects(self, image_path: str, use_tiling: bool = True) -> List[DetectionResult]:
+    def detect_objects(self, image_path: str, use_tiling: bool = True) -> list[DetectionResult]:
         """
         Görüntüde nesneleri tespit et
 
@@ -191,7 +191,7 @@ class YKSQuestionDetector:
 
         return all_detections
 
-    def apply_nms(self, detections: List[DetectionResult], iou_threshold: float = 0.5) -> List[DetectionResult]:
+    def apply_nms(self, detections: list[DetectionResult], iou_threshold: float = 0.5) -> list[DetectionResult]:
         """
         Non-Maximum Suppression uygula
         """
@@ -225,7 +225,7 @@ class YKSQuestionDetector:
 
         return final_detections
 
-    def calculate_iou(self, box1: Tuple, box2: Tuple) -> float:
+    def calculate_iou(self, box1: tuple, box2: tuple) -> float:
         """IoU hesapla"""
         x1_min, y1_min, x1_max, y1_max = box1
         x2_min, y2_min, x2_max, y2_max = box2
@@ -248,7 +248,7 @@ class YKSQuestionDetector:
 
         return inter_area / union_area if union_area > 0 else 0.0
 
-    def crop_detections(self, image_path: str, detections: List[DetectionResult]) -> List[DetectionResult]:
+    def crop_detections(self, image_path: str, detections: list[DetectionResult]) -> list[DetectionResult]:
         """
         Tespit edilen bölgeleri kırp
         """

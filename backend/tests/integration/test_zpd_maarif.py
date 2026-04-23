@@ -18,8 +18,6 @@ from models.zpd_maarif import (
 )
 from services.zpd_maarif_service import ZPDMaarifService
 
-
-
 pytestmark = pytest.mark.skipif(
     True,
     reason="ZPD Maarif parameters changed, 1/26 fail",

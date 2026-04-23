@@ -8,11 +8,10 @@ from __future__ import annotations
 
 import re
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
-from .models.enums import SeverityLevel, PatternType
-from .models.detection_result import DetectionResult, DetectorConfig
 from .config.patterns import REMEDIATION_SUGGESTIONS
+from .models.detection_result import DetectionResult, DetectorConfig
+from .models.enums import PatternType, SeverityLevel
 
 
 class BaseDetector(ABC):
@@ -31,7 +30,7 @@ class BaseDetector(ABC):
     default_severity: SeverityLevel = SeverityLevel.CRITICAL
     name: str = "BaseDetector"
 
-    def __init__(self, config: Optional[DetectorConfig] = None):
+    def __init__(self, config: DetectorConfig | None = None):
         """
         Initialize detector with optional configuration.
 
@@ -40,7 +39,7 @@ class BaseDetector(ABC):
                    default configuration will be used.
         """
         self.config = config or DetectorConfig()
-        self._compiled_patterns: List[re.Pattern] = []
+        self._compiled_patterns: list[re.Pattern] = []
         self._compile_patterns()
 
     def _compile_patterns(self) -> None:
@@ -60,21 +59,20 @@ class BaseDetector(ABC):
                 continue
 
     @abstractmethod
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """
         Get regex patterns for this detector.
 
         Returns:
             List of regex pattern strings
         """
-        pass
 
     @abstractmethod
     async def detect(
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect reward hacking patterns in file content.
 
@@ -85,7 +83,6 @@ class BaseDetector(ABC):
         Returns:
             List of DetectionResult objects for each detection
         """
-        pass
 
     def _is_in_exception(self, line: str, line_num: int, content: str) -> bool:
         """
@@ -129,7 +126,7 @@ class BaseDetector(ABC):
         code_snippet: str,
         message: str,
         confidence: float = 0.95,
-        column_number: Optional[int] = None
+        column_number: int | None = None
     ) -> DetectionResult:
         """
         Create a DetectionResult object.
@@ -165,7 +162,7 @@ class BaseDetector(ABC):
         file_path: str,
         content: str,
         message_template: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Perform regex-based detection using compiled patterns.
 
@@ -177,7 +174,7 @@ class BaseDetector(ABC):
         Returns:
             List of DetectionResult objects
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         for pattern in self._compiled_patterns:
             for match in pattern.finditer(content):

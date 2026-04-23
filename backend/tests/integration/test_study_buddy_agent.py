@@ -369,7 +369,7 @@ async def test_error_handling_and_recovery(agent):
         "agents.study_buddy_agent.llm_service.generate_for_education",
         new_callable=AsyncMock,
     ) as mock_llm:
-        mock_llm.side_effect = asyncio.TimeoutError()
+        mock_llm.side_effect = TimeoutError()
 
         summary = await agent.summarize_content("test", max_length=50)
         assert summary == "" or "Error" in summary

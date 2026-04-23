@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -41,11 +40,11 @@ class GateSeverityEnum(str, Enum):
 class RunPipelineRequest(BaseModel):
     """Request to run quality gates pipeline."""
 
-    working_dir: Optional[str] = Field(
+    working_dir: str | None = Field(
         None,
         description="Working directory path. Uses current dir if not specified.",
     )
-    gates: Optional[list[str]] = Field(
+    gates: list[str] | None = Field(
         None,
         description="Specific gates to run. Runs all if not specified.",
     )
@@ -91,11 +90,11 @@ class OverrideRequestSchema(BaseModel):
         min_length=20,
         description="Justification for override (min 20 chars).",
     )
-    ticket_id: Optional[str] = Field(
+    ticket_id: str | None = Field(
         None,
         description="Related ticket/issue ID.",
     )
-    expires_hours: Optional[int] = Field(
+    expires_hours: int | None = Field(
         24,
         gt=0,
         le=168,
@@ -116,7 +115,7 @@ class ApproveOverrideRequest(BaseModel):
     """Request to approve an override."""
 
     override_id: str = Field(..., description="Override request ID to approve.")
-    comments: Optional[str] = Field(None, description="Approver comments.")
+    comments: str | None = Field(None, description="Approver comments.")
 
 
 # ==================== RESPONSE SCHEMAS ====================
@@ -126,43 +125,43 @@ class GateIssueResponse(BaseModel):
     """Single issue found by a gate."""
 
     file: str
-    line: Optional[int] = None
-    column: Optional[int] = None
+    line: int | None = None
+    column: int | None = None
     rule: str
     message: str
     severity: GateSeverityEnum
-    suggestion: Optional[str] = None
+    suggestion: str | None = None
 
 
 class GateMetricsResponse(BaseModel):
     """Metrics collected by a gate."""
 
     # Code quality metrics
-    lint_score: Optional[float] = None
-    type_coverage: Optional[float] = None
-    complexity_avg: Optional[float] = None
-    docstring_coverage: Optional[float] = None
-    duplication_percent: Optional[float] = None
+    lint_score: float | None = None
+    type_coverage: float | None = None
+    complexity_avg: float | None = None
+    docstring_coverage: float | None = None
+    duplication_percent: float | None = None
 
     # Test coverage metrics
-    line_coverage: Optional[float] = None
-    branch_coverage: Optional[float] = None
-    function_coverage: Optional[float] = None
+    line_coverage: float | None = None
+    branch_coverage: float | None = None
+    function_coverage: float | None = None
 
     # Performance metrics
-    p50_ms: Optional[float] = None
-    p95_ms: Optional[float] = None
-    p99_ms: Optional[float] = None
+    p50_ms: float | None = None
+    p95_ms: float | None = None
+    p99_ms: float | None = None
 
     # Security metrics
-    critical_vulns: Optional[int] = None
-    high_vulns: Optional[int] = None
-    secrets_found: Optional[int] = None
+    critical_vulns: int | None = None
+    high_vulns: int | None = None
+    secrets_found: int | None = None
 
     # Architecture metrics
-    circular_deps_count: Optional[int] = None
-    coupling_score: Optional[float] = None
-    cohesion_score: Optional[float] = None
+    circular_deps_count: int | None = None
+    coupling_score: float | None = None
+    cohesion_score: float | None = None
 
 
 class GateResultResponse(BaseModel):
@@ -175,7 +174,7 @@ class GateResultResponse(BaseModel):
     message: str
     issues_count: int
     issues: list[GateIssueResponse] = Field(default_factory=list)
-    metrics: Optional[GateMetricsResponse] = None
+    metrics: GateMetricsResponse | None = None
     execution_time_ms: float
     blocking: bool
     passed: bool
@@ -194,11 +193,11 @@ class PipelineResultResponse(BaseModel):
     gates: list[GateResultResponse]
     total_execution_time_ms: float
     parallel_execution_used: bool
-    commit_hash: Optional[str] = None
-    branch: Optional[str] = None
-    triggered_by: Optional[str] = None
+    commit_hash: str | None = None
+    branch: str | None = None
+    triggered_by: str | None = None
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     passed: bool
 
 
@@ -234,9 +233,9 @@ class OverrideResponse(BaseModel):
     gate_name: str
     reason: str
     requestor: str
-    ticket_id: Optional[str] = None
+    ticket_id: str | None = None
     status: str  # pending, approved, denied, expired
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     created_at: datetime
 
 
@@ -246,7 +245,7 @@ class OverrideApprovalResponse(BaseModel):
     override_id: str
     approved: bool
     approver: str
-    comments: Optional[str] = None
+    comments: str | None = None
     approved_at: datetime
 
 
@@ -259,11 +258,11 @@ class RunHistoryResponse(BaseModel):
     passed_gates: int
     failed_gates: int
     execution_time_ms: float
-    commit_hash: Optional[str] = None
-    branch: Optional[str] = None
-    triggered_by: Optional[str] = None
+    commit_hash: str | None = None
+    branch: str | None = None
+    triggered_by: str | None = None
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
 
 class PipelineHistoryResponse(BaseModel):
@@ -282,6 +281,6 @@ class QualityGatesErrorResponse(BaseModel):
     """Error response for quality gates API."""
 
     error: str
-    detail: Optional[str] = None
-    gate_name: Optional[str] = None
+    detail: str | None = None
+    gate_name: str | None = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)

@@ -3,16 +3,17 @@ Create AI Training Data from ÖSYM Questions
 Formats ÖSYM questions for AI fine-tuning and prompt engineering
 """
 import asyncio
-import asyncpg
 import json
-from pathlib import Path
 import sys
-from typing import List, Dict
+from pathlib import Path
+
+import asyncpg
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.config import settings
 import re
+
+from core.config import settings
 
 
 class AITrainingDataGenerator:
@@ -23,7 +24,7 @@ class AITrainingDataGenerator:
         self.output_dir = Path("C:/Users/husey/kiro2/backend/ai_training_data")
         self.output_dir.mkdir(exist_ok=True)
 
-    def parse_database_url(self, url: str) -> Dict[str, any]:
+    def parse_database_url(self, url: str) -> dict[str, any]:
         """Parse PostgreSQL connection URL"""
         pattern = r"postgresql\+?.*://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)"
         match = re.match(pattern, url)
@@ -59,7 +60,7 @@ class AITrainingDataGenerator:
             await self.conn.close()
             print("\n[OK] Database connection closed")
 
-    async def fetch_osym_questions(self) -> List[Dict]:
+    async def fetch_osym_questions(self) -> list[dict]:
         """Fetch all ÖSYM questions from database"""
 
         query = """
@@ -94,7 +95,7 @@ class AITrainingDataGenerator:
         print(f"Fetched {len(questions)} ÖSYM questions\n")
         return questions
 
-    def create_openai_format(self, questions: List[Dict]) -> List[Dict]:
+    def create_openai_format(self, questions: list[dict]) -> list[dict]:
         """
         Create OpenAI fine-tuning format (JSONL)
         Format: {"messages": [{"role": "system"}, {"role": "user"}, {"role": "assistant"}]}
@@ -147,7 +148,7 @@ Dogru Cevap: {q['correct_answer']}"""
 
         return training_data
 
-    def save_training_data(self, questions: List[Dict]):
+    def save_training_data(self, questions: list[dict]):
         """Save training data in multiple formats"""
 
         print("\n" + "=" * 80)

@@ -9,16 +9,16 @@ Date: 2025-10-19 (Updated: 2026-01-16)
 # Core imports (no dependencies)
 from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
 from services.llm.multi_llm_config import (
-    LLMProvider,
     LLMCapability,
     LLMModelConfig,
+    LLMProvider,
     MultiLLMConfig,
 )
 from services.llm.sequential_thinking_mixin import (
-    SequentialThinkingMixin,
     ReasoningResult,
     ReasoningStep,
     ReasoningStepType,
+    SequentialThinkingMixin,
 )
 
 
@@ -48,7 +48,7 @@ def get_gemini_provider():
 
 
 def get_ensemble_manager():
-    from services.llm.ensemble_manager import MultiLLMEnsembleManager, EnsembleStrategy
+    from services.llm.ensemble_manager import EnsembleStrategy, MultiLLMEnsembleManager
 
     return MultiLLMEnsembleManager, EnsembleStrategy
 

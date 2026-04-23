@@ -6,7 +6,7 @@ Türkiye Üniversite Sınavları Hazırlık Platformu için veli takip sistemi
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_user, get_db, AuthenticatedUser, UserRole
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user, get_db
 from models.parent import (
     ChildPerformanceData,
     ParentChildRelationCreate,

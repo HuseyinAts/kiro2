@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -37,15 +37,15 @@ class FeedbackRecord(BaseModel):
 
     id: UUID = Field(default_factory=uuid4)
     task_id: str = Field(..., description="İlgili task ID'si")
-    rule_id: Optional[str] = Field(None, description="CLAUDE.md rule ID'si")
+    rule_id: str | None = Field(None, description="CLAUDE.md rule ID'si")
     feedback_type: FeedbackType = Field(..., description="Feedback türü")
     outcome: OutcomeType = Field(..., description="Task sonucu")
 
     # Explicit feedback alanları
-    rating: Optional[int] = Field(
+    rating: int | None = Field(
         None, ge=1, le=5, description="Kullanıcı puanı (1-5)"
     )
-    comment: Optional[str] = Field(None, description="Kullanıcı yorumu")
+    comment: str | None = Field(None, description="Kullanıcı yorumu")
 
     # Implicit feedback alanları
     retry_count: int = Field(default=0, description="Yeniden deneme sayısı")
@@ -53,15 +53,15 @@ class FeedbackRecord(BaseModel):
     execution_time: float = Field(default=0.0, description="Çalışma süresi (s)")
 
     # Automatic feedback alanları
-    test_passed: Optional[bool] = Field(None, description="Test sonucu")
-    lint_passed: Optional[bool] = Field(None, description="Lint sonucu")
-    type_check_passed: Optional[bool] = Field(None, description="Type check sonucu")
+    test_passed: bool | None = Field(None, description="Test sonucu")
+    lint_passed: bool | None = Field(None, description="Lint sonucu")
+    type_check_passed: bool | None = Field(None, description="Type check sonucu")
 
     # Metadata
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    session_id: Optional[str] = Field(None, description="Claude Code session ID")
-    agent_type: Optional[str] = Field(None, description="Agent türü")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Ek bağlam")
+    session_id: str | None = Field(None, description="Claude Code session ID")
+    agent_type: str | None = Field(None, description="Agent türü")
+    context: dict[str, Any] = Field(default_factory=dict, description="Ek bağlam")
 
     # Pydantic v2 automatically serializes datetime and UUID
     model_config = ConfigDict()
@@ -136,7 +136,7 @@ class ImprovementTrigger(BaseModel):
     improvement_target: float = Field(default=0.8, description="Hedef skor")
 
     # Önerilen aksiyonlar
-    suggested_actions: List[str] = Field(
+    suggested_actions: list[str] = Field(
         default_factory=list, description="Önerilen aksiyonlar"
     )
     priority: int = Field(default=1, ge=1, le=5, description="Öncelik (1=en yüksek)")
@@ -144,7 +144,7 @@ class ImprovementTrigger(BaseModel):
     # Durum
     triggered_at: datetime = Field(default_factory=datetime.utcnow)
     processed: bool = Field(default=False)
-    processed_at: Optional[datetime] = None
+    processed_at: datetime | None = None
 
     # Pydantic v2 automatically serializes datetime and UUID
     model_config = ConfigDict()
@@ -164,10 +164,10 @@ class PatternInfo(BaseModel):
     )
 
     # İlişkili kurallar
-    related_rules: List[str] = Field(
+    related_rules: list[str] = Field(
         default_factory=list, description="İlişkili kural ID'leri"
     )
-    recommendation: Optional[str] = Field(None, description="Öneri")
+    recommendation: str | None = Field(None, description="Öneri")
 
     detected_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -178,17 +178,17 @@ class ExitCodeResult(BaseModel):
     exit_code: int = Field(..., description="Exit code (0=success, 2=blocking)")
     message: str = Field(..., description="Sonuç mesajı")
     blocking: bool = Field(default=False, description="Claude'a geri beslenir mi")
-    details: Dict[str, Any] = Field(default_factory=dict)
+    details: dict[str, Any] = Field(default_factory=dict)
 
     @classmethod
-    def success(cls, message: str = "İşlem başarılı") -> "ExitCodeResult":
+    def success(cls, message: str = "İşlem başarılı") -> ExitCodeResult:
         """Başarılı sonuç oluştur."""
         return cls(exit_code=0, message=message, blocking=False)
 
     @classmethod
     def blocking_error(
-        cls, message: str, details: Optional[Dict[str, Any]] = None
-    ) -> "ExitCodeResult":
+        cls, message: str, details: dict[str, Any] | None = None
+    ) -> ExitCodeResult:
         """Blocking hata oluştur (Exit Code 2)."""
         return cls(
             exit_code=2,

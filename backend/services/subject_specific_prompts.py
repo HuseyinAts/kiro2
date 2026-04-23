@@ -5,7 +5,6 @@ Based on research: DERS_BAZLI_SORU_ANALIZI.md
 Implements subject-specific characteristics for each TYT/AYT subject
 """
 
-from typing import Dict, List, Optional
 
 
 class SubjectConfig:
@@ -16,9 +15,9 @@ class SubjectConfig:
         subject: str,
         target_length: int,
         length_tolerance: float = 0.30,  # ±30% default (relaxed from 15%)
-        bloom_preferences: Dict[str, float] = None,
-        common_misconceptions: List[str] = None,
-        question_style_notes: List[str] = None,
+        bloom_preferences: dict[str, float] = None,
+        common_misconceptions: list[str] = None,
+        question_style_notes: list[str] = None,
         formula_based: bool = False,
         scenario_based: bool = False,
     ):
@@ -193,7 +192,7 @@ TURKCE_CONFIG = SubjectConfig(
 
 
 # Configuration registry
-SUBJECT_CONFIGS: Dict[str, SubjectConfig] = {
+SUBJECT_CONFIGS: dict[str, SubjectConfig] = {
     "Kimya": KIMYA_CONFIG,
     "Matematik": MATEMATIK_CONFIG,
     "Fizik": FIZIK_CONFIG,
@@ -202,7 +201,7 @@ SUBJECT_CONFIGS: Dict[str, SubjectConfig] = {
 }
 
 
-def get_subject_config(subject: str) -> Optional[SubjectConfig]:
+def get_subject_config(subject: str) -> SubjectConfig | None:
     """Get configuration for a subject"""
     return SUBJECT_CONFIGS.get(subject)
 
@@ -331,7 +330,7 @@ def get_enhanced_prompt(subject: str, base_prompt: str, exam_type: str = "TYT") 
 
 
 # Statistics for monitoring
-def get_subject_statistics() -> Dict:
+def get_subject_statistics() -> dict:
     """Get statistics about subject configurations"""
 
     stats = {

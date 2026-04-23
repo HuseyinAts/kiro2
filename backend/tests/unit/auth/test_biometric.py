@@ -4,17 +4,18 @@ Biometric Authentication Unit Tests - KIRO2 Auth Enhancement
 Task 5.2 gereksinimlerini karsilar.
 """
 
+from datetime import UTC, datetime
+
 import pytest
-from datetime import datetime, timezone
 
 from core.biometric_auth_service import (
     BiometricAuthService,
+    BiometricError,
+    BiometricStrength,
+    BiometricType,
+    ChallengeResponse,
     DeviceInfo,
     DevicePlatform,
-    BiometricType,
-    BiometricStrength,
-    BiometricError,
-    ChallengeResponse,
 )
 
 
@@ -133,7 +134,7 @@ class TestChallengeGeneration:
         assert challenge.id.startswith("bio_")
         assert challenge.user_id == 123
         assert len(challenge.challenge_bytes) > 20
-        assert challenge.expires_at > datetime.now(timezone.utc)
+        assert challenge.expires_at > datetime.now(UTC)
 
     @pytest.mark.asyncio
     async def test_challenge_unique_ids(

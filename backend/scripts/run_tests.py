@@ -2,9 +2,9 @@
 """
 Test runner script for CI/CD pipeline
 """
+import os
 import subprocess
 import sys
-import os
 from pathlib import Path
 
 
@@ -97,12 +97,11 @@ def main():
     if success_count == total_stages:
         print("🎉 All tests passed!")
         return 0
-    elif success_count >= total_stages * 0.7:  # 70% success rate
+    if success_count >= total_stages * 0.7:  # 70% success rate
         print("⚠️  Most tests passed, but some issues remain")
         return 1
-    else:
-        print("❌ Many tests failed, needs attention")
-        return 2
+    print("❌ Many tests failed, needs attention")
+    return 2
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ Provides:
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import and_, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -50,7 +50,7 @@ class LearningPathRepository(BaseRepository[LearningPath]):
 
     async def get_by_student_id(
         self, student_id: str
-    ) -> Optional[LearningPath]:
+    ) -> LearningPath | None:
         """
         Get the most recent learning path for a student.
 
@@ -73,13 +73,13 @@ class LearningPathRepository(BaseRepository[LearningPath]):
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
             logger.error(
-                f"Error getting learning path for student {student_id}: {str(e)}"
+                f"Error getting learning path for student {student_id}: {e!s}"
             )
             raise
 
     async def get_active_paths(
         self, student_id: str
-    ) -> List[LearningPath]:
+    ) -> list[LearningPath]:
         """
         Get all active learning paths for a student.
 
@@ -109,13 +109,13 @@ class LearningPathRepository(BaseRepository[LearningPath]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             logger.error(
-                f"Error getting active paths for student {student_id}: {str(e)}"
+                f"Error getting active paths for student {student_id}: {e!s}"
             )
             raise
 
     async def get_with_progress(
         self, path_id: str
-    ) -> Optional[LearningPath]:
+    ) -> LearningPath | None:
         """
         Get learning path with eager-loaded relationships.
 
@@ -149,13 +149,13 @@ class LearningPathRepository(BaseRepository[LearningPath]):
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
             logger.error(
-                f"Error getting learning path {path_id} with progress: {str(e)}"
+                f"Error getting learning path {path_id} with progress: {e!s}"
             )
             raise
 
     async def get_by_student_and_subject(
         self, student_id: str, subject: str
-    ) -> List[LearningPath]:
+    ) -> list[LearningPath]:
         """
         Get all learning paths for a student filtered by subject.
 
@@ -183,7 +183,7 @@ class LearningPathRepository(BaseRepository[LearningPath]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             logger.error(
-                f"Error getting paths for student {student_id}, subject {subject}: {str(e)}"
+                f"Error getting paths for student {student_id}, subject {subject}: {e!s}"
             )
             raise
 
@@ -192,7 +192,7 @@ class LearningPathRepository(BaseRepository[LearningPath]):
         path_id: str,
         completed_modules: int,
         completed_topics: int,
-    ) -> Optional[LearningPath]:
+    ) -> LearningPath | None:
         """
         Update learning path progress and calculate overall percentage.
 
@@ -228,7 +228,7 @@ class LearningPathRepository(BaseRepository[LearningPath]):
                 overall_progress=overall_progress,
             )
         except SQLAlchemyError as e:
-            logger.error(f"Error updating progress for path {path_id}: {str(e)}")
+            logger.error(f"Error updating progress for path {path_id}: {e!s}")
             raise
 
 
@@ -326,13 +326,13 @@ class StudentProfileRepository(BaseRepository[LearningPathStudentProfile]):
             return profile, True
 
         except SQLAlchemyError as e:
-            logger.error(f"Error in get_or_create for student {student_id}: {str(e)}")
+            logger.error(f"Error in get_or_create for student {student_id}: {e!s}")
             await self.session.rollback()
             raise
 
     async def get_by_student_id(
         self, student_id: str
-    ) -> Optional[LearningPathStudentProfile]:
+    ) -> LearningPathStudentProfile | None:
         """
         Get student profile by student ID.
 
@@ -349,7 +349,7 @@ class StudentProfileRepository(BaseRepository[LearningPathStudentProfile]):
 
     async def get_with_learning_paths(
         self, student_id: str
-    ) -> Optional[LearningPathStudentProfile]:
+    ) -> LearningPathStudentProfile | None:
         """
         Get student profile with all learning paths eager-loaded.
 
@@ -371,19 +371,19 @@ class StudentProfileRepository(BaseRepository[LearningPathStudentProfile]):
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
             logger.error(
-                f"Error getting profile with paths for student {student_id}: {str(e)}"
+                f"Error getting profile with paths for student {student_id}: {e!s}"
             )
             raise
 
     async def update_learning_preferences(
         self,
         student_id: str,
-        learning_style: Optional[str] = None,
-        knowledge_level: Optional[str] = None,
-        interests: Optional[List[str]] = None,
-        goals: Optional[List[str]] = None,
-        available_time: Optional[int] = None,
-    ) -> Optional[LearningPathStudentProfile]:
+        learning_style: str | None = None,
+        knowledge_level: str | None = None,
+        interests: list[str] | None = None,
+        goals: list[str] | None = None,
+        available_time: int | None = None,
+    ) -> LearningPathStudentProfile | None:
         """
         Update student's learning preferences.
 
@@ -409,7 +409,7 @@ class StudentProfileRepository(BaseRepository[LearningPathStudentProfile]):
                 return None
 
             # Build update dict with only provided values
-            update_data: Dict[str, Any] = {}
+            update_data: dict[str, Any] = {}
             if learning_style is not None:
                 update_data["learning_style"] = learning_style
             if knowledge_level is not None:
@@ -442,7 +442,7 @@ class StudentProfileRepository(BaseRepository[LearningPathStudentProfile]):
 
         except SQLAlchemyError as e:
             logger.error(
-                f"Error updating preferences for student {student_id}: {str(e)}"
+                f"Error updating preferences for student {student_id}: {e!s}"
             )
             await self.session.rollback()
             raise

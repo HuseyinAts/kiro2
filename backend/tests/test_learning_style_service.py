@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Test - Hibrit Ogrenme Stili Servisi
 64 farkli ogrenme profili kombinasyonu testleri
 """
 
 import pytest
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

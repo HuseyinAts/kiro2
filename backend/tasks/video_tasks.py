@@ -8,7 +8,8 @@ Low-priority video tasks:
 - Cache warming
 - Metadata extraction
 """
-from typing import Dict, Any
+from typing import Any
+
 from core.celery_app import celery_app
 from core.structured_logger import get_logger
 
@@ -22,7 +23,7 @@ logger = get_logger(__name__)
 )
 def process_video_upload(
     self, video_id: str, video_url: str, user_id: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Process uploaded video (transcoding, thumbnails, metadata)
 
@@ -71,7 +72,7 @@ def process_video_upload(
 )
 def generate_video_thumbnail(
     self, video_id: str, video_url: str, timestamp_seconds: int = 5
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate video thumbnail at specific timestamp
 
@@ -105,7 +106,7 @@ def generate_video_thumbnail(
 
 
 @celery_app.task(bind=True, name="tasks.video_tasks.refresh_popular_video_cache")
-def refresh_popular_video_cache(self) -> Dict[str, Any]:
+def refresh_popular_video_cache(self) -> dict[str, Any]:
     """
     Refresh cache for popular videos (scheduled task)
 
@@ -141,7 +142,7 @@ def refresh_popular_video_cache(self) -> Dict[str, Any]:
 )
 def extract_video_subtitles(
     self, video_id: str, video_url: str, language: str = "tr"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Extract or generate subtitles for video
 

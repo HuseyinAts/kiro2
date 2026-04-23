@@ -286,7 +286,7 @@ class TestStudyBuddyAgent:
     @pytest.mark.asyncio
     async def test_generate_quiz_review(self, agent):
         """Test quiz review generation"""
-        from agents.study_buddy_agent import Quiz, Question
+        from agents.study_buddy_agent import Question, Quiz
 
         question = Question(
             question_id="q1",

@@ -5,9 +5,9 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 Backend çalışmadan da çalıştırılabilir - dosya bazlı kontroller
 """
 import json
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any
+from pathlib import Path
+from typing import Any
 
 
 class QuickHealthCheck:
@@ -17,7 +17,7 @@ class QuickHealthCheck:
         self.backend_path = Path(__file__).parent
         self.results = []
 
-    def check_api_files(self) -> Dict[str, Any]:
+    def check_api_files(self) -> dict[str, Any]:
         """API dosyalarının varlığını kontrol et"""
         api_dir = self.backend_path / "api"
 
@@ -85,7 +85,7 @@ class QuickHealthCheck:
             "score": int((len(existing) / len(critical_apis)) * 100),
         }
 
-    def check_core_services(self) -> Dict[str, Any]:
+    def check_core_services(self) -> dict[str, Any]:
         """Core servis dosyalarını kontrol et"""
         core_dir = self.backend_path / "core"
 
@@ -137,7 +137,7 @@ class QuickHealthCheck:
             "score": int((len(existing) / len(critical_services)) * 100),
         }
 
-    def check_ai_agents(self) -> Dict[str, Any]:
+    def check_ai_agents(self) -> dict[str, Any]:
         """AI agent dosyalarını kontrol et"""
         agents_dir = self.backend_path / "agents"
 
@@ -173,7 +173,7 @@ class QuickHealthCheck:
             else 0,
         }
 
-    def check_services(self) -> Dict[str, Any]:
+    def check_services(self) -> dict[str, Any]:
         """Servis dosyalarını kontrol et"""
         services_dir = self.backend_path / "services"
 
@@ -208,7 +208,7 @@ class QuickHealthCheck:
             else 0,
         }
 
-    def check_integrations(self) -> Dict[str, Any]:
+    def check_integrations(self) -> dict[str, Any]:
         """Entegrasyon dosyalarını kontrol et"""
         integrations_dir = self.backend_path / "integrations"
 
@@ -243,7 +243,7 @@ class QuickHealthCheck:
             else 0,
         }
 
-    def check_environment_config(self) -> Dict[str, Any]:
+    def check_environment_config(self) -> dict[str, Any]:
         """Environment konfigürasyonunu kontrol et"""
         env_file = self.backend_path / ".env"
 
@@ -259,7 +259,7 @@ class QuickHealthCheck:
         missing = []
 
         if env_file.exists():
-            with open(env_file, "r", encoding="utf-8") as f:
+            with open(env_file, encoding="utf-8") as f:
                 env_content = f.read()
 
             for var in critical_vars:
@@ -283,7 +283,7 @@ class QuickHealthCheck:
             "score": int((len(configured) / len(critical_vars)) * 100),
         }
 
-    def check_test_coverage(self) -> Dict[str, Any]:
+    def check_test_coverage(self) -> dict[str, Any]:
         """Test coverage durumunu kontrol et"""
         coverage_files = [
             self.backend_path / "coverage.json",
@@ -294,10 +294,10 @@ class QuickHealthCheck:
         for coverage_file in coverage_files:
             if coverage_file.exists():
                 try:
-                    with open(coverage_file, "r", encoding="utf-8") as f:
+                    with open(coverage_file, encoding="utf-8") as f:
                         latest_coverage = json.load(f)
                     break
-                except (json.JSONDecodeError, OSError, IOError):
+                except (json.JSONDecodeError, OSError):
                     continue
 
         if latest_coverage and "totals" in latest_coverage:
@@ -310,16 +310,15 @@ class QuickHealthCheck:
                 "score": int(coverage_percent),
                 "message": f"Test coverage: {coverage_percent:.1f}%",
             }
-        else:
-            return {
-                "category": "Test Coverage",
-                "coverage_percent": 0,
-                "status": "WARNING",
-                "score": 0,
-                "message": "Coverage data not found",
-            }
+        return {
+            "category": "Test Coverage",
+            "coverage_percent": 0,
+            "status": "WARNING",
+            "score": 0,
+            "message": "Coverage data not found",
+        }
 
-    def check_documentation(self) -> Dict[str, Any]:
+    def check_documentation(self) -> dict[str, Any]:
         """Dokümantasyon dosyalarını kontrol et"""
         docs_dir = self.backend_path / "docs"
 
@@ -354,7 +353,7 @@ class QuickHealthCheck:
             else 0,
         }
 
-    def run_all_checks(self) -> Dict[str, Any]:
+    def run_all_checks(self) -> dict[str, Any]:
         """Tüm kontrolleri çalıştır"""
         print("\n" + "=" * 80)
         print("🏥 PLATFORM SAĞLIK KONTROLÜ")

@@ -30,7 +30,7 @@ class TestUnifiedSessionSystem:
     def test_session_enums_import(self):
         """Test: Can import session enums"""
         try:
-            from core.unified.session_system import SessionStatus, TokenType, DeviceType
+            from core.unified.session_system import DeviceType, SessionStatus, TokenType
 
             assert SessionStatus is not None
             assert TokenType is not None

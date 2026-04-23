@@ -16,8 +16,6 @@ from models import (
 )
 from services.user_service import KullaniciServisi
 
-
-
 pytestmark = pytest.mark.skipif(
     True,
     reason="UserService API changed, 4F + 6E",

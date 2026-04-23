@@ -8,7 +8,9 @@ Requirements: REQ-4.1, REQ-4.2, REQ-4.6
 """
 
 import hashlib
-from hypothesis import given, settings, strategies as st
+
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 
 def generate_etag(content: bytes, weak: bool = False) -> str:

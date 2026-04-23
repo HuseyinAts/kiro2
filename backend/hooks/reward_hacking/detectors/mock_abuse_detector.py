@@ -7,15 +7,14 @@ Validates: Requirements 5.1, 5.2, 5.3, 5.4, 5.5, 5.6
 from __future__ import annotations
 
 import re
-from typing import List
 
-from ..base_detector import BaseDetector
-from ..models.enums import SeverityLevel, PatternType
-from ..models.detection_result import DetectionResult
 from ..analyzers.ast_analyzer import ASTAnalyzer
 from ..analyzers.context_analyzer import ContextAnalyzer
+from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
 from ..exceptions import ASTParseError
+from ..models.detection_result import DetectionResult
+from ..models.enums import PatternType, SeverityLevel
 
 
 class MockAbuseDetector(BaseDetector):
@@ -36,7 +35,7 @@ class MockAbuseDetector(BaseDetector):
     # Threshold for mock abuse
     MOCK_RATIO_THRESHOLD = 0.8  # 80%
 
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """Get regex patterns for mock abuse detection."""
         return REWARD_HACKING_PATTERNS.get("mock_abuse", [])
 
@@ -44,7 +43,7 @@ class MockAbuseDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect mock abuse patterns.
 
@@ -62,7 +61,7 @@ class MockAbuseDetector(BaseDetector):
         if not self._is_test_file(file_path):
             return []
 
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Initialize context analyzer
         context_analyzer = ContextAnalyzer(content, file_path)
@@ -99,7 +98,7 @@ class MockAbuseDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Check if mock usage ratio exceeds threshold.
 
@@ -110,7 +109,7 @@ class MockAbuseDetector(BaseDetector):
         Returns:
             List of DetectionResult if ratio exceeded
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         try:
             ast_analyzer = ASTAnalyzer(content, file_path)
@@ -141,7 +140,7 @@ class MockAbuseDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Check for mocks without verification.
 
@@ -152,7 +151,7 @@ class MockAbuseDetector(BaseDetector):
         Returns:
             List of DetectionResult for unverified mocks
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Count @patch decorators
         patch_pattern = r'@patch\s*\('
@@ -188,7 +187,7 @@ class MockAbuseDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Check for static mock return values.
 
@@ -199,7 +198,7 @@ class MockAbuseDetector(BaseDetector):
         Returns:
             List of DetectionResult for static returns
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Patterns for trivial return values
         static_patterns = [

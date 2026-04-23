@@ -3,7 +3,8 @@ Dependency Injection Container
 ARCHITECTURE FIX: Replace global singletons with proper DI pattern
 """
 
-from typing import Any, Callable, Dict, Optional, Type, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from .structured_logger import get_logger
 
@@ -34,12 +35,12 @@ class DependencyContainer:
     """
 
     def __init__(self):
-        self._factories: Dict[Type, Callable] = {}
-        self._singletons: Dict[Type, Any] = {}
-        self._transients: Dict[Type, Callable] = {}
+        self._factories: dict[type, Callable] = {}
+        self._singletons: dict[type, Any] = {}
+        self._transients: dict[type, Callable] = {}
         self._initialized = False
 
-    def register_singleton(self, interface: Type[T], factory: Callable[[], T]) -> None:
+    def register_singleton(self, interface: type[T], factory: Callable[[], T]) -> None:
         """
         Register a singleton dependency (created once, reused)
 
@@ -53,7 +54,7 @@ class DependencyContainer:
         self._factories[interface] = factory
         logger.debug(f"Registered singleton: {interface.__name__}")
 
-    def register_transient(self, interface: Type[T], factory: Callable[[], T]) -> None:
+    def register_transient(self, interface: type[T], factory: Callable[[], T]) -> None:
         """
         Register a transient dependency (created every time)
 
@@ -67,7 +68,7 @@ class DependencyContainer:
         self._transients[interface] = factory
         logger.debug(f"Registered transient: {interface.__name__}")
 
-    def register_instance(self, interface: Type[T], instance: T) -> None:
+    def register_instance(self, interface: type[T], instance: T) -> None:
         """
         Register an existing instance
 
@@ -82,7 +83,7 @@ class DependencyContainer:
         self._singletons[interface] = instance
         logger.debug(f"Registered instance: {interface.__name__}")
 
-    def resolve(self, interface: Type[T]) -> T:
+    def resolve(self, interface: type[T]) -> T:
         """
         Resolve a dependency
 
@@ -119,7 +120,7 @@ class DependencyContainer:
 
         raise KeyError(f"Dependency not registered: {interface.__name__}")
 
-    def resolve_optional(self, interface: Type[T]) -> Optional[T]:
+    def resolve_optional(self, interface: type[T]) -> T | None:
         """
         Resolve a dependency (returns None if not found)
 
@@ -148,7 +149,7 @@ class DependencyContainer:
 
 
 # Global container instance
-_container: Optional[DependencyContainer] = None
+_container: DependencyContainer | None = None
 
 
 def get_container() -> DependencyContainer:
@@ -203,7 +204,7 @@ def setup_dependencies():
 
 
 # Dependency injection decorators
-def inject(dependency_type: Type[T]) -> Callable:
+def inject(dependency_type: type[T]) -> Callable:
     """
     Decorator to inject dependencies into function parameters
 

@@ -5,16 +5,16 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 Output formatting utilities for learning path agent
 """
 
-from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
+from typing import Any
 
 from ..models import (
-    StudentProfile,
-    LearningResource,
+    KnowledgeLevel,
     LearningPath,
     LearningPhase,
+    LearningResource,
     LearningStyle,
-    KnowledgeLevel,
+    StudentProfile,
 )
 
 
@@ -22,7 +22,7 @@ class StudentProfileFormatter:
     """Format student profile data for display"""
 
     @staticmethod
-    def format_profile(profile: StudentProfile) -> Dict[str, Any]:
+    def format_profile(profile: StudentProfile) -> dict[str, Any]:
         """
         Format student profile for API response
 
@@ -122,7 +122,7 @@ class ResourceFormatter:
     """Format learning resource data for display"""
 
     @staticmethod
-    def format_resource(resource: LearningResource) -> Dict[str, Any]:
+    def format_resource(resource: LearningResource) -> dict[str, Any]:
         """
         Format learning resource for API response
 
@@ -163,7 +163,7 @@ class ResourceFormatter:
         }
 
     @staticmethod
-    def format_resource_list(resources: List[LearningResource]) -> List[Dict[str, Any]]:
+    def format_resource_list(resources: list[LearningResource]) -> list[dict[str, Any]]:
         """Format list of resources"""
         return [ResourceFormatter.format_resource(r) for r in resources]
 
@@ -194,18 +194,17 @@ class ResourceFormatter:
         """Format duration in human-readable Turkish"""
         if minutes < 60:
             return f"{minutes} dakika"
-        elif minutes < 120:
+        if minutes < 120:
             return "~1 saat"
-        else:
-            hours = minutes // 60
-            return f"~{hours} saat"
+        hours = minutes // 60
+        return f"~{hours} saat"
 
 
 class PathFormatter:
     """Format learning path data for display"""
 
     @staticmethod
-    def format_path(path: LearningPath) -> Dict[str, Any]:
+    def format_path(path: LearningPath) -> dict[str, Any]:
         """
         Format learning path for API response
 
@@ -237,7 +236,7 @@ class PathFormatter:
         }
 
     @staticmethod
-    def format_phase(phase: LearningPhase) -> Dict[str, Any]:
+    def format_phase(phase: LearningPhase) -> dict[str, Any]:
         """Format learning phase"""
         phase_duration = sum(r.estimated_time for r in phase.resources)
 
@@ -290,7 +289,7 @@ class AssessmentFormatter:
     """Format assessment data for display"""
 
     @staticmethod
-    def format_assessment(assessment: Dict[str, Any]) -> Dict[str, Any]:
+    def format_assessment(assessment: dict[str, Any]) -> dict[str, Any]:
         """Format assessment for API response"""
         return {
             "assessment_id": assessment.get("assessment_id", ""),
@@ -316,7 +315,7 @@ class AssessmentFormatter:
         return translations.get(type_val, type_val)
 
     @staticmethod
-    def format_assessment_results(results: Dict[str, Any]) -> Dict[str, Any]:
+    def format_assessment_results(results: dict[str, Any]) -> dict[str, Any]:
         """Format assessment results for API response"""
         # Calculate statistics
         scores = results.get("scores", [])
@@ -342,17 +341,16 @@ class AssessmentFormatter:
         """Get performance label based on score"""
         if score >= 85:
             return "Çok İyi"
-        elif score >= 70:
+        if score >= 70:
             return "İyi"
-        elif score >= 60:
+        if score >= 60:
             return "Orta"
-        elif score >= 50:
+        if score >= 50:
             return "Geliştirilmeli"
-        else:
-            return "Desteklenmeli"
+        return "Desteklenmeli"
 
     @staticmethod
-    def _identify_weak_areas(topic_scores: Dict[str, float]) -> List[str]:
+    def _identify_weak_areas(topic_scores: dict[str, float]) -> list[str]:
         """Identify weak areas from topic scores"""
         return [topic for topic, score in topic_scores.items() if score < 60]
 
@@ -361,7 +359,7 @@ class ProgressFormatter:
     """Format progress data for display"""
 
     @staticmethod
-    def format_progress(progress_data: Dict[str, Any]) -> Dict[str, Any]:
+    def format_progress(progress_data: dict[str, Any]) -> dict[str, Any]:
         """Format progress data for API response"""
         progress_percent = progress_data.get("progress_percent", 0)
 
@@ -386,17 +384,16 @@ class ProgressFormatter:
         """Get progress label"""
         if percent >= 100:
             return "Tamamlandı! 🎉"
-        elif percent >= 75:
+        if percent >= 75:
             return "Neredeyse Bitti"
-        elif percent >= 50:
+        if percent >= 50:
             return "Yarı Yolda"
-        elif percent >= 25:
+        if percent >= 25:
             return "İyi Gidiyor"
-        else:
-            return "Yeni Başladı"
+        return "Yeni Başladı"
 
     @staticmethod
-    def _estimate_completion_date(progress_data: Dict[str, Any]) -> Optional[str]:
+    def _estimate_completion_date(progress_data: dict[str, Any]) -> str | None:
         """Estimate completion date based on current progress"""
         # Simple estimation based on average pace
         completed = progress_data.get("completed_resources", 0)
@@ -422,7 +419,7 @@ class ChatFormatter:
     """Format chat/conversation data for display"""
 
     @staticmethod
-    def format_chat_response(response: Dict[str, Any]) -> Dict[str, Any]:
+    def format_chat_response(response: dict[str, Any]) -> dict[str, Any]:
         """Format chat response for API"""
         return {
             "session_id": response.get("session_id", ""),
@@ -434,8 +431,8 @@ class ChatFormatter:
 
     @staticmethod
     def format_conversation_history(
-        history: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        history: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Format conversation history"""
         return [
             {
@@ -452,8 +449,8 @@ class ErrorFormatter:
 
     @staticmethod
     def format_error(
-        error: Exception, context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        error: Exception, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Format error for API response
 
@@ -475,7 +472,7 @@ class ErrorFormatter:
         }
 
     @staticmethod
-    def format_validation_error(field: str, message: str) -> Dict[str, Any]:
+    def format_validation_error(field: str, message: str) -> dict[str, Any]:
         """Format validation error"""
         return {
             "success": False,
@@ -488,7 +485,7 @@ class ErrorFormatter:
         }
 
 
-def format_success_response(data: Any, message: Optional[str] = None) -> Dict[str, Any]:
+def format_success_response(data: Any, message: str | None = None) -> dict[str, Any]:
     """
     Generic success response formatter
 

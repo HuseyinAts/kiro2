@@ -8,51 +8,42 @@ Covers:
 - ZPD + Maarif system (zones, recommendations, cultural adaptation)
 """
 
-import math
-import time
-from datetime import datetime, timedelta
-
-import pytest
+import os
 
 # ─── IRT imports ───
 import sys
-import os
+import time
+from datetime import datetime
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from core.irt_validators import (
-    IRTValidationError,
-    validate_irt_difficulty,
-    validate_irt_discrimination,
-    validate_irt_guessing,
-    validate_irt_upper_asymptote,
-    is_in_zpd,
-)
 from algorithms.irt_model import (
     FourParameterIRTModel,
     IRTItem,
     IRTResponse,
-    StudentAbility,
 )
 from algorithms.turkish_optimized_fsrs import (
     CulturalFactorCalculator,
     CulturalPeriod,
     FSRSCard,
     FSRSGrade,
-    FSRSSchedule,
     StudentContext,
     TurkishOptimizedFSRS,
 )
 from algorithms.turkish_zpd_maarif_system import (
-    MaarifAlignment,
     MaarifValue,
     TurkishCulturalContext,
-    TurkishCulturalFactor,
     TurkishZPDMaarifSystem,
-    TurkishZPDRange,
-    ZPDRecommendation,
 )
-
+from core.irt_validators import (
+    IRTValidationError,
+    is_in_zpd,
+    validate_irt_difficulty,
+    validate_irt_discrimination,
+    validate_irt_guessing,
+)
 
 # ═══════════════════════════════════════════════════════════════════
 # IRT MODEL TESTS

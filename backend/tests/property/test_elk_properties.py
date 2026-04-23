@@ -18,10 +18,12 @@ Requirements Tested:
     REQ-3.1: ILM policy with hot-warm-cold-delete phases
 """
 
-import pytest
 import sys
 from datetime import datetime
-from hypothesis import given, strategies as st, settings, assume
+
+import pytest
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
@@ -29,7 +31,6 @@ from core.structured_logger import (
     censor_sensitive_data,
     get_logger,
 )
-
 
 # =====================================================================
 # Hypothesis Strategies
@@ -203,7 +204,7 @@ class TestLogCompletenessProperties:
         """
         import uuid
 
-        if "correlation_id" in data and data["correlation_id"]:
+        if data.get("correlation_id"):
             try:
                 uuid.UUID(data["correlation_id"])
             except ValueError:

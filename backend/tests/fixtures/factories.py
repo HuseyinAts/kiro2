@@ -5,7 +5,7 @@ Factory pattern for creating test data easily
 
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 from faker import Faker
 
@@ -26,7 +26,7 @@ class UserFactory:
         rol: str = "ogrenci",
         aktif: bool = True,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create user data dict"""
         return {
             "id": str(uuid.uuid4()),
@@ -80,7 +80,7 @@ class UserFactory:
         )
 
     @staticmethod
-    def create_batch(count: int = 10, **kwargs) -> List[Dict[str, Any]]:
+    def create_batch(count: int = 10, **kwargs) -> list[dict[str, Any]]:
         """Create multiple users"""
         return [UserFactory.create_user_data(**kwargs) for _ in range(count)]
 
@@ -113,7 +113,7 @@ class QuestionFactory:
         zorluk_seviyesi: str = "orta",
         dogru_cevap: str = "A",
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create question data dict"""
         soru_metni = kwargs.pop(
             "soru_metni",
@@ -150,7 +150,7 @@ class QuestionFactory:
     @staticmethod
     def create_batch(
         count: int = 10, konu: str = "Matematik", **kwargs
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Create multiple questions"""
         return [
             QuestionFactory.create_question_data(konu=konu, **kwargs)
@@ -160,7 +160,7 @@ class QuestionFactory:
     @staticmethod
     def create_mixed_difficulty_batch(
         count: int = 15, **kwargs
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Create questions with mixed difficulty"""
         questions = []
         difficulties = ["kolay", "orta", "zor"]
@@ -188,7 +188,7 @@ class ExamFactory:
         sure_dakika: int = 120,
         toplam_soru: int = 40,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create exam data dict"""
         return {
             "sinav_id": str(uuid.uuid4()),
@@ -242,7 +242,7 @@ class ExamResultFactory:
     @staticmethod
     def create_result_data(
         toplam_dogru: int = 30, toplam_yanlis: int = 5, toplam_bos: int = 5, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create exam result data"""
         net_puan = toplam_dogru - (toplam_yanlis / 4)
 
@@ -297,7 +297,7 @@ class ContentFactory:
         konu: str = "Matematik",
         url: str = None,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create content data"""
         return {
             "icerik_id": str(uuid.uuid4()),
@@ -328,7 +328,7 @@ class ContentFactory:
         )
 
     @staticmethod
-    def create_batch(count: int = 10, **kwargs) -> List[Dict[str, Any]]:
+    def create_batch(count: int = 10, **kwargs) -> list[dict[str, Any]]:
         """Create multiple content items"""
         return [ContentFactory.create_content_data(**kwargs) for _ in range(count)]
 
@@ -345,7 +345,7 @@ class TestDataBuilder:
     @staticmethod
     def create_student_with_exams(
         exam_count: int = 3,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create a student with exam history
 
@@ -374,7 +374,7 @@ class TestDataBuilder:
     @staticmethod
     def create_exam_with_questions(
         question_count: int = 40,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create an exam with questions
 
@@ -390,7 +390,7 @@ class TestDataBuilder:
         return {"exam": exam, "questions": questions}
 
     @staticmethod
-    def create_complete_test_scenario() -> Dict[str, Any]:
+    def create_complete_test_scenario() -> dict[str, Any]:
         """
         Create complete test scenario with all entities
 
@@ -428,7 +428,7 @@ def create_time_series_data(
     start_date: datetime = None,
     interval_days: int = 1,
     **kwargs,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Create time series data using any factory
 

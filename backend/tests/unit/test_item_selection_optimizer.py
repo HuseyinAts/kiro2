@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -8,11 +9,13 @@ Task 62: Soru Seçimi ve Optimizasyon
 Requirements: REQ-49.53-49.68
 """
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
+
 from services.item_selection_optimizer import (
-    ItemSelectionOptimizer,
     ContentConstraint,
+    ItemSelectionOptimizer,
     SpacedRepetitionSchedule,
 )
 

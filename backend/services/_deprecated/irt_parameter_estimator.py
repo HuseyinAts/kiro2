@@ -7,7 +7,7 @@ Requirements: REQ-48.13-48.16
 """
 
 import logging
-from typing import Dict, List
+
 import numpy as np
 from scipy.optimize import minimize
 
@@ -30,8 +30,8 @@ class IRTParameterEstimator:
         logger.info("IRTParameterEstimator başlatıldı")
 
     def estimate_parameters(
-        self, question_id: str, student_responses: List[Dict[str, any]]
-    ) -> Dict[str, float]:
+        self, question_id: str, student_responses: list[dict[str, any]]
+    ) -> dict[str, float]:
         """
         Soru için IRT parametrelerini tahmin et.
 
@@ -70,7 +70,7 @@ class IRTParameterEstimator:
 
     def _estimate_4pl_parameters(
         self, theta: np.ndarray, responses: np.ndarray
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         4PL IRT modelini fit et.
 
@@ -132,7 +132,7 @@ class IRTParameterEstimator:
             "d": float(d),  # upper asymptote
         }
 
-    def _constrain_parameters(self, params: Dict[str, float]) -> Dict[str, float]:
+    def _constrain_parameters(self, params: dict[str, float]) -> dict[str, float]:
         """
         Parametreleri gereksinim aralıklarına sınırla.
 
@@ -149,7 +149,7 @@ class IRTParameterEstimator:
 
         return constrained
 
-    def _default_parameters(self) -> Dict[str, float]:
+    def _default_parameters(self) -> dict[str, float]:
         """
         Varsayılan IRT parametreleri.
 
@@ -163,7 +163,7 @@ class IRTParameterEstimator:
             "d": 1.0,  # Tam doğru yapma olasılığı
         }
 
-    def calculate_probability(self, theta: float, params: Dict[str, float]) -> float:
+    def calculate_probability(self, theta: float, params: dict[str, float]) -> float:
         """
         Belirli yetenek seviyesinde soruyu doğru yapma olasılığını hesapla.
 
@@ -185,7 +185,7 @@ class IRTParameterEstimator:
 
         return float(prob)
 
-    def calculate_information(self, theta: float, params: Dict[str, float]) -> float:
+    def calculate_information(self, theta: float, params: dict[str, float]) -> float:
         """
         Fisher Information hesapla.
 
@@ -230,14 +230,13 @@ class IRTParameterEstimator:
         """
         if b_param < -1.5:
             return "çok kolay"
-        elif b_param < -0.5:
+        if b_param < -0.5:
             return "kolay"
-        elif b_param < 0.5:
+        if b_param < 0.5:
             return "orta"
-        elif b_param < 1.5:
+        if b_param < 1.5:
             return "zor"
-        else:
-            return "çok zor"
+        return "çok zor"
 
     def get_discrimination_category(self, a_param: float) -> str:
         """
@@ -251,14 +250,13 @@ class IRTParameterEstimator:
         """
         if a_param < 0.5:
             return "düşük ayırt edicilik"
-        elif a_param < 1.0:
+        if a_param < 1.0:
             return "orta ayırt edicilik"
-        elif a_param < 1.5:
+        if a_param < 1.5:
             return "yüksek ayırt edicilik"
-        else:
-            return "çok yüksek ayırt edicilik"
+        return "çok yüksek ayırt edicilik"
 
-    def estimate_student_ability(self, responses: List[Dict[str, any]]) -> float:
+    def estimate_student_ability(self, responses: list[dict[str, any]]) -> float:
         """
         Öğrenci yetenek seviyesini (theta) tahmin et.
 

@@ -12,7 +12,7 @@ import math
 import re
 from datetime import datetime
 from functools import lru_cache
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from models.irt_morfoloji import (
     MorfolojiAnalizi,
@@ -117,7 +117,7 @@ class ZemberekMorfolojiService:
             "cesine": TurkceEkTipi.ZARF_YAPIM,
         }
 
-    def _load_kelime_frekanslari(self) -> Dict[str, float]:
+    def _load_kelime_frekanslari(self) -> dict[str, float]:
         """Türkçe kelime frekanslarını yükle"""
         # Gerçek uygulamada büyük frekans veritabanından yüklenecek
         # Şimdilik örnek veriler
@@ -134,7 +134,7 @@ class ZemberekMorfolojiService:
             "bilim": 150.0,
         }
 
-    def _load_ek_frekanslari(self) -> Dict[str, float]:
+    def _load_ek_frekanslari(self) -> dict[str, float]:
         """Türkçe ek frekanslarını yükle"""
         # Gerçek uygulamada ek kullanım frekansları
         return {
@@ -210,7 +210,7 @@ class ZemberekMorfolojiService:
             return analiz
 
         except Exception as e:
-            logger.error(f"Kelime analiz hatası - Kelime: {kelime}, Hata: {str(e)}")
+            logger.error(f"Kelime analiz hatası - Kelime: {kelime}, Hata: {e!s}")
 
             # Hata durumunda basit analiz döndür
             return MorfolojiAnalizi(
@@ -284,10 +284,10 @@ class ZemberekMorfolojiService:
             return soru_analizi
 
         except Exception as e:
-            logger.error(f"Soru analiz hatası - ID: {soru_id}, Hata: {str(e)}")
+            logger.error(f"Soru analiz hatası - ID: {soru_id}, Hata: {e!s}")
             raise
 
-    async def _zemberek_analiz(self, kelime: str) -> Dict[str, Any]:
+    async def _zemberek_analiz(self, kelime: str) -> dict[str, Any]:
         """Zemberek-NLP ile kelime analizi yap"""
         try:
             # Zemberek JAR dosyasını çalıştır
@@ -301,10 +301,7 @@ class ZemberekMorfolojiService:
             elif kelime.endswith(("lık", "lik", "luk", "lük")):
                 kok = kelime[:-3]
                 ekler = [kelime[-3:]]
-            elif kelime.endswith(("da", "de", "ta", "te")):
-                kok = kelime[:-2]
-                ekler = [kelime[-2:]]
-            elif kelime.endswith(("ın", "in", "un", "ün")):
+            elif kelime.endswith(("da", "de", "ta", "te")) or kelime.endswith(("ın", "in", "un", "ün")):
                 kok = kelime[:-2]
                 ekler = [kelime[-2:]]
             else:
@@ -320,7 +317,7 @@ class ZemberekMorfolojiService:
             }
 
         except Exception as e:
-            logger.error(f"Zemberek analiz hatası: {str(e)}")
+            logger.error(f"Zemberek analiz hatası: {e!s}")
             return {
                 "kelime": kelime,
                 "kok": kelime,
@@ -330,8 +327,8 @@ class ZemberekMorfolojiService:
             }
 
     def _parse_zemberek_sonuc(
-        self, zemberek_sonuc: Dict[str, Any]
-    ) -> Tuple[str, List[str]]:
+        self, zemberek_sonuc: dict[str, Any]
+    ) -> tuple[str, list[str]]:
         """Zemberek analiz sonucunu parse et"""
         kok = zemberek_sonuc.get("kok", zemberek_sonuc.get("kelime", ""))
         ekler = zemberek_sonuc.get("ekler", [])
@@ -347,7 +344,7 @@ class ZemberekMorfolojiService:
         # Varsayılan olarak isim çekim eki
         return TurkceEkTipi.ISIM_CEKIM
 
-    def _hesapla_ek_frekansi(self, ekler: List[str]) -> float:
+    def _hesapla_ek_frekansi(self, ekler: list[str]) -> float:
         """Eklerin toplam frekansını hesapla"""
         if not ekler:
             return 1.0
@@ -358,7 +355,7 @@ class ZemberekMorfolojiService:
 
         return toplam_frekans / len(ekler)
 
-    def _hesapla_yaygınlık_skoru(self, kok: str, ekler: List[str]) -> float:
+    def _hesapla_yaygınlık_skoru(self, kok: str, ekler: list[str]) -> float:
         """Kelime yaygınlık skorunu hesapla"""
         # Kök frekansı faktörü
         kok_frekans = self.kelime_frekanslari.get(kok.lower(), 1.0)
@@ -376,7 +373,7 @@ class ZemberekMorfolojiService:
 
         return max(0.1, min(1.0, yaygınlık))
 
-    def _temizle_ve_ayir_kelimeler(self, metin: str) -> List[str]:
+    def _temizle_ve_ayir_kelimeler(self, metin: str) -> list[str]:
         """Metni temizle ve kelimelere ayır"""
         # Noktalama işaretlerini kaldır
         temiz_metin = re.sub(r"[^\w\s]", " ", metin)
@@ -388,8 +385,8 @@ class ZemberekMorfolojiService:
         return [kelime for kelime in kelimeler if kelime]
 
     def _hesapla_soru_istatistikleri(
-        self, kelime_analizleri: List[MorfolojiAnalizi]
-    ) -> Dict[str, Any]:
+        self, kelime_analizleri: list[MorfolojiAnalizi]
+    ) -> dict[str, Any]:
         """Soru için istatistikleri hesapla"""
         if not kelime_analizleri:
             return {
@@ -457,13 +454,13 @@ class ZemberekMorfolojiService:
         return analiz.morfoloji_skoru
 
     async def toplu_kelime_analizi(
-        self, kelimeler: List[str]
-    ) -> List[MorfolojiAnalizi]:
+        self, kelimeler: list[str]
+    ) -> list[MorfolojiAnalizi]:
         """Birden fazla kelime için paralel analiz"""
         tasks = [self.analiz_et_kelime(kelime) for kelime in kelimeler]
         return await asyncio.gather(*tasks)
 
-    def get_morfoloji_istatistikleri(self) -> Dict[str, Any]:
+    def get_morfoloji_istatistikleri(self) -> dict[str, Any]:
         """Servis istatistiklerini döndür"""
         return {
             "kelime_frekanslari_sayisi": len(self.kelime_frekanslari),

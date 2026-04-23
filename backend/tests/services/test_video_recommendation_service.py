@@ -14,13 +14,13 @@ pytestmark = pytest.mark.skipif(True, reason="sentence_transformers/transformers
 from unittest.mock import AsyncMock, Mock
 
 try:
-    from services.video_recommendation_service import (
-        VideoRecommendationService,
-        StudentProfile,
-        VideoRecommendation,
-    )
     from services.advanced_youtube_search import TurkishEducationVideo
     from services.turkish_content_filter import TurkishValidationResult
+    from services.video_recommendation_service import (
+        StudentProfile,
+        VideoRecommendation,
+        VideoRecommendationService,
+    )
 except (ImportError, ModuleNotFoundError):
     pass
 

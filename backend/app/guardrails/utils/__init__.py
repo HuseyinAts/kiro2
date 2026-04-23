@@ -1,8 +1,8 @@
 """Guardrail utility functions and classes."""
-from .resource_monitor import ResourceMonitor
 from .lock_tracker import LockTracker
+from .resource_monitor import ResourceMonitor
 
 __all__ = [
-    "ResourceMonitor",
     "LockTracker",
+    "ResourceMonitor",
 ]

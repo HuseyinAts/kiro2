@@ -3,9 +3,10 @@ Differential Item Functioning (DIF) Analysis
 Detects bias in test items across demographic groups for fairness
 """
 
-import numpy as np
-from typing import List, Dict, Any, Optional
 import logging
+from typing import Any
+
+import numpy as np
 from scipy import stats
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,7 @@ class DIFAnalyzer:
         responses: np.ndarray,
         group: np.ndarray,
         ability: np.ndarray
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Mantel-Haenszel DIF analysis
 
@@ -81,7 +82,7 @@ class DIFAnalyzer:
         responses: np.ndarray,
         group: np.ndarray,
         ability: np.ndarray
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Logistic Regression DIF analysis
 
@@ -151,11 +152,11 @@ class DIFAnalyzer:
 
     def analyze_item_dif(
         self,
-        item_responses: Dict[int, np.ndarray],
+        item_responses: dict[int, np.ndarray],
         groups: np.ndarray,
         ability_scores: np.ndarray,
         method: str = 'both'
-    ) -> Dict[int, Dict[str, Any]]:
+    ) -> dict[int, dict[str, Any]]:
         """
         Analyze DIF for multiple items
 
@@ -189,9 +190,9 @@ class DIFAnalyzer:
 
     def generate_fairness_report(
         self,
-        dif_results: Dict[int, Dict[str, Any]],
-        item_metadata: Optional[Dict[int, Dict]] = None
-    ) -> Dict[str, Any]:
+        dif_results: dict[int, dict[str, Any]],
+        item_metadata: dict[int, dict] | None = None
+    ) -> dict[str, Any]:
         """
         Generate comprehensive fairness report
 
@@ -294,7 +295,7 @@ class DIFAnalyzer:
         # Simplified - actual implementation would need null model LL
         return abs(log_likelihood) / 1000  # Placeholder
 
-    def _generate_fairness_recommendations(self, flagged_items: List[Dict]) -> List[str]:
+    def _generate_fairness_recommendations(self, flagged_items: list[dict]) -> list[str]:
         """Generate recommendations based on flagged items"""
         recommendations = []
 

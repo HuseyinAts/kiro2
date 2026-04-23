@@ -5,10 +5,10 @@ Request/Response Pydantic modelleri.
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
-from uuid import UUID
-from pydantic import BaseModel, Field
 
+from typing import Any
+
+from pydantic import BaseModel, Field
 
 # ── Request ──────────────────────────────────────────────────────
 
@@ -23,10 +23,10 @@ class StartSessionRequest(BaseModel):
 
 class SubmitAnswerRequest(BaseModel):
     question_id: str               = Field(..., description="Yanıtlanan soru ID'si")
-    selected_option: Optional[str] = Field(None, min_length=1, max_length=1,
+    selected_option: str | None = Field(None, min_length=1, max_length=1,
                                            description="Seçilen şık (A/B/C/D)")
-    answer: Optional[str]          = Field(None, description="selected_option aliası")
-    response_ms: Optional[int]     = Field(
+    answer: str | None          = Field(None, description="selected_option aliası")
+    response_ms: int | None     = Field(
         None, ge=0, le=300_000,
         description="Yanıt süresi (ms), opsiyonel — fatigue detection için"
     )
@@ -56,7 +56,7 @@ class IRTInfo(BaseModel):
 class QuestionResponse(BaseModel):
     question_id: str
     stem:        str
-    options:     Dict[str, Any]   # {"A": "...", "B": "...", "C": "...", "D": "..."}
+    options:     dict[str, Any]   # {"A": "...", "B": "...", "C": "...", "D": "..."}
     topic_id:    str
     subject_id:  str
     irt:         IRTInfo
@@ -64,7 +64,7 @@ class QuestionResponse(BaseModel):
 
 class FeedbackResponse(BaseModel):
     is_correct: bool
-    correct_option: Optional[str] = None   # Bitiş sonrası açıklanabilir
+    correct_option: str | None = None   # Bitiş sonrası açıklanabilir
 
 
 class StartSessionResponse(BaseModel):
@@ -82,9 +82,9 @@ class SubmitAnswerResponse(BaseModel):
     theta:                float
     se:                   float
     n_questions:          int
-    termination_reason:   Optional[str]  = None
-    next_question:        Optional[QuestionResponse] = None
-    phase:                Optional[str]  = None
+    termination_reason:   str | None  = None
+    next_question:        QuestionResponse | None = None
+    phase:                str | None  = None
     feedback:             FeedbackResponse
 
 

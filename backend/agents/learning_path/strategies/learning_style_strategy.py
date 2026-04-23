@@ -11,7 +11,7 @@ Responsibilities:
 """
 
 import logging
-from typing import List, Dict, Any
+from typing import Any
 
 from ..models import LearningResource, LearningStyle
 
@@ -36,8 +36,8 @@ class LearningStyleStrategy:
         logger.info("LearningStyleStrategy initialized")
 
     def filter_by_style(
-        self, resources: List[LearningResource], learning_style: LearningStyle
-    ) -> List[LearningResource]:
+        self, resources: list[LearningResource], learning_style: LearningStyle
+    ) -> list[LearningResource]:
         """Filter resources matching learning style"""
         if learning_style == LearningStyle.MIXED:
             return resources
@@ -45,8 +45,8 @@ class LearningStyleStrategy:
         return [r for r in resources if r.matches_style(learning_style)]
 
     def rank_by_style(
-        self, resources: List[LearningResource], learning_style: LearningStyle
-    ) -> List[LearningResource]:
+        self, resources: list[LearningResource], learning_style: LearningStyle
+    ) -> list[LearningResource]:
         """Rank resources by learning style compatibility"""
         scored = [(r, self.calculate_style_match(r, learning_style)) for r in resources]
         scored.sort(key=lambda x: x[1], reverse=True)
@@ -63,8 +63,8 @@ class LearningStyleStrategy:
         return weights.get(resource.resource_type.lower(), 0.5)
 
     def get_recommendations(
-        self, resources: List[LearningResource], learning_style: LearningStyle
-    ) -> List[Dict[str, Any]]:
+        self, resources: list[LearningResource], learning_style: LearningStyle
+    ) -> list[dict[str, Any]]:
         """Get style-based recommendations"""
         return [
             {

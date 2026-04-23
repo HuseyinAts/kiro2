@@ -5,11 +5,11 @@ Performans metrikleri ve optimizasyon endpoint'leri
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from core.dependencies import get_current_admin_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_admin_user
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get("/metrics", response_model=Dict[str, Any])
+@router.get("/metrics", response_model=dict[str, Any])
 async def get_performance_metrics(
     current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
@@ -38,7 +38,7 @@ async def get_performance_metrics(
             cache_stats = await cache_manager.get_stats()
             metrics["cache"] = cache_stats
         except Exception as e:
-            logger.error(f"Cache metrics hatası: {str(e)}")
+            logger.error(f"Cache metrics hatası: {e!s}")
             metrics["cache"] = {"error": str(e)}
 
         # System metrikleri
@@ -48,7 +48,7 @@ async def get_performance_metrics(
             system_metrics = system_monitor.get_current_metrics()
             metrics["system"] = system_metrics
         except Exception as e:
-            logger.error(f"System metrics hatası: {str(e)}")
+            logger.error(f"System metrics hatası: {e!s}")
             metrics["system"] = {"error": str(e)}
 
         # Database query metrikleri
@@ -58,7 +58,7 @@ async def get_performance_metrics(
             query_stats = query_optimizer.get_performance_stats()
             metrics["database_queries"] = query_stats
         except Exception as e:
-            logger.error(f"Database query metrics hatası: {str(e)}")
+            logger.error(f"Database query metrics hatası: {e!s}")
             metrics["database_queries"] = {"error": str(e)}
 
         # Revolutionary features metrikleri
@@ -68,7 +68,7 @@ async def get_performance_metrics(
             revolutionary_stats = get_optimization_stats()
             metrics["revolutionary_features"] = revolutionary_stats
         except Exception as e:
-            logger.error(f"Revolutionary features metrics hatası: {str(e)}")
+            logger.error(f"Revolutionary features metrics hatası: {e!s}")
             metrics["revolutionary_features"] = {"error": str(e)}
 
         return {
@@ -81,13 +81,13 @@ async def get_performance_metrics(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Performance metrics hatası: {str(e)}")
+        logger.error(f"Performance metrics hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.get("/system-status", response_model=Dict[str, Any])
+@router.get("/system-status", response_model=dict[str, Any])
 async def get_system_status(
     current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
@@ -134,13 +134,13 @@ async def get_system_status(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"System status hatası: {str(e)}")
+        logger.error(f"System status hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.get("/cache-stats", response_model=Dict[str, Any])
+@router.get("/cache-stats", response_model=dict[str, Any])
 async def get_cache_statistics(
     current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
@@ -183,13 +183,13 @@ async def get_cache_statistics(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Cache stats hatası: {str(e)}")
+        logger.error(f"Cache stats hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.get("/database-performance", response_model=Dict[str, Any])
+@router.get("/database-performance", response_model=dict[str, Any])
 async def get_database_performance(
     current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
@@ -244,14 +244,14 @@ async def get_database_performance(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Database performance hatası: {str(e)}")
+        logger.error(f"Database performance hatası: {e!s}")
         raise HTTPException(
             status_code=500,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.get("/revolutionary-features-performance", response_model=Dict[str, Any])
+@router.get("/revolutionary-features-performance", response_model=dict[str, Any])
 async def get_revolutionary_features_performance(
     current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
@@ -272,16 +272,16 @@ async def get_revolutionary_features_performance(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Revolutionary features performance hatası: {str(e)}")
+        logger.error(f"Revolutionary features performance hatası: {e!s}")
         raise HTTPException(
             status_code=500,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
 
 
-@router.post("/clear-cache", response_model=Dict[str, Any])
+@router.post("/clear-cache", response_model=dict[str, Any])
 async def clear_cache(
-    cache_type: Optional[str] = None,
+    cache_type: str | None = None,
     current_user: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
@@ -299,7 +299,7 @@ async def clear_cache(
                 await cache_manager.clear_pattern("*")
                 cleared_caches.append("redis")
             except Exception as e:
-                logger.error(f"Redis cache temizleme hatası: {str(e)}")
+                logger.error(f"Redis cache temizleme hatası: {e!s}")
 
         if cache_type is None or cache_type == "all" or cache_type == "revolutionary":
             # Revolutionary features cache temizle
@@ -315,7 +315,7 @@ async def clear_cache(
                 irt_morphology_optimizer.morphology_cache.clear()
                 cleared_caches.append("revolutionary_features")
             except Exception as e:
-                logger.error(f"Revolutionary cache temizleme hatası: {str(e)}")
+                logger.error(f"Revolutionary cache temizleme hatası: {e!s}")
 
         if cache_type is None or cache_type == "all" or cache_type == "learning_style":
             # Learning style cache temizle
@@ -329,7 +329,7 @@ async def clear_cache(
                         cache.clear()
                 cleared_caches.append("learning_style")
             except Exception as e:
-                logger.error(f"Learning style cache temizleme hatası: {str(e)}")
+                logger.error(f"Learning style cache temizleme hatası: {e!s}")
 
         return {
             "success": True,
@@ -343,11 +343,11 @@ async def clear_cache(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Cache temizleme hatası: {str(e)}")
+        logger.error(f"Cache temizleme hatası: {e!s}")
         raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
 
 
-@router.get("/api-response-times", response_model=Dict[str, Any])
+@router.get("/api-response-times", response_model=dict[str, Any])
 async def get_api_response_times(
     current_user: AuthenticatedUser = Depends(get_current_admin_user)
 ):
@@ -422,15 +422,15 @@ async def get_api_response_times(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"API response times hatası: {str(e)}")
+        logger.error(f"API response times hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.post("/optimize", response_model=Dict[str, Any])
+@router.post("/optimize", response_model=dict[str, Any])
 async def optimize_system(
-    optimization_type: Optional[str] = None,
+    optimization_type: str | None = None,
     current_user: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
@@ -454,7 +454,7 @@ async def optimize_system(
                 await cache_manager.initialize()
                 optimizations_applied.append("cache_restart")
             except Exception as e:
-                logger.error(f"Cache optimizasyon hatası: {str(e)}")
+                logger.error(f"Cache optimizasyon hatası: {e!s}")
 
         if (
             optimization_type is None
@@ -470,7 +470,7 @@ async def optimize_system(
                 await optimize_all_revolutionary_features()
                 optimizations_applied.append("revolutionary_features")
             except Exception as e:
-                logger.error(f"Revolutionary optimizasyon hatası: {str(e)}")
+                logger.error(f"Revolutionary optimizasyon hatası: {e!s}")
 
         if (
             optimization_type is None
@@ -486,7 +486,7 @@ async def optimize_system(
                     await create_performance_indexes(session)
                 optimizations_applied.append("database_indexes")
             except Exception as e:
-                logger.error(f"Database optimizasyon hatası: {str(e)}")
+                logger.error(f"Database optimizasyon hatası: {e!s}")
 
         return {
             "success": True,
@@ -501,13 +501,13 @@ async def optimize_system(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Sistem optimizasyon hatası: {str(e)}")
+        logger.error(f"Sistem optimizasyon hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-@router.get("/health-check", response_model=Dict[str, Any])
+@router.get("/health-check", response_model=dict[str, Any])
 async def performance_health_check():
     """
     Performans sistemlerinin sağlık kontrolü
@@ -584,7 +584,7 @@ async def performance_health_check():
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Performance health check hatası: {str(e)}")
+        logger.error(f"Performance health check hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

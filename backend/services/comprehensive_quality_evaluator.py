@@ -23,11 +23,10 @@ Thresholds:
 - Overall score < 0.70: Needs improvement (reject or revise)
 """
 
-import logging
-from typing import Dict, List, Optional, Tuple
-from dataclasses import dataclass, field, asdict
-from datetime import datetime
 import json
+import logging
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -45,26 +44,26 @@ class EvaluationResult:
     format_score: float = 0.0
     quality_score: float = 0.0
     bloom_score: float = 0.0
-    bertscore_f1: Optional[float] = None
-    benchmark_similarity: Optional[float] = None
+    bertscore_f1: float | None = None
+    benchmark_similarity: float | None = None
 
     # Detailed results
-    format_issues: List[str] = field(default_factory=list)
-    quality_issues: List[str] = field(default_factory=list)
-    bloom_level: Optional[int] = None
-    bloom_confidence: Optional[float] = None
+    format_issues: list[str] = field(default_factory=list)
+    quality_issues: list[str] = field(default_factory=list)
+    bloom_level: int | None = None
+    bloom_confidence: float | None = None
 
     # Recommendations
-    recommendations: List[str] = field(default_factory=list)
-    strengths: List[str] = field(default_factory=list)
-    weaknesses: List[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
+    strengths: list[str] = field(default_factory=list)
+    weaknesses: list[str] = field(default_factory=list)
 
     # Metadata
     evaluation_stage: str = "unknown"
     evaluation_time_ms: float = 0.0
     evaluated_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to dictionary"""
         return asdict(self)
 
@@ -85,7 +84,7 @@ class ComprehensiveQualityEvaluator:
     - ÖSYM benchmark comparison
     """
 
-    def __init__(self, osym_reference_questions: Optional[List[Dict]] = None):
+    def __init__(self, osym_reference_questions: list[dict] | None = None):
         """
         Initialize evaluator
 
@@ -158,7 +157,7 @@ class ComprehensiveQualityEvaluator:
         )
 
     def evaluate(
-        self, question: Dict, stage: str = "standard", subject: Optional[str] = None
+        self, question: dict, stage: str = "standard", subject: str | None = None
     ) -> EvaluationResult:
         """
         Evaluate question quality
@@ -331,7 +330,7 @@ class ComprehensiveQualityEvaluator:
 
         return result
 
-    def _validate_format(self, question: Dict) -> Tuple[float, List[str]]:
+    def _validate_format(self, question: dict) -> tuple[float, list[str]]:
         """
         Validate question format
 
@@ -360,8 +359,8 @@ class ComprehensiveQualityEvaluator:
         return max(0.0, score), issues
 
     def _validate_length(
-        self, question_text: str, subject: Optional[str] = None
-    ) -> Tuple[float, List[str]]:
+        self, question_text: str, subject: str | None = None
+    ) -> tuple[float, list[str]]:
         """
         Validate question length against ÖSYM standards
 
@@ -400,7 +399,7 @@ class ComprehensiveQualityEvaluator:
 
         return max(0.0, score), issues
 
-    def _bloom_name_to_number(self, name: str) -> Optional[int]:
+    def _bloom_name_to_number(self, name: str) -> int | None:
         """Convert Bloom level name to number"""
         mapping = {
             "hatırlama": 1,
@@ -467,7 +466,7 @@ class ComprehensiveQualityEvaluator:
 
         return result
 
-    def evaluate_batch(self, questions: List[Dict], stage: str = "standard") -> Dict:
+    def evaluate_batch(self, questions: list[dict], stage: str = "standard") -> dict:
         """
         Evaluate multiple questions
 

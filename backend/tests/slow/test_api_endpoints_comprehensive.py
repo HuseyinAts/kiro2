@@ -676,25 +676,24 @@ class TestAPIIntegration:
 
         with patch(
             "services.learning_style_service.LearningStyleService.detect_style"
-        ) as mock_style:
-            with patch(
-                "services.zpd_maarif_service.ZPDMaarifService.calculate_zpd"
-            ) as mock_zpd:
-                mock_style.return_value = {"primary_style": "visual"}
-                mock_zpd.return_value = {"zpd_lower_bound": 0.3, "zpd_upper_bound": 0.8}
+        ) as mock_style, patch(
+            "services.zpd_maarif_service.ZPDMaarifService.calculate_zpd"
+        ) as mock_zpd:
+            mock_style.return_value = {"primary_style": "visual"}
+            mock_zpd.return_value = {"zpd_lower_bound": 0.3, "zpd_upper_bound": 0.8}
 
-                # Learning style tespit
-                style_response = client.post(
-                    "/api/v1/learning-style/detect", json=style_data
-                )
-                assert style_response.status_code == 200
+            # Learning style tespit
+            style_response = client.post(
+                "/api/v1/learning-style/detect", json=style_data
+            )
+            assert style_response.status_code == 200
 
-                # ZPD hesaplama
-                zpd_data = {"student_id": student_id, "current_ability": 0.5}
-                zpd_response = client.post(
-                    "/api/v1/zpd-maarif/calculate", json=zpd_data
-                )
-                assert zpd_response.status_code == 200
+            # ZPD hesaplama
+            zpd_data = {"student_id": student_id, "current_ability": 0.5}
+            zpd_response = client.post(
+                "/api/v1/zpd-maarif/calculate", json=zpd_data
+            )
+            assert zpd_response.status_code == 200
 
     def test_full_student_analysis_pipeline(self, client):
         """Tam öğrenci analiz pipeline testi"""

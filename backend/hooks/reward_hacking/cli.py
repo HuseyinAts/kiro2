@@ -18,13 +18,12 @@ import asyncio
 import json
 import sys
 from pathlib import Path
-from typing import List, Optional
 
 from .hook_manager import HookManager
 from .models.detection_result import GlobalConfig
 
 
-def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         prog="reward-hacking-check",
@@ -103,7 +102,7 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def collect_files(paths: List[str]) -> List[str]:
+def collect_files(paths: list[str]) -> list[str]:
     """
     Collect all files from given paths.
 
@@ -113,7 +112,7 @@ def collect_files(paths: List[str]) -> List[str]:
     Returns:
         List of file paths
     """
-    files: List[str] = []
+    files: list[str] = []
 
     for path_str in paths:
         path = Path(path_str)
@@ -133,7 +132,7 @@ def collect_files(paths: List[str]) -> List[str]:
     return files
 
 
-def load_config(config_path: Optional[str]) -> GlobalConfig:
+def load_config(config_path: str | None) -> GlobalConfig:
     """
     Load configuration from file.
 
@@ -259,7 +258,7 @@ async def main_async(args: argparse.Namespace) -> int:
     return result.exit_code
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     """
     Main entry point.
 

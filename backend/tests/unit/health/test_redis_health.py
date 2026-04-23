@@ -13,14 +13,12 @@ Requirements Tested:
     REQ-6.6: Cache recovery -> cache warming baslat
 """
 
-import pytest
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock
 
-from app.health.dependencies.redis_health import (
-    RedisHealthChecker,
-    RedisHealthMetrics
-)
+import pytest
+
+from app.health.dependencies.redis_health import RedisHealthChecker, RedisHealthMetrics
 
 
 class TestRedisHealthMetrics:
@@ -128,9 +126,9 @@ class TestRedisHealthCheckerCheckHealth:
                 "keyspace_misses": 2000,
                 "evicted_keys": 10
             }
-        elif section == "clients":
+        if section == "clients":
             return {"connected_clients": 5}
-        elif section == "memory":
+        if section == "memory":
             return {
                 "used_memory": 100 * 1024 * 1024,
                 "maxmemory": 256 * 1024 * 1024,

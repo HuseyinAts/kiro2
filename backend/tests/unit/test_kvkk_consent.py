@@ -4,17 +4,11 @@ Sprint 7: Test Coverage
 
 Tests for KVKK consent system (Turkish GDPR compliance).
 """
+from datetime import datetime
+
 import pytest
-from datetime import datetime, timezone
-from uuid import uuid4
 
-from models.kvkk_models import (
-    KVKKConsent,
-    ConsentStatus,
-    DataProcessingPurpose
-)
-
-
+from models.kvkk_models import ConsentStatus, DataProcessingPurpose, KVKKConsent
 
 pytestmark = pytest.mark.skipif(
     True,

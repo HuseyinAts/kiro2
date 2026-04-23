@@ -10,10 +10,10 @@ import logging
 import re
 import secrets
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from io import BytesIO
-from typing import Any, Set
+from typing import Any
 
 import bcrypt
 import geoip2.database
@@ -66,7 +66,7 @@ class SecurityThreat:
 
     def __post_init__(self):
         if self.timestamp is None:
-            self.timestamp = datetime.now(timezone.utc)
+            self.timestamp = datetime.now(UTC)
         if self.additional_data is None:
             self.additional_data = {}
 
@@ -577,8 +577,8 @@ class IPSecurityManager:
 
     def __init__(self):
         self.trusted_networks = self._load_trusted_networks()
-        self.blocked_ips: Set[str] = set()
-        self.suspicious_ips: Set[str] = set()
+        self.blocked_ips: set[str] = set()
+        self.suspicious_ips: set[str] = set()
         self.geo_db_path = None  # Path to GeoIP database if available
 
     def _load_trusted_networks(self) -> list[ipaddress.IPv4Network]:

@@ -21,8 +21,8 @@ from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 from services.youtube_rate_limiter import (
-    YouTubeRateLimiter,
     YouTubeQuotaInfo,
+    YouTubeRateLimiter,
     get_youtube_rate_limiter,
 )
 
@@ -268,6 +268,7 @@ async def test_rate_limiting_integration():
     This test requires a running backend with Redis
     """
     from httpx import AsyncClient
+
     from main import app
 
     async with AsyncClient(app=app, base_url="http://test") as client:

@@ -14,13 +14,14 @@ Usage:
     cd backend && py demo_geometry_generation.py
 """
 
-import sys
-import io
-import os
 import asyncio
+import io
 import json
-from datetime import datetime, timezone
+import os
+import sys
+from datetime import UTC, datetime
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -47,7 +48,7 @@ async def demo_geometry_generation():
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
         print("[ERROR] ANTHROPIC_API_KEY not found in .env")
-        return
+        return None
 
     generator = OSYMInspiredGenerator(anthropic_api_key=api_key)
     print("      [OK] Generator ready\n")
@@ -125,7 +126,7 @@ async def demo_geometry_generation():
 
             # Add metadata
             question["test_case"] = test_case["name"]
-            question["generated_at"] = datetime.now(timezone.utc).isoformat()
+            question["generated_at"] = datetime.now(UTC).isoformat()
 
             # Validate
             print("\n[VALIDATING] Checking question structure...")
@@ -164,7 +165,7 @@ async def demo_geometry_generation():
                 questions.append(question)  # Still save for inspection
 
         except Exception as e:
-            print(f"\n[ERROR] Failed to generate question {i}: {str(e)}")
+            print(f"\n[ERROR] Failed to generate question {i}: {e!s}")
             import traceback
 
             traceback.print_exc()
@@ -194,7 +195,7 @@ async def demo_geometry_generation():
 
     # Save questions
     if questions:
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         output_file = f"demo_geometry_questions_{timestamp}.json"
 
         with open(output_file, "w", encoding="utf-8") as f:

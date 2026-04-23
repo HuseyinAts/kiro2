@@ -4,7 +4,7 @@ Timeline Diagrams Mixin - KIRO2
 Generates horizontal and vertical timeline diagrams.
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
@@ -15,14 +15,14 @@ from .utils import close_figure, fig_to_svg
 class TimelineMixin:
     """Mixin for timeline diagram generation."""
 
-    fig_size: Tuple[int, int]
+    fig_size: tuple[int, int]
 
     def _generate_timeline(
         self,
         subtype: str,
-        content: Dict[str, Any],
-        labels: Optional[Dict[str, str]],
-    ) -> Tuple[str, Dict[str, Any]]:
+        content: dict[str, Any],
+        labels: dict[str, str] | None,
+    ) -> tuple[str, dict[str, Any]]:
         """
         Generate timeline diagram (horizontal or vertical).
 
@@ -36,14 +36,13 @@ class TimelineMixin:
         """
         if subtype == "horizontal_timeline":
             return self._generate_horizontal_timeline(content)
-        elif subtype == "vertical_timeline":
+        if subtype == "vertical_timeline":
             return self._generate_vertical_timeline(content)
-        else:
-            raise ValueError(f"Unknown timeline subtype: {subtype}")
+        raise ValueError(f"Unknown timeline subtype: {subtype}")
 
     def _generate_horizontal_timeline(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate horizontal timeline."""
         fig, ax = plt.subplots(figsize=(12, 6))
         ax.set_aspect("auto")
@@ -52,7 +51,7 @@ class TimelineMixin:
         title = content.get("title", "Zaman Cizelgesi")
         ax.set_title(title, fontsize=14, fontweight="bold", pad=20)
 
-        events: List[Dict[str, Any]] = content.get("events", [])
+        events: list[dict[str, Any]] = content.get("events", [])
         num_events = len(events)
 
         # Timeline line
@@ -116,8 +115,8 @@ class TimelineMixin:
         return svg_content, metadata
 
     def _generate_vertical_timeline(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate vertical timeline."""
         fig, ax = plt.subplots(figsize=(8, 11))
         ax.set_aspect("auto")
@@ -126,7 +125,7 @@ class TimelineMixin:
         title = content.get("title", "Zaman Cizelgesi")
         ax.set_title(title, fontsize=14, fontweight="bold", pad=20)
 
-        events: List[Dict[str, Any]] = content.get("events", [])
+        events: list[dict[str, Any]] = content.get("events", [])
         num_events = len(events)
 
         # Timeline line

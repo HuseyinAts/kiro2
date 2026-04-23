@@ -9,14 +9,14 @@ Advanced tracing middleware with:
 - Error tracking
 - Custom attributes
 """
-import time
 import logging
-from typing import Callable
+import time
+from collections.abc import Callable
 
 from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
 from opentelemetry import trace
 from opentelemetry.trace import SpanKind, StatusCode
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from core.opentelemetry_config import get_otel_config
 
@@ -84,9 +84,7 @@ class DistributedTracingMiddleware(BaseHTTPMiddleware):
                 self._add_response_attributes(span, response, duration_ms)
 
                 # Set span status based on response code
-                if response.status_code >= 500:
-                    span.set_status(StatusCode.ERROR, f"HTTP {response.status_code}")
-                elif response.status_code >= 400:
+                if response.status_code >= 500 or response.status_code >= 400:
                     span.set_status(StatusCode.ERROR, f"HTTP {response.status_code}")
                 else:
                     span.set_status(StatusCode.OK)
@@ -396,8 +394,7 @@ def profile_function_performance(func_name: str):
 
         if inspect.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 

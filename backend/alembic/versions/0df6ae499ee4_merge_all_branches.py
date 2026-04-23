@@ -5,9 +5,8 @@ Revises: 002_performance_indexes, 20251117_044637, 20260102_fix_cols, 3ec73c2c6d
 Create Date: 2026-01-13 08:13:03.258230
 
 """
-from typing import Sequence, Union
-
-
+from collections.abc import Sequence
+from typing import Union
 
 # revision identifiers, used by Alembic.
 revision: str = '0df6ae499ee4'

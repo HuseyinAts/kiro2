@@ -4,8 +4,9 @@ Actually executing core service methods with mocks
 Target: +2% coverage through real execution
 """
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 
 class TestBaseServiceExecution:

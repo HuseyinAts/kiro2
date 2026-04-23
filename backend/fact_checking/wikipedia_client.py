@@ -15,7 +15,7 @@ import asyncio
 import hashlib
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 from pydantic import BaseModel, Field
@@ -28,9 +28,9 @@ class WikipediaVerificationResult(BaseModel):
     found: bool = Field(description="Bilgi bulundu mu")
     confidence: float = Field(ge=0.0, le=1.0, description="Güven skoru")
     status: str = Field(description="true/false/partially_true/unverified")
-    evidence: Optional[str] = Field(default=None, description="Kanıt metni")
-    page_title: Optional[str] = Field(default=None, description="Wikipedia sayfa başlığı")
-    page_url: Optional[str] = Field(default=None, description="Wikipedia sayfa URL'i")
+    evidence: str | None = Field(default=None, description="Kanıt metni")
+    page_title: str | None = Field(default=None, description="Wikipedia sayfa başlığı")
+    page_url: str | None = Field(default=None, description="Wikipedia sayfa URL'i")
 
 
 class WikipediaClient:
@@ -57,7 +57,7 @@ class WikipediaClient:
         self.rate_limit = rate_limit
         self.cache_enabled = cache_enabled
 
-        self._cache: Dict[str, Dict[str, Any]] = {}
+        self._cache: dict[str, dict[str, Any]] = {}
         self._last_request_time = 0.0
         self._request_count = 0
         self._embedding_model = None
@@ -138,7 +138,7 @@ class WikipediaClient:
 
         self._request_count += 1
 
-    async def _search(self, query: str) -> List[Dict[str, Any]]:
+    async def _search(self, query: str) -> list[dict[str, Any]]:
         """
         Wikipedia'da arama yap.
 
@@ -166,32 +166,31 @@ class WikipediaClient:
         }
 
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    self.API_URL,
-                    params=params,
-                    timeout=aiohttp.ClientTimeout(total=10.0),
-                ) as resp:
-                    if resp.status != 200:
-                        return []
+            async with aiohttp.ClientSession() as session, session.get(
+                self.API_URL,
+                params=params,
+                timeout=aiohttp.ClientTimeout(total=10.0),
+            ) as resp:
+                if resp.status != 200:
+                    return []
 
-                    data = await resp.json()
-                    results = data.get("query", {}).get("search", [])
+                data = await resp.json()
+                results = data.get("query", {}).get("search", [])
 
-                    # Cache'e kaydet
-                    if self.cache_enabled:
-                        self._cache[cache_key] = {
-                            "timestamp": time.time(),
-                            "data": results,
-                        }
+                # Cache'e kaydet
+                if self.cache_enabled:
+                    self._cache[cache_key] = {
+                        "timestamp": time.time(),
+                        "data": results,
+                    }
 
-                    return results
+                return results
 
         except Exception as e:
             logger.error(f"Wikipedia search error: {e}")
             return []
 
-    async def _get_page_content(self, title: str) -> Optional[str]:
+    async def _get_page_content(self, title: str) -> str | None:
         """
         Wikipedia sayfa içeriğini al.
 
@@ -220,33 +219,32 @@ class WikipediaClient:
         }
 
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    self.API_URL,
-                    params=params,
-                    timeout=aiohttp.ClientTimeout(total=10.0),
-                ) as resp:
-                    if resp.status != 200:
-                        return None
-
-                    data = await resp.json()
-                    pages = data.get("query", {}).get("pages", {})
-
-                    # İlk sayfanın içeriğini al
-                    for page_id, page_data in pages.items():
-                        if page_id != "-1":
-                            content = page_data.get("extract", "")
-
-                            # Cache'e kaydet
-                            if self.cache_enabled:
-                                self._cache[cache_key] = {
-                                    "timestamp": time.time(),
-                                    "data": content,
-                                }
-
-                            return content
-
+            async with aiohttp.ClientSession() as session, session.get(
+                self.API_URL,
+                params=params,
+                timeout=aiohttp.ClientTimeout(total=10.0),
+            ) as resp:
+                if resp.status != 200:
                     return None
+
+                data = await resp.json()
+                pages = data.get("query", {}).get("pages", {})
+
+                # İlk sayfanın içeriğini al
+                for page_id, page_data in pages.items():
+                    if page_id != "-1":
+                        content = page_data.get("extract", "")
+
+                        # Cache'e kaydet
+                        if self.cache_enabled:
+                            self._cache[cache_key] = {
+                                "timestamp": time.time(),
+                                "data": content,
+                            }
+
+                        return content
+
+                return None
 
         except Exception as e:
             logger.error(f"Wikipedia page content error: {e}")
@@ -254,7 +252,7 @@ class WikipediaClient:
 
     def _verify_claim_in_content(
         self, claim: str, content: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         İddiayı içerikte doğrula.
 
@@ -305,18 +303,17 @@ class WikipediaClient:
                 "confidence": 0.7 * match_ratio,
                 "evidence": content[:500],
             }
-        elif match_ratio >= 0.5:
+        if match_ratio >= 0.5:
             return {
                 "status": "unverified",
                 "confidence": 0.3,
                 "evidence": content[:300],
             }
-        else:
-            return {
-                "status": "unverified",
-                "confidence": 0.0,
-                "evidence": None,
-            }
+        return {
+            "status": "unverified",
+            "confidence": 0.0,
+            "evidence": None,
+        }
 
     def _extract_evidence(self, content: str, claim: str) -> str:
         """
@@ -350,7 +347,7 @@ class WikipediaClient:
         """Cache'i temizle"""
         self._cache.clear()
 
-    def get_cache_stats(self) -> Dict[str, int]:
+    def get_cache_stats(self) -> dict[str, int]:
         """Cache istatistiklerini al"""
         return {
             "entries": len(self._cache),

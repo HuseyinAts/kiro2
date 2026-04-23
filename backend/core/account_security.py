@@ -17,9 +17,9 @@ import hashlib
 import secrets
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from backend.core.structured_logger import get_logger
 
@@ -110,8 +110,8 @@ class DeviceInfo:
     user_agent: str
     device_name: str = ""
     is_verified: bool = False
-    first_seen: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_seen: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    first_seen: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_seen: datetime = field(default_factory=lambda: datetime.now(UTC))
     login_count: int = 0
 
     def to_dict(self) -> dict[str, Any]:
@@ -152,8 +152,8 @@ class LoginAttempt:
     user_agent: str
     device_fingerprint: str
     success: bool
-    failure_reason: Optional[str] = None
-    location: Optional[str] = None
+    failure_reason: str | None = None
+    location: str | None = None
     is_suspicious: bool = False
 
     def to_dict(self) -> dict[str, Any]:
@@ -226,7 +226,7 @@ class RecoveryResult:
     completed_steps: list[RecoveryStep] = field(default_factory=list)
     remaining_steps: list[RecoveryStep] = field(default_factory=list)
     expires_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc) + timedelta(hours=1)
+        default_factory=lambda: datetime.now(UTC) + timedelta(hours=1)
     )
     is_completed: bool = False
 
@@ -332,8 +332,8 @@ class AccountSecurityService:
     def _generate_device_fingerprint(
         self,
         user_agent: str,
-        screen_info: Optional[str] = None,
-        additional_data: Optional[str] = None,
+        screen_info: str | None = None,
+        additional_data: str | None = None,
     ) -> str:
         """
         Cihaz parmak izi olusturur.
@@ -407,7 +407,7 @@ class AccountSecurityService:
         user_id: int,
         ip: str,
         user_agent: str,
-        timestamp: Optional[datetime] = None,
+        timestamp: datetime | None = None,
     ) -> SuspiciousActivityResult:
         """
         Supheli aktivite tespiti yapar.
@@ -434,7 +434,7 @@ class AccountSecurityService:
             ...     print(f"Supheli aktivite: {result.reasons}")
         """
         if timestamp is None:
-            timestamp = datetime.now(timezone.utc)
+            timestamp = datetime.now(UTC)
 
         reasons: list[SuspiciousActivityReason] = []
         risk_score = 0
@@ -517,7 +517,7 @@ class AccountSecurityService:
     def _get_recent_failed_attempts(self, user_id: int, minutes: int = 30) -> int:
         """Son X dakikadaki basarisiz giris denemesi sayisini dondurur."""
         history = self._login_history.get(user_id, [])
-        cutoff = datetime.now(timezone.utc) - timedelta(minutes=minutes)
+        cutoff = datetime.now(UTC) - timedelta(minutes=minutes)
 
         return sum(
             1 for attempt in history
@@ -552,16 +552,15 @@ class AccountSecurityService:
         """Risk skoruna gore onerilen aksiyonu belirler."""
         if risk_score >= 70:
             return RecommendedAction.LOCK_ACCOUNT
-        elif risk_score >= 50:
+        if risk_score >= 50:
             return RecommendedAction.BLOCK_LOGIN
-        elif risk_score >= 40:
+        if risk_score >= 40:
             return RecommendedAction.REQUIRE_MFA
-        elif SuspiciousActivityReason.NEW_DEVICE in reasons:
+        if SuspiciousActivityReason.NEW_DEVICE in reasons:
             return RecommendedAction.VERIFY_DEVICE
-        elif risk_score >= 20:
+        if risk_score >= 20:
             return RecommendedAction.SEND_ALERT
-        else:
-            return RecommendedAction.ALLOW
+        return RecommendedAction.ALLOW
 
     # ==================== DEVICE VERIFICATION ====================
 
@@ -570,7 +569,7 @@ class AccountSecurityService:
         user_id: int,
         ip: str,
         user_agent: str,
-        screen_info: Optional[str] = None,
+        screen_info: str | None = None,
     ) -> DeviceInfo:
         """
         Yeni cihaz kaydeder.
@@ -594,8 +593,8 @@ class AccountSecurityService:
             user_agent=user_agent,
             device_name=device_name,
             is_verified=False,
-            first_seen=datetime.now(timezone.utc),
-            last_seen=datetime.now(timezone.utc),
+            first_seen=datetime.now(UTC),
+            last_seen=datetime.now(UTC),
             login_count=1,
         )
 
@@ -611,7 +610,7 @@ class AccountSecurityService:
 
         if existing:
             # Update existing device
-            existing.last_seen = datetime.now(timezone.utc)
+            existing.last_seen = datetime.now(UTC)
             existing.ip_address = ip
             existing.login_count += 1
             device = existing
@@ -663,7 +662,7 @@ class AccountSecurityService:
             return False
 
         # Check expiry
-        if datetime.now(timezone.utc) > code_entry["expires_at"]:
+        if datetime.now(UTC) > code_entry["expires_at"]:
             del self._verification_codes[code_key]
             logger.warning(
                 "device_verification_failed",
@@ -721,8 +720,8 @@ class AccountSecurityService:
             "code": code,
             "user_id": user_id,
             "device_fingerprint": device_fingerprint,
-            "created_at": datetime.now(timezone.utc),
-            "expires_at": datetime.now(timezone.utc)
+            "created_at": datetime.now(UTC),
+            "expires_at": datetime.now(UTC)
             + timedelta(minutes=self.VERIFICATION_CODE_EXPIRY),
         }
 
@@ -762,7 +761,7 @@ class AccountSecurityService:
             alert_type=AlertType.PASSWORD_CHANGED.value,
             details={
                 "invalidated_sessions": count,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             },
         )
 
@@ -835,7 +834,7 @@ class AccountSecurityService:
             current_step=0,
             completed_steps=[],
             remaining_steps=required_steps.copy(),
-            expires_at=datetime.now(timezone.utc)
+            expires_at=datetime.now(UTC)
             + timedelta(hours=self.RECOVERY_EXPIRY_HOURS),
             is_completed=False,
         )
@@ -890,7 +889,7 @@ class AccountSecurityService:
             return False
 
         # Check expiry
-        if datetime.now(timezone.utc) > recovery.expires_at:
+        if datetime.now(UTC) > recovery.expires_at:
             del self._recovery_sessions[recovery_id]
             logger.warning(
                 "recovery_verification_failed",
@@ -945,7 +944,7 @@ class AccountSecurityService:
 
         return True
 
-    def get_recovery_status(self, recovery_id: str) -> Optional[RecoveryResult]:
+    def get_recovery_status(self, recovery_id: str) -> RecoveryResult | None:
         """
         Kurtarma islemi durumunu dondurur.
 
@@ -965,7 +964,7 @@ class AccountSecurityService:
         ip: str,
         user_agent: str,
         success: bool,
-        failure_reason: Optional[str] = None,
+        failure_reason: str | None = None,
     ) -> LoginAttempt:
         """
         Giris denemesini kaydeder.
@@ -987,7 +986,7 @@ class AccountSecurityService:
 
         attempt = LoginAttempt(
             attempt_id=str(uuid.uuid4()),
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             ip_address=ip,
             user_agent=user_agent,
             device_fingerprint=fingerprint,
@@ -1082,7 +1081,7 @@ class AccountSecurityService:
 
         lock_info = AccountLockInfo(
             user_id=user_id,
-            locked_at=datetime.now(timezone.utc),
+            locked_at=datetime.now(UTC),
             reason=lock_reason,
             locked_by=locked_by,
             unlock_requires_admin=True,
@@ -1173,7 +1172,7 @@ class AccountSecurityService:
         """
         return user_id in self._locked_accounts
 
-    def get_lock_info(self, user_id: int) -> Optional[AccountLockInfo]:
+    def get_lock_info(self, user_id: int) -> AccountLockInfo | None:
         """
         Hesap kilidi bilgisini dondurur.
 
@@ -1210,7 +1209,7 @@ class AccountSecurityService:
         alert_data = {
             "user_id": user_id,
             "alert_type": alert_type,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "details": details,
         }
 
@@ -1287,7 +1286,7 @@ class AccountSecurityService:
             1
             for h in history
             if not h.success
-            and h.timestamp > datetime.now(timezone.utc) - timedelta(hours=24)
+            and h.timestamp > datetime.now(UTC) - timedelta(hours=24)
         )
         suspicious_attempts = sum(1 for h in history if h.is_suspicious)
 
@@ -1307,7 +1306,7 @@ class AccountSecurityService:
 # ==================== GLOBAL SERVICE INSTANCE ====================
 
 
-_security_service: Optional[AccountSecurityService] = None
+_security_service: AccountSecurityService | None = None
 
 
 def get_account_security_service() -> AccountSecurityService:

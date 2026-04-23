@@ -7,12 +7,13 @@ Create Date: 2025-11-11 18:43:51.775173
 Sprint 4: Two-Factor Authentication (2FA)
 Adds TOTP secret, 2FA enabled flag, and backup codes to users table
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSON
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = 'd7a10d07b648'

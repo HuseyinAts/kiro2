@@ -10,9 +10,10 @@ These models will be removed in v3.0.0.
 Part of Mock Data Cleanup - Phase 4
 """
 import warnings
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
-from sqlalchemy import Column, String, Float, DateTime, ForeignKey, JSON, Text
+
+from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, String, Text
 
 from .base import Base
 
@@ -121,7 +122,7 @@ class StudentLearningProfile(Base):
         """Check if profile is older than 30 days and should be recalculated"""
         if self.updated_at is None:
             return True
-        age = datetime.now(timezone.utc) - self.updated_at
+        age = datetime.now(UTC) - self.updated_at
         return bool(age > timedelta(days=30))
 
     def to_canonical(self) -> "LearningPathStudentProfile":

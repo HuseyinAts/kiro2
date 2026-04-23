@@ -5,8 +5,8 @@ Starts all 4 services and generates sample questions
 """
 
 import asyncio
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add backend to path
@@ -34,14 +34,14 @@ async def main():
     # Import services
     print("[1/5] Importing services...")
     try:
-        from services.knowledge_graph_service import KnowledgeGraphService
-        from services.plagiarism_detection_service import PlagiarismDetectionService
         from services.adaptive_testing_service import AdaptiveTestingService
         from services.hitl_workflow_service import HITLWorkflowService
+        from services.knowledge_graph_service import KnowledgeGraphService
+        from services.plagiarism_detection_service import PlagiarismDetectionService
 
         print("✓ All services imported successfully")
     except Exception as e:
-        print(f"✗ Import error: {str(e)}")
+        print(f"✗ Import error: {e!s}")
         return
 
     print()
@@ -52,7 +52,7 @@ async def main():
         kg_service = KnowledgeGraphService()
         print(f"✓ Knowledge Graph initialized - {len(kg_service.graph.nodes())} nodes")
     except Exception as e:
-        print(f"✗ Knowledge Graph error: {str(e)}")
+        print(f"✗ Knowledge Graph error: {e!s}")
         kg_service = None
 
     print()
@@ -65,7 +65,7 @@ async def main():
         await plagiarism_service.initialize()
         print("✓ Plagiarism Detection initialized - BERT model ready")
     except Exception as e:
-        print(f"✗ Plagiarism Detection error: {str(e)}")
+        print(f"✗ Plagiarism Detection error: {e!s}")
         print("   Continuing without plagiarism detection...")
         plagiarism_service = None
 
@@ -77,7 +77,7 @@ async def main():
         cat_service = AdaptiveTestingService()
         print("✓ CAT Service initialized - BanditCAT algorithm ready")
     except Exception as e:
-        print(f"✗ CAT Service error: {str(e)}")
+        print(f"✗ CAT Service error: {e!s}")
         cat_service = None
 
     print()
@@ -88,7 +88,7 @@ async def main():
         hitl_service = HITLWorkflowService()
         print("✓ HITL Service initialized - Expert workflow ready")
     except Exception as e:
-        print(f"✗ HITL Service error: {str(e)}")
+        print(f"✗ HITL Service error: {e!s}")
         hitl_service = None
 
     print()
@@ -182,8 +182,7 @@ async def main():
                     )
                     rejected_count += 1
                     continue
-                else:
-                    print("    ✓ PASSED - Not plagiarized")
+                print("    ✓ PASSED - Not plagiarized")
             except Exception as e:
                 print(f"    ! Plagiarism check skipped: {str(e)[:50]}")
                 similarity = 0.0
@@ -303,7 +302,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n\nInterrupted by user")
     except Exception as e:
-        print(f"\n\nFATAL ERROR: {str(e)}")
+        print(f"\n\nFATAL ERROR: {e!s}")
         import traceback
 
         traceback.print_exc()

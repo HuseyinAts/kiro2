@@ -5,7 +5,6 @@ Centralized settings for all RAG components
 
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -18,11 +17,11 @@ class EmbeddingConfig:
     device: str = "cpu"  # cpu, cuda
 
     # OpenAI settings (if used)
-    openai_api_key: Optional[str] = None
+    openai_api_key: str | None = None
     openai_model: str = "text-embedding-ada-002"
 
     # Cohere settings (if used)
-    cohere_api_key: Optional[str] = None
+    cohere_api_key: str | None = None
     cohere_model: str = "embed-multilingual-v3.0"
 
     # Performance
@@ -40,8 +39,8 @@ class VectorStoreConfig:
     collection_name: str = "kiro2_documents"
 
     # Chroma specific
-    chroma_host: Optional[str] = None
-    chroma_port: Optional[int] = None
+    chroma_host: str | None = None
+    chroma_port: int | None = None
 
     # FAISS specific
     faiss_index_type: str = "FlatL2"  # FlatL2, IVFFlat, HNSW
@@ -170,7 +169,7 @@ class RAGConfig:
 
 
 # Global configuration instance
-_config: Optional[RAGConfig] = None
+_config: RAGConfig | None = None
 
 
 def get_rag_config() -> RAGConfig:

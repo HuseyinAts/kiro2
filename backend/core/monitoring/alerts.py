@@ -9,12 +9,12 @@ Date: 2026-01-14
 Requirements: REQ-8.2
 """
 
-import time
 import logging
-from enum import Enum
+import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Optional, Callable
 from datetime import datetime
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class Alert:
     name: str
     message: str
     severity: AlertSeverity
-    endpoint: Optional[str] = None
+    endpoint: str | None = None
     value: float = 0.0
     threshold: float = 0.0
     timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -168,10 +168,10 @@ class AlertManager:
         name: str,
         message: str,
         severity: AlertSeverity,
-        endpoint: Optional[str] = None,
+        endpoint: str | None = None,
         value: float = 0.0,
         threshold: float = 0.0,
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
         force: bool = False
     ) -> bool:
         """
@@ -243,7 +243,7 @@ class AlertManager:
         self,
         endpoint: str,
         p95_ms: float,
-        p99_ms: Optional[float] = None
+        p99_ms: float | None = None
     ) -> bool:
         """
         Latency'yi kontrol eder ve gerekirse alert gönderir.
@@ -353,7 +353,7 @@ class AlertManager:
     def get_alert_history(
         self,
         limit: int = 100,
-        severity: Optional[AlertSeverity] = None
+        severity: AlertSeverity | None = None
     ) -> list[dict]:
         """
         Alert geçmişini döndürür.
@@ -407,14 +407,13 @@ def webhook_alert_handler(alert: Alert) -> None:
     """
     # Placeholder for webhook integration
     # In production, this would send to Slack, PagerDuty, etc.
-    pass
 
 
 # =============================================================================
 # SINGLETON INSTANCE
 # =============================================================================
 
-_alert_manager: Optional[AlertManager] = None
+_alert_manager: AlertManager | None = None
 
 
 def get_alert_manager() -> AlertManager:

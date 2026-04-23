@@ -17,8 +17,8 @@ Aligns with:
 """
 
 import pytest
-from httpx import AsyncClient
 from fastapi import status
+from httpx import AsyncClient
 
 # Module skip: async_client fixture uses deprecated AsyncClient(app=...) - httpx 0.27+
 pytestmark = pytest.mark.skipif(True, reason="AsyncClient(app=...) deprecated in httpx 0.27+ (needs ASGITransport)")

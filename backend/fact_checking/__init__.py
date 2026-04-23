@@ -30,12 +30,12 @@ from backend.fact_checking.wikipedia_client import (
 )
 
 __all__ = [
-    "FactChecker",
     "ClaimVerification",
+    "FactChecker",
+    "MEBResourceClient",
+    "MEBVerificationResult",
     "RAGClient",
     "RAGVerificationResult",
     "WikipediaClient",
     "WikipediaVerificationResult",
-    "MEBResourceClient",
-    "MEBVerificationResult",
 ]

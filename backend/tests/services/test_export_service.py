@@ -4,12 +4,13 @@ Unit tests for ExportService (REQ-8)
 Export functionality, privacy filters, and sharing tests.
 """
 
-import pytest
-from datetime import timedelta, date
+from datetime import date, timedelta
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
-from api.schemas.diary import ExportRequest, ExportFormat
+import pytest
+
+from api.schemas.diary import ExportFormat, ExportRequest
 
 
 class TestExportServiceExport:
@@ -214,7 +215,7 @@ class TestExportServiceEncryption:
 
     def test_derive_key(self):
         """Test key derivation from password"""
-        from services.export_service import ExportService, CRYPTOGRAPHY_AVAILABLE
+        from services.export_service import CRYPTOGRAPHY_AVAILABLE, ExportService
 
         if not CRYPTOGRAPHY_AVAILABLE:
             pytest.skip("cryptography not installed")
@@ -232,7 +233,7 @@ class TestExportServiceEncryption:
 
     def test_decrypt_backup(self):
         """Test backup decryption"""
-        from services.export_service import ExportService, CRYPTOGRAPHY_AVAILABLE
+        from services.export_service import CRYPTOGRAPHY_AVAILABLE, ExportService
 
         if not CRYPTOGRAPHY_AVAILABLE:
             pytest.skip("cryptography not installed")
@@ -243,6 +244,7 @@ class TestExportServiceEncryption:
         # First encrypt some data manually
         import json
         import os
+
         from cryptography.fernet import Fernet
 
         password = "test_password"
@@ -267,8 +269,8 @@ class TestExportServiceSharing:
     @pytest.mark.asyncio
     async def test_create_share_link(self):
         """Test share link creation"""
-        from services.export_service import ExportService
         from api.schemas.diary import ShareLinkCreate
+        from services.export_service import ExportService
 
         mock_db = AsyncMock()
         mock_db.add = MagicMock()
@@ -298,8 +300,8 @@ class TestExportServiceSharing:
     @pytest.mark.asyncio
     async def test_create_share_link_not_found(self):
         """Test share link creation for non-existent export"""
-        from services.export_service import ExportService
         from api.schemas.diary import ShareLinkCreate
+        from services.export_service import ExportService
 
         mock_db = AsyncMock()
         mock_result = MagicMock()
@@ -504,8 +506,9 @@ class TestExportServiceFileHandling:
 
     def test_get_export_path(self):
         """Test getting export file path"""
-        from services.export_service import ExportService
         from pathlib import Path
+
+        from services.export_service import ExportService
 
         mock_db = MagicMock()
         service = ExportService(mock_db)
@@ -522,8 +525,9 @@ class TestExportServiceFileHandling:
 
     def test_get_export_path_pdf(self):
         """Test getting PDF export file path"""
-        from services.export_service import ExportService
         from pathlib import Path
+
+        from services.export_service import ExportService
 
         mock_db = MagicMock()
         service = ExportService(mock_db)
@@ -539,8 +543,9 @@ class TestExportServiceFileHandling:
 
     def test_get_export_path_json(self):
         """Test getting JSON export file path"""
-        from services.export_service import ExportService
         from pathlib import Path
+
+        from services.export_service import ExportService
 
         mock_db = MagicMock()
         service = ExportService(mock_db)

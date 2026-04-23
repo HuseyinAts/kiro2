@@ -4,7 +4,7 @@ REQ-49.49-49.52: Tam ÖSYM simülasyonu, zaman yönetimi, gerçekçi ortam, deta
 """
 
 import logging
-from typing import Dict, List
+
 from services.test_types import BaseTestType, TestConfiguration
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class MockExam(BaseTestType):
             osym_format_compliance=True,  # REQ-49.49: %100 ÖSYM uyumlu
         )
 
-    def analyze_time_management(self, session_data: Dict) -> Dict:
+    def analyze_time_management(self, session_data: dict) -> dict:
         """REQ-49.50: Time management practice analysis"""
         responses = session_data.get("responses", [])
 
@@ -62,7 +62,7 @@ class MockExam(BaseTestType):
             "time_management_score": min(100, time_efficiency),
         }
 
-    def simulate_exam_environment(self, session_data: Dict) -> Dict:
+    def simulate_exam_environment(self, session_data: dict) -> dict:
         """REQ-49.51: Realistic exam environment simulation"""
         return {
             "environment_type": "mock_exam",
@@ -73,7 +73,7 @@ class MockExam(BaseTestType):
             "simulation_quality": "high",
         }
 
-    def generate_feedback(self, session_data: Dict) -> Dict:
+    def generate_feedback(self, session_data: dict) -> dict:
         """REQ-49.52: Detailed performance analysis"""
         responses = session_data.get("responses", [])
         total_correct = sum(1 for r in responses if r.get("is_correct", False))
@@ -122,7 +122,7 @@ class MockExam(BaseTestType):
             "osym_simulation_complete": True,
         }
 
-    def calculate_recommendations(self, session_data: Dict) -> List[str]:
+    def calculate_recommendations(self, session_data: dict) -> list[str]:
         """Detaylı öneriler"""
         feedback = self.generate_feedback(session_data)
         recommendations = []

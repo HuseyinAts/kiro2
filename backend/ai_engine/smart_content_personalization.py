@@ -4,12 +4,12 @@ AI-powered content adaptation and personalization for optimal learning
 """
 
 import logging
-import numpy as np
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 from enum import Enum
+from typing import Any
 
+import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 
@@ -66,9 +66,9 @@ class LearnerProfile:
 
     # Learning preferences
     primary_learning_style: LearningStyle
-    secondary_learning_style: Optional[LearningStyle]
-    preferred_content_types: List[ContentType]
-    content_type_preferences: Dict[ContentType, float]  # 0-1 preference scores
+    secondary_learning_style: LearningStyle | None
+    preferred_content_types: list[ContentType]
+    content_type_preferences: dict[ContentType, float]  # 0-1 preference scores
 
     # Cognitive characteristics
     processing_speed: float  # 0-1 (slow to fast)
@@ -77,16 +77,16 @@ class LearnerProfile:
     cognitive_load_tolerance: float  # 0-1 (low to high)
 
     # Performance metrics
-    subject_proficiency: Dict[str, float]  # subject -> proficiency (0-1)
-    skill_levels: Dict[str, float]  # skill -> level (0-1)
-    weakness_areas: List[str]
-    strength_areas: List[str]
+    subject_proficiency: dict[str, float]  # subject -> proficiency (0-1)
+    skill_levels: dict[str, float]  # skill -> level (0-1)
+    weakness_areas: list[str]
+    strength_areas: list[str]
 
     # Engagement patterns
     optimal_session_length: int  # minutes
-    preferred_study_times: List[str]  # time periods
-    engagement_triggers: List[str]  # what motivates the learner
-    fatigue_indicators: List[str]  # signs of fatigue
+    preferred_study_times: list[str]  # time periods
+    engagement_triggers: list[str]  # what motivates the learner
+    fatigue_indicators: list[str]  # signs of fatigue
 
     # Personalization settings
     personalization_level: PersonalizationLevel
@@ -99,11 +99,11 @@ class LearnerProfile:
     novelty_preference: float  # 0-1 (familiar to novel)
 
     # Historical data
-    learning_history: List[Dict[str, Any]]
-    performance_trends: Dict[str, List[float]]
-    engagement_history: List[float]
+    learning_history: list[dict[str, Any]]
+    performance_trends: dict[str, list[float]]
+    engagement_history: list[float]
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -122,26 +122,26 @@ class ContentItem:
     interactivity_level: float  # 0-1
 
     # Learning objectives
-    learning_objectives: List[str]
-    skills_addressed: List[str]
-    prerequisites: List[str]
-    concepts_covered: List[str]
+    learning_objectives: list[str]
+    skills_addressed: list[str]
+    prerequisites: list[str]
+    concepts_covered: list[str]
 
     # Personalization features
-    adaptable_features: Dict[str, Any]  # features that can be personalized
-    learning_style_suitability: Dict[LearningStyle, float]
-    engagement_factors: List[str]
+    adaptable_features: dict[str, Any]  # features that can be personalized
+    learning_style_suitability: dict[LearningStyle, float]
+    engagement_factors: list[str]
 
     # Quality metrics
     effectiveness_score: float  # 0-1
     engagement_score: float  # 0-1
-    user_ratings: Dict[str, float]  # user_id -> rating
+    user_ratings: dict[str, float]  # user_id -> rating
 
     # Variants and alternatives
-    variants: Dict[str, Any]  # different versions of content
-    related_content: List[str]  # related content IDs
+    variants: dict[str, Any]  # different versions of content
+    related_content: list[str]  # related content IDs
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -152,35 +152,35 @@ class PersonalizationStrategy:
     strategy_id: str
 
     # Content selection strategy
-    content_selection_weights: Dict[str, float]
+    content_selection_weights: dict[str, float]
     difficulty_adjustment_factor: float  # -0.5 to +0.5
-    content_type_priorities: Dict[ContentType, float]
+    content_type_priorities: dict[ContentType, float]
 
     # Sequencing strategy
-    learning_path_preferences: Dict[str, float]
+    learning_path_preferences: dict[str, float]
     pacing_strategy: str  # "self_paced", "guided", "accelerated"
     review_frequency: float  # 0-1
 
     # Adaptation parameters
-    performance_threshold_adjustments: Dict[str, float]
-    feedback_timing_preferences: Dict[str, int]  # context -> delay in seconds
+    performance_threshold_adjustments: dict[str, float]
+    feedback_timing_preferences: dict[str, int]  # context -> delay in seconds
     hint_provision_strategy: str
 
     # Engagement optimization
-    motivation_techniques: List[str]
-    gamification_elements: List[str]
-    social_features: List[str]
+    motivation_techniques: list[str]
+    gamification_elements: list[str]
+    social_features: list[str]
 
     # Context adaptations
-    time_based_adaptations: Dict[str, Dict[str, Any]]
-    device_specific_adaptations: Dict[str, Dict[str, Any]]
-    environmental_adaptations: Dict[str, Dict[str, Any]]
+    time_based_adaptations: dict[str, dict[str, Any]]
+    device_specific_adaptations: dict[str, dict[str, Any]]
+    environmental_adaptations: dict[str, dict[str, Any]]
 
     # Strategy effectiveness
-    effectiveness_metrics: Dict[str, float]
+    effectiveness_metrics: dict[str, float]
     last_updated: datetime = field(default_factory=datetime.now)
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -189,30 +189,30 @@ class PersonalizedContent:
 
     content_id: str
     learner_id: str
-    personalized_features: Dict[str, Any]
+    personalized_features: dict[str, Any]
 
     # Personalization details
     difficulty_adjustment: float  # applied difficulty modification
-    content_modifications: Dict[str, Any]  # specific modifications made
-    presentation_style: Dict[str, Any]  # how content should be presented
+    content_modifications: dict[str, Any]  # specific modifications made
+    presentation_style: dict[str, Any]  # how content should be presented
 
     # Reasoning
-    personalization_reasoning: List[str]
+    personalization_reasoning: list[str]
     expected_engagement: float  # 0-1
     expected_performance: float  # 0-1
     learning_efficiency_score: float  # 0-1
 
     # Adaptive parameters
     should_adapt_during_session: bool
-    adaptation_triggers: List[str]
-    fallback_options: List[str]
+    adaptation_triggers: list[str]
+    fallback_options: list[str]
 
     # Timing and context
-    optimal_delivery_time: Optional[datetime]
-    context_requirements: Dict[str, Any]
-    session_integration: Dict[str, Any]
+    optimal_delivery_time: datetime | None
+    context_requirements: dict[str, Any]
+    session_integration: dict[str, Any]
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class SmartContentPersonalization:
@@ -411,7 +411,7 @@ class SmartContentPersonalization:
             f"Generated {len(sample_learners)} learner profiles and {len(sample_content)} content items"
         )
 
-    async def _create_sample_learner_profiles(self) -> List[LearnerProfile]:
+    async def _create_sample_learner_profiles(self) -> list[LearnerProfile]:
         """Create sample learner profiles"""
         profiles = []
 
@@ -478,7 +478,7 @@ class SmartContentPersonalization:
 
         return profiles
 
-    async def _create_sample_content_items(self) -> List[ContentItem]:
+    async def _create_sample_content_items(self) -> list[ContentItem]:
         """Create sample content items"""
         items = []
 
@@ -646,7 +646,7 @@ class SmartContentPersonalization:
         logger.info(f"Created {len(set(clusters))} learner clusters")
 
     async def personalize_content(
-        self, learner_id: str, content_id: str, context: Optional[Dict[str, Any]] = None
+        self, learner_id: str, content_id: str, context: dict[str, Any] | None = None
     ) -> PersonalizedContent:
         """Generate personalized content for a learner"""
         if not self.ready:
@@ -678,7 +678,7 @@ class SmartContentPersonalization:
         self,
         learner_profile: LearnerProfile,
         content_item: ContentItem,
-        context: Optional[Dict[str, Any]],
+        context: dict[str, Any] | None,
     ) -> PersonalizationStrategy:
         """Generate personalization strategy for learner-content pair"""
 
@@ -744,7 +744,7 @@ class SmartContentPersonalization:
 
     async def _calculate_content_weights(
         self, learner_profile: LearnerProfile, content_item: ContentItem
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Calculate content selection weights"""
         weights = {}
 
@@ -827,14 +827,13 @@ class SmartContentPersonalization:
 
         if learner_profile.processing_speed > 0.7:
             return "accelerated"
-        elif learner_profile.processing_speed < 0.4:
+        if learner_profile.processing_speed < 0.4:
             return "guided"
-        else:
-            return "self_paced"
+        return "self_paced"
 
     async def _generate_adaptation_parameters(
         self, learner_profile: LearnerProfile, content_item: ContentItem
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate adaptation parameters"""
 
         return {
@@ -854,7 +853,7 @@ class SmartContentPersonalization:
 
     async def _select_motivation_techniques(
         self, learner_profile: LearnerProfile, content_item: ContentItem
-    ) -> List[str]:
+    ) -> list[str]:
         """Select appropriate motivation techniques"""
 
         techniques = []
@@ -881,7 +880,7 @@ class SmartContentPersonalization:
         learner_profile: LearnerProfile,
         content_item: ContentItem,
         strategy: PersonalizationStrategy,
-        context: Optional[Dict[str, Any]],
+        context: dict[str, Any] | None,
     ) -> PersonalizedContent:
         """Apply personalization to content"""
 
@@ -945,8 +944,8 @@ class SmartContentPersonalization:
         learner_profile: LearnerProfile,
         content_item: ContentItem,
         strategy: PersonalizationStrategy,
-        template: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        template: dict[str, Any],
+    ) -> dict[str, Any]:
         """Generate specific content modifications"""
 
         modifications = template.get("content_modifications", {}).copy()
@@ -998,8 +997,8 @@ class SmartContentPersonalization:
         self,
         learner_profile: LearnerProfile,
         content_item: ContentItem,
-        template: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        template: dict[str, Any],
+    ) -> dict[str, Any]:
         """Determine presentation style"""
 
         style = template.get("presentation_preferences", {}).copy()
@@ -1107,7 +1106,7 @@ class SmartContentPersonalization:
         learner_profile: LearnerProfile,
         content_item: ContentItem,
         strategy: PersonalizationStrategy,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate reasoning for personalization decisions"""
 
         reasoning = []
@@ -1151,7 +1150,7 @@ class SmartContentPersonalization:
 
     async def _identify_adaptation_triggers(
         self, learner_profile: LearnerProfile, content_item: ContentItem
-    ) -> List[str]:
+    ) -> list[str]:
         """Identify triggers for real-time adaptation"""
 
         triggers = []
@@ -1172,7 +1171,7 @@ class SmartContentPersonalization:
 
         return triggers
 
-    async def _generate_fallback_options(self, content_item: ContentItem) -> List[str]:
+    async def _generate_fallback_options(self, content_item: ContentItem) -> list[str]:
         """Generate fallback content options"""
 
         fallbacks = []

@@ -2,10 +2,10 @@
 BERT Plagiarism Model Setup
 Downloads and configures multilingual BERT model for Turkish question plagiarism detection
 """
-import numpy as np
-from typing import List, Dict
 import json
 from pathlib import Path
+
+import numpy as np
 
 # Check if sentence-transformers is available
 try:
@@ -53,10 +53,10 @@ class PlagiarismModelSetup:
             return True
 
         except Exception as e:
-            print(f"❌ Failed to download model: {str(e)}")
+            print(f"❌ Failed to download model: {e!s}")
             return False
 
-    def load_osym_questions_mock(self) -> List[Dict]:
+    def load_osym_questions_mock(self) -> list[dict]:
         """
         Load OSYM questions (MOCK for security)
         In production, this would load from secure database
@@ -89,7 +89,7 @@ class PlagiarismModelSetup:
 
         return mock_questions
 
-    def generate_embeddings(self, questions: List[Dict]) -> np.ndarray:
+    def generate_embeddings(self, questions: list[dict]) -> np.ndarray:
         """
         Generate BERT embeddings for questions
 
@@ -120,7 +120,7 @@ class PlagiarismModelSetup:
     def save_embeddings(
         self,
         embeddings: np.ndarray,
-        questions: List[Dict],
+        questions: list[dict],
         filename: str = "osym_embeddings.npy",
     ):
         """Save embeddings and metadata to disk"""
@@ -159,14 +159,14 @@ class PlagiarismModelSetup:
         print(f"📂 Loaded embeddings: shape {embeddings.shape}")
 
         # Load metadata
-        with open(metadata_path, "r", encoding="utf-8") as f:
+        with open(metadata_path, encoding="utf-8") as f:
             metadata = json.load(f)
 
         print(f"📄 Loaded metadata: {metadata['total_questions']} questions")
 
         return embeddings, metadata
 
-    def test_model_performance(self) -> Dict:
+    def test_model_performance(self) -> dict:
         """Test model inference speed and quality"""
         if self.model is None:
             if not self.download_model():

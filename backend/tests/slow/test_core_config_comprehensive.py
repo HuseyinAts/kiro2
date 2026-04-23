@@ -3,11 +3,12 @@ Comprehensive tests for core.config module
 Target: 95%+ coverage for critical configuration module
 """
 
-import pytest
 import os
 from unittest.mock import patch
-from core.config import Settings, get_settings
 
+import pytest
+
+from core.config import Settings, get_settings
 
 
 class TestSettings:

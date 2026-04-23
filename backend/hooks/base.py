@@ -11,9 +11,8 @@ import subprocess
 import time
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Optional
 
-from .models import QualityCheckResult, HookConfig, ExitCode
+from .models import ExitCode, HookConfig, QualityCheckResult
 
 
 class BaseHook(ABC):
@@ -21,13 +20,13 @@ class BaseHook(ABC):
 
     name: str = "base"
 
-    def __init__(self, config: Optional[HookConfig] = None):
+    def __init__(self, config: HookConfig | None = None):
         """Initialize hook with optional config."""
         self.config = config or HookConfig()
         self._start_time: float = 0.0
 
     @abstractmethod
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Run the quality check on given files.
 
@@ -37,9 +36,8 @@ class BaseHook(ABC):
         Returns:
             QualityCheckResult with check results
         """
-        pass
 
-    async def run_with_timeout(self, files: List[str]) -> QualityCheckResult:
+    async def run_with_timeout(self, files: list[str]) -> QualityCheckResult:
         """
         Run hook with timeout enforcement.
 
@@ -64,7 +62,7 @@ class BaseHook(ABC):
 
             return result
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return QualityCheckResult(
                 tool=self.name,
                 passed=False,
@@ -85,8 +83,8 @@ class BaseHook(ABC):
 
     async def _run_command(
         self,
-        cmd: List[str],
-        cwd: Optional[Path] = None
+        cmd: list[str],
+        cwd: Path | None = None
     ) -> tuple[int, str, str]:
         """
         Run a command asynchronously.
@@ -118,8 +116,8 @@ class BaseHook(ABC):
 
     def _run_command_sync(
         self,
-        cmd: List[str],
-        cwd: Optional[Path] = None
+        cmd: list[str],
+        cwd: Path | None = None
     ) -> tuple[int, str, str]:
         """
         Run a command synchronously.
@@ -147,7 +145,7 @@ class BaseHook(ABC):
         except Exception as e:
             return (1, "", str(e))
 
-    def _filter_python_files(self, files: List[str]) -> List[str]:
+    def _filter_python_files(self, files: list[str]) -> list[str]:
         """Filter only Python files from list."""
         return [f for f in files if f.endswith(".py")]
 
@@ -156,7 +154,7 @@ class BaseHook(ABC):
         files_checked: int,
         execution_time: float,
         auto_fixed: int = 0,
-        warnings: Optional[List[str]] = None
+        warnings: list[str] | None = None
     ) -> QualityCheckResult:
         """Create a success result."""
         return QualityCheckResult(
@@ -172,10 +170,10 @@ class BaseHook(ABC):
 
     def _create_error_result(
         self,
-        errors: List[str],
+        errors: list[str],
         files_checked: int,
         execution_time: float,
-        warnings: Optional[List[str]] = None
+        warnings: list[str] | None = None
     ) -> QualityCheckResult:
         """Create an error result."""
         return QualityCheckResult(

@@ -10,6 +10,7 @@ Requirements: 11.2
 
 import asyncio
 import json
+
 import pytest
 
 pytestmark = pytest.mark.skipif(True, reason="AsyncClient(app=...) deprecated in httpx 0.27+ (needs ASGITransport)")
@@ -20,26 +21,26 @@ from httpx import AsyncClient
 
 # Service imports
 try:
-    from services.video_recommendation_service import (
-        VideoRecommendationService,
-        StudentProfile,
-        VideoRecommendation,
+    from core.error_handler import (
+        CacheError,
+        YouTubeAPIError,
     )
-    from services.turkish_content_filter import (
-        TurkishContentFilter,
-    )
+
+    # Core imports
+    from core.multi_layer_cache import MultiLayerCache
+    from services.advanced_youtube_search import AdvancedYouTubeSearch
     from services.health_check_service import (
         HealthCheckService,
         HealthStatus,
     )
-    from services.advanced_youtube_search import AdvancedYouTubeSearch
     from services.semantic_youtube_search import SemanticYouTubeSearch
-
-    # Core imports
-    from core.multi_layer_cache import MultiLayerCache
-    from core.error_handler import (
-        YouTubeAPIError,
-        CacheError,
+    from services.turkish_content_filter import (
+        TurkishContentFilter,
+    )
+    from services.video_recommendation_service import (
+        StudentProfile,
+        VideoRecommendation,
+        VideoRecommendationService,
     )
 except (ImportError, ModuleNotFoundError, TypeError):
     pytest.skip("video services or torch dependencies not available", allow_module_level=True)
@@ -775,7 +776,7 @@ class TestErrorHandlingIntegration:
             )
             # If it completes, should return empty list
             assert isinstance(result, list)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Timeout is expected
             pass
 
@@ -1041,8 +1042,8 @@ class TestVideoAPIEndToEnd:
             "services.video_recommendation_service.VideoRecommendationService.get_recommendations"
         ) as mock_get:
             # Mock successful recommendations
-            from services.video_recommendation_service import VideoRecommendation
             from services.advanced_youtube_search import TurkishEducationVideo
+            from services.video_recommendation_service import VideoRecommendation
 
             mock_video = TurkishEducationVideo(
                 video_id="test123",
@@ -1088,7 +1089,7 @@ class TestVideoAPIEndToEnd:
                         assert "total_count" in data[0]
             except Exception as e:
                 # Endpoint may not be fully implemented
-                pytest.skip(f"Endpoint not fully implemented: {str(e)}")
+                pytest.skip(f"Endpoint not fully implemented: {e!s}")
 
 
 # ==================== Performance Integration Tests ====================

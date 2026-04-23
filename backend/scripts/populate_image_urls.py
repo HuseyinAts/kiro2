@@ -125,7 +125,7 @@ def build_tier15_index() -> dict[tuple, str]:
     index: dict[tuple, str] = {}
     errors = 0
 
-    with open(TIER15_PATH, "r", encoding="utf-8") as f:
+    with open(TIER15_PATH, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -155,7 +155,7 @@ def build_ocr_index() -> dict[tuple, dict]:
     skipped_none = 0
     errors = 0
 
-    with open(OCR_CROPS_PATH, "r", encoding="utf-8") as f:
+    with open(OCR_CROPS_PATH, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -204,7 +204,7 @@ def match_questions(tier15_index, ocr_index):
     stats = Counter()
     disk_missing = 0
 
-    with open(PRODUCTION_JSONL, "r", encoding="utf-8") as f:
+    with open(PRODUCTION_JSONL, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -357,7 +357,7 @@ def update_database(results, batch_size=1000):
 
     engine.dispose()
 
-    print(f"\nDB verification:")
+    print("\nDB verification:")
     print(f"  question_image_url NOT NULL: {total_with_url:,} / {total_all:,} "
           f"({total_with_url*100/total_all:.1f}%)")
     print(f"  Updated this run: {updated:,}")
@@ -428,7 +428,7 @@ def main():
     # Phase 3: Report
     tier_a = sum(1 for r in results if r["tier"] == "A")
     tier_b = sum(1 for r in results if r["tier"] == "B")
-    print(f"\nTier breakdown:")
+    print("\nTier breakdown:")
     print(f"  A (v3+tier15):  {tier_a:,}")
     print(f"  B (ocr+text):   {tier_b:,}")
     print(f"  Total:          {len(results):,}")

@@ -11,7 +11,6 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, Optional
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -51,12 +50,12 @@ class LearningStyleProfile:
 
     # Scores
     confidence_score: float  # 0.0-1.0
-    vark_scores: Dict[str, float]
-    felder_scores: Dict[str, float]
+    vark_scores: dict[str, float]
+    felder_scores: dict[str, float]
 
     # Turkish adaptations
     group_learning_preference: float  # 0.0-1.0
-    cultural_factors: Dict[str, float]
+    cultural_factors: dict[str, float]
 
     def get_profile_code(self) -> str:
         """64 profil kodunu al"""
@@ -108,7 +107,7 @@ class HybridLearningStyleDetector:
             f"(profiles: 64, min_confidence: {min_confidence})"
         )
 
-    def _init_vark_questions(self) -> Dict:
+    def _init_vark_questions(self) -> dict:
         """VARK soru setini başlat"""
         return {
             "prefers_diagrams": {"V": 1.0, "A": 0.0, "R": 0.3, "K": 0.2},
@@ -122,7 +121,7 @@ class HybridLearningStyleDetector:
             "solves_practice_problems": {"V": 0.2, "A": 0.1, "R": 0.4, "K": 0.9},
         }
 
-    def _init_felder_questions(self) -> Dict:
+    def _init_felder_questions(self) -> dict:
         """Felder-Silverman soru setini başlat"""
         return {
             # Active/Reflective
@@ -140,7 +139,7 @@ class HybridLearningStyleDetector:
         }
 
     def detect(
-        self, student_responses: Dict[str, float], behavior_data: Optional[Dict] = None
+        self, student_responses: dict[str, float], behavior_data: dict | None = None
     ) -> LearningStyleProfile:
         """
         Öğrenme stilini tespit et
@@ -210,7 +209,7 @@ class HybridLearningStyleDetector:
 
         return profile
 
-    def _calculate_vark_scores(self, responses: Dict[str, float]) -> Dict[str, float]:
+    def _calculate_vark_scores(self, responses: dict[str, float]) -> dict[str, float]:
         """VARK skorlarını hesapla"""
         scores = {"V": 0.0, "A": 0.0, "R": 0.0, "K": 0.0}
         total_weight = 0.0
@@ -229,7 +228,7 @@ class HybridLearningStyleDetector:
 
         return scores
 
-    def _calculate_felder_scores(self, responses: Dict[str, float]) -> Dict[str, float]:
+    def _calculate_felder_scores(self, responses: dict[str, float]) -> dict[str, float]:
         """Felder-Silverman skorlarını hesapla"""
         scores = {
             "Active": 0.0,
@@ -258,7 +257,7 @@ class HybridLearningStyleDetector:
         return scores
 
     def _calculate_confidence(
-        self, vark_scores: Dict[str, float], felder_scores: Dict[str, float]
+        self, vark_scores: dict[str, float], felder_scores: dict[str, float]
     ) -> float:
         """Güven skorunu hesapla"""
         # Check if there's a clear dominant style
@@ -289,8 +288,8 @@ class HybridLearningStyleDetector:
         return min(confidence, 1.0)
 
     def _calculate_cultural_factors(
-        self, responses: Dict[str, float], behavior_data: Optional[Dict]
-    ) -> Dict[str, float]:
+        self, responses: dict[str, float], behavior_data: dict | None
+    ) -> dict[str, float]:
         """Kültürel faktörleri hesapla (MEB Maarif)"""
         if not self.enable_cultural_factors:
             return {}

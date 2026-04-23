@@ -13,14 +13,15 @@ Tests:
 - Backup verification
 """
 
-import os
-import sys
 import gzip
-import tempfile
+import os
 import shutil
-from pathlib import Path
+import sys
+import tempfile
 from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock, AsyncMock
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 # Add backend to path
@@ -255,7 +256,6 @@ class TestBackupRestoreIntegration:
     def test_backup_restore_cycle(self, temp_backup_dir, sample_backup_file):
         """Test complete backup/restore cycle (mocked database)."""
         # This test verifies the workflow without actual database
-        from scripts.backup_database import DatabaseBackup
         from scripts.restore_database import DatabaseRestore
 
         # Step 1: Verify backup exists

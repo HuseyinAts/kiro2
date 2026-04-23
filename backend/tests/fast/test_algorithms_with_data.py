@@ -2,8 +2,9 @@
 Algorithm Tests with Real Data
 """
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from sqlalchemy import select
 
 
@@ -51,8 +52,8 @@ class TestZPDWithData:
     async def test_zpd_with_student(self, async_db_session):
         """Test ZPD with real student"""
         try:
-            from services.zpd_maarif_service import ZPDMaarifService
             from models_unified import Kullanici
+            from services.zpd_maarif_service import ZPDMaarifService
 
             result = await async_db_session.execute(
                 select(Kullanici).where(Kullanici.rol == "ogrenci").limit(1)

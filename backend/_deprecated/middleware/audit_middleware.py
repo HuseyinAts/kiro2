@@ -14,7 +14,7 @@ Author: Claude
 Date: 2025-10-27
 """
 import time
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -302,56 +302,52 @@ class AuditMiddleware(BaseHTTPMiddleware):
         # Authentication endpoints
         if "/auth/login" in path:
             return AuditAction.LOGIN if status_code < 400 else AuditAction.LOGIN_FAILED
-        elif "/auth/logout" in path:
+        if "/auth/logout" in path:
             return AuditAction.LOGOUT
-        elif "/auth/logout-all" in path:
+        if "/auth/logout-all" in path:
             return AuditAction.LOGOUT_ALL
-        elif "/auth/refresh" in path:
+        if "/auth/refresh" in path:
             return AuditAction.TOKEN_REFRESH
 
         # User management
-        elif "/user" in path:
+        if "/user" in path:
             if method == "POST":
                 return AuditAction.USER_CREATE
-            elif method in ["PUT", "PATCH"]:
+            if method in ["PUT", "PATCH"]:
                 return AuditAction.USER_UPDATE
-            elif method == "DELETE":
+            if method == "DELETE":
                 return AuditAction.USER_DELETE
-            else:
-                return AuditAction.USER_VIEW
+            return AuditAction.USER_VIEW
 
         # Exam operations
-        elif "/exam" in path:
+        if "/exam" in path:
             if method == "POST" and "/submit" in path:
                 return AuditAction.EXAM_SUBMIT
-            elif method == "POST" and "/start" in path:
+            if method == "POST" and "/start" in path:
                 return AuditAction.EXAM_START
-            elif method == "POST":
+            if method == "POST":
                 return AuditAction.EXAM_CREATE
-            elif method == "DELETE":
+            if method == "DELETE":
                 return AuditAction.EXAM_DELETE
-            else:
-                return AuditAction.EXAM_RESULT_VIEW
+            return AuditAction.EXAM_RESULT_VIEW
 
         # Content operations
-        elif "/content" in path:
+        if "/content" in path:
             if method == "POST":
                 return AuditAction.CONTENT_CREATE
-            elif method in ["PUT", "PATCH"]:
+            if method in ["PUT", "PATCH"]:
                 return AuditAction.CONTENT_UPDATE
-            elif method == "DELETE":
+            if method == "DELETE":
                 return AuditAction.CONTENT_DELETE
-            else:
-                return AuditAction.CONTENT_VIEW
+            return AuditAction.CONTENT_VIEW
 
         # API key operations
-        elif "/api-key" in path:
+        if "/api-key" in path:
             if method == "POST":
                 return AuditAction.API_KEY_CREATE
-            elif method == "DELETE":
+            if method == "DELETE":
                 return AuditAction.API_KEY_REVOKE
-            else:
-                return AuditAction.API_REQUEST
+            return AuditAction.API_REQUEST
 
         # Default: API request
         return AuditAction.API_REQUEST
@@ -368,20 +364,19 @@ class AuditMiddleware(BaseHTTPMiddleware):
         """
         if "/user" in path or "/auth" in path:
             return AuditResourceType.USER
-        elif "/student" in path:
+        if "/student" in path:
             return AuditResourceType.STUDENT
-        elif "/teacher" in path:
+        if "/teacher" in path:
             return AuditResourceType.TEACHER
-        elif "/exam" in path:
+        if "/exam" in path:
             return AuditResourceType.EXAM
-        elif "/question" in path:
+        if "/question" in path:
             return AuditResourceType.QUESTION
-        elif "/content" in path:
+        if "/content" in path:
             return AuditResourceType.CONTENT
-        elif "/api-key" in path:
+        if "/api-key" in path:
             return AuditResourceType.API_KEY
-        else:
-            return AuditResourceType.SYSTEM
+        return AuditResourceType.SYSTEM
 
     def _extract_resource_id(self, path: str) -> str | None:
         """

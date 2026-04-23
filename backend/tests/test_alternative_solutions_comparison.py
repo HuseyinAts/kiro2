@@ -7,8 +7,9 @@ Tests for enhanced solution comparison features:
 - Time complexity analysis
 """
 
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
 
 from services.alternative_solutions_service import AlternativeSolutionsService
 

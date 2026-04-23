@@ -13,7 +13,7 @@ import os
 import subprocess
 import sys
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 # Test modüllerini import et
 
@@ -30,7 +30,7 @@ class RevolutionaryFeaturesTestRunner:
         self.failed_tests = 0
         self.skipped_tests = 0
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Tüm testleri çalıştır"""
 
         print("[ROCKET] Revolutionary Features Test Suite Başlatılıyor...")
@@ -86,7 +86,7 @@ class RevolutionaryFeaturesTestRunner:
 
         return self.test_results
 
-    def _run_test_module(self, test_file: str) -> Dict[str, Any]:
+    def _run_test_module(self, test_file: str) -> dict[str, Any]:
         """Tek test modülünü çalıştır"""
 
         try:
@@ -112,7 +112,7 @@ class RevolutionaryFeaturesTestRunner:
             # JSON raporu oku
             report_file = f"reports/{test_file}_report.json"
             if os.path.exists(report_file):
-                with open(report_file, "r", encoding="utf-8") as f:
+                with open(report_file, encoding="utf-8") as f:
                     json_report = json.load(f)
             else:
                 json_report = {}
@@ -135,7 +135,7 @@ class RevolutionaryFeaturesTestRunner:
                 "error": str(e),
             }
 
-    def _display_module_results(self, module_name: str, result: Dict[str, Any]):
+    def _display_module_results(self, module_name: str, result: dict[str, Any]):
         """Modül sonuçlarını göster"""
 
         if result["success"]:
@@ -232,7 +232,7 @@ class RevolutionaryFeaturesTestRunner:
         ) as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
 
-    def run_specific_feature_tests(self, feature_name: str) -> Dict[str, Any]:
+    def run_specific_feature_tests(self, feature_name: str) -> dict[str, Any]:
         """Belirli bir özelliğin testlerini çalıştır"""
 
         feature_map = {
@@ -253,7 +253,7 @@ class RevolutionaryFeaturesTestRunner:
 
         return result
 
-    def run_performance_tests_only(self) -> Dict[str, Any]:
+    def run_performance_tests_only(self) -> dict[str, Any]:
         """Sadece performans testlerini çalıştır"""
 
         print("[LIGHTNING] Performans testleri çalıştırılıyor...")

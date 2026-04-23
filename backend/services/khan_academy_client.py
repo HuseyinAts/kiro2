@@ -3,13 +3,14 @@ Task 98.1: Khan Academy API Client
 OAuth integration and content fetching for Khan Academy Turkish content
 """
 
-import httpx
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
-from pydantic import BaseModel, Field
-from enum import Enum
 import secrets
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any
+
+import httpx
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -38,28 +39,28 @@ class KhanContentMetadata(BaseModel):
 
     content_id: str
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     content_type: KhanContentType
     subject: KhanSubject
-    topic: Optional[str] = None
+    topic: str | None = None
 
     # Video specific
-    video_url: Optional[str] = None
-    duration_seconds: Optional[int] = None
-    thumbnail_url: Optional[str] = None
+    video_url: str | None = None
+    duration_seconds: int | None = None
+    thumbnail_url: str | None = None
 
     # Exercise specific
-    exercise_url: Optional[str] = None
-    problem_count: Optional[int] = None
+    exercise_url: str | None = None
+    problem_count: int | None = None
 
     # Language
     language: str = "tr"  # Turkish
     has_turkish: bool = True
 
     # Metadata
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
-    difficulty_level: Optional[str] = None  # beginner, intermediate, advanced
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    difficulty_level: str | None = None  # beginner, intermediate, advanced
 
 
 class KhanUserProgress(BaseModel):
@@ -70,22 +71,22 @@ class KhanUserProgress(BaseModel):
     content_type: KhanContentType
 
     # Progress tracking
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    last_accessed: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    last_accessed: datetime | None = None
 
     # Video progress
-    video_seconds_watched: Optional[int] = None
+    video_seconds_watched: int | None = None
     video_completed: bool = False
 
     # Exercise progress
     problems_attempted: int = 0
     problems_correct: int = 0
-    proficiency_level: Optional[str] = None  # practicing, mastered, etc.
+    proficiency_level: str | None = None  # practicing, mastered, etc.
 
     # Points and energy
     energy_points: int = 0
-    badges_earned: List[str] = Field(default_factory=list)
+    badges_earned: list[str] = Field(default_factory=list)
 
 
 class KhanCertificate(BaseModel):
@@ -98,7 +99,7 @@ class KhanCertificate(BaseModel):
     description: str
     icon_url: str
     earned_at: datetime
-    verification_url: Optional[str] = None
+    verification_url: str | None = None
 
 
 class KhanAcademyClient:
@@ -114,8 +115,8 @@ class KhanAcademyClient:
 
     def __init__(
         self,
-        client_id: Optional[str] = None,
-        client_secret: Optional[str] = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
         base_url: str = "https://www.khanacademy.org/api/v1",
         timeout: int = 30,
     ):
@@ -124,13 +125,13 @@ class KhanAcademyClient:
         self.base_url = base_url
         self.timeout = timeout
 
-        self.access_token: Optional[str] = None
-        self.refresh_token: Optional[str] = None
-        self.token_expires_at: Optional[datetime] = None
+        self.access_token: str | None = None
+        self.refresh_token: str | None = None
+        self.token_expires_at: datetime | None = None
 
         self.client = httpx.AsyncClient(timeout=timeout, headers=self._get_headers())
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """Get request headers"""
         headers = {
             "Accept": "application/json",
@@ -148,7 +149,7 @@ class KhanAcademyClient:
     # ============================================
 
     def get_authorization_url(
-        self, redirect_uri: str, state: Optional[str] = None
+        self, redirect_uri: str, state: str | None = None
     ) -> str:
         """
         Task 98.1: Get OAuth authorization URL
@@ -174,7 +175,7 @@ class KhanAcademyClient:
 
     async def exchange_code_for_token(
         self, authorization_code: str, redirect_uri: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Task 98.1: Exchange authorization code for access token
 
@@ -219,7 +220,7 @@ class KhanAcademyClient:
             logger.error(f"[KHAN OAUTH] Token exchange failed: {e.response.text}")
             raise Exception(f"OAuth token exchange failed: {e.response.status_code}")
 
-    async def refresh_access_token(self) -> Dict[str, Any]:
+    async def refresh_access_token(self) -> dict[str, Any]:
         """
         Refresh expired access token using refresh token
         """
@@ -279,11 +280,11 @@ class KhanAcademyClient:
 
     async def get_turkish_content(
         self,
-        subject: Optional[KhanSubject] = None,
-        content_type: Optional[KhanContentType] = None,
-        topic: Optional[str] = None,
+        subject: KhanSubject | None = None,
+        content_type: KhanContentType | None = None,
+        topic: str | None = None,
         limit: int = 50,
-    ) -> List[KhanContentMetadata]:
+    ) -> list[KhanContentMetadata]:
         """
         Task 98.2: Fetch Turkish content from Khan Academy
 
@@ -331,8 +332,8 @@ class KhanAcademyClient:
             raise
 
     def _parse_content_item(
-        self, item: Dict[str, Any]
-    ) -> Optional[KhanContentMetadata]:
+        self, item: dict[str, Any]
+    ) -> KhanContentMetadata | None:
         """Parse Khan Academy content item"""
 
         # Determine content type
@@ -358,7 +359,6 @@ class KhanAcademyClient:
                 created_at = datetime.fromisoformat(item["date_added"])
             except (ValueError, TypeError) as e:
                 logger.debug(f"Failed to parse date_added: {e}")
-                pass
 
         return KhanContentMetadata(
             content_id=item["id"],
@@ -384,7 +384,7 @@ class KhanAcademyClient:
     # Task 98.3: Progress Synchronization
     # ============================================
 
-    async def get_user_progress(self, khan_user_id: str) -> List[KhanUserProgress]:
+    async def get_user_progress(self, khan_user_id: str) -> list[KhanUserProgress]:
         """
         Task 98.3: Get user's progress from Khan Academy
 
@@ -417,7 +417,7 @@ class KhanAcademyClient:
             raise
 
     def _parse_progress_item(
-        self, user_id: str, item: Dict[str, Any]
+        self, user_id: str, item: dict[str, Any]
     ) -> KhanUserProgress:
         """Parse Khan Academy progress item"""
 
@@ -433,21 +433,18 @@ class KhanAcademyClient:
                 started_at = datetime.fromisoformat(item["started"])
             except (ValueError, TypeError) as e:
                 logger.debug(f"Failed to parse started timestamp: {e}")
-                pass
 
         if item.get("completed"):
             try:
                 completed_at = datetime.fromisoformat(item["completed"])
             except (ValueError, TypeError) as e:
                 logger.debug(f"Failed to parse completed timestamp: {e}")
-                pass
 
         if item.get("last_done"):
             try:
                 last_accessed = datetime.fromisoformat(item["last_done"])
             except (ValueError, TypeError) as e:
                 logger.debug(f"Failed to parse last_done timestamp: {e}")
-                pass
 
         return KhanUserProgress(
             user_id=user_id,
@@ -466,7 +463,7 @@ class KhanAcademyClient:
         )
 
     async def update_user_progress(
-        self, khan_user_id: str, content_id: str, progress_data: Dict[str, Any]
+        self, khan_user_id: str, content_id: str, progress_data: dict[str, Any]
     ) -> bool:
         """
         Task 98.3: Update user progress on Khan Academy
@@ -493,7 +490,7 @@ class KhanAcademyClient:
     # Task 98.4: Certificate/Badge Integration
     # ============================================
 
-    async def get_user_badges(self, khan_user_id: str) -> List[KhanCertificate]:
+    async def get_user_badges(self, khan_user_id: str) -> list[KhanCertificate]:
         """
         Task 98.4: Get user's earned badges/certificates
         """
@@ -523,7 +520,7 @@ class KhanAcademyClient:
             logger.error(f"Failed to fetch badges: {e.response.text}")
             raise
 
-    def _parse_badge(self, user_id: str, badge: Dict[str, Any]) -> KhanCertificate:
+    def _parse_badge(self, user_id: str, badge: dict[str, Any]) -> KhanCertificate:
         """Parse Khan Academy badge"""
 
         earned_at = datetime.now()
@@ -532,7 +529,6 @@ class KhanAcademyClient:
                 earned_at = datetime.fromisoformat(badge["date_earned"])
             except (ValueError, TypeError) as e:
                 logger.debug(f"Failed to parse date_earned: {e}")
-                pass
 
         # Generate verification URL
         badge_slug = badge.get("slug", badge["name"].lower().replace(" ", "-"))
@@ -575,11 +571,11 @@ class MockKhanAcademyClient(KhanAcademyClient):
 
     async def get_turkish_content(
         self,
-        subject: Optional[KhanSubject] = None,
-        content_type: Optional[KhanContentType] = None,
-        topic: Optional[str] = None,
+        subject: KhanSubject | None = None,
+        content_type: KhanContentType | None = None,
+        topic: str | None = None,
         limit: int = 50,
-    ) -> List[KhanContentMetadata]:
+    ) -> list[KhanContentMetadata]:
         """Mock Turkish content"""
 
         mock_content = [
@@ -603,7 +599,7 @@ class MockKhanAcademyClient(KhanAcademyClient):
         logger.info(f"[MOCK KHAN] Generated {len(mock_content)} mock content items")
         return mock_content
 
-    async def get_user_progress(self, khan_user_id: str) -> List[KhanUserProgress]:
+    async def get_user_progress(self, khan_user_id: str) -> list[KhanUserProgress]:
         """Mock user progress"""
 
         mock_progress = [
@@ -622,7 +618,7 @@ class MockKhanAcademyClient(KhanAcademyClient):
 
         return mock_progress
 
-    async def get_user_badges(self, khan_user_id: str) -> List[KhanCertificate]:
+    async def get_user_badges(self, khan_user_id: str) -> list[KhanCertificate]:
         """Mock badges"""
 
         mock_badges = [

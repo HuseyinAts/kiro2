@@ -7,7 +7,7 @@ fonksiyonlarını kapsamlı olarak test eder.
 """
 
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -31,7 +31,7 @@ class TestLogEntry:
 
     def test_log_entry_creation(self):
         """Log entry oluşturma testi"""
-        timestamp = datetime.now(timezone.utc)
+        timestamp = datetime.now(UTC)
         entry = LogEntry(
             timestamp=timestamp,
             level=LogLevel.INFO,
@@ -61,7 +61,7 @@ class TestLogEntry:
 
     def test_log_entry_to_dict(self):
         """Log entry dict dönüşümü testi"""
-        timestamp = datetime.now(timezone.utc)
+        timestamp = datetime.now(UTC)
         entry = LogEntry(
             timestamp=timestamp,
             level=LogLevel.ERROR,
@@ -86,7 +86,7 @@ class TestLogEntry:
     def test_log_entry_metadata_default(self):
         """Log entry metadata varsayılan değer testi"""
         entry = LogEntry(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             level=LogLevel.DEBUG,
             category=LogCategory.SYSTEM,
             message="Debug mesajı",

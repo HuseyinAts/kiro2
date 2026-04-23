@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -17,8 +18,6 @@ from datetime import datetime
 import pytest
 
 from algorithms.hybrid_learning_style_detector import HybridLearningStyleDetector
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

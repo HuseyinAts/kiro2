@@ -203,12 +203,11 @@ def validate_imports():
     if failed_count > 0:
         print("❌ VALIDATION FAILED")
         return 1
-    elif partial_count > 0:
+    if partial_count > 0:
         print("⚠️  VALIDATION PARTIAL SUCCESS")
         return 2
-    else:
-        print("✅ ALL IMPORTS VALIDATED SUCCESSFULLY")
-        return 0
+    print("✅ ALL IMPORTS VALIDATED SUCCESSFULLY")
+    return 0
 
 
 if __name__ == "__main__":

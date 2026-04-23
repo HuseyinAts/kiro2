@@ -5,7 +5,7 @@ database.py'den ayrıştırıldı (2026-01-10)
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     JSON,
@@ -66,17 +66,17 @@ class Question(Base):
 
     # Question content
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
-    question_image_url: Mapped[Optional[str]] = mapped_column(String(500))
+    question_image_url: Mapped[str | None] = mapped_column(String(500))
 
     # Answer options
     option_a: Mapped[str] = mapped_column(Text, nullable=False)
     option_b: Mapped[str] = mapped_column(Text, nullable=False)
     option_c: Mapped[str] = mapped_column(Text, nullable=False)
     option_d: Mapped[str] = mapped_column(Text, nullable=False)
-    option_e: Mapped[Optional[str]] = mapped_column(Text)
+    option_e: Mapped[str | None] = mapped_column(Text)
 
     correct_answer: Mapped[str] = mapped_column(String(1), nullable=False)
-    explanation: Mapped[Optional[str]] = mapped_column(Text)
+    explanation: Mapped[str | None] = mapped_column(Text)
 
     # Classification - use values_callable for correct lowercase enum mapping
     exam_type: Mapped[ExamType] = mapped_column(
@@ -88,7 +88,7 @@ class Question(Base):
         nullable=False
     )
     topic: Mapped[str] = mapped_column(String(200), nullable=False)
-    subtopic: Mapped[Optional[str]] = mapped_column(String(200))
+    subtopic: Mapped[str | None] = mapped_column(String(200))
 
     # Difficulty and IRT parameters
     difficulty: Mapped[QuestionDifficulty] = mapped_column(
@@ -105,8 +105,8 @@ class Question(Base):
     irt_sample_size: Mapped[int] = mapped_column(Integer, default=0)
 
     # Source information
-    source_book: Mapped[Optional[str]] = mapped_column(String(300))
-    source_page: Mapped[Optional[int]] = mapped_column(Integer)
+    source_book: Mapped[str | None] = mapped_column(String(300))
+    source_page: Mapped[int | None] = mapped_column(Integer)
 
     # Turkish morphology analysis
     morphology_complexity: Mapped[float] = mapped_column(Float, default=0.0)
@@ -118,7 +118,7 @@ class Question(Base):
     average_response_time: Mapped[float] = mapped_column(Float, default=0.0)
 
     # System fields
-    created_by: Mapped[Optional[str]] = mapped_column(
+    created_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE")
     )
     created_at: Mapped[datetime] = mapped_column(
@@ -130,7 +130,7 @@ class Question(Base):
     is_active: Mapped[bool] = mapped_column("aktif", Boolean, default=True)
 
     # Visual content support
-    visual_content: Mapped[Optional[dict]] = mapped_column(JSON)
+    visual_content: Mapped[dict | None] = mapped_column(JSON)
 
     # Note: exam_questions and student_answers relationships moved to QuestionBankItem
     # (ExamQuestion/StudentAnswer now reference question_bank table)
@@ -159,18 +159,18 @@ class EducationalContent(Base):
 
     # Content information
     title: Mapped[str] = mapped_column(String(300), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
     content_type: Mapped[str] = mapped_column(String(50), nullable=False)
 
     # Source information
     source_platform: Mapped[str] = mapped_column(String(100), nullable=False)
     source_url: Mapped[str] = mapped_column(String(500), nullable=False)
-    source_id: Mapped[Optional[str]] = mapped_column(String(200))
+    source_id: Mapped[str | None] = mapped_column(String(200))
 
     # Classification
     subject_area: Mapped[SubjectArea] = mapped_column(Enum(SubjectArea), nullable=False)
     topic: Mapped[str] = mapped_column(String(200), nullable=False)
-    subtopic: Mapped[Optional[str]] = mapped_column(String(200))
+    subtopic: Mapped[str | None] = mapped_column(String(200))
     grade_level: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # Quality metrics
@@ -178,7 +178,7 @@ class EducationalContent(Base):
         Enum(QuestionDifficulty), nullable=False
     )
     educational_score: Mapped[float] = mapped_column(Float, default=0.0)
-    duration_minutes: Mapped[Optional[int]] = mapped_column(Integer)
+    duration_minutes: Mapped[int | None] = mapped_column(Integer)
 
     # Accessibility features
     has_subtitles: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -227,7 +227,7 @@ class ClassRoom(Base):
     school_year: Mapped[str] = mapped_column(String(20), nullable=False)
 
     # Student list (JSON array of student IDs)
-    student_ids: Mapped[Optional[dict]] = mapped_column(JSON)
+    student_ids: Mapped[dict | None] = mapped_column(JSON)
 
     # Class settings
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)

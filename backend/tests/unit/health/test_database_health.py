@@ -13,13 +13,14 @@ Requirements Tested:
     REQ-5.6: Connection leak tespiti ve trace raporu
 """
 
-import pytest
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from app.health.dependencies.database_health import (
     DatabaseHealthChecker,
-    DatabaseHealthMetrics
+    DatabaseHealthMetrics,
 )
 
 
@@ -172,7 +173,6 @@ class TestDatabaseHealthCheckerCheckHealth:
 
         async def slow_execute(*args):
             await asyncio.sleep(0.1)  # 100ms delay
-            return None
 
         mock_conn.execute = slow_execute
         mock_conn.__aenter__ = AsyncMock(return_value=mock_conn)

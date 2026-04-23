@@ -2,10 +2,12 @@
 Comprehensive tests for api/health.py
 Tests all health check endpoints with mocking
 """
+from datetime import UTC
+from unittest.mock import MagicMock, patch
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
 
 
 @pytest.fixture
@@ -60,8 +62,9 @@ class TestBasicHealthCheck:
         This ensures consistent healthy responses for basic structure tests.
         Also mocks cache to prevent stale responses from previous tests.
         """
-        from datetime import datetime, timezone
+        from datetime import datetime
         from unittest.mock import AsyncMock
+
         from core.comprehensive_health_check import (
             ComponentHealth,
             HealthStatus,
@@ -70,7 +73,7 @@ class TestBasicHealthCheck:
 
         mock_health = SystemHealth(
             status=HealthStatus.HEALTHY,
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             response_time_ms=10.5,
             components=[
                 ComponentHealth(

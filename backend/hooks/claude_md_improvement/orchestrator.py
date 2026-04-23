@@ -22,9 +22,10 @@ Data Flow:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from collections.abc import Awaitable, Callable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable, Awaitable
+from typing import Any
 
 from .feedback_hook import FeedbackHook
 from .models import (
@@ -53,7 +54,7 @@ class ImprovementOrchestrator:
 
     def __init__(
         self,
-        claude_md_path: Optional[Path] = None,
+        claude_md_path: Path | None = None,
         safety_enabled: bool = True,
         auto_improvement: bool = False,
     ):
@@ -73,16 +74,16 @@ class ImprovementOrchestrator:
         self.feedback_hook = FeedbackHook()
 
         # Callbacks for extensibility
-        self._improvement_callbacks: List[
+        self._improvement_callbacks: list[
             Callable[[ImprovementTrigger], Awaitable[None]]
         ] = []
-        self._safety_callbacks: List[
-            Callable[[Dict[str, Any]], Awaitable[ExitCodeResult]]
+        self._safety_callbacks: list[
+            Callable[[dict[str, Any]], Awaitable[ExitCodeResult]]
         ] = []
 
         # State
         self._is_running = False
-        self._last_analysis: Optional[datetime] = None
+        self._last_analysis: datetime | None = None
         self._emergency_stop = False
 
     async def start(self) -> ExitCodeResult:
@@ -125,16 +126,16 @@ class ImprovementOrchestrator:
 
         return ExitCodeResult.blocking_error(
             f"EMERGENCY STOP: {reason}. Manuel restart gerekli.",
-            {"emergency_stop_at": datetime.now(timezone.utc).isoformat(), "reason": reason},
+            {"emergency_stop_at": datetime.now(UTC).isoformat(), "reason": reason},
         )
 
     async def record_task_completion(
         self,
         task_id: str,
         success: bool,
-        rule_id: Optional[str] = None,
+        rule_id: str | None = None,
         execution_time: float = 0.0,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> ExitCodeResult:
         """
         Task tamamlanmasını kaydet ve analiz et.
@@ -178,7 +179,7 @@ class ImprovementOrchestrator:
         test_passed: bool,
         lint_passed: bool = True,
         type_check_passed: bool = True,
-        rule_id: Optional[str] = None,
+        rule_id: str | None = None,
     ) -> ExitCodeResult:
         """
         Boris Cherny verification sonuçlarını kaydet.
@@ -208,7 +209,7 @@ class ImprovementOrchestrator:
 
     async def _run_periodic_analysis(self) -> None:
         """Periyodik analiz çalıştır."""
-        self._last_analysis = datetime.now(timezone.utc)
+        self._last_analysis = datetime.now(UTC)
 
         # Feedback hook'u çalıştır
         await self.feedback_hook.run([])
@@ -235,7 +236,7 @@ class ImprovementOrchestrator:
                 await self._apply_improvement(trigger)
 
             trigger.processed = True
-            trigger.processed_at = datetime.now(timezone.utc)
+            trigger.processed_at = datetime.now(UTC)
 
     async def _check_safety(self, trigger: ImprovementTrigger) -> ExitCodeResult:
         """
@@ -295,12 +296,12 @@ class ImprovementOrchestrator:
         self._improvement_callbacks.append(callback)
 
     def register_safety_callback(
-        self, callback: Callable[[Dict[str, Any]], Awaitable[ExitCodeResult]]
+        self, callback: Callable[[dict[str, Any]], Awaitable[ExitCodeResult]]
     ) -> None:
         """Safety callback'i kaydet."""
         self._safety_callbacks.append(callback)
 
-    async def get_status(self) -> Dict[str, Any]:
+    async def get_status(self) -> dict[str, Any]:
         """Orchestrator durumunu getir."""
         feedback_summary = await self.feedback_hook.get_feedback_summary()
 
@@ -319,16 +320,16 @@ class ImprovementOrchestrator:
 
     async def get_rule_effectiveness(
         self, rule_id: str
-    ) -> Optional[RuleEffectiveness]:
+    ) -> RuleEffectiveness | None:
         """Belirli bir kuralın effectiveness'ını getir."""
         return self.feedback_hook.get_effectiveness(rule_id)
 
-    async def trigger_manual_analysis(self) -> Dict[str, Any]:
+    async def trigger_manual_analysis(self) -> dict[str, Any]:
         """Manuel analiz tetikle."""
         await self._run_periodic_analysis()
 
         return {
-            "analyzed_at": datetime.now(timezone.utc).isoformat(),
+            "analyzed_at": datetime.now(UTC).isoformat(),
             "pending_improvements": [
                 t.model_dump() for t in self.feedback_hook.get_pending_triggers()
             ],
@@ -337,7 +338,7 @@ class ImprovementOrchestrator:
 
 
 # Singleton instance
-_orchestrator_instance: Optional[ImprovementOrchestrator] = None
+_orchestrator_instance: ImprovementOrchestrator | None = None
 
 
 def get_orchestrator() -> ImprovementOrchestrator:
@@ -349,7 +350,7 @@ def get_orchestrator() -> ImprovementOrchestrator:
 
 
 async def init_orchestrator(
-    claude_md_path: Optional[Path] = None,
+    claude_md_path: Path | None = None,
     safety_enabled: bool = True,
     auto_improvement: bool = False,
 ) -> ImprovementOrchestrator:

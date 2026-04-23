@@ -10,27 +10,27 @@ Tests:
 - Error reporting
 """
 
-import pytest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from backend.validators.base_response_validator import (
-    AgentResponse,
-    ValidationResult,
-    ValidationAction,
+import pytest
+
+from backend.hooks.response_validation_hook import (
+    ResponseValidationHook,
 )
 from backend.orchestrator.response_validation_orchestrator import (
     ResponseValidationOrchestrator,
 )
-from backend.hooks.response_validation_hook import (
-    ResponseValidationHook,
-)
 from backend.scoring.confidence_scorer import ConfidenceScorer
-from backend.validators.error_reporter import (
-    ErrorReporter,
-    ErrorCategory,
+from backend.validators.base_response_validator import (
+    AgentResponse,
+    ValidationAction,
+    ValidationResult,
 )
-
+from backend.validators.error_reporter import (
+    ErrorCategory,
+    ErrorReporter,
+)
 
 # ============ Fixtures ============
 
@@ -52,7 +52,7 @@ def sample_agent_response():
         response_text="Osmanlı İmparatorluğu 1299 yılında Osman Bey tarafından kuruldu.",
         response_data={},
         context={"grade_level": 10},
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
 
 
@@ -72,7 +72,7 @@ def learning_path_response():
             ]
         },
         context={"grade_level": 9},
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
 
 
@@ -91,7 +91,7 @@ def exam_agent_response():
             "weak_areas": ["Geometri", "Trigonometri"],
         },
         context={"exam_type": "TYT"},
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
 
 
@@ -256,7 +256,7 @@ class TestHookIntegration:
             "warnings": [],
             "suggestions": [],
             "duration_seconds": 0.5,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         })
 
         hook = ResponseValidationHook(orchestrator=mock_orchestrator)
@@ -311,7 +311,7 @@ class TestHookIntegration:
             "warnings": [],
             "suggestions": [],
             "duration_seconds": 0.3,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         })
 
         hook = ResponseValidationHook(

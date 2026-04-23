@@ -20,12 +20,12 @@ Author: KIRO2 Team
 Date: 2026-01-17
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
-from enum import Enum
-from dataclasses import dataclass, field
-import logging
 import hashlib
+import logging
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
+from typing import Any
 from uuid import uuid4
 
 # Statistical computing
@@ -39,14 +39,13 @@ except ImportError:
     stats = None  # type: ignore
 
 # Database
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-
 # Models
 from backend.models.claude_md_improvement_models import (
-    RuleEffectiveness,
     AuditLog,
+    RuleEffectiveness,
 )
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -71,13 +70,13 @@ class ABTestResult:
     """Result of an A/B test."""
     test_id: str
     status: TestStatus
-    winner: Optional[Variant]
+    winner: Variant | None
     p_value: float
     effect_size: float
-    confidence_interval: Tuple[float, float]
-    control_metrics: Dict[str, float]
-    treatment_metrics: Dict[str, float]
-    sample_sizes: Dict[str, int]
+    confidence_interval: tuple[float, float]
+    control_metrics: dict[str, float]
+    treatment_metrics: dict[str, float]
+    sample_sizes: dict[str, int]
     is_significant: bool
     recommendation: str
 
@@ -91,18 +90,18 @@ class ABTest:
     treatment_text: str
     status: TestStatus = TestStatus.DRAFT
     created_at: datetime = field(default_factory=datetime.utcnow)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     min_samples: int = 1000
     max_duration_days: int = 14
     traffic_split: float = 0.5  # Treatment gets this fraction
-    metrics: List[str] = field(default_factory=lambda: ["success_rate", "avg_rating"])
+    metrics: list[str] = field(default_factory=lambda: ["success_rate", "avg_rating"])
     control_samples: int = 0
     treatment_samples: int = 0
     control_successes: int = 0
     treatment_successes: int = 0
-    control_ratings: List[float] = field(default_factory=list)
-    treatment_ratings: List[float] = field(default_factory=list)
+    control_ratings: list[float] = field(default_factory=list)
+    treatment_ratings: list[float] = field(default_factory=list)
 
 
 class ABTestingService:
@@ -124,7 +123,7 @@ class ABTestingService:
     def __init__(self, db: AsyncSession):
         """Initialize A/B testing service."""
         self.db = db
-        self._active_tests: Dict[str, ABTest] = {}
+        self._active_tests: dict[str, ABTest] = {}
 
         if not SCIPY_AVAILABLE:
             logger.warning("scipy not available. Statistical tests limited.")
@@ -140,7 +139,7 @@ class ABTestingService:
         treatment_text: str,
         min_samples: int = 1000,
         traffic_split: float = 0.5,
-        metrics: Optional[List[str]] = None,
+        metrics: list[str] | None = None,
     ) -> ABTest:
         """
         Create a new A/B test.
@@ -201,7 +200,7 @@ class ABTestingService:
             raise ValueError(f"Test already started: {test.status}")
 
         test.status = TestStatus.RUNNING
-        test.started_at = datetime.now(timezone.utc)
+        test.started_at = datetime.now(UTC)
 
         await self._log_audit(
             action="start_test",
@@ -265,7 +264,7 @@ class ABTestingService:
         test_id: str,
         variant: Variant,
         success: bool,
-        rating: Optional[float] = None,
+        rating: float | None = None,
     ) -> None:
         """
         Record an observation for a test.
@@ -393,7 +392,7 @@ class ABTestingService:
 
         # Update test status
         test.status = TestStatus.COMPLETED
-        test.completed_at = datetime.now(timezone.utc)
+        test.completed_at = datetime.now(UTC)
 
         # Log audit
         await self._log_audit(
@@ -431,7 +430,7 @@ class ABTestingService:
         control_total: int,
         treatment_successes: int,
         treatment_total: int,
-    ) -> Tuple[float, bool]:
+    ) -> tuple[float, bool]:
         """
         Perform chi-square test for independence.
 
@@ -488,7 +487,7 @@ class ABTestingService:
         self,
         test: ABTest,
         variant: Variant,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Calculate all metrics for a variant."""
         if variant == Variant.CONTROL:
             samples = test.control_samples
@@ -520,7 +519,7 @@ class ABTestingService:
     async def get_multi_metric_comparison(
         self,
         test_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get detailed multi-metric comparison.
 
@@ -555,8 +554,8 @@ class ABTestingService:
 
     def _determine_overall_winner(
         self,
-        comparison: Dict[str, Any],
-    ) -> Optional[str]:
+        comparison: dict[str, Any],
+    ) -> str | None:
         """Determine overall winner based on all metrics."""
         treatment_wins = sum(
             1 for m in comparison.values()
@@ -566,7 +565,7 @@ class ABTestingService:
 
         if treatment_wins > total_metrics / 2:
             return "treatment"
-        elif treatment_wins < total_metrics / 2:
+        if treatment_wins < total_metrics / 2:
             return "control"
         return None  # Tie
 
@@ -577,7 +576,7 @@ class ABTestingService:
     async def deploy_winner(
         self,
         test_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Deploy winning variant to production.
 
@@ -652,7 +651,7 @@ class ABTestingService:
         if rule:
             rule.rule_text = rule_text
             rule.effectiveness_score = effectiveness_score
-            rule.last_updated = datetime.now(timezone.utc)
+            rule.last_updated = datetime.now(UTC)
         else:
             rule = RuleEffectiveness(
                 rule_id=rule_id,
@@ -695,7 +694,7 @@ class ABTestingService:
         treatment_rate: float,
         treatment_n: int,
         confidence: float = 0.95,
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """
         Calculate confidence interval for difference in proportions.
 
@@ -720,14 +719,14 @@ class ABTestingService:
     # Test Management
     # =========================================================================
 
-    async def get_test(self, test_id: str) -> Optional[ABTest]:
+    async def get_test(self, test_id: str) -> ABTest | None:
         """Get test by ID."""
         return self._active_tests.get(test_id)
 
     async def list_tests(
         self,
-        status: Optional[TestStatus] = None,
-    ) -> List[ABTest]:
+        status: TestStatus | None = None,
+    ) -> list[ABTest]:
         """List all tests, optionally filtered by status."""
         tests = list(self._active_tests.values())
 
@@ -762,7 +761,7 @@ class ABTestingService:
             raise ValueError(f"Test not found: {test_id}")
 
         test.status = TestStatus.CANCELLED
-        test.completed_at = datetime.now(timezone.utc)
+        test.completed_at = datetime.now(UTC)
 
         await self._log_audit(
             action="cancel_test",
@@ -780,8 +779,8 @@ class ABTestingService:
         self,
         action: str,
         entity_type: str,
-        entity_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Log audit entry."""
         try:

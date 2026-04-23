@@ -6,34 +6,33 @@ VARK + Felder-Silverman Hibrit Öğrenme Stili API testi
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 
-import pytest
 from datetime import datetime
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
+import pytest
 from fastapi import HTTPException
 
 # API endpoint import
 from api.learning_style import (
     detect_learning_style,
-    get_content_recommendations,
-    update_behavioral_data,
-    submit_questionnaire,
-    get_learning_style_explanation,
-    get_all_hybrid_codes,
-    get_learning_style_statistics,
     export_learning_profile,
+    get_all_hybrid_codes,
     get_content_explanation,
-    update_recommendations_based_on_performance,
+    get_content_recommendations,
+    get_learning_style_explanation,
+    get_learning_style_statistics,
     health_check,
+    submit_questionnaire,
+    update_behavioral_data,
+    update_recommendations_based_on_performance,
 )
 
 # Mock models and services
 from models.learning_style import BehavioralData, QuestionnaireResponse
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

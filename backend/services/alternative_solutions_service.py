@@ -75,7 +75,7 @@ class AlternativeSolutionsService(
             # Soruyu getir
             stmt = select(QuestionBankItem).where(
                 QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
-            )  # noqa: E712
+            )
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -161,7 +161,7 @@ class AlternativeSolutionsService(
             # Soruyu getir
             stmt = select(QuestionBankItem).where(
                 QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
-            )  # noqa: E712
+            )
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -244,7 +244,7 @@ class AlternativeSolutionsService(
             # Soruyu getir
             stmt = select(QuestionBankItem).where(
                 QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
-            )  # noqa: E712
+            )
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -304,7 +304,7 @@ class AlternativeSolutionsService(
             # Soruyu getir
             stmt = select(QuestionBankItem).where(
                 QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
-            )  # noqa: E712
+            )
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -1757,7 +1757,7 @@ class AlternativeSolutionsService(
             # Soruyu getir
             stmt = select(QuestionBankItem).where(
                 QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
-            )  # noqa: E712
+            )
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -2174,7 +2174,7 @@ class AlternativeSolutionsService(
             # Soruyu getir
             stmt = select(QuestionBankItem).where(
                 QuestionBankItem.id == question_id, QuestionBankItem.is_active == True
-            )  # noqa: E712
+            )
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 

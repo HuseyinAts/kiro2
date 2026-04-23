@@ -6,7 +6,6 @@ SECURITY FIX: Prevent brute force attacks on auth endpoints
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple
 
 from fastapi import HTTPException, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -39,7 +38,7 @@ class AuthRateLimiter:
 
     def __init__(self):
         # Rate limit rules per endpoint
-        self.rules: Dict[str, RateLimitRule] = {
+        self.rules: dict[str, RateLimitRule] = {
             # Login: 5 attempts per minute
             "/api/v1/auth/login": RateLimitRule(
                 max_attempts=5, window_seconds=60, block_duration=300  # 5 minutes block
@@ -73,11 +72,11 @@ class AuthRateLimiter:
 
         # Tracking structures
         # {identifier: [(timestamp, success/fail), ...]}
-        self.attempts: Dict[str, list] = defaultdict(list)
+        self.attempts: dict[str, list] = defaultdict(list)
         # {identifier: block_until_timestamp}
-        self.blocked: Dict[str, float] = {}
+        self.blocked: dict[str, float] = {}
 
-    def _get_identifier(self, request: Request, username: Optional[str] = None) -> str:
+    def _get_identifier(self, request: Request, username: str | None = None) -> str:
         """
         Get unique identifier for rate limiting
 
@@ -101,7 +100,7 @@ class AuthRateLimiter:
             (ts, success) for ts, success in self.attempts[identifier] if ts > cutoff
         ]
 
-    def _is_blocked(self, identifier: str) -> Tuple[bool, Optional[int]]:
+    def _is_blocked(self, identifier: str) -> tuple[bool, int | None]:
         """
         Check if identifier is blocked
 
@@ -117,13 +116,12 @@ class AuthRateLimiter:
         if now < block_until:
             remaining = int(block_until - now)
             return True, remaining
-        else:
-            # Block expired, remove it
-            del self.blocked[identifier]
-            return False, None
+        # Block expired, remove it
+        del self.blocked[identifier]
+        return False, None
 
     def check_rate_limit(
-        self, request: Request, endpoint: str, username: Optional[str] = None
+        self, request: Request, endpoint: str, username: str | None = None
     ) -> None:
         """
         Check rate limit for request
@@ -195,7 +193,7 @@ class AuthRateLimiter:
         request: Request,
         endpoint: str,
         success: bool,
-        username: Optional[str] = None,
+        username: str | None = None,
     ):
         """
         Record authentication attempt result
@@ -212,7 +210,7 @@ class AuthRateLimiter:
         identifier = self._get_identifier(request, username)
 
         # Update last attempt status
-        if identifier in self.attempts and self.attempts[identifier]:
+        if self.attempts.get(identifier):
             last_attempt = self.attempts[identifier][-1]
             # Update the None status with actual result
             self.attempts[identifier][-1] = (last_attempt[0], success)
@@ -233,7 +231,7 @@ class AuthRateLimiter:
             },
         )
 
-    def get_stats(self, identifier: str) -> Dict:
+    def get_stats(self, identifier: str) -> dict:
         """Get rate limit stats for identifier"""
         is_blocked, remaining = self._is_blocked(identifier)
         return {
@@ -282,7 +280,6 @@ class AuthRateLimitMiddleware(BaseHTTPMiddleware):
                         pass
                 except (KeyError, AttributeError) as e:
                     logger.debug(f"Content type check failed: {e}")
-                    pass
 
             # Check rate limit BEFORE processing request
             try:
@@ -317,7 +314,7 @@ class AuthRateLimitMiddleware(BaseHTTPMiddleware):
 
 # Utility function for manual rate limit checking
 async def check_auth_rate_limit(
-    request: Request, endpoint: str, username: Optional[str] = None
+    request: Request, endpoint: str, username: str | None = None
 ):
     """
     Manually check auth rate limit
@@ -332,7 +329,7 @@ async def check_auth_rate_limit(
 
 
 async def record_auth_attempt(
-    request: Request, endpoint: str, success: bool, username: Optional[str] = None
+    request: Request, endpoint: str, success: bool, username: str | None = None
 ):
     """
     Manually record auth attempt

@@ -12,19 +12,21 @@ Requirements (from spec):
 """
 
 import asyncio
-import time
 import statistics
-import pytest
-from typing import List, Dict, Any
-from unittest.mock import MagicMock, AsyncMock
+import time
 from concurrent.futures import ThreadPoolExecutor
+from typing import Any
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
+from mcp_servers.zemberek_nlp.config import ZemberekConfig
+from mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
 
 # Import tool handlers
 from mcp_servers.zemberek_nlp.tools.morphology import MorphologyHandler
-from mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
 from mcp_servers.zemberek_nlp.tools.spell_check import SpellCheckHandler
 from mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
-from mcp_servers.zemberek_nlp.config import ZemberekConfig
 
 # Test data
 TURKISH_WORDS = [
@@ -204,7 +206,7 @@ class TestLatencyRequirements:
         )
         handler._use_jpype = True
 
-        latencies: List[float] = []
+        latencies: list[float] = []
 
         # Run 100 sequential requests to measure latency
         for i in range(100):
@@ -264,7 +266,7 @@ class TestLatencyRequirements:
         )
         handler._use_jpype = True
 
-        latencies: List[float] = []
+        latencies: list[float] = []
 
         for word in TURKISH_WORDS:
             start = time.perf_counter()
@@ -295,7 +297,7 @@ class TestThreadSafety:
         handler._use_jpype = True
 
         # Track results by word
-        results_by_word: Dict[str, List[Any]] = {w: [] for w in TURKISH_WORDS}
+        results_by_word: dict[str, list[Any]] = {w: [] for w in TURKISH_WORDS}
 
         async def make_request(word: str):
             result = await handler.execute(text=word)

@@ -10,15 +10,16 @@ Boris Cherny Standards: Minimum 100 iterations per property test
 """
 
 import asyncio
+import sys
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pytest
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 
@@ -32,9 +33,9 @@ class HandoffRequest:
     request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     source_agent: str = ""
     target_capability: str = ""
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     chain_depth: int = 0
-    parent_handoff_id: Optional[str] = None
+    parent_handoff_id: str | None = None
     timestamp: datetime = field(default_factory=datetime.now)
 
 
@@ -42,9 +43,9 @@ class HandoffRequest:
 class HandoffResult:
     """Result of handoff attempt."""
     success: bool
-    target_agent: Optional[str] = None
+    target_agent: str | None = None
     rejected: bool = False
-    reason: Optional[str] = None
+    reason: str | None = None
     chain_depth: int = 0
     latency_ms: float = 0.0
 
@@ -63,7 +64,7 @@ class HandoffManager:
         self.max_chain_depth = max_chain_depth
 
         # Mock agent registry
-        self._agents: Dict[str, List[str]] = {
+        self._agents: dict[str, list[str]] = {
             "math": ["matematik_agent_1", "matematik_agent_2"],
             "physics": ["fizik_agent_1"],
             "chemistry": ["kimya_agent_1"],
@@ -83,15 +84,15 @@ class HandoffManager:
         }
 
         # Active handoff chains
-        self._active_chains: Dict[str, List[str]] = {}
+        self._active_chains: dict[str, list[str]] = {}
 
     async def initiate_handoff(
         self,
         source_agent: str,
         target_capability: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         chain_depth: int = 0,
-        chain_id: Optional[str] = None
+        chain_id: str | None = None
     ) -> HandoffResult:
         """
         Initiate agent handoff (REQ-7.1)
@@ -155,7 +156,7 @@ class HandoffManager:
         self,
         capability: str,
         exclude_agent: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Select target agent by capability (REQ-7.1).
 

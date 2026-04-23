@@ -6,15 +6,15 @@ Dry run before rollback, backup restore, manual intervention detection.
 """
 
 from .manager import (
+    RestoreResult,
     RollbackManager,
     RollbackResult,
-    RestoreResult,
     VerificationResult,
 )
 
 __all__ = [
+    "RestoreResult",
     "RollbackManager",
     "RollbackResult",
-    "RestoreResult",
     "VerificationResult",
 ]

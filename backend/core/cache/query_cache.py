@@ -9,11 +9,12 @@ Date: 2026-01-14
 Requirements: REQ-5.4
 """
 
-import json
 import hashlib
+import json
 import logging
-from typing import Any, Optional, Callable, TypeVar
+from collections.abc import Callable
 from functools import wraps
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ class QueryCache:
             data = str(data)
         return hashlib.md5(data.encode()).hexdigest()[:16]
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """
         Cache'den değer alır.
 
@@ -116,7 +117,7 @@ class QueryCache:
         self,
         key: str,
         value: Any,
-        ttl: Optional[int] = None
+        ttl: int | None = None
     ) -> bool:
         """
         Cache'e değer yazar.
@@ -151,7 +152,7 @@ class QueryCache:
         self,
         key: str,
         getter: Callable,
-        ttl: Optional[int] = None
+        ttl: int | None = None
     ) -> Any:
         """
         Cache'den al veya getter ile doldur.
@@ -243,7 +244,7 @@ class QueryCache:
             logger.error(f"Cache invalidate error for {pattern}: {e}")
             return 0
 
-    async def get_hash(self, key: str) -> Optional[dict]:
+    async def get_hash(self, key: str) -> dict | None:
         """
         Redis hash'i alır.
 
@@ -274,7 +275,7 @@ class QueryCache:
         self,
         key: str,
         data: dict,
-        ttl: Optional[int] = None
+        ttl: int | None = None
     ) -> bool:
         """
         Redis hash'e yazar.
@@ -314,7 +315,7 @@ class QueryCache:
 def cached_query(
     key_template: str,
     ttl: int = 300,
-    key_params: Optional[list[str]] = None
+    key_params: list[str] | None = None
 ):
     """
     Query caching decorator.
@@ -455,7 +456,7 @@ class QueryCacheWarmer:
 # SINGLETON INSTANCE
 # =============================================================================
 
-_query_cache: Optional[QueryCache] = None
+_query_cache: QueryCache | None = None
 
 
 def get_query_cache() -> QueryCache:

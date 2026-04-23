@@ -2,7 +2,9 @@
 Quick script to verify admin user exists in database
 """
 import asyncio
+
 from sqlalchemy import select
+
 from core.database import db_manager
 from models.user_models import User
 

@@ -8,15 +8,14 @@ Exit code 2 for critical errors (E, F).
 from __future__ import annotations
 
 import re
-from typing import List, Optional
 
 from .base import BaseHook
 from .models import (
-    QualityCheckResult,
-    HookConfig,
-    ExitCode,
-    LintError,
     ErrorCategory,
+    ExitCode,
+    HookConfig,
+    LintError,
+    QualityCheckResult,
 )
 
 
@@ -39,7 +38,7 @@ class RuffHook(BaseHook):
         r"^(.+?):(\d+):(\d+):\s+([A-Z]\d+)\s+(.+)$"
     )
 
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Run ruff linting on files.
 
@@ -109,9 +108,9 @@ class RuffHook(BaseHook):
             warnings=warning_messages
         )
 
-    def _parse_output(self, output: str) -> List[LintError]:
+    def _parse_output(self, output: str) -> list[LintError]:
         """Parse ruff output into LintError objects."""
-        errors: List[LintError] = []
+        errors: list[LintError] = []
 
         for line in output.strip().split("\n"):
             match = self.ERROR_PATTERN.match(line.strip())
@@ -134,9 +133,9 @@ class RuffHook(BaseHook):
         """Get error category from code."""
         if code.startswith("E"):
             return ErrorCategory.ERROR
-        elif code.startswith("F"):
+        if code.startswith("F"):
             return ErrorCategory.FATAL
-        elif code.startswith("W"):
+        if code.startswith("W"):
             return ErrorCategory.WARNING
         return ErrorCategory.INFO
 
@@ -156,8 +155,8 @@ class RuffHook(BaseHook):
 
 
 async def run_ruff(
-    files: List[str],
-    config: Optional[HookConfig] = None
+    files: list[str],
+    config: HookConfig | None = None
 ) -> QualityCheckResult:
     """
     Convenience function to run ruff linting.

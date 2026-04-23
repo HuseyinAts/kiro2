@@ -30,7 +30,7 @@ class TestUnifiedLoggingSystem:
     def test_logging_enums_import(self):
         """Test: Can import logging enums"""
         try:
-            from core.unified.logging_system import LogLevel, LogCategory, LogFormat
+            from core.unified.logging_system import LogCategory, LogFormat, LogLevel
 
             assert LogLevel is not None
             assert LogCategory is not None
@@ -73,8 +73,8 @@ class TestUnifiedLoggingSystem:
         """Test: Can import log formatters"""
         try:
             from core.unified.logging_system import (
-                TurkishJSONFormatter,
                 StructuredTextFormatter,
+                TurkishJSONFormatter,
             )
 
             assert TurkishJSONFormatter is not None

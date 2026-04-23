@@ -20,7 +20,6 @@ import logging
 import re
 import time
 from pathlib import Path
-from typing import Optional
 
 from ..models import (
     GateConfig,
@@ -31,7 +30,6 @@ from ..models import (
     GateStatus,
 )
 from .base import BaseGate, GateContext
-
 
 logger = logging.getLogger(__name__)
 
@@ -216,7 +214,7 @@ class TestCoverageGate(BaseGate):
                     "covered_lines": totals.get("covered_lines", 0),
                     "missing_lines": totals.get("missing_lines", 0),
                 }
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 logger.warning(f"Failed to parse coverage.json: {e}")
 
         # Fallback: parse stdout
@@ -242,7 +240,7 @@ class TestCoverageGate(BaseGate):
         self,
         working_dir: Path,
         changed_files: list[str],
-    ) -> Optional[float]:
+    ) -> float | None:
         """Check coverage for newly changed files."""
         if not changed_files:
             return None
@@ -308,7 +306,7 @@ class TestCoverageGate(BaseGate):
     def _check_regression(
         self,
         current_line_cov: float,
-        previous_metrics: Optional[GateMetrics],
+        previous_metrics: GateMetrics | None,
         tolerance: float,
     ) -> list[GateIssue]:
         """Check for coverage regression."""

@@ -10,11 +10,12 @@ import statistics
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Union
 
 import websockets
+
 from analytics.unified_analytics_data_model import (
     AnalyticsEvent,
     AnalyticsEventType,
@@ -67,25 +68,25 @@ class RealTimeMetric:
     metric_id: str
     metric_type: MetricType
     timestamp: datetime
-    value: Union[int, float, str, Dict[str, Any]]
+    value: Union[int, float, str, dict[str, Any]]
 
     # Context information
-    exam_id: Optional[str] = None
-    student_id: Optional[int] = None
-    subject: Optional[TurkishSubject] = None
-    session_id: Optional[str] = None
+    exam_id: str | None = None
+    student_id: int | None = None
+    subject: TurkishSubject | None = None
+    session_id: str | None = None
 
     # Metadata
     source: str = "system"
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.metric_id:
             self.metric_id = str(uuid.uuid4())
         if not self.timestamp:
-            self.timestamp = datetime.now(timezone.utc)
+            self.timestamp = datetime.now(UTC)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "metric_id": self.metric_id,
@@ -117,41 +118,41 @@ class Alert:
     message_tr: str = ""
 
     # Context
-    exam_id: Optional[str] = None
-    student_ids: List[int] = field(default_factory=list)
-    affected_systems: List[str] = field(default_factory=list)
+    exam_id: str | None = None
+    student_ids: list[int] = field(default_factory=list)
+    affected_systems: list[str] = field(default_factory=list)
 
     # Alert lifecycle
     acknowledged: bool = False
     resolved: bool = False
-    acknowledged_by: Optional[str] = None
-    resolved_by: Optional[str] = None
-    acknowledged_at: Optional[datetime] = None
-    resolved_at: Optional[datetime] = None
+    acknowledged_by: str | None = None
+    resolved_by: str | None = None
+    acknowledged_at: datetime | None = None
+    resolved_at: datetime | None = None
 
     # Actions
-    suggested_actions: List[str] = field(default_factory=list)
-    automated_actions_taken: List[str] = field(default_factory=list)
+    suggested_actions: list[str] = field(default_factory=list)
+    automated_actions_taken: list[str] = field(default_factory=list)
 
     def __post_init__(self):
         if not self.alert_id:
             self.alert_id = str(uuid.uuid4())
         if not self.timestamp:
-            self.timestamp = datetime.now(timezone.utc)
+            self.timestamp = datetime.now(UTC)
 
     def acknowledge(self, user: str) -> None:
         """Acknowledge the alert"""
         self.acknowledged = True
         self.acknowledged_by = user
-        self.acknowledged_at = datetime.now(timezone.utc)
+        self.acknowledged_at = datetime.now(UTC)
 
     def resolve(self, user: str) -> None:
         """Resolve the alert"""
         self.resolved = True
         self.resolved_by = user
-        self.resolved_at = datetime.now(timezone.utc)
+        self.resolved_at = datetime.now(UTC)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "alert_id": self.alert_id,
@@ -185,26 +186,26 @@ class ExamSession:
     # Session info
     start_time: datetime
     scheduled_end_time: datetime
-    actual_end_time: Optional[datetime] = None
+    actual_end_time: datetime | None = None
 
     # Participants
-    registered_students: List[int] = field(default_factory=list)
-    active_students: List[int] = field(default_factory=list)
-    completed_students: List[int] = field(default_factory=list)
-    dropped_students: List[int] = field(default_factory=list)
+    registered_students: list[int] = field(default_factory=list)
+    active_students: list[int] = field(default_factory=list)
+    completed_students: list[int] = field(default_factory=list)
+    dropped_students: list[int] = field(default_factory=list)
 
     # Real-time statistics
     current_participation_rate: float = 0.0
     average_completion_rate: float = 0.0
     average_score: float = 0.0
-    question_difficulty_stats: Dict[str, Any] = field(default_factory=dict)
+    question_difficulty_stats: dict[str, Any] = field(default_factory=dict)
 
     # Technical metrics
     server_response_times: deque = field(default_factory=lambda: deque(maxlen=100))
-    error_counts: Dict[str, int] = field(default_factory=dict)
-    bandwidth_usage: Dict[str, float] = field(default_factory=dict)
+    error_counts: dict[str, int] = field(default_factory=dict)
+    bandwidth_usage: dict[str, float] = field(default_factory=dict)
 
-    def calculate_metrics(self) -> Dict[str, Any]:
+    def calculate_metrics(self) -> dict[str, Any]:
         """Calculate current session metrics"""
         total_registered = len(self.registered_students)
         currently_active = len(self.active_students)
@@ -306,7 +307,7 @@ class RealTimeMetricsCollector:
         metric_type: MetricType,
         limit: int = 100,
         time_window: timedelta = timedelta(minutes=10),
-    ) -> List[RealTimeMetric]:
+    ) -> list[RealTimeMetric]:
         """Get recent metrics of specific type"""
         if not self.redis_client:
             return []
@@ -317,7 +318,7 @@ class RealTimeMetricsCollector:
             )
 
             metrics = []
-            cutoff_time = datetime.now(timezone.utc) - time_window
+            cutoff_time = datetime.now(UTC) - time_window
 
             for data in metric_data:
                 metric_dict = json.loads(data)
@@ -353,7 +354,7 @@ class AnomalyDetector:
         self.baseline_stats = {}
         self.detection_rules = self._initialize_detection_rules()
 
-    def _initialize_detection_rules(self) -> Dict[str, Dict[str, Any]]:
+    def _initialize_detection_rules(self) -> dict[str, dict[str, Any]]:
         """Initialize anomaly detection rules"""
         return {
             "high_error_rate": {
@@ -390,8 +391,8 @@ class AnomalyDetector:
         }
 
     async def detect_anomalies(
-        self, session: ExamSession, recent_metrics: List[RealTimeMetric]
-    ) -> List[Alert]:
+        self, session: ExamSession, recent_metrics: list[RealTimeMetric]
+    ) -> list[Alert]:
         """Detect anomalies in exam session"""
         alerts = []
         session_metrics = session.calculate_metrics()
@@ -471,8 +472,8 @@ class AnomalyDetector:
         return alerts
 
     async def _detect_cheating_patterns(
-        self, session: ExamSession, recent_metrics: List[RealTimeMetric]
-    ) -> List[Alert]:
+        self, session: ExamSession, recent_metrics: list[RealTimeMetric]
+    ) -> list[Alert]:
         """Detect potential cheating patterns"""
         alerts = []
 
@@ -536,8 +537,8 @@ class AnomalyDetector:
         return alerts
 
     async def _detect_performance_issues(
-        self, session_metrics: Dict[str, Any]
-    ) -> List[Alert]:
+        self, session_metrics: dict[str, Any]
+    ) -> list[Alert]:
         """Detect system performance issues"""
         alerts = []
 
@@ -572,11 +573,11 @@ class RealTimeMonitoringDashboard:
     """Real-time monitoring dashboard for exam sessions"""
 
     def __init__(self):
-        self.active_sessions: Dict[str, ExamSession] = {}
+        self.active_sessions: dict[str, ExamSession] = {}
         self.metrics_collector = RealTimeMetricsCollector()
         self.anomaly_detector = AnomalyDetector()
-        self.active_alerts: Dict[str, Alert] = {}
-        self.websocket_connections: List = []
+        self.active_alerts: dict[str, Alert] = {}
+        self.websocket_connections: list = []
 
         # Monitoring configuration
         self.monitoring_interval = config.get_setting("monitoring.interval_seconds", 10)
@@ -654,7 +655,7 @@ class RealTimeMonitoringDashboard:
         for session_id, session in self.active_sessions.copy().items():
             # Check if session is still active
             if session.actual_end_time and datetime.now(
-                timezone.utc
+                UTC
             ) - session.actual_end_time > timedelta(hours=1):
                 # Remove old completed sessions
                 del self.active_sessions[session_id]
@@ -717,11 +718,11 @@ class RealTimeMonitoringDashboard:
                 "type": "session_update",
                 "session_id": session_id,
                 "metrics": metrics,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
-    async def _broadcast_update(self, data: Dict[str, Any]) -> None:
+    async def _broadcast_update(self, data: dict[str, Any]) -> None:
         """Broadcast update to all connected WebSocket clients"""
         if not self.websocket_connections:
             return
@@ -744,7 +745,7 @@ class RealTimeMonitoringDashboard:
 
     async def _cleanup_old_alerts(self) -> None:
         """Clean up old resolved alerts"""
-        cutoff_time = datetime.now(timezone.utc) - timedelta(
+        cutoff_time = datetime.now(UTC) - timedelta(
             hours=self.alert_retention_hours
         )
 
@@ -784,10 +785,10 @@ class RealTimeMonitoringDashboard:
             )
         )
 
-    def get_dashboard_data(self) -> Dict[str, Any]:
+    def get_dashboard_data(self) -> dict[str, Any]:
         """Get current dashboard data"""
         return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "active_sessions": len(self.active_sessions),
             "total_active_students": sum(
                 len(session.active_students)
@@ -834,7 +835,7 @@ class RealTimeMonitoringDashboard:
                     "type": "alert_acknowledged",
                     "alert_id": alert_id,
                     "acknowledged_by": user,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
             )
             return True
@@ -849,7 +850,7 @@ class RealTimeMonitoringDashboard:
                     "type": "alert_resolved",
                     "alert_id": alert_id,
                     "resolved_by": user,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
             )
             return True
@@ -888,8 +889,8 @@ if __name__ == "__main__":
             session_id="session_test_001",
             exam_id="tyt_final_2024",
             exam_type=TurkishExamType.TYT,
-            start_time=datetime.now(timezone.utc),
-            scheduled_end_time=datetime.now(timezone.utc) + timedelta(hours=2),
+            start_time=datetime.now(UTC),
+            scheduled_end_time=datetime.now(UTC) + timedelta(hours=2),
             registered_students=list(range(1001, 1051)),  # 50 students
         )
 

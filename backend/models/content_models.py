@@ -3,13 +3,14 @@
 Teknofest 2025 Eğitim Eylemci Platformu
 """
 
-from pydantic import BaseModel, Field, field_validator, ConfigDict
-from typing import List, Optional, Dict, Any
+import re
 from datetime import datetime
 from enum import Enum
-from uuid import uuid4
-import re
+from typing import Any
 from urllib.parse import urlparse
+from uuid import uuid4
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ContentType(str, Enum):
@@ -40,21 +41,21 @@ class MakaleIcerik(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     baslik: str = Field(..., min_length=3, max_length=200, description="Makale başlığı")
     icerik: str = Field(..., min_length=50, description="Makale içeriği")
-    ozet: Optional[str] = Field(None, max_length=500, description="Makale özeti")
+    ozet: str | None = Field(None, max_length=500, description="Makale özeti")
     kategori: str = Field(..., description="Makale kategorisi")
     yazar: str = Field(..., description="Makale yazarı")
-    yazar_id: Optional[str] = Field(None, description="Yazar kullanıcı ID'si")
-    etiketler: List[str] = Field(default_factory=list, description="Makale etiketleri")
+    yazar_id: str | None = Field(None, description="Yazar kullanıcı ID'si")
+    etiketler: list[str] = Field(default_factory=list, description="Makale etiketleri")
     okunma_suresi: int = Field(
         default=1, ge=1, description="Tahmini okuma süresi (dakika)"
     )
     goruntuleme_sayisi: int = Field(default=0, ge=0, description="Görüntülenme sayısı")
     begeni_sayisi: int = Field(default=0, ge=0, description="Beğeni sayısı")
     yayinlanma_tarihi: datetime = Field(default_factory=datetime.now)
-    guncellenme_tarihi: Optional[datetime] = Field(None)
+    guncellenme_tarihi: datetime | None = Field(None)
     aktif: bool = Field(default=True, description="İçerik aktif mi?")
     dil: str = Field(default="tr", description="İçerik dili")
-    zorluk_seviyesi: Optional[str] = Field(None, description="Zorluk seviyesi")
+    zorluk_seviyesi: str | None = Field(None, description="Zorluk seviyesi")
 
     @field_validator("baslik")
     @classmethod
@@ -103,14 +104,14 @@ class VideoIcerik(BaseModel):
 
     id: str = Field(default_factory=lambda: str(uuid4()))
     baslik: str = Field(..., min_length=3, max_length=200, description="Video başlığı")
-    aciklama: Optional[str] = Field(
+    aciklama: str | None = Field(
         None, max_length=1000, description="Video açıklaması"
     )
     video_url: str = Field(..., description="Video URL'i")
-    thumbnail_url: Optional[str] = Field(None, description="Thumbnail URL'i")
+    thumbnail_url: str | None = Field(None, description="Thumbnail URL'i")
     kategori: str = Field(..., description="Video kategorisi")
     platform: str = Field(default="youtube", description="Video platformu")
-    platform_id: Optional[str] = Field(None, description="Platform video ID'si")
+    platform_id: str | None = Field(None, description="Platform video ID'si")
     sure: int = Field(
         default=0, ge=0, le=14400, description="Video süresi (saniye)"
     )  # Max 4 saat
@@ -118,13 +119,13 @@ class VideoIcerik(BaseModel):
     dil: str = Field(default="tr", description="Video dili")
     altyazi_var: bool = Field(default=False, description="Altyazı var mı?")
     yayinlayan: str = Field(..., description="Video yayınlayan")
-    yayinlayan_id: Optional[str] = Field(None, description="Yayınlayan kullanıcı ID'si")
+    yayinlayan_id: str | None = Field(None, description="Yayınlayan kullanıcı ID'si")
     izlenme_sayisi: int = Field(default=0, ge=0, description="İzlenme sayısı")
     begeni_sayisi: int = Field(default=0, ge=0, description="Beğeni sayısı")
     yayinlanma_tarihi: datetime = Field(default_factory=datetime.now)
-    guncellenme_tarihi: Optional[datetime] = Field(None)
+    guncellenme_tarihi: datetime | None = Field(None)
     aktif: bool = Field(default=True, description="İçerik aktif mi?")
-    zorluk_seviyesi: Optional[str] = Field(None, description="Zorluk seviyesi")
+    zorluk_seviyesi: str | None = Field(None, description="Zorluk seviyesi")
 
     @field_validator("video_url")
     @classmethod
@@ -170,10 +171,9 @@ class VideoIcerik(BaseModel):
 
         if hours > 0:
             return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-        else:
-            return f"{minutes:02d}:{seconds:02d}"
+        return f"{minutes:02d}:{seconds:02d}"
 
-    def extract_platform_id(self) -> Optional[str]:
+    def extract_platform_id(self) -> str | None:
         """URL'den platform ID'sini çıkar"""
         if "youtube.com" in self.video_url or "youtu.be" in self.video_url:
             # YouTube ID çıkarma
@@ -196,16 +196,16 @@ class QuizIcerik(BaseModel):
 
     id: str = Field(default_factory=lambda: str(uuid4()))
     baslik: str = Field(..., min_length=3, max_length=200)
-    aciklama: Optional[str] = Field(None, max_length=500)
+    aciklama: str | None = Field(None, max_length=500)
     kategori: str = Field(...)
     olusturan: str = Field(...)
-    olusturan_id: Optional[str] = Field(None)
+    olusturan_id: str | None = Field(None)
     soru_sayisi: int = Field(default=0, ge=0)
-    sure_limiti: Optional[int] = Field(None, ge=60)  # Minimum 1 dakika
+    sure_limiti: int | None = Field(None, ge=60)  # Minimum 1 dakika
     zorluk_seviyesi: str = Field(default="orta")
     aktif: bool = Field(default=True)
     olusturulma_tarihi: datetime = Field(default_factory=datetime.now)
-    guncellenme_tarihi: Optional[datetime] = Field(None)
+    guncellenme_tarihi: datetime | None = Field(None)
 
     model_config = ConfigDict()
 
@@ -218,12 +218,12 @@ class ContentInteraction(BaseModel):
     content_id: str = Field(..., description="İçerik ID'si")
     content_type: ContentType = Field(..., description="İçerik türü")
     interaction_type: InteractionType = Field(..., description="Etkileşim türü")
-    interaction_data: Optional[Dict[str, Any]] = Field(
+    interaction_data: dict[str, Any] | None = Field(
         None, description="Ek etkileşim verisi"
     )
     timestamp: datetime = Field(default_factory=datetime.now)
-    session_id: Optional[str] = Field(None, description="Oturum ID'si")
-    device_info: Optional[Dict[str, str]] = Field(None, description="Cihaz bilgisi")
+    session_id: str | None = Field(None, description="Oturum ID'si")
+    device_info: dict[str, str] | None = Field(None, description="Cihaz bilgisi")
 
     model_config = ConfigDict()
 
@@ -238,8 +238,8 @@ class ContentStats(BaseModel):
     total_shares: int = Field(default=0, ge=0)
     total_comments: int = Field(default=0, ge=0)
     total_bookmarks: int = Field(default=0, ge=0)
-    average_rating: Optional[float] = Field(None, ge=0, le=5)
-    engagement_rate: Optional[float] = Field(None, ge=0, le=100)
+    average_rating: float | None = Field(None, ge=0, le=5)
+    engagement_rate: float | None = Field(None, ge=0, le=100)
     last_updated: datetime = Field(default_factory=datetime.now)
 
     def calculate_engagement_rate(self) -> float:
@@ -262,15 +262,15 @@ class ContentStats(BaseModel):
 class ContentFilter(BaseModel):
     """İçerik filtreleme modeli"""
 
-    content_types: Optional[List[ContentType]] = Field(None)
-    kategoriler: Optional[List[str]] = Field(None)
-    etiketler: Optional[List[str]] = Field(None)
-    zorluk_seviyesi: Optional[str] = Field(None)
-    dil: Optional[str] = Field(None)
-    baslangic_tarihi: Optional[datetime] = Field(None)
-    bitis_tarihi: Optional[datetime] = Field(None)
-    min_sure: Optional[int] = Field(None, ge=0)
-    max_sure: Optional[int] = Field(None, ge=0)
+    content_types: list[ContentType] | None = Field(None)
+    kategoriler: list[str] | None = Field(None)
+    etiketler: list[str] | None = Field(None)
+    zorluk_seviyesi: str | None = Field(None)
+    dil: str | None = Field(None)
+    baslangic_tarihi: datetime | None = Field(None)
+    bitis_tarihi: datetime | None = Field(None)
+    min_sure: int | None = Field(None, ge=0)
+    max_sure: int | None = Field(None, ge=0)
     sadece_aktif: bool = Field(default=True)
 
     @field_validator("max_sure")
@@ -291,7 +291,7 @@ class ContentSearchRequest(BaseModel):
     """İçerik arama isteği modeli"""
 
     query: str = Field(..., min_length=2, max_length=100)
-    filters: Optional[ContentFilter] = Field(None)
+    filters: ContentFilter | None = Field(None)
     sort_by: str = Field(default="relevance")  # relevance, date, popularity, rating
     sort_order: str = Field(default="desc")  # asc, desc
     page: int = Field(default=1, ge=1)
@@ -328,9 +328,9 @@ class BulkContentImport(BaseModel):
     successful_records: int = Field(default=0, ge=0)
     failed_records: int = Field(default=0, ge=0)
     status: str = Field(default="pending")  # pending, processing, completed, failed
-    error_details: Optional[List[Dict[str, Any]]] = Field(None)
-    started_at: Optional[datetime] = Field(None)
-    completed_at: Optional[datetime] = Field(None)
+    error_details: list[dict[str, Any]] | None = Field(None)
+    started_at: datetime | None = Field(None)
+    completed_at: datetime | None = Field(None)
     created_at: datetime = Field(default_factory=datetime.now)
 
     @field_validator("status")

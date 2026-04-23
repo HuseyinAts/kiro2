@@ -10,10 +10,12 @@ Property 2: Token counting accuracy
 Boris Cherny Standards: Minimum 100 iterations per property test
 """
 
-import pytest
-from hypothesis import given, strategies as st, settings, assume
-
 import sys
+
+import pytest
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from agents.context.context_manager import ContextManager, TokenCounter

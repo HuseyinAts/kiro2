@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Sınav Cevap Takip API Endpoint'leri
 Türkiye Üniversite Sınavları Hazırlık Platformu
@@ -11,7 +10,6 @@ Bu modül sınav cevap takibi için API endpoint'lerini sağlar:
 REQ-1.6: Sınav arayüzü gereksinimleri
 """
 
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
@@ -90,10 +88,10 @@ class CompletionStatsResponse(BaseModel):
     unanswered_questions: int = Field(..., description="Cevaplanmayan soru sayısı")
     empty_answers: int = Field(..., description="Boş bırakılan soru sayısı")
     completion_percentage: float = Field(..., description="Tamamlanma yüzdesi")
-    unanswered_question_ids: List[str] = Field(
+    unanswered_question_ids: list[str] = Field(
         ..., description="Cevaplanmayan soru ID'leri"
     )
-    unanswered_question_orders: List[int] = Field(
+    unanswered_question_orders: list[int] = Field(
         ..., description="Cevaplanmayan soru sıraları"
     )
 
@@ -176,7 +174,7 @@ async def get_completion_statistics(
 
 @router.get(
     "/{exam_session_id}/answer-statuses",
-    response_model=List[AnswerStatusResponse],
+    response_model=list[AnswerStatusResponse],
     summary="Tüm Cevap Durumları",
 )
 async def get_all_answer_statuses(
@@ -240,7 +238,7 @@ async def get_all_answer_statuses(
 
 @router.get(
     "/{exam_session_id}/unanswered-questions",
-    response_model=List[int],
+    response_model=list[int],
     summary="Cevaplanmayan Soru Sıraları",
 )
 async def get_unanswered_questions(
@@ -288,7 +286,7 @@ async def get_unanswered_questions(
 
 @router.get(
     "/{exam_session_id}/empty-answers",
-    response_model=List[int],
+    response_model=list[int],
     summary="Boş Bırakılan Soru Sıraları",
 )
 async def get_empty_answers(

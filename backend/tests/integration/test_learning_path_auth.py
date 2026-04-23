@@ -11,12 +11,13 @@ Test Coverage:
 - Permission-based access control
 """
 
+from datetime import UTC, datetime, timedelta
+
 import pytest
-from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
 
+from core.jwt_auth import JWTManager, TokenType, UserRole
 from main import app
-from core.jwt_auth import JWTManager, UserRole, TokenType
 
 client = TestClient(app)
 jwt_manager = JWTManager()
@@ -107,17 +108,18 @@ def admin_token(admin_user):
 def expired_token(student_user):
     """Generate an expired token for testing"""
     import jwt
+
     from core.config import get_settings
 
     settings = get_settings()
-    expire = datetime.now(timezone.utc) - timedelta(minutes=30)  # Expired 30 minutes ago
+    expire = datetime.now(UTC) - timedelta(minutes=30)  # Expired 30 minutes ago
 
     payload = {
         "sub": student_user["id"],
         "email": student_user["email"],
         "role": student_user["role"].value,
         "exp": expire,
-        "iat": datetime.now(timezone.utc) - timedelta(hours=1),
+        "iat": datetime.now(UTC) - timedelta(hours=1),
         "type": TokenType.ACCESS.value,
         "jti": "expired_token_001",
         "permissions": student_user["permissions"],
@@ -306,6 +308,7 @@ class TestRoleBasedAccessControl:
     def test_role_validation_in_token(self, student_user):
         """Test that invalid role in token is rejected"""
         import jwt
+
         from core.config import get_settings
 
         settings = get_settings()
@@ -315,8 +318,8 @@ class TestRoleBasedAccessControl:
             "sub": student_user["id"],
             "email": student_user["email"],
             "role": "invalid_role",  # Invalid role
-            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
-            "iat": datetime.now(timezone.utc),
+            "exp": datetime.now(UTC) + timedelta(hours=1),
+            "iat": datetime.now(UTC),
             "type": TokenType.ACCESS.value,
             "jti": "invalid_role_token",
         }
@@ -637,6 +640,7 @@ class TestSecurityEdgeCases:
     def test_jwt_algorithm_confusion_attack(self, student_user):
         """Test protection against JWT algorithm confusion attacks"""
         import jwt
+
         from core.config import get_settings
 
         settings = get_settings()
@@ -646,8 +650,8 @@ class TestSecurityEdgeCases:
             "sub": student_user["id"],
             "email": student_user["email"],
             "role": student_user["role"].value,
-            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
-            "iat": datetime.now(timezone.utc),
+            "exp": datetime.now(UTC) + timedelta(hours=1),
+            "iat": datetime.now(UTC),
             "type": TokenType.ACCESS.value,
         }
 

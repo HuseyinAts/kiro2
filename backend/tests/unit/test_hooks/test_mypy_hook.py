@@ -1,10 +1,11 @@
 """Tests for MypyHook."""
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
+import pytest
+
+from backend.hooks.models import ExitCode, HookConfig
 from backend.hooks.mypy_hook import MypyHook
-from backend.hooks.models import HookConfig, ExitCode
 
 
 class TestMypyHook:

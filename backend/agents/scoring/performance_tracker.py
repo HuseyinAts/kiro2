@@ -9,9 +9,9 @@ Agent performans metriklerini izler ve iyilestirme tespit eder.
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from ..domain_experts.base_domain_agent import DomainType, DomainResponse
+from ..domain_experts.base_domain_agent import DomainResponse, DomainType
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class PerformanceMetrics:
     total_tokens_used: int = 0
     total_response_time_ms: float = 0.0
     average_confidence: float = 0.0
-    last_activity: Optional[datetime] = None
+    last_activity: datetime | None = None
     created_at: datetime = field(default_factory=datetime.now)
 
     @property
@@ -62,8 +62,8 @@ class PerformanceTracker:
 
     def __init__(self):
         """PerformanceTracker olustur"""
-        self._metrics: Dict[DomainType, PerformanceMetrics] = {}
-        self._history: Dict[DomainType, List[Dict[str, Any]]] = {}
+        self._metrics: dict[DomainType, PerformanceMetrics] = {}
+        self._history: dict[DomainType, list[dict[str, Any]]] = {}
         logger.info("PerformanceTracker initialized")
 
     def track_response(self, response: DomainResponse):
@@ -113,11 +113,11 @@ class PerformanceTracker:
             f"success={response.is_successful()}, confidence={response.confidence:.2f}"
         )
 
-    def get_metrics(self, domain: DomainType) -> Optional[PerformanceMetrics]:
+    def get_metrics(self, domain: DomainType) -> PerformanceMetrics | None:
         """Domain icin metrikleri al"""
         return self._metrics.get(domain)
 
-    def get_all_metrics(self) -> Dict[DomainType, PerformanceMetrics]:
+    def get_all_metrics(self) -> dict[DomainType, PerformanceMetrics]:
         """Tum metrikleri al"""
         return dict(self._metrics)
 
@@ -125,7 +125,7 @@ class PerformanceTracker:
         self,
         domain: DomainType,
         window_size: int = 10,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Iyilestirme tespit et (REQ-8.5)
 
@@ -187,7 +187,7 @@ class PerformanceTracker:
         domain: DomainType,
         metric: str = "confidence",
         points: int = 10,
-    ) -> Optional[List[float]]:
+    ) -> list[float] | None:
         """
         Metrik trendi al
 
@@ -206,7 +206,7 @@ class PerformanceTracker:
         recent = history[-points:]
         return [h.get(metric, 0) for h in recent]
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Performans ozeti al"""
         summary = {
             "domains_tracked": len(self._metrics),

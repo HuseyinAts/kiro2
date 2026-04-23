@@ -4,12 +4,13 @@ Watch progress tracking, completion status, analytics
 """
 
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, func
-from pydantic import BaseModel
 import uuid
+from datetime import datetime, timedelta
+from typing import Any
+
+from pydantic import BaseModel
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.database import EBAVideo
 from models.eba_video import EBAVideoWatch
@@ -124,7 +125,7 @@ class EBAWatchTrackingService:
 
     async def update_watch_progress(
         self, session_id: uuid.UUID, current_time: int, video_duration: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         İzleme ilerlemesini güncelle
 
@@ -173,7 +174,7 @@ class EBAWatchTrackingService:
 
     async def end_watch_session(
         self, session_id: uuid.UUID, final_time: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         İzleme oturumunu sonlandır
         """
@@ -206,7 +207,7 @@ class EBAWatchTrackingService:
 
     async def get_user_watch_history(
         self, user_id: uuid.UUID, limit: int = 20
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Kullanıcının izleme geçmişi
         """
@@ -243,7 +244,7 @@ class EBAWatchTrackingService:
 
     async def get_resume_position(
         self, user_id: uuid.UUID, eba_video_id: str
-    ) -> Optional[int]:
+    ) -> int | None:
         """
         Kaldığın yerden devam et - son pozisyonu getir
 
@@ -280,7 +281,7 @@ class EBAWatchTrackingService:
         return None
 
     async def get_user_analytics(
-        self, user_id: uuid.UUID, since_days: Optional[int] = None
+        self, user_id: uuid.UUID, since_days: int | None = None
     ) -> WatchAnalytics:
         """
         Kullanıcı izleme analitikleri
@@ -342,7 +343,7 @@ class EBAWatchTrackingService:
             total_sessions=total_sessions,
         )
 
-    async def get_video_analytics(self, eba_video_id: str) -> Dict[str, Any]:
+    async def get_video_analytics(self, eba_video_id: str) -> dict[str, Any]:
         """
         Video bazlı analitikler (tüm kullanıcılar)
 
@@ -429,8 +430,8 @@ class EBAWatchTrackingService:
         }
 
     def _calculate_drop_off_distribution(
-        self, positions: List[int], video_duration: int
-    ) -> Dict[str, int]:
+        self, positions: list[int], video_duration: int
+    ) -> dict[str, int]:
         """
         Calculate where users drop off
 
@@ -461,10 +462,10 @@ class EBAWatchTrackingService:
 
     async def get_popular_videos(
         self,
-        subject: Optional[str] = None,
-        grade_level: Optional[str] = None,
+        subject: str | None = None,
+        grade_level: str | None = None,
         limit: int = 10,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         En popüler videolar (en çok izlenen)
         """

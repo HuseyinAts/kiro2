@@ -17,7 +17,6 @@ import hashlib
 import logging
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 try:
     import numpy as np
@@ -84,8 +83,8 @@ class EmbeddingService:
         self.batch_size = batch_size or EmbeddingConfig.BATCH_SIZE
         self.dimension = EmbeddingConfig.get_model_dimension()
 
-        self._model: Optional[SentenceTransformer] = None
-        self._redis: Optional[redis.Redis] = None
+        self._model: SentenceTransformer | None = None
+        self._redis: redis.Redis | None = None
         self._initialized = False
 
         # İstatistikler
@@ -152,7 +151,7 @@ class EmbeddingService:
         text_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()[:32]
         return f"chromadb:emb:{text_hash}"
 
-    def _get_from_cache(self, text: str) -> Optional[list[float]]:
+    def _get_from_cache(self, text: str) -> list[float] | None:
         """
         Cache'den embedding al.
 
@@ -396,16 +395,15 @@ class EmbeddingService:
                 return 0.0
 
             return float(np.dot(a, b) / (norm_a * norm_b))
-        else:
-            # Fallback
-            dot = sum(a * b for a, b in zip(vec1, vec2))
-            norm1 = sum(a * a for a in vec1) ** 0.5
-            norm2 = sum(b * b for b in vec2) ** 0.5
+        # Fallback
+        dot = sum(a * b for a, b in zip(vec1, vec2))
+        norm1 = sum(a * a for a in vec1) ** 0.5
+        norm2 = sum(b * b for b in vec2) ** 0.5
 
-            if norm1 == 0 or norm2 == 0:
-                return 0.0
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
 
-            return dot / (norm1 * norm2)
+        return dot / (norm1 * norm2)
 
     def warm_cache(self, texts: list[str]) -> int:
         """
@@ -464,7 +462,7 @@ class EmbeddingService:
 
 
 # Singleton instance
-_embedding_service: Optional[EmbeddingService] = None
+_embedding_service: EmbeddingService | None = None
 
 
 def get_embedding_service(

@@ -15,7 +15,7 @@ Requirements (REQ-3.x):
 
 import re
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from ..stage_base import BasePipelineStage, StageInput, StageOutput
 
@@ -68,8 +68,8 @@ class DistractorAgent(BasePipelineStage):
 
     def __init__(
         self,
-        llm_client: Optional[Any] = None,
-        config: Optional[Dict[str, Any]] = None
+        llm_client: Any | None = None,
+        config: dict[str, Any] | None = None
     ):
         """
         Distractor Agent başlat
@@ -189,7 +189,7 @@ class DistractorAgent(BasePipelineStage):
 
         except Exception as e:
             return self._create_error_output(
-                f"Çeldirici üretim hatası: {str(e)}",
+                f"Çeldirici üretim hatası: {e!s}",
                 input_data,
                 time.time() - start_time
             )
@@ -203,7 +203,7 @@ class DistractorAgent(BasePipelineStage):
         question_text: str,
         correct_answer: str,
         subject: str
-    ) -> List[str]:
+    ) -> list[str]:
         """
         3 çeldirici seçenek üret
 
@@ -261,7 +261,7 @@ class DistractorAgent(BasePipelineStage):
         self,
         correct_answer: str,
         subject: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Basit çeldirici üretimi (fallback)"""
         distractors = []
 
@@ -286,8 +286,8 @@ class DistractorAgent(BasePipelineStage):
         self,
         question_text: str,
         correct_answer: str,
-        distractors: List[str]
-    ) -> Dict[str, float]:
+        distractors: list[str]
+    ) -> dict[str, float]:
         """
         Çeldirici plausibility skorları hesapla
 
@@ -329,9 +329,9 @@ class DistractorAgent(BasePipelineStage):
     async def _validate_distractors(
         self,
         correct_answer: str,
-        distractors: List[str],
-        plausibility_scores: Dict[str, float]
-    ) -> Tuple[bool, List[str]]:
+        distractors: list[str],
+        plausibility_scores: dict[str, float]
+    ) -> tuple[bool, list[str]]:
         """
         Çeldiricileri doğrula
 
@@ -368,8 +368,8 @@ class DistractorAgent(BasePipelineStage):
 
     def _order_options(
         self,
-        options: List[str]
-    ) -> Tuple[List[str], int]:
+        options: list[str]
+    ) -> tuple[list[str], int]:
         """
         Seçenekleri mantıklı sırala
 

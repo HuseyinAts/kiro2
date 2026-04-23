@@ -14,7 +14,6 @@ Requirements: REQ-1.4, REQ-1.5
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
 
 from core.structured_logger import get_logger
 
@@ -47,7 +46,7 @@ class ExamNetScores:
     """Sınav net skorları"""
 
     exam_type: str
-    subject_nets: List[SubjectNet]
+    subject_nets: list[SubjectNet]
     total_net: float
     total_correct: int
     total_wrong: int
@@ -245,8 +244,8 @@ class OSYMScoringSystem:
             return 0.0
 
     def calculate_subject_nets(
-        self, subject_results: Dict[str, Dict[str, int]]
-    ) -> List[SubjectNet]:
+        self, subject_results: dict[str, dict[str, int]]
+    ) -> list[SubjectNet]:
         """
         Ders bazlı net sayılarını hesapla
 
@@ -295,7 +294,7 @@ class OSYMScoringSystem:
             return []
 
     def calculate_exam_nets(
-        self, exam_type: str, subject_results: Dict[str, Dict[str, int]]
+        self, exam_type: str, subject_results: dict[str, dict[str, int]]
     ) -> ExamNetScores:
         """
         Sınav toplam net skorlarını hesapla
@@ -349,7 +348,7 @@ class OSYMScoringSystem:
             )
 
     def calculate_raw_score(
-        self, subject_nets: List[SubjectNet], coefficients: Dict[str, float]
+        self, subject_nets: list[SubjectNet], coefficients: dict[str, float]
     ) -> float:
         """
         Ham puan hesapla (katsayılı puanlama)
@@ -400,7 +399,7 @@ class OSYMScoringSystem:
             logger.error(f"Ham puan hesaplama hatası: {e}")
             return 0.0
 
-    def _generate_score_distribution(self, total_candidates: int) -> Dict[int, int]:
+    def _generate_score_distribution(self, total_candidates: int) -> dict[int, int]:
         """
         Puan dağılımı oluştur (normal dağılım simülasyonu)
 
@@ -434,7 +433,7 @@ class OSYMScoringSystem:
 
     def _get_coefficients_for_score_type(
         self, score_type: ScoreType, exam_part: str
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Puan türüne göre katsayıları getir
 
@@ -447,20 +446,20 @@ class OSYMScoringSystem:
         """
         if exam_part == "tyt":
             return self.tyt_coefficients
-        elif exam_part == "ayt":
+        if exam_part == "ayt":
             if score_type == ScoreType.SAY:
                 return self.ayt_sayisal_coefficients
-            elif score_type == ScoreType.SOZ:
+            if score_type == ScoreType.SOZ:
                 return self.ayt_sozel_coefficients
-            else:  # EA
-                # Eşit ağırlık için karma katsayılar
-                return {
-                    "MATEMATIK": 5.0,
-                    "EDEBIYAT": 5.0,
-                    "TARIH_1": 4.0,
-                    "COGRAFYA_1": 4.0,
-                }
-        elif exam_part == "ydt":
+            # EA
+            # Eşit ağırlık için karma katsayılar
+            return {
+                "MATEMATIK": 5.0,
+                "EDEBIYAT": 5.0,
+                "TARIH_1": 4.0,
+                "COGRAFYA_1": 4.0,
+            }
+        if exam_part == "ydt":
             return self.ydt_coefficients
 
         return {}
@@ -468,9 +467,9 @@ class OSYMScoringSystem:
     def calculate_osym_score(
         self,
         score_type: ScoreType,
-        tyt_subject_results: Dict[str, Dict[str, int]],
-        ayt_subject_results: Optional[Dict[str, Dict[str, int]]] = None,
-        ydt_subject_results: Optional[Dict[str, Dict[str, int]]] = None,
+        tyt_subject_results: dict[str, dict[str, int]],
+        ayt_subject_results: dict[str, dict[str, int]] | None = None,
+        ydt_subject_results: dict[str, dict[str, int]] | None = None,
     ) -> OSYMScore:
         """
         ÖSYM puanını hesapla (TYT + AYT/YDT kombinasyonu)
@@ -713,9 +712,9 @@ class OSYMScoringSystem:
     def calculate_program_specific_score(
         self,
         placement_score: PlacementScore,
-        program_coefficients: Dict[str, float],
-        tyt_subject_results: Dict[str, Dict[str, int]],
-        ayt_subject_results: Optional[Dict[str, Dict[str, int]]] = None,
+        program_coefficients: dict[str, float],
+        tyt_subject_results: dict[str, dict[str, int]],
+        ayt_subject_results: dict[str, dict[str, int]] | None = None,
     ) -> float:
         """
         Program özel puanı hesapla (farklı katsayılarla)
@@ -767,7 +766,7 @@ class OSYMScoringSystem:
         osym_score: OSYMScore,
         placement_score: PlacementScore,
         ranking_estimate: RankingEstimate,
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Kapsamlı puan analizi raporu oluştur
 

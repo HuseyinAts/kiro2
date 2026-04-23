@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -13,28 +14,27 @@ Bu modül YDT sınav sisteminin tüm bileşenlerini test eder:
 - Time tracking and warnings
 """
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 
 from services.ydt_exam_service import (
     YDTExamService,
     YDTLanguage,
-    YDTQuestionType,
-    YDTQuestion,
     YDTPassage,
+    YDTQuestion,
+    YDTQuestionType,
 )
 from services.ydt_optical_form_service import (
-    YDTOpticalFormService,
-    YDTOpticalForm,
-    PassageSection,
     AnswerStatus,
+    PassageSection,
+    YDTOpticalForm,
+    YDTOpticalFormService,
 )
 from services.ydt_time_tracking_service import (
-    YDTTimeTrackingService,
     WarningLevel,
+    YDTTimeTrackingService,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

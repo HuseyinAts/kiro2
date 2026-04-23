@@ -48,7 +48,7 @@ Performance Requirements:
 import random
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from locust import HttpUser, between, events, task
 
@@ -143,13 +143,13 @@ class WebSocketSimulation:
     WebSocket behavior using HTTP long-polling and JSON messages.
     """
 
-    def _get_auth_headers(self) -> Dict[str, str]:
+    def _get_auth_headers(self) -> dict[str, str]:
         """Get authentication headers."""
         if hasattr(self, "access_token") and self.access_token:
             return {"Authorization": f"Bearer {self.access_token}"}
         return {}
 
-    def ws_connect(self, exam_session_id: str) -> Optional[str]:
+    def ws_connect(self, exam_session_id: str) -> str | None:
         """
         Connect to WebSocket (simulated).
 
@@ -182,11 +182,10 @@ class WebSocketSimulation:
                     response.success()
 
                 return connection_id
-            else:
-                response.failure(f"Connection failed: {response.status_code}")
-                return None
+            response.failure(f"Connection failed: {response.status_code}")
+            return None
 
-    def ws_send(self, connection_id: str, message: Dict[str, Any]) -> bool:
+    def ws_send(self, connection_id: str, message: dict[str, Any]) -> bool:
         """
         Send message via WebSocket (simulated).
 
@@ -216,11 +215,10 @@ class WebSocketSimulation:
                 else:
                     response.success()
                 return True
-            else:
-                response.failure(f"Send failed: {response.status_code}")
-                return False
+            response.failure(f"Send failed: {response.status_code}")
+            return False
 
-    def ws_receive(self, connection_id: str) -> List[Dict[str, Any]]:
+    def ws_receive(self, connection_id: str) -> list[dict[str, Any]]:
         """
         Receive messages via WebSocket (simulated).
 
@@ -486,7 +484,7 @@ class TeacherUser(HttpUser):
         else:
             self.access_token = f"teacher_test_{random.randint(1000, 9999)}"
 
-    def _get_auth_headers(self) -> Dict[str, str]:
+    def _get_auth_headers(self) -> dict[str, str]:
         """Get auth headers."""
         if self.access_token:
             return {"Authorization": f"Bearer {self.access_token}"}
@@ -542,7 +540,7 @@ class StressTestUser(HttpUser, WebSocketSimulation):
     wait_time = between(0.1, 1)  # Very short wait time
     weight = 10  # 10% of users are stress testers
 
-    def _get_auth_headers(self) -> Dict[str, str]:
+    def _get_auth_headers(self) -> dict[str, str]:
         """Get auth headers."""
         return {"Authorization": "Bearer stress_test_token"}
 

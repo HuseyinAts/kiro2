@@ -3,9 +3,9 @@ Smoke Tests for main.py - FastAPI Application
 Testing basic app initialization and endpoint availability
 """
 import os
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
 from fastapi.testclient import TestClient
 
 

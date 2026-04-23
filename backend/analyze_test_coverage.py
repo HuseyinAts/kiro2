@@ -5,12 +5,11 @@ Analyzes test coverage for the entire project and generates detailed report
 Usage:
     python analyze_test_coverage.py
 """
-import subprocess
 import json
+import subprocess
 import sys
-from pathlib import Path
-from typing import Dict, List, Tuple
 from datetime import datetime
+from pathlib import Path
 
 
 class TestCoverageAnalyzer:
@@ -22,7 +21,7 @@ class TestCoverageAnalyzer:
         self.coverage_threshold = 70.0  # Overall project threshold
         self.new_file_threshold = 80.0  # New file threshold
 
-    def run_coverage_analysis(self) -> Tuple[bool, Dict]:
+    def run_coverage_analysis(self) -> tuple[bool, dict]:
         """Run pytest with coverage and return results"""
         print("=" * 80)
         print("RUNNING COMPREHENSIVE TEST COVERAGE ANALYSIS")
@@ -67,12 +66,11 @@ class TestCoverageAnalyzer:
             # Load coverage JSON
             coverage_file = self.backend_dir / "coverage.json"
             if coverage_file.exists():
-                with open(coverage_file, "r", encoding="utf-8") as f:
+                with open(coverage_file, encoding="utf-8") as f:
                     coverage_data = json.load(f)
                 return True, coverage_data
-            else:
-                print("⚠️  Coverage JSON file not found")
-                return False, {}
+            print("⚠️  Coverage JSON file not found")
+            return False, {}
 
         except subprocess.TimeoutExpired:
             print("❌ Test execution timed out")
@@ -81,7 +79,7 @@ class TestCoverageAnalyzer:
             print(f"❌ Error running tests: {e}")
             return False, {}
 
-    def analyze_coverage_data(self, coverage_data: Dict) -> Dict:
+    def analyze_coverage_data(self, coverage_data: dict) -> dict:
         """Analyze coverage data and generate report"""
         if not coverage_data:
             return {}
@@ -131,7 +129,7 @@ class TestCoverageAnalyzer:
             "totals": totals,
         }
 
-    def check_new_files(self) -> List[Dict]:
+    def check_new_files(self) -> list[dict]:
         """Check coverage of newly added/modified files"""
         # Files related to Task 22 (Load Testing)
         new_files = [
@@ -150,7 +148,7 @@ class TestCoverageAnalyzer:
         if not coverage_file.exists():
             return results
 
-        with open(coverage_file, "r", encoding="utf-8") as f:
+        with open(coverage_file, encoding="utf-8") as f:
             coverage_data = json.load(f)
 
         files = coverage_data.get("files", {})
@@ -190,7 +188,7 @@ class TestCoverageAnalyzer:
 
         return results
 
-    def generate_report(self, analysis: Dict, new_files: List[Dict]) -> str:
+    def generate_report(self, analysis: dict, new_files: list[dict]) -> str:
         """Generate comprehensive coverage report"""
         report = []
         report.append("\n" + "=" * 80)
@@ -368,13 +366,12 @@ class TestCoverageAnalyzer:
         if overall_pass and new_files_pass:
             print("\n✅ ALL COVERAGE REQUIREMENTS MET")
             return True
-        else:
-            print("\n⚠️  SOME COVERAGE REQUIREMENTS NOT MET")
-            if not overall_pass:
-                print(f"   - Overall coverage below {self.coverage_threshold}%")
-            if not new_files_pass:
-                print(f"   - Some new files below {self.new_file_threshold}%")
-            return False
+        print("\n⚠️  SOME COVERAGE REQUIREMENTS NOT MET")
+        if not overall_pass:
+            print(f"   - Overall coverage below {self.coverage_threshold}%")
+        if not new_files_pass:
+            print(f"   - Some new files below {self.new_file_threshold}%")
+        return False
 
 
 if __name__ == "__main__":

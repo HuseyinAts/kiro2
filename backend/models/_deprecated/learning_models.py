@@ -8,7 +8,7 @@ Requirements: 10.1-10.7
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class LearningStyleType(Enum):
@@ -34,8 +34,8 @@ class HybridLearningProfile:
     """VARK + Felder-Silverman hibrit öğrenme profili"""
 
     student_id: str
-    vark_profile: Dict[str, float]  # visual, auditory, reading, kinesthetic
-    felder_profile: Dict[str, float]  # 4 boyut skoru
+    vark_profile: dict[str, float]  # visual, auditory, reading, kinesthetic
+    felder_profile: dict[str, float]  # 4 boyut skoru
     hybrid_code: str  # 64 kombinasyondan biri
     confidence_level: float  # 0-1 arası güven seviyesi
     created_at: datetime = field(default_factory=datetime.now)
@@ -45,7 +45,7 @@ class HybridLearningProfile:
         """Baskın VARK stilini döndür"""
         return max(self.vark_profile, key=self.vark_profile.get)
 
-    def get_learning_preferences(self) -> Dict[str, Any]:
+    def get_learning_preferences(self) -> dict[str, Any]:
         """Öğrenme tercihlerini döndür"""
         return {
             "dominant_vark": self.get_dominant_vark_style(),
@@ -65,7 +65,7 @@ class TurkishZPDRange:
     lower_bound: float  # Mevcut seviye
     upper_bound: float  # Potansiyel seviye
     optimal_challenge: float  # Optimal zorluk seviyesi
-    cultural_factors: Dict[str, float]  # Kültürel faktörler
+    cultural_factors: dict[str, float]  # Kültürel faktörler
     maarif_alignment: float  # MEB Maarif uyumluluğu
     created_at: datetime = field(default_factory=datetime.now)
 
@@ -87,12 +87,12 @@ class Question:
     discrimination: float  # IRT discrimination parameter
     subject: str
     topic: str
-    id: Optional[str] = None
+    id: str | None = None
     guessing_parameter: float = 0.2  # IRT guessing parameter
-    morphology_complexity: Optional[float] = None
+    morphology_complexity: float | None = None
     created_at: datetime = field(default_factory=datetime.now)
 
-    def get_irt_parameters(self) -> Dict[str, float]:
+    def get_irt_parameters(self) -> dict[str, float]:
         """IRT parametrelerini döndür"""
         return {
             "difficulty": self.difficulty,
@@ -108,13 +108,13 @@ class Student:
     id: str
     ability: float  # IRT ability parameter
     morphology_awareness: float  # Morfolojik farkındalık seviyesi
-    name: Optional[str] = None
-    grade_level: Optional[int] = None
-    learning_profile: Optional[HybridLearningProfile] = None
-    zpd_ranges: Dict[str, TurkishZPDRange] = field(default_factory=dict)
+    name: str | None = None
+    grade_level: int | None = None
+    learning_profile: HybridLearningProfile | None = None
+    zpd_ranges: dict[str, TurkishZPDRange] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
 
-    def get_zpd_for_subject(self, subject: str) -> Optional[TurkishZPDRange]:
+    def get_zpd_for_subject(self, subject: str) -> TurkishZPDRange | None:
         """Belirli ders için ZPD aralığını döndür"""
         return self.zpd_ranges.get(subject)
 
@@ -158,12 +158,12 @@ class LearningSession:
     student_id: str
     session_id: str
     start_time: datetime
-    end_time: Optional[datetime] = None
-    questions_answered: List[str] = field(default_factory=list)
+    end_time: datetime | None = None
+    questions_answered: list[str] = field(default_factory=list)
     correct_answers: int = 0
     total_questions: int = 0
-    subject: Optional[str] = None
-    topic: Optional[str] = None
+    subject: str | None = None
+    topic: str | None = None
 
     def get_success_rate(self) -> float:
         """Başarı oranını döndür"""
@@ -210,10 +210,10 @@ class MorphologyAnalysis:
 
     word: str
     root: str
-    suffixes: List[str]
+    suffixes: list[str]
     derivational_depth: int
     is_compound: bool
-    compound_parts: List[str] = field(default_factory=list)
+    compound_parts: list[str] = field(default_factory=list)
     complexity_score: float = 0.0
 
     def get_suffix_count(self) -> int:
@@ -234,8 +234,8 @@ class FSRSCard:
     difficulty: float = 0.0  # FSRS difficulty
     stability: float = 0.0  # FSRS stability
     retrievability: float = 1.0  # FSRS retrievability
-    last_review: Optional[datetime] = None
-    due_date: Optional[datetime] = None
+    last_review: datetime | None = None
+    due_date: datetime | None = None
     review_count: int = 0
     lapses: int = 0  # Unutma sayısı
     state: str = "new"  # new, learning, review, relearning
@@ -260,7 +260,7 @@ class SimplificationLevel:
     level: int  # 1, 2, 3
     name: str  # "lexical", "syntactic", "semantic"
     description: str
-    rules_applied: List[str] = field(default_factory=list)
+    rules_applied: list[str] = field(default_factory=list)
     complexity_reduction: float = 0.0
 
     def add_rule(self, rule: str, reduction: float = 0.0):
@@ -293,7 +293,7 @@ class AgentMessage:
     message_type: str  # "data_update", "request", "response"
     content: Any
     timestamp: datetime = field(default_factory=datetime.now)
-    target_agents: List[str] = field(default_factory=list)
+    target_agents: list[str] = field(default_factory=list)
 
     def is_broadcast(self) -> bool:
         """Tüm agentlara gönderilecek mi?"""
@@ -308,7 +308,7 @@ class BlackboardEntry:
     value: Any
     source_agent: str
     timestamp: datetime = field(default_factory=datetime.now)
-    subscribers_notified: List[str] = field(default_factory=list)
+    subscribers_notified: list[str] = field(default_factory=list)
 
     def add_subscriber_notification(self, agent_name: str):
         """Abone bildirimini ekle"""

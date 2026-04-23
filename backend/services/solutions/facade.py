@@ -15,13 +15,13 @@ Usage:
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .comparison import SolutionComparisonService
 from .crud import SolutionCRUDService
 from .voting import SolutionVotingService
-from .comparison import SolutionComparisonService
 
 logger = logging.getLogger(__name__)
 
@@ -53,25 +53,25 @@ class AlternativeSolutionsService:
     async def add_solution(
         self,
         question_id: str,
-        solution_data: Dict[str, Any],
+        solution_data: dict[str, Any],
         created_by: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Add alternative solution to a question."""
         return await self._crud.add_solution(question_id, solution_data, created_by)
 
     async def get_solutions(
         self,
         question_id: str,
-        category: Optional[str] = None,
-        difficulty: Optional[str] = None,
+        category: str | None = None,
+        difficulty: str | None = None,
         sort_by: str = "difficulty",
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> list[dict[str, Any]] | None:
         """Get alternative solutions for a question."""
         return await self._crud.get_solutions(question_id, category, difficulty, sort_by)
 
     async def get_solution_by_id(
         self, question_id: str, solution_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get a specific solution by ID."""
         return await self._crud.get_solution_by_id(question_id, solution_id)
 
@@ -79,7 +79,7 @@ class AlternativeSolutionsService:
         self,
         question_id: str,
         solution_id: str,
-        update_data: Dict[str, Any],
+        update_data: dict[str, Any],
         updated_by: str,
     ) -> bool:
         """Update a solution."""
@@ -103,7 +103,7 @@ class AlternativeSolutionsService:
         solution_id: str,
         user_id: str,
         vote_type: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Vote on a solution."""
         return await self._voting.vote_solution(
             question_id, solution_id, user_id, vote_type
@@ -114,7 +114,7 @@ class AlternativeSolutionsService:
         question_id: str,
         solution_id: str,
         user_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Remove a vote from a solution."""
         return await self._voting.remove_vote(question_id, solution_id, user_id)
 
@@ -122,7 +122,7 @@ class AlternativeSolutionsService:
         self,
         question_id: str,
         limit: int = 5,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get top rated solutions."""
         return await self._voting.get_top_rated_solutions(question_id, limit)
 
@@ -131,7 +131,7 @@ class AlternativeSolutionsService:
         question_id: str,
         solution_id: str,
         user_id: str,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get user's vote for a solution."""
         return await self._voting.get_user_vote(question_id, solution_id, user_id)
 
@@ -140,26 +140,26 @@ class AlternativeSolutionsService:
     # ========================================================================
 
     async def compare_solutions(
-        self, question_id: str, solution_ids: List[str]
-    ) -> Optional[Dict[str, Any]]:
+        self, question_id: str, solution_ids: list[str]
+    ) -> dict[str, Any] | None:
         """Compare multiple solutions."""
         return await self._comparison.compare_solutions(question_id, solution_ids)
 
     async def get_fastest_solution(
         self, question_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get the fastest solution for a question."""
         return await self._comparison.get_fastest_solution(question_id)
 
     async def get_easiest_solution(
         self, question_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get the easiest solution for a question."""
         return await self._comparison.get_easiest_solution(question_id)
 
     async def get_statistics(
         self, question_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get statistics for solutions."""
         return await self._comparison.get_statistics(question_id)
 
@@ -168,8 +168,8 @@ class AlternativeSolutionsService:
     # ========================================================================
 
     def _sort_solutions(
-        self, solutions: List[Dict[str, Any]], sort_by: str = "difficulty"
-    ) -> List[Dict[str, Any]]:
+        self, solutions: list[dict[str, Any]], sort_by: str = "difficulty"
+    ) -> list[dict[str, Any]]:
         """Sort solutions by criteria."""
         return self._crud._sort_solutions(solutions, sort_by)
 

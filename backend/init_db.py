@@ -296,7 +296,7 @@ async def main():
         logger.info("[CHECK] Database initialization tamamlandı!")
 
     except Exception as e:
-        logger.error(f"[X] Database initialization hatası: {str(e)}")
+        logger.error(f"[X] Database initialization hatası: {e!s}")
         sys.exit(1)
 
 

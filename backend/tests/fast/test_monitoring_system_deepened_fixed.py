@@ -4,8 +4,9 @@ Testing monitoring system with proper mocking
 Target: +2% coverage
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 
 class TestMonitoringSystemBasic:

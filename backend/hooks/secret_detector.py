@@ -23,10 +23,9 @@ Or via pre-commit:
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 # Secret patterns to detect
-SECRET_PATTERNS: List[Tuple[str, str]] = [
+SECRET_PATTERNS: list[tuple[str, str]] = [
     # Anthropic API Keys
     (r'sk-ant-api\d+-[A-Za-z0-9_-]{20,}', 'Anthropic API Key'),
 
@@ -82,7 +81,7 @@ def should_skip_file(filepath: Path) -> bool:
     return False
 
 
-def scan_file(filepath: Path) -> List[Tuple[int, str, str]]:
+def scan_file(filepath: Path) -> list[tuple[int, str, str]]:
     """
     Scan file for secrets.
 

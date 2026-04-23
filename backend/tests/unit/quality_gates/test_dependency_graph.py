@@ -10,12 +10,11 @@ from __future__ import annotations
 import pytest
 
 from backend.core.quality_gates.dependency_graph import (
-    DependencyGraph,
-    CircularDependencyError,
-    build_gate_graph,
     DEFAULT_GATE_DEPENDENCIES,
+    CircularDependencyError,
+    DependencyGraph,
+    build_gate_graph,
 )
-
 
 # =============================================================================
 # Test Cases: Basic Operations

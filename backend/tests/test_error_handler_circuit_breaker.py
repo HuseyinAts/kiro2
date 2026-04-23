@@ -3,23 +3,25 @@ Test Error Handler ve Circuit Breaker Pattern
 Task 9 implementation verification
 """
 
-import pytest
 import asyncio
-from backend.core.error_handler import (
-    ErrorHandler,
-    VideoAPIError,
-    YouTubeAPIError,
-    CacheError,
-    VideoTimeoutError,
-    VideoDiscoveryError,
-    ErrorCategory,
-)
+
+import pytest
+
 from backend.core.circuit_breaker import (
     CircuitBreaker,
     CircuitBreakerConfig,
-    CircuitState,
     CircuitBreakerOpenError,
+    CircuitState,
     circuit_breaker_manager,
+)
+from backend.core.error_handler import (
+    CacheError,
+    ErrorCategory,
+    ErrorHandler,
+    VideoAPIError,
+    VideoDiscoveryError,
+    VideoTimeoutError,
+    YouTubeAPIError,
 )
 from backend.core.exceptions import ErrorSeverity
 

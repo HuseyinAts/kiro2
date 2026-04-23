@@ -4,18 +4,19 @@ Automated Test Coverage Reporter
 Generates comprehensive coverage reports with trend analysis and actionable insights
 """
 
+import argparse
 import json
+import logging
+import sqlite3
+import subprocess
 import sys
 import time
-import subprocess
-import argparse
+import xml.etree.ElementTree as ET
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
-import logging
-from dataclasses import dataclass, asdict
-import sqlite3
-import xml.etree.ElementTree as ET
+from typing import Any
+
 from jinja2 import Template
 
 # Setup logging
@@ -55,7 +56,7 @@ class ModuleCoverage:
     statements: int
     missing: int
     coverage: float
-    missing_lines: List[str]
+    missing_lines: list[str]
     branches: int = 0
     partial_branches: int = 0
     branch_coverage: float = 0.0
@@ -66,11 +67,11 @@ class CoverageReport:
     """Complete coverage report"""
 
     metrics: CoverageMetrics
-    modules: List[ModuleCoverage]
-    uncovered_modules: List[str]
-    critical_gaps: List[str]
-    improvement_suggestions: List[str]
-    trend_analysis: Dict[str, Any]
+    modules: list[ModuleCoverage]
+    uncovered_modules: list[str]
+    critical_gaps: list[str]
+    improvement_suggestions: list[str]
+    trend_analysis: dict[str, Any]
 
 
 class CoverageDatabase:
@@ -123,7 +124,7 @@ class CoverageDatabase:
             )
 
     def save_coverage_run(
-        self, metrics: CoverageMetrics, modules: List[ModuleCoverage]
+        self, metrics: CoverageMetrics, modules: list[ModuleCoverage]
     ) -> int:
         """Save coverage run to database"""
         with sqlite3.connect(self.db_path) as conn:
@@ -182,7 +183,7 @@ class CoverageDatabase:
 
             return run_id
 
-    def get_coverage_trend(self, days: int = 30) -> List[CoverageMetrics]:
+    def get_coverage_trend(self, days: int = 30) -> list[CoverageMetrics]:
         """Get coverage trend for specified days"""
         cutoff_date = (datetime.now() - timedelta(days=days)).isoformat()
 
@@ -224,7 +225,7 @@ class CoverageRunner:
 
     def run_tests_with_coverage(
         self, test_type: str = "all"
-    ) -> Tuple[bool, Dict[str, Any]]:
+    ) -> tuple[bool, dict[str, Any]]:
         """Run tests with coverage collection"""
         logger.info(f"Running {test_type} tests with coverage collection...")
 
@@ -279,7 +280,7 @@ class CoverageRunner:
             logger.error(f"Test execution failed: {e}")
             return False, {"error": str(e), "duration": time.time() - start_time}
 
-    def _get_test_config(self, test_type: str) -> Tuple[List[str], List[str]]:
+    def _get_test_config(self, test_type: str) -> tuple[list[str], list[str]]:
         """Get test paths and options based on test type"""
         configs = {
             "fast": (["tests/fast"], ["--maxfail=3"]),
@@ -291,7 +292,7 @@ class CoverageRunner:
 
         return configs.get(test_type, configs["all"])
 
-    def _parse_pytest_output(self, stdout: str, stderr: str) -> Dict[str, Any]:
+    def _parse_pytest_output(self, stdout: str, stderr: str) -> dict[str, Any]:
         """Parse pytest output to extract test statistics"""
         stats = {
             "total_tests": 0,
@@ -342,7 +343,7 @@ class CoverageAnalyzer:
 
     def parse_coverage_data(
         self,
-    ) -> Optional[Tuple[CoverageMetrics, List[ModuleCoverage]]]:
+    ) -> tuple[CoverageMetrics, list[ModuleCoverage]] | None:
         """Parse coverage data from JSON and XML files"""
         if not self.coverage_json.exists():
             logger.error("Coverage JSON file not found")
@@ -350,7 +351,7 @@ class CoverageAnalyzer:
 
         try:
             # Parse JSON coverage data
-            with open(self.coverage_json, "r") as f:
+            with open(self.coverage_json) as f:
                 coverage_data = json.load(f)
 
             # Extract overall metrics
@@ -429,7 +430,7 @@ class CoverageAnalyzer:
 
         return module_path
 
-    def analyze_coverage_gaps(self, modules: List[ModuleCoverage]) -> Dict[str, Any]:
+    def analyze_coverage_gaps(self, modules: list[ModuleCoverage]) -> dict[str, Any]:
         """Analyze coverage gaps and identify improvement opportunities"""
         analysis = {
             "critical_gaps": [],
@@ -607,7 +608,7 @@ class CoverageAutomation:
         self.analyzer = CoverageAnalyzer(self.project_root)
         self.reporter = ReportGenerator(self.output_dir)
 
-    def run_automated_coverage_analysis(self, test_type: str = "all") -> Optional[str]:
+    def run_automated_coverage_analysis(self, test_type: str = "all") -> str | None:
         """Run complete automated coverage analysis"""
         logger.info("Starting automated coverage analysis...")
 
@@ -664,7 +665,7 @@ class CoverageAutomation:
             logger.error(f"Automated coverage analysis failed: {e}")
             return None
 
-    def _generate_trend_analysis(self) -> Dict[str, Any]:
+    def _generate_trend_analysis(self) -> dict[str, Any]:
         """Generate coverage trend analysis"""
         try:
             recent_runs = self.db.get_coverage_trend(days=30)

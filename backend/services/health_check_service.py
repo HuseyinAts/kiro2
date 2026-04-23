@@ -13,7 +13,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from core.cache_service import CacheService
 from services.real_youtube_api import RealYouTubeAPI
@@ -43,11 +43,11 @@ class ComponentHealth:
     name: str
     status: HealthStatus
     response_time_ms: float
-    error_message: Optional[str] = None
-    last_check: Optional[datetime] = None
-    details: Optional[Dict[str, Any]] = None
+    error_message: str | None = None
+    last_check: datetime | None = None
+    details: dict[str, Any] | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Dict'e çevir"""
         return {
             "name": self.name,
@@ -64,11 +64,11 @@ class SystemHealth:
     """Sistem sağlık durumu"""
 
     overall_status: HealthStatus
-    components: List[ComponentHealth]
-    metrics: Dict[str, Any]
+    components: list[ComponentHealth]
+    metrics: dict[str, Any]
     timestamp: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Dict'e çevir"""
         return {
             "overall_status": self.overall_status.value,
@@ -87,13 +87,13 @@ class StartupHealthCheck:
     """
 
     success: bool
-    components: List[ComponentHealth]
-    warnings: List[str]
-    errors: List[str]
+    components: list[ComponentHealth]
+    warnings: list[str]
+    errors: list[str]
     startup_time_ms: float
     timestamp: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Dict'e çevir"""
         return {
             "success": self.success,
@@ -115,8 +115,8 @@ class HealthCheckService:
 
     def __init__(
         self,
-        youtube_api: Optional[RealYouTubeAPI] = None,
-        cache_service: Optional[CacheService] = None,
+        youtube_api: RealYouTubeAPI | None = None,
+        cache_service: CacheService | None = None,
     ):
         """
         Initialize health check service
@@ -127,8 +127,8 @@ class HealthCheckService:
         """
         self._youtube_api = youtube_api
         self._cache_service = cache_service
-        self._metrics_cache: Dict[str, Any] = {}
-        self._last_metrics_update: Optional[datetime] = None
+        self._metrics_cache: dict[str, Any] = {}
+        self._last_metrics_update: datetime | None = None
 
     @property
     def youtube_api(self) -> RealYouTubeAPI:
@@ -231,7 +231,7 @@ class HealthCheckService:
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            logger.error(f"YouTube API sağlık kontrolü başarısız: {str(e)}")
+            logger.error(f"YouTube API sağlık kontrolü başarısız: {e!s}")
 
             return ComponentHealth(
                 name="YouTube API",
@@ -293,7 +293,7 @@ class HealthCheckService:
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            logger.error(f"Database sağlık kontrolü başarısız: {str(e)}")
+            logger.error(f"Database sağlık kontrolü başarısız: {e!s}")
 
             return ComponentHealth(
                 name="Database",
@@ -339,7 +339,7 @@ class HealthCheckService:
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            logger.error(f"Redis Cache sağlık kontrolü başarısız: {str(e)}")
+            logger.error(f"Redis Cache sağlık kontrolü başarısız: {e!s}")
 
             return ComponentHealth(
                 name="Redis Cache",
@@ -351,7 +351,7 @@ class HealthCheckService:
             )
 
     def _determine_overall_status(
-        self, components: List[ComponentHealth]
+        self, components: list[ComponentHealth]
     ) -> HealthStatus:
         """
         Overall status belirle
@@ -377,12 +377,11 @@ class HealthCheckService:
 
         if unhealthy_count > 0:
             return HealthStatus.UNHEALTHY
-        elif degraded_count > 0:
+        if degraded_count > 0:
             return HealthStatus.DEGRADED
-        else:
-            return HealthStatus.HEALTHY
+        return HealthStatus.HEALTHY
 
-    async def _collect_metrics(self) -> Dict[str, Any]:
+    async def _collect_metrics(self) -> dict[str, Any]:
         """
         Sistem metriklerini topla
 
@@ -403,7 +402,7 @@ class HealthCheckService:
 
         return self._metrics_cache
 
-    async def _fetch_fresh_metrics(self) -> Dict[str, Any]:
+    async def _fetch_fresh_metrics(self) -> dict[str, Any]:
         """
         Fresh metrikleri topla
 
@@ -448,7 +447,7 @@ class HealthCheckService:
                 )
 
         except Exception as e:
-            logger.warning(f"Metrik toplama hatası: {str(e)}")
+            logger.warning(f"Metrik toplama hatası: {e!s}")
             metrics.update(
                 {
                     "total_requests_24h": 0,
@@ -518,7 +517,7 @@ class HealthCheckService:
                     f"✅ Database healthy (response time: {db_health.response_time_ms:.2f}ms)"
                 )
         except Exception as e:
-            error_msg = f"Database check failed: {str(e)}"
+            error_msg = f"Database check failed: {e!s}"
             errors.append(error_msg)
             logger.error(f"❌ {error_msg}")
 
@@ -541,7 +540,7 @@ class HealthCheckService:
                     f"✅ Redis Cache healthy (response time: {cache_health.response_time_ms:.2f}ms)"
                 )
         except Exception as e:
-            error_msg = f"Cache check failed: {str(e)}"
+            error_msg = f"Cache check failed: {e!s}"
             errors.append(error_msg)
             logger.error(f"❌ {error_msg}")
 
@@ -564,7 +563,7 @@ class HealthCheckService:
                     f"✅ YouTube API healthy (response time: {youtube_health.response_time_ms:.2f}ms)"
                 )
         except Exception as e:
-            error_msg = f"YouTube API check failed: {str(e)}"
+            error_msg = f"YouTube API check failed: {e!s}"
             errors.append(error_msg)
             logger.error(f"❌ {error_msg}")
 
@@ -617,7 +616,7 @@ class HealthCheckService:
 
 
 # Global instance
-_health_check_service: Optional[HealthCheckService] = None
+_health_check_service: HealthCheckService | None = None
 
 
 def get_health_check_service() -> HealthCheckService:

@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -11,9 +12,11 @@ has changed significantly (Pydantic v2 keyword-only args, Turkish enum
 values, new method signatures). Tests need comprehensive rewrite.
 """
 
-import pytest
 from datetime import datetime
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
+
 from core.automated_question_generator import AutomatedQuestionGenerator
 
 # Skip failing tests - API signatures changed significantly
@@ -43,9 +46,9 @@ try:
     )
 except ImportError:
     # Mock missing models
-    from enum import Enum
     from dataclasses import dataclass
-    from typing import Any, Dict, List, Optional
+    from enum import Enum
+    from typing import Any
 
     class ExamType(Enum):
         LGS = "lgs"
@@ -85,7 +88,7 @@ except ImportError:
     class OSYMQuestionFormat:
         question_number: int
         question_text: str
-        options: List[str]
+        options: list[str]
         correct_answer: str
         explanation: str
 
@@ -98,7 +101,7 @@ except ImportError:
         subtopic: str
         question_type: QuestionType
         question_text: str
-        options: List[str]
+        options: list[str]
         correct_answer: str
         explanation: str
         difficulty_level: DifficultyLevel
@@ -111,17 +114,17 @@ except ImportError:
         readability_score: float
         uniqueness_score: float
         generation_method: str
-        generation_parameters: Dict[str, Any]
-        source_materials: List[str]
+        generation_parameters: dict[str, Any]
+        source_materials: list[str]
         is_validated: bool
-        validation_errors: List[str]
+        validation_errors: list[str]
         is_approved: bool
-        approved_by: Optional[str]
+        approved_by: str | None
         created_at: datetime
         updated_at: datetime
-        last_used_at: Optional[datetime]
-        meb_standard_id: Optional[str]
-        learning_outcome_ids: List[str]
+        last_used_at: datetime | None
+        meb_standard_id: str | None
+        learning_outcome_ids: list[str]
 
     @dataclass
     class QuestionTemplate:
@@ -131,9 +134,9 @@ except ImportError:
         subject: SubjectType
         topic_pattern: str
         question_template: str
-        options_template: List[str]
+        options_template: list[str]
         explanation_template: str
-        template_variables: Dict[str, Any]
+        template_variables: dict[str, Any]
         difficulty_level: DifficultyLevel
         cognitive_level: CognitiveLevel
         usage_count: int
@@ -149,11 +152,11 @@ except ImportError:
         subject: SubjectType
         topic_id: str
         exam_type: ExamType
-        grade_level: Optional[str]
+        grade_level: str | None
         question_count: int
-        question_types: List[QuestionType]
-        difficulty_distribution: Dict[DifficultyLevel, float]
-        cognitive_distribution: Dict[CognitiveLevel, float]
+        question_types: list[QuestionType]
+        difficulty_distribution: dict[DifficultyLevel, float]
+        cognitive_distribution: dict[CognitiveLevel, float]
         min_quality_score: float
         min_osym_compliance: float
         min_meb_compliance: float
@@ -162,7 +165,7 @@ except ImportError:
         allow_duplicates: bool
         requested_by: str
         priority: str
-        deadline: Optional[datetime]
+        deadline: datetime | None
         status: str
         created_at: datetime
 
@@ -174,9 +177,9 @@ except ImportError:
         osym_compliance_score: float
         meb_compliance_score: float
         uniqueness_score: float
-        errors: List[str]
-        warnings: List[str]
-        suggestions: List[str]
+        errors: list[str]
+        warnings: list[str]
+        suggestions: list[str]
 
     @dataclass
     class MEBCurriculumStandard:
@@ -298,18 +301,17 @@ class TestAutomatedQuestionGenerator:
         """Başarılı sistem başlatma testi"""
         with patch.object(
             generator, "_load_question_templates", new_callable=AsyncMock
-        ) as mock_load:
-            with patch.object(
-                generator, "_analyze_current_question_bank", new_callable=AsyncMock
-            ) as mock_analyze:
-                mock_load.return_value = True
-                mock_analyze.return_value = True
+        ) as mock_load, patch.object(
+            generator, "_analyze_current_question_bank", new_callable=AsyncMock
+        ) as mock_analyze:
+            mock_load.return_value = True
+            mock_analyze.return_value = True
 
-                result = await generator.initialize()
+            result = await generator.initialize()
 
-                assert result is True
-                mock_load.assert_called_once()
-                mock_analyze.assert_called_once()
+            assert result is True
+            mock_load.assert_called_once()
+            mock_analyze.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_initialize_failure(self, generator):
@@ -333,96 +335,90 @@ class TestAutomatedQuestionGenerator:
         # Mock dependencies
         with patch.object(
             generator, "_get_current_question_count", new_callable=AsyncMock
-        ) as mock_count:
-            with patch.object(
-                generator, "_get_meb_standards_for_topic", new_callable=AsyncMock
-            ) as mock_meb:
-                with patch.object(
-                    generator, "_get_osym_standards_for_topic", new_callable=AsyncMock
-                ) as mock_osym:
-                    with patch.object(
-                        generator, "_create_generation_plan", new_callable=AsyncMock
-                    ) as mock_plan:
-                        with patch.object(
-                            generator,
-                            "_generate_questions_batch",
-                            new_callable=AsyncMock,
-                        ) as mock_batch:
-                            with patch.object(
-                                generator, "validate_question", new_callable=AsyncMock
-                            ) as mock_validate:
-                                with patch.object(
-                                    generator,
-                                    "_save_generated_question",
-                                    new_callable=AsyncMock,
-                                ) as mock_save:
-                                    mock_count.return_value = 0  # Hiç soru yok
-                                    mock_meb.return_value = []
-                                    mock_osym.return_value = []
-                                    mock_plan.return_value = [{"id": "plan_1"}]
+        ) as mock_count, patch.object(
+            generator, "_get_meb_standards_for_topic", new_callable=AsyncMock
+        ) as mock_meb, patch.object(
+            generator, "_get_osym_standards_for_topic", new_callable=AsyncMock
+        ) as mock_osym, patch.object(
+            generator, "_create_generation_plan", new_callable=AsyncMock
+        ) as mock_plan, patch.object(
+            generator,
+            "_generate_questions_batch",
+            new_callable=AsyncMock,
+        ) as mock_batch, patch.object(
+            generator, "validate_question", new_callable=AsyncMock
+        ) as mock_validate, patch.object(
+            generator,
+            "_save_generated_question",
+            new_callable=AsyncMock,
+        ) as mock_save:
+            mock_count.return_value = 0  # Hiç soru yok
+            mock_meb.return_value = []
+            mock_osym.return_value = []
+            mock_plan.return_value = [{"id": "plan_1"}]
 
-                                    # Mock generated question
-                                    sample_question = GeneratedQuestion(
-                                        id="q_001",
-                                        subject=subject,
-                                        topic_id=topic_id,
-                                        topic_name="Cebir",
-                                        subtopic="Denklemler",
-                                        question_type=QuestionType.MULTIPLE_CHOICE,
-                                        question_text="x + 5 = 13 ise x kaçtır?",
-                                        options=["8", "7", "9", "10"],
-                                        correct_answer="8",
-                                        explanation="x = 13 - 5 = 8",
-                                        difficulty_level=DifficultyLevel.KOLAY,
-                                        cognitive_level=CognitiveLevel.UYGULAMA,
-                                        estimated_time_seconds=120,
-                                        osym_format=OSYMQuestionFormat(
-                                            1, "Test", ["A", "B"], "A", "Test"
-                                        ),
-                                        osym_compliance_score=0.9,
-                                        meb_compliance_score=0.85,
-                                        quality_score=0.8,
-                                        readability_score=0.9,
-                                        uniqueness_score=0.95,
-                                        generation_method="template",
-                                        generation_parameters={},
-                                        source_materials=[],
-                                        is_validated=False,
-                                        validation_errors=[],
-                                        is_approved=False,
-                                        approved_by=None,
-                                        created_at=datetime.now(),
-                                        updated_at=datetime.now(),
-                                        last_used_at=None,
-                                        meb_standard_id=None,
-                                        learning_outcome_ids=[],
-                                    )
+            # Mock generated question
+            sample_question = GeneratedQuestion(
+                id="q_001",
+                subject=subject,
+                topic_id=topic_id,
+                topic_name="Cebir",
+                subtopic="Denklemler",
+                question_type=QuestionType.MULTIPLE_CHOICE,
+                question_text="x + 5 = 13 ise x kaçtır?",
+                options=["8", "7", "9", "10"],
+                correct_answer="8",
+                explanation="x = 13 - 5 = 8",
+                difficulty_level=DifficultyLevel.KOLAY,
+                cognitive_level=CognitiveLevel.UYGULAMA,
+                estimated_time_seconds=120,
+                osym_format=OSYMQuestionFormat(
+                    1, "Test", ["A", "B"], "A", "Test"
+                ),
+                osym_compliance_score=0.9,
+                meb_compliance_score=0.85,
+                quality_score=0.8,
+                readability_score=0.9,
+                uniqueness_score=0.95,
+                generation_method="template",
+                generation_parameters={},
+                source_materials=[],
+                is_validated=False,
+                validation_errors=[],
+                is_approved=False,
+                approved_by=None,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                last_used_at=None,
+                meb_standard_id=None,
+                learning_outcome_ids=[],
+            )
 
-                                    mock_batch.return_value = [sample_question]
-                                    mock_validate.return_value = (
-                                        QuestionValidationResult(
-                                            is_valid=True,
-                                            quality_score=0.8,
-                                            readability_score=0.9,
-                                            osym_compliance_score=0.9,
-                                            meb_compliance_score=0.85,
-                                            uniqueness_score=0.95,
-                                            errors=[],
-                                            warnings=[],
-                                            suggestions=[],
-                                        )
-                                    )
-                                    mock_save.return_value = True
+            mock_batch.return_value = [sample_question]
+            mock_validate.return_value = (
+                QuestionValidationResult(
+                    is_valid=True,
+                    quality_score=0.8,
+                    readability_score=0.9,
+                    osym_compliance_score=0.9,
+                    meb_compliance_score=0.85,
+                    uniqueness_score=0.95,
+                    errors=[],
+                    warnings=[],
+                    suggestions=[],
+                )
+            )
+            mock_save.return_value = True
 
-                                    questions = (
-                                        await generator.generate_questions_for_topic(
-                                            topic_id, subject, exam_type, target_count=5
-                                        )
-                                    )
+            questions = (
+                await generator.generate_questions_for_topic(
+                    topic_id, subject, exam_type, target_count=5
+                )
+            )
 
-                                    assert len(questions) == 1
-                                    assert questions[0].is_validated is True
-                                    mock_save.assert_called()
+            assert len(questions) == 1
+            assert questions[0].is_validated is True
+            mock_save.assert_called()
 
     @pytest.mark.asyncio
     async def test_generate_questions_for_topic_no_questions_needed(self, generator):
@@ -447,32 +443,30 @@ class TestAutomatedQuestionGenerator:
         """Başarılı üretim talebi işleme testi"""
         with patch.object(
             generator, "_save_generation_request", new_callable=AsyncMock
-        ) as mock_save_req:
-            with patch.object(
-                generator, "generate_questions_for_topic", new_callable=AsyncMock
-            ) as mock_generate:
-                with patch.object(
-                    generator, "_update_generation_request", new_callable=AsyncMock
-                ) as mock_update:
-                    # Mock soru üretimi
-                    mock_questions = [Mock() for _ in range(5)]
-                    for i, q in enumerate(mock_questions):
-                        q.id = f"q_{i}"
-                    mock_generate.return_value = mock_questions
+        ) as mock_save_req, patch.object(
+            generator, "generate_questions_for_topic", new_callable=AsyncMock
+        ) as mock_generate, patch.object(
+            generator, "_update_generation_request", new_callable=AsyncMock
+        ) as mock_update:
+            # Mock soru üretimi
+            mock_questions = [Mock() for _ in range(5)]
+            for i, q in enumerate(mock_questions):
+                q.id = f"q_{i}"
+            mock_generate.return_value = mock_questions
 
-                    result = await generator.process_generation_request(
-                        sample_generation_request
-                    )
+            result = await generator.process_generation_request(
+                sample_generation_request
+            )
 
-                    assert result["request_id"] == sample_generation_request.id
-                    assert result["requested_count"] == 10
-                    assert result["generated_count"] == 5
-                    assert result["success_rate"] == 0.5
-                    assert result["status"] == "completed"
-                    assert len(result["questions"]) == 5
+            assert result["request_id"] == sample_generation_request.id
+            assert result["requested_count"] == 10
+            assert result["generated_count"] == 5
+            assert result["success_rate"] == 0.5
+            assert result["status"] == "completed"
+            assert len(result["questions"]) == 5
 
-                    mock_save_req.assert_called_once()
-                    mock_update.assert_called_once()
+            mock_save_req.assert_called_once()
+            mock_update.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_process_generation_request_failure(
@@ -686,23 +680,21 @@ class TestAutomatedQuestionGenerator:
 
         with patch.object(
             generator, "_save_generation_request", new_callable=AsyncMock
-        ) as mock_save:
-            with patch.object(
-                generator, "generate_questions_for_topic", new_callable=AsyncMock
-            ) as mock_generate:
-                with patch.object(
-                    generator, "_update_generation_request", new_callable=AsyncMock
-                ) as mock_update:
-                    mock_generate.return_value = [
-                        Mock() for _ in range(15)
-                    ]  # 15 soru üretildi
+        ) as mock_save, patch.object(
+            generator, "generate_questions_for_topic", new_callable=AsyncMock
+        ) as mock_generate, patch.object(
+            generator, "_update_generation_request", new_callable=AsyncMock
+        ) as mock_update:
+            mock_generate.return_value = [
+                Mock() for _ in range(15)
+            ]  # 15 soru üretildi
 
-                    result = await generator.process_generation_request(
-                        high_priority_request
-                    )
+            result = await generator.process_generation_request(
+                high_priority_request
+            )
 
-                    assert result["status"] == "completed"
-                    assert result["generated_count"] == 15
+            assert result["status"] == "completed"
+            assert result["generated_count"] == 15
 
     def test_osym_format_validation_rules(self, generator):
         """ÖSYM format doğrulama kuralları testi"""
@@ -729,17 +721,16 @@ class TestAutomatedQuestionGenerator:
 
         with patch.object(
             generator, "_get_question_template", new_callable=AsyncMock
-        ) as mock_template:
-            with patch.object(
-                generator, "create_from_template", new_callable=AsyncMock
-            ) as mock_create:
-                mock_template.return_value = Mock()  # Mock template
-                mock_create.return_value = Mock()  # Mock question
+        ) as mock_template, patch.object(
+            generator, "create_from_template", new_callable=AsyncMock
+        ) as mock_create:
+            mock_template.return_value = Mock()  # Mock template
+            mock_create.return_value = Mock()  # Mock question
 
-                questions = await generator._generate_questions_batch(batch_plan)
+            questions = await generator._generate_questions_batch(batch_plan)
 
-                # Veritabanı bağlantısı olmadığında bile boş liste dönmeli
-                assert isinstance(questions, list)
+            # Veritabanı bağlantısı olmadığında bile boş liste dönmeli
+            assert isinstance(questions, list)
 
     @pytest.mark.asyncio
     async def test_error_handling_database_failure(self, generator):
@@ -844,25 +835,23 @@ class TestAutomatedQuestionGenerator:
 
         with patch.object(
             generator, "_save_generation_request", new_callable=AsyncMock
+        ), patch.object(
+            generator, "generate_questions_for_topic", new_callable=AsyncMock
+        ) as mock_generate, patch.object(
+            generator, "_update_generation_request", new_callable=AsyncMock
         ):
-            with patch.object(
-                generator, "generate_questions_for_topic", new_callable=AsyncMock
-            ) as mock_generate:
-                with patch.object(
-                    generator, "_update_generation_request", new_callable=AsyncMock
-                ):
-                    mock_generate.return_value = []  # Boş liste döndür
+            mock_generate.return_value = []  # Boş liste döndür
 
-                    # Eşzamanlı çalıştır
-                    tasks = [
-                        generator.process_generation_request(req) for req in requests
-                    ]
-                    results = await asyncio.gather(*tasks, return_exceptions=True)
+            # Eşzamanlı çalıştır
+            tasks = [
+                generator.process_generation_request(req) for req in requests
+            ]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
 
-                    # Hiçbiri exception olmamalı
-                    for result in results:
-                        assert not isinstance(result, Exception)
-                        assert "request_id" in result
+            # Hiçbiri exception olmamalı
+            for result in results:
+                assert not isinstance(result, Exception)
+                assert "request_id" in result
 
 
 # Integration Tests
@@ -877,76 +866,70 @@ class TestAutomatedQuestionGeneratorIntegration:
         # 1. Sistem başlatma
         with patch.object(
             generator, "_load_question_templates", new_callable=AsyncMock
+        ), patch.object(
+            generator, "_analyze_current_question_bank", new_callable=AsyncMock
         ):
-            with patch.object(
-                generator, "_analyze_current_question_bank", new_callable=AsyncMock
-            ):
-                init_result = await generator.initialize()
-                assert init_result is True
+            init_result = await generator.initialize()
+            assert init_result is True
 
         # 2. Soru üretimi
         with patch.object(
             generator, "_get_current_question_count", new_callable=AsyncMock
-        ) as mock_count:
+        ) as mock_count, patch.object(
+            generator, "_get_meb_standards_for_topic", new_callable=AsyncMock
+        ), patch.object(
+            generator, "_get_osym_standards_for_topic", new_callable=AsyncMock
+        ), patch.object(
+            generator, "_create_generation_plan", new_callable=AsyncMock
+        ) as mock_plan, patch.object(
+            generator,
+            "_generate_questions_batch",
+            new_callable=AsyncMock,
+        ) as mock_batch, patch.object(
+            generator,
+            "_save_generated_question",
+            new_callable=AsyncMock,
+        ):
+            mock_count.return_value = 0
+            mock_plan.return_value = [{"test": True}]
+
+            # Mock bir soru üret
+            mock_question = Mock()
+            mock_question.id = "integration_test_q"
+            mock_question.is_validated = False
+            mock_batch.return_value = [mock_question]
+
+            # Mock validation
             with patch.object(
-                generator, "_get_meb_standards_for_topic", new_callable=AsyncMock
-            ):
-                with patch.object(
-                    generator, "_get_osym_standards_for_topic", new_callable=AsyncMock
-                ):
-                    with patch.object(
-                        generator, "_create_generation_plan", new_callable=AsyncMock
-                    ) as mock_plan:
-                        with patch.object(
-                            generator,
-                            "_generate_questions_batch",
-                            new_callable=AsyncMock,
-                        ) as mock_batch:
-                            with patch.object(
-                                generator,
-                                "_save_generated_question",
-                                new_callable=AsyncMock,
-                            ):
-                                mock_count.return_value = 0
-                                mock_plan.return_value = [{"test": True}]
+                generator,
+                "validate_question",
+                new_callable=AsyncMock,
+            ) as mock_validate:
+                mock_validate.return_value = (
+                    QuestionValidationResult(
+                        is_valid=True,
+                        quality_score=0.8,
+                        readability_score=0.9,
+                        osym_compliance_score=0.85,
+                        meb_compliance_score=0.8,
+                        uniqueness_score=0.95,
+                        errors=[],
+                        warnings=[],
+                        suggestions=[],
+                    )
+                )
 
-                                # Mock bir soru üret
-                                mock_question = Mock()
-                                mock_question.id = "integration_test_q"
-                                mock_question.is_validated = False
-                                mock_batch.return_value = [mock_question]
+                questions = (
+                    await generator.generate_questions_for_topic(
+                        "integration_topic",
+                        SubjectType.MATEMATIK,
+                        ExamType.LGS,
+                        target_count=1,
+                    )
+                )
 
-                                # Mock validation
-                                with patch.object(
-                                    generator,
-                                    "validate_question",
-                                    new_callable=AsyncMock,
-                                ) as mock_validate:
-                                    mock_validate.return_value = (
-                                        QuestionValidationResult(
-                                            is_valid=True,
-                                            quality_score=0.8,
-                                            readability_score=0.9,
-                                            osym_compliance_score=0.85,
-                                            meb_compliance_score=0.8,
-                                            uniqueness_score=0.95,
-                                            errors=[],
-                                            warnings=[],
-                                            suggestions=[],
-                                        )
-                                    )
-
-                                    questions = (
-                                        await generator.generate_questions_for_topic(
-                                            "integration_topic",
-                                            SubjectType.MATEMATIK,
-                                            ExamType.LGS,
-                                            target_count=1,
-                                        )
-                                    )
-
-                                    assert len(questions) == 1
-                                    assert questions[0].is_validated is True
+                assert len(questions) == 1
+                assert questions[0].is_validated is True
 
 
 if __name__ == "__main__":

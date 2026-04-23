@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -16,21 +17,23 @@ Total tests: ~300
 """
 
 import pytest
-from algorithms.turkish_text_simplifier import (
-    TurkishTextSimplifier,
-    SimplificationLevel,
-    SimplificationResult,
-)
-from algorithms.turkish_bionic_reading import (
-    TurkishBionicReading,
-    BionicReadingResult,
-    TurkishMorphologyAnalysis,
+
+from algorithms.three_level_turkish_simplification import (
+    SimplificationResult as ThreeLevelResult,
 )
 from algorithms.three_level_turkish_simplification import (
     ThreeLevelTurkishSimplification,
-    SimplificationResult as ThreeLevelResult,
 )
-
+from algorithms.turkish_bionic_reading import (
+    BionicReadingResult,
+    TurkishBionicReading,
+    TurkishMorphologyAnalysis,
+)
+from algorithms.turkish_text_simplifier import (
+    SimplificationLevel,
+    SimplificationResult,
+    TurkishTextSimplifier,
+)
 
 # ============================================================================
 # TURKISH TEXT SIMPLIFIER TESTS

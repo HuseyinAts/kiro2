@@ -4,10 +4,11 @@ Unit tests for DiaryService (REQ-1)
 Daily diary entry creation and management tests.
 """
 
-import pytest
 from datetime import date, timedelta
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
+
+import pytest
 
 
 class TestDiaryServiceTaskAggregation:
@@ -15,8 +16,8 @@ class TestDiaryServiceTaskAggregation:
 
     def test_aggregate_tasks(self):
         """Test task aggregation calculations"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import TaskSummary
+        from services.diary_service import DiaryService
 
         mock_db = MagicMock()
         service = DiaryService(mock_db)
@@ -49,8 +50,8 @@ class TestDiaryServiceTaskAggregation:
 
     def test_aggregate_tasks_with_partial(self):
         """Test task aggregation with partial tasks"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import TaskSummary
+        from services.diary_service import DiaryService
 
         mock_db = MagicMock()
         service = DiaryService(mock_db)
@@ -71,8 +72,8 @@ class TestDiaryServiceLearningsExtraction:
 
     def test_extract_learnings_from_tasks(self):
         """Test learning extraction from successful tasks"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import TaskSummary
+        from services.diary_service import DiaryService
 
         mock_db = MagicMock()
         service = DiaryService(mock_db)
@@ -114,8 +115,8 @@ class TestDiaryServiceHighlightsSelection:
 
     def test_select_highlights_from_tasks(self):
         """Test highlight selection from tasks"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import TaskSummary
+        from services.diary_service import DiaryService
 
         mock_db = MagicMock()
         service = DiaryService(mock_db)
@@ -156,8 +157,8 @@ class TestDiaryServiceChallengesExtraction:
 
     def test_extract_challenges_from_failures(self):
         """Test challenge extraction from failed tasks"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import TaskSummary
+        from services.diary_service import DiaryService
 
         mock_db = MagicMock()
         service = DiaryService(mock_db)
@@ -182,8 +183,8 @@ class TestDiaryServiceChallengesExtraction:
 
     def test_extract_challenges_no_failures(self):
         """Test challenge extraction with no failed tasks"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import TaskSummary
+        from services.diary_service import DiaryService
 
         mock_db = MagicMock()
         service = DiaryService(mock_db)
@@ -202,8 +203,8 @@ class TestDiaryServiceMarkdownGeneration:
 
     def test_format_markdown(self):
         """Test markdown format generation"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import TaskSummary
+        from services.diary_service import DiaryService
 
         mock_db = MagicMock()
         service = DiaryService(mock_db)
@@ -254,8 +255,8 @@ class TestDiaryServiceCRUD:
     @pytest.mark.asyncio
     async def test_generate_summary(self):
         """Test generating a diary summary"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import TaskSummary
+        from services.diary_service import DiaryService
 
         mock_db = AsyncMock()
         mock_db.add = MagicMock()
@@ -335,8 +336,8 @@ class TestDiaryServiceCRUD:
     @pytest.mark.asyncio
     async def test_update_summary(self):
         """Test updating a summary"""
-        from services.diary_service import DiaryService
         from api.schemas.diary import DiaryEntryUpdate
+        from services.diary_service import DiaryService
 
         mock_db = AsyncMock()
 

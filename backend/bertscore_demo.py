@@ -3,8 +3,8 @@ BERTScore Demo - Database Olmadan
 Wave 2B İyileştirme - BERTScore Aktivasyonu Kanıtı
 """
 
-import sys
 import io
+import sys
 from pathlib import Path
 
 # UTF-8 kodlama

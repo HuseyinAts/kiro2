@@ -113,41 +113,40 @@ class TestSimpleEmbeddings:
     def test_simple_embeddings_functionality(self):
         """Test SimpleEmbeddings embedding functionality"""
         try:
-            with patch("core.rag_service.logger"):
-                with patch(
-                    "core.rag_service.HuggingFaceEmbeddings",
-                    side_effect=Exception("Mock failure"),
-                ):
-                    from core.rag_service import RAGService
+            with patch("core.rag_service.logger"), patch(
+                "core.rag_service.HuggingFaceEmbeddings",
+                side_effect=Exception("Mock failure"),
+            ):
+                from core.rag_service import RAGService
 
-                    service = RAGService()
-                    embeddings = service.embeddings
+                service = RAGService()
+                embeddings = service.embeddings
 
-                    # Test embed_documents
-                    texts = ["test document 1", "test document 2"]
-                    doc_embeddings = embeddings.embed_documents(texts)
+                # Test embed_documents
+                texts = ["test document 1", "test document 2"]
+                doc_embeddings = embeddings.embed_documents(texts)
 
-                    assert isinstance(doc_embeddings, list)
-                    assert len(doc_embeddings) == 2
-                    assert all(isinstance(emb, list) for emb in doc_embeddings)
-                    assert all(
-                        len(emb) == 48 for emb in doc_embeddings
-                    )  # SHA384 = 48 bytes
+                assert isinstance(doc_embeddings, list)
+                assert len(doc_embeddings) == 2
+                assert all(isinstance(emb, list) for emb in doc_embeddings)
+                assert all(
+                    len(emb) == 48 for emb in doc_embeddings
+                )  # SHA384 = 48 bytes
 
-                    # Test embed_query
-                    query = "test query"
-                    query_embedding = embeddings.embed_query(query)
+                # Test embed_query
+                query = "test query"
+                query_embedding = embeddings.embed_query(query)
 
-                    assert isinstance(query_embedding, list)
-                    assert len(query_embedding) == 48
+                assert isinstance(query_embedding, list)
+                assert len(query_embedding) == 48
 
-                    # Same text should produce same embedding
-                    same_embedding = embeddings.embed_query(query)
-                    assert query_embedding == same_embedding
+                # Same text should produce same embedding
+                same_embedding = embeddings.embed_query(query)
+                assert query_embedding == same_embedding
 
-                    # Different text should produce different embedding
-                    different_embedding = embeddings.embed_query("different text")
-                    assert query_embedding != different_embedding
+                # Different text should produce different embedding
+                different_embedding = embeddings.embed_query("different text")
+                assert query_embedding != different_embedding
 
         except ImportError:
             pytest.skip("RAGService not available")

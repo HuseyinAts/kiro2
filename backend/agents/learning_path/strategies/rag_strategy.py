@@ -16,12 +16,12 @@ Features:
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
-from .resource_search import ResourceSearchStrategy
-from ..core.rag_search import RAGSearchService
 from ..config import get_learning_path_config
-from ..models import LearningResource, KnowledgeLevel
+from ..core.rag_search import RAGSearchService
+from ..models import KnowledgeLevel, LearningResource
+from .resource_search import ResourceSearchStrategy
 
 if TYPE_CHECKING:
     pass
@@ -54,7 +54,7 @@ class RAGSearchStrategy(ResourceSearchStrategy):
         ... )
     """
 
-    def __init__(self, rag_service: Optional[RAGSearchService] = None):
+    def __init__(self, rag_service: RAGSearchService | None = None):
         """
         Initialize RAG search strategy.
 
@@ -83,11 +83,11 @@ class RAGSearchStrategy(ResourceSearchStrategy):
     async def search(
         self,
         query: str,
-        subject: Optional[str] = None,
+        subject: str | None = None,
         difficulty_range: tuple = (-4.0, 4.0),
         limit: int = 10,
         **filters: Any
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Search RAG database for learning resources.
 
@@ -155,8 +155,8 @@ class RAGSearchStrategy(ResourceSearchStrategy):
         return "rag"
 
     def normalize_result(
-        self, raw_result: Dict[str, Any]
-    ) -> Optional[LearningResource]:
+        self, raw_result: dict[str, Any]
+    ) -> LearningResource | None:
         """
         Convert RAG result to LearningResource.
 
@@ -228,7 +228,7 @@ class RAGSearchStrategy(ResourceSearchStrategy):
 
     async def search_similar(
         self, resource_id: str, limit: int = 5
-    ) -> List[LearningResource]:
+    ) -> list[LearningResource]:
         """
         Find similar resources based on a reference resource.
 

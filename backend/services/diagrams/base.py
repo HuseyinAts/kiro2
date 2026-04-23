@@ -5,7 +5,7 @@ Abstract base class for diagram generators.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import matplotlib.pyplot as plt
 
@@ -15,7 +15,7 @@ from .styles import DEFAULT_FIG_SIZE, OSYM_DIAGRAM_STYLE
 class BaseDiagramGenerator(ABC):
     """Abstract base class for diagram generators."""
 
-    def __init__(self, fig_size: Tuple[int, int] = DEFAULT_FIG_SIZE) -> None:
+    def __init__(self, fig_size: tuple[int, int] = DEFAULT_FIG_SIZE) -> None:
         """
         Initialize generator with OSYM styling.
 
@@ -30,10 +30,10 @@ class BaseDiagramGenerator(ABC):
     def generate(
         self,
         subtype: str,
-        content: Dict[str, Any],
-        labels: Optional[Dict[str, str]] = None,
+        content: dict[str, Any],
+        labels: dict[str, str] | None = None,
         **kwargs: Any,
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> tuple[str, dict[str, Any]]:
         """
         Generate diagram SVG and metadata.
 
@@ -46,11 +46,10 @@ class BaseDiagramGenerator(ABC):
         Returns:
             Tuple of (svg_content, metadata)
         """
-        pass
 
     def create_figure(
-        self, figsize: Optional[Tuple[int, int]] = None
-    ) -> Tuple[Any, Any]:
+        self, figsize: tuple[int, int] | None = None
+    ) -> tuple[Any, Any]:
         """
         Create a new matplotlib figure and axes.
 

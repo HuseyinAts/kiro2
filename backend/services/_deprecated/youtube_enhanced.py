@@ -8,11 +8,13 @@ to run blocking API calls without blocking the event loop.
 
 import asyncio
 import logging
-from typing import List, Optional, Dict, Any, Callable, TypeVar
+import re
+from collections.abc import Callable
 from datetime import datetime
+from typing import Any, TypeVar
+
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import re
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -37,7 +39,7 @@ class VideoQuality(BaseModel):
     duration_appropriate: bool
     channel_credibility: float
     view_to_like_ratio: float
-    comments_quality: Optional[str]
+    comments_quality: str | None
 
 
 class Caption(BaseModel):
@@ -55,13 +57,13 @@ class PlaylistMetadata(BaseModel):
 
     playlist_id: str
     title: str
-    description: Optional[str]
+    description: str | None
     video_count: int
     total_duration: int  # seconds
     created_by: str
     created_at: datetime
     is_public: bool
-    tags: List[str]
+    tags: list[str]
 
 
 class YouTubeEnhancedService:
@@ -103,13 +105,13 @@ class YouTubeEnhancedService:
     async def enhanced_search(
         self,
         query: str,
-        subject: Optional[str] = None,
-        grade_level: Optional[str] = None,
+        subject: str | None = None,
+        grade_level: str | None = None,
         min_quality_score: float = 70.0,
         has_captions: bool = True,
-        duration_range: Optional[tuple] = None,  # (min, max) in seconds
+        duration_range: tuple | None = None,  # (min, max) in seconds
         max_results: int = 20,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Task 99.1: Enhanced YouTube search with quality filtering
 
@@ -199,7 +201,7 @@ class YouTubeEnhancedService:
             raise
 
     def _build_enhanced_query(
-        self, query: str, subject: Optional[str], grade_level: Optional[str]
+        self, query: str, subject: str | None, grade_level: str | None
     ) -> str:
         """Build enhanced search query with context"""
         enhanced_query = query
@@ -226,12 +228,11 @@ class YouTubeEnhancedService:
 
         if max_dur <= 240:  # 4 minutes
             return "short"
-        elif max_dur <= 1200:  # 20 minutes
+        if max_dur <= 1200:  # 20 minutes
             return "medium"
-        else:
-            return "long"
+        return "long"
 
-    async def get_video_details(self, video_id: str) -> Optional[Dict[str, Any]]:
+    async def get_video_details(self, video_id: str) -> dict[str, Any] | None:
         """Get detailed video information"""
         try:
             response = await self._run_sync(
@@ -258,7 +259,7 @@ class YouTubeEnhancedService:
         title: str,
         description: str,
         is_public: bool = False,
-        access_token: Optional[str] = None,
+        access_token: str | None = None,
     ) -> str:
         """
         Task 99.2: Create a new YouTube playlist
@@ -331,7 +332,7 @@ class YouTubeEnhancedService:
             logger.error(f"Failed to add video to playlist: {e}")
             return False
 
-    async def get_playlist_videos(self, playlist_id: str) -> List[Dict[str, Any]]:
+    async def get_playlist_videos(self, playlist_id: str) -> list[dict[str, Any]]:
         """
         Task 99.2: Get all videos in a playlist
         """
@@ -341,7 +342,7 @@ class YouTubeEnhancedService:
 
             while True:
                 # Wrap sync call in thread to avoid blocking
-                def _fetch_page(page_token: Optional[str] = next_page_token) -> dict:
+                def _fetch_page(page_token: str | None = next_page_token) -> dict:
                     request = self.youtube.playlistItems().list(
                         part="snippet,contentDetails",
                         playlistId=playlist_id,
@@ -384,7 +385,7 @@ class YouTubeEnhancedService:
 
     async def get_video_captions(
         self, video_id: str, language: str = "tr"
-    ) -> List[Caption]:
+    ) -> list[Caption]:
         """
         Task 99.3: Extract captions/subtitles from video
 
@@ -441,8 +442,8 @@ class YouTubeEnhancedService:
             return False
 
     async def search_in_captions(
-        self, query: str, video_ids: List[str]
-    ) -> List[Dict[str, Any]]:
+        self, query: str, video_ids: list[str]
+    ) -> list[dict[str, Any]]:
         """
         Task 99.3: Search for text in video captions
 
@@ -489,7 +490,7 @@ class YouTubeEnhancedService:
     # ============================================
 
     async def assess_video_quality(
-        self, video_id: str, video_details: Optional[Dict[str, Any]] = None
+        self, video_id: str, video_details: dict[str, Any] | None = None
     ) -> VideoQuality:
         """
         Task 99.4: Assess video quality and educational value
@@ -598,16 +599,11 @@ class YouTubeEnhancedService:
         """
         if 300 <= duration <= 1200:  # 5-20 min
             return 100.0
-        elif 180 <= duration < 300:  # 3-5 min
+        if 180 <= duration < 300 or 1200 < duration <= 1800:  # 3-5 min
             return 80.0
-        elif 1200 < duration <= 1800:  # 20-30 min
-            return 80.0
-        elif 60 <= duration < 180:  # 1-3 min
+        if 60 <= duration < 180 or 1800 < duration <= 3600:  # 1-3 min
             return 60.0
-        elif 1800 < duration <= 3600:  # 30-60 min
-            return 60.0
-        else:
-            return 30.0
+        return 30.0
 
     def _calculate_engagement_score(
         self, views: int, likes: int, comments: int
@@ -665,7 +661,7 @@ class YouTubeEnhancedService:
         # Default
         return 50.0
 
-    def _assess_content_appropriateness(self, snippet: Dict[str, Any]) -> float:
+    def _assess_content_appropriateness(self, snippet: dict[str, Any]) -> float:
         """
         Assess content appropriateness for students
 

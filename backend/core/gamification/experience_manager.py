@@ -8,14 +8,14 @@ Seviye ve deneyim puanı yönetim sistemi
 - Milestone rozetleri
 - Seviye atlama bildirimleri
 """
-from datetime import datetime, timezone
-from typing import Optional, Dict
+from datetime import UTC, datetime
 from uuid import UUID
-from sqlalchemy.orm import Session
-from redis import Redis
 
-from models.database import User
+from redis import Redis
+from sqlalchemy.orm import Session
+
 from core.structured_logger import get_logger
+from models.database import User
 
 logger = get_logger(__name__)
 
@@ -56,7 +56,7 @@ class ExperienceManager:
 
         return level
 
-    def add_xp(self, user_id: UUID, xp_amount: int, source: str = "unknown") -> Dict:
+    def add_xp(self, user_id: UUID, xp_amount: int, source: str = "unknown") -> dict:
         """
         Kullanıcıya XP ekle ve seviye kontrolü yap
 
@@ -90,7 +90,7 @@ class ExperienceManager:
         milestone_level = None
 
         if level_up:
-            user.last_level_up_at = datetime.now(timezone.utc)
+            user.last_level_up_at = datetime.now(UTC)
             logger.info(f"User {user_id} leveled up: {old_level} -> {new_level}")
 
             # Milestone kontrolü
@@ -115,7 +115,7 @@ class ExperienceManager:
             "source": source,
         }
 
-    def get_level_progress(self, user_id: UUID) -> Dict:
+    def get_level_progress(self, user_id: UUID) -> dict:
         """Mevcut seviye ilerlemesini getir"""
         user = self.db.query(User).filter(User.id == user_id).first()
         if not user:
@@ -150,7 +150,7 @@ class ExperienceManager:
             "next_milestone": self._get_next_milestone(current_level),
         }
 
-    def _get_next_milestone(self, current_level: int) -> Optional[int]:
+    def _get_next_milestone(self, current_level: int) -> int | None:
         """Sonraki milestone seviyesini bul"""
         for milestone in self.MILESTONES:
             if milestone > current_level:
@@ -163,7 +163,7 @@ class ExperienceManager:
         cache_data = {
             "xp": xp,
             "level": level,
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
         }
         try:
             self.redis.setex(cache_key, self.cache_ttl, str(cache_data))
@@ -196,7 +196,7 @@ class ExperienceManager:
 
 
 # Global instance
-_experience_manager: Optional[ExperienceManager] = None
+_experience_manager: ExperienceManager | None = None
 
 
 def get_experience_manager(db: Session, redis_client: Redis) -> ExperienceManager:

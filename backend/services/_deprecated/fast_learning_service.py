@@ -3,7 +3,7 @@ Hızlı Öğrenme Stili Servisi
 Performans optimizasyonu için minimal implementasyon
 """
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from algorithms.simple_learning_detector import SimpleLearningStyleDetector
 from models.learning_style import (
@@ -20,7 +20,7 @@ class FastLearningStyleService:
 
     def __init__(self):
         self.detector = SimpleLearningStyleDetector()
-        self.profiles_cache: Dict[str, HybridLearningProfile] = {}
+        self.profiles_cache: dict[str, HybridLearningProfile] = {}
         logger.info("[CHECK] Hızlı Öğrenme Stili Servisi başlatıldı")
 
     async def detect_learning_style(self, student_id: str) -> HybridLearningProfile:
@@ -87,7 +87,7 @@ class FastLearningStyleService:
 
         return recommendation
 
-    async def get_learning_style_explanation(self, student_id: str) -> Dict[str, Any]:
+    async def get_learning_style_explanation(self, student_id: str) -> dict[str, Any]:
         """Hızlı açıklama"""
         profile = await self.detect_learning_style(student_id)
 

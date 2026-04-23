@@ -12,8 +12,9 @@ pytestmark = pytest.mark.skipif(
 from sqlalchemy import select
 
 try:
-    from models_unified import Kullanici, Soru as SinavSorusu
     from models.enums import KullaniciRolu, ZorlukSeviyesi
+    from models_unified import Kullanici
+    from models_unified import Soru as SinavSorusu
 except (ImportError, ModuleNotFoundError):
     pytest.skip("models_unified module not available", allow_module_level=True)
 

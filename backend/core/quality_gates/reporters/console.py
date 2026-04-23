@@ -9,16 +9,15 @@ Uses rich library for formatting if available.
 from __future__ import annotations
 
 import sys
-from typing import Optional, TextIO
+from typing import TextIO
 
 from ..models import GateStatus, PipelineResult
-
 
 # Try to import rich for better formatting
 try:
     from rich.console import Console
-    from rich.table import Table
     from rich.panel import Panel
+    from rich.table import Table
     from rich.text import Text
     RICH_AVAILABLE = True
 except ImportError:
@@ -67,7 +66,7 @@ class ConsoleReporter:
 
     def __init__(
         self,
-        output: Optional[TextIO] = None,
+        output: TextIO | None = None,
         use_colors: bool = True,
         verbose: bool = False,
     ):

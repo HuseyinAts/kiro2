@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Zemberek-NLP API Endpoints
 Production-ready Türkçe NLP API
@@ -13,12 +12,13 @@ Endpoints:
 - GET /stats - Servis istatistikleri
 """
 
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from core.dependencies import get_current_user  # fixed: was auth_dependencies (no blacklist)
+from core.dependencies import (
+    get_current_user,  # fixed: was auth_dependencies (no blacklist)
+)
 from core.structured_logger import get_logger
 from core.zemberek_service import (
     get_zemberek_service,
@@ -48,16 +48,16 @@ class MorphologyResponse(BaseModel):
     lemma: str
     pos: str
     stem: str
-    suffixes: List[str]
-    morphemes: List[str]
-    morpheme_types: List[str]
+    suffixes: list[str]
+    morphemes: list[str]
+    morpheme_types: list[str]
     complexity_score: float
 
 
 class BatchMorphologyRequest(BaseModel):
     """Toplu morfoloji analiz isteği"""
 
-    words: List[str] = Field(
+    words: list[str] = Field(
         ..., min_items=1, max_items=100, description="Analiz edilecek kelimeler"
     )
 
@@ -65,7 +65,7 @@ class BatchMorphologyRequest(BaseModel):
 class BatchMorphologyResponse(BaseModel):
     """Toplu morfoloji analiz yanıtı"""
 
-    results: List[MorphologyResponse]
+    results: list[MorphologyResponse]
     total_count: int
     success_count: int
 
@@ -92,7 +92,7 @@ class TokenResponse(BaseModel):
 class TokenizeResponse(BaseModel):
     """Tokenization yanıtı"""
 
-    tokens: List[TokenResponse]
+    tokens: list[TokenResponse]
     token_count: int
     word_count: int
 
@@ -110,7 +110,7 @@ class SpellCheckResponse(BaseModel):
 
     word: str
     is_correct: bool
-    suggestions: List[str]
+    suggestions: list[str]
 
 
 class NormalizeRequest(BaseModel):
@@ -139,7 +139,7 @@ class SentenceRequest(BaseModel):
 class SentenceResponse(BaseModel):
     """Cümle ayırma yanıtı"""
 
-    sentences: List[str]
+    sentences: list[str]
     sentence_count: int
 
 

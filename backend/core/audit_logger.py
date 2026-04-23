@@ -13,9 +13,9 @@ Features:
 Author: Claude
 Date: 2025-10-27
 """
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
@@ -125,13 +125,13 @@ class AuditLogger:
         self,
         action: AuditAction,
         resource_type: AuditResourceType,
-        user_id: Optional[str] = None,
-        resource_id: Optional[str] = None,
-        old_values: Optional[Dict[str, Any]] = None,
-        new_values: Optional[Dict[str, Any]] = None,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        extra_data: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        resource_id: str | None = None,
+        old_values: dict[str, Any] | None = None,
+        new_values: dict[str, Any] | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
+        extra_data: dict[str, Any] | None = None,
     ):
         """
         Audit log kaydı oluştur
@@ -160,7 +160,7 @@ class AuditLogger:
 
             # Extra data enrichment
             enriched_extra = extra_data or {}
-            enriched_extra["timestamp"] = datetime.now(timezone.utc).isoformat()
+            enriched_extra["timestamp"] = datetime.now(UTC).isoformat()
             enriched_extra["action_type"] = action.value
 
             # Create audit log entry
@@ -203,9 +203,9 @@ class AuditLogger:
         event_type: AuditAction,
         description: str,
         severity: str = "medium",
-        user_id: Optional[str] = None,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
+        user_id: str | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
     ):
         """
         Güvenlik olayı kaydet (high priority)
@@ -248,8 +248,8 @@ class AuditLogger:
         user_id: str,
         resource_type: AuditResourceType,
         resource_id: str,
-        access_reason: Optional[str] = None,
-        ip_address: Optional[str] = None,
+        access_reason: str | None = None,
+        ip_address: str | None = None,
     ):
         """
         Veri erişim kaydet (KVKK compliance)
@@ -275,9 +275,9 @@ class AuditLogger:
         user_id: str,
         resource_type: AuditResourceType,
         resource_id: str,
-        old_data: Dict[str, Any],
-        new_data: Dict[str, Any],
-        ip_address: Optional[str] = None,
+        old_data: dict[str, Any],
+        new_data: dict[str, Any],
+        ip_address: str | None = None,
     ):
         """
         Veri değişikliği kaydet (before/after tracking)
@@ -314,7 +314,7 @@ class AuditLogger:
         try:
             from models.database import AuditLog
 
-            cutoff_date = datetime.now(timezone.utc) - timedelta(days=retention_days)
+            cutoff_date = datetime.now(UTC) - timedelta(days=retention_days)
 
             result = self.db.execute(
                 delete(AuditLog).where(AuditLog.created_at < cutoff_date)
@@ -382,7 +382,7 @@ class AuditLogger:
             )
             return []
 
-    def _filter_sensitive_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def _filter_sensitive_data(self, data: dict[str, Any]) -> dict[str, Any]:
         """
         Sensitive data'yı audit log'dan filtrele
 
@@ -425,8 +425,8 @@ class AuditLogger:
         return filtered
 
     def _calculate_diff(
-        self, old_data: Dict[str, Any], new_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, old_data: dict[str, Any], new_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         İki veri seti arasındaki farkı hesapla
 

@@ -18,7 +18,6 @@ Weight in total confidence: 40%
 import asyncio
 import logging
 import re
-from typing import Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -45,7 +44,7 @@ class ClaimVerification(BaseModel):
     status: str = Field(description="true/false/partially_true/unverified")
     confidence: float = Field(ge=0.0, le=1.0, description="Güven skoru")
     source: str = Field(description="Kaynak (MEB/RAG/Wikipedia/none)")
-    evidence: Optional[str] = Field(default=None, description="Kanıt")
+    evidence: str | None = Field(default=None, description="Kanıt")
 
 
 class FactChecker:
@@ -76,9 +75,9 @@ class FactChecker:
 
     def __init__(
         self,
-        rag_client: Optional[RAGClient] = None,
-        wikipedia_client: Optional[WikipediaClient] = None,
-        meb_client: Optional[MEBResourceClient] = None,
+        rag_client: RAGClient | None = None,
+        wikipedia_client: WikipediaClient | None = None,
+        meb_client: MEBResourceClient | None = None,
         parallel_checking: bool = True,
         max_claims: int = 10,
     ):
@@ -108,9 +107,9 @@ class FactChecker:
         Returns:
             ValidationResult: Fact-checking sonucu
         """
-        errors: List[str] = []
-        warnings: List[str] = []
-        suggestions: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
+        suggestions: list[str] = []
         score = 1.0
 
         # İddiaları çıkar
@@ -130,7 +129,7 @@ class FactChecker:
             )
 
         # Her iddiayı doğrula
-        verified_claims: List[ClaimVerification] = []
+        verified_claims: list[ClaimVerification] = []
 
         if self.parallel_checking:
             # Paralel doğrulama
@@ -193,7 +192,7 @@ class FactChecker:
             },
         )
 
-    def _extract_claims(self, text: str) -> List[str]:
+    def _extract_claims(self, text: str) -> list[str]:
         """
         Metinden iddiaları çıkar.
 
@@ -367,8 +366,8 @@ class FactChecker:
         )
 
     def _calculate_source_usage(
-        self, verifications: List[ClaimVerification]
-    ) -> Dict[str, int]:
+        self, verifications: list[ClaimVerification]
+    ) -> dict[str, int]:
         """
         Kaynak kullanım istatistiklerini hesapla.
 
@@ -390,8 +389,8 @@ class FactChecker:
         self,
         fact: str,
         expected_value: str,
-        subject: Optional[str] = None,
-    ) -> Tuple[bool, float, str]:
+        subject: str | None = None,
+    ) -> tuple[bool, float, str]:
         """
         Belirli bir gerçeği doğrula.
 

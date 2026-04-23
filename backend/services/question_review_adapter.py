@@ -14,8 +14,7 @@ turkish_optimized_fsrs.py'de mevcut — gelecekte entegre edilebilir.
 
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -44,8 +43,8 @@ class QuestionReviewAdapter:
         student_id: str,
         question_id: str,
         db: AsyncSession,
-        error_type: Optional[str] = None,
-    ) -> Optional[DBFSRSCard]:
+        error_type: str | None = None,
+    ) -> DBFSRSCard | None:
         """
         Yanlış cevaplanan soruyu FSRS tekrar kartına dönüştür.
 
@@ -75,7 +74,7 @@ class QuestionReviewAdapter:
             return None
 
         # FSRS kartı oluştur — SubjectArea enum dönüşümü (UPPERCASE → lowercase)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         try:
             subject = SubjectArea(question.subject_area) if question.subject_area else SubjectArea.MATEMATIK
         except (ValueError, KeyError):
@@ -113,7 +112,7 @@ class QuestionReviewAdapter:
         student_id: str,
         limit: int = 20,
         db: AsyncSession = None,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Tekrarı gelen soruları QuestionBankItem bilgileriyle birlikte döndür.
 
@@ -123,7 +122,7 @@ class QuestionReviewAdapter:
         if not db:
             return []
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         # Vadesi gelen kartları getir
         cards_result = await db.execute(
@@ -145,7 +144,7 @@ class QuestionReviewAdapter:
 
         # question_bank_id'leri topla
         qb_ids = []
-        card_map: Dict[str, DBFSRSCard] = {}
+        card_map: dict[str, DBFSRSCard] = {}
         for card in due_cards:
             factors = card.cultural_factors or {}
             qb_id = factors.get(_QB_ID_KEY)
@@ -205,8 +204,8 @@ class QuestionReviewAdapter:
         card_id: str,
         grade: int,
         db: AsyncSession,
-        student_id: Optional[str] = None,
-    ) -> Optional[DBFSRSCard]:
+        student_id: str | None = None,
+    ) -> DBFSRSCard | None:
         """
         Tekrar sonucunu kaydet ve FSRS parametrelerini güncelle.
 
@@ -230,7 +229,7 @@ class QuestionReviewAdapter:
             logger.warning(f"Kart sahiplik ihlali: card.student={card.student_id}, request={student_id}")
             return None
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         # Basit FSRS güncelleme (tam algoritma turkish_optimized_fsrs.py'de)
         interval_map = {
@@ -279,9 +278,9 @@ class QuestionReviewAdapter:
     async def register_wrong_answers(
         self,
         student_id: str,
-        question_ids: List[str],
+        question_ids: list[str],
         db: AsyncSession,
-        error_types: Optional[dict[str, str]] = None,
+        error_types: dict[str, str] | None = None,
     ) -> int:
         """
         Toplu yanlış cevap kaydı — quiz sonunda çağrılır.

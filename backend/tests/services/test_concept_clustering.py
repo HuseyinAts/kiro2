@@ -3,8 +3,8 @@ Tests for Concept Clustering Service
 Spec: REQ-6 Concept Clustering
 """
 
-import pytest
 import numpy as np
+import pytest
 
 
 class TestClusteringAlgorithm:

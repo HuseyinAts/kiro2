@@ -7,10 +7,11 @@ for various learning path operations.
 """
 
 import asyncio
+
 from agents.learning_path import (
+    KnowledgeLevel,
     LearningPathFacade,
     get_learning_path_facade,
-    KnowledgeLevel,
 )
 from agents.learning_path.services.path_adaptation import PerformanceMetrics
 
@@ -85,7 +86,7 @@ async def example_adapt_path():
     )
 
     if result.success:
-        print(f"✓ Path adapted")
+        print("✓ Path adapted")
         print(f"  Actions taken: {len(result.actions_taken)}")
         for action in result.actions_taken:
             print(f"    - {action.type.value}: {action.description}")

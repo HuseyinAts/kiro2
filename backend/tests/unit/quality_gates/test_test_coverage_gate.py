@@ -12,10 +12,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from backend.core.quality_gates.models import GateStatus, GateSeverity, GateMetrics
-from backend.core.quality_gates.gates.test_coverage import TestCoverageGate
 from backend.core.quality_gates.gates.base import GateContext
-
+from backend.core.quality_gates.gates.test_coverage import TestCoverageGate
+from backend.core.quality_gates.models import GateMetrics, GateSeverity, GateStatus
 
 # =============================================================================
 # Test Fixtures

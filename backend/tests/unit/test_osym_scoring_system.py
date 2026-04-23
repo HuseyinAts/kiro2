@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -9,12 +10,12 @@ pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 import pytest
 
 from services.osym_scoring_system import (
-    OSYMScoringSystem,
-    ScoreType,
-    SubjectNet,
     OSYMScore,
+    OSYMScoringSystem,
     PlacementScore,
     RankingEstimate,
+    ScoreType,
+    SubjectNet,
 )
 
 

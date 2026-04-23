@@ -7,6 +7,7 @@ Bu dosya tüm core servislerin unit testlerini içerir.
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 
@@ -17,10 +18,12 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from core.exceptions import NotFoundError, AuthorizationError as UnauthorizedError, ValidationError
-from models.exam_db import ExamSession as Exam
+from core.exceptions import AuthorizationError as UnauthorizedError
+from core.exceptions import NotFoundError, ValidationError
 from models.enums_db import ExamType
+from models.exam_db import ExamSession as Exam
 from services.admin_service import AdminService
+
 try:
     from services.auth_service import AuthService
 except ImportError:
@@ -31,8 +34,6 @@ except ImportError:
     ExamService = None
 from services.learning_style_service import LearningStyleService
 from services.user_service import KullaniciServisi as UserService
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -226,33 +227,32 @@ class TestExamService:
         """Sınav başlatma başarılı testi"""
         user_id = str(uuid.uuid4())
 
-        with patch("core.database.get_db", return_value=mock_db):
-            with patch(
-                "services.question_service.QuestionService.get_exam_questions"
-            ) as mock_questions:
-                mock_db.fetchone.return_value = {
-                    "id": mock_exam.id,
-                    "title": mock_exam.title,
-                    "duration": mock_exam.duration,
-                    "questionCount": mock_exam.questionCount,
-                    "status": "active",
+        with patch("core.database.get_db", return_value=mock_db), patch(
+            "services.question_service.QuestionService.get_exam_questions"
+        ) as mock_questions:
+            mock_db.fetchone.return_value = {
+                "id": mock_exam.id,
+                "title": mock_exam.title,
+                "duration": mock_exam.duration,
+                "questionCount": mock_exam.questionCount,
+                "status": "active",
+            }
+            mock_questions.return_value = [
+                {
+                    "id": "q1",
+                    "text": "Test sorusu?",
+                    "options": ["A", "B", "C", "D"],
+                    "subject": "Matematik",
                 }
-                mock_questions.return_value = [
-                    {
-                        "id": "q1",
-                        "text": "Test sorusu?",
-                        "options": ["A", "B", "C", "D"],
-                        "subject": "Matematik",
-                    }
-                ]
-                mock_db.execute.return_value = AsyncMock()
+            ]
+            mock_db.execute.return_value = AsyncMock()
 
-                result = await exam_service.start_exam(mock_exam.id, user_id)
+            result = await exam_service.start_exam(mock_exam.id, user_id)
 
-                assert result["success"] is True
-                assert "session" in result
-                assert "questions" in result
-                assert result["session"]["examId"] == mock_exam.id
+            assert result["success"] is True
+            assert "session" in result
+            assert "questions" in result
+            assert result["session"]["examId"] == mock_exam.id
 
     @pytest.mark.asyncio
     async def test_start_exam_already_active_session(
@@ -300,30 +300,29 @@ class TestExamService:
         session_id = str(uuid.uuid4())
         user_id = str(uuid.uuid4())
 
-        with patch("core.database.get_db", return_value=mock_db):
-            with patch(
-                "services.exam_service.ExamService._calculate_exam_result"
-            ) as mock_calculate:
-                mock_db.fetchone.return_value = {
-                    "id": session_id,
-                    "examId": "exam_id",
-                    "userId": user_id,
-                    "status": "active",
-                    "startTime": datetime.now() - timedelta(hours=1),
-                }
-                mock_calculate.return_value = {
-                    "score": 85,
-                    "correctAnswers": 34,
-                    "totalQuestions": 40,
-                    "subjectScores": {"Matematik": {"correct": 15, "total": 20}},
-                }
-                mock_db.execute.return_value = AsyncMock()
+        with patch("core.database.get_db", return_value=mock_db), patch(
+            "services.exam_service.ExamService._calculate_exam_result"
+        ) as mock_calculate:
+            mock_db.fetchone.return_value = {
+                "id": session_id,
+                "examId": "exam_id",
+                "userId": user_id,
+                "status": "active",
+                "startTime": datetime.now() - timedelta(hours=1),
+            }
+            mock_calculate.return_value = {
+                "score": 85,
+                "correctAnswers": 34,
+                "totalQuestions": 40,
+                "subjectScores": {"Matematik": {"correct": 15, "total": 20}},
+            }
+            mock_db.execute.return_value = AsyncMock()
 
-                result = await exam_service.complete_exam(session_id, user_id)
+            result = await exam_service.complete_exam(session_id, user_id)
 
-                assert result["success"] is True
-                assert "result" in result
-                assert result["result"]["score"] == 85
+            assert result["success"] is True
+            assert "result" in result
+            assert result["result"]["score"] == 85
 
     @pytest.mark.asyncio
     async def test_calculate_exam_result(self, exam_service):

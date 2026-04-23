@@ -30,8 +30,9 @@ class TestCacheEntry:
 
     def test_cache_entry_creation(self):
         """Test CacheEntry can be created"""
-        from core.advanced_cache import CacheEntry
         import time
+
+        from core.advanced_cache import CacheEntry
 
         now = time.time()
         entry = CacheEntry(
@@ -51,8 +52,9 @@ class TestCacheEntry:
 
     def test_cache_entry_default_tags(self):
         """Test CacheEntry has default empty tags set"""
-        from core.advanced_cache import CacheEntry
         import time
+
+        from core.advanced_cache import CacheEntry
 
         now = time.time()
         entry = CacheEntry(
@@ -65,8 +67,9 @@ class TestCacheEntry:
 
     def test_cache_entry_with_tags(self):
         """Test CacheEntry with custom tags"""
-        from core.advanced_cache import CacheEntry
         import time
+
+        from core.advanced_cache import CacheEntry
 
         now = time.time()
         entry = CacheEntry(

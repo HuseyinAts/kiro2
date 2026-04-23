@@ -9,12 +9,11 @@ Features:
 - Assumption tracking
 """
 
+import logging
+import re
+from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
-import re
-import logging
-from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -365,7 +364,7 @@ class LogicValidationService:
         self,
         premise: str,
         conclusion: str,
-        rule: Optional[InferenceRule] = None,
+        rule: InferenceRule | None = None,
     ) -> InferenceResult:
         """
         Validate an inference from premise to conclusion
@@ -571,7 +570,7 @@ class LogicValidationService:
 
 
 # Singleton instance
-_logic_validation_service: Optional[LogicValidationService] = None
+_logic_validation_service: LogicValidationService | None = None
 
 
 def get_logic_validation_service() -> LogicValidationService:

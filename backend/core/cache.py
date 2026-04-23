@@ -11,12 +11,12 @@ from core.cache.cache_manager import (
     CacheService,
     ConnectionMetrics,
     ConnectionStatus,
-    cache_manager,
-    cache_result,
-    cache_learning_style,
-    cache_exam_results,
-    cache_recommendations,
     cache_content,
+    cache_exam_results,
+    cache_learning_style,
+    cache_manager,
+    cache_recommendations,
+    cache_result,
 )
 
 __all__ = [
@@ -24,10 +24,10 @@ __all__ = [
     "CacheService",
     "ConnectionMetrics",
     "ConnectionStatus",
-    "cache_manager",
-    "cache_result",
-    "cache_learning_style",
-    "cache_exam_results",
-    "cache_recommendations",
     "cache_content",
+    "cache_exam_results",
+    "cache_learning_style",
+    "cache_manager",
+    "cache_recommendations",
+    "cache_result",
 ]

@@ -21,25 +21,25 @@ Author: KIRO2 Team
 Date: 2026-01-17
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
-from enum import Enum
-from dataclasses import dataclass, field
-import re
-import logging
-import hashlib
 import asyncio
-
-# Database
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, func
+import hashlib
+import logging
+import re
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from enum import Enum
+from typing import Any
 
 # Models
 from backend.models.claude_md_improvement_models import (
+    AuditLog,
     ImprovementTrigger,
     RuleVersion,
-    AuditLog,
 )
+from sqlalchemy import and_, func, select
+
+# Database
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +65,8 @@ class SafetyCheckResult:
     """Result of safety check."""
     passed: bool
     risk_level: RiskLevel
-    violations: List[str]
-    warnings: List[str]
+    violations: list[str]
+    warnings: list[str]
     requires_approval: bool
     checked_at: datetime = field(default_factory=datetime.utcnow)
 
@@ -82,9 +82,9 @@ class ApprovalRequest:
     requested_by: str
     requested_at: datetime
     status: ApprovalStatus = ApprovalStatus.PENDING
-    approved_by: Optional[str] = None
-    approved_at: Optional[datetime] = None
-    rejection_reason: Optional[str] = None
+    approved_by: str | None = None
+    approved_at: datetime | None = None
+    rejection_reason: str | None = None
 
 
 @dataclass
@@ -93,9 +93,9 @@ class SandboxResult:
     test_id: str
     passed: bool
     execution_time: float
-    errors: List[str]
-    warnings: List[str]
-    metrics: Dict[str, float]
+    errors: list[str]
+    warnings: list[str]
+    metrics: dict[str, float]
 
 
 class SafetyService:
@@ -137,7 +137,7 @@ class SafetyService:
         """Initialize safety service."""
         self.db = db
         self._emergency_stop_active = False
-        self._pending_approvals: Dict[str, ApprovalRequest] = {}
+        self._pending_approvals: dict[str, ApprovalRequest] = {}
 
     # =========================================================================
     # REQ-8.1: Safety Policy Compliance
@@ -146,7 +146,7 @@ class SafetyService:
     async def check_safety(
         self,
         rule_text: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> SafetyCheckResult:
         """
         Check if rule change complies with safety policies.
@@ -215,20 +215,19 @@ class SafetyService:
 
     def _calculate_risk_level(
         self,
-        violations: List[str],
-        warnings: List[str],
+        violations: list[str],
+        warnings: list[str],
     ) -> RiskLevel:
         """Calculate risk level based on violations and warnings."""
         if len(violations) > 2:
             return RiskLevel.CRITICAL
-        elif len(violations) > 0:
+        if len(violations) > 0:
             return RiskLevel.HIGH
-        elif len(warnings) > 3:
+        if len(warnings) > 3:
             return RiskLevel.MEDIUM
-        elif len(warnings) > 0:
+        if len(warnings) > 0:
             return RiskLevel.LOW
-        else:
-            return RiskLevel.LOW
+        return RiskLevel.LOW
 
     # =========================================================================
     # REQ-8.2: Manual Approval Requirement
@@ -258,7 +257,7 @@ class SafetyService:
 
         # Create approval request
         request_id = hashlib.md5(
-            f"{rule_id}{proposed_change}{datetime.now(timezone.utc).isoformat()}".encode()
+            f"{rule_id}{proposed_change}{datetime.now(UTC).isoformat()}".encode()
         ).hexdigest()[:12]
 
         request = ApprovalRequest(
@@ -268,13 +267,13 @@ class SafetyService:
             risk_level=safety.risk_level,
             reason=reason,
             requested_by=requested_by,
-            requested_at=datetime.now(timezone.utc),
+            requested_at=datetime.now(UTC),
         )
 
         # Auto-approve low risk changes
         if safety.risk_level.value <= self.AUTO_APPROVE_RISK_THRESHOLD.value:
             request.status = ApprovalStatus.AUTO_APPROVED
-            request.approved_at = datetime.now(timezone.utc)
+            request.approved_at = datetime.now(UTC)
             request.approved_by = "auto_approval_system"
 
         self._pending_approvals[request_id] = request
@@ -300,7 +299,7 @@ class SafetyService:
         self,
         request_id: str,
         approved_by: str,
-        comments: Optional[str] = None,
+        comments: str | None = None,
     ) -> ApprovalRequest:
         """
         Approve a pending change request.
@@ -322,7 +321,7 @@ class SafetyService:
 
         request.status = ApprovalStatus.APPROVED
         request.approved_by = approved_by
-        request.approved_at = datetime.now(timezone.utc)
+        request.approved_at = datetime.now(UTC)
 
         # Log audit with who, what, when, why
         await self._log_audit(
@@ -381,7 +380,7 @@ class SafetyService:
 
         return request
 
-    async def get_pending_approvals(self) -> List[ApprovalRequest]:
+    async def get_pending_approvals(self) -> list[ApprovalRequest]:
         """Get all pending approval requests."""
         return [
             r for r in self._pending_approvals.values()
@@ -395,7 +394,7 @@ class SafetyService:
     async def test_in_sandbox(
         self,
         rule_text: str,
-        test_cases: Optional[List[Dict[str, Any]]] = None,
+        test_cases: list[dict[str, Any]] | None = None,
     ) -> SandboxResult:
         """
         Test rule change in isolated sandbox environment.
@@ -408,10 +407,10 @@ class SafetyService:
             SandboxResult with test results
         """
         test_id = hashlib.md5(
-            f"{rule_text}{datetime.now(timezone.utc).isoformat()}".encode()
+            f"{rule_text}{datetime.now(UTC).isoformat()}".encode()
         ).hexdigest()[:8]
 
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         errors = []
         warnings = []
         metrics = {}
@@ -436,10 +435,10 @@ class SafetyService:
                         await asyncio.sleep(0.05)
                         metrics[f"test_{i}_passed"] = 1.0
                     except Exception as e:
-                        errors.append(f"Test case {i} failed: {str(e)}")
+                        errors.append(f"Test case {i} failed: {e!s}")
                         metrics[f"test_{i}_passed"] = 0.0
 
-            execution_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+            execution_time = (datetime.now(UTC) - start_time).total_seconds()
 
             passed = len(errors) == 0
 
@@ -464,7 +463,7 @@ class SafetyService:
                 metrics=metrics,
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return SandboxResult(
                 test_id=test_id,
                 passed=False,
@@ -477,8 +476,8 @@ class SafetyService:
             return SandboxResult(
                 test_id=test_id,
                 passed=False,
-                execution_time=(datetime.now(timezone.utc) - start_time).total_seconds(),
-                errors=[f"Sandbox error: {str(e)}"],
+                execution_time=(datetime.now(UTC) - start_time).total_seconds(),
+                errors=[f"Sandbox error: {e!s}"],
                 warnings=warnings,
                 metrics={},
             )
@@ -491,7 +490,7 @@ class SafetyService:
         self,
         rule_id: str,
         reason: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Perform fast rollback of a rule (< 5s recovery).
 
@@ -502,7 +501,7 @@ class SafetyService:
         Returns:
             Rollback result with timing
         """
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
 
         try:
             # Get current version
@@ -551,7 +550,7 @@ class SafetyService:
 
             await self.db.commit()
 
-            recovery_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+            recovery_time = (datetime.now(UTC) - start_time).total_seconds()
 
             # Verify recovery time
             if recovery_time > self.MAX_ROLLBACK_TIME:
@@ -587,7 +586,7 @@ class SafetyService:
             return {
                 "success": False,
                 "error": str(e),
-                "recovery_time": (datetime.now(timezone.utc) - start_time).total_seconds(),
+                "recovery_time": (datetime.now(UTC) - start_time).total_seconds(),
             }
 
     # =========================================================================
@@ -598,10 +597,10 @@ class SafetyService:
         self,
         action: str,
         entity_type: str,
-        entity_id: Optional[str] = None,
-        actor: Optional[str] = None,
-        reason: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        actor: str | None = None,
+        reason: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """
         Log audit entry with who, what, when, why.
@@ -631,10 +630,10 @@ class SafetyService:
 
     async def get_audit_history(
         self,
-        entity_type: Optional[str] = None,
-        entity_id: Optional[str] = None,
+        entity_type: str | None = None,
+        entity_id: str | None = None,
         limit: int = 100,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get audit history with filters."""
         query = select(AuditLog).order_by(AuditLog.created_at.desc()).limit(limit)
 
@@ -669,7 +668,7 @@ class SafetyService:
         self,
         reason: str,
         activated_by: str = "system",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Activate emergency stop to pause all auto-improvements.
 
@@ -692,7 +691,7 @@ class SafetyService:
         cancelled_count = 0
         for trigger in pending:
             trigger.processed = True
-            trigger.processed_at = datetime.now(timezone.utc)
+            trigger.processed_at = datetime.now(UTC)
             cancelled_count += 1
 
         await self.db.commit()
@@ -715,7 +714,7 @@ class SafetyService:
             "emergency_stop_active": True,
             "reason": reason,
             "activated_by": activated_by,
-            "activated_at": datetime.now(timezone.utc).isoformat(),
+            "activated_at": datetime.now(UTC).isoformat(),
             "cancelled_improvements": cancelled_count,
         }
 
@@ -723,7 +722,7 @@ class SafetyService:
         self,
         resumed_by: str,
         reason: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Resume operations after emergency stop.
 
@@ -750,7 +749,7 @@ class SafetyService:
             "success": True,
             "emergency_stop_active": False,
             "resumed_by": resumed_by,
-            "resumed_at": datetime.now(timezone.utc).isoformat(),
+            "resumed_at": datetime.now(UTC).isoformat(),
         }
 
     def is_emergency_stop_active(self) -> bool:
@@ -761,7 +760,7 @@ class SafetyService:
     # Safety Status
     # =========================================================================
 
-    async def get_safety_status(self) -> Dict[str, Any]:
+    async def get_safety_status(self) -> dict[str, Any]:
         """Get current safety system status."""
         # Count pending approvals
         pending_approvals = len(await self.get_pending_approvals())
@@ -773,7 +772,7 @@ class SafetyService:
             .where(
                 and_(
                     AuditLog.action == "safety_check",
-                    AuditLog.created_at >= datetime.now(timezone.utc) - timedelta(hours=24),
+                    AuditLog.created_at >= datetime.now(UTC) - timedelta(hours=24),
                 )
             )
         )

@@ -12,7 +12,7 @@ Requirements (REQ-6.x):
 """
 
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..stage_base import BasePipelineStage, StageInput, StageOutput
 
@@ -42,8 +42,8 @@ class QualityGateAgent(BasePipelineStage):
 
     def __init__(
         self,
-        llm_client: Optional[Any] = None,
-        config: Optional[Dict[str, Any]] = None
+        llm_client: Any | None = None,
+        config: dict[str, Any] | None = None
     ):
         """
         Quality Gate Agent başlat
@@ -135,7 +135,7 @@ class QualityGateAgent(BasePipelineStage):
 
         except Exception as e:
             return self._create_error_output(
-                f"Kalite değerlendirme hatası: {str(e)}",
+                f"Kalite değerlendirme hatası: {e!s}",
                 input_data,
                 time.time() - start_time
             )
@@ -146,9 +146,9 @@ class QualityGateAgent(BasePipelineStage):
 
     def _collect_stage_scores(
         self,
-        previous_scores: Dict[str, float],
-        question_data: Dict
-    ) -> Dict[str, float]:
+        previous_scores: dict[str, float],
+        question_data: dict
+    ) -> dict[str, float]:
         """
         Tüm aşama skorlarını topla
 
@@ -186,7 +186,7 @@ class QualityGateAgent(BasePipelineStage):
 
         return scores
 
-    def _calculate_weighted_score(self, stage_scores: Dict[str, float]) -> float:
+    def _calculate_weighted_score(self, stage_scores: dict[str, float]) -> float:
         """
         Ağırlıklı ortalama hesapla
 
@@ -223,16 +223,15 @@ class QualityGateAgent(BasePipelineStage):
         """
         if final_score >= self.APPROVAL_THRESHOLD:
             return "approved", f"Skor {final_score:.1%} >= {self.APPROVAL_THRESHOLD:.0%}"
-        elif final_score >= self.REVIEW_THRESHOLD:
+        if final_score >= self.REVIEW_THRESHOLD:
             return "review", f"Skor {final_score:.1%} ({self.REVIEW_THRESHOLD:.0%}-{self.APPROVAL_THRESHOLD:.0%} arası)"
-        else:
-            return "rejected", f"Skor {final_score:.1%} < {self.REVIEW_THRESHOLD:.0%}"
+        return "rejected", f"Skor {final_score:.1%} < {self.REVIEW_THRESHOLD:.0%}"
 
     def _generate_improvement_suggestions(
         self,
-        stage_scores: Dict[str, float],
+        stage_scores: dict[str, float],
         decision: str
-    ) -> List[str]:
+    ) -> list[str]:
         """
         İyileştirme önerileri üret
 

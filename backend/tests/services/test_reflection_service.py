@@ -4,10 +4,11 @@ Unit tests for ReflectionService (REQ-3)
 Guided reflection, depth measurement, and learning extraction tests.
 """
 
-import pytest
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
+
+import pytest
 
 from api.schemas.diary import ReflectionCreate, ReflectionPromptsResponse
 
@@ -77,8 +78,8 @@ class TestReflectionServiceDepthMeasurement:
 
     def test_measure_depth_surface_response(self):
         """Test depth measurement for surface-level responses"""
-        from services.reflection_service import ReflectionService
         from models.diary import ReflectionDepth
+        from services.reflection_service import ReflectionService
 
         mock_db = MagicMock()
         service = ReflectionService(mock_db)
@@ -97,8 +98,8 @@ class TestReflectionServiceDepthMeasurement:
 
     def test_measure_depth_moderate_response(self):
         """Test depth measurement for moderate responses"""
-        from services.reflection_service import ReflectionService
         from models.diary import ReflectionDepth
+        from services.reflection_service import ReflectionService
 
         mock_db = MagicMock()
         service = ReflectionService(mock_db)
@@ -117,8 +118,8 @@ class TestReflectionServiceDepthMeasurement:
 
     def test_measure_depth_deep_response(self):
         """Test depth measurement for deep responses"""
-        from services.reflection_service import ReflectionService
         from models.diary import ReflectionDepth
+        from services.reflection_service import ReflectionService
 
         mock_db = MagicMock()
         service = ReflectionService(mock_db)
@@ -155,8 +156,8 @@ class TestReflectionServiceDepthMeasurement:
 
     def test_measure_depth_empty_response(self):
         """Test depth measurement for empty responses"""
-        from services.reflection_service import ReflectionService
         from models.diary import ReflectionDepth
+        from services.reflection_service import ReflectionService
 
         mock_db = MagicMock()
         service = ReflectionService(mock_db)
@@ -378,8 +379,8 @@ class TestReflectionServiceStatistics:
     @pytest.mark.asyncio
     async def test_get_depth_statistics_with_data(self):
         """Test depth statistics with reflection data"""
-        from services.reflection_service import ReflectionService
         from models.diary import ReflectionDepth
+        from services.reflection_service import ReflectionService
 
         mock_db = AsyncMock()
 

@@ -9,13 +9,12 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import List, Optional, Set
 
 from .base import BaseHook
 from .models import (
-    QualityCheckResult,
-    HookConfig,
     ExitCode,
+    HookConfig,
+    QualityCheckResult,
     TestResult,
 )
 
@@ -44,7 +43,7 @@ class PytestHook(BaseHook):
         r"ERROR\s+(.+?)::([\w_]+)"
     )
 
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Run pytest on related test files.
 
@@ -124,7 +123,7 @@ class PytestHook(BaseHook):
             warnings=[]
         )
 
-    def _find_related_tests(self, files: List[str]) -> List[str]:
+    def _find_related_tests(self, files: list[str]) -> list[str]:
         """
         Find test files related to source files.
 
@@ -133,7 +132,7 @@ class PytestHook(BaseHook):
         - module.py -> module_test.py
         - src/module.py -> tests/test_module.py
         """
-        test_files: Set[str] = set()
+        test_files: set[str] = set()
 
         for file_path in files:
             path = Path(file_path)
@@ -155,11 +154,11 @@ class PytestHook(BaseHook):
 
         return list(test_files)
 
-    def _get_test_candidates(self, source_path: Path) -> List[Path]:
+    def _get_test_candidates(self, source_path: Path) -> list[Path]:
         """Get possible test file locations for a source file."""
         stem = source_path.stem
         parent = source_path.parent
-        candidates: List[Path] = []
+        candidates: list[Path] = []
 
         # Same directory patterns
         candidates.append(parent / f"test_{stem}.py")
@@ -182,9 +181,9 @@ class PytestHook(BaseHook):
 
         return candidates
 
-    def _parse_failures(self, output: str) -> List[TestResult]:
+    def _parse_failures(self, output: str) -> list[TestResult]:
         """Parse test failures from pytest output."""
-        results: List[TestResult] = []
+        results: list[TestResult] = []
 
         for match in self.FAILURE_PATTERN.finditer(output):
             file_path, test_name = match.groups()
@@ -196,9 +195,9 @@ class PytestHook(BaseHook):
 
         return results
 
-    def _parse_errors(self, output: str) -> List[TestResult]:
+    def _parse_errors(self, output: str) -> list[TestResult]:
         """Parse test errors from pytest output."""
-        results: List[TestResult] = []
+        results: list[TestResult] = []
 
         for match in self.ERROR_PATTERN.finditer(output):
             file_path, test_name = match.groups()
@@ -210,7 +209,7 @@ class PytestHook(BaseHook):
 
         return results
 
-    def _extract_traceback(self, output: str) -> Optional[str]:
+    def _extract_traceback(self, output: str) -> str | None:
         """Extract traceback from pytest output."""
         # Look for short traceback
         tb_start = output.find("=== FAILURES ===")
@@ -227,8 +226,8 @@ class PytestHook(BaseHook):
 
 
 async def run_pytest(
-    files: List[str],
-    config: Optional[HookConfig] = None
+    files: list[str],
+    config: HookConfig | None = None
 ) -> QualityCheckResult:
     """
     Convenience function to run pytest.

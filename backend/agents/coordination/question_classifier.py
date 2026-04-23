@@ -11,7 +11,6 @@ Multi-domain detection threshold: 0.6
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
 import numpy as np
 
@@ -21,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # Domain keywords for classification
 # Extended from services/subject_relevance_scorer.py
-DOMAIN_KEYWORDS: Dict[DomainType, Dict[str, List[str]]] = {
+DOMAIN_KEYWORDS: dict[DomainType, dict[str, list[str]]] = {
     DomainType.MATEMATIK: {
         "core": [
             "matematik", "sayı", "fonksiyon", "türev", "integral",
@@ -122,10 +121,10 @@ class DomainClassification:
 
     primary_domain: DomainType
     primary_confidence: float
-    secondary_domain: Optional[DomainType] = None
-    secondary_confidence: Optional[float] = None
+    secondary_domain: DomainType | None = None
+    secondary_confidence: float | None = None
     is_multi_domain: bool = False
-    all_scores: Dict[DomainType, float] = None
+    all_scores: dict[DomainType, float] = None
 
     def __post_init__(self):
         if self.all_scores is None:
@@ -164,7 +163,7 @@ class QuestionClassifier:
         """
         self.model_name = model_name
         self._model = None
-        self._domain_embeddings: Dict[DomainType, np.ndarray] = {}
+        self._domain_embeddings: dict[DomainType, np.ndarray] = {}
         self._initialized = False
 
         # Try to load the model
@@ -229,8 +228,7 @@ class QuestionClassifier:
         # Use semantic classification if available
         if self._initialized and self._model is not None:
             return self._classify_semantic(question, question_lower)
-        else:
-            return self._classify_keyword(question_lower)
+        return self._classify_keyword(question_lower)
 
     def _classify_semantic(
         self, question: str, question_lower: str
@@ -249,7 +247,7 @@ class QuestionClassifier:
         question_embedding = self._model.encode(question)
 
         # Calculate similarity with each domain
-        scores: Dict[DomainType, float] = {}
+        scores: dict[DomainType, float] = {}
         for domain, domain_embedding in self._domain_embeddings.items():
             similarity = self._cosine_similarity(question_embedding, domain_embedding)
             # Normalize to [0, 1]
@@ -301,7 +299,7 @@ class QuestionClassifier:
         Returns:
             DomainClassification: Siniflandirma sonucu
         """
-        scores: Dict[DomainType, float] = {}
+        scores: dict[DomainType, float] = {}
 
         for domain, keywords in DOMAIN_KEYWORDS.items():
             score = 0.0
@@ -346,8 +344,8 @@ class QuestionClassifier:
         )
 
     def _apply_keyword_boost(
-        self, scores: Dict[DomainType, float], question_lower: str
-    ) -> Dict[DomainType, float]:
+        self, scores: dict[DomainType, float], question_lower: str
+    ) -> dict[DomainType, float]:
         """
         Keyword eslesmelerine gore skorlari boost et
 
@@ -394,7 +392,7 @@ class QuestionClassifier:
 
         return float(dot_product / (norm_a * norm_b))
 
-    def get_domain_for_subject(self, subject: str) -> Optional[DomainType]:
+    def get_domain_for_subject(self, subject: str) -> DomainType | None:
         """
         Subject string'den DomainType'a donustur
 
@@ -433,7 +431,7 @@ class QuestionClassifier:
 
 
 # Global instance
-_classifier_instance: Optional[QuestionClassifier] = None
+_classifier_instance: QuestionClassifier | None = None
 
 
 def get_question_classifier() -> QuestionClassifier:

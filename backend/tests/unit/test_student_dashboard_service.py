@@ -13,12 +13,11 @@ pytestmark = pytest.mark.skip(
 )
 from datetime import datetime, timedelta
 
-from services.student_dashboard_service import OgrenciDashboardServisi
 from models.dashboard import (
     DashboardIstatistikleri,
     SinavSonucu,
 )
-
+from services.student_dashboard_service import OgrenciDashboardServisi
 
 # ==================== FIXTURES ====================
 

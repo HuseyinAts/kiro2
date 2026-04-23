@@ -9,7 +9,6 @@ Benefits:
 - Real-time ability estimation with ±0.3 error margin
 """
 import math
-from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -36,7 +35,7 @@ class StudentAbility:
 
     theta: float  # Ability estimate (-3 to +3)
     sem: float  # Standard error of measurement
-    confidence_interval: Tuple[float, float]
+    confidence_interval: tuple[float, float]
     response_count: int
 
 
@@ -47,8 +46,8 @@ class TestSession:
     student_id: str
     session_id: str
     current_ability: StudentAbility
-    response_history: List[Dict] = field(default_factory=list)
-    questions_used: List[str] = field(default_factory=list)
+    response_history: list[dict] = field(default_factory=list)
+    questions_used: list[str] = field(default_factory=list)
     start_time: float = 0.0
     is_complete: bool = False
 
@@ -65,9 +64,9 @@ class ComputerAdaptiveTestingService:
     - Automatic stopping criteria
     """
 
-    def __init__(self, item_bank: List[Dict]):
+    def __init__(self, item_bank: list[dict]):
         self.item_bank = item_bank  # All calibrated questions
-        self.active_sessions: Dict[str, TestSession] = {}
+        self.active_sessions: dict[str, TestSession] = {}
 
         # CAT Configuration
         self.MIN_QUESTIONS = 10  # Minimum questions per test
@@ -77,7 +76,7 @@ class ComputerAdaptiveTestingService:
         self.EXPLORATION_PHASE = 5  # First N questions: explore difficulty range
 
     def start_new_session(
-        self, student_id: str, session_id: str, initial_theta: Optional[float] = None
+        self, student_id: str, session_id: str, initial_theta: float | None = None
     ) -> TestSession:
         """Start a new adaptive testing session"""
         ability = StudentAbility(
@@ -98,8 +97,8 @@ class ComputerAdaptiveTestingService:
         return session
 
     def select_next_question(
-        self, session_id: str, exclude_topics: Optional[List[str]] = None
-    ) -> Dict:
+        self, session_id: str, exclude_topics: list[str] | None = None
+    ) -> dict:
         """
         Select most informative question using Fisher Information
         INNOVATION: BanditCAT algorithm
@@ -130,8 +129,8 @@ class ComputerAdaptiveTestingService:
         return self._select_most_informative(available_items, theta)
 
     def _explore_difficulty_range(
-        self, available_items: List[Dict], response_count: int
-    ) -> Dict:
+        self, available_items: list[dict], response_count: int
+    ) -> dict:
         """
         Exploration phase: Sample different difficulty levels
         Helps quickly narrow down ability range
@@ -151,8 +150,8 @@ class ComputerAdaptiveTestingService:
         return closest_item
 
     def _select_most_informative(
-        self, available_items: List[Dict], theta: float
-    ) -> Dict:
+        self, available_items: list[dict], theta: float
+    ) -> dict:
         """
         Select item with highest Fisher Information
         I(θ) = a² * P(θ) * Q(θ)  where Q = 1 - P
@@ -206,7 +205,7 @@ class ComputerAdaptiveTestingService:
         question_id: str,
         is_correct: bool,
         response_time_seconds: int,
-    ) -> Dict:
+    ) -> dict:
         """
         Submit response and update ability estimate
         Returns: Updated ability + next question recommendation
@@ -334,7 +333,7 @@ class ComputerAdaptiveTestingService:
         # Constrain to reasonable range
         return max(-3, min(3, theta))
 
-    def _calculate_sem(self, theta: float, response_history: List[Dict]) -> float:
+    def _calculate_sem(self, theta: float, response_history: list[dict]) -> float:
         """
         Standard Error of Measurement
         SEM = 1 / sqrt(Sum of Fisher Information)
@@ -377,7 +376,7 @@ class ComputerAdaptiveTestingService:
 
         return False
 
-    def _generate_performance_summary(self, session: TestSession) -> Dict:
+    def _generate_performance_summary(self, session: TestSession) -> dict:
         """Generate performance summary for completed session"""
         correct_count = sum(1 for r in session.response_history if r["is_correct"])
         total_count = len(session.response_history)
@@ -428,7 +427,7 @@ class AutoIRTCalibrationService:
         self.calibration_threshold = 30  # Minimum responses for parametric IRT
 
     async def calibrate_new_question(
-        self, question_id: str, question_features: Dict, initial_responses: List[Dict]
+        self, question_id: str, question_features: dict, initial_responses: list[dict]
     ) -> IRTParameters:
         """
         Rapid calibration with limited data (20-30 responses)
@@ -450,7 +449,7 @@ class AutoIRTCalibrationService:
             c=0.25,  # Default guessing parameter
         )
 
-    def _automl_predict(self, features: Dict) -> Dict:
+    def _automl_predict(self, features: dict) -> dict:
         """
         Predict IRT parameters from question features
         Features: word_count, formula_count, bloom_level, topic_avg_difficulty
@@ -481,7 +480,7 @@ class AutoIRTCalibrationService:
         return {"a": max(0.5, min(2.5, a_estimate)), "b": max(-2, min(2, b_estimate))}
 
     def _parametric_irt_calibration(
-        self, responses: List[Dict], warm_start: Dict
+        self, responses: list[dict], warm_start: dict
     ) -> IRTParameters:
         """
         Parametric IRT calibration using EM algorithm

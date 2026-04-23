@@ -12,14 +12,14 @@ Quality Gates - Gate Implementations
 7. Compliance - GDPR, KVKK, audit logs
 """
 
+from .architecture import ArchitectureGate
 from .base import BaseGate, GateContext
 from .code_quality import CodeQualityGate
-from .test_coverage import TestCoverageGate
-from .security import SecurityGate
-from .performance import PerformanceGate
-from .architecture import ArchitectureGate
-from .documentation import DocumentationGate
 from .compliance import ComplianceGate
+from .documentation import DocumentationGate
+from .performance import PerformanceGate
+from .security import SecurityGate
+from .test_coverage import TestCoverageGate
 
 __all__ = [
     "BaseGate",

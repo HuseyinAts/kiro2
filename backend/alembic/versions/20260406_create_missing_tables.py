@@ -9,8 +9,8 @@ UUID->String type fixes applied to 18 model files (218 replacements).
 9 empty tables with UUID PKs were dropped and recreated as VARCHAR.
 3 tables with data kept as-is (kiro2_cat_sessions, kiro2_learning_events, topic_prerequisites).
 """
-from typing import Sequence, Union
-from alembic import op
+from collections.abc import Sequence
+from typing import Union
 
 # revision identifiers
 revision: str = '20260406_create_missing_tables'

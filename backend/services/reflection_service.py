@@ -6,17 +6,17 @@ Yansitma sorulari, derinlik olcumu ve ogrenim cikartma.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.diary import Reflection, ReflectionDepth
 from api.schemas.diary import (
     ReflectionCreate,
     ReflectionPromptsResponse,
 )
+from models.diary import Reflection, ReflectionDepth
 
 
 class ReflectionService:
@@ -92,8 +92,8 @@ class ReflectionService:
 
     def get_prompts(
         self,
-        context: Optional[Dict[str, Any]] = None,
-        category: Optional[str] = None,
+        context: dict[str, Any] | None = None,
+        category: str | None = None,
     ) -> ReflectionPromptsResponse:
         """
         Guided reflection sorularini getir (REQ-3.1).
@@ -105,8 +105,8 @@ class ReflectionService:
         Returns:
             ReflectionPromptsResponse - Sorular ve ipuclari
         """
-        prompts: List[str] = []
-        context_hints: Dict[str, str] = {}
+        prompts: list[str] = []
+        context_hints: dict[str, str] = {}
 
         # Kategori belirtilmisse
         if category and category in self.PROMPTS:
@@ -140,7 +140,7 @@ class ReflectionService:
             context_hints=context_hints if context_hints else None
         )
 
-    def get_all_prompts(self) -> Dict[str, List[str]]:
+    def get_all_prompts(self) -> dict[str, list[str]]:
         """
         Tum reflection sorularini getir.
 
@@ -156,7 +156,7 @@ class ReflectionService:
     def measure_depth(
         self,
         responses: ReflectionCreate,
-    ) -> Tuple[ReflectionDepth, float]:
+    ) -> tuple[ReflectionDepth, float]:
         """
         Reflection derinligini olc (REQ-3.6).
 
@@ -234,7 +234,7 @@ class ReflectionService:
     # REQ-3.4: Learning Extraction
     # =========================================================================
 
-    def extract_learnings(self, responses: ReflectionCreate) -> List[str]:
+    def extract_learnings(self, responses: ReflectionCreate) -> list[str]:
         """
         Yanitlardan ogrenimleri cikar (REQ-3.4).
 
@@ -244,7 +244,7 @@ class ReflectionService:
         Returns:
             List[str] - Cikarilan ogrenimler
         """
-        learnings: List[str] = []
+        learnings: list[str] = []
 
         # "What did I learn?" yaniti
         if responses.what_did_i_learn:
@@ -283,7 +283,7 @@ class ReflectionService:
     # REQ-3.5: Action Items Extraction
     # =========================================================================
 
-    def extract_action_items(self, responses: ReflectionCreate) -> List[str]:
+    def extract_action_items(self, responses: ReflectionCreate) -> list[str]:
         """
         Yanitlardan aksiyon ogelerini cikar (REQ-3.5).
 
@@ -293,7 +293,7 @@ class ReflectionService:
         Returns:
             List[str] - Aksiyon ogeleri
         """
-        action_items: List[str] = []
+        action_items: list[str] = []
 
         # "What will I do differently?" yaniti
         if responses.what_will_i_do_differently:
@@ -381,10 +381,10 @@ class ReflectionService:
     async def get_reflections(
         self,
         user_id: UUID,
-        diary_entry_id: Optional[UUID] = None,
-        depth: Optional[ReflectionDepth] = None,
+        diary_entry_id: UUID | None = None,
+        depth: ReflectionDepth | None = None,
         limit: int = 20,
-    ) -> List[Reflection]:
+    ) -> list[Reflection]:
         """
         Reflection'lari getir.
 
@@ -419,7 +419,7 @@ class ReflectionService:
         self,
         reflection_id: UUID,
         user_id: UUID,
-    ) -> Optional[Reflection]:
+    ) -> Reflection | None:
         """
         ID ile reflection getir.
 
@@ -444,7 +444,7 @@ class ReflectionService:
         reflection_id: UUID,
         user_id: UUID,
         data: ReflectionCreate,
-    ) -> Optional[Reflection]:
+    ) -> Reflection | None:
         """
         Reflection guncelle.
 
@@ -512,7 +512,7 @@ class ReflectionService:
         self,
         user_id: UUID,
         days: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Depth istatistiklerini getir.
 

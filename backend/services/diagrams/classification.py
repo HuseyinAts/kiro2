@@ -4,10 +4,10 @@ Classification Diagrams Mixin - KIRO2
 Generates tree diagrams, Venn diagrams, matrix diagrams, and org charts.
 """
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
-import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+from matplotlib import patches
 from matplotlib.lines import Line2D
 from matplotlib.patches import Circle, FancyBboxPatch
 
@@ -18,14 +18,14 @@ from .utils import close_figure, fig_to_svg, setup_axes
 class ClassificationMixin:
     """Mixin for classification diagram generation."""
 
-    fig_size: Tuple[int, int]
+    fig_size: tuple[int, int]
 
     def _generate_classification_diagram(
         self,
         subtype: str,
-        content: Dict[str, Any],
-        labels: Optional[Dict[str, str]],
-    ) -> Tuple[str, Dict[str, Any]]:
+        content: dict[str, Any],
+        labels: dict[str, str] | None,
+    ) -> tuple[str, dict[str, Any]]:
         """
         Generate classification diagram (tree, Venn, matrix, org chart).
 
@@ -39,18 +39,17 @@ class ClassificationMixin:
         """
         if subtype == "tree_diagram":
             return self._generate_tree_diagram(content)
-        elif subtype == "venn_diagram":
+        if subtype == "venn_diagram":
             return self._generate_venn_diagram(content)
-        elif subtype == "matrix_diagram":
+        if subtype == "matrix_diagram":
             return self._generate_matrix_diagram(content)
-        elif subtype == "organizational_chart":
+        if subtype == "organizational_chart":
             return self._generate_organizational_chart(content)
-        else:
-            raise ValueError(f"Unknown classification diagram subtype: {subtype}")
+        raise ValueError(f"Unknown classification diagram subtype: {subtype}")
 
     def _generate_tree_diagram(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate tree diagram (hierarchical classification)."""
         fig, ax = plt.subplots(figsize=(10, 8))
         title = content.get("title", "Siniflandirma Agaci")
@@ -148,8 +147,8 @@ class ClassificationMixin:
         return svg_content, metadata
 
     def _generate_venn_diagram(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate Venn diagram (2 or 3 sets)."""
         fig, ax = plt.subplots(figsize=(9, 8))
         title = content.get("title", "Venn Diyagrami")
@@ -278,8 +277,8 @@ class ClassificationMixin:
         return svg_content, metadata
 
     def _generate_matrix_diagram(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate matrix diagram (2x2 or 3x3)."""
         fig, ax = plt.subplots(figsize=(9, 9))
         title = content.get("title", "Matris Diyagrami")
@@ -361,8 +360,8 @@ class ClassificationMixin:
         return svg_content, metadata
 
     def _generate_organizational_chart(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate organizational chart (hierarchy)."""
         # Reuse tree diagram logic with org chart styling
         return self._generate_tree_diagram(content)

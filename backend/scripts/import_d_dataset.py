@@ -345,7 +345,7 @@ def main() -> None:
         print(f"[ERROR] JSONL not found: {jsonl_path}")
         sys.exit(1)
 
-    with open(jsonl_path, "r", encoding="utf-8") as f:
+    with open(jsonl_path, encoding="utf-8") as f:
         for line_num, line in enumerate(f, 1):
             try:
                 entry = json.loads(line)
@@ -368,7 +368,7 @@ def main() -> None:
         print(f"  {exam:5s}: {cnt:6d}")
 
     if errors:
-        print(f"\nFirst 5 errors:")
+        print("\nFirst 5 errors:")
         for ln, err in errors[:5]:
             print(f"  Line {ln}: {err}")
 
@@ -428,7 +428,7 @@ def main() -> None:
     print(f"Inserted this run    : {inserted:,}")
     print(f"Skipped (duplicate)  : {skipped:,}")
     print(f"Parse errors         : {len(errors)}")
-    print(f"\nBy subject:")
+    print("\nBy subject:")
     for subj, cnt in by_subject:
         print(f"  {subj:15s}: {cnt:6d}")
     print(f"\nDone in {time() - t0:.1f}s")

@@ -34,8 +34,9 @@ Requirements: REQ-1.3
 import asyncio
 import functools
 import random
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional, Set, Tuple, Type, TypeVar
+from typing import Any, TypeVar
 
 from core.structured_logger import get_logger
 
@@ -45,7 +46,7 @@ logger = get_logger(__name__)
 T = TypeVar("T")
 
 # Default retryable exceptions
-DEFAULT_RETRYABLE_EXCEPTIONS: Tuple[Type[Exception], ...] = (
+DEFAULT_RETRYABLE_EXCEPTIONS: tuple[type[Exception], ...] = (
     ConnectionError,
     TimeoutError,
     asyncio.TimeoutError,
@@ -75,11 +76,11 @@ class RetryConfig:
     exponential_base: float = 2.0
     jitter: bool = True
     jitter_factor: float = 0.1
-    retryable_exceptions: Tuple[Type[Exception], ...] = DEFAULT_RETRYABLE_EXCEPTIONS
-    retryable_status_codes: Set[int] = field(
+    retryable_exceptions: tuple[type[Exception], ...] = DEFAULT_RETRYABLE_EXCEPTIONS
+    retryable_status_codes: set[int] = field(
         default_factory=lambda: {408, 429, 500, 502, 503, 504}
     )
-    on_retry: Optional[Callable[[int, Exception, float], None]] = None
+    on_retry: Callable[[int, Exception, float], None] | None = None
 
 
 class RetryError(Exception):
@@ -146,7 +147,7 @@ def is_retryable_exception(
 
     # Check for HTTP status code errors (e.g., aiohttp.ClientResponseError)
     if hasattr(exception, "status"):
-        status = getattr(exception, "status")
+        status = exception.status
         if status in config.retryable_status_codes:
             return True
 
@@ -160,9 +161,9 @@ def is_retryable_exception(
 
 
 def retry_with_backoff(
-    max_retries: Optional[int] = None,
-    base_delay: Optional[float] = None,
-    config: Optional[RetryConfig] = None,
+    max_retries: int | None = None,
+    base_delay: float | None = None,
+    config: RetryConfig | None = None,
 ) -> Callable:
     """
     Decorator for retrying async functions with exponential backoff.
@@ -215,7 +216,7 @@ def retry_with_backoff(
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
         @functools.wraps(func)
         async def wrapper(*args: Any, **kwargs: Any) -> T:
-            last_exception: Optional[Exception] = None
+            last_exception: Exception | None = None
 
             for attempt in range(config.max_retries + 1):
                 try:
@@ -280,9 +281,9 @@ def retry_with_backoff(
 
 
 def retry_sync_with_backoff(
-    max_retries: Optional[int] = None,
-    base_delay: Optional[float] = None,
-    config: Optional[RetryConfig] = None,
+    max_retries: int | None = None,
+    base_delay: float | None = None,
+    config: RetryConfig | None = None,
 ) -> Callable:
     """
     Decorator for retrying sync functions with exponential backoff.
@@ -312,7 +313,7 @@ def retry_sync_with_backoff(
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> T:
-            last_exception: Optional[Exception] = None
+            last_exception: Exception | None = None
 
             for attempt in range(config.max_retries + 1):
                 try:

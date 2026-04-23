@@ -2,14 +2,15 @@
 ÖSYM PDF Analyzer
 Analyzes PDF structure to understand question format
 """
-import pdfplumber
+import json
 import re
 from pathlib import Path
-from typing import Dict, Any
-import json
+from typing import Any
+
+import pdfplumber
 
 
-def analyze_pdf_structure(pdf_path: str) -> Dict[str, Any]:
+def analyze_pdf_structure(pdf_path: str) -> dict[str, Any]:
     """Analyze the structure of an ÖSYM PDF"""
 
     print(f"\n{'='*80}")

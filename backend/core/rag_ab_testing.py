@@ -4,11 +4,12 @@ Compare different configurations and strategies
 """
 
 import hashlib
+import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional, Callable, Tuple
-import json
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class ExperimentConfig:
 
     name: str
     description: str
-    config: Dict[str, Any]
+    config: dict[str, Any]
     weight: float = 0.5  # Traffic allocation (0-1)
 
 
@@ -30,7 +31,7 @@ class SearchMetrics:
     query: str
     results_count: int
     latency_ms: float
-    relevance_scores: List[float]
+    relevance_scores: list[float]
     top_1_score: float
     avg_score: float
     timestamp: float = field(default_factory=time.time)
@@ -53,7 +54,7 @@ class ExperimentResults:
 
     experiment_name: str
     total_queries: int
-    metrics: List[SearchMetrics]
+    metrics: list[SearchMetrics]
 
     # Aggregated statistics
     avg_latency: float = 0.0
@@ -105,12 +106,12 @@ class ABTestRunner:
     def __init__(self):
         """Initialize A/B test runner"""
 
-        self.experiments: Dict[str, ExperimentConfig] = {}
-        self.results: Dict[str, ExperimentResults] = {}
-        self._user_assignments: Dict[str, str] = {}  # user_id -> experiment
+        self.experiments: dict[str, ExperimentConfig] = {}
+        self.results: dict[str, ExperimentResults] = {}
+        self._user_assignments: dict[str, str] = {}  # user_id -> experiment
 
     def add_experiment(
-        self, name: str, description: str, config: Dict[str, Any], weight: float = 0.5
+        self, name: str, description: str, config: dict[str, Any], weight: float = 0.5
     ):
         """
         Add experiment configuration
@@ -170,7 +171,7 @@ class ABTestRunner:
 
     async def run_search(
         self, user_id: str, query: str, search_fn: Callable, **kwargs
-    ) -> Tuple[List[Dict], SearchMetrics]:
+    ) -> tuple[list[dict], SearchMetrics]:
         """
         Run search with assigned experiment
 
@@ -222,8 +223,8 @@ class ABTestRunner:
             raise
 
     def get_results(
-        self, experiment_name: Optional[str] = None
-    ) -> Dict[str, ExperimentResults]:
+        self, experiment_name: str | None = None
+    ) -> dict[str, ExperimentResults]:
         """
         Get experiment results
 
@@ -243,7 +244,7 @@ class ABTestRunner:
 
         return self.results
 
-    def compare_experiments(self) -> Dict[str, Any]:
+    def compare_experiments(self) -> dict[str, Any]:
         """
         Compare all experiments
 
@@ -401,8 +402,8 @@ class RAGStrategyComparator:
         )
 
     async def run_comparison(
-        self, test_queries: List[str], num_iterations: int = 10
-    ) -> Dict[str, Any]:
+        self, test_queries: list[str], num_iterations: int = 10
+    ) -> dict[str, Any]:
         """
         Run comprehensive comparison
 
@@ -437,19 +438,19 @@ class RAGStrategyComparator:
 
     async def _search_dispatcher(
         self, query: str, method: str = "standard", **kwargs
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Dispatch search to appropriate method"""
 
         if method == "standard":
             return await self.rag_service.search(query, **kwargs)
 
-        elif method == "hybrid":
+        if method == "hybrid":
             return await self.rag_service.hybrid_search(query, **kwargs)
 
-        elif method == "multi_query":
+        if method == "multi_query":
             return await self.rag_service.multi_query_search(query, **kwargs)
 
-        elif method == "hybrid_multi":
+        if method == "hybrid_multi":
             # First multi-query, then hybrid
             results = await self.rag_service.multi_query_search(
                 query, k=kwargs.get("k", 5) * 2
@@ -457,8 +458,7 @@ class RAGStrategyComparator:
             # Apply hybrid to expanded results
             return results[: kwargs.get("k", 5)]
 
-        else:
-            raise ValueError(f"Unknown method: {method}")
+        raise ValueError(f"Unknown method: {method}")
 
 
 # Example usage

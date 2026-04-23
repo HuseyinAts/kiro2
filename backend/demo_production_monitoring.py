@@ -22,6 +22,7 @@ Expected output:
 
 import asyncio
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -97,7 +98,7 @@ async def demo_production_workflow():
                 print("  [WARNING] Evaluation failed")
 
         except Exception as e:
-            print(f"  [ERROR] Error: {str(e)}")
+            print(f"  [ERROR] Error: {e!s}")
 
     # Generate and monitor Turkish questions
     print("\n[3/5] Generating Turkish questions with monitoring...")
@@ -131,7 +132,7 @@ async def demo_production_workflow():
                 print("  [WARNING] Evaluation failed")
 
         except Exception as e:
-            print(f"  [ERROR] Error: {str(e)}")
+            print(f"  [ERROR] Error: {e!s}")
 
     # Show statistics
     print("\n[4/5] Production Statistics")

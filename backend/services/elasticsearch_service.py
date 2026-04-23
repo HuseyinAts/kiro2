@@ -5,7 +5,7 @@ Soru bankası, içerik ve analytics için arama servisleri
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from core.elasticsearch_client import ElasticsearchClient, SearchResponse
@@ -99,7 +99,7 @@ class QuestionSearchService:
             return success
 
         except Exception as e:
-            logger.error(f"Soru indeksi başlatma hatası: {str(e)}")
+            logger.error(f"Soru indeksi başlatma hatası: {e!s}")
             return False
 
     async def index_question(self, question: dict) -> bool:
@@ -128,10 +128,10 @@ class QuestionSearchService:
             )
 
         except Exception as e:
-            logger.error(f"Soru indeksleme hatası: {str(e)}")
+            logger.error(f"Soru indeksleme hatası: {e!s}")
             return False
 
-    async def bulk_index_questions(self, questions: List[dict]) -> Dict[str, int]:
+    async def bulk_index_questions(self, questions: list[dict]) -> dict[str, int]:
         """Toplu soru indeksleme"""
         try:
             documents = []
@@ -158,16 +158,16 @@ class QuestionSearchService:
             )
 
         except Exception as e:
-            logger.error(f"Toplu soru indeksleme hatası: {str(e)}")
+            logger.error(f"Toplu soru indeksleme hatası: {e!s}")
             return {"success": 0, "errors": len(questions), "total": len(questions)}
 
     async def search_questions(
         self,
         query_text: str,
-        subject: Optional[str] = None,
-        topic: Optional[str] = None,
-        exam_type: Optional[str] = None,
-        difficulty_range: Optional[tuple] = None,
+        subject: str | None = None,
+        topic: str | None = None,
+        exam_type: str | None = None,
+        difficulty_range: tuple | None = None,
         size: int = 20,
         from_: int = 0,
     ) -> SearchResponse:
@@ -230,7 +230,7 @@ class QuestionSearchService:
             )
 
         except Exception as e:
-            logger.error(f"Benzer soru arama hatası: {str(e)}")
+            logger.error(f"Benzer soru arama hatası: {e!s}")
             return SearchResponse(
                 total=0, max_score=None, results=[], took=0, timed_out=False
             )
@@ -285,10 +285,10 @@ class ContentSearchService:
             return success
 
         except Exception as e:
-            logger.error(f"İçerik indeksi başlatma hatası: {str(e)}")
+            logger.error(f"İçerik indeksi başlatma hatası: {e!s}")
             return False
 
-    async def index_content(self, content: Dict[str, Any]) -> bool:
+    async def index_content(self, content: dict[str, Any]) -> bool:
         """İçeriği indeksle"""
         try:
             return await self.es_client.index_document(
@@ -296,15 +296,15 @@ class ContentSearchService:
             )
 
         except Exception as e:
-            logger.error(f"İçerik indeksleme hatası: {str(e)}")
+            logger.error(f"İçerik indeksleme hatası: {e!s}")
             return False
 
     async def search_content(
         self,
         query_text: str,
-        content_type: Optional[str] = None,
-        subject: Optional[str] = None,
-        difficulty_level: Optional[str] = None,
+        content_type: str | None = None,
+        subject: str | None = None,
+        difficulty_level: str | None = None,
         size: int = 20,
         from_: int = 0,
     ) -> SearchResponse:
@@ -374,15 +374,15 @@ class AnalyticsService:
             return success
 
         except Exception as e:
-            logger.error(f"Analytics indeksi başlatma hatası: {str(e)}")
+            logger.error(f"Analytics indeksi başlatma hatası: {e!s}")
             return False
 
     async def log_event(
         self,
         event_type: str,
-        user_id: Optional[str] = None,
-        session_id: Optional[str] = None,
-        data: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        session_id: str | None = None,
+        data: dict[str, Any] | None = None,
         **kwargs,
     ) -> bool:
         """Event logla"""
@@ -405,12 +405,12 @@ class AnalyticsService:
             )
 
         except Exception as e:
-            logger.error(f"Event loglama hatası: {str(e)}")
+            logger.error(f"Event loglama hatası: {e!s}")
             return False
 
     async def get_user_analytics(
         self, user_id: str, start_date: datetime, end_date: datetime
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Kullanıcı analytics'i"""
         try:
             # Date range query
@@ -454,12 +454,12 @@ class AnalyticsService:
             }
 
         except Exception as e:
-            logger.error(f"Kullanıcı analytics hatası: {str(e)}")
+            logger.error(f"Kullanıcı analytics hatası: {e!s}")
             return {}
 
     async def get_bulk_user_analytics(
-        self, user_ids: List[str], start_date: datetime, end_date: datetime
-    ) -> Dict[str, Dict[str, Any]]:
+        self, user_ids: list[str], start_date: datetime, end_date: datetime
+    ) -> dict[str, dict[str, Any]]:
         """
         Toplu kullanıcı analytics'i - N+1 query problemini çözer
 
@@ -567,7 +567,7 @@ class AnalyticsService:
             return result
 
         except Exception as e:
-            logger.error(f"Toplu kullanıcı analytics hatası: {str(e)}")
+            logger.error(f"Toplu kullanıcı analytics hatası: {e!s}")
             # Return empty data for all users on error
             return {user_id: {} for user_id in user_ids}
 
@@ -581,7 +581,7 @@ class ElasticsearchService:
         self.content_service = ContentSearchService(es_client)
         self.analytics_service = AnalyticsService(es_client)
 
-    async def initialize_all_indices(self) -> Dict[str, bool]:
+    async def initialize_all_indices(self) -> dict[str, bool]:
         """Tüm indeksleri başlat"""
         results = {}
 
@@ -599,10 +599,10 @@ class ElasticsearchService:
             return results
 
         except Exception as e:
-            logger.error(f"İndeks başlatma hatası: {str(e)}")
+            logger.error(f"İndeks başlatma hatası: {e!s}")
             return results
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Elasticsearch sağlık kontrolü"""
         try:
             if not self.es_client.is_connected:
@@ -629,12 +629,12 @@ class ElasticsearchService:
             }
 
         except Exception as e:
-            logger.error(f"Sağlık kontrolü hatası: {str(e)}")
+            logger.error(f"Sağlık kontrolü hatası: {e!s}")
             return {"status": "error", "error": str(e)}
 
 
 # Global service instance
-elasticsearch_service: Optional[ElasticsearchService] = None
+elasticsearch_service: ElasticsearchService | None = None
 
 
 async def get_elasticsearch_service() -> ElasticsearchService:

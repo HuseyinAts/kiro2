@@ -16,7 +16,8 @@ import math
 import sys
 from pathlib import Path
 
-from hypothesis import given, settings, strategies as st, assume, HealthCheck
+from hypothesis import HealthCheck, assume, given, settings
+from hypothesis import strategies as st
 
 # Add backend directory to path
 backend_dir = Path(__file__).parent.parent.parent
@@ -68,7 +69,7 @@ def calculate_irt_probability(
     # Overflow protection
     if exponent > 700:
         return guessing
-    elif exponent < -700:
+    if exponent < -700:
         return 1.0
 
     return guessing + (1 - guessing) / (1 + math.exp(exponent))
@@ -86,12 +87,11 @@ def classify_zpd_zone(probability: float) -> str:
     """
     if probability > ZPD_UPPER_BOUND:
         return "too_easy"
-    elif probability < ZPD_LOWER_BOUND:
+    if probability < ZPD_LOWER_BOUND:
         return "too_hard"
-    elif ZPD_OPTIMAL_LOWER <= probability <= ZPD_OPTIMAL_UPPER:
+    if ZPD_OPTIMAL_LOWER <= probability <= ZPD_OPTIMAL_UPPER:
         return "optimal"
-    else:
-        return "acceptable"
+    return "acceptable"
 
 
 # Hypothesis strategies

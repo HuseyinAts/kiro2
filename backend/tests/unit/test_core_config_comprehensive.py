@@ -2,10 +2,10 @@
 Comprehensive Unit Tests for core/config.py
 Testing configuration loading, validation, and security checks
 """
-import pytest
 import os
 from unittest.mock import patch
 
+import pytest
 
 # Test helper: Generate valid production keys with 64+ chars and good entropy
 VALID_SECRET_KEY = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@"
@@ -342,7 +342,7 @@ class TestGetSettingsSingleton:
         with patch.dict(os.environ, {
             'DATABASE_URL': 'sqlite+aiosqlite:///./test.db'  # DATABASE_URL required
         }, clear=True):
-            from core.config import get_settings, Settings
+            from core.config import Settings, get_settings
             settings = get_settings()
             assert isinstance(settings, Settings)
 

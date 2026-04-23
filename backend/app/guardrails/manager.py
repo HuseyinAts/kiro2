@@ -3,20 +3,21 @@ import asyncio
 import json
 import logging
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from .exceptions import GuardrailError
 from .guards import (
     BaseGuard,
-    MaxTurnsGuard,
-    TimeoutGuard,
     CircuitBreakerGuard,
-    RecursionDepthGuard,
-    ProgressMonitorGuard,
-    ResourceLimitGuard,
     DeadlockDetectionGuard,
     EmergencyStopGuard,
+    MaxTurnsGuard,
+    ProgressMonitorGuard,
+    RecursionDepthGuard,
+    ResourceLimitGuard,
+    TimeoutGuard,
 )
 from .models import GuardConfig, GuardResult, GuardStatus, TerminationReport
 
@@ -187,7 +188,7 @@ class GuardrailManager:
             return GuardResult(
                 guard_name=guard.name,
                 status=GuardStatus.WARNING,
-                message=f"Guard check error: {str(e)}",
+                message=f"Guard check error: {e!s}",
                 details={"error": str(e)},
                 should_stop=False
             )

@@ -3,10 +3,11 @@ Background Job Processor Comprehensive Tests
 KIRO2 Background Job Processing System için kapsamlı testler
 """
 
-import pytest
 import asyncio
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
+import pytest
 
 # Module-level skip: Test mock API (QueueType.NORMAL, BackgroundJobProcessor, JobScheduler,
 # JobMonitor) doesn't match real module exports. QueueType has different enum values
@@ -15,17 +16,18 @@ pytestmark = pytest.mark.skipif(True, reason="Mock API mismatches real module: Q
 
 try:
     from core.background_job_processor import (
-        JobPriority,
-        RetryPolicy,
         JobDefinition,
         JobExecution,
+        JobPriority,
+        RetryPolicy,
     )
     from core.message_queue_system import QueueType
 except ImportError:
     # Mock imports if module is not available
-    from enum import Enum
+    from collections.abc import Callable
     from dataclasses import dataclass, field
-    from typing import Any, Callable, Dict, List, Optional
+    from enum import Enum
+    from typing import Any
 
     class JobPriority(Enum):
         LOW = "low"
@@ -55,38 +57,37 @@ except ImportError:
         retry_policy: RetryPolicy = RetryPolicy.EXPONENTIAL_BACKOFF
         retry_delay: int = 60
         description: str = ""
-        tags: List[str] = field(default_factory=list)
+        tags: list[str] = field(default_factory=list)
         requires_auth: bool = False
         user_context: bool = False
 
         def calculate_retry_delay(self, attempt: int) -> int:
             if self.retry_policy == RetryPolicy.NONE:
                 return 0
-            elif self.retry_policy == RetryPolicy.FIXED_DELAY:
+            if self.retry_policy == RetryPolicy.FIXED_DELAY:
                 return self.retry_delay
-            elif self.retry_policy == RetryPolicy.LINEAR_BACKOFF:
+            if self.retry_policy == RetryPolicy.LINEAR_BACKOFF:
                 return self.retry_delay * attempt
-            elif self.retry_policy == RetryPolicy.EXPONENTIAL_BACKOFF:
+            if self.retry_policy == RetryPolicy.EXPONENTIAL_BACKOFF:
                 return self.retry_delay * (2 ** (attempt - 1))
-            else:
-                return self.retry_delay
+            return self.retry_delay
 
     @dataclass
     class JobExecution:
         job_id: str
         job_name: str
         started_at: datetime
-        user_id: Optional[int] = None
-        session_id: Optional[str] = None
-        correlation_id: Optional[str] = None
-        context: Dict[str, Any] = field(default_factory=dict)
+        user_id: int | None = None
+        session_id: str | None = None
+        correlation_id: str | None = None
+        context: dict[str, Any] = field(default_factory=dict)
         progress: int = 0
         status_message: str = ""
-        logs: List[str] = field(default_factory=list)
+        logs: list[str] = field(default_factory=list)
         is_cancelled: bool = False
 
         def log(self, message: str, level: str = "info"):
-            timestamp = datetime.now(timezone.utc).isoformat()
+            timestamp = datetime.now(UTC).isoformat()
             log_entry = f"[{timestamp}] [{level.upper()}] {message}"
             self.logs.append(log_entry)
 
@@ -127,14 +128,14 @@ except ImportError:
                 job_name: str
                 status: JobStatus
                 execution: JobExecution
-                result: Dict = field(default_factory=dict)
+                result: dict = field(default_factory=dict)
                 error_message: str = ""
 
             return JobStatusInfo(
                 job_id=job_id,
                 job_name="test_job",
                 status=JobStatus.COMPLETED,
-                execution=JobExecution("test", "test", datetime.now(timezone.utc)),
+                execution=JobExecution("test", "test", datetime.now(UTC)),
                 result={"attempts": 3},
             )
 
@@ -216,7 +217,7 @@ except ImportError:
                         schedule_id=sid,
                         job_name=job_info["job_name"],
                         next_run_time=job_info.get(
-                            "run_time", datetime.now(timezone.utc)
+                            "run_time", datetime.now(UTC)
                         ),
                     )
                 )
@@ -406,7 +407,7 @@ class TestJobExecution:
 
     def test_job_execution_creation(self):
         """JobExecution oluşturma testi"""
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
 
         execution = JobExecution(
             job_id="job_123",
@@ -436,7 +437,7 @@ class TestJobExecution:
         execution = JobExecution(
             job_id="job_log_test",
             job_name="log_test",
-            started_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
         )
 
         # Info log
@@ -709,7 +710,7 @@ class TestJobScheduler:
 
     def test_schedule_one_time_job(self, job_scheduler):
         """Tek seferlik job planlama testi"""
-        run_time = datetime.now(timezone.utc) + timedelta(seconds=30)
+        run_time = datetime.now(UTC) + timedelta(seconds=30)
 
         schedule_id = job_scheduler.schedule_job(
             job_name="test_scheduled_job",
@@ -748,7 +749,7 @@ class TestJobScheduler:
 
     def test_cancel_scheduled_job(self, job_scheduler):
         """Planlanmış job iptali testi"""
-        run_time = datetime.now(timezone.utc) + timedelta(hours=1)
+        run_time = datetime.now(UTC) + timedelta(hours=1)
 
         schedule_id = job_scheduler.schedule_job(
             job_name="to_be_cancelled",
@@ -764,7 +765,7 @@ class TestJobScheduler:
         """Planlanmış job'ları getirme testi"""
         # Birkaç job planla
         for i in range(3):
-            run_time = datetime.now(timezone.utc) + timedelta(minutes=i * 10)
+            run_time = datetime.now(UTC) + timedelta(minutes=i * 10)
             job_scheduler.schedule_job(
                 job_name=f"test_job_{i}",
                 schedule_type=ScheduleType.ONE_TIME,
@@ -800,7 +801,7 @@ class TestJobMonitor:
         job_execution = JobExecution(
             job_id="metric_test_job",
             job_name="metric_test",
-            started_at=datetime.now(timezone.utc),
+            started_at=datetime.now(UTC),
         )
 
         # Job başlangıcını kaydet
@@ -827,7 +828,7 @@ class TestJobMonitor:
             job_execution = JobExecution(
                 job_id=f"perf_test_{i}",
                 job_name="performance_test",
-                started_at=datetime.now(timezone.utc),
+                started_at=datetime.now(UTC),
             )
 
             job_monitor.record_job_start(job_execution)
@@ -859,7 +860,7 @@ class TestJobMonitor:
             job_execution = JobExecution(
                 job_id=f"failed_job_{i}",
                 job_name="failing_job",
-                started_at=datetime.now(timezone.utc),
+                started_at=datetime.now(UTC),
             )
 
             job_monitor.record_job_start(job_execution)
@@ -890,7 +891,7 @@ class TestBackgroundJobIntegration:
             for i in range(total_steps):
                 if execution.is_cancelled:
                     execution.log("Job cancelled during processing")
-                    return
+                    return None
 
                 # Simulate processing
                 time.sleep(0.001)
@@ -937,7 +938,7 @@ class TestBackgroundJobIntegration:
 
                 if status.status == JobStatus.COMPLETED:
                     break
-                elif status.status == JobStatus.FAILED:
+                if status.status == JobStatus.FAILED:
                     pytest.fail(f"Job failed: {status.error_message}")
 
                 if status.progress > last_progress:

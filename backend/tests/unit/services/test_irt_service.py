@@ -10,16 +10,13 @@ IMPORTANT: NO REWARD HACKING
 """
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parents[3]))
 
-import pytest
 import numpy as np
+import pytest
 
-from algorithms.irt_model import (
-    FourParameterIRTModel,
-    IRTItem,
-    IRTResponse
-)
+from algorithms.irt_model import FourParameterIRTModel, IRTItem, IRTResponse
 from core.irt_validators import IRTValidationError
 
 

@@ -2,18 +2,16 @@
 Türkçe NLP Servisi Test Suite
 """
 
-import asyncio
 from unittest.mock import patch
 
 import pytest
+
 from core.turkish_nlp_service import (
     MorphologicalAnalysis,
     TextNormalizationResult,
     TurkishNLPService,
     turkish_nlp_service,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

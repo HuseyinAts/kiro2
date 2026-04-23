@@ -12,7 +12,6 @@ Formative Test özellikleri:
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
 from services.test_types import BaseTestType, TestConfiguration
 
@@ -92,8 +91,8 @@ class FormativeTest(BaseTestType):
         )
 
     def assess_learning_progress(
-        self, session_data: Dict, previous_sessions: Optional[List[Dict]] = None
-    ) -> List[LearningProgress]:
+        self, session_data: dict, previous_sessions: list[dict] | None = None
+    ) -> list[LearningProgress]:
         """
         Öğrenme ilerlemesini değerlendir.
 
@@ -171,7 +170,7 @@ class FormativeTest(BaseTestType):
         return progress_list
 
     def adjust_difficulty(
-        self, current_difficulty: str, recent_performance: List[bool]
+        self, current_difficulty: str, recent_performance: list[bool]
     ) -> str:
         """
         Performansa göre zorluk seviyesini ayarla.
@@ -219,7 +218,7 @@ class FormativeTest(BaseTestType):
         return current_difficulty
 
     def generate_immediate_feedback(
-        self, question_data: Dict, student_answer: str, is_correct: bool
+        self, question_data: dict, student_answer: str, is_correct: bool
     ) -> ImmediateFeedback:
         """
         Her soru için anında geri bildirim oluştur.
@@ -262,7 +261,7 @@ class FormativeTest(BaseTestType):
             learning_tip=learning_tip,
         )
 
-    def generate_feedback(self, session_data: Dict) -> Dict:
+    def generate_feedback(self, session_data: dict) -> dict:
         """
         Test için genel geri bildirim oluştur.
 
@@ -318,7 +317,7 @@ class FormativeTest(BaseTestType):
             else 0.0,
         }
 
-    def calculate_recommendations(self, session_data: Dict) -> List[str]:
+    def calculate_recommendations(self, session_data: dict) -> list[str]:
         """
         Öğrenme önerileri oluştur.
 
@@ -426,7 +425,7 @@ class FormativeTest(BaseTestType):
     # ==================== Helper Methods ====================
 
     def _get_initial_level(
-        self, topic: str, previous_sessions: Optional[List[Dict]]
+        self, topic: str, previous_sessions: list[dict] | None
     ) -> float:
         """Önceki oturumlardan başlangıç seviyesini al"""
         if not previous_sessions:
@@ -443,7 +442,7 @@ class FormativeTest(BaseTestType):
 
         return 0.5
 
-    def _analyze_trend(self, recent_correct: List[bool]) -> str:
+    def _analyze_trend(self, recent_correct: list[bool]) -> str:
         """Son soruların trendini analiz et"""
         if len(recent_correct) < 3:
             return "stable"
@@ -457,22 +456,21 @@ class FormativeTest(BaseTestType):
 
         if diff > 0.2:
             return "improving"
-        elif diff < -0.2:
+        if diff < -0.2:
             return "declining"
-        else:
-            return "stable"
+        return "stable"
 
     def _suggest_next_difficulty(self, current: str, is_correct: bool) -> str:
         """Sonraki soru için zorluk öner"""
         if is_correct and current != "hard":
             idx = self.difficulty_levels.index(current)
             return self.difficulty_levels[idx + 1]
-        elif not is_correct and current != "easy":
+        if not is_correct and current != "easy":
             idx = self.difficulty_levels.index(current)
             return self.difficulty_levels[idx - 1]
         return current
 
-    def _generate_correct_explanation(self, question_data: Dict) -> str:
+    def _generate_correct_explanation(self, question_data: dict) -> str:
         """Doğru cevap için açıklama"""
         topic = question_data.get("topic", "bu konu")
         return (
@@ -481,7 +479,7 @@ class FormativeTest(BaseTestType):
         )
 
     def _generate_incorrect_explanation(
-        self, question_data: Dict, student_answer: str
+        self, question_data: dict, student_answer: str
     ) -> str:
         """Yanlış cevap için açıklama"""
         topic = question_data.get("topic", "bu konu")
@@ -497,30 +495,27 @@ class FormativeTest(BaseTestType):
         """Pekiştirme ipucu"""
         if difficulty == "hard":
             return f"Zor soruları çözebiliyorsunuz! {topic} konusunda ileri seviyeye geçebilirsiniz."
-        elif difficulty == "medium":
+        if difficulty == "medium":
             return f"İyi gidiyorsunuz! {topic} konusunda daha zor sorulara hazırsınız."
-        else:
-            return "Temel kavramları iyi anlıyorsunuz. Orta seviye sorulara geçebilirsiniz."
+        return "Temel kavramları iyi anlıyorsunuz. Orta seviye sorulara geçebilirsiniz."
 
     def _generate_improvement_tip(self, topic: str, difficulty: str) -> str:
         """İyileştirme ipucu"""
         if difficulty == "easy":
             return f"{topic} konusunda temel kavramları tekrar edin. Konu anlatım videoları izleyin."
-        elif difficulty == "medium":
+        if difficulty == "medium":
             return (
                 f"{topic} konusunda daha fazla örnek soru çözün. Formülleri pekiştirin."
             )
-        else:
-            return "Zor sorular için daha fazla pratik gerekli. Önce orta seviye soruları pekiştirin."
+        return "Zor sorular için daha fazla pratik gerekli. Önce orta seviye soruları pekiştirin."
 
     def _get_mastery_status(self, mastery_percentage: float) -> str:
         """Mastery durumunu belirle"""
         if mastery_percentage >= self.mastery_threshold * 100:
             return "mastered"
-        elif mastery_percentage >= self.partial_mastery_threshold * 100:
+        if mastery_percentage >= self.partial_mastery_threshold * 100:
             return "partial_mastery"
-        else:
-            return "needs_work"
+        return "needs_work"
 
     def _generate_progress_message(self, progress: LearningProgress) -> str:
         """İlerleme mesajı oluştur"""
@@ -529,13 +524,12 @@ class FormativeTest(BaseTestType):
                 f"📈 Harika ilerleme! {progress.topic} konusunda "
                 f"%{abs(progress.improvement)*100:.0f} gelişme gösterdiniz."
             )
-        elif progress.trend == "declining":
+        if progress.trend == "declining":
             return (
                 f"📉 Dikkat! {progress.topic} konusunda "
                 f"%{abs(progress.improvement)*100:.0f} düşüş var. Tekrar çalışma gerekli."
             )
-        else:
-            return (
-                f"➡️ {progress.topic} konusunda stabil performans gösteriyorsunuz. "
-                f"Mevcut seviyeniz: %{progress.mastery_percentage:.0f}"
-            )
+        return (
+            f"➡️ {progress.topic} konusunda stabil performans gösteriyorsunuz. "
+            f"Mevcut seviyeniz: %{progress.mastery_percentage:.0f}"
+        )

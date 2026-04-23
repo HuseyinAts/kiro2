@@ -2,9 +2,9 @@
 Load Testing for Question Bank v2.0 - Week 3
 Test system performance with 1000 concurrent users
 """
-from locust import HttpUser, task, between, events
 import random
-from typing import Dict
+
+from locust import HttpUser, between, events, task
 
 
 class QuestionBankV2User(HttpUser):
@@ -279,7 +279,7 @@ class LoadTestScenario:
     """Load test scenario configuration"""
 
     @staticmethod
-    def get_scenario(scenario_name: str) -> Dict:
+    def get_scenario(scenario_name: str) -> dict:
         """
         Get load test scenario configuration
 

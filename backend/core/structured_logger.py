@@ -6,12 +6,11 @@ Enhanced with structlog for better observability and performance monitoring
 import logging
 import os
 import sys
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import structlog
 from structlog.types import EventDict, Processor
-
 
 # ==================== CONFIGURATION ====================
 
@@ -94,12 +93,11 @@ def setup_structlog(
     if dev_mode:
         # Development: Colored console output (disabled on Windows)
         processors.append(structlog.dev.ConsoleRenderer(colors=not is_windows))
+    # Production: JSON output
+    elif json_logs:
+        processors.append(structlog.processors.JSONRenderer())
     else:
-        # Production: JSON output
-        if json_logs:
-            processors.append(structlog.processors.JSONRenderer())
-        else:
-            processors.append(structlog.dev.ConsoleRenderer(colors=False))
+        processors.append(structlog.dev.ConsoleRenderer(colors=False))
 
     # Configure structlog
     structlog.configure(
@@ -125,7 +123,7 @@ class StructuredLogger:
         self.name = name
         self.level = level
         self.logger = structlog.get_logger(name)
-        self._context: Dict[str, Any] = {}
+        self._context: dict[str, Any] = {}
 
     def bind(self, **kwargs) -> "StructuredLogger":
         """Bind context that will be included in all subsequent logs"""
@@ -198,7 +196,7 @@ class StructuredLogger:
         request_id: str,
         endpoint: str,
         method: str = "POST",
-        profile: Optional[Dict[str, Any]] = None,
+        profile: dict[str, Any] | None = None,
         **kwargs,
     ):
         """
@@ -223,7 +221,7 @@ class StructuredLogger:
             "request_id": request_id,
             "endpoint": endpoint,
             "method": method,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         if profile:
@@ -239,7 +237,7 @@ class StructuredLogger:
         endpoint: str,
         status: int,
         response_time: float,
-        cache_hit: Optional[bool] = None,
+        cache_hit: bool | None = None,
         **kwargs,
     ):
         """
@@ -269,7 +267,7 @@ class StructuredLogger:
             "status": status,
             "response_time": response_time,
             "response_time_ms": response_time,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         if cache_hit is not None:
@@ -290,8 +288,8 @@ class StructuredLogger:
         error_type: str,
         error_message: str,
         context: str,
-        request_id: Optional[str] = None,
-        stack_trace: Optional[str] = None,
+        request_id: str | None = None,
+        stack_trace: str | None = None,
         **kwargs,
     ):
         """
@@ -319,7 +317,7 @@ class StructuredLogger:
             "error_type": error_type,
             "error_message": error_message,
             "context": context,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
         if request_id:
@@ -341,7 +339,7 @@ def log_exam_event(
     event_type: str,
     sinav_id: int,
     ogrenci_id: int,
-    sinav_tipi: Optional[str] = None,
+    sinav_tipi: str | None = None,
     **kwargs,
 ):
     """
@@ -362,7 +360,7 @@ def log_exam_event(
         sinav_id=sinav_id,
         ogrenci_id=ogrenci_id,
         sinav_tipi=sinav_tipi,
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
         **kwargs,
     )
 
@@ -371,8 +369,8 @@ def log_api_request(
     logger: StructuredLogger,
     method: str,
     path: str,
-    user_id: Optional[int] = None,
-    request_id: Optional[str] = None,
+    user_id: int | None = None,
+    request_id: str | None = None,
     **kwargs,
 ):
     """
@@ -402,7 +400,7 @@ def log_api_request(
         endpoint=path,  # Alias for compatibility
         user_id=user_id,
         request_id=request_id,
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
         **kwargs,
     )
 
@@ -413,8 +411,8 @@ def log_api_response(
     path: str,
     status_code: int,
     duration_ms: float,
-    request_id: Optional[str] = None,
-    cache_hit: Optional[bool] = None,
+    request_id: str | None = None,
+    cache_hit: bool | None = None,
     **kwargs,
 ):
     """
@@ -451,7 +449,7 @@ def log_api_response(
         "response_time": duration_ms,
         "response_time_ms": duration_ms,
         "duration_ms": duration_ms,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
     if request_id:
@@ -482,7 +480,7 @@ def log_cache_operation(
     logger: StructuredLogger,
     operation: str,
     cache_key: str,
-    hit: Optional[bool] = None,
+    hit: bool | None = None,
     **kwargs,
 ):
     """Log cache operations"""
@@ -495,7 +493,7 @@ def log_error_with_context(
     logger: StructuredLogger,
     error: Exception,
     context: str,
-    request_id: Optional[str] = None,
+    request_id: str | None = None,
     include_stack_trace: bool = True,
     **kwargs,
 ):
@@ -528,7 +526,7 @@ def log_error_with_context(
         "error_type": type(error).__name__,
         "error_message": str(error),
         "context": context,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
     if request_id:

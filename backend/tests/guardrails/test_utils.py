@@ -4,7 +4,7 @@ import time
 
 import pytest
 
-from app.guardrails.utils import ResourceMonitor, LockTracker
+from app.guardrails.utils import LockTracker, ResourceMonitor
 from app.guardrails.utils.resource_monitor import ResourceThresholds
 
 

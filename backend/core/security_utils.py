@@ -13,7 +13,7 @@ Features:
 import html
 import re
 import unicodedata
-from typing import Any, Dict, List, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 import bleach
@@ -94,8 +94,8 @@ class XSSProtection:
         cls,
         html_content: str,
         strip: bool = True,
-        tags: Optional[List[str]] = None,
-        attributes: Optional[Dict[str, List[str]]] = None,
+        tags: list[str] | None = None,
+        attributes: dict[str, list[str]] | None = None,
     ) -> str:
         """
         Sanitize HTML content using bleach
@@ -486,7 +486,7 @@ class ComprehensiveInputSanitizer:
         check_xss: bool = True,
         check_path: bool = False,
         check_command: bool = False,
-        max_length: Optional[int] = None,
+        max_length: int | None = None,
     ) -> Any:
         """
         Comprehensive input sanitization
@@ -553,7 +553,7 @@ class ComprehensiveInputSanitizer:
 
 
 def sanitize_input(
-    value: str, allow_html: bool = False, max_length: Optional[int] = None
+    value: str, allow_html: bool = False, max_length: int | None = None
 ) -> str:
     """
     Quick sanitize function
@@ -595,7 +595,7 @@ def validate_email(email: str) -> str:
     return email
 
 
-def validate_url(url: str, allowed_schemes: Optional[List[str]] = None) -> str:
+def validate_url(url: str, allowed_schemes: list[str] | None = None) -> str:
     """
     Validate URL
 
@@ -635,12 +635,12 @@ def validate_url(url: str, allowed_schemes: Optional[List[str]] = None) -> str:
 # ==================== EXPORT ====================
 
 __all__ = [
-    "XSSProtection",
-    "SQLInjectionProtection",
-    "PathTraversalProtection",
     "CommandInjectionProtection",
-    "LDAPInjectionProtection",
     "ComprehensiveInputSanitizer",
+    "LDAPInjectionProtection",
+    "PathTraversalProtection",
+    "SQLInjectionProtection",
+    "XSSProtection",
     "sanitize_input",
     "validate_email",
     "validate_url",

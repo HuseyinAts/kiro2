@@ -17,7 +17,7 @@ Usage:
     async def get_item(id: int):
         return create_success_response(data=item, message="Item retrieved")
 """
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -51,8 +51,8 @@ class APIResponse(BaseModel, Generic[T]):
 
     success: bool = Field(..., description="Whether the operation succeeded")
     message: str = Field(default="", description="Human-readable message")
-    data: Optional[T] = Field(default=None, description="Response payload")
-    meta: Optional[Dict[str, Any]] = Field(
+    data: T | None = Field(default=None, description="Response payload")
+    meta: dict[str, Any] | None = Field(
         default=None, description="Additional metadata"
     )
 
@@ -95,9 +95,9 @@ class PaginatedResponse(BaseModel, Generic[T]):
 
     success: bool = Field(default=True, description="Whether the operation succeeded")
     message: str = Field(default="", description="Human-readable message")
-    data: List[T] = Field(default_factory=list, description="List of items")
+    data: list[T] = Field(default_factory=list, description="List of items")
     pagination: PaginationMeta = Field(..., description="Pagination information")
-    meta: Optional[Dict[str, Any]] = Field(
+    meta: dict[str, Any] | None = Field(
         default=None, description="Additional metadata"
     )
 
@@ -129,8 +129,8 @@ class PaginatedResponse(BaseModel, Generic[T]):
 def create_success_response(
     data: Any = None,
     message: str = "Operation completed successfully",
-    meta: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    meta: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Create a standard success response.
 
@@ -157,9 +157,9 @@ def create_success_response(
 
 def create_error_response(
     message: str,
-    error_code: Optional[str] = None,
-    details: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    error_code: str | None = None,
+    details: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Create a standard error response.
 
@@ -194,13 +194,13 @@ def create_error_response(
 
 
 def create_paginated_response(
-    data: List[Any],
+    data: list[Any],
     page: int,
     page_size: int,
     total_items: int,
     message: str = "Items retrieved successfully",
-    meta: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    meta: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Create a standard paginated response.
 
@@ -251,7 +251,7 @@ def create_paginated_response(
 class ValidationErrorItem(BaseModel):
     """Dogrulama hatasi detayi"""
 
-    loc: List[str] = Field(..., description="Hata konumu (field path)")
+    loc: list[str] = Field(..., description="Hata konumu (field path)")
     msg: str = Field(..., description="Hata mesaji")
     type: str = Field(..., description="Hata tipi")
 
@@ -269,7 +269,7 @@ class ErrorResponse(BaseModel):
 class ValidationErrorResponse(BaseModel):
     """422 Dogrulama hatasi yaniti"""
 
-    detail: List[ValidationErrorItem] = Field(..., description="Dogrulama hatalari")
+    detail: list[ValidationErrorItem] = Field(..., description="Dogrulama hatalari")
 
     model_config = {
         "json_schema_extra": {
@@ -330,7 +330,7 @@ class RateLimitResponse(BaseModel):
     """429 Rate limit asildi"""
 
     detail: str = Field(default="Istek limiti asildi")
-    retry_after: Optional[int] = Field(None, description="Yeniden deneme suresi (saniye)")
+    retry_after: int | None = Field(None, description="Yeniden deneme suresi (saniye)")
 
     model_config = {
         "json_schema_extra": {

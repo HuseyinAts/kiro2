@@ -5,51 +5,38 @@ Tests model definitions, fields, relationships, constraints, and methods
 """
 
 import enum
+
 from sqlalchemy import (
-    String,
-    Integer,
-    Float,
+    JSON,
     Boolean,
-    Text,
     Date,
     DateTime,
-    JSON,
+    Float,
+    Integer,
+    String,
+    Text,
 )
+
+from models.base import Base
 
 # Import all models and enums
 from models.database import (
-    # Enums
-    UserRole,
-    ExamType,
-    QuestionDifficulty,
-    LearningStyle,
-    SubjectArea,
-    EBAContentCategory,
-    EBAGradeLevel,
-    EBAVideoQuality,
-    # User Models
-    User,
-    StudentProfile,
-    TeacherProfile,
-    ParentProfile,
-    # Question and Exam Models
-    Question,
-    ExamSession,
-    ExamQuestion,
-    StudentAnswer,
-    # Learning Analytics Models
-    LearningAnalytics,
-    EducationalContent,
+    AuditLog,
     # Class and School Management Models
     ClassRoom,
-    SystemConfiguration,
-    AuditLog,
+    EBAContentAnalytics,
+    EBAContentCategory,
+    EBAContentCollection,
+    EBAGradeLevel,
     # EBA TV Content Models
     EBAVideo,
-    EBAVideoUsage,
+    EBAVideoQuality,
     EBAVideoRecommendation,
-    EBAContentCollection,
-    EBAContentAnalytics,
+    EBAVideoUsage,
+    EducationalContent,
+    ExamQuestion,
+    ExamSession,
+    ExamType,
     # FSRS Models
     FSRSCard,
     FSRSReview,
@@ -57,9 +44,23 @@ from models.database import (
     FSRSStudentProfile,
     FSRSStudySession,
     FSRSSubjectStats,
+    # Learning Analytics Models
+    LearningAnalytics,
+    LearningStyle,
+    ParentProfile,
+    # Question and Exam Models
+    Question,
+    QuestionDifficulty,
+    StudentAnswer,
+    StudentProfile,
+    SubjectArea,
+    SystemConfiguration,
+    TeacherProfile,
+    # User Models
+    User,
+    # Enums
+    UserRole,
 )
-from models.base import Base
-
 
 # ============================================================================
 # ENUM TESTS

@@ -1,23 +1,24 @@
 """Tests for d-dataset import classification logic and morphology metrics."""
 import json
-import pytest
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from scripts.import_d_dataset import (
+    DEFAULT_TOPICS,
+    build_row,
     classify_book,
-    normalize_tr,
     generate_question_id,
     generate_topic_id,
-    build_row,
-    DEFAULT_TOPICS,
+    normalize_tr,
 )
 from scripts.update_morphology import (
-    tokenize_turkish,
-    count_sentences,
     calc_readability,
     compute_metrics,
+    count_sentences,
+    tokenize_turkish,
 )
 
 
@@ -357,15 +358,17 @@ class TestSemanticSearchRequest:
         assert req.show_answers is False
 
     def test_query_too_short(self):
-        from api.question_crud_api import SemanticSearchRequest
         from pydantic import ValidationError
+
+        from api.question_crud_api import SemanticSearchRequest
 
         with pytest.raises(ValidationError):
             SemanticSearchRequest(query="ab")
 
     def test_top_k_bounds(self):
-        from api.question_crud_api import SemanticSearchRequest
         from pydantic import ValidationError
+
+        from api.question_crud_api import SemanticSearchRequest
 
         with pytest.raises(ValidationError):
             SemanticSearchRequest(query="test query", top_k=0)

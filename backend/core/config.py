@@ -3,10 +3,11 @@ Uygulama konfigürasyon ayarları
 Türkçe karakter desteği ve environment değişkenleri
 """
 import os
+from enum import Enum
 from functools import lru_cache
 from pathlib import Path
+
 from dotenv import load_dotenv
-from enum import Enum
 
 # Load environment variables from .env file (check both backend and root directories)
 # CRITICAL FIX: override=True ensures .env values override cached environment variables

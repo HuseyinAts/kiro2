@@ -15,21 +15,20 @@ Boris Cherny verification standards.
 
 from __future__ import annotations
 
-
 import pytest
-from hypothesis import given, settings, strategies as st, assume
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
+from backend.core.quality_gates.dependency_graph import (
+    CircularDependencyError,
+    DependencyGraph,
+)
 from backend.core.quality_gates.models import (
     GateConfig,
     GateResult,
     GateStatus,
     PipelineResult,
 )
-from backend.core.quality_gates.dependency_graph import (
-    DependencyGraph,
-    CircularDependencyError,
-)
-
 
 # =============================================================================
 # Strategies

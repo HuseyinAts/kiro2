@@ -7,14 +7,13 @@ Tests for override request and approval workflow.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 
-from backend.core.quality_gates.override import OverrideManager
 from backend.core.quality_gates.models import OverrideRequest
-
+from backend.core.quality_gates.override import OverrideManager
 
 # =============================================================================
 # Test Fixtures
@@ -76,7 +75,7 @@ class TestRequestSubmission:
         request = override_manager.submit_request(**sample_request)
 
         # Expiry should be approximately 7 days from now
-        expected_expiry = datetime.now(timezone.utc) + timedelta(days=7)
+        expected_expiry = datetime.now(UTC) + timedelta(days=7)
         diff = abs((request.expires_at - expected_expiry).total_seconds())
         assert diff < 60  # Within 60 seconds
 

@@ -6,7 +6,7 @@ Supports both JPype (direct Zemberek access) and HTTP backend.
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from .base import BaseToolHandler
 
@@ -34,7 +34,7 @@ class SpellCheckHandler(BaseToolHandler):
 
     tool_name = "spell_check"
 
-    async def _call_jpype(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_jpype(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Check spelling using JPype bridge.
 
@@ -48,7 +48,7 @@ class SpellCheckHandler(BaseToolHandler):
             raise RuntimeError("JPype bridge not initialized")
 
         words = self._tokenize_for_spell_check(text)
-        word_results: List[Dict[str, Any]] = []
+        word_results: list[dict[str, Any]] = []
         error_count = 0
 
         for word in words:
@@ -100,7 +100,7 @@ class SpellCheckHandler(BaseToolHandler):
             "accuracy": round(accuracy, 4),
         }
 
-    async def _call_backend(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_backend(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Check spelling of Turkish text
 
@@ -111,7 +111,7 @@ class SpellCheckHandler(BaseToolHandler):
             SpellCheckResult as dictionary
         """
         words = self._tokenize_for_spell_check(text)
-        word_results: List[Dict[str, Any]] = []
+        word_results: list[dict[str, Any]] = []
         error_count = 0
 
         for word in words:
@@ -170,7 +170,7 @@ class SpellCheckHandler(BaseToolHandler):
             "accuracy": round(accuracy, 4),
         }
 
-    def _tokenize_for_spell_check(self, text: str) -> List[str]:
+    def _tokenize_for_spell_check(self, text: str) -> list[str]:
         """Tokenize text for spell checking"""
         # Simple whitespace tokenization
         # Remove punctuation attached to words
@@ -180,7 +180,7 @@ class SpellCheckHandler(BaseToolHandler):
 
     async def _generate_suggestions(
         self, word: str, max_suggestions: int = 5
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Generate spelling suggestions for a misspelled word
 
@@ -215,7 +215,7 @@ class SpellCheckHandler(BaseToolHandler):
 
         return sorted_suggestions[:max_suggestions]
 
-    def _generate_diacritic_variants(self, word: str) -> List[str]:
+    def _generate_diacritic_variants(self, word: str) -> list[str]:
         """Generate variants with Turkish diacritics"""
         variants = []
         word_lower = word.lower()
@@ -228,7 +228,7 @@ class SpellCheckHandler(BaseToolHandler):
 
         return variants[:10]  # Limit variants
 
-    def _get_common_corrections(self, word: str) -> List[str]:
+    def _get_common_corrections(self, word: str) -> list[str]:
         """Get common Turkish spelling corrections"""
         corrections = []
         word_lower = word.lower()
@@ -248,7 +248,7 @@ class SpellCheckHandler(BaseToolHandler):
         return corrections
 
     def _check_diacritic_error(
-        self, word: str, suggestions: List[str]
+        self, word: str, suggestions: list[str]
     ) -> bool:
         """Check if error is likely a diacritic mistake"""
         if not suggestions:

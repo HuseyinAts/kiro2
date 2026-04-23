@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Load Test Verification Script
 Verifies that all load test files are properly configured and can be imported
@@ -21,7 +20,7 @@ def verify_locustfile():
 
     try:
         # Import the module
-        import tests.load.locustfile as locustfile
+        from tests.load import locustfile
 
         # Check for required classes
         assert hasattr(
@@ -43,7 +42,7 @@ def verify_locustfile():
         return True
 
     except Exception as e:
-        print(f"❌ locustfile.py verification failed: {str(e)}")
+        print(f"❌ locustfile.py verification failed: {e!s}")
         return False
 
 
@@ -80,7 +79,7 @@ def verify_load_test_video_api():
         return True
 
     except Exception as e:
-        print(f"❌ load_test_video_api.py verification failed: {str(e)}")
+        print(f"❌ load_test_video_api.py verification failed: {e!s}")
         return False
 
 
@@ -103,7 +102,7 @@ def verify_locustfile_video_api():
         return True
 
     except Exception as e:
-        print(f"❌ locustfile_video_api.py verification failed: {str(e)}")
+        print(f"❌ locustfile_video_api.py verification failed: {e!s}")
         return False
 
 
@@ -230,10 +229,9 @@ def main():
         print_usage_instructions()
 
         return 0
-    else:
-        print("\n❌ SOME VERIFICATIONS FAILED")
-        print("\nPlease check the errors above and fix them.")
-        return 1
+    print("\n❌ SOME VERIFICATIONS FAILED")
+    print("\nPlease check the errors above and fix them.")
+    return 1
 
 
 if __name__ == "__main__":

@@ -16,8 +16,7 @@ Requirements:
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, UTC
-from typing import Dict, List, Optional
+from datetime import UTC, datetime
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +49,7 @@ class RedisHealthMetrics:
     memory_usage_percent: float = 0.0
     connected_clients: int = 0
     timestamp: datetime = None
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     def __post_init__(self):
         if self.timestamp is None:
@@ -93,7 +92,7 @@ class RedisHealthChecker:
         self._bypass_mode = False
 
         # Cache warming callbacks
-        self._warming_callbacks: List = []
+        self._warming_callbacks: list = []
 
         logger.info(
             f"RedisHealthChecker başlatıldı: "
@@ -180,7 +179,7 @@ class RedisHealthChecker:
 
             return metrics
 
-    async def _get_cache_metrics(self) -> Dict:
+    async def _get_cache_metrics(self) -> dict:
         """
         Cache performans metriklerini toplar.
 
@@ -220,7 +219,7 @@ class RedisHealthChecker:
             logger.error(f"Cache metrikleri alınamadı: {e}")
             return {}
 
-    async def _get_memory_metrics(self) -> Dict:
+    async def _get_memory_metrics(self) -> dict:
         """
         Memory kullanım metriklerini toplar.
 

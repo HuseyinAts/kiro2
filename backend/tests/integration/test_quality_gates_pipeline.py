@@ -19,6 +19,7 @@ pytestmark = pytest.mark.skipif(
     reason="Quality gates API changed: override reason must be >=20 chars, JSON reporter output format changed ('status' key missing), 5 of 12 tests fail",
 )
 
+from backend.core.quality_gates.gates.base import BaseGate, GateContext
 from backend.core.quality_gates.models import (
     GateConfig,
     GateResult,
@@ -30,14 +31,12 @@ from backend.core.quality_gates.orchestrator import (
     QualityGatesOrchestrator,
     run_quality_gates,
 )
-from backend.core.quality_gates.gates.base import BaseGate, GateContext
+from backend.core.quality_gates.override import OverrideManager
 from backend.core.quality_gates.reporters import (
     ConsoleReporter,
-    JsonReporter,
     HtmlReporter,
+    JsonReporter,
 )
-from backend.core.quality_gates.override import OverrideManager
-
 
 # =============================================================================
 # Test Fixtures
@@ -405,8 +404,9 @@ class TestCLIIntegration:
 
     def test_cli_list_command(self):
         """CLI list command should return 0."""
-        from backend.core.quality_gates.cli import list_command
         import argparse
+
+        from backend.core.quality_gates.cli import list_command
 
         args = argparse.Namespace()
         result = list_command(args)
@@ -415,8 +415,9 @@ class TestCLIIntegration:
 
     def test_cli_status_command(self, temp_project_dir: Path):
         """CLI status command should return 0."""
-        from backend.core.quality_gates.cli import status_command
         import argparse
+
+        from backend.core.quality_gates.cli import status_command
 
         args = argparse.Namespace(dir=str(temp_project_dir))
         result = status_command(args)

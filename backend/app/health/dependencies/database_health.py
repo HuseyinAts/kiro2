@@ -16,11 +16,10 @@ Requirements:
 import logging
 import time
 from dataclasses import dataclass
-from datetime import datetime, UTC
-from typing import Dict, List, Optional
+from datetime import UTC, datetime
 
-from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +46,7 @@ class DatabaseHealthMetrics:
     pool_size: int = 0
     pool_usage_percent: float = 0.0
     timestamp: datetime = None
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
     def __post_init__(self):
         if self.timestamp is None:
@@ -91,7 +90,7 @@ class DatabaseHealthChecker:
         self.pool_warning_threshold = pool_warning_threshold
 
         # Connection tracking for leak detection
-        self._connection_history: List[Dict] = []
+        self._connection_history: list[dict] = []
         self._max_history_size = 1000
 
         logger.info(
@@ -176,7 +175,7 @@ class DatabaseHealthChecker:
 
             return metrics
 
-    async def _get_pool_metrics(self) -> Dict:
+    async def _get_pool_metrics(self) -> dict:
         """
         Connection pool metriklerini toplar.
 
@@ -297,7 +296,7 @@ class DatabaseHealthChecker:
         if len(self._connection_history) > self._max_history_size:
             self._connection_history = self._connection_history[-self._max_history_size:]
 
-    async def detect_connection_leak(self) -> Optional[Dict]:
+    async def detect_connection_leak(self) -> dict | None:
         """
         Connection leak tespiti yapar.
 

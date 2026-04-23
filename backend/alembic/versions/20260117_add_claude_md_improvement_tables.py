@@ -14,11 +14,13 @@ CLAUDE.md Self-Improvement Tables:
 
 Spec: claude-md-self-improvement Phase 0.5
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '20260117_claude_md'

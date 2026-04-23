@@ -8,9 +8,10 @@ Revises: f8_error_type_001
 Create Date: 2026-03-12
 """
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
+
+from alembic import op
 
 # revision identifiers
 revision = "mega_feature_001"

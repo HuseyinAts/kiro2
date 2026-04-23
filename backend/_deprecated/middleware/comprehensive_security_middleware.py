@@ -11,12 +11,14 @@ Bu middleware:
 - Rate limiting
 """
 import time
-from typing import Callable
+from collections.abc import Callable
+
 from fastapi import Request, Response, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from core.structured_logger import get_logger
+
 from core.cors_security import validate_origin
+from core.structured_logger import get_logger
 from core.xss_prevention import add_security_headers
 
 logger = get_logger("security_middleware")

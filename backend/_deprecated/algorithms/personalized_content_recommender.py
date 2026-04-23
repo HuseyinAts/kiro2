@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import numpy as np
-from typing import Dict, List, Tuple
 
 from models.learning_style import (
     ContentRecommendation,
@@ -67,7 +66,7 @@ class PersonalizedContentRecommender:
 
         logger.info("Kişiselleştirilmiş İçerik Önerisi Sistemi başlatıldı")
 
-    def _initialize_vark_content_weights(self) -> Dict[str, Dict[str, float]]:
+    def _initialize_vark_content_weights(self) -> dict[str, dict[str, float]]:
         """VARK boyutları için içerik ağırlıkları"""
         return {
             VARKDimension.VISUAL: {
@@ -120,7 +119,7 @@ class PersonalizedContentRecommender:
             },
         }
 
-    def _initialize_felder_content_weights(self) -> Dict[str, Dict[str, float]]:
+    def _initialize_felder_content_weights(self) -> dict[str, dict[str, float]]:
         """Felder-Silverman boyutları için içerik ağırlıkları"""
         return {
             "active": {
@@ -221,7 +220,7 @@ class PersonalizedContentRecommender:
             },
         }
 
-    def _initialize_learning_strategies(self) -> Dict[str, List[str]]:
+    def _initialize_learning_strategies(self) -> dict[str, list[str]]:
         """Hibrit profiller için öğrenme stratejileri"""
         return {
             # VARK tabanlı stratejiler
@@ -288,7 +287,7 @@ class PersonalizedContentRecommender:
             ],
         }
 
-    def _initialize_study_techniques(self) -> Dict[str, List[str]]:
+    def _initialize_study_techniques(self) -> dict[str, list[str]]:
         """Çalışma teknikleri matrisi"""
         return {
             # VARK teknikleri
@@ -394,7 +393,7 @@ class PersonalizedContentRecommender:
 
     async def _calculate_content_weights(
         self, hybrid_profile: HybridLearningProfile
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Hibrit profil için içerik ağırlıklarını hesapla"""
 
         vark_profile = hybrid_profile.vark_profile
@@ -438,8 +437,8 @@ class PersonalizedContentRecommender:
         return combined_weights
 
     async def _select_recommended_content_types(
-        self, content_weights: Dict[str, float], confidence_score: float
-    ) -> List[str]:
+        self, content_weights: dict[str, float], confidence_score: float
+    ) -> list[str]:
         """En uygun içerik türlerini seç"""
 
         # Ağırlıklara göre sırala
@@ -468,7 +467,7 @@ class PersonalizedContentRecommender:
 
     async def _select_learning_strategies(
         self, hybrid_profile: HybridLearningProfile
-    ) -> List[str]:
+    ) -> list[str]:
         """Hibrit profile göre öğrenme stratejileri seç"""
 
         strategies = []
@@ -492,7 +491,7 @@ class PersonalizedContentRecommender:
 
     async def _select_study_techniques(
         self, hybrid_profile: HybridLearningProfile
-    ) -> List[str]:
+    ) -> list[str]:
         """Hibrit profile göre çalışma teknikleri seç"""
 
         techniques = []
@@ -519,7 +518,7 @@ class PersonalizedContentRecommender:
 
     async def _calculate_adjustments(
         self, hybrid_profile: HybridLearningProfile, difficulty_level: str
-    ) -> Tuple[float, float]:
+    ) -> tuple[float, float]:
         """Zorluk ve hız ayarlamaları hesapla"""
 
         felder_prefs = hybrid_profile.felder_profile.learning_preferences
@@ -578,7 +577,7 @@ class PersonalizedContentRecommender:
         self,
         student_id: str,
         current_recommendation: ContentRecommendation,
-        performance_data: Dict[str, float],
+        performance_data: dict[str, float],
     ) -> ContentRecommendation:
         """Performans verilerine göre önerileri güncelle"""
 

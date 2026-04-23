@@ -19,19 +19,19 @@ Turkish Data Support:
 - Maarif curriculum subjects
 """
 
-import pytest
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, Mock
 from uuid import uuid4
 
-from agents.learning_path.models import (
-    LearningStyle,
-    KnowledgeLevel,
-    StudentProfile,
-    LearningResource,
-)
+import pytest
 
+from agents.learning_path.models import (
+    KnowledgeLevel,
+    LearningResource,
+    LearningStyle,
+    StudentProfile,
+)
 
 # =============================================================================
 # STUDENT PROFILE FIXTURES
@@ -39,7 +39,7 @@ from agents.learning_path.models import (
 
 
 @pytest.fixture
-def mock_student_profile() -> Dict[str, Any]:
+def mock_student_profile() -> dict[str, Any]:
     """
     Mock student profile data with Turkish content.
 
@@ -71,7 +71,7 @@ def mock_student_profile() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_student_profile_beginner() -> Dict[str, Any]:
+def mock_student_profile_beginner() -> dict[str, Any]:
     """Mock beginner level student profile (9th grade, LGS prep)"""
     return {
         "student_id": "test-student-beginner",
@@ -91,7 +91,7 @@ def mock_student_profile_beginner() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_student_profile_advanced() -> Dict[str, Any]:
+def mock_student_profile_advanced() -> dict[str, Any]:
     """Mock advanced level student profile (12th grade, top performer)"""
     return {
         "student_id": "test-student-advanced",
@@ -117,7 +117,7 @@ def mock_student_profile_advanced() -> Dict[str, Any]:
     }
 
 
-def create_student_profile(**overrides) -> Dict[str, Any]:
+def create_student_profile(**overrides) -> dict[str, Any]:
     """
     Factory function to create customizable student profiles.
 
@@ -150,7 +150,7 @@ def create_student_profile(**overrides) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def student_profile_obj(mock_student_profile: Dict[str, Any]) -> StudentProfile:
+def student_profile_obj(mock_student_profile: dict[str, Any]) -> StudentProfile:
     """
     StudentProfile object fixture (actual dataclass instance).
 
@@ -177,7 +177,7 @@ def student_profile_obj(mock_student_profile: Dict[str, Any]) -> StudentProfile:
 
 
 @pytest.fixture
-def mock_youtube_resource() -> Dict[str, Any]:
+def mock_youtube_resource() -> dict[str, Any]:
     """Mock YouTube video resource (Turkish mathematics content)"""
     return {
         "resource_id": "yt-video-001",
@@ -203,7 +203,7 @@ def mock_youtube_resource() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_khan_resource() -> Dict[str, Any]:
+def mock_khan_resource() -> dict[str, Any]:
     """Mock Khan Academy resource (Turkish localized)"""
     return {
         "resource_id": "khan-exercise-001",
@@ -226,7 +226,7 @@ def mock_khan_resource() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_oer_resource() -> Dict[str, Any]:
+def mock_oer_resource() -> dict[str, Any]:
     """Mock Open Educational Resource (OER)"""
     return {
         "resource_id": "oer-article-001",
@@ -249,7 +249,7 @@ def mock_oer_resource() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_eba_resource() -> Dict[str, Any]:
+def mock_eba_resource() -> dict[str, Any]:
     """Mock EBA (Eğitim Bilişim Ağı) resource"""
     return {
         "resource_id": "eba-video-001",
@@ -275,7 +275,7 @@ def create_learning_resource(
     platform: str = "youtube",
     difficulty: str = "intermediate",
     **overrides
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Factory function to create customizable learning resources.
 
@@ -334,7 +334,7 @@ def create_learning_resource(
 
 
 @pytest.fixture
-def learning_resource_obj(mock_youtube_resource: Dict[str, Any]) -> LearningResource:
+def learning_resource_obj(mock_youtube_resource: dict[str, Any]) -> LearningResource:
     """LearningResource object fixture (actual dataclass instance)"""
     return LearningResource(
         resource_id=mock_youtube_resource["resource_id"],
@@ -358,7 +358,7 @@ def learning_resource_obj(mock_youtube_resource: Dict[str, Any]) -> LearningReso
 
 
 @pytest.fixture
-def mock_learning_path() -> Dict[str, Any]:
+def mock_learning_path() -> dict[str, Any]:
     """Mock complete learning path with multiple phases"""
     return {
         "path_id": "path-001",
@@ -414,7 +414,7 @@ def create_learning_path(
     num_phases: int = 3,
     resources_per_phase: int = 2,
     **overrides
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Factory function to create customizable learning paths.
 
@@ -473,7 +473,7 @@ def create_learning_path(
 
 
 @pytest.fixture
-def mock_assessment() -> Dict[str, Any]:
+def mock_assessment() -> dict[str, Any]:
     """Mock assessment/quiz data"""
     return {
         "assessment_id": "assessment-001",
@@ -524,7 +524,7 @@ def create_assessment(
     num_questions: int = 5,
     difficulty: str = "intermediate",
     **overrides
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Factory function to create customizable assessments.
 
@@ -677,7 +677,7 @@ def mock_khan_api() -> Mock:
 
 
 @pytest.fixture
-def turkish_subjects() -> List[str]:
+def turkish_subjects() -> list[str]:
     """Common Turkish education subjects with Turkish characters"""
     return [
         "Matematik",
@@ -694,7 +694,7 @@ def turkish_subjects() -> List[str]:
 
 
 @pytest.fixture
-def yks_topics() -> Dict[str, List[str]]:
+def yks_topics() -> dict[str, list[str]]:
     """YKS exam topics by subject"""
     return {
         "matematik": [
@@ -729,7 +729,7 @@ def yks_topics() -> Dict[str, List[str]]:
 
 
 @pytest.fixture
-def turkish_names() -> List[str]:
+def turkish_names() -> list[str]:
     """Common Turkish student names with Turkish characters"""
     return [
         "Ahmet Yılmaz",
@@ -752,10 +752,10 @@ def turkish_names() -> List[str]:
 
 @pytest.fixture
 def complete_learning_scenario(
-    mock_student_profile: Dict[str, Any],
-    mock_learning_path: Dict[str, Any],
-    mock_assessment: Dict[str, Any],
-) -> Dict[str, Any]:
+    mock_student_profile: dict[str, Any],
+    mock_learning_path: dict[str, Any],
+    mock_assessment: dict[str, Any],
+) -> dict[str, Any]:
     """
     Complete learning scenario with student, path, and assessment.
 

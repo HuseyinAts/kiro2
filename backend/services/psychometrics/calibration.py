@@ -6,10 +6,11 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-import numpy as np
-from typing import List, Tuple, Dict, Any, Optional
-from scipy.optimize import minimize, differential_evolution
 from dataclasses import dataclass
+from typing import Any
+
+import numpy as np
+from scipy.optimize import differential_evolution, minimize
 
 from services.psychometrics.irt_model import FourParameterIRT, IRTParameters
 
@@ -43,7 +44,7 @@ class IRTCalibrator:
         self,
         responses: np.ndarray,
         abilities: np.ndarray,
-        initial_params: Optional[IRTParameters] = None,
+        initial_params: IRTParameters | None = None,
         max_iterations: int = 1000,
     ) -> CalibrationResult:
         """
@@ -186,7 +187,7 @@ class AdaptiveCalibrator:
     Updates parameters incrementally as new response data arrives
     """
 
-    def __init__(self, initial_params: Optional[IRTParameters] = None):
+    def __init__(self, initial_params: IRTParameters | None = None):
         """
         Initialize adaptive calibrator
 
@@ -199,7 +200,7 @@ class AdaptiveCalibrator:
             # Default parameters for medium difficulty
             self.params = IRTParameters(a=1.5, b=0.0, c=0.2, d=1.0)
 
-        self.response_history: List[Tuple[float, int]] = []  # (ability, response)
+        self.response_history: list[tuple[float, int]] = []  # (ability, response)
         self.update_count = 0
 
     def add_response(self, ability: float, response: int, update_now: bool = True):
@@ -248,7 +249,7 @@ class AdaptiveCalibrator:
             a=self.params.a, b=self.params.b, c=self.params.c, d=self.params.d
         )
 
-    def get_calibration_stats(self) -> Dict[str, Any]:
+    def get_calibration_stats(self) -> dict[str, Any]:
         """Get calibration statistics"""
         return {
             "total_responses": len(self.response_history),
@@ -282,7 +283,7 @@ class BatchCalibrator:
         self.num_questions = num_questions
         self.calibrators = [AdaptiveCalibrator() for _ in range(num_questions)]
 
-    def add_student_responses(self, ability: float, responses: List[int]):
+    def add_student_responses(self, ability: float, responses: list[int]):
         """
         Add responses from one student to all questions
 
@@ -308,11 +309,11 @@ class BatchCalibrator:
         for calibrator in self.calibrators:
             calibrator.update_parameters(method=method)
 
-    def get_all_parameters(self) -> List[IRTParameters]:
+    def get_all_parameters(self) -> list[IRTParameters]:
         """Get parameters for all questions"""
         return [cal.params for cal in self.calibrators]
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get calibration summary"""
         all_params = self.get_all_parameters()
 

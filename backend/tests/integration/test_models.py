@@ -3,44 +3,45 @@ Models Test Dosyası
 Tüm Pydantic modellerinin testleri
 """
 
-import pytest
 from datetime import datetime, timedelta
 from uuid import uuid4
+
+import pytest
 
 # Model importları
 try:
     from models import (
+        ContentType,
+        FelderSilvermanProfile,
+        HybridLearningProfile,
+        # IRT modelleri
+        IRTParameters,
+        MakaleIcerik,
+        MorphologicalComplexity,
+        # Performance modelleri
+        PerformanceMetrics,
+        ProgressReport,
+        # Soru modelleri
+        Question,
+        QuestionDifficulty,
+        SinavDurumu,
+        SinavOturumu,
+        SinavSonucu,
+        SinavSorusu,
+        SinavTipi,
+        # Student modelleri
+        Student,
+        StudentProfile,
+        StudySession,
+        TurkishCulturalFactors,
         # User modelleri
         User,
         UserCreate,
         UserRole,
-        # Student modelleri
-        Student,
-        StudentProfile,
         VARKProfile,
-        FelderSilvermanProfile,
-        HybridLearningProfile,
-        SinavTipi,
-        SinavDurumu,
-        SinavSorusu,
-        SinavOturumu,
-        SinavSonucu,
-        # Soru modelleri
-        Question,
-        QuestionDifficulty,
-        MakaleIcerik,
         VideoIcerik,
-        ContentType,
         # ZPD modelleri
         ZPDLevel,
-        TurkishCulturalFactors,
-        # IRT modelleri
-        IRTParameters,
-        MorphologicalComplexity,
-        # Performance modelleri
-        PerformanceMetrics,
-        StudySession,
-        ProgressReport,
     )
 except (ImportError, ModuleNotFoundError):
     pytest.skip("models module not available", allow_module_level=True)

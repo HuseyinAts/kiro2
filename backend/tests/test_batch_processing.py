@@ -3,15 +3,15 @@ Test Suite for Batch Question Generation System
 Tests batch processing, task management, and quality control
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from services.batch_question_generator import BatchQuestionGenerator
 from tasks.question_generation_tasks import (
+    aggregate_batch_results,
     generate_single_question,
-    aggregate_batch_results
 )
-
 
 # ==================== FIXTURES ====================
 

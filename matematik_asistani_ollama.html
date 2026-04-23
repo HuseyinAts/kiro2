@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matematik Öğretmeni Asistanı — Ollama qwen3:8b</title>
+<style>
+/* ── Temel ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #ffffff;
+  --bg2:      #f9fafb;
+  --bg3:      #f3f4f6;
+  --border:   #e5e7eb;
+  --border2:  #d1d5db;
+  --text:     #111827;
+  --text2:    #6b7280;
+  --text3:    #9ca3af;
+  --accent:   #111827;
+  --green-bg: #f0fdf4;
+  --green-bd: #bbf7d0;
+  --green-tx: #15803d;
+  --amber-bg: #fef3c7;
+  --amber-tx: #92400e;
+  --blue-bg:  #dbeafe;
+  --blue-tx:  #1e40af;
+  --red-tx:   #dc2626;
+  --mono:     "Consolas", "Monaco", monospace;
+}
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #e5e7eb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* ── Kurulum Uyarısı (başlangıçta göster, bağlantı başarılı olunca gizle) ── */
+#setup-banner {
+  width: 100%;
+  max-width: 800px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #78350f;
+  line-height: 1.6;
+}
+#setup-banner strong { font-weight: 600; }
+#setup-banner code { font-family: var(--mono); background: #fde68a; padding: 1px 4px; border-radius: 3px; }
+#setup-banner.hidden { display: none; }
+
+/* ── App Kapsayıcı ── */
+#app {
+  width: 100%;
+  max-width: 900px;
+  height: 700px;
+  background: var(--bg);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  width: 162px;
+  min-width: 162px;
+  border-right: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sb-head {
+  padding: 13px 12px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sb-eyebrow { font-size: 9px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; }
+.sb-title   { font-size: 12px; font-weight: 600; color: var(--text); margin-top: 3px; line-height: 1.3; }
+.sb-model   { margin-top: 5px; display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; background: var(--green-bg); border: 1px solid var(--green-bd); border-radius: 4px; }
+.sb-model-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+.sb-model-txt { font-size: 9.5px; font-weight: 600; color: var(--green-tx); }
+.sb-list { padding: 5px; overflow-y: auto; flex: 1; }
+.tool-btn {
+  width: 100%; text-align: left; display: block;
+  padding: 6px 8px 6px 10px; border-radius: 6px; margin-bottom: 1px; cursor: pointer;
+  background: transparent;
+  border-top: 1px solid transparent; border-right: 1px solid transparent;
+  border-bottom: 1px solid transparent; border-left: 2.5px solid transparent;
+  transition: background .08s;
+}
+.tool-btn:hover { background: var(--bg); }
+.tool-btn.active {
+  background: var(--bg);
+  border-top-color: var(--border); border-right-color: var(--border); border-bottom-color: var(--border);
+  border-left-color: var(--accent);
+}
+.tool-nm { display: block; font-size: 11.5px; color: var(--text2); font-weight: 400; }
+.tool-btn.active .tool-nm { font-weight: 600; color: var(--text); }
+.tool-ds { display: block; font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+/* ── Input Panel ── */
+#inp-panel {
+  width: 214px; min-width: 214px;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.inp-head { padding: 11px 13px 8px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.inp-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.inp-sub   { font-size: 10px; color: var(--text2); margin-top: 2px; line-height: 1.4; }
+.inp-body  { flex: 1; padding: 11px 12px; overflow-y: auto; min-height: 0; }
+
+.field     { margin-bottom: 9px; }
+.field label { display: block; font-size: 9.5px; font-weight: 500; color: var(--text2); margin-bottom: 3px; text-transform: uppercase; letter-spacing: .05em; }
+select, input[type=text], input[type=date], textarea {
+  width: 100%; background: var(--bg); color: var(--text);
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 5px 7px; font-size: 11.5px; font-family: inherit; outline: none;
+}
+select:focus, input:focus, textarea:focus { border-color: var(--border2); }
+textarea { resize: vertical; line-height: 1.5; }
+
+.gen-btn {
+  width: 100%; padding: 8px; margin-top: 6px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 6px; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+.gen-btn:disabled { background: var(--bg3); color: var(--text2); cursor: not-allowed; }
+
+/* ── Output Column ── */
+#out-col {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0;
+}
+.out-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; min-height: 34px;
+}
+.out-lbl { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text3); }
+.badge { font-size: 9px; padding: 2px 7px; border-radius: 3px; font-weight: 600; margin-left: 6px; }
+.badge-fetching  { background: var(--amber-bg); color: var(--amber-tx); }
+.badge-streaming { background: var(--blue-bg);  color: var(--blue-tx); }
+.badge-done      { background: var(--green-bg); color: var(--green-tx); }
+.wc-badge { font-size: 10px; color: var(--text3); margin-left: 6px; }
+.copy-btn { padding: 3px 10px; font-size: 11px; cursor: pointer; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text); font-weight: 500; }
+.copy-btn:hover { background: var(--bg2); }
+
+/* ── critical layout fix: flex:1 + min-height:0 ── */
+#out-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+.out-area {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 14px 16px; font-size: 13px; line-height: 1.78; color: var(--text);
+}
+.out-area.raw {
+  font-family: var(--mono); white-space: pre-wrap; word-break: break-word;
+  font-size: 12px; background: var(--bg2);
+}
+.out-area.md { font-family: inherit; }
+
+.empty-state { display: flex; align-items: center; justify-content: center; flex: 1; text-align: center; padding: 24px; }
+.empty-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+.empty-sub   { font-size: 11.5px; color: var(--text2); line-height: 1.65; margin-bottom: 4px; }
+.empty-hint  { font-size: 10.5px; color: var(--text3); }
+
+/* ── Markdown ── */
+.out-area.md h1 { font-size:15px; font-weight:600; margin:.85em 0 .35em; }
+.out-area.md h2 { font-size:13.5px; font-weight:600; margin:.8em 0 .28em; padding-bottom:4px; border-bottom:1px solid var(--border); }
+.out-area.md h3 { font-size:13px; font-weight:600; margin:.7em 0 .22em; }
+.out-area.md p  { margin-bottom:.52em; }
+.out-area.md strong { font-weight:600; }
+.out-area.md ul, .out-area.md ol { padding-left:1.4em; margin-bottom:.5em; }
+.out-area.md li { margin-bottom:.18em; }
+.out-area.md table { border-collapse:collapse; width:100%; margin:.55em 0; font-size:12px; }
+.out-area.md th { padding:5px 9px; border:1px solid var(--border); font-weight:600; background:var(--bg2); text-align:left; }
+.out-area.md td { padding:5px 9px; border:1px solid var(--border); }
+.out-area.md hr { border:none; border-top:1px solid var(--border); margin:.7em 0; }
+.out-area.md blockquote { border-left:2.5px solid var(--border2); padding-left:10px; color:var(--text2); margin:.5em 0; }
+.out-area.md code { font-family:var(--mono); font-size:11.5px; background:var(--bg3); padding:1px 4px; border-radius:3px; }
+
+/* ── Hata ekranı ── */
+.error-box { display:flex; align-items:center; justify-content:center; flex:1; padding:20px; }
+.error-inner { max-width:340px; }
+.error-title { font-size:12px; font-weight:600; color:var(--red-tx); margin-bottom:6px; }
+.error-pre { font-size:11px; color:var(--text); line-height:1.7; white-space:pre-wrap; background:var(--bg2); padding:10px; border-radius:6px; border:1px solid var(--border); font-family:var(--mono); }
+.retry-btn { margin-top:10px; padding:5px 14px; font-size:11px; cursor:pointer; border-radius:5px; border:1px solid var(--border); background:var(--accent); color:#fff; font-weight:600; }
+
+/* ── İterasyon barı ── */
+.iter-bar { flex-shrink:0; border-top:1px solid var(--border); padding:8px 14px 9px; }
+.iter-btns { display:flex; flex-wrap:wrap; gap:3px; margin-bottom:6px; }
+.iter-btn {
+  padding:3px 9px; font-size:10.5px; border-radius:4px; cursor:pointer;
+  background:var(--bg2); color:var(--text2); border:1px solid var(--border); font-weight:500;
+}
+.iter-btn:hover { background:var(--bg); color:var(--text); }
+.iter-btn:disabled { opacity:.38; cursor:not-allowed; }
+.iter-row { display:flex; gap:5px; }
+.iter-input { flex:1; font-size:11.5px; }
+.iter-send { padding:5px 11px; font-size:11px; cursor:pointer; border-radius:5px; background:var(--accent); color:#fff; border:none; font-weight:600; white-space:nowrap; }
+.iter-send:disabled { opacity:.38; cursor:not-allowed; }
+
+/* ── Geçmiş barı ── */
+.hist-bar { flex-shrink:0; border-top:1px solid var(--border); padding:5px 14px 7px; display:flex; align-items:center; gap:8px; background:var(--bg2); }
+.hist-lbl { font-size:9.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.07em; white-space:nowrap; }
+.hist-chips { display:flex; gap:3px; overflow-x:auto; }
+.hist-chip { padding:2px 9px; font-size:10.5px; border-radius:3px; cursor:pointer; color:var(--text2); border:1px solid var(--border); background:transparent; white-space:nowrap; font-weight:500; }
+.hist-chip:hover { background:var(--bg); color:var(--text); }
+</style>
+</head>
+<body>
+
+<!-- Kurulum banner -->
+<div id="setup-banner">
+  <strong>Kurulum (tek seferlik):</strong>
+  &nbsp;
+  <code>OLLAMA_ORIGINS=http://localhost:8080 ollama serve</code>
+  &nbsp;→&nbsp;
+  <code>ollama pull qwen3:8b</code>
+  &nbsp;→&nbsp; Bu dosyayı şuradan aç:
+  <code>http://localhost:8080/matematik_asistani_ollama.html</code>
+  &nbsp;|&nbsp;
+  <a href="javascript:testConn()" style="color:#92400e;font-weight:600;">Bağlantıyı Test Et</a>
+</div>
+
+<div id="app">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sb-head">
+      <div class="sb-eyebrow">Kocasinan Akademi</div>
+      <div class="sb-title">Matematik Asistanı</div>
+      <div class="sb-model">
+        <span class="sb-model-dot"></span>
+        <span class="sb-model-txt">Ollama · qwen3:8b</span>
+      </div>
+    </div>
+    <div class="sb-list" id="tool-list"></div>
+  </aside>
+
+  <!-- Input Panel -->
+  <section id="inp-panel">
+    <div class="inp-head">
+      <div class="inp-title" id="inp-title"></div>
+      <div class="inp-sub"   id="inp-sub"></div>
+    </div>
+    <div class="inp-body" id="inp-body"></div>
+  </section>
+
+  <!-- Output Column -->
+  <section id="out-col">
+    <div class="out-head">
+      <div style="display:flex;align-items:center;">
+        <span class="out-lbl">Çıktı</span>
+        <span id="phase-badge"></span>
+        <span id="wc-badge" class="wc-badge"></span>
+      </div>
+      <button id="copy-btn" class="copy-btn" style="display:none;" onclick="doCopy()">Kopyala</button>
+    </div>
+    <div id="out-body"><!-- render edilir --></div>
+  </section>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────
+// SABITLER
+// ─────────────────────────────────────────────────────────────────────
+
+const OLLAMA_URL = 'http://localhost:11434/api/chat';
+const MODEL      = 'qwen3:8b';
+
+const TOOLS = [
+  { id:'soru',   nm:'Soru Üretici',      ds:'Açık uçlu soru' },
+  { id:'sinav',  nm:'Sınav Hazırlayıcı', ds:'Tam sınav paketi' },
+  { id:'karne',  nm:'Karne Görüşü',      ds:'Kişiselleştirilmiş metin' },
+  { id:'bep',    nm:'BEP Taslağı',       ds:'Kaynaştırma planı' },
+  { id:'plan',   nm:'Ders Planı',        ds:'TYMM uyumlu plan' },
+  { id:'analiz', nm:'Sınav Analizi',     ds:'Kazanım bazlı rapor' },
+  { id:'zumre',  nm:'Zümre Tutanağı',    ds:'Resmi toplantı tutanağı' },
+  { id:'veli',   nm:'Veli Mektubu',      ds:'Bilgilendirme mektubu' },
+];
+
+const META = {
+  soru:  { ti:'Soru Üretici',       su:'LGS tarzı açık uçlu — kısmi puanlama şemalı' },
+  sinav: { ti:'Sınav Hazırlayıcı',  su:'Konu dağılım tablosu + sorular + cevap anahtarı' },
+  karne: { ti:'Karne Görüşü',       su:'Her öğrenci için özgün, kopyala-yapıştır olmayan metin' },
+  bep:   { ti:'BEP Taslağı',        su:'MEB Özel Eğitim Yönetmeliği formatında hazır taslak' },
+  plan:  { ti:'Ders Planı',         su:'TYMM Beceriler Çerçevesi + EDE değerleri uyumlu' },
+  analiz:{ ti:'Sınav Analizi',      su:'Kazanım bazlı analiz + pedagojik etkinlik önerileri' },
+  zumre: { ti:'Zümre Tutanağı',     su:'MEB formatında resmi tutanak — karar defterine hazır' },
+  veli:  { ti:'Veli Mektubu',       su:'Yasal dayanakları olan, resmi, yapıcı ton' },
+};
+
+const ES = {
+  soru:  'Kazanım, Bloom düzeyi ve soru sayısını seçin.',
+  sinav: 'Dönem, konular ve süreyi girin.',
+  karne: 'Not aralığı ve anahtar kelimeleri yazın.',
+  bep:   'Yetersizlik türü ve mevcut düzeyi belirtin.',
+  plan:  'Kazanım ve sınıf koşullarını girin.',
+  analiz:'Sınav verilerinizi yapıştırın.',
+  zumre: 'Gündem ve kararları kısaca yazın.',
+  veli:  'Mektup türünü ve konuyu belirtin.',
+};
+
+const SN  = ['5. Sınıf','6. Sınıf','7. Sınıf','8. Sınıf','9. Sınıf','10. Sınıf','11. Sınıf','12. Sınıf'];
+const BL  = ['Bilgi','Kavrama','Uygulama','Analiz','Sentez','Değerlendirme'];
+const SYS = `Sen MEB ve Türkiye Yüzyılı Maarif Modeli (TYMM) uzmanı bir matematik öğretmeni asistanısın. KURALLAR: (1) Tüm çıktılar Türkçe ve doğrudan kullanıma hazır taslak. (2) Yasal madde numarası asla uydurma; "ilgili yönetmelik hükümleri çerçevesinde" kullan. (3) Kalın başlıklar, listeler ve tablolar kullanarak taranabilir biçimde yaz.`;
+
+// ─────────────────────────────────────────────────────────────────────
+// DURUM (STATE)
+// ─────────────────────────────────────────────────────────────────────
+
+const state = {
+  tool:    'soru',
+  data:    {},         // { toolId: { key: val } }
+  msgs:    [],         // [{ role, content }]
+  out:     '',         // mevcut çıktı metni
+  phase:   'idle',     // idle | fetching | streaming | done
+  hist:    {},         // { toolId: [{ text, ts, wc }] }
+  reader:  null,       // aktif ReadableStreamDefaultReader
+};
+
+const G = (k, def='') => (state.data[state.tool] || {})[k] ?? def;
+const SET = (k, v) => {
+  if (!state.data[state.tool]) state.data[state.tool] = {};
+  state.data[state.tool][k] = v;
+};
+const busy = () => state.phase === 'fetching' || state.phase === 'streaming';
+
+// ─────────────────────────────────────────────────────────────────────
+// PROMPT ÜRETICI
+// ─────────────────────────────────────────────────────────────────────
+
+const NT = '\n\n/no_think'; // qwen3 düşünme modunu kapat
+
+function buildPrompt() {
+  switch (state.tool) {
+    case 'soru':
+      return `${SYS}\n\nGÖREV: ${G('sinif','7. Sınıf')} için "${G('konu','belirtilmemiş')}" konusunda ${G('sayi','3')} adet açık uçlu matematik sorusu üret. Bloom: ${G('bloom','Uygulama')} | Zorluk: ${G('zorluk','Orta')}\n\nKURALLAR: MEB 2023 — çoktan seçmeli yasak. LGS tarzı: gerçek hayat bağlamı + çok adımlı. Her soru başlığında: kazanım kodu | puan | Bloom. Her soru altında: adım adım cevap anahtarı + kısmi puanlama şeması.${NT}`;
+    case 'sinav':
+      return `${SYS}\n\nGÖREV: ${G('sinif','8. Sınıf')} ${G('donem','1. Dönem 1. Yazılı')}: konular: ${G('konular','belirtilmemiş')}. ${G('sayi','4')} soru, ${G('puan','100')} puan, ${G('sure','40')} dk.\n\nSIRA: (1) Konu-soru dağılım tablosu (2) Sorular—kazanım+puan+Bloom başlıklı (3) Cevap anahtarı (4) Kısmi puanlama tablosu. Zorluk: %30 kolay %50 orta %20 zor. Sadece açık uçlu.${NT}`;
+    case 'karne':
+      return `${SYS}\n\nGÖREV: ${G('sayi','3')} öğrenci için matematik karne görüşü. Not: ${G('notAr','karma')} | Trend: ${G('trend','sabit')} | Notlar: ${G('notlar','genel')}\n\nKURAL: Her öğrenci için TAMAMEN FARKLI özgün metin. 3–4 cümle. Öğrenci 1, 2, 3 numaralı liste.${NT}`;
+    case 'bep':
+      return `${SYS}\n\nGÖREV: ${G('sinif','6. Sınıf')} — ${G('tur','öğrenme güçlüğü')} tanılı öğrenci BEP. Mevcut: ${G('duzey','belirtilmemiş')}. Hedef: ${G('hedef','sayılar')}.\n\nFORMAT: **Kaba Değerlendirme** → **Uzun Dönemli Hedefler** (2-3, yıllık) → **Kısa Dönemli Hedefler** (min 4, aylık, ölçülebilir) → **Öğretim Yöntemleri** → **Değerlendirme Kriterleri**${NT}`;
+    case 'plan':
+      return `${SYS}\n\nGÖREV: ${G('sinif','7. Sınıf')} — "${G('kaz','belirtilmemiş')}" kazanımı. Süre: ${G('sure','2 (80 dk)')}. Mevcud: ${G('mevc','31–40')}. Materyal: ${G('mat','akıllı tahta')}.\n\nFORMAT: Kazanım+hedef → Materyaller → Süre tablosu (aşama|süre|açıklama) → Hazırlık → Keşfetme → Açıklama → Derinleştirme → Biçimlendirici Değerlendirme. TYMM. EDE bağlantısı.${NT}`;
+    case 'analiz':
+      return `${SYS}\n\nGÖREV: ${G('sinif','8. Sınıf')} sınav analizi. Konular: ${G('konular','belirtilmemiş')}. Veriler: ${G('veriler','belirtilmemiş')}\n\nFORMAT: **Genel Başarı Tablosu** → **Kazanım Bazlı Analiz** (başarı %, kategori) → **Zayıf Kazanımlar ve Nedenler** → **Etkinlik Önerileri** (her zayıf kazanım için 2) → **Sonraki Ders Önerisi**${NT}`;
+    case 'zumre':
+      return `${SYS}\n\nGÖREV: ${G('tarih','...')} tarihli matematik zümre toplantısı tutanağı. Katılımcılar: ${G('katil','belirtilmemiş')}. Gündem: ${G('gundem','belirtilmemiş')}. Kararlar: ${G('karar','belirtilmemiş')}\n\nFORMAT: Resmi başlık → Katılımcılar tablosu → Gündem+görüşme özetleri → **Alınan Kararlar tablosu** (karar|sorumlu|süre) → İmza alanı.${NT}`;
+    case 'veli':
+      return `${SYS}\n\nGÖREV: "${G('tur','bilgilendirme')}" mektubu. Öğrenci: ${G('ogr','belirtilmemiş')}. Konu: ${G('konu','belirtilmemiş')}. Okul: ${G('okul','...')}.\n\nFORMAT: Resmi başlık → Sayın Velimiz → Konu → Detaylar → Beklenti → Gereğini saygıyla arz ederim → İmza. Devamsızlık için "ilgili yönetmelik hükümleri çerçevesinde" ifadesini kullan.${NT}`;
+    default: return SYS;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// MARKDOWN PARSER
+// ─────────────────────────────────────────────────────────────────────
+
+function parseMD(raw) {
+  let s = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Tablolar
+  const lines = s.split('\n'), out2 = [];
+  let i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (i+1 < lines.length && l.includes('|') && /^\s*\|?[\s\-|:]+\|?\s*$/.test(lines[i+1])) {
+      const tr = [l]; i += 2;
+      while (i < lines.length && lines[i].includes('|')) { tr.push(lines[i]); i++; }
+      out2.push(mkTable(tr)); continue;
+    }
+    out2.push(l); i++;
+  }
+  s = out2.join('\n');
+  s = s
+    .replace(/^#{3} (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^#{2} (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/^---+$/gm,'<hr/>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([^*\n]+?)\*/g,'<em>$1</em>')
+    .replace(/`([^`\n]+?)`/g,'<code>$1</code>');
+  s = s.replace(/((?:^[-*•] .+$\n?)+)/gm, m =>
+    '<ul>' + m.trim().split('\n').filter(Boolean).map(l => '<li>' + l.replace(/^[-*•] /,'') + '</li>').join('') + '</ul>\n'
+  );
+  s = s.replace(/((?:^\d+[.)]\s.+$\n?)+)/gm, m =>
+    '<ol>' + m.trim().split('\n').filter(Boolean).map(l => '<li>' + l.replace(/^\d+[.)]\s/,'') + '</li>').join('') + '</ol>\n'
+  );
+  s = s.replace(/\n{2,}/g,'</p><p>');
+  s = s.replace(/\n(?!<\/?(?:h[1-3]|ul|ol|table|blockquote|hr|li))/g,'<br/>');
+  s = '<p>' + s + '</p>';
+  ['h1','h2','h3','ul','ol','table','blockquote'].forEach(t => {
+    s = s.replace(new RegExp(`<p>(<${t}[\\s>]|<${t}>)`,'g'),'$1');
+    s = s.replace(new RegExp(`(</${t}>)<\\/p>`,'g'),'$1');
+  });
+  return s.replace(/<p>(<hr\/>)<\/p>/g,'$1').replace(/<p>\s*<\/p>/g,'').replace(/<p><br\/><\/p>/g,'').replace(/<br\/>\s*<\/p>/g,'</p>');
+}
+
+function mkTable(rows) {
+  const parse = r => {
+    const c = r.split('|');
+    const st = r.trim().startsWith('|') ? 1 : 0;
+    const en = r.trim().endsWith('|')   ? c.length-1 : c.length;
+    return c.slice(st, en).map(x => x.trim());
+  };
+  const [h,...b] = rows.map(parse);
+  return `<table><thead><tr>${h.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${b.filter(r=>r.length).map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// qwen3 DÜŞÜNME BLOĞU SOYUCU (fallback)
+// ─────────────────────────────────────────────────────────────────────
+
+function stripThink(text) {
+  return text.replace(/<think>[\s\S]*?<\/think>/g,'').trimStart();
+}
+function isThinking(text) {
+  return (text.match(/<think>/g)||[]).length > (text.match(/<\/think>/g)||[]).length;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// API & STREAMING
+// ─────────────────────────────────────────────────────────────────────
+
+function cancelStream() {
+  if (state.reader) { state.reader.cancel().catch(()=>{}); state.reader = null; }
+}
+
+async function runStream(msgs) {
+  cancelStream();
+  state.msgs  = msgs;
+  state.out   = '';
+  state.phase = 'fetching';
+  renderOutput();
+  renderGenBtn();
+
+  let res;
+  try {
+    res = await fetch(OLLAMA_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model:MODEL, messages:msgs, stream:true, options:{ temperature:0.7 } }),
+    });
+  } catch (err) {
+    const isNet = err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('CORS') || err.message.includes('net::');
+    state.out   = isNet
+      ? `Ollama'ya bağlanılamadı.\n\nMixed Content hatası:\nBu sayfa HTTPS üzerinden yüklenmiş.\nhttp://localhost:11434'e istek atamazsınız.\n\nÇözüm: Bu HTML dosyasını yerel HTTP sunucusundan açın:\n\n  python -m http.server 8080\n  → http://localhost:8080/matematik_asistani_ollama.html\n\nOllama'yı başlatın:\n  OLLAMA_ORIGINS=http://localhost:8080 ollama serve`
+      : 'Bağlantı hatası: ' + err.message;
+    state.phase = 'done';
+    renderOutput();
+    renderGenBtn();
+    return;
+  }
+
+  if (!res.ok) {
+    state.out   = res.status === 404
+      ? `Model bulunamadı (HTTP 404).\n\nTerminalde:\n  ollama pull ${MODEL}`
+      : `Sunucu hatası: HTTP ${res.status}`;
+    state.phase = 'done';
+    renderOutput();
+    renderGenBtn();
+    return;
+  }
+
+  // Bağlantı başarılı — banner'ı gizle
+  document.getElementById('setup-banner').classList.add('hidden');
+
+  state.phase  = 'streaming';
+  state.reader = res.body.getReader();
+  renderOutput();   // streaming DOM kurulumu
+  renderGenBtn();
+
+  const outEl    = document.getElementById('stream-raw');
+  const decoder  = new TextDecoder();
+  let rawAccum   = '';
+  let buf        = '';
+
+  try {
+    while (true) {
+      const { done, value } = await state.reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream:true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const ev     = JSON.parse(line);
+          const chunk  = ev.message?.content || '';
+          if (chunk) {
+            rawAccum += chunk;
+            const display = isThinking(rawAccum) ? 'Düşünüyor...' : stripThink(rawAccum);
+            if (outEl) outEl.textContent = display;
+          }
+          if (ev.done) {
+            state.reader = null;
+            const finalText = stripThink(rawAccum).trim();
+            if (!finalText) {
+              state.out = 'Model yanıt üretemedi. Tekrar deneyin.';
+            } else {
+              const ts  = new Date().toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+              const wc  = finalText.trim().split(/\s+/).length;
+              if (!state.hist[state.tool]) state.hist[state.tool] = [];
+              state.hist[state.tool].unshift({ text:finalText, ts, wc });
+              if (state.hist[state.tool].length > 5) state.hist[state.tool].pop();
+              state.msgs.push({ role:'assistant', content:finalText });
+              state.out = finalText;
+            }
+            state.phase = 'done';
+            renderOutput();
+            renderGenBtn();
+            return;
+          }
+        } catch (_) {}
+      }
+    }
+  } catch (readErr) {
+    if (state.phase === 'streaming') {
+      state.out   = 'Okuma hatası: ' + readErr.message;
+      state.phase = 'done';
+      renderOutput();
+      renderGenBtn();
+    }
+  }
+}
+
+async function generate() {
+  if (busy()) return;
+  cancelStream();
+  const msgs = [{ role:'user', content: buildPrompt() }];
+  await runStream(msgs);
+}
+
+async function iterate(ins) {
+  if (busy() || !state.msgs.length) return;
+  const last    = state.msgs[state.msgs.length-1];
+  const newMsgs = last.role === 'assistant'
+    ? [...state.msgs, { role:'user', content: ins + '\n\n/no_think' }]
+    : state.msgs;
+  await runStream(newMsgs);
+}
+
+function sendFu() {
+  const el = document.getElementById('fu-input');
+  if (!el) return;
+  const v = el.value.trim();
+  if (!v) return;
+  el.value = '';
+  iterate(v);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// RENDER FONKSİYONLARI
+// ─────────────────────────────────────────────────────────────────────
+
+function renderSidebar() {
+  document.getElementById('tool-list').innerHTML = TOOLS.map(t => `
+    <button class="tool-btn${t.id===state.tool?' active':''}" onclick="switchTool('${t.id}')">
+      <span class="tool-nm">${t.nm}</span>
+      <span class="tool-ds">${t.ds}</span>
+    </button>
+  `).join('');
+}
+
+function renderInpHead() {
+  const m = META[state.tool];
+  document.getElementById('inp-title').textContent = m.ti;
+  document.getElementById('inp-sub').textContent   = m.su;
+}
+
+function renderForm() {
+  document.getElementById('inp-body').innerHTML = FORM_HTML[state.tool]() + `
+    <button id="gen-btn" class="gen-btn" onclick="generate()" ${busy()?'disabled':''}>Üret</button>
+  `;
+  attachFormListeners();
+}
+
+function renderGenBtn() {
+  const btn = document.getElementById('gen-btn');
+  if (!btn) return;
+  const b = busy();
+  btn.disabled    = b;
+  btn.textContent = state.phase==='fetching' ? 'Bağlanılıyor...' : state.phase==='streaming' ? 'Üretiliyor...' : 'Üret';
+}
+
+function renderPhaseBadge() {
+  const el = document.getElementById('phase-badge');
+  const wc = document.getElementById('wc-badge');
+  const cp = document.getElementById('copy-btn');
+  if (state.phase==='fetching') {
+    el.innerHTML = '<span class="badge badge-fetching">Bağlanılıyor</span>'; wc.textContent=''; cp.style.display='none';
+  } else if (state.phase==='streaming') {
+    el.innerHTML = '<span class="badge badge-streaming">Akış</span>'; wc.textContent=''; cp.style.display='none';
+  } else if (state.phase==='done' && state.out && !isErrOut()) {
+    el.innerHTML = '<span class="badge badge-done">Tamamlandı</span>';
+    wc.textContent = '~' + state.out.trim().split(/\s+/).length + ' kelime';
+    cp.style.display='';
+  } else {
+    el.innerHTML=''; wc.textContent=''; cp.style.display='none';
+  }
+}
+
+function isErrOut() {
+  return ['Sunucu','Bağlantı','Okuma','Model bulunam','Ollama','Model yanıt'].some(p => state.out.startsWith(p));
+}
+
+function renderOutput() {
+  renderPhaseBadge();
+  const body = document.getElementById('out-body');
+
+  if (state.phase==='idle' || (!state.out && !busy())) {
+    const m = META[state.tool];
+    body.innerHTML = `
+      <div class="empty-state">
+        <div>
+          <div class="empty-title">${m.ti}</div>
+          <div class="empty-sub">${ES[state.tool]}</div>
+          <div class="empty-hint">Girişleri doldurun ve Üret butonuna tıklayın.</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (state.phase==='fetching') {
+    body.innerHTML = `
+      <div class="empty-state">
+        <div>
+          <div class="empty-title">Ollama'ya bağlanılıyor</div>
+          <div class="empty-sub" style="font-family:monospace;font-size:11px;">${OLLAMA_URL}</div>
+          <div class="empty-hint" style="margin-top:4px">Model yükleniyor olabilir, lütfen bekleyin...</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (state.phase==='streaming') {
+    body.innerHTML = `<div id="stream-raw" class="out-area raw"></div>`;
+    return;
+  }
+
+  // done
+  if (isErrOut()) {
+    body.innerHTML = `
+      <div class="error-box">
+        <div class="error-inner">
+          <div class="error-title">Hata</div>
+          <pre class="error-pre">${esc(state.out)}</pre>
+          <button class="retry-btn" onclick="generate()">Tekrar Dene</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // başarılı done — markdown + iterasyon + geçmiş
+  const histList = state.hist[state.tool] || [];
+  const histBar  = histList.length ? `
+    <div class="hist-bar">
+      <span class="hist-lbl">Geçmiş</span>
+      <div class="hist-chips">
+        ${histList.map((h,i) => `<button class="hist-chip" onclick="loadHist(${i})" title="~${h.wc} kelime">${h.ts}</button>`).join('')}
+      </div>
+    </div>` : '';
+
+  body.innerHTML = `
+    <div class="out-area md">${parseMD(state.out)}</div>
+    <div class="iter-bar">
+      <div class="iter-btns">
+        <button class="iter-btn" onclick="iterate('Bu metni kısalt. Temel bilgileri koru, gereksiz ifadeleri çıkar.')">Kısalt</button>
+        <button class="iter-btn" onclick="iterate('Bu metni genişlet. Daha fazla detay, örnek ve açıklama ekle.')">Genişlet</button>
+        <button class="iter-btn" onclick="iterate('Bu metni daha resmi ve akademik bir Türkçe ile yeniden düzenle.')">Daha Resmi</button>
+        <button class="iter-btn" onclick="generate()">Yeniden Üret</button>
+      </div>
+      <div class="iter-row">
+        <input type="text" id="fu-input" class="iter-input" placeholder="Özel talimat... (Enter ile gönder)"
+               onkeydown="if(event.key==='Enter')sendFu()">
+        <button class="iter-send" onclick="sendFu()">Gönder</button>
+      </div>
+    </div>
+    ${histBar}`;
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function doCopy() {
+  navigator.clipboard.writeText(state.out);
+  const btn = document.getElementById('copy-btn');
+  if (btn) { btn.textContent = 'Kopyalandı'; setTimeout(() => { btn.textContent = 'Kopyala'; }, 1800); }
+}
+
+function loadHist(i) {
+  const h = (state.hist[state.tool]||[])[i];
+  if (!h) return;
+  cancelStream();
+  state.out   = h.text;
+  state.msgs  = [];
+  state.phase = 'done';
+  renderOutput();
+}
+
+function switchTool(id) {
+  if (busy()) return;
+  cancelStream();
+  state.tool  = id;
+  state.out   = '';
+  state.msgs  = [];
+  state.phase = 'idle';
+  renderSidebar();
+  renderInpHead();
+  renderForm();
+  renderOutput();
+}
+
+async function testConn() {
+  try {
+    const r = await fetch('http://localhost:11434/api/tags');
+    if (r.ok) {
+      const d = await r.json();
+      const hasModel = (d.models||[]).some(m => m.name.includes('qwen3'));
+      alert(hasModel ? '✓ Ollama çalışıyor ve qwen3 modeli mevcut!' : '✓ Ollama çalışıyor ama qwen3 bulunamadı.\n\nTerminalde:\nollama pull qwen3:8b');
+    } else {
+      alert('Ollama yanıt verdi ama hata döndürdü: HTTP ' + r.status);
+    }
+  } catch (e) {
+    alert('Ollama\'ya bağlanılamadı.\n\n' + e.message + '\n\nLütfen kurulum adımlarını kontrol edin.');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// FORM HTML ÜRETİCİLERİ
+// ─────────────────────────────────────────────────────────────────────
+
+const e = (v) => String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function sl(id, opts, def) {
+  const v = G(id, def);
+  return `<select data-key="${id}">${opts.map(o=>`<option value="${e(o)}"${v===o?' selected':''}>${e(o)}</option>`).join('')}</select>`;
+}
+function tx(id, ph, rows=3) { return `<textarea rows="${rows}" data-key="${id}" placeholder="${e(ph)}">${e(G(id))}</textarea>`; }
+function ip(id, ph, type='text') { return `<input type="${type}" data-key="${id}" value="${e(G(id))}" placeholder="${e(ph)}"/>`; }
+function fl(label, html) { return `<div class="field"><label>${label}</label>${html}</div>`; }
+
+const FORM_HTML = {
+  soru:  () => [fl('Sınıf',sl('sinif',SN,'7. Sınıf')),fl('Konu / Kazanım',tx('konu','Örn: Doğrusal denklemler...',2)),fl('Soru sayısı',sl('sayi',['1','2','3','4','5'],'3')),fl('Bloom düzeyi',sl('bloom',BL,'Uygulama')),fl('Zorluk',sl('zorluk',['Kolay','Orta','Zor','Karma'],'Orta'))].join(''),
+  sinav: () => [fl('Sınıf',sl('sinif',SN,'8. Sınıf')),fl('Dönem',sl('donem',['1. Dönem 1. Yazılı','1. Dönem 2. Yazılı','2. Dönem 1. Yazılı','2. Dönem 2. Yazılı'],'1. Dönem 1. Yazılı')),fl('Konular',tx('konular','Kapsanan konuları yazın...',2)),fl('Soru sayısı',sl('sayi',['3','4','5'],'4')),fl('Toplam puan',sl('puan',['100','50','40'],'100')),fl('Süre (dk)',sl('sure',['40','80','120'],'40'))].join(''),
+  karne: () => [fl('Kaç öğrenci?',sl('sayi',['1','2','3','5','8'],'3')),fl('Not aralığı',sl('notAr',['45–54 (geçer)','55–69 (orta)','70–84 (iyi)','85–100 (pekiyi)','Karma'],'Karma')),fl('Sınav trendi',sl('trend',['Yükseliyor','Düşüyor','Sabit','Dalgalı'],'Sabit')),fl('Öğretmen notları',tx('notlar','Anahtar kelimeler...',3))].join(''),
+  bep:   () => [fl('Sınıf',sl('sinif',SN,'6. Sınıf')),fl('Yetersizlik türü',sl('tur',['Özgül öğrenme güçlüğü (diskalkuli)','Hafif zihinsel yetersizlik','DEHB','OSB','İşitme yetersizliği','Görme yetersizliği'],'Özgül öğrenme güçlüğü (diskalkuli)')),fl('Mevcut matematik düzeyi',tx('duzey','Öğrenci şu an ne yapabiliyor?',3)),fl('Hedef alan',sl('hedef',['Sayılar ve işlemler','Geometri','Ölçme','Veri ve olasılık','Cebir','Günlük yaşam'],'Sayılar ve işlemler'))].join(''),
+  plan:  () => [fl('Sınıf',sl('sinif',SN,'7. Sınıf')),fl('Kazanım / Konu',tx('kaz','Örn: 7.A.2.1 — Doğrusal denklemler',2)),fl('Ders süresi',sl('sure',['1 (40 dk)','2 (80 dk)','3 (120 dk)'],'2 (80 dk)')),fl('Sınıf mevcudu',sl('mevc',['20 ve altı','21–30','31–40','40 üzeri'],'31–40')),fl('Mevcut materyal',sl('mat',['Sadece akıllı tahta','Akıllı tahta + bilgisayar','Projeksiyon + kâğıt','Hiç materyal yok'],'Sadece akıllı tahta'))].join(''),
+  analiz:() => [fl('Sınıf',sl('sinif',SN,'8. Sınıf')),fl('Sınav konuları',tx('konular','Konu 1: ...\nKonu 2: ...',2)),fl('Sınav verileri',tx('veriler','Soru 1 (konu, puan): sınıf ort. X, Y/Z tam puan...',4))].join(''),
+  zumre: () => [fl('Tarih',ip('tarih','','date')),fl('Katılımcılar',tx('katil','Adı Soyadı — Görevi...',2)),fl('Gündem maddeleri',tx('gundem','1. TYMM uyum süreci\n2. Ortak sınav planlaması...',3)),fl('Alınan kararlar (özet)',tx('karar','Kısaca not edin...',3))].join(''),
+  veli:  () => [fl('Mektup türü',sl('tur',['Devamsızlık uyarısı (1. bildirim)','Devamsızlık uyarısı (2. bildirim)','Davranış bildirimi','Başarı durumu bilgilendirme','Veli toplantısı daveti','Genel bilgilendirme'],'Devamsızlık uyarısı (1. bildirim)')),fl('Öğrenci bilgisi',tx('ogr','Sınıf ve genel durum...',2)),fl('Konu detayı',tx('konu','Ek bilgi...',2)),fl('Okul adı (opsiyonel)',ip('okul','Okul adı...'))].join(''),
+};
+
+function attachFormListeners() {
+  document.querySelectorAll('#inp-body [data-key]').forEach(el => {
+    el.addEventListener('input', () => SET(el.dataset.key, el.value));
+    el.addEventListener('change', () => SET(el.dataset.key, el.value));
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// BAŞLANGIC
+// ─────────────────────────────────────────────────────────────────────
+
+renderSidebar();
+renderInpHead();
+renderForm();
+renderOutput();
+</script>
+</body>
+</html>

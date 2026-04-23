@@ -8,7 +8,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -750,7 +750,7 @@ class UnifiedAccessibilityService:
 
 
 # Global service instance
-_accessibility_service: Optional[UnifiedAccessibilityService] = None
+_accessibility_service: UnifiedAccessibilityService | None = None
 
 
 def get_accessibility_service() -> UnifiedAccessibilityService:

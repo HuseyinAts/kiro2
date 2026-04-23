@@ -7,7 +7,6 @@ REQ-13.1: Makale/Soru içerik yönetimi - Alternatif çözüm yolları
 """
 
 import logging
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -15,7 +14,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user
 from services.alternative_solutions_service import AlternativeSolutionsService
 
 logger = logging.getLogger(__name__)
@@ -33,8 +32,8 @@ class SolutionStep(BaseModel):
 
     step_number: int = Field(..., ge=1, description="Adım numarası")
     description: str = Field(..., min_length=1, description="Adım açıklaması")
-    formula: Optional[str] = Field(None, description="Matematiksel formül (LaTeX)")
-    explanation: Optional[str] = Field(None, description="Ek açıklama")
+    formula: str | None = Field(None, description="Matematiksel formül (LaTeX)")
+    explanation: str | None = Field(None, description="Ek açıklama")
 
 
 class AlternativeSolutionCreate(BaseModel):
@@ -48,14 +47,14 @@ class AlternativeSolutionCreate(BaseModel):
     estimated_time_seconds: int = Field(
         ..., ge=1, le=3600, description="Tahmini çözüm süresi (saniye)"
     )
-    steps: List[SolutionStep] = Field(..., min_items=1, description="Çözüm adımları")
-    tips: Optional[List[str]] = Field(None, description="İpuçları")
-    prerequisites: Optional[List[str]] = Field(
+    steps: list[SolutionStep] = Field(..., min_items=1, description="Çözüm adımları")
+    tips: list[str] | None = Field(None, description="İpuçları")
+    prerequisites: list[str] | None = Field(
         None, description="Ön gereksinimler (bilgi/beceri)"
     )
-    advantages: Optional[List[str]] = Field(None, description="Avantajları")
-    disadvantages: Optional[List[str]] = Field(None, description="Dezavantajları")
-    video_url: Optional[str] = Field(None, description="Video çözüm URL")
+    advantages: list[str] | None = Field(None, description="Avantajları")
+    disadvantages: list[str] | None = Field(None, description="Dezavantajları")
+    video_url: str | None = Field(None, description="Video çözüm URL")
     created_by_type: str = Field(
         "teacher", description="Oluşturan tipi (teacher, student, ai)"
     )
@@ -65,7 +64,7 @@ class SolutionVote(BaseModel):
     """Çözüm oylama"""
 
     vote_type: str = Field(..., description="Oy tipi (upvote, downvote)")
-    comment: Optional[str] = Field(None, max_length=500, description="Yorum")
+    comment: str | None = Field(None, max_length=500, description="Yorum")
 
 
 # ========================================================================
@@ -121,7 +120,7 @@ async def add_alternative_solution(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Çözüm ekleme hatası: {str(e)}")
+        logger.error(f"Çözüm ekleme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -158,7 +157,7 @@ async def get_alternative_solutions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Çözüm getirme hatası: {str(e)}")
+        logger.error(f"Çözüm getirme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -217,7 +216,7 @@ async def get_student_submissions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Öğrenci çözümleri getirme hatası: {str(e)}")
+        logger.error(f"Öğrenci çözümleri getirme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -264,7 +263,7 @@ async def get_solution_reviews(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Review getirme hatası: {str(e)}")
+        logger.error(f"Review getirme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -275,7 +274,7 @@ async def get_solution_reviews(
 async def get_top_rated_solutions(
     question_id: str,
     limit: int = Query(5, ge=1, le=20, description="Maksimum sonuç sayısı"),
-    created_by_type: Optional[str] = Query(
+    created_by_type: str | None = Query(
         None, description="Oluşturan tipi filtresi (student, teacher, ai)"
     ),
     service: AlternativeSolutionsService = Depends(get_solutions_service),
@@ -316,7 +315,7 @@ async def get_top_rated_solutions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Top rated çözümler hatası: {str(e)}")
+        logger.error(f"Top rated çözümler hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -367,7 +366,7 @@ async def vote_solution(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Oylama hatası: {str(e)}")
+        logger.error(f"Oylama hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -414,7 +413,7 @@ async def remove_vote(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Oy geri çekme hatası: {str(e)}")
+        logger.error(f"Oy geri çekme hatası: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

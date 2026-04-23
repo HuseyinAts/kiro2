@@ -5,17 +5,16 @@ Comprehensive test coverage for diagnostic_video_api.py
 
 import asyncio
 import json
-import pytest
-from pathlib import Path
-from unittest.mock import AsyncMock, patch, mock_open
 
 # Import the diagnostic class
 import sys
+from pathlib import Path
+from unittest.mock import AsyncMock, mock_open, patch
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from diagnostic_video_api import VideoAPIDiagnostic
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -147,7 +146,7 @@ class TestVideoAPIDiagnostic:
         """Test recommendations endpoint - timeout case"""
         with patch("aiohttp.ClientSession") as mock_session:
             mock_session.return_value.__aenter__.return_value.post.side_effect = (
-                asyncio.TimeoutError()
+                TimeoutError()
             )
 
             await diagnostic.check_recommendations_endpoint()
@@ -324,22 +323,21 @@ class TestVideoAPIDiagnostic:
                 mock_response_ok
             )
 
-            with patch("pathlib.Path.exists", return_value=True):
-                with patch(
-                    "builtins.open",
-                    mock_open(
-                        read_data="const API_BASE_URL = 'http://localhost:8000';"
-                    ),
-                ):
-                    results = await diagnostic.run_all_checks()
+            with patch("pathlib.Path.exists", return_value=True), patch(
+                "builtins.open",
+                mock_open(
+                    read_data="const API_BASE_URL = 'http://localhost:8000';"
+                ),
+            ):
+                results = await diagnostic.run_all_checks()
 
-                    # Verify all checks were performed
-                    assert "backend_service" in results["checks"]
-                    assert "test_endpoint" in results["checks"]
-                    assert "recommendations_endpoint" in results["checks"]
-                    assert "cors" in results["checks"]
-                    assert "frontend_config" in results["checks"]
-                    assert "backend_logs" in results["checks"]
+                # Verify all checks were performed
+                assert "backend_service" in results["checks"]
+                assert "test_endpoint" in results["checks"]
+                assert "recommendations_endpoint" in results["checks"]
+                assert "cors" in results["checks"]
+                assert "frontend_config" in results["checks"]
+                assert "backend_logs" in results["checks"]
 
 
 class TestVideoAPIDiagnosticEdgeCases:

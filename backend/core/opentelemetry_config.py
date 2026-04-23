@@ -11,16 +11,20 @@ Comprehensive tracing configuration with:
 """
 import logging
 import os
-from typing import Optional
 
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION, DEPLOYMENT_ENVIRONMENT
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+from opentelemetry.sdk.resources import (
+    DEPLOYMENT_ENVIRONMENT,
+    SERVICE_NAME,
+    SERVICE_VERSION,
+    Resource,
+)
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.trace import SpanKind, Status, StatusCode
@@ -67,8 +71,8 @@ class OpenTelemetryConfig:
         self.jaeger_port = jaeger_port
         self.enable_console_export = enable_console_export
 
-        self.tracer_provider: Optional[TracerProvider] = None
-        self.tracer: Optional[trace.Tracer] = None
+        self.tracer_provider: TracerProvider | None = None
+        self.tracer: trace.Tracer | None = None
 
     def setup(self):
         """Setup OpenTelemetry with all instrumentations"""
@@ -254,7 +258,7 @@ class OpenTelemetryConfig:
 
 
 # Global instance
-_otel_config: Optional[OpenTelemetryConfig] = None
+_otel_config: OpenTelemetryConfig | None = None
 
 
 def get_otel_config() -> OpenTelemetryConfig:
@@ -335,8 +339,7 @@ def trace_function(name: str = None, attributes: dict = None):
         import inspect
         if inspect.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 

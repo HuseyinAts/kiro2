@@ -3,10 +3,11 @@ Question Generation Celery Tasks
 Batch question generation with progress tracking and quality control
 """
 
+from datetime import UTC, datetime
+from typing import Any
+
 from celery import Task, chord
 from celery.utils.log import get_task_logger
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timezone
 
 from core.celery_app import celery_app
 from services.batch_question_generator import BatchQuestionGenerator
@@ -46,7 +47,7 @@ def generate_single_question(
     difficulty: float,
     bloom_level: int,
     generation_method: str = 'ensemble'
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate a single question (subtask)
 
@@ -70,8 +71,8 @@ def generate_single_question(
         )
 
         # CRITICAL: Always use REAL OSYM question generator - NO MOCK ALLOWED
-        from services.osym_question_generator import OSYMQuestionGenerator
         from services.llm.ensemble_manager import MultiLLMEnsembleManager
+        from services.osym_question_generator import OSYMQuestionGenerator
 
         # Initialize real generator
         ensemble = MultiLLMEnsembleManager()
@@ -114,12 +115,12 @@ def generate_question_batch(
     batch_size: int,
     exam_type: str,
     subject: str,
-    topics: Optional[List[str]] = None,
+    topics: list[str] | None = None,
     difficulty_range: tuple = (0.3, 0.7),
-    bloom_levels: Optional[List[int]] = None,
+    bloom_levels: list[int] | None = None,
     generation_method: str = 'ensemble',
     priority: str = 'normal'
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate a batch of questions in parallel
 
@@ -147,7 +148,7 @@ def generate_question_batch(
                 'current': 0,
                 'total': batch_size,
                 'status': 'Preparing batch generation...',
-                'started_at': datetime.now(timezone.utc).isoformat()
+                'started_at': datetime.now(UTC).isoformat()
             }
         )
 
@@ -201,7 +202,7 @@ def generate_question_batch(
             'batch_id': self.request.id,
             'batch_size': batch_size,
             'results': results,
-            'completed_at': datetime.now(timezone.utc).isoformat()
+            'completed_at': datetime.now(UTC).isoformat()
         }
 
     except Exception as exc:
@@ -214,7 +215,7 @@ def generate_question_batch(
 
 
 @celery_app.task(name='tasks.aggregate_batch_results')
-def aggregate_batch_results(results: List[Dict], batch_size: int) -> Dict[str, Any]:
+def aggregate_batch_results(results: list[dict], batch_size: int) -> dict[str, Any]:
     """
     Aggregate results from parallel question generation
 
@@ -256,7 +257,7 @@ def aggregate_batch_results(results: List[Dict], batch_size: int) -> Dict[str, A
     name='tasks.quality_check_batch',
     priority=7  # High priority
 )
-def quality_check_batch(self, question_ids: List[int]) -> Dict[str, Any]:
+def quality_check_batch(self, question_ids: list[int]) -> dict[str, Any]:
     """
     Perform quality checks on a batch of questions
 
@@ -267,7 +268,9 @@ def quality_check_batch(self, question_ids: List[int]) -> Dict[str, Any]:
         Quality check results
     """
     try:
-        from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
+        from services.comprehensive_quality_evaluator import (
+            ComprehensiveQualityEvaluator,
+        )
 
         evaluator = ComprehensiveQualityEvaluator()
 
@@ -306,7 +309,7 @@ def quality_check_batch(self, question_ids: List[int]) -> Dict[str, Any]:
 
 
 @celery_app.task(name='tasks.cleanup_failed_questions')
-def cleanup_failed_questions(batch_id: str, failed_ids: List[int]) -> Dict[str, Any]:
+def cleanup_failed_questions(batch_id: str, failed_ids: list[int]) -> dict[str, Any]:
     """
     Clean up failed question generation attempts
 

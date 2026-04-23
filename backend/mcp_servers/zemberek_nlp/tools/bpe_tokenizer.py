@@ -10,7 +10,7 @@ Uses dbmdz/bert-base-turkish-cased tokenizer (BERTurk)
 
 import logging
 import threading
-from typing import List, Optional
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class BPETokenizer:
                 logger.error(f"[BPETokenizer] Failed to load model: {e}")
                 raise
 
-    def tokenize(self, text: str) -> List[str]:
+    def tokenize(self, text: str) -> list[str]:
         """
         Tokenize text using BPE algorithm.
 
@@ -87,7 +87,7 @@ class BPETokenizer:
         # Remove special tokens [CLS] and [SEP] if present
         return [t for t in tokens if t not in ("[CLS]", "[SEP]", "[PAD]")]
 
-    def tokenize_with_offsets(self, text: str) -> List[dict]:
+    def tokenize_with_offsets(self, text: str) -> list[dict]:
         """
         Tokenize text with character offsets.
 
@@ -119,7 +119,7 @@ class BPETokenizer:
 
         return result
 
-    def get_ids(self, text: str) -> List[int]:
+    def get_ids(self, text: str) -> list[int]:
         """
         Get token IDs for text.
 
@@ -134,7 +134,7 @@ class BPETokenizer:
         encoding = self._tokenizer.encode(text)
         return encoding.ids
 
-    def decode(self, token_ids: List[int]) -> str:
+    def decode(self, token_ids: list[int]) -> str:
         """
         Decode token IDs back to text.
 

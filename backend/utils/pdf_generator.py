@@ -5,7 +5,7 @@ Gelişmiş sınav raporları için PDF oluşturma utility'si
 
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any
 
 # matplotlib.pyplot imported but not used - removed plt
 import matplotlib
@@ -57,7 +57,7 @@ class PDFReportGenerator:
                     "DejaVu Sans font bulunamadı, varsayılan font kullanılacak"
                 )
         except Exception as e:
-            logger.error(f"Font yükleme hatası: {str(e)}")
+            logger.error(f"Font yükleme hatası: {e!s}")
 
     def setup_styles(self):
         """PDF stilleri ayarla"""
@@ -121,7 +121,7 @@ class PDFReportGenerator:
         )
 
     async def generate_advanced_exam_report(
-        self, rapor_data: Dict[str, Any], filename: str
+        self, rapor_data: dict[str, Any], filename: str
     ) -> str:
         """
         Gelişmiş sınav raporu PDF'i oluştur
@@ -206,10 +206,10 @@ class PDFReportGenerator:
             return file_path
 
         except Exception as e:
-            logger.error(f"PDF oluşturma hatası: {str(e)}")
+            logger.error(f"PDF oluşturma hatası: {e!s}")
             raise
 
-    def _create_title_page(self, rapor_data: Dict[str, Any]) -> List:
+    def _create_title_page(self, rapor_data: dict[str, Any]) -> list:
         """Başlık sayfası oluştur"""
         story = []
 
@@ -281,7 +281,7 @@ class PDFReportGenerator:
 
         return story
 
-    def _create_summary_section(self, rapor_data: Dict[str, Any]) -> List:
+    def _create_summary_section(self, rapor_data: dict[str, Any]) -> list:
         """Özet bölümü oluştur"""
         story = []
 
@@ -403,7 +403,7 @@ class PDFReportGenerator:
 
         return story
 
-    def _create_irt_analysis_section(self, irt_analizi: Dict[str, Any]) -> List:
+    def _create_irt_analysis_section(self, irt_analizi: dict[str, Any]) -> list:
         """IRT analizi bölümü oluştur"""
         story = []
 
@@ -525,7 +525,7 @@ class PDFReportGenerator:
 
         return story
 
-    def _create_zpd_analysis_section(self, zpd_analizi: Dict[str, Any]) -> List:
+    def _create_zpd_analysis_section(self, zpd_analizi: dict[str, Any]) -> list:
         """ZPD analizi bölümü oluştur"""
         story = []
 
@@ -615,8 +615,8 @@ class PDFReportGenerator:
         return story
 
     def _create_learning_style_section(
-        self, ogrenme_stili_analizi: Dict[str, Any]
-    ) -> List:
+        self, ogrenme_stili_analizi: dict[str, Any]
+    ) -> list:
         """Hibrit öğrenme stili bölümü oluştur"""
         story = []
 
@@ -741,7 +741,7 @@ class PDFReportGenerator:
 
         return story
 
-    def _create_comparison_section(self, karsilastirma: Dict[str, Any]) -> List:
+    def _create_comparison_section(self, karsilastirma: dict[str, Any]) -> list:
         """ÖSYM/ETS karşılaştırma bölümü oluştur"""
         story = []
 
@@ -878,7 +878,7 @@ class PDFReportGenerator:
 
         return story
 
-    def _create_recommendations_section(self, oneriler: List[Dict[str, Any]]) -> List:
+    def _create_recommendations_section(self, oneriler: list[dict[str, Any]]) -> list:
         """Kişiselleştirilmiş öneriler bölümü oluştur"""
         story = []
 

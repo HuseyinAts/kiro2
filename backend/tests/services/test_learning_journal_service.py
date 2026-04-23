@@ -4,10 +4,11 @@ Unit tests for LearningJournalService (REQ-4)
 Knowledge tracking, spaced repetition, and knowledge graph tests.
 """
 
-import pytest
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
+
+import pytest
 
 from api.schemas.diary import LearningEntryCreate
 
@@ -252,8 +253,9 @@ class TestLearningJournalServiceKnowledgeGraph:
     @pytest.mark.asyncio
     async def test_get_knowledge_graph(self):
         """Test getting knowledge graph"""
-        from services.learning_journal_service import LearningJournalService
         import networkx as nx
+
+        from services.learning_journal_service import LearningJournalService
 
         mock_db = AsyncMock()
 
@@ -369,8 +371,8 @@ class TestLearningJournalServiceReview:
     @pytest.mark.asyncio
     async def test_record_review(self):
         """Test recording a review for an entry"""
-        from services.learning_journal_service import LearningJournalService
         from api.schemas.diary import LearningReviewRequest
+        from services.learning_journal_service import LearningJournalService
 
         mock_db = AsyncMock()
 

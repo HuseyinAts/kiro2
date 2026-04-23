@@ -9,6 +9,7 @@ IMPORTANT: NO REWARD HACKING
 """
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
 import pytest

@@ -1,5 +1,5 @@
 """Multi-level caching facade module."""
-from typing import Any, Optional
+from typing import Any
 
 
 class CacheSystem:
@@ -8,7 +8,7 @@ class CacheSystem:
     def __init__(self) -> None:
         self._l1_cache: dict[str, Any] = {}
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         return self._l1_cache.get(key)
 
     async def set(self, key: str, value: Any, ttl: int = 300) -> None:
@@ -21,7 +21,7 @@ class CacheSystem:
         self._l1_cache.clear()
 
 
-_cache_system: Optional[CacheSystem] = None
+_cache_system: CacheSystem | None = None
 
 
 def get_cache_system() -> CacheSystem:

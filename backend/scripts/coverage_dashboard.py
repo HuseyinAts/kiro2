@@ -5,13 +5,13 @@ Real-time coverage monitoring with web interface
 """
 
 import sqlite3
-from typing import Dict, List, Any, Optional
 import threading
 import webbrowser
 from dataclasses import asdict
+from typing import Any
 
 try:
-    from flask import Flask, render_template_string, jsonify, request
+    from flask import Flask, jsonify, render_template_string, request
 
     FLASK_AVAILABLE = True
 except ImportError:
@@ -516,7 +516,7 @@ class CoverageDashboard:
 </html>
         """
 
-    def get_latest_coverage(self) -> Optional[CoverageMetrics]:
+    def get_latest_coverage(self) -> CoverageMetrics | None:
         """Get latest coverage metrics"""
         try:
             with sqlite3.connect(self.db.db_path) as conn:
@@ -541,7 +541,7 @@ class CoverageDashboard:
 
         return None
 
-    def get_coverage_trend_data(self, days: int = 30) -> Dict[str, Any]:
+    def get_coverage_trend_data(self, days: int = 30) -> dict[str, Any]:
         """Get coverage trend data for API"""
         try:
             trend_data = self.db.get_coverage_trend(days)
@@ -560,7 +560,7 @@ class CoverageDashboard:
         except Exception as e:
             return {"error": str(e)}
 
-    def get_module_coverage_data(self) -> List[Dict[str, Any]]:
+    def get_module_coverage_data(self) -> list[dict[str, Any]]:
         """Get module coverage data"""
         try:
             with sqlite3.connect(self.db.db_path) as conn:
@@ -609,7 +609,7 @@ class CoverageDashboard:
             print(f"Error getting module coverage: {e}")
             return []
 
-    def get_coverage_statistics(self) -> Dict[str, Any]:
+    def get_coverage_statistics(self) -> dict[str, Any]:
         """Get coverage statistics"""
         try:
             recent_data = self.db.get_coverage_trend(days=7)

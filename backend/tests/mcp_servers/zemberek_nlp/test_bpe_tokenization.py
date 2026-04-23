@@ -5,8 +5,9 @@ Tests the BPE tokenizer module using HuggingFace tokenizers library
 with BERTurk (dbmdz/bert-base-turkish-cased) model.
 """
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 # Dynamic check for tokenizers library and model availability
 try:
@@ -64,7 +65,9 @@ class TestBPETokenizerModule:
     @requires_berturk_model
     def test_tokenize_basic(self):
         """Test basic BPE tokenization"""
-        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import get_bpe_tokenizer
+        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import (
+            get_bpe_tokenizer,
+        )
 
         tokenizer = get_bpe_tokenizer()
         tokens = tokenizer.tokenize("Merhaba dunya")
@@ -78,7 +81,9 @@ class TestBPETokenizerModule:
     @requires_berturk_model
     def test_tokenize_with_offsets(self):
         """Test BPE tokenization with character offsets"""
-        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import get_bpe_tokenizer
+        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import (
+            get_bpe_tokenizer,
+        )
 
         tokenizer = get_bpe_tokenizer()
         result = tokenizer.tokenize_with_offsets("Merhaba")
@@ -94,7 +99,9 @@ class TestBPETokenizerModule:
     @requires_berturk_model
     def test_get_ids(self):
         """Test getting token IDs"""
-        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import get_bpe_tokenizer
+        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import (
+            get_bpe_tokenizer,
+        )
 
         tokenizer = get_bpe_tokenizer()
         ids = tokenizer.get_ids("Merhaba")
@@ -105,7 +112,9 @@ class TestBPETokenizerModule:
     @requires_berturk_model
     def test_decode(self):
         """Test decoding token IDs back to text"""
-        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import get_bpe_tokenizer
+        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import (
+            get_bpe_tokenizer,
+        )
 
         tokenizer = get_bpe_tokenizer()
         original = "Merhaba dunya"
@@ -119,7 +128,9 @@ class TestBPETokenizerModule:
     @requires_berturk_model
     def test_vocab_size(self):
         """Test vocabulary size property"""
-        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import get_bpe_tokenizer
+        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import (
+            get_bpe_tokenizer,
+        )
 
         tokenizer = get_bpe_tokenizer()
         vocab_size = tokenizer.vocab_size
@@ -190,7 +201,9 @@ class TestBPEPropertyBased:
     @requires_berturk_model
     def test_property_tokenize_returns_list(self):
         """Property: tokenize always returns a list"""
-        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import get_bpe_tokenizer
+        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import (
+            get_bpe_tokenizer,
+        )
 
         tokenizer = get_bpe_tokenizer()
 
@@ -211,7 +224,9 @@ class TestBPEPropertyBased:
     @requires_berturk_model
     def test_property_non_empty_text_has_tokens(self):
         """Property: non-empty, non-whitespace text produces at least one token"""
-        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import get_bpe_tokenizer
+        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import (
+            get_bpe_tokenizer,
+        )
 
         tokenizer = get_bpe_tokenizer()
 
@@ -229,7 +244,9 @@ class TestBPEPropertyBased:
     @requires_berturk_model
     def test_property_decode_roundtrip(self):
         """Property: encode -> decode should approximate original text"""
-        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import get_bpe_tokenizer
+        from backend.mcp_servers.zemberek_nlp.tools.bpe_tokenizer import (
+            get_bpe_tokenizer,
+        )
 
         tokenizer = get_bpe_tokenizer()
 

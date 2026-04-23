@@ -487,7 +487,7 @@ async def get_subject_weaknesses(
 
         return weaknesses_response
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
@@ -558,7 +558,7 @@ async def get_study_recommendations(
 
         return recommendations_response
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
@@ -619,7 +619,7 @@ async def get_performance_comparison(
 
         return comparison_response
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise

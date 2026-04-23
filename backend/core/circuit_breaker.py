@@ -5,12 +5,13 @@ Learning Path Video Yükleme Sorunu için servis koruma mekanizması
 Requirements: 5.18, 4.11
 """
 
+import logging
 import time
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, Optional
-from dataclasses import dataclass
-import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -41,15 +42,15 @@ class CircuitBreakerStats:
     state: CircuitState
     failure_count: int
     success_count: int
-    last_failure_time: Optional[datetime]
-    last_success_time: Optional[datetime]
-    opened_at: Optional[datetime]
+    last_failure_time: datetime | None
+    last_success_time: datetime | None
+    opened_at: datetime | None
     total_calls: int
     total_failures: int
     total_successes: int
     half_open_attempts: int
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """İstatistikleri dictionary'ye çevir"""
         return {
             "state": self.state.value,
@@ -84,7 +85,7 @@ class CircuitBreakerError(Exception):
         message: str,
         circuit_name: str,
         state: CircuitState,
-        retry_after: Optional[int] = None,
+        retry_after: int | None = None,
     ):
         super().__init__(message)
         self.message = message
@@ -98,7 +99,7 @@ class CircuitBreakerOpenError(CircuitBreakerError):
     """Circuit breaker açık durumda - istekler reddediliyor"""
 
     def __init__(
-        self, circuit_name: str, retry_after: int = 60, message: Optional[str] = None
+        self, circuit_name: str, retry_after: int = 60, message: str | None = None
     ):
         message = message or f"Circuit breaker '{circuit_name}' is OPEN"
         super().__init__(
@@ -113,7 +114,7 @@ class CircuitBreakerHalfOpenError(CircuitBreakerError):
     """Circuit breaker half-open durumda - maksimum istek sayısına ulaşıldı"""
 
     def __init__(
-        self, circuit_name: str, max_calls: int, message: Optional[str] = None
+        self, circuit_name: str, max_calls: int, message: str | None = None
     ):
         message = (
             message
@@ -139,8 +140,8 @@ class CircuitBreaker:
     def __init__(
         self,
         name: str,
-        config: Optional[CircuitBreakerConfig] = None,
-        logger: Optional[logging.Logger] = None,
+        config: CircuitBreakerConfig | None = None,
+        logger: logging.Logger | None = None,
     ):
         """Circuit breaker oluştur"""
         self.name = name
@@ -151,9 +152,9 @@ class CircuitBreaker:
         self._state = CircuitState.CLOSED
         self._failure_count = 0
         self._success_count = 0
-        self._last_failure_time: Optional[datetime] = None
-        self._last_success_time: Optional[datetime] = None
-        self._opened_at: Optional[datetime] = None
+        self._last_failure_time: datetime | None = None
+        self._last_success_time: datetime | None = None
+        self._opened_at: datetime | None = None
         self._half_open_calls = 0
 
         # Statistics
@@ -262,8 +263,7 @@ class CircuitBreaker:
             if self._success_count >= self.config.success_threshold:
                 self._transition_to_closed()
         elif self._state == CircuitState.CLOSED:
-            if self._failure_count > 0:
-                self._failure_count = 0
+            self._failure_count = min(self._failure_count, 0)
 
     def _on_failure(self, exception: Exception) -> None:
         """Başarısız çağrı sonrası işlemler"""
@@ -331,11 +331,11 @@ class CircuitBreakerManager:
     """
 
     def __init__(self):
-        self._breakers: Dict[str, CircuitBreaker] = {}
+        self._breakers: dict[str, CircuitBreaker] = {}
         self.logger = logging.getLogger(__name__)
 
     def register(
-        self, name: str, config: Optional[CircuitBreakerConfig] = None
+        self, name: str, config: CircuitBreakerConfig | None = None
     ) -> CircuitBreaker:
         """
         Yeni circuit breaker kaydet
@@ -357,11 +357,11 @@ class CircuitBreakerManager:
         self.logger.info(f"Circuit breaker '{name}' registered")
         return breaker
 
-    def get(self, name: str) -> Optional[CircuitBreaker]:
+    def get(self, name: str) -> CircuitBreaker | None:
         """Circuit breaker al"""
         return self._breakers.get(name)
 
-    def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_stats(self) -> dict[str, dict[str, Any]]:
         """Tüm circuit breaker'ların istatistiklerini al"""
         return {
             name: breaker.get_stats().to_dict()

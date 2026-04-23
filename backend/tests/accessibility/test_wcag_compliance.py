@@ -10,8 +10,9 @@ Requirements: 9.1-9.5, 7.4
 
 import os
 import sys
+from typing import Any
+
 import pytest
-from typing import Dict, Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -23,7 +24,7 @@ class WCAGComplianceChecker:
         self.wcag_guidelines = self._load_wcag_guidelines()
         self.test_results = []
 
-    def _load_wcag_guidelines(self) -> Dict[str, Any]:
+    def _load_wcag_guidelines(self) -> dict[str, Any]:
         """WCAG 2.1 Level AA kılavuzlarını yükle"""
         return {
             "1.1.1": {
@@ -129,8 +130,8 @@ class WCAGComplianceChecker:
         }
 
     def check_guideline(
-        self, guideline_id: str, content: str, context: Dict = None
-    ) -> Dict[str, Any]:
+        self, guideline_id: str, content: str, context: dict = None
+    ) -> dict[str, Any]:
         """Belirli bir WCAG kılavuzunu kontrol et"""
         guideline = self.wcag_guidelines.get(guideline_id)
         if not guideline:
@@ -160,7 +161,7 @@ class WCAGComplianceChecker:
         self.test_results.append(result)
         return result
 
-    def _check_alt_text(self, content: str, result: Dict) -> Dict:
+    def _check_alt_text(self, content: str, result: dict) -> dict:
         """Alt text kontrolü (1.1.1)"""
         if "<img" in content:
             if "alt=" not in content:
@@ -174,7 +175,7 @@ class WCAGComplianceChecker:
             result["passed"] = True
         return result
 
-    def _check_contrast(self, content: str, result: Dict, context: Dict = None) -> Dict:
+    def _check_contrast(self, content: str, result: dict, context: dict = None) -> dict:
         """Kontrast oranı kontrolü (1.4.3)"""
         if context and "colors" in context:
             fg = context["colors"].get("foreground", "#000000")
@@ -195,7 +196,7 @@ class WCAGComplianceChecker:
             result["skip_reason"] = "Kontrast context sağlanmadı - test uygulanamaz"
         return result
 
-    def _check_keyboard_access(self, content: str, result: Dict) -> Dict:
+    def _check_keyboard_access(self, content: str, result: dict) -> dict:
         """Klavye erişilebilirliği kontrolü (2.1.1)"""
         # Tıklanabilir elementlerin tabindex kontrolü
         if "onclick" in content.lower():
@@ -212,7 +213,7 @@ class WCAGComplianceChecker:
             result["passed"] = True
         return result
 
-    def _check_language(self, content: str, result: Dict) -> Dict:
+    def _check_language(self, content: str, result: dict) -> dict:
         """Dil tanımı kontrolü (3.1.1)"""
         if "<html" in content:
             if "lang=" not in content:
@@ -226,7 +227,7 @@ class WCAGComplianceChecker:
             result["passed"] = True
         return result
 
-    def _check_aria_labels(self, content: str, result: Dict) -> Dict:
+    def _check_aria_labels(self, content: str, result: dict) -> dict:
         """ARIA etiketleri kontrolü (4.1.2)"""
         # Form elementleri için label kontrolü
         if "<input" in content:
@@ -267,7 +268,7 @@ class WCAGComplianceChecker:
 
         return (lighter + 0.05) / (darker + 0.05)
 
-    def generate_compliance_report(self) -> Dict[str, Any]:
+    def generate_compliance_report(self) -> dict[str, Any]:
         """Uyumluluk raporu oluştur"""
         total_tests = len(self.test_results)
         passed_tests = sum(1 for r in self.test_results if r.get("passed", False))

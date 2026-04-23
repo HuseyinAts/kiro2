@@ -15,16 +15,17 @@ Requirements:
 - REQ-1.3: Backup code yonetimi
 """
 
+import sys
 from datetime import timedelta
 
 import pyotp
 import pytest
-from hypothesis import assume, given, settings, strategies as st
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
-from core.two_factor_auth import TwoFactorAuthService, RECOVERY_TOKEN_EXPIRY_MINUTES
+from core.two_factor_auth import RECOVERY_TOKEN_EXPIRY_MINUTES, TwoFactorAuthService
 
 
 class TestTOTPValidityProperties:

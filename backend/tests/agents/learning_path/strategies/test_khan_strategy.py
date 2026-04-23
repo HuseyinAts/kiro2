@@ -2,12 +2,13 @@
 
 This module tests Khan Academy API integration for learning path recommendations.
 """
-import pytest
+from typing import Any
 from unittest.mock import AsyncMock, patch
-from typing import Dict, Any
 
+import pytest
+
+from agents.learning_path.models import KnowledgeLevel, LearningResource
 from agents.learning_path.strategies.khan_strategy import KhanSearchStrategy
-from agents.learning_path.models import LearningResource, KnowledgeLevel
 
 
 class TestKhanSearchStrategy:
@@ -30,14 +31,14 @@ class TestKhanSearchStrategy:
     def test_normalize_result_valid(
         self,
         strategy: KhanSearchStrategy,
-        mock_khan_response: Dict[str, Any]
+        mock_khan_response: dict[str, Any]
     ) -> None:
         """Should convert Khan API response to LearningResource."""
         resource = strategy.normalize_result(mock_khan_response)
 
         assert resource is not None
         assert isinstance(resource, LearningResource)
-        assert "khan-algebra-basics" == resource.resource_id
+        assert resource.resource_id == "khan-algebra-basics"
         assert resource.source == "khan_academy"
         assert resource.title in ["Algebra Basics", "Cebir Temelleri"]
         assert resource.estimated_time == 15  # 900 seconds = 15 minutes
@@ -45,7 +46,7 @@ class TestKhanSearchStrategy:
     def test_normalize_result_uses_translated_title(
         self,
         strategy: KhanSearchStrategy,
-        mock_khan_response: Dict[str, Any]
+        mock_khan_response: dict[str, Any]
     ) -> None:
         """Should prefer title over translated_title."""
         resource = strategy.normalize_result(mock_khan_response)
@@ -57,7 +58,7 @@ class TestKhanSearchStrategy:
     def test_normalize_result_turkish_flag(
         self,
         strategy: KhanSearchStrategy,
-        mock_khan_turkish_response: Dict[str, Any]
+        mock_khan_turkish_response: dict[str, Any]
     ) -> None:
         """Should set correct language based on is_turkish flag."""
         resource = strategy.normalize_result(mock_khan_turkish_response)
@@ -195,7 +196,7 @@ class TestKhanSearchStrategy:
     def test_extract_topics_from_slugs(
         self,
         strategy: KhanSearchStrategy,
-        mock_khan_response: Dict[str, Any]
+        mock_khan_response: dict[str, Any]
     ) -> None:
         """Should extract topics from domain, subject, and topic slugs."""
         topics = strategy._extract_topics(mock_khan_response)
@@ -348,7 +349,7 @@ class TestKhanSearchStrategy:
     async def test_search_turkish_first(
         self,
         strategy: KhanSearchStrategy,
-        mock_khan_turkish_response: Dict[str, Any]
+        mock_khan_turkish_response: dict[str, Any]
     ) -> None:
         """Should search Turkish content first."""
         # Create proper LearningResource mocks with metadata
@@ -503,7 +504,6 @@ class TestKhanSearchStrategy:
         """Should handle network operations properly."""
         # Test empty results on error - tested in test_search_exception_returns_empty
         # Complex async mock setup is tested via higher-level search tests
-        pass
 
     @pytest.mark.asyncio
     async def test_do_search_non_200_status(

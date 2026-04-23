@@ -8,7 +8,7 @@ import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
@@ -26,13 +26,13 @@ class KhanCourse:
     description: str
     subject: str
     grade_level: str
-    topics: List[str]
+    topics: list[str]
     total_lessons: int
     estimated_hours: float
     difficulty: str
     language: str
-    prerequisites: List[str]
-    skills: List[str]
+    prerequisites: list[str]
+    skills: list[str]
 
 
 @dataclass
@@ -43,14 +43,14 @@ class KhanLesson:
     title: str
     description: str
     course_id: str
-    video_url: Optional[str]
-    exercise_url: Optional[str]
-    article_url: Optional[str]
+    video_url: str | None
+    exercise_url: str | None
+    article_url: str | None
     duration_minutes: int
     mastery_points: int
     content_type: str  # video, exercise, article
     difficulty: str
-    prerequisites: List[str]
+    prerequisites: list[str]
 
 
 @dataclass
@@ -62,11 +62,11 @@ class KhanExercise:
     description: str
     topic: str
     difficulty: str
-    question_types: List[str]
+    question_types: list[str]
     hints_available: bool
     mastery_points: int
     average_time_minutes: int
-    prerequisite_skills: List[str]
+    prerequisite_skills: list[str]
 
 
 class KhanAcademyService:
@@ -83,7 +83,7 @@ class KhanAcademyService:
         self.max_retries = 3
         self.content_cache = {}  # Simple in-memory cache
 
-    def _load_grade_mapping(self) -> Dict[str, List[str]]:
+    def _load_grade_mapping(self) -> dict[str, list[str]]:
         """Sınıf seviyesi haritalaması"""
         return {
             "ilkokul": ["1", "2", "3", "4"],
@@ -93,7 +93,7 @@ class KhanAcademyService:
             "YKS": ["11", "12"],
         }
 
-    def _load_subject_mapping(self) -> Dict[str, str]:
+    def _load_subject_mapping(self) -> dict[str, str]:
         """Ders haritalaması"""
         return {
             "matematik": "math",
@@ -122,10 +122,10 @@ class KhanAcademyService:
     async def search_courses(
         self,
         subject: str,
-        grade_level: Optional[str] = None,
+        grade_level: str | None = None,
         language: str = "tr",
         limit: int = 10,
-    ) -> List[KhanCourse]:
+    ) -> list[KhanCourse]:
         """
         Kurs ara (Gerçek Khan Academy API)
 
@@ -164,13 +164,13 @@ class KhanAcademyService:
             return courses
 
         except Exception as e:
-            logger.error(f"Search courses error: {str(e)}")
+            logger.error(f"Search courses error: {e!s}")
             # Fallback to simulated courses
             return await self._simulate_courses(subject, grade_level, language, limit)
 
     async def _fetch_topic_tree(
         self, subject: str, language: str = "tr"
-    ) -> List[KhanCourse]:
+    ) -> list[KhanCourse]:
         """
         Khan Academy topic tree'den kursları getir
 
@@ -194,19 +194,18 @@ class KhanAcademyService:
                 if response.status == 200:
                     data = await response.json()
                     return self._parse_topic_tree(data, subject)
-                else:
-                    logger.warning(
-                        f"Khan Academy API returned status {response.status}"
-                    )
-                    return []
+                logger.warning(
+                    f"Khan Academy API returned status {response.status}"
+                )
+                return []
 
         except Exception as e:
-            logger.error(f"Error fetching topic tree: {str(e)}")
+            logger.error(f"Error fetching topic tree: {e!s}")
             return []
 
     def _parse_topic_tree(
-        self, topic_tree: Dict[str, Any], subject_filter: str
-    ) -> List[KhanCourse]:
+        self, topic_tree: dict[str, Any], subject_filter: str
+    ) -> list[KhanCourse]:
         """
         Topic tree'yi parse et ve kursları çıkar
 
@@ -221,7 +220,7 @@ class KhanAcademyService:
 
         try:
             # Topic tree'yi recursive olarak dolaş
-            def extract_courses(node: Dict[str, Any], parent_subject: str = ""):
+            def extract_courses(node: dict[str, Any], parent_subject: str = ""):
                 if not isinstance(node, dict):
                     return
 
@@ -261,13 +260,13 @@ class KhanAcademyService:
             extract_courses(topic_tree)
 
         except Exception as e:
-            logger.error(f"Error parsing topic tree: {str(e)}")
+            logger.error(f"Error parsing topic tree: {e!s}")
 
         return courses
 
     def _create_course_from_topic(
-        self, topic_node: Dict[str, Any], subject: str
-    ) -> Optional[KhanCourse]:
+        self, topic_node: dict[str, Any], subject: str
+    ) -> KhanCourse | None:
         """
         Topic node'dan kurs oluştur
 
@@ -306,10 +305,10 @@ class KhanAcademyService:
             return course
 
         except Exception as e:
-            logger.error(f"Error creating course from topic: {str(e)}")
+            logger.error(f"Error creating course from topic: {e!s}")
             return None
 
-    def _count_content_items(self, node: Dict[str, Any]) -> int:
+    def _count_content_items(self, node: dict[str, Any]) -> int:
         """Node altındaki içerik sayısını hesapla"""
         count = 0
 
@@ -327,7 +326,7 @@ class KhanAcademyService:
         count_recursive(node)
         return count
 
-    def _determine_difficulty(self, node: Dict[str, Any], subject: str) -> str:
+    def _determine_difficulty(self, node: dict[str, Any], subject: str) -> str:
         """Zorluk seviyesini belirle"""
         title = node.get("title", "").lower()
 
@@ -336,12 +335,11 @@ class KhanAcademyService:
             word in title for word in ["temel", "giriş", "başlangıç", "basic", "intro"]
         ):
             return "kolay"
-        elif any(word in title for word in ["ileri", "advanced", "expert", "uzman"]):
+        if any(word in title for word in ["ileri", "advanced", "expert", "uzman"]):
             return "zor"
-        else:
-            return "orta"
+        return "orta"
 
-    def _determine_grade_level(self, node: Dict[str, Any], subject: str) -> str:
+    def _determine_grade_level(self, node: dict[str, Any], subject: str) -> str:
         """Sınıf seviyesini belirle"""
         title = node.get("title", "").lower()
 
@@ -361,7 +359,7 @@ class KhanAcademyService:
 
         return subject_grades.get(subject.lower(), "9")
 
-    def _extract_topics(self, node: Dict[str, Any]) -> List[str]:
+    def _extract_topics(self, node: dict[str, Any]) -> list[str]:
         """Alt konuları çıkar"""
         topics = []
 
@@ -380,7 +378,7 @@ class KhanAcademyService:
         extract_recursive(node)
         return topics[:10]  # En fazla 10 topic
 
-    def _extract_prerequisites(self, node: Dict[str, Any]) -> List[str]:
+    def _extract_prerequisites(self, node: dict[str, Any]) -> list[str]:
         """Önkoşulları çıkar"""
         # Khan Academy API'sinde explicit prerequisite bilgisi yok
         # Başlık bazlı tahmin yapabiliriz
@@ -388,14 +386,14 @@ class KhanAcademyService:
 
         if "algebra" in title or "cebir" in title:
             return ["Temel matematik"]
-        elif "calculus" in title or "analiz" in title:
+        if "calculus" in title or "analiz" in title:
             return ["Algebra", "Fonksiyonlar"]
-        elif "physics" in title or "fizik" in title:
+        if "physics" in title or "fizik" in title:
             return ["Matematik", "Algebra"]
 
         return []
 
-    def _extract_skills(self, node: Dict[str, Any]) -> List[str]:
+    def _extract_skills(self, node: dict[str, Any]) -> list[str]:
         """Becerileri çıkar"""
         # Genel beceriler
         return ["Problem çözme", "Analitik düşünme", "Matematiksel modelleme"]
@@ -405,8 +403,8 @@ class KhanAcademyService:
         return course.grade_level == grade_level or grade_level in course.title
 
     async def _simulate_courses(
-        self, subject: str, grade_level: Optional[str], language: str, limit: int = 10
-    ) -> List[KhanCourse]:
+        self, subject: str, grade_level: str | None, language: str, limit: int = 10
+    ) -> list[KhanCourse]:
         """Kursları simüle et"""
         sample_courses = [
             KhanCourse(
@@ -508,7 +506,7 @@ class KhanAcademyService:
 
         return courses[:limit]
 
-    async def get_course_content(self, course_id: str) -> List[KhanLesson]:
+    async def get_course_content(self, course_id: str) -> list[KhanLesson]:
         """
         Kurs içeriğini getir
 
@@ -569,12 +567,12 @@ class KhanAcademyService:
             return lessons
 
         except Exception as e:
-            logger.error(f"Get course content error: {str(e)}")
+            logger.error(f"Get course content error: {e!s}")
             return []
 
     async def get_exercises(
-        self, topic: str, difficulty: Optional[str] = None, limit: int = 10
-    ) -> List[KhanExercise]:
+        self, topic: str, difficulty: str | None = None, limit: int = 10
+    ) -> list[KhanExercise]:
         """
         Alıştırmaları getir
 
@@ -635,12 +633,12 @@ class KhanAcademyService:
             return exercises[:limit]
 
         except Exception as e:
-            logger.error(f"Get exercises error: {str(e)}")
+            logger.error(f"Get exercises error: {e!s}")
             return []
 
     async def get_learning_path(
         self, goal: str, current_level: str, time_available_hours: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Öğrenme yolu önerisi
 
@@ -711,12 +709,12 @@ class KhanAcademyService:
             return path
 
         except Exception as e:
-            logger.error(f"Get learning path error: {str(e)}")
+            logger.error(f"Get learning path error: {e!s}")
             return {}
 
     async def get_mastery_report(
         self, student_id: str, course_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Ustalık raporu (simüle edilmiş)
 
@@ -767,10 +765,10 @@ class KhanAcademyService:
             return report
 
         except Exception as e:
-            logger.error(f"Get mastery report error: {str(e)}")
+            logger.error(f"Get mastery report error: {e!s}")
             return {}
 
-    def get_grade_from_exam(self, exam_type: str) -> List[str]:
+    def get_grade_from_exam(self, exam_type: str) -> list[str]:
         """
         Sınav tipinden sınıf seviyelerini getir
 
@@ -796,7 +794,7 @@ class KhanAcademyService:
 
     async def get_video_transcript(
         self, video_id: str, language: str = "tr"
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Video transkriptini getir (simüle edilmiş)
 
@@ -819,7 +817,7 @@ class KhanAcademyService:
             return transcript.strip()
 
         except Exception as e:
-            logger.error(f"Get transcript error: {str(e)}")
+            logger.error(f"Get transcript error: {e!s}")
             return None
 
 

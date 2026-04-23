@@ -6,7 +6,7 @@ TRT EBA TV platformu için özel veri modelleri ve şemalar.
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
@@ -55,11 +55,11 @@ class EBACurriculumAlignment(BaseModel):
     """EBA içerik müfredat uyumu"""
 
     alignment_score: float = Field(..., ge=0, le=1, description="Müfredat uyum skoru")
-    matched_topics: List[str] = Field(
+    matched_topics: list[str] = Field(
         default_factory=list, description="Eşleşen konular"
     )
-    missing_topics: List[str] = Field(default_factory=list, description="Eksik konular")
-    suggestions: List[str] = Field(default_factory=list, description="Öneriler")
+    missing_topics: list[str] = Field(default_factory=list, description="Eksik konular")
+    suggestions: list[str] = Field(default_factory=list, description="Öneriler")
     curriculum_coverage: str = Field(..., description="Müfredat kapsama oranı")
 
     model_config = ConfigDict(from_attributes=True)
@@ -78,24 +78,24 @@ class EBAVideoMetadata(BaseModel):
     # Kategorilendirme
     category: EBAContentCategory = Field(..., description="İçerik kategorisi")
     grade_level: EBAGradeLevel = Field(..., description="Sınıf seviyesi")
-    subject_topics: List[str] = Field(
+    subject_topics: list[str] = Field(
         default_factory=list, description="Konu başlıkları"
     )
     difficulty_level: DifficultyLevel = Field(..., description="Zorluk seviyesi")
 
     # URL ve Medya
     video_url: HttpUrl = Field(..., description="Video URL'i")
-    thumbnail_url: Optional[HttpUrl] = Field(None, description="Küçük resim URL'i")
-    transcript: Optional[str] = Field(None, description="Video transkripti")
+    thumbnail_url: HttpUrl | None = Field(None, description="Küçük resim URL'i")
+    transcript: str | None = Field(None, description="Video transkripti")
 
     # Kalite ve Değerlendirme
     quality_score: float = Field(0.0, ge=0, le=10, description="Kalite skoru")
-    curriculum_alignment: Dict[str, Any] = Field(
+    curriculum_alignment: dict[str, Any] = Field(
         default_factory=dict, description="Müfredat uyumu"
     )
 
     # Erişilebilirlik
-    accessibility_features: List[str] = Field(
+    accessibility_features: list[str] = Field(
         default_factory=list, description="Erişilebilirlik özellikleri"
     )
 
@@ -133,17 +133,17 @@ class EBAVideoMetadata(BaseModel):
 class EBAContentCollection(BaseModel):
     """EBA TV içerik koleksiyonu"""
 
-    videos: List[EBAVideoMetadata] = Field(
+    videos: list[EBAVideoMetadata] = Field(
         default_factory=list, description="Video listesi"
     )
     total_count: int = Field(0, ge=0, description="Toplam video sayısı")
-    categories: Dict[str, int] = Field(
+    categories: dict[str, int] = Field(
         default_factory=dict, description="Kategori dağılımı"
     )
-    grade_levels: Dict[str, int] = Field(
+    grade_levels: dict[str, int] = Field(
         default_factory=dict, description="Sınıf seviyesi dağılımı"
     )
-    quality_distribution: Dict[str, int] = Field(
+    quality_distribution: dict[str, int] = Field(
         default_factory=dict, description="Kalite dağılımı"
     )
     last_updated: datetime = Field(
@@ -165,14 +165,14 @@ class EBAVideoSearchRequest(BaseModel):
     """EBA video arama isteği"""
 
     query: str = Field(..., min_length=1, max_length=100, description="Arama sorgusu")
-    grade_level: Optional[EBAGradeLevel] = Field(
+    grade_level: EBAGradeLevel | None = Field(
         None, description="Sınıf seviyesi filtresi"
     )
-    category: Optional[EBAContentCategory] = Field(
+    category: EBAContentCategory | None = Field(
         None, description="Kategori filtresi"
     )
     min_quality: float = Field(6.0, ge=0, le=10, description="Minimum kalite skoru")
-    max_duration: Optional[int] = Field(
+    max_duration: int | None = Field(
         None, ge=1, le=180, description="Maksimum süre (dakika)"
     )
     accessibility_required: bool = Field(
@@ -185,12 +185,12 @@ class EBAVideoSearchRequest(BaseModel):
 class EBAVideoSearchResponse(BaseModel):
     """EBA video arama yanıtı"""
 
-    videos: List[EBAVideoMetadata] = Field(
+    videos: list[EBAVideoMetadata] = Field(
         default_factory=list, description="Bulunan videolar"
     )
     total_results: int = Field(0, ge=0, description="Toplam sonuç sayısı")
     search_query: str = Field(..., description="Arama sorgusu")
-    filters_applied: Dict[str, Any] = Field(
+    filters_applied: dict[str, Any] = Field(
         default_factory=dict, description="Uygulanan filtreler"
     )
     search_time_ms: float = Field(0.0, ge=0, description="Arama süresi (ms)")
@@ -203,7 +203,7 @@ class EBAContentRecommendationRequest(BaseModel):
 
     student_id: str = Field(..., description="Öğrenci ID")
     grade_level: EBAGradeLevel = Field(..., description="Öğrenci sınıf seviyesi")
-    weak_subjects: List[EBAContentCategory] = Field(
+    weak_subjects: list[EBAContentCategory] = Field(
         default_factory=list, description="Zayıf konular"
     )
     learning_style: str = Field("visual", description="Öğrenme stili")
@@ -217,11 +217,11 @@ class EBAContentRecommendationRequest(BaseModel):
 class EBAContentRecommendationResponse(BaseModel):
     """EBA içerik öneri yanıtı"""
 
-    recommendations: List[EBAVideoMetadata] = Field(
+    recommendations: list[EBAVideoMetadata] = Field(
         default_factory=list, description="Önerilen videolar"
     )
     student_id: str = Field(..., description="Öğrenci ID")
-    recommendation_reasons: Dict[str, str] = Field(
+    recommendation_reasons: dict[str, str] = Field(
         default_factory=dict, description="Öneri nedenleri"
     )
     personalization_score: float = Field(
@@ -238,13 +238,13 @@ class EBAContentStatistics(BaseModel):
     """EBA içerik istatistikleri"""
 
     total_videos: int = Field(0, ge=0, description="Toplam video sayısı")
-    categories: Dict[str, Dict[str, Any]] = Field(
+    categories: dict[str, dict[str, Any]] = Field(
         default_factory=dict, description="Kategori istatistikleri"
     )
-    quality_distribution: Dict[str, int] = Field(
+    quality_distribution: dict[str, int] = Field(
         default_factory=dict, description="Kalite dağılımı"
     )
-    grade_distribution: Dict[str, int] = Field(
+    grade_distribution: dict[str, int] = Field(
         default_factory=dict, description="Sınıf dağılımı"
     )
     average_quality: float = Field(0.0, ge=0, le=10, description="Ortalama kalite")
@@ -275,7 +275,7 @@ class EBAVideoQualityAnalysis(BaseModel):
     accessibility_score: float = Field(..., ge=0, le=10, description="Erişilebilirlik")
 
     # Öneriler
-    improvement_suggestions: List[str] = Field(
+    improvement_suggestions: list[str] = Field(
         default_factory=list, description="İyileştirme önerileri"
     )
     quality_category: EBAVideoQuality = Field(..., description="Kalite kategorisi")
@@ -295,8 +295,8 @@ class EBAContentModerationRequest(BaseModel):
     video_id: str = Field(..., description="Video ID")
     moderator_id: str = Field(..., description="Moderatör ID")
     action: str = Field(..., description="Moderasyon aksiyonu")  # approve, reject, flag
-    reason: Optional[str] = Field(None, description="Moderasyon nedeni")
-    notes: Optional[str] = Field(None, max_length=500, description="Moderatör notları")
+    reason: str | None = Field(None, description="Moderasyon nedeni")
+    notes: str | None = Field(None, max_length=500, description="Moderatör notları")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -332,18 +332,18 @@ class EBAContentUsageAnalytics(BaseModel):
     bookmarks: int = Field(0, ge=0, description="Yer imi sayısı")
 
     # Demografik Dağılım
-    grade_level_distribution: Dict[str, int] = Field(
+    grade_level_distribution: dict[str, int] = Field(
         default_factory=dict, description="Sınıf seviyesi dağılımı"
     )
-    subject_interest_distribution: Dict[str, int] = Field(
+    subject_interest_distribution: dict[str, int] = Field(
         default_factory=dict, description="Konu ilgisi dağılımı"
     )
 
     # Zaman Analizi
-    peak_viewing_hours: List[int] = Field(
+    peak_viewing_hours: list[int] = Field(
         default_factory=list, description="Yoğun izlenme saatleri"
     )
-    weekly_trend: Dict[str, int] = Field(
+    weekly_trend: dict[str, int] = Field(
         default_factory=dict, description="Haftalık trend"
     )
 

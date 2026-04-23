@@ -114,14 +114,13 @@ def main():
         print("[VERIFICATION PASSED] Capture bug is fixed!")
         print("="*70)
         return 0
-    elif failed_count > 0:
+    if failed_count > 0:
         print(f"[VERIFICATION FAILED] {failed_count} test(s) failed")
         print("="*70)
         return 1
-    else:
-        print("[VERIFICATION INCONCLUSIVE] No tests ran")
-        print("="*70)
-        return 2
+    print("[VERIFICATION INCONCLUSIVE] No tests ran")
+    print("="*70)
+    return 2
 
 
 if __name__ == "__main__":

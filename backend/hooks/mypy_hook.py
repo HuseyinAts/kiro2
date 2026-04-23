@@ -8,13 +8,12 @@ Exit code 2 for any type errors.
 from __future__ import annotations
 
 import re
-from typing import List, Optional
 
 from .base import BaseHook
 from .models import (
-    QualityCheckResult,
-    HookConfig,
     ExitCode,
+    HookConfig,
+    QualityCheckResult,
     TypeErrorInfo,
 )
 
@@ -43,7 +42,7 @@ class MypyHook(BaseHook):
         r'got\s+"([^"]+)".*expected\s+"([^"]+)"'
     )
 
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Run mypy type checking on files.
 
@@ -107,9 +106,9 @@ class MypyHook(BaseHook):
             warnings=warnings
         )
 
-    def _parse_output(self, output: str) -> List[TypeErrorInfo]:
+    def _parse_output(self, output: str) -> list[TypeErrorInfo]:
         """Parse mypy output into TypeErrorInfo objects."""
-        errors: List[TypeErrorInfo] = []
+        errors: list[TypeErrorInfo] = []
 
         for line in output.strip().split("\n"):
             match = self.ERROR_PATTERN.match(line.strip())
@@ -132,7 +131,7 @@ class MypyHook(BaseHook):
 
         return errors
 
-    def _extract_types(self, message: str) -> tuple[Optional[str], Optional[str]]:
+    def _extract_types(self, message: str) -> tuple[str | None, str | None]:
         """Extract expected and actual types from error message.
 
         Returns:
@@ -146,9 +145,9 @@ class MypyHook(BaseHook):
             return expected, actual
         return None, None
 
-    def _find_missing_hints(self, output: str) -> List[str]:
+    def _find_missing_hints(self, output: str) -> list[str]:
         """Find warnings about missing type hints."""
-        warnings: List[str] = []
+        warnings: list[str] = []
 
         patterns = [
             r"Function is missing a type annotation",
@@ -182,8 +181,8 @@ class MypyHook(BaseHook):
 
 
 async def run_mypy(
-    files: List[str],
-    config: Optional[HookConfig] = None
+    files: list[str],
+    config: HookConfig | None = None
 ) -> QualityCheckResult:
     """
     Convenience function to run mypy type checking.

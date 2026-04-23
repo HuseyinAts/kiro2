@@ -5,7 +5,6 @@ MEB ve ÖSYM müfredat standartları için veri modelleri
 
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -53,18 +52,18 @@ class MEBCurriculumStandard(BaseModel):
     grade_level: GradeLevel = Field(..., description="Sınıf seviyesi")
     unit_name: str = Field(..., description="Ünite adı")
     topic_name: str = Field(..., description="Konu adı")
-    learning_outcomes: List[str] = Field(
+    learning_outcomes: list[str] = Field(
         default_factory=list, description="Öğrenme kazanımları"
     )
-    key_concepts: List[str] = Field(
+    key_concepts: list[str] = Field(
         default_factory=list, description="Anahtar kavramlar"
     )
-    skills: List[str] = Field(default_factory=list, description="Beceriler")
+    skills: list[str] = Field(default_factory=list, description="Beceriler")
     duration_hours: int = Field(default=0, description="Önerilen süre (saat)")
-    prerequisites: List[str] = Field(
+    prerequisites: list[str] = Field(
         default_factory=list, description="Ön koşul konular"
     )
-    assessment_criteria: List[str] = Field(
+    assessment_criteria: list[str] = Field(
         default_factory=list, description="Değerlendirme kriterleri"
     )
     created_at: datetime = Field(default_factory=datetime.now)
@@ -81,15 +80,15 @@ class OSYMStandard(BaseModel):
     topic_code: str = Field(..., description="Konu kodu")
     topic_name: str = Field(..., description="Konu adı")
     priority_level: int = Field(..., ge=1, le=5, description="Öncelik seviyesi (1-5)")
-    question_count_range: Dict[str, int] = Field(..., description="Soru sayısı aralığı")
-    difficulty_distribution: Dict[str, float] = Field(
+    question_count_range: dict[str, int] = Field(..., description="Soru sayısı aralığı")
+    difficulty_distribution: dict[str, float] = Field(
         ..., description="Zorluk dağılımı"
     )
-    cognitive_levels: List[str] = Field(
+    cognitive_levels: list[str] = Field(
         default_factory=list, description="Bilişsel seviyeler"
     )
     exam_frequency: float = Field(default=0.0, description="Sınavlarda çıkma sıklığı")
-    last_exam_appearance: Optional[str] = Field(None, description="Son çıktığı sınav")
+    last_exam_appearance: str | None = Field(None, description="Son çıktığı sınav")
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
     is_active: bool = Field(default=True, description="Aktif durumu")
@@ -103,12 +102,12 @@ class CurriculumAlignment(BaseModel):
     osym_standard_id: str = Field(..., description="ÖSYM standardı ID")
     alignment_score: float = Field(..., ge=0.0, le=1.0, description="Uyumluluk skoru")
     alignment_type: str = Field(..., description="Uyumluluk türü")
-    gaps_identified: List[str] = Field(
+    gaps_identified: list[str] = Field(
         default_factory=list, description="Tespit edilen boşluklar"
     )
-    recommendations: List[str] = Field(default_factory=list, description="Öneriler")
-    verified_by: Optional[str] = Field(None, description="Doğrulayan uzman")
-    verification_date: Optional[datetime] = Field(None, description="Doğrulama tarihi")
+    recommendations: list[str] = Field(default_factory=list, description="Öneriler")
+    verified_by: str | None = Field(None, description="Doğrulayan uzman")
+    verification_date: datetime | None = Field(None, description="Doğrulama tarihi")
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 
@@ -124,10 +123,10 @@ class LearningOutcome(BaseModel):
     cognitive_level: str = Field(..., description="Bilişsel seviye")
     bloom_taxonomy: str = Field(..., description="Bloom taksonomisi")
     meb_standard_id: str = Field(..., description="Bağlı MEB standardı")
-    assessment_methods: List[str] = Field(
+    assessment_methods: list[str] = Field(
         default_factory=list, description="Değerlendirme yöntemleri"
     )
-    sample_activities: List[str] = Field(
+    sample_activities: list[str] = Field(
         default_factory=list, description="Örnek etkinlikler"
     )
     created_at: datetime = Field(default_factory=datetime.now)
@@ -145,7 +144,7 @@ class QuestionBankCompliance(BaseModel):
         default=0, description="ÖSYM formatında soru sayısı"
     )
     meb_aligned_questions: int = Field(default=0, description="MEB uyumlu soru sayısı")
-    difficulty_distribution: Dict[str, int] = Field(
+    difficulty_distribution: dict[str, int] = Field(
         default_factory=dict, description="Zorluk dağılımı"
     )
     compliance_score: float = Field(
@@ -166,8 +165,8 @@ class CurriculumComplianceReport(BaseModel):
 
     id: str = Field(..., description="Rapor ID")
     report_type: str = Field(..., description="Rapor türü")
-    subject: Optional[SubjectType] = Field(None, description="Ders türü")
-    exam_type: Optional[ExamType] = Field(None, description="Sınav türü")
+    subject: SubjectType | None = Field(None, description="Ders türü")
+    exam_type: ExamType | None = Field(None, description="Sınav türü")
     overall_compliance_score: float = Field(
         ..., ge=0.0, le=1.0, description="Genel uyumluluk skoru"
     )
@@ -179,31 +178,31 @@ class CurriculumComplianceReport(BaseModel):
     )
 
     # Detaylı analiz
-    compliant_topics: List[str] = Field(
+    compliant_topics: list[str] = Field(
         default_factory=list, description="Uyumlu konular"
     )
-    non_compliant_topics: List[str] = Field(
+    non_compliant_topics: list[str] = Field(
         default_factory=list, description="Uyumsuz konular"
     )
-    missing_topics: List[str] = Field(default_factory=list, description="Eksik konular")
+    missing_topics: list[str] = Field(default_factory=list, description="Eksik konular")
 
     # Soru bankası durumu
-    question_bank_status: Dict[str, QuestionBankCompliance] = Field(
+    question_bank_status: dict[str, QuestionBankCompliance] = Field(
         default_factory=dict
     )
 
     # Öneriler
-    recommendations: List[str] = Field(
+    recommendations: list[str] = Field(
         default_factory=list, description="İyileştirme önerileri"
     )
-    priority_actions: List[str] = Field(
+    priority_actions: list[str] = Field(
         default_factory=list, description="Öncelikli aksiyonlar"
     )
 
     # Meta bilgiler
     generated_by: str = Field(..., description="Raporu oluşturan")
     generated_at: datetime = Field(default_factory=datetime.now)
-    report_period: Dict[str, datetime] = Field(
+    report_period: dict[str, datetime] = Field(
         default_factory=dict, description="Rapor dönemi"
     )
 
@@ -216,13 +215,13 @@ class CurriculumUpdateRequest(BaseModel):
     id: str = Field(..., description="Güncelleme talebi ID")
     update_type: str = Field(..., description="Güncelleme türü")
     subject: SubjectType = Field(..., description="Ders türü")
-    affected_standards: List[str] = Field(..., description="Etkilenen standartlar")
+    affected_standards: list[str] = Field(..., description="Etkilenen standartlar")
     changes_description: str = Field(..., description="Değişiklik açıklaması")
-    source_document: Optional[str] = Field(None, description="Kaynak doküman")
+    source_document: str | None = Field(None, description="Kaynak doküman")
     requested_by: str = Field(..., description="Talep eden")
     requested_at: datetime = Field(default_factory=datetime.now)
     status: str = Field(default="pending", description="Durum")
-    reviewed_by: Optional[str] = Field(None, description="İnceleyen")
-    reviewed_at: Optional[datetime] = Field(None, description="İnceleme tarihi")
-    implementation_date: Optional[datetime] = Field(None, description="Uygulama tarihi")
-    notes: Optional[str] = Field(None, description="Notlar")
+    reviewed_by: str | None = Field(None, description="İnceleyen")
+    reviewed_at: datetime | None = Field(None, description="İnceleme tarihi")
+    implementation_date: datetime | None = Field(None, description="Uygulama tarihi")
+    notes: str | None = Field(None, description="Notlar")

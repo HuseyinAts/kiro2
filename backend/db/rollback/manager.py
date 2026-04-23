@@ -25,7 +25,6 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -46,10 +45,10 @@ class RollbackResult:
     success: bool
     revision: str
     target_revision: str
-    dry_run_result: Optional[ExecutionResult] = None
-    execution_result: Optional[ExecutionResult] = None
+    dry_run_result: ExecutionResult | None = None
+    execution_result: ExecutionResult | None = None
     integrity_check_passed: bool = False
-    error_message: Optional[str] = None
+    error_message: str | None = None
     duration_seconds: float = 0.0
     manual_intervention_required: bool = False
 
@@ -75,7 +74,7 @@ class RestoreResult:
     success: bool
     backup_path: Path
     duration_seconds: float = 0.0
-    error_message: Optional[str] = None
+    error_message: str | None = None
     tables_restored: int = 0
     rows_restored: int = 0
 
@@ -102,7 +101,7 @@ class VerificationResult:
     schema_valid: bool = False
     data_intact: bool = False
     alembic_version_correct: bool = False
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 # ==================== ROLLBACK MANAGER ====================
@@ -123,7 +122,7 @@ class RollbackManager:
 
     def __init__(
         self,
-        config: Optional[DryRunConfig] = None,
+        config: DryRunConfig | None = None,
         backup_dir: str = "backups/migrations",
     ):
         """
@@ -261,7 +260,7 @@ class RollbackManager:
                 stderr=result.stderr,
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return RollbackResult(
                 success=False,
                 revision=current_revision or "unknown",
@@ -306,20 +305,19 @@ class RollbackManager:
                 integrity_check_passed=True,
                 duration_seconds=duration,
             )
-        else:
-            # REQ-5.5: Integrity check failed
-            logger.error("Rollback completed but integrity check failed")
-            return RollbackResult(
-                success=False,
-                revision=current_revision or "unknown",
-                target_revision=revision,
-                dry_run_result=dry_run_result,
-                execution_result=execution_result,
-                integrity_check_passed=False,
-                error_message="Integrity check failed after rollback",
-                duration_seconds=duration,
-                manual_intervention_required=True,
-            )
+        # REQ-5.5: Integrity check failed
+        logger.error("Rollback completed but integrity check failed")
+        return RollbackResult(
+            success=False,
+            revision=current_revision or "unknown",
+            target_revision=revision,
+            dry_run_result=dry_run_result,
+            execution_result=execution_result,
+            integrity_check_passed=False,
+            error_message="Integrity check failed after rollback",
+            duration_seconds=duration,
+            manual_intervention_required=True,
+        )
 
     async def restore_from_backup(self, backup_path: str | Path) -> RestoreResult:
         """
@@ -495,7 +493,7 @@ class RollbackManager:
             logger.exception(f"Manual intervention detection failed: {e}")
             return True  # Assume intervention needed on error
 
-    async def _get_current_revision(self) -> Optional[str]:
+    async def _get_current_revision(self) -> str | None:
         """Mevcut alembic revision'i al."""
         try:
             engine = await self._get_engine()
@@ -507,7 +505,7 @@ class RollbackManager:
         except Exception:
             return None
 
-    async def find_latest_backup(self) -> Optional[Path]:
+    async def find_latest_backup(self) -> Path | None:
         """En son backup dosyasini bul."""
         backups = sorted(
             self.backup_dir.glob("*.sql.gz"),

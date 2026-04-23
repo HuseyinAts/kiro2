@@ -8,7 +8,6 @@ from __future__ import annotations
 import logging
 import math
 import re
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,7 @@ ISO_8601_DURATION_PATTERN = re.compile(
 DEFAULT_DURATION_MINUTES = 10
 
 
-def parse_iso8601_duration(duration: Optional[str], default: int = DEFAULT_DURATION_MINUTES) -> int:
+def parse_iso8601_duration(duration: str | None, default: int = DEFAULT_DURATION_MINUTES) -> int:
     """
     Parse ISO 8601 duration string to minutes.
 

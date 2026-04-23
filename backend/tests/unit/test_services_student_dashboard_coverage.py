@@ -11,19 +11,19 @@ pytestmark = pytest.mark.skip(
 )
 from datetime import datetime, timedelta
 
+from models.dashboard import (
+    Bildirim,
+    DashboardIstatistikleri,
+    Hedef,
+    PerformansVerisi,
+    ProfilGuncelleme,
+    SinavSonucu,
+)
+from models.user import OgrenciProfili
 from services.student_dashboard_service import (
     OgrenciDashboardServisi,
     ogrenci_dashboard_servisi,
 )
-from models.dashboard import (
-    DashboardIstatistikleri,
-    SinavSonucu,
-    PerformansVerisi,
-    Hedef,
-    Bildirim,
-    ProfilGuncelleme,
-)
-from models.user import OgrenciProfili
 
 
 class TestOgrenciDashboardServisi:

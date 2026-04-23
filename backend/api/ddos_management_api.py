@@ -5,7 +5,6 @@ Admin endpoints for managing IP whitelist/blacklist and monitoring
 Author: Claude
 Date: 2025-10-27
 """
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -23,13 +22,13 @@ class IPActionRequest(BaseModel):
     """IP action request"""
 
     ip: str
-    reason: Optional[str] = None
+    reason: str | None = None
 
 
 class IPListResponse(BaseModel):
     """IP list response"""
 
-    ips: List[str]
+    ips: list[str]
     count: int
 
 
@@ -42,7 +41,7 @@ class IPReputationResponse(BaseModel):
     blocked_count: int
     last_seen: float
     first_seen: float
-    suspicious_patterns: List[str]
+    suspicious_patterns: list[str]
     whitelist: bool
 
 

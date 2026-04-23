@@ -6,9 +6,9 @@ Supports both JPype (direct Zemberek access) and HTTP backend.
 """
 
 import asyncio
-import time
 import logging
-from typing import Any, Dict, List
+import time
+from typing import Any
 
 from .base import BaseToolHandler
 
@@ -22,7 +22,7 @@ class LemmatizationHandler(BaseToolHandler):
 
     async def _call_jpype(
         self, text: str, batch: bool = False, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Extract lemmas using JPype bridge.
 
@@ -57,8 +57,8 @@ class LemmatizationHandler(BaseToolHandler):
         }
 
     async def _lemmatize_sequential_jpype(
-        self, words: List[str]
-    ) -> List[Dict[str, Any]]:
+        self, words: list[str]
+    ) -> list[dict[str, Any]]:
         """Lemmatize words sequentially using JPype bridge."""
         lemmas = []
 
@@ -107,8 +107,8 @@ class LemmatizationHandler(BaseToolHandler):
         return lemmas
 
     async def _lemmatize_batch_jpype(
-        self, words: List[str], batch_size: int = 50
-    ) -> List[Dict[str, Any]]:
+        self, words: list[str], batch_size: int = 50
+    ) -> list[dict[str, Any]]:
         """
         Lemmatize words in parallel batches using JPype bridge.
 
@@ -140,13 +140,13 @@ class LemmatizationHandler(BaseToolHandler):
 
         return lemmas
 
-    async def _process_batch_jpype(self, words: List[str]) -> List[Dict[str, Any]]:
+    async def _process_batch_jpype(self, words: list[str]) -> list[dict[str, Any]]:
         """Process a batch of words using JPype."""
         return await self._lemmatize_sequential_jpype(words)
 
     async def _call_backend(
         self, text: str, batch: bool = False, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Extract lemmas from Turkish text
 
@@ -160,7 +160,7 @@ class LemmatizationHandler(BaseToolHandler):
         start_time = time.perf_counter()
 
         words = text.split()
-        lemmas: List[Dict[str, Any]] = []
+        lemmas: list[dict[str, Any]] = []
 
         if batch:
             # Batch mode - parallel processing (not implemented in HTTP backend)
@@ -180,8 +180,8 @@ class LemmatizationHandler(BaseToolHandler):
         }
 
     async def _lemmatize_sequential(
-        self, words: List[str]
-    ) -> List[Dict[str, Any]]:
+        self, words: list[str]
+    ) -> list[dict[str, Any]]:
         """
         Lemmatize words sequentially
 
@@ -265,8 +265,7 @@ class LemmatizationHandler(BaseToolHandler):
 
         if last_vowel in "eioö":
             return lemma + "mek"
-        else:
-            return lemma + "mak"
+        return lemma + "mak"
 
     def _get_cache_input(self, text: str, batch: bool = False, **kwargs) -> str:
         """Generate cache input including batch flag"""

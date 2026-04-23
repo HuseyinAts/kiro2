@@ -1,18 +1,16 @@
 """Tests for AuthenticationMiddleware from security_middleware.py"""
 
-import sys
-import pytest
-from datetime import UTC, datetime
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 from starlette.datastructures import Headers, QueryParams
 from starlette.responses import JSONResponse
 
-# Patch broken fastapi.middleware.base import before loading the module
-import backend.tests.conftest_security  # noqa: F401
 import backend.core.security_middleware as sec_mod
 
+# Patch broken fastapi.middleware.base import before loading the module
+import backend.tests.conftest_security  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Helpers

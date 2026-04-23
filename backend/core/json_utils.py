@@ -30,11 +30,12 @@ Example:
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 from uuid import UUID
 
 import orjson

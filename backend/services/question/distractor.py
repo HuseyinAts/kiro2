@@ -8,11 +8,11 @@ Turk ogrencilerin yaygın yaptigi hatalari kullanir.
 
 import json
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from models.curriculum import SubjectType
 
-from .models import get_misconceptions, MISCONCEPTION_DATABASE
+from .models import MISCONCEPTION_DATABASE, get_misconceptions
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class DistractorGenerationSystem:
         subject: SubjectType,
         topic: str,
         count: int = 3,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         REQ-48.37: Plausible distractor generation - Makul celdiriciler uretmek
 
@@ -109,7 +109,7 @@ class DistractorGenerationSystem:
 
     def _generate_misconception_distractors(
         self, subject: SubjectType, topic: str, correct_answer: str, count: int
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """
         REQ-48.38: Common misconception database kullanarak celdirici uret
         """
@@ -133,7 +133,7 @@ class DistractorGenerationSystem:
         subject: SubjectType,
         topic: str,
         count: int,
-    ) -> List[Dict[str, str]]:
+    ) -> list[dict[str, str]]:
         """LLM ile celdirici uret"""
         try:
             prompt = f"""Sen bir OSYM soru hazirlama uzmanisin. Asagidaki soru icin {count} adet makul ama yanlis celdirici (distractor) uret:
@@ -175,7 +175,7 @@ CIKTI FORMATI (JSON):
 
     def _generate_fallback_distractor(
         self, correct_answer: str, index: int
-    ) -> Dict[str, str]:
+    ) -> dict[str, str]:
         """Fallback celdirici uret"""
         return {
             "text": f"{chr(66+index)}) Alternatif cevap {index+1}",
@@ -184,7 +184,7 @@ CIKTI FORMATI (JSON):
 
     def _generate_fallback_distractors(
         self, correct_answer: str, count: int
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Fallback celdiriciler"""
         return [
             {

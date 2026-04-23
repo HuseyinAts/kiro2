@@ -3,39 +3,40 @@ Core Exceptions Module Coverage Tests
 Goal: Increase core.exceptions coverage from 25% to 70%+
 """
 
-import pytest
 from datetime import datetime, timedelta
 
+import pytest
+
 from core.exceptions import (
-    # Base exceptions
-    ServiceError,
-    ValidationError,
-    NotFoundError,
-    AuthorizationError,
-    DatabaseError,
-    ExternalServiceError,
-    ConfigurationError,
-    BusinessLogicError,
+    # Compatibility
+    AdminAuthorizationError,
     AuthenticationError,
-    RateLimitError,
-    TimeoutError,
+    AuthorizationError,
+    BusinessLogicError,
     ConcurrencyError,
-    IntegrationError,
-    MaintenanceError,
-    QuotaExceededError,
-    SecurityError,
-    # Enhanced exceptions
-    ErrorSeverity,
-    EnhancedServiceError,
-    UserError,
+    ConfigurationError,
     ContentError,
-    ExamError,
-    LearningError,
+    DatabaseError,
+    EnhancedServiceError,
     # Utilities
     ErrorChain,
     ErrorFactory,
-    # Compatibility
-    AdminAuthorizationError,
+    # Enhanced exceptions
+    ErrorSeverity,
+    ExamError,
+    ExternalServiceError,
+    IntegrationError,
+    LearningError,
+    MaintenanceError,
+    NotFoundError,
+    QuotaExceededError,
+    RateLimitError,
+    SecurityError,
+    # Base exceptions
+    ServiceError,
+    TimeoutError,
+    UserError,
+    ValidationError,
 )
 
 

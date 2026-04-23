@@ -7,13 +7,15 @@ property-based testler içerir.
 Property 4: Health Score Bounds - Score her zaman 0-100 arasında
 """
 
-from hypothesis import given, strategies as st, settings
-
 import sys
+
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
-from app.health.score_calculator import HealthScoreCalculator
 from app.health.models import HealthStatus
+from app.health.score_calculator import HealthScoreCalculator
 
 
 class TestHealthScoreProperties:

@@ -17,11 +17,12 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
-from backend.sdk.tool_definitions import get_domain_tools, ToolRegistry
+from backend.sdk.tool_definitions import get_domain_tools
 
 logger = logging.getLogger(__name__)
 

@@ -6,7 +6,7 @@ Soru bankası ve sınav yönetimi için özel repository
 import logging
 import random
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import and_, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,7 +35,7 @@ class QuestionRepository(BaseRepository[Question]):
 
     async def get_by_exam_type(
         self, exam_type: ExamType, skip: int = 0, limit: int = 100
-    ) -> List[Question]:
+    ) -> list[Question]:
         """Get questions by exam type"""
         return await self.get_all(
             skip=skip, limit=limit, filters={"exam_type": exam_type, "is_active": True}
@@ -45,10 +45,10 @@ class QuestionRepository(BaseRepository[Question]):
         self,
         subject_area: SubjectArea,
         topic: str,
-        difficulty: Optional[QuestionDifficulty] = None,
+        difficulty: QuestionDifficulty | None = None,
         skip: int = 0,
         limit: int = 100,
-    ) -> List[Question]:
+    ) -> list[Question]:
         """Get questions by subject, topic and optional difficulty"""
         filters = {"subject_area": subject_area, "topic": topic, "is_active": True}
 
@@ -62,8 +62,8 @@ class QuestionRepository(BaseRepository[Question]):
         exam_type: ExamType,
         subject_area: SubjectArea,
         count: int,
-        difficulty_distribution: Optional[Dict[QuestionDifficulty, int]] = None,
-    ) -> List[Question]:
+        difficulty_distribution: dict[QuestionDifficulty, int] | None = None,
+    ) -> list[Question]:
         """Get random questions with optional difficulty distribution"""
         try:
             if difficulty_distribution:
@@ -87,21 +87,20 @@ class QuestionRepository(BaseRepository[Question]):
                     all_questions.extend(selected)
 
                 return all_questions
-            else:
-                # Get random questions without difficulty constraint
-                questions = await self.get_all(
-                    filters={
-                        "exam_type": exam_type,
-                        "subject_area": subject_area,
-                        "is_active": True,
-                    },
-                    limit=count * 2,  # Get more to have selection
-                )
+            # Get random questions without difficulty constraint
+            questions = await self.get_all(
+                filters={
+                    "exam_type": exam_type,
+                    "subject_area": subject_area,
+                    "is_active": True,
+                },
+                limit=count * 2,  # Get more to have selection
+            )
 
-                return random.sample(questions, min(count, len(questions)))
+            return random.sample(questions, min(count, len(questions)))
 
         except Exception as e:
-            logger.error(f"Error getting random questions: {str(e)}")
+            logger.error(f"Error getting random questions: {e!s}")
             raise
 
     async def get_by_irt_difficulty_range(
@@ -111,7 +110,7 @@ class QuestionRepository(BaseRepository[Question]):
         min_difficulty: float,
         max_difficulty: float,
         count: int,
-    ) -> List[Question]:
+    ) -> list[Question]:
         """Get questions within IRT difficulty range"""
         try:
             result = await self.session.execute(
@@ -130,12 +129,12 @@ class QuestionRepository(BaseRepository[Question]):
             )
             return result.scalars().all()
         except Exception as e:
-            logger.error(f"Error getting questions by IRT difficulty: {str(e)}")
+            logger.error(f"Error getting questions by IRT difficulty: {e!s}")
             raise
 
     async def update_question_statistics(
         self, question_id: str, is_correct: bool, response_time: float
-    ) -> Optional[Question]:
+    ) -> Question | None:
         """Update question statistics after student answer"""
         try:
             question = await self.get_by_id(question_id)
@@ -159,10 +158,10 @@ class QuestionRepository(BaseRepository[Question]):
                 average_response_time=new_avg,
             )
         except Exception as e:
-            logger.error(f"Error updating question statistics: {str(e)}")
+            logger.error(f"Error updating question statistics: {e!s}")
             raise
 
-    async def get_question_performance_stats(self, question_id: str) -> Dict[str, Any]:
+    async def get_question_performance_stats(self, question_id: str) -> dict[str, Any]:
         """Get detailed performance statistics for a question"""
         try:
             question = await self.get_by_id(question_id)
@@ -188,7 +187,7 @@ class QuestionRepository(BaseRepository[Question]):
                 "readability_score": question.readability_score,
             }
         except Exception as e:
-            logger.error(f"Error getting question performance stats: {str(e)}")
+            logger.error(f"Error getting question performance stats: {e!s}")
             raise
 
 
@@ -200,7 +199,7 @@ class ExamSessionRepository(BaseRepository[ExamSession]):
 
     async def get_by_student_id(
         self, student_id: str, skip: int = 0, limit: int = 100
-    ) -> List[ExamSession]:
+    ) -> list[ExamSession]:
         """Get exam sessions by student ID"""
         return await self.get_all(
             skip=skip,
@@ -209,7 +208,7 @@ class ExamSessionRepository(BaseRepository[ExamSession]):
             order_by="created_at",
         )
 
-    async def get_active_session(self, student_id: str) -> Optional[ExamSession]:
+    async def get_active_session(self, student_id: str) -> ExamSession | None:
         """Get active exam session for student"""
         try:
             result = await self.session.execute(
@@ -225,7 +224,7 @@ class ExamSessionRepository(BaseRepository[ExamSession]):
             )
             return result.scalar_one_or_none()
         except Exception as e:
-            logger.error(f"Error getting active session: {str(e)}")
+            logger.error(f"Error getting active session: {e!s}")
             raise
 
     async def create_exam_session(
@@ -233,7 +232,7 @@ class ExamSessionRepository(BaseRepository[ExamSession]):
         student_id: str,
         exam_type: ExamType,
         exam_name: str,
-        questions: List[Question],
+        questions: list[Question],
         duration_minutes: int,
     ) -> ExamSession:
         """Create new exam session with questions"""
@@ -265,11 +264,11 @@ class ExamSessionRepository(BaseRepository[ExamSession]):
 
             return exam_session
         except Exception as e:
-            logger.error(f"Error creating exam session: {str(e)}")
+            logger.error(f"Error creating exam session: {e!s}")
             await self.session.rollback()
             raise
 
-    async def start_exam(self, session_id: str) -> Optional[ExamSession]:
+    async def start_exam(self, session_id: str) -> ExamSession | None:
         """Start exam session"""
         return await self.update(
             session_id, status="in_progress", started_at=datetime.now()
@@ -283,7 +282,7 @@ class ExamSessionRepository(BaseRepository[ExamSession]):
         total_empty: int,
         raw_score: float,
         estimated_ability: float = 0.0,
-    ) -> Optional[ExamSession]:
+    ) -> ExamSession | None:
         """Complete exam session with results"""
         return await self.update(
             session_id,
@@ -298,7 +297,7 @@ class ExamSessionRepository(BaseRepository[ExamSession]):
 
     async def get_session_with_questions(
         self, session_id: str
-    ) -> Optional[ExamSession]:
+    ) -> ExamSession | None:
         """Get exam session with questions loaded"""
         try:
             result = await self.session.execute(
@@ -313,7 +312,7 @@ class ExamSessionRepository(BaseRepository[ExamSession]):
             )
             return result.scalar_one_or_none()
         except Exception as e:
-            logger.error(f"Error getting session with questions: {str(e)}")
+            logger.error(f"Error getting session with questions: {e!s}")
             raise
 
 
@@ -327,11 +326,11 @@ class StudentAnswerRepository(BaseRepository[StudentAnswer]):
         self,
         exam_session_id: str,
         question_id: str,
-        selected_answer: Optional[str],
+        selected_answer: str | None,
         response_time_seconds: float,
         answer_changes: int = 0,
         time_to_first_answer: float = 0.0,
-        confidence_level: Optional[float] = None,
+        confidence_level: float | None = None,
     ) -> StudentAnswer:
         """Save or update student answer"""
         try:
@@ -370,23 +369,22 @@ class StudentAnswerRepository(BaseRepository[StudentAnswer]):
                     confidence_level=confidence_level,
                     answered_at=datetime.now(),
                 )
-            else:
-                # Create new answer
-                return await self.create(
-                    exam_session_id=exam_session_id,
-                    question_id=question_id,
-                    selected_answer=selected_answer,
-                    is_correct=is_correct,
-                    response_time_seconds=response_time_seconds,
-                    answer_changes=answer_changes,
-                    time_to_first_answer=time_to_first_answer,
-                    confidence_level=confidence_level,
-                )
+            # Create new answer
+            return await self.create(
+                exam_session_id=exam_session_id,
+                question_id=question_id,
+                selected_answer=selected_answer,
+                is_correct=is_correct,
+                response_time_seconds=response_time_seconds,
+                answer_changes=answer_changes,
+                time_to_first_answer=time_to_first_answer,
+                confidence_level=confidence_level,
+            )
         except Exception as e:
-            logger.error(f"Error saving student answer: {str(e)}")
+            logger.error(f"Error saving student answer: {e!s}")
             raise
 
-    async def get_session_answers(self, exam_session_id: str) -> List[StudentAnswer]:
+    async def get_session_answers(self, exam_session_id: str) -> list[StudentAnswer]:
         """Get all answers for an exam session"""
         return await self.get_all(
             filters={"exam_session_id": exam_session_id}, order_by="answered_at"
@@ -394,7 +392,7 @@ class StudentAnswerRepository(BaseRepository[StudentAnswer]):
 
     async def get_student_performance_by_subject(
         self, student_id: str, subject_area: SubjectArea, days_back: int = 30
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get student performance statistics by subject"""
         try:
             # This would require joining multiple tables
@@ -409,5 +407,5 @@ class StudentAnswerRepository(BaseRepository[StudentAnswer]):
                 "improvement_trend": 0.0,
             }
         except Exception as e:
-            logger.error(f"Error getting student performance: {str(e)}")
+            logger.error(f"Error getting student performance: {e!s}")
             raise

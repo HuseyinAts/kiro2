@@ -13,9 +13,9 @@ import hashlib
 import json
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, TypeVar
+from datetime import UTC, datetime, timedelta
 from enum import Enum
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class CacheConfig:
     host: str = "localhost"
     port: int = 6379
     db: int = 0
-    password: Optional[str] = None
+    password: str | None = None
 
     # TTL ayarları (saniye)
     rule_effectiveness_ttl: int = 3600  # 1 saat
@@ -78,7 +78,7 @@ class ImprovementCache:
     - Cache invalidation
     """
 
-    def __init__(self, config: Optional[CacheConfig] = None):
+    def __init__(self, config: CacheConfig | None = None):
         """
         Cache'i başlat.
 
@@ -86,7 +86,7 @@ class ImprovementCache:
             config: Cache konfigürasyonu
         """
         self.config = config or CacheConfig()
-        self._redis: Optional[Any] = None
+        self._redis: Any | None = None
         self._connected = False
 
     async def connect(self) -> bool:
@@ -156,7 +156,7 @@ class ImprovementCache:
     # RULE EFFECTIVENESS CACHE
     # =========================================================================
 
-    async def get_rule_effectiveness(self, rule_id: str) -> Optional[float]:
+    async def get_rule_effectiveness(self, rule_id: str) -> float | None:
         """
         Kural etkinlik skorunu cache'den al.
 
@@ -185,7 +185,7 @@ class ImprovementCache:
         self,
         rule_id: str,
         score: float,
-        ttl: Optional[int] = None
+        ttl: int | None = None
     ) -> bool:
         """
         Kural etkinlik skorunu cache'e yaz.
@@ -235,7 +235,7 @@ class ImprovementCache:
             logger.error(f"Cache invalidate hatası: {e}")
             return False
 
-    async def get_all_rule_scores(self) -> Dict[str, float]:
+    async def get_all_rule_scores(self) -> dict[str, float]:
         """
         Tüm kural skorlarını al.
 
@@ -265,7 +265,7 @@ class ImprovementCache:
     # PATTERN CACHE
     # =========================================================================
 
-    async def get_pattern(self, pattern_id: str) -> Optional[Dict[str, Any]]:
+    async def get_pattern(self, pattern_id: str) -> dict[str, Any] | None:
         """
         Pattern verisini cache'den al.
 
@@ -293,8 +293,8 @@ class ImprovementCache:
     async def set_pattern(
         self,
         pattern_id: str,
-        data: Dict[str, Any],
-        ttl: Optional[int] = None
+        data: dict[str, Any],
+        ttl: int | None = None
     ) -> bool:
         """
         Pattern verisini cache'e yaz.
@@ -328,7 +328,7 @@ class ImprovementCache:
     async def cache_feedback_batch(
         self,
         rule_id: str,
-        feedbacks: List[Dict[str, Any]]
+        feedbacks: list[dict[str, Any]]
     ) -> bool:
         """
         Feedback batch'ini cache'e yaz.
@@ -372,7 +372,7 @@ class ImprovementCache:
         self,
         rule_id: str,
         limit: int = 100
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Cache'den feedback'leri al.
 
@@ -406,7 +406,7 @@ class ImprovementCache:
     async def cache_ab_test_result(
         self,
         test_id: str,
-        result: Dict[str, Any]
+        result: dict[str, Any]
     ) -> bool:
         """
         A/B test sonucunu cache'e yaz.
@@ -432,7 +432,7 @@ class ImprovementCache:
             logger.error(f"A/B test cache hatası: {e}")
             return False
 
-    async def get_ab_test_result(self, test_id: str) -> Optional[Dict[str, Any]]:
+    async def get_ab_test_result(self, test_id: str) -> dict[str, Any] | None:
         """
         A/B test sonucunu cache'den al.
 
@@ -464,7 +464,7 @@ class ImprovementCache:
     async def cache_pending_approval(
         self,
         request_id: str,
-        changes: Dict[str, Any],
+        changes: dict[str, Any],
         ttl: int = 86400  # 24 saat
     ) -> bool:
         """
@@ -485,7 +485,7 @@ class ImprovementCache:
             key = self._make_key(CacheKeyPrefix.APPROVAL, request_id)
             data = {
                 "changes": changes,
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
                 "status": "pending"
             }
 
@@ -496,7 +496,7 @@ class ImprovementCache:
             logger.error(f"Approval cache hatası: {e}")
             return False
 
-    async def get_pending_approval(self, request_id: str) -> Optional[Dict[str, Any]]:
+    async def get_pending_approval(self, request_id: str) -> dict[str, Any] | None:
         """
         Bekleyen onay isteğini al.
 
@@ -547,7 +547,7 @@ class ImprovementCache:
     # UTILITY METHODS
     # =========================================================================
 
-    async def clear_all(self, prefix: Optional[CacheKeyPrefix] = None) -> int:
+    async def clear_all(self, prefix: CacheKeyPrefix | None = None) -> int:
         """
         Cache'i temizle.
 
@@ -578,7 +578,7 @@ class ImprovementCache:
             logger.error(f"Cache clear hatası: {e}")
             return 0
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """
         Cache istatistiklerini al.
 
@@ -657,17 +657,17 @@ class InMemoryCache:
         Args:
             max_size: Maksimum entry sayısı
         """
-        self._cache: Dict[str, CacheEntry] = {}
+        self._cache: dict[str, CacheEntry] = {}
         self._max_size = max_size
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Key'e karşılık gelen değeri al."""
         entry = self._cache.get(key)
 
         if entry is None:
             return None
 
-        if datetime.now(timezone.utc) > entry.expires_at:
+        if datetime.now(UTC) > entry.expires_at:
             del self._cache[key]
             return None
 
@@ -687,7 +687,7 @@ class InMemoryCache:
                 )
                 del self._cache[oldest_key]
 
-        expires_at = datetime.now(timezone.utc) + timedelta(seconds=ttl)
+        expires_at = datetime.now(UTC) + timedelta(seconds=ttl)
         self._cache[key] = CacheEntry(value=value, expires_at=expires_at)
         return True
 
@@ -700,7 +700,7 @@ class InMemoryCache:
 
     def _evict_expired(self) -> int:
         """Süresi dolmuş entry'leri temizle."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expired_keys = [
             k for k, v in self._cache.items()
             if now > v.expires_at
@@ -717,7 +717,7 @@ class InMemoryCache:
         self._cache.clear()
         return count
 
-    def stats(self) -> Dict[str, Any]:
+    def stats(self) -> dict[str, Any]:
         """Cache istatistikleri."""
         self._evict_expired()
         return {
@@ -733,7 +733,7 @@ class InMemoryCache:
 
 async def create_cache(
     use_redis: bool = True,
-    config: Optional[CacheConfig] = None
+    config: CacheConfig | None = None
 ) -> ImprovementCache | InMemoryCache:
     """
     Cache instance oluştur.
@@ -751,7 +751,6 @@ async def create_cache(
 
         if connected:
             return cache
-        else:
-            logger.warning("Redis bağlantısı başarısız, in-memory cache kullanılıyor")
+        logger.warning("Redis bağlantısı başarısız, in-memory cache kullanılıyor")
 
     return InMemoryCache()

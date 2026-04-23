@@ -24,11 +24,13 @@ Backward Compatibility:
 Bu dosya silinmeyecek, ancak yeni kod icin
 core/cache/ kullanilmali.
 """
+import hashlib
 import json
 import pickle
-import hashlib
-from typing import Any, Optional, Callable
+from collections.abc import Callable
 from functools import wraps
+from typing import Any
+
 import redis
 from redis.asyncio import Redis as AsyncRedis
 
@@ -44,12 +46,12 @@ class CacheService:
     Redis cache service with sync and async support
     """
 
-    def __init__(self, redis_url: Optional[str] = None):
+    def __init__(self, redis_url: str | None = None):
         self.redis_url = redis_url or getattr(
             settings, "redis_url", "redis://localhost:6379"
         )
-        self._sync_client: Optional[redis.Redis] = None
-        self._async_client: Optional[AsyncRedis] = None
+        self._sync_client: redis.Redis | None = None
+        self._async_client: AsyncRedis | None = None
         self.default_ttl = 3600  # 1 hour
         self.namespace = "kiro"
 
@@ -84,7 +86,7 @@ class CacheService:
                 raise
         return self._async_client
 
-    def _make_key(self, key: str, namespace: Optional[str] = None) -> str:
+    def _make_key(self, key: str, namespace: str | None = None) -> str:
         """Create namespaced cache key"""
         ns = namespace or self.namespace
         return f"{ns}:{key}"
@@ -112,7 +114,7 @@ class CacheService:
 
     # ==================== SYNC METHODS ====================
 
-    def get(self, key: str, namespace: Optional[str] = None) -> Optional[Any]:
+    def get(self, key: str, namespace: str | None = None) -> Any | None:
         """Get value from cache (sync)"""
         try:
             full_key = self._make_key(key, namespace)
@@ -130,8 +132,8 @@ class CacheService:
         self,
         key: str,
         value: Any,
-        ttl: Optional[int] = None,
-        namespace: Optional[str] = None,
+        ttl: int | None = None,
+        namespace: str | None = None,
     ) -> bool:
         """Set value in cache (sync)"""
         try:
@@ -146,7 +148,7 @@ class CacheService:
             logger.error(f"Cache set error: {e}")
             return False
 
-    def delete(self, key: str, namespace: Optional[str] = None) -> bool:
+    def delete(self, key: str, namespace: str | None = None) -> bool:
         """Delete key from cache (sync)"""
         try:
             full_key = self._make_key(key, namespace)
@@ -157,7 +159,7 @@ class CacheService:
             logger.error(f"Cache delete error: {e}")
             return False
 
-    def exists(self, key: str, namespace: Optional[str] = None) -> bool:
+    def exists(self, key: str, namespace: str | None = None) -> bool:
         """Check if key exists (sync)"""
         try:
             full_key = self._make_key(key, namespace)
@@ -166,7 +168,7 @@ class CacheService:
             logger.error(f"Cache exists error: {e}")
             return False
 
-    def clear_namespace(self, namespace: Optional[str] = None) -> int:
+    def clear_namespace(self, namespace: str | None = None) -> int:
         """Clear all keys in namespace (sync)"""
         try:
             ns = namespace or self.namespace
@@ -181,7 +183,7 @@ class CacheService:
             logger.error(f"Cache clear namespace error: {e}")
             return 0
 
-    def get_ttl(self, key: str, namespace: Optional[str] = None) -> int:
+    def get_ttl(self, key: str, namespace: str | None = None) -> int:
         """Get remaining TTL in seconds (sync)"""
         try:
             full_key = self._make_key(key, namespace)
@@ -193,8 +195,8 @@ class CacheService:
     # ==================== ASYNC METHODS ====================
 
     async def async_get(
-        self, key: str, namespace: Optional[str] = None
-    ) -> Optional[Any]:
+        self, key: str, namespace: str | None = None
+    ) -> Any | None:
         """Get value from cache (async)"""
         try:
             client = await self.async_client
@@ -213,8 +215,8 @@ class CacheService:
         self,
         key: str,
         value: Any,
-        ttl: Optional[int] = None,
-        namespace: Optional[str] = None,
+        ttl: int | None = None,
+        namespace: str | None = None,
     ) -> bool:
         """Set value in cache (async)"""
         try:
@@ -230,7 +232,7 @@ class CacheService:
             logger.error(f"Cache async_set error: {e}")
             return False
 
-    async def async_delete(self, key: str, namespace: Optional[str] = None) -> bool:
+    async def async_delete(self, key: str, namespace: str | None = None) -> bool:
         """Delete key from cache (async)"""
         try:
             client = await self.async_client
@@ -246,9 +248,9 @@ class CacheService:
 
     def cached(
         self,
-        ttl: Optional[int] = None,
-        namespace: Optional[str] = None,
-        key_func: Optional[Callable] = None,
+        ttl: int | None = None,
+        namespace: str | None = None,
+        key_func: Callable | None = None,
     ):
         """
         Decorator to cache function results (sync)
@@ -294,9 +296,9 @@ class CacheService:
 
     def async_cached(
         self,
-        ttl: Optional[int] = None,
-        namespace: Optional[str] = None,
-        key_func: Optional[Callable] = None,
+        ttl: int | None = None,
+        namespace: str | None = None,
+        key_func: Callable | None = None,
     ):
         """
         Decorator to cache async function results
@@ -341,7 +343,7 @@ class CacheService:
 
     # ==================== CACHE INVALIDATION STRATEGIES ====================
 
-    def invalidate_pattern(self, pattern: str, namespace: Optional[str] = None) -> int:
+    def invalidate_pattern(self, pattern: str, namespace: str | None = None) -> int:
         """
         Invalidate all keys matching pattern
 
@@ -385,7 +387,7 @@ class CacheService:
 
 # ==================== GLOBAL INSTANCE ====================
 
-_cache_service: Optional[CacheService] = None
+_cache_service: CacheService | None = None
 
 
 def get_cache_service() -> CacheService:
@@ -399,23 +401,23 @@ def get_cache_service() -> CacheService:
 # ==================== CONVENIENCE FUNCTIONS ====================
 
 
-def cache_get(key: str, namespace: Optional[str] = None) -> Optional[Any]:
+def cache_get(key: str, namespace: str | None = None) -> Any | None:
     """Convenience function to get from cache"""
     return get_cache_service().get(key, namespace)
 
 
 def cache_set(
-    key: str, value: Any, ttl: Optional[int] = None, namespace: Optional[str] = None
+    key: str, value: Any, ttl: int | None = None, namespace: str | None = None
 ) -> bool:
     """Convenience function to set in cache"""
     return get_cache_service().set(key, value, ttl, namespace)
 
 
-def cache_delete(key: str, namespace: Optional[str] = None) -> bool:
+def cache_delete(key: str, namespace: str | None = None) -> bool:
     """Convenience function to delete from cache"""
     return get_cache_service().delete(key, namespace)
 
 
-def cache_clear_namespace(namespace: Optional[str] = None) -> int:
+def cache_clear_namespace(namespace: str | None = None) -> int:
     """Convenience function to clear namespace"""
     return get_cache_service().clear_namespace(namespace)

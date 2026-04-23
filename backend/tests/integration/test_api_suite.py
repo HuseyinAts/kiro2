@@ -9,8 +9,8 @@ NOTE: These tests require a running server at localhost:8000
 import asyncio
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import pytest
 
@@ -40,11 +40,11 @@ class APITestResult:
     status_code: int
     response_time_ms: float
     success: bool
-    error_message: Optional[str] = None
-    response_data: Optional[Dict[str, Any]] = None
-    validation_errors: List[str] = field(default_factory=list)
-    security_checks: Dict[str, bool] = field(default_factory=dict)
-    localization_checks: Dict[str, bool] = field(default_factory=dict)
+    error_message: str | None = None
+    response_data: dict[str, Any] | None = None
+    validation_errors: list[str] = field(default_factory=list)
+    security_checks: dict[str, bool] = field(default_factory=dict)
+    localization_checks: dict[str, bool] = field(default_factory=dict)
 
 
 @dataclass
@@ -53,10 +53,10 @@ class APITestSuite:
 
     name: str
     base_url: str
-    tests: List[Dict[str, Any]]
-    setup_fixtures: List[str]
-    teardown_actions: List[str]
-    global_headers: Dict[str, str] = field(default_factory=dict)
+    tests: list[dict[str, Any]]
+    setup_fixtures: list[str]
+    teardown_actions: list[str]
+    global_headers: dict[str, str] = field(default_factory=dict)
     timeout_seconds: int = 30
     retry_count: int = 1
 
@@ -66,11 +66,11 @@ class TurkishExamAPITester:
 
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
         self.fixtures = TurkishExamFixtures()
-        self.test_results: List[APITestResult] = []
-        self.current_auth_token: Optional[str] = None
-        self.current_session_id: Optional[str] = None
+        self.test_results: list[APITestResult] = []
+        self.current_auth_token: str | None = None
+        self.current_session_id: str | None = None
 
         # Test configuration
         self.default_headers = {
@@ -95,7 +95,7 @@ class TurkishExamAPITester:
         if self.session:
             await self.session.close()
 
-    def _setup_test_scenarios(self) -> Dict[str, List[Dict[str, Any]]]:
+    def _setup_test_scenarios(self) -> dict[str, list[dict[str, Any]]]:
         """Setup comprehensive test scenarios"""
         return {
             "authentication": [
@@ -350,12 +350,12 @@ class TurkishExamAPITester:
             ],
         }
 
-    async def run_test_suite(self, suite_name: str) -> Dict[str, Any]:
+    async def run_test_suite(self, suite_name: str) -> dict[str, Any]:
         """Run complete test suite"""
         start_time = time.time()
         suite_results = {
             "suite_name": suite_name,
-            "start_time": datetime.now(timezone.utc).isoformat(),
+            "start_time": datetime.now(UTC).isoformat(),
             "tests": [],
             "summary": {
                 "total_tests": 0,
@@ -412,7 +412,7 @@ class TurkishExamAPITester:
 
         total_time = time.time() - start_time
         suite_results["total_duration_seconds"] = total_time
-        suite_results["end_time"] = datetime.now(timezone.utc).isoformat()
+        suite_results["end_time"] = datetime.now(UTC).isoformat()
 
         logger.info(f"Test suite completed: {suite_results['summary']}")
         return suite_results
@@ -448,7 +448,7 @@ class TurkishExamAPITester:
         except Exception as e:
             logger.warning(f"Test environment cleanup error: {e}")
 
-    async def _run_single_test(self, test_config: Dict[str, Any]) -> APITestResult:
+    async def _run_single_test(self, test_config: dict[str, Any]) -> APITestResult:
         """Run single API test"""
         start_time = time.time()
 
@@ -533,7 +533,7 @@ class TurkishExamAPITester:
 
         except Exception as e:
             test_result.response_time_ms = (time.time() - start_time) * 1000
-            test_result.error_message = f"Test execution error: {str(e)}"
+            test_result.error_message = f"Test execution error: {e!s}"
             test_result.success = False
 
             logger.error(f"Test execution failed: {test_config['name']}: {e}")
@@ -541,7 +541,7 @@ class TurkishExamAPITester:
         return test_result
 
     async def _validate_response(
-        self, test_config: Dict[str, Any], result: APITestResult
+        self, test_config: dict[str, Any], result: APITestResult
     ) -> bool:
         """Validate API response based on test configuration"""
         if not result.response_data:
@@ -601,17 +601,17 @@ class TurkishExamAPITester:
 
         except Exception as e:
             logger.error(f"Response validation error: {e}")
-            result.validation_errors.append(f"Validation error: {str(e)}")
+            result.validation_errors.append(f"Validation error: {e!s}")
             validation_success = False
 
         return validation_success
 
-    def _validate_turkish_localization(self, response_data: Dict[str, Any]) -> bool:
+    def _validate_turkish_localization(self, response_data: dict[str, Any]) -> bool:
         """Validate Turkish localization in response"""
         try:
             # Check for Turkish translations
             turkish_fields = [
-                key for key in response_data.keys() if key.endswith("_tr")
+                key for key in response_data if key.endswith("_tr")
             ]
 
             # Check for platform info
@@ -636,7 +636,7 @@ class TurkishExamAPITester:
         except Exception:
             return False
 
-    def _validate_exam_data(self, response_data: Dict[str, Any]) -> bool:
+    def _validate_exam_data(self, response_data: dict[str, Any]) -> bool:
         """Validate exam data structure"""
         try:
             if "exam_info" in response_data:
@@ -671,7 +671,7 @@ class TurkishExamAPITester:
         except Exception:
             return False
 
-    def _validate_error_response(self, response_data: Dict[str, Any]) -> bool:
+    def _validate_error_response(self, response_data: dict[str, Any]) -> bool:
         """Validate error response structure"""
         try:
             required_fields = ["error", "detail"]
@@ -680,7 +680,7 @@ class TurkishExamAPITester:
         except Exception:
             return False
 
-    def _validate_health_response(self, response_data: Dict[str, Any]) -> bool:
+    def _validate_health_response(self, response_data: dict[str, Any]) -> bool:
         """Validate health check response"""
         try:
             return "status" in response_data and response_data["status"] in [
@@ -692,7 +692,7 @@ class TurkishExamAPITester:
         except Exception:
             return False
 
-    def _validate_rate_limit_response(self, response_data: Dict[str, Any]) -> bool:
+    def _validate_rate_limit_response(self, response_data: dict[str, Any]) -> bool:
         """Validate rate limit response"""
         try:
             return "error" in response_data and "rate" in response_data["error"].lower()
@@ -701,7 +701,7 @@ class TurkishExamAPITester:
             return False
 
     async def _validate_security_checks(
-        self, checks: List[str], result: APITestResult
+        self, checks: list[str], result: APITestResult
     ) -> bool:
         """Validate security checks"""
         try:
@@ -735,8 +735,8 @@ class TurkishExamAPITester:
             return False
 
     async def _generate_request_body_from_fixture(
-        self, fixture_name: str, test_config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, fixture_name: str, test_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate request body from test fixture"""
         try:
             if fixture_name == "student_fixture":
@@ -784,7 +784,7 @@ class TurkishExamAPITester:
 
     async def _perform_login(
         self, user_fixture: UserFixture
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Perform login and return tokens"""
         try:
             login_data = {
@@ -798,9 +798,8 @@ class TurkishExamAPITester:
                 if response.status == 200:
                     data = await response.json()
                     return data.get("tokens", {})
-                else:
-                    logger.error(f"Login failed: {response.status}")
-                    return None
+                logger.error(f"Login failed: {response.status}")
+                return None
 
         except Exception as e:
             logger.error(f"Login error: {e}")
@@ -824,7 +823,7 @@ class TurkishExamAPITester:
         except Exception as e:
             logger.warning(f"Logout error: {e}")
 
-    def generate_test_report(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_test_report(self, results: list[dict[str, Any]]) -> dict[str, Any]:
         """Generate comprehensive test report"""
         total_tests = sum(len(suite["tests"]) for suite in results)
         total_passed = sum(suite["summary"]["passed"] for suite in results)
@@ -855,7 +854,7 @@ class TurkishExamAPITester:
                     failures_by_type[error_type].append(test["test_name"])
 
         return {
-            "report_generated": datetime.now(timezone.utc).isoformat(),
+            "report_generated": datetime.now(UTC).isoformat(),
             "platform": "KIRO2 - Turkish Exam Platform",
             "summary": {
                 "total_test_suites": len(results),
@@ -888,7 +887,7 @@ class TurkishExamAPITester:
             "recommendations": self._generate_recommendations(results),
         }
 
-    def _generate_recommendations(self, results: List[Dict[str, Any]]) -> List[str]:
+    def _generate_recommendations(self, results: list[dict[str, Any]]) -> list[str]:
         """Generate recommendations based on test results"""
         recommendations = []
 

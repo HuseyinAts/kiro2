@@ -8,7 +8,6 @@ Provides slow query logging, Prometheus metrics, and performance tracking.
 import logging
 import time
 from contextlib import contextmanager
-from typing import Optional
 
 from prometheus_client import Counter, Histogram
 from sqlalchemy import event
@@ -77,7 +76,7 @@ class QueryMonitorConfig:
 # Query Monitoring Functions
 # ============================================================================
 
-def extract_query_info(statement: str) -> tuple[str, Optional[str]]:
+def extract_query_info(statement: str) -> tuple[str, str | None]:
     """
     Extract query type and table name from SQL statement
 

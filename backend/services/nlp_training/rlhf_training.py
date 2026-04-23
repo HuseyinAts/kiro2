@@ -6,15 +6,14 @@ Requirements: REQ-48.29-48.32
 """
 
 import logging
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim as optim
+from torch import nn, optim
 from torch.utils.data import DataLoader
 
 logger = logging.getLogger(__name__)
@@ -142,7 +141,7 @@ class PPOTrainer:
 
     def compute_advantages(
         self, rewards: torch.Tensor, values: torch.Tensor, dones: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> tuple[torch.Tensor, torch.Tensor]:
         """
         Advantage ve return hesapla (GAE - Generalized Advantage Estimation)
 
@@ -188,7 +187,7 @@ class PPOTrainer:
         old_log_probs: torch.Tensor,
         rewards: torch.Tensor,
         dones: torch.Tensor,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         PPO training step
 
@@ -258,7 +257,7 @@ class RLHFTrainingService:
     - REQ-48.32: Model performance improvement (20%+)
     """
 
-    def __init__(self, embedding_dim: int = 768, device: Optional[str] = None):
+    def __init__(self, embedding_dim: int = 768, device: str | None = None):
         """
         Initialize RLHF Training Service
 
@@ -279,11 +278,11 @@ class RLHFTrainingService:
         self.reward_model.to(self.device)
 
         # Feedback storage
-        self.feedback_history: List[HumanFeedback] = []
-        self.metrics_history: List[RLHFMetrics] = []
+        self.feedback_history: list[HumanFeedback] = []
+        self.metrics_history: list[RLHFMetrics] = []
 
         # Baseline performance
-        self.baseline_performance: Optional[float] = None
+        self.baseline_performance: float | None = None
 
         logger.info("RLHF Training Service initialized")
 
@@ -336,7 +335,7 @@ class RLHFTrainingService:
         epochs: int = 10,
         batch_size: int = 32,
         learning_rate: float = 1e-3,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Reward model eğit
 
@@ -420,10 +419,10 @@ class RLHFTrainingService:
 
     def run_rlhf_loop(
         self,
-        initial_questions: List[Dict[str, Any]],
+        initial_questions: list[dict[str, Any]],
         num_iterations: int = 10,
         questions_per_iteration: int = 50,
-    ) -> List[RLHFMetrics]:
+    ) -> list[RLHFMetrics]:
         """
         RLHF training loop çalıştır
 
@@ -503,7 +502,7 @@ class RLHFTrainingService:
 
         return metrics_list
 
-    def get_feedback_statistics(self) -> Dict[str, Any]:
+    def get_feedback_statistics(self) -> dict[str, Any]:
         """
         Feedback istatistiklerini getir
 

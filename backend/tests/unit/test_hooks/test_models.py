@@ -1,12 +1,12 @@
 """Tests for hooks models."""
 
 from backend.hooks.models import (
-    QualityCheckResult,
-    HookConfig,
-    ExitCode,
-    ErrorCategory,
-    LintError,
     AggregatedResult,
+    ErrorCategory,
+    ExitCode,
+    HookConfig,
+    LintError,
+    QualityCheckResult,
 )
 
 

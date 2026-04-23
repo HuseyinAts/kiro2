@@ -4,8 +4,8 @@ KIRO Platform - Service Startup and Question Generation
 """
 
 import asyncio
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Set UTF-8 encoding for Windows
@@ -40,14 +40,14 @@ async def main():
     # Import services
     print("[1/5] Importing services...")
     try:
-        from services.knowledge_graph_service import KnowledgeGraphService
-        from services.plagiarism_detection_service import PlagiarismDetectionService
         from services.adaptive_testing_service import ComputerAdaptiveTestingService
         from services.hitl_workflow_service import HITLWorkflowService
+        from services.knowledge_graph_service import KnowledgeGraphService
+        from services.plagiarism_detection_service import PlagiarismDetectionService
 
         print("[OK] All services imported successfully")
     except Exception as e:
-        print(f"[ERROR] Import error: {str(e)}")
+        print(f"[ERROR] Import error: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -62,7 +62,7 @@ async def main():
         node_count = len(kg_service.graph.nodes())
         print(f"[OK] Knowledge Graph initialized - {node_count} nodes")
     except Exception as e:
-        print(f"[ERROR] Knowledge Graph error: {str(e)}")
+        print(f"[ERROR] Knowledge Graph error: {e!s}")
         kg_service = None
 
     print()
@@ -75,7 +75,7 @@ async def main():
         await plagiarism_service.initialize()
         print("[OK] Plagiarism Detection initialized - BERT model ready")
     except Exception as e:
-        print(f"[WARN] Plagiarism Detection error: {str(e)}")
+        print(f"[WARN] Plagiarism Detection error: {e!s}")
         print("       Continuing without plagiarism detection...")
         plagiarism_service = None
 
@@ -87,7 +87,7 @@ async def main():
         cat_service = ComputerAdaptiveTestingService()
         print("[OK] CAT Service initialized - BanditCAT algorithm ready")
     except Exception as e:
-        print(f"[ERROR] CAT Service error: {str(e)}")
+        print(f"[ERROR] CAT Service error: {e!s}")
         cat_service = None
 
     print()
@@ -98,7 +98,7 @@ async def main():
         hitl_service = HITLWorkflowService()
         print("[OK] HITL Service initialized - Expert workflow ready")
     except Exception as e:
-        print(f"[ERROR] HITL Service error: {str(e)}")
+        print(f"[ERROR] HITL Service error: {e!s}")
         hitl_service = None
 
     print()
@@ -189,8 +189,7 @@ async def main():
                     )
                     rejected_count += 1
                     continue
-                else:
-                    print("    [PASS] Not plagiarized")
+                print("    [PASS] Not plagiarized")
             except Exception as e:
                 print(f"    [WARN] Plagiarism check failed: {str(e)[:60]}")
                 similarity = 0.0
@@ -307,7 +306,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n\nInterrupted by user")
     except Exception as e:
-        print(f"\n\nFATAL ERROR: {str(e)}")
+        print(f"\n\nFATAL ERROR: {e!s}")
         import traceback
 
         traceback.print_exc()

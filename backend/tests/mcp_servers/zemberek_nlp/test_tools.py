@@ -2,8 +2,9 @@
 Unit Tests for Zemberek NLP Tool Handlers
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 
 @pytest.fixture
@@ -72,7 +73,9 @@ class TestLemmatizationHandler:
     @pytest.mark.asyncio
     async def test_verb_infinitive(self, mock_http_client, mock_cache):
         """Test verb lemmatization returns infinitive"""
-        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import (
+            LemmatizationHandler,
+        )
 
         mock_http_client.post = AsyncMock(return_value=MagicMock(
             json=lambda: {
@@ -95,7 +98,9 @@ class TestLemmatizationHandler:
     @pytest.mark.asyncio
     async def test_batch_throughput(self, mock_http_client, mock_cache):
         """Test batch mode calculates throughput"""
-        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import (
+            LemmatizationHandler,
+        )
 
         mock_http_client.post = AsyncMock(return_value=MagicMock(
             json=lambda: {"word": "test", "analyses": [], "count": 0},
@@ -165,7 +170,9 @@ class TestTokenizationHandler:
     @pytest.mark.asyncio
     async def test_basic_tokenization(self, mock_http_client, mock_cache):
         """Test basic tokenization"""
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         text = "Merhaba dunya"
         mock_http_client.post = AsyncMock(return_value=MagicMock(
@@ -182,7 +189,9 @@ class TestTokenizationHandler:
     @pytest.mark.asyncio
     async def test_url_detection(self, mock_http_client, mock_cache):
         """Test URL detection in tokenization"""
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         text = "Visit https://example.com today"
         mock_http_client.post = AsyncMock(return_value=MagicMock(
@@ -198,7 +207,9 @@ class TestTokenizationHandler:
     @pytest.mark.asyncio
     async def test_bpe_subword_tokenization_disabled(self, mock_http_client, mock_cache):
         """Test BPE subword tokenization is None when not requested (REQ-4.6)"""
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         text = "Turkiye guzel"
         mock_http_client.post = AsyncMock(return_value=MagicMock(
@@ -215,7 +226,9 @@ class TestTokenizationHandler:
     @pytest.mark.asyncio
     async def test_bpe_subword_tokenization_enabled(self, mock_http_client, mock_cache):
         """Test BPE subword tokenization returns tokens when requested (REQ-4.6)"""
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         text = "Turkiye guzel"
         mock_http_client.post = AsyncMock(return_value=MagicMock(
@@ -236,7 +249,9 @@ class TestTokenizationHandler:
     @pytest.mark.asyncio
     async def test_bpe_cache_key_includes_subword_flag(self, mock_http_client, mock_cache):
         """Test that cache key differs for subword vs non-subword requests"""
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         handler = TokenizationHandler(mock_http_client, mock_cache)
 
@@ -294,7 +309,9 @@ class TestSegmentationHandler:
     @pytest.mark.asyncio
     async def test_basic_segmentation(self, mock_http_client, mock_cache):
         """Test basic sentence segmentation"""
-        from backend.mcp_servers.zemberek_nlp.tools.segmentation import SegmentationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.segmentation import (
+            SegmentationHandler,
+        )
 
         text = "Birinci cumle. Ikinci cumle!"
         mock_http_client.post = AsyncMock(return_value=MagicMock(
@@ -318,7 +335,9 @@ class TestNormalizationHandler:
     @pytest.mark.asyncio
     async def test_informal_conversion(self, mock_http_client, mock_cache):
         """Test informal to formal conversion"""
-        from backend.mcp_servers.zemberek_nlp.tools.normalization import NormalizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.normalization import (
+            NormalizationHandler,
+        )
 
         mock_http_client.post = AsyncMock(return_value=MagicMock(
             json=lambda: {"original": "mrb naber", "normalized": "merhaba ne haber"},
@@ -337,7 +356,9 @@ class TestNormalizationHandler:
     @pytest.mark.asyncio
     async def test_repeated_char_fix(self, mock_http_client, mock_cache):
         """Test repeated character fixing"""
-        from backend.mcp_servers.zemberek_nlp.tools.normalization import NormalizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.normalization import (
+            NormalizationHandler,
+        )
 
         mock_http_client.post = AsyncMock(return_value=MagicMock(
             json=lambda: {"original": "coooook guzel", "normalized": "cok guzel"},

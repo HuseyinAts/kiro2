@@ -4,10 +4,10 @@ Geographic Maps Mixin - KIRO2
 Generates Turkey and world geographic maps.
 """
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
-import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+from matplotlib import patches
 from matplotlib.patches import Circle
 
 from .styles import COLORS, CONTINENTS, TURKEY_MAJOR_CITIES, TURKEY_REGIONS
@@ -17,15 +17,15 @@ from .utils import close_figure, fig_to_svg, setup_axes
 class GeographicMapMixin:
     """Mixin for geographic map generation."""
 
-    fig_size: Tuple[int, int]
+    fig_size: tuple[int, int]
 
     def _generate_geographic_map(
         self,
         subtype: str,
-        content: Dict[str, Any],
-        labels: Optional[Dict[str, str]],
+        content: dict[str, Any],
+        labels: dict[str, str] | None,
         show_legend: bool,
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> tuple[str, dict[str, Any]]:
         """
         Generate geographic map (Turkey regions, cities, continents).
 
@@ -40,16 +40,15 @@ class GeographicMapMixin:
         """
         if subtype == "turkey_regions":
             return self._generate_turkey_regions_map(content, show_legend)
-        elif subtype == "turkey_cities":
+        if subtype == "turkey_cities":
             return self._generate_turkey_cities_map(content)
-        elif subtype == "continents":
+        if subtype == "continents":
             return self._generate_continents_map(content)
-        else:
-            raise ValueError(f"Unknown geographic map subtype: {subtype}")
+        raise ValueError(f"Unknown geographic map subtype: {subtype}")
 
     def _generate_turkey_regions_map(
-        self, content: Dict[str, Any], show_legend: bool
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any], show_legend: bool
+    ) -> tuple[str, dict[str, Any]]:
         """Generate Turkey regions map with 7 geographical regions."""
         fig, ax = plt.subplots(figsize=self.fig_size)
         setup_axes(ax, content.get("title", "Turkiye Cografi Bolgeleri"))
@@ -137,8 +136,8 @@ class GeographicMapMixin:
         return svg_content, metadata
 
     def _generate_turkey_cities_map(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate Turkey cities map with major city markers."""
         fig, ax = plt.subplots(figsize=self.fig_size)
         title = content.get("title", "Turkiye Buyuk Sehirleri")
@@ -198,8 +197,8 @@ class GeographicMapMixin:
         return svg_content, metadata
 
     def _generate_continents_map(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate world map with continents (simplified)."""
         fig, ax = plt.subplots(figsize=self.fig_size)
         title = content.get("title", "Dunya Kitalari")

@@ -16,10 +16,9 @@ import os
 import statistics
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import httpx
-
 
 DEFAULT_BASE_URL = "http://localhost:8000"
 DEFAULT_ROUNDS = 5
@@ -167,7 +166,7 @@ def main():
 
     # Save JSON
     report = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "base_url": args.base_url,
         "rounds": args.rounds,
         "results": results,

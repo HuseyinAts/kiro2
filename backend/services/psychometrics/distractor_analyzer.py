@@ -3,9 +3,10 @@ Distractor Analysis Service
 Analyzes effectiveness of wrong answer options (distractors)
 """
 
-import numpy as np
-from typing import List, Dict, Any
 import logging
+from typing import Any
+
+import numpy as np
 from scipy import stats
 
 logger = logging.getLogger(__name__)
@@ -36,8 +37,8 @@ class DistractorAnalyzer:
         responses: np.ndarray,
         correct_answer: str,
         total_scores: np.ndarray,
-        options: List[str] = ['A', 'B', 'C', 'D', 'E']
-    ) -> Dict[str, Any]:
+        options: list[str] = ['A', 'B', 'C', 'D', 'E']
+    ) -> dict[str, Any]:
         """
         Analyze distractor effectiveness for a question
 
@@ -80,7 +81,7 @@ class DistractorAnalyzer:
         option: str,
         is_correct: bool,
         total_scores: np.ndarray
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Analyze a single option"""
 
         # Binary coding: 1 if selected, 0 otherwise
@@ -140,24 +141,21 @@ class DistractorAnalyzer:
             # Correct answer evaluation
             if selection_rate > 0.7 and rpb > 0.3:
                 return "Excellent"
-            elif selection_rate > 0.5 and rpb > 0.2:
+            if selection_rate > 0.5 and rpb > 0.2:
                 return "Good"
-            elif selection_rate > 0.3:
+            if selection_rate > 0.3:
                 return "Fair"
-            else:
-                return "Poor - Too difficult"
-        else:
-            # Distractor evaluation
-            if (selection_rate >= self.thresholds['min_selection_rate'] and
-                selection_rate <= self.thresholds['max_selection_rate'] and
-                rpb < 0):
-                return "Effective"
-            elif selection_rate < self.thresholds['min_selection_rate']:
-                return "Ineffective - Rarely selected"
-            elif selection_rate > self.thresholds['max_selection_rate']:
-                return "Problematic - Too attractive"
-            else:
-                return "Poor discrimination"
+            return "Poor - Too difficult"
+        # Distractor evaluation
+        if (selection_rate >= self.thresholds['min_selection_rate'] and
+            selection_rate <= self.thresholds['max_selection_rate'] and
+            rpb < 0):
+            return "Effective"
+        if selection_rate < self.thresholds['min_selection_rate']:
+            return "Ineffective - Rarely selected"
+        if selection_rate > self.thresholds['max_selection_rate']:
+            return "Problematic - Too attractive"
+        return "Poor discrimination"
 
     def _should_flag_option(
         self,
@@ -186,9 +184,9 @@ class DistractorAnalyzer:
 
     def _generate_summary(
         self,
-        options_analysis: Dict[str, Dict],
+        options_analysis: dict[str, dict],
         correct_answer: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate summary statistics"""
 
         # Count effective distractors
@@ -224,10 +222,9 @@ class DistractorAnalyzer:
         """Classify overall distractor quality"""
         if effective_count >= self.thresholds['effective_distractor_count']:
             return "Good"
-        elif effective_count >= 2:
+        if effective_count >= 2:
             return "Fair"
-        else:
-            return "Poor"
+        return "Poor"
 
     def _classify_overall_quality(
         self,
@@ -241,16 +238,15 @@ class DistractorAnalyzer:
             0.3 <= p_value <= 0.8 and
             discrimination > 0.3):
             return "Excellent"
-        elif (effective_distractors >= 2 and
+        if (effective_distractors >= 2 and
               0.2 <= p_value <= 0.9 and
               discrimination > 0.2):
             return "Good"
-        elif effective_distractors >= 1:
+        if effective_distractors >= 1:
             return "Fair"
-        else:
-            return "Poor - Needs revision"
+        return "Poor - Needs revision"
 
-    def _generate_recommendations(self, results: Dict) -> List[str]:
+    def _generate_recommendations(self, results: dict) -> list[str]:
         """Generate actionable recommendations"""
         recommendations = []
 
@@ -308,10 +304,10 @@ class DistractorAnalyzer:
 
     def batch_analyze(
         self,
-        item_responses: Dict[int, np.ndarray],
-        correct_answers: Dict[int, str],
+        item_responses: dict[int, np.ndarray],
+        correct_answers: dict[int, str],
         total_scores: np.ndarray
-    ) -> Dict[int, Dict[str, Any]]:
+    ) -> dict[int, dict[str, Any]]:
         """
         Analyze distractors for multiple items
 
@@ -339,8 +335,8 @@ class DistractorAnalyzer:
 
     def generate_improvement_report(
         self,
-        analyses: Dict[int, Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        analyses: dict[int, dict[str, Any]]
+    ) -> dict[str, Any]:
         """Generate improvement report for test"""
 
         priority_revisions = []
@@ -370,7 +366,7 @@ class DistractorAnalyzer:
             'quality_distribution': self._get_quality_distribution(analyses)
         }
 
-    def _get_quality_distribution(self, analyses: Dict) -> Dict[str, int]:
+    def _get_quality_distribution(self, analyses: dict) -> dict[str, int]:
         """Get distribution of quality ratings"""
         distribution = {
             'Excellent': 0,

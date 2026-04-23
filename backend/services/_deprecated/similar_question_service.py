@@ -12,12 +12,13 @@ Requirements: REQ-13.7
 """
 
 import logging
-import numpy as np
-from typing import List, Dict, Any, Optional, Tuple
+import pickle
 from dataclasses import dataclass
 from datetime import datetime
-import pickle
 from pathlib import Path
+from typing import Any
+
+import numpy as np
 
 try:
     from services.nlp_training.berturk_embedding import (
@@ -71,7 +72,7 @@ class SimilarQuestionService:
 
     def __init__(
         self,
-        berturk_service: Optional[BERTurkEmbeddingService] = None,
+        berturk_service: BERTurkEmbeddingService | None = None,
         cache_dir: str = "data/question_embeddings",
     ):
         """
@@ -93,11 +94,11 @@ class SimilarQuestionService:
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 
         # In-memory embedding cache
-        self.question_embeddings: Dict[str, QuestionEmbedding] = {}
+        self.question_embeddings: dict[str, QuestionEmbedding] = {}
 
         # Similarity matrix cache
-        self.similarity_matrix: Optional[np.ndarray] = None
-        self.question_id_index: Dict[str, int] = {}
+        self.similarity_matrix: np.ndarray | None = None
+        self.question_id_index: dict[str, int] = {}
 
         logger.info(f"SimilarQuestionService initialized with cache dir: {cache_dir}")
 
@@ -152,8 +153,8 @@ class SimilarQuestionService:
         return question_emb
 
     def generate_batch_embeddings(
-        self, questions: List[Dict[str, Any]]
-    ) -> List[QuestionEmbedding]:
+        self, questions: list[dict[str, Any]]
+    ) -> list[QuestionEmbedding]:
         """
         Toplu soru embedding'leri oluştur
 
@@ -268,7 +269,7 @@ class SimilarQuestionService:
 
     def find_nearest_neighbors(
         self, question_id: str, k: int = 10, similarity_threshold: float = 0.5
-    ) -> List[Tuple[str, float]]:
+    ) -> list[tuple[str, float]]:
         """
         Nearest neighbor search ile en benzer soruları bul
 
@@ -314,32 +315,31 @@ class SimilarQuestionService:
             return results
 
         # Fallback: Manuel hesaplama
-        else:
-            query_emb = self.question_embeddings[question_id].embedding
+        query_emb = self.question_embeddings[question_id].embedding
 
-            similarities = []
-            for candidate_id, candidate_emb_obj in self.question_embeddings.items():
-                if candidate_id == question_id:
-                    continue
+        similarities = []
+        for candidate_id, candidate_emb_obj in self.question_embeddings.items():
+            if candidate_id == question_id:
+                continue
 
-                # Cosine similarity
-                from sklearn.metrics.pairwise import cosine_similarity
+            # Cosine similarity
+            from sklearn.metrics.pairwise import cosine_similarity
 
-                sim_score = cosine_similarity(
-                    query_emb.reshape(1, -1), candidate_emb_obj.embedding.reshape(1, -1)
-                )[0][0]
+            sim_score = cosine_similarity(
+                query_emb.reshape(1, -1), candidate_emb_obj.embedding.reshape(1, -1)
+            )[0][0]
 
-                if sim_score >= similarity_threshold:
-                    similarities.append((candidate_id, float(sim_score)))
+            if sim_score >= similarity_threshold:
+                similarities.append((candidate_id, float(sim_score)))
 
-            # Sırala ve top-k al
-            similarities.sort(key=lambda x: x[1], reverse=True)
-            return similarities[:k]
+        # Sırala ve top-k al
+        similarities.sort(key=lambda x: x[1], reverse=True)
+        return similarities[:k]
 
     def tune_similarity_threshold(
         self,
-        validation_pairs: List[Tuple[str, str, bool]],
-        threshold_range: Tuple[float, float] = (0.3, 0.9),
+        validation_pairs: list[tuple[str, str, bool]],
+        threshold_range: tuple[float, float] = (0.3, 0.9),
         step: float = 0.05,
     ) -> float:
         """
@@ -414,11 +414,11 @@ class SimilarQuestionService:
 
     def filter_by_topic(
         self,
-        candidates: List[Tuple[str, float]],
+        candidates: list[tuple[str, float]],
         target_topic: str,
         allow_cross_topic: bool = False,
-        topic_hierarchy: Optional[Dict[str, List[str]]] = None,
-    ) -> List[Tuple[str, float]]:
+        topic_hierarchy: dict[str, list[str]] | None = None,
+    ) -> list[tuple[str, float]]:
         """
         Konu bazlı filtreleme uygula
 
@@ -458,7 +458,7 @@ class SimilarQuestionService:
         return filtered
 
     def _is_related_topic(
-        self, topic1: str, topic2: str, topic_hierarchy: Dict[str, List[str]]
+        self, topic1: str, topic2: str, topic_hierarchy: dict[str, list[str]]
     ) -> bool:
         """
         İki konunun ilişkili olup olmadığını kontrol et
@@ -488,7 +488,7 @@ class SimilarQuestionService:
 
     def get_cross_topic_suggestions(
         self, question_id: str, k: int = 5, similarity_threshold: float = 0.6
-    ) -> List[SimilarQuestionResult]:
+    ) -> list[SimilarQuestionResult]:
         """
         Çapraz konu önerileri getir
 
@@ -541,11 +541,11 @@ class SimilarQuestionService:
 
     def filter_by_difficulty(
         self,
-        candidates: List[Tuple[str, float]],
+        candidates: list[tuple[str, float]],
         target_difficulty: float,
         difficulty_range: float = 1.0,
         progressive: bool = False,
-    ) -> List[Tuple[str, float]]:
+    ) -> list[tuple[str, float]]:
         """
         Zorluk bazlı filtreleme uygula
 
@@ -577,16 +577,15 @@ class SimilarQuestionService:
                     <= target_difficulty + difficulty_range * 1.5
                 ):
                     filtered.append((question_id, similarity))
-            else:
-                # Normal range matching
-                if abs(candidate_difficulty - target_difficulty) <= difficulty_range:
-                    filtered.append((question_id, similarity))
+            # Normal range matching
+            elif abs(candidate_difficulty - target_difficulty) <= difficulty_range:
+                filtered.append((question_id, similarity))
 
         return filtered
 
     def get_progressive_difficulty_suggestions(
         self, question_id: str, k: int = 5, difficulty_increment: float = 0.5
-    ) -> List[SimilarQuestionResult]:
+    ) -> list[SimilarQuestionResult]:
         """
         Giderek zorlaşan soru önerileri
 
@@ -640,7 +639,7 @@ class SimilarQuestionService:
 
     def get_adaptive_suggestions(
         self, question_id: str, student_performance: float, k: int = 5
-    ) -> List[SimilarQuestionResult]:
+    ) -> list[SimilarQuestionResult]:
         """
         Öğrenci performansına göre adaptif öneriler
 
@@ -721,9 +720,9 @@ class SimilarQuestionService:
         k: int = 10,
         similarity_threshold: float = 0.6,
         same_topic_only: bool = True,
-        difficulty_range: Optional[float] = None,
-        student_performance: Optional[float] = None,
-    ) -> List[SimilarQuestionResult]:
+        difficulty_range: float | None = None,
+        student_performance: float | None = None,
+    ) -> list[SimilarQuestionResult]:
         """
         Benzer soru önerileri getir (tüm filtreler ile)
 
@@ -879,10 +878,10 @@ class SimilarQuestionService:
             return True
 
         except Exception as e:
-            logger.error(f"Error loading embeddings: {str(e)}")
+            logger.error(f"Error loading embeddings: {e!s}")
             return False
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """
         Servis istatistiklerini getir
 
@@ -919,7 +918,7 @@ class SimilarQuestionService:
 
 
 # Global service instance
-_similar_question_service: Optional[SimilarQuestionService] = None
+_similar_question_service: SimilarQuestionService | None = None
 
 
 def get_similar_question_service() -> SimilarQuestionService:

@@ -20,10 +20,10 @@ Affected tables:
 - weekly_progress (user_id)
 
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
 from alembic import op
-
 
 # revision identifiers, used by Alembic.
 revision: str = "20260123_cascade"

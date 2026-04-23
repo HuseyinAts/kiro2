@@ -14,11 +14,12 @@ Requirements: hypothesis, pytest-asyncio
 
 import asyncio
 import time
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
+
 try:
-    from hypothesis import given, settings, assume, HealthCheck
+    from hypothesis import HealthCheck, assume, given, settings
     from hypothesis import strategies as st
 
     HYPOTHESIS_AVAILABLE = True
@@ -27,13 +28,12 @@ except ImportError:
 
 # Import test fixtures
 from tests.fixtures.turkish_words import (
-    TURKISH_WORDS,
     DICTIONARY_WORDS,
     INFLECTED_FORMS,
     TEST_SENTENCES,
     TURKISH_ALPHABET,
+    TURKISH_WORDS,
 )
-
 
 # Skip all tests if hypothesis not available
 pytestmark = pytest.mark.skipif(

@@ -14,7 +14,6 @@ Bu modül 5 farklı test tipini implement eder:
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +23,12 @@ class TestConfiguration:
     """Test konfigürasyonu"""
 
     test_type: str
-    target_length: Optional[int] = None
+    target_length: int | None = None
     min_length: int = 10
     max_length: int = 50
     precision_threshold: float = 0.3
-    content_constraints: Optional[Dict[str, int]] = None
-    time_limit_minutes: Optional[int] = None
+    content_constraints: dict[str, int] | None = None
+    time_limit_minutes: int | None = None
     immediate_feedback: bool = False
     adaptive_difficulty: bool = True
     osym_format_compliance: bool = False
@@ -44,14 +43,11 @@ class BaseTestType(ABC):
     @abstractmethod
     def get_configuration(self) -> TestConfiguration:
         """Test konfigürasyonunu döndür"""
-        pass
 
     @abstractmethod
-    def generate_feedback(self, session_data: Dict) -> Dict:
+    def generate_feedback(self, session_data: dict) -> dict:
         """Test için geri bildirim oluştur"""
-        pass
 
     @abstractmethod
-    def calculate_recommendations(self, session_data: Dict) -> List[str]:
+    def calculate_recommendations(self, session_data: dict) -> list[str]:
         """Öneriler oluştur"""
-        pass

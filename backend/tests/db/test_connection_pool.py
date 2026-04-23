@@ -9,8 +9,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import pytest
-
 # Add backend to path
 backend_dir = str(Path(__file__).parent.parent.parent)
 if backend_dir not in sys.path:
@@ -102,5 +100,5 @@ def test_async_driver_configured():
     ])
 
     assert parts_present, (
-        f"DATABASE_URL should have format: postgresql+asyncpg://user:pass@host:port/db"
+        "DATABASE_URL should have format: postgresql+asyncpg://user:pass@host:port/db"
     )

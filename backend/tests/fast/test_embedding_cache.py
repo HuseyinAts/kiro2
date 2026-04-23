@@ -2,9 +2,10 @@
 Tests for Embedding Cache System
 """
 
-import pytest
-import numpy as np
 from datetime import datetime
+
+import numpy as np
+import pytest
 
 from core.embedding_cache import (
     EmbeddingCache,

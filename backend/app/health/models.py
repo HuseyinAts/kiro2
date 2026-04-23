@@ -5,9 +5,8 @@ Bu modül, health check sistemi için gerekli tüm Pydantic modellerini tanımla
 Python 3.13+ type hints kullanılarak yazılmıştır.
 """
 
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from enum import Enum
-from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -57,7 +56,7 @@ class EndpointMetadata(BaseModel):
     handler: str = Field(..., description="Handler fonksiyon adı")
     requires_auth: bool = Field(default=False, description="Authentication gereksinimi")
     is_critical: bool = Field(default=False, description="Kritik endpoint işareti")
-    expected_status_codes: List[int] = Field(
+    expected_status_codes: list[int] = Field(
         default=[200, 201, 204],
         description="Beklenen başarılı status code'lar"
     )
@@ -93,7 +92,7 @@ class HealthCheckResult(BaseModel):
     status: HealthStatus = Field(..., description="Sağlık durumu")
     response_time_ms: float = Field(..., description="Yanıt süresi (ms)")
     status_code: int = Field(..., description="HTTP status code")
-    error_message: Optional[str] = Field(None, description="Hata mesajı")
+    error_message: str | None = Field(None, description="Hata mesajı")
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC), description="Kontrol zamanı")
     circuit_state: CircuitState = Field(default=CircuitState.CLOSED, description="Circuit breaker durumu")
 

@@ -6,7 +6,7 @@ TRT EBA TV içerik entegrasyonu için API endpoint'leri.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from fastapi.responses import JSONResponse
@@ -69,7 +69,7 @@ async def eba_tv_home():
 
 
 @router.get(
-    "/content", summary="Tüm EBA TV İçeriklerini Getir", response_model=Dict[str, Any]
+    "/content", summary="Tüm EBA TV İçeriklerini Getir", response_model=dict[str, Any]
 )
 async def get_all_eba_content(
     force_refresh: bool = Query(False, description="Cache'i yenile"),
@@ -134,10 +134,10 @@ async def get_all_eba_content(
 )
 async def search_eba_content(
     query: str = Query(..., min_length=1, max_length=100, description="Arama sorgusu"),
-    grade_level: Optional[str] = Query(None, description="Sınıf seviyesi filtresi"),
-    category: Optional[str] = Query(None, description="Kategori filtresi"),
+    grade_level: str | None = Query(None, description="Sınıf seviyesi filtresi"),
+    category: str | None = Query(None, description="Kategori filtresi"),
     min_quality: float = Query(6.0, ge=0, le=10, description="Minimum kalite skoru"),
-    max_duration: Optional[int] = Query(
+    max_duration: int | None = Query(
         None, ge=1, le=180, description="Maksimum süre (dakika)"
     ),
     accessibility_required: bool = Query(
@@ -345,7 +345,7 @@ async def get_eba_recommendations(
             generated_at=datetime.now(),
         )
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
@@ -408,7 +408,7 @@ async def get_content_by_curriculum_topic(
             "message": f"{topic} konusu için {len(results)} video bulundu",
         }
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=400, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise

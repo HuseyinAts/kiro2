@@ -3,10 +3,10 @@ Plagiarism Detection Service - ÖSYM Copyright Protection
 INNOVATION: BERT embeddings + cosine similarity for plagiarism detection
 Research: 95%+ accuracy with multilingual BERT models
 """
-import numpy as np
-from typing import Dict, Optional
 from dataclasses import dataclass
 from datetime import datetime
+
+import numpy as np
 
 
 @dataclass
@@ -15,8 +15,8 @@ class SimilarityResult:
 
     is_plagiarized: bool
     similarity_score: float
-    closest_match_id: Optional[str]
-    closest_match_text: Optional[str]
+    closest_match_id: str | None
+    closest_match_text: str | None
     confidence: float
     checked_against: str  # "osym_exams", "platform_questions", "online_sources"
 
@@ -49,7 +49,7 @@ class PlagiarismDetectionService:
         self.DUPLICATE_THRESHOLD = 0.90  # >90% similarity = duplicate
         self.PARAPHRASE_THRESHOLD = 0.75  # 75-85% = potential paraphrase
 
-    def _load_osym_questions(self) -> Dict[str, Dict]:
+    def _load_osym_questions(self) -> dict[str, dict]:
         """
         Load ÖSYM past exam questions (for copyright protection)
         In production: Load from secure database
@@ -70,7 +70,7 @@ class PlagiarismDetectionService:
             },
         }
 
-    def _load_platform_questions(self) -> Dict[str, Dict]:
+    def _load_platform_questions(self) -> dict[str, dict]:
         """Load existing platform questions (to prevent duplicates)"""
         # Mock data (in real system: query PostgreSQL sorular table)
         return {}
@@ -169,7 +169,7 @@ class PlagiarismDetectionService:
 
     async def comprehensive_plagiarism_check(
         self, question_text: str
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Full plagiarism check pipeline
         Returns: Combined result from all checks
@@ -236,7 +236,7 @@ class PlagiarismDetectionService:
             "added_date": datetime.now().isoformat(),
         }
 
-    def export_statistics(self) -> Dict:
+    def export_statistics(self) -> dict:
         """Export plagiarism detection statistics"""
         return {
             "osym_database_size": len(self.osym_questions_db),

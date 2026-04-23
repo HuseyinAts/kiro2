@@ -11,22 +11,21 @@ import asyncio
 import sys
 import time
 from pathlib import Path
-from typing import List, Optional
 
+from .base import BaseHook
+from .black_hook import BlackHook
+from .docstring_hook import DocstringHook
+from .isort_hook import IsortHook
 from .models import (
-    QualityCheckResult,
-    HookConfig,
     AggregatedResult,
     ExitCode,
+    HookConfig,
+    QualityCheckResult,
 )
-from .base import BaseHook
-from .ruff_hook import RuffHook
 from .mypy_hook import MypyHook
 from .pytest_hook import PytestHook
-from .black_hook import BlackHook
-from .isort_hook import IsortHook
-from .docstring_hook import DocstringHook
 from .reward_hacking_hook import RewardHackingHook
+from .ruff_hook import RuffHook
 
 try:
     from ..utils.file_watcher import FileWatcher, get_changed_python_files
@@ -66,7 +65,7 @@ class PostToolUseOrchestrator:
 
     def __init__(
         self,
-        config: Optional[HookConfig] = None,
+        config: HookConfig | None = None,
         enable_pytest: bool = True,
         enable_docstring: bool = True,
         enable_reward_hacking: bool = True
@@ -99,7 +98,7 @@ class PostToolUseOrchestrator:
 
     async def run_all_checks(
         self,
-        files: Optional[List[str]] = None
+        files: list[str] | None = None
     ) -> AggregatedResult:
         """
         Run all quality checks in parallel.
@@ -124,7 +123,7 @@ class PostToolUseOrchestrator:
             )
 
         # Build list of hooks to run
-        hooks: List[BaseHook] = [
+        hooks: list[BaseHook] = [
             self.ruff_hook,
             self.mypy_hook,
             self.black_hook,
@@ -158,7 +157,7 @@ class PostToolUseOrchestrator:
                     tool=hooks[i].name,
                     passed=False,
                     exit_code=ExitCode.BLOCKING_ERROR,
-                    errors=[f"Hook error: {str(result)}"],
+                    errors=[f"Hook error: {result!s}"],
                     warnings=[],
                     execution_time=0.0,
                     files_checked=len(files)
@@ -173,7 +172,7 @@ class PostToolUseOrchestrator:
 
     async def run_quick_checks(
         self,
-        files: Optional[List[str]] = None
+        files: list[str] | None = None
     ) -> AggregatedResult:
         """
         Run only fast checks (ruff, black, isort).
@@ -206,7 +205,7 @@ class PostToolUseOrchestrator:
 
     def format_results(self, results: AggregatedResult) -> str:
         """Format results for display."""
-        lines: List[str] = []
+        lines: list[str] = []
 
         lines.append("=" * 60)
         lines.append("  VERIFICATION FEEDBACK LOOP - PostToolUse Hook")
@@ -252,7 +251,7 @@ class PostToolUseOrchestrator:
 
 
 async def run_orchestrator(
-    files: Optional[List[str]] = None,
+    files: list[str] | None = None,
     quick: bool = False
 ) -> int:
     """

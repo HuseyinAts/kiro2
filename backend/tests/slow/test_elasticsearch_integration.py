@@ -6,15 +6,16 @@ Türkçe full-text search ve analytics testleri
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 import pytest
-from core.elasticsearch_client import ElasticsearchClient
-from dataclasses import dataclass
 
+from core.elasticsearch_client import ElasticsearchClient
 
 pytestmark = pytest.mark.skipif(
     True,

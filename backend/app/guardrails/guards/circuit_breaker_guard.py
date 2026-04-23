@@ -1,11 +1,12 @@
 """Circuit breaker guard - prevents cascade failures."""
 import logging
 import time
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
-from .base_guard import BaseGuard
 from ..models import GuardResult, GuardStatus
+from .base_guard import BaseGuard
 
 logger = logging.getLogger(__name__)
 
@@ -88,8 +89,7 @@ class CircuitBreakerGuard(BaseGuard):
 
         if operation_failed:
             return await self._handle_failure(current_time)
-        else:
-            return await self._handle_success()
+        return await self._handle_success()
 
     async def _handle_failure(self, current_time: float) -> GuardResult:
         """Handle a failed operation.

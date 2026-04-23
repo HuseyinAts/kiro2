@@ -1,8 +1,8 @@
 """Elasticsearch logging wrapper module."""
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -27,14 +27,14 @@ class LogCategory(str, Enum):
 
 
 class LogEntry(BaseModel):
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     level: LogLevel = LogLevel.INFO
     category: LogCategory = LogCategory.GENERAL
     message: str = ""
     metadata: dict[str, Any] = {}
     source: str = ""
-    user_id: Optional[str] = None
-    request_id: Optional[str] = None
+    user_id: str | None = None
+    request_id: str | None = None
 
 
 class ElasticsearchLogger:
@@ -74,7 +74,7 @@ class ElasticsearchLogger:
 class ElasticsearchLoggingMiddleware:
     """ASGI middleware for request/response logging."""
 
-    def __init__(self, app: Any, logger: Optional[ElasticsearchLogger] = None) -> None:
+    def __init__(self, app: Any, logger: ElasticsearchLogger | None = None) -> None:
         self.app = app
         self.logger = logger or ElasticsearchLogger()
 
@@ -82,7 +82,7 @@ class ElasticsearchLoggingMiddleware:
         await self.app(scope, receive, send)
 
 
-_logger_instance: Optional[ElasticsearchLogger] = None
+_logger_instance: ElasticsearchLogger | None = None
 
 
 def get_elasticsearch_logger() -> ElasticsearchLogger:

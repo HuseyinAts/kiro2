@@ -5,7 +5,8 @@ SECURITY FIX: Redact sensitive information from logs
 
 import logging
 import re
-from typing import Any, Dict, List, Pattern
+from re import Pattern
+from typing import Any
 
 
 class SensitiveDataFilter(logging.Filter):
@@ -26,7 +27,7 @@ class SensitiveDataFilter(logging.Filter):
         self,
         redact_email: bool = False,
         redact_phone: bool = False,
-        custom_patterns: List[Pattern] = None,
+        custom_patterns: list[Pattern] = None,
     ):
         super().__init__()
         self.redact_email = redact_email
@@ -180,7 +181,7 @@ class SensitiveDataFilter(logging.Filter):
 
         return message
 
-    def _redact_dict(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def _redact_dict(self, data: dict[str, Any]) -> dict[str, Any]:
         """Redact sensitive data from dictionary"""
         redacted = {}
 
@@ -251,7 +252,7 @@ def setup_sensitive_data_filter(
     logger: logging.Logger = None,
     redact_email: bool = False,
     redact_phone: bool = False,
-    custom_patterns: List[Pattern] = None,
+    custom_patterns: list[Pattern] = None,
 ) -> SensitiveDataFilter:
     """
     Setup sensitive data filter for logger
@@ -288,7 +289,7 @@ def setup_sensitive_data_filter(
 def setup_global_sensitive_data_filter(
     redact_email: bool = False,
     redact_phone: bool = False,
-    custom_patterns: List[Pattern] = None,
+    custom_patterns: list[Pattern] = None,
 ):
     """
     Setup sensitive data filter for ALL loggers globally

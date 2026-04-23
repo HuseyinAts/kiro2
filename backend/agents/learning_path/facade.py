@@ -44,6 +44,11 @@ if TYPE_CHECKING:
     )
 
 from .config import get_learning_path_config
+from .facade_persistence import (
+    load_student_path_from_db,
+    load_student_profile_from_db,
+    persist_student_path,
+)
 from .integrations.chat_integration import (
     ChatMessage,
     ChatResponse,
@@ -71,11 +76,6 @@ from .services.path_generation import (
 )
 from .services.resource_discovery import (
     DiscoveryRequest,
-)
-from .facade_persistence import (
-    load_student_path_from_db,
-    load_student_profile_from_db,
-    persist_student_path,
 )
 
 logger = logging.getLogger(__name__)

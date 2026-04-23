@@ -16,7 +16,6 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Optional
 from uuid import uuid4
 
 logger = logging.getLogger(__name__)
@@ -176,19 +175,18 @@ class ComprehensionValidator:
         text: str,
         q_type: QuestionType,
         difficulty: DifficultyLevel
-    ) -> Optional[QuizQuestion]:
+    ) -> QuizQuestion | None:
         """Tek soru üret"""
         try:
             if q_type == QuestionType.FACTUAL:
                 return self._generate_factual_question(sentence, difficulty)
-            elif q_type == QuestionType.MAIN_IDEA:
+            if q_type == QuestionType.MAIN_IDEA:
                 return self._generate_main_idea_question(text, difficulty)
-            elif q_type == QuestionType.INFERENCE:
+            if q_type == QuestionType.INFERENCE:
                 return self._generate_inference_question(sentence, text, difficulty)
-            elif q_type == QuestionType.VOCABULARY:
+            if q_type == QuestionType.VOCABULARY:
                 return self._generate_vocabulary_question(sentence, difficulty)
-            else:
-                return self._generate_factual_question(sentence, difficulty)
+            return self._generate_factual_question(sentence, difficulty)
 
         except Exception as e:
             logger.error(f"Soru üretme hatası: {e}")
@@ -198,7 +196,7 @@ class ComprehensionValidator:
         self,
         sentence: str,
         difficulty: DifficultyLevel
-    ) -> Optional[QuizQuestion]:
+    ) -> QuizQuestion | None:
         """Olgusal soru üret (detay hatırlama - REQ-4.3)"""
         # Cümleden anahtar kelimeyi çıkar
         words = [w for w in sentence.split() if len(w) > 3]
@@ -233,7 +231,7 @@ class ComprehensionValidator:
         self,
         text: str,
         difficulty: DifficultyLevel
-    ) -> Optional[QuizQuestion]:
+    ) -> QuizQuestion | None:
         """Ana fikir sorusu üret"""
         question_text = "Metnin ana fikri nedir?"
 
@@ -264,7 +262,7 @@ class ComprehensionValidator:
         sentence: str,
         text: str,
         difficulty: DifficultyLevel
-    ) -> Optional[QuizQuestion]:
+    ) -> QuizQuestion | None:
         """Çıkarım sorusu üret (REQ-4.4)"""
         question_text = f"'{sentence[:50]}...' cümlesinden ne çıkarılabilir?"
 
@@ -290,7 +288,7 @@ class ComprehensionValidator:
         self,
         sentence: str,
         difficulty: DifficultyLevel
-    ) -> Optional[QuizQuestion]:
+    ) -> QuizQuestion | None:
         """Kelime sorusu üret"""
         words = [w for w in sentence.split() if len(w) > 5]
         if not words:

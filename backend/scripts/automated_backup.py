@@ -11,16 +11,15 @@ Features:
 - Cloud upload (S3/Azure)
 - Email notifications
 """
-import os
-import subprocess
 import gzip
-import shutil
 import hashlib
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Optional, List
+import os
+import shutil
+import subprocess
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from pathlib import Path
 
 from core.structured_logger import get_logger
 
@@ -56,7 +55,7 @@ class BackupInfo:
     checksum: str
     status: BackupStatus
     duration_seconds: float = 0.0
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class DatabaseBackupManager:
@@ -109,7 +108,7 @@ class DatabaseBackupManager:
         self.enable_cloud_upload = enable_cloud_upload
 
         # Backup history
-        self.backup_history: List[BackupInfo] = []
+        self.backup_history: list[BackupInfo] = []
 
     def create_full_backup(self) -> BackupInfo:
         """
@@ -332,11 +331,10 @@ class DatabaseBackupManager:
         try:
             if backup.backup_type == BackupType.FULL:
                 return self._restore_full_backup(backup, target_db)
-            elif backup.backup_type == BackupType.INCREMENTAL:
+            if backup.backup_type == BackupType.INCREMENTAL:
                 return self._restore_incremental_backup(backup, target_db)
-            else:
-                logger.error(f"Unknown backup type: {backup.backup_type}")
-                return False
+            logger.error(f"Unknown backup type: {backup.backup_type}")
+            return False
 
         except Exception as e:
             logger.error(f"Restore failed: {e}")
@@ -374,9 +372,8 @@ class DatabaseBackupManager:
         if result.returncode == 0:
             logger.info("Restore completed successfully")
             return True
-        else:
-            logger.error(f"Restore failed: {result.stderr}")
-            return False
+        logger.error(f"Restore failed: {result.stderr}")
+        return False
 
     def _restore_incremental_backup(self, backup: BackupInfo, target_db: str) -> bool:
         """Restore from incremental backup (base backup)"""

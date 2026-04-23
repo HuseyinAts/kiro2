@@ -4,7 +4,6 @@ Sprint 9: Enhanced API Documentation
 
 Comprehensive OpenAPI configuration with metadata, tags, and examples.
 """
-from typing import Dict, List
 
 # OpenAPI Metadata
 OPENAPI_METADATA = {
@@ -399,7 +398,7 @@ OPENAPI_EXTERNAL_DOCS = {
 }
 
 
-def get_openapi_config() -> Dict:
+def get_openapi_config() -> dict:
     """
     Get complete OpenAPI configuration
 
@@ -416,7 +415,7 @@ def get_openapi_config() -> Dict:
     }
 
 
-def get_openapi_tags() -> List[Dict]:
+def get_openapi_tags() -> list[dict]:
     """
     Get OpenAPI tags for API organization
 
@@ -454,7 +453,7 @@ Refresh token: 7 gun
 OPENAPI_SECURITY = [{"BearerAuth": []}]
 
 
-def get_security_schemes() -> Dict:
+def get_security_schemes() -> dict:
     """
     Get OpenAPI security schemes
 

@@ -7,14 +7,16 @@ property-based testler içerir.
 Property 3: SLA Compliance Detection - P95 > 200ms marked as degraded/unhealthy
 """
 
-import pytest
-from hypothesis import given, strategies as st, settings
-
 import sys
+
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
-from app.health.sla_monitor import SLAMonitor
 from app.health.models import HealthStatus, SLAMetrics
+from app.health.sla_monitor import SLAMonitor
 
 
 class TestSLAMonitorProperties:

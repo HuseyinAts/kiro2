@@ -7,9 +7,9 @@ Task 4.2 gereksinimlerini karsilar.
 import pytest
 
 from core.sso_saml_service import (
+    SAMLError,
     SAMLService,
     SPConfig,
-    SAMLError,
 )
 
 

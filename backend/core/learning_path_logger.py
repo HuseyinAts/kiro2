@@ -11,12 +11,13 @@ Features:
 - User journey tracking
 """
 
-import uuid
 import time
-from typing import Optional, Dict, Any, Callable
-from functools import wraps
+import uuid
+from collections.abc import Callable
 from contextvars import ContextVar
 from enum import Enum
+from functools import wraps
+from typing import Any
 
 from core.structured_logger import get_logger
 
@@ -25,13 +26,13 @@ from core.structured_logger import get_logger
 # ============================================================================
 
 # Request ID for correlation across logs
-request_id_var: ContextVar[Optional[str]] = ContextVar("request_id", default=None)
+request_id_var: ContextVar[str | None] = ContextVar("request_id", default=None)
 
 # Student ID for user journey tracking
-student_id_var: ContextVar[Optional[str]] = ContextVar("student_id", default=None)
+student_id_var: ContextVar[str | None] = ContextVar("student_id", default=None)
 
 # Learning Path ID for operation tracking
-path_id_var: ContextVar[Optional[str]] = ContextVar("path_id", default=None)
+path_id_var: ContextVar[str | None] = ContextVar("path_id", default=None)
 
 
 # ============================================================================
@@ -103,7 +104,7 @@ class LearningPathLogger:
         self.base_logger = get_logger(name)
         self.name = name
 
-    def _get_context(self) -> Dict[str, Any]:
+    def _get_context(self) -> dict[str, Any]:
         """
         Get current context from context variables
 
@@ -126,7 +127,7 @@ class LearningPathLogger:
 
         return context
 
-    def bind_request(self, request_id: Optional[str] = None) -> str:
+    def bind_request(self, request_id: str | None = None) -> str:
         """
         Bind request ID to context
 
@@ -189,8 +190,8 @@ class LearningPathLogger:
     def error(
         self,
         event: str,
-        error: Optional[Exception] = None,
-        error_category: Optional[ErrorCategory] = None,
+        error: Exception | None = None,
+        error_category: ErrorCategory | None = None,
         **kwargs,
     ):
         """
@@ -291,7 +292,7 @@ class LearningPathLogger:
     def log_resource_search(
         self,
         subject: str,
-        difficulty: Optional[str],
+        difficulty: str | None,
         result_count: int,
         duration_seconds: float,
         source: str,  # "cache" or "api"
@@ -321,7 +322,7 @@ class LearningPathLogger:
         quiz_id: str,
         score: int,
         passed: bool,
-        duration_seconds: Optional[float] = None,
+        duration_seconds: float | None = None,
     ):
         """
         Log quiz submission
@@ -367,8 +368,8 @@ class LearningPathLogger:
         self,
         operation: str,  # "get", "set", "invalidate"
         cache_type: str,  # "path", "resources", "quiz", etc.
-        hit: Optional[bool] = None,
-        ttl: Optional[int] = None,
+        hit: bool | None = None,
+        ttl: int | None = None,
     ):
         """
         Log cache operation
@@ -391,8 +392,8 @@ class LearningPathLogger:
         self,
         event_type: str,  # "login", "token_validate", "permission_check"
         success: bool,
-        user_role: Optional[str] = None,
-        reason: Optional[str] = None,
+        user_role: str | None = None,
+        reason: str | None = None,
     ):
         """
         Log authentication/authorization event
@@ -419,7 +420,7 @@ class LearningPathLogger:
         self,
         breaker_name: str,
         state: str,  # "open", "closed", "half_open"
-        failure_count: Optional[int] = None,
+        failure_count: int | None = None,
     ):
         """
         Log circuit breaker state change
@@ -445,7 +446,7 @@ class LearningPathLogger:
         operation: str,
         duration_seconds: float,
         success: bool,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """
         Log performance metrics
@@ -580,8 +581,7 @@ def track_operation(
 
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 
@@ -590,7 +590,7 @@ def track_operation(
 # Singleton Instance
 # ============================================================================
 
-_logger_instances: Dict[str, LearningPathLogger] = {}
+_logger_instances: dict[str, LearningPathLogger] = {}
 
 
 def get_learning_path_logger(name: str) -> LearningPathLogger:

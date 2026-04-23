@@ -8,13 +8,12 @@ Always exit 0 (formatting is non-blocking).
 from __future__ import annotations
 
 import re
-from typing import List, Optional
 
 from .base import BaseHook
 from .models import (
-    QualityCheckResult,
-    HookConfig,
     ExitCode,
+    HookConfig,
+    QualityCheckResult,
 )
 
 
@@ -32,7 +31,7 @@ class BlackHook(BaseHook):
 
     name = "black"
 
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Run black formatting on files.
 
@@ -97,7 +96,7 @@ class BlackHook(BaseHook):
             auto_fixed=formatted_count
         )
 
-    def _count_formatted(self, output: str, files: List[str]) -> int:
+    def _count_formatted(self, output: str, files: list[str]) -> int:
         """Count number of files that were formatted."""
         # Black reports "reformatted X files" or individual file names
         match = re.search(r"reformatted\s+(\d+)\s+file", output)
@@ -108,9 +107,9 @@ class BlackHook(BaseHook):
         count = output.lower().count("reformatted")
         return count
 
-    def _find_unformatted(self, output: str) -> List[str]:
+    def _find_unformatted(self, output: str) -> list[str]:
         """Find files that need formatting (in check mode)."""
-        unformatted: List[str] = []
+        unformatted: list[str] = []
 
         # Black check mode shows "would reformat X"
         pattern = re.compile(r"would reformat\s+(.+?)$", re.MULTILINE)
@@ -121,8 +120,8 @@ class BlackHook(BaseHook):
 
 
 async def run_black(
-    files: List[str],
-    config: Optional[HookConfig] = None
+    files: list[str],
+    config: HookConfig | None = None
 ) -> QualityCheckResult:
     """
     Convenience function to run black formatting.

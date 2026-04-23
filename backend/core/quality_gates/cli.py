@@ -17,9 +17,9 @@ import asyncio
 import sys
 from pathlib import Path
 
+from .models import GateStatus, PipelineConfig
 from .orchestrator import QualityGatesOrchestrator, run_quality_gates
-from .models import PipelineConfig, GateStatus
-from .reporters import ConsoleReporter, JsonReporter, HtmlReporter
+from .reporters import ConsoleReporter, HtmlReporter, JsonReporter
 
 
 def main() -> int:

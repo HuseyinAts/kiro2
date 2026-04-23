@@ -6,15 +6,15 @@ Bu dosya, structured_logger.py modülünün nasıl kullanılacağını gösteren
 Video API ve diğer servisler için logging best practices.
 """
 
+import time
+import traceback
+
 from core.structured_logger import (
     get_logger,
     log_api_request,
     log_api_response,
     log_error_with_context,
 )
-import time
-import traceback
-
 
 # ==================== BASIC USAGE ====================
 

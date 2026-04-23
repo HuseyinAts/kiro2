@@ -11,14 +11,17 @@ Bu test dosyası:
 
 import asyncio
 from datetime import datetime, timedelta
-from typing import Any, Dict
+from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
 
 try:
     from agents.base_agent import AgentType, BaseAgent
-    from algorithms.agent_synergy_examples import SynergyResult, get_synergy_orchestrator
+    from algorithms.agent_synergy_examples import (
+        SynergyResult,
+        get_synergy_orchestrator,
+    )
 
     # Test edilecek modüller
     from algorithms.multi_agent_blackboard import (
@@ -44,7 +47,7 @@ class MockAgent(BaseAgent):
         self.coordination_responses = {}
 
     async def process_request(
-        self, request_type: str, parameters: Dict[str, Any], context=None
+        self, request_type: str, parameters: dict[str, Any], context=None
     ):
         """Mock process request"""
         return {
@@ -69,7 +72,7 @@ class MockAgent(BaseAgent):
         )
 
     async def _process_coordination_request(
-        self, coordination_type: str, parameters: Dict[str, Any], source_agent: str
+        self, coordination_type: str, parameters: dict[str, Any], source_agent: str
     ):
         """Koordinasyon talebini işle"""
         response = {

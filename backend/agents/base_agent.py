@@ -14,7 +14,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -56,13 +56,13 @@ class AgentMessage:
 
     message_id: str
     sender_agent: str
-    receiver_agent: Optional[str]  # None = broadcast
+    receiver_agent: str | None  # None = broadcast
     message_type: MessageType
-    content: Dict[str, Any]
+    content: dict[str, Any]
     timestamp: datetime
     priority: int = 1  # 1=low, 2=medium, 3=high
     requires_response: bool = False
-    correlation_id: Optional[str] = None  # İlişkili mesajlar için
+    correlation_id: str | None = None  # İlişkili mesajlar için
 
 
 @dataclass
@@ -71,10 +71,10 @@ class AgentCapability:
 
     name: str
     description: str
-    input_types: List[str]
-    output_types: List[str]
-    parameters: Dict[str, Any]
-    performance_metrics: Dict[str, float]
+    input_types: list[str]
+    output_types: list[str]
+    parameters: dict[str, Any]
+    performance_metrics: dict[str, float]
 
 
 @dataclass
@@ -86,7 +86,7 @@ class AgentMetrics:
     successful_requests: int = 0
     failed_requests: int = 0
     avg_response_time: float = 0.0
-    last_activity: Optional[datetime] = None
+    last_activity: datetime | None = None
     uptime_percentage: float = 100.0
     memory_usage: float = 0.0
     cpu_usage: float = 0.0
@@ -103,16 +103,16 @@ class BaseAgent(ABC):
         self.name = name
         self.description = description
         self.status = AgentStatus.IDLE
-        self.capabilities: List[AgentCapability] = []
+        self.capabilities: list[AgentCapability] = []
         self.metrics = AgentMetrics(agent_id=agent_id)
-        self.message_queue: List[AgentMessage] = []
-        self.blackboard_subscriptions: List[str] = []
-        self.coordination_handlers: Dict[str, callable] = {}
-        self.error_handlers: Dict[str, callable] = {}
+        self.message_queue: list[AgentMessage] = []
+        self.blackboard_subscriptions: list[str] = []
+        self.coordination_handlers: dict[str, callable] = {}
+        self.error_handlers: dict[str, callable] = {}
 
         # Agent-specific configuration
-        self.config: Dict[str, Any] = {}
-        self.cache: Dict[str, Any] = {}
+        self.config: dict[str, Any] = {}
+        self.cache: dict[str, Any] = {}
 
         # Blackboard integration
         self.blackboard = None
@@ -131,9 +131,9 @@ class BaseAgent(ABC):
     async def process_request(
         self,
         request_type: str,
-        parameters: Dict[str, Any],
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        parameters: dict[str, Any],
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Ana işlem metodu - her agent kendi implementasyonunu yapar
 
@@ -261,8 +261,8 @@ class BaseAgent(ABC):
             )
 
     async def _process_coordination_request(
-        self, coordination_type: str, parameters: Dict[str, Any], source_agent: str
-    ) -> Dict[str, Any]:
+        self, coordination_type: str, parameters: dict[str, Any], source_agent: str
+    ) -> dict[str, Any]:
         """
         Koordinasyon talebini işle - alt sınıflar override edebilir
         """
@@ -277,8 +277,8 @@ class BaseAgent(ABC):
         self,
         key: str,
         value: Any,
-        ttl_seconds: Optional[int] = None,
-        metadata: Dict[str, Any] = None,
+        ttl_seconds: int | None = None,
+        metadata: dict[str, Any] = None,
     ) -> bool:
         """Blackboard'a veri yaz"""
         try:
@@ -307,7 +307,7 @@ class BaseAgent(ABC):
             logger.error(f"Blackboard write error: {self.agent_id}, error: {e}")
             return False
 
-    def read_from_blackboard(self, key: str) -> Optional[Any]:
+    def read_from_blackboard(self, key: str) -> Any | None:
         """Blackboard'dan veri oku"""
         try:
             if not self.blackboard:
@@ -328,11 +328,11 @@ class BaseAgent(ABC):
 
     async def request_coordination(
         self,
-        target_agents: List[str],
+        target_agents: list[str],
         coordination_type: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
         timeout_seconds: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Diğer agent'larla koordinasyon talep et"""
         try:
             if not self.blackboard:
@@ -358,7 +358,7 @@ class BaseAgent(ABC):
             logger.error(f"Coordination request error: {self.agent_id}, error: {e}")
             return {"success": False, "error": str(e)}
 
-    def get_agent_metrics(self) -> Dict[str, Any]:
+    def get_agent_metrics(self) -> dict[str, Any]:
         """Agent metriklerini al"""
         return {
             "agent_id": self.agent_id,

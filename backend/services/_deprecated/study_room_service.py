@@ -4,29 +4,29 @@ Task 109: Study Room Service
 Service for managing study rooms, members, chat, and file sharing.
 """
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
-from datetime import datetime, timedelta, timezone
-from typing import Optional, List
-from uuid import UUID
-import secrets
 import hashlib
 import logging
+import secrets
+from datetime import UTC, datetime, timedelta
+from uuid import UUID
+
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.study_room import (
-    StudyRoom,
-    RoomMember,
-    RoomInvitation,
-    RoomChatMessage,
-    SharedFile,
+    FileType,
     FileVersion,
-    RoomSettings,
-    RoomStatus,
-    RoomVisibility,
     MemberRole,
     MemberStatus,
     MessageType,
-    FileType,
+    RoomChatMessage,
+    RoomInvitation,
+    RoomMember,
+    RoomSettings,
+    RoomStatus,
+    RoomVisibility,
+    SharedFile,
+    StudyRoom,
 )
 
 logger = logging.getLogger(__name__)
@@ -47,11 +47,11 @@ class StudyRoomService:
         owner_id: UUID,
         name: str,
         description: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         visibility: RoomVisibility = RoomVisibility.PRIVATE,
-        password: Optional[str] = None,
+        password: str | None = None,
         max_members: int = 50,
-        tags: Optional[List[str]] = None,
+        tags: list[str] | None = None,
     ) -> StudyRoom:
         """Create new study room"""
         room = StudyRoom(
@@ -84,13 +84,13 @@ class StudyRoomService:
         logger.info(f"Study room created: {room.id} by {owner_id}")
         return room
 
-    async def get_room(self, room_id: UUID) -> Optional[StudyRoom]:
+    async def get_room(self, room_id: UUID) -> StudyRoom | None:
         """Get room by ID"""
         query = select(StudyRoom).where(StudyRoom.id == room_id)
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
-    async def update_room(self, room_id: UUID, **kwargs) -> Optional[StudyRoom]:
+    async def update_room(self, room_id: UUID, **kwargs) -> StudyRoom | None:
         """Update room settings"""
         room = await self.get_room(room_id)
         if not room:
@@ -106,7 +106,7 @@ class StudyRoomService:
             if hasattr(room, key):
                 setattr(room, key, value)
 
-        room.updated_at = datetime.now(timezone.utc)
+        room.updated_at = datetime.now(UTC)
         await self.db.commit()
         await self.db.refresh(room)
 
@@ -139,7 +139,7 @@ class StudyRoomService:
         room_id: UUID,
         user_id: UUID,
         role: MemberRole = MemberRole.MEMBER,
-        invited_by: Optional[UUID] = None,
+        invited_by: UUID | None = None,
     ) -> RoomMember:
         """Add member to room"""
         member = RoomMember(
@@ -151,11 +151,7 @@ class StudyRoomService:
         )
 
         # Set permissions based on role
-        if role == MemberRole.OWNER:
-            member.can_invite_members = True
-            member.can_delete_messages = True
-            member.can_delete_files = True
-        elif role == MemberRole.ADMIN:
+        if role == MemberRole.OWNER or role == MemberRole.ADMIN:
             member.can_invite_members = True
             member.can_delete_messages = True
             member.can_delete_files = True
@@ -198,7 +194,7 @@ class StudyRoomService:
 
     async def update_member_role(
         self, room_id: UUID, user_id: UUID, new_role: MemberRole
-    ) -> Optional[RoomMember]:
+    ) -> RoomMember | None:
         """Update member role"""
         query = select(RoomMember).where(
             RoomMember.room_id == room_id, RoomMember.user_id == user_id
@@ -227,8 +223,8 @@ class StudyRoomService:
         return member
 
     async def get_room_members(
-        self, room_id: UUID, status: Optional[MemberStatus] = MemberStatus.ACTIVE
-    ) -> List[RoomMember]:
+        self, room_id: UUID, status: MemberStatus | None = MemberStatus.ACTIVE
+    ) -> list[RoomMember]:
         """Get all members of a room"""
         query = select(RoomMember).where(RoomMember.room_id == room_id)
 
@@ -240,7 +236,7 @@ class StudyRoomService:
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
-    async def ban_member(self, room_id: UUID, user_id: UUID) -> Optional[RoomMember]:
+    async def ban_member(self, room_id: UUID, user_id: UUID) -> RoomMember | None:
         """Ban member from room"""
         query = select(RoomMember).where(
             RoomMember.room_id == room_id, RoomMember.user_id == user_id
@@ -268,9 +264,9 @@ class StudyRoomService:
         self,
         room_id: UUID,
         inviter_id: UUID,
-        invitee_id: Optional[UUID] = None,
-        invitee_email: Optional[str] = None,
-        message: Optional[str] = None,
+        invitee_id: UUID | None = None,
+        invitee_email: str | None = None,
+        message: str | None = None,
         expires_in_days: int = 7,
     ) -> RoomInvitation:
         """Create room invitation"""
@@ -281,7 +277,7 @@ class StudyRoomService:
             invitee_email=invitee_email,
             message=message,
             invitation_code=secrets.token_urlsafe(16),
-            expires_at=datetime.now(timezone.utc) + timedelta(days=expires_in_days),
+            expires_at=datetime.now(UTC) + timedelta(days=expires_in_days),
         )
 
         self.db.add(invitation)
@@ -292,7 +288,7 @@ class StudyRoomService:
 
     async def accept_invitation(
         self, invitation_id: UUID, user_id: UUID
-    ) -> Optional[RoomMember]:
+    ) -> RoomMember | None:
         """Accept room invitation"""
         query = select(RoomInvitation).where(RoomInvitation.id == invitation_id)
         result = await self.db.execute(query)
@@ -302,11 +298,11 @@ class StudyRoomService:
             return None
 
         # Check expiration
-        if invitation.expires_at and invitation.expires_at < datetime.now(timezone.utc):
+        if invitation.expires_at and invitation.expires_at < datetime.now(UTC):
             return None
 
         invitation.is_accepted = True
-        invitation.accepted_at = datetime.now(timezone.utc)
+        invitation.accepted_at = datetime.now(UTC)
 
         # Add member to room
         member = await self.add_member(
@@ -329,9 +325,9 @@ class StudyRoomService:
         user_id: UUID,
         message: str,
         message_type: MessageType = MessageType.TEXT,
-        file_id: Optional[UUID] = None,
-        reply_to_id: Optional[UUID] = None,
-        mentions: Optional[List[str]] = None,
+        file_id: UUID | None = None,
+        reply_to_id: UUID | None = None,
+        mentions: list[str] | None = None,
     ) -> RoomChatMessage:
         """Send chat message"""
         chat_message = RoomChatMessage(
@@ -366,8 +362,8 @@ class StudyRoomService:
         return chat_message
 
     async def get_messages(
-        self, room_id: UUID, limit: int = 50, before_id: Optional[UUID] = None
-    ) -> List[RoomChatMessage]:
+        self, room_id: UUID, limit: int = 50, before_id: UUID | None = None
+    ) -> list[RoomChatMessage]:
         """Get chat messages"""
         query = select(RoomChatMessage).where(
             RoomChatMessage.room_id == room_id, RoomChatMessage.is_deleted == False
@@ -384,7 +380,7 @@ class StudyRoomService:
 
     async def add_reaction(
         self, message_id: UUID, user_id: UUID, emoji: str
-    ) -> Optional[RoomChatMessage]:
+    ) -> RoomChatMessage | None:
         """Add emoji reaction to message"""
         query = select(RoomChatMessage).where(RoomChatMessage.id == message_id)
         result = await self.db.execute(query)
@@ -420,7 +416,7 @@ class StudyRoomService:
             return False
 
         message.is_deleted = True
-        message.deleted_at = datetime.now(timezone.utc)
+        message.deleted_at = datetime.now(UTC)
         message.deleted_by = deleted_by
 
         await self.db.commit()
@@ -439,8 +435,8 @@ class StudyRoomService:
         file_type: FileType,
         file_size_bytes: int,
         mime_type: str,
-        description: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        description: str | None = None,
+        tags: list[str] | None = None,
     ) -> SharedFile:
         """Upload file to room"""
         # Generate safe filename
@@ -483,8 +479,8 @@ class StudyRoomService:
         return file
 
     async def get_room_files(
-        self, room_id: UUID, file_type: Optional[FileType] = None, limit: int = 50
-    ) -> List[SharedFile]:
+        self, room_id: UUID, file_type: FileType | None = None, limit: int = 50
+    ) -> list[SharedFile]:
         """Get files in room"""
         query = select(SharedFile).where(
             SharedFile.room_id == room_id, SharedFile.is_deleted == False
@@ -504,7 +500,7 @@ class StudyRoomService:
         user_id: UUID,
         file_path: str,
         file_size_bytes: int,
-        change_description: Optional[str] = None,
+        change_description: str | None = None,
     ) -> FileVersion:
         """Create new version of file"""
         # Get original file
@@ -534,7 +530,7 @@ class StudyRoomService:
         file.version_number = new_version_number
         file.file_path = file_path
         file.file_size_bytes = file_size_bytes
-        file.updated_at = datetime.now(timezone.utc)
+        file.updated_at = datetime.now(UTC)
 
         await self.db.commit()
         await self.db.refresh(version)
@@ -551,7 +547,7 @@ class StudyRoomService:
             return False
 
         file.is_deleted = True
-        file.deleted_at = datetime.now(timezone.utc)
+        file.deleted_at = datetime.now(UTC)
         file.deleted_by = deleted_by
 
         await self.db.commit()
@@ -563,11 +559,11 @@ class StudyRoomService:
 
     async def search_rooms(
         self,
-        query_text: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        visibility: Optional[RoomVisibility] = None,
+        query_text: str | None = None,
+        tags: list[str] | None = None,
+        visibility: RoomVisibility | None = None,
         limit: int = 20,
-    ) -> List[StudyRoom]:
+    ) -> list[StudyRoom]:
         """Search for study rooms"""
         query = select(StudyRoom).where(StudyRoom.status == RoomStatus.ACTIVE)
 
@@ -596,8 +592,8 @@ class StudyRoomService:
         return list(result.scalars().all())
 
     async def get_user_rooms(
-        self, user_id: UUID, status: Optional[MemberStatus] = MemberStatus.ACTIVE
-    ) -> List[StudyRoom]:
+        self, user_id: UUID, status: MemberStatus | None = MemberStatus.ACTIVE
+    ) -> list[StudyRoom]:
         """Get rooms where user is a member"""
         query = select(StudyRoom).join(RoomMember).where(RoomMember.user_id == user_id)
 

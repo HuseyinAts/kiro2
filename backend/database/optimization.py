@@ -14,7 +14,7 @@ Requirements: 7.1, 7.2, 7.3
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import event, text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
@@ -36,7 +36,7 @@ class DatabaseOptimizationManager:
 
     def __init__(self, engine: AsyncEngine):
         self.engine = engine
-        self.metrics: Dict[str, Any] = {
+        self.metrics: dict[str, Any] = {
             "queries": [],
             "slow_queries": [],
             "connection_stats": {},
@@ -69,7 +69,7 @@ class DatabaseOptimizationManager:
                 self.metrics["connection_stats"].get("checkins", 0) + 1
             )
 
-    async def get_pool_status(self) -> Dict[str, Any]:
+    async def get_pool_status(self) -> dict[str, Any]:
         """
         Connection pool durumunu getir
 
@@ -98,7 +98,7 @@ class DatabaseOptimizationManager:
 
     async def optimize_pool_settings(
         self, expected_concurrent_users: int = 100000
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         Beklenen kullanıcı sayısına göre pool ayarlarını optimize et
 
@@ -162,7 +162,7 @@ class DatabaseOptimizationManager:
                 f"{query[:100]}..."
             )
 
-    async def get_performance_metrics(self) -> Dict[str, Any]:
+    async def get_performance_metrics(self) -> dict[str, Any]:
         """
         Toplanan performans metriklerini getir
 
@@ -294,7 +294,7 @@ class DatabaseIndexingStrategy:
         logger.info("Index oluşturma tamamlandı")
 
     @classmethod
-    async def analyze_index_usage(cls, session: AsyncSession) -> Dict[str, Any]:
+    async def analyze_index_usage(cls, session: AsyncSession) -> dict[str, Any]:
         """
         Index kullanım istatistiklerini analiz et (PostgreSQL)
 
@@ -347,7 +347,7 @@ class DatabaseIndexingStrategy:
             return {"error": str(e)}
 
     @classmethod
-    async def get_missing_indexes(cls, session: AsyncSession) -> List[Dict[str, Any]]:
+    async def get_missing_indexes(cls, session: AsyncSession) -> list[dict[str, Any]]:
         """
         Eksik index önerilerini al (PostgreSQL)
 
@@ -407,7 +407,7 @@ class QueryOptimizer:
     """
 
     @staticmethod
-    async def explain_query(session: AsyncSession, query: str) -> Dict[str, Any]:
+    async def explain_query(session: AsyncSession, query: str) -> dict[str, Any]:
         """
         Query execution plan'ı analiz et
 
@@ -467,7 +467,7 @@ class QueryOptimizer:
     @staticmethod
     async def get_table_statistics(
         session: AsyncSession, table_name: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Tablo istatistiklerini getir
 
@@ -506,7 +506,7 @@ class QueryOptimizer:
 
 
 # Global optimization manager instance
-_optimization_manager: Optional[DatabaseOptimizationManager] = None
+_optimization_manager: DatabaseOptimizationManager | None = None
 
 
 def get_optimization_manager(engine: AsyncEngine) -> DatabaseOptimizationManager:

@@ -7,20 +7,22 @@ Requirements: REQ-52.1 - REQ-52.20
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
+
 import pytest
-from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
 
 # Import centralized JWT constants from conftest (DRY)
 try:
-    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+    from tests.conftest import TEST_JWT_ALGORITHM, TEST_JWT_SECRET, _generate_test_jwt
 except ImportError:
     import jwt as _jwt
     TEST_JWT_SECRET = "test-secret-key-for-testing"

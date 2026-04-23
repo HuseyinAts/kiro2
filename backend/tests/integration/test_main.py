@@ -1,5 +1,6 @@
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
@@ -9,6 +10,7 @@ Türkçe karakter desteği ve temel endpoint testleri
 """
 
 import pytest
+
 pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
 
 

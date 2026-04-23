@@ -3,29 +3,27 @@ Comprehensive tests for Unified Monitoring System
 Target: 80%+ test coverage
 """
 
-import pytest
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
+import pytest
 
 from core.unified.monitoring_system import (
-    UnifiedMonitoringManager,
-    MonitoringConfig,
-    MetricType,
+    Alert,
     AlertLevel,
-    MonitoringCategory,
-    MetricPoint,
-    SystemMetrics,
+    AlertManager,
     APIMetrics,
     DatabaseMetrics,
-    Alert,
+    MetricPoint,
     MetricsAggregator,
-    AlertManager,
+    MetricType,
+    MonitoringCategory,
+    MonitoringConfig,
+    SystemMetrics,
+    UnifiedMonitoringManager,
     get_monitoring_manager,
     initialize_monitoring,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -655,11 +653,11 @@ class TestBackwardCompatibility:
     def test_aliases_exist(self):
         """Test that backward compatibility aliases exist"""
         from core.unified.monitoring_system import (
-            MonitoringService,
-            PerformanceMonitor,
-            MetricsCollector,
             AnalyticsMonitoring,
             ApplicationMetrics,
+            MetricsCollector,
+            MonitoringService,
+            PerformanceMonitor,
         )
 
         # All aliases should point to UnifiedMonitoringManager

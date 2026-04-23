@@ -4,9 +4,8 @@ Task 66: AYT Exam System Implementation Tests
 REQ-1.2, REQ-3.1
 """
 import pytest
-from core.osym_exam_engine import OSYMExamEngine, AYTFieldType, ExamType
 
-
+from core.osym_exam_engine import AYTFieldType, ExamType, OSYMExamEngine
 
 pytestmark = pytest.mark.skipif(
     True,

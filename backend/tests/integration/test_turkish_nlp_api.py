@@ -4,12 +4,13 @@ Türkçe NLP API Endpoint Testleri
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from fastapi.testclient import TestClient
+
 from core.turkish_nlp_service import (
     MorphologicalAnalysis,
     TextNormalizationResult,
 )
 from main import app
-from fastapi.testclient import TestClient
 
 client = TestClient(app)
 

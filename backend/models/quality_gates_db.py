@@ -13,7 +13,7 @@ Models:
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     JSON,
@@ -74,29 +74,29 @@ class QualityGatesRun(Base):
     fail_fast_mode: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Git context
-    commit_hash: Mapped[Optional[str]] = mapped_column(String(40), index=True)
-    branch: Mapped[Optional[str]] = mapped_column(String(200), index=True)
-    repository: Mapped[Optional[str]] = mapped_column(String(500))
+    commit_hash: Mapped[str | None] = mapped_column(String(40), index=True)
+    branch: Mapped[str | None] = mapped_column(String(200), index=True)
+    repository: Mapped[str | None] = mapped_column(String(500))
 
     # Trigger info
-    triggered_by: Mapped[Optional[str]] = mapped_column(String(255), index=True)
-    trigger_type: Mapped[Optional[str]] = mapped_column(
+    triggered_by: Mapped[str | None] = mapped_column(String(255), index=True)
+    trigger_type: Mapped[str | None] = mapped_column(
         String(50)
     )  # manual, push, pr, schedule
 
     # Override info
     overridden: Mapped[bool] = mapped_column(Boolean, default=False)
-    override_reason: Mapped[Optional[str]] = mapped_column(Text)
-    override_approver: Mapped[Optional[str]] = mapped_column(String(255))
+    override_reason: Mapped[str | None] = mapped_column(Text)
+    override_approver: Mapped[str | None] = mapped_column(String(255))
 
     # Configuration used
-    config_snapshot: Mapped[Optional[dict]] = mapped_column(JSON)
+    config_snapshot: Mapped[dict | None] = mapped_column(JSON)
 
     # Timestamps
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
-    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -153,9 +153,9 @@ class GateResultRecord(Base):
     auto_fixed: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Detailed data stored as JSON
-    issues: Mapped[Optional[list]] = mapped_column(JSON)  # List of issue objects
-    metrics: Mapped[Optional[dict]] = mapped_column(JSON)  # Gate-specific metrics
-    details: Mapped[Optional[dict]] = mapped_column(JSON)  # Additional details
+    issues: Mapped[list | None] = mapped_column(JSON)  # List of issue objects
+    metrics: Mapped[dict | None] = mapped_column(JSON)  # Gate-specific metrics
+    details: Mapped[dict | None] = mapped_column(JSON)  # Additional details
 
     # Execution
     execution_time_ms: Mapped[float] = mapped_column(Float, nullable=False)
@@ -163,7 +163,7 @@ class GateResultRecord(Base):
 
     # Timestamps
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -196,7 +196,7 @@ class OverrideAuditLog(Base):
 
     # Request info
     gate_name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    run_id: Mapped[Optional[str]] = mapped_column(
+    run_id: Mapped[str | None] = mapped_column(
         String,
         ForeignKey("quality_gates_runs.id", ondelete="SET NULL"),
     )
@@ -204,7 +204,7 @@ class OverrideAuditLog(Base):
     # Requestor
     requestor: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     reason: Mapped[str] = mapped_column(Text, nullable=False)
-    ticket_id: Mapped[Optional[str]] = mapped_column(String(100))
+    ticket_id: Mapped[str | None] = mapped_column(String(100))
 
     # Status
     status: Mapped[str] = mapped_column(
@@ -212,12 +212,12 @@ class OverrideAuditLog(Base):
     )  # pending, approved, denied, expired
 
     # Approval
-    approver: Mapped[Optional[str]] = mapped_column(String(255))
-    approver_comments: Mapped[Optional[str]] = mapped_column(Text)
-    approved_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    approver: Mapped[str | None] = mapped_column(String(255))
+    approver_comments: Mapped[str | None] = mapped_column(Text)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Expiration
-    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(

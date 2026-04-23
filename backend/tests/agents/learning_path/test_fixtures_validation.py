@@ -3,7 +3,6 @@ Fixture Validation Tests
 Tests to verify that all fixtures work correctly.
 """
 
-import pytest
 
 
 def test_mock_student_profile_fixture(mock_student_profile):
@@ -123,7 +122,11 @@ def test_turkish_names_fixture(turkish_names):
 
 def test_student_profile_obj_fixture(student_profile_obj):
     """Test StudentProfile object fixture"""
-    from agents.learning_path.models import StudentProfile, LearningStyle, KnowledgeLevel
+    from agents.learning_path.models import (
+        KnowledgeLevel,
+        LearningStyle,
+        StudentProfile,
+    )
 
     assert isinstance(student_profile_obj, StudentProfile)
     assert student_profile_obj.student_id == "test-student-001"
@@ -133,7 +136,7 @@ def test_student_profile_obj_fixture(student_profile_obj):
 
 def test_learning_resource_obj_fixture(learning_resource_obj):
     """Test LearningResource object fixture"""
-    from agents.learning_path.models import LearningResource, KnowledgeLevel
+    from agents.learning_path.models import KnowledgeLevel, LearningResource
 
     assert isinstance(learning_resource_obj, LearningResource)
     assert learning_resource_obj.source == "YouTube"

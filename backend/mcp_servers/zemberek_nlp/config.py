@@ -5,7 +5,7 @@ Environment-based configuration with Pydantic
 Supports both JPype (direct Java bridge) and HTTP backend modes.
 """
 
-from typing import Dict, List, Optional
+
 from pydantic import ConfigDict, Field
 from pydantic_settings import BaseSettings
 
@@ -18,15 +18,15 @@ class ZemberekConfig(BaseSettings):
         default=True,
         description="Use JPype bridge (True) or HTTP backend (False)",
     )
-    java_home: Optional[str] = Field(
+    java_home: str | None = Field(
         default=None,
         description="JAVA_HOME path (uses env var if None)",
     )
-    zemberek_jar_path: Optional[str] = Field(
+    zemberek_jar_path: str | None = Field(
         default=None,
         description="Path to Zemberek JAR file (auto-detected if None)",
     )
-    jpype_jvm_options: List[str] = Field(
+    jpype_jvm_options: list[str] = Field(
         default_factory=lambda: ["-Xmx512m"],
         description="Additional JVM options",
     )
@@ -42,7 +42,7 @@ class ZemberekConfig(BaseSettings):
     # Redis Cache
     redis_host: str = Field(default="localhost", description="Redis host")
     redis_port: int = Field(default=6379, description="Redis port")
-    redis_password: Optional[str] = Field(default=None, description="Redis password")
+    redis_password: str | None = Field(default=None, description="Redis password")
     redis_db: int = Field(default=0, description="Redis database number")
 
     # Cache Configuration
@@ -83,7 +83,7 @@ class ZemberekConfig(BaseSettings):
 
 
 # Cache TTL settings per tool (in seconds)
-CACHE_TTL: Dict[str, int] = {
+CACHE_TTL: dict[str, int] = {
     "morphology": 3600,  # 1 hour - stable results
     "lemmatization": 3600,  # 1 hour - stable results
     "spell_check": 1800,  # 30 min - may need dictionary updates
@@ -100,7 +100,7 @@ def get_ttl(tool_name: str) -> int:
 
 
 # Global config instance
-_config: Optional[ZemberekConfig] = None
+_config: ZemberekConfig | None = None
 
 
 def get_config() -> ZemberekConfig:

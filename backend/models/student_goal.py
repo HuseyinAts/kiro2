@@ -2,8 +2,9 @@
 Student Goal ORM Model - Dashboard Service
 Part of Mock Data Cleanup Phase 2
 """
-from datetime import datetime, timezone
-from sqlalchemy import Column, String, Float, DateTime, ForeignKey, Text
+from datetime import UTC, datetime
+
+from sqlalchemy import Column, DateTime, Float, ForeignKey, String, Text
 
 from .base import Base
 
@@ -63,7 +64,7 @@ class StudentGoal(Base):
     @property
     def is_active(self) -> bool:
         """Check if goal is currently active"""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if self.start_date is None or self.end_date is None:
             return self.status == "aktif"
         return bool(

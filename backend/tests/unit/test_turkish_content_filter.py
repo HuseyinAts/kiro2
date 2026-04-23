@@ -4,6 +4,7 @@ Video içeriğinin Türkçe olup olmadığını doğrulayan servisi test eder
 """
 
 import pytest
+
 from services.turkish_content_filter import (
     TurkishContentFilter,
     TurkishValidationResult,

@@ -3,28 +3,28 @@ Unified Database Schema for YKS Hazırlık Platformu
 Teknofest 2025 - Birleştirilmiş Veritabanı Modelleri
 """
 
+import uuid
 from datetime import datetime
 from enum import Enum
 
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    Boolean,
-    Text,
-    ForeignKey,
-    Table,
-    UniqueConstraint,
-    Index,
-    CheckConstraint,
     DECIMAL,
     TIMESTAMP,
+    Boolean,
+    CheckConstraint,
+    Column,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Table,
+    Text,
+    UniqueConstraint,
 )
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
-import uuid
 
 Base = declarative_base()
 

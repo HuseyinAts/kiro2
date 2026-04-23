@@ -7,12 +7,11 @@ Soru versiyonlarını karşılaştırmak için A/B testing framework'ü.
 Requirements: REQ-48.61 - REQ-48.64
 """
 
-from typing import List, Dict, Optional, Tuple
+import math
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import math
-import uuid
 
 
 class ExperimentStatus(Enum):
@@ -41,7 +40,7 @@ class Variant:
     type: VariantType
     question_id: str
     question_text: str
-    options: List[str]
+    options: list[str]
     correct_answer: int
     traffic_allocation: float = 0.5  # Trafik dağılımı (0-1 arası)
 
@@ -81,13 +80,13 @@ class Experiment:
     subject: str
     difficulty_level: str
     status: ExperimentStatus
-    variants: List[Variant]
+    variants: list[Variant]
     created_at: datetime = field(default_factory=datetime.now)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
     minimum_sample_size: int = 100  # Minimum örneklem büyüklüğü
     significance_level: float = 0.05  # p-value eşiği (varsayılan %5)
-    winner: Optional[str] = None  # Kazanan varyant ID
+    winner: str | None = None  # Kazanan varyant ID
 
 
 @dataclass
@@ -98,7 +97,7 @@ class StatisticalTestResult:
     p_value: float  # p-değeri
     confidence_level: float  # Güven seviyesi (%)
     effect_size: float  # Etki büyüklüğü
-    winner_variant_id: Optional[str]  # Kazanan varyant
+    winner_variant_id: str | None  # Kazanan varyant
     recommendation: str  # Öneri
 
 
@@ -114,7 +113,7 @@ class ABTestingFramework:
 
     def __init__(self):
         """Framework'ü başlat"""
-        self.experiments: Dict[str, Experiment] = {}
+        self.experiments: dict[str, Experiment] = {}
 
     def create_experiment(
         self,
@@ -122,9 +121,9 @@ class ABTestingFramework:
         description: str,
         subject: str,
         difficulty_level: str,
-        control_question: Dict,
-        treatment_question: Dict,
-        traffic_allocation: Tuple[float, float] = (0.5, 0.5),
+        control_question: dict,
+        treatment_question: dict,
+        traffic_allocation: tuple[float, float] = (0.5, 0.5),
         minimum_sample_size: int = 100,
         significance_level: float = 0.05,
     ) -> Experiment:
@@ -290,7 +289,7 @@ class ABTestingFramework:
 
     def run_statistical_test(
         self, experiment_id: str, metric: str = "accuracy_rate"
-    ) -> Optional[StatisticalTestResult]:
+    ) -> StatisticalTestResult | None:
         """
         İstatistiksel anlamlılık testi yap (REQ-48.62)
 
@@ -392,7 +391,7 @@ class ABTestingFramework:
         p_value: float,
         p1: float,
         p2: float,
-        winner_id: Optional[str],
+        winner_id: str | None,
         treatment_id: str,
     ) -> str:
         """Öneri metni oluştur"""
@@ -408,13 +407,12 @@ class ABTestingFramework:
                 f"✅ Treatment (B) versiyonu anlamlı şekilde daha iyi (p={p_value:.4f}). "
                 f"Performans artışı: %{improvement:.1f}. Treatment versiyonunu kullanın."
             )
-        else:
-            decline = ((p1 - p2) / p1) * 100 if p1 > 0 else 0
-            return (
-                f"⚠️ Control (A) versiyonu anlamlı şekilde daha iyi (p={p_value:.4f}). "
-                f"Treatment %{decline:.1f} daha düşük performans gösteriyor. "
-                f"Control versiyonunu kullanmaya devam edin."
-            )
+        decline = ((p1 - p2) / p1) * 100 if p1 > 0 else 0
+        return (
+            f"⚠️ Control (A) versiyonu anlamlı şekilde daha iyi (p={p_value:.4f}). "
+            f"Treatment %{decline:.1f} daha düşük performans gösteriyor. "
+            f"Control versiyonunu kullanmaya devam edin."
+        )
 
     def complete_experiment(
         self, experiment_id: str, auto_select_winner: bool = True
@@ -447,7 +445,7 @@ class ABTestingFramework:
 
         return True
 
-    def get_performance_comparison(self, experiment_id: str) -> Optional[Dict]:
+    def get_performance_comparison(self, experiment_id: str) -> dict | None:
         """
         Performans karşılaştırma raporu (REQ-48.63)
 
@@ -540,7 +538,7 @@ class ABTestingFramework:
             else None,
         }
 
-    def get_experiment_summary(self, experiment_id: str) -> Optional[Dict]:
+    def get_experiment_summary(self, experiment_id: str) -> dict | None:
         """
         Deney özeti
 
@@ -574,7 +572,7 @@ class ABTestingFramework:
             else None,
         }
 
-    def list_experiments(self, status: Optional[ExperimentStatus] = None) -> List[Dict]:
+    def list_experiments(self, status: ExperimentStatus | None = None) -> list[dict]:
         """
         Deneyleri listele
 
@@ -593,7 +591,7 @@ class ABTestingFramework:
 
     def _find_variant(
         self, experiment: Experiment, variant_id: str
-    ) -> Optional[Variant]:
+    ) -> Variant | None:
         """Varyantı bul"""
         for variant in experiment.variants:
             if variant.id == variant_id:

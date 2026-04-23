@@ -2,22 +2,23 @@
 User Workflow Integration Tests
 Testing complete user workflows using integration utilities
 """
-import pytest
 import asyncio
 from datetime import datetime
 
+import pytest
+
 # Import custom test utilities
 try:
+    from tests.fixtures.integration_fixtures import (
+        create_test_content_data,
+        create_test_user_data,
+        generate_test_id,
+    )
     from tests.utils.integration_utils import (
-        integration_test_context,
+        assert_data_integrity,
         assert_performance_acceptable,
         assert_security_clean,
-        assert_data_integrity,
-    )
-    from tests.fixtures.integration_fixtures import (
-        create_test_user_data,
-        create_test_content_data,
-        generate_test_id,
+        integration_test_context,
     )
 
     UTILS_AVAILABLE = True
@@ -257,8 +258,7 @@ class TestUserWorkflowIntegration:
 
         if response["status_code"] < 400:
             return response["json"]
-        else:
-            raise Exception(f"Content creation failed: {response}")
+        raise Exception(f"Content creation failed: {response}")
 
     async def _list_content(self, client, context=None):
         """Helper method to list content"""
@@ -266,8 +266,7 @@ class TestUserWorkflowIntegration:
 
         if response["status_code"] == 200:
             return response["json"]
-        else:
-            raise Exception(f"Content listing failed: {response}")
+        raise Exception(f"Content listing failed: {response}")
 
 
 class MockExamWorkflow:

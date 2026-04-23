@@ -9,10 +9,9 @@ Key Features:
 - Inter-rater agreement tracking
 - AI feedback loop for continuous improvement
 """
-from typing import List, Dict, Optional
 from dataclasses import dataclass, field
-from enum import Enum
 from datetime import datetime
+from enum import Enum
 
 
 class ReviewDecision(Enum):
@@ -39,7 +38,7 @@ class ExpertProfile:
     id: str
     name: str
     expertise_level: ExpertiseLevel
-    specializations: List[str]  # ["matematik", "fizik", "geometri"]
+    specializations: list[str]  # ["matematik", "fizik", "geometri"]
 
     # Performance metrics
     total_reviews: int = 0
@@ -49,7 +48,7 @@ class ExpertProfile:
 
     # Gamification
     points: int = 0
-    badges: List[str] = field(default_factory=list)
+    badges: list[str] = field(default_factory=list)
     leaderboard_rank: int = 0
 
 
@@ -59,12 +58,12 @@ class ReviewTask:
 
     task_id: str
     question_id: str
-    question_data: Dict
-    ai_validation_result: Dict
+    question_data: dict
+    ai_validation_result: dict
 
-    assigned_expert_id: Optional[str] = None
-    assigned_time: Optional[datetime] = None
-    completed_time: Optional[datetime] = None
+    assigned_expert_id: str | None = None
+    assigned_time: datetime | None = None
+    completed_time: datetime | None = None
 
     # Task metadata
     priority: str = "normal"  # "low", "normal", "high", "urgent"
@@ -82,7 +81,7 @@ class ReviewSubmission:
     decision: ReviewDecision
     pedagogy_score: int  # 0-100
     comments: str
-    suggested_changes: Optional[Dict] = None
+    suggested_changes: dict | None = None
     review_time_seconds: int = 0
 
 
@@ -98,9 +97,9 @@ class HITLWorkflowService:
     """
 
     def __init__(self):
-        self.experts: Dict[str, ExpertProfile] = {}
-        self.task_queue: List[ReviewTask] = []
-        self.completed_tasks: List[ReviewTask] = []
+        self.experts: dict[str, ExpertProfile] = {}
+        self.task_queue: list[ReviewTask] = []
+        self.completed_tasks: list[ReviewTask] = []
 
         # Configuration
         self.CONFIDENCE_THRESHOLD = 0.75  # Below this → human review
@@ -112,8 +111,8 @@ class HITLWorkflowService:
         self.experts[expert.id] = expert
 
     def evaluate_question_for_review(
-        self, question_id: str, question_data: Dict, ai_validation_result: Dict
-    ) -> Dict:
+        self, question_id: str, question_data: dict, ai_validation_result: dict
+    ) -> dict:
         """
         Determine if question needs human review
         INNOVATION: Confidence-based escalation
@@ -160,8 +159,8 @@ class HITLWorkflowService:
         }
 
     def assign_task_to_expert(
-        self, task_id: str, expert_id: Optional[str] = None
-    ) -> Dict:
+        self, task_id: str, expert_id: str | None = None
+    ) -> dict:
         """
         Smart task assignment
         INNOVATION: Expertise matching algorithm
@@ -248,7 +247,7 @@ class HITLWorkflowService:
         expert_scores.sort(key=lambda x: x[1], reverse=True)
         return expert_scores[0][0] if expert_scores else list(self.experts.keys())[0]
 
-    def submit_review(self, submission: ReviewSubmission) -> Dict:
+    def submit_review(self, submission: ReviewSubmission) -> dict:
         """
         Expert submits review
         INNOVATION: AI feedback loop for continuous learning
@@ -331,7 +330,7 @@ class HITLWorkflowService:
         if expert.total_reviews >= 100 and "century_club" not in expert.badges:
             expert.badges.append("century_club")
 
-    def _get_newly_earned_badges(self, expert: ExpertProfile) -> List[str]:
+    def _get_newly_earned_badges(self, expert: ExpertProfile) -> list[str]:
         """Get badges earned in this review"""
         # Simplified: return last badge if any
         return [expert.badges[-1]] if expert.badges else []
@@ -350,16 +349,16 @@ class HITLWorkflowService:
 
         return len(self.experts)
 
-    def _update_ai_model(self, feedback_data: Dict):
+    def _update_ai_model(self, feedback_data: dict):
         """
         Update AI validation model with expert feedback
         INNOVATION: Continuous learning loop
         """
         # In production: Retrain ML model with new data
         # For now: Store feedback for later batch training
-        pass  # Mock
+        # Mock
 
-    def get_expert_dashboard(self, expert_id: str) -> Dict:
+    def get_expert_dashboard(self, expert_id: str) -> dict:
         """Get dashboard data for expert"""
         expert = self.experts.get(expert_id)
         if not expert:
@@ -419,7 +418,7 @@ class HITLWorkflowService:
             ]
         )
 
-    def get_leaderboard(self, limit: int = 10) -> List[Dict]:
+    def get_leaderboard(self, limit: int = 10) -> list[dict]:
         """Get top experts leaderboard"""
         sorted_experts = sorted(
             self.experts.values(), key=lambda e: e.points, reverse=True

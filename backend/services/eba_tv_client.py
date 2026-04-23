@@ -5,13 +5,14 @@ MEB EBA TV API entegrasyonu - Video katalog çekme
 EBA TV (Eğitim Bilişim Ağı - MEB resmi eğitim platformu)
 """
 
-import httpx
-import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
-from pydantic import BaseModel, Field
 import asyncio
+import logging
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any
+
+import httpx
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -56,35 +57,35 @@ class EBAVideoMetadata(BaseModel):
 
     video_id: str
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     duration_seconds: int
-    thumbnail_url: Optional[str] = None
+    thumbnail_url: str | None = None
     video_url: str
     subject: EBASubject
     grade_level: EBAGradeLevel
-    topic: Optional[str] = None
-    subtopics: List[str] = Field(default_factory=list)
-    keywords: List[str] = Field(default_factory=list)
-    publish_date: Optional[datetime] = None
+    topic: str | None = None
+    subtopics: list[str] = Field(default_factory=list)
+    keywords: list[str] = Field(default_factory=list)
+    publish_date: datetime | None = None
     view_count: int = 0
     quality: str = "720p"  # 360p, 480p, 720p, 1080p
     has_turkish_subtitle: bool = True  # EBA always Turkish
     curriculum_aligned: bool = True
 
     # MEB specific fields
-    meb_content_id: Optional[str] = None
-    kazanim_codes: List[str] = Field(default_factory=list)  # Müfredat kazanım kodları
+    meb_content_id: str | None = None
+    kazanim_codes: list[str] = Field(default_factory=list)  # Müfredat kazanım kodları
 
 
 class EBACatalogFilter(BaseModel):
     """EBA katalog filtreleme parametreleri"""
 
-    subject: Optional[EBASubject] = None
-    grade_level: Optional[EBAGradeLevel] = None
-    topic: Optional[str] = None
-    min_duration: Optional[int] = None  # seconds
-    max_duration: Optional[int] = None  # seconds
-    search_query: Optional[str] = None
+    subject: EBASubject | None = None
+    grade_level: EBAGradeLevel | None = None
+    topic: str | None = None
+    min_duration: int | None = None  # seconds
+    max_duration: int | None = None  # seconds
+    search_query: str | None = None
     page: int = 1
     page_size: int = 20
 
@@ -101,7 +102,7 @@ class EBATVClient:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         base_url: str = "https://eba.gov.tr/api/v1",
         timeout: int = 30,
         max_retries: int = 3,
@@ -114,11 +115,11 @@ class EBATVClient:
         # Rate limiting: 100 requests/minute
         self.rate_limit_max = 100
         self.rate_limit_window = 60  # seconds
-        self.request_timestamps: List[datetime] = []
+        self.request_timestamps: list[datetime] = []
 
         self.client = httpx.AsyncClient(timeout=timeout, headers=self._get_headers())
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """API request headers"""
         headers = {
             "Accept": "application/json",
@@ -162,7 +163,7 @@ class EBATVClient:
 
     async def _make_request(
         self, method: str, endpoint: str, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Make API request with retry logic
         """
@@ -185,11 +186,11 @@ class EBATVClient:
                     await asyncio.sleep(wait_time)
                     continue
 
-                elif e.response.status_code == 401:  # Unauthorized
+                if e.response.status_code == 401:  # Unauthorized
                     logger.error("API authentication failed. Check API key.")
                     raise
 
-                elif e.response.status_code >= 500:  # Server error
+                if e.response.status_code >= 500:  # Server error
                     if attempt < self.max_retries - 1:
                         wait_time = 2**attempt
                         logger.warning(f"Server error. Retrying in {wait_time}s...")
@@ -197,8 +198,7 @@ class EBATVClient:
                         continue
                     raise
 
-                else:
-                    raise
+                raise
 
             except httpx.RequestError as e:
                 if attempt < self.max_retries - 1:
@@ -211,8 +211,8 @@ class EBATVClient:
         raise Exception(f"Failed after {self.max_retries} retries")
 
     async def get_video_catalog(
-        self, filters: Optional[EBACatalogFilter] = None
-    ) -> List[EBAVideoMetadata]:
+        self, filters: EBACatalogFilter | None = None
+    ) -> list[EBAVideoMetadata]:
         """
         Task 97.2: Video katalog çekme
 
@@ -260,7 +260,7 @@ class EBATVClient:
             logger.error(f"Failed to fetch video catalog: {e}")
             raise
 
-    def _parse_video_metadata(self, data: Dict[str, Any]) -> EBAVideoMetadata:
+    def _parse_video_metadata(self, data: dict[str, Any]) -> EBAVideoMetadata:
         """Parse EBA API response to EBAVideoMetadata"""
 
         # Parse publish date
@@ -270,7 +270,6 @@ class EBATVClient:
                 publish_date = datetime.fromisoformat(data["publish_date"])
             except (ValueError, TypeError) as e:
                 logger.debug(f"Failed to parse publish_date: {e}")
-                pass
 
         return EBAVideoMetadata(
             video_id=data["id"],
@@ -293,7 +292,7 @@ class EBATVClient:
             kazanim_codes=data.get("kazanim_codes", []),
         )
 
-    async def get_video_details(self, video_id: str) -> Optional[EBAVideoMetadata]:
+    async def get_video_details(self, video_id: str) -> EBAVideoMetadata | None:
         """
         Belirli bir videonun detaylarını çeker
         """
@@ -310,10 +309,10 @@ class EBATVClient:
     async def search_videos(
         self,
         query: str,
-        subject: Optional[EBASubject] = None,
-        grade_level: Optional[EBAGradeLevel] = None,
+        subject: EBASubject | None = None,
+        grade_level: EBAGradeLevel | None = None,
         limit: int = 20,
-    ) -> List[EBAVideoMetadata]:
+    ) -> list[EBAVideoMetadata]:
         """
         Video arama
         """
@@ -326,7 +325,7 @@ class EBATVClient:
 
         return await self.get_video_catalog(filters)
 
-    async def get_subjects_taxonomy(self) -> Dict[str, List[str]]:
+    async def get_subjects_taxonomy(self) -> dict[str, list[str]]:
         """
         Task 97.3: Konu bazlı filtreleme
 
@@ -348,7 +347,7 @@ class EBATVClient:
             # Return default taxonomy if API fails
             return self._get_default_taxonomy()
 
-    def _get_default_taxonomy(self) -> Dict[str, List[str]]:
+    def _get_default_taxonomy(self) -> dict[str, list[str]]:
         """Fallback taxonomy if API fails"""
         return {
             "matematik": [
@@ -375,7 +374,7 @@ class EBATVClient:
 
     async def get_curriculum_alignment(
         self, grade_level: EBAGradeLevel, subject: EBASubject
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Müfredat uyumluluğu bilgisi
         Hangi kazanımlar hangi videolarla eşleşiyor
@@ -415,8 +414,8 @@ class MockEBATVClient(EBATVClient):
         super().__init__(api_key="mock_key")
 
     async def get_video_catalog(
-        self, filters: Optional[EBACatalogFilter] = None
-    ) -> List[EBAVideoMetadata]:
+        self, filters: EBACatalogFilter | None = None
+    ) -> list[EBAVideoMetadata]:
         """Mock video catalog"""
 
         if filters is None:
@@ -459,7 +458,7 @@ class MockEBATVClient(EBATVClient):
         logger.info(f"[MOCK EBA] Generated {len(mock_videos)} mock videos")
         return mock_videos
 
-    async def get_subjects_taxonomy(self) -> Dict[str, List[str]]:
+    async def get_subjects_taxonomy(self) -> dict[str, list[str]]:
         """Mock taxonomy"""
         return self._get_default_taxonomy()
 

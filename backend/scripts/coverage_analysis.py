@@ -23,7 +23,7 @@ def analyze_coverage():
             return False
 
     try:
-        with open(coverage_file, "r") as f:
+        with open(coverage_file) as f:
             data = json.load(f)
 
         print("COVERAGE GAP ANALYSIS")

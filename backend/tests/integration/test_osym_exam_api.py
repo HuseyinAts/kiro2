@@ -9,18 +9,18 @@ Bu modül ÖSYM sınav API endpoint'lerinin tüm fonksiyonalitelerini test eder:
 - Hata durumları ve güvenlik kontrolleri
 """
 
-import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 # Import centralized JWT helper from conftest (DRY)
 try:
     from tests.conftest import (
-        _generate_test_jwt,
-        TEST_JWT_SECRET,
         TEST_JWT_ALGORITHM,
+        TEST_JWT_SECRET,
+        _generate_test_jwt,
     )
 except ImportError:
     import jwt as _jwt

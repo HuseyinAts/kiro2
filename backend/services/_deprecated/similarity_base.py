@@ -21,7 +21,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Protocol, TypeVar
+from typing import Protocol, TypeVar
 
 import numpy as np
 
@@ -149,7 +149,7 @@ class SimilarityCheckResult:
     processing_time_ms: float = 0.0
 
     @property
-    def top_match(self) -> Optional[SimilarItem]:
+    def top_match(self) -> SimilarItem | None:
         """Get the most similar item."""
         return self.similar_items[0] if self.similar_items else None
 
@@ -307,7 +307,7 @@ class BaseSimilarityService(ABC):
 
     def __init__(
         self,
-        thresholds: Optional[SimilarityThresholds] = None,
+        thresholds: SimilarityThresholds | None = None,
         service_name: str = "similarity",
     ):
         """
@@ -325,12 +325,10 @@ class BaseSimilarityService(ABC):
     @abstractmethod
     async def initialize(self) -> bool:
         """Initialize the service (load models, connect to storage)."""
-        pass
 
     @abstractmethod
     def _get_embedding(self, content: str) -> np.ndarray:
         """Generate embedding for content."""
-        pass
 
     @abstractmethod
     async def _search_similar(
@@ -346,13 +344,12 @@ class BaseSimilarityService(ABC):
         Returns:
             List of (id, metadata, distance) tuples
         """
-        pass
 
     async def check_similarity(
         self,
         content: str,
         limit: int = 10,
-        custom_threshold: Optional[float] = None,
+        custom_threshold: float | None = None,
     ) -> SimilarityCheckResult:
         """
         Check content for similar items.
@@ -385,8 +382,7 @@ class BaseSimilarityService(ABC):
 
         for item_id, metadata, distance in results:
             similarity = self.calculator.distance_to_similarity(distance)
-            if similarity > max_similarity:
-                max_similarity = similarity
+            max_similarity = max(max_similarity, similarity)
 
             # Create preview
             content_preview = metadata.get("content", "")[:200]

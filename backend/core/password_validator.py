@@ -3,8 +3,6 @@ Strong Password Validation
 SECURITY FIX: Enforce password complexity requirements
 """
 import re
-from typing import List, Optional
-
 
 # Common passwords to reject (top 100 most common)
 COMMON_PASSWORDS = {
@@ -77,7 +75,6 @@ COMMON_PASSWORDS = {
 class PasswordValidationError(Exception):
     """Custom exception for password validation failures"""
 
-    pass
 
 
 class PasswordValidator:
@@ -98,7 +95,7 @@ class PasswordValidator:
     MAX_LENGTH = 128
 
     @classmethod
-    def validate(cls, password: str, username: Optional[str] = None) -> None:
+    def validate(cls, password: str, username: str | None = None) -> None:
         """
         Validate password against all requirements
 
@@ -109,7 +106,7 @@ class PasswordValidator:
         Raises:
             PasswordValidationError: If password doesn't meet requirements
         """
-        errors: List[str] = []
+        errors: list[str] = []
 
         # Length check
         if len(password) < cls.MIN_LENGTH:
@@ -133,7 +130,7 @@ class PasswordValidator:
         # Special character check
         if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]', password):
             errors.append(
-                'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>_-+=[]\\\/~`)'
+                'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>_-+=[]\\\\/~`)'
             )
 
         # Common password check (case-insensitive)
@@ -274,18 +271,17 @@ class PasswordValidator:
 
         if score < 40:
             return "Weak"
-        elif score < 60:
+        if score < 60:
             return "Fair"
-        elif score < 80:
+        if score < 80:
             return "Good"
-        elif score < 95:
+        if score < 95:
             return "Strong"
-        else:
-            return "Very Strong"
+        return "Very Strong"
 
 
 # Convenience function for use in Pydantic models
-def validate_password_strength(password: str, username: Optional[str] = None) -> str:
+def validate_password_strength(password: str, username: str | None = None) -> str:
     """
     Validate password and return it if valid
 

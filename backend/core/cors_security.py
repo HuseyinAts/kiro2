@@ -5,9 +5,10 @@ Task 23: Security Hardening - CORS policy güncelleme
 Bu modül güvenli CORS yapılandırması sağlar.
 """
 import os
-from typing import List
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from core.structured_logger import get_logger
 
 logger = get_logger("cors_security")
@@ -39,7 +40,7 @@ class CORSConfig:
     TEST_ORIGINS = ["http://testserver", "http://localhost:8000"]
 
     @staticmethod
-    def get_allowed_origins() -> List[str]:
+    def get_allowed_origins() -> list[str]:
         """
         Environment'a göre izin verilen origin'leri döndür
 
@@ -74,7 +75,7 @@ class CORSConfig:
         return origins
 
     @staticmethod
-    def get_allowed_methods() -> List[str]:
+    def get_allowed_methods() -> list[str]:
         """
         İzin verilen HTTP metodları
 
@@ -84,7 +85,7 @@ class CORSConfig:
         return ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 
     @staticmethod
-    def get_allowed_headers() -> List[str]:
+    def get_allowed_headers() -> list[str]:
         """
         İzin verilen HTTP header'ları
 
@@ -101,7 +102,7 @@ class CORSConfig:
         ]
 
     @staticmethod
-    def get_exposed_headers() -> List[str]:
+    def get_exposed_headers() -> list[str]:
         """
         Client'a expose edilecek header'lar
 
@@ -129,9 +130,8 @@ class CORSConfig:
         if environment == "production":
             # Production'da sadece specific origin'ler için credential
             return True
-        else:
-            # Development'ta credential'lara izin ver
-            return True
+        # Development'ta credential'lara izin ver
+        return True
 
     @staticmethod
     def get_max_age() -> int:

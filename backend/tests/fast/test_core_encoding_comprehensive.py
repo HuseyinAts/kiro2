@@ -2,8 +2,8 @@
 Comprehensive tests for core/encoding.py
 Tests Turkish character encoding and UTF-8 support
 """
-from unittest.mock import patch
 import os
+from unittest.mock import patch
 
 
 class TestValidateTurkishText:
@@ -160,7 +160,7 @@ class TestTurkishSafeDecode:
         from core.encoding import turkish_safe_decode
 
         # Valid bytes
-        bytes_data = "Öğrenci".encode("utf-8")
+        bytes_data = "Öğrenci".encode()
         result = turkish_safe_decode(bytes_data, errors="replace")
 
         assert "Öğrenci" in result

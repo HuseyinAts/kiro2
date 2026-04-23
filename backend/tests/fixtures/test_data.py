@@ -7,7 +7,7 @@ Bu dosya testler için gerekli mock verileri içerir.
 
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 from models.enums_db import ExamType, UserRole
 
@@ -22,7 +22,7 @@ class TestDataFactory:
         username: str = "test_user",
         email: str = "test@example.com",
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test kullanıcısı oluştur"""
         default_data = {
             "id": str(uuid.uuid4()),
@@ -40,7 +40,7 @@ class TestDataFactory:
         return default_data
 
     @staticmethod
-    def create_student(**kwargs) -> Dict[str, Any]:
+    def create_student(**kwargs) -> dict[str, Any]:
         """Test öğrencisi oluştur"""
         defaults = dict(
             role=UserRole.STUDENT,
@@ -53,7 +53,7 @@ class TestDataFactory:
         return TestDataFactory.create_user(**defaults)
 
     @staticmethod
-    def create_teacher(**kwargs) -> Dict[str, Any]:
+    def create_teacher(**kwargs) -> dict[str, Any]:
         """Test öğretmeni oluştur"""
         defaults = dict(
             role=UserRole.TEACHER,
@@ -67,7 +67,7 @@ class TestDataFactory:
         )
 
     @staticmethod
-    def create_admin(**kwargs) -> Dict[str, Any]:
+    def create_admin(**kwargs) -> dict[str, Any]:
         """Test admin oluştur"""
         defaults = dict(
             role=UserRole.ADMIN,
@@ -83,7 +83,7 @@ class TestDataFactory:
     @staticmethod
     def create_exam(
         exam_type: ExamType = ExamType.TYT, subject: str = "Matematik", **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test sınavı oluştur"""
         default_data = {
             "id": str(uuid.uuid4()),
@@ -100,14 +100,14 @@ class TestDataFactory:
         return default_data
 
     @staticmethod
-    def create_tyt_exam(**kwargs) -> Dict[str, Any]:
+    def create_tyt_exam(**kwargs) -> dict[str, Any]:
         """TYT sınavı oluştur"""
         defaults = dict(exam_type=ExamType.TYT, subject="Matematik", duration=165, questionCount=40)
         defaults.update(kwargs)
         return TestDataFactory.create_exam(**defaults)
 
     @staticmethod
-    def create_ayt_exam(**kwargs) -> Dict[str, Any]:
+    def create_ayt_exam(**kwargs) -> dict[str, Any]:
         """AYT sınavı oluştur"""
         defaults = dict(exam_type=ExamType.AYT, subject="Matematik", duration=210, questionCount=80)
         defaults.update(kwargs)
@@ -116,7 +116,7 @@ class TestDataFactory:
     @staticmethod
     def create_question(
         subject: str = "Matematik", difficulty: str = "medium", **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test sorusu oluştur"""
         default_data = {
             "id": str(uuid.uuid4()),
@@ -133,7 +133,7 @@ class TestDataFactory:
         return default_data
 
     @staticmethod
-    def create_math_question(**kwargs) -> Dict[str, Any]:
+    def create_math_question(**kwargs) -> dict[str, Any]:
         """Matematik sorusu oluştur"""
         defaults = dict(
             text="x + 2 = 5 ise x kaçtır?",
@@ -146,7 +146,7 @@ class TestDataFactory:
         return TestDataFactory.create_question(**defaults)
 
     @staticmethod
-    def create_turkish_question(**kwargs) -> Dict[str, Any]:
+    def create_turkish_question(**kwargs) -> dict[str, Any]:
         """Türkçe sorusu oluştur"""
         defaults = dict(
             text="Aşağıdaki cümlelerden hangisi kurallı yazılmıştır?",
@@ -166,7 +166,7 @@ class TestDataFactory:
     @staticmethod
     def create_exam_session(
         exam_id: str = None, user_id: str = None, status: str = "active", **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test sınav oturumu oluştur"""
         default_data = {
             "id": str(uuid.uuid4()),
@@ -185,7 +185,7 @@ class TestDataFactory:
     @staticmethod
     def create_exam_result(
         session_id: str = None, user_id: str = None, score: int = 85, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test sınav sonucu oluştur"""
         default_data = {
             "id": str(uuid.uuid4()),
@@ -218,7 +218,7 @@ class TestDataFactory:
     @staticmethod
     def create_learning_style(
         user_id: str = None, hybrid_code: str = "V-A-V-S", **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test öğrenme stili oluştur"""
         default_data = {
             "id": str(uuid.uuid4()),
@@ -251,7 +251,7 @@ class TestDataFactory:
     @staticmethod
     def create_fsrs_card(
         user_id: str = None, content: str = "Matematik - Türev Kuralları", **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test FSRS kartı oluştur"""
         default_data = {
             "id": str(uuid.uuid4()),
@@ -273,7 +273,7 @@ class TestDataFactory:
         content: str = "Bu bir test mesajıdır.",
         sender: str = "user",
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test chat mesajı oluştur"""
         default_data = {
             "id": str(uuid.uuid4()),
@@ -287,7 +287,7 @@ class TestDataFactory:
         return default_data
 
     @staticmethod
-    def create_admin_stats(**kwargs) -> Dict[str, Any]:
+    def create_admin_stats(**kwargs) -> dict[str, Any]:
         """Test admin istatistikleri oluştur"""
         default_data = {
             "totalUsers": 1250,
@@ -318,7 +318,7 @@ class TestDataFactory:
     @staticmethod
     def create_revolutionary_features_data(
         user_id: str = None, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test devrimsel özellikler verisi oluştur"""
         default_data = {
             "userId": user_id or str(uuid.uuid4()),
@@ -393,7 +393,7 @@ class MockResponses:
     """Mock API yanıtları için yardımcı sınıf"""
 
     @staticmethod
-    def success_response(data: Any, message: str = "İşlem başarılı") -> Dict[str, Any]:
+    def success_response(data: Any, message: str = "İşlem başarılı") -> dict[str, Any]:
         """Başarılı API yanıtı"""
         return {
             "success": True,
@@ -407,7 +407,7 @@ class MockResponses:
         message: str = "Bir hata oluştu",
         error_code: str = "GENERAL_ERROR",
         status_code: int = 500,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Hata API yanıtı"""
         return {
             "success": False,
@@ -421,7 +421,7 @@ class MockResponses:
         }
 
     @staticmethod
-    def validation_error_response(field_errors: Dict[str, str]) -> Dict[str, Any]:
+    def validation_error_response(field_errors: dict[str, str]) -> dict[str, Any]:
         """Validasyon hatası yanıtı"""
         return {
             "success": False,
@@ -433,8 +433,8 @@ class MockResponses:
 
     @staticmethod
     def paginated_response(
-        data: List[Any], page: int = 1, page_size: int = 10, total: int = None
-    ) -> Dict[str, Any]:
+        data: list[Any], page: int = 1, page_size: int = 10, total: int = None
+    ) -> dict[str, Any]:
         """Sayfalanmış API yanıtı"""
         if total is None:
             total = len(data)

@@ -8,9 +8,9 @@ Create Date: 2025-11-10
 This migration adds 15+ critical database indexes to improve query performance.
 Expected impact: 10-20x faster queries, 70% reduction in database load.
 """
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '002_performance_indexes'

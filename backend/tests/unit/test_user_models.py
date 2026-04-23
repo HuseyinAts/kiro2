@@ -5,11 +5,13 @@ NO MOCKS - Pure validation and data model testing
 Coverage target: 100%
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
 from pydantic import ValidationError
-from models.user import KullaniciBase, KullaniciOlustur, Kullanici, OgrenciProfili
-from models.enums import KullaniciRolu, SinavTipi, OgrenmeStili
+
+from models.enums import KullaniciRolu, OgrenmeStili, SinavTipi
+from models.user import Kullanici, KullaniciBase, KullaniciOlustur, OgrenciProfili
 
 
 class TestKullaniciBase:

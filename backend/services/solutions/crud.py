@@ -9,7 +9,7 @@ Extracted from alternative_solutions_service.py (lines 36-316)
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,9 +30,9 @@ class SolutionCRUDService(BaseSolutionService):
     async def add_solution(
         self,
         question_id: str,
-        solution_data: Dict[str, Any],
+        solution_data: dict[str, Any],
         created_by: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Add alternative solution to a question.
 
@@ -103,16 +103,16 @@ class SolutionCRUDService(BaseSolutionService):
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Solution add error: {str(e)}")
+            logger.error(f"Solution add error: {e!s}")
             raise
 
     async def get_solutions(
         self,
         question_id: str,
-        category: Optional[str] = None,
-        difficulty: Optional[str] = None,
+        category: str | None = None,
+        difficulty: str | None = None,
         sort_by: str = "difficulty",
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> list[dict[str, Any]] | None:
         """
         Get alternative solutions for a question.
 
@@ -140,12 +140,12 @@ class SolutionCRUDService(BaseSolutionService):
             return solutions
 
         except Exception as e:
-            logger.error(f"Solution get error: {str(e)}")
+            logger.error(f"Solution get error: {e!s}")
             return []
 
     async def get_solution_by_id(
         self, question_id: str, solution_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Get a specific solution by ID.
 
@@ -169,14 +169,14 @@ class SolutionCRUDService(BaseSolutionService):
             return None
 
         except Exception as e:
-            logger.error(f"Solution detail error: {str(e)}")
+            logger.error(f"Solution detail error: {e!s}")
             return None
 
     async def update_solution(
         self,
         question_id: str,
         solution_id: str,
-        update_data: Dict[str, Any],
+        update_data: dict[str, Any],
         updated_by: str,
     ) -> bool:
         """
@@ -228,7 +228,7 @@ class SolutionCRUDService(BaseSolutionService):
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Solution update error: {str(e)}")
+            logger.error(f"Solution update error: {e!s}")
             return False
 
     async def delete_solution(
@@ -280,7 +280,7 @@ class SolutionCRUDService(BaseSolutionService):
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Solution delete error: {str(e)}")
+            logger.error(f"Solution delete error: {e!s}")
             return False
 
 

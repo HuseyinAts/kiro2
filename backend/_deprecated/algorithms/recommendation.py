@@ -7,7 +7,7 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import numpy as np
 from sklearn.decomposition import TruncatedSVD
@@ -24,9 +24,9 @@ class User:
     """Kullanıcı modeli"""
 
     user_id: str
-    profile: Dict[str, Any]  # Demografik bilgiler
-    preferences: Dict[str, float]  # Tercihler
-    interaction_history: List[Dict[str, Any]]  # Etkileşim geçmişi
+    profile: dict[str, Any]  # Demografik bilgiler
+    preferences: dict[str, float]  # Tercihler
+    interaction_history: list[dict[str, Any]]  # Etkileşim geçmişi
     learning_style: str
     knowledge_level: str
 
@@ -38,11 +38,11 @@ class Item:
     item_id: str
     title: str
     description: str
-    features: Dict[str, Any]  # İçerik özellikleri
-    tags: List[str]
+    features: dict[str, Any]  # İçerik özellikleri
+    tags: list[str]
     difficulty_level: str
     item_type: str  # video, article, quiz, etc.
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -71,7 +71,7 @@ class CollaborativeFiltering:
         self.item_features = None
         self.svd = TruncatedSVD(n_components=n_factors)
 
-    def build_user_item_matrix(self, interactions: List[Dict[str, Any]]) -> np.ndarray:
+    def build_user_item_matrix(self, interactions: list[dict[str, Any]]) -> np.ndarray:
         """
         Kullanıcı-içerik etkileşim matrisini oluştur
 
@@ -109,10 +109,10 @@ class CollaborativeFiltering:
             return matrix
 
         except Exception as e:
-            logger.error(f"Build matrix error: {str(e)}")
+            logger.error(f"Build matrix error: {e!s}")
             return np.array([])
 
-    def _calculate_interaction_score(self, interaction: Dict[str, Any]) -> float:
+    def _calculate_interaction_score(self, interaction: dict[str, Any]) -> float:
         """Etkileşim skorunu hesapla"""
         # Etkileşim tipine göre skor
         action = interaction.get("action", "view")
@@ -133,7 +133,7 @@ class CollaborativeFiltering:
 
         return base_score * time_decay * performance
 
-    def fit(self, interactions: List[Dict[str, Any]]):
+    def fit(self, interactions: list[dict[str, Any]]):
         """
         Matrix factorization modelini eğit
 
@@ -152,11 +152,11 @@ class CollaborativeFiltering:
                 logger.info("Collaborative filtering model trained")
 
         except Exception as e:
-            logger.error(f"Fit error: {str(e)}")
+            logger.error(f"Fit error: {e!s}")
 
     def predict(
-        self, user_id: str, item_ids: List[str], n_recommendations: int = 10
-    ) -> List[Tuple[str, float]]:
+        self, user_id: str, item_ids: list[str], n_recommendations: int = 10
+    ) -> list[tuple[str, float]]:
         """
         Kullanıcı için öneriler üret
 
@@ -195,7 +195,7 @@ class CollaborativeFiltering:
             return scores[:n_recommendations]
 
         except Exception as e:
-            logger.error(f"Predict error: {str(e)}")
+            logger.error(f"Predict error: {e!s}")
             return []
 
 
@@ -207,7 +207,7 @@ class ContentBasedFiltering:
         self.content_features = None
         self.item_ids = []
 
-    def build_content_features(self, items: List[Item]):
+    def build_content_features(self, items: list[Item]):
         """
         İçerik özellik vektörlerini oluştur
 
@@ -231,9 +231,9 @@ class ContentBasedFiltering:
                 logger.info(f"Content features built: {self.content_features.shape}")
 
         except Exception as e:
-            logger.error(f"Build content features error: {str(e)}")
+            logger.error(f"Build content features error: {e!s}")
 
-    def get_user_profile(self, user: User, interaction_items: List[Item]) -> np.ndarray:
+    def get_user_profile(self, user: User, interaction_items: list[Item]) -> np.ndarray:
         """
         Kullanıcı profil vektörü oluştur
 
@@ -264,16 +264,16 @@ class ContentBasedFiltering:
             return user_profile
 
         except Exception as e:
-            logger.error(f"Get user profile error: {str(e)}")
+            logger.error(f"Get user profile error: {e!s}")
             return np.zeros(self.content_features.shape[1])
 
     def recommend(
         self,
         user: User,
-        candidate_items: List[Item],
-        interaction_items: List[Item],
+        candidate_items: list[Item],
+        interaction_items: list[Item],
         n_recommendations: int = 10,
-    ) -> List[Tuple[str, float]]:
+    ) -> list[tuple[str, float]]:
         """
         İçerik tabanlı öneriler üret
 
@@ -332,7 +332,7 @@ class ContentBasedFiltering:
             return scores[:n_recommendations]
 
         except Exception as e:
-            logger.error(f"Recommend error: {str(e)}")
+            logger.error(f"Recommend error: {e!s}")
             return []
 
     def _level_to_num(self, level: str) -> int:
@@ -360,7 +360,7 @@ class HybridRecommender:
         self.alpha = alpha  # CF ağırlığı
         self.recommendations_cache = {}
 
-    def train(self, interactions: List[Dict[str, Any]], items: List[Item]):
+    def train(self, interactions: list[dict[str, Any]], items: list[Item]):
         """
         Modelleri eğit
 
@@ -379,11 +379,11 @@ class HybridRecommender:
     def recommend(
         self,
         user: User,
-        candidate_items: List[Item],
-        interaction_items: List[Item],
-        interactions: List[Dict[str, Any]],
+        candidate_items: list[Item],
+        interaction_items: list[Item],
+        interactions: list[dict[str, Any]],
         n_recommendations: int = 10,
-    ) -> List[Recommendation]:
+    ) -> list[Recommendation]:
         """
         Hibrit öneriler üret
 
@@ -452,10 +452,10 @@ class HybridRecommender:
             return recommendations
 
         except Exception as e:
-            logger.error(f"Hybrid recommend error: {str(e)}")
+            logger.error(f"Hybrid recommend error: {e!s}")
             return []
 
-    def update_weights(self, feedback: Dict[str, Any]):
+    def update_weights(self, feedback: dict[str, Any]):
         """
         Geri bildirime göre ağırlıkları güncelle
 
@@ -505,11 +505,11 @@ class ChromaDBRecommender:
         self.collaborative_weight = collaborative_weight
 
         # User profile embedding cache
-        self._user_profile_cache: Dict[str, Tuple[np.ndarray, datetime]] = {}
+        self._user_profile_cache: dict[str, tuple[np.ndarray, datetime]] = {}
         self._cache_ttl_hours = 24
 
         # Popularity scores for cold-start
-        self._popularity_scores: Dict[str, float] = {}
+        self._popularity_scores: dict[str, float] = {}
 
         # Fallback recommender
         self._hybrid_recommender = HybridRecommender(alpha=collaborative_weight)
@@ -517,7 +517,7 @@ class ChromaDBRecommender:
     def get_user_profile_embedding(
         self,
         user_id: str,
-        interaction_history: List[Dict[str, Any]],
+        interaction_history: list[dict[str, Any]],
     ) -> np.ndarray:
         """
         Generate user profile embedding by aggregating interaction embeddings.
@@ -631,10 +631,10 @@ class ChromaDBRecommender:
     def recommend_with_embeddings(
         self,
         user_id: str,
-        interaction_history: List[Dict[str, Any]],
+        interaction_history: list[dict[str, Any]],
         k: int = 10,
-        filter_metadata: Dict[str, Any] | None = None,
-    ) -> List[Recommendation]:
+        filter_metadata: dict[str, Any] | None = None,
+    ) -> list[Recommendation]:
         """
         Generate recommendations using ChromaDB embeddings.
 
@@ -704,7 +704,7 @@ class ChromaDBRecommender:
             logger.error(f"ChromaDB recommendation error: {e}")
             return self.handle_cold_start(user_id, k, filter_metadata)
 
-    def _is_cold_start(self, interaction_history: List[Dict[str, Any]]) -> bool:
+    def _is_cold_start(self, interaction_history: list[dict[str, Any]]) -> bool:
         """
         Detect if user is in cold-start situation.
 
@@ -726,8 +726,8 @@ class ChromaDBRecommender:
         self,
         user_id: str,
         k: int = 10,
-        filter_metadata: Dict[str, Any] | None = None,
-    ) -> List[Recommendation]:
+        filter_metadata: dict[str, Any] | None = None,
+    ) -> list[Recommendation]:
         """
         Handle cold-start users with popularity-based recommendations.
 
@@ -764,7 +764,7 @@ class ChromaDBRecommender:
 
         return recommendations
 
-    def update_popularity_scores(self, interactions: List[Dict[str, Any]]) -> None:
+    def update_popularity_scores(self, interactions: list[dict[str, Any]]) -> None:
         """
         Update popularity scores from interaction data.
 
@@ -772,7 +772,7 @@ class ChromaDBRecommender:
             interactions: All user interactions
         """
         # Count interactions per item
-        item_counts: Dict[str, float] = {}
+        item_counts: dict[str, float] = {}
 
         for interaction in interactions:
             item_id = interaction.get("item_id")

@@ -12,8 +12,8 @@ Responsibilities:
 """
 
 import logging
-from typing import List, Dict, Any
 from datetime import datetime, timedelta
+from typing import Any
 
 from ..models import LearningPath, LearningResource
 
@@ -61,7 +61,7 @@ class TimePlanner:
 
     def create_milestones(
         self, path: LearningPath, milestone_count: int = 5
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Create learning milestones"""
         if not path.resources:
             return []
@@ -91,8 +91,8 @@ class TimePlanner:
         return milestones
 
     def track_objectives(
-        self, path: LearningPath, completed_resource_ids: List[str]
-    ) -> Dict[str, Any]:
+        self, path: LearningPath, completed_resource_ids: list[str]
+    ) -> dict[str, Any]:
         """Track learning objectives progress"""
         total = len(path.resources)
         completed = sum(
@@ -107,8 +107,8 @@ class TimePlanner:
         }
 
     def _create_daily_plan(
-        self, resources: List[LearningResource], daily_time: int
-    ) -> List[Dict[str, Any]]:
+        self, resources: list[LearningResource], daily_time: int
+    ) -> list[dict[str, Any]]:
         """Create daily resource allocation"""
         daily_plan = []
         current_day = []

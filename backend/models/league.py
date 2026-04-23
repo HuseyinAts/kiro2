@@ -6,7 +6,6 @@ LeagueMembership ve LeagueHistory modelleri — haftalik lig sistemi.
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -29,7 +28,7 @@ class LeagueMembership(Base):
     week_start: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
-    rank: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    rank: Mapped[int | None] = mapped_column(Integer, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
@@ -53,9 +52,9 @@ class LeagueHistory(Base):
     week_start: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
-    from_tier: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
-    to_tier: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
-    final_rank: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    from_tier: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    to_tier: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    final_rank: Mapped[int | None] = mapped_column(Integer, nullable=True)
     final_xp: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

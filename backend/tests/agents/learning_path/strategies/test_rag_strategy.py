@@ -2,12 +2,13 @@
 
 This module tests RAG/ChromaDB semantic search strategy for learning path recommendations.
 """
-import pytest
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
-from typing import Dict, Any
 
+import pytest
+
+from agents.learning_path.models import KnowledgeLevel, LearningResource
 from agents.learning_path.strategies.rag_strategy import RAGSearchStrategy
-from agents.learning_path.models import LearningResource, KnowledgeLevel
 
 
 class TestRAGSearchStrategy:
@@ -56,7 +57,7 @@ class TestRAGSearchStrategy:
     def test_normalize_dict_result(
         self,
         strategy: RAGSearchStrategy,
-        mock_rag_response: Dict[str, Any]
+        mock_rag_response: dict[str, Any]
     ) -> None:
         """Should convert dict to LearningResource."""
         resource = strategy.normalize_result(mock_rag_response)
@@ -126,7 +127,7 @@ class TestRAGSearchStrategy:
     def test_normalize_result_uses_provided_url(
         self,
         strategy: RAGSearchStrategy,
-        mock_rag_response: Dict[str, Any]
+        mock_rag_response: dict[str, Any]
     ) -> None:
         """Should use provided URL if available."""
         resource = strategy.normalize_result(mock_rag_response)
@@ -445,7 +446,7 @@ class TestRAGSearchStrategy:
     def test_normalize_extracts_topics(
         self,
         strategy: RAGSearchStrategy,
-        mock_rag_response: Dict[str, Any]
+        mock_rag_response: dict[str, Any]
     ) -> None:
         """Should extract topics from result."""
         resource = strategy.normalize_result(mock_rag_response)
@@ -474,7 +475,7 @@ class TestRAGSearchStrategy:
     def test_normalize_uses_metadata(
         self,
         strategy: RAGSearchStrategy,
-        mock_rag_response: Dict[str, Any]
+        mock_rag_response: dict[str, Any]
     ) -> None:
         """Should extract and use metadata."""
         resource = strategy.normalize_result(mock_rag_response)
@@ -595,7 +596,7 @@ class TestRAGResourceNormalization:
     def test_normalize_uses_rating(
         self,
         strategy: RAGSearchStrategy,
-        mock_rag_response: Dict[str, Any]
+        mock_rag_response: dict[str, Any]
     ) -> None:
         """Should extract rating from result."""
         resource = strategy.normalize_result(mock_rag_response)

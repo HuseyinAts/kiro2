@@ -4,17 +4,19 @@ Comprehensive authentication test
 Tests both database password verification and API login
 """
 import asyncio
-import sys
 import os
+import sys
+
 import httpx
 
 # Add backend to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from sqlalchemy import select
+
+from api.auth import pwd_context
 from core.database import db_manager
 from models.database import User
-from api.auth import pwd_context
 
 
 async def test_comprehensive():
@@ -80,7 +82,7 @@ async def test_comprehensive():
                 return
 
         except Exception as e:
-            print(f"  Error: {str(e)}")
+            print(f"  Error: {e!s}")
             print("\n  API Login: FAIL")
             return
 

@@ -64,7 +64,7 @@ def build_ocr_index() -> dict[tuple, dict]:
     index: dict[tuple, dict] = {}
     errors = 0
 
-    with open(OCR_CROPS_PATH, "r", encoding="utf-8") as f:
+    with open(OCR_CROPS_PATH, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -118,7 +118,7 @@ def match_and_collect(ocr_index):
     results = []
     stats = Counter()
 
-    with open(PRODUCTION_JSONL, "r", encoding="utf-8") as f:
+    with open(PRODUCTION_JSONL, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -249,7 +249,7 @@ def update_database(results, batch_size=1000):
 
     engine.dispose()
 
-    print(f"\nDB verification:")
+    print("\nDB verification:")
     print(f"  image_ocr_text NOT NULL: {ocr_count:,} / {total:,}")
     print(f"  image_width NOT NULL:    {dims_count:,} / {total:,}")
     print(f"  Updated OCR: {updated_ocr:,}, dims: {updated_dims:,}")
@@ -292,7 +292,7 @@ def main():
 
     ocr_count = sum(1 for r in results if "ocr_text" in r)
     dims_count = sum(1 for r in results if "width" in r)
-    print(f"\nBreakdown:")
+    print("\nBreakdown:")
     print(f"  OCR text:    {ocr_count:,}")
     print(f"  Dimensions:  {dims_count:,}")
     print(f"  Total:       {len(results):,}")

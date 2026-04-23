@@ -4,27 +4,27 @@ Zemberek NLP Tools Package
 """
 
 from .base import BaseToolHandler
-from .morphology import MorphologyHandler
+from .entity_linker import EntityLinkerHandler
+from .health import HealthHandler
 from .lemmatization import LemmatizationHandler
+from .morphology import MorphologyHandler
+from .ner import NERHandler
+from .normalization import NormalizationHandler
+from .segmentation import SegmentationHandler
 from .spell_check import SpellCheckHandler
 from .tokenization import TokenizationHandler
-from .ner import NERHandler
-from .segmentation import SegmentationHandler
-from .normalization import NormalizationHandler
-from .health import HealthHandler
-from .entity_linker import EntityLinkerHandler
 
 __all__ = [
     "BaseToolHandler",
-    "MorphologyHandler",
+    "EntityLinkerHandler",
+    "HealthHandler",
     "LemmatizationHandler",
+    "MorphologyHandler",
+    "NERHandler",
+    "NormalizationHandler",
+    "SegmentationHandler",
     "SpellCheckHandler",
     "TokenizationHandler",
-    "NERHandler",
-    "SegmentationHandler",
-    "NormalizationHandler",
-    "HealthHandler",
-    "EntityLinkerHandler",
 ]
 
 

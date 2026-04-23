@@ -26,7 +26,6 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -99,11 +98,11 @@ class ExecutionResult:
     duration_seconds: float = 0.0
     affected_tables: list[str] = field(default_factory=list)
     affected_rows: dict[str, int] = field(default_factory=dict)  # table -> row count
-    error_message: Optional[str] = None
+    error_message: str | None = None
     stdout: str = ""
     stderr: str = ""
     started_at: datetime = field(default_factory=datetime.now)
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
     @property
     def total_affected_rows(self) -> int:
@@ -153,7 +152,7 @@ class DryRunTester:
         test_db_name: Olusturulan test database adi
     """
 
-    def __init__(self, config: Optional[DryRunConfig] = None):
+    def __init__(self, config: DryRunConfig | None = None):
         """
         DryRunTester olustur.
 
@@ -161,7 +160,7 @@ class DryRunTester:
             config: DryRunConfig instance (default: from environment)
         """
         self.config = config or DryRunConfig.from_env()
-        self.test_db_name: Optional[str] = None
+        self.test_db_name: str | None = None
         self._engine = None
         self._async_engine = None
 
@@ -487,7 +486,7 @@ class DryRunTester:
                 completed_at=datetime.now(),
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             duration = (datetime.now() - start_time).total_seconds()
             return ExecutionResult(
                 success=False,

@@ -1,10 +1,11 @@
 """Tests for BlackHook."""
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
+import pytest
+
 from backend.hooks.black_hook import BlackHook
-from backend.hooks.models import HookConfig, ExitCode
+from backend.hooks.models import ExitCode, HookConfig
 
 
 class TestBlackHook:

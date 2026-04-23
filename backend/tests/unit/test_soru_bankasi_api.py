@@ -9,7 +9,7 @@ import sys
 
 sys.path.insert(0, "C:/Users/husey/kiro2/backend")
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -706,7 +706,7 @@ class TestSoruGuncelle:
     def test_soru_guncelle_admin_role_should_return_200(self, admin_client):
         """Admin should be able to update questions (UserRole enum vs guard)."""
         mock_soru = SimpleNamespace(
-            id="qid-001", updated_at=datetime.now(timezone.utc)
+            id="qid-001", updated_at=datetime.now(UTC)
         )
         mc = _make_cache_mock()
         with (

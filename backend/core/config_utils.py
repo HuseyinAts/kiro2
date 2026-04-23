@@ -4,12 +4,12 @@ Configuration Utility Functions
 Feature flag ve configuration'a kolay erişim için yardımcı fonksiyonlar.
 """
 
-from typing import Optional
+
 from .feature_flags import (
-    FeatureFlag,
-    QualityThresholds,
-    PerformanceConfig,
     ABTestVariant,
+    FeatureFlag,
+    PerformanceConfig,
+    QualityThresholds,
     get_feature_flag_manager,
 )
 
@@ -53,7 +53,7 @@ def get_performance_config() -> PerformanceConfig:
     return manager.get_performance_config()
 
 
-def get_ab_test_variant(test_id: str, user_id: str) -> Optional[ABTestVariant]:
+def get_ab_test_variant(test_id: str, user_id: str) -> ABTestVariant | None:
     """
     Kullanıcı için A/B test varyantını al
 

@@ -7,9 +7,8 @@ import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 from enum import Enum
-
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -69,13 +68,13 @@ class StudySession:
     start_time: datetime
 
     # Session goals and context
-    learning_objectives: List[str]
+    learning_objectives: list[str]
     difficulty_level: str
     study_context: LearningContext
 
     # Progress tracking
     questions_asked: int = 0
-    concepts_covered: List[str] = field(default_factory=list)
+    concepts_covered: list[str] = field(default_factory=list)
     problems_solved: int = 0
     hints_given: int = 0
 
@@ -86,11 +85,11 @@ class StudySession:
     student_understanding: float = 0.5  # 0-1
 
     # Session notes
-    key_insights: List[str] = field(default_factory=list)
-    areas_of_struggle: List[str] = field(default_factory=list)
-    breakthrough_moments: List[str] = field(default_factory=list)
+    key_insights: list[str] = field(default_factory=list)
+    areas_of_struggle: list[str] = field(default_factory=list)
+    breakthrough_moments: list[str] = field(default_factory=list)
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -105,13 +104,13 @@ class AssistantQuery:
     text: str
     query_type: QueryType
     subject: str
-    topic: Optional[str] = None
+    topic: str | None = None
 
     # Context
     learning_context: LearningContext = LearningContext.HOMEWORK_HELP
-    previous_queries: List[str] = field(default_factory=list)
-    current_problem: Optional[str] = None
-    student_work: Optional[str] = None
+    previous_queries: list[str] = field(default_factory=list)
+    current_problem: str | None = None
+    student_work: str | None = None
 
     # Student state
     confusion_level: float = 0.5  # 0-1
@@ -119,7 +118,7 @@ class AssistantQuery:
     confidence_level: float = 0.6  # 0-1
 
     timestamp: datetime = field(default_factory=datetime.now)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -131,19 +130,19 @@ class AssistantResponse:
 
     # Response content
     main_response: str
-    explanation: Optional[str] = None
-    examples: List[str] = field(default_factory=list)
-    analogies: List[str] = field(default_factory=list)
+    explanation: str | None = None
+    examples: list[str] = field(default_factory=list)
+    analogies: list[str] = field(default_factory=list)
 
     # Interactive elements
-    follow_up_questions: List[str] = field(default_factory=list)
-    suggested_actions: List[str] = field(default_factory=list)
-    practice_problems: List[str] = field(default_factory=list)
+    follow_up_questions: list[str] = field(default_factory=list)
+    suggested_actions: list[str] = field(default_factory=list)
+    practice_problems: list[str] = field(default_factory=list)
 
     # Educational guidance
-    learning_tips: List[str] = field(default_factory=list)
-    study_strategies: List[str] = field(default_factory=list)
-    resource_links: List[str] = field(default_factory=list)
+    learning_tips: list[str] = field(default_factory=list)
+    study_strategies: list[str] = field(default_factory=list)
+    resource_links: list[str] = field(default_factory=list)
 
     # Response metadata
     response_style: ResponseStyle
@@ -153,22 +152,22 @@ class AssistantResponse:
     # Adaptation info
     difficulty_adjusted: bool = False
     personalization_applied: bool = False
-    motivational_elements: List[str] = field(default_factory=list)
+    motivational_elements: list[str] = field(default_factory=list)
 
     timestamp: datetime = field(default_factory=datetime.now)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class KnowledgeBase:
     """Knowledge base for the assistant"""
 
-    concepts: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    explanations: Dict[str, str] = field(default_factory=dict)
-    examples: Dict[str, List[str]] = field(default_factory=dict)
-    analogies: Dict[str, List[str]] = field(default_factory=dict)
-    common_mistakes: Dict[str, List[str]] = field(default_factory=dict)
-    study_tips: Dict[str, List[str]] = field(default_factory=dict)
+    concepts: dict[str, dict[str, Any]] = field(default_factory=dict)
+    explanations: dict[str, str] = field(default_factory=dict)
+    examples: dict[str, list[str]] = field(default_factory=dict)
+    analogies: dict[str, list[str]] = field(default_factory=dict)
+    common_mistakes: dict[str, list[str]] = field(default_factory=dict)
+    study_tips: dict[str, list[str]] = field(default_factory=dict)
 
 
 class AIStudyAssistant:
@@ -484,7 +483,7 @@ class AIStudyAssistant:
         student_id: str,
         subject: str,
         topic: str,
-        learning_objectives: List[str],
+        learning_objectives: list[str],
         context: LearningContext = LearningContext.PRACTICE_SESSION,
     ) -> StudySession:
         """Start a new study session"""
@@ -552,7 +551,7 @@ class AIStudyAssistant:
         # Default to concept explanation
         return QueryType.CONCEPT_EXPLANATION
 
-    async def _extract_topic(self, text: str, subject: str) -> Optional[str]:
+    async def _extract_topic(self, text: str, subject: str) -> str | None:
         """Extract topic from query text"""
         text_lower = text.lower()
 
@@ -636,7 +635,7 @@ class AIStudyAssistant:
 
     async def _generate_concept_explanation(
         self, query: AssistantQuery, style: ResponseStyle
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate concept explanation response"""
         topic = query.topic or "genel"
         subject = query.subject
@@ -684,7 +683,7 @@ class AIStudyAssistant:
 
     async def _generate_problem_solving_help(
         self, query: AssistantQuery, style: ResponseStyle
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate problem solving help response"""
 
         # Analyze the problem from query
@@ -736,7 +735,7 @@ class AIStudyAssistant:
 
     async def _generate_study_plan(
         self, query: AssistantQuery, style: ResponseStyle
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate study plan response"""
 
         # Create personalized study plan
@@ -776,7 +775,7 @@ class AIStudyAssistant:
 
     async def _generate_motivational_response(
         self, query: AssistantQuery, style: ResponseStyle
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate motivational response"""
 
         motivational_messages = [
@@ -821,7 +820,7 @@ class AIStudyAssistant:
 
     async def _generate_feedback_response(
         self, query: AssistantQuery, style: ResponseStyle
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate feedback response"""
 
         # Analyze student work if provided
@@ -852,7 +851,7 @@ class AIStudyAssistant:
 
     async def _generate_resource_recommendations(
         self, query: AssistantQuery, style: ResponseStyle
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate resource recommendations"""
 
         resources = {
@@ -881,7 +880,7 @@ class AIStudyAssistant:
 
     async def _generate_default_response(
         self, query: AssistantQuery, style: ResponseStyle
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate default response for unclassified queries"""
 
         main_response = (
@@ -897,7 +896,7 @@ class AIStudyAssistant:
             ],
         }
 
-    def _get_concept_info(self, subject: str, topic: str) -> Dict[str, Any]:
+    def _get_concept_info(self, subject: str, topic: str) -> dict[str, Any]:
         """Get concept information from knowledge base"""
 
         # Navigate through knowledge base structure
@@ -924,8 +923,8 @@ class AIStudyAssistant:
         }
 
     async def _analyze_problem(
-        self, query_text: str, current_problem: Optional[str]
-    ) -> Dict[str, Any]:
+        self, query_text: str, current_problem: str | None
+    ) -> dict[str, Any]:
         """Analyze problem from query text"""
 
         # Simple problem analysis
@@ -967,7 +966,7 @@ class AIStudyAssistant:
 
         return {"type": problem_type, "steps": steps, "expressions": math_expressions}
 
-    def _generate_hints(self, subject: str, topic: str) -> List[str]:
+    def _generate_hints(self, subject: str, topic: str) -> list[str]:
         """Generate hints for problem solving"""
 
         # Get common mistakes and convert to hints
@@ -996,8 +995,7 @@ class AIStudyAssistant:
         if "=" in work:
             if work.count("=") > 1:
                 return "İyi çalışmışsın! Adımları açıkça göstermişsin."
-            else:
-                return "Adımları daha detaylı gösterebilirsin."
+            return "Adımları daha detaylı gösterebilirsin."
 
         if any(op in work for op in ["+", "-", "*", "/"]):
             return "Matematiksel işlemlerin doğru görünüyor. Hesaplama adımlarını kontrol et."
@@ -1065,7 +1063,7 @@ class AIStudyAssistant:
         if query.confidence_level > 0.8:
             session.breakthrough_moments.append(f"Başarı: {query.topic or 'genel'}")
 
-    async def end_study_session(self, session_id: str) -> Dict[str, Any]:
+    async def end_study_session(self, session_id: str) -> dict[str, Any]:
         """End study session and provide summary"""
 
         if session_id not in self.active_sessions:
@@ -1098,7 +1096,7 @@ class AIStudyAssistant:
 
     async def _generate_session_recommendations(
         self, session: StudySession
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate recommendations based on session"""
 
         recommendations = []

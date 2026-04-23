@@ -7,11 +7,11 @@ Provides AST, Regex, and Context analysis capabilities.
 from __future__ import annotations
 
 from .ast_analyzer import ASTAnalyzer
-from .regex_analyzer import RegexAnalyzer
 from .context_analyzer import ContextAnalyzer
+from .regex_analyzer import RegexAnalyzer
 
 __all__ = [
     "ASTAnalyzer",
-    "RegexAnalyzer",
     "ContextAnalyzer",
+    "RegexAnalyzer",
 ]

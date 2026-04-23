@@ -8,9 +8,9 @@ import asyncio
 import copy
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from content.unified_content_management import (
     ContentItem,
@@ -79,27 +79,27 @@ class ContentVersion:
     change_type: ChangeType
 
     # Version metadata
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     created_by: int = 0
-    parent_version_id: Optional[str] = None
+    parent_version_id: str | None = None
 
     # Change tracking
-    changes_from_parent: Dict[str, Any] = field(default_factory=dict)
-    affected_files: List[str] = field(default_factory=list)
+    changes_from_parent: dict[str, Any] = field(default_factory=dict)
+    affected_files: list[str] = field(default_factory=list)
 
     # Review and approval
     approval_status: ApprovalStatus = ApprovalStatus.PENDING_REVIEW
-    review_comments: List[Dict[str, Any]] = field(default_factory=list)
-    approved_by: Optional[int] = None
-    approved_at: Optional[datetime] = None
+    review_comments: list[dict[str, Any]] = field(default_factory=list)
+    approved_by: int | None = None
+    approved_at: datetime | None = None
 
     # Publishing
     is_published: bool = False
-    published_at: Optional[datetime] = None
-    published_by: Optional[int] = None
+    published_at: datetime | None = None
+    published_by: int | None = None
 
     # Turkish localization
-    change_summary_tr: Optional[str] = None
+    change_summary_tr: str | None = None
 
     def __post_init__(self):
         if not self.version_id:
@@ -121,7 +121,7 @@ class ContentVersion:
             "reviewer_role": reviewer_role.value,
             "comment": comment,
             "comment_type": comment_type,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "resolved": False,
         }
         self.review_comments.append(review_comment)
@@ -130,7 +130,7 @@ class ContentVersion:
         """Approve this version"""
         self.approval_status = ApprovalStatus.APPROVED
         self.approved_by = approver_id
-        self.approved_at = datetime.now(timezone.utc)
+        self.approved_at = datetime.now(UTC)
 
     def reject_version(self, reviewer_id: int, reason: str) -> None:
         """Reject this version"""
@@ -146,7 +146,7 @@ class ContentVersion:
 
         self.is_published = True
         self.published_by = publisher_id
-        self.published_at = datetime.now(timezone.utc)
+        self.published_at = datetime.now(UTC)
 
         # Update content item status
         self.content_snapshot.update_status(ContentStatus.PUBLISHED, publisher_id)
@@ -183,7 +183,7 @@ class ContentVersion:
 
         return max(0, min(100, score))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "version_id": self.version_id,
@@ -220,16 +220,16 @@ class ApprovalWorkflow:
     description: str
 
     # Workflow stages
-    stages: List[WorkflowStage] = field(default_factory=list)
-    stage_requirements: Dict[WorkflowStage, Dict[str, Any]] = field(
+    stages: list[WorkflowStage] = field(default_factory=list)
+    stage_requirements: dict[WorkflowStage, dict[str, Any]] = field(
         default_factory=dict
     )
 
     # Reviewer assignments
-    stage_reviewers: Dict[WorkflowStage, List[ReviewerRole]] = field(
+    stage_reviewers: dict[WorkflowStage, list[ReviewerRole]] = field(
         default_factory=dict
     )
-    required_approvals_per_stage: Dict[WorkflowStage, int] = field(default_factory=dict)
+    required_approvals_per_stage: dict[WorkflowStage, int] = field(default_factory=dict)
 
     # Workflow settings
     auto_progression: bool = True
@@ -237,10 +237,10 @@ class ApprovalWorkflow:
     deadline_days: int = 7
 
     # Content type applicability
-    applicable_content_types: List[ContentType] = field(
+    applicable_content_types: list[ContentType] = field(
         default_factory=lambda: list(ContentType)
     )
-    applicable_change_types: List[ChangeType] = field(
+    applicable_change_types: list[ChangeType] = field(
         default_factory=lambda: list(ChangeType)
     )
 
@@ -284,8 +284,8 @@ class ApprovalWorkflow:
             }
 
     def get_next_stage(
-        self, current_stage: Optional[WorkflowStage]
-    ) -> Optional[WorkflowStage]:
+        self, current_stage: WorkflowStage | None
+    ) -> WorkflowStage | None:
         """Get next stage in workflow"""
         if not current_stage:
             return self.stages[0] if self.stages else None
@@ -315,7 +315,7 @@ class ApprovalWorkflow:
 
         return type_applicable and change_applicable
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "workflow_id": self.workflow_id,
@@ -357,17 +357,17 @@ class ReviewTask:
     workflow_stage: WorkflowStage
 
     # Task properties
-    assigned_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    due_date: Optional[datetime] = None
+    assigned_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    due_date: datetime | None = None
     priority: str = "normal"  # low, normal, high, urgent
 
     # Task status
     status: str = "assigned"  # assigned, in_progress, completed, skipped
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
 
     # Review criteria
-    review_checklist: List[Dict[str, Any]] = field(default_factory=list)
-    required_checks: List[str] = field(default_factory=list)
+    review_checklist: list[dict[str, Any]] = field(default_factory=list)
+    required_checks: list[str] = field(default_factory=list)
 
     # Turkish localization
     task_description_tr: str = ""
@@ -386,10 +386,10 @@ class ReviewTask:
                 f"{self.workflow_stage.value} aşaması için içerik incelemesi"
             )
 
-    def complete_task(self, review_data: Dict[str, Any]) -> None:
+    def complete_task(self, review_data: dict[str, Any]) -> None:
         """Complete the review task"""
         self.status = "completed"
-        self.completed_at = datetime.now(timezone.utc)
+        self.completed_at = datetime.now(UTC)
 
         # Update checklist with review results
         for item in self.review_checklist:
@@ -404,7 +404,7 @@ class ReviewTask:
         if not self.due_date or self.status == "completed":
             return False
 
-        return datetime.now(timezone.utc) > self.due_date
+        return datetime.now(UTC) > self.due_date
 
     def get_completion_percentage(self) -> float:
         """Get task completion percentage"""
@@ -419,7 +419,7 @@ class ReviewTask:
         )
         return (completed_checks / len(self.review_checklist)) * 100
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "task_id": self.task_id,
@@ -446,9 +446,9 @@ class VersionManager:
     """Manages content versions and version control"""
 
     def __init__(self):
-        self.versions: Dict[str, ContentVersion] = {}
-        self.content_versions: Dict[str, List[str]] = {}  # content_id -> version_ids
-        self.published_versions: Dict[
+        self.versions: dict[str, ContentVersion] = {}
+        self.content_versions: dict[str, list[str]] = {}  # content_id -> version_ids
+        self.published_versions: dict[
             str, str
         ] = {}  # content_id -> published_version_id
 
@@ -458,7 +458,7 @@ class VersionManager:
         change_summary: str,
         change_type: ChangeType,
         created_by: int,
-        parent_version_id: Optional[str] = None,
+        parent_version_id: str | None = None,
     ) -> ContentVersion:
         """Create new version of content"""
 
@@ -506,7 +506,7 @@ class VersionManager:
         return version
 
     def _generate_version_number(
-        self, existing_versions: List[str], change_type: ChangeType
+        self, existing_versions: list[str], change_type: ChangeType
     ) -> str:
         """Generate new version number based on change type"""
         if not existing_versions:
@@ -541,7 +541,7 @@ class VersionManager:
 
     def _calculate_changes(
         self, old_content: ContentItem, new_content: ContentItem
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Calculate changes between two content versions"""
         changes = {}
 
@@ -578,16 +578,16 @@ class VersionManager:
 
         return changes
 
-    async def get_version(self, version_id: str) -> Optional[ContentVersion]:
+    async def get_version(self, version_id: str) -> ContentVersion | None:
         """Get specific version"""
         return self.versions.get(version_id)
 
-    async def get_content_versions(self, content_id: str) -> List[ContentVersion]:
+    async def get_content_versions(self, content_id: str) -> list[ContentVersion]:
         """Get all versions of content"""
         version_ids = self.content_versions.get(content_id, [])
         return [self.versions[vid] for vid in version_ids if vid in self.versions]
 
-    async def get_latest_version(self, content_id: str) -> Optional[ContentVersion]:
+    async def get_latest_version(self, content_id: str) -> ContentVersion | None:
         """Get latest version of content"""
         versions = await self.get_content_versions(content_id)
         if not versions:
@@ -597,7 +597,7 @@ class VersionManager:
         versions.sort(key=lambda v: v.created_at, reverse=True)
         return versions[0]
 
-    async def get_published_version(self, content_id: str) -> Optional[ContentVersion]:
+    async def get_published_version(self, content_id: str) -> ContentVersion | None:
         """Get published version of content"""
         published_version_id = self.published_versions.get(content_id)
         if published_version_id:
@@ -621,7 +621,7 @@ class VersionManager:
 
     async def compare_versions(
         self, version_id1: str, version_id2: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Compare two versions and return differences"""
         version1 = self.versions.get(version_id1)
         version2 = self.versions.get(version_id2)
@@ -650,7 +650,7 @@ class VersionManager:
             "summary": self._generate_change_summary(changes),
         }
 
-    def _generate_change_summary(self, changes: Dict[str, Any]) -> Dict[str, Any]:
+    def _generate_change_summary(self, changes: dict[str, Any]) -> dict[str, Any]:
         """Generate human-readable change summary"""
         summary = {
             "total_changes": len(changes),
@@ -681,12 +681,12 @@ class ApprovalWorkflowManager:
 
     def __init__(self, version_manager: VersionManager):
         self.version_manager = version_manager
-        self.workflows: Dict[str, ApprovalWorkflow] = {}
-        self.active_reviews: Dict[
-            str, Dict[str, Any]
+        self.workflows: dict[str, ApprovalWorkflow] = {}
+        self.active_reviews: dict[
+            str, dict[str, Any]
         ] = {}  # version_id -> review_state
-        self.review_tasks: Dict[str, ReviewTask] = {}
-        self.reviewer_assignments: Dict[int, List[ReviewerRole]] = {}
+        self.review_tasks: dict[str, ReviewTask] = {}
+        self.reviewer_assignments: dict[int, list[ReviewerRole]] = {}
 
         # Initialize default workflows
         self._initialize_default_workflows()
@@ -766,7 +766,7 @@ class ApprovalWorkflowManager:
             self.workflows[workflow.workflow_id] = workflow
 
     async def start_approval_workflow(
-        self, version_id: str, workflow_id: Optional[str] = None
+        self, version_id: str, workflow_id: str | None = None
     ) -> bool:
         """Start approval workflow for a version"""
         version = await self.version_manager.get_version(version_id)
@@ -790,8 +790,8 @@ class ApprovalWorkflowManager:
             "workflow_id": workflow.workflow_id,
             "current_stage": workflow.stages[0] if workflow.stages else None,
             "stage_progress": {},
-            "started_at": datetime.now(timezone.utc),
-            "deadline": datetime.now(timezone.utc)
+            "started_at": datetime.now(UTC),
+            "deadline": datetime.now(UTC)
             + timedelta(days=workflow.deadline_days),
             "review_tasks": [],
         }
@@ -809,7 +809,7 @@ class ApprovalWorkflowManager:
 
     def _select_workflow_for_version(
         self, version: ContentVersion
-    ) -> Optional[ApprovalWorkflow]:
+    ) -> ApprovalWorkflow | None:
         """Select appropriate workflow for version"""
         content_type = version.content_snapshot.content_type
         change_type = version.change_type
@@ -869,7 +869,7 @@ class ApprovalWorkflowManager:
             f"Created {len(review_state['review_tasks'])} review tasks for stage {stage.value}"
         )
 
-    def _find_reviewers_by_role(self, role: ReviewerRole) -> List[int]:
+    def _find_reviewers_by_role(self, role: ReviewerRole) -> list[int]:
         """Find available reviewers by role"""
         # In a real implementation, this would query user database
         # For now, return mock reviewer IDs
@@ -884,7 +884,7 @@ class ApprovalWorkflowManager:
 
         return role_reviewers.get(role, [])
 
-    def _get_stage_checklist(self, stage: WorkflowStage) -> List[Dict[str, Any]]:
+    def _get_stage_checklist(self, stage: WorkflowStage) -> list[dict[str, Any]]:
         """Get review checklist for workflow stage"""
         checklists = {
             WorkflowStage.CONTENT_REVIEW: [
@@ -989,7 +989,7 @@ class ApprovalWorkflowManager:
         self,
         task_id: str,
         reviewer_id: int,
-        review_data: Dict[str, Any],
+        review_data: dict[str, Any],
         comments: str = "",
     ) -> bool:
         """Submit review for a task"""
@@ -1114,10 +1114,10 @@ class ApprovalWorkflowManager:
             logger.info(f"Rejected version {version_id}")
 
         # Mark workflow as completed
-        review_state["completed_at"] = datetime.now(timezone.utc)
+        review_state["completed_at"] = datetime.now(UTC)
         review_state["current_stage"] = None
 
-    async def get_pending_reviews(self, reviewer_id: int) -> List[Dict[str, Any]]:
+    async def get_pending_reviews(self, reviewer_id: int) -> list[dict[str, Any]]:
         """Get pending review tasks for a reviewer"""
         pending_tasks = []
 
@@ -1140,7 +1140,7 @@ class ApprovalWorkflowManager:
 
         return sorted(pending_tasks, key=lambda t: t.get("due_date", ""))
 
-    async def get_workflow_status(self, version_id: str) -> Optional[Dict[str, Any]]:
+    async def get_workflow_status(self, version_id: str) -> dict[str, Any] | None:
         """Get current workflow status for a version"""
         review_state = self.active_reviews.get(version_id)
         if not review_state:
@@ -1185,13 +1185,13 @@ class ApprovalWorkflowManager:
             "overdue_tasks": len(overdue_tasks),
             "started_at": review_state["started_at"].isoformat(),
             "deadline": review_state["deadline"].isoformat(),
-            "is_overdue": datetime.now(timezone.utc) > review_state["deadline"],
+            "is_overdue": datetime.now(UTC) > review_state["deadline"],
             "completed_at": review_state.get("completed_at").isoformat()
             if review_state.get("completed_at")
             else None,
         }
 
-    def get_workflow_statistics(self) -> Dict[str, Any]:
+    def get_workflow_statistics(self) -> dict[str, Any]:
         """Get overall workflow statistics"""
         total_reviews = len(self.active_reviews)
         completed_reviews = len(
@@ -1202,7 +1202,7 @@ class ApprovalWorkflowManager:
                 r
                 for r in self.active_reviews.values()
                 if not r.get("completed_at")
-                and datetime.now(timezone.utc) > r["deadline"]
+                and datetime.now(UTC) > r["deadline"]
             ]
         )
 

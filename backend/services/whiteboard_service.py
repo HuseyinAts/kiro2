@@ -4,17 +4,18 @@ Task 108: Whiteboard Service
 Service for managing interactive whiteboard with drawing tools and math equations.
 """
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
-from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
-from uuid import UUID
 import logging
+from datetime import UTC, datetime
+from typing import Any
+from uuid import UUID
+
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.live_session import (
+    WhiteboardEquation,
     WhiteboardSession,
     WhiteboardStroke,
-    WhiteboardEquation,
     WhiteboardToolType,
 )
 
@@ -57,7 +58,7 @@ class WhiteboardService:
         logger.info(f"Whiteboard created: {whiteboard.id} for session {session_id}")
         return whiteboard
 
-    async def get_whiteboard(self, whiteboard_id: UUID) -> Optional[WhiteboardSession]:
+    async def get_whiteboard(self, whiteboard_id: UUID) -> WhiteboardSession | None:
         """Get whiteboard by ID"""
         query = select(WhiteboardSession).where(WhiteboardSession.id == whiteboard_id)
         result = await self.db.execute(query)
@@ -65,7 +66,7 @@ class WhiteboardService:
 
     async def get_session_whiteboards(
         self, session_id: UUID
-    ) -> List[WhiteboardSession]:
+    ) -> list[WhiteboardSession]:
         """Get all whiteboards for a session"""
         query = (
             select(WhiteboardSession)
@@ -78,7 +79,7 @@ class WhiteboardService:
 
     async def update_whiteboard(
         self, whiteboard_id: UUID, **kwargs
-    ) -> Optional[WhiteboardSession]:
+    ) -> WhiteboardSession | None:
         """Update whiteboard settings"""
         whiteboard = await self.get_whiteboard(whiteboard_id)
         if not whiteboard:
@@ -88,13 +89,13 @@ class WhiteboardService:
             if hasattr(whiteboard, key):
                 setattr(whiteboard, key, value)
 
-        whiteboard.updated_at = datetime.now(timezone.utc)
+        whiteboard.updated_at = datetime.now(UTC)
         await self.db.commit()
         await self.db.refresh(whiteboard)
 
         return whiteboard
 
-    async def add_page(self, whiteboard_id: UUID) -> Optional[WhiteboardSession]:
+    async def add_page(self, whiteboard_id: UUID) -> WhiteboardSession | None:
         """Add new page to whiteboard"""
         whiteboard = await self.get_whiteboard(whiteboard_id)
         if not whiteboard:
@@ -110,7 +111,7 @@ class WhiteboardService:
 
     async def set_current_page(
         self, whiteboard_id: UUID, page_number: int
-    ) -> Optional[WhiteboardSession]:
+    ) -> WhiteboardSession | None:
         """Change current page"""
         whiteboard = await self.get_whiteboard(whiteboard_id)
         if not whiteboard:
@@ -136,10 +137,10 @@ class WhiteboardService:
         user_id: UUID,
         tool_type: WhiteboardToolType,
         page_number: int,
-        path_data: Optional[List[Dict[str, float]]] = None,
-        shape_type: Optional[str] = None,
-        shape_data: Optional[Dict[str, Any]] = None,
-        text_content: Optional[str] = None,
+        path_data: list[dict[str, float]] | None = None,
+        shape_type: str | None = None,
+        shape_data: dict[str, Any] | None = None,
+        text_content: str | None = None,
         color: str = "#000000",
         width: float = 2.0,
         opacity: float = 1.0,
@@ -181,7 +182,7 @@ class WhiteboardService:
 
     async def get_page_strokes(
         self, whiteboard_id: UUID, page_number: int, include_deleted: bool = False
-    ) -> List[WhiteboardStroke]:
+    ) -> list[WhiteboardStroke]:
         """Get all strokes for a specific page"""
         query = select(WhiteboardStroke).where(
             WhiteboardStroke.whiteboard_id == whiteboard_id,
@@ -196,7 +197,7 @@ class WhiteboardService:
         result = await self.db.execute(query)
         return list(result.scalars().all())
 
-    async def get_stroke(self, stroke_id: UUID) -> Optional[WhiteboardStroke]:
+    async def get_stroke(self, stroke_id: UUID) -> WhiteboardStroke | None:
         """Load stroke by id (for session membership checks)."""
         query = select(WhiteboardStroke).where(WhiteboardStroke.id == stroke_id)
         result = await self.db.execute(query)
@@ -214,11 +215,10 @@ class WhiteboardService:
                 await self.db.commit()
                 return True
             return False
-        else:
-            query = delete(WhiteboardStroke).where(WhiteboardStroke.id == stroke_id)
-            result = await self.db.execute(query)
-            await self.db.commit()
-            return result.rowcount > 0
+        query = delete(WhiteboardStroke).where(WhiteboardStroke.id == stroke_id)
+        result = await self.db.execute(query)
+        await self.db.commit()
+        return result.rowcount > 0
 
     async def clear_page(self, whiteboard_id: UUID, page_number: int) -> int:
         """Clear all strokes from a page (soft delete)"""
@@ -287,12 +287,12 @@ class WhiteboardService:
     async def update_equation(
         self,
         equation_id: UUID,
-        latex_code: Optional[str] = None,
-        x: Optional[float] = None,
-        y: Optional[float] = None,
-        font_size: Optional[int] = None,
-        color: Optional[str] = None,
-    ) -> Optional[WhiteboardEquation]:
+        latex_code: str | None = None,
+        x: float | None = None,
+        y: float | None = None,
+        font_size: int | None = None,
+        color: str | None = None,
+    ) -> WhiteboardEquation | None:
         """Update equation"""
         query = select(WhiteboardEquation).where(WhiteboardEquation.id == equation_id)
         result = await self.db.execute(query)
@@ -317,7 +317,7 @@ class WhiteboardService:
         if color is not None:
             equation.color = color
 
-        equation.updated_at = datetime.now(timezone.utc)
+        equation.updated_at = datetime.now(UTC)
 
         await self.db.commit()
         await self.db.refresh(equation)
@@ -326,7 +326,7 @@ class WhiteboardService:
 
     async def get_page_equations(
         self, whiteboard_id: UUID, page_number: int, include_deleted: bool = False
-    ) -> List[WhiteboardEquation]:
+    ) -> list[WhiteboardEquation]:
         """Get all equations for a specific page"""
         query = select(WhiteboardEquation).where(
             WhiteboardEquation.whiteboard_id == whiteboard_id,
@@ -359,13 +359,12 @@ class WhiteboardService:
                 await self.db.commit()
                 return True
             return False
-        else:
-            query = delete(WhiteboardEquation).where(
-                WhiteboardEquation.id == equation_id
-            )
-            result = await self.db.execute(query)
-            await self.db.commit()
-            return result.rowcount > 0
+        query = delete(WhiteboardEquation).where(
+            WhiteboardEquation.id == equation_id
+        )
+        result = await self.db.execute(query)
+        await self.db.commit()
+        return result.rowcount > 0
 
     # ============================================================
     # Export & Snapshot
@@ -373,7 +372,7 @@ class WhiteboardService:
 
     async def get_page_content(
         self, whiteboard_id: UUID, page_number: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get complete page content (strokes + equations)"""
         strokes = await self.get_page_strokes(whiteboard_id, page_number)
         equations = await self.get_page_equations(whiteboard_id, page_number)
@@ -414,7 +413,7 @@ class WhiteboardService:
 
     async def save_snapshot(
         self, whiteboard_id: UUID, snapshot_url: str
-    ) -> Optional[WhiteboardSession]:
+    ) -> WhiteboardSession | None:
         """Save snapshot URL of whiteboard"""
         whiteboard = await self.get_whiteboard(whiteboard_id)
         if not whiteboard:
@@ -430,14 +429,14 @@ class WhiteboardService:
     # Collaborative Features
     # ============================================================
 
-    async def get_active_users(self, whiteboard_id: UUID) -> List[UUID]:
+    async def get_active_users(self, whiteboard_id: UUID) -> list[UUID]:
         """
         Get list of users currently drawing on whiteboard
 
         This would be implemented with WebSocket tracking in production
         """
         # Placeholder: Return users who have drawn in last 5 minutes
-        five_mins_ago = datetime.now(timezone.utc) - timedelta(minutes=5)
+        five_mins_ago = datetime.now(UTC) - timedelta(minutes=5)
 
         query = (
             select(WhiteboardStroke.user_id)

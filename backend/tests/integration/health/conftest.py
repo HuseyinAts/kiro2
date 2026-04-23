@@ -4,8 +4,8 @@ Health Integration Tests Configuration
 Bu dosya, health integration testleri icin pytest yapilandirmasi saglar.
 """
 
-import sys
 import os
+import sys
 
 # Backend path'i ekle
 backend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -14,7 +14,7 @@ if backend_path not in sys.path:
 
 import pytest
 from fastapi import FastAPI
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 
 
 @pytest.fixture

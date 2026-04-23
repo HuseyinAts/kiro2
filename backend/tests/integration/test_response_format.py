@@ -5,6 +5,8 @@ Comprehensive tests for validating response format compliance
 """
 
 import pytest
+from fastapi.responses import JSONResponse
+
 from core.response_models import (
     APIResponse,
     ErrorDetail,
@@ -30,7 +32,6 @@ from core.response_validators import (
     run_response_validation_tests,
     validate_api_endpoint_response,
 )
-from fastapi.responses import JSONResponse
 
 
 class TestResponseModels:

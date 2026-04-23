@@ -60,7 +60,7 @@ class DatabaseOptimizer:
             return True
 
         except Exception as e:
-            logger.error(f"[X] Performans analizi hatası: {str(e)}")
+            logger.error(f"[X] Performans analizi hatası: {e!s}")
             return False
         finally:
             await db_manager.close()
@@ -86,7 +86,7 @@ class DatabaseOptimizer:
                     logger.info(f"   - {index[0]}")
 
             except SQLAlchemyError as e:
-                logger.error(f"Index analizi hatası: {str(e)}")
+                logger.error(f"Index analizi hatası: {e!s}")
 
     async def _analyze_query_performance(self):
         """Query performance analizi"""
@@ -147,7 +147,7 @@ class DatabaseOptimizer:
 
                 except SQLAlchemyError as e:
                     logger.warning(
-                        f"Query test hatası ({query_test['name']}): {str(e)}"
+                        f"Query test hatası ({query_test['name']}): {e!s}"
                     )
 
         self.optimization_results["queries_optimized"] = len(test_queries)
@@ -188,7 +188,7 @@ class DatabaseOptimizer:
                     logger.info(f"   {table}: {count} kayıt")
 
                 except SQLAlchemyError as e:
-                    logger.warning(f"Tablo istatistik hatası ({table}): {str(e)}")
+                    logger.warning(f"Tablo istatistik hatası ({table}): {e!s}")
 
     async def _generate_optimization_recommendations(self):
         """Optimization önerileri oluştur"""
@@ -287,7 +287,7 @@ class DatabaseOptimizer:
                         logger.info(f"[CHECK] Uygulandı: {optimization}")
                     except SQLAlchemyError as e:
                         logger.warning(
-                            f"⚠️ Optimization hatası: {optimization} - {str(e)}"
+                            f"⚠️ Optimization hatası: {optimization} - {e!s}"
                         )
 
                 await session.commit()
@@ -296,7 +296,7 @@ class DatabaseOptimizer:
             return True
 
         except Exception as e:
-            logger.error(f"[X] Optimization uygulama hatası: {str(e)}")
+            logger.error(f"[X] Optimization uygulama hatası: {e!s}")
             return False
         finally:
             await db_manager.close()
@@ -323,7 +323,7 @@ class DatabaseOptimizer:
             return True
 
         except Exception as e:
-            logger.error(f"[X] Vacuum işlemi hatası: {str(e)}")
+            logger.error(f"[X] Vacuum işlemi hatası: {e!s}")
             return False
         finally:
             await db_manager.close()
@@ -350,7 +350,7 @@ async def main():
         success = await optimizer.vacuum_database()
     else:
         parser.print_help()
-        return
+        return None
 
     return success
 

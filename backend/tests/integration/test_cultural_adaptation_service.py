@@ -12,13 +12,14 @@ import pytest
 # Module skip: async_generator context manager protocol issue in service,
 # DB session handling incompatible with test mocks.
 pytestmark = pytest.mark.skipif(True, reason="Cultural adaptation service: async_generator context manager protocol, DB session incompatible")
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from algorithms.cultural_adaptation_engine import (
     AgeGroup,
     CulturalPeriod,
     RegionalCulture,
 )
 from services.cultural_adaptation_service import CulturalAdaptationService
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class TestCulturalAdaptationService:
@@ -394,7 +395,7 @@ class TestCulturalAdaptationService:
         # İçerik yaklaşımı
         content_approach = recommendations["content_approach"]
         assert content_approach["difficulty_level"] == "zor"  # 1.1 > 1.2 için "zor"
-        assert "70% grup, 30% bireysel" == content_approach["social_learning_ratio"]
+        assert content_approach["social_learning_ratio"] == "70% grup, 30% bireysel"
         assert content_approach["motivational_style"] == "family_honor_motivation"
 
         # Kültürel değerlendirmeler
@@ -597,9 +598,8 @@ class TestCulturalAdaptationServiceIntegration:
         # Database hatası simülasyonu
         with patch.object(
             service, "_get_student_info", side_effect=Exception("Database error")
-        ):
-            with pytest.raises(Exception):
-                await service.get_student_cultural_adaptation("error_test_student")
+        ), pytest.raises(Exception):
+            await service.get_student_cultural_adaptation("error_test_student")
 
         # Geçersiz bölge adı - hata vermemeli, varsayılan değer dönmeli
         result = await service.get_regional_culture_info("invalid_region_name")

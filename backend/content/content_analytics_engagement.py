@@ -9,9 +9,9 @@ import statistics
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Union
 
 from analytics.unified_analytics_data_model import (
     TurkishExamType,
@@ -70,29 +70,29 @@ class EngagementEvent:
     event_type: EngagementMetric
 
     # Event data
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     value: Union[float, int, str, bool] = None
-    duration_seconds: Optional[float] = None
+    duration_seconds: float | None = None
 
     # Context information
-    session_id: Optional[str] = None
-    device_type: Optional[str] = None
-    location: Optional[str] = None
-    referrer: Optional[str] = None
+    session_id: str | None = None
+    device_type: str | None = None
+    location: str | None = None
+    referrer: str | None = None
 
     # Learning context
-    subject: Optional[TurkishSubject] = None
-    exam_type: Optional[TurkishExamType] = None
-    difficulty_level: Optional[str] = None
+    subject: TurkishSubject | None = None
+    exam_type: TurkishExamType | None = None
+    difficulty_level: str | None = None
 
     # Additional metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.event_id:
             self.event_id = str(uuid.uuid4())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "event_id": self.event_id,
@@ -156,7 +156,7 @@ class ContentEngagementSummary:
 
     # Turkish education specific
     subject_performance_rank: int = 0
-    exam_type_relevance: Dict[TurkishExamType, float] = field(default_factory=dict)
+    exam_type_relevance: dict[TurkishExamType, float] = field(default_factory=dict)
     curriculum_alignment_score: float = 0.0
 
     def calculate_engagement_score(self) -> float:
@@ -211,7 +211,7 @@ class ContentEngagementSummary:
 
         return self.engagement_level
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "content_id": self.content_id,
@@ -261,9 +261,9 @@ class StudentEngagementProfile:
     average_session_duration_minutes: float = 0.0
 
     # Engagement patterns
-    preferred_content_types: List[ContentType] = field(default_factory=list)
-    peak_activity_hours: List[int] = field(default_factory=list)
-    most_engaged_subjects: List[TurkishSubject] = field(default_factory=list)
+    preferred_content_types: list[ContentType] = field(default_factory=list)
+    peak_activity_hours: list[int] = field(default_factory=list)
+    most_engaged_subjects: list[TurkishSubject] = field(default_factory=list)
 
     # Learning behavior
     completion_rate: float = 0.0
@@ -312,7 +312,7 @@ class StudentEngagementProfile:
         )
         return self.overall_engagement_score
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "student_id": self.student_id,
@@ -347,7 +347,7 @@ class EngagementTracker:
 
     def __init__(self):
         self.event_buffer: deque = deque(maxlen=10000)
-        self.content_sessions: Dict[str, Dict[str, Any]] = defaultdict(
+        self.content_sessions: dict[str, dict[str, Any]] = defaultdict(
             dict
         )  # user_id:content_id -> session
         self.session_timeout_minutes = 30
@@ -408,7 +408,7 @@ class EngagementTracker:
             session["completed"] = True
 
     async def _finalize_session(
-        self, session_key: str, session: Dict[str, Any]
+        self, session_key: str, session: dict[str, Any]
     ) -> None:
         """Finalize a content viewing session"""
         # Calculate final session metrics
@@ -423,7 +423,7 @@ class EngagementTracker:
 
     async def get_content_engagement_events(
         self, content_id: str, start_date: datetime, end_date: datetime
-    ) -> List[EngagementEvent]:
+    ) -> list[EngagementEvent]:
         """Get engagement events for specific content"""
         events = []
 
@@ -438,7 +438,7 @@ class EngagementTracker:
 
     async def get_user_engagement_events(
         self, user_id: int, start_date: datetime, end_date: datetime
-    ) -> List[EngagementEvent]:
+    ) -> list[EngagementEvent]:
         """Get engagement events for specific user"""
         events = []
 
@@ -450,7 +450,7 @@ class EngagementTracker:
 
     async def cleanup_old_sessions(self) -> None:
         """Clean up old inactive sessions"""
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
         expired_sessions = []
 
         for session_key, session in self.content_sessions.items():
@@ -474,7 +474,7 @@ class ContentAnalyticsEngine:
 
     def __init__(self, engagement_tracker: EngagementTracker):
         self.engagement_tracker = engagement_tracker
-        self.analytics_cache: Dict[str, Any] = {}
+        self.analytics_cache: dict[str, Any] = {}
         self.cache_ttl_seconds = 3600  # 1 hour
 
     async def analyze_content_engagement(
@@ -482,7 +482,7 @@ class ContentAnalyticsEngine:
         content_id: str,
         start_date: datetime,
         end_date: datetime,
-        content_metadata: Optional[Dict[str, Any]] = None,
+        content_metadata: dict[str, Any] | None = None,
     ) -> ContentEngagementSummary:
         """Analyze engagement for specific content"""
 
@@ -493,7 +493,7 @@ class ContentAnalyticsEngine:
         if cache_key in self.analytics_cache:
             cached_data = self.analytics_cache[cache_key]
             if (
-                datetime.now(timezone.utc) - cached_data["timestamp"]
+                datetime.now(UTC) - cached_data["timestamp"]
             ).total_seconds() < self.cache_ttl_seconds:
                 return cached_data["summary"]
 
@@ -590,12 +590,12 @@ class ContentAnalyticsEngine:
         # Cache results
         self.analytics_cache[cache_key] = {
             "summary": summary,
-            "timestamp": datetime.now(timezone.utc),
+            "timestamp": datetime.now(UTC),
         }
 
         return summary
 
-    def _calculate_return_visitor_rate(self, events: List[EngagementEvent]) -> float:
+    def _calculate_return_visitor_rate(self, events: list[EngagementEvent]) -> float:
         """Calculate return visitor rate"""
         user_visit_counts = defaultdict(int)
 
@@ -739,7 +739,7 @@ class ContentAnalyticsEngine:
 
         return profile
 
-    def _calculate_engagement_trend(self, events: List[EngagementEvent]) -> str:
+    def _calculate_engagement_trend(self, events: list[EngagementEvent]) -> str:
         """Calculate engagement trend over time"""
         if len(events) < 10:
             return "stable"
@@ -761,14 +761,13 @@ class ContentAnalyticsEngine:
 
         if change_rate > 0.2:
             return "improving"
-        elif change_rate < -0.2:
+        if change_rate < -0.2:
             return "declining"
-        else:
-            return "stable"
+        return "stable"
 
     async def generate_content_recommendations(
-        self, content_summaries: List[ContentEngagementSummary]
-    ) -> List[Dict[str, Any]]:
+        self, content_summaries: list[ContentEngagementSummary]
+    ) -> list[dict[str, Any]]:
         """Generate recommendations for improving content engagement"""
         recommendations = []
 
@@ -854,8 +853,8 @@ class ContentAnalyticsEngine:
         self,
         start_date: datetime,
         end_date: datetime,
-        content_ids: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        content_ids: list[str] | None = None,
+    ) -> dict[str, Any]:
         """Get comprehensive engagement insights"""
 
         insights = {
@@ -992,8 +991,8 @@ class ContentAnalyticsService:
         content_id: str,
         user_id: int,
         duration_seconds: float,
-        session_id: Optional[str] = None,
-        metadata: Dict[str, Any] = None,
+        session_id: str | None = None,
+        metadata: dict[str, Any] = None,
     ) -> None:
         """Track content view event"""
         event = EngagementEvent(
@@ -1012,7 +1011,7 @@ class ContentAnalyticsService:
         content_id: str,
         user_id: int,
         completion_percentage: float,
-        session_id: Optional[str] = None,
+        session_id: str | None = None,
     ) -> None:
         """Track content completion event"""
         event = EngagementEvent(
@@ -1031,7 +1030,7 @@ class ContentAnalyticsService:
         user_id: int,
         score: float,
         success: bool,
-        session_id: Optional[str] = None,
+        session_id: str | None = None,
     ) -> None:
         """Track quiz attempt event"""
         event = EngagementEvent(
@@ -1049,7 +1048,7 @@ class ContentAnalyticsService:
         content_id: str,
         user_id: int,
         rating: float,
-        session_id: Optional[str] = None,
+        session_id: str | None = None,
     ) -> None:
         """Track content rating event"""
         event = EngagementEvent(
@@ -1062,7 +1061,7 @@ class ContentAnalyticsService:
         await self.engagement_tracker.track_engagement_event(event)
 
     async def track_content_bookmark(
-        self, content_id: str, user_id: int, session_id: Optional[str] = None
+        self, content_id: str, user_id: int, session_id: str | None = None
     ) -> None:
         """Track content bookmark event"""
         event = EngagementEvent(
@@ -1075,10 +1074,10 @@ class ContentAnalyticsService:
         self,
         content_id: str,
         days_back: int = 30,
-        content_metadata: Optional[Dict[str, Any]] = None,
+        content_metadata: dict[str, Any] | None = None,
     ) -> ContentEngagementSummary:
         """Get analytics for specific content"""
-        end_date = datetime.now(timezone.utc)
+        end_date = datetime.now(UTC)
         start_date = end_date - timedelta(days=days_back)
 
         return await self.analytics_engine.analyze_content_engagement(
@@ -1089,23 +1088,23 @@ class ContentAnalyticsService:
         self, student_id: int, days_back: int = 30
     ) -> StudentEngagementProfile:
         """Get analytics for specific student"""
-        end_date = datetime.now(timezone.utc)
+        end_date = datetime.now(UTC)
         start_date = end_date - timedelta(days=days_back)
 
         return await self.analytics_engine.analyze_student_engagement(
             student_id, start_date, end_date
         )
 
-    async def get_platform_insights(self, days_back: int = 30) -> Dict[str, Any]:
+    async def get_platform_insights(self, days_back: int = 30) -> dict[str, Any]:
         """Get platform-wide engagement insights"""
-        end_date = datetime.now(timezone.utc)
+        end_date = datetime.now(UTC)
         start_date = end_date - timedelta(days=days_back)
 
         return await self.analytics_engine.get_engagement_insights(start_date, end_date)
 
     async def generate_content_recommendations(
-        self, content_ids: List[str], days_back: int = 30
-    ) -> List[Dict[str, Any]]:
+        self, content_ids: list[str], days_back: int = 30
+    ) -> list[dict[str, Any]]:
         """Generate content improvement recommendations"""
         summaries = []
 

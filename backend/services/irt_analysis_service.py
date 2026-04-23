@@ -13,12 +13,11 @@ import logging
 import math
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from core.database import get_db_session_context
 from models.enums import ZorlukSeviyesi
 from models.soru_model import Soru
-from models.exam import SinavCevabi
 
 # Note: Repository classes are not yet implemented, using direct model access
 # TODO: Create SoruRepository and SinavCevabiRepository in repositories/
@@ -46,8 +45,8 @@ class StudentAbilityResult:
     ogrenci_id: str
     theta: float  # Yetenek seviyesi
     standard_error: float
-    guven_araligi: Tuple[float, float]
-    konu_bazli_yetenekler: Dict[str, float]
+    guven_araligi: tuple[float, float]
+    konu_bazli_yetenekler: dict[str, float]
 
 
 class IRTAnalysisService:
@@ -58,7 +57,7 @@ class IRTAnalysisService:
         self.convergence_threshold = 0.001
 
     async def analyze_soru_irt_parameters(
-        self, soru_id: str, cevap_verileri: Optional[List[Dict[str, Any]]] = None
+        self, soru_id: str, cevap_verileri: list[dict[str, Any]] | None = None
     ) -> IRTAnalysisResult:
         """
         Sorunun IRT parametrelerini analiz et
@@ -127,7 +126,7 @@ class IRTAnalysisService:
             )
 
     async def calculate_student_ability(
-        self, ogrenci_id: str, sinav_cevaplari: Optional[List[Dict[str, Any]]] = None
+        self, ogrenci_id: str, sinav_cevaplari: list[dict[str, Any]] | None = None
     ) -> StudentAbilityResult:
         """
         Öğrencinin yetenek seviyesini (theta) hesapla
@@ -141,7 +140,6 @@ class IRTAnalysisService:
             # TODO: Replace with proper repository when available
             # cevap_repo = SinavCevabiRepository(session)
             # soru_repo = SoruRepository(session)
-            pass
 
             # Öğrencinin cevaplarını getir
             if sinav_cevaplari is None:
@@ -188,7 +186,7 @@ class IRTAnalysisService:
 
     async def calibrate_soru_difficulty(
         self, soru_id: str, target_difficulty: float, morphology_adjustment: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Sorunun zorluk seviyesini kalibre et
 
@@ -265,8 +263,8 @@ class IRTAnalysisService:
         ogrenci_id: str,
         konu: str,
         soru_sayisi: int = 20,
-        target_theta: Optional[float] = None,
-    ) -> List[Dict[str, Any]]:
+        target_theta: float | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Öğrencinin yetenek seviyesine göre adaptif test soruları seç
 
@@ -381,7 +379,7 @@ class IRTAnalysisService:
 
     async def _get_soru_cevap_verileri(
         self, soru_id: str, session
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Soruya verilen cevapları getir"""
         # TODO: Replace with proper repository when available
         # cevap_repo = SinavCevabiRepository(session)
@@ -399,7 +397,7 @@ class IRTAnalysisService:
 
     async def _get_ogrenci_cevap_verileri(
         self, ogrenci_id: str, session
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Öğrencinin cevaplarını getir"""
         # Basitleştirilmiş implementasyon
         return [
@@ -414,8 +412,8 @@ class IRTAnalysisService:
         ]
 
     async def _estimate_irt_parameters(
-        self, cevap_verileri: List[Dict[str, Any]], morfoloji_karmasikligi: float
-    ) -> Tuple[float, float, float]:
+        self, cevap_verileri: list[dict[str, Any]], morfoloji_karmasikligi: float
+    ) -> tuple[float, float, float]:
         """IRT parametrelerini tahmin et (Maximum Likelihood)"""
 
         # Basit tahmin algoritması
@@ -474,7 +472,7 @@ class IRTAnalysisService:
 
     async def _calculate_calibration_confidence(
         self,
-        cevap_verileri: List[Dict[str, Any]],
+        cevap_verileri: list[dict[str, Any]],
         a_param: float,
         b_param: float,
         c_param: float,
@@ -486,12 +484,11 @@ class IRTAnalysisService:
 
         if veri_sayisi < 10:
             return 0.3
-        elif veri_sayisi < 50:
+        if veri_sayisi < 50:
             return 0.6
-        elif veri_sayisi < 100:
+        if veri_sayisi < 100:
             return 0.8
-        else:
-            return 0.9
+        return 0.9
 
     async def _determine_difficulty_level(
         self, b_param: float, morfoloji_etkisi: float
@@ -503,14 +500,13 @@ class IRTAnalysisService:
 
         if adjusted_b < -1.0:
             return ZorlukSeviyesi.KOLAY
-        elif adjusted_b < 0.5:
+        if adjusted_b < 0.5:
             return ZorlukSeviyesi.ORTA
-        elif adjusted_b < 1.5:
+        if adjusted_b < 1.5:
             return ZorlukSeviyesi.ZOR
-        else:
-            return ZorlukSeviyesi.UZMAN
+        return ZorlukSeviyesi.UZMAN
 
-    async def _estimate_theta_mle(self, sinav_cevaplari: List[Dict[str, Any]]) -> float:
+    async def _estimate_theta_mle(self, sinav_cevaplari: list[dict[str, Any]]) -> float:
         """Maximum Likelihood ile theta tahmin et"""
 
         # Newton-Raphson iterasyonu
@@ -551,7 +547,7 @@ class IRTAnalysisService:
         return round(theta, 3)
 
     async def _calculate_theta_standard_error(
-        self, sinav_cevaplari: List[Dict[str, Any]], theta: float
+        self, sinav_cevaplari: list[dict[str, Any]], theta: float
     ) -> float:
         """Theta standard error hesapla"""
 
@@ -570,12 +566,11 @@ class IRTAnalysisService:
 
         if information > 0.001:
             return round(1.0 / math.sqrt(information), 3)
-        else:
-            return 1.0
+        return 1.0
 
     async def _calculate_subject_abilities(
-        self, sinav_cevaplari: List[Dict[str, Any]], genel_theta: float
-    ) -> Dict[str, float]:
+        self, sinav_cevaplari: list[dict[str, Any]], genel_theta: float
+    ) -> dict[str, float]:
         """Konu bazlı yetenek seviyelerini hesapla"""
 
         # Basitleştirilmiş implementasyon

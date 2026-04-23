@@ -3,12 +3,14 @@ Property-Based Tests for Zemberek NLP MCP Server
 6 correctness properties as defined in design.md
 """
 
-import pytest
 import time
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
+
 try:
-    from hypothesis import given, settings, strategies as st, assume, HealthCheck
+    from hypothesis import HealthCheck, assume, given, settings
+    from hypothesis import strategies as st
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
@@ -163,7 +165,9 @@ class TestLemmatizationConsistency:
     @pytest.mark.asyncio
     async def test_consistent_lemma(self, mock_http_client, mock_cache, word):
         """Same word should always produce same lemma"""
-        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import (
+            LemmatizationHandler,
+        )
 
         # Mock consistent backend response
         mock_http_client.post = AsyncMock(return_value=MagicMock(
@@ -250,7 +254,9 @@ class TestTokenizationBoundary:
         """Tokens should reconstruct original text"""
         assume(text.strip())  # Skip empty strings
 
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         # Simple tokenization for mock
         tokens = text.split()
@@ -295,8 +301,8 @@ class TestCacheConsistency:
     @pytest.mark.asyncio
     async def test_cached_matches_fresh(self, mock_http_client, word):
         """Cached result should match fresh result"""
-        from backend.mcp_servers.zemberek_nlp.tools.morphology import MorphologyHandler
         from backend.mcp_servers.zemberek_nlp.cache.redis_cache import ZemberekCache
+        from backend.mcp_servers.zemberek_nlp.tools.morphology import MorphologyHandler
 
         # Create a cache that stores results
         stored_cache = {}
@@ -419,7 +425,9 @@ class TestToolHandlers:
     @pytest.mark.asyncio
     async def test_tokenization_detects_url(self, mock_http_client, mock_cache):
         """Test tokenization detects URLs"""
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         text = "Check https://example.com for info"
         mock_http_client.post = AsyncMock(return_value=MagicMock(
@@ -435,7 +443,9 @@ class TestToolHandlers:
     @pytest.mark.asyncio
     async def test_normalization_fixes_repeated(self, mock_http_client, mock_cache):
         """Test normalization fixes repeated characters"""
-        from backend.mcp_servers.zemberek_nlp.tools.normalization import NormalizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.normalization import (
+            NormalizationHandler,
+        )
 
         mock_http_client.post = AsyncMock(return_value=MagicMock(
             json=lambda: {"original": "çoooook", "normalized": "çok"},
@@ -460,7 +470,9 @@ class TestIntegration:
     @pytest.mark.asyncio
     async def test_cache_key_generation(self):
         """Test cache key generation is deterministic"""
-        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import generate_cache_key
+        from backend.mcp_servers.zemberek_nlp.cache.redis_cache import (
+            generate_cache_key,
+        )
 
         key1 = generate_cache_key("zemberek", "morphology", "test input")
         key2 = generate_cache_key("zemberek", "morphology", "test input")

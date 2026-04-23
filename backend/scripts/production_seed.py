@@ -69,7 +69,7 @@ class ProductionSeeder:
             return True
 
         except Exception as e:
-            logger.error(f"[X] Production seeding hatası: {str(e)}")
+            logger.error(f"[X] Production seeding hatası: {e!s}")
             return False
         finally:
             await db_manager.close()

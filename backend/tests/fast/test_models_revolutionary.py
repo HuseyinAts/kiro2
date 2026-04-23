@@ -3,39 +3,40 @@ Devrimsel AI Modelleri için Testler
 Coverage target: revolutionary_models.py (296 statements, 0% → 80%+)
 """
 
-import pytest
 import sys
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
+
+import pytest
 
 # Add backend to path and import directly to avoid SQLAlchemy metadata conflicts
 backend_path = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(backend_path))
 
 from models.revolutionary_models import (
-    SimplificationLevel,
+    AgentState,
     AgentType,
-    MessageType,
-    SimplificationResult,
-    LexicalReplacement,
-    SyntacticPattern,
     BionicReadingConfig,
     BionicReadingResult,
-    FSRSParameters,
-    FSRSCard,
-    CulturalAdjustments,
-    BlackboardMessage,
-    AgentState,
     BlackboardEvent,
-    MaarifValues,
-    ZPDCalculationResult,
-    MorphologyComplexity,
-    IRTAnalysisResult,
-    VARKProfile,
+    BlackboardMessage,
+    CulturalAdjustments,
     FelderSilvermanProfile,
+    FSRSCard,
+    FSRSParameters,
     HybridLearningAnalysis,
-    create_sample_simplification_result,
+    IRTAnalysisResult,
+    LexicalReplacement,
+    MaarifValues,
+    MessageType,
+    MorphologyComplexity,
+    SimplificationLevel,
+    SimplificationResult,
+    SyntacticPattern,
+    VARKProfile,
+    ZPDCalculationResult,
     create_sample_bionic_result,
+    create_sample_simplification_result,
 )
 
 

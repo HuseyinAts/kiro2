@@ -15,21 +15,21 @@ Reward Hacking Detectors.
 from __future__ import annotations
 
 from .assert_true_detector import AssertTrueDetector
-from .echo_success_detector import EchoSuccessDetector
-from .placeholder_detector import PlaceholderDetector
+from .cicd_bypass_detector import CICDBypassDetector
 from .coverage_manipulation_detector import CoverageManipulationDetector
-from .mock_abuse_detector import MockAbuseDetector
+from .echo_success_detector import EchoSuccessDetector
 from .empty_exception_detector import EmptyExceptionDetector
 from .hardcoded_test_data_detector import HardcodedTestDataDetector
-from .cicd_bypass_detector import CICDBypassDetector
+from .mock_abuse_detector import MockAbuseDetector
+from .placeholder_detector import PlaceholderDetector
 
 __all__ = [
     "AssertTrueDetector",
-    "EchoSuccessDetector",
-    "PlaceholderDetector",
+    "CICDBypassDetector",
     "CoverageManipulationDetector",
-    "MockAbuseDetector",
+    "EchoSuccessDetector",
     "EmptyExceptionDetector",
     "HardcodedTestDataDetector",
-    "CICDBypassDetector",
+    "MockAbuseDetector",
+    "PlaceholderDetector",
 ]

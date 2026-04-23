@@ -14,10 +14,10 @@ import logging
 import math
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+
 import numpy as np
-from scipy.stats import norm
 from scipy.optimize import minimize_scalar
+from scipy.stats import norm
 
 from services.irt_psychometric_analysis import IRTParameters, IRTPsychometricAnalysis
 
@@ -34,7 +34,7 @@ class QuestionCandidate:
     topic: str
     difficulty_level: str
     exposure_count: int
-    last_used: Optional[datetime]
+    last_used: datetime | None
     information_value: float = 0.0
     content_balance_score: float = 0.0
     total_score: float = 0.0
@@ -46,7 +46,7 @@ class StudentKnowledgeState:
 
     student_id: str
     theta: float  # Mevcut yetenek tahmini
-    theta_history: List[float]  # Theta geçmişi
+    theta_history: list[float]  # Theta geçmişi
     standard_error: float  # Tahmin hatası
     knowledge_probability: float  # Bilgi olasılığı (0-1)
     learning_rate: float  # Öğrenme hızı
@@ -65,12 +65,12 @@ class TestSession:
     test_type: str  # diagnostic, formative, summative, benchmark, mock
     start_time: datetime
     current_question_index: int
-    questions_administered: List[str]
-    responses: List[Dict]
+    questions_administered: list[str]
+    responses: list[dict]
     knowledge_state: StudentKnowledgeState
-    content_coverage: Dict[str, int]  # Konu bazlı soru sayısı
+    content_coverage: dict[str, int]  # Konu bazlı soru sayısı
     is_complete: bool = False
-    completion_reason: Optional[str] = None
+    completion_reason: str | None = None
 
 
 class AdaptiveTestEngine:
@@ -86,7 +86,7 @@ class AdaptiveTestEngine:
     def __init__(self):
         """Adaptif Test Motoru başlat"""
         self.irt_service = IRTPsychometricAnalysis()
-        self.active_sessions: Dict[str, TestSession] = {}
+        self.active_sessions: dict[str, TestSession] = {}
 
         # Stopping rule parametreleri
         self.fixed_length_min = 10  # Minimum soru sayısı
@@ -107,9 +107,9 @@ class AdaptiveTestEngine:
     def select_next_question(
         self,
         session: TestSession,
-        question_pool: List[QuestionCandidate],
-        content_constraints: Optional[Dict[str, int]] = None,
-    ) -> Optional[QuestionCandidate]:
+        question_pool: list[QuestionCandidate],
+        content_constraints: dict[str, int] | None = None,
+    ) -> QuestionCandidate | None:
         """
         Maximum Information Criterion ile bir sonraki soruyu seç.
 
@@ -181,7 +181,7 @@ class AdaptiveTestEngine:
         self,
         candidate: QuestionCandidate,
         session: TestSession,
-        content_constraints: Optional[Dict[str, int]],
+        content_constraints: dict[str, int] | None,
     ) -> float:
         """
         İçerik dengesi skorunu hesapla.
@@ -208,9 +208,8 @@ class AdaptiveTestEngine:
             # Eksiklik oranına göre skor
             deficit = required_count - current_count
             return 1.0 + (deficit / required_count)  # Bonus skor
-        else:
-            # Yeterli kapsama varsa düşük skor
-            return 0.5
+        # Yeterli kapsama varsa düşük skor
+        return 0.5
 
     def _calculate_exposure_penalty(self, candidate: QuestionCandidate) -> float:
         """
@@ -378,8 +377,8 @@ class AdaptiveTestEngine:
     # ==================== SUBTASK 60.3: EAP/MLE Theta Estimation ====================
 
     def estimate_theta_eap(
-        self, responses: List[Dict], prior_mean: float = 0.0, prior_sd: float = 1.0
-    ) -> Tuple[float, float]:
+        self, responses: list[dict], prior_mean: float = 0.0, prior_sd: float = 1.0
+    ) -> tuple[float, float]:
         """
         Expected A Posteriori (EAP) metodu ile theta tahmini.
 
@@ -438,8 +437,8 @@ class AdaptiveTestEngine:
         return float(theta_eap), float(standard_error)
 
     def estimate_theta_mle(
-        self, responses: List[Dict], initial_theta: float = 0.0
-    ) -> Tuple[float, float]:
+        self, responses: list[dict], initial_theta: float = 0.0
+    ) -> tuple[float, float]:
         """
         Maximum Likelihood Estimation (MLE) metodu ile theta tahmini.
 
@@ -535,8 +534,8 @@ class AdaptiveTestEngine:
     # ==================== SUBTASK 60.4: Stopping Rules ====================
 
     def check_stopping_rules(
-        self, session: TestSession, test_config: Dict
-    ) -> Tuple[bool, Optional[str]]:
+        self, session: TestSession, test_config: dict
+    ) -> tuple[bool, str | None]:
         """
         Test sonlandırma kurallarını kontrol et.
 
@@ -797,7 +796,7 @@ class AdaptiveTestEngine:
 
         return session
 
-    def get_session_summary(self, session: TestSession) -> Dict:
+    def get_session_summary(self, session: TestSession) -> dict:
         """
         Oturum özetini al.
 

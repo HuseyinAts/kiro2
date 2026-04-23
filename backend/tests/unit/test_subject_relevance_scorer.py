@@ -9,8 +9,8 @@ import os
 import pytest
 
 from services.subject_relevance_scorer import (
-    SubjectRelevanceScorer,
     RelevanceScore,
+    SubjectRelevanceScorer,
 )
 
 

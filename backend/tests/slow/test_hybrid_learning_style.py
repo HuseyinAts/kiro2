@@ -6,6 +6,7 @@ VARK + Felder-Silverman Hibrit Öğrenme Stili Sistemi Testleri
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 import os
@@ -29,8 +30,6 @@ from models.learning_style import (
     VARKProfile,
 )
 from services.learning_style_service import LearningStyleService
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

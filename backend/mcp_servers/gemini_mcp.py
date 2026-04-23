@@ -8,10 +8,10 @@ Eğitim içeriği üretimi ve soru analizi için optimize edilmiş
 import asyncio
 import json
 import os
-from typing import Any, Dict, List
+from typing import Any
 
-from fastmcp import FastMCP
 import google.generativeai as genai
+from fastmcp import FastMCP
 
 # MCP sunucusunu başlat
 mcp = FastMCP("Gemini Education")
@@ -64,12 +64,12 @@ async def generate_educational_content(
     İçerik öğrenci dostu, anlaşılır ve öğretici olmalıdır.
     Türkçe dilbilgisi kurallarına dikkat et.
     """
-    
+
     try:
         response = await asyncio.to_thread(model.generate_content, prompt)
         return response.text
     except Exception as e:
-        return f"Hata: {str(e)}"
+        return f"Hata: {e!s}"
 
 
 @mcp.tool()
@@ -78,7 +78,7 @@ async def analyze_student_answer(
     student_answer: str,
     correct_answer: str,
     subject: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Öğrenci cevabını analiz eder ve geri bildirim sağlar.
     
@@ -111,23 +111,23 @@ async def analyze_student_answer(
     
     Sadece JSON döndür, başka açıklama ekleme.
     """
-    
+
     try:
         response = await asyncio.to_thread(model.generate_content, prompt)
         result_text = response.text.strip()
-        
+
         # JSON parse et
         if result_text.startswith("```json"):
             result_text = result_text[7:-3].strip()
         elif result_text.startswith("```"):
             result_text = result_text[3:-3].strip()
-            
+
         return json.loads(result_text)
     except Exception as e:
         return {
             "is_correct": False,
             "score": 0,
-            "feedback": f"Analiz hatası: {str(e)}",
+            "feedback": f"Analiz hatası: {e!s}",
             "suggestions": []
         }
 
@@ -138,7 +138,7 @@ async def generate_exam_question(
     topic: str,
     difficulty: str = "orta",
     question_type: str = "çoktan seçmeli"
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Sınav sorusu üretir (LGS/YKS formatında).
     
@@ -171,23 +171,23 @@ async def generate_exam_question(
     
     Sadece JSON döndür.
     """
-    
+
     try:
         response = await asyncio.to_thread(model.generate_content, prompt)
         result_text = response.text.strip()
-        
+
         if result_text.startswith("```json"):
             result_text = result_text[7:-3].strip()
         elif result_text.startswith("```"):
             result_text = result_text[3:-3].strip()
-            
+
         return json.loads(result_text)
     except Exception as e:
         return {
             "question": "",
             "options": [],
             "correct_answer": "",
-            "explanation": f"Hata: {str(e)}",
+            "explanation": f"Hata: {e!s}",
             "bloom_level": ""
         }
 
@@ -196,9 +196,9 @@ async def generate_exam_question(
 async def create_learning_path(
     student_level: str,
     target_exam: str,
-    weak_topics: List[str],
+    weak_topics: list[str],
     time_available: int
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Öğrenci için kişiselleştirilmiş öğrenme yolu oluşturur.
     
@@ -232,16 +232,16 @@ async def create_learning_path(
     
     Sadece JSON döndür.
     """
-    
+
     try:
         response = await asyncio.to_thread(model.generate_content, prompt)
         result_text = response.text.strip()
-        
+
         if result_text.startswith("```json"):
             result_text = result_text[7:-3].strip()
         elif result_text.startswith("```"):
             result_text = result_text[3:-3].strip()
-            
+
         return json.loads(result_text)
     except Exception as e:
         return {
@@ -264,7 +264,7 @@ async def gemini_health() -> str:
         )
         return f"✅ Gemini API aktif - Model: {model.model_name}"
     except Exception as e:
-        return f"❌ Gemini API hatası: {str(e)}"
+        return f"❌ Gemini API hatası: {e!s}"
 
 
 if __name__ == "__main__":

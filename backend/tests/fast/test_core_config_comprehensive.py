@@ -3,8 +3,9 @@ Comprehensive tests for core/config.py
 Tests configuration loading, validation, and defaults
 """
 import os
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 
 class TestSettingsDefaults:
@@ -314,7 +315,7 @@ class TestGetSettings:
 
     def test_get_settings_returns_settings(self):
         """Test get_settings returns Settings instance"""
-        from core.config import get_settings, Settings
+        from core.config import Settings, get_settings
 
         settings = get_settings()
         assert isinstance(settings, Settings)

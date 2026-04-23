@@ -6,7 +6,7 @@ Target: Reduce LLM API latency from 2-5s to <2s
 import asyncio
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 from pydantic import BaseModel
@@ -37,9 +37,9 @@ class LLMConnectionPool:
     - Multi-provider support (OpenAI, Anthropic, etc.)
     """
 
-    def __init__(self, config: Optional[LLMPoolConfig] = None):
+    def __init__(self, config: LLMPoolConfig | None = None):
         self.config = config or LLMPoolConfig()
-        self._client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.AsyncClient | None = None
         self._lock = asyncio.Lock()
 
         # Metrics
@@ -76,8 +76,8 @@ class LLMConnectionPool:
         self,
         method: str,
         url: str,
-        headers: Optional[Dict[str, str]] = None,
-        json: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        json: dict[str, Any] | None = None,
         **kwargs,
     ) -> httpx.Response:
         """
@@ -149,8 +149,8 @@ class LLMConnectionPool:
         raise last_error
 
     async def post_json(
-        self, url: str, data: Dict[str, Any], headers: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
+        self, url: str, data: dict[str, Any], headers: dict[str, str] | None = None
+    ) -> dict[str, Any]:
         """
         POST JSON request (convenience method)
 
@@ -171,8 +171,8 @@ class LLMConnectionPool:
         self,
         method: str,
         url: str,
-        headers: Optional[Dict[str, str]] = None,
-        json: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        json: dict[str, Any] | None = None,
         **kwargs,
     ):
         """
@@ -189,7 +189,7 @@ class LLMConnectionPool:
             async for chunk in response.aiter_bytes():
                 yield chunk
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get connection pool metrics"""
         avg_latency = (
             self.total_latency / self.successful_requests
@@ -232,20 +232,20 @@ class OpenAIPool:
     - Request batching support
     """
 
-    def __init__(self, api_key: str, config: Optional[LLMPoolConfig] = None):
+    def __init__(self, api_key: str, config: LLMPoolConfig | None = None):
         self.api_key = api_key
         self.base_url = "https://api.openai.com/v1"
         self.pool = LLMConnectionPool(config)
 
     async def chat_completion(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         model: str = "gpt-3.5-turbo",
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None,
+        max_tokens: int | None = None,
         stream: bool = False,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         OpenAI Chat Completion API
 
@@ -278,12 +278,11 @@ class OpenAIPool:
 
         if stream:
             return self._stream_completion(headers, data)
-        else:
-            return await self.pool.post_json(
-                url=f"{self.base_url}/chat/completions", data=data, headers=headers
-            )
+        return await self.pool.post_json(
+            url=f"{self.base_url}/chat/completions", data=data, headers=headers
+        )
 
-    async def _stream_completion(self, headers: Dict[str, str], data: Dict[str, Any]):
+    async def _stream_completion(self, headers: dict[str, str], data: dict[str, Any]):
         """Stream chat completion"""
         async for chunk in self.pool.stream_request(
             method="POST",
@@ -294,8 +293,8 @@ class OpenAIPool:
             yield chunk
 
     async def embedding(
-        self, texts: List[str], model: str = "text-embedding-ada-002"
-    ) -> Dict[str, Any]:
+        self, texts: list[str], model: str = "text-embedding-ada-002"
+    ) -> dict[str, Any]:
         """
         OpenAI Embeddings API
 
@@ -321,20 +320,20 @@ class OpenAIPool:
         """Close connection pool"""
         await self.pool.close()
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get pool metrics"""
         return self.pool.get_metrics()
 
 
 # Global pool instances (singleton pattern)
-_global_pools: Dict[str, LLMConnectionPool] = {}
+_global_pools: dict[str, LLMConnectionPool] = {}
 _pool_lock = asyncio.Lock()
 
 
 async def get_llm_pool(
     provider: str = "openai",
-    api_key: Optional[str] = None,
-    config: Optional[LLMPoolConfig] = None,
+    api_key: str | None = None,
+    config: LLMPoolConfig | None = None,
 ) -> LLMConnectionPool:
     """
     Get or create LLM connection pool (singleton)
@@ -374,7 +373,7 @@ async def close_all_pools():
         logger.info("All LLM connection pools closed")
 
 
-def get_global_llm_pool() -> Optional[LLMConnectionPool]:
+def get_global_llm_pool() -> LLMConnectionPool | None:
     """
     Get the global LLM connection pool for metrics/monitoring
 

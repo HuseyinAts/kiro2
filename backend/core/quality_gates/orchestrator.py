@@ -18,11 +18,11 @@ import asyncio
 import logging
 import subprocess
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional, Type
 
 from .dependency_graph import DependencyGraph, build_gate_graph
+from .gates.base import BaseGate, GateContext
 from .models import (
     GateResult,
     GateStatus,
@@ -31,8 +31,6 @@ from .models import (
     PipelineConfig,
     PipelineResult,
 )
-from .gates.base import BaseGate, GateContext
-
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +50,7 @@ class QualityGatesOrchestrator:
     def __init__(
         self,
         working_dir: Path,
-        config: Optional[PipelineConfig] = None,
+        config: PipelineConfig | None = None,
     ):
         """
         Initialize orchestrator.
@@ -80,16 +78,16 @@ class QualityGatesOrchestrator:
     def _setup_gates(self) -> None:
         """Initialize all gates with their configurations."""
         from .gates import (
-            CodeQualityGate,
-            TestCoverageGate,
-            SecurityGate,
-            PerformanceGate,
             ArchitectureGate,
-            DocumentationGate,
+            CodeQualityGate,
             ComplianceGate,
+            DocumentationGate,
+            PerformanceGate,
+            SecurityGate,
+            TestCoverageGate,
         )
 
-        gate_classes: dict[str, Type[BaseGate]] = {
+        gate_classes: dict[str, type[BaseGate]] = {
             "code_quality": CodeQualityGate,
             "test_coverage": TestCoverageGate,
             "security": SecurityGate,
@@ -124,10 +122,10 @@ class QualityGatesOrchestrator:
 
     async def run(
         self,
-        commit_hash: Optional[str] = None,
-        branch: Optional[str] = None,
-        changed_files: Optional[list[str]] = None,
-        triggered_by: Optional[str] = None,
+        commit_hash: str | None = None,
+        branch: str | None = None,
+        changed_files: list[str] | None = None,
+        triggered_by: str | None = None,
     ) -> PipelineResult:
         """
         Run the complete quality gates pipeline.
@@ -142,7 +140,7 @@ class QualityGatesOrchestrator:
             PipelineResult with all gate results
         """
         start_time = time.time()
-        started_at = datetime.now(timezone.utc)
+        started_at = datetime.now(UTC)
 
         # Get git info if not provided
         if not commit_hash:
@@ -239,14 +237,14 @@ class QualityGatesOrchestrator:
             branch=branch,
             triggered_by=triggered_by,
             started_at=started_at,
-            completed_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(UTC),
         )
 
     async def _run_parallel(
         self,
         gate_names: list[str],
-        commit_hash: Optional[str],
-        branch: Optional[str],
+        commit_hash: str | None,
+        branch: str | None,
         changed_files: list[str],
     ) -> list[GateResult]:
         """Run gates in parallel."""
@@ -277,8 +275,8 @@ class QualityGatesOrchestrator:
     async def _run_sequential(
         self,
         gate_names: list[str],
-        commit_hash: Optional[str],
-        branch: Optional[str],
+        commit_hash: str | None,
+        branch: str | None,
         changed_files: list[str],
     ) -> list[GateResult]:
         """Run gates sequentially."""
@@ -322,7 +320,7 @@ class QualityGatesOrchestrator:
 
             return result
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return GateResult(
                 gate_name=gate_name,
                 status=GateStatus.TIMEOUT,
@@ -402,7 +400,7 @@ class QualityGatesOrchestrator:
             blocking=gate.config.blocking if gate else True,
         )
 
-    def _get_git_commit(self) -> Optional[str]:
+    def _get_git_commit(self) -> str | None:
         """Get current git commit hash."""
         try:
             result = subprocess.run(
@@ -415,7 +413,7 @@ class QualityGatesOrchestrator:
         except Exception:
             return None
 
-    def _get_git_branch(self) -> Optional[str]:
+    def _get_git_branch(self) -> str | None:
         """Get current git branch."""
         try:
             result = subprocess.run(
@@ -462,15 +460,15 @@ class QualityGatesOrchestrator:
             del self._overrides[gate_name]
             logger.info(f"Override revoked for {gate_name}")
 
-    def get_override(self, gate_name: str) -> Optional[OverrideApproval]:
+    def get_override(self, gate_name: str) -> OverrideApproval | None:
         """Get override status for a gate."""
         return self._overrides.get(gate_name)
 
 
 # Convenience function
 async def run_quality_gates(
-    working_dir: Optional[Path] = None,
-    config: Optional[PipelineConfig] = None,
+    working_dir: Path | None = None,
+    config: PipelineConfig | None = None,
 ) -> PipelineResult:
     """
     Run quality gates pipeline.

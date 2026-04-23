@@ -7,16 +7,15 @@ import asyncio
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # LangChain imports
+# Modern LangChain agent imports (OpenAIFunctionsAgent is deprecated)
 from langchain.agents import (
     AgentExecutor,
+    create_openai_functions_agent,
     create_structured_chat_agent,
 )
-
-# Modern LangChain agent imports (OpenAIFunctionsAgent is deprecated)
-from langchain.agents import create_openai_functions_agent
 from langchain.chains import LLMChain, SequentialChain
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.output_parsers import (
@@ -25,8 +24,8 @@ from langchain.output_parsers import (
     StructuredOutputParser,
 )
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import AIMessage, HumanMessage
 from langchain.tools import StructuredTool, tool
+from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
 
 # Import our LangChain service
@@ -40,7 +39,7 @@ class QuizQuestion(BaseModel):
     """Quiz question model"""
 
     question: str = Field(description="The question text")
-    options: List[str] = Field(description="Multiple choice options")
+    options: list[str] = Field(description="Multiple choice options")
     correct_answer: str = Field(description="The correct answer")
     explanation: str = Field(description="Explanation of the answer")
     difficulty: str = Field(description="Difficulty level: easy, medium, hard")
@@ -50,19 +49,19 @@ class LearningPath(BaseModel):
     """Learning path model"""
 
     topic: str = Field(description="Main topic")
-    subtopics: List[str] = Field(description="List of subtopics to cover")
-    difficulty_progression: List[str] = Field(description="Difficulty levels in order")
+    subtopics: list[str] = Field(description="List of subtopics to cover")
+    difficulty_progression: list[str] = Field(description="Difficulty levels in order")
     estimated_time: int = Field(description="Estimated time in minutes")
-    resources: List[str] = Field(description="Recommended resources")
+    resources: list[str] = Field(description="Recommended resources")
 
 
 class StudentAssessment(BaseModel):
     """Student assessment model"""
 
     understanding_level: float = Field(description="Understanding level 0-1")
-    strengths: List[str] = Field(description="Areas of strength")
-    weaknesses: List[str] = Field(description="Areas needing improvement")
-    recommendations: List[str] = Field(description="Study recommendations")
+    strengths: list[str] = Field(description="Areas of strength")
+    weaknesses: list[str] = Field(description="Areas needing improvement")
+    recommendations: list[str] = Field(description="Study recommendations")
 
 
 class LangChainStudyBuddy:
@@ -131,25 +130,24 @@ class LangChainStudyBuddy:
                         if isinstance(node.value, (int, float)):
                             return node.value
                         raise ValueError(f"Desteklenmeyen sabit: {node.value}")
-                    elif isinstance(node, ast.Num):  # Python 3.7 uyumluluğu
+                    if isinstance(node, ast.Num):  # Python 3.7 uyumluluğu
                         return node.n
-                    elif isinstance(node, ast.BinOp):
+                    if isinstance(node, ast.BinOp):
                         left = safe_eval_node(node.left)
                         right = safe_eval_node(node.right)
                         op_type = type(node.op)
                         if op_type not in SAFE_OPERATORS:
                             raise ValueError(f"Desteklenmeyen operatör: {op_type}")
                         return SAFE_OPERATORS[op_type](left, right)
-                    elif isinstance(node, ast.UnaryOp):
+                    if isinstance(node, ast.UnaryOp):
                         operand = safe_eval_node(node.operand)
                         op_type = type(node.op)
                         if op_type not in SAFE_OPERATORS:
                             raise ValueError(f"Desteklenmeyen operatör: {op_type}")
                         return SAFE_OPERATORS[op_type](operand)
-                    elif isinstance(node, ast.Expression):
+                    if isinstance(node, ast.Expression):
                         return safe_eval_node(node.body)
-                    else:
-                        raise ValueError(f"Desteklenmeyen ifade: {type(node)}")
+                    raise ValueError(f"Desteklenmeyen ifade: {type(node)}")
 
                 # ^ işaretini ** ile değiştir
                 safe_expr = expression.replace("^", "**")
@@ -161,7 +159,7 @@ class LangChainStudyBuddy:
                 result = safe_eval_node(tree)
                 return f"Result: {result}"
             except Exception as e:
-                return f"Error solving: {str(e)}"
+                return f"Error solving: {e!s}"
 
         # Quiz generator tool
         @tool
@@ -445,7 +443,7 @@ class LangChainStudyBuddy:
 
         return json.dumps(questions, ensure_ascii=False)
 
-    async def _assess_student(self, questions: List[str], answers: List[str]) -> str:
+    async def _assess_student(self, questions: list[str], answers: list[str]) -> str:
         """Assess student performance"""
 
         parser = PydanticOutputParser(pydantic_object=StudentAssessment)
@@ -484,9 +482,9 @@ class LangChainStudyBuddy:
     async def chat(
         self,
         message: str,
-        session_id: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        session_id: str | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Main chat interface"""
 
         try:
@@ -530,7 +528,7 @@ class LangChainStudyBuddy:
         grade: int = 8,
         learning_style: str = "visual",
         language: str = "tr",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate complete lesson with explanation and quiz"""
 
         try:
@@ -567,7 +565,7 @@ class LangChainStudyBuddy:
         current_level: str = "beginner",
         learning_style: str = "visual",
         time_available: int = 10,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create personalized learning path"""
 
         try:
@@ -592,8 +590,8 @@ class LangChainStudyBuddy:
             return {"success": False, "error": str(e)}
 
     async def assess_understanding(
-        self, questions: List[str], answers: List[str]
-    ) -> Dict[str, Any]:
+        self, questions: list[str], answers: list[str]
+    ) -> dict[str, Any]:
         """Assess student understanding based on Q&A"""
 
         try:

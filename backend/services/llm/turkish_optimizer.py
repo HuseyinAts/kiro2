@@ -6,10 +6,9 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-import re
-from typing import Dict, List, Optional
-from dataclasses import dataclass
 import json
+import re
+from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -23,7 +22,7 @@ class OptimizationResult:
     optimized_tokens: int
     token_savings: int
     savings_percentage: float
-    optimizations_applied: List[str]
+    optimizations_applied: list[str]
 
 
 class TurkishPromptOptimizer:
@@ -37,7 +36,7 @@ class TurkishPromptOptimizer:
     4. Using compact Turkish expressions
     """
 
-    def __init__(self, common_words_path: Optional[str] = None):
+    def __init__(self, common_words_path: str | None = None):
         """
         Initialize optimizer
 
@@ -103,7 +102,7 @@ class TurkishPromptOptimizer:
         try:
             path = Path(self.common_words_path)
             if path.exists():
-                with open(path, "r", encoding="utf-8") as f:
+                with open(path, encoding="utf-8") as f:
                     data = json.load(f)
                     return set(data.get("words", []))
         except Exception as e:
@@ -286,7 +285,7 @@ class TurkishPromptOptimizer:
         estimated = int(base_tokens + turkish_penalty + long_word_penalty)
         return estimated
 
-    def optimize_osym_prompt(self, prompt_data: Dict[str, str]) -> Dict[str, str]:
+    def optimize_osym_prompt(self, prompt_data: dict[str, str]) -> dict[str, str]:
         """
         Optimize OSYM question generation prompt
 
@@ -310,7 +309,7 @@ class TurkishPromptOptimizer:
 
         return optimized_data
 
-    def batch_optimize(self, prompts: List[str]) -> List[OptimizationResult]:
+    def batch_optimize(self, prompts: list[str]) -> list[OptimizationResult]:
         """
         Optimize multiple prompts
 
@@ -328,8 +327,8 @@ class TurkishPromptOptimizer:
         return results
 
     def get_optimization_stats(
-        self, results: List[OptimizationResult]
-    ) -> Dict[str, float]:
+        self, results: list[OptimizationResult]
+    ) -> dict[str, float]:
         """
         Get statistics from batch optimization
 
@@ -360,7 +359,7 @@ class TurkishPromptOptimizer:
         }
 
 
-def create_optimized_osym_prompts() -> Dict[str, str]:
+def create_optimized_osym_prompts() -> dict[str, str]:
     """
     Create optimized OSYM question generation prompts
 
@@ -399,8 +398,8 @@ def create_optimized_osym_prompts() -> Dict[str, str]:
 
 # Example usage and testing
 if __name__ == "__main__":
-    import sys
     import io
+    import sys
 
     # Fix UTF-8 encoding for Windows console
     if sys.platform == "win32":

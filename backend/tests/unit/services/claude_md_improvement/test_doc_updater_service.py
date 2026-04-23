@@ -12,21 +12,22 @@ Bu modül doc_updater_service.py için kapsamlı testler içerir:
 Boris Cherny Standards - Verification Feedback Loops
 """
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock
-from pathlib import Path
-import tempfile
 import os
+import tempfile
+from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 try:
     from services.doc_updater_service import (
-        DocUpdaterService,
-        ChangeType,
-        ApprovalStatus,
-        Example,
-        DiffResult,
-        Change,
         ApprovalRequest,
+        ApprovalStatus,
+        Change,
+        ChangeType,
+        DiffResult,
+        DocUpdaterService,
+        Example,
         UpdateResult,
     )
 except Exception as e:

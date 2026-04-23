@@ -28,12 +28,10 @@ def check_java_installation():
             # Java 11+ kontrolü
             if "11" in version_info or "17" in version_info or "21" in version_info:
                 return True
-            else:
-                logger.warning("⚠️ Java 11+ önerilir")
-                return True
-        else:
-            logger.error("[X] Java kurulu değil")
-            return False
+            logger.warning("⚠️ Java 11+ önerilir")
+            return True
+        logger.error("[X] Java kurulu değil")
+        return False
 
     except FileNotFoundError:
         logger.error("[X] Java bulunamadı")

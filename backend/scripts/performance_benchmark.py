@@ -6,12 +6,13 @@ Requirements: 2.1, 2.5, 2.12, 6.6
 """
 
 import asyncio
-import time
-import statistics
 import json
-from datetime import datetime
-import psutil
 import os
+import statistics
+import time
+from datetime import datetime
+
+import psutil
 
 
 class PerformanceBenchmark:

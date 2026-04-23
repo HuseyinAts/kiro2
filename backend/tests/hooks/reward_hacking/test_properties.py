@@ -6,24 +6,30 @@ Uses Hypothesis to test system-wide properties.
 
 from __future__ import annotations
 
-import pytest
-from hypothesis import given, strategies as st, settings
-import tempfile
 import os
+import tempfile
 
-from backend.hooks.reward_hacking.hook_manager import HookManager
-from backend.hooks.reward_hacking.models.enums import ExitCode, SeverityLevel, PatternType
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
+from backend.hooks.reward_hacking.config.patterns import REWARD_HACKING_PATTERNS
 from backend.hooks.reward_hacking.detectors import (
     AssertTrueDetector,
-    EchoSuccessDetector,
-    PlaceholderDetector,
+    CICDBypassDetector,
     CoverageManipulationDetector,
-    MockAbuseDetector,
+    EchoSuccessDetector,
     EmptyExceptionDetector,
     HardcodedTestDataDetector,
-    CICDBypassDetector,
+    MockAbuseDetector,
+    PlaceholderDetector,
 )
-from backend.hooks.reward_hacking.config.patterns import REWARD_HACKING_PATTERNS
+from backend.hooks.reward_hacking.hook_manager import HookManager
+from backend.hooks.reward_hacking.models.enums import (
+    ExitCode,
+    PatternType,
+    SeverityLevel,
+)
 
 
 def create_temp_file(content: str, suffix: str = '.py') -> str:

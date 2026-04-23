@@ -4,11 +4,12 @@ isort import sorting hook icin unit testleri.
 Black uyumlulugu ve import siralama testleri.
 """
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
+import pytest
+
 from backend.hooks.isort_hook import IsortHook, run_isort
-from backend.hooks.models import HookConfig, ExitCode
+from backend.hooks.models import ExitCode, HookConfig
 
 
 class TestIsortHook:

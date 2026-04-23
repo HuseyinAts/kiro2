@@ -1,6 +1,6 @@
 """Khan Academy Integration Wrapper"""
 import logging
-from typing import List, Dict, Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -13,11 +13,11 @@ class KhanIntegration:
         logger.info("KhanIntegration initialized")
 
     async def search_content(
-        self, query: str, subjects: Optional[List[str]] = None
-    ) -> List[Dict[str, Any]]:
+        self, query: str, subjects: list[str] | None = None
+    ) -> list[dict[str, Any]]:
         """Search Khan Academy content"""
         try:
             return await self.service.search(query=query, subjects=subjects)
         except Exception as e:
-            logger.error(f"Khan Academy search error: {str(e)}")
+            logger.error(f"Khan Academy search error: {e!s}")
             return []

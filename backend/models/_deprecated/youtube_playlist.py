@@ -2,24 +2,24 @@
 Task 99.2: YouTube Playlist Models
 """
 
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Boolean,
-    DateTime,
-    ForeignKey,
-    Text,
-    Float,
-    Table,
-)
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
-from sqlalchemy.orm import relationship
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+    Text,
+)
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
+from sqlalchemy.orm import relationship
 
 from .database import Base
-
 
 # Association table for playlist-video many-to-many
 playlist_videos = Table(

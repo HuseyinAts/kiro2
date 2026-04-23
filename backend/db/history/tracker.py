@@ -21,7 +21,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
@@ -44,11 +44,11 @@ class MigrationRecord:
     direction: str  # "upgrade" or "downgrade"
     status: str  # "completed", "failed", "rolled_back"
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     duration_ms: float = 0.0
-    author: Optional[str] = None
-    description: Optional[str] = None
-    error_message: Optional[str] = None
+    author: str | None = None
+    description: str | None = None
+    error_message: str | None = None
     affected_tables: list[str] = field(default_factory=list)
     metadata: dict = field(default_factory=dict)
 
@@ -167,13 +167,13 @@ class MigrationHistoryTracker:
         direction: str,
         status: str,
         started_at: datetime,
-        completed_at: Optional[datetime] = None,
+        completed_at: datetime | None = None,
         duration_ms: float = 0.0,
-        author: Optional[str] = None,
-        description: Optional[str] = None,
-        error_message: Optional[str] = None,
-        affected_tables: Optional[list[str]] = None,
-        metadata: Optional[dict] = None,
+        author: str | None = None,
+        description: str | None = None,
+        error_message: str | None = None,
+        affected_tables: list[str] | None = None,
+        metadata: dict | None = None,
     ) -> int:
         """
         Migration kaydini ekle.
@@ -240,11 +240,11 @@ class MigrationHistoryTracker:
 
     async def get_history(
         self,
-        revision: Optional[str] = None,
-        status: Optional[str] = None,
-        direction: Optional[str] = None,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
+        revision: str | None = None,
+        status: str | None = None,
+        direction: str | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         limit: int = 100,
         offset: int = 0,
     ) -> list[MigrationRecord]:
@@ -353,8 +353,8 @@ class MigrationHistoryTracker:
 
     async def generate_audit_report(
         self,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
     ) -> AuditReport:
         """
         Audit raporu olustur.
@@ -412,7 +412,7 @@ class MigrationHistoryTracker:
             summary_by_month=monthly_summary,
         )
 
-    async def get_latest_revision(self) -> Optional[str]:
+    async def get_latest_revision(self) -> str | None:
         """En son basarili revision'i al."""
         async with self.engine.connect() as conn:
             result = await conn.execute(text(f"""

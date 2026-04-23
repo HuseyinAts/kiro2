@@ -9,7 +9,8 @@ High-priority email tasks:
 - Bulk emails
 """
 import os
-from typing import List, Dict, Any
+from typing import Any
+
 from core.celery_app import celery_app
 from core.structured_logger import get_logger
 
@@ -17,7 +18,7 @@ logger = get_logger(__name__)
 
 
 @celery_app.task(bind=True, name="tasks.email_tasks.send_welcome_email")
-def send_welcome_email(self, user_email: str, user_name: str) -> Dict[str, Any]:
+def send_welcome_email(self, user_email: str, user_name: str) -> dict[str, Any]:
     """
     Send welcome email to new user
 
@@ -62,7 +63,7 @@ def send_welcome_email(self, user_email: str, user_name: str) -> Dict[str, Any]:
 @celery_app.task(bind=True, name="tasks.email_tasks.send_password_reset_email")
 def send_password_reset_email(
     self, user_email: str, reset_token: str, expires_in_minutes: int = 30
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Send password reset email
 
@@ -101,8 +102,8 @@ def send_password_reset_email(
 
 @celery_app.task(bind=True, name="tasks.email_tasks.send_notification_email")
 def send_notification_email(
-    self, user_email: str, notification_type: str, notification_data: Dict[str, Any]
-) -> Dict[str, Any]:
+    self, user_email: str, notification_type: str, notification_data: dict[str, Any]
+) -> dict[str, Any]:
     """
     Send notification email
 
@@ -145,11 +146,11 @@ def send_notification_email(
 )
 def send_bulk_emails(
     self,
-    email_list: List[str],
+    email_list: list[str],
     subject: str,
     template: str,
-    template_data: Dict[str, Any],
-) -> Dict[str, Any]:
+    template_data: dict[str, Any],
+) -> dict[str, Any]:
     """
     Send bulk emails (batched)
 

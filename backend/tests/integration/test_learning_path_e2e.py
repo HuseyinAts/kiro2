@@ -11,11 +11,12 @@ Test Coverage:
 - Performance under realistic usage patterns
 """
 import time
+
 import pytest
 from fastapi.testclient import TestClient
 
-from main import app
 from core.jwt_auth import JWTManager, UserRole
+from main import app
 
 client = TestClient(app)
 jwt_manager = JWTManager()

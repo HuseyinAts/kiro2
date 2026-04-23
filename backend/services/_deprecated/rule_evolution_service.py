@@ -20,11 +20,11 @@ Author: KIRO2 Team
 Date: 2026-01-17
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
-from pathlib import Path
-import re
 import logging
+import re
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from typing import Any
 
 # Git integration
 try:
@@ -35,15 +35,14 @@ except ImportError:
     git = None  # type: ignore
 
 # Database
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, desc
-
 # Models
 from backend.models.claude_md_improvement_models import (
+    AuditLog,
     RuleEffectiveness,
     RuleVersion,
-    AuditLog,
 )
+from sqlalchemy import and_, desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +66,7 @@ class RuleEvolutionService:
     def __init__(
         self,
         db: AsyncSession,
-        claude_md_path: Optional[Path] = None,
+        claude_md_path: Path | None = None,
     ):
         """
         Initialize rule evolution service.
@@ -80,7 +79,7 @@ class RuleEvolutionService:
         self.claude_md_path = claude_md_path or Path("CLAUDE.md")
 
         # Git repo for version control
-        self._repo: Optional[git.Repo] = None
+        self._repo: git.Repo | None = None
         if GIT_AVAILABLE:
             try:
                 self._repo = git.Repo(search_parent_directories=True)
@@ -94,7 +93,7 @@ class RuleEvolutionService:
     async def suggest_alternatives(
         self,
         rule_id: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Suggest alternative formulations for a low-performing rule.
 
@@ -173,7 +172,7 @@ class RuleEvolutionService:
     # REQ-3.2: Contradiction Resolution
     # =========================================================================
 
-    async def detect_contradictions(self) -> List[Dict[str, Any]]:
+    async def detect_contradictions(self) -> list[dict[str, Any]]:
         """
         Detect contradictions between rules.
 
@@ -208,8 +207,8 @@ class RuleEvolutionService:
         rule1_id: str,
         rule2_id: str,
         resolution: str,
-        keep_rule: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        keep_rule: str | None = None,
+    ) -> dict[str, Any]:
         """
         Resolve a contradiction between two rules.
 
@@ -235,7 +234,7 @@ class RuleEvolutionService:
         rule1 = rules[rule1_id]
         rule2 = rules[rule2_id]
 
-        result_data: Dict[str, Any] = {"success": True}
+        result_data: dict[str, Any] = {"success": True}
 
         if resolution == "merge":
             # Merge rules into one
@@ -355,7 +354,7 @@ class RuleEvolutionService:
         self,
         rule_id: str,
         limit: int = 10,
-    ) -> List[RuleVersion]:
+    ) -> list[RuleVersion]:
         """
         Get version history for a rule.
 
@@ -381,8 +380,8 @@ class RuleEvolutionService:
     async def rollback_rule(
         self,
         rule_id: str,
-        target_version: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        target_version: str | None = None,
+    ) -> dict[str, Any]:
         """
         Rollback a rule to a previous version.
 
@@ -420,22 +419,21 @@ class RuleEvolutionService:
                 )
             )
             target = result.scalar_one_or_none()
+        # Get previous version
+        elif current.previous_version_id:
+            result = await self.db.execute(
+                select(RuleVersion)
+                .where(RuleVersion.id == current.previous_version_id)
+            )
+            target = result.scalar_one_or_none()
         else:
-            # Get previous version
-            if current.previous_version_id:
-                result = await self.db.execute(
-                    select(RuleVersion)
-                    .where(RuleVersion.id == current.previous_version_id)
-                )
-                target = result.scalar_one_or_none()
-            else:
-                target = None
+            target = None
 
         if not target:
             return {"success": False, "error": "Target version not found"}
 
         # Check rollback window
-        time_since_change = datetime.now(timezone.utc) - current.created_at
+        time_since_change = datetime.now(UTC) - current.created_at
         if time_since_change > timedelta(hours=self.ROLLBACK_WINDOW_HOURS):
             logger.warning(f"Rollback outside window for rule {rule_id}")
             # Still allow but log warning
@@ -478,7 +476,7 @@ class RuleEvolutionService:
         rule_id: str,
         version1: str,
         version2: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Compare metrics between two versions.
 
@@ -570,8 +568,8 @@ class RuleEvolutionService:
 
     async def detect_low_performing_rules(
         self,
-        threshold: Optional[float] = None,
-    ) -> List[Dict[str, Any]]:
+        threshold: float | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Detect rules that need improvement.
 
@@ -701,15 +699,14 @@ class RuleEvolutionService:
         # Prefer higher performing rule
         if rule1.effectiveness_score > rule2.effectiveness_score:
             return f"Keep rule {rule1.rule_id} (higher effectiveness: {rule1.effectiveness_score:.2f})"
-        elif rule2.effectiveness_score > rule1.effectiveness_score:
+        if rule2.effectiveness_score > rule1.effectiveness_score:
             return f"Keep rule {rule2.rule_id} (higher effectiveness: {rule2.effectiveness_score:.2f})"
-        else:
-            return "Consider merging rules or clarifying contexts"
+        return "Consider merging rules or clarifying contexts"
 
     def _merge_rules(
         self,
-        text1: Optional[str],
-        text2: Optional[str],
+        text1: str | None,
+        text2: str | None,
     ) -> str:
         """Merge two rule texts."""
         if not text1:
@@ -721,9 +718,9 @@ class RuleEvolutionService:
 
     def _compute_text_diff(
         self,
-        text1: Optional[str],
-        text2: Optional[str],
-    ) -> Dict[str, Any]:
+        text1: str | None,
+        text2: str | None,
+    ) -> dict[str, Any]:
         """Compute diff between two texts."""
         if not text1:
             text1 = ""
@@ -745,7 +742,7 @@ class RuleEvolutionService:
         rule_id: str,
         rule_text: str,
         change_reason: str,
-        effectiveness_before: Optional[float] = None,
+        effectiveness_before: float | None = None,
     ) -> RuleVersion:
         """Internal version creation helper."""
         return await self.create_rule_version(
@@ -775,8 +772,8 @@ class RuleEvolutionService:
         self,
         action: str,
         entity_type: str,
-        entity_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Log audit entry."""
         try:
@@ -796,7 +793,7 @@ class RuleEvolutionService:
 # Factory function
 async def get_rule_evolution_service(
     db: AsyncSession,
-    claude_md_path: Optional[Path] = None,
+    claude_md_path: Path | None = None,
 ) -> RuleEvolutionService:
     """Get rule evolution service instance."""
     return RuleEvolutionService(db, claude_md_path)

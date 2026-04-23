@@ -5,7 +5,7 @@ Türkçe morfoloji analizi ile soru zorluk kalibrasyonu
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 
@@ -249,10 +249,10 @@ class IRTCalibrationService:
     async def calibrate_question_irt(
         self,
         question_text: str,
-        options: List[str],
+        options: list[str],
         subject: str,
         initial_difficulty: str,
-        student_responses: Optional[List[Dict[str, Any]]] = None,
+        student_responses: list[dict[str, Any]] | None = None,
     ) -> IRTParameters:
         """
         Soru için IRT parametrelerini kalibre et
@@ -350,11 +350,11 @@ class IRTCalibrationService:
 
     async def _empirical_calibration(
         self,
-        student_responses: List[Dict[str, Any]],
+        student_responses: list[dict[str, Any]],
         initial_difficulty: float,
         initial_discrimination: float,
         guessing: float,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Öğrenci yanıtlarına dayalı empirical kalibrasyon
         Maximum Likelihood Estimation (MLE) benzeri yaklaşım
@@ -475,8 +475,8 @@ class IRTCalibrationService:
         return sum(confidence_factors)
 
     async def batch_calibrate_questions(
-        self, questions: List[Dict[str, Any]], batch_size: int = 50
-    ) -> List[IRTParameters]:
+        self, questions: list[dict[str, Any]], batch_size: int = 50
+    ) -> list[IRTParameters]:
         """
         Toplu soru kalibrasyonu
         Büyük soru bankası için optimize edilmiş
@@ -529,8 +529,8 @@ class IRTCalibrationService:
         return calibrated_params
 
     async def validate_irt_parameters(
-        self, questions_with_params: List[Tuple[Dict[str, Any], IRTParameters]]
-    ) -> Dict[str, Any]:
+        self, questions_with_params: list[tuple[dict[str, Any], IRTParameters]]
+    ) -> dict[str, Any]:
         """
         IRT parametrelerini doğrula ve kalite kontrolü yap
         """
@@ -644,7 +644,7 @@ class IRTCalibrationService:
 
     async def export_calibrated_questions(
         self,
-        questions_with_params: List[Tuple[Dict[str, Any], IRTParameters]],
+        questions_with_params: list[tuple[dict[str, Any], IRTParameters]],
         output_format: str = "json",
     ) -> str:
         """
@@ -672,6 +672,5 @@ class IRTCalibrationService:
             import json
 
             return json.dumps(export_data, ensure_ascii=False, indent=2)
-        else:
-            # CSV veya diğer formatlar için genişletilebilir
-            return str(export_data)
+        # CSV veya diğer formatlar için genişletilebilir
+        return str(export_data)

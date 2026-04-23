@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
@@ -59,14 +59,14 @@ class EBAVideoMetadata:
     duration_minutes: int
     category: EBAContentCategory
     grade_level: EBAGradeLevel
-    subject_topics: List[str]
+    subject_topics: list[str]
     difficulty_level: DifficultyLevel
     video_url: str
-    thumbnail_url: Optional[str]
-    transcript: Optional[str]
+    thumbnail_url: str | None
+    transcript: str | None
     quality_score: float
-    curriculum_alignment: Dict[str, Any]
-    accessibility_features: List[str]
+    curriculum_alignment: dict[str, Any]
+    accessibility_features: list[str]
     created_date: datetime
     last_updated: datetime
 
@@ -75,11 +75,11 @@ class EBAVideoMetadata:
 class EBAContentCollection:
     """EBA TV içerik koleksiyonu"""
 
-    videos: List[EBAVideoMetadata]
+    videos: list[EBAVideoMetadata]
     total_count: int
-    categories: Dict[EBAContentCategory, int]
-    grade_levels: Dict[EBAGradeLevel, int]
-    quality_distribution: Dict[str, int]
+    categories: dict[EBAContentCategory, int]
+    grade_levels: dict[EBAGradeLevel, int]
+    quality_distribution: dict[str, int]
     last_updated: datetime
 
 
@@ -141,12 +141,11 @@ class EBAContentQualityAnalyzer:
 
         if duration < criteria["min"]:
             return 0.3  # Çok kısa
-        elif duration > criteria["max"]:
+        if duration > criteria["max"]:
             return 0.5  # Çok uzun
-        elif abs(duration - criteria["optimal"]) <= 5:
+        if abs(duration - criteria["optimal"]) <= 5:
             return 1.0  # Optimal
-        else:
-            return 0.7  # Kabul edilebilir
+        return 0.7  # Kabul edilebilir
 
     def _evaluate_title_clarity(self, title: str) -> float:
         """Başlık netliğini değerlendir"""
@@ -155,10 +154,9 @@ class EBAContentQualityAnalyzer:
 
         if len(words) < criteria["min_words"]:
             return 0.4  # Çok kısa
-        elif len(words) > criteria["max_words"]:
+        if len(words) > criteria["max_words"]:
             return 0.6  # Çok uzun
-        else:
-            return 1.0  # Uygun
+        return 1.0  # Uygun
 
     def _evaluate_description(self, description: str) -> float:
         """Açıklama kalitesini değerlendir"""
@@ -170,10 +168,9 @@ class EBAContentQualityAnalyzer:
 
         if length < criteria["min_chars"]:
             return 0.3
-        elif length > criteria["max_chars"]:
+        if length > criteria["max_chars"]:
             return 0.7
-        else:
-            return 1.0
+        return 1.0
 
     def _evaluate_curriculum_alignment(self, metadata: EBAVideoMetadata) -> float:
         """Müfredat uyumunu değerlendir"""
@@ -183,7 +180,7 @@ class EBAContentQualityAnalyzer:
         found_keywords = sum(1 for keyword in keywords if keyword in text)
         return min(1.0, found_keywords / len(keywords) * 2)
 
-    def _evaluate_accessibility(self, features: List[str]) -> float:
+    def _evaluate_accessibility(self, features: list[str]) -> float:
         """Erişilebilirlik özelliklerini değerlendir"""
         if not features:
             return 0.2
@@ -260,7 +257,7 @@ class EBACurriculumMatcher:
 
     async def match_content_to_curriculum(
         self, metadata: EBAVideoMetadata
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """İçeriği müfredat ile eşleştir"""
 
         grade_topics = self.curriculum_topics.get(metadata.grade_level, {})
@@ -299,7 +296,7 @@ class EBAContentCollector:
     """EBA TV içerik toplama sistemi"""
 
     def __init__(self):
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
         self.quality_analyzer = EBAContentQualityAnalyzer()
         self.curriculum_matcher = EBACurriculumMatcher()
 
@@ -438,7 +435,7 @@ class EBAContentCollector:
 
     async def collect_content_by_category(
         self, grade_level: EBAGradeLevel, category: EBAContentCategory
-    ) -> List[EBAVideoMetadata]:
+    ) -> list[EBAVideoMetadata]:
         """Belirli kategori için içerik topla"""
 
         videos = []
@@ -482,7 +479,7 @@ class EBAContentCollector:
 
     async def _create_video_metadata(
         self,
-        video_data: Dict[str, Any],
+        video_data: dict[str, Any],
         grade_level: EBAGradeLevel,
         category: EBAContentCategory,
     ) -> EBAVideoMetadata:
@@ -534,7 +531,7 @@ class EBAContentCollector:
             # Uzun videolar genelde daha karmaşık
             if base_difficulty == DifficultyLevel.EASY:
                 return DifficultyLevel.MEDIUM
-            elif base_difficulty == DifficultyLevel.MEDIUM:
+            if base_difficulty == DifficultyLevel.MEDIUM:
                 return DifficultyLevel.HARD
 
         return base_difficulty
@@ -549,8 +546,8 @@ class EBAtvService:
         self.curriculum_matcher = EBACurriculumMatcher()
 
         # Cache için
-        self._content_cache: Optional[EBAContentCollection] = None
-        self._cache_expiry: Optional[datetime] = None
+        self._content_cache: EBAContentCollection | None = None
+        self._cache_expiry: datetime | None = None
         self._cache_duration = timedelta(hours=6)  # 6 saatte bir güncelle
 
     async def get_all_content(
@@ -584,10 +581,10 @@ class EBAtvService:
     async def search_content(
         self,
         query: str,
-        grade_level: Optional[EBAGradeLevel] = None,
-        category: Optional[EBAContentCategory] = None,
+        grade_level: EBAGradeLevel | None = None,
+        category: EBAContentCategory | None = None,
         min_quality: float = 6.0,
-    ) -> List[EBAVideoMetadata]:
+    ) -> list[EBAVideoMetadata]:
         """EBA TV içeriklerinde arama yap"""
 
         content_collection = await self.get_all_content()
@@ -620,7 +617,7 @@ class EBAtvService:
 
     async def get_content_by_curriculum_topic(
         self, grade_level: EBAGradeLevel, category: EBAContentCategory, topic: str
-    ) -> List[EBAVideoMetadata]:
+    ) -> list[EBAVideoMetadata]:
         """Müfredat konusuna göre içerik getir"""
 
         content_collection = await self.get_all_content()
@@ -645,9 +642,9 @@ class EBAtvService:
     async def get_recommended_content(
         self,
         student_grade: EBAGradeLevel,
-        weak_subjects: List[EBAContentCategory],
+        weak_subjects: list[EBAContentCategory],
         learning_style: str = "visual",
-    ) -> List[EBAVideoMetadata]:
+    ) -> list[EBAVideoMetadata]:
         """Öğrenci profiline göre önerilen içerikler"""
 
         content_collection = await self.get_all_content()
@@ -661,9 +658,7 @@ class EBAtvService:
             # Zayıf konulara odaklan
             if video.category in weak_subjects:
                 # Görsel öğrenme stili için video süresi tercihi
-                if learning_style == "visual" and video.duration_minutes <= 20:
-                    recommendations.append(video)
-                elif learning_style == "auditory" and video.duration_minutes >= 15:
+                if (learning_style == "visual" and video.duration_minutes <= 20) or (learning_style == "auditory" and video.duration_minutes >= 15):
                     recommendations.append(video)
                 else:
                     recommendations.append(video)
@@ -679,7 +674,7 @@ class EBAtvService:
 
         return recommendations[:10]  # En iyi 10 öneri
 
-    async def get_content_statistics(self) -> Dict[str, Any]:
+    async def get_content_statistics(self) -> dict[str, Any]:
         """EBA TV içerik istatistikleri"""
 
         content_collection = await self.get_all_content()

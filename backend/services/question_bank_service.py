@@ -10,25 +10,26 @@ Task 70 Implementation:
 """
 
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Any
-from sqlalchemy import select, and_, or_, func
+from typing import Any
+
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
+# Note: IRTValidationError is raised by validators - re-exported for external use
+from core.irt_validators import IRTValidationError as IRTValidationError
 from core.irt_validators import (
     validate_irt_difficulty,
     validate_irt_discrimination,
     validate_irt_guessing,
     validate_irt_upper_asymptote,
 )
-# Note: IRTValidationError is raised by validators - re-exported for external use
-from core.irt_validators import IRTValidationError as IRTValidationError  # noqa: F401
 from models.question_bank import (
+    IRTCalibrationHistory,
     QuestionBankItem,
-    TopicHierarchy,
+    QuestionDifficultyLevel,
     QuestionTag,
     QuestionTagAssociation,
-    IRTCalibrationHistory,
-    QuestionDifficultyLevel,
+    TopicHierarchy,
     calculate_irt_based_difficulty,
     should_update_difficulty,
 )
@@ -45,7 +46,7 @@ class QuestionBankService:
     # ========================================================================
 
     async def create_question(
-        self, question_data: Dict[str, Any], created_by: Optional[str] = None
+        self, question_data: dict[str, Any], created_by: str | None = None
     ) -> QuestionBankItem:
         """
         Yeni soru oluştur
@@ -72,7 +73,7 @@ class QuestionBankService:
 
         return question
 
-    async def get_question(self, question_id: str) -> Optional[QuestionBankItem]:
+    async def get_question(self, question_id: str) -> QuestionBankItem | None:
         """Soru detayını getir"""
         result = await self.db.execute(
             select(QuestionBankItem)
@@ -86,8 +87,8 @@ class QuestionBankService:
         return result.scalar_one_or_none()
 
     async def update_question(
-        self, question_id: str, update_data: Dict[str, Any]
-    ) -> Optional[QuestionBankItem]:
+        self, question_id: str, update_data: dict[str, Any]
+    ) -> QuestionBankItem | None:
         """Soru güncelle"""
         question = await self.get_question(question_id)
         if not question:
@@ -124,7 +125,7 @@ class QuestionBankService:
         code: str,
         name_tr: str,
         level: int,
-        parent_id: Optional[str] = None,
+        parent_id: str | None = None,
         **kwargs,
     ) -> TopicHierarchy:
         """
@@ -150,8 +151,8 @@ class QuestionBankService:
         return topic
 
     async def get_topic_hierarchy(
-        self, parent_id: Optional[str] = None
-    ) -> List[TopicHierarchy]:
+        self, parent_id: str | None = None
+    ) -> list[TopicHierarchy]:
         """
         Konu hiyerarşisini getir
 
@@ -173,7 +174,7 @@ class QuestionBankService:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def get_topic_path(self, topic_id: str) -> List[TopicHierarchy]:
+    async def get_topic_path(self, topic_id: str) -> list[TopicHierarchy]:
         """
         Konunun tam yolunu getir (kökten başlayarak)
 
@@ -250,8 +251,8 @@ class QuestionBankService:
             return path
 
     async def add_question_tags(
-        self, question_id: str, tag_names: List[str]
-    ) -> List[QuestionTagAssociation]:
+        self, question_id: str, tag_names: list[str]
+    ) -> list[QuestionTagAssociation]:
         """
         Soruya etiket ekle
 
@@ -298,7 +299,7 @@ class QuestionBankService:
 
     async def update_question_difficulty(
         self, question_id: str, force: bool = False
-    ) -> Optional[QuestionBankItem]:
+    ) -> QuestionBankItem | None:
         """
         Sorunun zorluk seviyesini dinamik olarak güncelle
 
@@ -489,7 +490,7 @@ class QuestionBankService:
 
     async def get_calibration_history(
         self, question_id: str, limit: int = 10
-    ) -> List[IRTCalibrationHistory]:
+    ) -> list[IRTCalibrationHistory]:
         """
         Sorunun kalibrasyon geçmişini getir
 
@@ -510,7 +511,7 @@ class QuestionBankService:
 
     async def get_questions_needing_calibration(
         self, min_attempts: int = 200, days_since_calibration: int = 90
-    ) -> List[QuestionBankItem]:
+    ) -> list[QuestionBankItem]:
         """
         Kalibrasyona ihtiyaç duyan soruları getir
 
@@ -543,15 +544,15 @@ class QuestionBankService:
 
     async def search_questions(
         self,
-        exam_type: Optional[str] = None,
-        subject_area: Optional[str] = None,
-        topic_id: Optional[str] = None,
-        difficulty_level: Optional[QuestionDifficultyLevel] = None,
+        exam_type: str | None = None,
+        subject_area: str | None = None,
+        topic_id: str | None = None,
+        difficulty_level: QuestionDifficultyLevel | None = None,
         min_quality_score: float = 0.0,
-        is_calibrated: Optional[bool] = None,
+        is_calibrated: bool | None = None,
         limit: int = 50,
         offset: int = 0,
-    ) -> List[QuestionBankItem]:
+    ) -> list[QuestionBankItem]:
         """
         Soru ara ve filtrele
 
@@ -608,7 +609,7 @@ class QuestionBankService:
     # Analytics and Statistics
     # ========================================================================
 
-    async def get_question_statistics(self, question_id: str) -> Dict[str, Any]:
+    async def get_question_statistics(self, question_id: str) -> dict[str, Any]:
         """
         Soru istatistiklerini getir
 
@@ -639,7 +640,7 @@ class QuestionBankService:
             "exposure_rate": question.exposure_rate,
         }
 
-    async def get_topic_statistics(self, topic_id: str) -> Dict[str, Any]:
+    async def get_topic_statistics(self, topic_id: str) -> dict[str, Any]:
         """
         Konu istatistiklerini getir
 

@@ -8,7 +8,6 @@ PERFORMANCE FIX: Critical indexes for high-traffic queries
 """
 from alembic import op
 
-
 # revision identifiers, used by Alembic.
 revision = "001_perf_indexes"
 down_revision = None

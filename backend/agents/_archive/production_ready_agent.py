@@ -10,7 +10,6 @@ import os
 # Import improved components
 import sys
 import time
-from typing import Dict, Optional
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -54,7 +53,7 @@ class ProductionLearningAgent(BaseAgent):
         logger.info(f"Initialized {self.name} with production settings")
 
     async def process(
-        self, message: str, context: Optional[ConversationContext] = None
+        self, message: str, context: ConversationContext | None = None
     ) -> str:
         """
         Enhanced process method with monitoring and error handling
@@ -76,7 +75,7 @@ class ProductionLearningAgent(BaseAgent):
                 return await self._get_fallback_response(message)
 
     async def _process_mock(
-        self, message: str, context: Optional[ConversationContext]
+        self, message: str, context: ConversationContext | None
     ) -> str:
         """
         Process with dynamic content from content manager
@@ -110,7 +109,7 @@ class ProductionLearningAgent(BaseAgent):
         return response
 
     async def _process_with_llm(
-        self, message: str, context: Optional[ConversationContext]
+        self, message: str, context: ConversationContext | None
     ) -> str:
         """
         Process with LLM using circuit breaker and connection pool
@@ -149,7 +148,7 @@ class ProductionLearningAgent(BaseAgent):
             return await self._get_content_based_response(message)
 
     async def _call_llm_with_timeout(
-        self, prompt: str, context: Optional[ConversationContext]
+        self, prompt: str, context: ConversationContext | None
     ) -> str:
         """
         Call LLM with timeout protection
@@ -167,14 +166,13 @@ class ProductionLearningAgent(BaseAgent):
 
                 if result.get("success") and result.get("text"):
                     return result["text"]
-                else:
-                    raise Exception("LLM returned empty response")
+                raise Exception("LLM returned empty response")
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise Exception(f"LLM timeout after {self.response_timeout}s")
 
     def _build_enhanced_prompt(
-        self, message: str, context: Optional[ConversationContext]
+        self, message: str, context: ConversationContext | None
     ) -> str:
         """
         Build context-aware prompt with relevant information
@@ -207,7 +205,7 @@ class ProductionLearningAgent(BaseAgent):
 
         return "\n".join(parts)
 
-    def _get_system_prompt(self, context: Optional[ConversationContext]) -> str:
+    def _get_system_prompt(self, context: ConversationContext | None) -> str:
         """
         Get dynamic system prompt based on context
         """
@@ -240,12 +238,11 @@ class ProductionLearningAgent(BaseAgent):
         # Try to match keywords with content
         if any(word in message_lower for word in ["matematik", "mat", "sayı"]):
             return await self.content_provider.get_lgs_math_content()
-        elif any(word in message_lower for word in ["plan", "program", "çalışma"]):
+        if any(word in message_lower for word in ["plan", "program", "çalışma"]):
             return await self.content_provider.get_personalized_plan("lgs_matematik")
-        elif any(word in message_lower for word in ["kaynak", "video", "kitap"]):
+        if any(word in message_lower for word in ["kaynak", "video", "kitap"]):
             return await self.content_provider.get_study_resources("lgs_matematik")
-        else:
-            return await self._get_fallback_response(message)
+        return await self._get_fallback_response(message)
 
     async def _get_fallback_response(self, message: str) -> str:
         """
@@ -263,7 +260,7 @@ class ProductionLearningAgent(BaseAgent):
         return random.choice(responses)
 
     async def _get_educational_response(
-        self, message: str, context: Optional[ConversationContext]
+        self, message: str, context: ConversationContext | None
     ) -> str:
         """
         Generate educational response based on message patterns
@@ -287,7 +284,7 @@ LGS (Liselere Geçiş Sınavı), 8. sınıf öğrencilerinin gireceği merkezi s
 
 Hangi ders hakkında detaylı bilgi almak istersiniz?"""
 
-    async def get_health_status(self) -> Dict:
+    async def get_health_status(self) -> dict:
         """
         Get agent health status
         """

@@ -8,10 +8,10 @@ Property Tests (design.md):
 """
 
 import pytest
-from hypothesis import given, strategies as st, settings
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 # Note: conftest.py adds backend dir to sys.path
-
 from pipeline.agents.quality_gate_agent import QualityGateAgent
 from pipeline.stage_base import StageInput
 

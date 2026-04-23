@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 100K+ Concurrent Users Load Testing
 Büyük ölçekli yük testi - 100,000+ eşzamanlı kullanıcı simülasyonu
@@ -8,12 +7,13 @@ Requirements: 7.1, 7.2, 7.3, 7.6
 """
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Load test spawns 20 workers for 600s - not suitable for CI/batch runs", allow_module_level=True)
 
 import asyncio
 import os
 import time
-from typing import Dict, Any
+from typing import Any
 
 import aiohttp
 import psutil
@@ -40,7 +40,7 @@ class Test100KConcurrentUsers:
         batch_size = 500
         concurrent_batches = 20  # 500 * 20 = 10K eşzamanlı
 
-        async def simulate_user_session(user_id: int) -> Dict[str, Any]:
+        async def simulate_user_session(user_id: int) -> dict[str, Any]:
             """Tek kullanıcı oturumu simülasyonu"""
             async with aiohttp.ClientSession() as session:
                 start_time = time.time()

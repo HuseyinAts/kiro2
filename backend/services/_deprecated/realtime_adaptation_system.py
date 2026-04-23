@@ -14,14 +14,14 @@ import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+
 import numpy as np
 from scipy.stats import norm
 
 from services.adaptive_test_engine import (
     AdaptiveTestEngine,
-    TestSession,
     IRTParameters,
+    TestSession,
 )
 
 logger = logging.getLogger(__name__)
@@ -31,9 +31,9 @@ logger = logging.getLogger(__name__)
 class RealtimeMetrics:
     """Gerçek zamanlı metrikler"""
 
-    response_times: List[float] = field(default_factory=list)
-    accuracy_history: List[bool] = field(default_factory=list)
-    difficulty_history: List[float] = field(default_factory=list)
+    response_times: list[float] = field(default_factory=list)
+    accuracy_history: list[bool] = field(default_factory=list)
+    difficulty_history: list[float] = field(default_factory=list)
     success_rate_window: float = 0.5
     avg_response_time: float = 0.0
     response_time_trend: float = 0.0  # Pozitif = yavaşlama
@@ -50,7 +50,7 @@ class AdaptationDecision:
     decision_type: str  # 'difficulty', 'motivation', 'break', 'continue'
     action: str  # Yapılacak aksiyon
     reason: str  # Karar nedeni
-    parameters: Dict  # Ek parametreler
+    parameters: dict  # Ek parametreler
     timestamp: datetime = field(default_factory=datetime.now)
 
 
@@ -64,10 +64,10 @@ class RealtimeAdaptationSystem:
     REQ-49.81-49.84: Yorgunluk tespiti
     """
 
-    def __init__(self, adaptive_engine: Optional[AdaptiveTestEngine] = None):
+    def __init__(self, adaptive_engine: AdaptiveTestEngine | None = None):
         """Gerçek zamanlı adaptasyon sistemini başlat"""
         self.adaptive_engine = adaptive_engine or AdaptiveTestEngine()
-        self.session_metrics: Dict[str, RealtimeMetrics] = {}
+        self.session_metrics: dict[str, RealtimeMetrics] = {}
 
         # Theta güncelleme parametreleri
         self.theta_update_threshold = 0.001  # Minimum değişim
@@ -96,7 +96,7 @@ class RealtimeAdaptationSystem:
         question_params: IRTParameters,
         is_correct: bool,
         response_time: float,
-    ) -> Tuple[float, float, float]:
+    ) -> tuple[float, float, float]:
         """
         Her yanıt sonrası theta'yı gerçek zamanlı güncelle.
 
@@ -236,7 +236,7 @@ class RealtimeAdaptationSystem:
 
         return prob
 
-    def track_confidence_interval(self, session: TestSession) -> Dict[str, float]:
+    def track_confidence_interval(self, session: TestSession) -> dict[str, float]:
         """
         Güven aralığını takip et.
 
@@ -456,7 +456,7 @@ class RealtimeAdaptationSystem:
 
     def monitor_success_rate(
         self, session: TestSession, window_size: int = 10
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Başarı oranını izle ve motivasyon seviyesini hesapla.
 
@@ -519,8 +519,8 @@ class RealtimeAdaptationSystem:
         }
 
     def generate_encouragement_message(
-        self, session: TestSession, motivation_metrics: Dict
-    ) -> Optional[str]:
+        self, session: TestSession, motivation_metrics: dict
+    ) -> str | None:
         """
         Pozitif pekiştirme mesajı oluştur.
 
@@ -559,9 +559,7 @@ class RealtimeAdaptationSystem:
         # Yüksek başarı oranı kutlaması (REQ-49.79)
         if success_rate >= 0.8:
             messages = [
-                "Mükemmel performans! %{:.0f} başarı oranı! 🏆".format(
-                    success_rate * 100
-                ),
+                f"Mükemmel performans! %{success_rate * 100:.0f} başarı oranı! 🏆",
                 "Harika gidiyorsun! Başarı oranın çok yüksek! ⭐",
                 "Süpersin! Bu konuyu çok iyi kavramışsın! 🎯",
             ]
@@ -580,7 +578,7 @@ class RealtimeAdaptationSystem:
 
     def celebrate_achievement(
         self, session: TestSession, achievement_type: str
-    ) -> Dict:
+    ) -> dict:
         """
         Başarı kutlaması oluştur.
 
@@ -698,7 +696,7 @@ class RealtimeAdaptationSystem:
 
     def analyze_response_time(
         self, session: TestSession, recent_window: int = 10
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Yanıt sürelerini analiz et ve yorgunluk tespiti yap.
 
@@ -767,7 +765,7 @@ class RealtimeAdaptationSystem:
 
     def detect_accuracy_decline(
         self, session: TestSession, window_size: int = 10
-    ) -> Dict[str, any]:
+    ) -> dict[str, any]:
         """
         Doğruluk düşüşünü tespit et.
 
@@ -819,7 +817,7 @@ class RealtimeAdaptationSystem:
             "second_half_accuracy": second_half_accuracy,
         }
 
-    def recommend_break(self, session: TestSession) -> Optional[Dict]:
+    def recommend_break(self, session: TestSession) -> dict | None:
         """
         Mola önerisi yap.
 
@@ -997,7 +995,7 @@ class RealtimeAdaptationSystem:
             f"Response Time: {response_time:.1f}s, Correct: {is_correct}"
         )
 
-    def get_adaptation_summary(self, session: TestSession) -> Dict:
+    def get_adaptation_summary(self, session: TestSession) -> dict:
         """
         Adaptasyon özetini al.
 

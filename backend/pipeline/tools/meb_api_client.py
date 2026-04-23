@@ -7,7 +7,7 @@ YKS Ders ve Kazanım Yapısı:
 - AYT: Alan dersleri
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -21,7 +21,7 @@ class Kazanim(BaseModel):
     sinif: int
     unite: str
     konu: str
-    alt_konu: Optional[str] = None
+    alt_konu: str | None = None
     bloom_seviyesi: str
     sure_dk: int = 45
 
@@ -33,7 +33,7 @@ class Konu(BaseModel):
     ders: str
     sinif: int
     unite: str
-    kazanimlar: List[str] = []
+    kazanimlar: list[str] = []
 
 
 class MEBApiClient:
@@ -136,7 +136,7 @@ class MEBApiClient:
         ]
     }
 
-    def __init__(self, api_base_url: Optional[str] = None, api_key: Optional[str] = None):
+    def __init__(self, api_base_url: str | None = None, api_key: str | None = None):
         """
         MEB API Client başlat
 
@@ -146,9 +146,9 @@ class MEBApiClient:
         """
         self.api_base_url = api_base_url
         self.api_key = api_key
-        self._cache: Dict[str, Any] = {}
+        self._cache: dict[str, Any] = {}
 
-    async def get_kazanim(self, kazanim_id: str) -> Optional[Kazanim]:
+    async def get_kazanim(self, kazanim_id: str) -> Kazanim | None:
         """
         Kazanım ID'ye göre kazanım bilgisi getir
 
@@ -177,8 +177,8 @@ class MEBApiClient:
         self,
         ders: str,
         konu: str,
-        sinif: Optional[int] = None
-    ) -> List[Kazanim]:
+        sinif: int | None = None
+    ) -> list[Kazanim]:
         """
         Konu ve derse göre kazanımları getir
 
@@ -201,7 +201,7 @@ class MEBApiClient:
 
         return results
 
-    async def get_konular_by_ders(self, ders: str, sinif: Optional[int] = None) -> List[Konu]:
+    async def get_konular_by_ders(self, ders: str, sinif: int | None = None) -> list[Konu]:
         """
         Derse göre konuları getir
 
@@ -263,7 +263,7 @@ class MEBApiClient:
         # Varsayılan
         return "anlama"
 
-    async def get_related_kazanimlar(self, kazanim_id: str, limit: int = 5) -> List[Kazanim]:
+    async def get_related_kazanimlar(self, kazanim_id: str, limit: int = 5) -> list[Kazanim]:
         """
         İlişkili kazanımları getir
 

@@ -10,7 +10,7 @@ import re
 def fix_test_file(file_path: str) -> None:
     """Apply all final fixes"""
 
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         content = f.read()
 
     original_content = content
@@ -81,9 +81,8 @@ def fix_test_file(file_path: str) -> None:
             print(f"  - {fix}")
 
         return True
-    else:
-        print("INFO: No changes needed")
-        return False
+    print("INFO: No changes needed")
+    return False
 
 
 if __name__ == "__main__":

@@ -30,16 +30,36 @@ def _load_sympy():
     try:
         import sympy
         from sympy import (
-            symbols, Symbol, Eq, solve, simplify, expand, factor,
-            diff, integrate, limit, sqrt, Rational, pi, E,
-            sin, cos, tan, log, exp, oo,
-            parse_expr, sympify,
+            E,
+            Eq,
+            Rational,
+            Symbol,
+            cos,
+            diff,
+            exp,
+            expand,
+            factor,
+            integrate,
+            limit,
+            log,
+            oo,
+            parse_expr,
+            pi,
+            simplify,
+            sin,
+            solve,
+            sqrt,
+            symbols,
+            sympify,
+            tan,
+        )
+        from sympy.parsing.sympy_parser import (
+            convert_xor,
+            implicit_multiplication_application,
+            standard_transformations,
         )
         from sympy.parsing.sympy_parser import (
             parse_expr as parse_expression,
-            standard_transformations,
-            implicit_multiplication_application,
-            convert_xor,
         )
         _sympy_modules = {
             'sympy': sympy,
@@ -392,7 +412,7 @@ class MathVerificationService:
             return VerificationResult(
                 is_correct=False,
                 confidence=0.0,
-                message=f"Doğrulama hatası: {str(e)}",
+                message=f"Doğrulama hatası: {e!s}",
                 error=str(e)
             )
 
@@ -492,7 +512,7 @@ class MathVerificationService:
             return VerificationResult(
                 is_correct=False,
                 confidence=0.0,
-                message=f"Doğrulama hatası: {str(e)}",
+                message=f"Doğrulama hatası: {e!s}",
                 error=str(e)
             )
 
@@ -575,7 +595,7 @@ class MathVerificationService:
             return VerificationResult(
                 is_correct=False,
                 confidence=0.0,
-                message=f"Doğrulama hatası: {str(e)}",
+                message=f"Doğrulama hatası: {e!s}",
                 error=str(e)
             )
 
@@ -605,28 +625,27 @@ class MathVerificationService:
         if problem_type == MathProblemType.ALGEBRA:
             return await self.verify_algebra(problem, solution)
 
-        elif problem_type == MathProblemType.CALCULUS:
+        if problem_type == MathProblemType.CALCULUS:
             operation = kwargs.get('operation', 'derivative')
             return await self.verify_calculus(
                 problem, solution, operation,
                 limit_point=kwargs.get('limit_point')
             )
 
-        elif problem_type == MathProblemType.GEOMETRY:
+        if problem_type == MathProblemType.GEOMETRY:
             steps = kwargs.get('construction_steps', [])
             return await self.verify_geometry(problem, steps, solution)
 
-        elif problem_type == MathProblemType.TRIGONOMETRY:
+        if problem_type == MathProblemType.TRIGONOMETRY:
             # Trigonometry uses algebra verification
             return await self.verify_algebra(problem, solution)
 
-        else:
-            return VerificationResult(
-                is_correct=False,
-                confidence=0.0,
-                message=f"Desteklenmeyen problem tipi: {problem_type}",
-                error="unsupported_problem_type"
-            )
+        return VerificationResult(
+            is_correct=False,
+            confidence=0.0,
+            message=f"Desteklenmeyen problem tipi: {problem_type}",
+            error="unsupported_problem_type"
+        )
 
 
 # Singleton instance

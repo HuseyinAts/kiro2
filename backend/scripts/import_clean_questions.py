@@ -12,7 +12,6 @@ import asyncio
 import json
 import sys
 from pathlib import Path
-from uuid import UUID
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -30,6 +29,7 @@ CLEAN_QUESTIONS_FILE = DATA_DIR / "osym_clean_questions.json"
 async def get_database_url() -> str:
     """Get database URL from environment or config."""
     import os
+
     from dotenv import load_dotenv
 
     load_dotenv(BASE_DIR / ".env")
@@ -143,7 +143,7 @@ async def main():
         print("Önce repair_osym_questions.py çalıştırın.")
         return
 
-    with open(CLEAN_QUESTIONS_FILE, 'r', encoding='utf-8') as f:
+    with open(CLEAN_QUESTIONS_FILE, encoding='utf-8') as f:
         questions = json.load(f)
 
     print(f"[OK] {len(questions)} temiz soru yüklendi")

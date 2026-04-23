@@ -1,12 +1,11 @@
 import asyncio
-from pathlib import Path
-from typing import List, Dict
 import json
 import logging
 from datetime import datetime
+from pathlib import Path
 
-from .yolo_detector import YKSQuestionDetector
 from .gemini_ocr import GeminiOCRService
+from .yolo_detector import YKSQuestionDetector
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +30,7 @@ class YKSQuestionPipeline:
 
         logger.info("YKS Question Pipeline initialized")
 
-    async def process_test_page(self, image_path: str) -> Dict:
+    async def process_test_page(self, image_path: str) -> dict:
         """
         Tek bir test sayfasını işle
 
@@ -98,7 +97,7 @@ class YKSQuestionPipeline:
 
         return results
 
-    async def process_batch(self, image_paths: List[str]) -> List[Dict]:
+    async def process_batch(self, image_paths: list[str]) -> list[dict]:
         """
         Birden fazla test sayfasını işle
 
@@ -134,7 +133,7 @@ class YKSQuestionPipeline:
 
         return results
 
-    def extract_answer_sheet(self, image_path: str) -> Dict[str, str]:
+    def extract_answer_sheet(self, image_path: str) -> dict[str, str]:
         """
         Cevap anahtarını çıkar (manuel kontrol gerekebilir)
 

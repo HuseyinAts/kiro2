@@ -3,11 +3,11 @@ Comprehensive tests for HuggingFace LLM Service
 Target: 80%+ test coverage
 """
 
-import asyncio
 import json
-import pytest
 import time
-from unittest.mock import AsyncMock, patch, Mock
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 
 pytestmark = pytest.mark.skipif(True, reason="HuggingFaceLLMService API changed + async tests timeout (19+ failures)")
 
@@ -412,7 +412,7 @@ class TestHuggingFaceLLMService:
         service = HuggingFaceLLMService()
 
         # Mock timeout
-        mock_post.side_effect = asyncio.TimeoutError()
+        mock_post.side_effect = TimeoutError()
 
         # Mock session
         mock_session = AsyncMock()

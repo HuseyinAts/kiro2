@@ -6,10 +6,11 @@ Requirements: REQ-48.1-48.4
 Bu modül ÖSYM sorularını toplar, parse eder ve veritabanına kaydeder.
 """
 
-import logging
-from typing import Dict, List, Any
 import hashlib
+import logging
 import re
+from typing import Any
+
 from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ class OSYMQuestionScraper:
         self.scraped_count = 0
         self.error_count = 0
 
-    def generate_question_id(self, question_data: Dict[str, Any]) -> str:
+    def generate_question_id(self, question_data: dict[str, Any]) -> str:
         """
         Soru için benzersiz ID oluştur.
 
@@ -47,8 +48,8 @@ class OSYMQuestionScraper:
         return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
 
     def scrape_osym_questions(
-        self, year_range: tuple = (2014, 2024), exam_types: List[str] = None
-    ) -> Dict[str, int]:
+        self, year_range: tuple = (2014, 2024), exam_types: list[str] = None
+    ) -> dict[str, int]:
         """
         ÖSYM sorularını belirtilen yıl aralığında topla.
 
@@ -87,13 +88,13 @@ class OSYMQuestionScraper:
                     logger.info(f"{year} {exam_type}: {saved} soru kaydedildi")
 
                 except Exception as e:
-                    logger.error(f"{year} {exam_type} scraping hatası: {str(e)}")
+                    logger.error(f"{year} {exam_type} scraping hatası: {e!s}")
                     stats["total_errors"] += 1
 
         logger.info(f"Scraping tamamlandı. Toplam: {stats['total_saved']} soru")
         return stats
 
-    def _scrape_year_exam(self, year: int, exam_type: str) -> List[Dict[str, Any]]:
+    def _scrape_year_exam(self, year: int, exam_type: str) -> list[dict[str, Any]]:
         """
         Belirli yıl ve sınav tipi için soruları topla.
 
@@ -114,7 +115,7 @@ class OSYMQuestionScraper:
 
         return questions
 
-    def _save_questions(self, questions: List[Dict[str, Any]]) -> int:
+    def _save_questions(self, questions: list[dict[str, Any]]) -> int:
         """
         Soruları veritabanına kaydet.
 
@@ -146,7 +147,7 @@ class OSYMQuestionScraper:
                 saved_count += 1
 
             except Exception as e:
-                logger.error(f"Soru kaydetme hatası: {str(e)}")
+                logger.error(f"Soru kaydetme hatası: {e!s}")
                 self.error_count += 1
 
         return saved_count
@@ -182,7 +183,7 @@ class OSYMQuestionParser:
         return answer_key.strip().upper()
 
     @staticmethod
-    def extract_distractors(raw_question: str, correct_answer: str) -> List[str]:
+    def extract_distractors(raw_question: str, correct_answer: str) -> list[str]:
         """
         Çeldiricileri (distractors) çıkar.
 
@@ -198,8 +199,8 @@ class OSYMQuestionParser:
 
     @staticmethod
     def extract_metadata(
-        raw_question: str, exam_info: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        raw_question: str, exam_info: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Metadata çıkar (konu, zorluk, vb.)
 
@@ -222,8 +223,8 @@ class OSYMQuestionParser:
         return metadata
 
     def parse_question(
-        self, raw_question: str, answer_key: str, exam_info: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, raw_question: str, answer_key: str, exam_info: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Tam soru parse işlemi.
 

@@ -9,20 +9,20 @@ Features:
 - Performance alerts
 - Integration with Prometheus metrics
 """
-import time
-import psutil
 import asyncio
-from typing import Dict, List, Optional, Callable
-from datetime import datetime, timedelta
+import time
 from collections import defaultdict
+from collections.abc import Callable
+from datetime import datetime, timedelta
 from functools import wraps
 
+import psutil
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from core.structured_logger import get_logger
 from core.cache_service import get_cache_service
+from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
 cache = get_cache_service()
@@ -35,10 +35,10 @@ class PerformanceMetrics:
     """Collect and store performance metrics"""
 
     def __init__(self):
-        self.request_times: Dict[str, List[float]] = defaultdict(list)
-        self.request_counts: Dict[str, int] = defaultdict(int)
-        self.error_counts: Dict[str, int] = defaultdict(int)
-        self.slow_requests: List[dict] = []
+        self.request_times: dict[str, list[float]] = defaultdict(list)
+        self.request_counts: dict[str, int] = defaultdict(int)
+        self.error_counts: dict[str, int] = defaultdict(int)
+        self.slow_requests: list[dict] = []
         self.slow_threshold = 2.0  # 2 seconds
 
     def record_request(
@@ -97,11 +97,11 @@ class PerformanceMetrics:
             for endpoint in self.request_times.keys()
         }
 
-    def get_slow_requests(self, limit: int = 20) -> List[dict]:
+    def get_slow_requests(self, limit: int = 20) -> list[dict]:
         """Get recent slow requests"""
         return self.slow_requests[-limit:]
 
-    def get_top_endpoints(self, limit: int = 10, sort_by: str = "count") -> List[tuple]:
+    def get_top_endpoints(self, limit: int = 10, sort_by: str = "count") -> list[tuple]:
         """
         Get top endpoints by metric
 
@@ -125,7 +125,7 @@ class PerformanceMetrics:
         return stats[:limit]
 
     @staticmethod
-    def _percentile(data: List[float], percentile: int) -> float:
+    def _percentile(data: list[float], percentile: int) -> float:
         """Calculate percentile"""
         if not data:
             return 0.0
@@ -165,7 +165,7 @@ class PerformanceMonitoringMiddleware(BaseHTTPMiddleware):
         app.add_middleware(PerformanceMonitoringMiddleware)
     """
 
-    def __init__(self, app: ASGIApp, exclude_paths: Optional[List[str]] = None):
+    def __init__(self, app: ASGIApp, exclude_paths: list[str] | None = None):
         super().__init__(app)
         self.exclude_paths = exclude_paths or [
             "/health",
@@ -284,10 +284,10 @@ class PerformanceAlert:
         self.cpu_threshold = cpu_threshold
         self.memory_threshold = memory_threshold
         self.response_time_threshold = response_time_threshold
-        self.last_alert_time: Dict[str, datetime] = {}
+        self.last_alert_time: dict[str, datetime] = {}
         self.alert_cooldown = timedelta(minutes=5)
 
-    def check_system_alerts(self) -> List[dict]:
+    def check_system_alerts(self) -> list[dict]:
         """Check for system resource alerts"""
         alerts = []
 
@@ -321,7 +321,7 @@ class PerformanceAlert:
 
         return alerts
 
-    def check_endpoint_alerts(self) -> List[dict]:
+    def check_endpoint_alerts(self) -> list[dict]:
         """Check for endpoint performance alerts"""
         alerts = []
         metrics = _metrics
@@ -368,7 +368,7 @@ _alert_system = PerformanceAlert()
 # ==================== PERFORMANCE DECORATOR ====================
 
 
-def monitor_performance(func_name: Optional[str] = None):
+def monitor_performance(func_name: str | None = None):
     """
     Decorator to monitor function performance
 

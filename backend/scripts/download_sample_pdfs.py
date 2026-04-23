@@ -1,8 +1,9 @@
 """
 Download sample PDFs from ÖSYM to test improved answer key extraction
 """
-import requests
 from pathlib import Path
+
+import requests
 
 # URLs we found from research
 pdf_urls = {

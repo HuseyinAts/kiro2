@@ -16,9 +16,8 @@ Requirements: REQ-8.1 - REQ-8.6
 
 import logging
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -53,9 +52,9 @@ class ValidationErrorRecord(BaseModel):
     agent_type: str
     error_message: str
     source: str  # Hatanın kaynağı (validator adı)
-    response_id: Optional[str] = None
-    user_id: Optional[str] = None
-    context: Dict = Field(default_factory=dict)
+    response_id: str | None = None
+    user_id: str | None = None
+    context: dict = Field(default_factory=dict)
 
 
 class ErrorTrend(BaseModel):
@@ -64,7 +63,7 @@ class ErrorTrend(BaseModel):
     count: int
     percentage_change: float  # Önceki döneme göre değişim
     period: str  # "daily", "weekly", "monthly"
-    top_sources: List[str]
+    top_sources: list[str]
 
 
 class ImprovementSuggestion(BaseModel):
@@ -72,7 +71,7 @@ class ImprovementSuggestion(BaseModel):
     category: ErrorCategory
     suggestion: str
     priority: int  # 1-5 (5 en yüksek)
-    examples: List[str]
+    examples: list[str]
     estimated_impact: str  # "high", "medium", "low"
 
 
@@ -89,12 +88,12 @@ class ErrorReport(BaseModel):
     period_start: datetime
     period_end: datetime
     total_errors: int
-    errors_by_category: Dict[str, int]
-    errors_by_severity: Dict[str, int]
-    errors_by_agent: Dict[str, int]
-    trends: List[ErrorTrend]
-    suggestions: List[ImprovementSuggestion]
-    top_error_messages: List[TopErrorMessage]
+    errors_by_category: dict[str, int]
+    errors_by_severity: dict[str, int]
+    errors_by_agent: dict[str, int]
+    trends: list[ErrorTrend]
+    suggestions: list[ImprovementSuggestion]
+    top_error_messages: list[TopErrorMessage]
 
 
 class ErrorReporter:
@@ -192,17 +191,17 @@ class ErrorReporter:
             max_history: Saklanacak maksimum hata sayısı
         """
         self.max_history = max_history
-        self._errors: List[ValidationErrorRecord] = []
-        self._error_counts: Dict[str, int] = defaultdict(int)
+        self._errors: list[ValidationErrorRecord] = []
+        self._error_counts: dict[str, int] = defaultdict(int)
 
     def record_error(
         self,
         error_message: str,
         source: str,
         agent_type: str,
-        response_id: Optional[str] = None,
-        user_id: Optional[str] = None,
-        context: Optional[Dict] = None,
+        response_id: str | None = None,
+        user_id: str | None = None,
+        context: dict | None = None,
     ) -> ValidationErrorRecord:
         """
         Yeni hata kaydı oluştur.
@@ -297,7 +296,7 @@ class ErrorReporter:
     def get_error_frequency(
         self,
         period_hours: int = 24,
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         Belirli dönemdeki hata sıklığını al.
 
@@ -307,7 +306,7 @@ class ErrorReporter:
         Returns:
             Dict: Kategori → sayı
         """
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=period_hours)
+        cutoff = datetime.now(UTC) - timedelta(hours=period_hours)
 
         frequency = defaultdict(int)
         for error in self._errors:
@@ -320,7 +319,7 @@ class ErrorReporter:
         self,
         current_period_hours: int = 24,
         comparison_period_hours: int = 24,
-    ) -> List[ErrorTrend]:
+    ) -> list[ErrorTrend]:
         """
         Hata trendlerini analiz et.
 
@@ -331,7 +330,7 @@ class ErrorReporter:
         Returns:
             List[ErrorTrend]: Trend listesi
         """
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         current_cutoff = now - timedelta(hours=current_period_hours)
         comparison_cutoff = current_cutoff - timedelta(hours=comparison_period_hours)
 
@@ -385,7 +384,7 @@ class ErrorReporter:
     def generate_suggestions(
         self,
         period_hours: int = 24,
-    ) -> List[ImprovementSuggestion]:
+    ) -> list[ImprovementSuggestion]:
         """
         İyileştirme önerileri oluştur.
 
@@ -445,7 +444,7 @@ class ErrorReporter:
         """
         import uuid
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         cutoff = now - timedelta(hours=period_hours)
 
         # Dönem içindeki hatalar
@@ -495,7 +494,7 @@ class ErrorReporter:
     def get_errors_by_response(
         self,
         response_id: str,
-    ) -> List[ValidationErrorRecord]:
+    ) -> list[ValidationErrorRecord]:
         """Belirli yanıta ait hataları al"""
         return [
             e for e in self._errors
@@ -506,7 +505,7 @@ class ErrorReporter:
         self,
         user_id: str,
         limit: int = 100,
-    ) -> List[ValidationErrorRecord]:
+    ) -> list[ValidationErrorRecord]:
         """Belirli kullanıcıya ait hataları al"""
         user_errors = [
             e for e in self._errors
@@ -519,7 +518,7 @@ class ErrorReporter:
         older_than_hours: int = 168,  # 7 gün
     ):
         """Eski hataları temizle"""
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=older_than_hours)
+        cutoff = datetime.now(UTC) - timedelta(hours=older_than_hours)
         self._errors = [
             e for e in self._errors
             if e.timestamp >= cutoff
@@ -528,7 +527,7 @@ class ErrorReporter:
 
 
 # Global instance
-_global_reporter: Optional[ErrorReporter] = None
+_global_reporter: ErrorReporter | None = None
 
 
 def get_error_reporter() -> ErrorReporter:

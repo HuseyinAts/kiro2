@@ -3,11 +3,11 @@ Zemberek NLP Redis Cache
 Async Redis caching with namespace support for NLP operations
 """
 
-import json
 import hashlib
+import json
 import logging
-from typing import Optional, Any, Dict
 from datetime import datetime
+from typing import Any
 
 try:
     import redis.asyncio as aioredis
@@ -41,7 +41,7 @@ class CacheStats:
         """Get uptime in seconds"""
         return (datetime.now() - self.start_time).total_seconds()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "hits": self.hits,
@@ -57,7 +57,7 @@ class ZemberekCache:
 
     def __init__(self):
         self.config = get_config()
-        self._client: Optional[aioredis.Redis] = None
+        self._client: aioredis.Redis | None = None
         self._connected = False
         self.stats = CacheStats()
 
@@ -107,7 +107,7 @@ class ZemberekCache:
 
     async def get_cached(
         self, tool_name: str, input_text: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Get cached result for a tool operation
 
@@ -131,10 +131,9 @@ class ZemberekCache:
                 self.stats.hits += 1
                 logger.debug(f"[ZemberekCache] HIT: {tool_name} ({cache_key[:20]}...)")
                 return json.loads(value)
-            else:
-                self.stats.misses += 1
-                logger.debug(f"[ZemberekCache] MISS: {tool_name} ({cache_key[:20]}...)")
-                return None
+            self.stats.misses += 1
+            logger.debug(f"[ZemberekCache] MISS: {tool_name} ({cache_key[:20]}...)")
+            return None
         except Exception as e:
             self.stats.errors += 1
             logger.error(f"[ZemberekCache] GET error: {e}")
@@ -144,8 +143,8 @@ class ZemberekCache:
         self,
         tool_name: str,
         input_text: str,
-        result: Dict[str, Any],
-        ttl: Optional[int] = None,
+        result: dict[str, Any],
+        ttl: int | None = None,
     ) -> bool:
         """
         Cache a tool operation result
@@ -217,7 +216,7 @@ class ZemberekCache:
             logger.error(f"[ZemberekCache] CLEAR error: {e}")
             return 0
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get cache statistics"""
         stats = self.stats.to_dict()
         stats["connected"] = self.is_connected
@@ -258,7 +257,7 @@ def generate_cache_key(namespace: str, tool_name: str, input_text: str) -> str:
 
 
 # Global cache instance
-_cache_instance: Optional[ZemberekCache] = None
+_cache_instance: ZemberekCache | None = None
 
 
 async def get_cache() -> ZemberekCache:

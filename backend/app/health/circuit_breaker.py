@@ -18,8 +18,8 @@ Transitions:
 
 import asyncio
 import logging
-from datetime import datetime, UTC
-from typing import Dict, Optional, Callable
+from collections.abc import Callable
+from datetime import UTC, datetime
 
 from .models import CircuitState
 
@@ -69,10 +69,10 @@ class CircuitBreaker:
         self.recovery_timeout = recovery_timeout
 
         # In-memory state storage (Redis backup olarak kullanılır)
-        self.states: Dict[str, CircuitState] = {}
-        self.failure_counts: Dict[str, int] = {}
-        self.last_failure_times: Dict[str, datetime] = {}
-        self.opened_at: Dict[str, datetime] = {}
+        self.states: dict[str, CircuitState] = {}
+        self.failure_counts: dict[str, int] = {}
+        self.last_failure_times: dict[str, datetime] = {}
+        self.opened_at: dict[str, datetime] = {}
 
         # State change callbacks
         self._on_state_change_callbacks: list[Callable] = []
@@ -169,7 +169,7 @@ class CircuitBreaker:
 
         logger.debug(f"Başarı kaydedildi: {endpoint_key}")
 
-    async def record_failure(self, endpoint_key: str, error: Optional[str] = None) -> None:
+    async def record_failure(self, endpoint_key: str, error: str | None = None) -> None:
         """
         Başarısız bir istek kaydeder.
 
@@ -371,14 +371,14 @@ class CircuitBreaker:
 
         if state == CircuitState.CLOSED:
             return True
-        elif state == CircuitState.HALF_OPEN:
+        if state == CircuitState.HALF_OPEN:
             # HALF_OPEN'da sadece bir test isteği kabul edilir
             # Gerçek implementasyonda bu kısım daha sofistike olabilir
             return True
-        else:  # OPEN
-            return False
+        # OPEN
+        return False
 
-    async def get_all_states(self) -> Dict[str, CircuitState]:
+    async def get_all_states(self) -> dict[str, CircuitState]:
         """
         Tüm endpoint'lerin circuit durumlarını getirir.
 

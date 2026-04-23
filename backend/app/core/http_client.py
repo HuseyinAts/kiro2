@@ -11,8 +11,8 @@ Requirements: REQ-1.3
 
 import asyncio
 import logging
-from typing import Any, Optional, Dict
 from contextlib import asynccontextmanager
+from typing import Any
 
 import aiohttp
 from aiohttp import ClientSession, ClientTimeout, TCPConnector
@@ -32,7 +32,7 @@ class AsyncHTTPClient:
     
     Requirements: REQ-1.3
     """
-    
+
     def __init__(
         self,
         timeout: float = 5.0,
@@ -55,7 +55,7 @@ class AsyncHTTPClient:
         self.max_retries = max_retries
         self.retry_delay = retry_delay
         self.retry_backoff = retry_backoff
-        
+
         # Connection pooling configuration
         self.connector = TCPConnector(
             limit=connection_limit,  # Max concurrent connections
@@ -63,14 +63,14 @@ class AsyncHTTPClient:
             ttl_dns_cache=300,  # DNS cache TTL (5 minutes)
             enable_cleanup_closed=True  # Clean up closed connections
         )
-        
-        self._session: Optional[ClientSession] = None
-        
+
+        self._session: ClientSession | None = None
+
         logger.info(
             f"AsyncHTTPClient initialized: timeout={timeout}s, "
             f"max_retries={max_retries}, connection_limit={connection_limit}"
         )
-    
+
     async def _ensure_session(self) -> ClientSession:
         """Session yoksa oluşturur."""
         if self._session is None or self._session.closed:
@@ -80,13 +80,13 @@ class AsyncHTTPClient:
             )
             logger.debug("New aiohttp ClientSession created")
         return self._session
-    
+
     async def close(self) -> None:
         """HTTP client'ı kapatır ve kaynakları temizler."""
         if self._session and not self._session.closed:
             await self._session.close()
             logger.info("AsyncHTTPClient closed")
-    
+
     async def _make_request(
         self,
         method: str,
@@ -109,58 +109,58 @@ class AsyncHTTPClient:
         """
         session = await self._ensure_session()
         current_delay = self.retry_delay
-        last_exception: Optional[Exception] = None
-        
+        last_exception: Exception | None = None
+
         for attempt in range(1, self.max_retries + 1):
             try:
                 logger.debug(f"HTTP {method} {url} (attempt {attempt}/{self.max_retries})")
-                
+
                 async with session.request(method, url, **kwargs) as response:
                     # Log response
                     logger.debug(
                         f"HTTP {method} {url} -> {response.status} "
                         f"({response.content_length or 0} bytes)"
                     )
-                    
+
                     # Raise for 4xx/5xx status codes
                     response.raise_for_status()
-                    
+
                     return response
-                    
-            except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+
+            except (TimeoutError, aiohttp.ClientError) as e:
                 last_exception = e
-                
+
                 if attempt == self.max_retries:
                     logger.error(
                         f"HTTP {method} {url} failed after {self.max_retries} attempts: {e}"
                     )
                     raise
-                
+
                 # Retry only on specific errors
                 if isinstance(e, aiohttp.ClientResponseError) and 400 <= e.status < 500:
                     # Don't retry client errors (4xx)
                     logger.error(f"HTTP {method} {url} -> {e.status} (client error, no retry)")
                     raise
-                
+
                 logger.warning(
                     f"HTTP {method} {url} failed (attempt {attempt}/{self.max_retries}): {e}. "
                     f"Retrying in {current_delay}s..."
                 )
-                
+
                 await asyncio.sleep(current_delay)
                 current_delay *= self.retry_backoff
-        
+
         # Bu noktaya ulaşılmamalı
         if last_exception:
             raise last_exception
-    
+
     async def get(
         self,
         url: str,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         HTTP GET request yapar.
         
@@ -184,15 +184,15 @@ class AsyncHTTPClient:
             **kwargs
         )
         return await response.json()
-    
+
     async def post(
         self,
         url: str,
-        json: Optional[Dict[str, Any]] = None,
-        data: Optional[Any] = None,
-        headers: Optional[Dict[str, str]] = None,
+        json: dict[str, Any] | None = None,
+        data: Any | None = None,
+        headers: dict[str, str] | None = None,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         HTTP POST request yapar.
         
@@ -221,14 +221,14 @@ class AsyncHTTPClient:
             **kwargs
         )
         return await response.json()
-    
+
     async def put(
         self,
         url: str,
-        json: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
+        json: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """HTTP PUT request yapar."""
         response = await self._make_request(
             "PUT",
@@ -238,13 +238,13 @@ class AsyncHTTPClient:
             **kwargs
         )
         return await response.json()
-    
+
     async def delete(
         self,
         url: str,
-        headers: Optional[Dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
         **kwargs: Any
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """HTTP DELETE request yapar."""
         response = await self._make_request(
             "DELETE",
@@ -253,7 +253,7 @@ class AsyncHTTPClient:
             **kwargs
         )
         return await response.json()
-    
+
     @asynccontextmanager
     async def stream_get(self, url: str, **kwargs: Any):
         """
@@ -278,7 +278,7 @@ class AsyncHTTPClient:
 
 
 # Global HTTP client instance
-_http_client: Optional[AsyncHTTPClient] = None
+_http_client: AsyncHTTPClient | None = None
 
 
 def get_http_client() -> AsyncHTTPClient:

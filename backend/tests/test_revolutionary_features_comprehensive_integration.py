@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -19,24 +20,23 @@ Bu test suite, tüm 7 devrimsel özelliğin birlikte çalışmasını test eder:
 Requirements: 10.1-10.7, 11.1-11.6, 12.1-12.6
 """
 
+import random
 import time
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
-import random
 
 # Revolutionary features imports
 from algorithms.hybrid_learning_style_detector import HybridLearningStyleDetector
-from algorithms.turkish_zpd_maarif_system import TurkishZPDMaarifSystem
-from algorithms.turkish_morphology_aware_irt import TurkishMorphologyAwareIRT
-from algorithms.turkish_optimized_fsrs import TurkishOptimizedFSRS
+from algorithms.multi_agent_blackboard import MultiAgentBlackboard
 from algorithms.three_level_turkish_simplification import (
     ThreeLevelTurkishSimplification,
 )
 from algorithms.turkish_bionic_reading import TurkishBionicReading
-from algorithms.multi_agent_blackboard import MultiAgentBlackboard
-
-
+from algorithms.turkish_morphology_aware_irt import TurkishMorphologyAwareIRT
+from algorithms.turkish_optimized_fsrs import TurkishOptimizedFSRS
+from algorithms.turkish_zpd_maarif_system import TurkishZPDMaarifSystem
 
 pytestmark = pytest.mark.skipif(
     True,

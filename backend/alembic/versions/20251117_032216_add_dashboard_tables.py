@@ -10,8 +10,9 @@ This migration adds tables required for student dashboard service:
 
 Part of Mock Data Cleanup - Phase 1
 """
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '20251117_032216'

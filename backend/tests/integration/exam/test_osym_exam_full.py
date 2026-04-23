@@ -4,9 +4,10 @@ Integration Tests for OSYM Exam System (F-02)
 Tests exam data structures, scoring logic, and navigation.
 NO REWARD HACKING - All assertions must be meaningful.
 """
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 

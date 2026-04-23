@@ -10,19 +10,20 @@ import json
 import os
 import re
 import secrets
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 try:
+    import base64
+
     from cryptography.fernet import Fernet
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-    import base64
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:
     CRYPTOGRAPHY_AVAILABLE = False
@@ -30,23 +31,34 @@ except ImportError:
 try:
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import A4
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
     from reportlab.lib.units import cm
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.platypus import (
+        Paragraph,
+        SimpleDocTemplate,
+        Spacer,
+        Table,
+        TableStyle,
+    )
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
 
-from models.diary import (
-    DiaryEntry, DiaryExport, ExportFormat,
-    Insight, Reflection, LearningEntry, Goal
-)
 from api.schemas.diary import (
     ExportRequest,
     ShareLinkCreate,
     ShareLinkResponse,
+)
+from models.diary import (
+    DiaryEntry,
+    DiaryExport,
+    ExportFormat,
+    Goal,
+    Insight,
+    LearningEntry,
+    Reflection,
 )
 
 
@@ -119,7 +131,7 @@ class ExportService:
         file_size = len(content) if isinstance(content, bytes) else len(content.encode('utf-8'))
 
         # Redacted fields
-        redacted_fields: List[str] = []
+        redacted_fields: list[str] = []
         if request.apply_privacy_filter:
             redacted_fields = data.get("redacted_fields", [])
 
@@ -145,7 +157,7 @@ class ExportService:
         self,
         user_id: UUID,
         request: ExportRequest,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Export icin verileri topla.
 
@@ -156,7 +168,7 @@ class ExportService:
         Returns:
             Dict - Toplanan veriler
         """
-        data: Dict[str, Any] = {
+        data: dict[str, Any] = {
             "user_id": str(user_id),
             "export_date": datetime.now().isoformat(),
             "date_range": {
@@ -326,9 +338,9 @@ class ExportService:
 
     async def _export_markdown(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         request: ExportRequest,
-    ) -> Tuple[str, Optional[Path]]:
+    ) -> tuple[str, Path | None]:
         """
         Markdown export olustur.
 
@@ -422,9 +434,9 @@ class ExportService:
 
     async def _export_pdf(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         request: ExportRequest,
-    ) -> Tuple[bytes, Optional[Path]]:
+    ) -> tuple[bytes, Path | None]:
         """
         PDF export olustur.
 
@@ -529,9 +541,9 @@ class ExportService:
 
     async def _export_json(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         request: ExportRequest,
-    ) -> Tuple[str, Optional[Path]]:
+    ) -> tuple[str, Path | None]:
         """
         JSON export olustur.
 
@@ -576,7 +588,7 @@ class ExportService:
     def _apply_privacy_filter(
         self,
         content: str,
-    ) -> Tuple[str, List[str]]:
+    ) -> tuple[str, list[str]]:
         """
         Privacy filter uygula (REQ-8.3).
 
@@ -586,7 +598,7 @@ class ExportService:
         Returns:
             Tuple[str, List[str]] - Filtrelenmis icerik ve redact edilen alanlar
         """
-        redacted_fields: List[str] = []
+        redacted_fields: list[str] = []
 
         for pattern, replacement in self.PRIVACY_PATTERNS:
             matches = re.findall(pattern, content, re.IGNORECASE)
@@ -598,10 +610,10 @@ class ExportService:
 
     def _apply_privacy_filter_to_dict(
         self,
-        data: Dict[str, Any],
-    ) -> Tuple[Dict[str, Any], List[str]]:
+        data: dict[str, Any],
+    ) -> tuple[dict[str, Any], list[str]]:
         """Dict'e privacy filter uygula."""
-        all_redacted: List[str] = []
+        all_redacted: list[str] = []
 
         for key, value in data.items():
             if isinstance(value, str):
@@ -625,7 +637,7 @@ class ExportService:
         self,
         user_id: UUID,
         data: ShareLinkCreate,
-    ) -> Optional[ShareLinkResponse]:
+    ) -> ShareLinkResponse | None:
         """
         Paylasim linki olustur (REQ-8.4).
 
@@ -677,7 +689,7 @@ class ExportService:
     async def get_shared_export(
         self,
         share_token: str,
-    ) -> Optional[DiaryExport]:
+    ) -> DiaryExport | None:
         """
         Paylasilan export'u getir.
 
@@ -727,9 +739,9 @@ class ExportService:
         self,
         user_id: UUID,
         password: str,
-        date_from: Optional[date] = None,
-        date_to: Optional[date] = None,
-    ) -> Tuple[bytes, bytes]:
+        date_from: date | None = None,
+        date_to: date | None = None,
+    ) -> tuple[bytes, bytes]:
         """
         Sifrelenmis backup olustur (REQ-8.6).
 
@@ -801,7 +813,7 @@ class ExportService:
         encrypted_data: bytes,
         salt: bytes,
         password: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Backup'i coz.
 
@@ -830,7 +842,7 @@ class ExportService:
         self,
         user_id: UUID,
         limit: int = 20,
-    ) -> List[DiaryExport]:
+    ) -> list[DiaryExport]:
         """
         Export gecmisini getir.
 
@@ -855,7 +867,7 @@ class ExportService:
         self,
         export_id: UUID,
         user_id: UUID,
-    ) -> Optional[DiaryExport]:
+    ) -> DiaryExport | None:
         """
         ID ile export getir.
 

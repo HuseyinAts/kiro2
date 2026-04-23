@@ -17,10 +17,11 @@ import logging
 import uuid
 import weakref
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -59,12 +60,12 @@ class BlackboardEvent:
     key: str
     value: Any
     source_agent: str
-    target_agents: Optional[List[str]] = None  # None = broadcast
+    target_agents: list[str] | None = None  # None = broadcast
     priority: Priority = Priority.MEDIUM
     timestamp: datetime = None
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
     requires_response: bool = False
-    correlation_id: Optional[str] = None
+    correlation_id: str | None = None
 
     def __post_init__(self):
         if self.timestamp is None:
@@ -83,9 +84,9 @@ class BlackboardData:
     timestamp: datetime
     version: int = 1
     access_count: int = 0
-    subscribers: Set[str] = None
-    ttl: Optional[datetime] = None  # Time to live
-    metadata: Dict[str, Any] = None
+    subscribers: set[str] = None
+    ttl: datetime | None = None  # Time to live
+    metadata: dict[str, Any] = None
 
     def __post_init__(self):
         if self.subscribers is None:
@@ -100,10 +101,10 @@ class AgentSubscription:
     def __init__(
         self,
         agent_name: str,
-        event_types: List[EventType],
-        key_patterns: List[str] = None,
-        callback: Optional[Callable] = None,
-        priority_filter: Optional[Priority] = None,
+        event_types: list[EventType],
+        key_patterns: list[str] = None,
+        callback: Callable | None = None,
+        priority_filter: Priority | None = None,
     ):
         self.agent_name = agent_name
         self.event_types = event_types
@@ -124,19 +125,19 @@ class MultiAgentBlackboard:
 
     def __init__(self, max_history_size: int = 10000):
         # Merkezi blackboard veri yapısı
-        self.blackboard: Dict[str, BlackboardData] = {}
+        self.blackboard: dict[str, BlackboardData] = {}
 
         # Agent kayıtları ve abonelikleri
-        self.registered_agents: Dict[str, Any] = {}  # agent_name -> agent_instance
-        self.subscriptions: Dict[str, List[AgentSubscription]] = defaultdict(list)
+        self.registered_agents: dict[str, Any] = {}  # agent_name -> agent_instance
+        self.subscriptions: dict[str, list[AgentSubscription]] = defaultdict(list)
 
         # Olay geçmişi ve koordinasyon
-        self.event_history: List[BlackboardEvent] = []
+        self.event_history: list[BlackboardEvent] = []
         self.max_history_size = max_history_size
-        self.coordination_requests: Dict[str, Dict[str, Any]] = {}
+        self.coordination_requests: dict[str, dict[str, Any]] = {}
 
         # WebSocket bağlantıları (gerçek zamanlı senkronizasyon için)
-        self.websocket_connections: Dict[str, Any] = {}
+        self.websocket_connections: dict[str, Any] = {}
 
         # Performans metrikleri
         self.metrics = {
@@ -243,10 +244,10 @@ class MultiAgentBlackboard:
     def subscribe(
         self,
         agent_name: str,
-        event_types: List[EventType],
-        key_patterns: List[str] = None,
-        callback: Optional[Callable] = None,
-        priority_filter: Optional[Priority] = None,
+        event_types: list[EventType],
+        key_patterns: list[str] = None,
+        callback: Callable | None = None,
+        priority_filter: Priority | None = None,
     ) -> bool:
         """
         Agent'ı belirli olaylara abone et
@@ -304,8 +305,8 @@ class MultiAgentBlackboard:
         key: str,
         value: Any,
         source_agent: str,
-        ttl_seconds: Optional[int] = None,
-        metadata: Dict[str, Any] = None,
+        ttl_seconds: int | None = None,
+        metadata: dict[str, Any] = None,
         priority: Priority = Priority.MEDIUM,
     ) -> bool:
         """
@@ -384,7 +385,7 @@ class MultiAgentBlackboard:
             logger.error(f"Write operation failed: {key}, error: {e}")
             return False
 
-    def read(self, key: str, reader_agent: str = "unknown") -> Optional[Any]:
+    def read(self, key: str, reader_agent: str = "unknown") -> Any | None:
         """
         Blackboard'dan veri oku
 
@@ -616,7 +617,7 @@ class MultiAgentBlackboard:
         self.websocket_connections.pop(connection_id, None)
         logger.info(f"WebSocket connection removed: {connection_id}")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Performans metriklerini al"""
         return {
             **self.metrics,
@@ -626,7 +627,7 @@ class MultiAgentBlackboard:
             "websocket_connections": len(self.websocket_connections),
         }
 
-    def get_agent_status(self) -> Dict[str, Any]:
+    def get_agent_status(self) -> dict[str, Any]:
         """Agent durumlarını al"""
         status = {}
         for agent_name, agent_ref in self.registered_agents.items():
@@ -645,11 +646,11 @@ class MultiAgentBlackboard:
     async def request_coordination(
         self,
         requester_agent: str,
-        target_agents: List[str],
+        target_agents: list[str],
         coordination_type: str,
-        parameters: Dict[str, Any],
+        parameters: dict[str, Any],
         timeout_seconds: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Agent koordinasyonu talep et
 
@@ -710,7 +711,7 @@ class MultiAgentBlackboard:
 
     async def _wait_for_coordination_responses(
         self, coordination_id: str, timeout_seconds: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Koordinasyon yanıtlarını bekle"""
         try:
             start_time = datetime.now()
@@ -751,7 +752,7 @@ class MultiAgentBlackboard:
             return {"success": False, "error": str(e)}
 
     async def respond_to_coordination(
-        self, coordination_id: str, responding_agent: str, response_data: Dict[str, Any]
+        self, coordination_id: str, responding_agent: str, response_data: dict[str, Any]
     ) -> bool:
         """
         Koordinasyon talebine yanıt ver
@@ -824,7 +825,7 @@ class MultiAgentBlackboard:
 
 
 # Global blackboard instance
-_global_blackboard: Optional[MultiAgentBlackboard] = None
+_global_blackboard: MultiAgentBlackboard | None = None
 
 
 def get_blackboard() -> MultiAgentBlackboard:

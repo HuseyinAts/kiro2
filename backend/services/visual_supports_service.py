@@ -9,11 +9,11 @@ Bu modül disleksili öğrenciler için görsel öğrenme destekleri sağlar:
 - Renk kodlama sistemi
 """
 
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timezone
 import hashlib
-from pydantic import BaseModel, Field
+from datetime import UTC, datetime
+from typing import Any
 
+from pydantic import BaseModel, Field
 
 # ============================================================================
 # Data Models
@@ -25,13 +25,13 @@ class MindMapNode(BaseModel):
 
     id: str
     label: str
-    description: Optional[str] = None
+    description: str | None = None
     color: str = "#4A90E2"
     x: float = 0
     y: float = 0
-    children: List[str] = Field(default_factory=list)
-    parent: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    children: list[str] = Field(default_factory=list)
+    parent: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class MindMap(BaseModel):
@@ -41,10 +41,10 @@ class MindMap(BaseModel):
     title: str
     subject: str
     topic: str
-    nodes: List[MindMapNode]
+    nodes: list[MindMapNode]
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    user_id: Optional[str] = None
+    user_id: str | None = None
 
 
 class Infographic(BaseModel):
@@ -55,11 +55,11 @@ class Infographic(BaseModel):
     subject: str
     topic: str
     template: str  # "timeline", "comparison", "process", "hierarchy"
-    elements: List[Dict[str, Any]]
-    icons: List[str]
-    colors: List[str]
+    elements: list[dict[str, Any]]
+    icons: list[str]
+    colors: list[str]
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    user_id: Optional[str] = None
+    user_id: str | None = None
 
 
 class VisualVocabularyCard(BaseModel):
@@ -69,8 +69,8 @@ class VisualVocabularyCard(BaseModel):
     word: str
     definition: str
     image_url: str
-    example_sentence: Optional[str] = None
-    synonyms: List[str] = Field(default_factory=list)
+    example_sentence: str | None = None
+    synonyms: list[str] = Field(default_factory=list)
     category: str
     difficulty_level: int = 1  # 1-5
     color_code: str = "#4A90E2"
@@ -83,8 +83,8 @@ class ColorCodingScheme(BaseModel):
     id: str
     name: str
     description: str
-    categories: Dict[str, str]  # category_name -> color_hex
-    user_id: Optional[str] = None
+    categories: dict[str, str]  # category_name -> color_hex
+    user_id: str | None = None
     is_default: bool = False
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -103,10 +103,10 @@ class VisualSupportsService:
 
     def __init__(self):
         """Servisi başlat"""
-        self.mind_maps: Dict[str, MindMap] = {}
-        self.infographics: Dict[str, Infographic] = {}
-        self.vocabulary_cards: Dict[str, VisualVocabularyCard] = {}
-        self.color_schemes: Dict[str, ColorCodingScheme] = {}
+        self.mind_maps: dict[str, MindMap] = {}
+        self.infographics: dict[str, Infographic] = {}
+        self.vocabulary_cards: dict[str, VisualVocabularyCard] = {}
+        self.color_schemes: dict[str, ColorCodingScheme] = {}
 
         # Varsayılan renk şemalarını yükle
         self._load_default_color_schemes()
@@ -121,7 +121,7 @@ class VisualSupportsService:
         subject: str,
         topic: str,
         content: str,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
     ) -> MindMap:
         """
         REQ-50.73: Kavram haritası oluştur
@@ -183,7 +183,7 @@ class VisualSupportsService:
         self.mind_maps[mind_map_id] = mind_map
         return mind_map
 
-    def get_mind_map(self, mind_map_id: str) -> Optional[MindMap]:
+    def get_mind_map(self, mind_map_id: str) -> MindMap | None:
         """
         REQ-50.74: Kavram haritasını getir (interactive exploration)
 
@@ -195,7 +195,7 @@ class VisualSupportsService:
         """
         return self.mind_maps.get(mind_map_id)
 
-    def export_mind_map(self, mind_map_id: str, format: str = "json") -> Dict[str, Any]:
+    def export_mind_map(self, mind_map_id: str, format: str = "json") -> dict[str, Any]:
         """
         REQ-50.75: Kavram haritasını dışa aktar
 
@@ -212,20 +212,19 @@ class VisualSupportsService:
 
         if format == "json":
             return mind_map.dict()
-        elif format == "svg":
+        if format == "svg":
             # SVG export (basitleştirilmiş)
             return {"format": "svg", "data": self._generate_svg(mind_map)}
-        elif format == "png":
+        if format == "png":
             # PNG export için placeholder
             return {
                 "format": "png",
                 "message": "PNG export requires image processing library",
             }
-        else:
-            return {"error": f"Unsupported format: {format}"}
+        return {"error": f"Unsupported format: {format}"}
 
     def update_mind_map_node(
-        self, mind_map_id: str, node_id: str, updates: Dict[str, Any]
+        self, mind_map_id: str, node_id: str, updates: dict[str, Any]
     ) -> bool:
         """
         REQ-50.76: Kavram haritası düğümünü güncelle (drag-and-drop)
@@ -247,7 +246,7 @@ class VisualSupportsService:
                 for key, value in updates.items():
                     if hasattr(node, key):
                         setattr(node, key, value)
-                mind_map.updated_at = datetime.now(timezone.utc)
+                mind_map.updated_at = datetime.now(UTC)
                 return True
 
         return False
@@ -262,8 +261,8 @@ class VisualSupportsService:
         subject: str,
         topic: str,
         template: str,
-        data: List[Dict[str, Any]],
-        user_id: Optional[str] = None,
+        data: list[dict[str, Any]],
+        user_id: str | None = None,
     ) -> Infographic:
         """
         REQ-50.77: İnfografik oluştur (visual summary generation)
@@ -313,7 +312,7 @@ class VisualSupportsService:
         self.infographics[infographic_id] = infographic
         return infographic
 
-    def get_infographic_templates(self) -> List[Dict[str, Any]]:
+    def get_infographic_templates(self) -> list[dict[str, Any]]:
         """
         REQ-50.79: İnfografik şablonlarını getir (customizable templates)
 
@@ -353,7 +352,7 @@ class VisualSupportsService:
 
     def export_infographic(
         self, infographic_id: str, format: str = "png"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         REQ-50.80: İnfografiği dışa aktar (farklı format seçenekleri)
 
@@ -390,8 +389,8 @@ class VisualSupportsService:
         definition: str,
         image_url: str,
         category: str,
-        example_sentence: Optional[str] = None,
-        synonyms: Optional[List[str]] = None,
+        example_sentence: str | None = None,
+        synonyms: list[str] | None = None,
         difficulty_level: int = 1,
     ) -> VisualVocabularyCard:
         """
@@ -432,9 +431,9 @@ class VisualSupportsService:
     def search_vocabulary_cards(
         self,
         query: str,
-        category: Optional[str] = None,
-        difficulty_level: Optional[int] = None,
-    ) -> List[VisualVocabularyCard]:
+        category: str | None = None,
+        difficulty_level: int | None = None,
+    ) -> list[VisualVocabularyCard]:
         """
         REQ-50.83: Resimli sözlükte arama yap (searchable image database)
 
@@ -464,7 +463,7 @@ class VisualSupportsService:
 
         return results
 
-    def get_vocabulary_builder_progress(self, user_id: str) -> Dict[str, Any]:
+    def get_vocabulary_builder_progress(self, user_id: str) -> dict[str, Any]:
         """
         REQ-50.82: Kelime öğrenme ilerlemesini getir (visual vocabulary builder)
 
@@ -500,8 +499,8 @@ class VisualSupportsService:
         self,
         name: str,
         description: str,
-        categories: Dict[str, str],
-        user_id: Optional[str] = None,
+        categories: dict[str, str],
+        user_id: str | None = None,
     ) -> ColorCodingScheme:
         """
         REQ-50.85: Renk kodlama şeması oluştur (color-coded categories)
@@ -529,7 +528,7 @@ class VisualSupportsService:
         self.color_schemes[scheme_id] = scheme
         return scheme
 
-    def get_color_scheme(self, scheme_id: str) -> Optional[ColorCodingScheme]:
+    def get_color_scheme(self, scheme_id: str) -> ColorCodingScheme | None:
         """
         REQ-50.86: Renk şemasını getir (consistent color scheme)
 
@@ -541,7 +540,7 @@ class VisualSupportsService:
         """
         return self.color_schemes.get(scheme_id)
 
-    def get_default_color_schemes(self) -> List[ColorCodingScheme]:
+    def get_default_color_schemes(self) -> list[ColorCodingScheme]:
         """
         REQ-50.86: Varsayılan renk şemalarını getir
 
@@ -573,7 +572,7 @@ class VisualSupportsService:
 
     def save_user_color_preferences(
         self, user_id: str, scheme_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         REQ-50.88: Kullanıcı renk tercihlerini kaydet
 
@@ -603,10 +602,10 @@ class VisualSupportsService:
     def _generate_id(self, seed: str) -> str:
         """Benzersiz ID oluştur"""
         return hashlib.md5(
-            f"{seed}_{datetime.now(timezone.utc).isoformat()}".encode()
+            f"{seed}_{datetime.now(UTC).isoformat()}".encode()
         ).hexdigest()[:16]
 
-    def _extract_key_concepts(self, words: List[str]) -> List[str]:
+    def _extract_key_concepts(self, words: list[str]) -> list[str]:
         """Anahtar kavramları çıkar (basitleştirilmiş)"""
         # Gerçek implementasyonda NLP kullanılır
         # Şimdilik uzun kelimeleri anahtar kavram olarak al
@@ -623,7 +622,7 @@ class VisualSupportsService:
         # Gerçek implementasyonda tam SVG rendering yapılır
         return f"<svg><text>{mind_map.title}</text></svg>"
 
-    def _select_icons_for_template(self, template: str, count: int) -> List[str]:
+    def _select_icons_for_template(self, template: str, count: int) -> list[str]:
         """Şablon için ikonları seç"""
         icon_sets = {
             "timeline": ["calendar", "clock", "event"],
@@ -634,7 +633,7 @@ class VisualSupportsService:
         icons = icon_sets.get(template, ["default"])
         return (icons * (count // len(icons) + 1))[:count]
 
-    def _select_colors_for_template(self, template: str, count: int) -> List[str]:
+    def _select_colors_for_template(self, template: str, count: int) -> list[str]:
         """Şablon için renkleri seç"""
         color_palettes = {
             "timeline": ["#4A90E2", "#50C878", "#FFB347"],
@@ -659,7 +658,7 @@ class VisualSupportsService:
         }
         return category_colors.get(category.lower(), "#95A5A6")  # Varsayılan gri
 
-    def _get_category_progress(self) -> Dict[str, Any]:
+    def _get_category_progress(self) -> dict[str, Any]:
         """Kategori bazlı ilerleme"""
         categories = {}
         for card in self.vocabulary_cards.values():

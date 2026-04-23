@@ -5,7 +5,7 @@ PERFORMANCE FIX: Real-time query performance monitoring
 
 import time
 from contextlib import asynccontextmanager
-from typing import Any, Dict, Optional
+from typing import Any
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -50,7 +50,7 @@ class QueryMonitor:
     )
 
     def record_query(
-        self, statement: str, duration: float, row_count: Optional[int] = None
+        self, statement: str, duration: float, row_count: int | None = None
     ):
         """Record a query execution"""
         # Health-check ve sistem sorgularini N+1 sayacindan hariç tut
@@ -79,7 +79,7 @@ class QueryMonitor:
                 },
             )
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get query statistics for current request"""
         return {
             "total_queries": self.queries_executed,

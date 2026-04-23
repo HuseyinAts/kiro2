@@ -18,9 +18,10 @@ What it does:
 5. Creates summary analysis
 """
 
+import argparse
 import asyncio
 import os
-import argparse
+
 from dotenv import load_dotenv
 
 load_dotenv()

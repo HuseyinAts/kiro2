@@ -14,7 +14,7 @@ import time
 import unicodedata
 import uuid
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 from sqlalchemy import text as sa_text
@@ -98,7 +98,7 @@ async def find_similar_questions(
     ocr_text: str,
     top_k: int = 5,
     min_similarity: float = MIN_SIMILARITY,
-    subject_area: Optional[str] = None,
+    subject_area: str | None = None,
 ) -> list[dict[str, Any]]:
     """Find similar questions in question_bank using pgvector similarity search.
 
@@ -233,7 +233,7 @@ async def process_photo_ask(
     db: AsyncSession,
     file_content: bytes,
     filename: str,
-    subject_area: Optional[str] = None,
+    subject_area: str | None = None,
     student_id: str,
 ) -> dict[str, Any]:
     """Full photo-ask pipeline: save → OCR → search → (AI fallback).

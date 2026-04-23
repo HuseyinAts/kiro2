@@ -6,15 +6,13 @@ Daisy Stanton Standards - Banned Patterns List
 
 from __future__ import annotations
 
-from typing import Dict, List
-
 # =============================================================================
 # REWARD HACKING PATTERNS
 # =============================================================================
 # Each pattern type maps to a list of regex patterns that detect that type.
 # Patterns are designed to minimize false positives while catching all real cases.
 
-REWARD_HACKING_PATTERNS: Dict[str, List[str]] = {
+REWARD_HACKING_PATTERNS: dict[str, list[str]] = {
     # =========================================================================
     # 1. Assert True Detection (REQ-1)
     # =========================================================================
@@ -66,7 +64,7 @@ REWARD_HACKING_PATTERNS: Dict[str, List[str]] = {
         r"#\s*pragma:\s*nocover",          # pragma: nocover (variant)
         r"#\s*type:\s*ignore\s*$",         # type: ignore without code
         r"#\s*type:\s*ignore\s*#",         # type: ignore with comment but no code
-        r"#\s*noqa\s*$",                   # noqa without code
+        r"#\s*noqa\s*$",
         r"#\s*nosec\s*$",                  # nosec without reason
         r"@pytest\.mark\.skip\s*$",        # skip without reason
         r"@unittest\.skip\s*$",            # unittest skip without reason
@@ -131,7 +129,7 @@ REWARD_HACKING_PATTERNS: Dict[str, List[str]] = {
 # =============================================================================
 # Human-readable suggestions for fixing each pattern type.
 
-REMEDIATION_SUGGESTIONS: Dict[str, str] = {
+REMEDIATION_SUGGESTIONS: dict[str, str] = {
     "assert_true": (
         "Replace with a meaningful assertion that tests actual behavior. "
         "Example: assert user.email == expected_email"
@@ -172,7 +170,7 @@ REMEDIATION_SUGGESTIONS: Dict[str, str] = {
 # =============================================================================
 # Patterns that look like reward hacking but are legitimate uses.
 
-LEGITIMATE_EXCEPTIONS: Dict[str, List[str]] = {
+LEGITIMATE_EXCEPTIONS: dict[str, list[str]] = {
     "assert_true": [
         r'""".*assert\s+True.*"""',         # In docstring
         r"#.*assert\s+True",                # In comment
@@ -203,7 +201,7 @@ LEGITIMATE_EXCEPTIONS: Dict[str, List[str]] = {
 # =============================================================================
 # Patterns applicable to specific file types only.
 
-FILE_TYPE_PATTERNS: Dict[str, List[str]] = {
+FILE_TYPE_PATTERNS: dict[str, list[str]] = {
     "python": ["assert_true", "placeholder", "coverage_manipulation",
                "mock_abuse", "empty_exception", "hardcoded_test_data"],
     "shell": ["echo_success", "cicd_bypass"],

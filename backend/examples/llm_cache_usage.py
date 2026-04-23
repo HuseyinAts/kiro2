@@ -4,8 +4,8 @@ Demonstrates how to use the enhanced LLM cache system
 """
 
 import asyncio
-from core.llm_cache import LLMCache, LLMCacheConfig, cached_llm, get_llm_cache
 
+from core.llm_cache import LLMCache, LLMCacheConfig, cached_llm, get_llm_cache
 
 # ============================================================================
 # EXAMPLE 1: Basic Cache Usage

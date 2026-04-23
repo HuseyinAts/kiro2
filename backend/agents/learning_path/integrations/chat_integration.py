@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..config import get_learning_path_config
 
@@ -35,8 +35,8 @@ class ChatMessage:
 
     text: str
     student_id: str
-    session_id: Optional[str] = None
-    context: Optional[Dict[str, Any]] = None
+    session_id: str | None = None
+    context: dict[str, Any] | None = None
 
 
 @dataclass
@@ -45,9 +45,9 @@ class ChatResponse:
 
     text: str
     intent: ChatIntent
-    suggestions: List[str] = field(default_factory=list)
-    resources: List[Any] = field(default_factory=list)  # List[LearningResource]
-    actions: List[Dict[str, Any]] = field(default_factory=list)
+    suggestions: list[str] = field(default_factory=list)
+    resources: list[Any] = field(default_factory=list)  # List[LearningResource]
+    actions: list[dict[str, Any]] = field(default_factory=list)
 
 
 class ChatIntegrationService:
@@ -59,9 +59,9 @@ class ChatIntegrationService:
 
     def __init__(
         self,
-        llm_service: Optional[Any] = None,
-        resource_finder: Optional[Any] = None,
-        path_service: Optional[Any] = None,
+        llm_service: Any | None = None,
+        resource_finder: Any | None = None,
+        path_service: Any | None = None,
     ):
         """Initialize chat integration service.
 
@@ -81,8 +81,8 @@ class ChatIntegrationService:
     async def process_message(
         self,
         message: ChatMessage,
-        current_path: Optional[Any] = None,  # Optional[LearningPath]
-        student_profile: Optional[Any] = None,  # Optional[StudentProfile]
+        current_path: Any | None = None,  # Optional[LearningPath]
+        student_profile: Any | None = None,  # Optional[StudentProfile]
     ) -> ChatResponse:
         """Process a chat message and generate response.
 
@@ -145,8 +145,8 @@ class ChatIntegrationService:
         self,
         intent: ChatIntent,
         message: ChatMessage,
-        current_path: Optional[Any],
-        student_profile: Optional[Any],
+        current_path: Any | None,
+        student_profile: Any | None,
     ) -> ChatResponse:
         """Generate response based on intent.
 
@@ -162,26 +162,25 @@ class ChatIntegrationService:
         if intent == ChatIntent.CHECK_PROGRESS:
             return await self._handle_progress_check(current_path)
 
-        elif intent == ChatIntent.GET_RECOMMENDATION:
+        if intent == ChatIntent.GET_RECOMMENDATION:
             return await self._handle_recommendation(current_path, student_profile)
 
-        elif intent == ChatIntent.MARK_COMPLETE:
+        if intent == ChatIntent.MARK_COMPLETE:
             return await self._handle_mark_complete(message, current_path)
 
-        elif intent == ChatIntent.REQUEST_HELP:
+        if intent == ChatIntent.REQUEST_HELP:
             return await self._handle_help_request(message, current_path)
 
-        elif intent == ChatIntent.ASK_QUESTION:
+        if intent == ChatIntent.ASK_QUESTION:
             return await self._handle_question(message, current_path)
 
-        elif intent == ChatIntent.CHANGE_TOPIC:
+        if intent == ChatIntent.CHANGE_TOPIC:
             return await self._handle_topic_change(message, current_path)
 
-        else:
-            return self._handle_unknown(message)
+        return self._handle_unknown(message)
 
     async def _handle_progress_check(
-        self, current_path: Optional[Any]
+        self, current_path: Any | None
     ) -> ChatResponse:
         """Handle progress check request.
 
@@ -233,7 +232,7 @@ Devam etmek için hazır mısınız?"""
         )
 
     async def _handle_recommendation(
-        self, current_path: Optional[Any], student_profile: Optional[Any]
+        self, current_path: Any | None, student_profile: Any | None
     ) -> ChatResponse:
         """Handle recommendation request.
 
@@ -284,7 +283,7 @@ Devam etmek için hazır mısınız?"""
         )
 
     async def _handle_mark_complete(
-        self, message: ChatMessage, current_path: Optional[Any]
+        self, message: ChatMessage, current_path: Any | None
     ) -> ChatResponse:
         """Handle topic completion marking.
 
@@ -327,7 +326,7 @@ Devam etmek için hazır mısınız?"""
         )
 
     async def _handle_help_request(
-        self, message: ChatMessage, current_path: Optional[Any]
+        self, message: ChatMessage, current_path: Any | None
     ) -> ChatResponse:
         """Handle help request.
 
@@ -354,7 +353,7 @@ Sorularınız için doğrudan yazabilirsiniz!"""
         )
 
     async def _handle_question(
-        self, message: ChatMessage, current_path: Optional[Any]
+        self, message: ChatMessage, current_path: Any | None
     ) -> ChatResponse:
         """Handle a question from student.
 
@@ -409,7 +408,7 @@ Kısa ve öğretici bir yanıt ver. Türkçe yanıtla."""
         )
 
     async def _handle_topic_change(
-        self, message: ChatMessage, current_path: Optional[Any]
+        self, message: ChatMessage, current_path: Any | None
     ) -> ChatResponse:
         """Handle topic change request.
 
@@ -457,7 +456,7 @@ Kısa ve öğretici bir yanıt ver. Türkçe yanıtla."""
             suggestions=["Yardım", "İlerleme durumum", "Kaynak öner"],
         )
 
-    def _load_intent_patterns(self) -> Dict[ChatIntent, List[str]]:
+    def _load_intent_patterns(self) -> dict[ChatIntent, list[str]]:
         """Load intent detection patterns.
 
         Returns:
@@ -528,8 +527,8 @@ class ChatIntegration:
         self,
         session_id: str,
         message: str,
-        context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Process chat message.
 
         Args:
@@ -545,10 +544,10 @@ class ChatIntegration:
                 session_id=session_id, message=message, context=context
             )
         except Exception as e:
-            logger.error(f"Chat processing error: {str(e)}")
+            logger.error(f"Chat processing error: {e!s}")
             return {"error": str(e)}
 
-    def get_history(self, session_id: str) -> List[Dict[str, Any]]:
+    def get_history(self, session_id: str) -> list[dict[str, Any]]:
         """Get conversation history.
 
         Args:
@@ -560,5 +559,5 @@ class ChatIntegration:
         try:
             return self.service.get_conversation_history(session_id)
         except Exception as e:
-            logger.error(f"Get history error: {str(e)}")
+            logger.error(f"Get history error: {e!s}")
             return []

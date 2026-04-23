@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-import asyncio, asyncpg, logging, json, uuid, os
+import asyncio
+import json
+import logging
+import os
+import uuid
+
+import asyncpg
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -19,7 +26,7 @@ async def copy():
                 await conn.execute("""
                     INSERT INTO questions (id, question_text, option_a, option_b, option_c, option_d, option_e, correct_answer, exam_type, subject_area, topic, subtopic, difficulty, irt_discrimination, irt_difficulty, irt_guessing, aktif)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, true)
-                """, str(uuid.uuid4()), s['metin'], opts.get('A',''), opts.get('B',''), opts.get('C',''), opts.get('D',''), opts.get('E',''), s['dogru_cevap'], s['sinav_tipi'], subject, s['konu'], s['alt_konu'], diff, 
+                """, str(uuid.uuid4()), s['metin'], opts.get('A',''), opts.get('B',''), opts.get('C',''), opts.get('D',''), opts.get('E',''), s['dogru_cevap'], s['sinav_tipi'], subject, s['konu'], s['alt_konu'], diff,
                 s['irt_discrimination'] or 1.0, s['irt_difficulty'] or 0.0, s['irt_guessing'] or 0.25)
                 inserted += 1
             except Exception as e:

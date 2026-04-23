@@ -3,18 +3,17 @@ Test Suite for Difficulty Classification Service
 Task 74: Zorluk Seviyesi Sınıflandırma Tests
 """
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 from services.difficulty_classification_service import (
     DifficultyClassificationService,
     DifficultyLevel,
     DifficultyThresholds,
-    get_difficulty_label,
     difficulty_score_to_level,
+    get_difficulty_label,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -246,13 +245,11 @@ class TestDifficultyClassificationIntegration:
         """Test complete classification workflow"""
         # This would require actual database setup
         # Placeholder for integration test
-        pass
 
     def test_realtime_update_workflow(self):
         """Test realtime update workflow"""
         # This would require actual database setup
         # Placeholder for integration test
-        pass
 
 
 if __name__ == "__main__":

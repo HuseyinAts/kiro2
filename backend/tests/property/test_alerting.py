@@ -14,21 +14,22 @@ Requirements Tested:
     REQ-2.6: Kritik endpoint basarisizliginda aninda alert
 """
 
-import pytest
-import time
-from datetime import datetime, timedelta, UTC
-from hypothesis import given, strategies as st, settings
-
 import sys
+import time
+from datetime import UTC, datetime, timedelta
+
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from app.health.alerting.alert_manager import (
     AlertManager,
-    AlertThreshold,
     AlertSeverity,
-    AlertType
+    AlertThreshold,
+    AlertType,
 )
-
 
 # =====================================================================
 # Hypothesis Strategies

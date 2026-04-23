@@ -1,7 +1,9 @@
 """Create kiro2_db database"""
 import asyncio
-import asyncpg
 import sys
+
+import asyncpg
+
 
 async def create_database():
     try:

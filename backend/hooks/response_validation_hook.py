@@ -15,8 +15,9 @@ Requirements: REQ-6.1 - REQ-6.6
 
 import asyncio
 import logging
-from datetime import datetime, timezone
-from typing import Any, Callable, Dict, Optional
+from collections.abc import Callable
+from datetime import UTC, datetime
+from typing import Any
 
 from backend.orchestrator.response_validation_orchestrator import (
     ResponseValidationOrchestrator,
@@ -42,12 +43,12 @@ class ResponseValidationHook:
 
     def __init__(
         self,
-        orchestrator: Optional[ResponseValidationOrchestrator] = None,
-        on_approve: Optional[Callable] = None,
-        on_review: Optional[Callable] = None,
-        on_reject: Optional[Callable] = None,
-        on_error: Optional[Callable] = None,
-        admin_notification_callback: Optional[Callable] = None,
+        orchestrator: ResponseValidationOrchestrator | None = None,
+        on_approve: Callable | None = None,
+        on_review: Callable | None = None,
+        on_reject: Callable | None = None,
+        on_error: Callable | None = None,
+        admin_notification_callback: Callable | None = None,
         enabled: bool = True,
     ):
         """
@@ -80,7 +81,7 @@ class ResponseValidationHook:
     async def on_response_complete(
         self,
         response: AgentResponse,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         AI yanıt tamamlandığında çağrılır.
 
@@ -140,7 +141,7 @@ class ResponseValidationHook:
     async def _log_validation(
         self,
         response: AgentResponse,
-        result: Dict[str, Any],
+        result: dict[str, Any],
     ):
         """Doğrulama sonuçlarını logla"""
         logger.info(
@@ -162,7 +163,7 @@ class ResponseValidationHook:
     async def _handle_rejection(
         self,
         response: AgentResponse,
-        result: Dict[str, Any],
+        result: dict[str, Any],
     ):
         """Red durumunu işle"""
         logger.warning(
@@ -184,7 +185,7 @@ class ResponseValidationHook:
     async def _handle_review(
         self,
         response: AgentResponse,
-        result: Dict[str, Any],
+        result: dict[str, Any],
     ):
         """İnceleme durumunu işle"""
         logger.info(
@@ -201,7 +202,7 @@ class ResponseValidationHook:
     async def _handle_approval(
         self,
         response: AgentResponse,
-        result: Dict[str, Any],
+        result: dict[str, Any],
     ):
         """Onay durumunu işle"""
         logger.debug(
@@ -218,7 +219,7 @@ class ResponseValidationHook:
     async def _notify_admin(
         self,
         response: AgentResponse,
-        result: Dict[str, Any],
+        result: dict[str, Any],
         status: str,
     ):
         """Admin'e bildirim gönder"""
@@ -232,7 +233,7 @@ class ResponseValidationHook:
                 "confidence_score": result["confidence_score"],
                 "errors": result["errors"],
                 "warnings": result["warnings"],
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
             await self._safe_callback(
@@ -254,7 +255,7 @@ class ResponseValidationHook:
         except Exception as e:
             logger.error(f"Callback error: {e}")
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> dict[str, int]:
         """Hook istatistiklerini al"""
         return self._stats.copy()
 
@@ -270,7 +271,7 @@ class ResponseValidationHook:
 
 
 # Global hook instance
-_global_hook: Optional[ResponseValidationHook] = None
+_global_hook: ResponseValidationHook | None = None
 
 
 def get_validation_hook() -> ResponseValidationHook:
@@ -287,7 +288,7 @@ def set_validation_hook(hook: ResponseValidationHook):
     _global_hook = hook
 
 
-async def validate_on_complete(response: AgentResponse) -> Dict[str, Any]:
+async def validate_on_complete(response: AgentResponse) -> dict[str, Any]:
     """
     Convenience function: Yanıt tamamlandığında doğrulama yap.
 

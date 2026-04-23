@@ -7,7 +7,7 @@ Links named entities to knowledge base entries (Wikipedia, custom KB).
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .base import BaseToolHandler
 
@@ -87,7 +87,7 @@ class EntityLinkerHandler(BaseToolHandler):
         self._kb = {**TURKISH_ENTITIES_KB, **TURKISH_UNIVERSITIES_KB}
         self._alias_index = self._build_alias_index()
 
-    def _build_alias_index(self) -> Dict[str, str]:
+    def _build_alias_index(self) -> dict[str, str]:
         """Build reverse index from aliases to entity IDs."""
         index = {}
         for key, entity in self._kb.items():
@@ -114,7 +114,7 @@ class EntityLinkerHandler(BaseToolHandler):
             text = text.replace(char, replacement)
         return text
 
-    def _find_entity(self, text: str) -> Optional[Dict[str, Any]]:
+    def _find_entity(self, text: str) -> dict[str, Any] | None:
         """Find entity in knowledge base."""
         # Try exact match first
         normalized = self._normalize_text(text)
@@ -133,9 +133,9 @@ class EntityLinkerHandler(BaseToolHandler):
     async def _call_jpype(
         self,
         text: str,
-        entities: Optional[List[Dict[str, Any]]] = None,
+        entities: list[dict[str, Any]] | None = None,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Link entities to knowledge base using NER + KB lookup.
 
@@ -202,9 +202,9 @@ class EntityLinkerHandler(BaseToolHandler):
     async def _call_backend(
         self,
         text: str,
-        entities: Optional[List[Dict[str, Any]]] = None,
+        entities: list[dict[str, Any]] | None = None,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Fallback to HTTP backend for entity linking."""
         try:
             response = await self._post(
@@ -217,7 +217,7 @@ class EntityLinkerHandler(BaseToolHandler):
             # Fall back to local KB lookup
             return await self._call_jpype(text, entities, **kwargs)
 
-    def _extract_entities_pattern(self, text: str) -> List[Dict[str, Any]]:
+    def _extract_entities_pattern(self, text: str) -> list[dict[str, Any]]:
         """Extract entities using pattern matching (fallback)."""
         entities = []
 

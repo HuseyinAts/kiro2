@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 WebSocket Real-Time Communication Comprehensive Tests
 WebSocket gerçek zamanlı iletişim kapsamlı testleri
@@ -15,6 +14,7 @@ Requirements: 11.4, 11.5, 11.6
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 
@@ -40,6 +40,7 @@ except ImportError:
 
 # Service imports
 from algorithms.multi_agent_blackboard import MultiAgentBlackboard
+
 try:
     from services.real_time_websocket_system import RealTimeWebSocketSystem
 except ImportError:
@@ -549,7 +550,7 @@ class TestWebSocketBlackboardIntegration:
             "sync_duration_ms": sync_duration * 1000,
             "all_notifications_correct": all(
                 notification_counts[agent] == expected_notifications[agent]
-                for agent in agents.keys()
+                for agent in agents
             ),
         }
 
@@ -713,7 +714,7 @@ class TestWebSocketConnectionReliability:
         assert status["last_heartbeat"] is not None
 
         # Agent'ı yanıt vermez hale getir (simulated failure)
-        agent.on_heartbeat.side_effect = asyncio.TimeoutError("Heartbeat timeout")
+        agent.on_heartbeat.side_effect = TimeoutError("Heartbeat timeout")
 
         # Timeout'u bekle
         await asyncio.sleep(0.8)  # Timeout + buffer

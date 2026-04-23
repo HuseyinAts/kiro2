@@ -5,7 +5,7 @@ Otomatik Soru Üretim Modelleri
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Union
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -85,13 +85,13 @@ class OSYMQuestionFormat(BaseModel):
 
     question_number: int = Field(..., description="Soru numarası")
     question_text: str = Field(..., description="Soru metni")
-    options: List[str] = Field(..., min_length=4, max_length=5, description="Seçenekler")
+    options: list[str] = Field(..., min_length=4, max_length=5, description="Seçenekler")
     correct_answer: str = Field(..., description="Doğru cevap (A, B, C, D, E)")
-    explanation: Optional[str] = Field(None, description="Çözüm açıklaması")
+    explanation: str | None = Field(None, description="Çözüm açıklaması")
 
     # ÖSYM Format Kontrolleri
     has_visual: bool = Field(default=False, description="Görsel içeriyor mu")
-    visual_description: Optional[str] = Field(None, description="Görsel açıklaması")
+    visual_description: str | None = Field(None, description="Görsel açıklaması")
     reading_time_seconds: int = Field(default=60, description="Okuma süresi (saniye)")
     solution_time_seconds: int = Field(default=120, description="Çözüm süresi (saniye)")
 
@@ -105,13 +105,13 @@ class GeneratedQuestion(BaseModel):
     subject: SubjectType = Field(..., description="Ders")
     topic_id: str = Field(..., description="Konu ID")
     topic_name: str = Field(..., description="Konu adı")
-    subtopic: Optional[str] = Field(None, description="Alt konu")
+    subtopic: str | None = Field(None, description="Alt konu")
 
     # Soru İçeriği
     question_type: QuestionType = Field(..., description="Soru türü")
     question_text: str = Field(..., description="Soru metni")
-    options: List[str] = Field(default_factory=list, description="Seçenekler")
-    correct_answer: Union[str, int, List[str]] = Field(..., description="Doğru cevap")
+    options: list[str] = Field(default_factory=list, description="Seçenekler")
+    correct_answer: Union[str, int, list[str]] = Field(..., description="Doğru cevap")
     explanation: str = Field(..., description="Çözüm açıklaması")
 
     # Zorluk ve Seviye
@@ -126,8 +126,8 @@ class GeneratedQuestion(BaseModel):
     )
 
     # MEB Uyumluluk
-    meb_standard_id: Optional[str] = Field(None, description="MEB standardı ID")
-    learning_outcome_ids: List[str] = Field(
+    meb_standard_id: str | None = Field(None, description="MEB standardı ID")
+    learning_outcome_ids: list[str] = Field(
         default_factory=list, description="Öğrenme kazanımları"
     )
     meb_compliance_score: float = Field(
@@ -147,25 +147,25 @@ class GeneratedQuestion(BaseModel):
 
     # Meta Bilgiler
     generation_method: str = Field(..., description="Üretim yöntemi")
-    generation_parameters: Dict[str, Any] = Field(
+    generation_parameters: dict[str, Any] = Field(
         default_factory=dict, description="Üretim parametreleri"
     )
-    source_materials: List[str] = Field(
+    source_materials: list[str] = Field(
         default_factory=list, description="Kaynak materyaller"
     )
 
     # Durum Bilgileri
     is_validated: bool = Field(default=False, description="Doğrulandı mı")
-    validation_errors: List[str] = Field(
+    validation_errors: list[str] = Field(
         default_factory=list, description="Doğrulama hataları"
     )
     is_approved: bool = Field(default=False, description="Onaylandı mı")
-    approved_by: Optional[str] = Field(None, description="Onaylayan")
+    approved_by: str | None = Field(None, description="Onaylayan")
 
     # Tarihler
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
-    last_used_at: Optional[datetime] = Field(None, description="Son kullanım tarihi")
+    last_used_at: datetime | None = Field(None, description="Son kullanım tarihi")
 
     model_config = ConfigDict()
 
@@ -179,17 +179,17 @@ class QuestionGenerationRequest(BaseModel):
     subject: SubjectType = Field(..., description="Ders")
     topic_id: str = Field(..., description="Konu ID")
     exam_type: ExamType = Field(..., description="Sınav türü")
-    grade_level: Optional[GradeLevel] = Field(None, description="Sınıf seviyesi")
+    grade_level: GradeLevel | None = Field(None, description="Sınıf seviyesi")
 
     # Üretim Parametreleri
     question_count: int = Field(
         ..., ge=1, le=10000, description="Üretilecek soru sayısı"
     )
-    question_types: List[QuestionType] = Field(..., description="Soru türleri")
-    difficulty_distribution: Dict[DifficultyLevel, float] = Field(
+    question_types: list[QuestionType] = Field(..., description="Soru türleri")
+    difficulty_distribution: dict[DifficultyLevel, float] = Field(
         ..., description="Zorluk dağılımı"
     )
-    cognitive_distribution: Dict[CognitiveLevel, float] = Field(
+    cognitive_distribution: dict[CognitiveLevel, float] = Field(
         ..., description="Bilişsel seviye dağılımı"
     )
 
@@ -214,7 +214,7 @@ class QuestionGenerationRequest(BaseModel):
     # Talep Bilgileri
     requested_by: str = Field(..., description="Talep eden")
     priority: str = Field(default="normal", description="Öncelik")
-    deadline: Optional[datetime] = Field(None, description="Teslim tarihi")
+    deadline: datetime | None = Field(None, description="Teslim tarihi")
 
     # Durum
     status: str = Field(default="pending", description="Durum")
@@ -236,11 +236,11 @@ class QuestionTemplate(BaseModel):
 
     # Şablon İçeriği
     question_template: str = Field(..., description="Soru şablonu metni")
-    options_template: List[str] = Field(..., description="Seçenek şablonları")
+    options_template: list[str] = Field(..., description="Seçenek şablonları")
     explanation_template: str = Field(..., description="Açıklama şablonu")
 
     # Parametreler
-    template_variables: Dict[str, str] = Field(
+    template_variables: dict[str, str] = Field(
         default_factory=dict, description="Şablon değişkenleri"
     )
     difficulty_level: DifficultyLevel = Field(..., description="Zorluk seviyesi")
@@ -276,12 +276,12 @@ class QuestionValidationResult(BaseModel):
     )
 
     # Doğrulama Detayları
-    validation_checks: Dict[str, bool] = Field(
+    validation_checks: dict[str, bool] = Field(
         default_factory=dict, description="Doğrulama kontrolleri"
     )
-    errors: List[str] = Field(default_factory=list, description="Hatalar")
-    warnings: List[str] = Field(default_factory=list, description="Uyarılar")
-    suggestions: List[str] = Field(default_factory=list, description="Öneriler")
+    errors: list[str] = Field(default_factory=list, description="Hatalar")
+    warnings: list[str] = Field(default_factory=list, description="Uyarılar")
+    suggestions: list[str] = Field(default_factory=list, description="Öneriler")
 
     # Doğrulama Bilgileri
     validated_by: str = Field(..., description="Doğrulayan")
@@ -319,20 +319,20 @@ class QuestionBankStatus(BaseModel):
     )
 
     # Dağılımlar
-    difficulty_distribution: Dict[DifficultyLevel, int] = Field(
+    difficulty_distribution: dict[DifficultyLevel, int] = Field(
         default_factory=dict, description="Zorluk dağılımı"
     )
-    cognitive_distribution: Dict[CognitiveLevel, int] = Field(
+    cognitive_distribution: dict[CognitiveLevel, int] = Field(
         default_factory=dict, description="Bilişsel dağılım"
     )
-    type_distribution: Dict[QuestionType, int] = Field(
+    type_distribution: dict[QuestionType, int] = Field(
         default_factory=dict, description="Tür dağılımı"
     )
 
     # Durum Bilgileri
     status: str = Field(default="insufficient", description="Durum")
     last_updated: datetime = Field(default_factory=datetime.now)
-    next_generation_date: Optional[datetime] = Field(
+    next_generation_date: datetime | None = Field(
         None, description="Sonraki üretim tarihi"
     )
 
@@ -344,7 +344,7 @@ class QuestionGenerationReport(BaseModel):
 
     # Rapor Bilgileri
     report_type: str = Field(..., description="Rapor türü")
-    subject: Optional[SubjectType] = Field(None, description="Ders")
+    subject: SubjectType | None = Field(None, description="Ders")
     period_start: datetime = Field(..., description="Dönem başlangıcı")
     period_end: datetime = Field(..., description="Dönem sonu")
 
@@ -368,13 +368,13 @@ class QuestionGenerationReport(BaseModel):
     success_rate: float = Field(default=0.0, ge=0.0, le=1.0, description="Başarı oranı")
 
     # Konu Bazlı Durum
-    topic_status: List[QuestionBankStatus] = Field(
+    topic_status: list[QuestionBankStatus] = Field(
         default_factory=list, description="Konu bazlı durum"
     )
 
     # Öneriler
-    recommendations: List[str] = Field(default_factory=list, description="Öneriler")
-    priority_topics: List[str] = Field(
+    recommendations: list[str] = Field(default_factory=list, description="Öneriler")
+    priority_topics: list[str] = Field(
         default_factory=list, description="Öncelikli konular"
     )
 

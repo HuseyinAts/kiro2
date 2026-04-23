@@ -21,6 +21,7 @@ from typing import Any
 
 import structlog
 from fastapi import APIRouter, Depends, Request
+
 from core.auth_dependencies import AuthenticationDependency
 
 get_current_user = AuthenticationDependency(required=True)

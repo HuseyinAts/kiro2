@@ -6,7 +6,6 @@ YKS (Yükseköğretim Kurumları Sınavı) uses: Net = Correct - (Wrong / 4)
 """
 import sys
 from pathlib import Path
-from typing import Dict
 
 # Add backend directory to path
 backend_dir = Path(__file__).parent.parent.parent.parent
@@ -179,7 +178,7 @@ class OSYMScoreCalculator:
         return correct - (wrong / 4.0)
 
     @staticmethod
-    def calculate_tyt_total(subject_nets: Dict[str, float]) -> float:
+    def calculate_tyt_total(subject_nets: dict[str, float]) -> float:
         """Calculate total TYT net from subject nets."""
         return sum(subject_nets.values())
 

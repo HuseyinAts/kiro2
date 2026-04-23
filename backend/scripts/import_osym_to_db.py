@@ -3,18 +3,19 @@ Import ÖSYM Questions to Database
 Loads extracted ÖSYM questions into PostgreSQL database
 """
 import asyncio
-import asyncpg
 import json
-from pathlib import Path
 import sys
-from typing import Dict
 from datetime import datetime
+from pathlib import Path
+
+import asyncpg
 
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.config import settings
 import re
+
+from core.config import settings
 
 
 class OSYMDatabaseImporter:
@@ -26,7 +27,7 @@ class OSYMDatabaseImporter:
         self.skipped_count = 0
         self.error_count = 0
 
-    def parse_database_url(self, url: str) -> Dict[str, any]:
+    def parse_database_url(self, url: str) -> dict[str, any]:
         """Parse PostgreSQL connection URL"""
         # Format: postgresql+asyncpg://user:password@host:port/database
         pattern = r"postgresql\+?.*://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)"
@@ -74,7 +75,7 @@ class OSYMDatabaseImporter:
         result = await self.conn.fetchval(query, stem, year)
         return result is not None
 
-    async def import_question(self, question: Dict) -> bool:
+    async def import_question(self, question: dict) -> bool:
         """Import a single question to database"""
 
         try:
@@ -131,7 +132,7 @@ class OSYMDatabaseImporter:
         print(f"{'='*80}\n")
 
         # Load JSON
-        with open(json_path, "r", encoding="utf-8") as f:
+        with open(json_path, encoding="utf-8") as f:
             data = json.load(f)
 
         metadata = data.get("metadata", {})

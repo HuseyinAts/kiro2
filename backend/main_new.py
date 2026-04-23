@@ -5,10 +5,10 @@ Minimal main.py using application factory pattern.
 All routers are dynamically loaded from the routers module.
 """
 
-import logging
-import sys
-import os
 import io
+import logging
+import os
+import sys
 from pathlib import Path
 
 # UTF-8 encoding fix for Windows (skip during testing to preserve pytest capture)
@@ -40,13 +40,14 @@ try:
 except ImportError as e:
     logger.error(f"❌ Could not import application factory: {e}")
     logger.info("⚠️ Using fallback application configuration")
-    
+
     # Fallback for compatibility
+    from collections.abc import AsyncGenerator
+    from contextlib import asynccontextmanager
+
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
-    from contextlib import asynccontextmanager
-    from typing import AsyncGenerator
-    
+
     @asynccontextmanager
     async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         """Application lifespan management."""
@@ -55,7 +56,7 @@ except ImportError as e:
         logger.info("=" * 60)
         yield
         logger.info("🛑 KIRO2 Backend Shutting Down...")
-    
+
     def create_app() -> FastAPI:
         """Fallback application factory."""
         app = FastAPI(
@@ -64,7 +65,7 @@ except ImportError as e:
             description="AI-powered educational platform for Turkish students",
             lifespan=app_lifespan
         )
-        
+
         # Basic CORS middleware
         app.add_middleware(
             CORSMiddleware,
@@ -73,7 +74,7 @@ except ImportError as e:
             allow_methods=["*"],
             allow_headers=["*"],
         )
-        
+
         # Basic endpoints
         @app.get("/")
         async def root():
@@ -84,22 +85,22 @@ except ImportError as e:
                 "status": "online",
                 "mode": "fallback"
             }
-        
+
         @app.get("/health")
         async def health():
             """Health check endpoint."""
             return {"status": "healthy"}
-        
+
         @app.get("/health/ready")
         async def ready():
             """Readiness check endpoint."""
             return {"status": "ready"}
-        
+
         @app.get("/health/live")
         async def live():
             """Liveness check endpoint."""
             return {"status": "alive"}
-        
+
         # Try to load routers if available
         try:
             from routers.loader import setup_routers
@@ -108,7 +109,7 @@ except ImportError as e:
         except ImportError as e:
             logger.warning(f"⚠️ Could not load routers: {e}")
             logger.info("Running in minimal mode with basic endpoints only")
-        
+
         return app
 
 # Create application instance
@@ -120,7 +121,7 @@ async def startup_event():
     """Additional startup tasks."""
     logger.info("✅ Custom startup tasks completed")
 
-@app.on_event("shutdown") 
+@app.on_event("shutdown")
 async def shutdown_event():
     """Additional shutdown tasks."""
     logger.info("✅ Custom shutdown tasks completed")
@@ -128,12 +129,12 @@ async def shutdown_event():
 # Main entry point
 if __name__ == "__main__":
     import uvicorn
-    
+
     # Get configuration
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "8000"))
     reload = os.getenv("ENVIRONMENT", "development") == "development"
-    
+
     logger.info("=" * 60)
     logger.info("🚀 Starting KIRO2 Backend Server")
     logger.info(f"  Host: {host}")
@@ -141,7 +142,7 @@ if __name__ == "__main__":
     logger.info(f"  Reload: {reload}")
     logger.info(f"  API Docs: http://localhost:{port}/docs")
     logger.info("=" * 60)
-    
+
     # Run server
     uvicorn.run(
         "main:app" if not reload else "main_new:app",

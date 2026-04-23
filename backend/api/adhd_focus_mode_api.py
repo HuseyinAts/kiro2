@@ -15,15 +15,16 @@ Features:
 - Session tracking (oturum takibi)
 """
 
+import logging
+from datetime import UTC, datetime, timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
-from typing import Optional, List
-from datetime import datetime, timedelta, timezone
+from sqlalchemy.orm import Session
+
 from core.database import get_db
 from core.dependencies import get_current_user
 from models.database import User
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +41,10 @@ class FocusModeTask(BaseModel):
 
     id: str
     title: str
-    description: Optional[str] = None
-    estimated_duration_minutes: Optional[int] = None
+    description: str | None = None
+    estimated_duration_minutes: int | None = None
     priority: str = Field(default="medium", pattern="^(low|medium|high)$")
-    subject: Optional[str] = None
+    subject: str | None = None
 
 
 class FocusModeSettings(BaseModel):
@@ -61,14 +62,14 @@ class FocusModeSettings(BaseModel):
 class FocusModeActivateRequest(BaseModel):
     """Focus mode activation request"""
 
-    task_id: Optional[str] = None
+    task_id: str | None = None
     settings: FocusModeSettings
 
 
 class FocusModeDeactivateRequest(BaseModel):
     """Focus mode deactivation request"""
 
-    task_id: Optional[str] = None
+    task_id: str | None = None
     elapsed_seconds: int = 0
 
 
@@ -77,9 +78,9 @@ class FocusModeSession(BaseModel):
 
     session_id: str
     user_id: str
-    task_id: Optional[str]
+    task_id: str | None
     started_at: datetime
-    ended_at: Optional[datetime]
+    ended_at: datetime | None
     elapsed_seconds: int
     settings: dict
     completed: bool = False
@@ -93,7 +94,7 @@ class FocusModeStats(BaseModel):
     average_session_duration_minutes: float
     completed_sessions: int
     completion_rate: float
-    most_productive_hour: Optional[int]
+    most_productive_hour: int | None
     longest_session_minutes: int
 
 
@@ -187,7 +188,7 @@ def get_focus_task(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error fetching focus task: {str(e)}")
+        logger.error(f"Error fetching focus task: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Görev bilgileri alınamadı",
@@ -215,14 +216,14 @@ def activate_focus_mode(
         logger.info(f"Activating focus mode for user {current_user.id}")
 
         # Create focus session
-        session_id = f"focus_{current_user.id}_{datetime.now(timezone.utc).timestamp()}"
+        session_id = f"focus_{current_user.id}_{datetime.now(UTC).timestamp()}"
 
         # In production, save to database
         session_data = {
             "session_id": session_id,
             "user_id": str(current_user.id),
             "task_id": request.task_id,
-            "started_at": datetime.now(timezone.utc).isoformat(),
+            "started_at": datetime.now(UTC).isoformat(),
             "settings": request.settings.dict(),
             "active": True,
         }
@@ -245,7 +246,7 @@ def activate_focus_mode(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error activating focus mode: {str(e)}")
+        logger.error(f"Error activating focus mode: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Odak modu etkinleştirilemedi",
@@ -276,7 +277,7 @@ def deactivate_focus_mode(
             "task_id": request.task_id,
             "elapsed_seconds": request.elapsed_seconds,
             "duration_minutes": round(duration_minutes, 2),
-            "ended_at": datetime.now(timezone.utc).isoformat(),
+            "ended_at": datetime.now(UTC).isoformat(),
         }
 
         logger.info(f"Focus mode deactivated. Duration: {duration_minutes:.2f} minutes")
@@ -291,7 +292,7 @@ def deactivate_focus_mode(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error deactivating focus mode: {str(e)}")
+        logger.error(f"Error deactivating focus mode: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Odak modu sonlandırılamadı",
@@ -320,14 +321,14 @@ def get_focus_stats(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error fetching focus stats: {str(e)}")
+        logger.error(f"Error fetching focus stats: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="İstatistikler alınamadı",
         )
 
 
-@router.get("/sessions", response_model=List[FocusModeSession])
+@router.get("/sessions", response_model=list[FocusModeSession])
 def get_focus_sessions(
     limit: int = 10,
     current_user: User = Depends(get_current_user),
@@ -350,8 +351,8 @@ def get_focus_sessions(
                 session_id=f"focus_{current_user.id}_1",
                 user_id=str(current_user.id),
                 task_id="task1",
-                started_at=datetime.now(timezone.utc) - timedelta(hours=2),
-                ended_at=datetime.now(timezone.utc) - timedelta(hours=1, minutes=30),
+                started_at=datetime.now(UTC) - timedelta(hours=2),
+                ended_at=datetime.now(UTC) - timedelta(hours=1, minutes=30),
                 elapsed_seconds=1800,
                 settings={"minimal_ui": True, "hide_notifications": True},
                 completed=True,
@@ -360,8 +361,8 @@ def get_focus_sessions(
                 session_id=f"focus_{current_user.id}_2",
                 user_id=str(current_user.id),
                 task_id="task2",
-                started_at=datetime.now(timezone.utc) - timedelta(days=1),
-                ended_at=datetime.now(timezone.utc) - timedelta(days=1, minutes=-45),
+                started_at=datetime.now(UTC) - timedelta(days=1),
+                ended_at=datetime.now(UTC) - timedelta(days=1, minutes=-45),
                 elapsed_seconds=2700,
                 settings={"minimal_ui": True, "fullscreen_mode": True},
                 completed=True,
@@ -373,7 +374,7 @@ def get_focus_sessions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error fetching focus sessions: {str(e)}")
+        logger.error(f"Error fetching focus sessions: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Oturumlar alınamadı",
@@ -392,7 +393,7 @@ def focus_mode_health_check():
     return {
         "status": "healthy",
         "service": "ADHD Focus Mode API",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "features": {
             "single_task_view": True,
             "minimal_interface": True,

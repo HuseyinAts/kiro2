@@ -11,14 +11,14 @@ Features:
 - Error categorization
 - Breadcrumbs for debugging
 """
-import time
 import logging
-from typing import Callable, Optional
+import time
+from collections.abc import Callable
 
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
 import sentry_sdk
-from sentry_sdk import start_transaction, configure_scope
+from fastapi import Request, Response
+from sentry_sdk import configure_scope, start_transaction
+from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)
 
@@ -300,8 +300,7 @@ def track_business_operation(operation_name: str):
 
         if inspect.iscoroutinefunction(func):
             return async_wrapper
-        else:
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 
@@ -364,8 +363,8 @@ def get_error_category(error: Exception) -> str:
 
 def capture_categorized_error(
     error: Exception,
-    user_id: Optional[str] = None,
-    operation: Optional[str] = None,
+    user_id: str | None = None,
+    operation: str | None = None,
     **extra_context
 ):
     """

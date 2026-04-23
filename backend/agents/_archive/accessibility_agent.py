@@ -19,7 +19,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.llm_service import llm_service
@@ -71,7 +71,7 @@ class AccessibilityIssue:
     description: str
     location: str  # Sorunun konumu
     suggestion: str  # Çözüm önerisi
-    wcag_criterion: Optional[str] = None  # İlgili WCAG kriteri
+    wcag_criterion: str | None = None  # İlgili WCAG kriteri
 
 
 @dataclass
@@ -80,12 +80,12 @@ class AccessibilityReport:
 
     report_id: str
     content_type: ContentType
-    issues: List[AccessibilityIssue]
+    issues: list[AccessibilityIssue]
     score: float  # 0-100 erişilebilirlik skoru
     level: AccessibilityLevel
-    recommendations: List[str]
-    improved_content: Optional[str]  # İyileştirilmiş içerik
-    metadata: Dict[str, Any]
+    recommendations: list[str]
+    improved_content: str | None  # İyileştirilmiş içerik
+    metadata: dict[str, Any]
 
 
 @dataclass
@@ -97,7 +97,7 @@ class AltText:
     generated_alt: str
     confidence: float
     language: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class AccessibilityAgent:
@@ -124,7 +124,7 @@ class AccessibilityAgent:
         }
 
     async def analyze_content(
-        self, content: str, content_type: ContentType, context: Optional[str] = None
+        self, content: str, content_type: ContentType, context: str | None = None
     ) -> AccessibilityReport:
         """
         İçeriği erişilebilirlik açısından analiz et
@@ -198,10 +198,10 @@ class AccessibilityAgent:
             return report
 
         except Exception as e:
-            logger.error(f"Analyze content error: {str(e)}")
+            logger.error(f"Analyze content error: {e!s}")
             raise
 
-    async def _analyze_text(self, text: str) -> List[AccessibilityIssue]:
+    async def _analyze_text(self, text: str) -> list[AccessibilityIssue]:
         """Metin erişilebilirlik analizi"""
         issues = []
 
@@ -249,7 +249,7 @@ class AccessibilityAgent:
 
         return issues
 
-    def _analyze_html(self, html: str) -> List[AccessibilityIssue]:
+    def _analyze_html(self, html: str) -> list[AccessibilityIssue]:
         """HTML erişilebilirlik analizi"""
         issues = []
 
@@ -328,8 +328,8 @@ class AccessibilityAgent:
         return issues
 
     async def _analyze_image(
-        self, image_data: str, context: Optional[str] = None
-    ) -> List[AccessibilityIssue]:
+        self, image_data: str, context: str | None = None
+    ) -> list[AccessibilityIssue]:
         """Görsel erişilebilirlik analizi"""
         issues = []
 
@@ -363,7 +363,7 @@ class AccessibilityAgent:
         complexity = min(1.0, (avg_sentence_length / 30 + avg_word_length / 10) / 2)
         return complexity
 
-    def _find_jargon(self, text: str) -> List[str]:
+    def _find_jargon(self, text: str) -> list[str]:
         """Metindeki jargon ve kısaltmaları bul"""
         jargon_terms = []
 
@@ -383,7 +383,7 @@ class AccessibilityAgent:
 
         return jargon_terms
 
-    def _calculate_accessibility_score(self, issues: List[AccessibilityIssue]) -> float:
+    def _calculate_accessibility_score(self, issues: list[AccessibilityIssue]) -> float:
         """Erişilebilirlik skoru hesapla (0-100)"""
         if not issues:
             return 100
@@ -400,13 +400,12 @@ class AccessibilityAgent:
         """Erişilebilirlik seviyesi belirle"""
         if score >= 90:
             return AccessibilityLevel.AAA
-        elif score >= 70:
+        if score >= 70:
             return AccessibilityLevel.AA
-        else:
-            return AccessibilityLevel.A
+        return AccessibilityLevel.A
 
     async def generate_alt_text(
-        self, image_data: str, context: Optional[str] = None, language: str = "tr"
+        self, image_data: str, context: str | None = None, language: str = "tr"
     ) -> AltText:
         """
         Görsel için alternatif metin oluştur
@@ -462,7 +461,7 @@ class AccessibilityAgent:
             return alt_text
 
         except Exception as e:
-            logger.error(f"Generate alt text error: {str(e)}")
+            logger.error(f"Generate alt text error: {e!s}")
             # Fallback alt text
             return AltText(
                 image_id=f"img_{datetime.now().timestamp()}",
@@ -501,11 +500,10 @@ class AccessibilityAgent:
                 self.simplified_content[cache_key] = simplified
 
                 return simplified
-            else:
-                return text
+            return text
 
         except Exception as e:
-            logger.error(f"Simplify text error: {str(e)}")
+            logger.error(f"Simplify text error: {e!s}")
             return text
 
     def _add_term_explanations(self, text: str) -> str:
@@ -526,7 +524,7 @@ class AccessibilityAgent:
 
     async def improve_structure(
         self, content: str, content_type: ContentType
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         İçerik yapısını iyileştir
 
@@ -621,12 +619,12 @@ class AccessibilityAgent:
             return suggestions
 
         except Exception as e:
-            logger.error(f"Improve structure error: {str(e)}")
+            logger.error(f"Improve structure error: {e!s}")
             return suggestions
 
     async def check_contrast(
         self, foreground_color: str, background_color: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Renk kontrastını kontrol et
 
@@ -678,19 +676,18 @@ class AccessibilityAgent:
             }
 
         except Exception as e:
-            logger.error(f"Check contrast error: {str(e)}")
+            logger.error(f"Check contrast error: {e!s}")
             return {"error": str(e), "recommendation": "Kontrast hesaplanamadı"}
 
     def _get_contrast_recommendation(self, ratio: float) -> str:
         """Kontrast oranına göre öneri"""
         if ratio >= 7:
             return "Mükemmel kontrast (AAA)"
-        elif ratio >= 4.5:
+        if ratio >= 4.5:
             return "İyi kontrast (AA)"
-        elif ratio >= 3:
+        if ratio >= 3:
             return "Sadece büyük metin için yeterli"
-        else:
-            return "Yetersiz kontrast, renkleri değiştirin"
+        return "Yetersiz kontrast, renkleri değiştirin"
 
     async def create_accessible_version(
         self,
@@ -756,14 +753,14 @@ class AccessibilityAgent:
             return accessible_content
 
         except Exception as e:
-            logger.error(f"Create accessible version error: {str(e)}")
+            logger.error(f"Create accessible version error: {e!s}")
             return content
 
-    def get_report(self, report_id: str) -> Optional[AccessibilityReport]:
+    def get_report(self, report_id: str) -> AccessibilityReport | None:
         """Rapor getir"""
         return self.reports.get(report_id)
 
-    def get_wcag_guidelines(self, level: AccessibilityLevel) -> List[str]:
+    def get_wcag_guidelines(self, level: AccessibilityLevel) -> list[str]:
         """WCAG yönergelerini getir"""
         guidelines = {
             AccessibilityLevel.A: [

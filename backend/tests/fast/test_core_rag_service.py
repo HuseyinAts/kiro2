@@ -7,6 +7,7 @@ Note: In TESTING mode, RAGService skips initialization (text_splitter=None).
 """
 
 import os
+
 import pytest
 
 pytestmark = pytest.mark.integration

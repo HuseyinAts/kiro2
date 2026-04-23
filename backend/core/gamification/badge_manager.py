@@ -8,14 +8,14 @@ Rozet koleksiyonu ve başarı sistemi
 - İlerleme takibi
 - Nadir rozetler
 """
-from datetime import datetime, timezone
-from typing import List, Dict, Optional
-from uuid import UUID
-from sqlalchemy.orm import Session
+from datetime import UTC, datetime
 from enum import Enum
+from uuid import UUID
 
-from models.user_badge import UserBadge
+from sqlalchemy.orm import Session
+
 from core.structured_logger import get_logger
+from models.user_badge import UserBadge
 
 logger = get_logger(__name__)
 
@@ -243,7 +243,7 @@ class BadgeManager:
 
     def award_badge(
         self, user_id: UUID, badge_id: str, auto_awarded: bool = True
-    ) -> Optional[UserBadge]:
+    ) -> UserBadge | None:
         """Kullanıcıya rozet ver"""
         # Rozet tanımını kontrol et
         if badge_id not in self.badges:
@@ -266,7 +266,7 @@ class BadgeManager:
         user_badge = UserBadge(
             user_id=user_id,
             badge_id=badge_id,
-            earned_at=datetime.now(timezone.utc),
+            earned_at=datetime.now(UTC),
             auto_awarded=auto_awarded,
         )
 
@@ -282,8 +282,8 @@ class BadgeManager:
         return user_badge
 
     def check_and_award_badges(
-        self, user_id: UUID, user_stats: Dict
-    ) -> List[UserBadge]:
+        self, user_id: UUID, user_stats: dict
+    ) -> list[UserBadge]:
         """Kullanıcının istatistiklerini kontrol et ve uygun rozetleri ver"""
         awarded_badges = []
 
@@ -305,7 +305,7 @@ class BadgeManager:
 
         return awarded_badges
 
-    def _check_criteria(self, user_stats: Dict, criteria: Dict) -> bool:
+    def _check_criteria(self, user_stats: dict, criteria: dict) -> bool:
         """Rozet kriterlerini kontrol et"""
         for key, required_value in criteria.items():
             user_value = user_stats.get(key, 0)
@@ -313,7 +313,7 @@ class BadgeManager:
                 return False
         return True
 
-    def get_user_badges(self, user_id: UUID) -> List[Dict]:
+    def get_user_badges(self, user_id: UUID) -> list[dict]:
         """Kullanıcının rozetlerini getir"""
         user_badges = (
             self.db.query(UserBadge)
@@ -333,7 +333,7 @@ class BadgeManager:
             if ub.badge_id in self.badges
         ]
 
-    def get_badge_progress(self, user_id: UUID, user_stats: Dict) -> List[Dict]:
+    def get_badge_progress(self, user_id: UUID, user_stats: dict) -> list[dict]:
         """Henüz kazanılmamış rozetlerin ilerlemesini göster"""
         progress = []
 
@@ -372,7 +372,7 @@ class BadgeManager:
         progress.sort(key=lambda x: x["progress_percentage"], reverse=True)
         return progress
 
-    def get_all_badges(self) -> List[Dict]:
+    def get_all_badges(self) -> list[dict]:
         """Tüm rozet tanımlarını getir"""
         return [
             {"badge_id": badge_id, **badge_data}
@@ -381,7 +381,7 @@ class BadgeManager:
 
 
 # Global instance
-_badge_manager: Optional[BadgeManager] = None
+_badge_manager: BadgeManager | None = None
 
 
 def get_badge_manager(db: Session) -> BadgeManager:

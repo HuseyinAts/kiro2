@@ -38,21 +38,21 @@ from .diagrams import (
 OSYM_DIAGRAM_STYLE = OSYM_DIAGRAM_STYLE
 
 __all__ = [
-    "MapDiagramGenerator",
-    "BaseDiagramGenerator",
-    "GeographicMapMixin",
-    "ProcessDiagramMixin",
-    "ClassificationMixin",
-    "TimelineMixin",
-    "OSYM_DIAGRAM_STYLE",
     "COLORS",
-    "TURKEY_REGIONS",
-    "TURKEY_MAJOR_CITIES",
     "CONTINENTS",
     "DEFAULT_FIG_SIZE",
+    "OSYM_DIAGRAM_STYLE",
+    "TURKEY_MAJOR_CITIES",
+    "TURKEY_REGIONS",
+    "BaseDiagramGenerator",
+    "ClassificationMixin",
+    "GeographicMapMixin",
+    "MapDiagramGenerator",
+    "ProcessDiagramMixin",
+    "TimelineMixin",
+    "close_figure",
     "fig_to_svg",
     "setup_axes",
-    "close_figure",
 ]
 
 

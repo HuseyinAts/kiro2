@@ -25,7 +25,6 @@ import unicodedata
 from pathlib import Path
 from time import time
 
-
 # ─── Bloom Classification Rules ──────────────────────────────────────────
 
 BLOOM_LEVELS = {
@@ -203,7 +202,7 @@ def main() -> None:
     # (some rows may classify back to L2=understand, so WHERE clause won't shrink)
     t0 = time()
     updated = 0
-    distribution = {i: 0 for i in range(1, 7)}
+    distribution = dict.fromkeys(range(1, 7), 0)
 
     with engine.connect() as conn:
         all_ids = conn.execute(text(

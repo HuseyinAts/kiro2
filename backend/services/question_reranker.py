@@ -7,7 +7,6 @@ Based on DEEP_RESEARCH_FINDINGS_2024.md:
 - Fast, zero cost, explainable
 """
 
-from typing import List, Dict, Optional
 import re
 
 
@@ -56,7 +55,6 @@ class KeywordQuestionReranker:
             "en",
             "çok",
             "az",
-            "ve",
             "veya",
             "ama",
             "fakat",
@@ -67,7 +65,7 @@ class KeywordQuestionReranker:
             "tablo",
         }
 
-    def extract_keywords(self, text: str) -> List[str]:
+    def extract_keywords(self, text: str) -> list[str]:
         """
         Extract meaningful keywords from Turkish text
 
@@ -160,7 +158,7 @@ class KeywordQuestionReranker:
         return density
 
     def calculate_year_recency_score(
-        self, year: Optional[int], current_year: int = 2025
+        self, year: int | None, current_year: int = 2025
     ) -> float:
         """
         Calculate recency score (prefer recent ÖSYM questions)
@@ -175,13 +173,12 @@ class KeywordQuestionReranker:
 
         if years_ago <= 3:
             return 1.0
-        elif years_ago <= 10:
+        if years_ago <= 10:
             return 1.0 - ((years_ago - 3) * 0.1)  # Decay by 0.1 per year
-        else:
-            return 0.3  # Minimum score for very old questions
+        return 0.3  # Minimum score for very old questions
 
     def calculate_relevance_score(
-        self, question: Dict, topic: str, target_length: int
+        self, question: dict, topic: str, target_length: int
     ) -> float:
         """
         Calculate overall relevance score for a question
@@ -214,8 +211,8 @@ class KeywordQuestionReranker:
         return relevance_score
 
     def rerank(
-        self, candidates: List[Dict], topic: str, target_length: int, top_k: int = 3
-    ) -> List[Dict]:
+        self, candidates: list[dict], topic: str, target_length: int, top_k: int = 3
+    ) -> list[dict]:
         """
         Rerank candidate questions by relevance
 
@@ -245,7 +242,7 @@ class KeywordQuestionReranker:
 
         return top_questions
 
-    def explain_ranking(self, question: Dict, topic: str, target_length: int) -> Dict:
+    def explain_ranking(self, question: dict, topic: str, target_length: int) -> dict:
         """
         Explain why a question received its score (for debugging)
 

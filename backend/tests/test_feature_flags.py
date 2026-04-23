@@ -2,29 +2,28 @@
 Unit tests for Feature Flags and Configuration Management
 """
 
-import pytest
 import json
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from backend.core.feature_flags import (
-    FeatureFlag,
-    Environment,
-    QualityThresholds,
-    PerformanceConfig,
-    ABTestVariant,
-    ABTest,
-    FeatureFlagManager,
-)
+import pytest
+
 from backend.core.config_utils import (
-    is_feature_enabled,
-    get_quality_thresholds,
-    get_performance_config,
     get_config_for_user,
+    get_performance_config,
+    get_quality_thresholds,
+    is_feature_enabled,
 )
-
-
+from backend.core.feature_flags import (
+    ABTest,
+    ABTestVariant,
+    Environment,
+    FeatureFlag,
+    FeatureFlagManager,
+    PerformanceConfig,
+    QualityThresholds,
+)
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -261,7 +260,7 @@ class TestFeatureFlagManager:
             manager.save_configuration()
 
             # Load and verify
-            with open(config_file, "r") as f:
+            with open(config_file) as f:
                 saved_config = json.load(f)
 
             assert saved_config["feature_flags"]["semantic_search"] is False

@@ -5,11 +5,11 @@ import time
 
 import pytest
 
-from app.guardrails import GuardrailManager, GuardConfig
+from app.guardrails import GuardConfig, GuardrailManager
 from app.guardrails.guards import (
+    CircuitBreakerGuard,
     MaxTurnsGuard,
     TimeoutGuard,
-    CircuitBreakerGuard,
 )
 from app.guardrails.guards.circuit_breaker_guard import CircuitState
 from app.guardrails.models import GuardStatus

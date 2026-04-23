@@ -18,15 +18,16 @@ Aligns with:
 NOTE: Tests need httpx ASGITransport migration for async_client fixture
 """
 
-import pytest
 import asyncio
+
+import pytest
 
 # Skip entire module - async_client fixture uses deprecated AsyncClient(app=...) pattern
 pytestmark = pytest.mark.skip(
     reason="Tests use async_client fixture with deprecated AsyncClient(app=app) - needs ASGITransport"
 )
-from httpx import AsyncClient
 from fastapi import status
+from httpx import AsyncClient
 
 # Use fixtures from conftest.py
 # async_client fixture is available globally
@@ -341,7 +342,6 @@ class TestUserProfile:
         Note: This test requires mocking time or waiting for token expiration
         """
         # This is a placeholder - full implementation would require time mocking
-        pass
 
 
 class TestTokenRefresh:
@@ -565,7 +565,6 @@ class TestErrorCodes:
     async def test_auth_002_token_expired(self, async_client: AsyncClient):
         """Test AUTH_002: Token expired (requires time mocking)"""
         # Placeholder - requires time mocking for full implementation
-        pass
 
     @pytest.mark.asyncio
     async def test_val_001_invalid_email_format(self, async_client: AsyncClient):

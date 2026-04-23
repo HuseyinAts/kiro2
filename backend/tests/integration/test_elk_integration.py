@@ -18,12 +18,13 @@ Requirements Tested:
     REQ-5.1: Kibana dashboard with log visualizations
 """
 
-import pytest
-import sys
 import json
-from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
+import sys
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
@@ -33,13 +34,13 @@ sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 try:
     from services.alert_service import (
-        AlertService,
-        AlertRule,
         Alert,
+        AlertRule,
+        AlertService,
         AlertSeverity,
         AlertStatus,
-        SlackNotificationChannel,
         EmailNotificationChannel,
+        SlackNotificationChannel,
     )
     ALERT_SERVICE_AVAILABLE = True
 except (ImportError, ModuleNotFoundError, TypeError):
@@ -356,12 +357,12 @@ class TestAlertAcknowledge:
 
         alert_service.active_alerts["test-alert-456"] = alert
 
-        before_time = datetime.now(timezone.utc)
+        before_time = datetime.now(UTC)
         await alert_service.acknowledge_alert(
             alert_id="test-alert-456",
             acknowledged_by="admin"
         )
-        after_time = datetime.now(timezone.utc)
+        after_time = datetime.now(UTC)
 
         ack_time = alert_service.active_alerts["test-alert-456"].acknowledged_at
         assert before_time <= ack_time <= after_time
@@ -412,7 +413,7 @@ class TestAlertSilence:
         service = AlertService(es_client=mock_elasticsearch)
 
         # Set last_alert_time in the past (silence expired)
-        service.last_alert_times["error_spike"] = datetime.now(timezone.utc) - timedelta(minutes=10)
+        service.last_alert_times["error_spike"] = datetime.now(UTC) - timedelta(minutes=10)
 
         # Check rules
         alerts = await service.check_all_rules()
@@ -596,7 +597,7 @@ class TestKibanaDashboard:
         """
         assert kibana_dashboard_path.exists(), f"Dashboard file not found: {kibana_dashboard_path}"
 
-        with open(kibana_dashboard_path, "r", encoding="utf-8") as f:
+        with open(kibana_dashboard_path, encoding="utf-8") as f:
             lines = f.readlines()
 
         # Each non-empty line should be valid JSON
@@ -614,7 +615,7 @@ class TestKibanaDashboard:
         """
         Test: Dashboard gerekli Kibana object'leri icermeli.
         """
-        with open(kibana_dashboard_path, "r", encoding="utf-8") as f:
+        with open(kibana_dashboard_path, encoding="utf-8") as f:
             objects = [json.loads(line) for line in f if line.strip()]
 
         object_types = {obj.get("type") for obj in objects}
@@ -628,7 +629,7 @@ class TestKibanaDashboard:
         """
         Test: Index pattern dogru formatta olmali.
         """
-        with open(kibana_dashboard_path, "r", encoding="utf-8") as f:
+        with open(kibana_dashboard_path, encoding="utf-8") as f:
             objects = [json.loads(line) for line in f if line.strip()]
 
         # Find index-pattern object
@@ -650,7 +651,7 @@ class TestKibanaDashboard:
         """
         Test: Dashboard Kibana 8.x ile uyumlu olmali.
         """
-        with open(kibana_dashboard_path, "r", encoding="utf-8") as f:
+        with open(kibana_dashboard_path, encoding="utf-8") as f:
             objects = [json.loads(line) for line in f if line.strip()]
 
         for obj in objects:
@@ -664,7 +665,7 @@ class TestKibanaDashboard:
         """
         Test: Dashboard en az 5 visualization icermeli.
         """
-        with open(kibana_dashboard_path, "r", encoding="utf-8") as f:
+        with open(kibana_dashboard_path, encoding="utf-8") as f:
             objects = [json.loads(line) for line in f if line.strip()]
 
         visualizations = [
@@ -680,7 +681,7 @@ class TestKibanaDashboard:
         """
         Test: Dashboard search panel (Recent Logs) icermeli.
         """
-        with open(kibana_dashboard_path, "r", encoding="utf-8") as f:
+        with open(kibana_dashboard_path, encoding="utf-8") as f:
             objects = [json.loads(line) for line in f if line.strip()]
 
         search_panels = [

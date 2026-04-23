@@ -5,9 +5,10 @@ Revises: 20260406_reasoning
 Create Date: 2026-04-06
 """
 
-from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
+
+from alembic import op
 
 revision = "20260406_uni_dept"
 down_revision = "20260406_reasoning"

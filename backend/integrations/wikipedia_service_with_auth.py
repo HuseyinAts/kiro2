@@ -10,7 +10,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 
@@ -38,9 +38,9 @@ class WikipediaArticle:
     summary: str
     content: str
     url: str
-    categories: List[str]
-    images: List[str]
-    references: List[str]
+    categories: list[str]
+    images: list[str]
+    references: list[str]
     language: str
     last_modified: datetime
     word_count: int
@@ -52,9 +52,9 @@ class WikipediaServiceWithAuth:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         auth_method: AuthMethod = AuthMethod.NONE,
-        custom_base_url: Optional[str] = None,
+        custom_base_url: str | None = None,
     ):
         """
         Initialize Wikipedia service with optional authentication
@@ -82,7 +82,7 @@ class WikipediaServiceWithAuth:
             }
             self.api_endpoint = "https://{lang}.wikipedia.org/w/api.php"
 
-    def _prepare_auth_headers(self) -> Dict[str, str]:
+    def _prepare_auth_headers(self) -> dict[str, str]:
         """Prepare authentication headers based on auth method"""
         headers = {"User-Agent": "TeknofestEducationBot/1.0"}
 
@@ -95,13 +95,13 @@ class WikipediaServiceWithAuth:
 
         return headers
 
-    def _prepare_auth_params(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _prepare_auth_params(self, params: dict[str, Any]) -> dict[str, Any]:
         """Add authentication to query parameters if needed"""
         if self.api_key and self.auth_method == AuthMethod.QUERY_PARAM:
             params["api_key"] = self.api_key
         return params
 
-    def _prepare_auth_cookies(self) -> Dict[str, str]:
+    def _prepare_auth_cookies(self) -> dict[str, str]:
         """Prepare authentication cookies if needed"""
         cookies = {}
         if self.api_key and self.auth_method == AuthMethod.COOKIE:
@@ -114,7 +114,7 @@ class WikipediaServiceWithAuth:
         language: str = "tr",
         limit: int = 10,
         educational_filter: bool = True,
-    ) -> List[WikipediaArticle]:
+    ) -> list[WikipediaArticle]:
         """
         Search Wikipedia articles with authentication
 
@@ -158,10 +158,10 @@ class WikipediaServiceWithAuth:
                     if response.status == 401:
                         logger.error("Authentication failed - Invalid API key")
                         return []
-                    elif response.status == 403:
+                    if response.status == 403:
                         logger.error("Authorization failed - Insufficient permissions")
                         return []
-                    elif response.status != 200:
+                    if response.status != 200:
                         logger.error(
                             f"API request failed with status {response.status}"
                         )
@@ -208,15 +208,15 @@ class WikipediaServiceWithAuth:
                     return articles[:limit]
 
         except aiohttp.ClientError as e:
-            logger.error(f"Network error during Wikipedia search: {str(e)}")
+            logger.error(f"Network error during Wikipedia search: {e!s}")
             return []
         except Exception as e:
-            logger.error(f"Wikipedia search error: {str(e)}")
+            logger.error(f"Wikipedia search error: {e!s}")
             return []
 
     async def get_article(
         self, title: str, language: str = "tr"
-    ) -> Optional[WikipediaArticle]:
+    ) -> WikipediaArticle | None:
         """
         Get full article content with authentication
 
@@ -249,7 +249,7 @@ class WikipediaServiceWithAuth:
                     if response.status == 401:
                         logger.error("Authentication failed when fetching article")
                         return None
-                    elif response.status != 200:
+                    if response.status != 200:
                         logger.error(f"Failed to fetch article: {response.status}")
                         return None
 
@@ -301,10 +301,10 @@ class WikipediaServiceWithAuth:
                     return None
 
         except Exception as e:
-            logger.error(f"Error fetching article '{title}': {str(e)}")
+            logger.error(f"Error fetching article '{title}': {e!s}")
             return None
 
-    def _calculate_educational_relevance(self, search_result: Dict[str, Any]) -> float:
+    def _calculate_educational_relevance(self, search_result: dict[str, Any]) -> float:
         """Calculate educational relevance score for search results"""
         score = 0.5  # Base score
 
@@ -350,7 +350,7 @@ class WikipediaServiceWithAuth:
         return min(score, 1.0)
 
     def _calculate_content_relevance(
-        self, content: str, categories: List[str]
+        self, content: str, categories: list[str]
     ) -> float:
         """Calculate educational relevance from content and categories"""
         score = 0.5
@@ -401,7 +401,7 @@ class WikipediaServiceWithAuth:
 
     async def get_article_sections(
         self, title: str, language: str = "tr"
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get article sections with authentication"""
         try:
             url = self.api_endpoint.format(lang=language)
@@ -418,22 +418,21 @@ class WikipediaServiceWithAuth:
             headers = self._prepare_auth_headers()
             cookies = self._prepare_auth_cookies()
 
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    url, params=params, headers=headers, cookies=cookies
-                ) as response:
-                    if response.status != 200:
-                        return []
-
-                    data = await response.json()
-
-                    if "parse" in data and "sections" in data["parse"]:
-                        return data["parse"]["sections"]
-
+            async with aiohttp.ClientSession() as session, session.get(
+                url, params=params, headers=headers, cookies=cookies
+            ) as response:
+                if response.status != 200:
                     return []
 
+                data = await response.json()
+
+                if "parse" in data and "sections" in data["parse"]:
+                    return data["parse"]["sections"]
+
+                return []
+
         except Exception as e:
-            logger.error(f"Error fetching sections: {str(e)}")
+            logger.error(f"Error fetching sections: {e!s}")
             return []
 
 
@@ -443,8 +442,8 @@ wikipedia_service_with_auth = WikipediaServiceWithAuth()
 
 # Export the enhanced service
 __all__ = [
-    "WikipediaServiceWithAuth",
-    "WikipediaArticle",
     "AuthMethod",
+    "WikipediaArticle",
+    "WikipediaServiceWithAuth",
     "wikipedia_service_with_auth",
 ]

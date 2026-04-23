@@ -10,14 +10,16 @@ IMPORTANT: NO REWARD HACKING
 """
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parents[3]))
 
-import pytest
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+import pytest
+
+from models import KullaniciGiris, KullaniciOlustur, KullaniciRolu
 from services.user_service import KullaniciServisi
-from models import KullaniciOlustur, KullaniciGiris, KullaniciRolu
 
 
 # Mock bcrypt to avoid Python 3.13 + passlib compatibility issue

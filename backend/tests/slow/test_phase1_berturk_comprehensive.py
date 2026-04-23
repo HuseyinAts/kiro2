@@ -263,7 +263,7 @@ class TestBERTurkServiceMethodsBasic:
 
             # Test that method exists
             assert hasattr(service, "initialize")
-            assert callable(getattr(service, "initialize"))
+            assert callable(service.initialize)
 
             # Mock the transformers imports to avoid model loading
             with patch("core.berturk_service.AutoTokenizer") as mock_tokenizer, patch(

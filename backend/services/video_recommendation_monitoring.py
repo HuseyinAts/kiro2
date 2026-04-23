@@ -9,8 +9,8 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 from threading import Lock
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +36,13 @@ class FilterMetrics:
     avg_final_score: float = 0.0
 
     # Skor dağılımları
-    turkish_score_distribution: Dict[str, int] = field(
+    turkish_score_distribution: dict[str, int] = field(
         default_factory=lambda: defaultdict(int)
     )
-    relevance_score_distribution: Dict[str, int] = field(
+    relevance_score_distribution: dict[str, int] = field(
         default_factory=lambda: defaultdict(int)
     )
-    quality_score_distribution: Dict[str, int] = field(
+    quality_score_distribution: dict[str, int] = field(
         default_factory=lambda: defaultdict(int)
     )
 
@@ -54,8 +54,8 @@ class ValidationFailure:
     video_id: str
     failure_type: str
     timestamp: datetime
-    details: Dict[str, Any]
-    video_title: Optional[str] = None
+    details: dict[str, Any]
+    video_title: str | None = None
 
 
 @dataclass
@@ -84,7 +84,7 @@ class PerformanceMetrics:
     timeout_count: int = 0
 
     # Request timing dağılımı (saniye)
-    timing_distribution: Dict[str, int] = field(
+    timing_distribution: dict[str, int] = field(
         default_factory=lambda: {"<1s": 0, "1-2s": 0, "2-3s": 0, "3-5s": 0, ">5s": 0}
     )
 
@@ -94,9 +94,9 @@ class ErrorMetrics:
     """Hata metrikleri"""
 
     total_errors: int = 0
-    error_types: Dict[str, int] = field(default_factory=lambda: defaultdict(int))
+    error_types: dict[str, int] = field(default_factory=lambda: defaultdict(int))
     error_rate: float = 0.0
-    recent_errors: List[Dict[str, Any]] = field(default_factory=list)
+    recent_errors: list[dict[str, Any]] = field(default_factory=list)
     max_recent_errors: int = 100
 
 
@@ -115,7 +115,7 @@ class VideoRecommendationMonitor:
         self.error_metrics = ErrorMetrics()
 
         # Validation başarısızlıkları
-        self.validation_failures: List[ValidationFailure] = []
+        self.validation_failures: list[ValidationFailure] = []
         self.max_validation_failures = 1000  # Son 1000 başarısızlığı sakla
 
         # Thread-safe operations için lock
@@ -195,8 +195,8 @@ class VideoRecommendationMonitor:
         self,
         filter_type: str,
         passed: bool,
-        score: Optional[float] = None,
-        threshold: Optional[float] = None,
+        score: float | None = None,
+        threshold: float | None = None,
     ):
         """
         Filtre sonucunu logla
@@ -243,8 +243,8 @@ class VideoRecommendationMonitor:
         self,
         video_id: str,
         failure_type: str,
-        details: Dict[str, Any],
-        video_title: Optional[str] = None,
+        details: dict[str, Any],
+        video_title: str | None = None,
     ):
         """
         Validation başarısızlığını kaydet
@@ -394,7 +394,7 @@ class VideoRecommendationMonitor:
         self,
         error_type: str,
         error_message: str,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ):
         """
         Hata logla
@@ -436,7 +436,7 @@ class VideoRecommendationMonitor:
         # Log
         logger.error(f"Error: {error_type} - {error_message} " f"(context: {context})")
 
-    def get_filter_stats(self) -> Dict[str, Any]:
+    def get_filter_stats(self) -> dict[str, Any]:
         """
         Filtre istatistiklerini al
 
@@ -499,7 +499,7 @@ class VideoRecommendationMonitor:
                 },
             }
 
-    def get_validation_failure_stats(self) -> Dict[str, Any]:
+    def get_validation_failure_stats(self) -> dict[str, Any]:
         """
         Validation başarısızlık istatistiklerini al
 
@@ -530,7 +530,7 @@ class VideoRecommendationMonitor:
                 "recent_failures": recent_failures,
             }
 
-    def get_performance_stats(self) -> Dict[str, Any]:
+    def get_performance_stats(self) -> dict[str, Any]:
         """
         Performance istatistiklerini al
 
@@ -587,7 +587,7 @@ class VideoRecommendationMonitor:
                 "timeouts": self.performance_metrics.timeout_count,
             }
 
-    def get_error_stats(self) -> Dict[str, Any]:
+    def get_error_stats(self) -> dict[str, Any]:
         """
         Hata istatistiklerini al
 
@@ -602,7 +602,7 @@ class VideoRecommendationMonitor:
                 "recent_errors": self.error_metrics.recent_errors[-10:],
             }
 
-    def get_comprehensive_report(self) -> Dict[str, Any]:
+    def get_comprehensive_report(self) -> dict[str, Any]:
         """
         Kapsamlı monitoring raporu al
 
@@ -684,7 +684,7 @@ class VideoRecommendationMonitor:
 
         logger.info("All metrics reset")
 
-    def _update_score_distribution(self, distribution: Dict[str, int], score: float):
+    def _update_score_distribution(self, distribution: dict[str, int], score: float):
         """
         Skor dağılımını güncelle
 

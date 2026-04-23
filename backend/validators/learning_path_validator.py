@@ -15,7 +15,7 @@ Requirements: REQ-1.1 - REQ-1.6
 
 import asyncio
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import aiohttp
 
@@ -65,7 +65,7 @@ class LearningPathValidator(BaseResponseValidator):
     def __init__(
         self,
         weight: float = 0.30,
-        meb_api_url: Optional[str] = None,
+        meb_api_url: str | None = None,
         resource_check_timeout: float = 5.0,
     ):
         """
@@ -79,7 +79,7 @@ class LearningPathValidator(BaseResponseValidator):
         self.resource_check_timeout = resource_check_timeout
 
         # MEB müfredat cache (basit in-memory)
-        self._curriculum_cache: Dict[str, List[str]] = {}
+        self._curriculum_cache: dict[str, list[str]] = {}
 
     def get_validator_name(self) -> str:
         return "LearningPathValidator"
@@ -94,9 +94,9 @@ class LearningPathValidator(BaseResponseValidator):
         Returns:
             ValidationResult: Doğrulama sonucu
         """
-        errors: List[str] = []
-        warnings: List[str] = []
-        suggestions: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
+        suggestions: list[str] = []
         score = 1.0
 
         # Learning path verilerini çıkar
@@ -209,7 +209,7 @@ class LearningPathValidator(BaseResponseValidator):
 
     def _extract_learning_path_from_text(
         self, text: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Metin yanıtından öğrenme yolu bilgilerini çıkar.
 
@@ -245,8 +245,8 @@ class LearningPathValidator(BaseResponseValidator):
         }
 
     async def _validate_curriculum_compliance(
-        self, topics: List[str], grade_level: int
-    ) -> Dict[str, Any]:
+        self, topics: list[str], grade_level: int
+    ) -> dict[str, Any]:
         """
         Konuların MEB müfredatına uygunluğunu kontrol et.
 
@@ -282,7 +282,7 @@ class LearningPathValidator(BaseResponseValidator):
             "invalid_topics": invalid_topics,
         }
 
-    async def _fetch_curriculum(self, grade_level: int) -> List[str]:
+    async def _fetch_curriculum(self, grade_level: int) -> list[str]:
         """
         MEB müfredatını getir (API veya fallback).
 
@@ -308,7 +308,7 @@ class LearningPathValidator(BaseResponseValidator):
         # Fallback: Temel müfredat konuları
         return self._get_fallback_curriculum(grade_level)
 
-    def _get_fallback_curriculum(self, grade_level: int) -> List[str]:
+    def _get_fallback_curriculum(self, grade_level: int) -> list[str]:
         """
         Varsayılan müfredat konuları (fallback).
 
@@ -348,9 +348,9 @@ class LearningPathValidator(BaseResponseValidator):
 
     def _validate_prerequisite_order(
         self,
-        topics: List[str],
-        prerequisites: Dict[str, List[str]],
-    ) -> Dict[str, Any]:
+        topics: list[str],
+        prerequisites: dict[str, list[str]],
+    ) -> dict[str, Any]:
         """
         Ön koşul sıralamasını doğrula.
 
@@ -384,7 +384,7 @@ class LearningPathValidator(BaseResponseValidator):
 
     def _validate_difficulty_level(
         self, difficulty: str, student_level: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Zorluk seviyesinin öğrenci seviyesine uygunluğunu kontrol et.
 
@@ -407,22 +407,21 @@ class LearningPathValidator(BaseResponseValidator):
                 "message": "",
                 "suggestion": "",
             }
-        elif diff_value > student_value:
+        if diff_value > student_value:
             return {
                 "is_appropriate": False,
                 "message": f"Zorluk seviyesi ({difficulty}) öğrenci seviyesi ({student_level}) için çok yüksek",
                 "suggestion": "Daha kolay bir zorluk seviyesi seçin veya ön hazırlık konuları ekleyin",
             }
-        else:
-            return {
-                "is_appropriate": False,
-                "message": f"Zorluk seviyesi ({difficulty}) öğrenci seviyesi ({student_level}) için çok düşük",
-                "suggestion": "Daha zor bir zorluk seviyesi seçin veya ileri konular ekleyin",
-            }
+        return {
+            "is_appropriate": False,
+            "message": f"Zorluk seviyesi ({difficulty}) öğrenci seviyesi ({student_level}) için çok düşük",
+            "suggestion": "Daha zor bir zorluk seviyesi seçin veya ileri konular ekleyin",
+        }
 
     def _validate_estimated_time(
         self, estimated_hours: float, topic_count: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Tahmini sürenin gerçekçiliğini kontrol et.
 
@@ -445,22 +444,21 @@ class LearningPathValidator(BaseResponseValidator):
                 "min_expected": min_expected,
                 "max_expected": max_expected,
             }
-        elif estimated_hours > max_expected:
+        if estimated_hours > max_expected:
             return {
                 "status": "too_long",
                 "min_expected": min_expected,
                 "max_expected": max_expected,
             }
-        else:
-            return {
-                "status": "ok",
-                "min_expected": min_expected,
-                "max_expected": max_expected,
-            }
+        return {
+            "status": "ok",
+            "min_expected": min_expected,
+            "max_expected": max_expected,
+        }
 
     async def _validate_resource_accessibility(
-        self, resources: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, resources: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Kaynakların erişilebilirliğini kontrol et.
 
@@ -473,7 +471,7 @@ class LearningPathValidator(BaseResponseValidator):
         accessible = []
         inaccessible = []
 
-        async def check_resource(resource: Dict[str, Any]) -> Tuple[bool, Dict]:
+        async def check_resource(resource: dict[str, Any]) -> tuple[bool, dict]:
             url = resource.get("url")
             if not url:
                 return True, resource

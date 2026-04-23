@@ -8,7 +8,7 @@ Requirements: 10.1-10.7, 11.1-11.6, 12.1-12.6
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 # Enums
@@ -49,7 +49,7 @@ class SimplificationResult:
     complexity_reduction: float  # 0-1 arası
     readability_score: float  # 0-10 arası
     processing_time_ms: float = 0.0
-    applied_rules: List[str] = field(default_factory=list)
+    applied_rules: list[str] = field(default_factory=list)
 
     def get_final_text(self) -> str:
         """Final basitleştirilmiş metni döndür"""
@@ -68,9 +68,9 @@ class LexicalReplacement:
     replacement: str
     category: str  # "ottoman", "academic", "foreign"
     confidence: float
-    context: Optional[str] = None
+    context: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Dictionary'ye çevir"""
         return {
             "original": self.original,
@@ -89,7 +89,7 @@ class SyntacticPattern:
     replacement_template: str
     description: str
     complexity_reduction: float
-    examples: List[str] = field(default_factory=list)
+    examples: list[str] = field(default_factory=list)
 
     def matches(self, text: str) -> bool:
         """Metin bu kalıba uyuyor mu?"""
@@ -125,7 +125,7 @@ class BionicReadingResult:
     original_text: str
     bionic_text: str
     config: BionicReadingConfig
-    word_analysis: List[Dict[str, Any]] = field(default_factory=list)
+    word_analysis: list[dict[str, Any]] = field(default_factory=list)
     processing_time_ms: float = 0.0
     morphology_aware: bool = True
 
@@ -135,7 +135,7 @@ class BionicReadingResult:
         bold_chars = self.bionic_text.count("**") // 2
         return bold_chars / total_chars if total_chars > 0 else 0.0
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """İstatistikleri döndür"""
         return {
             "word_count": len(self.original_text.split()),
@@ -151,7 +151,7 @@ class BionicReadingResult:
 class FSRSParameters:
     """FSRS parametreleri (17 parametre)"""
 
-    w: List[float] = field(
+    w: list[float] = field(
         default_factory=lambda: [
             0.4,
             0.7,
@@ -195,8 +195,8 @@ class FSRSCard:
     difficulty: float = 0.0
     stability: float = 0.0
     retrievability: float = 1.0
-    last_review: Optional[datetime] = None
-    due_date: Optional[datetime] = None
+    last_review: datetime | None = None
+    due_date: datetime | None = None
     review_count: int = 0
     lapses: int = 0
     state: str = "new"  # new, learning, review, relearning
@@ -230,7 +230,7 @@ class CulturalAdjustments:
     group_study_bonus: float = 1.2  # Grup çalışması bonusu
     family_pressure: float = 1.1  # Aile baskısı faktörü
 
-    def get_adjustment_factor(self, context: Dict[str, Any]) -> float:
+    def get_adjustment_factor(self, context: dict[str, Any]) -> float:
         """Bağlama göre ayarlama faktörü"""
         factor = 1.0
 
@@ -257,10 +257,10 @@ class BlackboardMessage:
     key: str
     value: Any
     source_agent: str
-    target_agents: List[str] = field(default_factory=list)
+    target_agents: list[str] = field(default_factory=list)
     message_type: MessageType = MessageType.DATA_UPDATE
     timestamp: datetime = field(default_factory=datetime.now)
-    processed_by: List[str] = field(default_factory=list)
+    processed_by: list[str] = field(default_factory=list)
 
     def is_broadcast(self) -> bool:
         """Broadcast mesajı mı?"""
@@ -271,7 +271,7 @@ class BlackboardMessage:
         if agent_name not in self.processed_by:
             self.processed_by.append(agent_name)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Dictionary'ye çevir"""
         return {
             "id": self.id,
@@ -293,9 +293,9 @@ class AgentState:
     agent_type: AgentType
     is_active: bool = True
     last_activity: datetime = field(default_factory=datetime.now)
-    subscriptions: List[str] = field(default_factory=list)
-    message_queue: List[BlackboardMessage] = field(default_factory=list)
-    performance_metrics: Dict[str, float] = field(default_factory=dict)
+    subscriptions: list[str] = field(default_factory=list)
+    message_queue: list[BlackboardMessage] = field(default_factory=list)
+    performance_metrics: dict[str, float] = field(default_factory=dict)
 
     def subscribe_to(self, event_type: str):
         """Olay tipine abone ol"""
@@ -312,7 +312,7 @@ class AgentState:
         self.message_queue.append(message)
         self.last_activity = datetime.now()
 
-    def get_pending_messages(self) -> List[BlackboardMessage]:
+    def get_pending_messages(self) -> list[BlackboardMessage]:
         """Bekleyen mesajları al"""
         return [
             msg for msg in self.message_queue if self.agent_name not in msg.processed_by
@@ -328,7 +328,7 @@ class BlackboardEvent:
     data: Any
     source_agent: str
     timestamp: datetime = field(default_factory=datetime.now)
-    subscribers_notified: List[str] = field(default_factory=list)
+    subscribers_notified: list[str] = field(default_factory=list)
 
     def notify_subscriber(self, agent_name: str):
         """Aboneyi bilgilendir"""
@@ -341,13 +341,13 @@ class BlackboardEvent:
 class MaarifValues:
     """MEB Maarif değerleri"""
 
-    national_values: List[str] = field(
+    national_values: list[str] = field(
         default_factory=lambda: ["vatan", "millet", "aile"]
     )
-    universal_values: List[str] = field(
+    universal_values: list[str] = field(
         default_factory=lambda: ["adalet", "dostluk", "dürüstlük"]
     )
-    root_values: List[str] = field(default_factory=lambda: ["sabır", "saygı", "sevgi"])
+    root_values: list[str] = field(default_factory=lambda: ["sabır", "saygı", "sevgi"])
 
     def get_alignment_score(self, subject: str) -> float:
         """Ders ile değer uyumluluğu"""
@@ -388,10 +388,9 @@ class ZPDCalculationResult:
         """Öneri oluştur"""
         if self.cultural_adjustment > 1.1:
             return "Grup çalışması ve sosyal öğrenme aktiviteleri önerilir."
-        elif self.cultural_adjustment < 0.9:
+        if self.cultural_adjustment < 0.9:
             return "Bireysel çalışma ve kişisel rehberlik önerilir."
-        else:
-            return "Mevcut öğrenme yaklaşımı uygun."
+        return "Mevcut öğrenme yaklaşımı uygun."
 
 
 # Morfoloji IRT Modelleri
@@ -415,10 +414,9 @@ class MorphologyComplexity:
         """Karmaşıklık kategorisi"""
         if self.total_complexity < 0.3:
             return "Basit"
-        elif self.total_complexity < 0.7:
+        if self.total_complexity < 0.7:
             return "Orta"
-        else:
-            return "Karmaşık"
+        return "Karmaşık"
 
 
 @dataclass
@@ -482,7 +480,7 @@ class FelderSilvermanProfile:
     visual_verbal: float  # Görsel ↔ Sözel
     sequential_global: float  # Sıralı ↔ Bütünsel
 
-    def get_learning_preferences(self) -> Dict[str, str]:
+    def get_learning_preferences(self) -> dict[str, str]:
         """Öğrenme tercihlerini döndür"""
         return {
             "processing": "active" if self.active_reflective > 0.5 else "reflective",
@@ -505,7 +503,7 @@ class HybridLearningAnalysis:
     questionnaire_alignment: float
     analysis_time_ms: float = 0.0
 
-    def get_learning_recommendations(self) -> List[str]:
+    def get_learning_recommendations(self) -> list[str]:
         """Öğrenme önerileri"""
         recommendations = []
 

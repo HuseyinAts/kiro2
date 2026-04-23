@@ -4,10 +4,11 @@ Unit tests for InsightService (REQ-2)
 Pattern detection, confidence scoring, and recommendation generation tests.
 """
 
-import pytest
 from datetime import date
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
+
+import pytest
 
 
 class TestInsightServicePatternDetection:
@@ -278,8 +279,8 @@ class TestInsightServiceCategorization:
 
     def test_categorize_technical_insight(self):
         """Test categorization of technical insights"""
-        from services.insight_service import InsightService
         from models.diary import InsightCategory
+        from services.insight_service import InsightService
 
         mock_db = MagicMock()
         service = InsightService(mock_db)
@@ -295,8 +296,8 @@ class TestInsightServiceCategorization:
 
     def test_categorize_process_insight(self):
         """Test categorization of process insights"""
-        from services.insight_service import InsightService
         from models.diary import InsightCategory
+        from services.insight_service import InsightService
 
         mock_db = MagicMock()
         service = InsightService(mock_db)
@@ -312,8 +313,8 @@ class TestInsightServiceCategorization:
 
     def test_categorize_communication_insight(self):
         """Test categorization of communication insights"""
-        from services.insight_service import InsightService
         from models.diary import InsightCategory
+        from services.insight_service import InsightService
 
         mock_db = MagicMock()
         service = InsightService(mock_db)
@@ -329,8 +330,8 @@ class TestInsightServiceCategorization:
 
     def test_categorize_default_to_process(self):
         """Test default categorization to PROCESS"""
-        from services.insight_service import InsightService
         from models.diary import InsightCategory
+        from services.insight_service import InsightService
 
         mock_db = MagicMock()
         service = InsightService(mock_db)
@@ -374,8 +375,8 @@ class TestInsightServiceCRUD:
     @pytest.mark.asyncio
     async def test_create_insight(self):
         """Test creating an insight"""
+        from api.schemas.diary import InsightCategory, InsightCreate
         from services.insight_service import InsightService
-        from api.schemas.diary import InsightCreate, InsightCategory
 
         mock_db = AsyncMock()
         mock_db.add = MagicMock()

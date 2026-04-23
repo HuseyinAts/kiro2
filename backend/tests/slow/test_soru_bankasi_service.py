@@ -5,6 +5,7 @@ Türkiye Üniversite Sınavları Hazırlık Platformu
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
 from datetime import datetime
@@ -14,8 +15,6 @@ import pytest
 
 from models.database import ExamType, Question, QuestionDifficulty, SubjectArea
 from services.soru_bankasi_service import SoruBankasiServisi
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

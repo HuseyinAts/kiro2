@@ -3,7 +3,7 @@ import asyncio
 
 import pytest
 
-from app.guardrails import GuardrailManager, GuardConfig
+from app.guardrails import GuardConfig, GuardrailManager
 
 
 class TestGuardrailManager:

@@ -3,11 +3,10 @@ Comprehensive FastAPI Integration Tests
 Test all API endpoints with TestClient and mocked dependencies
 """
 
-import pytest
-from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock
 
-
+import pytest
+from fastapi.testclient import TestClient
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -79,8 +78,8 @@ class TestUserEndpoints:
     def test_get_users_endpoint(self):
         """Test GET /api/users"""
         try:
-            from main import app
             from core.database import get_async_session
+            from main import app
 
             async def mock_db():
                 yield AsyncMock()
@@ -100,8 +99,8 @@ class TestUserEndpoints:
     def test_create_user_endpoint(self):
         """Test POST /api/users"""
         try:
-            from main import app
             from core.database import get_async_session
+            from main import app
 
             async def mock_db():
                 yield AsyncMock()

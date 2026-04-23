@@ -12,11 +12,11 @@ Requirements: REQ-5.2
 import base64
 import json
 import logging
-from datetime import datetime
-from typing import TypeVar, Generic, Optional, Any
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Generic, TypeVar
 
-from sqlalchemy import select, desc, asc
+from sqlalchemy import asc, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 
@@ -39,11 +39,11 @@ class CursorPage(Generic[T]):
         total_count: Toplam item sayısı (opsiyonel)
     """
     items: list[T]
-    next_cursor: Optional[str] = None
-    prev_cursor: Optional[str] = None
+    next_cursor: str | None = None
+    prev_cursor: str | None = None
     has_next: bool = False
     has_prev: bool = False
-    total_count: Optional[int] = None
+    total_count: int | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Dictionary'e dönüştürür."""
@@ -162,9 +162,9 @@ class CursorPaginator(Generic[T]):
         self,
         session: AsyncSession,
         limit: int = 10,
-        cursor: Optional[str] = None,
+        cursor: str | None = None,
         direction: str = "forward",
-        filters: Optional[list] = None,
+        filters: list | None = None,
         order_desc: bool = True,
         include_total: bool = False
     ) -> CursorPage[T]:
@@ -216,19 +216,18 @@ class CursorPaginator(Generic[T]):
                             (cursor_col > cursor_value) |
                             ((cursor_col == cursor_value) & (id_col > cursor_id))
                         )
-                else:  # backward
-                    if order_desc:
-                        # Backward + DESC: cursor_value > x OR (cursor_value == x AND id > cursor_id)
-                        query = query.where(
-                            (cursor_col > cursor_value) |
-                            ((cursor_col == cursor_value) & (id_col > cursor_id))
-                        )
-                    else:
-                        # Backward + ASC: cursor_value < x OR (cursor_value == x AND id < cursor_id)
-                        query = query.where(
-                            (cursor_col < cursor_value) |
-                            ((cursor_col == cursor_value) & (id_col < cursor_id))
-                        )
+                elif order_desc:
+                    # Backward + DESC: cursor_value > x OR (cursor_value == x AND id > cursor_id)
+                    query = query.where(
+                        (cursor_col > cursor_value) |
+                        ((cursor_col == cursor_value) & (id_col > cursor_id))
+                    )
+                else:
+                    # Backward + ASC: cursor_value < x OR (cursor_value == x AND id < cursor_id)
+                    query = query.where(
+                        (cursor_col < cursor_value) |
+                        ((cursor_col == cursor_value) & (id_col < cursor_id))
+                    )
 
             except ValueError:
                 logger.warning("Invalid cursor, starting from beginning")
@@ -239,11 +238,10 @@ class CursorPaginator(Generic[T]):
                 query = query.order_by(desc(cursor_col), desc(id_col))
             else:
                 query = query.order_by(asc(cursor_col), asc(id_col))
-        else:  # backward - reverse order
-            if order_desc:
-                query = query.order_by(asc(cursor_col), asc(id_col))
-            else:
-                query = query.order_by(desc(cursor_col), desc(id_col))
+        elif order_desc:
+            query = query.order_by(asc(cursor_col), asc(id_col))
+        else:
+            query = query.order_by(desc(cursor_col), desc(id_col))
 
         # Fetch limit + 1 to check if there are more items
         query = query.limit(limit + 1)

@@ -7,12 +7,13 @@ Uses mocked backends to test timing and caching behavior.
 
 import asyncio
 import time
-import pytest
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
-from typing import Dict, Any
+
+import pytest
 
 # Performance targets (in milliseconds) - REQ-8.5
-LATENCY_TARGETS: Dict[str, int] = {
+LATENCY_TARGETS: dict[str, int] = {
     "morphology_analyze": 100,
     "lemmatize": 50,
     "spell_check": 100,
@@ -116,7 +117,9 @@ class TestLatencyTargets:
     @pytest.mark.asyncio
     async def test_lemmatization_latency(self, mock_http_client, mock_cache):
         """Lemmatization should complete within 50ms"""
-        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import (
+            LemmatizationHandler,
+        )
 
         target_ms = LATENCY_TARGETS["lemmatize"]
         handler = LemmatizationHandler(mock_http_client, mock_cache)
@@ -145,7 +148,9 @@ class TestLatencyTargets:
     @pytest.mark.asyncio
     async def test_tokenization_latency(self, mock_http_client, mock_cache):
         """Tokenization should complete within 50ms"""
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         target_ms = LATENCY_TARGETS["tokenize"]
         handler = TokenizationHandler(mock_http_client, mock_cache)
@@ -159,7 +164,9 @@ class TestLatencyTargets:
     @pytest.mark.asyncio
     async def test_segmentation_latency(self, mock_http_client, mock_cache):
         """Sentence segmentation should complete within 50ms"""
-        from backend.mcp_servers.zemberek_nlp.tools.segmentation import SegmentationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.segmentation import (
+            SegmentationHandler,
+        )
 
         target_ms = LATENCY_TARGETS["segment_sentences"]
         handler = SegmentationHandler(mock_http_client, mock_cache)
@@ -173,7 +180,9 @@ class TestLatencyTargets:
     @pytest.mark.asyncio
     async def test_normalization_latency(self, mock_http_client, mock_cache):
         """Text normalization should complete within 100ms"""
-        from backend.mcp_servers.zemberek_nlp.tools.normalization import NormalizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.normalization import (
+            NormalizationHandler,
+        )
 
         target_ms = LATENCY_TARGETS["normalize_text"]
         handler = NormalizationHandler(mock_http_client, mock_cache)
@@ -216,7 +225,9 @@ class TestCachePerformance:
     @pytest.mark.asyncio
     async def test_repeated_calls_benefit_from_cache(self, mock_http_client, mock_cache):
         """Multiple calls with same input should benefit from caching"""
-        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import (
+            LemmatizationHandler,
+        )
 
         handler = LemmatizationHandler(mock_http_client, mock_cache)
         text = "okuyorum"
@@ -244,7 +255,9 @@ class TestBatchProcessingEfficiency:
     @pytest.mark.asyncio
     async def test_batch_more_efficient_than_individual(self, mock_http_client, mock_cache):
         """Batch processing should be more efficient than individual calls"""
-        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import LemmatizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.lemmatization import (
+            LemmatizationHandler,
+        )
 
         handler = LemmatizationHandler(mock_http_client, mock_cache)
         words = ["okumak", "yazmak", "koşmak", "yürümek", "düşünmek"]
@@ -294,7 +307,9 @@ class TestThroughput:
     @pytest.mark.asyncio
     async def test_concurrent_requests(self, mock_http_client, mock_cache):
         """Test handling of concurrent requests"""
-        from backend.mcp_servers.zemberek_nlp.tools.tokenization import TokenizationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.tokenization import (
+            TokenizationHandler,
+        )
 
         handler = TokenizationHandler(mock_http_client, mock_cache)
 
@@ -323,7 +338,9 @@ class TestLongTextPerformance:
     @pytest.mark.asyncio
     async def test_long_text_within_bounds(self, mock_http_client, mock_cache):
         """Long text should still complete within acceptable time"""
-        from backend.mcp_servers.zemberek_nlp.tools.segmentation import SegmentationHandler
+        from backend.mcp_servers.zemberek_nlp.tools.segmentation import (
+            SegmentationHandler,
+        )
 
         handler = SegmentationHandler(mock_http_client, mock_cache)
 

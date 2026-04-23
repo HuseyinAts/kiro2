@@ -53,12 +53,12 @@ class TestCriticalAlgorithms:
                 """Zorluk hesaplama (1-10 arası)"""
                 if rating == 1:  # Again
                     return min(10.0, current_difficulty + 1.0)
-                elif rating == 2:  # Hard
+                if rating == 2:  # Hard
                     return max(1.0, current_difficulty - 0.3)
-                elif rating == 3:  # Good
+                if rating == 3:  # Good
                     return current_difficulty
-                else:  # Easy (4)
-                    return max(1.0, current_difficulty - 0.5)
+                # Easy (4)
+                return max(1.0, current_difficulty - 0.5)
 
             def next_review_date(
                 self, stability: float, desired_retention: float = 0.9
@@ -214,11 +214,10 @@ class TestCriticalAlgorithms:
                         self.student_abilities[student_id] += learning_rate * (
                             1 - expected_prob
                         )
-                else:  # Incorrect
-                    if expected_prob > 0.2:  # Unexpected failure
-                        self.student_abilities[student_id] -= (
-                            learning_rate * expected_prob
-                        )
+                elif expected_prob > 0.2:  # Unexpected failure
+                    self.student_abilities[student_id] -= (
+                        learning_rate * expected_prob
+                    )
 
                 return self.student_abilities[student_id]
 
@@ -253,12 +252,11 @@ class TestCriticalAlgorithms:
 
                 if ability >= 1.5:
                     return "advanced"
-                elif ability >= 0.5:
+                if ability >= 0.5:
                     return "intermediate"
-                elif ability >= -0.5:
+                if ability >= -0.5:
                     return "beginner"
-                else:
-                    return "struggling"
+                return "struggling"
 
         adaptive = MockAdaptiveLearning()
 
@@ -334,12 +332,11 @@ class TestCriticalAlgorithms:
 
                 if target_difficulty <= 2.0:
                     return "kolay"
-                elif target_difficulty <= 4.0:
+                if target_difficulty <= 4.0:
                     return "orta"
-                elif target_difficulty <= 6.0:
+                if target_difficulty <= 6.0:
                     return "zor"
-                else:
-                    return "çok_zor"
+                return "çok_zor"
 
             def adapt_to_turkish_learning_style(
                 self, content_type: str, student_profile: dict

@@ -12,7 +12,6 @@ from dataclasses import dataclass, field
 
 from models.question_generation import MarzanoProcessLevel, MarzanoSystem
 
-
 # Marzano system names (Turkish)
 MARZANO_SYSTEM_NAMES: dict[int, str] = {
     1: "Öz-sistem",

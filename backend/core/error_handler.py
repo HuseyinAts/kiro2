@@ -6,20 +6,22 @@ Requirements: 5.1, 5.2, 5.7, 5.8, 5.9
 """
 
 import asyncio
-from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, Tuple, List
-from dataclasses import dataclass
 import logging
 import traceback
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
 from .exceptions import (
+    DatabaseError,
     EnhancedServiceError,
     ErrorSeverity,
     ExternalServiceError,
-    TimeoutError as CustomTimeoutError,
     RateLimitError,
-    DatabaseError,
+)
+from .exceptions import (
+    TimeoutError as CustomTimeoutError,
 )
 
 # Re-export circuit breaker classes for backward compatibility
@@ -27,11 +29,11 @@ try:
     from core.circuit_breaker import (
         CircuitBreaker,
         CircuitBreakerConfig,
-        CircuitBreakerStats,
-        CircuitState,
-        CircuitBreakerOpenError,
         CircuitBreakerHalfOpenError,
         CircuitBreakerManager,
+        CircuitBreakerOpenError,
+        CircuitBreakerStats,
+        CircuitState,
     )
 except ImportError:
     logging.getLogger(__name__).warning("circuit_breaker module not found, using stubs")
@@ -68,7 +70,7 @@ except ImportError:
             return await func(*args, **kwargs)
 
     class CircuitBreakerManager:
-        _breakers: Dict[str, CircuitBreaker] = {}
+        _breakers: dict[str, CircuitBreaker] = {}
 
         @classmethod
         def get_breaker(cls, name: str, config: CircuitBreakerConfig = None) -> CircuitBreaker:
@@ -89,7 +91,7 @@ class VideoAPIError(EnhancedServiceError):
         self,
         message: str,
         error_code: str = "VIDEO_API_ERROR",
-        details: Dict[str, Any] | None = None,
+        details: dict[str, Any] | None = None,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
         user_message: str | None = None,
         retry_after: int | None = None,
@@ -114,7 +116,7 @@ class YouTubeAPIError(VideoAPIError):
         message: str,
         status_code: int | None = None,
         quota_exceeded: bool = False,
-        details: Dict[str, Any] | None = None,
+        details: dict[str, Any] | None = None,
         **kwargs,
     ):
         details = details or {}
@@ -143,7 +145,7 @@ class CacheError(VideoAPIError):
         message: str,
         operation: str | None = None,
         cache_type: str | None = None,
-        details: Dict[str, Any] | None = None,
+        details: dict[str, Any] | None = None,
         **kwargs,
     ):
         details = details or {}
@@ -167,7 +169,7 @@ class VideoDiscoveryError(VideoAPIError):
         message: str,
         subject: str | None = None,
         search_type: str | None = None,
-        details: Dict[str, Any] | None = None,
+        details: dict[str, Any] | None = None,
         **kwargs,
     ):
         details = details or {}
@@ -190,7 +192,7 @@ class VideoFilterError(VideoAPIError):
         self,
         message: str,
         filter_type: str | None = None,
-        details: Dict[str, Any] | None = None,
+        details: dict[str, Any] | None = None,
         **kwargs,
     ):
         details = details or {}
@@ -214,7 +216,7 @@ class VideoTimeoutError(VideoAPIError):
         message: str,
         timeout_seconds: float | None = None,
         operation: str | None = None,
-        details: Dict[str, Any] | None = None,
+        details: dict[str, Any] | None = None,
         **kwargs,
     ):
         details = details or {}
@@ -261,7 +263,7 @@ class ErrorClassification:
     retryable: bool
     retry_after: int  # Seconds
     user_message: str
-    recovery_actions: List[str]
+    recovery_actions: list[str]
     log_level: str  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 
@@ -284,8 +286,8 @@ class ErrorHandler:
 
     def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger(__name__)
-        self._error_counts: Dict[str, int] = {}
-        self._last_errors: Dict[str, datetime] = {}
+        self._error_counts: dict[str, int] = {}
+        self._last_errors: dict[str, datetime] = {}
 
     def classify_error(self, error: Exception) -> ErrorClassification:
         """
@@ -300,27 +302,27 @@ class ErrorHandler:
         # Handle VideoAPIError and subclasses
         if isinstance(error, YouTubeAPIError):
             return self._classify_youtube_error(error)
-        elif isinstance(error, CacheError):
+        if isinstance(error, CacheError):
             return self._classify_cache_error(error)
-        elif isinstance(error, VideoTimeoutError):
+        if isinstance(error, VideoTimeoutError):
             return self._classify_timeout_error(error)
-        elif isinstance(error, VideoDiscoveryError):
+        if isinstance(error, VideoDiscoveryError):
             return self._classify_discovery_error(error)
-        elif isinstance(error, VideoFilterError):
+        if isinstance(error, VideoFilterError):
             return self._classify_filter_error(error)
 
         # Handle standard exceptions
-        elif isinstance(error, RateLimitError):
+        if isinstance(error, RateLimitError):
             return self._classify_rate_limit_error(error)
-        elif isinstance(error, CustomTimeoutError):
+        if isinstance(error, CustomTimeoutError):
             return self._classify_timeout_error(error)
-        elif isinstance(error, DatabaseError):
+        if isinstance(error, DatabaseError):
             return self._classify_database_error(error)
-        elif isinstance(error, ExternalServiceError):
+        if isinstance(error, ExternalServiceError):
             return self._classify_external_service_error(error)
 
         # Handle generic exceptions
-        elif isinstance(error, asyncio.TimeoutError):
+        if isinstance(error, asyncio.TimeoutError):
             return ErrorClassification(
                 category=ErrorCategory.TIMEOUT,
                 severity=ErrorSeverity.MEDIUM,
@@ -330,7 +332,7 @@ class ErrorHandler:
                 recovery_actions=["retry", "use_cache", "fallback"],
                 log_level="WARNING",
             )
-        elif isinstance(error, ConnectionError):
+        if isinstance(error, ConnectionError):
             return ErrorClassification(
                 category=ErrorCategory.NETWORK,
                 severity=ErrorSeverity.HIGH,
@@ -340,8 +342,7 @@ class ErrorHandler:
                 recovery_actions=["retry", "check_network", "use_cache"],
                 log_level="ERROR",
             )
-        else:
-            return self._classify_unknown_error(error)
+        return self._classify_unknown_error(error)
 
     def _classify_youtube_error(self, error: YouTubeAPIError) -> ErrorClassification:
         """Classify YouTube API errors"""
@@ -367,7 +368,7 @@ class ErrorHandler:
                 recovery_actions=["wait", "use_cache"],
                 log_level="WARNING",
             )
-        elif status_code and 500 <= status_code < 600:
+        if status_code and 500 <= status_code < 600:
             return ErrorClassification(
                 category=ErrorCategory.SERVER_ERROR,
                 severity=ErrorSeverity.HIGH,
@@ -377,16 +378,15 @@ class ErrorHandler:
                 recovery_actions=["retry", "use_cache", "fallback"],
                 log_level="ERROR",
             )
-        else:
-            return ErrorClassification(
-                category=ErrorCategory.CLIENT_ERROR,
-                severity=ErrorSeverity.MEDIUM,
-                retryable=False,
-                retry_after=0,
-                user_message="YouTube API isteği başarısız oldu.",
-                recovery_actions=["use_cache", "fallback"],
-                log_level="WARNING",
-            )
+        return ErrorClassification(
+            category=ErrorCategory.CLIENT_ERROR,
+            severity=ErrorSeverity.MEDIUM,
+            retryable=False,
+            retry_after=0,
+            user_message="YouTube API isteği başarısız oldu.",
+            recovery_actions=["use_cache", "fallback"],
+            log_level="WARNING",
+        )
 
     def _classify_cache_error(self, error: CacheError) -> ErrorClassification:
         """Classify cache errors"""
@@ -502,7 +502,7 @@ class ErrorHandler:
     def handle_error(
         self,
         error: Exception,
-        context: Dict[str, Any] | None = None,
+        context: dict[str, Any] | None = None,
         request_id: str | None = None,
     ) -> ErrorClassification:
         """
@@ -536,7 +536,7 @@ class ErrorHandler:
         self,
         error: Exception,
         classification: ErrorClassification,
-        context: Dict[str, Any] | None,
+        context: dict[str, Any] | None,
         request_id: str | None,
     ) -> None:
         """Log error with structured format"""
@@ -572,7 +572,7 @@ class ErrorHandler:
         classification = self.classify_error(error)
         return classification.user_message
 
-    def should_retry(self, error: Exception) -> Tuple[bool, int]:
+    def should_retry(self, error: Exception) -> tuple[bool, int]:
         """
         Determine if error should be retried
 
@@ -582,12 +582,12 @@ class ErrorHandler:
         classification = self.classify_error(error)
         return classification.retryable, classification.retry_after
 
-    def get_recovery_actions(self, error: Exception) -> List[str]:
+    def get_recovery_actions(self, error: Exception) -> list[str]:
         """Get recommended recovery actions"""
         classification = self.classify_error(error)
         return classification.recovery_actions
 
-    def get_error_metrics(self) -> Dict[str, Any]:
+    def get_error_metrics(self) -> dict[str, Any]:
         """Get error metrics summary"""
         return {
             "error_counts": dict(self._error_counts),

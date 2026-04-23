@@ -8,8 +8,8 @@ ve interactive exploration için altyapı sağlar.
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any
 from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,6 @@ class VisualizationService:
 
     def __init__(self):
         """Initialize visualization service."""
-        pass
 
     def generate_thought_tree(
         self,
@@ -211,12 +210,11 @@ class VisualizationService:
         # Determine node shape based on step type
         if node.step_type == "understanding":
             return f'{node.id}["{label}"]'  # Rectangle
-        elif node.step_type == "verification":
+        if node.step_type == "verification":
             return f'{node.id}{{"{label}"}}'  # Diamond
-        elif node.step_type == "synthesis":
+        if node.step_type == "synthesis":
             return f'{node.id}(["{label}"])'  # Stadium
-        else:
-            return f'{node.id}["{label}"]'  # Default rectangle
+        return f'{node.id}["{label}"]'  # Default rectangle
 
     def _find_critical_path(self, nodes: list[ThoughtNode]) -> list[str]:
         """

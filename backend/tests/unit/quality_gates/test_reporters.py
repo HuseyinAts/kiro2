@@ -20,10 +20,9 @@ from backend.core.quality_gates.models import (
 )
 from backend.core.quality_gates.reporters import (
     ConsoleReporter,
-    JsonReporter,
     HtmlReporter,
+    JsonReporter,
 )
-
 
 # =============================================================================
 # Test Fixtures

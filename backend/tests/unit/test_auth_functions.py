@@ -21,7 +21,6 @@ from api.auth import (
     _validate_password,
 )
 
-
 # ==================== _validate_password ====================
 
 
@@ -263,7 +262,8 @@ class TestRoleMappingCompleteness:
         # We cannot import the dict directly (local variable), but we can
         # verify the mapping indirectly through the module's source.
         import inspect
-        import api.auth as auth_module  # noqa: PLC0415
+
+        import api.auth as auth_module
 
         source = inspect.getsource(auth_module)
         # All three role_mapping blocks must map SUPER_ADMIN → super_admin
@@ -272,7 +272,8 @@ class TestRoleMappingCompleteness:
     def test_role_mapping_contains_all_roles(self) -> None:
         """Source must map all five roles without omission."""
         import inspect
-        import api.auth as auth_module  # noqa: PLC0415
+
+        import api.auth as auth_module
 
         source = inspect.getsource(auth_module)
         for role_key in ("STUDENT", "TEACHER", "PARENT", "ADMIN", "SUPER_ADMIN"):
@@ -287,26 +288,27 @@ class TestCheckLoginRateLimit:
 
     def _fresh_ip(self, prefix: str = "192.0.2.") -> str:
         """Return an IP string unlikely to collide with other tests."""
-        import uuid  # noqa: PLC0415
+        import uuid
         return prefix + str(abs(hash(str(uuid.uuid4()))) % 200 + 10)
 
     def test_first_attempt_does_not_raise(self) -> None:
-        import api.auth as auth_mod  # noqa: PLC0415
+        import api.auth as auth_mod
         ip = self._fresh_ip("192.0.2.")
         request = _make_request(ip)
         # No HTTPException on first attempt.
         auth_mod._check_login_rate_limit(request)
 
     def test_attempts_below_limit_do_not_raise(self) -> None:
-        import api.auth as auth_mod  # noqa: PLC0415
+        import api.auth as auth_mod
         ip = self._fresh_ip("192.0.3.")
         request = _make_request(ip)
         for _ in range(auth_mod.LOGIN_RATE_LIMIT - 1):
             auth_mod._check_login_rate_limit(request)
 
     def test_exceeding_limit_raises_429(self) -> None:
-        import api.auth as auth_mod  # noqa: PLC0415
-        from fastapi import HTTPException  # noqa: PLC0415
+        from fastapi import HTTPException
+
+        import api.auth as auth_mod
         ip = self._fresh_ip("192.0.4.")
         request = _make_request(ip)
         # Fill up the window.
@@ -318,8 +320,9 @@ class TestCheckLoginRateLimit:
 
     def test_old_attempts_cleaned_before_check(self) -> None:
         """Attempts older than LOGIN_RATE_WINDOW should be discarded."""
-        import time as _time  # noqa: PLC0415
-        import api.auth as auth_mod  # noqa: PLC0415
+        import time as _time
+
+        import api.auth as auth_mod
         ip = self._fresh_ip("192.0.5.")
         request = _make_request(ip)
         old_ts = _time.time() - auth_mod.LOGIN_RATE_WINDOW - 10
@@ -330,7 +333,7 @@ class TestCheckLoginRateLimit:
         auth_mod._check_login_rate_limit(request)
 
     def test_rate_limit_constants_are_positive(self) -> None:
-        import api.auth as auth_mod  # noqa: PLC0415
+        import api.auth as auth_mod
         assert auth_mod.LOGIN_RATE_LIMIT > 0
         assert auth_mod.LOGIN_RATE_WINDOW > 0
 
@@ -342,8 +345,9 @@ class TestRecordFailedLogin:
     """_record_failed_login must append a timestamp to the IP's attempt list."""
 
     def test_records_attempt_for_ip(self) -> None:
-        import time as _time  # noqa: PLC0415
-        import api.auth as auth_mod  # noqa: PLC0415
+        import time as _time
+
+        import api.auth as auth_mod
         ip = "198.51.100.5"
         request = _make_request(ip)
         before = _time.time()
@@ -355,7 +359,7 @@ class TestRecordFailedLogin:
         assert before <= attempts[-1] <= after
 
     def test_multiple_failures_accumulate(self) -> None:
-        import api.auth as auth_mod  # noqa: PLC0415
+        import api.auth as auth_mod
         ip = "198.51.100.6"
         request = _make_request(ip)
         initial_count = len(auth_mod._login_attempts[ip])
@@ -365,7 +369,7 @@ class TestRecordFailedLogin:
         assert len(auth_mod._login_attempts[ip]) == initial_count + 3
 
     def test_trusted_proxy_records_forwarded_ip(self) -> None:
-        import api.auth as auth_mod  # noqa: PLC0415
+        import api.auth as auth_mod
         real_client = "203.0.113.77"
         request = _make_request("127.0.0.1", x_forwarded_for=real_client)
         auth_mod._record_failed_login(request)

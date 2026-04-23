@@ -20,11 +20,11 @@ Author: KIRO2 Team
 Date: 2026-01-17
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple, Set
-from dataclasses import dataclass, field
-import random
 import logging
+import random
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from typing import Any
 
 # Scientific computing
 try:
@@ -37,7 +37,7 @@ except ImportError:
 # Bayesian optimization
 try:
     from skopt import gp_minimize
-    from skopt.space import Real, Integer
+    from skopt.space import Integer, Real
     SKOPT_AVAILABLE = True
 except ImportError:
     SKOPT_AVAILABLE = False
@@ -52,15 +52,14 @@ except ImportError:
     nx = None  # type: ignore
 
 # Database
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
-
 # Models
 from backend.models.claude_md_improvement_models import (
-    RuleEffectiveness,
-    PatternDetection,
     AuditLog,
+    PatternDetection,
+    RuleEffectiveness,
 )
+from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +71,7 @@ class LearningState:
     exploration_rate: float = 0.3  # Epsilon for epsilon-greedy
     iteration: int = 0
     total_reward: float = 0.0
-    recent_rewards: List[float] = field(default_factory=list)
+    recent_rewards: list[float] = field(default_factory=list)
     plateau_count: int = 0
     best_score: float = 0.0
 
@@ -83,8 +82,8 @@ class TaskSimilarity:
     source_task: str
     target_task: str
     similarity_score: float
-    shared_features: List[str]
-    transferable_knowledge: Dict[str, Any]
+    shared_features: list[str]
+    transferable_knowledge: dict[str, Any]
 
 
 class MetaLearningService:
@@ -112,7 +111,7 @@ class MetaLearningService:
         """Initialize meta-learning service."""
         self.db = db
         self._learning_state = LearningState()
-        self._knowledge_graph: Optional[nx.DiGraph] = None
+        self._knowledge_graph: nx.DiGraph | None = None
 
         if NETWORKX_AVAILABLE:
             self._knowledge_graph = nx.DiGraph()
@@ -126,7 +125,7 @@ class MetaLearningService:
 
     async def optimize_learning_rate(
         self,
-        recent_performance: List[float],
+        recent_performance: list[float],
     ) -> float:
         """
         Optimize learning rate based on recent performance.
@@ -215,7 +214,7 @@ class MetaLearningService:
         self,
         target_task: str,
         threshold: float = 0.5,
-    ) -> List[TaskSimilarity]:
+    ) -> list[TaskSimilarity]:
         """
         Find similar tasks for transfer learning.
 
@@ -271,7 +270,7 @@ class MetaLearningService:
         self,
         target_task: str,
         source_knowledge: TaskSimilarity,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Apply transfer learning from similar task.
 
@@ -306,7 +305,7 @@ class MetaLearningService:
                 source_knowledge.source_task,
                 target_task,
                 weight=weight,
-                transfer_time=datetime.now(timezone.utc).isoformat(),
+                transfer_time=datetime.now(UTC).isoformat(),
             )
 
         await self._log_audit(
@@ -347,9 +346,9 @@ class MetaLearningService:
 
     async def get_action(
         self,
-        available_actions: List[str],
-        action_values: Dict[str, float],
-    ) -> Tuple[str, bool]:
+        available_actions: list[str],
+        action_values: dict[str, float],
+    ) -> tuple[str, bool]:
         """
         Select action using epsilon-greedy strategy.
 
@@ -367,13 +366,12 @@ class MetaLearningService:
             # Explore: random action
             action = random.choice(available_actions)
             return action, True
-        else:
-            # Exploit: best known action
-            best_action = max(
-                available_actions,
-                key=lambda a: action_values.get(a, 0.0),
-            )
-            return best_action, False
+        # Exploit: best known action
+        best_action = max(
+            available_actions,
+            key=lambda a: action_values.get(a, 0.0),
+        )
+        return best_action, False
 
     async def update_exploration_rate(self) -> float:
         """
@@ -400,9 +398,9 @@ class MetaLearningService:
     async def bayesian_optimize(
         self,
         objective_fn,
-        parameter_space: Dict[str, Tuple[float, float]],
+        parameter_space: dict[str, tuple[float, float]],
         n_calls: int = 20,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Perform Bayesian optimization for hyperparameters.
 
@@ -465,9 +463,9 @@ class MetaLearningService:
     async def _random_search(
         self,
         objective_fn,
-        parameter_space: Dict[str, Tuple[float, float]],
+        parameter_space: dict[str, tuple[float, float]],
         n_calls: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Fallback random search optimization."""
         best_params = {}
         best_value = float("inf")
@@ -502,8 +500,8 @@ class MetaLearningService:
 
     async def detect_plateau(
         self,
-        recent_scores: List[float],
-    ) -> Tuple[bool, str]:
+        recent_scores: list[float],
+    ) -> tuple[bool, str]:
         """
         Detect if learning has plateaued.
 
@@ -555,7 +553,7 @@ class MetaLearningService:
 
         return False, "Learning progressing"
 
-    async def escape_plateau(self) -> Dict[str, Any]:
+    async def escape_plateau(self) -> dict[str, Any]:
         """
         Apply strategies to escape plateau.
 
@@ -603,7 +601,7 @@ class MetaLearningService:
     # REQ-5.6: Knowledge Graph
     # =========================================================================
 
-    async def persist_knowledge_graph(self) -> Dict[str, Any]:
+    async def persist_knowledge_graph(self) -> dict[str, Any]:
         """
         Persist knowledge graph to storage.
 
@@ -619,7 +617,7 @@ class MetaLearningService:
 
             # Add metadata
             graph_data["meta"] = {
-                "persisted_at": datetime.now(timezone.utc).isoformat(),
+                "persisted_at": datetime.now(UTC).isoformat(),
                 "node_count": self._knowledge_graph.number_of_nodes(),
                 "edge_count": self._knowledge_graph.number_of_edges(),
                 "learning_state": {
@@ -648,7 +646,7 @@ class MetaLearningService:
 
     async def load_knowledge_graph(
         self,
-        graph_data: Dict[str, Any],
+        graph_data: dict[str, Any],
     ) -> bool:
         """
         Load knowledge graph from storage.
@@ -683,7 +681,7 @@ class MetaLearningService:
         self,
         node: str,
         depth: int = 2,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Query knowledge graph for related nodes.
 
@@ -701,12 +699,12 @@ class MetaLearningService:
             return {"related": [], "edges": []}
 
         # BFS to find related nodes
-        related: Set[str] = set()
+        related: set[str] = set()
         edges = []
 
         current_level = {node}
         for d in range(depth):
-            next_level: Set[str] = set()
+            next_level: set[str] = set()
 
             for n in current_level:
                 # Successors (outgoing edges)
@@ -763,10 +761,9 @@ class MetaLearningService:
             self._learning_state.recent_rewards.pop(0)
 
         # Update best score
-        if reward > self._learning_state.best_score:
-            self._learning_state.best_score = reward
+        self._learning_state.best_score = max(self._learning_state.best_score, reward)
 
-    async def get_learning_status(self) -> Dict[str, Any]:
+    async def get_learning_status(self) -> dict[str, Any]:
         """Get current learning status."""
         return {
             "learning_rate": self._learning_state.learning_rate,
@@ -808,7 +805,7 @@ class MetaLearningService:
         self,
         text1: str,
         text2: str,
-    ) -> List[str]:
+    ) -> list[str]:
         """Extract shared features (words) between texts."""
         words1 = set(text1.lower().split())
         words2 = set(text2.lower().split())
@@ -822,7 +819,7 @@ class MetaLearningService:
     async def _get_success_patterns(
         self,
         rule_id: str,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get success patterns for a rule."""
         result = await self.db.execute(
             select(PatternDetection)
@@ -850,8 +847,8 @@ class MetaLearningService:
         self,
         action: str,
         entity_type: str,
-        entity_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Log audit entry."""
         try:

@@ -17,7 +17,6 @@ Requirements: REQ-7.1 - REQ-7.6
 """
 
 import logging
-from typing import Dict, Tuple
 
 from backend.validators.base_response_validator import (
     ValidationAction,
@@ -48,7 +47,7 @@ class ConfidenceScorer:
 
     def __init__(
         self,
-        weights: Dict[str, float] = None,
+        weights: dict[str, float] = None,
         approve_threshold: float = 0.80,
         review_threshold: float = 0.50,
     ):
@@ -112,17 +111,16 @@ class ConfidenceScorer:
         """
         if confidence >= self.approve_threshold:
             return ValidationAction.APPROVE
-        elif confidence >= self.review_threshold:
+        if confidence >= self.review_threshold:
             return ValidationAction.REVIEW
-        else:
-            return ValidationAction.REJECT
+        return ValidationAction.REJECT
 
     def calculate_and_determine(
         self,
         agent_validation: ValidationResult,
         fact_checking: ValidationResult,
         consistency: ValidationResult,
-    ) -> Tuple[float, ValidationAction]:
+    ) -> tuple[float, ValidationAction]:
         """
         Confidence hesapla ve aksiyon belirle (kombine metot).
 
@@ -146,7 +144,7 @@ class ConfidenceScorer:
         agent_validation: ValidationResult,
         fact_checking: ValidationResult,
         consistency: ValidationResult,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Skor dağılımını al (debugging için).
 

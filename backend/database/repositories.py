@@ -8,7 +8,6 @@ Her model için CRUD operasyonları ve özel sorgular burada tanımlanır.
 
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 
 from sqlalchemy import and_, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -65,14 +64,14 @@ class KullaniciRepository(BaseRepository):
         await self.session.refresh(kullanici)
         return kullanici
 
-    async def get_by_email(self, email: str) -> Optional[Kullanici]:
+    async def get_by_email(self, email: str) -> Kullanici | None:
         """Email ile kullanıcı bul"""
         result = await self.session.execute(
             select(Kullanici).where(Kullanici.email == email)
         )
         return result.scalar_one_or_none()
 
-    async def get_by_id(self, kullanici_id: str) -> Optional[Kullanici]:
+    async def get_by_id(self, kullanici_id: str) -> Kullanici | None:
         """ID ile kullanıcı bul"""
         result = await self.session.execute(
             select(Kullanici)
@@ -93,7 +92,7 @@ class KullaniciRepository(BaseRepository):
             .values(son_giris=datetime.now())
         )
 
-    async def get_kullanicilar_by_rol(self, rol: KullaniciRolu) -> List[Kullanici]:
+    async def get_kullanicilar_by_rol(self, rol: KullaniciRolu) -> list[Kullanici]:
         """Role göre kullanıcıları getir"""
         result = await self.session.execute(
             select(Kullanici).where(Kullanici.rol == rol)
@@ -112,7 +111,7 @@ class OgrenciRepository(BaseRepository):
         await self.session.refresh(profil)
         return profil
 
-    async def get_by_kullanici_id(self, kullanici_id: str) -> Optional[OgrenciProfili]:
+    async def get_by_kullanici_id(self, kullanici_id: str) -> OgrenciProfili | None:
         """Kullanıcı ID ile öğrenci profili bul"""
         result = await self.session.execute(
             select(OgrenciProfili)
@@ -121,7 +120,7 @@ class OgrenciRepository(BaseRepository):
         )
         return result.scalar_one_or_none()
 
-    async def get_by_profil_id(self, profil_id: str) -> Optional[OgrenciProfili]:
+    async def get_by_profil_id(self, profil_id: str) -> OgrenciProfili | None:
         """Profil ID ile öğrenci bul"""
         result = await self.session.execute(
             select(OgrenciProfili)
@@ -142,7 +141,7 @@ class OgrenciRepository(BaseRepository):
             .values(mevcut_seviye=yeni_seviye, guncelleme_tarihi=datetime.now())
         )
 
-    async def get_ogrenciler_by_sinif(self, sinif: int) -> List[OgrenciProfili]:
+    async def get_ogrenciler_by_sinif(self, sinif: int) -> list[OgrenciProfili]:
         """Sınıfa göre öğrencileri getir"""
         result = await self.session.execute(
             select(OgrenciProfili)
@@ -163,7 +162,7 @@ class SinavRepository(BaseRepository):
         await self.session.refresh(sablon)
         return sablon
 
-    async def get_sablon_by_tip(self, tip: SinavTipi) -> List[SinavSablonu]:
+    async def get_sablon_by_tip(self, tip: SinavTipi) -> list[SinavSablonu]:
         """Tipe göre sınav şablonlarını getir"""
         result = await self.session.execute(
             select(SinavSablonu).where(
@@ -180,7 +179,7 @@ class SinavRepository(BaseRepository):
         await self.session.refresh(sinav)
         return sinav
 
-    async def get_sinav_by_id(self, sinav_id: str) -> Optional[Sinav]:
+    async def get_sinav_by_id(self, sinav_id: str) -> Sinav | None:
         """Sınav ID ile sınav bul"""
         result = await self.session.execute(
             select(Sinav)
@@ -193,7 +192,7 @@ class SinavRepository(BaseRepository):
         )
         return result.scalar_one_or_none()
 
-    async def get_aktif_sinavlar(self, ogrenci_id: str) -> List[Sinav]:
+    async def get_aktif_sinavlar(self, ogrenci_id: str) -> list[Sinav]:
         """Öğrencinin aktif sınavlarını getir"""
         result = await self.session.execute(
             select(Sinav)
@@ -214,7 +213,7 @@ class SinavRepository(BaseRepository):
             update(Sinav).where(Sinav.sinav_id == sinav_id).values(**update_data)
         )
 
-    async def get_sinav_gecmisi(self, ogrenci_id: str, limit: int = 10) -> List[Sinav]:
+    async def get_sinav_gecmisi(self, ogrenci_id: str, limit: int = 10) -> list[Sinav]:
         """Öğrencinin sınav geçmişini getir"""
         result = await self.session.execute(
             select(Sinav)
@@ -240,9 +239,9 @@ class SoruRepository(BaseRepository):
     async def get_sorular_by_konu(
         self,
         konu: str,
-        zorluk_seviyesi: Optional[ZorlukSeviyesi] = None,
+        zorluk_seviyesi: ZorlukSeviyesi | None = None,
         limit: int = 50,
-    ) -> List[SoruBankasi]:
+    ) -> list[SoruBankasi]:
         """Konuya göre soruları getir"""
         query = select(SoruBankasi).where(
             and_(SoruBankasi.konu == konu, SoruBankasi.aktif == True)
@@ -257,9 +256,9 @@ class SoruRepository(BaseRepository):
 
     async def get_rastgele_sorular(
         self,
-        konu_dagilimi: Dict[str, int],
-        zorluk_seviyesi: Optional[ZorlukSeviyesi] = None,
-    ) -> List[SoruBankasi]:
+        konu_dagilimi: dict[str, int],
+        zorluk_seviyesi: ZorlukSeviyesi | None = None,
+    ) -> list[SoruBankasi]:
         """Konu dağılımına göre rastgele sorular getir"""
         sorular = []
 
@@ -277,7 +276,7 @@ class SoruRepository(BaseRepository):
 
         return sorular
 
-    async def get_soru_by_id(self, soru_id: str) -> Optional[SoruBankasi]:
+    async def get_soru_by_id(self, soru_id: str) -> SoruBankasi | None:
         """Soru ID ile soru bul"""
         result = await self.session.execute(
             select(SoruBankasi).where(SoruBankasi.soru_id == soru_id)
@@ -310,7 +309,7 @@ class SinavCevabiRepository(BaseRepository):
         await self.session.refresh(cevap)
         return cevap
 
-    async def get_cevaplar_by_sinav(self, sinav_id: str) -> List[SinavCevabi]:
+    async def get_cevaplar_by_sinav(self, sinav_id: str) -> list[SinavCevabi]:
         """Sınava ait tüm cevapları getir"""
         result = await self.session.execute(
             select(SinavCevabi)
@@ -340,7 +339,7 @@ class SinavSonucuRepository(BaseRepository):
         await self.session.refresh(sonuc)
         return sonuc
 
-    async def get_sonuc_by_sinav(self, sinav_id: str) -> Optional[SinavSonucu]:
+    async def get_sonuc_by_sinav(self, sinav_id: str) -> SinavSonucu | None:
         """Sınav ID ile sonuç bul"""
         result = await self.session.execute(
             select(SinavSonucu).where(SinavSonucu.sinav_id == sinav_id)
@@ -349,7 +348,7 @@ class SinavSonucuRepository(BaseRepository):
 
     async def get_ogrenci_sonuclari(
         self, ogrenci_id: str, limit: int = 10
-    ) -> List[SinavSonucu]:
+    ) -> list[SinavSonucu]:
         """Öğrencinin sınav sonuçlarını getir"""
         result = await self.session.execute(
             select(SinavSonucu)
@@ -362,7 +361,7 @@ class SinavSonucuRepository(BaseRepository):
 
     async def get_performans_trendi(
         self, ogrenci_id: str, gun_sayisi: int = 30
-    ) -> List[SinavSonucu]:
+    ) -> list[SinavSonucu]:
         """Öğrencinin performans trendini getir"""
         baslangic_tarihi = datetime.now() - timedelta(days=gun_sayisi)
 
@@ -390,7 +389,7 @@ class OgrenmeStiliRepository(BaseRepository):
         await self.session.refresh(profil)
         return profil
 
-    async def get_by_ogrenci_id(self, ogrenci_id: str) -> Optional[OgrenmeStiliProfili]:
+    async def get_by_ogrenci_id(self, ogrenci_id: str) -> OgrenmeStiliProfili | None:
         """Öğrenci ID ile öğrenme stili profili bul"""
         result = await self.session.execute(
             select(OgrenmeStiliProfili).where(
@@ -422,7 +421,7 @@ class KulturelBaglamRepository(BaseRepository):
 
     async def get_by_ogrenci_id(
         self, ogrenci_id: str
-    ) -> Optional[KulturelBaglamProfili]:
+    ) -> KulturelBaglamProfili | None:
         """Öğrenci ID ile kültürel bağlam profili bul"""
         result = await self.session.execute(
             select(KulturelBaglamProfili).where(
@@ -445,7 +444,7 @@ class MaarifDegerleriRepository(BaseRepository):
 
     async def get_by_ogrenci_id(
         self, ogrenci_id: str
-    ) -> Optional[MaarifDegerleriProfili]:
+    ) -> MaarifDegerleriProfili | None:
         """Öğrenci ID ile Maarif değerleri profili bul"""
         result = await self.session.execute(
             select(MaarifDegerleriProfili).where(
@@ -466,7 +465,7 @@ class OgrenmeOturumuRepository(BaseRepository):
         await self.session.refresh(oturum)
         return oturum
 
-    async def get_oturum_by_id(self, oturum_id: str) -> Optional[OgrenmeOturumu]:
+    async def get_oturum_by_id(self, oturum_id: str) -> OgrenmeOturumu | None:
         """Oturum ID ile öğrenme oturumu bul"""
         result = await self.session.execute(
             select(OgrenmeOturumu).where(OgrenmeOturumu.oturum_id == oturum_id)
@@ -475,7 +474,7 @@ class OgrenmeOturumuRepository(BaseRepository):
 
     async def get_ogrenci_oturumlari(
         self, ogrenci_id: str, limit: int = 50
-    ) -> List[OgrenmeOturumu]:
+    ) -> list[OgrenmeOturumu]:
         """Öğrencinin öğrenme oturumlarını getir"""
         result = await self.session.execute(
             select(OgrenmeOturumu)
@@ -518,10 +517,10 @@ class EgitimIcerigiRepository(BaseRepository):
     async def get_icerikler_by_konu(
         self,
         konu: str,
-        icerik_tipi: Optional[str] = None,
-        zorluk_seviyesi: Optional[ZorlukSeviyesi] = None,
+        icerik_tipi: str | None = None,
+        zorluk_seviyesi: ZorlukSeviyesi | None = None,
         limit: int = 20,
-    ) -> List[EgitimIcerigi]:
+    ) -> list[EgitimIcerigi]:
         """Konuya göre eğitim içeriklerini getir"""
         query = select(EgitimIcerigi).where(
             and_(EgitimIcerigi.konu == konu, EgitimIcerigi.aktif == True)
@@ -539,7 +538,7 @@ class EgitimIcerigiRepository(BaseRepository):
 
     async def get_kisisellestirilmis_icerikler(
         self, ogrenci_id: str, konu: str, ogrenme_stili: OgrenmeStili, limit: int = 10
-    ) -> List[EgitimIcerigi]:
+    ) -> list[EgitimIcerigi]:
         """Öğrenciye kişiselleştirilmiş içerikler getir"""
         # Öğrenme stiline göre içerik tipi belirleme
         icerik_tipleri = {
@@ -592,8 +591,8 @@ class MetrikRepository(BaseRepository):
         return metrik
 
     async def get_sistem_metrikleri(
-        self, kategori: Optional[str] = None, son_saat: int = 24
-    ) -> List[SistemMetrikleri]:
+        self, kategori: str | None = None, son_saat: int = 24
+    ) -> list[SistemMetrikleri]:
         """Sistem metriklerini getir"""
         baslangic_zamani = datetime.now() - timedelta(hours=son_saat)
 
@@ -609,8 +608,8 @@ class MetrikRepository(BaseRepository):
         return result.scalars().all()
 
     async def get_agent_performans_metrikleri(
-        self, agent_adi: Optional[str] = None, son_saat: int = 24
-    ) -> List[AgentPerformansMetrikleri]:
+        self, agent_adi: str | None = None, son_saat: int = 24
+    ) -> list[AgentPerformansMetrikleri]:
         """Agent performans metriklerini getir"""
         baslangic_zamani = datetime.now() - timedelta(hours=son_saat)
 

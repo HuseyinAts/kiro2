@@ -17,9 +17,10 @@ _backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(o
 if _backend_dir not in sys.path:
     sys.path.insert(0, _backend_dir)
 
-import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock
+
+import pytest
 
 from hooks.claude_md_improvement.cache import (
     CacheConfig,
@@ -28,7 +29,6 @@ from hooks.claude_md_improvement.cache import (
     InMemoryCache,
     create_cache,
 )
-
 
 # =============================================================================
 # CACHE CONFIG TESTLERİ
@@ -115,7 +115,7 @@ class TestInMemoryCache:
         assert cache.get("key1") == "value1"
 
         # TTL simulasyonu için expires_at'ı değiştir
-        cache._cache["key1"].expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
+        cache._cache["key1"].expires_at = datetime.now(UTC) - timedelta(seconds=1)
 
         # Artık None döner
         assert cache.get("key1") is None

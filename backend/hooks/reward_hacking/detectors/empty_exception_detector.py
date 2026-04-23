@@ -6,15 +6,13 @@ Validates: Requirements 6.1, 6.2, 6.3, 6.4, 6.5, 6.6
 
 from __future__ import annotations
 
-from typing import List
-
-from ..base_detector import BaseDetector
-from ..models.enums import SeverityLevel, PatternType
-from ..models.detection_result import DetectionResult
 from ..analyzers.ast_analyzer import ASTAnalyzer
 from ..analyzers.context_analyzer import ContextAnalyzer
+from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
 from ..exceptions import ASTParseError
+from ..models.detection_result import DetectionResult
+from ..models.enums import PatternType, SeverityLevel
 
 
 class EmptyExceptionDetector(BaseDetector):
@@ -32,7 +30,7 @@ class EmptyExceptionDetector(BaseDetector):
     pattern_type = PatternType.EMPTY_EXCEPTION
     default_severity = SeverityLevel.CRITICAL
 
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """Get regex patterns for empty exception detection."""
         return REWARD_HACKING_PATTERNS.get("empty_exception", [])
 
@@ -40,7 +38,7 @@ class EmptyExceptionDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect empty exception handler patterns.
 
@@ -54,7 +52,7 @@ class EmptyExceptionDetector(BaseDetector):
         if not self.is_enabled():
             return []
 
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Initialize context analyzer
         context_analyzer = ContextAnalyzer(content, file_path)
@@ -97,7 +95,7 @@ class EmptyExceptionDetector(BaseDetector):
         file_path: str,
         content: str,
         context_analyzer: ContextAnalyzer
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Perform AST-based detection for empty exception handlers.
 
@@ -109,7 +107,7 @@ class EmptyExceptionDetector(BaseDetector):
         Returns:
             List of DetectionResult objects
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         try:
             ast_analyzer = ASTAnalyzer(content, file_path)
@@ -175,7 +173,7 @@ class EmptyExceptionDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect bare except: clauses without specific exception type.
 
@@ -187,7 +185,7 @@ class EmptyExceptionDetector(BaseDetector):
             List of DetectionResult for bare excepts
         """
         import re
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Pattern for bare except (not followed by Exception type)
         pattern = r'^\s*except\s*:\s*$'
@@ -205,10 +203,10 @@ class EmptyExceptionDetector(BaseDetector):
 
         return results
 
-    def _deduplicate(self, results: List[DetectionResult]) -> List[DetectionResult]:
+    def _deduplicate(self, results: list[DetectionResult]) -> list[DetectionResult]:
         """Remove duplicate detections on the same line."""
         seen_lines: set = set()
-        unique_results: List[DetectionResult] = []
+        unique_results: list[DetectionResult] = []
 
         for result in results:
             key = (result.file_path, result.line_number)

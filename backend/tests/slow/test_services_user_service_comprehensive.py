@@ -5,20 +5,23 @@ Target: 85%+ coverage for user service functionality
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
-import pytest
 import asyncio
 from unittest.mock import patch
-from services.user_service import KullaniciServisi as UserService
+
+import pytest
+
 from core.exceptions import (
-    ValidationError,
-    NotFoundError as ResourceNotFoundError,
     AuthenticationError,
     DatabaseError,
+    ValidationError,
 )
-
-
+from core.exceptions import (
+    NotFoundError as ResourceNotFoundError,
+)
+from services.user_service import KullaniciServisi as UserService
 
 pytestmark = pytest.mark.skipif(
     True,

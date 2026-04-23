@@ -8,10 +8,8 @@ Daisy Stanton Standards - Exit Code Management
 
 from __future__ import annotations
 
-from typing import List, Optional
-
 from .base import BaseHook
-from .models import QualityCheckResult, HookConfig, ExitCode
+from .models import ExitCode, HookConfig, QualityCheckResult
 from .reward_hacking.hook_manager import HookManager
 
 
@@ -32,7 +30,7 @@ class RewardHackingHook(BaseHook):
 
     name = "reward_hacking"
 
-    def __init__(self, config: Optional[HookConfig] = None):
+    def __init__(self, config: HookConfig | None = None):
         """
         Initialize RewardHackingHook.
 
@@ -42,7 +40,7 @@ class RewardHackingHook(BaseHook):
         super().__init__(config)
         self.manager = HookManager()
 
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Run reward hacking detection on files.
 
@@ -73,8 +71,8 @@ class RewardHackingHook(BaseHook):
 
         # Convert HookResult → QualityCheckResult
         # Note: Pydantic uses use_enum_values=True, so enums are already strings
-        errors: List[str] = []
-        warnings: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
 
         for detection in result.results:
             # pattern_type is already a string due to use_enum_values=True

@@ -1,6 +1,6 @@
 import json
 
-with open("coverage.json", "r") as f:
+with open("coverage.json") as f:
     data = json.load(f)
 
 # Collect 0% coverage files

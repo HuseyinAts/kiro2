@@ -98,8 +98,8 @@ class TestModelCreation:
     def test_create_kullanici_model(self):
         """Create Kullanici model instance"""
         try:
-            from models.user import KullaniciOlustur
             from models.enums import KullaniciRolu
+            from models.user import KullaniciOlustur
 
             user = KullaniciOlustur(
                 email="test@test.com",
@@ -114,8 +114,8 @@ class TestModelCreation:
     def test_create_exam_model(self):
         """Create exam model instances"""
         try:
-            from models.exam import SinavOlustur
             from models.enums import SinavTipi
+            from models.exam import SinavOlustur
 
             exam = SinavOlustur(baslik="Test Sınav", sinav_tipi=SinavTipi.TYT, sure=120)
             assert exam.baslik == "Test Sınav"

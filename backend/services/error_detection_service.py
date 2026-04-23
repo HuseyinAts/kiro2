@@ -11,10 +11,9 @@ Bu servis:
 
 import logging
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
-from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ class MathError:
     suggestion: str
     severity: int  # 1-5 arası (5 en ciddi)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "error_type": self.error_type.value,
             "description": self.description,
@@ -56,15 +55,15 @@ class ErrorDetectionService:
 
     def __init__(self):
         # Tekrarlayan hataları takip et
-        self.student_error_history: Dict[str, List[MathError]] = defaultdict(list)
+        self.student_error_history: dict[str, list[MathError]] = defaultdict(list)
         logger.info("ErrorDetectionService initialized")
 
     def detect_error(
         self,
         student_answer: str,
         correct_answer: str,
-        step_context: Optional[str] = None,
-    ) -> Optional[MathError]:
+        step_context: str | None = None,
+    ) -> MathError | None:
         """
         Öğrenci cevabındaki hatayı tespit et
 
@@ -100,7 +99,7 @@ class ErrorDetectionService:
         # 4. Genel kavram hatası
         return self._create_concept_error(student_answer, correct_answer)
 
-    def _check_sign_error(self, student: str, correct: str) -> Optional[MathError]:
+    def _check_sign_error(self, student: str, correct: str) -> MathError | None:
         """İşaret hatası kontrolü"""
         # Sayıları çıkar
         student_nums = re.findall(r"-?\d+\.?\d*", student)
@@ -127,7 +126,7 @@ class ErrorDetectionService:
 
         return None
 
-    def _check_operation_error(self, student: str, correct: str) -> Optional[MathError]:
+    def _check_operation_error(self, student: str, correct: str) -> MathError | None:
         """İşlem hatası kontrolü"""
         # Basit sayısal karşılaştırma
         try:
@@ -152,11 +151,10 @@ class ErrorDetectionService:
                         )
         except (ValueError, SyntaxError) as e:
             logger.debug(f"Operation check failed: {e}")
-            pass
 
         return None
 
-    def _check_syntax_error(self, student: str, correct: str) -> Optional[MathError]:
+    def _check_syntax_error(self, student: str, correct: str) -> MathError | None:
         """Sözdizimi hatası kontrolü"""
         # Parantez dengesi kontrolü
         if student.count("(") != student.count(")"):
@@ -193,7 +191,7 @@ class ErrorDetectionService:
             severity=4,
         )
 
-    def _extract_number(self, text: str) -> Optional[float]:
+    def _extract_number(self, text: str) -> float | None:
         """Metinden sayı çıkar"""
         try:
             # Sadece sayıları ve işaretleri al
@@ -202,7 +200,6 @@ class ErrorDetectionService:
                 return float(cleaned)
         except (ValueError, TypeError) as e:
             logger.debug(f"Number extraction failed: {e}")
-            pass
         return None
 
     def track_student_error(self, student_id: str, error: MathError):
@@ -212,7 +209,7 @@ class ErrorDetectionService:
 
     def get_recurring_errors(
         self, student_id: str, min_occurrences: int = 3
-    ) -> List[Tuple[ErrorType, int]]:
+    ) -> list[tuple[ErrorType, int]]:
         """
         Tekrarlayan hataları getir
 
@@ -242,7 +239,7 @@ class ErrorDetectionService:
 
         return recurring
 
-    def get_error_suggestions(self, student_id: str) -> List[str]:
+    def get_error_suggestions(self, student_id: str) -> list[str]:
         """
         Öğrenciye özel öneriler oluştur
 

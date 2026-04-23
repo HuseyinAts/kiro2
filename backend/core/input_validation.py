@@ -4,16 +4,16 @@ Task 23: Security Hardening - Input validation ve sanitization
 
 Bu modül tüm kullanıcı girdilerini doğrular ve temizler.
 """
-import re
 import html
-from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, ConfigDict, Field, field_validator, constr, conint
+import re
+from typing import Any
+
 from fastapi import HTTPException, status
+from pydantic import BaseModel, ConfigDict, Field, conint, constr, field_validator
 
 
 class InputValidationError(Exception):
     """Input validation hatası için özel exception"""
-    pass
 
 
 class SecurityValidator:
@@ -138,7 +138,7 @@ class SecurityValidator:
         return learning_style
 
     @staticmethod
-    def validate_goals(goals: List[str]) -> List[str]:
+    def validate_goals(goals: list[str]) -> list[str]:
         """Hedefler listesi doğrulama"""
         if not goals:
             raise HTTPException(
@@ -167,7 +167,7 @@ class SecurityValidator:
         return validated_goals
 
     @staticmethod
-    def validate_current_level(current_level: Dict[str, int]) -> Dict[str, int]:
+    def validate_current_level(current_level: dict[str, int]) -> dict[str, int]:
         """Mevcut seviye doğrulama"""
         if not current_level:
             raise HTTPException(
@@ -291,7 +291,7 @@ class ValidatedVideoSearchRequest(BaseModel):
     exam_type: constr(min_length=2, max_length=10, strip_whitespace=True)
     max_results: conint(ge=1, le=50) = 20
     search_mode: constr(pattern=r"^(semantic|keyword|hybrid)$") = "semantic"
-    custom_query: Optional[constr(max_length=500)] = None
+    custom_query: constr(max_length=500) | None = None
 
     @field_validator("subject")
     @classmethod
@@ -323,12 +323,12 @@ class ValidatedVideoSearchRequest(BaseModel):
 class ValidatedStudentProfileRequest(BaseModel):
     """Doğrulanmış öğrenci profili isteği"""
 
-    goals: List[constr(min_length=1, max_length=200, strip_whitespace=True)] = Field(
+    goals: list[constr(min_length=1, max_length=200, strip_whitespace=True)] = Field(
         ..., min_length=1, max_length=10
     )
-    currentLevel: Dict[str, conint(ge=0, le=100)]
+    currentLevel: dict[str, conint(ge=0, le=100)]
     learningStyle: constr(min_length=1, max_length=20, strip_whitespace=True)
-    preferences: Dict[str, Any] = Field(default_factory=dict)
+    preferences: dict[str, Any] = Field(default_factory=dict)
 
     @field_validator("goals")
     @classmethod

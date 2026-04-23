@@ -3,8 +3,8 @@ Authorization Helper Functions
 SECURITY FIX: Centralized authorization checks to prevent IDOR attacks
 """
 
+
 from fastapi import HTTPException, status
-from typing import List, Optional
 
 from models import Kullanici, KullaniciRolu
 
@@ -16,7 +16,7 @@ class AuthorizationError(HTTPException):
         super().__init__(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
 
 
-def require_roles(current_user: Kullanici, allowed_roles: List[KullaniciRolu]) -> None:
+def require_roles(current_user: Kullanici, allowed_roles: list[KullaniciRolu]) -> None:
     """
     Kullanıcının belirtilen rollerden birine sahip olmasını kontrol et
 
@@ -36,7 +36,7 @@ def require_roles(current_user: Kullanici, allowed_roles: List[KullaniciRolu]) -
 def require_owner_or_roles(
     current_user: Kullanici,
     resource_owner_id: str,
-    allowed_roles: Optional[List[KullaniciRolu]] = None,
+    allowed_roles: list[KullaniciRolu] | None = None,
 ) -> None:
     """
     Kaynağın sahibi veya belirtilen rollerden birine sahip olma kontrolü
@@ -115,7 +115,7 @@ def require_student_owner_or_privileged(
 
 def check_resource_ownership(
     current_user: Kullanici,
-    resource_owner_id: Optional[str],
+    resource_owner_id: str | None,
     resource_name: str = "kaynak",
 ) -> None:
     """

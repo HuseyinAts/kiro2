@@ -6,7 +6,7 @@ VARK + Felder-Silverman, ZPD + Maarif, IRT + Morfoloji entegrasyonu
 import logging
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from algorithms.turkish_zpd_maarif_system import TurkishZPDMaarifSystem
 from services.irt_calibration_service import IRTCalibrationService
@@ -33,7 +33,7 @@ class FelderProfile:
     sensing_intuitive: float
     visual_verbal: float
     sequential_global: float
-    preferences: List[str]
+    preferences: list[str]
 
 
 @dataclass
@@ -44,7 +44,7 @@ class HybridLearningProfile:
     hybrid_code: str
     vark_profile: VARKProfile
     felder_profile: FelderProfile
-    confidence: Dict[str, Any]
+    confidence: dict[str, Any]
     data_points_used: int
     detection_date: str
     last_updated: str
@@ -72,7 +72,7 @@ class MaarifAlignment:
     national_values_alignment: float
     universal_values_alignment: float
     root_values_alignment: float
-    aligned_values: List[str]
+    aligned_values: list[str]
 
 
 @dataclass
@@ -102,7 +102,7 @@ class ZPDRecommendation:
     content_type: str
     teacher_guidance_level: float
     peer_support_level: float
-    maarif_integration: List[str]
+    maarif_integration: list[str]
     reasoning: str
     confidence_score: float
 
@@ -173,8 +173,8 @@ class RevolutionaryFeaturesService:
     async def detect_hybrid_learning_style(
         self,
         student_id: str,
-        behavioral_data: Dict[str, Any],
-        questionnaire_responses: Optional[List[str]] = None,
+        behavioral_data: dict[str, Any],
+        questionnaire_responses: list[str] | None = None,
         force_recalculation: bool = False,
     ) -> HybridLearningProfile:
         """Hibrit öğrenme stili tespiti"""
@@ -224,8 +224,8 @@ class RevolutionaryFeaturesService:
 
     async def _calculate_vark_profile(
         self,
-        behavioral_data: Dict[str, Any],
-        questionnaire_responses: Optional[List[str]] = None,
+        behavioral_data: dict[str, Any],
+        questionnaire_responses: list[str] | None = None,
     ) -> VARKProfile:
         """VARK profili hesaplama"""
 
@@ -274,8 +274,8 @@ class RevolutionaryFeaturesService:
 
     async def _calculate_felder_profile(
         self,
-        behavioral_data: Dict[str, Any],
-        questionnaire_responses: Optional[List[str]] = None,
+        behavioral_data: dict[str, Any],
+        questionnaire_responses: list[str] | None = None,
     ) -> FelderProfile:
         """Felder-Silverman profili hesaplama"""
 
@@ -375,9 +375,9 @@ class RevolutionaryFeaturesService:
 
     def _calculate_confidence(
         self,
-        behavioral_data: Dict[str, Any],
-        questionnaire_responses: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        behavioral_data: dict[str, Any],
+        questionnaire_responses: list[str] | None = None,
+    ) -> dict[str, Any]:
         """Güven skoru hesaplama"""
 
         confidence_factors = []
@@ -425,7 +425,7 @@ class RevolutionaryFeaturesService:
         }
 
     def _calculate_behavioral_consistency(
-        self, behavioral_data: Dict[str, Any]
+        self, behavioral_data: dict[str, Any]
     ) -> float:
         """Davranışsal tutarlılık hesaplama"""
 
@@ -458,10 +458,9 @@ class RevolutionaryFeaturesService:
         # Ortalama tutarlılık
         if consistency_checks:
             return sum(consistency_checks) / len(consistency_checks)
-        else:
-            return 0.5  # Varsayılan
+        return 0.5  # Varsayılan
 
-    def _analyze_questionnaire_for_vark(self, responses: List[str]) -> Dict[str, float]:
+    def _analyze_questionnaire_for_vark(self, responses: list[str]) -> dict[str, float]:
         """Anket yanıtlarından VARK bonusu"""
 
         # Basit anahtar kelime analizi
@@ -491,8 +490,8 @@ class RevolutionaryFeaturesService:
         return bonuses
 
     def _analyze_questionnaire_for_felder(
-        self, responses: List[str]
-    ) -> Dict[str, float]:
+        self, responses: list[str]
+    ) -> dict[str, float]:
         """Anket yanıtlarından Felder bonusu"""
 
         # Basit anahtar kelime analizi
@@ -540,9 +539,9 @@ class RevolutionaryFeaturesService:
         student_id: str,
         subject: str,
         current_level: float,
-        behavioral_data: Dict[str, Any],
+        behavioral_data: dict[str, Any],
         content_description: str = "",
-        family_survey: Optional[Dict[str, Any]] = None,
+        family_survey: dict[str, Any] | None = None,
     ) -> TurkishZPDRange:
         """Devrimsel ZPD hesaplama"""
 
@@ -596,7 +595,7 @@ class RevolutionaryFeaturesService:
             raise
 
     async def detect_cultural_context(
-        self, student_id: str, behavioral_data: Dict[str, Any]
+        self, student_id: str, behavioral_data: dict[str, Any]
     ) -> CulturalContext:
         """Kültürel bağlam tespiti"""
 
@@ -698,7 +697,7 @@ class RevolutionaryFeaturesService:
         )
 
     def _calculate_group_individual_balance(
-        self, behavioral_data: Dict[str, Any]
+        self, behavioral_data: dict[str, Any]
     ) -> float:
         """Grup-birey öğrenme dengesi"""
 
@@ -717,10 +716,10 @@ class RevolutionaryFeaturesService:
         student_id: str,
         subject: str,
         current_level: float,
-        behavioral_data: Dict[str, Any],
+        behavioral_data: dict[str, Any],
         learning_objective: str,
         content_description: str = "",
-        family_survey: Optional[Dict[str, Any]] = None,
+        family_survey: dict[str, Any] | None = None,
     ) -> ZPDRecommendation:
         """Devrimsel öneri oluşturma"""
 

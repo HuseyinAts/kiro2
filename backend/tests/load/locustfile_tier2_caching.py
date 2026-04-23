@@ -10,8 +10,9 @@ Run with:
 """
 
 import random
-from locust import HttpUser, task, between, events
 from datetime import datetime
+
+from locust import HttpUser, between, events, task
 
 # Performance metrics tracking
 performance_metrics = {

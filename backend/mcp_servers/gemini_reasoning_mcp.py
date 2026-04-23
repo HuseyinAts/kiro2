@@ -5,7 +5,6 @@ Google Gemini 3 modelini MCP protokolü üzerinden sunar
 
 import os
 import sys
-from typing import Optional
 
 import google.generativeai as genai
 from fastmcp import FastMCP
@@ -38,7 +37,7 @@ except Exception:
 @mcp.tool()
 async def gemini_reasoning_engine(
     prompt: str,
-    context: Optional[str] = None,
+    context: str | None = None,
     thinking_mode: bool = True
 ) -> str:
     """
@@ -64,7 +63,7 @@ async def gemini_reasoning_engine(
     try:
         # Prompt'u hazırla
         full_prompt = prompt
-        
+
         if context:
             full_prompt = f"Bağlam:\n{context}\n\nGörev:\n{prompt}"
 
@@ -81,7 +80,7 @@ async def gemini_reasoning_engine(
         return f"🤖 Gemini Yanıtı:\n\n{result_text}"
 
     except Exception as e:
-        return f"❌ Gemini API Hatası: {str(e)}"
+        return f"❌ Gemini API Hatası: {e!s}"
 
 
 @mcp.tool()
@@ -110,12 +109,12 @@ Lütfen şunları analiz et:
 4. Best practice uygulamaları
 5. Refactoring önerileri
 """
-    
+
     try:
         response = MODEL.generate_content(prompt)
         return f"🔍 Kod İncelemesi:\n\n{response.text}"
     except Exception as e:
-        return f"❌ Hata: {str(e)}"
+        return f"❌ Hata: {e!s}"
 
 
 @mcp.tool()
@@ -142,12 +141,12 @@ Lütfen şunları değerlendir:
 5. Güvenlik ve performans konuları
 6. İyileştirme önerileri
 """
-    
+
     try:
         response = MODEL.generate_content(prompt)
         return f"🏗️ Tasarım Analizi:\n\n{response.text}"
     except Exception as e:
-        return f"❌ Hata: {str(e)}"
+        return f"❌ Hata: {e!s}"
 
 
 @mcp.tool()
@@ -174,12 +173,12 @@ Lütfen şunları kontrol et:
 5. Eksik veya belirsiz gereksinimler
 6. İyileştirme önerileri
 """
-    
+
     try:
         response = MODEL.generate_content(prompt)
         return f"📋 Gereksinim Analizi:\n\n{response.text}"
     except Exception as e:
-        return f"❌ Hata: {str(e)}"
+        return f"❌ Hata: {e!s}"
 
 
 @mcp.resource("gemini://health")
@@ -190,7 +189,7 @@ async def gemini_health() -> str:
         response = MODEL.generate_content("Test")
         return f"✅ Gemini servisi aktif. Model: {MODEL.model_name}"
     except Exception as e:
-        return f"❌ Gemini servisi kullanılamıyor: {str(e)}"
+        return f"❌ Gemini servisi kullanılamıyor: {e!s}"
 
 
 if __name__ == "__main__":

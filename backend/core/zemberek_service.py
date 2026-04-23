@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Production-Ready Zemberek-NLP Service
 Türkçe Morfolojik Analiz ve NLP İşlemleri
@@ -13,7 +12,7 @@ Zemberek-NLP kütüphanesi ile Türkçe dil işleme:
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List
+from typing import Any
 
 from core.structured_logger import get_logger
 
@@ -51,10 +50,10 @@ class MorphemeAnalysis:
     surface: str  # Yüzey formu
     lemma: str  # Kök/lemma
     pos: POSTag  # Kelime türü
-    morphemes: List[str]  # Morfem listesi
+    morphemes: list[str]  # Morfem listesi
     stem: str  # Kök
-    suffixes: List[str]  # Ekler
-    morpheme_types: List[MorphemeType]  # Morfem tipleri
+    suffixes: list[str]  # Ekler
+    morpheme_types: list[MorphemeType]  # Morfem tipleri
     complexity_score: float = 0.0  # Karmaşıklık skoru
 
 
@@ -95,8 +94,8 @@ class ZemberekService:
             try:
                 from zemberek import (
                     TurkishMorphology,
-                    TurkishTokenizer,
                     TurkishSpellChecker,
+                    TurkishTokenizer,
                 )
 
                 self.morphology = TurkishMorphology.create_with_defaults()
@@ -164,14 +163,13 @@ class ZemberekService:
                 # İlk morfem genellikle kök
                 if idx == 0:
                     morpheme_types.append(MorphemeType.ROOT)
+                # Morfem tipini belirle
+                elif hasattr(morpheme, "derivational_") and morpheme.derivational_:
+                    morpheme_types.append(MorphemeType.DERIVATIONAL)
+                    suffixes.append(morpheme_str)
                 else:
-                    # Morfem tipini belirle
-                    if hasattr(morpheme, "derivational_") and morpheme.derivational_:
-                        morpheme_types.append(MorphemeType.DERIVATIONAL)
-                        suffixes.append(morpheme_str)
-                    else:
-                        morpheme_types.append(MorphemeType.INFLECTIONAL)
-                        suffixes.append(morpheme_str)
+                    morpheme_types.append(MorphemeType.INFLECTIONAL)
+                    suffixes.append(morpheme_str)
 
             # Lemma (kök kelime) - item.root kullan
             lemma = (
@@ -204,7 +202,7 @@ class ZemberekService:
             logger.error(f"morphology_analysis_error: {e}")
             return await self._fallback_morphology_analysis(word)
 
-    async def tokenize(self, text: str) -> List[TokenInfo]:
+    async def tokenize(self, text: str) -> list[TokenInfo]:
         """
         Metni token'lara ayır
 
@@ -218,7 +216,7 @@ class ZemberekService:
         # Morphology için Zemberek kullanıyoruz ama tokenization için basit yöntem daha stabil
         return self._fallback_tokenize(text)
 
-    async def spell_check(self, word: str) -> Dict[str, Any]:
+    async def spell_check(self, word: str) -> dict[str, Any]:
         """
         Yazım kontrolü yap
 
@@ -285,7 +283,7 @@ class ZemberekService:
             logger.error(f"normalization_error: {e}")
             return text.lower()
 
-    async def sentence_boundary_detection(self, text: str) -> List[str]:
+    async def sentence_boundary_detection(self, text: str) -> list[str]:
         """
         Cümle sınırlarını tespit et
 
@@ -350,7 +348,7 @@ class ZemberekService:
             complexity_score=min(1.0, complexity),
         )
 
-    def _fallback_tokenize(self, text: str) -> List[TokenInfo]:
+    def _fallback_tokenize(self, text: str) -> list[TokenInfo]:
         """Fallback tokenization"""
         import re
 
@@ -372,7 +370,7 @@ class ZemberekService:
 
         return token_infos
 
-    def _fallback_spell_check(self, word: str) -> Dict[str, Any]:
+    def _fallback_spell_check(self, word: str) -> dict[str, Any]:
         """Fallback yazım kontrolü"""
         # Basit kontrol: Türkçe karakterler ve uzunluk
         is_valid = (
@@ -409,7 +407,7 @@ class ZemberekService:
 
         return pos_map.get(pos_lower, POSTag.NOUN)  # Default to NOUN
 
-    def _calculate_complexity(self, morphemes: List[str], suffixes: List[str]) -> float:
+    def _calculate_complexity(self, morphemes: list[str], suffixes: list[str]) -> float:
         """Morfolojik karmaşıklık skoru hesapla"""
         # Morfem sayısı faktörü
         morpheme_factor = len(morphemes) * 0.15
@@ -425,7 +423,7 @@ class ZemberekService:
 
         return min(1.0, complexity)
 
-    async def get_service_stats(self) -> Dict[str, Any]:
+    async def get_service_stats(self) -> dict[str, Any]:
         """Servis istatistiklerini döndür"""
         return {
             "initialized": self.initialized,

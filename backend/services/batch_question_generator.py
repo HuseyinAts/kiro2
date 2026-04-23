@@ -3,9 +3,9 @@ Batch Question Generator Service
 Handles batch question generation configuration and coordination
 """
 
-import random
-from typing import List, Dict, Any, Optional, Tuple
 import logging
+import random
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -61,10 +61,10 @@ class BatchQuestionGenerator:
         batch_size: int,
         exam_type: str,
         subject: str,
-        topics: Optional[List[str]] = None,
-        difficulty_range: Tuple[float, float] = (0.3, 0.7),
-        bloom_levels: Optional[List[int]] = None
-    ) -> List[Dict[str, Any]]:
+        topics: list[str] | None = None,
+        difficulty_range: tuple[float, float] = (0.3, 0.7),
+        bloom_levels: list[int] | None = None
+    ) -> list[dict[str, Any]]:
         """
         Create batch generation configuration
 
@@ -125,7 +125,7 @@ class BatchQuestionGenerator:
         logger.info(f"Created {batch_size} question configs for {subject}/{exam_type}")
         return configs
 
-    def _get_default_topics(self, subject: str, exam_type: str) -> List[str]:
+    def _get_default_topics(self, subject: str, exam_type: str) -> list[str]:
         """Get default topics for subject/exam_type"""
         if subject in self.topic_library:
             if exam_type in self.topic_library[subject]:
@@ -153,7 +153,7 @@ class BatchQuestionGenerator:
         templates = subtopic_templates.get(subject, [f"{topic} - Genel"])
         return random.choice(templates)
 
-    def _distribute_bloom_levels(self, batch_size: int) -> List[int]:
+    def _distribute_bloom_levels(self, batch_size: int) -> list[int]:
         """Distribute Bloom levels according to target distribution"""
         bloom_levels = []
 
@@ -174,7 +174,7 @@ class BatchQuestionGenerator:
         self,
         index: int,
         total: int,
-        difficulty_range: Tuple[float, float]
+        difficulty_range: tuple[float, float]
     ) -> float:
         """Generate difficulty value with good distribution"""
         min_diff, max_diff = difficulty_range
@@ -193,9 +193,9 @@ class BatchQuestionGenerator:
 
     def validate_batch_quality(
         self,
-        generated_questions: List[Dict[str, Any]],
+        generated_questions: list[dict[str, Any]],
         min_quality_score: float = 0.7
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Validate quality of generated batch
 
@@ -242,7 +242,7 @@ class BatchQuestionGenerator:
         avg_quality: float,
         topic_count: int,
         bloom_count: int
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate improvement recommendations"""
         recommendations = []
 

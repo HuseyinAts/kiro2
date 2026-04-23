@@ -113,7 +113,7 @@ class TestMultipleExceptionTypes:
     def test_catch_multiple_exceptions(self):
         """Catch multiple exception types"""
         try:
-            from core.exceptions import ValidationException, DatabaseException
+            from core.exceptions import DatabaseException, ValidationException
 
             # Raise one type
             with pytest.raises((ValidationException, DatabaseException)):

@@ -78,10 +78,10 @@ class TestCoreModulesIntegration:
         """Test exceptions module functionality"""
         try:
             from core.exceptions import (
-                ValidationError,
-                ResourceNotFoundError,
                 AuthenticationError,
                 DatabaseError,
+                ResourceNotFoundError,
+                ValidationError,
             )
 
             # Test that exceptions can be instantiated
@@ -124,13 +124,13 @@ class TestAgentsModulesIntegration:
         """Test base_agent module to increase coverage"""
         try:
             from agents.base_agent import (
-                BaseAgent,
-                AgentType,
-                AgentStatus,
-                MessageType,
-                AgentMessage,
                 AgentCapability,
+                AgentMessage,
                 AgentMetrics,
+                AgentStatus,
+                AgentType,
+                BaseAgent,
+                MessageType,
             )
 
             # Test enums

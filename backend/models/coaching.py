@@ -6,9 +6,8 @@ CoachingEvent ve StudentEngagementSignal modelleri — AI koçluk ve etkileşim 
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
-from sqlalchemy import DateTime, Float, Integer, JSON, String, Text
+from sqlalchemy import JSON, DateTime, Float, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -25,17 +24,17 @@ class CoachingEvent(Base):
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     event_type: Mapped[str] = mapped_column(String(30), nullable=False)
-    trigger_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    trigger_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     message: Mapped[str] = mapped_column(Text, nullable=False)
     priority: Mapped[int] = mapped_column(Integer, default=0)
-    action_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    shown_at: Mapped[Optional[datetime]] = mapped_column(
+    action_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    shown_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    clicked_at: Mapped[Optional[datetime]] = mapped_column(
+    clicked_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    dismissed_at: Mapped[Optional[datetime]] = mapped_column(
+    dismissed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
     created_at: Mapped[datetime] = mapped_column(

@@ -6,7 +6,6 @@ DuelSession, DuelMatch ve DuelRating modelleri — ogrenciler arasi soru duelola
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -26,7 +25,7 @@ class DuelSession(Base):
     player1_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    player2_id: Mapped[Optional[str]] = mapped_column(
+    player2_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     subject: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -35,16 +34,16 @@ class DuelSession(Base):
     status: Mapped[str] = mapped_column(String(20), default="waiting")
     player1_score: Mapped[int] = mapped_column(Integer, default=0)
     player2_score: Mapped[int] = mapped_column(Integer, default=0)
-    winner_id: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    winner_id: Mapped[str | None] = mapped_column(String, nullable=True)
     player1_elo_change: Mapped[float] = mapped_column(Float, default=0.0)
     player2_elo_change: Mapped[float] = mapped_column(Float, default=0.0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    started_at: Mapped[Optional[datetime]] = mapped_column(
+    started_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    finished_at: Mapped[Optional[datetime]] = mapped_column(
+    finished_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
 
@@ -68,12 +67,12 @@ class DuelMatch(Base):
     )
     question_id: Mapped[str] = mapped_column(String, nullable=False)
     question_order: Mapped[int] = mapped_column(Integer, nullable=False)
-    player1_answer: Mapped[Optional[str]] = mapped_column(String(1), nullable=True)
-    player1_time_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    player1_correct: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
-    player2_answer: Mapped[Optional[str]] = mapped_column(String(1), nullable=True)
-    player2_time_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    player2_correct: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    player1_answer: Mapped[str | None] = mapped_column(String(1), nullable=True)
+    player1_time_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    player1_correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    player2_answer: Mapped[str | None] = mapped_column(String(1), nullable=True)
+    player2_time_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    player2_correct: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

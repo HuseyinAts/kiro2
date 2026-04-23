@@ -20,11 +20,10 @@ Date: 2026-01-19
 from __future__ import annotations
 
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 
 # ============================================================================
 # Test Fixtures
@@ -179,7 +178,7 @@ class TestFullImprovementCycle:
 
         # Step 2: Aggregate feedback
         aggregation = await mock_feedback_service.aggregate_recent_feedback(
-            since=datetime.now(timezone.utc) - timedelta(hours=1),
+            since=datetime.now(UTC) - timedelta(hours=1),
         )
         assert aggregation["total_records"] > 0
 
@@ -583,7 +582,7 @@ class TestDataFlowIntegration:
         """
         # Generate feedback
         aggregation = await mock_feedback_service.aggregate_recent_feedback(
-            since=datetime.now(timezone.utc) - timedelta(hours=24),
+            since=datetime.now(UTC) - timedelta(hours=24),
         )
 
         # Feed to pattern detection

@@ -8,25 +8,23 @@ Previously: Sync calls blocked event loop for 50-200ms per query
 Now: Proper async operations allow concurrent request handling
 """
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Union
+from datetime import UTC, datetime, timedelta
+from typing import Any, Union
 
-from sqlalchemy import func, Integer, select, and_
-from sqlalchemy.orm import Session
+from sqlalchemy import Integer, and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 # Database models (SQLAlchemy ORM)
 from models import (
-    User,
-    StudentProfile,
     ExamSession,
-    StudentAnswer,
-    WeeklyProgress,
-    StudentGoal,
     Notification,
+    StudentAnswer,
+    StudentGoal,
+    StudentProfile,
+    User,
+    WeeklyProgress,
 )
-from models.question_bank import QuestionBankItem as Question
-from models.video_analytics import VideoWatchSession
 
 # Pydantic models (API responses)
 from models.dashboard import (
@@ -37,7 +35,9 @@ from models.dashboard import (
     ProfilGuncelleme,
     SinavSonucu,
 )
+from models.question_bank import QuestionBankItem as Question
 from models.user import OgrenciProfili
+from models.video_analytics import VideoWatchSession
 
 # Type alias for backward compatibility
 DBSession = Union[Session, AsyncSession]
@@ -72,9 +72,8 @@ class OgrenciDashboardServisi:
                 # Async session
                 result = await db.execute(query)
                 return result
-            else:
-                # Sync session fallback
-                return db.execute(query)
+            # Sync session fallback
+            return db.execute(query)
 
         # Get user data (XP, level, gamification)
         user_result = await execute_query(
@@ -169,8 +168,8 @@ class OgrenciDashboardServisi:
         db: Session,
         limit: int = 20,
         offset: int = 0,
-        sinav_tipi: Optional[str] = None,
-    ) -> List[SinavSonucu]:
+        sinav_tipi: str | None = None,
+    ) -> list[SinavSonucu]:
         """
         Öğrencinin sınav geçmişini getir
 
@@ -235,8 +234,8 @@ class OgrenciDashboardServisi:
         return sinavlar
 
     async def _calculate_topic_performance_batch(
-        self, exam_session_ids: List[str], db: Session
-    ) -> Dict[str, Dict[str, float]]:
+        self, exam_session_ids: list[str], db: Session
+    ) -> dict[str, dict[str, float]]:
         """
         Batch calculate topic performance for multiple exam sessions in ONE query.
 
@@ -259,7 +258,7 @@ class OgrenciDashboardServisi:
         topic_result = await db.execute(stmt)
         topic_stats = topic_result.all()
 
-        result: Dict[str, Dict[str, float]] = {}
+        result: dict[str, dict[str, float]] = {}
         for stat in topic_stats:
             if stat.primary_topic_id and stat.total > 0:
                 if stat.exam_session_id not in result:
@@ -270,7 +269,7 @@ class OgrenciDashboardServisi:
 
         return result
 
-    async def _calculate_subject_performance(self, kullanici_id: str, db, min_questions: int = 10) -> Dict[str, float]:
+    async def _calculate_subject_performance(self, kullanici_id: str, db, min_questions: int = 10) -> dict[str, float]:
         """
         Calculate overall subject performance across all exams
 
@@ -307,7 +306,7 @@ class OgrenciDashboardServisi:
 
     async def performans_trendi_getir(
         self, kullanici_id: str, db, gun_sayisi: int = 30
-    ) -> List[PerformansVerisi]:
+    ) -> list[PerformansVerisi]:
         """
         Öğrencinin performans trendini getir
 
@@ -400,7 +399,7 @@ class OgrenciDashboardServisi:
 
     async def hedefler_getir(
         self, kullanici_id: str, db, aktif_sadece: bool = False
-    ) -> List[Hedef]:
+    ) -> list[Hedef]:
         """
         Öğrencinin hedeflerini getir
 
@@ -493,7 +492,7 @@ class OgrenciDashboardServisi:
         goal.target_value = hedef_data.hedef_degeri
         goal.current_value = hedef_data.mevcut_deger
         goal.status = hedef_data.durum
-        goal.updated_at = datetime.now(timezone.utc)
+        goal.updated_at = datetime.now(UTC)
 
         await db.commit()
         await db.refresh(goal)
@@ -525,7 +524,7 @@ class OgrenciDashboardServisi:
 
     async def bildirimler_getir(
         self, kullanici_id: str, db, okunmamis_sadece: bool = False, limit: int = 50
-    ) -> List[Bildirim]:
+    ) -> list[Bildirim]:
         """
         Öğrencinin bildirimlerini getir
 
@@ -590,7 +589,7 @@ class OgrenciDashboardServisi:
 
     async def ogrenci_profili_getir(
         self, kullanici_id: str, db
-    ) -> Optional[OgrenciProfili]:
+    ) -> OgrenciProfili | None:
         """
         Öğrenci profil bilgilerini getir
 
@@ -663,7 +662,7 @@ class OgrenciDashboardServisi:
             profile.study_hours_per_day = profil_data.gunluk_calisma_hedefi
 
         # Update timestamp
-        profile.updated_at = datetime.now(timezone.utc)
+        profile.updated_at = datetime.now(UTC)
 
         await db.commit()
         await db.refresh(profile)
@@ -671,7 +670,7 @@ class OgrenciDashboardServisi:
         # Return updated profile
         return await self.ogrenci_profili_getir(kullanici_id, db)
 
-    async def dashboard_ozeti_getir(self, kullanici_id: str, db) -> Dict[str, Any]:
+    async def dashboard_ozeti_getir(self, kullanici_id: str, db) -> dict[str, Any]:
         """
         Dashboard özet bilgilerini getir
 
@@ -691,7 +690,7 @@ class OgrenciDashboardServisi:
         def _to_dict(obj):
             if hasattr(obj, 'model_dump'):
                 return obj.model_dump()
-            elif hasattr(obj, 'dict'):
+            if hasattr(obj, 'dict'):
                 return obj.dict()
             return obj
 

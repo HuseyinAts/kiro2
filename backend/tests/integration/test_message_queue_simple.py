@@ -3,12 +3,12 @@ Message Queue System Simple Tests
 Mesaj Kuyruğu Sistemi için basit testler (aioredis dependency'si olmadan)
 """
 
-import pytest
+# Mock aioredis before importing the module
+import sys
 from datetime import datetime, timedelta
 from unittest.mock import Mock
 
-# Mock aioredis before importing the module
-import sys
+import pytest
 
 mock_aioredis = Mock()
 mock_aioredis.from_url = Mock()
@@ -35,19 +35,19 @@ def mock_get_unified_config():
 # Try to import with mocks, if fails create simple mock imports
 try:
     from core.message_queue_system import (
-        QueueMessage,
         BackgroundJob,
+        JobStatus,
+        QueueMessage,
         QueuePriority,
         QueueType,
-        JobStatus,
     )
 except ImportError:
     # Create mock classes since the module has import issues
-    from enum import Enum
+    import uuid
     from dataclasses import dataclass, field
     from datetime import datetime
-    from typing import Any, Dict, List, Optional
-    import uuid
+    from enum import Enum
+    from typing import Any
 
     class QueuePriority(Enum):
         LOW = "low"
@@ -79,17 +79,17 @@ except ImportError:
     class QueueMessage:
         id: str
         queue_type: QueueType
-        payload: Dict[str, Any]
+        payload: dict[str, Any]
         priority: QueuePriority
         created_at: datetime
-        scheduled_at: Optional[datetime] = None
+        scheduled_at: datetime | None = None
         attempts: int = 0
         max_attempts: int = 3
         timeout: int = 300
-        user_id: Optional[int] = None
-        session_id: Optional[str] = None
-        correlation_id: Optional[str] = None
-        metadata: Dict[str, Any] = field(default_factory=dict)
+        user_id: int | None = None
+        session_id: str | None = None
+        correlation_id: str | None = None
+        metadata: dict[str, Any] = field(default_factory=dict)
 
         def __post_init__(self):
             if not self.id:
@@ -97,7 +97,7 @@ except ImportError:
             if not self.correlation_id:
                 self.correlation_id = self.id
 
-        def to_dict(self) -> Dict[str, Any]:
+        def to_dict(self) -> dict[str, Any]:
             data = {
                 "id": self.id,
                 "queue_type": self.queue_type.value,
@@ -117,7 +117,7 @@ except ImportError:
             return data
 
         @classmethod
-        def from_dict(cls, data: Dict[str, Any]) -> "QueueMessage":
+        def from_dict(cls, data: dict[str, Any]) -> "QueueMessage":
             data = data.copy()
             data["queue_type"] = QueueType(data["queue_type"])
             data["priority"] = QueuePriority(data["priority"])
@@ -131,28 +131,28 @@ except ImportError:
         id: str
         job_type: str
         function_name: str
-        args: List[Any]
-        kwargs: Dict[str, Any]
+        args: list[Any]
+        kwargs: dict[str, Any]
         queue_type: QueueType
         priority: QueuePriority
         status: JobStatus
         created_at: datetime
-        started_at: Optional[datetime] = None
-        completed_at: Optional[datetime] = None
-        result: Optional[Any] = None
-        error: Optional[str] = None
+        started_at: datetime | None = None
+        completed_at: datetime | None = None
+        result: Any | None = None
+        error: str | None = None
         progress: int = 0
         attempts: int = 0
         max_attempts: int = 3
         timeout: int = 300
-        user_id: Optional[int] = None
-        metadata: Dict[str, Any] = field(default_factory=dict)
+        user_id: int | None = None
+        metadata: dict[str, Any] = field(default_factory=dict)
 
         def __post_init__(self):
             if not self.id:
                 self.id = str(uuid.uuid4())
 
-        def to_dict(self) -> Dict[str, Any]:
+        def to_dict(self) -> dict[str, Any]:
             data = {
                 "id": self.id,
                 "job_type": self.job_type,

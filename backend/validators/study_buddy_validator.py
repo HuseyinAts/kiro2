@@ -15,7 +15,7 @@ Requirements: REQ-2.1 - REQ-2.6
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from backend.validators.base_response_validator import (
     AgentResponse,
@@ -110,9 +110,9 @@ class StudyBuddyValidator(BaseResponseValidator):
         Returns:
             ValidationResult: Doğrulama sonucu
         """
-        errors: List[str] = []
-        warnings: List[str] = []
-        suggestions: List[str] = []
+        errors: list[str] = []
+        warnings: list[str] = []
+        suggestions: list[str] = []
         score = 1.0
 
         query = response.query
@@ -325,7 +325,7 @@ class StudyBuddyValidator(BaseResponseValidator):
 
     async def _verify_math_answer(
         self, query: str, answer: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Matematiksel cevabı doğrula.
 
@@ -408,13 +408,13 @@ class StudyBuddyValidator(BaseResponseValidator):
                 "detail": str(e),
             }
 
-    def _extract_numbers(self, text: str) -> List[str]:
+    def _extract_numbers(self, text: str) -> list[str]:
         """Metinden sayıları çıkar"""
         # Ondalık ve tam sayılar
         pattern = r'-?\d+(?:[.,]\d+)?'
         return re.findall(pattern, text)
 
-    def _extract_math_expression(self, text: str) -> Optional[str]:
+    def _extract_math_expression(self, text: str) -> str | None:
         """Metinden matematiksel ifadeyi çıkar"""
         # Basit aritmetik ifadeler
         pattern = r'[\d\s\+\-\*\/\(\)\^\.]+[=][\d\s\+\-\*\/\(\)\^\.]*'
@@ -423,7 +423,7 @@ class StudyBuddyValidator(BaseResponseValidator):
             return matches[0].replace(' ', '')
         return None
 
-    def _calculate_simple_expression(self, text: str) -> Optional[float]:
+    def _calculate_simple_expression(self, text: str) -> float | None:
         """Basit aritmetik ifadeyi hesapla"""
         try:
             # Sayıları ve operatörleri çıkar
@@ -436,11 +436,11 @@ class StudyBuddyValidator(BaseResponseValidator):
 
                 if op == '+':
                     return a + b
-                elif op == '-':
+                if op == '-':
                     return a - b
-                elif op == '*':
+                if op == '*':
                     return a * b
-                elif op == '/' and b != 0:
+                if op == '/' and b != 0:
                     return a / b
 
             return None
@@ -449,7 +449,7 @@ class StudyBuddyValidator(BaseResponseValidator):
 
     async def _verify_historical_facts(
         self, answer: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Tarihsel bilgileri doğrula.
 
@@ -490,17 +490,16 @@ class StudyBuddyValidator(BaseResponseValidator):
                         warnings.append(
                             f"'{fact}' için tarih bilgisi eksik veya hatalı"
                         )
-                else:
-                    if str(year_info) not in years:
-                        # Yakın bir tarih var mı kontrol et
-                        close_years = [
-                            y for y in years
-                            if abs(int(y) - year_info) <= 2
-                        ]
-                        if not close_years:
-                            warnings.append(
-                                f"'{fact}' için beklenen tarih: {year_info}"
-                            )
+                elif str(year_info) not in years:
+                    # Yakın bir tarih var mı kontrol et
+                    close_years = [
+                        y for y in years
+                        if abs(int(y) - year_info) <= 2
+                    ]
+                    if not close_years:
+                        warnings.append(
+                            f"'{fact}' için beklenen tarih: {year_info}"
+                        )
 
         return {
             "errors": errors,
@@ -509,7 +508,7 @@ class StudyBuddyValidator(BaseResponseValidator):
 
     async def _verify_scientific_claims(
         self, answer: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Bilimsel iddiaları doğrula.
 
@@ -558,8 +557,8 @@ class StudyBuddyValidator(BaseResponseValidator):
         }
 
     def _check_source_reliability(
-        self, sources: List[str]
-    ) -> Dict[str, Any]:
+        self, sources: list[str]
+    ) -> dict[str, Any]:
         """
         Kaynakların güvenilirliğini kontrol et.
 

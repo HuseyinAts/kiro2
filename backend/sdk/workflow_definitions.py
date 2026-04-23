@@ -19,12 +19,12 @@ Kullanım:
 
 from __future__ import annotations
 
-import asyncio
 import logging
+from collections.abc import Callable, Coroutine
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Coroutine, TypeVar
+from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 

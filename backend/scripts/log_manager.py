@@ -267,7 +267,7 @@ def tail_logs(log_dir: str, level: str, category: str, hours: int, tail: int):
     cutoff_time = datetime.now() - timedelta(hours=hours)
 
     try:
-        with open(log_file, "r", encoding="utf-8") as f:
+        with open(log_file, encoding="utf-8") as f:
             lines = f.readlines()
 
             # Son N satırı al ve filtrele

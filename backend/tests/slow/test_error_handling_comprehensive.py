@@ -15,8 +15,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import modules to test
 try:
-    from agents.learning_path_agent import LearningPathAgent
     from agents.study_buddy_agent import StudyBuddyAgent
+
+    from agents.learning_path_agent import LearningPathAgent
 except ImportError:
     pytest.skip("study_buddy_agent module not available (archived)", allow_module_level=True)
 from core.llm_service import llm_service
@@ -33,7 +34,7 @@ class TestNetworkErrors:
     async def test_connection_timeout(self):
         """Test connection timeout handling"""
         with patch("aiohttp.ClientSession.get") as mock_get:
-            mock_get.side_effect = asyncio.TimeoutError()
+            mock_get.side_effect = TimeoutError()
 
             # Test with YouTube service
             result = await youtube_service.fetch_with_timeout(
@@ -259,7 +260,7 @@ class TestConcurrencyErrors:
                 asyncio.gather(operation_a(lock1, lock2), operation_b(lock1, lock2)),
                 timeout=0.5,
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # Timeout was raised as expected - this is the expected behavior
             pass  # Test passes - timeout handling works correctly
         else:
@@ -504,13 +505,12 @@ class TestRecoveryStrategies:
                         "features": ["feature1", "feature2", "feature3"],
                         "mode": "full",
                     }
-                else:
-                    # Degraded functionality
-                    return {
-                        "data": "basic data",
-                        "features": ["feature1"],
-                        "mode": "degraded",
-                    }
+                # Degraded functionality
+                return {
+                    "data": "basic data",
+                    "features": ["feature1"],
+                    "mode": "degraded",
+                }
 
         service = ServiceWithDegradation()
 

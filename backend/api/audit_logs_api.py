@@ -4,16 +4,16 @@ TASK 48.5: Audit log viewer and export
 
 Admin-only endpoints for viewing and exporting audit logs.
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
-from datetime import datetime, timedelta, timezone
-from sqlalchemy.orm import Session
-from sqlalchemy import func, and_
+from datetime import UTC, datetime, timedelta
 
-from core.audit_logging import AuditLog, AuditEventType
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy import and_, func
+from sqlalchemy.orm import Session
+
+from core.audit_logging import AuditEventType, AuditLog
 from core.database import get_db
-from core.dependencies import get_current_user, AuthenticatedUser, UserRole
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 
 router = APIRouter(prefix="/admin/audit-logs", tags=["Admin - Audit Logs"])
 
@@ -25,16 +25,16 @@ class AuditLogResponse(BaseModel):
     timestamp: datetime
     event_type: str
     severity: str
-    user_id: Optional[str]
-    user_email: Optional[str]
-    user_role: Optional[str]
-    ip_address: Optional[str]
-    resource_type: Optional[str]
-    resource_id: Optional[str]
-    action: Optional[str]
-    description: Optional[str]
+    user_id: str | None
+    user_email: str | None
+    user_role: str | None
+    ip_address: str | None
+    resource_type: str | None
+    resource_id: str | None
+    action: str | None
+    description: str | None
     success: str
-    error_message: Optional[str]
+    error_message: str | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -45,7 +45,7 @@ class AuditLogListResponse(BaseModel):
     total: int
     page: int
     per_page: int
-    logs: List[AuditLogResponse]
+    logs: list[AuditLogResponse]
 
 
 class AuditStatsResponse(BaseModel):
@@ -72,12 +72,12 @@ def require_admin(current_user: AuthenticatedUser = Depends(get_current_user)) -
 def get_audit_logs(
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=500),
-    event_type: Optional[str] = None,
-    user_id: Optional[str] = None,
-    severity: Optional[str] = None,
-    start_date: Optional[datetime] = None,
-    end_date: Optional[datetime] = None,
-    search: Optional[str] = None,
+    event_type: str | None = None,
+    user_id: str | None = None,
+    severity: str | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None,
+    search: str | None = None,
     db: Session = Depends(get_db),
     admin: AuthenticatedUser = Depends(require_admin),
 ):
@@ -147,7 +147,7 @@ def get_audit_stats(
     Query Parameters:
         - days: Number of days to analyze (default: 7, max: 90)
     """
-    start_date = datetime.now(timezone.utc) - timedelta(days=days)
+    start_date = datetime.now(UTC) - timedelta(days=days)
 
     # Total events
     total_events = (
@@ -192,7 +192,7 @@ def get_audit_stats(
         db.query(func.count(AuditLog.id))
         .filter(
             and_(
-                AuditLog.timestamp >= datetime.now(timezone.utc) - timedelta(hours=24),
+                AuditLog.timestamp >= datetime.now(UTC) - timedelta(hours=24),
                 AuditLog.event_type == AuditEventType.LOGIN_FAILURE.value,
             )
         )
@@ -204,7 +204,7 @@ def get_audit_stats(
         db.query(func.count(AuditLog.id))
         .filter(
             and_(
-                AuditLog.timestamp >= datetime.now(timezone.utc) - timedelta(hours=24),
+                AuditLog.timestamp >= datetime.now(UTC) - timedelta(hours=24),
                 AuditLog.event_type.like("security_%"),
             )
         )
@@ -224,9 +224,9 @@ def get_audit_stats(
 @router.get("/export")
 def export_audit_logs(
     format: str = Query("csv", pattern="^(csv|json)$"),
-    event_type: Optional[str] = None,
-    start_date: Optional[datetime] = None,
-    end_date: Optional[datetime] = None,
+    event_type: str | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None,
     db: Session = Depends(get_db),
     admin: AuthenticatedUser = Depends(require_admin),
 ):
@@ -244,9 +244,10 @@ def export_audit_logs(
     Returns:
         File download (CSV or JSON)
     """
-    from fastapi.responses import StreamingResponse
     import csv
     import io
+
+    from fastapi.responses import StreamingResponse
 
     query = db.query(AuditLog)
 
@@ -307,39 +308,39 @@ def export_audit_logs(
             iter([output.getvalue()]),
             media_type="text/csv",
             headers={
-                "Content-Disposition": f"attachment; filename=audit_logs_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv"
+                "Content-Disposition": f"attachment; filename=audit_logs_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.csv"
             },
         )
 
-    else:  # JSON format
-        import json
+    # JSON format
+    import json
 
-        data = [
-            {
-                "timestamp": log.timestamp.isoformat(),
-                "event_type": log.event_type,
-                "severity": log.severity,
-                "user_id": log.user_id,
-                "user_email": log.user_email,
-                "ip_address": log.ip_address,
-                "resource_type": log.resource_type,
-                "resource_id": log.resource_id,
-                "action": log.action,
-                "description": log.description,
-                "success": log.success,
-                "error_message": log.error_message,
-                "metadata": log.metadata,
-            }
-            for log in logs
-        ]
+    data = [
+        {
+            "timestamp": log.timestamp.isoformat(),
+            "event_type": log.event_type,
+            "severity": log.severity,
+            "user_id": log.user_id,
+            "user_email": log.user_email,
+            "ip_address": log.ip_address,
+            "resource_type": log.resource_type,
+            "resource_id": log.resource_id,
+            "action": log.action,
+            "description": log.description,
+            "success": log.success,
+            "error_message": log.error_message,
+            "metadata": log.metadata,
+        }
+        for log in logs
+    ]
 
-        return StreamingResponse(
-            iter([json.dumps(data, indent=2)]),
-            media_type="application/json",
-            headers={
-                "Content-Disposition": f"attachment; filename=audit_logs_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
-            },
-        )
+    return StreamingResponse(
+        iter([json.dumps(data, indent=2)]),
+        media_type="application/json",
+        headers={
+            "Content-Disposition": f"attachment; filename=audit_logs_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
+        },
+    )
 
 
 @router.delete("/cleanup")
@@ -360,7 +361,7 @@ def cleanup_old_logs(
     Returns:
         Number of deleted records
     """
-    cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
+    cutoff_date = datetime.now(UTC) - timedelta(days=days)
 
     deleted_count = db.query(AuditLog).filter(AuditLog.timestamp < cutoff_date).delete()
 

@@ -5,18 +5,19 @@ Bu modül, health check sistemi modellerinin property-based testlerini içerir.
 Hypothesis kütüphanesi kullanılarak 100+ iterasyon ile test edilir.
 """
 
-from hypothesis import given, strategies as st, settings
 from datetime import datetime
 
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 from app.health.models import (
-    HealthStatus,
     CircuitState,
     EndpointMetadata,
     HealthCheckResult,
     HealthScore,
+    HealthStatus,
     SLAMetrics,
 )
-
 
 # Hypothesis stratejileri
 health_status_strategy = st.sampled_from([
@@ -79,7 +80,7 @@ class TestEndpointMetadataProperties:
             requires_auth=requires_auth,
             is_critical=is_critical
         )
-        
+
         assert metadata.path == path
         assert metadata.method == method
         assert metadata.handler == handler
@@ -111,10 +112,10 @@ class TestEndpointMetadataProperties:
             method=method,
             handler=handler
         )
-        
+
         json_data = original.model_dump()
         restored = EndpointMetadata(**json_data)
-        
+
         assert restored.path == original.path
         assert restored.method == original.method
         assert restored.handler == original.handler
@@ -151,7 +152,7 @@ class TestHealthCheckResultProperties:
             status_code=status_code,
             circuit_state=circuit_state
         )
-        
+
         assert result.endpoint == endpoint
         assert result.status == status
         assert result.response_time_ms == response_time_ms
@@ -184,7 +185,7 @@ class TestHealthCheckResultProperties:
             response_time_ms=response_time_ms,
             status_code=status_code
         )
-        
+
         assert result.timestamp is not None
         assert isinstance(result.timestamp, datetime)
 
@@ -224,10 +225,10 @@ class TestHealthScoreProperties:
             uptime_score=uptime_score,
             dependency_score=dependency_score
         )
-        
+
         # Main property: score is always 0-100
         assert 0 <= health_score.score <= 100
-        
+
         # Component scores are also 0-100
         assert 0 <= health_score.response_time_score <= 100
         assert 0 <= health_score.error_rate_score <= 100
@@ -265,7 +266,7 @@ class TestHealthScoreProperties:
             uptime_score=uptime_score,
             dependency_score=dependency_score
         )
-        
+
         assert health_score.timestamp is not None
         assert isinstance(health_score.timestamp, datetime)
 
@@ -307,7 +308,7 @@ class TestSLAMetricsProperties:
             uptime_percentage=uptime_percentage,
             sla_compliant=sla_compliant
         )
-        
+
         assert 0.0 <= metrics.error_rate <= 1.0
 
     @given(
@@ -344,7 +345,7 @@ class TestSLAMetricsProperties:
             uptime_percentage=uptime_percentage,
             sla_compliant=sla_compliant
         )
-        
+
         assert 0.0 <= metrics.uptime_percentage <= 100.0
 
     @given(
@@ -377,7 +378,7 @@ class TestSLAMetricsProperties:
             error_rate < 0.01 and
             uptime_percentage > 99.9
         )
-        
+
         metrics = SLAMetrics(
             endpoint=endpoint,
             p50_ms=p50_ms,
@@ -387,7 +388,7 @@ class TestSLAMetricsProperties:
             uptime_percentage=uptime_percentage,
             sla_compliant=sla_compliant
         )
-        
+
         # Verify the property
         if p95_ms > 200.0:
             # Should be marked as non-compliant or degraded
@@ -421,7 +422,7 @@ class TestModelConsistencyProperties:
             expected_status = HealthStatus.DEGRADED
         else:
             expected_status = HealthStatus.UNHEALTHY
-        
+
         # Create health check result
         result = HealthCheckResult(
             endpoint=endpoint,
@@ -429,7 +430,7 @@ class TestModelConsistencyProperties:
             response_time_ms=response_time_ms,
             status_code=200
         )
-        
+
         # Verify consistency
         if result.response_time_ms < 200:
             assert result.status in [HealthStatus.HEALTHY, HealthStatus.DEGRADED]
@@ -460,7 +461,7 @@ class TestModelConsistencyProperties:
             expected_status = HealthStatus.DEGRADED
         else:
             expected_status = HealthStatus.UNHEALTHY
-        
+
         # Create models
         health_score = HealthScore(
             endpoint=endpoint,
@@ -470,7 +471,7 @@ class TestModelConsistencyProperties:
             uptime_score=float(score),
             dependency_score=float(score)
         )
-        
+
         # Verify correlation
         assert health_score.score == score
         if score >= 70:

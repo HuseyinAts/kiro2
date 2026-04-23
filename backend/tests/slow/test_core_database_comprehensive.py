@@ -5,13 +5,14 @@ Target: 90%+ coverage for critical database module
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
-import pytest
 import asyncio
-from core.database import get_async_session, Base
 
+import pytest
 
+from core.database import Base, get_async_session
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -253,7 +254,7 @@ class TestAsyncSessionIntegration:
             except Exception:
                 await session.rollback()
                 # Re-raise for proper error handling
-                pass  # Don't re-raise in test
+                # Don't re-raise in test
 
     @pytest.mark.asyncio
     async def test_concurrent_sessions(self):

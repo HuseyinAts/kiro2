@@ -205,7 +205,7 @@ async def run_with_timeout(
     """
     try:
         return await asyncio.wait_for(coro, timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         logger.warning(f"Operation timed out after {timeout}s")
         return default
 
@@ -398,7 +398,7 @@ class AsyncPool:
         self.max_workers = max_workers
         self._semaphore: asyncio.Semaphore | None = None
 
-    async def __aenter__(self) -> "AsyncPool":
+    async def __aenter__(self) -> AsyncPool:
         """Context manager giris."""
         self._semaphore = asyncio.Semaphore(self.max_workers)
         return self
@@ -534,8 +534,7 @@ def async_cached(
                 if time.time() - timestamp < ttl:
                     logger.debug(f"Cache hit: {func.__name__}")
                     return value
-                else:
-                    del cache[key]
+                del cache[key]
 
             # Fonksiyonu calistir
             result = await func(*args, **kwargs)

@@ -25,12 +25,13 @@ Test Categories:
 6. Feedback (20+ tests)
 """
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, AsyncMock, patch
 
 # Import FastAPI app
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 
 # Fake user for auth override
@@ -65,8 +66,8 @@ app = create_test_app()
 try:
     from api.enhanced_chat import (  # noqa: F401
         ChatMessageType,
-        ResponseMode,
         EnhancedChatResponse,
+        ResponseMode,
     )
 except ImportError as e:
     print(f"Warning: Could not import enhanced_chat models: {e}")

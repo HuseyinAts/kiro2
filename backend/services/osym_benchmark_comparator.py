@@ -23,11 +23,11 @@ Thresholds:
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
+
 import numpy as np
-from collections import Counter
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class QuestionStatistics:
     total_count: int = 0
 
     # Length statistics
-    lengths: List[int] = field(default_factory=list)
+    lengths: list[int] = field(default_factory=list)
     mean_length: float = 0.0
     std_length: float = 0.0
     median_length: float = 0.0
@@ -48,19 +48,19 @@ class QuestionStatistics:
     max_length: int = 0
 
     # Difficulty distribution
-    difficulty_counts: Dict[str, int] = field(default_factory=dict)
-    difficulty_percentages: Dict[str, float] = field(default_factory=dict)
+    difficulty_counts: dict[str, int] = field(default_factory=dict)
+    difficulty_percentages: dict[str, float] = field(default_factory=dict)
 
     # Subject distribution
-    subject_counts: Dict[str, int] = field(default_factory=dict)
-    subject_percentages: Dict[str, float] = field(default_factory=dict)
+    subject_counts: dict[str, int] = field(default_factory=dict)
+    subject_percentages: dict[str, float] = field(default_factory=dict)
 
     # Bloom taxonomy distribution
-    bloom_counts: Dict[str, int] = field(default_factory=dict)
-    bloom_percentages: Dict[str, float] = field(default_factory=dict)
+    bloom_counts: dict[str, int] = field(default_factory=dict)
+    bloom_percentages: dict[str, float] = field(default_factory=dict)
 
     # Answer option statistics
-    correct_answer_distribution: Dict[str, int] = field(default_factory=dict)
+    correct_answer_distribution: dict[str, int] = field(default_factory=dict)
 
     # Computed timestamp
     computed_at: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -80,16 +80,16 @@ class BenchmarkComparison:
     bloom_similarity: float = 0.0
 
     # Statistical test results
-    statistical_tests: Dict = field(default_factory=dict)
+    statistical_tests: dict = field(default_factory=dict)
 
     # Detailed comparisons
-    length_comparison: Dict = field(default_factory=dict)
-    difficulty_comparison: Dict = field(default_factory=dict)
-    bloom_comparison: Dict = field(default_factory=dict)
+    length_comparison: dict = field(default_factory=dict)
+    difficulty_comparison: dict = field(default_factory=dict)
+    bloom_comparison: dict = field(default_factory=dict)
 
     # Recommendations
-    issues: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    issues: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
 
 class OSYMBenchmarkComparator:
@@ -102,7 +102,7 @@ class OSYMBenchmarkComparator:
     def __init__(self):
         """Initialize comparator"""
         self.logger = logger
-        self._reference_stats: Optional[QuestionStatistics] = None
+        self._reference_stats: QuestionStatistics | None = None
         self._scipy_available = False
 
         # Try to import scipy for statistical tests
@@ -118,7 +118,7 @@ class OSYMBenchmarkComparator:
             )
 
     def calculate_statistics(
-        self, questions: List[Dict], name: str = "Unknown"
+        self, questions: list[dict], name: str = "Unknown"
     ) -> QuestionStatistics:
         """
         Calculate comprehensive statistics for a question set
@@ -216,7 +216,7 @@ class OSYMBenchmarkComparator:
 
         return stats
 
-    def set_reference_benchmark(self, osym_questions: List[Dict]) -> QuestionStatistics:
+    def set_reference_benchmark(self, osym_questions: list[dict]) -> QuestionStatistics:
         """
         Set ÖSYM questions as reference benchmark
 
@@ -239,8 +239,8 @@ class OSYMBenchmarkComparator:
 
     def compare_against_benchmark(
         self,
-        ai_questions: List[Dict],
-        reference_stats: Optional[QuestionStatistics] = None,
+        ai_questions: list[dict],
+        reference_stats: QuestionStatistics | None = None,
     ) -> BenchmarkComparison:
         """
         Compare AI-generated questions against ÖSYM benchmark
@@ -316,7 +316,7 @@ class OSYMBenchmarkComparator:
 
     def _compare_lengths(
         self, ai_stats: QuestionStatistics, ref_stats: QuestionStatistics
-    ) -> Dict:
+    ) -> dict:
         """Compare length distributions"""
         # Calculate mean difference
         mean_diff = abs(ai_stats.mean_length - ref_stats.mean_length)
@@ -354,7 +354,7 @@ class OSYMBenchmarkComparator:
 
     def _compare_difficulty(
         self, ai_stats: QuestionStatistics, ref_stats: QuestionStatistics
-    ) -> Dict:
+    ) -> dict:
         """Compare difficulty distributions"""
         # Get all difficulty levels
         all_levels = set(
@@ -434,7 +434,7 @@ class OSYMBenchmarkComparator:
 
     def _compare_bloom(
         self, ai_stats: QuestionStatistics, ref_stats: QuestionStatistics
-    ) -> Dict:
+    ) -> dict:
         """Compare Bloom taxonomy distributions"""
         # Same logic as difficulty comparison
         all_levels = set(
@@ -461,7 +461,7 @@ class OSYMBenchmarkComparator:
 
     def _run_statistical_tests(
         self, ai_stats: QuestionStatistics, ref_stats: QuestionStatistics
-    ) -> Dict:
+    ) -> dict:
         """Run comprehensive statistical tests"""
         tests = {}
 
@@ -499,7 +499,7 @@ class OSYMBenchmarkComparator:
 
         return tests
 
-    def _calculate_cohens_d(self, group1: List[float], group2: List[float]) -> float:
+    def _calculate_cohens_d(self, group1: list[float], group2: list[float]) -> float:
         """Calculate Cohen's d effect size"""
         mean1 = np.mean(group1)
         mean2 = np.mean(group2)
@@ -521,34 +521,32 @@ class OSYMBenchmarkComparator:
         """Interpret Cohen's d effect size"""
         if d < 0.2:
             return "Negligible difference (excellent equivalence)"
-        elif d < 0.5:
+        if d < 0.5:
             return "Small difference (good equivalence)"
-        elif d < 0.8:
+        if d < 0.8:
             return "Medium difference (acceptable)"
-        else:
-            return "Large difference (needs improvement)"
+        return "Large difference (needs improvement)"
 
     def _interpret_similarity(self, similarity: float) -> str:
         """Interpret similarity score"""
         if similarity >= 0.90:
             return "Excellent"
-        elif similarity >= 0.85:
+        if similarity >= 0.85:
             return "Very Good"
-        elif similarity >= 0.80:
+        if similarity >= 0.80:
             return "Good"
-        elif similarity >= 0.75:
+        if similarity >= 0.75:
             return "Acceptable"
-        elif similarity >= 0.70:
+        if similarity >= 0.70:
             return "Marginal"
-        else:
-            return "Needs Improvement"
+        return "Needs Improvement"
 
     def _generate_recommendations(
         self,
         comparison: BenchmarkComparison,
         ai_stats: QuestionStatistics,
         ref_stats: QuestionStatistics,
-    ) -> Tuple[List[str], List[str]]:
+    ) -> tuple[list[str], list[str]]:
         """Generate issues and recommendations"""
         issues = []
         recommendations = []

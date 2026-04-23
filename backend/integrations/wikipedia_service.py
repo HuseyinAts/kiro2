@@ -8,7 +8,7 @@ import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,9 +24,9 @@ class WikipediaArticle:
     summary: str
     content: str
     url: str
-    categories: List[str]
-    images: List[str]
-    references: List[str]
+    categories: list[str]
+    images: list[str]
+    references: list[str]
     language: str
     last_modified: datetime
     word_count: int
@@ -49,7 +49,7 @@ class WikipediaService:
         language: str = "tr",
         limit: int = 10,
         educational_filter: bool = True,
-    ) -> List[WikipediaArticle]:
+    ) -> list[WikipediaArticle]:
         """
         Wikipedia makalelerini ara
 
@@ -90,12 +90,12 @@ class WikipediaService:
             return articles[:limit]
 
         except Exception as e:
-            logger.error(f"Wikipedia search error: {str(e)}")
+            logger.error(f"Wikipedia search error: {e!s}")
             return []
 
     async def _simulate_search(
         self, query: str, language: str, limit: int
-    ) -> List[WikipediaArticle]:
+    ) -> list[WikipediaArticle]:
         """Arama sonuçlarını simüle et"""
         # Örnek makaleler
         sample_articles = [
@@ -157,7 +157,7 @@ class WikipediaService:
 
     async def get_article(
         self, title: str, language: str = "tr", extract_length: int = 500
-    ) -> Optional[WikipediaArticle]:
+    ) -> WikipediaArticle | None:
         """
         Makale detaylarını getir
 
@@ -193,7 +193,7 @@ class WikipediaService:
             return article
 
         except Exception as e:
-            logger.error(f"Get article error: {str(e)}")
+            logger.error(f"Get article error: {e!s}")
             return None
 
     def _calculate_educational_relevance(self, title: str) -> float:
@@ -259,7 +259,7 @@ class WikipediaService:
 
     async def get_article_sections(
         self, title: str, language: str = "tr"
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Makale bölümlerini getir
 
@@ -302,12 +302,12 @@ class WikipediaService:
             return sections
 
         except Exception as e:
-            logger.error(f"Get sections error: {str(e)}")
+            logger.error(f"Get sections error: {e!s}")
             return []
 
     async def get_related_articles(
         self, title: str, language: str = "tr", limit: int = 5
-    ) -> List[str]:
+    ) -> list[str]:
         """
         İlgili makaleleri getir
 
@@ -348,10 +348,10 @@ class WikipediaService:
             return related[:limit]
 
         except Exception as e:
-            logger.error(f"Get related articles error: {str(e)}")
+            logger.error(f"Get related articles error: {e!s}")
             return []
 
-    def extract_key_concepts(self, content: str) -> List[str]:
+    def extract_key_concepts(self, content: str) -> list[str]:
         """
         İçerikten anahtar kavramları çıkar
 
@@ -379,7 +379,7 @@ class WikipediaService:
             return concepts[:20]
 
         except Exception as e:
-            logger.error(f"Extract concepts error: {str(e)}")
+            logger.error(f"Extract concepts error: {e!s}")
             return []
 
     def simplify_content(self, content: str, target_level: str = "beginner") -> str:
@@ -428,12 +428,12 @@ class WikipediaService:
             return result
 
         except Exception as e:
-            logger.error(f"Simplify content error: {str(e)}")
+            logger.error(f"Simplify content error: {e!s}")
             return content
 
     async def get_daily_featured(
         self, language: str = "tr"
-    ) -> Optional[WikipediaArticle]:
+    ) -> WikipediaArticle | None:
         """
         Günün öne çıkan makalesini getir
 
@@ -461,12 +461,12 @@ class WikipediaService:
             )
 
         except Exception as e:
-            logger.error(f"Get daily featured error: {str(e)}")
+            logger.error(f"Get daily featured error: {e!s}")
             return None
 
     async def search_by_category(
         self, category: str, language: str = "tr", limit: int = 10
-    ) -> List[WikipediaArticle]:
+    ) -> list[WikipediaArticle]:
         """
         Kategoriye göre makale ara
 
@@ -500,7 +500,7 @@ class WikipediaService:
             return articles
 
         except Exception as e:
-            logger.error(f"Search by category error: {str(e)}")
+            logger.error(f"Search by category error: {e!s}")
             return []
 
 

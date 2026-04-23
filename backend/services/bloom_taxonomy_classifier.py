@@ -7,9 +7,9 @@ Requirements: REQ-48.9-48.12
 """
 
 import logging
-from typing import Dict, Tuple
-from transformers import AutoTokenizer
+
 import torch
+from transformers import AutoTokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -133,10 +133,10 @@ class BloomTaxonomyClassifier:
             logger.info("Model başarıyla yüklendi")
 
         except Exception as e:
-            logger.error(f"Model yükleme hatası: {str(e)}")
+            logger.error(f"Model yükleme hatası: {e!s}")
             raise
 
-    def classify_question(self, question_text: str) -> Tuple[int, str, float]:
+    def classify_question(self, question_text: str) -> tuple[int, str, float]:
         """
         Soruyu Bloom taksonomisine göre sınıflandır.
 
@@ -170,7 +170,7 @@ class BloomTaxonomyClassifier:
 
         return level, category, confidence
 
-    def _keyword_based_classification(self, question_text: str) -> Tuple[int, float]:
+    def _keyword_based_classification(self, question_text: str) -> tuple[int, float]:
         """
         Anahtar kelime tabanlı sınıflandırma.
 
@@ -203,7 +203,7 @@ class BloomTaxonomyClassifier:
 
         return best_level, confidence
 
-    def _ml_based_classification(self, question_text: str) -> Tuple[int, float]:
+    def _ml_based_classification(self, question_text: str) -> tuple[int, float]:
         """
         ML model tabanlı sınıflandırma.
 
@@ -241,7 +241,7 @@ class BloomTaxonomyClassifier:
             return bloom_level, confidence
 
         except Exception as e:
-            logger.error(f"ML classification hatası: {str(e)}")
+            logger.error(f"ML classification hatası: {e!s}")
             return 2, 0.5  # Fallback
 
     def train_model(self, training_data: list, validation_data: list):
@@ -273,7 +273,7 @@ class BloomTaxonomyClassifier:
         else:
             logger.info(f"Model başarıyla eğitildi. Accuracy: {self.accuracy:.2%}")
 
-    def evaluate_model(self, test_data: list) -> Dict[str, float]:
+    def evaluate_model(self, test_data: list) -> dict[str, float]:
         """
         Model performansını değerlendir.
 

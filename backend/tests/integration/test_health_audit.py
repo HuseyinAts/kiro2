@@ -83,10 +83,9 @@ class HealthAuditReport:
         score = self.calculate_health_score()
         if score >= 90:
             return "🟢"
-        elif score >= 80:
+        if score >= 80:
             return "🟡"
-        else:
-            return "🔴"
+        return "🔴"
 
     def to_dict(self) -> dict:
         """Raporu dictionary'e çevir"""
@@ -299,7 +298,7 @@ class TestAPIHealth:
                 category="API Health (REQ-26)",
                 test_name="/health endpoint",
                 status="CRITICAL",
-                message=f"Health endpoint erişilemez: {str(e)}",
+                message=f"Health endpoint erişilemez: {e!s}",
             )
 
     @pytest.mark.asyncio
@@ -350,7 +349,7 @@ class TestAPIHealth:
                 category="Performance (REQ-7)",
                 test_name="API p95 Response Time",
                 status="CRITICAL",
-                message=f"Yanıt süresi testi başarısız: {str(e)}",
+                message=f"Yanıt süresi testi başarısız: {e!s}",
             )
 
 
@@ -381,7 +380,7 @@ class TestAIAgents:
                 category="AI Agents (REQ-27)",
                 test_name="OSYMExamEngine Import",
                 status="CRITICAL",
-                message=f"ÖSYM Exam Engine yüklenemedi: {str(e)}",
+                message=f"ÖSYM Exam Engine yüklenemedi: {e!s}",
             )
 
     @pytest.mark.asyncio
@@ -418,7 +417,7 @@ class TestAIAgents:
                 category="AI Agents (REQ-27)",
                 test_name="Exam Engine Functionality",
                 status="FAIL",
-                message=f"Exam Engine testi başarısız: {str(e)}",
+                message=f"Exam Engine testi başarısız: {e!s}",
             )
 
 
@@ -467,7 +466,7 @@ class TestExternalServices:
                 category="External Services (REQ-28)",
                 test_name="YouTube API Connection",
                 status="CRITICAL",
-                message=f"YouTube API bağlantı hatası: {str(e)}",
+                message=f"YouTube API bağlantı hatası: {e!s}",
             )
 
 
@@ -496,7 +495,7 @@ class TestDatabase:
                 category="Database (REQ-29)",
                 test_name="PostgreSQL Connection",
                 status="CRITICAL",
-                message=f"PostgreSQL bağlantı hatası: {str(e)}",
+                message=f"PostgreSQL bağlantı hatası: {e!s}",
             )
 
 
@@ -534,7 +533,7 @@ class TestSecurity:
                 category="Security (REQ-31)",
                 test_name="Rate Limiting",
                 status="FAIL",
-                message=f"Rate limiting testi başarısız: {str(e)}",
+                message=f"Rate limiting testi başarısız: {e!s}",
             )
 
 

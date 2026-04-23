@@ -13,18 +13,15 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import math
-from datetime import datetime, timezone
-from typing import List, Tuple
 
 import numpy as np
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.irt_calibrator import (
+    MIN_RESPONSES_CTT,
     CalibrationBatch,
     CalibrationResult,
-    MIN_RESPONSES_CTT,
     calibrate_batch,
 )
 
@@ -240,7 +237,7 @@ async def run_calibration_pipeline(
             old_params_map[qid] = {"a": float(row.a), "b": float(row.b), "c": float(row.c)}
 
     # Yanıt matrislerini çek
-    items: List[Tuple[str, np.ndarray]] = []
+    items: list[tuple[str, np.ndarray]] = []
     for qid in question_ids:
         resp_vec = await _fetch_response_matrix(db, qid)
         items.append((qid, resp_vec))

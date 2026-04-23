@@ -6,12 +6,12 @@ Requirements: REQ-48.21-48.24
 """
 
 import logging
-import numpy as np
-from typing import List, Tuple, Optional, Dict
 from dataclasses import dataclass
+
+import numpy as np
 import torch
-from transformers import AutoTokenizer, AutoModel
 from sklearn.metrics.pairwise import cosine_similarity
+from transformers import AutoModel, AutoTokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +43,8 @@ class BERTurkEmbeddingService:
     def __init__(
         self,
         model_name: str = "dbmdz/bert-base-turkish-cased",
-        device: Optional[str] = None,
-        cache_dir: Optional[str] = None,
+        device: str | None = None,
+        cache_dir: str | None = None,
     ):
         """
         Initialize BERTurk Embedding Service
@@ -75,7 +75,7 @@ class BERTurkEmbeddingService:
         self.model.eval()  # Evaluation mode
 
         # Embedding cache
-        self.embedding_cache: Dict[str, np.ndarray] = {}
+        self.embedding_cache: dict[str, np.ndarray] = {}
 
         logger.info(f"BERTurk model loaded successfully: {model_name}")
 
@@ -166,8 +166,8 @@ class BERTurkEmbeddingService:
         return result
 
     def generate_batch_embeddings(
-        self, texts: List[str], batch_size: int = 32, pooling_strategy: str = "mean"
-    ) -> List[EmbeddingResult]:
+        self, texts: list[str], batch_size: int = 32, pooling_strategy: str = "mean"
+    ) -> list[EmbeddingResult]:
         """
         Batch embedding oluştur
 
@@ -267,8 +267,8 @@ class BERTurkEmbeddingService:
         return similarity
 
     def calculate_batch_similarities(
-        self, query_text: str, candidate_texts: List[str], top_k: Optional[int] = None
-    ) -> List[Tuple[str, float]]:
+        self, query_text: str, candidate_texts: list[str], top_k: int | None = None
+    ) -> list[tuple[str, float]]:
         """
         Bir query text ile birden fazla candidate text arasında similarity hesapla
 
@@ -307,8 +307,8 @@ class BERTurkEmbeddingService:
         return similarities
 
     def find_most_similar(
-        self, query_text: str, candidate_texts: List[str], threshold: float = 0.7
-    ) -> List[Tuple[str, float]]:
+        self, query_text: str, candidate_texts: list[str], threshold: float = 0.7
+    ) -> list[tuple[str, float]]:
         """
         Threshold üzerinde similarity olan textleri bul
 
@@ -328,8 +328,8 @@ class BERTurkEmbeddingService:
         return filtered
 
     def cluster_texts(
-        self, texts: List[str], n_clusters: int = 5
-    ) -> Dict[int, List[str]]:
+        self, texts: list[str], n_clusters: int = 5
+    ) -> dict[int, list[str]]:
         """
         Textleri semantic similarity'ye göre cluster'la
 
@@ -351,7 +351,7 @@ class BERTurkEmbeddingService:
         cluster_labels = kmeans.fit_predict(embedding_matrix)
 
         # Cluster'ları organize et
-        clusters: Dict[int, List[str]] = {i: [] for i in range(n_clusters)}
+        clusters: dict[int, list[str]] = {i: [] for i in range(n_clusters)}
         for text, label in zip(texts, cluster_labels):
             clusters[int(label)].append(text)
 
@@ -373,7 +373,7 @@ class BERTurkEmbeddingService:
         logger.info("Embedding cache cleared")
 
     def save_embeddings(
-        self, embeddings: List[EmbeddingResult], output_file: str
+        self, embeddings: list[EmbeddingResult], output_file: str
     ) -> None:
         """
         Embeddings'leri dosyaya kaydet
@@ -401,7 +401,7 @@ class BERTurkEmbeddingService:
 
         logger.info(f"Saved {len(embeddings)} embeddings to {output_file}")
 
-    def load_embeddings(self, input_file: str) -> List[EmbeddingResult]:
+    def load_embeddings(self, input_file: str) -> list[EmbeddingResult]:
         """
         Embeddings'leri dosyadan yükle
 
@@ -413,7 +413,7 @@ class BERTurkEmbeddingService:
         """
         import json
 
-        with open(input_file, "r", encoding="utf-8") as f:
+        with open(input_file, encoding="utf-8") as f:
             data = json.load(f)
 
         embeddings = []

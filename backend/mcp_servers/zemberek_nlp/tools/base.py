@@ -6,15 +6,15 @@ Supports both JPype (direct Java bridge) and HTTP backend modes.
 JPype is tried first if available, with automatic HTTP fallback.
 """
 
-import time
 import logging
+import time
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import httpx
 
-from ..config import get_config, ZemberekConfig
 from ..cache.redis_cache import ZemberekCache
+from ..config import ZemberekConfig, get_config
 
 if TYPE_CHECKING:
     from ..bridge import ZemberekJPypeBridge
@@ -36,9 +36,9 @@ class BaseToolHandler(ABC):
 
     def __init__(
         self,
-        http_client: Optional[httpx.AsyncClient] = None,
-        cache: Optional[ZemberekCache] = None,
-        config: Optional[ZemberekConfig] = None,
+        http_client: httpx.AsyncClient | None = None,
+        cache: ZemberekCache | None = None,
+        config: ZemberekConfig | None = None,
         bridge: Optional["ZemberekJPypeBridge"] = None,
     ):
         """
@@ -76,7 +76,7 @@ class BaseToolHandler(ABC):
             and bridge.is_initialized
         )
 
-    async def execute(self, **kwargs) -> Dict[str, Any]:
+    async def execute(self, **kwargs) -> dict[str, Any]:
         """
         Execute tool with caching.
 
@@ -121,7 +121,7 @@ class BaseToolHandler(ABC):
 
         return result
 
-    async def _execute_with_fallback(self, **kwargs) -> Dict[str, Any]:
+    async def _execute_with_fallback(self, **kwargs) -> dict[str, Any]:
         """
         Execute with JPype->HTTP fallback pattern.
 
@@ -154,7 +154,7 @@ class BaseToolHandler(ABC):
             logger.error(f"[{self.tool_name}] Request error: {e}")
             raise
 
-    async def _call_jpype(self, **kwargs) -> Dict[str, Any]:
+    async def _call_jpype(self, **kwargs) -> dict[str, Any]:
         """
         Call Zemberek via JPype bridge.
 
@@ -172,7 +172,7 @@ class BaseToolHandler(ABC):
         )
 
     @abstractmethod
-    async def _call_backend(self, **kwargs) -> Dict[str, Any]:
+    async def _call_backend(self, **kwargs) -> dict[str, Any]:
         """
         Call HTTP backend to perform operation.
 
@@ -184,9 +184,8 @@ class BaseToolHandler(ABC):
         Returns:
             Tool result dictionary (without cached/latency_ms/backend fields)
         """
-        pass
 
-    def _get_cache_input(self, **kwargs) -> Optional[str]:
+    def _get_cache_input(self, **kwargs) -> str | None:
         """
         Get cache input string from arguments
 
@@ -202,8 +201,8 @@ class BaseToolHandler(ABC):
         return kwargs.get("text")
 
     async def _post(
-        self, endpoint: str, json_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, endpoint: str, json_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Make POST request to HTTP backend
 
@@ -221,7 +220,7 @@ class BaseToolHandler(ABC):
         response.raise_for_status()
         return response.json()
 
-    async def _get(self, endpoint: str) -> Dict[str, Any]:
+    async def _get(self, endpoint: str) -> dict[str, Any]:
         """
         Make GET request to HTTP backend
 

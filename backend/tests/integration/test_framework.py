@@ -10,15 +10,16 @@ import asyncio
 import shutil
 import tempfile
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
 # Import centralized JWT helper from conftest (DRY)
 try:
-    from tests.conftest import _generate_test_jwt, TEST_JWT_SECRET, TEST_JWT_ALGORITHM
+    from tests.conftest import TEST_JWT_ALGORITHM, TEST_JWT_SECRET, _generate_test_jwt
 except ImportError:
     # Fallback: conftest may resolve to wrong module with importlib mode
     import jwt as _jwt
@@ -30,6 +31,7 @@ except ImportError:
         return _jwt.encode(payload, TEST_JWT_SECRET, algorithm=TEST_JWT_ALGORITHM)
 
 import pytest_asyncio
+
 from core.application_metrics import get_metrics_collector
 from core.auth_middleware import AuthUser, UserRole
 from core.message_queue_system import get_message_queue
@@ -95,20 +97,20 @@ class TestContext:
     priority: str
     description: str
     turkish_description: str
-    setup_data: Dict[str, Any] = field(default_factory=dict)
-    cleanup_tasks: List[Callable] = field(default_factory=list)
-    metrics: Dict[str, Any] = field(default_factory=dict)
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    setup_data: dict[str, Any] = field(default_factory=dict)
+    cleanup_tasks: list[Callable] = field(default_factory=list)
+    metrics: dict[str, Any] = field(default_factory=dict)
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
     def __post_init__(self):
         if not self.test_id:
             self.test_id = str(uuid.uuid4())
-        self.start_time = datetime.now(timezone.utc)
+        self.start_time = datetime.now(UTC)
 
     def mark_completed(self):
         """Mark test as completed"""
-        self.end_time = datetime.now(timezone.utc)
+        self.end_time = datetime.now(UTC)
 
     def get_duration_ms(self) -> float:
         """Get test duration in milliseconds"""
@@ -164,7 +166,7 @@ class TestDataGenerator:
         exam_type: TurkishExamType = TurkishExamType.TYT,
         difficulty: str = "orta",
         question_count: int = 120,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create test exam data"""
         subjects = {
             TurkishExamType.TYT: ["turkce", "matematik", "fen", "sosyal"],
@@ -209,8 +211,8 @@ class TestDataGenerator:
         method: str = "GET",
         path: str = "/test",
         user: AuthUser = None,
-        body: Dict[str, Any] = None,
-    ) -> Dict[str, Any]:
+        body: dict[str, Any] = None,
+    ) -> dict[str, Any]:
         """Create test API request"""
         headers = {
             "Content-Type": "application/json",
@@ -231,7 +233,7 @@ class TestDataGenerator:
         }
 
     @staticmethod
-    def create_turkish_content_data() -> Dict[str, Any]:
+    def create_turkish_content_data() -> dict[str, Any]:
         """Create Turkish educational content test data"""
         return {
             "subjects": {
@@ -412,7 +414,7 @@ class TestRunner:
 
     async def run_test(
         self, test_func: Callable, context: TestContext
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run individual test with context"""
         try:
             logger.info(
@@ -471,7 +473,7 @@ class TestRunner:
             logger.error(f"Test failed: {context.description}: {e}")
             raise
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate test execution report"""
         if not self.test_results:
             return {"message": "No tests executed"}
@@ -521,7 +523,7 @@ class TestRunner:
             },
             "category_breakdown": category_stats,
             "failed_tests": [r for r in self.test_results if r["status"] == "failed"],
-            "execution_timestamp": datetime.now(timezone.utc).isoformat(),
+            "execution_timestamp": datetime.now(UTC).isoformat(),
             "environment": "test",
         }
 
@@ -705,14 +707,14 @@ async def create_test_context(
 
 
 def assert_turkish_response(
-    response_data: Dict[str, Any], check_localization: bool = True
+    response_data: dict[str, Any], check_localization: bool = True
 ):
     """Assert Turkish-specific response data"""
     assert response_data is not None, "Response data should not be None"
 
     if check_localization:
         # Check for Turkish translations
-        turkish_fields = [key for key in response_data.keys() if key.endswith("_tr")]
+        turkish_fields = [key for key in response_data if key.endswith("_tr")]
         assert len(turkish_fields) > 0, "Response should contain Turkish translations"
 
         # Check for Turkish headers if present
@@ -724,7 +726,7 @@ def assert_turkish_response(
                 ), "Content-Language should include Turkish"
 
 
-def assert_exam_data_valid(exam_data: Dict[str, Any], exam_type: TurkishExamType):
+def assert_exam_data_valid(exam_data: dict[str, Any], exam_type: TurkishExamType):
     """Assert exam data validity for Turkish exams"""
     assert "exam_type" in exam_data, "Exam data should contain exam_type"
     assert (
@@ -762,7 +764,7 @@ async def wait_for_async_completion(coro, timeout: float = 5.0):
     try:
         result = await asyncio.wait_for(coro, timeout=timeout)
         return result
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise AssertionError(f"Async operation timed out after {timeout} seconds")
 
 
@@ -811,7 +813,7 @@ class MockFactory:
 
 
 # Test configuration helper
-def get_test_config() -> Dict[str, Any]:
+def get_test_config() -> dict[str, Any]:
     """Get test configuration"""
     return TEST_CONFIG.copy()
 

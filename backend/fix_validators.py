@@ -1,6 +1,6 @@
 ﻿import re
 
-with open('core/input_validation.py', 'r', encoding='utf-8') as f:
+with open('core/input_validation.py', encoding='utf-8') as f:
     content = f.read()
 
 # sanitize_url metodu ekle (validate_url'dan once)

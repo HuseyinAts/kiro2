@@ -4,23 +4,26 @@ Mesaj Kuyruğu Sistemi için kapsamlı testler
 """
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("aioredis module removed from core.message_queue_system - fixture setup fails before pytestmark evaluated", allow_module_level=True)
 
 import asyncio
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import AsyncMock, Mock, patch
+
 from core.message_queue_system import (
-    QueueMessage,
     BackgroundJob,
-    RedisMessageQueue,
+    JobStatus,
+    QueueMessage,
     QueuePriority,
     QueueType,
-    JobStatus,
+    RedisMessageQueue,
 )
 
 # Mock imports if they fail
 try:
     import redis.asyncio as redis
+
     from core.application_metrics import MetricType, get_metrics_collector
     from core.structured_logging import LogCategory, get_logger
     from core.unified_config import get_unified_config

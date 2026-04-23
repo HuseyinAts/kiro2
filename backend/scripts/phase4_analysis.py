@@ -7,7 +7,6 @@ Target: 60% overall coverage focusing on integration scenarios and performance
 import json
 import sys
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass
@@ -16,8 +15,8 @@ class Phase4Target:
 
     phase: str
     target_percentage: float
-    focus_areas: List[str]
-    test_types: List[str]
+    focus_areas: list[str]
+    test_types: list[str]
     estimated_effort: str
     priority_level: str
 
@@ -56,7 +55,7 @@ class Phase4AnalysisStrategy:
 
         try:
             # Phase 3 coverage oku
-            with open("coverage_phase3_complete.json", "r") as f:
+            with open("coverage_phase3_complete.json") as f:
                 coverage_data = json.load(f)
         except FileNotFoundError:
             print("Phase 3 coverage bulunamadi. Onceki phase'leri tamamlayin.")
@@ -348,22 +347,21 @@ class Phase4AnalysisStrategy:
 
         if "database" in path_lower or "db" in path_lower:
             return "Database Integration"
-        elif "elasticsearch" in path_lower:
+        if "elasticsearch" in path_lower:
             return "Search Integration"
-        elif "websocket" in path_lower:
+        if "websocket" in path_lower:
             return "Real-Time Communication"
-        elif "api" in path_lower:
+        if "api" in path_lower:
             return "API Integration"
-        elif "redis" in path_lower:
+        if "redis" in path_lower:
             return "Caching Integration"
-        elif "service" in path_lower:
+        if "service" in path_lower:
             return "Service Integration"
-        elif "client" in path_lower:
+        if "client" in path_lower:
             return "Client Integration"
-        elif "webhook" in path_lower:
+        if "webhook" in path_lower:
             return "Webhook Integration"
-        else:
-            return "Generic Integration"
+        return "Generic Integration"
 
 
 def main():

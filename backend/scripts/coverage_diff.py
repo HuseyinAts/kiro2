@@ -4,8 +4,8 @@ Coverage Diff Quality Gate
 Fails if coverage decreases in PR
 """
 import json
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 

@@ -71,7 +71,6 @@ from core.response_models import (
     validation_error_response,
 )
 
-
 # ==================== EXCEPTIONS TESTS (60+ tests) ====================
 
 

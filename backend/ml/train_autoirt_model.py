@@ -2,12 +2,12 @@
 AutoIRT Model Training
 Train AutoML models to predict IRT parameters (discrimination and difficulty) from question features
 """
-import pandas as pd
-import numpy as np
-from typing import Dict
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 # Check if autogluon is available
 try:
@@ -20,9 +20,9 @@ except ImportError:
 
 # Fallback to sklearn if autogluon not available
 try:
-    from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-    from sklearn.model_selection import train_test_split
+    from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
     from sklearn.metrics import mean_squared_error, r2_score
+    from sklearn.model_selection import train_test_split
 
     SKLEARN_AVAILABLE = True
 except ImportError:
@@ -41,8 +41,8 @@ class AutoIRTTrainer:
         self.predictor_b = None  # Difficulty (b)
 
     def extract_question_features(
-        self, question_text: str, question_data: Dict
-    ) -> Dict:
+        self, question_text: str, question_data: dict
+    ) -> dict:
         """
         Extract features from question for IRT prediction
 
@@ -193,7 +193,7 @@ class AutoIRTTrainer:
 
         return df
 
-    def train_with_autogluon(self, df: pd.DataFrame, time_limit: int = 600) -> Dict:
+    def train_with_autogluon(self, df: pd.DataFrame, time_limit: int = 600) -> dict:
         """
         Train models using AutoGluon (if available)
 
@@ -253,7 +253,7 @@ class AutoIRTTrainer:
 
         return results
 
-    def train_with_sklearn(self, df: pd.DataFrame) -> Dict:
+    def train_with_sklearn(self, df: pd.DataFrame) -> dict:
         """
         Train models using sklearn RandomForest + GradientBoosting ensemble (fallback)
 
@@ -341,7 +341,7 @@ class AutoIRTTrainer:
 
         return results
 
-    def train_models(self, use_autogluon: bool = False, time_limit: int = 600) -> Dict:
+    def train_models(self, use_autogluon: bool = False, time_limit: int = 600) -> dict:
         """
         Train IRT prediction models
 

@@ -19,17 +19,17 @@ Author: KIRO2 Team
 Date: 2026-01-17
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Tuple
-from collections import defaultdict
 import logging
+from collections import defaultdict
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 # Scientific computing
 try:
     import numpy as np
+    from scipy import stats
     from sklearn.cluster import KMeans
     from sklearn.preprocessing import StandardScaler
-    from scipy import stats
     SKLEARN_AVAILABLE = True
 except ImportError:
     SKLEARN_AVAILABLE = False
@@ -37,17 +37,17 @@ except ImportError:
     KMeans = None  # type: ignore
 
 # Database
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_
+from backend.hooks.claude_md_improvement.models import PatternInfo
 
 # Models
 from backend.models.claude_md_improvement_models import (
+    AuditLog,
     FeedbackRecord,
     PatternDetection,
     RuleEffectiveness,
-    AuditLog,
 )
-from backend.hooks.claude_md_improvement.models import PatternInfo
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ class PatternDetectionService:
         self,
         window_days: int = 30,
         min_occurrences: int = 3,
-    ) -> List[PatternInfo]:
+    ) -> list[PatternInfo]:
         """
         Detect error patterns using clustering.
 
@@ -94,7 +94,7 @@ class PatternDetectionService:
             List of detected error patterns
         """
         # Get failed feedback records
-        cutoff = datetime.now(timezone.utc) - timedelta(days=window_days)
+        cutoff = datetime.now(UTC) - timedelta(days=window_days)
 
         result = await self.db.execute(
             select(FeedbackRecord)
@@ -143,7 +143,7 @@ class PatternDetectionService:
         self,
         window_days: int = 30,
         min_occurrences: int = 5,
-    ) -> List[PatternInfo]:
+    ) -> list[PatternInfo]:
         """
         Identify success patterns (high-performing rule combinations).
 
@@ -154,7 +154,7 @@ class PatternDetectionService:
         Returns:
             List of success patterns
         """
-        cutoff = datetime.now(timezone.utc) - timedelta(days=window_days)
+        cutoff = datetime.now(UTC) - timedelta(days=window_days)
 
         # Get successful feedback with high ratings
         result = await self.db.execute(
@@ -172,7 +172,7 @@ class PatternDetectionService:
             return []
 
         # Group by rule combinations
-        rule_combinations: Dict[str, List[FeedbackRecord]] = defaultdict(list)
+        rule_combinations: dict[str, list[FeedbackRecord]] = defaultdict(list)
 
         for record in records:
             # Use rule_id or extract from context
@@ -210,7 +210,7 @@ class PatternDetectionService:
     async def detect_anti_patterns(
         self,
         window_days: int = 30,
-    ) -> List[PatternInfo]:
+    ) -> list[PatternInfo]:
         """
         Detect anti-patterns (problematic rule sequences).
 
@@ -222,7 +222,7 @@ class PatternDetectionService:
         Returns:
             List of detected anti-patterns
         """
-        cutoff = datetime.now(timezone.utc) - timedelta(days=window_days)
+        cutoff = datetime.now(UTC) - timedelta(days=window_days)
 
         # Get rule effectiveness data
         result = await self.db.execute(
@@ -336,16 +336,15 @@ class PatternDetectionService:
         # Using rule of thumb: n >= 30 for ~95% confidence
         if total >= 30:
             return 0.95
-        elif total >= 10:
+        if total >= 10:
             return 0.80 + (total - 10) * 0.0075  # 0.80 to 0.95
-        else:
-            return 0.50 + total * 0.03  # 0.50 to 0.80
+        return 0.50 + total * 0.03  # 0.50 to 0.80
 
     async def test_pattern_significance(
         self,
         pattern: PatternInfo,
         alpha: float = 0.05,
-    ) -> Tuple[bool, float]:
+    ) -> tuple[bool, float]:
         """
         Test if a pattern is statistically significant.
 
@@ -369,14 +368,14 @@ class PatternDetectionService:
     async def generate_heatmap_data(
         self,
         window_days: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate data for pattern heatmap visualization.
 
         Returns:
             Dictionary with heatmap data structure
         """
-        cutoff = datetime.now(timezone.utc) - timedelta(days=window_days)
+        cutoff = datetime.now(UTC) - timedelta(days=window_days)
 
         # Get rule x outcome matrix
         result = await self.db.execute(
@@ -398,7 +397,7 @@ class PatternDetectionService:
         # Build heatmap structure
         rules = set()
         outcomes = ["success", "failure", "partial", "timeout"]
-        matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        matrix: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
 
         for row in data:
             rules.add(row.rule_id)
@@ -412,13 +411,13 @@ class PatternDetectionService:
                 rule: [matrix[rule][outcome] for outcome in outcomes]
                 for rule in rules
             },
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
         }
 
     async def generate_graph_data(
         self,
         window_days: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate data for pattern relationship graph.
 
@@ -459,7 +458,7 @@ class PatternDetectionService:
             "type": "graph",
             "nodes": nodes,
             "edges": edges,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
         }
 
     # =========================================================================
@@ -469,7 +468,7 @@ class PatternDetectionService:
     async def get_recommendations(
         self,
         limit: int = 10,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get actionable recommendations based on detected patterns.
 
@@ -516,7 +515,7 @@ class PatternDetectionService:
     async def run_full_analysis(
         self,
         window_days: int = 30,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Run comprehensive pattern analysis.
 
@@ -550,7 +549,7 @@ class PatternDetectionService:
         )
 
         return {
-            "analyzed_at": datetime.now(timezone.utc).isoformat(),
+            "analyzed_at": datetime.now(UTC).isoformat(),
             "window_days": window_days,
             "patterns": {
                 "error": [p.model_dump() for p in error_patterns],
@@ -571,8 +570,8 @@ class PatternDetectionService:
 
     def _extract_features(
         self,
-        records: List[FeedbackRecord],
-    ) -> Optional[np.ndarray]:
+        records: list[FeedbackRecord],
+    ) -> np.ndarray | None:
         """Extract numerical features for clustering."""
         if not SKLEARN_AVAILABLE:
             return None
@@ -593,9 +592,9 @@ class PatternDetectionService:
     def _cluster_patterns(
         self,
         features: np.ndarray,
-        records: List[FeedbackRecord],
+        records: list[FeedbackRecord],
         pattern_type: str,
-    ) -> List[PatternInfo]:
+    ) -> list[PatternInfo]:
         """Cluster features using K-means."""
         if not SKLEARN_AVAILABLE:
             return []
@@ -613,7 +612,7 @@ class PatternDetectionService:
         labels = kmeans.fit_predict(features_scaled)
 
         # Group records by cluster
-        clusters: Dict[int, List[FeedbackRecord]] = defaultdict(list)
+        clusters: dict[int, list[FeedbackRecord]] = defaultdict(list)
         for idx, record in enumerate(records):
             clusters[labels[idx]].append(record)
 
@@ -649,11 +648,11 @@ class PatternDetectionService:
 
     async def _simple_error_grouping(
         self,
-        records: List[FeedbackRecord],
+        records: list[FeedbackRecord],
         min_occurrences: int,
-    ) -> List[PatternInfo]:
+    ) -> list[PatternInfo]:
         """Simple grouping fallback when sklearn is not available."""
-        groups: Dict[str, List[FeedbackRecord]] = defaultdict(list)
+        groups: dict[str, list[FeedbackRecord]] = defaultdict(list)
 
         for record in records:
             key = record.rule_id or "unknown"
@@ -678,7 +677,7 @@ class PatternDetectionService:
 
     def _generate_cluster_recommendation(
         self,
-        records: List[FeedbackRecord],
+        records: list[FeedbackRecord],
         pattern_type: str,
     ) -> str:
         """Generate recommendation based on cluster characteristics."""
@@ -743,7 +742,7 @@ class PatternDetectionService:
                 # Update existing pattern
                 existing.occurrence_count = pattern.occurrence_count
                 existing.confidence = pattern.confidence
-                existing.last_seen = datetime.now(timezone.utc)
+                existing.last_seen = datetime.now(UTC)
                 existing.related_rules = pattern.related_rules
                 existing.recommendation = pattern.recommendation
             else:
@@ -768,8 +767,8 @@ class PatternDetectionService:
         self,
         action: str,
         entity_type: str,
-        entity_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Log audit entry."""
         try:

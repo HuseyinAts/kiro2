@@ -20,7 +20,8 @@ Usage:
 """
 
 import io
-from typing import Dict, Literal, Any
+from typing import Any, Literal
+
 import matplotlib
 
 matplotlib.use("Agg")  # Non-interactive backend
@@ -64,14 +65,14 @@ class GraphGenerator:
     def generate_graph(
         self,
         graph_type: Literal["line", "bar", "pie", "scatter", "histogram"],
-        data: Dict[str, Any],
+        data: dict[str, Any],
         title: str,
         x_label: str = "",
         y_label: str = "",
         style: str = "osym",
         width: int = 8,
         height: int = 6,
-    ) -> Dict:
+    ) -> dict:
         """
         Generate graph and return visual_content structure
 
@@ -142,7 +143,7 @@ class GraphGenerator:
 
     def _generate_line_graph(
         self,
-        data: Dict,
+        data: dict,
         title: str,
         x_label: str,
         y_label: str,
@@ -165,7 +166,7 @@ class GraphGenerator:
         fig, ax = plt.subplots(figsize=(width, height))
 
         # Single line or multiple lines
-        if "lines" in data and data["lines"]:
+        if data.get("lines"):
             # Multiple lines
             for line_data in data["lines"]:
                 ax.plot(
@@ -200,7 +201,7 @@ class GraphGenerator:
 
     def _generate_bar_chart(
         self,
-        data: Dict,
+        data: dict,
         title: str,
         x_label: str,
         y_label: str,
@@ -272,7 +273,7 @@ class GraphGenerator:
         return self._fig_to_svg(fig)
 
     def _generate_pie_chart(
-        self, data: Dict, title: str, width: int, height: int
+        self, data: dict, title: str, width: int, height: int
     ) -> str:
         """
         Generate pie chart (Pasta Grafigi)
@@ -318,7 +319,7 @@ class GraphGenerator:
 
     def _generate_scatter_plot(
         self,
-        data: Dict,
+        data: dict,
         title: str,
         x_label: str,
         y_label: str,
@@ -361,7 +362,7 @@ class GraphGenerator:
 
     def _generate_histogram(
         self,
-        data: Dict,
+        data: dict,
         title: str,
         x_label: str,
         y_label: str,
@@ -409,7 +410,7 @@ class GraphGenerator:
         svg_buffer.close()
         return svg_content
 
-    def _generate_description(self, graph_type: str, data: Dict, title: str) -> str:
+    def _generate_description(self, graph_type: str, data: dict, title: str) -> str:
         """Generate accessible description of the graph"""
         descriptions = {
             "line": f"Cizgi grafigi: {title}. Zamanla degisen bir trendi gosterir.",

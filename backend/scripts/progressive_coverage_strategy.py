@@ -9,7 +9,6 @@ import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List
 
 
 @dataclass
@@ -18,8 +17,8 @@ class CoverageTarget:
 
     phase: str
     target_percentage: float
-    priority_areas: List[str]
-    test_types: List[str]
+    priority_areas: list[str]
+    test_types: list[str]
     estimated_effort: str
 
 
@@ -69,10 +68,10 @@ class ProgressiveCoverageStrategy:
             ),
         ]
 
-    def analyze_current_state(self) -> Dict:
+    def analyze_current_state(self) -> dict:
         """Mevcut coverage durumunu analiz et"""
         try:
-            with open("coverage_final.json", "r") as f:
+            with open("coverage_final.json") as f:
                 coverage_data = json.load(f)
 
             current_coverage = coverage_data["totals"]["percent_covered"]
@@ -118,8 +117,8 @@ class ProgressiveCoverageStrategy:
         return self.phases[-1]  # Son faz
 
     def generate_phase_plan(
-        self, current_phase: CoverageTarget, analysis: Dict
-    ) -> Dict:
+        self, current_phase: CoverageTarget, analysis: dict
+    ) -> dict:
         """Mevcut faz için detaylı plan oluştur"""
         plan = {
             "phase": current_phase.phase,
@@ -179,7 +178,7 @@ class ProgressiveCoverageStrategy:
 
         return plan
 
-    def estimate_effort(self, plan: Dict) -> Dict:
+    def estimate_effort(self, plan: dict) -> dict:
         """Test effort tahminini hesapla"""
         effort = {
             "total_lines_to_cover": 0,
@@ -200,7 +199,7 @@ class ProgressiveCoverageStrategy:
 
         return effort
 
-    def create_implementation_guide(self, plan: Dict) -> str:
+    def create_implementation_guide(self, plan: dict) -> str:
         """Implementasyon rehberi oluştur"""
         guide = f"""
 # {plan['phase']} - Implementation Guide

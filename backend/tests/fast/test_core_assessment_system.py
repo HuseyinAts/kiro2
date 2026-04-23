@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -7,14 +8,16 @@ Tests for Assessment System
 Zero coverage -> Target: 70%+
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
+
 from core.assessment_system import (
     AssessmentSystem,
     AssessmentType,
-    QuestionType,
     DifficultyLevel,
     Question,
+    QuestionType,
 )
 
 

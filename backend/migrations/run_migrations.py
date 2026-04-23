@@ -11,13 +11,13 @@ Environment Variables:
     POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
 """
 
+import asyncio
+import codecs
 import os
 import sys
 from pathlib import Path
-import asyncio
+
 import asyncpg
-from typing import List, Tuple
-import codecs
 
 # Force UTF-8 encoding for Windows
 if sys.platform == 'win32':
@@ -67,7 +67,7 @@ async def get_applied_migrations(conn: asyncpg.Connection) -> set:
     rows = await conn.fetch('SELECT version FROM schema_migrations')
     return {row['version'] for row in rows}
 
-async def get_migration_files() -> List[Tuple[str, Path]]:
+async def get_migration_files() -> list[tuple[str, Path]]:
     """Get list of migration files to apply"""
     migrations_dir = Path(__file__).parent
     migration_files = sorted(migrations_dir.glob('*.sql'))
@@ -84,7 +84,7 @@ async def apply_migration(conn: asyncpg.Connection, version: str, filepath: Path
     print(f"{BLUE}-->{RESET} Applying migration: {version}")
 
     # Read SQL file with explicit UTF-8 encoding
-    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+    with open(filepath, encoding='utf-8', errors='replace') as f:
         sql_content = f.read()
 
     # Execute migration in transaction

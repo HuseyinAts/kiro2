@@ -14,9 +14,10 @@ Revises: 20251117_044637
 Create Date: 2025-11-22
 
 """
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'add_critical_service_tables'

@@ -14,7 +14,6 @@ Date: 2025-10-27
 """
 
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, ConfigDict
@@ -24,7 +23,7 @@ from core.audit_logger import (
     AuditAction,
     get_audit_logger,
 )
-from core.dependencies import get_db, get_current_admin_user
+from core.dependencies import get_current_admin_user, get_db
 from core.structured_logger import get_logger
 from models.database import AuditLog, User
 
@@ -37,14 +36,14 @@ class AuditLogResponse(BaseModel):
     """Audit log response model"""
 
     id: str
-    user_id: Optional[str]
+    user_id: str | None
     action: str
     resource_type: str
-    resource_id: Optional[str]
-    old_values: Optional[dict]
-    new_values: Optional[dict]
-    ip_address: Optional[str]
-    user_agent: Optional[str]
+    resource_id: str | None
+    old_values: dict | None
+    new_values: dict | None
+    ip_address: str | None
+    user_agent: str | None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
@@ -53,13 +52,13 @@ class AuditLogResponse(BaseModel):
 class AuditLogSearchRequest(BaseModel):
     """Audit log search request"""
 
-    user_id: Optional[str] = None
-    action: Optional[str] = None
-    resource_type: Optional[str] = None
-    resource_id: Optional[str] = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    ip_address: Optional[str] = None
+    user_id: str | None = None
+    action: str | None = None
+    resource_type: str | None = None
+    resource_id: str | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    ip_address: str | None = None
     limit: int = 100
     offset: int = 0
 
@@ -95,15 +94,15 @@ async def require_admin(
     summary="Get Audit Logs (Admin Only)",
 )
 async def get_audit_logs(
-    user_id: Optional[str] = Query(None, description="Filter by user ID"),
-    action: Optional[str] = Query(None, description="Filter by action"),
-    resource_type: Optional[str] = Query(None, description="Filter by resource type"),
-    resource_id: Optional[str] = Query(None, description="Filter by resource ID"),
+    user_id: str | None = Query(None, description="Filter by user ID"),
+    action: str | None = Query(None, description="Filter by action"),
+    resource_type: str | None = Query(None, description="Filter by resource type"),
+    resource_id: str | None = Query(None, description="Filter by resource ID"),
     current_admin: dict = Depends(get_current_admin_user),
-    start_date: Optional[datetime] = Query(
+    start_date: datetime | None = Query(
         None, description="Filter by start date (ISO format)"
     ),
-    end_date: Optional[datetime] = Query(
+    end_date: datetime | None = Query(
         None, description="Filter by end date (ISO format)"
     ),
     limit: int = Query(100, ge=1, le=1000, description="Max results (1-1000)"),
@@ -321,8 +320,8 @@ async def get_user_audit_trail(
 
 @router.get("/security-events", summary="Get Security Events (Admin Only)")
 async def get_security_events(
-    severity: Optional[str] = Query(None, description="Filter by severity"),
-    start_date: Optional[datetime] = Query(None, description="Start date"),
+    severity: str | None = Query(None, description="Filter by severity"),
+    start_date: datetime | None = Query(None, description="Start date"),
     limit: int = Query(100, ge=1, le=1000, description="Max results"),
     db: AsyncSession = Depends(get_db),
     current_admin: dict = Depends(get_current_admin_user),
@@ -444,10 +443,10 @@ async def cleanup_old_audit_logs(
 
 @router.get("/stats", summary="Get Audit Statistics (Admin Only)")
 async def get_audit_statistics(
-    start_date: Optional[datetime] = Query(
+    start_date: datetime | None = Query(
         None, description="Start date for statistics"
     ),
-    end_date: Optional[datetime] = Query(None, description="End date for statistics"),
+    end_date: datetime | None = Query(None, description="End date for statistics"),
     db: AsyncSession = Depends(get_db),
     current_admin: dict = Depends(get_current_admin_user),
 ):

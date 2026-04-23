@@ -4,8 +4,8 @@ Cross-encoder based reranking for better accuracy
 """
 
 import logging
-from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class RerankResult:
     score: float
     original_score: float
     rerank_score: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class CrossEncoderReranker:
@@ -74,11 +74,11 @@ class CrossEncoderReranker:
     def rerank(
         self,
         query: str,
-        results: List[Dict[str, Any]],
-        top_k: Optional[int] = None,
+        results: list[dict[str, Any]],
+        top_k: int | None = None,
         combine_scores: bool = True,
         weight: float = 0.5,
-    ) -> List[RerankResult]:
+    ) -> list[RerankResult]:
         """
         Rerank search results using cross-encoder
 
@@ -146,8 +146,8 @@ class CrossEncoderReranker:
             return self._fallback_rerank(query, results, top_k)
 
     def _fallback_rerank(
-        self, query: str, results: List[Dict[str, Any]], top_k: Optional[int] = None
-    ) -> List[RerankResult]:
+        self, query: str, results: list[dict[str, Any]], top_k: int | None = None
+    ) -> list[RerankResult]:
         """Fallback keyword-based reranking"""
         query_terms = set(query.lower().split())
 
@@ -276,8 +276,8 @@ class TurkishOptimizedReranker:
         return relevance
 
     def rerank(
-        self, query: str, results: List[Dict[str, Any]], top_k: Optional[int] = None
-    ) -> List[RerankResult]:
+        self, query: str, results: list[dict[str, Any]], top_k: int | None = None
+    ) -> list[RerankResult]:
         """
         Rerank results using Turkish-optimized strategy
         """
@@ -331,8 +331,8 @@ class TurkishOptimizedReranker:
 
 
 # Global reranker instances
-_cross_encoder_reranker: Optional[CrossEncoderReranker] = None
-_turkish_reranker: Optional[TurkishOptimizedReranker] = None
+_cross_encoder_reranker: CrossEncoderReranker | None = None
+_turkish_reranker: TurkishOptimizedReranker | None = None
 
 
 def get_cross_encoder_reranker() -> CrossEncoderReranker:

@@ -1,8 +1,9 @@
+import logging
+from pathlib import Path
+
+import torch
 import yaml
 from ultralytics import YOLO
-from pathlib import Path
-import torch
-import logging
 
 logger = logging.getLogger(__name__)
 

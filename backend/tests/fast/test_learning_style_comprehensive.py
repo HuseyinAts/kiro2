@@ -10,9 +10,9 @@ Tests:
 - Performance analysis by learning style
 """
 
+from datetime import UTC, datetime
+
 import pytest
-from datetime import datetime, timezone
-from typing import Dict, List
 
 
 # Mock learning style models
@@ -38,7 +38,7 @@ class LearningStyleProfile:
             "naturalistic": 0.0,
         }
         self.dominant_style = None
-        self.last_updated = datetime.now(timezone.utc)
+        self.last_updated = datetime.now(UTC)
 
 
 class LearningStyleDetector:
@@ -48,7 +48,7 @@ class LearningStyleDetector:
         self.profiles = {}
 
     def analyze_behavior(
-        self, student_id: str, activities: List[Dict]
+        self, student_id: str, activities: list[dict]
     ) -> LearningStyleProfile:
         """Öğrenci davranışlarından öğrenme stilini analiz et"""
         profile = LearningStyleProfile(student_id)
@@ -81,7 +81,7 @@ class LearningStyleDetector:
         return profile
 
     def update_from_quiz_performance(
-        self, student_id: str, question_types: List[str], scores: List[float]
+        self, student_id: str, question_types: list[str], scores: list[float]
     ) -> LearningStyleProfile:
         """Quiz performansından öğrenme stilini güncelle"""
         profile = self.profiles.get(student_id, LearningStyleProfile(student_id))
@@ -103,7 +103,7 @@ class LearningStyleDetector:
                 profile.vark_scores[key] = profile.vark_scores[key] / total
 
         profile.dominant_style = max(profile.vark_scores, key=profile.vark_scores.get)
-        profile.last_updated = datetime.now(timezone.utc)
+        profile.last_updated = datetime.now(UTC)
 
         self.profiles[student_id] = profile
         return profile
@@ -116,8 +116,8 @@ class AdaptiveContentRecommender:
         self.detector = detector
 
     def recommend_content(
-        self, student_id: str, topic: str, available_content: List[Dict]
-    ) -> List[Dict]:
+        self, student_id: str, topic: str, available_content: list[dict]
+    ) -> list[dict]:
         """Öğrencinin öğrenme stiline göre içerik öner"""
         profile = self.detector.profiles.get(student_id)
 
@@ -147,7 +147,7 @@ class AdaptiveContentRecommender:
 
         return scored_content[:10]  # Top 10 öneri
 
-    def recommend_study_method(self, student_id: str) -> Dict:
+    def recommend_study_method(self, student_id: str) -> dict:
         """Öğrenme stiline göre çalışma metodu öner"""
         profile = self.detector.profiles.get(student_id)
 
@@ -339,13 +339,13 @@ class TestQuizPerformanceUpdate:
 
     def test_profile_timestamp_updated(self, detector):
         """Test profile timestamp is updated"""
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
 
         profile = detector.update_from_quiz_performance(
             "student_time", ["text_question"], [0.8]
         )
 
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
 
         assert before <= profile.last_updated <= after
 

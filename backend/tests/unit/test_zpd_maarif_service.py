@@ -7,17 +7,17 @@ Coverage Target: %65-75
 Test Count: ~25 testler
 """
 
-import pytest
 from datetime import datetime, timedelta
 
-from services.zpd_maarif_service import ZPDMaarifService
+import pytest
+
 from models.zpd_maarif import (
     KulturelBaglamProfili,
     MaarifDegerleriProfili,
     TurkZPDAraligi,
     ZPDOptimizasyonSonucu,
 )
-
+from services.zpd_maarif_service import ZPDMaarifService
 
 # ============================================
 # TEST FIXTURES
@@ -657,7 +657,6 @@ def test_zpd_maarif_test_coverage_summary():
     - Temel metodlar: %80+
     - Yardımcı metodlar: %60+
     """
-    pass
 
 
 if __name__ == "__main__":

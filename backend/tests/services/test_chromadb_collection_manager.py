@@ -3,10 +3,9 @@ Tests for ChromaDB Collection Manager
 Spec: REQ-2 Collection Management
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -85,104 +84,100 @@ class TestCollectionManager:
         """Valid metadata should pass validation"""
         with patch(
             "backend.services.chromadb_collection_manager.CHROMADB_AVAILABLE", True
-        ):
-            with patch(
-                "backend.services.chromadb_collection_manager.chromadb"
-            ) as mock_db:
-                mock_db.PersistentClient.return_value = MagicMock()
+        ), patch(
+            "backend.services.chromadb_collection_manager.chromadb"
+        ) as mock_db:
+            mock_db.PersistentClient.return_value = MagicMock()
 
-                from backend.services.chromadb_collection_manager import (
-                    ChromaDBCollectionManager,
-                    CollectionType,
-                )
+            from backend.services.chromadb_collection_manager import (
+                ChromaDBCollectionManager,
+                CollectionType,
+            )
 
-                manager = ChromaDBCollectionManager(persist_directory="/tmp/test_db")
+            manager = ChromaDBCollectionManager(persist_directory="/tmp/test_db")
 
-                is_valid, missing = manager.validate_metadata(
-                    CollectionType.QUESTIONS,
-                    {
-                        "subject": "matematik",
-                        "difficulty": 0.5,
-                        "exam_type": "TYT",
-                    },
-                )
+            is_valid, missing = manager.validate_metadata(
+                CollectionType.QUESTIONS,
+                {
+                    "subject": "matematik",
+                    "difficulty": 0.5,
+                    "exam_type": "TYT",
+                },
+            )
 
-                assert is_valid is True
-                assert missing == []
+            assert is_valid is True
+            assert missing == []
 
     def test_validate_metadata_invalid(self):
         """Invalid metadata should fail with missing fields"""
         with patch(
             "backend.services.chromadb_collection_manager.CHROMADB_AVAILABLE", True
-        ):
-            with patch(
-                "backend.services.chromadb_collection_manager.chromadb"
-            ) as mock_db:
-                mock_db.PersistentClient.return_value = MagicMock()
+        ), patch(
+            "backend.services.chromadb_collection_manager.chromadb"
+        ) as mock_db:
+            mock_db.PersistentClient.return_value = MagicMock()
 
-                from backend.services.chromadb_collection_manager import (
-                    ChromaDBCollectionManager,
-                    CollectionType,
-                )
+            from backend.services.chromadb_collection_manager import (
+                ChromaDBCollectionManager,
+                CollectionType,
+            )
 
-                manager = ChromaDBCollectionManager(persist_directory="/tmp/test_db")
+            manager = ChromaDBCollectionManager(persist_directory="/tmp/test_db")
 
-                is_valid, missing = manager.validate_metadata(
-                    CollectionType.QUESTIONS,
-                    {"subject": "matematik"},  # Missing difficulty and exam_type
-                )
+            is_valid, missing = manager.validate_metadata(
+                CollectionType.QUESTIONS,
+                {"subject": "matematik"},  # Missing difficulty and exam_type
+            )
 
-                assert is_valid is False
-                assert "difficulty" in missing
-                assert "exam_type" in missing
+            assert is_valid is False
+            assert "difficulty" in missing
+            assert "exam_type" in missing
 
     def test_add_documents_validation_error(self):
         """Add documents with mismatched lengths should raise error"""
         with patch(
             "backend.services.chromadb_collection_manager.CHROMADB_AVAILABLE", True
-        ):
-            with patch(
-                "backend.services.chromadb_collection_manager.chromadb"
-            ) as mock_db:
-                mock_db.PersistentClient.return_value = MagicMock()
+        ), patch(
+            "backend.services.chromadb_collection_manager.chromadb"
+        ) as mock_db:
+            mock_db.PersistentClient.return_value = MagicMock()
 
-                from backend.services.chromadb_collection_manager import (
-                    ChromaDBCollectionManager,
-                    CollectionType,
+            from backend.services.chromadb_collection_manager import (
+                ChromaDBCollectionManager,
+                CollectionType,
+            )
+
+            manager = ChromaDBCollectionManager(persist_directory="/tmp/test_db")
+
+            with pytest.raises(ValueError, match="same length"):
+                manager.add_documents(
+                    CollectionType.QUESTIONS,
+                    documents=["doc1", "doc2"],
+                    embeddings=[[0.1] * 768],  # Only 1 embedding
+                    metadatas=[{"subject": "mat"}],
                 )
-
-                manager = ChromaDBCollectionManager(persist_directory="/tmp/test_db")
-
-                with pytest.raises(ValueError, match="same length"):
-                    manager.add_documents(
-                        CollectionType.QUESTIONS,
-                        documents=["doc1", "doc2"],
-                        embeddings=[[0.1] * 768],  # Only 1 embedding
-                        metadatas=[{"subject": "mat"}],
-                    )
 
     def test_delete_requires_filter(self):
         """Delete without ids or where should raise error"""
         with patch(
             "backend.services.chromadb_collection_manager.CHROMADB_AVAILABLE", True
-        ):
-            with patch(
-                "backend.services.chromadb_collection_manager.chromadb"
-            ) as mock_db:
-                mock_client = MagicMock()
-                mock_collection = MagicMock()
-                mock_client.get_or_create_collection.return_value = mock_collection
-                mock_db.PersistentClient.return_value = mock_client
+        ), patch(
+            "backend.services.chromadb_collection_manager.chromadb"
+        ) as mock_db:
+            mock_client = MagicMock()
+            mock_collection = MagicMock()
+            mock_client.get_or_create_collection.return_value = mock_collection
+            mock_db.PersistentClient.return_value = mock_client
 
-                from backend.services.chromadb_collection_manager import (
-                    ChromaDBCollectionManager,
-                    CollectionType,
-                )
+            from backend.services.chromadb_collection_manager import (
+                ChromaDBCollectionManager,
+                CollectionType,
+            )
 
-                manager = ChromaDBCollectionManager(persist_directory="/tmp/test_db")
+            manager = ChromaDBCollectionManager(persist_directory="/tmp/test_db")
 
-                with pytest.raises(ValueError, match="Must provide"):
-                    manager.delete_documents(CollectionType.QUESTIONS)
+            with pytest.raises(ValueError, match="Must provide"):
+                manager.delete_documents(CollectionType.QUESTIONS)
 
 
 class TestCollectionStats:
@@ -190,8 +185,9 @@ class TestCollectionStats:
 
     def test_stats_dataclass(self):
         """CollectionStats should hold correct data"""
-        from backend.services.chromadb_collection_manager import CollectionStats
         from datetime import datetime
+
+        from backend.services.chromadb_collection_manager import CollectionStats
 
         stats = CollectionStats(
             name="questions",
@@ -210,7 +206,8 @@ class TestCollectionStats:
 # =============================================================================
 
 try:
-    from hypothesis import given, strategies as st, settings, assume
+    from hypothesis import assume, given, settings
+    from hypothesis import strategies as st
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False

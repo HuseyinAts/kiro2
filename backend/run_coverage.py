@@ -3,10 +3,11 @@
 Coverage analysis script for KIRO2 backend.
 Generates comprehensive coverage report with module breakdown.
 """
-import subprocess
 import json
+import subprocess
 import sys
 from pathlib import Path
+
 
 def run_coverage():
     """Run coverage analysis"""
@@ -95,7 +96,7 @@ def run_coverage():
     # Parse JSON
     cov_file = backend_dir / ".coverage.json"
     if cov_file.exists():
-        with open(cov_file, 'r') as f:
+        with open(cov_file) as f:
             cov_data = json.load(f)
 
         # Sort by coverage percentage

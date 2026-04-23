@@ -15,9 +15,11 @@ import json
 import logging
 import os
 import time
-from dataclasses import dataclass, asdict
-from typing import Any, Callable, Dict, List, Optional, Set
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
 from enum import Enum
+from typing import Any
+
 import redis.asyncio as aioredis
 
 logger = logging.getLogger(__name__)
@@ -41,7 +43,7 @@ class BlackboardMessage:
     message_type: str
     agent_id: str
     timestamp: float
-    data: Dict[str, Any]
+    data: dict[str, Any]
     priority: int = 0  # 0 = normal, 1 = high, 2 = critical
 
     def to_json(self) -> str:
@@ -85,14 +87,14 @@ class BlackboardCoordinator:
         self.heartbeat_interval = heartbeat_interval
 
         # Redis bağlantıları
-        self.redis: Optional[aioredis.Redis] = None
-        self.pubsub: Optional[aioredis.client.PubSub] = None
+        self.redis: aioredis.Redis | None = None
+        self.pubsub: aioredis.client.PubSub | None = None
 
         # Registered agents
-        self.registered_agents: Set[str] = set()
+        self.registered_agents: set[str] = set()
 
         # Subscribers (topic -> [callbacks])
-        self.subscribers: Dict[str, List[Callable]] = {}
+        self.subscribers: dict[str, list[Callable]] = {}
 
         # Metrics
         self.messages_sent = 0
@@ -101,7 +103,7 @@ class BlackboardCoordinator:
 
         # State
         self.is_running = False
-        self._tasks: List[asyncio.Task] = []
+        self._tasks: list[asyncio.Task] = []
 
         logger.info("Blackboard Coordinator initialized")
 
@@ -313,7 +315,7 @@ class BlackboardCoordinator:
             except Exception as e:
                 logger.error(f"Heartbeat error: {e}")
 
-    async def start(self, agent_id: Optional[str] = None):
+    async def start(self, agent_id: str | None = None):
         """
         Coordinator'ı başlat
 
@@ -339,7 +341,7 @@ class BlackboardCoordinator:
         await self.disconnect()
         logger.info("Blackboard Coordinator stopped")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Koordinatör metriklerini al"""
         return {
             "messages_sent": self.messages_sent,
@@ -395,7 +397,7 @@ async def broadcast_discovery(
     coordinator: BlackboardCoordinator,
     agent_id: str,
     discovery_type: str,
-    discovery_data: Dict[str, Any],
+    discovery_data: dict[str, Any],
 ):
     """
     Yeni bilgi keşfini broadcast et (REQ-11.1)

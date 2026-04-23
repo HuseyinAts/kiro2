@@ -13,19 +13,18 @@ Task 17.2: Property-Based Tests for Konu Bazli Subagent System
 Uses Hypothesis library for property-based testing.
 """
 
-from typing import List
 
 import pytest
-from hypothesis import given, settings, assume, HealthCheck
+from hypothesis import HealthCheck, assume, given, settings
 from hypothesis import strategies as st
 
-from agents.domain_experts import (
-    DomainType,
-    DomainContext,
-)
 from agents.coordination import (
-    QuestionClassifier,
     DomainBlackboard,
+    QuestionClassifier,
+)
+from agents.domain_experts import (
+    DomainContext,
+    DomainType,
 )
 from agents.scoring import SpecializationScorer
 
@@ -461,7 +460,7 @@ class TestCombinedProperties:
         )
     )
     @HYPOTHESIS_SETTINGS
-    def test_domain_independence(self, domains: List[DomainType]):
+    def test_domain_independence(self, domains: list[DomainType]):
         """Scores from different domains MUST be independent."""
         scorer = SpecializationScorer()
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Video API Load Testing with Locust
 100 concurrent user simülasyonu - Video öneri endpoint'i için yük testi
@@ -9,7 +8,8 @@ Run: locust -f backend/tests/load/load_test_video_api.py --users 100 --spawn-rat
 
 import random
 import time
-from locust import HttpUser, task, between, events
+
+from locust import HttpUser, between, events, task
 
 
 class VideoAPIUser(HttpUser):
@@ -125,7 +125,7 @@ class VideoAPIUser(HttpUser):
                         response.failure("No videos returned in recommendations")
 
                 except Exception as e:
-                    response.failure(f"Response parsing error: {str(e)}")
+                    response.failure(f"Response parsing error: {e!s}")
 
             elif response.status_code == 429:
                 # Rate limit - beklenen bir durum
@@ -162,7 +162,7 @@ class VideoAPIUser(HttpUser):
                     response.success()
                     return
 
-                elif response.status_code == 429:
+                if response.status_code == 429:
                     # Rate limit - exponential backoff
                     retry_count += 1
                     if retry_count <= max_retries:
@@ -221,7 +221,7 @@ class VideoAPIUser(HttpUser):
                         response.success()
 
                 except Exception as e:
-                    response.failure(f"Health check response parsing error: {str(e)}")
+                    response.failure(f"Health check response parsing error: {e!s}")
 
             else:
                 response.failure(
@@ -455,7 +455,6 @@ def on_request(request_type, name, response_time, response_length, exception, **
     # Cache hit/miss tracking için response body'yi parse edebiliriz
     # Ancak Locust'ta bu performans overhead yaratabilir
     # Production'da Prometheus gibi bir tool kullanılmalı
-    pass
 
 
 if __name__ == "__main__":

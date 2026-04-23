@@ -8,7 +8,6 @@ import asyncio
 import logging
 import time
 from collections import deque
-from typing import Deque, Dict, List, Optional
 
 import httpx
 
@@ -30,7 +29,7 @@ class HealthChecker:
         timeout: Request timeout süresi (saniye)
         response_times: Endpoint'lerin response time geçmişi
     """
-    
+
     def __init__(
         self,
         base_url: str,
@@ -48,16 +47,16 @@ class HealthChecker:
         self.base_url = base_url.rstrip("/")
         self.redis_client = redis_client
         self.timeout = timeout
-        
+
         # Her endpoint için response time geçmişi (sliding window)
         # Key: "method:path", Value: deque of response times
-        self.response_times: Dict[str, Deque[float]] = {}
-        
+        self.response_times: dict[str, deque[float]] = {}
+
         # Sliding window size (son 100 request)
         self.window_size = 100
-        
+
         logger.info(f"HealthChecker başlatıldı: {base_url}")
-    
+
     async def check_endpoint(
         self,
         metadata: EndpointMetadata,
@@ -79,7 +78,7 @@ class HealthChecker:
             REQ-2.3: Status code'u kontrol eder (200-299 başarılı)
         """
         endpoint_key = f"{metadata.method}:{metadata.path}"
-        
+
         # Circuit OPEN ise request gönderme
         if circuit_state == CircuitState.OPEN:
             logger.warning(f"Circuit OPEN: {endpoint_key}")
@@ -91,14 +90,14 @@ class HealthChecker:
                 error_message="Circuit breaker is OPEN",
                 circuit_state=circuit_state
             )
-        
+
         # Test request gönder
         start_time = time.time()
-        
+
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 url = f"{self.base_url}{metadata.path}"
-                
+
                 # HTTP method'a göre request gönder
                 if metadata.method == "GET":
                     response = await client.get(url)
@@ -110,16 +109,16 @@ class HealthChecker:
                     response = await client.delete(url)
                 else:
                     response = await client.request(metadata.method, url)
-                
+
                 # Response time hesapla (milisaniye)
                 response_time_ms = (time.time() - start_time) * 1000
-                
+
                 # Response time'ı kaydet
                 self._record_response_time(endpoint_key, response_time_ms)
-                
+
                 # Status code kontrolü
                 is_success = response.status_code in metadata.expected_status_codes
-                
+
                 # Health status belirle
                 if is_success:
                     status = HealthStatus.HEALTHY
@@ -127,7 +126,7 @@ class HealthChecker:
                 else:
                     status = HealthStatus.UNHEALTHY
                     error_message = f"Unexpected status code: {response.status_code}"
-                
+
                 result = HealthCheckResult(
                     endpoint=metadata.path,
                     status=status,
@@ -136,22 +135,22 @@ class HealthChecker:
                     error_message=error_message,
                     circuit_state=circuit_state
                 )
-                
+
                 # Redis'e kaydet
                 if self.redis_client:
                     await self._store_result(result)
-                
+
                 logger.debug(
                     f"Health check tamamlandı: {endpoint_key} - "
                     f"{response_time_ms:.2f}ms - {response.status_code}"
                 )
-                
+
                 return result
-                
+
         except httpx.TimeoutException:
             response_time_ms = self.timeout * 1000
             logger.warning(f"Timeout: {endpoint_key}")
-            
+
             result = HealthCheckResult(
                 endpoint=metadata.path,
                 status=HealthStatus.UNHEALTHY,
@@ -160,16 +159,16 @@ class HealthChecker:
                 error_message=f"Request timeout after {self.timeout}s",
                 circuit_state=circuit_state
             )
-            
+
             if self.redis_client:
                 await self._store_result(result)
-            
+
             return result
-            
+
         except Exception as e:
             response_time_ms = (time.time() - start_time) * 1000
             logger.error(f"Health check hatası: {endpoint_key} - {e}")
-            
+
             result = HealthCheckResult(
                 endpoint=metadata.path,
                 status=HealthStatus.UNHEALTHY,
@@ -178,17 +177,17 @@ class HealthChecker:
                 error_message=str(e),
                 circuit_state=circuit_state
             )
-            
+
             if self.redis_client:
                 await self._store_result(result)
-            
+
             return result
-    
+
     async def check_multiple_endpoints(
         self,
-        endpoints: List[EndpointMetadata],
-        circuit_states: Optional[Dict[str, CircuitState]] = None
-    ) -> List[HealthCheckResult]:
+        endpoints: list[EndpointMetadata],
+        circuit_states: dict[str, CircuitState] | None = None
+    ) -> list[HealthCheckResult]:
         """
         Birden fazla endpoint'e paralel health check yapar.
         
@@ -201,16 +200,16 @@ class HealthChecker:
         """
         if circuit_states is None:
             circuit_states = {}
-        
+
         # Paralel olarak tüm endpoint'leri kontrol et
         tasks = []
         for metadata in endpoints:
             endpoint_key = f"{metadata.method}:{metadata.path}"
             circuit_state = circuit_states.get(endpoint_key, CircuitState.CLOSED)
             tasks.append(self.check_endpoint(metadata, circuit_state))
-        
+
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Exception'ları handle et
         valid_results = []
         for i, result in enumerate(results):
@@ -229,9 +228,9 @@ class HealthChecker:
                 )
             else:
                 valid_results.append(result)
-        
+
         return valid_results
-    
+
     def _record_response_time(self, endpoint_key: str, response_time_ms: float) -> None:
         """
         Response time'ı sliding window'a kaydeder.
@@ -242,10 +241,10 @@ class HealthChecker:
         """
         if endpoint_key not in self.response_times:
             self.response_times[endpoint_key] = deque(maxlen=self.window_size)
-        
+
         self.response_times[endpoint_key].append(response_time_ms)
-    
-    def calculate_percentiles(self, endpoint_key: str) -> Dict[str, float]:
+
+    def calculate_percentiles(self, endpoint_key: str) -> dict[str, float]:
         """
         Endpoint için P50, P95, P99 metriklerini hesaplar.
         
@@ -260,25 +259,25 @@ class HealthChecker:
         """
         if endpoint_key not in self.response_times:
             return {"p50": 0.0, "p95": 0.0, "p99": 0.0}
-        
+
         times = sorted(self.response_times[endpoint_key])
-        
+
         if not times:
             return {"p50": 0.0, "p95": 0.0, "p99": 0.0}
-        
+
         n = len(times)
-        
+
         # Percentile hesaplama
         p50_idx = int(n * 0.50)
         p95_idx = int(n * 0.95)
         p99_idx = int(n * 0.99)
-        
+
         return {
             "p50": times[p50_idx] if p50_idx < n else times[-1],
             "p95": times[p95_idx] if p95_idx < n else times[-1],
             "p99": times[p99_idx] if p99_idx < n else times[-1]
         }
-    
+
     async def _store_result(self, result: HealthCheckResult) -> None:
         """
         Health check sonucunu Redis'e kaydeder.
@@ -291,11 +290,11 @@ class HealthChecker:
         """
         if not self.redis_client:
             return
-        
+
         try:
             # Redis key formatı: kiro2:health:results:{endpoint}
             redis_key = f"kiro2:health:results:{result.endpoint}"
-            
+
             # Sonucu JSON olarak kaydet
             await self.redis_client.hset(
                 redis_key,
@@ -308,14 +307,14 @@ class HealthChecker:
                     "circuit_state": result.circuit_state.value
                 }
             )
-            
+
             # TTL ayarla (1 saat)
             await self.redis_client.expire(redis_key, 3600)
-            
+
             logger.debug(f"Result Redis'e kaydedildi: {redis_key}")
         except Exception as e:
             logger.error(f"Result Redis'e kaydedilemedi: {e}")
-    
+
     async def send_critical_alert(
         self,
         metadata: EndpointMetadata,
@@ -333,10 +332,10 @@ class HealthChecker:
         """
         if not metadata.is_critical:
             return
-        
+
         if result.status != HealthStatus.UNHEALTHY:
             return
-        
+
         # Alert mesajı oluştur
         alert_message = (
             f"🚨 KRİTİK ENDPOINT BAŞARISIZ!\n"
@@ -346,12 +345,12 @@ class HealthChecker:
             f"Error: {result.error_message}\n"
             f"Timestamp: {result.timestamp.isoformat()}"
         )
-        
+
         logger.critical(alert_message)
-        
+
         # TODO: Slack/Email/SMS alert gönderme
         # Bu kısım alerting modülü implement edildikten sonra eklenecek
-        
+
         # Redis'e alert kaydı
         if self.redis_client:
             try:

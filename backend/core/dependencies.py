@@ -6,7 +6,6 @@ SECURITY: Type-safe authentication with Pydantic models
 """
 
 import logging
-from enum import Enum
 from typing import Any
 
 import jwt
@@ -30,7 +29,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.jwt_access_token_expire_minutes
 # ============================================================================
 # User Role Enum — imported from canonical source (models.enums_db)
 # ============================================================================
-from models.enums_db import UserRole  # noqa: F401 — re-exported for backward compat
+from models.enums_db import UserRole
 
 
 # ============================================================================
@@ -353,9 +352,9 @@ def create_access_token(data: dict[str, Any], expires_delta: int = None) -> str:
 
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=expires_delta)
+        expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=expires_delta)
     else:
-        expire = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+        expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
             minutes=ACCESS_TOKEN_EXPIRE_MINUTES
         )
 

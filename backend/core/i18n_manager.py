@@ -5,9 +5,9 @@ Multi-language support for KIRO2 platform
 
 import json
 import logging
-from pathlib import Path
-from typing import Dict, Any, Optional
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class I18nManager:
     def __init__(self, locales_dir: str = "backend/locales", default_lang: str = "tr"):
         self.locales_dir = Path(locales_dir)
         self.default_lang = default_lang
-        self.translations: Dict[str, Dict[str, Any]] = {}
+        self.translations: dict[str, dict[str, Any]] = {}
         self._load_all_translations()
 
     def _load_all_translations(self):
@@ -48,7 +48,7 @@ class I18nManager:
 
         try:
             if file_path.exists():
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding='utf-8') as f:
                     self.translations[lang_code] = json.load(f)
                 logger.info(f"Loaded translations for {lang_code}")
             else:
@@ -107,7 +107,7 @@ class I18nManager:
 
         return translation
 
-    def _get_nested_value(self, data: Dict, key: str) -> Optional[str]:
+    def _get_nested_value(self, data: dict, key: str) -> str | None:
         """Get nested dictionary value using dot notation"""
         keys = key.split('.')
         value = data
@@ -172,7 +172,7 @@ class I18nManager:
         except (KeyError, ValueError, IndexError):
             return translation
 
-    def get_available_languages(self) -> Dict[str, str]:
+    def get_available_languages(self) -> dict[str, str]:
         """Get list of available languages"""
         return {
             lang: self.translate('language.name', lang)

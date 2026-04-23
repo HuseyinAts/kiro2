@@ -10,7 +10,6 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List
 
 from core.structured_logger import get_logger
 
@@ -137,9 +136,9 @@ class SQLInjectionAuditor:
 
     def __init__(self, project_root: str = "backend"):
         self.project_root = Path(project_root)
-        self.vulnerabilities: List[SQLVulnerability] = []
+        self.vulnerabilities: list[SQLVulnerability] = []
 
-    def audit_codebase(self) -> List[SQLVulnerability]:
+    def audit_codebase(self) -> list[SQLVulnerability]:
         """
         Audit entire codebase for SQL injection vulnerabilities
 
@@ -169,7 +168,7 @@ class SQLInjectionAuditor:
     def _audit_file(self, file_path: Path):
         """Audit single Python file for SQL injection vulnerabilities"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 lines = content.split("\n")
 
@@ -218,7 +217,7 @@ class SQLInjectionAuditor:
                         )
                     )
 
-    def _analyze_ast(self, file_path: Path, tree: ast.AST, lines: List[str]):
+    def _analyze_ast(self, file_path: Path, tree: ast.AST, lines: list[str]):
         """Analyze AST for complex SQL injection patterns"""
         for node in ast.walk(tree):
             # Check for execute() calls with string operations
@@ -227,7 +226,7 @@ class SQLInjectionAuditor:
                     if node.func.attr in ["execute", "executemany"]:
                         self._check_execute_call(file_path, node, lines)
 
-    def _check_execute_call(self, file_path: Path, node: ast.Call, lines: List[str]):
+    def _check_execute_call(self, file_path: Path, node: ast.Call, lines: list[str]):
         """Check execute/executemany call for SQL injection vulnerabilities"""
         if not node.args:
             return
@@ -274,26 +273,25 @@ class SQLInjectionAuditor:
                 "# Bad:  conn.execute(f'SELECT * FROM users WHERE id = {user_id}')\n"
                 "# Good: conn.execute('SELECT * FROM users WHERE id = :id', {'id': user_id})"
             )
-        elif "concatenation" in description:
+        if "concatenation" in description:
             return (
                 "Replace string concatenation with parameterized query:\n"
                 "# Bad:  conn.execute('SELECT * FROM users WHERE id = ' + str(user_id))\n"
                 "# Good: conn.execute('SELECT * FROM users WHERE id = :id', {'id': user_id})"
             )
-        elif ".format()" in description:
+        if ".format()" in description:
             return (
                 "Replace .format() with parameterized query:\n"
                 "# Bad:  conn.execute('SELECT * FROM users WHERE id = {}'.format(user_id))\n"
                 "# Good: conn.execute('SELECT * FROM users WHERE id = :id', {'id': user_id})"
             )
-        elif "% formatting" in description:
+        if "% formatting" in description:
             return (
                 "Replace % formatting with parameterized query:\n"
                 "# Bad:  conn.execute('SELECT * FROM users WHERE id = %s' % user_id)\n"
                 "# Good: conn.execute('SELECT * FROM users WHERE id = :id', {'id': user_id})"
             )
-        else:
-            return "Use parameterized queries with named or positional placeholders"
+        return "Use parameterized queries with named or positional placeholders"
 
     def generate_report(self) -> dict:
         """Generate comprehensive audit report"""

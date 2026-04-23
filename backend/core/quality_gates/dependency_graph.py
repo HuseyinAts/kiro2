@@ -10,8 +10,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import TypeVar, Generic
-
+from typing import Generic, TypeVar
 
 T = TypeVar("T")
 
@@ -98,8 +97,8 @@ class DependencyGraph(Generic[T]):
             List of nodes forming cycle, or None if no cycle.
         """
         WHITE, GRAY, BLACK = 0, 1, 2
-        color: dict[str, int] = {n: WHITE for n in self._nodes}
-        parent: dict[str, str | None] = {n: None for n in self._nodes}
+        color: dict[str, int] = dict.fromkeys(self._nodes, WHITE)
+        parent: dict[str, str | None] = dict.fromkeys(self._nodes)
 
         def dfs(node: str) -> list[str] | None:
             color[node] = GRAY
@@ -140,7 +139,7 @@ class DependencyGraph(Generic[T]):
         if cycle:
             raise CircularDependencyError(cycle)
 
-        in_degree: dict[str, int] = {n: 0 for n in self._nodes}
+        in_degree: dict[str, int] = dict.fromkeys(self._nodes, 0)
         for node in self._nodes:
             for dep in self._edges[node]:
                 in_degree[node] += 1

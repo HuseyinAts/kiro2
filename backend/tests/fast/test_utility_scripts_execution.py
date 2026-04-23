@@ -6,10 +6,11 @@ NOTE: setup_database.py interface changed. Functions like create_database,
 create_tables, insert_test_data no longer exist in the current version.
 """
 
-import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
 import sys
 from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 # Skip tests for non-existent functions
 pytestmark = pytest.mark.skip(
@@ -62,7 +63,7 @@ class TestSetupDatabaseExecution:
 
     def test_database_url_configuration(self):
         """Test database URL configuration"""
-        from setup_database import DATABASE_URL, ASYNC_DATABASE_URL
+        from setup_database import ASYNC_DATABASE_URL, DATABASE_URL
 
         assert "postgresql" in DATABASE_URL
         assert "turkiye_sinav_db" in DATABASE_URL
@@ -134,7 +135,7 @@ class TestModelsUnifiedExecution:
 
     def test_enum_values_execution(self):
         """Test enum values"""
-        from models_unified import SinavTipi, SinavDurumu, SoruZorluk, KullaniciRolu
+        from models_unified import KullaniciRolu, SinavDurumu, SinavTipi, SoruZorluk
 
         # Test all enum values
         assert SinavTipi.TYT == "TYT"
@@ -248,10 +249,10 @@ class TestCoreExceptionsExecution:
         """Execute exception creation and raising"""
         try:
             from core.exceptions import (
-                ValidationException,
                 AuthenticationException,
                 AuthorizationException,
                 NotFoundException,
+                ValidationException,
             )
 
             # Test ValidationException

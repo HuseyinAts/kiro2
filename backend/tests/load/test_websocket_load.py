@@ -30,7 +30,7 @@ from __future__ import annotations
 import random
 import time
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -97,7 +97,7 @@ class WebSocketMixin:
     WebSocket behavior using HTTP endpoints and polling.
     """
 
-    def connect_websocket(self, exam_session_id: str) -> Dict[str, Any]:
+    def connect_websocket(self, exam_session_id: str) -> dict[str, Any]:
         """
         Simulate WebSocket connection via HTTP long-polling.
 
@@ -129,11 +129,10 @@ class WebSocketMixin:
             else:
                 response.success()
             return data
-        else:
-            response.failure(f"WebSocket connection failed: {response.status_code}")
-            return {}
+        response.failure(f"WebSocket connection failed: {response.status_code}")
+        return {}
 
-    def send_websocket_message(self, connection_id: str, message: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def send_websocket_message(self, connection_id: str, message: dict[str, Any]) -> dict[str, Any] | None:
         """
         Send message via WebSocket (simulated via HTTP POST).
 
@@ -164,11 +163,10 @@ class WebSocketMixin:
             else:
                 response.success()
             return response.json()
-        else:
-            response.failure(f"WebSocket message send failed: {response.status_code}")
-            return None
+        response.failure(f"WebSocket message send failed: {response.status_code}")
+        return None
 
-    def receive_websocket_message(self, connection_id: str) -> Optional[List[Dict[str, Any]]]:
+    def receive_websocket_message(self, connection_id: str) -> list[dict[str, Any]] | None:
         """
         Receive messages via WebSocket (simulated via HTTP GET long-polling).
 
@@ -254,7 +252,7 @@ class ExamSessionBehavior(TaskSet, WebSocketMixin):
         else:
             response.failure(f"Login failed: {response.status_code}")
 
-    def _get_auth_headers(self) -> Dict[str, str]:
+    def _get_auth_headers(self) -> dict[str, str]:
         """Get authorization headers."""
         if self.access_token:
             return {"Authorization": f"Bearer {self.access_token}"}
@@ -373,7 +371,7 @@ class StudentUser(HttpUser, WebSocketMixin):
     tasks = [ExamSessionBehavior]
     wait_time = between(3, 8)  # Realistic wait time between actions
 
-    def _get_auth_headers(self) -> Dict[str, str]:
+    def _get_auth_headers(self) -> dict[str, str]:
         """Get authorization headers."""
         if hasattr(self, "access_token") and self.access_token:
             return {"Authorization": f"Bearer {self.access_token}"}
@@ -453,7 +451,7 @@ class RapidConnectionUser(HttpUser, WebSocketMixin):
 
     wait_time = between(0.5, 2)  # Very short wait time
 
-    def _get_auth_headers(self) -> Dict[str, str]:
+    def _get_auth_headers(self) -> dict[str, str]:
         """Get authorization headers."""
         return {"Authorization": "Bearer test_stress_token"}
 

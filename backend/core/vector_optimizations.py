@@ -6,7 +6,7 @@ Target: Reduce vector search from 300-800ms to <100ms
 import hashlib
 import logging
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import faiss
 import numpy as np
@@ -46,14 +46,14 @@ class OptimizedVectorStore:
     - Vector normalization for cosine similarity
     """
 
-    def __init__(self, config: Optional[VectorSearchConfig] = None):
+    def __init__(self, config: VectorSearchConfig | None = None):
         self.config = config or VectorSearchConfig()
-        self.index: Optional[faiss.Index] = None
-        self.documents: List[Dict[str, Any]] = []
-        self.doc_id_to_index: Dict[str, int] = {}
+        self.index: faiss.Index | None = None
+        self.documents: list[dict[str, Any]] = []
+        self.doc_id_to_index: dict[str, int] = {}
 
         # Query cache
-        self.query_cache: Dict[str, List[Tuple[int, float]]] = {}
+        self.query_cache: dict[str, list[tuple[int, float]]] = {}
         self.cache_hits = 0
         self.cache_misses = 0
 
@@ -104,7 +104,7 @@ class OptimizedVectorStore:
         return vectors / norms
 
     async def add_documents(
-        self, documents: List[Dict[str, Any]], embeddings: np.ndarray
+        self, documents: list[dict[str, Any]], embeddings: np.ndarray
     ):
         """
         Add documents with embeddings to index
@@ -153,8 +153,8 @@ class OptimizedVectorStore:
         self,
         query_embedding: np.ndarray,
         k: int = 5,
-        filter_fn: Optional[callable] = None,
-    ) -> List[Tuple[Dict[str, Any], float]]:
+        filter_fn: callable | None = None,
+    ) -> list[tuple[dict[str, Any], float]]:
         """
         Search for similar documents
 
@@ -219,7 +219,7 @@ class OptimizedVectorStore:
 
     async def batch_search(
         self, query_embeddings: np.ndarray, k: int = 5
-    ) -> List[List[Tuple[Dict[str, Any], float]]]:
+    ) -> list[list[tuple[dict[str, Any], float]]]:
         """
         Batch search for multiple queries (more efficient)
 
@@ -263,8 +263,8 @@ class OptimizedVectorStore:
         return all_results
 
     def _format_results(
-        self, results: List[Tuple[int, float]]
-    ) -> List[Tuple[Dict[str, Any], float]]:
+        self, results: list[tuple[int, float]]
+    ) -> list[tuple[dict[str, Any], float]]:
         """Format results with document metadata"""
         return [(self.documents[idx], score) for idx, score in results]
 
@@ -274,7 +274,7 @@ class OptimizedVectorStore:
         embedding_hash = hashlib.md5(embedding.tobytes()).hexdigest()
         return f"{embedding_hash}_{k}"
 
-    async def remove_documents(self, doc_ids: List[str]):
+    async def remove_documents(self, doc_ids: list[str]):
         """
         Remove documents from index
 
@@ -315,7 +315,7 @@ class OptimizedVectorStore:
         elapsed = time.time() - start_time
         logger.info(f"Document removal completed in {elapsed:.3f}s")
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get vector store metrics"""
         avg_search_time = (
             self.total_search_time / self.total_searches
@@ -372,7 +372,7 @@ class HybridSearchOptimizer:
 
     async def hybrid_search(
         self, query_embedding: np.ndarray, query_text: str, k: int = 5
-    ) -> List[Tuple[Dict[str, Any], float]]:
+    ) -> list[tuple[dict[str, Any], float]]:
         """
         Hybrid search combining vector and keyword matching
 
@@ -397,7 +397,7 @@ class HybridSearchOptimizer:
 
     def _keyword_search(
         self, query_text: str, k: int
-    ) -> List[Tuple[Dict[str, Any], float]]:
+    ) -> list[tuple[dict[str, Any], float]]:
         """Simple keyword search (BM25-like)"""
         query_terms = set(query_text.lower().split())
         results = []
@@ -418,10 +418,10 @@ class HybridSearchOptimizer:
 
     def _fuse_results(
         self,
-        vector_results: List[Tuple[Dict[str, Any], float]],
-        keyword_results: List[Tuple[Dict[str, Any], float]],
+        vector_results: list[tuple[dict[str, Any], float]],
+        keyword_results: list[tuple[dict[str, Any], float]],
         k: int,
-    ) -> List[Tuple[Dict[str, Any], float]]:
+    ) -> list[tuple[dict[str, Any], float]]:
         """Fuse vector and keyword results"""
         # Normalize scores
         vector_scores = {doc["id"]: score for doc, score in vector_results}
@@ -458,11 +458,11 @@ class HybridSearchOptimizer:
 
 
 # Global instance (singleton)
-_global_vector_store: Optional[OptimizedVectorStore] = None
+_global_vector_store: OptimizedVectorStore | None = None
 
 
 async def get_vector_store(
-    config: Optional[VectorSearchConfig] = None,
+    config: VectorSearchConfig | None = None,
 ) -> OptimizedVectorStore:
     """Get or create global vector store (singleton)"""
     global _global_vector_store

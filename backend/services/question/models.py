@@ -6,11 +6,9 @@ Bu dosya soru uretim modulunun ortak veri yapilarini ve
 template/misconception database'lerini icerir.
 """
 
-from typing import Dict, List
-
 
 # OSYM soru yapisi sablonlari
-QUESTION_TEMPLATES: Dict[str, List[str]] = {
+QUESTION_TEMPLATES: dict[str, list[str]] = {
     "matematik": [
         "Asagidaki {konu} problemi icin dogru cozum hangisidir?",
         "{konu} ile ilgili verilen ifadelerden hangisi dogrudur?",
@@ -30,7 +28,7 @@ QUESTION_TEMPLATES: Dict[str, List[str]] = {
 
 
 # Turk ogrencilerin sik yaptigi hatalar ve kavram yanilgilari
-MISCONCEPTION_DATABASE: Dict[str, Dict[str, List[str]]] = {
+MISCONCEPTION_DATABASE: dict[str, dict[str, list[str]]] = {
     "matematik": {
         "kesirler": [
             "Paydalari toplamak (1/2 + 1/3 = 2/5 gibi)",
@@ -75,13 +73,13 @@ MISCONCEPTION_DATABASE: Dict[str, Dict[str, List[str]]] = {
 }
 
 
-def get_question_templates(subject: str) -> List[str]:
+def get_question_templates(subject: str) -> list[str]:
     """Ders icin soru sablonlarini dondur."""
     subject_key = subject.lower()
     return QUESTION_TEMPLATES.get(subject_key, QUESTION_TEMPLATES["matematik"])
 
 
-def get_misconceptions(subject: str, topic: str) -> List[str]:
+def get_misconceptions(subject: str, topic: str) -> list[str]:
     """Ders ve konu icin kavram yanilgilarini dondur."""
     subject_key = subject.lower()
     topic_key = topic.lower().replace(" ", "_")

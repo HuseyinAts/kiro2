@@ -4,8 +4,9 @@ Testing question generator methods to boost coverage
 Target: +2% coverage (496 lines, currently 9.5%)
 """
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 
 class TestQuestionGeneratorInit:

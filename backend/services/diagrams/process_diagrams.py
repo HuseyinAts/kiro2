@@ -4,11 +4,11 @@ Process Diagrams Mixin - KIRO2
 Generates flowcharts, cycle diagrams, and system diagrams.
 """
 
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
-import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import patches
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 from .styles import COLORS
@@ -18,14 +18,14 @@ from .utils import close_figure, fig_to_svg, setup_axes
 class ProcessDiagramMixin:
     """Mixin for process diagram generation."""
 
-    fig_size: Tuple[int, int]
+    fig_size: tuple[int, int]
 
     def _generate_process_diagram(
         self,
         subtype: str,
-        content: Dict[str, Any],
-        labels: Optional[Dict[str, str]],
-    ) -> Tuple[str, Dict[str, Any]]:
+        content: dict[str, Any],
+        labels: dict[str, str] | None,
+    ) -> tuple[str, dict[str, Any]]:
         """
         Generate process diagram (flowchart, cycle, system).
 
@@ -39,23 +39,22 @@ class ProcessDiagramMixin:
         """
         if subtype == "flowchart":
             return self._generate_flowchart(content)
-        elif subtype == "cycle_diagram":
+        if subtype == "cycle_diagram":
             return self._generate_cycle_diagram(content)
-        elif subtype == "system_diagram":
+        if subtype == "system_diagram":
             return self._generate_system_diagram(content)
-        else:
-            raise ValueError(f"Unknown process diagram subtype: {subtype}")
+        raise ValueError(f"Unknown process diagram subtype: {subtype}")
 
     def _generate_flowchart(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate flowchart with nodes and edges."""
         fig, ax = plt.subplots(figsize=(9, 11))
         title = content.get("title", "Akis Diyagrami")
         setup_axes(ax, title)
 
         nodes = content.get("nodes", [])
-        node_positions: Dict[str, Tuple[float, float]] = {}
+        node_positions: dict[str, tuple[float, float]] = {}
 
         # Draw nodes
         for i, node in enumerate(nodes):
@@ -171,8 +170,8 @@ class ProcessDiagramMixin:
         return svg_content, metadata
 
     def _generate_cycle_diagram(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate cycle diagram (circular process)."""
         fig, ax = plt.subplots(figsize=(9, 9))
         title = content.get("title", "Dongu Diyagrami")
@@ -249,15 +248,15 @@ class ProcessDiagramMixin:
         return svg_content, metadata
 
     def _generate_system_diagram(
-        self, content: Dict[str, Any]
-    ) -> Tuple[str, Dict[str, Any]]:
+        self, content: dict[str, Any]
+    ) -> tuple[str, dict[str, Any]]:
         """Generate system diagram (components and interactions)."""
         fig, ax = plt.subplots(figsize=self.fig_size)
         title = content.get("title", "Sistem Diyagrami")
         setup_axes(ax, title)
 
         components = content.get("components", [])
-        component_positions: Dict[str, Tuple[float, float]] = {}
+        component_positions: dict[str, tuple[float, float]] = {}
 
         # Draw components
         for comp in components:

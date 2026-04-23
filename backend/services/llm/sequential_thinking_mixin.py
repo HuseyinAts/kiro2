@@ -6,11 +6,11 @@ Author: KIRO AI Team
 Date: 2026-01-16
 """
 
+import json
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any, List
 from dataclasses import dataclass, field
 from enum import Enum
-import json
+from typing import Any
 
 
 class ReasoningStepType(str, Enum):
@@ -32,11 +32,11 @@ class ReasoningStep:
     step_type: ReasoningStepType
     description: str
     reasoning: str
-    result: Optional[str] = None
+    result: str | None = None
     confidence: float = 1.0
-    sub_steps: List["ReasoningStep"] = field(default_factory=list)
+    sub_steps: list["ReasoningStep"] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "step_number": self.step_number,
@@ -55,16 +55,16 @@ class ReasoningResult:
 
     problem: str
     understanding: str
-    steps: List[ReasoningStep]
+    steps: list[ReasoningStep]
     final_answer: str
-    verification: Optional[str] = None
+    verification: str | None = None
     confidence: float = 1.0
     provider: str = ""
     model: str = ""
     latency_ms: float = 0.0
     thinking_tokens: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "problem": self.problem,
@@ -88,7 +88,7 @@ class SequentialThinkingMixin(ABC):
     """
 
     # Default prompts for each provider (override in subclass)
-    THINKING_PROMPTS: Dict[str, str] = {
+    THINKING_PROMPTS: dict[str, str] = {
         "step_by_step": """Asagidaki problemi adim adim coz.
 Her adimda:
 1. Ne yaptigini acikla
@@ -128,7 +128,6 @@ Cozum:""",
     @abstractmethod
     async def generate(self, request: Any) -> Any:
         """Abstract generate method - must be implemented by provider"""
-        pass
 
     def get_thinking_prompt(self, prompt_type: str, **kwargs) -> str:
         """Get formatted thinking prompt"""
@@ -175,8 +174,7 @@ Cozum:""",
         # Parse response
         if structured_output:
             return self._parse_structured_response(response.content, problem, response)
-        else:
-            return self._parse_unstructured_response(response.content, problem, response)
+        return self._parse_unstructured_response(response.content, problem, response)
 
     def _build_structured_prompt(
         self, problem: str, max_steps: int, include_verification: bool
@@ -305,7 +303,7 @@ Sadece JSON formatinda yanit ver, baska bir sey ekleme."""
             latency_ms=getattr(response, "latency_ms", 0),
         )
 
-    async def decompose(self, problem: str) -> Dict[str, Any]:
+    async def decompose(self, problem: str) -> dict[str, Any]:
         """
         Decompose complex problem into sub-problems
 
@@ -363,8 +361,8 @@ JSON formatinda yanit ver:
             }
 
     async def verify_reasoning(
-        self, problem: str, solution: str, steps: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, problem: str, solution: str, steps: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Verify reasoning steps for logical consistency
 
@@ -453,7 +451,7 @@ PROVIDER_THINKING_PROMPTS = {
 }
 
 
-def get_provider_thinking_prompt(provider: str) -> Dict[str, str]:
+def get_provider_thinking_prompt(provider: str) -> dict[str, str]:
     """Get thinking prompt template for specific provider"""
     return PROVIDER_THINKING_PROMPTS.get(
         provider, PROVIDER_THINKING_PROMPTS["gemini"]

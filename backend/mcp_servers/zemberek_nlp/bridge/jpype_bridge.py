@@ -14,7 +14,7 @@ import os
 import platform
 import threading
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from .exceptions import (
     AnalysisError,
@@ -110,9 +110,9 @@ class ZemberekJPypeBridge:
 
     def initialize(
         self,
-        jar_path: Optional[str] = None,
-        java_home: Optional[str] = None,
-        jvm_options: Optional[List[str]] = None,
+        jar_path: str | None = None,
+        java_home: str | None = None,
+        jvm_options: list[str] | None = None,
     ) -> bool:
         """
         Initialize JVM with Zemberek JAR.
@@ -187,7 +187,7 @@ class ZemberekJPypeBridge:
                 logger.error(f"Failed to initialize ZemberekJPypeBridge: {e}")
                 raise JVMInitializationError(str(e))
 
-    def _get_jvm_path(self, java_home: Optional[str] = None) -> str:
+    def _get_jvm_path(self, java_home: str | None = None) -> str:
         """Get JVM path based on platform"""
         jp = _import_jpype()
 
@@ -223,7 +223,7 @@ class ZemberekJPypeBridge:
 
         return separator.join(paths)
 
-    def _find_zemberek_jar(self) -> Optional[str]:
+    def _find_zemberek_jar(self) -> str | None:
         """Find Zemberek JAR file in common locations"""
         # Check environment variable
         env_path = os.environ.get("ZEMBEREK_JAR_PATH")
@@ -373,7 +373,7 @@ class ZemberekJPypeBridge:
 
     # ===== Morphological Analysis =====
 
-    def analyze_word(self, word: str) -> List[Dict[str, Any]]:
+    def analyze_word(self, word: str) -> list[dict[str, Any]]:
         """
         Perform morphological analysis on a Turkish word.
 
@@ -425,7 +425,7 @@ class ZemberekJPypeBridge:
         except Exception as e:
             raise AnalysisError(word, f"Lemmatization failed: {e}")
 
-    def lemmatize_all(self, word: str) -> List[str]:
+    def lemmatize_all(self, word: str) -> list[str]:
         """
         Get all possible lemmas for a word.
 
@@ -450,7 +450,7 @@ class ZemberekJPypeBridge:
 
     # ===== Spell Checking =====
 
-    def check_spelling(self, word: str) -> Dict[str, Any]:
+    def check_spelling(self, word: str) -> dict[str, Any]:
         """
         Check spelling of a Turkish word.
 
@@ -489,7 +489,7 @@ class ZemberekJPypeBridge:
 
     # ===== Tokenization =====
 
-    def tokenize(self, text: str) -> List[Dict[str, Any]]:
+    def tokenize(self, text: str) -> list[dict[str, Any]]:
         """
         Tokenize Turkish text.
 
@@ -523,7 +523,7 @@ class ZemberekJPypeBridge:
 
     # ===== Sentence Segmentation =====
 
-    def segment_sentences(self, text: str) -> List[str]:
+    def segment_sentences(self, text: str) -> list[str]:
         """
         Segment text into sentences.
 
@@ -549,7 +549,7 @@ class ZemberekJPypeBridge:
 
     # ===== Text Normalization =====
 
-    def normalize(self, text: str) -> Dict[str, Any]:
+    def normalize(self, text: str) -> dict[str, Any]:
         """
         Normalize informal Turkish text.
 
@@ -590,7 +590,7 @@ class ZemberekJPypeBridge:
 
     # ===== Named Entity Recognition =====
 
-    def extract_entities(self, text: str) -> List[Dict[str, Any]]:
+    def extract_entities(self, text: str) -> list[dict[str, Any]]:
         """
         Extract named entities from text.
 
@@ -624,7 +624,7 @@ class ZemberekJPypeBridge:
 
     # ===== Health Check =====
 
-    def get_health(self) -> Dict[str, Any]:
+    def get_health(self) -> dict[str, Any]:
         """
         Get health status of the bridge.
 
@@ -646,7 +646,7 @@ class ZemberekJPypeBridge:
 
     # ===== Async Wrappers =====
 
-    async def analyze_word_async(self, word: str) -> List[Dict[str, Any]]:
+    async def analyze_word_async(self, word: str) -> list[dict[str, Any]]:
         """Async wrapper for analyze_word"""
         return await asyncio.to_thread(self.analyze_word, word)
 
@@ -654,29 +654,29 @@ class ZemberekJPypeBridge:
         """Async wrapper for lemmatize"""
         return await asyncio.to_thread(self.lemmatize, word)
 
-    async def check_spelling_async(self, word: str) -> Dict[str, Any]:
+    async def check_spelling_async(self, word: str) -> dict[str, Any]:
         """Async wrapper for check_spelling"""
         return await asyncio.to_thread(self.check_spelling, word)
 
-    async def tokenize_async(self, text: str) -> List[Dict[str, Any]]:
+    async def tokenize_async(self, text: str) -> list[dict[str, Any]]:
         """Async wrapper for tokenize"""
         return await asyncio.to_thread(self.tokenize, text)
 
-    async def segment_sentences_async(self, text: str) -> List[str]:
+    async def segment_sentences_async(self, text: str) -> list[str]:
         """Async wrapper for segment_sentences"""
         return await asyncio.to_thread(self.segment_sentences, text)
 
-    async def normalize_async(self, text: str) -> Dict[str, Any]:
+    async def normalize_async(self, text: str) -> dict[str, Any]:
         """Async wrapper for normalize"""
         return await asyncio.to_thread(self.normalize, text)
 
-    async def extract_entities_async(self, text: str) -> List[Dict[str, Any]]:
+    async def extract_entities_async(self, text: str) -> list[dict[str, Any]]:
         """Async wrapper for extract_entities"""
         return await asyncio.to_thread(self.extract_entities, text)
 
 
 # Global bridge instance
-_bridge: Optional[ZemberekJPypeBridge] = None
+_bridge: ZemberekJPypeBridge | None = None
 
 
 def get_bridge() -> ZemberekJPypeBridge:

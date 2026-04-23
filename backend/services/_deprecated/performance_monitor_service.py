@@ -21,12 +21,12 @@ Author: KIRO2 Team
 Date: 2026-01-17
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Tuple
-from collections import defaultdict
-from dataclasses import dataclass, field
 import logging
 import math
+from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 # Scientific computing
 try:
@@ -37,15 +37,14 @@ except ImportError:
     np = None  # type: ignore
 
 # Database
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
-
 # Models
 from backend.models.claude_md_improvement_models import (
+    AuditLog,
     FeedbackRecord,
     RuleEffectiveness,
-    AuditLog,
 )
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +54,7 @@ class BaselineSnapshot:
     """Baseline performance snapshot."""
     snapshot_id: str
     created_at: datetime
-    metrics: Dict[str, float]
+    metrics: dict[str, float]
     sample_size: int
 
 
@@ -76,9 +75,9 @@ class TrendAnalysis:
     metric: str
     trend: str  # "increasing", "decreasing", "stable"
     slope: float
-    moving_average: List[float]
+    moving_average: list[float]
     seasonality_detected: bool
-    seasonality_period: Optional[int]
+    seasonality_period: int | None
 
 
 @dataclass
@@ -112,8 +111,8 @@ class PerformanceMonitorService:
     def __init__(self, db: AsyncSession):
         """Initialize performance monitor."""
         self.db = db
-        self._baselines: Dict[str, BaselineSnapshot] = {}
-        self._metric_history: Dict[str, List[Tuple[datetime, float]]] = defaultdict(list)
+        self._baselines: dict[str, BaselineSnapshot] = {}
+        self._metric_history: dict[str, list[tuple[datetime, float]]] = defaultdict(list)
 
     # =========================================================================
     # REQ-7.1: Baseline Metric Snapshot
@@ -136,7 +135,7 @@ class PerformanceMonitorService:
         metrics = await self._calculate_all_metrics(days=30)
 
         # Get sample size
-        cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+        cutoff = datetime.now(UTC) - timedelta(days=30)
         result = await self.db.execute(
             select(func.count())
             .select_from(FeedbackRecord)
@@ -149,7 +148,7 @@ class PerformanceMonitorService:
 
         baseline = BaselineSnapshot(
             snapshot_id=baseline_id,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             metrics=metrics,
             sample_size=sample_size,
         )
@@ -173,7 +172,7 @@ class PerformanceMonitorService:
     async def get_baseline(
         self,
         baseline_id: str = "default",
-    ) -> Optional[BaselineSnapshot]:
+    ) -> BaselineSnapshot | None:
         """Get baseline by ID."""
         return self._baselines.get(baseline_id)
 
@@ -185,7 +184,7 @@ class PerformanceMonitorService:
         self,
         baseline_id: str = "default",
         period_days: int = 7,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Measure improvement compared to baseline.
 
@@ -246,7 +245,7 @@ class PerformanceMonitorService:
             select(func.count())
             .select_from(FeedbackRecord)
             .where(
-                FeedbackRecord.created_at >= datetime.now(timezone.utc) - timedelta(days=7)
+                FeedbackRecord.created_at >= datetime.now(UTC) - timedelta(days=7)
             )
         )
         total_tasks = result.scalar() or 0
@@ -266,7 +265,7 @@ class PerformanceMonitorService:
     async def check_regression(
         self,
         baseline_id: str = "default",
-    ) -> Tuple[bool, Optional[str]]:
+    ) -> tuple[bool, str | None]:
         """
         Check if performance has regressed and trigger rollback.
 
@@ -309,7 +308,7 @@ class PerformanceMonitorService:
     async def trigger_rollback(
         self,
         reason: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Trigger automatic rollback.
 
@@ -326,7 +325,7 @@ class PerformanceMonitorService:
             result = await self.db.execute(
                 select(RuleEffectiveness)
                 .where(
-                    RuleEffectiveness.last_updated >= datetime.now(timezone.utc) - timedelta(hours=24)
+                    RuleEffectiveness.last_updated >= datetime.now(UTC) - timedelta(hours=24)
                 )
             )
             recent_rules = result.scalars().all()
@@ -420,9 +419,9 @@ class PerformanceMonitorService:
 
     def _calculate_moving_average(
         self,
-        values: List[float],
+        values: list[float],
         window: int,
-    ) -> List[float]:
+    ) -> list[float]:
         """Calculate moving average."""
         if len(values) < window:
             return values
@@ -434,7 +433,7 @@ class PerformanceMonitorService:
 
         return ma
 
-    def _calculate_slope(self, values: List[float]) -> float:
+    def _calculate_slope(self, values: list[float]) -> float:
         """Calculate linear regression slope."""
         n = len(values)
         if n < 2:
@@ -453,8 +452,8 @@ class PerformanceMonitorService:
 
     def _detect_seasonality(
         self,
-        values: List[float],
-    ) -> Tuple[bool, Optional[int]]:
+        values: list[float],
+    ) -> tuple[bool, int | None]:
         """Detect seasonality using autocorrelation."""
         if len(values) < 14:  # Need at least 2 weeks
             return False, None
@@ -472,7 +471,7 @@ class PerformanceMonitorService:
 
     def _autocorrelation(
         self,
-        values: List[float],
+        values: list[float],
         lag: int,
     ) -> float:
         """Calculate autocorrelation at given lag."""
@@ -523,7 +522,7 @@ class PerformanceMonitorService:
                 value=current_value,
                 z_score=0.0,
                 is_anomaly=False,
-                detected_at=datetime.now(timezone.utc),
+                detected_at=datetime.now(UTC),
                 severity="low",
             )
 
@@ -563,11 +562,11 @@ class PerformanceMonitorService:
             value=current_value,
             z_score=z_score,
             is_anomaly=is_anomaly,
-            detected_at=datetime.now(timezone.utc),
+            detected_at=datetime.now(UTC),
             severity=severity,
         )
 
-    async def scan_all_anomalies(self) -> List[AnomalyDetection]:
+    async def scan_all_anomalies(self) -> list[AnomalyDetection]:
         """Scan all metrics for anomalies."""
         metrics = await self._calculate_all_metrics(days=1)
         anomalies = []
@@ -583,7 +582,7 @@ class PerformanceMonitorService:
     # REQ-7.6: Real-time Dashboard
     # =========================================================================
 
-    async def get_dashboard_data(self) -> Dict[str, Any]:
+    async def get_dashboard_data(self) -> dict[str, Any]:
         """
         Get real-time dashboard data.
 
@@ -607,7 +606,7 @@ class PerformanceMonitorService:
         time_series = await self._get_time_series_data(days=14)
 
         return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "current_metrics": {
                 "success_rate": current.task_success_rate,
                 "avg_latency": current.avg_latency,
@@ -642,9 +641,9 @@ class PerformanceMonitorService:
     async def _get_time_series_data(
         self,
         days: int,
-    ) -> Dict[str, List[Dict[str, Any]]]:
+    ) -> dict[str, list[dict[str, Any]]]:
         """Get time series data for charts."""
-        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        cutoff = datetime.now(UTC) - timedelta(days=days)
 
         # Get daily aggregates
         result = await self.db.execute(
@@ -688,7 +687,7 @@ class PerformanceMonitorService:
     def _calculate_health_status(
         self,
         metrics: PerformanceMetrics,
-        anomalies: List[AnomalyDetection],
+        anomalies: list[AnomalyDetection],
     ) -> str:
         """Calculate overall health status."""
         # Check for high severity anomalies
@@ -717,9 +716,9 @@ class PerformanceMonitorService:
     async def _calculate_all_metrics(
         self,
         days: int,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Calculate all metrics for a period."""
-        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        cutoff = datetime.now(UTC) - timedelta(days=days)
 
         # Get aggregates
         result = await self.db.execute(
@@ -749,19 +748,19 @@ class PerformanceMonitorService:
         self,
         metric: str,
         days: int,
-    ) -> List[float]:
+    ) -> list[float]:
         """Get historical values for a metric."""
         # Check in-memory cache first
         if metric in self._metric_history:
             recent = [
                 v for t, v in self._metric_history[metric]
-                if t >= datetime.now(timezone.utc) - timedelta(days=days)
+                if t >= datetime.now(UTC) - timedelta(days=days)
             ]
             if recent:
                 return recent
 
         # Get from database
-        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        cutoff = datetime.now(UTC) - timedelta(days=days)
 
         # Daily aggregates
         result = await self.db.execute(
@@ -794,8 +793,8 @@ class PerformanceMonitorService:
         self,
         action: str,
         entity_type: str,
-        entity_id: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Log audit entry."""
         try:

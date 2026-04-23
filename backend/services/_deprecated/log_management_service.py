@@ -10,8 +10,8 @@ sağlar.
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from elasticsearch import AsyncElasticsearch
 
@@ -252,7 +252,7 @@ class LogManagementService:
             "_meta": {
                 "description": "KIRO2 YKS Platform log template",
                 "created_by": "log_management_service",
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
             },
         }
 
@@ -273,7 +273,7 @@ class LogManagementService:
         Returns:
             bool: Index başarıyla oluşturuldu mu
         """
-        initial_index = f"kiro2-logs-{datetime.now(timezone.utc).strftime('%Y.%m.%d')}-000001"
+        initial_index = f"kiro2-logs-{datetime.now(UTC).strftime('%Y.%m.%d')}-000001"
 
         try:
             # Index zaten var mı kontrol et
@@ -385,7 +385,7 @@ class LogManagementService:
             logger.error(f"Exam events index template hatası: {e}")
             return False
 
-    async def initialize_logging_infrastructure(self) -> Dict[str, bool]:
+    async def initialize_logging_infrastructure(self) -> dict[str, bool]:
         """
         Tüm logging altyapısını başlat.
 
@@ -412,7 +412,7 @@ class LogManagementService:
         logger.info(f"Logging altyapısı başlatıldı: {results}")
         return results
 
-    async def get_ilm_status(self) -> Dict[str, Any]:
+    async def get_ilm_status(self) -> dict[str, Any]:
         """
         ILM policy ve index durumunu getir.
 
@@ -460,7 +460,7 @@ class LogManagementService:
             logger.error(f"Rollover hatası: {e}")
             return False
 
-    async def get_index_stats(self) -> Dict[str, Any]:
+    async def get_index_stats(self) -> dict[str, Any]:
         """
         Log index istatistiklerini getir.
 
@@ -492,7 +492,7 @@ class LogManagementService:
             logger.error(f"Index stats hatası: {e}")
             return {"error": str(e)}
 
-    async def cleanup_old_indices(self, older_than_days: int = 30) -> List[str]:
+    async def cleanup_old_indices(self, older_than_days: int = 30) -> list[str]:
         """
         Eski index'leri manuel olarak temizle (ILM'e ek olarak).
 
@@ -512,7 +512,7 @@ class LogManagementService:
                     # Format: kiro2-logs-YYYY.MM.dd-000001
                     date_part = index_name.split("-")[2]
                     index_date = datetime.strptime(date_part, "%Y.%m.%d")
-                    age_days = (datetime.now(timezone.utc) - index_date).days
+                    age_days = (datetime.now(UTC) - index_date).days
 
                     if age_days > older_than_days:
                         await self.es_client.indices.delete(index=index_name)
@@ -528,7 +528,7 @@ class LogManagementService:
 
 
 # Global service instance
-_log_management_service: Optional[LogManagementService] = None
+_log_management_service: LogManagementService | None = None
 
 
 async def get_log_management_service() -> LogManagementService:
@@ -542,6 +542,7 @@ async def get_log_management_service() -> LogManagementService:
 
     if _log_management_service is None:
         from elasticsearch import AsyncElasticsearch
+
         from core.config import settings
 
         es_client = AsyncElasticsearch(

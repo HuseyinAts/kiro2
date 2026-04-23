@@ -17,30 +17,30 @@ from unittest.mock import AsyncMock, Mock
 
 # Service imports
 try:
-    from services.video_recommendation_service import (
-        VideoRecommendationService,
-        StudentProfile,
+    from core.error_handler import (
+        CacheError,
+        CircuitBreaker,
+        CircuitBreakerConfig,
+        CircuitBreakerOpenError,
+        CircuitState,
+        ErrorCategory,
+        ErrorClassification,
+        ErrorHandler,
+        VideoTimeoutError,
+        YouTubeAPIError,
+    )
+    from core.exceptions import ErrorSeverity
+    from services.health_check_service import (
+        HealthCheckService,
     )
     from services.turkish_content_filter import (
         TurkishContentFilter,
         TurkishValidationResult,
     )
-    from services.health_check_service import (
-        HealthCheckService,
+    from services.video_recommendation_service import (
+        StudentProfile,
+        VideoRecommendationService,
     )
-    from core.error_handler import (
-        ErrorHandler,
-        CircuitBreaker,
-        CircuitState,
-        CircuitBreakerConfig,
-        ErrorCategory,
-        ErrorClassification,
-        YouTubeAPIError,
-        CacheError,
-        VideoTimeoutError,
-        CircuitBreakerOpenError,
-    )
-    from core.exceptions import ErrorSeverity
 except (ImportError, ModuleNotFoundError):
     pass
 

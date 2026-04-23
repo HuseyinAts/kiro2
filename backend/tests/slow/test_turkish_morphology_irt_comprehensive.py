@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -20,8 +21,6 @@ import pytest
 
 from algorithms.turkish_morphology_aware_irt import TurkishMorphologyAwareIRT
 from models.learning_models import Question, Student
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

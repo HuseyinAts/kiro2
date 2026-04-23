@@ -9,14 +9,15 @@ running infrastructure.
 """
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, Mock, patch
 
-import pytest
 import httpx
+import pytest
 from httpx import AsyncClient
 
 from main import app

@@ -10,16 +10,18 @@ Tests:
 """
 
 import threading
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+
+from mcp_servers.zemberek_nlp.bridge.exceptions import (
+    AnalysisError,
+    JVMInitializationError,
+    JVMNotStartedError,
+)
 
 # Import bridge module
 from mcp_servers.zemberek_nlp.bridge.jpype_bridge import ZemberekJPypeBridge, get_bridge
-from mcp_servers.zemberek_nlp.bridge.exceptions import (
-    JVMInitializationError,
-    JVMNotStartedError,
-    AnalysisError,
-)
 
 
 class TestSingletonPattern:

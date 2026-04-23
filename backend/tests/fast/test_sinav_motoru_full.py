@@ -13,10 +13,9 @@ Tests:
 - Result generation
 """
 
-import pytest
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from datetime import UTC, datetime
 
+import pytest
 
 # ==================== MOCK MODELS ====================
 
@@ -31,7 +30,7 @@ class Question:
         topic: str,
         difficulty: float,
         correct_answer: str,
-        options: List[str],
+        options: list[str],
         points: int = 1,
     ):
         self.question_id = question_id
@@ -52,7 +51,7 @@ class ExamConfig:
         exam_type: str,
         total_questions: int,
         duration_minutes: int,
-        subjects: Dict[str, int],
+        subjects: dict[str, int],
     ):
         self.exam_type = exam_type  # "tyt", "ayt", "lgs"
         self.total_questions = total_questions
@@ -65,12 +64,12 @@ class ExamConfig:
 class StudentAnswer:
     """Öğrenci cevabı"""
 
-    def __init__(self, question_id: str, answer: Optional[str], time_spent: int):
+    def __init__(self, question_id: str, answer: str | None, time_spent: int):
         self.question_id = question_id
         self.answer = answer  # None = boş
         self.time_spent = time_spent  # saniye
         self.is_correct = False
-        self.answered_at = datetime.now(timezone.utc)
+        self.answered_at = datetime.now(UTC)
 
 
 class ExamResult:
@@ -93,11 +92,11 @@ class ExamResult:
 class Exam:
     """Sınav modeli"""
 
-    def __init__(self, exam_id: str, config: ExamConfig, questions: List[Question]):
+    def __init__(self, exam_id: str, config: ExamConfig, questions: list[Question]):
         self.exam_id = exam_id
         self.config = config
         self.questions = questions
-        self.created_at = datetime.now(timezone.utc)
+        self.created_at = datetime.now(UTC)
         self.start_time = None
         self.end_time = None
         self.student_answers = {}
@@ -105,7 +104,7 @@ class Exam:
 
     def start_exam(self) -> datetime:
         """Sınavı başlat"""
-        self.start_time = datetime.now(timezone.utc)
+        self.start_time = datetime.now(UTC)
         self.status = "in_progress"
         return self.start_time
 
@@ -114,7 +113,7 @@ class Exam:
         if not self.start_time or self.status == "completed":
             return 0
 
-        elapsed = (datetime.now(timezone.utc) - self.start_time).total_seconds()
+        elapsed = (datetime.now(UTC) - self.start_time).total_seconds()
         total_seconds = self.config.duration_minutes * 60
         remaining = max(0, total_seconds - elapsed)
 
@@ -141,7 +140,7 @@ class Exam:
 
     def complete_exam(self):
         """Sınavı tamamla"""
-        self.end_time = datetime.now(timezone.utc)
+        self.end_time = datetime.now(UTC)
         self.status = "completed"
 
 
@@ -152,8 +151,8 @@ class QuestionSelector:
     """Soru seçim algoritması"""
 
     def select_questions(
-        self, question_pool: List[Question], config: ExamConfig
-    ) -> List[Question]:
+        self, question_pool: list[Question], config: ExamConfig
+    ) -> list[Question]:
         """Sınav için soru seç"""
 
         selected = []
@@ -173,8 +172,8 @@ class QuestionSelector:
         return selected[: config.total_questions]
 
     def balance_difficulty(
-        self, questions: List[Question], target_difficulty: float = 0.5
-    ) -> List[Question]:
+        self, questions: list[Question], target_difficulty: float = 0.5
+    ) -> list[Question]:
         """Zorluk dengesini kontrol et"""
 
         if not questions:
@@ -216,10 +215,10 @@ class AnswerValidator:
 
     def calculate_score(
         self,
-        questions: List[Question],
-        answers: Dict[str, StudentAnswer],
+        questions: list[Question],
+        answers: dict[str, StudentAnswer],
         wrong_penalty: float = 0.25,
-    ) -> Dict:
+    ) -> dict:
         """Puan hesapla"""
 
         correct = 0
@@ -260,7 +259,7 @@ class ExamEngine:
         self.active_exams = {}
 
     def create_exam(
-        self, exam_id: str, config: ExamConfig, question_pool: List[Question]
+        self, exam_id: str, config: ExamConfig, question_pool: list[Question]
     ) -> Exam:
         """Sınav oluştur"""
 
@@ -277,7 +276,7 @@ class ExamEngine:
 
         return exam
 
-    def start_exam(self, exam_id: str) -> Optional[Exam]:
+    def start_exam(self, exam_id: str) -> Exam | None:
         """Sınavı başlat"""
         exam = self.active_exams.get(exam_id)
 
@@ -321,7 +320,7 @@ class ExamEngine:
         result.empty_answers = score_data["empty"]
         result.net_score = score_data["net_score"]
         result.raw_score = score_data["raw_score"]
-        result.completed_at = datetime.now(timezone.utc)
+        result.completed_at = datetime.now(UTC)
 
         # Ders bazlı skorları hesapla
         for subject in exam.config.subjects.keys():

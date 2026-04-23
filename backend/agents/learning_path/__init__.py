@@ -28,21 +28,21 @@ __version__ = "2.0.0"
 __author__ = "Teknofest 2025 Team"
 
 from .agent import LearningPathAgent
+from .config import LearningPathConfig, config, get_learning_path_config
 from .facade import (
-    LearningPathFacade,
     FacadeConfig,
+    LearningPathFacade,
     get_learning_path_facade,
 )
 from .models import (
-    StudentProfile,
-    LearningResource,
+    KnowledgeLevel,
     LearningPath,
     LearningPhase,
-    PathNode,
+    LearningResource,
     LearningStyle,
-    KnowledgeLevel,
+    PathNode,
+    StudentProfile,
 )
-from .config import LearningPathConfig, get_learning_path_config, config
 
 __all__ = [
     # Legacy Agent (to be replaced)

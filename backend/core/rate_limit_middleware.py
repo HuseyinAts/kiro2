@@ -5,7 +5,6 @@ PHASE 2 Sprint 6: Advanced Rate Limiting
 Applies distributed rate limiting to all API requests.
 Adds RFC 6585 compliant headers to responses.
 """
-from typing import Optional
 from datetime import datetime
 
 from fastapi import Request, Response, status
@@ -13,11 +12,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from core.advanced_rate_limiter import (
-    AdvancedRateLimiter,
-    UserTier,
-    get_rate_limiter
-)
+from core.advanced_rate_limiter import AdvancedRateLimiter, UserTier, get_rate_limiter
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
@@ -38,8 +33,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     def __init__(
         self,
         app: ASGIApp,
-        rate_limiter: Optional[AdvancedRateLimiter] = None,
-        excluded_paths: Optional[list] = None
+        rate_limiter: AdvancedRateLimiter | None = None,
+        excluded_paths: list | None = None
     ):
         """
         Initialize rate limit middleware
@@ -94,10 +89,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         if user_role == "admin" or user_role == "superadmin":
             return UserTier.ADMIN
-        elif user_role == "premium" or getattr(user, "is_premium", False):
+        if user_role == "premium" or getattr(user, "is_premium", False):
             return UserTier.PREMIUM
-        else:
-            return UserTier.FREE
+        return UserTier.FREE
 
     def _get_identifier(self, request: Request) -> str:
         """

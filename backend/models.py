@@ -4,7 +4,7 @@ Ultra simple, no authentication required
 """
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -14,7 +14,7 @@ class ChatRequest(BaseModel):
 
     agent: str = Field(..., description="Agent type: learning, study, or exam")
     message: str = Field(..., description="User message")
-    session_id: Optional[str] = Field(
+    session_id: str | None = Field(
         None, description="Optional session ID for history tracking"
     )
 
@@ -25,7 +25,7 @@ class ChatResponse(BaseModel):
     response: str = Field(..., description="Agent response")
     agent: str = Field(..., description="Agent that responded")
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
-    session_id: Optional[str] = None
+    session_id: str | None = None
 
 
 class AgentInfo(BaseModel):
@@ -42,7 +42,7 @@ class SessionMessage(BaseModel):
 
     role: str  # 'user' or 'agent'
     content: str
-    agent: Optional[str] = None
+    agent: str | None = None
     timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
 
 
@@ -50,9 +50,9 @@ class WebSocketMessage(BaseModel):
     """WebSocket message model"""
 
     type: str  # 'chat', 'status', 'error'
-    agent: Optional[str] = None
-    message: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
+    agent: str | None = None
+    message: str | None = None
+    data: dict[str, Any] | None = None
 
 
 # ==================== KULLANICI MODELLERİ ====================
@@ -74,13 +74,13 @@ class Kullanici(BaseModel):
     kullanici_id: str = Field(..., alias="id")
     email: str
     ad_soyad: str
-    telefon: Optional[str] = None
+    telefon: str | None = None
     rol: KullaniciRolu
     aktif: bool = True
     olusturma_tarihi: datetime = Field(..., alias="kayit_tarihi")
-    son_giris: Optional[datetime] = None
-    son_guncelleme: Optional[datetime] = None
-    profil_resmi: Optional[str] = None
+    son_giris: datetime | None = None
+    son_guncelleme: datetime | None = None
+    profil_resmi: str | None = None
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -101,8 +101,8 @@ class KullaniciGiris(BaseModel):
     """Kullanıcı giriş modeli - Hem 'sifre' hem 'password' kabul eder"""
 
     email: str = Field(..., description="Kullanıcı email adresi")
-    sifre: Optional[str] = Field(None, description="Kullanıcı şifresi (Türkçe)")
-    password: Optional[str] = Field(None, description="Kullanıcı şifresi (İngilizce)")
+    sifre: str | None = Field(None, description="Kullanıcı şifresi (Türkçe)")
+    password: str | None = Field(None, description="Kullanıcı şifresi (İngilizce)")
 
     model_config = ConfigDict(extra="allow")
 
@@ -125,9 +125,9 @@ class OgrenciProfili(BaseModel):
 
     ogrenci_id: str
     kullanici_id: str
-    sinif: Optional[int] = None
-    okul: Optional[str] = None
-    hedef_puan: Optional[float] = None
+    sinif: int | None = None
+    okul: str | None = None
+    hedef_puan: float | None = None
 
 
 class OgretmenProfili(BaseModel):
@@ -135,8 +135,8 @@ class OgretmenProfili(BaseModel):
 
     ogretmen_id: str
     kullanici_id: str
-    brans: Optional[str] = None
-    okul: Optional[str] = None
+    brans: str | None = None
+    okul: str | None = None
 
 
 class VeliProfili(BaseModel):
@@ -144,4 +144,4 @@ class VeliProfili(BaseModel):
 
     veli_id: str
     kullanici_id: str
-    cocuk_sayisi: Optional[int] = None
+    cocuk_sayisi: int | None = None

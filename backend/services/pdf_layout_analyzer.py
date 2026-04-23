@@ -4,17 +4,17 @@ Advanced layout detection and structure preservation for ÖSYM PDFs
 """
 
 import logging
-from typing import List, Dict, Any, Optional
 import re
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 try:
+    import cv2
+    import numpy as np
     import pdfplumber
     import pytesseract
     from pdf2image import convert_from_path
-    import cv2
-    import numpy as np
     PDF_LIBS_AVAILABLE = True
 except ImportError:
     PDF_LIBS_AVAILABLE = False
@@ -44,7 +44,7 @@ class PDFLayoutAnalyzer:
         # Option patterns (A-E)
         self.option_pattern = r'([A-E])\)\s*(.+?)(?=[A-E]\)|$)'
 
-    def analyze_pdf_layout(self, pdf_path: str) -> Dict[str, Any]:
+    def analyze_pdf_layout(self, pdf_path: str) -> dict[str, Any]:
         """
         Analyze PDF layout and extract structure
 
@@ -87,7 +87,7 @@ class PDFLayoutAnalyzer:
             logger.error(f"PDF layout analysis failed: {e}")
             raise
 
-    def _extract_tables(self, page) -> List[Dict[str, Any]]:
+    def _extract_tables(self, page) -> list[dict[str, Any]]:
         """Extract tables from page"""
         tables = []
 
@@ -108,7 +108,7 @@ class PDFLayoutAnalyzer:
 
         return tables
 
-    def _detect_images(self, page) -> List[Dict[str, Any]]:
+    def _detect_images(self, page) -> list[dict[str, Any]]:
         """Detect images/figures in page"""
         images = []
 
@@ -131,7 +131,7 @@ class PDFLayoutAnalyzer:
 
         return images
 
-    def _analyze_page_layout(self, page) -> Dict[str, Any]:
+    def _analyze_page_layout(self, page) -> dict[str, Any]:
         """Analyze page layout structure"""
         return {
             'width': page.width,
@@ -152,7 +152,7 @@ class PDFLayoutAnalyzer:
         avg_line_length = sum(len(line) for line in lines) / len(lines) if lines else 0
         return avg_line_length < 40
 
-    def _detect_header(self, page) -> Optional[Dict[str, float]]:
+    def _detect_header(self, page) -> dict[str, float] | None:
         """Detect header region"""
         # Top 10% of page
         return {
@@ -162,7 +162,7 @@ class PDFLayoutAnalyzer:
             'x1': page.width
         }
 
-    def _detect_footer(self, page) -> Optional[Dict[str, float]]:
+    def _detect_footer(self, page) -> dict[str, float] | None:
         """Detect footer region"""
         # Bottom 10% of page
         return {
@@ -203,7 +203,7 @@ class PDFLayoutAnalyzer:
             logger.error(f"OCR failed: {e}")
             return ""
 
-    def _extract_questions_from_pages(self, pages: List[Dict]) -> List[Dict[str, Any]]:
+    def _extract_questions_from_pages(self, pages: list[dict]) -> list[dict[str, Any]]:
         """Extract questions from analyzed pages"""
         questions = []
 
@@ -232,7 +232,7 @@ class PDFLayoutAnalyzer:
 
         return questions
 
-    def _extract_options(self, text: str) -> Dict[str, str]:
+    def _extract_options(self, text: str) -> dict[str, str]:
         """Extract answer options A-E"""
         options = {}
 
@@ -245,7 +245,7 @@ class PDFLayoutAnalyzer:
 
         return options
 
-    def extract_metadata(self, pdf_path: str) -> Dict[str, Any]:
+    def extract_metadata(self, pdf_path: str) -> dict[str, Any]:
         """Extract PDF metadata (exam type, year, etc.)"""
         metadata = {
             'exam_type': None,
@@ -284,7 +284,7 @@ class PDFLayoutAnalyzer:
 
         return metadata
 
-    def calculate_confidence_score(self, extracted_question: Dict[str, Any]) -> float:
+    def calculate_confidence_score(self, extracted_question: dict[str, Any]) -> float:
         """
         Calculate confidence score for extracted question
 

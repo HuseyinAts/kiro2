@@ -3,7 +3,6 @@ Photo Ask API — F3 "Fotoğrafla Sor" Endpoints
 Upload a photo of a question → OCR → find similar questions → AI solve.
 """
 
-from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel
@@ -26,15 +25,15 @@ ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/heic"}
 
 class MatchedQuestion(BaseModel):
     id: str
-    question_text: Optional[str] = None
-    question_image_url: Optional[str] = None
-    exam_type: Optional[str] = None
-    subject_area: Optional[str] = None
-    source_book: Optional[str] = None
-    difficulty: Optional[str] = None
-    correct_answer: Optional[str] = None
-    options: Optional[dict[str, Optional[str]]] = None
-    explanation: Optional[str] = None
+    question_text: str | None = None
+    question_image_url: str | None = None
+    exam_type: str | None = None
+    subject_area: str | None = None
+    source_book: str | None = None
+    difficulty: str | None = None
+    correct_answer: str | None = None
+    options: dict[str, str | None] | None = None
+    explanation: str | None = None
     similarity: float
 
 
@@ -42,26 +41,26 @@ class AISolution(BaseModel):
     solution: str
     model: str
     generated: bool
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class PhotoAskResponse(BaseModel):
     status: str  # matched, partial_match, ai_solved, ocr_failed
     ocr_text: str
     ocr_confidence: float
-    ocr_time_ms: Optional[int] = None
+    ocr_time_ms: int | None = None
     matched_questions: list[MatchedQuestion]
-    ai_solution: Optional[AISolution] = None
+    ai_solution: AISolution | None = None
     total_time_ms: int
     message: str
 
 
 class QuestionSolutionResponse(BaseModel):
     question_id: str
-    question_text: Optional[str] = None
-    correct_answer: Optional[str] = None
-    explanation: Optional[str] = None
-    options: Optional[dict[str, Optional[str]]] = None
+    question_text: str | None = None
+    correct_answer: str | None = None
+    explanation: str | None = None
+    options: dict[str, str | None] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -75,7 +74,7 @@ class QuestionSolutionResponse(BaseModel):
 )
 async def upload_and_search(
     file: UploadFile = File(...),
-    subject: Optional[str] = None,
+    subject: str | None = None,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Upload a photo of a question. Returns OCR text, similar questions, and AI solution."""

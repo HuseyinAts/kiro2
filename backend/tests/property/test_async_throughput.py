@@ -9,13 +9,15 @@ Requirements: REQ-1.6
 
 import asyncio
 import time
+
 import pytest
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from core.async_utils import (
-    gather_with_results,
     AsyncPool,
     batch_process,
+    gather_with_results,
     run_with_timeout,
 )
 

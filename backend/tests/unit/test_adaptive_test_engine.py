@@ -6,8 +6,9 @@ Requirements: REQ-49.17-49.32
 Bu test dosyası adaptif test motorunun tüm bileşenlerini test eder.
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
 
 try:
     from services.adaptive_test_engine import (

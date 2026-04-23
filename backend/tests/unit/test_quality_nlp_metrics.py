@@ -11,7 +11,7 @@ pytestmark = pytest.mark.skip(
     reason="NLP metrics hesaplama algoritması güncellendi - BLEU/ROUGE/BERT skorları değişti. "
     "Testler güncellenmeli."
 )
-from services.quality.nlp_metrics_calculator import NLPMetricsCalculator, NLPMetrics
+from services.quality.nlp_metrics_calculator import NLPMetrics, NLPMetricsCalculator
 
 
 class TestNLPMetricsCalculator:

@@ -5,14 +5,15 @@ Soru bankası, eğitim materyalleri ve içerik onay/reddetme işlemleri
 import math
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
 from models.database import EducationalContent, QuestionDifficulty, SubjectArea
-from models.question_bank import QuestionBankItem as Question, QuestionDifficultyLevel, TopicHierarchy
+from models.question_bank import QuestionBankItem as Question
+from models.question_bank import QuestionDifficultyLevel, TopicHierarchy
 from services.soru_bankasi_service import SoruBankasiServisi
 
 
@@ -61,13 +62,13 @@ class ContentManagementService:
 
     async def soru_bankasi_listele(
         self,
-        sinav_tipi: Optional[str] = None,
-        konu: Optional[str] = None,
-        zorluk_seviyesi: Optional[str] = None,
-        onay_durumu: Optional[str] = None,
+        sinav_tipi: str | None = None,
+        konu: str | None = None,
+        zorluk_seviyesi: str | None = None,
+        onay_durumu: str | None = None,
         sayfa: int = 1,
         sayfa_boyutu: int = 20,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Soru bankasındaki soruları listele ve filtrele
         """
@@ -155,24 +156,24 @@ class ContentManagementService:
                 }
 
             except Exception as e:
-                print(f"Soru bankası listeleme hatası: {str(e)}")
+                print(f"Soru bankası listeleme hatası: {e!s}")
                 return {"sorular": [], "toplam_soru": 0, "toplam_sayfa": 0}
 
-    async def soru_ekle(self, soru_data: Dict[str, Any]) -> Question:
+    async def soru_ekle(self, soru_data: dict[str, Any]) -> Question:
         """
         Soru bankasına yeni soru ekle
         """
         return await self.soru_bankasi_servisi.soru_ekle(soru_data)
 
-    async def soru_getir(self, soru_id: str) -> Optional[Question]:
+    async def soru_getir(self, soru_id: str) -> Question | None:
         """
         Soru ID ile soru getir
         """
         return await self.soru_bankasi_servisi.soru_getir(soru_id)
 
     async def soru_guncelle(
-        self, soru_id: str, soru_data: Dict[str, Any]
-    ) -> Optional[Question]:
+        self, soru_id: str, soru_data: dict[str, Any]
+    ) -> Question | None:
         """
         Mevcut soruyu güncelle
         """
@@ -185,7 +186,7 @@ class ContentManagementService:
         return await self.soru_bankasi_servisi.soru_sil(soru_id)
 
     async def soru_onay_durumu_guncelle(
-        self, soru_id: str, onay_data: Dict[str, Any]
+        self, soru_id: str, onay_data: dict[str, Any]
     ) -> bool:
         """
         Soru onay durumunu güncelle
@@ -218,21 +219,21 @@ class ContentManagementService:
 
             except Exception as e:
                 await session.rollback()
-                print(f"Soru onay durumu güncelleme hatası: {str(e)}")
+                print(f"Soru onay durumu güncelleme hatası: {e!s}")
                 return False
 
     # ==================== EĞİTİM MATERYALİ CRUD İŞLEMLERİ ====================
 
     async def egitim_materyalleri_listele(
         self,
-        icerik_turu: Optional[str] = None,
-        konu: Optional[str] = None,
-        platform: Optional[str] = None,
-        zorluk_seviyesi: Optional[str] = None,
-        onay_durumu: Optional[str] = None,
+        icerik_turu: str | None = None,
+        konu: str | None = None,
+        platform: str | None = None,
+        zorluk_seviyesi: str | None = None,
+        onay_durumu: str | None = None,
         sayfa: int = 1,
         sayfa_boyutu: int = 20,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Eğitim materyallerini listele ve filtrele
         """
@@ -334,11 +335,11 @@ class ContentManagementService:
                 }
 
             except Exception as e:
-                print(f"Eğitim materyalleri listeleme hatası: {str(e)}")
+                print(f"Eğitim materyalleri listeleme hatası: {e!s}")
                 return {"materyaller": [], "toplam_materyal": 0, "toplam_sayfa": 0}
 
     async def egitim_materyali_ekle(
-        self, materyal_data: Dict[str, Any]
+        self, materyal_data: dict[str, Any]
     ) -> EducationalContent:
         """
         Yeni eğitim materyali ekle
@@ -382,11 +383,11 @@ class ContentManagementService:
 
             except Exception as e:
                 await session.rollback()
-                raise Exception(f"Eğitim materyali eklenirken hata oluştu: {str(e)}")
+                raise Exception(f"Eğitim materyali eklenirken hata oluştu: {e!s}")
 
     async def egitim_materyali_getir(
         self, materyal_id: str
-    ) -> Optional[EducationalContent]:
+    ) -> EducationalContent | None:
         """
         Materyal ID ile eğitim materyali getir
         """
@@ -398,12 +399,12 @@ class ContentManagementService:
                 result = await session.execute(stmt)
                 return result.scalar_one_or_none()
             except Exception as e:
-                print(f"Eğitim materyali getirme hatası: {str(e)}")
+                print(f"Eğitim materyali getirme hatası: {e!s}")
                 return None
 
     async def egitim_materyali_guncelle(
-        self, materyal_id: str, materyal_data: Dict[str, Any]
-    ) -> Optional[EducationalContent]:
+        self, materyal_id: str, materyal_data: dict[str, Any]
+    ) -> EducationalContent | None:
         """
         Mevcut eğitim materyalini güncelle
         """
@@ -445,7 +446,7 @@ class ContentManagementService:
 
             except Exception as e:
                 await session.rollback()
-                print(f"Eğitim materyali güncelleme hatası: {str(e)}")
+                print(f"Eğitim materyali güncelleme hatası: {e!s}")
                 return None
 
     async def egitim_materyali_sil(self, materyal_id: str) -> bool:
@@ -473,11 +474,11 @@ class ContentManagementService:
 
             except Exception as e:
                 await session.rollback()
-                print(f"Eğitim materyali silme hatası: {str(e)}")
+                print(f"Eğitim materyali silme hatası: {e!s}")
                 return False
 
     async def egitim_materyali_onay_durumu_guncelle(
-        self, materyal_id: str, onay_data: Dict[str, Any]
+        self, materyal_id: str, onay_data: dict[str, Any]
     ) -> bool:
         """
         Eğitim materyali onay durumunu güncelle
@@ -512,14 +513,14 @@ class ContentManagementService:
 
             except Exception as e:
                 await session.rollback()
-                print(f"Eğitim materyali onay durumu güncelleme hatası: {str(e)}")
+                print(f"Eğitim materyali onay durumu güncelleme hatası: {e!s}")
                 return False
 
     # ==================== TOPLU İÇERİK YÜKLEME ====================
 
     async def toplu_soru_yukle(
-        self, sorular_data: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, sorular_data: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Toplu soru yükleme
         FIX N+1: Batch commit instead of per-item commits (10x faster)
@@ -558,8 +559,8 @@ class ContentManagementService:
         }
 
     async def toplu_egitim_materyali_yukle(
-        self, materyaller_data: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, materyaller_data: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Toplu eğitim materyali yükleme
         FIX N+1: Batch commit all materials at once (10x faster)
@@ -630,7 +631,7 @@ class ContentManagementService:
                     basarili_sayisi = 0
                     hatalar = [{
                         "sira": "batch",
-                        "hata": f"Batch commit failed: {str(e)}",
+                        "hata": f"Batch commit failed: {e!s}",
                         "baslik": "All materials"
                     }]
 
@@ -642,7 +643,7 @@ class ContentManagementService:
 
     # ==================== İÇERİK KATEGORİLENDİRME ====================
 
-    async def icerik_kategorileri_getir(self) -> Dict[str, Any]:
+    async def icerik_kategorileri_getir(self) -> dict[str, Any]:
         """
         Mevcut içerik kategorilerini getir
         """
@@ -660,12 +661,12 @@ class ContentManagementService:
             return kategoriler
 
         except Exception as e:
-            print(f"Kategori getirme hatası: {str(e)}")
+            print(f"Kategori getirme hatası: {e!s}")
             return {}
 
     async def icerik_kategorisi_ekle(
-        self, kategori_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, kategori_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Yeni içerik kategorisi ekle (şimdilik basit implementasyon)
         """
@@ -685,12 +686,12 @@ class ContentManagementService:
     async def icerik_ara(
         self,
         arama_terimi: str,
-        icerik_turu: Optional[str] = None,
-        konu: Optional[str] = None,
-        zorluk_seviyesi: Optional[str] = None,
+        icerik_turu: str | None = None,
+        konu: str | None = None,
+        zorluk_seviyesi: str | None = None,
         sayfa: int = 1,
         sayfa_boyutu: int = 20,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         İçerik arama (sorular ve eğitim materyalleri)
         """
@@ -737,18 +738,18 @@ class ContentManagementService:
                 }
 
             except Exception as e:
-                print(f"İçerik arama hatası: {str(e)}")
+                print(f"İçerik arama hatası: {e!s}")
                 return {"sonuclar": [], "toplam_sonuc": 0, "toplam_sayfa": 0}
 
     async def _soru_ara(
         self,
         session: AsyncSession,
         arama_terimi: str,
-        konu: Optional[str],
-        zorluk_seviyesi: Optional[str],
+        konu: str | None,
+        zorluk_seviyesi: str | None,
         sayfa: int,
         sayfa_boyutu: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Soru arama yardımcı fonksiyonu
         """
@@ -833,18 +834,18 @@ class ContentManagementService:
             return {"sonuclar": sonuclar, "toplam": toplam}
 
         except Exception as e:
-            print(f"Soru arama hatası: {str(e)}")
+            print(f"Soru arama hatası: {e!s}")
             return {"sonuclar": [], "toplam": 0}
 
     async def _egitim_materyali_ara(
         self,
         session: AsyncSession,
         arama_terimi: str,
-        konu: Optional[str],
-        zorluk_seviyesi: Optional[str],
+        konu: str | None,
+        zorluk_seviyesi: str | None,
         sayfa: int,
         sayfa_boyutu: int,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Eğitim materyali arama yardımcı fonksiyonu
         """
@@ -925,10 +926,10 @@ class ContentManagementService:
             return {"sonuclar": sonuclar, "toplam": toplam}
 
         except Exception as e:
-            print(f"Eğitim materyali arama hatası: {str(e)}")
+            print(f"Eğitim materyali arama hatası: {e!s}")
             return {"sonuclar": [], "toplam": 0}
 
-    async def filtre_secenekleri_getir(self) -> Dict[str, Any]:
+    async def filtre_secenekleri_getir(self) -> dict[str, Any]:
         """
         Filtreleme için mevcut seçenekleri getir
         """
@@ -973,12 +974,12 @@ class ContentManagementService:
                 }
 
             except Exception as e:
-                print(f"Filtre seçenekleri getirme hatası: {str(e)}")
+                print(f"Filtre seçenekleri getirme hatası: {e!s}")
                 return {}
 
     # ==================== İÇERİK İSTATİSTİKLERİ ====================
 
-    async def icerik_istatistikleri_getir(self) -> Dict[str, Any]:
+    async def icerik_istatistikleri_getir(self) -> dict[str, Any]:
         """
         İçerik yönetimi istatistikleri
         """
@@ -1040,7 +1041,7 @@ class ContentManagementService:
                 }
 
             except Exception as e:
-                print(f"İstatistik hesaplama hatası: {str(e)}")
+                print(f"İstatistik hesaplama hatası: {e!s}")
                 return {}
 
 

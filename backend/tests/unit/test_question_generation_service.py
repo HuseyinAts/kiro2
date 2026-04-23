@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -19,24 +20,24 @@ Tests AI-powered question generation:
 - Subject-specific questions
 """
 
-import pytest
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
-from services.question_generation_service import QuestionGenerationService
+import pytest
+
+from models.curriculum import ExamType, GradeLevel, SubjectType
 from models.question_generation import (
-    QuestionType,
-    DifficultyLevel,
     CognitiveLevel,
+    DifficultyLevel,
     GeneratedQuestion,
+    OSYMQuestionFormat,
     QuestionGenerationRequest,
     QuestionTemplate,
+    QuestionType,
     QuestionValidationResult,
-    OSYMQuestionFormat,
 )
-from models.curriculum import ExamType, GradeLevel, SubjectType
-
+from services.question_generation_service import QuestionGenerationService
 
 # ==================== FIXTURES ====================
 

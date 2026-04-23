@@ -3,16 +3,18 @@ Comprehensive tests for core.encoding module
 Target: 95%+ coverage for critical encoding module
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from core.encoding import (
     ensure_utf8_encoding,
-    turkish_safe_encode,
-    turkish_safe_decode,
-    normalize_turkish_text,
     get_system_encoding,
-    safe_json_encode,
+    normalize_turkish_text,
     safe_json_decode,
+    safe_json_encode,
+    turkish_safe_decode,
+    turkish_safe_encode,
 )
 
 

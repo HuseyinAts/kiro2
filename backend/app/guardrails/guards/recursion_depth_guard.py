@@ -4,8 +4,8 @@ import sys
 import traceback
 from typing import Any
 
-from .base_guard import BaseGuard
 from ..models import GuardResult, GuardStatus
+from .base_guard import BaseGuard
 
 logger = logging.getLogger(__name__)
 

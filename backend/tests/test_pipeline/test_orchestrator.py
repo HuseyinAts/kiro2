@@ -7,14 +7,15 @@ Property Tests (design.md):
 - Property 6: Retry Logic
 """
 
-import pytest
+from datetime import UTC
 from unittest.mock import AsyncMock
 
-# Note: conftest.py adds backend dir to sys.path
+import pytest
 
+# Note: conftest.py adds backend dir to sys.path
 from pipeline.orchestrator import PipelineOrchestrator
-from pipeline.stage_base import StageInput, StageOutput
 from pipeline.pipeline_state import PipelineStatus
+from pipeline.stage_base import StageInput, StageOutput
 
 
 class TestPipelineOrchestrator:
@@ -65,8 +66,9 @@ class TestPipelineOrchestrator:
 
     def test_final_score_calculation(self, orchestrator):
         """Final skor hesaplama testi"""
+        from datetime import datetime
+
         from pipeline.pipeline_state import StageResult
-        from datetime import datetime, timezone
 
         results = [
             StageResult(
@@ -74,14 +76,14 @@ class TestPipelineOrchestrator:
                 score=0.9,
                 passed=True,
                 duration=10.0,
-                completed_at=datetime.now(timezone.utc)
+                completed_at=datetime.now(UTC)
             ),
             StageResult(
                 stage_name="difficulty_calibration",
                 score=0.8,
                 passed=True,
                 duration=5.0,
-                completed_at=datetime.now(timezone.utc)
+                completed_at=datetime.now(UTC)
             )
         ]
 

@@ -23,7 +23,8 @@ from __future__ import annotations
 import json
 import logging
 import os
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 import httpx
 
@@ -33,7 +34,6 @@ logger = logging.getLogger(__name__)
 class OllamaError(Exception):
     """Ollama API error."""
 
-    pass
 
 
 class LLMService:

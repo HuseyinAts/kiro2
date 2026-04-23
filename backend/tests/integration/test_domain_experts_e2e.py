@@ -12,41 +12,38 @@ Test 6 domain expert agents with real YKS-style questions:
 """
 
 import time
-from typing import List
 
 import pytest
 
 # Module skip: Agent API changed - process_question → process_request (28 occurrences)
 pytestmark = pytest.mark.skipif(True, reason="Agent API changed: process_question renamed to process_request")
 
-from agents.domain_experts import (
-    DomainType,
-    DomainResponse,
-    MatematikAgent,
-    FizikAgent,
-    TurkceAgent,
-    SosyalAgent,
-    BiyolojiAgent,
-    YabanciDilAgent,
-)
 from agents.coordination import (
-    QuestionClassifier,
     AgentCoordinator,
     DomainBlackboard,
+    QuestionClassifier,
     ResponseSynthesizer,
 )
-from agents.scoring import SpecializationScorer
-
-from tests.fixtures.yks_questions import (
-    MATEMATIK_QUESTIONS,
-    FIZIK_QUESTIONS,
-    TURKCE_QUESTIONS,
-    SOSYAL_QUESTIONS,
-    BIYOLOJI_QUESTIONS,
-    YABANCI_DIL_QUESTIONS,
-    MULTI_DOMAIN_QUESTIONS,
+from agents.domain_experts import (
+    BiyolojiAgent,
+    DomainResponse,
+    DomainType,
+    FizikAgent,
+    MatematikAgent,
+    SosyalAgent,
+    TurkceAgent,
+    YabanciDilAgent,
 )
-
+from agents.scoring import SpecializationScorer
+from tests.fixtures.yks_questions import (
+    BIYOLOJI_QUESTIONS,
+    FIZIK_QUESTIONS,
+    MATEMATIK_QUESTIONS,
+    MULTI_DOMAIN_QUESTIONS,
+    SOSYAL_QUESTIONS,
+    TURKCE_QUESTIONS,
+    YABANCI_DIL_QUESTIONS,
+)
 
 # Test configuration
 MAX_RESPONSE_TIME_MS = 3000  # 3 seconds
@@ -138,7 +135,7 @@ async def coordinator(
 def _validate_response(
     response: DomainResponse,
     expected_domain: DomainType,
-    expected_keywords: List[str],
+    expected_keywords: list[str],
 ) -> None:
     """Validate agent response"""
     # Check domain

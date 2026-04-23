@@ -11,11 +11,11 @@ P1 FIX: Thread safety, lru_cache/global conflict çözüldü (2026-02-03)
 
 import logging
 import threading
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from .learning_path_agent import LearningPathAgent
     from .learning_path.core.rag_search import RAGSearchService
+    from .learning_path_agent import LearningPathAgent
 
 logger = logging.getLogger(__name__)
 

@@ -20,11 +20,12 @@ Parametreler:
 - c: guessing (tahmin) [0.0, 0.35]
 - d: upper_asymptote (ust asimptot) [0.85, 1.0]
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "20260126_irt_4pl"

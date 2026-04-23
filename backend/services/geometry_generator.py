@@ -23,14 +23,16 @@ Usage:
 
 import io
 import math
-from typing import Dict, Optional, Literal, Any
+from typing import Any, Literal
+
 import matplotlib
 
 matplotlib.use("Agg")  # Non-interactive backend
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from matplotlib.patches import Wedge, Polygon as MplPolygon
 import numpy as np
+from matplotlib import patches
+from matplotlib.patches import Polygon as MplPolygon
+from matplotlib.patches import Wedge
 
 # OSYM Style Configuration
 OSYM_GEOMETRY_STYLE = {
@@ -65,12 +67,12 @@ class GeometryGenerator:
             "triangle", "circle", "quadrilateral", "polygon", "3d_shape"
         ],
         shape_subtype: str,
-        dimensions: Dict[str, float],
-        labels: Optional[Dict[str, Any]] = None,
+        dimensions: dict[str, float],
+        labels: dict[str, Any] | None = None,
         show_measurements: bool = True,
         show_angles: bool = False,
         style: str = "osym",
-    ) -> Dict:
+    ) -> dict:
         """
         Generate geometric figure and return visual_content structure
 
@@ -150,8 +152,8 @@ class GeometryGenerator:
     def _generate_triangle(
         self,
         subtype: str,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
         show_angles: bool,
     ) -> str:
@@ -320,8 +322,8 @@ class GeometryGenerator:
     def _generate_circle(
         self,
         subtype: str,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
     ) -> str:
         """
@@ -425,8 +427,8 @@ class GeometryGenerator:
     def _generate_quadrilateral(
         self,
         subtype: str,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
         show_angles: bool,
     ) -> str:
@@ -623,8 +625,8 @@ class GeometryGenerator:
     def _generate_polygon(
         self,
         subtype: str,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
     ) -> str:
         """
@@ -707,8 +709,8 @@ class GeometryGenerator:
     def _generate_3d_shape(
         self,
         subtype: str,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
     ) -> str:
         """
@@ -723,21 +725,20 @@ class GeometryGenerator:
         """
         if subtype == "cube":
             return self._generate_cube_svg(dimensions, labels, show_measurements)
-        elif subtype == "rectangular_prism":
+        if subtype == "rectangular_prism":
             return self._generate_rectangular_prism_svg(
                 dimensions, labels, show_measurements
             )
-        elif subtype == "cylinder":
+        if subtype == "cylinder":
             return self._generate_cylinder_svg(dimensions, labels, show_measurements)
-        elif subtype == "sphere":
+        if subtype == "sphere":
             return self._generate_sphere_svg(dimensions, labels, show_measurements)
-        else:
-            raise ValueError(f"Unknown 3D shape subtype: {subtype}")
+        raise ValueError(f"Unknown 3D shape subtype: {subtype}")
 
     def _generate_cube_svg(
         self,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
     ) -> str:
         """Generate cube with isometric perspective"""
@@ -802,8 +803,8 @@ class GeometryGenerator:
 
     def _generate_rectangular_prism_svg(
         self,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
     ) -> str:
         """Generate rectangular prism with isometric perspective"""
@@ -856,8 +857,8 @@ class GeometryGenerator:
 
     def _generate_cylinder_svg(
         self,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
     ) -> str:
         """Generate cylinder with perspective"""
@@ -894,8 +895,8 @@ class GeometryGenerator:
 
     def _generate_sphere_svg(
         self,
-        dimensions: Dict[str, float],
-        labels: Dict[str, Any],
+        dimensions: dict[str, float],
+        labels: dict[str, Any],
         show_measurements: bool,
     ) -> str:
         """Generate sphere with great circles"""
@@ -1004,7 +1005,7 @@ class GeometryGenerator:
         return svg_content
 
     def _generate_description(
-        self, geometry_type: str, shape_subtype: str, dimensions: Dict
+        self, geometry_type: str, shape_subtype: str, dimensions: dict
     ) -> str:
         """Generate accessible description of the geometry"""
         descriptions = {

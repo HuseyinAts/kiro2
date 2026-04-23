@@ -16,8 +16,8 @@ Requirements: REQ-6.1 - REQ-6.6
 import asyncio
 import logging
 import time
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from backend.consistency.consistency_checker import ConsistencyChecker
 from backend.consistency.response_history_manager import ResponseHistoryManager
@@ -53,12 +53,12 @@ class ResponseValidationOrchestrator:
 
     def __init__(
         self,
-        learning_path_validator: Optional[LearningPathValidator] = None,
-        study_buddy_validator: Optional[StudyBuddyValidator] = None,
-        exam_agent_validator: Optional[ExamAgentValidator] = None,
-        fact_checker: Optional[FactChecker] = None,
-        consistency_checker: Optional[ConsistencyChecker] = None,
-        confidence_scorer: Optional[ConfidenceScorer] = None,
+        learning_path_validator: LearningPathValidator | None = None,
+        study_buddy_validator: StudyBuddyValidator | None = None,
+        exam_agent_validator: ExamAgentValidator | None = None,
+        fact_checker: FactChecker | None = None,
+        consistency_checker: ConsistencyChecker | None = None,
+        confidence_scorer: ConfidenceScorer | None = None,
         parallel_validation: bool = True,
     ):
         """
@@ -103,7 +103,7 @@ class ResponseValidationOrchestrator:
 
     async def validate_response(
         self, response: AgentResponse
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         AI yanıtını tam doğrulama pipeline'ından geçir.
 
@@ -200,7 +200,7 @@ class ResponseValidationOrchestrator:
             "warnings": all_warnings,
             "suggestions": all_suggestions,
             "duration_seconds": round(duration, 3),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "metadata": {
                 "agent_type": response.agent_type,
                 "user_id": response.user_id,
@@ -233,26 +233,25 @@ class ResponseValidationOrchestrator:
         """
         if isinstance(result, ValidationResult):
             return result
-        elif isinstance(result, Exception):
+        if isinstance(result, Exception):
             logger.error(f"{validator_name} validation error: {result}")
             return ValidationResult(
                 is_valid=True,  # Fail-open
                 score=0.5,  # Neutral score
                 errors=[],
-                warnings=[f"{validator_name} doğrulaması başarısız: {str(result)}"],
+                warnings=[f"{validator_name} doğrulaması başarısız: {result!s}"],
                 suggestions=[],
                 metadata={"error": str(result)},
             )
-        else:
-            logger.warning(f"Unexpected result type from {validator_name}")
-            return ValidationResult(
-                is_valid=True,
-                score=0.5,
-                errors=[],
-                warnings=[],
-                suggestions=[],
-                metadata={},
-            )
+        logger.warning(f"Unexpected result type from {validator_name}")
+        return ValidationResult(
+            is_valid=True,
+            score=0.5,
+            errors=[],
+            warnings=[],
+            suggestions=[],
+            metadata={},
+        )
 
     async def _safe_validate(
         self,
@@ -277,13 +276,13 @@ class ResponseValidationOrchestrator:
                 is_valid=True,  # Fail-open
                 score=0.5,
                 errors=[],
-                warnings=[f"{validator_name} doğrulaması başarısız: {str(e)}"],
+                warnings=[f"{validator_name} doğrulaması başarısız: {e!s}"],
                 suggestions=[],
                 metadata={"error": str(e)},
             )
 
     def to_validation_report(
-        self, result: Dict[str, Any]
+        self, result: dict[str, Any]
     ) -> ValidationReport:
         """
         Dict sonucunu ValidationReport modeline dönüştür.

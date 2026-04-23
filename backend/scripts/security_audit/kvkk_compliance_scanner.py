@@ -18,7 +18,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -47,7 +46,7 @@ class KVKKFinding:
     status: ComplianceStatus
     severity: Severity
     description: str
-    file_path: Optional[str] = None
+    file_path: str | None = None
     evidence: str = ""
     recommendation: str = ""
 
@@ -226,7 +225,7 @@ class KVKKComplianceScanner:
                     severity=Severity.HIGH,
                     description=f"{data_type} verisi isleniyor olabilir",
                     evidence=f"Dosyalar: {', '.join(found_files[:3])}",
-                    recommendation=f"Acik riza alindigindan emin olunmali",
+                    recommendation="Acik riza alindigindan emin olunmali",
                 ))
 
         print("  [OK] Madde 6 kontrolu tamamlandi")
@@ -692,7 +691,7 @@ class KVKKComplianceScanner:
         with open(md_path, "w", encoding="utf-8") as f:
             f.write(md_content)
 
-        print(f"\n[RAPOR] Raporlar olusturuldu:")
+        print("\n[RAPOR] Raporlar olusturuldu:")
         print(f"   - {json_path}")
         print(f"   - {md_path}")
 

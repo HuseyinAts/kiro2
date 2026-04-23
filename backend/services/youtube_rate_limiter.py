@@ -9,7 +9,6 @@ Date: 2025-10-30
 """
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Optional
 
 from core.cache import cache_manager
 from core.structured_logger import get_logger
@@ -69,7 +68,7 @@ class YouTubeRateLimiter:
 
     def __init__(self):
         self.cache_key = "youtube:quota:info"
-        self._quota_info: Optional[YouTubeQuotaInfo] = None
+        self._quota_info: YouTubeQuotaInfo | None = None
 
     async def initialize(self) -> bool:
         """
@@ -110,7 +109,7 @@ class YouTubeRateLimiter:
             return False
 
     async def check_quota_available(
-        self, operation: str = "search", required_quota: Optional[int] = None
+        self, operation: str = "search", required_quota: int | None = None
     ) -> tuple[bool, str]:
         """
         Quota'nın yeterli olup olmadığını kontrol et
@@ -157,7 +156,7 @@ class YouTubeRateLimiter:
         return False, message
 
     async def consume_quota(
-        self, operation: str = "search", quota_amount: Optional[int] = None
+        self, operation: str = "search", quota_amount: int | None = None
     ) -> bool:
         """
         Quota tüket
@@ -320,7 +319,7 @@ class YouTubeRateLimiter:
 
 
 # Global singleton instance
-_youtube_rate_limiter: Optional[YouTubeRateLimiter] = None
+_youtube_rate_limiter: YouTubeRateLimiter | None = None
 
 
 def get_youtube_rate_limiter() -> YouTubeRateLimiter:

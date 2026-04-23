@@ -35,9 +35,9 @@ import os
 import secrets
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 # Structured logging
 logger = logging.getLogger(__name__)
@@ -141,8 +141,8 @@ class DeviceInfo:
     device_id: str
     platform: DevicePlatform
     platform_version: str
-    model: Optional[str] = None
-    manufacturer: Optional[str] = None
+    model: str | None = None
+    manufacturer: str | None = None
     biometric_types: list[BiometricType] = field(default_factory=list)
     is_biometric_enrolled: bool = False
     security_level: BiometricStrength = BiometricStrength.DEVICE_CREDENTIAL
@@ -165,10 +165,10 @@ class BiometricCapability:
     is_supported: bool
     is_enrolled: bool = False
     available_types: list[BiometricType] = field(default_factory=list)
-    recommended_type: Optional[BiometricType] = None
+    recommended_type: BiometricType | None = None
     security_level: BiometricStrength = BiometricStrength.DEVICE_CREDENTIAL
     can_fallback: bool = True
-    error: Optional[BiometricError] = None
+    error: BiometricError | None = None
 
 
 @dataclass
@@ -190,8 +190,8 @@ class Challenge:
     challenge_bytes: str
     created_at: datetime
     expires_at: datetime
-    biometric_type: Optional[BiometricType] = None
-    device_id: Optional[str] = None
+    biometric_type: BiometricType | None = None
+    device_id: str | None = None
 
 
 @dataclass
@@ -216,7 +216,7 @@ class BiometricCredential:
     public_key: str
     biometric_type: BiometricType
     created_at: datetime
-    last_used_at: Optional[datetime] = None
+    last_used_at: datetime | None = None
     use_count: int = 0
     is_active: bool = True
 
@@ -271,9 +271,9 @@ class BiometricResult:
     """
 
     success: bool
-    error: Optional[BiometricError] = None
-    error_message: Optional[str] = None
-    data: Optional[Any] = None
+    error: BiometricError | None = None
+    error_message: str | None = None
+    data: Any | None = None
 
 
 # ==================== BIOMETRIC SERVICE ====================
@@ -340,7 +340,7 @@ class BiometricAuthService:
         # Platform bazli yetenek kontrolu
         available_types: list[BiometricType] = []
         security_level = BiometricStrength.DEVICE_CREDENTIAL
-        recommended_type: Optional[BiometricType] = None
+        recommended_type: BiometricType | None = None
 
         if device_info.platform == DevicePlatform.IOS:
             # iOS: Touch ID veya Face ID
@@ -414,8 +414,8 @@ class BiometricAuthService:
     async def generate_challenge(
         self,
         user_id: int,
-        device_id: Optional[str] = None,
-        biometric_type: Optional[BiometricType] = None,
+        device_id: str | None = None,
+        biometric_type: BiometricType | None = None,
     ) -> BiometricResult:
         """Biyometrik dogrulama icin challenge olustur.
 
@@ -448,7 +448,7 @@ class BiometricAuthService:
         challenge_bytes = secrets.token_urlsafe(32)
 
         # Zaman damgalari
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expires_at = now + self._challenge_expiry
 
         # Challenge olustur
@@ -514,7 +514,7 @@ class BiometricAuthService:
             )
 
         # Expiry kontrolu
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if now > challenge.expires_at:
             # Challenge sil
             del self._challenges[response.challenge_id]
@@ -621,7 +621,7 @@ class BiometricAuthService:
         """
         # Credential ID olustur
         credential_id = f"cred_{uuid.uuid4().hex}"
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         # Credential olustur
         credential = BiometricCredential(
@@ -676,12 +676,11 @@ class BiometricAuthService:
                 },
             )
             return BiometricResult(success=True, data={"revoked": True})
-        else:
-            return BiometricResult(
-                success=False,
-                error=BiometricError.CREDENTIAL_NOT_FOUND,
-                error_message="Credential bulunamadi",
-            )
+        return BiometricResult(
+            success=False,
+            error=BiometricError.CREDENTIAL_NOT_FOUND,
+            error_message="Credential bulunamadi",
+        )
 
     async def fallback_to_password(
         self,
@@ -710,7 +709,7 @@ class BiometricAuthService:
         """
         # Token olustur
         token = secrets.token_urlsafe(32)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expires_at = now + timedelta(minutes=10)
 
         fallback = FallbackToken(
@@ -754,8 +753,8 @@ class BiometricAuthService:
     async def _find_credential(
         self,
         user_id: int,
-        device_id: Optional[str],
-    ) -> Optional[BiometricCredential]:
+        device_id: str | None,
+    ) -> BiometricCredential | None:
         """Kullanicinin credential'ini bul."""
         if device_id:
             key = f"{user_id}:{device_id}"
@@ -800,11 +799,10 @@ class BiometricAuthService:
         # Lockout kontrolu
         lockout_until = self._lockout_until.get(user_id)
         if lockout_until:
-            if datetime.now(timezone.utc) < lockout_until:
+            if datetime.now(UTC) < lockout_until:
                 return True
-            else:
-                # Lockout suresi dolmus
-                del self._lockout_until[user_id]
+            # Lockout suresi dolmus
+            del self._lockout_until[user_id]
 
         # Basarisiz deneme sayisi
         attempts = self._failed_attempts.get(user_id, 0)
@@ -817,7 +815,7 @@ class BiometricAuthService:
 
         if attempts >= self._max_failed_attempts:
             self._lockout_until[user_id] = (
-                datetime.now(timezone.utc) + self._lockout_duration
+                datetime.now(UTC) + self._lockout_duration
             )
             logger.warning(
                 "Kullanici biometric auth icin kilitlendi",
@@ -831,7 +829,7 @@ class BiometricAuthService:
 
     async def _cleanup_expired_challenges(self) -> None:
         """Suresi dolmus challenge'lari temizle."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expired = [
             cid for cid, c in self._challenges.items() if now > c.expires_at
         ]
@@ -845,7 +843,7 @@ class BiometricAuthService:
 
 # ==================== FACTORY ====================
 
-_biometric_service: Optional[BiometricAuthService] = None
+_biometric_service: BiometricAuthService | None = None
 
 
 def get_biometric_service() -> BiometricAuthService:

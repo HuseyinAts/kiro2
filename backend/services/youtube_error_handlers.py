@@ -7,7 +7,7 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from core.exceptions import ExternalServiceError
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class FallbackResponse:
     """Fallback yanıt modeli"""
 
-    videos: List[Any]
+    videos: list[Any]
     source: str  # 'cache', 'mock', 'fallback'
     message: str
 
@@ -54,7 +54,7 @@ class YouTubeAPIErrorHandler:
     - Rate limit: Exponential backoff ile retry yap
     """
 
-    def __init__(self, cache_manager: Optional[Any] = None):
+    def __init__(self, cache_manager: Any | None = None):
         """
         YouTubeAPIErrorHandler'ı başlat
 
@@ -71,7 +71,7 @@ class YouTubeAPIErrorHandler:
         logger.info("YouTube API Error Handler initialized")
 
     async def handle_api_error(
-        self, error: Exception, context: Optional[Dict[str, Any]] = None
+        self, error: Exception, context: dict[str, Any] | None = None
     ) -> FallbackResponse:
         """
         API hatasını yönet ve fallback yanıt döndür
@@ -85,37 +85,36 @@ class YouTubeAPIErrorHandler:
         """
         try:
             logger.warning(
-                f"Handling YouTube API error: {type(error).__name__}: {str(error)}"
+                f"Handling YouTube API error: {type(error).__name__}: {error!s}"
             )
 
             # Hata tipine göre fallback stratejisi belirle
             if isinstance(error, QuotaExceededError):
                 return await self.get_cached_videos(context)
 
-            elif isinstance(error, InvalidAPIKeyError):
+            if isinstance(error, InvalidAPIKeyError):
                 return await self.get_mock_videos(context)
 
-            elif isinstance(error, RateLimitError):
+            if isinstance(error, RateLimitError):
                 # Rate limit için retry yapılacak, burada fallback döndür
                 logger.warning("Rate limit error, returning cached videos")
                 return await self.get_cached_videos(context)
 
-            else:
-                # Genel hata - cache'den dene, yoksa mock data
-                logger.error(f"Unhandled YouTube API error: {str(error)}")
-                cached_response = await self.get_cached_videos(context)
-                if cached_response.videos:
-                    return cached_response
-                return await self.get_mock_videos(context)
+            # Genel hata - cache'den dene, yoksa mock data
+            logger.error(f"Unhandled YouTube API error: {error!s}")
+            cached_response = await self.get_cached_videos(context)
+            if cached_response.videos:
+                return cached_response
+            return await self.get_mock_videos(context)
 
         except Exception as e:
-            logger.error(f"Error in error handler: {str(e)}")
+            logger.error(f"Error in error handler: {e!s}")
             return FallbackResponse(
-                videos=[], source="error", message=f"Hata yönetimi başarısız: {str(e)}"
+                videos=[], source="error", message=f"Hata yönetimi başarısız: {e!s}"
             )
 
     async def get_cached_videos(
-        self, context: Optional[Dict[str, Any]] = None
+        self, context: dict[str, Any] | None = None
     ) -> FallbackResponse:
         """
         Cache'den video önerilerini al
@@ -146,20 +145,19 @@ class YouTubeAPIErrorHandler:
                     source="cache",
                     message="Önbellekten video önerileri alındı",
                 )
-            else:
-                logger.warning("No cached videos found")
-                return FallbackResponse(
-                    videos=[], source="cache", message="Önbellekte video bulunamadı"
-                )
+            logger.warning("No cached videos found")
+            return FallbackResponse(
+                videos=[], source="cache", message="Önbellekte video bulunamadı"
+            )
 
         except Exception as e:
-            logger.error(f"Error getting cached videos: {str(e)}")
+            logger.error(f"Error getting cached videos: {e!s}")
             return FallbackResponse(
-                videos=[], source="cache", message=f"Cache hatası: {str(e)}"
+                videos=[], source="cache", message=f"Cache hatası: {e!s}"
             )
 
     async def get_mock_videos(
-        self, context: Optional[Dict[str, Any]] = None
+        self, context: dict[str, Any] | None = None
     ) -> FallbackResponse:
         """
         Mock video data döndür
@@ -196,13 +194,13 @@ class YouTubeAPIErrorHandler:
             )
 
         except Exception as e:
-            logger.error(f"Error getting mock videos: {str(e)}")
+            logger.error(f"Error getting mock videos: {e!s}")
             return FallbackResponse(
-                videos=[], source="mock", message=f"Mock data hatası: {str(e)}"
+                videos=[], source="mock", message=f"Mock data hatası: {e!s}"
             )
 
     async def get_fallback_videos(
-        self, context: Optional[Dict[str, Any]] = None
+        self, context: dict[str, Any] | None = None
     ) -> FallbackResponse:
         """
         Genel fallback videoları döndür
@@ -222,7 +220,7 @@ class YouTubeAPIErrorHandler:
         return await self.get_mock_videos(context)
 
     async def retry_with_backoff(
-        self, func, *args, max_retries: Optional[int] = None, **kwargs
+        self, func, *args, max_retries: int | None = None, **kwargs
     ) -> Any:
         """
         Exponential backoff ile retry yap
@@ -283,7 +281,7 @@ class YouTubeAPIErrorHandler:
                     wait_time = self.base_delay * (2**retry_count)
                     logger.warning(
                         f"Error occurred, retrying in {wait_time}s "
-                        f"(attempt {retry_count + 1}/{max_retries}): {str(e)}"
+                        f"(attempt {retry_count + 1}/{max_retries}): {e!s}"
                     )
                     await asyncio.sleep(wait_time)
                 else:
@@ -294,7 +292,7 @@ class YouTubeAPIErrorHandler:
         if last_error:
             raise last_error
 
-    def _build_cache_key(self, context: Optional[Dict[str, Any]]) -> str:
+    def _build_cache_key(self, context: dict[str, Any] | None) -> str:
         """
         Cache key oluştur
 
@@ -321,7 +319,7 @@ class YouTubeAPIErrorHandler:
 
         return ":".join(parts)
 
-    def _create_mock_videos(self) -> List[Dict[str, Any]]:
+    def _create_mock_videos(self) -> list[dict[str, Any]]:
         """
         Mock video data oluştur
 
@@ -429,7 +427,7 @@ class ValidationErrorHandler:
     Video validation başarısızlıklarını loglar ve alternatif video arar.
     """
 
-    def __init__(self, metrics_collector: Optional[Any] = None):
+    def __init__(self, metrics_collector: Any | None = None):
         """
         ValidationErrorHandler'ı başlat
 
@@ -442,7 +440,7 @@ class ValidationErrorHandler:
         logger.info("Validation Error Handler initialized")
 
     def handle_validation_failure(
-        self, video_id: str, failure_type: str, details: Optional[Dict[str, Any]] = None
+        self, video_id: str, failure_type: str, details: dict[str, Any] | None = None
     ) -> None:
         """
         Validation başarısızlığını yönet
@@ -476,9 +474,9 @@ class ValidationErrorHandler:
                 )
 
         except Exception as e:
-            logger.error(f"Error handling validation failure: {str(e)}")
+            logger.error(f"Error handling validation failure: {e!s}")
 
-    def get_failure_stats(self) -> Dict[str, int]:
+    def get_failure_stats(self) -> dict[str, int]:
         """
         Başarısızlık istatistiklerini al
 
@@ -514,7 +512,7 @@ class TimeoutHandler:
         )
 
     async def with_timeout(
-        self, coro, timeout_seconds: Optional[int] = None, fallback_value: Any = None
+        self, coro, timeout_seconds: int | None = None, fallback_value: Any = None
     ) -> Any:
         """
         Timeout ile async işlem yürüt
@@ -533,21 +531,21 @@ class TimeoutHandler:
             result = await asyncio.wait_for(coro, timeout=timeout)
             return result
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.warning(
                 f"Operation timed out after {timeout}s, returning fallback value"
             )
             return fallback_value
 
         except Exception as e:
-            logger.error(f"Error during timeout operation: {str(e)}")
+            logger.error(f"Error during timeout operation: {e!s}")
             return fallback_value
 
     async def with_timeout_and_retry(
         self,
         coro_func,
         *args,
-        timeout_seconds: Optional[int] = None,
+        timeout_seconds: int | None = None,
         max_retries: int = 2,
         **kwargs,
     ) -> Any:
@@ -580,7 +578,7 @@ class TimeoutHandler:
 
                 return result
 
-            except asyncio.TimeoutError as e:
+            except TimeoutError as e:
                 last_error = e
 
                 if retry_count < max_retries:
@@ -597,7 +595,7 @@ class TimeoutHandler:
 
             except Exception as e:
                 last_error = e
-                logger.error(f"Error during operation: {str(e)}")
+                logger.error(f"Error during operation: {e!s}")
                 raise e
 
         if last_error:

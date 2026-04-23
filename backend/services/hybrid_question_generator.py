@@ -14,7 +14,6 @@ Research-backed implementation (2024 best practices)
 
 import asyncio
 import logging
-from typing import Dict, List, Optional
 from datetime import datetime
 
 # Existing services
@@ -43,11 +42,11 @@ class HybridQuestionGenerator:
 
     def __init__(
         self,
-        openai_api_key: Optional[str] = None,
-        anthropic_api_key: Optional[str] = None,
+        openai_api_key: str | None = None,
+        anthropic_api_key: str | None = None,
         enable_wave2b: bool = False,
         wave2b_threshold: float = 0.80,
-        osym_reference_questions: Optional[List[Dict]] = None,
+        osym_reference_questions: list[dict] | None = None,
     ):
         # Initialize generators
         self.osym_generator = OSYMInspiredGenerator(
@@ -73,7 +72,7 @@ class HybridQuestionGenerator:
         if enable_wave2b:
             self._init_wave2b(osym_reference_questions)
 
-    def _init_wave2b(self, osym_reference: Optional[List[Dict]] = None):
+    def _init_wave2b(self, osym_reference: list[dict] | None = None):
         """Initialize Wave 2B quality evaluator"""
         try:
             from services.comprehensive_quality_evaluator import (
@@ -99,7 +98,7 @@ class HybridQuestionGenerator:
         provider: str = "claude",
         validate: bool = True,
         enable_retry: bool = True,  # NEW: Enable retry for short questions
-    ) -> Dict:
+    ) -> dict:
         """
         METHOD 1: ÖSYM-Guided Generation with Retry Logic
 
@@ -209,7 +208,7 @@ class HybridQuestionGenerator:
         exam_type: str = "TYT",
         provider: str = "claude",
         validate: bool = True,
-    ) -> Dict:
+    ) -> dict:
         """
         Internal method: Single generation attempt without retry logic
         """
@@ -353,7 +352,7 @@ class HybridQuestionGenerator:
 
     async def generate_ensemble(
         self, subject: str, topic: str, difficulty: str = "orta", exam_type: str = "TYT"
-    ) -> Dict:
+    ) -> dict:
         """
         METHOD 2: Multi-Model Ensemble
 
@@ -428,7 +427,7 @@ class HybridQuestionGenerator:
 
     async def generate_progressive(
         self, subject: str, topic: str, difficulty: str = "orta", exam_type: str = "TYT"
-    ) -> Dict:
+    ) -> dict:
         """
         METHOD 3: Progressive Learning
 
@@ -443,7 +442,6 @@ class HybridQuestionGenerator:
         if has_finetuned_model:
             logger.info("[PROGRESSIVE] Using fine-tuned model...")
             # return await self.generate_with_finetuned(...)
-            pass
         else:
             logger.info("[PROGRESSIVE] Fallback to ÖSYM-guided generation...")
             return await self.generate_osym_quality_question(
@@ -452,7 +450,7 @@ class HybridQuestionGenerator:
 
     async def _calculate_irt_params(
         self, question_text: str, difficulty: str, subject: str
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         IRT parametrelerini hesapla
 
@@ -474,7 +472,7 @@ class HybridQuestionGenerator:
             # Default IRT parameters
             return {"difficulty": 0.0, "discrimination": 1.0, "guessing": 0.25}
 
-    async def _analyze_turkish_morphology(self, text: str) -> Dict[str, float]:
+    async def _analyze_turkish_morphology(self, text: str) -> dict[str, float]:
         """
         Türkçe morfoloji analizi
 
@@ -491,8 +489,8 @@ class HybridQuestionGenerator:
             return {"complexity": 0.5, "readability": 0.5}
 
     def _calculate_quality_score(
-        self, ai_question: Dict, style_guide: Dict, irt_params: Dict, morphology: Dict
-    ) -> Dict[str, float]:
+        self, ai_question: dict, style_guide: dict, irt_params: dict, morphology: dict
+    ) -> dict[str, float]:
         """
         Multi-metric quality scoring
 
@@ -566,7 +564,7 @@ class HybridQuestionGenerator:
             "issues": issues,
         }
 
-    def _validate_question(self, quality_score: Dict) -> bool:
+    def _validate_question(self, quality_score: dict) -> bool:
         """
         Validate question against quality thresholds
 
@@ -587,7 +585,7 @@ class HybridQuestionGenerator:
         # All checks passed
         return True
 
-    async def _run_wave2b_evaluation(self, question_dict: Dict) -> Optional[Dict]:
+    async def _run_wave2b_evaluation(self, question_dict: dict) -> dict | None:
         """
         Run Wave 2B comprehensive quality evaluation
 

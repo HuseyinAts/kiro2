@@ -7,13 +7,12 @@ Automatic import sorting with Black compatibility.
 from __future__ import annotations
 
 import re
-from typing import List, Optional
 
 from .base import BaseHook
 from .models import (
-    QualityCheckResult,
-    HookConfig,
     ExitCode,
+    HookConfig,
+    QualityCheckResult,
 )
 
 
@@ -31,7 +30,7 @@ class IsortHook(BaseHook):
 
     name = "isort"
 
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Run isort on files.
 
@@ -106,9 +105,9 @@ class IsortHook(BaseHook):
                 count = int(match.group(1))
         return count
 
-    def _find_unsorted(self, output: str) -> List[str]:
+    def _find_unsorted(self, output: str) -> list[str]:
         """Find files that need sorting."""
-        unsorted: List[str] = []
+        unsorted: list[str] = []
 
         # isort check shows files that would be modified
         pattern = re.compile(r"would\s+(?:fix|sort)\s+(.+?)$", re.MULTILINE | re.IGNORECASE)
@@ -127,9 +126,9 @@ class IsortHook(BaseHook):
 
         return list(set(unsorted))
 
-    def _find_unused_imports(self, output: str) -> List[str]:
+    def _find_unused_imports(self, output: str) -> list[str]:
         """Find warnings about unused imports."""
-        warnings: List[str] = []
+        warnings: list[str] = []
 
         # Check for unused import mentions
         pattern = re.compile(
@@ -143,8 +142,8 @@ class IsortHook(BaseHook):
 
 
 async def run_isort(
-    files: List[str],
-    config: Optional[HookConfig] = None
+    files: list[str],
+    config: HookConfig | None = None
 ) -> QualityCheckResult:
     """
     Convenience function to run isort.

@@ -14,7 +14,6 @@ Requirements: REQ-14.1, REQ-14.2, REQ-14.3, REQ-14.4, REQ-14.5, REQ-14.6
 import enum
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
 from sqlalchemy import (
     JSON,
@@ -33,7 +32,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from .base import Base
-
 
 # ============================================================================
 # TASK 72.1: Video Format and Status Enums
@@ -128,15 +126,15 @@ class VideoSolution(Base):
 
     # Video URL'leri
     original_url: Mapped[str] = mapped_column(String(1000), nullable=False)
-    cdn_url: Mapped[Optional[str]] = mapped_column(String(1000))  # CDN URL
+    cdn_url: Mapped[str | None] = mapped_column(String(1000))  # CDN URL
 
     # Format validation sonuçları
     is_format_valid: Mapped[bool] = mapped_column(Boolean, default=False)
-    validation_errors: Mapped[Optional[dict]] = mapped_column(JSON)
+    validation_errors: Mapped[dict | None] = mapped_column(JSON)
 
     # Compression bilgileri
-    compressed_size_bytes: Mapped[Optional[int]] = mapped_column(Integer)
-    compression_ratio: Mapped[Optional[float]] = mapped_column(
+    compressed_size_bytes: Mapped[int | None] = mapped_column(Integer)
+    compression_ratio: Mapped[float | None] = mapped_column(
         Float
     )  # Orijinal/Sıkıştırılmış
 
@@ -144,11 +142,11 @@ class VideoSolution(Base):
     # TASK 72.2: Streaming Configuration
     # ========================================================================
     # HLS/DASH streaming URL'leri
-    hls_playlist_url: Mapped[Optional[str]] = mapped_column(String(1000))
-    dash_manifest_url: Mapped[Optional[str]] = mapped_column(String(1000))
+    hls_playlist_url: Mapped[str | None] = mapped_column(String(1000))
+    dash_manifest_url: Mapped[str | None] = mapped_column(String(1000))
 
     # Adaptive bitrate variants
-    available_qualities: Mapped[Optional[dict]] = mapped_column(
+    available_qualities: Mapped[dict | None] = mapped_column(
         JSON
     )  # {quality: url} mapping
 
@@ -162,8 +160,8 @@ class VideoSolution(Base):
     # ========================================================================
     # TASK 72.3: Video Thumbnail
     # ========================================================================
-    thumbnail_url: Mapped[Optional[str]] = mapped_column(String(1000))  # REQ-14.3
-    thumbnail_generated_at: Mapped[Optional[datetime]] = mapped_column(
+    thumbnail_url: Mapped[str | None] = mapped_column(String(1000))  # REQ-14.3
+    thumbnail_generated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
 
@@ -171,18 +169,18 @@ class VideoSolution(Base):
     # Video Metadata
     # ========================================================================
     title: Mapped[str] = mapped_column(String(500), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
 
     # Video içerik bilgileri
-    solution_method: Mapped[Optional[str]] = mapped_column(
+    solution_method: Mapped[str | None] = mapped_column(
         String(100)
     )  # Hızlı çözüm, klasik çözüm, vb.
-    difficulty_level: Mapped[Optional[str]] = mapped_column(String(20))
+    difficulty_level: Mapped[str | None] = mapped_column(String(20))
     language: Mapped[str] = mapped_column(String(10), default="tr")
 
     # Eğitmen bilgileri
-    instructor_name: Mapped[Optional[str]] = mapped_column(String(200))
-    instructor_title: Mapped[Optional[str]] = mapped_column(String(200))
+    instructor_name: Mapped[str | None] = mapped_column(String(200))
+    instructor_title: Mapped[str | None] = mapped_column(String(200))
 
     # ========================================================================
     # Processing Status
@@ -192,25 +190,25 @@ class VideoSolution(Base):
         nullable=False,
         default=VideoProcessingStatus.PENDING,
     )
-    processing_started_at: Mapped[Optional[datetime]] = mapped_column(
+    processing_started_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
-    processing_completed_at: Mapped[Optional[datetime]] = mapped_column(
+    processing_completed_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
-    processing_error: Mapped[Optional[str]] = mapped_column(Text)
+    processing_error: Mapped[str | None] = mapped_column(Text)
 
     # ========================================================================
     # Quality and Moderation
     # ========================================================================
     quality_score: Mapped[float] = mapped_column(Float, default=0.0)  # 0-100 arası
     is_approved: Mapped[bool] = mapped_column(Boolean, default=False)
-    approved_by: Mapped[Optional[str]] = mapped_column(
+    approved_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="SET NULL")
     )
-    approved_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    moderation_notes: Mapped[Optional[str]] = mapped_column(Text)
+    moderation_notes: Mapped[str | None] = mapped_column(Text)
 
     # ========================================================================
     # Accessibility
@@ -235,10 +233,10 @@ class VideoSolution(Base):
     # ========================================================================
     # Relationships
     # ========================================================================
-    transcripts: Mapped[List["VideoTranscript"]] = relationship(
+    transcripts: Mapped[list["VideoTranscript"]] = relationship(
         "VideoTranscript", back_populates="video"
     )
-    analytics: Mapped[List["VideoAnalytics"]] = relationship(
+    analytics: Mapped[list["VideoAnalytics"]] = relationship(
         "VideoAnalytics", back_populates="video"
     )
 
@@ -305,42 +303,42 @@ class VideoTranscript(Base):
     )
 
     # Auto-generation bilgileri
-    auto_generated_by: Mapped[Optional[str]] = mapped_column(
+    auto_generated_by: Mapped[str | None] = mapped_column(
         String(100)
     )  # Whisper, Google Speech, vb.
-    auto_generation_confidence: Mapped[Optional[float]] = mapped_column(
+    auto_generation_confidence: Mapped[float | None] = mapped_column(
         Float
     )  # 0-1 arası
-    auto_generated_at: Mapped[Optional[datetime]] = mapped_column(
+    auto_generated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
 
     # Manual editing bilgileri
-    manually_edited_by: Mapped[Optional[str]] = mapped_column(
+    manually_edited_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="SET NULL")
     )
-    manually_edited_at: Mapped[Optional[datetime]] = mapped_column(
+    manually_edited_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
     edit_count: Mapped[int] = mapped_column(Integer, default=0)
 
     # Verification bilgileri
-    verified_by: Mapped[Optional[str]] = mapped_column(
+    verified_by: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="SET NULL")
     )
-    verified_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # ========================================================================
     # Search and Analysis
     # ========================================================================
     # Anahtar kelimeler (otomatik çıkarılmış)
-    keywords: Mapped[Optional[list]] = mapped_column(JSON)
+    keywords: Mapped[list | None] = mapped_column(JSON)
 
     # Konu etiketleri
-    topics: Mapped[Optional[list]] = mapped_column(JSON)
+    topics: Mapped[list | None] = mapped_column(JSON)
 
     # Matematik formülleri (LaTeX format)
-    math_formulas: Mapped[Optional[list]] = mapped_column(JSON)
+    math_formulas: Mapped[list | None] = mapped_column(JSON)
 
     # ========================================================================
     # Quality Metrics
@@ -405,7 +403,7 @@ class VideoAnalytics(Base):
     video_id: Mapped[str] = mapped_column(
         String, ForeignKey("video_solutions.id", ondelete="CASCADE"), nullable=False
     )
-    user_id: Mapped[Optional[str]] = mapped_column(
+    user_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE")
     )
 
@@ -418,7 +416,7 @@ class VideoAnalytics(Base):
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
-    ended_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     watch_duration_seconds: Mapped[float] = mapped_column(Float, default=0.0)
     completion_percentage: Mapped[float] = mapped_column(
@@ -433,23 +431,23 @@ class VideoAnalytics(Base):
     )  # 0.5x, 1x, 1.5x, 2x
 
     # Kalite seçimi
-    selected_quality: Mapped[Optional[str]] = mapped_column(String(20))
+    selected_quality: Mapped[str | None] = mapped_column(String(20))
     quality_changes: Mapped[int] = mapped_column(Integer, default=0)
 
     # ========================================================================
     # Device and Network
     # ========================================================================
-    device_type: Mapped[Optional[str]] = mapped_column(
+    device_type: Mapped[str | None] = mapped_column(
         String(50)
     )  # mobile, tablet, desktop
-    browser: Mapped[Optional[str]] = mapped_column(String(100))
-    os: Mapped[Optional[str]] = mapped_column(String(100))
+    browser: Mapped[str | None] = mapped_column(String(100))
+    os: Mapped[str | None] = mapped_column(String(100))
 
-    ip_address: Mapped[Optional[str]] = mapped_column(String(45))  # IPv6 support
-    country: Mapped[Optional[str]] = mapped_column(String(2))  # ISO country code
+    ip_address: Mapped[str | None] = mapped_column(String(45))  # IPv6 support
+    country: Mapped[str | None] = mapped_column(String(2))  # ISO country code
 
     # Network quality
-    average_bandwidth_mbps: Mapped[Optional[float]] = mapped_column(Float)
+    average_bandwidth_mbps: Mapped[float | None] = mapped_column(Float)
     buffering_count: Mapped[int] = mapped_column(Integer, default=0)
     buffering_duration_seconds: Mapped[float] = mapped_column(Float, default=0.0)
 
@@ -463,7 +461,7 @@ class VideoAnalytics(Base):
     reported: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Faydalı buldu mu
-    helpful_rating: Mapped[Optional[int]] = mapped_column(Integer)  # 1-5 arası
+    helpful_rating: Mapped[int | None] = mapped_column(Integer)  # 1-5 arası
 
     # ========================================================================
     # System Fields
@@ -541,7 +539,7 @@ def format_duration(seconds: float) -> str:
     return f"{minutes:02d}:{secs:02d}"
 
 
-def is_valid_video_format(filename: str) -> tuple[bool, Optional[VideoFormat]]:
+def is_valid_video_format(filename: str) -> tuple[bool, VideoFormat | None]:
     """
     Dosya adından video formatını kontrol et
 

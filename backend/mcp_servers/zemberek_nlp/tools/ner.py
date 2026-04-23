@@ -5,12 +5,12 @@ Turkce ozel isim tespiti - PERSON, LOCATION, ORGANIZATION
 Supports both JPype (direct Zemberek access) and HTTP backend.
 """
 
-import re
 import logging
-from typing import Any, Dict, List
+import re
+from typing import Any
 
-from .base import BaseToolHandler
 from ..models.tool_schemas import EntityType
+from .base import BaseToolHandler
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class NERHandler(BaseToolHandler):
 
     tool_name = "ner"
 
-    async def _call_jpype(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_jpype(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Extract named entities using JPype bridge.
 
@@ -64,7 +64,7 @@ class NERHandler(BaseToolHandler):
         if not self.bridge:
             raise RuntimeError("JPype bridge not initialized")
 
-        entities: List[Dict[str, Any]] = []
+        entities: list[dict[str, Any]] = []
 
         # Try JPype NER if available
         try:
@@ -111,7 +111,7 @@ class NERHandler(BaseToolHandler):
             "organization_count": org_count,
         }
 
-    async def _get_morphology_jpype(self, text: str) -> Dict[str, List[Dict]]:
+    async def _get_morphology_jpype(self, text: str) -> dict[str, list[dict]]:
         """Get morphological analysis using JPype bridge."""
         word_analyses = {}
         words = text.split()
@@ -141,7 +141,7 @@ class NERHandler(BaseToolHandler):
         }
         return type_map.get(zemberek_type.upper(), EntityType.UNKNOWN)
 
-    async def _call_backend(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_backend(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Extract named entities from Turkish text
 
@@ -151,7 +151,7 @@ class NERHandler(BaseToolHandler):
         Returns:
             NERResult as dictionary
         """
-        entities: List[Dict[str, Any]] = []
+        entities: list[dict[str, Any]] = []
 
         # 1. Get morphological analysis for proper noun detection
         word_analyses = await self._get_morphology(text)
@@ -186,7 +186,7 @@ class NERHandler(BaseToolHandler):
             "organization_count": org_count,
         }
 
-    async def _get_morphology(self, text: str) -> Dict[str, List[Dict]]:
+    async def _get_morphology(self, text: str) -> dict[str, list[dict]]:
         """Get morphological analysis for all words"""
         word_analyses = {}
         words = text.split()
@@ -206,8 +206,8 @@ class NERHandler(BaseToolHandler):
         return word_analyses
 
     def _extract_proper_nouns(
-        self, text: str, word_analyses: Dict[str, List[Dict]]
-    ) -> List[Dict[str, Any]]:
+        self, text: str, word_analyses: dict[str, list[dict]]
+    ) -> list[dict[str, Any]]:
         """Extract entities from morphological proper noun tags"""
         entities = []
 
@@ -235,7 +235,7 @@ class NERHandler(BaseToolHandler):
 
         return entities
 
-    def _extract_pattern_entities(self, text: str) -> List[Dict[str, Any]]:
+    def _extract_pattern_entities(self, text: str) -> list[dict[str, Any]]:
         """Extract entities using Turkish-specific patterns"""
         entities = []
 
@@ -278,8 +278,8 @@ class NERHandler(BaseToolHandler):
         return entities
 
     def _extract_capitalized_groups(
-        self, text: str, word_analyses: Dict[str, List[Dict]]
-    ) -> List[Dict[str, Any]]:
+        self, text: str, word_analyses: dict[str, list[dict]]
+    ) -> list[dict[str, Any]]:
         """Extract entities from consecutive capitalized words"""
         entities = []
 
@@ -332,7 +332,7 @@ class NERHandler(BaseToolHandler):
         return EntityType.PERSON
 
     def _classify_multi_word(
-        self, text: str, word_analyses: Dict[str, List[Dict]]
+        self, text: str, word_analyses: dict[str, list[dict]]
     ) -> EntityType:
         """Classify a multi-word entity"""
         text_lower = text.lower()
@@ -365,7 +365,7 @@ class NERHandler(BaseToolHandler):
 
         return EntityType.UNKNOWN
 
-    def _get_person_patterns(self) -> List[str]:
+    def _get_person_patterns(self) -> list[str]:
         """Get regex patterns for person detection"""
         patterns = []
 
@@ -379,7 +379,7 @@ class NERHandler(BaseToolHandler):
 
         return patterns
 
-    def _get_location_patterns(self) -> List[str]:
+    def _get_location_patterns(self) -> list[str]:
         """Get regex patterns for location detection"""
         patterns = []
 
@@ -393,7 +393,7 @@ class NERHandler(BaseToolHandler):
 
         return patterns
 
-    def _get_org_patterns(self) -> List[str]:
+    def _get_org_patterns(self) -> list[str]:
         """Get regex patterns for organization detection"""
         patterns = []
 
@@ -408,8 +408,8 @@ class NERHandler(BaseToolHandler):
         return patterns
 
     def _merge_entities(
-        self, entities: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, entities: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """Merge overlapping entities and deduplicate"""
         if not entities:
             return []
@@ -422,9 +422,7 @@ class NERHandler(BaseToolHandler):
             # Check if overlaps with last merged entity
             if merged and self._overlaps(merged[-1], entity):
                 # Keep the one with higher confidence or longer span
-                if entity["confidence"] > merged[-1]["confidence"]:
-                    merged[-1] = entity
-                elif (
+                if entity["confidence"] > merged[-1]["confidence"] or (
                     entity["confidence"] == merged[-1]["confidence"]
                     and len(entity["text"]) > len(merged[-1]["text"])
                 ):
@@ -434,6 +432,6 @@ class NERHandler(BaseToolHandler):
 
         return merged
 
-    def _overlaps(self, e1: Dict, e2: Dict) -> bool:
+    def _overlaps(self, e1: dict, e2: dict) -> bool:
         """Check if two entities overlap"""
         return not (e1["end"] <= e2["start"] or e2["end"] <= e1["start"])

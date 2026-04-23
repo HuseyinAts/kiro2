@@ -4,10 +4,11 @@ Unit tests for EmotionalService (REQ-5)
 Emotional state tracking, frustration detection, and mood visualization tests.
 """
 
-import pytest
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
+
+import pytest
 
 from api.schemas.diary import EmotionalStateCreate
 
@@ -111,8 +112,8 @@ class TestEmotionalServiceMoodTrend:
     @pytest.mark.asyncio
     async def test_get_mood_trend(self):
         """Test getting mood trend data"""
-        from services.emotional_service import EmotionalService
         from api.schemas.diary import MoodTrendResponse
+        from services.emotional_service import EmotionalService
 
         mock_db = AsyncMock()
 
@@ -144,8 +145,8 @@ class TestEmotionalServiceMoodTrend:
     @pytest.mark.asyncio
     async def test_get_mood_trend_empty(self):
         """Test mood trend with no data"""
-        from services.emotional_service import EmotionalService
         from api.schemas.diary import MoodTrendResponse
+        from services.emotional_service import EmotionalService
 
         mock_db = AsyncMock()
         mock_result = MagicMock()
@@ -238,8 +239,9 @@ class TestEmotionalServiceCRUD:
     @pytest.mark.asyncio
     async def test_get_states(self):
         """Test getting emotional states"""
-        from services.emotional_service import EmotionalService
         from datetime import datetime, timedelta
+
+        from services.emotional_service import EmotionalService
 
         mock_db = AsyncMock()
         mock_result = MagicMock()

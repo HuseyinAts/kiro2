@@ -10,10 +10,12 @@ IMPORTANT: NO REWARD HACKING
 """
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
+from datetime import datetime
+
 import pytest
-from datetime import datetime, timedelta
 
 
 # --- F-12.1: Student dashboard data ---

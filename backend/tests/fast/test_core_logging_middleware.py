@@ -3,6 +3,7 @@ Comprehensive tests for core/logging_middleware.py
 Tests logging middleware for FastAPI request/response logging
 """
 from unittest.mock import patch
+
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -257,8 +258,9 @@ class TestLoggingMiddlewareIntegration:
     @patch("core.logging_middleware.logger")
     def test_middleware_timing_accuracy(self, mock_logger):
         """Test middleware measures processing time"""
-        from core.logging_middleware import LoggingMiddleware
         import asyncio
+
+        from core.logging_middleware import LoggingMiddleware
 
         app = FastAPI()
         app.add_middleware(LoggingMiddleware)

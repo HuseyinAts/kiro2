@@ -5,18 +5,18 @@ Gunluk ozet olusturma servisi (REQ-1).
 Task agregasyonu, key learnings, highlights, challenges ve markdown formatting.
 """
 
-from datetime import datetime, date
+from datetime import date, datetime
 from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.diary import DiaryEntry
 from api.schemas.diary import (
     TaskSummary,
 )
+from models.diary import DiaryEntry
 
 
 class DiaryService:
@@ -46,7 +46,7 @@ class DiaryService:
     # REQ-1.1: Task Aggregation
     # =========================================================================
 
-    def aggregate_tasks(self, tasks: List[TaskSummary]) -> Dict[str, Any]:
+    def aggregate_tasks(self, tasks: list[TaskSummary]) -> dict[str, Any]:
         """
         Task istatistiklerini hesapla (REQ-1.1).
 
@@ -84,9 +84,9 @@ class DiaryService:
 
     def extract_learnings(
         self,
-        tasks: List[TaskSummary],
+        tasks: list[TaskSummary],
         max_learnings: int = 3
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Task notlarindan key learnings cikar (REQ-1.2).
 
@@ -97,7 +97,7 @@ class DiaryService:
         Returns:
             List[str] - Key learnings listesi (top 3)
         """
-        learnings: List[str] = []
+        learnings: list[str] = []
 
         # Basarili tasklerden ogrenimler
         successful_tasks = [t for t in tasks if t.status == "success"]
@@ -130,9 +130,9 @@ class DiaryService:
 
     def select_highlights(
         self,
-        tasks: List[TaskSummary],
+        tasks: list[TaskSummary],
         max_highlights: int = 3
-    ) -> List[str]:
+    ) -> list[str]:
         """
         En etkili tasklari sec (REQ-1.3).
 
@@ -149,7 +149,7 @@ class DiaryService:
             List[str] - Highlight listesi
         """
         # Skor hesapla
-        scored_tasks: List[tuple] = []
+        scored_tasks: list[tuple] = []
         for task in tasks:
             score = 0
             # Basari durumu
@@ -169,7 +169,7 @@ class DiaryService:
         scored_tasks.sort(key=lambda x: x[0], reverse=True)
 
         # Highlight formatla
-        highlights: List[str] = []
+        highlights: list[str] = []
         for score, task in scored_tasks[:max_highlights]:
             status_emoji = "✅" if task.status == "success" else "⚠️"
             highlight = f"{status_emoji} {task.title}"
@@ -183,7 +183,7 @@ class DiaryService:
     # REQ-1.4: Challenge Logging
     # =========================================================================
 
-    def extract_challenges(self, tasks: List[TaskSummary]) -> List[str]:
+    def extract_challenges(self, tasks: list[TaskSummary]) -> list[str]:
         """
         Karsilasilan zorluklari listele (REQ-1.4).
 
@@ -193,7 +193,7 @@ class DiaryService:
         Returns:
             List[str] - Zorluklar listesi
         """
-        challenges: List[str] = []
+        challenges: list[str] = []
 
         # Basarisiz taskler
         failed_tasks = [t for t in tasks if t.status == "failure"]
@@ -227,11 +227,11 @@ class DiaryService:
     def format_markdown(
         self,
         entry_date: date,
-        stats: Dict[str, Any],
-        highlights: List[str],
-        learnings: List[str],
-        challenges: List[str],
-        tasks: List[TaskSummary],
+        stats: dict[str, Any],
+        highlights: list[str],
+        learnings: list[str],
+        challenges: list[str],
+        tasks: list[TaskSummary],
     ) -> str:
         """
         Markdown ozet olustur (REQ-1.5).
@@ -363,7 +363,7 @@ _Claude Diary Plugin v1.0_
         self,
         user_id: UUID,
         entry_date: date,
-        tasks: List[TaskSummary],
+        tasks: list[TaskSummary],
         persist_file: bool = True,
     ) -> DiaryEntry:
         """
@@ -433,7 +433,7 @@ _Claude Diary Plugin v1.0_
         self,
         user_id: UUID,
         entry_date: date
-    ) -> Optional[DiaryEntry]:
+    ) -> DiaryEntry | None:
         """
         Belirli bir tarihin ozetini getir.
 
@@ -453,7 +453,7 @@ _Claude Diary Plugin v1.0_
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
-    async def get_today_summary(self, user_id: UUID) -> Optional[DiaryEntry]:
+    async def get_today_summary(self, user_id: UUID) -> DiaryEntry | None:
         """
         Bugunun ozetini getir.
 
@@ -468,10 +468,10 @@ _Claude Diary Plugin v1.0_
     async def get_summaries(
         self,
         user_id: UUID,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None,
+        start_date: date | None = None,
+        end_date: date | None = None,
         limit: int = 30,
-    ) -> List[DiaryEntry]:
+    ) -> list[DiaryEntry]:
         """
         Ozet listesi getir.
 
@@ -504,10 +504,10 @@ _Claude Diary Plugin v1.0_
     async def update_summary(
         self,
         entry_id: UUID,
-        highlights: Optional[List[str]] = None,
-        learnings: Optional[List[str]] = None,
-        challenges: Optional[List[str]] = None,
-    ) -> Optional[DiaryEntry]:
+        highlights: list[str] | None = None,
+        learnings: list[str] | None = None,
+        challenges: list[str] | None = None,
+    ) -> DiaryEntry | None:
         """
         Ozeti guncelle.
 
@@ -567,7 +567,7 @@ _Claude Diary Plugin v1.0_
         self,
         user_id: UUID,
         week_start: date
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Haftalik istatistikleri getir.
 

@@ -12,7 +12,7 @@ Requirements: REQ-4.4
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -24,9 +24,9 @@ class MEBVerificationResult(BaseModel):
     found: bool = Field(description="Bilgi bulundu mu")
     confidence: float = Field(ge=0.0, le=1.0, description="Güven skoru")
     status: str = Field(description="true/false/partially_true/unverified")
-    evidence: Optional[str] = Field(default=None, description="Kanıt metni")
-    kazanim_code: Optional[str] = Field(default=None, description="İlgili kazanım kodu")
-    grade_level: Optional[int] = Field(default=None, description="Sınıf seviyesi")
+    evidence: str | None = Field(default=None, description="Kanıt metni")
+    kazanim_code: str | None = Field(default=None, description="İlgili kazanım kodu")
+    grade_level: int | None = Field(default=None, description="Sınıf seviyesi")
 
 
 class MEBResourceClient:
@@ -42,7 +42,7 @@ class MEBResourceClient:
 
     def __init__(
         self,
-        api_url: Optional[str] = None,
+        api_url: str | None = None,
         use_local_data: bool = True,
     ):
         """
@@ -56,7 +56,7 @@ class MEBResourceClient:
         # Lokal müfredat verisi (offline kullanım için)
         self._curriculum_data = self._load_curriculum_data()
 
-    def _load_curriculum_data(self) -> Dict[str, Any]:
+    def _load_curriculum_data(self) -> dict[str, Any]:
         """
         Müfredat verisini yükle.
 
@@ -203,22 +203,21 @@ class MEBResourceClient:
         import aiohttp
 
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    f"{self.api_url}/verify",
-                    json={"claim": claim},
-                    timeout=aiohttp.ClientTimeout(total=10.0),
-                ) as resp:
-                    if resp.status == 200:
-                        data = await resp.json()
-                        return MEBVerificationResult(
-                            found=data.get("found", False),
-                            confidence=data.get("confidence", 0.0),
-                            status=data.get("status", "unverified"),
-                            evidence=data.get("evidence"),
-                            kazanim_code=data.get("kazanim_code"),
-                            grade_level=data.get("grade_level"),
-                        )
+            async with aiohttp.ClientSession() as session, session.post(
+                f"{self.api_url}/verify",
+                json={"claim": claim},
+                timeout=aiohttp.ClientTimeout(total=10.0),
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    return MEBVerificationResult(
+                        found=data.get("found", False),
+                        confidence=data.get("confidence", 0.0),
+                        status=data.get("status", "unverified"),
+                        evidence=data.get("evidence"),
+                        kazanim_code=data.get("kazanim_code"),
+                        grade_level=data.get("grade_level"),
+                    )
         except Exception as e:
             logger.error(f"MEB API verification error: {e}")
 
@@ -257,14 +256,13 @@ class MEBResourceClient:
                             status="true",
                             evidence=f"MEB Müfredatı: {fact_name} = {fact_value}",
                         )
-                    else:
-                        # Fact adı geçiyor ama değer farklı olabilir
-                        return MEBVerificationResult(
-                            found=True,
-                            confidence=0.7,
-                            status="partially_true",
-                            evidence=f"MEB Müfredatı'na göre {fact_name}: {fact_value}",
-                        )
+                    # Fact adı geçiyor ama değer farklı olabilir
+                    return MEBVerificationResult(
+                        found=True,
+                        confidence=0.7,
+                        status="partially_true",
+                        evidence=f"MEB Müfredatı'na göre {fact_name}: {fact_value}",
+                    )
 
             # Konu kontrolü
             topics = data.get("konular", data.get("temel", []))
@@ -291,7 +289,7 @@ class MEBResourceClient:
         self,
         topic: str,
         grade_level: int,
-        subject: Optional[str] = None,
+        subject: str | None = None,
     ) -> bool:
         """
         Bir konunun müfredatta olup olmadığını kontrol et.
@@ -336,8 +334,8 @@ class MEBResourceClient:
     def get_curriculum_topics(
         self,
         subject: str,
-        category: Optional[str] = None,
-    ) -> List[str]:
+        category: str | None = None,
+    ) -> list[str]:
         """
         Bir dersin müfredat konularını al.
 
@@ -368,7 +366,7 @@ class MEBResourceClient:
         self,
         subject: str,
         fact_name: str,
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Belirli bir bilimsel gerçeği al.
 

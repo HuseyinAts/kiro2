@@ -6,26 +6,27 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any, List
-from datetime import datetime
 import asyncio
+from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict
 
-from services.llm.multi_llm_config import LLMProvider, LLMModelConfig, LLMCapability
+from services.llm.multi_llm_config import LLMCapability, LLMModelConfig, LLMProvider
 
 
 class LLMRequest(BaseModel):
     """LLM Request Model"""
 
     prompt: str
-    system_prompt: Optional[str] = None
-    max_tokens: Optional[int] = None
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    stop_sequences: Optional[List[str]] = None
+    system_prompt: str | None = None
+    max_tokens: int | None = None
+    temperature: float | None = None
+    top_p: float | None = None
+    stop_sequences: list[str] | None = None
     json_mode: bool = False
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class LLMResponse(BaseModel):
@@ -34,7 +35,7 @@ class LLMResponse(BaseModel):
     provider: LLMProvider
     model_name: str
     content: str
-    raw_response: Optional[Dict[str, Any]] = None
+    raw_response: dict[str, Any] | None = None
 
     # Performance metrics
     latency_ms: float
@@ -42,11 +43,11 @@ class LLMResponse(BaseModel):
     cost_usd: float
 
     # Quality metrics
-    confidence_score: Optional[float] = None
+    confidence_score: float | None = None
 
     # Metadata
     timestamp: datetime = datetime.now()
-    request_id: Optional[str] = None
+    request_id: str | None = None
 
     model_config = ConfigDict(use_enum_values=True)
 
@@ -88,10 +89,9 @@ class BaseLLMProvider(ABC):
         Returns:
             LLM response with generated text and metadata
         """
-        pass
 
     @abstractmethod
-    async def generate_batch(self, requests: List[LLMRequest]) -> List[LLMResponse]:
+    async def generate_batch(self, requests: list[LLMRequest]) -> list[LLMResponse]:
         """
         Generate text for multiple requests (batch processing)
 
@@ -101,7 +101,6 @@ class BaseLLMProvider(ABC):
         Returns:
             List of LLM responses
         """
-        pass
 
     @abstractmethod
     async def check_health(self) -> bool:
@@ -111,7 +110,6 @@ class BaseLLMProvider(ABC):
         Returns:
             True if healthy, False otherwise
         """
-        pass
 
     @abstractmethod
     def supports_capability(self, capability: LLMCapability) -> bool:
@@ -124,11 +122,10 @@ class BaseLLMProvider(ABC):
         Returns:
             True if supported, False otherwise
         """
-        pass
 
     @abstractmethod
     async def fine_tune(
-        self, training_file: str, validation_file: Optional[str] = None, **kwargs
+        self, training_file: str, validation_file: str | None = None, **kwargs
     ) -> str:
         """
         Fine-tune the model with custom data
@@ -141,7 +138,6 @@ class BaseLLMProvider(ABC):
         Returns:
             Fine-tuned model ID
         """
-        pass
 
     def _calculate_cost(self, tokens_used: int) -> float:
         """
@@ -173,7 +169,7 @@ class BaseLLMProvider(ABC):
             self._avg_latency * (self._total_requests - 1) + latency_ms
         ) / self._total_requests
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """
         Get provider performance metrics
 

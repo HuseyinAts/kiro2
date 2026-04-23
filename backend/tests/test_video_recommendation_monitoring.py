@@ -3,8 +3,10 @@ Tests for Video Recommendation Monitoring Service
 Teknofest 2025 - Eğitim Eylemci Projesi
 """
 
-import pytest
 import time
+
+import pytest
+
 from services.video_recommendation_monitoring import (
     VideoRecommendationMonitor,
 )

@@ -21,15 +21,15 @@ Author: KIRO2 Team
 Date: 2026-01-17
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
-from pathlib import Path
-from dataclasses import dataclass, field
-from enum import Enum
-import re
-import logging
 import difflib
 import hashlib
+import logging
+import re
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Git integration
 try:
@@ -40,16 +40,15 @@ except ImportError:
     git = None  # type: ignore
 
 # Database
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, desc
-
 # Models
 from backend.models.claude_md_improvement_models import (
+    AuditLog,
+    ImprovementTrigger,
     RuleEffectiveness,
     RuleVersion,
-    ImprovementTrigger,
-    AuditLog,
 )
+from sqlalchemy import and_, desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +74,7 @@ class Example:
     rule_id: str
     title: str
     good_example: str
-    bad_example: Optional[str] = None
+    bad_example: str | None = None
     explanation: str = ""
     effectiveness_score: float = 0.0
 
@@ -108,14 +107,14 @@ class Change:
 class ApprovalRequest:
     """Request for human approval."""
     id: str
-    changes: List[Change]
+    changes: list[Change]
     version_before: str
     version_after: str
     status: ApprovalStatus = ApprovalStatus.PENDING
     requested_at: datetime = field(default_factory=datetime.utcnow)
-    approved_by: Optional[str] = None
-    approved_at: Optional[datetime] = None
-    rejection_reason: Optional[str] = None
+    approved_by: str | None = None
+    approved_at: datetime | None = None
+    rejection_reason: str | None = None
 
 
 @dataclass
@@ -125,8 +124,8 @@ class UpdateResult:
     version_before: str
     version_after: str
     changes_applied: int
-    diff: Optional[DiffResult] = None
-    error: Optional[str] = None
+    diff: DiffResult | None = None
+    error: str | None = None
     updated_at: datetime = field(default_factory=datetime.utcnow)
 
 
@@ -149,7 +148,7 @@ class DocUpdaterService:
     def __init__(
         self,
         db: AsyncSession,
-        claude_md_path: Optional[Path] = None,
+        claude_md_path: Path | None = None,
     ):
         """
         Initialize doc updater service.
@@ -160,10 +159,10 @@ class DocUpdaterService:
         """
         self.db = db
         self.claude_md_path = claude_md_path or Path(self.CLAUDE_MD_FILENAME)
-        self._pending_approvals: Dict[str, ApprovalRequest] = {}
+        self._pending_approvals: dict[str, ApprovalRequest] = {}
 
         # Git repo
-        self._repo: Optional[git.Repo] = None
+        self._repo: git.Repo | None = None
         if GIT_AVAILABLE:
             try:
                 self._repo = git.Repo(search_parent_directories=True)
@@ -262,18 +261,17 @@ class DocUpdaterService:
                     changes_applied=1,
                     diff=diff,
                 )
-            else:
-                # Request approval
-                approval = await self.request_approval([change])
+            # Request approval
+            approval = await self.request_approval([change])
 
-                return UpdateResult(
-                    success=False,
-                    version_before=current_version,
-                    version_after=new_version,
-                    changes_applied=0,
-                    diff=diff,
-                    error=f"Approval required. Request ID: {approval.id}",
-                )
+            return UpdateResult(
+                success=False,
+                version_before=current_version,
+                version_after=new_version,
+                changes_applied=0,
+                diff=diff,
+                error=f"Approval required. Request ID: {approval.id}",
+            )
 
         except Exception as e:
             logger.error(f"Failed to update CLAUDE.md: {e}")
@@ -293,7 +291,7 @@ class DocUpdaterService:
         self,
         rule_id: str,
         limit: int = 3,
-    ) -> List[Example]:
+    ) -> list[Example]:
         """
         Select best practice examples for a rule.
 
@@ -345,7 +343,7 @@ class DocUpdaterService:
 
         return examples
 
-    def _extract_examples(self, text: str) -> Tuple[Optional[str], Optional[str]]:
+    def _extract_examples(self, text: str) -> tuple[str | None, str | None]:
         """Extract good/bad examples from text."""
         good_match = re.search(r"(?:Good|GOOD|✓|✅)[:\s]*(.+?)(?=Bad|BAD|✗|❌|$)", text, re.DOTALL | re.IGNORECASE)
         bad_match = re.search(r"(?:Bad|BAD|✗|❌)[:\s]*(.+?)(?=$)", text, re.DOTALL | re.IGNORECASE)
@@ -393,7 +391,7 @@ class DocUpdaterService:
         # Build migration guide
         guide_parts = [
             f"# Migration Guide: {old_version} → {new_version}",
-            f"\n**Generated:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
+            f"\n**Generated:** {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')}",
             "\n## Changes\n",
         ]
 
@@ -503,8 +501,8 @@ class DocUpdaterService:
     async def generate_diff(
         self,
         rule_id: str,
-        old_text: Optional[str] = None,
-        new_text: Optional[str] = None,
+        old_text: str | None = None,
+        new_text: str | None = None,
     ) -> DiffResult:
         """
         Generate diff between old and new text.
@@ -574,10 +572,9 @@ class DocUpdaterService:
 
         if similarity < 0.5:
             return ChangeType.MAJOR  # Significant change
-        elif similarity < 0.9:
+        if similarity < 0.9:
             return ChangeType.MINOR  # Moderate change
-        else:
-            return ChangeType.PATCH  # Small fix
+        return ChangeType.PATCH  # Small fix
 
     # =========================================================================
     # REQ-6.6: Human-in-the-Loop Approval Workflow
@@ -585,7 +582,7 @@ class DocUpdaterService:
 
     async def request_approval(
         self,
-        changes: List[Change],
+        changes: list[Change],
     ) -> ApprovalRequest:
         """
         Request human approval for changes.
@@ -616,7 +613,7 @@ class DocUpdaterService:
 
         # Create approval request
         request_id = hashlib.md5(
-            f"{current_version}{new_version}{datetime.now(timezone.utc).isoformat()}".encode()
+            f"{current_version}{new_version}{datetime.now(UTC).isoformat()}".encode()
         ).hexdigest()[:12]
 
         request = ApprovalRequest(
@@ -691,7 +688,7 @@ class DocUpdaterService:
         # Mark as approved
         request.status = ApprovalStatus.APPROVED
         request.approved_by = approved_by
-        request.approved_at = datetime.now(timezone.utc)
+        request.approved_at = datetime.now(UTC)
 
         # Apply changes
         try:
@@ -780,7 +777,7 @@ class DocUpdaterService:
 
         return True
 
-    async def get_pending_approvals(self) -> List[ApprovalRequest]:
+    async def get_pending_approvals(self) -> list[ApprovalRequest]:
         """Get all pending approval requests."""
         return [
             r for r in self._pending_approvals.values()
@@ -795,7 +792,7 @@ class DocUpdaterService:
         self,
         content: str,
         rule_id: str,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Find rule section in CLAUDE.md content."""
         # Pattern to find rule by ID
         pattern = rf"(?:^|\n)(##?\s*{re.escape(rule_id)}.*?)(?=\n##|\Z)"
@@ -817,7 +814,7 @@ class DocUpdaterService:
         self,
         content: str,
         rule_id: str,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Find section name containing rule."""
         lines = content.split("\n")
         current_section = "root"
@@ -865,7 +862,7 @@ class DocUpdaterService:
             try:
                 self._repo.index.add([str(self.claude_md_path)])
                 self._repo.index.commit(
-                    f"CLAUDE.md auto-update: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')}"
+                    f"CLAUDE.md auto-update: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M')}"
                 )
             except Exception as e:
                 logger.warning(f"Git commit failed: {e}")
@@ -910,10 +907,10 @@ class DocUpdaterService:
         self,
         action: str,
         entity_type: str,
-        entity_id: Optional[str] = None,
-        actor: Optional[str] = None,
-        reason: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        actor: str | None = None,
+        reason: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Log audit entry."""
         try:
@@ -934,7 +931,7 @@ class DocUpdaterService:
 # Factory function
 async def get_doc_updater_service(
     db: AsyncSession,
-    claude_md_path: Optional[Path] = None,
+    claude_md_path: Path | None = None,
 ) -> DocUpdaterService:
     """Get doc updater service instance."""
     return DocUpdaterService(db, claude_md_path)

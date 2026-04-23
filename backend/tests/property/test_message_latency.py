@@ -11,19 +11,19 @@ Boris Cherny Standards: Minimum 100 iterations per property test
 
 import asyncio
 import statistics
+import sys
 import time
-from typing import List
 
 import pytest
-from hypothesis import given, settings, strategies as st
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from algorithms.multi_agent_blackboard import (
+    EventType,
     MultiAgentBlackboard,
     Priority,
-    EventType,
 )
 
 
@@ -33,7 +33,7 @@ class TestMessageLatencyProperties:
     def setup_method(self):
         """Test setup."""
         self.blackboard = MultiAgentBlackboard()
-        self.latencies: List[float] = []
+        self.latencies: list[float] = []
 
     @given(
         payload_size=st.integers(min_value=10, max_value=10000),

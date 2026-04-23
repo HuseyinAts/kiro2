@@ -12,7 +12,6 @@ Bu servis, disleksi desteği için metinleri basitleştirir:
 import logging
 import re
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +23,7 @@ class ComplexWord:
     word: str
     complexity_score: float
     position: int
-    suggested_replacements: List[str]
+    suggested_replacements: list[str]
     frequency_score: float
 
 
@@ -39,7 +38,7 @@ class SimplificationResult:
     readability_improvement: float
     original_flesch_score: float
     simplified_flesch_score: float
-    suggestions: List[Dict]
+    suggestions: list[dict]
 
 
 class TextSimplificationService:
@@ -95,7 +94,6 @@ class TextSimplificationService:
             "söylemek",
             "demek",
             "istemek",
-            "gelmek",
             # Yaygın isimler
             "insan",
             "kişi",
@@ -181,7 +179,7 @@ class TextSimplificationService:
     # Task 80.1: Karmaşık Kelime Tespiti
     def detect_complex_words(
         self, text: str, complexity_threshold: float = 0.6
-    ) -> List[ComplexWord]:
+    ) -> list[ComplexWord]:
         """
         Metindeki karmaşık kelimeleri tespit et
 
@@ -296,7 +294,7 @@ class TextSimplificationService:
         # Bilinmeyen kelimeler için varsayılan düşük frekans
         return 0.2
 
-    def _find_simple_synonyms(self, word: str) -> List[str]:
+    def _find_simple_synonyms(self, word: str) -> list[str]:
         """Kelime için basit eşanlamlılar bul"""
         if word in self.synonyms:
             return self.synonyms[word]
@@ -307,9 +305,9 @@ class TextSimplificationService:
     def replace_with_synonyms(
         self,
         text: str,
-        complex_words: List[ComplexWord],
+        complex_words: list[ComplexWord],
         require_confirmation: bool = False,
-    ) -> Tuple[str, List[Dict]]:
+    ) -> tuple[str, list[dict]]:
         """
         Karmaşık kelimeleri basit eşanlamlılarıyla değiştir
 
@@ -375,7 +373,7 @@ class TextSimplificationService:
     # Task 80.3: Uzun Cümle Bölme
     def split_long_sentences(
         self, text: str, max_sentence_length: int = 20
-    ) -> Tuple[str, int]:
+    ) -> tuple[str, int]:
         """
         Uzun cümleleri daha kısa cümlelere böl
 
@@ -428,7 +426,7 @@ class TextSimplificationService:
         self.logger.info(f"Bölünen cümle sayısı: {split_count}")
         return simplified_text, split_count
 
-    def _split_sentence(self, sentence: str, max_length: int) -> List[str]:
+    def _split_sentence(self, sentence: str, max_length: int) -> list[str]:
         """
         Tek bir uzun cümleyi bağlaçlardan böl
 
@@ -484,7 +482,7 @@ class TextSimplificationService:
 
         return result
 
-    def _split_by_commas(self, sentence: str, max_length: int) -> List[str]:
+    def _split_by_commas(self, sentence: str, max_length: int) -> list[str]:
         """Virgüllerden cümle böl"""
         parts = sentence.split(",")
 
@@ -510,7 +508,7 @@ class TextSimplificationService:
         return result
 
     # Task 80.4: Flesch-Kincaid Skoru
-    def calculate_flesch_kincaid_score(self, text: str) -> Dict[str, float]:
+    def calculate_flesch_kincaid_score(self, text: str) -> dict[str, float]:
         """
         Türkçe metin için Flesch-Kincaid okunabilirlik skorunu hesapla
 
@@ -605,8 +603,8 @@ class TextSimplificationService:
         }
 
     def get_improvement_suggestions(
-        self, original_score: Dict[str, float], simplified_score: Dict[str, float]
-    ) -> List[str]:
+        self, original_score: dict[str, float], simplified_score: dict[str, float]
+    ) -> list[str]:
         """
         Okunabilirlik iyileştirme önerileri sun
 

@@ -3,12 +3,11 @@ Test Suite for Advanced Psychometrics
 Tests DIF Analysis and Distractor Analysis
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from services.psychometrics.dif_analyzer import DIFAnalyzer
 from services.psychometrics.distractor_analyzer import DistractorAnalyzer
-
 
 # ==================== FIXTURES ====================
 

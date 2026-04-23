@@ -13,11 +13,11 @@ def analyze_phase2_final():
 
     try:
         # Phase 1 baseline (start of Phase 2)
-        with open("coverage_phase2_start.json", "r") as f:
+        with open("coverage_phase2_start.json") as f:
             phase2_baseline = json.load(f)
 
         # Phase 2 complete coverage
-        with open("coverage_phase2_complete.json", "r") as f:
+        with open("coverage_phase2_complete.json") as f:
             phase2_complete = json.load(f)
 
         print("PHASE 2 CORE MODULES - FINAL ANALYSIS")

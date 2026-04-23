@@ -13,7 +13,6 @@ from __future__ import annotations
 import enum
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
 from sqlalchemy import (
     JSON,
@@ -33,7 +32,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from .base import Base
-
 
 # ---------------------------------------------------------------------------
 # Enums
@@ -96,14 +94,14 @@ class GenerationRun(Base):
     # Üretim parametreleri
     exam_type: Mapped[str] = mapped_column(String(20), nullable=False)
     subject: Mapped[str] = mapped_column(String(100), nullable=False)
-    topic: Mapped[Optional[str]] = mapped_column(String(200))
-    target_difficulty: Mapped[Optional[str]] = mapped_column(String(20))
-    target_solo: Mapped[Optional[str]] = mapped_column(String(30))
+    topic: Mapped[str | None] = mapped_column(String(200))
+    target_difficulty: Mapped[str | None] = mapped_column(String(20))
+    target_solo: Mapped[str | None] = mapped_column(String(30))
     target_count: Mapped[int] = mapped_column(Integer, default=1)
 
     # Model bilgisi
     model_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    model_params: Mapped[Optional[dict]] = mapped_column(JSON)
+    model_params: Mapped[dict | None] = mapped_column(JSON)
 
     # Durum
     status: Mapped[GenerationStatus] = mapped_column(
@@ -119,17 +117,17 @@ class GenerationRun(Base):
     duration_seconds: Mapped[float] = mapped_column(Float, default=0.0)
 
     # Hata bilgisi
-    error_message: Mapped[Optional[str]] = mapped_column(Text)
+    error_message: Mapped[str | None] = mapped_column(Text)
 
     # Zaman
-    started_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
-    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
     # İlişkiler
-    questions: Mapped[List["GeneratedQuestion"]] = relationship(
+    questions: Mapped[list[GeneratedQuestion]] = relationship(
         "GeneratedQuestion", back_populates="generation_run"
     )
 
@@ -160,7 +158,7 @@ class GeneratedQuestion(Base):
     )
 
     # Soru bankası ilişkisi (kabul edilirse)
-    question_bank_id: Mapped[Optional[str]] = mapped_column(
+    question_bank_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("question_bank.id", ondelete="SET NULL")
     )
 
@@ -168,29 +166,29 @@ class GeneratedQuestion(Base):
     question_text: Mapped[str] = mapped_column(Text, nullable=False)
     options: Mapped[dict] = mapped_column(JSON, nullable=False)  # {"A":..,"B":..}
     correct_answer: Mapped[str] = mapped_column(String(1), nullable=False)
-    explanation: Mapped[Optional[str]] = mapped_column(Text)
+    explanation: Mapped[str | None] = mapped_column(Text)
 
     # Sınıflandırma
     exam_type: Mapped[str] = mapped_column(String(20), nullable=False)
     subject: Mapped[str] = mapped_column(String(100), nullable=False)
-    topic: Mapped[Optional[str]] = mapped_column(String(200))
+    topic: Mapped[str | None] = mapped_column(String(200))
 
     # Taxonomy etiketleri
-    solo_label: Mapped[Optional[str]] = mapped_column(String(30))
-    solo_confidence: Mapped[Optional[float]] = mapped_column(Float)
-    marzano_label: Mapped[Optional[str]] = mapped_column(String(30))
-    marzano_confidence: Mapped[Optional[float]] = mapped_column(Float)
-    bloom_level: Mapped[Optional[int]] = mapped_column(Integer)
+    solo_label: Mapped[str | None] = mapped_column(String(30))
+    solo_confidence: Mapped[float | None] = mapped_column(Float)
+    marzano_label: Mapped[str | None] = mapped_column(String(30))
+    marzano_confidence: Mapped[float | None] = mapped_column(Float)
+    bloom_level: Mapped[int | None] = mapped_column(Integer)
 
     # IRT parametreleri (tahmini)
-    irt_difficulty: Mapped[Optional[float]] = mapped_column(Float)
-    irt_discrimination: Mapped[Optional[float]] = mapped_column(Float)
-    irt_guessing: Mapped[Optional[float]] = mapped_column(Float)
+    irt_difficulty: Mapped[float | None] = mapped_column(Float)
+    irt_discrimination: Mapped[float | None] = mapped_column(Float)
+    irt_guessing: Mapped[float | None] = mapped_column(Float)
 
     # Kalite
     quality_score: Mapped[float] = mapped_column(Float, default=0.0)
-    judge_verdict: Mapped[Optional[str]] = mapped_column(String(20))  # accept/reject
-    judge_reasoning: Mapped[Optional[str]] = mapped_column(Text)
+    judge_verdict: Mapped[str | None] = mapped_column(String(20))  # accept/reject
+    judge_reasoning: Mapped[str | None] = mapped_column(Text)
     copy_risk_score: Mapped[float] = mapped_column(Float, default=0.0)
 
     # Durum
@@ -203,10 +201,10 @@ class GeneratedQuestion(Base):
     )
 
     # İlişkiler
-    generation_run: Mapped["GenerationRun"] = relationship(
+    generation_run: Mapped[GenerationRun] = relationship(
         "GenerationRun", back_populates="questions"
     )
-    feedbacks: Mapped[List["HumanFeedback"]] = relationship(
+    feedbacks: Mapped[list[HumanFeedback]] = relationship(
         "HumanFeedback", back_populates="question"
     )
 
@@ -253,10 +251,10 @@ class QuestionEmbedding(Base):
     )
 
     # Kaynak soru (üretilmiş veya mevcut)
-    generated_question_id: Mapped[Optional[str]] = mapped_column(
+    generated_question_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("yks_generated_questions.id", ondelete="CASCADE")
     )
-    question_bank_id: Mapped[Optional[str]] = mapped_column(
+    question_bank_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("question_bank.id", ondelete="CASCADE")
     )
 
@@ -301,7 +299,7 @@ class HumanFeedback(Base):
         ForeignKey("yks_generated_questions.id", ondelete="CASCADE"),
         nullable=False,
     )
-    reviewer_id: Mapped[Optional[str]] = mapped_column(
+    reviewer_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="SET NULL")
     )
 
@@ -310,14 +308,14 @@ class HumanFeedback(Base):
         Enum(FeedbackVerdict), nullable=False
     )
     quality_rating: Mapped[int] = mapped_column(Integer, nullable=False)  # 1-5
-    difficulty_rating: Mapped[Optional[int]] = mapped_column(Integer)  # 1-5
+    difficulty_rating: Mapped[int | None] = mapped_column(Integer)  # 1-5
 
     # Detay
-    comments: Mapped[Optional[str]] = mapped_column(Text)
-    suggested_edits: Mapped[Optional[dict]] = mapped_column(JSON)
+    comments: Mapped[str | None] = mapped_column(Text)
+    suggested_edits: Mapped[dict | None] = mapped_column(JSON)
 
     # Kategorik feedback
-    issues: Mapped[Optional[dict]] = mapped_column(JSON)
+    issues: Mapped[dict | None] = mapped_column(JSON)
     # {"grammar": false, "ambiguous": true, "wrong_answer": false, ...}
 
     # Zaman
@@ -326,7 +324,7 @@ class HumanFeedback(Base):
     )
 
     # İlişkiler
-    question: Mapped["GeneratedQuestion"] = relationship(
+    question: Mapped[GeneratedQuestion] = relationship(
         "GeneratedQuestion", back_populates="feedbacks"
     )
 

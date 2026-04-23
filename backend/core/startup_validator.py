@@ -6,9 +6,8 @@ This module is automatically called on application startup to validate
 all critical configuration before accepting requests.
 """
 
-import os
-from typing import List, Tuple
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,6 @@ logger = logging.getLogger(__name__)
 class StartupValidationError(Exception):
     """Raised when startup validation fails"""
 
-    pass
 
 
 class StartupValidator:
@@ -46,10 +44,10 @@ class StartupValidator:
         self.strict_mode = (
             strict_mode if strict_mode is not None else (env == "production")
         )
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
-    def validate_all(self) -> Tuple[bool, List[str], List[str]]:
+    def validate_all(self) -> tuple[bool, list[str], list[str]]:
         """
         Run all validation checks
 

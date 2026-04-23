@@ -21,9 +21,9 @@ Usage:
 """
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Callable, Optional
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine
@@ -186,7 +186,7 @@ class DataIntegrityValidator:
     def __init__(
         self,
         engine: AsyncEngine,
-        rollback_callback: Optional[Callable] = None,
+        rollback_callback: Callable | None = None,
         auto_rollback: bool = True,
     ):
         """
@@ -238,7 +238,7 @@ class DataIntegrityValidator:
     async def compare_row_counts(
         self,
         before: dict[str, int],
-        after: Optional[dict[str, int]] = None,
+        after: dict[str, int] | None = None,
     ) -> list[RowCountDiff]:
         """
         Row count'lari karsilastir.
@@ -434,7 +434,7 @@ class DataIntegrityValidator:
 
     async def validate_integrity(
         self,
-        before_counts: Optional[dict[str, int]] = None,
+        before_counts: dict[str, int] | None = None,
         check_fks: bool = True,
         check_unique: bool = True,
         check_nulls: bool = True,

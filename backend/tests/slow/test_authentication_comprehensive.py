@@ -10,7 +10,7 @@ import hashlib
 import hmac
 import os
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, Mock, patch
 
 import jwt
@@ -32,8 +32,8 @@ class TestAPIAuthentication:
         secret_key = "test_secret_key_12345"
         payload = {
             "sub": "user123",
-            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
-            "iat": datetime.now(timezone.utc),
+            "exp": datetime.now(UTC) + timedelta(hours=1),
+            "iat": datetime.now(UTC),
             "roles": ["user", "admin"],
         }
         token = jwt.encode(payload, secret_key, algorithm="HS256")
@@ -412,8 +412,8 @@ class TestSecurityFeatures:
         # Create expired token
         expired_payload = {
             "sub": "user123",
-            "exp": datetime.now(timezone.utc) - timedelta(hours=1),  # Expired
-            "iat": datetime.now(timezone.utc) - timedelta(hours=2),
+            "exp": datetime.now(UTC) - timedelta(hours=1),  # Expired
+            "iat": datetime.now(UTC) - timedelta(hours=2),
         }
         expired_token = jwt.encode(expired_payload, secret_key, algorithm="HS256")
 
@@ -921,7 +921,7 @@ class TestMockUserAuthentication:
         """Test user login and token generation"""
         # Mock stored user
         stored_hash = hashlib.pbkdf2_hmac(
-            "sha256", "SecurePass123!".encode("utf-8"), b"salt", 100000
+            "sha256", b"SecurePass123!", b"salt", 100000
         )
 
         # Mock login attempt
@@ -937,8 +937,8 @@ class TestMockUserAuthentication:
         # Generate JWT token
         token_payload = {
             "sub": "testuser",
-            "exp": datetime.now(timezone.utc) + timedelta(hours=24),
-            "iat": datetime.now(timezone.utc),
+            "exp": datetime.now(UTC) + timedelta(hours=24),
+            "iat": datetime.now(UTC),
         }
 
         token = jwt.encode(token_payload, "secret_key", algorithm="HS256")
@@ -951,8 +951,8 @@ class TestMockUserAuthentication:
         assert len(reset_token) > 0
 
         # Mock reset token expiry
-        reset_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
-        assert reset_expiry > datetime.now(timezone.utc)
+        reset_expiry = datetime.now(UTC) + timedelta(hours=1)
+        assert reset_expiry > datetime.now(UTC)
 
     def test_session_management(self):
         """Test session creation and validation"""
@@ -960,8 +960,8 @@ class TestMockUserAuthentication:
         session_id = str(uuid.uuid4())
         session_data = {
             "user_id": "user123",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
+            "expires_at": (datetime.now(UTC) + timedelta(hours=24)).isoformat(),
         }
 
         assert len(session_id) == 36  # UUID v4 length
@@ -990,8 +990,8 @@ class TestMockUserAuthentication:
         refresh_payload = {
             "sub": "user123",
             "type": "refresh",
-            "exp": datetime.now(timezone.utc) + timedelta(days=7),
-            "iat": datetime.now(timezone.utc),
+            "exp": datetime.now(UTC) + timedelta(days=7),
+            "iat": datetime.now(UTC),
         }
 
         refresh_token = jwt.encode(refresh_payload, "refresh_secret", algorithm="HS256")

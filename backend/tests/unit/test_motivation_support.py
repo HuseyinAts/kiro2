@@ -13,4 +13,3 @@ class TestMotivationSupportSystem:
     @pytest.fixture
     def motivation_system(self):
         """Fixture for motivation system"""
-        pass

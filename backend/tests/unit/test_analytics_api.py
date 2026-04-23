@@ -4,12 +4,11 @@ API File: api/analytics.py (1,466 lines)
 Target: 400+ tests with FastAPI TestClient
 """
 
-import pytest
 from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, patch, Mock
+from unittest.mock import AsyncMock, Mock, patch
 
+import pytest
 from fastapi import HTTPException
-
 
 # ============================================================================
 # FIXTURES
@@ -822,11 +821,10 @@ class TestAdminDashboardEndpoint:
         with patch(
             "api.analytics.get_elasticsearch_service",
             return_value=mock_elasticsearch_service,
-        ):
-            with patch("api.analytics.get_cache", return_value=mock_cache):
-                await get_admin_dashboard_analytics(
-                    start_date=None, end_date=None, current_user=mock_admin_user
-                )
+        ), patch("api.analytics.get_cache", return_value=mock_cache):
+            await get_admin_dashboard_analytics(
+                start_date=None, end_date=None, current_user=mock_admin_user
+            )
 
         mock_elasticsearch_service.analytics_service.log_event.assert_called_once()
 
@@ -866,14 +864,13 @@ class TestAdminDashboardEndpoint:
 
         with patch(
             "api.analytics.get_elasticsearch_service", return_value=mock_service
-        ):
-            with patch("api.analytics.get_cache", return_value=mock_cache):
-                with pytest.raises(HTTPException) as exc_info:
-                    await get_admin_dashboard_analytics(
-                        start_date=None, end_date=None, current_user=mock_admin_user
-                    )
+        ), patch("api.analytics.get_cache", return_value=mock_cache):
+            with pytest.raises(HTTPException) as exc_info:
+                await get_admin_dashboard_analytics(
+                    start_date=None, end_date=None, current_user=mock_admin_user
+                )
 
-                assert exc_info.value.status_code == 500
+            assert exc_info.value.status_code == 500
 
     @pytest.mark.parametrize("days_back", [7, 14, 30, 60, 90])
     @pytest.mark.asyncio
@@ -910,7 +907,7 @@ class TestExportPDFEndpoint:
         self, mock_elasticsearch_service, mock_current_user
     ):
         """Test successful PDF export for student"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(
             format="pdf", data_type="student", filters={"student_id": "student_123"}
@@ -931,7 +928,7 @@ class TestExportPDFEndpoint:
         self, mock_elasticsearch_service, mock_teacher_user
     ):
         """Test successful PDF export for class"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(
             format="pdf", data_type="class", filters={"class_id": "class_12a"}
@@ -951,7 +948,7 @@ class TestExportPDFEndpoint:
         self, mock_elasticsearch_service, mock_admin_user
     ):
         """Test successful PDF export for admin"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(format="pdf", data_type="admin", filters={})
 
@@ -969,7 +966,7 @@ class TestExportPDFEndpoint:
         self, mock_current_user, mock_elasticsearch_service
     ):
         """Test PDF export fails without student_id"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(
             format="pdf", data_type="student", filters={}  # Missing student_id
@@ -990,7 +987,7 @@ class TestExportPDFEndpoint:
         self, mock_teacher_user, mock_elasticsearch_service
     ):
         """Test PDF export fails without class_id"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(
             format="pdf", data_type="class", filters={}  # Missing class_id
@@ -1010,7 +1007,7 @@ class TestExportPDFEndpoint:
         self, mock_current_user, mock_elasticsearch_service
     ):
         """Test PDF export fails with invalid data type"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(format="pdf", data_type="invalid_type", filters={})
 
@@ -1028,7 +1025,7 @@ class TestExportPDFEndpoint:
         self, mock_elasticsearch_service, mock_current_user
     ):
         """Test PDF export logs analytics event"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(
             format="pdf", data_type="student", filters={"student_id": "student_123"}
@@ -1045,7 +1042,7 @@ class TestExportPDFEndpoint:
     @pytest.mark.asyncio
     async def test_export_pdf_error_handling(self, mock_current_user):
         """Test error handling when PDF generation fails"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(
             format="pdf", data_type="student", filters={"student_id": "student_123"}
@@ -1070,7 +1067,7 @@ class TestExportPDFEndpoint:
         self, data_type, mock_elasticsearch_service, mock_admin_user
     ):
         """Test PDF export with various data types"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         filters = {}
         if data_type == "student":
@@ -1102,7 +1099,7 @@ class TestExportExcelEndpoint:
         self, mock_elasticsearch_service, mock_current_user
     ):
         """Test successful Excel export for student"""
-        from api.analytics import export_analytics_excel, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_excel
 
         request = ExportRequest(
             format="excel", data_type="student", filters={"student_id": "student_123"}
@@ -1124,7 +1121,7 @@ class TestExportExcelEndpoint:
         self, mock_elasticsearch_service, mock_teacher_user
     ):
         """Test successful Excel export for class"""
-        from api.analytics import export_analytics_excel, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_excel
 
         request = ExportRequest(
             format="excel", data_type="class", filters={"class_id": "class_12a"}
@@ -1144,7 +1141,7 @@ class TestExportExcelEndpoint:
         self, mock_elasticsearch_service, mock_admin_user
     ):
         """Test successful Excel export for admin"""
-        from api.analytics import export_analytics_excel, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_excel
 
         request = ExportRequest(format="excel", data_type="admin", filters={})
 
@@ -1162,7 +1159,7 @@ class TestExportExcelEndpoint:
         self, mock_elasticsearch_service, mock_current_user
     ):
         """Test Excel export logs analytics event"""
-        from api.analytics import export_analytics_excel, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_excel
 
         request = ExportRequest(
             format="excel", data_type="student", filters={"student_id": "student_123"}
@@ -1179,7 +1176,7 @@ class TestExportExcelEndpoint:
     @pytest.mark.asyncio
     async def test_export_excel_error_handling(self, mock_current_user):
         """Test error handling when Excel generation fails"""
-        from api.analytics import export_analytics_excel, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_excel
 
         request = ExportRequest(
             format="excel", data_type="student", filters={"student_id": "student_123"}
@@ -1204,7 +1201,7 @@ class TestExportExcelEndpoint:
         self, data_type, mock_elasticsearch_service, mock_admin_user
     ):
         """Test Excel export with various data types"""
-        from api.analytics import export_analytics_excel, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_excel
 
         filters = {}
         if data_type == "student":
@@ -1236,7 +1233,7 @@ class TestExportCSVEndpoint:
         self, mock_elasticsearch_service, mock_current_user
     ):
         """Test successful CSV export for student"""
-        from api.analytics import export_analytics_csv, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_csv
 
         request = ExportRequest(
             format="csv", data_type="student", filters={"student_id": "student_123"}
@@ -1258,7 +1255,7 @@ class TestExportCSVEndpoint:
         self, mock_elasticsearch_service, mock_teacher_user
     ):
         """Test successful CSV export for class"""
-        from api.analytics import export_analytics_csv, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_csv
 
         request = ExportRequest(
             format="csv", data_type="class", filters={"class_id": "class_12a"}
@@ -1278,7 +1275,7 @@ class TestExportCSVEndpoint:
         self, mock_elasticsearch_service, mock_admin_user
     ):
         """Test successful CSV export for admin"""
-        from api.analytics import export_analytics_csv, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_csv
 
         request = ExportRequest(format="csv", data_type="admin", filters={})
 
@@ -1296,7 +1293,7 @@ class TestExportCSVEndpoint:
         self, mock_elasticsearch_service, mock_current_user
     ):
         """Test CSV export logs analytics event"""
-        from api.analytics import export_analytics_csv, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_csv
 
         request = ExportRequest(
             format="csv", data_type="student", filters={"student_id": "student_123"}
@@ -1313,7 +1310,7 @@ class TestExportCSVEndpoint:
     @pytest.mark.asyncio
     async def test_export_csv_error_handling(self, mock_current_user):
         """Test error handling when CSV generation fails"""
-        from api.analytics import export_analytics_csv, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_csv
 
         request = ExportRequest(
             format="csv", data_type="student", filters={"student_id": "student_123"}
@@ -1338,7 +1335,7 @@ class TestExportCSVEndpoint:
         self, data_type, mock_elasticsearch_service, mock_admin_user
     ):
         """Test CSV export with various data types"""
-        from api.analytics import export_analytics_csv, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_csv
 
         filters = {}
         if data_type == "student":
@@ -1763,8 +1760,9 @@ class TestResponseStructures:
 
     def test_performance_metrics_structure(self):
         """Test performance metrics have correct structure"""
-        from api.analytics import _calculate_student_performance_metrics
         import asyncio
+
+        from api.analytics import _calculate_student_performance_metrics
 
         result = asyncio.run(
             _calculate_student_performance_metrics(
@@ -1782,8 +1780,9 @@ class TestResponseStructures:
 
     def test_learning_style_structure(self):
         """Test learning style has correct structure"""
-        from api.analytics import _get_learning_style_analysis
         import asyncio
+
+        from api.analytics import _get_learning_style_analysis
 
         result = asyncio.run(_get_learning_style_analysis("student_123"))
 
@@ -1793,8 +1792,9 @@ class TestResponseStructures:
 
     def test_exam_performance_structure(self):
         """Test exam performance has correct structure"""
-        from api.analytics import _get_exam_performance_analysis
         import asyncio
+
+        from api.analytics import _get_exam_performance_analysis
 
         result = asyncio.run(
             _get_exam_performance_analysis(
@@ -1831,8 +1831,9 @@ class TestTurkishLanguageSupport:
     )
     def test_turkish_subjects_in_subject_analysis(self, subject):
         """Test Turkish subjects are properly handled"""
-        from api.analytics import _get_subject_performance_analysis
         import asyncio
+
+        from api.analytics import _get_subject_performance_analysis
 
         result = asyncio.run(
             _get_subject_performance_analysis(
@@ -1853,8 +1854,9 @@ class TestTurkishLanguageSupport:
 
     def test_turkish_exam_types(self):
         """Test Turkish exam types (TYT, AYT, YDT)"""
-        from api.analytics import _get_exam_performance_analysis
         import asyncio
+
+        from api.analytics import _get_exam_performance_analysis
 
         result = asyncio.run(
             _get_exam_performance_analysis(
@@ -1887,8 +1889,9 @@ class TestPerformanceOptimization:
         self, mock_elasticsearch_service, mock_current_user
     ):
         """Test student analytics executes quickly"""
-        from api.analytics import get_student_analytics
         import time
+
+        from api.analytics import get_student_analytics
 
         with patch(
             "api.analytics.get_elasticsearch_service",
@@ -1912,8 +1915,9 @@ class TestPerformanceOptimization:
         self, mock_elasticsearch_service, mock_teacher_user
     ):
         """Test class analytics executes quickly"""
-        from api.analytics import get_class_analytics
         import time
+
+        from api.analytics import get_class_analytics
 
         with patch(
             "api.analytics.get_elasticsearch_service",
@@ -1936,8 +1940,9 @@ class TestPerformanceOptimization:
         self, mock_elasticsearch_service, mock_current_user
     ):
         """Test multiple analytics calls don't slow down"""
-        from api.analytics import get_student_analytics
         import time
+
+        from api.analytics import get_student_analytics
 
         with patch(
             "api.analytics.get_elasticsearch_service",
@@ -2066,7 +2071,7 @@ class TestEdgeCases:
         self, mock_elasticsearch_service, mock_admin_user
     ):
         """Test PDF export with empty filters for admin"""
-        from api.analytics import export_analytics_pdf, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_pdf
 
         request = ExportRequest(format="pdf", data_type="admin", filters={})
 
@@ -2083,7 +2088,7 @@ class TestEdgeCases:
         self, mock_elasticsearch_service, mock_admin_user
     ):
         """Test Excel export with large dataset"""
-        from api.analytics import export_analytics_excel, ExportRequest
+        from api.analytics import ExportRequest, export_analytics_excel
 
         request = ExportRequest(
             format="excel", data_type="admin", filters={"large_dataset": True}
@@ -2099,8 +2104,9 @@ class TestEdgeCases:
 
     def test_helper_function_error_handling(self):
         """Test helper functions handle errors gracefully"""
-        from api.analytics import _calculate_student_performance_metrics
         import asyncio
+
+        from api.analytics import _calculate_student_performance_metrics
 
         # Should not raise exception even if service fails
         mock_service = AsyncMock()

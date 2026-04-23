@@ -19,13 +19,13 @@ Requirements:
 
 import hashlib
 import secrets
-from datetime import datetime, timedelta, timezone
-from dataclasses import dataclass
-from typing import Optional
-
-from hypothesis import assume, given, settings, strategies as st
-
 import sys
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 
@@ -38,7 +38,7 @@ class OAuth2StateToken:
     provider: str
     created_at: datetime
     expires_at: datetime
-    redirect_uri: Optional[str] = None
+    redirect_uri: str | None = None
 
 
 class OAuth2StateManager:
@@ -61,12 +61,12 @@ class OAuth2StateManager:
     def store_state(
         self,
         provider: str,
-        redirect_uri: Optional[str] = None,
-        created_at: Optional[datetime] = None
+        redirect_uri: str | None = None,
+        created_at: datetime | None = None
     ) -> str:
         """State token olusturur ve saklar."""
         state = self.generate_state()
-        now = created_at or datetime.now(timezone.utc)
+        now = created_at or datetime.now(UTC)
 
         state_obj = OAuth2StateToken(
             state=state,
@@ -83,7 +83,7 @@ class OAuth2StateManager:
         self,
         state: str,
         provider: str,
-        check_time: Optional[datetime] = None
+        check_time: datetime | None = None
     ) -> tuple[bool, str]:
         """
         State token'i dogrular ve sonuc dondurur.
@@ -91,7 +91,7 @@ class OAuth2StateManager:
         Returns:
             tuple[bool, str]: (is_valid, reason)
         """
-        now = check_time or datetime.now(timezone.utc)
+        now = check_time or datetime.now(UTC)
 
         # State bulunamadi
         if state not in self._states:
@@ -122,18 +122,18 @@ class OAuth2StateManager:
         return OAuth2StateToken(
             state=state,
             provider=provider,
-            created_at=datetime.now(timezone.utc),
-            expires_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            expires_at=datetime.now(UTC),
         )
 
     def get_active_state_count(self) -> int:
         """Aktif state sayisini dondurur."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         return sum(1 for s in self._states.values() if now <= s.expires_at)
 
     def cleanup_expired(self) -> int:
         """Suresi dolmus state'leri temizler."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expired = [s for s, obj in self._states.items() if now > obj.expires_at]
         for s in expired:
             del self._states[s]
@@ -233,7 +233,7 @@ class TestOAuth2StateCSRFProperties:
 
         State 10 dakika sonra gecersiz olmali.
         """
-        base_time = datetime.now(timezone.utc)
+        base_time = datetime.now(UTC)
         state = self.manager.store_state("google", created_at=base_time)
 
         # expiry_minutes sonra kontrol (10 dakikadan fazla)
@@ -254,7 +254,7 @@ class TestOAuth2StateCSRFProperties:
 
         10 dakikadan once state hala gecerli olmali.
         """
-        base_time = datetime.now(timezone.utc)
+        base_time = datetime.now(UTC)
         state = self.manager.store_state("google", created_at=base_time)
 
         # minutes sonra kontrol (10 dakikadan az)

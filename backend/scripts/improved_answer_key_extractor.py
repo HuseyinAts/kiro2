@@ -1,4 +1,4 @@
-"""
+r"""
 Improved Answer Key Extractor for ÖSYM PDFs (Wave 2A)
 
 PROBLEM IDENTIFIED:
@@ -26,7 +26,6 @@ RESEARCH BASIS:
 """
 
 import re
-from typing import Dict, List, Tuple
 from collections import defaultdict
 
 
@@ -84,7 +83,7 @@ class ImprovedAnswerKeyExtractor:
             "strategy_5_fallback": 0,
         }
 
-    def extract_from_pdf(self, pdf, pages_to_check: int = 10) -> Dict[int, str]:
+    def extract_from_pdf(self, pdf, pages_to_check: int = 10) -> dict[int, str]:
         """
         Main extraction method - tries all strategies
 
@@ -135,7 +134,7 @@ class ImprovedAnswerKeyExtractor:
         text_upper = text.upper()
         return any(keyword in text_upper for keyword in self.ANSWER_KEY_KEYWORDS)
 
-    def _try_all_strategies(self, text: str) -> Dict[int, str]:
+    def _try_all_strategies(self, text: str) -> dict[int, str]:
         """Try all extraction strategies and return best result"""
 
         strategies = [
@@ -166,7 +165,7 @@ class ImprovedAnswerKeyExtractor:
 
         return best_result
 
-    def _extract_table_format(self, text: str) -> Dict[int, str]:
+    def _extract_table_format(self, text: str) -> dict[int, str]:
         """
         Strategy 1: Table format with section headers
 
@@ -201,7 +200,7 @@ class ImprovedAnswerKeyExtractor:
 
         return answer_key
 
-    def _extract_simple_format(self, text: str) -> Dict[int, str]:
+    def _extract_simple_format(self, text: str) -> dict[int, str]:
         """
         Strategy 2: Simple sequential format
 
@@ -224,7 +223,7 @@ class ImprovedAnswerKeyExtractor:
 
         return answer_key
 
-    def _extract_section_format(self, text: str) -> Dict[int, str]:
+    def _extract_section_format(self, text: str) -> dict[int, str]:
         """
         Strategy 3: Section-based format with subject names
 
@@ -255,7 +254,7 @@ class ImprovedAnswerKeyExtractor:
 
         return answer_key
 
-    def _extract_multicolumn_format(self, text: str) -> Dict[int, str]:
+    def _extract_multicolumn_format(self, text: str) -> dict[int, str]:
         """
         Strategy 4: Dense multi-column format
 
@@ -278,7 +277,7 @@ class ImprovedAnswerKeyExtractor:
 
         return answer_key
 
-    def _extract_fallback_format(self, text: str) -> Dict[int, str]:
+    def _extract_fallback_format(self, text: str) -> dict[int, str]:
         """
         Strategy 5: Fallback - any digit-letter pair
 
@@ -299,7 +298,7 @@ class ImprovedAnswerKeyExtractor:
 
         return answer_key
 
-    def _print_extraction_stats(self, answer_key: Dict[int, str]):
+    def _print_extraction_stats(self, answer_key: dict[int, str]):
         """Print debug statistics"""
         print(f"[DEBUG] Extracted {len(answer_key)} answers")
 
@@ -313,7 +312,7 @@ class ImprovedAnswerKeyExtractor:
             if count > 0:
                 print(f"  {strategy}: {count} times")
 
-    def validate_answer_key(self, answer_key: Dict[int, str]) -> Tuple[bool, List[str]]:
+    def validate_answer_key(self, answer_key: dict[int, str]) -> tuple[bool, list[str]]:
         """
         Validate extracted answer key
 

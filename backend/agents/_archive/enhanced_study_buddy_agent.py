@@ -11,7 +11,7 @@ import os
 import sys
 import time
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -80,7 +80,7 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
         )
 
     async def process_message(
-        self, message: str, session_id: str, context: Optional[Dict[str, Any]] = None
+        self, message: str, session_id: str, context: dict[str, Any] | None = None
     ) -> str:
         """Process message with full context and personalization"""
 
@@ -151,7 +151,7 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
             return await self.handle_error(e)
 
     async def _get_or_create_session(
-        self, session_id: str, context: Optional[Dict[str, Any]]
+        self, session_id: str, context: dict[str, Any] | None
     ):
         """Get existing or create new session"""
         session = await self.context_manager.get_session(session_id)
@@ -169,7 +169,7 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
 
     async def _analyze_intent(
         self, message: str, session
-    ) -> Tuple[str, Dict[str, Any]]:
+    ) -> tuple[str, dict[str, Any]]:
         """Analyze message intent and extract entities"""
 
         # Get recent context
@@ -219,7 +219,6 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
                 return data.get("intent", "help"), data.get("entities", {})
         except (json.JSONDecodeError, KeyError, TypeError) as e:
             logger.debug(f"Intent analysis failed, using fallback: {e}")
-            pass
 
         # Fallback to simple keyword matching
         message_lower = message.lower()
@@ -249,7 +248,7 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
         self,
         message: str,
         intent: str,
-        entities: Dict[str, Any],
+        entities: dict[str, Any],
         session,
         student_profile: StudentProfile,
     ) -> str:
@@ -354,7 +353,7 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
         )
 
     async def _update_learning_progress(
-        self, student_id: str, topic: Optional[str], success: bool
+        self, student_id: str, topic: str | None, success: bool
     ):
         """Update student learning progress"""
 
@@ -375,13 +374,13 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
             {"last_active": datetime.now(), "total_study_time": 5},  # Add 5 minutes
         )
 
-    async def get_capabilities(self) -> List[str]:
+    async def get_capabilities(self) -> list[str]:
         """Return agent capabilities"""
         return [cap.value for cap in self.manifest.capabilities]
 
     async def create_adaptive_quiz(
         self, student_id: str, topic: str, session_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create adaptive quiz based on student performance"""
 
         # Get student profile
@@ -435,7 +434,7 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
 
     async def provide_real_time_feedback(
         self, student_id: str, question_id: str, answer: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Provide real-time feedback on student answers"""
 
         start_time = time.time()
@@ -483,7 +482,7 @@ class EnhancedStudyBuddyAgent(BaseAgentPlugin):
             "processing_time_ms": processing_time,
         }
 
-    async def get_learning_insights(self, student_id: str) -> Dict[str, Any]:
+    async def get_learning_insights(self, student_id: str) -> dict[str, Any]:
         """Get personalized learning insights"""
 
         # Get progress report

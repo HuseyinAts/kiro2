@@ -9,7 +9,7 @@ import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 from analytics.unified_analytics_data_model import (
     TurkishExamType,
@@ -67,9 +67,9 @@ class LearningPathNode:
     content_item: ContentItem
 
     # Node properties
-    prerequisites: List[str] = field(default_factory=list)
-    next_nodes: List[str] = field(default_factory=list)
-    alternative_nodes: List[str] = field(default_factory=list)
+    prerequisites: list[str] = field(default_factory=list)
+    next_nodes: list[str] = field(default_factory=list)
+    alternative_nodes: list[str] = field(default_factory=list)
 
     # Adaptation parameters
     min_mastery_threshold: float = 0.7
@@ -77,14 +77,14 @@ class LearningPathNode:
     retry_limit: int = 3
 
     # Turkish education context
-    curriculum_alignment: Dict[str, str] = field(default_factory=dict)
-    exam_relevance: Dict[TurkishExamType, float] = field(default_factory=dict)
+    curriculum_alignment: dict[str, str] = field(default_factory=dict)
+    exam_relevance: dict[TurkishExamType, float] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.node_id:
             self.node_id = str(uuid.uuid4())
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "node_id": self.node_id,
@@ -108,7 +108,7 @@ class StudentLearningProfile:
 
     # Learning preferences
     preferred_learning_style: LearningStyle = LearningStyle.MULTIMODAL
-    learning_style_scores: Dict[LearningStyle, float] = field(default_factory=dict)
+    learning_style_scores: dict[LearningStyle, float] = field(default_factory=dict)
 
     # Performance patterns
     average_accuracy: float = 0.0
@@ -117,17 +117,17 @@ class StudentLearningProfile:
     optimal_study_duration: int = 30
 
     # Subject-specific data
-    subject_proficiencies: Dict[TurkishSubject, float] = field(default_factory=dict)
-    weak_topics: List[str] = field(default_factory=list)
-    strong_topics: List[str] = field(default_factory=list)
+    subject_proficiencies: dict[TurkishSubject, float] = field(default_factory=dict)
+    weak_topics: list[str] = field(default_factory=list)
+    strong_topics: list[str] = field(default_factory=list)
 
     # Engagement patterns
-    preferred_content_types: List[ContentType] = field(default_factory=list)
-    engagement_patterns: Dict[str, float] = field(default_factory=dict)
-    peak_learning_hours: List[int] = field(default_factory=list)
+    preferred_content_types: list[ContentType] = field(default_factory=list)
+    engagement_patterns: dict[str, float] = field(default_factory=dict)
+    peak_learning_hours: list[int] = field(default_factory=list)
 
     # Adaptation history
-    adaptation_effectiveness: Dict[str, float] = field(default_factory=dict)
+    adaptation_effectiveness: dict[str, float] = field(default_factory=dict)
     learning_path_completions: int = 0
     mastery_achievements: int = 0
 
@@ -158,14 +158,13 @@ class StudentLearningProfile:
 
         if proficiency >= 0.85:
             return DifficultyLevel.ADVANCED
-        elif proficiency >= 0.7:
+        if proficiency >= 0.7:
             return DifficultyLevel.INTERMEDIATE
-        elif proficiency >= 0.5:
+        if proficiency >= 0.5:
             return DifficultyLevel.BASIC
-        else:
-            return DifficultyLevel.BASIC
+        return DifficultyLevel.BASIC
 
-    def update_from_interaction(self, interaction_data: Dict[str, Any]) -> None:
+    def update_from_interaction(self, interaction_data: dict[str, Any]) -> None:
         """Update profile based on learning interaction"""
         # Update accuracy
         if "accuracy" in interaction_data:
@@ -194,7 +193,7 @@ class StudentLearningProfile:
                     velocity_factor * 0.1
                 )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "student_id": self.student_id,
@@ -233,27 +232,27 @@ class AdaptiveLearningPath:
     subject: TurkishSubject
 
     # Path structure
-    nodes: List[LearningPathNode] = field(default_factory=list)
-    current_node_id: Optional[str] = None
-    completed_nodes: Set[str] = field(default_factory=set)
+    nodes: list[LearningPathNode] = field(default_factory=list)
+    current_node_id: str | None = None
+    completed_nodes: set[str] = field(default_factory=set)
 
     # Path properties
-    learning_objectives: List[LearningObjective] = field(default_factory=list)
+    learning_objectives: list[LearningObjective] = field(default_factory=list)
     estimated_completion_hours: float = 0.0
     actual_time_spent_hours: float = 0.0
 
     # Adaptation settings
-    adaptation_strategies: List[AdaptationStrategy] = field(default_factory=list)
+    adaptation_strategies: list[AdaptationStrategy] = field(default_factory=list)
     delivery_mode: ContentDeliveryMode = ContentDeliveryMode.ADAPTIVE
 
     # Progress tracking
-    mastery_scores: Dict[str, float] = field(default_factory=dict)  # node_id -> mastery
-    attempt_counts: Dict[str, int] = field(default_factory=dict)  # node_id -> attempts
-    time_spent: Dict[str, float] = field(default_factory=dict)  # node_id -> hours
+    mastery_scores: dict[str, float] = field(default_factory=dict)  # node_id -> mastery
+    attempt_counts: dict[str, int] = field(default_factory=dict)  # node_id -> attempts
+    time_spent: dict[str, float] = field(default_factory=dict)  # node_id -> hours
 
     # Turkish curriculum alignment
-    curriculum_coverage: Dict[str, bool] = field(default_factory=dict)
-    exam_preparation_focus: Dict[TurkishExamType, float] = field(default_factory=dict)
+    curriculum_coverage: dict[str, bool] = field(default_factory=dict)
+    exam_preparation_focus: dict[TurkishExamType, float] = field(default_factory=dict)
 
     def __post_init__(self):
         if not self.path_id:
@@ -265,7 +264,7 @@ class AdaptiveLearningPath:
         if not self.current_node_id and not node.prerequisites:
             self.current_node_id = node.node_id
 
-    def get_current_node(self) -> Optional[LearningPathNode]:
+    def get_current_node(self) -> LearningPathNode | None:
         """Get current learning node"""
         if not self.current_node_id:
             return None
@@ -275,7 +274,7 @@ class AdaptiveLearningPath:
                 return node
         return None
 
-    def get_next_nodes(self) -> List[LearningPathNode]:
+    def get_next_nodes(self) -> list[LearningPathNode]:
         """Get available next nodes"""
         current_node = self.get_current_node()
         if not current_node:
@@ -289,7 +288,7 @@ class AdaptiveLearningPath:
 
         return next_nodes
 
-    def get_node_by_id(self, node_id: str) -> Optional[LearningPathNode]:
+    def get_node_by_id(self, node_id: str) -> LearningPathNode | None:
         """Get node by ID"""
         for node in self.nodes:
             if node.node_id == node_id:
@@ -330,7 +329,7 @@ class AdaptiveLearningPath:
         return True
 
     def _select_next_node(
-        self, available_nodes: List[LearningPathNode]
+        self, available_nodes: list[LearningPathNode]
     ) -> LearningPathNode:
         """Select best next node based on adaptation strategies"""
         if len(available_nodes) == 1:
@@ -350,7 +349,7 @@ class AdaptiveLearningPath:
 
         return (completed_count / total_count) * 100
 
-    def get_progress_summary(self) -> Dict[str, Any]:
+    def get_progress_summary(self) -> dict[str, Any]:
         """Get comprehensive progress summary"""
         total_nodes = len(self.nodes)
         completed_nodes = len(self.completed_nodes)
@@ -381,7 +380,7 @@ class AdaptiveLearningPath:
             "subject": self.subject.value,
         }
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "path_id": self.path_id,
@@ -412,7 +411,7 @@ class AdaptationEngine:
         self.adaptation_algorithms = self._initialize_algorithms()
         self.learning_analytics = defaultdict(list)
 
-    def _initialize_algorithms(self) -> Dict[AdaptationStrategy, callable]:
+    def _initialize_algorithms(self) -> dict[AdaptationStrategy, callable]:
         """Initialize adaptation algorithms"""
         return {
             AdaptationStrategy.DIFFICULTY_BASED: self._adapt_by_difficulty,
@@ -426,9 +425,9 @@ class AdaptationEngine:
         self,
         student_profile: StudentLearningProfile,
         learning_path: AdaptiveLearningPath,
-        available_content: List[ContentItem],
-        context: Dict[str, Any] = None,
-    ) -> List[ContentItem]:
+        available_content: list[ContentItem],
+        context: dict[str, Any] = None,
+    ) -> list[ContentItem]:
         """Select and adapt content for student"""
         context = context or {}
 
@@ -458,9 +457,9 @@ class AdaptationEngine:
         self,
         student_profile: StudentLearningProfile,
         learning_path: AdaptiveLearningPath,
-        available_content: List[ContentItem],
-        context: Dict[str, Any],
-    ) -> List[ContentItem]:
+        available_content: list[ContentItem],
+        context: dict[str, Any],
+    ) -> list[ContentItem]:
         """Adapt content based on difficulty level"""
         target_difficulty = student_profile.get_recommended_difficulty(
             learning_path.subject
@@ -475,13 +474,7 @@ class AdaptationEngine:
 
         # If not enough content at target level, include adjacent levels
         if len(suitable_content) < 3:
-            if target_difficulty == DifficultyLevel.BASIC:
-                adjacent_content = [
-                    c
-                    for c in available_content
-                    if c.metadata.difficulty_level == DifficultyLevel.INTERMEDIATE
-                ]
-            elif target_difficulty == DifficultyLevel.ADVANCED:
+            if target_difficulty == DifficultyLevel.BASIC or target_difficulty == DifficultyLevel.ADVANCED:
                 adjacent_content = [
                     c
                     for c in available_content
@@ -503,9 +496,9 @@ class AdaptationEngine:
         self,
         student_profile: StudentLearningProfile,
         learning_path: AdaptiveLearningPath,
-        available_content: List[ContentItem],
-        context: Dict[str, Any],
-    ) -> List[ContentItem]:
+        available_content: list[ContentItem],
+        context: dict[str, Any],
+    ) -> list[ContentItem]:
         """Adapt content based on performance patterns"""
         # Focus on weak topics
         weak_topic_content = []
@@ -533,9 +526,9 @@ class AdaptationEngine:
         self,
         student_profile: StudentLearningProfile,
         learning_path: AdaptiveLearningPath,
-        available_content: List[ContentItem],
-        context: Dict[str, Any],
-    ) -> List[ContentItem]:
+        available_content: list[ContentItem],
+        context: dict[str, Any],
+    ) -> list[ContentItem]:
         """Adapt content based on learning style preferences"""
         preferred_style = student_profile.preferred_learning_style
 
@@ -569,9 +562,9 @@ class AdaptationEngine:
         self,
         student_profile: StudentLearningProfile,
         learning_path: AdaptiveLearningPath,
-        available_content: List[ContentItem],
-        context: Dict[str, Any],
-    ) -> List[ContentItem]:
+        available_content: list[ContentItem],
+        context: dict[str, Any],
+    ) -> list[ContentItem]:
         """Adapt content based on available time and attention span"""
         available_minutes = context.get(
             "available_time_minutes", student_profile.optimal_study_duration
@@ -598,9 +591,9 @@ class AdaptationEngine:
         self,
         student_profile: StudentLearningProfile,
         learning_path: AdaptiveLearningPath,
-        available_content: List[ContentItem],
-        context: Dict[str, Any],
-    ) -> List[ContentItem]:
+        available_content: list[ContentItem],
+        context: dict[str, Any],
+    ) -> list[ContentItem]:
         """Adapt content based on mastery levels"""
         # Find topics that need reinforcement
         low_mastery_topics = []
@@ -621,8 +614,8 @@ class AdaptationEngine:
         return reinforcement_content
 
     def analyze_adaptation_effectiveness(
-        self, student_id: int, adaptation_results: List[Dict[str, Any]]
-    ) -> Dict[str, float]:
+        self, student_id: int, adaptation_results: list[dict[str, Any]]
+    ) -> dict[str, float]:
         """Analyze effectiveness of different adaptation strategies"""
         strategy_effectiveness = defaultdict(list)
 
@@ -646,8 +639,8 @@ class ContentDeliveryService:
 
     def __init__(self):
         self.adaptation_engine = AdaptationEngine()
-        self.student_profiles: Dict[int, StudentLearningProfile] = {}
-        self.learning_paths: Dict[str, AdaptiveLearningPath] = {}
+        self.student_profiles: dict[int, StudentLearningProfile] = {}
+        self.learning_paths: dict[str, AdaptiveLearningPath] = {}
         self.content_repository = {}  # Would be injected in real implementation
 
         # Delivery settings
@@ -659,7 +652,7 @@ class ContentDeliveryService:
         )
 
     async def initialize_student_profile(
-        self, student_id: int, initial_assessment: Dict[str, Any] = None
+        self, student_id: int, initial_assessment: dict[str, Any] = None
     ) -> StudentLearningProfile:
         """Initialize or update student learning profile"""
         if student_id in self.student_profiles:
@@ -677,7 +670,7 @@ class ContentDeliveryService:
         return profile
 
     def _update_profile_from_assessment(
-        self, profile: StudentLearningProfile, assessment: Dict[str, Any]
+        self, profile: StudentLearningProfile, assessment: dict[str, Any]
     ) -> None:
         """Update profile based on initial assessment"""
         # Learning style assessment
@@ -736,9 +729,9 @@ class ContentDeliveryService:
         self,
         student_id: int,
         subject: TurkishSubject,
-        learning_objectives: List[LearningObjective],
-        available_content: List[ContentItem],
-        path_config: Dict[str, Any] = None,
+        learning_objectives: list[LearningObjective],
+        available_content: list[ContentItem],
+        path_config: dict[str, Any] = None,
     ) -> AdaptiveLearningPath:
         """Create adaptive learning path for student"""
         path_config = path_config or {}
@@ -787,7 +780,7 @@ class ContentDeliveryService:
     async def _build_learning_path_structure(
         self,
         learning_path: AdaptiveLearningPath,
-        available_content: List[ContentItem],
+        available_content: list[ContentItem],
         profile: StudentLearningProfile,
     ) -> None:
         """Build the structure of the learning path"""
@@ -865,8 +858,8 @@ class ContentDeliveryService:
         learning_path.estimated_completion_hours = total_time / 60.0
 
     def _determine_topic_order(
-        self, topics: List[str], subject: TurkishSubject
-    ) -> List[str]:
+        self, topics: list[str], subject: TurkishSubject
+    ) -> list[str]:
         """Determine optimal order for topics based on subject"""
         # This would contain curriculum-based topic ordering
         # For now, simple alphabetical order
@@ -911,8 +904,8 @@ class ContentDeliveryService:
         return ordered_topics
 
     def _select_best_content(
-        self, content_list: List[ContentItem], profile: StudentLearningProfile
-    ) -> Optional[ContentItem]:
+        self, content_list: list[ContentItem], profile: StudentLearningProfile
+    ) -> ContentItem | None:
         """Select best content based on student profile"""
         if not content_list:
             return None
@@ -947,8 +940,8 @@ class ContentDeliveryService:
         return best_content
 
     async def get_next_content(
-        self, student_id: int, path_id: str, context: Dict[str, Any] = None
-    ) -> Optional[Dict[str, Any]]:
+        self, student_id: int, path_id: str, context: dict[str, Any] = None
+    ) -> dict[str, Any] | None:
         """Get next adaptive content for student"""
         learning_path = self.learning_paths.get(path_id)
         profile = self.student_profiles.get(student_id)
@@ -1024,7 +1017,7 @@ class ContentDeliveryService:
         student_id: int,
         path_id: str,
         node_id: str,
-        interaction_data: Dict[str, Any],
+        interaction_data: dict[str, Any],
     ) -> bool:
         """Record student interaction with learning content"""
         learning_path = self.learning_paths.get(path_id)
@@ -1072,7 +1065,7 @@ class ContentDeliveryService:
 
         return True
 
-    def _calculate_mastery_score(self, interaction_data: Dict[str, Any]) -> float:
+    def _calculate_mastery_score(self, interaction_data: dict[str, Any]) -> float:
         """Calculate mastery score from interaction data"""
         # Base score from accuracy
         accuracy = interaction_data.get("accuracy", 0.0)
@@ -1098,7 +1091,7 @@ class ContentDeliveryService:
 
         return min(1.0, base_score)
 
-    async def get_learning_analytics(self, student_id: int) -> Dict[str, Any]:
+    async def get_learning_analytics(self, student_id: int) -> dict[str, Any]:
         """Get comprehensive learning analytics for student"""
         profile = self.student_profiles.get(student_id)
         if not profile:
@@ -1142,8 +1135,8 @@ class ContentDeliveryService:
         return analytics
 
     def _generate_learning_recommendations(
-        self, profile: StudentLearningProfile, paths: List[AdaptiveLearningPath]
-    ) -> List[Dict[str, str]]:
+        self, profile: StudentLearningProfile, paths: list[AdaptiveLearningPath]
+    ) -> list[dict[str, str]]:
         """Generate personalized learning recommendations"""
         recommendations = []
 

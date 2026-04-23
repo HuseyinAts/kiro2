@@ -15,12 +15,12 @@ import asyncio
 import hashlib
 import json
 import logging
-import numpy as np
-from typing import List, Optional, Dict, Tuple, Any, Union
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime
-from collections import OrderedDict
+from typing import Any, Union
 
+import numpy as np
 import redis.asyncio as redis
 from pydantic import BaseModel
 
@@ -61,7 +61,7 @@ class EmbeddingEntry:
 
     text: str
     embedding: np.ndarray
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.now)
     model: str = "default"
 
@@ -94,7 +94,7 @@ class SearchResult:
     text: str
     embedding: np.ndarray
     similarity: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         """Convert to dictionary"""
@@ -113,12 +113,12 @@ class EmbeddingIndex:
 
     def __init__(self, dimension: int = 768):
         self.dimension = dimension
-        self.embeddings: List[np.ndarray] = []
-        self.texts: List[str] = []
-        self.metadata: List[Dict] = []
-        self.last_rebuild: Optional[datetime] = None
+        self.embeddings: list[np.ndarray] = []
+        self.texts: list[str] = []
+        self.metadata: list[dict] = []
+        self.last_rebuild: datetime | None = None
 
-    def add(self, text: str, embedding: np.ndarray, metadata: Dict = None):
+    def add(self, text: str, embedding: np.ndarray, metadata: dict = None):
         """Add embedding to index"""
         if embedding.shape[0] != self.dimension:
             logger.warning(
@@ -133,7 +133,7 @@ class EmbeddingIndex:
 
     def search(
         self, query_embedding: np.ndarray, top_k: int = 10, threshold: float = 0.0
-    ) -> List[SearchResult]:
+    ) -> list[SearchResult]:
         """
         Search for similar embeddings
 
@@ -214,7 +214,7 @@ class LRUCache:
         self.capacity = capacity
         self.cache: OrderedDict[str, EmbeddingEntry] = OrderedDict()
 
-    def get(self, key: str) -> Optional[EmbeddingEntry]:
+    def get(self, key: str) -> EmbeddingEntry | None:
         """Get entry and mark as recently used"""
         if key not in self.cache:
             return None
@@ -228,11 +228,10 @@ class LRUCache:
         if key in self.cache:
             # Update existing
             self.cache.move_to_end(key)
-        else:
-            # Add new
-            if len(self.cache) >= self.capacity:
-                # Remove oldest
-                self.cache.popitem(last=False)
+        # Add new
+        elif len(self.cache) >= self.capacity:
+            # Remove oldest
+            self.cache.popitem(last=False)
 
         self.cache[key] = entry
 
@@ -257,9 +256,9 @@ class EmbeddingCache:
     - Automatic index optimization
     """
 
-    def __init__(self, config: Optional[EmbeddingCacheConfig] = None):
+    def __init__(self, config: EmbeddingCacheConfig | None = None):
         self.config = config or EmbeddingCacheConfig()
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self._redis_available = False
 
         # In-memory components
@@ -270,7 +269,7 @@ class EmbeddingCache:
         self.stats = {"hits": 0, "misses": 0, "searches": 0, "batch_operations": 0}
 
         # Background tasks
-        self._index_rebuild_task: Optional[asyncio.Task] = None
+        self._index_rebuild_task: asyncio.Task | None = None
 
     async def initialize(self) -> bool:
         """Initialize Redis connection and index"""
@@ -310,7 +309,7 @@ class EmbeddingCache:
 
         return f"{self.config.key_prefix}:{model}:{text_hash}"
 
-    async def get(self, text: str, model: str = "default") -> Optional[np.ndarray]:
+    async def get(self, text: str, model: str = "default") -> np.ndarray | None:
         """
         Get embedding from cache
 
@@ -350,10 +349,10 @@ class EmbeddingCache:
     async def set(
         self,
         text: str,
-        embedding: Union[np.ndarray, List[float]],
+        embedding: Union[np.ndarray, list[float]],
         model: str = "default",
-        metadata: Optional[Dict] = None,
-        ttl: Optional[int] = None,
+        metadata: dict | None = None,
+        ttl: int | None = None,
     ) -> bool:
         """
         Cache embedding
@@ -401,10 +400,10 @@ class EmbeddingCache:
 
     async def search(
         self,
-        query_embedding: Union[np.ndarray, List[float]],
-        top_k: Optional[int] = None,
-        threshold: Optional[float] = None,
-    ) -> List[SearchResult]:
+        query_embedding: Union[np.ndarray, list[float]],
+        top_k: int | None = None,
+        threshold: float | None = None,
+    ) -> list[SearchResult]:
         """
         Semantic similarity search
 
@@ -431,8 +430,8 @@ class EmbeddingCache:
         return results
 
     async def batch_get(
-        self, texts: List[str], model: str = "default"
-    ) -> Dict[str, Optional[np.ndarray]]:
+        self, texts: list[str], model: str = "default"
+    ) -> dict[str, np.ndarray | None]:
         """
         Get multiple embeddings in batch
 
@@ -459,9 +458,9 @@ class EmbeddingCache:
 
     async def batch_set(
         self,
-        entries: List[Tuple[str, Union[np.ndarray, List[float]]]],
+        entries: list[tuple[str, Union[np.ndarray, list[float]]]],
         model: str = "default",
-        metadata: Optional[Dict] = None,
+        metadata: dict | None = None,
     ) -> int:
         """
         Set multiple embeddings in batch
@@ -563,7 +562,7 @@ class EmbeddingCache:
         except Exception as e:
             logger.error(f"Index rebuild failed: {e}")
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get cache statistics"""
         total_requests = self.stats["hits"] + self.stats["misses"]
         hit_ratio = self.stats["hits"] / total_requests if total_requests > 0 else 0.0
@@ -614,7 +613,7 @@ class EmbeddingCache:
 
 
 # Global instance
-_global_embedding_cache: Optional[EmbeddingCache] = None
+_global_embedding_cache: EmbeddingCache | None = None
 
 
 async def get_embedding_cache() -> EmbeddingCache:

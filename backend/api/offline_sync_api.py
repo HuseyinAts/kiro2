@@ -13,8 +13,6 @@ Endpoints:
 
 from __future__ import annotations
 
-from typing import Optional
-
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy import text
@@ -94,7 +92,7 @@ class SyncResultsResponse(BaseModel):
 class SyncStatusResponse(BaseModel):
     """Response payload for GET /sync-status."""
 
-    last_sync_at: Optional[str]
+    last_sync_at: str | None
     pending_results_count: int
     offline_package_version: str
 
@@ -138,7 +136,7 @@ async def offline_sync_health() -> dict[str, str | bool]:
     ),
 )
 async def get_sync_package(
-    subject: Optional[str] = Query(
+    subject: str | None = Query(
         default=None, description="Ders filtresi (ör. MATEMATIK)"
     ),
     limit: int = Query(default=50, ge=1, le=200, description="Maksimum soru sayısı"),

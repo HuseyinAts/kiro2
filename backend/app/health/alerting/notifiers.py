@@ -18,7 +18,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import List, Optional
 
 import httpx
 
@@ -41,14 +40,13 @@ class BaseNotifier(ABC):
         Returns:
             True ise başarılı
         """
-        pass
 
 
 @dataclass
 class SlackConfig:
     """Slack webhook konfigürasyonu."""
     webhook_url: str
-    channel: Optional[str] = None
+    channel: str | None = None
     username: str = "KIRO2 Health Monitor"
     icon_emoji: str = ":hospital:"
 
@@ -104,11 +102,10 @@ class SlackNotifier(BaseNotifier):
                 if response.status_code == 200:
                     logger.debug(f"Slack alert gönderildi: {alert.id}")
                     return True
-                else:
-                    logger.error(
-                        f"Slack alert gönderilemedi: {response.status_code}"
-                    )
-                    return False
+                logger.error(
+                    f"Slack alert gönderilemedi: {response.status_code}"
+                )
+                return False
 
         except Exception as e:
             logger.error(f"Slack notifier hatası: {e}")
@@ -195,7 +192,7 @@ class EmailConfig:
     username: str
     password: str
     from_email: str
-    to_emails: List[str]
+    to_emails: list[str]
     use_tls: bool = True
 
 
@@ -319,7 +316,7 @@ class TwilioConfig:
     account_sid: str
     auth_token: str
     from_number: str
-    to_numbers: List[str]
+    to_numbers: list[str]
 
 
 class SMSNotifier(BaseNotifier):

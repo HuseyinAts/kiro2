@@ -6,13 +6,11 @@ Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5, 2.6
 
 from __future__ import annotations
 
-from typing import List
-
-from ..base_detector import BaseDetector
-from ..models.enums import SeverityLevel, PatternType
-from ..models.detection_result import DetectionResult
 from ..analyzers.context_analyzer import ContextAnalyzer
+from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
+from ..models.detection_result import DetectionResult
+from ..models.enums import PatternType, SeverityLevel
 
 
 class EchoSuccessDetector(BaseDetector):
@@ -30,7 +28,7 @@ class EchoSuccessDetector(BaseDetector):
     pattern_type = PatternType.ECHO_SUCCESS
     default_severity = SeverityLevel.CRITICAL
 
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """Get regex patterns for echo success detection."""
         return REWARD_HACKING_PATTERNS.get("echo_success", [])
 
@@ -38,7 +36,7 @@ class EchoSuccessDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect echo success patterns.
 
@@ -52,7 +50,7 @@ class EchoSuccessDetector(BaseDetector):
         if not self.is_enabled():
             return []
 
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Initialize context analyzer
         context_analyzer = ContextAnalyzer(content, file_path)

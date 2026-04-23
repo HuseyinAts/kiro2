@@ -11,12 +11,11 @@ Endpoints:
 - GET /api/v1/performance/rag-pipeline - RAG pipeline stats
 """
 import logging
-from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from core.dependencies import get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -75,10 +74,10 @@ class RAGPipelineMetrics(BaseModel):
 class PerformanceMetrics(BaseModel):
     """Comprehensive performance metrics"""
 
-    llm_pool: Optional[LLMPoolMetrics] = None
-    vector_store: Optional[VectorStoreMetrics] = None
-    cache: Optional[CacheMetrics] = None
-    rag_pipeline: Optional[RAGPipelineMetrics] = None
+    llm_pool: LLMPoolMetrics | None = None
+    vector_store: VectorStoreMetrics | None = None
+    cache: CacheMetrics | None = None
+    rag_pipeline: RAGPipelineMetrics | None = None
 
 
 # ==================== ENDPOINTS ====================

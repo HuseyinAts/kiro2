@@ -11,7 +11,6 @@ Bu modül YDT sınavları için optik form arayüzü işlevlerini yönetir:
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
 
 from core.structured_logger import get_logger
 
@@ -31,11 +30,11 @@ class OpticalFormAnswer:
     """Optik form cevap modeli"""
 
     question_number: int
-    selected_option: Optional[str] = None  # A, B, C, D, E
+    selected_option: str | None = None  # A, B, C, D, E
     status: AnswerStatus = AnswerStatus.EMPTY
     is_flagged: bool = False  # Şüpheli işaret
-    response_time: Optional[float] = None  # Cevaplama süresi (saniye)
-    marked_at: Optional[datetime] = None
+    response_time: float | None = None  # Cevaplama süresi (saniye)
+    marked_at: datetime | None = None
 
 
 @dataclass
@@ -46,7 +45,7 @@ class PassageSection:
     title: str
     content: str
     word_count: int
-    question_numbers: List[int]  # Bu metne ait soru numaraları
+    question_numbers: list[int]  # Bu metne ait soru numaraları
     estimated_reading_time: int  # Tahmini okuma süresi (dakika)
 
     # Görüntüleme optimizasyonu
@@ -65,14 +64,14 @@ class YDTOpticalForm:
     total_questions: int = 80
 
     # Cevaplar
-    answers: Dict[int, OpticalFormAnswer] = field(default_factory=dict)
+    answers: dict[int, OpticalFormAnswer] = field(default_factory=dict)
 
     # Metin bölümleri
-    passages: List[PassageSection] = field(default_factory=list)
+    passages: list[PassageSection] = field(default_factory=list)
 
     # Navigasyon
     current_question: int = 1
-    current_passage_id: Optional[str] = None
+    current_passage_id: str | None = None
 
     # İstatistikler
     answered_count: int = 0
@@ -142,7 +141,7 @@ class YDTOpticalFormService:
         exam_session_id: str,
         student_id: str,
         language: str,
-        passages: List[PassageSection],
+        passages: list[PassageSection],
     ) -> YDTOpticalForm:
         """
         YDT optik form oluştur - REQ-1.3, REQ-1.6
@@ -184,7 +183,7 @@ class YDTOpticalFormService:
         optical_form: YDTOpticalForm,
         question_number: int,
         selected_option: str,
-        response_time: Optional[float] = None,
+        response_time: float | None = None,
     ) -> bool:
         """
         Cevap işaretle - REQ-1.3, REQ-1.6
@@ -354,7 +353,7 @@ class YDTOpticalFormService:
 
     def get_passage_for_question(
         self, optical_form: YDTOpticalForm, question_number: int
-    ) -> Optional[PassageSection]:
+    ) -> PassageSection | None:
         """
         Soru için ilgili metni getir - REQ-1.3, REQ-1.6
 
@@ -373,7 +372,7 @@ class YDTOpticalFormService:
 
     def get_answer_grid(
         self, optical_form: YDTOpticalForm
-    ) -> Dict[int, Dict[str, any]]:
+    ) -> dict[int, dict[str, any]]:
         """
         Cevap ızgarasını getir (optik form görünümü için) - REQ-1.3, REQ-1.6
 
@@ -395,7 +394,7 @@ class YDTOpticalFormService:
 
         return grid
 
-    def get_completion_stats(self, optical_form: YDTOpticalForm) -> Dict[str, any]:
+    def get_completion_stats(self, optical_form: YDTOpticalForm) -> dict[str, any]:
         """
         Tamamlanma istatistiklerini getir - REQ-1.3, REQ-1.6
 
@@ -420,8 +419,8 @@ class YDTOpticalFormService:
         self,
         passage: PassageSection,
         screen_width: int,
-        user_preferences: Optional[Dict] = None,
-    ) -> Dict[str, str]:
+        user_preferences: dict | None = None,
+    ) -> dict[str, str]:
         """
         Metin görüntüleme optimizasyonu - REQ-1.3, REQ-1.6
 
@@ -465,7 +464,7 @@ class YDTOpticalFormService:
 
         return display_settings
 
-    def get_language_interface_config(self, language: str) -> Dict[str, str]:
+    def get_language_interface_config(self, language: str) -> dict[str, str]:
         """
         Dil-specific interface konfigürasyonunu getir - REQ-1.3, REQ-1.6
 

@@ -9,12 +9,11 @@ Features:
 - Dangerous pattern detection
 - Automated security report generation
 """
-import re
 import os
-from pathlib import Path
-from typing import List, Dict, Set
+import re
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 
 
 class VulnerabilityLevel(str, Enum):
@@ -46,13 +45,13 @@ class AuditReport:
 
     total_files_scanned: int = 0
     total_lines_scanned: int = 0
-    findings: List[SQLInjectionFinding] = field(default_factory=list)
+    findings: list[SQLInjectionFinding] = field(default_factory=list)
     safe_patterns_found: int = 0
-    files_with_issues: Set[str] = field(default_factory=set)
+    files_with_issues: set[str] = field(default_factory=set)
 
-    def get_summary(self) -> Dict:
+    def get_summary(self) -> dict:
         """Get summary statistics"""
-        severity_counts = {level: 0 for level in VulnerabilityLevel}
+        severity_counts = dict.fromkeys(VulnerabilityLevel, 0)
         for finding in self.findings:
             severity_counts[finding.severity] += 1
 
@@ -167,12 +166,12 @@ class SQLInjectionAuditor:
             r"session\.execute\s*\(\s*select\s*\(",
         ]
 
-    def audit_file(self, file_path: Path) -> List[SQLInjectionFinding]:
+    def audit_file(self, file_path: Path) -> list[SQLInjectionFinding]:
         """Audit a single Python file"""
         findings = []
 
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
                 lines = content.split("\n")
 

@@ -140,16 +140,15 @@ class TestGlobalMetrics:
 
     def test_global_metrics_exists(self):
         """Test global_metrics instance exists"""
-        from core.metrics_collector import global_metrics, PerformanceMonitor
+        from core.metrics_collector import PerformanceMonitor, global_metrics
 
         assert global_metrics is not None
         assert isinstance(global_metrics, PerformanceMonitor)
 
     def test_global_metrics_is_singleton(self):
         """Test global_metrics is a singleton"""
-        from core.metrics_collector import global_metrics
-
         # Import again
         from core import metrics_collector
+        from core.metrics_collector import global_metrics
 
         assert metrics_collector.global_metrics is global_metrics

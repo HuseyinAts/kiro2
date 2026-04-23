@@ -2,7 +2,6 @@
 Dashboard veri modelleri
 """
 from datetime import datetime
-from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -40,7 +39,7 @@ class SinavSonucu(BaseModel):
     yanlis_sayisi: int = Field(..., description="Yanlış cevap sayısı")
     bos_sayisi: int = Field(..., description="Boş cevap sayısı")
     sure: int = Field(..., description="Sınav süresi (dakika)")
-    konu_performanslari: Dict[str, float] = Field(
+    konu_performanslari: dict[str, float] = Field(
         default_factory=dict, description="Konu bazlı performanslar"
     )
 
@@ -50,7 +49,7 @@ class Hedef(BaseModel):
 
     hedef_id: str = Field(..., description="Hedef ID")
     baslik: str = Field(..., description="Hedef başlığı")
-    aciklama: Optional[str] = Field(None, description="Hedef açıklaması")
+    aciklama: str | None = Field(None, description="Hedef açıklaması")
     hedef_tipi: str = Field(..., description="Hedef türü (gunluk, haftalik, aylik)")
     hedef_degeri: float = Field(..., description="Hedef değeri")
     mevcut_deger: float = Field(..., description="Mevcut değer")
@@ -69,7 +68,7 @@ class Bildirim(BaseModel):
     tip: str = Field(..., description="Bildirim türü (basari, uyari, bilgi, hata)")
     okundu: bool = Field(False, description="Okunma durumu")
     tarih: datetime = Field(default_factory=datetime.now)
-    eylem_url: Optional[str] = Field(None, description="Eylem URL'si")
+    eylem_url: str | None = Field(None, description="Eylem URL'si")
 
 
 class PerformansVerisi(BaseModel):
@@ -85,15 +84,15 @@ class PerformansVerisi(BaseModel):
 class ProfilGuncelleme(BaseModel):
     """Profil güncelleme modeli"""
 
-    ad_soyad: Optional[str] = Field(None, description="Ad soyad")
-    telefon: Optional[str] = Field(None, description="Telefon numarası")
-    sinif_seviyesi: Optional[int] = Field(
+    ad_soyad: str | None = Field(None, description="Ad soyad")
+    telefon: str | None = Field(None, description="Telefon numarası")
+    sinif_seviyesi: int | None = Field(
         None, ge=9, le=12, description="Sınıf seviyesi"
     )
-    okul_adi: Optional[str] = Field(None, description="Okul adı")
-    hedef_universiteler: Optional[List[str]] = Field(
+    okul_adi: str | None = Field(None, description="Okul adı")
+    hedef_universiteler: list[str] | None = Field(
         None, description="Hedef üniversiteler"
     )
-    gunluk_calisma_hedefi: Optional[int] = Field(
+    gunluk_calisma_hedefi: int | None = Field(
         None, ge=30, le=600, description="Günlük çalışma hedefi"
     )

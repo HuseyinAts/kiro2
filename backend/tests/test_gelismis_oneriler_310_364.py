@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Test: Gelismis Oneri Generatorleri - Learning Style Service
 HEDEF: %85+ Coverage
@@ -6,9 +5,8 @@ KRITIK ALAN: 310-364 satir (55 satir)
 """
 
 import pytest
+
 from services.learning_style_service import LearningStyleService
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -597,7 +595,6 @@ def test_gelismis_oneriler_summary():
     cd backend
     pytest tests/test_gelismis_oneriler_310_364.py -v --cov=services.learning_style_service --cov-report=html
     """
-    pass
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ Supports both JPype (direct Zemberek access) and HTTP backend.
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from .base import BaseToolHandler
 
@@ -18,7 +18,7 @@ class MorphologyHandler(BaseToolHandler):
 
     tool_name = "morphology"
 
-    async def _call_jpype(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_jpype(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Perform morphological analysis using JPype bridge.
 
@@ -32,7 +32,7 @@ class MorphologyHandler(BaseToolHandler):
             raise RuntimeError("JPype bridge not initialized")
 
         words = text.split()
-        word_analyses: List[Dict[str, Any]] = []
+        word_analyses: list[dict[str, Any]] = []
 
         for word in words:
             try:
@@ -80,7 +80,7 @@ class MorphologyHandler(BaseToolHandler):
             "total_words": len(words),
         }
 
-    async def _call_backend(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_backend(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Perform morphological analysis on Turkish text
 
@@ -91,7 +91,7 @@ class MorphologyHandler(BaseToolHandler):
             MorphologyResult as dictionary
         """
         words = text.split()
-        word_analyses: List[Dict[str, Any]] = []
+        word_analyses: list[dict[str, Any]] = []
 
         for word in words:
             try:
@@ -141,7 +141,7 @@ class MorphologyHandler(BaseToolHandler):
             "total_words": len(words),
         }
 
-    def _extract_root(self, analysis: Dict[str, Any]) -> str:
+    def _extract_root(self, analysis: dict[str, Any]) -> str:
         """Extract root from analysis"""
         lemma = analysis.get("lemma", "")
         morphemes = analysis.get("morphemes", [])
@@ -151,7 +151,7 @@ class MorphologyHandler(BaseToolHandler):
             return morphemes[0]
         return lemma
 
-    def _extract_suffixes(self, analysis: Dict[str, Any]) -> List[str]:
+    def _extract_suffixes(self, analysis: dict[str, Any]) -> list[str]:
         """Extract suffixes from morphemes"""
         morphemes = analysis.get("morphemes", [])
         if len(morphemes) > 1:

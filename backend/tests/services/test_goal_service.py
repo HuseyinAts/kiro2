@@ -4,12 +4,19 @@ Unit tests for GoalService (REQ-6)
 Goal tracking, milestones, and risk assessment tests.
 """
 
-import pytest
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
-from api.schemas.diary import GoalCreate, GoalUpdate, GoalProgressUpdate, MilestoneCreate, GoalStatus
+import pytest
+
+from api.schemas.diary import (
+    GoalCreate,
+    GoalProgressUpdate,
+    GoalStatus,
+    GoalUpdate,
+    MilestoneCreate,
+)
 
 
 class TestGoalServiceCreation:
@@ -237,8 +244,8 @@ class TestGoalServiceRiskAssessment:
 
     def test_detect_risk_on_track(self):
         """Test risk detection for on-track goal"""
-        from services.goal_service import GoalService
         from api.schemas.diary import GoalRiskResponse
+        from services.goal_service import GoalService
 
         mock_db = MagicMock()
         service = GoalService(mock_db)
@@ -259,8 +266,8 @@ class TestGoalServiceRiskAssessment:
 
     def test_detect_risk_behind_schedule(self):
         """Test risk detection for behind schedule goal"""
-        from services.goal_service import GoalService
         from api.schemas.diary import GoalRiskResponse
+        from services.goal_service import GoalService
 
         mock_db = MagicMock()
         service = GoalService(mock_db)
@@ -455,8 +462,8 @@ class TestGoalServiceStatistics:
     @pytest.mark.asyncio
     async def test_get_goal_statistics(self):
         """Test getting goal statistics"""
-        from services.goal_service import GoalService
         from models.diary import GoalStatus as GoalStatusModel
+        from services.goal_service import GoalService
 
         mock_db = AsyncMock()
 

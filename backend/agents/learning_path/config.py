@@ -193,6 +193,6 @@ config = get_learning_path_config()
 
 __all__ = [
     "LearningPathConfig",
-    "get_learning_path_config",
     "config",
+    "get_learning_path_config",
 ]

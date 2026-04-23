@@ -33,7 +33,6 @@ from core.exceptions import (
     NotFoundError,
     ValidationError,
 )
-from core.global_exception_handler import handle_with_recovery
 from core.response_models import (
     PaginatedResponse,
     SuccessResponse,
@@ -175,7 +174,7 @@ async def list_users_enhanced(
 
         # Initialize service with error handling
         try:
-            from sqlalchemy import select, func, or_, cast, String
+            from sqlalchemy import String, cast, func, or_, select
             query = select(User)
             count_query = select(func.count()).select_from(User)
 

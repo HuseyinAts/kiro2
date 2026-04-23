@@ -5,10 +5,11 @@ Learning Path Video Yükleme Sorunu Çözümü - Task 4
 Simple unit tests that don't require full database setup
 """
 
-import pytest
 from datetime import datetime
 
-from services.health_check_service import HealthStatus, ComponentHealth, SystemHealth
+import pytest
+
+from services.health_check_service import ComponentHealth, HealthStatus, SystemHealth
 
 
 class TestComponentHealth:
@@ -203,10 +204,9 @@ class TestHealthCheckServiceSingleton:
 
     def test_get_health_check_service_singleton(self):
         """Test that get_health_check_service returns same instance"""
-        from services.health_check_service import get_health_check_service
-
         # Reset singleton for test
         import services.health_check_service as hcs_module
+        from services.health_check_service import get_health_check_service
 
         hcs_module._health_check_service = None
 

@@ -8,14 +8,13 @@ Tests for import analysis, coupling metrics, and layer separation.
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from backend.core.quality_gates.models import GateStatus, GateSeverity
 from backend.core.quality_gates.gates.architecture import ArchitectureGate
 from backend.core.quality_gates.gates.base import GateContext
-
+from backend.core.quality_gates.models import GateSeverity, GateStatus
 
 # =============================================================================
 # Test Fixtures

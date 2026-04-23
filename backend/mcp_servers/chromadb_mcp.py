@@ -19,19 +19,26 @@ Author: KIRO2 Team
 Date: 2026-01-14
 """
 
+import json
 import os
 import sys
-import json
 import time
 from collections import defaultdict
+from collections.abc import Callable
 from datetime import datetime
 from functools import wraps
-from typing import Optional, Callable, Any
 from pathlib import Path
+from typing import Any
 
 # Prometheus metrics support
 try:
-    from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+    from prometheus_client import (
+        CONTENT_TYPE_LATEST,
+        Counter,
+        Gauge,
+        Histogram,
+        generate_latest,
+    )
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False
@@ -265,7 +272,7 @@ class ChromaDBService:
     """ChromaDB service for KIRO2 question bank."""
 
     def __init__(self):
-        self.client: Optional[chromadb.Client] = None
+        self.client: chromadb.Client | None = None
         self.collection = None
         self.embedding_model = None
         self._initialized = False

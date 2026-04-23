@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -9,19 +10,18 @@ Teknofest 2025 - Eğitim Eylemci Projesi
 """
 
 import asyncio
-import pytest
 import time
+from datetime import datetime
 from unittest.mock import patch
 
+import pytest
+
+from backend.integrations.youtube_service import YouTubeVideo
 from services.enhanced_resource_recommendation_engine import (
     EnhancedResourceRecommendationEngine,
     RateLimiter,
     RecommendedVideo,
 )
-from backend.integrations.youtube_service import YouTubeVideo
-from datetime import datetime
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -325,8 +325,8 @@ class TestRecommendationPerformance:
             engine.quality_validator, "calculate_quality_score", return_value=0.8
         ):
             # Mock responses
-            from services.turkish_content_filter import TurkishValidationResult
             from services.subject_relevance_scorer import RelevanceScore
+            from services.turkish_content_filter import TurkishValidationResult
             from services.video_quality_validator import VideoAccessibilityResult
 
             mock_turkish.return_value = TurkishValidationResult(

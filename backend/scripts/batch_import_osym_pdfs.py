@@ -3,14 +3,13 @@ Batch Import ÖSYM PDFs
 Process all TYT and AYT PDFs and import to database
 """
 import asyncio
-from pathlib import Path
 import sys
-from typing import List
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from scripts.osym_question_extractor import OSYMQuestionExtractor
 from scripts.import_osym_to_db import OSYMDatabaseImporter
+from scripts.osym_question_extractor import OSYMQuestionExtractor
 
 
 class BatchOSYMImporter:
@@ -28,7 +27,7 @@ class BatchOSYMImporter:
         self.failed_extractions = 0
         self.total_questions = 0
 
-    def get_all_pdfs(self) -> List[Path]:
+    def get_all_pdfs(self) -> list[Path]:
         """Get all PDF files from TYT and AYT directories"""
         pdfs = []
 
@@ -68,10 +67,9 @@ class BatchOSYMImporter:
 
                 print(f"[OK] Extracted {len(questions)} questions")
                 return str(output_file)
-            else:
-                print("[WARN] No questions extracted")
-                self.failed_extractions += 1
-                return None
+            print("[WARN] No questions extracted")
+            self.failed_extractions += 1
+            return None
 
         except Exception as e:
             print(f"[ERROR] Failed to extract: {e}")

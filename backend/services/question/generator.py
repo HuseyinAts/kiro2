@@ -10,7 +10,7 @@ import json
 import logging
 import random
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from models.curriculum import SubjectType
 from models.question_generation import (
@@ -47,7 +47,7 @@ class TopicBasedQuestionGenerator:
         difficulty_level: DifficultyLevel,
         cognitive_level: CognitiveLevel,
         question_type: QuestionType = QuestionType.MULTIPLE_CHOICE,
-    ) -> Optional[GeneratedQuestion]:
+    ) -> GeneratedQuestion | None:
         """
         Konu bazli soru uretimi
 
@@ -155,7 +155,7 @@ class TopicBasedQuestionGenerator:
         topic_context: str,
         difficulty_level: DifficultyLevel,
         cognitive_level: CognitiveLevel,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         REQ-48.34: Context injection - Konu baglamini prompt'a eklemek
         """
@@ -180,7 +180,7 @@ class TopicBasedQuestionGenerator:
 
     def _create_prompt(
         self,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         template: str,
         difficulty_level: DifficultyLevel,
         cognitive_level: CognitiveLevel,
@@ -216,7 +216,7 @@ Lutfen OSYM standartlarina uygun, Turkce dilbilgisi kurallarina uygun, net ve an
 
         return prompt
 
-    def _parse_llm_response(self, llm_response: str) -> Dict[str, Any]:
+    def _parse_llm_response(self, llm_response: str) -> dict[str, Any]:
         """LLM yanitini parse et"""
         try:
             data = json.loads(llm_response)
@@ -234,7 +234,7 @@ Lutfen OSYM standartlarina uygun, Turkce dilbilgisi kurallarina uygun, net ve an
 
     def _generate_mock_question(
         self, subject: SubjectType, topic_name: str, difficulty_level: DifficultyLevel
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test icin mock soru uret"""
         return {
             "question_text": f"{topic_name} konusu ile ilgili asagidaki ifadelerden hangisi dogrudur?",

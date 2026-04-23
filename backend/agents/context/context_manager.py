@@ -12,7 +12,7 @@ Sid Bidasaria subagent mimarisi:
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class TokenCounter:
             logger.warning(f"Token counting error, using fallback: {e}")
             return max(1, int(len(text) / 3.5))
 
-    def count_messages(self, messages: List[Dict[str, str]]) -> int:
+    def count_messages(self, messages: list[dict[str, str]]) -> int:
         """
         Mesaj listesindeki toplam token sayisi
 
@@ -101,7 +101,7 @@ class ContextEntry:
     priority: int = 0  # 0=low, 1=medium, 2=high
     entry_type: str = "general"  # "domain_knowledge", "history", "shared", "general"
     created_at: datetime = field(default_factory=datetime.now)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ContextManager:
@@ -141,7 +141,7 @@ class ContextManager:
         self.max_tokens = max_tokens
         self.auto_prune = auto_prune
         self.current_tokens = 0
-        self.entries: List[ContextEntry] = []
+        self.entries: list[ContextEntry] = []
 
         self._token_counter = TokenCounter()
         self._created_at = datetime.now()
@@ -157,7 +157,7 @@ class ContextManager:
         content: str,
         priority: int = 0,
         entry_type: str = "general",
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """
         Context'e icerik ekle
@@ -312,8 +312,8 @@ class ContextManager:
 
     def get_context_string(
         self,
-        include_types: Optional[List[str]] = None,
-        max_tokens: Optional[int] = None,
+        include_types: list[str] | None = None,
+        max_tokens: int | None = None,
     ) -> str:
         """
         Context'i string olarak al
@@ -342,7 +342,7 @@ class ContextManager:
 
         return "\n\n".join(parts)
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Context durumunu al"""
         return {
             "current_tokens": self.current_tokens,

@@ -6,7 +6,7 @@ RefreshToken, APIKey, SystemConfiguration, AuditLog, Session
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     JSON,
@@ -59,24 +59,24 @@ class RefreshToken(Base):
     )  # JWT ID from token payload
 
     # Device and session tracking
-    device_id: Mapped[Optional[str]] = mapped_column(String(255))
-    device_name: Mapped[Optional[str]] = mapped_column(String(200))
-    device_type: Mapped[Optional[str]] = mapped_column(
+    device_id: Mapped[str | None] = mapped_column(String(255))
+    device_name: Mapped[str | None] = mapped_column(String(200))
+    device_type: Mapped[str | None] = mapped_column(
         String(50)
     )  # mobile, desktop, tablet
-    ip_address: Mapped[Optional[str]] = mapped_column(String(45))  # IPv4/IPv6
-    user_agent: Mapped[Optional[str]] = mapped_column(String(500))
+    ip_address: Mapped[str | None] = mapped_column(String(45))  # IPv4/IPv6
+    user_agent: Mapped[str | None] = mapped_column(String(500))
 
     # Expiration and status
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, index=True
     )
     revoked: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
-    revoked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
-    revoke_reason: Mapped[Optional[str]] = mapped_column(String(200))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoke_reason: Mapped[str | None] = mapped_column(String(200))
 
     # Usage tracking
-    last_used_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     usage_count: Mapped[int] = mapped_column(Integer, default=0)
 
     # System fields
@@ -121,29 +121,29 @@ class APIKey(Base):
     name: Mapped[str] = mapped_column(
         String(200), nullable=False
     )  # Human-readable name
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
 
     # Permissions and scopes
-    scopes: Mapped[Optional[dict]] = mapped_column(JSON)  # List of allowed permissions
-    allowed_ips: Mapped[Optional[dict]] = mapped_column(JSON)  # IP whitelist (optional)
+    scopes: Mapped[dict | None] = mapped_column(JSON)  # List of allowed permissions
+    allowed_ips: Mapped[dict | None] = mapped_column(JSON)  # IP whitelist (optional)
     rate_limit: Mapped[int] = mapped_column(Integer, default=1000)  # Requests per hour
 
     # Status
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
-    expires_at: Mapped[Optional[datetime]] = mapped_column(
+    expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), index=True
     )
     revoked: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
-    revoked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
-    revoke_reason: Mapped[Optional[str]] = mapped_column(String(200))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoke_reason: Mapped[str | None] = mapped_column(String(200))
 
     # Usage tracking
-    last_used_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     usage_count: Mapped[int] = mapped_column(Integer, default=0)
-    last_used_ip: Mapped[Optional[str]] = mapped_column(String(45))
+    last_used_ip: Mapped[str | None] = mapped_column(String(45))
 
     # Security
-    created_from_ip: Mapped[Optional[str]] = mapped_column(String(45))
+    created_from_ip: Mapped[str | None] = mapped_column(String(45))
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -170,7 +170,7 @@ class SystemConfiguration(Base):
     config_type: Mapped[str] = mapped_column(
         String(50), nullable=False
     )  # string, integer, float, boolean, json
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -197,18 +197,18 @@ class AuditLog(Base):
     )
 
     # Audit information
-    user_id: Mapped[Optional[str]] = mapped_column(
+    user_id: Mapped[str | None] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE")
     )
     action: Mapped[str] = mapped_column(String(100), nullable=False)
     resource_type: Mapped[str] = mapped_column(String(100), nullable=False)
-    resource_id: Mapped[Optional[str]] = mapped_column(String)
+    resource_id: Mapped[str | None] = mapped_column(String)
 
     # Details
-    old_values: Mapped[Optional[dict]] = mapped_column(JSON)
-    new_values: Mapped[Optional[dict]] = mapped_column(JSON)
-    ip_address: Mapped[Optional[str]] = mapped_column(String(45))
-    user_agent: Mapped[Optional[str]] = mapped_column(String(500))
+    old_values: Mapped[dict | None] = mapped_column(JSON)
+    new_values: Mapped[dict | None] = mapped_column(JSON)
+    ip_address: Mapped[str | None] = mapped_column(String(45))
+    user_agent: Mapped[str | None] = mapped_column(String(500))
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -237,11 +237,11 @@ class Session(Base):
     )
 
     # Device & location info
-    device_info: Mapped[Optional[dict]] = mapped_column(
+    device_info: Mapped[dict | None] = mapped_column(
         JSON, comment="Device/browser info"
     )
-    ip_address: Mapped[Optional[str]] = mapped_column(String(45))
-    user_agent: Mapped[Optional[str]] = mapped_column(Text)
+    ip_address: Mapped[str | None] = mapped_column(String(45))
+    user_agent: Mapped[str | None] = mapped_column(Text)
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(

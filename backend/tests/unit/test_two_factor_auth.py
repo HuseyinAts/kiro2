@@ -10,11 +10,12 @@ pytestmark = pytest.mark.skip(
     reason="2FA error handling değişti - empty/none secret artık exception atmıyor. "
     "Testler güncellenmeli."
 )
-import pyotp
 import base64
 from io import BytesIO
+from unittest.mock import MagicMock, patch
+
+import pyotp
 from PIL import Image
-from unittest.mock import patch, MagicMock
 
 from core.two_factor_auth import TwoFactorAuthService
 

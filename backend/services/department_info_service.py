@@ -5,20 +5,20 @@ Service for curriculum, career opportunities, salary expectations, and sector an
 """
 
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.department_info import (
-    DepartmentCurriculum,
     CareerOpportunity,
-    SalaryExpectation,
-    SectorAnalysis,
+    DepartmentCurriculum,
     DepartmentStatistics,
     ExperienceLevel,
     IndustryType,
+    SalaryExpectation,
+    SectorAnalysis,
 )
 
 
@@ -38,7 +38,7 @@ class DepartmentInfoService:
 
     async def get_department_curriculum(
         self, department_id: UUID
-    ) -> Optional[DepartmentCurriculum]:
+    ) -> DepartmentCurriculum | None:
         """Get curriculum information for a department"""
         result = await self.db.execute(
             select(DepartmentCurriculum).where(
@@ -61,7 +61,7 @@ class DepartmentInfoService:
 
         return curriculum
 
-    async def get_specialization_options(self, department_id: UUID) -> List[str]:
+    async def get_specialization_options(self, department_id: UUID) -> list[str]:
         """Get specialization tracks for a department"""
         curriculum = await self.get_department_curriculum(department_id)
 
@@ -77,9 +77,9 @@ class DepartmentInfoService:
     async def get_career_opportunities(
         self,
         department_id: UUID,
-        industry_type: Optional[IndustryType] = None,
-        demand_level: Optional[str] = None,
-    ) -> List[CareerOpportunity]:
+        industry_type: IndustryType | None = None,
+        demand_level: str | None = None,
+    ) -> list[CareerOpportunity]:
         """
         Get career opportunities for a department
 
@@ -118,7 +118,7 @@ class DepartmentInfoService:
 
         return opportunity
 
-    async def get_employment_statistics(self, department_id: UUID) -> Dict[str, Any]:
+    async def get_employment_statistics(self, department_id: UUID) -> dict[str, Any]:
         """
         Get employment statistics for a department
 
@@ -161,8 +161,8 @@ class DepartmentInfoService:
         }
 
     def _get_top_industries(
-        self, opportunities: List[CareerOpportunity]
-    ) -> List[Dict[str, Any]]:
+        self, opportunities: list[CareerOpportunity]
+    ) -> list[dict[str, Any]]:
         """Get top industries from career opportunities"""
         industry_counts = {}
         for opp in opportunities:
@@ -184,10 +184,10 @@ class DepartmentInfoService:
     async def get_salary_expectations(
         self,
         department_id: UUID,
-        experience_level: Optional[ExperienceLevel] = None,
-        city: Optional[str] = None,
+        experience_level: ExperienceLevel | None = None,
+        city: str | None = None,
         year: int = 2024,
-    ) -> List[SalaryExpectation]:
+    ) -> list[SalaryExpectation]:
         """
         Get salary expectations for a department
 
@@ -217,8 +217,8 @@ class DepartmentInfoService:
         return result.scalars().all()
 
     async def get_salary_progression(
-        self, department_id: UUID, city: Optional[str] = None, year: int = 2024
-    ) -> Dict[str, Any]:
+        self, department_id: UUID, city: str | None = None, year: int = 2024
+    ) -> dict[str, Any]:
         """
         Get salary progression by experience level
 
@@ -253,7 +253,7 @@ class DepartmentInfoService:
         department_id: UUID,
         experience_level: ExperienceLevel = ExperienceLevel.ENTRY,
         year: int = 2024,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Compare salaries across different regions
 
@@ -298,7 +298,7 @@ class DepartmentInfoService:
 
     async def get_sector_analysis(
         self, industry_type: IndustryType, year: int = 2024
-    ) -> Optional[SectorAnalysis]:
+    ) -> SectorAnalysis | None:
         """Get sector analysis for an industry"""
         result = await self.db.execute(
             select(SectorAnalysis).where(
@@ -312,7 +312,7 @@ class DepartmentInfoService:
 
     async def get_related_sectors(
         self, department_id: UUID, year: int = 2024
-    ) -> List[SectorAnalysis]:
+    ) -> list[SectorAnalysis]:
         """
         Get sector analyses related to a department
 
@@ -340,7 +340,7 @@ class DepartmentInfoService:
 
     async def get_job_market_trends(
         self, department_id: UUID, year: int = 2024
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get comprehensive job market trends for a department
 
@@ -397,12 +397,11 @@ class DepartmentInfoService:
         """Categorize growth rate"""
         if growth_rate >= 10:
             return "high"
-        elif growth_rate >= 5:
+        if growth_rate >= 5:
             return "medium"
-        elif growth_rate >= 0:
+        if growth_rate >= 0:
             return "low"
-        else:
-            return "declining"
+        return "declining"
 
     # ============================================================
     # Department Statistics (Aggregate)
@@ -410,7 +409,7 @@ class DepartmentInfoService:
 
     async def get_department_statistics(
         self, department_id: UUID, year: int = 2024
-    ) -> Optional[DepartmentStatistics]:
+    ) -> DepartmentStatistics | None:
         """Get aggregate statistics for a department"""
         result = await self.db.execute(
             select(DepartmentStatistics).where(
@@ -475,29 +474,28 @@ class DepartmentInfoService:
             await self.db.commit()
             await self.db.refresh(existing)
             return existing
-        else:
-            # Create
-            stats = DepartmentStatistics(
-                department_id=department_id,
-                year=year,
-                overall_employment_rate=employment_stats.get("average_employment_rate"),
-                average_hiring_time_days=employment_stats.get(
-                    "average_hiring_time_days"
-                ),
-                entry_level_avg_salary=entry_data.get("average"),
-                entry_level_min_salary=entry_data.get("min"),
-                entry_level_max_salary=entry_data.get("max"),
-                mid_career_avg_salary=mid_data.get("average"),
-                senior_avg_salary=senior_data.get("average"),
-                salary_growth_rate=round(salary_growth_rate, 2),
-                top_industries=employment_stats.get("top_industries", []),
-            )
+        # Create
+        stats = DepartmentStatistics(
+            department_id=department_id,
+            year=year,
+            overall_employment_rate=employment_stats.get("average_employment_rate"),
+            average_hiring_time_days=employment_stats.get(
+                "average_hiring_time_days"
+            ),
+            entry_level_avg_salary=entry_data.get("average"),
+            entry_level_min_salary=entry_data.get("min"),
+            entry_level_max_salary=entry_data.get("max"),
+            mid_career_avg_salary=mid_data.get("average"),
+            senior_avg_salary=senior_data.get("average"),
+            salary_growth_rate=round(salary_growth_rate, 2),
+            top_industries=employment_stats.get("top_industries", []),
+        )
 
-            self.db.add(stats)
-            await self.db.commit()
-            await self.db.refresh(stats)
+        self.db.add(stats)
+        await self.db.commit()
+        await self.db.refresh(stats)
 
-            return stats
+        return stats
 
     # ============================================================
     # Comprehensive Department Info
@@ -505,7 +503,7 @@ class DepartmentInfoService:
 
     async def get_comprehensive_department_info(
         self, department_id: UUID, year: int = 2024
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get all department information in one call
 

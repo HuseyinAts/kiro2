@@ -9,28 +9,28 @@ Date: 2026-01-14
 Requirements: REQ-8.1, REQ-8.2, REQ-8.4, REQ-8.5
 """
 
-from .metrics import (
-    MetricsCollector,
-    get_metrics_collector,
-    REQUEST_LATENCY,
-    REQUEST_COUNT,
-    ERROR_COUNT,
-    ACTIVE_REQUESTS,
-)
 from .alerts import (
     AlertManager,
     AlertSeverity,
     get_alert_manager,
 )
+from .metrics import (
+    ACTIVE_REQUESTS,
+    ERROR_COUNT,
+    REQUEST_COUNT,
+    REQUEST_LATENCY,
+    MetricsCollector,
+    get_metrics_collector,
+)
 
 __all__ = [
-    "MetricsCollector",
-    "get_metrics_collector",
-    "REQUEST_LATENCY",
-    "REQUEST_COUNT",
-    "ERROR_COUNT",
     "ACTIVE_REQUESTS",
+    "ERROR_COUNT",
+    "REQUEST_COUNT",
+    "REQUEST_LATENCY",
     "AlertManager",
     "AlertSeverity",
+    "MetricsCollector",
     "get_alert_manager",
+    "get_metrics_collector",
 ]

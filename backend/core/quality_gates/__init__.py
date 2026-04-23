@@ -15,14 +15,14 @@ KIRO2 Quality Gates Pipeline
 Boris Cherny verification standards.
 """
 
+from .dependency_graph import DependencyGraph
 from .models import (
-    GateStatus,
-    GateResult,
-    PipelineResult,
     GateConfig,
+    GateResult,
+    GateStatus,
+    PipelineResult,
 )
 from .orchestrator import QualityGatesOrchestrator
-from .dependency_graph import DependencyGraph
 
 __all__ = [
     "GateStatus",

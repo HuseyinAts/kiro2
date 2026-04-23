@@ -7,10 +7,11 @@ ve parameterized query kullanımını sağlar.
 """
 import re
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
+
+from fastapi import HTTPException, status
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
 
 
 class SQLInjectionPrevention:
@@ -63,7 +64,7 @@ class SQLInjectionPrevention:
         return True
 
     @staticmethod
-    def validate_query_params(params: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_query_params(params: dict[str, Any]) -> dict[str, Any]:
         """
         Query parametrelerini doğrula
 
@@ -103,10 +104,10 @@ class SQLInjectionPrevention:
     @staticmethod
     def build_safe_query(
         base_query: str,
-        filters: Optional[Dict[str, Any]] = None,
-        order_by: Optional[str] = None,
-        limit: Optional[int] = None,
-    ) -> Tuple[str, Dict[str, Any]]:
+        filters: dict[str, Any] | None = None,
+        order_by: str | None = None,
+        limit: int | None = None,
+    ) -> tuple[str, dict[str, Any]]:
         """
         Güvenli parameterized query oluştur
 
@@ -172,8 +173,8 @@ class SQLInjectionPrevention:
 
     @staticmethod
     async def execute_safe_query(
-        session: AsyncSession, query_string: str, params: Dict[str, Any]
-    ) -> List[Any]:
+        session: AsyncSession, query_string: str, params: dict[str, Any]
+    ) -> list[Any]:
         """
         Güvenli query execution
 
@@ -276,7 +277,7 @@ class SafeQueryBuilder:
         self.limit_value = value
         return self
 
-    def build(self) -> Tuple[str, Dict[str, Any]]:
+    def build(self) -> tuple[str, dict[str, Any]]:
         """
         Query'yi oluştur
 
@@ -292,7 +293,7 @@ class SafeQueryBuilder:
             limit=self.limit_value,
         )
 
-    async def execute(self, session: AsyncSession) -> List[Any]:
+    async def execute(self, session: AsyncSession) -> list[Any]:
         """
         Query'yi çalıştır
 
@@ -326,11 +327,11 @@ class SQLInjectionSeverity(str, Enum):
 class SQLInjectionPreventionMiddleware:
     """ASGI middleware for SQL injection detection in requests"""
 
-    def __init__(self, app: Any, detector: Optional[SQLInjectionPrevention] = None) -> None:
+    def __init__(self, app: Any, detector: SQLInjectionPrevention | None = None) -> None:
         self.app = app
         self.detector = detector or SQLInjectionPrevention()
 
-    async def __call__(self, scope: Dict[str, Any], receive: Any, send: Any) -> None:
+    async def __call__(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
         # Pass through for now - actual implementation would inspect request body
         await self.app(scope, receive, send)
 
@@ -339,7 +340,7 @@ class ParameterizedQueryValidator:
     """Validator for parameterized queries"""
 
     @staticmethod
-    def validate(query: str, params: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+    def validate(query: str, params: dict[str, Any]) -> tuple[bool, str | None]:
         """
         Validate that query uses parameterized placeholders
 

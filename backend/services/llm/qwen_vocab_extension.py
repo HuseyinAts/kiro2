@@ -7,9 +7,8 @@ Date: 2025-10-19
 """
 
 import json
-from typing import List, Dict, Optional
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 
 class QwenVocabExtensionPipeline:
@@ -40,12 +39,12 @@ class QwenVocabExtensionPipeline:
         self.turkish_morphemes = self._get_turkish_morphemes()
         self.new_tokens = []
 
-    def _load_common_words(self) -> Dict[str, any]:
+    def _load_common_words(self) -> dict[str, any]:
         """Load common Turkish words"""
-        with open(self.common_words_path, "r", encoding="utf-8") as f:
+        with open(self.common_words_path, encoding="utf-8") as f:
             return json.load(f)
 
-    def _get_turkish_morphemes(self) -> Dict[str, List[str]]:
+    def _get_turkish_morphemes(self) -> dict[str, list[str]]:
         """
         Get Turkish morphological patterns
 
@@ -122,8 +121,8 @@ class QwenVocabExtensionPipeline:
         }
 
     def analyze_tokenization_efficiency(
-        self, text_samples: List[str], tokenizer=None
-    ) -> Dict[str, any]:
+        self, text_samples: list[str], tokenizer=None
+    ) -> dict[str, any]:
         """
         Analyze how efficiently current tokenizer handles Turkish
 
@@ -166,7 +165,7 @@ class QwenVocabExtensionPipeline:
             "most_oversplit": oversplit_counter.most_common(50),
         }
 
-    def _approximate_analysis(self, text_samples: List[str]) -> Dict[str, any]:
+    def _approximate_analysis(self, text_samples: list[str]) -> dict[str, any]:
         """Approximate analysis without tokenizer"""
         total_chars = sum(len(text) for text in text_samples)
         words = []
@@ -192,7 +191,7 @@ class QwenVocabExtensionPipeline:
             "note": "Approximation without tokenizer",
         }
 
-    def generate_new_tokens(self, max_new_tokens: int = 5000) -> List[str]:
+    def generate_new_tokens(self, max_new_tokens: int = 5000) -> list[str]:
         """
         Generate new vocabulary tokens for Turkish
 
@@ -236,7 +235,7 @@ class QwenVocabExtensionPipeline:
         self.new_tokens = new_tokens
         return new_tokens
 
-    def _generate_common_bigrams(self, words: List[str]) -> List[str]:
+    def _generate_common_bigrams(self, words: list[str]) -> list[str]:
         """Generate common Turkish word bigrams"""
         bigrams = []
 
@@ -257,8 +256,8 @@ class QwenVocabExtensionPipeline:
     def create_tokenizer_config(
         self,
         base_vocab_size: int = 151936,  # Qwen2.5 base vocab size
-        output_path: Optional[str] = None,
-    ) -> Dict[str, any]:
+        output_path: str | None = None,
+    ) -> dict[str, any]:
         """
         Create extended tokenizer configuration
 
@@ -357,14 +356,14 @@ class QwenVocabExtensionPipeline:
 
         return random.choice(templates)
 
-    def _generate_multi_token_sentence(self, tokens: List[str]) -> str:
+    def _generate_multi_token_sentence(self, tokens: list[str]) -> str:
         """Generate sentence using multiple tokens"""
         if len(tokens) < 3:
             return " ".join(tokens) + " hakkında bilgi veriniz."
 
         return f"{tokens[0].capitalize()}, {tokens[1]} ve {tokens[2]} konularını içeren kapsamlı bir OSYM sorusu hazırlayınız."
 
-    def create_lora_config(self, output_path: Optional[str] = None) -> Dict[str, any]:
+    def create_lora_config(self, output_path: str | None = None) -> dict[str, any]:
         """
         Create LoRA fine-tuning configuration for vocab extension
 
@@ -403,7 +402,7 @@ class QwenVocabExtensionPipeline:
 
         return config
 
-    def run_full_pipeline(self) -> Dict[str, str]:
+    def run_full_pipeline(self) -> dict[str, str]:
         """
         Run complete vocabulary extension pipeline
 
@@ -457,7 +456,7 @@ class QwenVocabExtensionPipeline:
             "readme": str(readme_path),
         }
 
-    def _create_readme(self, path: Path, config: Dict):
+    def _create_readme(self, path: Path, config: dict):
         """Create README for vocabulary extension"""
         readme_content = f"""# Qwen Turkish Vocabulary Extension
 

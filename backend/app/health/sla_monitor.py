@@ -6,10 +6,15 @@ izler ve P95 response time metriklerine göre sağlık durumu belirler.
 """
 
 import logging
-from datetime import datetime, timedelta, timezone
-from typing import Dict, Optional
+from datetime import UTC, datetime, timedelta
 
-from .models import HealthCheckResult, HealthStatus, SLAComplianceReport, SLAMetrics, SLATarget
+from .models import (
+    HealthCheckResult,
+    HealthStatus,
+    SLAComplianceReport,
+    SLAMetrics,
+    SLATarget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +37,7 @@ class SLAMonitor:
         degraded_threshold: Degraded threshold (ms)
         violation_window: SLA ihlali penceresi (dakika)
     """
-    
+
     def __init__(
         self,
         redis_client=None,
@@ -53,20 +58,20 @@ class SLAMonitor:
         self.healthy_threshold = healthy_threshold
         self.degraded_threshold = degraded_threshold
         self.violation_window = violation_window
-        
+
         # SLA ihlali takibi
-        self.violations: Dict[str, datetime] = {}
+        self.violations: dict[str, datetime] = {}
 
         # SLA hedefleri ve check kayıtları
-        self.targets: Dict[str, SLATarget] = {}
-        self.check_records: Dict[str, list] = {}
-        
+        self.targets: dict[str, SLATarget] = {}
+        self.check_records: dict[str, list] = {}
+
         logger.info(
             f"SLAMonitor başlatıldı: "
             f"healthy<{healthy_threshold}ms, "
             f"degraded<{degraded_threshold}ms"
         )
-    
+
     def classify_health_status(self, p95_ms: float) -> HealthStatus:
         """
         P95 response time'a göre sağlık durumu belirler.
@@ -85,11 +90,10 @@ class SLAMonitor:
         """
         if p95_ms < self.healthy_threshold:
             return HealthStatus.HEALTHY
-        elif p95_ms < self.degraded_threshold:
+        if p95_ms < self.degraded_threshold:
             return HealthStatus.DEGRADED
-        else:
-            return HealthStatus.UNHEALTHY
-    
+        return HealthStatus.UNHEALTHY
+
     async def check_sla_compliance(
         self,
         endpoint: str,
@@ -107,26 +111,25 @@ class SLAMonitor:
         """
         # P95 threshold kontrolü
         p95_compliant = metrics.p95_ms < self.healthy_threshold
-        
+
         # Error rate kontrolü (< %1)
         error_rate_compliant = metrics.error_rate < 0.01
-        
+
         # Uptime kontrolü (> %99.9)
         uptime_compliant = metrics.uptime_percentage > 99.9
-        
+
         # Tüm kriterler sağlanmalı
         is_compliant = p95_compliant and error_rate_compliant and uptime_compliant
-        
+
         # SLA ihlali varsa kaydet
         if not is_compliant:
             await self._record_violation(endpoint, metrics)
-        else:
-            # SLA'ya uygunsa, ihlal kaydını temizle
-            if endpoint in self.violations:
-                del self.violations[endpoint]
-        
+        # SLA'ya uygunsa, ihlal kaydını temizle
+        elif endpoint in self.violations:
+            del self.violations[endpoint]
+
         return is_compliant
-    
+
     async def _record_violation(
         self,
         endpoint: str,
@@ -142,8 +145,8 @@ class SLAMonitor:
         Requirements:
             REQ-3.5: SLA ihlali tespit edildiğinde root cause analysis başlatır
         """
-        now = datetime.now(timezone.utc)
-        
+        now = datetime.now(UTC)
+
         # İlk ihlal mi?
         if endpoint not in self.violations:
             self.violations[endpoint] = now
@@ -153,17 +156,17 @@ class SLAMonitor:
                 f"Error Rate: {metrics.error_rate:.2%}, "
                 f"Uptime: {metrics.uptime_percentage:.2f}%"
             )
-            
+
             # Root cause analysis başlat
             await self._start_root_cause_analysis(endpoint, metrics)
         else:
             # İhlal süresi
             violation_duration = now - self.violations[endpoint]
-            
+
             # 5 dakikadan uzun sürüyorsa incident oluştur
             if violation_duration > timedelta(minutes=self.violation_window):
                 await self._create_incident(endpoint, metrics, violation_duration)
-    
+
     async def _start_root_cause_analysis(
         self,
         endpoint: str,
@@ -180,11 +183,11 @@ class SLAMonitor:
             REQ-3.5: Root cause analysis başlatır
         """
         logger.info(f"Root cause analysis başlatılıyor: {endpoint}")
-        
+
         # Analiz sonuçları
         analysis = {
             "endpoint": endpoint,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "metrics": {
                 "p95_ms": metrics.p95_ms,
                 "error_rate": metrics.error_rate,
@@ -192,7 +195,7 @@ class SLAMonitor:
             },
             "possible_causes": []
         }
-        
+
         # Yüksek response time
         if metrics.p95_ms > self.degraded_threshold:
             analysis["possible_causes"].append({
@@ -204,7 +207,7 @@ class SLAMonitor:
                     "Check server resource usage (CPU, Memory)"
                 ]
             })
-        
+
         # Yüksek error rate
         if metrics.error_rate > 0.01:
             analysis["possible_causes"].append({
@@ -216,7 +219,7 @@ class SLAMonitor:
                     "Check dependency health (DB, Redis, etc.)"
                 ]
             })
-        
+
         # Düşük uptime
         if metrics.uptime_percentage < 99.9:
             analysis["possible_causes"].append({
@@ -228,7 +231,7 @@ class SLAMonitor:
                     "Check for network issues"
                 ]
             })
-        
+
         # Redis'e kaydet
         if self.redis_client:
             try:
@@ -241,7 +244,7 @@ class SLAMonitor:
                 logger.info(f"Root cause analysis kaydedildi: {redis_key}")
             except Exception as e:
                 logger.error(f"Root cause analysis kaydedilemedi: {e}")
-    
+
     async def _create_incident(
         self,
         endpoint: str,
@@ -267,7 +270,7 @@ class SLAMonitor:
             f"Error Rate: {metrics.error_rate:.2%} (threshold: 1%)\n"
             f"Uptime: {metrics.uptime_percentage:.2f}% (threshold: 99.9%)"
         )
-        
+
         # Incident bilgileri
         incident = {
             "endpoint": endpoint,
@@ -281,7 +284,7 @@ class SLAMonitor:
             },
             "status": "open"
         }
-        
+
         # Redis'e kaydet
         if self.redis_client:
             try:
@@ -292,10 +295,10 @@ class SLAMonitor:
                 logger.info(f"Incident kaydedildi: {incident_key}")
             except Exception as e:
                 logger.error(f"Incident kaydedilemedi: {e}")
-        
+
         # TODO: Incident ticket oluşturma (Jira, PagerDuty, vb.)
         # Bu kısım alerting modülü implement edildikten sonra eklenecek
-    
+
     async def update_endpoint_status(
         self,
         endpoint: str,
@@ -313,7 +316,7 @@ class SLAMonitor:
         """
         if not self.redis_client:
             return
-        
+
         try:
             redis_key = f"kiro2:health:status:{endpoint}"
             await self.redis_client.set(
@@ -324,8 +327,8 @@ class SLAMonitor:
             logger.debug(f"Endpoint status güncellendi: {endpoint} -> {status.value}")
         except Exception as e:
             logger.error(f"Endpoint status güncellenemedi: {e}")
-    
-    async def get_endpoint_status(self, endpoint: str) -> Optional[HealthStatus]:
+
+    async def get_endpoint_status(self, endpoint: str) -> HealthStatus | None:
         """
         Endpoint'in mevcut sağlık durumunu getirir.
         
@@ -337,11 +340,11 @@ class SLAMonitor:
         """
         if not self.redis_client:
             return None
-        
+
         try:
             redis_key = f"kiro2:health:status:{endpoint}"
             status_str = await self.redis_client.get(redis_key)
-            
+
             if status_str:
                 return HealthStatus(status_str.decode() if isinstance(status_str, bytes) else status_str)
             return None

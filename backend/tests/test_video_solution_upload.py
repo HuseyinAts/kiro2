@@ -3,15 +3,15 @@ Video Solution Upload Tests
 Task 72.1: Video yükleme testi
 """
 
-import pytest
 from io import BytesIO
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.video_solution import VideoFormat
-from services.video_solution_service import VideoValidator, VideoConfig
+from services.video_solution_service import VideoConfig, VideoValidator
 
 
 class TestVideoValidator:

@@ -4,7 +4,7 @@ Kullanıcı ve profil yönetimi için özel repository
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,15 +28,15 @@ class UserRepository(BaseRepository[User]):
     def __init__(self, session: AsyncSession):
         super().__init__(User, session)
 
-    async def get_by_email(self, email: str) -> Optional[User]:
+    async def get_by_email(self, email: str) -> User | None:
         """Get user by email"""
         return await self.get_by_field("email", email)
 
-    async def get_by_username(self, username: str) -> Optional[User]:
+    async def get_by_username(self, username: str) -> User | None:
         """Get user by username"""
         return await self.get_by_field("username", username)
 
-    async def get_with_profile(self, user_id: str) -> Optional[User]:
+    async def get_with_profile(self, user_id: str) -> User | None:
         """Get user with appropriate profile loaded"""
         try:
             result = await self.session.execute(
@@ -50,11 +50,11 @@ class UserRepository(BaseRepository[User]):
             )
             return result.scalar_one_or_none()
         except Exception as e:
-            logger.error(f"Error getting user with profile: {str(e)}")
+            logger.error(f"Error getting user with profile: {e!s}")
             raise
 
     async def create_user_with_profile(
-        self, user_data: Dict[str, Any], profile_data: Dict[str, Any], role: UserRole
+        self, user_data: dict[str, Any], profile_data: dict[str, Any], role: UserRole
     ) -> User:
         """Create user with appropriate profile"""
         try:
@@ -77,7 +77,7 @@ class UserRepository(BaseRepository[User]):
 
             return user
         except Exception as e:
-            logger.error(f"Error creating user with profile: {str(e)}")
+            logger.error(f"Error creating user with profile: {e!s}")
             await self.session.rollback()
             raise
 
@@ -86,8 +86,8 @@ class UserRepository(BaseRepository[User]):
         await self.update(user_id, last_login=datetime.now())
 
     async def get_active_users(
-        self, role: Optional[UserRole] = None, skip: int = 0, limit: int = 100
-    ) -> List[User]:
+        self, role: UserRole | None = None, skip: int = 0, limit: int = 100
+    ) -> list[User]:
         """Get active users by role"""
         filters = {"is_active": True}
         if role:
@@ -98,10 +98,10 @@ class UserRepository(BaseRepository[User]):
     async def search_users(
         self,
         search_term: str,
-        role: Optional[UserRole] = None,
+        role: UserRole | None = None,
         skip: int = 0,
         limit: int = 100,
-    ) -> List[User]:
+    ) -> list[User]:
         """Search users by name, email, or username"""
         try:
             query = select(User).where(User.is_active == True)
@@ -123,7 +123,7 @@ class UserRepository(BaseRepository[User]):
             result = await self.session.execute(query)
             return result.scalars().all()
         except Exception as e:
-            logger.error(f"Error searching users: {str(e)}")
+            logger.error(f"Error searching users: {e!s}")
             raise
 
 
@@ -133,11 +133,11 @@ class StudentRepository(BaseRepository[StudentProfile]):
     def __init__(self, session: AsyncSession):
         super().__init__(StudentProfile, session)
 
-    async def get_by_user_id(self, user_id: str) -> Optional[StudentProfile]:
+    async def get_by_user_id(self, user_id: str) -> StudentProfile | None:
         """Get student profile by user ID"""
         return await self.get_by_field("user_id", user_id)
 
-    async def get_with_user(self, student_id: str) -> Optional[StudentProfile]:
+    async def get_with_user(self, student_id: str) -> StudentProfile | None:
         """Get student with user information"""
         try:
             result = await self.session.execute(
@@ -147,12 +147,12 @@ class StudentRepository(BaseRepository[StudentProfile]):
             )
             return result.scalar_one_or_none()
         except Exception as e:
-            logger.error(f"Error getting student with user: {str(e)}")
+            logger.error(f"Error getting student with user: {e!s}")
             raise
 
     async def get_by_grade_level(
         self, grade_level: int, skip: int = 0, limit: int = 100
-    ) -> List[StudentProfile]:
+    ) -> list[StudentProfile]:
         """Get students by grade level"""
         return await self.get_all(
             skip=skip, limit=limit, filters={"grade_level": grade_level}
@@ -160,7 +160,7 @@ class StudentRepository(BaseRepository[StudentProfile]):
 
     async def get_by_learning_style(
         self, learning_style: LearningStyle, skip: int = 0, limit: int = 100
-    ) -> List[StudentProfile]:
+    ) -> list[StudentProfile]:
         """Get students by learning style"""
         return await self.get_all(
             skip=skip, limit=limit, filters={"learning_style": learning_style}
@@ -172,7 +172,7 @@ class StudentRepository(BaseRepository[StudentProfile]):
         questions_solved: int,
         correct_answers: int,
         study_hours: int,
-    ) -> Optional[StudentProfile]:
+    ) -> StudentProfile | None:
         """Update student performance statistics"""
         try:
             student = await self.get_by_id(student_id)
@@ -199,17 +199,17 @@ class StudentRepository(BaseRepository[StudentProfile]):
                 current_level=new_level,
             )
         except Exception as e:
-            logger.error(f"Error updating student performance: {str(e)}")
+            logger.error(f"Error updating student performance: {e!s}")
             raise
 
     async def update_learning_profile(
         self,
         student_id: str,
-        vark_profile: Optional[Dict[str, Any]] = None,
-        zpd_range: Optional[Dict[str, Any]] = None,
-        irt_ability: Optional[float] = None,
-        fsrs_parameters: Optional[Dict[str, Any]] = None,
-    ) -> Optional[StudentProfile]:
+        vark_profile: dict[str, Any] | None = None,
+        zpd_range: dict[str, Any] | None = None,
+        irt_ability: float | None = None,
+        fsrs_parameters: dict[str, Any] | None = None,
+    ) -> StudentProfile | None:
         """Update student's revolutionary learning features"""
         update_data = {}
 
@@ -234,11 +234,11 @@ class TeacherRepository(BaseRepository[TeacherProfile]):
     def __init__(self, session: AsyncSession):
         super().__init__(TeacherProfile, session)
 
-    async def get_by_user_id(self, user_id: str) -> Optional[TeacherProfile]:
+    async def get_by_user_id(self, user_id: str) -> TeacherProfile | None:
         """Get teacher profile by user ID"""
         return await self.get_by_field("user_id", user_id)
 
-    async def get_with_classes(self, teacher_id: str) -> Optional[TeacherProfile]:
+    async def get_with_classes(self, teacher_id: str) -> TeacherProfile | None:
         """Get teacher with classes"""
         try:
             result = await self.session.execute(
@@ -248,12 +248,12 @@ class TeacherRepository(BaseRepository[TeacherProfile]):
             )
             return result.scalar_one_or_none()
         except Exception as e:
-            logger.error(f"Error getting teacher with classes: {str(e)}")
+            logger.error(f"Error getting teacher with classes: {e!s}")
             raise
 
     async def get_by_subject_area(
         self, subject_area: str, skip: int = 0, limit: int = 100
-    ) -> List[TeacherProfile]:
+    ) -> list[TeacherProfile]:
         """Get teachers by subject area"""
         try:
             result = await self.session.execute(
@@ -264,7 +264,7 @@ class TeacherRepository(BaseRepository[TeacherProfile]):
             )
             return result.scalars().all()
         except Exception as e:
-            logger.error(f"Error getting teachers by subject: {str(e)}")
+            logger.error(f"Error getting teachers by subject: {e!s}")
             raise
 
 
@@ -274,11 +274,11 @@ class ParentRepository(BaseRepository[ParentProfile]):
     def __init__(self, session: AsyncSession):
         super().__init__(ParentProfile, session)
 
-    async def get_by_user_id(self, user_id: str) -> Optional[ParentProfile]:
+    async def get_by_user_id(self, user_id: str) -> ParentProfile | None:
         """Get parent profile by user ID"""
         return await self.get_by_field("user_id", user_id)
 
-    async def add_child(self, parent_id: str, child_id: str) -> Optional[ParentProfile]:
+    async def add_child(self, parent_id: str, child_id: str) -> ParentProfile | None:
         """Add child to parent's children list"""
         try:
             parent = await self.get_by_id(parent_id)
@@ -291,12 +291,12 @@ class ParentRepository(BaseRepository[ParentProfile]):
 
             return parent
         except Exception as e:
-            logger.error(f"Error adding child to parent: {str(e)}")
+            logger.error(f"Error adding child to parent: {e!s}")
             raise
 
     async def remove_child(
         self, parent_id: str, child_id: str
-    ) -> Optional[ParentProfile]:
+    ) -> ParentProfile | None:
         """Remove child from parent's children list"""
         try:
             parent = await self.get_by_id(parent_id)
@@ -309,5 +309,5 @@ class ParentRepository(BaseRepository[ParentProfile]):
 
             return parent
         except Exception as e:
-            logger.error(f"Error removing child from parent: {str(e)}")
+            logger.error(f"Error removing child from parent: {e!s}")
             raise

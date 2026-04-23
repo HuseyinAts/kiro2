@@ -10,15 +10,14 @@ Puan Kazanma Mekanizmaları:
 - Sınav tamamlama: 50-500 puan (performansa göre)
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
-from sqlalchemy.orm import Session
 from redis import Redis
+from sqlalchemy.orm import Session
 
-from models.point_transaction import PointTransaction
 from models.database import User
+from models.point_transaction import PointTransaction
 
 
 class PointsManager:
@@ -37,7 +36,7 @@ class PointsManager:
         self.cache_ttl = 3600  # 1 saat
 
     def award_points(
-        self, user_id: UUID, points: int, reason: str, metadata: Optional[dict] = None
+        self, user_id: UUID, points: int, reason: str, metadata: dict | None = None
     ) -> PointTransaction:
         """
         Kullanıcıya puan ver ve transaction kaydet
@@ -73,7 +72,7 @@ class PointsManager:
             points=points,
             reason=reason,
             metadata=metadata,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         self.db.add(transaction)
 
@@ -136,7 +135,7 @@ class PointsManager:
 
         return base_points + question_bonus
 
-    def award_daily_goal_bonus(self, user_id: UUID) -> Optional[PointTransaction]:
+    def award_daily_goal_bonus(self, user_id: UUID) -> PointTransaction | None:
         """
         Günlük hedef tamamlama bonusu ver
 
@@ -147,7 +146,7 @@ class PointsManager:
             PointTransaction veya None (zaten verilmişse)
         """
         # Bugün zaten verilmiş mi kontrol et
-        today_start = datetime.now(timezone.utc).replace(
+        today_start = datetime.now(UTC).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
         existing_bonus = (
@@ -209,7 +208,7 @@ class PointsManager:
         Returns:
             int: Bugün kazanılan puan
         """
-        today_start = datetime.now(timezone.utc).replace(
+        today_start = datetime.now(UTC).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
         transactions = (
@@ -233,7 +232,7 @@ class PointsManager:
         Returns:
             int: Bu hafta kazanılan puan
         """
-        week_start = datetime.now(timezone.utc) - timedelta(days=7)
+        week_start = datetime.now(UTC) - timedelta(days=7)
         transactions = (
             self.db.query(PointTransaction)
             .filter(
@@ -246,8 +245,8 @@ class PointsManager:
         return sum(t.points for t in transactions)
 
     def get_point_history(
-        self, user_id: UUID, days: int = 30, limit: Optional[int] = None
-    ) -> List[PointTransaction]:
+        self, user_id: UUID, days: int = 30, limit: int | None = None
+    ) -> list[PointTransaction]:
         """
         Son N günlük puan geçmişini getir
 
@@ -259,7 +258,7 @@ class PointsManager:
         Returns:
             List[PointTransaction]: Puan işlem kayıtları
         """
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days)
         query = (
             self.db.query(PointTransaction)
             .filter(
@@ -288,7 +287,7 @@ class PointsManager:
             "total_points": self.get_total_points(user_id),
             "daily_points": self.get_daily_points(user_id),
             "weekly_points": self.get_weekly_points(user_id),
-            "last_updated": datetime.now(timezone.utc).isoformat(),
+            "last_updated": datetime.now(UTC).isoformat(),
         }
 
     def invalidate_cache(self, user_id: UUID):

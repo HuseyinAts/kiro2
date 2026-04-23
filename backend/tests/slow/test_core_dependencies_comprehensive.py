@@ -5,15 +5,15 @@ Target: 90%+ coverage for critical dependencies module
 
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Module has import errors or API changes - skip to prevent collection failure", allow_module_level=True)
 
-import pytest
 import jwt
+import pytest
 from fastapi import HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
-from core.dependencies import get_current_user, security, JWT_SECRET, JWT_ALGORITHM
 
-
+from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_current_user, security
 
 pytestmark = pytest.mark.skipif(
     True,

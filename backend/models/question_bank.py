@@ -99,10 +99,10 @@ class TopicHierarchy(Base):
     average_difficulty: Mapped[float] = mapped_column(Float, default=0.0)
 
     # DB-only legacy kolonlar — alembic dışı eklendi, korunuyor
-    difficulty_level: Mapped[Optional[float]] = mapped_column(
+    difficulty_level: Mapped[float | None] = mapped_column(
         Float, nullable=True, server_default="0.5", comment="Legacy difficulty (DB-only)"
     )
-    subject_area: Mapped[Optional[str]] = mapped_column(
+    subject_area: Mapped[str | None] = mapped_column(
         String(50), nullable=True, comment="Legacy subject_area (DB-only)"
     )
 
@@ -372,26 +372,26 @@ class QuestionBankItem(Base):
     # CAT engine bu kolonları kullanıyor — DOKUNMA / DO NOT DROP
     # ========================================================================
     # 3PL IRT parametreleri (CAT kalibrasyonu için)
-    irt_a: Mapped[Optional[float]] = mapped_column(
+    irt_a: Mapped[float | None] = mapped_column(
         Numeric(6, 4), nullable=True, comment="3PL discrimination param (CAT)"
     )
-    irt_b: Mapped[Optional[float]] = mapped_column(
+    irt_b: Mapped[float | None] = mapped_column(
         Numeric(6, 4), nullable=True, comment="3PL difficulty param (CAT)"
     )
-    irt_c: Mapped[Optional[float]] = mapped_column(
+    irt_c: Mapped[float | None] = mapped_column(
         Numeric(5, 4), nullable=True, comment="3PL guessing param (CAT)"
     )
     # Kalibrasyon durumu (360 kalibreli soru bu kolonla işaretlendi)
     irt_calibrated: Mapped[bool] = mapped_column(
         Boolean, server_default="false", comment="3PL kalibrasyonu tamamlandı mı"
     )
-    irt_calibrated_at: Mapped[Optional[datetime]] = mapped_column(
+    irt_calibrated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, comment="Kalibrasyon tarihi"
     )
     irt_n_responses: Mapped[int] = mapped_column(
         Integer, server_default="0", comment="Kalibrasyon için kullanılan yanıt sayısı"
     )
-    irt_method: Mapped[Optional[str]] = mapped_column(
+    irt_method: Mapped[str | None] = mapped_column(
         Text, nullable=True, comment="Kalibrasyon yöntemi (EM, MLE, Bayesian)"
     )
     # CAT kalibrasyon havuzu (598 soru bu kolonla işaretlendi — KRİTİK)

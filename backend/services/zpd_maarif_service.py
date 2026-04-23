@@ -14,10 +14,7 @@ DEVRİMSEL ÖZELLİKLER:
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
-
-# PERFORMANCE: Cache integration for ZPD calculations
-from core.cache import cache_manager
+from typing import Any
 
 # Yeni devrimsel algoritma entegrasyonu
 from algorithms.turkish_zpd_maarif_system import (
@@ -27,6 +24,9 @@ from algorithms.turkish_zpd_maarif_system import (
     TurkishZPDRange,
     ZPDRecommendation,
 )
+
+# PERFORMANCE: Cache integration for ZPD calculations
+from core.cache import cache_manager
 from models.zpd_maarif import (
     KulturelBaglamProfili,
     MaarifDegerleriProfili,
@@ -56,7 +56,7 @@ class ZPDMaarifService:
         self.default_parametreler: ZPDHesaplamaParametreleri = (
             ZPDHesaplamaParametreleri()
         )
-        self.hesaplama_gecmisi: Dict[str, List[ZPDHesaplamaGecmisi]] = {}
+        self.hesaplama_gecmisi: dict[str, list[ZPDHesaplamaGecmisi]] = {}
 
         # DEVRİMSEL: Yeni algoritma sistemi
         self.turkish_zpd_system = TurkishZPDMaarifSystem()
@@ -102,9 +102,9 @@ class ZPDMaarifService:
         ogrenci_id: str,
         konu: str,
         mevcut_seviye: float,
-        kulturel_profil: Optional[KulturelBaglamProfili] = None,
-        maarif_profili: Optional[MaarifDegerleriProfili] = None,
-        parametreler: Optional[ZPDHesaplamaParametreleri] = None,
+        kulturel_profil: KulturelBaglamProfili | None = None,
+        maarif_profili: MaarifDegerleriProfili | None = None,
+        parametreler: ZPDHesaplamaParametreleri | None = None,
     ) -> TurkZPDAraligi:
         """
         Türk eğitim kültürüne uyarlanmış ZPD aralığı hesapla
@@ -259,12 +259,12 @@ class ZPDMaarifService:
 
         except Exception as e:
             logger.error(
-                f"ZPD hesaplama hatası - Öğrenci: {ogrenci_id}, Hata: {str(e)}"
+                f"ZPD hesaplama hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}"
             )
             raise
 
     async def optimize_zpd_parametreleri(
-        self, ogrenci_id: str, konu: str, performans_verileri: List[Dict[str, Any]]
+        self, ogrenci_id: str, konu: str, performans_verileri: list[dict[str, Any]]
     ) -> ZPDOptimizasyonSonucu:
         """
         Performans verilerine göre ZPD parametrelerini optimize et
@@ -342,7 +342,7 @@ class ZPDMaarifService:
 
         except Exception as e:
             logger.error(
-                f"ZPD optimizasyon hatası - Öğrenci: {ogrenci_id}, Hata: {str(e)}"
+                f"ZPD optimizasyon hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}"
             )
             raise
 
@@ -429,20 +429,20 @@ class ZPDMaarifService:
 
         return min(1.0, max(0.0, toplam_uyum))
 
-    async def _get_konu_deger_agirliklari(self, konu: str) -> Dict[str, float]:
+    async def _get_konu_deger_agirliklari(self, konu: str) -> dict[str, float]:
         """Konu bazlı değer ağırlıklarını getir"""
         # Tarih konularında milli değerler daha önemli
         if "tarih" in konu.lower() or "atatürk" in konu.lower():
             return {"milli": 1.3, "evrensel": 1.0, "kok": 1.1}
 
         # Matematik/Fen konularında evrensel değerler önemli
-        elif any(
+        if any(
             x in konu.lower() for x in ["matematik", "fizik", "kimya", "biyoloji"]
         ):
             return {"milli": 1.0, "evrensel": 1.2, "kok": 1.0}
 
         # Türkçe/Edebiyat konularında kök değerler önemli
-        elif any(x in konu.lower() for x in ["türkçe", "edebiyat", "dil"]):
+        if any(x in konu.lower() for x in ["türkçe", "edebiyat", "dil"]):
             return {"milli": 1.1, "evrensel": 1.0, "kok": 1.3}
 
         # Varsayılan ağırlıklar
@@ -520,7 +520,7 @@ class ZPDMaarifService:
             self.hesaplama_gecmisi[anahtar] = self.hesaplama_gecmisi[anahtar][-10:]
 
     # Optimizasyon yardımcı metodları
-    async def _analiz_et_basari_trendi(self, performans_verileri: List[Dict]) -> float:
+    async def _analiz_et_basari_trendi(self, performans_verileri: list[dict]) -> float:
         """Başarı trendini analiz et"""
         if len(performans_verileri) < 2:
             return 0.0
@@ -536,7 +536,7 @@ class ZPDMaarifService:
 
         return 0.0
 
-    async def _analiz_et_zorluk_uyumu(self, performans_verileri: List[Dict]) -> float:
+    async def _analiz_et_zorluk_uyumu(self, performans_verileri: list[dict]) -> float:
         """Zorluk uyumunu analiz et"""
         if not performans_verileri:
             return 0.5
@@ -557,7 +557,7 @@ class ZPDMaarifService:
 
         return toplam_uyum / len(performans_verileri[-10:])
 
-    async def _hesapla_ogrenme_hizi(self, performans_verileri: List[Dict]) -> float:
+    async def _hesapla_ogrenme_hizi(self, performans_verileri: list[dict]) -> float:
         """Öğrenme hızını hesapla"""
         if len(performans_verileri) < 3:
             return 1.0
@@ -577,7 +577,7 @@ class ZPDMaarifService:
 
     async def _get_mevcut_zpd(
         self, ogrenci_id: str, konu: str
-    ) -> Optional[TurkZPDAraligi]:
+    ) -> TurkZPDAraligi | None:
         """Mevcut ZPD'yi getir"""
         anahtar = f"{ogrenci_id}_{konu}"
         gecmis_listesi = self.hesaplama_gecmisi.get(anahtar, [])
@@ -591,7 +591,7 @@ class ZPDMaarifService:
 
     async def _hesapla_onerilen_zorluk(
         self,
-        mevcut_zpd: Optional[TurkZPDAraligi],
+        mevcut_zpd: TurkZPDAraligi | None,
         basari_trendi: float,
         zorluk_uyumu: float,
     ) -> float:
@@ -616,7 +616,7 @@ class ZPDMaarifService:
         return max(1.0, min(10.0, onerilen))
 
     async def _belirle_optimal_ogrenme_yontemi(
-        self, ogrenci_id: str, performans_verileri: List[Dict]
+        self, ogrenci_id: str, performans_verileri: list[dict]
     ) -> str:
         """Optimal öğrenme yöntemini belirle"""
         # Performans verilerine göre en başarılı yöntemi bul
@@ -643,7 +643,7 @@ class ZPDMaarifService:
         return en_iyi_yontem
 
     async def _degerlendirme_grup_calismasi(
-        self, ogrenci_id: str, performans_verileri: List[Dict]
+        self, ogrenci_id: str, performans_verileri: list[dict]
     ) -> bool:
         """Grup çalışması önerisini değerlendir"""
         # Grup çalışması verilerini analiz et
@@ -669,7 +669,7 @@ class ZPDMaarifService:
         return True
 
     async def _degerlendirme_ogretmen_rehberlik(
-        self, ogrenci_id: str, performans_verileri: List[Dict]
+        self, ogrenci_id: str, performans_verileri: list[dict]
     ) -> bool:
         """Öğretmen rehberlik ihtiyacını değerlendir"""
         if not performans_verileri:
@@ -683,8 +683,8 @@ class ZPDMaarifService:
         return ortalama_basari < 0.6
 
     async def _oneriler_icerik_turu(
-        self, ogrenci_id: str, konu: str, performans_verileri: List[Dict]
-    ) -> List[str]:
+        self, ogrenci_id: str, konu: str, performans_verileri: list[dict]
+    ) -> list[str]:
         """İçerik türü önerilerini belirle"""
         oneriler = []
 
@@ -711,8 +711,8 @@ class ZPDMaarifService:
         return oneriler[:3]  # En fazla 3 öneri
 
     async def _belirle_motivasyon_stratejileri(
-        self, ogrenci_id: str, performans_verileri: List[Dict]
-    ) -> List[str]:
+        self, ogrenci_id: str, performans_verileri: list[dict]
+    ) -> list[str]:
         """Motivasyon stratejilerini belirle"""
         stratejiler = []
 
@@ -742,17 +742,16 @@ class ZPDMaarifService:
 
         return stratejiler[:5]  # En fazla 5 strateji
 
-    async def _hesapla_oneri_guveni(self, performans_verileri: List[Dict]) -> float:
+    async def _hesapla_oneri_guveni(self, performans_verileri: list[dict]) -> float:
         """Öneri güvenini hesapla"""
         if len(performans_verileri) < 3:
             return 0.6  # Düşük güven
-        elif len(performans_verileri) < 10:
+        if len(performans_verileri) < 10:
             return 0.8  # Orta güven
-        else:
-            return 0.9  # Yüksek güven
+        return 0.9  # Yüksek güven
 
     async def _tahmin_et_basari_artisi(
-        self, performans_verileri: List[Dict], onerilen_zorluk: float
+        self, performans_verileri: list[dict], onerilen_zorluk: float
     ) -> float:
         """Beklenen başarı artışını tahmin et"""
         if not performans_verileri:
@@ -784,8 +783,8 @@ class ZPDMaarifService:
     async def detect_cultural_context_revolutionary(
         self,
         student_id: str,
-        behavioral_data: Dict[str, Any],
-        family_survey: Optional[Dict[str, Any]] = None,
+        behavioral_data: dict[str, Any],
+        family_survey: dict[str, Any] | None = None,
     ) -> TurkishCulturalContext:
         """
         DEVRİMSEL: Türk öğrenci kültürel bağlamını tespit et
@@ -804,9 +803,9 @@ class ZPDMaarifService:
         student_id: str,
         subject: str,
         current_level: float,
-        behavioral_data: Dict[str, Any],
+        behavioral_data: dict[str, Any],
         content_description: str = "",
-        family_survey: Optional[Dict[str, Any]] = None,
+        family_survey: dict[str, Any] | None = None,
     ) -> TurkishZPDRange:
         """
         DEVRİMSEL: Türk kültürüne uyarlanmış ZPD hesaplama
@@ -840,7 +839,7 @@ class ZPDMaarifService:
 
         except Exception as e:
             logger.error(
-                f"DEVRİMSEL ZPD hesaplama hatası - Öğrenci: {student_id}, Hata: {str(e)}"
+                f"DEVRİMSEL ZPD hesaplama hatası - Öğrenci: {student_id}, Hata: {e!s}"
             )
             raise
 
@@ -849,10 +848,10 @@ class ZPDMaarifService:
         student_id: str,
         subject: str,
         current_level: float,
-        behavioral_data: Dict[str, Any],
+        behavioral_data: dict[str, Any],
         learning_objective: str,
         content_description: str = "",
-        family_survey: Optional[Dict[str, Any]] = None,
+        family_survey: dict[str, Any] | None = None,
     ) -> ZPDRecommendation:
         """
         DEVRİMSEL: ZPD tabanlı kişiselleştirilmiş öğrenme önerisi
@@ -887,7 +886,7 @@ class ZPDMaarifService:
 
         except Exception as e:
             logger.error(
-                f"DEVRİMSEL öneri oluşturma hatası - Öğrenci: {student_id}, Hata: {str(e)}"
+                f"DEVRİMSEL öneri oluşturma hatası - Öğrenci: {student_id}, Hata: {e!s}"
             )
             raise
 
@@ -895,8 +894,8 @@ class ZPDMaarifService:
         self,
         student_id: str,
         current_difficulty: float,
-        student_performance: Dict[str, float],
-        behavioral_data: Dict[str, Any],
+        student_performance: dict[str, float],
+        behavioral_data: dict[str, Any],
     ) -> float:
         """
         DEVRİMSEL: Kültürel faktörlere göre zorluk seviyesi adaptasyonu
@@ -926,13 +925,13 @@ class ZPDMaarifService:
 
         except Exception as e:
             logger.error(
-                f"DEVRİMSEL zorluk adaptasyon hatası - Öğrenci: {student_id}, Hata: {str(e)}"
+                f"DEVRİMSEL zorluk adaptasyon hatası - Öğrenci: {student_id}, Hata: {e!s}"
             )
             raise
 
     async def monitor_cultural_learning_patterns_revolutionary(
-        self, student_id: str, learning_sessions: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, student_id: str, learning_sessions: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         DEVRİMSEL: Kültürel öğrenme kalıplarını izle ve analiz et
         Türk öğrenci davranış kalıplarının derinlemesine analizi
@@ -951,7 +950,7 @@ class ZPDMaarifService:
 
         except Exception as e:
             logger.error(
-                f"DEVRİMSEL kalıp analizi hatası - Öğrenci: {student_id}, Hata: {str(e)}"
+                f"DEVRİMSEL kalıp analizi hatası - Öğrenci: {student_id}, Hata: {e!s}"
             )
             raise
 
@@ -976,13 +975,13 @@ class ZPDMaarifService:
 
         except Exception as e:
             logger.error(
-                f"DEVRİMSEL Maarif uyum hatası - Konu: {subject}, Hata: {str(e)}"
+                f"DEVRİMSEL Maarif uyum hatası - Konu: {subject}, Hata: {e!s}"
             )
             raise
 
     async def get_revolutionary_learning_balance(
-        self, student_id: str, behavioral_data: Dict[str, Any]
-    ) -> Dict[str, float]:
+        self, student_id: str, behavioral_data: dict[str, Any]
+    ) -> dict[str, float]:
         """
         DEVRİMSEL: Grup vs bireysel öğrenme dengesini hesapla
         Türk kültürü faktörleri ile optimize edilmiş denge analizi
@@ -1029,6 +1028,6 @@ class ZPDMaarifService:
 
         except Exception as e:
             logger.error(
-                f"DEVRİMSEL öğrenme dengesi hatası - Öğrenci: {student_id}, Hata: {str(e)}"
+                f"DEVRİMSEL öğrenme dengesi hatası - Öğrenci: {student_id}, Hata: {e!s}"
             )
             raise

@@ -13,9 +13,9 @@ Requirements (REQ-8.x):
 
 import logging
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List
 from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class PipelineMetric:
     total_duration: float
     final_score: float
     decision: str
-    stage_metrics: List[StageMetric]
+    stage_metrics: list[StageMetric]
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
 
@@ -68,9 +68,9 @@ class PerformanceMonitor:
             max_history: Saklanacak maksimum metrik sayısı
         """
         self.max_history = max_history
-        self._pipeline_metrics: List[PipelineMetric] = []
-        self._stage_timings: Dict[str, List[float]] = defaultdict(list)
-        self._start_time = datetime.now(timezone.utc)
+        self._pipeline_metrics: list[PipelineMetric] = []
+        self._stage_timings: dict[str, list[float]] = defaultdict(list)
+        self._start_time = datetime.now(UTC)
 
     def record_pipeline(
         self,
@@ -78,7 +78,7 @@ class PerformanceMonitor:
         total_duration: float,
         final_score: float,
         decision: str,
-        stage_results: List[Dict[str, Any]]
+        stage_results: list[dict[str, Any]]
     ) -> None:
         """
         Pipeline metriği kaydet
@@ -121,7 +121,7 @@ class PerformanceMonitor:
 
         logger.debug(f"Recorded metrics for pipeline {pipeline_id}")
 
-    def get_stage_metrics(self, stage_name: str) -> Dict[str, Any]:
+    def get_stage_metrics(self, stage_name: str) -> dict[str, Any]:
         """
         Aşama metriklerini getir
 
@@ -159,7 +159,7 @@ class PerformanceMonitor:
             return 0.0
 
         # Son period'daki pipeline'ları say
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=period_hours)
+        cutoff = datetime.now(UTC) - timedelta(hours=period_hours)
         recent = [
             p for p in self._pipeline_metrics
             if p.timestamp >= cutoff
@@ -186,7 +186,7 @@ class PerformanceMonitor:
         approved = sum(1 for p in self._pipeline_metrics if p.decision == "approved")
         return round(approved / len(self._pipeline_metrics), 4)
 
-    def get_bottlenecks(self) -> List[Dict[str, Any]]:
+    def get_bottlenecks(self) -> list[dict[str, Any]]:
         """
         Bottleneck'leri tespit et (REQ-8.2)
 
@@ -212,7 +212,7 @@ class PerformanceMonitor:
 
         return sorted(bottlenecks, key=lambda x: x["max_duration"], reverse=True)
 
-    def get_optimization_suggestions(self) -> List[str]:
+    def get_optimization_suggestions(self) -> list[str]:
         """
         Optimization önerileri (REQ-8.5)
 
@@ -262,7 +262,7 @@ class PerformanceMonitor:
 
         return suggestions
 
-    def get_trend_analysis(self, days: int = 7) -> Dict[str, Any]:
+    def get_trend_analysis(self, days: int = 7) -> dict[str, Any]:
         """
         Trend analizi (REQ-8.6)
 
@@ -272,14 +272,14 @@ class PerformanceMonitor:
         Returns:
             Dict: Trend verileri
         """
-        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        cutoff = datetime.now(UTC) - timedelta(days=days)
         recent = [p for p in self._pipeline_metrics if p.timestamp >= cutoff]
 
         if len(recent) < 2:
             return {"insufficient_data": True}
 
         # Günlük grupla
-        daily_data: Dict[str, List[PipelineMetric]] = defaultdict(list)
+        daily_data: dict[str, list[PipelineMetric]] = defaultdict(list)
         for p in recent:
             day = p.timestamp.strftime("%Y-%m-%d")
             daily_data[day].append(p)
@@ -321,7 +321,7 @@ class PerformanceMonitor:
 
         return trend
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Tüm metriklerin özeti"""
         return {
             "total_pipelines": len(self._pipeline_metrics),
@@ -329,5 +329,5 @@ class PerformanceMonitor:
             "throughput_per_hour": self.get_throughput(),
             "bottlenecks": self.get_bottlenecks()[:3],
             "optimization_suggestions": self.get_optimization_suggestions()[:3],
-            "uptime_hours": (datetime.now(timezone.utc) - self._start_time).total_seconds() / 3600
+            "uptime_hours": (datetime.now(UTC) - self._start_time).total_seconds() / 3600
         }

@@ -9,7 +9,6 @@ import tempfile
 from pathlib import Path
 
 
-
 @pytest.mark.unit
 def test_worker_isolation(worker_id):
     """Test that each worker has isolated environment"""
@@ -115,7 +114,7 @@ def test_file_isolation():
     try:
         # Each worker should be able to create and access its own files
         assert Path(temp_path).exists()
-        with open(temp_path, "r") as f:
+        with open(temp_path) as f:
             content = f.read()
         assert content == "test data"
     finally:

@@ -4,14 +4,14 @@ TASK 48.3: Data encryption at rest - Management endpoints
 
 Admin-only endpoints for encryption key management and rotation.
 """
+import os
+from datetime import UTC, datetime, timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from typing import Optional
-import os
-from datetime import datetime, timedelta, timezone
 
-from core.encryption_service import get_encryption_service, EncryptionService
-from core.dependencies import get_current_user, AuthenticatedUser, UserRole
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+from core.encryption_service import EncryptionService, get_encryption_service
 
 router = APIRouter(prefix="/admin/encryption", tags=["Admin - Encryption"])
 
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/admin/encryption", tags=["Admin - Encryption"])
 class KeyRotationRequest(BaseModel):
     """Request model for key rotation"""
 
-    new_key: Optional[str] = None  # If None, generate new key
+    new_key: str | None = None  # If None, generate new key
     force: bool = False  # Force rotation even if recent
 
 
@@ -39,7 +39,7 @@ class EncryptionStatusResponse(BaseModel):
     enabled: bool
     primary_key_set: bool
     old_keys_count: int
-    last_rotation: Optional[datetime]
+    last_rotation: datetime | None
     recommendation: str
 
 
@@ -77,8 +77,9 @@ async def get_encryption_status(admin: AuthenticatedUser = Depends(require_admin
     # Track in database - get last rotation timestamp
     last_rotation = None
     try:
-        from core.database import get_db_session_context
         from sqlalchemy import text
+
+        from core.database import get_db_session_context
 
         async with get_db_session_context() as session:
             # Try to get last rotation from a simple key-value settings table
@@ -125,7 +126,7 @@ async def get_encryption_status(admin: AuthenticatedUser = Depends(require_admin
         )
     elif old_keys_count == 0:
         recommendation = "Consider rotating encryption key (no rotation history)"
-    elif last_rotation and datetime.now(timezone.utc) - last_rotation > timedelta(days=90):
+    elif last_rotation and datetime.now(UTC) - last_rotation > timedelta(days=90):
         recommendation = (
             "⚠️ Encryption key hasn't been rotated in over 90 days. Consider rotation."
         )
@@ -177,10 +178,11 @@ async def rotate_encryption_key(
         service.rotate_key(new_key)
 
         # Track rotation in database
-        rotation_timestamp = datetime.now(timezone.utc)
+        rotation_timestamp = datetime.now(UTC)
         try:
-            from core.database import get_db_session_context
             from sqlalchemy import text
+
+            from core.database import get_db_session_context
 
             async with get_db_session_context() as session:
                 # Ensure settings table exists
@@ -229,7 +231,7 @@ async def rotate_encryption_key(
 
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",

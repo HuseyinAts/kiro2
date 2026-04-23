@@ -3,12 +3,13 @@
 This module provides shared fixtures for testing learning path strategies.
 All fixtures return properly structured mock API responses.
 """
+from typing import Any
+
 import pytest
-from typing import Dict, Any
 
 
 @pytest.fixture
-def mock_youtube_response() -> Dict[str, Any]:
+def mock_youtube_response() -> dict[str, Any]:
     """Mock YouTube API video details response.
 
     Returns:
@@ -39,7 +40,7 @@ def mock_youtube_response() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_youtube_search_response() -> Dict[str, Any]:
+def mock_youtube_search_response() -> dict[str, Any]:
     """Mock YouTube API search response (list of video IDs).
 
     Returns:
@@ -66,7 +67,7 @@ def mock_youtube_search_response() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_khan_response() -> Dict[str, Any]:
+def mock_khan_response() -> dict[str, Any]:
     """Mock Khan Academy API response.
 
     Returns:
@@ -94,7 +95,7 @@ def mock_khan_response() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_oer_response() -> Dict[str, Any]:
+def mock_oer_response() -> dict[str, Any]:
     """Mock OER Commons API response.
 
     Returns:
@@ -124,7 +125,7 @@ def mock_oer_response() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_rag_response() -> Dict[str, Any]:
+def mock_rag_response() -> dict[str, Any]:
     """Mock RAG/ChromaDB response.
 
     Returns:
@@ -150,7 +151,7 @@ def mock_rag_response() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_youtube_turkish_response() -> Dict[str, Any]:
+def mock_youtube_turkish_response() -> dict[str, Any]:
     """Mock YouTube response with Turkish characters.
 
     Returns:
@@ -180,7 +181,7 @@ def mock_youtube_turkish_response() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_khan_turkish_response() -> Dict[str, Any]:
+def mock_khan_turkish_response() -> dict[str, Any]:
     """Mock Khan Academy Turkish content response.
 
     Returns:
@@ -207,7 +208,7 @@ def mock_khan_turkish_response() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_oer_multilevel_response() -> Dict[str, Any]:
+def mock_oer_multilevel_response() -> dict[str, Any]:
     """Mock OER response with multiple grade levels.
 
     Returns:

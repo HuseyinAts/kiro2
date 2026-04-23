@@ -13,10 +13,8 @@ Requirements:
 """
 
 import logging
-from datetime import datetime, UTC
-from typing import Dict, Optional
+from datetime import UTC, datetime
 
-from typing import List
 from .models import HealthCheckResult, HealthScore, HealthStatus
 
 logger = logging.getLogger(__name__)
@@ -64,7 +62,7 @@ class HealthScoreCalculator:
     def __init__(
         self,
         redis_client=None,
-        weights: Optional[Dict[str, float]] = None
+        weights: dict[str, float] | None = None
     ):
         """
         HealthScoreCalculator sınıfını başlatır.
@@ -161,28 +159,27 @@ class HealthScoreCalculator:
 
         if response_time_ms < self.RESPONSE_TIME_EXCELLENT:
             return 100.0
-        elif response_time_ms < self.RESPONSE_TIME_GOOD:
+        if response_time_ms < self.RESPONSE_TIME_GOOD:
             # 50-100ms: 90-100 arası linear
             ratio = (response_time_ms - self.RESPONSE_TIME_EXCELLENT) / \
                     (self.RESPONSE_TIME_GOOD - self.RESPONSE_TIME_EXCELLENT)
             return 100.0 - (ratio * 10.0)
-        elif response_time_ms < self.RESPONSE_TIME_FAIR:
+        if response_time_ms < self.RESPONSE_TIME_FAIR:
             # 100-200ms: 70-90 arası linear
             ratio = (response_time_ms - self.RESPONSE_TIME_GOOD) / \
                     (self.RESPONSE_TIME_FAIR - self.RESPONSE_TIME_GOOD)
             return 90.0 - (ratio * 20.0)
-        elif response_time_ms < self.RESPONSE_TIME_POOR:
+        if response_time_ms < self.RESPONSE_TIME_POOR:
             # 200-500ms: 40-70 arası linear
             ratio = (response_time_ms - self.RESPONSE_TIME_FAIR) / \
                     (self.RESPONSE_TIME_POOR - self.RESPONSE_TIME_FAIR)
             return 70.0 - (ratio * 30.0)
-        elif response_time_ms < self.RESPONSE_TIME_CRITICAL:
+        if response_time_ms < self.RESPONSE_TIME_CRITICAL:
             # 500-1000ms: 0-40 arası linear
             ratio = (response_time_ms - self.RESPONSE_TIME_POOR) / \
                     (self.RESPONSE_TIME_CRITICAL - self.RESPONSE_TIME_POOR)
             return 40.0 - (ratio * 40.0)
-        else:
-            return 0.0
+        return 0.0
 
     def _calculate_error_rate_score(self, error_rate: float) -> float:
         """
@@ -201,31 +198,30 @@ class HealthScoreCalculator:
 
         if error_percentage <= 0.0:
             return 100.0
-        elif error_percentage < 0.1:
+        if error_percentage < 0.1:
             # < 0.1%: 95-100
             return 100.0 - (error_percentage * 50.0)
-        elif error_percentage < 0.5:
+        if error_percentage < 0.5:
             # 0.1-0.5%: 85-95
             ratio = (error_percentage - 0.1) / 0.4
             return 95.0 - (ratio * 10.0)
-        elif error_percentage < 1.0:
+        if error_percentage < 1.0:
             # 0.5-1%: 70-85
             ratio = (error_percentage - 0.5) / 0.5
             return 85.0 - (ratio * 15.0)
-        elif error_percentage < 2.0:
+        if error_percentage < 2.0:
             # 1-2%: 50-70
             ratio = (error_percentage - 1.0) / 1.0
             return 70.0 - (ratio * 20.0)
-        elif error_percentage < 5.0:
+        if error_percentage < 5.0:
             # 2-5%: 20-50
             ratio = (error_percentage - 2.0) / 3.0
             return 50.0 - (ratio * 30.0)
-        elif error_percentage < 10.0:
+        if error_percentage < 10.0:
             # 5-10%: 0-20
             ratio = (error_percentage - 5.0) / 5.0
             return 20.0 - (ratio * 20.0)
-        else:
-            return 0.0
+        return 0.0
 
     def _calculate_uptime_score(self, uptime_percentage: float) -> float:
         """
@@ -239,30 +235,29 @@ class HealthScoreCalculator:
         """
         if uptime_percentage >= 99.99:
             return 100.0
-        elif uptime_percentage >= 99.9:
+        if uptime_percentage >= 99.9:
             # 99.9-99.99%: 95-100
             ratio = (uptime_percentage - 99.9) / 0.09
             return 95.0 + (ratio * 5.0)
-        elif uptime_percentage >= 99.5:
+        if uptime_percentage >= 99.5:
             # 99.5-99.9%: 85-95
             ratio = (uptime_percentage - 99.5) / 0.4
             return 85.0 + (ratio * 10.0)
-        elif uptime_percentage >= 99.0:
+        if uptime_percentage >= 99.0:
             # 99.0-99.5%: 70-85
             ratio = (uptime_percentage - 99.0) / 0.5
             return 70.0 + (ratio * 15.0)
-        elif uptime_percentage >= 95.0:
+        if uptime_percentage >= 95.0:
             # 95-99%: 40-70
             ratio = (uptime_percentage - 95.0) / 4.0
             return 40.0 + (ratio * 30.0)
-        elif uptime_percentage >= 90.0:
+        if uptime_percentage >= 90.0:
             # 90-95%: 20-40
             ratio = (uptime_percentage - 90.0) / 5.0
             return 20.0 + (ratio * 20.0)
-        else:
-            # < 90%: 0-20
-            ratio = uptime_percentage / 90.0
-            return ratio * 20.0
+        # < 90%: 0-20
+        ratio = uptime_percentage / 90.0
+        return ratio * 20.0
 
     def get_status_from_score(self, score: int) -> HealthStatus:
         """
@@ -276,10 +271,9 @@ class HealthScoreCalculator:
         """
         if score >= 70:
             return HealthStatus.HEALTHY
-        elif score >= 50:
+        if score >= 50:
             return HealthStatus.DEGRADED
-        else:
-            return HealthStatus.UNHEALTHY
+        return HealthStatus.UNHEALTHY
 
     def get_score_label(self, score: int) -> str:
         """
@@ -293,14 +287,13 @@ class HealthScoreCalculator:
         """
         if score >= 90:
             return "Excellent (Mükemmel)"
-        elif score >= 70:
+        if score >= 70:
             return "Good (İyi)"
-        elif score >= 50:
+        if score >= 50:
             return "Fair (Orta)"
-        elif score >= 30:
+        if score >= 30:
             return "Poor (Zayıf)"
-        else:
-            return "Critical (Kritik)"
+        return "Critical (Kritik)"
 
     async def calculate_and_store(
         self,
@@ -358,7 +351,7 @@ class HealthScoreCalculator:
 
         return score
 
-    async def get_stored_score(self, endpoint: str) -> Optional[HealthScore]:
+    async def get_stored_score(self, endpoint: str) -> HealthScore | None:
         """
         Redis'ten kaydedilmiş skoru getirir.
 
@@ -395,7 +388,7 @@ class HealthScoreCalculator:
 
     async def calculate_from_results(
         self,
-        results: List[HealthCheckResult],
+        results: list[HealthCheckResult],
         dependency_health: float = 100.0
     ) -> float:
         """

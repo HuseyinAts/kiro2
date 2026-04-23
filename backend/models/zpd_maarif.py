@@ -14,7 +14,6 @@ DEVRİMSEL ÖZELLİKLER:
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -85,9 +84,9 @@ class KulturelBaglamProfili(BaseModel):
     kolektif_kimlik_gucu: float = Field(ge=0.0, le=1.0, default=0.7)
 
     # Demografik faktörler
-    bolge: Optional[str] = None  # Coğrafi bölge
-    sosyoekonomik_durum: Optional[str] = None
-    okul_turu: Optional[str] = None  # Devlet/özel
+    bolge: str | None = None  # Coğrafi bölge
+    sosyoekonomik_durum: str | None = None
+    okul_turu: str | None = None  # Devlet/özel
 
     olusturma_tarihi: datetime = Field(default_factory=datetime.now)
     guncelleme_tarihi: datetime = Field(default_factory=datetime.now)
@@ -218,14 +217,13 @@ class TurkZPDAraligi(BaseModel):
         """Hedef zorluğun ZPD içindeki seviyesini belirle"""
         if hedef_zorluk < self.alt_sinir:
             return ZPDSeviyesi.COK_KOLAY
-        elif hedef_zorluk < self.mevcut_seviye:
+        if hedef_zorluk < self.mevcut_seviye:
             return ZPDSeviyesi.KOLAY
-        elif hedef_zorluk <= self.optimal_zorluk:
+        if hedef_zorluk <= self.optimal_zorluk:
             return ZPDSeviyesi.OPTIMAL
-        elif hedef_zorluk <= self.ust_sinir:
+        if hedef_zorluk <= self.ust_sinir:
             return ZPDSeviyesi.ZOR
-        else:
-            return ZPDSeviyesi.COK_ZOR
+        return ZPDSeviyesi.COK_ZOR
 
 
 class ZPDHesaplamaParametreleri(BaseModel):
@@ -266,11 +264,11 @@ class ZPDHesaplamaGecmisi(BaseModel):
     maarif_profili: MaarifDegerleriProfili
 
     # Performans verileri
-    onceki_basari_orani: Optional[float] = None
-    sonraki_basari_orani: Optional[float] = None
-    tahmin_dogrulugu: Optional[float] = None
+    onceki_basari_orani: float | None = None
+    sonraki_basari_orani: float | None = None
+    tahmin_dogrulugu: float | None = None
 
-    notlar: Optional[str] = None
+    notlar: str | None = None
 
 
 class ZPDOptimizasyonSonucu(BaseModel):
@@ -286,9 +284,9 @@ class ZPDOptimizasyonSonucu(BaseModel):
     ogretmen_rehberlik_ihtiyaci: bool
 
     # Kişiselleştirme önerileri
-    icerik_turu_onerileri: List[str]
+    icerik_turu_onerileri: list[str]
     ogrenme_hizi_ayarlama: float
-    motivasyon_stratejileri: List[str]
+    motivasyon_stratejileri: list[str]
 
     # Güven metrikleri
     oneri_guveni: float = Field(ge=0.0, le=1.0)

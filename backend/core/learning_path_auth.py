@@ -9,14 +9,14 @@ Features:
 """
 
 import logging
-from typing import Optional
-from fastapi import HTTPException, Depends, status
+
+from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.jwt_auth import JWTManager, TokenType, UserRole, get_jwt_manager
 from core.dependencies import get_db
+from core.jwt_auth import JWTManager, TokenType, UserRole, get_jwt_manager
 from models.learning_path_models import LearningPathStudentProfile
 
 logger = logging.getLogger(__name__)
@@ -243,7 +243,7 @@ optional_security = HTTPBearer(auto_error=False)
 
 
 async def get_current_user_optional(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security),
+    credentials: HTTPAuthorizationCredentials | None = Depends(optional_security),
     jwt_manager: JWTManager = Depends(get_jwt_manager),
 ):
     """

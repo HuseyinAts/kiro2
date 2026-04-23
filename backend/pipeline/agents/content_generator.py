@@ -14,11 +14,11 @@ Requirements (REQ-1.x):
 """
 
 import time
-from typing import Any, Dict, Optional
+from typing import Any
 
 from ..stage_base import BasePipelineStage, StageInput, StageOutput
-from ..tools.zemberek_client import ZemberekClient
 from ..tools.meb_api_client import MEBApiClient
+from ..tools.zemberek_client import ZemberekClient
 
 
 class ContentGeneratorAgent(BasePipelineStage):
@@ -81,10 +81,10 @@ class ContentGeneratorAgent(BasePipelineStage):
 
     def __init__(
         self,
-        llm_client: Optional[Any] = None,
-        meb_api_client: Optional[MEBApiClient] = None,
-        zemberek_client: Optional[ZemberekClient] = None,
-        config: Optional[Dict[str, Any]] = None
+        llm_client: Any | None = None,
+        meb_api_client: MEBApiClient | None = None,
+        zemberek_client: ZemberekClient | None = None,
+        config: dict[str, Any] | None = None
     ):
         """
         Content Generator Agent başlat
@@ -197,7 +197,7 @@ class ContentGeneratorAgent(BasePipelineStage):
 
         except Exception as e:
             return self._create_error_output(
-                f"İçerik üretim hatası: {str(e)}",
+                f"İçerik üretim hatası: {e!s}",
                 input_data,
                 time.time() - start_time
             )

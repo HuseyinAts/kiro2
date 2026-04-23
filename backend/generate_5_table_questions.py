@@ -13,9 +13,10 @@ Usage:
 """
 
 import asyncio
-import os
 import json
-from datetime import datetime, timezone
+import os
+from datetime import UTC, datetime
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,7 +35,7 @@ async def generate_5_production_questions():
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
         print("[ERROR] ANTHROPIC_API_KEY not found in .env")
-        return
+        return None
 
     generator = OSYMInspiredGenerator(anthropic_api_key=api_key)
 
@@ -105,7 +106,7 @@ async def generate_5_production_questions():
             # Add metadata
             question["metadata"] = {
                 "phase": "Phase 1 - Tables",
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
                 "spec_name": spec["name"],
                 "table_type": spec["table_type"],
             }
@@ -128,13 +129,13 @@ async def generate_5_production_questions():
             print(f"  [SAVED] {filename}")
 
         except Exception as e:
-            print(f"\n[ERROR] Question {i}/5 generation failed: {str(e)}")
+            print(f"\n[ERROR] Question {i}/5 generation failed: {e!s}")
             import traceback
 
             traceback.print_exc()
 
     # Save all questions together
-    output_file = f"production_5_table_questions_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json"
+    output_file = f"production_5_table_questions_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
 

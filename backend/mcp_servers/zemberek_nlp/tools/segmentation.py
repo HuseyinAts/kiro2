@@ -5,9 +5,9 @@ Turkce cumle segmentasyonu
 Supports both JPype (direct Zemberek access) and HTTP backend.
 """
 
-import re
 import logging
-from typing import Any, Dict, List
+import re
+from typing import Any
 
 from .base import BaseToolHandler
 
@@ -30,7 +30,7 @@ class SegmentationHandler(BaseToolHandler):
 
     tool_name = "segmentation"
 
-    async def _call_jpype(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_jpype(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Segment text into sentences using JPype bridge.
 
@@ -60,7 +60,7 @@ class SegmentationHandler(BaseToolHandler):
             "has_quotation": has_quotation,
         }
 
-    async def _call_backend(self, text: str, **kwargs) -> Dict[str, Any]:
+    async def _call_backend(self, text: str, **kwargs) -> dict[str, Any]:
         """
         Segment Turkish text into sentences
 
@@ -91,7 +91,7 @@ class SegmentationHandler(BaseToolHandler):
             "has_quotation": has_quotation,
         }
 
-    def _segment_sentences(self, text: str) -> List[str]:
+    def _segment_sentences(self, text: str) -> list[str]:
         """
         Rule-based Turkish sentence segmentation
 
@@ -129,7 +129,7 @@ class SegmentationHandler(BaseToolHandler):
         return sentences
 
     def _is_sentence_end(
-        self, word: str, index: int, words: List[str]
+        self, word: str, index: int, words: list[str]
     ) -> bool:
         """Determine if word ends a sentence"""
         # Check for sentence-ending punctuation

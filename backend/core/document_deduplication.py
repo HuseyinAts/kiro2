@@ -5,8 +5,9 @@ Detect and handle duplicate or near-duplicate documents
 
 import hashlib
 import logging
-from typing import List, Dict, Any, Set, Tuple, Optional
 from dataclasses import dataclass
+from typing import Any
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ class DuplicateGroup:
     """Group of duplicate documents"""
 
     canonical: str  # The document to keep
-    duplicates: List[str]  # Similar documents
+    duplicates: list[str]  # Similar documents
     similarity: float  # Average similarity
     method: str  # Detection method used
 
@@ -49,12 +50,12 @@ class DocumentDeduplicator:
         self.embedding_threshold = embedding_threshold
 
         # Caches
-        self._hash_cache: Dict[str, str] = {}
-        self._embedding_cache: Dict[str, np.ndarray] = {}
+        self._hash_cache: dict[str, str] = {}
+        self._embedding_cache: dict[str, np.ndarray] = {}
 
     def find_duplicates(
-        self, documents: List[Dict[str, Any]], method: str = "all"
-    ) -> List[DuplicateGroup]:
+        self, documents: list[dict[str, Any]], method: str = "all"
+    ) -> list[DuplicateGroup]:
         """
         Find duplicate documents
 
@@ -82,11 +83,11 @@ class DocumentDeduplicator:
         return duplicate_groups
 
     def _find_exact_duplicates(
-        self, documents: List[Dict[str, Any]]
-    ) -> List[DuplicateGroup]:
+        self, documents: list[dict[str, Any]]
+    ) -> list[DuplicateGroup]:
         """Find exact duplicates using hash"""
 
-        hash_map: Dict[str, List[int]] = {}
+        hash_map: dict[str, list[int]] = {}
 
         for idx, doc in enumerate(documents):
             content = doc.get("content") or doc.get("text", "")
@@ -123,12 +124,12 @@ class DocumentDeduplicator:
         return groups
 
     def _find_fuzzy_duplicates(
-        self, documents: List[Dict[str, Any]]
-    ) -> List[DuplicateGroup]:
+        self, documents: list[dict[str, Any]]
+    ) -> list[DuplicateGroup]:
         """Find near-duplicates using Jaccard similarity"""
 
         groups = []
-        processed: Set[int] = set()
+        processed: set[int] = set()
 
         for i, doc1 in enumerate(documents):
             if i in processed:
@@ -167,8 +168,8 @@ class DocumentDeduplicator:
         return groups
 
     def _find_embedding_duplicates(
-        self, documents: List[Dict[str, Any]]
-    ) -> List[DuplicateGroup]:
+        self, documents: list[dict[str, Any]]
+    ) -> list[DuplicateGroup]:
         """
         Find semantic duplicates using embedding similarity.
 
@@ -178,10 +179,10 @@ class DocumentDeduplicator:
         - Paraphrase detection via semantic similarity
         """
         groups = []
-        processed: Set[int] = set()
+        processed: set[int] = set()
 
         # Try to get embeddings from documents or generate them
-        embeddings: List[Optional[np.ndarray]] = []
+        embeddings: list[np.ndarray | None] = []
         for doc in documents:
             # Check if embedding is already in document
             if "embedding" in doc:
@@ -266,8 +267,8 @@ class DocumentDeduplicator:
     def check_duplicate_by_embedding(
         self,
         embedding: np.ndarray,
-        threshold: Optional[float] = None,
-    ) -> Tuple[bool, Optional[str], float]:
+        threshold: float | None = None,
+    ) -> tuple[bool, str | None, float]:
         """
         Check if an embedding is duplicate against cached embeddings.
 
@@ -289,9 +290,9 @@ class DocumentDeduplicator:
 
     def merge_metadata(
         self,
-        canonical_metadata: Dict[str, Any],
-        duplicate_metadata: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        canonical_metadata: dict[str, Any],
+        duplicate_metadata: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Merge metadata from duplicate document into canonical.
 
@@ -323,7 +324,7 @@ class DocumentDeduplicator:
         # Generate hash
         return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
-    def _tokenize(self, text: str) -> Set[str]:
+    def _tokenize(self, text: str) -> set[str]:
         """Tokenize text into words"""
 
         # Simple word tokenization
@@ -334,7 +335,7 @@ class DocumentDeduplicator:
 
         return set(words)
 
-    def _jaccard_similarity(self, set1: Set[str], set2: Set[str]) -> float:
+    def _jaccard_similarity(self, set1: set[str], set2: set[str]) -> float:
         """Calculate Jaccard similarity between two sets"""
 
         if not set1 or not set2:
@@ -346,8 +347,8 @@ class DocumentDeduplicator:
         return intersection / union if union > 0 else 0.0
 
     def deduplicate(
-        self, documents: List[Dict[str, Any]], method: str = "all", keep: str = "first"
-    ) -> List[Dict[str, Any]]:
+        self, documents: list[dict[str, Any]], method: str = "all", keep: str = "first"
+    ) -> list[dict[str, Any]]:
         """
         Remove duplicates from documents
 
@@ -364,7 +365,7 @@ class DocumentDeduplicator:
         duplicate_groups = self.find_duplicates(documents, method)
 
         # Build set of duplicate contents to remove
-        to_remove: Set[str] = set()
+        to_remove: set[str] = set()
 
         for group in duplicate_groups:
             if keep == "first":
@@ -412,13 +413,13 @@ class IncrementalDeduplicator:
             threshold: Similarity threshold for duplicates
         """
         self.threshold = threshold
-        self._seen_hashes: Set[str] = set()
-        self._seen_tokens: List[Set[str]] = []
-        self._seen_contents: List[str] = []
+        self._seen_hashes: set[str] = set()
+        self._seen_tokens: list[set[str]] = []
+        self._seen_contents: list[str] = []
 
     def is_duplicate(
         self, content: str, method: str = "hash"
-    ) -> Tuple[bool, Optional[str]]:
+    ) -> tuple[bool, str | None]:
         """
         Check if content is duplicate
 
@@ -449,7 +450,7 @@ class IncrementalDeduplicator:
             self._seen_contents.append(content)
             return False, None
 
-        elif method == "fuzzy":
+        if method == "fuzzy":
             # Fuzzy matching
             tokens = self._tokenize(content)
 
@@ -485,12 +486,12 @@ class IncrementalDeduplicator:
         normalized = " ".join(normalized.split())
         return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
-    def _tokenize(self, text: str) -> Set[str]:
+    def _tokenize(self, text: str) -> set[str]:
         """Tokenize text"""
         words = text.lower().split()
         return {w for w in words if len(w) > 2}
 
-    def _jaccard_similarity(self, set1: Set[str], set2: Set[str]) -> float:
+    def _jaccard_similarity(self, set1: set[str], set2: set[str]) -> float:
         """Jaccard similarity"""
         if not set1 or not set2:
             return 0.0
@@ -500,7 +501,7 @@ class IncrementalDeduplicator:
 
 
 # Global deduplicator instance
-_global_deduplicator: Optional[IncrementalDeduplicator] = None
+_global_deduplicator: IncrementalDeduplicator | None = None
 
 
 def get_deduplicator() -> IncrementalDeduplicator:

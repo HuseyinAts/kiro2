@@ -4,13 +4,13 @@ IRT + Türkçe Morfoloji API
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from algorithms.irt_morfoloji_service import IRTParameters, irt_morfoloji_service
-from core.dependencies import get_current_user, AuthenticatedUser
+from core.dependencies import AuthenticatedUser, get_current_user
 
 logger = logging.getLogger(__name__)
 
@@ -23,16 +23,16 @@ class QuestionAnalysisRequest(BaseModel):
     question_id: str = Field(..., description="Soru ID")
     question_text: str = Field(..., description="Soru metni")
     correct_answer: str = Field(..., description="Doğru cevap")
-    student_responses: Optional[List[Dict[str, Any]]] = Field(
+    student_responses: list[dict[str, Any]] | None = Field(
         None, description="Öğrenci yanıtları"
     )
-    base_difficulty: Optional[float] = Field(None, description="Temel zorluk seviyesi")
+    base_difficulty: float | None = Field(None, description="Temel zorluk seviyesi")
 
 
 class BatchAnalysisRequest(BaseModel):
     """Toplu analiz isteği"""
 
-    questions: List[Dict[str, Any]] = Field(..., description="Soru listesi")
+    questions: list[dict[str, Any]] = Field(..., description="Soru listesi")
 
 
 class MorphologyInsightsRequest(BaseModel):
@@ -55,7 +55,7 @@ class DifficultyRecommendationRequest(BaseModel):
 async def analyze_question(
     request: QuestionAnalysisRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Tek soru IRT + Morfoloji analizi
     """
@@ -101,7 +101,7 @@ async def analyze_question(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"IRT + Morfoloji analiz hatası: {str(e)}")
+        logger.error(f"IRT + Morfoloji analiz hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -112,7 +112,7 @@ async def batch_analyze_questions(
     request: BatchAnalysisRequest,
     background_tasks: BackgroundTasks,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Toplu soru analizi
     """
@@ -139,7 +139,7 @@ async def batch_analyze_questions(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Toplu analiz hatası: {str(e)}")
+        logger.error(f"Toplu analiz hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -149,7 +149,7 @@ async def batch_analyze_questions(
 async def get_morphology_insights(
     request: MorphologyInsightsRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Metin morfoloji içgörüleri
     """
@@ -167,7 +167,7 @@ async def get_morphology_insights(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Morfoloji içgörü hatası: {str(e)}")
+        logger.error(f"Morfoloji içgörü hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -177,7 +177,7 @@ async def get_morphology_insights(
 async def get_difficulty_recommendation(
     request: DifficultyRecommendationRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Zorluk seviyesi önerisi
     """
@@ -209,7 +209,7 @@ async def get_difficulty_recommendation(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Zorluk önerisi hatası: {str(e)}")
+        logger.error(f"Zorluk önerisi hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -223,7 +223,7 @@ async def calculate_irt_probability(
     guessing: float = 0.20,
     morphology_adjustment: bool = True,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     IRT olasılık hesaplama
     """
@@ -257,7 +257,7 @@ async def calculate_irt_probability(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"IRT olasılık hesaplama hatası: {str(e)}")
+        logger.error(f"IRT olasılık hesaplama hatası: {e!s}")
         raise HTTPException(
             status_code=500,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -267,7 +267,7 @@ async def calculate_irt_probability(
 @router.get("/service-stats")
 async def get_service_stats(
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Servis istatistikleri
     """
@@ -283,13 +283,13 @@ async def get_service_stats(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Servis istatistik hatası: {str(e)}")
+        logger.error(f"Servis istatistik hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
 
-async def _process_batch_analysis(questions: List[Dict[str, Any]], user_id: str):
+async def _process_batch_analysis(questions: list[dict[str, Any]], user_id: str):
     """
     Arka planda toplu analiz işlemi
     """
@@ -304,11 +304,11 @@ async def _process_batch_analysis(questions: List[Dict[str, Any]], user_id: str)
         logger.info(f"Toplu analiz tamamlandı - {len(results)} soru işlendi")
 
     except Exception as e:
-        logger.error(f"Arka plan toplu analiz hatası: {str(e)}")
+        logger.error(f"Arka plan toplu analiz hatası: {e!s}")
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """
     Servis sağlık kontrolü
     """
@@ -346,14 +346,14 @@ class StudentQuestionRecommendationRequest(BaseModel):
     target_success_rate: float = Field(
         0.7, ge=0.0, le=1.0, description="Hedef başarı oranı"
     )
-    question_pool: Optional[List[str]] = Field(None, description="Soru havuzu ID'leri")
+    question_pool: list[str] | None = Field(None, description="Soru havuzu ID'leri")
 
 
 class QualityAnalysisRequest(BaseModel):
     """Toplu kalite analizi isteği"""
 
-    questions: List[Dict[str, Any]] = Field(..., description="Soru listesi")
-    quality_threshold: Optional[float] = Field(
+    questions: list[dict[str, Any]] = Field(..., description="Soru listesi")
+    quality_threshold: float | None = Field(
         None, ge=0.0, le=100.0, description="Minimum kalite eşiği"
     )
 
@@ -368,7 +368,7 @@ class OSYMETSComparisonRequest(BaseModel):
 async def quick_assessment(
     request: QuickAssessmentRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Soru için hızlı ön değerlendirme
 
@@ -393,7 +393,7 @@ async def quick_assessment(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Hızlı değerlendirme hatası: {str(e)}")
+        logger.error(f"Hızlı değerlendirme hatası: {e!s}")
         raise HTTPException(
             status_code=500,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -404,7 +404,7 @@ async def quick_assessment(
 async def recommend_questions_for_student(
     request: StudentQuestionRecommendationRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Öğrenci profiline uygun soru önerisi
 
@@ -435,7 +435,7 @@ async def recommend_questions_for_student(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Soru önerisi hatası: {str(e)}")
+        logger.error(f"Soru önerisi hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -446,7 +446,7 @@ async def bulk_quality_analysis(
     request: QualityAnalysisRequest,
     background_tasks: BackgroundTasks,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Toplu soru kalite analizi
 
@@ -469,7 +469,7 @@ async def bulk_quality_analysis(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Toplu kalite analizi hatası: {str(e)}")
+        logger.error(f"Toplu kalite analizi hatası: {e!s}")
         raise HTTPException(
             status_code=500,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -480,7 +480,7 @@ async def bulk_quality_analysis(
 async def osym_ets_comparison(
     request: OSYMETSComparisonRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     ÖSYM ve ETS standartları ile karşılaştırma
 
@@ -504,7 +504,7 @@ async def osym_ets_comparison(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"ÖSYM/ETS karşılaştırma hatası: {str(e)}")
+        logger.error(f"ÖSYM/ETS karşılaştırma hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -513,7 +513,7 @@ async def osym_ets_comparison(
 @router.get("/full-analysis/{question_id}")
 async def get_full_question_analysis(
     question_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Tam kapsamlı soru analizi
 
@@ -561,7 +561,7 @@ async def get_full_question_analysis(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Tam analiz getirme hatası: {str(e)}")
+        logger.error(f"Tam analiz getirme hatası: {e!s}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

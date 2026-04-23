@@ -9,9 +9,9 @@ This migration adds performance indexes to the ACTUAL tables that exist in the d
 Target tables: users, kullanicilar, questions, sorular, sinavlar, sinav_sonuclari
 Expected impact: 10-50x faster queries, 70% reduction in database load.
 """
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '003_real_perf_idx'

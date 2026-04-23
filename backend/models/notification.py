@@ -2,8 +2,9 @@
 Notification ORM Model - Dashboard Service
 Part of Mock Data Cleanup Phase 2
 """
-from datetime import datetime, timezone
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Text
+from datetime import UTC, datetime
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Text
 
 from .base import Base
 
@@ -46,7 +47,7 @@ class Notification(Base):
         from datetime import timedelta
         if self.created_at is None:
             return False
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         return bool((now - self.created_at) < timedelta(hours=24))
 
     def mark_as_read(self) -> None:

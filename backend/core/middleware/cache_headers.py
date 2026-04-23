@@ -19,9 +19,9 @@ from __future__ import annotations
 import hashlib
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable, Optional
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -63,8 +63,8 @@ class CacheConfig:
     max_age: int = 300  # 5 dakika default
     policy: CachePolicy = CachePolicy.PUBLIC
     vary_headers: list[str] = field(default_factory=lambda: ["Accept", "Accept-Encoding"])
-    stale_while_revalidate: Optional[int] = None
-    stale_if_error: Optional[int] = None
+    stale_while_revalidate: int | None = None
+    stale_if_error: int | None = None
 
 
 # Endpoint tipine gore default cache konfigurasyonlari
@@ -310,7 +310,7 @@ class CacheMiddleware(BaseHTTPMiddleware):
     def __init__(
         self,
         app,
-        skip_paths: Optional[list[str]] = None,
+        skip_paths: list[str] | None = None,
         enable_metrics: bool = True,
     ) -> None:
         """
@@ -475,7 +475,7 @@ class CacheMiddleware(BaseHTTPMiddleware):
 
 
 def get_cache_middleware(
-    skip_paths: Optional[list[str]] = None,
+    skip_paths: list[str] | None = None,
     enable_metrics: bool = True,
 ):
     """
@@ -508,12 +508,12 @@ def get_cache_middleware(
 
 
 __all__ = [
+    "DEFAULT_CACHE_CONFIGS",
+    "CacheConfig",
     "CacheMiddleware",
     "CachePolicy",
-    "CacheConfig",
-    "DEFAULT_CACHE_CONFIGS",
-    "generate_etag",
     "build_cache_control_header",
+    "generate_etag",
     "get_cache_config_for_path",
     "get_cache_middleware",
 ]

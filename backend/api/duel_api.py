@@ -5,7 +5,6 @@ SSE streaming for real-time game events.
 
 import asyncio
 import json
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
@@ -29,7 +28,7 @@ class MatchmakeRequest(BaseModel):
 
 class MatchmakeResponse(BaseModel):
     status: str  # "matched" or "queued"
-    session_id: Optional[str] = None
+    session_id: str | None = None
     message: str
 
 
@@ -58,13 +57,13 @@ class DuelRatingResponse(BaseModel):
 class DuelHistoryItem(BaseModel):
     session_id: str
     subject: str
-    opponent_id: Optional[str]
+    opponent_id: str | None
     my_score: int
     opponent_score: int
     won: bool
     draw: bool
     elo_change: float
-    finished_at: Optional[str]
+    finished_at: str | None
 
 
 # ---------------------------------------------------------------------------

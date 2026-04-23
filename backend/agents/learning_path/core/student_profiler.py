@@ -21,12 +21,12 @@ Responsibilities:
 
 import json
 import logging
-from typing import Dict, Any, Optional, List
 from datetime import datetime
+from typing import Any
 
 from cachetools import TTLCache
 
-from ..models import StudentProfile, LearningStyle, KnowledgeLevel
+from ..models import KnowledgeLevel, LearningStyle, StudentProfile
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ class StudentProfiler:
         )
 
     async def analyze_student(
-        self, student_id: str, initial_data: Dict[str, Any]
+        self, student_id: str, initial_data: dict[str, Any]
     ) -> StudentProfile:
         """
         Analyze student data and create profile
@@ -143,14 +143,14 @@ class StudentProfiler:
             return profile
 
         except Exception as e:
-            logger.error(f"Student analysis error for {student_id}: {str(e)}")
+            logger.error(f"Student analysis error for {student_id}: {e!s}")
             raise
 
     async def assess_knowledge_level(
         self,
         student_id: str,
         subject: str,
-        test_results: Optional[Dict[str, Any]] = None,
+        test_results: dict[str, Any] | None = None,
     ) -> KnowledgeLevel:
         """
         Assess student's knowledge level for a subject
@@ -183,26 +183,24 @@ class StudentProfiler:
                 # Calculate from test results
                 logger.info(f"Assessing knowledge from test: {student_id} - {subject}")
                 return self._calculate_level_from_test(test_results)
-            else:
-                # Get from cached profile
-                profile = self.get_profile(student_id)
-                if profile:
-                    logger.info(
-                        f"Knowledge level from profile: {student_id} - {profile.knowledge_level.value}"
-                    )
-                    return profile.knowledge_level
-                else:
-                    logger.warning(
-                        f"No profile found for {student_id}, defaulting to BEGINNER"
-                    )
-                    return KnowledgeLevel.BEGINNER
+            # Get from cached profile
+            profile = self.get_profile(student_id)
+            if profile:
+                logger.info(
+                    f"Knowledge level from profile: {student_id} - {profile.knowledge_level.value}"
+                )
+                return profile.knowledge_level
+            logger.warning(
+                f"No profile found for {student_id}, defaulting to BEGINNER"
+            )
+            return KnowledgeLevel.BEGINNER
 
         except Exception as e:
-            logger.error(f"Knowledge assessment error: {str(e)}")
+            logger.error(f"Knowledge assessment error: {e!s}")
             raise
 
     async def analyze_behavioral_learning_style(
-        self, student_id: str, behaviors: List[Dict[str, Any]]
+        self, student_id: str, behaviors: list[dict[str, Any]]
     ) -> LearningStyle:
         """
         Analyze learning style from behavioral indicators
@@ -249,15 +247,15 @@ class StudentProfiler:
             return LearningStyle(detected_style)
 
         except Exception as e:
-            logger.error(f"Behavioral analysis error: {str(e)}")
+            logger.error(f"Behavioral analysis error: {e!s}")
             raise
 
     def record_learning_behavior(
         self,
         student_id: str,
         action: str,
-        context: Dict[str, Any],
-        duration: Optional[int] = None,
+        context: dict[str, Any],
+        duration: int | None = None,
     ) -> bool:
         """
         Record a learning behavior for future analysis
@@ -307,12 +305,12 @@ class StudentProfiler:
             return True
 
         except Exception as e:
-            logger.error(f"Record behavior error: {str(e)}")
+            logger.error(f"Record behavior error: {e!s}")
             return False
 
     def get_behavior_history(
         self, student_id: str, limit: int = 50
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get student's behavior history
 
@@ -371,12 +369,11 @@ class StudentProfiler:
             # Fall back to simple thresholds
             if current_score >= 80:
                 return "stable_excellent"
-            elif current_score >= 60:
+            if current_score >= 60:
                 return "stable_good"
-            elif current_score >= 40:
+            if current_score >= 40:
                 return "stable_average"
-            else:
-                return "needs_improvement"
+            return "needs_improvement"
 
         # Calculate trend from recent scores
         recent_scores = [s["score"] for s in scores[-5:]]
@@ -390,22 +387,21 @@ class StudentProfiler:
         # Determine trend
         if improvement > 10:
             return "improving_rapidly"
-        elif improvement > 5:
+        if improvement > 5:
             return "improving"
-        elif improvement < -5:
+        if improvement < -5:
             return "declining"
-        elif current_score >= 80:
+        if current_score >= 80:
             return "stable_excellent"
-        elif current_score >= 60:
+        if current_score >= 60:
             return "stable_good"
-        elif current_score >= 40:
+        if current_score >= 40:
             return "stable_average"
-        else:
-            return "needs_improvement"
+        return "needs_improvement"
 
     def get_score_history(
         self, student_id: str, limit: int = 20
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Get student's score history
 
@@ -420,7 +416,7 @@ class StudentProfiler:
         scores = self.score_history_cache.get(cache_key, [])
         return scores[-limit:][::-1]  # Return most recent first
 
-    def get_profile(self, student_id: str) -> Optional[StudentProfile]:
+    def get_profile(self, student_id: str) -> StudentProfile | None:
         """
         Get student profile from cache
 
@@ -433,8 +429,8 @@ class StudentProfiler:
         return self.profiles_cache.get(student_id)
 
     def update_profile(
-        self, student_id: str, updates: Dict[str, Any]
-    ) -> Optional[StudentProfile]:
+        self, student_id: str, updates: dict[str, Any]
+    ) -> StudentProfile | None:
         """
         Update student profile
 
@@ -477,7 +473,7 @@ class StudentProfiler:
 
     # Private helper methods
 
-    async def _llm_analyze(self, initial_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _llm_analyze(self, initial_data: dict[str, Any]) -> dict[str, Any]:
         """
         Analyze student data using LLM
 
@@ -523,10 +519,10 @@ JSON formatında yanıtla:
                 return self._default_analysis(initial_data)
 
         except Exception as e:
-            logger.error(f"LLM analysis error: {str(e)}")
+            logger.error(f"LLM analysis error: {e!s}")
             return self._default_analysis(initial_data)
 
-    def _default_analysis(self, initial_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _default_analysis(self, initial_data: dict[str, Any]) -> dict[str, Any]:
         """
         Fallback analysis when LLM fails
 
@@ -544,7 +540,7 @@ JSON formatında yanıtla:
         }
 
     def _create_profile(
-        self, student_id: str, initial_data: Dict[str, Any], analysis: Dict[str, Any]
+        self, student_id: str, initial_data: dict[str, Any], analysis: dict[str, Any]
     ) -> StudentProfile:
         """
         Create StudentProfile from analysis
@@ -575,7 +571,7 @@ JSON formatında yanıtla:
         )
 
     def _calculate_level_from_test(
-        self, test_results: Dict[str, Any]
+        self, test_results: dict[str, Any]
     ) -> KnowledgeLevel:
         """
         Calculate knowledge level from test results
@@ -597,11 +593,10 @@ JSON formatında yanıtla:
         # Knowledge level thresholds
         if percentage < 30:
             return KnowledgeLevel.BEGINNER
-        elif percentage < 50:
+        if percentage < 50:
             return KnowledgeLevel.ELEMENTARY
-        elif percentage < 70:
+        if percentage < 70:
             return KnowledgeLevel.INTERMEDIATE
-        elif percentage < 90:
+        if percentage < 90:
             return KnowledgeLevel.ADVANCED
-        else:
-            return KnowledgeLevel.EXPERT
+        return KnowledgeLevel.EXPERT

@@ -11,8 +11,9 @@ Usage:
 """
 
 import asyncio
-import os
 import json
+import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -77,7 +78,7 @@ async def demo_table_generation():
         print("\n[SAVED] Question saved to: demo_table_math.json")
 
     except Exception as e:
-        print(f"\n[ERROR] Math question generation failed: {str(e)}")
+        print(f"\n[ERROR] Math question generation failed: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -124,7 +125,7 @@ async def demo_table_generation():
         print("\n[SAVED] Question saved to: demo_table_turkish.json")
 
     except Exception as e:
-        print(f"\n[ERROR] Turkish question generation failed: {str(e)}")
+        print(f"\n[ERROR] Turkish question generation failed: {e!s}")
         import traceback
 
         traceback.print_exc()

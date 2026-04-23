@@ -3,8 +3,8 @@ Transaction Management Context Manager
 ARCHITECTURE FIX: Standardized transaction handling with automatic rollback
 """
 
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,14 +17,13 @@ logger = get_logger("transaction_context")
 class TransactionError(Exception):
     """Transaction-related errors"""
 
-    pass
 
 
 @asynccontextmanager
 async def transactional_session(
-    session: Optional[AsyncSession] = None,
+    session: AsyncSession | None = None,
     auto_commit: bool = True,
-    isolation_level: Optional[str] = None,
+    isolation_level: str | None = None,
 ) -> AsyncGenerator[AsyncSession, None]:
     """
     Transaction context manager with automatic commit/rollback
@@ -132,12 +131,12 @@ class TransactionalRepository:
                     return user
     """
 
-    def __init__(self, session: Optional[AsyncSession] = None):
+    def __init__(self, session: AsyncSession | None = None):
         self.session = session
 
     @asynccontextmanager
     async def transaction(
-        self, auto_commit: bool = True, isolation_level: Optional[str] = None
+        self, auto_commit: bool = True, isolation_level: str | None = None
     ) -> AsyncGenerator[AsyncSession, None]:
         """
         Get transaction context
@@ -167,7 +166,7 @@ class TransactionalRepository:
 
 
 # Decorator for automatic transaction management
-def transactional(auto_commit: bool = True, isolation_level: Optional[str] = None):
+def transactional(auto_commit: bool = True, isolation_level: str | None = None):
     """
     Decorator for automatic transaction management
 

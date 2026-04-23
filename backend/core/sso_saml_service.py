@@ -31,9 +31,9 @@ import secrets
 import uuid
 import zlib
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from xml.etree import ElementTree as ET
 
 from cryptography import x509
@@ -127,8 +127,8 @@ class IdPConfig:
 
     entity_id: str
     sso_url: str
-    slo_url: Optional[str] = None
-    certificate: Optional[str] = None
+    slo_url: str | None = None
+    certificate: str | None = None
     name_id_format: SAMLNameIDFormat = SAMLNameIDFormat.EMAIL
     binding: SAMLBinding = SAMLBinding.HTTP_POST
 
@@ -152,8 +152,8 @@ class SPConfig:
     acs_url: str
     slo_url: str
     metadata_url: str
-    private_key: Optional[str] = None
-    certificate: Optional[str] = None
+    private_key: str | None = None
+    certificate: str | None = None
 
 
 @dataclass
@@ -181,7 +181,7 @@ class SAMLAssertion:
     not_before: datetime
     not_on_or_after: datetime
     authn_instant: datetime
-    session_index: Optional[str] = None
+    session_index: str | None = None
     attributes: dict[str, Any] = field(default_factory=dict)
 
 
@@ -200,10 +200,10 @@ class UserAttributes:
     """
 
     email: str
-    name: Optional[str] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    role: Optional[str] = None
+    name: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    role: str | None = None
     groups: list[str] = field(default_factory=list)
     extra: dict[str, Any] = field(default_factory=dict)
 
@@ -262,9 +262,9 @@ class SAMLServiceResult:
     """
 
     success: bool
-    error: Optional[SAMLError] = None
-    error_message: Optional[str] = None
-    data: Optional[Any] = None
+    error: SAMLError | None = None
+    error_message: str | None = None
+    data: Any | None = None
 
 
 # ==================== ATTRIBUTE MAPPING ====================
@@ -328,7 +328,7 @@ class SAMLService:
             sp_config: Service Provider konfigurasyonu
         """
         self.sp_config = sp_config
-        self.idp_config: Optional[IdPConfig] = None
+        self.idp_config: IdPConfig | None = None
         self._pending_requests: dict[str, AuthnRequest] = {}
         self._processed_assertions: set[str] = set()
         self._active_sessions: dict[str, dict[str, Any]] = {}
@@ -464,7 +464,7 @@ class SAMLService:
 
     async def create_authn_request(
         self,
-        relay_state: Optional[str] = None,
+        relay_state: str | None = None,
         force_authn: bool = False,
     ) -> SAMLServiceResult:
         """SAML AuthnRequest olustur.
@@ -493,7 +493,7 @@ class SAMLService:
 
         # Request ID olustur
         request_id = f"_kiro2_{uuid.uuid4().hex}"
-        issue_instant = datetime.now(timezone.utc)
+        issue_instant = datetime.now(UTC)
 
         # Relay state yoksa olustur
         if not relay_state:
@@ -558,7 +558,7 @@ class SAMLService:
     async def process_saml_response(
         self,
         saml_response: str,
-        relay_state: Optional[str] = None,
+        relay_state: str | None = None,
     ) -> SAMLServiceResult:
         """SAML Response isle ve kullanici bilgilerini extract et.
 
@@ -641,10 +641,9 @@ class SAMLService:
                     extra={"in_response_to": in_response_to},
                 )
                 # Strict modda hata don, simdilik uyari
-                pass
 
             # Zaman kontrolu
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             if assertion.not_before > now:
                 return SAMLServiceResult(
                     success=False,
@@ -694,7 +693,7 @@ class SAMLService:
                 self._active_sessions[assertion.session_index] = {
                     "user_email": user_attrs.email,
                     "assertion_id": assertion.id,
-                    "created_at": datetime.now(timezone.utc),
+                    "created_at": datetime.now(UTC),
                 }
 
             logger.info(
@@ -760,7 +759,7 @@ class SAMLService:
 
         # Request ID olustur
         request_id = f"_kiro2_logout_{uuid.uuid4().hex}"
-        issue_instant = datetime.now(timezone.utc)
+        issue_instant = datetime.now(UTC)
 
         # LogoutRequest XML olustur
         logout_request = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -838,12 +837,11 @@ class SAMLService:
                 if "Success" in status:
                     logger.info("SLO basariyla tamamlandi")
                     return SAMLServiceResult(success=True)
-                else:
-                    return SAMLServiceResult(
-                        success=False,
-                        error=SAMLError.SLO_FAILED,
-                        error_message=f"SLO Status: {status}",
-                    )
+                return SAMLServiceResult(
+                    success=False,
+                    error=SAMLError.SLO_FAILED,
+                    error_message=f"SLO Status: {status}",
+                )
 
             return SAMLServiceResult(success=True)
 
@@ -896,7 +894,7 @@ class SAMLService:
     async def _parse_assertion(
         self,
         assertion_elem: ET.Element,
-    ) -> Optional[SAMLAssertion]:
+    ) -> SAMLAssertion | None:
         """Assertion XML'ini parse et."""
         try:
             # ID
@@ -915,8 +913,8 @@ class SAMLService:
 
             # Conditions
             conditions_elem = assertion_elem.find("saml:Conditions", SAML_NS)
-            not_before = datetime.now(timezone.utc) - timedelta(minutes=5)
-            not_on_or_after = datetime.now(timezone.utc) + timedelta(hours=1)
+            not_before = datetime.now(UTC) - timedelta(minutes=5)
+            not_on_or_after = datetime.now(UTC) + timedelta(hours=1)
 
             if conditions_elem is not None:
                 nb = conditions_elem.get("NotBefore")
@@ -935,7 +933,7 @@ class SAMLService:
 
             # AuthnStatement
             authn_elem = assertion_elem.find("saml:AuthnStatement", SAML_NS)
-            authn_instant = datetime.now(timezone.utc)
+            authn_instant = datetime.now(UTC)
             session_index = None
 
             if authn_elem is not None:
@@ -1069,7 +1067,7 @@ class SAMLService:
 
     async def _cleanup_expired_requests(self) -> None:
         """Suresi dolmus request'leri temizle."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expired = []
 
         for req_id, req in self._pending_requests.items():
@@ -1088,7 +1086,7 @@ class SAMLService:
 
 # ==================== FACTORY ====================
 
-_saml_service: Optional[SAMLService] = None
+_saml_service: SAMLService | None = None
 
 
 def get_saml_service() -> SAMLService:

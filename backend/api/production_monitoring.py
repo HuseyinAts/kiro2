@@ -12,9 +12,9 @@ Bu degisiklik monitoring.py ile cakismayi onler:
 - /api/v1/monitoring/quality → Production quality metrics (BU DOSYA)
 """
 
-from fastapi import APIRouter, Depends, HTTPException
-from typing import Optional
 from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException
 
 from core.auth_dependencies import require_role
 from services.production_quality_monitor import get_monitor
@@ -42,7 +42,7 @@ async def get_quality_stats(_: None = Depends(require_role("ADMIN"))):
         return {"success": True, "data": stats, "timestamp": datetime.now().isoformat()}
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -50,7 +50,7 @@ async def get_quality_stats(_: None = Depends(require_role("ADMIN"))):
 
 @router.get("/report")
 async def get_quality_report(
-    last_n: Optional[int] = None, _: None = Depends(require_role("ADMIN"))
+    last_n: int | None = None, _: None = Depends(require_role("ADMIN"))
 ):
     """
     Generate detailed quality report
@@ -72,7 +72,7 @@ async def get_quality_report(
         }
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -119,7 +119,7 @@ async def monitoring_health():
         }
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
@@ -161,7 +161,7 @@ async def get_recent_questions(
         }
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )

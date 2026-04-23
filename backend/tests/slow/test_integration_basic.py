@@ -1,14 +1,14 @@
 """
 Basic integration tests
 """
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
+
+from tests.fixtures.mock_data import MockResponses, MockServices
 from tests.fixtures.mock_decorators import (
     mock_all_external_apis,
 )
-from tests.fixtures.mock_data import MockServices, MockResponses
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

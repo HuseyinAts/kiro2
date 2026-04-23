@@ -13,7 +13,7 @@ Requirements:
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -47,19 +47,19 @@ class ValidationResult(BaseModel):
         le=1.0,
         description="Doğrulama skoru (0-1 arası)"
     )
-    errors: List[str] = Field(
+    errors: list[str] = Field(
         default_factory=list,
         description="Kritik hatalar listesi"
     )
-    warnings: List[str] = Field(
+    warnings: list[str] = Field(
         default_factory=list,
         description="Uyarılar listesi"
     )
-    suggestions: List[str] = Field(
+    suggestions: list[str] = Field(
         default_factory=list,
         description="İyileştirme önerileri"
     )
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Ek metadata (validator ismi, istatistikler vb.)"
     )
@@ -92,7 +92,7 @@ class AgentResponse(BaseModel):
     response_text: str = Field(
         description="Agent'ın metin yanıtı"
     )
-    response_data: Dict[str, Any] = Field(
+    response_data: dict[str, Any] = Field(
         default_factory=dict,
         description="Agent'a özgü yapılandırılmış veri"
     )
@@ -100,7 +100,7 @@ class AgentResponse(BaseModel):
         default_factory=datetime.utcnow,
         description="Yanıt zamanı"
     )
-    context: Optional[Dict[str, Any]] = Field(
+    context: dict[str, Any] | None = Field(
         default=None,
         description="Ek bağlam bilgisi (öğrenci seviyesi, sınıf vb.)"
     )
@@ -123,18 +123,18 @@ class ValidationReport(BaseModel):
     action: ValidationAction = Field(
         description="Önerilen aksiyon"
     )
-    validation_results: Dict[str, Dict[str, Any]] = Field(
+    validation_results: dict[str, dict[str, Any]] = Field(
         description="Her validator'ın detaylı sonuçları"
     )
-    errors: List[str] = Field(
+    errors: list[str] = Field(
         default_factory=list,
         description="Tüm hatalar"
     )
-    warnings: List[str] = Field(
+    warnings: list[str] = Field(
         default_factory=list,
         description="Tüm uyarılar"
     )
-    suggestions: List[str] = Field(
+    suggestions: list[str] = Field(
         default_factory=list,
         description="Tüm öneriler"
     )
@@ -194,7 +194,6 @@ class BaseResponseValidator(ABC):
         Raises:
             ValidationError: Doğrulama işlemi başarısız olursa
         """
-        pass
 
     @abstractmethod
     def get_validator_name(self) -> str:
@@ -204,13 +203,12 @@ class BaseResponseValidator(ABC):
         Returns:
             str: Validator ismi (örn: "LearningPathValidator")
         """
-        pass
 
     def _create_success_result(
         self,
         score: float = 1.0,
-        warnings: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        warnings: list[str] | None = None,
+        metadata: dict[str, Any] | None = None
     ) -> ValidationResult:
         """
         Başarılı doğrulama sonucu oluştur.
@@ -237,11 +235,11 @@ class BaseResponseValidator(ABC):
 
     def _create_failure_result(
         self,
-        errors: List[str],
+        errors: list[str],
         score: float = 0.0,
-        warnings: Optional[List[str]] = None,
-        suggestions: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        warnings: list[str] | None = None,
+        suggestions: list[str] | None = None,
+        metadata: dict[str, Any] | None = None
     ) -> ValidationResult:
         """
         Başarısız doğrulama sonucu oluştur.
@@ -280,19 +278,15 @@ class ValidationError(Exception):
 
 class ValidationTimeoutError(ValidationError):
     """Doğrulama zaman aşımı hatası"""
-    pass
 
 
 class ExternalAPIError(ValidationError):
     """Harici API hatası (Wikipedia, MEB vb.)"""
-    pass
 
 
 class AgentTypeError(ValidationError):
     """Bilinmeyen agent tipi hatası"""
-    pass
 
 
 class HistoryNotFoundError(ValidationError):
     """Yanıt geçmişi bulunamadı hatası"""
-    pass

@@ -6,7 +6,6 @@ import asyncio
 import json
 import logging
 from datetime import datetime
-from typing import Dict, List
 
 from fastapi import WebSocket, WebSocketDisconnect
 
@@ -17,10 +16,10 @@ class ConnectionManager:
     """Manages WebSocket connections"""
 
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
-        self.user_connections: Dict[str, WebSocket] = {}
-        self.exam_connections: Dict[str, List[WebSocket]] = {}  # sinav_id -> websockets
-        self.exam_timers: Dict[str, asyncio.Task] = {}  # sinav_id -> timer task
+        self.active_connections: list[WebSocket] = []
+        self.user_connections: dict[str, WebSocket] = {}
+        self.exam_connections: dict[str, list[WebSocket]] = {}  # sinav_id -> websockets
+        self.exam_timers: dict[str, asyncio.Task] = {}  # sinav_id -> timer task
 
     async def connect(self, websocket: WebSocket, client_id: str = None):
         """Accept new connection"""
@@ -61,7 +60,6 @@ class ConnectionManager:
         except (WebSocketDisconnect, ConnectionError, RuntimeError) as e:
             # Connection might be closed
             logger.debug(f"WebSocket send failed: {e}")
-            pass
 
     async def send_json_message(self, data: dict, websocket: WebSocket):
         """Send JSON message to specific client"""
@@ -70,7 +68,6 @@ class ConnectionManager:
         except (WebSocketDisconnect, ConnectionError, RuntimeError) as e:
             # Connection might be closed
             logger.debug(f"WebSocket JSON send failed: {e}")
-            pass
 
     async def broadcast_to_exam(self, sinav_id: str, data: dict):
         """Broadcast message to all clients in specific exam"""

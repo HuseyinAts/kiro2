@@ -13,24 +13,23 @@ Tools:
 8. zemberek_health - Health check
 """
 
-import logging
 import asyncio
-from typing import Optional
+import logging
 
 import httpx
 from fastmcp import FastMCP
 
+from .cache.redis_cache import ZemberekCache, close_cache, get_cache
 from .config import get_config
-from .cache.redis_cache import get_cache, close_cache, ZemberekCache
 from .tools import (
-    MorphologyHandler,
+    HealthHandler,
     LemmatizationHandler,
+    MorphologyHandler,
+    NERHandler,
+    NormalizationHandler,
+    SegmentationHandler,
     SpellCheckHandler,
     TokenizationHandler,
-    NERHandler,
-    SegmentationHandler,
-    NormalizationHandler,
-    HealthHandler,
 )
 
 # Configure logging
@@ -44,8 +43,8 @@ logger = logging.getLogger("zemberek_nlp")
 mcp = FastMCP("Zemberek NLP")
 
 # Global state
-_http_client: Optional[httpx.AsyncClient] = None
-_cache: Optional[ZemberekCache] = None
+_http_client: httpx.AsyncClient | None = None
+_cache: ZemberekCache | None = None
 _config = get_config()
 
 
@@ -60,7 +59,7 @@ async def get_http_client() -> httpx.AsyncClient:
     return _http_client
 
 
-async def get_cache_instance() -> Optional[ZemberekCache]:
+async def get_cache_instance() -> ZemberekCache | None:
     """Get or create cache instance"""
     global _cache
     if _cache is None and _config.cache_enabled:
@@ -122,7 +121,7 @@ async def zemberek_analyze(text: str) -> str:
         return _format_result(result)
     except Exception as e:
         logger.error(f"[zemberek_analyze] Error: {e}")
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 # =============================================================================
@@ -168,7 +167,7 @@ async def zemberek_lemmatize(text: str, batch: bool = False) -> str:
         return _format_result(result)
     except Exception as e:
         logger.error(f"[zemberek_lemmatize] Error: {e}")
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 # =============================================================================
@@ -212,7 +211,7 @@ async def zemberek_spell_check(text: str) -> str:
         return _format_result(result)
     except Exception as e:
         logger.error(f"[zemberek_spell_check] Error: {e}")
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 # =============================================================================
@@ -264,7 +263,7 @@ async def zemberek_tokenize(text: str, use_subword: bool = False) -> str:
         return _format_result(result)
     except Exception as e:
         logger.error(f"[zemberek_tokenize] Error: {e}")
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 # =============================================================================
@@ -307,7 +306,7 @@ async def zemberek_ner(text: str) -> str:
         return _format_result(result)
     except Exception as e:
         logger.error(f"[zemberek_ner] Error: {e}")
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 # =============================================================================
@@ -349,7 +348,7 @@ async def zemberek_segment_sentences(text: str) -> str:
         return _format_result(result)
     except Exception as e:
         logger.error(f"[zemberek_segment_sentences] Error: {e}")
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 # =============================================================================
@@ -392,7 +391,7 @@ async def zemberek_normalize(text: str) -> str:
         return _format_result(result)
     except Exception as e:
         logger.error(f"[zemberek_normalize] Error: {e}")
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 # =============================================================================
@@ -425,7 +424,7 @@ async def zemberek_health() -> str:
         return _format_result(result)
     except Exception as e:
         logger.error(f"[zemberek_health] Error: {e}")
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 # =============================================================================

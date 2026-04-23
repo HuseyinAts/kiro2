@@ -14,10 +14,10 @@ Features:
 import time
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import redis
-from fastapi import FastAPI, Request, HTTPException, status
+from fastapi import FastAPI, HTTPException, Request, status
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -98,25 +98,24 @@ class AdaptiveRateLimiter:
 
     def __init__(
         self,
-        redis_client: Optional[redis.Redis] = None,
-        config: Optional[AdaptiveRateLimitConfig] = None,
+        redis_client: redis.Redis | None = None,
+        config: AdaptiveRateLimitConfig | None = None,
     ):
         self.redis = redis_client
         self.config = config or AdaptiveRateLimitConfig()
         self.mode = "normal"  # normal, suspicious, attack
         self.mode_changed_at = time.time()
 
-    def get_current_limits(self, ip: str) -> Dict[str, int]:
+    def get_current_limits(self, ip: str) -> dict[str, int]:
         """Get current rate limits based on mode"""
         if self.mode == "attack":
             return {"rpm": self.config.attack_rpm, "rph": self.config.attack_rph}
-        elif self.mode == "suspicious":
+        if self.mode == "suspicious":
             return {
                 "rpm": self.config.suspicious_rpm,
                 "rph": self.config.suspicious_rph,
             }
-        else:
-            return {"rpm": self.config.normal_rpm, "rph": self.config.normal_rph}
+        return {"rpm": self.config.normal_rpm, "rph": self.config.normal_rph}
 
     def analyze_traffic(self):
         """Analyze global traffic and adjust mode"""
@@ -145,11 +144,10 @@ class AdaptiveRateLimiter:
                     logger.warning(
                         f"[DDoS PROTECTION] Switched to SUSPICIOUS mode - {requests_last_minute} req/min"
                     )
-            else:
-                # Cool down period: stay in protective mode for at least 5 minutes
-                if self.mode != "normal" and (now - self.mode_changed_at) > 300:
-                    self.mode = "normal"
-                    logger.info("[DDoS PROTECTION] Returned to NORMAL mode")
+            # Cool down period: stay in protective mode for at least 5 minutes
+            elif self.mode != "normal" and (now - self.mode_changed_at) > 300:
+                self.mode = "normal"
+                logger.info("[DDoS PROTECTION] Returned to NORMAL mode")
 
         except Exception as e:
             logger.error(f"Traffic analysis error: {e}")
@@ -161,11 +159,11 @@ class AdaptiveRateLimiter:
 class IPAccessControl:
     """IP-based access control"""
 
-    def __init__(self, redis_client: Optional[redis.Redis] = None):
+    def __init__(self, redis_client: redis.Redis | None = None):
         self.redis = redis_client
-        self.whitelist: Set[str] = set()
-        self.blacklist: Set[str] = set()
-        self.temp_blacklist: Dict[str, float] = {}  # IP -> expiry time
+        self.whitelist: set[str] = set()
+        self.blacklist: set[str] = set()
+        self.temp_blacklist: dict[str, float] = {}  # IP -> expiry time
 
         # Load from environment/config
         self._load_static_lists()
@@ -210,13 +208,12 @@ class IPAccessControl:
         if ip in self.temp_blacklist:
             if time.time() < self.temp_blacklist[ip]:
                 return True
-            else:
-                del self.temp_blacklist[ip]
+            del self.temp_blacklist[ip]
 
         return False
 
     def block_ip(
-        self, ip: str, duration: Optional[int] = None, reason: str = "DDoS protection"
+        self, ip: str, duration: int | None = None, reason: str = "DDoS protection"
     ):
         """
         Block IP address
@@ -260,11 +257,11 @@ class IPAccessControl:
 class RequestPatternAnalyzer:
     """Analyze request patterns for anomaly detection"""
 
-    def __init__(self, redis_client: Optional[redis.Redis] = None):
+    def __init__(self, redis_client: redis.Redis | None = None):
         self.redis = redis_client
-        self.patterns: Dict[str, List[Dict]] = defaultdict(list)
+        self.patterns: dict[str, list[dict]] = defaultdict(list)
 
-    def analyze(self, request: Request, ip: str) -> Dict[str, Any]:
+    def analyze(self, request: Request, ip: str) -> dict[str, Any]:
         """
         Analyze request for suspicious patterns
 
@@ -317,7 +314,7 @@ class RequestPatternAnalyzer:
             "is_attack": suspicion_score >= 60,
         }
 
-    def _get_recent_endpoints(self, ip: str) -> List[str]:
+    def _get_recent_endpoints(self, ip: str) -> list[str]:
         """Get recently accessed endpoints for IP"""
         if self.redis:
             key = f"pattern:endpoints:{ip}"
@@ -356,7 +353,7 @@ class DDoSProtectionMiddleware:
     def __init__(
         self,
         app: FastAPI,
-        redis_client: Optional[redis.Redis] = None,
+        redis_client: redis.Redis | None = None,
         enable_adaptive: bool = True,
         enable_pattern_analysis: bool = True,
     ):
@@ -429,11 +426,11 @@ class DDoSProtectionMiddleware:
 
 def setup_ddos_protection(
     app: FastAPI,
-    redis_url: Optional[str] = None,
+    redis_url: str | None = None,
     enable_slowapi: bool = True,
     enable_adaptive: bool = True,
     enable_pattern_analysis: bool = True,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Setup comprehensive DDoS protection
 
@@ -508,12 +505,12 @@ def rate_limit(limit: str):
 # ==================== EXPORT ====================
 
 __all__ = [
+    "AdaptiveRateLimiter",
+    "DDoSProtectionMiddleware",
+    "IPAccessControl",
+    "RequestPatternAnalyzer",
+    "get_rate_limit_key",
     "limiter",
     "rate_limit",
     "setup_ddos_protection",
-    "DDoSProtectionMiddleware",
-    "IPAccessControl",
-    "AdaptiveRateLimiter",
-    "RequestPatternAnalyzer",
-    "get_rate_limit_key",
 ]

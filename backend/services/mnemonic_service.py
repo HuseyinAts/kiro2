@@ -5,8 +5,6 @@ AI-generated Turkish memory aids for frequently-missed questions.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,7 +18,7 @@ async def get_mnemonic(
     *,
     db: AsyncSession,
     question_id: str,
-) -> Optional[dict]:
+) -> dict | None:
     """Get the mnemonic hint for a question, if available."""
     # Note: mnemonic_hint and is_active columns not in DB yet
     # Using fallback approach - get question without these columns
@@ -100,7 +98,7 @@ async def generate_mnemonic(
         }
     except Exception as e:
         logger.error(f"Mnemonic generation failed: {e}")
-        return {"error": f"Mnemonic üretilemedi: {str(e)}"}
+        return {"error": f"Mnemonic üretilemedi: {e!s}"}
 
 
 def _build_mnemonic_prompt(

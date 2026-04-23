@@ -5,7 +5,7 @@ database.py'den ayrıştırıldı (2026-01-10)
 
 import uuid
 from datetime import date, datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     JSON,
@@ -66,10 +66,10 @@ class FSRSCard(Base):
     # Durum
     state: Mapped[str] = mapped_column(String(20), default="new")
     due_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    last_review: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    last_review: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Türk öğrenci özel faktörleri
-    cultural_factors: Mapped[Optional[dict]] = mapped_column(JSON)
+    cultural_factors: Mapped[dict | None] = mapped_column(JSON)
 
     # Sistem alanları
     created_at: Mapped[datetime] = mapped_column(
@@ -81,7 +81,7 @@ class FSRSCard(Base):
 
     # İlişkiler
     student: Mapped["User"] = relationship("User", back_populates="fsrs_cards")
-    reviews: Mapped[List["FSRSReview"]] = relationship(
+    reviews: Mapped[list["FSRSReview"]] = relationship(
         "FSRSReview", back_populates="card"
     )
 
@@ -157,7 +157,7 @@ class FSRSSchedule(Base):
     retention_rate: Mapped[float] = mapped_column(Float, default=0.0)
 
     # Türk öğrenci adaptasyonu
-    cultural_period: Mapped[Optional[str]] = mapped_column(String(50))
+    cultural_period: Mapped[str | None] = mapped_column(String(50))
     adjustment_factor: Mapped[float] = mapped_column(Float, default=1.0)
 
     # İlişkiler
@@ -228,7 +228,7 @@ class FSRSStudySession(Base):
     average_response_time: Mapped[float] = mapped_column(Float, default=0.0)
 
     # Kültürel bağlam
-    cultural_context: Mapped[Optional[dict]] = mapped_column(JSON)
+    cultural_context: Mapped[dict | None] = mapped_column(JSON)
 
     # İlişkiler
     student: Mapped["User"] = relationship("User", back_populates="fsrs_study_sessions")

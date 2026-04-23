@@ -165,7 +165,6 @@ def get_csp_policy(environment: str = "production") -> str:
     """
     if environment == "development":
         return CSP_POLICIES["development"]
-    elif environment == "staging":
+    if environment == "staging":
         return CSP_POLICIES["moderate"]
-    else:
-        return CSP_POLICIES["strict"]
+    return CSP_POLICIES["strict"]

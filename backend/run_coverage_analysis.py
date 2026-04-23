@@ -3,12 +3,11 @@ Test Coverage Runner ve Reporter
 Teknofest 2025 - YKS Hazırlık Platformu
 """
 
-import sys
 import json
 import subprocess
-from pathlib import Path
+import sys
 from datetime import datetime
-from typing import Dict
+from pathlib import Path
 
 
 class CoverageRunner:
@@ -23,7 +22,7 @@ class CoverageRunner:
         # Rapor dizinini oluştur
         self.report_dir.mkdir(exist_ok=True)
 
-    def run_tests_with_coverage(self) -> Dict:
+    def run_tests_with_coverage(self) -> dict:
         """Testleri coverage ile çalıştır"""
         print("\n" + "=" * 80)
         print("🧪 TEST COVERAGE ÇALIŞTIRILIYOR")
@@ -75,7 +74,7 @@ class CoverageRunner:
             # Coverage.json oku
             coverage_file = self.backend_dir / "coverage.json"
             if coverage_file.exists():
-                with open(coverage_file, "r") as f:
+                with open(coverage_file) as f:
                     coverage_data = json.load(f)
 
                 return coverage_data
@@ -84,7 +83,7 @@ class CoverageRunner:
             print(f"❌ Hata: {e}")
             return {}
 
-    def analyze_coverage(self, coverage_data: Dict) -> Dict:
+    def analyze_coverage(self, coverage_data: dict) -> dict:
         """Coverage verilerini analiz et"""
         print("\n" + "=" * 80)
         print("📊 COVERAGE ANALİZİ")
@@ -146,7 +145,7 @@ class CoverageRunner:
 
         return analysis
 
-    def generate_detailed_report(self, analysis: Dict):
+    def generate_detailed_report(self, analysis: dict):
         """Detaylı rapor oluştur"""
         report_file = self.report_dir / f"coverage_report_{self.timestamp}.md"
 
@@ -308,7 +307,7 @@ class CoverageRunner:
         # README'ye ekle
         readme_path = self.backend_dir / "README.md"
         if readme_path.exists():
-            with open(readme_path, "r", encoding="utf-8") as f:
+            with open(readme_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Badge'i güncelle veya ekle
@@ -338,7 +337,7 @@ class CoverageRunner:
 
         if not coverage_data:
             print("❌ Coverage verisi alınamadı!")
-            return
+            return None
 
         # 2. Analiz yap
         analysis = self.analyze_coverage(coverage_data)
@@ -364,18 +363,17 @@ class CoverageRunner:
             print("🎉 BAŞARILI! Coverage hedefi aşıldı!")
             print("=" * 80)
             return True
-        else:
-            improvement_needed = 80 - analysis["total_coverage"]
-            print("\n" + "=" * 80)
-            print(f"⚠️ Coverage hedefine %{improvement_needed:.2f} kaldı!")
-            print("=" * 80)
+        improvement_needed = 80 - analysis["total_coverage"]
+        print("\n" + "=" * 80)
+        print(f"⚠️ Coverage hedefine %{improvement_needed:.2f} kaldı!")
+        print("=" * 80)
 
-            # En kritik 5 modülü göster
-            print("\n🎯 Öncelikli olarak test edilmesi gereken modüller:")
-            for i, module in enumerate(analysis["zero_coverage_modules"][:5], 1):
-                print(f"{i}. {module['name']}")
+        # En kritik 5 modülü göster
+        print("\n🎯 Öncelikli olarak test edilmesi gereken modüller:")
+        for i, module in enumerate(analysis["zero_coverage_modules"][:5], 1):
+            print(f"{i}. {module['name']}")
 
-            return False
+        return False
 
 
 if __name__ == "__main__":

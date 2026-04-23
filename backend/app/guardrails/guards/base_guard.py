@@ -43,7 +43,6 @@ class BaseGuard(ABC):
         Returns:
             GuardResult with status and details
         """
-        pass
 
     @abstractmethod
     def reset(self) -> None:
@@ -51,7 +50,6 @@ class BaseGuard(ABC):
 
         Called at the start of each new loop execution.
         """
-        pass
 
     @property
     def enabled(self) -> bool:

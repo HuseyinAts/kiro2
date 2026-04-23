@@ -6,18 +6,19 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-from typing import Optional, Dict, Any, List
+import asyncio
+import json
 import time
 import uuid
-import json
-import asyncio
+from typing import Any
+
 from openai import AsyncOpenAI, OpenAI
 from openai.types.chat import ChatCompletion
 
-from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
-from services.llm.multi_llm_config import LLMProvider, LLMModelConfig, LLMCapability
-from services.llm.turkish_optimizer import TurkishPromptOptimizer
 from monitoring.token_usage_tracker import get_tracker
+from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
+from services.llm.multi_llm_config import LLMCapability, LLMModelConfig, LLMProvider
+from services.llm.turkish_optimizer import TurkishPromptOptimizer
 
 
 class OpenAIProvider(BaseLLMProvider):
@@ -140,9 +141,9 @@ class OpenAIProvider(BaseLLMProvider):
             )
 
         except Exception as e:
-            raise RuntimeError(f"OpenAI API error: {str(e)}")
+            raise RuntimeError(f"OpenAI API error: {e!s}")
 
-    async def generate_batch(self, requests: List[LLMRequest]) -> List[LLMResponse]:
+    async def generate_batch(self, requests: list[LLMRequest]) -> list[LLMResponse]:
         """
         Generate text for multiple requests concurrently
 
@@ -175,7 +176,7 @@ class OpenAIProvider(BaseLLMProvider):
         return capability in self.config.capabilities
 
     async def fine_tune(
-        self, training_file: str, validation_file: Optional[str] = None, **kwargs
+        self, training_file: str, validation_file: str | None = None, **kwargs
     ) -> str:
         """
         Fine-tune GPT-4 model
@@ -234,14 +235,14 @@ class OpenAIProvider(BaseLLMProvider):
                     self.config.fine_tuned_model_id = fine_tuned_model_id
                     return fine_tuned_model_id
 
-                elif job_status.status in ["failed", "cancelled"]:
+                if job_status.status in ["failed", "cancelled"]:
                     raise RuntimeError(f"Fine-tuning {job_status.status}")
 
                 # Wait before checking again
                 await asyncio.sleep(60)
 
         except Exception as e:
-            raise RuntimeError(f"Fine-tuning error: {str(e)}")
+            raise RuntimeError(f"Fine-tuning error: {e!s}")
 
     async def create_osym_question(
         self,
@@ -250,7 +251,7 @@ class OpenAIProvider(BaseLLMProvider):
         difficulty: float,
         bloom_level: int,
         exam_type: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate ÖSYM question using fine-tuned model
 
@@ -300,7 +301,7 @@ class OpenAIProvider(BaseLLMProvider):
 
     async def generate_distractors(
         self, question_stem: str, correct_answer: str, topic: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate distractors for ÖSYM question
 
@@ -339,8 +340,8 @@ class OpenAIProvider(BaseLLMProvider):
             raise ValueError(f"Failed to parse JSON response: {response.content}")
 
     async def score_question_quality(
-        self, question_stem: str, options: List[str], correct_answer: int
-    ) -> Dict[str, Any]:
+        self, question_stem: str, options: list[str], correct_answer: int
+    ) -> dict[str, Any]:
         """
         Score ÖSYM question quality
 

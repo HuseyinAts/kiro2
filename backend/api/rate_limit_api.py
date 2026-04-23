@@ -7,18 +7,14 @@ Endpoints for:
 - Admin rate limit management
 - Rate limit statistics
 """
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.advanced_rate_limiter import UserTier, get_rate_limiter
 from core.database import get_async_session
 from core.jwt_auth import TokenPayload, get_current_user, require_admin
-from core.advanced_rate_limiter import (
-    UserTier,
-    get_rate_limiter
-)
 from core.rate_limit_middleware import get_rate_limit_status
 from core.structured_logger import get_logger
 
@@ -51,8 +47,8 @@ class RateLimitResetResponse(BaseModel):
     """Rate limit reset confirmation"""
     success: bool
     message: str
-    user_id: Optional[str] = None
-    endpoint: Optional[str] = None
+    user_id: str | None = None
+    endpoint: str | None = None
 
 
 # ============================================================================
@@ -204,7 +200,7 @@ async def get_my_tier(
 @router.post("/reset", response_model=RateLimitResetResponse)
 async def reset_user_rate_limit(
     user_id: str,
-    endpoint: Optional[str] = None,
+    endpoint: str | None = None,
     current_user: TokenPayload = Depends(require_admin),
     db: AsyncSession = Depends(get_async_session)
 ):
@@ -248,31 +244,30 @@ async def reset_user_rate_limit(
                 "user_id": user_id,
                 "endpoint": endpoint
             }
-        else:
-            # Reset all endpoints for user
-            # Get all endpoint patterns
-            endpoints_to_reset = list(limiter.endpoint_limits.keys())
+        # Reset all endpoints for user
+        # Get all endpoint patterns
+        endpoints_to_reset = list(limiter.endpoint_limits.keys())
 
-            for ep in endpoints_to_reset:
-                await limiter.reset_rate_limit(
-                    identifier=user_id,
-                    endpoint=ep,
-                    tier=tier
-                )
-
-            logger.info(
-                "rate_limit_full_reset_by_admin",
-                admin_id=current_user.sub,
-                target_user_id=user_id,
-                endpoints_reset=len(endpoints_to_reset)
+        for ep in endpoints_to_reset:
+            await limiter.reset_rate_limit(
+                identifier=user_id,
+                endpoint=ep,
+                tier=tier
             )
 
-            return {
-                "success": True,
-                "message": f"All rate limits reset for user {user_id}",
-                "user_id": user_id,
-                "endpoint": "all"
-            }
+        logger.info(
+            "rate_limit_full_reset_by_admin",
+            admin_id=current_user.sub,
+            target_user_id=user_id,
+            endpoints_reset=len(endpoints_to_reset)
+        )
+
+        return {
+            "success": True,
+            "message": f"All rate limits reset for user {user_id}",
+            "user_id": user_id,
+            "endpoint": "all"
+        }
 
     except HTTPException:
         raise

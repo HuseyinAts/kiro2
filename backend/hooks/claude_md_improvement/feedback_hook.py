@@ -11,20 +11,20 @@ Exit Codes (Daisy Stanton):
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 from collections import defaultdict
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from typing import Any
 
 from ..base import BaseHook
-from ..models import QualityCheckResult, HookConfig
+from ..models import HookConfig, QualityCheckResult
 from .models import (
+    ExitCodeResult,
     FeedbackRecord,
     FeedbackType,
+    ImprovementTrigger,
     OutcomeType,
     RuleEffectiveness,
-    ImprovementTrigger,
-    ExitCodeResult,
 )
 
 
@@ -51,8 +51,8 @@ class FeedbackHook(BaseHook):
 
     def __init__(
         self,
-        config: Optional[HookConfig] = None,
-        storage_path: Optional[Path] = None,
+        config: HookConfig | None = None,
+        storage_path: Path | None = None,
         improvement_threshold: float = 0.6,
     ):
         """
@@ -68,14 +68,14 @@ class FeedbackHook(BaseHook):
         self.improvement_threshold = improvement_threshold
 
         # In-memory stores (production'da Redis/PostgreSQL kullanılacak)
-        self._feedback_store: List[FeedbackRecord] = []
-        self._effectiveness_cache: Dict[str, RuleEffectiveness] = {}
-        self._triggers: List[ImprovementTrigger] = []
+        self._feedback_store: list[FeedbackRecord] = []
+        self._effectiveness_cache: dict[str, RuleEffectiveness] = {}
+        self._triggers: list[ImprovementTrigger] = []
 
         # Rolling window
         self.window_days = 30
 
-    async def run(self, files: List[str]) -> QualityCheckResult:
+    async def run(self, files: list[str]) -> QualityCheckResult:
         """
         Feedback hook'u çalıştır.
 
@@ -111,7 +111,7 @@ class FeedbackHook(BaseHook):
         except Exception as e:
             execution_time = self._stop_timer()
             return self._create_error_result(
-                errors=[f"Feedback analizi başarısız: {str(e)}"],
+                errors=[f"Feedback analizi başarısız: {e!s}"],
                 files_checked=0,
                 execution_time=execution_time,
             )
@@ -120,9 +120,9 @@ class FeedbackHook(BaseHook):
         self,
         task_id: str,
         success: bool,
-        rule_id: Optional[str] = None,
+        rule_id: str | None = None,
         execution_time: float = 0.0,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> ExitCodeResult:
         """
         Task outcome'u kaydet.
@@ -160,8 +160,8 @@ class FeedbackHook(BaseHook):
         self,
         task_id: str,
         rating: int,
-        comment: Optional[str] = None,
-        rule_id: Optional[str] = None,
+        comment: str | None = None,
+        rule_id: str | None = None,
     ) -> ExitCodeResult:
         """
         Kullanıcı feedback'i kaydet.
@@ -208,7 +208,7 @@ class FeedbackHook(BaseHook):
         task_id: str,
         retry_count: int = 0,
         edit_frequency: int = 0,
-        rule_id: Optional[str] = None,
+        rule_id: str | None = None,
     ) -> ExitCodeResult:
         """
         Implicit feedback kaydet.
@@ -256,7 +256,7 @@ class FeedbackHook(BaseHook):
         test_passed: bool,
         lint_passed: bool = True,
         type_check_passed: bool = True,
-        rule_id: Optional[str] = None,
+        rule_id: str | None = None,
     ) -> ExitCodeResult:
         """
         Test sonuçlarını kaydet (Boris Cherny verification loop).
@@ -315,8 +315,8 @@ class FeedbackHook(BaseHook):
         self,
         rule_id: str,
         success: bool,
-        explicit_score: Optional[float] = None,
-        implicit_score: Optional[float] = None,
+        explicit_score: float | None = None,
+        implicit_score: float | None = None,
     ) -> None:
         """Rule effectiveness güncelle."""
         if rule_id not in self._effectiveness_cache:
@@ -346,20 +346,20 @@ class FeedbackHook(BaseHook):
             )
 
         effectiveness.calculate_effectiveness()
-        effectiveness.last_updated = datetime.now(timezone.utc)
+        effectiveness.last_updated = datetime.now(UTC)
 
-    async def _analyze_effectiveness(self) -> Dict[str, float]:
+    async def _analyze_effectiveness(self) -> dict[str, float]:
         """
         Tüm kuralların effectiveness'ını analiz et.
 
         Returns:
             İyileştirme gerektiren kural ID'leri ve skorları
         """
-        rules_needing_improvement: Dict[str, float] = {}
+        rules_needing_improvement: dict[str, float] = {}
 
         for rule_id, effectiveness in self._effectiveness_cache.items():
             # 30-day window kontrolü
-            cutoff = datetime.now(timezone.utc) - timedelta(days=self.window_days)
+            cutoff = datetime.now(UTC) - timedelta(days=self.window_days)
             if effectiveness.last_updated < cutoff:
                 continue
 
@@ -387,11 +387,11 @@ class FeedbackHook(BaseHook):
         self._triggers.append(trigger)
         return trigger
 
-    def get_effectiveness(self, rule_id: str) -> Optional[RuleEffectiveness]:
+    def get_effectiveness(self, rule_id: str) -> RuleEffectiveness | None:
         """Belirli bir kuralın effectiveness'ını getir."""
         return self._effectiveness_cache.get(rule_id)
 
-    def get_pending_triggers(self) -> List[ImprovementTrigger]:
+    def get_pending_triggers(self) -> list[ImprovementTrigger]:
         """İşlenmemiş trigger'ları getir."""
         return [t for t in self._triggers if not t.processed]
 
@@ -403,21 +403,21 @@ class FeedbackHook(BaseHook):
         total = sum(e.effectiveness_score for e in self._effectiveness_cache.values())
         return total / len(self._effectiveness_cache)
 
-    async def get_feedback_summary(self) -> Dict[str, Any]:
+    async def get_feedback_summary(self) -> dict[str, Any]:
         """Feedback özeti getir."""
         # 30-day window
-        cutoff = datetime.now(timezone.utc) - timedelta(days=self.window_days)
+        cutoff = datetime.now(UTC) - timedelta(days=self.window_days)
         recent_feedback = [
             f for f in self._feedback_store if f.created_at >= cutoff
         ]
 
         # Outcome dağılımı
-        outcome_counts: Dict[str, int] = defaultdict(int)
+        outcome_counts: dict[str, int] = defaultdict(int)
         for f in recent_feedback:
             outcome_counts[f.outcome.value] += 1
 
         # Feedback type dağılımı
-        type_counts: Dict[str, int] = defaultdict(int)
+        type_counts: dict[str, int] = defaultdict(int)
         for f in recent_feedback:
             type_counts[f.feedback_type.value] += 1
 

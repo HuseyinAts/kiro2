@@ -10,9 +10,9 @@ Bu sistem:
 """
 
 import math
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -70,8 +70,8 @@ class IRTParameters(BaseModel):
 
     # Kalibrasyon bilgileri
     calibration_sample_size: int = 0
-    calibration_date: Optional[datetime] = None
-    fit_statistics: Dict[str, float] = Field(default_factory=dict)
+    calibration_date: datetime | None = None
+    fit_statistics: dict[str, float] = Field(default_factory=dict)
 
 
 class QuestionMetadata(BaseModel):
@@ -80,24 +80,24 @@ class QuestionMetadata(BaseModel):
     question_id: str
     subject: str  # Ders
     topic: str  # Konu
-    subtopic: Optional[str] = None  # Alt konu
+    subtopic: str | None = None  # Alt konu
 
     # MEB Müfredat
     grade_level: str  # Sınıf seviyesi
-    learning_outcomes: List[str] = Field(default_factory=list)  # Kazanımlar
+    learning_outcomes: list[str] = Field(default_factory=list)  # Kazanımlar
 
     # ÖSYM bilgileri
     exam_type: str  # tyt, ayt, lgs, vb.
     question_type: str  # test, açık uçlu
 
     # Zorluk ve IRT
-    irt_params: Optional[IRTParameters] = None
+    irt_params: IRTParameters | None = None
     estimated_difficulty: float = Field(default=0.5, ge=0, le=1)  # 0-1 arası
 
     # İstatistikler
     times_used: int = 0
-    avg_correct_rate: Optional[float] = None
-    discrimination_index: Optional[float] = None
+    avg_correct_rate: float | None = None
+    discrimination_index: float | None = None
 
 
 class ValidationResult(BaseModel):
@@ -109,8 +109,8 @@ class ValidationResult(BaseModel):
     passed: bool
 
     message: str
-    details: Dict[str, Any] = Field(default_factory=dict)
-    suggestions: List[str] = Field(default_factory=list)
+    details: dict[str, Any] = Field(default_factory=dict)
+    suggestions: list[str] = Field(default_factory=list)
 
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
@@ -127,11 +127,11 @@ class ExamBlueprint(BaseModel):
     target_discrimination: float = 1.0  # Ortalama ayırt edicilik
 
     # Konu dağılımı hedefleri
-    topic_distribution: Dict[str, int]  # {"Matematik": 40, "Türkçe": 40}
-    subtopic_distribution: Dict[str, int] = Field(default_factory=dict)
+    topic_distribution: dict[str, int]  # {"Matematik": 40, "Türkçe": 40}
+    subtopic_distribution: dict[str, int] = Field(default_factory=dict)
 
     # Zorluk dağılımı hedefleri
-    difficulty_distribution: Dict[DifficultyLevel, float] = Field(
+    difficulty_distribution: dict[DifficultyLevel, float] = Field(
         default_factory=lambda: {
             DifficultyLevel.VERY_EASY: 0.1,
             DifficultyLevel.EASY: 0.2,
@@ -142,7 +142,7 @@ class ExamBlueprint(BaseModel):
     )
 
     # Kazanım hedefleri
-    required_learning_outcomes: List[str] = Field(default_factory=list)
+    required_learning_outcomes: list[str] = Field(default_factory=list)
     min_outcomes_coverage: float = 0.8  # En az %80 kazanım kapsama
 
 
@@ -172,7 +172,7 @@ class IRTCalibrationValidator:
 
     def validate_irt_parameters(
         self, question: QuestionMetadata
-    ) -> List[ValidationResult]:
+    ) -> list[ValidationResult]:
         """IRT parametrelerini doğrula"""
 
         results = []
@@ -369,18 +369,17 @@ class DifficultyBalanceValidator:
         """Zorluk değerini seviyeye dönüştür"""
         if difficulty < 0.2:
             return DifficultyLevel.VERY_EASY
-        elif difficulty < 0.4:
+        if difficulty < 0.4:
             return DifficultyLevel.EASY
-        elif difficulty < 0.6:
+        if difficulty < 0.6:
             return DifficultyLevel.MEDIUM
-        elif difficulty < 0.8:
+        if difficulty < 0.8:
             return DifficultyLevel.HARD
-        else:
-            return DifficultyLevel.VERY_HARD
+        return DifficultyLevel.VERY_HARD
 
     def validate_difficulty_distribution(
-        self, questions: List[QuestionMetadata], blueprint: ExamBlueprint
-    ) -> List[ValidationResult]:
+        self, questions: list[QuestionMetadata], blueprint: ExamBlueprint
+    ) -> list[ValidationResult]:
         """Sınav sorularının zorluk dağılımını doğrula"""
 
         results = []
@@ -397,7 +396,7 @@ class DifficultyBalanceValidator:
             return results
 
         # Mevcut zorluk dağılımını hesapla
-        difficulty_counts = {level: 0 for level in DifficultyLevel}
+        difficulty_counts = dict.fromkeys(DifficultyLevel, 0)
 
         for question in questions:
             # IRT'den veya tahmini zorluktan al
@@ -521,8 +520,8 @@ class CurriculumMatchValidator:
         logger.info("curriculum_match_validator_initialized")
 
     def validate_curriculum_alignment(
-        self, questions: List[QuestionMetadata], blueprint: ExamBlueprint
-    ) -> List[ValidationResult]:
+        self, questions: list[QuestionMetadata], blueprint: ExamBlueprint
+    ) -> list[ValidationResult]:
         """Soruların müfredat ile uyumunu kontrol et"""
 
         results = []
@@ -643,8 +642,8 @@ class TopicDistributionValidator:
         logger.info("topic_distribution_validator_initialized")
 
     def validate_topic_distribution(
-        self, questions: List[QuestionMetadata], blueprint: ExamBlueprint
-    ) -> List[ValidationResult]:
+        self, questions: list[QuestionMetadata], blueprint: ExamBlueprint
+    ) -> list[ValidationResult]:
         """Konu dağılımını doğrula"""
 
         results = []
@@ -778,8 +777,8 @@ class ExamQualityValidator:
         logger.info("exam_quality_validator_initialized")
 
     def validate_exam(
-        self, questions: List[QuestionMetadata], blueprint: ExamBlueprint
-    ) -> Dict[str, Any]:
+        self, questions: list[QuestionMetadata], blueprint: ExamBlueprint
+    ) -> dict[str, Any]:
         """Sınavın tüm kalite kontrollerini yap"""
 
         logger.info(
@@ -829,13 +828,13 @@ class ExamQualityValidator:
         return {
             "exam_id": blueprint.exam_id,
             "exam_name": blueprint.exam_name,
-            "validation_timestamp": datetime.now(timezone.utc).isoformat(),
+            "validation_timestamp": datetime.now(UTC).isoformat(),
             "total_questions": len(questions),
             "summary": summary,
             "results": [r.model_dump(mode="json") for r in all_results],
         }
 
-    def _create_summary(self, results: List[ValidationResult]) -> Dict[str, Any]:
+    def _create_summary(self, results: list[ValidationResult]) -> dict[str, Any]:
         """Doğrulama sonuçlarının özetini oluştur"""
 
         total = len(results)

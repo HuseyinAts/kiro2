@@ -10,25 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from langchain.chains import ConversationalRetrievalChain, RetrievalQA
-
-# LangChain imports - Updated to non-deprecated versions
-from langchain_community.document_loaders import (
-    CSVLoader,
-    DirectoryLoader,
-    JSONLoader,
-    PyPDFLoader as PDFLoader,
-    PythonLoader,
-    TextLoader,
-    UnstructuredMarkdownLoader,
-    UnstructuredWordDocumentLoader,
-)
-from langchain_community.embeddings import (
-    CohereEmbeddings,
-    HuggingFaceEmbeddings,
-)
-from langchain_openai import OpenAIEmbeddings
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
-from langchain_core.prompts import PromptTemplate
 
 # For hybrid search
 from langchain.retrievers import (
@@ -37,9 +19,7 @@ from langchain.retrievers import (
     MultiQueryRetriever,
     TimeWeightedVectorStoreRetriever,
 )
-from langchain_community.retrievers import BM25Retriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
-from langchain_core.documents import Document
 from langchain.text_splitter import (
     CharacterTextSplitter,
     Language,
@@ -48,7 +28,29 @@ from langchain.text_splitter import (
     RecursiveCharacterTextSplitter,
     TokenTextSplitter,
 )
+
+# LangChain imports - Updated to non-deprecated versions
+from langchain_community.document_loaders import (
+    CSVLoader,
+    DirectoryLoader,
+    JSONLoader,
+    PythonLoader,
+    TextLoader,
+    UnstructuredMarkdownLoader,
+    UnstructuredWordDocumentLoader,
+)
+from langchain_community.document_loaders import (
+    PyPDFLoader as PDFLoader,
+)
+from langchain_community.embeddings import (
+    CohereEmbeddings,
+    HuggingFaceEmbeddings,
+)
+from langchain_community.retrievers import BM25Retriever
 from langchain_community.vectorstores import FAISS, Chroma
+from langchain_core.documents import Document
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import OpenAIEmbeddings
 
 logger = logging.getLogger(__name__)
 

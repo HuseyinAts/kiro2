@@ -6,16 +6,15 @@ nasıl kullanılacağını gösterir.
 """
 
 import asyncio
-from typing import List
-from backend.core.feature_flags import FeatureFlag
+
 from backend.core.config_utils import (
-    is_feature_enabled,
-    get_quality_thresholds,
-    get_performance_config,
     get_ab_test_variant,
     get_config_for_user,
+    get_performance_config,
+    get_quality_thresholds,
+    is_feature_enabled,
 )
-
+from backend.core.feature_flags import FeatureFlag
 
 # ============================================================================
 # Örnek 1: Feature Flag ile Algoritma Seçimi
@@ -60,7 +59,7 @@ async def search_videos_with_feature_flags(query: str, user_id: str):
 # ============================================================================
 
 
-async def filter_videos_with_thresholds(videos: List[dict]):
+async def filter_videos_with_thresholds(videos: list[dict]):
     """
     Quality threshold'lara göre videoları filtrele
     """
@@ -214,7 +213,7 @@ async def get_personalized_recommendations(user_id: str, query: str):
 # ============================================================================
 
 
-async def process_video_recommendations(videos: List[dict], user_id: str):
+async def process_video_recommendations(videos: list[dict], user_id: str):
     """
     Feature flag'lere göre farklı işlemler uygula
     """
@@ -257,7 +256,7 @@ async def process_video_recommendations(videos: List[dict], user_id: str):
 # ============================================================================
 
 
-async def parallel_video_discovery(subjects: List[str]):
+async def parallel_video_discovery(subjects: list[str]):
     """
     Performance config'e göre paralel arama yap
     """
@@ -290,7 +289,7 @@ async def parallel_video_discovery(subjects: List[str]):
 
             all_results.extend(valid_results)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print(f"Batch timed out after {timeout}s")
 
     return all_results

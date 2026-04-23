@@ -7,11 +7,9 @@ dinamik olarak ayarlayan sistemin servis katmanını sağlar.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from core.database import get_db_session
 
 from algorithms.cultural_adaptation_engine import (
     AgeGroup,
@@ -22,6 +20,7 @@ from algorithms.cultural_adaptation_engine import (
     CulturalPeriod,
     RegionalCulture,
 )
+from core.database import get_db_session
 
 logger = logging.getLogger(__name__)
 
@@ -39,12 +38,12 @@ class CulturalAdaptationService:
         self.context_analyzer = CulturalContextAnalyzer()
 
         # Cache için basit in-memory storage
-        self._adaptation_cache: Dict[str, Dict[str, Any]] = {}
+        self._adaptation_cache: dict[str, dict[str, Any]] = {}
         self._cache_ttl = 3600  # 1 saat
 
     async def get_student_cultural_adaptation(
         self, student_id: str, force_refresh: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Öğrenci için kültürel adaptasyon bilgilerini getir
 
@@ -154,8 +153,8 @@ class CulturalAdaptationService:
             raise
 
     async def update_cultural_context(
-        self, student_id: str, behavioral_update: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, student_id: str, behavioral_update: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Öğrenci davranış verilerini güncelle ve adaptasyonu yenile
 
@@ -185,7 +184,7 @@ class CulturalAdaptationService:
             logger.error(f"Kültürel bağlam güncelleme hatası: {e}")
             raise
 
-    async def get_cultural_period_info(self, date: datetime = None) -> Dict[str, Any]:
+    async def get_cultural_period_info(self, date: datetime = None) -> dict[str, Any]:
         """
         Mevcut kültürel dönem bilgilerini getir
 
@@ -212,7 +211,7 @@ class CulturalAdaptationService:
 
         return period_info
 
-    async def get_regional_culture_info(self, region: str) -> Dict[str, Any]:
+    async def get_regional_culture_info(self, region: str) -> dict[str, Any]:
         """
         Bölgesel kültür bilgilerini getir
 
@@ -251,7 +250,7 @@ class CulturalAdaptationService:
 
     async def _get_student_info(
         self, session: AsyncSession, student_id: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Öğrenci bilgilerini getir"""
         # Bu kısım gerçek veritabanı implementasyonunda User modelinden gelecek
         # Şimdilik mock data döndürüyoruz
@@ -264,7 +263,7 @@ class CulturalAdaptationService:
 
     async def _collect_behavioral_data(
         self, session: AsyncSession, student_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Davranış verilerini topla"""
         # Mock behavioral data - gerçek implementasyonda veritabanından gelecek
         return {
@@ -282,7 +281,7 @@ class CulturalAdaptationService:
 
     async def _get_interaction_history(
         self, session: AsyncSession, student_id: str
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Etkileşim geçmişini getir"""
         # Mock interaction history - gerçek implementasyonda veritabanından gelecek
         return [
@@ -305,9 +304,9 @@ class CulturalAdaptationService:
 
     async def _determine_cultural_factors(
         self,
-        student_info: Dict[str, Any],
-        behavioral_data: Dict[str, Any],
-        interaction_history: List[Dict[str, Any]],
+        student_info: dict[str, Any],
+        behavioral_data: dict[str, Any],
+        interaction_history: list[dict[str, Any]],
     ) -> CulturalFactors:
         """Kültürel faktörleri belirle"""
 
@@ -356,12 +355,11 @@ class CulturalAdaptationService:
 
         if age <= 10:
             return AgeGroup.ELEMENTARY
-        elif age <= 14:
+        if age <= 14:
             return AgeGroup.MIDDLE_SCHOOL
-        elif age <= 18:
+        if age <= 18:
             return AgeGroup.HIGH_SCHOOL
-        else:
-            return AgeGroup.UNIVERSITY
+        return AgeGroup.UNIVERSITY
 
     def _determine_regional_culture(self, location: str) -> RegionalCulture:
         """Bölgesel kültürü belirle"""
@@ -386,8 +384,8 @@ class CulturalAdaptationService:
     async def _generate_personalized_recommendations(
         self,
         adaptation_result: CulturalAdaptationResult,
-        context_analysis: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        context_analysis: dict[str, Any],
+    ) -> dict[str, Any]:
         """Kişiselleştirilmiş öneriler oluştur"""
 
         recommendations = {
@@ -423,7 +421,7 @@ class CulturalAdaptationService:
         return recommendations
 
     async def _save_behavioral_update(
-        self, session: AsyncSession, student_id: str, behavioral_update: Dict[str, Any]
+        self, session: AsyncSession, student_id: str, behavioral_update: dict[str, Any]
     ):
         """Davranış güncellemesini kaydet"""
         # Gerçek implementasyonda veritabanına kaydedilecek
@@ -453,7 +451,7 @@ class CulturalAdaptationService:
         }
         return descriptions.get(period, "Normal çalışma programı uygulanacak.")
 
-    def _get_general_period_recommendations(self, period: CulturalPeriod) -> List[str]:
+    def _get_general_period_recommendations(self, period: CulturalPeriod) -> list[str]:
         """Genel dönem önerilerini getir"""
         recommendations = {
             CulturalPeriod.RAMADAN: [

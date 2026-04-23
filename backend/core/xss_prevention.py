@@ -7,7 +7,8 @@ content sanitization sağlar.
 """
 import html
 import re
-from typing import Any, Dict, List
+from typing import Any
+
 from fastapi import Response
 from fastapi.responses import JSONResponse
 
@@ -167,7 +168,7 @@ class XSSPrevention:
         return text
 
     @staticmethod
-    def sanitize_dict(data: Dict[str, Any], allow_html: bool = False) -> Dict[str, Any]:
+    def sanitize_dict(data: dict[str, Any], allow_html: bool = False) -> dict[str, Any]:
         """
         Dictionary içindeki tüm string değerleri temizle
 
@@ -202,7 +203,7 @@ class XSSPrevention:
         return sanitized
 
     @staticmethod
-    def sanitize_list(data: List[Any], allow_html: bool = False) -> List[Any]:
+    def sanitize_list(data: list[Any], allow_html: bool = False) -> list[Any]:
         """
         List içindeki tüm string değerleri temizle
 

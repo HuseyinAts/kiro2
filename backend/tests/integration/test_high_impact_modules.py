@@ -8,9 +8,9 @@ import pytest
 # Module skip: Multiple import errors - Content, TurkishCulturalFactors,
 # TurkishMorphologyAnalysis, UserService, AdaptiveLearningEngine renamed/removed
 pytestmark = pytest.mark.skipif(True, reason="Model/service classes renamed or removed (Content, UserService, etc.)")
-from unittest.mock import patch, MagicMock
-from datetime import datetime, timedelta
 import json
+from datetime import datetime, timedelta
+from unittest.mock import MagicMock, patch
 
 
 class TestHighImpactModels:
@@ -19,11 +19,11 @@ class TestHighImpactModels:
     def test_comprehensive_database_models(self):
         """Database modellerini kapsamlı test et"""
         from models.database import (
-            User,
             Content,
-            Question,
             ExamSession,
             LearningPath,
+            Question,
+            User,
         )
 
         # User model test
@@ -116,8 +116,8 @@ class TestHighImpactModels:
     def test_comprehensive_zpd_maarif_models(self):
         """ZPD Maarif modellerini kapsamlı test et"""
         from models.zpd_maarif import (
-            TurkishCulturalFactors,
             MaarifCompatibilityProfile,
+            TurkishCulturalFactors,
             ZPDAssessment,
         )
 
@@ -184,8 +184,8 @@ class TestHighImpactModels:
     def test_comprehensive_irt_morfoloji_models(self):
         """IRT Morfoloji modellerini kapsamlı test et"""
         from models.irt_morfoloji import (
-            TurkishMorphologyAnalysis,
             IRTQuestionParameters,
+            TurkishMorphologyAnalysis,
         )
 
         # TurkishMorphologyAnalysis test

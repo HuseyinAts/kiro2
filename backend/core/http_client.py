@@ -17,10 +17,11 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, AsyncGenerator
+from typing import Any
 
 import aiohttp
 from aiohttp import ClientTimeout, TCPConnector
@@ -131,7 +132,7 @@ class AsyncHttpClient:
         self._session: aiohttp.ClientSession | None = None
         self._connector: TCPConnector | None = None
 
-    async def __aenter__(self) -> "AsyncHttpClient":
+    async def __aenter__(self) -> AsyncHttpClient:
         """Context manager giris - session olustur."""
         await self._create_session()
         return self
@@ -241,10 +242,7 @@ class AsyncHttpClient:
                         elapsed_ms=elapsed_ms,
                     )
 
-            except (
-                aiohttp.ClientError,
-                asyncio.TimeoutError,
-            ) as e:
+            except (TimeoutError, aiohttp.ClientError) as e:
                 last_error = e
                 elapsed_ms = (time.perf_counter() - start_time) * 1000
 

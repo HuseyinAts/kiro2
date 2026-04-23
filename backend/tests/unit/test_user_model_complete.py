@@ -2,21 +2,22 @@
 Comprehensive unit tests for User models
 Testing user management, authentication, and profile models
 """
-import pytest
 from datetime import datetime
+
+import pytest
 from pydantic import ValidationError
 
+from models.enums import KullaniciRolu, OgrenmeStili, SinavTipi
 from models.user import (
-    KullaniciBase,
-    KullaniciOlustur,
     Kullanici,
+    KullaniciBase,
+    KullaniciGiris,
+    KullaniciOlustur,
     OgrenciProfili,
     OgretmenProfili,
-    VeliProfili,
-    KullaniciGiris,
     TokenYaniti,
+    VeliProfili,
 )
-from models.enums import KullaniciRolu, OgrenmeStili, SinavTipi
 
 
 class TestKullaniciBase:

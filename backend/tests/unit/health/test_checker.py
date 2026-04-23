@@ -4,10 +4,11 @@ Unit Tests - Health Checker
 Bu modül, HealthChecker sınıfı için unit testler içerir.
 """
 
-import pytest
+import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import sys
+import pytest
+
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from app.health.checker import HealthChecker

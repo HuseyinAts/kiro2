@@ -1,11 +1,11 @@
-from fastapi import APIRouter, File, UploadFile, BackgroundTasks, HTTPException
-from typing import List
-import shutil
-from pathlib import Path
-import uuid
-import sys
-import os
 import logging
+import os
+import shutil
+import sys
+import uuid
+from pathlib import Path
+
+from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile
 
 # Services dizinini path'e ekle
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
@@ -75,7 +75,7 @@ async def parse_test_page(
 
 @router.post("/parse-batch")
 async def parse_test_batch(
-    files: List[UploadFile] = File(...)
+    files: list[UploadFile] = File(...)
 ):
     """
     Birden fazla test sayfasını parse et

@@ -3,10 +3,12 @@ Comprehensive tests for api.health module
 Target: 95%+ coverage for health check API endpoints
 """
 
-import pytest
 from unittest.mock import patch
-from fastapi.testclient import TestClient
+
+import pytest
 from fastapi import FastAPI, status
+from fastapi.testclient import TestClient
+
 from api.health import router as health_router
 
 

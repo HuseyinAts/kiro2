@@ -11,12 +11,12 @@ Status: Task 25 - Final Integration Testing ve Bug Fixes
 
 import asyncio
 import time
+
 import pytest
 
 pytestmark = pytest.mark.skipif(True, reason="AsyncClient(app=...) deprecated in httpx 0.27+ (needs ASGITransport)")
 
 from httpx import AsyncClient
-
 
 # ==================== Test Configuration ====================
 
@@ -139,9 +139,9 @@ class TestEndToEndIntegration:
                 print(f"⚠ E2E test completed with status {response.status_code}")
 
         except Exception as e:
-            print(f"✗ E2E test failed: {str(e)}")
+            print(f"✗ E2E test failed: {e!s}")
             # Don't fail the test, just log the error
-            pytest.skip(f"E2E test skipped due to: {str(e)}")
+            pytest.skip(f"E2E test skipped due to: {e!s}")
 
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -179,8 +179,8 @@ class TestEndToEndIntegration:
                 print("⚠ Health check endpoint not found (404)")
 
         except Exception as e:
-            print(f"✗ Health check failed: {str(e)}")
-            pytest.skip(f"Health check skipped due to: {str(e)}")
+            print(f"✗ Health check failed: {e!s}")
+            pytest.skip(f"Health check skipped due to: {e!s}")
 
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -208,8 +208,8 @@ class TestEndToEndIntegration:
                 print("⚠ Connectivity test endpoint not found (404)")
 
         except Exception as e:
-            print(f"✗ Connectivity test failed: {str(e)}")
-            pytest.skip(f"Connectivity test skipped due to: {str(e)}")
+            print(f"✗ Connectivity test failed: {e!s}")
+            pytest.skip(f"Connectivity test skipped due to: {e!s}")
 
 
 # ==================== Performance Regression Tests ====================
@@ -254,7 +254,7 @@ class TestPerformanceRegression:
                     successful_requests += 1
 
             except Exception as e:
-                print(f"Request {i+1} failed: {str(e)}")
+                print(f"Request {i+1} failed: {e!s}")
                 response_times.append(TestConfig.API_TIMEOUT)
 
         # Calculate P95
@@ -441,7 +441,7 @@ class TestErrorHandling:
                 )
 
             except Exception as e:
-                print(f"⚠ Invalid input {i+1} caused exception: {str(e)}")
+                print(f"⚠ Invalid input {i+1} caused exception: {e!s}")
 
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -462,7 +462,7 @@ class TestErrorHandling:
             # If we get here, request was faster than 1ms (unlikely) or timeout not working
             print(f"⚠ Request completed in < 1ms (status: {response.status_code})")
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print("✓ Timeout handled correctly")
         except Exception as e:
             print(f"✓ Timeout caused expected exception: {type(e).__name__}")
@@ -524,8 +524,8 @@ class TestTurkishContentFiltering:
                 print(f"⚠ Request failed with status {response.status_code}")
 
         except Exception as e:
-            print(f"✗ Turkish content test failed: {str(e)}")
-            pytest.skip(f"Turkish content test skipped due to: {str(e)}")
+            print(f"✗ Turkish content test failed: {e!s}")
+            pytest.skip(f"Turkish content test skipped due to: {e!s}")
 
 
 # ==================== User Acceptance Tests ====================
@@ -593,8 +593,8 @@ class TestUserAcceptance:
                 print(f"  Step 3: Request failed with status {response.status_code} ⚠")
 
         except Exception as e:
-            print(f"  ✗ User journey failed: {str(e)}")
-            pytest.skip(f"User journey test skipped due to: {str(e)}")
+            print(f"  ✗ User journey failed: {e!s}")
+            pytest.skip(f"User journey test skipped due to: {e!s}")
 
     @pytest.mark.asyncio
     @pytest.mark.integration
@@ -636,8 +636,8 @@ class TestUserAcceptance:
                 print("⚠ Request failed")
 
         except Exception as e:
-            print(f"✗ Multi-subject test failed: {str(e)}")
-            pytest.skip(f"Multi-subject test skipped due to: {str(e)}")
+            print(f"✗ Multi-subject test failed: {e!s}")
+            pytest.skip(f"Multi-subject test skipped due to: {e!s}")
 
 
 # ==================== System Health Tests ====================
@@ -692,8 +692,8 @@ class TestSystemHealth:
                 print(f"⚠ Health check endpoint returned {response.status_code}")
 
         except Exception as e:
-            print(f"✗ Health check failed: {str(e)}")
-            pytest.skip(f"Health check skipped due to: {str(e)}")
+            print(f"✗ Health check failed: {e!s}")
+            pytest.skip(f"Health check skipped due to: {e!s}")
 
 
 # ==================== Test Summary ====================

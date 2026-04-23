@@ -4,10 +4,9 @@ Video Content Validation Utilities
 Centralized video content validation for Turkish educational videos.
 Consolidated from duplicate implementations across the codebase.
 """
-from typing import Dict
 
 
-def validate_video_content(video_data: Dict, min_edu_score: int = 1) -> bool:
+def validate_video_content(video_data: dict, min_edu_score: int = 1) -> bool:
     """
     Validate if video content is Turkish educational content.
 
@@ -69,7 +68,7 @@ def validate_video_content(video_data: Dict, min_edu_score: int = 1) -> bool:
     return edu_score >= min_edu_score and non_edu_score == 0
 
 
-def validate_video_content_strict(video_data: Dict) -> bool:
+def validate_video_content_strict(video_data: dict) -> bool:
     """
     Strict validation requiring at least 2 educational keywords.
 
@@ -82,7 +81,7 @@ def validate_video_content_strict(video_data: Dict) -> bool:
     return validate_video_content(video_data, min_edu_score=2)
 
 
-def validate_video_content_lenient(video_data: Dict) -> bool:
+def validate_video_content_lenient(video_data: dict) -> bool:
     """
     Lenient validation requiring at least 1 educational keyword.
 

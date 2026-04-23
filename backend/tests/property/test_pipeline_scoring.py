@@ -7,8 +7,9 @@ Validates:
 Boris Cherny Standards: Property tests with 100+ iterations
 """
 
-from hypothesis import given, strategies as st, settings, assume
-from typing import Dict
+
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 # Stage weights from spec (sum = 1.0)
 STAGE_WEIGHTS = {
@@ -23,7 +24,7 @@ STAGE_WEIGHTS = {
 valid_score = st.floats(min_value=0.0, max_value=1.0, allow_nan=False)
 
 
-def calculate_weighted_score(stage_scores: Dict[str, float]) -> float:
+def calculate_weighted_score(stage_scores: dict[str, float]) -> float:
     """
     Calculate weighted average of stage scores.
 
@@ -99,7 +100,7 @@ class TestWeightedScoreWeightsSum:
     @given(uniform_score=valid_score)
     def test_uniform_scores_equal_final(self, uniform_score):
         """If all stage scores are equal, final score equals that score."""
-        scores = {stage: uniform_score for stage in STAGE_WEIGHTS.keys()}
+        scores = dict.fromkeys(STAGE_WEIGHTS.keys(), uniform_score)
 
         final_score = calculate_weighted_score(scores)
 

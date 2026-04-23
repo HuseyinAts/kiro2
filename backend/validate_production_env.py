@@ -6,11 +6,10 @@ Usage:
     python validate_production_env.py --env-file .env.production
 """
 
-import sys
-import re
-from typing import List, Dict
-from pathlib import Path
 import argparse
+import re
+import sys
+from pathlib import Path
 
 
 class Colors:
@@ -88,9 +87,9 @@ class EnvironmentValidator:
 
     def __init__(self, env_file: str):
         self.env_file = Path(env_file)
-        self.env_vars: Dict[str, str] = {}
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.env_vars: dict[str, str] = {}
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def load_env_file(self) -> bool:
         """Load .env file"""
@@ -99,7 +98,7 @@ class EnvironmentValidator:
             return False
 
         try:
-            with open(self.env_file, "r", encoding="utf-8") as f:
+            with open(self.env_file, encoding="utf-8") as f:
                 for line_num, line in enumerate(f, 1):
                     line = line.strip()
 
@@ -114,9 +113,7 @@ class EnvironmentValidator:
                         value = value.strip()
 
                         # Remove quotes
-                        if value.startswith('"') and value.endswith('"'):
-                            value = value[1:-1]
-                        elif value.startswith("'") and value.endswith("'"):
+                        if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
                             value = value[1:-1]
 
                         self.env_vars[key] = value
@@ -125,7 +122,7 @@ class EnvironmentValidator:
             return True
 
         except Exception as e:
-            self.errors.append(f"Failed to load env file: {str(e)}")
+            self.errors.append(f"Failed to load env file: {e!s}")
             return False
 
     def validate_required_vars(self):
@@ -318,8 +315,7 @@ class EnvironmentValidator:
         if any(kw in var_name.lower() for kw in sensitive_keywords):
             if len(value) > 8:
                 return f"{value[:4]}...{value[-4:]}"
-            else:
-                return "***"
+            return "***"
 
         # For URLs, mask passwords
         if "://" in value and "@" in value:
@@ -371,7 +367,7 @@ class EnvironmentValidator:
             print(f"{Colors.RED}{Colors.BOLD}❌ VALIDATION FAILED{Colors.END}")
             print(f"Fix {len(self.errors)} error(s) before deploying to production!")
             return False
-        elif self.warnings:
+        if self.warnings:
             print(
                 f"{Colors.YELLOW}{Colors.BOLD}⚠ VALIDATION PASSED WITH WARNINGS{Colors.END}"
             )
@@ -379,10 +375,9 @@ class EnvironmentValidator:
                 f"Consider fixing {len(self.warnings)} warning(s) for best practices."
             )
             return True
-        else:
-            print(f"{Colors.GREEN}{Colors.BOLD}✅ VALIDATION PASSED{Colors.END}")
-            print("Environment configuration is production-ready!")
-            return True
+        print(f"{Colors.GREEN}{Colors.BOLD}✅ VALIDATION PASSED{Colors.END}")
+        print("Environment configuration is production-ready!")
+        return True
 
     def run(self) -> bool:
         """Run all validations"""

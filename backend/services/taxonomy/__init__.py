@@ -15,16 +15,16 @@ from .webb_dok_classifier import (
 )
 
 __all__ = [
-    "classify_solo",
-    "SOLOResult",
-    "classify_marzano",
-    "MarzanoResult",
-    "classify_webb_dok",
-    "WebbDOKResult",
-    "estimate_dok_from_bloom",
-    "analyze_all",
-    "MultiTaxonomyResult",
-    "get_yks_distribution_targets",
-    "calculate_cognitive_load",
     "CLTResult",
+    "MarzanoResult",
+    "MultiTaxonomyResult",
+    "SOLOResult",
+    "WebbDOKResult",
+    "analyze_all",
+    "calculate_cognitive_load",
+    "classify_marzano",
+    "classify_solo",
+    "classify_webb_dok",
+    "estimate_dok_from_bloom",
+    "get_yks_distribution_targets",
 ]

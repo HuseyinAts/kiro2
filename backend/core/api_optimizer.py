@@ -8,7 +8,7 @@ import json
 import logging
 import time
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import wraps
 from typing import Any
 
@@ -390,7 +390,7 @@ class ResponseCacheMiddleware(BaseHTTPMiddleware):
                         "Content-Type", "application/json"
                     )
                 },
-                "cached_at": datetime.now(timezone.utc).isoformat(),
+                "cached_at": datetime.now(UTC).isoformat(),
             }
 
             await self.optimizer.redis_client.setex(

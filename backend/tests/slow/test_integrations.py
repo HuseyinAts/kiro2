@@ -13,8 +13,6 @@ from integrations.wikipedia_service import wikipedia_service
 # Test edilecek modüller
 from integrations.youtube_service import youtube_service
 
-
-
 pytestmark = pytest.mark.skipif(
     True,
     reason="Integration module APIs changed, all 25 tests fail",
@@ -476,7 +474,7 @@ async def test_service_timeout_handling():
     """Test timeout handling for all services"""
     # YouTube timeout
     with patch("integrations.youtube_service.build") as mock_build:
-        mock_build.side_effect = asyncio.TimeoutError()
+        mock_build.side_effect = TimeoutError()
 
         result = await youtube_service.search_videos("test", timeout=1)
         assert result["success"] == False
@@ -484,7 +482,7 @@ async def test_service_timeout_handling():
 
     # Wikipedia timeout
     with patch("wikipedia.search") as mock_search:
-        mock_search.side_effect = asyncio.TimeoutError()
+        mock_search.side_effect = TimeoutError()
 
         result = await wikipedia_service.search("test", timeout=1)
         assert result["success"] == False

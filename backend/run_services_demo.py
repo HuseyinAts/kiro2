@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 KIRO Platform - Service Demo (Simplified)
 Demonstrates all services generating questions
@@ -31,12 +30,12 @@ def main():
     # Import services
     print("[YUKLENIY OR] Servisler yuklen iyor...")
     try:
-        from services.knowledge_graph_service import KnowledgeGraphService, QuestionNode
         from services.hitl_workflow_service import HITLWorkflowService
+        from services.knowledge_graph_service import KnowledgeGraphService, QuestionNode
 
         print("[TAMAM] Tum servisler yuklendi!")
     except Exception as e:
-        print(f"[HATA] {str(e)}")
+        print(f"[HATA] {e!s}")
         return
 
     print()
@@ -211,7 +210,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\nHATA: {str(e)}")
+        print(f"\nHATA: {e!s}")
         import traceback
 
         traceback.print_exc()

@@ -1,5 +1,6 @@
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
@@ -13,18 +14,17 @@ error handling rather than a fake mini-app.
 """
 
 import pytest
+
 pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
 
 
 import json
 
-import pytest
 import httpx
+import pytest
 from httpx import AsyncClient
 
 from main import app
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -147,7 +147,7 @@ class TestCriticalAPI:
             if isinstance(e, ExceptionGroup):
                 # Check if UnboundLocalError is in the exception group
                 assert any(isinstance(exc, UnboundLocalError) for exc in e.exceptions)
-            pass  # Test passes - we verified the endpoint exists and has the known bug
+            # Test passes - we verified the endpoint exists and has the known bug
 
     @pytest.mark.asyncio
     async def test_osym_exam_configs_endpoint(self, client: AsyncClient):

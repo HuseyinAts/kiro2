@@ -1,8 +1,8 @@
 """
 Analyze extracted JSONs for answer coverage
 """
-import json
 import glob
+import json
 import os
 
 print("Analyzing all extracted JSONs for answer coverage...")
@@ -12,7 +12,7 @@ results = []
 for json_path in sorted(glob.glob("osym_extracted/*.json")):
     filename = os.path.basename(json_path)
 
-    with open(json_path, "r", encoding="utf-8") as f:
+    with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
 
     total = len(data["questions"])

@@ -1,4 +1,5 @@
 import pytest
+
 pytest.skip("Deprecated module — see _deprecated/", allow_module_level=True)
 # DEPRECATED_SKIP_APPLIED
 
@@ -9,13 +10,15 @@ NO MOCKS - Pure business logic testing
 Coverage target: 80%+
 """
 
-import pytest
 from datetime import datetime
+
+import pytest
+
 from algorithms.adaptive_learning import (
-    MultiArmedBandit,
     Arm,
     ArmStatistics,
     BanditAlgorithm,
+    MultiArmedBandit,
 )
 
 

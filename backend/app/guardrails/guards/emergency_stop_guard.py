@@ -4,11 +4,12 @@ import logging
 import signal
 import threading
 import time
-from datetime import datetime, timezone
-from typing import Any, Callable
+from collections.abc import Callable
+from datetime import UTC, datetime
+from typing import Any
 
-from .base_guard import BaseGuard
 from ..models import GuardResult, GuardStatus
+from .base_guard import BaseGuard
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +154,7 @@ class EmergencyStopGuard(BaseGuard):
             )
             logger.info("Graceful shutdown completed successfully")
             return True
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.warning("Graceful shutdown timed out, forcing termination")
             return False
 
@@ -181,7 +182,7 @@ class EmergencyStopGuard(BaseGuard):
             state: State dictionary to save
         """
         self._saved_state = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "data": state,
         }
         logger.info("State saved for recovery")
@@ -254,7 +255,7 @@ class EmergencyStopGuard(BaseGuard):
             signal_type: Signal type that triggered stop
         """
         incident = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "reason": reason,
             "signal": signal_type,
             "check_count": self._check_count,

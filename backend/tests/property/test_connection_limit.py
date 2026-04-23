@@ -10,16 +10,16 @@ Boris Cherny Standards: Minimum 100 iterations per property test
 """
 
 import asyncio
+import sys
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional
 
 import pytest
-from hypothesis import given, settings, strategies as st, assume
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 
@@ -44,9 +44,9 @@ class MockWebSocket:
 class ConnectionResult:
     """Result of connection attempt."""
     connected: bool
-    connection_id: Optional[str] = None
-    closed_connection: Optional[str] = None
-    reason: Optional[str] = None
+    connection_id: str | None = None
+    closed_connection: str | None = None
+    reason: str | None = None
 
 
 class WebSocketConnectionManager:
@@ -60,8 +60,8 @@ class WebSocketConnectionManager:
 
     def __init__(self, max_connections: int = MAX_CONNECTIONS_PER_USER):
         self.max_connections = max_connections
-        self._connections: Dict[str, Dict[str, MockWebSocket]] = defaultdict(dict)
-        self._connection_order: Dict[str, List[str]] = defaultdict(list)
+        self._connections: dict[str, dict[str, MockWebSocket]] = defaultdict(dict)
+        self._connection_order: dict[str, list[str]] = defaultdict(list)
 
     async def connect(
         self,
@@ -126,7 +126,7 @@ class WebSocketConnectionManager:
             return True
         return False
 
-    def get_user_connections(self, user_id: str) -> List[str]:
+    def get_user_connections(self, user_id: str) -> list[str]:
         """Get list of connection IDs for a user."""
         return list(self._connections[user_id].keys())
 
@@ -233,7 +233,7 @@ class TestConnectionLimitProperties:
     )
     @settings(max_examples=50)
     def test_limit_per_user_not_global(
-        self, user_ids: List[str], connections_per_user: int
+        self, user_ids: list[str], connections_per_user: int
     ):
         """
         Property 3: Limit is per-user, not global (REQ-2.6)

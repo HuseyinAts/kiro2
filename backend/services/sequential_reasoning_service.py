@@ -10,42 +10,41 @@ Updated: 2026-01-17
 - Added topological sort for sub-problems (REQ-1.3)
 """
 
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta, timezone
 import hashlib
-import uuid
 import logging
+import uuid
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
-
-from models.reasoning_models import (
-    ReasoningSession,
-    ReasoningStep,
-    ReasoningCache,
-    ReasoningSessionStatus,
-    ReasoningStepTypeEnum,
-    LLMProviderEnum,
-)
-from services.llm.ensemble_manager import MultiLLMEnsembleManager
-from services.llm.multi_llm_config import LLMProvider, LLMCapability
-
-# Math verification (REQ-4)
-from services.reasoning.math_verification_service import (
-    get_math_verification_service,
-    MathVerificationService,
-    MathProblemType,
-)
-
-# Logic validation (REQ-5)
-from services.reasoning.logic_validation_service import (
-    get_logic_validation_service,
-    LogicValidationService,
-)
 
 # Topological sort for dependencies (REQ-1.3)
 from core.quality_gates.dependency_graph import DependencyGraph
+from models.reasoning_models import (
+    LLMProviderEnum,
+    ReasoningCache,
+    ReasoningSession,
+    ReasoningSessionStatus,
+    ReasoningStep,
+    ReasoningStepTypeEnum,
+)
+from services.llm.ensemble_manager import MultiLLMEnsembleManager
+from services.llm.multi_llm_config import LLMCapability, LLMProvider
+
+# Logic validation (REQ-5)
+from services.reasoning.logic_validation_service import (
+    LogicValidationService,
+    get_logic_validation_service,
+)
+
+# Math verification (REQ-4)
+from services.reasoning.math_verification_service import (
+    MathProblemType,
+    MathVerificationService,
+    get_math_verification_service,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -86,16 +85,16 @@ class SequentialReasoningService:
         self.enable_logic_validation = enable_logic_validation
 
         # Initialize ensemble manager (lazy)
-        self._ensemble_manager: Optional[MultiLLMEnsembleManager] = None
+        self._ensemble_manager: MultiLLMEnsembleManager | None = None
 
         # Initialize math verification service (REQ-4)
-        self._math_verifier: Optional[MathVerificationService] = None
+        self._math_verifier: MathVerificationService | None = None
         if enable_math_verification:
             self._math_verifier = get_math_verification_service()
             logger.info(f"Math verification enabled: SymPy available={self._math_verifier.sympy_available}")
 
         # Initialize logic validation service (REQ-5)
-        self._logic_validator: Optional[LogicValidationService] = None
+        self._logic_validator: LogicValidationService | None = None
         if enable_logic_validation:
             self._logic_validator = get_logic_validation_service()
             logger.info("Logic validation enabled")
@@ -116,12 +115,12 @@ class SequentialReasoningService:
     async def solve(
         self,
         problem: str,
-        provider: Optional[str] = None,
+        provider: str | None = None,
         use_ensemble: bool = False,
         max_steps: int = 10,
         use_cache: bool = True,
-        user_id: Optional[uuid.UUID] = None,
-    ) -> Dict[str, Any]:
+        user_id: uuid.UUID | None = None,
+    ) -> dict[str, Any]:
         """
         Solve a problem with sequential thinking
 
@@ -179,9 +178,9 @@ class SequentialReasoningService:
     async def _create_session(
         self,
         problem: str,
-        provider: Optional[str],
+        provider: str | None,
         use_ensemble: bool,
-        user_id: Optional[uuid.UUID],
+        user_id: uuid.UUID | None,
     ) -> ReasoningSession:
         """Create a new reasoning session"""
         provider_enum = None
@@ -207,7 +206,7 @@ class SequentialReasoningService:
 
     async def _solve_with_ensemble(
         self, problem: str, max_steps: int, session: ReasoningSession
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Solve using ensemble of all providers"""
         result = await self.ensemble_manager.sequential_thinking_ensemble(
             problem=problem,
@@ -223,10 +222,10 @@ class SequentialReasoningService:
     async def _solve_with_provider(
         self,
         problem: str,
-        provider: Optional[str],
+        provider: str | None,
         max_steps: int,
         session: ReasoningSession,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Solve using specific provider"""
         # Map string to enum
         provider_enum = None
@@ -247,7 +246,7 @@ class SequentialReasoningService:
         return result
 
     async def _store_steps(
-        self, session: ReasoningSession, steps: List[Dict[str, Any]]
+        self, session: ReasoningSession, steps: list[dict[str, Any]]
     ) -> None:
         """
         Store reasoning steps in database with optional math verification.
@@ -324,8 +323,8 @@ class SequentialReasoningService:
             await self._validate_logic(session, steps)
 
     async def _validate_logic(
-        self, session: ReasoningSession, steps: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, session: ReasoningSession, steps: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """
         Validate logical consistency of reasoning steps (REQ-5)
 
@@ -403,11 +402,11 @@ class SequentialReasoningService:
         return validation_result
 
     async def _update_session_with_result(
-        self, session: ReasoningSession, result: Dict[str, Any]
+        self, session: ReasoningSession, result: dict[str, Any]
     ) -> None:
         """Update session with final result"""
         session.status = ReasoningSessionStatus.COMPLETED
-        session.completed_at = datetime.now(timezone.utc)
+        session.completed_at = datetime.now(UTC)
         session.understanding = result.get("understanding")
         session.final_answer = result.get("final_answer") or result.get("answer")
         session.verification = result.get("verification")
@@ -421,21 +420,21 @@ class SequentialReasoningService:
 
     async def _get_cached_reasoning(
         self, problem: str
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get cached reasoning if available"""
         problem_hash = self._hash_problem(problem)
 
         result = await self.db.execute(
             select(ReasoningCache)
             .where(ReasoningCache.problem_hash == problem_hash)
-            .where(ReasoningCache.expires_at > datetime.now(timezone.utc))
+            .where(ReasoningCache.expires_at > datetime.now(UTC))
         )
         cached = result.scalar_one_or_none()
 
         if cached:
             # Update hit count
             cached.hit_count += 1
-            cached.last_hit = datetime.now(timezone.utc)
+            cached.last_hit = datetime.now(UTC)
             await self.db.commit()
 
             return {
@@ -447,7 +446,7 @@ class SequentialReasoningService:
         return None
 
     async def _cache_reasoning(
-        self, problem: str, result: Dict[str, Any]
+        self, problem: str, result: dict[str, Any]
     ) -> None:
         """Cache reasoning result"""
         problem_hash = self._hash_problem(problem)
@@ -461,7 +460,7 @@ class SequentialReasoningService:
         if cache_entry:
             # Update existing
             cache_entry.reasoning_data = result
-            cache_entry.expires_at = datetime.now(timezone.utc) + timedelta(days=self.CACHE_TTL_DAYS)
+            cache_entry.expires_at = datetime.now(UTC) + timedelta(days=self.CACHE_TTL_DAYS)
             cache_entry.confidence = result.get("confidence", 0.0)
             cache_entry.was_verified = bool(result.get("verification"))
         else:
@@ -473,7 +472,7 @@ class SequentialReasoningService:
                 provider=result.get("provider"),
                 confidence=result.get("confidence", 0.0),
                 was_verified=bool(result.get("verification")),
-                expires_at=datetime.now(timezone.utc) + timedelta(days=self.CACHE_TTL_DAYS),
+                expires_at=datetime.now(UTC) + timedelta(days=self.CACHE_TTL_DAYS),
             )
             self.db.add(cache_entry)
 
@@ -486,7 +485,7 @@ class SequentialReasoningService:
 
     async def get_session(
         self, session_id: uuid.UUID
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get reasoning session by ID"""
         result = await self.db.execute(
             select(ReasoningSession)
@@ -502,7 +501,7 @@ class SequentialReasoningService:
 
     async def get_session_steps(
         self, session_id: uuid.UUID
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get all steps for a session"""
         result = await self.db.execute(
             select(ReasoningStep)
@@ -514,8 +513,8 @@ class SequentialReasoningService:
         return [step.to_dict() for step in steps]
 
     async def decompose_problem(
-        self, problem: str, provider: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, problem: str, provider: str | None = None
+    ) -> dict[str, Any]:
         """
         Decompose complex problem into sub-problems with topological ordering.
 
@@ -553,8 +552,8 @@ class SequentialReasoningService:
         return decomposition_result
 
     def _topological_sort_subproblems(
-        self, sub_problems: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        self, sub_problems: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """
         Sort sub-problems by dependencies using topological sort.
 
@@ -613,7 +612,7 @@ class SequentialReasoningService:
 
     async def compare_providers(
         self, problem: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Compare all providers on the same problem
 
@@ -626,7 +625,7 @@ class SequentialReasoningService:
         return await self.ensemble_manager.compare_providers(problem)
 
     async def invalidate_cache(
-        self, problem: Optional[str] = None
+        self, problem: str | None = None
     ) -> int:
         """
         Invalidate cache entries
@@ -648,7 +647,7 @@ class SequentialReasoningService:
             # Delete expired entries
             result = await self.db.execute(
                 delete(ReasoningCache).where(
-                    ReasoningCache.expires_at < datetime.now(timezone.utc)
+                    ReasoningCache.expires_at < datetime.now(UTC)
                 )
             )
 
@@ -657,7 +656,7 @@ class SequentialReasoningService:
 
     async def get_user_sessions(
         self, user_id: uuid.UUID, limit: int = 20
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get recent sessions for a user"""
         result = await self.db.execute(
             select(ReasoningSession)

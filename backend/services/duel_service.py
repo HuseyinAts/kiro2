@@ -5,8 +5,7 @@ Handles matchmaking, game flow, ELO calculation, and Redis queue management.
 
 import json
 import uuid
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -62,7 +61,7 @@ async def enqueue_matchmaking(
     student_id: str,
     subject: str,
     elo_rating: float,
-) -> Optional[str]:
+) -> str | None:
     """Try to find a match or enqueue the player.
 
     Uses Redis SETNX for atomic lock and LPUSH/RPOP for queue.
@@ -107,7 +106,7 @@ async def enqueue_matchmaking(
     player_data = json.dumps({
         "student_id": student_id,
         "elo_rating": elo_rating,
-        "queued_at": datetime.now(timezone.utc).isoformat(),
+        "queued_at": datetime.now(UTC).isoformat(),
     })
     await redis.lpush(queue_key, player_data)
     await redis.expire(queue_key, MATCHMAKING_TTL_SEC)
@@ -167,7 +166,7 @@ async def create_duel_session(
         subject=subject,
         question_count=len(question_ids),
         status="active",
-        started_at=datetime.now(timezone.utc),
+        started_at=datetime.now(UTC),
     )
     db.add(session)
 
@@ -250,7 +249,7 @@ async def process_duel_answer(
     }
 
 
-async def finish_duel(*, db: AsyncSession, session_id: str) -> Optional[dict]:
+async def finish_duel(*, db: AsyncSession, session_id: str) -> dict | None:
     """Finalize a duel session: calculate winner and ELO changes."""
     sess_result = await db.execute(
         select(DuelSession).where(DuelSession.id == session_id)
@@ -297,7 +296,7 @@ async def finish_duel(*, db: AsyncSession, session_id: str) -> Optional[dict]:
         r2.draws += 1
 
     session.status = "completed"
-    session.finished_at = datetime.now(timezone.utc)
+    session.finished_at = datetime.now(UTC)
 
     await db.flush()
 

@@ -683,10 +683,9 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_timeout_handling(self, client):
         """Timeout hatası yönetimi testi"""
-        import asyncio
 
         mock_es_client = AsyncMock()
-        mock_es_client.search.side_effect = asyncio.TimeoutError("Request timeout")
+        mock_es_client.search.side_effect = TimeoutError("Request timeout")
         client.client = mock_es_client
 
         result = await client.search("test", {})

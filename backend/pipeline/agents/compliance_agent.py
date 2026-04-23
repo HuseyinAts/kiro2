@@ -14,7 +14,7 @@ Requirements (REQ-4.x):
 """
 
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 from ..stage_base import BasePipelineStage, StageInput, StageOutput
 
@@ -43,8 +43,8 @@ class ComplianceAgent(BasePipelineStage):
 
     def __init__(
         self,
-        llm_client: Optional[Any] = None,
-        config: Optional[Dict[str, Any]] = None
+        llm_client: Any | None = None,
+        config: dict[str, Any] | None = None
     ):
         """
         Compliance Agent başlat
@@ -143,7 +143,7 @@ class ComplianceAgent(BasePipelineStage):
 
         except Exception as e:
             return self._create_error_output(
-                f"Uyumluluk kontrol hatası: {str(e)}",
+                f"Uyumluluk kontrol hatası: {e!s}",
                 input_data,
                 time.time() - start_time
             )
@@ -152,7 +152,7 @@ class ComplianceAgent(BasePipelineStage):
         """Stage ağırlığı: 20%"""
         return self.STAGE_WEIGHT
 
-    def _check_format(self, question_data: Dict) -> Tuple[bool, List[str]]:
+    def _check_format(self, question_data: dict) -> tuple[bool, list[str]]:
         """
         Format kontrolü
 
@@ -193,7 +193,7 @@ class ComplianceAgent(BasePipelineStage):
 
         return len(errors) == 0, errors
 
-    def _check_word_count(self, question_data: Dict) -> Tuple[bool, int]:
+    def _check_word_count(self, question_data: dict) -> tuple[bool, int]:
         """
         Kelime sayısı kontrolü
 
@@ -212,7 +212,7 @@ class ComplianceAgent(BasePipelineStage):
 
         return word_count <= self.MAX_QUESTION_WORDS, word_count
 
-    def _check_option_lengths(self, question_data: Dict) -> Tuple[bool, List[str]]:
+    def _check_option_lengths(self, question_data: dict) -> tuple[bool, list[str]]:
         """
         Seçenek uzunluk dengesi kontrolü
 
@@ -248,7 +248,7 @@ class ComplianceAgent(BasePipelineStage):
 
         return len(issues) == 0, issues
 
-    def _check_visuals(self, question_data: Dict) -> Tuple[bool, List[str]]:
+    def _check_visuals(self, question_data: dict) -> tuple[bool, list[str]]:
         """
         Görsel kontrolü
 
@@ -281,7 +281,7 @@ class ComplianceAgent(BasePipelineStage):
 
         return len(issues) == 0, issues
 
-    def _check_correct_answer(self, question_data: Dict) -> bool:
+    def _check_correct_answer(self, question_data: dict) -> bool:
         """
         Doğru cevap kontrolü
 
@@ -308,7 +308,7 @@ class ComplianceAgent(BasePipelineStage):
 
         return False
 
-    def _additional_osym_checks(self, question_data: Dict) -> Dict:
+    def _additional_osym_checks(self, question_data: dict) -> dict:
         """
         Ek ÖSYM kontrolleri
 
@@ -355,7 +355,7 @@ class ComplianceAgent(BasePipelineStage):
 
         return {"checks": checks, "warnings": warnings}
 
-    def _calculate_compliance_score(self, checks: Dict[str, bool]) -> float:
+    def _calculate_compliance_score(self, checks: dict[str, bool]) -> float:
         """
         Compliance skoru hesapla
 

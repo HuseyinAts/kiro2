@@ -12,8 +12,8 @@ Requirements: REQ-6.1 - REQ-6.6
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, ConfigDict, Field
@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/response-validation", tags=["validation"])
 
 # Global orchestrator instance
-_orchestrator: Optional[ResponseValidationOrchestrator] = None
+_orchestrator: ResponseValidationOrchestrator | None = None
 
 
 def get_orchestrator() -> ResponseValidationOrchestrator:
@@ -67,11 +67,11 @@ class ValidateResponseRequest(BaseModel):
     user_id: str = Field(description="Kullanıcı ID'si")
     query: str = Field(description="Kullanıcı sorusu/isteği")
     response_text: str = Field(description="Agent'ın metin yanıtı")
-    response_data: Optional[Dict[str, Any]] = Field(
+    response_data: dict[str, Any] | None = Field(
         default=None,
         description="Agent'a özgü yapılandırılmış veri"
     )
-    context: Optional[Dict[str, Any]] = Field(
+    context: dict[str, Any] | None = Field(
         default=None,
         description="Ek bağlam bilgisi"
     )
@@ -95,9 +95,9 @@ class ValidationResponse(BaseModel):
     confidence_score: float
     action: str
     action_description: str
-    errors: List[str]
-    warnings: List[str]
-    suggestions: List[str]
+    errors: list[str]
+    warnings: list[str]
+    suggestions: list[str]
     duration_seconds: float
     timestamp: str
 
@@ -110,12 +110,12 @@ class ValidationStatsResponse(BaseModel):
     review_rate: float
     rejection_rate: float
     average_duration: float
-    by_agent_type: Dict[str, Dict[str, Any]]
+    by_agent_type: dict[str, dict[str, Any]]
     period: str
 
 
 # In-memory stats storage (production'da Redis/DB kullanılmalı)
-_validation_stats: Dict[str, Any] = {
+_validation_stats: dict[str, Any] = {
     "total": 0,
     "approved": 0,
     "review": 0,
@@ -157,7 +157,7 @@ async def validate_response(
             response_text=request.response_text,
             response_data=request.response_data or {},
             context=request.context,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
         # Doğrulama yap
@@ -181,7 +181,7 @@ async def validate_response(
             timestamp=result["timestamp"],
         )
 
-    except AgentTypeError as e:
+    except AgentTypeError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -201,7 +201,7 @@ async def validate_response(
 )
 async def get_validation_report(
     response_id: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Doğrulama raporunu al.
 
@@ -267,7 +267,7 @@ async def get_validation_stats(
 async def quick_validate(
     request: ValidateResponseRequest,
     orchestrator: ResponseValidationOrchestrator = Depends(get_orchestrator),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Hızlı doğrulama (sadece agent-specific).
     """
@@ -299,7 +299,7 @@ async def quick_validate(
         )
 
 
-def _update_stats(result: Dict[str, Any]):
+def _update_stats(result: dict[str, Any]):
     """İstatistikleri güncelle"""
     _validation_stats["total"] += 1
     _validation_stats["total_confidence"] += result["confidence_score"]
@@ -337,7 +337,7 @@ def _update_stats(result: Dict[str, Any]):
 async def get_validation_errors(
     period_hours: int = Query(default=24, description="Dönem (saat)"),
     # current_user = Depends(get_admin_user),  # Production'da aktif edilmeli
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Doğrulama hatalarını al.
 
@@ -362,7 +362,7 @@ async def get_validation_errors(
 async def get_validation_error_report(
     period_hours: int = Query(default=24, description="Rapor dönemi (saat)"),
     # current_user = Depends(get_admin_user),  # Production'da aktif edilmeli
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Kapsamlı hata raporu oluştur.
 
@@ -381,7 +381,7 @@ async def get_validation_error_report(
 )
 async def get_validation_suggestions(
     period_hours: int = Query(default=24, description="Analiz dönemi"),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     İyileştirme önerileri al.
     """
@@ -403,7 +403,7 @@ async def get_validation_suggestions(
 )
 async def enable_validation_hook(
     # current_user = Depends(get_admin_user),  # Production'da aktif edilmeli
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Validation hook'unu etkinleştir.
     """
@@ -423,7 +423,7 @@ async def enable_validation_hook(
 )
 async def disable_validation_hook(
     # current_user = Depends(get_admin_user),  # Production'da aktif edilmeli
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Validation hook'unu devre dışı bırak.
     """
@@ -441,7 +441,7 @@ async def disable_validation_hook(
     summary="Hook istatistiklerini al",
     description="Validation hook istatistiklerini getirir."
 )
-async def get_validation_hook_stats() -> Dict[str, Any]:
+async def get_validation_hook_stats() -> dict[str, Any]:
     """
     Hook istatistiklerini al.
     """

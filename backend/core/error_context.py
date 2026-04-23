@@ -245,7 +245,6 @@ class ErrorContext:
                 }
             except (AttributeError, TypeError) as e:
                 logger.debug(f"Failed to extract local vars: {e}")
-                pass
 
         # Get context variables
         try:
@@ -315,7 +314,6 @@ class ErrorContext:
                 )
         except (AttributeError, IndexError, TypeError) as e:
             logger.debug(f"Failed to extract stack trace: {e}")
-            pass
 
         return stack
 

@@ -10,10 +10,10 @@ import logging
 import secrets
 import uuid
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 
 from passlib.context import CryptContext
 
+from core.password_validator import PasswordValidationError, PasswordValidator
 from models import (
     Kullanici,
     KullaniciGiris,
@@ -24,7 +24,6 @@ from models import (
     TokenYaniti,
     VeliProfili,
 )
-from core.password_validator import PasswordValidator, PasswordValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -46,13 +45,13 @@ class KullaniciServisi:
             )
             KullaniciServisi._warned = True
         # In-memory veri saklama (production'da database kullanılacak)
-        self.kullanicilar: Dict[str, Kullanici] = {}
-        self.sifreler: Dict[str, str] = {}  # kullanici_id -> hashed_password
-        self.email_index: Dict[str, str] = {}  # email -> kullanici_id
-        self.ogrenci_profilleri: Dict[str, OgrenciProfili] = {}
-        self.ogretmen_profilleri: Dict[str, OgretmenProfili] = {}
-        self.veli_profilleri: Dict[str, VeliProfili] = {}
-        self.aktif_tokenlar: Dict[str, Dict] = {}  # token -> user_info
+        self.kullanicilar: dict[str, Kullanici] = {}
+        self.sifreler: dict[str, str] = {}  # kullanici_id -> hashed_password
+        self.email_index: dict[str, str] = {}  # email -> kullanici_id
+        self.ogrenci_profilleri: dict[str, OgrenciProfili] = {}
+        self.ogretmen_profilleri: dict[str, OgretmenProfili] = {}
+        self.veli_profilleri: dict[str, VeliProfili] = {}
+        self.aktif_tokenlar: dict[str, dict] = {}  # token -> user_info
 
     def _sifre_hash_et(self, sifre: str) -> str:
         """Şifreyi bcrypt ile hash'le (SECURITY FIX: SHA-256 → bcrypt)"""
@@ -81,7 +80,7 @@ class KullaniciServisi:
                 kullanici_data.sifre, username=kullanici_data.email.split("@")[0]
             )
         except PasswordValidationError as e:
-            raise ValueError(f"Şifre gereksinimleri karşılanmıyor: {str(e)}")
+            raise ValueError(f"Şifre gereksinimleri karşılanmıyor: {e!s}")
 
         # Kullanıcı ID oluştur
         kullanici_id = str(uuid.uuid4())
@@ -141,7 +140,7 @@ class KullaniciServisi:
             kullanici=kullanici,
         )
 
-    async def token_dogrula(self, token: str) -> Optional[Kullanici]:
+    async def token_dogrula(self, token: str) -> Kullanici | None:
         """Token doğrula ve kullanıcı bilgilerini döndür"""
         if token not in self.aktif_tokenlar:
             return None
@@ -156,13 +155,13 @@ class KullaniciServisi:
         kullanici_id = token_info["kullanici_id"]
         return self.kullanicilar.get(kullanici_id)
 
-    async def kullanici_getir(self, kullanici_id: str) -> Optional[Kullanici]:
+    async def kullanici_getir(self, kullanici_id: str) -> Kullanici | None:
         """Kullanıcı bilgilerini getir"""
         return self.kullanicilar.get(kullanici_id)
 
     async def kullanici_listesi(
-        self, rol: Optional[KullaniciRolu] = None
-    ) -> List[Kullanici]:
+        self, rol: KullaniciRolu | None = None
+    ) -> list[Kullanici]:
         """Kullanıcı listesi getir"""
         kullanicilar = list(self.kullanicilar.values())
 
@@ -187,7 +186,7 @@ class KullaniciServisi:
         self.ogrenci_profilleri[profil_data.ogrenci_id] = profil_data
         return profil_data
 
-    async def ogrenci_profili_getir(self, ogrenci_id: str) -> Optional[OgrenciProfili]:
+    async def ogrenci_profili_getir(self, ogrenci_id: str) -> OgrenciProfili | None:
         """Öğrenci profili getir"""
         return self.ogrenci_profilleri.get(ogrenci_id)
 
@@ -209,7 +208,7 @@ class KullaniciServisi:
 
     async def ogretmen_profili_getir(
         self, ogretmen_id: str
-    ) -> Optional[OgretmenProfili]:
+    ) -> OgretmenProfili | None:
         """Öğretmen profili getir"""
         return self.ogretmen_profilleri.get(ogretmen_id)
 
@@ -227,7 +226,7 @@ class KullaniciServisi:
         self.veli_profilleri[profil_data.veli_id] = profil_data
         return profil_data
 
-    async def veli_profili_getir(self, veli_id: str) -> Optional[VeliProfili]:
+    async def veli_profili_getir(self, veli_id: str) -> VeliProfili | None:
         """Veli profili getir"""
         return self.veli_profilleri.get(veli_id)
 
@@ -239,8 +238,8 @@ class KullaniciServisi:
         return False
 
     async def kullanici_guncelle(
-        self, kullanici_id: str, kullanici_data: Dict
-    ) -> Optional[Kullanici]:
+        self, kullanici_id: str, kullanici_data: dict
+    ) -> Kullanici | None:
         """Kullanıcı bilgilerini güncelle"""
         if kullanici_id not in self.kullanicilar:
             return None

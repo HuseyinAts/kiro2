@@ -6,19 +6,19 @@ Spaced repetition, concept linking ve gap detection.
 """
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 from uuid import UUID
 
 import networkx as nx
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.diary import LearningEntry
 from api.schemas.diary import (
     LearningEntryCreate,
     LearningReviewRequest,
     LearningReviewResponse,
 )
+from models.diary import LearningEntry
 
 
 class LearningJournalService:
@@ -51,7 +51,7 @@ class LearningJournalService:
             db: AsyncSession - SQLAlchemy async session
         """
         self.db = db
-        self._knowledge_graph: Optional[nx.Graph] = None
+        self._knowledge_graph: nx.Graph | None = None
 
     # =========================================================================
     # REQ-4.1: Knowledge Entry Creation
@@ -110,7 +110,7 @@ class LearningJournalService:
     # REQ-4.2: Categorization with Tags
     # =========================================================================
 
-    def auto_tag(self, content: str, title: str) -> List[str]:
+    def auto_tag(self, content: str, title: str) -> list[str]:
         """
         Icerigi otomatik etiketle (REQ-4.2).
 
@@ -121,7 +121,7 @@ class LearningJournalService:
         Returns:
             List[str] - Otomatik etiketler
         """
-        tags: Set[str] = set()
+        tags: set[str] = set()
         text = f"{title} {content}".lower()
 
         # Domain detection
@@ -161,8 +161,8 @@ class LearningJournalService:
         self,
         entry_id: UUID,
         user_id: UUID,
-        tags: List[str],
-    ) -> Optional[LearningEntry]:
+        tags: list[str],
+    ) -> LearningEntry | None:
         """
         Etiketleri guncelle.
 
@@ -192,8 +192,8 @@ class LearningJournalService:
         self,
         entry_id: UUID,
         user_id: UUID,
-        concepts: List[str],
-    ) -> Optional[LearningEntry]:
+        concepts: list[str],
+    ) -> LearningEntry | None:
         """
         Kavramlari bagla (REQ-4.3).
 
@@ -294,7 +294,7 @@ class LearningJournalService:
         self._knowledge_graph = G
         return G
 
-    def get_graph_statistics(self, G: nx.Graph) -> Dict[str, Any]:
+    def get_graph_statistics(self, G: nx.Graph) -> dict[str, Any]:
         """
         Graph istatistiklerini getir.
 
@@ -343,7 +343,7 @@ class LearningJournalService:
         self,
         user_id: UUID,
         limit: int = 10,
-    ) -> List[LearningEntry]:
+    ) -> list[LearningEntry]:
         """
         Review gereken kayitlari getir (REQ-4.4).
 
@@ -375,7 +375,7 @@ class LearningJournalService:
         self,
         user_id: UUID,
         data: LearningReviewRequest,
-    ) -> Optional[LearningReviewResponse]:
+    ) -> LearningReviewResponse | None:
         """
         Review sonucunu kaydet ve schedule guncelle (REQ-4.4).
 
@@ -455,7 +455,7 @@ class LearningJournalService:
     async def detect_gaps(
         self,
         user_id: UUID,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Knowledge gap'leri tespit et (REQ-4.5).
 
@@ -465,7 +465,7 @@ class LearningJournalService:
         Returns:
             List[Dict] - Tespit edilen gap'ler
         """
-        gaps: List[Dict[str, Any]] = []
+        gaps: list[dict[str, Any]] = []
 
         # Tum entry'leri getir
         entries = await self.get_entries(user_id, limit=500)
@@ -479,7 +479,7 @@ class LearningJournalService:
 
         # Domain coverage analizi
         covered_domains = set()
-        domain_entries: Dict[str, int] = {}
+        domain_entries: dict[str, int] = {}
 
         for entry in entries:
             if entry.domain:
@@ -546,10 +546,10 @@ class LearningJournalService:
     async def get_entries(
         self,
         user_id: UUID,
-        domain: Optional[str] = None,
-        tag: Optional[str] = None,
+        domain: str | None = None,
+        tag: str | None = None,
         limit: int = 50,
-    ) -> List[LearningEntry]:
+    ) -> list[LearningEntry]:
         """
         Ogrenme kayitlarini getir.
 
@@ -587,7 +587,7 @@ class LearningJournalService:
         self,
         entry_id: UUID,
         user_id: UUID,
-    ) -> Optional[LearningEntry]:
+    ) -> LearningEntry | None:
         """
         ID ile kayit getir.
 
@@ -612,7 +612,7 @@ class LearningJournalService:
         entry_id: UUID,
         user_id: UUID,
         data: LearningEntryCreate,
-    ) -> Optional[LearningEntry]:
+    ) -> LearningEntry | None:
         """
         Kaydi guncelle.
 
@@ -683,7 +683,7 @@ class LearningJournalService:
         user_id: UUID,
         query: str,
         limit: int = 20,
-    ) -> List[LearningEntry]:
+    ) -> list[LearningEntry]:
         """
         Kayitlarda arama yap.
 
@@ -731,7 +731,7 @@ class LearningJournalService:
         entry_id: UUID,
         user_id: UUID,
         limit: int = 5,
-    ) -> List[LearningEntry]:
+    ) -> list[LearningEntry]:
         """
         Ilgili kayitlari getir.
 

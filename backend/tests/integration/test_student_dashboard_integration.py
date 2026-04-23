@@ -10,11 +10,12 @@ pytestmark = pytest.mark.skipif(
     reason="DuplicateTable: idx_student_learning_style already exists in PostgreSQL, requires clean DB state",
 )
 from datetime import datetime, timedelta
+
 from sqlalchemy.orm import Session
 
-from models.database import User, UserRole, StudentProfile, ExamSession, ExamType
+from models.dashboard import Hedef, ProfilGuncelleme
+from models.database import ExamSession, ExamType, StudentProfile, User, UserRole
 from services.student_dashboard_service import OgrenciDashboardServisi
-from models.dashboard import ProfilGuncelleme, Hedef
 
 
 def create_test_student(session: Session, username: str, email: str):

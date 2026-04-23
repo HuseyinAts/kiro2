@@ -5,12 +5,12 @@ Demonstrates migration from primitive to structured logging
 
 from core.structured_logger import (
     get_logger,
-    log_exam_event,
     log_api_request,
     log_api_response,
-    log_database_query,
     log_cache_operation,
+    log_database_query,
     log_error_with_context,
+    log_exam_event,
 )
 
 # Initialize logger

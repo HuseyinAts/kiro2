@@ -7,8 +7,8 @@ Note: Orphan branch - original parent db66ce0bd16f was removed
       CASCADE DELETE logic moved to 20260123_cascade_deletes.py
 
 """
-from typing import Sequence, Union
-
+from collections.abc import Sequence
+from typing import Union
 
 # revision identifiers, used by Alembic.
 revision: str = "4aec28c6c9e0"

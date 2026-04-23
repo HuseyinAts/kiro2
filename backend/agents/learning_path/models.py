@@ -17,7 +17,7 @@ Models:
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class LearningStyle(Enum):
@@ -82,9 +82,9 @@ class StudentProfile:
     learning_goal: str
     learning_style: LearningStyle
     knowledge_level: KnowledgeLevel
-    interests: List[str]
+    interests: list[str]
     available_time: int  # minutes per day
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         """Validate after initialization"""
@@ -93,7 +93,7 @@ class StudentProfile:
         if self.available_time < 0:
             raise ValueError("available_time must be non-negative")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
             "student_id": self.student_id,
@@ -109,7 +109,7 @@ class StudentProfile:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "StudentProfile":
+    def from_dict(cls, data: dict[str, Any]) -> "StudentProfile":
         """Create from dictionary"""
         return cls(
             student_id=data["student_id"],
@@ -154,9 +154,9 @@ class LearningResource:
     estimated_time: int  # minutes
     language: str
     description: str
-    tags: List[str]
-    rating: Optional[float] = None
-    metadata: Optional[Dict[str, Any]] = None
+    tags: list[str]
+    rating: float | None = None
+    metadata: dict[str, Any] | None = None
 
     def __post_init__(self):
         """Validate after initialization"""
@@ -169,7 +169,7 @@ class LearningResource:
         if self.rating is not None and (self.rating < 0 or self.rating > 5):
             raise ValueError("rating must be between 0 and 5")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
             "resource_id": self.resource_id,
@@ -187,7 +187,7 @@ class LearningResource:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "LearningResource":
+    def from_dict(cls, data: dict[str, Any]) -> "LearningResource":
         """Create from dictionary"""
         return cls(
             resource_id=data["resource_id"],
@@ -239,11 +239,11 @@ class LearningPhase:
     name: str
     description: str
     order: int
-    resources: List[LearningResource]
-    learning_objectives: List[str]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    resources: list[LearningResource]
+    learning_objectives: list[str]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
             "phase_id": self.phase_id,
@@ -256,7 +256,7 @@ class LearningPhase:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "LearningPhase":
+    def from_dict(cls, data: dict[str, Any]) -> "LearningPhase":
         """Create from dictionary"""
         return cls(
             phase_id=data["phase_id"],
@@ -290,11 +290,11 @@ class LearningPath:
     path_id: str
     student_id: str
     goal: str
-    resources: List[LearningResource]
-    phases: List[LearningPhase]
+    resources: list[LearningResource]
+    phases: list[LearningPhase]
     created_at: datetime
     reasoning: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         """Validate after initialization"""
@@ -303,7 +303,7 @@ class LearningPath:
         if not self.student_id:
             raise ValueError("student_id cannot be empty")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
             "path_id": self.path_id,
@@ -317,7 +317,7 @@ class LearningPath:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "LearningPath":
+    def from_dict(cls, data: dict[str, Any]) -> "LearningPath":
         """Create from dictionary"""
         return cls(
             path_id=data["path_id"],
@@ -330,14 +330,14 @@ class LearningPath:
             metadata=data.get("metadata", {}),
         )
 
-    def get_resources_by_phase(self, phase_index: int) -> List[LearningResource]:
+    def get_resources_by_phase(self, phase_index: int) -> list[LearningResource]:
         """Get resources for a specific phase"""
         if phase_index < 0 or phase_index >= len(self.phases):
             raise ValueError(f"Invalid phase_index: {phase_index}")
 
         return self.phases[phase_index].resources
 
-    def get_completion_percentage(self, completed_resource_ids: List[str]) -> float:
+    def get_completion_percentage(self, completed_resource_ids: list[str]) -> float:
         """Calculate completion percentage"""
         if not self.resources:
             return 0.0
@@ -347,7 +347,7 @@ class LearningPath:
         )
         return (completed_count / len(self.resources)) * 100
 
-    def estimate_remaining_time(self, completed_resource_ids: List[str]) -> int:
+    def estimate_remaining_time(self, completed_resource_ids: list[str]) -> int:
         """Estimate remaining time in minutes"""
         remaining_time = sum(
             r.estimated_time
@@ -378,11 +378,11 @@ class PathNode:
     node_id: str
     topic: str
     order: int
-    resources: List[LearningResource]
+    resources: list[LearningResource]
     estimated_time: int  # minutes
     is_completed: bool = False
-    prerequisites: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    prerequisites: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         """Validate after initialization"""
@@ -395,7 +395,7 @@ class PathNode:
         if self.estimated_time < 0:
             raise ValueError("estimated_time must be non-negative")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
             "node_id": self.node_id,
@@ -409,7 +409,7 @@ class PathNode:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "PathNode":
+    def from_dict(cls, data: dict[str, Any]) -> "PathNode":
         """Create from dictionary"""
         return cls(
             node_id=data["node_id"],

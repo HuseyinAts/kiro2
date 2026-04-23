@@ -50,7 +50,7 @@ async def init_database():
         return True
 
     except Exception as e:
-        logger.error(f"[X] Database initialization hatası: {str(e)}")
+        logger.error(f"[X] Database initialization hatası: {e!s}")
         return False
     finally:
         await db_manager.close()
@@ -81,7 +81,7 @@ async def reset_database():
         return True
 
     except Exception as e:
-        logger.error(f"[X] Database reset hatası: {str(e)}")
+        logger.error(f"[X] Database reset hatası: {e!s}")
         return False
     finally:
         await db_manager.close()
@@ -117,7 +117,7 @@ async def check_database_status():
         return health["healthy"]
 
     except Exception as e:
-        logger.error(f"[X] Database durum kontrolü hatası: {str(e)}")
+        logger.error(f"[X] Database durum kontrolü hatası: {e!s}")
         return False
     finally:
         await db_manager.close()

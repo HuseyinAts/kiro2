@@ -20,23 +20,28 @@ Date: 2026-01-17
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
-from sqlalchemy import and_, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from backend.hooks.claude_md_improvement.models import (
+    ExitCodeResult,
+    ImprovementTrigger,
+    RuleEffectiveness,
+)
 from backend.models.claude_md_improvement_models import (
-    FeedbackRecord as FeedbackRecordDB,
-    RuleEffectiveness as RuleEffectivenessDB,
-    ImprovementTrigger as ImprovementTriggerDB,
     AuditLog,
 )
-from backend.hooks.claude_md_improvement.models import (
-    RuleEffectiveness,
-    ImprovementTrigger,
-    ExitCodeResult,
+from backend.models.claude_md_improvement_models import (
+    FeedbackRecord as FeedbackRecordDB,
 )
+from backend.models.claude_md_improvement_models import (
+    ImprovementTrigger as ImprovementTriggerDB,
+)
+from backend.models.claude_md_improvement_models import (
+    RuleEffectiveness as RuleEffectivenessDB,
+)
+from sqlalchemy import and_, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class FeedbackService:
@@ -84,11 +89,11 @@ class FeedbackService:
         session: AsyncSession,
         task_id: str,
         success: bool,
-        rule_id: Optional[str] = None,
+        rule_id: str | None = None,
         execution_time: float = 0.0,
-        session_id: Optional[str] = None,
-        agent_type: Optional[str] = None,
-        context: Optional[Dict[str, Any]] = None,
+        session_id: str | None = None,
+        agent_type: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> ExitCodeResult:
         """
         Task outcome kaydeder (REQ-1.1).
@@ -145,8 +150,8 @@ class FeedbackService:
         session: AsyncSession,
         task_id: str,
         rating: int,
-        comment: Optional[str] = None,
-        rule_id: Optional[str] = None,
+        comment: str | None = None,
+        rule_id: str | None = None,
     ) -> ExitCodeResult:
         """
         Kullanıcı feedback'i kaydeder (REQ-1.2).
@@ -207,7 +212,7 @@ class FeedbackService:
         task_id: str,
         retry_count: int = 0,
         edit_frequency: int = 0,
-        rule_id: Optional[str] = None,
+        rule_id: str | None = None,
     ) -> ExitCodeResult:
         """
         Implicit feedback kaydeder (REQ-1.3).
@@ -258,7 +263,7 @@ class FeedbackService:
         test_passed: bool,
         lint_passed: bool = True,
         type_check_passed: bool = True,
-        rule_id: Optional[str] = None,
+        rule_id: str | None = None,
     ) -> ExitCodeResult:
         """
         Boris Cherny verification sonuçlarını kaydeder.
@@ -328,7 +333,7 @@ class FeedbackService:
         Returns:
             RuleEffectiveness
         """
-        cutoff = datetime.now(timezone.utc) - timedelta(days=self.window_days)
+        cutoff = datetime.now(UTC) - timedelta(days=self.window_days)
 
         # Get feedback records
         query = select(FeedbackRecordDB).where(
@@ -408,7 +413,7 @@ class FeedbackService:
 
     async def check_improvement_needed(
         self, session: AsyncSession, rule_id: str
-    ) -> Optional[ImprovementTrigger]:
+    ) -> ImprovementTrigger | None:
         """
         Kuralın iyileştirme gerektirip gerektirmediğini kontrol eder (REQ-1.5).
 
@@ -469,7 +474,7 @@ class FeedbackService:
 
     async def get_feedback_summary(
         self, session: AsyncSession
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         30-day rolling window feedback özeti getirir (REQ-1.6).
 
@@ -479,7 +484,7 @@ class FeedbackService:
         Returns:
             Feedback özeti
         """
-        cutoff = datetime.now(timezone.utc) - timedelta(days=self.window_days)
+        cutoff = datetime.now(UTC) - timedelta(days=self.window_days)
 
         # Total count
         total_query = select(func.count(FeedbackRecordDB.id)).where(
@@ -536,7 +541,7 @@ class FeedbackService:
             "type_distribution": type_distribution,
             "rules_tracked": rules_tracked,
             "pending_improvements": pending_improvements,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
         }
 
     async def _update_effectiveness(
@@ -544,8 +549,8 @@ class FeedbackService:
         session: AsyncSession,
         rule_id: str,
         success: bool,
-        explicit_score: Optional[float] = None,
-        implicit_score: Optional[float] = None,
+        explicit_score: float | None = None,
+        implicit_score: float | None = None,
     ) -> None:
         """Rule effectiveness günceller."""
         query = select(RuleEffectivenessDB).where(
@@ -592,17 +597,17 @@ class FeedbackService:
             effectiveness.effectiveness_score = (weighted + success_rate) / 2
             effectiveness.confidence = min(effectiveness.total_feedback / 100, 1.0)
 
-        effectiveness.last_updated = datetime.now(timezone.utc)
+        effectiveness.last_updated = datetime.now(UTC)
 
     async def _log_action(
         self,
         session: AsyncSession,
         action: str,
         entity_type: str,
-        entity_id: Optional[str] = None,
-        actor: Optional[str] = None,
-        reason: Optional[str] = None,
-        details: Optional[Dict[str, Any]] = None,
+        entity_id: str | None = None,
+        actor: str | None = None,
+        reason: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Audit log oluşturur."""
         log = AuditLog(
@@ -617,7 +622,7 @@ class FeedbackService:
 
 
 # Singleton instance
-_feedback_service: Optional[FeedbackService] = None
+_feedback_service: FeedbackService | None = None
 
 
 def get_feedback_service() -> FeedbackService:

@@ -32,9 +32,9 @@ Usage:
 
 import logging
 import random
-from typing import Dict, Any
+from typing import Any
 
-from locust import HttpUser, task, between, events
+from locust import HttpUser, between, events, task
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +96,7 @@ def generate_student_id() -> str:
     return f"LOAD_TEST_STU_{random.randint(10000, 99999)}"
 
 
-def generate_student_profile() -> Dict[str, Any]:
+def generate_student_profile() -> dict[str, Any]:
     """Generate random student profile data"""
     return {
         "student_id": generate_student_id(),
@@ -111,7 +111,7 @@ def generate_student_profile() -> Dict[str, Any]:
     }
 
 
-def generate_learning_path_request() -> Dict[str, Any]:
+def generate_learning_path_request() -> dict[str, Any]:
     """Generate random learning path creation request"""
     subject = random.choice(SUBJECTS)
     return {
@@ -123,7 +123,7 @@ def generate_learning_path_request() -> Dict[str, Any]:
     }
 
 
-def generate_resource_search_request() -> Dict[str, Any]:
+def generate_resource_search_request() -> dict[str, Any]:
     """Generate random resource search request"""
     subject = random.choice(SUBJECTS)
     topics = TOPICS_BY_SUBJECT.get(subject, [])
@@ -138,7 +138,7 @@ def generate_resource_search_request() -> Dict[str, Any]:
     }
 
 
-def generate_quiz_submission(quiz_id: str = "QZ_LOAD_TEST_001") -> Dict[str, Any]:
+def generate_quiz_submission(quiz_id: str = "QZ_LOAD_TEST_001") -> dict[str, Any]:
     """Generate random quiz submission"""
     question_count = 10
     answers = []
@@ -155,7 +155,7 @@ def generate_quiz_submission(quiz_id: str = "QZ_LOAD_TEST_001") -> Dict[str, Any
     return {"student_id": generate_student_id(), "quiz_id": quiz_id, "answers": answers}
 
 
-def generate_completion_update() -> Dict[str, Any]:
+def generate_completion_update() -> dict[str, Any]:
     """Generate random topic completion update"""
     num_completions = random.randint(1, 5)
     completions = {}

@@ -6,8 +6,8 @@ Supports both JPype (direct Zemberek access) and HTTP backend.
 """
 
 import logging
-from typing import Any, Dict, Optional
 from datetime import datetime
+from typing import Any
 
 from .base import BaseToolHandler
 
@@ -22,7 +22,7 @@ class HealthHandler(BaseToolHandler):
 
     tool_name = "health"
 
-    async def _call_jpype(self, **kwargs) -> Dict[str, Any]:
+    async def _call_jpype(self, **kwargs) -> dict[str, Any]:
         """
         Check health using JPype bridge.
 
@@ -76,7 +76,7 @@ class HealthHandler(BaseToolHandler):
             "error_message": error_message,
         }
 
-    async def _call_backend(self, **kwargs) -> Dict[str, Any]:
+    async def _call_backend(self, **kwargs) -> dict[str, Any]:
         """
         Check health of all Zemberek components
 
@@ -149,12 +149,12 @@ class HealthHandler(BaseToolHandler):
             return True
         return False
 
-    async def _get_cache_hit_rate(self) -> Optional[float]:
+    async def _get_cache_hit_rate(self) -> float | None:
         """Get cache hit rate from stats"""
         if self.cache and self.cache.is_connected:
             return round(self.cache.stats.hit_rate, 4)
         return None
 
-    def _get_cache_input(self, **kwargs) -> Optional[str]:
+    def _get_cache_input(self, **kwargs) -> str | None:
         """Health check results should not be cached"""
         return None

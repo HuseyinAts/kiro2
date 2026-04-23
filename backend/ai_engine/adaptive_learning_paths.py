@@ -6,8 +6,9 @@ AI-powered personalized learning path creation and optimization
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set
 from enum import Enum
+from typing import Any
+
 import networkx as nx
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -59,10 +60,10 @@ class LearningObjective:
     topic: str
 
     # Hierarchy and relationships
-    prerequisites: List[str] = field(default_factory=list)
-    dependencies: List[str] = field(default_factory=list)
-    enables: List[str] = field(default_factory=list)  # What this enables
-    related_concepts: List[str] = field(default_factory=list)
+    prerequisites: list[str] = field(default_factory=list)
+    dependencies: list[str] = field(default_factory=list)
+    enables: list[str] = field(default_factory=list)  # What this enables
+    related_concepts: list[str] = field(default_factory=list)
 
     # Learning characteristics
     estimated_time: int = 30  # minutes
@@ -72,17 +73,17 @@ class LearningObjective:
 
     # Assessment criteria
     mastery_threshold: float = 0.8  # 0-1
-    assessment_methods: List[str] = field(default_factory=list)
+    assessment_methods: list[str] = field(default_factory=list)
 
     # Personalization factors
-    learning_styles: List[str] = field(
+    learning_styles: list[str] = field(
         default_factory=list
     )  # visual, auditory, kinesthetic
-    preferred_modalities: List[str] = field(
+    preferred_modalities: list[str] = field(
         default_factory=list
     )  # video, text, interactive
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -100,23 +101,23 @@ class LearningNode:
     time_spent: int = 0  # minutes
 
     # Scheduling
-    scheduled_start: Optional[datetime] = None
-    scheduled_end: Optional[datetime] = None
-    actual_start: Optional[datetime] = None
-    actual_end: Optional[datetime] = None
+    scheduled_start: datetime | None = None
+    scheduled_end: datetime | None = None
+    actual_start: datetime | None = None
+    actual_end: datetime | None = None
 
     # Adaptive parameters
     difficulty_adjustment: float = 0.0  # -0.5 to +0.5
     repetition_count: int = 0
-    last_review: Optional[datetime] = None
-    next_review: Optional[datetime] = None
+    last_review: datetime | None = None
+    next_review: datetime | None = None
 
     # Resources and activities
-    resources: List[Dict[str, Any]] = field(default_factory=list)
-    activities: List[Dict[str, Any]] = field(default_factory=list)
-    assessments: List[Dict[str, Any]] = field(default_factory=list)
+    resources: list[dict[str, Any]] = field(default_factory=list)
+    activities: list[dict[str, Any]] = field(default_factory=list)
+    assessments: list[dict[str, Any]] = field(default_factory=list)
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -131,14 +132,14 @@ class LearningPath:
     # Path metadata
     title: str
     description: str
-    learning_goals: List[str]
+    learning_goals: list[str]
     target_completion: datetime
     estimated_duration: int  # minutes
 
     # Path structure
-    nodes: List[LearningNode]
-    dependencies: Dict[str, List[str]]  # node_id -> [prerequisite_node_ids]
-    alternative_paths: Dict[str, List[str]] = field(default_factory=dict)
+    nodes: list[LearningNode]
+    dependencies: dict[str, list[str]]  # node_id -> [prerequisite_node_ids]
+    alternative_paths: dict[str, list[str]] = field(default_factory=dict)
 
     # Progress tracking
     overall_progress: float = 0.0  # 0-1
@@ -148,20 +149,20 @@ class LearningPath:
     # Adaptive parameters
     difficulty_preference: float = 0.5  # 0-1
     pace_preference: float = 0.5  # 0-1 (slow to fast)
-    learning_style_weights: Dict[str, float] = field(default_factory=dict)
+    learning_style_weights: dict[str, float] = field(default_factory=dict)
 
     # Performance metrics
     average_mastery: float = 0.0
-    struggle_points: List[str] = field(
+    struggle_points: list[str] = field(
         default_factory=list
     )  # node_ids where student struggled
-    strength_areas: List[str] = field(default_factory=list)
+    strength_areas: list[str] = field(default_factory=list)
 
     # Scheduling
     created_at: datetime = field(default_factory=datetime.now)
     last_updated: datetime = field(default_factory=datetime.now)
 
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -169,10 +170,10 @@ class PathOptimizationContext:
     """Context for path optimization"""
 
     available_time: int  # minutes per week
-    deadline: Optional[datetime] = None
-    focus_areas: List[str] = field(default_factory=list)  # specific topics to emphasize
-    avoid_areas: List[str] = field(default_factory=list)  # topics to minimize
-    learning_style_preference: Optional[str] = None
+    deadline: datetime | None = None
+    focus_areas: list[str] = field(default_factory=list)  # specific topics to emphasize
+    avoid_areas: list[str] = field(default_factory=list)  # topics to minimize
+    learning_style_preference: str | None = None
     difficulty_tolerance: float = 0.5  # 0-1
     novelty_preference: float = 0.5  # 0-1 (familiar to novel)
     collaboration_preference: float = 0.5  # 0-1 (individual to collaborative)
@@ -396,7 +397,7 @@ class AdaptiveLearningPathGenerator:
     async def generate_personalized_path(
         self,
         student_id: str,
-        learning_goals: List[str],
+        learning_goals: list[str],
         context: PathOptimizationContext,
         path_type: LearningPathType = LearningPathType.ADAPTIVE,
     ) -> LearningPath:
@@ -442,7 +443,7 @@ class AdaptiveLearningPathGenerator:
 
         return optimized_path
 
-    async def _analyze_student_profile(self, student_id: str) -> Dict[str, Any]:
+    async def _analyze_student_profile(self, student_id: str) -> dict[str, Any]:
         """Analyze student profile for personalization"""
         # This would typically load from database
         # For now, create a sample analysis
@@ -478,8 +479,8 @@ class AdaptiveLearningPathGenerator:
         return analysis
 
     async def _identify_required_objectives(
-        self, learning_goals: List[str]
-    ) -> List[str]:
+        self, learning_goals: list[str]
+    ) -> list[str]:
         """Identify all objectives needed to achieve learning goals"""
         required_objectives = set()
 
@@ -507,7 +508,7 @@ class AdaptiveLearningPathGenerator:
 
         return list(all_objectives)
 
-    def _get_all_prerequisites(self, objective_id: str) -> Set[str]:
+    def _get_all_prerequisites(self, objective_id: str) -> set[str]:
         """Get all prerequisites for an objective (recursive)"""
         prerequisites = set()
 
@@ -523,10 +524,10 @@ class AdaptiveLearningPathGenerator:
 
     async def _optimize_objective_selection(
         self,
-        required_objectives: List[str],
-        student_analysis: Dict[str, Any],
+        required_objectives: list[str],
+        student_analysis: dict[str, Any],
         context: PathOptimizationContext,
-    ) -> List[str]:
+    ) -> list[str]:
         """Optimize objective selection based on student needs and constraints"""
 
         optimized = []
@@ -565,10 +566,10 @@ class AdaptiveLearningPathGenerator:
 
     async def _generate_optimal_sequence(
         self,
-        objectives: List[str],
-        student_analysis: Dict[str, Any],
+        objectives: list[str],
+        student_analysis: dict[str, Any],
         context: PathOptimizationContext,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate optimal learning sequence using topological sort and optimization"""
 
         # Create subgraph with only required objectives
@@ -588,7 +589,7 @@ class AdaptiveLearningPathGenerator:
 
         return optimized_sequence
 
-    def _handle_dependency_cycles(self, graph: nx.DiGraph) -> List[str]:
+    def _handle_dependency_cycles(self, graph: nx.DiGraph) -> list[str]:
         """Handle dependency cycles in the learning graph"""
         # Find and break cycles
         cycles = list(nx.simple_cycles(graph))
@@ -613,10 +614,10 @@ class AdaptiveLearningPathGenerator:
 
     async def _optimize_sequence_order(
         self,
-        base_sequence: List[str],
-        student_analysis: Dict[str, Any],
+        base_sequence: list[str],
+        student_analysis: dict[str, Any],
         context: PathOptimizationContext,
-    ) -> List[str]:
+    ) -> list[str]:
         """Optimize the order of objectives in the sequence"""
 
         # Group objectives that can be learned in parallel
@@ -636,7 +637,7 @@ class AdaptiveLearningPathGenerator:
 
         return optimized_sequence
 
-    def _identify_parallel_groups(self, sequence: List[str]) -> List[List[str]]:
+    def _identify_parallel_groups(self, sequence: list[str]) -> list[list[str]]:
         """Identify groups of objectives that can be learned in parallel"""
         groups = []
         current_group = []
@@ -664,10 +665,10 @@ class AdaptiveLearningPathGenerator:
 
     async def _sort_parallel_group(
         self,
-        group: List[str],
-        student_analysis: Dict[str, Any],
+        group: list[str],
+        student_analysis: dict[str, Any],
         context: PathOptimizationContext,
-    ) -> List[str]:
+    ) -> list[str]:
         """Sort a group of parallel objectives based on optimization criteria"""
 
         # Calculate scores for each objective
@@ -715,10 +716,10 @@ class AdaptiveLearningPathGenerator:
 
     async def _create_learning_nodes(
         self,
-        sequence: List[str],
-        student_analysis: Dict[str, Any],
+        sequence: list[str],
+        student_analysis: dict[str, Any],
         context: PathOptimizationContext,
-    ) -> List[LearningNode]:
+    ) -> list[LearningNode]:
         """Create learning nodes with resources and activities"""
 
         nodes = []
@@ -767,7 +768,7 @@ class AdaptiveLearningPathGenerator:
             return LearningNodeType.CONCEPT
 
         # Middle nodes are skill practice
-        elif position < total_nodes * 0.7:
+        if position < total_nodes * 0.7:
             return (
                 LearningNodeType.SKILL
                 if position % 2 == 0
@@ -775,15 +776,14 @@ class AdaptiveLearningPathGenerator:
             )
 
         # Later nodes are assessment and projects
-        else:
-            return (
-                LearningNodeType.ASSESSMENT
-                if position % 2 == 0
-                else LearningNodeType.PROJECT
-            )
+        return (
+            LearningNodeType.ASSESSMENT
+            if position % 2 == 0
+            else LearningNodeType.PROJECT
+        )
 
     async def _add_personalized_resources(
-        self, node: LearningNode, student_analysis: Dict[str, Any]
+        self, node: LearningNode, student_analysis: dict[str, Any]
     ):
         """Add personalized learning resources to node"""
 
@@ -814,7 +814,7 @@ class AdaptiveLearningPathGenerator:
                 node.resources.append(resource)
 
     async def _add_learning_activities(
-        self, node: LearningNode, student_analysis: Dict[str, Any]
+        self, node: LearningNode, student_analysis: dict[str, Any]
     ):
         """Add learning activities to node"""
 
@@ -841,7 +841,7 @@ class AdaptiveLearningPathGenerator:
             node.activities.append(activity)
 
     async def _add_assessments(
-        self, node: LearningNode, student_analysis: Dict[str, Any]
+        self, node: LearningNode, student_analysis: dict[str, Any]
     ):
         """Add assessments to node"""
 
@@ -861,8 +861,8 @@ class AdaptiveLearningPathGenerator:
     async def _build_learning_path(
         self,
         student_id: str,
-        nodes: List[LearningNode],
-        learning_goals: List[str],
+        nodes: list[LearningNode],
+        learning_goals: list[str],
         context: PathOptimizationContext,
         path_type: LearningPathType,
     ) -> LearningPath:
@@ -914,7 +914,7 @@ class AdaptiveLearningPathGenerator:
     async def _optimize_path_for_student(
         self,
         path: LearningPath,
-        student_analysis: Dict[str, Any],
+        student_analysis: dict[str, Any],
         context: PathOptimizationContext,
     ) -> LearningPath:
         """Final optimization of the learning path"""
@@ -947,7 +947,7 @@ class AdaptiveLearningPathGenerator:
         return path
 
     async def _optimize_scheduling(
-        self, path: LearningPath, available_time: int, deadline: Optional[datetime]
+        self, path: LearningPath, available_time: int, deadline: datetime | None
     ):
         """Optimize scheduling of learning nodes"""
 

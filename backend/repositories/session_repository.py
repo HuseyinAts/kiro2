@@ -2,10 +2,10 @@
 Session Repository - Authentication & Token Management
 PHASE 2.5: Replaces in-memory token storage (self.aktif_tokenlar)
 """
-from datetime import datetime, timedelta, timezone
-from typing import Optional, List
-from sqlalchemy.orm import Session as DBSession
+from datetime import UTC, datetime, timedelta
+
 from sqlalchemy import and_
+from sqlalchemy.orm import Session as DBSession
 
 from models.database import Session, User
 
@@ -24,15 +24,15 @@ class SessionRepository:
         user_id: str,
         token: str,
         expires_in_seconds: int = 86400,  # 24 hours default
-        device_info: Optional[dict] = None,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
+        device_info: dict | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
     ) -> Session:
         """
         Create new session
         Replaces: self.aktif_tokenlar[token] = {...}
         """
-        expires_at = datetime.now(timezone.utc) + timedelta(seconds=expires_in_seconds)
+        expires_at = datetime.now(UTC) + timedelta(seconds=expires_in_seconds)
 
         session = Session(
             user_id=user_id,
@@ -42,8 +42,8 @@ class SessionRepository:
             ip_address=ip_address,
             user_agent=user_agent,
             is_active=True,
-            created_at=datetime.now(timezone.utc),
-            last_activity_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            last_activity_at=datetime.now(UTC),
         )
 
         self.db.add(session)
@@ -52,7 +52,7 @@ class SessionRepository:
 
         return session
 
-    def get_session_by_token(self, token: str) -> Optional[Session]:
+    def get_session_by_token(self, token: str) -> Session | None:
         """
         Get session by token
         Replaces: self.aktif_tokenlar.get(token)
@@ -63,13 +63,13 @@ class SessionRepository:
                 and_(
                     Session.token == token,
                     Session.is_active == True,
-                    Session.expires_at > datetime.now(timezone.utc),
+                    Session.expires_at > datetime.now(UTC),
                 )
             )
             .first()
         )
 
-    def get_active_sessions_for_user(self, user_id: str) -> List[Session]:
+    def get_active_sessions_for_user(self, user_id: str) -> list[Session]:
         """Get all active sessions for a user"""
         return (
             self.db.query(Session)
@@ -77,21 +77,21 @@ class SessionRepository:
                 and_(
                     Session.user_id == user_id,
                     Session.is_active == True,
-                    Session.expires_at > datetime.now(timezone.utc),
+                    Session.expires_at > datetime.now(UTC),
                 )
             )
             .order_by(Session.last_activity_at.desc())
             .all()
         )
 
-    def update_activity(self, token: str) -> Optional[Session]:
+    def update_activity(self, token: str) -> Session | None:
         """
         Update last activity timestamp
         For keeping session alive
         """
         session = self.get_session_by_token(token)
         if session:
-            session.last_activity_at = datetime.now(timezone.utc)
+            session.last_activity_at = datetime.now(UTC)
             self.db.commit()
             self.db.refresh(session)
 
@@ -131,7 +131,7 @@ class SessionRepository:
         """
         expired_sessions = (
             self.db.query(Session)
-            .filter(Session.expires_at < datetime.now(timezone.utc))
+            .filter(Session.expires_at < datetime.now(UTC))
             .all()
         )
 
@@ -144,7 +144,7 @@ class SessionRepository:
 
         return count
 
-    def get_user_from_token(self, token: str) -> Optional[User]:
+    def get_user_from_token(self, token: str) -> User | None:
         """
         Get user from token (convenience method)
         Replaces complex token validation logic
@@ -157,7 +157,7 @@ class SessionRepository:
 
         return None
 
-    def extend_session(self, token: str, additional_seconds: int = 3600) -> Optional[Session]:
+    def extend_session(self, token: str, additional_seconds: int = 3600) -> Session | None:
         """
         Extend session expiration
         For "remember me" functionality

@@ -6,13 +6,17 @@ Tests the orchestration of reward hacking detection.
 
 from __future__ import annotations
 
-import pytest
-import tempfile
 import os
+import tempfile
 
-from backend.hooks.reward_hacking.hook_manager import HookManager, run_reward_hacking_detection
-from backend.hooks.reward_hacking.models.enums import ExitCode
+import pytest
+
+from backend.hooks.reward_hacking.hook_manager import (
+    HookManager,
+    run_reward_hacking_detection,
+)
 from backend.hooks.reward_hacking.models.detection_result import GlobalConfig
+from backend.hooks.reward_hacking.models.enums import ExitCode
 
 
 def create_temp_file(content: str, suffix: str = '.py') -> str:

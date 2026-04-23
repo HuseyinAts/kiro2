@@ -13,17 +13,15 @@ araliklarda olmasini garanti eder.
 Boris Cherny Standards: Verification Feedback Loops
 """
 
-from typing import Tuple, Optional
-
 
 # CLAUDE.md'den IRT parametre araliklari (satir 55-57)
-IRT_DIFFICULTY_RANGE: Tuple[float, float] = (-4.0, 4.0)
-IRT_DISCRIMINATION_RANGE: Tuple[float, float] = (0.2, 4.0)
-IRT_GUESSING_RANGE: Tuple[float, float] = (0.0, 0.35)
-IRT_UPPER_ASYMPTOTE_RANGE: Tuple[float, float] = (0.0, 1.0)
+IRT_DIFFICULTY_RANGE: tuple[float, float] = (-4.0, 4.0)
+IRT_DISCRIMINATION_RANGE: tuple[float, float] = (0.2, 4.0)
+IRT_GUESSING_RANGE: tuple[float, float] = (0.0, 0.35)
+IRT_UPPER_ASYMPTOTE_RANGE: tuple[float, float] = (0.0, 1.0)
 
 # ZPD (Zone of Proximal Development) optimal araligi
-ZPD_SUCCESS_PROBABILITY_RANGE: Tuple[float, float] = (0.15, 0.85)
+ZPD_SUCCESS_PROBABILITY_RANGE: tuple[float, float] = (0.15, 0.85)
 
 
 class IRTValidationError(ValueError):
@@ -160,7 +158,7 @@ def validate_all_irt_params(
     guessing: float,
     upper_asymptote: float = 1.0,
     strict: bool = True,
-) -> Tuple[float, float, float, float]:
+) -> tuple[float, float, float, float]:
     """
     Tum IRT parametrelerini tek seferde dogrula.
 
@@ -187,8 +185,8 @@ def validate_all_irt_params(
 
 def is_in_zpd(
     success_probability: float,
-    min_prob: Optional[float] = None,
-    max_prob: Optional[float] = None,
+    min_prob: float | None = None,
+    max_prob: float | None = None,
 ) -> bool:
     """
     Basari olasiliginin ZPD (Zone of Proximal Development) icinde olup

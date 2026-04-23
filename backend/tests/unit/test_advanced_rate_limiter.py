@@ -4,15 +4,16 @@ Sprint 7: Test Coverage
 
 Tests for Redis-based distributed rate limiting system.
 """
-import pytest
 import time
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
 
 from core.advanced_rate_limiter import (
     AdvancedRateLimiter,
-    UserTier,
     RateLimitExceeded,
-    get_rate_limiter
+    UserTier,
+    get_rate_limiter,
 )
 
 

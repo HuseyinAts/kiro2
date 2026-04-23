@@ -16,11 +16,11 @@ Output:
     - Individual SVG files for each diagram
 """
 
-import sys
-import io
 import asyncio
+import io
 import json
-from datetime import datetime, timezone
+import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 # UTF-8 encoding
@@ -35,9 +35,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from services.osym_inspired_generator import OSYMInspiredGenerator
 import os
 
+from services.osym_inspired_generator import OSYMInspiredGenerator
 
 # Test cases for Phase 4
 TEST_CASES = [
@@ -142,7 +142,7 @@ async def generate_demo_questions():
             question["test_case"] = test_case["name"]
             question["metadata"] = {
                 "spec_name": f"phase4_{test_case['diagram_subtype']}",
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
             }
 
             questions.append(question)
@@ -165,14 +165,14 @@ async def generate_demo_questions():
             print(f"[SAVED] SVG saved to: {svg_filename}\n")
 
         except Exception as e:
-            print(f"[ERROR] Failed to generate question: {str(e)}\n")
+            print(f"[ERROR] Failed to generate question: {e!s}\n")
             import traceback
 
             traceback.print_exc()
 
     # Save all questions
     print("[3/3] Saving questions...")
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     output_file = f"demo_map_diagram_questions_{timestamp}.json"
 
     with open(output_file, "w", encoding="utf-8") as f:

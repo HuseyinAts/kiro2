@@ -4,16 +4,16 @@ Integration Tests - Health Check Workflow
 Bu modul, tam health check workflow'u icin integration testler icerir.
 """
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 from fastapi import FastAPI
+
+from app.health.checker import HealthChecker
+from app.health.circuit_breaker import CircuitBreaker
 
 # conftest.py handles sys.path setup
 from app.health.discovery import EndpointDiscovery
-from app.health.checker import HealthChecker
-from app.health.circuit_breaker import CircuitBreaker
-from app.health.sla_monitor import SLAMonitor
-from app.health.score_calculator import HealthScoreCalculator
 from app.health.models import (
     CircuitState,
     EndpointMetadata,
@@ -21,6 +21,8 @@ from app.health.models import (
     HealthStatus,
     SLATarget,
 )
+from app.health.score_calculator import HealthScoreCalculator
+from app.health.sla_monitor import SLAMonitor
 
 
 # Test FastAPI app

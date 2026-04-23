@@ -9,10 +9,9 @@ Bu test modülü aşağıdaki özellikleri test eder:
 """
 
 import pytest
+
 from core.osym_exam_engine import OSYMExamEngine
 from models.database import ExamType
-
-
 
 pytestmark = pytest.mark.skipif(
     True,

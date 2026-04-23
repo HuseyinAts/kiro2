@@ -38,7 +38,7 @@ def fix_file(filepath):
         return False
 
     try:
-        with open(abs_path, 'r', encoding='utf-8', errors='replace') as f:
+        with open(abs_path, encoding='utf-8', errors='replace') as f:
             content = f.read()
 
         # Pattern 1: pytestmark inside except block (most common)
@@ -57,9 +57,8 @@ def fix_file(filepath):
                 f.write(new_content)
             print(f"  [OK] Fixed: {filepath}")
             return True
-        else:
-            print(f"  [SKIP] No pattern matched: {filepath}")
-            return False
+        print(f"  [SKIP] No pattern matched: {filepath}")
+        return False
 
     except Exception as e:
         print(f"  [ERROR] Error processing {filepath}: {e}")

@@ -10,15 +10,15 @@ import pytest
 pytest.skip("enhanced_study_buddy_agent module archived", allow_module_level=True)
 
 import asyncio
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 # Test edilecek modülleri import et
 try:
     from agents.enhanced_study_buddy_agent import (
         EnhancedStudyBuddyAgent,
-        StudySession,
         StudyPlan,
         StudyProgress,
+        StudySession,
     )
 except ImportError:
     # Mock classes if imports fail

@@ -9,14 +9,14 @@ Tests the agent→algorithm→init chain to verify:
 """
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
 import math
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -91,7 +91,9 @@ class TestZPDFiltering:
 
     def test_calculate_success_probability_midpoint(self) -> None:
         """At theta=b, P should be ~0.5 (no guessing)."""
-        from agents.learning_path.core.path_generator import calculate_success_probability
+        from agents.learning_path.core.path_generator import (
+            calculate_success_probability,
+        )
 
         prob = calculate_success_probability(theta=0.0, difficulty=0.0)
         assert abs(prob - 0.5) < 0.01
@@ -99,8 +101,8 @@ class TestZPDFiltering:
     def test_zpd_range_boundaries(self) -> None:
         """ZPD range should be 0.15-0.85."""
         from agents.learning_path.core.path_generator import (
-            ZPD_MIN_PROBABILITY,
             ZPD_MAX_PROBABILITY,
+            ZPD_MIN_PROBABILITY,
         )
 
         assert ZPD_MIN_PROBABILITY == 0.15
@@ -108,21 +110,27 @@ class TestZPDFiltering:
 
     def test_easy_question_high_probability(self) -> None:
         """High ability + low difficulty = high P."""
-        from agents.learning_path.core.path_generator import calculate_success_probability
+        from agents.learning_path.core.path_generator import (
+            calculate_success_probability,
+        )
 
         prob = calculate_success_probability(theta=2.0, difficulty=-2.0)
         assert prob > 0.95
 
     def test_hard_question_low_probability(self) -> None:
         """Low ability + high difficulty = low P."""
-        from agents.learning_path.core.path_generator import calculate_success_probability
+        from agents.learning_path.core.path_generator import (
+            calculate_success_probability,
+        )
 
         prob = calculate_success_probability(theta=-2.0, difficulty=2.0)
         assert prob < 0.05
 
     def test_guessing_parameter_raises_floor(self) -> None:
         """With guessing=0.2, P should never go below 0.2."""
-        from agents.learning_path.core.path_generator import calculate_success_probability
+        from agents.learning_path.core.path_generator import (
+            calculate_success_probability,
+        )
 
         prob = calculate_success_probability(
             theta=-4.0, difficulty=4.0, guessing=0.2

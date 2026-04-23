@@ -5,8 +5,8 @@ Teknofest 2025 - Türkiye Üniversite Sınav Hazırlık Platformu
 
 import logging
 import os
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -100,7 +100,7 @@ class DatabaseManager:
                 await conn.run_sync(Base.metadata.create_all)
             logger.info("[CHECK] Database tabloları başarıyla oluşturuldu")
         except Exception as e:
-            logger.error(f"[X] Database tablo oluşturma hatası: {str(e)}")
+            logger.error(f"[X] Database tablo oluşturma hatası: {e!s}")
             raise
 
     async def drop_tables(self):
@@ -110,7 +110,7 @@ class DatabaseManager:
                 await conn.run_sync(Base.metadata.drop_all)
             logger.info("⚠️ Database tabloları silindi")
         except Exception as e:
-            logger.error(f"[X] Database tablo silme hatası: {str(e)}")
+            logger.error(f"[X] Database tablo silme hatası: {e!s}")
             raise
 
     def create_tables_sync(self):
@@ -119,7 +119,7 @@ class DatabaseManager:
             Base.metadata.create_all(bind=self.sync_engine)
             logger.info("[CHECK] Database tabloları (sync) başarıyla oluşturuldu")
         except Exception as e:
-            logger.error(f"[X] Database tablo oluşturma (sync) hatası: {str(e)}")
+            logger.error(f"[X] Database tablo oluşturma (sync) hatası: {e!s}")
             raise
 
     async def check_connection(self) -> bool:
@@ -132,7 +132,7 @@ class DatabaseManager:
             logger.info("[CHECK] Database bağlantısı başarılı")
             return True
         except Exception as e:
-            logger.error(f"[X] Database bağlantı hatası: {str(e)}")
+            logger.error(f"[X] Database bağlantı hatası: {e!s}")
             return False
 
     async def get_table_info(self) -> dict:
@@ -172,7 +172,7 @@ class DatabaseManager:
                     "status": "connected",
                 }
         except Exception as e:
-            logger.error(f"[X] Tablo bilgisi alma hatası: {str(e)}")
+            logger.error(f"[X] Tablo bilgisi alma hatası: {e!s}")
             return {
                 "table_count": 0,
                 "table_names": [],
@@ -193,7 +193,7 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
             yield session
         except Exception as e:
             await session.rollback()
-            logger.error(f"[X] Database session hatası: {str(e)}")
+            logger.error(f"[X] Database session hatası: {e!s}")
             raise
         finally:
             await session.close()
@@ -209,7 +209,7 @@ async def get_async_session_context() -> AsyncGenerator[AsyncSession, None]:
             await session.commit()
         except Exception as e:
             await session.rollback()
-            logger.error(f"[X] Database session context hatası: {str(e)}")
+            logger.error(f"[X] Database session context hatası: {e!s}")
             raise
         finally:
             await session.close()
@@ -231,7 +231,7 @@ async def get_sync_session_context() -> Session:
         session.commit()
     except Exception as e:
         session.rollback()
-        logger.error(f"[X] Sync database session context hatası: {str(e)}")
+        logger.error(f"[X] Sync database session context hatası: {e!s}")
         raise
     finally:
         session.close()
@@ -267,7 +267,7 @@ async def cleanup_database():
         sync_engine.dispose()
         logger.info("[CHECK] Database bağlantıları temizlendi")
     except Exception as e:
-        logger.error(f"[X] Database temizleme hatası: {str(e)}")
+        logger.error(f"[X] Database temizleme hatası: {e!s}")
 
 
 # Health check

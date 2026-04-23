@@ -4,10 +4,12 @@ End-to-end testing of complete Question Bank v2.0 system
 """
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
 import pytest
+
 pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
 
 
@@ -16,9 +18,11 @@ import pytest
 pytestmark = pytest.mark.skipif(True, reason="AsyncClient(app=...) deprecated in httpx 0.27+ (needs ASGITransport)")
 
 import asyncio
-from httpx import AsyncClient
-from main import app
 import uuid
+
+from httpx import AsyncClient
+
+from main import app
 
 
 class TestFullPipeline:
@@ -79,10 +83,9 @@ class TestFullPipeline:
                     final_ability = result["final_ability"]
                     assert -3 <= final_ability <= 3  # Valid theta range
                     break
-                else:
-                    # Continue with next question
-                    assert "next_question" in result
-                    current_question = result["next_question"]
+                # Continue with next question
+                assert "next_question" in result
+                current_question = result["next_question"]
 
             # Step 4: Get knowledge graph recommendations
             kg_response = await client.post(

@@ -17,9 +17,9 @@ Standard API Error Response Format:
 """
 
 import traceback
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, Optional, Type
+from typing import Any
 from uuid import uuid4
 
 from fastapi import Request, status
@@ -82,7 +82,7 @@ class AppException(Exception):
         message: str,
         error_code: ErrorCode = ErrorCode.UNKNOWN_ERROR,
         status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         self.message = message
         self.error_code = error_code
@@ -90,7 +90,7 @@ class AppException(Exception):
         self.details = details or {}
         super().__init__(self.message)
 
-    def to_dict(self, request_id: Optional[str] = None) -> Dict[str, Any]:
+    def to_dict(self, request_id: str | None = None) -> dict[str, Any]:
         """Convert exception to standardized error response dictionary"""
         return {
             "success": False,
@@ -100,7 +100,7 @@ class AppException(Exception):
                 "type": self.error_code.name,
                 "details": self.details,
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "request_id": request_id or str(uuid4()),
         }
 
@@ -108,7 +108,7 @@ class AppException(Exception):
 class ValidationException(AppException):
     """Validation error exception"""
 
-    def __init__(self, message: str, details: Optional[Dict] = None):
+    def __init__(self, message: str, details: dict | None = None):
         super().__init__(
             message=message,
             error_code=ErrorCode.VALIDATION_ERROR,
@@ -132,7 +132,7 @@ class NotFoundException(AppException):
 class ConflictException(AppException):
     """Resource conflict exception"""
 
-    def __init__(self, message: str, details: Optional[Dict] = None):
+    def __init__(self, message: str, details: dict | None = None):
         super().__init__(
             message=message,
             error_code=ErrorCode.CONFLICT,
@@ -166,7 +166,7 @@ class ForbiddenException(AppException):
 class DatabaseException(AppException):
     """Database operation exception"""
 
-    def __init__(self, message: str, details: Optional[Dict] = None):
+    def __init__(self, message: str, details: dict | None = None):
         super().__init__(
             message=message,
             error_code=ErrorCode.DATABASE_ERROR,
@@ -178,7 +178,7 @@ class DatabaseException(AppException):
 class ExternalServiceException(AppException):
     """External service error exception"""
 
-    def __init__(self, service: str, message: str, details: Optional[Dict] = None):
+    def __init__(self, service: str, message: str, details: dict | None = None):
         super().__init__(
             message=f"{service} error: {message}",
             error_code=ErrorCode.EXTERNAL_SERVICE_ERROR,
@@ -188,7 +188,7 @@ class ExternalServiceException(AppException):
 
 
 # Exception handler mapping
-EXCEPTION_HANDLERS: Dict[Type[Exception], int] = {
+EXCEPTION_HANDLERS: dict[type[Exception], int] = {
     ValueError: status.HTTP_400_BAD_REQUEST,
     KeyError: status.HTTP_404_NOT_FOUND,
     PermissionError: status.HTTP_403_FORBIDDEN,
@@ -249,7 +249,7 @@ async def validation_exception_handler(
     request_id = _get_request_id(request)
 
     logger.warning(
-        f"Validation error: {str(exc)}",
+        f"Validation error: {exc!s}",
         extra_data={
             "path": request.url.path,
             "method": request.method,
@@ -267,7 +267,7 @@ async def validation_exception_handler(
                 "type": ErrorCode.VALIDATION_ERROR.name,
                 "details": {"errors": str(exc)},
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "request_id": request_id,
         },
         headers={"X-Request-ID": request_id},
@@ -294,7 +294,7 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
 
     # Log with full traceback
     logger.error(
-        f"Unhandled exception: {str(exc)}",
+        f"Unhandled exception: {exc!s}",
         extra_data={
             "exception_type": type(exc).__name__,
             "path": request.url.path,
@@ -324,7 +324,7 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
                 "type": ErrorCode.UNKNOWN_ERROR.name,
                 "details": details,
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "request_id": request_id,
         },
         headers={"X-Request-ID": request_id},

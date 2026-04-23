@@ -7,8 +7,9 @@ but StructuredLogger now uses structlog which has a different interface.
 Skipping tests that assume standard logging behavior.
 """
 import logging
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 # Skip level/handler tests - structlog doesn't use these the same way
 pytestmark = pytest.mark.skip(
@@ -205,7 +206,7 @@ class TestGetLoggerFunction:
 
     def test_get_logger_returns_structured_logger(self):
         """Test get_logger returns StructuredLogger instance"""
-        from core.structured_logger import get_logger, StructuredLogger
+        from core.structured_logger import StructuredLogger, get_logger
 
         logger = get_logger("test")
 
@@ -235,7 +236,7 @@ class TestGetStructuredLoggerFunction:
 
     def test_get_structured_logger_is_alias(self):
         """Test get_structured_logger is alias for get_logger"""
-        from core.structured_logger import get_structured_logger, StructuredLogger
+        from core.structured_logger import StructuredLogger, get_structured_logger
 
         logger = get_structured_logger("test")
 
@@ -262,7 +263,7 @@ class TestAppLogger:
 
     def test_app_logger_is_structured_logger(self):
         """Test app_logger is StructuredLogger instance"""
-        from core.structured_logger import app_logger, StructuredLogger
+        from core.structured_logger import StructuredLogger, app_logger
 
         assert isinstance(app_logger, StructuredLogger)
 

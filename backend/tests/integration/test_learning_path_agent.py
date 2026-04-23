@@ -3,11 +3,13 @@ Test: Learning Path Agent
 """
 # EARLY_SKIP_APPLIED
 import pytest
+
 pytest.skip("Heavy imports (from main import app) cause 10+ second timeout", allow_module_level=True)
 
 
 
 import pytest
+
 pytest.skip("Test requires running server or has heavy imports that timeout", allow_module_level=True)
 
 
@@ -29,8 +31,6 @@ from agents.learning_path_agent import (
     LearningStyle,
     StudentProfile,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -296,7 +296,7 @@ async def test_edge_cases_and_error_handling(agent):
         "agents.learning_path_agent.rag_service.search_educational_content",
         new_callable=AsyncMock,
     ) as mock_rag:
-        mock_rag.side_effect = asyncio.TimeoutError()
+        mock_rag.side_effect = TimeoutError()
 
         resources = await agent.search_resources(
             topic="matematik",

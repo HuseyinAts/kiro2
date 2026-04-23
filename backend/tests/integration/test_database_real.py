@@ -7,19 +7,20 @@ import pytest
 
 # Module skip: Requires clean PostgreSQL (DuplicateTable idx_student_learning_style)
 pytestmark = pytest.mark.skipif(True, reason="Requires clean PostgreSQL via Testcontainers (DuplicateTable errors)")
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from models.database import (
-    User,
-    UserRole,
-    StudentProfile,
     ExamSession,
     ExamType,
     Question,
     QuestionDifficulty,
+    StudentProfile,
     SubjectArea,
+    User,
+    UserRole,
 )
 
 
@@ -318,14 +319,14 @@ class TestUserCRUD:
 
     def test_user_timestamps(self, sync_db_session: Session):
         """Test user created_at timestamp"""
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         user, profile = create_student_with_profile(
             sync_db_session,
             "timestamp_user",
             "timestamp@test.com",
             password_hash="hash",
         )
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
 
         assert user.created_at is not None
         assert before <= user.created_at <= after
@@ -482,13 +483,13 @@ class TestExamSession:
             sync_db_session, "ts_user", "ts@test.com", password_hash="h"
         )
 
-        before = datetime.now(timezone.utc)
+        before = datetime.now(UTC)
         exam = create_exam_session(
             student_profile_id=profile.id, exam_type=ExamType.TYT
         )
         sync_db_session.add(exam)
         sync_db_session.commit()
-        after = datetime.now(timezone.utc)
+        after = datetime.now(UTC)
 
         assert exam.created_at is not None
         assert before <= exam.created_at <= after
@@ -782,7 +783,7 @@ class TestComplexQueries:
         sync_db_session.commit()
 
         # Query recent exams (last 24 hours)
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+        cutoff = datetime.now(UTC) - timedelta(hours=24)
         recent_exams = (
             sync_db_session.query(ExamSession)
             .filter(ExamSession.created_at >= cutoff)

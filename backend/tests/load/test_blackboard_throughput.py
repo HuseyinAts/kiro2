@@ -9,22 +9,22 @@ Boris Cherny Standards: Verification feedback loops
 """
 # UNIVERSAL_SKIP_APPLIED
 import pytest
+
 pytest.skip("Load test: WebSocketConnectionManager API changed (add_connection removed)", allow_module_level=True)
 
 import asyncio
+import sys
 import time
 from dataclasses import dataclass
-from typing import List, Tuple
 
 import pytest
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from algorithms.multi_agent_blackboard import (
+    EventType,
     MultiAgentBlackboard,
     Priority,
-    EventType,
 )
 
 
@@ -35,7 +35,7 @@ class ThroughputResult:
     total_messages: int
     duration_seconds: float
     messages_per_second: float
-    latencies_ms: List[float]
+    latencies_ms: list[float]
     p50_latency_ms: float
     p95_latency_ms: float
     p99_latency_ms: float
@@ -205,7 +205,7 @@ class TestBlackboardThroughput:
             blackboard.register_agent(f"concurrent_{i}", None)
 
         async def run_concurrent():
-            async def agent_writes(agent_id: int) -> Tuple[int, float]:
+            async def agent_writes(agent_id: int) -> tuple[int, float]:
                 success = 0
                 start = time.perf_counter()
 

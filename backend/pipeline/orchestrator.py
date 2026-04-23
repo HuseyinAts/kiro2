@@ -15,19 +15,19 @@ import asyncio
 import logging
 import time
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Type
+from datetime import UTC, datetime
+from typing import Any
 
-from .stage_base import BasePipelineStage, StageInput, StageOutput
-from .pipeline_state import PipelineState, PipelineStatus, StageResult
 from .agents import (
+    ComplianceAgent,
     ContentGeneratorAgent,
     DifficultyAgent,
     DistractorAgent,
-    ComplianceAgent,
     LanguageQAAgent,
-    QualityGateAgent
+    QualityGateAgent,
 )
+from .pipeline_state import PipelineState, PipelineStatus, StageResult
+from .stage_base import BasePipelineStage, StageInput, StageOutput
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +62,9 @@ class PipelineOrchestrator:
 
     def __init__(
         self,
-        llm_client: Optional[Any] = None,
-        redis_client: Optional[Any] = None,
-        config: Optional[Dict[str, Any]] = None
+        llm_client: Any | None = None,
+        redis_client: Any | None = None,
+        config: dict[str, Any] | None = None
     ):
         """
         Orchestrator başlat
@@ -79,15 +79,15 @@ class PipelineOrchestrator:
         self.config = config or {}
 
         # Stage'leri başlat
-        self.stages: Dict[str, BasePipelineStage] = {}
+        self.stages: dict[str, BasePipelineStage] = {}
         self._initialize_stages()
 
         # Active pipelines
-        self._active_pipelines: Dict[str, PipelineState] = {}
+        self._active_pipelines: dict[str, PipelineState] = {}
 
     def _initialize_stages(self) -> None:
         """Pipeline aşamalarını başlat"""
-        stage_classes: List[Type[BasePipelineStage]] = [
+        stage_classes: list[type[BasePipelineStage]] = [
             ContentGeneratorAgent,
             DifficultyAgent,
             DistractorAgent,
@@ -102,7 +102,7 @@ class PipelineOrchestrator:
 
         logger.info(f"Pipeline initialized with {len(self.stages)} stages")
 
-    def get_stage_order(self) -> List[str]:
+    def get_stage_order(self) -> list[str]:
         """Aşama sırasını döndür"""
         return [
             "content_generator",
@@ -115,10 +115,10 @@ class PipelineOrchestrator:
 
     async def execute_pipeline(
         self,
-        initial_input: Dict[str, Any],
-        pipeline_id: Optional[str] = None,
-        created_by: Optional[str] = None
-    ) -> Dict[str, Any]:
+        initial_input: dict[str, Any],
+        pipeline_id: str | None = None,
+        created_by: str | None = None
+    ) -> dict[str, Any]:
         """
         Tam pipeline'ı çalıştır
 
@@ -143,7 +143,7 @@ class PipelineOrchestrator:
             initial_input=initial_input,
             current_data=initial_input.copy(),
             created_by=created_by,
-            started_at=datetime.now(timezone.utc)
+            started_at=datetime.now(UTC)
         )
 
         self._active_pipelines[pipeline_id] = state
@@ -174,7 +174,7 @@ class PipelineOrchestrator:
                         break
                     # Paralel gruptaki diğer stage'leri atla
                     continue
-                elif parallel_group and stage_name in parallel_group[1:]:
+                if parallel_group and stage_name in parallel_group[1:]:
                     # Paralel grupta zaten işlendi
                     continue
 
@@ -210,7 +210,7 @@ class PipelineOrchestrator:
             state.metadata["error"] = str(e)
 
         # Finalize
-        state.completed_at = datetime.now(timezone.utc)
+        state.completed_at = datetime.now(UTC)
         state.total_duration = time.time() - start_time
 
         # Final skor ve karar
@@ -246,7 +246,7 @@ class PipelineOrchestrator:
         stage_name: str,
         input_data: StageInput,
         state: PipelineState
-    ) -> Optional[StageOutput]:
+    ) -> StageOutput | None:
         """
         Stage'i retry logic ile çalıştır
 
@@ -281,7 +281,7 @@ class PipelineOrchestrator:
                     errors=output.errors,
                     warnings=output.warnings,
                     retry_count=attempt,
-                    completed_at=datetime.now(timezone.utc)
+                    completed_at=datetime.now(UTC)
                 )
                 state.add_stage_result(result)
 
@@ -312,7 +312,7 @@ class PipelineOrchestrator:
                         errors=[str(e)],
                         warnings=[],
                         retry_count=attempt,
-                        completed_at=datetime.now(timezone.utc)
+                        completed_at=datetime.now(UTC)
                     )
                     state.add_stage_result(result)
                     logger.error(f"Stage {stage_name} failed after {self.MAX_RETRIES} attempts")
@@ -321,7 +321,7 @@ class PipelineOrchestrator:
 
     async def _execute_parallel_stages(
         self,
-        stage_names: List[str],
+        stage_names: list[str],
         input_data: StageInput,
         state: PipelineState
     ) -> tuple:
@@ -376,14 +376,14 @@ class PipelineOrchestrator:
 
         return new_input, all_passed
 
-    def _get_parallel_group(self, stage_name: str) -> Optional[List[str]]:
+    def _get_parallel_group(self, stage_name: str) -> list[str] | None:
         """Stage'in paralel grubunu bul"""
         for group in self.PARALLEL_GROUPS:
             if stage_name in group:
                 return group
         return None
 
-    def _calculate_final_score(self, stage_results: List[StageResult]) -> float:
+    def _calculate_final_score(self, stage_results: list[StageResult]) -> float:
         """Final skoru hesapla"""
         total_score = 0.0
         total_weight = 0.0
@@ -404,12 +404,11 @@ class PipelineOrchestrator:
         """Final karar ver"""
         if score >= 0.85:
             return "approved"
-        elif score >= 0.70:
+        if score >= 0.70:
             return "review"
-        else:
-            return "rejected"
+        return "rejected"
 
-    async def get_pipeline_status(self, pipeline_id: str) -> Optional[Dict]:
+    async def get_pipeline_status(self, pipeline_id: str) -> dict | None:
         """Pipeline durumunu getir"""
         state = self._active_pipelines.get(pipeline_id)
         if state:
@@ -435,7 +434,7 @@ class PipelineOrchestrator:
             return True
         return False
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Pipeline metriklerini döndür"""
         total = len(self._active_pipelines)
         completed = sum(

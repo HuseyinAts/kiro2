@@ -18,8 +18,8 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from core.chroma_client import chromadb_connection_mode
 from core.auth_dependencies import AuthenticationDependency, AuthorizationDependency
+from core.chroma_client import chromadb_connection_mode
 from core.dependencies import AuthenticatedUser
 from models.enums_db import UserRole
 

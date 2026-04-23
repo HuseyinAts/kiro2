@@ -9,11 +9,10 @@ dünya çapında benzersiz bir soru kalitesi değerlendirme sistemi sunar.
 import asyncio
 import logging
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 # PERFORMANCE: Redis cache integration
 from core.cache import cache_manager
-
 from models.irt_morfoloji import (
     OgrenciMorfolojiProfili,
     SoruMorfolojiAnalizi,
@@ -44,7 +43,7 @@ class IRTMorfolojiService:
         self.irt_service = IRTService()
 
         # Soru analizleri cache
-        self.soru_analizleri: Dict[str, TurkceIRTSoruAnalizi] = {}
+        self.soru_analizleri: dict[str, TurkceIRTSoruAnalizi] = {}
 
         # Performans metrikleri
         self.analiz_sayisi = 0
@@ -60,7 +59,7 @@ class IRTMorfolojiService:
         self,
         soru_id: str,
         soru_metni: str,
-        cevap_verileri: List[Dict[str, Any]],
+        cevap_verileri: list[dict[str, Any]],
         konu: str = "Genel",
         sinav_tipi: str = "TYT",
     ) -> TurkceIRTSoruAnalizi:
@@ -147,7 +146,7 @@ class IRTMorfolojiService:
             return soru_analizi
 
         except Exception as e:
-            logger.error(f"Tam soru analizi hatası - ID: {soru_id}, Hata: {str(e)}")
+            logger.error(f"Tam soru analizi hatası - ID: {soru_id}, Hata: {e!s}")
             await self._guncelle_performans_metrikleri(baslangic_zamani, False)
             raise
 
@@ -156,7 +155,7 @@ class IRTMorfolojiService:
         soru_metni: str,
         hedef_zorluk: float = 0.0,
         hedef_ogrenci_seviyesi: str = "orta",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Soru için hızlı ön değerlendirme yap
 
@@ -203,7 +202,7 @@ class IRTMorfolojiService:
             }
 
         except Exception as e:
-            logger.error(f"Hızlı değerlendirme hatası: {str(e)}")
+            logger.error(f"Hızlı değerlendirme hatası: {e!s}")
             raise
 
     async def ogrenci_uyumlu_soru_onerisi(
@@ -211,8 +210,8 @@ class IRTMorfolojiService:
         ogrenci_id: str,
         konu: str,
         hedef_basari_orani: float = 0.7,
-        soru_havuzu: List[str] = None,
-    ) -> List[Dict[str, Any]]:
+        soru_havuzu: list[str] = None,
+    ) -> list[dict[str, Any]]:
         """
         Öğrenci profiline uygun soru önerisi yap
 
@@ -283,12 +282,12 @@ class IRTMorfolojiService:
             return oneriler[:10]  # En iyi 10 öneri
 
         except Exception as e:
-            logger.error(f"Soru önerisi hatası - Öğrenci: {ogrenci_id}, Hata: {str(e)}")
+            logger.error(f"Soru önerisi hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}")
             raise
 
     async def toplu_soru_kalite_analizi(
-        self, soru_listesi: List[Dict[str, Any]], kalite_esigi: float = None
-    ) -> Dict[str, Any]:
+        self, soru_listesi: list[dict[str, Any]], kalite_esigi: float = None
+    ) -> dict[str, Any]:
         """
         Birden fazla soru için toplu kalite analizi
 
@@ -357,10 +356,10 @@ class IRTMorfolojiService:
             }
 
         except Exception as e:
-            logger.error(f"Toplu analiz hatası: {str(e)}")
+            logger.error(f"Toplu analiz hatası: {e!s}")
             raise
 
-    async def osym_ets_karsilastirma_raporu(self, soru_id: str) -> Dict[str, Any]:
+    async def osym_ets_karsilastirma_raporu(self, soru_id: str) -> dict[str, Any]:
         """
         ÖSYM ve ETS standartları ile detaylı karşılaştırma raporu
 
@@ -450,7 +449,7 @@ class IRTMorfolojiService:
 
         except Exception as e:
             logger.error(
-                f"ÖSYM/ETS karşılaştırma hatası - Soru: {soru_id}, Hata: {str(e)}"
+                f"ÖSYM/ETS karşılaştırma hatası - Soru: {soru_id}, Hata: {e!s}"
             )
             raise
 
@@ -507,7 +506,7 @@ class IRTMorfolojiService:
 
     async def _olustur_hizli_oneriler(
         self, morfoloji_analizi: SoruMorfolojiAnalizi, tahmini_zorluk: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Hızlı öneriler oluştur"""
         oneriler = []
 
@@ -571,8 +570,8 @@ class IRTMorfolojiService:
         return max(0.0, min(1.0, uyum))
 
     async def _hesapla_toplu_istatistikler(
-        self, analiz_sonuclari: List[TurkceIRTSoruAnalizi]
-    ) -> Dict[str, Any]:
+        self, analiz_sonuclari: list[TurkceIRTSoruAnalizi]
+    ) -> dict[str, Any]:
         """Toplu istatistikleri hesapla"""
         if not analiz_sonuclari:
             return {}
@@ -615,7 +614,7 @@ class IRTMorfolojiService:
             ),
         }
 
-    def _hesapla_standart_sapma(self, degerler: List[float]) -> float:
+    def _hesapla_standart_sapma(self, degerler: list[float]) -> float:
         """Standart sapma hesapla"""
         if len(degerler) < 2:
             return 0.0
@@ -625,8 +624,8 @@ class IRTMorfolojiService:
         return varyans**0.5
 
     def _karsilastir_ayirt_edicilik(
-        self, deger: float, standartlar: Dict
-    ) -> Dict[str, Any]:
+        self, deger: float, standartlar: dict
+    ) -> dict[str, Any]:
         """Ayırt edicilik karşılaştırması"""
         if deger >= standartlar["ayirt_edicilik_ideal"]:
             durum = "ideal"
@@ -640,7 +639,7 @@ class IRTMorfolojiService:
 
         return {"durum": durum, "skor": skor, "deger": deger}
 
-    def _karsilastir_zorluk(self, deger: float, standartlar: Dict) -> Dict[str, Any]:
+    def _karsilastir_zorluk(self, deger: float, standartlar: dict) -> dict[str, Any]:
         """Zorluk karşılaştırması"""
         min_z, max_z = standartlar["zorluk_araligi"]
 
@@ -657,8 +656,8 @@ class IRTMorfolojiService:
         return {"durum": durum, "skor": skor, "deger": deger}
 
     def _karsilastir_sans_faktoru(
-        self, deger: float, standartlar: Dict
-    ) -> Dict[str, Any]:
+        self, deger: float, standartlar: dict
+    ) -> dict[str, Any]:
         """Şans faktörü karşılaştırması"""
         if deger <= standartlar["sans_faktoru_max"]:
             durum = "uygun"
@@ -672,7 +671,7 @@ class IRTMorfolojiService:
 
         return {"durum": durum, "skor": skor, "deger": deger}
 
-    def _hesapla_genel_uyum_skoru(self, karsilastirma: Dict) -> float:
+    def _hesapla_genel_uyum_skoru(self, karsilastirma: dict) -> float:
         """Genel uyum skorunu hesapla"""
         skorlar = [
             karsilastirma["ayirt_edicilik_durumu"]["skor"],
@@ -682,7 +681,7 @@ class IRTMorfolojiService:
         return sum(skorlar) / len(skorlar)
 
     def _belirle_karsilastirma_sonucu(
-        self, osym_karsilastirma: Dict, ets_karsilastirma: Dict
+        self, osym_karsilastirma: dict, ets_karsilastirma: dict
     ) -> str:
         """Karşılaştırma sonucunu belirle"""
         osym_skor = osym_karsilastirma["genel_uyum_skoru"]
@@ -690,16 +689,15 @@ class IRTMorfolojiService:
 
         if osym_skor >= 90 and ets_skor >= 90:
             return "Her iki standardı da aşıyor"
-        elif osym_skor >= 70 and ets_skor >= 70:
+        if osym_skor >= 70 and ets_skor >= 70:
             return "Her iki standarda da uygun"
-        elif osym_skor >= 70 or ets_skor >= 70:
+        if osym_skor >= 70 or ets_skor >= 70:
             return "Bir standarda uygun"
-        else:
-            return "Standartların altında"
+        return "Standartların altında"
 
     async def _olustur_karsilastirma_onerileri(
         self, soru_analizi: TurkceIRTSoruAnalizi
-    ) -> List[str]:
+    ) -> list[str]:
         """Karşılaştırma önerileri oluştur"""
         oneriler = []
 
@@ -713,7 +711,7 @@ class IRTMorfolojiService:
 
         return oneriler
 
-    def get_servis_istatistikleri(self) -> Dict[str, Any]:
+    def get_servis_istatistikleri(self) -> dict[str, Any]:
         """Servis istatistiklerini döndür"""
         basari_orani = (
             self.basarili_kalibrasyon_sayisi / max(1, self.analiz_sayisi) * 100

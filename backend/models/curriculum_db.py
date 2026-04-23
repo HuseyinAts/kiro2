@@ -7,7 +7,6 @@ Bu modeller curriculum_compliance_service.py icin olusturuldu.
 
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
 from sqlalchemy import (
     JSON,
@@ -79,11 +78,11 @@ class MEBCurriculumStandardDB(Base):
     topic_name: Mapped[str] = mapped_column(String(200), nullable=False)
 
     # JSON fields for list data
-    learning_outcomes: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
-    key_concepts: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
-    skills: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
-    prerequisites: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
-    assessment_criteria: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
+    learning_outcomes: Mapped[dict | None] = mapped_column(JSON, default=list)
+    key_concepts: Mapped[dict | None] = mapped_column(JSON, default=list)
+    skills: Mapped[dict | None] = mapped_column(JSON, default=list)
+    prerequisites: Mapped[dict | None] = mapped_column(JSON, default=list)
+    assessment_criteria: Mapped[dict | None] = mapped_column(JSON, default=list)
 
     duration_hours: Mapped[int] = mapped_column(Integer, default=0)
 
@@ -97,10 +96,10 @@ class MEBCurriculumStandardDB(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships
-    learning_outcomes_rel: Mapped[List["LearningOutcomeDB"]] = relationship(
+    learning_outcomes_rel: Mapped[list["LearningOutcomeDB"]] = relationship(
         "LearningOutcomeDB", back_populates="meb_standard"
     )
-    curriculum_alignments: Mapped[List["CurriculumAlignmentDB"]] = relationship(
+    curriculum_alignments: Mapped[list["CurriculumAlignmentDB"]] = relationship(
         "CurriculumAlignmentDB", back_populates="meb_standard"
     )
 
@@ -126,12 +125,12 @@ class OSYMStandardDB(Base):
     priority_level: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # JSON fields for complex data
-    question_count_range: Mapped[Optional[dict]] = mapped_column(JSON, default=dict)
-    difficulty_distribution: Mapped[Optional[dict]] = mapped_column(JSON, default=dict)
-    cognitive_levels: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
+    question_count_range: Mapped[dict | None] = mapped_column(JSON, default=dict)
+    difficulty_distribution: Mapped[dict | None] = mapped_column(JSON, default=dict)
+    cognitive_levels: Mapped[dict | None] = mapped_column(JSON, default=list)
 
     exam_frequency: Mapped[float] = mapped_column(Float, default=0.0)
-    last_exam_appearance: Mapped[Optional[str]] = mapped_column(String(50))
+    last_exam_appearance: Mapped[str | None] = mapped_column(String(50))
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -143,7 +142,7 @@ class OSYMStandardDB(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships
-    curriculum_alignments: Mapped[List["CurriculumAlignmentDB"]] = relationship(
+    curriculum_alignments: Mapped[list["CurriculumAlignmentDB"]] = relationship(
         "CurriculumAlignmentDB", back_populates="osym_standard"
     )
 
@@ -172,8 +171,8 @@ class LearningOutcomeDB(Base):
     )
 
     # JSON fields for list data
-    assessment_methods: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
-    sample_activities: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
+    assessment_methods: Mapped[dict | None] = mapped_column(JSON, default=list)
+    sample_activities: Mapped[dict | None] = mapped_column(JSON, default=list)
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -216,11 +215,11 @@ class CurriculumAlignmentDB(Base):
     alignment_type: Mapped[str] = mapped_column(String(50), nullable=False)
 
     # JSON fields for list data
-    gaps_identified: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
-    recommendations: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
+    gaps_identified: Mapped[dict | None] = mapped_column(JSON, default=list)
+    recommendations: Mapped[dict | None] = mapped_column(JSON, default=list)
 
-    verified_by: Mapped[Optional[str]] = mapped_column(String(100))
-    verification_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    verified_by: Mapped[str | None] = mapped_column(String(100))
+    verification_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -256,16 +255,16 @@ class CurriculumUpdateRequestDB(Base):
     subject: Mapped[str] = mapped_column(String(50), nullable=False)
 
     # JSON fields for list data
-    affected_standards: Mapped[Optional[dict]] = mapped_column(JSON, default=list)
+    affected_standards: Mapped[dict | None] = mapped_column(JSON, default=list)
 
     changes_description: Mapped[str] = mapped_column(Text, nullable=False)
-    source_document: Mapped[Optional[str]] = mapped_column(String(500))
+    source_document: Mapped[str | None] = mapped_column(String(500))
     requested_by: Mapped[str] = mapped_column(String(100), nullable=False)
     requested_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
     status: Mapped[str] = mapped_column(String(50), default="pending")
-    reviewed_by: Mapped[Optional[str]] = mapped_column(String(100))
-    reviewed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
-    implementation_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
-    notes: Mapped[Optional[str]] = mapped_column(Text)
+    reviewed_by: Mapped[str | None] = mapped_column(String(100))
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    implementation_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    notes: Mapped[str | None] = mapped_column(Text)

@@ -4,8 +4,9 @@ Testing cache system with proper async mocking
 Target: +3% coverage
 """
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
 
 
 class TestCacheSystemBasic:

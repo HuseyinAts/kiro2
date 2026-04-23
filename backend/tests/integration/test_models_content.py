@@ -2,14 +2,15 @@
 Models Test - Basitleştirilmiş Versiyon
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Backend klasörünü path'e ekle
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from models import MakaleIcerik, VideoIcerik, ContentType
+from models import ContentType, MakaleIcerik, VideoIcerik
 
 
 # MakaleIcerik Testleri

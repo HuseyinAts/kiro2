@@ -12,6 +12,7 @@ Endpoints:
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, status
+
 from core.auth_dependencies import AuthenticationDependency
 
 get_current_user = AuthenticationDependency(required=True)

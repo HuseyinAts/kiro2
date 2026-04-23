@@ -6,18 +6,18 @@ Gerçek Zamanlı Adaptasyon ve Performans Analitikleri testleri
 import pytest
 
 try:
-    from services.realtime_adaptation_system import (
-        RealtimeAdaptationSystem,
-        RealtimeMetrics,
-    )
-    from services.performance_analytics_system import (
-        PerformanceAnalyticsSystem,
-        LearningCurveData,
-        PredictionResult,
-    )
     from services.adaptive_test_engine import (
         AdaptiveTestEngine,
         IRTParameters,
+    )
+    from services.performance_analytics_system import (
+        LearningCurveData,
+        PerformanceAnalyticsSystem,
+        PredictionResult,
+    )
+    from services.realtime_adaptation_system import (
+        RealtimeAdaptationSystem,
+        RealtimeMetrics,
     )
 except Exception as e:
     pytest.skip(f"Cannot import required services: {e}", allow_module_level=True)

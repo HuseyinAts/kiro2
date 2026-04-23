@@ -6,15 +6,14 @@ Input validation utilities for learning path agent
 """
 
 import re
-from typing import Dict, Any, Optional
+from typing import Any
 
-from ..models import LearningStyle, KnowledgeLevel
+from ..models import KnowledgeLevel, LearningStyle
 
 
 class ValidationError(Exception):
     """Custom validation error"""
 
-    pass
 
 
 class StudentDataValidator:
@@ -25,7 +24,7 @@ class StudentDataValidator:
     VALID_EXAM_TARGETS = ["LGS", "YKS", "TYT", "AYT", "Genel"]
 
     @staticmethod
-    def validate_student_data(data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+    def validate_student_data(data: dict[str, Any]) -> tuple[bool, str | None]:
         """
         Validate student data dictionary
 
@@ -59,7 +58,7 @@ class StudentDataValidator:
             )
 
         # Validate exam_target if provided
-        if "exam_target" in data and data["exam_target"]:
+        if data.get("exam_target"):
             if data["exam_target"] not in StudentDataValidator.VALID_EXAM_TARGETS:
                 return (
                     False,
@@ -67,7 +66,7 @@ class StudentDataValidator:
                 )
 
         # Validate learning_style if provided
-        if "learning_style" in data and data["learning_style"]:
+        if data.get("learning_style"):
             try:
                 LearningStyle(data["learning_style"])
             except ValueError:
@@ -78,7 +77,7 @@ class StudentDataValidator:
                 )
 
         # Validate knowledge_level if provided
-        if "knowledge_level" in data and data["knowledge_level"]:
+        if data.get("knowledge_level"):
             try:
                 KnowledgeLevel(data["knowledge_level"])
             except ValueError:
@@ -101,7 +100,7 @@ class StudentDataValidator:
                 return False, "available_time must be an integer"
 
         # Validate interests if provided
-        if "interests" in data and data["interests"]:
+        if data.get("interests"):
             if not isinstance(data["interests"], list):
                 return False, "interests must be a list"
 
@@ -124,7 +123,7 @@ class AssessmentDataValidator:
     """Validator for assessment-related data"""
 
     @staticmethod
-    def validate_assessment_request(data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+    def validate_assessment_request(data: dict[str, Any]) -> tuple[bool, str | None]:
         """Validate assessment request data"""
         # Check student_id
         if "student_id" not in data or not data["student_id"]:
@@ -150,8 +149,8 @@ class AssessmentDataValidator:
 
     @staticmethod
     def validate_assessment_results(
-        results: Dict[str, Any]
-    ) -> tuple[bool, Optional[str]]:
+        results: dict[str, Any]
+    ) -> tuple[bool, str | None]:
         """Validate assessment results data"""
         # Check required fields
         if "student_id" not in results:
@@ -186,7 +185,7 @@ class ResourceDataValidator:
     VALID_RESOURCE_TYPES = ["video", "article", "exercise", "quiz", "interactive"]
 
     @staticmethod
-    def validate_resource_search(data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+    def validate_resource_search(data: dict[str, Any]) -> tuple[bool, str | None]:
         """Validate resource search parameters"""
         # Check topic/query
         if "topic" not in data and "query" not in data:
@@ -202,7 +201,7 @@ class ResourceDataValidator:
                 return False, "count must be an integer"
 
         # Validate difficulty if provided
-        if "difficulty" in data and data["difficulty"]:
+        if data.get("difficulty"):
             if isinstance(data["difficulty"], str):
                 try:
                     KnowledgeLevel(data["difficulty"])
@@ -214,7 +213,7 @@ class ResourceDataValidator:
                     )
 
         # Validate learning_style if provided
-        if "learning_style" in data and data["learning_style"]:
+        if data.get("learning_style"):
             if isinstance(data["learning_style"], str):
                 try:
                     LearningStyle(data["learning_style"])
@@ -228,7 +227,7 @@ class ResourceDataValidator:
         return True, None
 
     @staticmethod
-    def validate_resource_data(resource: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+    def validate_resource_data(resource: dict[str, Any]) -> tuple[bool, str | None]:
         """Validate resource data structure"""
         # Check required fields
         required = ["resource_id", "title", "type", "platform", "url"]
@@ -272,8 +271,8 @@ class PathDataValidator:
 
     @staticmethod
     def validate_path_generation_request(
-        data: Dict[str, Any]
-    ) -> tuple[bool, Optional[str]]:
+        data: dict[str, Any]
+    ) -> tuple[bool, str | None]:
         """Validate path generation request"""
         # Check student_id
         if "student_id" not in data or not data["student_id"]:
@@ -283,14 +282,14 @@ class PathDataValidator:
             return False, "Invalid student_id format"
 
         # Check goal
-        if "goal" in data and data["goal"]:
+        if data.get("goal"):
             if not isinstance(data["goal"], str) or len(data["goal"]) < 3:
                 return False, "goal must be at least 3 characters"
 
         return True, None
 
     @staticmethod
-    def validate_progress_update(data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+    def validate_progress_update(data: dict[str, Any]) -> tuple[bool, str | None]:
         """Validate progress update data"""
         # Check student_id
         if "student_id" not in data or not data["student_id"]:
@@ -304,7 +303,7 @@ class PathDataValidator:
             return False, "completed_resource_ids must be a list"
 
         # Validate performance_data if provided
-        if "performance_data" in data and data["performance_data"]:
+        if data.get("performance_data"):
             if not isinstance(data["performance_data"], dict):
                 return False, "performance_data must be a dictionary"
 
@@ -324,7 +323,7 @@ class ChatDataValidator:
     """Validator for chat/conversation data"""
 
     @staticmethod
-    def validate_chat_message(data: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+    def validate_chat_message(data: dict[str, Any]) -> tuple[bool, str | None]:
         """Validate chat message data"""
         # Check session_id
         if "session_id" not in data or not data["session_id"]:
@@ -345,7 +344,7 @@ class ChatDataValidator:
 
 
 def validate_and_raise(
-    validator_func, data: Dict[str, Any], error_prefix: str = "Validation failed"
+    validator_func, data: dict[str, Any], error_prefix: str = "Validation failed"
 ):
     """
     Helper function to validate and raise ValidationError if invalid

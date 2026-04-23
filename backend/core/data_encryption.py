@@ -16,9 +16,9 @@ import json
 import logging
 import os
 import secrets
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Union
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -76,7 +76,7 @@ class EncryptionKey(BaseModel):
     algorithm: EncryptionAlgorithm
     key_material: bytes
     created_at: datetime
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     is_active: bool = True
     version: int = 1
 
@@ -88,7 +88,7 @@ class EncryptedData(BaseModel):
     algorithm: EncryptionAlgorithm
     key_id: str
     nonce: str  # Base64 encoded (for GCM)
-    tag: Optional[str] = None  # Base64 encoded (for GCM)
+    tag: str | None = None  # Base64 encoded (for GCM)
     version: int = 1
 
 
@@ -178,7 +178,7 @@ class AES256Encryptor:
 class EncryptionKeyManager:
     """Encryption key management with rotation support"""
 
-    def __init__(self, master_key: Optional[bytes] = None):
+    def __init__(self, master_key: bytes | None = None):
         """
         Initialize key manager
 
@@ -201,8 +201,8 @@ class EncryptionKeyManager:
             raise ValueError("Master key must be 32 bytes")
 
         self.master_key = master_key
-        self.keys: Dict[str, EncryptionKey] = {}
-        self.active_key_id: Optional[str] = None
+        self.keys: dict[str, EncryptionKey] = {}
+        self.active_key_id: str | None = None
 
         # Create initial key
         self._create_initial_key()
@@ -216,7 +216,7 @@ class EncryptionKeyManager:
             key_id=key_id,
             algorithm=EncryptionAlgorithm.AES_256_GCM,
             key_material=key_material,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             is_active=True,
             version=1,
         )
@@ -226,7 +226,7 @@ class EncryptionKeyManager:
 
         logger.info(f"Created initial encryption key: {key_id}")
 
-    def _derive_key(self, key_id: str, salt: Optional[bytes] = None) -> bytes:
+    def _derive_key(self, key_id: str, salt: bytes | None = None) -> bytes:
         """
         Derive encryption key from master key using PBKDF2
 
@@ -258,7 +258,7 @@ class EncryptionKeyManager:
 
         return self.keys[self.active_key_id]
 
-    def get_key(self, key_id: str) -> Optional[EncryptionKey]:
+    def get_key(self, key_id: str) -> EncryptionKey | None:
         """Get encryption key by ID"""
         return self.keys.get(key_id)
 
@@ -282,7 +282,7 @@ class EncryptionKeyManager:
             key_id=key_id,
             algorithm=EncryptionAlgorithm.AES_256_GCM,
             key_material=key_material,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             is_active=True,
             version=version,
         )
@@ -294,7 +294,7 @@ class EncryptionKeyManager:
 
         return key_id
 
-    def list_keys(self) -> List[Dict[str, Any]]:
+    def list_keys(self) -> list[dict[str, Any]]:
         """List all encryption keys"""
         return [
             {
@@ -311,7 +311,7 @@ class EncryptionKeyManager:
 class DataEncryptionManager:
     """Main data encryption manager"""
 
-    def __init__(self, key_manager: Optional[EncryptionKeyManager] = None):
+    def __init__(self, key_manager: EncryptionKeyManager | None = None):
         """
         Initialize encryption manager
 
@@ -319,7 +319,7 @@ class DataEncryptionManager:
             key_manager: Optional key manager (created if not provided)
         """
         self.key_manager = key_manager or EncryptionKeyManager()
-        self.encryptors: Dict[str, AES256Encryptor] = {}
+        self.encryptors: dict[str, AES256Encryptor] = {}
 
         # Create encryptor for active key
         self._initialize_encryptors()
@@ -333,7 +333,7 @@ class DataEncryptionManager:
     def encrypt(
         self,
         plaintext: Union[str, bytes],
-        field_name: Optional[SensitiveDataField] = None,
+        field_name: SensitiveDataField | None = None,
     ) -> EncryptedData:
         """
         Encrypt data
@@ -388,8 +388,8 @@ class DataEncryptionManager:
         return plaintext_bytes.decode("utf-8")
 
     def encrypt_dict(
-        self, data: Dict[str, Any], fields_to_encrypt: List[str]
-    ) -> Dict[str, Any]:
+        self, data: dict[str, Any], fields_to_encrypt: list[str]
+    ) -> dict[str, Any]:
         """
         Encrypt specific fields in a dictionary
 
@@ -403,7 +403,7 @@ class DataEncryptionManager:
         encrypted_data = data.copy()
 
         for field in fields_to_encrypt:
-            if field in encrypted_data and encrypted_data[field]:
+            if encrypted_data.get(field):
                 # Convert to string if not already
                 value = str(encrypted_data[field])
 
@@ -426,8 +426,8 @@ class DataEncryptionManager:
         return encrypted_data
 
     def decrypt_dict(
-        self, data: Dict[str, Any], fields_to_decrypt: List[str]
-    ) -> Dict[str, Any]:
+        self, data: dict[str, Any], fields_to_decrypt: list[str]
+    ) -> dict[str, Any]:
         """
         Decrypt specific fields in a dictionary
 
@@ -441,7 +441,7 @@ class DataEncryptionManager:
         decrypted_data = data.copy()
 
         for field in fields_to_decrypt:
-            if field in decrypted_data and decrypted_data[field]:
+            if decrypted_data.get(field):
                 try:
                     # Parse JSON
                     encrypted_json = json.loads(decrypted_data[field])
@@ -468,7 +468,7 @@ class DataEncryptionManager:
 
         return decrypted_data
 
-    def encrypt_sensitive_fields(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+    def encrypt_sensitive_fields(self, user_data: dict[str, Any]) -> dict[str, Any]:
         """
         Encrypt all sensitive fields in user data
 
@@ -491,7 +491,7 @@ class DataEncryptionManager:
 
         return self.encrypt_dict(user_data, sensitive_fields)
 
-    def decrypt_sensitive_fields(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+    def decrypt_sensitive_fields(self, user_data: dict[str, Any]) -> dict[str, Any]:
         """
         Decrypt all sensitive fields in user data
 
@@ -562,7 +562,7 @@ class DataEncryptionManager:
 
 
 # Global instance
-encryption_manager: Optional[DataEncryptionManager] = None
+encryption_manager: DataEncryptionManager | None = None
 
 
 def get_encryption_manager() -> DataEncryptionManager:
@@ -578,13 +578,13 @@ def get_encryption_manager() -> DataEncryptionManager:
 # Utility functions
 
 
-def encrypt_personal_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def encrypt_personal_data(data: dict[str, Any]) -> dict[str, Any]:
     """Encrypt personal data fields"""
     manager = get_encryption_manager()
     return manager.encrypt_sensitive_fields(data)
 
 
-def decrypt_personal_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def decrypt_personal_data(data: dict[str, Any]) -> dict[str, Any]:
     """Decrypt personal data fields"""
     manager = get_encryption_manager()
     return manager.decrypt_sensitive_fields(data)

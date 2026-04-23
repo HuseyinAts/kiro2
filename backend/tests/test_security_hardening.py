@@ -6,12 +6,11 @@ Bu test suite tüm güvenlik önlemlerini test eder.
 """
 import pytest
 from fastapi import HTTPException
-from core.input_validation import SecurityValidator, ValidatedStudentProfileRequest
-from core.sql_injection_prevention import SQLInjectionPrevention, SafeQueryBuilder
-from core.xss_prevention import XSSPrevention
+
 from core.cors_security import validate_origin
-
-
+from core.input_validation import SecurityValidator, ValidatedStudentProfileRequest
+from core.sql_injection_prevention import SafeQueryBuilder, SQLInjectionPrevention
+from core.xss_prevention import XSSPrevention
 
 pytestmark = pytest.mark.skipif(
     True,

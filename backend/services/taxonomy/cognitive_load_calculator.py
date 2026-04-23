@@ -10,7 +10,6 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 
 class LoadCategory(str, Enum):
@@ -137,7 +136,7 @@ def _detect_visual(text: str) -> bool:
 
 def calculate_cognitive_load(
     question_text: str,
-    options: Optional[list[str]] = None,
+    options: list[str] | None = None,
     subject: str = "",
 ) -> CLTResult:
     """Soru icin bilissel yuk hesapla.

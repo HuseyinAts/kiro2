@@ -3,11 +3,11 @@ Unit Tests for ResourceFinder
 Coverage Target: 90%+
 """
 
-import pytest
-from unittest.mock import Mock, AsyncMock
-
-import sys
 import os
+import sys
+from unittest.mock import AsyncMock, Mock
+
+import pytest
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../.."))
@@ -15,8 +15,8 @@ sys.path.insert(
 
 from backend.agents.learning_path.core.resource_finder import ResourceFinder
 from backend.agents.learning_path.models import (
-    LearningResource,
     KnowledgeLevel,
+    LearningResource,
     LearningStyle,
 )
 

@@ -289,9 +289,8 @@ Soruyu yazdıktan sonra KONTROL ET:
 
         if enhancement:
             return base_prompt + "\n\n" + enhancement
-        else:
-            # No enhancement needed (Fizik, Kimya, Biyoloji already good)
-            return base_prompt
+        # No enhancement needed (Fizik, Kimya, Biyoloji already good)
+        return base_prompt
 
 
 # Example usage

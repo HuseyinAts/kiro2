@@ -161,7 +161,7 @@ def process_questions() -> tuple[list[dict], list[dict], dict]:
 
         print(f"[PROCESSING] {json_file}")
 
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             questions = json.load(f)
 
         subject = json_file.replace('osym_', '').replace('.json', '')

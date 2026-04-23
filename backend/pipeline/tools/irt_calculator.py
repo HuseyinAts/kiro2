@@ -10,8 +10,6 @@ IRT Parametreleri (CLAUDE.md):
 """
 
 import math
-from typing import Dict, List, Tuple
-
 
 
 class IRTCalculator:
@@ -118,7 +116,7 @@ class IRTCalculator:
         """
         P = self.calculate_probability(theta, difficulty, discrimination, guessing)
 
-        if P <= guessing or P >= 1.0:
+        if guessing >= P or P >= 1.0:
             return 0.0
 
         numerator = (self.D ** 2) * (discrimination ** 2) * ((P - guessing) ** 2) * (1 - P)
@@ -135,7 +133,7 @@ class IRTCalculator:
         discrimination: float,
         guessing: float,
         theta: float = 0.0
-    ) -> Tuple[bool, float, str]:
+    ) -> tuple[bool, float, str]:
         """
         ZPD (Zone of Proximal Development) kontrolü
 
@@ -155,16 +153,15 @@ class IRTCalculator:
 
         if self.ZPD_OPTIMAL_MIN <= prob <= self.ZPD_OPTIMAL_MAX:
             return True, 1.0, f"Optimal ZPD ({prob:.1%} başarı olasılığı)"
-        elif self.ZPD_MIN <= prob <= self.ZPD_MAX:
+        if self.ZPD_MIN <= prob <= self.ZPD_MAX:
             return True, 0.8, f"Kabul edilebilir ZPD ({prob:.1%} başarı olasılığı)"
-        else:
-            return False, 0.5, f"ZPD dışında ({prob:.1%} başarı olasılığı)"
+        return False, 0.5, f"ZPD dışında ({prob:.1%} başarı olasılığı)"
 
     def estimate_difficulty_from_text(
         self,
         question_text: str,
         target_difficulty: str = "orta"
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Soru metninden zorluk parametrelerini tahmin et
 
@@ -213,7 +210,7 @@ class IRTCalculator:
         difficulty: float,
         discrimination: float,
         guessing: float
-    ) -> Tuple[bool, List[str]]:
+    ) -> tuple[bool, list[str]]:
         """
         IRT parametrelerini doğrula
 
@@ -250,7 +247,7 @@ class IRTCalculator:
     def calculate_expected_score(
         self,
         theta: float,
-        items: List[Dict[str, float]]
+        items: list[dict[str, float]]
     ) -> float:
         """
         Beklenen test skoru hesapla

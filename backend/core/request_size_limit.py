@@ -3,7 +3,6 @@ Request Size Limiting Middleware
 SECURITY FIX: Prevent DoS attacks via large payloads
 """
 import logging
-from typing import Optional
 
 from fastapi import HTTPException, Request, status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -23,7 +22,7 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
         self,
         app,
         max_request_size: int = 10 * 1024 * 1024,  # 10 MB default
-        max_file_upload_size: Optional[int] = None,  # Can be different for file uploads
+        max_file_upload_size: int | None = None,  # Can be different for file uploads
     ):
         super().__init__(app)
         self.max_request_size = max_request_size
@@ -91,7 +90,7 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
 def add_request_size_limit(
     app,
     max_request_size: int = 10 * 1024 * 1024,
-    max_file_upload_size: Optional[int] = None,
+    max_file_upload_size: int | None = None,
 ) -> None:
     """
     Add request size limiting middleware to FastAPI app

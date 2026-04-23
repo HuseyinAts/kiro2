@@ -18,9 +18,10 @@ import functools
 import hashlib
 import inspect
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Any, Callable, Optional, TypeVar, Union
+from typing import Any, TypeVar, Union
 
 from fastapi import Request
 
@@ -91,9 +92,9 @@ class CacheKeyBuilder:
     def build(
         self,
         path: str,
-        query_params: Optional[dict[str, Any]] = None,
-        user_id: Optional[Union[int, str]] = None,
-        extra_parts: Optional[list[str]] = None,
+        query_params: dict[str, Any] | None = None,
+        user_id: Union[int, str] | None = None,
+        extra_parts: list[str] | None = None,
     ) -> str:
         """
         Cache key'i olusturur.
@@ -140,7 +141,7 @@ class CacheKeyBuilder:
         return key
 
 
-def _get_request_from_args(args: tuple, kwargs: dict) -> Optional[Request]:
+def _get_request_from_args(args: tuple, kwargs: dict) -> Request | None:
     """
     Fonksiyon argumanlari arasinda Request objesini bulur.
 
@@ -163,7 +164,7 @@ def _get_request_from_args(args: tuple, kwargs: dict) -> Optional[Request]:
     return None
 
 
-def _get_user_id_from_request(request: Optional[Request]) -> Optional[Union[int, str]]:
+def _get_user_id_from_request(request: Request | None) -> Union[int, str] | None:
     """
     Request'ten kullanici ID'sini cikarir.
 
@@ -195,7 +196,7 @@ def _get_user_id_from_request(request: Optional[Request]) -> Optional[Union[int,
     return None
 
 
-async def _get_cached_value(cache_key: str) -> Optional[Any]:
+async def _get_cached_value(cache_key: str) -> Any | None:
     """
     Redis'ten cache'lenmis degeri alir.
 
@@ -281,12 +282,12 @@ async def invalidate_cache(
 
 def cache_response(
     ttl: Union[int, TTLPreset] = DEFAULT_TTL,
-    prefix: Optional[str] = None,
+    prefix: str | None = None,
     include_query_params: bool = True,
     include_user_id: bool = False,
     cache_version: int = 1,
-    key_builder: Optional[CacheKeyBuilder] = None,
-    skip_if: Optional[Callable[..., bool]] = None,
+    key_builder: CacheKeyBuilder | None = None,
+    skip_if: Callable[..., bool] | None = None,
 ) -> Callable[[F], F]:
     """
     Response caching decorator.
@@ -398,8 +399,7 @@ def cache_response(
         # Async mi kontrolu
         if inspect.iscoroutinefunction(func):
             return async_wrapper  # type: ignore[return-value]
-        else:
-            return sync_wrapper  # type: ignore[return-value]
+        return sync_wrapper  # type: ignore[return-value]
 
     return decorator
 
@@ -407,7 +407,7 @@ def cache_response(
 # Convenience decorators for common use cases
 def cache_static(
     ttl: int = TTLPreset.STATIC,
-    prefix: Optional[str] = None,
+    prefix: str | None = None,
 ) -> Callable[[F], F]:
     """
     Statik icerik icin cache decorator.
@@ -435,7 +435,7 @@ def cache_static(
 
 def cache_dynamic(
     ttl: int = TTLPreset.DYNAMIC,
-    prefix: Optional[str] = None,
+    prefix: str | None = None,
     include_user_id: bool = False,
 ) -> Callable[[F], F]:
     """
@@ -465,7 +465,7 @@ def cache_dynamic(
 
 def cache_user_data(
     ttl: int = TTLPreset.USER_DATA,
-    prefix: Optional[str] = None,
+    prefix: str | None = None,
 ) -> Callable[[F], F]:
     """
     Kullanici verisi icin cache decorator.
@@ -492,12 +492,12 @@ def cache_user_data(
 
 
 __all__ = [
-    "cache_response",
-    "cache_static",
-    "cache_dynamic",
-    "cache_user_data",
+    "DEFAULT_TTL",
     "CacheKeyBuilder",
     "TTLPreset",
-    "DEFAULT_TTL",
+    "cache_dynamic",
+    "cache_response",
+    "cache_static",
+    "cache_user_data",
     "invalidate_cache",
 ]

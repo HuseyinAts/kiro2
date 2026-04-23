@@ -7,11 +7,11 @@ Author: KIRO AI Team
 Date: 2025-10-19 (Updated: 2026-01-16)
 """
 
-from typing import List, Dict, Any, Optional
 import asyncio
+from typing import Any
 
 from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
-from services.llm.multi_llm_config import LLMProvider, LLMCapability, MultiLLMConfig
+from services.llm.multi_llm_config import LLMCapability, LLMProvider, MultiLLMConfig
 from services.llm.sequential_thinking_mixin import (
     ReasoningResult,
 )
@@ -27,7 +27,7 @@ class EnsembleStrategy:
 
     @staticmethod
     def majority_voting(
-        responses: List[LLMResponse], weights: Optional[Dict[LLMProvider, float]] = None
+        responses: list[LLMResponse], weights: dict[LLMProvider, float] | None = None
     ) -> LLMResponse:
         """
         Weighted majority voting
@@ -59,8 +59,8 @@ class EnsembleStrategy:
 
     @staticmethod
     def quality_threshold_filter(
-        responses: List[LLMResponse], min_quality: float = 0.7
-    ) -> List[LLMResponse]:
+        responses: list[LLMResponse], min_quality: float = 0.7
+    ) -> list[LLMResponse]:
         """
         Filter responses by quality threshold
 
@@ -75,7 +75,7 @@ class EnsembleStrategy:
 
     @staticmethod
     def cost_optimized_selection(
-        responses: List[LLMResponse], quality_threshold: float = 0.7
+        responses: list[LLMResponse], quality_threshold: float = 0.7
     ) -> LLMResponse:
         """
         Select most cost-effective response above quality threshold
@@ -101,7 +101,7 @@ class EnsembleStrategy:
 
     @staticmethod
     def latency_optimized_selection(
-        responses: List[LLMResponse], quality_threshold: float = 0.7
+        responses: list[LLMResponse], quality_threshold: float = 0.7
     ) -> LLMResponse:
         """
         Select fastest response above quality threshold
@@ -153,7 +153,7 @@ class MultiLLMEnsembleManager:
         Raises:
             RuntimeError: If no providers can be initialized
         """
-        self.providers: Dict[LLMProvider, BaseLLMProvider] = {}
+        self.providers: dict[LLMProvider, BaseLLMProvider] = {}
 
         # Initialize Gemini first (best for sequential thinking)
         if enable_gemini:
@@ -233,9 +233,9 @@ class MultiLLMEnsembleManager:
             results = await asyncio.wait_for(
                 asyncio.gather(*tasks, return_exceptions=True), timeout=30.0
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print("⚠️  Ensemble generation timeout")
-            results = [asyncio.TimeoutError()] * len(tasks)
+            results = [TimeoutError()] * len(tasks)
 
         # Filter successful responses
         successful_responses = []
@@ -251,15 +251,14 @@ class MultiLLMEnsembleManager:
         # Apply strategy
         if strategy == "majority_voting":
             return EnsembleStrategy.majority_voting(successful_responses)
-        elif strategy == "cost_optimized":
+        if strategy == "cost_optimized":
             return EnsembleStrategy.cost_optimized_selection(successful_responses)
-        elif strategy == "latency_optimized":
+        if strategy == "latency_optimized":
             return EnsembleStrategy.latency_optimized_selection(successful_responses)
-        else:
-            return successful_responses[0]
+        return successful_responses[0]
 
     async def generate_with_fallback(
-        self, request: LLMRequest, preferred_provider: Optional[LLMProvider] = None
+        self, request: LLMRequest, preferred_provider: LLMProvider | None = None
     ) -> LLMResponse:
         """
         Generate with fallback chain
@@ -298,7 +297,7 @@ class MultiLLMEnsembleManager:
 
         raise RuntimeError(f"All providers failed. Last error: {last_error}")
 
-    async def check_health_all(self) -> Dict[LLMProvider, bool]:
+    async def check_health_all(self) -> dict[LLMProvider, bool]:
         """
         Check health of all providers
 
@@ -324,7 +323,7 @@ class MultiLLMEnsembleManager:
 
         return health_status
 
-    def get_metrics_all(self) -> Dict[LLMProvider, Dict[str, Any]]:
+    def get_metrics_all(self) -> dict[LLMProvider, dict[str, Any]]:
         """
         Get performance metrics from all providers
 
@@ -338,7 +337,7 @@ class MultiLLMEnsembleManager:
 
     def get_best_provider_for_capability(
         self, capability: LLMCapability, prefer_cost_effective: bool = False
-    ) -> Optional[BaseLLMProvider]:
+    ) -> BaseLLMProvider | None:
         """
         Get best available provider for specific capability
 
@@ -363,7 +362,7 @@ class MultiLLMEnsembleManager:
         bloom_level: int,
         exam_type: str,
         use_voting: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate ÖSYM question using ensemble
 
@@ -402,8 +401,7 @@ class MultiLLMEnsembleManager:
             # Ensemble voting: return best based on quality
             # For now, return first (can be enhanced with similarity comparison)
             return successful_questions[0]
-        else:
-            return successful_questions[0]
+        return successful_questions[0]
 
     def __repr__(self) -> str:
         """Return string representation."""
@@ -419,8 +417,8 @@ class MultiLLMEnsembleManager:
         problem: str,
         max_steps: int = 10,
         use_voting: bool = True,
-        preferred_provider: Optional[LLMProvider] = None,
-    ) -> Dict[str, Any]:
+        preferred_provider: LLMProvider | None = None,
+    ) -> dict[str, Any]:
         """
         Solve problem with sequential thinking using multiple providers
 
@@ -472,9 +470,9 @@ class MultiLLMEnsembleManager:
             results = await asyncio.wait_for(
                 asyncio.gather(*tasks, return_exceptions=True), timeout=60.0
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             print("⚠️  Sequential thinking timeout")
-            results = [asyncio.TimeoutError()] * len(tasks)
+            results = [TimeoutError()] * len(tasks)
 
         # Process results
         successful_results = []
@@ -494,12 +492,11 @@ class MultiLLMEnsembleManager:
 
         if use_voting and len(successful_results) > 1:
             return self._vote_on_reasoning_results(successful_results)
-        else:
-            return successful_results[0]
+        return successful_results[0]
 
     async def _generate_with_thinking_prompt(
         self, provider: BaseLLMProvider, problem: str, max_steps: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate with thinking prompt for providers without native support"""
         prompt = f"""Asagidaki problemi adim adim coz.
 
@@ -533,8 +530,8 @@ Cozum:"""
         }
 
     def _vote_on_reasoning_results(
-        self, results: List[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, results: list[dict[str, Any]]
+    ) -> dict[str, Any]:
         """Vote on multiple reasoning results to select best"""
         if not results:
             raise ValueError("No results to vote on")
@@ -591,7 +588,7 @@ Cozum:"""
 
     async def solve_with_best_provider(
         self, problem: str, capability: LLMCapability = LLMCapability.SEQUENTIAL_THINKING
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Solve problem with best available provider for capability
 
@@ -621,28 +618,27 @@ Cozum:"""
             provider, "think_step_by_step"
         ):
             return await provider.think_step_by_step(problem)
-        elif capability == LLMCapability.MATH_REASONING and hasattr(
+        if capability == LLMCapability.MATH_REASONING and hasattr(
             provider, "solve_math_problem"
         ):
             return await provider.solve_math_problem(problem)
-        else:
-            # Generic generation
-            request = LLMRequest(
-                prompt=problem,
-                max_tokens=4096,
-                temperature=0.3,
-            )
-            response = await provider.generate(request)
-            return {
-                "problem": problem,
-                "answer": response.content,
-                "provider": best_provider_type.value,
-                "latency_ms": response.latency_ms,
-            }
+        # Generic generation
+        request = LLMRequest(
+            prompt=problem,
+            max_tokens=4096,
+            temperature=0.3,
+        )
+        response = await provider.generate(request)
+        return {
+            "problem": problem,
+            "answer": response.content,
+            "provider": best_provider_type.value,
+            "latency_ms": response.latency_ms,
+        }
 
     async def compare_providers(
         self, problem: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Compare all providers on same problem
 

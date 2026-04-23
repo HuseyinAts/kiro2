@@ -5,11 +5,8 @@ Revises: b3c4d5e6f7a8, mega_feature_001
 Create Date: 2026-03-14 16:18:06.180064
 
 """
-from typing import Sequence, Union
-
-from alembic import op
-import sqlalchemy as sa
-
+from collections.abc import Sequence
+from typing import Union
 
 # revision identifiers, used by Alembic.
 revision: str = '5e00e4fca928'

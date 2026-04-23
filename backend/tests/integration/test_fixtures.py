@@ -10,10 +10,11 @@ import json
 import random
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import pytest_asyncio
+
 from core.auth_middleware import AuthUser, PermissionManager, UserRole
 from core.structured_logging import LogCategory, get_logger
 from core.unified_api_gateway import APIRequest, APIResponse, HTTPMethod, RouteType
@@ -28,9 +29,9 @@ class UserFixture:
 
     user: AuthUser
     password: str
-    profile_data: Dict[str, Any]
-    exam_history: List[Dict[str, Any]]
-    session_data: Dict[str, Any]
+    profile_data: dict[str, Any]
+    exam_history: list[dict[str, Any]]
+    session_data: dict[str, Any]
 
 
 @dataclass
@@ -39,10 +40,10 @@ class ExamFixture:
 
     exam_id: str
     exam_type: TurkishExamType
-    questions: List[Dict[str, Any]]
-    answers: List[Dict[str, Any]]
-    metadata: Dict[str, Any]
-    session_config: Dict[str, Any]
+    questions: list[dict[str, Any]]
+    answers: list[dict[str, Any]]
+    metadata: dict[str, Any]
+    session_config: dict[str, Any]
 
 
 @dataclass
@@ -51,9 +52,9 @@ class APIRequestFixture:
 
     request: APIRequest
     expected_response: APIResponse
-    user_context: Optional[AuthUser]
+    user_context: AuthUser | None
     test_scenario: str
-    validation_rules: List[Dict[str, Any]]
+    validation_rules: list[dict[str, Any]]
 
 
 class TurkishExamFixtures:
@@ -78,7 +79,7 @@ class TurkishExamFixtures:
             is_active=True,
             is_verified=True,
             session_id=f"session_{uuid.uuid4()}",
-            last_login=datetime.now(timezone.utc) - timedelta(hours=2),
+            last_login=datetime.now(UTC) - timedelta(hours=2),
             profile_data={
                 "first_name": f"Test{student_id}",
                 "last_name": "Öğrenci",
@@ -111,7 +112,7 @@ class TurkishExamFixtures:
                 "exam_id": f"tyt_practice_{i}",
                 "exam_type": "tyt",
                 "date": (
-                    datetime.now(timezone.utc) - timedelta(days=i * 7)
+                    datetime.now(UTC) - timedelta(days=i * 7)
                 ).isoformat(),
                 "score": random.randint(300, 500),
                 "duration_minutes": 135,
@@ -149,7 +150,7 @@ class TurkishExamFixtures:
             exam_history=exam_history,
             session_data={
                 "login_count": random.randint(50, 200),
-                "last_activity": datetime.now(timezone.utc).isoformat(),
+                "last_activity": datetime.now(UTC).isoformat(),
                 "device_info": {
                     "browser": "Chrome",
                     "os": "Windows 11",
@@ -177,7 +178,7 @@ class TurkishExamFixtures:
             is_active=True,
             is_verified=True,
             session_id=f"teacher_session_{uuid.uuid4()}",
-            last_login=datetime.now(timezone.utc) - timedelta(minutes=30),
+            last_login=datetime.now(UTC) - timedelta(minutes=30),
             profile_data={
                 "first_name": f"Öğretmen{teacher_id}",
                 "last_name": "Test",
@@ -205,7 +206,7 @@ class TurkishExamFixtures:
             session_data={
                 "content_created": random.randint(20, 100),
                 "students_supervised": random.randint(50, 150),
-                "last_activity": datetime.now(timezone.utc).isoformat(),
+                "last_activity": datetime.now(UTC).isoformat(),
                 "permissions_level": "content_creator",
             },
         )
@@ -223,7 +224,7 @@ class TurkishExamFixtures:
             is_active=True,
             is_verified=True,
             session_id=f"admin_session_{uuid.uuid4()}",
-            last_login=datetime.now(timezone.utc) - timedelta(minutes=10),
+            last_login=datetime.now(UTC) - timedelta(minutes=10),
             profile_data={
                 "first_name": f"Admin{admin_id}",
                 "last_name": "System",
@@ -330,7 +331,7 @@ class TurkishExamFixtures:
                 "time_spent_seconds": random.randint(30, 120),
                 "is_correct": None,  # Will be calculated
                 "points_earned": 0,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "confidence_level": random.choice(["high", "medium", "low"]),
                 "review_marked": random.choice([True, False]),
             }
@@ -358,7 +359,7 @@ class TurkishExamFixtures:
                 "total_questions": 120,
                 "subjects": ["matematik", "turkce", "fen", "sosyal"],
                 "difficulty": difficulty,
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
                 "version": "2024.1",
                 "instructions": {
                     "tr": "TYT sınavı talimatları...",
@@ -455,7 +456,7 @@ class TurkishExamFixtures:
                 "duration_minutes": 180,
                 "total_questions": sum(subjects.values()),
                 "difficulty": difficulty,
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
             },
             session_config={
                 "time_limit_minutes": 180,
@@ -632,7 +633,7 @@ class TurkishExamFixtures:
 
     # Database Test Data Fixtures
 
-    def create_database_fixtures(self) -> Dict[str, List[Dict[str, Any]]]:
+    def create_database_fixtures(self) -> dict[str, list[dict[str, Any]]]:
         """Create comprehensive database test fixtures"""
         return {
             "users": [
@@ -732,7 +733,7 @@ class TurkishExamFixtures:
 
     # Performance Test Data
 
-    def create_load_test_users(self, count: int = 1000) -> List[UserFixture]:
+    def create_load_test_users(self, count: int = 1000) -> list[UserFixture]:
         """Create users for load testing"""
         users = []
 
@@ -754,7 +755,7 @@ class TurkishExamFixtures:
 
     # Error Scenario Fixtures
 
-    def create_error_scenarios(self) -> List[Dict[str, Any]]:
+    def create_error_scenarios(self) -> list[dict[str, Any]]:
         """Create comprehensive error scenario fixtures"""
         return [
             {

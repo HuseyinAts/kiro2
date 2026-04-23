@@ -12,10 +12,10 @@ Requirements:
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -47,12 +47,12 @@ class Alert:
     severity: AlertSeverity
     endpoint: str
     message: str
-    details: Dict = field(default_factory=dict)
+    details: dict = field(default_factory=dict)
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     resolved: bool = False
-    resolved_at: Optional[datetime] = None
+    resolved_at: datetime | None = None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Dict'e dönüştürür."""
         return {
             "id": self.id,
@@ -94,7 +94,7 @@ class AlertManager:
     def __init__(
         self,
         redis_client=None,
-        thresholds: Optional[AlertThreshold] = None,
+        thresholds: AlertThreshold | None = None,
         throttle_minutes: int = 5
     ):
         """
@@ -110,13 +110,13 @@ class AlertManager:
         self.throttle_minutes = throttle_minutes
 
         # Son gönderilen alertler (throttling için)
-        self._last_alerts: Dict[str, datetime] = {}
+        self._last_alerts: dict[str, datetime] = {}
 
         # Active alerts
-        self._active_alerts: Dict[str, Alert] = {}
+        self._active_alerts: dict[str, Alert] = {}
 
         # Notifiers
-        self._notifiers: List[Callable] = []
+        self._notifiers: list[Callable] = []
 
         # Alert counter
         self._alert_counter = 0
@@ -138,7 +138,7 @@ class AlertManager:
         error_rate: float,
         health_score: int,
         is_critical: bool = False
-    ) -> Optional[Alert]:
+    ) -> Alert | None:
         """
         Metrikleri kontrol eder ve gerekirse alert oluşturur.
 
@@ -165,7 +165,7 @@ class AlertManager:
                 details={"response_time_ms": response_time_ms},
                 is_critical=is_critical
             )
-        elif response_time_ms >= self.thresholds.response_time_warning_ms:
+        if response_time_ms >= self.thresholds.response_time_warning_ms:
             return await self.create_alert(
                 type=AlertType.HIGH_LATENCY,
                 severity=AlertSeverity.WARNING,
@@ -185,7 +185,7 @@ class AlertManager:
                 details={"error_rate": error_rate},
                 is_critical=is_critical
             )
-        elif error_rate >= self.thresholds.error_rate_warning:
+        if error_rate >= self.thresholds.error_rate_warning:
             return await self.create_alert(
                 type=AlertType.HIGH_ERROR_RATE,
                 severity=AlertSeverity.WARNING,
@@ -205,7 +205,7 @@ class AlertManager:
                 details={"health_score": health_score},
                 is_critical=is_critical
             )
-        elif health_score < self.thresholds.health_score_warning:
+        if health_score < self.thresholds.health_score_warning:
             return await self.create_alert(
                 type=AlertType.LOW_HEALTH_SCORE,
                 severity=AlertSeverity.WARNING,
@@ -223,9 +223,9 @@ class AlertManager:
         severity: AlertSeverity,
         endpoint: str,
         message: str,
-        details: Optional[Dict] = None,
+        details: dict | None = None,
         is_critical: bool = False
-    ) -> Optional[Alert]:
+    ) -> Alert | None:
         """
         Yeni alert oluşturur.
 
@@ -393,7 +393,7 @@ class AlertManager:
         """
         self._notifiers.append(notifier)
 
-    async def get_active_alerts(self) -> List[Alert]:
+    async def get_active_alerts(self) -> list[Alert]:
         """Aktif alert'leri getirir."""
         return list(self._active_alerts.values())
 
@@ -401,7 +401,7 @@ class AlertManager:
         self,
         severity: AlertSeverity,
         limit: int = 100
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Severity'ye göre alert'leri getirir.
 
@@ -440,7 +440,7 @@ class AlertManager:
             logger.error(f"Alerts getirilemedi: {e}")
             return []
 
-    async def get_alert_stats(self) -> Dict:
+    async def get_alert_stats(self) -> dict:
         """Alert istatistiklerini getirir."""
         stats = {
             "active_count": len(self._active_alerts),

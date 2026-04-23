@@ -13,23 +13,23 @@ Requirements Tested:
     REQ-7.6: Basarisiz deployment -> incident ticket
 """
 
-import pytest
-from datetime import datetime, UTC
+import sys
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
+
 import httpx
+import pytest
 from httpx import Response
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from app.health.hooks.postdeploy_hook import (
-    PostDeployHook,
     DeploymentReport,
     DeploymentStatus,
-    SmokeTestResult
+    PostDeployHook,
+    SmokeTestResult,
 )
 from app.health.models import EndpointMetadata
-
 
 # =====================================================================
 # Fixtures

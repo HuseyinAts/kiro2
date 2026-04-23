@@ -3,10 +3,10 @@ API Versioning System
 ARCHITECTURE FIX: Version management and deprecation strategy
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Callable, Optional
 
 from fastapi import Header, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -29,9 +29,9 @@ class VersionInfo:
 
     version: str
     status: str  # "stable", "deprecated", "sunset"
-    deprecation_date: Optional[datetime] = None
-    sunset_date: Optional[datetime] = None
-    successor: Optional[str] = None
+    deprecation_date: datetime | None = None
+    sunset_date: datetime | None = None
+    successor: str | None = None
     description: str = ""
 
 
@@ -62,7 +62,7 @@ class VersionNegotiator:
     """
 
     @staticmethod
-    def extract_version_from_path(path: str) -> Optional[str]:
+    def extract_version_from_path(path: str) -> str | None:
         """Extract version from URL path"""
         # Pattern: /api/v1/... or /api/v2/...
         parts = path.split("/")
@@ -74,7 +74,7 @@ class VersionNegotiator:
         return None
 
     @staticmethod
-    def extract_version_from_header(accept_header: Optional[str]) -> Optional[str]:
+    def extract_version_from_header(accept_header: str | None) -> str | None:
         """Extract version from Accept header"""
         if not accept_header:
             return None
@@ -88,12 +88,12 @@ class VersionNegotiator:
         return None
 
     @staticmethod
-    def extract_version_from_query(query_params: dict) -> Optional[str]:
+    def extract_version_from_query(query_params: dict) -> str | None:
         """Extract version from query parameters"""
         return query_params.get("version") or query_params.get("api_version")
 
     @staticmethod
-    def negotiate_version(request: Request, accept: Optional[str] = None) -> str:
+    def negotiate_version(request: Request, accept: str | None = None) -> str:
         """
         Negotiate API version from request
 
@@ -263,7 +263,7 @@ class VersionMiddleware:
 
 # Dependency for route handlers
 async def get_api_version(
-    request: Request, accept: Optional[str] = Header(None)
+    request: Request, accept: str | None = Header(None)
 ) -> str:
     """
     Dependency to get API version in route handlers
@@ -282,7 +282,7 @@ async def get_api_version(
 
 
 # Decorator for version-specific endpoints
-def version_endpoint(min_version: str = "v1", max_version: Optional[str] = None):
+def version_endpoint(min_version: str = "v1", max_version: str | None = None):
     """
     Decorator to restrict endpoint to specific API versions
 
@@ -344,7 +344,7 @@ def deprecated_endpoint(
 
     def decorator(func: Callable) -> Callable:
         async def wrapper(*args, **kwargs):
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
 
             # Check if sunset
             if now >= sunset_date:

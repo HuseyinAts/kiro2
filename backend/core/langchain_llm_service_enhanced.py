@@ -338,7 +338,6 @@ class EnhancedLangChainLLMService:
                 logger.info("[CHECK] OpenAI embeddings initialized")
             except (ImportError, ValueError, ConnectionError) as e:
                 logger.debug(f"OpenAI embeddings initialization failed: {e}")
-                pass
 
         # HuggingFace embeddings (always available)
         try:

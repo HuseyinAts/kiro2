@@ -39,7 +39,6 @@ from core.jwt_auth import (
     get_current_user,
 )
 
-
 # ==================== Shared fixture ====================
 
 
@@ -1000,9 +999,8 @@ class TestGetCurrentUser:
 
         with patch.object(
             manager, "is_blacklisted_async", new_callable=AsyncMock, return_value=True
-        ):
-            with pytest.raises(HTTPException) as exc_info:
-                await get_current_user(credentials=credentials, jwt_mgr=manager)
+        ), pytest.raises(HTTPException) as exc_info:
+            await get_current_user(credentials=credentials, jwt_mgr=manager)
 
         assert exc_info.value.status_code == 401
         assert "revoked" in exc_info.value.detail.lower()
@@ -1036,9 +1034,8 @@ class TestGetCurrentUser:
 
         with patch.object(
             manager, "is_blacklisted_async", new_callable=AsyncMock, return_value=False
-        ):
-            with pytest.raises(HTTPException) as exc_info:
-                await get_current_user(credentials=credentials, jwt_mgr=manager)
+        ), pytest.raises(HTTPException) as exc_info:
+            await get_current_user(credentials=credentials, jwt_mgr=manager)
 
         assert exc_info.value.status_code == 401
 

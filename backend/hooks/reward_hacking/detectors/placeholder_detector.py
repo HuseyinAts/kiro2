@@ -6,15 +6,13 @@ Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 3.6
 
 from __future__ import annotations
 
-from typing import List
-
-from ..base_detector import BaseDetector
-from ..models.enums import SeverityLevel, PatternType
-from ..models.detection_result import DetectionResult
 from ..analyzers.ast_analyzer import ASTAnalyzer
 from ..analyzers.context_analyzer import ContextAnalyzer
+from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
 from ..exceptions import ASTParseError
+from ..models.detection_result import DetectionResult
+from ..models.enums import PatternType, SeverityLevel
 
 
 class PlaceholderDetector(BaseDetector):
@@ -34,7 +32,7 @@ class PlaceholderDetector(BaseDetector):
     pattern_type = PatternType.PLACEHOLDER
     default_severity = SeverityLevel.CRITICAL
 
-    def get_patterns(self) -> List[str]:
+    def get_patterns(self) -> list[str]:
         """Get regex patterns for placeholder detection."""
         return REWARD_HACKING_PATTERNS.get("placeholder", [])
 
@@ -42,7 +40,7 @@ class PlaceholderDetector(BaseDetector):
         self,
         file_path: str,
         content: str
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Detect placeholder code patterns.
 
@@ -56,7 +54,7 @@ class PlaceholderDetector(BaseDetector):
         if not self.is_enabled():
             return []
 
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         # Initialize context analyzer
         context_analyzer = ContextAnalyzer(content, file_path)
@@ -104,7 +102,7 @@ class PlaceholderDetector(BaseDetector):
         file_path: str,
         content: str,
         context_analyzer: ContextAnalyzer
-    ) -> List[DetectionResult]:
+    ) -> list[DetectionResult]:
         """
         Perform AST-based detection for empty functions and NotImplementedError.
 
@@ -116,7 +114,7 @@ class PlaceholderDetector(BaseDetector):
         Returns:
             List of DetectionResult objects
         """
-        results: List[DetectionResult] = []
+        results: list[DetectionResult] = []
 
         try:
             ast_analyzer = ASTAnalyzer(content, file_path)

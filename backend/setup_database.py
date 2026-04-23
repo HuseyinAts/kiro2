@@ -10,18 +10,20 @@ from pathlib import Path
 # Add current directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
+import uuid
+from datetime import UTC, datetime
+
 import asyncpg
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-import uuid
-from datetime import datetime, timezone
+
 from models_unified import (
     Base,
     Kullanici,
+    KullaniciRolu,
     OgrenmeProfili,
     Soru,
-    KullaniciRolu,
     SoruZorluk,
 )
 
@@ -110,7 +112,7 @@ async def insert_test_data():
                 hedef_universite="Boğaziçi Üniversitesi",
                 hedef_bolum="Bilgisayar Mühendisliği",
                 aktif=True,
-                kayit_tarihi=datetime.now(timezone.utc),
+                kayit_tarihi=datetime.now(UTC),
             )
 
             ogrenci2 = Kullanici(
@@ -127,7 +129,7 @@ async def insert_test_data():
                 hedef_universite="ODTÜ",
                 hedef_bolum="İşletme",
                 aktif=True,
-                kayit_tarihi=datetime.now(timezone.utc),
+                kayit_tarihi=datetime.now(UTC),
             )
 
             ogretmen = Kullanici(
@@ -140,7 +142,7 @@ async def insert_test_data():
                 parola_hash="hash789",
                 okul="Atatürk Lisesi",
                 aktif=True,
-                kayit_tarihi=datetime.now(timezone.utc),
+                kayit_tarihi=datetime.now(UTC),
             )
 
             # Add users to session
@@ -169,7 +171,7 @@ async def insert_test_data():
                 ogretmene_saygi_seviyesi=0.9,
                 aile_katilim_derecesi=0.6,
                 akran_rekabet_egilimi=0.5,
-                ilk_tespit_tarihi=datetime.now(timezone.utc),
+                ilk_tespit_tarihi=datetime.now(UTC),
             )
 
             session.add(profil1)

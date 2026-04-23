@@ -8,9 +8,9 @@ import asyncio
 import statistics
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from analytics.student_performance_engine import PerformanceComparator
 from analytics.unified_analytics_data_model import (
@@ -40,25 +40,25 @@ class ExamResultReport:
     generated_at: datetime
 
     # Report sections
-    overview: Dict[str, Any] = field(default_factory=dict)
-    subject_breakdown: Dict[str, Any] = field(default_factory=dict)
-    performance_analysis: Dict[str, Any] = field(default_factory=dict)
-    recommendations: List[Dict[str, Any]] = field(default_factory=list)
-    visual_data: Dict[str, Any] = field(default_factory=dict)
+    overview: dict[str, Any] = field(default_factory=dict)
+    subject_breakdown: dict[str, Any] = field(default_factory=dict)
+    performance_analysis: dict[str, Any] = field(default_factory=dict)
+    recommendations: list[dict[str, Any]] = field(default_factory=list)
+    visual_data: dict[str, Any] = field(default_factory=dict)
 
     # Comparison data
-    peer_comparison: Optional[Dict[str, Any]] = None
-    historical_comparison: Optional[Dict[str, Any]] = None
+    peer_comparison: dict[str, Any] | None = None
+    historical_comparison: dict[str, Any] | None = None
 
     # Turkish specific data
-    yks_projection: Optional[Dict[str, Any]] = None
-    university_chances: Optional[Dict[str, Any]] = None
+    yks_projection: dict[str, Any] | None = None
+    university_chances: dict[str, Any] | None = None
 
     # Report metadata
     report_language: str = "tr"
-    export_formats: List[str] = field(default_factory=lambda: ["json", "pdf"])
+    export_formats: list[str] = field(default_factory=lambda: ["json", "pdf"])
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert report to dictionary"""
         return {
             "report_id": self.report_id,
@@ -96,20 +96,20 @@ class SubjectAnalysisReport:
     score: Decimal
     net_score: Decimal
     performance_level: str
-    percentile: Optional[float] = None
+    percentile: float | None = None
 
     # Question difficulty analysis
     easy_correct: int = 0
     medium_correct: int = 0
     hard_correct: int = 0
-    difficulty_analysis: Dict[str, Any] = field(default_factory=dict)
+    difficulty_analysis: dict[str, Any] = field(default_factory=dict)
 
     # Topic breakdown
-    topic_performance: Dict[str, Any] = field(default_factory=dict)
+    topic_performance: dict[str, Any] = field(default_factory=dict)
 
     # Recommendations
-    improvement_areas: List[str] = field(default_factory=list)
-    study_suggestions: List[str] = field(default_factory=list)
+    improvement_areas: list[str] = field(default_factory=list)
+    study_suggestions: list[str] = field(default_factory=list)
 
     # Turkish education specific
     curriculum_coverage: float = 0.0
@@ -121,7 +121,7 @@ class SubjectAnalysisReport:
         self.net_score = Decimal(str(max(0, self.correct_answers - penalty)))
         return self.net_score
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "subject": self.subject,
@@ -272,7 +272,7 @@ class ExamResultsReportGenerator:
                 student_id=student_id,
                 exam_metrics=exam_metrics,
                 report_type="detailed",
-                generated_at=datetime.now(timezone.utc),
+                generated_at=datetime.now(UTC),
             )
 
             # Generate report sections
@@ -489,19 +489,18 @@ class ExamResultsReportGenerator:
         """Get performance level based on success rate"""
         if success_rate >= 90:
             return "excellent"
-        elif success_rate >= 80:
+        if success_rate >= 80:
             return "very_good"
-        elif success_rate >= 70:
+        if success_rate >= 70:
             return "good"
-        elif success_rate >= 60:
+        if success_rate >= 60:
             return "average"
-        elif success_rate >= 50:
+        if success_rate >= 50:
             return "below_average"
-        else:
-            return "weak"
+        return "weak"
 
     async def _analyze_subject_difficulty(
-        self, subject_analysis: SubjectAnalysisReport, subject_data: Dict[str, Any]
+        self, subject_analysis: SubjectAnalysisReport, subject_data: dict[str, Any]
     ):
         """Analyze performance by question difficulty
 
@@ -605,7 +604,7 @@ class ExamResultsReportGenerator:
             logger.error(f"Subject difficulty analysis failed: {e}")
 
     async def _analyze_topic_performance(
-        self, subject_analysis: SubjectAnalysisReport, subject_data: Dict[str, Any]
+        self, subject_analysis: SubjectAnalysisReport, subject_data: dict[str, Any]
     ):
         """Analyze performance by curriculum topics"""
         try:
@@ -643,7 +642,7 @@ class ExamResultsReportGenerator:
         except Exception as e:
             logger.error(f"Topic performance analysis failed: {e}")
 
-    def _get_curriculum_topics(self, subject: str) -> List[str]:
+    def _get_curriculum_topics(self, subject: str) -> list[str]:
         """Get curriculum topics for subject"""
         topic_map = {
             "matematik": [
@@ -763,8 +762,8 @@ class ExamResultsReportGenerator:
             logger.error(f"Subject recommendations generation failed: {e}")
 
     def _generate_subject_summary(
-        self, subject_reports: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, subject_reports: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate summary of all subjects"""
         try:
             if not subject_reports:
@@ -968,7 +967,7 @@ class ExamResultsReportGenerator:
 
     async def _analyze_goal_achievement(
         self, exam: ExamMetrics, student_id: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Analyze goal achievement"""
         try:
             # This would typically fetch student goals from database
@@ -1037,25 +1036,22 @@ class ExamResultsReportGenerator:
             if exam_type == TurkishExamType.TYT:
                 if score >= 450:
                     return 0.95  # Top tier universities
-                elif score >= 400:
+                if score >= 400:
                     return 0.85  # High tier universities
-                elif score >= 350:
+                if score >= 350:
                     return 0.70  # Mid tier universities
-                elif score >= 300:
+                if score >= 300:
                     return 0.50  # Lower tier universities
-                else:
-                    return 0.20  # Limited options
-            else:  # AYT
-                if score >= 450:
-                    return 0.98
-                elif score >= 400:
-                    return 0.90
-                elif score >= 350:
-                    return 0.75
-                elif score >= 300:
-                    return 0.55
-                else:
-                    return 0.25
+                return 0.20  # Limited options
+            if score >= 450:
+                return 0.98
+            if score >= 400:
+                return 0.90
+            if score >= 350:
+                return 0.75
+            if score >= 300:
+                return 0.55
+            return 0.25
 
         except Exception as e:
             logger.error(f"University probability calculation failed: {e}")
@@ -1064,10 +1060,10 @@ class ExamResultsReportGenerator:
     def _generate_overall_assessment(
         self,
         exam: ExamMetrics,
-        trends: Dict[str, Any],
-        efficiency: Dict[str, Any],
-        risks: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        trends: dict[str, Any],
+        efficiency: dict[str, Any],
+        risks: dict[str, Any],
+    ) -> dict[str, Any]:
         """Generate overall performance assessment"""
         try:
             score = float(exam.score)
@@ -1161,8 +1157,8 @@ class ExamResultsReportGenerator:
             return {"status": "error", "message": "Değerlendirme oluşturulamadı"}
 
     def _generate_next_steps(
-        self, performance_level: PerformanceLevel, risks: Dict[str, Any]
-    ) -> List[str]:
+        self, performance_level: PerformanceLevel, risks: dict[str, Any]
+    ) -> list[str]:
         """Generate next steps based on performance and risks"""
         next_steps = []
 
@@ -1296,8 +1292,8 @@ class ExamResultsReportGenerator:
 
             # Historical comparison - REFACTORED to use real database data
             try:
-                from models import ExamSession
                 from core.database import get_db
+                from models import ExamSession
 
                 # Try to get database session
                 db_gen = get_db()
@@ -1368,7 +1364,7 @@ class ExamResultsReportGenerator:
 
                     # Calculate real improvement rate over last 30 days
                     from datetime import timedelta
-                    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+                    thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
                     recent_exams = [e for e in previous_exams_query if e.completed_at and e.completed_at >= thirty_days_ago]
 
                     improvement_rate_text = "Yetersiz veri"
@@ -1643,7 +1639,7 @@ class ExamResultsReportGenerator:
                 student_id=student_id,
                 exam_metrics=exam_metrics,
                 report_type="summary",
-                generated_at=datetime.now(timezone.utc),
+                generated_at=datetime.now(UTC),
             )
 
             # Generate only essential sections
@@ -1691,7 +1687,7 @@ class ExamResultsReportGenerator:
             logger.error(f"Summary report generation failed: {e}")
             raise
 
-    async def get_cached_report(self, report_id: str) -> Optional[ExamResultReport]:
+    async def get_cached_report(self, report_id: str) -> ExamResultReport | None:
         """Retrieve cached report"""
         try:
             if not self.cache_system:

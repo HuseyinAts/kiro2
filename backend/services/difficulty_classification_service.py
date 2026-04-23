@@ -10,10 +10,9 @@ Bu servis 4 ana özellik sağlar:
 """
 
 import logging
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
-from enum import Enum
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from enum import Enum
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -40,9 +39,9 @@ class DifficultyClassification:
     difficulty_score: float  # 1.0-5.0 arası sürekli değer
     classification_method: str
     confidence: float  # 0-1 arası güven skoru
-    irt_based_difficulty: Optional[float] = None
-    performance_based_difficulty: Optional[float] = None
-    metadata: Dict = None
+    irt_based_difficulty: float | None = None
+    performance_based_difficulty: float | None = None
+    metadata: dict = None
 
     def __post_init__(self):
         if self.metadata is None:
@@ -94,14 +93,13 @@ class DifficultyClassificationService:
         """
         if irt_difficulty <= self.thresholds.very_easy_max:
             return DifficultyLevel.VERY_EASY
-        elif irt_difficulty <= self.thresholds.easy_max:
+        if irt_difficulty <= self.thresholds.easy_max:
             return DifficultyLevel.EASY
-        elif irt_difficulty <= self.thresholds.medium_max:
+        if irt_difficulty <= self.thresholds.medium_max:
             return DifficultyLevel.MEDIUM
-        elif irt_difficulty <= self.thresholds.hard_max:
+        if irt_difficulty <= self.thresholds.hard_max:
             return DifficultyLevel.HARD
-        else:
-            return DifficultyLevel.VERY_HARD
+        return DifficultyLevel.VERY_HARD
 
     def irt_to_difficulty_score(self, irt_difficulty: float) -> float:
         """
@@ -119,7 +117,7 @@ class DifficultyClassificationService:
         score = 1.0 + (normalized * 4.0)  # 1-5 aralığına
         return max(1.0, min(5.0, score))
 
-    def calibrate_thresholds(self, questions_data: List[Dict]) -> DifficultyThresholds:
+    def calibrate_thresholds(self, questions_data: list[dict]) -> DifficultyThresholds:
         """
         Soru havuzuna göre IRT eşiklerini kalibre et
 
@@ -159,7 +157,7 @@ class DifficultyClassificationService:
 
     def calculate_performance_based_difficulty(
         self, question_id: str, time_window_days: int = 90
-    ) -> Optional[float]:
+    ) -> float | None:
         """
         Öğrenci performansına göre crowd-sourced zorluk hesapla
 
@@ -213,7 +211,7 @@ class DifficultyClassificationService:
 
     def get_success_rate_analysis(
         self, question_id: str, time_window_days: int = 90
-    ) -> Dict:
+    ) -> dict:
         """
         Soru için detaylı başarı oranı analizi
 
@@ -264,7 +262,7 @@ class DifficultyClassificationService:
     def classify_question(
         self,
         question_id: str,
-        irt_difficulty: Optional[float] = None,
+        irt_difficulty: float | None = None,
         force_recalculate: bool = False,
     ) -> DifficultyClassification:
         """
@@ -344,7 +342,7 @@ class DifficultyClassificationService:
 
     def get_visual_difficulty_indicator(
         self, difficulty_level: DifficultyLevel
-    ) -> Dict:
+    ) -> dict:
         """
         Görsel zorluk göstergesi için veri sağla
 
@@ -406,7 +404,7 @@ class DifficultyClassificationService:
     # ========================================================================
 
     def update_difficulty_realtime(
-        self, question_id: str, new_response_data: Dict
+        self, question_id: str, new_response_data: dict
     ) -> DifficultyClassification:
         """
         Yeni yanıt verisi geldiğinde zorluk seviyesini gerçek zamanlı güncelle
@@ -449,7 +447,7 @@ class DifficultyClassificationService:
 
     def analyze_difficulty_trend(
         self, question_id: str, recent_days: int = 30, historical_days: int = 90
-    ) -> Dict:
+    ) -> dict:
         """
         Zorluk seviyesi trendini analiz et
 
@@ -529,8 +527,8 @@ class DifficultyClassificationService:
         }
 
     def batch_update_difficulties(
-        self, question_ids: List[str], update_threshold_days: int = 7
-    ) -> Dict[str, DifficultyClassification]:
+        self, question_ids: list[str], update_threshold_days: int = 7
+    ) -> dict[str, DifficultyClassification]:
         """
         Toplu zorluk güncellemesi yap
 
@@ -564,10 +562,10 @@ class DifficultyClassificationService:
 
     def filter_questions_by_difficulty(
         self,
-        difficulty_levels: List[DifficultyLevel],
-        topic_id: Optional[str] = None,
+        difficulty_levels: list[DifficultyLevel],
+        topic_id: str | None = None,
         limit: int = 50,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Zorluk seviyesine göre soruları filtrele
 
@@ -631,8 +629,8 @@ class DifficultyClassificationService:
         return [r.id for r in results]
 
     def get_difficulty_distribution(
-        self, topic_id: Optional[str] = None
-    ) -> Dict[str, int]:
+        self, topic_id: str | None = None
+    ) -> dict[str, int]:
         """
         Zorluk seviyesi dağılımını al
 
@@ -711,11 +709,10 @@ def difficulty_score_to_level(score: float) -> DifficultyLevel:
     """Zorluk skorunu seviyeye çevir"""
     if score <= 1.8:
         return DifficultyLevel.VERY_EASY
-    elif score <= 2.6:
+    if score <= 2.6:
         return DifficultyLevel.EASY
-    elif score <= 3.4:
+    if score <= 3.4:
         return DifficultyLevel.MEDIUM
-    elif score <= 4.2:
+    if score <= 4.2:
         return DifficultyLevel.HARD
-    else:
-        return DifficultyLevel.VERY_HARD
+    return DifficultyLevel.VERY_HARD

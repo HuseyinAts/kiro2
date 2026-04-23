@@ -14,9 +14,9 @@ import subprocess
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from ..models import (
     GateConfig,
@@ -27,7 +27,6 @@ from ..models import (
     GateStatus,
 )
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -37,10 +36,10 @@ class GateContext:
 
     working_dir: Path
     config: GateConfig
-    commit_hash: Optional[str] = None
-    branch: Optional[str] = None
+    commit_hash: str | None = None
+    branch: str | None = None
     changed_files: list[str] = field(default_factory=list)
-    previous_result: Optional[GateResult] = None
+    previous_result: GateResult | None = None
     extra: dict[str, Any] = field(default_factory=dict)
 
 
@@ -65,7 +64,7 @@ class BaseGate(ABC):
     - get_default_config(): Default configuration
     """
 
-    def __init__(self, config: Optional[GateConfig] = None):
+    def __init__(self, config: GateConfig | None = None):
         """Initialize gate with configuration."""
         self.config = config or self.get_default_config()
 
@@ -108,7 +107,7 @@ class BaseGate(ABC):
         """
         start_time = time.time()
         retries = 0
-        last_error: Optional[str] = None
+        last_error: str | None = None
 
         while retries <= self.config.max_retries:
             try:
@@ -118,10 +117,10 @@ class BaseGate(ABC):
                 )
                 result.retries = retries
                 result.execution_time_ms = (time.time() - start_time) * 1000
-                result.completed_at = datetime.now(timezone.utc)
+                result.completed_at = datetime.now(UTC)
                 return result
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.warning(
                     f"Gate {self.get_name()} timed out after {self.config.timeout_seconds}s"
                 )
@@ -144,7 +143,7 @@ class BaseGate(ABC):
         self,
         command: list[str],
         working_dir: Path,
-        timeout: Optional[int] = None,
+        timeout: int | None = None,
     ) -> CommandResult:
         """
         Run shell command asynchronously.
@@ -181,7 +180,7 @@ class BaseGate(ABC):
                 duration_ms=(time.time() - start) * 1000,
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return CommandResult(
                 success=False,
                 stdout="",
@@ -210,7 +209,7 @@ class BaseGate(ABC):
         self,
         command: list[str],
         working_dir: Path,
-        timeout: Optional[int] = None,
+        timeout: int | None = None,
     ) -> CommandResult:
         """
         Run shell command synchronously.
@@ -293,9 +292,9 @@ class BaseGate(ABC):
         file: str,
         rule: str,
         message: str,
-        line: Optional[int] = None,
+        line: int | None = None,
         severity: GateSeverity = GateSeverity.MEDIUM,
-        suggestion: Optional[str] = None,
+        suggestion: str | None = None,
     ) -> GateIssue:
         """Helper to create a GateIssue."""
         return GateIssue(
@@ -317,7 +316,7 @@ class BaseGate(ABC):
             message=f"Gate timed out after {self.config.timeout_seconds}s",
             execution_time_ms=(time.time() - start_time) * 1000,
             blocking=self.config.blocking,
-            completed_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(UTC),
         )
 
     def _error_result(
@@ -336,7 +335,7 @@ class BaseGate(ABC):
             execution_time_ms=(time.time() - start_time) * 1000,
             blocking=self.config.blocking,
             retries=retries,
-            completed_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(UTC),
         )
 
     def _success_result(
@@ -344,8 +343,8 @@ class BaseGate(ABC):
         score: float,
         message: str,
         execution_time_ms: float,
-        issues: Optional[list[GateIssue]] = None,
-        metrics: Optional[GateMetrics] = None,
+        issues: list[GateIssue] | None = None,
+        metrics: GateMetrics | None = None,
     ) -> GateResult:
         """Helper to create successful result."""
         status = self.determine_status(score)
@@ -359,5 +358,5 @@ class BaseGate(ABC):
             metrics=metrics,
             execution_time_ms=execution_time_ms,
             blocking=self.config.blocking,
-            completed_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(UTC),
         )

@@ -4,7 +4,7 @@ Elasticsearch tabanlı log yönetimi sistemi testleri
 """
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -27,7 +27,7 @@ class TestLogEntry:
 
     def test_log_entry_creation(self):
         """Log entry oluşturma testi"""
-        timestamp = datetime.now(timezone.utc)
+        timestamp = datetime.now(UTC)
         entry = LogEntry(
             timestamp=timestamp,
             level=LogLevel.INFO,
@@ -57,7 +57,7 @@ class TestLogEntry:
 
     def test_log_entry_to_dict(self):
         """Log entry dict dönüşümü testi"""
-        timestamp = datetime.now(timezone.utc)
+        timestamp = datetime.now(UTC)
         entry = LogEntry(
             timestamp=timestamp,
             level=LogLevel.ERROR,
@@ -81,7 +81,7 @@ class TestLogEntry:
     def test_log_entry_metadata_default(self):
         """Log entry metadata varsayılan değer testi"""
         entry = LogEntry(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             level=LogLevel.DEBUG,
             category=LogCategory.SYSTEM,
             message="Debug mesajı",
@@ -205,7 +205,7 @@ class TestElasticsearchLogger:
         # Buffer'a log ekle
         logger.log_buffer.append(
             LogEntry(
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 level=LogLevel.INFO,
                 category=LogCategory.API,
                 message="Test mesajı",
@@ -238,7 +238,7 @@ class TestElasticsearchLogger:
 
         # Buffer'a log ekle
         test_entry = LogEntry(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             level=LogLevel.INFO,
             category=LogCategory.API,
             message="Test mesajı",
@@ -533,7 +533,7 @@ class TestErrorHandling:
 
         # Buffer'a log ekle
         test_entry = LogEntry(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             level=LogLevel.INFO,
             category=LogCategory.API,
             message="Test mesajı",
@@ -584,7 +584,7 @@ async def test_integration_full_logging_cycle():
             # Çeşitli loglar ekle
             logger.log_buffer.append(
                 LogEntry(
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                     level=LogLevel.INFO,
                     category=LogCategory.API,
                     message="API çağrısı başladı",

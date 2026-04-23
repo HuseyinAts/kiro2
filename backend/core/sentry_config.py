@@ -11,17 +11,17 @@ Advanced Sentry integration with:
 - Breadcrumbs for error context
 - Environment-based configuration
 """
-import os
 import logging
-from typing import Optional, Dict, Any
+import os
+from typing import Any
 
 import sentry_sdk
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.asyncio import AsyncioIntegration
+from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.httpx import HttpxIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +41,9 @@ class SentryConfig:
 
     def __init__(
         self,
-        dsn: Optional[str] = None,
+        dsn: str | None = None,
         environment: str = "production",
-        release: Optional[str] = None,
+        release: str | None = None,
         traces_sample_rate: float = 1.0,
         profiles_sample_rate: float = 1.0,
         enable_tracing: bool = True,
@@ -201,7 +201,7 @@ class SentryConfig:
             logger.error(f"[ERROR] Sentry initialization failed: {e}")
             raise
 
-    def _before_send(self, event: Dict[str, Any], hint: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _before_send(self, event: dict[str, Any], hint: dict[str, Any]) -> dict[str, Any] | None:
         """
         Filter and modify events before sending to Sentry
 
@@ -236,7 +236,7 @@ class SentryConfig:
 
         return event
 
-    def _before_breadcrumb(self, crumb: Dict[str, Any], hint: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _before_breadcrumb(self, crumb: dict[str, Any], hint: dict[str, Any]) -> dict[str, Any] | None:
         """
         Filter and modify breadcrumbs before adding to event
 
@@ -260,7 +260,7 @@ class SentryConfig:
 
         return crumb
 
-    def _sanitize_event(self, event: Dict[str, Any]) -> Dict[str, Any]:
+    def _sanitize_event(self, event: dict[str, Any]) -> dict[str, Any]:
         """
         Remove sensitive data from Sentry event (KVKK compliance)
 
@@ -317,7 +317,7 @@ class SentryConfig:
 
         return sanitized
 
-    def _sanitize_headers(self, headers: Dict[str, Any]) -> Dict[str, Any]:
+    def _sanitize_headers(self, headers: dict[str, Any]) -> dict[str, Any]:
         """
         Sanitize HTTP headers
 
@@ -342,7 +342,7 @@ class SentryConfig:
 
 
 # Global Sentry instance
-_sentry_config: Optional[SentryConfig] = None
+_sentry_config: SentryConfig | None = None
 
 
 def get_sentry_config() -> SentryConfig:
@@ -442,7 +442,7 @@ def capture_message(message: str, level: str = "info", **kwargs):
         sentry_sdk.capture_message(message)
 
 
-def add_breadcrumb(message: str, category: str = "default", level: str = "info", data: Optional[Dict] = None):
+def add_breadcrumb(message: str, category: str = "default", level: str = "info", data: dict | None = None):
     """
     Add a breadcrumb for error context
 
@@ -460,7 +460,7 @@ def add_breadcrumb(message: str, category: str = "default", level: str = "info",
     )
 
 
-def set_user_context(user_id: str, email: Optional[str] = None, username: Optional[str] = None, **kwargs):
+def set_user_context(user_id: str, email: str | None = None, username: str | None = None, **kwargs):
     """
     Set user context for error tracking
 
@@ -485,7 +485,7 @@ def set_user_context(user_id: str, email: Optional[str] = None, username: Option
     sentry_sdk.set_user(user_data)
 
 
-def set_context(key: str, value: Dict[str, Any]):
+def set_context(key: str, value: dict[str, Any]):
     """
     Set custom context for errors
 

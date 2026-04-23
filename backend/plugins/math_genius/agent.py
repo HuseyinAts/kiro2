@@ -5,7 +5,7 @@ Advanced mathematics tutoring with step-by-step solutions
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from core.plugin_architecture import BaseAgentPlugin
 
@@ -29,7 +29,7 @@ class MathGeniusAgent(BaseAgentPlugin):
         logger.info("Math Genius Agent initialized")
 
     async def process_message(
-        self, message: str, session_id: str, context: Optional[Dict[str, Any]] = None
+        self, message: str, session_id: str, context: dict[str, Any] | None = None
     ) -> str:
         """Process mathematics questions"""
 
@@ -39,12 +39,11 @@ class MathGeniusAgent(BaseAgentPlugin):
         # Generate solution based on type
         if problem_type == "equation":
             return await self._solve_equation(message)
-        elif problem_type == "word_problem":
+        if problem_type == "word_problem":
             return await self._solve_word_problem(message)
-        elif problem_type == "geometry":
+        if problem_type == "geometry":
             return await self._solve_geometry(message)
-        else:
-            return await self._provide_math_help(message)
+        return await self._provide_math_help(message)
 
     def _detect_problem_type(self, message: str) -> str:
         """Detect the type of math problem"""
@@ -95,15 +94,15 @@ class MathGeniusAgent(BaseAgentPlugin):
                 def safe_math_eval(node):
                     if isinstance(node, ast.Constant):
                         return node.value if isinstance(node.value, (int, float)) else 0
-                    elif isinstance(node, ast.Num):
+                    if isinstance(node, ast.Num):
                         return node.n
-                    elif isinstance(node, ast.BinOp):
+                    if isinstance(node, ast.BinOp):
                         return SAFE_OPS.get(type(node.op), lambda a, b: 0)(
                             safe_math_eval(node.left), safe_math_eval(node.right)
                         )
-                    elif isinstance(node, ast.UnaryOp):
+                    if isinstance(node, ast.UnaryOp):
                         return SAFE_OPS.get(type(node.op), lambda a: 0)(safe_math_eval(node.operand))
-                    elif isinstance(node, ast.Expression):
+                    if isinstance(node, ast.Expression):
                         return safe_math_eval(node.body)
                     return 0
 
@@ -124,9 +123,8 @@ class MathGeniusAgent(BaseAgentPlugin):
 
                 [BULB] **İpucu:** İşlem önceliği kurallarını unutmayın!
                 """
-            else:
-                # For equations with variables
-                return f"""
+            # For equations with variables
+            return f"""
                 📐 **Denklem:** {equation}
                 
                 **Çözüm Adımları:**
@@ -178,10 +176,9 @@ class MathGeniusAgent(BaseAgentPlugin):
 
         if "alan" in message_lower:
             return self._area_formula_help()
-        elif "çevre" in message_lower:
+        if "çevre" in message_lower:
             return self._perimeter_formula_help()
-        else:
-            return self._general_geometry_help()
+        return self._general_geometry_help()
 
     def _area_formula_help(self) -> str:
         """Provide area formulas"""
@@ -279,7 +276,7 @@ class MathGeniusAgent(BaseAgentPlugin):
         Hangi konuda yardım istersiniz?
         """
 
-    async def get_capabilities(self) -> List[str]:
+    async def get_capabilities(self) -> list[str]:
         """Return agent capabilities"""
         return [cap.value for cap in self.manifest.capabilities]
 

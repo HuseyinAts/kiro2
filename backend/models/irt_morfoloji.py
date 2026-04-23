@@ -9,7 +9,6 @@ sistemi için gerekli veri modellerini içerir.
 import math
 from datetime import datetime
 from enum import Enum
-from typing import List
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -48,8 +47,8 @@ class MorfolojiAnalizi(BaseModel):
 
     kelime: str = Field(..., description="Analiz edilen kelime")
     kok: str = Field(..., description="Kelimenin kök hali")
-    ekler: List[str] = Field(default_factory=list, description="Eklerin listesi")
-    ek_tipleri: List[TurkceEkTipi] = Field(
+    ekler: list[str] = Field(default_factory=list, description="Eklerin listesi")
+    ek_tipleri: list[TurkceEkTipi] = Field(
         default_factory=list, description="Ek tiplerinin listesi"
     )
     ek_sayisi: int = Field(0, ge=0, description="Toplam ek sayısı")
@@ -100,18 +99,18 @@ class IRTParametreleri(BaseModel):
             exp_val = math.exp(theta - self.b_parametresi)
             return exp_val / (1 + exp_val)
 
-        elif self.parametre_tipi == IRTParametreTipi.IKI_PARAMETRE:
+        if self.parametre_tipi == IRTParametreTipi.IKI_PARAMETRE:
             # 2PL Model: P(θ) = exp(a(θ - b)) / (1 + exp(a(θ - b)))
             exp_val = math.exp(self.a_parametresi * (theta - self.b_parametresi))
             return exp_val / (1 + exp_val)
 
-        elif self.parametre_tipi == IRTParametreTipi.UC_PARAMETRE:
+        if self.parametre_tipi == IRTParametreTipi.UC_PARAMETRE:
             # 3PL Model: P(θ) = c + (1 - c) * exp(a(θ - b)) / (1 + exp(a(θ - b)))
             exp_val = math.exp(self.a_parametresi * (theta - self.b_parametresi))
             logistic = exp_val / (1 + exp_val)
             return self.c_parametresi + (1 - self.c_parametresi) * logistic
 
-        elif self.parametre_tipi == IRTParametreTipi.DORT_PARAMETRE:
+        if self.parametre_tipi == IRTParametreTipi.DORT_PARAMETRE:
             # 4PL Model: P(θ) = c + (d - c) * exp(a(θ - b)) / (1 + exp(a(θ - b)))
             exp_val = math.exp(self.a_parametresi * (theta - self.b_parametresi))
             logistic = exp_val / (1 + exp_val)
@@ -120,8 +119,7 @@ class IRTParametreleri(BaseModel):
                 + (self.d_parametresi - self.c_parametresi) * logistic
             )
 
-        else:
-            raise ValueError(f"Desteklenmeyen parametre tipi: {self.parametre_tipi}")
+        raise ValueError(f"Desteklenmeyen parametre tipi: {self.parametre_tipi}")
 
 
 class SoruMorfolojiAnalizi(BaseModel):
@@ -129,7 +127,7 @@ class SoruMorfolojiAnalizi(BaseModel):
 
     soru_id: str = Field(..., description="Soru benzersiz kimliği")
     soru_metni: str = Field(..., description="Soru metni")
-    morfoloji_analizleri: List[MorfolojiAnalizi] = Field(
+    morfoloji_analizleri: list[MorfolojiAnalizi] = Field(
         default_factory=list, description="Kelime analizleri"
     )
     toplam_kelime_sayisi: int = Field(0, ge=0, description="Toplam kelime sayısı")
@@ -247,14 +245,13 @@ class TurkceIRTSoruAnalizi(BaseModel):
 
         if toplam_zorluk <= 0.2:
             return min(5, self.onerilen_sinif_seviyesi)
-        elif toplam_zorluk <= 0.4:
+        if toplam_zorluk <= 0.4:
             return min(8, max(5, self.onerilen_sinif_seviyesi))
-        elif toplam_zorluk <= 0.6:
+        if toplam_zorluk <= 0.6:
             return min(10, max(8, self.onerilen_sinif_seviyesi))
-        elif toplam_zorluk <= 0.8:
+        if toplam_zorluk <= 0.8:
             return min(12, max(10, self.onerilen_sinif_seviyesi))
-        else:
-            return 12
+        return 12
 
 
 class MorfolojiIRTRaporu(BaseModel):
@@ -262,20 +259,20 @@ class MorfolojiIRTRaporu(BaseModel):
 
     rapor_id: str = Field(..., description="Rapor benzersiz kimliği")
     ogrenci_id: str = Field(..., description="Öğrenci kimliği")
-    soru_analizleri: List[TurkceIRTSoruAnalizi] = Field(
+    soru_analizleri: list[TurkceIRTSoruAnalizi] = Field(
         default_factory=list, description="Soru analizleri"
     )
     ogrenci_profili: OgrenciMorfolojiProfili = Field(..., description="Öğrenci profili")
     genel_performans_skoru: float = Field(
         0.0, ge=0.0, le=1.0, description="Genel performans skoru"
     )
-    morfoloji_guc_alanlari: List[str] = Field(
+    morfoloji_guc_alanlari: list[str] = Field(
         default_factory=list, description="Morfoloji güçlü alanları"
     )
-    morfoloji_zayif_alanlari: List[str] = Field(
+    morfoloji_zayif_alanlari: list[str] = Field(
         default_factory=list, description="Morfoloji zayıf alanları"
     )
-    oneriler: List[str] = Field(default_factory=list, description="Gelişim önerileri")
+    oneriler: list[str] = Field(default_factory=list, description="Gelişim önerileri")
     rapor_tarihi: datetime = Field(
         default_factory=datetime.now, description="Rapor tarihi"
     )

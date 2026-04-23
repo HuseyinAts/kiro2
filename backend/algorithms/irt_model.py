@@ -12,18 +12,18 @@ Date: 2025-01
 Version: 1.0.0
 """
 
-import numpy as np
-from typing import List, Dict, Tuple, Optional
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-import logging
+
+import numpy as np
 
 from core.irt_validators import (
+    IRTValidationError,
     validate_irt_difficulty,
     validate_irt_discrimination,
     validate_irt_guessing,
     validate_irt_upper_asymptote,
-    IRTValidationError,
 )
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class IRTItem:
     yks_question_type: str = "TYT"
 
     sample_size: int = 0
-    calibration_date: Optional[datetime] = None
+    calibration_date: datetime | None = None
     se_a: float = 0.0
     se_b: float = 0.0
 
@@ -95,8 +95,8 @@ class StudentAbility:
     estimation_method: str
     n_items: int = 0
     last_updated: datetime = field(default_factory=datetime.now)
-    yks_predicted_score: Optional[float] = None
-    confidence_interval_95: Tuple[float, float] = (-3.0, 3.0)
+    yks_predicted_score: float | None = None
+    confidence_interval_95: tuple[float, float] = (-3.0, 3.0)
 
 
 @dataclass
@@ -114,9 +114,9 @@ class FourParameterIRTModel:
 
     def __init__(self, scaling_constant: float = 1.0) -> None:
         self.D: float = scaling_constant
-        self.items: Dict[str, IRTItem] = {}
-        self.student_abilities: Dict[str, StudentAbility] = {}
-        self.responses: List[IRTResponse] = []
+        self.items: dict[str, IRTItem] = {}
+        self.student_abilities: dict[str, StudentAbility] = {}
+        self.responses: list[IRTResponse] = []
 
     def probability(self, theta: float, item: IRTItem) -> float:
         a, b, c, d = item.discrimination, item.difficulty, item.guessing, item.upper_asymptote
@@ -132,15 +132,15 @@ class FourParameterIRTModel:
         P_prime = (d - c) * self.D * a * exp_val / ((1 + exp_val) ** 2)
         return (P_prime ** 2) / (P * Q) if P * Q >= 1e-10 else 0.0
 
-    def test_information(self, theta: float, items: List[IRTItem]) -> float:
+    def test_information(self, theta: float, items: list[IRTItem]) -> float:
         return sum(self.information(theta, item) for item in items)
 
-    def standard_error(self, theta: float, items: List[IRTItem]) -> float:
+    def standard_error(self, theta: float, items: list[IRTItem]) -> float:
         info = self.test_information(theta, items)
         return 1.0 / np.sqrt(info) if info >= 1e-10 else 999.0
 
     def estimate_ability_mle(
-        self, responses: List[IRTResponse], initial_theta: float = 0.0,
+        self, responses: list[IRTResponse], initial_theta: float = 0.0,
         max_iterations: int = 50, convergence_threshold: float = 0.001
     ) -> StudentAbility:
         if not responses:
@@ -193,9 +193,9 @@ class FourParameterIRTModel:
     def select_next_item_cat(
         self,
         current_theta: float,
-        available_items: List[IRTItem],
-        answered_items: List[str],
-    ) -> Optional[IRTItem]:
+        available_items: list[IRTItem],
+        answered_items: list[str],
+    ) -> IRTItem | None:
         """
         CAT (Computerized Adaptive Testing) icin sonraki soruyu sec.
 
@@ -228,7 +228,7 @@ class FourParameterIRTModel:
         """
         self.responses.append(response)
 
-    def get_item(self, item_id: str) -> Optional[IRTItem]:
+    def get_item(self, item_id: str) -> IRTItem | None:
         """
         ID ile item getir.
 

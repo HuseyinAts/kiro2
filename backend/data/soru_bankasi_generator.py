@@ -17,7 +17,6 @@ import os
 import random
 import sys
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
 
 # Add backend to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -37,7 +36,7 @@ class SoruData:
     alt_konu: str
     zorluk_seviyesi: ZorlukSeviyesi
     soru_metni: str
-    secenekler: Dict[str, str]
+    secenekler: dict[str, str]
     dogru_cevap: str
     aciklama: str
     irt_a_parametresi: float
@@ -54,7 +53,7 @@ class IRTKalibrator:
     @staticmethod
     def calculate_irt_parameters(
         zorluk_seviyesi: ZorlukSeviyesi, konu: str, morfoloji_karmasikligi: float
-    ) -> Tuple[float, float, float]:
+    ) -> tuple[float, float, float]:
         """
         IRT parametrelerini hesapla
 
@@ -100,7 +99,7 @@ class TurkishMorphologyAnalyzer:
     """Türkçe morfoloji analiz simülatörü"""
 
     @staticmethod
-    def analyze_text(text: str) -> Tuple[float, int, int]:
+    def analyze_text(text: str) -> tuple[float, int, int]:
         """
         Metin morfoloji analizini simüle et
 
@@ -141,7 +140,7 @@ class SoruBankasiGenerator:
         self.irt_kalibrator = IRTKalibrator()
         self.morfoloji_analyzer = TurkishMorphologyAnalyzer()
 
-    def generate_tyt_sorulari(self) -> List[SoruData]:
+    def generate_tyt_sorulari(self) -> list[SoruData]:
         """TYT soruları üret (1000+ soru)"""
         logger.info("[BOOKS] TYT soruları üretiliyor...")
 
@@ -162,7 +161,7 @@ class SoruBankasiGenerator:
         logger.info(f"[CHECK] {len(sorular)} TYT sorusu üretildi")
         return sorular
 
-    def generate_ayt_sorulari(self) -> List[SoruData]:
+    def generate_ayt_sorulari(self) -> list[SoruData]:
         """AYT soruları üret (800+ soru)"""
         logger.info("[BOOKS] AYT soruları üretiliyor...")
 
@@ -183,7 +182,7 @@ class SoruBankasiGenerator:
         logger.info(f"[CHECK] {len(sorular)} AYT sorusu üretildi")
         return sorular
 
-    def generate_ydt_sorulari(self) -> List[SoruData]:
+    def generate_ydt_sorulari(self) -> list[SoruData]:
         """YDT soruları üret (500+ soru)"""
         logger.info("[BOOKS] YDT soruları üretiliyor...")
 
@@ -197,7 +196,7 @@ class SoruBankasiGenerator:
 
     def _generate_matematik_sorulari(
         self, sayi: int, sinav_tipi: str
-    ) -> List[SoruData]:
+    ) -> list[SoruData]:
         """Matematik soruları üret"""
         sorular = []
 
@@ -267,7 +266,7 @@ class SoruBankasiGenerator:
 
         return sorular
 
-    def _generate_turkce_sorulari(self, sayi: int, sinav_tipi: str) -> List[SoruData]:
+    def _generate_turkce_sorulari(self, sayi: int, sinav_tipi: str) -> list[SoruData]:
         """Türkçe soruları üret"""
         sorular = []
 
@@ -330,7 +329,7 @@ class SoruBankasiGenerator:
 
         return sorular
 
-    def _generate_fen_sorulari(self, sayi: int) -> List[SoruData]:
+    def _generate_fen_sorulari(self, sayi: int) -> list[SoruData]:
         """Fen soruları üret (TYT için)"""
         sorular = []
 
@@ -391,7 +390,7 @@ class SoruBankasiGenerator:
 
         return sorular
 
-    def _generate_sosyal_sorulari(self, sayi: int) -> List[SoruData]:
+    def _generate_sosyal_sorulari(self, sayi: int) -> list[SoruData]:
         """Sosyal soruları üret"""
         sorular = []
 
@@ -453,7 +452,7 @@ class SoruBankasiGenerator:
 
         return sorular
 
-    def _generate_fizik_sorulari(self, sayi: int) -> List[SoruData]:
+    def _generate_fizik_sorulari(self, sayi: int) -> list[SoruData]:
         """Fizik soruları üret (AYT için)"""
         sorular = []
 
@@ -515,7 +514,7 @@ class SoruBankasiGenerator:
 
         return sorular
 
-    def _generate_kimya_sorulari(self, sayi: int) -> List[SoruData]:
+    def _generate_kimya_sorulari(self, sayi: int) -> list[SoruData]:
         """Kimya soruları üret"""
         sorular = []
 
@@ -577,7 +576,7 @@ class SoruBankasiGenerator:
 
         return sorular
 
-    def _generate_biyoloji_sorulari(self, sayi: int) -> List[SoruData]:
+    def _generate_biyoloji_sorulari(self, sayi: int) -> list[SoruData]:
         """Biyoloji soruları üret"""
         sorular = []
 
@@ -639,7 +638,7 @@ class SoruBankasiGenerator:
 
         return sorular
 
-    def _generate_ingilizce_sorulari(self, sayi: int) -> List[SoruData]:
+    def _generate_ingilizce_sorulari(self, sayi: int) -> list[SoruData]:
         """İngilizce soruları üret"""
         sorular = []
 
@@ -700,7 +699,7 @@ class SoruBankasiGenerator:
 
         return sorular
 
-    def _random_zorluk(self, dagilim: Dict[ZorlukSeviyesi, float]) -> ZorlukSeviyesi:
+    def _random_zorluk(self, dagilim: dict[ZorlukSeviyesi, float]) -> ZorlukSeviyesi:
         """Dağılıma göre rastgele zorluk seviyesi seç"""
         rand = random.random()
         cumulative = 0.0
@@ -715,7 +714,7 @@ class SoruBankasiGenerator:
     # Soru içerik üretici metodları (örnekler)
     def _generate_matematik_soru_content(
         self, alt_konu: str, zorluk: ZorlukSeviyesi, sinav_tipi: str
-    ) -> Tuple[str, Dict[str, str], str, str]:
+    ) -> tuple[str, dict[str, str], str, str]:
         """Matematik soru içeriği üret"""
 
         soru_sablonlari = {
@@ -803,7 +802,7 @@ class SoruBankasiGenerator:
 
     def _generate_turkce_soru_content(
         self, alt_konu: str, zorluk: ZorlukSeviyesi
-    ) -> Tuple[str, Dict[str, str], str, str]:
+    ) -> tuple[str, dict[str, str], str, str]:
         """Türkçe soru içeriği üret"""
 
         soru_sablonlari = {
@@ -880,7 +879,7 @@ class SoruBankasiGenerator:
 
     def _generate_fen_soru_content(
         self, alt_konu: str, zorluk: ZorlukSeviyesi
-    ) -> Tuple[str, Dict[str, str], str, str]:
+    ) -> tuple[str, dict[str, str], str, str]:
         """Fen soruları içeriği üret"""
         return (
             f"{alt_konu} konusunda temel fen bilgisi sorusu.",
@@ -897,7 +896,7 @@ class SoruBankasiGenerator:
 
     def _generate_sosyal_soru_content(
         self, alt_konu: str, zorluk: ZorlukSeviyesi
-    ) -> Tuple[str, Dict[str, str], str, str]:
+    ) -> tuple[str, dict[str, str], str, str]:
         """Sosyal bilimler soruları içeriği üret"""
         return (
             f"{alt_konu} konusunda sosyal bilimler sorusu.",
@@ -914,7 +913,7 @@ class SoruBankasiGenerator:
 
     def _generate_fizik_soru_content(
         self, alt_konu: str, zorluk: ZorlukSeviyesi
-    ) -> Tuple[str, Dict[str, str], str, str]:
+    ) -> tuple[str, dict[str, str], str, str]:
         """Fizik soruları içeriği üret"""
         return (
             f"{alt_konu} konusunda fizik sorusu.",
@@ -931,7 +930,7 @@ class SoruBankasiGenerator:
 
     def _generate_kimya_soru_content(
         self, alt_konu: str, zorluk: ZorlukSeviyesi
-    ) -> Tuple[str, Dict[str, str], str, str]:
+    ) -> tuple[str, dict[str, str], str, str]:
         """Kimya soruları içeriği üret"""
         return (
             f"{alt_konu} konusunda kimya sorusu.",
@@ -948,7 +947,7 @@ class SoruBankasiGenerator:
 
     def _generate_biyoloji_soru_content(
         self, alt_konu: str, zorluk: ZorlukSeviyesi
-    ) -> Tuple[str, Dict[str, str], str, str]:
+    ) -> tuple[str, dict[str, str], str, str]:
         """Biyoloji soruları içeriği üret"""
         return (
             f"{alt_konu} konusunda biyoloji sorusu.",
@@ -965,7 +964,7 @@ class SoruBankasiGenerator:
 
     def _generate_ingilizce_soru_content(
         self, alt_konu: str, zorluk: ZorlukSeviyesi
-    ) -> Tuple[str, Dict[str, str], str, str]:
+    ) -> tuple[str, dict[str, str], str, str]:
         """İngilizce soruları içeriği üret"""
 
         soru_sablonlari = {
@@ -1073,7 +1072,7 @@ async def main():
                         logger.info(f"[MEMO] {kayit_sayisi} soru kaydedildi...")
 
                 except Exception as e:
-                    logger.warning(f"⚠️ Soru kaydetme hatası: {str(e)}")
+                    logger.warning(f"⚠️ Soru kaydetme hatası: {e!s}")
                     continue
 
         logger.info(f"[CHECK] {kayit_sayisi} soru başarıyla database'e kaydedildi!")
@@ -1122,7 +1121,7 @@ async def main():
         logger.info("[PARTY] Soru bankası üretimi ve IRT kalibrasyonu tamamlandı!")
 
     except Exception as e:
-        logger.error(f"[X] Soru bankası üretim hatası: {str(e)}")
+        logger.error(f"[X] Soru bankası üretim hatası: {e!s}")
         raise
 
 

@@ -20,13 +20,11 @@ Date: 2026-01-19
 from __future__ import annotations
 
 import math
-from datetime import datetime, timezone
-from typing import List
+from datetime import UTC, datetime
 
 import pytest
-from hypothesis import given, settings, assume, HealthCheck
+from hypothesis import HealthCheck, assume, given, settings
 from hypothesis import strategies as st
-
 
 # ============================================================================
 # REQ-1: Feedback Aggregation - Effectiveness Score Property
@@ -90,7 +88,7 @@ class TestFeedbackAggregation:
         )
     )
     @settings(max_examples=100)
-    def test_user_rating_normalization(self, ratings: List[int]) -> None:
+    def test_user_rating_normalization(self, ratings: list[int]) -> None:
         """
         Property: User ratings (1-5) normalized to [0, 1] range.
 
@@ -117,7 +115,7 @@ class TestFeedbackAggregation:
     def test_rolling_window_aggregation(
         self,
         window_days: int,
-        feedback_counts: List[int],
+        feedback_counts: list[int],
     ) -> None:
         """
         Property: Rolling window aggregation is bounded.
@@ -155,7 +153,7 @@ class TestPatternConfidence:
     @settings(max_examples=100)
     def test_pattern_confidence_threshold(
         self,
-        pattern_samples: List[bool],
+        pattern_samples: list[bool],
     ) -> None:
         """
         Property: Patterns only reported if confidence >= 0.95.
@@ -199,7 +197,7 @@ class TestPatternConfidence:
     @settings(max_examples=50)
     def test_cluster_quality_bounded(
         self,
-        cluster_sizes: List[int],
+        cluster_sizes: list[int],
     ) -> None:
         """
         Property: Cluster quality metrics are bounded.
@@ -246,7 +244,7 @@ class TestRollbackSafety:
     @settings(max_examples=100)
     def test_rollback_restores_exact_version(
         self,
-        version_history: List[str],
+        version_history: list[str],
         rollback_to: int,
     ) -> None:
         """
@@ -364,7 +362,7 @@ class TestStatisticalSignificance:
         )
     )
     @settings(max_examples=50)
-    def test_effect_size_bounded(self, effect_sizes: List[float]) -> None:
+    def test_effect_size_bounded(self, effect_sizes: list[float]) -> None:
         """
         Property: Cohen's d effect size interpretation is bounded.
 
@@ -437,7 +435,7 @@ class TestExplorationDecay:
         )
     )
     @settings(max_examples=50)
-    def test_learning_rate_bounds(self, learning_rates: List[float]) -> None:
+    def test_learning_rate_bounds(self, learning_rates: list[float]) -> None:
         """
         Property: Learning rates are within valid bounds.
 
@@ -545,7 +543,7 @@ class TestAnomalyDetection:
         ),
     )
     @settings(max_examples=100)
-    def test_anomalies_have_high_zscore(self, values: List[float]) -> None:
+    def test_anomalies_have_high_zscore(self, values: list[float]) -> None:
         """
         Property: Anomalies have Z-score > 3.
 
@@ -576,7 +574,7 @@ class TestAnomalyDetection:
         )
     )
     @settings(max_examples=50)
-    def test_moving_average_bounded(self, metrics: List[float]) -> None:
+    def test_moving_average_bounded(self, metrics: list[float]) -> None:
         """
         Property: Moving average is bounded by min/max of input.
 
@@ -628,7 +626,7 @@ class TestAuditCompleteness:
     @settings(max_examples=100)
     def test_every_change_logged(
         self,
-        changes: List[tuple],
+        changes: list[tuple],
     ) -> None:
         """
         Property: Every change has corresponding audit log.
@@ -647,7 +645,7 @@ class TestAuditCompleteness:
             entry = {
                 "who": who,
                 "what": what,
-                "when": datetime.now(timezone.utc).isoformat(),
+                "when": datetime.now(UTC).isoformat(),
                 "why": why,
             }
             audit_log.append(entry)
@@ -657,9 +655,9 @@ class TestAuditCompleteness:
 
         # Property: each change has required fields
         for entry in audit_log:
-            assert "who" in entry and entry["who"]
-            assert "what" in entry and entry["what"]
-            assert "when" in entry and entry["when"]
+            assert entry.get("who")
+            assert entry.get("what")
+            assert entry.get("when")
             assert "why" in entry  # why can be empty
 
     @given(

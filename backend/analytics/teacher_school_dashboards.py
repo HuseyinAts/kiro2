@@ -6,9 +6,9 @@ Türkiye Üniversite Sınavları Hazırlık Platformu - Öğretmen ve Okul Panel
 
 import asyncio
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from core.structured_logging import LogCategory, get_logger
 from core.unified_config import get_unified_config
@@ -46,22 +46,22 @@ class DashboardWidget:
     widget_id: str
     widget_type: str
     title: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
     # Display properties
-    position: Dict[str, int] = field(default_factory=dict)  # x, y, width, height
-    chart_type: Optional[str] = None  # line, bar, pie, radar, etc.
+    position: dict[str, int] = field(default_factory=dict)  # x, y, width, height
+    chart_type: str | None = None  # line, bar, pie, radar, etc.
     color_scheme: str = "default"
 
     # Update properties
-    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    last_updated: datetime = field(default_factory=lambda: datetime.now(UTC))
     update_frequency: DashboardUpdateFrequency = DashboardUpdateFrequency.HOURLY
 
     # Turkish localization
-    title_tr: Optional[str] = None
-    description_tr: Optional[str] = None
+    title_tr: str | None = None
+    description_tr: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "widget_id": self.widget_id,
@@ -88,17 +88,17 @@ class Dashboard:
 
     # Dashboard properties
     name: str
-    name_tr: Optional[str] = None
-    widgets: List[DashboardWidget] = field(default_factory=list)
-    layout_config: Dict[str, Any] = field(default_factory=dict)
+    name_tr: str | None = None
+    widgets: list[DashboardWidget] = field(default_factory=list)
+    layout_config: dict[str, Any] = field(default_factory=dict)
 
     # Permissions and sharing
     visibility: str = "private"  # private, school, public
-    shared_with: List[int] = field(default_factory=list)
+    shared_with: list[int] = field(default_factory=list)
 
     # Metadata
-    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_accessed: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    last_accessed: datetime = field(default_factory=lambda: datetime.now(UTC))
     access_count: int = 0
 
     def add_widget(self, widget: DashboardWidget) -> None:
@@ -117,14 +117,14 @@ class Dashboard:
                 return True
         return False
 
-    def get_widget(self, widget_id: str) -> Optional[DashboardWidget]:
+    def get_widget(self, widget_id: str) -> DashboardWidget | None:
         """Get specific widget by ID"""
         for widget in self.widgets:
             if widget.widget_id == widget_id:
                 return widget
         return None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary"""
         return {
             "dashboard_id": self.dashboard_id,
@@ -149,7 +149,7 @@ class TeacherDashboardManager:
         self.cache_ttl = config.get_setting("analytics.cache_ttl", 3600)
         self.widget_templates = self._initialize_teacher_widget_templates()
 
-    def _initialize_teacher_widget_templates(self) -> Dict[str, Dict[str, Any]]:
+    def _initialize_teacher_widget_templates(self) -> dict[str, dict[str, Any]]:
         """Initialize teacher dashboard widget templates"""
         return {
             "student_overview": {
@@ -629,17 +629,17 @@ class TeacherDashboardManager:
             if "student_overview" in widget.widget_id:
                 updated_widget = await self._create_student_overview_widget(teacher_id)
                 widget.data = updated_widget.data
-                widget.last_updated = datetime.now(timezone.utc)
+                widget.last_updated = datetime.now(UTC)
 
             elif "class_performance" in widget.widget_id:
                 updated_widget = await self._create_class_performance_widget(teacher_id)
                 widget.data = updated_widget.data
-                widget.last_updated = datetime.now(timezone.utc)
+                widget.last_updated = datetime.now(UTC)
 
             elif "subject_breakdown" in widget.widget_id:
                 updated_widget = await self._create_subject_breakdown_widget(teacher_id)
                 widget.data = updated_widget.data
-                widget.last_updated = datetime.now(timezone.utc)
+                widget.last_updated = datetime.now(UTC)
 
         logger.info(
             f"Updated dashboard {dashboard.dashboard_id} for teacher {teacher_id}"
@@ -654,7 +654,7 @@ class SchoolDashboardManager:
         self.cache_ttl = config.get_setting("analytics.cache_ttl", 3600)
         self.widget_templates = self._initialize_school_widget_templates()
 
-    def _initialize_school_widget_templates(self) -> Dict[str, Dict[str, Any]]:
+    def _initialize_school_widget_templates(self) -> dict[str, dict[str, Any]]:
         """Initialize school dashboard widget templates"""
         return {
             "school_overview": {
@@ -1200,20 +1200,20 @@ class DashboardService:
     def __init__(self):
         self.teacher_manager = TeacherDashboardManager()
         self.school_manager = SchoolDashboardManager()
-        self.dashboards_cache: Dict[str, Dashboard] = {}
+        self.dashboards_cache: dict[str, Dashboard] = {}
         self.cache_ttl = config.get_setting("analytics.cache_ttl", 3600)
 
-    async def get_dashboard(self, dashboard_id: str) -> Optional[Dashboard]:
+    async def get_dashboard(self, dashboard_id: str) -> Dashboard | None:
         """Get dashboard by ID"""
         if dashboard_id in self.dashboards_cache:
             dashboard = self.dashboards_cache[dashboard_id]
             # Check if cache is still valid
             cache_age = (
-                datetime.now(timezone.utc) - dashboard.last_accessed
+                datetime.now(UTC) - dashboard.last_accessed
             ).total_seconds()
             if cache_age < self.cache_ttl:
                 dashboard.access_count += 1
-                dashboard.last_accessed = datetime.now(timezone.utc)
+                dashboard.last_accessed = datetime.now(UTC)
                 return dashboard
 
         # If not in cache or cache expired, fetch from database
@@ -1247,7 +1247,7 @@ class DashboardService:
         self.dashboards_cache[dashboard.dashboard_id] = dashboard
         return dashboard
 
-    async def update_dashboard(self, dashboard_id: str) -> Optional[Dashboard]:
+    async def update_dashboard(self, dashboard_id: str) -> Dashboard | None:
         """Update dashboard data"""
         dashboard = await self.get_dashboard(dashboard_id)
         if not dashboard:
@@ -1271,18 +1271,16 @@ class DashboardService:
 
     async def get_dashboards_for_user(
         self, user_id: int, user_type: str
-    ) -> List[Dashboard]:
+    ) -> list[Dashboard]:
         """Get all dashboards for a specific user"""
         user_dashboards = []
         for dashboard in self.dashboards_cache.values():
-            if dashboard.owner_id == user_id and dashboard.owner_type == user_type:
-                user_dashboards.append(dashboard)
-            elif user_id in dashboard.shared_with:
+            if (dashboard.owner_id == user_id and dashboard.owner_type == user_type) or user_id in dashboard.shared_with:
                 user_dashboards.append(dashboard)
 
         return user_dashboards
 
-    async def share_dashboard(self, dashboard_id: str, user_ids: List[int]) -> bool:
+    async def share_dashboard(self, dashboard_id: str, user_ids: list[int]) -> bool:
         """Share dashboard with other users"""
         dashboard = await self.get_dashboard(dashboard_id)
         if not dashboard:
@@ -1302,7 +1300,7 @@ class DashboardService:
             return True
         return False
 
-    def get_dashboard_statistics(self) -> Dict[str, Any]:
+    def get_dashboard_statistics(self) -> dict[str, Any]:
         """Get overall dashboard statistics"""
         total_dashboards = len(self.dashboards_cache)
         teacher_dashboards = sum(

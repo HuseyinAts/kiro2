@@ -9,8 +9,8 @@ Output formatters for pipeline results:
 """
 
 from .console import ConsoleReporter
-from .json_reporter import JsonReporter
 from .html_reporter import HtmlReporter
+from .json_reporter import JsonReporter
 
 __all__ = [
     "ConsoleReporter",

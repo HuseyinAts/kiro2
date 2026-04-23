@@ -15,20 +15,20 @@ Requirements:
 - REQ-2.3: Aktivite ile session yenileme
 """
 
-import pytest
 import secrets
+import sys
 from datetime import datetime, timedelta
 from typing import Any
 
-from hypothesis import given, settings, strategies as st
+import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
-import sys
 sys.path.insert(0, "c:/Users/husey/kiro2/backend")
 
 from core.session_auth_caching import (
     SessionAuthCache,
 )
-
 
 # Test icin sabitler (production degerlerini simule et)
 IDLE_TIMEOUT_MINUTES = 30

@@ -79,9 +79,8 @@ def main():
     if passed == total:
         print("\n🎉 All test suites passed!")
         return 0
-    else:
-        print(f"\n⚠️  {total - passed} test suite(s) failed")
-        return 1
+    print(f"\n⚠️  {total - passed} test suite(s) failed")
+    return 1
 
 
 if __name__ == "__main__":

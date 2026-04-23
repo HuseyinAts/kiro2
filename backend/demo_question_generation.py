@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 KIRO Platform - Complete Question Generation Demo
 Demonstrates all 4 production services working together
@@ -31,13 +30,13 @@ def main():
     # Import services
     print("[1/4] Servisleri yukleme...")
     try:
+        from services.hitl_workflow_service import HITLWorkflowService
         from services.knowledge_graph_service import KnowledgeGraphService, QuestionNode
         from services.plagiarism_detection_service import PlagiarismDetectionService
-        from services.hitl_workflow_service import HITLWorkflowService
 
         print("[OK] Tum servisler yuklendi")
     except Exception as e:
-        print(f"[HATA] Import hatasi: {str(e)}")
+        print(f"[HATA] Import hatasi: {e!s}")
         import traceback
 
         traceback.print_exc()
@@ -53,7 +52,7 @@ def main():
         edge_count = len(kg_service.graph.edges())
         print(f"[OK] Knowledge Graph hazir - {node_count} node, {edge_count} edge")
     except Exception as e:
-        print(f"[HATA] Knowledge Graph hatasi: {str(e)}")
+        print(f"[HATA] Knowledge Graph hatasi: {e!s}")
         return
 
     print()
@@ -64,7 +63,7 @@ def main():
         plagiarism_service = PlagiarismDetectionService()
         print("[OK] Plagiarism Detection hazir - BERT model yuklendi")
     except Exception as e:
-        print(f"[UYARI] Plagiarism servisi kullanilamiyor: {str(e)}")
+        print(f"[UYARI] Plagiarism servisi kullanilamiyor: {e!s}")
         plagiarism_service = None
 
     print()
@@ -75,7 +74,7 @@ def main():
         hitl_service = HITLWorkflowService()
         print("[OK] HITL Workflow hazir - Expert sistemi aktif")
     except Exception as e:
-        print(f"[HATA] HITL Workflow hatasi: {str(e)}")
+        print(f"[HATA] HITL Workflow hatasi: {e!s}")
         return
 
     print()
@@ -172,7 +171,7 @@ def main():
                     f"      [OK] Topic ile baglanti kuruldu: {topic_node.split(':')[-1]}"
                 )
         except Exception as e:
-            print(f"      [HATA] KG ekleme hatasi: {str(e)}")
+            print(f"      [HATA] KG ekleme hatasi: {e!s}")
 
         # Step 2: Check plagiarism (simulated)
         print("  [2] Plagiarism kontrolu...")
@@ -184,7 +183,7 @@ def main():
         if similarity_score > 0.85:
             print("      [REDDEDILDI] Yuksek benzerlik!")
             continue
-        elif similarity_score > 0.70:
+        if similarity_score > 0.70:
             print("      [UYARI] Orta seviye benzerlik - expert incelemesi gerekli")
             needs_expert_review = True
         else:
@@ -210,7 +209,7 @@ def main():
                 print(f"      - Tahmini sure: {task.estimated_time_minutes} dk")
                 needs_review_count += 1
             except Exception as e:
-                print(f"      [HATA] Task olusturulamadi: {str(e)}")
+                print(f"      [HATA] Task olusturulamadi: {e!s}")
         else:
             print("  [3] Otomatik onaylandi")
             print("      [ONAYLANDI] Soru sisteme eklendi")
@@ -291,7 +290,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n\nKullanici tarafindan durduruldu")
     except Exception as e:
-        print(f"\n\nFATAL HATA: {str(e)}")
+        print(f"\n\nFATAL HATA: {e!s}")
         import traceback
 
         traceback.print_exc()

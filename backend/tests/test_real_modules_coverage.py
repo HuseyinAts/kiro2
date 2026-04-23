@@ -2,30 +2,29 @@
 Real Module Tests - Coverage Boost
 These tests execute EXISTING code to boost coverage
 """
-import pytest
 import sys
-from pathlib import Path
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from pathlib import Path
+
+import pytest
 
 sys.path.append(str(Path(__file__).parent.parent))
 
 from models_unified import (
-    Kullanici,
-    OgrenmeProfili,
-    Soru,
-    Sinav,
-    SinavSonucu,
     CozulenSoru,
-    OgrenmeYolu,
     IcerikKaynagi,
-    SinavTipi,
-    SinavDurumu,
-    SoruZorluk,
+    Kullanici,
     KullaniciRolu,
+    OgrenmeProfili,
+    OgrenmeYolu,
+    Sinav,
+    SinavDurumu,
+    SinavSonucu,
+    SinavTipi,
+    Soru,
+    SoruZorluk,
 )
-
-
 
 pytestmark = pytest.mark.skipif(
     True,
@@ -203,8 +202,8 @@ class TestModelsUnified:
 
         cozum.guven_seviyesi = 4
         cozum.cozum_sayisi = 2
-        cozum.ilk_cozum_tarihi = datetime.now(timezone.utc)
-        cozum.son_cozum_tarihi = datetime.now(timezone.utc)
+        cozum.ilk_cozum_tarihi = datetime.now(UTC)
+        cozum.son_cozum_tarihi = datetime.now(UTC)
 
         assert cozum.dogru_mu == True
         assert cozum.guven_seviyesi == 4
@@ -293,7 +292,7 @@ class TestSetupDatabase:
 
     def test_database_url_config(self):
         """Database URL configuration"""
-        from setup_database import DATABASE_URL, ASYNC_DATABASE_URL
+        from setup_database import ASYNC_DATABASE_URL, DATABASE_URL
 
         assert "postgresql" in DATABASE_URL
         assert "turkiye_sinav_db" in DATABASE_URL

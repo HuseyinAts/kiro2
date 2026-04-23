@@ -6,7 +6,7 @@ Otomatik soru üretimi için veritabanı işlemleri ve iş mantığı
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from models.curriculum import ExamType, GradeLevel, SubjectType
 from models.question_generation import (
@@ -111,10 +111,10 @@ class QuestionGenerationService:
     async def get_questions_by_topic(
         self,
         topic_id: str,
-        limit: Optional[int] = None,
+        limit: int | None = None,
         validated_only: bool = False,
         approved_only: bool = False,
-    ) -> List[GeneratedQuestion]:
+    ) -> list[GeneratedQuestion]:
         """Konuya göre üretilen soruları getir"""
         try:
             if not self.db:
@@ -152,7 +152,7 @@ class QuestionGenerationService:
             logger.error(f"Konuya göre sorular getirme hatası: {e}")
             return []
 
-    async def get_question_by_id(self, question_id: str) -> Optional[GeneratedQuestion]:
+    async def get_question_by_id(self, question_id: str) -> GeneratedQuestion | None:
         """ID'ye göre soru getir"""
         try:
             if not self.db:
@@ -232,11 +232,10 @@ class QuestionGenerationService:
             if result.rowcount > 0:
                 logger.info(f"Soru onaylandı: {question_id}")
                 return True
-            else:
-                logger.warning(
-                    f"Soru onaylanamadı (doğrulanmamış olabilir): {question_id}"
-                )
-                return False
+            logger.warning(
+                f"Soru onaylanamadı (doğrulanmamış olabilir): {question_id}"
+            )
+            return False
 
         except Exception as e:
             logger.error(f"Soru onaylama hatası: {e}")
@@ -299,7 +298,7 @@ class QuestionGenerationService:
             return False
 
     async def update_generation_request_status(
-        self, request_id: str, status: str, result_data: Optional[Dict[str, Any]] = None
+        self, request_id: str, status: str, result_data: dict[str, Any] | None = None
     ) -> bool:
         """Üretim talebi durumunu güncelle"""
         try:
@@ -330,7 +329,7 @@ class QuestionGenerationService:
             logger.error(f"Üretim talebi güncelleme hatası: {e}")
             return False
 
-    async def get_pending_generation_requests(self) -> List[QuestionGenerationRequest]:
+    async def get_pending_generation_requests(self) -> list[QuestionGenerationRequest]:
         """Bekleyen üretim taleplerini getir"""
         try:
             if not self.db:
@@ -418,10 +417,10 @@ class QuestionGenerationService:
     async def get_templates_by_criteria(
         self,
         subject: SubjectType,
-        question_type: Optional[QuestionType] = None,
-        difficulty_level: Optional[DifficultyLevel] = None,
-        cognitive_level: Optional[CognitiveLevel] = None,
-    ) -> List[QuestionTemplate]:
+        question_type: QuestionType | None = None,
+        difficulty_level: DifficultyLevel | None = None,
+        cognitive_level: CognitiveLevel | None = None,
+    ) -> list[QuestionTemplate]:
         """Kriterlere göre şablonları getir"""
         try:
             if not self.db:
@@ -508,7 +507,7 @@ class QuestionGenerationService:
 
     # İstatistik ve Analiz İşlemleri
 
-    async def get_question_statistics_by_topic(self, topic_id: str) -> Dict[str, Any]:
+    async def get_question_statistics_by_topic(self, topic_id: str) -> dict[str, Any]:
         """Konuya göre soru istatistiklerini getir"""
         try:
             if not self.db:
@@ -611,8 +610,8 @@ class QuestionGenerationService:
             return {}
 
     async def get_generation_statistics(
-        self, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None
-    ) -> Dict[str, Any]:
+        self, start_date: datetime | None = None, end_date: datetime | None = None
+    ) -> dict[str, Any]:
         """Üretim istatistiklerini getir"""
         try:
             if not self.db:
@@ -708,8 +707,8 @@ class QuestionGenerationService:
     # Yardımcı Metodlar
 
     def _row_to_generated_question(
-        self, row: Dict[str, Any]
-    ) -> Optional[GeneratedQuestion]:
+        self, row: dict[str, Any]
+    ) -> GeneratedQuestion | None:
         """Veritabanı satırını GeneratedQuestion objesine çevir"""
         try:
             from models.question_generation import OSYMQuestionFormat
@@ -772,8 +771,8 @@ class QuestionGenerationService:
             return None
 
     def _row_to_generation_request(
-        self, row: Dict[str, Any]
-    ) -> Optional[QuestionGenerationRequest]:
+        self, row: dict[str, Any]
+    ) -> QuestionGenerationRequest | None:
         """Veritabanı satırını QuestionGenerationRequest objesine çevir"""
         try:
             request = QuestionGenerationRequest(
@@ -816,8 +815,8 @@ class QuestionGenerationService:
             return None
 
     def _row_to_question_template(
-        self, row: Dict[str, Any]
-    ) -> Optional[QuestionTemplate]:
+        self, row: dict[str, Any]
+    ) -> QuestionTemplate | None:
         """Veritabanı satırını QuestionTemplate objesine çevir"""
         try:
             template = QuestionTemplate(
@@ -854,7 +853,7 @@ class QuestionGenerationService:
 
     def _get_mock_questions_by_topic(
         self, topic_id: str, limit: int
-    ) -> List[GeneratedQuestion]:
+    ) -> list[GeneratedQuestion]:
         """Test için mock sorular"""
         from models.question_generation import OSYMQuestionFormat
 
@@ -899,7 +898,7 @@ class QuestionGenerationService:
 
         return mock_questions
 
-    def _get_mock_question_by_id(self, question_id: str) -> Optional[GeneratedQuestion]:
+    def _get_mock_question_by_id(self, question_id: str) -> GeneratedQuestion | None:
         """Test için mock soru"""
         mock_questions = self._get_mock_questions_by_topic("mock_topic", 1)
         if mock_questions:
@@ -908,7 +907,7 @@ class QuestionGenerationService:
             return question
         return None
 
-    def _get_mock_templates(self, subject: SubjectType) -> List[QuestionTemplate]:
+    def _get_mock_templates(self, subject: SubjectType) -> list[QuestionTemplate]:
         """Test için mock şablonlar"""
         mock_templates = []
 

@@ -4,7 +4,7 @@ Dünya çapında ilk 64 farklı öğrenme profili kombinasyonu
 """
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -74,7 +74,7 @@ class FelderProfile(BaseModel):
     )
 
     @property
-    def learning_preferences(self) -> Dict[str, str]:
+    def learning_preferences(self) -> dict[str, str]:
         """Öğrenme tercihlerini döndür"""
         return {
             "processing": "active" if self.active_reflective < 0 else "reflective",
@@ -160,7 +160,7 @@ class QuestionnaireResponse(BaseModel):
     questionnaire_type: str = Field(..., description="Anket türü (VARK/Felder)")
 
     # Anket yanıtları
-    responses: Dict[str, Any] = Field(..., description="Anket yanıtları")
+    responses: dict[str, Any] = Field(..., description="Anket yanıtları")
     completion_time: float = Field(..., description="Anket tamamlama süresi (dakika)")
 
     # Meta veriler
@@ -175,18 +175,18 @@ class ContentRecommendation(BaseModel):
     hybrid_code: str = Field(..., description="Hibrit profil kodu")
 
     # Önerilen içerik türleri
-    recommended_content_types: List[str] = Field(
+    recommended_content_types: list[str] = Field(
         ..., description="Önerilen içerik türleri"
     )
-    content_weights: Dict[str, float] = Field(
+    content_weights: dict[str, float] = Field(
         ..., description="İçerik türü ağırlıkları"
     )
 
     # Öğrenme stratejileri
-    learning_strategies: List[str] = Field(
+    learning_strategies: list[str] = Field(
         ..., description="Önerilen öğrenme stratejileri"
     )
-    study_techniques: List[str] = Field(..., description="Önerilen çalışma teknikleri")
+    study_techniques: list[str] = Field(..., description="Önerilen çalışma teknikleri")
 
     # Kişiselleştirme parametreleri
     difficulty_adjustment: float = Field(
@@ -208,7 +208,7 @@ class LearningStyleUpdate(BaseModel):
 
     # Güncelleme nedeni
     update_reason: str = Field(..., description="Güncelleme nedeni")
-    new_behavioral_data: Optional[BehavioralData] = Field(
+    new_behavioral_data: BehavioralData | None = Field(
         None, description="Yeni davranışsal veri"
     )
 

@@ -20,8 +20,8 @@ Responsibilities:
 """
 
 import logging
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from typing import Any
 
 from ..models import KnowledgeLevel
 
@@ -55,8 +55,8 @@ class AssessmentCreator:
         logger.info("AssessmentCreator initialized")
 
     async def create_diagnostic_assessment(
-        self, student_id: str, subjects: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        self, student_id: str, subjects: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Create comprehensive diagnostic assessment
 
@@ -101,9 +101,9 @@ class AssessmentCreator:
         self,
         student_id: str,
         subject: str,
-        topic: Optional[str] = None,
+        topic: str | None = None,
         question_count: int = 5,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create quick assessment with dynamic question selection
 
@@ -194,12 +194,12 @@ class AssessmentCreator:
             return assessment_data
 
         except Exception as e:
-            logger.error(f"Create quick assessment error: {str(e)}")
+            logger.error(f"Create quick assessment error: {e!s}")
             raise
 
     async def create_self_assessment(
-        self, student_id: str, subjects: List[str]
-    ) -> Dict[str, Any]:
+        self, student_id: str, subjects: list[str]
+    ) -> dict[str, Any]:
         """
         Create self-assessment for multiple subjects
 
@@ -245,12 +245,12 @@ class AssessmentCreator:
             return assessment_data
 
         except Exception as e:
-            logger.error(f"Create self-assessment error: {str(e)}")
+            logger.error(f"Create self-assessment error: {e!s}")
             raise
 
     async def create_interactive_questionnaire(
-        self, student_id: str, goal: str, subjects: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        self, student_id: str, goal: str, subjects: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Create interactive questionnaire with dynamic questions
 
@@ -326,12 +326,12 @@ class AssessmentCreator:
             return assessment_data
 
         except Exception as e:
-            logger.error(f"Create interactive questionnaire error: {str(e)}")
+            logger.error(f"Create interactive questionnaire error: {e!s}")
             raise
 
     async def create_guided_self_assessment(
-        self, student_id: str, subjects: List[str], learning_goals: List[str]
-    ) -> Dict[str, Any]:
+        self, student_id: str, subjects: list[str], learning_goals: list[str]
+    ) -> dict[str, Any]:
         """
         Create guided self-assessment flow
 
@@ -370,12 +370,12 @@ class AssessmentCreator:
             return flow_data
 
         except Exception as e:
-            logger.error(f"Create guided self-assessment error: {str(e)}")
+            logger.error(f"Create guided self-assessment error: {e!s}")
             raise
 
     async def create_learning_style_questionnaire(
         self, student_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create questionnaire to detect learning style
 
@@ -444,12 +444,12 @@ class AssessmentCreator:
             return assessment_data
 
         except Exception as e:
-            logger.error(f"Create learning style questionnaire error: {str(e)}")
+            logger.error(f"Create learning style questionnaire error: {e!s}")
             raise
 
     def analyze_learning_style_responses(
-        self, student_id: str, responses: Dict[str, int]
-    ) -> Dict[str, Any]:
+        self, student_id: str, responses: dict[str, int]
+    ) -> dict[str, Any]:
         """
         Analyze learning style questionnaire responses
 
@@ -513,7 +513,7 @@ class AssessmentCreator:
             return analysis
 
         except Exception as e:
-            logger.error(f"Analyze learning style error: {str(e)}")
+            logger.error(f"Analyze learning style error: {e!s}")
             raise
 
     # Private helper methods
@@ -537,7 +537,7 @@ class AssessmentCreator:
         # Otherwise return string
         return difficulty_str
 
-    def _format_question(self, question) -> Dict[str, Any]:
+    def _format_question(self, question) -> dict[str, Any]:
         """Format question object to dictionary"""
         return {
             "question_id": getattr(question, "question_id", ""),

@@ -6,15 +6,16 @@ Coverage target: 100%
 """
 
 import pytest
+
 from models.enums import (
+    IcerikTipi,
+    KarsilastirmaGrubu,
+    KullaniciRolu,
+    OgrenmeStili,
+    RaporTipi,
+    SinavDurumu,
     SinavTipi,
     ZorlukSeviyesi,
-    OgrenmeStili,
-    IcerikTipi,
-    KullaniciRolu,
-    SinavDurumu,
-    RaporTipi,
-    KarsilastirmaGrubu,
 )
 
 

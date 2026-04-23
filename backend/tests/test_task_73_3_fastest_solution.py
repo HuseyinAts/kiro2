@@ -5,8 +5,9 @@ Test Task 73.3: En Hızlı Çözüm Önerisi
 - Shortcut identification
 """
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
 
 from services.alternative_solutions_service import AlternativeSolutionsService
 

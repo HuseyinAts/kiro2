@@ -3,12 +3,12 @@ Wave 2B ile Mevcut Soruları Değerlendirme
 Veritabanındaki mevcut soruları Wave 2B kalite kontrolünden geçirir
 """
 
-import sys
-import json
 import asyncio
-from pathlib import Path
 import io
+import json
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # UTF-8 kodlama
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -17,9 +17,10 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="repla
 # Backend'i path'e ekle
 sys.path.insert(0, str(Path(__file__).parent))
 
-from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
-from core.database import get_db_session
 from sqlalchemy import text
+
+from core.database import get_db_session
+from services.comprehensive_quality_evaluator import ComprehensiveQualityEvaluator
 
 
 async def load_osym_reference():
@@ -294,8 +295,7 @@ async def main():
             )
             print("\nWave 2B başarıyla çalışıyor! 🎉")
             return 0
-        else:
-            return 1
+        return 1
 
     except Exception as e:
         print(f"\n❌ Hata: {e}")

@@ -6,7 +6,6 @@ keşfeder ve metadata bilgilerini toplar.
 """
 
 import logging
-from typing import List, Optional, Set
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -28,7 +27,7 @@ class EndpointDiscovery:
         redis_client: Redis client (metadata storage için)
         discovered_endpoints: Keşfedilen endpoint'lerin set'i
     """
-    
+
     def __init__(self, app: FastAPI, redis_client=None):
         """
         EndpointDiscovery sınıfını başlatır.
@@ -39,10 +38,10 @@ class EndpointDiscovery:
         """
         self.app = app
         self.redis_client = redis_client
-        self.discovered_endpoints: Set[str] = set()
+        self.discovered_endpoints: set[str] = set()
         logger.info("EndpointDiscovery başlatıldı")
-    
-    async def discover_all_endpoints(self) -> List[EndpointMetadata]:
+
+    async def discover_all_endpoints(self) -> list[EndpointMetadata]:
         """
         Tüm registered endpoint'leri keşfeder ve metadata toplar.
         
@@ -56,33 +55,33 @@ class EndpointDiscovery:
             REQ-1.1: FastAPI uygulaması başlatıldığında tüm endpoint'leri tarar
             REQ-1.2: Her endpoint'in path, method ve handler bilgisini toplar
         """
-        endpoints: List[EndpointMetadata] = []
-        
+        endpoints: list[EndpointMetadata] = []
+
         for route in self.app.routes:
             if isinstance(route, APIRoute):
                 # Her HTTP method için ayrı endpoint oluştur
                 for method in route.methods:
                     endpoint_key = f"{method}:{route.path}"
-                    
+
                     # Yeni endpoint keşfedildi mi kontrol et
                     if endpoint_key not in self.discovered_endpoints:
                         logger.info(f"Yeni endpoint keşfedildi: {endpoint_key}")
                         self.discovered_endpoints.add(endpoint_key)
-                    
+
                     # Metadata oluştur
                     metadata = await self._extract_metadata(route, method)
                     endpoints.append(metadata)
-                    
+
                     # Redis'e kaydet
                     if self.redis_client:
                         await self._store_metadata(metadata)
-        
+
         logger.info(f"Toplam {len(endpoints)} endpoint keşfedildi")
         return endpoints
-    
+
     async def _extract_metadata(
-        self, 
-        route: APIRoute, 
+        self,
+        route: APIRoute,
         method: str
     ) -> EndpointMetadata:
         """
@@ -101,16 +100,16 @@ class EndpointDiscovery:
         """
         # Handler fonksiyon adını al
         handler_name = route.endpoint.__name__ if route.endpoint else "unknown"
-        
+
         # Authentication gereksinimi kontrolü
         requires_auth = self._check_auth_requirement(route)
-        
+
         # Kritik endpoint kontrolü (tag'lerden veya path'ten)
         is_critical = self._check_critical_endpoint(route)
-        
+
         # Expected status codes (route response_model'den çıkarılabilir)
         expected_status_codes = self._extract_expected_status_codes(route)
-        
+
         metadata = EndpointMetadata(
             path=route.path,
             method=method,
@@ -119,10 +118,10 @@ class EndpointDiscovery:
             is_critical=is_critical,
             expected_status_codes=expected_status_codes
         )
-        
+
         logger.debug(f"Metadata çıkarıldı: {metadata.path} ({metadata.method})")
         return metadata
-    
+
     def _check_auth_requirement(self, route: APIRoute) -> bool:
         """
         Endpoint'in authentication gerektirip gerektirmediğini kontrol eder.
@@ -143,13 +142,13 @@ class EndpointDiscovery:
                 dep_str = str(dependency)
                 if any(keyword in dep_str.lower() for keyword in ['auth', 'token', 'jwt', 'security']):
                     return True
-        
+
         # Route'un kendisinde security tanımı var mı?
         if hasattr(route, 'security') and route.security:
             return True
-        
+
         return False
-    
+
     def _check_critical_endpoint(self, route: APIRoute) -> bool:
         """
         Endpoint'in kritik olup olmadığını kontrol eder.
@@ -169,15 +168,15 @@ class EndpointDiscovery:
         critical_paths = ['/health', '/ready', '/api/v1/auth']
         if any(route.path.startswith(path) for path in critical_paths):
             return True
-        
+
         # Tag bazlı kontrol
         if route.tags:
             if any('critical' in tag.lower() for tag in route.tags):
                 return True
-        
+
         return False
-    
-    def _extract_expected_status_codes(self, route: APIRoute) -> List[int]:
+
+    def _extract_expected_status_codes(self, route: APIRoute) -> list[int]:
         """
         Endpoint'in beklenen status code'larını çıkarır.
         
@@ -189,21 +188,21 @@ class EndpointDiscovery:
         """
         # Default status codes
         status_codes = [200]
-        
+
         # Route'un response_model'i varsa, status code'ları çıkar
         if hasattr(route, 'status_code') and route.status_code:
             status_codes = [route.status_code]
-        
+
         # POST endpoint'leri için 201 ekle
         if 'POST' in route.methods:
             status_codes.append(201)
-        
+
         # DELETE endpoint'leri için 204 ekle
         if 'DELETE' in route.methods:
             status_codes.append(204)
-        
+
         return list(set(status_codes))  # Duplicate'leri kaldır
-    
+
     async def _store_metadata(self, metadata: EndpointMetadata) -> None:
         """
         Endpoint metadata'sını Redis'e kaydeder.
@@ -216,11 +215,11 @@ class EndpointDiscovery:
         """
         if not self.redis_client:
             return
-        
+
         try:
             # Redis key formatı: kiro2:health:endpoints:{method}:{path}
             redis_key = f"kiro2:health:endpoints:{metadata.method}:{metadata.path}"
-            
+
             # Metadata'yı JSON olarak kaydet
             await self.redis_client.hset(
                 redis_key,
@@ -233,15 +232,15 @@ class EndpointDiscovery:
                     "expected_status_codes": ",".join(map(str, metadata.expected_status_codes))
                 }
             )
-            
+
             # TTL ayarla (24 saat)
             await self.redis_client.expire(redis_key, 86400)
-            
+
             logger.debug(f"Metadata Redis'e kaydedildi: {redis_key}")
         except Exception as e:
             logger.error(f"Metadata Redis'e kaydedilemedi: {e}")
-    
-    async def check_new_endpoints(self) -> List[EndpointMetadata]:
+
+    async def check_new_endpoints(self) -> list[EndpointMetadata]:
         """
         Yeni eklenen endpoint'leri kontrol eder.
         
@@ -254,30 +253,30 @@ class EndpointDiscovery:
         Requirements:
             REQ-1.3: Yeni endpoint eklendiğinde otomatik tespit eder
         """
-        new_endpoints: List[EndpointMetadata] = []
-        
+        new_endpoints: list[EndpointMetadata] = []
+
         for route in self.app.routes:
             if isinstance(route, APIRoute):
                 for method in route.methods:
                     endpoint_key = f"{method}:{route.path}"
-                    
+
                     # Daha önce keşfedilmemiş mi?
                     if endpoint_key not in self.discovered_endpoints:
                         logger.info(f"Yeni endpoint tespit edildi: {endpoint_key}")
                         self.discovered_endpoints.add(endpoint_key)
-                        
+
                         metadata = await self._extract_metadata(route, method)
                         new_endpoints.append(metadata)
-                        
+
                         if self.redis_client:
                             await self._store_metadata(metadata)
-        
+
         if new_endpoints:
             logger.info(f"{len(new_endpoints)} yeni endpoint tespit edildi")
-        
+
         return new_endpoints
-    
-    async def check_removed_endpoints(self) -> List[str]:
+
+    async def check_removed_endpoints(self) -> list[str]:
         """
         Silinen endpoint'leri kontrol eder.
         
@@ -291,22 +290,22 @@ class EndpointDiscovery:
             REQ-1.4: Endpoint silindiğinde monitoring listesinden çıkarır
         """
         # Mevcut endpoint'leri topla
-        current_endpoints: Set[str] = set()
+        current_endpoints: set[str] = set()
         for route in self.app.routes:
             if isinstance(route, APIRoute):
                 for method in route.methods:
                     endpoint_key = f"{method}:{route.path}"
                     current_endpoints.add(endpoint_key)
-        
+
         # Silinen endpoint'leri bul
         removed_endpoints = self.discovered_endpoints - current_endpoints
-        
+
         if removed_endpoints:
             logger.info(f"{len(removed_endpoints)} endpoint silindi")
-            
+
             # Silinen endpoint'leri discovered_endpoints'ten çıkar
             self.discovered_endpoints -= removed_endpoints
-            
+
             # Redis'ten de sil
             if self.redis_client:
                 for endpoint_key in removed_endpoints:
@@ -317,14 +316,14 @@ class EndpointDiscovery:
                         logger.debug(f"Endpoint Redis'ten silindi: {redis_key}")
                     except Exception as e:
                         logger.error(f"Endpoint Redis'ten silinemedi: {e}")
-        
+
         return list(removed_endpoints)
-    
+
     async def get_endpoint_metadata(
-        self, 
-        method: str, 
+        self,
+        method: str,
         path: str
-    ) -> Optional[EndpointMetadata]:
+    ) -> EndpointMetadata | None:
         """
         Belirli bir endpoint'in metadata'sını getirir.
         
@@ -342,14 +341,14 @@ class EndpointDiscovery:
                     if method in route.methods:
                         return await self._extract_metadata(route, method)
             return None
-        
+
         try:
             redis_key = f"kiro2:health:endpoints:{method}:{path}"
             data = await self.redis_client.hgetall(redis_key)
-            
+
             if not data:
                 return None
-            
+
             # Redis'ten gelen data'yı EndpointMetadata'ya dönüştür
             return EndpointMetadata(
                 path=data.get(b"path", b"").decode(),
@@ -358,7 +357,7 @@ class EndpointDiscovery:
                 requires_auth=data.get(b"requires_auth", b"False").decode() == "True",
                 is_critical=data.get(b"is_critical", b"False").decode() == "True",
                 expected_status_codes=[
-                    int(code) 
+                    int(code)
                     for code in data.get(b"expected_status_codes", b"200").decode().split(",")
                 ]
             )

@@ -7,6 +7,7 @@ yanlış → mastery -= 0.1*mastery.
 """
 from __future__ import annotations
 
+from datetime import UTC
 from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -199,9 +200,7 @@ async def get_student_knowledge_state(
     unlocked: set[str] = set()
     for node in nodes:
         prereqs = node.get("prerequisites", [])
-        if not prereqs:
-            unlocked.add(node["id"])
-        elif all(
+        if not prereqs or all(
             mastery_map.get(p, {}).get("mastery_level", 0) >= 0.6 for p in prereqs
         ):
             unlocked.add(node["id"])
@@ -314,7 +313,7 @@ async def update_knowledge_state(
         {knowledge_point_id, student_id, old_mastery, new_mastery, delta, is_correct}
     """
     try:
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         from sqlalchemy import and_, select
 
@@ -357,7 +356,7 @@ async def update_knowledge_state(
 
         new_mastery = max(0.0, min(1.0, old_mastery + delta))
         state.mastery_level = new_mastery
-        state.last_assessed = datetime.now(timezone.utc)
+        state.last_assessed = datetime.now(UTC)
 
         # Güven artışı: cevap verilince biraz daha emin olunur
         old_confidence = float(state.confidence or 0.5)

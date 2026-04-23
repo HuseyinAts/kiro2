@@ -8,17 +8,16 @@ Tests for the abstract base gate class and its utilities.
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from backend.core.quality_gates.gates.base import BaseGate, GateContext
 from backend.core.quality_gates.models import (
     GateConfig,
     GateSeverity,
     GateStatus,
 )
-from backend.core.quality_gates.gates.base import BaseGate, GateContext
-
 
 # =============================================================================
 # Test Fixtures
@@ -44,8 +43,9 @@ class ConcreteGate(BaseGate):
         )
 
     async def execute(self, context: GateContext):
-        from backend.core.quality_gates.models import GateResult
         from datetime import datetime
+
+        from backend.core.quality_gates.models import GateResult
 
         return GateResult(
             gate_name=self.get_name(),

@@ -7,7 +7,6 @@ import hashlib
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Set, Tuple
 
 from fastapi import HTTPException, UploadFile, status
 
@@ -20,8 +19,8 @@ logger = get_logger("file_upload_security")
 class FileValidationConfig:
     """File upload validation configuration"""
 
-    allowed_extensions: Set[str]
-    allowed_mime_types: Set[str]
+    allowed_extensions: set[str]
+    allowed_mime_types: set[str]
     max_file_size: int  # bytes
     check_magic_bytes: bool = True
     sanitize_filename: bool = True
@@ -301,7 +300,7 @@ class FileUploadValidator:
     @classmethod
     async def validate_upload(
         cls, file: UploadFile, config: FileValidationConfig = None
-    ) -> Tuple[str, int, str]:
+    ) -> tuple[str, int, str]:
         """
         Complete file upload validation
 
@@ -360,7 +359,7 @@ class FileUploadValidator:
 
     @classmethod
     def generate_safe_filename(
-        cls, original_filename: str, user_id: Optional[str] = None
+        cls, original_filename: str, user_id: str | None = None
     ) -> str:
         """
         Generate safe filename with hash
@@ -423,7 +422,7 @@ PROFILE_PICTURE_CONFIG = FileValidationConfig(
 # Helper function for route usage
 async def validate_file_upload(
     file: UploadFile, config: FileValidationConfig = None
-) -> Tuple[str, int, str]:
+) -> tuple[str, int, str]:
     """
     Validate file upload (convenience function)
 

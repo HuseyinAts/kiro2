@@ -4,7 +4,7 @@ SECURITY FIX: Centralized SQL security validation and sanitization
 """
 
 import re
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Union
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,7 +18,6 @@ logger = get_logger("sql_security")
 class SQLInjectionError(Exception):
     """SQL Injection attempt detected"""
 
-    pass
 
 
 class SQLSecurityValidator:
@@ -151,7 +150,7 @@ class SQLSecurityValidator:
         return column_name
 
     @classmethod
-    def validate_order_by(cls, order_by: str, allowed_columns: List[str]) -> str:
+    def validate_order_by(cls, order_by: str, allowed_columns: list[str]) -> str:
         """
         Validate ORDER BY clause
 
@@ -197,14 +196,14 @@ class SafeQueryBuilder:
     """
 
     def __init__(self):
-        self._select_cols: List[str] = []
-        self._from_table: Optional[str] = None
-        self._where_clauses: List[str] = []
-        self._order_by_clause: Optional[str] = None
-        self._limit_value: Optional[int] = None
-        self._offset_value: Optional[int] = None
+        self._select_cols: list[str] = []
+        self._from_table: str | None = None
+        self._where_clauses: list[str] = []
+        self._order_by_clause: str | None = None
+        self._limit_value: int | None = None
+        self._offset_value: int | None = None
 
-    def select(self, table: str, columns: List[str] = None):
+    def select(self, table: str, columns: list[str] = None):
         """Select columns from table"""
         self._from_table = SQLSecurityValidator.validate_table_name(table)
         if columns:
@@ -284,7 +283,7 @@ class SafeQueryBuilder:
 async def safe_execute(
     session: AsyncSession,
     query: Union[str, ClauseElement],
-    params: Optional[Dict[str, Any]] = None,
+    params: dict[str, Any] | None = None,
 ) -> Any:
     """
     Safely execute query with parameter validation

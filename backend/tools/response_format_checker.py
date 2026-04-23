@@ -9,7 +9,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import requests
 
@@ -30,7 +30,7 @@ class ResponseFormatChecker:
         self.validator = ResponseValidator(strict_validation=False)
         self.tester = ResponseTester()
 
-    def check_file(self, file_path: str) -> Dict[str, Any]:
+    def check_file(self, file_path: str) -> dict[str, Any]:
         """
         Check response format from JSON file
 
@@ -41,7 +41,7 @@ class ResponseFormatChecker:
             Dict containing validation results
         """
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 response_data = json.load(f)
 
             return self._validate_response_data(response_data, f"file:{file_path}")
@@ -55,19 +55,19 @@ class ResponseFormatChecker:
         except json.JSONDecodeError as e:
             return {
                 "source": f"file:{file_path}",
-                "error": f"Invalid JSON: {str(e)}",
+                "error": f"Invalid JSON: {e!s}",
                 "validation_passed": False,
             }
         except Exception as e:
             return {
                 "source": f"file:{file_path}",
-                "error": f"Unexpected error: {str(e)}",
+                "error": f"Unexpected error: {e!s}",
                 "validation_passed": False,
             }
 
     def check_url(
-        self, url: str, headers: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
+        self, url: str, headers: dict[str, str] | None = None
+    ) -> dict[str, Any]:
         """
         Check response format from API endpoint
 
@@ -91,23 +91,23 @@ class ResponseFormatChecker:
         except requests.exceptions.RequestException as e:
             return {
                 "source": f"url:{url}",
-                "error": f"Request failed: {str(e)}",
+                "error": f"Request failed: {e!s}",
                 "validation_passed": False,
             }
         except json.JSONDecodeError as e:
             return {
                 "source": f"url:{url}",
-                "error": f"Response is not valid JSON: {str(e)}",
+                "error": f"Response is not valid JSON: {e!s}",
                 "validation_passed": False,
             }
         except Exception as e:
             return {
                 "source": f"url:{url}",
-                "error": f"Unexpected error: {str(e)}",
+                "error": f"Unexpected error: {e!s}",
                 "validation_passed": False,
             }
 
-    def check_json_string(self, json_string: str) -> Dict[str, Any]:
+    def check_json_string(self, json_string: str) -> dict[str, Any]:
         """
         Check response format from JSON string
 
@@ -124,19 +124,19 @@ class ResponseFormatChecker:
         except json.JSONDecodeError as e:
             return {
                 "source": "json_string",
-                "error": f"Invalid JSON: {str(e)}",
+                "error": f"Invalid JSON: {e!s}",
                 "validation_passed": False,
             }
         except Exception as e:
             return {
                 "source": "json_string",
-                "error": f"Unexpected error: {str(e)}",
+                "error": f"Unexpected error: {e!s}",
                 "validation_passed": False,
             }
 
     def _validate_response_data(
-        self, response_data: Dict[str, Any], source: str
-    ) -> Dict[str, Any]:
+        self, response_data: dict[str, Any], source: str
+    ) -> dict[str, Any]:
         """Internal method to validate response data"""
         result = {
             "source": source,
@@ -176,12 +176,12 @@ class ResponseFormatChecker:
             result["validation_passed"] = len(result["errors"]) == 0
 
         except Exception as e:
-            result["errors"].append(f"Validation exception: {str(e)}")
+            result["errors"].append(f"Validation exception: {e!s}")
 
         return result
 
     def _add_quality_warnings(
-        self, response_data: Dict[str, Any], result: Dict[str, Any]
+        self, response_data: dict[str, Any], result: dict[str, Any]
     ):
         """Add quality warnings to validation result"""
         warnings = []
@@ -223,8 +223,8 @@ class ResponseFormatChecker:
         result["warnings"] = warnings
 
     def bulk_check(
-        self, sources: List[str], source_type: str = "auto"
-    ) -> List[Dict[str, Any]]:
+        self, sources: list[str], source_type: str = "auto"
+    ) -> list[dict[str, Any]]:
         """
         Check multiple sources
 
@@ -263,7 +263,7 @@ class ResponseFormatChecker:
 
         return results
 
-    def generate_report(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def generate_report(self, results: list[dict[str, Any]]) -> dict[str, Any]:
         """Generate summary report from validation results"""
         total_sources = len(results)
         passed_sources = len([r for r in results if r.get("validation_passed")])

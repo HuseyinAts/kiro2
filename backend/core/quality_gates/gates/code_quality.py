@@ -29,7 +29,6 @@ from ..models import (
 )
 from .base import BaseGate, GateContext
 
-
 logger = logging.getLogger(__name__)
 
 

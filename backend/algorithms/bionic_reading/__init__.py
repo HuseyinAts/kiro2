@@ -11,19 +11,19 @@ Modüller:
 - accessibility: Accessibility features (REQ-7)
 """
 
-from .syllabifier import TurkishSyllabifier
+from .accessibility import AccessibilityManager
+from .comprehension import ComprehensionValidator
 from .fixation import FixationPointDetector
 from .formatter import BionicFormatter, OutputFormat
 from .speed_tracker import ReadingSpeedTracker
-from .comprehension import ComprehensionValidator
-from .accessibility import AccessibilityManager
+from .syllabifier import TurkishSyllabifier
 
 __all__ = [
-    "TurkishSyllabifier",
-    "FixationPointDetector",
+    "AccessibilityManager",
     "BionicFormatter",
+    "ComprehensionValidator",
+    "FixationPointDetector",
     "OutputFormat",
     "ReadingSpeedTracker",
-    "ComprehensionValidator",
-    "AccessibilityManager",
+    "TurkishSyllabifier",
 ]

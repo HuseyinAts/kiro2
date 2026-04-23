@@ -6,15 +6,16 @@ Author: KIRO AI Team
 Date: 2025-10-19
 """
 
-from typing import Optional, Dict, Any, List
+import asyncio
+import json
 import time
 import uuid
-import json
-import asyncio
-from anthropic import AsyncAnthropic, Anthropic
+from typing import Any
+
+from anthropic import Anthropic, AsyncAnthropic
 
 from services.llm.base_llm_provider import BaseLLMProvider, LLMRequest, LLMResponse
-from services.llm.multi_llm_config import LLMProvider, LLMModelConfig, LLMCapability
+from services.llm.multi_llm_config import LLMCapability, LLMModelConfig, LLMProvider
 from services.llm.turkish_optimizer import TurkishPromptOptimizer
 
 
@@ -118,9 +119,9 @@ class ClaudeProvider(BaseLLMProvider):
             )
 
         except Exception as e:
-            raise RuntimeError(f"Claude API error: {str(e)}")
+            raise RuntimeError(f"Claude API error: {e!s}")
 
-    async def generate_batch(self, requests: List[LLMRequest]) -> List[LLMResponse]:
+    async def generate_batch(self, requests: list[LLMRequest]) -> list[LLMResponse]:
         """
         Generate text for multiple requests concurrently
 
@@ -153,7 +154,7 @@ class ClaudeProvider(BaseLLMProvider):
         return capability in self.config.capabilities
 
     async def fine_tune(
-        self, training_file: str, validation_file: Optional[str] = None, **kwargs
+        self, training_file: str, validation_file: str | None = None, **kwargs
     ) -> str:
         """
         Claude doesn't support fine-tuning via API yet
@@ -180,7 +181,7 @@ class ClaudeProvider(BaseLLMProvider):
         difficulty: float,
         bloom_level: int,
         exam_type: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate ÖSYM question using Claude
 
@@ -236,17 +237,16 @@ class ClaudeProvider(BaseLLMProvider):
                 json_str = content[start_idx:end_idx]
                 question_data = json.loads(json_str)
                 return question_data
-            else:
-                raise ValueError("No JSON object found in response")
+            raise ValueError("No JSON object found in response")
 
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(
-                f"Failed to parse JSON response: {response.content}\nError: {str(e)}"
+                f"Failed to parse JSON response: {response.content}\nError: {e!s}"
             )
 
     async def generate_distractors(
         self, question_stem: str, correct_answer: str, topic: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate distractors for ÖSYM question
 
@@ -288,17 +288,16 @@ class ClaudeProvider(BaseLLMProvider):
                 json_str = content[start_idx:end_idx]
                 distractors_data = json.loads(json_str)
                 return distractors_data
-            else:
-                raise ValueError("No JSON object found in response")
+            raise ValueError("No JSON object found in response")
 
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(
-                f"Failed to parse JSON response: {response.content}\nError: {str(e)}"
+                f"Failed to parse JSON response: {response.content}\nError: {e!s}"
             )
 
     async def score_question_quality(
-        self, question_stem: str, options: List[str], correct_answer: int
-    ) -> Dict[str, Any]:
+        self, question_stem: str, options: list[str], correct_answer: int
+    ) -> dict[str, Any]:
         """
         Score ÖSYM question quality
 
@@ -340,10 +339,9 @@ class ClaudeProvider(BaseLLMProvider):
                 json_str = content[start_idx:end_idx]
                 quality_data = json.loads(json_str)
                 return quality_data
-            else:
-                raise ValueError("No JSON object found in response")
+            raise ValueError("No JSON object found in response")
 
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(
-                f"Failed to parse JSON response: {response.content}\nError: {str(e)}"
+                f"Failed to parse JSON response: {response.content}\nError: {e!s}"
             )

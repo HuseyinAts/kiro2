@@ -2,7 +2,6 @@
 Öğretmen paneli API endpoint'leri
 """
 from datetime import datetime, timedelta
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -21,11 +20,11 @@ router = APIRouter(
 class RaporParametreleri(BaseModel):
     """Rapor oluşturma parametreleri"""
 
-    baslangic_tarihi: Optional[datetime] = Field(
+    baslangic_tarihi: datetime | None = Field(
         None, description="Rapor başlangıç tarihi"
     )
-    bitis_tarihi: Optional[datetime] = Field(None, description="Rapor bitiş tarihi")
-    sinav_tipi: Optional[str] = Field(None, description="Sınav türü filtresi")
+    bitis_tarihi: datetime | None = Field(None, description="Rapor bitiş tarihi")
+    sinav_tipi: str | None = Field(None, description="Sınav türü filtresi")
 
 
 class BildirimGonder(BaseModel):
@@ -74,7 +73,7 @@ async def ogretmen_dashboard(ogretmen: Kullanici = Depends(ogretmen_yetkisi_kont
             "message": "Dashboard verisi başarıyla alındı",
         }
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
@@ -124,7 +123,7 @@ async def ogrenci_listesi(
             "message": f"{len(sayfalanmis_ogrenciler)} öğrenci listelendi",
         }
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
@@ -161,7 +160,7 @@ async def ogrenci_performans_detay(
             "message": "Öğrenci performans verisi başarıyla alındı",
         }
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
@@ -199,7 +198,7 @@ async def sinif_raporu_olustur(
             "message": "Sınıf raporu başarıyla oluşturuldu",
         }
 
-    except ValueError as e:
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Islem basarisiz. Lutfen tekrar deneyin.")
     except HTTPException:
         raise
@@ -307,10 +306,9 @@ async def bildirim_gonder(
                 "data": None,
                 "message": "Bildirim başarıyla gönderildi",
             }
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Bildirim gönderilemedi"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Bildirim gönderilemedi"
+        )
 
     except HTTPException:
         raise
@@ -373,10 +371,9 @@ async def bildirim_okundu_isaretle(
                 "data": None,
                 "message": "Bildirim okundu olarak işaretlendi",
             }
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Bildirim bulunamadı"
-            )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Bildirim bulunamadı"
+        )
 
     except HTTPException:
         raise

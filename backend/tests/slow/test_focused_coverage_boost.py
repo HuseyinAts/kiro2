@@ -11,7 +11,7 @@ pytest.skip(
 Focused tests to specifically boost coverage of modules that exist
 Target: Exercise actual module code to reach 50%+ coverage
 """
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 
 class TestCoreConfigIntegration:
@@ -47,11 +47,11 @@ class TestCoreEncodingIntegration:
         try:
             from core.encoding import (
                 ensure_utf8_encoding,
-                turkish_safe_encode,
-                turkish_safe_decode,
-                safe_json_encode,
-                safe_json_decode,
                 get_system_encoding,
+                safe_json_decode,
+                safe_json_encode,
+                turkish_safe_decode,
+                turkish_safe_encode,
             )
 
             # Test data with Turkish characters
@@ -101,10 +101,10 @@ class TestCoreDependenciesIntegration:
         """Test dependencies functions"""
         try:
             from core.dependencies import (
+                JWT_ALGORITHM,
+                JWT_SECRET,
                 get_current_user,
                 verify_token,
-                JWT_SECRET,
-                JWT_ALGORITHM,
             )
 
             # Test constants exist
@@ -125,7 +125,7 @@ class TestAgentsModulesDeepIntegration:
     def test_base_agent_methods_usage(self):
         """Test BaseAgent methods to increase coverage"""
         try:
-            from agents.base_agent import BaseAgent, AgentType, AgentStatus
+            from agents.base_agent import AgentStatus, AgentType, BaseAgent
 
             # Create concrete implementation
             class TestAgent(BaseAgent):
@@ -413,7 +413,7 @@ class TestModelsUsage:
     def test_database_models_usage(self):
         """Test database models"""
         try:
-            from models.database import Base, User, Content
+            from models.database import Base, Content, User
 
             # Test that classes exist
             assert Base is not None

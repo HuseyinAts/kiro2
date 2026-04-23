@@ -17,9 +17,10 @@ import asyncio
 import logging
 import time
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -65,10 +66,10 @@ class HandoffRequest:
     request_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     source_agent: str = ""
     target_capability: str = ""
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     chain_depth: int = 0
-    chain_id: Optional[str] = None
-    parent_handoff_id: Optional[str] = None
+    chain_id: str | None = None
+    parent_handoff_id: str | None = None
     timestamp: datetime = field(default_factory=datetime.now)
     timeout_seconds: float = 30.0
 
@@ -79,12 +80,12 @@ class HandoffResult:
 
     success: bool
     request_id: str = ""
-    target_agent: Optional[str] = None
+    target_agent: str | None = None
     rejected: bool = False
-    reason: Optional[str] = None
+    reason: str | None = None
     chain_depth: int = 0
     latency_ms: float = 0.0
-    context_transferred: Dict[str, Any] = field(default_factory=dict)
+    context_transferred: dict[str, Any] = field(default_factory=dict)
     acknowledgment_received: bool = False
 
 
@@ -129,26 +130,26 @@ class HandoffManager:
         self.timeout_seconds = timeout_seconds
 
         # Agent registry (domain -> agent list)
-        self._agent_registry: Dict[str, List[str]] = {}
+        self._agent_registry: dict[str, list[str]] = {}
 
         # Active handoffs
-        self._active_handoffs: Dict[str, HandoffRequest] = {}
+        self._active_handoffs: dict[str, HandoffRequest] = {}
 
         # Handoff chains for tracking
-        self._handoff_chains: Dict[str, List[str]] = {}
+        self._handoff_chains: dict[str, list[str]] = {}
 
         # Metrics (REQ-7.6)
         self.metrics = HandoffMetrics()
 
         # Callbacks
-        self._acknowledgment_callbacks: Dict[str, Callable] = {}
+        self._acknowledgment_callbacks: dict[str, Callable] = {}
 
         logger.info(
             f"HandoffManager initialized: max_chain_depth={max_chain_depth}, "
             f"timeout={timeout_seconds}s"
         )
 
-    def register_agent(self, agent_id: str, capabilities: List[str]) -> bool:
+    def register_agent(self, agent_id: str, capabilities: list[str]) -> bool:
         """
         Agent'i handoff sisteme kaydet.
 
@@ -192,10 +193,10 @@ class HandoffManager:
         self,
         source_agent: str,
         target_capability: str,
-        context: Dict[str, Any],
+        context: dict[str, Any],
         chain_depth: int = 0,
-        chain_id: Optional[str] = None,
-        parent_handoff_id: Optional[str] = None,
+        chain_id: str | None = None,
+        parent_handoff_id: str | None = None,
     ) -> HandoffResult:
         """
         Agent handoff baslat (REQ-7.1).
@@ -298,7 +299,7 @@ class HandoffManager:
                 acknowledgment_received=success,
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             # REQ-7.4: Rollback on timeout
             await self._rollback_handoff(request, source_agent)
             self.metrics.failed_handoffs += 1
@@ -327,7 +328,7 @@ class HandoffManager:
             return HandoffResult(
                 success=False,
                 request_id=request.request_id,
-                reason=f"handoff_error: {str(e)}",
+                reason=f"handoff_error: {e!s}",
                 chain_depth=chain_depth,
                 latency_ms=latency_ms,
             )
@@ -338,7 +339,7 @@ class HandoffManager:
 
     def _select_target_agent(
         self, domain: str, exclude_agent: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Hedef agent sec (REQ-7.1).
 
@@ -361,8 +362,8 @@ class HandoffManager:
         return available[0]
 
     def _extract_minimal_context(
-        self, full_context: Dict[str, Any], domain: str
-    ) -> Dict[str, Any]:
+        self, full_context: dict[str, Any], domain: str
+    ) -> dict[str, Any]:
         """
         Minimal context cikar (REQ-7.2).
 
@@ -494,8 +495,7 @@ class HandoffManager:
         )
 
         # Update max chain
-        if chain_depth > self.metrics.max_chain_observed:
-            self.metrics.max_chain_observed = chain_depth
+        self.metrics.max_chain_observed = max(self.metrics.max_chain_observed, chain_depth)
 
     def register_acknowledgment_callback(
         self, agent_id: str, callback: Callable
@@ -521,7 +521,7 @@ class HandoffManager:
         """
         return len(self._handoff_chains.get(chain_id, []))
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """
         Metrikleri al (REQ-7.6).
 
@@ -554,7 +554,7 @@ class HandoffManager:
 
 
 # Singleton instance
-_handoff_manager: Optional[HandoffManager] = None
+_handoff_manager: HandoffManager | None = None
 
 
 def get_handoff_manager() -> HandoffManager:

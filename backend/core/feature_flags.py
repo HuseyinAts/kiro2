@@ -7,13 +7,13 @@ A/B testing altyapısını sağlar.
 Requirements: 8.10
 """
 
-from enum import Enum
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass, field
-from datetime import datetime
 import json
 import os
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
 from pathlib import Path
+from typing import Any
 
 
 class FeatureFlag(Enum):
@@ -97,7 +97,7 @@ class QualityThresholds:
     trusted_channel_boost: float = 0.1  # Güvenilir kanal bonus skoru
     min_channel_subscriber_count: int = 1000  # Minimum abone sayısı
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Threshold'ları dictionary'e çevir"""
         return {
             "language": {
@@ -164,7 +164,7 @@ class PerformanceConfig:
     max_videos_per_subject: int = 5
     max_total_videos: int = 15
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Config'i dictionary'e çevir"""
         return {
             "cache": {
@@ -206,7 +206,7 @@ class ABTestVariant:
     name: str
     description: str
     traffic_percentage: float  # 0-100 arası
-    config_overrides: Dict[str, Any] = field(default_factory=dict)
+    config_overrides: dict[str, Any] = field(default_factory=dict)
     enabled: bool = True
 
     def __post_init__(self):
@@ -224,9 +224,9 @@ class ABTest:
     test_id: str
     name: str
     description: str
-    variants: List[ABTestVariant]
+    variants: list[ABTestVariant]
     start_date: datetime
-    end_date: Optional[datetime] = None
+    end_date: datetime | None = None
     enabled: bool = True
 
     def __post_init__(self):
@@ -268,16 +268,16 @@ class FeatureFlagManager:
     def __init__(
         self,
         environment: Environment = Environment.PRODUCTION,
-        config_file: Optional[str] = None,
+        config_file: str | None = None,
     ):
         self.environment = environment
         self.config_file = config_file or self._get_default_config_file()
 
         # Default configurations
-        self.flags: Dict[FeatureFlag, bool] = self._get_default_flags()
+        self.flags: dict[FeatureFlag, bool] = self._get_default_flags()
         self.quality_thresholds = QualityThresholds()
         self.performance_config = PerformanceConfig()
-        self.ab_tests: Dict[str, ABTest] = {}
+        self.ab_tests: dict[str, ABTest] = {}
 
         # Load configuration
         self._load_configuration()
@@ -287,7 +287,7 @@ class FeatureFlagManager:
         base_dir = Path(__file__).parent.parent
         return str(base_dir / "config" / f"feature_flags_{self.environment.value}.json")
 
-    def _get_default_flags(self) -> Dict[FeatureFlag, bool]:
+    def _get_default_flags(self) -> dict[FeatureFlag, bool]:
         """Environment'a göre default flag değerleri"""
 
         if self.environment == Environment.PRODUCTION:
@@ -313,7 +313,7 @@ class FeatureFlagManager:
                 FeatureFlag.PERSONALIZED_RANKING: False,  # Experimental
             }
 
-        elif self.environment == Environment.STAGING:
+        if self.environment == Environment.STAGING:
             return {
                 # Staging: Test new features
                 FeatureFlag.SEMANTIC_SEARCH: True,
@@ -336,18 +336,18 @@ class FeatureFlagManager:
                 FeatureFlag.PERSONALIZED_RANKING: True,  # Test experimental
             }
 
-        else:  # DEVELOPMENT or TEST
-            return {
-                # Development: All features enabled for testing
-                flag: True
-                for flag in FeatureFlag
-            }
+        # DEVELOPMENT or TEST
+        return {
+            # Development: All features enabled for testing
+            flag: True
+            for flag in FeatureFlag
+        }
 
     def _load_configuration(self):
         """Configuration dosyasından ayarları yükle"""
         try:
             if os.path.exists(self.config_file):
-                with open(self.config_file, "r", encoding="utf-8") as f:
+                with open(self.config_file, encoding="utf-8") as f:
                     config = json.load(f)
 
                 # Load feature flags
@@ -375,7 +375,7 @@ class FeatureFlagManager:
             print(f"Warning: Failed to load configuration from {self.config_file}: {e}")
             print("Using default configuration")
 
-    def _load_quality_thresholds(self, config: Dict[str, Any]):
+    def _load_quality_thresholds(self, config: dict[str, Any]):
         """Quality threshold'ları yükle"""
         if "language" in config:
             self.quality_thresholds.min_language_score = config["language"].get(
@@ -418,7 +418,7 @@ class FeatureFlagManager:
                 "difficulty_weight", self.quality_thresholds.difficulty_weight
             )
 
-    def _load_performance_config(self, config: Dict[str, Any]):
+    def _load_performance_config(self, config: dict[str, Any]):
         """Performance config'i yükle"""
         if "cache" in config:
             self.performance_config.cache_ttl_seconds = config["cache"].get(
@@ -447,7 +447,7 @@ class FeatureFlagManager:
                 "rate_limiting"
             ].get("per_user", self.performance_config.requests_per_minute_per_user)
 
-    def _load_ab_tests(self, config: List[Dict[str, Any]]):
+    def _load_ab_tests(self, config: list[dict[str, Any]]):
         """A/B test'leri yükle"""
         for test_config in config:
             try:
@@ -493,7 +493,7 @@ class FeatureFlagManager:
 
     def get_ab_test_variant(
         self, test_id: str, user_id: str
-    ) -> Optional[ABTestVariant]:
+    ) -> ABTestVariant | None:
         """
         Kullanıcı için A/B test varyantını al
         """
@@ -549,7 +549,7 @@ class FeatureFlagManager:
         with open(self.config_file, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2, ensure_ascii=False)
 
-    def get_config_summary(self) -> Dict[str, Any]:
+    def get_config_summary(self) -> dict[str, Any]:
         """Konfigürasyon özetini al"""
         return {
             "environment": self.environment.value,
@@ -574,7 +574,7 @@ class FeatureFlagManager:
 
 
 # Global instance
-_feature_flag_manager: Optional[FeatureFlagManager] = None
+_feature_flag_manager: FeatureFlagManager | None = None
 
 
 def get_feature_flag_manager() -> FeatureFlagManager:
@@ -595,7 +595,7 @@ def get_feature_flag_manager() -> FeatureFlagManager:
 
 
 def initialize_feature_flags(
-    environment: Environment, config_file: Optional[str] = None
+    environment: Environment, config_file: str | None = None
 ):
     """Feature flag manager'ı initialize et"""
     global _feature_flag_manager
