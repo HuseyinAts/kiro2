@@ -657,6 +657,43 @@ class TestRBACManager:
         assert result.granted is True
 
     @pytest.mark.asyncio
+    async def test_check_permission_role_only_grants_without_rbac_assignment(self):
+        ctx = AuthorizationContext(
+            user_id="jwt_admin_no_rbac_row",
+            resource_type="general",
+            action=None,
+            required_roles=["admin", "super_admin"],
+            user_role="admin",
+        )
+        result = await self.rbac.check_permission(ctx)
+        assert result.granted is True
+
+    @pytest.mark.asyncio
+    async def test_check_permission_role_only_denies_wrong_role(self):
+        ctx = AuthorizationContext(
+            user_id="student_only",
+            resource_type="general",
+            action=None,
+            required_roles=["admin"],
+            user_role="student",
+        )
+        result = await self.rbac.check_permission(ctx)
+        assert result.granted is False
+
+    @pytest.mark.asyncio
+    async def test_check_permission_role_only_missing_user_role_denied(self):
+        ctx = AuthorizationContext(
+            user_id="norole_ctx",
+            resource_type="general",
+            action=None,
+            required_roles=["admin"],
+            user_role=None,
+        )
+        result = await self.rbac.check_permission(ctx)
+        assert result.granted is False
+        assert "user_role" in result.reason.lower()
+
+    @pytest.mark.asyncio
     async def test_check_permission_denied_insufficient(self):
         # Create an isolated custom role with only report:read — no exam:delete, no parent roles
         from core.rbac_system import Role, RoleType

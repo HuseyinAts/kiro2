@@ -43,6 +43,14 @@ def _get_value(obj) -> str:
     return str(obj)
 
 
+def _auth_role_slug(role: Any) -> str:
+    """Normalize JWT / user.role (enum or str) to a lowercase slug."""
+    if role is None:
+        return ""
+    raw = getattr(role, "value", role)
+    return str(raw).strip().lower()
+
+
 # ==================== RBAC ENUMS ====================
 
 
@@ -969,6 +977,66 @@ class RBACManager:
             )
 
             try:
+                req_roles = [
+                    str(r).strip().lower()
+                    for r in (auth_context.required_roles or [])
+                    if str(r).strip()
+                ]
+                req_perms = [
+                    str(p).strip()
+                    for p in (auth_context.required_permissions or [])
+                    if str(p).strip()
+                ]
+
+                # Role-only checks (AuthorizationDependency + require_*_role):
+                # JWT/ORM role must satisfy required_roles without RBAC row assignments.
+                if req_roles and not req_perms:
+                    uslug = _auth_role_slug(auth_context.user_role)
+                    if not uslug:
+                        result = AuthorizationResult(
+                            granted=False,
+                            reason="Role check: user_role missing on context",
+                            context=auth_context,
+                        )
+                        ctx.add_annotation("Permission denied: role check without user_role")
+                        await self._log_audit_event(
+                            AuditAction.PERMISSION_DENIED,
+                            auth_context.user_id,
+                            {"reason": "role_check_no_user_role", "required_roles": req_roles},
+                        )
+                        return result
+                    if uslug in req_roles:
+                        result = AuthorizationResult(
+                            granted=True,
+                            reason="Role check passed",
+                            matched_roles=[uslug],
+                            context=auth_context,
+                        )
+                        ctx.add_annotation("Role-only authorization granted")
+                        await self._log_audit_event(
+                            AuditAction.PERMISSION_GRANTED,
+                            auth_context.user_id,
+                            {"roles": [uslug], "mode": "required_roles"},
+                        )
+                        return result
+                    result = AuthorizationResult(
+                        granted=False,
+                        reason=f"Role check failed: {uslug!r} not in {req_roles!r}",
+                        matched_roles=[uslug],
+                        context=auth_context,
+                    )
+                    ctx.add_annotation("Permission denied: role check failed")
+                    await self._log_audit_event(
+                        AuditAction.PERMISSION_DENIED,
+                        auth_context.user_id,
+                        {
+                            "reason": "role_check_failed",
+                            "user_role": uslug,
+                            "required_roles": req_roles,
+                        },
+                    )
+                    return result
+
                 # Check cache first
                 cache_key = self._get_cache_key(auth_context)
                 cached_result = self._get_cached_permission(cache_key)

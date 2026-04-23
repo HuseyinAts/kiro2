@@ -18,7 +18,7 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -129,6 +129,12 @@ async def sync_progress(
     Upserts into learning_progress_daily using (user_id, log_date, subject, activity_type) unique key.
     Frontend only checks HTTP status — response body is informational.
     """
+    if str(progress.userId).strip() != str(current_user.id).strip():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="userId must match authenticated user",
+        )
+
     student_id = str(current_user.id)
 
     # Determine log_date from lastActivity (date part only)
