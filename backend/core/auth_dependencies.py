@@ -324,9 +324,15 @@ def require_role(*roles: str) -> AuthorizationDependency:
 
     RBAC rol id'leri küçük harf (örn. ``admin``, ``teacher``). ``"ADMIN"`` gibi
     büyük harf değerler otomatik küçültülür.
+
+    ``admin`` gerektiren yüzeylerde ``super_admin`` de kabul edilir (işletim parity).
     """
     normalized = [str(r).strip().lower() for r in roles if str(r).strip()]
-    return AuthorizationDependency(required_roles=normalized or ["admin"])
+    if not normalized:
+        normalized = ["admin"]
+    if "admin" in normalized and "super_admin" not in normalized:
+        normalized = [*normalized, "super_admin"]
+    return AuthorizationDependency(required_roles=normalized)
 
 
 def require_permission(*permissions: str) -> AuthorizationDependency:

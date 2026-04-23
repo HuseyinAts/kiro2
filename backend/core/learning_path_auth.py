@@ -253,12 +253,16 @@ def require_role(*allowed_roles: UserRole):
             # Role verified, proceed
             ...
     """
+    expanded = frozenset(allowed_roles)
+    if UserRole.ADMIN in expanded:
+        expanded = expanded | {UserRole.SUPER_ADMIN}
+    required_list = tuple(expanded)
 
     async def role_checker(current_user=Depends(get_current_user_from_token)) -> bool:
-        if current_user.role not in allowed_roles:
+        if current_user.role not in expanded:
             logger.warning(
                 f"Role denied: User {getattr(current_user, 'id', getattr(current_user, 'sub', '?'))} has role '{current_user.role.value}', "
-                f"required: {[r.value for r in allowed_roles]}"
+                f"required: {[r.value for r in required_list]}"
             )
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -266,7 +270,7 @@ def require_role(*allowed_roles: UserRole):
                     "error": "insufficient_role",
                     "message": "Bu işlem için yetkiniz yok",
                     "message_en": "Insufficient role for this operation",
-                    "required_roles": [r.value for r in allowed_roles],
+                    "required_roles": [r.value for r in required_list],
                 },
             )
 
