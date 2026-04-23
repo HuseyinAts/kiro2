@@ -115,12 +115,16 @@ async def detect_learning_style(
     questionnaire: QuestionnaireRequest | None = None,
     force_recalculation: bool = False,
     current_user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Hibrit öğrenme stili tespiti
     VARK + Felder-Silverman = 64 farklı profil
     """
     try:
+        # IDOR: GET ile aynı sözleşme — path'teki student_id için yetki (F4 Dalga B)
+        await verify_student_access(student_id, current_user, db)
+
         questionnaire_responses = questionnaire.responses if questionnaire else None
 
         profile = await revolutionary_features_service.detect_hybrid_learning_style(
