@@ -2,8 +2,10 @@
  * Performans Trendi Tab
  * Performance Trend Analysis Tab
  */
-import { Box, Typography, Alert } from '@mui/material';
+import { Box, Alert } from '@mui/material';
 import * as React from 'react';
+
+import { AnalysisTabPlaceholder } from './AnalysisTabPlaceholder';
 
 interface PerformanceTrendTabProps {
   trend: any;
@@ -20,13 +22,7 @@ export const PerformanceTrendTab: React.FC<PerformanceTrendTabProps> = ({ trend 
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        📈 Performans Trendi
-      </Typography>
-      <Typography variant="body2" color="textSecondary">
-        Zaman içinde performans gelişim sonuçları burada gösterilecek
-      </Typography>
-      {/* TODO: Implement full performance trend analysis UI */}
+      <AnalysisTabPlaceholder title="Performans trendi" />
     </Box>
   );
 };

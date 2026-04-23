@@ -114,6 +114,23 @@ ON CONFLICT (email) DO NOTHING
 """
 
 
+# GF6w / admin soru ekleme: soru_bankasi_service MATEMATIK topic_hierarchy satırı ister (taze CI DB).
+MVP_MAT_TOPIC_ID = str(
+    uuid.uuid5(uuid.NAMESPACE_DNS, "kiro2.mvp.topic.MVP.MAT.GOLDEN")
+)
+ENSURE_TOPIC_SQL = """
+INSERT INTO topic_hierarchy (
+    id, level, parent_id, code, name_tr, name_en,
+    subject_area, osym_relevance, osym_frequency, total_questions,
+    average_difficulty, is_active, created_at, updated_at
+) VALUES (
+    %s, 1, NULL, 'MVP.MAT.GOLDEN', 'MVP Matematik (Golden seed)',
+    'MVP Math Golden', 'MATEMATIK', 0, 0, 0, 0, true, NOW(), NOW()
+)
+ON CONFLICT (code) DO NOTHING
+"""
+
+
 PROFILE_INSERT_SQL = """
 INSERT INTO student_profiles (
     id, user_id, grade_level, veli_onay,
@@ -180,6 +197,11 @@ def main():
         else:
             print(f"  CREATE: {user['email']} ({user['role']})")
         created += 1
+
+    # Topic row for admin question create (K4 / GF6w) on empty topic_hierarchy DBs
+    cur.execute(ENSURE_TOPIC_SQL, (MVP_MAT_TOPIC_ID,))
+    if cur.rowcount:
+        print(f"  CREATE: topic_hierarchy MVP.MAT.GOLDEN ({MVP_MAT_TOPIC_ID})")
 
     conn.commit()
     cur.close()

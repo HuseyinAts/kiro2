@@ -34,6 +34,7 @@ ROUTER_MAPPING = {
     "api.auth": ("auth", "api.auth"),
     "api.enhanced_auth_api": ("auth", "api.enhanced_auth_api"),
     "api.two_factor_auth_api": ("auth", "api.two_factor_auth_api"),
+    "api.billing_api": ("security", "api.billing_api"),
     "api.kvkk_consent_api": ("security", "api.kvkk_consent_api"),
     "api.kvkk_privacy_api": ("security", "api.kvkk_privacy_api"),
     "api.rate_limit_api": ("security", "api.rate_limit_api"),

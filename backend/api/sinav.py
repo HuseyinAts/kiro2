@@ -14,7 +14,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.osym_exam_engine import ExamStatus, osym_exam_engine
@@ -64,6 +64,17 @@ class SaveAnswerRequest(BaseModel):
         min_length=1,
         description="Soru ID (non-empty, UUID bekleniyor)",
     )
+
+    @field_validator("question_id", mode="before")
+    @classmethod
+    def question_id_strip_reject_blank(cls, v: object) -> str:
+        """Boş string ve yalnızca boşluk kabul edilmez (K3 / GF3w)."""
+        if v is None:
+            raise ValueError("question_id gerekli")
+        s = str(v).strip()
+        if not s:
+            raise ValueError("question_id bos olamaz")
+        return s
     selected_answer: str | None = Field(
         None, description="Seçilen cevap (A, B, C, D, E)"
     )

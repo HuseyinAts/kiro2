@@ -2,8 +2,10 @@
  * ÖSYM/ETS Karşılaştırma Tab
  * ÖSYM/ETS Comparison Tab
  */
-import { Box, Typography, Alert } from '@mui/material';
+import { Box, Alert } from '@mui/material';
 import * as React from 'react';
+
+import { AnalysisTabPlaceholder } from './AnalysisTabPlaceholder';
 
 interface ComparisonTabProps {
   analiz: any;
@@ -20,13 +22,7 @@ export const ComparisonTab: React.FC<ComparisonTabProps> = ({ analiz }) => {
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        📊 ÖSYM/ETS Karşılaştırma
-      </Typography>
-      <Typography variant="body2" color="textSecondary">
-        Standart test karşılaştırma sonuçları burada gösterilecek
-      </Typography>
-      {/* TODO: Implement full ÖSYM/ETS comparison UI */}
+      <AnalysisTabPlaceholder title="ÖSYM / standart test karşılaştırması" />
     </Box>
   );
 };

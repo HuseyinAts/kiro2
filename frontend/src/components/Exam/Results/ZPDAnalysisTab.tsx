@@ -2,8 +2,10 @@
  * ZPD Analizi Tab
  * Zone of Proximal Development Analysis Tab
  */
-import { Box, Typography, Alert } from '@mui/material';
+import { Box, Alert } from '@mui/material';
 import * as React from 'react';
+
+import { AnalysisTabPlaceholder } from './AnalysisTabPlaceholder';
 
 interface ZPDAnalysisTabProps {
   analiz: any;
@@ -20,13 +22,7 @@ export const ZPDAnalysisTab: React.FC<ZPDAnalysisTabProps> = ({ analiz }) => {
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        🎯 ZPD (Zone of Proximal Development) Analizi
-      </Typography>
-      <Typography variant="body2" color="textSecondary">
-        Yakınsal Gelişim Alanı analiz sonuçları burada gösterilecek
-      </Typography>
-      {/* TODO: Implement full ZPD analysis UI */}
+      <AnalysisTabPlaceholder title="ZPD (yakınsal gelişim alanı) analizi" />
     </Box>
   );
 };

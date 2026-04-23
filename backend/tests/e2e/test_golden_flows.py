@@ -398,6 +398,52 @@ def test_gf3c_exam_session_save_answer_smoke(client: httpx.Client):
 
 
 # ---------------------------------------------------------------------------
+# GF3d: J4 — sınavı tamamla (complete) smoke
+# ---------------------------------------------------------------------------
+
+
+def test_gf3d_exam_session_complete_smoke(client: httpx.Client):
+    """J4: create → start → POST /complete returns 200 + performans gövdesi."""
+    token = _login(client, STUDENT)
+    headers = _auth_headers(token)
+    session_id = _create_exam_session(client, token)
+    assert session_id is not None
+
+    comp = client.post(
+        f"/api/v1/osym-exam/{session_id}/complete",
+        headers=headers,
+    )
+    assert comp.status_code == 200, (
+        f"GF3d complete HTTP {comp.status_code}: {comp.text[:400]}"
+    )
+    body = comp.json()
+    assert "total_questions" in body or "net_score" in body, (
+        f"GF3d unexpected body keys: {list(body.keys())[:20]}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# GF1x: J1 — Bearer çıkış sonrası /me 401
+# ---------------------------------------------------------------------------
+
+
+def test_gf1x_logout_invalidates_bearer_token(client: httpx.Client):
+    """Logout (/cikis) token'ı blacklist'ler; aynı Bearer ile /me reddedilir."""
+    token = _login(client, STUDENT)
+    headers = _auth_headers(token)
+    me = client.get("/api/v1/auth/me", headers=headers)
+    assert me.status_code == 200, f"GF1x pre-logout /me: {me.text[:200]}"
+
+    lo = client.post("/api/v1/auth/cikis", headers=headers)
+    assert lo.status_code == 200, f"GF1x logout: {lo.status_code} {lo.text[:200]}"
+
+    me2 = client.get("/api/v1/auth/me", headers=headers)
+    assert me2.status_code == 401, (
+        f"GF1x post-logout /me expected 401, got {me2.status_code}: {me2.text[:200]}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # GF1w: save-answer must actually update BKT state (not just return 200)
 # ---------------------------------------------------------------------------
 

@@ -373,10 +373,10 @@ async def soru_ekle(
             },
             "message": "Soru başarıyla eklendi",
         }
-    except ValueError:
+    except ValueError as ve:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+            detail=str(ve) or "Islem basarisiz. Lutfen tekrar deneyin.",
         )
     except HTTPException:
         raise

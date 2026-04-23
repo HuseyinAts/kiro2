@@ -591,6 +591,13 @@ class OSYMExamEngine:
             bool: Kaydetme başarı durumu
         """
         try:
+            if not question_id or not str(question_id).strip():
+                logger.warning(
+                    "save_answer: bos question_id reddedildi",
+                    extra_data={"session_id": session_id},
+                )
+                return False
+
             session_data = await self.get_session_data(session_id)
             if not session_data:
                 return False

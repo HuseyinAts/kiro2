@@ -1,8 +1,8 @@
 /**
  * Öneri Servisi - Kişiselleştirilmiş içerik önerileri
  *
- * Not: Bu servis şu an stub implementation olarak çalışmaktadır.
- * Backend API entegrasyonu ileride yapılacaktır.
+ * Öncelik: `POST /api/v1/recommendations` (Chroma / içerik motoru).
+ * Yedek: `GET .../learning-style/recommendations/{id}`, ardından mock.
  */
 
 import { apiClient } from './apiClient';
@@ -49,6 +49,34 @@ class RecommendationService {
   /**
    * Learning-style API yanıtını dashboard kartlarına dönüştürür
    */
+  private mapFromContentRecommendationApi(
+    raw: {
+      recommendations?: Array<{
+        content_id: string
+        content_preview: string
+        score: number
+        metadata?: Record<string, unknown>
+        recommendation_type?: string
+      }>
+    },
+    filter?: RecommendationFilter,
+  ): Recommendation[] {
+    const list = raw.recommendations || [];
+    let rows: Recommendation[] = list.map((r, i) => ({
+      id: r.content_id || `rec-chroma-${i}`,
+      tip: r.recommendation_type || 'content',
+      title: r.content_preview?.slice(0, 200) || 'Önerilen içerik',
+      source: 'İçerik önerisi (KIRO2)',
+      match_score: Math.min(1, Math.max(0, r.score)),
+      difficulty: filter?.difficulty || 'orta',
+      tags: r.metadata?.subject ? [String(r.metadata.subject)] : ['genel'],
+    }));
+    if (filter?.limit) {
+      rows = rows.slice(0, filter.limit);
+    }
+    return rows;
+  }
+
   private mapFromLearningStylePayload(
     data: {
       recommended_content_types?: string[];
@@ -89,6 +117,37 @@ class RecommendationService {
    * Öğrenci için kişiselleştirilmiş önerileri getir
    */
   async getRecommendations(studentId: string, filter?: RecommendationFilter): Promise<Recommendation[]> {
+    try {
+      const chromaResp = await apiClient.post(
+        '/api/v1/recommendations/',
+        {
+          user_id: studentId,
+          limit: filter?.limit ?? 10,
+          subject_filter: filter?.subject?.toUpperCase() || 'MATEMATIK',
+          ensure_diversity: true,
+        },
+      );
+      if (chromaResp.status === 200 && chromaResp.data && typeof chromaResp.data === 'object') {
+        const mapped = this.mapFromContentRecommendationApi(
+          chromaResp.data as {
+            recommendations?: Array<{
+              content_id: string
+              content_preview: string
+              score: number
+              metadata?: Record<string, unknown>
+              recommendation_type?: string
+            }>
+          },
+          filter,
+        );
+        if (mapped.length > 0) {
+          return mapped;
+        }
+      }
+    } catch {
+      /* 503 / ağ — learning-style veya mock’a düş */
+    }
+
     try {
       const response = await apiClient.get(
         `/api/v1/learning-style/recommendations/${studentId}`,
@@ -136,8 +195,12 @@ class RecommendationService {
    */
   async markCompleted(studentId: string, recommendationId: string): Promise<void> {
     try {
-      await apiClient.post(`/api/v1/recommendations/${studentId}/complete`, {
-        recommendation_id: recommendationId,
+      await apiClient.post('/api/v1/recommendations/interaction', {
+        user_id: studentId,
+        content_id: recommendationId,
+        interaction_type: 'complete',
+        duration_seconds: 0,
+        metadata: {},
       });
     } catch (error) {
       console.error('Öneri tamamlama hatası:', error);

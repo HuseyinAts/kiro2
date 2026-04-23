@@ -206,6 +206,7 @@ jobs:
           JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
           ENVIRONMENT=test
           DEBUG=false
+          BILLING_WEBHOOK_SECRET=ci-test-billing-webhook-secret
           EOF
 
       - name: Run database migrations
@@ -257,6 +258,11 @@ jobs:
             tests/e2e/test_golden_flows.py::test_gf3_exam_configs_list \
             tests/e2e/test_golden_flows.py::test_gf3b_osym_subjects_reachable \
             tests/e2e/test_golden_flows.py::test_gf3c_exam_session_save_answer_smoke \
+            tests/e2e/test_golden_flows.py::test_gf1x_logout_invalidates_bearer_token \
+            tests/e2e/test_golden_flows.py::test_gf3d_exam_session_complete_smoke \
+            tests/e2e/test_golden_flows.py::test_gf6w_admin_question_create_returns_success \
+            tests/e2e/test_golden_flows.py::test_gf1w_save_answer_updates_mastery \
+            tests/e2e/test_golden_flows.py::test_gf3w_save_answer_rejects_empty_question_id \
             -v --tb=short
           kill $(cat /tmp/uvicorn_p0_golden.pid) 2>/dev/null || true
           wait $(cat /tmp/uvicorn_p0_golden.pid) 2>/dev/null || true

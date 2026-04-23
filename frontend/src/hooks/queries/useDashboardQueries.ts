@@ -1,20 +1,16 @@
 /**
- * Dashboard-related React Query Hooks (EXAMPLE)
- *
- * Provides React Query hooks for dashboard data
- * NOTE: This is an example pattern. Uncomment and implement when dashboardService exists.
+ * Dashboard-related React Query hooks — `student-dashboard` API.
  */
 
 import { useQuery } from 'react-query';
 
-// import { dashboardService } from '../../services/dashboardService'
 import { queryConfig } from '../../config/reactQuery';
+import { dashboardService } from '../../services/dashboardService';
 import { useAuthStore } from '../../store';
 import { queryKeys } from '../useQueryKeys';
 
 /**
- * Query: Get dashboard stats (EXAMPLE)
- * TODO: Uncomment when dashboardService is implemented
+ * Query: Get dashboard stats
  */
 export const useDashboardStats = () => {
   const userId = useAuthStore((state) => state.user?.id);
@@ -22,16 +18,7 @@ export const useDashboardStats = () => {
   return useQuery(
     queryKeys.dashboard.stats(userId!),
     async () => {
-      // const stats = await dashboardService.getStats(userId!)
-      // return stats
-
-      // Placeholder
-      return {
-        tamamlanan_dersler: 0,
-        toplam_dersler: 0,
-        tamamlanan_sinavlar: 0,
-        ortalama_puan: 0,
-      };
+      return dashboardService.getStats(userId!);
     },
     {
       enabled: !!userId,
@@ -41,8 +28,7 @@ export const useDashboardStats = () => {
 };
 
 /**
- * Query: Get recent activity (EXAMPLE)
- * TODO: Uncomment when dashboardService is implemented
+ * Query: Recent sınav geçmişi (aktivite özeti)
  */
 export const useRecentActivity = () => {
   const userId = useAuthStore((state) => state.user?.id);
@@ -50,11 +36,7 @@ export const useRecentActivity = () => {
   return useQuery(
     queryKeys.dashboard.recent(userId!),
     async () => {
-      // const activity = await dashboardService.getRecentActivity(userId!)
-      // return activity
-
-      // Placeholder
-      return [];
+      return dashboardService.getRecentActivity(userId!);
     },
     {
       enabled: !!userId,
@@ -64,8 +46,7 @@ export const useRecentActivity = () => {
 };
 
 /**
- * Query: Get notifications (EXAMPLE)
- * TODO: Uncomment when dashboardService is implemented
+ * Query: Bildirimler
  */
 export const useNotifications = () => {
   const userId = useAuthStore((state) => state.user?.id);
@@ -73,11 +54,7 @@ export const useNotifications = () => {
   return useQuery(
     queryKeys.dashboard.notifications(userId!),
     async () => {
-      // const notifications = await dashboardService.getNotifications(userId!)
-      // return notifications
-
-      // Placeholder
-      return [];
+      return dashboardService.getNotifications(userId!);
     },
     {
       enabled: !!userId,
