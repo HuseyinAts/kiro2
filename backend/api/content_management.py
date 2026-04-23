@@ -8,29 +8,21 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
 
-from core.dependencies import get_current_user
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 
 # Mock implementations for testing
 router = APIRouter(prefix="/api/v1/content-management", tags=["İçerik Yönetimi"])
 
-
-# Mock user class
-class MockUser:
-    def __init__(self):
-        self.id = "mock-admin-id"
-        self.role = "admin"
-        self.email = "admin@test.com"
-        self.full_name = "Mock Admin"
-
-
-# Removed duplicate - use from core.dependencies instead
+_CONTENT_MGMT_STAFF = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
 
 
 async def admin_yetki_kontrolu(
-    current_user: MockUser = Depends(get_current_user),
-) -> MockUser:
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> AuthenticatedUser:
     """Admin yetkisi kontrolü"""
-    if current_user.role not in ["admin", "teacher"]:
+    if current_user.role not in _CONTENT_MGMT_STAFF:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Bu işlem için admin veya öğretmen yetkisi gerekli",
@@ -51,7 +43,7 @@ async def soru_bankasi_listele(
     ),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
     sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Soru bankasındaki soruları listele ve filtrele"""
     try:
@@ -100,7 +92,7 @@ async def soru_bankasi_listele(
 
 @router.post("/questions", response_model=dict[str, Any])
 async def soru_ekle(
-    soru_data: dict[str, Any], current_user: MockUser = Depends(admin_yetki_kontrolu)
+    soru_data: dict[str, Any], current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu)
 ):
     """Soru bankasına yeni soru ekle"""
     try:
@@ -149,7 +141,7 @@ async def soru_ekle(
 
 @router.get("/questions/{soru_id}", response_model=dict[str, Any])
 async def soru_detay(
-    soru_id: str, current_user: MockUser = Depends(admin_yetki_kontrolu)
+    soru_id: str, current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu)
 ):
     """Belirli bir sorunun detaylarını getir"""
     try:
@@ -193,7 +185,7 @@ async def soru_detay(
 async def soru_guncelle(
     soru_id: str,
     soru_data: dict[str, Any],
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Mevcut soruyu güncelle"""
     try:
@@ -222,7 +214,7 @@ async def soru_guncelle(
 
 @router.delete("/questions/{soru_id}", response_model=dict[str, Any])
 async def soru_sil(
-    soru_id: str, current_user: MockUser = Depends(admin_yetki_kontrolu)
+    soru_id: str, current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu)
 ):
     """Soruyu sil (soft delete)"""
     try:
@@ -259,7 +251,7 @@ async def egitim_materyalleri_listele(
     onay_durumu: str | None = Query(None, description="Onay durumu"),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
     sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Eğitim materyallerini listele ve filtrele"""
     try:
@@ -305,7 +297,7 @@ async def egitim_materyalleri_listele(
 @router.post("/educational", response_model=dict[str, Any])
 async def egitim_materyali_ekle(
     materyal_data: dict[str, Any],
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Yeni eğitim materyali ekle"""
     try:
@@ -355,7 +347,7 @@ async def egitim_materyali_ekle(
 
 @router.get("/educational/{materyal_id}", response_model=dict[str, Any])
 async def egitim_materyali_detay(
-    materyal_id: str, current_user: MockUser = Depends(admin_yetki_kontrolu)
+    materyal_id: str, current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu)
 ):
     """Belirli bir eğitim materyalinin detaylarını getir"""
     try:
@@ -395,7 +387,7 @@ async def egitim_materyali_detay(
 async def egitim_materyali_guncelle(
     materyal_id: str,
     materyal_data: dict[str, Any],
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Mevcut eğitim materyalini güncelle"""
     try:
@@ -424,7 +416,7 @@ async def egitim_materyali_guncelle(
 
 @router.delete("/educational/{materyal_id}", response_model=dict[str, Any])
 async def egitim_materyali_sil(
-    materyal_id: str, current_user: MockUser = Depends(admin_yetki_kontrolu)
+    materyal_id: str, current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu)
 ):
     """Eğitim materyalini sil (soft delete)"""
     try:
@@ -452,7 +444,7 @@ async def egitim_materyali_sil(
 async def soru_onay_durumu_guncelle(
     soru_id: str,
     onay_data: dict[str, Any],
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Soru onay durumunu güncelle"""
     try:
@@ -496,7 +488,7 @@ async def soru_onay_durumu_guncelle(
 async def egitim_materyali_onay_durumu_guncelle(
     materyal_id: str,
     onay_data: dict[str, Any],
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Eğitim materyali onay durumunu güncelle"""
     try:
@@ -536,7 +528,7 @@ async def egitim_materyali_onay_durumu_guncelle(
 @router.post("/questions/bulk-upload", response_model=dict[str, Any])
 async def toplu_soru_yukle(
     sorular_data: list[dict[str, Any]],
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Toplu soru yükleme"""
     try:
@@ -580,7 +572,7 @@ async def toplu_soru_yukle(
 @router.post("/educational/bulk-upload", response_model=dict[str, Any])
 async def toplu_egitim_materyali_yukle(
     materyaller_data: list[dict[str, Any]],
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Toplu eğitim materyali yükleme"""
     try:
@@ -626,7 +618,7 @@ async def toplu_egitim_materyali_yukle(
 
 @router.get("/categories", response_model=dict[str, Any])
 async def icerik_kategorileri_getir(
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Mevcut içerik kategorilerini getir"""
     try:
@@ -669,7 +661,7 @@ async def icerik_kategorileri_getir(
 @router.post("/categories", response_model=dict[str, Any])
 async def icerik_kategorisi_ekle(
     kategori_data: dict[str, Any],
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Yeni içerik kategorisi ekle"""
     try:
@@ -717,7 +709,7 @@ async def icerik_ara(
     ),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
     sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """İçerik arama (sorular ve eğitim materyalleri)"""
     try:
@@ -760,7 +752,7 @@ async def icerik_ara(
 
 @router.get("/filter-options", response_model=dict[str, Any])
 async def filtre_secenekleri_getir(
-    current_user: MockUser = Depends(admin_yetki_kontrolu),
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Filtreleme için mevcut seçenekleri getir"""
     try:
@@ -803,7 +795,7 @@ async def filtre_secenekleri_getir(
 
 
 @router.get("/statistics", response_model=dict[str, Any])
-async def icerik_istatistikleri(current_user: MockUser = Depends(admin_yetki_kontrolu)):
+async def icerik_istatistikleri(current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu)):
     """İçerik yönetimi istatistikleri"""
     try:
         istatistikler = {

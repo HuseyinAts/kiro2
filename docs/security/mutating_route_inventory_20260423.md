@@ -60,8 +60,11 @@ cd backend && rg "@router\.(post|put|patch|delete)\(" api --glob "*.py" -c
 | `api.video_solution` | silme / streaming oluşturma / onay | Yükleyen veya `ADMIN`\|`SUPER_ADMIN` |
 | `api.bionic_reading` | `/stats`, `/cache` (clear_all) | `ADMIN`\|`SUPER_ADMIN` |
 | `api.content_api` | makale PUT/DELETE | Yazar veya `ADMIN`\|`SUPER_ADMIN` |
+| `api.enhanced_user_management_api` | `require_admin` / `require_admin_or_self` | `UserRole` (`ADMIN`\|`SUPER_ADMIN`); self `str(id)` eşlemesi |
+| `api.quality_gates_api` | override onay / sil | Onay: `TEACHER`\|`ADMIN`\|`SUPER_ADMIN`; sil: talep eden veya `ADMIN`\|`SUPER_ADMIN` |
+| `api.content_management` | tüm `admin_yetki_kontrolu` uçları | `MockUser`/string liste kaldırıldı; `AuthenticatedUser` + `UserRole` staff |
 
-Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`, `tests/unit/test_exam_performance_session_guard.py`, `tests/unit/test_ferpa_coppa_guards.py`, `tests/unit/test_analytics_student_access.py`.
+Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`, `tests/unit/test_exam_performance_session_guard.py`, `tests/unit/test_ferpa_coppa_guards.py`, `tests/unit/test_analytics_student_access.py`, `tests/unit/test_enhanced_user_management_auth.py`.
 
 ## Sonraki adım
 

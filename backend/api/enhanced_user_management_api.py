@@ -11,7 +11,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_current_user, get_db
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user, get_db
 from core.error_context import (
     SpanKind,
     add_database_query_to_context,
@@ -71,19 +71,19 @@ router = APIRouter(prefix="/api/v1/users", tags=["Enhanced User Management"])
 
 @error_context_decorator("user_authorization_check")
 async def require_admin_or_self(
-    user_id: str, current_user: User = Depends(get_current_user)
-) -> User:
+    user_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+) -> AuthenticatedUser:
     """Enhanced authorization check with error context"""
 
     # Add context annotations
     annotate_error_context(f"Checking authorization for user {user_id}")
 
     # Check if user is admin or accessing their own data
-    if current_user.role in ["admin", "super_admin"]:
+    if current_user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
         annotate_error_context("Admin access granted")
         return current_user
 
-    if current_user.id == user_id:
+    if str(current_user.id) == str(user_id):
         annotate_error_context("Self-access granted")
         return current_user
 
@@ -100,10 +100,12 @@ async def require_admin_or_self(
 
 
 @trace_operation("admin_check", SpanKind.INTERNAL)
-async def require_admin(current_user: User = Depends(get_current_user)) -> User:
+async def require_admin(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> AuthenticatedUser:
     """Enhanced admin check with tracing"""
 
-    if (current_user.role or "").lower() not in ["admin", "super_admin"]:
+    if current_user.role not in (UserRole.ADMIN, UserRole.SUPER_ADMIN):
         # Use error factory for consistent error creation
         raise ErrorFactory.authorization_error(
             required_role="admin",
@@ -133,7 +135,7 @@ async def list_users_enhanced(
     page_size: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
     search: str | None = Query(None, description="Arama terimi"),
     role_filter: str | None = Query(None, description="Rol filtresi"),
-    current_user: User = Depends(require_admin),
+    current_user: AuthenticatedUser = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ) -> PaginatedResponse[list[UserResponse]]:
     """
@@ -300,7 +302,7 @@ async def list_users_enhanced(
 @error_context_decorator("create_user", capture_args=True)
 @trace_operation("api.users.create", SpanKind.SERVER)
 async def create_user_enhanced(
-    user_data: UserCreate, request: Request, current_user: User = Depends(require_admin)
+    user_data: UserCreate, request: Request, current_user: AuthenticatedUser = Depends(require_admin)
 ) -> SuccessResponse[UserResponse]:
     """
     Enhanced user creation with comprehensive error handling
@@ -489,7 +491,7 @@ async def create_user_enhanced(
 @router.get("/export-data")
 async def export_user_data(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> JSONResponse:
     """Export user data — real implementation.
     Frontend: ModernSettingsPage.tsx (calls response.blob() for download)
@@ -619,7 +621,7 @@ async def export_user_data(
 @error_context_decorator("get_user_detail", capture_args=True)
 @trace_operation("api.users.get_detail", SpanKind.SERVER)
 async def get_user_detail_enhanced(
-    user_id: str, request: Request, current_user: User = Depends(require_admin_or_self)
+    user_id: str, request: Request, current_user: AuthenticatedUser = Depends(require_admin_or_self)
 ) -> SuccessResponse[UserResponse]:
     """
     Enhanced user detail retrieval with comprehensive error handling
@@ -769,7 +771,7 @@ async def get_user_detail_enhanced(
     description="Get error monitoring and system health status",
 )
 async def get_error_monitoring_health(
-    request: Request, current_user: User = Depends(require_admin)
+    request: Request, current_user: AuthenticatedUser = Depends(require_admin)
 ) -> SuccessResponse[dict[str, Any]]:
     """Get error monitoring and system health status"""
 

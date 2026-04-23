@@ -40,6 +40,7 @@ from api.schemas.quality_gates import (
 )
 from core.dependencies import (
     AuthenticatedUser,
+    UserRole,
     get_current_user,  # fixed: was auth_dependencies (no blacklist)
 )
 from core.structured_logger import get_logger
@@ -47,6 +48,10 @@ from core.structured_logger import get_logger
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1/quality-gates", tags=["quality-gates"])
+
+_OVERRIDE_APPROVERS = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
 
 # In-memory storage for results (will be replaced with database)
 _pipeline_results: dict[str, dict[str, Any]] = {}
@@ -446,9 +451,7 @@ async def approve_override(
             detail=f"Override not found: {override_id}",
         )
 
-    # Check if user has admin role
-    user_role = current_user.role.value
-    if user_role not in ["admin", "teacher"]:
+    if current_user.role not in _OVERRIDE_APPROVERS:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only admins and teachers can approve overrides",
@@ -494,10 +497,10 @@ async def delete_override(
 
     override = _override_requests[override_id]
     user_email = current_user.email
-    user_role = current_user.role.value
+    is_privileged = current_user.role in (UserRole.ADMIN, UserRole.SUPER_ADMIN)
 
     # Check permissions
-    if override["requestor"] != user_email and user_role != "admin":
+    if override["requestor"] != user_email and not is_privileged:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only the requestor or an admin can delete this override",

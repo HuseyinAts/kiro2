@@ -59,6 +59,13 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-13 — F4: enhanced users + quality-gates + content-management auth
+
+- **enhanced_user_management_api:** `get_current_user` artık `AuthenticatedUser` ile hizalı; `require_admin` / `require_admin_or_self` **`UserRole`** (`ADMIN`, `SUPER_ADMIN`); self erişimde **`str(id)`** karşılaştırması.
+- **quality_gates_api:** Override onay **`TEACHER`/`ADMIN`/`SUPER_ADMIN`**; silmede talep eden veya **`ADMIN`/`SUPER_ADMIN`** (önceden yalnızca tam `"admin"` string).
+- **content_management:** Sahte **`MockUser`** ve `role in ["admin","teacher"]` kaldırıldı; gerçek **`AuthenticatedUser`** + staff seti.
+- **Test:** `tests/unit/test_enhanced_user_management_auth.py` (4).
+
 ## B-20260423-12 — F4: analytics student path + rol enum sweep (video, bionic, content, ES)
 
 - **analytics:** `GET /student/{student_id}` artık yalnızca `users.id` ile değil; **`verify_student_access`** ile learning-path `student_id` sahipliğini de kabul ediyor.
