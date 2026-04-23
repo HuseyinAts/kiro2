@@ -5,31 +5,29 @@ kurulumun **kalbi** — diğer her şey bu üçünün üstüne inşa edilmiş.
 
 ---
 
-## 1. `Shift+Tab` = Kas Hafızası
+## 1. Hüseyin Doğrudan İş Verir
 
-**Kural:** Karmaşık task'a başlamadan önce **daima** `Shift+Tab` ile Plan Mode'a geç.
+**Kural:** Hüseyin Cursor Agent mode'a doğrudan iş verir. Claude Desktop
+isteğe bağlı danışmandır — strateji, mimari analiz, karmaşık karar için.
+Her iş için plan beklemek YASAK.
 
-**Neden:**
-- Cursor ekibinin **resmi #1 best practice**'i
-- Chicago Üniversitesi çalışması: deneyimli developer'lar plan yapıyor
-- Plan → onay → Build disiplini, revert'ten hızlı sonuç verir
-- Agent "concrete goal" ile çok daha iyi kod üretir
+**Ne zaman Claude Desktop'a danış:**
+- Mimari karar (hangi yaklaşım?)
+- Risk analizi (migration, auth değişikliği)
+- Borç önceliklendirme (sıralama kararı)
+- Sapma analizi (Composer 2 çıktısı şüpheli)
 
-**Ne zaman atla:**
-- Tek satır bug fix
-- Format/lint-only değişiklik
-- 10+ kez yapılan mekanik task
+**Ne zaman doğrudan Agent'a ver:**
+- Bug fix, feature, config değişikliği
+- Smoke test, doğrulama
+- Dosya oluşturma/düzenleme
+- Commit hijyeni
 
-**Ne zaman ZORUNLU:**
-- 3+ dosya etkileyen değişiklik
-- Yeni endpoint / migration / algoritma parametresi
-- Belirsiz yaklaşım ("nereden başlasam?")
-- KIRO2 IRT/FSRS/BKT dokunuşları
-
-**Plan'ı daima kaydet:** "Save to workspace" → `.cursor/plans/YYYYMMDD_konu.md`
-
-**Refleks testi:** Agent input'una tıkladıktan sonra parmağın **otomatik
-Shift+Tab'a gidiyorsa** doğru yoldasın.
+**Güvenlik katmanı (DB/migration/auth işleri):**
+- pg_dump backup Hüseyin yapar
+- Agent commit atar, Hüseyin push yapar
+- Migration upgrade Hüseyin yapar
+- `.cursor/skills/pilot-protocol/` sapma koruması sağlar
 
 ---
 
@@ -47,16 +45,6 @@ Shift+Tab'a gidiyorsa** doğru yoldasın.
 - `IRT calibration Platt vs empirical`
 - `Dual Table Trap debug - question_bank 0 row`
 
-**Kötü isim:**
-- `Chat`, `Untitled`, `Test`, `New conversation`
-- Sadece tarih (`2026-04-20`)
-- Sadece emoji (`🔥`)
-
-**Pattern:**
-- `tarih_konu` (yeni work için)
-- `konu_debug` (bug fix için)
-- `konu_decision` (mimari karar için)
-
 **Yeni session'da kullanım:**
 ```
 @Past Chats:IRT calibration
@@ -70,11 +58,6 @@ Shift+Tab'a gidiyorsa** doğru yoldasın.
 **Kural:** `/best-of-n`'i **sadece gerçekten belirsiz kararlar** için çalıştır.
 Günlük CRUD'da Composer 2 yeter.
 
-**Neden:**
-- Her model ayrı kredi → 4x maliyet
-- Composer 2 KIRO2 pattern'larına zaten hakim (Pro'da cömert havuz)
-- Yanlış kullanırsa kredi havuzunu 1 haftada yakarsın
-
 **Ne zaman KULLAN:**
 - ✅ IRT kalibrasyonu / FSRS parametre tuning (algoritma-kritik)
 - ✅ Güvenlik-kritik kod (auth flow, IDOR, JWT)
@@ -86,31 +69,18 @@ Günlük CRUD'da Composer 2 yeter.
 - ❌ Format/lint fix
 - ❌ Tek satır bug fix
 - ❌ Daha önce yapılmış benzer task
-- ❌ Composer 2'nin zaten iyi yapacağı iş
-
-**Budget rehberi:**
-- Haftada 1-2 kez → Pro ($20) yeter
-- Haftada 3+ kez → Pro+ ($60) değer
-- Günde 2+ kez → kötü kullanım, gözden geçir
-
-**Composer 2 default refleks ol:**
-Çoğu KIRO2 task'ında Composer 2 yeter. Auto mode'u aç, sadece gerçek
-engel gördüğünde manuel modele geç.
 
 ---
 
-## 🎯 Günlük Refleks Döngüsü
+## 🎯 Günlük Refleks
 
-Her task'a başlarken bu 3 soruyu sor:
+Her task'a başlarken:
 
 ```
-1. Shift+Tab'a bastım mı?        → karmaşıksa ZORUNLU
-2. Chat'imin adı var mı?          → her chat için ZORUNLU
-3. Bu task /best-of-n'e değer mi? → nadiren EVET
+1. Bu işi doğrudan Agent'a verebilir miyim?  → çoğu zaman EVET
+2. Chat'imin adı var mı?                     → her chat için ZORUNLU
+3. Bu task /best-of-n'e değer mi?            → nadiren EVET
 ```
-
-Bu 3 refleks kas hafızasına girdiğinde Cursor Pro'nun gerçek değerini
-alıyorsun. Girmezse ayda $20 veriyorsun ama Copilot seviyesinde kullanıyorsun.
 
 ---
 
@@ -120,17 +90,4 @@ Bu kurallar tek **source of truth** burada. Diğer dosyalar buraya referans:
 
 - `.cursor/rules/00-core.mdc` — agent her prompt'ta görür
 - `.cursor/README.md` — üstte vurgulu blok (insan)
-- `.cursor/MIGRATION-NIGHTLY.md` — kurulum rehberinde §9 Kısayollar
-
-Bir kuralı değiştirmek istersen **sadece bu dosyayı** güncelle. Diğerleri
-referans eder.
-
----
-
-## 🔗 İlgili Derin İçerik
-
-- `.cursor/skills/plan-mode/SKILL.md` — Plan Mode workflow + KIRO2 checklist
-- `.cursor/skills/past-chats/SKILL.md` — @Past Chats kullanım senaryoları
-- `.cursor/commands/best-of-n.md` — /best-of-n workflow + KIRO2 senaryoları
-- `.cursor/commands/plan.md` — Plan Mode komutu
-- https://cursor.com/blog/agent-best-practices — Cursor ekibinin resmi rehberi
+- `.cursor/skills/pilot-protocol/SKILL.md` — sapma koruması

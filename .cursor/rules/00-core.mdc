@@ -10,24 +10,18 @@ alwaysApply: true
 
 Detay: `.cursor/GOLDEN-RULES.md`
 
-1. **`Shift+Tab` kas hafızası** — Karmaşık task'ta (3+ dosya, yeni endpoint,
-   migration, algoritma) her zaman Plan Mode ile başla. Kullanıcıya hatırlat:
-   _"Plan Mode'da ilerleyelim mi? Shift+Tab ile planı gözden geçirelim."_
-   Plan'ı `.cursor/plans/YYYYMMDD_konu.md` olarak kaydetmeyi öner.
+1. **Hüseyin doğrudan iş verir** — Claude Desktop isteğe bağlı danışmandır,
+   darboğaz değil. Agent mode'a doğrudan iş ver, plan bekleme.
+   DB/migration/auth işlerinde güvenlik katmanı: backup + Hüseyin push yapar.
 
 2. **Chat'leri isimlendir** — Yeni conversation başlatıldığında chat'in
    adsız olduğunu görürsen kullanıcıya hatırlat:
    _"Bu chat'e `20260420_konu_adı` formatında bir isim verelim mi?
    İleride @Past Chats ile referans için değerli olacak."_
 
-3. **`/best-of-n` kıt kullan** — Kullanıcı `/best-of-n` istediğinde değer
-   kontrolü yap: bu gerçekten belirsiz bir karar mı, yoksa Composer 2 tek
-   başına yeter mi? Basit CRUD / tek satır fix için `/best-of-n` öneme.
-   Sadece: algoritma-kritik, güvenlik-kritik, mimari karar, belirsiz
-   yaklaşım için öner.
-
-Bu 3 refleks kas hafızasına girince Cursor Pro'nun gerçek değeri açılır.
-Bu olmadan $20 veriliyor ama Copilot seviyesinde kullanılıyor olur.
+3. **`/best-of-n` kıt kullan** — Sadece: algoritma-kritik, güvenlik-kritik,
+   mimari karar, belirsiz yaklaşım için. Basit CRUD / tek satır fix için
+   `/best-of-n` önerme.
 
 ## Davranış
 
@@ -36,32 +30,25 @@ Bu olmadan $20 veriliyor ama Copilot seviyesinde kullanılıyor olur.
 - Yeni kod yazmadan önce @Codebase ile ara; benzer pattern varsa onu extend et, yoktan yaratma
 - Bilmiyorsan tahmin etme, sor
 
-## Workflow (Resmi Cursor Best Practice)
+## Workflow
 
-- **Karmaşık task'ta önce Plan Mode**: Shift+Tab → plan onayı → Build. `.cursor/commands/plan.md` rehberini izle
-- **Önceki işe referans gerektiğinde @Past Chats kullan** — kopyala-yapıştır YASAK. `.cursor/skills/past-chats/` yükle
-- **Tests feedback loop olarak** — TDD: test yaz → fail et → kod yaz → geç → commit
-- **Yanlış yön alındığında**: revert → plan'ı sıkılaştır → yeniden çalıştır (in-progress düzeltme yapma)
-- **Uzun chat odağı kaybediyorsa** yeni conversation aç, @Past Chats ile bağla
-- **Context manuel tag'leme**: sadece bildiğin dosyayı tag'le; bilmiyorsan agent bulsun
+- Hüseyin doğrudan Agent mode'a iş verir
+- Karmaşık task'ta Agent kendi planını yapar (state.md opsiyonel)
+- Önceki işe referans gerektiğinde @Past Chats kullan — kopyala-yapıştır YASAK
+- Tests feedback loop olarak — TDD: test yaz → fail et → kod yaz → geç → commit
+- Yanlış yön alındığında: revert → yeniden çalıştır
+- Uzun chat odağı kaybediyorsa yeni conversation aç, @Past Chats ile bağla
 
 ## Güvenlik (P0 — İhlali Ciddi)
 
-- Yeni API endpoint: `Depends(get_current_user)` + resource ownership check (`resource.user_id == current_user.id`) zorunlu
-- Yeni backend kodu için pytest testi yaz; 916 passing test baseline korunur
+- Yeni API endpoint: `Depends(get_current_user)` + resource ownership check zorunlu
+- Yeni backend kodu için pytest testi yaz; baseline korunur
 - Schema değişikliği sadece Alembic migration ile; ORM içinde DDL çalıştırma
-- Privacy Mode Cursor Settings'te ENABLED olmalı (öğrenci verisi + TÜBİTAK IP)
+- Sapma koruması: `.cursor/skills/pilot-protocol/SKILL.md` — YASAK listesi, DUR sinyalleri
 
 ## Büyük Değişiklik
 
-- Büyük refactor/mimari karar önerisinde önce plan yaz, onay bekle — kod yazma
-- 3+ dosyayı etkileyen değişiklik → Plan Mode zorunlu
+- 3+ dosyayı etkileyen değişiklik → Agent kendi planını yapmalı
+- DB/migration → pg_dump backup zorunlu, Hüseyin push + upgrade yapar
 - Risky experiment → `/worktree` ile izole et
 - Belirsiz yaklaşımda → `/best-of-n` ile paralel model karşılaştır (kıt kullan)
-
-## Agents Window (Cursor 3.x)
-
-- Paralel agent çalıştırırken her biri kendi worktree'sinde olmalı
-- Cloud ↔ local handoff: long-running task'ı cloud'a taşı, laptop kapatabilirsin
-- Design Mode (⌘+Shift+D) frontend değişiklikleri için default yol
-- Canvas'lar (dashboard, diagram) complex veri sunumunda prose'a tercih edilir

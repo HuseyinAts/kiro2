@@ -4,6 +4,9 @@
     "afterFileEdit": [
       {
         "command": "python .cursor/hooks/post-edit-ruff.py"
+      },
+      {
+        "command": "python .cursor/hooks/pilot-guard.py"
       }
     ],
     "beforeShellExecution": [
