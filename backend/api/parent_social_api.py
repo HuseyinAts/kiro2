@@ -13,11 +13,11 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 from models.social_safety import (
     ContentReport,
     MessageAuditLog,
@@ -28,6 +28,31 @@ from models.social_safety import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/parent-social", tags=["Parent Social"])
+
+
+async def _require_parent_linked_student(
+    db: AsyncSession,
+    current_user: AuthenticatedUser,
+    student_id: str,
+) -> None:
+    """Veli rolü + onaylı parent_child kaydı olmadan path student_id erişimi yok (IDOR)."""
+    if current_user.role != UserRole.PARENT:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu islem sadece veli hesaplari icin.",
+        )
+    res = await db.execute(
+        text(
+            "SELECT 1 FROM parent_child "
+            "WHERE parent_id = :pid AND child_id = :cid AND approved = TRUE"
+        ),
+        {"pid": str(current_user.id), "cid": str(student_id)},
+    )
+    if res.first() is None:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu ogrenciye erisim yetkiniz yok.",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -60,6 +85,7 @@ async def get_social_settings(
     db: AsyncSession = Depends(get_db_session),
 ):
     """Cocugun sosyal ayarlarini getir."""
+    await _require_parent_linked_student(db, current_user, student_id)
     parent_id = str(current_user.id)
 
     result = await db.execute(
@@ -106,6 +132,7 @@ async def update_social_settings(
     db: AsyncSession = Depends(get_db_session),
 ):
     """Cocugun sosyal ayarlarini guncelle."""
+    await _require_parent_linked_student(db, current_user, student_id)
     parent_id = str(current_user.id)
 
     result = await db.execute(
@@ -141,17 +168,7 @@ async def get_student_activity(
     days: int = Query(7, ge=1, le=30),
 ):
     """Cocugun son X gunluk sosyal aktivite ozetini getir."""
-    parent_id = str(current_user.id)
-
-    # Veli-ogrenci iliskisi kontrol
-    settings_check = await db.execute(
-        select(ParentSocialSettings.id).where(
-            ParentSocialSettings.parent_id == parent_id,
-            ParentSocialSettings.student_id == student_id,
-        )
-    )
-    if not settings_check.scalar_one_or_none():
-        raise HTTPException(403, "Bu ogrenciye erisim yetkiniz yok.")
+    await _require_parent_linked_student(db, current_user, student_id)
 
     from datetime import UTC, datetime, timedelta
 
@@ -231,16 +248,7 @@ async def get_student_flags(
     limit: int = Query(10, ge=1, le=50),
 ):
     """Cocugun bayrakli mesajlarini getir (hash + sebep, icerik degil)."""
-    parent_id = str(current_user.id)
-
-    settings_check = await db.execute(
-        select(ParentSocialSettings.id).where(
-            ParentSocialSettings.parent_id == parent_id,
-            ParentSocialSettings.student_id == student_id,
-        )
-    )
-    if not settings_check.scalar_one_or_none():
-        raise HTTPException(403, "Bu ogrenciye erisim yetkiniz yok.")
+    await _require_parent_linked_student(db, current_user, student_id)
 
     result = await db.execute(
         select(MessageAuditLog)
@@ -275,6 +283,7 @@ async def disable_all_social(
     db: AsyncSession = Depends(get_db_session),
 ):
     """Acil durum: Tum sosyal ozellikleri kapat (panic button)."""
+    await _require_parent_linked_student(db, current_user, student_id)
     parent_id = str(current_user.id)
 
     result = await db.execute(

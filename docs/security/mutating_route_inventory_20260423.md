@@ -49,7 +49,11 @@ cd backend && rg "@router\.(post|put|patch|delete)\(" api --glob "*.py" -c
 | `api.berturk_api` | `GET .../performance/stats`, `POST .../cache/clear` | `ADMIN` \| `SUPER_ADMIN` |
 | `api.cultural_adaptation_api` | `GET/PUT .../student/{student_id}*` | `UserRole` staff + self; `SUPER_ADMIN` eklendi; `/test-adaptation` `ADMIN`\|`SUPER_ADMIN` |
 
-Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`.
+| `api.parent_social_api` | `GET/PUT .../settings/{student_id}`, `activity`, `flags`, `disable-all` | `PARENT` + `parent_child.approved` (önceden sahte `ParentSocialSettings` ile IDOR) |
+| `api.irt_morfoloji` | `POST .../recommend-questions` (`student_id`) | staff \| self `users.id` \| `verify_student_access` |
+| `api.exam_performance` | `GET .../student/{id}/improvement-trends` | `UserRole` staff + `str` id; önceden yalnızca `"admin"` string |
+
+Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`.
 
 ## Sonraki adım
 

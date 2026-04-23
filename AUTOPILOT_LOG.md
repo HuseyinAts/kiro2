@@ -59,6 +59,13 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-10 — F4 Dalga B: parent-social IDOR + IRT recommend + exam trends
+
+- **parent_social_api:** `ParentSocialSettings` ilk GET/PUT ile rastgele `student_id` için satır açılıyordu; aktivite/bayrak uçları bu satıra bakarak veri dönebiliyordu. Tüm `{student_id}` yollarında **`UserRole.PARENT`** + **`parent_child` onaylı kayıt** zorunlu.
+- **irt_morfoloji:** `POST /recommend-questions` gövde `student_id` için staff, `users.id` eşleşmesi veya `verify_student_access`.
+- **exam_performance:** `improvement-trends` yetkisi `role.value != "admin"` yerine **`TEACHER`/`ADMIN`/`SUPER_ADMIN`** + `str` id karşılaştırması.
+- **Test:** `test_parent_social_access.py` (3), `test_irt_morfoloji_recommend_idor.py` (2), `test_exam_performance_improvement_auth.py` (1).
+
 ## B-20260423-09 — F4 Dalga B: BERTurk motivasyon + kültürel adaptasyon rolleri
 
 - **Sorun:** `POST /api/v1/berturk/motivation/assess` yetkisi `["teacher","admin"]` string listesiyle yapılıyordu; `UserRole.SUPER_ADMIN` dışarıda kalıyordu, tip de `User` idi. `cultural_adaptation_api` path `student_id` için yalnızca `admin`/`teacher` string + `super_admin` yoktu; `/test-adaptation` yalnızca `admin` string.

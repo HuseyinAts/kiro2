@@ -16,7 +16,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+
+_STAFF_VIEW_STUDENT_PERFORMANCE = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
 from core.multi_layer_cache import MultiLayerCache
 from core.structured_logger import get_logger
 from models.database import ExamType
@@ -653,8 +657,9 @@ async def get_student_improvement_trends(
     - **Son Puanlar**: Kronolojik sırayla son 5 sınav
     """
     try:
-        # Kullanıcı yetki kontrolü (sadece kendi verilerini görebilir)
-        if current_user.id != student_id and current_user.role.value != "admin":
+        if str(current_user.id) != str(
+            student_id
+        ) and current_user.role not in _STAFF_VIEW_STUDENT_PERFORMANCE:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu öğrencinin verilerine erişim yetkiniz yok",
