@@ -147,6 +147,22 @@ class TestRateLimitMiddleware:
 
         assert tier == UserTier.ADMIN
 
+    def test_get_user_tier_super_admin_slug(self, middleware, mock_request):
+        """Canonical super_admin string maps to ADMIN tier"""
+        mock_user = Mock()
+        mock_user.role = "super_admin"
+        mock_request.state.user = mock_user
+
+        assert middleware._get_user_tier(mock_request) == UserTier.ADMIN
+
+    def test_get_user_tier_teacher_premium(self, middleware, mock_request):
+        mock_user = Mock()
+        mock_user.role = "teacher"
+        mock_user.is_premium = False
+        mock_request.state.user = mock_user
+
+        assert middleware._get_user_tier(mock_request) == UserTier.PREMIUM
+
     def test_get_identifier_authenticated(self, middleware, mock_request):
         """Test identifier for authenticated user"""
         mock_user = Mock()

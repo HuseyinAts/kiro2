@@ -14,7 +14,9 @@ from core.advanced_rate_limiter import (
     RateLimitExceeded,
     UserTier,
     get_rate_limiter,
+    resolve_user_tier_for_rate_limit,
 )
+from models.enums_db import UserRole
 
 
 @pytest.fixture
@@ -72,6 +74,18 @@ class TestAdvancedRateLimiter:
         assert UserTier.FREE.value == "free"
         assert UserTier.PREMIUM.value == "premium"
         assert UserTier.ADMIN.value == "admin"
+
+    def test_resolve_user_tier_enum_admin_and_super_admin(self):
+        assert resolve_user_tier_for_rate_limit(UserRole.ADMIN) == UserTier.ADMIN
+        assert resolve_user_tier_for_rate_limit(UserRole.SUPER_ADMIN) == UserTier.ADMIN
+
+    def test_resolve_user_tier_string_variants(self):
+        assert resolve_user_tier_for_rate_limit("super_admin") == UserTier.ADMIN
+        assert resolve_user_tier_for_rate_limit("superadmin") == UserTier.ADMIN
+
+    def test_resolve_user_tier_teacher_premium(self):
+        assert resolve_user_tier_for_rate_limit(UserRole.TEACHER) == UserTier.PREMIUM
+        assert resolve_user_tier_for_rate_limit("teacher") == UserTier.PREMIUM
 
     def test_get_rate_limit_key(self, rate_limiter):
         """Test Redis key generation"""

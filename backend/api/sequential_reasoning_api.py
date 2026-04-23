@@ -18,12 +18,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.auth_dependencies import AuthorizationDependency, authenticate_optional
 from core.database import get_async_session
 from core.dependencies import AuthenticatedUser, get_current_user
+from services.reasoning.visualization_service import get_visualization_service
+from services.sequential_reasoning_service import SequentialReasoningService
 
 get_current_admin_user = AuthorizationDependency(
     required_roles=["admin", "super_admin"]
 )
-from services.reasoning.visualization_service import get_visualization_service
-from services.sequential_reasoning_service import SequentialReasoningService
 
 router = APIRouter(prefix="/api/v1/reasoning", tags=["Sequential Reasoning"])
 

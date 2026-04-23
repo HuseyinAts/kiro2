@@ -13,6 +13,7 @@ Features:
 
 import time
 from enum import Enum
+from typing import Any
 
 import redis.asyncio as redis
 from fastapi import HTTPException, Request, status
@@ -28,6 +29,35 @@ class UserTier(str, Enum):
     FREE = "free"
     PREMIUM = "premium"
     ADMIN = "admin"
+
+
+def _normalize_role_slug(role: Any) -> str:
+    """Lowercase slug from UserRole enum or raw JWT/string (rate-limit tier checks)."""
+    if role is None:
+        return ""
+    if isinstance(role, str):
+        return role.lower()
+    if hasattr(role, "value"):
+        return str(role.value).lower()
+    return str(role).lower()
+
+
+# Canonical super_admin plus legacy typo sometimes seen in tokens/config.
+_ADMIN_RATE_LIMIT_SLUGS = frozenset({"admin", "super_admin", "superadmin"})
+
+
+def resolve_user_tier_for_rate_limit(
+    role: Any,
+    *,
+    is_premium: bool = False,
+) -> UserTier:
+    """Map role (+ optional subscription flag) to rate-limit tier; keep in sync with middleware."""
+    slug = _normalize_role_slug(role)
+    if slug in _ADMIN_RATE_LIMIT_SLUGS:
+        return UserTier.ADMIN
+    if slug == "teacher" or is_premium or slug == "premium":
+        return UserTier.PREMIUM
+    return UserTier.FREE
 
 
 class RateLimitExceeded(HTTPException):
@@ -386,4 +416,5 @@ __all__ = [
     "UserTier",
     "check_rate_limit",
     "get_rate_limiter",
+    "resolve_user_tier_for_rate_limit",
 ]

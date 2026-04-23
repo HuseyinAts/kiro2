@@ -12,7 +12,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.advanced_rate_limiter import UserTier, get_rate_limiter
+from core.advanced_rate_limiter import (
+    UserTier,
+    get_rate_limiter,
+    resolve_user_tier_for_rate_limit,
+)
 from core.database import get_async_session
 from core.jwt_auth import TokenPayload, get_current_user, require_admin
 from core.rate_limit_middleware import get_rate_limit_status
@@ -98,14 +102,10 @@ async def get_rate_limit_config(
     try:
         limiter = get_rate_limiter()
 
-        # Determine user tier
-        user_role = getattr(current_user, "role", None)
-        if user_role == "admin" or user_role == "superadmin":
-            tier = UserTier.ADMIN
-        elif user_role == "premium" or getattr(current_user, "is_premium", False):
-            tier = UserTier.PREMIUM
-        else:
-            tier = UserTier.FREE
+        tier = resolve_user_tier_for_rate_limit(
+            getattr(current_user, "role", None),
+            is_premium=bool(getattr(current_user, "is_premium", False)),
+        )
 
         # Get tier limits
         tier_limits = limiter.tier_limits.get(tier, limiter.tier_limits[UserTier.FREE])
@@ -147,14 +147,10 @@ async def get_my_tier(
     Returns tier information and upgrade options.
     """
     try:
-        # Determine user tier
-        user_role = getattr(current_user, "role", None)
-        if user_role == "admin" or user_role == "superadmin":
-            tier = UserTier.ADMIN
-        elif user_role == "premium" or getattr(current_user, "is_premium", False):
-            tier = UserTier.PREMIUM
-        else:
-            tier = UserTier.FREE
+        tier = resolve_user_tier_for_rate_limit(
+            getattr(current_user, "role", None),
+            is_premium=bool(getattr(current_user, "is_premium", False)),
+        )
 
         tier_info = {
             UserTier.FREE: {

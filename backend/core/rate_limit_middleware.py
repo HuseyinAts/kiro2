@@ -12,7 +12,12 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
-from core.advanced_rate_limiter import AdvancedRateLimiter, UserTier, get_rate_limiter
+from core.advanced_rate_limiter import (
+    AdvancedRateLimiter,
+    UserTier,
+    get_rate_limiter,
+    resolve_user_tier_for_rate_limit,
+)
 from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
@@ -84,14 +89,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if not user:
             return UserTier.FREE
 
-        # Check user role/tier
-        user_role = getattr(user, "role", None)
-
-        if user_role == "admin" or user_role == "superadmin":
-            return UserTier.ADMIN
-        if user_role == "premium" or getattr(user, "is_premium", False):
-            return UserTier.PREMIUM
-        return UserTier.FREE
+        return resolve_user_tier_for_rate_limit(
+            getattr(user, "role", None),
+            is_premium=bool(getattr(user, "is_premium", False)),
+        )
 
     def _get_identifier(self, request: Request) -> str:
         """
@@ -233,13 +234,10 @@ async def get_rate_limit_status(request: Request) -> dict:
         user_id = getattr(user, "id", None)
         identifier = str(user_id) if user_id else request.client.host
 
-        user_role = getattr(user, "role", None)
-        if user_role == "admin" or user_role == "superadmin":
-            tier = UserTier.ADMIN
-        elif user_role == "premium" or getattr(user, "is_premium", False):
-            tier = UserTier.PREMIUM
-        else:
-            tier = UserTier.FREE
+        tier = resolve_user_tier_for_rate_limit(
+            getattr(user, "role", None),
+            is_premium=bool(getattr(user, "is_premium", False)),
+        )
     else:
         identifier = request.client.host if request.client else "unknown"
         tier = UserTier.FREE
