@@ -9,6 +9,8 @@ Endpoints:
 - GET /api/v1/agents/specialization-scores - Tum skorlar
 """
 
+from __future__ import annotations
+
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -94,6 +96,18 @@ async def get_coordinator() -> AgentCoordinator:
     """Agent coordinator instance'ini al"""
     global _coordinator, _blackboard
 
+    if (
+        DomainType is None
+        or AgentCoordinator is None
+        or DomainBlackboard is None
+        or QuestionClassifier is None
+        or MatematikAgent is None
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Expert agents modulu yuklenemedi (bagimlilik eksik)",
+        )
+
     if _coordinator is None:
         # Initialize blackboard
         _blackboard = DomainBlackboard()
@@ -124,6 +138,11 @@ async def get_coordinator() -> AgentCoordinator:
 async def get_scorer() -> SpecializationScorer:
     """Specialization scorer instance'ini al"""
     global _scorer
+    if SpecializationScorer is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Expert agents skorlama modulu yuklenemedi",
+        )
     if _scorer is None:
         _scorer = SpecializationScorer()
     return _scorer
@@ -132,6 +151,11 @@ async def get_scorer() -> SpecializationScorer:
 async def get_tracker() -> PerformanceTracker:
     """Performance tracker instance'ini al"""
     global _tracker
+    if PerformanceTracker is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Expert agents performans modulu yuklenemedi",
+        )
     if _tracker is None:
         _tracker = PerformanceTracker()
     return _tracker

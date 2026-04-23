@@ -2,6 +2,10 @@
 Veli takip sistemi API endpoint'leri
 
 CODE QUALITY FIX: Improved exception handling, added path validation
+
+Iliski: POST /api/v1/auth/veli-profil yalnizca iletisim tercihlerini acar; cocuk
+kullanici baglantisi parent_child uzerinden yapilir — tercihen /api/v1/parent
+(create_parent_child_relation, approve, cocuk listesi).
 """
 
 import logging
