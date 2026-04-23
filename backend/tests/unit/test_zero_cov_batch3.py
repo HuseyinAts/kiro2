@@ -203,6 +203,9 @@ class _SessionChatMessage:
     # Class-level column descriptors
     id = MagicMock()
     session_id = MagicMock()
+    user_id = MagicMock()
+    recipient_id = MagicMock()
+    is_private = MagicMock()
     is_deleted = MagicMock()
     created_at = MagicMock()
 
@@ -1488,7 +1491,9 @@ class TestVideoConferenceService:
         ]
         db.execute.return_value.scalars.return_value.all.return_value = fake_msgs
         svc = self._make_svc(db)
-        msgs = await svc.get_session_chat("sess-id", limit=50)
+        msgs = await svc.get_session_chat(
+            "sess-id", limit=50, viewer_user_id="u1", viewer_is_session_host=False
+        )
         assert len(msgs) == 1
 
     # --- Jitsi room name ---

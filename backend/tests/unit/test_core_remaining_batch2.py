@@ -694,6 +694,35 @@ class TestRBACManager:
         assert "user_role" in result.reason.lower()
 
     @pytest.mark.asyncio
+    async def test_check_permission_combined_role_and_perm_denied_when_role_wrong(self):
+        await self.rbac.assign_role_to_user("u_combo", "student", "admin")
+        ctx = AuthorizationContext(
+            user_id="u_combo",
+            resource_type=ResourceType.EXAM,
+            action=Action.READ,
+            required_roles=["admin"],
+            required_permissions=["read"],
+            user_role="student",
+        )
+        result = await self.rbac.check_permission(ctx)
+        assert result.granted is False
+        assert "combined" in result.reason.lower()
+
+    @pytest.mark.asyncio
+    async def test_check_permission_combined_role_and_perm_granted(self):
+        await self.rbac.assign_role_to_user("u_combo2", "student", "admin")
+        ctx = AuthorizationContext(
+            user_id="u_combo2",
+            resource_type=ResourceType.EXAM,
+            action=Action.READ,
+            required_roles=["student", "teacher"],
+            required_permissions=["read"],
+            user_role="student",
+        )
+        result = await self.rbac.check_permission(ctx)
+        assert result.granted is True
+
+    @pytest.mark.asyncio
     async def test_check_permission_denied_insufficient(self):
         # Create an isolated custom role with only report:read — no exam:delete, no parent roles
         from core.rbac_system import Role, RoleType

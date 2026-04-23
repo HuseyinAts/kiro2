@@ -1037,6 +1037,57 @@ class RBACManager:
                     )
                     return result
 
+                # Role AND permission: JWT role must pass before RBAC permission loop.
+                if req_roles and req_perms:
+                    uslug_combo = _auth_role_slug(auth_context.user_role)
+                    if not uslug_combo:
+                        result = AuthorizationResult(
+                            granted=False,
+                            reason=(
+                                "Role check: user_role missing on context "
+                                "(combined role+permission)"
+                            ),
+                            context=auth_context,
+                        )
+                        ctx.add_annotation(
+                            "Permission denied: combined check without user_role"
+                        )
+                        await self._log_audit_event(
+                            AuditAction.PERMISSION_DENIED,
+                            auth_context.user_id,
+                            {
+                                "reason": "role_check_no_user_role_combined",
+                                "required_roles": req_roles,
+                            },
+                        )
+                        return result
+                    if uslug_combo not in req_roles:
+                        result = AuthorizationResult(
+                            granted=False,
+                            reason=(
+                                "Role check failed (combined): "
+                                f"{uslug_combo!r} not in {req_roles!r}"
+                            ),
+                            matched_roles=[uslug_combo],
+                            context=auth_context,
+                        )
+                        ctx.add_annotation(
+                            "Permission denied: combined role gate failed"
+                        )
+                        await self._log_audit_event(
+                            AuditAction.PERMISSION_DENIED,
+                            auth_context.user_id,
+                            {
+                                "reason": "role_check_failed_combined",
+                                "user_role": uslug_combo,
+                                "required_roles": req_roles,
+                            },
+                        )
+                        return result
+                    ctx.add_annotation(
+                        "Combined check: role gate passed, evaluating permissions"
+                    )
+
                 # Check cache first
                 cache_key = self._get_cache_key(auth_context)
                 cached_result = self._get_cached_permission(cache_key)

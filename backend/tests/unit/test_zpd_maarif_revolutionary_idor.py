@@ -76,7 +76,7 @@ async def test_revolutionary_calculate_verifies() -> None:
         behavioral_data={},
     )
     user, db = MagicMock(), AsyncMock()
-    with patch.object(zpd_mod, "verify_student_access", new_callable=AsyncMock) as v:
+    with patch.object(zpd_mod, "assert_can_access_body_student_id", new_callable=AsyncMock) as v:
         v.return_value = True
         with patch.object(
             zpd_mod.zpd_service,
@@ -99,7 +99,7 @@ async def test_revolutionary_recommend_verifies() -> None:
         content_description="",
     )
     user, db = MagicMock(), AsyncMock()
-    with patch.object(zpd_mod, "verify_student_access", new_callable=AsyncMock) as v:
+    with patch.object(zpd_mod, "assert_can_access_body_student_id", new_callable=AsyncMock) as v:
         v.return_value = True
         with patch.object(
             zpd_mod.zpd_service,
@@ -115,7 +115,7 @@ async def test_revolutionary_recommend_verifies() -> None:
 async def test_revolutionary_cultural_context_verifies() -> None:
     req = LearningBalanceRequest(student_id="stu-zpd-3", behavioral_data={})
     user, db = MagicMock(), AsyncMock()
-    with patch.object(zpd_mod, "verify_student_access", new_callable=AsyncMock) as v:
+    with patch.object(zpd_mod, "assert_can_access_body_student_id", new_callable=AsyncMock) as v:
         v.return_value = True
         cc = SimpleNamespace(
             student_id="stu-zpd-3",
@@ -148,7 +148,7 @@ async def test_revolutionary_adapt_difficulty_verifies() -> None:
         behavioral_data={},
     )
     user, db = MagicMock(), AsyncMock()
-    with patch.object(zpd_mod, "verify_student_access", new_callable=AsyncMock) as v:
+    with patch.object(zpd_mod, "assert_can_access_body_student_id", new_callable=AsyncMock) as v:
         v.return_value = True
         with patch.object(
             zpd_mod.zpd_service,
@@ -164,7 +164,7 @@ async def test_revolutionary_adapt_difficulty_verifies() -> None:
 async def test_revolutionary_learning_balance_verifies() -> None:
     req = LearningBalanceRequest(student_id="stu-zpd-5", behavioral_data={})
     user, db = MagicMock(), AsyncMock()
-    with patch.object(zpd_mod, "verify_student_access", new_callable=AsyncMock) as v:
+    with patch.object(zpd_mod, "assert_can_access_body_student_id", new_callable=AsyncMock) as v:
         v.return_value = True
         with patch.object(
             zpd_mod.zpd_service,
@@ -183,7 +183,7 @@ async def test_revolutionary_cultural_patterns_verifies() -> None:
         learning_sessions=[{"x": 1}],
     )
     user, db = MagicMock(), AsyncMock()
-    with patch.object(zpd_mod, "verify_student_access", new_callable=AsyncMock) as v:
+    with patch.object(zpd_mod, "assert_can_access_body_student_id", new_callable=AsyncMock) as v:
         v.return_value = True
         with patch.object(
             zpd_mod.zpd_service,

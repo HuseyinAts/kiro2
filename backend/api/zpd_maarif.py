@@ -16,8 +16,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import AuthenticatedUser, UserRole, get_current_user, get_db
-from core.learning_path_auth import verify_student_access
+from core.dependencies import AuthenticatedUser, get_current_user, get_db
+from core.learning_path_auth import assert_can_access_body_student_id
 from models.zpd_maarif import (
     KulturelBaglamProfili,
     MaarifDegerleriProfili,
@@ -32,16 +32,6 @@ router = APIRouter(prefix="/api/v1/zpd-maarif", tags=["ZPD Maarif"])
 
 # Servis instance'ı
 zpd_service = ZPDMaarifService()
-
-
-def _verify_student_access(current_user: AuthenticatedUser, ogrenci_id: str) -> None:
-    """IDOR: student own data only, admin/teacher any."""
-    if current_user.role in (UserRole.ADMIN, UserRole.TEACHER, UserRole.SUPER_ADMIN):
-        return
-    if str(current_user.id) != ogrenci_id:
-        raise HTTPException(
-            status_code=403, detail="Bu ogrenci verisine erisim yetkiniz yok"
-        )
 
 
 class ZPDHesaplamaRequest(BaseModel):
@@ -132,6 +122,7 @@ class CulturalPatternAnalysisRequest(BaseModel):
 async def hesapla_zpd(
     request: ZPDHesaplamaRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Türk eğitim kültürüne uyarlanmış ZPD aralığı hesapla
@@ -144,7 +135,7 @@ async def hesapla_zpd(
     - MEB Maarif değerleri entegrasyonu
     - Kültürel bağlam farkındalıklı hesaplama
     """
-    _verify_student_access(current_user, request.ogrenci_id)
+    await assert_can_access_body_student_id(request.ogrenci_id, current_user, db)
 
     try:
         zpd_araligi = await zpd_service.hesapla_turk_zpd(
@@ -174,6 +165,7 @@ async def hesapla_zpd(
 async def optimize_zpd(
     request: ZPDOptimizasyonRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Performans verilerine göre ZPD parametrelerini optimize et
@@ -181,7 +173,7 @@ async def optimize_zpd(
     Bu endpoint geçmiş performans verilerini analiz ederek
     öğrenci için en uygun öğrenme stratejilerini önerir.
     """
-    _verify_student_access(current_user, request.ogrenci_id)
+    await assert_can_access_body_student_id(request.ogrenci_id, current_user, db)
     try:
         optimizasyon_sonucu = await zpd_service.optimize_zpd_parametreleri(
             ogrenci_id=request.ogrenci_id,
@@ -205,10 +197,12 @@ async def optimize_zpd(
 
 @router.get("/profil/kulturel/{ogrenci_id}", response_model=ZPDResponse)
 async def get_kulturel_profil(
-    ogrenci_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+    ogrenci_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Öğrencinin kültürel bağlam profilini getir"""
-    _verify_student_access(current_user, ogrenci_id)
+    await assert_can_access_body_student_id(ogrenci_id, current_user, db)
     try:
         # Varsayılan profil oluştur (gerçek uygulamada veritabanından gelir)
         kulturel_profil = await zpd_service._olustur_varsayilan_kulturel_profil(
@@ -231,10 +225,12 @@ async def get_kulturel_profil(
 
 @router.get("/profil/maarif/{ogrenci_id}", response_model=ZPDResponse)
 async def get_maarif_profili(
-    ogrenci_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+    ogrenci_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Öğrencinin MEB Maarif değerleri profilini getir"""
-    _verify_student_access(current_user, ogrenci_id)
+    await assert_can_access_body_student_id(ogrenci_id, current_user, db)
     try:
         # Varsayılan profil oluştur (gerçek uygulamada veritabanından gelir)
         maarif_profili = await zpd_service._olustur_varsayilan_maarif_profili(
@@ -260,9 +256,10 @@ async def update_kulturel_profil(
     ogrenci_id: str,
     profil: KulturelBaglamProfili,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Öğrencinin kültürel bağlam profilini güncelle"""
-    _verify_student_access(current_user, ogrenci_id)
+    await assert_can_access_body_student_id(ogrenci_id, current_user, db)
     try:
         # Profil güncelleme (gerçek uygulamada veritabanına kaydedilir)
         profil.ogrenci_id = ogrenci_id
@@ -287,9 +284,10 @@ async def update_maarif_profili(
     ogrenci_id: str,
     profil: MaarifDegerleriProfili,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Öğrencinin MEB Maarif değerleri profilini güncelle"""
-    _verify_student_access(current_user, ogrenci_id)
+    await assert_can_access_body_student_id(ogrenci_id, current_user, db)
     try:
         # Profil güncelleme (gerçek uygulamada veritabanına kaydedilir)
         profil.ogrenci_id = ogrenci_id
@@ -317,9 +315,10 @@ async def get_zorluk_seviyesi(
         ..., ge=0.0, le=10.0, description="Hedef zorluk seviyesi"
     ),
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Hedef zorluğun ZPD içindeki seviyesini belirle"""
-    _verify_student_access(current_user, ogrenci_id)
+    await assert_can_access_body_student_id(ogrenci_id, current_user, db)
     try:
         # Mevcut ZPD'yi al
         mevcut_zpd = await zpd_service._get_mevcut_zpd(ogrenci_id, konu)
@@ -366,9 +365,10 @@ async def get_zpd_gecmisi(
     konu: str | None = Query(None, description="Konu filtresi"),
     limit: int = Query(10, ge=1, le=50, description="Maksimum kayıt sayısı"),
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Öğrencinin ZPD hesaplama geçmişini getir"""
-    _verify_student_access(current_user, ogrenci_id)
+    await assert_can_access_body_student_id(ogrenci_id, current_user, db)
     try:
         # Geçmiş verilerini getir
         tum_gecmis = zpd_service.hesaplama_gecmisi
@@ -413,10 +413,12 @@ async def get_zpd_gecmisi(
 
 @router.get("/istatistikler/{ogrenci_id}", response_model=ZPDResponse)
 async def get_zpd_istatistikleri(
-    ogrenci_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+    ogrenci_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Öğrencinin ZPD istatistiklerini getir"""
-    _verify_student_access(current_user, ogrenci_id)
+    await assert_can_access_body_student_id(ogrenci_id, current_user, db)
     try:
         # Geçmiş verilerini analiz et
         tum_gecmis = zpd_service.hesaplama_gecmisi
@@ -510,7 +512,7 @@ async def calculate_revolutionary_zpd(
     - Grup vs bireysel öğrenme dengeleme
     """
     try:
-        await verify_student_access(request.student_id, current_user, db)
+        await assert_can_access_body_student_id(request.student_id, current_user, db)
         zpd_range = await zpd_service.calculate_revolutionary_zpd(
             student_id=request.student_id,
             subject=request.subject,
@@ -570,7 +572,7 @@ async def generate_revolutionary_recommendation(
     Türk kültürü faktörleri ile optimize edilmiş öğrenme önerileri sunar.
     """
     try:
-        await verify_student_access(request.student_id, current_user, db)
+        await assert_can_access_body_student_id(request.student_id, current_user, db)
         recommendation = await zpd_service.generate_revolutionary_recommendation(
             student_id=request.student_id,
             subject=request.subject,
@@ -620,7 +622,7 @@ async def detect_cultural_context(
     Öğrencinin Türk kültürü faktörlerini analiz eder.
     """
     try:
-        await verify_student_access(request.student_id, current_user, db)
+        await assert_can_access_body_student_id(request.student_id, current_user, db)
         cultural_context = await zpd_service.detect_cultural_context_revolutionary(
             student_id=request.student_id, behavioral_data=request.behavioral_data
         )
@@ -663,7 +665,7 @@ async def adapt_difficulty_culturally(
     Türk öğrenci davranış kalıplarına göre zorluk seviyesini dinamik olarak ayarlar.
     """
     try:
-        await verify_student_access(request.student_id, current_user, db)
+        await assert_can_access_body_student_id(request.student_id, current_user, db)
         adapted_difficulty = (
             await zpd_service.adapt_difficulty_culturally_revolutionary(
                 student_id=request.student_id,
@@ -741,7 +743,7 @@ async def get_learning_balance(
     Türk kültürü faktörleri ile optimize edilmiş öğrenme dengesi analizi.
     """
     try:
-        await verify_student_access(request.student_id, current_user, db)
+        await assert_can_access_body_student_id(request.student_id, current_user, db)
         balance_info = await zpd_service.get_revolutionary_learning_balance(
             student_id=request.student_id, behavioral_data=request.behavioral_data
         )
@@ -773,7 +775,7 @@ async def monitor_cultural_patterns(
     Türk öğrenci davranış kalıplarının derinlemesine analizi.
     """
     try:
-        await verify_student_access(request.student_id, current_user, db)
+        await assert_can_access_body_student_id(request.student_id, current_user, db)
         patterns = await zpd_service.monitor_cultural_learning_patterns_revolutionary(
             student_id=request.student_id, learning_sessions=request.learning_sessions
         )
@@ -794,14 +796,16 @@ async def monitor_cultural_patterns(
 
 @router.get("/revolutionary/demo/{student_id}", response_model=ZPDResponse)
 async def revolutionary_demo(
-    student_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+    student_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     [ROCKET] DEVRİMSEL DEMO: Tüm devrimsel özelliklerin demo gösterimi
 
     Bu endpoint tüm devrimsel özellikleri örnek verilerle gösterir.
     """
-    _verify_student_access(current_user, student_id)
+    await assert_can_access_body_student_id(student_id, current_user, db)
     try:
         # Örnek davranışsal veri
         sample_behavioral_data = {

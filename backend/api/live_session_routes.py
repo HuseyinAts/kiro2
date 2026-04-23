@@ -85,6 +85,19 @@ async def _verify_session_participant(
         raise HTTPException(status_code=403, detail="Not a session participant")
 
 
+async def _viewer_is_session_host(
+    session_id: UUID,
+    current_user: AuthenticatedUser,
+    db: AsyncSession,
+) -> bool:
+    result = await db.execute(
+        text("SELECT host_id FROM live_sessions WHERE id = :sid"),
+        {"sid": str(session_id)},
+    )
+    row = result.first()
+    return bool(row and str(row.host_id) == str(current_user.id))
+
+
 async def _verify_private_chat_recipient(
     session_id: UUID,
     recipient_id: UUID,
@@ -688,8 +701,14 @@ async def get_session_chat(
 ):
     """Get chat messages"""
     await _verify_session_participant(session_id, current_user, db)
+    is_host = await _viewer_is_session_host(session_id, current_user, db)
     service = VideoConferenceService(db)
-    messages = await service.get_session_chat(session_id, limit)
+    messages = await service.get_session_chat(
+        session_id,
+        limit,
+        viewer_user_id=str(current_user.id),
+        viewer_is_session_host=is_host,
+    )
 
     return {
         "messages": [

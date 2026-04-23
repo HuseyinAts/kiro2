@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import String, and_, cast, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.live_session import (
@@ -554,15 +554,30 @@ class VideoConferenceService:
         return chat_message
 
     async def get_session_chat(
-        self, session_id: UUID, limit: int = 100
+        self,
+        session_id: UUID,
+        limit: int = 100,
+        *,
+        viewer_user_id: str,
+        viewer_is_session_host: bool = False,
     ) -> list[SessionChatMessage]:
-        """Get chat messages for session"""
+        """Get chat messages visible to viewer (public + own DMs; host sees all)."""
+        filters = [
+            SessionChatMessage.session_id == session_id,
+            SessionChatMessage.is_deleted == False,
+        ]
+        if not viewer_is_session_host:
+            vid = str(viewer_user_id)
+            filters.append(
+                or_(
+                    SessionChatMessage.is_private == False,
+                    cast(SessionChatMessage.user_id, String) == vid,
+                    cast(SessionChatMessage.recipient_id, String) == vid,
+                )
+            )
         query = (
             select(SessionChatMessage)
-            .where(
-                SessionChatMessage.session_id == session_id,
-                SessionChatMessage.is_deleted == False,
-            )
+            .where(and_(*filters))
             .order_by(SessionChatMessage.created_at.desc())
             .limit(limit)
         )

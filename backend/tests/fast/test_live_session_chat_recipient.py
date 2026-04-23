@@ -40,6 +40,37 @@ async def test_private_chat_recipient_stranger_denied() -> None:
 
 
 @pytest.mark.asyncio
+async def test_viewer_is_session_host_true() -> None:
+    from api.live_session_routes import _viewer_is_session_host
+
+    sid = uuid4()
+    host = uuid4()
+    db = AsyncMock()
+    user = MagicMock()
+    user.id = host
+    r = MagicMock()
+    r.first.return_value = MagicMock(host_id=host)
+    db.execute = AsyncMock(return_value=r)
+    assert await _viewer_is_session_host(sid, user, db) is True
+
+
+@pytest.mark.asyncio
+async def test_viewer_is_session_host_false() -> None:
+    from api.live_session_routes import _viewer_is_session_host
+
+    sid = uuid4()
+    host = uuid4()
+    peer = uuid4()
+    db = AsyncMock()
+    user = MagicMock()
+    user.id = peer
+    r = MagicMock()
+    r.first.return_value = MagicMock(host_id=host)
+    db.execute = AsyncMock(return_value=r)
+    assert await _viewer_is_session_host(sid, user, db) is False
+
+
+@pytest.mark.asyncio
 async def test_private_chat_recipient_participant_allowed() -> None:
     sid = uuid4()
     host_id = uuid4()

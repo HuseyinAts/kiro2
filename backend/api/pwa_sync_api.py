@@ -20,7 +20,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
-from sqlalchemy import text
+from sqlalchemy import select, text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -218,6 +218,17 @@ async def sync_exam_sessions(
     """
     student_id = str(current_user.id)
 
+    existing_owner = (
+        await db.execute(
+            select(ExamSession.student_id).where(ExamSession.id == session.session_id)
+        )
+    ).scalar_one_or_none()
+    if existing_owner is not None and str(existing_owner) != student_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Exam session belongs to another user",
+        )
+
     # Upsert exam session
     session_values = {
         "id": session.session_id,
@@ -237,7 +248,11 @@ async def sync_exam_sessions(
     stmt = pg_insert(ExamSession).values(**session_values)
     stmt = stmt.on_conflict_do_update(
         index_elements=["id"],
-        set_={k: v for k, v in session_values.items() if v is not None and k != "id"},
+        set_={
+            k: v
+            for k, v in session_values.items()
+            if v is not None and k not in ("id", "student_id")
+        },
     )
     await db.execute(stmt)
 
