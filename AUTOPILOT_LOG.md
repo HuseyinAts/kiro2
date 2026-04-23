@@ -59,6 +59,13 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-11 — F4: exam session IDOR + ES analytics + FERPA/COPPA
+
+- **exam_performance:** `exam_session_id` ile dönen tüm detay/zayıflık/öneri/karşılaştırma GET’leri servis düzeyinde sahiplik kontrolü yapmıyordu; `_assert_exam_session_authorized` eklendi (sahip veya `TEACHER`/`ADMIN`/`SUPER_ADMIN`).
+- **elasticsearch:** `GET /analytics/user/{user_id}` artık `UserRole` staff seti + `str` self; `super_admin` ve öğretmen dahil.
+- **ferpa_coppa_compliance_api:** COPPA talep/doğrulama/geri çekme, çocuk durumu GET, FERPA talep ve erişim logu — veli+`parent_child`, personel veya öğrenci kendi kaydı; rastgele `child_id`/`consent_id` ile yazma/okuma engellendi.
+- **Test:** `test_exam_performance_session_guard.py` (3), `test_ferpa_coppa_guards.py` (1).
+
 ## B-20260423-10 — F4 Dalga B: parent-social IDOR + IRT recommend + exam trends
 
 - **parent_social_api:** `ParentSocialSettings` ilk GET/PUT ile rastgele `student_id` için satır açılıyordu; aktivite/bayrak uçları bu satıra bakarak veri dönebiliyordu. Tüm `{student_id}` yollarında **`UserRole.PARENT`** + **`parent_child` onaylı kayıt** zorunlu.

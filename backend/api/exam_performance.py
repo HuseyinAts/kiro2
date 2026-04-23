@@ -16,11 +16,39 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 
+from sqlalchemy import select
+
+from core.database import get_db_session_context
 from core.dependencies import AuthenticatedUser, UserRole, get_current_user
+from models.database import ExamSession
 
 _STAFF_VIEW_STUDENT_PERFORMANCE = frozenset(
     {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
 )
+
+
+async def _assert_exam_session_authorized(
+    exam_session_id: str,
+    current_user: AuthenticatedUser,
+) -> None:
+    """IDOR: yalnızca oturum sahibi öğrenci veya personel."""
+    async with get_db_session_context() as db_auth:
+        r = await db_auth.execute(
+            select(ExamSession.student_id).where(ExamSession.id == exam_session_id)
+        )
+        owner = r.scalar_one_or_none()
+    if owner is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Sinav oturumu bulunamadi",
+        )
+    if str(owner) != str(
+        current_user.id
+    ) and current_user.role not in _STAFF_VIEW_STUDENT_PERFORMANCE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu sinav verisine erisim yetkiniz yok",
+        )
 from core.multi_layer_cache import MultiLayerCache
 from core.structured_logger import get_logger
 from models.database import ExamType
@@ -283,6 +311,8 @@ async def get_detailed_performance_analysis(
     - Cache hit rate target: 60-70%
     """
     try:
+        await _assert_exam_session_authorized(exam_session_id, current_user)
+
         # SPRINT 2: Cache key generation
         cache_key = f"{exam_session_id}:{include_comparisons}"
 
@@ -449,6 +479,8 @@ async def get_subject_weaknesses(
     - Gelişim potansiyeline göre sıralanmış
     """
     try:
+        await _assert_exam_session_authorized(exam_session_id, current_user)
+
         # Cache: sınav tamamlandıktan sonra analiz değişmez
         cache_key = f"weaknesses:{exam_session_id}"
         cached = await performance_cache.get(cache_key)
@@ -523,6 +555,8 @@ async def get_study_recommendations(
     - Çalışma saati, soru sayısı ve kaynak önerileri
     """
     try:
+        await _assert_exam_session_authorized(exam_session_id, current_user)
+
         # Cache: sınav tamamlandıktan sonra öneriler değişmez
         cache_key = f"recommendations:{exam_session_id}"
         cached = await performance_cache.get(cache_key)
@@ -593,6 +627,8 @@ async def get_performance_comparison(
     - **Sıralama Bilgileri**: Tahmini sıralama
     """
     try:
+        await _assert_exam_session_authorized(exam_session_id, current_user)
+
         analysis = await exam_performance_service.analyze_exam_performance(
             exam_session_id=exam_session_id, include_comparisons=True
         )

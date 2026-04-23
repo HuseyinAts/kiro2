@@ -28,11 +28,11 @@ from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, validator
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_async_session
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import AuthenticatedUser, UserRole, get_current_user
 from models.ferpa_coppa_models import (
     COPPAParentalConsent,
     EducationalRecordAccess,
@@ -43,6 +43,43 @@ from models.ferpa_coppa_models import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/compliance", tags=["FERPA/COPPA Compliance"])
+
+_STAFF_COMPLIANCE = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
+_COPPA_CREATE_STAFF = frozenset({UserRole.ADMIN, UserRole.SUPER_ADMIN})
+
+
+async def _parent_child_approved(
+    db: AsyncSession, parent_id: str, child_id: str
+) -> bool:
+    r = await db.execute(
+        text(
+            "SELECT 1 FROM parent_child "
+            "WHERE parent_id = :p AND child_id = :c AND approved = TRUE"
+        ),
+        {"p": str(parent_id), "c": str(child_id)},
+    )
+    return r.first() is not None
+
+
+async def _require_coppa_child_access(
+    db: AsyncSession,
+    current_user: AuthenticatedUser,
+    child_id: str,
+) -> None:
+    if current_user.role in _STAFF_COMPLIANCE:
+        return
+    if str(current_user.id) == str(child_id):
+        return
+    if current_user.role == UserRole.PARENT and await _parent_child_approved(
+        db, str(current_user.id), str(child_id)
+    ):
+        return
+    raise HTTPException(
+        status_code=403,
+        detail="Bu cocuk kaydina erisim yetkiniz yok",
+    )
 
 
 # Pydantic models
@@ -85,6 +122,27 @@ async def request_coppa_parental_consent(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Request COPPA parental consent for under-13 user"""
+    if current_user.role in _COPPA_CREATE_STAFF:
+        pass
+    elif current_user.role == UserRole.PARENT:
+        if str(current_user.id) != str(request.parent_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="parent_id oturumdaki veli ile eslesmiyor",
+            )
+        if not await _parent_child_approved(
+            db, str(request.parent_id), str(request.child_id)
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Onayli veli-cocuk iliskisi bulunamadi",
+            )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="COPPA onayi yalnizca veli veya yetkili personel tarafindan talep edilebilir",
+        )
+
     # Check if consent already exists
     result = await db.execute(
         select(COPPAParentalConsent).where(
@@ -141,6 +199,12 @@ async def verify_coppa_consent(
     if not consent:
         raise HTTPException(status_code=404, detail="Consent not found")
 
+    if consent.parent_id != str(current_user.id) and current_user.role not in _STAFF_COMPLIANCE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu onay kaydini dogrulama yetkiniz yok",
+        )
+
     if consent.consent_status != ParentalConsentStatus.PENDING:
         raise HTTPException(
             status_code=400, detail=f"Consent already {consent.consent_status}"
@@ -167,6 +231,28 @@ async def request_ferpa_consent(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Request FERPA consent for educational records access"""
+    if current_user.role in _STAFF_COMPLIANCE:
+        pass
+    elif str(current_user.id) == str(request.student_id):
+        pass
+    elif current_user.role == UserRole.PARENT:
+        eff_parent = request.parent_id or str(current_user.id)
+        if eff_parent != str(current_user.id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="parent_id oturumdaki veli ile eslesmiyor",
+            )
+        if not await _parent_child_approved(db, eff_parent, str(request.student_id)):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Onayli veli-ogrenci iliskisi bulunamadi",
+            )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="FERPA onayi icin yetkiniz yok",
+        )
+
     consent = FERPAConsent(
         student_id=request.student_id,
         parent_id=request.parent_id,
@@ -194,6 +280,8 @@ async def get_coppa_consent_status(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Get COPPA consent status for a child"""
+    await _require_coppa_child_access(db, current_user, child_id)
+
     result = await db.execute(
         select(COPPAParentalConsent)
         .where(COPPAParentalConsent.child_id == child_id)
@@ -236,6 +324,12 @@ async def withdraw_coppa_consent(
     if not consent:
         raise HTTPException(status_code=404, detail="Consent not found")
 
+    if consent.parent_id != str(current_user.id) and current_user.role not in _STAFF_COMPLIANCE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu onayi geri cekme yetkiniz yok",
+        )
+
     consent.consent_status = ParentalConsentStatus.WITHDRAWN
     consent.withdrawal_date = datetime.now()
     consent.withdrawal_reason = reason
@@ -257,11 +351,8 @@ async def get_ferpa_access_log(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """Get FERPA educational records access log"""
-    # IDOR koruması: sadece admin/teacher erişebilir, veya öğrenci kendi logunu
-    role_str = getattr(current_user.role, "value", str(current_user.role)).lower()
-    if role_str not in ("admin", "teacher", "super_admin"):
-        user_id = str(getattr(current_user, "id", "") or "")
-        if user_id != student_id:
+    if current_user.role not in _STAFF_COMPLIANCE:
+        if str(current_user.id) != str(student_id):
             raise HTTPException(
                 status_code=403,
                 detail="Bu öğrencinin erişim loglarına yetkiniz yok",

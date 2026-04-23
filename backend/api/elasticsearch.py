@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 try:
     from core.auth_dependencies import require_role
-    from core.dependencies import AuthenticatedUser, get_current_user
+    from core.dependencies import AuthenticatedUser, UserRole, get_current_user
     from services.elasticsearch_service import (
         ElasticsearchService,
         get_elasticsearch_service,
@@ -20,7 +20,7 @@ try:
 except ImportError:
     # Import the canonical get_current_user function from core.dependencies
     from core.auth_dependencies import require_role
-    from core.dependencies import AuthenticatedUser, get_current_user
+    from core.dependencies import AuthenticatedUser, UserRole, get_current_user
     from services.elasticsearch_service import (
         ElasticsearchService,
         get_elasticsearch_service,
@@ -29,6 +29,10 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/elasticsearch", tags=["elasticsearch"])
+
+_ES_USER_ANALYTICS_STAFF = frozenset(
+    {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
+)
 
 
 # Request/Response modelleri
@@ -277,8 +281,9 @@ async def get_user_analytics(
     Son N gün içindeki kullanıcı aktivitelerini analiz eder
     """
     try:
-        # Yetki kontrolü (sadece kendi verilerini veya admin)
-        if str(current_user.id) != user_id and current_user.role.value != "admin":
+        if str(current_user.id) != str(
+            user_id
+        ) and current_user.role not in _ES_USER_ANALYTICS_STAFF:
             raise HTTPException(
                 status_code=403, detail="Bu verilere erişim yetkiniz yok"
             )

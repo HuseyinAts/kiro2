@@ -52,8 +52,11 @@ cd backend && rg "@router\.(post|put|patch|delete)\(" api --glob "*.py" -c
 | `api.parent_social_api` | `GET/PUT .../settings/{student_id}`, `activity`, `flags`, `disable-all` | `PARENT` + `parent_child.approved` (önceden sahte `ParentSocialSettings` ile IDOR) |
 | `api.irt_morfoloji` | `POST .../recommend-questions` (`student_id`) | staff \| self `users.id` \| `verify_student_access` |
 | `api.exam_performance` | `GET .../student/{id}/improvement-trends` | `UserRole` staff + `str` id; önceden yalnızca `"admin"` string |
+| `api.exam_performance` | `GET .../{exam_session_id}/detailed-analysis`, `weaknesses`, `study-recommendations`, `performance-comparison` | Oturum `student_id` sahibi veya staff (`_assert_exam_session_authorized`) |
+| `api.elasticsearch` | `GET .../analytics/user/{user_id}` | `TEACHER`/`ADMIN`/`SUPER_ADMIN` veya self; önceden yalnızca `"admin"` string |
+| `api.ferpa_coppa_compliance_api` | COPPA oluşturma / doğrulama / çekme / FERPA oluşturma / COPPA GET | Veli+`parent_child`, staff, veya öğrenci self; açık uçlar kapatıldı |
 
-Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`.
+Birim: `tests/unit/test_revolutionary_features_idor.py`, `tests/unit/test_zpd_maarif_revolutionary_idor.py`, `tests/unit/test_turkish_nlp_chat_idor.py`, `tests/unit/test_berturk_motivation_idor.py`, `tests/unit/test_cultural_adaptation_auth.py`, `tests/unit/test_parent_social_access.py`, `tests/unit/test_irt_morfoloji_recommend_idor.py`, `tests/unit/test_exam_performance_improvement_auth.py`, `tests/unit/test_exam_performance_session_guard.py`, `tests/unit/test_ferpa_coppa_guards.py`.
 
 ## Sonraki adım
 
