@@ -59,6 +59,13 @@
 - **Dalga A:** `scripts/dalga_a_mutating_openapi.py` — OpenAPI mutating TSV.
 - **Matris:** F4 notu J10–J13 satırında.
 
+## B-20260423-14 — F4: `rate_limit_config` rol → tier hizası
+
+- **Sorun:** `get_user_tier_from_roles` yalnızca `"admin"` / `"superadmin"` string eşlemesi yapıyordu; **`super_admin`** ve **`UserRole` enum** öğeleri ADMIN tier’a düşmüyordu; öğretmen rolü FREE kalıyordu.
+- **Düzeltme:** `backend/core/rate_limit_config.py` — slug normalizasyonu, `advanced_rate_limiter` ile aynı admin kümesi; `teacher` / `premium` slug + `is_premium` → PREMIUM.
+- **Test:** `tests/unit/test_rate_limit_config.py` (5).
+- **Not:** Önceki turda Redis tabanlı `resolve_user_tier_for_rate_limit` ile API/middleware hizalanmıştı; bu patch Task 51.2 yolunu da aynı kurallara çeker.
+
 ## B-20260423-13 — F4: enhanced users + quality-gates + content-management auth
 
 - **enhanced_user_management_api:** `get_current_user` artık `AuthenticatedUser` ile hizalı; `require_admin` / `require_admin_or_self` **`UserRole`** (`ADMIN`, `SUPER_ADMIN`); self erişimde **`str(id)`** karşılaştırması.

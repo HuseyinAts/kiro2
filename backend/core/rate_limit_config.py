@@ -7,8 +7,20 @@ Date: 2025-10-27
 """
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 from core.rate_limiting import RateLimitRule, RateLimitScope, RateLimitStrategy
+
+# Align with advanced_rate_limiter.resolve_user_tier_for_rate_limit admin slugs.
+_ADMIN_ROLE_SLUGS = frozenset({"admin", "super_admin", "superadmin"})
+
+
+def _slug_from_role_value(r: Any) -> str:
+    if r is None:
+        return ""
+    if hasattr(r, "value"):
+        return str(r.value).lower().strip()
+    return str(r).lower().strip()
 
 
 class UserTier(str, Enum):
@@ -302,10 +314,11 @@ def get_user_tier_from_roles(
     if not roles:
         return UserTier.ANONYMOUS
 
-    if "admin" in roles or "superadmin" in roles:
+    slugs = {_slug_from_role_value(r) for r in roles if _slug_from_role_value(r)}
+    if slugs & _ADMIN_ROLE_SLUGS:
         return UserTier.ADMIN
 
-    if is_premium:
+    if "teacher" in slugs or "premium" in slugs or is_premium:
         return UserTier.PREMIUM
 
     return UserTier.FREE
