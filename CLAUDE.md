@@ -1,5 +1,124 @@
 # KIRO2 Project Instructions
 
+## 🧭 Behavioral Foundation (Karpathy Guidelines)
+
+KIRO2 üzerinde çalışan Claude için 4 davranış prensibi. Andrej Karpathy'nin LLM kodlama gözlemlerinden türetildi. Bu bölüm **davranış**, sonraki bölümler **proje detayı** içindir.
+
+**Tradeoff:** Bu kurallar hıza karşı **dikkati** önceler. Trivial görevlerde (tipo, tek satır) sağduyu kullan.
+
+### 1. Önce Düşün, Sonra Kodla
+
+**Varsayım yapma. Kafa karışıklığını gizleme. Ödünleşimi yüzeye çıkar.**
+
+Kod yazmadan önce:
+
+- Varsayımlarını açıkça yaz. Belirsizsen sor.
+- Birden fazla yorum varsa sun — sessizce birini seçme.
+- Daha sade bir yol varsa söyle. Gerektiğinde geri it (push back).
+- Bir şey net değilse **dur. neyin karıştığını söyle. sor.**
+
+KIRO2 bağlamında: Bir endpoint dokunmadan önce `grep` ile route'un nerede tanımlı olduğunu, hangi guard'ı kullandığını, hangi tabloyu okuduğunu doğrula. **Ezbere yazma.** Her iddia canlı sistemden veya gerçek dosyadan doğrulanmalı.
+
+### 2. Önce Sadelik
+
+**Problemi çözen minimum kod. Spekülatif hiçbir şey yok.**
+
+- İstenen dışında özellik ekleme.
+- Tek-kullanımlık kod için soyutlama yapma.
+- İstenmemiş "esneklik" veya "configurability" ekleme.
+- İmkânsız senaryolar için error handling yazma.
+- 200 satır yazdıysan ve 50 satır yetiyorsa, **yeniden yaz**.
+
+Kendine sor: "Kıdemli bir mühendis bunu fazla karmaşık bulur muydu?" Cevap evet ise sadeleştir.
+
+KIRO2 bağlamında: Tek bir IRT hesabı için `IRTStrategy(ABC)` + `ThreePLEstimator` + `EstimatorFactory` yazma. Tek fonksiyon yeterli olduğunda DAG sınıfı çıkarma. (Aşağıdaki "Basit Cozum Prensibi (KISS/YAGNI)" bölümüyle uyumludur.)
+
+### 3. Cerrahi Müdahale
+
+**Sadece dokunman gereken yere dokun. Sadece kendi yarattığın çöpü topla.**
+
+Mevcut kodu düzenlerken:
+
+- Komşu kodu, yorumları, formatlamayı **"iyileştirme"**.
+- Bozuk olmayanı refactor etme.
+- Kendin farklı yapardın — yine de mevcut stille eşleş.
+- İlgisiz dead code görürsen **bahset, silme**.
+
+Senin değişiklik yetim bıraktıysa:
+
+- **Senin** değişikliğinin kullanılmaz hale getirdiği import/değişken/fonksiyonu kaldır.
+- Önceden var olan dead code'a **istenmedikçe** dokunma.
+
+Test: Değişen her satır doğrudan kullanıcının talebine izlenebilir olmalı.
+
+KIRO2 bağlamında: Backend geniş ve katmanlı. Bir auth bug'ı düzeltirken yan dosyada gördüğün eski yorumu silme. CSRF middleware'inde tip-hint eksik diye eklemeye girme — istenen iş bu değildi. Ayrı bir commit'e konu olur.
+
+### 4. Hedef Odaklı Yürütme
+
+**Başarı kriterini tanımla. Doğrulanana kadar döngüde kal.**
+
+Görevleri doğrulanabilir hedeflere dönüştür:
+
+- "Validation ekle" → "Geçersiz inputlar için test yaz, sonra geçir"
+- "Bug'ı düzelt" → "Bug'ı reproduce eden test yaz, sonra geçir"
+- "X'i refactor et" → "Refactor öncesi ve sonrasında testler geçsin"
+
+Çok adımlı görevlerde kısa bir plan koy:
+
+```
+1. [Adım] → doğrula: [kontrol]
+2. [Adım] → doğrula: [kontrol]
+3. [Adım] → doğrula: [kontrol]
+```
+
+Güçlü kriter bağımsız çalışmana izin verir. Zayıf kriter ("çalışsın yeter") sürekli açıklama ister. (Aşağıdaki "TDD Bug Fix (ZORUNLU)" kuralının genel hâlidir.)
+
+### KIRO2 Hard Rules (İhlal Edilmez)
+
+Bu kurallar canlı sistemden defalarca doğrulandı. İhlal edilirse veri bozulur, container çöker veya sessiz hata üretir. (Tablo/satır sayıları gibi durum bilgileri için `KIRO2_SESSION_BRIEFING.md`'ye bak. `questions` vs `question_bank` ayrımı için yukarıdaki Architecture Quick Reference'a bak.)
+
+**Veritabanı / Servis**
+
+- `emergency_content.sql` **DEPRECATED** — legacy `questions` tablosunu hedefler. Çalıştırma, ölü yazım olur.
+- **İki PostgreSQL örneği var:** Host PostgreSQL 18 port **5434** db `kiro2` → **gerçek backend**. `kiro2_postgres` container db `kiro2_db` → **kullanılmıyor.** DSN için `claude_desktop_config.json` (`%APPDATA%\Claude\`).
+- `users.id` ve `user_badges.id` **VARCHAR**, UUID değil. FK kolonları `sa.String` olmalı.
+- `sa.Enum` `create_type=False` ile güvenilmez → `sa.String` kullan.
+- `KullaniciServisi` **DEPRECATED** — sadece in-memory. Gerçek DB için `core.database.db_manager.get_session()` ile direkt SQLAlchemy `AsyncSession` kullan.
+
+**Container ve Deploy**
+
+- `ENVIRONMENT=production` **TUZAĞI:** config validation `postgres` password ve localhost CORS reddi → crash loop. Lokal/dev için `ENVIRONMENT=development`.
+- Python dosya değişikliği için kanonik döngü:
+  1. Host'ta düzenle
+  2. `docker cp [dosya] kiro2-backend:/app/[yol]`
+  3. `docker exec kiro2-backend find /app/[dizin] -name "*.pyc" -delete`
+  4. `docker restart kiro2-backend`
+  5. `Start-Sleep 22`
+  6. Health check
+- **Env değişkeni değişikliği:** `docker compose up -d --no-deps backend` (restart yetmez).
+- **Kalıcı değişiklik için:** `docker compose build backend` + `up -d --no-deps backend`.
+- `.pyc` **cache temizleme:** Model/service düzenlemesinden sonra her zaman. SQLAlchemy cache'lenmiş tip tanımı kullanır yoksa.
+
+**Dosya / Komut**
+
+- **Türkçe içerikli SQL:** Daima `psql -f dosya.sql`. Inline `psql -c "..."` Türkçe karakteri bozar.
+- **Karmaşık Python script'leri:** Host'a yaz → `docker cp` → `docker exec python /tmp/script.py`. Inline `python -c "..."` PowerShell quote/Türkçe ile patlar.
+
+### Çalışma Şekli: İnsan Döngüsünde
+
+KIRO2'de Claude **otonom yürütücü değildir**. Pattern:
+
+1. Claude PowerShell veya komut yazar.
+2. Hüseyin host'ta yürütür.
+3. Çıktıyı yapıştırır.
+4. Claude analiz eder, sonraki adımı belirler.
+
+Onaysız `bash`, `docker exec`, `psql` çalıştırma. Her bulgu **gerçek çıktıyla** desteklenmeli. Tek istisna: salt-okunur keşif (dosya görüntüleme).
+
+**Bu kurallar işe yarıyor demektir:** diff'lerde gereksiz değişiklik azaldıysa, hatalı tabloya yazan kod commit'e girmediyse, açıklayıcı sorular **uygulamadan önce** geliyorsa ve `Start-Sleep 22` atlanmadıysa.
+
+---
+
 ## Session Management
 
 - **Session resume**: Önceki session'dan devam ederken, codebase'i sıfırdan explore ETME. Bildiğin context'i hemen belirt ve sonraki adımları öner. Gereksiz keşif yapmadan önce SOR.
@@ -10,12 +129,12 @@
   1. `.claude/sessions/latest.md` guncelle
   2. MEMORY.md session index guncelle
   3. Pending changes commit et
-  4. Handoff prompt sun
-  NOT: Yeni session acmak MUMKUN DEGIL — sadece prompt metni ver
+  4. Handoff prompt sun NOT: Yeni session acmak MUMKUN DEGIL — sadece prompt metni ver
 
 ## Pre-flight Checks
 
 Before Docker commands (`docker compose`, `docker build`, `docker up`):
+
 1. Verify Docker: `docker info`
 2. Check Redis: `redis-cli ping`
 3. Check PostgreSQL: `pg_isready -p 5434`
@@ -30,6 +149,7 @@ Before Docker commands (`docker compose`, `docker build`, `docker up`):
 ## Session Handoff Checklist
 
 Before closing session:
+
 1. Commit: `git add . && git commit -m "..."`
 2. Push: `git push`
 3. Update `.claude/sessions/latest.md`:
@@ -47,6 +167,7 @@ Before closing session:
 ## Code Review Auto-fixes
 
 Fix WITHOUT asking during code review:
+
 - SQL injection → parameterized queries
 - Hardcoded credentials → environment variables
 - Dead code paths → remove stale imports
@@ -61,25 +182,26 @@ Fix WITHOUT asking during code review:
 
 ## Debugging Protocol
 
-Bug fix baslamadan ONCE `Root Cause Analysis` tablosunu kullaniciya GOSTER.
-Bu tablo olmadan Edit/Write YAPMA. Format ve detay: `.claude/rules/debugging-first.md`
+Bug fix baslamadan ONCE `Root Cause Analysis` tablosunu kullaniciya GOSTER. Bu tablo olmadan Edit/Write YAPMA. Format ve detay: `.claude/rules/debugging-first.md`
 
 ### TDD Bug Fix (ZORUNLU)
+
 Bug/hata/fix iceren gorevlerde Edit/Write ONCESI:
+
 1. Root Cause Analysis tablosunu goster (debugging-first.md)
 2. Fail eden test bul veya yaz
 3. Testi calistir ve FAIL ettigini dogrula
 4. SONRA fix yaz
-5. Testi tekrar calistir ve PASS ettigini dogrula
-Bu adimlar ATLANAMAZ. Acil durumda kullanicidan onay al.
+5. Testi tekrar calistir ve PASS ettigini dogrula Bu adimlar ATLANAMAZ. Acil durumda kullanicidan onay al.
 
 ### Progressive Checkpoint (ZORUNLU)
+
 Her commit SONRASI `.claude/sessions/latest.md` guncelle:
+
 - Son commit hash + mesaj
 - Yapilan isler (bu session'da)
 - Bekleyen isler
-- Test durumu (pass/fail/skip)
-Bu kural compaction/crash durumunda context kurtarma icin KRITIK.
+- Test durumu (pass/fail/skip) Bu kural compaction/crash durumunda context kurtarma icin KRITIK.
 
 ## Deep Audit Protocol
 5+ dosyayi etkileyen audit/review/tarama isteklerinde:
@@ -700,6 +822,6 @@ See `.claude/rules/testing.md` (26 lessons) and `.claude/rules/verification.md` 
 
 ---
 
-**Last Updated:** March 20, 2026
-**Document Version:** 3.5
-**Changes:** v3.5 — Paralel brainstorming sistemi eklendi: /brainstorm, /challenge, /analyze komutları. docs/brainstorms/ dizini oluşturuldu.
+**Last Updated:** April 27, 2026
+**Document Version:** 3.6
+**Changes:** v3.6 — Karpathy Behavioral Foundation eklendi (4 prensip: Önce Düşün / Önce Sadelik / Cerrahi Müdahale / Hedef Odaklı Yürütme) + KIRO2 Hard Rules bölümü (emergency_content deprecated, iki postgres örneği, VARCHAR PK, KullaniciServisi deprecated, ENVIRONMENT trap, deploy cycle, Türkçe SQL/Python kuralları) + İnsan Döngüsünde çalışma protokolü.
