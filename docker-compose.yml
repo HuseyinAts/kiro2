@@ -1,12 +1,12 @@
 # KIRO2 Production Stack - Docker Compose
-# Uses host PostgreSQL (port 5434) and host Redis (port 6379)
+# Uses host PostgreSQL (port 5434); Redis runs in kiro2-redis container (external volume)
 #
 # Setup:
 #   1. cp .env.mvp.example .env.mvp
-#   2. Edit .env.mvp: set REDIS_URL=redis://host.docker.internal:6379/0
+#   2. Edit .env.mvp: set REDIS_URL=redis://kiro2-redis:6379/0
 #   3. docker compose up --build
 #
-# NOTE: Redis runs natively on host (port 6379). Docker Redis disabled to avoid port conflict.
+# NOTE: Redis runs in kiro2-redis container, using external volume kiro2_redis-data.
 # NOTE: Elasticsearch runs in turkiye_sinav_elasticsearch container (external network).
 # Chroma (optional): set in shell or .env.mvp e.g. CHROMADB_HOST=chroma CHROMADB_PORT=8000
 # for HttpClient; leave CHROMADB_HOST empty for embedded persist (CHROMADB_PERSIST_DIR=/app/vector_db).
@@ -43,6 +43,20 @@ services:
       start_period: 60s
       retries: 3
 
+  redis:
+    image: redis:7-alpine
+    container_name: kiro2-redis
+    command: redis-server --appendonly yes --save "60 1000"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
   celery-worker:
     build:
       context: ./backend
@@ -125,6 +139,9 @@ volumes:
   backend-logs:
   kiro2-vector-db:
 
+  redis-data:
+    external: true
+    name: kiro2_redis-data
 networks:
   default:
     driver: bridge
