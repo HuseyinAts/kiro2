@@ -1,4 +1,4 @@
-# KIRO2 SESSION BRIEFING — 28 Nisan 2026 (v17)
+# KIRO2 SESSION BRIEFING — 28 Nisan 2026 (v18)
 
 ## YENİ SOHBET BAŞLATMAK İÇİN
 ```
@@ -212,47 +212,54 @@ Akış: ADIM 0 (kod dokunmadan tespit) → Aşama kararı (insan onayı) → mig
 
 ---
 
-## GİT DURUMU (28 Nis 2026)
+## GİT DURUMU (28 Nis 2026, akşam güncelleme — v18)
 
 Branch: `master`
-Son commit zinciri (push sonrası):
-- `docs(briefing): v17 — konsolide + 28 Nis durum`
-- `docs(claude): v3.6 — Karpathy Behavioral Foundation + Hard Rules`
-- `fix(infra): redis container + external volume (REDIS FIX kalıcılaştır)`
-- `f05e5d6` chore: archive superseded migration + add behavior test doc *(28 Nis Pist 3 — kök dizin temizliği)*
+Son commit zinciri (push bekliyor — `60d4db5` + `ac2dee5` + bu briefing v18 commit'i yeni):
+- `ac2dee5` docs(pilots): Paket A dead-data cleanup RESULT + state (PASS) *(28 Nis akşam)*
+- `60d4db5` docs(pipeline): M3 v1.1 — K-M3-1...7 kararları işlendi *(28 Nis akşam)*
+- `5f89ad4` docs(pipeline): plan v1.2.1 + pre-pilot artifact'leri ekle *(28 Nis)*
+- `a16826f` docs(pipeline): M3 iskeleti ekle *(28 Nis)*
+- `2197cc2` docs(briefing): v17 hijyen *(28 Nis)*
+- `1daf065` docs(briefing): v17 — konsolide + 28 Nis durum *(28 Nis)*
+- `27a2a29` docs(claude): v3.6 — Karpathy Behavioral Foundation + Hard Rules *(28 Nis)*
+- `f05e5d6` chore: archive superseded migration + add behavior test doc *(28 Nis Pist 3)*
 - `36549f9` prepilot M1+S1+M2 (28 Nis, soru_hash + MRQ + staging)
 
-Origin/master: senkron (28 Nis push sonrası).
+Origin/master: 2 commit ileri (`60d4db5` + `ac2dee5`; bu briefing v18 commit'i sonrası 3 olur). Push v18 ile birlikte atılır.
 
-**Untracked (WIP, atık değil):**
-```
-.cursor/plans/20260427_icerik_pipeline_v1_2.md
-.cursor/plans/20260428_icerik_pipeline_prepilot_RESULT.md
-.cursor/plans/20260428_paket_a_dead_data_cleanup_RESULT.md
-backend/_pilots/20260428_icerik_pipeline_prepilot_state.md
-backend/_pilots/20260428_paket_a_dead_data_cleanup_state.md
-```
-
-`[DOĞRULA: 23-27 Nis arası commit hash listesi — yakın commit özeti için git log --oneline]`
+**Untracked: yok** — tüm WIP dosyaları commit zincirine girdi (`5f89ad4` + `ac2dee5`).
 
 ---
 
 ## AÇIK PİSTLER (28 Nis devir notu)
 
-### Pist 1 — M3 / İçerik Pipeline İskeleti  **[ASIL İŞ]**
-Önce şu 3 dosyayı oku (untracked):
-- `.cursor/plans/20260427_icerik_pipeline_v1_2.md`
-- `.cursor/plans/20260428_icerik_pipeline_prepilot_RESULT.md`
-- `backend/_pilots/20260428_icerik_pipeline_prepilot_state.md`
+### Pist 1 — M3 / İçerik Pipeline — DEVAM (pilot script yazımı bekliyor)  **[ASIL İŞ]**
+Tamamlandı:
+- Plan v1.2.1 (`.cursor/plans/20260427_icerik_pipeline_v1_2.md`, commit `a16826f`+`5f89ad4`)
+- Pre-pilot M1+S1+M2 PASS (commit `36549f9`, head `prepilot_m2_indexes_20260428`)
+- M3 iskelet v1.0 (commit `5f89ad4`) → v1.1 (commit `60d4db5`, 7 karar K-M3-1...7 KAPALI, 3 değişiklik)
 
-Sonra: M1+S1+M2 (commit `36549f9`) ile uyumu doğrula. M3 iskeleti = staging tablosu → MRQ akışı, pipeline'ın `soru_hash` ile nasıl konuşacağı.
+Sıradaki: Pilot script yazımı (`backend/scripts/pipeline/pilot_500p.py`)
 
-### Paket A RESULT commit  *(pilot sahibi sohbette)*
-```
-.cursor/plans/20260428_paket_a_dead_data_cleanup_RESULT.md
-backend/_pilots/20260428_paket_a_dead_data_cleanup_state.md
-```
-K1_K2_K3_dead_data cleanup pilotunun kapanış commit'i.
+Önce şu dokümanı oku: `.cursor/plans/20260428_pipeline_M3_iskelet.md` (v1.1)
+- §7 Karar Tablosu (KAPALI) — 7 kararın gerekçesi + hangi 3'ü değiştirildi (K-M3-2 async, K-M3-3 pool, K-M3-7 hibrit)
+- §2.3 Modül imzaları + connection notu
+- §3 Conflict policy + pool/transaction notu
+- §4.4 Concurrency × idempotency
+- §6.1 Smoke kabul kriterleri (1a dry-run + 1b host)
+
+Pilot script kısıtları (§7'den, ezberden değil dokümandan):
+- Async + concurrency flag (`--concurrency=N`, smoke=1, 500p=4, prod=8)
+- asyncpg pool (size=concurrency+2), sayfa-başı 1 connection 1 transaction
+- Dry-run flag (`--dry-run`) — DB yazımı yok, JSON çıktı, MCP'de imza testi için
+- Resume flag (`--resume <batch_id>`) — pending+failed sayfaları paralel re-process
+- Model env/flag (`claude-opus-4-7` default)
+
+Sonra: Smoke iki adımda — `--dry-run --concurrency=1` (MCP veya host, imza testi) → `--concurrency=1` host smoke 5-10 sayfa Matematik kitabı → RESULT raporu (`.cursor/plans/<tarih>_pipeline_M3_smoke_RESULT.md`) → PASS ise 500p pilot (`--concurrency=4`).
+
+### Pist 2 — Paket A dead-data cleanup — KAPANDI ✅
+Commit `ac2dee5`. RESULT + state (1132 satır) tracked. PASS — 6 kabul kriterinin tamamı geçti, 6.278 satır pasifleştirildi (`is_active=FALSE`), 148 koruma kuralı tetiklendi (kalibre/havuz/yanıtlanmış kayıtlar korundu), 1 test seed silindi.
 
 ### Pist 3 — KAPANDI ✅
 Kök dizin temizliği. Commit `f05e5d6`. 49 path → 8 path.
@@ -314,3 +321,21 @@ CLAUDE.md (v3.6 Karpathy Behavioral Foundation) ve docker-compose.yml (Redis fix
 - 23 disabled router sayısı: liste toplamı 13 düşüyor, eksik 10 router'ın listesi nereden gelir?
 - 236 tablo sayısı (28 Nis cleanup sonrası post-state teyidi yapılmadı; cleanup yalnız satır pasifleştirme olmalı, tablo sayısı değişmemeli)
 - `30_DERSLER.md` / `40_OPEN_DEBTS.md` / `50_KARARLAR.md` ardışık doküman zinciri hâlâ duruyor mu? v17'de referansı isteniyorsa eklenir.
+
+---
+
+## v18 DEĞİŞİKLİK NOTU (v17'den, 28 Nis 2026 akşam)
+
+- **Pist 1 yeniden yazıldı:** "M3 İskeleti yazılacak" → "M3 v1.1 commit'lendi (60d4db5), 7 karar KAPALI, sıradaki pilot script yazımı". Yeni sohbet için pilot script kısıtları (async + concurrency flag, asyncpg pool, dry-run, resume, model env) listelendi — ezberden değil §7 karar tablosundan.
+- **Paket A → Pist 2 KAPANDI:** "RESULT commit (pilot sahibi sohbette)" → "KAPANDI ✅ commit `ac2dee5`, PASS". Untracked durumdan tracked'a geçiş.
+- **GİT DURUMU güncellendi:** Yeni commit'ler (`60d4db5` M3 v1.1, `ac2dee5` Paket A) zincire eklendi. Untracked listesi → "yok" (tüm WIP commit'lendi).
+- **Yeni sohbet için signal:** Pilot script yazımı bu sohbette başlatılmadı (context budget korundu); yeni sohbet açıldığında Pist 1 talimatları doğrudan pilot script yazımına yönlendiriyor.
+
+**Sohbet özeti (28 Nis akşam, bu sohbet):**
+1. Briefing/memory drift teyidi (canlı sistem doğrulama, 5 nokta hepsi memory ile uyumlu çıktı)
+2. M3 iskelet §7 7 kararı tartışıldı (K-M3-1...7) — 3 değişiklik (K-M3-2 sync→async, K-M3-3 per-batch→pool, K-M3-7 saf MCP→hibrit), 4 doküman önerisi kabul
+3. M3 iskelet v1.0 → v1.1 patch'lendi + commit (`60d4db5`)
+4. Paket A RESULT + state commit'lendi (`ac2dee5`)
+5. Briefing v17 → v18 patch'lendi (bu commit)
+
+**Sıradaki sohbete iş:** Pilot script yazımı (`backend/scripts/pipeline/pilot_500p.py`) — Pist 1 talimatlarına göre.
