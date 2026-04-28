@@ -1,7 +1,7 @@
 # M3 İskelet — İçerik Pipeline v1.2.1 Akış Tasarımı
 
-**Tarih:** 28 Nisan 2026
-**Durum:** TASARIM (henüz uygulanmadı, smoke test bekliyor)
+**Tarih:** 28 Nisan 2026 (v1.1 hijyen: K-M3-1...7 kararları işlendi)
+**Durum:** TASARIM (kararlar kapandı, pilot script yazımı bekliyor)
 **Tip:** Plan v1.2.1'in alt-seviye akış iskeleti (kod değil, spec)
 **Plan referansı:** `.cursor/plans/20260427_icerik_pipeline_v1_2.md`
 **Pre-pilot durumu:** PASS (commit `36549f9`, head `prepilot_m2_indexes_20260428`)
@@ -172,6 +172,8 @@ class ConflictDecision(TypedDict):
 
 ### 2.3 Modül imzaları (taslak)
 
+> **Connection yönetimi (K-M3-3):** Tüm `Connection` parametreleri pilot script'te `asyncpg.create_pool(min_size=2, max_size=concurrency+2)` üzerinden `async with pool.acquire() as conn:` ile alınan connection'lardır. Sayfa-başı bir connection, sayfa-içi bir transaction (atomic).
+
 ```python
 from pathlib import Path
 from asyncpg import Connection
@@ -253,6 +255,8 @@ async def finalize_batch(
 ---
 
 ## 3. Conflict Policy — Somut Python Taslağı
+
+> `conn` parametresi pilot script'te pool'dan acquire edilmiş bir connection'dır (K-M3-3). `apply_decision` içindeki `async with conn.transaction()` sayfa-içi atomicity sağlar — Katman 2'nin DELETE+INSERT'i ve staging_status update tek transaction içinde yer alır.
 
 ```python
 async def resolve_conflict(
@@ -438,6 +442,18 @@ Aynı sayfa iki kere extract edilirse (resume sırasında) aynı `soru_hash` ür
 
 **Pilot için kabul edilen davranış:** Resume oranı düşük olacağından (%5 altı tahmin) gereksiz IO ihmal edilebilir. Eğer pilot RESULT'ta yüksek resume görünürse, `write_staging` öncesi `staging_batch_id+source_page` ile dedup eklenir (ek SELECT).
 
+### 4.4 Concurrency × idempotency (K-M3-2 + K-M3-3)
+
+Paralel akış (`--concurrency=N`) idempotency'yi şu şekilde etkiler:
+
+- **Sayfa dağıtımı:** Pilot script sayfaları `asyncio.Semaphore(N)` üzerinden dağıtır. Aynı sayfa **iki coroutine'de eşzamanlı işlenmez** (script seviyesinde tekillik garantisi).
+- **Connection izolasyonu:** Her sayfa pool'dan kendi connection'ını alır. Sayfa-içi transaction izole, sayfa-arası transaction yok — sayfalar birbirinin staging row'larını görmez (READ COMMITTED default).
+- **Hash race (farklı sayfalarda aynı hash):** İki paralel sayfa aynı `soru_hash` üretirse:
+  - İlk biten Katman 1 INSERT → partial UNIQUE INDEX `uq_qb_soru_hash_active` aktif olarak rezerve eder
+  - İkinci sayfa `resolve_conflict`'te artık hash'i aktif görür → Katman 2 veya 3'e düşer (mevcut conflict policy)
+  - Bu **bug değil**, policy'nin tetiklenmesi. Pre-pilot M2 garantisi bunu kapsar.
+- **Resume + concurrency:** `--resume <batch_id> --concurrency=N` → tamamlanmamış sayfalar paralel re-process edilir. Aynı semaphore kuralı geçerli.
+
 ---
 
 ## 5. Hata Kurtarma — Modül × Hata Türü Matrisi
@@ -459,6 +475,8 @@ Aynı sayfa iki kere extract edilirse (resume sırasında) aynı `soru_hash` ür
 | `apply_decision` | INSERT fail (FK eksik vb.) | Tx rollback, status='failed' | Sayfa atlanır, devam |
 | `apply_decision` | MRQ INSERT fail | Tx rollback, status='failed' | Sayfa atlanır, devam |
 | `finalize_batch` | Hatalı sayım | Log uyarı, summary üret | Bilgi notu |
+| (pool seviyesi) | `pool.acquire()` timeout (pool exhausted) | Sayfa atlanır, status='failed' | Pool size yetersizse pilot durur |
+| (pool seviyesi) | Pool oluşturma fail (DB down) | Pilot durur | Pre-flight kontrol gerekli |
 
 **Genel kural:** modül seviyesinde hata = sayfa atlanır, batch devam. Yalnız iki istisna:
 - `extract_page` 4xx (auth/quota) → kritik, pilot durur
@@ -480,36 +498,44 @@ M3 iskeleti **uygulandığında** aşağıdaki smoke test ile doğrulanır.
 
 | # | Kriter | Doğrulama yöntemi |
 |---|---|---|
-| 1 | İskelet imzaları çalışır koda dönüştürülebildi | Pilot script bu iskelet üzerine inşa edildi, runtime hata yok |
+| 1a | İskelet imzaları çalışır koda dönüştürülebildi (dry-run) | `pilot_500p.py --dry-run --concurrency=1` MCP veya host'ta çalışır, DB yazımı 0, JSON çıktı üretilir, runtime hata yok |
+| 1b | Host smoke: gerçek DB + gerçek Opus | `pilot_500p.py --concurrency=1` host'ta 5-10 sayfa Matematik kitabı, runtime hata yok, staging dolar |
 | 2 | Conflict policy 3 katmanın üçünü de gerçek veride üretti | `SELECT staging_status, COUNT(*) FROM question_bank_staging WHERE staging_batch_id=$1 GROUP BY 1` |
 | 3 | Idempotency: aynı batch_id ile 2. çalıştırma no-op | Aynı `staging_batch_id` ile pilot 2. kez çalıştırılır → 0 yeni question_bank yazımı, 0 yeni MRQ |
 | 4 | Hata kurtarma: API kesilirse pilot devam eder | Manuel test (network drop simülasyonu); `failed_pages.csv` doluyor, batch tamamlanıyor |
 | 5 | İki kayıt yeri ayrımı çalışıyor | Smoke sonu `failed_pages.csv` ve `staging_status='failed'` ayrı kontrol |
 | 6 | Backend regression yok | `/health` 5/5 + `/api/v1/osym/statistics` aynı `total` |
+| 7 | QA örnekleme çalışıyor | `finalize_batch` çıktısında `qa_sample.csv` var; satır sayısı = `ceil(batch_size × 0.01)` veya min 1; `flags.needs_manual_review=true` satırlar listede |
+| 8 | Pool / concurrency davranışı | Smoke `--concurrency=1`'de pool min=1 max=2, log "pool acquired" sayısı = sayfa sayısı, pool exhaustion 0 |
 
 ### 6.2 FAIL durumları → aksiyon
 
 | Kriter | Olası sebep | Aksiyon |
 |---|---|---|
-| 1 | İskelet imzaları yetersiz | M3 v2 gerekli |
+| 1a | Dry-run JSON üretmedi / imza fail | M3 v2 gerekli |
+| 1b | Host runtime fail (gerçek DB veya Opus bağlantı sorunu) | Pre-flight kontrol + retry kalibre |
 | 2 | Katman 2 veya 3 üretilmedi (5 sayfa hep Katman 1) | Smoke kapsamı 50 sayfaya genişlet |
 | 3 | Resume logic eksik veya bozuk | Resume akışı + UNIQUE INDEX davranışı gözden geçir |
 | 4-5 | Hata matrisi eksik | Modül × hata türü genişlet, retry sayıları kalibre |
 | 6 | Schema migration kalıntısı | Rollback gerekebilir |
+| 7 | QA örnekleme bug | `finalize_batch` sample logic gözden geçir |
+| 8 | Pool exhaustion / connection leak | pool size + connection lifecycle review |
 
 ---
 
-## 7. Açık Kararlar / Borçlar
+## 7. Karar Tablosu (KAPALI — 28 Nisan 2026 sohbeti)
 
-| ID | Karar | Önerim | Bağlı |
+7 karar bu sohbette tartışıldı ve kapatıldı. **3 karar (K-M3-2, K-M3-3, K-M3-7) doküman önerisinden değiştirildi.**
+
+| ID | Soru | Karar | Gerekçe (özet) |
 |---|---|---|---|
-| K-M3-1 | Pilot script konumu | `backend/scripts/pipeline/pilot_500p.py` (S1 backfill_soru_hash.py orada) | Pilot script yazımı |
-| K-M3-2 | `extract_page` async mı sync mı? | Async (Opus API zaten async, paralel çağrı için kapı açık) | Throughput |
-| K-M3-3 | DB connection: per-batch tek mi, modül başı yeni mi? | Per-batch tek + her `apply_decision` kendi `async with conn.transaction()` | Performans |
-| K-M3-4 | QA örnekleme (%1 random + %100 flagged) hangi modülde? | `validate_page` flagged işaretler, `finalize_batch` random sample seçer | Plan §1.2 |
-| K-M3-5 | Batch çalışırken backend canlı mı? | Evet — staging tablosu izole, production okumaları etkilenmez | Plan v1.2.1 R8 |
-| K-M3-6 | Smoke test'te kullanılacak Opus modeli | `claude-opus-4-7` (60 sayfa baseline ile aynı) | Reproducibility |
-| K-M3-7 | Pilot script çalışma yeri (CLI / sohbet / Claude Code) | İlk smoke bu sohbette MCP üzerinden, sonra Claude Code CLI | Plan §5.1 |
+| K-M3-1 | Pilot script konumu | ✅ `backend/scripts/pipeline/pilot_500p.py` | S1 backfill aynı dizinde, pattern devam |
+| K-M3-2 | `extract_page` async mı sync mı? | ✅ **Async + concurrency flag** (smoke=1, 500p=4, prod=8) | DEĞİŞTİRİLDİ. 100K sayfa hedefi (Plan sat. 3) sync'le ~58 gün, async-4 ile ~14 gün; Plan sat. 127 zaten "paralel batch" diyor; sync→async refactor önceki tahminden zor |
+| K-M3-3 | DB connection: per-batch tek mi, modül başı yeni mi? | ✅ **asyncpg pool** (size=concurrency+2), sayfa-başı 1 connection 1 transaction | DEĞİŞTİRİLDİ. K-M3-2 async kararıyla uyum: per-batch tek connection paralelizmi öldürür; pool sayfa izolasyonu + Katman 2 atomicity'sini korur; KIRO2 backend'de zaten standart pattern |
+| K-M3-4 | QA örnekleme hangi modülde? | ✅ `validate_page` flagged, `finalize_batch` random | Doğal sorumluluk: flagged sayfa-içi bilgiyle, random batch-bütünüyle stratifiye |
+| K-M3-5 | Batch çalışırken backend canlı mı? | ✅ Evet | Staging izole, Katman 1/2/3 production okumalarını bozmuyor; §6.1 #6 doğrulayıcı; gece koşumda zaten 0 öğrenci |
+| K-M3-6 | Smoke test Opus modeli | ✅ `claude-opus-4-7` (env/flag ile geçirilecek — kod kararı) | 60p baseline ile aynı → reproducibility; Sonnet alternatifi Plan §0.5'te değerlendirilip reddedilmiş |
+| K-M3-7 | Pilot çalışma yeri | ✅ **Hibrit C** — `--dry-run --concurrency=1` MCP'de imza, `--concurrency=1` host smoke, `--concurrency=4` host 500p | DEĞİŞTİRİLDİ. Saf MCP CLAUDE.md "insan döngüsü" kuralını delik açıyor; saf host iter çevrimi yavaş; dry-run flag'i pilot script'in zaten ihtiyacı olan bir özellik |
 
 ---
 
@@ -517,11 +543,12 @@ M3 iskeleti **uygulandığında** aşağıdaki smoke test ile doğrulanır.
 
 1. ✅ Hüseyin: M3 iskelet onayı (K2/K3/K4 — bu sohbette tamamlandı)
 2. ✅ Claude: M3 iskelet dokümanı (`.cursor/plans/20260428_pipeline_M3_iskelet.md`)
-3. ⏳ Hüseyin: M3 dokümanı gözden geçirmesi, K-M3-1...7 cevaplaması
-4. ⏳ Claude (yeni sohbet veya bu): Pilot script yazımı (`pilot_500p.py`)
-5. ⏳ Hüseyin: Smoke test (5-10 sayfa, M3 §6 kabul kriterleri)
-6. ⏳ Claude: Smoke RESULT raporu (`.cursor/plans/<tarih>_pipeline_M3_smoke_RESULT.md`)
-7. ⏳ Karar: PASS → 500 sayfa pilot başlat (Plan §10) / FAIL → M3 v2 revize
+3. ✅ Hüseyin + Claude: K-M3-1...7 kararları kapandı (28 Nisan 2026 sohbeti, §7 karar tablosu)
+4. ⏳ Claude: Pilot script yazımı (`backend/scripts/pipeline/pilot_500p.py`) — §7 kararlarına göre
+5. ⏳ Hüseyin: Dry-run smoke (`--dry-run --concurrency=1`, MCP veya host) — §6.1 kriter 1a
+6. ⏳ Hüseyin: Host smoke (`--concurrency=1`, 5-10 sayfa Matematik) — §6.1 kriter 1b-8
+7. ⏳ Claude: Smoke RESULT raporu (`.cursor/plans/<tarih>_pipeline_M3_smoke_RESULT.md`)
+8. ⏳ Karar: PASS → 500 sayfa pilot başlat (Plan §10, `--concurrency=4`) / FAIL → M3 v2 revize
 
 ---
 
@@ -539,3 +566,5 @@ M3 iskeleti **uygulandığında** aşağıdaki smoke test ile doğrulanır.
 ## 10. Versiyon
 
 **v1 (28.04.2026):** İlk yazım. Plan v1.2.1'in §3.1, §5.4, §5.5 bölümlerinin somut akış iskeleti. Pre-pilot M1+S1+M2 (commit `36549f9`) zemini üzerine kuruldu. İçerik: 6 modül × veri sözleşmeleri + conflict policy Python taslağı + idempotency mantığı + 15 satırlık hata kurtarma matrisi + 6 maddelik smoke kabul kriterleri + 7 açık karar.
+
+**v1.1 (28.04.2026, akşam):** K-M3-1...7 kararları işlendi (3 değişiklik: K-M3-2 sync→async+concurrency flag; K-M3-3 per-batch conn→asyncpg pool; K-M3-7 saf MCP→hibrit dry-run+host). §2.3'e connection yönetimi notu eklendi. §3'e pool/transaction notu eklendi. §4.4 yeni alt-bölüm (concurrency × idempotency etkileşimi). §5'e 2 pool seviyesi hata satırı. §6.1 kriter 1 → 1a/1b ayrımı + kriter 7 (QA) + kriter 8 (pool) eklendi; §6.2 uyumlu güncellendi. §7 "Açık Kararlar" → "Karar Tablosu (KAPALI)" yeniden yazıldı. §8 "Sıradaki Adımlar" güncellendi (3 ✅, pilot script yazımı sıradaki).
