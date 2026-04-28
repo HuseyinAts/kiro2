@@ -61,9 +61,9 @@ question_bank: 77.445 toplam
        ├─  6.278 K1_K2_K3_dead_data (28 Nis cleanup, Paket A)
        └─      1 prepilot dedup (Esen APS)
 
-users: 65 | exam_sessions: 73 | kiro2_cat_sessions: 8
+users: 65 | exam_sessions: 186 | kiro2_cat_sessions: 8
 irt_calibration_history: 1.080 | topic_prerequisites: 90
-fsrs_cards: 0 | zpd_history: 0   ← organik birikim bekliyor
+fsrs_cards: 57 | zpd_history: 0   ← FSRS akışı başladı, ZPD organik birikim bekliyor
 ```
 
 ES doc sayısı: `[DOĞRULA — 28 Nis cleanup sonrası ES reindex yapıldı mı?]`
