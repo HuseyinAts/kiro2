@@ -1,0 +1,67 @@
+{
+  "_README": {
+    "amac": "Manuel-OCR pipeline (W4r workflow) icin kitap-bazli crop koordinatlari. Her kitap icin metin alani (UI, dekorasyon, watermark, viewer cerceveleri haric) bbox'u kayitli.",
+    "kullanim": "Yeni batch baslarken: ilgili kitap kaydini bul, sol_yari ve sag_yari koordinatlarini Python crop'una uygula (PIL Image.crop). Eger kitap 'kalibre_edilmemis' listesindeyse, ONCE kalibrasyon yap (CLAUDE.local.md 'Kitap-bazli crop kalibrasyonu' bolumu).",
+    "sema": {
+      "kitap_klasor_adi": {
+        "calibrated_date": "YYYY-MM-DD",
+        "calibrated_via": "kalibrasyon yontemi/kanit",
+        "image_size": "[W, H] orijinal PNG boyutu",
+        "sol_yari": {"x": "[xmin, xmax]", "y": "[ymin, ymax]"},
+        "sag_yari": {"x": "[xmin, xmax]", "y": "[ymin, ymax]"},
+        "ozel_sayfalar": {
+          "cevap_anahtari_sayfa_no": "tam sayfa numarasi (1-indexed)",
+          "ozel_crop_<sayfa_grubu>": "varsa farkli koordinat seti"
+        },
+        "test_edilmis_sayfalar": "[test edilmis sayfa numaralari listesi]"
+      }
+    },
+    "guncelleme_kurali": "Yeni kitap kalibre edilince 'calibrated' altina ekle, 'kalibre_edilmemis' listesinden cikar. Mevcut kalibrasyonu degistirirken eski koordinatlari git history'de tut (bu dosya commit edilir)."
+  },
+
+  "calibrated": {
+    "345 2025 Tyt Türkçe Soru Bankası": {
+      "calibrated_date": "2026-04-30",
+      "calibrated_via": "Test 3 + Test 4 + ÖSYM Tadinda 1 batch'lerinde uretim ortaminda dogrulandi (3 batch x 8-11 soru, 30 INSERT'in tamami basarili)",
+      "image_size": [1920, 1080],
+      "sol_yari": {"x": [480, 1100], "y": [130, 985]},
+      "sag_yari": {"x": [1000, 1750], "y": [130, 985]},
+      "ozel_sayfalar": {
+        "cevap_anahtari_sayfa_no": 432,
+        "cevap_anahtari_crop": {"x": [640, 1200], "y": [235, 280]},
+        "cevap_anahtari_upscale": "4x LANCZOS, q=95"
+      },
+      "test_edilmis_sayfalar": [10, 11, 12, 13, 14, 15, 432]
+    }
+  },
+
+  "kalibre_edilmemis": [
+    {
+      "kitap": "345 2024 Ayt Kimya Soru Bankası",
+      "ornek_sayfa_gozlemi": "sayfa_0037: UI 'UcDortBes' widget sag-ust, dekoratif ust bant, sayfa numarasi alt-orta. Beklenen crop: 345 Turkce ile benzer ama dogrulama gerek.",
+      "tahmini_yakin_kitap": "345 2025 Tyt Türkçe Soru Bankası"
+    },
+    {
+      "kitap": "2020-2021-ACİL-AYT Matematik Soru Bankası",
+      "ornek_sayfa_gozlemi": "sayfa_0029: Sag-ust 'ACIL' marka + dik araclar widget'i (Hareket/Alan Sec/Kalem/Boyut/Silgi/Renk/Vurgu/Sekiller/Firca/Temizle/Geri Al/Ileri Al/Zoom/Yon/Donme), ust koyu lacivert+sari+kirmizi bant, alt 'FERNUS' watermark + sayfa cercevesi, 1.A 2.E... cevap kutusu sayfa altinda. Crop koordinatlari 345'ten farkli.",
+      "tahmini_kabaca_crop": "x:380-1640, y:80-1010 (gozle, dogrulama gerek)"
+    },
+    {
+      "kitap": "2023-2024-ACİL-TYT-AYT Geometri Soru Bankası",
+      "ornek_sayfa_gozlemi": "sayfa_0034: Ust 'Ikizkenar ve Eskenar Ucgen' bant (mavi/sari/kirmizi), sag 'ACIL Yayinlari' widget (yatay araclar paneli), alt cevap anahtari kutusu '1.C 2.D 3.C...' kucuk font. Sag taraf widget genis - crop sag sinir solda.",
+      "tahmini_kabaca_crop": "x:380-1620, y:80-985 (gozle, dogrulama gerek)"
+    },
+    {
+      "kitap": "Aktif Ogrenme 2025 Tyt Fizik Soru Bankası",
+      "ornek_sayfa_gozlemi": "sayfa_0281: Ust dekoratif bantlar 'Kavrama Bolumu / Ic / Uygulama Bolumu', sag-ust 'ISLER' watermark + araclar widget, sol-sag 2 sutunlu format (Ornek/Cozum solda, Soru sagda). Iki sutun yapisi 345'e benzer ama dekoratif kenarlar farkli.",
+      "tahmini_kabaca_crop": "x:430-1660, y:90-1010 (gozle, dogrulama gerek)"
+    },
+    {
+      "kitap": "Aromat Paragraf Soru Bankası",
+      "ornek_sayfa_gozlemi": "sayfa_0054: Sol-ust 'Sozcuk ve Cumle Duzeyinde Anlam' mavi panel (genis), sag-ust 'aromat+ yayinlari' watermark (icin de TEST 25 + 'Cercek OSYM Deney mi' bant), alt 'aromat+' logo + dekoratif renk band kavisli sayfa cevresinde, 2 sutun format. Sol mavi panel sayfanin %20'sini kapliyor — crop sol sinir burada.",
+      "tahmini_kabaca_crop": "x:460-1640, y:170-960 (gozle, dogrulama gerek)"
+    }
+  ],
+
+  "kalibrasyon_prosedur_referans": "CLAUDE.local.md 'Kitap-bazli crop kalibrasyonu' bolumune bak. Her kitap icin bir kez ~5 dakika kalibrasyon, sonra tum batch'ler hizlanir."
+}

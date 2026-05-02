@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-05-02T01:13:10.207409+00:00",
+  "book": "345 Yayinevi TYT Turkce Soru Bankasi 2025",
+  "test": "OSYM Tadinda Sorular 2 - Sozcukte Anlam",
+  "topic_id": "c1350eca-9173-43e7-a6ec-175e42081510",
+  "topic_name": "TUR.ANL Anlam Bilgisi",
+  "answer_key_source": "sayfa 432 zoom (pixel-dogrulandi 1 May 2026)",
+  "total_questions": 8,
+  "inserted_count": 8,
+  "skipped_count": 0,
+  "error_count": 0,
+  "inserted": [
+    {
+      "q_no": 1,
+      "id": "40d02a3a-e014-415a-b08d-5dbe0950122e",
+      "hash": "adad0c9bec0b145ca5e015dae8f58f4e",
+      "answer": "A",
+      "osym_year": 2023,
+      "page": 16
+    },
+    {
+      "q_no": 2,
+      "id": "9f74c81f-a9ee-43a6-beb7-ee96b6291400",
+      "hash": "75116069b35a5e864ccef4971d60fcac",
+      "answer": "D",
+      "osym_year": null,
+      "page": 16
+    },
+    {
+      "q_no": 3,
+      "id": "db05e552-896c-4ccc-b43d-414642b9de34",
+      "hash": "1582c35afd5627562532f2ebaecaec25",
+      "answer": "D",
+      "osym_year": null,
+      "page": 16
+    },
+    {
+      "q_no": 4,
+      "id": "e248df23-7c42-41fb-b23c-b0bc5b694f46",
+      "hash": "b820eb03cea74cd466906a146e567e67",
+      "answer": "B",
+      "osym_year": null,
+      "page": 16
+    },
+    {
+      "q_no": 5,
+      "id": "db16e67e-75a0-4867-869f-d5fd67cf5855",
+      "hash": "e9f58bb2957d28ca313ba7f70ec6babb",
+      "answer": "B",
+      "osym_year": null,
+      "page": 17
+    },
+    {
+      "q_no": 6,
+      "id": "9667799e-6459-41c9-abd7-97800edba14e",
+      "hash": "a5df2b8a09282df976a7491876e6e1e4",
+      "answer": "A",
+      "osym_year": null,
+      "page": 17
+    },
+    {
+      "q_no": 7,
+      "id": "78b12c97-382a-45dc-b06a-3d6403be8a80",
+      "hash": "32a97168db7a15bd72e679756f8b2c3c",
+      "answer": "E",
+      "osym_year": null,
+      "page": 17
+    },
+    {
+      "q_no": 8,
+      "id": "cbb78b4d-46dd-41e4-a08f-fb631d588fa1",
+      "hash": "0e741c0490c77f2fd5aed1881b26e043",
+      "answer": "A",
+      "osym_year": null,
+      "page": 17
+    }
+  ],
+  "skipped": [],
+  "errors": []
+}

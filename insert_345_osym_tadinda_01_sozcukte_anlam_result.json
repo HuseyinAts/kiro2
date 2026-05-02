@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-05-01T17:06:23.535506+00:00",
+  "book": "345 Yayinevi TYT Turkce Soru Bankasi 2025",
+  "test": "OSYM Tadinda Sorular 1 - Sozcukte Anlam",
+  "topic_id": "c1350eca-9173-43e7-a6ec-175e42081510",
+  "topic_name": "TUR.ANL Anlam Bilgisi",
+  "answer_key_source": "sayfa 432 zoom screenshot, 1 May 2026",
+  "total_questions": 8,
+  "inserted_count": 8,
+  "skipped_count": 0,
+  "error_count": 0,
+  "inserted": [
+    {
+      "q_no": 1,
+      "id": "9cff834a-46c2-45c1-908d-dd307aacc8ef",
+      "hash": "1f68222026837cd651db55a9679639a0",
+      "answer": "D",
+      "osym_year": null,
+      "page": 14
+    },
+    {
+      "q_no": 2,
+      "id": "09a692a4-fe22-4b28-982c-5cc8794e994f",
+      "hash": "ee18b8914211ebb7f34b51c3dc7dec5b",
+      "answer": "A",
+      "osym_year": null,
+      "page": 14
+    },
+    {
+      "q_no": 3,
+      "id": "c788139f-f450-43c7-adf5-5318ef07803c",
+      "hash": "95d80d15dcc2c9c4eed316fcc7fae195",
+      "answer": "B",
+      "osym_year": 2025,
+      "page": 14
+    },
+    {
+      "q_no": 4,
+      "id": "f3074ba7-b303-4d28-9666-fcaeffb6fc63",
+      "hash": "244fe9b4d2987931e3dc790e4e89d3f7",
+      "answer": "E",
+      "osym_year": null,
+      "page": 14
+    },
+    {
+      "q_no": 5,
+      "id": "a3c46b82-7ea0-4faa-95c9-14e0bac13f7b",
+      "hash": "62325783d6c7d89f9a33acc01bb03768",
+      "answer": "D",
+      "osym_year": null,
+      "page": 15
+    },
+    {
+      "q_no": 6,
+      "id": "f4185f51-a77e-4209-bd3c-636687f63331",
+      "hash": "1c9c056241580ab12648a6bd9c7934aa",
+      "answer": "E",
+      "osym_year": null,
+      "page": 15
+    },
+    {
+      "q_no": 7,
+      "id": "ed67d24e-22e6-4735-980a-1fe23b59b173",
+      "hash": "90f92072f89de2c1d13e8f472a2b9691",
+      "answer": "D",
+      "osym_year": null,
+      "page": 15
+    },
+    {
+      "q_no": 8,
+      "id": "06237c47-8c51-457c-9026-7607f2d54202",
+      "hash": "3b77db20e92ad06f4e4a21c59636542d",
+      "answer": "C",
+      "osym_year": null,
+      "page": 15
+    }
+  ],
+  "skipped": [],
+  "errors": []
+}

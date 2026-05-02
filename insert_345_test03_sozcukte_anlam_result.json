@@ -1,0 +1,104 @@
+{
+  "timestamp": "2026-04-30T20:57:37.472309+00:00",
+  "book": "345 Yayinevi TYT Turkce Soru Bankasi 2025",
+  "test": "Test 3 - Sozcukte Anlam Kazanim Odakli Sorular 3",
+  "topic_id": "c1350eca-9173-43e7-a6ec-175e42081510",
+  "topic_name": "TUR.ANL Anlam Bilgisi",
+  "answer_key_source": "sayfa 432 zoom screenshot, 30 Nis 2026",
+  "total_questions": 11,
+  "inserted_count": 11,
+  "skipped_count": 0,
+  "error_count": 0,
+  "inserted": [
+    {
+      "q_no": 1,
+      "id": "8465a7d3-5a62-4a59-b285-00d52b6a6ab7",
+      "hash": "d00f0b0e223ba77984b7c8364331ea02",
+      "answer": "A",
+      "osym_year": 2022,
+      "page": 10
+    },
+    {
+      "q_no": 2,
+      "id": "3c4c14c0-dc6a-4c8b-9afa-04a438facb3f",
+      "hash": "fe39fd28e2ac14002881571ecf3a1c1c",
+      "answer": "C",
+      "osym_year": null,
+      "page": 10
+    },
+    {
+      "q_no": 3,
+      "id": "7d9bb189-b1c1-4ec8-9b03-ee6d0213e2e1",
+      "hash": "36ea601198df767ee4db31dfc9f45990",
+      "answer": "D",
+      "osym_year": null,
+      "page": 10
+    },
+    {
+      "q_no": 4,
+      "id": "034ec667-d879-4eae-ab48-78cad98a4625",
+      "hash": "c736f39c257abb256998319fb56b15c4",
+      "answer": "C",
+      "osym_year": null,
+      "page": 10
+    },
+    {
+      "q_no": 5,
+      "id": "fca5b87c-11a4-426f-b062-43f07973fd96",
+      "hash": "13f3335c7fd207fbf08da1329ff8040b",
+      "answer": "C",
+      "osym_year": null,
+      "page": 10
+    },
+    {
+      "q_no": 6,
+      "id": "9cc00683-97ac-4f7b-8508-e7c48c42cec0",
+      "hash": "27a5456d0aeda8ef7ab0af5a92f1d9eb",
+      "answer": "D",
+      "osym_year": null,
+      "page": 11
+    },
+    {
+      "q_no": 7,
+      "id": "c2d11ce1-622a-4b15-82bb-699d05382b3c",
+      "hash": "210eab15c8c825e6daa0b11102513b42",
+      "answer": "C",
+      "osym_year": null,
+      "page": 11
+    },
+    {
+      "q_no": 8,
+      "id": "393d7f7d-a32e-4971-a64f-1ca52bcdde81",
+      "hash": "0506e4eccf61cb6c9b9c7f7b6d30122e",
+      "answer": "C",
+      "osym_year": null,
+      "page": 11
+    },
+    {
+      "q_no": 9,
+      "id": "dc53a982-944c-4f17-aed9-b421597ec9fe",
+      "hash": "511c55244d9ee14ef3610b60877bbbe9",
+      "answer": "D",
+      "osym_year": null,
+      "page": 11
+    },
+    {
+      "q_no": 10,
+      "id": "c2da12df-331d-4a04-9984-185d2e81a4a5",
+      "hash": "bc607f04478f5e994978e76432c6dce7",
+      "answer": "D",
+      "osym_year": null,
+      "page": 11
+    },
+    {
+      "q_no": 11,
+      "id": "a557d69c-d989-4036-b585-9d6e8bb7dc7b",
+      "hash": "83f51ec7105e216a9d8e69d762360ab6",
+      "answer": "E",
+      "osym_year": null,
+      "page": 11
+    }
+  ],
+  "skipped": [],
+  "errors": []
+}
