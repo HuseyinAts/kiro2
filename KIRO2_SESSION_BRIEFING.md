@@ -339,3 +339,75 @@ CLAUDE.md (v3.6 Karpathy Behavioral Foundation) ve docker-compose.yml (Redis fix
 5. Briefing v17 → v18 patch'lendi (bu commit)
 
 **Sıradaki sohbete iş:** Pilot script yazımı (`backend/scripts/pipeline/pilot_500p.py`) — Pist 1 talimatlarına göre.
+
+
+---
+
+## Session 87 — 1 Mayıs 2026 (M3 manuel-OCR pipeline + W4r workflow)
+
+**Commit:** `d79a76e` "M3 manuel-OCR pipeline: 27 soru INSERT + W4r workflow + kalibrasyon"
+
+### YAPILANLAR
+
+**INSERT batch'leri** (claude_opus_4_7_v1 havuzu: 0 → 49 aktif):
+
+| Topic | Batch | Sayfa | Adet | osym_year |
+|---|---|---|---|---|
+| TUR.ANL | Test 3 K.O.3 | 10-11 | 11 | 1×2022 |
+| TUR.ANL | Test 4 K.O.4 | 12-13 | 11 | 0 |
+| TUR.ANL | ÖSYM Tadında 1 | 14-15 | 8 | 1×2025 |
+| TUR.ANL | **ÖSYM Tadında 2** | 16-17 | 8 | 1×2023 |
+| TUR.PAR | Aromat Den.02 (migrate) | — | 11 | 11× (2019-2023) |
+
+Toplam: TUR.ANL=38, TUR.PAR=11. ÖSYM yıl-işaretli: 14/49.
+
+**Migration:** Aromat 11 satır TYT-TR-03 → TUR.PAR (audit izli `pipeline_metadata.topic_migrated_from`).
+
+**Workflow değişikliği — W4r:**
+- Tam-sayfa thumbnail YASAKLANDI (15/19 OCR hatası kök-nedeni)
+- Default: sol+sağ yarı zoom (2x LANCZOS, q=88, long_edge=1568)
+- Pre-INSERT pixel-onay zorunlu (yüksek-risk 2-3 soru, Hüseyin onayı)
+- ÖTS 2 batch'i ile pratik test geçildi (8/8 başarılı, 0 hata)
+
+**Yeni dokümanlar:**
+- `kitap_crop_coords.json`: kitap-bazlı crop kalibrasyon kayıt (5 kitap analizi, 1 kalibre)
+- `CLAUDE.local.md` (gitignore'da, lokal): Manuel-OCR Pipeline Workflow (W4r) + Kitap-bazlı crop kalibrasyonu prosedürü
+
+**Schema gerçeği keşfedildi:**
+- `pipeline_metadata` = `json` (jsonb DEĞİL)
+- UPDATE/merge'de `::jsonb` cast şart (`||`, `?` operatörleri jsonb-only)
+- INSERT'te psycopg2 `extras.Json()` adapter sorunsuz
+
+### W4r METRİKLER (ÖTS 2 batch'inde gerçek)
+
+| Metrik | Hedef | Gerçek |
+|---|---|---|
+| Image MCP çağrı | 6-8 | 7 |
+| INSERT hatası | <%1 | 0 |
+| Pre-INSERT pixel-onay | Zorunlu | ✓ S1, S3, S4 |
+| Post-INSERT dbhub doğrulama | ✓ | 8/8 |
+
+### AÇIK İŞLER
+
+- **ÖSYM Tadında 3** (s.18-19, ~8 soru) — sıradaki natural batch (cevap anahtarı: 1.D 2.C 3.C 4.C 5.C 6.A 7.E 8.C, dbhub'dan görüldü)
+- 345 Türkçe Test 1 + Test 2 (s.6-9, 21 soru) — eksik K.O. testleri
+- ÖSYM Tadında 4-6 (sözcükte anlam başlığında 5 test daha)
+- Sözcükte Anlam komple bitince → Cümlede Kavramlar / Deyim Atasözü vs.
+- 5 batch sonra W4r yeniden değerlendirme (hata oranı eşik testi)
+- Diğer kitaplar (ACİL Geometri, Aromat Paragraf, Aktif Öğrenme Fizik, 345 AYT Kimya) için kalibrasyon — `kitap_crop_coords.json` "kalibre_edilmemis" listesinde
+
+### SIRADAKİ SOHBET İÇİN
+
+Pist: ÖSYM Tadında 3 batch'i (s.18-19) — W4r workflow'u zaten kalibre 345 Türkçe için, doğrudan başlanabilir.
+
+Akış:
+1. `kitap_crop_coords.json` kontrol (kitap kalibre ✓)
+2. p18+p19 sol+sağ yarı zoom (4 image)
+3. OCR + sözlük/gramer/eser-adı/numaralı kontroller
+4. Cevap anahtarı pixel-doğrulama (s.432, ÖTS 3 satırı)
+5. INSERT script (şablon: insert_345_osym_tadinda_02_sozcukte_anlam.py)
+6. Pre-INSERT pixel-onay (yüksek-risk 2-3 soru)
+7. INSERT + dbhub post-doğrulama
+
+Cache klasörleri (temizlenebilir): `_tmp_test4_ocr/`, `_tmp_test5_ocr/`, `_tmp_ots2_ocr/`, `_tmp_crop_analysis/`
+
