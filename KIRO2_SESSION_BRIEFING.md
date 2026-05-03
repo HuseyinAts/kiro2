@@ -411,3 +411,74 @@ Akış:
 
 Cache klasörleri (temizlenebilir): `_tmp_test4_ocr/`, `_tmp_test5_ocr/`, `_tmp_ots2_ocr/`, `_tmp_crop_analysis/`
 
+
+
+---
+
+## Session 88 — 3 Mayıs 2026 (M3 pipeline quality gate + Layer 3 fallback)
+
+**Commit:** `acd6049` "M3 pipeline fix: quality gate (Layer 3 fallback) + pilot_500p ilk seri"
+
+### YAPILANLAR
+
+**Pilot çalıştırma (50 sayfa AYT Matematik, sayfa 50-99):**
+- Süre: 17.5 dk, concurrency=4
+- 45/50 sayfa başarılı, 238 soru staging'e
+- 5 sayfa NULL correct_answer yüzünden DB constraint patladı (~25 soru kayıp)
+
+**Kök neden analizi:**
+- Vision model şekilli/grafik sorularda `correct_answer` çıkaramıyor → JSON'da `null`
+- `staging.correct_answer NOT NULL` → sayfa rollback → vision çıktısı tamamen kayboluyor
+- M3 plan §6 niyeti "flag + devam" idi ama implementasyon eksikti
+
+**3 katmanlı fix:**
+1. **DB schema:** `question_bank_staging.correct_answer` NOT NULL kaldırıldı
+2. **DB schema:** `manual_review_queue.old_question_id` NOT NULL kaldırıldı (yeni use-case: "yeni soru, eskisi yok")
+3. **Kod:**
+   - `validate_page`: `correct_answer` invalid → `needs_manual_review=True` (tutarlılık)
+   - `resolve_conflict`: kalite gate eklendi (NULL/invalid CA → Layer 3'e zorla)
+   - `apply_decision` + `_staging_to_mrq`: `old_question_id` None geçişi
+
+**End-to-end doğrulama:**
+- Eksik 3 sayfa retry (s.66, s.85, s.90) — hepsi başarılı, L3=14 toplam
+- Sayfa 63 ilk smoke + 61'in retroaktif resolve+apply
+- Toplam 274 soru staging'de (0 kayıp), 24 soru manual_review_queue'da quality_gate ile
+
+### PİPELİNE NİHAİ TABLO (50-sayfa AYT Mat)
+
+| Metrik | Değer |
+|---|---|
+| İşlenen sayfa | 49/50 (s.97 boş) |
+| Toplam staging | 274 |
+| L1 validated | 246 |
+| L2 conflict_replaced | 4 |
+| L3 conflict_kept_old | 24 |
+| pending (kayıp) | 0 |
+| MRQ quality_gate (NULL old_question_id) | 24 |
+
+**Reason etiketi:** `quality_gate:correct_answer=None,needs_review=True`
+
+### YENİ DOSYALAR
+
+- `fix_staging_correct_answer_nullable.sql`
+- `fix_mrq_old_question_id_nullable.sql`
+- `backend/scripts/pipeline/pilot_500p.py` (M3 v1.2.1, 1454 satır — Session 87 öncesi committed değildi)
+- `backend/scripts/pipeline/crop_preprocessor.py` (yayınevi-bazlı crop)
+
+### AÇIK İŞLER
+
+- **Manual review akışı**: 24 satır kuyrukta, correct_answer manuel doldurulup question_bank'e taşınmalı (offline iş)
+- **Yayinevi-bazlı crop kalibrasyonu** (Session 87 W4r): 5 kitap "kalibre_edilmemis" listesinde
+- **345 Türkçe** Sözcükte Anlam batch'leri (Session 87): ÖSYM Tadında 3-6, Test 1+2 eksik
+- **AYT Matematik 100-500 sayfa**: pilot devam ettirilebilir (M3 sec.6 smoke kabul kriterleri karşılandı, prod-scale onaylı)
+- **resolve_conflict kalite gate testi**: smoke test yarım kaldıysa retro-resolve helper script (`session88_retroactive_resolve.py` benzeri) gelecek seansta yazılabilir, ama mevcut çözüm yeterli
+
+### SIRADAKİ SOHBET İÇİN
+
+**İki paralel pist:**
+
+1. **AYT Matematik pilot devam (büyük ölçek)**: sayfa 100-500, concurrency=4, ~3 saat tahmini, ~2000+ soru
+2. **345 Türkçe içerik (küçük ölçek, manuel-OCR W4r)**: ÖSYM Tadında 3 (s.18-19, 8 soru, ~35 dk)
+
+`KIRO2_SESSION_BRIEFING.md` v20 commit'lendiğinde bağlam tam aktarılmış olur.
+
