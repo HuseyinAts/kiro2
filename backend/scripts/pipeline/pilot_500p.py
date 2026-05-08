@@ -1222,6 +1222,21 @@ async def _process_page(
                     dry_run=False, model=model,
                 )
 
+                # 0-question durum: staging'e satir yazilmaz; resume'un bu sayfayi
+                # tekrar Opus'a yollamamasi icin failed_pages.csv'ye iz birak.
+                # (Bug fix 6 May 2026: 0-Q sayfalar resume'da bos Opus call yaratiyordu.)
+                if len(staging_ids) == 0:
+                    async with failed_lock:
+                        failed_writer.writerow([
+                            file_page, str(png_path), "no_questions",
+                            f"page_type={extracted.get('page_type', '?')} conf={_safe_float(extracted.get('extraction_confidence'), 0.0):.2f}",
+                        ])
+                    log.info(
+                        "page=%s questions=0 (resume_skip iz birakildi)",
+                        file_page,
+                    )
+                    return result
+
                 # Her staging row icin resolve + apply (bagimsiz tx'ler)
                 for sid in staging_ids:
                     decision = await resolve_conflict(sid, conn)
@@ -1345,14 +1360,41 @@ async def _amain(args: argparse.Namespace) -> int:
     # Resume - tamamlanmis sayfalari atla
     if args.resume and pool is not None:
         async with pool.acquire() as conn:
-            if not await batch_id_exists(batch_id, conn):
-                log.error("RESUME: batch_id=%s DB'de bulunamadi", batch_id)
-                await pool.close()
-                return 2
-            completed = await already_completed_pages(batch_id, conn)
+            db_has = await batch_id_exists(batch_id, conn)
+            completed = (
+                await already_completed_pages(batch_id, conn)
+                if db_has else set()
+            )
+
+        # Bug fix 6 May 2026: batch tum sayfalari 0-Q olmussa DB'de iz olmaz
+        # ama failed_pages.csv'de var. CSV de yoksa gercek hata.
+        csv_exists = failed_csv_path.exists() and failed_csv_path.stat().st_size > 0
+        if not db_has and not csv_exists:
+            log.error("RESUME: batch_id=%s ne DB'de ne CSV'de iz var", batch_id)
+            await pool.close()
+            return 2
+        if not db_has:
+            log.info("RESUME: batch_id=%s DB'de iz yok, sadece CSV'den skip", batch_id)
+
+        # Bug fix 6 May 2026: failed_pages.csv'deki 'no_questions' ve
+        # 'extract_failed' sayfalari da skip et (DB'de iz yok ama tekrar
+        # gondermek bos Opus call'una yol acar).
+        if failed_csv_path.exists():
+            try:
+                with failed_csv_path.open("r", encoding="utf-8") as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        if row.get("reason") == "no_questions":
+                            fp_str = (row.get("file_page") or "").lstrip("0") or "0"
+                            fp = _safe_int(fp_str)
+                            if fp is not None:
+                                completed.add(fp)
+            except Exception as e:
+                log.warning("failed_pages.csv okunamadi (devam): %s", e)
+
         before = len(pages)
         pages = [p for p in pages if (_safe_int(p.stem.replace("sayfa_", "")) or -1) not in completed]
-        log.info("RESUME: %d completed, %d remaining (toplam %d)", len(completed), len(pages), before)
+        log.info("RESUME: %d completed (DB+CSV), %d remaining (toplam %d)", len(completed), len(pages), before)
 
     # start-page: belli bir sayfadan basla (1-indexed)
     if args.start_page is not None:
