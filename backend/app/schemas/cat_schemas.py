@@ -60,6 +60,11 @@ class QuestionResponse(BaseModel):
     topic_id:    str
     subject_id:  str
     irt:         IRTInfo
+    # Image fields (optional — frontend renders only if question_image_url present)
+    question_image_url: str | None = None
+    image_alt_text:     str | None = None
+    image_width:        int | None = None
+    image_height:       int | None = None
 
 
 class FeedbackResponse(BaseModel):

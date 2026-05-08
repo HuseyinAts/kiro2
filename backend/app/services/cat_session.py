@@ -239,6 +239,7 @@ class CATSessionService:
                 FROM question_bank
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
                   AND is_active = TRUE
+                  AND quality_review_status = 'approved'
                   AND (
                       -- Oncelik 1: Gercek IRT kalibrasyonu olan calib_pool sorulari
                       (is_calib_pool = TRUE AND is_calibrated = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
@@ -269,6 +270,7 @@ class CATSessionService:
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
                   AND irt_difficulty BETWEEN :b_min AND :b_max
                   AND is_active = TRUE
+                  AND quality_review_status = 'approved'
                 ORDER BY
                     -- is_calibrated=TRUE olanlar ZPD icinde de one alinir
                     CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
@@ -320,7 +322,11 @@ class CATSessionService:
                    irt_discrimination AS discrimination,
                    irt_guessing AS guessing,
                    primary_topic_id::text AS topic_id,
-                   subject_area AS subject_id
+                   subject_area AS subject_id,
+                   question_image_url,
+                   image_width,
+                   image_height,
+                   image_ocr_text
             FROM question_bank
             WHERE id = :qid AND is_active = TRUE
         """)
@@ -340,6 +346,10 @@ class CATSessionService:
                 "discrimination": round(float(row.discrimination), 4),
                 "guessing": round(float(row.guessing), 4),
             },
+            "question_image_url": row.question_image_url,
+            "image_alt_text": row.image_ocr_text[:200] if row.image_ocr_text else None,
+            "image_width": row.image_width,
+            "image_height": row.image_height,
         }
 
     # ---- Ana API ----

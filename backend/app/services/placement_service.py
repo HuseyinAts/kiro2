@@ -295,6 +295,7 @@ class PlacementTestService:
             FROM question_bank
             WHERE LOWER(subject_area) = LOWER(:sid)
               AND is_active = TRUE
+              AND quality_review_status = 'approved'
             ORDER BY RANDOM()
             LIMIT 80
         """),
