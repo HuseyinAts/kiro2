@@ -1,5 +1,5 @@
 # KIRO2 Production Dockerfile
-FROM node:18-alpine AS frontend-builder
+FROM node:26-alpine AS frontend-builder
 
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
