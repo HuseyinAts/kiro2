@@ -239,7 +239,8 @@ class CATSessionService:
                 FROM question_bank
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
                   AND is_active = TRUE
-                  AND quality_review_status = 'approved'
+                  -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
+                  AND quality_review_status IN ('human_verified', 'auto_judged_high')
                   AND (
                       -- Oncelik 1: Gercek IRT kalibrasyonu olan calib_pool sorulari
                       (is_calib_pool = TRUE AND is_calibrated = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
@@ -270,7 +271,8 @@ class CATSessionService:
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
                   AND irt_difficulty BETWEEN :b_min AND :b_max
                   AND is_active = TRUE
-                  AND quality_review_status = 'approved'
+                  -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
+                  AND quality_review_status IN ('human_verified', 'auto_judged_high')
                 ORDER BY
                     -- is_calibrated=TRUE olanlar ZPD icinde de one alinir
                     CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0

@@ -295,7 +295,11 @@ class PlacementTestService:
             FROM question_bank
             WHERE LOWER(subject_area) = LOWER(:sid)
               AND is_active = TRUE
-              AND quality_review_status = 'approved'
+              -- 15 May 2026: Convention v2 — eski 'approved' (hardcoded literal,
+              -- %87 hatalı) yasak. Sadece gerçek manuel onay (human_verified)
+              -- veya LLM-as-judge yüksek güven (auto_judged_high) kabul.
+              -- Bkz: docs/quality_review_status_convention.md
+              AND quality_review_status IN ('human_verified', 'auto_judged_high')
             ORDER BY RANDOM()
             LIMIT 80
         """),

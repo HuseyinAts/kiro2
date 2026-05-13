@@ -28,6 +28,7 @@ KIRO2_NAMESPACE = uuid.UUID("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
 # Turkish Normalization
 # =============================================================================
 
+
 def normalize_tr(text: str) -> str:
     """Turkish-aware lowercase normalization with NFC."""
     if not text:
@@ -44,22 +45,66 @@ def normalize_tr(text: str) -> str:
 # Order matters: AYT-specific math topics BEFORE generic 'matematik'
 SUBJECT_PATTERNS: list[tuple[list[str], str, str | None]] = [
     # AYT-only math subtopics
-    (["trigonometri", "t\u00fcrev", "turev", "integral", "logaritma",
-      "polinom", "fonksiyon", "diziler", "limit ve s\u00fcreklilik"],
-     "MATEMATIK", "AYT"),
+    (
+        [
+            "trigonometri",
+            "t\u00fcrev",
+            "turev",
+            "integral",
+            "logaritma",
+            "polinom",
+            "fonksiyon",
+            "diziler",
+            "limit ve s\u00fcreklilik",
+        ],
+        "MATEMATIK",
+        "AYT",
+    ),
     (["kat\u0131 cisim", "kati cisim", "analitik geometri"], "GEOMETRI", "AYT"),
     # Generic subjects
-    (["geometri", "\u00fc\u00e7gen", "ucgen", "d\u00f6rtgen", "dortgen"], "GEOMETRI", None),
-    (["matematik", "problemler", "say\u0131lar", "sayilar",
-      "matemateik", "matemat,k", "matemati\u011fin", "matematig",
-      "ilac\u0131", "ilaci"], "MATEMATIK", None),
+    (
+        ["geometri", "\u00fc\u00e7gen", "ucgen", "d\u00f6rtgen", "dortgen"],
+        "GEOMETRI",
+        None,
+    ),
+    (
+        [
+            "matematik",
+            "problemler",
+            "say\u0131lar",
+            "sayilar",
+            "matemateik",
+            "matemat,k",
+            "matemati\u011fin",
+            "matematig",
+            "ilac\u0131",
+            "ilaci",
+        ],
+        "MATEMATIK",
+        None,
+    ),
     (["fizik", "fizipedia", "neofizik"], "FIZIK", None),
     (["kimya", "aromat"], "KIMYA", None),
     (["biyoloji"], "BIYOLOJI", None),
     # TURKCE before EDEBIYAT: "Edebiyat Sokağı Dil Bilgisi" -> TURKCE, not EDEBIYAT
-    (["paragraf", "t\u00fcrk\u00e7e", "turkce", "t\u00fcrkce", "dil bilgisi",
-      "dilbilgisi", "s\u00f6zc\u00fck", "sozcuk", "anlam",
-      "atas\u00f6zleri", "atasozu", "kurgulu"], "TURKCE", "TYT"),
+    (
+        [
+            "paragraf",
+            "t\u00fcrk\u00e7e",
+            "turkce",
+            "t\u00fcrkce",
+            "dil bilgisi",
+            "dilbilgisi",
+            "s\u00f6zc\u00fck",
+            "sozcuk",
+            "anlam",
+            "atas\u00f6zleri",
+            "atasozu",
+            "kurgulu",
+        ],
+        "TURKCE",
+        "TYT",
+    ),
     (["edebiyat"], "EDEBIYAT", "AYT"),
     (["tarih"], "TARIH", None),
     (["co\u011frafya", "cografya"], "COGRAFYA", None),
@@ -111,6 +156,7 @@ def classify_book(book_name: str) -> tuple[str, str]:
 # ID Generation
 # =============================================================================
 
+
 def generate_question_id(book_name: str, page: int, q_num: int) -> str:
     """Generate deterministic UUID from question identity triple."""
     key = f"{book_name}|{page}|{q_num}"
@@ -143,13 +189,22 @@ DEFAULT_TOPICS: dict[str, tuple[str, str]] = {
 }
 
 # Fields mapped directly to question_bank columns (excluded from pipeline_metadata)
-DIRECT_FIELDS = {"text", "options", "answer", "book_name", "page_number",
-                 "question_number", "quality_score", "confidence"}
+DIRECT_FIELDS = {
+    "text",
+    "options",
+    "answer",
+    "book_name",
+    "page_number",
+    "question_number",
+    "quality_score",
+    "confidence",
+}
 
 
 # =============================================================================
 # Row Builder
 # =============================================================================
+
 
 def build_row(entry: dict, subject: str, exam_type: str) -> dict:
     """Transform a JSONL entry into a question_bank INSERT parameter dict."""
@@ -209,7 +264,10 @@ def build_row(entry: dict, subject: str, exam_type: str) -> dict:
         "subject_area": subject,
         "grade_level": 11,  # Default for YKS prep
         "quality_score": entry.get("quality_score") or 0.0,
-        "quality_review_status": "approved",
+        # 14 May 2026 audit: hardcoded 'approved' literal'i %87 hata oranlı
+        # pool üretti — manuel onay süreci hiç yoktu. v2 convention için
+        # bkz: docs/quality_review_status_convention.md
+        "quality_review_status": "pending",
         "osym_format_compliant": True,
         "is_active": True,
         "is_public": False,
@@ -224,37 +282,49 @@ def build_row(entry: dict, subject: str, exam_type: str) -> dict:
 # Database Operations
 # =============================================================================
 
+
 def ensure_columns(conn) -> None:
     """Add new columns to question_bank if they don't exist yet."""
     from sqlalchemy import text
-    conn.execute(text(
-        "ALTER TABLE question_bank ADD COLUMN IF NOT EXISTS source_book VARCHAR(300)"
-    ))
-    conn.execute(text(
-        "ALTER TABLE question_bank ADD COLUMN IF NOT EXISTS source_page INTEGER"
-    ))
-    conn.execute(text(
-        "ALTER TABLE question_bank ADD COLUMN IF NOT EXISTS pipeline_metadata JSONB DEFAULT '{}'"
-    ))
+
+    conn.execute(
+        text(
+            "ALTER TABLE question_bank ADD COLUMN IF NOT EXISTS source_book VARCHAR(300)"
+        )
+    )
+    conn.execute(
+        text("ALTER TABLE question_bank ADD COLUMN IF NOT EXISTS source_page INTEGER")
+    )
+    conn.execute(
+        text(
+            "ALTER TABLE question_bank ADD COLUMN IF NOT EXISTS pipeline_metadata JSONB DEFAULT '{}'"
+        )
+    )
     # Index for book-based queries
-    conn.execute(text(
-        "CREATE INDEX IF NOT EXISTS idx_qbank_source_book ON question_bank (source_book)"
-    ))
+    conn.execute(
+        text(
+            "CREATE INDEX IF NOT EXISTS idx_qbank_source_book ON question_bank (source_book)"
+        )
+    )
 
 
 def ensure_topics(conn) -> None:
     """Insert default topic_hierarchy entries (ON CONFLICT skip)."""
     from sqlalchemy import text
+
     for subject, (code, name_tr) in DEFAULT_TOPICS.items():
         topic_id = generate_topic_id(code)
-        conn.execute(text("""
+        conn.execute(
+            text("""
             INSERT INTO topic_hierarchy (
                 id, level, code, name_tr, is_active,
                 osym_relevance, osym_frequency, total_questions, average_difficulty
             )
             VALUES (:id, 1, :code, :name_tr, true, 0.0, 0, 0, 0.0)
             ON CONFLICT (code) DO NOTHING
-        """), {"id": topic_id, "code": code, "name_tr": name_tr})
+        """),
+            {"id": topic_id, "code": code, "name_tr": name_tr},
+        )
 
 
 INSERT_SQL = """
@@ -297,19 +367,32 @@ INSERT_SQL = """
 # Main
 # =============================================================================
 
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Import d-dataset \u2192 question_bank")
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Parse and classify only, don't touch the database")
+    parser = argparse.ArgumentParser(
+        description="Import d-dataset \u2192 question_bank"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Parse and classify only, don't touch the database",
+    )
     parser.add_argument("--batch-size", type=int, default=1000)
-    parser.add_argument("--jsonl-path", type=str,
-                        default=str(Path(__file__).parent.parent.parent
-                                    / "d-dataset" / "eslesmis_sorucevap.jsonl"))
+    parser.add_argument(
+        "--jsonl-path",
+        type=str,
+        default=str(
+            Path(__file__).parent.parent.parent
+            / "d-dataset"
+            / "eslesmis_sorucevap.jsonl"
+        ),
+    )
     args = parser.parse_args()
 
     # Load .env for DATABASE_URL
     try:
         from dotenv import load_dotenv
+
         load_dotenv(Path(__file__).parent.parent / ".env")
     except ImportError:
         pass
@@ -408,16 +491,20 @@ def main() -> None:
 
             done = i + len(batch)
             pct = done / len(rows) * 100
-            print(f"  [{pct:5.1f}%] {done:,}/{len(rows):,} "
-                  f"({inserted:,} new, {skipped:,} dup)")
+            print(
+                f"  [{pct:5.1f}%] {done:,}/{len(rows):,} "
+                f"({inserted:,} new, {skipped:,} dup)"
+            )
 
     # ---- Phase 3: Verify ----
     with engine.connect() as conn:
         total = conn.execute(text("SELECT COUNT(*) FROM question_bank")).scalar()
-        by_subject = conn.execute(text(
-            "SELECT subject_area, COUNT(*) FROM question_bank "
-            "GROUP BY subject_area ORDER BY COUNT(*) DESC"
-        )).fetchall()
+        by_subject = conn.execute(
+            text(
+                "SELECT subject_area, COUNT(*) FROM question_bank "
+                "GROUP BY subject_area ORDER BY COUNT(*) DESC"
+            )
+        ).fetchall()
 
     engine.dispose()
 

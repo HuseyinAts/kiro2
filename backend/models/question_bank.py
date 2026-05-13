@@ -100,7 +100,10 @@ class TopicHierarchy(Base):
 
     # DB-only legacy kolonlar — alembic dışı eklendi, korunuyor
     difficulty_level: Mapped[float | None] = mapped_column(
-        Float, nullable=True, server_default="0.5", comment="Legacy difficulty (DB-only)"
+        Float,
+        nullable=True,
+        server_default="0.5",
+        comment="Legacy difficulty (DB-only)",
     )
     subject_area: Mapped[str | None] = mapped_column(
         String(50), nullable=True, comment="Legacy subject_area (DB-only)"
@@ -443,7 +446,10 @@ class QuestionBankItem(Base):
     quality_score: Mapped[float] = mapped_column(Float, default=0.0)  # 0-100 arası
     quality_review_status: Mapped[str] = mapped_column(
         String(20), default="pending"
-    )  # pending, approved, rejected
+    )  # Convention v2 (15 May 2026): pending, unverified, legacy_v3_unaudited,
+    # human_verified, auto_judged_high, rejected, archived.
+    # 'approved' YASAK — hardcoded literal yalanıydı, %87 hata.
+    # Bkz: docs/quality_review_status_convention.md
 
     # ========================================================================
     # Pipeline Source Tracking (d-dataset import)
