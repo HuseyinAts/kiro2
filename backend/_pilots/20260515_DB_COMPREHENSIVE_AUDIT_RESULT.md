@@ -10,8 +10,8 @@
 |---|---|---|---|
 | 1 | DB Snapshot | ⚠️ PARTIAL PASS | tier_c_match flag YAZILMAMIŞ (audit trail boşluğu, fonksiyonel OK) |
 | 2 | Tier H Pixel | ❌❌ KRITIK FAIL → **ROLLBACK YAPILDI** | KÖK NEDEN: DB qip %92.9 sayfa 0-indexed, disk filename 1-indexed. v1 offset bug → 49,468 rollback. v2 (offset-aware) pilot da %75 yanlış (q_index_in_page Gemini-assigned, deterministic değil). **Tier H konsepti iptal**. Missing %2.51 → %10.13 geri döndü. |
-| 3 | Tier G Drift | ⏳ | pending |
-| 4 | Tier F Verify | ⏳ | pending |
+| 3 | Tier G substring | ✅ PASS | G1 %90 (LaTeX delim noise, real %100), G2 %100, G3 %100. Çift sinyal güvenli. |
+| 4 | Tier F substring | ✅ PASS | %100 (49/49). Key+sim çift sinyal Tier H'in tek-sinyal hatasından korunmuş. |
 | 5 | Tier D+E | ⏳ | pending |
 | 6 | Cross-Tier Overlap | ⏳ | pending |
 | 7 | Broken Links | ⏳ | pending |
@@ -83,4 +83,50 @@
 - v2 apply YAPILMADI
 - Plan v1 hedef revize: pipeline-fix bound = **%10 missing**, <%5 için Re-OCR + Curator
 - Critical lesson: q_index_in_page tabanlı mapping güvenilir değil
+
+
+## Task 3: Tier G substring re-verify (2,493 satır)
+
+30 sample per sub-tier (G1, G2, G3):
+
+| Sub-tier | Yöntem | Sample | strong | weak | no_match | Accuracy |
+|---|---|---|---|---|---|---|
+| G1 | key + sim>=0.40 | 30 | 16 | 11 | 3 | %90 |
+| G2 | page no-key + sim>=0.55 | 30 | 28 | 2 | 0 | %100 |
+| G3 | page no-qno + sim>=0.55 | 30 | 30 | 0 | 0 | %100 |
+
+G1 3 no_match örneği LaTeX delimiter farkı (`$|AE|$` vs `|AE|`) — **aynı sorular**, substring algoritması yanıltıcı. Gerçek accuracy %100'e yakın.
+
+**VERDICT**: ✅ PASS. Tier G güvenli (key + sim çift sinyal). Tier H bug'ı tek-sinyal hatası.
+
+## Task 4: Tier F substring re-verify (7,441 satır)
+
+50 sample (key+sim>=0.50, asymmetric):
+
+| Metrik | Sayı |
+|---|---|
+| strong (≥6 word) | 45 |
+| weak (4-5 word) | 4 |
+| no_match (<4) | 0 |
+| no_ocr | 1 |
+| **Accuracy** | **%100 (49/49)** |
+
+Bucket bazlı:
+- sim 0.50-0.60: 17/17 ok (%100)
+- sim 0.60-0.70: 32/32 ok (%100)
+
+**VERDICT**: ✅ PASS. Tier F çok güvenli — daha gevşek threshold (0.50) bile **çift sinyal** (key match + similarity) sayesinde %100.
+
+## Tier H Bug'ının Anatomik Açıklaması
+
+| Tier | Sinyal 1 (key) | Sinyal 2 (text) | Sonuç |
+|---|---|---|---|
+| C | exact filename | — | ✓ deterministic |
+| D | (book, page, q_no) ocr_crops | sim>=0.70 | ✓ %96 pilot |
+| E | (book, page, q_no_strip) | sim>=0.70 / exact | ✓ uniform |
+| F | (book, page, q_no) ocr_crops | sim>=0.50 | ✓ %100 audit |
+| G | (book, page, q_no) ocr_crops | sim>=0.40 + page-best | ✓ %90-100 |
+| **H** | **(book, page, q_index_in_page) filename pattern** | **YOK** | **❌ %25 audit** |
+
+Tek-sinyal mapping (key match yeterli, text yok) **fundamental hata**. q_index_in_page Gemini-assigned, deterministic mapping field değil.
 
