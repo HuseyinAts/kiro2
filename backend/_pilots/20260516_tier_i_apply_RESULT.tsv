@@ -1,0 +1,69 @@
+id	book	page	q_no	substr_pct	band	action	image_url	ocr_text_len
+a6bedf0d-c3c2-5beb-b6f0-091f004e22ad	CAP-2023-2024-AYT-Matematik Soru Bankası	289	6	0.778	high	apply	/static/crops/CAP-2023-2024-AYT-Matematik_Soru_Bankası/CAP-2023-2024-AYT-Matematik_Soru_Bankası_p0289_q04.png	168
+38a5b945-79c4-51ba-a184-ead70de81faa	Orijinal-2024-Ayt-Trigonometri	25	10	0.882	high	apply	/static/crops/Orijinal-2024-Ayt-Trigonometri/Orijinal-2024-Ayt-Trigonometri_p0025_q02.png	147
+a97f2615-30fa-5713-abea-7eda90385904	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	96	9	0.917	high	apply	/static/crops/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası_p0096_q06.png	102
+7f84289e-c7e0-547e-b6e5-037e9ee6574d	CAP-2022-2023-TYT AYT-Geometri Soru Bankası	75	10	0.722	high	apply	/static/crops/CAP-2022-2023-TYT_AYT-Geometri_Soru_Bankası/CAP-2022-2023-TYT_AYT-Geometri_Soru_Bankası_p0075_q05.png	178
+a0f19a90-513f-5ed4-89c2-ef9d49be8d89	Orijinal-Tyt Ayt Geometri Soru Bankası	210	12	0.900	high	apply	/static/crops/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası_p0210_q06.png	101
+d088a335-82f4-59d5-94df-aeb3895b2ec3	345 2025 Tyt Ayt Geometri Soru Bankası 1	107	6	1.000	high	apply	/static/crops/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1_p0107_q04.png	116
+5bffce3f-98a5-5659-bb87-7efc95ae712d	Orijinal-2024-Geometri Soru Bankası	269	10	0.571	mid	skip		147
+c7b36f67-481a-5e1e-be70-14fec655cf7c	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	214	7	0.600	mid	skip		111
+41c50ff9-33ae-5a82-9105-f43a0dd818e7	345 Tyt Ayt Geometri Soru Bankası	325	9	1.000	high	apply	/static/crops/345_Tyt_Ayt_Geometri_Soru_Bankası/345_Tyt_Ayt_Geometri_Soru_Bankası_p0325_q02.png	96
+417b1cbb-84da-5de6-9865-7327de604eac	2023-2024 ACİL- AYT Matematik Soru Bankası	148	5	0.750	high	apply	/static/crops/2023-2024_ACİL-_AYT_Matematik_Soru_Bankası/2023-2024_ACİL-_AYT_Matematik_Soru_Bankası_p0148_q02.png	96
+f58ce890-47d8-5c21-8bac-f6eba748f4da	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	218	8	1.000	high	apply	/static/crops/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası_p0218_q01.png	140
+97f23839-01cd-5515-8b2d-b818d24b36db	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	223	8	0.333	low	skip		108
+4b9cfd4a-f67f-5560-84a1-6306d7c1fa75	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	295	7	0.750	high	apply	/static/crops/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası_p0295_q01.png	102
+d919e5f8-7aaf-58c8-8ebd-f545f05c5619	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	320	1	0.083	low	skip		145
+627ea72a-d477-5fcb-8ca8-548ed59fc0cd	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	295	10	0.800	high	apply	/static/crops/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası_p0295_q02.png	66
+7b1c23d9-9ce0-5592-913f-347a318e1550	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	367	2	0.967	high	apply	/static/crops/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası_p0367_q02.png	275
+7b1cbe40-aed1-52b2-8453-8531f6033278	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	36	1	0	error	error		0
+0095b28e-bd0c-536c-ab88-b17087c3e2fa	2019-2020-ACİL-AYT-Matematik Soru Bankası	292	11	0.947	high	apply	/static/crops/2019-2020-ACİL-AYT-Matematik_Soru_Bankası/2019-2020-ACİL-AYT-Matematik_Soru_Bankası_p0292_q03.png	239
+83c0108c-a217-5372-adbb-3fe934f0df2f	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	122	6	0.727	high	apply	/static/crops/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2_p0122_q01.png	127
+a9b8e9b6-368e-5492-81a4-aa8c0f470ff5	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	122	7	1.000	high	apply	/static/crops/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2_p0122_q03.png	102
+d2ea2009-25dd-525e-94cf-5949374ef918	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	139	7	0.875	high	apply	/static/crops/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2_p0139_q01.png	99
+5a35d066-5c9c-5324-a631-d114be673b21	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	143	7	1.000	high	apply	/static/crops/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2_p0143_q01.png	261
+5ad11697-cca5-5768-b104-cd3e61585180	2019-2020-ACİL-AYT-Matematik Soru Bankası	322	18	0.929	high	apply	/static/crops/2019-2020-ACİL-AYT-Matematik_Soru_Bankası/2019-2020-ACİL-AYT-Matematik_Soru_Bankası_p0322_q04.png	140
+8011fe4a-2149-5eb5-80b3-edcf09e698fc	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	160	7	0.667	mid	skip		98
+d04dee2b-f6dc-53a0-a802-02baa50f6f0a	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	20	9	0.778	high	apply	/static/crops/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası_p0020_q06.png	96
+52d9bc59-20a4-5f5e-a45b-6d253961095b	2019-2020-ACİL-AYT-Matematik Soru Bankası	396	9	0.923	high	apply	/static/crops/2019-2020-ACİL-AYT-Matematik_Soru_Bankası/2019-2020-ACİL-AYT-Matematik_Soru_Bankası_p0396_q01.png	124
+ff9ca202-45c4-5f1f-bc06-e9a3629d2ef2	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	216	6	0.667	mid	skip		131
+3d7b57d5-b7a1-581b-9ca9-2e389b3a82f5	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	16	10	0.833	high	apply	/static/crops/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası_p0016_q02.png	119
+7760986d-79a9-514a-aad2-61ee584b424d	2019-2020-ACİL-AYT-Matematik Soru Bankası	428	12	0.667	mid	skip		305
+fd36dfb0-6127-5429-ab8f-dbcfa616b8df	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	174	10	1.000	high	apply	/static/crops/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası_p0174_q01.png	92
+ffcf9976-30c1-5b21-98f8-18a8106269aa	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	56	11	1.000	high	apply	/static/crops/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası_p0056_q04.png	96
+d51a223a-1e21-52c4-bee2-e0305623a19b	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	298	7	0.750	high	apply	/static/crops/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2_p0298_q01.png	102
+6aa1de71-4c55-57ef-9108-70509bbcdc84	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	114	11	0.812	high	apply	/static/crops/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası_p0114_q04.png	145
+0275caf6-2718-5ab0-be3d-8cebc5687faa	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	329	1	0.200	low	skip		103
+d835d9e9-4999-59ae-8e2c-a6e70dc375e6	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	367	1	0.360	low	skip		286
+bdbd1686-1386-5f87-969e-9908040e159a	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	24	9	0	error	error		0
+c9fc1311-f77b-52a7-b3da-4de8904ea447	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	108	7	1.000	high	apply	/static/crops/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası_p0108_q03.png	102
+d03f1b1a-22fa-5536-8f9e-b3fddc5ff273	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	26	9	0.625	mid	skip		92
+87f77b03-a521-57c8-90e6-ade491ee423a	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	26	10	1.000	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0026_q03.png	145
+0a024750-a0fd-51dd-af2e-68a196f5c976	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	44	9	0.727	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0044_q01.png	136
+b995937d-1962-5aa2-b091-8e7e57a98b88	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	44	13	0.727	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0044_q02.png	100
+36e474ba-c8ea-5575-86ce-68c3de41b908	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	46	9	0.700	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0046_q02.png	93
+e16c2941-a1d7-53a9-b213-094cd96286ab	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	81	9	0.833	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0081_q01.png	119
+87d4cbd6-1b05-5297-a64f-f770a1141c0b	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	83	12	0.786	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0083_q05.png	113
+694a0f56-7b3b-5af2-ba7a-b5e63278a388	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	95	10	0.857	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0095_q04.png	124
+e38555f8-7964-5c5c-b268-6b2d7bc84de0	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	95	9	1.000	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0095_q01.png	132
+fd54ffb2-4102-5d97-bff0-0c60b23a55e1	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	97	9	1.000	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0097_q01.png	112
+c71085e5-f6d9-5a9c-a333-19e4c7f85945	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	123	7	0.909	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0123_q01.png	107
+6dad3df8-5db8-59b2-a2a2-d113f4d27ce5	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	147	9	0.846	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0147_q02.png	124
+0e308028-36d8-5ba6-97af-d8a7a934d438	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	147	13	0.778	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0147_q01.png	129
+f5efced8-4cbf-573a-abd7-2cbbfceba238	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	149	9	0.727	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0149_q01.png	122
+c6fd240f-8c52-5999-a435-5ace5a8d12a2	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	149	15	0	error	error		0
+05cec5ec-1a60-55f1-b853-1abefc495ccb	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	154	3	0	error	error		0
+40c536aa-21c5-5f92-83ef-57bd720b3810	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	168	9	1.000	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0168_q01.png	115
+5fda7264-d808-52ac-a679-9a618344e4c4	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	170	9	0.923	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0170_q01.png	131
+eb2be7f3-dca3-59de-ac0c-ef94210539b1	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	172	9	0.727	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0172_q01.png	106
+a3877d1b-6b70-5a7c-a368-d286f60059b6	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	210	16	0.867	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0210_q08.png	127
+42918295-4765-5c05-bd4c-5e992417bcf5	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	227	9	0.778	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0227_q01.png	111
+cd746791-5cb8-587b-8339-e6c69cab49d4	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	241	9	1.000	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0241_q01.png	117
+c92943a8-2f7c-5536-b0e2-71a9c92e2f61	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	243	12	1.000	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0243_q08.png	113
+b23fbb9d-fe4d-5454-b638-3fcd39f7b899	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	243	9	1.000	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0243_q02.png	116
+f7270ff6-f633-5b12-8539-4d31b35f5f81	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	257	9	0.778	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0257_q01.png	77
+60c52392-7dc2-5f15-b21d-9300b4073a56	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	257	11	0.917	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0257_q06.png	105
+ca688f43-356b-5d4e-9cd7-010c371f7b58	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	259	9	0.778	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0259_q01.png	76
+acb9da7d-539b-56cf-84c2-06aee01e0cc0	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	265	9	1.000	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0265_q01.png	116
+a92b3183-b912-511d-bf81-a65e1cf399e9	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	286	9	0.429	low	skip		81
+e2e95abf-fb4f-529f-a3b2-73122233683c	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	286	12	0.750	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0286_q08.png	76
+1acce595-622f-54e3-b47d-c25ba871fd6c	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	42	8	0.700	high	apply	/static/crops/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2/Mikro_Orijinal-Tyt_Ayt-Geometri_Soru_Bankası_2_p0042_q03.png	99
