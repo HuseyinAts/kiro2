@@ -57,7 +57,7 @@ Mevcut kayitlari/audit'leri commit + baseline dondur. Drift baselinesi olmadan h
 | 1.4 | ✅ **Sanity checker (TAMAMLANDI 15 May)** | 612 satır flag (607 duplicate_options + 5 answer_no_option, 2 placeholder_dup). Defansif flag-only (Faz 1.9 pattern). Script: `backend/scripts/sanity_checker.py` |
 | 1.5 | Pipeline-fix run audit (30 random sample, post-fix dogrulama) | Yeni RESULT artifact, missing_diagram dilimi <%5 |
 | 1.6 | Bronze tier promotion: pipeline-fix gecen satirlara `quality_review_status='bronze_clean'` | Yeni status enum + migration |
-| 1.7 | q_no=null orphan recovery (7,510 satir) | Page-level recovery audit |
+| 1.7 | ✅ **q_no=invalid orphan recovery (TAMAMLANDI 15 May)** | 7,510 → 4,315 match (%57.5). E1a=2,369 (exact), E1b=1,189 (sim), E1c=17, E2=740. Threshold uniform 0.70 (Tier D pilot kalibre). Script: `qno_orphan_recovery.py` |
 | 1.8 | Symbolic math verifier (SymPy) — wrong_answer 2. layer | %30+ math soru parse |
 | 1.9 | ✅ **Book answer key cross-reference (TAMAMLANDI 14 May)** | A1 defansif flag. 16,159 satir flag (agree=7,425, disagree=8,734). Audit: `_pilots/20260514_book_key_audit_RESULT.md` |
 | 1.10 | Re-OCR cut-off entries (Pro ile) — scope ~3.6K (revize, 17K degil) | Faz 0.8 methodology fix sonrasi |
