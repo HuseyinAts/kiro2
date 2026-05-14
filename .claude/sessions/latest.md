@@ -1,77 +1,68 @@
-## Session Handoff — 2026-04-12 Session 155
-**Branch:** master
-**Son commit:** 499dde6 (Session 154 handoff — Session 155 değişiklikleri henüz commitlenmedi)
-**Pending changes:** `backend/scripts/audit_orm_schema_drift.py` (yeni), `docs/audits/2026-04-12_orm-schema-drift-baseline.md` (yeni), `docs/audits/2026-04-12_orm-schema-drift-baseline.json` (yeni)
-**Golden Flow:** 164 PASS / 0 FAIL / 2 SKIP (Session 154 baseline korunuyor, çalıştırılmadı)
+# Session 156 — Closing State (14 May 2026)
 
-### Yapilanlar — Session 155 (audit_orm_schema_drift.py tooling)
+**Branch:** master (push edildi, clean)
+**Son commit:** `91163d3d8` docs(handoff): Session 156 closing
+**Detaylı handoff:** `backend/_pilots/20260514_HANDOFF_session156_to_157.md`
 
-Session 153'ün handoff backlog #3 görevi: ORM ↔ live PostgreSQL schema drift audit script. GF115 (Session 152'de) ve GF106 (Session 148'de) yakalanabilirdi — bu script tooling açığını kapatır.
+## ✅ Yapılanlar — Faz 0 TAMAMEN BİTTİ (9/9)
 
-**Yeni dosya: `backend/scripts/audit_orm_schema_drift.py` (~430 satır):**
+| Task | Çıktı |
+|---|---|
+| #2 Faz 0.1 | Memory drift fix (live DB sync) |
+| #1 Faz 0.2 | C1+C2+C3 audit (110 sample, pass=22.7% fail=53.6%) |
+| #14 Faz 0.3 | audit_missing_image_v2 (84.7% pipeline-fix kanıtı) |
+| #10 Faz 0.4 | pg_dump backup (361MB rollback) |
+| #26 Faz 0.5 | Plan v1 commit (KPI revize) |
+| #46 Faz 0.6 | Convention v3 + Alembic migration |
+| #47 Faz 0.7 | Pool categorization (56K karar) |
+| #56 Faz 0.8 | OCR truncation = METHODOLOGY ERROR (yeni rule) |
+| #51 Faz 0.9 | Bayesian validator REPLACE kararı (%26 precision) |
 
-- `models/` paketini walk-import ederek 222 ORM tablosunu yükler.
-- Live `kiro2` DB'ye `psycopg2` ile bağlanır (read-only), `information_schema.columns` sorgusu ile 235 tablonun şemasını çeker.
-- SQLAlchemy column tip sınıflarını (`String`, `UUID`, `Integer`, `Boolean`, ...) kanonik PG `udt_name` değerlerine indirger; family-based comparison (`string`, `integer`, `uuid`, `bool`, ...).
-- Üç HIGH pattern flag'ler: `inverse-rule-of-seven` (ORM=String/DB=uuid), `forward-rule-of-seven` (ORM=UUID/DB=varchar), `int-vs-string` (ORM=Integer/DB=varchar). MEDIUM: family mismatch + tz drift. LOW: nullability + DB-only columns.
-- CLI: `--fail` (CI gate exit 1), `--json` (rapor), `--table` (tek tablo debug), `--severity HIGH|MEDIUM|LOW`.
+**8 commit push edildi** (ee90bbab2 → 91163d3d8).
 
-**Doğrulama:**
+## ⏳ Bekleyen — Faz 1 sprint başlıyor
 
-İlk run sonrası **Sessions 149/153/154 fix edilmiş 8 tablonun hepsi CLEAN dönüyor** — script'in correctness'ı kanıtlandı:
+41 pending task. Faz 1'de ana sıra:
 
-| Table | Session/GF | Audit |
-|-------|-----------|-------|
-| `osb_settings` | 153 GF115 | CLEAN |
-| `student_reviews` + 5 review tables | 154 GF106 | CLEAN |
-| `coppa_parental_consents` | 149 GF113 | CLEAN |
+| # | Task | Süre |
+|---|---|---|
+| **#18 Faz 1.1** | Tier C image matcher | **4-6 saat** ← BAŞLA |
+| #54 Faz 1.9 | Book key cross-reference | 1-2 gün |
+| #42 Faz 1.4 | Sanity checker | 1 gün |
+| #31 Faz 1.2 | Tier D image matcher | 1.5 gün |
 
-**Bulgular:**
+## 🔧 State
 
-İlk baseline run: **HIGH=203, MEDIUM=455, LOW=206**. Hepsi gerçek bug'lar (false positive yok, spot-check edildi).
+- PostgreSQL 18.1 port 5434, db `kiro2`
+- question_bank: 187,834 toplam (167,559 aktif)
+- v_safe_for_beta: **0** (Convention v2 deploy)
+- 499K crop disk'te, 58.5K linked
+- Backup: `backups/qb_pre_pipeline_fix_20260514.sql.gz` (gitignored)
 
-HIGH findings 3 küme:
+## ⚠️ Kritik Bulgular (yeni oturum bilmeli)
 
-1. **University-info backlog (~140 finding, 8 tablo)**: `dormitory_info` (32), `scholarship_programs` (31), `city_living_costs` (30), `university_statistics` (9), `department_curricula` (8), `salary_expectations` (8), `sector_analyses` (8), `campus_info` (7) — `orm-declares-missing-db-col` pattern. ORM modelleri yazılmış ama Alembic migration koşulmamış. Cold tables, kullanıcı yoluna girmiyor. Tek batch migration ile 140 finding kapanır.
+1. **OCR truncation YOK** — methodology error idi. Yeni rule: `.claude/rules/audit-methodology.md`
+2. **Bayesian REPLACE** — Faz 5.7 hybrid iptal, judge tek karar
+3. **Pool categorized** — 43.7K Bronze, 11K rejected, 2K pending (`docs/pool_categorization_decision.md`)
+4. **Convention v3 hazır** — Alembic migration deploy bekliyor (Faz 1.6 öncesi)
+5. **Pipeline-fix %84.7 kanıtlı** — Tier C+D image matcher değerli yatırım
 
-2. **Inverse rule-of-seven (41 finding, ~22 tablo)** — GF115 pattern'inin dökülmemiş hali. **Production verisi olan kritik tablolar:**
-   - `kiro2_learning_events` (243 satır): id, user_id, session_id
-   - `topic_prerequisites` (106 satır): id
-   - `kiro2_cat_sessions` (8 satır): id, user_id
-   - `osym_questions`: 19 finding
-   - + `reasoning_cache`, `reasoning_sessions`, `reasoning_steps`, `student_knowledge_states`, `knowledge_points`, vd.
-   ORM `Column(String, default=lambda: str(uuid4()))` deklare ediyor ama DB `uuid`. Bu tabloların yazıldığı kod yolları muhtemelen raw SQL veya caller-side `str(uuid)` shim kullanıyor; ORM yolundan giden herhangi bir kod path'i `DatatypeMismatchError` üretir. Fix: model deklarasyonlarında `Column(UUID(as_uuid=True), default=uuid4)` — Session 154 reçetesinin tek satırlık tekrarı.
+## 📋 Yeni Oturum İlk Komutlar
 
-3. **int-vs-string (4 finding, 2 tablo)**: `badges.id`, `user_badges.id`, `user_badges.badge_id` — ORM Integer, DB varchar. Half-wired feature (5 badge seed, 0 user_badge). Her iki yön de geçerli.
+```bash
+git log --oneline -5                    # State doğrulama
+git status -sb                          # Clean mi?
+# TaskList                              # 50 task, 9 done, 41 pending
+# Read backend/_pilots/20260514_HANDOFF_session156_to_157.md  # Detaylı resume
+# Önerilen: TaskUpdate #18 in_progress + Tier C implementation
+```
 
-**Persistent rapor:**
-- `docs/audits/2026-04-12_orm-schema-drift-baseline.json` — full machine-readable findings
-- `docs/audits/2026-04-12_orm-schema-drift-baseline.md` — triage analizi + cluster breakdown
+## 📚 Kanonik Referanslar
 
-### Fail Eden Testler
-- Çalıştırılmadı (Session 155 sadece tooling). Golden Flow baseline 164 PASS sabit (Session 154'ten).
-
-### Engelleyiciler
-- YOK
-
-### Session 155 Bulgular / Notlar
-
-- **DATABASE_URL trap**: Live env `.env`'de URL `postgresql+asyncpg://...` formatında. psycopg2 driver suffix anlamıyor; script `replace("postgresql+asyncpg://", "postgresql://")` shim'i ile iki driver'i uzlaştırıyor. Bu pattern başka audit script'lerinde de tekrar edebilir.
-- **Walk-import side effect**: `models/__init__.py` 29 modülü explicit import ediyor ama 60+ model dosyası daha var. `pkgutil.iter_modules()` ile walk-import 222 tabloyu yüklüyor (vs. 119 sadece `__init__.py` ile). Bazı modüller heavy import-time side effects yapıyor (LLM init, JVM bridges) ve fail oluyor — script silently skip ediyor, çünkü `Base.metadata` class body execution side effect'i.
-- **Pattern density beklentisi**: 203 HIGH finding Wave 10-14'ün hit rate trailing indicator curve'unun (80% → 50% → 20% → 50% → 10% → 0% → 0%) **gerçek hesabını** veriyor. Suite saturation = "single-handler bug discovery saturated", system saturation ≠. Hâlâ ~200 yapısal asyncpg crash bekliyor — sadece probe-discoverable değiller, çünkü kullanıcı bu cold path'leri henüz çağırmıyor. Bu script onları toplu çıkarıyor.
-- **Production data risk**: `kiro2_learning_events` 243 satır + ORM/DB tip uyumsuzluğu = bir gün biri ORM yazma yolu yazarsa anlık 500. Cluster 2 fix'i yüksek öncelik.
-
-### Sonraki Adimlar (maks 5)
-
-1. **Cluster 2 fix sweep (P1)** — Inverse rule-of-seven (41 finding, ~22 tablo). Session 154 reçetesinin tek-satırlık tekrarı: `Column(String, default=lambda: str(uuid4()))` → `Column(UUID(as_uuid=True), default=uuid4)`. Production tablolar (`kiro2_learning_events`, `topic_prerequisites`, `kiro2_cat_sessions`) öncelikli. Migration GEREKMİYOR (DB zaten doğru).
-2. **Cluster 1 batch migration (P1)** — University-info 8 tablo, ~140 finding. Tek Alembic migration ile ORM'ün bildiği tüm kolonları DB'ye ekle. Cold tables, sıralama önemsiz.
-3. **Cluster 3 fix (P2)** — `badges`/`user_badges` Integer vs varchar. 0 user_badge satırı, her iki yön güvenli; ORM → String tercih edilir (UUID hazırlığı için).
-4. **CI integration (P2)** — `audit_orm_schema_drift.py --fail` `.github/workflows/`'a ekle. Önce baseline'i 0 HIGH'a çek, sonra gate aktif et (yoksa CI sürekli kırmızı kalır).
-5. **Sync service async port backlog (P1, ertelendi)** — DifficultyClassificationService ~700 satır (GF112), DINA EM calibration (GF151b). Cluster 1+2+3 fix sonrası ele alınabilir.
-
-### Kararlar (gelecek session tekrar tartismasin)
-- Session 155 deliverable'ı `audit_orm_schema_drift.py` script + baseline raporu. Findings'in fix'i Session 156+ işi (her cluster ayrı session olabilir).
-- Script `docs/audits/2026-04-12_orm-schema-drift-baseline.json` baseline'ı persistent — gelecek run'lar bu baseline ile diff'lenebilir.
-- Inverse rule-of-seven pattern'i Session 153 GF115 (1 tablo) + Session 154 GF106 (6 tablo) + Session 155 audit (~22 tablo) = **toplam 29 tablo** kapsama alanına alındı.
-- DATABASE_URL `postgresql+asyncpg://` shim pattern'i diğer psycopg2-based script'lere de eklenebilir (audit_db_dependency.py vd.).
-- Golden Flow baseline 164 PASS / 0 FAIL / 2 SKIP sabit. Suite saturation declaration hâlâ geçerli.
+- Plan: `docs/quality_pool_plan_v1.md`
+- Pool karar: `docs/pool_categorization_decision.md`
+- Convention v3: `docs/quality_review_status_convention_v3.md`
+- Bayesian audit: `docs/bayesian_validator_audit_RESULT.md`
+- OCR investigation: `docs/ocr_truncation_root_cause.md`
+- 110 sample combined: `backend/_pilots/20260514_audit_C1_C2_C3_COMBINED_RESULT.md`
+- audit-methodology rule: `.claude/rules/audit-methodology.md`
