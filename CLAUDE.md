@@ -84,6 +84,8 @@ Bu kurallar canlı sistemden defalarca doğrulandı. İhlal edilirse veri bozulu
 - `users.id` ve `user_badges.id` **VARCHAR**, UUID değil. FK kolonları `sa.String` olmalı.
 - `sa.Enum` `create_type=False` ile güvenilmez → `sa.String` kullan.
 - `KullaniciServisi` **DEPRECATED** — sadece in-memory. Gerçek DB için `core.database.db_manager.get_session()` ile direkt SQLAlchemy `AsyncSession` kullan.
+- **Pipeline-fix mapping ÇİFT SİNYAL ZORUNLU**: Tek-sinyal (yalnız filename pattern, text validation yok) **FUNDAMENTAL HATA** (Tier H 49,468 satır rollback, Session 158). Her image_url/crop_file mapping script'i hem **key match** (ocr_crops.soru_no veya disk filename) hem **text similarity** (Jaccard sim>=0.50) kullanmalı. Apply ÖNCESİ 30-50 sample + substring overlap audit ZORUNLU.
+- **Gemini-assigned field güvensiz**: `pipeline_metadata.ai_extras.q_no`, `q_index_in_page`, `subtopic` gibi Gemini Flash batch çıktıları **deterministic mapping field değil** — apply öncesi mutlaka text similarity ile doğrula.
 
 **Container ve Deploy**
 
@@ -138,6 +140,15 @@ Before Docker commands (`docker compose`, `docker build`, `docker up`):
 1. Verify Docker: `docker info`
 2. Check Redis: `redis-cli ping`
 3. Check PostgreSQL: `pg_isready -p 5434`
+
+Before pipeline-fix apply (>1000 satır DB UPDATE):
+
+1. Pilot 30-50 sample TSV oluştur (filename pattern + text karşılaştırma)
+2. Substring overlap audit (≥4 word DB → OCR match)
+3. Page-level invariant kontrol (DB count vs disk count)
+4. min(field) histogram (0-index vs 1-index gibi semantic ayrılıkları yakala)
+5. Sample audit %95+ accuracy → apply, değilse DUR
+6. Apply sonrası backup TSV + pipeline_metadata flag (rollback için)
 
 ## Testing Requirements
 
@@ -515,6 +526,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswer }) => {
 ```
 
 ### Database
+- **`SELECT DISTINCT + ORDER BY` PostgreSQL trap**: `ORDER BY md5(col)` SELECT list'te yoksa `InvalidColumnReference` hatası. Fix: alt-sorgu kullan — `SELECT col FROM (SELECT DISTINCT col, md5(col) AS sort_key FROM t) AS x ORDER BY sort_key LIMIT N`
+
 ```sql
 -- Always add indexes for foreign keys
 CREATE INDEX idx_questions_topic_id ON questions(topic_id);
@@ -721,6 +734,8 @@ npm test -- --coverage
 - Use `python` not `python3` (python3 doesn't exist on this Windows env)
 - Path separators: `str(Path(...))` returns backslashes on Windows; use `.replace("\\", "/")` when needed for string operations
 - Bash env vars: `VAR=value python script.py` works in Git Bash but not cmd/PowerShell
+- **Python stdout UTF-8 fix** (Türkçe karakter print): script başında `import sys; sys.stdout.reconfigure(encoding="utf-8", errors="replace")` — cp1254 console crash önler
+- **PSQL Windows yolu**: `"C:/Program Files/PostgreSQL/18/bin/psql.exe"` (quoted, forward slash). Türkçe SQL için `-f dosya.sql` zorunlu (`-c "inline"` 0xfe encoding error verir)
 
 ## 🔧 Environment Variables
 
