@@ -54,7 +54,7 @@ Mevcut kayitlari/audit'leri commit + baseline dondur. Drift baselinesi olmadan h
 | 1.1 | Tier C image matcher script (exact_match: 16,440 satir) | --dry-run + --apply, idempotent, 100% match dogrulamali |
 | 1.2 | Tier D image matcher script (page_match_other_q: 25,337 satir, text similarity) | Pilot 100 satir → manuel doğrulama → %95+ accuracy then full run |
 | 1.3 | OCR text validator (Turkce sozluk + n-gram bozuk text flag) | pipeline_metadata.ocr_quality_flag eklenir |
-| 1.4 | Sanity checker (duplicate options + answer-fits-options) | pipeline_metadata.sanity_flags eklenir |
+| 1.4 | ✅ **Sanity checker (TAMAMLANDI 15 May)** | 612 satır flag (607 duplicate_options + 5 answer_no_option, 2 placeholder_dup). Defansif flag-only (Faz 1.9 pattern). Script: `backend/scripts/sanity_checker.py` |
 | 1.5 | Pipeline-fix run audit (30 random sample, post-fix dogrulama) | Yeni RESULT artifact, missing_diagram dilimi <%5 |
 | 1.6 | Bronze tier promotion: pipeline-fix gecen satirlara `quality_review_status='bronze_clean'` | Yeni status enum + migration |
 | 1.7 | q_no=null orphan recovery (7,510 satir) | Page-level recovery audit |
