@@ -53,7 +53,7 @@ Mevcut kayitlari/audit'leri commit + baseline dondur. Drift baselinesi olmadan h
 |---|---|---|
 | 1.1 | Tier C image matcher script (exact_match: 16,440 satir) | --dry-run + --apply, idempotent, 100% match dogrulamali |
 | 1.2 | ✅ **Tier D image matcher (TAMAMLANDI 15 May)** | Pilot %96 accuracy → full run. 13,741 satır UPDATE (D1=13,472 + D2=269). image_url 74,954 → 88,695. Script: `tier_d_image_matcher.py`, RESULT: `_pilots/20260515_tier_d_pilot_RESULT.md` |
-| 1.3 | OCR text validator (Turkce sozluk + n-gram bozuk text flag) | pipeline_metadata.ocr_quality_flag eklenir |
+| 1.3 | ✅ **OCR text validator (TAMAMLANDI 15 May)** | 64 satır flag (kombineli rare_ratio>=0.15 AND >=1 4-cons rare token). Corpus zaten temiz (replacement char=0), marjinal sinyal. Domain false-positive bilinen sınır (geometri etiketleri, yabancı isimler, Osmanlıca). Script: `ocr_text_validator.py` |
 | 1.4 | ✅ **Sanity checker (TAMAMLANDI 15 May)** | 612 satır flag (607 duplicate_options + 5 answer_no_option, 2 placeholder_dup). Defansif flag-only (Faz 1.9 pattern). Script: `backend/scripts/sanity_checker.py` |
 | 1.5 | Pipeline-fix run audit (30 random sample, post-fix dogrulama) | Yeni RESULT artifact, missing_diagram dilimi <%5 |
 | 1.6 | Bronze tier promotion: pipeline-fix gecen satirlara `quality_review_status='bronze_clean'` | Yeni status enum + migration |
