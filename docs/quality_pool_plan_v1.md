@@ -57,8 +57,12 @@ Mevcut kayitlari/audit'leri commit + baseline dondur. Drift baselinesi olmadan h
 | 1.4 | Sanity checker (duplicate options + answer-fits-options) | pipeline_metadata.sanity_flags eklenir |
 | 1.5 | Pipeline-fix run audit (30 random sample, post-fix dogrulama) | Yeni RESULT artifact, missing_diagram dilimi <%5 |
 | 1.6 | Bronze tier promotion: pipeline-fix gecen satirlara `quality_review_status='bronze_clean'` | Yeni status enum + migration |
+| 1.7 | q_no=null orphan recovery (7,510 satir) | Page-level recovery audit |
+| 1.8 | Symbolic math verifier (SymPy) — wrong_answer 2. layer | %30+ math soru parse |
+| 1.9 | ✅ **Book answer key cross-reference (TAMAMLANDI 14 May)** | A1 defansif flag. 16,159 satir flag (agree=7,425, disagree=8,734). Audit: `_pilots/20260514_book_key_audit_RESULT.md` |
+| 1.10 | Re-OCR cut-off entries (Pro ile) — scope ~3.6K (revize, 17K degil) | Faz 0.8 methodology fix sonrasi |
 
-**Cikti:** ~+41,777 image-link, OCR/sanity flag'leri, Bronze tier oluşumu (~80-100K satir).
+**Cikti:** ~+41,777 image-link, OCR/sanity flag'leri, Bronze tier oluşumu (~80-100K satir), 16,159 book_key_match flag.
 
 ---
 
@@ -203,9 +207,10 @@ Beta acilir. Audit harness sürekli aktif. Compound learning baslar.
 | Süre (başlangıç → beta) | ~11 hafta | **~12-13 hafta** | +1-2 hafta (yeni 7 task) |
 | LLM API toplam | ~$500-1,500 | **~$600-1,700** | +$50-200 re-OCR + $200-400 math re-solve |
 | İnsan emek (Hüseyin) | ~80-120 saat | **~95-135 saat** | +10-15 saat yeni audit'ler |
-| Beta-safe pool | ~30-50K | **~30-55K** | +5K (symbolic+book key kazancı) |
-| wrong_answer yakalama | ~%85-90 | **~%90-95** | 4-katmanlı (book→symbolic→bayesian→judge) |
-| OCR cut-off pool | belirsiz | **~17K satır re-OCR** | Faz 1.10 ile |
+| Beta-safe pool | ~30-50K | **~30-55K** | +5K symbolic katkı (book key flag, pool katkı YOK) |
+| wrong_answer yakalama | ~%85-90 | **~%90-95** | 4-katmanlı (book→symbolic→bayesian→judge). Book key pre-flag: %13 (~7,600 satır), pilot kanıt |
+| OCR cut-off pool | belirsiz | **~3.6K satır re-OCR** | Faz 1.10 (Faz 0.8 methodology fix sonrası, %80 azalma) |
+| Judge cost save (Faz 5/6) | implicit | **~$50** | book key agree (7,425) bypass adayı |
 | Geri alınabilirlik | Yüksek | aynı | — |
 
 ---
@@ -242,9 +247,12 @@ Faz 0 (Foundation)
 
 - `backend/_pilots/20260514_audit_RESULT.md` — 100+30 stratified audit
 - `backend/_pilots/20260515_missing_image_v2_RESULT.md` — pipeline-fix potansiyeli
+- `backend/_pilots/20260514_book_key_audit_RESULT.md` — Faz 1.9 pilot + 8 sample pixel-doğrulama
 - `docs/quality_pool_roadmap.md` — onceki roadmap (Cozum E1-E4 yollari)
 - `docs/quality_review_status_convention.md` — Convention v2
-- `backend/scripts/populate_image_urls.py` — Tier A+B referans (Tier C+D buna eklenir)
-- `backend/scripts/cross_validate_answers.py` — Bayesian validation referans
+- `backend/scripts/populate_image_urls.py` — Tier A+B referans (JSONL-driven)
+- `backend/scripts/populate_image_urls_tier_c.py` — Tier C exact_match (DB-driven, +16,440 satır, 14 May)
+- `backend/scripts/book_key_cross_reference.py` — Faz 1.9 flag (16,159 satır, 14 May)
+- `backend/scripts/cross_validate_answers.py` — Bayesian validation referans (Faz 0.9'da REPLACE kararı)
 
 *Plan v1 — gozden gecirilecek (sonraki bolumde elestiri).*
