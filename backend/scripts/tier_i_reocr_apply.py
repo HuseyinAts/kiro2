@@ -57,7 +57,7 @@ SUBSTR_HIGH = 0.70
 SUBSTR_MID = 0.50  # band ayrımı için
 SUBSTR_LOW = 0.50  # MID threshold (legacy)
 SUBSTR_APPLY = 0.70  # HIGH-only mode: apply threshold (MID de skip)
-RATE_LIMIT_S = 0.5
+RATE_LIMIT_S = 0.1  # Paid tier: rate limit kaldırıldı, sadece buffer
 AUDIT_DATE = datetime.now().strftime("%Y-%m-%d")
 MODEL_NAME = "gemini-2.5-pro"
 
