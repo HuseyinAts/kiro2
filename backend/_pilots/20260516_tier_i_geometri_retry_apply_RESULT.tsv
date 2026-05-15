@@ -1,0 +1,21 @@
+id	book	page	q_no	substr_pct	band	action	image_url	ocr_text_len
+0065b135-5817-59b8-9f15-2039cae0bfd0	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	119	12	0.846	high	apply	/static/crops/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası/Mikro-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0119_q07.png	118
+fdcd1366-0ea1-5a5d-aa7d-97b063f1fd27	Aktif Ogrenme 2025 Tyt Fizik Soru Bankası	209	11	0.562	mid	skip		168
+e5fc1491-8567-5a42-b737-fb126af2b46d	345 2024 Ayt Kimya Soru Bankası	139	8	0.654	mid	skip		382
+73610e74-31fb-56cd-9c5f-896acf5bd192	345 2025 Tyt Ayt Geometri Soru Bankası 1	7	6	0.375	low	skip		96
+0ebdf0c3-5e2a-59b8-8702-1886ee522a69	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	44	10	1.000	high	apply	/static/crops/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası/2020-2021-Acil-Tyt_Ayt_Geometrinin_ilacı_Soru_Bankası_p0044_q01.png	129
+2593204f-488c-5246-a16c-53206e75a75e	345 Tyt Ayt Geometri Soru Bankası	171	7	1.000	high	apply	/static/crops/345_Tyt_Ayt_Geometri_Soru_Bankası/345_Tyt_Ayt_Geometri_Soru_Bankası_p0171_q03.png	99
+1fa3ec83-aeb5-5489-8e38-4ebd0794872f	Bilgi Sarmalı-2025-Tyt Ayt-Geometri Soru Bankası	200	11	0.857	high	apply	/static/crops/Bilgi_Sarmalı-2025-Tyt_Ayt-Geometri_Soru_Bankası/Bilgi_Sarmalı-2025-Tyt_Ayt-Geometri_Soru_Bankası_p0200_q04.png	129
+a4c2e029-2bab-5257-877c-ff195ff10b58	ACİL-TYT-AYT-Geometri Soru Bankası	175	4	0	error	error		0
+35d719b8-74f7-5d8b-b69f-f8b65953f96d	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	26	12	0.429	low	skip		90
+6b37d7be-1033-5074-b8f5-bc3c1a85a91a	C1CELL-2024-TYT-Matematik Soru Bankası	21	14	0.344	low	skip		354
+887b531d-0e3b-5e0f-b9f8-7a7e947a3226	2023-2024-ACİL-TYT-AYT Geometri Soru Bankası	101	13	0	error	error		0
+f3b0673e-281c-5202-84e3-652868c15bbc	Bilgi Sarmalı-Tyt Ayt-Geometri Soru Bankası	40	7	0	error	error		0
+71d9928a-f5f5-5f6b-a166-5601ed14e44a	Orijinal-2024-Ayt-Trigonometri	192	12	0	error	error		0
+7d10c8ea-b384-5412-aa2c-2f6a0eb8e916	2021-2022-Apotemi-Limit	81	9	0	json_fail	skip		0
+993bfe5e-3231-536f-9247-60379e8eaff7	Orijinal-Tyt Ayt Geometri Soru Bankası	287	7	0	error	error		0
+a33281d4-cb64-5252-9753-8206170f3e6f	Mikro-2024-Tyt Ayt-Geometri Soru Bankası	137	9	0	error	error		0
+695742a8-66f5-5e7b-bcae-d75973077b9c	Orijinal-Tyt Ayt Geometri Soru Bankası	15	8	0	error	error		0
+653307f8-3b65-5560-ba98-3120d64470f4	CAP-2022-2023-TYT AYT-Geometri Soru Bankası	169	7	0	error	error		0
+cf31dcd0-7c2b-52b6-9721-0497b9ca3fc8	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	180	8	0.600	mid	skip		88
+b0a4be66-a343-5d90-96a5-6ddb33860f20	2023-2024-ACİL-TYT-AYT Geometri Soru Bankası	239	11	0	error	error		0

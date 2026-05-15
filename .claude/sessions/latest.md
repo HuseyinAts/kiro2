@@ -1,7 +1,15 @@
-## Session Handoff — 2026-05-16 11:30 (Session 161)
-**Branch:** master
-**Son commit:** `d69628a16` feat(tier-j): heuristic apply 85 satır
-**Uncommitted:** temiz (7 commit push edilmedi)
+## Session Handoff — 2026-05-16 (Session 161b extension) — CLOSED
+**Branch:** master (origin/master synced as of 8-commit push)
+**Son commit (push edilmiş):** `bbbb53c1d` chore: session 161 handoff
+**Uncommitted:** Tier I Geometri retry script + RESULT MD (yeni commit pending)
+
+### Session 161b ek iş (Faz 5.8 partial)
+- `backend/scripts/tier_i_geometri_retry.py` — BLOCK_NONE safety + 334 error retry script
+- Pilot n=20: %45 gemini_error, %20 applied_high, %50 toplam hata → **NO-GO production retry**
+- Bonus: 4 HIGH UPDATE DB'de kalıcı (audit trail `safety_mode=block_none, retry_pass=2`)
+- Finding: BLOCK_NONE yetersiz, `finish_reason != STOP` derin SDK sorunu — `candidates[0].content.parts[0].text` bypass gerek
+- Error count drift düzeltildi: memory "311" → gerçek **334**
+- RESULT: `backend/_pilots/20260516_tier_i_geometri_retry_pilot_RESULT.md`
 
 ### Yapilanlar
 - `docs/llm_judge_spec.md` + `backend/scripts/judge/{__init__,prompt_v1,client,aggregator,runner}.py` — Faz 5.5+5.1+5.2 (`2a25347ba`)
@@ -16,7 +24,6 @@
 - YOK (pytest çalıştırılmadı, sadece script-level smoke + multimodal pixel-verify)
 
 ### Engelleyiciler
-- 7 commit push edilmedi — kullanıcı isterse `git push origin master`
 - Faz 6.1 judge pilot Faz 4.1 (200 manuel curated set) blocker — bu insan iş
 - Geometri safety_blocked 311 satır retry için Session 162+ `safety_settings=BLOCK_NONE` config
 - ANTHROPIC_API_KEY env'de yok (judge runner için gerekli)
@@ -26,7 +33,6 @@
 2. **Faz 6.1 judge pilot**: 1,000 satır = 445 GEOMETRI Tier J kalanı + 555 random Bronze, ~$10-20, ~1.5h
 3. **MID bant pilot**: `tier_i_reocr_apply_threaded.py --substr-apply 0.50 --limit 50` script edit + apply (~25 dk)
 4. **Geometri safety retry**: 311 satır `safety_settings=BLOCK_NONE` ile Session 161+ Faz 5.8
-5. **Push 7 commit**: `git push origin master` (kullanıcı onayı bekliyor)
 
 ### Kararlar (gelecek session tekrar tartismasin)
 - Tier I HIGH apply onaylı (URL 12/12 + image_ocr 11/12 = production'da kalıyor)
