@@ -71,15 +71,63 @@ Not: Otomatik checks sadece DB state'i doğrular (URL pointer + flag + crop exis
 | `correct_answer` image'deki seçenek ile aynı | **7/7** ✅ |
 | `question_text` (legacy, Tier I dokunmadı) image ile uyumlu | 5/7 + 1 minor + 2 substantive |
 
-### 3.2 KRİTİK BULGU
+### 3.2 KRİTİK BULGU (Round 1)
 
-**Tier I image_ocr_text legacy question_text'i AŞTI.**
+**Tier I image_ocr_text legacy question_text'i AŞTI** — geometri rows için.
 
 Sample 3 ve 7'de:
 - `question_text` (eski pipeline çıktısı, Tier I dokunmadı) → ❌ image ile uyuşmuyor
 - `image_ocr_text` (Tier I bu apply'da yazdı) → ✅ image ile uyuyor
 
-Tier I sadece URL bind etmedi, aynı zamanda **legacy question_text hatalarını açığa çıkaran high-quality ground truth** üretti. Bu yeni kategori iş fırsatı: **Tier J — question_text correction from image_ocr_text**.
+Tier I sadece URL bind etmedi, aynı zamanda **legacy question_text hatalarını açığa çıkaran high-quality ground truth** üretti.
+
+### 3.3 Non-Geometri Spot-Check (Round 2, n=5)
+
+Bias riski çürütmek için stratified non-geometri sample (subject_area filter):
+
+| # | Subject | id (kısa) | URL✓ | image_ocr ✓ | qtext ✓ |
+|---|---|---|---|---|---|
+| 1 | MATEMATIK | 9e95e67a | ✅ | ✅ | ✅ |
+| 2 | MATEMATIK | 48cc7852 | ✅ | ✅ | ✅ |
+| 3 | KIMYA | 8cf1c2d1 | ✅ | ⚠️ minor ("tepkmesi" 1 letter drop) | ✅ |
+| 4 | FIZIK | 674b80ab | ✅ | ✅ | ✅ |
+| 5 | BIYOLOJI | 0862be9b | ✅ | ✅ | ✅ |
+
+**Tier I HIGH apply subject distribution (1727+263+46+41+7+2+2 = 2,088):**
+
+| Subject | n | % |
+|---|---:|---:|
+| GEOMETRI | 1,727 | 82.7 |
+| MATEMATIK | 263 | 12.6 |
+| KIMYA | 46 | 2.2 |
+| FIZIK | 41 | 2.0 |
+| BIYOLOJI | 7 | 0.3 |
+| COGRAFYA + TARIH | 4 | 0.2 |
+
+Sözel ders (TURKCE/EDEBIYAT/FELSEFE) **ZERO** — Tier I scope `has_diagram` filter ile inherently STEM-biased.
+
+### 3.4 KRİTİK YENİ BULGU (Round 2 sonrası) — Subject-Asymmetric Pattern
+
+| Subject | qtext durumu | image_ocr durumu | Tier J yön |
+|---|---|---|---|
+| **GEOMETRI** | ❌ ~%29 substantive error | ✅ Tier I doğru | ✅ **GAIN** — image_ocr > qtext |
+| **MATEMATIK / FIZIK / BIYOLOJI** | ✅ tam | ✅ tam | 🟡 NÖTR — fark yok |
+| **KIMYA** | ✅ tam | ⚠️ Tier I 1-letter typo | ❌ **LOSS** — image_ocr < qtext |
+
+**Implikasyon:** Blind "Tier J: qtext = image_ocr_text" UYGULAMA YASAK. Non-geometri rows'u downgrade eder.
+
+**Doğru yaklaşım:** Tier J için subject filter ZORUNLU + drift threshold + pixel-verify gate (Tier H rollback dersi).
+
+### 3.5 Toplam Pixel-Verify Skor (n=12)
+
+| Doğrulama | Skor |
+|---|---:|
+| URL binding (Tier I birincil hedef) | **12/12 ✅** |
+| `image_ocr_text` image ile uyumlu | **11/12** ✅ (1 KIMYA minor) |
+| `question_text` image ile uyumlu | **10/12** (2 GEOMETRI substantive errors) |
+| `correct_answer` image options'da var | **12/12 ✅** |
+
+**Tier I URL binding mission: KESIN BAŞARI (n=12, %100).**
 
 ---
 
@@ -92,18 +140,20 @@ Tier I sadece URL bind etmedi, aynı zamanda **legacy question_text hatalarını
 | LOW + safety_blocked (694 satır) | 📋 **Backlog** | LOW: judge'a bırak. Safety: Faz 5.8 retry pile (`safety_settings=BLOCK_NONE`) |
 | Faz 1.10 (task #55) | ✅ **COMPLETED** | Birincil hedef (URL binding) gerçekleşti |
 | **YENİ: question_text drift audit** | 🆕 **Faz J pre-audit** | Tüm 1,770 Tier I satırında question_text vs image_ocr_text similarity ölç |
-| **YENİ: Tier J apply (drift varsa)** | 🆕 **Karar audit sonrası** | Pixel-verify + SUBSTR_APPLY kapısı (Tier H dersleri) |
-| Sample bias risk | ⚠️ **Non-geometri spot-check (5-7 sample)** | 7/7 geometri → %100 LaTeX-ağır, sözel kanıt eksik |
+| **YENİ: Tier J apply (drift varsa)** | 🆕 **GEOMETRI-ONLY scope ZORUNLU** | Round 2 spot-check: non-geometri Tier I marjinal/sıfır kazanç + KIMYA'da regression riski. Subject filter olmadan apply YASAK |
+| Sample bias risk | ✅ **ÇÜRÜTÜLDÜ (Round 2)** | 5 non-geometri sample: URL 5/5, image_ocr 4/5+1minor, qtext 5/5. Tier I geneline güven yüksek |
 
 ---
 
-## 5. Sıradaki Adımlar (priority sırası)
+## 5. Sıradaki Adımlar (priority sırası, Round 2 sonrası revize)
 
-1. ✅ Bu RESULT commit
-2. **Non-geometri stratified spot-check** (5-7 sample, ~10 dk) — bias riski çürüt
-3. **question_text drift audit** (read-only SQL, ~15 dk) — Tier J fizibilite ölç
-4. MID bant pilot script edit (`--substr-apply` arg eklenmeli, ~10 dk) + 50-sample apply (~12 dk)
-5. Tier J script (drift rate yüksekse) — `tier_j_qtext_correction.py` (Tier I template'i klonla, target field swap)
+1. ✅ Round 1 RESULT commit (`b41270231`)
+2. ✅ **Non-geometri stratified spot-check tamamlandı** (Round 2, n=5)
+3. ✅ Round 2 RESULT update + Tier J pre-audit script (bu commit)
+4. **Tier J pre-audit çalıştır** — `python backend/scripts/tier_j_qtext_audit.py` (read-only SQL, GEOMETRI-only). Drift dağılımı raporu üretir.
+5. **Pixel-verify Tier J pre-audit'ten 30 sample** — drift>0.30 olan sample'lara odaklan, image_ocr gerçekten qtext'ten iyi mi doğrula
+6. **Tier J script tasarla** (eğer drift rate yüksekse) — `tier_j_qtext_apply.py` (subject=GEOMETRI + drift<0.85 + sample audit gate)
+7. MID bant pilot script edit (`--substr-apply` arg, ~10 dk) + 50-sample apply (~12 dk)
 
 ---
 
@@ -114,6 +164,8 @@ Tier I sadece URL bind etmedi, aynı zamanda **legacy question_text hatalarını
 3. **Sample bias takip** — random seed=42, 7/7 geometri çıktı. Stratified sampling yoksa subject-level error rate gizli kalır
 4. **Karpathy "Önce Düşün" — yanlış yorum risk düşük yatırımdı bile** — ilk Pixel-verify yorumum "Tier I OCR'da %29 hata" yanlış başladı (question_text ≠ image_ocr_text). Bir adım daha düşünüp DB schema'yı doğrulamak hatayı yakaladı
 5. **9.3x speedup** ThreadPool migration başarısı kanıtlandı (10 worker, paid Gemini Pro). Future Tier J/K için template hazır
+6. **Subject-asymmetric Tier I behavior** — qtext kalite farkı subject-bağımlı: GEOMETRI'de Tier I aşıyor (LaTeX ağır), KIMYA'da Tier I gerileyebiliyor (1-letter typo riski). Blind subject-agnostic apply YASAK. Memory: [[tier-i-subject-asymmetric]]
+7. **Tier I scope inherently STEM** — `has_diagram=true` filter sözel kitapları (TURKCE/EDEBIYAT/FELSEFE) hariç tutar. Sözel question_text iyileştirme Tier I'ın görevi değil; Judge pipeline veya curator workflow'a bırak
 
 ---
 
