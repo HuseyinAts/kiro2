@@ -1,7 +1,13 @@
-## Session Handoff — 2026-05-16 (Session 161d, Faz 1.6 sprint) — IN PROGRESS
+## Session Handoff — 2026-05-16 (Session 161d, Faz 1.6 + 2.2) — IN PROGRESS
 **Branch:** master (origin/master 1 commit behind pending push)
-**Son commit (push edilmiş):** `7b3265258` feat(tier-i-geometri): retry pilot NO-GO
-**Uncommitted:** Faz 1.6 Bronze promotion paketi (script + RESULT + doc revize)
+**Son commit (push edilmiş):** `816c7f4ae` feat(faz-1-6): Bronze tier promotion
+**Uncommitted:** Faz 2.2 scoring template paketi
+
+### Session 161d ek iş (Faz 2.2 — scoring template)
+- `backend/scripts/quality/scoring_template.py` (~210 satır) — `--prepare` + `--summarize` + `--strata-col`
+- `docs/audit_scoring_guide.md` — reusable guide (mevcut SCORING_GUIDE generalize)
+- Test: C1 30 sample summarize (validation clean), C2 50 sample strata breakdown, idempotent guard
+- Verdict/error_type taksonomi sabit (8 error type), inconsistency detection (pass+error_type, fail+empty)
 
 ### Session 161d — Faz 1.6 Bronze tier promotion
 - Alembic `qrs_v3_20260514` deploy (DB v2→v3, `bronze_clean` constraint accept)
