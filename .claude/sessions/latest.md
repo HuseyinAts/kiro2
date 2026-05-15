@@ -1,38 +1,37 @@
-## Session Handoff — 2026-05-15 04:15 (Session 160)
+## Session Handoff — 2026-05-16 11:30 (Session 161)
 **Branch:** master
-**Son commit:** `c5220794f` feat(tier-i): ThreadPool concurrent version (10x speedup)
-**Uncommitted:** 3 in-flight apply files (BACKUP+RESULT+checkpoint) ~604 satır
+**Son commit:** `d69628a16` feat(tier-j): heuristic apply 85 satır
+**Uncommitted:** temiz (7 commit push edilmedi)
 
 ### Yapilanlar
-- `backend/scripts/tier_i_postaudit.py` (`bcef5c8c4`) — read-only post-audit, 5 sample %100 verified, bug fix `audit_date`→`date`
-- `docs/cost_projection_judge_v1.md` (`825c67bcd`) — Faz 5.6: 80K=$1,477, 146K=$2,692, token n=20 AVG 351/150
-- `backend/scripts/audit_harness.py` + `backend/scripts/sympy_verifier.py` + `docs/sanity_fail_review_v1.md` (`4ba94a59b`) — Faz 2.1/1.8/4.2 deliverables
-- `backend/scripts/tier_i_reocr_apply_threaded.py` (`c5220794f`) — ThreadPool 10 worker, ETA 11.7h→1.15h, kalite garantili (import reuse)
-- MEMORY.md Session 160 indeks satırı eklendi (Geometri error pattern + cost + post-audit)
-- TaskUpdate: #6, #17, #28, #50 → completed
-- Bulgu: Tier I gerçek maliyet **~$5.50** (MEMORY $10 tahminden düşük, ölçüm-bazlı revize)
-- Bulgu: Sanity-fail %76 E-option pair (yapısal OCR bug, 462/612)
-- Bulgu: 10/10 Geometri error sistematik (Gemini güvenlik filtresi, Session 161+ `safety_settings=BLOCK_NONE`)
+- `docs/llm_judge_spec.md` + `backend/scripts/judge/{__init__,prompt_v1,client,aggregator,runner}.py` — Faz 5.5+5.1+5.2 (`2a25347ba`)
+- Tier I apply tamam: 3,008 satır 74.2 dk (9.3x speedup), 1,770 HIGH UPDATE — `backend/scripts/tier_i_reocr_apply_threaded.py` (`b41270231`)
+- Tier I pixel-verify n=12 (R1 geometri 7 + R2 non-geometri 5): URL 12/12 ✅, image_ocr 11/12, qtext 10/12 (`b41270231`+`def215db7`)
+- `backend/scripts/tier_j_qtext_audit.py` v1 + `tier_j_qtext_audit_v2.py` format-aware: 270 false positive elendi, ~860 gerçek content drift (`def215db7`+`01f7e7684`)
+- Tier J pixel-verify n=60 (R3+R4): %40 image_ocr_better, %10 KRİTİK math errors (∥/⊥/=/<) (`fd6fecfa6`+`b388a0bee`)
+- Tier J heuristic apply: 85 satır UPDATE (broken_text_o 51 + italic_i 39 + truncation 2), pipeline_metadata.tier_j_qtext audit trail — `backend/scripts/tier_j_apply_heuristic.py` (`d69628a16`)
+- Memory: `~/.claude/.../memory/{feedback_smoke_test_checkpoint_trap,project_tier_i_subject_asymmetric}.md`
 
 ### Fail Eden Testler
-- YOK (pytest çalıştırılmadı)
+- YOK (pytest çalıştırılmadı, sadece script-level smoke + multimodal pixel-verify)
 
 ### Engelleyiciler
-- Apply PID 917 hala çalışıyor olabilir; threaded versiyon kullanmak için durdurulmalı (`taskkill /F /PID 917`)
-- Kullanıcı Pilot 1K (Faz 6.1) reddetti — Tier I tamamlanma sonrası tekrar gündem
-- SymPy verifier `antlr4-python3-runtime==4.11` gerek (mevcut sürüm uyumsuz)
+- 7 commit push edilmedi — kullanıcı isterse `git push origin master`
+- Faz 6.1 judge pilot Faz 4.1 (200 manuel curated set) blocker — bu insan iş
+- Geometri safety_blocked 311 satır retry için Session 162+ `safety_settings=BLOCK_NONE` config
+- ANTHROPIC_API_KEY env'de yok (judge runner için gerekli)
 
 ### Sonraki Adimlar (maks 5)
-1. PID 917 durdur → `taskkill //F //PID 917` veya başlatma terminalinde Ctrl+C
-2. Yeni terminal + `$env:GEMINI_API_KEY="AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I"`
-3. Smoke test: `python backend/scripts/tier_i_reocr_apply_threaded.py --apply --workers 5 --limit 20` (~3 dk)
-4. Smoke OK ise full: `--apply --resume --workers 10` background (~1.15h ETA)
-5. Apply bitince: `python backend/scripts/tier_i_postaudit.py --sample-size 50` + pixel-doğrulama
+1. **Faz 4.1**: 200 manuel curated set (50 exact+50 fuzzy+50 fallback+50 v3.5 residual) — Hüseyin manuel iş
+2. **Faz 6.1 judge pilot**: 1,000 satır = 445 GEOMETRI Tier J kalanı + 555 random Bronze, ~$10-20, ~1.5h
+3. **MID bant pilot**: `tier_i_reocr_apply_threaded.py --substr-apply 0.50 --limit 50` script edit + apply (~25 dk)
+4. **Geometri safety retry**: 311 satır `safety_settings=BLOCK_NONE` ile Session 161+ Faz 5.8
+5. **Push 7 commit**: `git push origin master` (kullanıcı onayı bekliyor)
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- ThreadPool 10 worker seçildi (Async aiohttp yerine — std lib + cerrahi reuse)
-- Mevcut script DOKUNULMADI, yeni dosya side-by-side (`tier_i_reocr_apply_threaded.py`)
-- Aynı checkpoint dosyası → resume backward compatible
-- Pilot 1K reddedildi (kullanıcı: Tier I sırasında ek API iş yapma)
-- Tier I maliyet gerçek ~$5.50 (önceki $10 tahmin overshoot)
-- Geometri error retry için `safety_settings=BLOCK_NONE` Session 161+ MID bant pass'inde
+- Tier I HIGH apply onaylı (URL 12/12 + image_ocr 11/12 = production'da kalıyor)
+- MID/LOW band ertele (gerçek kanıt yok, judge pipeline için bırakıldı)
+- Tier J SUBJECT-ASYMMETRIC: GEOMETRI-only (KIMYA Tier I OCR typo riski, sözel Tier I scope dışı)
+- Tier J blind apply YASAK: 60 sample evidence — %53-60 format_only (LaTeX→Unicode = beta UI render kaybı)
+- Strategy A heuristic conservative (85/1727=%4.9): broken LaTeX + italic-I objectively wrong patterns
+- Strategy C judge için Faz 4.1 önkoşul, Session 162+
