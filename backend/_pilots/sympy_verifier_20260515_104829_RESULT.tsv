@@ -1,0 +1,6 @@
+id	subject	verdict	details	q_text_preview	correct
+e5b0d585-3c1a-51e4-b94f-85381e67fa6c	MATEMATIK	INCONCLUSIVE	eval_q=0.14285714285714285, no unique option match	İşleminin sonucu kaçtır? $\frac{2}{14} \cdot \frac{36}{36}$	D
+7ac60b7d-3c87-585a-8b4a-a0276cc77a55	MATEMATIK	PASS	symbolic match → option A, expected A	$\frac{a^2 - 4b^2}{a^2 - 2ab}$ ifadesinin sade hâli aşağıdakilerden hangisidir?	A
+a0096b01-ace0-5eff-8e20-b68045cee553	MATEMATIK	INCONCLUSIVE	eval_q=None, no unique option match	x pozitif gerçek bir sayı olmak üzere, $$\log_5(x^3) + \log_{25}(x^2) - \log_x 5 = 9$$ eşitliği veriliyor.  Buna göre, x	B
+f90ed833-7689-502b-9d22-5bb7de83de42	MATEMATIK	INCONCLUSIVE	eval_q=None, no unique option match	$x$, $A$ ve $B$ birer doğal sayıdır. Yukarıdaki bölme işlemine göre, $A$ sayısının alabileceği kaç farklı değer vardır?	B
+014b320f-7aa2-54c5-bf34-3e2c75c8f04b	MATEMATIK	INCONCLUSIVE	eval_q=None, no unique option match	$x$ ve $y$ tam sayıdır. $5^{2x-y+3}=3^{3x-y}$ olduğuna göre $x^y-y^x$ ifadesinin eşiti nedir?	D
