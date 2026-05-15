@@ -1,7 +1,15 @@
-## Session Handoff — 2026-05-16 (Session 161b extension) — CLOSED
-**Branch:** master (origin/master synced as of 8-commit push)
-**Son commit (push edilmiş):** `bbbb53c1d` chore: session 161 handoff
-**Uncommitted:** Tier I Geometri retry script + RESULT MD (yeni commit pending)
+## Session Handoff — 2026-05-16 (Session 161d, Faz 1.6 sprint) — IN PROGRESS
+**Branch:** master (origin/master 1 commit behind pending push)
+**Son commit (push edilmiş):** `7b3265258` feat(tier-i-geometri): retry pilot NO-GO
+**Uncommitted:** Faz 1.6 Bronze promotion paketi (script + RESULT + doc revize)
+
+### Session 161d — Faz 1.6 Bronze tier promotion
+- Alembic `qrs_v3_20260514` deploy (DB v2→v3, `bronze_clean` constraint accept)
+- `backend/scripts/faz_1_6_bronze_promotion.py` — filter v1_loose
+- 84,905 satır UPDATE (12 dk, 117/s), audit trail 84,905/84,905
+- v_safe_for_beta=0 doğrulandı, post-state: bronze_clean=84,905 + unverified=61,482 + legacy_v3=18,397 + pending=2,775
+- Convention v3 doc revize: `sanity_flags`/`ocr_quality_flag` → `quality_flags` gerçek key
+- Plan v1 Faz 1.x %100 kapalı — sıradaki Faz 2.2 veya 4.1
 
 ### Session 161b ek iş (Faz 5.8 partial)
 - `backend/scripts/tier_i_geometri_retry.py` — BLOCK_NONE safety + 334 error retry script

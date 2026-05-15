@@ -44,17 +44,34 @@ Sebep: Bronze "pipeline-fix passed" demek, "doğru cevap" demek değil. Audit %2
 
 ### Kim set eder?
 
-Faz 1.5 (pipeline-fix run audit) sonrası, Faz 1.6 (Bronze migration script) tarafından otomatik:
+Faz 1.5 (pipeline-fix run audit) sonrası, Faz 1.6 (Bronze migration script) tarafından otomatik.
+
+**Filtre v1 (revize 16 May 2026):** Doc orijinali `sanity_flags` + `ocr_quality_flag` key'leri arıyordu — bu key'ler gerçek pipeline_metadata'da yok (doc/kod drift). Gerçek deploy edilen filtre:
 
 ```sql
 UPDATE question_bank
 SET quality_review_status = 'bronze_clean', updated_at = NOW()
 WHERE quality_review_status = 'unverified'
-  AND question_image_url IS NOT NULL  -- pipeline-fix uygulandı
-  AND pipeline_metadata::jsonb ? 'sanity_flags'  -- sanity check geçti
-  AND COALESCE((pipeline_metadata::jsonb -> 'sanity_flags' ->> 'duplicate_options')::boolean, FALSE) = FALSE
-  AND pipeline_metadata::jsonb ->> 'ocr_quality_flag' IN ('clean', 'suspect');
+  AND is_active = TRUE
+  AND question_image_url IS NOT NULL  -- pipeline-fix uygulandı (Tier A/B/C/D/E/F/G/I)
+  AND NOT (
+    -- pipeline_metadata.quality_flags problem içermesi → bronze değil
+    pipeline_metadata::jsonb ? 'quality_flags'
+    AND pipeline_metadata::jsonb -> 'quality_flags' ?| ARRAY[
+      'duplicate_option_values',
+      'answer_uncertain',
+      'numeric_q_nonnumeric_a',
+      'empty_options'
+    ]
+  );
 ```
+
+**Gerekçe:** Convention v3 yazıldığında (14 May) `sanity_flags`/`ocr_quality_flag` plan vardı ama Faz 1.3/1.4 script'leri farklı key isimlendirmeyle deploy etti (`quality_flags`). Mevcut sinyaller:
+- `question_image_url IS NOT NULL` → 84,905 unverified satır (pipeline-fix kanıtı, Tier A/B legacy + Tier C/D/I audit-trail'li)
+- `quality_flags` problem işaretleri → ~1,050 satır (bunlar promotion adayı DEĞİL)
+- Audit trail (`tier_d_match`, `tier_i_reocr`, `book_key_match`, `tier_f_match`) → 21,319 satır (alt küme)
+
+Gevşek filtre (84,905) ile sıkı filtre (21,319) arasında karar: Plan v1 satır 145 "~80-100K satır" hedefi gevşek filtreyle uyumlu, Tier A/B legacy ve Session 157 Tier C (16,440 image_url ama flag yazılmamış audit gap) dahil. Bronze beta'ya alınmaz, judge öncesi tier marker olarak yeterli.
 
 ### Kim alabilir?
 
@@ -187,11 +204,12 @@ CONVENTION V3 + FAZ 0.7 MIGRATION:
   pending                 4,935  (+2,160 from legacy_v3)
   bronze_clean                0  (henüz Faz 1.6 yok)
 
-FAZ 1.6 BRONZE MIGRATION SONRASI:
-  unverified             40-60K  (pipeline-fix geçemeyenler)
-  bronze_clean           80-100K (pipeline-fix geçti, judge bekliyor)
-  rejected               10,965+
-  pending                 4,935
+FAZ 1.6 BRONZE MIGRATION SONRASI (revize 16 May 2026, gerçek apply):
+  unverified            ~61,482  (image_url yok — pipeline-fix uygulanmadı)
+  bronze_clean           84,905  (image_url SET, quality_flags problem yok)
+  legacy_v3_unaudited    18,397
+  pending                 2,775
+  Tahmin sapması: gevşek filter (yalnız image_url), strict filter 21K idi.
 
 FAZ 6 JUDGE FULL RUN SONRASI:
   bronze_clean             0    (komple judged)
