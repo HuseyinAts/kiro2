@@ -55,3 +55,42 @@ d92ba06c-e2fa-59c0-82b6-6a9305cbf6dc	pass		Türkçe özne analizi text-only; C (
 a0100752-5c1c-50bf-bc86-0999fb695dd9	pass		Mutluluk/öfke/korku/üzüntü temel duygular; II ve III paragrafa uygun. E muhtemel	medium
 ef422f88-d1c4-5eed-9d42-0358bf51b6aa	pass		Hidrokarbon yanma: I yanlış (O₂ bazen fazla, hidrokarbon sınırlayıcı), II doğru, III doğru. C (I ve III yanlış) — bekle, soru 'yanlıştır' → I yanlış. C uygun	medium
 cc496a21-63eb-5dda-b2f0-03bc7917befa	pass		Piramit kulesi maketi 4√3 birim çizgi, kalanı uzunluk hesabı img-driven	medium
+cfcb4ec5-0051-5ec3-86c0-a29caa735061	pass		akın/yakın 3+ ses uyum (-akın), zengin uyak. E doğru	medium
+e7e3a5d8-940a-5ec4-aee1-846be9b5600e	pass		I sorunlar, II çözümsüzleşme nedenleri. E uygun (metin akış tipik)	medium
+655aa9da-51e1-5803-99d5-454cf52c1d33	fail	wrong_answer	A+B+C=D+E+F=(-5,13), koord toplam=8. Doğru E (8), c=B (11) yanlış	high
+85360362-37db-5ee4-8afa-8c38ce0b1e0e	pass		İp gerilme img-driven (P/açı bilinmeden), image var	medium
+c259e455-b171-50f0-908a-bacd679cf8cf	fail	wrong_answer	Çift fonksiyon a=-1/2 b=4, ab=-2. f(-2)=2·-2+5=1. Doğru C, c=B (-5) yanlış	high
+80efa4bc-f1b0-5a2f-a97c-d122bf8b31be	pass		Konum-zaman grafiği img-driven, image var. B muhtemel	medium
+efae7522-4116-5ebf-bd3e-de94558d9c70	fail	wrong_answer	Sarkaç K→O: ω+L+a_merkezcil hepsi artar (potansiyel→kinetik). Doğru E, c=A yanlış	high
+5f3f812c-efde-5fe2-a7db-c605eb2ffb49	fail	wrong_answer	Coulomb: I doğru. II yanlış (Newton 3 etki=tepki). III yanlış (zıt yön). Doğru A, c=C yanlış	high
+5d86f158-4bfb-5c75-8d9e-ba955d892f6f	unclear	ocr	Şiir OCR bozuk (mızcıralar, conglı, boklor anlamsız). Edat var/yok zor	low
+3d6ac794-bcee-5ae7-a4e5-2232caad7eed	fail	wrong_answer	Parça öyküdür + diyalog (doğrudan anlatım). Doğru A, c=E (tanımlama-benzetme) yanlış	medium
+e43b6a52-e74f-5c60-95c8-bc801cb85388	pass		Şair-eser stilik tahmin: ut/üzüntü/deniz imgesi Cansever. E muhtemel	low
+ca94cc13-ec77-5046-8aff-8437ff756d4e	fail	wrong_answer	Miyavlama (B) yansıma sözcüktür. Yansıma kullanılmayan C veya D. c=B yanlış	medium
+57d42eeb-72d8-5c96-914f-9c59e893e09c	unclear		Paragraf tema rol/kendi feda. D vs E yorum tartışmalı	low
+54d3476f-6e19-5332-9717-6a1794746556	fail	wrong_answer	Akson çapı (I) + miyelin (II) hız artırır. III yanlış (all-or-none). Doğru B, c=A yanlış	high
+0b652909-0e69-56d8-9f09-90d5d8230cb2	fail	wrong_answer	a≥b≥c, a∈{1..4}: 3+6+10+15=34. Doğru E, c=A (14) yanlış	high
+536e4cee-4e4e-5514-8d66-1de4064a986e	fail	wrong_answer	(2x-y)⁸ açılım 3.terim katsayı=1792, en büyük=1792. A/B=1. Doğru E, c=D yanlış	high
+e5ba9ffa-edf0-541d-a26d-9f565c952627	fail	wrong_answer	Kırmızı ışıkta sarı kağıt+kırmızı yazı aynı renk (kontrast yok). Doğru B, c=D (Sarı) yanlış	high
+b954cfc5-aa33-5826-83ed-c928d70e6b42	fail	wrong_answer	Kütle (I) eşit, çekim (II) Dünya>Ay, etki-tepki (III). Hepsi doğru → E. c=D II atlıyor yanlış	high
+c8ee6a92-b0b1-59c0-8c19-b1ff5752eeec	fail	wrong_answer	Metin uyku apnesi nedeni+sonuçları (B). c=E (düzenli uyku sağlık) genel/yanlış	medium
+414d2b41-e1bf-5896-ac37-7626248b6cb8	pass		Şerî+Türk gelenek bilgi. E (azınlık kuralları) bilgiden çıkarılamaz. E doğru	high
+5f85ccce-0aae-52cc-8ebd-a0165c1181a1	unclear		Kök analizi tartışmalı, OCR sapması (ız?) bulunabilir	low
+4dead521-a28c-52bb-bab7-1c6f6caa61b7	fail	wrong_answer	Nüfus artış hızı ↑ → genç oran ARTAR. C beklenmez. c=E (katlanma azalır) beklenir → yanlış	high
+c5d8383e-5d31-5402-abc9-988021e48dfe	pass		Kayışlı tekerlek lineer hız sabit, ω farklı. Küçük teker merkezi ivme büyük. C img-driven uyumlu	medium
+3a10c23f-e35c-5304-9a68-d8d0ff7f0211	fail	incomplete	Soru cut off: Emine/Vildan/Handan/Zümra listede. E (Hilal) listede yok, soru yapısı sorunlu	medium
+1182fbd2-c66f-5d07-b51d-e2e6674a7d87	fail	wrong_answer	Duyu ortak: II (beyin kabuğu) + III (eşik) + IV (elektrokimyasal). I (aynı uyarı) yanlış. Doğru B, c=E yanlış	high
+a10d9002-b63b-5fbb-a5d0-717ea50b9e3e	pass		Numaralı paragraf akış sorusu V (D) muhtemel	low
+17a5eee9-8e31-53cc-8628-17bc88df879b	fail	wrong_answer	Mantar depo karbonhidrat = glikojen. Selüloz bitki çeperi. Doğru C, c=B yanlış	high
+cc226d54-ba0d-53e9-9ad8-0a09407411e8	fail	incomplete	Şiir analiz I-IV semboliği belirsiz, soru yarım	medium
+1e58e1ca-89ba-51f4-8bd4-8f234ad188fe	fail	wrong_answer	f=x³-3x+11. (-1,1) azalan (I✓). x=-1 yerel max (II yanlış). Bire bir değil (III yanlış). Doğru A, c=C yanlış	high
+2bc1b8b7-cb6a-5c30-996a-26ac26b36407	fail	wrong_answer	Âlem→tür: çeşit azalır (I✓). Kromozom sabit (II✗). Protein benzerliği ARTAR (III✗). Doğru A, c=E yanlış	high
+da74869c-9889-5971-8298-d98f264e46f8	pass		Numaralı cümlelerden anlatım bozuk I (A) muhtemel	low
+9cdee9e8-2aad-50a3-8def-ac20aba4b6c0	fail	wrong_answer	2x-3y=4z → y çift. x·y her zaman çift (C). z paritesi bilinmez. Doğru C, c=E yanlış	high
+8255fae3-1b96-5c1f-a270-a00f8215cb56	fail	ocr	OCR çok bozuk (kız ay, ölücülüğüne, dikan, 10 yaşma). Anlam çıkarılamaz	high
+09f8ef9b-1106-5168-b3c8-47958bfbcfc6	fail	wrong_answer	Tuzlu su ρ büyük. Sandal yüzer F_k=ağırlık sabit, V_batan küçük. Doğru C, c=B yanlış	high
+c2583526-fb2e-5954-bb15-cae474b40bfc	pass		Sanat eseri alışkanlık + detay tema, E muhtemel	medium
+6f3433ce-54fb-5fd3-9ec4-5766befa65b9	fail	ocr	Balık türleri OCR (Alebalık, heviz?), anlatım akış değerlendirilemez	medium
+eaaf2027-81e6-5470-8fd6-b4fc624abdb5	fail	wrong_answer	Uzay mekiği+kayık+yürüme hepsi etki-tepki. Doğru E (I,II,III), c=A yanlış	high
+013dafcb-0970-52fe-bb81-f037c0f7ee17	fail	incomplete	Soru cut off (kıyaslama tam değil), x değeri belirsiz, B doğrulanamaz	low
+39bf97a7-ab18-5091-b5ef-8144f846a83c	fail	wrong_answer	Zn>Sn (1.tepkime) Sn>Cu (2.tepkime) → Zn>Sn>Cu yükseltgenme pot. Doğru A, c=D yanlış	high
