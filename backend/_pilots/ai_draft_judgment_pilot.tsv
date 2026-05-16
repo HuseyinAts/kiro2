@@ -1,0 +1,21 @@
+id	ai_draft_verdict	ai_draft_error_type	ai_draft_reasoning	ai_confidence
+89bfaf33-c8e5-5c45-b3c4-7f8be8acdbe5	pass		Diyagram-bağımlı geometri (karton katlama); image_url var, text+image birlikte tam	medium
+d3f9a072-94c0-50dd-9b8a-1c33d0c12d3d	pass		Kuvvet skaler değil vektörel; I=D (dinamometre), II=Y (vektörel), III=D (Newton). Cevap A doğru	high
+0aa76727-7cd0-590a-99ce-23faf03c1d3d	pass		Ağırlık merkezi geometri; |BG|=|AC|=4|GD| oranı + image var, çözüm olası	medium
+a099f78b-d3a1-5a07-aaff-1ea83d9fa6b2	fail	wrong_answer	Doğru cevap C (baba homozigot olmak ZORUNDA değil, heterozigot Rh+ da uyumsuzluk yapar). E (antikor plasenta geçişi) gerekli koşul	high
+4e39abab-08ec-5f3a-948c-7d3df11a3f48	pass		2x²-5x+2≤0 → (2x-1)(x-2)≤0 → x∈[1/2,2]. Cevap A doğru	high
+1871848d-9a82-5234-ac6f-3814bce53dfa	fail	incomplete	Eşleştirmenin cevabı '----' boş; hangi ifade 'olamaz' değerlendirilemez. Mülakat içeriği yarım	high
+87caab84-5fb1-5e51-9619-1c9b8a40b73a	unclear		c=0 durumunda kök 0, tersi tanımsız → III matematik yorumu zor. Cevap E (I,II,III olabilir) c=0 dahil tartışmalı	low
+2480272c-6a4e-5b62-b8c7-9e98c2fc01a4	fail	wrong_answer	x²+x+1 her x için pozitif (discriminant<0), |...|>0, tanım kümesi R. Doğru cevap D, ama E (∅) işaretli	high
+e5578d5c-3a4b-5b81-95e8-3e2c0aa5e1f2	pass		f'(1/2)=3(a+2)/4=g'(1/5)=2(2a+3)/5 → 15(a+2)=8(2a+3) → a=6. Cevap E doğru	high
+4dc1a971-83a1-5c61-baf4-3f4f6e9ce97d	fail	wrong_answer	Beyaz 4h=2/3 doldurur, kalan 1/3 siyahla (1/3)/(1/8)=8/3 saat=160 dk. Doğru cevap C (160), ama D (180) işaretli	high
+b6157e11-3b1f-5f55-a4e6-fe53e4a08fc4	unclear	ocr	'15S' notasyonu OCR hatası muhtemel (S sülfür mü P fosfor mu?). X=2A (tamamen metal), Y=8A (atomik gaz). I YANLIŞ (1.periyot 2A yok), III DOĞRU. II OCR'a bağlı	low
+5e08270d-7b9d-5e15-8f7e-bf69e15f04e6	fail	wrong_topic	subject_area=KIMYA ama içerik Din Kültürü (Hadis-i Şerif, gençlik). Ayrıca cevap B (olgun gencin sevildiği) A'dan daha güçlü	high
+364ffff6-8e9c-5d3a-a0d4-1c5f8f23c0b3	fail	wrong_answer	Mol oranı C:H:N:O=4:5:2:1, mol kütlesi 194 → kafein C₈H₁₀N₄O₂. Hiçbir seçenek 1:1 doğru değil; E (C₁₀H₂₀N₅O₈) kesinlikle yanlış	high
+c8b2e90e-4b8c-590a-bf2d-5a3e1d2b85c0	fail	wrong_answer	E (Amonyum sülfat) doğru adlandırma. Yanlış cevap muhtemel C (Demir sülfat — Fe(II) oksidasyon belirsiz). Cevap E yanlış işaretli	medium
+7a89d20c-9c91-5b8f-8a3e-d4f1d3e9c8a5	pass		64²=2¹². A=2¹², B=2¹², C=2¹², D=2¹², E=32²=2¹⁰. Cevap E (eşit değil) doğru	high
+618c8bf2-be01-5f76-9024-65a37b9c84e1	fail	garbage_text	'Polisitropin' anlamsız; GTF tanımı yok; cevap D yarım. Subject KIMYA ama içerik tıbbi jargon, soru çözülemez	high
+f11d0149-1edd-5fde-bf30-ca6f6e85d121	pass		Pisagor: AC²=BC²-AB²=25-9=16, AC=4. Cevap A doğru, text-only yeterli	high
+c81c64d2-cc56-58f1-a3f1-c40b8a5b9ec3	fail	missing_diagram	'13. Tablo verildiği göre' diyor ama image_url yok, tablo görünmüyor. Çözülemez	high
+67776930-6e3e-58df-95f2-1a4c5c0a4b2e	fail	wrong_answer	Küp yüzey 600 → 6a²=600 → a=10, hacim=1000. Hiçbir seçenek 1000 değil. Muhtemel veri hatası (600 yerine 216 olsa a=6, hacim 216 → B)	high
+ec60dbcb-c9ab-5eb1-a3a4-9e6f3a8c0b1d	fail	garbage_text	'Bir nöktede' hatalı, soru mantık karmaşası ('iki yol' + 'aynı hız'). E seçeneği BOŞ. Subject TURKCE ama içerik fizik. Anlamsız soru	high

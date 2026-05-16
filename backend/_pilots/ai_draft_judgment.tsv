@@ -1,0 +1,57 @@
+id	ai_draft_verdict	ai_draft_error_type	ai_draft_reasoning	ai_confidence
+89bfaf33-8d03-59e2-8315-8244526b61ee	pass		Diyagram-bağımlı geometri (karton katlama); image_url var, text+image birlikte tam	medium
+d3f9a072-fbec-59d3-8f40-27de387fb75c	pass		Kuvvet vektörel (II yanlış), dinamometre/Newton doğru. I=D, II=Y, III=D. Cevap A doğru	high
+0aa76727-11d2-52bf-9d1f-6e4c40d5a1f1	pass		Ağırlık merkezi geometri; |BG|=|AC|=4|GD| oranı + image var	medium
+a099f78b-d3ae-5175-aad7-153525746fbc	fail	wrong_answer	Doğru cevap C (baba homozigot olmak ZORUNDA değil). E (antikor plasenta geçişi) gerekli koşul	high
+4e39abab-19a4-56ba-a386-c82b71f61d2f	pass		2x²-5x+2≤0 → (2x-1)(x-2)≤0 → x∈[1/2,2]. Cevap A doğru	high
+1871848d-d93c-5447-a4d4-796ecca394e3	fail	incomplete	Eşleştirmenin cevabı '----' boş; hangi ifade 'olamaz' değerlendirilemez	high
+87caab84-af9c-502a-809b-ed111525b66a	unclear		c=0 durumunda kök 0, tersi tanımsız → III mümkün mü tartışmalı	low
+2480272c-3151-5d37-a2af-2bef9cef000f	fail	wrong_answer	x²+x+1>0 her x (discriminant<0), |...|>0, tanım R. Doğru D, ama E (∅) işaretli	high
+e5578d5c-0c71-5749-891d-681b502f3a1f	pass		f'(1/2)=3(a+2)/4=g'(1/5)=2(2a+3)/5 → a=6. Cevap E doğru	high
+4dc1a971-8878-55b2-9668-559cee21c2b2	fail	wrong_answer	Beyaz 4h=2/3 doldurur, kalan 1/3 siyahla 160 dk. Doğru C, ama D işaretli	high
+b6157e11-1eaa-55fa-8fb5-1da9ab887284	unclear	ocr	'15S' notasyonu OCR muhtemel. X=2A, Y=8A: I yanlış (1.periyot), III doğru. II OCR'a bağlı	low
+5e08270d-823a-59de-9230-418f31e8c086	fail	wrong_topic	subject=KIMYA ama içerik Din Kültürü (Hadis-i Şerif). Cevap B (olgun genç) A'dan daha güçlü	high
+364ffff6-bdb9-5933-9f87-ba3dc6f1e1cd	fail	wrong_answer	C:H:N:O=4:5:2:1, kafein C₈H₁₀N₄O₂ — seçeneklerde yok. E (C₁₀H₂₀N₅O₈) yanlış	high
+c8b2e90e-8b55-515c-855f-d91e4be581e1	fail	wrong_answer	E (Amonyum sülfat) doğru ad. Cevap C (Fe(II) belirsiz) olabilir, E işaretli yanlış	medium
+7a89d20c-bec5-5d8f-9974-33963180c6eb	pass		64²=2¹². A-D=2¹², E=32²=2¹⁰. Cevap E (eşit değil) doğru	high
+618c8bf2-ebd8-543a-acee-52951993c419	fail	garbage_text	'Polisitropin/GTF' anlamsız jargon, cevap D yarım, subject KIMYA tıbbi içerik	high
+f11d0149-caf6-593d-8ebd-03cb45ced7f6	pass		Pisagor AC²=25-9=16, AC=4. Cevap A doğru, text-only yeterli	high
+c81c64d2-d7f4-536f-8931-38915d3be447	fail	missing_diagram	'13. Tablo verildiği göre' diyor ama image_url yok	high
+67776930-8b8b-5776-85eb-f593a4b7f8e6	fail	wrong_answer	Küp yüzey 600→a=10→hacim=1000, hiçbir seçenek 1000 değil (muhtemel 600 yerine 216)	high
+ec60dbcb-b0c4-57a8-ab21-57c17d9b2002	fail	garbage_text	'Bir nöktede' OCR, soru mantık karmaşası, E boş, subject TURKCE ama fizik içerik	high
+79dd3963-36b5-5cf4-8f37-81a0f87d0b86	pass		10:15→11:00, akrep+yelkovan yukarı çıkar, potansiyel artar. III mekanik enerji ilgisiz. Cevap C uygun	high
+82e5ea93-d6b2-5949-a674-5b81abc31881	pass		Periyodik tablo elementleri X/Y/T atom çapı + iyon yarıçapı; image-driven, img var	medium
+b8ca0e0b-0ad1-5228-9aef-83ef0a8ba3f7	pass		cis-trans izomer ayırt etme img-driven, image var	medium
+117dabf5-c0f9-5fe2-abf1-0e568cff66b2	pass		K/L/M ses dalgaları modelleri image-driven, soru tam	medium
+c31c08d1-addf-59a0-a77d-b685e9ca5433	pass		|A-3|+|B+C|+|2A-B|=0 → A=3, B=6, C=-6. A-B+C=-9. Cevap B doğru	high
+092e2985-0aaf-5192-b229-cde7755851a9	pass		Analitik düzlemde kare 1. bölge görünüm img-driven, image var	medium
+575f186d-1cc9-57c2-949c-518c6075ae00	pass		'Azımsamak' (sayıca az) yenilikçilere uygun değil, küçümsemek olmalı. C doğru	high
+7cf5d787-908b-57d4-90c2-c5b718ef7382	fail	ocr	Soru metni OCR bozuk ('sıvacık hit', 'altınsı insanlara' anlamsız). Karşılaştırma yapılamaz	high
+66c04ec2-224e-560a-86d8-a6069eab7f71	fail	incomplete	İkinci gün koşulu 'kumbaraya attığım madeni' devamı kesik, çözüm yapılamaz	high
+3bbab59b-51fa-532f-bebe-51ae8cd0c89a	pass		(f·g)(3)=6, (f+g)(3)=6 → I=II. Cevap A (I ve II) doğru	high
+d63fb6f0-2745-562b-ace6-d32df8bb1fef	pass		AC=10, BD=14, AC⊥BD, kiriş kuvvet ve koord: R²=50, R=5√2. Cevap E doğru	high
+d390cca0-3161-51a3-a7e2-6d022f33e203	fail	incomplete	Hasan tarih problem 'vefatından 72' kesik, eksik bilgi	medium
+069aacf2-d1df-5f2a-b435-d4e8e50deb2c	fail	wrong_answer	A(3,0), B(0,0), |AB|=3. Seçeneklerde 3 yok; E (4√3) yanlış	medium
+2f50ca0f-3b8f-5af1-8fea-ac87c8dfb0ef	pass		ATP sentezi: besin+enzim+P+riboz gerek; ışık (fotosentez) hayvanda gerek değil. C doğru	high
+28203591-6440-5672-b2f1-c17d3641cf88	fail	incomplete	Konteyner sorusu 'konteyn' kesik, hangi boyut soruluyor belli değil	medium
+726461f2-30eb-54d8-806c-088f20c203a5	pass		Yarılanma süresi=kütle yarıya iniş süresi. C semantik doğru (Türkçe biraz bozuk)	high
+ef42479d-7492-57a7-80ef-6a0dbe408c94	unclear		2x²+3y²=58, 3x²-2y²=30 sistemi integer çözüm yok; reel min Lagrange'le -4 olabilir	medium
+cdb284fc-558b-559a-a769-9450a11ce3ee	pass		Mercek su/hava ortamı img-driven, image var	medium
+08ab101c-b5b7-58d0-81bb-f013e07fd0e3	pass		Kc=(4/5)²/((1/5)(4/5))=4. +3 H₂+3 HCl sonrası x=0.25, Cl₂=3.75. C doğru	high
+a2911e15-db5d-513f-8a92-86574d4777a3	fail	wrong_answer	AG=BC/3 (dik üçgen hipotenüs medyanı). 50=BC/3 → BC=150. Doğru C, E (225) yanlış	high
+9e99489c-fbb1-5f2a-abcb-ea8749102caa	pass		Yamuk ABCD, BD⊥DC, BD açıortay, AD=DC img-driven; image var	medium
+7e67e9a1-7b65-5ee2-8bd2-c5ddf7f11b9f	pass		Felsefe paragraf yorumu: değer yargısı durum/zamana değişmez. E doğru	medium
+4a9aa2fa-5ded-513d-85dd-49dcff7a657f	fail	wrong_answer	BC²=9+16=25→BC=5. CD²=25+144=169→CD=13. Doğru D, E (18) yanlış	high
+d095ab6d-e811-5a38-94af-c8a7e1a9f223	pass		Sanat metni: estetik+özgün arayış asıl mesaj. A (özgün, sıra dışı) doğru	medium
+a2b66aed-d4a0-5e88-9389-40b4e1ed3b3f	unclear		X iyonu başlangıç yükü belirsiz; n=5+ varsayılırsa X⁻ başlangıç olmalı	low
+00bd7bfe-5da8-56b3-9a66-18cf7f04855a	fail	incomplete	Nüfus problemi 'sonraki dört yı' kesik, formül tamamlanmamış	high
+30d0de6e-00ea-5ad4-9b80-37ee0339fec4	pass		f(x)=(mx-1)/(x+2), f'(x)=(2m+1)/(x+2)². f'(0)=(2m+1)/4=3 → m=11/2. A doğru	high
+cf6f5e04-5205-51dd-8da1-9e072c6a8668	pass		|x|≤4, |y|<3 dikdörtgen 8×6=48 birim². D doğru	high
+c73c1c7b-24ee-51c8-8fc6-6310200dc94e	pass		İki basamaklı rakam farklı tam sayılar: -98+-97=-195 en küçük. E doğru	high
+81b2ca6c-6c78-5cbc-90a3-c634f38c62cc	unclear	ocr	Şiir dizeleri OCR bozuk (Şiran/sabrın anlamsız). Soru zamiri 'ne' var ama OCR sapması nedeniyle yargı zor	low
+4eebca2f-cf52-546e-82be-d2152699dfa1	pass		Bölme A÷B=2 kalan 3 → A=2B+3, B÷C=3 kalan 4 → B=3C+4. A-11=2B-8=6C, B-3=3C+1. EBOB(6C, 3C+1)=3·EBOB(2C, 3C+1)=... C tek kat. Cevap C (3·C) tutarlı	medium
+516ee976-1a83-5df8-a671-9bcaaae7e8ba	pass		Sayı doğrusu img-driven (a<b<0<c). |a+b-c|+|c-a+b|=2c-2a varsay. C doğru	medium
+d92ba06c-e2fa-59c0-82b6-6a9305cbf6dc	pass		Türkçe özne analizi text-only; C (zıt anlamlı) gerçekten yok ise söylenemez. img var, ek doğrulama mümkün	medium
+a0100752-5c1c-50bf-bc86-0999fb695dd9	pass		Mutluluk/öfke/korku/üzüntü temel duygular; II ve III paragrafa uygun. E muhtemel	medium
+ef422f88-d1c4-5eed-9d42-0358bf51b6aa	pass		Hidrokarbon yanma: I yanlış (O₂ bazen fazla, hidrokarbon sınırlayıcı), II doğru, III doğru. C (I ve III yanlış) — bekle, soru 'yanlıştır' → I yanlış. C uygun	medium
+cc496a21-63eb-5dda-b2f0-03bc7917befa	pass		Piramit kulesi maketi 4√3 birim çizgi, kalanı uzunluk hesabı img-driven	medium
