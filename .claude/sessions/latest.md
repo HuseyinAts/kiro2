@@ -1,15 +1,18 @@
-## Session Handoff — 2026-05-16 (Session 161d, Faz 1.6 + 2.2 + 2.3) — IN PROGRESS
+## Session Handoff — 2026-05-16 (Session 161d, Faz 1.6 + 2.2 + 2.3 + 4.1-prereq) — IN PROGRESS
 **Branch:** master (origin/master 1 commit behind pending push)
-**Son commit (push edilmiş):** `30515066c` feat(faz-2-2): scoring template + reusable audit guide
-**Uncommitted:** Faz 2.3 drift dashboard paketi
+**Son commit (push edilmiş):** `1795fe3c9` feat(faz-2-3): drift dashboard
+**Uncommitted:** Faz 4.1 stratified sample paketi
 
-### Session 161d kapsamı (3 Faz tamamlandı)
-- **Faz 1.6 Bronze promotion** (push'lu): 84,905 satır `bronze_clean`, Alembic v3, Convention v3 revize
-- **Faz 2.2 Scoring template** (push'lu): `scoring_template.py` --prepare/--summarize/--strata-col + reusable guide
-- **Faz 2.3 Drift dashboard** (pending commit): `drift_dashboard.py` multi SCORING → markdown + JSON
-  - Test: C1+C2+C3 birleşik (110 sample) → aggregate pass=%20.9 / fail=%54.5 / unclear=%24.5 (Faz 0.2 baseline ile bire bir)
-  - JSON output (Faz 2.4 30-gün MA için), drift signals (multi-tarih varsa pass% delta)
-  - Demo: `docs/quality_audits/20260516_baseline_dashboard.md`
+### Session 161d kapsamı (4 Faz iş)
+- **Faz 1.6 Bronze promotion** (push'lu, `816c7f4ae`): 84,905 satır `bronze_clean`
+- **Faz 2.2 Scoring template** (push'lu, `30515066c`): scoring_template.py + reusable guide
+- **Faz 2.3 Drift dashboard** (push'lu, `1795fe3c9`): drift_dashboard.py + baseline demo
+- **Faz 4.1 prereq** (commit pending): 200 stratified sample TSV ÜRETİLDİ (Hüseyin manuel scoring bekliyor)
+  - `backend/scripts/quality/faz_4_1_sample.py` — strata: 50 exact + 50 fuzzy + 50 fallback + 50 v3.5_residual
+  - `backend/_pilots/20260516_faz_4_1_curated_set_RAW.tsv` (200 satır, 15 kolon)
+  - `backend/_pilots/20260516_faz_4_1_curated_set_RAW_SCORING.tsv` (200 satır, 18 kolon — 3 boş scoring kolonu)
+  - SQL bug fix: `id::text` + `pipeline_metadata::jsonb` → `CAST(...)` syntax (Tier I lesson tekrarı)
+  - Sıradaki: Hüseyin SCORING TSV doldurur (4-7 saat), sonra Faz 5.3 judge calibration
 
 ### Session 161d — Faz 1.6 Bronze tier promotion
 - Alembic `qrs_v3_20260514` deploy (DB v2→v3, `bronze_clean` constraint accept)

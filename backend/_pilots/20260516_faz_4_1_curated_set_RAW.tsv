@@ -1,0 +1,793 @@
+id	strata	subject_area	source_book	source_page	question_text	option_a	option_b	option_c	option_d	option_e	correct_answer	question_image_url	match_tier	quality_review_status
+89bfaf33-8d03-59e2-8315-8244526b61ee	exact	GEOMETRI	Orijinal-2024-Geometri Soru Bankası	55	"Şekil 1'de ABC dikkenar üçgen biçiminde verilen kartonun taralı kısmı, [AD] boyunca katlandığında Şekil 2 elde edilmektedir.
+
+Yukarıdaki Şekil 3'te verilen dikkenar üçgenin E ile D noktaları arası uzaklık kaç cm'dir?"	\sqrt{3}	3	\sqrt{5}	\sqrt{6}	\sqrt{10}	A	/static/crops/Orijinal-2024-Geometri_Soru_Bankası/Orijinal-2024-Geometri_Soru_Bankası_p0055_q04.png	tier1_page_inline	bronze_clean
+d3f9a072-fbec-59d3-8f40-27de387fb75c	exact	FIZIK	Egsersiz Tyt Fizik Soru Bankası 2021	69	"Aşağıda kuvvet kavramı ile ilgili doğru/yanlış etkinliği tablosu verilmiştir;
+
+Kuvvet ile ilgili yargı | Doğru | Yanlış
+---|---|---
+I. Dinamometre ile ölçülür. | | 
+II. Skaler büyüklüktür. | | 
+III. SI birim sistemindeki birimi Newton dur. | | 
+
+Buna göre, doğru olan bilgiye '✓' işareti konularak etkinlik hatasız tamamlandığında aşağıdaki desenlerden hangisi elde edilir?"	Desen: I satırı Doğru, II satırı Yanlış, III satırı Doğru	Desen: I satırı Doğru, II satırı Doğru, III satırı Yanlış	Desen: I satırı Yanlış, II satırı Doğru, III satırı Yanlış	Desen: I satırı Yanlış, II satırı Yanlış, III satırı Doğru	Desen: I satırı Doğru, II satırı Doğru, III satırı Doğru	A	/static/crops/Egsersiz_Tyt_Fizik_Soru_Bankası_2021/Egsersiz_Tyt_Fizik_Soru_Bankası_2021_p0069_q01.png	tier1_page_inline	bronze_clean
+0aa76727-11d2-52bf-9d1f-6e4c40d5a1f1	exact	GEOMETRI	345 Tyt Ayt Geometri Soru Bankası	151	"AD ∩ BE = {G}
+|BG| = |AC| = 4|GD|
+
+G, ABC üçgensel bölgesinin ağırlık merkezi olduğuna göre; m(AGE) = α kaç derecedir?"	30	45	50	60	40	D	/static/crops/345_Tyt_Ayt_Geometri_Soru_Bankası/345_Tyt_Ayt_Geometri_Soru_Bankası_p0151_q04.png	tier1_page_inline	bronze_clean
+a099f78b-d3ae-5175-aad7-153525746fbc	exact	BIYOLOJI	345 Tyt Biyoloji Soru Bankası	184	Rh kan karakterinde, annenin Rh- olması durumunda, çocuklarda kan uyumsuzluğu görülme ihtimali vardır. Bu olayın oluşabilmesi için, aşağıdakilerden hangisinin meydana gelmesine gerek yoktur?	Babanın kanında Rh antijeni bulunmalıdır.	En az iki çocuk Rh+ kan grubundan olmalıdır.	Baba, homozigot Rh+ olmalıdır.	Rh+ bir çocuğun kanı annenin kanına karışmalıdır.	Anne kanında oluşan antikorlar, plasentadan çocuğa geçmelidir.	E	/static/crops/345_Tyt_Biyoloji_Soru_Bankası/345_Tyt_Biyoloji_Soru_Bankası_p0184_q01.png	tier1_page_inline	bronze_clean
+4e39abab-19a4-56ba-a386-c82b71f61d2f	exact	MATEMATIK	Mikro Orijinal-2024-Ayt-Matematik Soru Bankası	66	"$x^2 + 1 \le -x^2 + 5x - 1$
+eşitsizliğinin çözüm kümesi aşağıdakilerden hangisidir?"	\left[\frac{1}{2}, 2\right]	[2, 3)	(-\infty, 4]	[2, \infty)	(-\infty, 2]	A	/static/crops/Mikro_Orijinal-2024-Ayt-Matematik_Soru_Bankası/Mikro_Orijinal-2024-Ayt-Matematik_Soru_Bankası_p0066_q06.png	tier1_page_inline	bronze_clean
+3983a1fb-d1c7-5d66-a3aa-94279191fb2c	exact	GEOMETRI	Orijinal-2024-Geometri	138	"Yukarıdaki dik koordinat düzleminde orijinden geçen doğrular dikdörtgenlerin köşelerinden geçmektedir.
+
+Boyalı alan 9 birimkare olduğuna göre, ABCD dikdörtgeninin çevresi kaç birimdir?"	12	16	20	24	28	D	/static/crops/Orijinal-2024-Geometri/Orijinal-2024-Geometri_p0138_q02.png	tier1_page_inline	bronze_clean
+f1438829-4f3b-52af-a5a4-e7dea1a3ff39	exact	MATEMATIK	Full Matematik-2022-2023-Tyt-Matematik Soru Bankası	212	Hangi sayının %30 u 150 sayısının %40 ına eşittir?	160	180	190	200	240	D	/static/crops/Full_Matematik-2022-2023-Tyt-Matematik_Soru_Bankası/Full_Matematik-2022-2023-Tyt-Matematik_Soru_Bankası_p0212_q05.png	tier1_page_inline	bronze_clean
+e0f7c250-5485-5387-8c6d-36ac8cf82203	exact	FIZIK	Esen 2025 Aps Ayt Fizik Soru Bankası	70	Kütle ve ağırlık merkezi ile ilgili aşağıdakilerden hangisi yanlıştır?	"Cismi oluşturan parçacıkların ağırlıklarının bileşkesinin uygulandığı noktaya ""ağırlık merkezi"" denir."	"Cisim sabit olduğu için kütlemerkezini tamamının toplandığı kabu-l edilen nokta ""cismin kütlesel merkezi"" denir."	Yer çekiminin olmadığı yerde kütle merkezi vardır ama ağırlık merkezi yoktur.	Göklerden gibi büyük binalarda ağırlık ve kütle merkezlerinin farklı yerlerde olması, yer çekimi ivmesinin düzgün olmamasından sonucudur.	Barajın daha dayanıklı olması için kütle ve ağırlık merkezi farklı yükseklikte tasarlanır.	B	/static/crops/Esen_2025_Aps_Ayt_Fizik_Soru_Bankası/Esen_2025_Aps_Ayt_Fizik_Soru_Bankası_p0070_q02.png	tier1_page_inline	bronze_clean
+8b6cd1ca-f5ce-51be-8bac-fac9852cc4d5	exact	FIZIK	Fizipedia Ayt Fizik Soru Bankası 2025	294	"Tek yarıkla yapılan kırınım deneyinde yeşil renkli ışık kullanılmaktadır.
+
+Buna göre
+
+I. Deneyde yeşil renkli ışık yerine, kırmızı renkli ışık kullanılırsa saçak genişliği azalır.
+II. Yarık düzlemi ile perde arasındaki uzaklık arttırılırsa saçak genişliği azalır.
+III. Yarık genişliği azaltılırsa saçak genişliği artar.
+
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız II	Yalnız III	I ve III	II ve III	C	/static/crops/Fizipedia_Ayt_Fizik_Soru_Bankası_2025/Fizipedia_Ayt_Fizik_Soru_Bankası_2025_p0294_q01.png	tier1_page_inline	bronze_clean
+1121a93e-8882-5f0a-98fa-0c2a60c7b3e0	exact	MATEMATIK	Mikro Orijinal-2024-Tyt-Matematik Soru Bankası	73	Beş basamaklı 3a64b sayısı 36 ile tam bölünebildiğine göre, a + b toplamının en büyük değeri kaçtır?	18	17	16	15	14	E	/static/crops/Mikro_Orijinal-2024-Tyt-Matematik_Soru_Bankası/Mikro_Orijinal-2024-Tyt-Matematik_Soru_Bankası_p0073_q08.png	tier1_page_inline	bronze_clean
+63676183-1677-5260-8ac6-8b5082bde4e3	exact	TURKCE	Bilgi Sarmal Tyt Ayt Paragraf Soru Bankası	67	Romancıydı, öykücüyü, edebiyat tarihçisiydi. Edebiyata her yönüyle dahilme ermiş idi. Yaşamı boyunca bir karınca gibi çalıştı. Ölümsüz yapıtlar bıraktı ardında. Hep halktan, sokaktan yana oldu. Bunun için de başı beladan belaya girdi. Ama bundan hiç yakınındı. Tanzımat taviz vermedi.	Halkın bir özelliğine sahip olduğuna	Çizgisini hiç bozmadığına	Farklı türde eserleri olduğuna	Edebiyata büyük yenilikler getirdiğine	Üretken ve verimli bir yazar olduğuna	E	/static/crops/Bilgi_Sarmal_Tyt_Ayt_Paragraf_Soru_Bankası/Bilgi_Sarmal_Tyt_Ayt_Paragraf_Soru_Bankası_p0067_q04.png	tier1_page_inline	bronze_clean
+224e51a8-d0c3-509e-a1b7-a29b80674f0a	exact	MATEMATIK	2023-2024 ACİL- AYT Matematik Soru Bankası	299	"f(x) = \sqrt[3]{x^3 + x - 6}
+fonksiyonu veriliyor.
+Buna göre, f'(1) kaçtır?"	\frac{1}{2}	\frac{1}{3}	\frac{1}{4}	\frac{1}{6}	\frac{1}{12}	B	/static/crops/2023-2024_ACİL-_AYT_Matematik_Soru_Bankası/2023-2024_ACİL-_AYT_Matematik_Soru_Bankası_p0299_q03.png	tier1_page_inline	bronze_clean
+1ae4a999-3787-5c2d-bfbd-711f67a356eb	exact	BIYOLOJI	345 2025 Ayt Biyoloji Soru Bankası	355	"Odunsu bitkilerin topraktan su ve mineral almasını
+I. mikoriza birliktelikleri,
+II. yapraklarda gerçekleşen terleme,
+III. soğuk borularının kalburu yapısı,
+IV. toprağa eklenen aşırı gübre
+faktörlerinden hangileri kolaylaştırır?"	Yalnız I	I ve II	II ve III	III ve IV	II, III ve IV	E	/static/crops/345_2025_Ayt_Biyoloji_Soru_Bankası/345_2025_Ayt_Biyoloji_Soru_Bankası_p0355_q02.png	tier1_page_inline	bronze_clean
+0825483d-466f-5c68-8a07-4f7d940102e4	exact	FIZIK	Apotemi 2019 2020 Modern Fizik Konu Anlatımlı Soru Bankası	193	Aşağıda verilen bilgilerden hangisi Michelson - Morley deneyi ve Einstein'ın görüşlerinden biriyle örtüşmektedir?	Fizik yasaları tüm eylemsiz referans sistemlerinde aynı sonucu verir.	Elektron ışık hızına ulaşamaz.	Esir (ether) ortamı yoktur.	Işık tüm ortamlarda aynı hızla yayılır.	Elektron yüzeylerden elektron koparır.	C	/static/crops/Apotemi_2019_2020_Modern_Fizik_Konu_Anlatımlı_Soru_Bankası/Apotemi_2019_2020_Modern_Fizik_Konu_Anlatımlı_Soru_Bankası_p0193_q04.png	tier1_page_inline	bronze_clean
+65c764fe-7c3a-5f33-91f2-7ddc5dba95cb	exact	GEOMETRI	Bilgi Sarmalı-2023-2024-Tyt Ayt-Geometri Soru Bankası	101	"ABC ve DEC dik üçgen, $|AB| \parallel |DC|$, $|DE| \perp |EC|$, $[BC] \perp [DC]$, $|AB| = 12 \text{ cm}, |DE| = 8 \text{ cm}, |DC| = 10 \text{ cm}$
+
+Yukarıdaki verilere göre, $|AE| = x$ kaç cm'dir?"	10	11	12	13	14	E	/static/crops/Bilgi_Sarmalı-2023-2024-Tyt_Ayt-Geometri_Soru_Bankası/Bilgi_Sarmalı-2023-2024-Tyt_Ayt-Geometri_Soru_Bankası_p0101_q04.png	tier1_page_inline	bronze_clean
+680c086c-74d4-51fb-b579-f1b26ca5a09d	exact	GEOMETRI	345 2025 Tyt Ayt Geometri Soru Bankası 1	55	"[DE] \perp [BC]
+[BE] = |EC|
+|AB| = |DC|
+m(\widehat{DAB}) = 59^\circ
+m(\widehat{DCB}) = 50^\circ
+olduğuna göre, m(\widehat{ADE}) = x kaç derecedir?"	110	105	100	85	99	E	/static/crops/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1_p0055_q03.png	tier1_page_inline	bronze_clean
+162d701e-6b76-5307-a254-997b1fcc3793	exact	FIZIK	Fizipedia Ayt Fizik Soru Bankası 2025	356	"Özel göreliliğe göre kütleli parçacıklar için geçerli olan enerji-momentum ilişkisi
+
+$$E^2 = (p.c)^2 + (m.c^2)^2$$
+
+(1)
+
+şeklindeir. Fakat fotonlar için bu ifade basite
+
+$$E = P.c$$
+
+(2)
+
+olarak da yazılabilir.
+
+Buna göre yukarıdaki 1. ifadenin E = P.c olarak basite yazılabilemesinin nedeni aşağıdakilerden hangisi olabilir?"	1. ifadedeki m elektronun kütlesidir ve çok küçük olduğundan sıfır kabul edilir.	1. ifadedeki m fototon kütlesi ve çok küçük bir değere sahip olduğundan ihmal edilir.	Fotonlar ışık hızı ile yayıldıkları kütlesi sonsuzdur.	Fotonların kütlesi olmadığından m = 0'dır.	Foton bir elektromanyetik dalga olduğundan kütlesi çok büyüktür.	D	/static/crops/Fizipedia_Ayt_Fizik_Soru_Bankası_2025/Fizipedia_Ayt_Fizik_Soru_Bankası_2025_p0356_q01.png	tier1_page_inline	bronze_clean
+afd49dfc-caee-5113-9f09-63e1ceee33e0	exact	EDEBIYAT	Edebiyat Sokagi Ayt Edebiyat Soru Bankasi	137	"Hiciv, şairin dilinde hedefini vurmaya hazırlanan zehirli bir ok gibidir. Avını gözetleyen bir avcı, nasıl ilk fırsatta silahını ateşleyerek heccat za mana ve zemîn müsâil olunca muhalifini le-nâ-hilde hırpalan baştan burnuna da yetineymek üzere telaf eder. Meddah, öldürdüğü kimseyi gökyüzüne çıkardı gibi heccat da kötülüğünü adamı yerin dibine geçirir. Meddahların gösterilerini kahvehanelerde, saray ve konaklarda yapması, hikâyelerini buralarda anlatmalarıdır. Bazan de öyle olur ki kişi âdeta kasnınnı heccat da o zaman hiciv denilen kağıtçı arı eline muhtacını kıçmaya başlar.
+
+Aşağıdaki şiirlerden hangisi hiciv örneği gösteremez?"	"Nidelüm çev sunarsa sana şerbet sana zehr
+Bu cihan böyle olur gâh bana gâh sana"	"Çok da mağzur olma kim meyhâne-i lâikbâle
+Biz hezâran mest-i mağrûrun humârın görmüşüz"	"Gözlerin obnâ-yı âcemoñ o kadar yıldı ki
+İstemiş ben Fâtihâ tek kalmasınlar taşını"	"Şiîler pençe-i kahrından olurkan lerzân
+Benî bir gözleri âniyâ zebrini etî felek"	"Zülmü alıkoyayamam, zâlimi asla sevevem
+Gelenin keyfi için geçmişe kalkıp sövevem"	E	/static/crops/Edebiyat_Sokagi_Ayt_Edebiyat_Soru_Bankasi/Edebiyat_Sokagi_Ayt_Edebiyat_Soru_Bankasi_p0137_q01.png	tier1_page_inline	legacy_v3_unaudited
+71ce0885-a7d9-5f7c-b683-00b8ac01437f	exact	MATEMATIK	345 2025 Ayt Matematik Soru Bankası	308	$\int \sqrt{x+3} \, dx$ ifadesinin eşiti aşağıdakilerden hangisidir?	$\sqrt[3]{x+3} + c$	$\sqrt[3]{(x+3)^2} + c$	$\frac{2}{3} \cdot \sqrt[3]{(x+3)^2} - c$	$\frac{2}{3} \cdot \sqrt{(x+3)^3} + c$	$\frac{3}{2} \cdot \sqrt[3]{(x+3)} + c$	D	/static/crops/345_2025_Ayt_Matematik_Soru_Bankası/345_2025_Ayt_Matematik_Soru_Bankası_p0308_q02.png	tier1_page_inline	bronze_clean
+b2f3eaba-64ac-52d6-b8a0-bc5091cab636	exact	MATEMATIK	Full Matematik-Ayt-Matematik Soru Bankası	73	"Aşağıda dik koordinat düzlemi üzerinde birim kareler çizilmiş y = f(x) fonksiyonunun grafiği ile bu grafiğin öteleme dönüşümü ile elde edilen y = h(x) fonksiyonunun grafiği verilmiştir.
+
+Buna göre, uygulanmış olan öteleme işlemi aşağıdakilerden hangisidir?"	x-ekseninde 2 birim sağa, y-ekseninde 2 birim yukarı	x-ekseninde 4 birim sağa, y-ekseninde 1 birim yukarı	x-ekseninde 4 birim sola, y-ekseninde 1 birim aşağı	x-ekseninde 1 birim sağa, y-ekseninde 3 birim yukarı	x-ekseninde 1 birim sola, y-ekseninde 3 birim aşağı	C	/static/crops/Full_Matematik-Ayt-Matematik_Soru_Bankası/Full_Matematik-Ayt-Matematik_Soru_Bankası_p0073_q01.png	tier1_page_inline	bronze_clean
+79dd3963-36b5-5cf4-8f37-81a0f87d0b86	exact	FIZIK	345 2025 Tyt Fizik Soru Bankası	121	"Hatasız çalışan bir saat şekliyle dikey duvara asılı olup, saat 10:15'i göstermektedir.
+
+Buna göre, bu andan itibaren tam 45 dakika sonra,
+
+I. Akrebin yere göre potansiyel enerjisi artmıştır.
+II. Yelkovanın yere göre potansiyel enerjisi artmıştır.
+III. Saniye kadranının mekanik enerjisi azalmıştır.
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız II	I ve II	I ve III	II ve III	C	/static/crops/345_2025_Tyt_Fizik_Soru_Bankası/345_2025_Tyt_Fizik_Soru_Bankası_p0121_q02.png	tier1_page_inline	bronze_clean
+82e5ea93-d6b2-5949-a674-5b81abc31881	exact	KIMYA	345 2024 Ayt Kimya Soru Bankası	17	"Yukarıdaki periyodik sistemde yerleri belirtilen elementler ile ilgili;
+
+I. Atom çapı en büyük olan X'tir.
+II. X⁺ iyonunun yarıçapı Y²⁺ den küçüktür.
+III. Atom çapı en küçük olan T'dir.
+
+ifadelerinden hangileri doğrudur?"	Yalnız I	Yalnız II	I ve II	I ve III	I, II ve III	D	/static/crops/345_2024_Ayt_Kimya_Soru_Bankası/345_2024_Ayt_Kimya_Soru_Bankası_p0017_q04.png	tier1_page_inline	bronze_clean
+b8ca0e0b-0ad1-5228-9aef-83ef0a8ba3f7	exact	KIMYA	Bilgi Sarmal 2024 Ayt Kimya Sopru Bankasi	311	Yukarıdaki bileşik çiftlerinden hangileri birbirinin cis-trans izomeri değildir?	Yalnız I	I ve II	I ve III	II ve III	I, II ve III	A	/static/crops/Bilgi_Sarmal_2024_Ayt_Kimya_Sopru_Bankasi/Bilgi_Sarmal_2024_Ayt_Kimya_Sopru_Bankasi_p0311_q04.png	tier1_page_inline	bronze_clean
+117dabf5-c0f9-5fe2-abf1-0e568cff66b2	exact	FIZIK	Esen Aps Fizik Soru Bankası 3	173	"Aynı ortamdaki K, L ve M ses dalgalarının eşit bölümlerindeki düzlemsel dalga modelleri gösterilmiştir.
+
+Buna göre, K, L ve M ses dalgalarıyla ilgili,
+
+I. En uzak mesafeden duyulacak olan ses dalgası L'dir.
+II. Yüksekliği en fazla olan ses dalgası K'dır.
+III. Şiddeti en az olan ses dalgası M'dir.
+
+yargılarından hangileri doğrudur?"	Yalnız I	I ve II	I ve III	II ve III	I, II ve III	A	/static/crops/Esen_Aps_Fizik_Soru_Bankası_3/Esen_Aps_Fizik_Soru_Bankası_3_p0173_q03.png	tier1_page_inline	bronze_clean
+c31c08d1-addf-59a0-a77d-b685e9ca5433	exact	MATEMATIK	Full Matematik-Tyt-Matematik Soru Bankası	69	"A, B ve C gerçel sayıları için,
+$$|A - 3| + |B + C| + |2A - B| = 0$$
+olduğuna göre, A - B + C ifadesinin değeri kaçtır?"	-15	-9	-6	3	6	B	/static/crops/Full_Matematik-Tyt-Matematik_Soru_Bankası/Full_Matematik-Tyt-Matematik_Soru_Bankası_p0069_q01.png	tier1_page_inline	bronze_clean
+092e2985-0aaf-5192-b229-cde7755851a9	exact	GEOMETRI	Orijinal-2024-Geometri Soru Bankası	335	"Bir bilgisayar programının yazılımında yapılan bir hatadan dolayı analitik düzlemde tanımlanan tüm geometrik şekillerin sadece 1. bölgede kalan kısımları görülmektedir.
+
+Aşağıda analitik düzlemde bir kenarı orijin noktasından geçen karenin 1. bölgeli kısmının görünümü verilmiştir.
+
+Karenin görünen kısmında A noktasının koordinatı (1, 7) olduğuna göre, EF uzunluğu kaç birimdir?"	6	√38	2√10	3√5	5√5	C	/static/crops/Orijinal-2024-Geometri_Soru_Bankası/Orijinal-2024-Geometri_Soru_Bankası_p0335_q03.png	tier1_page_inline	bronze_clean
+575f186d-1cc9-57c2-949c-518c6075ae00	exact	TURKCE	Bilgi Sarmal  Tyt Türkce Soru Bankası	302	Aşağıdaki cümlelerden hangisinin anlatımı, yanlış anlamda sözcük kullanıldığı için bozulmuştur?	Türk şiirinde öteden beri tartışılan bir konudur biçim özgürlüğü.	Her şairin fikir birliğine vardığı belli bir biçim yoktur şirimizde.	Gelenekçi şairleri yüceltip yenilikçileri azımsamak doğru gelmiyor bana.	Şeşerin sağladığı akıcılık, şiire aynı renk katar kuşkusuz.	Galiba en doğrusu, her şiiri tek başına değerlendirmek olacaktır.	C	/static/crops/Bilgi_Sarmal__Tyt_Türkce_Soru_Bankası/Bilgi_Sarmal__Tyt_Türkce_Soru_Bankası_p0302_q01.png	tier1_page_inline	bronze_clean
+7cf5d787-908b-57d4-90c2-c5b718ef7382	exact	TURKCE	Bilgi Sarmal  Tyt Türkce Soru Bankası	70	"İçimi sıvacık bir hit kapladı. Bu cesur, bu güzel, bu yarı bozuk altınsı insanlara oyni sokaklarda olmak, yeni yordayışıyor olmak, bana büyük bir mutluluk veriyor.
+
+Bu parçadaki altı çizili sözcük öbeğinin anlamca karşılığı olan bir söz, eş anlamlilerden hangisinde yer almıştır?"	Günümüzün insanı, yasaktan yasaklanıp bir düzence çirkinliğinden uzak durur.	Benim için, tabu diye bir şey yoktur, her dünyaceye çekilebilir.	Karmakarışık düşünceler içinde iseniz yazdıklarınızın bir anlam çıkarılmasını beklemeyiniz.	Dürüst, saydam bir insandır; içten pazardaki gibi değildir.	Hedeflerini açıkça belirleyen ve onun uğruna mücadele eden, yorulun, gile çeken insan asla mutsuz edilemez.	D	/static/crops/Bilgi_Sarmal__Tyt_Türkce_Soru_Bankası/Bilgi_Sarmal__Tyt_Türkce_Soru_Bankası_p0070_q03.png	tier1_page_inline	bronze_clean
+66c04ec2-224e-560a-86d8-a6069eab7f71	exact	MATEMATIK	Aromat -2023-2024-Matematik Soru Bankası	180	"Para biriktirmeye başlayan Tufan, kumbarasına sadece 1 TL'lik madeni paralar atmaktadır.
+
+İki gün para biriktiren Tufan'a, Suat kaç TL biriktirdiğini sorunca Tufan, şöyle cevap vermiştir:
+
+İlk gün 5 TL'den fazla 9 TL'ye kadar para biriktirdim. İkinci gün kumbaraya attığım madeni para sayısı ile ikinci gün kumbaraya attığım para sayısının çarpımı 30'dan fazla 35'ten azdır.
+
+Buna göre, Tufan bu iki günde toplam kaç TL para biriktirmiştir?"	11	12	13	14	15	D	/static/crops/Aromat_-2023-2024-Matematik_Soru_Bankası/Aromat_-2023-2024-Matematik_Soru_Bankası_p0180_q03.png	tier1_page_inline	bronze_clean
+3bbab59b-51fa-532f-bebe-51ae8cd0c89a	exact	MATEMATIK	2019-2020-Acil-Matematiğin ilacı Tyt Matematik Soru Bankası	255	"Gerçel sayılarla tanımlı f ve g fonksiyonları
+$f(x) = x - \sqrt{3}$
+$g(x) = x + \sqrt{3}$
+şeklinde tanımlanıyor.
+Buna göre,
+I. $(f \cdot g)(3)$
+II. $(f + g)(3)$
+III. $(f \circ g)(3)$
+IV. $f^{-1}(3) \cdot g(3)$
+ifadelerinin hangilerinin sonucu eşittir?"	I ve II	II ve III	I, II ve III	II, III ve IV	I, III ve IV	A	/static/crops/2019-2020-Acil-Matematiğin_ilacı_Tyt_Matematik_Soru_Bankası/2019-2020-Acil-Matematiğin_ilacı_Tyt_Matematik_Soru_Bankası_p0255_q01.png	tier1_page_inline	bronze_clean
+d63fb6f0-2745-562b-ace6-d32df8bb1fef	exact	GEOMETRI	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	269	"O merkez
+AC ⊥ BD
+|BE| = 2 cm
+|EC| = 4 cm
+|AE| = 6 cm
+|DE| = 12 cm
+
+Verilenlere göre, çemberin yarıçapı kaç cm'dir?"	2√7	4√2	2√10	4√3	5√2	E	/static/crops/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası_p0269_q02.png	tier1_page_inline	bronze_clean
+d390cca0-3161-51a3-a7e2-6d022f33e203	exact	MATEMATIK	Bilgi Sarmalı-2025-Tyt-Matematik Soru Bankası	237	"Hasan, miladi takvime göre 2021 yılında büyük dedesinin mezarını ziyarette bulunduğu mezardaki lahitin Rumi takvimde yazılı olduğunu ve bu tarihin miladi takvime göre kendisinin şu anki yaşının 64 katı olduğunu görmüştür.
+
+Hasan, miladi takvime göre büyük dedesinin vefatından 72 sene sonra doğmuştur.
+
+Buna göre, Hasan'ın miladi takvimdeki doğum yılı aşağıdakilerden hangisidir? (Miladi yıl, Rumi yıl ile 584 çıkarılarak hesaplanacaktır.)"	1998	1999	2000	2001	2002	A	/static/crops/Bilgi_Sarmalı-2025-Tyt-Matematik_Soru_Bankası/Bilgi_Sarmalı-2025-Tyt-Matematik_Soru_Bankası_p0237_q01.png	tier1_page_inline	bronze_clean
+069aacf2-d1df-5f2a-b435-d4e8e50deb2c	exact	GEOMETRI	Orijinal-Tyt Ayt Geometri Soru Bankası	323	"Bilgi: Dik koordinat sisteminde, x ekseni üzerindeki noktaların ordinatı, y ekseni üzerindeki noktaların ise apsisleri sıfırdır.
+
+A(a + 2, b - 3) noktası, x ekseni üzerinde; B(a - 1, b - 3) noktası ve y ekseni üzerindedir.
+
+Buna göre, A ile B noktaları arasındaki uzaklık kaç birimdir?"	√5	2√5	5	3√5	4√3	E	/static/crops/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası_p0323_q04.png	tier1_page_inline	bronze_clean
+2f50ca0f-3b8f-5af1-8fea-ac87c8dfb0ef	exact	BIYOLOJI	345 2025 Tyt Biyoloji Soru Bankası	63	Hayvansal hücrelerde ATP sentezlenebilmesi için aşağıdakilerden hangisine ihtiyaç yoktur?	Besin	Enzim	Işık	Fosfat	Riboz	C	/static/crops/345_2025_Tyt_Biyoloji_Soru_Bankası/345_2025_Tyt_Biyoloji_Soru_Bankası_p0063_q06.png	tier1_page_inline	bronze_clean
+28203591-6440-5672-b2f1-c17d3641cf88	exact	GEOMETRI	Orijinal-Tyt Ayt Geometri Soru Bankası	403	"Dikdörtgen biçimindeki arsanın bir köşesine dikdörtgenler prizması şeklinde bir konteyner yerleştirilmiştir. Konteynerin A, B ve C köşelerinden sırasıyla arsanın K, L ve M köşelerine gergin ipler bağlanmıştır.
+
+[AK] = 4 metre, |BL| = 6 metre, |CM| = 5 metre olduğuna göre; konteynerin yüksekliği kaç metredir?"	√5	2√2	3	3√3	3√5	A	/static/crops/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası_p0403_q01.png	tier1_page_inline	legacy_v3_unaudited
+726461f2-30eb-54d8-806c-088f20c203a5	exact	FIZIK	Fizipedia Ayt Fizik Soru Bankası 2025	332	Radyoaktif bir madde için kullanılan yarılanma süresi kavramı nedir?	Maddenin tamamının bozunumu için geçen süre.	Tüm çekirdeklerin kararsız hâle gelmesi için geçen süre.	Maddenin bozunmaya başladığındaki kütlesinin yarısı inmesi için geçen süre.	Maddenin bozunmaya başladığındaki toplam proton sayısının yarıya düşmesi için geçen süre.	Maddenin bozunmaya başladığı kütle numarasının yarıya düşmesi için geçen süre.	C	/static/crops/Fizipedia_Ayt_Fizik_Soru_Bankası_2025/Fizipedia_Ayt_Fizik_Soru_Bankası_2025_p0332_q05.png	tier1_page_inline	bronze_clean
+ef42479d-7492-57a7-80ef-6a0dbe408c94	exact	MATEMATIK	Bilgi Sarmalı-2025-Ayt-Matematik Soru Bankası	81	"$2x^2 + 3y^2 = 58$ 
+ $3x^2 - 2y^2 = 30$ 
+ denklem sistemini sağlayan $(x, y)$ sıralı ikilileri için $x + y$ toplamı en az kaç olur?"	-8	-7	-6	-5	-4	E	/static/crops/Bilgi_Sarmalı-2025-Ayt-Matematik_Soru_Bankası/Bilgi_Sarmalı-2025-Ayt-Matematik_Soru_Bankası_p0081_q04.png	tier1_page_inline	bronze_clean
+cdb284fc-558b-559a-a769-9450a11ce3ee	exact	FIZIK	Egsersiz Tyt Fizik Soru Bankası 2021	331	"Camdan yapılmış ince kenarlı K merceği su ortamına Şekil - I'deki gibi, hava ortamına Şekil - II'deki gibi yerleştirilmiştir.
+
+K merceğine asal eksene paralel olarak gönderilen kırmızı ışık ışınlarının izledikleri yolları verildiğine göre,
+
+I. d₁ > d₂'dir.
+
+II. α > β'dir.
+
+III. Şekil - I'de su ortamının kırıcılık indisi artarsa d₁ azalır.
+
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız II	Yalnız III	I ve III	II ve III	A	/static/crops/Egsersiz_Tyt_Fizik_Soru_Bankası_2021/Egsersiz_Tyt_Fizik_Soru_Bankası_2021_p0331_q04.png	tier1_page_inline	bronze_clean
+08ab101c-b5b7-58d0-81bb-f013e07fd0e3	exact	KIMYA	345 2025 Ayt Kimya Soru Bankası	171	"5 litrelik sabit hacimli bir kapta 1 mol H₂, 4 mol Cl₂ ve 4 mol HCl gazları
+
+H₂(g) + Cl₂(g) ⇌ 2HCl(g)
+
+tepkimemesine göre dengededir.
+
+Dengedeki sisteme sabit sıcaklıkta 3'er mol H₂ ve HCl gazları ilave edilip yeterince beklenirse yeni kurulan dengede Cl₂ gazı mol sayısı kaç olur?"	3	3,5	3,75	4,25	4,5	C	/static/crops/345_2025_Ayt_Kimya_Soru_Bankası/345_2025_Ayt_Kimya_Soru_Bankası_p0171_q01.png	tier1_page_inline	bronze_clean
+a2911e15-db5d-513f-8a92-86574d4777a3	exact	GEOMETRI	Krallar Karması-2023-Tyt Ayt-Geometri Branş Deneme Sınavı	38	"ABC dik üçgeni biçimindeki tarlasının A noktasından bu tarlanın ağırlık merkezine yürüyen Hasan Amca 50 metre yürümüştür.
+
+|AB ⊥ |AC| ve G ağırlık merkezi olmak üzere.
+
+Hasan Amca'nın tarlasının [BC] kenarının uzunluğu kaç metredir?"	100	125	150	200	225	E	/static/crops/Krallar_Karması-2023-Tyt_Ayt-Geometri_Branş_Deneme_Sınavı/Krallar_Karması-2023-Tyt_Ayt-Geometri_Branş_Deneme_Sınavı_p0038_q03.png	tier1_page_inline	bronze_clean
+9e99489c-fbb1-5f2a-abcb-ea8749102caa	exact	GEOMETRI	Bilgi Sarmalı-Tyt Ayt-Geometri Soru Bankası	245	"ABCD yamuk, [AD] // [BC], [BD] ⊥ [DC], [BD] açıortay,
+|AD| = |DC|
+
+Yukarıdaki verilere göre, m(BÂD) = α kaç derecedir?"	100	110	120	130	140	C	/static/crops/Bilgi_Sarmalı-Tyt_Ayt-Geometri_Soru_Bankası/Bilgi_Sarmalı-Tyt_Ayt-Geometri_Soru_Bankası_p0245_q05.png	tier1_page_inline	bronze_clean
+7e67e9a1-7b65-5ee2-8bd2-c5ddf7f11b9f	exact	GENEL	Cap Tyt Konu Anlatımlı Soru Bankasi 2024	230	"Bireyin ve toplumun özünü oluşturan değer kavramı farklı disiplinlerde çeşitli biçimlerde ifade edilmektedir. İktisatta malın ve hizmet alıcısı ile ilgili bir kavramdır. Felsefede değer, doğrudan doğruya insan özü ile ilişkili bir kavramdır ve insan, değer üreten bir varlıktır. Felsefe; değeri insanın doğa, toplum ve kendisi ile ilişkileri kapsamında olarak tanımlar. Bu noktada üstünde durulması gereken husus; değerin her toplumda, her çağda ve her mekânda farklılık göstermesi, kişiden kişiye farklı algılanması ve yorumlanmasıdır. Bu nedenle değerlendirilen herhangi bir olgunun, daima aynı ölçülerle, aynı ifadelerle, aynı bakış açılarıyla, aynı değer yargılarıyla eleştirilmesi mümkün değildir.
+
+Bu parça aşağıdaki yargılardan hangisini savunmak amacıyla yazılmıştır?"	Değerlendirmeyi yapabilecek birinin alanında uzman ve konuya hâkim olması önceliklidir.	Bir durum ya da olay üzerine yapılan değerlendirmenin net özgünlük bölünmüş kaideleri yoktur.	Farklı disiplinlere göre ele alınan değer yargısı her alan kendi değerlerine göre incelenmelidir.	Uzmanlık isteyen konularda eleştiri yapılabilmek, ancak kişinin başvuracağı bir yetkinlik olmalıdır.	Değer yargısının her durum ve ortama göre değiştilemeyeceği belli bir standart olmalıdır.	E	/static/crops/Cap_Tyt_Konu_Anlatımlı_Soru_Bankasi_2024/Cap_Tyt_Konu_Anlatımlı_Soru_Bankasi_2024_p0230_q03.png	tier1_page_inline	bronze_clean
+4a9aa2fa-5ded-513d-85dd-49dcff7a657f	exact	GEOMETRI	345 2025 Tyt Ayt Geometri Soru Bankası 1	46	"[AC] \perp [AB], [BC] \perp [BD]
+|AB| = 3 cm, |AC| = 4 cm ve |BD| = 12 cm
+olduğuna göre, |CD| = x kaç cm'dir?"	15	17	20	13	18	E	/static/crops/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1_p0046_q02.png	tier1_page_inline	bronze_clean
+d095ab6d-e811-5a38-94af-c8a7e1a9f223	exact	TURKCE	Bilgi Sarmal Tyt Turkce Video Dets Kitabı 2025	30	"Kuşkusuz her sanatçı, yaşadığı deneyleri karşılığını onu sanat kalına yükseltecek estetik, dil ve biçim arayışı içerisine olacaktır. Bu da sürekli değişken zorunlu kılar. Bu nedenle kuramlar, kurallar geçici; yapıtlar ise bir zaman kalıcıdır. Kuşkusuz kurama göre, kurallara göre sanat yapılmaz, yapılamazdı. Zaten güzell yapıtlar, kendilerini bir ""edebiyat modeli"" olarak sunar. Edebiyata başkasına benzemeyen modeldir, benzermekten temel hoşdur."	Özgün, sıra dışı olmak	Konu alanını çok geniş tutmak	Ustalaşmayı zamana yaymak	Yazma tekniklerini iyi araştırmak	Gün yüzüne çıkmayan konuları işlemek	A	/static/crops/Bilgi_Sarmal_Tyt_Turkce_Video_Dets_Kitabı_2025/Bilgi_Sarmal_Tyt_Turkce_Video_Dets_Kitabı_2025_p0030_q03.png	tier1_page_inline	bronze_clean
+a2b66aed-d4a0-5e88-9389-40b4e1ed3b3f	exact	KIMYA	345 Tyt Kimya Soru Bankası	66	"X iyonu Yⁿ⁺ iyonuna 3 tane elektron verdiğinde iyon yükleri eşit oluyor.
+
+Buna göre, n değeri kaçtır?"	1+	2+	3+	4+	5+	E	/static/crops/345_Tyt_Kimya_Soru_Bankası/345_Tyt_Kimya_Soru_Bankası_p0066_q04.png	tier1_page_inline	bronze_clean
+00bd7bfe-5da8-56b3-9a66-18cf7f04855a	exact	MATEMATIK	Mikro Orijinal-2024-Tyt-Matematik Soru Bankası	161	"1 Ocak 2015'te yapılan nüfus sayımında nüfusu 810 000 olan bir şehrin, 2016'dan 2023'e kadar her sene 1 Ocakta nüfus sayımı yapılmıştır. 2015'ten sonra yapılan ilk dört yıllardaki nüfus sayımlarının her birinde nüfus bir önceki yıla göre \(\frac{1}{10}\) oranında, sonraki dört yılda bir birinde ise nüfus bir önceki yıla göre \(\frac{1}{11}\) oranında artmıştır.
+Buna göre, bu şehrin 1 Ocak 2023'te yapılan nüfus sayımında nüfusu kaç olmuştur?"	\(2^{90}\)	\(3^{12}\)	\(5^9\)	\(6^{10}\)	\(10^6\)	D	/static/crops/Mikro_Orijinal-2024-Tyt-Matematik_Soru_Bankası/Mikro_Orijinal-2024-Tyt-Matematik_Soru_Bankası_p0161_q04.png	tier1_page_inline	bronze_clean
+30d0de6e-00ea-5ad4-9b80-37ee0339fec4	exact	MATEMATIK	345 2025 Ayt Matematik Soru Bankası	241	"f(x) = \frac{mx-1}{x+2}
+
+f'(0) = 3
+
+olduğuna göre, m kaçtır?"	\frac{11}{2}	2	4	\frac{13}{2}	3	A	/static/crops/345_2025_Ayt_Matematik_Soru_Bankası/345_2025_Ayt_Matematik_Soru_Bankası_p0241_q05.png	tier1_page_inline	bronze_clean
+cf6f5e04-5205-51dd-8da1-9e072c6a8668	exact	GEOMETRI	Mikro Orijinal-2025-Ayt-Geometri Soru Bankası	359	"Analitik düzlemde,
+$|x| \le 4$
+$|y| < 3$
+eşitsizliklerini sağlayan (x, y) noktalarının oluşturduğu bölgenin alanı kaç birimkaredir?"	12	24	36	48	60	D	/static/crops/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası/Mikro_Orijinal-2025-Ayt-Geometri_Soru_Bankası_p0359_q05.png	tier1_page_inline	bronze_clean
+c73c1c7b-24ee-51c8-8fc6-6310200dc94e	exact	MATEMATIK	Mikro Orijinal-2024-Tyt-Matematik Soru Bankası	17	İki basamaklı rakamları farklı ve birbirinden farklı iki tam sayının toplamı en az kaçtır?	21	22	-22	-198	-195	E	/static/crops/Mikro_Orijinal-2024-Tyt-Matematik_Soru_Bankası/Mikro_Orijinal-2024-Tyt-Matematik_Soru_Bankası_p0017_q04.png	tier1_page_inline	bronze_clean
+81b2ca6c-6c78-5cbc-90a3-c634f38c62cc	exact	TURKCE	Cap Tyt Turkce Soru Bankası	235	"Gözünü yıldırımın kara kuş
+Altında sağlama yatağın
+Hastanede Şiran var
+Ne kaldı ki şurada
+Ekim, kasım, derken aralık
+Sonun sabrın tükenmezse eğer
+
+Bu dizelerle ilgili aşağıdakilerden hangisi söylenemez?"	Soru zamirine yer verilmiştir.	2.kelime iyelik zamiri vardır.	İşaret zamiri bulunma durumu eki almıştır.	Kişi zamirini tamamlayan eki almıştır.	Birleşik yapıda zamir kullanılmıştır.	A	/static/crops/Cap_Tyt_Turkce_Soru_Bankası/Cap_Tyt_Turkce_Soru_Bankası_p0235_q04.png	tier1_page_inline	bronze_clean
+1871848d-d93c-5447-a4d4-796ecca394e3	fuzzy	EDEBIYAT	Bilgi Sarmal Ayt Edebiyat Soru Bankası 2024	403	"Gazeteci: Dönemin yazarlarının Ahmet Mithat Efendi'ye bakışları nasıldır?
+
+Eşleştirme: ----
+
+Bu mülakatta gazetecinin sorusuna eşleştirmenin verdiği cevap,
+
+I. Servetifünuncuların dışında kalan yazarların çoğu Ahmet Mithat Efendi'yi bir usta olarak görmüş ve ona saygı duymuşlardır.
+
+II. Dönemin sanatçıları onu sanatkârlara ilüsün ön-cü olarak görüp örnek almışlar, roman sanatının teknik özelliklerini geliştirmişlerdir.
+
+III. Özellikle Servetifünuncuların Ahmet Mithat Efendi'ye çok düşman baktığını, aksi bu da daha çok edebiyat tarihimize ""Dekadanlık tartışması"" olarak bilinen tanımadaki rolü sebebiyledir.
+
+yukarıdakilerden hangisi olamaz?"	Yalnız I	Yalnız II	I ve III	Yalnız III	II ve III	A	/static/crops/Bilgi_Sarmal_Ayt_Edebiyat_Soru_Bankası_2024/Bilgi_Sarmal_Ayt_Edebiyat_Soru_Bankası_2024_p0403_q01.png	tier1b_position_page_inline	bronze_clean
+87caab84-af9c-502a-809b-ed111525b66a	fuzzy	MATEMATIK	C1CELL-2024-TYT-Matematik Soru Bankası	347	"$ax^2 + bx + c = 0$
+ikinci dereceden denkleminin kökler toplamı ile köklerinin çarpma işlemine göre terslerinin toplamı birbirine eşittir.
+Buna göre,
+I. $a = c$
+II. $b = 0$
+III. $c = 0$
+ifadelerinden hangileri doğru olabilir?"	Yalnız I	I ve II	I ve III	II ve III	I, II ve III	E	/static/crops/C1CELL-2024-TYT-Matematik_Soru_Bankası/C1CELL-2024-TYT-Matematik_Soru_Bankası_p0347_q04.png	tier1b_position_page_inline	bronze_clean
+2480272c-3151-5d37-a2af-2bef9cef000f	fuzzy	MATEMATIK	Bilgi Sarmalı-2025-Ayt-Matematik Soru Bankası	191	f(x) = \log_2 |x^2 + x + 1|\nfonksiyonunun en geniş tanım kümesi aşağıdakilerden hangisidir?	{2}	R - {-1}	R - {2}	R	\emptyset	E	/static/crops/Bilgi_Sarmalı-2025-Ayt-Matematik_Soru_Bankası/Bilgi_Sarmalı-2025-Ayt-Matematik_Soru_Bankası_p0191_q03.png	tier1b_position_page_inline	bronze_clean
+e5578d5c-0c71-5749-891d-681b502f3a1f	fuzzy	MATEMATIK	C1CELL-2025-Matematik Soru Bankası	280	"Gerçel sayılar kümesi üzerinde f ve g fonksiyonları
+$$f(x) = (a + 2) \cdot x^3$$
+$$g(x) = (2a + 3) \cdot x^2$$
+biçiminde tanımlanıyorlar.
+$$f'(\frac{1}{2}) = g'(\frac{1}{5})$$ olduğuna göre, a kaçtır?"	-1	2	3	4	6	E	/static/crops/C1CELL-2025-Matematik_Soru_Bankası/C1CELL-2025-Matematik_Soru_Bankası_p0280_q05.png	tier1b_position_page_inline	bronze_clean
+4dc1a971-8878-55b2-9668-559cee21c2b2	fuzzy	MATEMATIK	2019-2020-Acil Matematiğin ilacı-1	326	"Farklı kapasitelere sahip beyaz ve siyah şarj aletleri vardı.
+Beyaz tablet beyaz şarj aleti ile 6 saatte, siyah şarj aleti ile 8 saatte tam dolmaktaydı.
+Bataryası tamamen boş olan bir tablet, beyaz şarj aleti ile 4 saat şarj edildikten sonra, siyah şarj aleti ile tam dolana kadar şarja bırakılıyor.
+Buna göre, siyah şarj aleti kaç dakika kullanılmıştır?
+(Verilen süreler tabletin bataryasının boş olduğu durumda sörenerdir.)"	120	150	160	180	190	D	/static/crops/2019-2020-Acil_Matematiğin_ilacı-1/2019-2020-Acil_Matematiğin_ilacı-1_p0326_q01.png	tier1b_position_page_inline	bronze_clean
+516ee976-1a83-5df8-a671-9bcaaae7e8ba	fuzzy	MATEMATIK	2023-2024-ACİL-TYT-Matematiğin İlacı	99	"Aşağıdaki sayı doğrusunda a, b, c ve 0 sayılarının yerleri gösterilmiştir.
+
+Buna göre,
+$$|a + b - c| + |c - a + b|$$
+ifadesi aşağıdakilerden hangisine eşittir?"	2c	2b	2c - 2a	2a - 2c	a - b + c	C	/static/crops/2023-2024-ACİL-TYT-Matematiğin_İlacı/2023-2024-ACİL-TYT-Matematiğin_İlacı_p0099_q04.png	tier1b_position_page_inline	bronze_clean
+d92ba06c-e2fa-59c0-82b6-6a9305cbf6dc	fuzzy	TURKCE	Bilgi Sarmal Tyt 2023 2024 Turkce Deneme-13	8	"Bereketli Hilal ya da Münbit Hilal denilen Dicle ve Fırat'ın birleştiği hediye ettiği bu bölgenin merkezinde yer alan Şanlıurfa önemli bir tanrı şehridir.
+
+Bu cümlenin öznesi ile ilgili aşağıdakilerden hangisi söylenemez?"	Özneyi oluşturan söz öbeğinin içinde belirsiz isim tamlaması vardır.	Sıfat-fiil grubunun tamlayanı olduğu için sıfat tamlamasından oluşmuştur.	İçinde birden fazla bağlama grubuna yer verilmiştir.	İçinde birden fazla zıt anlamlı sözcük bulunmaktadır.	Özne grubunun içinde tamlayanı eki almış sözcükler kullanılmıştır.	C	/static/crops/Bilgi_Sarmal_Tyt_2023_2024_Turkce_Deneme-13/Bilgi_Sarmal_Tyt_2023_2024_Turkce_Deneme-13_p0008_q03.png	tier1b_position_page_inline	bronze_clean
+a0100752-5c1c-50bf-bc86-0999fb695dd9	fuzzy	TURKCE	Pes Tyt Ayt Paragraf Soruları 2020 2021	213	"Mutluluk, öfke, korku, üzüntü... Bu temel duyguların hepsi tip insanlarda bulunur. Ancak yoğunlukları bireyden bireye değişir. Normal kabul edilen sınırların dışında bu duygular kişinin sağlıklı bir hayat sürmesine yardımcı olur. Ancak ----
+
+I. bu duyguların aşırı uçlarda yaşanması veya bastırılması bireyin psikolojik problemlere yol açabilir.
+
+II. insandaki bu duygular, dozajına bağlı olarak yaşam kalitemizi olumlu veya olumsuz etkileyebilir.
+
+III. insanlarla ilişkilerimizde sınır koymamızı sağlar; ancak yaşam kalitemizin yükselmesine katkıda bulunur.
+
+Bu parçanın sonuna düşüncenin akışına göre yukarıdakilerden hangileri getirilemez?"	Yalnız I	Yalnız II	Yalnız III	I ve III	II ve III	E	/static/crops/Pes_Tyt_Ayt_Paragraf_Soruları_2020_2021/Pes_Tyt_Ayt_Paragraf_Soruları_2020_2021_p0213_q03.png	tier1b_position_page_inline	bronze_clean
+ef422f88-d1c4-5eed-9d42-0358bf51b6aa	fuzzy	KIMYA	Apotemi Tyt Ayt Kimya 2019-2020	147	"Bir hidrokarbonun yanma tepkimesiyle ilgili;
+
+I. Sınırlayıcı madde her zaman O₂ dir.
+II. CO₂ ve H₂O oluşur.
+III. Ekzotermiktir.
+
+yargılarından hangileri yanlıştır?"	Yalnız I	Yalnız II	I ve III	II ve III	I, II ve III	C	/static/crops/Apotemi_Tyt_Ayt_Kimya_2019-2020/Apotemi_Tyt_Ayt_Kimya_2019-2020_p0147_q01.png	tier1b_position_page_inline	bronze_clean
+cc496a21-63eb-5dda-b2f0-03bc7917befa	fuzzy	GEOMETRI	Esen Tyt Ayt Geometri Soru Bankası	243	"Mimar İlhan, San Francisco'daki piramit kulenin maketi üzerinde çalışmaktadır.
+
+(P; ABCD) kare piramit şeklindeki maketin her ayrıtı 4'er birim olmak üzere, A köşesinden başlayıp aynı köşeye en kısa yoldan ulaşacak biçimde toplam $4\sqrt{3}$ birim uzunluğunda çizgi çekip piramidin yan yüzeylerinde çizginin altında kalan bölgeleri sarıya boyuyor.
+
+Buna göre, boyanan bölgenin toplam alanı kaç birim-kare olur?"	4	4\sqrt{3}	6\sqrt{3}	16 - 4\sqrt{3}	16 - 2\sqrt{3}	E	/static/crops/Esen_Tyt_Ayt_Geometri_Soru_Bankası/Esen_Tyt_Ayt_Geometri_Soru_Bankası_p0243_q03.png	tier1b_position_page_inline	bronze_clean
+cfcb4ec5-0051-5ec3-86c0-a29caa735061	fuzzy	EDEBIYAT	Esen Aps Ayt Edebiyat Soru Bankası	20	"Sabah akşam aynı kaldırımlarda,
+Birbirimize uzak, yakın.
+Gidip gelirken işlerimize
+Akım akın.
+
+Bu dizelerin uyak türü aşağıdakilerden hangisidir?"	Tam uyak	Cinsel uyak	Tunç uyak	Yarım uyak	Zengin uyak	E	/static/crops/Esen_Aps_Ayt_Edebiyat_Soru_Bankası/Esen_Aps_Ayt_Edebiyat_Soru_Bankası_p0020_q03.png	tier1b_position_page_inline	bronze_clean
+e7e3a5d8-940a-5ec4-aee1-846be9b5600e	fuzzy	TURKCE	Sure Tyt Paragraf Gunlukleri 2023	125	"I. Küresel ısınma, küresel bir iklim krizine yol açtı. Buna bağlı olarak ortaya kuraklık, susuzluk, yağmursuzluk çıktı. Sıcaklıklar, mevsim normallerinin üzerinde seyrediyor. Buharlaşma artıyor, göller bozuluyor. Kışın ortasına gelinmesine rağmen kar düşmüyor, yağmur yağıyor. Şehirlerin su ihtiyacını karşılayan barajlarda su seviyesi %15-20'ye düşüyor.
+
+II. Susuzluk, kuraklık ve ısınma arttıkça meteorolojik okur-yazarlık da artıyor. Klimatoloji (iklim bilimi), sera etkisi, ekoloji, ekosistem, termik strateji ve nihayet 'yağmur hasadı' terimleri, günlük dilde dolaşımı çıktı. Evet yakın bir gelecekte çeşitli yollarla yağmuru toplayacağız, ihtiyaç duyduğumuz zaman kullanacağız. Yağmurbarı, boşta gitmeyecek. Eskiden sarınç gibi bir şey tabii ki daha modern. Bir de sanırım 'Önce sabunu alın, sonra suyu ayın.' denilenler komik bulmayacağınız artık.
+
+Birbirinin devamı olan bu iki paragraftan I. parçanın II. parçayla ilişkisi için aşağıdakilerden hangisi doğrudur?"	I. parça, sonuçları; II. parça ise ona yol açan sebepleri açıklamaktadır.	I. parça, varsayımları; II. parça varsayımların gerçekleşmesi durumunda oluşacakları yansıtmaktadır.	I. parça, II. parçadaki gelişmeleri ortaya çıkararak olguları ortaya koymaktadır.	I. parçadaki gelişmelerin hızının II. parçadaki önlemleri geçersiz kılacak nitelikte olduğu vurgulanmıştır.	I. parçada sorunlar ortaya konmuş, II. parçada ise sorunların çözümsüzleşmesinin gerekçeleri dile getirilmiştir.	E	/static/crops/Sure_Tyt_Paragraf_Gunlukleri_2023/Sure_Tyt_Paragraf_Gunlukleri_2023_p0125_q02.png	tier1b_position_page_inline	bronze_clean
+655aa9da-51e1-5803-99d5-454cf52c1d33	fuzzy	GEOMETRI	Full Matematik-2019-2020-Geometri Soru Bankası	233	Analitik düzlemde ABC üçgeninin kenarlarının orta noktaları D(1, 2), E(-4, 2) ve F(-2, 9) olduğuna göre, ABC üçgeninin köşelerinin koordinatları toplamı kaçtır?	13	11	10	9	8	B	/static/crops/Full_Matematik-2019-2020-Geometri_Soru_Bankası/Full_Matematik-2019-2020-Geometri_Soru_Bankası_p0233_q06.png	tier1b_position_page_inline	bronze_clean
+85360362-37db-5ee4-8afa-8c38ce0b1e0e	fuzzy	FIZIK	Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankası	112	"P ağırlıklı cisim iplerle şekli gibi dengededir. S1, S2, S3 iplerdeki gerilme kuvvetleri sırasıyla T1, T2, T3 tür.
+
+Buna göre; T1, T2, T3 arasındaki ilişki nedir?"	T1 = T2 = T3	T1 > T2 > T3	T1 > T2 = T3	T2 > T1 = T3	T3 > T2 = T1	A	/static/crops/Apotemi_2019_2020_Tyt_Ayt_Fizik_Soru_Bankası/Apotemi_2019_2020_Tyt_Ayt_Fizik_Soru_Bankası_p0112_q03.png	tier1b_position_page_inline	bronze_clean
+c259e455-b171-50f0-908a-bacd679cf8cf	fuzzy	MATEMATIK	C1CELL-2024-TYT-Matematik Soru Bankası	299	"f(x) = \begin{cases} (2a - 1)x + 5 & , x \geq 0 \\ 2x + b + 1 & , x < 0 \end{cases}
+
+fonksiyonu çift fonksiyondur.
+
+Buna göre, f(a · b) kaçtır?"	-9	-5	1	5	9	B	/static/crops/C1CELL-2024-TYT-Matematik_Soru_Bankası/C1CELL-2024-TYT-Matematik_Soru_Bankası_p0299_q04.png	tier1b_position_page_inline	bronze_clean
+80efa4bc-f1b0-5a2f-a97c-d122bf8b31be	fuzzy	FIZIK	Bilgi Sarmalı Tyt 2024 Fizik Soru Bankası	100	"Doğrusal bir yolda hareket eden bir hareketlinin konum-zaman grafiği şekil gibidir.
+
+Buna göre,
+I. (0-20) saniye aralığında ortalama sürati 2,5 m/s'dir.
+II. (0-20) saniye aralığında ortalama hızı -1,5 m/s'dir.
+III. (0-5) saniye aralığında yer değiştirmesi 50 metredir.
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız II	Yalnız III	I ve II	II ve III	B	/static/crops/Bilgi_Sarmalı_Tyt_2024_Fizik_Soru_Bankası/Bilgi_Sarmalı_Tyt_2024_Fizik_Soru_Bankası_p0100_q02.png	tier1b_position_page_inline	legacy_v3_unaudited
+efae7522-4116-5ebf-bd3e-de94558d9c70	fuzzy	FIZIK	Bilgi Sarmal Ayt 2024 Fizik 25Branş Deneme	21	"l uzunluğundaki ipe bağlı m kütleli cisim dikeyden α açısı kadar çekilerek serbest bırakılıyor.
+
+Cisim K konumundan O konumuna gelirken,
+I. Açısal momentumu artar.
+II. Açısal hızı artar.
+III. Merkezcil ivmesi artar.
+yargılarından hangileri doğrudur? (Sürtünmeler önemsiz)"	Yalnız I	Yalnız II	Yalnız III	II ve III	I, II ve III	A	/static/crops/Bilgi_Sarmal_Ayt_2024_Fizik_25Branş_Deneme/Bilgi_Sarmal_Ayt_2024_Fizik_25Branş_Deneme_p0021_q02.png	tier1b_position_page_inline	bronze_clean
+5f3f812c-efde-5fe2-a7db-c605eb2ffb49	fuzzy	FIZIK	Esen Tyt FizikSoru Bankası	140	"Elektrik yüklü iki cisim arasındaki coulomb kuvveti ile ilgili,
+
+I. Cisimlerin yüklerinin çarpımı ile doğru orantılıdır.
+
+II. Yükü fazla olan cisim, az olan cisme daha büyük kuvvet uygular.
+
+III. Cisimlerin birbirine uyguladığı kuvvetler aynı yönlü vektörel büyüklüklerdir.
+
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız III	I ve II	II ve III	I, II ve III	C	/static/crops/Esen_Tyt_FizikSoru_Bankası/Esen_Tyt_FizikSoru_Bankası_p0140_q01.png	tier1b_position_page_inline	bronze_clean
+5d86f158-4bfb-5c75-8d9e-ba955d892f6f	fuzzy	TURKCE	Bilgi Sarmal Tyt Türkçe Soru Bankası 2024	242	"Paslı mızcıralar gibi uyuyanlar direkler
+
+Bir gün yapacakları muhayyel conglı boklor
+
+Uçuşur heyecan deniz kuşları alay alay
+
+Yukarıdaki dizelerde aşağıdakilerden hangisinin örneği yoktur?"	Niteleme sıfatı	Durum zarfı	Edat	Zaman zarfı	Bağlaç	C	/static/crops/Bilgi_Sarmal_Tyt_Türkçe_Soru_Bankası_2024/Bilgi_Sarmal_Tyt_Türkçe_Soru_Bankası_2024_p0242_q03.png	tier1b_position_page_inline	bronze_clean
+3d6ac794-bcee-5ae7-a4e5-2232caad7eed	fuzzy	TURKCE	Sure Paragrafın Suresi 2025	20	"Değerli taşlara ilgi duyan genç bir adam, mücevher ustası olmak istemiştir. ""Bu mesleği yapacaksam iyi bir mücevher ustası olmalıyım."" demiş ve ülkedeki en iyi mücevher ustasını aramaya başlamış. Aradığı ustayı sonunda bulmuş. ""Anlat, dinliyorum seni,"" demiş usta. Genç adam, taşlara ilgi duyduğunu ve iyi bir mücevher ustası olmaya karar verdiğini hayranca anlatmış.
+
+Bu parçanın anlatımında aşağıdakilerden hangileri vardır?"	Öyküleme - Doğrudan anlatım	Açıklama - Örnekleme	Örnekleme - Abartma	Tanık gösterme - Karşılaştırma	Tanımlama - Benzetme	E	/static/crops/Sure_Paragrafın_Suresi_2025/Sure_Paragrafın_Suresi_2025_p0020_q04.png	tier1b_position_page_inline	bronze_clean
+e43b6a52-e74f-5c60-95c8-bc801cb85388	fuzzy	EDEBIYAT	Bilgi Sarmal Ayt Edebiyat Soru Bankası 2024	222	"""Ve içinde birikmiş ut çalan kadın elleri olmuş hep gibi bir üzüntü sökün edermiş akşamları ağlarken kuşlara kanat hanım'ın denizlerinden."" Yukarıdaki metin, bir eserle birlikte verilen aşağıdaki şairlerden hangisine ait olabilir?"	İlhan Berk - Kül	Ece Ayhan - Yort Savul	Cemal Süreya - Üvercinka	Turgut Uyar - Divan	Edip Cansever - Yerçekimli Karanfil	E	/static/crops/Bilgi_Sarmal_Ayt_Edebiyat_Soru_Bankası_2024/Bilgi_Sarmal_Ayt_Edebiyat_Soru_Bankası_2024_p0222_q03.png	tier1b_position_page_inline	bronze_clean
+ca94cc13-ec77-5046-8aff-8437ff756d4e	fuzzy	TURKCE	Bilgi Sarmal Tyt Ayt Dil Bilgisi Soru Bankası 2024	77	"Yansıma sözcükler aşağıdaki seslerin taklidi edilmesiyle ortaya çıkar ve yansıma sözcüklerde isim köküdür.
+
+Aşağıdaki cümlelerin hangisinde yansıma sözcük kullanılmamıştır?"	Okul bahçesindeki gürültü sınıfta ders yapılmasını zorlaştırıyordu.	Sabahları Tekir'in miyavlamalarıyla başlayan günler daha keyifli oluyordu.	Üniversite tercihlerinden ikisine girdiğini duyunca gözleri patladı.	Doğum günü pastasındaki tüm mumlar bir öfmede söndürüldüğü.	Ocaaktaki yemek fokurdayınca annem hemen ocağı kapattı.	B	/static/crops/Bilgi_Sarmal_Tyt_Ayt_Dil_Bilgisi_Soru_Bankası_2024/Bilgi_Sarmal_Tyt_Ayt_Dil_Bilgisi_Soru_Bankası_2024_p0077_q01.png	tier1b_position_page_inline	bronze_clean
+57d42eeb-72d8-5c96-914f-9c59e893e09c	fuzzy	TURKCE	Edebiyat Sokagi Tyt Turkce Denemeleri 2024	120	"Karşımızdakinin ihtiyaçlarına özen gösteririz, onlar da bize nars, görmek istiyorlarsa onu görürüz. Hayatta verici olmak için iyi bir yol bu, üstlenilmiş rol ve üstüncür yapılı duran roller vardır ya hep bizden beklenen... Tanımak adina tanımayı feda etmek yo runda kalırız. Ötekilerin oldugu istediği kalıba girensiniz. Ama içinde de ortaklığı bozma, bağlan koparma eğilimi her zaman vardır. Coğumuz, ortadağıya yükselen mücadelesi veren dalkavukluktur.
+
+Bu paragrafta asıl anlatılmak istenen aşağıdakilerden hangisidir?"	Her ne kadar birliklikleri sonlandırmaya yatkın bir yapımış olsa da birlik olmak adına pohpocalılığı görev edinen varlıklarız çoğumuz.	Kimi zaman tanrının adıma ayaklar altına alıp birlikliğe soyunduğumuz insanların ön plana çıkarmamızı mücadele ediyoruz.	Karşımızdakinin gereksinimlerini hep kendi ihtiyaçlarımızın önüne koyduğumuz için başkaları için yaşayan böceklere dönüştürüyoruz.	Kendimizle olmak yerine kendimize olmayanı istediğimiz karakterlere bürünerek kendimizi bile yabancısı tutar bireyler oluyoruz.	Hayatın zorlukları hepimizi bir şekilde birlikte olmaya ve eksik yönlerimizi başkalarıyla tamamlamaya mecbur kılıyor.	E	/static/crops/Edebiyat_Sokagi_Tyt_Turkce_Denemeleri_2024/Edebiyat_Sokagi_Tyt_Turkce_Denemeleri_2024_p0120_q01.png	tier1b_position_page_inline	bronze_clean
+54d3476f-6e19-5332-9717-6a1794746556	fuzzy	FEN	Bilgi Sarmal Ayt 10 Fen Bilimleri Denemeleri 2024	54	"Nöronlarda impuls iletim hızı için,
+
+I. Akson çapı kalınlığının artışı impuls iletim hızını artırır.
+II. Nöronda miyelin kılıf varlığı impuls iletim hızını artırır.
+III. Uyarı şiddetinin azalışı impuls iletim hızını azaltır.
+
+İfadelerden hangileri doğrudur?"	Yalnız I	I ve II	I ve III	II ve III	I, II ve III	A	/static/crops/Bilgi_Sarmal_Ayt_10_Fen_Bilimleri_Denemeleri_2024/Bilgi_Sarmal_Ayt_10_Fen_Bilimleri_Denemeleri_2024_p0054_q03.png	tier1b_position_page_inline	bronze_clean
+0b652909-0e69-56d8-9f09-90d5d8230cb2	fuzzy	MATEMATIK	2019-2020-Apotemi-Tyt Matematik Soru Bankası	295	"A = {0, 1, 2, 3, 4} kümesi veriliyor.
+a, b ve c sayıları A kümesinin birer elemanı olmak üzere,
+a ≥ b ≥ c
+koşullarını sağlayan üç basamaklı kaç farklı abc sayısı yazılabilir?"	14	19	20	23	34	A	/static/crops/2019-2020-Apotemi-Tyt_Matematik_Soru_Bankası/2019-2020-Apotemi-Tyt_Matematik_Soru_Bankası_p0295_q03.png	tier1b_position_page_inline	bronze_clean
+536e4cee-4e4e-5514-8d66-1de4064a986e	fuzzy	MATEMATIK	Full Matematik-2022-2023-Tyt-Matematik Soru Bankası	311	"$(2x - y)^{3n-1}$ açılımında 9 terim vardır.
+Bu açılım x in kuvvetlerine göre düzenlendiğinde,
+• baştan n. terimin katsayısı A,
+• en büyük katsayı B
+oluyor.
+Buna göre, $\frac{A}{B}$ oranı kaçtır?"	$-\frac{1}{16}$	$-\frac{1}{8}$	$\frac{1}{32}$	$\frac{1}{2}$	1	D	/static/crops/Full_Matematik-2022-2023-Tyt-Matematik_Soru_Bankası/Full_Matematik-2022-2023-Tyt-Matematik_Soru_Bankası_p0311_q01.png	tier1b_position_page_inline	bronze_clean
+e5ba9ffa-edf0-541d-a26d-9f565c952627	fuzzy	FIZIK	Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankası	380	"Karanlık bir ortamda sarı renkli kağıt üzerine kırmızı renkle A harfi yazılmıştır.
+
+Buna göre, bu kağıt aşağıdaki renkli ışıkların hangisi ile aydınlatılırsa, A harfini okumak diğerlerine göre daha zor olur?"	Yeşil	Kırmızı	Beyaz	Sarı	Cyan	D	/static/crops/Apotemi_2019_2020_Tyt_Ayt_Fizik_Soru_Bankası/Apotemi_2019_2020_Tyt_Ayt_Fizik_Soru_Bankası_p0380_q03.png	tier1b_position_page_inline	bronze_clean
+b954cfc5-aa33-5826-83ed-c928d70e6b42	fuzzy	FIZIK	Neofizik Ayt Fizik Soru Bankası 2025	224	"Bir astronotun Dünya ve Ay yüzeyindeki fiziksel nicelikleri ile ilgili;
+
+I. Astronotun; Dünya ve Ay'da kütlesi eşittir.
+
+II. Astronota; Dünya'nın uyguladığı kütle çekim kuvveti, Ay'ın uyguladığından daha büyüktür.
+
+III. Astronotun; Dünya'da iken Dünya'ya, Ay'da iken Ay'a uyguladığı kütle çekim kuvveti eşit büyüklüktedir.
+
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız II	I ve II	I ve III	II ve III	D	/static/crops/Neofizik_Ayt_Fizik_Soru_Bankası_2025/Neofizik_Ayt_Fizik_Soru_Bankası_2025_p0224_q02.png	tier1b_position_page_inline	bronze_clean
+c8ee6a92-b0b1-59c0-8c19-b1ff5752eeec	fuzzy	TURKCE	Vaf Capli Paragraf Soru Bankası	151	"Dr. Clifford B. Saper, yaptığı bir araştırmanın sonucu hakkında şunları söylemektedir: Uyku apnesi, temel olarak uyku sırasında nefes alama yolunu, kontrol edilemeyen bitkisel kas hareketleri sonucunda kapanmasından kaynaklanmaktadır. Bu rahatsızlık, son zamanlarda yaygın görülen bir hastalık hâlini aldı. Bu durum, hastaların uyku boyunca yataküstü nefes tıkanıklığını gidermek adına gece boyu onlarca kez kontrolsüz uyanmalarına neden oluyor. Doğal olarak gece boyu sık sık uygulanan hastalığın uykuları iyi alamamaları, gün içindeyko kendilerini yorgun hissetmeleri ve bilişsel fonksiyonlarında zarar görmesine neden oluyor. Bunun yanı sıra uyku apnesinin en basitinden değilselme, kalp krizi ve felç gibi durumların oluşmasına da etkili olduğu düşünülmektedir.
+
+Bu parçada sözü edilen araştırmanın amacı aşağıdakilerden hangisidir?"	Uyku rahatsızlıklarının uyku süresi ile ilişkisini tespit etmek	Uyku apnesinin sebebi olduğu uyku bozukluğunun ve sonuçlarının neler olduğunu ortaya koymak	Uyku düzeni konusunda insanlardaki insani farklılıkları belirlemek	Uykuya dalmak ile uyanıklık arasındaki ilişkiyi incelemek	Düzenli uykunun sağlık üzerindeki etkilerini gözlemlemek	E	/static/crops/Vaf_Capli_Paragraf_Soru_Bankası/Vaf_Capli_Paragraf_Soru_Bankası_p0151_q05.png	tier1b_position_page_inline	bronze_clean
+414d2b41-e1bf-5896-ac37-7626248b6cb8	fuzzy	TARIH	Esen Tyt Tarih Soru Bankası	154	"Osmanlı adalet sisteminin temelini şerî hukuk oluşturmuştur. İslam dininin kurallarına aykırı olmayan Türk gelenekleri de devam ettirilmiştir.
+
+Yalnız bu bilgiyle Osmanlı Devleti'nin hukuk sistemiyle ilgili aşağıdaki yargılardan hangisi yapılamaz?"	Ülkede hukuk birliğinin olmadığı	Geleneksel hukukun da esas alındığı	Örfî hukukun geçerliliğini sürdürdüğü	İslam dininin temel kurallarının dikkate alındığı	Azınlıklara özgü kuralların da yer aldığı	E	/static/crops/Esen_Tyt_Tarih_Soru_Bankası/Esen_Tyt_Tarih_Soru_Bankası_p0154_q04.png	tier1b_position_page_inline	bronze_clean
+5f85ccce-0aae-52cc-8ebd-a0165c1181a1	fuzzy	TURKCE	Sure Tyt Turkce Soru Bankası 2023 2024	214	Aşağıdaki cümlelerin hangisinde altı çizili sözcüğün kökü yanlış belirlenmiştir?	Yapacağımız bütün görevleri listo hâlinde sunaca-ğım. (gör)	Tarladan daha çok verim almak için bilinçli olmak gerek-yor. (ver)	Tavukların yemini, suyunu vermiş; bize doğru geli-yor şimdi. (yem)	İnsanları tiyatrodan uzaklaştıran unsurları tespit et-meli-yiz. (unsur)	İzlenmenin en basit yolu doğal olmaktadır, der büyük sanatçılar. (ız)	C	/static/crops/Sure_Tyt_Turkce_Soru_Bankası_2023_2024/Sure_Tyt_Turkce_Soru_Bankası_2023_2024_p0214_q01.png	tier1b_position_page_inline	bronze_clean
+4dead521-a28c-52bb-bab7-1c6f6caa61b7	fuzzy	TARIH	Esen Ayt Tarih Soru Bankası	48	Nüfus piramidinde verilen ülkenin, nüfus artış hızını yükseltmesi durumunda, ülkede aşağıdakilerden hangisinin görülmesi beklenmez?	Nüfus yoğunluğunun artması	Nüfusun dinamizminin artması	Genç nüfus oranının azalması	İş gücü açıklarının azalması	Nüfusun ikiye katlanma süresinin azalması	E	/static/crops/Esen_Ayt_Tarih_Soru_Bankası/Esen_Ayt_Tarih_Soru_Bankası_p0048_q01.png	tier1b_position_page_inline	bronze_clean
+c5d8383e-5d31-5402-abc9-988021e48dfe	fuzzy	FIZIK	Neofizik Ayt Fizik Soru Bankası 2025	202	"Birbirine kayışla bağlı iki tekerlek merkezlerinden geçen eksenler etrafında sabit hızla döndürülmektedir.
+
+2r ve r yarıçaplı tekerlekler üzerindeki K, L, N noktalarının merkezi ivmeleri sırasıyla ak, al, an olduğuna göre bunlar arasındaki ilişki aşağıdakilerden hangisidir?"	ak > al > an	ak = al > an	al > ak = an	an > al > ak	an > al = ak	C	/static/crops/Neofizik_Ayt_Fizik_Soru_Bankası_2025/Neofizik_Ayt_Fizik_Soru_Bankası_2025_p0202_q01.png	tier1b_position_page_inline	bronze_clean
+3a10c23f-e35c-5304-9a68-d8d0ff7f0211	fuzzy	EDEBIYAT	Cap Ayt Edebiyat Soru Bankası 2022 2023	258	"Öğrencilerden Emine, Vildan, Handan ve Zümra Cumhuriyet Dönemi toplumu gerçekçi romanın konusu/teması ile ilgili olarak
+
+Emine: Sabahattin Ali, İçimizdeki Şeytan romanında İkinci Dünya Savaşı öncesi İstanbul'da üniversite ve sanat çevrelerinde yazdıklarımları, ahlaki değerler çatışması, yadırganan ve yeni aydınların tutumunu eleştiri. Eseri yönüyle Yakup Kadri'nin Sodom ve Gomora'sıdır.
+
+Vildan: Cumhuriyet Döneminde ilk romancılarımız başlangıç aşırı olarak kabul edilen Mahmut Makal'ın Bizim Köy adlı eserleri edebiyatımızın önemli eserleri olarak görülmüştür.
+
+Handan: Sadi Ertem, Çinkolar Durunca adlı romanında Avrupa'dan ucuz malların gelip endüstride başlayan gelişme nedenini gösterirken, dokuma tezgâhlarının durmasına yarattığı işsizlik sonucu köyden kente başlayan göçü de anlatmıştır.
+
+Zümra: Kemal Tahir'in Bereketli Topraklar Üzerinde romanının ekseni, köyden kente nüfus göçü, gurbetçi-ileten Adana'daki güç yaşamı temasıdır.
+
+Hilal: Asıl adı Kemal Sadık Göçgel olan Yaşar Kemal'in, Anadolu'yu özellikle Çukurova'yı anlatıldığı romanlarından bazıları, Teneke, İnce Memed ve Orta Direk'tir.
+
+şeklinde verdikleri bilgilerden hangisi yanlıştır?"	Emine	Vildan	Handan	Zümra	Hilal	E	/static/crops/Cap_Ayt_Edebiyat_Soru_Bankası_2022_2023/Cap_Ayt_Edebiyat_Soru_Bankası_2022_2023_p0258_q03.png	tier1b_position_page_inline	bronze_clean
+1182fbd2-c66f-5d07-b51d-e2e6674a7d87	fuzzy	BIYOLOJI	345 2025 Ayt Biyoloji Soru Bankası	66	"İnsandaki duygu organlarının tümü için
+
+I. aynı özellikteki uyarılarla uyarılma.
+II. uyarıların beyin kabuğunda değerlendirilmesi,
+III. eşik şiddetindeki uyarılarla uyarılma,
+IV. uyarıların elektrokimyasal olarak taşınması
+
+özelliklerinden hangileri ortaktır?"	I, II ve IV	II, III ve IV	I ve II	I ve IV	I, II ve III	E	/static/crops/345_2025_Ayt_Biyoloji_Soru_Bankası/345_2025_Ayt_Biyoloji_Soru_Bankası_p0066_q03.png	tier1b_position_page_inline	bronze_clean
+a10d9002-b63b-5fbb-a5d0-717ea50b9e3e	fuzzy	TURKCE	Deneme Deposu Paragraf Denemeleri 2021 2022	174	"(I) Tarihsel süreç içerisinde bakıldığında öykücülüğümüz sürekli gelişme içinde olmuştur. (II) Tanzimat'tan bu yana her nesli yeni ve özgün bazı yazarlar çıkarmaya da devam ediyor. (III) Aradan onlarca yıl geçmesine rağmen hâlâ zevkle okunan Sait Faik gibi, Feyyaz Kayacan gibi, Vüsât O. Bener gibi yazarlarımızın yerini klasik haline dönüştürdükleri bile söylenebilir. (IV) Öykücülüğümüzde, modern öykünün etkileyici evrelerini de gözlemlemek de rahatlıkla görebiliriz. (V) Maupassant ve Çehov gibi; Kafkaesk, balık ağları, varoluşçuluk, gerçeküstücü, postmodernist gibi eğilimlerin yansımalarını izleriz sözlerimize göre. (VI) Kuşkusuz bu sözlerle, tümüyle eski altındaki bir öykü gelişim çizgisinden değil dünya öykücülüğünün bir parçası olma serüveninden söz ediliyor.
+
+Bu parça iki paragrafa bölünecek olursa ikinci paragraf numaralanmış cümlelerin hangisinden başlar?"	II	III	IV	V	VI	D	/static/crops/Deneme_Deposu_Paragraf_Denemeleri_2021_2022/Deneme_Deposu_Paragraf_Denemeleri_2021_2022_p0174_q01.png	tier1b_position_page_inline	bronze_clean
+17a5eee9-8e31-53cc-8628-17bc88df879b	fuzzy	BIYOLOJI	Esen Tyt Ayt Biyoloji Soru Bankası	18	Mantarlardaki depo karbonhidrat çeşidi aşağıdakilerden hangisidir?	Nişasta	Selüloz	Glikojen	Kitin	Riboz	B	/static/crops/Esen_Tyt_Ayt_Biyoloji_Soru_Bankası/Esen_Tyt_Ayt_Biyoloji_Soru_Bankası_p0018_q01.png	tier1b_position_page_inline	bronze_clean
+cc226d54-ba0d-53e9-9ad8-0a09407411e8	fuzzy	EDEBIYAT	Edebiyat Denizi Ayt Edebiyat Soru Bankasi	118	"Kardeşim İbrahim bana mermer pulları
+Nasıl devireceğini öğretmişti
+Ben de gün geçmez ki birini patlatmayayım
+Ama siz kaçtıkikeli ve kelimeledekini ve sözlerdekini
+Nasıl sileceğimi öğretmediniz
+Bir kentten daha geçtim
+Buğdayları yakıyorlardı
+Yedikleri pirinçti
+Birbirlerine açılan borular gibi üfürüyorlardı
+Sonra birbirlerinden borular gibi çığırtıyorlardı
+Pirinçler gibi çoğalıyorlardı
+Atlarını yalnız atlarını cana yakın buldum
+Öpüp çıkıp gittim yelelerini
+
+Sezal KARAKOÇ
+
+Bu şiire ilgili olarak
+I. Müzikalite ön plandadır.
+II. Belli bir nazım şekli yoktur.
+III. Dini duyarlılıkla yazılmıştır.
+IV. Nazım nesre yaklaştırılmıştır.
+degerlendirmelerinden hangileri yapılamaz?"	Yalnız I	Yalnız IV	I ve II	II ve III	III ve IV	E	/static/crops/Edebiyat_Denizi_Ayt_Edebiyat_Soru_Bankasi/Edebiyat_Denizi_Ayt_Edebiyat_Soru_Bankasi_p0118_q03.png	tier1b_position_page_inline	bronze_clean
+1e58e1ca-89ba-51f4-8bd4-8f234ad188fe	fuzzy	MATEMATIK	Bilgi Sarmalı-2023-2024-Ayt-Matematik Soru Bankası	315	"Gerçek sayılar kümesinde tanımlı bir f fonksiyonu
+$$f(x) = x^3 - 3x + 11$$
+biçiminde tanımlanıyor.
+Buna göre, f fonksiyonu için,
+I. (-1, 1) aralığında azalandır.
+II. x = -1 apsisi noktada yerel minimum değerine sahiptir.
+III. Birce birdir.
+İfadelerinden hangileri doğrudur?"	Yalnız I	Yalnız II	Yalnız III	I ve II	I ve III	C	/static/crops/Bilgi_Sarmalı-2023-2024-Ayt-Matematik_Soru_Bankası/Bilgi_Sarmalı-2023-2024-Ayt-Matematik_Soru_Bankası_p0315_q04.png	tier1b_position_page_inline	bronze_clean
+2bc1b8b7-cb6a-5c30-996a-26ac26b36407	fuzzy	BIYOLOJI	Esen Aps Biyoloji Soru Bankası	68	"Filogenetik sınıflandırmada âlemden türe doğru gidildikçe;
+
+I. canlı çeşidi,
+II. kromozom sayısı,
+III. protein benzerliği
+
+niceliklerinden hangilerinde azalma olur?"	Yalnız I	I ve II	I ve III	II ve III	I, II ve III	E	/static/crops/Esen_Aps_Biyoloji_Soru_Bankası/Esen_Aps_Biyoloji_Soru_Bankası_p0068_q04.png	tier1b_position_page_inline	bronze_clean
+da74869c-9889-5971-8298-d98f264e46f8	fuzzy	TURKCE	Edebiyat Sokagi Paragraf Yeterlilik Testi 2024	148	"Her zaman (I) kapsamı çatabileceği bir dostu olmalı insanın.
+""Nereden çıktın bu vakitte?"" dememeli bir gece yarısı telaşla yataktan fırladığında; (II) ""Gözünün dilini bilmedi; dinlemle sormadan, söylemeden anlamalı. İhtiyac duyduğunda gidip müstfik göğsüne yaslanabilmeli; kovulmaksa saklanabilirmeli. Kucaklamalı seni güvendiğin (III) sanıp sarılmamalı, kayanan ruhuna merhem olmalı. En mahrem (IV) sırlarını verebilirmeli, en derin yaralarını açıp gösterebilmelidir; göğsünde seninimlenmesin sorgusuz sualsiz. Onda dalavukar arasında bir tek o, sözünü eşip bökmenden söylemeli, yanlış anlaşılamayacağını bilmeli. (V) Yağmur olsa kimsenin tarlasına düşmez, tiplerden uzak durmalı insan.
+
+Bu parçada numaralanmış söz gruplarından hangisi deyim olarak kullanılmamıştır?"	I	II	III	IV	V	A	/static/crops/Edebiyat_Sokagi_Paragraf_Yeterlilik_Testi_2024/Edebiyat_Sokagi_Paragraf_Yeterlilik_Testi_2024_p0148_q03.png	tier1b_position_page_inline	bronze_clean
+9cdee9e8-2aad-50a3-8def-ac20aba4b6c0	fuzzy	MATEMATIK	Esen Tyt  Matematik Soru Bankası	8	"x, y ve z tam sayılar için,
+$$\frac{2x - 3y}{4} = z$$
+olduğuna göre aşağıdakilerden hangisi kesinlikle doğrudur?"	x + y tektir.	y + z çifttir.	x·y çifttir.	y+z tektir.	z tektir.	E	/static/crops/Esen_Tyt__Matematik_Soru_Bankası/Esen_Tyt__Matematik_Soru_Bankası_p0008_q03.png	tier1b_position_page_inline	bronze_clean
+8255fae3-1b96-5c1f-a270-a00f8215cb56	fuzzy	TURKCE	Esen Tyt Türkçe 12 Deneme	27	"Köyümden kız aylarında dedemin ölücülüğüne kurulan iftar meclislerinde şiirler de okunurdu. O uzun gecelerin yaşandığı bir yaz mevsiminde 5 ya da 6 dikan vardı. Bir gün köyünde kurulan iftar onmasında 40'tan fazla insan adım işitmiş, onama art şiirler dinlenmiştir. Hatta 10 yaşma gelgemde 20'den fazla siiri ezbere bilirdim. Rahmetli babam, konuk odasında misafirlerini okuyupca şiirleri söyletmek için önce bana bakar, Ben babamın dinleyenler o şiirler benim zihnime, gönlüme ilmek ilmek işlenirdi. Şiir bu denli etkili olduğu için çocukluk dönemi sonrasında benim o biyolojik dünyaya kaytışa kalmak pek mümkün değildi ve kalamadım da zaten.
+
+Bu parçanın yazarı aşağıdakilerin hangisinden söz etmektedir?"	Şiirinin temel kaynaklarını nerelerin oluşturduğunundan	Çocukluğunun, belleğinde bırakan anılarından	Şiire olan ilgi ve merakının nasıl başladığından	Ali ortamların çocuğun gelişiminde rolünden	Şiirlerinde anlattığı öykülerin nedenlerinden	A	/static/crops/Esen_Tyt_Türkçe_12_Deneme/Esen_Tyt_Türkçe_12_Deneme_p0027_q01.png	tier1b_position_page_inline	bronze_clean
+09f8ef9b-1106-5168-b3c8-47958bfbcfc6	fuzzy	FIZIK	Mikro Orijinal Tyt Fizik Soru Bankası 2025	288	"5. Tatlı su havuzuna bırakılan bir oyuncak sandal, sudan yukarıda dengede kalmaktadır. Bu durumda, sandalı denge konumunda tutan kaldırma kuvvetinin büyüklüğü Fk'dır ve sandalin su batacak hacmi Vb kadardır. Aynı sandal tuzlu suyundaki büyük deniz suyu ile dolu bir havuza bırakıldığında yine yüzer dengelenmektedir.
+
+Buna göre, yeni denge durumunda sandalin su batacak hacmi ve sandala etki eden kaldırma kuvvetinin büyüklüğü ile ilgili aşağıdakilerden hangisi doğrudur?"	Batan hacim Vb'ye eşit, Kaldırma kuvveti Fk'dan büyük	Batan hacim Vb'ye eşit, Kaldırma kuvveti Fk'dan küçük	Batan hacim Vb'den küçük, Kaldırma kuvveti Fk'ya eşit	Batan hacim Vb'den küçük, Kaldırma kuvveti Fk'dan küçük	Batan hacim Vb'den büyük, Kaldırma kuvveti Fk'dan küçük	B	/static/crops/Mikro_Orijinal_Tyt_Fizik_Soru_Bankası_2025/Mikro_Orijinal_Tyt_Fizik_Soru_Bankası_2025_p0288_q03.png	tier1b_position_page_inline	bronze_clean
+c2583526-fb2e-5954-bb15-cae474b40bfc	fuzzy	TURKCE	Aromat Tyt Türkce Model Sorular	70	"Bir sanat eserinde ilk kesfedilen güzellikler ve çabuk bilinmeyenler çünkü daha önce bildiklerimizden en az farklı olanlardır. Vincent'in son resminin gizli detayları benim için artı görünürlük olduğunda eserdeki en başta boğmamı sağlayan güzellikler; alışkanlık kazandığım için duyarsız kalı anlarımın dışına sürüklenmeyi bile. İki göze çarpan güzelliklerden uzaklaşıp yonı bakış açısıyla eseri dinlemeye başladığımda sanati, dirnağıma kankıktan başka bir şey sunmayan hâliyle başa kaldım. Üsluptaki bu anlaşılmalık bana sevecemci bir tin bıraktı. Güzeliliğin gücüyle görünmez olan bu tını, ve son fark ettigimi ama en son fark edeceğim de yine öykü çünkü onu sevmem daha fazla zamanım almıştı.
+
+Bu parçadan aşağıdakilerden hangisine ulaşılabilir?"	Bir sanat eserini vazgeçilmez kılan geçmişten getirdiğimiz duyarlılıklarımızla hâtap etmesidir.	Bir sanat eserini değerlendirebilmekte ilk dikkatimizi çeken, eserin bize tanıdık gelen unsurlarıdır.	Bir sanat eserine aşinalığımız arttıkça onun beğenmemizi sağlayan iki unsurun etkisini yitirir.	Bir sanat eserine sevgimizi uzun soluklu kılan; onun keşfetmesi zor, alışılagelmiş yönleridir.	Bir eserin detaylarını kavramak için harcanan zaman, o eseri ne kadar seveceğimizi de belirler.	E	/static/crops/Aromat_Tyt_Türkce_Model_Sorular/Aromat_Tyt_Türkce_Model_Sorular_p0070_q03.png	tier1b_position_page_inline	bronze_clean
+4eebca2f-cf52-546e-82be-d2152699dfa1	fuzzy	MATEMATIK	Esen Aps Tyt Matematik Soru Bankası	36	"A, B, C sıfırdan farklı doğal sayılardır.
+
+$$ \begin{array}{r} A \mid B \ -\quad 3 \ \hline \phantom{-}\quad 2 \end{array} \quad \begin{array}{r} B \mid C \ -\quad 4 \ \hline \phantom{-}\quad 3 \end{array} $$
+
+Yukarıdaki bölme işlemlerine göre, EBOB(A - 11, B - 3) değeri aşağıdakilerden hangisi olur?"	C	2·C	3·C	4·C	5·C	C	/static/crops/Esen_Aps_Tyt_Matematik_Soru_Bankası/Esen_Aps_Tyt_Matematik_Soru_Bankası_p0036_q05.png	tier1b_position_page_inline	bronze_clean
+6f3433ce-54fb-5fd3-9ec4-5766befa65b9	fuzzy	TURKCE	Edebiyat Sokagi Paragraf Yeterlilik Testi 2024	17	"(I) Alebalıklar, tuna balıkları ve heviz balıklarının derin bir uykuları yoktur, sadece uykular görürlerse ve en ufak bir tehlike karşısında simsiyah gibi harekete geçerlermişdir. (II) Öyle böyle aramışlarım Amazon nehrinde uykuya dalmış soluklar alıp, tahtalıyan bir balık kesilmişlerdir. (III) Bir İngiliz heyeti de Batı Afrika'da, başını suyun bir km yukarısına ipine sokan, sonra suya salverince ok gibi yüzüp giden balığı rastlamıştır. (IV) Balıklar bu felâketi ancak yukarıda tarif edilen, suyu yukarıya yatmak suretiyle atlatabilirler. (V) Balıkların kuru uykuyla, herkes için birçok hayvanın çok uykusunu andır.
+
+Bu parçada numaralanmış cümlelerden hangisinden sonra ""Bu durumun sebebi basittir. Birçok Afrika nehirleri bazen mevsimlere kurur."" cümlesi getirilebilir?"	I	II	III	IV	V	E	/static/crops/Edebiyat_Sokagi_Paragraf_Yeterlilik_Testi_2024/Edebiyat_Sokagi_Paragraf_Yeterlilik_Testi_2024_p0017_q02.png	tier1b_position_page_inline	bronze_clean
+eaaf2027-81e6-5470-8fd6-b4fc624abdb5	fuzzy	FIZIK	Bilgi Sarmalı Ayt 2024 Fizik Soru Bankası	76	"Newton'un hareket kanunlarından üçüncüsü Etki-Tepki Prensibi'dir.
+
+I. Uzay Mekigi
+II. Kayık İlerlemesi
+III. Yürüme
+
+Yukarıdaki hareketlerden hangisi tepki kuvvetleri sayesinde gerçekleşir?"	Yalnız I	I ve II	I ve III	II ve III	I, II ve III	A	/static/crops/Bilgi_Sarmalı_Ayt_2024_Fizik_Soru_Bankası/Bilgi_Sarmalı_Ayt_2024_Fizik_Soru_Bankası_p0076_q05.png	tier1b_position_page_inline	bronze_clean
+013dafcb-0970-52fe-bb81-f037c0f7ee17	fuzzy	MATEMATIK	C1CELL-2025-Matematik Soru Bankası	120	"Birer kenarları ortak olan AKLD karesi ve KBCD dikdörtgeni aşağıdaki gibi verilmiştir.
+
+AKLD karesinin alanı $(x^2 - 4)$ bir² ve $|LC| = (-x^2 + 7x + 9)$ br olarak verilmiştir.
+
+KBCD dikdörtgeninin br² cinsinden alanı, AKLD karesinin bir kenar uzunluğunun br cinsinden değerinden büyüktür.
+
+Buna göre, x yerine yazılabilecek kaç farklı tam sayı değeri vardır?"	7	6	5	4	3	B	/static/crops/C1CELL-2025-Matematik_Soru_Bankası/C1CELL-2025-Matematik_Soru_Bankası_p0120_q03.png	tier1b_position_page_inline	bronze_clean
+39bf97a7-ab18-5091-b5ef-8144f846a83c	fuzzy	KIMYA	345 2025 Ayt Kimya Soru Bankası	213	"Aşağıdaki tepkimelerin kendiliğinden gerçekleştiği bilinmektedir.
+
+$$Zn(k) + Sn^{2+}(suda) \rightarrow Zn^{2+}(suda) + Sn(k)$$
+$$Sn(k) + Cu^{2+}(suda) \rightarrow Sn^{2+}(suda) + Cu(k)$$
+
+Buna göre; Zn, Sn ve Cu metallarının yükseltgenme potansiyelleri arasındaki ilişki aşağıdakilerden hangisinde doğru verilmiştir?"	Zn > Sn > Cu	Zn > Cu > Sn	Sn > Zn > Cu	Cu > Sn > Zn	Cu > Zn > Sn	D	/static/crops/345_2025_Ayt_Kimya_Soru_Bankası/345_2025_Ayt_Kimya_Soru_Bankası_p0213_q01.png	tier1b_position_page_inline	bronze_clean
+b6157e11-1eaa-55fa-8fb5-1da9ab887284	fallback	FEN	Aramot Tyt 2023 Fen Bilimleri Model Sorular	29	"Baş grup elementleri olan X ve Y ile ilgili bilgiler aşağıda verilmiştir.
+
+X: Tamamı metal olan gruptur.
+Y: Tamamı atomik hâlde gaz olan gruptur.
+
+Aynı periyotta bulunan X ve Y elementleri ile ilgili,
+
+I. 1. periyotta bulunabilirler.
+II. 15S ile bileşik oluşturabilirler.
+III. Y'nin değerlik elektron sayısı daha büyüktür.
+
+ifadelerinden hangileri doğrudur?"	Yalnız I	Yalnız III	I ve II	I ve III	II ve III	E	/static/crops/Aramot_Tyt_2023_Fen_Bilimleri_Model_Sorular/Aramot_Tyt_2023_Fen_Bilimleri_Model_Sorular_p0029_q02.png	tier5_qindex_page_inline	bronze_clean
+5e08270d-823a-59de-9230-418f31e8c086	fallback	KIMYA	Aromat Tyt Sosyal Bilimler Model Sorular 2023	59	"'Allahü Teala gençliği Allah'a itaat yolunda geçiren genci sever.' (Hadis-i Şerif)
+
+'Verilen kimseye Allahü Teala kendi gölgesinden başka gölge bulunmayan kıyamet gününde arşının gölgesi altında barındıracaktır. Bunlardan biri de ibadet ederek yetişen gençtir.' (Hadis-i Şerif)
+
+'Allah çocukça (laubali )davranışları olmayan huyuna uygun ve hevesi terk eden, vakar sahibi, olgun genci sever.' (Hadis-i Şerif)
+
+Bu hadiselerde verilmek istenen asıl mesaj aşağıdakilerden hangisidir?"	Hayat içerisindeki gençliğin önemli bir zaman dilimi olduğu	Allah katında olgun ve vakarlı gencin sevildiği	Kıyamet gününün dehşeti	Gençlik yıllarını Allah'a kulluk ederek geçirmenin mükafatının büyük olacağı	İbadet etmenin önemli olduğu	A	/static/crops/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023_p0059_q02.png	tier5_qindex_page_inline	bronze_clean
+364ffff6-bdb9-5933-9f87-ba3dc6f1e1cd	fallback	KIMYA	Aromat 2024 Ayt Fen Bilimleri	40	"Basit Formül - Molekül Formülü
+✓ Bir bileşikteki elementlerin türünü ve atom sayılarının oranını gösteren formüle basit (kaba) formül denir.
+✓ Bileşiği oluşturan atomların gerçek sayısını gösteren formüle molekül formülü denir.
+(Basit formül kütlesi) x k = Mol kütlesi
+(Basit formül) x k = Molekül formülü
+
+KILAVUZ SORU
+Kahve ve çayda bulunan kafein bileşiğinin 0,05 molü 4,8 gram C, 0,5 gram H, 2,8 gram N ve 1,6 gram O içermektedir.
+Buna göre kafeinin molekül formülü aşağıdakilerden hangisidir?
+(H: 1, C: 12, N: 14, O: 16)"	C₄H₅N₂O	C₈H₁₀N₂O	C₈H₁₂N₄O₂	C₁₂H₁₆N₄O₆	C₁₀H₂₀N₅O₈	E	/static/crops/Aromat_2024_Ayt_Fen_Bilimleri/Aromat_2024_Ayt_Fen_Bilimleri_p0040_q02.png	tier5_qindex_page_inline	bronze_clean
+c8b2e90e-8b55-515c-855f-d91e4be581e1	fallback	FEN	Aramot Tyt 2023 Fen Bilimleri Model Sorular	32	Aşağıdaki bileşiklerden hangisi yanlış adlandırılmıştır?	Ca(OH)₂ Kalsiyum hidroksit	K₂S Potasyum sülfür	FeSO₄ Demir sülfat	N₂O₅ Diazot pentaoksit	(NH₄)₂SO₄ Amonyum sülfat	E	/static/crops/Aramot_Tyt_2023_Fen_Bilimleri_Model_Sorular/Aramot_Tyt_2023_Fen_Bilimleri_Model_Sorular_p0032_q02.png	tier5_qindex_page_inline	bronze_clean
+7a89d20c-bec5-5d8f-9974-33963180c6eb	fallback	MATEMATIK	Aromat-2023-Tyt-Matematik Net 30	8	Aşağıdaki sayılardan hangisi $64^2$ sayısına eşit değildir?	$2^{12}$	$4^6$	$8^4$	$16^3$	$32^2$	E	/static/crops/Aromat-2023-Tyt-Matematik_Net_30/Aromat-2023-Tyt-Matematik_Net_30_p0008_q02.png	tier5_qindex_page_inline	bronze_clean
+9564bfe2-6752-564d-bdaa-0b62befaeb4b	fallback	GEOMETRI	Orijinal-Tyt Ayt Geometri Soru Bankası	340	Dik koordinat düzleminde köşe koordinatları A(-2, 4), B(3, 5) ve C(5, 9) olan ABC üçgeninin [BC] kenarına ait kenarortay doğrusunun denklemini aşağıdakilerden hangisidir?	2y - x - 10 = 0	2y + x - 10 = 0	2x - y - 10 = 0	y + 2x - 8 = 0	x + 2y - 6 = 0	C	/static/crops/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası_p0340_q04.png	tier5_qindex_page_inline	bronze_clean
+de6be0c5-cebe-52da-9b4e-927a9e87f048	fallback	SOSYAL	Bilgi Sarmal Tyt Sosyal Bilimler Video Ders Kitabı 2025	112	Dünyada sıcaklığın dağılışı ile ilgili aşağıda verilen bilgilerden hangisi yanlıştır?	Ekvator'dan kutuplara doğru gidildikçe sıcaklık genellikle azalır.	En yüksek sıcaklıklar Yengeç dönencesi çevresindeki kara içinde görülür.	Genelikle Kuzey Yarım Küre'de sıcaklık değerleri Güney Yarım Küre'den daha yüksektir.	Güney Yarım Küre'de sıcaklık, ocak ayında en düşük seviyededir.	Kuzey Yarım Küre'de orta kuşak karalarının batı kıyıları, doğu kıyılarından daha sıcaktır.	E	/static/crops/Bilgi_Sarmal_Tyt_Sosyal_Bilimler_Video_Ders_Kitabı_2025/Bilgi_Sarmal_Tyt_Sosyal_Bilimler_Video_Ders_Kitabı_2025_p0112_q02.png	tier5_qindex_page_inline	bronze_clean
+91d49f6f-449b-5741-ac65-bdee33841e95	fallback	KIMYA	Bilgi Sarmal 2025 Tyt Kimya Video Ders Kitabı	103	"b. Katı - sıvı heterojen karışımlar
+
+Katının sıvı içersinde çözünmeden oluşturduğu karışımlardır. Bu karışımlara özel ad olarak süspansiyon karışımlar denir."	Kum + su	Kan	Ayran	Türk kahvesi		A	/static/crops/Bilgi_Sarmal_2025_Tyt_Kimya_Video_Ders_Kitabı/Bilgi_Sarmal_2025_Tyt_Kimya_Video_Ders_Kitabı_p0103_q02.png	tier5_qindex_page_inline	bronze_clean
+43433945-07e8-5bb9-86d1-56c82c7183d4	fallback	TURKCE	Sure Tyt Turkce Soru Bankası 2023 2024	109	"Sanatçı: İyi bir tiyatronun metinleri ne abartılı olmalı ne de argoya yaklaşmalıdır. Sokaktaki simsiyahı da fabrikadaki iş adamını da izleyip ya da okuyanlar, onları sahnede görmeli. Yani tiyatro yapının hayatın ritmini yakalamalıdır. Bu bakımdan pazara da ve alışveriş merkezlerine benzetilebilir.
+
+Gazeteci: Bu biraz basit olmadı mı?
+
+Sanatçı: Tiyatro yapıtları zaten hayatın kopyasını üretmiyor mu? Sanat, toplumdan uzaktaşı kayıp bir kıtayı keşfetmek değildir.
+
+Aşağıdaki yargılardan hangisinin bu diyaloğda sanatçı sanat anlayışını örtüştüğü söylenebilir?"	İnsana insanı anlatan bir tür olan tiyatro, topluma fil dişi kulaklerinden seslenmelidir.	Kendine has bir imge dünyası oluşturmak, sanatçıların özgürlüğünü tesciller.	Gerçek bir tiyatro eseri, insanlara kimseın söyleyemediği gerçekleri fısıldamalıdır.	Soylu bir sanat olarak gelişme devam eden tiyatronun içerisinde aleladeleş yer yoktur.	Sanatçı, toplumun yapısını eserlerinde yansıttığı ölçüde başarıya ulaşır.	E	/static/crops/Sure_Tyt_Turkce_Soru_Bankası_2023_2024/Sure_Tyt_Turkce_Soru_Bankası_2023_2024_p0109_q02.png	tier5_qindex_page_inline	bronze_clean
+2be14718-64ea-56aa-bd1c-d548fafaaeda	fallback	GEOMETRI	345 2025 Tyt Ayt Geometri Soru Bankası 1	20	"d_1 // d_2
+m(\widehat{ABC}) = 2x
+m(\widehat{EDC}) = 3x + 40^\circ
+m(\widehat{BCD}) = 20^\circ
+
+olduğuna göre, x kaç derecedir?"	30	33	32	34	31	B	/static/crops/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1_p0020_q02.png	tier5_qindex_page_inline	bronze_clean
+da0b9cdb-3764-5277-856c-6bc12fb676d3	fallback	TURKCE	Mikro Orijinal Tyt Paragraf Soru Bankası 2024	186	"Asur kralı Asurbanipal tarafından MÖ 7. yüzyılda Asur Devleti'nin başkenti Ninova'da kurulan Asurbanipal Kütüphanesi, dünyanın en eski kütüphanelerinden biridir. (I) Büyük İskender'in Ninova'daki Asurbanipal Kütüphanesini gördüğü ve ondan ilham aldığı düşünülmektedir. (II) Bilim ve kültür adına verilen çabalar, kendi ülkesinde yazılı eserlerinin yanı sıra Akadlar, Sümerler ve Babilliler tarafından yazılmış binlerce eseri, kütüphaneye konulmuştur. (III) MÖ 612'de Nineva şehri, Babilliler ve Medler tarafından işgal edilince kütüphane yıkılmıştır. (IV) Günümüzde bulunan yazma eserlerin ya yanmış olması dolayısıyla yok olduğu ancak kil tabletlerin bu sayede binlerce yılın korunduğu düşünülmektedir. (V) 19. yüzyılın ortalarında bölgede yapılan kazılar sonucu bulunan 30.000'den fazla kil tablet arasında Gilgameş Destanı'nın yazılı olduğu tabletlerin yer aldığı bu eserler günümüzde Londra'daki Britanya Müzesinde sergilenmektedir.
+
+Bu parçada numaralanmış cümlelerden hangisi düşünceyi akışı bozmaktadır?"	I	II	III	IV	V	E	/static/crops/Mikro_Orijinal_Tyt_Paragraf_Soru_Bankası_2024/Mikro_Orijinal_Tyt_Paragraf_Soru_Bankası_2024_p0186_q01.png	tier5_qindex_page_inline	legacy_v3_unaudited
+fe7de757-a0a4-54f3-90e0-26d080ceecf3	fallback	KIMYA	Aromat 2024 Ayt Fen Bilimleri Model Sorular	7	"Cafer, m kütleli, v sabit hızı ile kendisine doğru gelen vagonu yatay F kuvveti ile 1 sürede durdurmaktadır.
+
+Tezcan ise 2m kütleli, v sabit hızı ile kendisine doğru gelen vagonu 2t sürede durdurmaktadır.
+
+Sürtünmeden dolayı oluşan enerji kayıpları önemsenmediğine göre,
+
+I. Cafer'in vagona uyguladığı ortalama itme kuvveti Tezcan'inkinden küçüktür.
+
+II. Cafer ve Tezcan'ın vagonalara uyguladığı ortalama itme kuvvetleri eşittir.
+
+III. Cafer'in vagona uyguladığı itme, Tezcan'inkinden küçüktür.
+
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız II	Yalnız III	I ve III	II ve III	D		tier5_qindex_page_inline	unverified
+8c3e1946-a01e-5335-9237-bd4ffce3cffb	fallback	TURKCE	Pes Sozcuk ve Cumlede Anlam 2020 2021	16	Aşağıdaki cümlelerin hangisinde 'birleşmek' sözcüğü 'Hiçbir noktada birleşmeyen bu iki insan, çocuğun bu isteğini kabul etmeme noktasında anlaşmış bulunuyorlarsa.' cümlesindeki ile eş anlamda kullanılmıştır?	Taşıma işinin ne ile yapılacağı konusunda birleştiler.	Seninle köşede birleşir, sonra birlikte gideriz.	Bu iki yol köprüde birleşiyorarmış.	İki ayrı madenin birleşmesinden yeni bir madde elde edilir.	Masanın birleşip duran büyük bir örtü örtüldü.	A	/static/crops/Pes_Sozcuk_ve_Cumlede_Anlam_2020_2021/Pes_Sozcuk_ve_Cumlede_Anlam_2020_2021_p0016_q02.png	tier5_qindex_page_inline	bronze_clean
+aa9783a9-a19e-5709-ae30-9ce8a31c0878	fallback	FIZIK	345 2025 Tyt Fizik Soru Bankası	317	"Yarıçapları r, 2r olan K ve L küresel yüzeylerinin merkezlerine, özdeş iki ışık kaynağı yerleştiriliyor.
+
+Buna göre,
+
+I. K küresinin yüzeyine düşen ışık akısı, L yüzeyine düşen ışık akısından azdır.
+II. K küresinin yüzeyinde oluşan aydınlanma şiddeti, L'ninkinden büyüktür.
+III. K küresinin yüzeyine düşen ışık akısı, L yüzeyine düşen ışık akısından fazladır.
+
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız II	Yalnız III	I ve II	II ve III	A	/static/crops/345_2025_Tyt_Fizik_Soru_Bankası/345_2025_Tyt_Fizik_Soru_Bankası_p0317_q02.png	tier5_qindex_page_inline	bronze_clean
+6492d312-e719-5b3d-9301-c8dca3dd68c1	fallback	MATEMATIK	Bilgi Sarmalı-2023-2024-Tyt-Matematik Soru Bankası	71	"Dikdörtgen şeklindeki bir kağıt, ortasından ok yönünde katlandığında 2. durumdaki gibi görünür. 2. durumdaki kağıt, tekrar ortasından ok yönünde katlandığında 3. durumdaki gibi görünür. 3. durumdaki kağıt ortasından bir makas yardımıyla şeklideki gibi kesilir.
+
+Son durumda bütün katı parçalar açıldığında oluşan küçük eş parçaların alanlarının toplamı, büyük eş parçaların alanları toplamının kaçta kaçıdır?"	1/8	1/6	1/5	1/4	1/3	E	/static/crops/Bilgi_Sarmalı-2023-2024-Tyt-Matematik_Soru_Bankası/Bilgi_Sarmalı-2023-2024-Tyt-Matematik_Soru_Bankası_p0071_q05.png	tier5_qindex_page_inline	bronze_clean
+102be69a-8f36-5882-a894-9d433ef3d4d7	fallback	KIMYA	Aromat Tyt Sosyal Bilimler Model Sorular 2023	21	"Dünyanın eksen eğikliği nedeniyle gece - gündüz süreleri ve Güneş ışınlarının düşme açısı değişir.
+
+Buna göre haritada numaralandırılmış merkezlerle ilgili olarak aşağıdakilerden hangisi söylenemez?"	21 Haziran'da en uzun gündüz I numaralı merkezde yaşanır.	II numaralı merkezde 23 Eylül'de gece süresi diğerlerinden daha uzundur.	III numaralı merkezde gece ile gündüz süre farkı 21 Haziran tarihinde diğerlerinden daha azdır.	IV numaralı merkezde 21 Aralıktan sonra günler uzamaya başlar.	V numaralı merkezde 21 Aralıkta gündüz süresi III numaralı merkezen daha kısadır.	E	/static/crops/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023_p0021_q02.png	tier5_qindex_page_inline	bronze_clean
+11a32f76-7570-57be-8cd2-c6fd3726fea9	fallback	KIMYA	Aromat Ayt 2024 Fen Bilimleri Model Sorular Net 30	29	"T °C'de X ve Y gazlarının
+2X(g) + 2Y(g) → K(g) + 2T(g)
+tepkimesine ait deneysel sonuçlar aşağıda verilmiştir.
+
+Deney [X]M [Y]M Hız m/s
+1 5 . 10⁻³ 2 . 10⁻³ 1 . 10⁻²
+2 1 . 10⁻² 2 . 10⁻³ 4 . 10⁻²
+3 5 . 10⁻³ 4 . 10⁻³ 2 . 10⁻²
+
+Verilen bilgilere göre aşağıdaki ifadelerden hangisi yanlıştır?"	Tepkime çok basamaklıdır.	Hız sabiti K'nın değeri 200'dür.	Tepkimenin derecesi ile molekülitesi eşittir.	Hız sabitinin birimi L²/mol².s dir.	[X] = 2 . 10⁻² ve [Y] = 2 . 10⁻² alınırsa tepkime hızı 16 . 10⁻⁴ mol/L.s olur.	E		tier5_qindex_page_inline	unverified
+ba333dcd-d038-5432-b892-467df2cda851	fallback	KIMYA	Aromat 2024 Ayt Fen Bilimleri Net 30	40	"Kahve ve çayda bulunan kafein bileşiğinin 0.05 molü 4.8 gram C, 0.5 g H, 2.8 g N ve 1.6 g O içermektedir.
+
+Buna göre kafeinin molekül formülü aşağıdakilerden hangisidir?
+
+(H: 1; C: 12; N: 14; O: 16)"	C₈H₁₀N₄O	C₈H₁₀N₂O	C₈H₁₀N₂O₂	C₁₂H₁₀N₆O₂	C₁₀H₂₀N₄O₅	E	/static/crops/Aromat_2024_Ayt_Fen_Bilimleri_Net_30/Aromat_2024_Ayt_Fen_Bilimleri_Net_30_p0040_q02.png	tier5_qindex_page_inline	bronze_clean
+dd2c0472-1a9e-542a-a9b6-01e0922efd55	fallback	SOSYAL	Bilgi Sarmal Tyt Sosyal Bilimler Video Ders Kitabı 2025	135	"Rüzgârın hizlerinin azalığı veya bir engelle karşılaştığı yerlerde taşıdığı malzemeleri biriktirerek bazı şekiller oluşturur.
+
+Aşağıdakilerden hangisi bu şekillere örnek verilebilir?"	Lös	Moren	Alüvyon	Yardang	Hamada	A	/static/crops/Bilgi_Sarmal_Tyt_Sosyal_Bilimler_Video_Ders_Kitabı_2025/Bilgi_Sarmal_Tyt_Sosyal_Bilimler_Video_Ders_Kitabı_2025_p0135_q02.png	tier5_qindex_page_inline	bronze_clean
+8386dc10-bfd2-53bd-9058-f63426bf40fb	fallback	KIMYA	Bilgi Sarmal 2025 Tyt Kimya Video Ders Kitabı	60	"Aşağıda bazı olaylardaki değişimler fiziksel veya kimyasal olarak işaretlenmiştir.
+
+I. Gökkuşağı oluşması
+II. CO₂ gazının suda çözünmesi
+III. İyot katısının süblimleşmesi
+IV. Şeker pancarından şeker elde edilmesi
+V. Mumun erimesi
+
+Buna göre hangi olayın değişim türü yanlış işaretlenmiştir?"	V	IV	III	II	I	C	/static/crops/Bilgi_Sarmal_2025_Tyt_Kimya_Video_Ders_Kitabı/Bilgi_Sarmal_2025_Tyt_Kimya_Video_Ders_Kitabı_p0060_q01.png	tier5_qindex_page_inline	bronze_clean
+e2edd67f-a1ce-532c-9e1a-614ab13dc7d0	fallback	MATEMATIK	Aromat-2024-Matematik Net 30	8	"a bir gerçek sayı olmak üzere,
+P(x) = (x - 2)(x² - 6x + a)
+polinomunun yalnız iki farklı gerçek kökü vardır.
+Buna göre, a gerçel sayısının alabileceği değerler toplamı kaçtır?"	17	18	19	20	21	A	/static/crops/Aromat-2024-Matematik_Net_30/Aromat-2024-Matematik_Net_30_p0008_q02.png	tier5_qindex_page_inline	bronze_clean
+ac35db81-d82a-55fa-aacb-e7a03d46fe94	fallback	MATEMATIK	Aromat-2023-Tyt-Matematik Net 30	50	"Annesini ziyaret etmek için yola çıkan Melike, aracını çalıştırdığı anda aracının km sayacı aşağıdaki biçimde görülmektedir.
+
+1 5 2 8 1
+
+Aracın hareketi boyunca km sayacında görülen farklı sayıların %15'inin onlar basamağında '8' olduğu biliniyor.
+
+İlk durumda Melike'nin, bulunduğu noktanın annesinin evine uzaklığı 100 km'den az olduğuna göre, Melike annesinin evine vardığında aracının km sayacı görüntüsü aşağıdakilerden hangisidir?"	1 5 2 8 8	1 5 3 4 0	1 5 3 4 2	1 5 3 4 8	1 5 3 8 0	D	/static/crops/Aromat-2023-Tyt-Matematik_Net_30/Aromat-2023-Tyt-Matematik_Net_30_p0050_q02.png	tier5_qindex_page_inline	bronze_clean
+e344f30c-9b1a-542e-b8e5-ad29e7399326	fallback	EDEBIYAT	Bilgi Sarmal Ayt Edebiyat Video Ders Kitabı 2025	109	"Eserinin pek çok yerinde Türkleri ve Türklüğü öven ; kendini dili en güzel, en açık ve en etkili kullanan kişi olarak tanımlar. Bütün Türk ileri gelen dâhisi Türk, Türkmen, Oğuz, Çiğil, Yağma ve Kıpçakların sözlü edebiyat ürünlerini öğrendiğini belirtirken aynı bütün bu bilgileri kitabında ve uygun bir biçimde sıralayarak düzenlediğini anlatır.
+
+Bu parçada boş bırakılan yere aşağıdakilerden hangisi getirilmelidir?"	Hoca Ahmet Yesevi	Edip Ahmet Yükneki	Kaşgarlı Mahmut	Yusuf Has Hacip	Ali Şir Nevai	A	/static/crops/Bilgi_Sarmal_Ayt_Edebiyat_Video_Ders_Kitabı_2025/Bilgi_Sarmal_Ayt_Edebiyat_Video_Ders_Kitabı_2025_p0109_q02.png	tier5_qindex_page_inline	bronze_clean
+ac7be967-bc6c-5518-94c0-f35498f3d7f7	fallback	TURKCE	Aromat Tyt Türkce Model Sorular	52	"Dünyamız, gerçekten büyük dönüşümlerin yaşanacağı bir değişim çağına giriyor. Öyle ki yaşanacak gelişmeler hiç öngörmediğimiz gibi ya da gelişmelerin hızı ve büyüklüğü biz harete düşürecektir. Üstel (üstel halinde katanarak) ilerleyen teknoloji, bir yandan muazzam bir potansiyel sunarken diğer yandan oluşan bu imkânlar, çok büyük ve yeni sorumluluklar üstlenmemizi gerektirecektir.
+
+Bu parçadan hareketle aşağıdakilerin hangisi çıkarılabilir?"	Her teknolojik gelişme, toplumu olumsuz yönde değiştirir.	Büyük teknolojik hamleler, toplumda her zaman karşılık bulmaz.	Günümüzde değişimler, tarihindeki daha yavaş olmaktadır.	Değişim ve dönüşüm çağı, insana birlikte görev ve işler yükler.	İnsan, teknolojik geleceği öngöremediğinde panik ve kuşku başlar.	A	/static/crops/Aromat_Tyt_Türkce_Model_Sorular/Aromat_Tyt_Türkce_Model_Sorular_p0052_q03.png	tier5_qindex_page_inline	bronze_clean
+53ec5ee3-57ff-52be-b117-267ffa3583d7	fallback	MATEMATIK	Aromat-2024-Matematik Net 30	45	"KILAVUZ SORU
+$$ \lim_{x \to \infty} \frac{x^2 - 5x + 6}{x^2} + \lim_{x \to 0} \frac{x^2 - 25}{x^2 - 5x} $$
+ifadesinin değeri kaçtır?"	\frac{3}{2}	2	\frac{5}{2}	3	\frac{7}{2}	A	/static/crops/Aromat-2024-Matematik_Net_30/Aromat-2024-Matematik_Net_30_p0045_q02.png	tier5_qindex_page_inline	bronze_clean
+d3b80948-154b-5490-8a39-08f85c872933	fallback	EDEBIYAT	Aromat Ayt Edebiyat	13	"Avrupa'daki bilimsel düşüncesi farkı ettiği gibi kendi ülkesindeki bilimlerin durumuna uygun bir giriş yapmış ve bu bunu aşmanın yollarını aramıştır. Keşfiyye-Zunûn'da bilimler hakkında çeşitli toplu bir ansiklopedi hazırlama amacındadır. Bu eserini mukaddimesinde bilgi, bilim, bilimlerin konusu, aynı noktaları, yöntem vb. konuları ele almış; bununla ele alınan çoğunluğu Osmanlı bilimlerinin yazdıkları eserlerden faydalanmıştır.
+
+Bu parçada sözü edilen sanatçı aşağıdakilerden hangisidir?"	Evliya Çelebi	Katip Çelebi	Naima	Sinan Paşa	Mercimek Ahmet	E	/static/crops/Aromat_Ayt_Edebiyat/Aromat_Ayt_Edebiyat_p0013_q02.png	tier5_qindex_page_inline	bronze_clean
+a0a952ff-5ee1-57e2-bc2d-fd6a6df3f44f	fallback	KIMYA	Aromat Ayt 2024 Fen Bilimleri Model Sorular Net 30	53	Aşağıdakilerden hangisi sağlıklı bir insanın solunum sisteminin yapı ve işlevlerinden biri değildir?	Hücrelerin ihtiyacı olan oksijenin dış ortamdan alınması için solunum sistemine gereksinim duyulur.	Hücrelerin ürettiği metabolik atık olan karbondioksit dışarı atılmasını sağlar.	Sağ akciğer üç loplu, sol akciğer iki lobludur.	Solunum gazlarının alveollerde alışverişi difüzyon kurallarına göre gerçekleşir.	Soluk borusu sadece kıkırdaktan oluşur.	E	/static/crops/Aromat_Ayt_2024_Fen_Bilimleri_Model_Sorular_Net_30/Aromat_Ayt_2024_Fen_Bilimleri_Model_Sorular_Net_30_p0053_q02.png	tier5_qindex_page_inline	bronze_clean
+a484ea25-ce2e-5519-9b99-7233b1670e0a	fallback	SOSYAL	Bilgi Sarmal Tyt Sosyal Bilimler Video Ders Kitabı 2025	21	Bu bilgiye göre Medine Sözleşmesi ile ilgili aşağıdakilerden hangisine ulaşılabilir?	Anayasalı bir nitelik taşıdığına	Arabistan'daki ilk yazılı kanun olduğuna	Avrupa hukukuna temel oluşturduğuna	Güçler ayrılığı ilkesini ortaya çıkardığına	Halifelik makamının kurulmasında etkili olduğuna	B	/static/crops/Bilgi_Sarmal_Tyt_Sosyal_Bilimler_Video_Ders_Kitabı_2025/Bilgi_Sarmal_Tyt_Sosyal_Bilimler_Video_Ders_Kitabı_2025_p0021_q01.png	tier5_qindex_page_inline	bronze_clean
+d1278d68-cfb7-5acf-b003-bd2c625556d5	fallback	EDEBIYAT	Aromat Ayt Edebiyat	33	"(I) Nazım Hikmet'in şiirlerinde fütürizm akımının ve Rus şair Mayakovski'nin etkisi görülür. (II) Nazım Hikmet, ""serbest"" ve ""toplumcu gerçekçi"" şiir anlayışının öncülüğünü yapmıştır. (III) Bütün tema ve dil bakımından Türk şiirine büyük bir genişlik getirmiştir. (IV) Eserlerinde son derece başarılı ve canlı bir dil kullanmıştır. (V) Dizeleri anlamlıyı yırkış; nesnel ve somut işgariştirmiş; tüm dizeleri hep büyük harfle başlatmıştır.
+
+Bu paragrafta numaralanmış cümlelerin hangisinde bir yanlışlık yapılmıştır?"	I	II	III	IV	V	E	/static/crops/Aromat_Ayt_Edebiyat/Aromat_Ayt_Edebiyat_p0033_q02.png	tier5_qindex_page_inline	bronze_clean
+a9a78a64-9c6c-56ca-9fba-746c571cb346	fallback	EDEBIYAT	Aromat Ayt Edebiyat	39	Aşağıdakilerden hangisi Tanzimat Dönemi hikâyecilerinden biri değildir?	Namık Kemal	Şamipaşazade Sezai	Ahmet Mithat Efendi	Recaizade Mahmud Ekrem	Ahmet Vefik Paşa	E	/static/crops/Aromat_Ayt_Edebiyat/Aromat_Ayt_Edebiyat_p0039_q02.png	tier5_qindex_page_inline	bronze_clean
+a23fd47d-b092-52f3-8ea2-34dcc069735a	fallback	KIMYA	Aromat Ayt 2024 Fen Bilimleri Model Sorular Net 30	48	"İnsanda destek ve hareket sisteminin işlevleriyle ilgili;
+
+I. kan hücrelerinin üretimini sağlayan hormonları üretime,
+II. iç organlara bağlanma yüzeyi oluşturur,
+III. kalsiyum ve fosfor gibi bazı mineralleri üretime
+
+ifadelerden hangileri yanlıştır?"	Yalnız I	Yalnız II	Yalnız III	I ve III	I, II ve III	E	/static/crops/Aromat_Ayt_2024_Fen_Bilimleri_Model_Sorular_Net_30/Aromat_Ayt_2024_Fen_Bilimleri_Model_Sorular_Net_30_p0048_q02.png	tier5_qindex_page_inline	bronze_clean
+dd4fbd3f-e4c5-54c6-8126-da54caca76df	fallback	KIMYA	Aromat 2024 Ayt Fen Bilimleri Model Sorular	21	Çift yarıklı yapılan girişim deneyinde perde üzerinde aydınlık ve kararan saçaklar oluşmaktadır. Buna göre girişim desenindeki saçak genişliğini artırmak için λ, ışının dalga boyu L, yarık düzlemi ile perde arasındaki uzaklık n, girişimin gerçekleştiği ortamın kırılma indisi niceliklerinden hangilerinin tek başına artırılması yeterli olabilir?	Yalnız λ	λ ve L	Yalnız L	L ve n	Yalnız n	E	/static/crops/Aromat_2024_Ayt_Fen_Bilimleri_Model_Sorular/Aromat_2024_Ayt_Fen_Bilimleri_Model_Sorular_p0021_q02.png	tier5_qindex_page_inline	bronze_clean
+2a1bba7a-8d3a-5e12-aa78-728a9362e1d5	fallback	KIMYA	Aromat Tyt Sosyal Bilimler Model Sorular 2023	54	"İslam'da iman esasları Kur'an-ı Kerim ve hadislerden çıkarılmıştır. Bütünlük arz eder, iman esaslarında zorlama yoktur, açık ve sadedir. Zamana ve mekâna, kişi ve toplumlara göre değişmez; daima sabit kalır.
+
+Bu parçaya göre aşağıdakilerden hangisi iman esasları içerisinde yer almaz?"	İslam inanç esaslarını görecelidir.	İslam inanç esasları açık ve sadedir.	İslam inanç esaslarında zorlama yoktur.	İslam inanç esaslarında her tercihe dayanır.	İslam inanç esasları bir bütünlük; bölünme kabul etmez.	E	/static/crops/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023_p0054_q02.png	tier5_qindex_page_inline	bronze_clean
+f21c0575-3f3d-56ab-8def-f45679a5327e	fallback	FIZIK	Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankası	288	Bir cep telefonu bataryasının üzerinde yazan 2500 mAh değeri, bataryanın hangi niceliğini gösterir?	Potansiyel farkını	Çekilebilecek maksimum akımı	Dayanabildiği maksimum akımı	Depolanmış elektrik yükünü	Elektriksels gücünü	C	/static/crops/Apotemi_2019_2020_Tyt_Ayt_Fizik_Soru_Bankası/Apotemi_2019_2020_Tyt_Ayt_Fizik_Soru_Bankası_p0288_q05.png	tier5_qindex_page_inline	bronze_clean
+2d27449e-c9e7-51ad-aada-db5b49230b81	fallback	FIZIK	345 2025 Tyt Fizik Soru Bankası	113	"Bir evde çalışan bazı elektrikli aletlerin günlük çalışma sürelerini ve güçlerini gösteren tablo aşağıdaki gibidir.
+
+| Alet | Günlük çalışma süresi (saat) | Gücü (Watt) |
+| :--- | :---: | :---: |
+| Elektrikli ısıtıcı | 2 | 2000 |
+| Ütü | 5 | 1600 |
+| Tost makinesi | 1 | 1000 |
+
+Buna göre, bu aletlerin 1 günde harcadıkları toplam elektrik enerjisi kaç kWh tir?"	8	10	12	13	16	E	/static/crops/345_2025_Tyt_Fizik_Soru_Bankası/345_2025_Tyt_Fizik_Soru_Bankası_p0113_q01.png	tier5_qindex_page_inline	bronze_clean
+3f4d2515-42ac-5540-bbee-33f874b832a6	fallback	MATEMATIK	Aromat-2023-Tyt-Matematik Net 30	62	Evinde 4 tanesi kokulu ve 3 tanesi kokusuz mum bulunan Şermin, bu mumlardan rastgele ikisini yakmak istiyor. Buna göre; Şermin'in yakacağı bu iki mumdan birinin kokulu, diğerinin kokusuz mum olma olasılığı kaçtır?	5/7	4/7	3/7	2/7	1/7	E	/static/crops/Aromat-2023-Tyt-Matematik_Net_30/Aromat-2023-Tyt-Matematik_Net_30_p0062_q02.png	tier5_qindex_page_inline	bronze_clean
+36b4027d-8e3c-535b-a9f6-543860ef5743	fallback	KIMYA	Aromat 2024 Ayt Fen Bilimleri Net 30	47	"Aşağıda sağlıklı bir insanın göz ile ilgili bazı yapıları verilmiştir.
+
+I. Kornea
+II. İris
+III. Göz merceği
+IV. Camlı sıvı
+V. Kör nokta
+
+Bu yapılardan hangisinin yeri yanlış gösterilmiştir?"	I	II	III	IV	V	A	/static/crops/Aromat_2024_Ayt_Fen_Bilimleri_Net_30/Aromat_2024_Ayt_Fen_Bilimleri_Net_30_p0047_q02.png	tier5_qindex_page_inline	bronze_clean
+f5def824-e5c0-56e4-83b0-42213302d71d	fallback	KIMYA	Aromat 2024 Ayt Fen Bilimleri Net 30	41	Aşağıdaki bileşiklerden hangisi yanlış adlandırılmıştır?	CH₃ - CH - CH - CH₂ - CH - CH₃ (altlarda sırasıyla CH₃, CH₃, C₂H₅) 2, 3, 5-trimetil heptan	CH₃ - CH - CH = CH - CH₂ - CH₃ (ikinci C'nin altında CH₃) 2 metil 3 heksen	CH₃ - C ≡ C - CH₂ - CH = CH₂ 1-heksen - 4-in	(Siklopentan halkası ve bir metil grubu) 3-metil siklopentan	(Benzen halkası, üstte CH₃, sağda OH) 1-hidroksi-2-metil benzen	E	/static/crops/Aromat_2024_Ayt_Fen_Bilimleri_Net_30/Aromat_2024_Ayt_Fen_Bilimleri_Net_30_p0041_q02.png	tier5_qindex_page_inline	bronze_clean
+97e7c609-3978-5c5d-bfbc-46d8265e3b89	fallback	KIMYA	Aromat Tyt Sosyal Bilimler Model Sorular 2023	27	Japonya, Singapur, İngiltere ve Andorra gibi gelişmiş ülkelerde ortalama yaşam süresi oldukça uzundur. Buna göre bu ülkelerin nüfusuyla ilgili olarak aşağıdakilerden hangisi doğrudur?	Genç nüfus oranı fazladır.	Üçüncül ekonomik faaliyetlerde çalışanlar azdır.	Doğum ve ölüm oranları azdır.	Nüfus artış hızı fazladır.	Sanayi ürünleri ithalatı fazladır.	D	/static/crops/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023_p0027_q02.png	tier5_qindex_page_inline	bronze_clean
+5f8a1b9b-8375-5546-9b72-bd40951fd18a	fallback	TURKCE	Sure Tyt Turkce Soru Bankası 2023 2024	257	"I. Salonun lüks bölümünde genç iki adam belirdi.
+II. Saat dokuz olduğu hâlde tiyatro salonu daha dolmamıştı.
+III. Ayakta durup salonu gözden geçirildi.
+IV. Arkasına yaslanıp, hafifçe esneyerek eliyle ağzını kapadı.
+V. Sonra kısa kesmiş olmak için amcasının oğlunu tanıttırdı.
+
+Numaralanmış cümlelerin hangisinde ek eylem vardır?"	I	II	III	IV	V	D	/static/crops/Sure_Tyt_Turkce_Soru_Bankası_2023_2024/Sure_Tyt_Turkce_Soru_Bankası_2023_2024_p0257_q01.png	tier5_qindex_page_inline	bronze_clean
+8bb4c59e-1d04-5bf6-9572-7a5e5484b97d	fallback	MATEMATIK	Aromat-2023-Tyt-Matematik Net 30	51	"Örüntü: Bilinen İki Büyüklüğün Farklı Yüzdeliklerini Kullanma
+
+Bir A sayısının %x'i ile B sayısının %y'si C sayısına eşitse, A · x = B · y = C · 100 eşitliği sağlanır.
+
+60 sayısının, 300 sayısının %20'si iken 240 sayısının %25'ine eşittir.
+
+300 · 20 = 240 · 25 = 60 · 100
+
+KILAVUZ SORU
+
+Bir çerezci elindeki fındığın %45'ini 30 eş pakete, geriye kalanını 50 eş pakete bölmüştür.
+
+Paketlerden ağır olanında 150 gram fındık olduğuna göre, hafif olanında kaç gram fındık vardır?"	110	120	130	140	150	A	/static/crops/Aromat-2023-Tyt-Matematik_Net_30/Aromat-2023-Tyt-Matematik_Net_30_p0051_q02.png	tier5_qindex_page_inline	bronze_clean
+0b00af22-2ddc-53e1-85e1-e0458f8d4cf4	fallback	SOSYAL	Bilgi Sarmal Tyt Sosyal Bilimler Video Ders Kitabı 2025	188	Dua kavramı, Allah'ın yüceliğini kabul ederek O'na yönelen kulun istekleri iletmesi, Onun lütuf ve yardımını dilemesi olarak tanımlanmaktadır. Bu tanıma göre dua eden bir insan için; I. İkram ve destek beklemektedir. II. Aczini/ayıbını kabul etmektedir. III. Dileklerini arzetmektedir. düşüncelerinden hangilerinin doğru olduğu söylenebilir?	Yalnız I	I ve II	I ve III	II ve III	I, II ve III	A	/static/crops/Bilgi_Sarmal_Tyt_Sosyal_Bilimler_Video_Ders_Kitabı_2025/Bilgi_Sarmal_Tyt_Sosyal_Bilimler_Video_Ders_Kitabı_2025_p0188_q01.png	tier5_qindex_page_inline	bronze_clean
+8fed6f77-7fa0-50bc-8a4c-1dec181b8e98	fallback	KIMYA	Aromat 2024 Ayt Fen Bilimleri Net 30	36	Aşağıdaki bileşiklerden hangisinde altı çizili elementin yükseltgenme basamağı yanlış verilmiştir?	K₂MnO₄ +6	HCN +2	CaC₂O₄ +4	K₂O₂ -1	K₂Cr₂O₇ +6	E	/static/crops/Aromat_2024_Ayt_Fen_Bilimleri_Net_30/Aromat_2024_Ayt_Fen_Bilimleri_Net_30_p0036_q02.png	tier5_qindex_page_inline	bronze_clean
+7677fcc2-94f0-520a-8de6-db54f915a5c1	fallback	KIMYA	Aromat Tyt Sosyal Bilimler Model Sorular 2023	19	"• Egemenlik kayıtsız şartsız milletindir.
+• Özgürlüğün, eşitliğin, adaletin dayanak noktası ulusal egemenliktir.
+
+Atatürk'ün bu ifadeleri onun hangi ilkesiyle ilgilidir?"	Cumhuriyetçilik	Devletçilik	Milliyetçilik	Laiklik	Halkçılık	E	/static/crops/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023/Aromat_Tyt_Sosyal_Bilimler_Model_Sorular_2023_p0019_q02.png	tier5_qindex_page_inline	bronze_clean
+53476bb4-a56d-5338-898f-5bdf2e598e97	fallback	TURKCE	Edebiyat Sokagi Dil Bilgisi Soru Bankasi 2024	118	"2021 TYT
+(I) Süper kahramanların çizgi romanlarda güçlerine kavuşmaları, genellikle belli başlı şekillerde olmaktadır. (II) Bilinmeyen bir dünyadan ya da doğudan uyanıp gelen insanüstü güce sahip süper kahraman- lar, en yaygın bilinen örneklendirlerdir. (III) İkinci sıradaaki radyoaktif et- ki sonucu güçlerine kavuşan süper kahramandır. (IV) Radyoaktif bir hayvan tarafından ısırılan karakter, bir süper kahramana dönüşüp onu ısırılan hayvanın özelliklerine sahip olur. (V) Başvurulan yöntemlerden biri diğeri de deney kazaları sonucu ortaya çıkan kahramandır.
+
+Bu paragrafta numaralanmış cümlelerle ilgili aşağıdakilerden hangisi yanlıştır?"	I. cümlenin öznesi, belirli isim tamlamasıdır.	II. cümlenin öznesi, sıfat tamlamasıdır.	III. cümlenin yüklemi, sıfat tamlamasıdır.	IV. cümlenin öznesi, belirsiz isim tamlamasıdır.	V. cümlenin yüklemi, sıfat tamlamasıdır.	C	/static/crops/Edebiyat_Sokagi_Dil_Bilgisi_Soru_Bankasi_2024/Edebiyat_Sokagi_Dil_Bilgisi_Soru_Bankasi_2024_p0118_q01.png	tier5_qindex_page_inline	bronze_clean
+862ff6ac-7ece-53fc-b939-fd635de8b22a	fallback	EDEBIYAT	Aromat Ayt Edebiyat	56	"Metinlerarasılık, postmodern edebiyatta bir eserin I yazma sürecinin okura doğrudan anlatılması veya II metinde ipuçları aracılığıyla sezdirilmesidir. Yazar gerçek dünyayı, bilincaltı ve kurmacayı bir araya getirerek III metni okura sunar. Bu durum rüya içinde rüya görmek gibidir. Okur böylece metinde ve hayatta her şeyin IV kurmaca olduğu düşüncesine kapılır. V
+
+Bu numaralanmış cümlelerin hangisinde bilgi yanlış yapılmıştır?"	I	II	III	IV	V	E	/static/crops/Aromat_Ayt_Edebiyat/Aromat_Ayt_Edebiyat_p0056_q02.png	tier5_qindex_page_inline	bronze_clean
+99b4ba10-2753-515c-8c73-b6c3d3d7b925	fallback	KIMYA	Aromat 2024 Ayt Fen Bilimleri	16	Bir yarış arabası yarıçapı 200 m olan sürtünmeli yatay bir viraja 40 m/s hızla giriyor ve emniyetle dönerek yarışa devam ediyor. Buna göre yarış arabası ile yol arasındaki sürtünme katsayısı en az kaçtır? (g = 10 m/s² alınır.)	0.2	0.4	0.5	0.6	0.8	E	/static/crops/Aromat_2024_Ayt_Fen_Bilimleri/Aromat_2024_Ayt_Fen_Bilimleri_p0016_q02.png	tier5_qindex_page_inline	bronze_clean
+145bc9df-ab82-57e0-bff1-85d943346de2	fallback	TURKCE	Aromat Tyt Türkce Model Sorular	12	"Kimileri yenilgi yıkar, kimileriyle zaferle küçülür, bayılaşırlar; büyüklükten hem yenilgiyi hem de zaferi kabullenebilen kişilerde yaşar.
+
+Bu cümlede asıl anlatılmak istenen aşağıdakilerden hangisidir?"	Büyüklük olarak görülen elde edilmiş zaferlerin insanı küçültebileceği	Yenilgi yaşayan insanların uzun süre bu yenilgilerinin sarsıntısı altında kaldığı	Başarıların getirdiği hazza bazı insanların olgunlukla yaklaşamadığı	İnsanın yaşamında karşılaştığı olumlu ve olumsuz durumları olduğu gibi benimsemesi gerektiği	Kazanılan zaferleri, insanın içindeki hırsın ve kibrin oğersizleştirildiği	E	/static/crops/Aromat_Tyt_Türkce_Model_Sorular/Aromat_Tyt_Türkce_Model_Sorular_p0012_q02.png	tier5_qindex_page_inline	bronze_clean
+e7fb7b69-d580-5b59-bc92-fb91161952f1	fallback	EDEBIYAT	Bilgi Sarmal Ayt Edebiyat Video Ders Kitabı 2025	9	"Sanat eseri; temelde özgünlük esasına dayanır onun benzeri yoktur, biriciktir. Zanaat eserinin ise pek çok benzeri vardır. Zanaatkâr aynı ürünü birçok kez tekrarlar, sanatçı ise her defasında özgün bir eser ortaya koymaya çalışır. Geniş anlamıyla zanaat, bir iş için kullanılan çığra aktarılardan değişmiş yöntemlerle defalarca üretilmiş olmasıyla kazanılan el becerisi ve hünnerdir.
+
+Buna göre aşağıdakilerden hangisi sanat eseri sayılmaz?"	Picasso'nun 1937 tarihli eseri Guernica tablosu	Önemli Antik Yunan heykellerinden biri olan Afrodit heykeli	Benzerleri binlerce kez yapılmış Antik Yunan seramikleri	Leonardo da Vinci tarafından yapılan Mona Lisa tablosu	Michelangelo'nun yaptığı Davut heykeli	E	/static/crops/Bilgi_Sarmal_Ayt_Edebiyat_Video_Ders_Kitabı_2025/Bilgi_Sarmal_Ayt_Edebiyat_Video_Ders_Kitabı_2025_p0009_q02.png	tier5_qindex_page_inline	bronze_clean
+5b04204e-0457-5f6c-b1dd-9d40b4c367d1	fallback	KIMYA	Aromat Ayt 2024 Fen Bilimleri Model Sorular Net 30	9	$q_1$ ve $q_2$ yüklü noktasal cisimlerin aralarındaki uzaklık $d$ ise cisimlerin birbirine uyguladığı elektriksel kuvvetin büyüklüğü F olmaktadır. Yüklerin her ikisinin de büyüklüğü 2 katına, aralarındaki uzaklık 3 kata çıkarılırsa elektriksel kuvvetin büyüklüğü kaç F olur?	\frac{1}{9}	\frac{2}{9}	\frac{4}{3}	\frac{2}{3}	\frac{4}{9}	A	/static/crops/Aromat_Ayt_2024_Fen_Bilimleri_Model_Sorular_Net_30/Aromat_Ayt_2024_Fen_Bilimleri_Model_Sorular_Net_30_p0009_q02.png	tier5_qindex_page_inline	bronze_clean
+618c8bf2-ebd8-543a-acee-52951993c419	v3.5_residual	KIMYA	Bilgi Sarmal 2024 Tyt Kimya Soru Bankasi	294	Polisitropin ve GTF ile ilgili olarak aşağıdaki ifadelerden hangisi doğru?	Basit bir hormon	Kronik bir enfeksiyonun etkilerini azaltır	Kronik bir enfeksiyonun etkilerini artırır	Kronik bir enfeksiyonun etkilerini azaltır ve genel destekleyici etki gösterir	Kronik bir enfeksiyonun etkilerini artırır ve genel destekleyici etki gösterir	D			legacy_v3_unaudited
+f11d0149-caf6-593d-8ebd-03cb45ced7f6	v3.5_residual	GEOMETRI	Mikro Orijinal-Tyt Ayt-Geometri Soru Bankası 2	129	ABC üçgenünde A = 90°, AB = 3 cm, BC = 5 cm ise, AC uzunluğu kaç cm'dir?	4 cm	3 cm	5 cm	6 cm	7 cm	A			legacy_v3_unaudited
+c81c64d2-d7f4-536f-8931-38915d3be447	v3.5_residual	MATEMATIK	Pes PRofesyonel Anlam ve Problem Soruları 2020 2021	220	13. Tablo verildiği göre, aşağıdaki ifadelerden hangisi doğrudur?	a + b = c	a + b = c + d	a + b = c + d + e	a + b = c + d + e + f	a + b = c + d + e + f + g	A			legacy_v3_unaudited
+67776930-8b8b-5776-85eb-f593a4b7f8e6	v3.5_residual	GEOMETRI	CAP-2022-2023-TYT AYT-Geometri Soru Bankası	313	Soru: Bir kubun yüzeyi 600 cm² olduğuna göre, bu kubun hacmi kaç cm³'dür?	200	216	250	270	288	C			legacy_v3_unaudited
+ec60dbcb-b0c4-57a8-ab21-57c17d9b2002	v3.5_residual	TURKCE	Bilgi Sarmal  Tyt Türkce Soru Bankası	251	Bir nöktede iki farklı yoldan geçen bir araç, yolun her iki tarafında aynı hızla ilerliyor. Aşağıdaki ifadelerden hangisi, bu durumda araçın hızını ifade eder?	v = s/t	v = 2s/t	v = s/2t	v = 2s/2t		A			legacy_v3_unaudited
+7a242bee-0ee3-52af-ab1f-2b4601637c15	v3.5_residual	MATEMATIK	C1CELL-2025-Matematik Soru Bankası	358	Bilinçli İntegralde Değişken Değiştirme Kullanımı	a^2	a^2 + 1	a^2 - 1	a^2 + 2a	a^2 - 2a	A			legacy_v3_unaudited
+662573ba-2587-5ec1-8538-51088521db94	v3.5_residual	TURKCE	Cap Tyt Dil Bilgisi Konu Anlatımlı Soru Bankasi	327	Adapte bir uygulamada hangi pozisyonlarda doğrudan algılama faktörleri kullanılır?	Hipersensitif bina terapisi için direksiyon problemleri	Bu oyun levhalar (düzeyleri), verilen seviyeler ve oyun levhaları	Bu levha doğru bir şekilde bir döner mekanizmasıyla	Sensitif teşhis amacıyla, sensör hattı ile bir hizmet	Toplum teknolojileri arasında genel olarak, ameliyatların güvenliğiyle ilgili algılama faktörleri kullanılır.	A			legacy_v3_unaudited
+f5429d1a-0bca-5bd6-9375-0db3789c21cb	v3.5_residual	TARIH	Esen Ayt Tarih Soru Bankası	35	Bu ekoistematik sistemlerde, aşağıdaki dörtten hangisi eksikdir?	Plastik Düşenler	Toz Düşenler	Ara Düşenler	Tur Düşenler	Plastik Düşenler	D			legacy_v3_unaudited
+b90b7bdb-5035-5a3b-843c-145fc481d2f5	v3.5_residual	SOSYAL	Bilgi Sarmali Ayt Sosyal Bilimler Brans Denemesi 2021 2022,	29	1. İngilizce dilinde kullanılan bir kelime olan 'butterfly' Türkçe'de hangi kelime ile karşılık gelir?	kelebek	karanfil	kabak	kabakum	kabakum	A			legacy_v3_unaudited
+f182845c-4fd4-54dd-a678-64b26da77936	v3.5_residual	EDEBIYAT	Vaf Ayt Turk Dili ve Edebiyatı Deneme 2022	23	14. Aşağıdaki ifadelerden hangisinin sonucu 1'dir?	x^2 - 1	x^2 + 1	x^2 - 2x + 1	x^2 + 2x + 1	x^2 - 2x - 1	C			legacy_v3_unaudited
+2ec3ee7f-08d3-5581-a307-683161b8a4aa	v3.5_residual	MATEMATIK	2019-2020-ACİL-AYT-Matematik Soru Bankası	376	1. $x^2$-e отношении гром. 12x в какой термин входит?	A1 - 4x	B1 - 4x^2	C1 4x	D1 4x^2	E1 4x^3	A			legacy_v3_unaudited
+7a946a2e-a68a-5f38-b992-c3988d1405c8	v3.5_residual	GEOMETRI	Orijinal-2024-Geometri Soru Bankası	369	ABC üçgenünden origine göre çevrimsel döndürme uygulandığında A(-1, 1) noktasının yeni konumunu belirleyiniz.	A(-1, 1)	A(1, -1)	A(-1, -1)	A(1, 1)	A(0, 0)	B			legacy_v3_unaudited
+80efa4bc-f1b0-5a2f-a97c-d122bf8b31be	v3.5_residual	FIZIK	Bilgi Sarmalı Tyt 2024 Fizik Soru Bankası	100	"Doğrusal bir yolda hareket eden bir hareketlinin konum-zaman grafiği şekil gibidir.
+
+Buna göre,
+I. (0-20) saniye aralığında ortalama sürati 2,5 m/s'dir.
+II. (0-20) saniye aralığında ortalama hızı -1,5 m/s'dir.
+III. (0-5) saniye aralığında yer değiştirmesi 50 metredir.
+yargılarından hangileri doğrudur?"	Yalnız I	Yalnız II	Yalnız III	I ve II	II ve III	B	/static/crops/Bilgi_Sarmalı_Tyt_2024_Fizik_Soru_Bankası/Bilgi_Sarmalı_Tyt_2024_Fizik_Soru_Bankası_p0100_q02.png	tier1b_position_page_inline	legacy_v3_unaudited
+e254df8d-fa1d-5ecb-95a4-269c563ac887	v3.5_residual	MATEMATIK	Mikro Orijinal-2024-Tyt-Matematik Soru Bankası	323	"Test 2
+
+2. Aşağıdaki ifadelerden hangisi tam olarak doğru ifade edilmiştir?"	A) $x^2 + y^2 = (x + y)^2$	B) $x^2 - y^2 = (x - y)^2$	C) $x^2 + y^2 = (x - y)^2$	D) $x^2 - y^2 = (x + y)^2$	E) $x^2 + y^2 = (x + y)^2$	D			legacy_v3_unaudited
+afd49dfc-caee-5113-9f09-63e1ceee33e0	v3.5_residual	EDEBIYAT	Edebiyat Sokagi Ayt Edebiyat Soru Bankasi	137	"Hiciv, şairin dilinde hedefini vurmaya hazırlanan zehirli bir ok gibidir. Avını gözetleyen bir avcı, nasıl ilk fırsatta silahını ateşleyerek heccat za mana ve zemîn müsâil olunca muhalifini le-nâ-hilde hırpalan baştan burnuna da yetineymek üzere telaf eder. Meddah, öldürdüğü kimseyi gökyüzüne çıkardı gibi heccat da kötülüğünü adamı yerin dibine geçirir. Meddahların gösterilerini kahvehanelerde, saray ve konaklarda yapması, hikâyelerini buralarda anlatmalarıdır. Bazan de öyle olur ki kişi âdeta kasnınnı heccat da o zaman hiciv denilen kağıtçı arı eline muhtacını kıçmaya başlar.
+
+Aşağıdaki şiirlerden hangisi hiciv örneği gösteremez?"	"Nidelüm çev sunarsa sana şerbet sana zehr
+Bu cihan böyle olur gâh bana gâh sana"	"Çok da mağzur olma kim meyhâne-i lâikbâle
+Biz hezâran mest-i mağrûrun humârın görmüşüz"	"Gözlerin obnâ-yı âcemoñ o kadar yıldı ki
+İstemiş ben Fâtihâ tek kalmasınlar taşını"	"Şiîler pençe-i kahrından olurkan lerzân
+Benî bir gözleri âniyâ zebrini etî felek"	"Zülmü alıkoyayamam, zâlimi asla sevevem
+Gelenin keyfi için geçmişe kalkıp sövevem"	E	/static/crops/Edebiyat_Sokagi_Ayt_Edebiyat_Soru_Bankasi/Edebiyat_Sokagi_Ayt_Edebiyat_Soru_Bankasi_p0137_q01.png	tier1_page_inline	legacy_v3_unaudited
+d7861d67-b4c3-5290-9be7-9c4f7c682c2c	v3.5_residual	TURKCE	Pes Tyt Ayt Paragraf Soruları 2020 2021	271	4. Sayılar arası geçişlerde kullanılan en temel işlemlerden hangisi değildir?	Toplama	Çıkarma	Çarpma	Bölme	Karekök alma	E			legacy_v3_unaudited
+5120cf8f-4ae4-551d-8a15-47d71c950f56	v3.5_residual	MATEMATIK	2020-2021-ACİL-AYT Matematik Soru Bankası	96	14. Bir suyun kapasitesi 100 litre olan depo, suyun %20'si suyun kapasitesinin %10'u kadar bir pompa ile pompalanarak depoya dökülüyor. Bu pompa ile depoda kaç litre su kalıyor?	20 litre	40 litre	60 litre	80 litre	100 litre	C			legacy_v3_unaudited
+7dd1758f-7d51-51c3-805b-255cd14d338a	v3.5_residual	FIZIK	Esen Aps Fizik Soru Bankası 3	185	Haber gölge ve yar gölge (shadow of the light source) programlamada hangi pozisyon?	A) yarım yarım	B) tam yarım	C) tam	D) yarım	E) yarım yarım	C			legacy_v3_unaudited
+9797b7b0-540f-5edc-991a-d68dd9dc4305	v3.5_residual	MATEMATIK	345 2024 Ayt Matematik Soru Bankası	24	"Aşağıdaki tekrar eden halleri seçin ve sırayla yazınız.
+
+1. $x^2 + 2x + 1 = 0$
+2. $x^2 - 2x + 1 = 0$
+3. $x^2 + 2x - 1 = 0$
+4. $x^2 - 2x - 1 = 0$
+5. $x^2 + 2x + 2 = 0$"	1, 2, 3	1, 2, 4	1, 3, 5	2, 3, 4	2, 3, 5	A			legacy_v3_unaudited
+023f09ca-6b96-5c32-89f7-7490e53ceeb6	v3.5_residual	SOSYAL	345 2025 Tyt Sosyal Bilgiler Soru Bankası	188	Bu soru, TADIN'da bulunan bir sorudur. Soru, bir haritada verilen bilgileri kullanarak bir soru soruyor. Haritada, bazı bölgelerin isimleri ve bazı noktaların koordinatları verilmiştir. Soru, bu bilgileri kullanarak bir soru soruyor.	Amerika	Avrupa	Asya	Avustralya	Afrika	C			legacy_v3_unaudited
+fa44529b-52ff-5a2b-b40d-c4cb15270aca	v3.5_residual	SOSYAL	krallar karması tyt sosyal bilimler branş denemesi-14	7	"Aristoteles'in ifadesiyle ""doğal olarak bilmeyi isteyen insan"" hayatını kuşatan varlığı sürekli olarak merak etmiştir. Varlığın ne olduğu sorusu, felsefenin temel sorularından biri olmuştur. Felsefe de var olan şeyleri, onların temellerini, derinliklerini ve aralarındaki bağı bir bütün olarak açıklamak ister.
+Bu parçada aşağıdaki felsefe alt dallarının hangisinden bahsedilmektedir?"	Epistemoloji	Metafizik	Etik	Estetik	Ontoloji	E	/static/crops/krallar_karması_tyt_sosyal_bilimler_branş_denemesi-14/krallar_karması_tyt_sosyal_bilimler_branş_denemesi-14_p0007_q04.png		legacy_v3_unaudited
+7762f022-1783-43d3-8235-a6fc89f25666	v3.5_residual	SOSYAL			Aşağıdakilerden hangisi temel hak ve özgürlüklerden biri değildir?	Yaşama hakkı	Mülkiyet hakkı	Eğitim hakkı	Vergi muafiyeti	Düşünce özgürlüğü	D			legacy_v3_unaudited
+2d50d436-c0f5-5f25-ab7c-b937bd161a32	v3.5_residual	GEOMETRI	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	219	Bir tabakta 2 cm, bir diğer tabakta 1 cm yüksekliğindeki iki farklı boyutlu banyo kaplaması bulunmaktadır. Bu kaplamaların toplam alanı 1000 cm²'dir. Buna göre, bu kaplamaların genişliği kaç cm'dir?	10	15	20	25	30	B			legacy_v3_unaudited
+22cb52e1-4b59-5084-8191-919d3ef22886	v3.5_residual	MATEMATIK	2023-2024-ACİL-TYT-Matematiğin İlacı	67	a ve b pozitif tam sayılar olmak üzere, A = a + b ve B = a - b olmak üzere A ve B'nin toplamı 100'dür. Bu durumda A ve B'nin farkı kaçtır?	20	40	60	80	100	B			legacy_v3_unaudited
+d22f1ad7-74dc-5511-b526-d3a66ff2dcdf	v3.5_residual	GEOMETRI	2020-2021-Acil-Tyt Ayt Geometrinin ilacı Soru Bankası	112	ABCD dörtgeni veriliyor. ACD = 80° ve BCD = 120° olduğuna göre, ABC açısının ölçüsü kaç derecedir?	20°	30°	40°	50°	60°	D			legacy_v3_unaudited
+28203591-6440-5672-b2f1-c17d3641cf88	v3.5_residual	GEOMETRI	Orijinal-Tyt Ayt Geometri Soru Bankası	403	"Dikdörtgen biçimindeki arsanın bir köşesine dikdörtgenler prizması şeklinde bir konteyner yerleştirilmiştir. Konteynerin A, B ve C köşelerinden sırasıyla arsanın K, L ve M köşelerine gergin ipler bağlanmıştır.
+
+[AK] = 4 metre, |BL| = 6 metre, |CM| = 5 metre olduğuna göre; konteynerin yüksekliği kaç metredir?"	√5	2√2	3	3√3	3√5	A	/static/crops/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası/Orijinal-Tyt_Ayt_Geometri_Soru_Bankası_p0403_q01.png	tier1_page_inline	legacy_v3_unaudited
+b75510e4-e4c3-5cba-a902-50d6a5c44b30	v3.5_residual	MATEMATIK	Bilgi Sarmalı-2022-2023-Tyt-Problemler Soru Bankası	140	2021 yılında Türkiye'de 1000000000 TL'lik bir yatırım yapılmıştır. Bu yatırımın %10'unu 2022 yılında, %20'unu 2023 yılında ve geri kalanını 2024 yılında yapmıştır. 2024 yılında yapılan yatırım miktarı kaç TL'dir?	1000000000 TL	2000000000 TL	3000000000 TL	4000000000 TL	5000000000 TL	A			legacy_v3_unaudited
+fc991ae0-b3c0-5581-b460-f914f3e84953	v3.5_residual	TURKCE	Pes Tyt Ayt Paragraf Soruları 2020 2021	97	11. Aşağıdaki cümlelerden hangisi cümle yapısında hata içermez?	A) Bu evdeki köpeklerin her biri bir köpek gibi.	B) Dışarıda dönerken dışarıdan dışarıya giden bir köpek gibi.	C) Köpekler yabancıların evlerinde dışarıdan dışarıya giden bir köpek gibi.	D) Sınırsız vurudan vurudan dışarıdan dışarıya giden bir köpek gibi.	E) Sınırsız vurudan vurudan dışarıdan dışarıya giden bir köpek gibi.	A			legacy_v3_unaudited
+6b4d9ae6-5fd1-59be-afa5-8f9eddf04371	v3.5_residual	TURKCE	Bilgi Sarmal Tyt Türkçe Soru Bankası 2024	258	1. Tüylerin en uzun olduğu bölgede hangi hayvanlar yaşamaktadır?	A) Koyun ve keçi	B) Keçi ve domuz	C) Keçi ve domuz	D) Keçi ve domuz	E) Keçi ve domuz	A			legacy_v3_unaudited
+7d42bf3d-a88c-5c41-b106-2dea2db13556	v3.5_residual	KIMYA	Apotemi Tyt Ayt Kimya 2019-2020	246	1. 0.1 M HCl çözeltisi 100 mL'de 0.1 M HCl çözeltisi 10 mL'de kaç dilimde bulunur?	10 dilimde	1 dilimde	100 dilimde	1000 dilimde		A			legacy_v3_unaudited
+8a3ac4ac-28d4-56f5-8365-72ed46d557ab	v3.5_residual	MATEMATIK	345 2025 Ayt Matematik Soru Bankası	293	Aşağıdaki iki fonksiyonun grafiği verilmiştir. Bu fonksiyonların grafiklerinin kesiştiği noktaların koordinatları hangileridir?	(-1, 0) ve (1, 0)	(-1, 0) ve (0, 1)	(0, -1) ve (1, 0)	(0, -1) ve (0, 1)	(0, 0) ve (1, 0)	C			legacy_v3_unaudited
+69f65509-3e0a-5923-9481-c75c4ce137fb	v3.5_residual	TURKCE	Edebiyat Sokagi Paragraf ileri Duzey	188	"Orta Çağ Japonya'sında shogunların veya feodal lordların saraylarında birçok ressam yaşadı. O zamanlar Japonya'nın birçok bölgeye ayrılmıştı. Onlar, şöhretlerini donuklara ulaşıp; mükemmel sanatçılar. Onların çoğu bu züveye erişir erizgem aniden uzaklıktan ortadan kaybolurlardı. Sonra başka bir shogunun sarayında farklı arka ve bütünüy-le bilinmeyen kişiler olarak yeniden ortaya çıkarlardı. Bunlar bir saray ressami olarak kariyerlerinin başından başlayarak isimlerini başka bir işiulsa sanal eserler yaratırlardı. Böyle bir inanma biçimi ile onların bir kısmı beş veya altı hayat yaşardı.
+
+Aşağıdakilerden hangisi bu parçada sözü edilen ressamların bir özelliği değildir?"	Alçak gönüllü	Yetenekli	Azimli	Hırslı	Yaralı	E	/static/crops/Edebiyat_Sokagi_Paragraf_ileri_Duzey/Edebiyat_Sokagi_Paragraf_ileri_Duzey_p0188_q03.png	ai_crop_solve	legacy_v3_unaudited
+46c17388-bedf-5fe9-9e79-388ec6dec82a	v3.5_residual	SOSYAL	krallar karması tyt sosyal bilimler branş denemesi-12	4	"Materyalizm düşüncesi İlk Çağ'dan bu yana farklı düşünürlerce ortaya konmuş ve maddenin varlığa temel oluşu farklı biçimlerde savunulmuştur. Materyalist düşünceyi temel alan Marx ve Engels, geistten (mutlak din) başladığı için Hegel'in diyalektiğini baş aşağı duruyor olarak nitelendirmiştir. Onlara göre Hegel, diyalektik yöntemi tez-antitez-sentez süreçleriyle belirlemede doğru bir düşünce ortaya koymuş; ancak tez aşamasını geist ile başlatmakla hata yapmıştır. Tez aşaması madde, yani doğa ile başlamalıdır.
+Buna göre Marx ve Engels'in Hegel'i aşağıdakilerin hangisinden dolayı eleştirdiği söylenebilir?"	Varlığın varlığını yadsıması	Varlığın durağanlığını savunması	Varlığın dinamik bir yapıda olduğunu düşünmesi	Varlığın başlatıcısı olarak maddeyi görmemesi	Varlıkta çelişkisel bir süreci savunması	D	/static/crops/krallar_karması_tyt_sosyal_bilimler_branş_denemesi-12/krallar_karması_tyt_sosyal_bilimler_branş_denemesi-12_p0004_q03.png		legacy_v3_unaudited
+678b8bd5-9f8b-5f22-9bcd-943f183a608b	v3.5_residual	GEOMETRI	Orijinal-2024-Geometri	43	Analitik geometride verilen dikdörtgenin bir köşesinin koordinatları (3, 4) ve diğer köşesi (7, 8) olduğuna göre, dikdörtgenin alanı kaç birimkaredir?	20	24	32	36	40	A			legacy_v3_unaudited
+17404753-e383-59e1-88e7-ecf28b19e715	v3.5_residual	FIZIK	Neofizik Ayt Fizik Deneme	64	Bu sorunun her yerinde eşitliğin doğru olduğunu gösteren ifade aşağıdakilerden hangisi olabilir?	x + y = 0	x - y = 0	xy = 0	x/y = 0	x + y = 1	B			legacy_v3_unaudited
+967db969-4cc3-5cdd-8990-45539eaf1eb7	v3.5_residual	MATEMATIK	Aromat-2023-Ayt-Matematik Soru Bankası	330	Birinci koordinat düzleminde, y = x + 1 grafikleri	1. köşegen	2. köşegen	3. köşegen	4. köşegen	5. köşegen	B			legacy_v3_unaudited
+901df354-d2a1-5b45-ba16-f94b90318b97	v3.5_residual	GEOMETRI	ACİL-TYT-AYT-Geometri Soru Bankası	267	Bir dikdörtgenin bir köşesinden bir köşeye doğru bir doğru çizildiğinde, dikdörtgenin alanı 120 cm² ve bu doğru dikdörtgenin bir köşesinden bir köşeye doğru çizildiğinde dikdörtgenin alanı 150 cm² olduguna göre, dikdörtgenin köşegen uzunluğu kaç cm'dir?	10 cm	12 cm	14 cm	16 cm	18 cm	A			legacy_v3_unaudited
+c16436e6-bf1a-5816-bb71-360b94b9a6c8	v3.5_residual	MATEMATIK	CAP-2022-2023-TYT-Matematik Soru Bankası	111	"a, b ve c gerçel sayılar olmak üzere, aşağıdaki eşitlikler veriliyor:
+a + b = 3
+c + a = 5
+c + b = 4
+a, b ve c'nin toplamı kaçtır?"	10	9	8	7	6	D			legacy_v3_unaudited
+444b0af2-8ee8-56c5-a649-812d63a7e6c7	v3.5_residual	GEOMETRI	2020-2021-Apotemi-Tyt Ayt-Geometri Maestro Soru Bankası	31	ABC üçgeninde, m∠A = 90°, m∠B = 30° ise, m∠C kaç derecedir?	70°	75°	60°	65°	55°	C			legacy_v3_unaudited
+439e3843-a51a-53d2-9f17-7ff983dcca74	v3.5_residual	FIZIK	345 2025 Ayt Fizik Soru Bankası	94	Bir kutu içinde 4 adet kırmızı ve 3 adet beyaz top bulunmaktadır. Kutudan rastgele bir top çıkartıldığında, bu topun beyaz olma olasılığı kaçtır?	0.4	0.5	0.6	0.7	0.8	E			legacy_v3_unaudited
+c5dfbb04-12bd-5077-baae-e8c12d6602af	v3.5_residual	FIZIK	345 2025 Ayt Fizik Soru Bankası	132	Bir topu çözen kareköklerin grafiğini çiz.	Şekil 1	Şekil 2	Şekil 3	Şekil 4	Şekil 5	D			legacy_v3_unaudited
+0c17c16f-33fd-58ab-8216-fb1630aa6d2d	v3.5_residual	BIYOLOJI	345 2024 Ayt Biyoloji Soru Bankası	234	Yüksek metabolizma için en iyi taşı:	A) Glukoz	B) Lipit	C) Protein	D) Kolesterol	E) Amino asit	A			legacy_v3_unaudited
+cb57bbc2-7e97-5f19-889f-2236380d3cbf	v3.5_residual	FEN	Aramot Tyt 2023 Fen Bilimleri Model Sorular	23	Bir dairesel çemberin çevresi 100 cm'dir. Bu çemberin içine çarpan bir kare dikdörtgenin çevresi 60 cm'dir. Bu dikdörtgenin bir kenarının uzak bir kenarından 2 cm daha uzun olduğuna göre, dikdörtgenin bir kenarının uzunluğu kaç cm'dir?	10 cm	12 cm	14 cm	16 cm	18 cm	C			legacy_v3_unaudited
+22d8e50a-c00f-50a3-bafa-115728b4d205	v3.5_residual	TURKCE	Edebiyat Sokagi Paragraf ileri Duzey	160	"Sosyal medya mecraları, ucu bucağı olmayan yepyeni dünyalar vadettiği için internet kullanıcıları bu dijital iletişim platformlarına büyük ilgi gösteriyorlar. Sosyal medya mecralarında o kadar geniş bir yelpazede öylesine çok içerik bulunuyor ki herkes ilgi alanlarına odaklanıp istedikleri şeyi takip etme olanağına sahip. Peki, bu platformlarda bu kadar çok içerik varken aradığınız şeylere nasıl ulaşacaksınız? Sosyal medya paylaşımının arasında kaybolmamanız ve ilgi alanınızdaki konuları araştırmanızın en iyi yolunu gösteren ve aradıklarınızı bulmanızı sağlayan bir araç var: Hashtag, belirli bir konu veya sosyal medya paylaşımının kümellemeye yarayan ve benzer özellikler aynı havuzda toplayan bir araç ve semboldür. Hashtag sayesinde aynı konuyu konuşan kişilerin birbirini bulması kolaylaşır ve bilgi aktarımı hızlanır.
+
+Bu parçada sosyal medya ile ilgili aşağıdakilerden hangisi söylenemez?"	Keşfedilmeyi bekleyen sonsuz bir alem barındırdığı	Barındırdığı bilgi açısından çok güçlü bir yapıya olduğu	Bilgi kirliliğinin bazen insanın ona ulaşmasını engellediği	Bol sembolle bilgiye ulaşmanın daha kolay ve doğru olduğu	Bilgi transferinin ve kullanıcıların aktivitelerinin hızlandığı	D	/static/crops/Edebiyat_Sokagi_Paragraf_ileri_Duzey/Edebiyat_Sokagi_Paragraf_ileri_Duzey_p0160_q02.png	ai_crop_solve	legacy_v3_unaudited
+2efa496f-e6d7-5cfd-ad4d-81c15b3d3141	v3.5_residual	EDEBIYAT	Bilgi Sarmal Ayt Edebiyat Soru Bankası	76	"Tarihçeden alınan ve desteklenen sistemlerin logoları:
+
+- 1990-1999: Microsoft Windows
+- 2000-2009: Microsoft Windows
+- 2010-2019: Microsoft Windows
+- 2020-2023: Microsoft Windows
+
+Hangi dönemlerde Microsoft Windows logoları kullanılmıştır?"	1990-1999 ve 2000-2009	2000-2009 ve 2010-2019	2010-2019 ve 2020-2023	1990-1999 ve 2010-2019	1990-1999 ve 2020-2023	A			legacy_v3_unaudited
+cd519a61-3eb6-577b-9084-8223408dbc25	v3.5_residual	GEOMETRI	345 2025 Tyt Ayt Geometri Soru Bankası 1	327	"ABCD paralelkenar
+[AC] köşegen
+[EF] ⊥ [FG]
+|AF| = |FC|
+|AE| = |ED|
+|FG| = 7 cm
+|EF| = 10 cm
+olduğuna göre, boyalı alan kaç cm² dir?"	120	150	135	125	140	E	/static/crops/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1/345_2025_Tyt_Ayt_Geometri_Soru_Bankası_1_p0327_q01.png	tier1_page_inline	legacy_v3_unaudited
+59cda6af-b8a8-5bfb-94cb-054d883ab6dd	v3.5_residual	MATEMATIK	C1CELL-2025-Matematik Soru Bankası	406	a ve b iki farklı sayı için a + b = 14 ve a - b = 2 ise a ve b'nin toplamı kaçtır?	16	18	12	14	10	D			legacy_v3_unaudited
+7b56b362-2bb8-5813-b8c5-0f3c32b33a24	v3.5_residual	TURKCE	Mikro Orijinal Tyt Paragraf Soru Bankası 2024	173	1. (1) Gündüzdeki suyu metin parçasına göre, hangi cümlede suyun etkisi en fazla?	A) Gündüzde suyu metin parçasına göre, hangi cümlede suyun etkisi en fazla?	B) Gündüzde suyu metin parçasına göre, hangi cümlede suyun etkisi en fazla?	C) Gündüzde suyu metin parçasına göre, hangi cümlede suyun etkisi en fazla?	D) Gündüzde suyu metin parçasına göre, hangi cümlede suyun etkisi en fazla?	E) Gündüzde suyu metin parçasına göre, hangi cümlede suyun etkisi en fazla?	D			legacy_v3_unaudited
+ee361dcf-999c-542c-8b3e-09eff07d072b	v3.5_residual	TURKCE	345 2025 Paragraf Sifir Risk Soru Bankası	120	Bu sorularla ilgili, zamanın yarasını	A) 1000	B) 100	C) 10	D) 1	E) 0.1	A			legacy_v3_unaudited
+101bab86-85b6-5e19-9b62-da138e849f0b	v3.5_residual	GEOMETRI	Esen Tyt Ayt Geometri Soru Bankası	283	6. Aşağıdaki dik üçgenlerde dik açıları A ve C noktalarında kuvvetle birbirine dikdörtgen oluşturuyor. Bu dikdörtgenin bir kenarı 10 cm uzunluğunda ve diğer kenarı 12 cm uzunluğunda ise dikdörtgenin alan kaç cm² dir?	120	130	140	150	160	A			legacy_v3_unaudited
