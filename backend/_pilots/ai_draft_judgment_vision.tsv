@@ -49,3 +49,8 @@ dd4fbd3f-e4c5-54c6-8126-da54caca76df	fail	wrong_topic	VISION CONFIRMED: Cift yar
 36b4027d-8e3c-535b-a9f6-543860ef5743	fail	wrong_topic	VISION CONFIRMED: Goz Yapisi ve Islevleri + Bilsen Yeter (Biyoloji). Yapilarinin yeri yanlis sorusu. Subject=KIMYA wrong_topic	high	fail	no
 97e7c609-3978-5c5d-bfbc-46d8265e3b89	fail	wrong_topic	VISION CONFIRMED: Japonya/Singapur gelismis ulke nufus (Cografya/Sosyal). Subject=KIMYA wrong_topic. Aromat sistemik bug	high	fail	no
 7677fcc2-94f0-520a-8de6-db54f915a5c1	fail	wrong_topic	VISION CONFIRMED: M AROMAT MODELI 'Egemenlik milletindir' Ataturk ilkesi (Tarih/Inkilap). Subject=KIMYA wrong_topic. Cumhuriyetcilik dogru cevap (c=E Halkcilik yanlis muhtemel)	high	fail	no
+99b4ba10-2753-515c-8c73-b6c3d3d7b925	fail	wrong_topic	VISION CONFIRMED: Yatay Cembersel Hareket + Bilsen Yeter (Fizik). m=v^2/(rg)=1600/2000=0.8. c=E dogru ama subject=KIMYA wrong_topic. Aromat sistemik	high	fail	no
+b90b7bdb-5035-5a3b-843c-145fc481d2f5	fail	wrong_topic	VISION: text-only, image yok. butterfly Turkce karsiligi (Ingilizce). subject=SOSYAL gercekte yabanci dil. wrong_topic	high	fail	no
+f182845c-4fd4-54dd-a678-64b26da77936	fail	wrong_topic	VISION: text-only, image yok. x^2-2x+1=1 matematik. subject=EDEBIY gercekte matematik. wrong_topic + soru kalitesi sorunlu	high	fail	no
+d7861d67-b4c3-5290-9be7-9c4f7c682c2c	fail	wrong_topic	VISION: text-only, image yok. Toplama/cikarma/carpma/bolme/karekok temel islemler (matematik). subject=TURKCE wrong_topic	high	fail	no
+439e3843-a51a-53d2-9f17-7ff983dcca74	fail	wrong_topic	VISION: text-only, image yok. Kirmizi/beyaz top olasiligi (matematik). subject=FIZIK wrong_topic. P(beyaz)=3/7~0.43, c=E (0.8) yanlis bonus	high	fail	no
