@@ -44,3 +44,8 @@ fe7de757-a0a4-54f3-90e0-26d080ceecf3	fail	wrong_topic	VISION: text-only, image y
 102be69a-8f36-5882-a894-9d433ef3d4d7	fail	wrong_topic	VISION CONFIRMED: AROMAT MODELI footer, icerik Dunya eksen egikligi harita (Cografya). Subject=KIMYA wrong_topic. Tier5 fallback bug	high	fail	no
 a0a952ff-5ee1-57e2-bc2d-fd6a6df3f44f	fail	wrong_topic	VISION CONFIRMED: 'Bilsen Yeter' format, icerik solunum sistemi (Biyoloji). Subject=KIMYA wrong_topic	high	fail	no
 a23fd47d-b092-52f3-8ea2-34dcc069735a	fail	wrong_topic	VISION CONFIRMED: AROMAT MODELI footer, icerik destek-hareket sistemi (Biyoloji). Subject=KIMYA wrong_topic. Tier5 fallback bug	high	fail	no
+dd4fbd3f-e4c5-54c6-8126-da54caca76df	fail	wrong_topic	VISION CONFIRMED: Cift yarikli girisim Dx=L*lambda/d (Fizik). K Kilavuz Soru. Subject=KIMYA wrong_topic	high	fail	no
+2a1bba7a-8d3a-5e12-aa78-728a9362e1d5	fail	wrong_topic	VISION CONFIRMED: K Kilavuz iman esaslari + M AROMAT MODELI peygamberler ayetleri (Din Kulturu). Subject=KIMYA wrong_topic. Sayfada 2 soru bulunuyor (degisik kategori)	high	fail	no
+36b4027d-8e3c-535b-a9f6-543860ef5743	fail	wrong_topic	VISION CONFIRMED: Goz Yapisi ve Islevleri + Bilsen Yeter (Biyoloji). Yapilarinin yeri yanlis sorusu. Subject=KIMYA wrong_topic	high	fail	no
+97e7c609-3978-5c5d-bfbc-46d8265e3b89	fail	wrong_topic	VISION CONFIRMED: Japonya/Singapur gelismis ulke nufus (Cografya/Sosyal). Subject=KIMYA wrong_topic. Aromat sistemik bug	high	fail	no
+7677fcc2-94f0-520a-8de6-db54f915a5c1	fail	wrong_topic	VISION CONFIRMED: M AROMAT MODELI 'Egemenlik milletindir' Ataturk ilkesi (Tarih/Inkilap). Subject=KIMYA wrong_topic. Cumhuriyetcilik dogru cevap (c=E Halkcilik yanlis muhtemel)	high	fail	no
