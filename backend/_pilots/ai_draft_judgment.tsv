@@ -139,3 +139,60 @@ f5def824-e5c0-56e4-83b0-42213302d71d	pass		Isimlendirme tartismali; D (siklopent
 145bc9df-ab82-57e0-bff1-85d943346de2	fail	wrong_answer	Asil mesaj: yenilgi+zafer kabullenme=buyukluk (D). c=E (hirs/kibir) farkli yorum	medium
 e7fb7b69-d580-5b59-bc92-fb91161952f1	fail	wrong_answer	Zanaat=tekrar yapilan. C (Antik Yunan seramikleri) zanaat ornegi. Dogru C, c=E (Davut sanat) yanlis	high
 5b04204e-0457-5f6c-b1dd-9d40b4c367d1	fail	wrong_answer	Coulomb F=kq1q2/d2. 2x yuk + 3x mesafe -> 4/9 F. Dogru E, c=A (1/9) yanlis	high
+7a242bee-0ee3-52af-ab1f-2b4601637c15	fail	garbage_text	Soru cumlesi yok (sadece baslik), seceneklerle baglamsiz	high
+662573ba-2587-5ec1-8538-51088521db94	fail	garbage_text	Soru ve secenekler sacma anlamsiz Turkce	high
+f5429d1a-0bca-5bd6-9375-0db3789c21cb	fail	garbage_text	Ekoistematik/Tur Dusenler anlamsiz jargon. A ve E (Plastik Dusenler) duplicate	high
+b90b7bdb-5035-5a3b-843c-145fc481d2f5	fail	wrong_topic	butterfly Turkce karsiligi - subject=SOSYAL ama Ingilizce kelime. D, E (kabakum) duplicate	high
+f182845c-4fd4-54dd-a678-64b26da77936	fail	wrong_topic	subject=EDEBIYAT ama matematik (algebra). x degerine bagli, tek sonuc imkansiz	high
+2ec3ee7f-08d3-5581-a307-683161b8a4aa	fail	garbage_text	Soru RUSCA (otnosenii/grom/termin), Turkce degil	high
+7a946a2e-a68a-5f38-b992-c3988d1405c8	pass		180 donme A(-1,1)->A(1,-1). c=B uyumlu ama 'cevrimsel' tanimi belirsiz	low
+e254df8d-fa1d-5ecb-95a4-269c563ac887	fail	wrong_answer	Hicbir esitlik dogru DEGIL (x+y)^2 = x^2+2xy+y^2. A ve E duplicate	high
+afd49dfc-caee-5113-9f09-63e1ceee33e0	pass		Hiciv Divan ed. Osmanlica beyitler, E (zalim/zulm vurgu) hiciv ornegi muhtemel	low
+d7861d67-b4c3-5290-9be7-9c4f7c682c2c	fail	wrong_topic	subject=TURKCE ama matematik (temel islem)	high
+5120cf8f-4ae4-551d-8a15-47d71c950f56	fail	garbage_text	Soru cumle karisik, kelime kaybi	high
+7dd1758f-7d51-51c3-805b-255cd14d338a	fail	garbage_text	Programlama+gölge sacma, secenekler tekrar (yarim yarim)	high
+9797b7b0-540f-5edc-991a-d68dd9dc4305	unclear	garbage_text	'Tekrar eden hal' tanimi belirsiz, 3'lu secim 1 ve 2 (cift kok) sonrasi belirsiz	medium
+023f09ca-6b96-5c32-89f7-7490e53ceeb6	fail	garbage_text	Soru kendisi yok (meta-aciklama), gercek harita verilmemis	high
+fa44529b-52ff-5a2b-b40d-c4cb15270aca	pass		Varlik temelleri felsefe dali = Ontoloji. E dogru	high
+7762f022-1783-43d3-8235-a6fc89f25666	pass		Vergi muafiyeti temel hak degil. D dogru	high
+2d50d436-c0f5-5f25-ab7c-b937bd161a32	fail	garbage_text	Soru cumlesi karisik. Hesap 1000=3g -> g=333, c=B (15) tutarsiz	medium
+22cb52e1-4b59-5084-8191-919d3ef22886	fail	incomplete	A+B=2a=100 a=50. A-B=2b ama b bilinmez. Eksik bilgi	high
+d22f1ad7-74dc-5511-b526-d3a66ff2dcdf	unclear		Dortgen aci problemi img=N (gorsel yok), ACD/BCD tanimi belirsiz	medium
+b75510e4-e4c3-5cba-a902-50d6a5c44b30	fail	wrong_answer	%10+%20=%30, kalan %70 = 7 milyar TL. Hicbir secenek 7 milyar yok	high
+fc991ae0-b3c0-5581-b460-f914f3e84953	fail	garbage_text	Siklarin hepsi 'bir kopek gibi' tekrar, anlamsiz	high
+6b4d9ae6-5fd1-59be-afa5-8f9eddf04371	fail	garbage_text	B-E secenekleri (Keci ve domuz) 4 kez duplicate	high
+7d42bf3d-a88c-5c41-b106-2dea2db13556	fail	garbage_text	'Dilim' ne demek? Anlamsiz soru	high
+8a3ac4ac-28d4-56f5-8365-72ed46d557ab	fail	missing_diagram	Iki fonksiyon grafigi referans var ama img=N	high
+69f65509-3e0a-5923-9481-c75c4ce137fb	fail	ocr	OCR bozuk (donuklara/zuveye/erizgem). C (yarali) anlamsiz	high
+46c17388-bedf-5fe9-9e79-388ec6dec82a	pass		Marx/Engels Hegel'in idealizmi (geist) elestirisi: madde temel gormez. D plausible	medium
+678b8bd5-9f8b-5f22-9bcd-943f183a608b	fail	wrong_answer	Dikdortgen kose (3,4)-(7,8) karsi: 4x4=16 (kare). c=A (20) yanlis	medium
+17404753-e383-59e1-88e7-ecf28b19e715	fail	garbage_text	'Her yerinde esitlik' belirsiz, secenekler degil ifadeler	high
+967db969-4cc3-5cdd-8990-45539eaf1eb7	fail	garbage_text	'y=x+1 grafikleri kosegen' ifadesi sacma	high
+901df354-d2a1-5b45-ba16-f94b90318b97	fail	garbage_text	Dikdortgen 2 farkli alan (120, 150) celisik. Soru sacma	high
+c16436e6-bf1a-5816-bb71-360b94b9a6c8	fail	wrong_answer	(a+b)+(c+a)+(c+b)=12=2(a+b+c) -> a+b+c=6. Dogru E, c=D (7) yanlis	high
+444b0af2-8ee8-56c5-a649-812d63a7e6c7	pass		90+30+C=180 -> C=60. c=C dogru	high
+439e3843-a51a-53d2-9f17-7ff983dcca74	fail	wrong_topic	subject=FIZIK ama matematik (olasilik). P(beyaz)=3/7~0.43, c=E (0.8) yanlis	high
+c5dfbb04-12bd-5077-baae-e8c12d6602af	fail	missing_diagram	Karekok grafik referans, Sekil 1-5 secenek; img=N	high
+0c17c16f-33fd-58ab-8216-fb1630aa6d2d	fail	ocr	'taşı' OCR (tasiyici?). Glukoz hizli enerji dogru ama soru anlamsiz	medium
+cb57bbc2-7e97-5f19-889f-2236380d3cbf	fail	garbage_text	Cember+kare+dikdortgen karisik cumle, hesaplanamaz	high
+22d8e50a-c00f-50a3-bafa-115728b4d205	fail	wrong_answer	Sosyal medya genis icerik. A (sonsuz alem) gucla. D (bol sembolle) cevirme hatasi	medium
+2efa496f-e6d7-5cfd-ad4d-81c15b3d3141	fail	wrong_topic	subject=EDEBIYAT ama bilgisayar tarihi (Windows logo)	high
+cd519a61-3eb6-577b-9084-8223408dbc25	pass		Paralelkenar img-driven, EFG dik ucgen 35x4=140. c=E uyumlu	medium
+59cda6af-b8a8-5bfb-94cb-054d883ab6dd	pass		a+b=14 verilen, a+b 'toplami' = 14. Trivial ama dogru. c=D	high
+7b56b362-2bb8-5813-b8c5-0f3c32b33a24	fail	garbage_text	5 secenek HEPSI ayni metin (duplicate). Soru sacma	high
+ee361dcf-999c-542c-8b3e-09eff07d072b	fail	garbage_text	'zamanin yarasini' anlamsiz, sayilar baglamsiz	high
+101bab86-85b6-5e19-9b62-da138e849f0b	pass		Dikdortgen alan=10x12=120. c=A dogru. Cumle bozuk ama hesap dogru	medium
+3983a1fb-d1c7-5d66-a3aa-94279191fb2c	pass		Boyali alan 9 br², img-driven dikdortgen cevre. D (24) plausible	low
+f1438829-4f3b-52af-a5a4-e7dea1a3ff39	pass		x*0.30=150*0.40=60, x=200. D dogru	high
+e0f7c250-5485-5387-8c6d-36ac8cf82203	unclear		Kutle/agirlik merkezi tanimi; B cumle bozuk Turkce, E barajin uyumu tartismali	low
+8b6cd1ca-f5ce-51be-8bac-fac9852cc4d5	pass		Kirinim Dy=lL/a. I,II yanlis (artar). III (yarik genis -> sacak azalir) dogru. C uygun	medium
+1121a93e-8882-5f0a-98fa-0c2a60c7b3e0	pass		3a64b ÷ 36: b∈{0,4,8}, a+b∈{5,14}. Max a+b=14 (a=6, b=8): 36648/36=1018. E dogru	high
+63676183-1677-5260-8ac6-8b5082bde4e3	pass		Romanci/oykucu/tarihci coklu tur, urettiken. E (uretken) ve C (farkli tur) tartismali	low
+224e51a8-d0c3-509e-a1b7-a29b80674f0a	unclear		f'(1) hesap (3+1)/(3*(-V4)^2) ≈ 0.53; seceneklerle uyumsuz, c=B (1/3) tartismali	low
+1ae4a999-3787-5c2d-bfbd-711f67a356eb	fail	wrong_answer	I (mikoriza) + II (terleme) kolaylastirir. IV (asiri gubre) zorlastirir. Dogru B, c=E yanlis	medium
+0825483d-466f-5c68-8a07-4f7d940102e4	pass		Michelson-Morley etiri curuttu, C (esir yok) dogru. Einstein da kabul etti	medium
+65c764fe-7c3a-5f33-91f2-7ddc5dba95cb	pass		ABC/DEC dik ucgen AE=x img-driven. E (14) plausible	low
+680c086c-74d4-51fb-b579-f1b26ca5a09d	pass		DE⊥BC, BE=EC, AB=DC, aci hesabi img-driven. E (99) plausible	low
+162d701e-6b76-5307-a254-997b1fcc3793	pass		Foton kutlesi 0 -> E²=(pc)² -> E=pc. D dogru	high
+71ce0885-a7d9-5f7c-b683-00b8ac01437f	pass		Integral V(x+3) dx = (2/3)(x+3)^(3/2) + c. D dogru	high
+b2f3eaba-64ac-52d6-b8a0-bc5091cab636	pass		Oteleme donusum img-driven. C (4 sola, 1 asagi) plausible	low
