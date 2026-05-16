@@ -39,3 +39,8 @@ f5def824-e5c0-56e4-83b0-42213302d71d	fail	wrong_answer	VISION: E (1-hidroksi-2-m
 862ff6ac-7ece-53fc-b939-fd635de8b22a	pass		VISION: Metinlerarasilik = farkli metinler arasi gonderme. I 'yazma sureci okura dogrudan anlatma' meta-fiction, metinlerarasilik DEGIL. c=A (I yanlis) plausible	high	pass	no
 7a946a2e-a68a-5f38-b992-c3988d1405c8	unclear		VISION: Text-only, image yok. 'Cevrimsel donme' derecesi belirsiz: 180 -> B, 90 -> C, 270 -> D. c=B (180) plausible ama tanim belirsiz	low	pass	YES
 d22f1ad7-74dc-5511-b526-d3a66ff2dcdf	unclear		VISION: Text-only, image yok. ABCD dortgen ACD=80, BCD=120. Acilarin tanimi belirsiz (kose mu kose ucgen mi). Soru eksik	low	unclear	no
+5e08270d-823a-59de-9230-418f31e8c086	fail	wrong_topic	VISION CONFIRMED: AROMAT MODELI footer, icerik Hadis-i Serif (Din Kulturu). Subject=KIMYA yanlis, wrong_topic. Tier5 fallback subject inheritance bug	high	fail	no
+fe7de757-a0a4-54f3-90e0-26d080ceecf3	fail	wrong_topic	VISION: text-only, image yok. AI draft 'momentum (fizik)' tespiti dogru. Subject=KIMYA wrong_topic confirmed	high	fail	no
+102be69a-8f36-5882-a894-9d433ef3d4d7	fail	wrong_topic	VISION CONFIRMED: AROMAT MODELI footer, icerik Dunya eksen egikligi harita (Cografya). Subject=KIMYA wrong_topic. Tier5 fallback bug	high	fail	no
+a0a952ff-5ee1-57e2-bc2d-fd6a6df3f44f	fail	wrong_topic	VISION CONFIRMED: 'Bilsen Yeter' format, icerik solunum sistemi (Biyoloji). Subject=KIMYA wrong_topic	high	fail	no
+a23fd47d-b092-52f3-8ea2-34dcc069735a	fail	wrong_topic	VISION CONFIRMED: AROMAT MODELI footer, icerik destek-hareket sistemi (Biyoloji). Subject=KIMYA wrong_topic. Tier5 fallback bug	high	fail	no
