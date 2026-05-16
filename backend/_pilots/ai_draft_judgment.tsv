@@ -94,3 +94,48 @@ c2583526-fb2e-5954-bb15-cae474b40bfc	pass		Sanat eseri alışkanlık + detay tem
 eaaf2027-81e6-5470-8fd6-b4fc624abdb5	fail	wrong_answer	Uzay mekiği+kayık+yürüme hepsi etki-tepki. Doğru E (I,II,III), c=A yanlış	high
 013dafcb-0970-52fe-bb81-f037c0f7ee17	fail	incomplete	Soru cut off (kıyaslama tam değil), x değeri belirsiz, B doğrulanamaz	low
 39bf97a7-ab18-5091-b5ef-8144f846a83c	fail	wrong_answer	Zn>Sn (1.tepkime) Sn>Cu (2.tepkime) → Zn>Sn>Cu yükseltgenme pot. Doğru A, c=D yanlış	high
+9564bfe2-6752-564d-bdaa-0b62befaeb4b	fail	wrong_answer	BC orta=(4,7), A(-2,4) dogrusu: 2y-x-10=0. Dogru A, c=C yanlis	high
+de6be0c5-cebe-52da-9b4e-927a9e87f048	fail	wrong_answer	D yanlis (Guney yarimkure ocak yaz, sicaklik yuksek). c=E (bati kiyi) tartismali	medium
+91d49f6f-449b-5741-ac65-bdee33841e95	pass		Suspansiyon=kati-sivi heterojen. Kum+su klasik ornek. A dogru	high
+43433945-07e8-5bb9-86d1-56c82c7183d4	pass		Tiyatro hayati yansitma temasi, E (toplum yapisi yansitma) tutarli	medium
+2be14718-64ea-56aa-bd1c-d548fafaaeda	pass		Paralel dogru aci problemi img-driven, B (33) plausible	low
+da0b9cdb-3764-5277-856c-6bc12fb676d3	pass		Asurbanipal numarali paragraf akis, V (E) muhtemel	low
+fe7de757-a0a4-54f3-90e0-26d080ceecf3	fail	wrong_topic	subject=KIMYA ama fizik (momentum/impulse). wrong_topic	high
+8c3e1946-a01e-5335-9237-bd4ffce3cffb	pass		Birlesmek=anlasmak; A (tasima isinde birlestiler) ayni anlam. A dogru	high
+aa9783a9-a19e-5709-ae30-9ce8a31c0878	fail	wrong_answer	Ayni kaynak aki sabit (I yanlis). E=I/r2, K(r) buyuk (II dogru). Dogru B, c=A yanlis	high
+6492d312-e719-5b3d-9301-c8dca3dd68c1	unclear		Katlama+kesim img-driven, 1/3 sonucu kesim sekline bagli	low
+102be69a-8f36-5882-a894-9d433ef3d4d7	fail	wrong_topic	subject=KIMYA ama cografya (eksen egikligi). wrong_topic	high
+11a32f76-7570-57be-8cd2-c6fd3726fea9	pass		Hiz=k[X]2[Y]. E: hiz 1.6 olmali, 16e-4 degil. E (yanlis) dogru cevap	medium
+ba333dcd-d038-5432-b892-467df2cda851	fail	wrong_answer	C:H:N:O=4:5:2:1, kafein C8H10N4O2 — seceneklerde yok. c=E (C10H20N4O5) yanlis	high
+dd2c0472-1a9e-542a-a9b6-01e0922efd55	pass		Los=ruzgar birikim. Moren buzul, Aluvyon akarsu, Yardang/Hamada ruzgar asindirma. A dogru	high
+8386dc10-bfd2-53bd-9058-f63426bf40fb	pass		Fizik/kim olay ayrimi img-driven (isaretleme gorunmuyor). C plausible	low
+e2edd67f-a1ce-532c-9e1a-614ab13dc7d0	pass		a=9 (kuadratik cift kok) veya a=8 (x=2 ortak kok). Toplam=17. A dogru	high
+ac35db81-d82a-55fa-aacb-e7a03d46fe94	unclear		Km sayaci %15 kosulu yorum gerekli; img-driven, D plausible	low
+e344f30c-9b1a-542e-b8e5-ad29e7399326	fail	wrong_answer	Turk boylari dil eseri=Kasgarli Mahmut (Divanu Lugati). Dogru C, c=A (Yesevi) yanlis	high
+ac7be967-bc6c-5518-94c0-f35498f3d7f7	fail	wrong_answer	Metin teknoloji potansiyel; A (her gelisme olumsuz) asiri genelleme yanlis. D muhtemel	medium
+53ec5ee3-57ff-52be-b117-267ffa3583d7	unclear		Limit ifadesi tartismali (x->0 sonsuz, x->5 ise 2). 3/2 icin ikinci=1/2 — OCR muhtemel	low
+d3b80948-154b-5490-8a39-08f85c872933	fail	wrong_answer	Kesf-uz Zunun bibliyografya = Katip Celebi. Dogru B, c=E (Mercimek Ahmet) yanlis	high
+a0a952ff-5ee1-57e2-bc2d-fd6a6df3f44f	fail	wrong_topic	subject=KIMYA ama biyoloji (solunum). E (sadece kikirdak) yanlis ifade. wrong_topic	high
+a484ea25-ce2e-5519-9b99-7233b1670e0a	pass		Medine Sozlesmesi=Arabistan ilk yazili kanun (B), bilinen tarihsel ozellik	low
+d1278d68-cfb7-5acf-b003-bd2c625556d5	pass		Nazim Hikmet paragraf akis, V (E) muhtemel	low
+a9a78a64-9c6c-56ca-9fba-746c571cb346	pass		Ahmet Vefik Pasa tiyatro yazari (Moliere cev.), hikayeci degil. E dogru	high
+a23fd47d-b092-52f3-8ea2-34dcc069735a	fail	wrong_topic	subject=KIMYA ama biyoloji (destek-hareket). I/III yanlis (uretim degil depo), II dogru. Dogru D. wrong_topic	high
+dd4fbd3f-e4c5-54c6-8126-da54caca76df	fail	wrong_topic	subject=KIMYA ama fizik (girisim). Dy=lL/d, l+L artirir (B). c=E yanlis. wrong_topic	high
+2a1bba7a-8d3a-5e12-aa78-728a9362e1d5	fail	wrong_topic	subject=KIMYA ama din kulturu. A (goreceli) metnin tersine. c=E (butunluk) metinde mevcut yanlis. wrong_topic	high
+f21c0575-3f3d-56ab-8def-f45679a5327e	fail	wrong_answer	mAh=mA*h=elektrik yuk birimi. Dogru D, c=C (max akim) yanlis	high
+2d27449e-c9e7-51ad-aada-db5b49230b81	fail	wrong_answer	4+8+1=13 kWh/gun. Dogru D (13), c=E (16) yanlis	high
+3f4d2515-42ac-5540-bbee-33f874b832a6	fail	wrong_answer	P(1K+1NK)=4*3/C(7,2)=12/21=4/7. Dogru B, c=E (1/7) yanlis	high
+36b4027d-8e3c-535b-a9f6-543860ef5743	fail	wrong_topic	subject=KIMYA ama biyoloji (goz). wrong_topic; img-driven detay dogrulanamaz	high
+f5def824-e5c0-56e4-83b0-42213302d71d	pass		Isimlendirme tartismali; D (siklopentan substituent numara) veya E (orto-metilfenol) yanlis	low
+97e7c609-3978-5c5d-bfbc-46d8265e3b89	fail	wrong_topic	subject=KIMYA ama cografya. Gelismis ulke dusuk dogum/olum (C). c=D yanlis. wrong_topic	high
+5f8a1b9b-8375-5546-9b72-bd40951fd18a	pass		Numarali cumle paragraf akis, D (IV) muhtemel	low
+8bb4c59e-1d04-5bf6-9572-7a5e5484b97d	unclear		Cerezci problem cut off (formul verildi ama spesifik problem detayi eksik)	low
+0b00af22-2ddc-53e1-85e1-e0458f8d4cf4	fail	wrong_answer	Dua=istek+acz+yardim bekleme. Hepsi dogru -> E. c=A (Yalniz I) yanlis	high
+8fed6f77-7fa0-50bc-8a4c-1dec181b8e98	fail	wrong_answer	C (CaC2O4 oksalat): C=+3, +4 yanlis. E (Cr=+6) dogru. c=E yanlis isaret	medium
+7677fcc2-94f0-520a-8de6-db54f915a5c1	fail	wrong_topic	subject=KIMYA ama tarih. Egemenlik kayitsiz sartsiz=Cumhuriyetcilik. Dogru A, c=E (Halkcilik) yanlis. wrong_topic	high
+53476bb4-a56d-5338-898f-5bdf2e598e97	pass		Super kahraman numarali yuklem analizi, C (III) muhtemel	low
+862ff6ac-7ece-53fc-b939-fd635de8b22a	pass		Metinlerarasilik numarali paragraf, V (E) muhtemel	low
+99b4ba10-2753-515c-8c73-b6c3d3d7b925	fail	wrong_topic	subject=KIMYA ama fizik (surtunme). m=v2/(rg)=1600/2000=0.8. E dogru ama wrong_topic	high
+145bc9df-ab82-57e0-bff1-85d943346de2	fail	wrong_answer	Asil mesaj: yenilgi+zafer kabullenme=buyukluk (D). c=E (hirs/kibir) farkli yorum	medium
+e7fb7b69-d580-5b59-bc92-fb91161952f1	fail	wrong_answer	Zanaat=tekrar yapilan. C (Antik Yunan seramikleri) zanaat ornegi. Dogru C, c=E (Davut sanat) yanlis	high
+5b04204e-0457-5f6c-b1dd-9d40b4c367d1	fail	wrong_answer	Coulomb F=kq1q2/d2. 2x yuk + 3x mesafe -> 4/9 F. Dogru E, c=A (1/9) yanlis	high
