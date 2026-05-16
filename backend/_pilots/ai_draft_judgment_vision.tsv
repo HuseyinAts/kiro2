@@ -64,3 +64,8 @@ b8ca0e0b-0ad1-5228-9aef-83ef0a8ba3f7	pass		VISION CONFIRMED: 3 bilesik cifti cis
 092e2985-0aaf-5192-b229-cde7755851a9	pass		VISION: Analitik duzlem 1.bolge gorunum kare, A(1,7) kose, F x-ekseni 45 derece. EF uzunlugu img-driven karmasik hesap. c=C (2*sqrt(10)) plausible	medium	pass	no
 d390cca0-3161-51a3-a7e2-6d022f33e203	fail	wrong_answer	VISION: Hasan miladi 2021 ziyaret, Rumi yil=64*yas. 65y=1365, y=21, dogum=2000. c=C (2000) dogru, c=A (1998) yanlis. Soru COMPLETE degil incomplete idi - vision ile hesap mumkun	medium	fail	no
 069aacf2-d1df-5f2a-b435-d4e8e50deb2c	fail	wrong_answer	VISION CONFIRMED: b-3=0 -> b=3, a-1=0 -> a=1. A(3,0), B(0,0), |AB|=3. Seceneklerde 3 YOK (A v5, B 2v5, C 5, D 3v5, E 4v3). c=E (4v3) yanlis	high	fail	no
+28203591-6440-5672-b2f1-c17d3641cf88	pass		VISION: Konteyner 3D yukseklik, AK=4/BL=6/CM=5 ipler. Soru TAM (AI draft 'incomplete' yanlis - OCR kesim hatasi). img-driven hesap, c=A (sqrt5) plausible	medium	fail	YES
+cdb284fc-558b-559a-a769-9450a11ce3ee	pass		VISION CONFIRMED: K mercek su/hava. d1>d2 (su buyuk f), alpha<beta (II yanlis), III yanlis. Yalniz I, c=A dogru	high	pass	no
+9e99489c-fbb1-5f2a-abcb-ea8749102caa	pass		VISION: Yamuk ABCD AD//BC, BD aciortay, AD=DC, BD perp DC. m(BAD)=alpha img-driven hesap, c=C (120) plausible	medium	pass	no
+516ee976-1a83-5df8-a671-9bcaaae7e8ba	fail	wrong_answer	VISION: Sayi dogrusu c<0<a<b, |c|>b-a. |a+b-c|+|c-a+b| = (a+b-c)+(a-b-c) = 2a-2c. Dogru D (2a-2c), c=C (2c-2a) yanlis (isaret ters)	high	pass	YES
+ef422f88-d1c4-5eed-9d42-0358bf51b6aa	fail	wrong_answer	VISION: Hidrokarbon yanma. I yanlis (sinirlay sadece O2 degil), II/III dogru (CO2+H2O+ekzo). Yanlis olan: Yalniz I -> c=A. DB c=C (I ve III) yanlis (III aslen dogru)	high	pass	YES
