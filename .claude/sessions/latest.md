@@ -1,13 +1,15 @@
-## Session Handoff — 2026-05-16 (Session 161d, Faz 1.6 + 2.2) — IN PROGRESS
+## Session Handoff — 2026-05-16 (Session 161d, Faz 1.6 + 2.2 + 2.3) — IN PROGRESS
 **Branch:** master (origin/master 1 commit behind pending push)
-**Son commit (push edilmiş):** `816c7f4ae` feat(faz-1-6): Bronze tier promotion
-**Uncommitted:** Faz 2.2 scoring template paketi
+**Son commit (push edilmiş):** `30515066c` feat(faz-2-2): scoring template + reusable audit guide
+**Uncommitted:** Faz 2.3 drift dashboard paketi
 
-### Session 161d ek iş (Faz 2.2 — scoring template)
-- `backend/scripts/quality/scoring_template.py` (~210 satır) — `--prepare` + `--summarize` + `--strata-col`
-- `docs/audit_scoring_guide.md` — reusable guide (mevcut SCORING_GUIDE generalize)
-- Test: C1 30 sample summarize (validation clean), C2 50 sample strata breakdown, idempotent guard
-- Verdict/error_type taksonomi sabit (8 error type), inconsistency detection (pass+error_type, fail+empty)
+### Session 161d kapsamı (3 Faz tamamlandı)
+- **Faz 1.6 Bronze promotion** (push'lu): 84,905 satır `bronze_clean`, Alembic v3, Convention v3 revize
+- **Faz 2.2 Scoring template** (push'lu): `scoring_template.py` --prepare/--summarize/--strata-col + reusable guide
+- **Faz 2.3 Drift dashboard** (pending commit): `drift_dashboard.py` multi SCORING → markdown + JSON
+  - Test: C1+C2+C3 birleşik (110 sample) → aggregate pass=%20.9 / fail=%54.5 / unclear=%24.5 (Faz 0.2 baseline ile bire bir)
+  - JSON output (Faz 2.4 30-gün MA için), drift signals (multi-tarih varsa pass% delta)
+  - Demo: `docs/quality_audits/20260516_baseline_dashboard.md`
 
 ### Session 161d — Faz 1.6 Bronze tier promotion
 - Alembic `qrs_v3_20260514` deploy (DB v2→v3, `bronze_clean` constraint accept)

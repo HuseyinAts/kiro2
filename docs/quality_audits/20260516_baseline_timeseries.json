@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-05-16T02:59:49.068606",
+  "records": [
+    {
+      "path": "C:\\Users\\husey\\kiro2\\backend\\_pilots\\20260515_audit_C1_SCORING.tsv",
+      "date": "2026-05-15",
+      "audit_id": "audit_C1",
+      "total": 30,
+      "scored": 30,
+      "verdicts": {
+        "fail": 19,
+        "unclear": 9,
+        "pass": 2
+      },
+      "error_types": {
+        "missing_diagram": 23,
+        "ocr": 5
+      }
+    },
+    {
+      "path": "C:\\Users\\husey\\kiro2\\backend\\_pilots\\20260515_audit_C2_SCORING.tsv",
+      "date": "2026-05-15",
+      "audit_id": "audit_C2",
+      "total": 50,
+      "scored": 50,
+      "verdicts": {
+        "fail": 25,
+        "unclear": 10,
+        "pass": 15
+      },
+      "error_types": {
+        "incomplete": 5,
+        "ocr": 12,
+        "wrong_answer": 18
+      }
+    },
+    {
+      "path": "C:\\Users\\husey\\kiro2\\backend\\_pilots\\20260515_audit_C3_SCORING.tsv",
+      "date": "2026-05-15",
+      "audit_id": "audit_C3",
+      "total": 30,
+      "scored": 30,
+      "verdicts": {
+        "fail": 16,
+        "pass": 6,
+        "unclear": 8
+      },
+      "error_types": {
+        "garbage_text": 9,
+        "incomplete": 4,
+        "wrong_answer": 2,
+        "missing_diagram": 5,
+        "ocr": 2,
+        "wrong_topic": 2
+      }
+    }
+  ]
+}
