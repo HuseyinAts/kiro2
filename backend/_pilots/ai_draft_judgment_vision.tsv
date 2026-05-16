@@ -1,0 +1,21 @@
+id	vision_verdict	vision_error_type	vision_reasoning	vision_confidence	original_verdict	verdict_changed
+89bfaf33-8d03-59e2-8315-8244526b61ee	pass		VISION: ABC ikizkenar uggen, taralı kısım AD katlanır, Sekil 3 kucuk uggen E-D mesafesi √3. img net, c=A plausible	medium	pass	no
+d3f9a072-fbec-59d3-8f40-27de387fb75c	pass		VISION: text-only soru, image yok. I=D, II=Y (vektorel), III=D. c=A dogru	high	pass	no
+0aa76727-11d2-52bf-9d1f-6e4c40d5a1f1	pass		VISION: Agirlik merkezi G, |BG|=|AC|=4|GD|. img net, c=D (60) hesap mumkun	medium	pass	no
+a099f78b-d3ae-5175-aad7-153525746fbc	fail	wrong_answer	VISION: Rh uyumsuzluk - dogru cevap C (baba homozigot ZORUNDA degil). E (antikor gecisi) gerekli kosul, 'yok' denilemez	high	fail	no
+4e39abab-19a4-56ba-a386-c82b71f61d2f	pass		VISION: 2x²-5x+2≤0 -> x∈[1/2,2]. img matematik formul net, c=A dogru	high	pass	no
+3983a1fb-d1c7-5d66-a3aa-94279191fb2c	pass		VISION: y=x, y=x/2, y=x/4 dogrular orjinden, ABCD dikdortgen, boyali AEB ucgen 9 br². img net, c=D (24) cevre plausible	medium	pass	no
+e0f7c250-5485-5387-8c6d-36ac8cf82203	fail	wrong_answer	VISION: Kutle/agirlik merkezi - E (barajin dayaniklilik icin farkli yukseklikte) yanlis (gercekte ayni yukseklik daha stabil). c=B yanlis	high	unclear	YES
+63676183-1677-5260-8ac6-8b5082bde4e3	fail	wrong_answer	VISION: 'Romanci/oykucu/tarihci' farkli tur (C), 'karinca gibi calisti' uretken (E), 'tarzindan taviz vermedi' cizgi (B). D (edebiyat yenilikler) DEGINILMEMIS = dogru cevap. c=E yanlis (E aslinda deginilmis)	high	pass	YES
+224e51a8-d0c3-509e-a1b7-a29b80674f0a	fail	wrong_answer	VISION: f(x)=∛(x³+x-6), f'(1)=(3+1)/(3·(-4)^(2/3))=4/(3·∛16)=2/(3∛2)≈0.529. Dogru A (1/2), c=B (1/3) yanlis	medium	unclear	YES
+65c764fe-7c3a-5f33-91f2-7ddc5dba95cb	pass		VISION: ABCDE figur, AB=12, DC=10, DE=8. EC²=DC²-DE²=36, EC=6. AE hesabi img-driven, E (14) plausible	medium	pass	no
+680c086c-74d4-51fb-b579-f1b26ca5a09d	pass		VISION: 4 noktali figur, A(59°), D, B, E orta, C(50°). DE⊥BC, BE=EC, AB=DC. img net hesap mumkun, c=E (99) plausible	medium	pass	no
+afd49dfc-caee-5113-9f09-63e1ceee33e0	unclear		VISION: Hiciv tanimi + 5 Osmanlica beyit. A/B genel ogut, C aşk, D/E politik. 'Hiciv DEGIL' karari Osmanlica yorumu gerek, c=E tartismali	low	pass	YES
+b2f3eaba-64ac-52d6-b8a0-bc5091cab636	unclear		VISION: f(x) mor + h(x) yesil grafikler. h sag-altta gorunuyor (4 saga 1 asagi gibi). Ama c=C (4 sola 1 asagi) ters yon - tartismali	low	pass	YES
+a2b66aed-d4a0-5e88-9389-40b4e1ed3b3f	unclear		VISION: X iyonu yuk belirsiz. 3 e verir, eşit yuk: X^(m+3)=Y^(n-3) -> n=m+6. m=-1 ise n=5 (E). Soru kosul eksik	low	unclear	no
+81b2ca6c-6c78-5cbc-90a3-c634f38c62cc	unclear		VISION: Siir net OCR degil. 'Ne kaldi ki' Ne=soru zamiri var. 'sabrin/gozunun/yatagin' iyelik. c=A 'Soru zamiri yok' soylenemez = dogru ifade? Tartismali	low	unclear	no
+87caab84-af9c-502a-809b-ed111525b66a	fail	wrong_answer	VISION: Kokler toplam=-b/a, tersler toplam=-b/c. -b/a=-b/c -> b=0 veya a=c. III: c=0 -> kok 0, tersi tanimsiz, MUMKUN DEGIL. Dogru B (I ve II), c=E (I,II,III) yanlis	high	unclear	YES
+5d86f158-4bfb-5c75-8d9e-ba955d892f6f	fail	wrong_answer	VISION: Siir net, 'gibi' EDAT var. C 'edat yok' YANLIS. Dogru 'bağlaç yok' E. c=C yanlis	high	unclear	YES
+e43b6a52-e74f-5c60-95c8-bc801cb85388	unclear		VISION: 'kınar hanım denizlerinden' + 'ut çalan kadın elleri' - Ece Ayhan veya Cansever stili. c=E (Cansever-Yercekimli Karanfil) plausible ama tartismali	low	pass	YES
+57d42eeb-72d8-5c96-914f-9c59e893e09c	fail	wrong_answer	VISION: Paragraf 'kendimize olmayan karakterlere burunerek yabanci olduguz' - D net dogru cevap (paragraf ifadesinin aynisi). c=E (birlikte olmaya) genel, D daha guclu. Yanlis isaret	medium	unclear	YES
+5f85ccce-0aae-52cc-8ebd-a0165c1181a1	fail	wrong_answer	VISION: E 'izlenmenin' kok 'iz' yazili - YANLIS belirleme (izle- fiil koku olmali). Dogru E, c=C (yem) dogru kok belirleme degil	high	unclear	YES
