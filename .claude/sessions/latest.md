@@ -1,7 +1,22 @@
-## Session Handoff — 2026-05-16 (Session 161d, Faz 1.6 + 2.2 + 2.3 + 4.1-prereq) — IN PROGRESS
+## Session Handoff — 2026-05-16 (Session 161d, 6 Faz sprint) — IN PROGRESS
 **Branch:** master (origin/master 1 commit behind pending push)
-**Son commit (push edilmiş):** `1795fe3c9` feat(faz-2-3): drift dashboard
-**Uncommitted:** Faz 4.1 stratified sample paketi
+**Son commit (push edilmiş):** `45eb3a0f4` feat(faz-4-1)
+**Uncommitted:** Faz 2.4 (ma_tracker) + 2.5 (Task Scheduler) + retroactive 2.1 (weekly_audit)
+
+### Faz 2.4 + 2.5 ek iş
+- **Faz 2.4 30-gün MA tracker**: `backend/scripts/quality/ma_tracker.py`
+  - Faz 2.3 timeseries.json input → pass% rolling 30-day average + alarm flag
+  - Alarmlar: MA(30g) < baseline - 5pp → drift, tek tarih < baseline - 10pp → flash
+  - Test: tek tarih → "veri yetersiz" mesajı (Faz 2.6 baseline'den sonra anlamlı)
+  - Exit code 2 alarm active ise (CI/cron integration)
+- **Faz 2.1 retroactive**: `backend/scripts/quality/weekly_audit.py` (memory'de completed işaretliydi ama dosya yoktu)
+  - 30 random sample, deterministic seed=ISO_year+week
+  - Auto-chain: weekly_audit → scoring_template --prepare (subprocess)
+  - Test: 30 sample (24 bronze + 6 legacy_v3), W20 seed
+- **Faz 2.5 Task Scheduler**:
+  - `run_weekly_audit.ps1` PowerShell wrapper (log dosyası + cwd)
+  - `SCHEDULER_SETUP.md` schtasks kurulum + troubleshooting + iş akışı
+  - Pazar 09:00 weekly trigger (kullanıcı manuel kurar)
 
 ### Session 161d kapsamı (4 Faz iş)
 - **Faz 1.6 Bronze promotion** (push'lu, `816c7f4ae`): 84,905 satır `bronze_clean`
