@@ -406,9 +406,7 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # Base query - questions tablosundan (Question modeli)
-                stmt = select(Question).where(
-                    Question.is_active.is_(True)
-                )
+                stmt = select(Question).where(Question.is_active.is_(True))
 
                 # Sınav tipi filtresi — DB UPPERCASE: "TYT", "AYT"
                 if sinav_tipi:
@@ -498,9 +496,7 @@ class SoruBankasiServisi:
 
                 # FIX N+1: Tek sorguda tüm konuların sorularını getir
                 sinav_upper = sinav_tipi.upper() if sinav_tipi else None
-                stmt = select(Question).where(
-                    Question.is_active.is_(True)
-                )
+                stmt = select(Question).where(Question.is_active.is_(True))
                 if sinav_upper:
                     stmt = stmt.where(Question.exam_type == sinav_upper)
 
@@ -591,20 +587,38 @@ class SoruBankasiServisi:
         exam_type_upper = exam_type.upper()
         pool_size = count * 3
 
+        # Convention v2 (15 May 2026) — quality filter zorunlu:
+        # auto_judged_high (R4 promoted) + human_verified (manual curator) kabul.
+        # rejected, unverified, legacy_v3_unaudited havuza girmez.
+        # Bkz: docs/quality_review_status_convention.md
+        _accepted_status = ("human_verified", "auto_judged_high")
+
+        def _base_stmt(et: str | None):
+            s = select(Question).where(
+                Question.is_active == True,
+                Question.subject_area.in_(subjects_upper),
+                Question.quality_review_status.in_(_accepted_status),
+            )
+            if et is not None:
+                s = s.where(Question.exam_type == et)
+            if difficulty_levels:
+                s = s.where(Question.difficulty_level.in_(difficulty_levels))
+            return s.order_by(func.random()).limit(pool_size)
+
         async with db_manager.get_session() as session:
             try:
-                stmt = select(Question).where(
-                    Question.is_active == True,
-                    Question.subject_area.in_(subjects_upper),
-                    Question.exam_type == exam_type_upper,
-                )
-                if difficulty_levels:
-                    stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))
-
-                stmt = stmt.order_by(func.random()).limit(pool_size)
-
-                result = await session.execute(stmt)
+                # Önce exam_type ile dene
+                result = await session.execute(_base_stmt(exam_type_upper))
                 pool: list[Question] = list(result.scalars().all())
+
+                # Edebiyat TYT yok gibi durumlar için fallback: exam_type kısıtını kaldır
+                if not pool:
+                    logger.info(
+                        f"get_interleaved_questions: exam_type={exam_type_upper} "
+                        f"havuz boş, fallback uygulanıyor (konular={subjects_upper})"
+                    )
+                    result = await session.execute(_base_stmt(None))
+                    pool = list(result.scalars().all())
 
                 logger.debug(
                     f"get_interleaved_questions: havuzdan {len(pool)} soru çekildi "
