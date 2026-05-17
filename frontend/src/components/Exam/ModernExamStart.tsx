@@ -203,13 +203,17 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
         await examService.startExam(sessionId);
         onStart(sessionId);
       } else {
-        // Fallback: session yoksa yeni oluştur
+        // Fallback: session yoksa yeni oluştur ve hemen başlat
+        // BUG #3 fix: createExam tek başına status=not_started bırakır,
+        // ModernOSYMExamInterface IN_PROGRESS değil diye soru/timer
+        // fetch etmez → ekranda timer 00:00:00 + boş soru.
         const session = await examService.createExam({
           exam_type: examType,
           custom_config: examInfo.difficulty_distribution ? {
             difficulty_distribution: examInfo.difficulty_distribution,
           } : undefined,
         });
+        await examService.startExam(session.session_id);
         onStart(session.session_id);
       }
     } catch (err: any) {

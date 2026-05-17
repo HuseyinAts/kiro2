@@ -177,7 +177,13 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
       setLoading(true);
       setError(null);
 
-      const sessionData = await examService.getExamSession(sessionId);
+      let sessionData = await examService.getExamSession(sessionId);
+
+      // BUG #3 defensive fix: NOT_STARTED session ekrana açıldıysa otomatik başlat.
+      // Aksi halde currentQuestion + timer fetch atlanır, ekran boş kalır.
+      if (sessionData.status === ExamStatus.NOT_STARTED) {
+        sessionData = await examService.startExam(sessionId);
+      }
 
       if (sessionData.status === ExamStatus.COMPLETED) {
         const performanceData = await examService.getPerformanceAnalysis(sessionId);
