@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 """
-Faz 2.1 — Haftalık 30 random sample audit harness (retroactive impl, Session 161d).
+Faz 2.1 + Faz 2.6 — Haftalık 30 random sample audit harness.
 
-Plan v1 Faz 2.1: "weekly_audit.py — backend/scripts/quality/weekly_audit.py".
-Memory'de completed işaretli ama dosya yoktu — manuel SQL'le yapılan one-shot
-audit'leri (C1/C2/C3) bir araya getiren reusable version.
+Post-Faz 5+6 pool kompozisyonu değişti (bronze 84,905 → 197, auto_judged_high
+0 → 81,776). ELIGIBLE pool artık 'v_safe_for_beta' view (student'ın
+gördüğü Gold pool) + ayrıca 'rejected' pool false-negative kontrolü için.
 
 USAGE:
-  # Manuel:
+  # Default: Gold pool (v_safe_for_beta) — baseline tracking
   python -m backend.scripts.quality.weekly_audit
 
-  # Cron-like (Faz 2.5 Task Scheduler tetikler):
-  # → 20260524_weekly_RAW.tsv üretir → scoring_template --prepare → SCORING.tsv
+  # Reject pool — false-negative kontrolü (Faz 5+6 filter audit)
+  python -m backend.scripts.quality.weekly_audit --pool reject
+
+  # Sadece Edebiyat Sokagi manual queue
+  python -m backend.scripts.quality.weekly_audit --pool manual_queue
 
 SCOPE (her hafta):
-  - 30 random sample (deterministic seed=ISO_year+week)
-  - Source: bronze_clean veya legacy_v3_unaudited (eligible review pool)
-  - Output: backend/_pilots/<YYYYMMDD>_weekly_RAW.tsv
+  - 30 random sample (deterministic seed=ISO_year+week+pool)
+  - Output: backend/_pilots/<YYYYMMDD>_weekly_<pool>_RAW.tsv
+  - Auto-chain: scoring_template --prepare → SCORING.tsv
 
 CHAIN:
   weekly_audit → RAW.tsv → scoring_template --prepare → SCORING.tsv
@@ -25,6 +28,7 @@ CHAIN:
 
 from __future__ import annotations
 
+import argparse
 import csv
 import os
 import subprocess
@@ -38,11 +42,25 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 PILOTS_DIR = PROJECT_ROOT / "backend" / "_pilots"
 SAMPLE_N = 30
 
-# Eligible pool: pipeline-fix geçmiş veya legacy_v3 (audit/curation adayları)
-ELIGIBLE_WHERE = """
-    is_active = TRUE
-    AND quality_review_status IN ('bronze_clean', 'legacy_v3_unaudited')
-"""
+
+# Pool tanımları — Faz 5+6 alternative sonrası composition
+POOLS = {
+    "gold": {
+        "label": "v_safe_for_beta (Gold pool — student sees)",
+        "source": "v_safe_for_beta",
+        "where": "1=1",
+    },
+    "reject": {
+        "label": "rejected (false-negative check)",
+        "source": "question_bank",
+        "where": "is_active = TRUE AND quality_review_status = 'rejected'",
+    },
+    "manual_queue": {
+        "label": "Edebiyat Sokagi manual queue (bronze_clean)",
+        "source": "question_bank",
+        "where": ("is_active = TRUE AND quality_review_status = 'bronze_clean'"),
+    },
+}
 
 COLUMNS = [
     "id",
@@ -77,11 +95,37 @@ def get_engine():
 def main() -> int:
     from sqlalchemy import text
 
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--pool",
+        choices=sorted(POOLS.keys()),
+        default="gold",
+        help="Audit pool seçimi (default: gold)",
+    )
+    args = ap.parse_args()
+    pool = POOLS[args.pool]
+
     today = date.today()
     iso_year, iso_week, _ = today.isocalendar()
-    seed = f"weekly_{iso_year}W{iso_week:02d}"
+    seed = f"weekly_{iso_year}W{iso_week:02d}_{args.pool}"
 
     eng = get_engine()
+
+    # Pre-state: pool size + composition
+    with eng.connect() as c:
+        pool_size = c.execute(
+            text(f"SELECT COUNT(*) FROM {pool['source']} WHERE {pool['where']}")
+        ).scalar()
+
+    if pool_size == 0:
+        sys.exit(f"[error] Pool '{args.pool}' boş ({pool['label']})")
+
+    if pool_size < SAMPLE_N:
+        print(
+            f"[warn] Pool '{args.pool}' size={pool_size} < {SAMPLE_N} — "
+            f"tüm satırlar dahil edilecek"
+        )
+
     sql = f"""
         SELECT
             CAST(id AS text) AS id,
@@ -94,8 +138,8 @@ def main() -> int:
             question_image_url,
             pipeline_metadata::jsonb ->> 'match_tier' AS match_tier,
             quality_review_status
-        FROM question_bank
-        WHERE {ELIGIBLE_WHERE}
+        FROM {pool["source"]}
+        WHERE {pool["where"]}
         ORDER BY md5(CAST(id AS text) || :seed)
         LIMIT :n
     """
@@ -104,9 +148,9 @@ def main() -> int:
     rows = [dict(r._mapping) for r in result]
 
     if not rows:
-        sys.exit("[error] Hiç sample alınamadı (pool boş?)")
+        sys.exit(f"[error] Hiç sample alınamadı (pool '{args.pool}' filtresi?)")
 
-    out_path = PILOTS_DIR / f"{today.strftime('%Y%m%d')}_weekly_RAW.tsv"
+    out_path = PILOTS_DIR / f"{today.strftime('%Y%m%d')}_weekly_{args.pool}_RAW.tsv"
     PILOTS_DIR.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(
@@ -120,8 +164,11 @@ def main() -> int:
             }
             writer.writerow(cleaned)
 
-    print(f"[done] {len(rows)} sample → {out_path}")
-    print(f"[seed] {seed} (ISO year+week)")
+    print(f"[pool] {args.pool} — {pool['label']}")
+    print(f"[pool-size] {pool_size:,} eligible satır")
+    print(f"[sampled] {len(rows)} satır")
+    print(f"[seed] {seed}")
+    print(f"[output] {out_path}")
 
     # Auto-prepare SCORING.tsv
     print("\n[chain] scoring_template --prepare çağırılıyor...")
@@ -142,10 +189,8 @@ def main() -> int:
     else:
         print(f"[warn] prepare başarısız: {result.stderr}", flush=True)
 
-    print(
-        f"\n[next] Hüseyin scoring: "
-        f"{out_path.with_name(out_path.stem + '_SCORING.tsv')}"
-    )
+    scoring_path = out_path.with_name(out_path.stem + "_SCORING.tsv")
+    print(f"\n[next] Hüseyin scoring: {scoring_path}")
     return 0
 
 
