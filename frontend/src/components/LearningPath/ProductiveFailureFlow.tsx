@@ -29,6 +29,8 @@ import {
   SkipNext as SkipIcon,
 } from '@mui/icons-material';
 
+import { MathText } from '../ui/MathText';
+
 interface PretestQuestion {
   id: string;
   question_text: string;
@@ -200,8 +202,8 @@ export function ProductiveFailureFlow({ topic, onComplete, onSkip }: ProductiveF
               value={((currentIdx + 1) / questions.length) * 100}
               sx={{ mb: 2, height: 4, borderRadius: 2 }}
             />
-            <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.8 }}>
-              {currentQuestion.question_text}
+            <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.8 }} component="div">
+              <MathText>{currentQuestion.question_text}</MathText>
             </Typography>
             <Stack spacing={1}>
               {Object.entries(currentQuestion.options).map(([key, value]) => (
@@ -217,7 +219,9 @@ export function ProductiveFailureFlow({ topic, onComplete, onSkip }: ProductiveF
                 >
                   <Stack direction="row" alignItems="center" spacing={1}>
                     <Chip label={key} size="small" sx={{ fontWeight: 700 }} />
-                    <Typography variant="body2">{value}</Typography>
+                    <Typography variant="body2" component="span">
+                      <MathText inline>{value}</MathText>
+                    </Typography>
                   </Stack>
                 </Paper>
               ))}

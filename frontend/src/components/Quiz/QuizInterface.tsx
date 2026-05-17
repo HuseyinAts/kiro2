@@ -40,6 +40,8 @@ import { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+import { MathText } from '../ui/MathText';
+
 import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
 import { MnemonicHint } from './MnemonicHint';
 
@@ -471,7 +473,7 @@ export function QuizInterface({
               >
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-xl font-semibold flex-1 break-words text-gray-800 leading-relaxed">
-                    {currentQuestion.question}
+                    <MathText inline>{currentQuestion.question}</MathText>
                   </h3>
 
                   <IconButton onClick={toggleFlag} size="small" className="ml-2">
@@ -485,7 +487,7 @@ export function QuizInterface({
 
                 {currentQuestion.description && (
                   <p className="text-gray-600 mb-4 text-base">
-                    {currentQuestion.description}
+                    <MathText inline>{currentQuestion.description}</MathText>
                   </p>
                 )}
 
@@ -515,7 +517,7 @@ export function QuizInterface({
                       key={index}
                       value={option}
                       control={<Radio className="mt-1" />}
-                      label={<span className="text-base text-gray-700">{option}</span>}
+                      label={<span className="text-base text-gray-700"><MathText inline>{option}</MathText></span>}
                       className={clsx(
                         'mb-4 p-5 min-h-[70px] rounded-xl border-2 transition-all break-words w-full cursor-pointer',
                         answers[currentQuestion.id] === option
@@ -539,7 +541,7 @@ export function QuizInterface({
                           onChange={() => handleMultiSelectChange(option)}
                         />
                       }
-                      label={option}
+                      label={<MathText inline>{option}</MathText>}
                       className={clsx(
                         'p-2 rounded-lg border transition-all',
                         (answers[currentQuestion.id] || []).includes(option)
@@ -632,7 +634,7 @@ export function QuizInterface({
 
                 {showHint && (
                   <Alert severity="info" className="mt-2">
-                    {currentQuestion.hints[currentHintIndex]}
+                    <MathText inline>{currentQuestion.hints[currentHintIndex]}</MathText>
                   </Alert>
                 )}
               </div>
@@ -653,12 +655,12 @@ export function QuizInterface({
                   <div className="mb-1">
                     <strong>{feedbackCorrect ? 'Doğru!' : 'Yanlış'}</strong>
                     {!feedbackCorrect && currentQuestion.correctAnswer && (
-                      <span> — Doğru cevap: <strong>{currentQuestion.correctAnswer}</strong></span>
+                      <span> — Doğru cevap: <strong><MathText inline>{String(currentQuestion.correctAnswer)}</MathText></strong></span>
                     )}
                   </div>
                   {currentQuestion.explanation && (
                     <div className="text-sm mt-1">
-                      {currentQuestion.explanation}
+                      <MathText inline>{currentQuestion.explanation}</MathText>
                     </div>
                   )}
                 </Alert>
