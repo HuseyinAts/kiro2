@@ -73,6 +73,7 @@ ROUTER_MAPPING = {
     "api.pdf_processing_api": ("content", "api.pdf_processing_api"),
     "api.batch_generation_api": ("content", "api.batch_generation_api"),
     "api.wave2b_quality_routes": ("content", "api.wave2b_quality_routes"),
+    "api.student_feedback_api": ("content", "api.student_feedback_api"),
     "api.difficulty_classification_api": (
         "content",
         "api.difficulty_classification_api",
