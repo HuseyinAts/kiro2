@@ -609,23 +609,27 @@ class SoruBankasiServisi:
         }
         _has_quantitative = bool(set(subjects_upper) & _quantitative_subjects)
 
+        # Bug #11 fix (18 May 2026): IMAGE-REQUIRED soruları HARIÇ.
+        # Vision audit (10/10 sample) ortaya koydu ki tüm question_image_url'ler
+        # solution leak içeriyor (options image'da görünüyor). Geçici çözüm:
+        # image olmadan çözülebilen (text-self-contained) sorulara dar.
+        # Image-required: text "şekil", "yukarıda", "aşağıda", "verilen graf/tablo",
+        #                 "şemada", "haritada" gibi ifadeler içeriyor.
+        # Tahmini etki: pool 84K → ~31K (text-self-contained)
+        # Sprint sonrası: Vision re-crop ile düzgün crop'lar geri eklenir.
+        _img_required_pattern = (
+            r"şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|"
+            r"grafikte|şemada|haritada|verilenler|aşağıdaki şek"
+        )
+
         def _base_stmt(et: str | None):
             s = select(Question).where(
                 Question.is_active == True,
                 Question.subject_area.in_(subjects_upper),
                 Question.quality_review_status.in_(_accepted_status),
+                # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
+                text(f"question_text !~* '{_img_required_pattern}'"),
             )
-            # Sayısal branş hedefliyorsa page-level exclude
-            if _has_quantitative and set(subjects_upper).issubset(
-                _quantitative_subjects
-            ):
-                s = s.where(
-                    text(
-                        "(pipeline_metadata::jsonb ->> 'match_tier') IS NULL "
-                        "OR (pipeline_metadata::jsonb ->> 'match_tier') NOT IN "
-                        "('tier1_page_inline','tier1b_position_page_inline','tier5_qindex_page_inline')"
-                    )
-                )
             if et is not None:
                 s = s.where(Question.exam_type == et)
             if difficulty_levels:

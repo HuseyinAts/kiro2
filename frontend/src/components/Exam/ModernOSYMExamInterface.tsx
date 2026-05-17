@@ -525,7 +525,14 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
                     </Typography>
                   </Box>
 
-                  {currentQuestion.question_image_url && (
+                  {/* Bug #11 defensive suppress (18 May 2026):
+                      Vision audit ortaya koydu ki tüm question_image_url'ler
+                      solution leak içeriyor (image içinde A) B) C) D) E) görünüyor).
+                      Backend filter image-required soruları zaten pool dışı tutuyor,
+                      bu defansif katman beta'ya sızabilecek leak'leri durdurur.
+                      Sprint sonrası: Vision re-crop ile düzgün crop'lar geri eklenir,
+                      buradaki suppress kaldırılır. */}
+                  {false && currentQuestion.question_image_url && (
                     <Box sx={{
                       flex: { md: '0 0 40%' },
                       position: { md: 'sticky' },
