@@ -9,7 +9,7 @@ import random
 import unicodedata
 from datetime import datetime
 
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import and_, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # PERFORMANCE: Redis cache integration
@@ -593,12 +593,39 @@ class SoruBankasiServisi:
         # Bkz: docs/quality_review_status_convention.md
         _accepted_status = ("human_verified", "auto_judged_high")
 
+        # Bug #8 fix v2 (17 May 2026): subject-aware page-level exclusion.
+        # Page-level crop'lar (tier1/tier1b/tier5) sayısal branşlarda solution leak
+        # ve text↔image content mismatch içeriyor (Hüseyin hata/hata 2 8/8 sample audit).
+        # AMA sözel branşlarda paragraf bazlı sorular zaten image gerektiriyor
+        # (yukarıdaki parça/şu cümlede vb.) — exclude EDEBIYAT pool'unu 2618 → 38'e düşürüyor.
+        # Subject-aware: sayısal EXCLUDE, sözel KEEP.
+        _quantitative_subjects = {
+            "MATEMATIK",
+            "FIZIK",
+            "GEOMETRI",
+            "KIMYA",
+            "BIYOLOJI",
+            "COGRAFYA",
+        }
+        _has_quantitative = bool(set(subjects_upper) & _quantitative_subjects)
+
         def _base_stmt(et: str | None):
             s = select(Question).where(
                 Question.is_active == True,
                 Question.subject_area.in_(subjects_upper),
                 Question.quality_review_status.in_(_accepted_status),
             )
+            # Sayısal branş hedefliyorsa page-level exclude
+            if _has_quantitative and set(subjects_upper).issubset(
+                _quantitative_subjects
+            ):
+                s = s.where(
+                    text(
+                        "(pipeline_metadata::jsonb ->> 'match_tier') IS NULL "
+                        "OR (pipeline_metadata::jsonb ->> 'match_tier') NOT IN "
+                        "('tier1_page_inline','tier1b_position_page_inline','tier5_qindex_page_inline')"
+                    )
+                )
             if et is not None:
                 s = s.where(Question.exam_type == et)
             if difficulty_levels:

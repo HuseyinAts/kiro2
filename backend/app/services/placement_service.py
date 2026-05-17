@@ -300,6 +300,18 @@ class PlacementTestService:
               -- veya LLM-as-judge yüksek güven (auto_judged_high) kabul.
               -- Bkz: docs/quality_review_status_convention.md
               AND quality_review_status IN ('human_verified', 'auto_judged_high')
+              -- 17 May 2026: Bug #8 fix v2 — SAYISAL branşlarda page-level crop HARIÇ.
+              -- Sözel branşlarda (turkce/edebiyat/tarih/sosyal) paragraf bazlı sorular
+              -- image gerektiriyor, exclude EDEBIYAT pool'u 2618→38'e düşürüyor.
+              -- Subject-aware: sayısal EXCLUDE, sözel KEEP.
+              AND (
+                CASE WHEN LOWER(:sid) IN ('matematik','fizik','geometri','kimya','biyoloji','cografya') THEN
+                  ((pipeline_metadata::jsonb ->> 'match_tier') IS NULL
+                   OR (pipeline_metadata::jsonb ->> 'match_tier') NOT IN
+                      ('tier1_page_inline','tier1b_position_page_inline','tier5_qindex_page_inline'))
+                ELSE TRUE
+                END
+              )
             ORDER BY RANDOM()
             LIMIT 80
         """),

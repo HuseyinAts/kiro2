@@ -241,6 +241,15 @@ class CATSessionService:
                   AND is_active = TRUE
                   -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
                   AND quality_review_status IN ('human_verified', 'auto_judged_high')
+                  -- 17 May 2026: Bug #8 fix v2 — SAYISAL branşlarda page-level crop HARIÇ
+                  AND (
+                      CASE WHEN LOWER(:subject_id) IN ('matematik','fizik','geometri','kimya','biyoloji','cografya') THEN
+                        ((pipeline_metadata::jsonb ->> 'match_tier') IS NULL
+                         OR (pipeline_metadata::jsonb ->> 'match_tier') NOT IN
+                            ('tier1_page_inline','tier1b_position_page_inline','tier5_qindex_page_inline'))
+                      ELSE TRUE
+                      END
+                  )
                   AND (
                       -- Oncelik 1: Gercek IRT kalibrasyonu olan calib_pool sorulari
                       (is_calib_pool = TRUE AND is_calibrated = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
@@ -273,6 +282,15 @@ class CATSessionService:
                   AND is_active = TRUE
                   -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
                   AND quality_review_status IN ('human_verified', 'auto_judged_high')
+                  -- 17 May 2026: Bug #8 fix v2 — SAYISAL branşlarda page-level crop HARIÇ
+                  AND (
+                      CASE WHEN LOWER(:subject_id) IN ('matematik','fizik','geometri','kimya','biyoloji','cografya') THEN
+                        ((pipeline_metadata::jsonb ->> 'match_tier') IS NULL
+                         OR (pipeline_metadata::jsonb ->> 'match_tier') NOT IN
+                            ('tier1_page_inline','tier1b_position_page_inline','tier5_qindex_page_inline'))
+                      ELSE TRUE
+                      END
+                  )
                 ORDER BY
                     -- is_calibrated=TRUE olanlar ZPD icinde de one alinir
                     CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
