@@ -20,6 +20,23 @@ function hasLatex(text: string): boolean {
   return text.includes('$') || text.includes('\\frac') || text.includes('\\sqrt');
 }
 
+/**
+ * Bare LaTeX wrap — $ delimiter olmadan ham \frac, \sqrt, \alpha vb. varsa
+ * remarkMath bunları render etmez (ham kalır: "\frac{26}{33}"). Bug #1 v2
+ * (19 May 2026 beta01 flag `7c49c4d7`): opsiyonlarda DB'de `\frac{26}{33}`
+ * format'ında — auto-wrap çözer.
+ */
+const BARE_LATEX_REGEX = /\\(?:frac|sqrt|sum|int|prod|lim|infty|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|pi|sigma|phi|psi|omega|cdot|times|le|ge|ne|approx|in|notin|cup|cap|subset|supset|forall|exists|partial|nabla|leftarrow|rightarrow|Leftrightarrow|Rightarrow|leq|geq|neq)\b/;
+
+function autoWrapBareLatex(text: string): string {
+  // Eğer $ delimiter zaten varsa veya bare LaTeX yoksa dokunma
+  if (text.includes('$') || !BARE_LATEX_REGEX.test(text)) {
+    return text;
+  }
+  // Tek bir bare LaTeX expression: tüm string'i $...$ ile sar
+  return `$${text}$`;
+}
+
 export const MathText: React.FC<MathTextProps> = ({ children, inline = false }) => {
   // Null/undefined guard — content + question_text ikisi de boşsa crash önle
   if (!children) return inline ? <span /> : <div />;
@@ -31,7 +48,10 @@ export const MathText: React.FC<MathTextProps> = ({ children, inline = false }) 
   }
 
   // LaTeX yolunda da whitespace normalize et (OCR line-break temizliği)
-  const preprocessed = children.replace(/\n{3,}/g, '\n\n').replace(/[ \t]+/g, ' ').trim();
+  // + bare LaTeX auto-wrap ($ delimiter olmadan \frac vb. olanlar için)
+  const preprocessed = autoWrapBareLatex(
+    children.replace(/\n{3,}/g, '\n\n').replace(/[ \t]+/g, ' ').trim(),
+  );
 
   return (
     <ReactMarkdown
