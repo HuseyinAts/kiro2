@@ -40,6 +40,7 @@ import { useState, useEffect } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+import { FlagButton } from '../Quality/FlagButton';
 import { MathText } from '../ui/MathText';
 
 import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
@@ -476,13 +477,16 @@ export function QuizInterface({
                     <MathText inline>{currentQuestion.question}</MathText>
                   </h3>
 
-                  <IconButton onClick={toggleFlag} size="small" className="ml-2">
-                    {flagged.has(currentQuestion.id) ? (
-                      <Bookmark color="warning" />
-                    ) : (
-                      <BookmarkBorder />
-                    )}
-                  </IconButton>
+                  <div className="flex items-start ml-2">
+                    <FlagButton questionId={currentQuestion.id} size="small" />
+                    <IconButton onClick={toggleFlag} size="small">
+                      {flagged.has(currentQuestion.id) ? (
+                        <Bookmark color="warning" />
+                      ) : (
+                        <BookmarkBorder />
+                      )}
+                    </IconButton>
+                  </div>
                 </div>
 
                 {currentQuestion.description && (
