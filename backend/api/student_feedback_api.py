@@ -110,6 +110,16 @@ async def create_flag(
         await db.commit()
     except IntegrityError as exc:
         await db.rollback()
+        err_str = (str(exc.orig) if exc.orig else str(exc)).lower()
+        # S1.1 — distinguish UNIQUE violation from FK violation
+        if (
+            "uq_student_flags_user_question_type" in err_str
+            or "duplicate key" in err_str
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Bu soruyu zaten aynı türde bildirdiniz.",
+            ) from exc
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="question_id not found or constraint violation",
