@@ -395,7 +395,13 @@ export function ModernLearningPathPage() {
     setInterleavedLoading(true);
     setQuizError(null);
     try {
-      const res = await fetch(`/api/v1/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
+      // Cache-bust: ?_t=Date.now() + Cache-Control: no-cache
+      // Backend middleware'i cache-control: private, max-age=300 set ediyor
+      // → reject edilen sorular cached response'da kalıyor. Bypass et.
+      const res = await fetch(
+        `/api/v1/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10&_t=${Date.now()}`,
+        { credentials: 'include', headers: { 'Cache-Control': 'no-cache' } },
+      );
       const data = await res.json();
       if (data.success && data.questions?.length > 0) {
         setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));

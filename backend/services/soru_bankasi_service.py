@@ -624,12 +624,16 @@ class SoruBankasiServisi:
         #   "kavram", "numaraland" — list/diagram references
         #   "ABCD paralelkenar|üçgen|dik", "|AK|=", "$AB$" — geometri figür ref
         #   "Şekildeki kap", "cam boru" — kimya deney ref
+        # v3 (19 May 2026): PostgreSQL `C` locale — LOWER('Ş')='Ş', ~* Türkçe
+        # karakterleri ignore ediyor. Her Türkçe ilk-harf için [küçükBÜYÜK] char
+        # class kullan. Test: `'Şekilde' ~* '[şŞ]ekil'` → True
         _img_required_pattern = (
-            r"şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|"
-            r"grafikte|şemada|haritada|verilenler|aşağıdaki şek|"
-            r"görsel|kavram harita|deney düzene|kavram haritası|"
-            r"numaraland.* özelli|şekildeki kap|cam boru|"
-            r"paralelkenar|kareler|sayıları verilmiş|şek\.|şek\s"
+            r"[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|"
+            r"[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|"
+            r"aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|"
+            r"numaraland.* özelli|şekildeki kap|[cC]am boru|"
+            r"[pP]aralelkenar|kareler|sayıları verilmiş|şek\.|şek\s|"
+            r"[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen"
         )
 
         def _base_stmt(et: str | None):

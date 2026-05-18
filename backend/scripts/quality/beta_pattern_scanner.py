@@ -58,51 +58,135 @@ AUDIT_DATE = datetime.now().strftime("%Y-%m-%d")
 # Pattern definitions: (category, predicate, reason)
 # Predicate: SQL fragment to be ANDed with auto_judged_high filter
 PATTERNS = [
-    # IMAGE_BOUND patterns
+    # IMAGE_BOUND — v3 char class first letter (PostgreSQL C locale fix)
+    # NOTE: 'şekil' tek başına FP riski yüksek (bu şekilde, küp şeklinde idiomatic).
+    # Stricter sub-patterns kullan:
+    (
+        "image_sekil_numbered",
+        "question_text ~ '[şŞ]ekil\\s*[0-9]'",
+        "'Şekil 1', 'şekil 2' — numbered figure ref",
+    ),
+    (
+        "image_sekildeki",
+        "question_text ~ '[şŞ]ekildeki'",
+        "'Şekildeki/şekildeki' — image ref (NOT 'bu şekilde')",
+    ),
+    (
+        "image_yukari_sek",
+        "question_text ~ '[yY]ukarı.{0,15}\\s[şŞ]ek'",
+        "'Yukarı(da/daki) ...şek' — image ref",
+    ),
+    (
+        "image_asagi_sek",
+        "question_text ~ '[aA]şağı.{0,15}\\s[şŞ]ek'",
+        "'Aşağı(da/daki) ...şek' — image ref",
+    ),
+    (
+        "image_verilen_sek",
+        "question_text ~ '[vV]erilen.{0,15}\\s[şŞ]ek'",
+        "'Verilen ...şek' — image ref",
+    ),
+    (
+        "image_sekilde_goster",
+        "question_text ~ '[şŞ]ekilde\\s+(gösteril|bağlan|veril|çizil)'",
+        "'Şekilde gösterilmiş/bağlanmış/verilmiş/çizilmiş'",
+    ),
     (
         "image_gorsel",
-        "question_text ~* 'görsel'",
-        "Soru metni 'görsel' kelimesi içeriyor — image olmadan çözülemez",
+        "question_text ~ '[gG]örsel'",
+        "Soru metni 'Görsel/görsel' kelimesi (image-bound)",
     ),
     (
         "image_kavram_harita",
-        "question_text ~* 'kavram harita'",
+        "question_text ~ '[kK]avram harita'",
         "Tarih/sosyal — kavram haritası referansı",
     ),
     (
         "image_deney_duzene",
-        "question_text ~* 'deney düzene'",
+        "question_text ~ '[dD]eney düzene'",
         "Fizik/kimya/biyoloji deney düzeneği şekli",
     ),
     (
+        "image_yukarida",
+        "question_text ~ '[yY]ukarıda(ki|n)?\\s+(şekil|grafik|tablo|şema|görsel|verilen)'",
+        "'Yukarıda...şekil/grafik/tablo' image-bound referansı",
+    ),
+    (
+        "image_asagida",
+        "question_text ~ '[aA]şağıda(ki|n)?\\s+(şekil|grafik|tablo|şema|görsel|verilen)'",
+        "'Aşağıda...şekil/grafik/tablo' image-bound referansı",
+    ),
+    (
+        "image_grafikte",
+        "question_text ~ '[gG]rafikte'",
+        "'Grafikte/grafikte' referansı",
+    ),
+    (
+        "image_tabloda",
+        "question_text ~ '[tT]abloda'",
+        "'Tabloda/tabloda' referansı",
+    ),
+    (
+        "image_semada",
+        "question_text ~ '[şŞ]emada'",
+        "'Şemada/şemada' referansı",
+    ),
+    (
+        "image_haritada",
+        "question_text ~ '[hH]aritada'",
+        "'Haritada/haritada' referansı",
+    ),
+    (
         "image_sekildeki_kap",
-        "question_text ~* 'şekildeki kap'",
-        "Kimya — şekildeki kaplar (deney şekli)",
+        "question_text ~ '[şŞ]ekildeki kap'",
+        "Kimya — şekildeki kaplar",
     ),
     (
         "image_cam_boru",
-        "question_text ~* 'cam boru'",
-        "Kimya — cam boru ile bağlı deney",
+        "question_text ~ '[cC]am boru'",
+        "Kimya — cam boru deney",
     ),
     (
         "image_numaraland_ozelli",
-        "question_text ~* 'numaraland.* özelli'",
-        "Numaralandırılmış özellik referansı (numbered list)",
+        "question_text ~ 'numaraland.* özelli'",
+        "Numaralandırılmış özellik referansı",
     ),
     (
         "image_paralelkenar",
-        "question_text ~* 'paralelkenar' AND question_text ~* '\\|[A-Z]{1,3}\\|'",
-        "Geometri paralelkenar + segment notation (|AB|, |AKL|)",
+        "question_text ~ '[pP]aralelkenar' AND question_text ~ '\\|[A-Z]{1,3}\\|'",
+        "Geometri paralelkenar + segment notation",
     ),
     (
         "image_dikucgen",
-        "question_text ~* '(dik üçgen|eşkenar üçgen|ikizkenar üçgen)' AND question_text ~* '\\|[A-Z]{1,3}\\|'",
+        "question_text ~ '([dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen)' AND question_text ~ '\\|[A-Z]{1,3}\\|'",
         "Geometri üçgen + segment notation",
     ),
     (
         "image_abcd_segment",
-        "question_text ~* 'ABCD' AND question_text ~* '\\|[A-Z]{1,3}\\|'",
+        "question_text ~ 'ABCD' AND question_text ~ '\\|[A-Z]{1,3}\\|'",
         "ABCD figür + segment notation",
+    ),
+    (
+        "image_verilenler",
+        "question_text ~ '[vV]erilen(\\s+graf|\\s+tablo|\\s+şema)' OR question_text ~ '[vV]erilenler'",
+        "'Verilen graf/tablo/şema' referansı",
+    ),
+    # CONTEXT_DEPENDENT — başlangıçta dangling reference
+    # "Bu X..." opening — önceki bağlam yok ama "Bu X" diye referans yapıyor
+    (
+        "context_bu_opening",
+        "question_text ~ '^Bu (fabrika|tablo|grafik|şek|olay|metin|durum|deney|kümeden|sayıdan|cebirsel|işlem|haritada|şemada|denklem|fonksiyon|paragraf|metinden|tablodan|grafikten|şekilden|şekildeki|tablodaki|grafikteki|verilen)'",
+        "'Bu X...' opening — dangling context reference",
+    ),
+    (
+        "context_yukaridaki_acik",
+        "question_text ~ '^[YA]ukarıda(ki)? (ver|bul|söy|göst|açık|durum)'",
+        "'Yukarıdaki/Yukarıda verilen...' opening (preceding context)",
+    ),
+    (
+        "context_asagidaki_acik",
+        "question_text ~ '^[AŞ]şağıda(ki)? (ver|bul|söy|göst|açık|durum)'",
+        "'Aşağıdaki/Aşağıda verilen...' opening (following context)",
     ),
     # BROKEN_TEXT patterns
     (
@@ -158,15 +242,31 @@ PATTERNS = [
 
 # Reject sınırı: which categories to apply (HIGH confidence)
 APPLY_CATEGORIES = {
+    "image_sekil_numbered",
+    "image_sekildeki",
+    "image_yukari_sek",
+    "image_asagi_sek",
+    "image_verilen_sek",
+    "image_sekilde_goster",
     "image_gorsel",
     "image_kavram_harita",
     "image_deney_duzene",
+    "image_yukarida",
+    "image_asagida",
+    "image_grafikte",
+    "image_tabloda",
+    "image_semada",
+    "image_haritada",
     "image_sekildeki_kap",
     "image_cam_boru",
     "image_numaraland_ozelli",
     "image_paralelkenar",
     "image_dikucgen",
     "image_abcd_segment",
+    "image_verilenler",
+    "context_bu_opening",
+    "context_yukaridaki_acik",
+    "context_asagidaki_acik",
     "broken_ends_III",
     "broken_ends_dotdot",
     # incomplete_roman_options_no_text → MEDIUM risk, skip

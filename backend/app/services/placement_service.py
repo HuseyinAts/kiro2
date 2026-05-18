@@ -304,8 +304,9 @@ class PlacementTestService:
               -- Vision audit (10/10 sample) tüm question_image_url'lerin
               -- options leak içerdiğini ortaya koydu. Geçici çözüm: text-self-contained
               -- sorulara dar (image olmadan çözülebilen).
-              -- Bug #11 v2: beta01 flag pattern'leri eklendi
-              AND question_text !~* 'şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|grafikte|şemada|haritada|verilenler|aşağıdaki şek|görsel|kavram harita|deney düzene|numaraland.* özelli|şekildeki kap|cam boru|paralelkenar|şek\.|şek '
+              -- Bug #11 v3: PostgreSQL C locale fix (LOWER('Ş')='Ş')
+              -- char class [şŞ] her Türkçe ilk-harf için
+              AND question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
             ORDER BY RANDOM()
             LIMIT 80
         """),
