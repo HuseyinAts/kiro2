@@ -279,7 +279,7 @@ class PlacementTestService:
         from sqlalchemy import text
 
         result = await self.db.execute(
-            text("""
+            text(r"""
             SELECT
                 id::text                AS question_id,
                 question_text,
@@ -304,7 +304,8 @@ class PlacementTestService:
               -- Vision audit (10/10 sample) tüm question_image_url'lerin
               -- options leak içerdiğini ortaya koydu. Geçici çözüm: text-self-contained
               -- sorulara dar (image olmadan çözülebilen).
-              AND question_text !~* 'şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|grafikte|şemada|haritada|verilenler|aşağıdaki şek'
+              -- Bug #11 v2: beta01 flag pattern'leri eklendi
+              AND question_text !~* 'şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|grafikte|şemada|haritada|verilenler|aşağıdaki şek|görsel|kavram harita|deney düzene|numaraland.* özelli|şekildeki kap|cam boru|paralelkenar|şek\.|şek '
             ORDER BY RANDOM()
             LIMIT 80
         """),

@@ -617,9 +617,19 @@ class SoruBankasiServisi:
         #                 "şemada", "haritada" gibi ifadeler içeriyor.
         # Tahmini etki: pool 84K → ~31K (text-self-contained)
         # Sprint sonrası: Vision re-crop ile düzgün crop'lar geri eklenir.
+        # Bug #11 v2 (19 May 2026): beta01 flag'lerinden çıkan eksik pattern'ler:
+        #   "görsel" — kullanıcılar genel olarak görsel kelimesini kullanıyor
+        #   "kavram harita" — tarih sorularında sık geçer
+        #   "deney düzene" — fizik/kimya/biyoloji
+        #   "kavram", "numaraland" — list/diagram references
+        #   "ABCD paralelkenar|üçgen|dik", "|AK|=", "$AB$" — geometri figür ref
+        #   "Şekildeki kap", "cam boru" — kimya deney ref
         _img_required_pattern = (
             r"şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|"
-            r"grafikte|şemada|haritada|verilenler|aşağıdaki şek"
+            r"grafikte|şemada|haritada|verilenler|aşağıdaki şek|"
+            r"görsel|kavram harita|deney düzene|kavram haritası|"
+            r"numaraland.* özelli|şekildeki kap|cam boru|"
+            r"paralelkenar|kareler|sayıları verilmiş|şek\.|şek\s"
         )
 
         def _base_stmt(et: str | None):

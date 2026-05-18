@@ -234,7 +234,7 @@ class CATSessionService:
             #   1. is_calib_pool=TRUE ve kolay (b < 0) → zorunlu ilk temas
             #   2. is_calib_pool=TRUE tumu → havuz doluysa genisle
             #   3. Normal kolay sorular (fallback)
-            stmt = text("""
+            stmt = text(r"""
                 SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
                 FROM question_bank
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
@@ -243,7 +243,8 @@ class CATSessionService:
                   AND quality_review_status IN ('human_verified', 'auto_judged_high')
                   -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ
                   -- Vision audit: tüm image'lar options leak içeriyor, text-self-contained dar
-                  AND question_text !~* 'şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|grafikte|şemada|haritada|verilenler|aşağıdaki şek'
+                  -- Bug #11 v2: beta01 flag pattern'leri eklendi
+                  AND question_text !~* 'şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|grafikte|şemada|haritada|verilenler|aşağıdaki şek|görsel|kavram harita|deney düzene|numaraland.* özelli|şekildeki kap|cam boru|paralelkenar|şek\.|şek '
                   AND (
                       -- Oncelik 1: Gercek IRT kalibrasyonu olan calib_pool sorulari
                       (is_calib_pool = TRUE AND is_calibrated = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
@@ -268,7 +269,7 @@ class CATSessionService:
         else:
             # ZPD bolgesi: theta - 1.5 < b < theta + 1.5
             # Kalibrasyon havuzundaki sorulari tercih et
-            stmt = text("""
+            stmt = text(r"""
                 SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
                 FROM question_bank
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
@@ -278,7 +279,8 @@ class CATSessionService:
                   AND quality_review_status IN ('human_verified', 'auto_judged_high')
                   -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ
                   -- Vision audit: tüm image'lar options leak içeriyor, text-self-contained dar
-                  AND question_text !~* 'şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|grafikte|şemada|haritada|verilenler|aşağıdaki şek'
+                  -- Bug #11 v2: beta01 flag pattern'leri eklendi
+                  AND question_text !~* 'şekil|yukarıda|aşağıda|verilen graf|verilen tablo|tabloda|grafikte|şemada|haritada|verilenler|aşağıdaki şek|görsel|kavram harita|deney düzene|numaraland.* özelli|şekildeki kap|cam boru|paralelkenar|şek\.|şek '
                 ORDER BY
                     -- is_calibrated=TRUE olanlar ZPD icinde de one alinir
                     CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
