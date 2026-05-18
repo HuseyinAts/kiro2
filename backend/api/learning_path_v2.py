@@ -125,6 +125,7 @@ RATE_LIMITS = {
     "create_path": "5/minute",  # Expensive AI operation
     "search_resources": "30/minute",
     "adapt_path": "10/minute",
+    "flag_submit": "10/minute",  # S1.2 student feedback flag rate limit
     "completion_read": "60/minute",
     "completion_write": "30/minute",
     "quiz_submit": "10/minute",

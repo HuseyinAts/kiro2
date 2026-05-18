@@ -23,12 +23,14 @@ import uuid
 from datetime import datetime
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+# S1.2 — reuse @rate_limit decorator from learning_path_v2 (Task 7'de unified'e taşınır)
+from api.learning_path_v2 import rate_limit
 from core.database import get_async_session
 from core.dependencies import (
     AuthenticatedUser,
@@ -92,7 +94,9 @@ class FlagResolve(BaseModel):
     response_model=FlagResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@rate_limit("flag_submit")  # S1.2 — 10/minute IP-based rate limit
 async def create_flag(
+    request: Request,  # Required by slowapi limiter
     payload: FlagCreate,
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
