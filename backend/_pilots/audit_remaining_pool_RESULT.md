@@ -1,152 +1,152 @@
-# v_safe_for_beta Audit — 30/5,008
+# v_safe_for_beta Audit — 30/4,187
 
 
-## `b171a080` [GEOMETRI]
-- Book: Orijinal-2025-Analitik Geometri
-- Text: Koordinat düzlemi şeklinde modellenmiş bir dürbün vizöründen bakan keskin nişancı hedefin koordinatlarını $(2, 9)$ olarak hesaplıyor. Hedefe doğru atış yapabilmek için rüzgarın şiddetini ölçtüğünde her $300$ metrede merminin dürbün vizöründeki apsisinin $1$ birim, ordinatının $2$ birim arttığını görüyor. Bulunduğu konumdan hedefi vurabilmesi için $
-- A: 450 metre  |  B: 600 metre
+## `793f3cff` [MATEMATIK]
+- Book: 2019-2020-Acil-Matematiğin ilacı Tyt Matematik Sor
+- Text: $f: [-7, 5] \to R$ tanımlı $y = f(x)$ fonksiyonu için aşağıdakilerden hangisi yanlıştır?
+- A: $x = 0$ için en küçük değerini alır.  |  B: Fonksiyonun alacağı en büyük değer $4$'tür.
 
-## `3f1b9e60` [FIZIK]
-- Book: Aromat Ayt 2023 2024 Fizik Soru Bankası
-- Text: Sürtünmenin yalnızca L-M noktaları arasında olduğu bir yolda K noktasından $7E$ kinetik enerjisi ile fırlatılan bir cisim, yörüngesi üzerindeki M noktasından $E$, O noktasından ise $2E$ kinetik enerjisi ile geçerek hareketine devam ediyor. Buna göre sürtünme kuvveti L-M noktaları arasında kaç $E$ büyüklüğünde iş yapmıştır?
-- A: 1  |  B: 2
+## `41529732` [GEOMETRI]
+- Book: 345 2025 Tyt Ayt Geometri Soru Bankası 1
+- Text: [AD] $\perp$ [CD], [AB] $\perp$ [BC], [AD] = 1 birim, [AB] = 2 birim, [CB] = 3 birim olduğuna göre, [DC] = $x$ kaç birimdir?
+- A: $2\sqrt{3}$  |  B: 3
 
-## `23d7878e` [MATEMATIK]
-- Book: Aromat-2023-Tyt-Matematik Net 30
-- Text: Bir pizza dükkânının İnternet sitesinden seçtiği pizzaları sipariş etmek isteyen bir müşteri, ödeme ekranına geldiğinde aşağıdaki mesaj ile karşılaşır: "Değerli müşterimiz, size özel bir teklifimiz var! Bu siparişi mobil uygulamamızı kullanarak vermeniz durumunda $9$ TL daha az ödeyeceksiniz." Bu mesajdan sonra aynı pizzalar için mobil uygulama üze
-- A: 47  |  B: 48
+## `2d8d8cff` [GEOMETRI]
+- Book: Orijinal-Tyt Ayt Geometri Soru Bankası
+- Text: M merkezli çemberin K noktası, y ekseni üzerindeki duvarın A noktasına; L noktası, x ekseni üzerindeki zemine dik diğer duvar üzerindeki B noktasına gergin ipler ile bağlanmıştır. $[AK]$ ipi kesilerek çemberin sağ taraftaki duvar üzerinde asılı kalması sağlanıyor. $[KL]$ çaplı, M merkezli çemberin yarıçapı 3 birimdir. $|AK| = |LB| = 2$ birim, $|AO|
+- A: $(7, 5)$  |  B: $(6, 4)$
 
-## `2b8808b8` [GEOMETRI]
-- Book: Bilgi Sarmalı-2023-2024-Tyt Ayt-Geometri Soru Bank
-- Text: 6 eş kareden oluşan şekil komşu karelerin birer kenarları çakışacak biçimde dik koordinat sistemine aşağıdaki gibi çizilmiştir. Bu karelerden üçünün ortak köşesi orijin olduğuna göre, A noktasının koordinatları aşağıdakilerden hangisidir?
-- A: (4, 8)  |  B: $(\sqrt{5}, 2)$
-
-## `d51c6da3` [MATEMATIK]
-- Book: CAP-2022-2023-TYT-Matematik Soru Bankası
-- Text: $a$ ve $b$ birer pozitif tam sayı olmak üzere, $|x-a| \le b$ eşitsizliğinin çözüm kümesi aşağıdakilerden hangisi olabilir?
-- A: Bir sayı doğrusu üzerinde -3 ile 2 arasındaki kapalı aralık.  |  B: Bir sayı doğrusu üzerinde -5 ile 3 arasındaki kapalı aralık.
-
-## `2e95be46` [GEOMETRI]
-- Book: ACİL-TYT-AYT-Geometri Soru Bankası
-- Text: Dik koordinat sisteminde verilen ABFE ve OCDF birer kare ve $A(-6,2)$'dir. Buna göre, boyalı alan kaç birimkaredir?
-- A: 4  |  B: 6
-
-## `b1b9d9b2` [FIZIK]
-- Book: Egsersiz Tyt Fizik Soru Bankası 2021
-- Text: Mert'in, bir gitar telinin ortasından çekip bıraktığında telin detaylı hareketini göremeyeceğini ama telin Şekil - I'de gösterilen dalga biçimli bir bölgeyi taradığını fark eder. Mert'in bundan sonra Şekil - II'deki teli, gitarın tam ortasındaki perdeye temas edecek şekilde hafifçe bastırır ve bu defa telin Şekil - III'deki gibi bir bölgeyi taradığ
-- A: Yalnız I  |  B: Yalnız II
-
-## `15795e03` [KIMYA]
-- Book: 345 2024 Ayt Kimya Soru Bankası
-- Text: $25^\circ C$'de bulunan aşağıdaki sulu çözeltilere $1 \text{ L}$ an su ekleniyor. Buna göre, aşağıdakilerden hangisi yanlıştır?
-- A: İki çözeltinin de pH değeri artar.  |  B: HX çözeltisinde $H^+$ iyonu derişimi yarıya iner.
-
-## `19aab24c` [MATEMATIK]
-- Book: 2023-2024 ACİL- AYT Matematik Soru Bankası
-- Text: Şekilde $f(x)$ fonksiyonu ve $x$-ekseni arasında kalan bölgelerin alanları $S_1=7$ birimkare, $S_2=3$ birimkare olduğuna göre, $\int_{-1}^{5} f(x)dx$ integralinin değeri kaçtır?
-- A: 1  |  B: 2
-
-## `d86ffb4c` [MATEMATIK]
-- Book: Full Matematik-2022-2023-Tyt-Matematik Soru Bankas
-- Text: Habibe $18 \text{ cm}$ yüksekliğindeki, Eser ise $21 \text{ cm}$ yüksekliğindeki özdeş kovaları iç içe koyarak kova kuleleri oluşturuyorlar. Art arda olan her iki kovanın tabanları arasındaki uzaklık iki kulede de sabittir. Kulelerin yükseklikleri ilk kez eşit olduğunda Habibe'nin kulesinde kaç kova vardır?
-- A: 4  |  B: 5
-
-## `afb0c545` [MATEMATIK]
-- Book: Full Matematik-Ayt-Matematik Soru Bankası
-- Text: Yukarıdaki kalemlerle bir sayı dizisi oluşturuluyor. Adımlarda kullanılan kalem sayıları bu dizinin ardışık terimlerini oluşturmaktadır. Buna göre, I. Bu dizi aritmetik bir dizidir. II. Bu dizinin 9. adımında 19 tane kalem kullanılmıştır. III. Bu dizinin ilk 10 adımında 120 tane kalem kullanılmıştır. ifadelerinden hangileri doğrudur?
-- A: Yalnız I  |  B: Yalnız II
-
-## `42a20950` [FIZIK]
-- Book: Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankası
-- Text: Periyodik doğrusal su dalgalarının dalga boyunu ölçmek için yapılan basit düzeneğe stroboskop denir. Stroboskop, üzerinde yarıklar bulunan ve merkezinden dönebilecek şekilde yapılmış dairesel bir levhadır. Stroboskobun yarıkları su dalgalarına paralel olacak şekilde tutulup dalgaların ilerlediği yönde döndürülür. Her bir aralıkta ardışık dalga tepe
-- A: Yalnız II  |  B: Yalnız III
-
-## `f1675a00` [MATEMATIK]
-- Book: 345 2024 Ayt Matematik Soru Bankası
-- Text: Ortak farkı $r$ olan bir $(a_n)$ aritmetik dizisinin ilk $n$ teriminin toplamı $(S_n)$ $S_n = \frac{n}{2} \cdot [2a_1 + (n-1)r]$ şeklinde bulunur. Yukarıda eşit aralıklarla oluşturulmuş cetvelin her iki birim arası uzaklığı eşit olmakla birlikte bir $(a_n)$ dizisinin terimleri şeklinde uzunluk ölçmektedir. Cetvelin üzerinde bulunan kareli kâğıtta i
-- A: 6  |  B: 8
-
-## `385688f3` [GEOMETRI]
-- Book: Bilgi Sarmalı-2023-2024-Tyt Ayt-Geometri Soru Bank
-- Text: ABC eşkenar üçgeni şeklindeki oyuncak tren yolu ile oynayan Selim, A ile E noktaları arasına 4 tane vagon, B ile D noktaları arasına ise 8 tane vagon koymuştur. A, E ve D doğrusal noktalardır. $[ED] \perp [BC]$'dir. Tüm vagonların boyları eş ve $5$ cm olduğuna göre, ABC tren yolunun toplam uzunluğu kaç cm'dir? (Vagonlar arasındaki boşluklar önemsen
-- A: 150  |  B: 180
-
-## `e08c5c0a` [FIZIK]
-- Book: Bilgi Sarmalı Tyt 2024 Fizik Soru Bankası
-- Text: Yatay ve sürtünmeli bir yolda, bu yola paralel $F$ büyüklüğünde bir kuvvetin etkisinde, ilk hızıyla harekete başlayan $m$ kütleli bir cisim, $d$ yolunu aldıktan sonra kuvvet kaldırılıyor. Cisim bundan sonra $x$ yolunu alarak duruyor. Yol boyunca cisim ile yol arasındaki sürtünme katsayısı değişmediğine göre, I. $m$ azaltılırsa, $x$ artar. II. $F$ a
-- A: Yalnız I  |  B: Yalnız II
-
-## `189ef841` [MATEMATIK]
-- Book: 345 2024 Tyt Matematik Soru Bankası
-- Text: Aşağıdaki kare dik piramit biçimindeki müzenin tüm yan yüzlerinde A tepesinden itibaren aşağıya doğru yan yüz yükseklikleri $x$ birim olan kısımlar açık mavi renkli cam ile, aşağıda kalan kısımlar ise koyu renkli cam ile giydirilecektir. $[AG] \perp [CB]$ $[AF] \perp [ED]$ $|ED| = |AF| = 10 \text{ br}$ Tüm yan yüzlere yapılacak bu giydirmenin topla
-- A: $67200$  |  B: $65000$
-
-## `fd8407a9` [MATEMATIK]
-- Book: Bilgi Sarmalı-2025-Tyt-Matematik Soru Bankası
-- Text: Özdeş çizgili içi 4 eş hacimli parçaya ayrılmış olan 1. durumdaki kabın içerisinde bir miktar su vardır. Bu kaba 6 bardak su daha konulursa 2. durumdaki gibi görünüyor. Eğer 1. durumdaki kaptan 4 bardak su alınırsa 3. durumdaki gibi görünüyor. Bu işlemlerde kullanılan bardaklar özdeştir. Buna göre, 1. durumdaki kabın tamamen dolması için kabın içer
-- A: 10  |  B: 11
-
-## `784c2688` [MATEMATIK]
-- Book: 2020-2021-ACİL-TYT Matematik Soru Bankası
-- Text: Aşağıda 1'den 6'ya kadar numaralandırılmış kutular bulunmaktadır. İlk 5 kutunun içinde, kutunun numarası ile doğru orantılı olacak sayıda, sonuncu kutuda ise 5 kutudaki bilgilerin aritmetik ortalaması kadar bilye bulunmaktadır. Buna göre, I. 3. ve 6. kutuda eşit sayıda bilye vardır. II. Tek numaralı kutulardaki toplam bilye sayısı çift numaralı kut
-- A: Yalnız I  |  B: I ve II
-
-## `703489ba` [MATEMATIK]
-- Book: 2020-2021-ACİL-TYT Matematik Soru Bankası
-- Text: Aynı evde yaşayan Mustafa ve Kemal kardeşler online derslerinde öğretmenlerinin gönderdikleri aynı büyüklükteki aynı ödev dosyalarını Mustafa bilgisayarına, Kemal ise tabletine indirecektir. * Mustafa'nın dosyayı bilgisayarına indirme hızı, Kemal'in dosyayı tabletine indirme hızının 3 katına eşittir. * Aynı anda indirme işlemi gerçekleşirken iki ci
-- A: $\frac{16}{9}$  |  B: 4
-
-## `bd4bd3d8` [MATEMATIK]
-- Book: Bilgi Sarmalı-2023-2024-Tyt-Matematik Soru Bankası
-- Text: Bir banka, müşterilerine vermiş olduğu kasalar için üç hane- li bir şifreleme sistemi kurmuştur. I. haneye üç basamaklı bir sayı girilip, sayının rakamları toplamı II. haneye yazılacaktır. III. haneye ise I. hanedeki sayının ikinci hanedeki sayı ile bölümünden kalan yazılacaktır. Örneğin, I. haneye $203$ sayısı yazılırsa ikinci haneye $2+0+3=5$ say
-- A: 6  |  B: 8
-
-## `ec926781` [GEOMETRI]
-- Book: Full Matematik-2022-2023-Tyt Ayt-Geometri Soru Ban
-- Text: Aşağıda merkezleri arasındaki uzaklığı $100$ birim olan iki farklı çaplarda iki tekerleği olan bir bisiklet gösterilmiştir. Bu bisikletin ön tekeri $1$. turunu tamamladığında, arka teker $2$. turunu tamamlamaktadır. Bisikletin tekerleklerinin zemine temas ettikleri noktalar arasındaki mesafe $96$ birimdir. Buna göre, bisikletin küçük tekerleğinin y
-- A: 20  |  B: 26
-
-## `2ae40556` [MATEMATIK]
-- Book: C1CELL-2024-Problemler Soru Bankası
-- Text: Ahmet, tabletinin ekranındaki uygulamaları aşağıdaki gibi her sırada eşit sayıda uygulama olacak biçimde düzenlemektedir. Ahmet, uygulamaları dörderli olarak düzenlerse son sırada 1. durumdaki gibi 2 uygulama, dokuzarlı olarak düzenlerse son sırada 2. durumdaki gibi 7 uygulama olmaktadır. Buna göre, bir sıraya 36 uygulama konulabilseydi son sırada 
-- A: 10  |  B: 18
-
-## `a6bedf0d` [MATEMATIK]
-- Book: CAP-2023-2024-AYT-Matematik Soru Bankası
-- Text: $f(x)$ fonksiyonu $d$ doğrusuna $A(2, 3)$ noktasında teğettir. $g(x) = f(5-f(x))$ olduğuna göre, $g'(2)$ değeri kaçtır?
-- A: -4  |  B: -1
-
-## `03217a51` [FIZIK]
-- Book: Aromat Tyt 2023 2024 Fizik Soru Bankası
-- Text: K ve L levhaları arasına noktasal bir ışık kaynağı yerleştirilmiş olup K levhasının ışık kaynağına uzaklığı L'ninkinin iki katıdır. L levhası ile noktasal ışık kaynağı arasına bir filtre konulduğunda K ve L levhalarının üzerinde, ışığın dik olarak geldiği noktalarındaki aydınlanma şiddetleri eşitlendiğine göre filtre, üzerine gelen ışığın yüzde kaç
-- A: 10  |  B: 25
-
-## `172b93c6` [FIZIK]
-- Book: Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankası
-- Text: Ahmet Bey'in aldığı elektrikli otomobilin bazı teknik özellikleri aşağıdaki gibidir: Güç: $110 \text{ kW}$ $1 \text{ km}$ de ortalama harcadığı enerji: $0,11 \text{ kWh}$ Batarya kapasitesi: $33 \text{ kWh}$ Kütlesi: $1100 \text{ kg}$ Buna göre, Ahmet Bey; I. Otomobilin bataryaları boş iken $220 \text{ volt}$, $20 \text{ amper}$ değerlerine sahip e
+## `3f54c80e` [KIMYA]
+- Book: Aramot Tyt 2023 Fen Bilimleri Model Sorular
+- Text: Baş grup elementi oldukları bilinen X ve Y elementlerinin oluşturduğu $XY_3$ molekülünün Lewis yapısı aşağıdaki gibidir. Buna göre, I. X, periyodik sistemde 15. gruptadır. II. $XY_3$ molekülünde 3 çift ortaklanmış elektron vardır. III. X'in, H ile oluşturacağı bileşikte 1 çift ortaklanmamış elektron bulunur. yargılarından hangileri doğrudur?
 - A: Yalnız I  |  B: Yalnız III
 
-## `ed12fd81` [MATEMATIK]
-- Book: Bilgi Sarmalı-2022-2023-Tyt-Matematik Soru Bankası
-- Text: Aşağıdaki çubuklara 2 sarı, 2 mavi ve 1 kırmızı boncuk takılmıştır. Yukarıdaki beş boncuk tek tek bulundukları yerlerden kaç farklı şekilde çıkartılabilir?
-- A: 16  |  B: 30
+## `0900d5ff` [FIZIK]
+- Book: Cap Tyt Fizik Soru Bankası 2023 2024
+- Text: Gazoz ya da kola gibi içeceklerde kabın dibinden kopan kabarcıklar yüzeye doğru hacimleri artarak hızlanırlar. Buna göre, tabandan yüzeye doğru ilerleyen bir kabarcık için, I. İçindeki gaz basıncı II. Hacim III. Etki eden kaldırma kuvveti niceliklerinden hangileri artar?
+- A: Yalnız I  |  B: Yalnız II
 
-## `be27ea55` [BIYOLOJI]
-- Book: Esen Aylık Planlı Biyoloji Soru Bankası
-- Text: Işıklı ortamda büyütülen aynı tür iki bitkiyle aşağıdaki düzenekler hazırlanıyor. Birinci düzenekte bitki sabit tutulurken ikinci düzenekte bitki ok yönünde sürekli döndürülüyor. Bir süre sonra, bu bitkilerle ilgili; I. Birinci düzenekte, bitkinin kökü aşağı yönelir. II. Birinci düzenekte, bitkinin gövdesi yukarı yönelir. III. İkinci düzenekte, bit
-- A: I ve IV  |  B: II ve V
+## `76a62741` [MATEMATIK]
+- Book: C1CELL-2025-Matematik Soru Bankası
+- Text: Her $k \in A$ için $k+f(k)$ sonucu tek sayısı olması koşuluyla $A$'dan $B$'ye kaç farklı örten fonksiyon tanımlanabilir?
+- A: 24  |  B: 18
 
-## `f2d4ee57` [MATEMATIK]
-- Book: 345 2025 Tyt Matematik Soru Bankası
-- Text: Bir iş hanına giriş ve çıkış için konulan turnikelerin üzerindeki mavi ekran aynı gün o ana kadar o turnikeden kaç kişinin iş hanına giriş yaptığını, kırmızı ekran ise o ana kadar o turnikeden kaç kişinin iş hanından çıkış yaptığını göstermektedir. Aynı güne ait saat 13.00'te binadaki kişi sayısı, saat 14.00'te binadaki kişi sayısının iki katı oldu
-- A: 100  |  B: 110
+## `7c49dede` [MATEMATIK]
+- Book: ACİL-2025-TYT-Soeu Bankası
+- Text: Şekilde, $f$ fonksiyonunun $[-4, 3]$ aralığında apsisi tam sayı olan kaç noktada limiti vardır?
+- A: 2  |  B: 3
 
-## `074b10bb` [BIYOLOJI]
-- Book: 345 2025 Ayt Biyoloji Soru Bankası
-- Text: İnsan vücudunda görev yapan hormonlar ve hedef dokularıyla ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?
-- A: FSH - Ovaryum  |  B: İnsülin - Karaciğer
+## `def33802` [GEOMETRI]
+- Book: Bilgi Sarmalı-2025-Tyt Ayt-Geometri Soru Bankası
+- Text: Yol kenarında dolmuş bekleyen Yusuf'un 8 eş parçaya ayrılıp boyanmış 5 metre uzunluğundaki yere dik konumda bulunan elektrik direğine olan uzaklığı 3 metredir. Aşırı rüzgar sebebiyle kırılan direk Yusuf'a doğru devrildiğinde aşağıdaki gibi dengede duruyor. Buna göre, son durumda Yusuf'un elektrik direğinin uç noktasına olan uzaklığı $|AC|$ kaç cm'd
+- A: 25  |  B: 50
 
-## `67802847` [KIMYA]
-- Book: Bilgi Sarmal 2024 Tyt Kimya Soru Bankasi
-- Text: Nötr $_{12}X$ elementi, $_{15}Y$ iyonuna 2 elektron vermektedir. Elektronları alan $Y$ iyonu ise daha sonra nötr $_{16}Z$ elementine 3 elektron vermektedir. Son durumda tüm taneciklerin iyon yükleri hangi seçenekte doğru verilmiştir?
-- A: Grafik A  |  B: Grafik B
+## `ddb8b85e` [MATEMATIK]
+- Book: 2023-2024-ACİL-TYT Matematik Soru Bankası
+- Text: Bir sınıftaki öğrenciler yukarıda çizilmiş geometrik şekillerin içine taş atarak puanlarının toplamını hesaplamak istemektedirler. 1. bölgeye atılacak her taş için 1, 2. bölgeye atılacak her taş için 3 ve 3. bölgeye atılacak her taş için 4 puan alınacaktır. a tane öğrenci 3. bölgeye, b tane öğrenci 2. bölgeye ve a - b tane öğrenci 1. bölgeye taş at
+- A: Yalnız I  |  B: I ve II
+
+## `ca915a9c` [KIMYA]
+- Book: Esen Tyt Kimya Soru Bankası
+- Text: Aşağıdaki uyarı işaretleri ve taşıdığı anlamlardan hangisi yanlıştır?
+- A: Solunum ya da ağız yoluyla alındığında zehirleyici etki yapa  |  B: Oksitleyici ve yakıcı maddelerdir. Kolay tutuşabilen nitrik 
+
+## `02fd4d05` [FIZIK]
+- Book: Bilgi Sarmalı Tyt 2024 Fizik Soru Bankası
+- Text: Alp ve Kaan esnek ve türdeş bir yayı iki tarafından tutarak birbirlerine doğru aşağıdaki gibi dalgalar oluşturuyorlar. Oluşturulan bu dalgalar ile ilgili, I. Hızlarının büyüklüğü eşittir. II. Genlikleri eşittir. III. Dalga boyları eşittir. yargılarından hangileri kesinlikle doğrudur?
+- A: Yalnız I  |  B: Yalnız III
+
+## `63443c68` [MATEMATIK]
+- Book: 2023-2024-ACİL-TYT Matematik Soru Bankası
+- Text: $n$ kenarlı bir düzgün çokgende, $A = 1 + (1+n) + ... + A$ eşitliği veriliyor. Örneğin: $19 = 1 + 7 + 13 + 19$'dur. Buna göre, işleminin sonucu kaçtır?
+- A: 153  |  B: 156
+
+## `d8cc8d19` [MATEMATIK]
+- Book: 2019-2020-Acil-Matematiğin ilacı Tyt Matematik Sor
+- Text: Ezgi hanım duvarına 4 ünlü Türk ressamı Adnan Turani, Mürşide İçmeli, Mustafa Ayaz ve Süleyman İyigün tablolarını asıyor. Adnan Turani ve Süleyman İyigün'ün tablolarının iki uçta olma olasılığı kaçtır?
+- A: $\frac{1}{24}$  |  B: $\frac{1}{12}$
+
+## `1d9fff3e` [MATEMATIK]
+- Book: ACİL-2025-Matematiğin İlacı Sayılar-1
+- Text: Sayfa numaralarının soldan sağa doğru arttığı bir kitapta eksik veya hatalı basılan sayfa bulunmuyor. Yukarıda kitabın açık halinde görünen üç basamaklı sayfa numaralarından birinin $5$ ile diğerinin $6$ ile bölünebildiği biliniyor. Buna göre, $23b$ numaralı sayfadan sonra gelen I. $18$'inci II. $40$'ıncı III. $51$'inci sayfalardan hangilerinin say
+- A: Yalnız I  |  B: I ve II
+
+## `384850f7` [MATEMATIK]
+- Book: 2019-2020-Apotemi-Tyt Matematik Soru Bankası
+- Text: Kenar uzunlukları birer tam sayı olan dikdörtgen kenar uzunlukları tam sayı olan karelere bölünecektir. Bu bölme işi mümkün olan en az sayıda kare elde edilecek şekilde yapılacaktır.  Örneğin; aşağıdaki gibi $7 \times 5$ lik bir dikdörtgen bu koşulları sağlayacak biçimde beş kareye bölünebilir.  Buna göre, kenar uzunlukları $a \times b$ olan bir di
+- A: 8  |  B: 10
+
+## `e28de95c` [MATEMATIK]
+- Book: 2019-2020-Apotemi-Tyt Matematik Soru Bankası
+- Text: Bir binanın yukarıdaki gibi 4 koridoru mavi, kırmızı, turuncu ve gri renklerle boyanacaktır. Koridorları boyayacak Ömer ve Halit ile ilgili şunlar bilinmektedir:  * Halit, Ömer'in iki katı hızla boya yapmaktadır. * Ömer, mavi ve turuncu renkleri gri ve kırmızı renge göre iki kat hızlı boyamaktadır. * Halit kırmızı ve gri renge boyanacak koridorları
+- A: 5  |  B: 6
+
+## `e89cbd4d` [KIMYA]
+- Book: 345 2024 Ayt Kimya Soru Bankası
+- Text: Potansiyel enerji (PE) - tepkime koordinatı (TK) verilen tepkime ile ilgili, I. Tepkime hızını 1. basamak belirler. II. Tepkimenin yavaş adımı endotermiktir. III. Net tepkime ekzotermiktir. ifadelerinden hangileri doğrudur?
+- A: Yalnız I  |  B: I ve II
+
+## `7abf2671` [MATEMATIK]
+- Book: Bilgi Sarmalı-2023-2024-Tyt-Matematik Soru Bankası
+- Text: Aşağıda bir pozitif tam sayının doğal sayı çarpanlarının tamamı küçükten büyüğe doğru sırasıyla her kutuda bir tane çarpan olacak şekilde yazılacaktır. Buna göre, yeşil renkli kutularda yazması gereken sayıların toplamı, mor renkli kutularda yazması gereken sayıların toplamından kaç fazladır?
+- A: 21  |  B: 23
+
+## `a4455419` [MATEMATIK]
+- Book: 2020-2021-Acil-Problemlerin ilacı
+- Text: Knot; denizcilikte kullanılan bir hız birimidir. $1$ Knot $1$ saatte kaydedilen $1$ deniz miline yani $1852$ metreye eşittir. Hızları verilen iki gemi aynı anda birbirlerine doğru harekete başladıktan $1$ saat sonra karşılaşıyorlar. Buna göre, ilk durumda gemiler arasındaki uzaklık kaç kilometredir?
+- A: 453  |  B: 458
+
+## `d63ec85b` [GEOMETRI]
+- Book: C1CELL-2024-TYT-AYT-Geometri Soru Bankası
+- Text: Tepe açılarının ölçüleri $28^	ext{o}$, $30^	ext{o}$, $38^	ext{o}$, $40^	ext{o}$ olan $4$ adet ikizkenar üçgenden $3$ tanesi tabanları doğrusal olacak ve birer köşesi kesişecek biçimde aşağıdaki gibi çiziliyor. Mavi açının ölçüsü, kırmızı açının ölçüsünden $6^	ext{o}$ fazla olduğuna göre, I. Turuncu üçgen $38^	ext{o}$ II. Gri üçgen $34^	ext{o}$ III.
+- A: Yalnız I  |  B: Yalnız II
+
+## `901c7227` [MATEMATIK]
+- Book: ACİL-2025-TYT-Soru Bankası
+- Text: $2, 3, 4, 9$ ve $12$ sayıları aşağıdaki kutulara, her kutuya farklı bir sayı gelecek şekilde yerleştirildiğinde oluşan eşitlik sağlanmaktadır. Parantez içindeki çıkarma işlemi olsaydı yapılan bu yerleştirme işlemin sonucunu kaç artırırdı?
+- A: 2  |  B: 3
+
+## `21ddac9a` [FIZIK]
+- Book: Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankası
+- Text: Bir ütünün üzerinde $1100 \text{ W}$ ve $110 \text{ V}$ yazıyor. Bu ütünün üzerinde yazan değerlerle çalışması için $220 \text{ V}$ gerilime bağlandığında yanına bağlanması gereken $R$ direnci kaç $\Omega$ olur?
+- A: 50  |  B: 40
+
+## `823d743a` [MATEMATIK]
+- Book: 2020-2021-ACİL-TYT Matematik Soru Bankası
+- Text: Murat ve Alpay bir kafede çay sipariş etmişlerdir. İkisine yanda hacim bilgileri verilen ve 2 nolu çizgiye kadar çay ko- yulmuş iki adet şekersiz çay bardağı gelmiştir. Alpay önce 3 nolu hizaya gelecek şekilde bir yudum alır, çayın şeker- siz olduğunu fark eder ve içine her biri V hacimli 3 adet şe- ker atıp karıştırır. Murat ise önce 2 adet şeker 
+- A: $\frac{5}{4}$  |  B: $\frac{3}{2}$
+
+## `a13121c5` [MATEMATIK]
+- Book: CAP-2022-2023-TYT-Matematik Soru Bankası
+- Text: Bir tren kendisinin 3 katı uzunluğundaki bir köprüyü $x$ saatte geçmektedir. Trenin hızı değişmeden uzunluğu 3 katına çıkarılırsa, aynı köprüyü kaç dakikada geçer?
+- A: 30x  |  B: 45x
+
+## `e00321f8` [MATEMATIK]
+- Book: 345 2025 Start Matematik
+- Text: Alt ve üst kapakları özdeş olan aşağıdaki 256 yapraklı kitabın tüm iç yaprakları özdeştir. Kitabın alt ve üst kapaklarından her birinin kalınlığı 1 mm ve bir yaprak kalınlığı $2^{-2}$ mm olduğuna göre, bu kitabın kalınlığı kaç milimetredir?
+- A: 66  |  B: 65
+
+## `11e92531` [KIMYA]
+- Book: Bilgi Sarmal 2024 Ayt Kimya Sopru Bankasi
+- Text: Yapı formülü verilen bileşik ile ilgili, I. Yaygın adı fenil metil eterdir. II. IUPAC adı metoksibenzendir. III. Formülü C$_{7}$H$_{8}$O'dur. yargılarından hangileri doğrudur?
+- A: Yalnız I  |  B: I ve II
+
+## `7832317f` [FIZIK]
+- Book: Apotemi 2019 2020 Tyt Ayt Fizik Soru Bankası
+- Text: Iraksak P, yakınsak S mercek düzeneğindeki X cisminin P'deki görüntüsü Y, S'deki görüntüsü Z'dir. Buna göre, P'nin odak uzaklığı $f_P$, S'nin odak uzaklığı $f_S$ ye oranı $\frac{f_P}{f_S}$ kaçtır?
+- A: $\frac{1}{3}$  |  B: $\frac{2}{3}$
+
+## `784c603b` [GEOMETRI]
+- Book: 345 2025 Tyt Ayt Geometri Soru Bankası 1
+- Text: ABCD eşkenar dörtgen, $\text{AE} \perp \text{EC}$, D, F ve B doğrusal, $|\text{AE}| = 1 \text{ cm}$, $|\text{EF}| = 4\sqrt{3} \text{ cm}$ olduğuna göre, $|\text{FC}| = x$ kaç cm'dir?
+- A: 5  |  B: 6
+
+## `8214ce56` [MATEMATIK]
+- Book: Bilgi Sarmalı-2023-2024-Tyt-Matematik Soru Bankası
+- Text: Farklı renklerde ve farklı uzunluklarda bulunan üç farklı çubuğun ikişerli olarak aralarında boşluk kalmadan yan yana dizilmesiyle oluşan uzunluklar aşağıdaki gibidir. Buna göre, mavi renkli çubuğun uzunluğunun mor renkli çubuğun uzunluğuna oranı kaçtır?
+- A: $\frac{9}{11}$  |  B: $\frac{7}{8}$
+
+## `02608307` [FIZIK]
+- Book: Bilgi Sarmalı Tyt 2024 Fizik Soru Bankası
+- Text: Yatay ve düz bir yolda hareket eden $m$ kütleli cisme hareketliyle zıt yönde ve doğrultuda uygulanan $F$ kuvveti cismi bir süre sonra durdurmuş ve aynı noktadan aynı hızla geçmesini sağlamıştır. Cisim K'den L'ye kadar gitmiş ve tekrar K'den V hızıyla geçtiğine göre, $F$ kuvvetinin yaptığı iş aşağıdakilerden hangisine eşittir?
+- A: $\frac{1}{2}mV^2$  |  B: $mV^2$

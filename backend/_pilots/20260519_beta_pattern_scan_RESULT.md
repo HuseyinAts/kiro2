@@ -68,32 +68,55 @@
 | `v5_kent_kentine_giderken` | 0 | ✅ APPLY A kentinden B kentine — harita figür |
 | `v5_bilgisayar_ekran` | 0 | ✅ APPLY Bilgisayar ekranı görüntüsü — figür |
 | `v5_hucre_zarı_fosfolipit` | 0 | ✅ APPLY Hücre zarı + numara ile gösterilm — diyagram |
-| `v6_sekil_dash` | 333 | ✅ APPLY Şekil-I/Şekil-1 dash notation — image-bound |
-| `v6_dusey_kesit` | 109 | ✅ APPLY Düşey kesiti verilen — figür |
-| `v6_gunes_sistemi` | 4 | ✅ APPLY Güneş Sistemi görsel referans |
-| `v6_yukaridaki_kaplar` | 52 | ✅ APPLY Yukarıdaki kaplar/sıvılar — figür |
-| `v6_n_nolu_kut` | 11 | ✅ APPLY I/II nolu kutu/kap/şişe — numbered figure |
-| `v6_egik_duzlem_K` | 78 | ✅ APPLY Eğik düzlem — fizik figür |
+| `v6_sekil_dash` | 0 | ✅ APPLY Şekil-I/Şekil-1 dash notation — image-bound |
+| `v6_dusey_kesit` | 0 | ✅ APPLY Düşey kesiti verilen — figür |
+| `v6_gunes_sistemi` | 0 | ✅ APPLY Güneş Sistemi görsel referans |
+| `v6_yukaridaki_kaplar` | 0 | ✅ APPLY Yukarıdaki kaplar/sıvılar — figür |
+| `v6_n_nolu_kut` | 0 | ✅ APPLY I/II nolu kutu/kap/şişe — numbered figure |
+| `v6_egik_duzlem_K` | 0 | ✅ APPLY Eğik düzlem — fizik figür |
 | `v6_KL_LM_MN_segment` | 0 | ✅ APPLY KL/LM segments + nokta — figür |
-| `v6_abcde_dots` | 8 | ✅ APPLY ABCDE... n kenarlı — polygon figür |
+| `v6_abcde_dots` | 0 | ✅ APPLY ABCDE... n kenarlı — polygon figür |
 | `v6_O_merkez` | 0 | ✅ APPLY O merkezli daire/çember — figür |
-| `v6_sayi_duzenegi` | 1 | ✅ APPLY Sayı düzeneği — figür |
-| `v6_sekilde_belirtil` | 47 | ✅ APPLY Şekilde belirtilen yön/işaret — figür |
-| `v6_birim_kareler` | 63 | ✅ APPLY Birim karelerden oluşan — grid figure |
-| `v6_kepler_kepler_yasalari` | 348 | ✅ APPLY Astronomi/fizik nesne + figür ref |
-| `v6_kapsam_sapma_grafigi` | 1,000 | ✅ APPLY Yörünge/grafik ref — figür |
-| `v6_evre_ait_yukaridaki` | 101 | ✅ APPLY Evreler/aşamalar yukarıdaki — figür |
-| `v6_akim_devre` | 133 | ✅ APPLY Devre akım/gerilim — devre figür |
-| `v6_kuvvet_F1_F2` | 98 | ✅ APPLY F_1, F_2 kuvvetleri — figür |
-| `v6_ucgen_geometri_acidol` | 1,133 | ✅ APPLY Üçgen geometri + açı — figür |
-| `v6_omurga_skolyoz_rontgen` | 54 | ✅ APPLY Tıbbi görüntü ref |
-| `v6_yatay_dusey_eksen` | 326 | ✅ APPLY Yatay/düşey düzlem fizik — figür |
+| `v6_sayi_duzenegi` | 0 | ✅ APPLY Sayı düzeneği — figür |
+| `v6_sekilde_belirtil` | 0 | ✅ APPLY Şekilde belirtilen yön/işaret — figür |
+| `v6_birim_kareler` | 0 | ✅ APPLY Birim karelerden oluşan — grid figure |
+| `v6_kepler_kepler_yasalari` | 0 | ✅ APPLY Astronomi/fizik nesne + figür ref |
+| `v6_kapsam_sapma_grafigi` | 0 | ✅ APPLY Yörünge/grafik ref — figür |
+| `v6_evre_ait_yukaridaki` | 0 | ✅ APPLY Evreler/aşamalar yukarıdaki — figür |
+| `v6_akim_devre` | 0 | ✅ APPLY Devre akım/gerilim — devre figür |
+| `v6_kuvvet_F1_F2` | 0 | ✅ APPLY F_1, F_2 kuvvetleri — figür |
+| `v6_ucgen_geometri_acidol` | 0 | ✅ APPLY Üçgen geometri + açı — figür |
+| `v6_omurga_skolyoz_rontgen` | 0 | ✅ APPLY Tıbbi görüntü ref |
+| `v6_yatay_dusey_eksen` | 0 | ✅ APPLY Yatay/düşey düzlem fizik — figür |
+| `v7_sekil_dash_loose` | 315 | ✅ APPLY Şekil - I/II (dash with optional spaces) |
+| `v7_x_es_karelerden` | 6 | ✅ APPLY N eş kareden oluşan — grid figure |
+| `v7_sekilde_fonk` | 0 | ✅ APPLY Şekilde f(x) — graphed function |
+| `v7_yukaridaki_kalem_dizi` | 31 | ✅ APPLY Yukarıdaki kalem/kutu/şekil — figür |
+| `v7_durumdaki_kab` | 5 | ✅ APPLY 1./2. durumdaki kap/kutu — figür |
+| `v7_numaralandirilmis_kut` | 0 | ✅ APPLY Numaralandırılmış kutular/kaplar — figür |
+| `v7_iki_tekerlek_bisiklet` | 15 | ✅ APPLY İki tekerlekli bisiklet — figür |
+| `v7_telefon_tablet_ekran` | 17 | ✅ APPLY Tablet/telefon ekranı — figür |
+| `v7_isik_kaynagi_levha` | 11 | ✅ APPLY K ve L levhaları/aynaları — figür |
+| `v7_renkli_boncuk_cubuk` | 40 | ✅ APPLY Renkli boncuk/çubuk/disk — figür |
+| `v7_dort_eskenar` | 134 | ✅ APPLY ABC eşkenar üçgen — figür |
+| `v7_piramit_koni_silindir` | 554 | ✅ APPLY Piramit/koni/silindir + göster — figür |
+| `v7_uygulamalar_satira` | 25 | ✅ APPLY Tablet uygulamaları sırasız — figür |
+| `v7_asagidaki_duzenek` | 53 | ✅ APPLY Aşağıdaki düzenek/deney/şişe — figür |
+| `v7_asagidaki_cubuklar` | 50 | ✅ APPLY Aşağıdaki çubuklar/tepkimeler — figür |
+| `v7_ucgen_acisal_aci` | 705 | ✅ APPLY ABC üçgen/dörtgen + noktası/köşesi — figür |
+| `v7_dik_koord_sistem_figur` | 68 | ✅ APPLY Dik koordinat sistemi + figür ref |
+| `v7_K_L_M_N_noktalar` | 0 | ✅ APPLY K, L, M, N noktaları — figür ref |
+| `v7_yatay_yol_F_kuvvet` | 34 | ✅ APPLY Yatay yol + kuvvet — fizik figür |
+| `v7_F1_F2_F3` | 0 | ✅ APPLY F_1, F_2, F_3 kuvvetler — figür |
+| `v7_strob_periyodik_dalga` | 164 | ✅ APPLY Stroboskop / dalga — fizik figür |
+| `v7_kesit_verilen_eks` | 20 | ✅ APPLY Kesit verilen/gösterilen — figür |
+| `v7_aci_widehat_nolu` | 332 | ✅ APPLY m(âçı) — geometri figür |
 | `broken_ends_III` | 0 | ✅ APPLY Roman numaralı liste yarıda kesik (sonu II/III/IV) |
 | `broken_ends_dotdot` | 0 | ✅ APPLY Paragraf '...' ile bitiyor (truncation indicator) |
-| `incomplete_roman_options_no_text` | 1,331 | ⏭ SKIP Opsiyonlarda Roman list var ama metinde işaret yok |
-| `latex_options_frac` | 2,741 | ⏭ SKIP Opsiyonlarda \frac raw — Frontend MathText wrap eksik (Bug #1 v2) |
-| `latex_options_sqrt` | 1,149 | ⏭ SKIP Opsiyonlarda \sqrt raw — Bug #1 v2 |
-| `latex_options_alpha_beta` | 387 | ⏭ SKIP Opsiyonlarda Greek/math symbol raw — Bug #1 v2 |
+| `incomplete_roman_options_no_text` | 1,089 | ⏭ SKIP Opsiyonlarda Roman list var ama metinde işaret yok |
+| `latex_options_frac` | 2,452 | ⏭ SKIP Opsiyonlarda \frac raw — Frontend MathText wrap eksik (Bug #1 v2) |
+| `latex_options_sqrt` | 1,014 | ⏭ SKIP Opsiyonlarda \sqrt raw — Bug #1 v2 |
+| `latex_options_alpha_beta` | 363 | ⏭ SKIP Opsiyonlarda Greek/math symbol raw — Bug #1 v2 |
 
 **Total auto_judged_high:** 
-40,333
+36,725
