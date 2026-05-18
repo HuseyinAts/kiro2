@@ -25,6 +25,7 @@ import {
 import { useState } from 'react';
 
 import { feedbackService, type FlagType } from '../../services/feedbackService';
+import { extractErrorDetail } from '../../utils/extractErrorDetail';
 
 interface FlagButtonProps {
   questionId: string;
@@ -76,7 +77,7 @@ export const FlagButton: React.FC<FlagButtonProps> = ({ questionId, size = 'smal
         setNote('');
       }, 300);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Bildirim gönderilemedi';
+      const msg = extractErrorDetail(err, 'Bildirim gönderilemedi');
       setToast({ open: true, severity: 'error', message: msg });
     } finally {
       setSubmitting(false);
