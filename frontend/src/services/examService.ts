@@ -192,7 +192,13 @@ class ExamService {
    */
   async getExamSession(sessionId: string): Promise<ExamSessionResponse> {
     try {
-      const response = await apiClient.get(`/api/v1/osym-exam/${sessionId}/session`);
+      // Cache-bust: response interceptor uzun max-age cache header set ediyor;
+      // /start ve diğer state mutation'lar sonrası stale read olmasın diye
+      // her çağrıda timestamp ekle + Cache-Control: no-cache header gönder.
+      const response = await apiClient.get(
+        `/api/v1/osym-exam/${sessionId}/session?_t=${Date.now()}`,
+        { headers: { 'Cache-Control': 'no-cache' } },
+      );
       return response.data;
     } catch (error) {
       console.error('Sınav oturum bilgisi getirme hatası:', error);

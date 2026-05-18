@@ -42,7 +42,7 @@ import {
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as React from 'react';
-import {  useState  } from 'react';
+import {  useState, useRef  } from 'react';
 
 import { examService, ExamType } from '../../services/examService';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -73,6 +73,9 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showInstructions, setShowInstructions] = useState(false);
+  // Idempotency guard: ardışık çift tıklama / StrictMode double-fire / navigate
+  // sırasında re-render edip handleStartExam'i ikinci kez tetiklemesin diye.
+  const startingRef = useRef(false);
   const [showSystemCheck, setShowSystemCheck] = useState(false);
   const [systemCheckResults, setSystemCheckResults] = useState<Record<string, boolean>>({});
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -193,6 +196,10 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
       setError('Lütfen tüm şartları kabul edin ve talimatları okuyun');
       return;
     }
+    if (startingRef.current) {
+      return;
+    }
+    startingRef.current = true;
 
     try {
       setLoading(true);
@@ -218,6 +225,8 @@ export const ModernExamStart: React.FC<ModernExamStartProps> = ({
       }
     } catch (err: any) {
       setError(err.message || 'Sınav başlatılamadı');
+      // Hata durumunda guard'ı serbest bırak — kullanıcı tekrar deneyebilsin.
+      startingRef.current = false;
     } finally {
       setLoading(false);
     }

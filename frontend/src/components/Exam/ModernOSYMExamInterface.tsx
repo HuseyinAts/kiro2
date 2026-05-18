@@ -180,9 +180,19 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
       let sessionData = await examService.getExamSession(sessionId);
 
       // BUG #3 defensive fix: NOT_STARTED session ekrana açıldıysa otomatik başlat.
-      // Aksi halde currentQuestion + timer fetch atlanır, ekran boş kalır.
+      // Backend multi-worker race + cache: ModernExamStart parent /start çağırıp
+      // success aldıktan sonra navigate ediyor, ama bu component'in GET /session
+      // farklı worker'a düşüp stale NOT_STARTED dönebiliyor. Bu durumda auto-start
+      // 400 ("zaten başlatılmış") dönebilir — bu beklenen davranış, sessizce yut.
       if (sessionData.status === ExamStatus.NOT_STARTED) {
-        sessionData = await examService.startExam(sessionId);
+        try {
+          sessionData = await examService.startExam(sessionId);
+        } catch {
+          // Parent /start zaten başarılı olmuş varsay → IN_PROGRESS state'i zorla.
+          // currentQuestion + remainingTime fetch IN_PROGRESS dalında devam eder;
+          // gerçekten unstarted ise o çağrılar 4xx döner ve hata oraya kayar.
+          sessionData = { ...sessionData, status: ExamStatus.IN_PROGRESS };
+        }
       }
 
       if (sessionData.status === ExamStatus.COMPLETED) {
