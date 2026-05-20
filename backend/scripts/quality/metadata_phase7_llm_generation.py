@@ -31,6 +31,57 @@ DSN = os.getenv("DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
 
+# Rule-based taxonomy: Bloom → Marzano New Taxonomy (Marzano & Kendall 2007)
+BLOOM_TO_MARZANO = {
+    "bilgi": "retrieval",
+    "kavrama": "comprehension",
+    "uygulama": "knowledge_utilization",
+    "analiz": "analysis",
+    "sentez": "knowledge_utilization",
+    "degerlendirme": "metacognitive",
+    "değerlendirme": "metacognitive",
+}
+
+# Rule-based taxonomy: (Difficulty, Bloom) → SOLO (Biggs & Collis 1982)
+SOLO_TABLE = {
+    ("VERY_EASY", "bilgi"): "unistructural",
+    ("VERY_EASY", "kavrama"): "unistructural",
+    ("EASY", "bilgi"): "unistructural",
+    ("EASY", "kavrama"): "multistructural",
+    ("EASY", "uygulama"): "multistructural",
+    ("MEDIUM", "bilgi"): "unistructural",
+    ("MEDIUM", "kavrama"): "multistructural",
+    ("MEDIUM", "uygulama"): "multistructural",
+    ("MEDIUM", "analiz"): "relational",
+    ("HARD", "kavrama"): "multistructural",
+    ("HARD", "uygulama"): "relational",
+    ("HARD", "analiz"): "relational",
+    ("HARD", "sentez"): "extended_abstract",
+    ("HARD", "degerlendirme"): "extended_abstract",
+    ("HARD", "değerlendirme"): "extended_abstract",
+    ("VERY_HARD", "analiz"): "relational",
+    ("VERY_HARD", "sentez"): "extended_abstract",
+    ("VERY_HARD", "degerlendirme"): "extended_abstract",
+    ("VERY_HARD", "değerlendirme"): "extended_abstract",
+}
+SOLO_FALLBACK = "multistructural"
+
+# Rule-based: subject_area → is_math_solvable (SymPy ile çözülebilir mi?)
+MATH_SUBJECTS = {"MATEMATIK", "GEOMETRI", "FIZIK", "KIMYA"}
+
+
+def derive_taxonomy(subject_area, difficulty_level, bloom_category):
+    """Rule-based taxonomy derivation — LLM hallucination'ı önler, daha tutarlı."""
+    bloom = (bloom_category or "kavrama").lower().strip()
+    diff = (difficulty_level or "MEDIUM").upper().strip()
+    subj = (subject_area or "").upper().strip()
+
+    marzano = BLOOM_TO_MARZANO.get(bloom, "comprehension")
+    solo = SOLO_TABLE.get((diff, bloom), SOLO_FALLBACK)
+    is_math = subj in MATH_SUBJECTS
+    return solo, marzano, is_math
+
+
 PROMPT_TEMPLATE = """Sen Türkiye YKS (TYT/AYT) sınavlarına hazırlık konusunda uzman bir eğitimcisin. Aşağıdaki çoktan seçmeli soruyu analiz et ve istenen metadata'yı JSON formatında üret.
 
 KONU: {subject_area} ({exam_type})
@@ -62,10 +113,7 @@ Aşağıdaki JSON formatında yanıt ver (sadece JSON, başka açıklama yok):
   }},
   "misconception_tags": ["kavram_yanılgısı_1", "kavram_yanılgısı_2"],
   "solution_steps": ["Adım 1: ...", "Adım 2: ...", "Adım 3: ..."],
-  "solo_level": "unistructural | multistructural | relational | extended_abstract",
-  "marzano_level": "retrieval | comprehension | analysis | knowledge_utilization | metacognitive",
-  "expected_answer_formula": "Eğer matematik sorusu ise SymPy uyumlu sembolik ifade (örn: 'x**2 + 3*x - 4'), değilse null",
-  "is_math_solvable": true_veya_false
+  "expected_answer_formula": "Eğer matematik sorusu ise SymPy uyumlu sembolik ifade (örn: 'x**2 + 3*x - 4'), değilse null"
 }}"""
 
 
@@ -179,14 +227,14 @@ def main():
             print(f"  [{i}] ollama error: {e}", flush=True)
             continue
 
-        # Validate + extract
+        # Validate + extract (rationales LLM-only)
         rationales = parsed.get("rationales", {}) or {}
         misconception = parsed.get("misconception_tags", []) or []
         solution = parsed.get("solution_steps", []) or []
-        solo = parsed.get("solo_level")
-        marzano = parsed.get("marzano_level")
         formula = parsed.get("expected_answer_formula")
-        is_math = bool(parsed.get("is_math_solvable", False))
+
+        # Rule-based taxonomy: tutarlı + hızlı, LLM'e hiç sorulmuyor
+        solo, marzano, is_math = derive_taxonomy(subj, diff, bloom)
 
         if args.apply:
             try:
