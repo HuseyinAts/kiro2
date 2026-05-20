@@ -48,15 +48,17 @@ E) {option_e}
 
 DOĞRU CEVAP: {correct_answer}
 
+KISALIK KURALI: Her rationale TEK CÜMLE (max 25 kelime). Her solution_step TEK CÜMLE (max 20 kelime). Tekrar etme, döngüye girme.
+
 Aşağıdaki JSON formatında yanıt ver (sadece JSON, başka açıklama yok):
 
 {{
   "rationales": {{
-    "A": "Neden doğru/yanlış olduğunun kısa açıklaması",
-    "B": "...",
-    "C": "...",
-    "D": "...",
-    "E": "..."
+    "A": "Tek cümle, max 25 kelime",
+    "B": "Tek cümle, max 25 kelime",
+    "C": "Tek cümle, max 25 kelime",
+    "D": "Tek cümle, max 25 kelime",
+    "E": "Tek cümle, max 25 kelime"
   }},
   "misconception_tags": ["kavram_yanılgısı_1", "kavram_yanılgısı_2"],
   "solution_steps": ["Adım 1: ...", "Adım 2: ...", "Adım 3: ..."],
@@ -74,7 +76,7 @@ def ollama_generate(prompt, timeout=120):
             "prompt": prompt,
             "stream": False,
             "format": "json",
-            "options": {"temperature": 0.2, "num_predict": 1500},
+            "options": {"temperature": 0.1, "num_predict": 1500},
         }
     ).encode("utf-8")
     req = urllib.request.Request(
@@ -105,13 +107,23 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=100, help="Max questions to process")
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument(
+        "--gold-only",
+        action="store_true",
+        help="Filter to R4_rule_based_gold (beta-eligible) only",
+    )
     args = ap.parse_args()
 
     conn = psycopg2.connect(DSN)
     cur = conn.cursor()
+    gold_filter = (
+        "AND q.pipeline_metadata->'beta_filter_v1'->>'rule' = 'R4_rule_based_gold'"
+        if args.gold_only
+        else ""
+    )
     # Resume: skip rows already having rationale
     cur.execute(
-        """
+        f"""
         SELECT q.id::text, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.option_e,
                q.correct_answer, q.subject_area, q.exam_type, q.difficulty_level::text, q.bloom_category
         FROM question_bank q
@@ -121,6 +133,7 @@ def main():
           AND q.option_a IS NOT NULL
           AND q.correct_answer IN ('A', 'B', 'C', 'D', 'E')
           AND r.question_id IS NULL
+          {gold_filter}
         ORDER BY q.created_at DESC
         LIMIT %s
     """,
