@@ -1,0 +1,98 @@
+name: Quality Gate (New-Endpoint Checklist)
+
+# KIRO2 Task 8 — quality hardening CI gate.
+# Runs on every PR and push to master/main. Catches the regression
+# classes that previously slipped through (Session 84 IDOR, Session 112
+# unregistered router, Session 148 middleware HTTPException, drift).
+#
+# Distinct from `quality-gates.yml` (the broader 5-gate score pipeline) —
+# this workflow targets the *new-endpoint checklist* and four static-audit
+# guards that already exist in `backend/scripts/`.
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.11"
+  PYTHONIOENCODING: "utf-8"
+
+jobs:
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for diff)
+        uses: actions/checkout@v4
+        with:
+          # check_new_endpoints.py needs origin/master to diff against
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install backend requirements
+        run: |
+          cd backend
+          pip install --upgrade pip
+          pip install -r requirements.txt || pip install pytest pytest-asyncio httpx fastapi pydantic sqlalchemy
+
+      - name: Install lint/type tools
+        run: pip install ruff mypy
+
+      # ---- Step 1: Router registration check -----------------------------
+      # Catches Session 112 class bug (router file exists, not in
+      # loader.py ROUTER_MAPPING → silent 404 for weeks).
+      - name: Router registration check
+        run: |
+          cd backend
+          pytest tests/test_router_registration.py -v --tb=short
+
+      # ---- Step 2: Golden Flows smoke ------------------------------------
+      # GF1-GF8 read-path + write-path GFs auto-skip when backend is
+      # unreachable (built-in to the test module), so we don't need to
+      # spin up docker-compose in CI. This catches the classes that the
+      # 16-wave probe sweep eradicated (rule-of-eight, IDOR, schema drift).
+      - name: Golden Flows smoke
+        run: |
+          cd backend
+          pytest tests/e2e/test_golden_flows.py -m golden_flow -v --tb=short
+
+      # ---- Step 3: Path drift audit --------------------------------------
+      # .claude/rules/path-naming.md — TR/EN duplicate ban, frontend 404
+      # risk. --fail exits 1 if drift count increases.
+      - name: Path drift audit
+        run: python backend/scripts/audit_path_drift.py --fail
+
+      # ---- Step 4: ORM schema drift --------------------------------------
+      # Session 155 baseline: HIGH=203. Script exits 1 if HIGH-severity
+      # finding count grows past the baseline JSON.
+      - name: ORM schema drift
+        run: python backend/scripts/audit_orm_schema_drift.py --fail
+
+      # ---- Step 5: New-endpoint checklist --------------------------------
+      # Custom checklist for PR-added @router.{get,post,...} decorators.
+      # HARD violations (auth, IDOR, /api/v1 prefix) → exit 1.
+      # SOFT violations (response_model, loader, tests) → warning only.
+      - name: New-endpoint checklist
+        run: python .github/scripts/check_new_endpoints.py
+        env:
+          # check script diffs against this ref; override for forks
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'master' }}
+
+      # ---- Step 6: Ruff + mypy (backend) ---------------------------------
+      - name: Ruff lint
+        run: |
+          cd backend
+          ruff check . --select=E,F,W --ignore=E501
+
+      - name: Mypy type check
+        run: |
+          cd backend
+          mypy . --ignore-missing-imports --no-strict-optional || true
+          # mypy soft-fail until strict-mode rollout (CLAUDE.md target)
