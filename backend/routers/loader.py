@@ -160,6 +160,9 @@ ROUTER_MAPPING = {
     # Other Features
     "api.live_session_routes": ("learning", "api.live_session_routes"),
     "api.team_challenges_api": ("integrations", "api.team_challenges_api"),
+    # S180 #5: study-rooms stub — 23 endpoints return 501 until real
+    # implementation lands. Converts FE 404 cascade → explicit 501.
+    "api.study_rooms_stub": ("collaboration", "api.study_rooms_stub"),
     # Social Features (F0-F6)
     "api.moderation_api": ("social", "api.moderation_api"),
     "api.parent_social_api": ("social", "api.parent_social_api"),
