@@ -39,7 +39,7 @@ from metadata_phase7_llm_generation import (  # noqa
     parse_llm_response,
 )
 
-DSN = os.getenv("DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2")
+DSN = os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
 GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
 

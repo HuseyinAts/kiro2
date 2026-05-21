@@ -23,7 +23,7 @@ import psycopg2
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-DSN = os.getenv("DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2")
+DSN = os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 EMBED_MODEL = os.getenv("EMBED_MODEL", "nomic-embed-text")
 EMBED_DIM = 768

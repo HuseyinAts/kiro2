@@ -207,7 +207,7 @@ def main():
     from sqlalchemy import create_engine, text
 
     eng = create_engine(
-        os.getenv("DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2")
+        os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
     )
 
     if args.pilot:
@@ -244,16 +244,28 @@ def main():
         page = extract_page_num(request_key)
 
         q_idx = ai_extras.get("q_index_in_page")
+        # Tier 4: legacy crop_file field (pre-v4.14e dataset)
+        crop_file = pm.get("crop_file")
 
-        if page is None or (q_no is None and q_idx is None):
+        if page is None and not crop_file:
+            no_metadata += 1
+            continue
+        if not crop_file and q_no is None and q_idx is None:
             no_metadata += 1
             continue
 
         url = None
-        if q_no is not None:
+        if q_no is not None and page is not None:
             url = find_crop(r.source_book, page, q_no)
-        if not url and q_idx is not None:
+        if not url and q_idx is not None and page is not None:
             url = find_crop_by_qidx(r.source_book, page, int(q_idx))
+        if not url and crop_file:
+            # Tier 4: direct legacy crop_file lookup
+            book_dir = find_disk_dir(r.source_book)
+            if book_dir:
+                fpath = CROPS_BASE / book_dir / crop_file
+                if fpath.exists():
+                    url = f"/static/crops/{book_dir}/{crop_file}"
 
         if url:
             found += 1

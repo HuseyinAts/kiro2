@@ -46,9 +46,7 @@ DEFAULT_STATUS_POOL = "unverified"  # Bronze proxy (pre Faz 1.6)
 def get_engine():
     from sqlalchemy import create_engine
 
-    db_url = os.getenv(
-        "DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2"
-    )
+    db_url = os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
     db_url = db_url.replace("postgresql+asyncpg://", "postgresql://").replace(
         "/kiro2_db", "/kiro2"
     )

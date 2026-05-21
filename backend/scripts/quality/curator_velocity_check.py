@@ -26,7 +26,7 @@ import psycopg2
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-DSN = os.getenv("DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2")
+DSN = os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
 
 
 def fetch_velocities(since_days: int = 30):

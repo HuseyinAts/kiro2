@@ -14,7 +14,7 @@ from psycopg2.extras import execute_values
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 random.seed(42)
 
-DSN = os.getenv("DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2")
+DSN = os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
 
 
 def fisher_3pl(theta, a, b, c):

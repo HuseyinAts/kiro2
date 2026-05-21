@@ -33,10 +33,7 @@ async def get_database_url() -> str:
     from dotenv import load_dotenv
 
     load_dotenv(BASE_DIR / ".env")
-    return os.getenv(
-        "DATABASE_URL",
-        "postgresql+asyncpg://postgres:changeme@localhost:5434/kiro2_db"
-    )
+    return os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
 
 
 async def check_table_exists(session: AsyncSession, table_name: str) -> bool:

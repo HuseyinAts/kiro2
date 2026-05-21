@@ -39,7 +39,7 @@ def main():
     from sqlalchemy import create_engine, text
 
     eng = create_engine(
-        os.getenv("DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2")
+        os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
     )
 
     audit_obj = {
