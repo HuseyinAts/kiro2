@@ -44,6 +44,15 @@ DSN = os.getenv("DATABASE_URL", "postgresql://postgres:1470@localhost:5434/kiro2
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 MODEL = os.getenv("OLLAMA_MODEL", "qwen3:8b")
 
+# Cloud LLM provider (set LLM_PROVIDER=openai or gemini to use cloud)
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama")  # "ollama", "openai", or "gemini"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_URL = "https://api.openai.com/v1/chat/completions"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models"
+
 # ─── Rule-based taxonomy mappings ─────────────────────────────────────────
 
 # Bloom → Marzano New Taxonomy (Marzano & Kendall 2007)
@@ -142,6 +151,7 @@ def ollama_generate(prompt, timeout=120):
             "prompt": prompt,
             "stream": False,
             "format": "json",
+            "think": False,
             "options": {"temperature": 0.1, "num_predict": 1500},
         }
     ).encode("utf-8")
@@ -153,6 +163,80 @@ def ollama_generate(prompt, timeout=120):
     resp = urllib.request.urlopen(req, timeout=timeout)
     result = json.loads(resp.read())
     return result.get("response", "")
+
+
+def openai_generate(prompt, timeout=60):
+    """Single LLM call to OpenAI (gpt-4o-mini, gpt-5.x, or o-series reasoning)."""
+    if not OPENAI_API_KEY:
+        raise RuntimeError("OPENAI_API_KEY not set")
+    # Reasoning models (o1, o3, o4-mini) use different parameters
+    is_reasoning = OPENAI_MODEL.startswith(("o1", "o3", "o4"))
+    if is_reasoning:
+        body = {
+            "model": OPENAI_MODEL,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_completion_tokens": 4000,  # reasoning_tokens dahil
+            "reasoning_effort": os.getenv("OPENAI_REASONING_EFFORT", "medium"),
+            "response_format": {"type": "json_object"},
+        }
+    else:
+        body = {
+            "model": OPENAI_MODEL,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.1,
+            "max_tokens": 1500,
+            "response_format": {"type": "json_object"},
+        }
+    data = json.dumps(body).encode("utf-8")
+    req = urllib.request.Request(
+        OPENAI_URL,
+        data=data,
+        headers={
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Content-Type": "application/json",
+        },
+    )
+    resp = urllib.request.urlopen(req, timeout=timeout)
+    result = json.loads(resp.read())
+    return result["choices"][0]["message"]["content"]
+
+
+def gemini_generate(prompt, timeout=60):
+    """Single LLM call to Google Gemini with JSON output."""
+    if not GEMINI_API_KEY:
+        raise RuntimeError("GEMINI_API_KEY not set")
+    body = {
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.1,
+            "maxOutputTokens": 4000,
+            "responseMimeType": "application/json",
+        },
+    }
+    data = json.dumps(body).encode("utf-8")
+    url = f"{GEMINI_URL}/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={"Content-Type": "application/json"},
+    )
+    resp = urllib.request.urlopen(req, timeout=timeout)
+    result = json.loads(resp.read())
+    candidates = result.get("candidates") or []
+    if not candidates:
+        raise RuntimeError(f"Gemini empty response: {str(result)[:200]}")
+    parts = candidates[0].get("content", {}).get("parts") or []
+    text = "".join(p.get("text", "") for p in parts)
+    return text
+
+
+def llm_generate(prompt, timeout=None):
+    """Provider-switching wrapper."""
+    if LLM_PROVIDER == "openai":
+        return openai_generate(prompt, timeout=timeout or 60)
+    if LLM_PROVIDER == "gemini":
+        return gemini_generate(prompt, timeout=timeout or 60)
+    return ollama_generate(prompt, timeout=timeout or 120)
 
 
 def parse_llm_response(text):
@@ -280,13 +364,17 @@ def process_row(row, cluster_reuse, cluster_threshold):
     )
 
     try:
-        raw = ollama_generate(prompt)
+        raw = llm_generate(prompt)
     except Exception as e:
         return {
             "row": row,
             "ok": False,
             "reason": f"ollama:{type(e).__name__}:{str(e)[:100]}",
         }
+
+    # Strip NUL bytes — gpt-4o-mini sometimes emits   which PostgreSQL rejects
+    if raw:
+        raw = raw.replace("\x00", "").replace("\\u0000", "")
 
     parsed = parse_llm_response(raw)
     if not parsed or not parsed.get("rationales"):
@@ -332,6 +420,9 @@ def bulk_write(writer_conn, results):
     for r in results:
         if not r["ok"]:
             fail += 1
+            reason = r.get("reason", "unknown")
+            raw_head = r.get("raw_head", "")
+            print(f"  [fail-detail] reason={reason} raw={raw_head[:120]!r}", flush=True)
             continue
 
         qid, _, _, _, _, _, _, ca, subj, _, diff, bloom = r["row"]
@@ -492,9 +583,11 @@ def main():
     rows = fetch_cur.fetchall()
     fetch_conn.close()
 
+    active_model = OPENAI_MODEL if LLM_PROVIDER == "openai" else MODEL
     print(
-        f"[scan] {len(rows):,} rows | model={MODEL} | parallel={args.parallel} | "
-        f"bulk={args.bulk_size} | cluster_reuse={args.cluster_reuse}"
+        f"[scan] {len(rows):,} rows | provider={LLM_PROVIDER} | model={active_model} | "
+        f"parallel={args.parallel} | bulk={args.bulk_size} | "
+        f"cluster_reuse={args.cluster_reuse}"
         f"{f' (sim>={args.cluster_threshold})' if args.cluster_reuse else ''} | "
         f"apply={args.apply}\n",
         flush=True,

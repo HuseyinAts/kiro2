@@ -1,77 +1,84 @@
-## Session Handoff — 2026-05-16 (Session 161d, 6 Faz sprint) — IN PROGRESS
-**Branch:** master (origin/master 1 commit behind pending push)
-**Son commit (push edilmiş):** `45eb3a0f4` feat(faz-4-1)
-**Uncommitted:** Faz 2.4 (ma_tracker) + 2.5 (Task Scheduler) + retroactive 2.1 (weekly_audit)
+## Session Handoff — 2026-05-21 (Phase 7 Cloud LLM Pipeline — Complete) 🎯
+**Branch:** master
+**Son commit:** `3f8927ecc` Phase 5 embedding + Phase 7 v3 (20 May, henüz pending Phase 7 batch fix commit)
+**Uncommitted:** Yeni Gemini Batch API script + A/B test pilots + spot-check + LLM script updates
+**Önceki session:** Power kesintisi sonrası resume (Session 177 ground truth completed)
 
-### Faz 2.4 + 2.5 ek iş
-- **Faz 2.4 30-gün MA tracker**: `backend/scripts/quality/ma_tracker.py`
-  - Faz 2.3 timeseries.json input → pass% rolling 30-day average + alarm flag
-  - Alarmlar: MA(30g) < baseline - 5pp → drift, tek tarih < baseline - 10pp → flash
-  - Test: tek tarih → "veri yetersiz" mesajı (Faz 2.6 baseline'den sonra anlamlı)
-  - Exit code 2 alarm active ise (CI/cron integration)
-- **Faz 2.1 retroactive**: `backend/scripts/quality/weekly_audit.py` (memory'de completed işaretliydi ama dosya yoktu)
-  - 30 random sample, deterministic seed=ISO_year+week
-  - Auto-chain: weekly_audit → scoring_template --prepare (subprocess)
-  - Test: 30 sample (24 bronze + 6 legacy_v3), W20 seed
-- **Faz 2.5 Task Scheduler**:
-  - `run_weekly_audit.ps1` PowerShell wrapper (log dosyası + cwd)
-  - `SCHEDULER_SETUP.md` schtasks kurulum + troubleshooting + iş akışı
-  - Pazar 09:00 weekly trigger (kullanıcı manuel kurar)
+### 🏆 Bu Session Başarıları (00:42 → 04:30)
 
-### Session 161d kapsamı (4 Faz iş)
-- **Faz 1.6 Bronze promotion** (push'lu, `816c7f4ae`): 84,905 satır `bronze_clean`
-- **Faz 2.2 Scoring template** (push'lu, `30515066c`): scoring_template.py + reusable guide
-- **Faz 2.3 Drift dashboard** (push'lu, `1795fe3c9`): drift_dashboard.py + baseline demo
-- **Faz 4.1 prereq** (commit pending): 200 stratified sample TSV ÜRETİLDİ (Hüseyin manuel scoring bekliyor)
-  - `backend/scripts/quality/faz_4_1_sample.py` — strata: 50 exact + 50 fuzzy + 50 fallback + 50 v3.5_residual
-  - `backend/_pilots/20260516_faz_4_1_curated_set_RAW.tsv` (200 satır, 15 kolon)
-  - `backend/_pilots/20260516_faz_4_1_curated_set_RAW_SCORING.tsv` (200 satır, 18 kolon — 3 boş scoring kolonu)
-  - SQL bug fix: `id::text` + `pipeline_metadata::jsonb` → `CAST(...)` syntax (Tier I lesson tekrarı)
-  - Sıradaki: Hüseyin SCORING TSV doldurur (4-7 saat), sonra Faz 5.3 judge calibration
+**Phase 7 LLM Pipeline %17 → %93.8** (62,697 yeni rationale-completed soru)
+- DB: question_option_rationales = **383,660 satır** (önce 70,180)
+- Unique q with rationales: **76,733** (önce 14,036)
+- Gold pool target: 81,776, kalan **5,120 retry batch'te**
+- question_math = 27,244 (math sorular)
 
-### Session 161d — Faz 1.6 Bronze tier promotion
-- Alembic `qrs_v3_20260514` deploy (DB v2→v3, `bronze_clean` constraint accept)
-- `backend/scripts/faz_1_6_bronze_promotion.py` — filter v1_loose
-- 84,905 satır UPDATE (12 dk, 117/s), audit trail 84,905/84,905
-- v_safe_for_beta=0 doğrulandı, post-state: bronze_clean=84,905 + unverified=61,482 + legacy_v3=18,397 + pending=2,775
-- Convention v3 doc revize: `sanity_flags`/`ocr_quality_flag` → `quality_flags` gerçek key
-- Plan v1 Faz 1.x %100 kapalı — sıradaki Faz 2.2 veya 4.1
+### Yapılan İşler
 
-### Session 161b ek iş (Faz 5.8 partial)
-- `backend/scripts/tier_i_geometri_retry.py` — BLOCK_NONE safety + 334 error retry script
-- Pilot n=20: %45 gemini_error, %20 applied_high, %50 toplam hata → **NO-GO production retry**
-- Bonus: 4 HIGH UPDATE DB'de kalıcı (audit trail `safety_mode=block_none, retry_pass=2`)
-- Finding: BLOCK_NONE yetersiz, `finish_reason != STOP` derin SDK sorunu — `candidates[0].content.parts[0].text` bypass gerek
-- Error count drift düzeltildi: memory "311" → gerçek **334**
-- RESULT: `backend/_pilots/20260516_tier_i_geometri_retry_pilot_RESULT.md`
+1. **Power kesintisi sonrası resume** — latest.md outdated tespit, batch durumu doğrulandı
+2. **Lokal Ollama optimizasyonu denendi** — qwen3:8b paralel kazanım YOK (hardware bandwidth bound 70 tok/s)
+3. **NUL byte bug fix** — gpt-4o-mini bazen `\x00` üretiyor, PostgreSQL reject ediyordu
+4. **OpenAI gpt-4o-mini denendi** — 10K success sonra daily limit, sonra **kalite zayıf tespit edildi** (Hemingway→Stendhal hatası)
+5. **4 paralel deep research agent** — hardware ceiling, architectural opt, cost analysis, production cases
+6. **Web search 2026 frontier models** — gpt-5.5, Opus 4.7, Gemini 3.5 Flash bulundu (önceki agent eski Jan 2026 modelleri biliyordu)
+7. **A/B Test #1: o3 vs Gemini Flash** — o3 %68 success (max_tok yetersiz), Gemini %100, **Gemini 4x ucuz**
+8. **A/B Test #2: Gemini vs Sonnet 4.6 thinking** — Sonnet kalite şampiyonu (factual correct) ama 5x pahalı, Gemini factual hata var ama uygun
+9. **Gemini Batch API entegrasyonu** — yeni script `metadata_phase7_batch_gemini.py` (build/submit/poll/apply)
+10. **67,808 satır 9 dakikada SUCCEEDED** — paralel infra, %100 API success
+11. **Apply 16 dk** — 313K INSERT + 62K UPDATE transaction commit
+12. **Spot-check 50 sample** — %100 schema, 0 contradiction, 0 English bleed
+13. **Retry batch (5,120 parse_fail)** — maxOutputTokens 6000→8000, submitted batch_x9cmysywag7ai4xybc4olprul4bxvz1ycqlb
 
-### Yapilanlar
-- `docs/llm_judge_spec.md` + `backend/scripts/judge/{__init__,prompt_v1,client,aggregator,runner}.py` — Faz 5.5+5.1+5.2 (`2a25347ba`)
-- Tier I apply tamam: 3,008 satır 74.2 dk (9.3x speedup), 1,770 HIGH UPDATE — `backend/scripts/tier_i_reocr_apply_threaded.py` (`b41270231`)
-- Tier I pixel-verify n=12 (R1 geometri 7 + R2 non-geometri 5): URL 12/12 ✅, image_ocr 11/12, qtext 10/12 (`b41270231`+`def215db7`)
-- `backend/scripts/tier_j_qtext_audit.py` v1 + `tier_j_qtext_audit_v2.py` format-aware: 270 false positive elendi, ~860 gerçek content drift (`def215db7`+`01f7e7684`)
-- Tier J pixel-verify n=60 (R3+R4): %40 image_ocr_better, %10 KRİTİK math errors (∥/⊥/=/<) (`fd6fecfa6`+`b388a0bee`)
-- Tier J heuristic apply: 85 satır UPDATE (broken_text_o 51 + italic_i 39 + truncation 2), pipeline_metadata.tier_j_qtext audit trail — `backend/scripts/tier_j_apply_heuristic.py` (`d69628a16`)
-- Memory: `~/.claude/.../memory/{feedback_smoke_test_checkpoint_trap,project_tier_i_subject_asymmetric}.md`
+### Maliyet
+- Gemini Batch API: ~$142
+- OpenAI gpt-4o-mini live (10K): ~$1.70
+- A/B test combined: ~$2
+- **TOPLAM: ~$146**
+
+### API Anahtarları Kullanıldı (kullanıcı verdi)
+- OPENAI_API_KEY (env'den, 164 char Tier-3 hesap)
+- GEMINI_API_KEY `AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I` (kullanıcı paylaştı)
+- ANTHROPIC_API_KEY `sk-ant-api03-KqFFwJPi...` (kullanıcı paylaştı, A/B test için)
+
+### Yeni Script ve Dosyalar (uncommitted)
+- `backend/scripts/quality/metadata_phase7_batch_gemini.py` — Gemini Batch API (ana iş)
+- `backend/scripts/quality/metadata_phase7_batch_openai.py` — OpenAI Batch API (kullanılmadı)
+- `backend/scripts/quality/metadata_phase7_llm_generation.py` (modified) — OpenAI/Gemini provider, NUL fix, think:false
+- `backend/_pilots/ab_test_o3_vs_gemini.py` — A/B test
+- `backend/_pilots/ab_test_gemini_vs_sonnet.py` — A/B test
+- `backend/_pilots/bench_models_phase7.py` — Multi-model benchmark
+- `backend/_pilots/spot_check_phase7_quality.py` — 50 sample kalite analizi
+- `backend/_pilots/test_openai_fail.py` — debug
+- `backend/_pilots/20260521_ab_test_o3_vs_gemini_RAW.tsv` — A/B output
+- `backend/_pilots/20260521_ab_test_gemini_vs_sonnet_RAW.tsv` — A/B output
+- `backend/_pilots/20260521_phase7_spot_check_RAW.tsv` — kalite sonuçları
+- `backend/scripts/quality/_batch_state_gemini/` — batch state (gitignore aday)
+
+### Önemli Bulgular / Öğrenilen Dersler
+- **gpt-4o-mini factual hata yapıyor** (kanıtlı: Hemingway→Stendhal eseri "Kırmızı ve Siyah") — beta'ya gidemez
+- **Gemini Batch API paralel infra** kullanıyor — 67K satır 9 dk'da bitti (live API ile 19 saat olurdu)
+- **Sonnet 4.6 thinking requires temperature=1** (otherwise 400 error)
+- **OpenAI o3** kullanıyor `max_completion_tokens` (not `max_tokens`) + `reasoning_effort`
+- **OpenAI Batch token cap = 2M enqueued tokens per organization** for gpt-4o-mini
+- **Gemini Files API jsonl bug** — `mime_type="text/plain"` workaround (issue #1590)
+- **Gemini download URL** = `download/v1beta/{file}:download?alt=media` (not `v1beta/{file}?alt=media`)
 
 ### Fail Eden Testler
-- YOK (pytest çalıştırılmadı, sadece script-level smoke + multimodal pixel-verify)
+- YOK (pytest çalıştırılmadı, sadece script-level)
 
 ### Engelleyiciler
-- Faz 6.1 judge pilot Faz 4.1 (200 manuel curated set) blocker — bu insan iş
-- Geometri safety_blocked 311 satır retry için Session 162+ `safety_settings=BLOCK_NONE` config
-- ANTHROPIC_API_KEY env'de yok (judge runner için gerekli)
+- Retry batch (5,120) hâlâ background poll'da, ~5-10 dk içinde tamamlanmalı
+- Sonraki kalite kontroller: random 50 sample manuel review (programatik spot-check %100 geçti zaten)
 
-### Sonraki Adimlar (maks 5)
-1. **Faz 4.1**: 200 manuel curated set (50 exact+50 fuzzy+50 fallback+50 v3.5 residual) — Hüseyin manuel iş
-2. **Faz 6.1 judge pilot**: 1,000 satır = 445 GEOMETRI Tier J kalanı + 555 random Bronze, ~$10-20, ~1.5h
-3. **MID bant pilot**: `tier_i_reocr_apply_threaded.py --substr-apply 0.50 --limit 50` script edit + apply (~25 dk)
-4. **Geometri safety retry**: 311 satır `safety_settings=BLOCK_NONE` ile Session 161+ Faz 5.8
+### Sonraki Adımlar (maks 5)
+1. **Retry batch apply** — 5,120 → ~4,500 yeni rationale (apply komutu çalıştırılmalı)
+2. **Git commit** — tüm yeni script + dosyalar (büyük _batch_state hariç)
+3. **Phase 6 (similar_questions kNN)** — pgvector ile Phase 5 embedding üzerinden kNN
+4. **Beta launch hazırlığı** — Phase 7 hazır artık (Faz 7.1 in_progress)
+5. **MEMORY.md güncelleme** — production durumu refresh
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- Tier I HIGH apply onaylı (URL 12/12 + image_ocr 11/12 = production'da kalıyor)
-- MID/LOW band ertele (gerçek kanıt yok, judge pipeline için bırakıldı)
-- Tier J SUBJECT-ASYMMETRIC: GEOMETRI-only (KIMYA Tier I OCR typo riski, sözel Tier I scope dışı)
-- Tier J blind apply YASAK: 60 sample evidence — %53-60 format_only (LaTeX→Unicode = beta UI render kaybı)
-- Strategy A heuristic conservative (85/1727=%4.9): broken LaTeX + italic-I objectively wrong patterns
-- Strategy C judge için Faz 4.1 önkoşul, Session 162+
+- Phase 7 için **Gemini Flash latest** seçildi (factual hata kabul edilebilir, beta curator review yapılacak)
+- Sonnet 4.6 thinking kalite şampiyonu ama 5x pahalı, **post-MVP premium upgrade** için saklı
+- gpt-4o-mini **KESİNLİKLE kullanılmayacak** (factual error documented)
+- OpenAI Batch API daha karmaşık + token cap, Gemini Batch API tercih edildi
+- Hardware lokal Ollama Phase 7 için **deprecated** — cloud Batch API standart
