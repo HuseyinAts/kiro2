@@ -777,13 +777,36 @@ async def save_answer(
                                     responses=responses,
                                 )
                             )
-                            # Detach: if the task fails, we want the log,
-                            # not a hang on the request.
-                            _task.add_done_callback(
-                                lambda t: logger.exception("BKT fire-and-forget FAILED")
-                                if t.exception()
-                                else None
-                            )
+
+                            # S180 fix (#10): pre-fix the done_callback only
+                            # logged the exception — `_ALGO_ERRORS` counter
+                            # wasn't bumped so /metrics never reflected the
+                            # degraded pipeline. Now: also increment the
+                            # per-stage counter so monitoring catches the
+                            # fire-and-forget failure even though the client
+                            # response (already sent) can't be updated.
+                            def _on_done(
+                                t, sid=str(session_id), qid=str(request.question_id)
+                            ):
+                                exc = t.exception()
+                                if exc is None:
+                                    return
+                                try:
+                                    from services.bkt_service import _ALGO_ERRORS
+
+                                    _ALGO_ERRORS["bkt_write"] = (
+                                        _ALGO_ERRORS.get("bkt_write", 0) + 1
+                                    )
+                                except Exception:
+                                    pass
+                                logger.exception(
+                                    "BKT fire-and-forget FAILED session=%s qid=%s",
+                                    sid,
+                                    qid,
+                                    exc_info=exc,
+                                )
+
+                            _task.add_done_callback(_on_done)
                             bkt_result = {"deferred": True}
                         else:
                             bkt_result = await BKTService.record_answer(
