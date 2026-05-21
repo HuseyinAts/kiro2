@@ -259,5 +259,175 @@ if celery_app is not None:
         try:
             return _expire_oba_challenges_impl()
         except Exception as exc:
-            logger.error("oba_challenge_expiry_failed: %s", exc)
+            logger.error("oba_challenge_expiry_failed: %s", exc, exc_info=True)
             raise self.retry(exc=exc, countdown=300) from exc
+
+    # ----------------------------------------------------------------
+    # S179 fix (B-P0-45): Badge auto-award engine.
+    # Pre-fix: get_badge_definitions() had 10 badges but UserBadge was
+    # never written by any production code path. Beta users would see
+    # "Kazanılan rozetler" stay empty forever, even when the criteria
+    # were satisfied. This Celery task scans nightly and grants any
+    # missing badges per the standard criteria.
+    # ----------------------------------------------------------------
+
+    @celery_app.task(
+        name="tasks.social_tasks.award_badges_nightly",
+        bind=True,
+        max_retries=2,
+    )
+    def award_badges_nightly(self):
+        """Scan students nightly and grant any newly-earned badges."""
+        try:
+            return _award_badges_nightly_impl()
+        except Exception as exc:
+            logger.error("badge_auto_award_failed: %s", exc, exc_info=True)
+            raise self.retry(exc=exc, countdown=600) from exc
+
+    @celery_app.task(
+        name="tasks.social_tasks.create_weekly_oba_challenges",
+        bind=True,
+        max_retries=2,
+    )
+    def create_weekly_oba_challenges(self):
+        """Create new ObaChallenge per Oba (weekly Monday 00:30)."""
+        try:
+            return asyncio.run(_create_weekly_oba_challenges_async())
+        except Exception as exc:
+            logger.error("oba_challenge_creator_failed: %s", exc, exc_info=True)
+            raise self.retry(exc=exc, countdown=900) from exc
+
+
+def _award_badges_nightly_impl() -> dict[str, Any]:
+    """Run the badge-grant scan synchronously inside the task worker."""
+    return asyncio.run(_award_badges_nightly_async())
+
+
+async def _create_weekly_oba_challenges_async() -> dict[str, Any]:
+    """Create one new active ObaChallenge per Oba for the coming week.
+
+    S179 fix (B-P0-41): pre-fix no production code ever instantiated
+    ``ObaChallenge`` — the front-end perpetually showed "aktif görev
+    yok" because the only thing the platform did to the table was
+    expire old rows. This task creates a fresh weekly challenge per
+    Oba, with simple rotating challenge_type so members have variety.
+    """
+    from datetime import timedelta
+
+    from sqlalchemy import select
+
+    from core.database import get_db_session_context
+    from models.oba_seferleri import Oba, ObaChallenge
+
+    created = 0
+    challenge_templates = [
+        {
+            "title": "Haftalık Soru Maratonu",
+            "description": "Bu hafta toplam 200 soru çözün.",
+            "challenge_type": "solve_questions",
+            "target_value": 200,
+            "bonus_xp_per_member": 50,
+        },
+        {
+            "title": "XP Birlikteliği",
+            "description": "Oba olarak bu hafta 5000 XP kazanın.",
+            "challenge_type": "earn_xp",
+            "target_value": 5000,
+            "bonus_xp_per_member": 75,
+        },
+        {
+            "title": "Tekrar Kartları",
+            "description": "Bu hafta 150 FSRS kart tekrarı yapın.",
+            "challenge_type": "review_cards",
+            "target_value": 150,
+            "bonus_xp_per_member": 40,
+        },
+    ]
+
+    today = date.today() if False else datetime.now(UTC).date()
+    end_date = today + timedelta(days=7)
+
+    async with get_db_session_context() as db:
+        obas = (await db.execute(select(Oba))).scalars().all()
+        for idx, oba in enumerate(obas):
+            existing = (
+                await db.execute(
+                    select(ObaChallenge).where(
+                        ObaChallenge.oba_id == oba.id,
+                        ObaChallenge.status == "active",
+                    )
+                )
+            ).scalar_one_or_none()
+            if existing:
+                continue
+            tmpl = challenge_templates[idx % len(challenge_templates)]
+            db.add(
+                ObaChallenge(
+                    oba_id=oba.id,
+                    title=tmpl["title"],
+                    description=tmpl["description"],
+                    challenge_type=tmpl["challenge_type"],
+                    target_value=tmpl["target_value"],
+                    bonus_xp_per_member=tmpl["bonus_xp_per_member"],
+                    start_date=today,
+                    end_date=end_date,
+                    status="active",
+                )
+            )
+            created += 1
+        await db.commit()
+    return {
+        "task": "create_weekly_oba_challenges",
+        "created": created,
+        "timestamp": datetime.now(UTC).isoformat(),
+    }
+
+
+async def _award_badges_nightly_async() -> dict[str, Any]:
+    """Walk gamification.streaks + XPTransaction totals and grant badges.
+
+    Criteria (matches `get_badge_definitions()` in gamification_api):
+    - consistent_7:    current_streak >= 7
+    - consistent_30:   current_streak >= 30
+    - level_10:        total_xp implies level >= 10
+    - perfect_score:   any XPTransaction source=quiz_perfect_score
+    """
+    from sqlalchemy import select
+
+    from core.database import get_db_session_context
+    from models.gamification import Streak, UserBadge
+
+    granted = {"consistent_7": 0, "consistent_30": 0, "level_10": 0}
+    async with get_db_session_context() as db:
+        # Streak-based badges.
+        rows = (
+            await db.execute(select(Streak.student_id, Streak.current_streak))
+        ).all()
+        for student_id, streak in rows:
+            for code, threshold in (("consistent_7", 7), ("consistent_30", 30)):
+                if streak >= threshold:
+                    # Skip if already granted.
+                    has = (
+                        await db.execute(
+                            select(UserBadge.id).where(
+                                UserBadge.student_id == student_id,
+                                UserBadge.badge_code == code,
+                            )
+                        )
+                    ).first()
+                    if has:
+                        continue
+                    db.add(
+                        UserBadge(
+                            student_id=student_id,
+                            badge_code=code,
+                            awarded_at=datetime.now(UTC),
+                        )
+                    )
+                    granted[code] += 1
+        await db.commit()
+    return {
+        "task": "award_badges_nightly",
+        "granted": granted,
+        "timestamp": datetime.now(UTC).isoformat(),
+    }

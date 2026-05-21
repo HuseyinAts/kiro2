@@ -2,6 +2,10 @@
 KIRO2 TYT/AYT Exam Results Reporting System
 Comprehensive exam results analysis and reporting for Turkish exam platform
 Türkiye Üniversite Sınavları Hazırlık Platformu - Sınav Sonuçları Raporlama Sistemi
+
+@TODO S179 fix (B-P0-68): 1,859 LOC, Maintainability Index 0.00.
+Sprint plan: split `ExamResultsReportGenerator` into report-section
+classes (subject, difficulty, comparison). Do NOT extend this file.
 """
 
 import asyncio
@@ -513,43 +517,95 @@ class ExamResultsReportGenerator:
             from models import ExamQuestion
             from models.question_bank import QuestionBankItem as Question
 
-            exam_session_id = subject_data.get('exam_session_id')
-            db = subject_data.get('db_session')
+            exam_session_id = subject_data.get("exam_session_id")
+            db = subject_data.get("db_session")
 
             if exam_session_id and db:
                 # Get actual questions with difficulty levels
-                questions_query = db.query(
-                    ExamQuestion.question_id,
-                    Question.difficulty,
-                    Question.irt_difficulty
-                ).join(
-                    Question, ExamQuestion.question_id == Question.id
-                ).filter(
-                    ExamQuestion.exam_session_id == exam_session_id,
-                    Question.subject_area == subject_analysis.subject
-                ).all()
+                questions_query = (
+                    db.query(
+                        ExamQuestion.question_id,
+                        Question.difficulty,
+                        Question.irt_difficulty,
+                    )
+                    .join(Question, ExamQuestion.question_id == Question.id)
+                    .filter(
+                        ExamQuestion.exam_session_id == exam_session_id,
+                        Question.subject_area == subject_analysis.subject,
+                    )
+                    .all()
+                )
 
                 if questions_query:
                     # Count by difficulty level
-                    easy_questions = sum(1 for q in questions_query if q.difficulty.value == 'easy' or (q.irt_difficulty and q.irt_difficulty < -0.5))
-                    hard_questions = sum(1 for q in questions_query if q.difficulty.value == 'hard' or (q.irt_difficulty and q.irt_difficulty > 0.5))
-                    medium_questions = len(questions_query) - easy_questions - hard_questions
+                    easy_questions = sum(
+                        1
+                        for q in questions_query
+                        if q.difficulty.value == "easy"
+                        or (q.irt_difficulty and q.irt_difficulty < -0.5)
+                    )
+                    hard_questions = sum(
+                        1
+                        for q in questions_query
+                        if q.difficulty.value == "hard"
+                        or (q.irt_difficulty and q.irt_difficulty > 0.5)
+                    )
+                    medium_questions = (
+                        len(questions_query) - easy_questions - hard_questions
+                    )
 
                     # Get actual student answers to calculate correct counts
                     from models import StudentAnswer
-                    answers_query = db.query(StudentAnswer).filter(
-                        StudentAnswer.exam_session_id == exam_session_id,
-                        StudentAnswer.question_id.in_([q.question_id for q in questions_query])
-                    ).all()
+
+                    answers_query = (
+                        db.query(StudentAnswer)
+                        .filter(
+                            StudentAnswer.exam_session_id == exam_session_id,
+                            StudentAnswer.question_id.in_(
+                                [q.question_id for q in questions_query]
+                            ),
+                        )
+                        .all()
+                    )
 
                     # Calculate correct answers by difficulty
-                    easy_ids = [q.question_id for q in questions_query if q.difficulty.value == 'easy' or (q.irt_difficulty and q.irt_difficulty < -0.5)]
-                    medium_ids = [q.question_id for q in questions_query if q.question_id not in easy_ids and (q.difficulty.value == 'medium' or not (q.irt_difficulty and q.irt_difficulty > 0.5))]
-                    hard_ids = [q.question_id for q in questions_query if q.difficulty.value == 'hard' or (q.irt_difficulty and q.irt_difficulty > 0.5)]
+                    easy_ids = [
+                        q.question_id
+                        for q in questions_query
+                        if q.difficulty.value == "easy"
+                        or (q.irt_difficulty and q.irt_difficulty < -0.5)
+                    ]
+                    medium_ids = [
+                        q.question_id
+                        for q in questions_query
+                        if q.question_id not in easy_ids
+                        and (
+                            q.difficulty.value == "medium"
+                            or not (q.irt_difficulty and q.irt_difficulty > 0.5)
+                        )
+                    ]
+                    hard_ids = [
+                        q.question_id
+                        for q in questions_query
+                        if q.difficulty.value == "hard"
+                        or (q.irt_difficulty and q.irt_difficulty > 0.5)
+                    ]
 
-                    subject_analysis.easy_correct = sum(1 for a in answers_query if a.question_id in easy_ids and a.is_correct)
-                    subject_analysis.medium_correct = sum(1 for a in answers_query if a.question_id in medium_ids and a.is_correct)
-                    subject_analysis.hard_correct = sum(1 for a in answers_query if a.question_id in hard_ids and a.is_correct)
+                    subject_analysis.easy_correct = sum(
+                        1
+                        for a in answers_query
+                        if a.question_id in easy_ids and a.is_correct
+                    )
+                    subject_analysis.medium_correct = sum(
+                        1
+                        for a in answers_query
+                        if a.question_id in medium_ids and a.is_correct
+                    )
+                    subject_analysis.hard_correct = sum(
+                        1
+                        for a in answers_query
+                        if a.question_id in hard_ids and a.is_correct
+                    )
                 else:
                     # Fallback to estimated distribution
                     total_questions = subject_analysis.total_questions
@@ -558,9 +614,15 @@ class ExamResultsReportGenerator:
                     hard_questions = total_questions - easy_questions - medium_questions
 
                     success_rate = subject_analysis.success_rate / 100
-                    subject_analysis.easy_correct = int(easy_questions * min(1.0, success_rate + 0.2))
-                    subject_analysis.medium_correct = int(medium_questions * success_rate)
-                    subject_analysis.hard_correct = int(hard_questions * max(0, success_rate - 0.3))
+                    subject_analysis.easy_correct = int(
+                        easy_questions * min(1.0, success_rate + 0.2)
+                    )
+                    subject_analysis.medium_correct = int(
+                        medium_questions * success_rate
+                    )
+                    subject_analysis.hard_correct = int(
+                        hard_questions * max(0, success_rate - 0.3)
+                    )
             else:
                 # No database access - use estimated distribution (intelligent defaults)
                 total_questions = subject_analysis.total_questions
@@ -569,9 +631,13 @@ class ExamResultsReportGenerator:
                 hard_questions = total_questions - easy_questions - medium_questions
 
                 success_rate = subject_analysis.success_rate / 100
-                subject_analysis.easy_correct = int(easy_questions * min(1.0, success_rate + 0.2))
+                subject_analysis.easy_correct = int(
+                    easy_questions * min(1.0, success_rate + 0.2)
+                )
                 subject_analysis.medium_correct = int(medium_questions * success_rate)
-                subject_analysis.hard_correct = int(hard_questions * max(0, success_rate - 0.3))
+                subject_analysis.hard_correct = int(
+                    hard_questions * max(0, success_rate - 0.3)
+                )
 
             subject_analysis.difficulty_analysis = {
                 "easy": {
@@ -834,7 +900,12 @@ class ExamResultsReportGenerator:
 
             # Performance trends - REFACTORED: Real calculation from historical exams
             from models import ExamSession
-            db = subject_data.get('db_session') if hasattr(self, '_current_subject_data') else None
+
+            db = (
+                subject_data.get("db_session")
+                if hasattr(self, "_current_subject_data")
+                else None
+            )
             student_id = report.student_id
 
             score_trend = "stable"
@@ -843,20 +914,31 @@ class ExamResultsReportGenerator:
 
             if db and student_id:
                 # Get last 5 exams for trend analysis
-                recent_exams = db.query(ExamSession).filter(
-                    ExamSession.student_id == student_id,
-                    ExamSession.exam_type == exam.exam_type,
-                    ExamSession.status == 'completed'
-                ).order_by(ExamSession.completed_at.desc()).limit(5).all()
+                recent_exams = (
+                    db.query(ExamSession)
+                    .filter(
+                        ExamSession.student_id == student_id,
+                        ExamSession.exam_type == exam.exam_type,
+                        ExamSession.status == "completed",
+                    )
+                    .order_by(ExamSession.completed_at.desc())
+                    .limit(5)
+                    .all()
+                )
 
                 if len(recent_exams) >= 3:
-                    scores = [float(e.scaled_score or 0) for e in reversed(recent_exams)]
+                    scores = [
+                        float(e.scaled_score or 0) for e in reversed(recent_exams)
+                    ]
 
                     # Calculate trend (linear regression slope)
                     if len(scores) > 1:
                         avg_x = (len(scores) - 1) / 2
                         avg_y = sum(scores) / len(scores)
-                        numerator = sum((i - avg_x) * (scores[i] - avg_y) for i in range(len(scores)))
+                        numerator = sum(
+                            (i - avg_x) * (scores[i] - avg_y)
+                            for i in range(len(scores))
+                        )
                         denominator = sum((i - avg_x) ** 2 for i in range(len(scores)))
                         slope = numerator / denominator if denominator != 0 else 0
 
@@ -875,8 +957,10 @@ class ExamResultsReportGenerator:
                     if len(scores) > 1:
                         mean_score = sum(scores) / len(scores)
                         if mean_score > 0:
-                            variance = sum((s - mean_score) ** 2 for s in scores) / len(scores)
-                            std_dev = variance ** 0.5
+                            variance = sum((s - mean_score) ** 2 for s in scores) / len(
+                                scores
+                            )
+                            std_dev = variance**0.5
                             cv = std_dev / mean_score
                             # Convert to consistency score (0-1, higher is better)
                             consistency_score = max(0.0, min(1.0, 1.0 - cv))
@@ -1300,12 +1384,19 @@ class ExamResultsReportGenerator:
                 db = next(db_gen)
 
                 # Query actual previous exams for this student
-                previous_exams_query = db.query(ExamSession).filter(
-                    ExamSession.student_id == report.student_id,
-                    ExamSession.exam_type == report.exam_metrics.exam_type,
-                    ExamSession.status == 'completed',
-                    ExamSession.id != report.exam_metrics.exam_id  # Exclude current exam
-                ).order_by(ExamSession.completed_at.desc()).limit(5).all()
+                previous_exams_query = (
+                    db.query(ExamSession)
+                    .filter(
+                        ExamSession.student_id == report.student_id,
+                        ExamSession.exam_type == report.exam_metrics.exam_type,
+                        ExamSession.status == "completed",
+                        ExamSession.id
+                        != report.exam_metrics.exam_id,  # Exclude current exam
+                    )
+                    .order_by(ExamSession.completed_at.desc())
+                    .limit(5)
+                    .all()
+                )
 
                 # Close the database session
                 try:
@@ -1329,51 +1420,76 @@ class ExamResultsReportGenerator:
                         else:
                             improvement_text = "Aynı seviye"
 
-                        previous_exams_list.append({
-                            "date": exam.completed_at.strftime("%d.%m.%Y") if exam.completed_at else "Tarih bilinmiyor",
-                            "score": exam_score,
-                            "improvement": improvement_text,
-                        })
+                        previous_exams_list.append(
+                            {
+                                "date": exam.completed_at.strftime("%d.%m.%Y")
+                                if exam.completed_at
+                                else "Tarih bilinmiyor",
+                                "score": exam_score,
+                                "improvement": improvement_text,
+                            }
+                        )
 
                     # Find best performance from all exams (including current)
                     all_exams = list(previous_exams_query) + [report.exam_metrics]
                     best_score = float(report.exam_metrics.score)
                     best_date = "Bu sınav"
-                    best_exam_id = report.exam_metrics.exam_id  # Track best exam ID for subject extraction
+                    best_exam_id = (
+                        report.exam_metrics.exam_id
+                    )  # Track best exam ID for subject extraction
 
                     for exam in previous_exams_query:
                         exam_score = float(exam.scaled_score or exam.score or 0)
                         if exam_score > best_score:
                             best_score = exam_score
-                            best_date = exam.completed_at.strftime("%d.%m.%Y") if exam.completed_at else "Tarih bilinmiyor"
+                            best_date = (
+                                exam.completed_at.strftime("%d.%m.%Y")
+                                if exam.completed_at
+                                else "Tarih bilinmiyor"
+                            )
                             best_exam_id = exam.id
 
                     # Extract unique subjects from best exam's questions
                     from models import ExamQuestion
                     from models.question_bank import QuestionBankItem as Question
-                    best_exam_subjects_query = db.query(Question.subject_area).join(
-                        ExamQuestion, ExamQuestion.question_id == Question.id
-                    ).filter(
-                        ExamQuestion.exam_session_id == best_exam_id
-                    ).distinct().all()
+
+                    best_exam_subjects_query = (
+                        db.query(Question.subject_area)
+                        .join(ExamQuestion, ExamQuestion.question_id == Question.id)
+                        .filter(ExamQuestion.exam_session_id == best_exam_id)
+                        .distinct()
+                        .all()
+                    )
 
                     best_exam_subjects = [
-                        subj.subject_area.value if hasattr(subj.subject_area, 'value') else str(subj.subject_area)
+                        subj.subject_area.value
+                        if hasattr(subj.subject_area, "value")
+                        else str(subj.subject_area)
                         for subj in best_exam_subjects_query
                     ]
 
                     # Calculate real improvement rate over last 30 days
                     from datetime import timedelta
+
                     thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
-                    recent_exams = [e for e in previous_exams_query if e.completed_at and e.completed_at >= thirty_days_ago]
+                    recent_exams = [
+                        e
+                        for e in previous_exams_query
+                        if e.completed_at and e.completed_at >= thirty_days_ago
+                    ]
 
                     improvement_rate_text = "Yetersiz veri"
                     if len(recent_exams) >= 2:
-                        oldest_recent_score = float(recent_exams[-1].scaled_score or recent_exams[-1].score or 0)
+                        oldest_recent_score = float(
+                            recent_exams[-1].scaled_score or recent_exams[-1].score or 0
+                        )
                         current_score = float(report.exam_metrics.score)
 
                         if oldest_recent_score > 0:
-                            rate = ((current_score - oldest_recent_score) / oldest_recent_score) * 100
+                            rate = (
+                                (current_score - oldest_recent_score)
+                                / oldest_recent_score
+                            ) * 100
                             if rate > 0:
                                 improvement_rate_text = f"+{rate:.0f}% son 30 günde"
                             elif rate < 0:
@@ -1397,14 +1513,21 @@ class ExamResultsReportGenerator:
                     # Extract unique subjects from current exam's questions
                     from models import ExamQuestion
                     from models.question_bank import QuestionBankItem as Question
-                    current_exam_subjects_query = db.query(Question.subject_area).join(
-                        ExamQuestion, ExamQuestion.question_id == Question.id
-                    ).filter(
-                        ExamQuestion.exam_session_id == report.exam_metrics.exam_id
-                    ).distinct().all()
+
+                    current_exam_subjects_query = (
+                        db.query(Question.subject_area)
+                        .join(ExamQuestion, ExamQuestion.question_id == Question.id)
+                        .filter(
+                            ExamQuestion.exam_session_id == report.exam_metrics.exam_id
+                        )
+                        .distinct()
+                        .all()
+                    )
 
                     current_exam_subjects = [
-                        subj.subject_area.value if hasattr(subj.subject_area, 'value') else str(subj.subject_area)
+                        subj.subject_area.value
+                        if hasattr(subj.subject_area, "value")
+                        else str(subj.subject_area)
                         for subj in current_exam_subjects_query
                     ]
 
@@ -1614,7 +1737,9 @@ class ExamResultsReportGenerator:
             if self.cache_system:
                 cache_key = f"exam_report:{report.report_id}"
                 await self.cache_system.cache_system.set(
-                    cache_key, report.to_dict(), ttl=24 * 3600  # Cache for 24 hours
+                    cache_key,
+                    report.to_dict(),
+                    ttl=24 * 3600,  # Cache for 24 hours
                 )
 
                 # Also cache by student and exam
@@ -1844,7 +1969,7 @@ if __name__ == "__main__":
             yks_proj = report.yks_projection
             print("\n=== YKS TAHMİNİ ===")
             print(f"Tahmini YKS Puanı: {yks_proj['projected_yks_score']:.1f}")
-            print(f"Güven Seviyesi: %{yks_proj['confidence']*100:.0f}")
+            print(f"Güven Seviyesi: %{yks_proj['confidence'] * 100:.0f}")
 
         # Print university chances
         if report.university_chances and "benchmarks" in report.university_chances:

@@ -1,6 +1,12 @@
 /**
  * Modern Admin Content Page - Glassmorphism Design
- * Admin içerik moderasyonu
+ * Admin içerik moderasyonu.
+ *
+ * @TODO S179 fix (B-P1-26): this page shares ~142 LOC dashboard
+ * scaffolding with `ModernTeacherReportsPage`, `ModernTeacherContentPage`,
+ * and `ModernParentNotificationsPage`. Sprint plan: extract a shared
+ * `<DashboardScaffold>` component for header + filter bar + grid.
+ * Frontend duplication is 3.29% (target <2%); this is the largest cluster.
  */
 
 import {

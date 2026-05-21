@@ -41,7 +41,9 @@ class AuthRateLimiter:
         self.rules: dict[str, RateLimitRule] = {
             # Login: 5 attempts per minute
             "/api/v1/auth/login": RateLimitRule(
-                max_attempts=5, window_seconds=60, block_duration=300  # 5 minutes block
+                max_attempts=5,
+                window_seconds=60,
+                block_duration=300,  # 5 minutes block
             ),
             "/api/v1/auth/giris": RateLimitRule(
                 max_attempts=5, window_seconds=60, block_duration=300
@@ -152,6 +154,11 @@ class AuthRateLimiter:
                     "remaining_seconds": remaining,
                 },
             )
+            # NOTE (S179 / B-P0-5): HTTPException is acceptable here because
+            # callers are EITHER (a) route handlers (FastAPI propagates) OR
+            # (b) the AuthRateLimitMiddleware below which catches and converts
+            # to JSONResponse (see line ~287). Do not raise from a fresh
+            # middleware without the same conversion wrapper.
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail=f"Too many attempts. Please try again in {remaining} seconds.",

@@ -1,7 +1,14 @@
 """
 Structured Logging Module
-Provides categorized logging with structured output
+Provides categorized logging with structured output.
+
+@deprecated S179 fix (B-P1-25): KIRO2 has two parallel logger modules —
+this one and `core.structured_logger`. The audit (Session 179) counted
+86 importers of `structured_logger` vs 10 of `structured_logging`.
+New code SHOULD use `core.structured_logger.get_logger(...)`. This
+module is kept for backward compatibility only; do not extend.
 """
+
 import logging
 from enum import Enum
 

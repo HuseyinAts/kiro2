@@ -23,7 +23,7 @@ class TestAPIEndpointsAsync:
     @pytest.mark.asyncio
     async def test_root_endpoint(self):
         """Test root endpoint returns system info"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/")
             assert response.status_code == 200
             data = response.json()
@@ -36,7 +36,7 @@ class TestAPIEndpointsAsync:
     @pytest.mark.asyncio
     async def test_get_agents_endpoint(self):
         """Test get agents endpoint"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/api/agents")
             assert response.status_code == 200
             data = response.json()
@@ -59,7 +59,7 @@ class TestAPIEndpointsAsync:
     @pytest.mark.asyncio
     async def test_chat_endpoint_success(self):
         """Test successful chat endpoint request"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             request_data = {
                 "agent": "learning",
                 "message": "Test message",
@@ -79,7 +79,7 @@ class TestAPIEndpointsAsync:
     @pytest.mark.asyncio
     async def test_chat_endpoint_invalid_agent(self):
         """Test chat endpoint with invalid agent"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             request_data = {"agent": "invalid_agent", "message": "Test message"}
 
             response = await client.post("/api/chat", json=request_data)
@@ -91,7 +91,7 @@ class TestAPIEndpointsAsync:
     @pytest.mark.asyncio
     async def test_chat_endpoint_all_agents(self):
         """Test chat endpoint with all agents"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             agents_to_test = ["learning", "study", "exam"]
 
             for agent_id in agents_to_test:
@@ -115,7 +115,7 @@ class TestAPIEndpointsAsync:
         # Clear sessions first
         sessions.clear()
 
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Send first message
             request_data = {
                 "agent": "study",
@@ -141,7 +141,7 @@ class TestAPIEndpointsAsync:
             {"role": "agent", "content": "Test response"},
         ]
 
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get(f"/api/sessions/{session_id}")
             assert response.status_code == 200
 
@@ -152,7 +152,7 @@ class TestAPIEndpointsAsync:
     @pytest.mark.asyncio
     async def test_get_session_not_found(self):
         """Test get session with non-existent session"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.get("/api/sessions/nonexistent")
             assert response.status_code == 200
 
@@ -167,7 +167,7 @@ class TestAPIEndpointsAsync:
         sessions["test1"] = ["data1"]
         sessions["test2"] = ["data2"]
 
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.delete("/api/clear")
             assert response.status_code == 200
 
@@ -178,7 +178,7 @@ class TestAPIEndpointsAsync:
     @pytest.mark.asyncio
     async def test_chat_without_session(self):
         """Test chat endpoint without session_id"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             request_data = {"agent": "exam", "message": "Test without session"}
 
             response = await client.post("/api/chat", json=request_data)
@@ -195,7 +195,7 @@ class TestLearningPathEndpointsAsync:
     @pytest.mark.asyncio
     async def test_create_student_profile(self):
         """Test creating a student profile"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             request_data = {
                 "name": "Test Student",
                 "grade": 10,
@@ -219,7 +219,7 @@ class TestLearningPathEndpointsAsync:
     @pytest.mark.asyncio
     async def test_search_resources(self):
         """Test searching educational resources"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             request_data = {
                 "topic": "Python programlama",
                 "learning_style": "VISUAL",
@@ -245,7 +245,7 @@ class TestRAGEndpointsAsync:
     @pytest.mark.asyncio
     async def test_add_document(self):
         """Test adding document to RAG"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             request_data = {
                 "content": "Test document content for RAG",
                 "metadata": {"type": "test", "subject": "math"},
@@ -260,7 +260,7 @@ class TestRAGEndpointsAsync:
     @pytest.mark.asyncio
     async def test_search_documents(self):
         """Test searching documents in RAG"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             request_data = {"query": "matematik", "k": 3, "score_threshold": 0.5}
 
             response = await client.post("/api/rag/search", json=request_data)
@@ -274,7 +274,7 @@ class TestRAGEndpointsAsync:
     @pytest.mark.asyncio
     async def test_clear_rag_database(self):
         """Test clearing RAG database"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.delete("/api/rag/clear")
             assert response.status_code == 200
 
@@ -293,7 +293,7 @@ class TestIntegrationAsync:
         # Clear sessions
         sessions.clear()
 
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Step 1: Ask learning agent for a plan
             response = await client.post(
                 "/api/chat",
@@ -337,7 +337,7 @@ class TestIntegrationAsync:
     @pytest.mark.asyncio
     async def test_concurrent_requests(self):
         """Test handling concurrent requests"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             tasks = [
                 client.post("/api/chat", json={"agent": "learning", "message": "plan"}),
                 client.post("/api/chat", json={"agent": "study", "message": "quiz"}),
@@ -356,7 +356,7 @@ class TestIntegrationAsync:
     @pytest.mark.asyncio
     async def test_error_recovery(self):
         """Test system recovers from errors"""
-        async with AsyncClient(app=app, base_url="http://test") as client:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Send invalid data
             response = await client.post("/api/chat", json={})
             assert response.status_code == 422  # Validation error

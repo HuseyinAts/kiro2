@@ -189,7 +189,7 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
   const handleFallbackTTS = async () => {
     try {
       // Backend TTS API'sine istek gönder
-      const response = await fetch('/api/v1/tts/synthesize', {
+      const response = await fetch('/api/v1/tts/synthesize', { credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

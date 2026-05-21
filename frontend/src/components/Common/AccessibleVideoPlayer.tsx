@@ -1,6 +1,11 @@
 /**
  * WCAG 2.1 Level AA Uyumlu Video Player
- * Türkçe altyazı desteği ve klavye kısayolları
+ * Türkçe altyazı desteği ve klavye kısayolları.
+ *
+ * @TODO S179 fix (B-P1-22): 36 hooks in a single component (782 LOC).
+ * Sprint plan: extract `useVideoControls`, `useVideoCaptions`,
+ * `useVideoKeyboard`, `useVideoFullscreen` to separate custom hooks.
+ * Do NOT add new hooks to this file.
  */
 
 import {

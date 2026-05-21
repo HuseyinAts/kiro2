@@ -523,42 +523,50 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
                   </Tooltip>
                 </Box>
 
-                {/* Question Text + Image — side-by-side on desktop */}
-                <Box sx={{
-                  display: { xs: 'block', md: currentQuestion.question_image_url ? 'flex' : 'block' },
-                  gap: 3,
-                  mb: 3,
-                }}>
-                  <Box sx={{ flex: currentQuestion.question_image_url ? { md: '1 1 55%' } : undefined, minWidth: 0 }}>
-                    <Typography variant="h6" component="div" sx={{ lineHeight: 1.8 }}>
-                      <MathText>{currentQuestion.content || currentQuestion.question_text}</MathText>
-                    </Typography>
-                  </Box>
-
-                  {/* Bug #11 defensive suppress (18 May 2026):
-                      Vision audit ortaya koydu ki tüm question_image_url'ler
-                      solution leak içeriyor (image içinde A) B) C) D) E) görünüyor).
-                      Backend filter image-required soruları zaten pool dışı tutuyor,
-                      bu defansif katman beta'ya sızabilecek leak'leri durdurur.
-                      Sprint sonrası: Vision re-crop ile düzgün crop'lar geri eklenir,
-                      buradaki suppress kaldırılır. */}
-                  {false && currentQuestion.question_image_url && (
+                {/* Question Text + Image — side-by-side on desktop.
+                    S179 fix (B-P0-60): non-null narrowed alias `cq` so the
+                    sx={{...}} closures don't lose the parent `currentQuestion &&`
+                    narrowing (TS18047). */}
+                {(() => {
+                  const cq = currentQuestion;
+                  return (
                     <Box sx={{
-                      flex: { md: '0 0 40%' },
-                      position: { md: 'sticky' },
-                      top: { md: 80 },
-                      alignSelf: 'flex-start',
-                      mt: { xs: 2, md: 0 },
+                      display: { xs: 'block', md: cq.question_image_url ? 'flex' : 'block' },
+                      gap: 3,
+                      mb: 3,
                     }}>
-                      <QuestionImage
-                        src={currentQuestion.question_image_url}
-                        alt={currentQuestion.image_alt_text || undefined}
-                        width={currentQuestion.image_width}
-                        height={currentQuestion.image_height}
-                      />
+                      <Box sx={{ flex: cq.question_image_url ? { md: '1 1 55%' } : undefined, minWidth: 0 }}>
+                        <Typography variant="h6" component="div" sx={{ lineHeight: 1.8 }}>
+                          <MathText>{cq.content || cq.question_text || ''}</MathText>
+                        </Typography>
+                      </Box>
+
+                      {/* Bug #11 defensive suppress (18 May 2026):
+                          Vision audit ortaya koydu ki tüm question_image_url'ler
+                          solution leak içeriyor (image içinde A) B) C) D) E) görünüyor).
+                          Backend filter image-required soruları zaten pool dışı tutuyor,
+                          bu defansif katman beta'ya sızabilecek leak'leri durdurur.
+                          Sprint sonrası: Vision re-crop ile düzgün crop'lar geri eklenir,
+                          buradaki suppress kaldırılır. */}
+                      {false && cq.question_image_url && (
+                        <Box sx={{
+                          flex: { md: '0 0 40%' },
+                          position: { md: 'sticky' },
+                          top: { md: 80 },
+                          alignSelf: 'flex-start',
+                          mt: { xs: 2, md: 0 },
+                        }}>
+                          <QuestionImage
+                            src={cq.question_image_url}
+                            alt={cq.image_alt_text || undefined}
+                            width={cq.image_width}
+                            height={cq.image_height}
+                          />
+                        </Box>
+                      )}
                     </Box>
-                  )}
-                </Box>
+                  );
+                })()}
 
                 {/* Options */}
                 <RadioGroup value={currentAnswer || ''} onChange={(e) => handleAnswerChange(e.target.value)}>

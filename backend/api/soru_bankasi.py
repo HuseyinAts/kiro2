@@ -247,6 +247,7 @@ async def rastgele_sorular_sec(
     soru_sayisi: int = Query(..., ge=1, le=200, description="Seçilecek soru sayısı"),
     konu_dagilimi: str | None = Query(None, description="Konu dağılımı (JSON string)"),
     db: AsyncSession = Depends(get_db_session),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Rastgele soru seçimi yap - Redis cached (30s TTL)
@@ -460,6 +461,7 @@ async def irt_parametreli_sorular_sec(
 async def konu_listesi_getir(
     sinav_tipi: str | None = Query(None, description="Sınav türü filtresi"),
     db: AsyncSession = Depends(get_db_session),
+    current_user: AuthenticatedUser = Depends(get_current_user),
 ):
     """
     Mevcut konuları listele
@@ -489,7 +491,10 @@ async def konu_listesi_getir(
 
 
 @router.get("/istatistikler", response_model=dict[str, Any])
-async def soru_bankasi_istatistikleri(db: AsyncSession = Depends(get_db_session)):
+async def soru_bankasi_istatistikleri(
+    db: AsyncSession = Depends(get_db_session),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
     """
     Soru bankası istatistiklerini getir
     """

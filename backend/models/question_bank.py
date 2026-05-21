@@ -463,6 +463,14 @@ class QuestionBankItem(Base):
     # ========================================================================
     # P1 metadata pipeline tarafından doldurulur (Gemini Flash batch).
     # Curator UI (Faz 3.1) bu alanları queue/verdict ekranında gösterir.
+    #
+    # @WARN S179 fix (B-P0-17 + B-P0-18): pre-fix the rationale + steps
+    # data was 0% populated on `auto_judged_high` (Gold) and 90%
+    # populated on `rejected`/`pending` (audit content_quality_llm_review).
+    # ALSO: gemini-flash-latest reproduces Hemingway/Stendhal /
+    # Pürranameler hallucinations. UI MUST NOT display these columns to
+    # students until the regen pipeline (B-P0-17) runs against Gold AND
+    # the Opus second-pass judge (B-P0-18) validates non-hallucination.
     misconception_tags: Mapped[list | None] = mapped_column(JSON, nullable=True)
     solution_steps: Mapped[list | None] = mapped_column(JSON, nullable=True)
     similar_question_ids: Mapped[list | None] = mapped_column(JSON, nullable=True)

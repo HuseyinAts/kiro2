@@ -11,16 +11,18 @@ Features:
 - Automatic IP blocking
 - Whitelist/Blacklist management
 """
+
 import time
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any
 
 import redis
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, Request, status
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
+from starlette.responses import JSONResponse
 
 from core.config import get_settings
 from core.structured_logger import get_logger
@@ -382,8 +384,11 @@ class DDoSProtectionMiddleware:
         # Check blacklist
         if self.ip_control.is_blacklisted(ip):
             logger.warning(f"[DDoS PROTECTION] Blocked blacklisted IP: {ip}")
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
+            # S179 (B-P0-10 / GF99): middleware must return Response, not
+            # raise HTTPException — raise surfaces as plain 500 to the client.
+            return JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={"detail": "Access denied"},
             )
 
         # Adaptive traffic analysis (every 10 seconds)
@@ -405,9 +410,10 @@ class DDoSProtectionMiddleware:
                     f"[DDoS PROTECTION] Blocked attack from {ip}",
                     extra_data={"analysis": analysis},
                 )
-                raise HTTPException(
+                # S179 (B-P0-10 / GF99): middleware Response, not raise.
+                return JSONResponse(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Suspicious activity detected",
+                    content={"detail": "Suspicious activity detected"},
                 )
 
             if analysis["is_suspicious"]:

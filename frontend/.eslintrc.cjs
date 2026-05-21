@@ -93,20 +93,51 @@ module.exports = {
     'import/no-cycle': 'warn',
     'import/no-duplicates': 'error',
 
-    // Accessibility Rules (warnings - don't block build)
+    // S179 fix (B-P0-66): UI library hygiene.
+    // KIRO2 has 3 systems: @mui/material (221 files), Tailwind (158),
+    // shadcn `components/ui/*` (18). New components MUST pick ONE.
+    // This rule is informational — pre-existing mix stays; CI promo
+    // after audit of remaining ~25 mixed files.
+    'no-restricted-imports': [
+      'warn',
+      {
+        paths: [
+          {
+            name: '@mui/material',
+            message:
+              'B-P0-66: prefer Tailwind + shadcn for new components. '
+              + 'See .claude/rules/path-naming.md style addendum.',
+          },
+        ],
+      },
+    ],
+
+    // Accessibility Rules.
+    // S179 fix (F-P1-7): promote the 3 highest-volume / highest-risk
+    // rules to 'error'. Pre-fix all were 'warn' and CI's
+    // --max-warnings 0 was bypassed, so 156 a11y violations were
+    // silently shipping. The 3 promoted rules are also the ones a
+    // screen-reader user notices first.
     'jsx-a11y/anchor-is-valid': 'warn',
-    'jsx-a11y/click-events-have-key-events': 'warn',
-    'jsx-a11y/no-static-element-interactions': 'warn',
-    'jsx-a11y/alt-text': 'warn',
+    'jsx-a11y/click-events-have-key-events': 'error',  // S179 promoted
+    'jsx-a11y/no-static-element-interactions': 'error',  // S179 promoted
+    'jsx-a11y/alt-text': 'error',  // S179 promoted (was 100% prod, keep strict)
     'jsx-a11y/aria-props': 'warn',
     'jsx-a11y/aria-role': 'warn',
-    'jsx-a11y/label-has-associated-control': 'warn',
+    // S179 fix (F-P0-6): promote to error. Pre-fix only 3/150 inputs
+    // had `aria-invalid` and ~67 `<label>` lacked `htmlFor`. CI gate
+    // forces new code to pair labels with inputs for screen readers.
+    'jsx-a11y/label-has-associated-control': 'error',
     'jsx-a11y/media-has-caption': 'warn',
     'jsx-a11y/no-autofocus': 'warn',
 
     // React Hooks - relax for React 18 (React Compiler rules are for React 19)
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn',
+    // S179 fix (B-P1-23): exhaustive-deps promoted from warn → error.
+    // Pre-fix 82% of components lacked memo/callback, and stale-deps
+    // were the primary re-render trigger. Keeping this strict catches
+    // the pattern at PR-time.
+    'react-hooks/exhaustive-deps': 'error',
     // Disable React Compiler rules (only needed for React 19)
     // These rules are for React 19 Compiler, not needed for React 18
     'react-hooks/purity': 'off',

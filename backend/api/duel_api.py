@@ -22,6 +22,7 @@ logger = get_logger("duel_api")
 # Pydantic models
 # ---------------------------------------------------------------------------
 
+
 class MatchmakeRequest(BaseModel):
     subject: str = Field(..., description="Konu (ör. MATEMATIK)")
 
@@ -66,9 +67,41 @@ class DuelHistoryItem(BaseModel):
     finished_at: str | None
 
 
+class DuelCurrentQuestionResponse(BaseModel):
+    """S179 fix (B-P0-40): DuelPage frontend bekliyordu, backend'de yoktu."""
+
+    session_id: str
+    status: str
+    question_order: int | None
+    question_id: str | None
+    question_text: str | None
+    options: dict[str, str] | None  # {"A": "...", "B": "..."}
+    time_per_question_sec: int
+    total_questions: int
+    player1_score: int
+    player2_score: int
+    answered: bool  # bu istemci için cevaplandı mı
+
+
+class DuelResultResponse(BaseModel):
+    """S179 fix (B-P0-40): final result payload."""
+
+    session_id: str
+    status: str
+    subject: str
+    finished: bool
+    my_score: int
+    opponent_score: int
+    won: bool
+    draw: bool
+    elo_change: float
+    finished_at: str | None
+
+
 # ---------------------------------------------------------------------------
 # Matchmaking
 # ---------------------------------------------------------------------------
+
 
 @router.post(
     "/matchmake",
@@ -162,6 +195,7 @@ async def matchmake(
 # Answer submission
 # ---------------------------------------------------------------------------
 
+
 @router.post(
     "/{session_id}/answer",
     response_model=DuelAnswerResponse,
@@ -211,9 +245,7 @@ async def submit_answer(
                     "player_id": current_user.id,
                     **result,
                 }
-                await redis.publish(
-                    f"duel:events:{session_id}", json.dumps(event)
-                )
+                await redis.publish(f"duel:events:{session_id}", json.dumps(event))
 
                 # Check if all rounds are done
                 if result["round_complete"]:
@@ -248,6 +280,7 @@ async def submit_answer(
 # ---------------------------------------------------------------------------
 # SSE stream
 # ---------------------------------------------------------------------------
+
 
 @router.get(
     "/stream/{session_id}",
@@ -334,6 +367,7 @@ async def duel_stream(
 # Rating & history
 # ---------------------------------------------------------------------------
 
+
 @router.get(
     "/rating",
     response_model=DuelRatingResponse,
@@ -373,8 +407,204 @@ async def get_history(
 
 
 # ---------------------------------------------------------------------------
+# S179 fix (B-P0-40): DuelPage frontend bekledigi 2 endpoint
+# ---------------------------------------------------------------------------
+
+
+def _verify_session_player(session, user_id: str) -> str:
+    """Return 'p1' or 'p2' for the requesting user, else raise 403."""
+    uid = str(user_id)
+    if str(session.player1_id) == uid:
+        return "p1"
+    if session.player2_id and str(session.player2_id) == uid:
+        return "p2"
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Bu düelloya erişim yetkiniz yok.",
+    )
+
+
+@router.get(
+    "/{session_id}/current-question",
+    response_model=DuelCurrentQuestionResponse,
+    summary="Sıradaki cevaplanmamış düello sorusu",
+)
+async def get_current_question(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """Return the next unanswered question for this player in the duel.
+
+    S179 (B-P0-40): created so DuelPage.tsx no longer 404s. Frontend was
+    expecting this endpoint but only /matchmake, /answer, /stream existed.
+    """
+    from sqlalchemy import select as sa_select
+
+    from models.duel import DuelMatch, DuelSession
+    from models.question_bank import QuestionBankItem
+
+    async with get_db_session_context() as db:
+        session = (
+            await db.execute(sa_select(DuelSession).where(DuelSession.id == session_id))
+        ).scalar_one_or_none()
+        if not session:
+            raise HTTPException(404, "Düello oturumu bulunamadı.")
+        role = _verify_session_player(session, current_user.id)
+
+        # Bulunamayan sıradaki match: bu öğrenci için cevaplanmamış ilk soru
+        if role == "p1":
+            answer_col = DuelMatch.player1_answer
+        else:
+            answer_col = DuelMatch.player2_answer
+
+        next_match = (
+            await db.execute(
+                sa_select(DuelMatch)
+                .where(
+                    DuelMatch.session_id == session_id,
+                    answer_col.is_(None),
+                )
+                .order_by(DuelMatch.question_order.asc())
+                .limit(1)
+            )
+        ).scalar_one_or_none()
+
+        total_q = session.question_count or 5
+
+        if not next_match:
+            # Tüm sorular bu oyuncu tarafından cevaplandı; veya duel bitti
+            return DuelCurrentQuestionResponse(
+                session_id=session_id,
+                status=session.status,
+                question_order=None,
+                question_id=None,
+                question_text=None,
+                options=None,
+                time_per_question_sec=session.time_per_question_sec,
+                total_questions=total_q,
+                player1_score=session.player1_score,
+                player2_score=session.player2_score,
+                answered=True,
+            )
+
+        q_row = (
+            await db.execute(
+                sa_select(
+                    QuestionBankItem.id,
+                    QuestionBankItem.question_text,
+                    QuestionBankItem.option_a,
+                    QuestionBankItem.option_b,
+                    QuestionBankItem.option_c,
+                    QuestionBankItem.option_d,
+                    QuestionBankItem.option_e,
+                ).where(QuestionBankItem.id == next_match.question_id)
+            )
+        ).first()
+
+        if not q_row:
+            raise HTTPException(404, "Soru bulunamadı.")
+
+        opts: dict[str, str] = {}
+        for label, val in (
+            ("A", q_row.option_a),
+            ("B", q_row.option_b),
+            ("C", q_row.option_c),
+            ("D", q_row.option_d),
+            ("E", q_row.option_e),
+        ):
+            if val:
+                opts[label] = val
+
+        return DuelCurrentQuestionResponse(
+            session_id=session_id,
+            status=session.status,
+            question_order=next_match.question_order,
+            question_id=str(q_row.id),
+            question_text=q_row.question_text,
+            options=opts,
+            time_per_question_sec=session.time_per_question_sec,
+            total_questions=total_q,
+            player1_score=session.player1_score,
+            player2_score=session.player2_score,
+            answered=False,
+        )
+
+
+@router.get(
+    "/{session_id}/result",
+    response_model=DuelResultResponse,
+    summary="Düello sonucu (bitmişse)",
+)
+async def get_duel_result(
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    """Return final score + ELO delta when the duel is finished.
+
+    S179 (B-P0-40): frontend was calling this; it didn't exist before.
+    """
+    from sqlalchemy import select as sa_select
+
+    from models.duel import DuelSession
+
+    async with get_db_session_context() as db:
+        session = (
+            await db.execute(sa_select(DuelSession).where(DuelSession.id == session_id))
+        ).scalar_one_or_none()
+        if not session:
+            raise HTTPException(404, "Düello oturumu bulunamadı.")
+        role = _verify_session_player(session, current_user.id)
+
+        if session.status not in ("finished", "completed"):
+            # Henüz bitmedi — frontend bunu polling ile çağıracak
+            return DuelResultResponse(
+                session_id=session_id,
+                status=session.status,
+                subject=session.subject,
+                finished=False,
+                my_score=0,
+                opponent_score=0,
+                won=False,
+                draw=False,
+                elo_change=0.0,
+                finished_at=None,
+            )
+
+        if role == "p1":
+            my_score = session.player1_score
+            opp_score = session.player2_score
+            elo_change = session.player1_elo_change
+        else:
+            my_score = session.player2_score
+            opp_score = session.player1_score
+            elo_change = session.player2_elo_change
+
+        won = bool(session.winner_id) and str(session.winner_id) == str(current_user.id)
+        draw = session.winner_id is None and session.status in (
+            "finished",
+            "completed",
+        )
+
+        return DuelResultResponse(
+            session_id=session_id,
+            status=session.status,
+            subject=session.subject,
+            finished=True,
+            my_score=my_score,
+            opponent_score=opp_score,
+            won=won,
+            draw=draw,
+            elo_change=float(elo_change or 0.0),
+            finished_at=(
+                session.finished_at.isoformat() if session.finished_at else None
+            ),
+        )
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 async def _check_answer_correctness(
     session_id: str, question_order: int, answer: str
@@ -402,9 +632,7 @@ async def _check_answer_correctness(
 
         # Get the correct answer from question bank
         q_result = await db.execute(
-            select(QuestionBankItem.correct_answer).where(
-                QuestionBankItem.id == row[0]
-            )
+            select(QuestionBankItem.correct_answer).where(QuestionBankItem.id == row[0])
         )
         q_row = q_result.first()
         if not q_row or not q_row[0]:
@@ -421,25 +649,52 @@ async def _check_answer_correctness(
 async def _select_duel_questions(subject: str, count: int = 5) -> list[str]:
     """Select IRT-calibrated questions for fair duel play.
 
-    Picks medium-difficulty questions so neither player has an unfair advantage.
+    S179 fix (B-P1-12): pre-fix docstring claimed "IRT-calibrated"
+    but body was just `ORDER BY random()`. True IRT bracket pick:
+    questions with `irt_difficulty` between [-1.0, +1.0] (≈ middle 70%
+    of the calibrated pool) so neither player has a runaway advantage.
+    Falls back to random over the full pool only if the calibrated
+    band is empty.
     """
     from sqlalchemy import func, select
 
     from models.question_bank import QuestionBankItem
 
     async with get_db_session_context() as db:
+        # Calibrated pool first.
         result = await db.execute(
             select(QuestionBankItem.id)
             .where(
                 QuestionBankItem.is_active == True,  # noqa: E712
                 QuestionBankItem.subject_area == subject.upper(),
+                QuestionBankItem.irt_difficulty.isnot(None),
+                QuestionBankItem.irt_difficulty >= -1.0,
+                QuestionBankItem.irt_difficulty <= 1.0,
             )
             .order_by(func.random())
             .limit(count)
         )
         ids = [r[0] for r in result.all()]
 
-    # Fallback: if not enough questions, return what we have
+        if len(ids) < count:
+            # Top-up from full pool if calibrated band is thin.
+            need = count - len(ids)
+            extra = await db.execute(
+                select(QuestionBankItem.id)
+                .where(
+                    QuestionBankItem.is_active == True,  # noqa: E712
+                    QuestionBankItem.subject_area == subject.upper(),
+                    QuestionBankItem.id.notin_(ids) if ids else True,
+                )
+                .order_by(func.random())
+                .limit(need)
+            )
+            ids.extend(r[0] for r in extra.all())
+
     if not ids:
-        logger.warning(f"No questions found for subject {subject}")
+        logger.warning(
+            "No questions found for subject %s (IRT-band empty + fallback empty)",
+            subject,
+            exc_info=True,
+        )
     return ids

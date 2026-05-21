@@ -56,7 +56,7 @@ export function AgentChat({
 
     try {
       // Simulate API call
-      const response = await fetch('/api/v1/chat', {
+      const response = await fetch('/api/v1/chat', { credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

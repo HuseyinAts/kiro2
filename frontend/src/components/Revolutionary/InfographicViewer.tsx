@@ -42,7 +42,7 @@ const InfographicViewer: React.FC = () => {
   // REQ-50.77: Visual summary generation
   const handleCreate = async () => {
     try {
-      const response = await fetch('/api/v1/visual-supports/infographics', {
+      const response = await fetch('/api/v1/visual-supports/infographics', { credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

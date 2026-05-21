@@ -24,7 +24,7 @@ import pytest
 
 # Skip entire module - async_client fixture uses deprecated AsyncClient(app=...) pattern
 pytestmark = pytest.mark.skip(
-    reason="Tests use async_client fixture with deprecated AsyncClient(app=app) - needs ASGITransport"
+    reason="Tests use async_client fixture with deprecated AsyncClient(transport=ASGITransport(app=app)) - needs ASGITransport"
 )
 from fastapi import status
 from httpx import AsyncClient

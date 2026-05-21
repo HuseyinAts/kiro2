@@ -401,7 +401,7 @@ async def crop_questions(
     summary="Model bilgileri",
     description="YOLO model bilgilerini döndürür.",
 )
-async def get_model_info() -> dict[str, Any]:
+async def get_model_info(current_user=Depends(get_current_user)) -> dict[str, Any]:
     """Model bilgilerini getir."""
 
     try:

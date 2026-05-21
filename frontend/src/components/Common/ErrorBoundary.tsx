@@ -106,7 +106,7 @@ class ErrorBoundary extends Component<Props, State> {
 
     // API endpoint'e hata gönder (opsiyonel)
     try {
-      fetch('/api/v1/errors/report', {
+      fetch('/api/v1/errors/report', { credentials: 'include',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

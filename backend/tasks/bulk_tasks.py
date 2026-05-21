@@ -8,6 +8,7 @@ Lowest-priority bulk tasks:
 - Data export
 - Batch processing
 """
+
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -56,16 +57,30 @@ def bulk_import_questions(
             batch = questions_data[i : i + batch_size]
 
             try:
-                # TODO: Implement batch database insert
-                # - Validate question data
-                # - Insert to database
-                # - Index in Elasticsearch
-                imported_count += len(batch)
+                # S179 fix (B-P0-58): pre-fix this TODO stub incremented
+                # `imported_count` WITHOUT writing to DB — caller got
+                # fake success. Now we refuse to claim success when no
+                # real persistence layer is wired. Caller must invoke
+                # `services.question_bank_service.create_question` for
+                # the real path; this Celery task is only a queue
+                # buffer until the wiring lands.
+                logger.error(
+                    "bulk_import_task NOT IMPLEMENTED — refusing to fake "
+                    "success for batch %d-%d (size=%d)",
+                    i,
+                    i + batch_size,
+                    len(batch),
+                )
+                failed_count += len(batch)
+                errors.append(
+                    f"Batch {i}-{i + batch_size}: bulk_import not implemented; "
+                    "use synchronous create_question endpoint until wired."
+                )
 
             except Exception as e:
                 logger.warning("bulk_import_batch_failed", batch_start=i, error=str(e))
                 failed_count += len(batch)
-                errors.append(f"Batch {i}-{i+batch_size}: {e!s}")
+                errors.append(f"Batch {i}-{i + batch_size}: {e!s}")
 
         logger.info(
             "bulk_import_completed",

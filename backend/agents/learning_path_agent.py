@@ -2,6 +2,12 @@
 Kişiselleştirilmiş Öğrenme Yolu Oluşturan YZ Ajanı
 Teknofest 2025 - Eğitim Eylemci Projesi
 
+@TODO S179 fix (B-P0-68): this file is 3,745 LOC with
+Maintainability Index 0.00 + 1 F-grade function (`search_resources`
+CC=45). Sprint plan: decompose into `core/`, `assessment/`,
+`resources/`, `evaluation/` submodules. DO NOT add new methods to
+this file before the split lands.
+
 Bu ajan öğrencinin:
 - Öğrenme hedeflerini belirler
 - Mevcut bilgi seviyesini ölçer

@@ -5,15 +5,19 @@ Creates an initial admin user in the database if no admin exists.
 This script should be run once during initial setup.
 
 Usage:
-    python seed_admin.py
+    ADMIN_SEED_PASSWORD='YourStrongPassword!' python seed_admin.py
 
 Environment Variables:
     DATABASE_URL: PostgreSQL connection string (from .env)
+    ADMIN_SEED_PASSWORD: Required. Admin password (must meet password policy).
+    ADMIN_SEED_EMAIL: Optional admin email (default: admin@kiro2.com)
+    ADMIN_SEED_USERNAME: Optional admin username (default: admin)
 
 Security:
     - Password is hashed with bcrypt
     - Only creates admin if no admin exists
     - Uses strong password policy
+    - No password is checked into git
 """
 
 import asyncio
@@ -45,10 +49,10 @@ def hash_password(password: str) -> str:
         Hashed password string
     """
     # Encode password to bytes and hash with bcrypt
-    password_bytes = password.encode('utf-8')
+    password_bytes = password.encode("utf-8")
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password_bytes, salt)
-    return hashed.decode('utf-8')
+    return hashed.decode("utf-8")
 
 
 async def check_admin_exists(session: AsyncSession) -> bool:
@@ -61,9 +65,7 @@ async def check_admin_exists(session: AsyncSession) -> bool:
     Returns:
         True if admin exists, False otherwise
     """
-    result = await session.execute(
-        select(User).where(User.role == UserRole.ADMIN)
-    )
+    result = await session.execute(select(User).where(User.role == UserRole.ADMIN))
     admin = result.scalars().first()
     return admin is not None
 
@@ -78,10 +80,17 @@ async def create_admin_user(session: AsyncSession) -> User:
     Returns:
         Created User object
     """
-    # Admin credentials
-    admin_email = "admin@kiro2.com"
-    admin_username = "admin"
-    admin_password = "Admin123!"  # Strong password that meets policy
+    # Admin credentials — sourced from environment, never hardcoded
+    admin_email = os.environ.get("ADMIN_SEED_EMAIL", "admin@kiro2.com")
+    admin_username = os.environ.get("ADMIN_SEED_USERNAME", "admin")
+    admin_password = os.environ.get("ADMIN_SEED_PASSWORD")
+    if not admin_password:
+        print(
+            "ERROR: ADMIN_SEED_PASSWORD environment variable is required.\n"
+            "Example: ADMIN_SEED_PASSWORD='Str0ng!Pass' python seed_admin.py",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     # Hash the password
     password_hash = hash_password(admin_password)
@@ -182,6 +191,7 @@ async def seed_admin():
         print(f"Error: {e}")
         print()
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 

@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-d
 import { PageTransition } from './components/Animations/PageTransition';
 import { useAccessibilityStyles } from './hooks/useAccessibilityStyles';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
+import { AccessibilityProvider } from './components/Common/AccessibilityProvider';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import { PageSkeleton } from './components/Common/PageSkeleton';
 import { RoleBasedLayout } from './components/Layout/RoleBasedLayout';
@@ -17,7 +18,8 @@ import { Modern404Page } from './pages/Modern404Page';
 import { ModernErrorPage } from './pages/ModernErrorPage';
 import { ModernRegisterPage as RegisterPage } from './pages/ModernRegisterPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
-import { ParentDashboard } from './pages/ParentDashboard';
+// S179 (F-P0-2): ParentDashboard route now redirects to /parent/dashboard;
+// no eager import needed. ParentDashboardPage (Modern) is still lazy.
 import './styles/touch-optimized.css';
 import { modernLightTheme as lightTheme } from './theme/modern-theme';
 import {
@@ -194,6 +196,12 @@ function AppContent() {
     >
       <ThemeProvider theme={lightTheme}>
         <CssBaseline />
+        {/*
+         * S179 fix (F-P0-3): Mount AccessibilityProvider so any consumer
+         * of useAccessibility() throws no longer at runtime. Provider was
+         * defined but never reached the tree in production.
+         */}
+        <AccessibilityProvider>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <Router>
@@ -211,11 +219,11 @@ function AppContent() {
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               <Route path="/404" element={<Modern404Page />} />
               <Route path="/error" element={<ModernErrorPage />} />
-              <Route path="/veli-takip" element={
-                <ProtectedRoute requiredRoles={['veli']}>
-                  <ParentDashboard />
-                </ProtectedRoute>
-              } />
+              {/* S179 fix (F-P0-2): Turkish `/veli-takip` route deprecated.
+                  Canonical English route is `/parent/dashboard`; keep an
+                  HTTP redirect so existing bookmarks/notification links
+                  still land on the right page. See .claude/rules/path-naming.md. */}
+              <Route path="/veli-takip" element={<Navigate to="/parent/dashboard" replace />} />
 
               {/* Student Routes */}
               <Route
@@ -347,14 +355,9 @@ function AppContent() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/parent-new"
-                element={
-                  <ProtectedRoute requiredRoles={['veli', 'admin']}>
-                    <ParentDashboardNew />
-                  </ProtectedRoute>
-                }
-              />
+              {/* S179 fix (F-P0-2): `/parent-new` deprecated alongside
+                  `/veli-takip`. Redirect to canonical `/parent/dashboard`. */}
+              <Route path="/parent-new" element={<Navigate to="/parent/dashboard" replace />} />
               <Route
                 path="/oba"
                 element={
@@ -727,6 +730,7 @@ function AppContent() {
             </Router>
           </AuthProvider>
         </QueryClientProvider>
+        </AccessibilityProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

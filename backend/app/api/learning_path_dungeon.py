@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections import defaultdict, deque
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -82,8 +82,16 @@ class DungeonMapResponse(BaseModel):
 
 
 class QuizCompleteRequest(BaseModel):
+    """POST /dungeon/{subject}/complete — score MUST be server-validated.
+
+    S179 fix (B-P0-38): bounded 0..100 to block trivial completion farming
+    (client used to be able to POST score=999999 and instantly complete any
+    room). True fix is server-derived score from quiz answers; this Pydantic
+    bound is the immediate stop-gap.
+    """
+
     topic_id: str
-    score: int
+    score: int = Field(..., ge=0, le=100)
 
 
 class QuizCompleteResponse(BaseModel):

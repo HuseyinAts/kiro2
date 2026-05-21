@@ -152,13 +152,13 @@ export const useAuthStore = create<AuthStore>()(
          * Login action
          * SECURITY: Server sets httpOnly cookies, we only store user state
          */
-        login: async (credentials: LoginRequest): Promise<boolean> => {
+        login: async (credentials: LoginRequest): Promise<boolean | '2fa_required'> => {
           try {
             set({ loading: true, error: null });
 
             const response = await authService.login(credentials);
 
-            if (response.success) {
+            if (response.success && response.user) {
               // SECURITY: No localStorage token storage
               // Server has set httpOnly cookies via response headers
               set({
@@ -169,13 +169,31 @@ export const useAuthStore = create<AuthStore>()(
               });
 
               return true;
-            } else {
+            }
+
+            // S179 fix (B-P0-24): backend returns {success:false, requires_2fa:true}
+            // when the user has TOTP enabled. We surface this as a distinct
+            // signal so ModernLoginPage can route to the 2FA challenge step
+            // instead of showing "Giriş başarısız".
+            if (response.requires_2fa) {
               set({
                 loading: false,
-                error: response.message || 'Giriş başarısız',
+                error: null,
               });
-              return false;
+              // Stash the pending email on window for the 2FA form to pick up.
+              // (No store field added — kept narrow per CLAUDE.md "no new
+              // fields beyond what the task requires".)
+              if (typeof window !== 'undefined' && response.email) {
+                (window as Window & { __pending2faEmail?: string }).__pending2faEmail = response.email;
+              }
+              return '2fa_required';
             }
+
+            set({
+              loading: false,
+              error: response.message || 'Giriş başarısız',
+            });
+            return false;
           } catch (error: unknown) {
             set({
               loading: false,

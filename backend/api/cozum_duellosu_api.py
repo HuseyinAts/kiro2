@@ -97,6 +97,29 @@ async def create_duel(
             "message": "Rakip bulundu! Duello basladi.",
         }
 
+    # S179 fix (B-P0-42): question_bank_id must exist in question_bank.
+    # Pre-fix the literal string "auto" (or any other arbitrary value)
+    # was stored, leaving voters unable to ever load the soru.
+    from models.question_bank import QuestionBankItem  # local import
+
+    qb_check = await db.execute(
+        select(QuestionBankItem.id).where(
+            QuestionBankItem.id == body.question_bank_id,
+            QuestionBankItem.is_active == True,  # noqa: E712
+        )
+    )
+    if not qb_check.scalar_one_or_none():
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "question_bank_id_invalid",
+                "message": (
+                    "Geçerli bir aktif soru ID'si gerekli. "
+                    "'auto' veya rastgele literal kabul edilmez."
+                ),
+            },
+        )
+
     duel = SolutionDuel(
         question_bank_id=body.question_bank_id,
         subject_area=body.subject_area,

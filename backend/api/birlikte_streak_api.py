@@ -225,11 +225,39 @@ async def complete_today(
 
     await db.commit()
 
+    # S179 fix (B-P0-36 / EVIDENCE_BASED III.B): write real XPTransaction
+    # so the streak XP actually moves the leaderboard. Pre-fix the
+    # `XP_DAILY_BOTH` value lived only inside `pair.total_xp_earned` (a
+    # local counter), the global XP system never saw it.
+    actual_awarded = 0
+    if xp_earned or bonus:
+        try:
+            from services.learning_event_service import GamificationDBService
+
+            actual_awarded = xp_earned + bonus
+            await GamificationDBService.award_xp(
+                student_id=user_id,
+                amount=actual_awarded,
+                source="streak_milestone" if bonus else "streak_daily",
+                db=db,
+            )
+            await GamificationDBService.update_leaderboard(student_id=user_id, db=db)
+            await db.commit()
+        except Exception:
+            logger.exception(
+                "Birlikte Streak XP award FAILED student=%s pair=%s",
+                user_id,
+                pair.id,
+            )
+            await db.rollback()
+            actual_awarded = 0
+
     return {
         "success": True,
         "data": {
             "streak": pair.current_streak,
             "xp_earned": xp_earned + bonus,
+            "xp_committed": actual_awarded,
             "bonus": bonus,
         },
         "message": "Gunluk gorev tamamlandi!"

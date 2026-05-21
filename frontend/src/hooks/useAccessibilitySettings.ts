@@ -19,6 +19,13 @@ interface AccessibilitySettings {
   fontSize: 'small' | 'medium' | 'large' | 'extra-large';
   reducedMotion: boolean;
 
+  // OSB (Optical Spectrum / Otizm) ayarları — S179 fix (F-P0-5).
+  // Pre-fix backend's `osb_settings.no_animations` and `no_shadows` fields
+  // were exposed via the API but no frontend code applied them; KVKK /
+  // disability accommodation claim was silently broken.
+  noAnimations: boolean;
+  noShadows: boolean;
+
   // Navigasyon ayarları
   keyboardNavigation: boolean;
   focusIndicators: boolean;
@@ -44,6 +51,8 @@ const DEFAULT_SETTINGS: AccessibilitySettings = {
   highContrast: false,
   fontSize: 'medium',
   reducedMotion: false,
+  noAnimations: false,
+  noShadows: false,
   keyboardNavigation: true,
   focusIndicators: true,
   skipLinks: true,
@@ -160,6 +169,21 @@ export const useAccessibilitySettings = () => {
       root.classList.add('reduced-motion');
     } else {
       root.classList.remove('reduced-motion');
+    }
+
+    // S179 fix (F-P0-5): OSB toggles. CSS class hooks let
+    // accessibility.css strip animations/shadows globally for users on
+    // the autism spectrum or with vestibular sensitivities.
+    if (settings.noAnimations) {
+      root.classList.add('no-animations');
+    } else {
+      root.classList.remove('no-animations');
+    }
+
+    if (settings.noShadows) {
+      root.classList.add('no-shadows');
+    } else {
+      root.classList.remove('no-shadows');
     }
 
     // Klavye navigasyon

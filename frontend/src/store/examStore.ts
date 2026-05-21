@@ -1,4 +1,10 @@
 /**
+ * @deprecated S179 fix (B-P0-64): only consumer is
+ * `components/Exam/OSYMExamInterfaceRefactored.tsx`, which is itself
+ * orphan (no imports outside its own file). Plan: delete this store and
+ * the Refactored variant together once frontend/src/components/Exam/
+ * orphan inventory is run. Do NOT add new useExamStore call sites.
+ *
  * Exam Store (Zustand)
  *
  * Centralized exam session state management

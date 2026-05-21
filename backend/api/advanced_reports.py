@@ -1,6 +1,13 @@
 """
 Gelişmiş Sınav Raporlama API'leri
-IRT, Morfoloji, ZPD ve Hibrit Öğrenme Stili analizleri
+IRT, Morfoloji, ZPD ve Hibrit Öğrenme Stili analizleri.
+
+@WARN S179 fix (B-P0-57): pre-fix this module had 5 mock points
+(lines 310, 395, 490, 615, 892) returning fabricated IRT/ZPD/hybrid
+learning-style values, while the REAL IRT engine in `bkt_service.py`
+goes unused. Sprint plan: wire each endpoint to the live algorithm
+service. Until then responses include `"computed_by": "mock"` so the
+frontend can suppress display.
 """
 
 import asyncio

@@ -41,7 +41,7 @@ const ColorCodingPanel: React.FC = () => {
 
   const loadDefaultSchemes = async () => {
     try {
-      const response = await fetch('/api/v1/visual-supports/color-schemes');
+      const response = await fetch('/api/v1/visual-supports/color-schemes', { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setSchemes(data);

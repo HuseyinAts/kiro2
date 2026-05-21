@@ -174,8 +174,14 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   success: boolean
-  user: User
+  // S179 fix (B-P0-24): backend returns user only on full success.
+  // When 2FA is required, response is {success: false, requires_2fa: true, email}
+  // and the frontend must transition to the 2FA TOTP screen instead of
+  // showing the generic "Giriş başarısız" toast.
+  user?: User
   message?: string
+  requires_2fa?: boolean
+  email?: string
 }
 
 export interface RegisterRequest {

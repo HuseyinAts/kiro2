@@ -17,7 +17,9 @@ from services.revolutionary_features_service import revolutionary_features_servi
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/revolutionary-features", tags=["Revolutionary Features"])
+router = APIRouter(
+    prefix="/api/v1/revolutionary-features", tags=["Revolutionary Features"]
+)
 
 
 # Pydantic modelleri
@@ -144,7 +146,9 @@ async def detect_learning_style(
         raise
     except Exception as e:
         logger.error(f"Öğrenme stili tespit hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/learning-style/detect/{student_id}", response_model=ApiResponse)
@@ -179,11 +183,17 @@ async def detect_learning_style_get(
         raise
     except Exception as e:
         logger.error(f"Öğrenme stili tespit hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/learning-style/hybrid-codes", response_model=ApiResponse)
-async def get_hybrid_codes():
+async def get_hybrid_codes(
+    # S179 fix (B-P0-28): require auth; pre-fix this was anonymous and
+    # crashed 500 instead of 401 when something went wrong.
+    _: AuthenticatedUser = Depends(get_current_user),
+):
     """Tüm hibrit kodları listele"""
     try:
         # 64 farklı hibrit kod
@@ -218,7 +228,9 @@ async def get_hybrid_codes():
         raise
     except Exception as e:
         logger.error(f"Hibrit kod listeleme hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # ZPD + Maarif Endpoint'leri
@@ -253,7 +265,9 @@ async def calculate_revolutionary_zpd(
         raise
     except Exception as e:
         logger.error(f"ZPD hesaplama hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/zpd-maarif/revolutionary/recommend", response_model=ApiResponse)
@@ -290,7 +304,9 @@ async def generate_revolutionary_recommendation(
         raise
     except Exception as e:
         logger.error(f"Öneri oluşturma hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/zpd-maarif/revolutionary/cultural-context", response_model=ApiResponse)
@@ -320,7 +336,9 @@ async def detect_cultural_context(
         raise
     except Exception as e:
         logger.error(f"Kültürel bağlam tespit hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.post("/zpd-maarif/revolutionary/maarif-alignment", response_model=ApiResponse)
@@ -346,7 +364,9 @@ async def calculate_maarif_alignment(
         raise
     except Exception as e:
         logger.error(f"Maarif uyumu hesaplama hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/zpd-maarif/revolutionary/demo/{student_id}", response_model=ApiResponse)
@@ -430,7 +450,9 @@ async def get_revolutionary_demo(
         raise
     except Exception as e:
         logger.error(f"Demo oluşturma hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # Sistem sağlığı
@@ -466,4 +488,6 @@ async def check_revolutionary_health():
         raise
     except Exception as e:
         logger.error(f"Sağlık kontrolü hatası: {e}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )

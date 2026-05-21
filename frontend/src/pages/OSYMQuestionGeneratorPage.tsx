@@ -93,7 +93,7 @@ export const OSYMQuestionGeneratorPage: React.FC = () => {
     setQuestion(null);
 
     try {
-      const response = await fetch('/api/v1/osym/generate-question', {
+      const response = await fetch('/api/v1/osym/generate-question', { credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),

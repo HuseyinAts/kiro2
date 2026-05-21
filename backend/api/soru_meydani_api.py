@@ -317,10 +317,41 @@ async def submit_solution(
 
     await db.commit()
 
+    # S179 fix (B-P0-36): actually write the XP transaction so leaderboard
+    # reflects it. Pre-fix the "+10 XP" string was display-only — the
+    # XPTransaction row was never created and the leaderboard ignored the
+    # solution. award_xp + update_leaderboard chains via services.
+    awarded_xp = 0
+    try:
+        from services.learning_event_service import GamificationDBService
+
+        awarded_xp = XP_SUBMIT_SOLUTION
+        await GamificationDBService.award_xp(
+            student_id=user_id,
+            amount=awarded_xp,
+            source="soru_meydani_solution",
+            db=db,
+        )
+        await GamificationDBService.update_leaderboard(student_id=user_id, db=db)
+        await db.commit()
+    except Exception:
+        logger.exception(
+            "Soru Meydani XP award FAILED solver=%s solution=%s",
+            user_id,
+            solution.id,
+        )
+        # Rollback the XP-only commit so the solution insert survives.
+        await db.rollback()
+        awarded_xp = 0
+
     return {
         "success": True,
-        "data": {"id": solution.id},
-        "message": "Cozumunuz yayinlandi! +10 XP",
+        "data": {"id": solution.id, "xp_awarded": awarded_xp},
+        "message": (
+            f"Cozumunuz yayinlandi! +{awarded_xp} XP"
+            if awarded_xp
+            else "Cozumunuz yayinlandi. XP later olarak hesaplanacak."
+        ),
     }
 
 

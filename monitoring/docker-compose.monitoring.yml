@@ -38,8 +38,12 @@ services:
     ports:
       - "3100:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=teknofest2025
+      # S179 fix (I-P0-3): admin password sourced from env, not hardcoded.
+      # Set GRAFANA_ADMIN_PASSWORD in .env or docker-compose `env_file`.
+      # Will refuse to start if unset (Grafana exits with auth error
+      # rather than fall back to "admin/admin").
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD env required}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_ROOT_URL=http://localhost:3100
       - GF_INSTALL_PLUGINS=grafana-piechart-panel

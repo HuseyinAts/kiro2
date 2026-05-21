@@ -414,18 +414,39 @@ function ActionsBar({ velocitySec, onAction, disabled }: ActionsBarProps) {
 }
 
 function HelpOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
+  // S179 fix (F-P1-6): role=dialog + aria-modal + Escape-to-close +
+  // initial-focus on the close button. Pre-fix this `fixed inset-0`
+  // <div> was invisible to screen readers and not keyboard-dismissable.
+  // useEffect for Escape + initial focus is hooks-rules safe because
+  // we return null AFTER the hooks fire.
+  useEffect(() => {
+    if (!open) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [open, onClose]);
+
   if (!open) return null;
   return (
     <div
       className="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-6"
       onClick={onClose}
       data-testid="help-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="curator-help-title"
     >
       <div
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-lg font-bold text-slate-900 mb-3">Klavye Kısayolları</h2>
+        <h2 id="curator-help-title" className="text-lg font-bold text-slate-900 mb-3">
+          Klavye Kısayolları
+        </h2>
         <ul className="space-y-2 text-sm text-slate-700">
           <li><kbd className="px-2 py-0.5 bg-slate-100 rounded font-mono">V</kbd> — Onayla</li>
           <li><kbd className="px-2 py-0.5 bg-slate-100 rounded font-mono">R</kbd> — Reddet</li>
@@ -434,10 +455,13 @@ function HelpOverlay({ open, onClose }: { open: boolean; onClose: () => void }) 
           <li><kbd className="px-2 py-0.5 bg-slate-100 rounded font-mono">1-5</kbd> — Şıkları vurgula</li>
           <li><kbd className="px-2 py-0.5 bg-slate-100 rounded font-mono">←/→</kbd> — Önceki / Sonraki soru</li>
           <li><kbd className="px-2 py-0.5 bg-slate-100 rounded font-mono">?</kbd> — Bu yardımı aç</li>
+          <li><kbd className="px-2 py-0.5 bg-slate-100 rounded font-mono">Esc</kbd> — Kapat</li>
         </ul>
         <button
           type="button"
           onClick={onClose}
+          autoFocus
+          aria-label="Yardım penceresini kapat"
           className="mt-4 w-full px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold"
         >
           Kapat

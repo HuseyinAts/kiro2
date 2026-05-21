@@ -38,6 +38,23 @@ export default function UstaCirakPage() {
   const [acting, setActing] = useState(false);
   const [subject, setSubject] = useState('matematik');
   const [role, setRole] = useState<'mentor' | 'mentee'>('mentee');
+  // S179 fix (B-P0-44): expose end-session UI so XP can finally be awarded.
+  // Pre-fix the only way to leave a session was to reload — duration
+  // never reached the backend and XPTransaction was never written.
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
+  const [sessionElapsed, setSessionElapsed] = useState(0);
+
+  // Tick the on-screen timer when a session is active.
+  useEffect(() => {
+    if (!sessionStartedAt) {
+      return;
+    }
+    const t = window.setInterval(() => {
+      setSessionElapsed(Math.floor((Date.now() - sessionStartedAt) / 1000));
+    }, 1000);
+    return () => window.clearInterval(t);
+  }, [sessionStartedAt]);
 
   const fetchPairs = useCallback(async () => {
     try {
@@ -70,10 +87,44 @@ export default function UstaCirakPage() {
   const handleStartSession = async (pairId: string) => {
     setActing(true);
     try {
-      await ustaCirak.startSession(pairId);
+      const res = await ustaCirak.startSession(pairId);
+      const sessionId = res?.data?.session_id ?? null;
+      if (sessionId) {
+        setActiveSessionId(sessionId);
+        setSessionStartedAt(Date.now());
+        setSessionElapsed(0);
+      }
       fetchPairs();
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Oturum baslatilamadi');
+    } finally {
+      setActing(false);
+    }
+  };
+
+  // S179 fix (B-P0-44): close the loop so XP is actually awarded.
+  const handleEndSession = async () => {
+    if (!activeSessionId) {
+      return;
+    }
+    setActing(true);
+    try {
+      const res = await ustaCirak.endSession(activeSessionId);
+      const minutes = res?.data?.duration_minutes ?? 0;
+      const mentorXp = res?.data?.mentor_xp ?? 0;
+      const menteeXp = res?.data?.mentee_xp ?? 0;
+      setError('');
+      // Toast-style flash via the existing Alert region — simplest path.
+      window.alert(
+        `Oturum tamamlandi. Sure: ${minutes} dk. ` +
+          `Usta XP: ${mentorXp}, Cirak XP: ${menteeXp}.`,
+      );
+      setActiveSessionId(null);
+      setSessionStartedAt(null);
+      setSessionElapsed(0);
+      fetchPairs();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Oturum kapatilamadi');
     } finally {
       setActing(false);
     }
@@ -102,6 +153,35 @@ export default function UstaCirakPage() {
         </Stack>
 
         {error && <Alert severity="error" onClose={() => setError('')}>{error}</Alert>}
+
+        {/* S179 fix (B-P0-44): Active session banner with timer + end-session
+            button. Pre-fix `startSession` ran but the UI gave the student no
+            way to call `endSession`, so XP was never awarded. */}
+        {activeSessionId && (
+          <Card sx={{ borderLeft: '4px solid #2e7d32' }}>
+            <CardContent>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={700}>
+                    Aktif oturum
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Sure: {Math.floor(sessionElapsed / 60)} dk {sessionElapsed % 60} sn
+                  </Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleEndSession}
+                  disabled={acting}
+                  aria-label="Oturumu sonlandir ve XP kazan"
+                >
+                  Oturumu Sonlandir
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Match request */}
         <Card>

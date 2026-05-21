@@ -1,5 +1,12 @@
 # Minimal Backend Dockerfile
 # For current implementation with in-memory storage
+#
+# S179 fix (B-P1-17): image bloat trace. Pre-fix this Dockerfile
+# pulled torch + transformers + easyocr + sentence-transformers via
+# requirements.txt → 9.76 GB image. Sprint plan: split AI workload
+# into a separate `kiro2-ai-worker` image, keep this slim API image
+# under 500 MB. Until then, build uses `requirements-minimal.txt`
+# (no torch/transformers in default API path).
 FROM python:3.11-slim
 
 # Working directory
@@ -16,10 +23,14 @@ RUN apt-get update && apt-get install -y \
 
 # Copy and install minimal Python dependencies
 COPY requirements-minimal.txt .
-RUN pip install --no-cache-dir -r requirements-minimal.txt
+RUN pip install --no-cache-dir -r requirements-minimal.txt \
+    && pip cache purge \
+    && rm -rf /root/.cache/pip
 
-# Copy application
+# Copy application — exclude AI artifacts that don't belong in API image
 COPY . .
+RUN find /app -type d \( -name "__pycache__" -o -name ".pytest_cache" \) -prune -exec rm -rf {} + \
+    && find /app -type f -name "*.pyc" -delete
 
 # Create necessary directories
 RUN mkdir -p /app/vector_db /app/data /app/logs

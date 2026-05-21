@@ -146,7 +146,20 @@ class PasswordSecurityManager:
             raise ValidationError("Şifre boş olamaz")
 
         if salt is None:
-            salt = bcrypt.gensalt(rounds=12)
+            # S179 fix (B-P0-12): bcrypt cost env-configurable.
+            # Pre-fix hard-coded rounds=12 cost ~300 ms verify, which
+            # dominated login latency (Locust p50=1300ms). NIST permits
+            # >=10. Default still 12 for safety; deploys with serious
+            # latency budget (load test 100+ concurrent students) can
+            # set BCRYPT_ROUNDS=10 → ~75 ms verify.
+            import os as _os
+
+            try:
+                _rounds = int(_os.environ.get("BCRYPT_ROUNDS", "12"))
+            except ValueError:
+                _rounds = 12
+            _rounds = max(10, min(_rounds, 14))  # NIST floor / sane ceiling
+            salt = bcrypt.gensalt(rounds=_rounds)
 
         hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
         return hashed.decode("utf-8"), salt.decode("utf-8")

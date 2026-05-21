@@ -107,7 +107,7 @@ export const BatchQueueMonitor: React.FC = () => {
 
   const fetchBatchJobs = async () => {
     try {
-      const response = await fetch('/api/v1/batch/queue/active');
+      const response = await fetch('/api/v1/batch/queue/active', { credentials: 'include' });
       if (!response.ok) {throw new Error('Failed to fetch batch jobs');}
       const data = await response.json();
       setBatchJobs(data);
@@ -118,7 +118,7 @@ export const BatchQueueMonitor: React.FC = () => {
 
   const fetchPDFJobs = async () => {
     try {
-      const response = await fetch('/api/v1/pdf/jobs?limit=20');
+      const response = await fetch('/api/v1/pdf/jobs?limit=20', { credentials: 'include' });
       if (!response.ok) {throw new Error('Failed to fetch PDF jobs');}
       const data = await response.json();
       setPDFJobs(data);
@@ -129,7 +129,7 @@ export const BatchQueueMonitor: React.FC = () => {
 
   const fetchQueueStats = async () => {
     try {
-      const response = await fetch('/api/v1/batch/queue/stats');
+      const response = await fetch('/api/v1/batch/queue/stats', { credentials: 'include' });
       if (!response.ok) {throw new Error('Failed to fetch queue stats');}
       const data = await response.json();
       setQueueStats(data);

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import secrets
 import time
 from collections import defaultdict
@@ -36,13 +37,13 @@ from models import (
     KullaniciGiris,
     KullaniciOlustur,
     KullaniciRolu,
-    OgrenciProfilOlusturGirdi,
     OgrenciProfili,
-    OgretmenProfilOlusturGirdi,
+    OgrenciProfilOlusturGirdi,
     OgretmenProfili,
+    OgretmenProfilOlusturGirdi,
     TokenYaniti,
-    VeliProfilOlusturGirdi,
     VeliProfili,
+    VeliProfilOlusturGirdi,
 )
 from models.database import User as DBUser
 from services.user_service import kullanici_servisi
@@ -77,8 +78,13 @@ _rate_buckets: dict[str, dict[str, list[float]]] = defaultdict(
 )
 
 # Bucket configs: (max_attempts, window_seconds)
+# NOTE: Login default raised from 10 → 30 to tolerate shared-NAT classrooms
+# (workload-simulator audit: 10 concurrent same-WiFi students = 10/10 HTTP 429).
+# Override via LOGIN_RATE_LIMIT_PER_MINUTE env. Brute-force protection still
+# meaningful at 30/min: 60s window + bcrypt cost makes credential stuffing slow.
+_LOGIN_RPM = int(os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "30") or 30)
 RATE_LIMITS = {
-    "login": (10, 60),
+    "login": (_LOGIN_RPM, 60),
     "register": (5, 60),
     "password_reset": (5, 300),
     "2fa_verify": (10, 60),

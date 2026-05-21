@@ -162,7 +162,7 @@ export const TaskManagement: React.FC = () => {
 
   const fetchColorScheme = async () => {
     try {
-      const response = await fetch('/api/v1/adhd-support/tasks/colors/scheme');
+      const response = await fetch('/api/v1/adhd-support/tasks/colors/scheme', { credentials: 'include' });
       if (!response.ok) {throw new Error('Renk şeması yüklenemedi');}
       const data = await response.json();
       setColorScheme(data);

@@ -135,8 +135,40 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        // Simplified chunk strategy - only vendor separation, let Vite handle app code
-        manualChunks: undefined,
+        // S179 fix (B-P0-63 + B-P0-61): grouped manualChunks.
+        //
+        // Pre-fix `manualChunks: undefined` produced 188 separate MUI icon
+        // chunks (each ~0.2 KB) → HTTP overhead even on HTTP/2; auto
+        // code-split also let `refractor` blow chatService chunk to 611 KB.
+        //
+        // We group: mui-icons together (was 188 chunks → 1), mui-core,
+        // recharts+d3 into 'charts', react-router into 'router'. App
+        // chunks stay auto-split by route.
+        //
+        // KIRO2 lesson (Session 74): keep `react` itself in the entry
+        // bundle, NOT in a vendor chunk — splitting React across chunks
+        // breaks createContext order. Hence no react/react-dom group.
+        manualChunks: (id: string) => {
+          if (id.includes('node_modules/@mui/icons-material')) {
+            return 'mui-icons';
+          }
+          if (id.includes('node_modules/@mui')) {
+            return 'mui-core';
+          }
+          if (
+            id.includes('node_modules/recharts') ||
+            id.includes('node_modules/d3-')
+          ) {
+            return 'charts';
+          }
+          if (
+            id.includes('node_modules/react-router') ||
+            id.includes('node_modules/@remix-run')
+          ) {
+            return 'router';
+          }
+          return undefined;
+        },
         // Chunk dosya isimlendirme
         chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',

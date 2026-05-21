@@ -1,6 +1,12 @@
 /**
  * Modern Learning Path Page - Glassmorphism Design
- * Kişiselleştirilmiş öğrenme yolu ve kaynaklar
+ * Kişiselleştirilmiş öğrenme yolu ve kaynaklar.
+ *
+ * @TODO S179 fix (B-P1-21): this file is 1,165 LOC and has 6 direct
+ * `fetch()` calls bypassing `services/learningPathService.ts`. Sprint
+ * plan: split into `LearningPathOverview` + `QuizPanel` +
+ * `InterleavedSession` + `DuelLaunchPanel` sub-components, route via
+ * `lazy()`. DO NOT add new responsibilities to this file.
  */
 
 import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science, SportsEsports } from '@mui/icons-material';

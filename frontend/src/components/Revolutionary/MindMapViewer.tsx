@@ -76,7 +76,7 @@ const MindMapViewer: React.FC = () => {
   // REQ-50.73: Mind map generation
   const handleCreateMindMap = async () => {
     try {
-      const response = await fetch('/api/v1/visual-supports/mind-maps', {
+      const response = await fetch('/api/v1/visual-supports/mind-maps', { credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

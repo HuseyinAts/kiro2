@@ -2,9 +2,10 @@
 Request Size Limiting Middleware
 SECURITY FIX: Prevent DoS attacks via large payloads
 """
+
 import logging
 
-from fastapi import HTTPException, Request, status
+from fastapi import Request, status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
@@ -58,10 +59,15 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
                     f"to {request.url.path}"
                 )
 
-                raise HTTPException(
+                # S179 (B-P0-10 / GF99): middleware Response, not raise.
+                return JSONResponse(
                     status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                    detail=f"Request body too large. "
-                    f"Maximum allowed size is {size_limit / 1024 / 1024:.1f}MB",
+                    content={
+                        "detail": (
+                            f"Request body too large. "
+                            f"Maximum allowed size is {size_limit / 1024 / 1024:.1f}MB"
+                        )
+                    },
                 )
 
         # Process request

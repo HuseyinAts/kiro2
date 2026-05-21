@@ -1,4 +1,7 @@
 /**
+ * @deprecated S179 fix (B-P0-64): zero consumers per Session 179 audit.
+ * Safe to delete after a brief deprecation period. Do NOT import.
+ *
  * UI Store (Zustand)
  *
  * Centralized UI state management

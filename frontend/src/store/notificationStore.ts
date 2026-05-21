@@ -1,4 +1,9 @@
 /**
+ * @deprecated S179 fix (B-P0-64): only consumer is the orphan
+ * `components/Common/Notification.tsx` (no imports outside itself).
+ * Production code uses react-hot-toast directly. Do NOT add new
+ * useNotificationStore call sites.
+ *
  * Notification Store
  * Global notification state management using Zustand
  */

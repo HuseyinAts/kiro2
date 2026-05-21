@@ -1,6 +1,13 @@
 /**
  * WCAG 2.1 Level AA Uyumlu Layout Bileşeni
- * Semantic HTML ve landmark'lar
+ * Semantic HTML ve landmark'lar.
+ *
+ * @deprecated S179 fix (F-P0-4): this file is DEAD CODE (zero imports outside
+ *   itself). Production routes use `RoleBasedLayout`. The WCAG-AA features
+ *   that lived here (skip-link, Alt+M/Alt+N shortcuts, scroll-to-top
+ *   respecting reduced motion) should be merged into RoleBasedLayout in a
+ *   focused sprint. Until then this component must NOT be re-imported —
+ *   doing so creates two competing layout systems.
  */
 
 import {

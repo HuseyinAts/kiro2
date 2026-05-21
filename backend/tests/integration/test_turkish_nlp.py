@@ -15,7 +15,7 @@ from core.turkish_nlp_service import (
 
 pytestmark = pytest.mark.skipif(
     True,
-    reason="AsyncClient(app=app) hangs in asyncio event loop on Windows",
+    reason="AsyncClient(transport=ASGITransport(app=app)) hangs in asyncio event loop on Windows",
 )
 
 

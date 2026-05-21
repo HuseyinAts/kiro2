@@ -32,7 +32,24 @@ router = APIRouter(prefix="/api/v1/oba-seferleri", tags=["Oba Seferleri"])
 
 
 class ContributeRequest(BaseModel):
-    amount: int = Field(..., ge=1, le=100)
+    """Oba Seferleri katkı POST body.
+
+    S179 (B-P0-39): server-side bounded `amount`. Pre-fix client could send
+    +1000 per click; even with `oba_contribute` rate limit (10/60s) that was
+    600 fake katkı/dakika per user. We cap at 10 per call now so even if rate
+    limit is exhausted the leaderboard impact is bounded.
+
+    True fix (deferred): server must derive contribution from actual quiz/
+    activity events, not trust client `amount` at all. Until then this is
+    the strongest schema-level guard.
+    """
+
+    amount: int = Field(
+        ...,
+        ge=1,
+        le=10,
+        description="Görev katkı miktarı (sunucu tarafı sınırlandırma)",
+    )
 
 
 # ---------------------------------------------------------------------------

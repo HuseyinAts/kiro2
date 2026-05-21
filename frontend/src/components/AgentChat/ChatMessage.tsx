@@ -1,8 +1,21 @@
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+// S179 fix (B-P0-62): use light build + register specific languages.
+// Pre-fix `react-syntax-highlighter` Prism import bundled ALL 300+
+// languages → 611 KB chatService chunk. Light build + 4 registered
+// languages drops to ~80 KB.
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
+import javascript from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
+import python from 'react-syntax-highlighter/dist/esm/languages/hljs/python';
+import bash from 'react-syntax-highlighter/dist/esm/languages/hljs/bash';
+import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
+import { vs2015 as vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+
+SyntaxHighlighter.registerLanguage('javascript', javascript);
+SyntaxHighlighter.registerLanguage('python', python);
+SyntaxHighlighter.registerLanguage('bash', bash);
+SyntaxHighlighter.registerLanguage('json', json);
 
 import { dateUtils } from '@/utils/dateUtils';
 

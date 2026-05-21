@@ -14,7 +14,7 @@ import logging
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from redis import Redis
 from sqlalchemy import func, select
@@ -179,17 +179,54 @@ class AwardPointsRequest(BaseModel):
     )
 
 
+# S179 fix (B-P0-37): self-XP injection.
+# Pre-fix any authenticated user could POST {"points": 100, "reason": "x"}
+# every second and dominate the leaderboard. We restrict the open endpoint
+# to a small whitelist of legitimate sources; everything else (manual,
+# admin grants) must go through the admin-gated /admin/points/award path.
+_ALLOWED_AWARD_SOURCES: frozenset[str] = frozenset(
+    {
+        "interleaved_practice",
+        "quiz_completion",
+        "review_completed",
+        "streak_milestone",
+        "duel_won",
+        "oba_contribution",
+        "soru_meydani_solution",
+        "daily_quest",
+    }
+)
+
+
 @router.post("/points/award", response_model=dict[str, Any])
 async def award_points(
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
     body: AwardPointsRequest = Body(...),
 ):
-    """Kullaniciya puan ver (DB-backed, JSON body). Max 100 puan/istek."""
+    """Kullaniciya puan ver (DB-backed, JSON body). Max 100 puan/istek.
+
+    S179 (B-P0-37): ``reason`` must be one of the curated source slugs.
+    Arbitrary strings are rejected so the leaderboard cannot be sniped via
+    the public client.
+    """
     try:
         user_id = str(current_user.id)
         points = body.points
         reason = body.reason
+
+        if reason not in _ALLOWED_AWARD_SOURCES:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={
+                    "error": "reason_not_allowed",
+                    "message": (
+                        "Bu kaynak puan ödülü için geçerli değil. "
+                        "Sadece sistem üretimli kaynaklar kabul edilir."
+                    ),
+                    "allowed_sources": sorted(_ALLOWED_AWARD_SOURCES),
+                },
+            )
 
         new_total = await GamificationDBService.award_xp(
             student_id=user_id,

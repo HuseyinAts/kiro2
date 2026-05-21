@@ -46,6 +46,14 @@ LEGACY_PREFIXES: list[tuple[str, str]] = [
     ("/api/zemberek", "/api/v1/zemberek"),
     ("/api/errors", "/api/v1/errors"),
     ("/api/analytics", "/api/v1/analytics"),
+    # S179 fix (B-P0-29): Turkish legacy → English canonical redirects.
+    # See .claude/rules/path-naming.md — Turkish paths blocked from new
+    # endpoints; existing ones redirect for backward compat. Removal
+    # planned after frontend fetch sweep.
+    ("/api/v1/ogretmen", "/api/v1/teacher"),
+    ("/api/v1/veli", "/api/v1/parent"),
+    ("/api/ogretmen", "/api/v1/teacher"),
+    ("/api/veli", "/api/v1/parent"),
     # Prefix-less routes
     ("/search", "/api/v1/search"),
     ("/validation", "/api/v1/validation"),

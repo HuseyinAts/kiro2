@@ -100,17 +100,49 @@ def _deserialize_session(json_str: str) -> "ExamSessionData":
     return ExamSessionData(**d)
 
 
-async def _get_redis():
-    """Get Redis connection. Returns None if unavailable."""
-    try:
-        import redis.asyncio as aioredis
+# S179 fix (B-P0-25): module-level pooled Redis client.
+# Pre-fix every persist_session / load_session call opened a fresh TCP
+# connection + auth + PING — for a 100-question exam that meant 100 ×
+# (tcp + auth + ping) round-trips. The pool client multiplexes safely;
+# aclose-per-call removed.
+_REDIS_POOL_CLIENT = None
+_REDIS_POOL_LOCK: "asyncio.Lock | None" = None
 
-        url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-        r = aioredis.from_url(url, decode_responses=True)
-        await r.ping()
-        return r
-    except Exception:
-        return None
+
+async def _get_redis():
+    """Get pooled Redis connection. Returns None if unavailable.
+
+    The connection is created on first use and reused. aioredis client
+    objects wrap a connection pool internally, so it is safe to share
+    across coroutines.
+    """
+    global _REDIS_POOL_CLIENT, _REDIS_POOL_LOCK
+    if _REDIS_POOL_CLIENT is not None:
+        return _REDIS_POOL_CLIENT
+
+    import asyncio as _asyncio
+
+    if _REDIS_POOL_LOCK is None:
+        _REDIS_POOL_LOCK = _asyncio.Lock()
+
+    async with _REDIS_POOL_LOCK:
+        if _REDIS_POOL_CLIENT is not None:
+            return _REDIS_POOL_CLIENT
+        try:
+            import redis.asyncio as aioredis
+
+            url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+            r = aioredis.from_url(
+                url,
+                decode_responses=True,
+                max_connections=20,
+                health_check_interval=30,
+            )
+            await r.ping()
+            _REDIS_POOL_CLIENT = r
+            return r
+        except Exception:
+            return None
 
 
 async def persist_session(session_data: "ExamSessionData") -> None:
@@ -120,7 +152,6 @@ async def persist_session(session_data: "ExamSessionData") -> None:
         if r:
             key = f"{_REDIS_PREFIX}{session_data.session_id}"
             await r.set(key, _serialize_session(session_data), ex=_REDIS_TTL)
-            await r.aclose()
     except Exception as e:
         logger.warning(f"Redis persist failed for {session_data.session_id}: {e}")
 
@@ -132,7 +163,6 @@ async def load_session(session_id: str) -> "ExamSessionData | None":
         if r:
             key = f"{_REDIS_PREFIX}{session_id}"
             data = await r.get(key)
-            await r.aclose()
             if data:
                 return _deserialize_session(data)
     except Exception as e:
@@ -147,7 +177,6 @@ async def delete_session(session_id: str) -> None:
         if r:
             key = f"{_REDIS_PREFIX}{session_id}"
             await r.delete(key)
-            await r.aclose()
     except Exception as e:
         logger.warning(f"Redis delete failed for {session_id}: {e}")
 

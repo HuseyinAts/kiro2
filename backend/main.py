@@ -53,9 +53,28 @@ except ImportError as e:
         app = FastAPI(
             title="KIRO2 Educational Platform", version="1.0.0", lifespan=app_lifespan
         )
+        # CORS origins from ALLOWED_ORIGINS env (comma-separated). Falls back to
+        # localhost dev URLs only when running locally; production deploys MUST
+        # set ALLOWED_ORIGINS or all browser requests will be silently rejected.
+        _allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "").strip()
+        if _allowed_origins_env:
+            _allowed_origins = [
+                origin.strip()
+                for origin in _allowed_origins_env.split(",")
+                if origin.strip()
+            ]
+        elif os.environ.get("ENVIRONMENT", "").lower() in ("production", "prod"):
+            logger.error(
+                "ALLOWED_ORIGINS unset in production — refusing to start with "
+                "localhost-only CORS that would silently reject the real frontend."
+            )
+            raise RuntimeError("ALLOWED_ORIGINS env var required in production")
+        else:
+            _allowed_origins = ["http://localhost:3000", "http://localhost:3001"]
+
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=["http://localhost:3000", "http://localhost:3001"],
+            allow_origins=_allowed_origins,
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],

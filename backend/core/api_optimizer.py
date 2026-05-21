@@ -128,13 +128,17 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             # Check rate limits
             if await self._is_rate_limited(client_key):
                 self.optimizer.stats["rate_limited"] += 1
-                raise HTTPException(
+                # Middleware MUST return a Response, not raise HTTPException.
+                # Raising here escapes the middleware stack and surfaces as a
+                # generic 500 (see .claude/rules/middleware.md / GF99).
+                return JSONResponse(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail={
+                    content={
                         "error": "Rate limit exceeded",
                         "message": "Çok fazla istek gönderiyorsunuz. Lütfen bir süre bekleyin.",
                         "retry_after": 60,
                     },
+                    headers={"Retry-After": "60"},
                 )
 
             # Process request
@@ -469,7 +473,13 @@ def cache_response(ttl: int = 300, key_prefix: str = "api"):
                     if cached_result:
                         optimizer.stats["cache_hits"] += 1
                         return json.loads(cached_result)
-            except (redis.ConnectionError, redis.TimeoutError, redis.RedisError, json.JSONDecodeError, ImportError):
+            except (
+                redis.ConnectionError,
+                redis.TimeoutError,
+                redis.RedisError,
+                json.JSONDecodeError,
+                ImportError,
+            ):
                 pass
 
             # Execute function
@@ -484,7 +494,13 @@ def cache_response(ttl: int = 300, key_prefix: str = "api"):
                         json.dumps(result, ensure_ascii=False, default=str),
                     )
                     optimizer.stats["cache_misses"] += 1
-            except (redis.ConnectionError, redis.TimeoutError, redis.RedisError, TypeError, ValueError):
+            except (
+                redis.ConnectionError,
+                redis.TimeoutError,
+                redis.RedisError,
+                TypeError,
+                ValueError,
+            ):
                 pass
 
             return result

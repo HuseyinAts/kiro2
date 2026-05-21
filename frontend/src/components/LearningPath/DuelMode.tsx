@@ -1,6 +1,10 @@
 /**
  * DuelMode — F1 1v1 Düello
  *
+ * @TODO S179 fix (B-P1-21): 1,072 LOC, 17 useState, 0 useMemo. Sprint
+ * plan: useReducer for game-state machine + child split (DuelArena,
+ * DuelHud, DuelTimer, DuelResults). Do NOT add new useState here.
+ *
  * İki mod:
  *   1. "Rakip Bul" — POST /api/v1/duel/matchmake ile gerçek eşleşme, SSE stream.
  *   2. "AI Bot" — API yokken çevrimdışı fallback (mevcut davranış).

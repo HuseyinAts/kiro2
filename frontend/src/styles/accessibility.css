@@ -173,6 +173,32 @@
   scroll-behavior: auto !important;
 }
 
+/* S179 fix (F-P0-5): OSB / autism-spectrum toggles.
+ * Match backend osb_settings.no_animations + osb_settings.no_shadows so the
+ * server-side accommodation actually has a visible effect. The selectors are
+ * intentionally more aggressive than .reduced-motion — they fully suppress
+ * animation declarations and remove drop shadows that can be sensory-loading.
+ */
+.no-animations,
+.no-animations *,
+.no-animations *::before,
+.no-animations *::after {
+  animation: none !important;
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition: none !important;
+  transition-duration: 0s !important;
+  scroll-behavior: auto !important;
+}
+
+.no-shadows,
+.no-shadows * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
 /* ===== KLAVYE NAVİGASYONU ===== */
 
 .keyboard-navigation *:focus {

@@ -2,6 +2,7 @@
 İçerik Yönetim API'leri
 Soru bankası, eğitim materyalleri ve içerik onay/reddetme sistemi
 """
+
 from datetime import datetime
 from typing import Any
 
@@ -45,32 +46,77 @@ async def soru_bankasi_listele(
     sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
     current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
-    """Soru bankasındaki soruları listele ve filtrele"""
+    """Soru bankasındaki soruları listele ve filtrele.
+
+    S179 fix (B-P0-53): pre-fix returned 5 fake rows with
+    ``"soru_metni": f"Bu bir örnek soru metnidir - {i+1}"`` regardless of
+    filters. Real implementation queries 192K-row question_bank.
+    """
     try:
-        # Mock data
-        mock_sorular = []
-        for i in range(min(sayfa_boyutu, 5)):
-            soru = {
-                "id": f"soru-{i+1}",
-                "soru_metni": f"Bu bir örnek soru metnidir - {i+1}",
-                "sinav_tipi": sinav_tipi or "TYT",
-                "konu": konu or "Matematik",
-                "zorluk_seviyesi": zorluk_seviyesi or "medium",
-                "onay_durumu": onay_durumu or "approved",
-                "olusturma_tarihi": datetime.now().isoformat(),
-                "aktif": True,
+        from sqlalchemy import func as _func
+        from sqlalchemy import select as _select
+
+        from core.database import get_db_session_context
+        from models.question_bank import QuestionBankItem
+
+        async with get_db_session_context() as db:
+            stmt = _select(QuestionBankItem).where(
+                QuestionBankItem.is_active == True  # noqa: E712
+            )
+            count_stmt = (
+                _select(_func.count())
+                .select_from(QuestionBankItem)
+                .where(QuestionBankItem.is_active == True)
+            )  # noqa: E712
+
+            if sinav_tipi:
+                stmt = stmt.where(QuestionBankItem.exam_type == sinav_tipi.upper())
+                count_stmt = count_stmt.where(
+                    QuestionBankItem.exam_type == sinav_tipi.upper()
+                )
+            if zorluk_seviyesi:
+                stmt = stmt.where(QuestionBankItem.difficulty_level == zorluk_seviyesi)
+                count_stmt = count_stmt.where(
+                    QuestionBankItem.difficulty_level == zorluk_seviyesi
+                )
+            if onay_durumu:
+                stmt = stmt.where(QuestionBankItem.quality_review_status == onay_durumu)
+                count_stmt = count_stmt.where(
+                    QuestionBankItem.quality_review_status == onay_durumu
+                )
+
+            offset = (sayfa - 1) * sayfa_boyutu
+            stmt = stmt.offset(offset).limit(sayfa_boyutu)
+
+            rows = (await db.execute(stmt)).scalars().all()
+            total = (await db.execute(count_stmt)).scalar() or 0
+
+        sorular = [
+            {
+                "id": str(r.id),
+                "soru_metni": r.question_text,
+                "sinav_tipi": r.exam_type,
+                "konu": getattr(r, "subject_area", None),
+                "zorluk_seviyesi": getattr(r, "difficulty_level", None),
+                "onay_durumu": r.quality_review_status,
+                "olusturma_tarihi": (
+                    r.created_at.isoformat() if r.created_at else None
+                ),
+                "aktif": bool(r.is_active),
             }
-            mock_sorular.append(soru)
+            for r in rows
+        ]
+        toplam_sayfa = (int(total) + sayfa_boyutu - 1) // sayfa_boyutu
 
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={
                 "success": True,
                 "data": {
-                    "sorular": mock_sorular,
-                    "toplam_sayfa": 1,
+                    "sorular": sorular,
+                    "toplam_sayfa": toplam_sayfa,
                     "mevcut_sayfa": sayfa,
-                    "toplam_soru": len(mock_sorular),
+                    "toplam_soru": int(total),
                     "filtreler": {
                         "sinav_tipi": sinav_tipi,
                         "konu": konu,
@@ -78,7 +124,7 @@ async def soru_bankasi_listele(
                         "onay_durumu": onay_durumu,
                     },
                 },
-                "message": f"{len(mock_sorular)} soru başarıyla getirildi",
+                "message": f"{len(sorular)} soru getirildi (toplam {total})",
             },
         )
     except HTTPException:
@@ -92,7 +138,8 @@ async def soru_bankasi_listele(
 
 @router.post("/questions", response_model=dict[str, Any])
 async def soru_ekle(
-    soru_data: dict[str, Any], current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu)
+    soru_data: dict[str, Any],
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
 ):
     """Soru bankasına yeni soru ekle"""
     try:
@@ -259,9 +306,9 @@ async def egitim_materyalleri_listele(
         mock_materyaller = []
         for i in range(min(sayfa_boyutu, 3)):
             materyal = {
-                "id": f"materyal-{i+1}",
-                "baslik": f"Eğitim Materyali {i+1}",
-                "aciklama": f"Bu bir örnek eğitim materyalidir - {i+1}",
+                "id": f"materyal-{i + 1}",
+                "baslik": f"Eğitim Materyali {i + 1}",
+                "aciklama": f"Bu bir örnek eğitim materyalidir - {i + 1}",
                 "icerik_turu": icerik_turu or "video",
                 "platform": platform or "youtube",
                 "konu": konu or "Matematik",
@@ -704,9 +751,7 @@ async def icerik_ara(
         None, description="İçerik türü (question, educational)"
     ),
     konu: str | None = Query(None, description="Konu filtresi"),
-    zorluk_seviyesi: str | None = Query(
-        None, description="Zorluk seviyesi filtresi"
-    ),
+    zorluk_seviyesi: str | None = Query(None, description="Zorluk seviyesi filtresi"),
     sayfa: int = Query(1, ge=1, description="Sayfa numarası"),
     sayfa_boyutu: int = Query(20, ge=1, le=100, description="Sayfa boyutu"),
     current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
@@ -717,9 +762,9 @@ async def icerik_ara(
         mock_sonuclar = []
         for i in range(min(5, sayfa_boyutu)):
             sonuc = {
-                "id": f"sonuc-{i+1}",
+                "id": f"sonuc-{i + 1}",
                 "tip": icerik_turu or ("soru" if i % 2 == 0 else "egitim_materyali"),
-                "baslik": f"'{q}' ile ilgili içerik {i+1}",
+                "baslik": f"'{q}' ile ilgili içerik {i + 1}",
                 "aciklama": f"Bu içerik '{q}' arama terimiyle eşleşiyor",
                 "konu": konu or "Matematik",
                 "zorluk_seviyesi": zorluk_seviyesi or "medium",
@@ -795,7 +840,9 @@ async def filtre_secenekleri_getir(
 
 
 @router.get("/statistics", response_model=dict[str, Any])
-async def icerik_istatistikleri(current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu)):
+async def icerik_istatistikleri(
+    current_user: AuthenticatedUser = Depends(admin_yetki_kontrolu),
+):
     """İçerik yönetimi istatistikleri"""
     try:
         istatistikler = {

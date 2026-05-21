@@ -336,16 +336,22 @@ async def test_record_answer_without_answered_questions_uses_bridge(db_session):
             f"irt_method should be 'bridge', got {result['irt_method']}"
         )
 
-        # Bridge formula: theta = (clamped(p_L) - 0.5) * 8.0
+        # S179 fix (B-P0-33): DM-05 replaced the linear bridge formula
+        # (theta = (clamped - 0.5) * 8.0) with logit (math.log(clamped /
+        # (1 - clamped))). The old assert was stale and silently passed
+        # only because the test never ran in CI (skipif elsewhere).
         # clamped = max(0.05, min(0.95, p_L))
+        import math
+
         new_p_L = result["new_p_L"]
         clamped = max(0.05, min(0.95, new_p_L))
-        expected_theta = (clamped - 0.5) * 8.0
+        expected_theta = math.log(clamped / (1.0 - clamped))
         assert abs(result["theta_after"] - expected_theta) < 0.01, (
-            f"theta_after={result['theta_after']} != expected {expected_theta}"
+            f"theta_after={result['theta_after']} != expected {expected_theta} "
+            f"(logit bridge since DM-05)"
         )
 
-        # SE: max(0.3, 1.0 - p_L)
+        # SE: max(0.3, 1.0 - p_L) — formula unchanged in DM-05
         expected_se = max(0.3, 1.0 - new_p_L)
         assert abs(result["theta_se"] - expected_se) < 0.01, (
             f"theta_se={result['theta_se']} != expected {expected_se}"

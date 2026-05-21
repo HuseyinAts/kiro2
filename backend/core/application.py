@@ -55,6 +55,22 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(f"  Debug Mode: {settings.debug}")
     logger.info(f"  Database: {settings.database_url[:30]}...")
 
+    # S179 fix (B-P0-49): AGPL exposure warning. See
+    # docs/compliance/AGPL_LICENSE_EXPOSURE.md. ultralytics + PyMuPDF
+    # are AGPL-3.0; commercial production deployment without a
+    # licensing decision risks copyleft trigger.
+    import os as _os
+
+    if _os.environ.get("ENVIRONMENT", "").lower() in (
+        "production",
+        "prod",
+    ) and not _os.environ.get("KIRO2_LICENSE_DECISION"):
+        logger.error(
+            "[LICENSE][AGPL] ultralytics + PyMuPDF are AGPL-3.0; "
+            "no KIRO2_LICENSE_DECISION env set in production. "
+            "See docs/compliance/AGPL_LICENSE_EXPOSURE.md before going live."
+        )
+
     # Initialize database connection
     await db_manager.initialize()
     logger.info("✅ Database initialized")

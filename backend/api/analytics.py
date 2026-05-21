@@ -929,21 +929,45 @@ async def _get_class_learning_style_distribution(
 async def _calculate_system_metrics(
     start_date: datetime, end_date: datetime, es_service
 ) -> dict[str, Any]:
-    """Sistem metrikleri hesapla"""
+    """Sistem metrikleri hesapla.
+
+    S179 fix (B-P0-52): pre-fix returned hard-coded mock
+    ``{"total_active_users": 15247, ...}``. Now reads the actual user
+    count from DB and leaves un-collected metrics null so the frontend
+    can render "veri yok" rather than a fabricated number.
+    """
+    from sqlalchemy import func, select
+
+    from core.database import get_db_session_context
+    from models.database import User
+
+    metrics: dict[str, Any] = {
+        "total_active_users": None,
+        "total_sessions": None,
+        "average_session_duration_minutes": None,
+        "total_questions_solved": None,
+        "system_uptime_percentage": None,
+        "api_response_time_ms": None,
+        "error_rate_percentage": None,
+        "_data_source": "db_partial",
+    }
+
     try:
-        # Mock implementation
-        return {
-            "total_active_users": 15247,
-            "total_sessions": 89456,
-            "average_session_duration_minutes": 32.5,
-            "total_questions_solved": 1247896,
-            "system_uptime_percentage": 99.7,
-            "api_response_time_ms": 145,
-            "error_rate_percentage": 0.3,
-        }
-    except Exception as e:
-        logger.error(f"System metrics calculation error: {e!s}")
-        return {}
+        async with get_db_session_context() as db:
+            active_count = (
+                await db.execute(
+                    select(func.count())
+                    .select_from(User)
+                    .where(
+                        User.is_active == True  # noqa: E712
+                    )
+                )
+            ).scalar() or 0
+            metrics["total_active_users"] = int(active_count)
+    except Exception:
+        logger.exception("Active-user count query FAILED")
+
+    return metrics
 
 
 async def _get_user_statistics(
