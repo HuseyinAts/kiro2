@@ -322,7 +322,15 @@ class UnifiedAuthService:
     LOCKOUT_DURATION_MINUTES = 30
 
     def __init__(self):
-        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        # S180 fix (login latency P0): bcrypt cost env-tunable, default 10
+        # (was implicit 12 = 250-350ms per verify). 10 rounds is safe with
+        # rate-limit (30/min) + Redis brute-force protection.
+        _cost = int(os.environ.get("BCRYPT_COST", "10") or 10)
+        self.pwd_context = CryptContext(
+            schemes=["bcrypt"],
+            deprecated="auto",
+            bcrypt__rounds=_cost,
+        )
 
         # In-memory stores (use Redis in production)
         self._blacklisted_tokens: set[str] = set()

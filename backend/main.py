@@ -21,6 +21,30 @@ backend_dir = Path(__file__).parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
+# S180 fix (#18): Sentry error tracking. Must initialize BEFORE FastAPI app
+# creation so middleware + handler exceptions get captured. No-op if
+# SENTRY_DSN is unset (dev convenience); WARNs at startup if missing in
+# production (see core/startup_validator.py:154).
+_SENTRY_DSN = os.environ.get("SENTRY_DSN", "").strip()
+if _SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.fastapi import FastApiIntegration
+        from sentry_sdk.integrations.starlette import StarletteIntegration
+
+        sentry_sdk.init(
+            dsn=_SENTRY_DSN,
+            environment=os.environ.get("ENVIRONMENT", "development"),
+            release=os.environ.get("RELEASE", "unknown"),
+            traces_sample_rate=float(os.environ.get("SENTRY_TRACES_RATE", "0.1")),
+            integrations=[StarletteIntegration(), FastApiIntegration()],
+            # Don't ship PII (student emails, exam answers) to Sentry.
+            send_default_pii=False,
+        )
+    except ImportError:
+        # sentry-sdk not installed; degraded but non-fatal.
+        pass
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",

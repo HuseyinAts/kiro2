@@ -209,7 +209,17 @@ def _safe_user_detail(e: Exception) -> str:
 
 
 # Password hashing using bcrypt
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# S180 fix (login latency P0): default cost was 12 (~250-350ms per verify).
+# Drop to 10 (~75ms) for beta — still cryptographically strong against
+# offline attacks (10 rounds = 2^10 = 1024 KDF iterations). Production
+# can override via BCRYPT_COST env. With rate-limit (30/min/IP) + Redis
+# brute-force protection, 10 rounds is safe for beta UX.
+_BCRYPT_COST = int(os.environ.get("BCRYPT_COST", "10") or 10)
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__rounds=_BCRYPT_COST,
+)
 
 # Minimum password length + complexity (consistent across register/change/reset)
 _MIN_PASSWORD_LENGTH = 8
