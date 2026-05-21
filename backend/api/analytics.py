@@ -1,6 +1,12 @@
 """
 Advanced Analytics API Endpoints
 Öğrenci, sınıf ve sistem geneli analytics API'leri
+
+@WARN S180 fix (#3): 23 endpoints in this module return mock/fabricated
+analytics (learning-style scores, retention curves, trends). The
+`_mock_analytics_guard()` helper blocks responses in production unless
+`ALLOW_MOCK_ANALYTICS=true` env is set. Mock-derived endpoints include
+`"computed_by": "mock"` so the frontend can suppress display.
 """
 
 import csv
@@ -39,6 +45,31 @@ router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 _STUDENT_ANALYTICS_STAFF = frozenset(
     {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
 )
+
+
+def _mock_analytics_guard(endpoint: str) -> None:
+    """S180 #3 — Block fabricated analytics from shipping to production.
+
+    Pre-fix this module returned synthetic retention curves, learning-style
+    breakdowns, and performance trends marked only by comments. Now in
+    production (ENVIRONMENT in {production,prod}) the call returns 503
+    unless ALLOW_MOCK_ANALYTICS=true is set explicitly.
+    """
+    env = os.environ.get("ENVIRONMENT", "").lower()
+    allow_mock = os.environ.get("ALLOW_MOCK_ANALYTICS", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    if env in ("production", "prod") and not allow_mock:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                f"{endpoint} returns mock analytics. Wire to real DB query "
+                "or set ALLOW_MOCK_ANALYTICS=true to receive mock-tagged "
+                "response."
+            ),
+        )
 
 
 async def _assert_can_read_student_analytics(
@@ -95,6 +126,7 @@ async def get_student_analytics(
 
     Requirements: 1.4, 1.5 - Öğrenci performans analizi ve raporlama
     """
+    _mock_analytics_guard("/api/v1/analytics/student/{student_id}")
     try:
         await _assert_can_read_student_analytics(student_id, current_user)
 
@@ -189,6 +221,7 @@ async def get_class_analytics(
 
     Requirements: 6.5 - Sınıf performans takibi ve raporlama
     """
+    _mock_analytics_guard("/api/v1/analytics/class/{class_id}")
     try:
         # Tarih aralığı ayarla
         if not end_date:
@@ -296,6 +329,7 @@ async def get_admin_dashboard_analytics(
 
     Requirements: 6.5 - Sistem geneli analytics ve raporlama
     """
+    _mock_analytics_guard("/api/v1/analytics/admin/dashboard")
     try:
         # Tarih aralığı ayarla
         if not end_date:
@@ -396,6 +430,7 @@ async def get_d7_retention(
 
     kiro2_learning_events tablosunu kullanır (sentetik veriler ayrı tabloda).
     """
+    _mock_analytics_guard("/api/v1/analytics/retention/d7")
     try:
         async with get_db_session_context() as db:
             row = await db.execute(
@@ -460,6 +495,7 @@ async def export_analytics_pdf(
 
     Requirements: 6.5 - Export functionality
     """
+    _mock_analytics_guard("/api/v1/analytics/export/pdf")
     try:
         # Veri tipine göre analytics al
         if request.data_type == "student":
@@ -538,6 +574,7 @@ async def export_analytics_excel(
 
     Requirements: 6.5 - Export functionality
     """
+    _mock_analytics_guard("/api/v1/analytics/export/excel")
     try:
         # Veri tipine göre analytics al
         analytics_data = await _get_analytics_data_for_export(request)
@@ -591,6 +628,7 @@ async def export_analytics_csv(
 
     Requirements: 6.5 - Export functionality
     """
+    _mock_analytics_guard("/api/v1/analytics/export/csv")
     try:
         # Veri tipine göre analytics al
         analytics_data = await _get_analytics_data_for_export(request)

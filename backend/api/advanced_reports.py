@@ -39,6 +39,32 @@ learning_style_service = LearningStyleService()
 pdf_generator = PDFReportGenerator()
 
 
+def _mock_report_guard(endpoint_name: str) -> None:
+    """S180 fix (#3): refuse to ship mock IRT/ZPD/learning-style data in
+    production. Pre-fix advanced_reports returned fabricated psychometric
+    parameters that the frontend rendered as real analysis (Bug #B-P0-57).
+
+    In `production` environments without `ALLOW_MOCK_REPORTS=true`, raise
+    503 to make the gap visible. In `development` or with the env flag,
+    return mock data + `computed_by: mock` marker so consumers can
+    suppress display.
+    """
+    env = os.environ.get("ENVIRONMENT", "").lower()
+    allow_mock = os.environ.get("ALLOW_MOCK_REPORTS", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    if env in ("production", "prod") and not allow_mock:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                f"{endpoint_name} not yet wired to real IRT/ZPD service. "
+                "Set ALLOW_MOCK_REPORTS=true to receive mock-tagged response."
+            ),
+        )
+
+
 @router.get("/exam/{sinav_id}/advanced")
 async def get_advanced_exam_report(
     sinav_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
@@ -126,6 +152,7 @@ async def get_irt_morfoloji_analysis(
     """
     IRT + Morfoloji analizi detayları
     """
+    _mock_report_guard("/reports/exam/{id}/irt-analysis")
     try:
         temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
@@ -137,6 +164,7 @@ async def get_irt_morfoloji_analysis(
             "sinav_id": sinav_id,
             "analiz_tarihi": datetime.now().isoformat(),
             "irt_morfoloji_analizi": irt_analizi,
+            "computed_by": "mock",  # S180: frontend MUST suppress display
         }
 
     except HTTPException:
@@ -155,6 +183,7 @@ async def get_zpd_recommendations(
     """
     ZPD tabanlı kişiselleştirilmiş öneriler
     """
+    _mock_report_guard("/reports/exam/{id}/zpd-recommendations")
     try:
         temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
@@ -167,6 +196,7 @@ async def get_zpd_recommendations(
             "ogrenci_id": current_user.id,
             "analiz_tarihi": datetime.now().isoformat(),
             "zpd_analizi": zpd_analizi,
+            "computed_by": "mock",  # S180: frontend MUST suppress display
         }
 
     except HTTPException:
@@ -185,6 +215,7 @@ async def get_learning_style_analysis(
     """
     Hibrit öğrenme stili bazlı performans analizi
     """
+    _mock_report_guard("/reports/exam/{id}/learning-style-analysis")
     try:
         temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
@@ -199,6 +230,7 @@ async def get_learning_style_analysis(
             "ogrenci_id": current_user.id,
             "analiz_tarihi": datetime.now().isoformat(),
             "hibrit_ogrenme_stili_analizi": ogrenme_stili_analizi,
+            "computed_by": "mock",  # S180: frontend MUST suppress display
         }
 
     except HTTPException:
@@ -217,6 +249,7 @@ async def get_osym_ets_comparison(
     """
     ÖSYM/ETS standartları ile karşılaştırma raporu
     """
+    _mock_report_guard("/reports/exam/{id}/osym-ets-comparison")
     try:
         temel_sonuc = await session_to_sinav_sonucu(sinav_id)
         if not temel_sonuc:
@@ -228,6 +261,7 @@ async def get_osym_ets_comparison(
             "sinav_id": sinav_id,
             "analiz_tarihi": datetime.now().isoformat(),
             "osym_ets_karsilastirmasi": karsilastirma,
+            "computed_by": "mock",  # S180: frontend MUST suppress display
         }
 
     except HTTPException:
