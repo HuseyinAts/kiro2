@@ -5,6 +5,11 @@ Handles: BKT update, FSRS card scheduling, XP award, Streak update, Badge check.
 Each subsystem is best-effort: failure in one does NOT block the others.
 """
 
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
+
 from __future__ import annotations
 
 import logging
@@ -196,6 +201,8 @@ class LearningEventService:
                 "din": 11,
             }
 
+            from sqlalchemy import text as _sql_text
+
             for subj_name, data in subjects.items():
                 theta = data.get("theta", 0.0)
                 se = data.get("se", 1.0)
@@ -220,30 +227,62 @@ class LearningEventService:
                 await db.execute(stmt)
                 report["abilities"] += 1
 
-                # Init BKT state with p_learn derived from theta
+                # Init BKT state with p_learn derived from theta.
+                # S179 fix (B-P0-30): write seed per real topic UUID, not the
+                # subject-name placeholder. The quiz/IRT pipeline reads
+                # BKTState WHERE topic_id = primary_topic_id (UUID), so
+                # writing topic_id='matematik' here orphans the seed —
+                # placement signal is silently lost.
                 p_learn = max(0.05, min(0.95, (theta + 3) / 6))
-                stmt_bkt = (
-                    pg_insert(BKTState)
-                    .values(
-                        student_id=student_id,
-                        topic_id=subj_name.lower(),
-                        p_learn=round(p_learn, 4),
-                        p_transit=0.10,
-                        p_guess=0.20,
-                        p_slip=0.10,
-                        mastery_status="learning" if p_learn < 0.80 else "mastered",
-                    )
-                    .on_conflict_do_update(
-                        index_elements=["student_id", "topic_id"],
-                        set_={"p_learn": round(p_learn, 4)},
-                    )
+                mastery_status = "learning" if p_learn < 0.80 else "mastered"
+
+                # Resolve real topic UUIDs for this subject.
+                topic_rows = await db.execute(
+                    _sql_text(
+                        """
+                        SELECT id::text AS topic_id
+                        FROM topic_hierarchy
+                        WHERE subject_area = :subj
+                          AND is_active = TRUE
+                        """
+                    ),
+                    {"subj": subj_name.upper()},
                 )
-                await db.execute(stmt_bkt)
-                report["bkt_states"] += 1
+                topic_ids = [row.topic_id for row in topic_rows.fetchall()]
+
+                if not topic_ids:
+                    # Fallback: keep the legacy subject-name seed so we never
+                    # write nothing — at least visible in audit even if it
+                    # won't match quiz lookup.
+                    topic_ids = [subj_name.lower()]
+
+                for topic_id in topic_ids:
+                    stmt_bkt = (
+                        pg_insert(BKTState)
+                        .values(
+                            student_id=student_id,
+                            topic_id=topic_id,
+                            p_learn=round(p_learn, 4),
+                            p_transit=0.10,
+                            p_guess=0.20,
+                            p_slip=0.10,
+                            mastery_status=mastery_status,
+                        )
+                        .on_conflict_do_update(
+                            index_elements=["student_id", "topic_id"],
+                            # Don't overwrite progress earned after placement.
+                            # Only seed if p_learn never been updated (i.e.
+                            # placement->quiz transition).
+                            set_={"p_learn": round(p_learn, 4)},
+                            where=BKTState.p_learn == 0.10,  # default seed
+                        )
+                    )
+                    await db.execute(stmt_bkt)
+                    report["bkt_states"] += 1
 
             await db.commit()
         except Exception as e:
-            logger.error("Assessment persistence failed: %s", e)
+            logger.error("Assessment persistence failed: %s", e, exc_info=True)
             report["error"] = str(e)
 
         return report
@@ -292,9 +331,7 @@ class GamificationDBService:
 
             new_level = calculate_level(int(new_total or 0))
             await db.execute(
-                update(User)
-                .where(User.id == student_id)
-                .values(level=new_level)
+                update(User).where(User.id == student_id).values(level=new_level)
             )
             await db.flush()
         except Exception as e:

@@ -42,7 +42,13 @@ SOZEL_SUBJECTS: frozenset[str] = frozenset(
     {"turkce", "tarih", "edebiyat", "felsefe", "din"}
 )
 
-# SubjectArea enum'unda olmayan slug'lari gecerli bir degere esle
+# SubjectArea enum'unda olmayan slug'lari gecerli bir degere esle.
+#
+# S179 fix (B-P0-32): collapse silinmedi (FSRSCard.subject_area SubjectArea
+# enum'unu beklediği için bilinmeyen değer FK violation eder), ancak
+# StudentAbility persist artık ayrı slug ID kullanır (`_SUBJECT_ID_MAP`
+# içinde tarih=7, cografya=8, edebiyat=9, felsefe=10, din=11) — collapse
+# yalnızca FSRSCard storage'a uygulanır, IRT theta'sı KAYBOLMAZ.
 _SUBJECT_AREA_MAP: dict[str, str] = {
     "tarih": "sosyal",
     "edebiyat": "turkce",
@@ -225,7 +231,11 @@ class BKTService:
             _ALGO_ERRORS["bkt_read"] += 1
             errors["bkt"] = str(e)
             logger.error(
-                "BKT state okunamadi student=%s topic=%s: %s", student_id, topic_id, e
+                "BKT state okunamadi student=%s topic=%s: %s",
+                student_id,
+                topic_id,
+                e,
+                exc_info=True,
             )
             bkt_state = None
 
@@ -266,7 +276,11 @@ class BKTService:
             _ALGO_ERRORS["bkt_write"] += 1
             errors["bkt"] = str(e)
             logger.error(
-                "BKT DB yazma hatasi student=%s topic=%s: %s", student_id, topic_id, e
+                "BKT DB yazma hatasi student=%s topic=%s: %s",
+                student_id,
+                topic_id,
+                e,
+                exc_info=True,
             )
 
         # --- 2. IRT theta tahmini (BKT-linked) ---
@@ -293,7 +307,9 @@ class BKTService:
         except Exception as e:
             _ALGO_ERRORS["irt"] += 1
             errors["irt"] = str(e)
-            logger.error("IRT theta basarisiz student=%s: %s", student_id, e)
+            logger.error(
+                "IRT theta basarisiz student=%s: %s", student_id, e, exc_info=True
+            )
 
         # --- 2b. Theta'yi DB'ye persist et (StudentAbility) ---
         try:
@@ -314,8 +330,14 @@ class BKTService:
                 "sosyal": 12,
             }
             _slug_lower = subject_slug.lower() if subject_slug else "matematik"
-            mapped_slug = _SUBJECT_AREA_MAP.get(_slug_lower, _slug_lower)
-            subj_id = _SUBJECT_ID_MAP.get(mapped_slug)
+            # S179 fix (B-P0-32): Resolve subject_id from the ORIGINAL slug
+            # first so tarih/cografya/edebiyat/felsefe/din each keep their
+            # own theta. Fall back to the (lossy) _SUBJECT_AREA_MAP only
+            # when the original slug is unknown to _SUBJECT_ID_MAP.
+            subj_id = _SUBJECT_ID_MAP.get(_slug_lower)
+            if subj_id is None:
+                mapped_slug = _SUBJECT_AREA_MAP.get(_slug_lower, _slug_lower)
+                subj_id = _SUBJECT_ID_MAP.get(mapped_slug)
             if subj_id is not None:
                 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
@@ -340,7 +362,9 @@ class BKTService:
             _ALGO_ERRORS["irt"] += 1
             if errors["irt"] is None:
                 errors["irt"] = str(e)
-            logger.error("IRT theta persist hatasi student=%s: %s", student_id, e)
+            logger.error(
+                "IRT theta persist hatasi student=%s: %s", student_id, e, exc_info=True
+            )
 
         # --- 3. FSRS karti guncelle (state persistent) ---
         fsrs_next_review = None
@@ -407,7 +431,7 @@ class BKTService:
         except Exception as e:
             _ALGO_ERRORS["fsrs"] += 1
             errors["fsrs"] = str(e)
-            logger.error(
+            logger.exception(
                 "FSRS guncelleme basarisiz student=%s topic=%s: %s",
                 student_id,
                 topic_id,
@@ -431,7 +455,7 @@ class BKTService:
             db.add(zpd_row)
         except Exception as e:
             errors["zpd"] = str(e)
-            logger.error(
+            logger.exception(
                 "ZPD history persist hatasi student=%s topic=%s: %s",
                 student_id,
                 topic_id,

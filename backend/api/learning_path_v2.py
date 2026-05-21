@@ -1271,6 +1271,11 @@ async def submit_quiz(
                 q_meta[question.id] = {
                     "topic_id": question.primary_topic_id,
                     "subject": (question.subject_area or "matematik").lower(),
+                    # S179 fix (B-P0-31): pass real IRT params so EAP
+                    # doesn't degenerate to count-correct minus count-wrong.
+                    "irt_a": float(getattr(question, "irt_discrimination", 1.0) or 1.0),
+                    "irt_b": float(getattr(question, "irt_difficulty", 0.0) or 0.0),
+                    "irt_c": float(getattr(question, "irt_guessing", 0.2) or 0.2),
                 }
 
             logger.info(
@@ -1287,6 +1292,10 @@ async def submit_quiz(
                         Question.correct_answer,
                         Question.primary_topic_id,
                         Question.subject_area,
+                        # S179 fix (B-P0-31): include IRT params here too.
+                        Question.irt_discrimination,
+                        Question.irt_difficulty,
+                        Question.irt_guessing,
                     ).filter(
                         Question.id.in_(question_ids),
                         Question.is_active == True,  # noqa: E712
@@ -1297,6 +1306,9 @@ async def submit_quiz(
                     q_meta[question.id] = {
                         "topic_id": question.primary_topic_id,
                         "subject": (question.subject_area or "matematik").lower(),
+                        "irt_a": float(question.irt_discrimination or 1.0),
+                        "irt_b": float(question.irt_difficulty or 0.0),
+                        "irt_c": float(question.irt_guessing or 0.2),
                     }
 
             logger.info(

@@ -75,6 +75,7 @@ class SaveAnswerRequest(BaseModel):
         if not s:
             raise ValueError("question_id bos olamaz")
         return s
+
     selected_answer: str | None = Field(
         None, description="Seçilen cevap (A, B, C, D, E)"
     )
@@ -750,25 +751,71 @@ async def save_answer(
                         )
                         responses.append(correct)
 
-                        bkt_result = await BKTService.record_answer(
-                            student_id=str(current_user.id),
-                            topic_id=str(row.primary_topic_id),
-                            subject_slug=subject_slug,
-                            correct=correct,
-                            rating=rating,
-                            db=db,
-                            answered_questions=answered_questions,
-                            responses=responses,
-                        )
-                        await db.commit()
-            except Exception as e:
-                logger.warning(f"BKT pipeline hatası (sınav devam eder): {e}")
+                        # S179 fix (B-P0-23): BKT/IRT/FSRS pipeline adds
+                        # 15-40ms × ~120 clicks during an exam ≈ 2-5s
+                        # cumulative wait. Env-gated fire-and-forget keeps
+                        # default behavior (synchronous = consistent state)
+                        # while letting load-tested deploys skip the wait.
+                        import os as _os
 
+                        if _os.environ.get("ALGO_FIRE_AND_FORGET", "").lower() in (
+                            "1",
+                            "true",
+                            "yes",
+                        ):
+                            import asyncio as _asyncio
+
+                            _task = _asyncio.create_task(
+                                BKTService.record_answer(
+                                    student_id=str(current_user.id),
+                                    topic_id=str(row.primary_topic_id),
+                                    subject_slug=subject_slug,
+                                    correct=correct,
+                                    rating=rating,
+                                    db=db,
+                                    answered_questions=answered_questions,
+                                    responses=responses,
+                                )
+                            )
+                            # Detach: if the task fails, we want the log,
+                            # not a hang on the request.
+                            _task.add_done_callback(
+                                lambda t: logger.exception("BKT fire-and-forget FAILED")
+                                if t.exception()
+                                else None
+                            )
+                            bkt_result = {"deferred": True}
+                        else:
+                            bkt_result = await BKTService.record_answer(
+                                student_id=str(current_user.id),
+                                topic_id=str(row.primary_topic_id),
+                                subject_slug=subject_slug,
+                                correct=correct,
+                                rating=rating,
+                                db=db,
+                                answered_questions=answered_questions,
+                                responses=responses,
+                            )
+                            await db.commit()
+            except Exception:
+                # S179 fix (B-P0-26): pre-fix the bare logger.warning + silent
+                # algorithm=None response made client think everything was OK
+                # while the BKT/IRT/FSRS pipeline was actually broken. We now
+                # log with full traceback and surface an explicit degraded
+                # flag in the response so monitoring/frontend can react.
+                logger.exception(
+                    "BKT pipeline FAILED session=%s qid=%s — degraded mode",
+                    session_id,
+                    request.question_id,
+                )
+
+        algorithm_degraded = bkt_result is None
         return {
             "success": True,
             "message": "Cevap başarıyla kaydedildi",
             "auto_saved": True,
             "algorithm": bkt_result,
+            "algorithm_degraded": algorithm_degraded,
         }
 
     except HTTPException:

@@ -7,7 +7,6 @@ SSE streaming endpoint for realm NPC chat.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import logging
 
@@ -207,13 +206,29 @@ async def _stream_llm_response(  # type: ignore[return]
                     except (json.JSONDecodeError, KeyError):
                         pass
 
-    except Exception as e:
-        logger.warning("LLM unavailable, using mock response: %s", e)
-        # Fallback mock response
-        mock = f"Merhaba! Şu an tam olarak bağlanamıyorum ama yardımcı olmaya hazırım. '{user_message}' konusunda sana rehberlik edebilirim. Devam edelim mi?"
-        for char in mock:
-            yield char
-            await asyncio.sleep(0.015)
+    except Exception:
+        # LLM provider unreachable. Surface an explicit degraded-mode event so
+        # the frontend can show a banner instead of silently faking AI output
+        # (which destroys user trust when discovered). See silent_failures SF-6.
+        logger.error(
+            "Bilge Alp LLM call FAILED — surfacing degraded_mode to client (no mock)",
+            exc_info=True,
+        )
+        yield (
+            "data: "
+            + json.dumps(
+                {
+                    "type": "degraded_mode",
+                    "is_mock": True,
+                    "user_message": (
+                        "Şu an AI tutor servisi geçici olarak ulaşılamıyor. "
+                        "Birkaç dakika sonra tekrar denesen olur mu?"
+                    ),
+                    "retry_after": 60,
+                }
+            )
+            + "\n\n"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -238,27 +253,52 @@ async def bilge_alp_chat(
     user_message = str(body.get("message", "Merhaba")).strip()[:500]
     history: list[dict[str, str]] = body.get("history", [])
 
-    # Fetch BKT score from DB instead of trusting client
+    # Fetch BKT score from DB instead of trusting client.
+    # S179 fix (B-P0-43): BKTState.topic_id holds topic_hierarchy.id (UUID),
+    # so the legacy `topic_id LIKE f"{realm_slug}%"` predicate never matches
+    # any row (UUIDs don't start with subject names) → every NPC fell back
+    # to bkt_score=0.0 forever, breaking ZPD-adaptive dialogue. Resolve the
+    # realm slug to its topic UUIDs via topic_hierarchy first.
     bkt_score = 0.0
     try:
         from sqlalchemy import func as sa_func
         from sqlalchemy import select
+        from sqlalchemy import text as sa_text
 
         from core.database import get_db_session_context
         from models.gamification import BKTState
 
         async with get_db_session_context() as db:
-            result = await db.execute(
-                select(sa_func.avg(BKTState.p_learn)).where(
-                    BKTState.student_id == str(current_user.id),
-                    BKTState.topic_id.like(f"{realm_slug}%"),
-                )
+            topic_rows = await db.execute(
+                sa_text(
+                    """
+                    SELECT id::text AS topic_id
+                    FROM topic_hierarchy
+                    WHERE subject_area = :subj
+                      AND is_active = TRUE
+                    """
+                ),
+                {"subj": realm_slug.upper()},
             )
-            avg_mastery = result.scalar()
-            if avg_mastery is not None:
-                bkt_score = float(avg_mastery)
-    except Exception as e:
-        logger.warning("BKT score fetch failed, using default 0.0: %s", e)
+            topic_ids = [row.topic_id for row in topic_rows.fetchall()]
+
+            if topic_ids:
+                result = await db.execute(
+                    select(sa_func.avg(BKTState.p_learn)).where(
+                        BKTState.student_id == str(current_user.id),
+                        BKTState.topic_id.in_(topic_ids),
+                    )
+                )
+                avg_mastery = result.scalar()
+                if avg_mastery is not None:
+                    bkt_score = float(avg_mastery)
+            else:
+                logger.warning(
+                    "Bilge Alp BKT: realm_slug=%r resolved to 0 topics — falling back to 0.0",
+                    realm_slug,
+                )
+    except Exception:
+        logger.warning("BKT score fetch failed, using default 0.0", exc_info=True)
 
     # Sanitize history
     clean_history = [

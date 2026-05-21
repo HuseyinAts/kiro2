@@ -569,6 +569,13 @@ class LearningPathOrchestrator:
 
         LP-03 fix: fsrs_cards tablosu kullan (bkt_service buraya yazar).
         Eski user_item_fsrs tablosu farklı schema — her zaman 0 dönüyordu.
+
+        S179 fix: ``fsrs_cards.subject_area`` lowercase enum değeri tutar
+        (matematik, turkce, ...). Caller'lar UPPERCASE subject identifier
+        kullanıyor (theta_map ile aynı convention). Hem lower hem upper
+        key'i populate ederek ``get(subject, 0)`` her iki tarafta da
+        eşleşir; aksi takdirde FSRS due ALWAYS 0 dönüp review hiç
+        scheduled olmaz (B-P0-34).
         """
         try:
             result = await self.db.execute(
@@ -582,7 +589,16 @@ class LearningPathOrchestrator:
             """),
                 {"uid": user_id},
             )
-            return {row.subject_area: int(row.due_count) for row in result.fetchall()}
+            counts: dict[str, int] = {}
+            for row in result.fetchall():
+                raw = (row.subject_area or "").strip()
+                due = int(row.due_count)
+                if not raw:
+                    continue
+                counts[raw] = due
+                counts[raw.lower()] = due
+                counts[raw.upper()] = due
+            return counts
         except Exception as e:
             logger.warning(f"FSRS due çekme hatası: {e}")
             return {}

@@ -4,6 +4,8 @@ TASK 48.3: Data encryption at rest - Management endpoints
 
 Admin-only endpoints for encryption key management and rotation.
 """
+
+import logging
 import os
 from datetime import UTC, datetime, timedelta
 
@@ -12,6 +14,8 @@ from pydantic import BaseModel
 
 from core.dependencies import AuthenticatedUser, get_current_admin_user
 from core.encryption_service import EncryptionService, get_encryption_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/admin/encryption", tags=["Admin - Encryption"])
 
@@ -44,7 +48,9 @@ class EncryptionStatusResponse(BaseModel):
 
 
 @router.get("/status", response_model=EncryptionStatusResponse)
-async def get_encryption_status(admin: AuthenticatedUser = Depends(get_current_admin_user)):
+async def get_encryption_status(
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
+):
     """
     Get encryption service status
 
@@ -89,7 +95,15 @@ async def get_encryption_status(admin: AuthenticatedUser = Depends(get_current_a
                 )
                 await session.commit()
             except Exception:
-                pass  # Table might already exist
+                # IF NOT EXISTS makes "already exists" a non-error. Any
+                # exception here is a real failure (permission denied, lock
+                # timeout, etc.) — swallowing silently breaks the encryption
+                # rotation audit trail (compliance risk). See SF-17.
+                await session.rollback()
+                logger.exception(
+                    "system_settings table create FAILED — encryption "
+                    "rotation audit may be unrecorded."
+                )
 
             # Get last rotation
             result = await session.execute(
@@ -103,11 +117,12 @@ async def get_encryption_status(admin: AuthenticatedUser = Depends(get_current_a
                     last_rotation = datetime.fromisoformat(row[0])
                 except Exception:
                     pass
-    except Exception as e:
-        # If database tracking fails, continue without it
-        import logging
-
-        logging.warning(f"Could not retrieve last rotation from database: {e}")
+    except Exception:
+        # If database tracking fails, continue without it (audit display only).
+        logger.warning(
+            "Could not retrieve last rotation from database",
+            exc_info=True,
+        )
 
     # Determine recommendation
     recommendation = "Encryption is properly configured"
@@ -133,7 +148,8 @@ async def get_encryption_status(admin: AuthenticatedUser = Depends(get_current_a
 
 @router.post("/rotate-key", response_model=KeyRotationResponse)
 async def rotate_encryption_key(
-    request: KeyRotationRequest, admin: AuthenticatedUser = Depends(get_current_admin_user)
+    request: KeyRotationRequest,
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
 ):
     """
     Rotate encryption key
@@ -191,7 +207,13 @@ async def rotate_encryption_key(
                     )
                     await session.commit()
                 except Exception:
-                    pass  # Table might already exist
+                    # IF NOT EXISTS makes "already exists" a non-error.
+                    # Any exception here is a real failure (e.g. permissions);
+                    # log + rollback so encryption audit trail is preserved.
+                    await session.rollback()
+                    logger.exception(
+                        "system_settings table create FAILED during key rotation."
+                    )
 
                 # Insert or update last rotation timestamp
                 await session.execute(
@@ -207,10 +229,11 @@ async def rotate_encryption_key(
                     {"timestamp": rotation_timestamp.isoformat()},
                 )
                 await session.commit()
-        except Exception as e:
-            import logging
-
-            logging.warning(f"Could not track rotation in database: {e}")
+        except Exception:
+            logger.exception(
+                "Could not track rotation timestamp in database — compliance "
+                "audit trail may be incomplete."
+            )
 
         return KeyRotationResponse(
             success=True,
@@ -230,7 +253,9 @@ async def rotate_encryption_key(
 
 
 @router.post("/generate-key")
-async def generate_new_key(admin: AuthenticatedUser = Depends(get_current_admin_user)) -> dict:
+async def generate_new_key(
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
+) -> dict:
     """
     Generate a new encryption key
 
@@ -260,7 +285,9 @@ async def generate_new_key(admin: AuthenticatedUser = Depends(get_current_admin_
 
 
 @router.post("/test-encryption")
-async def test_encryption(admin: AuthenticatedUser = Depends(get_current_admin_user)) -> dict:
+async def test_encryption(
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
+) -> dict:
     """
     Test encryption service
 

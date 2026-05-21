@@ -161,34 +161,50 @@ class DAGService:
             if cached:
                 return json.loads(cached)
 
-        # cat_sessions tablosundan son θ değerlerini çek
-        # Her oturum subject_id'ye bağlı; mastery topic_id bazında döner
-        # subject_id → topics tablosu üzerinden topic_id'ye ulaşırız
-        result = await self.db.execute(
+        # S179 fix (B-P0-35): pre-fix JOIN'ed kiro2_cat_sessions ×
+        # question_bank → 3,520× amplification (3 sessions × ~38K rows =
+        # 116K rows → 33 distinct topic). Now we fetch the per-subject
+        # final theta once, then resolve subject → topics via
+        # topic_hierarchy (small table, ~100 rows). Same semantic
+        # output, ~100× less I/O.
+        subj_thetas = await self.db.execute(
             text("""
-            SELECT DISTINCT ON (q.primary_topic_id)
-                q.primary_topic_id AS topic_id,
-                cs.theta_final,
-                cs.se_final
-            FROM kiro2_cat_sessions cs
-            JOIN question_bank q ON q.subject_area = cs.subject_id
-            WHERE cs.user_id = :uid
-              AND cs.state = 'completed'
-              AND q.primary_topic_id IS NOT NULL
-              AND q.is_active = TRUE
-            ORDER BY q.primary_topic_id, cs.completed_at DESC
-        """),
+            SELECT DISTINCT ON (subject_id)
+                subject_id, theta_final, se_final
+            FROM kiro2_cat_sessions
+            WHERE user_id = :uid AND state = 'completed'
+            ORDER BY subject_id, completed_at DESC
+            """),
             {"uid": user_id},
         )
-
-        # Konu başına en yüksek mastery al
-        mastery: dict[str, float] = {}
-        for row in result.fetchall():
-            tid = row.topic_id
-            score = compute_mastery_from_theta(
+        subj_map: dict[str, tuple[float, float]] = {
+            row.subject_id: (
                 float(row.theta_final),
                 float(row.se_final or 0.5),
             )
+            for row in subj_thetas.fetchall()
+        }
+
+        if subj_map:
+            topic_rows = await self.db.execute(
+                text("""
+                SELECT id::text AS topic_id, subject_area
+                FROM topic_hierarchy
+                WHERE subject_area = ANY(:subjects)
+                  AND is_active = TRUE
+                """),
+                {"subjects": list(subj_map.keys())},
+            )
+        else:
+            topic_rows = []
+
+        mastery: dict[str, float] = {}
+        for row in (
+            topic_rows.fetchall() if hasattr(topic_rows, "fetchall") else topic_rows
+        ):
+            theta, se = subj_map.get(row.subject_area, (0.0, 0.5))
+            score = compute_mastery_from_theta(theta, se)
+            tid = row.topic_id
             if tid not in mastery or mastery[tid] < score:
                 mastery[tid] = score
 

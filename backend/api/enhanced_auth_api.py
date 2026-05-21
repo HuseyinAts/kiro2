@@ -1,6 +1,15 @@
 """
 Enhanced Authentication API Endpoints - KIRO2 YKS Platform
 
+@WARN S179 fix (B-P0-56): pre-fix this module had 7 endpoints that
+returned FABRICATED data (device lists, login history, active sessions,
+email 2FA codes). The endpoints LIE to security-aware users — they show
+made-up "you logged in from Istanbul yesterday" entries.
+
+Until the real session/device audit tables are wired (B-P0-56 sprint),
+all responses include `"data_source": "mock"` so the frontend can show
+a banner instead of pretending the audit trail is real.
+
 Bu modul, gelismis kimlik dogrulama ozelliklerini sunar:
 - OAuth2 sosyal giris (Google)
 - Sifresiz giris (magic link)
@@ -237,7 +246,9 @@ async def start_oauth2_flow(
             state_prefix=state[:8],
         )
 
-        return RedirectResponse(url=authorization_url, status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+        return RedirectResponse(
+            url=authorization_url, status_code=status.HTTP_307_TEMPORARY_REDIRECT
+        )
 
     except OAuth2Exception as e:
         logger.warning(
@@ -520,7 +531,9 @@ async def verify_magic_link(
     try:
         passwordless_service = get_passwordless_auth_service()
 
-        ip_address = http_request.client.host if http_request and http_request.client else None
+        ip_address = (
+            http_request.client.host if http_request and http_request.client else None
+        )
         user_agent = http_request.headers.get("user-agent", "") if http_request else ""
 
         # Token dogrula
@@ -542,9 +555,7 @@ async def verify_magic_link(
             )
 
         # Kullaniciyi bul
-        result = await db.execute(
-            select(User).where(User.email == verification.email)
-        )
+        result = await db.execute(select(User).where(User.email == verification.email))
         user = result.scalar_one_or_none()
 
         if not user:
@@ -632,32 +643,64 @@ async def list_devices(
         DeviceListResponse: Cihaz listesi
     """
     try:
-        # TODO: Gercek cihaz listesi veritabanindan alinmali
-        # Simdilik mock veri
-        mock_devices = [
-            DeviceInfo(
-                device_id="dev_001",
-                device_name="Chrome Windows",
-                device_type="Desktop",
-                os="Windows 11",
-                browser="Chrome 120",
-                last_seen=datetime.now(UTC),
-                ip_address="192.168.1.100",
-                is_current=True,
-                is_trusted=True,
-            ),
-        ]
+        # S179 fix (B-P0-56): real device list from refresh_tokens table
+        # instead of hardcoded `Chrome Windows / Windows 11 / 192.168.1.100`
+        # mock. Each refresh token represents a session/device.
+        from sqlalchemy import select as _select
+
+        from core.database import get_db_session_context
+        from models.database import RefreshToken
+
+        devices: list[DeviceInfo] = []
+        async with get_db_session_context() as db:
+            rows = (
+                (
+                    await db.execute(
+                        _select(RefreshToken)
+                        .where(
+                            RefreshToken.user_id == str(current_user.id),
+                            RefreshToken.revoked == False,  # noqa: E712
+                        )
+                        .order_by(RefreshToken.created_at.desc())
+                    )
+                )
+                .scalars()
+                .all()
+            )
+
+            for r in rows:
+                ua = (getattr(r, "user_agent", "") or "")[:200]
+                # Heuristic UA parse — keeps response shape compatible
+                if "Mobile" in ua or "iPhone" in ua or "Android" in ua:
+                    device_type = "Mobile"
+                elif "Tablet" in ua or "iPad" in ua:
+                    device_type = "Tablet"
+                else:
+                    device_type = "Desktop"
+                devices.append(
+                    DeviceInfo(
+                        device_id=str(r.id),
+                        device_name=ua[:50] or "Unknown device",
+                        device_type=device_type,
+                        os=ua,  # raw UA; client can parse further
+                        browser="",
+                        last_seen=getattr(r, "last_used_at", None) or r.created_at,
+                        ip_address=getattr(r, "ip_address", "") or "",
+                        is_current=False,  # cannot detect without request context
+                        is_trusted=False,
+                    )
+                )
 
         logger.info(
             "devices_listed",
             user_id=current_user.id,
-            device_count=len(mock_devices),
+            device_count=len(devices),
         )
 
         return DeviceListResponse(
             success=True,
-            devices=mock_devices,
-            total_count=len(mock_devices),
+            devices=devices,
+            total_count=len(devices),
         )
 
     except HTTPException:
@@ -696,7 +739,31 @@ async def remove_device(
         dict: Islem sonucu
     """
     try:
-        # TODO: Gercek cihaz silme islemi
+        # S179 fix (B-P0-56): real revocation — flip refresh_tokens.revoked
+        # for the row owned by this user. Defensive: only allow revoke if
+        # the row IS owned by current_user (prevents cross-user revoke).
+        from sqlalchemy import update as _update
+
+        from core.database import get_db_session_context
+        from models.database import RefreshToken
+
+        async with get_db_session_context() as db:
+            result = await db.execute(
+                _update(RefreshToken)
+                .where(
+                    RefreshToken.id == device_id,
+                    RefreshToken.user_id == str(current_user.id),
+                    RefreshToken.revoked == False,  # noqa: E712
+                )
+                .values(revoked=True)
+            )
+            await db.commit()
+            if result.rowcount == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Cihaz bulunamadı veya size ait değil",
+                )
+
         logger.info(
             "device_removed",
             user_id=current_user.id,
