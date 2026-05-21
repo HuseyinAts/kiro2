@@ -21,7 +21,6 @@ import json
 import logging
 import uuid
 from datetime import UTC, datetime
-from types import SimpleNamespace
 from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -331,51 +330,20 @@ async def get_queue(
     total_result = await db.execute(count_query)
     total = int(total_result.scalar() or 0)
 
-    # Soru SELECT'i raw SQL ile — ORM model `misconception_tags`,
-    # `solution_steps`, `similar_question_ids` kolonlarını içermez ama
-    # DB'de mevcut. ORM `select(QuestionBankItem)` bu kolonları yüklemez.
-    sql_filters = [
-        "quality_review_status = :status_filter",
-        "is_active = TRUE",
-    ]
-    params: dict[str, Any] = {
-        "status_filter": status_filter,
-        "limit": per_page,
-        "offset": (page - 1) * per_page,
-    }
-    if subject:
-        sql_filters.append("subject_area = :subject")
-        params["subject"] = subject.strip().upper()
-    if difficulty:
-        sql_filters.append("difficulty_level = :difficulty")
-        params["difficulty"] = difficulty.strip().upper()
-    if has_diagram is True:
-        sql_filters.append("question_image_url IS NOT NULL")
-    elif has_diagram is False:
-        sql_filters.append("question_image_url IS NULL")
+    # ORM SELECT — `misconception_tags`, `solution_steps`,
+    # `similar_question_ids` ve `reviewed_at` kolonları artık ORM model'inde
+    # tanımlı (Session 179, migration `curator_audit_20260521`).
+    # Sıralama: md5(id) — random ama deterministic, kuyruğun curator'lar
+    # arasında dağıtılmasını sağlar.
+    paged_query = (
+        base_query.order_by(func.md5(QuestionBankItem.id))
+        .limit(per_page)
+        .offset((page - 1) * per_page)
+    )
+    rows_result = await db.execute(paged_query)
+    rows = rows_result.scalars().all()
 
-    # Güvenlik notu: sql_filters yalnızca sabit kolon adları içerir;
-    # tüm değerler `params` üzerinden parameterize edilir.
-    where_clause = " AND ".join(sql_filters)
-
-    # tüm değerler params üzerinden parameterize edilir.
-    raw_sql_str = f"""
-        SELECT
-            id, question_text,
-            option_a, option_b, option_c, option_d, option_e,
-            correct_answer, subject_area, difficulty_level::text AS difficulty_level,
-            quality_review_status, question_image_url,
-            misconception_tags, solution_steps, similar_question_ids
-        FROM question_bank
-        WHERE {where_clause}
-        ORDER BY md5(id)
-        LIMIT :limit OFFSET :offset
-        """  # noqa: S608
-    raw_sql = text(raw_sql_str)
-    rows_result = await db.execute(raw_sql, params)
-    rows = rows_result.mappings().all()
-
-    items = [_row_to_queue_item(SimpleNamespace(**dict(r))) for r in rows]
+    items = [_row_to_queue_item(row) for row in rows]
     return QueueResponse(items=items, total=total, page=page, per_page=per_page)
 
 
@@ -429,6 +397,10 @@ async def post_verdict(
     row.quality_review_status = new_status
     row.pipeline_metadata = existing_metadata
     row.reviewed_by = str(admin.id)
+    # Faz 3.6 (Session 179): kolon-level audit timestamp.
+    # JSON-embedded pipeline_metadata.curator_verdict.reviewed_at ile birlikte
+    # tutulur (column = fast stats; JSON = full audit trail).
+    row.reviewed_at = reviewed_at
 
     # Audit log yaz (commit'ten önce — atomik)
     await _write_audit_log(

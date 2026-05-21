@@ -459,6 +459,25 @@ class QuestionBankItem(Base):
     pipeline_metadata: Mapped[dict | None] = mapped_column(JSON)
 
     # ========================================================================
+    # Phase 5 Metadata Pipeline (Session 178+, DB-only kolonlar)
+    # ========================================================================
+    # P1 metadata pipeline tarafından doldurulur (Gemini Flash batch).
+    # Curator UI (Faz 3.1) bu alanları queue/verdict ekranında gösterir.
+    misconception_tags: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    solution_steps: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    similar_question_ids: Mapped[list | None] = mapped_column(JSON, nullable=True)
+
+    # ========================================================================
+    # Curator Audit Trail (Faz 3.6, Session 179)
+    # ========================================================================
+    # Curator verdict ne zaman verildi? reviewed_by zaten yukarıda tanımlı.
+    # pipeline_metadata.curator_verdict.reviewed_at ile redundant ama
+    # column-level erişim hızlı stats sorguları için gerekli.
+    reviewed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    # ========================================================================
     # Sistem Alanları
     # ========================================================================
     created_by: Mapped[str | None] = mapped_column(
