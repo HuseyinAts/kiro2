@@ -47,7 +47,7 @@ GEN_BASE = "https://generativelanguage.googleapis.com/v1beta"
 UPLOAD_BASE = "https://generativelanguage.googleapis.com/upload/v1beta"
 
 BATCH_LIMIT = 30_000  # split files; under file-size 2GB easily
-MAX_OUTPUT_TOKENS = 8000  # increased from 4000 — fixes truncation parse_fail
+MAX_OUTPUT_TOKENS = 16000  # increased from 4000 — fixes truncation parse_fail
 
 STATE_DIR = THIS_DIR / "_batch_state_gemini"
 STATE_DIR.mkdir(exist_ok=True)
