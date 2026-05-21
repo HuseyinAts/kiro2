@@ -39,7 +39,9 @@ from metadata_phase7_llm_generation import (  # noqa
     parse_llm_response,
 )
 
-DSN = os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
+DSN = os.environ.get("DATABASE_URL") or (
+    __import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)")
+)
 GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
 
@@ -74,26 +76,68 @@ def _http(method, url, body=None, headers=None, timeout=120):
 
 
 def fetch_pending_rows(limit: int):
+    """Return rows missing Phase 7 rationale, ordered by curator priority.
+
+    S180 fix (2026-05-22 audit): pre-fix filter `beta_filter_v1.rule =
+    'R4_rule_based_gold'` excluded the 15,321 R1-restored gold questions
+    (audit_judged_high status). Result: gold pool rationale coverage was
+    0% — beta launch blocked. New filter targets `auto_judged_high` +
+    `bronze_clean` status directly (the two beta-eligible pools), with
+    an env override to scope back to R4 for old-style batches.
+
+    Env override:
+      PHASE7_TARGET_RULE=R4_rule_based_gold  # legacy mode
+      (unset)                                 # new mode: all gold/bronze
+    """
+    target_rule = os.getenv("PHASE7_TARGET_RULE", "").strip()
     conn = psycopg2.connect(DSN)
     cur = conn.cursor()
-    cur.execute(
-        """
-        SELECT q.id::text, q.question_text, q.option_a, q.option_b, q.option_c,
-               q.option_d, q.option_e, q.correct_answer, q.subject_area,
-               q.exam_type, q.difficulty_level::text, q.bloom_category
-        FROM question_bank q
-        LEFT JOIN question_option_rationales r
-          ON r.question_id = q.id::text AND r.option_letter = 'A'
-        WHERE q.is_active AND q.question_text IS NOT NULL
-          AND q.option_a IS NOT NULL
-          AND q.correct_answer IN ('A','B','C','D','E')
-          AND r.question_id IS NULL
-          AND q.pipeline_metadata->'beta_filter_v1'->>'rule' = 'R4_rule_based_gold'
-        ORDER BY q.created_at DESC
-        LIMIT %s
-        """,
-        (limit,),
-    )
+    if target_rule:
+        # Legacy: scope by beta_filter_v1.rule.
+        cur.execute(
+            """
+            SELECT q.id::text, q.question_text, q.option_a, q.option_b, q.option_c,
+                   q.option_d, q.option_e, q.correct_answer, q.subject_area,
+                   q.exam_type, q.difficulty_level::text, q.bloom_category
+            FROM question_bank q
+            LEFT JOIN question_option_rationales r
+              ON r.question_id = q.id::text AND r.option_letter = 'A'
+            WHERE q.is_active AND q.question_text IS NOT NULL
+              AND q.option_a IS NOT NULL
+              AND q.correct_answer IN ('A','B','C','D','E')
+              AND r.question_id IS NULL
+              AND q.pipeline_metadata->'beta_filter_v1'->>'rule' = %s
+            ORDER BY q.created_at DESC
+            LIMIT %s
+            """,
+            (target_rule, limit),
+        )
+    else:
+        # Default: target beta-eligible pools by curator status.
+        cur.execute(
+            """
+            SELECT q.id::text, q.question_text, q.option_a, q.option_b, q.option_c,
+                   q.option_d, q.option_e, q.correct_answer, q.subject_area,
+                   q.exam_type, q.difficulty_level::text, q.bloom_category
+            FROM question_bank q
+            LEFT JOIN question_option_rationales r
+              ON r.question_id = q.id::text AND r.option_letter = 'A'
+            WHERE q.is_active AND q.question_text IS NOT NULL
+              AND q.option_a IS NOT NULL
+              AND q.correct_answer IN ('A','B','C','D','E')
+              AND r.question_id IS NULL
+              AND q.quality_review_status IN ('auto_judged_high', 'bronze_clean')
+            ORDER BY
+              CASE q.quality_review_status
+                WHEN 'auto_judged_high' THEN 0
+                WHEN 'bronze_clean' THEN 1
+                ELSE 2
+              END,
+              q.created_at DESC
+            LIMIT %s
+            """,
+            (limit,),
+        )
     rows = cur.fetchall()
     conn.close()
     return rows
