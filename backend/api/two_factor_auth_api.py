@@ -485,7 +485,7 @@ async def login_verify_2fa(
     """
     from api.auth import _check_rate_limit
 
-    _check_rate_limit(request, "2fa_verify")
+    await _check_rate_limit(request, "2fa_verify")
 
     from datetime import UTC, datetime
 
@@ -600,7 +600,7 @@ async def login_verify_backup(
     """
     from api.auth import _check_rate_limit
 
-    _check_rate_limit(request, "2fa_verify")
+    await _check_rate_limit(request, "2fa_verify")
 
     from datetime import UTC, datetime
 

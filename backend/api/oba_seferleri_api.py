@@ -132,7 +132,7 @@ async def contribute(
     """Goreve katki ekle (otomatik veya manuel)."""
     from api.auth import _check_rate_limit, _record_attempt
 
-    _check_rate_limit(request, "oba_contribute")
+    await _check_rate_limit(request, "oba_contribute")
     _record_attempt(request, "oba_contribute")
     user_id = str(current_user.id)
 

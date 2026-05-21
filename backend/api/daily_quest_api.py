@@ -196,7 +196,7 @@ async def update_quest_progress(
     """Gorev ilerlemesini guncelle. Tamamlaninca XP ver."""
     from api.auth import _check_rate_limit, _record_attempt
 
-    _check_rate_limit(request, "quest_progress")
+    await _check_rate_limit(request, "quest_progress")
     _record_attempt(request, "quest_progress")
     user_id = str(current_user.id)
 
@@ -252,7 +252,7 @@ async def claim_daily_bonus(
     """3/3 gorev tamamlandi ise bonus XP al."""
     from api.auth import _check_rate_limit, _record_attempt
 
-    _check_rate_limit(request, "claim_bonus")
+    await _check_rate_limit(request, "claim_bonus")
     _record_attempt(request, "claim_bonus")
     user_id = str(current_user.id)
     today = date.today()

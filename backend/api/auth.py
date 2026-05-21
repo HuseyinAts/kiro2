@@ -105,10 +105,52 @@ def _get_client_ip(request: Request) -> str:
     return client_host
 
 
-def _check_rate_limit(request: Request, bucket: str = "login") -> None:
-    """Raise 429 if IP exceeds rate limit for the given bucket."""
+async def _check_rate_limit(request: Request, bucket: str = "login") -> None:
+    """Raise 429 if identifier exceeds rate limit for the given bucket.
+
+    S180 fix: First try Redis-backed sliding-window via
+    `core.redis_rate_limiter` (distributed, restart-safe). On Redis
+    failure or when Redis is unavailable, fall back to the legacy
+    in-process buckets so single-worker deploys still get protection.
+    Multi-worker deploys MUST have Redis available; in-process fallback
+    will under-count cross-worker requests (acceptable for emergency
+    degradation, not for steady-state).
+    """
     max_attempts, window = RATE_LIMITS.get(bucket, (10, 60))
     client_ip = _get_client_ip(request)
+
+    # ---- Try Redis-backed limiter first ----
+    try:
+        from core.redis_rate_limiter import get_rate_limiter
+
+        limiter = await get_rate_limiter()
+        if limiter is not None:
+            decision = await limiter.check(
+                bucket=bucket,
+                identifier=client_ip,
+                limit=max_attempts,
+                window=window,
+            )
+            if not decision.allowed:
+                raise HTTPException(
+                    status_code=429,
+                    detail=(
+                        f"Cok fazla istek. {decision.retry_after_sec} saniye "
+                        "sonra tekrar deneyin."
+                    ),
+                )
+            return  # Redis decision authoritative.
+    except HTTPException:
+        raise
+    except Exception:
+        logging.getLogger(__name__).warning(
+            "Redis rate limiter unavailable for bucket=%s — falling back "
+            "to in-process bucket (single-worker only)",
+            bucket,
+            exc_info=True,
+        )
+
+    # ---- Legacy in-process fallback ----
     now = time.time()
     attempts = _rate_buckets[bucket][client_ip]
     _rate_buckets[bucket][client_ip] = [t for t in attempts if now - t < window]
@@ -120,14 +162,19 @@ def _check_rate_limit(request: Request, bucket: str = "login") -> None:
 
 
 def _record_attempt(request: Request, bucket: str = "login") -> None:
-    """Record an attempt for rate limiting."""
+    """Record an attempt for the legacy in-process bucket.
+
+    Redis bucket records on .check() automatically (ZADD inside the
+    sliding window). This function only feeds the in-process fallback
+    path. Safe to call regardless of which limiter is active.
+    """
     client_ip = _get_client_ip(request)
     _rate_buckets[bucket][client_ip].append(time.time())
 
 
 # Backward compat aliases
-def _check_login_rate_limit(request: Request) -> None:
-    _check_rate_limit(request, "login")
+async def _check_login_rate_limit(request: Request) -> None:
+    await _check_rate_limit(request, "login")
 
 
 def _record_failed_login(request: Request) -> None:
@@ -460,7 +507,7 @@ async def kullanici_kayit(
     Request Body:
       email, sifre, ad_soyad, rol (ogrenci/veli/ogretmen/admin)
     """
-    _check_rate_limit(request, "register")
+    await _check_rate_limit(request, "register")
 
     import uuid as _uuid
 
@@ -700,7 +747,7 @@ async def kullanici_giris(
     - Rate limiting uygulanır (5 başarısız deneme sonrası geçici blok)
     - HTTPS üzerinden kullanılmalıdır (production)
     """
-    _check_login_rate_limit(request)
+    await _check_login_rate_limit(request)
 
     try:
         # Use database-backed authentication instead of in-memory service
@@ -762,7 +809,7 @@ async def secure_login(
     - max_age: 24 hours for access token, 7 days for refresh token
     """
     # P1-1: Rate limit check (5 attempts/minute per IP)
-    _check_login_rate_limit(request)
+    await _check_login_rate_limit(request)
 
     try:
         token_yaniti = await database_authenticate(giris_data, db)
@@ -1310,7 +1357,7 @@ async def forgot_password(
         "message": string
     }
     """
-    _check_rate_limit(request, "password_reset")
+    await _check_rate_limit(request, "password_reset")
 
     try:
         # Check if user exists
@@ -1365,7 +1412,7 @@ async def reset_password(
         "message": string
     }
     """
-    _check_rate_limit(request, "password_reset")
+    await _check_rate_limit(request, "password_reset")
     try:
         store = await _get_token_store()
         token_data = await store.get(request_data.token)

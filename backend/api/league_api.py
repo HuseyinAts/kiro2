@@ -199,7 +199,7 @@ async def award_xp(
     from api.auth import _check_rate_limit, _record_attempt
     from services.league_service import award_xp
 
-    _check_rate_limit(request, "award_xp")
+    await _check_rate_limit(request, "award_xp")
     _record_attempt(request, "award_xp")
 
     try:
