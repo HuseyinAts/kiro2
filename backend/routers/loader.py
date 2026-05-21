@@ -214,6 +214,8 @@ ROUTER_MAPPING = {
     "app.api.learning_path_dungeon": ("learning", "app.api.learning_path_dungeon"),
     # Orchestrator Admin API
     "api.orchestrator_api": ("admin", "api.orchestrator_api"),
+    # Faz 3.1: Curator UI Backend (admin-only review queue)
+    "api.curator": ("admin", "api.curator"),
 }
 
 

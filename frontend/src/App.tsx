@@ -61,6 +61,7 @@ const AdminSettingsPage = lazy(() => import('./pages/ModernAdminSettingsPage'));
 const OSYMQuestionGeneratorPage = lazy(() => import('./pages/OSYMQuestionGeneratorPage'));
 const TokenOptimizationDashboard = lazy(() => import('./pages/TokenOptimizationDashboard'));
 const ABTestResultsPage = lazy(() => import('./pages/ABTestResultsPage'));
+const CuratorPage = lazy(() => import('./pages/Admin/CuratorPage'));
 
 // Pages - Question Upload (YOLO)
 const QuestionUploadPage = lazy(() => import('./pages/QuestionUploadPage'));
@@ -638,6 +639,14 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
                     <ABTestResultsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/curator"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <CuratorPage />
                   </ProtectedRoute>
                 }
               />
