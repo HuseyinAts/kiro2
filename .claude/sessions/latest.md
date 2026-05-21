@@ -1,60 +1,62 @@
-## Session Handoff — 2026-05-21 ~06:30 (Session 178: Curator UI + CI Gate + R1 restore) 🚀
+## Session Handoff — 2026-05-22 (S180: Product-Ready Audit + Sprint 0-4)
 
-**Branch:** master
-**Son 4 commit:**
-- `7544c45f5` feat(r1-restore): legacy_v3 false-negative recovery pilot + apply
-- `79b160bb3` ci(quality-gate): Task 8 — new-endpoint checklist + 6-step CI
-- `f5fb19478` feat(quality): Task 5 smoke suite + fix SQLAlchemy func.case bug
-- `2225e1108` feat(curator): Faz 3.1+3.2+3.3+3.4+3.6 — admin Curator UI
-- Push: origin/master 252e3535..7544c45f5 ✅
+**Branch:** master | **Push range:** `217d9e879..6bdde688a` (9 commit)
+**Last commit:** `6bdde688a docs(audit): full product-readiness audit`
 
-### 🏆 Bu Session Final Başarısı
+### Bu Session
 
-5 paralel agent + 1 manuel fix → 4 commit, 19 dosya, 4,341 satır.
+1. **7 paralel Explore agent** dispatch — 7 domain audit + cross-cutting synthesis
+2. **18 P0 product-blocker** identified + sprint plan
+3. **Sprint 0-4 SIRAYLA tamamlandı**, onaysız (kullanıcı talebi)
+4. **8 S180 commit + 1 audit commit** push edildi
 
-#### Tamamlanan Faz/Task (Tracker güncellendi)
-- **Faz 3.1** Curator backend (api/curator.py + 17 unit test PASS)
-- **Faz 3.2** Curator frontend (CuratorPage.tsx + 9 vitest PASS)
-- **Faz 3.3** Klavye shortcuts (V/R/A/S, 1-5, ←/→, ? bindings)
-- **Faz 3.4** Queue management filters (status/subject/has_diagram)
-- **Faz 3.6** Audit log infrastructure (audit_logs raw SQL + JSON trail)
-- **Quality Task 5** 15 critical API smoke test (8 PASS / 7 mock-DB artifact)
-- **Quality Task 8** CI gate workflow + 7-rule new-endpoint checklist
-- **R1 legacy_v3 FN restore** pilot %87, dry-run 15,321 satır (apply pending)
-- **Bug fix**: SQLAlchemy `func.case(else_=)` → `case(else_=)` import düzelt
+### Sprint Completion
 
-#### Test Sonuçları
-- Curator backend: **17/17 PASS** (test_curator_api.py)
-- Curator backend smoke: **4/4 PASS** (curator_api_smoke.py, prod DB)
-- Curator frontend: **9/9 PASS** (vitest)
-- Smoke API critical: **8 PASS / 7 FAIL** (1 prod bug fixed, 6 mock artifacts)
-- Toplam yeni test: 30 backend + 9 frontend = **39 PASS**
+| Sprint | Commits | İçerik |
+|---|---|---|
+| **0** Quick wins | 3f70591bf, 1be9262b8, 755aa9940 | depends_on (zaten OK), migration env-gate, subject enum +GENEL/TDE, placement fallback raise, TS build 5 fix, Redis rate limiter wire |
+| **1** Data integrity | 1fe3d3cdf | MEMORY.md refresh, Phase 7 filter `auto_judged_high+bronze_clean`, runbook, 13 auth smoke test (was 0% coverage) |
+| **2** Perf+sec | 059c9324d | bcrypt 12→10 (-225ms login), Sentry init, .env orphan cleanup, WCAG-A reject (agent claim yanlış) |
+| **3** Mock burndown | d9cb7e2e4, 7ca8c643b | Fire-forget `_ALGO_ERRORS` increment, 11 endpoint mock guard + `computed_by:"mock"` markers |
+| **4** Missing features | 01e932542 | Study Rooms stub (23 endpoint, 501), apiClient migration runbook |
+| **audit** | 6bdde688a | 7 raporu + 99_SYNTHESIS |
 
-#### Production Bug Fixed
-`backend/api/student_feedback_api.py:169`: `func.case(...)` → `case(...)`
-+ import `from sqlalchemy import case, func, select`. Smoke test compile
-artık geçiyor, sadece test-env mock-DB AsyncMock pattern artifact'i kaldı
-(production'da gerçekleşmez).
+### Karpathy Self-Correction Discipline
 
-### Engelleyici / Bekleyen
+6 agent iddiası bağımsız doğrulandı, **3'ü YANLIŞ**:
+- ❌ Agent 6 "migration chain broken" → alembic 1 head, OK
+- ❌ Agent 6 "depends_on missing service_healthy" → zaten mevcut
+- ❌ Agent 3 "8 missing alt=" → multi-line tarama 0 violation
+- ✅ Agent 5 "MEMORY 77K→live 167K" doğrulandı (+116% drift)
+- ✅ Agent 3 "TS build 5 error" doğrulandı (fix edildi)
+- ✅ Agent 2 partial: 2 subject (GENEL+TDE), 6 değil
 
-- **R1 restore --apply için manuel verify gerekli**: 
-  `backend/_pilots/20260521_r1_fn_restore_pilot_RAW.tsv` 
-  20-30 satıra `manual_verdict` ekle (false-positive 0 doğrula). Onay sonrası:
-  `python backend/scripts/quality/r1_legacy_v3_restore_apply.py --apply`
-  Beklenen: rejected 69,447 → 54,126, auto_judged_high 0 → 15,321.
-- **Faz 3.6 reviewed_at kolonu DB'de yok**: Sadece JSON-embedded. Ayrı 
-  migration için `Task #?` aç.
+### Doğrulanmış Durum (production state)
 
-### Sonraki Adımlar (max 5)
+- ✅ Backend: 199 unit test PASS
+- ✅ Frontend: `npm run build` (`tsc + vite`) clean
+- ✅ Live DB: 167,559 active questions (MEMORY refresh edildi)
+- ✅ Login latency: bcrypt 10 = -225ms saving
+- ✅ Rate limiter: Redis backed, 8 site await + 6 caller fixed
+- ✅ Sentry: init guarded by SENTRY_DSN env
 
-1. **R1 sample verify + --apply** — 15,321 soru restore (manuel TSV verdict sonrası)
-2. **Quality Hardening Task 6** — fetch → apiClient migration (30+ dosya, ayrı session)
-3. **Quality Hardening Task 7** — Redis unified rate limiter (büyük refactor)
-4. **Beta launch genişletme** (Faz 7.1) — 5-10 öğrenci davet, Curator UI artık hazır
-5. **Phase 7 kalan 108 retry** — structured output schema constraint
+### Bekleyen (sonraki session)
 
-### Kararlar
-- 4 ayrı commit + master'a push (kullanıcı kararı)
-- R1 --apply sample verify sonrası (kullanıcı kararı, DB write yok)
-- Task 6+7 ayrı session (büyük refactor, scope)
+1. **Phase 7 gold pool retry** — runbook hazır, ~$300 + 24h batch run gerek (operator-run)
+2. **35 endpoint full wire to DB** — mock guard koyduk, gerçek implementation 5d sprint
+3. **Study Rooms backend** — stub 501, gerçek implementation 2w sprint (product spec gerek)
+4. **Raw fetch → apiClient** migration — 10 service, 5d sprint (runbook hazır)
+5. **Auth modülleri test coverage** — 13 smoke landed, asıl test suite 2 sprint scope
+6. **DB pool tuning** — login latency'nin diğer 841ms'i (PgBouncer + pool size)
+
+### Engelleyici / Notlar
+
+- `gh` CLI lokal yok — CI sonuçları GitHub Actions web'den izlenmeli
+- 2 path-encoded `.env*` dosya tracked'den silindi (cUsershusey*); working-tree'de duruyor (untracked)
+- Agent claim'leri ASLA doğrulama yapmadan kabul edilemez (3/6 yanlış oranı çok yüksek)
+
+### Karar
+
+- master'a 9 commit doğrudan push (kullanıcı onayıyla)
+- Audit doc kalıcı kayıt (docs/audits/2026-05-22_product_ready_audit/)
+- Yeni runbook'lar: phase7_gold_pool_retry + frontend_apiclient_migration
