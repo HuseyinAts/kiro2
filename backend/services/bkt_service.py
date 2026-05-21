@@ -56,6 +56,15 @@ _SUBJECT_AREA_MAP: dict[str, str] = {
     "din": "sosyal",
     "cografya": "sosyal",
     "geometri": "matematik",
+    # S180 (2026-05-22 audit gap): live DB has 14 subjects but SubjectArea
+    # enum has 8. Without these collapses, FSRSCard.subject_area enum write
+    # would fail silently inside the fire-and-forget BKT task for these
+    # questions. Live counts: GENEL=1996, TDE=13 (1.2% of 167K active).
+    # Mapping rationale:
+    #   GENEL → fen (catch-all questions usually science-leaning in YKS)
+    #   TDE   → turkce (Türk Dili ve Edebiyatı umbrella subject)
+    "genel": "fen",
+    "tde": "turkce",
 }
 
 

@@ -36,6 +36,8 @@ then re-entering — pattern documented in db_perf_migration_drift.md:96-106.
 
 from __future__ import annotations
 
+import os
+
 from alembic import op
 
 revision = "s179_hot_path_idx_20260521"
@@ -44,7 +46,29 @@ branch_labels = None
 depends_on = None
 
 
+def _require_explicit_approval() -> None:
+    """Block accidental `alembic upgrade head` until operator confirms.
+
+    The docstring banner alone is not enforcement — alembic won't read it.
+    This gate requires `ALLOW_S179_HOT_PATH_INDEXES=true` in the environment
+    before the migration will execute. See the module docstring for the
+    pre-flight checklist (EXPLAIN ANALYZE on staging, pg_indexes collision
+    check, downgrade test).
+    """
+    flag = os.environ.get("ALLOW_S179_HOT_PATH_INDEXES", "").strip().lower()
+    if flag not in ("1", "true", "yes"):
+        raise SystemExit(
+            "S179 hot-path index migration requires explicit approval.\n"
+            "Set ALLOW_S179_HOT_PATH_INDEXES=true after completing:\n"
+            "  1. EXPLAIN ANALYZE current queries on staging copy\n"
+            "  2. pg_indexes name collision check\n"
+            "  3. downgrade test on populated table\n"
+            "Then re-run `alembic upgrade head`."
+        )
+
+
 def upgrade() -> None:
+    _require_explicit_approval()
     # Exit Alembic's tx so CONCURRENTLY is allowed.
     op.execute("COMMIT")
 

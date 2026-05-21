@@ -9,7 +9,6 @@ Each subsystem is best-effort: failure in one does NOT block the others.
 # handlers. Caller-responsibility — see .claude/rules/middleware.md.
 # TODO sprint: wrap each commit with try/except/await db.rollback().
 
-
 from __future__ import annotations
 
 import logging
@@ -251,10 +250,22 @@ class LearningEventService:
                 topic_ids = [row.topic_id for row in topic_rows.fetchall()]
 
                 if not topic_ids:
-                    # Fallback: keep the legacy subject-name seed so we never
-                    # write nothing — at least visible in audit even if it
-                    # won't match quiz lookup.
-                    topic_ids = [subj_name.lower()]
+                    # S180 (2026-05-22 audit gap): pre-fix legacy code wrote
+                    # `topic_id = subject_name.lower()` (e.g. "matematik") as
+                    # a fallback. That's a string, but quiz BKT lookup keys
+                    # on UUID — every subsequent answer would write a fresh
+                    # row instead of updating the seed = silent placement
+                    # signal loss. Now: log + SKIP this subject. Surfacing
+                    # the gap is better than corrupting state.
+                    logger.warning(
+                        "Placement seed skipped — no topics for subject=%s "
+                        "in topic_hierarchy (student=%s). "
+                        "Topic taxonomy must be populated for this subject "
+                        "before placement signal can be persisted.",
+                        subj_name,
+                        student_id,
+                    )
+                    continue
 
                 for topic_id in topic_ids:
                     stmt_bkt = (
