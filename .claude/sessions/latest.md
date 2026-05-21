@@ -70,11 +70,17 @@
 - Sonraki kalite kontroller: random 50 sample manuel review (programatik spot-check %100 geçti zaten)
 
 ### Sonraki Adımlar (maks 5)
-1. **Retry batch apply** — 5,120 → ~4,500 yeni rationale (apply komutu çalıştırılmalı)
-2. **Git commit** — tüm yeni script + dosyalar (büyük _batch_state hariç)
-3. **Phase 6 (similar_questions kNN)** — pgvector ile Phase 5 embedding üzerinden kNN
-4. **Beta launch hazırlığı** — Phase 7 hazır artık (Faz 7.1 in_progress)
-5. **MEMORY.md güncelleme** — production durumu refresh
+1. ~~Retry batch apply~~ ✅ DONE — +3,222 yeni rationale (Phase 7 %93.8 → %97.8)
+2. ~~Git commit~~ ✅ DONE — `b1baf7be6` (Phase 7) + `076e78750` (Phase 6)
+3. ~~Phase 6 (similar_questions kNN)~~ ✅ DONE — numpy bulk yaklaşımı, 81,776 row, top-K=10 (UPDATE devam ediyor 04:46'da background, 6-8 dk içinde biter)
+4. **Beta launch hazırlığı** — Phase 7 + Phase 6 hazır artık
+5. **Spot-check 50 sample kalitesi** ✅ DONE — %100 schema, 0 contradiction, 0 English bleed
+
+### Final Session State (04:46)
+- Phase 7: 79,955 / 81,776 (%97.8) ✅
+- Phase 6: 81,776 numpy top-K computed (UPDATE ~%43 progress, background)
+- 2 commit pushed (b1baf7be6, 076e78750)
+- 5 P1 görev tamamlandı: spot-check, retry batch, MEMORY+latest update, git commit, Phase 6 framework + start
 
 ### Kararlar (gelecek session tekrar tartismasin)
 - Phase 7 için **Gemini Flash latest** seçildi (factual hata kabul edilebilir, beta curator review yapılacak)
