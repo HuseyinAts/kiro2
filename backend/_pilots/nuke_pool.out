@@ -1,0 +1,10 @@
+BEGIN
+ quality_review_status | count 
+-----------------------+-------
+ rejected              | 69447
+ unverified            | 61482
+ auto_judged_high      | 33658
+ pending               |  2775
+ bronze_clean          |   197
+(5 satýr)
+
