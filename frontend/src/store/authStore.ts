@@ -64,7 +64,9 @@ let initPromise: Promise<void> | null = null;
 
 interface AuthStore extends Omit<AuthState, 'token' | 'refreshToken'> {
   // Actions
-  login: (credentials: LoginRequest) => Promise<boolean>
+  // 2FA flow: `'2fa_required'` literal returned when backend requests TOTP step
+  // (see types.ts LoginResponse.requires_2fa). Caller branches on this.
+  login: (credentials: LoginRequest) => Promise<boolean | '2fa_required'>
   register: (userData: RegisterRequest) => Promise<boolean>
   logout: () => Promise<void>
   refreshAuth: () => Promise<boolean>
@@ -213,11 +215,16 @@ export const useAuthStore = create<AuthStore>()(
             const response = await authService.register(userData);
 
             if (response.success) {
-              // Auto-login after successful registration
-              return await get().login({
+              // Auto-login after successful registration.
+              // login() can return '2fa_required' if account had TOTP enabled
+              // pre-registration (edge case). Coerce to false for the
+              // register-returns-boolean contract — caller will handle the
+              // 2FA flow via the standard login path on next attempt.
+              const loginResult = await get().login({
                 email: userData.email,
                 password: userData.password,
               });
+              return loginResult === true;
             } else {
               set({
                 loading: false,

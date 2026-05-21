@@ -557,7 +557,7 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
                           mt: { xs: 2, md: 0 },
                         }}>
                           <QuestionImage
-                            src={cq.question_image_url}
+                            src={cq.question_image_url || ''}
                             alt={cq.image_alt_text || undefined}
                             width={cq.image_width}
                             height={cq.image_height}

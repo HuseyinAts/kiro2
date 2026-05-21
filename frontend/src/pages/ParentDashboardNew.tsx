@@ -40,7 +40,7 @@ export default function ParentDashboardNew() {
   useEffect(() => {
     const opts = { credentials: 'include' as RequestCredentials };
 
-    fetch('/api/v1/veli/cocuklar', opts, { credentials: 'include' })
+    fetch('/api/v1/veli/cocuklar', opts)
       .then(r => r.ok ? r.json() : [])
       .then(async (data: any[]) => {
         if (!Array.isArray(data) || data.length === 0) {

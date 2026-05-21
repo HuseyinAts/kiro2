@@ -103,8 +103,8 @@ const CalibrationStatusPage = lazy(() => import('./pages/CalibrationStatusPage')
 // Learning Path Daily + Map (ZPD+DAG+IRT+FSRS)
 const DailyPlanPage         = lazy(() => import('./pages/DailyPlanPage'));
 const LearningPathMapPage   = lazy(() => import('./pages/LearningPathMapPage'));
-// Veli Paneli (yeni)
-const ParentDashboardNew    = lazy(() => import('./pages/ParentDashboardNew'));
+// Veli Paneli (yeni) — kept as lazy import for future route wiring (#258 spec)
+// const ParentDashboardNew    = lazy(() => import('./pages/ParentDashboardNew'));
 // Oba (Guild) + Daily Quests + Boss Fight
 const ObaPage               = lazy(() => import('./pages/ObaPage'));
 const DailyQuestPage        = lazy(() => import('./pages/DailyQuestPage'));
