@@ -9,7 +9,7 @@
 [![Platform](https://img.shields.io/badge/Platform-KIRO2-blue)](https://github.com)
 [![Version](https://img.shields.io/badge/Version-2.0.0-green)](https://github.com)
 [![Status](https://img.shields.io/badge/Status-Production_Ready-success)](https://github.com)
-[![Coverage](https://img.shields.io/badge/Coverage-80%25-brightgreen)](https://github.com)
+[![Coverage](https://img.shields.io/badge/Coverage-16.6%25_(curated_fail--free)-orange)](https://github.com/anthropics/claude-code)
 
 </div>
 
@@ -598,8 +598,9 @@ python test_complete_checklists.py
 |----------|--------|-------|
 | **Kritik Düzeltmeler** | 8/8 (100%) | ✅ PASS |
 | **Çekirdek Kontroller** | 33/33 (100%) | ✅ PASS |
-| **Tam Kontrol Listesi** | 164/169 (97.0%) | ✅ PASS |
-| **Entegrasyon Sağlığı** | 97.0% | ✅ EXCELLENT |
+| **Tam Kontrol Listesi** | 164/169 (97.0% Golden Flow E2E) | ✅ PASS |
+| **Entegrasyon Sağlığı** | 97.0% (E2E success rate, NOT test coverage) | ✅ EXCELLENT |
+| **Unit Test Coverage** | 16.6% statement / 2.2% branch (curated fail-free) | ⚠️ Below target |
 
 ---
 
@@ -616,7 +617,7 @@ python test_complete_checklists.py
 - [x] **Ölçeklenebilirlik**: 100,000+ eş zamanlı kullanıcı desteği
 - [x] **Güvenlik**: JWT auth, CSRF, rate limiting
 - [x] **Dokümantasyon**: Kapsamlı teknik dokümantasyon
-- [x] **Test Kapsamı**: %97 entegrasyon, %100 kritik testler
+- [x] **Test Kapsamı**: %97 Golden Flow E2E pass rate (unit coverage: %16.6 curated, audit'te detay)
 
 ### 🎯 Ek Özellikler
 
@@ -635,7 +636,8 @@ python test_complete_checklists.py
 |--------|-------|-------------|-------|
 | **Response Time** | <200ms | ~150ms | ✅ |
 | **API Uptime** | >99.9% | On track | ✅ |
-| **Test Coverage** | >95% | 97.0% | ✅ |
+| **Unit Test Coverage** | >80% | 16.6% (curated) | ⚠️ |
+| **Golden Flow E2E** | >95% | 97.0% (164/169) | ✅ |
 | **Integration Health** | >95% | 97.0% | ✅ |
 | **Concurrent Users** | 100k+ | Tested | ✅ |
 | **Database Pool** | Optimized | 200+50 | ✅ |

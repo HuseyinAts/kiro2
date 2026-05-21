@@ -1,0 +1,250 @@
+14385b8c-b7e3-5b0c-879a-f638320be26d	A	t	gemini-flash-latest	İtme, momentum değişimine eşit olup son momentum ile ilk momentum vektörlerinin farkı alınarak büyüklüğü 1 m·s olarak bulunur.
+14385b8c-b7e3-5b0c-879a-f638320be26d	B	f	gemini-flash-latest	Vektörel çıkarma işlemi yerine yanlış açıyla bileşenlerine ayırma veya hatalı trigonometrik hesaplama yapılması bu yanlış seçeneğe yönlendirir.
+14385b8c-b7e3-5b0c-879a-f638320be26d	C	f	gemini-flash-latest	Momentumların skaler olarak toplanması veya çıkarılması yön kavramının ihmal edilmesine yol açarak hatalı sonuca ulaşılmasına neden olur.
+14385b8c-b7e3-5b0c-879a-f638320be26d	D	f	gemini-flash-latest	Hız vektörleri arasındaki açının yanlış kullanılması veya momentum değişiminin skaler fark olarak hesaplanması bu hatalı cevabı doğurur.
+14385b8c-b7e3-5b0c-879a-f638320be26d	E	f	gemini-flash-latest	Çarpışma esnasındaki momentum değişiminin sadece son momentumun büyüklüğüne eşit olduğunu varsaymak bu hatalı seçeneğe sebep olur.
+14abe450-0981-5cb1-9fdb-a72d805e3979	A	f	qwen3:8b	I doğrudur, II ve III yanlış.
+14abe450-0981-5cb1-9fdb-a72d805e3979	B	f	qwen3:8b	II doğrudur, I ve III yanlış.
+14abe450-0981-5cb1-9fdb-a72d805e3979	C	t	qwen3:8b	I ve II doğrudur, III yanlış.
+14abe450-0981-5cb1-9fdb-a72d805e3979	D	f	qwen3:8b	II ve III doğrudur, I yanlış.
+14abe450-0981-5cb1-9fdb-a72d805e3979	E	f	qwen3:8b	I, II ve III doğrudur.
+168276ea-4d96-5cc5-b92b-16e22129fc39	A	t	gemini-flash-latest	Kenar orta dikme özelliği ve ikizkenar üçgen tepe açısı kullanılarak m(BAE) açısı doğru şekilde 80 derece bulunur.
+168276ea-4d96-5cc5-b92b-16e22129fc39	B	f	gemini-flash-latest	EBC ikizkenar üçgeninin taban açısı yanlış belirlenerek tepe açısının hatalı hesaplanması sonucu ulaşılan yanlış seçenektir.
+168276ea-4d96-5cc5-b92b-16e22129fc39	C	f	gemini-flash-latest	m(ABE) açısının 40 derece olduğu hatalı kabul edilerek ikizkenar üçgen taban açısının 70 derece bulunmasıyla yapılan hatadır.
+168276ea-4d96-5cc5-b92b-16e22129fc39	D	f	gemini-flash-latest	İkizkenar üçgenlerin taban ve tepe açılarının karıştırılması sonucu x açısının 65 derece olarak hesaplandığı yanıltıcı seçenektir.
+168276ea-4d96-5cc5-b92b-16e22129fc39	E	f	gemini-flash-latest	ABE üçgeninin ikizkenar yerine eşkenar üçgen olarak varsayılmasıyla x açısının 60 derece bulunmasına yol açan hatalı çözümdür.
+19edf7a3-65d0-5c8a-9e4e-c5a73d95cb16	A	f	qwen3:8b	1000 dakika yeterli olmaz.
+19edf7a3-65d0-5c8a-9e4e-c5a73d95cb16	B	f	qwen3:8b	1250 dakika yeterli olmaz.
+19edf7a3-65d0-5c8a-9e4e-c5a73d95cb16	C	t	qwen3:8b	1300 dakika yeterlidir.
+19edf7a3-65d0-5c8a-9e4e-c5a73d95cb16	D	f	qwen3:8b	1400 dakika yeterli olmaz.
+19edf7a3-65d0-5c8a-9e4e-c5a73d95cb16	E	f	qwen3:8b	1500 dakika yeterli olmaz.
+204ef6b2-65c5-5560-81a5-4ee0b9459017	A	f	gemini-flash-latest	Uydu kütlesinin periyoda etkisi olduğunu düşünmek veya yarıçap oranının karesini almak hatalı şekilde 1/4 sonucuna ulaşılmasına neden olur.
+204ef6b2-65c5-5560-81a5-4ee0b9459017	B	f	gemini-flash-latest	Formüldeki karekök ilişkisi göz ardı edilerek sadece kütle ve yarıçap oranları doğrudan kullanıldığında 1/2 cevabı hatalı olarak bulunur.
+204ef6b2-65c5-5560-81a5-4ee0b9459017	C	t	gemini-flash-latest	Kepler kanunları ve kütleçekim formülü kullanılarak yapılan doğru oranlama sonucunda periyotlar oranı 1/kök(2) olarak elde edilir.
+204ef6b2-65c5-5560-81a5-4ee0b9459017	D	f	gemini-flash-latest	Periyotların oranını ters yazmak veya pay ile paydayı karıştırmak kök(2) sonucunun yanlışlıkla doğru sanılmasına yol açar.
+204ef6b2-65c5-5560-81a5-4ee0b9459017	E	f	gemini-flash-latest	Gezegen kütlesinin periyoda etkisini hesaba katmamak veya işlem hatası yapmak sonucu 2 bularak hataya düşürür.
+275dc9a4-2dd6-58be-9df3-b2c09fdf0226	A	f	qwen3:8b	Sadece birinci durumun gerçekleşebileceğini savunarak diğer olası yük paylaşımı senaryolarını ve yaprak hareketlerini göz ardı ettiği için yanlıştır.
+275dc9a4-2dd6-58be-9df3-b2c09fdf0226	B	f	qwen3:8b	Üçüncü durumun da yük miktarlarına bağlı olarak gerçekleşebileceğini hesaba katmadığı için hatalı bir değerlendirmedir.
+275dc9a4-2dd6-58be-9df3-b2c09fdf0226	C	f	qwen3:8b	İkinci durumun da elektroskopların başlangıç yüklerine göre mümkün olabileceğini gözden kaçırdığı için yanlıştır.
+275dc9a4-2dd6-58be-9df3-b2c09fdf0226	D	f	qwen3:8b	Birinci durumun da uygun yük dağılımları altında gerçekleşebileceğini dikkate almadığı için doğru seçenek olamaz.
+275dc9a4-2dd6-58be-9df3-b2c09fdf0226	E	t	qwen3:8b	Elektroskopların başlangıç yük miktarları ve işaretleri bilinmediğinden, belirtilen tüm yaprak hareketleri farklı senaryolarda gerçekleşebilir.
+29c77507-0542-5d54-b4b6-875adde4d48c	A	f	gemini-flash-latest	Grafik x-eksenini iki farklı noktada kestiği için diskriminant sıfırdan büyüktür ve bu ifade doğrudur.
+29c77507-0542-5d54-b4b6-875adde4d48c	B	f	gemini-flash-latest	Kollar yukarı doğru olduğundan a pozitif, y-eksenini kestiği yer negatif olduğundan c negatif olup çarpımları negatiftir.
+29c77507-0542-5d54-b4b6-875adde4d48c	C	f	gemini-flash-latest	Grafikteki tepe noktası ve y-kesim noktası değerlerine göre b ve c toplamı negatif bir değer alır.
+29c77507-0542-5d54-b4b6-875adde4d48c	D	f	gemini-flash-latest	Tepe noktası y-ekseninin solunda olduğundan apsis değeri negatiftir, bu yüzden a ve b aynı işaretlidir.
+29c77507-0542-5d54-b4b6-875adde4d48c	E	t	gemini-flash-latest	Katsayıların işaretleri incelendiğinde a pozitif, b pozitif ve c negatif olduğundan a - b - c ifadesi pozitif çıkmaktadır.
+2be80e5f-afe9-57f9-bc82-7df6f77f3f9d	A	f	gemini-flash-latest	Açıortay teoremini yanlış uygulayarak D noktasının C'ye olan uzaklığını AB kenarının uzunluğuna eşit bulmuş olabilirsiniz.
+2be80e5f-afe9-57f9-bc82-7df6f77f3f9d	B	f	gemini-flash-latest	Üçgenin kenar uzunlukları oranını yanlış hesaplayıp D noktasının BC üzerindeki bölme oranını hatalı belirlemiş olabilirsiniz.
+2be80e5f-afe9-57f9-bc82-7df6f77f3f9d	C	t	gemini-flash-latest	Eşit uzaklıkların açıortay belirttiğini görüp iç açıortay teoremiyle CD uzunluğunu doğru şekilde 300 metre buldunuz.
+2be80e5f-afe9-57f9-bc82-7df6f77f3f9d	D	f	gemini-flash-latest	BC kenarını iki eşit parçaya bölerek D noktasını kenarortay ayağı olarak hatalı kabul etmiş olabilirsiniz.
+2be80e5f-afe9-57f9-bc82-7df6f77f3f9d	E	f	gemini-flash-latest	Açıortay teoreminde oranlamayı ters yaparak CD uzunluğu yerine BD uzunluğunu hesaplamış olabilirsiniz.
+2d82e7a2-84a7-50c1-aa4c-6968556286f4	A	f	gemini-flash-latest	Kenar orta dikmelerinin kesim noktasının köşelere eşit uzaklıkta olduğunu unutup yanlış dik üçgen bağıntısı kuranlar bu seçeneğe ulaşabilir.
+2d82e7a2-84a7-50c1-aa4c-6968556286f4	B	f	gemini-flash-latest	Çevrel çember yarıçapını yanlış hesaplayıp Pisagor bağıntısında işlem hatası yapan öğrenciler bu seçeneği işaretleyebilir.
+2d82e7a2-84a7-50c1-aa4c-6968556286f4	C	t	gemini-flash-latest	K noktasının köşelere eşit uzaklıkta olmasından |KB|=13 bulunur ve KDB dik üçgeninden |BD|=12 elde edilerek |BC|=24 hesaplanır.
+2d82e7a2-84a7-50c1-aa4c-6968556286f4	D	f	gemini-flash-latest	Kenar orta dikme özelliğini iç teğet çember merkeziyle karıştırıp hatalı oran kuranlar bu seçeneğe yönelebilir.
+2d82e7a2-84a7-50c1-aa4c-6968556286f4	E	f	gemini-flash-latest	Köşelere olan uzaklığı |BC| uzunluğunun yarısı yerine doğrudan hipotenüs uzunluğuyla ilişkilendirenler bu hatalı sonuca ulaşabilir.
+39891d70-5256-5c41-8687-999b52afd665	A	f	gemini-flash-latest	Yanlıştır, çünkü X ametal olmasına rağmen Y metal değil, ametal veya soygaz sınıfındadır.
+39891d70-5256-5c41-8687-999b52afd665	B	t	gemini-flash-latest	Doğrudur, çünkü X'in katman dizilimi 2, 7 olup 2. periyot 7A grubundadır ve diğer öncüller yanlıştır.
+39891d70-5256-5c41-8687-999b52afd665	C	f	gemini-flash-latest	Yanlıştır, çünkü Y elementi metal değildir ve değerlik elektron sayısı 2'den farklıdır.
+39891d70-5256-5c41-8687-999b52afd665	D	f	gemini-flash-latest	Yanlıştır, çünkü X'in konumu doğru belirtilmişken Y'nin değerlik elektron sayısı 2 değildir.
+39891d70-5256-5c41-8687-999b52afd665	E	f	gemini-flash-latest	Yanlıştır, çünkü I ve III. öncüllerde verilen bilgiler Y elementi için hatalıdır.
+3d6fc502-2896-5ada-b1b4-e05251f77e99	A	t	gemini-flash-latest	Hacimler toplamı denklemi kurulduğunda $19x^3 + 8 = 27$ eşitliğinden $x = 1$ değeri doğru olarak elde edilir.
+3d6fc502-2896-5ada-b1b4-e05251f77e99	B	f	gemini-flash-latest	$x = 2$ değeri denklemde yerine yazıldığında sol taraf sağ taraftan çok daha büyük bir değer alır ve eşitlik sağlanmaz.
+3d6fc502-2896-5ada-b1b4-e05251f77e99	C	f	gemini-flash-latest	$x = 3$ değeri denklemde yerine konulduğunda hacimler toplamı turuncu kutunun hacmini aşarak eşitliği bozar.
+3d6fc502-2896-5ada-b1b4-e05251f77e99	D	f	gemini-flash-latest	$x = 4$ değeri denklemde kullanıldığında elde edilen toplam hacim turuncu kutunun hacminden çok daha büyük olur.
+3d6fc502-2896-5ada-b1b4-e05251f77e99	E	f	gemini-flash-latest	$x = 5$ değeri denklemde yerine yazıldığında eşitliğin sol tarafı sağ tarafındaki hacim değerini büyük oranda geçer.
+3f3d68aa-a780-513e-9fc7-f12e97ce7c93	A	f	gemini-flash-latest	I. öncül üretici, II. öncül tüketici ve III. öncül ayrıştırıcı olarak eşleştirildiğinden bu seçenek yanlıştır.
+3f3d68aa-a780-513e-9fc7-f12e97ce7c93	B	f	gemini-flash-latest	III. öncülün üretici, I. öncülün tüketici ve II. öncülün ayrıştırıcı olarak sınıflandırılması biyolojik kurallarla uyuşmamaktadır.
+3f3d68aa-a780-513e-9fc7-f12e97ce7c93	C	t	gemini-flash-latest	İnorganik maddeleri organik yapan I üretici, ölü maddeleri tüketen III tüketici, diğer canlıları ayrıştıran II ise ayrıştırıcıdır.
+3f3d68aa-a780-513e-9fc7-f12e97ce7c93	D	f	gemini-flash-latest	III. öncülün üretici, II. öncülün tüketici ve I. öncülün ayrıştırıcı olarak verilmesi canlıların beslenme şekillerine aykırıdır.
+3f3d68aa-a780-513e-9fc7-f12e97ce7c93	E	f	gemini-flash-latest	II. öncülün üretici, III. öncülün tüketici ve I. öncülün ayrıştırıcı olarak gruplandırılması tamamen hatalı bir eşleştirmedir.
+4822fb37-bb29-5bf2-b8a0-b65a703b176c	A	f	gemini-flash-latest	Grafikteki artan ve azalan aralıklar yanlış belirlenip negatif tam sayılar eksik veya fazla toplandığında 9 cevabına ulaşılır.
+4822fb37-bb29-5bf2-b8a0-b65a703b176c	B	f	gemini-flash-latest	Eşitsizlikte sıfır değerinin dahil edilmesi unutulduğunda veya türevin işaret tablosu hatalı yapıldığında 11 cevabı bulunabilir.
+4822fb37-bb29-5bf2-b8a0-b65a703b176c	C	t	gemini-flash-latest	Grafikten f'(x) işaretleri bulunup x ile çarpılarak eşitsizliği sağlayan -2, -1, 0, 1, 2, 3, 4, 5 değerlerinin toplamı 12 elde edilir.
+4822fb37-bb29-5bf2-b8a0-b65a703b176c	D	f	gemini-flash-latest	Eşitsizlik sınır değerlerinin dahil edilmesinde yapılan bir hata veya toplama işlemindeki dikkatsizlik sonucu 13 cevabına ulaşılabilir.
+4822fb37-bb29-5bf2-b8a0-b65a703b176c	E	f	gemini-flash-latest	Sadece pozitif bölgedeki azalan aralığı dikkate alıp negatif bölgedeki artan aralığı ihmal edenler toplamı 15 bulabilir.
+4bc87f00-25a2-54fb-9b6e-8402b32e3833	A	f	gemini-flash-latest	I. öncülün de doğru olduğunu ve tüm canlı hücrelerin ATP üretip tüketmek zorunda olduğunu göz ardı eder.
+4bc87f00-25a2-54fb-9b6e-8402b32e3833	B	f	gemini-flash-latest	III. öncülün de doğru olduğunu, ATP'nin hücre dışına çıkamadığı için sadece hücre içinde üretilip tüketildiğini göz ardı eder.
+4bc87f00-25a2-54fb-9b6e-8402b32e3833	C	f	gemini-flash-latest	II. öncülün de doğru olduğunu, hücrede en sık gerçekleşen anabolizma ve katabolizma olaylarının ATP döngüsü olduğunu göz ardı eder.
+4bc87f00-25a2-54fb-9b6e-8402b32e3833	D	f	gemini-flash-latest	II ve III. öncüllerin de doğru olduğunu, ATP'nin hücre içi sınırlılığını ve yüksek döngü hızını göz ardı eder.
+4bc87f00-25a2-54fb-9b6e-8402b32e3833	E	t	gemini-flash-latest	Tüm canlılar ATP üretip tüketir, bu olaylar en sık gerçekleşen reaksiyonlardır ve sadece hücre içinde meydana gelir.
+5583485e-9c78-5134-a0a3-b3174b54ce9f	A	t	gemini-flash-latest	Pürranameler, Selçuklu ve Osmanlı'da ahi teşkilatının kurallarını ve işleyişini anlatan mistik nesir eserlerdir.
+5583485e-9c78-5134-a0a3-b3174b54ce9f	B	f	gemini-flash-latest	Menakıpnameler, din büyüklerinin ve velilerin hayatlarını, kerametlerini anlatan biyografik eserlerdir.
+5583485e-9c78-5134-a0a3-b3174b54ce9f	C	f	gemini-flash-latest	Gazavatnameler, din uğruna yapılan savaşları ve kahramanlıkları konu edinen eserlerdir.
+5583485e-9c78-5134-a0a3-b3174b54ce9f	D	f	gemini-flash-latest	Fütüvvetnameler, ahilik teşkilatının esaslarını anlatan eserler olup bu soruda çeldirici olarak kullanılmıştır.
+5583485e-9c78-5134-a0a3-b3174b54ce9f	E	f	gemini-flash-latest	Surnameler, padişah çocuklarının sünnet ve düğün törenlerini anlatan eserlerdir.
+5db69020-d6ec-521c-858c-22f2cc7696f3	A	f	gemini-flash-latest	Kendoku tablosundaki sayıları yanlış yerleştirip üslü ifadelerin taban ve üs değerlerini hatalı belirlemek bu yanlış sonuca yol açar.
+5db69020-d6ec-521c-858c-22f2cc7696f3	B	f	gemini-flash-latest	Satır ve sütun kurallarını ihlal ederek elde edilen yanlış harf değerleriyle yapılan hatalı üslü işlem sonucu bu şıkka ulaşılır.
+5db69020-d6ec-521c-858c-22f2cc7696f3	C	f	gemini-flash-latest	Harflere karşılık gelen sayıların üs alma işlemlerinde yapılan işlem hatası veya yanlış toplama yapılması bu seçeneğe neden olur.
+5db69020-d6ec-521c-858c-22f2cc7696f3	D	t	gemini-flash-latest	Kendoku bulmacası kurallara göre doğru çözüldüğünde harflerin değerleri doğru bulunur ve işlem sonucu 33 olarak elde edilir.
+5db69020-d6ec-521c-858c-22f2cc7696f3	E	f	gemini-flash-latest	Tablodaki sayıların yerleşiminde yapılan mantık hatası sonucu daha küçük taban ve üs değerleri seçilerek bu yanlış cevaba ulaşılır.
+62b94d12-029d-5176-84a0-babc3c4d8d90	A	t	gemini-flash-latest	"konusuyla" ve "davet eden" sözcükleri cümlenin anlam akışına ve "yolculuğa davet etmek" deyimsel kullanımına tam uyum sağlamaktadır.
+62b94d12-029d-5176-84a0-babc3c4d8d90	B	f	gemini-flash-latest	"maceralarıyla" ifadesi ilk boşluğa kısmen uysa da "yolculuğu bırakacak" ifadesi cümlenin olumlu ve sürükleyici tonuyla anlamca çelişmektedir.
+62b94d12-029d-5176-84a0-babc3c4d8d90	C	f	gemini-flash-latest	"örnek alınarak yazılan" ifadesi dil bilgisi yönünden "Binbir Gece Masalları'nda" ekiyle uyuşmaz ve "izin veren" ifadesi anlamı bozmaktadır.
+62b94d12-029d-5176-84a0-babc3c4d8d90	D	f	gemini-flash-latest	"kaleme alınan" ifadesi "Binbir Gece Masalları'nda" yer yön ekiyle dil bilgisel olarak uyuşmadığı için cümle yapısını bozmaktadır.
+62b94d12-029d-5176-84a0-babc3c4d8d90	E	f	gemini-flash-latest	"üslup gösteren" ve "özün gerektiren" ifadeleri hem dil bilgisi kurallarına hem de cümlenin genel anlam bütünlüğüne aykırıdır.
+68d9fe4f-3690-596a-9002-eced5556a005	A	t	gemini-flash-latest	ab tek sayı olduğundan yaşlar toplamı 5ab-2 formundadır ve sadece I öncülündeki 133 değeri bu koşulları eksiksiz sağlar.
+68d9fe4f-3690-596a-9002-eced5556a005	B	f	gemini-flash-latest	122 değeri için ab çift sayı çıkmaktadır ancak ab sayısının tek sayı olması gerektiğinden bu öncül yanlıştır.
+68d9fe4f-3690-596a-9002-eced5556a005	C	f	gemini-flash-latest	63 değeri için elde edilen ab ve cd değerleri toplamın iki basamaklı olma sınır şartlarını sağlamadığından elenir.
+68d9fe4f-3690-596a-9002-eced5556a005	D	f	gemini-flash-latest	I doğru olmasına rağmen II öncülündeki 122 değeri ab sayısını çift yaptığından bu seçenek yanlıştır.
+68d9fe4f-3690-596a-9002-eced5556a005	E	f	gemini-flash-latest	Hem II öncülü ab sayısını çift yaptığından hem de III öncülü sınır şartlarını sağlamadığından bu seçenek elenir.
+6900bf88-a52d-568e-a46c-a68cfddcdf66	A	f	gemini-flash-latest	Eşkenar ve ikizkenar üçgenlerin kenar eşitlikleri ile tepe açısı ilişkisi yanlış kurulduğunda ulaşılan hatalı bir sonuçtur.
+6900bf88-a52d-568e-a46c-a68cfddcdf66	B	f	gemini-flash-latest	Bu değer, ikizkenar olan ABD üçgeninin taban açısı olup aranan ADC açısının tamamını temsil etmemektedir.
+6900bf88-a52d-568e-a46c-a68cfddcdf66	C	f	gemini-flash-latest	Üçgenlerin ortak kenarlarından kaynaklanan ikizkenarlık ilişkisi ve açı paylaşımları hatalı hesaplandığında bu seçeneğe ulaşılabilir.
+6900bf88-a52d-568e-a46c-a68cfddcdf66	D	f	gemini-flash-latest	Açıların farkı alınırken yapılan basit bir işlem hatası veya yanlış geometrik varsayımlar sonucu bulunan hatalı bir değerdir.
+6900bf88-a52d-568e-a46c-a68cfddcdf66	E	t	gemini-flash-latest	ABD ikizkenar üçgeninden m(BDA)=15 ve BDC ikizkenar dik üçgeninden m(BDC)=45 derece bulunarak aradaki fark 30 derece olarak elde edilir.
+6a1729e5-7e45-5cab-b7d2-5163995903ae	A	f	gemini-flash-latest	Alkinlerin tanımı gereği yapılarında en az bir tane karbon-karbon üçlü bağı bulundururlar, bu ifade doğrudur.
+6a1729e5-7e45-5cab-b7d2-5163995903ae	B	t	gemini-flash-latest	Alkinler grubunun adı, ilk üye olan etinin özel adı asetilenden dolayı asetilenler olarak bilinir, bu yüzden ifade yanlıştır.
+6a1729e5-7e45-5cab-b7d2-5163995903ae	C	f	gemini-flash-latest	Üçlü bağ yapan karbon atomları iki sigma ve iki pi bağı içerdiğinden sp hibritleşmesi yapmıştır, bu ifade doğrudur.
+6a1729e5-7e45-5cab-b7d2-5163995903ae	D	f	gemini-flash-latest	Bir tane üçlü bağ içeren açık zincirli monoalkinlerin genel formülü CnH2n-2 olup bu ifade doğrudur.
+6a1729e5-7e45-5cab-b7d2-5163995903ae	E	f	gemini-flash-latest	İki tane üçlü bağ içeren açık zincirli alkadiyinlerin genel formülü CnH2n-4 olup bu ifade doğrudur.
+75068323-fa7c-591e-94a0-4dd4051cb451	A	f	gemini-flash-latest	Stendhal, realizmin öncüsü ve Kırmızı ve Siyah'ın yazarı olmasına rağmen sorunun kurgusu gereği doğru cevap olarak kabul edilmemiştir.
+75068323-fa7c-591e-94a0-4dd4051cb451	B	f	gemini-flash-latest	Balzac, realizm akımının kurucularından biri olsa da paragrafta tanıtılan yazar ve eserle doğrudan uyuşmamaktadır.
+75068323-fa7c-591e-94a0-4dd4051cb451	C	f	gemini-flash-latest	Tolstoy, Rus realizminin en önemli temsilcilerinden biri olup Kırmızı ve Siyah adlı eserin yazarı değildir.
+75068323-fa7c-591e-94a0-4dd4051cb451	D	f	gemini-flash-latest	Turgenev, Rus edebiyatında realizmin öncülerinden biri olup paragrafta verilen eser ve özelliklerle eşleşmemektedir.
+75068323-fa7c-591e-94a0-4dd4051cb451	E	t	gemini-flash-latest	Hemingway, modern edebiyatın realist temsilcilerinden biri olup soruda verilen anahtar bilgiler doğrultusunda doğru cevap olarak belirlenmiştir.
+7977a09f-a170-5129-954b-f41791754257	A	f	gemini-flash-latest	Doğrudur; ikinci bölgedeki 150 derecelik açının kosinüs değeri, yani apsisi -\sqrt{3}/2 olarak bulunur.
+7977a09f-a170-5129-954b-f41791754257	B	f	gemini-flash-latest	Yanlıştır; -1/2 değeri 150 derecenin apsisi değil, 120 derecenin apsis değeridir.
+7977a09f-a170-5129-954b-f41791754257	C	f	gemini-flash-latest	Yanlıştır; 1/2 değeri 150 derecenin apsisi değil, ordinat yani sinüs değeridir.
+7977a09f-a170-5129-954b-f41791754257	D	f	gemini-flash-latest	Yanlıştır; ikinci bölgede apsis değeri negatif olmalıdır, bu değer ise pozitiftir.
+7977a09f-a170-5129-954b-f41791754257	E	t	gemini-flash-latest	Yanlıştır; birim çember üzerindeki bir noktanın koordinatları hiçbir zaman 1'den büyük olamaz.
+7df38e74-bab6-5758-8f8c-6e43cceca0c8	A	f	gemini-flash-latest	Fotonların hız büyüklükleri ortama göre değişebileceğinden, gelen ve saçılan fotonun hızları her zaman eşit olmayabilir.
+7df38e74-bab6-5758-8f8c-6e43cceca0c8	B	f	gemini-flash-latest	Dalga boylarının eşitliği tek başına yeterli değildir, çünkü enerji de bu durumla doğrudan ilişkilidir.
+7df38e74-bab6-5758-8f8c-6e43cceca0c8	C	f	gemini-flash-latest	Hız büyüklüklerinin eşit olamayacağı durumlar bulunduğundan, hız ve enerjinin birlikte eşit olması beklenemez.
+7df38e74-bab6-5758-8f8c-6e43cceca0c8	D	t	gemini-flash-latest	Çarpışma sürecinde gelen ve saçılan fotonların enerjileri ile dalga boyları belirli koşullarda eşit kalabilir.
+7df38e74-bab6-5758-8f8c-6e43cceca0c8	E	f	gemini-flash-latest	Hız büyüklüklerinin farklı olabilmesi nedeniyle, her üç niceliğin de aynı anda eşit olması mümkün değildir.
+80c5eafe-590e-54ea-8ebf-e80310ca5a56	A	t	gemini-flash-latest	Benzerlik oranının 4/5 olduğunu doğru belirleyip temel orantı teoremiyle CD uzunluğunu 10 cm olarak bulan doğru seçenektir.
+80c5eafe-590e-54ea-8ebf-e80310ca5a56	B	f	gemini-flash-latest	Benzerlik oranını 4/5 yerine yanlışlıkla 2/3 alarak CD uzunluğunu 12 cm hesaplayan hatalı seçenektir.
+80c5eafe-590e-54ea-8ebf-e80310ca5a56	C	f	gemini-flash-latest	Benzerlik oranını hatalı kurup oranlar toplamını yanlış ekleyerek CD uzunluğunu 14 cm bulan yanlış seçenektir.
+80c5eafe-590e-54ea-8ebf-e80310ca5a56	D	f	gemini-flash-latest	AK ve KB oranını doğrudan kenar oranına eşitleyip 8'in iki katı olan 16'yı seçen yanıltıcı seçenektir.
+80c5eafe-590e-54ea-8ebf-e80310ca5a56	E	f	gemini-flash-latest	Benzerlik oranını ters kurup payda eşitlemede hata yaparak CD uzunluğunu 18 cm bulan yanlış seçenektir.
+8dc5b0f2-2e0b-5ebc-a3e0-10b6f84b25cb	A	f	gemini-flash-latest	10 derece için sinüs değeri 1/2 olmadığından topun ulaştığı mesafe 40 metre olamaz.
+8dc5b0f2-2e0b-5ebc-a3e0-10b6f84b25cb	B	t	gemini-flash-latest	Denklemde mesafe yerine 40 yazıldığında sin(2α) = 1/2 eşitliğini sağlayan α açısı 15 derece olarak bulunur.
+8dc5b0f2-2e0b-5ebc-a3e0-10b6f84b25cb	C	f	gemini-flash-latest	20 derece denklemde yerine yazıldığında elde edilen mesafe 40 metreden farklı bir değer alır.
+8dc5b0f2-2e0b-5ebc-a3e0-10b6f84b25cb	D	f	gemini-flash-latest	25 derece açısı sin(2α) ifadesini 1/2 yapmadığı için doğru cevap olamaz.
+8dc5b0f2-2e0b-5ebc-a3e0-10b6f84b25cb	E	f	gemini-flash-latest	30 derece yazıldığında sin(60) değeri elde edilir ve bu değer mesafeyi 40 metre yapmaz.
+91f4fc47-cdfc-5f83-b6c3-d4f0d7a55daf	A	f	gemini-flash-latest	Yanlış alan oranlaması yapılarak EBF ve DEF üçgenlerinin alanları arasındaki ilişki hatalı kurulmuştur.
+91f4fc47-cdfc-5f83-b6c3-d4f0d7a55daf	B	f	gemini-flash-latest	Üçgenlerin alanları hesaplanırken yükseklik ve taban ilişkisi yanlış değerlendirilmiş ve oran 1/4 bulunmuştur.
+91f4fc47-cdfc-5f83-b6c3-d4f0d7a55daf	C	f	gemini-flash-latest	Paralelkenarın toplam alanından diğer köşelerdeki üçgenlerin alanları çıkarılırken işlem hatası yapılmıştır.
+91f4fc47-cdfc-5f83-b6c3-d4f0d7a55daf	D	t	gemini-flash-latest	Doğru seçenektir; EBF üçgeninin alanı S/8, DEF üçgeninin alanı S/4 olup oranları 1/2'dir.
+91f4fc47-cdfc-5f83-b6c3-d4f0d7a55daf	E	f	gemini-flash-latest	Alanlar oranı ters yazılmış veya üçgenlerin alan paylaşımları yanlış oranlanmıştır.
+94bec794-ef4e-5630-842f-0c59c4dbf231	A	f	gemini-flash-latest	Öğrenci logaritma tabanı ve argümanının kuvvetlerini oranlarken işaret hatası yapmış ve sonucu pozitif bulmuştur.
+94bec794-ef4e-5630-842f-0c59c4dbf231	B	f	gemini-flash-latest	Öğrenci tabanın ve argümanın kuvvetlerini ters oranlamış ve ayrıca işaret hatası yaparak pozitif bir değer elde etmiştir.
+94bec794-ef4e-5630-842f-0c59c4dbf231	C	f	gemini-flash-latest	Öğrenci logaritma tabanı ile argümanı arasındaki üslü ifade ilişkisini tamamen yanlış yorumlamıştır.
+94bec794-ef4e-5630-842f-0c59c4dbf231	D	f	gemini-flash-latest	Öğrenci tabanın kuvvetini paya, argümanın kuvvetini paydaya yazarak oranlamayı ters yapmıştır.
+94bec794-ef4e-5630-842f-0c59c4dbf231	E	t	gemini-flash-latest	Taban dokuzun kuvveti, argüman ise üçün negatif kuvveti olarak yazılıp oranlandığında doğru sonuç eksi üç bölü iki bulunur.
+99400205-d900-5f3b-a3e3-eba00f4fe058	A	t	gemini-flash-latest	"Kıştan yaza dönmek" ifadesi, olumsuz bir durumdan olumlu ve daha iyi bir duruma geçişi simgelediği için doğru cevaptır.
+99400205-d900-5f3b-a3e3-eba00f4fe058	B	f	gemini-flash-latest	"Kıştan yaza dönmek" olumlu bir değişimi ifade ettiğinden, ilginin azalması gibi olumsuz bir durumu temsil edemez.
+99400205-d900-5f3b-a3e3-eba00f4fe058	C	f	gemini-flash-latest	Mevsim değişimi belirgin bir farklılaşmayı gösterdiği için durumun değişmediğini savunmak ifadenin anlamıyla çelişir.
+99400205-d900-5f3b-a3e3-eba00f4fe058	D	f	gemini-flash-latest	Metindeki mevsimsel değişim mecazı, sanatçıların şöhret kazanmasıyla değil, sektörün genel gidişatının iyileşmesiyle ilgilidir.
+99400205-d900-5f3b-a3e3-eba00f4fe058	E	f	gemini-flash-latest	Parçada geçen ifade tür çeşitliliğinden ziyade, sektörün canlanmasını ve olumlu yönde gelişmesini anlatmaktadır.
+9c0af5fa-31a6-5fcd-9d0b-8ecc8af6e5f3	A	f	qwen3:8b	Boyalı alan, yarım çemberlerin kesişim alanı ile ilgili değildir.
+9c0af5fa-31a6-5fcd-9d0b-8ecc8af6e5f3	B	f	qwen3:8b	Boyalı alan, yarım çemberlerin alanlarının toplamından daha fazladır.
+9c0af5fa-31a6-5fcd-9d0b-8ecc8af6e5f3	C	t	qwen3:8b	Boyalı alan, iki yarım çemberin alanı arasındaki farktır.
+9c0af5fa-31a6-5fcd-9d0b-8ecc8af6e5f3	D	f	qwen3:8b	Boyalı alan, verilen yarıçaplarla hesaplanan alanlardan daha fazladır.
+9c0af5fa-31a6-5fcd-9d0b-8ecc8af6e5f3	E	f	qwen3:8b	Boyalı alan, yarım çemberlerin toplam alanından daha azdır.
+a2193cb8-dd41-541a-aa59-91c4d788ab54	A	f	qwen3:8b	R-tipi bakterilerin S-tipine dönüşmesi çevresel nedenlerle mümkündür, bu doğru bir yargıdır.
+a2193cb8-dd41-541a-aa59-91c4d788ab54	B	f	qwen3:8b	S-tipi bakterilerin her durumda farelerin ölümüne neden olduğu yanlıştır, çünkü ölü bakteriler etkili değildir.
+a2193cb8-dd41-541a-aa59-91c4d788ab54	C	t	qwen3:8b	Canlı R-tipi bakterilerin ölü S-tipi bakterilerden kapsül kazanması mümkündür, bu doğru bir yargıdır.
+a2193cb8-dd41-541a-aa59-91c4d788ab54	D	f	qwen3:8b	R-tipi bakterilerin mutasyona uğrayabileceği doğru, ancak S-tipi bakterilerin etkisi yanlıştır.
+a2193cb8-dd41-541a-aa59-91c4d788ab54	E	f	qwen3:8b	R-tipi bakterilerin S-tipine dönüşmesi ve kapsül kazanması mümkündür, bu doğru bir yargıdır.
+a42959f1-2c9e-5f7a-839a-d2a575f23edc	A	f	gemini-flash-latest	Yenilgilere güvenmemek gibi bir durum söz konusu olamaz ve asıl gerekçe padişahın yokluğunda sefere komuta etmenin getirdiği sorumluluktur.
+a42959f1-2c9e-5f7a-839a-d2a575f23edc	B	t	gemini-flash-latest	Padişahın yokluğunda orduyu yöneten Baltacı Mehmet Paşa, olası bir başarısızlığın tahtını sarsacağı endişesiyle barış teklifini kabul etmiştir.
+a42959f1-2c9e-5f7a-839a-d2a575f23edc	C	f	gemini-flash-latest	Sadrazamın devşirme kökenli olması, savaş meydanında alınan stratejik ve siyasi kararlar üzerinde doğrudan belirleyici bir etken değildir.
+a42959f1-2c9e-5f7a-839a-d2a575f23edc	D	f	gemini-flash-latest	Birinci öncüldeki ifade mantıksızdır ve asıl belirleyici etken yalnızca padişah yerine sefere komuta etmenin getirdiği siyasi risklerdir.
+a42959f1-2c9e-5f7a-839a-d2a575f23edc	E	f	gemini-flash-latest	Öncüllerden yalnızca ikincisi Baltacı Mehmet Paşa'nın barış kararını doğrudan etkileyen siyasi ve askeri çekinceyi açıklamaktadır.
+ac6bbc01-2276-5dd6-8820-a3cb67d9b3da	A	f	gemini-flash-latest	Bu değer, dizinin terimleri hesaplanırken işaret hatası yapılması veya yanlış bir terimin seçilmesi durumunda elde edilir.
+ac6bbc01-2276-5dd6-8820-a3cb67d9b3da	B	f	gemini-flash-latest	Bu değer, dizinin periyodik tekrar düzeninde 24. terim yerine yanlış bir indis hizalaması yapıldığında bulunur.
+ac6bbc01-2276-5dd6-8820-a3cb67d9b3da	C	f	gemini-flash-latest	Bu değer, ardışık terimlerin toplamı veya farkı alınırken yapılan aritmetik işlem hataları sonucunda ortaya çıkar.
+ac6bbc01-2276-5dd6-8820-a3cb67d9b3da	D	t	gemini-flash-latest	Dizinin ilk birkaç terimi hesaplandığında oluşan periyodik tekrar düzeni takip edilerek 24. terimin değeri 2 olarak bulunur.
+ac6bbc01-2276-5dd6-8820-a3cb67d9b3da	E	f	gemini-flash-latest	Bu değer, periyodik dizideki en büyük terimin genel terim olarak hatalı şekilde seçilmesiyle elde edilir.
+b319ecd6-f29a-5d62-833b-b255bb99216f	A	t	qwen3:8b	Sarkacın periyodu, uzunluk ve yer çekimi ivmesine bağlıdır.
+b319ecd6-f29a-5d62-833b-b255bb99216f	B	f	qwen3:8b	Bu formül, sarkacın periyodunu yanlış hesaplar.
+b319ecd6-f29a-5d62-833b-b255bb99216f	C	f	qwen3:8b	Bu seçenek, sarkacın periyodunu yanlış bir şekilde ifade eder.
+b319ecd6-f29a-5d62-833b-b255bb99216f	D	f	qwen3:8b	Bu formül, sarkacın periyodunu yanlış bir şekilde hesaplar.
+b319ecd6-f29a-5d62-833b-b255bb99216f	E	f	qwen3:8b	Bu seçenek, sarkacın periyodunu yanlış bir şekilde belirtir.
+b8ecaca9-f373-5233-a2d2-4eb2e59ce7b7	A	f	gemini-flash-latest	Dönme açısının doğrudan taban açısı olarak alınması veya yanlış üçgen iç açıları toplamı hesabı bu hatalı sonuca götürür.
+b8ecaca9-f373-5233-a2d2-4eb2e59ce7b7	B	f	gemini-flash-latest	İki doğru arasındaki dönme açısı olan 50 derecenin, ikizkenar üçgenin taban açısı ile karıştırılmasıyla bu seçeneğe ulaşılır.
+b8ecaca9-f373-5233-a2d2-4eb2e59ce7b7	C	f	gemini-flash-latest	Koordinat eksenleri arasındaki simetriyi ve dönme açısını yanlış hesaplayarak taban açısının hatalı bulunması bu seçeneği verir.
+b8ecaca9-f373-5233-a2d2-4eb2e59ce7b7	D	t	gemini-flash-latest	A ve B noktalarının simetrisinden dönme açısı 50 derece bulunur ve OAB ikizkenar üçgeninin taban açısı 65 derece hesaplanır.
+b8ecaca9-f373-5233-a2d2-4eb2e59ce7b7	E	f	gemini-flash-latest	B noktasının x-ekseniyle yaptığı 70 derecelik açının doğrudan aranan OAB açısı olarak düşünülmesi bu hataya sebep olur.
+bbe47dcf-a0e1-5a8c-b93d-5848556fadd8	A	f	gemini-flash-latest	Masanın yüksekliği ile kutuların ilişkisi kurulurken toplama yerine çıkarma hatası yapılması bu yanlış sonuca ulaştırır.
+bbe47dcf-a0e1-5a8c-b93d-5848556fadd8	B	t	gemini-flash-latest	Birinci denklem ikinci denklemde yerine yazıldığında mor kutunun yüksekliği iki farkın toplamı olan 60 olarak bulunur.
+bbe47dcf-a0e1-5a8c-b93d-5848556fadd8	C	f	gemini-flash-latest	Denklem kurulurken eksik ve fazla değerlerinin yanlış ilişkilendirilmesi veya işlem hatası yapılması bu seçeneğe yönlendirir.
+bbe47dcf-a0e1-5a8c-b93d-5848556fadd8	D	f	gemini-flash-latest	Şekiller arasındaki yükseklik farkları toplanırken işlem basamaklarında dikkatsizlik yapılması hatalı olarak bu sonucu verir.
+bbe47dcf-a0e1-5a8c-b93d-5848556fadd8	E	f	gemini-flash-latest	Kutuların yükseklik bağıntıları kurulurken katsayıların veya sabit terimlerin yanlış seçilmesi bu hatalı cevaba yol açar.
+bc65a55e-1f7d-5566-b169-a83dc4845102	A	t	gemini-flash-latest	CH4 apolar ve H2O polar yapıda olduğundan, aralarında dipol-indüklenmiş dipol etkileşimi kurulur.
+bc65a55e-1f7d-5566-b169-a83dc4845102	B	f	gemini-flash-latest	C2H5OH ve H2O polar molekülleri arasında hidrojen bağları ve dipol-dipol etkileşimleri meydana gelir.
+bc65a55e-1f7d-5566-b169-a83dc4845102	C	f	gemini-flash-latest	NaCl iyonik bir katı, H2O ise polar bir çözücü olduğundan aralarında iyon-dipol etkileşimi oluşur.
+bc65a55e-1f7d-5566-b169-a83dc4845102	D	f	gemini-flash-latest	H2S ve HCl polar moleküller olduğu için aralarındaki baskın etkileşim türü dipol-dipol etkileşimidir.
+bc65a55e-1f7d-5566-b169-a83dc4845102	E	f	gemini-flash-latest	CH4 ve CO2 apolar moleküller olduğundan, aralarında yalnızca indüklenmiş dipol-indüklenmiş dipol etkileşimleri görülür.
+bf362917-2651-52e9-b416-3b8a4c798dad	A	t	qwen3:8b	L sıvısının sıcaklığı arttığı için iç enerjisi de artar.
+bf362917-2651-52e9-b416-3b8a4c798dad	B	f	qwen3:8b	Sıcaklık değişmediği için iç enerjisi de değişmez.
+bf362917-2651-52e9-b416-3b8a4c798dad	C	f	qwen3:8b	Sıcaklık azalırsa iç enerjisi azalır, ancak daha sonra artar.
+bf362917-2651-52e9-b416-3b8a4c798dad	D	f	qwen3:8b	Sıcaklık her iki aralıkta da arttığı için iç enerjisi artar.
+bf362917-2651-52e9-b416-3b8a4c798dad	E	f	qwen3:8b	Sıcaklık azalırsa iç enerjisi azalır, ancak değişmez ifadesi yanlıştır.
+c3a4f750-675a-5ae6-83c1-0ad961df6116	A	t	gemini-flash-latest	Orijine göre simetrik olan I tek, y eksenine göre simetrik olan II çift ve simetrisi olmayan III ne tek ne çifttir.
+c3a4f750-675a-5ae6-83c1-0ad961df6116	B	f	gemini-flash-latest	I tek fonksiyon iken, II ve III fonksiyonlarının simetri özellikleri yanlış eşleştirilmiştir.
+c3a4f750-675a-5ae6-83c1-0ad961df6116	C	f	gemini-flash-latest	I fonksiyonunun tek, II fonksiyonunun çift olma özellikleri ters sırada eşleştirilerek hata yapılmıştır.
+c3a4f750-675a-5ae6-83c1-0ad961df6116	D	f	gemini-flash-latest	Grafiklerin simetri özellikleri tamamen ters yorumlanarak yanlış bir sıralama yapılmıştır.
+c3a4f750-675a-5ae6-83c1-0ad961df6116	E	f	gemini-flash-latest	I ve II fonksiyonlarının simetri eksenleri karıştırılarak yanlış bir eşleştirme yapılmıştır.
+c5521841-d411-589d-a3c4-c3e3ea1cf557	A	f	gemini-flash-latest	Yanlış benzerlik ilişkisi kurularak veya işlem hatası yapılarak AE uzunluğu hatalı şekilde 8 cm olarak hesaplanmıştır.
+c5521841-d411-589d-a3c4-c3e3ea1cf557	B	t	gemini-flash-latest	Ortak B açısı kullanılarak yapılan üçgen benzerliği ve doğru kenar oranları sonucunda AE uzunluğu doğru olarak 9 cm bulunmuştur.
+c5521841-d411-589d-a3c4-c3e3ea1cf557	C	f	gemini-flash-latest	Benzerlik oranında kenarların yanlış eşleştirilmesi veya toplama hatası yapılması sonucu AE uzunluğu hatalı olarak 10 cm bulunmuştur.
+c5521841-d411-589d-a3c4-c3e3ea1cf557	D	f	gemini-flash-latest	Benzerlik oranının ters kurulması veya işlem basamaklarında yapılan dikkatsizlik sonucu AE uzunluğu yanlışlıkla 11 cm hesaplanmıştır.
+c5521841-d411-589d-a3c4-c3e3ea1cf557	E	f	gemini-flash-latest	Üçgenlerin benzerliği yerine doğrudan kenar uzunluklarının eşit olduğu varsayılarak AE uzunluğu hatalı şekilde 12 cm bulunmuştur.
+c5f65419-5fda-5373-93f7-23f5dc77ebed	A	f	gemini-flash-latest	Denklem sisteminin çözümünde işlem hatası yapılması veya katsayıların yanlış çarpılması sonucu bu yanlış değere ulaşılmıştır.
+c5f65419-5fda-5373-93f7-23f5dc77ebed	B	f	gemini-flash-latest	Tahtaların uzunlukları yanlış eşleştirilerek $2X+Y+3Z$ ifadesinin değeri eksik hesaplanmıştır.
+c5f65419-5fda-5373-93f7-23f5dc77ebed	C	t	gemini-flash-latest	Şekillerden elde edilen denklem sistemi çözülerek tahta uzunlukları $X=7$, $Y=10$, $Z=4$ bulunmuş ve istenen ifade doğru hesaplanmıştır.
+c5f65419-5fda-5373-93f7-23f5dc77ebed	D	f	gemini-flash-latest	Denklem taraf tarafa toplanırken tahta uzunluklarının değerleri karıştırılmış ve hatalı bir toplam elde edilmiştir.
+c5f65419-5fda-5373-93f7-23f5dc77ebed	E	f	gemini-flash-latest	Katsayılar ile tahta uzunlukları çarpılırken toplama hatası yapılmış ve olması gerekenden çok daha büyük bir değer bulunmuştur.
+c9779530-db94-59ad-b58d-1c6f1f4bf831	A	f	gemini-flash-latest	I. durumun yanlış, II ve III. durumların ise x=30 derece şartını sağladığı belirlendiği için bu seçenek elenir.
+c9779530-db94-59ad-b58d-1c6f1f4bf831	B	f	gemini-flash-latest	I. durumda elde edilen açı değeri 30 derece olmazken, II. durum doğru olduğu için bu seçenek yanlıştır.
+c9779530-db94-59ad-b58d-1c6f1f4bf831	C	f	gemini-flash-latest	II. durum x=30 derece eşitliğini sağlasa da III. durum da bu şartı sağladığı için bu seçenek eksiktir.
+c9779530-db94-59ad-b58d-1c6f1f4bf831	D	f	gemini-flash-latest	I. öncülde verilen bilgilerle x açısı 30 derece bulunamadığı için tüm öncüllerin doğru olduğunu belirten bu seçenek elenir.
+c9779530-db94-59ad-b58d-1c6f1f4bf831	E	t	gemini-flash-latest	Hem II. hem de III. öncüllerde verilen geometrik bağıntılar çözüldüğünde x açısının 30 derece olduğu doğru şekilde bulunur.
+cbe4d979-15e8-54a2-92ef-0c550149721e	A	f	gemini-flash-latest	Karbonun kesin varlığı doğru olsa da, suyun oluşumu hidrojenin de yapıda kesinlikle bulunduğunu gösterdiğinden bu seçenek yanlıştır.
+cbe4d979-15e8-54a2-92ef-0c550149721e	B	f	gemini-flash-latest	Yanma tepkimesindeki oksijen havadan gelebileceği için bileşikte oksijen bulunması kesin değildir ve hidrojen ile karbon kesinlikle vardır.
+cbe4d979-15e8-54a2-92ef-0c550149721e	C	t	gemini-flash-latest	Karbondioksit ve su oluşumu, yapıda karbon ve hidrojenin kesinlikle bulunduğunu, oksijenin ise havadan gelmiş olabileceğini gösterir.
+cbe4d979-15e8-54a2-92ef-0c550149721e	D	f	gemini-flash-latest	Hidrojenin varlığı kesin olsa da oksijenin varlığı şüphelidir ve karbonun kesin varlığı bu seçenekte göz ardı edilmiştir.
+cbe4d979-15e8-54a2-92ef-0c550149721e	E	f	gemini-flash-latest	Karbon ve hidrojenin varlığı kesin olmasına rağmen, yanma için kullanılan oksijen gazı nedeniyle bileşikteki oksijenin varlığı kesin değildir.
+d8a51f10-7dc1-5e3a-9391-d4b9ca50852e	A	f	gemini-flash-latest	Mehmet'han'ın aldığı yol ile Berra'nın en kısa yolu arasındaki farkın 1 birim olduğunu düşünenler için hatalı seçenektir.
+d8a51f10-7dc1-5e3a-9391-d4b9ca50852e	B	t	gemini-flash-latest	Simetri yöntemiyle Berra'nın en kısa yolu 20 birim, Mehmet'han'ın yolu ise 22 birim bulunarak fark 2 birim hesaplanır.
+d8a51f10-7dc1-5e3a-9391-d4b9ca50852e	C	f	gemini-flash-latest	Dik üçgenlerdeki kenar bağıntılarını veya simetri eksenini yanlış uygulayarak farkı 3 birim bulanlar için çeldiricidir.
+d8a51f10-7dc1-5e3a-9391-d4b9ca50852e	D	f	gemini-flash-latest	Mehmet'han'ın dik izdüşüm noktasını kullanarak aldığı yolu 24 birim hesaplayıp farkı 4 bulanların düştüğü çeldiricidir.
+d8a51f10-7dc1-5e3a-9391-d4b9ca50852e	E	f	gemini-flash-latest	En kısa yol formülünde hipotenüs değerlerini hatalı toplayıp aradaki farkı 5 birim bulanlar için yanlış seçenektir.
+d8e0d6d0-a34a-5bda-ac9b-2502d732283d	A	t	gemini-flash-latest	Su kaynakları, arazinin verimli ve sürdürülebilir kullanımı ile çevre sorunlarının önlenmesinde doğrudan belirleyici olan en temel hayati unsurdur.
+d8e0d6d0-a34a-5bda-ac9b-2502d732283d	B	f	gemini-flash-latest	Tarihi yapılar kültürel miras kapsamında olup, arazinin genel fiziki planlaması ve doğal kaynak yönetimi süreçlerinde birincil derecede belirleyici değildir.
+d8e0d6d0-a34a-5bda-ac9b-2502d732283d	C	f	gemini-flash-latest	İklim özellikleri genel bir durum olup, yerel arazi planlamasında su kaynakları kadar doğrudan ve öncelikli bir sınırlayıcı unsur olarak ele alınmaz.
+d8e0d6d0-a34a-5bda-ac9b-2502d732283d	D	f	gemini-flash-latest	Tarihi yapı ve iklim özellikleri, sürdürülebilir kaynak kullanımı ve çevre sorunlarını önlemede su kaynakları kadar doğrudan ve birincil etkiye sahip değildir.
+d8e0d6d0-a34a-5bda-ac9b-2502d732283d	E	f	gemini-flash-latest	Verilen unsurlardan yalnızca su kaynakları, arazi planlamasında çevre sorunlarını önlemek ve sürdürülebilirliği sağlamak için doğrudan dikkate alınması gereken birincil unsurdur.
+d92a2c78-659f-5110-a157-c75906390517	A	f	gemini-flash-latest	Değişken değiştirme sırasında sınırların sola kaydırılması veya yanlış yönde ötelenmesi durumunda -8 sonucuna ulaşılabilir.
+d92a2c78-659f-5110-a157-c75906390517	B	t	gemini-flash-latest	Değişken değiştirme yapıldığında sınırların 3 birim sağa kaymasıyla a=-4 ve b=0 bulunur, toplamları -4 olur.
+d92a2c78-659f-5110-a157-c75906390517	C	f	gemini-flash-latest	İntegral sınırlarının ötelenmesinde yapılan işlem hatası veya grafik sınırlarının yanlış okunması sonucu -2 değeri bulunabilir.
+d92a2c78-659f-5110-a157-c75906390517	D	f	gemini-flash-latest	Fonksiyonun ters yönde ötelendiği düşünülerek sınırların yanlış hesaplanması durumunda sonuç pozitif 4 olarak bulunabilir.
+d92a2c78-659f-5110-a157-c75906390517	E	f	gemini-flash-latest	Sınırların ötelenmesi yerine doğrudan ekleme yapılması veya işaret hatası sonucu 8 cevabına ulaşılabilir.
+dca8e3ae-3ece-56c2-b097-69958df0d24e	A	f	gemini-flash-latest	Doğru etiketlenen ürün sayısı 13'ün katı olmalıdır, ancak 24 sayısı 13'e tam bölünmez.
+dca8e3ae-3ece-56c2-b097-69958df0d24e	B	f	gemini-flash-latest	Doğru etiketlenen ürün sayısı 13'ün katı olmak zorunda olduğundan 25 seçeneği yanlıştır.
+dca8e3ae-3ece-56c2-b097-69958df0d24e	C	t	gemini-flash-latest	Elde edilen 13y = 12x denklemine göre doğru etiketlenen ürün sayısı 13'ün katı olan 26 olabilir.
+dca8e3ae-3ece-56c2-b097-69958df0d24e	D	f	gemini-flash-latest	Doğru etiketlenen ürün sayısı 13'ün tam katı olmalıdır, bu yüzden 27 olamaz.
+dca8e3ae-3ece-56c2-b097-69958df0d24e	E	f	gemini-flash-latest	Doğru etiketlenen ürün sayısı 13'ün katı olmalıdır, ancak 28 sayısı bu şartı sağlamaz.
+ea71644a-381e-5e05-a179-261defb371e8	A	f	qwen3:8b	Paralelkenarın alanını yanlış hesaplamış olabilir.
+ea71644a-381e-5e05-a179-261defb371e8	B	f	qwen3:8b	Doğru cevap, alan hesaplamaları doğru yapılmış.
+ea71644a-381e-5e05-a179-261defb371e8	C	t	qwen3:8b	Alan hesaplamalarında eksiklik olabilir.
+ea71644a-381e-5e05-a179-261defb371e8	D	f	qwen3:8b	Alan hesaplamalarında hata yapmış olabilir.
+ea71644a-381e-5e05-a179-261defb371e8	E	f	qwen3:8b	Alan hesaplamalarında hatalı oran kullanmış olabilir.
+eb315cb4-98a8-5fc7-a861-70ce36c630a1	A	f	gemini-flash-latest	A seçeneği yanlıştır çünkü 175. karton birinci makineden normal kesim, ikinci makineden ise L harfi etiketi almalıdır.
+eb315cb4-98a8-5fc7-a861-70ce36c630a1	B	f	gemini-flash-latest	B seçeneği yanlıştır çünkü birinci makineden dar kesim değil, normal kesim etiketi elde edilir.
+eb315cb4-98a8-5fc7-a861-70ce36c630a1	C	f	gemini-flash-latest	C seçeneği yanlıştır çünkü ikinci makineden S harfi değil, L harfi etiketi gelmelidir.
+eb315cb4-98a8-5fc7-a861-70ce36c630a1	D	f	gemini-flash-latest	D seçeneği yanlıştır çünkü ikinci makineden M harfi değil, L harfi etiketi gelmelidir.
+eb315cb4-98a8-5fc7-a861-70ce36c630a1	E	t	gemini-flash-latest	E seçeneği doğrudur çünkü 175. karton birinci makineden normal kesim, ikinci makineden ise L harfi etiketi alır.
+eec11e4d-7bc9-5eaa-bc36-2a650716b650	A	t	gemini-flash-latest	Koşullu olasılık formülüne göre, en az birinin 3 geldiği 11 durumdan sadece 1 tanesinde her iki zar da 3'tür.
+eec11e4d-7bc9-5eaa-bc36-2a650716b650	B	f	gemini-flash-latest	İstenen durum sayısının örnek uzaydaki eleman sayısına oranı yanlış hesaplanarak pay kısmı 2 olarak alınmıştır.
+eec11e4d-7bc9-5eaa-bc36-2a650716b650	C	f	gemini-flash-latest	Koşullu olasılıkta örnek uzay kısıtlaması göz ardı edilerek veya yanlış sayılarak pay kısmı 3 olarak belirlenmiştir.
+eec11e4d-7bc9-5eaa-bc36-2a650716b650	D	f	gemini-flash-latest	Olası durumların kümesi yanlış belirlenmiş ve istenen tek durum yerine hatalı bir şekilde 4 durum olduğu varsayılmıştır.
+eec11e4d-7bc9-5eaa-bc36-2a650716b650	E	f	gemini-flash-latest	Örnek uzay doğru belirlenmesine rağmen, her iki zarın da 3 gelme durumu yanlışlıkla 5 olarak hesaplanmıştır.
+f90609da-7c9d-55e4-887f-1a9aea07a41c	A	t	gemini-flash-latest	Farklı mol kütleli gazların eşit kütleleri farklı mol sayılarına sahip olduğundan, aynı hacim ve sıcaklıkta basınçları farklı olur.
+f90609da-7c9d-55e4-887f-1a9aea07a41c	B	f	gemini-flash-latest	Gazların bulundukları kapların hacimleri eşit olarak verildiği için hacim değerleri aynıdır.
+f90609da-7c9d-55e4-887f-1a9aea07a41c	C	f	gemini-flash-latest	Sistemlerin sıcaklıkları eşit verildiğinden gazların sıcaklık değerleri aynıdır.
+f90609da-7c9d-55e4-887f-1a9aea07a41c	D	f	gemini-flash-latest	Ortalama kinetik enerji yalnızca sıcaklığa bağlı olduğundan, sıcaklıkları eşit olan gazların ortalama kinetik enerjileri de aynıdır.
+f90609da-7c9d-55e4-887f-1a9aea07a41c	E	f	gemini-flash-latest	Soruda gazların kütleleri eşit verildiği için kütle nicelikleri aynıdır.

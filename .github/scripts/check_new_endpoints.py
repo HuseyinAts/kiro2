@@ -47,7 +47,9 @@ BASE_REF = os.environ.get("BASE_REF", "master")
 
 # Which checks are blocking. Override here if a check needs to be demoted.
 HARD_CHECKS: set[str] = {"C1", "C3", "C4"}
-SOFT_CHECKS: set[str] = {"C2", "C5", "C6", "C7"}
+# S179 fix (B-P1-14): C8 = missing `description=` on new endpoints.
+# OpenAPI 96% has description today; this gate keeps regression at 0.
+SOFT_CHECKS: set[str] = {"C2", "C5", "C6", "C7", "C8"}
 
 # Public endpoints — auth check (C3) skipped if route matches any substring.
 # Hardcoded per task spec; do NOT pull from runtime config (CI runs without

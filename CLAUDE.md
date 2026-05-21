@@ -239,9 +239,9 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 
 | Katman | Yol | Notlar |
 |--------|-----|--------|
-| API Routers | `backend/api/` | FastAPI, 124+ endpoint |
+| API Routers | `backend/api/` | FastAPI, **1,163 endpoint** (619 GET + 456 POST + 35 PUT + 43 DELETE + 10 PATCH), 770 Pydantic schemas |
 | Services | `backend/services/` | Is mantigi |
-| Models | `backend/models/` | SQLAlchemy — `question_bank` = prod, `questions` = BOS |
+| Models | `backend/models/` | SQLAlchemy — `question_bank` = 192K prod, `questions` = **36,381 row legacy** (NOT BOS — ANALYZE missing) |
 | Frontend Pages | `frontend/src/pages/` | React 18 + TypeScript |
 | Frontend Hooks | `frontend/src/hooks/` | Custom hooks (useLearningPath vb.) |
 | State | `frontend/src/store/` | Zustand (authStore, NOT stores/) |
@@ -252,7 +252,7 @@ KIRO2 is a Turkish EdTech platform for YKS/TYT/AYT university entrance exam prep
 ## 📊 Current Status (March 2026)
 
 ### Database & Content ✅
-- ✅ **PostgreSQL 15** (port 5434) - Production ready
+- ✅ **PostgreSQL 18.1** (port 5434, native Windows) - Production ready
   - **PgBouncer:** Not yet configured (planned for 100K+ concurrent users)
 - ✅ **Redis 7** (port 6379) - Session & cache layer
 - ✅ **77,336 YKS questions in production** (v3.5+, Target: 45K by March 2026 - EXCEEDED 172%)
@@ -328,7 +328,7 @@ python create_answers_v8.py --validate
 kiro2/
 ├── backend/
 │   ├── app/
-│   │   ├── api/           # FastAPI routers (124+ endpoints)
+│   │   ├── api/           # FastAPI routers (1,163 endpoints, 770 schemas)
 │   │   ├── core/          # Config, security, deps
 │   │   ├── models/        # SQLAlchemy models
 │   │   ├── schemas/       # Pydantic schemas
