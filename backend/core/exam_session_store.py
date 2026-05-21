@@ -10,6 +10,7 @@ On read: check dict first, fallback to Redis
 On startup: dict is empty, sessions lazily loaded from Redis
 """
 
+import asyncio
 import json
 import logging
 import os
