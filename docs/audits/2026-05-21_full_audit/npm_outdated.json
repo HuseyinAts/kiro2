@@ -1,0 +1,380 @@
+{
+  "@lottiefiles/dotlottie-react": {
+    "current": "0.18.7",
+    "wanted": "0.18.10",
+    "latest": "0.19.4",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@lottiefiles\\dotlottie-react"
+  },
+  "@mui/icons-material": {
+    "current": "5.18.0",
+    "wanted": "5.18.0",
+    "latest": "9.0.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@mui\\icons-material"
+  },
+  "@mui/material": {
+    "current": "5.18.0",
+    "wanted": "5.18.0",
+    "latest": "9.0.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@mui\\material"
+  },
+  "@playwright/test": {
+    "current": "1.56.1",
+    "wanted": "1.60.0",
+    "latest": "1.60.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@playwright\\test"
+  },
+  "@tailwindcss/postcss": {
+    "current": "4.1.13",
+    "wanted": "4.3.0",
+    "latest": "4.3.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@tailwindcss\\postcss"
+  },
+  "@testing-library/jest-dom": {
+    "current": "6.8.0",
+    "wanted": "6.9.1",
+    "latest": "6.9.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@testing-library\\jest-dom"
+  },
+  "@testing-library/react": {
+    "current": "14.3.1",
+    "wanted": "14.3.1",
+    "latest": "16.3.2",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@testing-library\\react"
+  },
+  "@types/lodash": {
+    "current": "4.17.20",
+    "wanted": "4.17.24",
+    "latest": "4.17.24",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@types\\lodash"
+  },
+  "@types/node": {
+    "current": "20.19.15",
+    "wanted": "20.19.41",
+    "latest": "25.9.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@types\\node"
+  },
+  "@types/react": {
+    "current": "18.3.24",
+    "wanted": "18.3.29",
+    "latest": "19.2.15",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@types\\react"
+  },
+  "@types/react-dom": {
+    "current": "18.3.7",
+    "wanted": "18.3.7",
+    "latest": "19.2.3",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@types\\react-dom"
+  },
+  "@typescript-eslint/eslint-plugin": {
+    "current": "8.52.0",
+    "wanted": "8.59.4",
+    "latest": "8.59.4",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@typescript-eslint\\eslint-plugin"
+  },
+  "@typescript-eslint/parser": {
+    "current": "8.52.0",
+    "wanted": "8.59.4",
+    "latest": "8.59.4",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@typescript-eslint\\parser"
+  },
+  "@vitejs/plugin-react": {
+    "current": "4.7.0",
+    "wanted": "4.7.0",
+    "latest": "6.0.2",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@vitejs\\plugin-react"
+  },
+  "@vitest/coverage-v8": {
+    "current": "3.2.4",
+    "wanted": "3.2.4",
+    "latest": "4.1.7",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@vitest\\coverage-v8"
+  },
+  "@vitest/ui": {
+    "current": "3.2.4",
+    "wanted": "3.2.4",
+    "latest": "4.1.7",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\@vitest\\ui"
+  },
+  "autoprefixer": {
+    "current": "10.4.21",
+    "wanted": "10.5.0",
+    "latest": "10.5.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\autoprefixer"
+  },
+  "axios": {
+    "current": "1.12.2",
+    "wanted": "1.16.1",
+    "latest": "1.16.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\axios"
+  },
+  "canvas-confetti": {
+    "current": "1.9.3",
+    "wanted": "1.9.4",
+    "latest": "1.9.4",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\canvas-confetti"
+  },
+  "date-fns": {
+    "current": "4.1.0",
+    "wanted": "4.2.1",
+    "latest": "4.2.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\date-fns"
+  },
+  "dayjs": {
+    "current": "1.11.18",
+    "wanted": "1.11.20",
+    "latest": "1.11.20",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\dayjs"
+  },
+  "dexie": {
+    "current": "4.3.0",
+    "wanted": "4.4.2",
+    "latest": "4.4.2",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\dexie"
+  },
+  "dompurify": {
+    "current": "3.3.1",
+    "wanted": "3.4.5",
+    "latest": "3.4.5",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\dompurify"
+  },
+  "eslint": {
+    "current": "8.57.1",
+    "wanted": "8.57.1",
+    "latest": "10.4.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\eslint"
+  },
+  "eslint-plugin-react-hooks": {
+    "current": "7.0.1",
+    "wanted": "7.1.1",
+    "latest": "7.1.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\eslint-plugin-react-hooks"
+  },
+  "eslint-plugin-react-refresh": {
+    "current": "0.4.26",
+    "wanted": "0.4.26",
+    "latest": "0.5.2",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\eslint-plugin-react-refresh"
+  },
+  "eslint-plugin-testing-library": {
+    "current": "7.15.4",
+    "wanted": "7.16.2",
+    "latest": "7.16.2",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\eslint-plugin-testing-library"
+  },
+  "framer-motion": {
+    "current": "10.18.0",
+    "wanted": "10.18.0",
+    "latest": "12.40.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\framer-motion"
+  },
+  "jest-axe": {
+    "current": "8.0.0",
+    "wanted": "8.0.0",
+    "latest": "10.0.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\jest-axe"
+  },
+  "jsdom": {
+    "current": "23.2.0",
+    "wanted": "23.2.0",
+    "latest": "29.1.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\jsdom"
+  },
+  "katex": {
+    "current": "0.16.38",
+    "wanted": "0.16.47",
+    "latest": "0.16.47",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\katex"
+  },
+  "lodash": {
+    "current": "4.17.21",
+    "wanted": "4.18.1",
+    "latest": "4.18.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\lodash"
+  },
+  "lucide-react": {
+    "current": "0.263.1",
+    "wanted": "0.263.1",
+    "latest": "1.16.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\lucide-react"
+  },
+  "mermaid": {
+    "current": "10.9.5",
+    "wanted": "10.9.6",
+    "latest": "11.15.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\mermaid"
+  },
+  "msw": {
+    "current": "2.11.2",
+    "wanted": "2.14.6",
+    "latest": "2.14.6",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\msw"
+  },
+  "postcss": {
+    "current": "8.5.6",
+    "wanted": "8.5.15",
+    "latest": "8.5.15",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\postcss"
+  },
+  "prettier": {
+    "current": "3.6.2",
+    "wanted": "3.8.3",
+    "latest": "3.8.3",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\prettier"
+  },
+  "react": {
+    "current": "18.3.1",
+    "wanted": "18.3.1",
+    "latest": "19.2.6",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\react"
+  },
+  "react-dom": {
+    "current": "18.3.1",
+    "wanted": "18.3.1",
+    "latest": "19.2.6",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\react-dom"
+  },
+  "react-markdown": {
+    "current": "9.1.0",
+    "wanted": "9.1.0",
+    "latest": "10.1.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\react-markdown"
+  },
+  "react-router-dom": {
+    "current": "6.30.1",
+    "wanted": "6.30.3",
+    "latest": "7.15.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\react-router-dom"
+  },
+  "react-window": {
+    "current": "2.2.3",
+    "wanted": "2.2.7",
+    "latest": "2.2.7",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\react-window"
+  },
+  "recharts": {
+    "current": "2.15.4",
+    "wanted": "2.15.4",
+    "latest": "3.8.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\recharts"
+  },
+  "rollup-plugin-visualizer": {
+    "current": "6.0.5",
+    "wanted": "6.0.11",
+    "latest": "7.0.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\rollup-plugin-visualizer"
+  },
+  "tailwind-merge": {
+    "current": "3.5.0",
+    "wanted": "3.6.0",
+    "latest": "3.6.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\tailwind-merge"
+  },
+  "tailwindcss": {
+    "current": "4.1.13",
+    "wanted": "4.3.0",
+    "latest": "4.3.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\tailwindcss"
+  },
+  "terser": {
+    "current": "5.44.0",
+    "wanted": "5.47.1",
+    "latest": "5.47.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\terser"
+  },
+  "typescript": {
+    "current": "5.9.2",
+    "wanted": "5.9.3",
+    "latest": "6.0.3",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\typescript"
+  },
+  "vite": {
+    "current": "7.1.6",
+    "wanted": "7.3.3",
+    "latest": "8.0.14",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\vite"
+  },
+  "vite-plugin-pwa": {
+    "current": "1.2.0",
+    "wanted": "1.3.0",
+    "latest": "1.3.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\vite-plugin-pwa"
+  },
+  "vitest": {
+    "current": "3.2.4",
+    "wanted": "3.2.4",
+    "latest": "4.1.7",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\vitest"
+  },
+  "web-vitals": {
+    "current": "5.1.0",
+    "wanted": "5.2.0",
+    "latest": "5.2.0",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\web-vitals"
+  },
+  "workbox-window": {
+    "current": "7.4.0",
+    "wanted": "7.4.1",
+    "latest": "7.4.1",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\workbox-window"
+  },
+  "zustand": {
+    "current": "4.5.7",
+    "wanted": "4.5.7",
+    "latest": "5.0.13",
+    "dependent": "frontend",
+    "location": "C:\\Users\\husey\\kiro2\\frontend\\node_modules\\zustand"
+  }
+}

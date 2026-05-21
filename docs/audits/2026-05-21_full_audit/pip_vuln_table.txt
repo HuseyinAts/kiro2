@@ -1,0 +1,84 @@
+SEV        | Package                   | Version         | CVE                       | Fix
+--------------------------------------------------------------------------------------------------------------
+CRITICAL   | aiohttp                   | 3.13.3          | CVE-2026-34515            | 3.13.4
+CRITICAL   | aiohttp                   | 3.13.3          | CVE-2026-34517            | 3.13.4
+CRITICAL   | fastmcp                   | 0.2.0           | CVE-2025-69196            | 2.14.2
+CRITICAL   | fastmcp                   | 0.2.0           | CVE-2025-64340            | 3.2.0
+CRITICAL   | fastmcp                   | 0.2.0           | CVE-2026-27124            | 3.2.0
+CRITICAL   | filelock                  | 3.20.0          | CVE-2026-22701            | 3.20.3
+CRITICAL   | idna                      | 3.11            | CVE-2026-45409            | 3.15
+CRITICAL   | langchain-core            | 1.2.7           | CVE-2026-26013            | 1.2.11
+CRITICAL   | langchain-core            | 1.2.7           | CVE-2026-44843            | 0.3.85,1.3.3
+CRITICAL   | langgraph-checkpoint      | 3.0.1           | CVE-2026-27794            | 4.0.0
+CRITICAL   | langsmith                 | 0.6.2           | CVE-2026-45134            | 0.8.0
+CRITICAL   | nltk                      | 3.9.4           | PYSEC-2026-97             | 
+CRITICAL   | ollama                    | 0.6.1           | PYSEC-2025-146            | 
+CRITICAL   | pillow                    | 12.0.0          | CVE-2026-42310            | 12.2.0
+CRITICAL   | pillow                    | 12.0.0          | CVE-2026-42311            | 12.2.0
+CRITICAL   | pyasn1                    | 0.6.1           | CVE-2026-23490            | 0.6.2
+CRITICAL   | pyasn1                    | 0.6.1           | CVE-2026-30922            | 0.6.3
+CRITICAL   | pyjwt                     | 2.10.1          | PYSEC-2025-183            | 
+CRITICAL   | python-dotenv             | 1.2.1           | CVE-2026-28684            | 1.2.2
+CRITICAL   | python-multipart          | 0.0.21          | CVE-2026-24486            | 0.0.22
+CRITICAL   | setuptools                | 70.2.0          | PYSEC-2025-49             | 78.1.1
+CRITICAL   | setuptools                | 70.2.0          | PYSEC-2025-49             | 78.1.1
+CRITICAL   | transformers              | 4.57.3          | PYSEC-2025-217            | 
+CRITICAL   | transformers              | 4.57.3          | PYSEC-2025-214            | 
+CRITICAL   | transformers              | 4.57.3          | PYSEC-2025-218            | 
+CRITICAL   | transformers              | 4.57.3          | PYSEC-2025-211            | 
+CRITICAL   | transformers              | 4.57.3          | PYSEC-2025-212            | 
+CRITICAL   | transformers              | 4.57.3          | PYSEC-2025-213            | 
+CRITICAL   | transformers              | 4.57.3          | PYSEC-2025-215            | 
+CRITICAL   | transformers              | 4.57.3          | PYSEC-2025-216            | 
+CRITICAL   | transformers              | 4.57.3          | CVE-2026-1839             | 5.0.0rc3
+CRITICAL   | urllib3                   | 2.6.2           | PYSEC-2026-142            | 2.7.0
+CRITICAL   | urllib3                   | 2.6.2           | CVE-2026-21441            | 2.6.3
+CRITICAL   | uv                        | 0.9.21          | GHSA-pjjw-68hj-v9mw       | 0.11.6
+HIGH       | aiohttp                   | 3.13.3          | CVE-2026-34513            | 3.13.4
+HIGH       | aiohttp                   | 3.13.3          | CVE-2026-34516            | 3.13.4
+HIGH       | ecdsa                     | 0.19.1          | CVE-2026-33936            | 0.19.2
+HIGH       | fastmcp                   | 0.2.0           | CVE-2025-62800            | 2.13.0
+HIGH       | filelock                  | 3.20.0          | CVE-2025-68146            | 3.20.1
+HIGH       | langchain-text-splitters  | 1.1.0           | PYSEC-2026-77             | 1.1.2
+HIGH       | langsmith                 | 0.6.2           | CVE-2026-25528            | 0.6.3
+HIGH       | ollama                    | 0.6.1           | PYSEC-2025-144            | 
+HIGH       | ollama                    | 0.6.1           | PYSEC-2025-145            | 
+HIGH       | ollama                    | 0.6.1           | PYSEC-2026-102            | 
+HIGH       | ollama                    | 0.6.1           | PYSEC-2026-101            | 
+HIGH       | pillow                    | 12.0.0          | CVE-2026-40192            | 12.2.0
+HIGH       | py                        | 1.11.0          | PYSEC-2022-42969          | 
+HIGH       | pytest                    | 8.4.2           | CVE-2025-71176            | 9.0.3
+HIGH       | python-jose               | 3.5.0           | PYSEC-2025-185            | 
+HIGH       | python-multipart          | 0.0.21          | CVE-2026-40347            | 0.0.26
+HIGH       | python-multipart          | 0.0.21          | CVE-2026-42561            | 0.0.27
+MEDIUM     | aiohttp                   | 3.13.3          | CVE-2026-34519            | 3.13.4
+MEDIUM     | aiohttp                   | 3.13.3          | CVE-2026-34518            | 3.13.4
+MEDIUM     | aiohttp                   | 3.13.3          | CVE-2026-34520            | 3.13.4
+MEDIUM     | aiohttp                   | 3.13.3          | CVE-2026-34525            | 3.13.4
+MEDIUM     | aiohttp                   | 3.13.3          | CVE-2026-22815            | 3.13.4
+MEDIUM     | aiohttp                   | 3.13.3          | CVE-2026-34514            | 3.13.4
+MEDIUM     | cryptography              | 46.0.3          | PYSEC-2026-36             | 46.0.7
+MEDIUM     | cryptography              | 46.0.3          | PYSEC-2026-35             | 46.0.6
+MEDIUM     | cryptography              | 46.0.3          | CVE-2026-26007            | 46.0.5
+MEDIUM     | ecdsa                     | 0.19.1          | CVE-2024-23342            | 
+MEDIUM     | fastmcp                   | 0.2.0           | CVE-2025-62801            | 2.13.0
+MEDIUM     | fastmcp                   | 0.2.0           | GHSA-rcfx-77hg-w2wv       | 2.14.0
+MEDIUM     | flask-cors                | 6.0.2           | PYSEC-2024-271            | 
+MEDIUM     | joblib                    | 1.5.3           | PYSEC-2024-277            | 
+MEDIUM     | langchain-community       | 0.4.1           | PYSEC-2024-278            | 
+MEDIUM     | langchain-core            | 1.2.7           | CVE-2026-40087            | 0.3.84,1.2.28
+MEDIUM     | langgraph                 | 1.0.5           | PYSEC-2026-83             | 1.0.10rc1
+MEDIUM     | langsmith                 | 0.6.2           | CVE-2026-41182            | 0.7.31
+MEDIUM     | mako                      | 1.3.10          | CVE-2026-44307            | 1.3.12
+MEDIUM     | ollama                    | 0.6.1           | PYSEC-2025-147            | 
+MEDIUM     | orjson                    | 3.11.5          | CVE-2025-67221            | 3.11.6
+MEDIUM     | pillow                    | 12.0.0          | CVE-2026-25990            | 12.1.1
+MEDIUM     | pillow                    | 12.0.0          | CVE-2026-42308            | 12.2.0
+MEDIUM     | pillow                    | 12.0.0          | CVE-2026-42309            | 12.2.0
+MEDIUM     | pip                       | 26.0            | CVE-2026-3219             | 
+MEDIUM     | pip                       | 26.0            | CVE-2026-6357             | 26.1
+MEDIUM     | pygments                  | 2.19.2          | CVE-2026-4539             | 2.20.0
+MEDIUM     | pyjwt                     | 2.10.1          | PYSEC-2026-120            | 2.12.0
+MEDIUM     | requests                  | 2.32.5          | CVE-2026-25645            | 2.33.0
+MEDIUM     | urllib3                   | 2.6.2           | PYSEC-2026-141            | 2.7.0
+MEDIUM     | werkzeug                  | 3.1.5           | CVE-2026-27199            | 3.1.6
