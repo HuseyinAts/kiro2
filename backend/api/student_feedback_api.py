@@ -25,7 +25,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -166,7 +166,7 @@ async def get_summary(
             StudentQuestionFlag.flag_type,
             func.count().label("total"),
             func.sum(
-                func.case(
+                case(
                     (StudentQuestionFlag.resolved_at.is_(None), 1),
                     else_=0,
                 )
