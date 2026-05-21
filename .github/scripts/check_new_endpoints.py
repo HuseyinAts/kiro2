@@ -53,18 +53,20 @@ SOFT_CHECKS: set[str] = {"C2", "C5", "C6", "C7"}
 # Hardcoded per task spec; do NOT pull from runtime config (CI runs without
 # backend up).
 PUBLIC_ENDPOINTS: tuple[str, ...] = (
-    "/auth/login",
-    "/auth/register",
-    "/auth/refresh",
-    "/auth/logout",
     "/auth/forgot-password",
+    "/auth/login",
+    "/auth/logout",
+    "/auth/refresh",
+    "/auth/register",
     "/auth/reset-password",
+    "/billing/webhook",  # External billing provider webhook — shared-secret auth via X-Kiro2-Billing-Secret header
+    "/docs",
     "/health",
     "/healthz",
-    "/docs",
+    "/metrics",
     "/openapi.json",
     "/redoc",
-    "/metrics",
+    "/web-vitals",  # Frontend telemetry (Google Web Vitals) — fire-and-forget, no PII, no DB writes
 )
 
 # Turkish allowlist — product names + regulation terms. Mirrors
@@ -102,6 +104,7 @@ AUTH_DEPENDS_RE = re.compile(
     # Depends(admin_kullanici_getir), Depends(mevcut_kullanici_getir), etc.
     r"Depends\s*\(\s*("
     r"get_current_user|get_current_active_user|get_authenticated_user|"
+    r"get_current_admin_user|get_current_teacher_user|get_current_student_user|"
     r"require_admin|require_admin_user|require_teacher|require_parent|"
     r"require_student|require_admin_or_teacher|"
     r"mevcut_kullanici_getir|admin_kullanici_getir|"
@@ -274,10 +277,17 @@ def check_c2_english_segment(ep: Endpoint) -> str | None:
     return None
 
 
-def check_c3_auth(ep: Endpoint) -> str | None:
-    """C3 — auth Depends required unless route is in public allowlist."""
+def check_c3_auth(ep: Endpoint, router_prefix: str = "") -> str | None:
+    """C3 — auth Depends required unless route is in public allowlist.
+
+    Allowlist match is performed against the *full* path
+    (`router_prefix + ep.path`) so that entries like `/billing/webhook` or
+    `/auth/login` match correctly when the decorator only carries the
+    suffix segment (`/webhook`, `/login`).
+    """
+    full_path = (router_prefix.rstrip("/") + "/" + ep.path.lstrip("/")).rstrip("/")
     for pub in PUBLIC_ENDPOINTS:
-        if pub in ep.path:
+        if pub in full_path or pub in ep.path:
             return None
     has_auth_dep = bool(AUTH_DEPENDS_RE.search(ep.function_body))
     has_user_param = bool(CURRENT_USER_PARAM_RE.search(ep.function_body))
@@ -379,7 +389,7 @@ def main() -> int:
             for code, fn in (
                 ("C1", lambda e=ep: check_c1_api_v1_prefix(e, router_prefix)),
                 ("C2", lambda e=ep: check_c2_english_segment(e)),
-                ("C3", lambda e=ep: check_c3_auth(e)),
+                ("C3", lambda e=ep, rp=router_prefix: check_c3_auth(e, rp)),
                 ("C4", lambda e=ep: check_c4_idor_user_id(e)),
                 ("C5", lambda e=ep: check_c5_response_model(e)),
                 ("C6", lambda e=ep: check_c6_loader_registered(e)),
