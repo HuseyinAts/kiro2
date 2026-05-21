@@ -390,7 +390,7 @@ Seçenekler:
             logger.info(f"Fine-tuning cancelled: {job_id}")
             return True
         except Exception as e:
-            logger.error(f"Failed to cancel fine-tuning: {e}")
+            logger.error(f"Failed to cancel fine-tuning: {e}", exc_info=True)
             return False
 
     def get_metrics_history(self) -> list[TrainingMetrics]:

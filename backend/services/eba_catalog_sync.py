@@ -72,7 +72,7 @@ class EBACatalogSyncService:
                 except Exception as e:
                     logger.error(
                         f"[EBA SYNC] Failed to sync {subject.value} - {grade_level.value}: {e}"
-                    )
+                    , exc_info=True)
                     stats["errors"] += 1
                     continue
 
@@ -130,7 +130,7 @@ class EBACatalogSyncService:
                     page += 1
 
             except Exception as e:
-                logger.error(f"Failed to fetch page {page}: {e}")
+                logger.error(f"Failed to fetch page {page}: {e}", exc_info=True)
                 await self.db.rollback()
                 has_more = False
 
@@ -248,7 +248,7 @@ class EBACatalogSyncService:
             return stats
 
         except Exception as e:
-            logger.error(f"[EBA SYNC] Incremental sync failed: {e}")
+            logger.error(f"[EBA SYNC] Incremental sync failed: {e}", exc_info=True)
             raise
 
     async def sync_by_curriculum_code(
@@ -302,7 +302,7 @@ class EBACatalogSyncService:
             return matching_videos
 
         except Exception as e:
-            logger.error(f"Failed to fetch videos for kazanım {kazanim_code}: {e}")
+            logger.error(f"Failed to fetch videos for kazanım {kazanim_code}: {e}", exc_info=True)
             return []
 
     async def get_sync_status(self) -> dict[str, Any]:
@@ -371,7 +371,7 @@ async def scheduled_eba_sync(db: AsyncSession, use_mock: bool = False):
         return stats
 
     except Exception as e:
-        logger.error(f"[SCHEDULED] EBA sync failed: {e}")
+        logger.error(f"[SCHEDULED] EBA sync failed: {e}", exc_info=True)
         raise
 
     finally:

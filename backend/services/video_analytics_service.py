@@ -4,6 +4,11 @@ Task 100: Video Analytics Service
 Service for video watch tracking, completion tracking, notes, and bookmarks
 """
 
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
+
 from datetime import datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4

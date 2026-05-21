@@ -243,7 +243,7 @@ class VideoRecommendationService:
             if isinstance(result, Exception):
                 logger.error(
                     f"[{request_id}] Error processing goal '{goals_to_process[i]}': {result!s}"
-                )
+                , exc_info=True)
             else:
                 recommendations.append(result)
 

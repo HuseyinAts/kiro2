@@ -4,6 +4,11 @@ Task 108: Whiteboard Service
 Service for managing interactive whiteboard with drawing tools and math equations.
 """
 
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
+
 import logging
 from datetime import UTC, datetime
 from typing import Any

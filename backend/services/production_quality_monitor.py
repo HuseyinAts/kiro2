@@ -185,7 +185,12 @@ class ProductionQualityMonitor:
 
     async def generate_report(self, last_n: int | None = None) -> str:
         """
-        Generate production quality report
+        Generate production quality report.
+
+        @TODO S179 fix (B-P0-69): cyclomatic complexity = 54 (F-grade).
+        Plan: split into report sections (per-subject / per-difficulty /
+        comparison). Testing this function as-is is nearly impossible.
+        Do NOT add new branches.
 
         Args:
             last_n: Only analyze last N questions (None = all)
@@ -229,13 +234,13 @@ class ProductionQualityMonitor:
 - Max Score: **{max(scores):.3f}**
 
 **Approval Breakdown**:
-- APPROVE: **{approvals}** ({approvals/total*100:.1f}%)
-- REVIEW: **{reviews}** ({reviews/total*100:.1f}%)
-- REJECT: **{rejects}** ({rejects/total*100:.1f}%)
+- APPROVE: **{approvals}** ({approvals / total * 100:.1f}%)
+- REVIEW: **{reviews}** ({reviews / total * 100:.1f}%)
+- REJECT: **{rejects}** ({rejects / total * 100:.1f}%)
 
 **Quality Targets**:
-- Questions >= 0.85: **{sum(1 for s in scores if s >= 0.85)}** ({sum(1 for s in scores if s >= 0.85)/total*100:.1f}%)
-- Approval Rate: **{approvals/total*100:.1f}%** (Target: 75-85%)
+- Questions >= 0.85: **{sum(1 for s in scores if s >= 0.85)}** ({sum(1 for s in scores if s >= 0.85) / total * 100:.1f}%)
+- Approval Rate: **{approvals / total * 100:.1f}%** (Target: 75-85%)
 
 ---
 
@@ -261,9 +266,9 @@ class ProductionQualityMonitor:
 - Score Range: {min(subject_scores):.3f} - {max(subject_scores):.3f}
 
 **Decisions**:
-- APPROVE: {subject_approvals} ({subject_approvals/len(subject_logs)*100:.1f}%)
-- REVIEW: {subject_reviews} ({subject_reviews/len(subject_logs)*100:.1f}%)
-- REJECT: {subject_rejects} ({subject_rejects/len(subject_logs)*100:.1f}%)
+- APPROVE: {subject_approvals} ({subject_approvals / len(subject_logs) * 100:.1f}%)
+- REVIEW: {subject_reviews} ({subject_reviews / len(subject_logs) * 100:.1f}%)
+- REJECT: {subject_rejects} ({subject_rejects / len(subject_logs) * 100:.1f}%)
 
 **Characteristics**:
 - Average Length: {avg_length:.0f} characters
@@ -292,13 +297,13 @@ class ProductionQualityMonitor:
 
 **First 10 Questions**:
 - Average Score: {statistics.mean([log.wave2b_score for log in logs[:10]]):.3f}
-- Approval Rate: {sum(1 for log in logs[:10] if log.decision == 'APPROVE')/10*100:.1f}%
+- Approval Rate: {sum(1 for log in logs[:10] if log.decision == "APPROVE") / 10 * 100:.1f}%
 
 **Last 10 Questions**:
 - Average Score: {statistics.mean([log.wave2b_score for log in logs[-10:]]):.3f}
-- Approval Rate: {sum(1 for log in logs[-10:] if log.decision == 'APPROVE')/10*100:.1f}%
+- Approval Rate: {sum(1 for log in logs[-10:] if log.decision == "APPROVE") / 10 * 100:.1f}%
 
-**Trend**: {'Improving' if statistics.mean([log.wave2b_score for log in logs[-10:]]) > statistics.mean([log.wave2b_score for log in logs[:10]]) else 'Stable/Declining'}
+**Trend**: {"Improving" if statistics.mean([log.wave2b_score for log in logs[-10:]]) > statistics.mean([log.wave2b_score for log in logs[:10]]) else "Stable/Declining"}
 
 """
 
@@ -314,7 +319,7 @@ class ProductionQualityMonitor:
 
         if approvals / total < 0.70:
             alerts.append(
-                f"[WARNING] Low approval rate ({approvals/total*100:.1f}% < 70%)"
+                f"[WARNING] Low approval rate ({approvals / total * 100:.1f}% < 70%)"
             )
 
         if statistics.mean(scores) < 0.80:
@@ -324,7 +329,7 @@ class ProductionQualityMonitor:
 
         if rejects / total > 0.10:
             alerts.append(
-                f"[WARNING] High reject rate ({rejects/total*100:.1f}% > 10%)"
+                f"[WARNING] High reject rate ({rejects / total * 100:.1f}% > 10%)"
             )
 
         # Subject-specific alerts
@@ -341,7 +346,7 @@ class ProductionQualityMonitor:
 
             if subject_approvals / len(subject_logs) < 0.60:
                 alerts.append(
-                    f"[WARNING] {subject} approval rate low ({subject_approvals/len(subject_logs)*100:.1f}% < 60%)"
+                    f"[WARNING] {subject} approval rate low ({subject_approvals / len(subject_logs) * 100:.1f}% < 60%)"
                 )
 
         if alerts:
@@ -382,7 +387,7 @@ Suggested Actions:
 **Questions Until Next Report**: {((total // 25) + 1) * 25 - total}
 
 **Monitor Status**: ACTIVE
-**Enhanced Templates**: {'ENABLED' if any(log.enhanced for log in logs) else 'DISABLED'}
+**Enhanced Templates**: {"ENABLED" if any(log.enhanced for log in logs) else "DISABLED"}
 """
 
         return report

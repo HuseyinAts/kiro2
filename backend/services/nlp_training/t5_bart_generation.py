@@ -412,7 +412,7 @@ Soru:"""
                     )
                     results.append(question)
                 except Exception as e:
-                    logger.error(f"Failed to generate question: {e}")
+                    logger.error(f"Failed to generate question: {e}", exc_info=True)
                     continue
 
         logger.info(f"Batch generated {len(results)} questions")

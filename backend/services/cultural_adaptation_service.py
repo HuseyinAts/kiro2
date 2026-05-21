@@ -149,7 +149,7 @@ class CulturalAdaptationService:
                 return result
 
         except Exception as e:
-            logger.error(f"Kültürel adaptasyon hesaplama hatası: {e}")
+            logger.error(f"Kültürel adaptasyon hesaplama hatası: {e}", exc_info=True)
             raise
 
     async def update_cultural_context(
@@ -181,7 +181,7 @@ class CulturalAdaptationService:
             )
 
         except Exception as e:
-            logger.error(f"Kültürel bağlam güncelleme hatası: {e}")
+            logger.error(f"Kültürel bağlam güncelleme hatası: {e}", exc_info=True)
             raise
 
     async def get_cultural_period_info(self, date: datetime = None) -> dict[str, Any]:

@@ -347,7 +347,7 @@ class HybridQuestionGenerator:
             return result
 
         except Exception as e:
-            logger.error(f"[ERROR] Failed to generate question: {e}")
+            logger.error(f"[ERROR] Failed to generate question: {e}", exc_info=True)
             raise
 
     async def generate_ensemble(
@@ -419,7 +419,7 @@ class HybridQuestionGenerator:
             return best_question
 
         except Exception as e:
-            logger.error(f"[ERROR] Ensemble generation failed: {e}")
+            logger.error(f"[ERROR] Ensemble generation failed: {e}", exc_info=True)
             # Fallback to single model
             return await self.generate_osym_quality_question(
                 subject=subject, topic=topic, difficulty=difficulty, exam_type=exam_type
@@ -468,7 +468,7 @@ class HybridQuestionGenerator:
             }
 
         except Exception as e:
-            logger.error(f"[ERROR] IRT calculation failed: {e}")
+            logger.error(f"[ERROR] IRT calculation failed: {e}", exc_info=True)
             # Default IRT parameters
             return {"difficulty": 0.0, "discrimination": 1.0, "guessing": 0.25}
 
@@ -485,7 +485,7 @@ class HybridQuestionGenerator:
             return {"complexity": complexity, "readability": readability}
 
         except Exception as e:
-            logger.error(f"[ERROR] Morphology analysis failed: {e}")
+            logger.error(f"[ERROR] Morphology analysis failed: {e}", exc_info=True)
             return {"complexity": 0.5, "readability": 0.5}
 
     def _calculate_quality_score(
@@ -625,7 +625,7 @@ class HybridQuestionGenerator:
             }
 
         except Exception as e:
-            logger.error(f"Wave 2B evaluation failed: {e}")
+            logger.error(f"Wave 2B evaluation failed: {e}", exc_info=True)
             return None
 
 

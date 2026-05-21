@@ -187,7 +187,7 @@ class EBATVClient:
                     continue
 
                 if e.response.status_code == 401:  # Unauthorized
-                    logger.error("API authentication failed. Check API key.")
+                    logger.error("API authentication failed. Check API key.", exc_info=True)
                     raise
 
                 if e.response.status_code >= 500:  # Server error
@@ -257,7 +257,7 @@ class EBATVClient:
             return videos
 
         except Exception as e:
-            logger.error(f"Failed to fetch video catalog: {e}")
+            logger.error(f"Failed to fetch video catalog: {e}", exc_info=True)
             raise
 
     def _parse_video_metadata(self, data: dict[str, Any]) -> EBAVideoMetadata:
@@ -343,7 +343,7 @@ class EBATVClient:
             return taxonomy
 
         except Exception as e:
-            logger.error(f"Failed to fetch subjects taxonomy: {e}")
+            logger.error(f"Failed to fetch subjects taxonomy: {e}", exc_info=True)
             # Return default taxonomy if API fails
             return self._get_default_taxonomy()
 
@@ -389,7 +389,7 @@ class EBATVClient:
             return response
 
         except Exception as e:
-            logger.error(f"Failed to fetch curriculum alignment: {e}")
+            logger.error(f"Failed to fetch curriculum alignment: {e}", exc_info=True)
             return {}
 
     async def close(self):

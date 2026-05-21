@@ -4,6 +4,11 @@ Task 105: Student Review Service
 Service layer for review management, moderation, and statistics
 """
 
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
+
 from datetime import UTC, datetime
 from uuid import UUID
 

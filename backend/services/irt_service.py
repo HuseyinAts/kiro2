@@ -166,7 +166,7 @@ class IRTService:
             return kalibrasyon_sonucu
 
         except Exception as e:
-            logger.error(f"IRT kalibrasyon hatası - Soru: {soru_id}, Hata: {e!s}")
+            logger.error(f"IRT kalibrasyon hatası - Soru: {soru_id}, Hata: {e!s}", exc_info=True)
             raise
 
     async def hesapla_cevap_olasiligi(
@@ -203,7 +203,7 @@ class IRTService:
             return temel_olasilik
 
         except Exception as e:
-            logger.error(f"Olasılık hesaplama hatası: {e!s}")
+            logger.error(f"Olasılık hesaplama hatası: {e!s}", exc_info=True)
             return 0.5  # Varsayılan olasılık
 
     async def hesapla_optimal_zorluk(
@@ -258,7 +258,7 @@ class IRTService:
             return max(-4.0, min(4.0, optimal_zorluk))
 
         except Exception as e:
-            logger.error(f"Optimal zorluk hesaplama hatası: {e!s}")
+            logger.error(f"Optimal zorluk hesaplama hatası: {e!s}", exc_info=True)
             return hedef_ogrenci_theta
 
     async def guncelle_ogrenci_morfoloji_profili(
@@ -353,7 +353,7 @@ class IRTService:
         except Exception as e:
             logger.error(
                 f"Profil güncelleme hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     async def analiz_et_soru_kalitesi(
@@ -428,7 +428,7 @@ class IRTService:
             return soru_analizi
 
         except Exception as e:
-            logger.error(f"Soru kalite analizi hatası - ID: {soru_id}, Hata: {e!s}")
+            logger.error(f"Soru kalite analizi hatası - ID: {soru_id}, Hata: {e!s}", exc_info=True)
             raise
 
     # Yardımcı metodlar
@@ -540,7 +540,7 @@ class IRTService:
             }
 
         except Exception as e:
-            logger.error(f"IRT kalibrasyon hatası: {e!s}")
+            logger.error(f"IRT kalibrasyon hatası: {e!s}", exc_info=True)
             # Hata durumunda başlangıç parametrelerini döndür
             return {
                 "discrimination": baslangic_parametreleri["discrimination"],
@@ -598,7 +598,7 @@ class IRTService:
             }
 
         except Exception as e:
-            logger.error(f"Model uyum hesaplama hatası: {e!s}")
+            logger.error(f"Model uyum hesaplama hatası: {e!s}", exc_info=True)
             return {
                 "log_likelihood": -1000.0,
                 "aic": 2000.0,

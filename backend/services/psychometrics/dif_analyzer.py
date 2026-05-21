@@ -147,7 +147,7 @@ class DIFAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Logistic regression DIF failed: {e}")
+            logger.error(f"Logistic regression DIF failed: {e}", exc_info=True)
             return {'error': str(e)}
 
     def analyze_item_dif(

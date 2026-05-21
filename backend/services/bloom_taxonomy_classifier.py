@@ -133,7 +133,7 @@ class BloomTaxonomyClassifier:
             logger.info("Model başarıyla yüklendi")
 
         except Exception as e:
-            logger.error(f"Model yükleme hatası: {e!s}")
+            logger.error(f"Model yükleme hatası: {e!s}", exc_info=True)
             raise
 
     def classify_question(self, question_text: str) -> tuple[int, str, float]:
@@ -241,7 +241,7 @@ class BloomTaxonomyClassifier:
             return bloom_level, confidence
 
         except Exception as e:
-            logger.error(f"ML classification hatası: {e!s}")
+            logger.error(f"ML classification hatası: {e!s}", exc_info=True)
             return 2, 0.5  # Fallback
 
     def train_model(self, training_data: list, validation_data: list):

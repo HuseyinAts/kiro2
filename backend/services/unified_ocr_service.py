@@ -120,10 +120,10 @@ class EasyOCREngine:
                 )
                 logger.info(f"EasyOCR initialized with languages: {self.languages}")
             except ImportError:
-                logger.error("EasyOCR not installed. Run: pip install easyocr")
+                logger.error("EasyOCR not installed. Run: pip install easyocr", exc_info=True)
                 raise
             except Exception as e:
-                logger.error(f"Failed to initialize EasyOCR: {e}")
+                logger.error(f"Failed to initialize EasyOCR: {e}", exc_info=True)
                 raise
         return self._reader
 
@@ -169,7 +169,7 @@ class PaddleOCREngine:
                 )
                 logger.info(f"PaddleOCR initialized with lang: {self.lang}")
             except ImportError:
-                logger.error("PaddleOCR not installed. Run: pip install paddlepaddle paddleocr")
+                logger.error("PaddleOCR not installed. Run: pip install paddlepaddle paddleocr", exc_info=True)
                 raise
         return self._ocr
 
@@ -236,7 +236,7 @@ class TesseractEngine:
             return boxes
 
         except ImportError:
-            logger.error("pytesseract not installed")
+            logger.error("pytesseract not installed", exc_info=True)
             return []
 
 
@@ -255,7 +255,7 @@ class ClaudeVisionEngine:
                 self._client = anthropic.Anthropic(api_key=self.api_key)
                 logger.info("Claude Vision initialized")
             except ImportError:
-                logger.error("anthropic not installed")
+                logger.error("anthropic not installed", exc_info=True)
         return self._client
 
     async def extract_async(self, image: np.ndarray) -> tuple[str, float]:
@@ -306,7 +306,7 @@ Sadece görüntüdeki metni döndür, başka açıklama yapma."""
             return text, 0.95  # Claude genellikle yüksek kalite
 
         except Exception as e:
-            logger.error(f"Claude Vision error: {e}")
+            logger.error(f"Claude Vision error: {e}", exc_info=True)
             return "", 0.0
 
 
@@ -583,7 +583,7 @@ class UnifiedOCRService:
             )
 
         except Exception as e:
-            logger.error(f"OCR error with {engine_type.value}: {e}")
+            logger.error(f"OCR error with {engine_type.value}: {e}", exc_info=True)
 
             # Fallback dene
             if engine_type != self.fallback_engine:
@@ -747,7 +747,7 @@ class UnifiedOCRService:
                     results['metadata'][class_name] = ocr_result.text
 
             except Exception as e:
-                logger.error(f"OCR error for detection: {e}")
+                logger.error(f"OCR error for detection: {e}", exc_info=True)
 
         results['processing_time_ms'] = (time.time() - start_time) * 1000
 

@@ -73,7 +73,7 @@ class BaseSolutionService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Solutions update error: {e!s}")
+            logger.error(f"Solutions update error: {e!s}", exc_info=True)
             return False
 
     def _sort_solutions(

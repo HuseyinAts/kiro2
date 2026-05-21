@@ -51,7 +51,7 @@ class SolutionComparisonMixin:
 
             return comparison
         except Exception as e:
-            logger.error(f"Karsilastirma hatasi: {e}")
+            logger.error(f"Karsilastirma hatasi: {e}", exc_info=True)
             return None
 
     def _build_side_by_side_comparison(

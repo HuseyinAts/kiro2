@@ -343,7 +343,7 @@ Sadece asagidaki JSON formatinda cevap ver:
             }
 
         except Exception as e:
-            logger.error(f"LLM analizi hatasi: {e}")
+            logger.error(f"LLM analizi hatasi: {e}", exc_info=True)
             return {
                 "relevance_score": 7.0,
                 "turkish_content": True,

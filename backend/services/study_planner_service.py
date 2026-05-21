@@ -179,7 +179,7 @@ async def create_or_update_plan(
         return _serialize_plan(plan)
 
     except Exception as exc:
-        logger.error(
+        logger.exception(
             "Study plan creation failed",
             extra_data={"student_id": student_id, "error": str(exc)},
         )

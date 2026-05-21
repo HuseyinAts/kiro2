@@ -135,7 +135,7 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Çözüm ekleme hatası: {e!s}")
+            logger.error(f"Çözüm ekleme hatası: {e!s}", exc_info=True)
             raise
 
     async def get_solutions(
@@ -189,7 +189,7 @@ class AlternativeSolutionsService(
             return solutions
 
         except Exception as e:
-            logger.error(f"Çözüm getirme hatası: {e!s}")
+            logger.error(f"Çözüm getirme hatası: {e!s}", exc_info=True)
             return []
 
     async def get_solution_by_id(
@@ -218,7 +218,7 @@ class AlternativeSolutionsService(
             return None
 
         except Exception as e:
-            logger.error(f"Çözüm detay hatası: {e!s}")
+            logger.error(f"Çözüm detay hatası: {e!s}", exc_info=True)
             return None
 
     async def update_solution(
@@ -283,7 +283,7 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Çözüm güncelleme hatası: {e!s}")
+            logger.error(f"Çözüm güncelleme hatası: {e!s}", exc_info=True)
             return False
 
     async def delete_solution(
@@ -340,7 +340,7 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Çözüm silme hatası: {e!s}")
+            logger.error(f"Çözüm silme hatası: {e!s}", exc_info=True)
             return False
 
     # ========================================================================
@@ -497,7 +497,7 @@ class AlternativeSolutionsService(
             return comparison
 
         except Exception as e:
-            logger.error(f"Karşılaştırma hatası: {e!s}")
+            logger.error(f"Karşılaştırma hatası: {e!s}", exc_info=True)
             return None
 
     def _build_side_by_side_comparison(
@@ -1060,7 +1060,7 @@ class AlternativeSolutionsService(
             return result
 
         except Exception as e:
-            logger.error(f"En hızlı çözüm hatası: {e!s}")
+            logger.error(f"En hızlı çözüm hatası: {e!s}", exc_info=True)
             return None
 
     def _estimate_solution_times(
@@ -1821,7 +1821,7 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Oylama hatası: {e!s}")
+            logger.error(f"Oylama hatası: {e!s}", exc_info=True)
             return {"success": False, "message": str(e)}
 
     async def get_statistics(self, question_id: str) -> dict[str, Any] | None:
@@ -1902,7 +1902,7 @@ class AlternativeSolutionsService(
             return stats
 
         except Exception as e:
-            logger.error(f"İstatistik hatası: {e!s}")
+            logger.error(f"İstatistik hatası: {e!s}", exc_info=True)
             return None
 
     # ========================================================================
@@ -2038,7 +2038,7 @@ class AlternativeSolutionsService(
             return student_solutions
 
         except Exception as e:
-            logger.error(f"Öğrenci çözümleri getirme hatası: {e!s}")
+            logger.error(f"Öğrenci çözümleri getirme hatası: {e!s}", exc_info=True)
             return []
 
     async def get_solution_reviews(
@@ -2099,7 +2099,7 @@ class AlternativeSolutionsService(
             return reviews
 
         except Exception as e:
-            logger.error(f"Review getirme hatası: {e!s}")
+            logger.error(f"Review getirme hatası: {e!s}", exc_info=True)
             return None
 
     async def get_top_rated_solutions(
@@ -2153,7 +2153,7 @@ class AlternativeSolutionsService(
             return top_solutions
 
         except Exception as e:
-            logger.error(f"Top rated çözümler hatası: {e!s}")
+            logger.error(f"Top rated çözümler hatası: {e!s}", exc_info=True)
             return []
 
     async def remove_vote(
@@ -2239,7 +2239,7 @@ class AlternativeSolutionsService(
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Oy geri çekme hatası: {e!s}")
+            logger.error(f"Oy geri çekme hatası: {e!s}", exc_info=True)
             return {"success": False, "message": str(e)}
 
     # ========================================================================

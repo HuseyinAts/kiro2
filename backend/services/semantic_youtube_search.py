@@ -225,7 +225,7 @@ class SemanticYouTubeSearch:
             logger.info("Fallback TF-IDF embedding sistemi hazır")
 
         except Exception as e:
-            logger.error(f"Fallback embedding hatası: {e!s}")
+            logger.error(f"Fallback embedding hatası: {e!s}", exc_info=True)
 
     def _get_text_embedding(self, text: str) -> np.ndarray:
         """Text'in embedding'ini hesapla (cache + fallback)"""
@@ -447,7 +447,7 @@ class SemanticYouTubeSearch:
                     semantic_matches.append(match)
 
                 except Exception as e:
-                    logger.error(f"Video scoring hatası: {e!s}")
+                    logger.error(f"Video scoring hatası: {e!s}", exc_info=True)
                     continue
 
             # Combined score'a göre sırala
@@ -463,7 +463,7 @@ class SemanticYouTubeSearch:
             return semantic_matches[:max_results]
 
         except Exception as e:
-            logger.error(f"Semantic arama hatası: {e!s}")
+            logger.error(f"Semantic arama hatası: {e!s}", exc_info=True)
             return []
 
     async def _fetch_youtube_videos(

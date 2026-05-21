@@ -160,7 +160,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru oluşturma hatası: {e!s}")
+            logger.error(f"Soru oluşturma hatası: {e!s}", exc_info=True)
             raise
 
     async def _upload_question_image(self, image_file: bytes, filename: str) -> str:
@@ -197,7 +197,7 @@ class QuestionCRUDService:
             return image_url
 
         except Exception as e:
-            logger.error(f"Görsel yükleme hatası: {e!s}")
+            logger.error(f"Görsel yükleme hatası: {e!s}", exc_info=True)
             raise
 
     async def _get_or_create_topic(
@@ -268,7 +268,7 @@ class QuestionCRUDService:
             return topic.id
 
         except Exception as e:
-            logger.error(f"Konu oluşturma hatası: {e!s}")
+            logger.error(f"Konu oluşturma hatası: {e!s}", exc_info=True)
             raise
 
     async def _add_question_tags(self, question_id: str, tags: list[str]) -> None:
@@ -319,7 +319,7 @@ class QuestionCRUDService:
             await self.db.commit()
 
         except Exception as e:
-            logger.error(f"Etiket ekleme hatası: {e!s}")
+            logger.error(f"Etiket ekleme hatası: {e!s}", exc_info=True)
             raise
 
     # ========================================================================
@@ -373,7 +373,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru güncelleme hatası: {e!s}")
+            logger.error(f"Soru güncelleme hatası: {e!s}", exc_info=True)
             raise
 
     async def _create_question_version(
@@ -423,7 +423,7 @@ class QuestionCRUDService:
             )
 
         except Exception as e:
-            logger.error(f"Versiyon oluşturma hatası: {e!s}")
+            logger.error(f"Versiyon oluşturma hatası: {e!s}", exc_info=True)
             # Versiyon oluşturma hatası kritik değil, devam et
 
     async def _get_next_version_number(self, question_id: str) -> int:
@@ -450,7 +450,7 @@ class QuestionCRUDService:
             return 1
 
         except Exception as e:
-            logger.error(f"Versiyon numarası alma hatası: {e!s}")
+            logger.error(f"Versiyon numarası alma hatası: {e!s}", exc_info=True)
             return 1
 
     async def get_question_history(self, question_id: str) -> list[dict[str, Any]]:
@@ -479,7 +479,7 @@ class QuestionCRUDService:
             return []
 
         except Exception as e:
-            logger.error(f"Geçmiş getirme hatası: {e!s}")
+            logger.error(f"Geçmiş getirme hatası: {e!s}", exc_info=True)
             return []
 
     # ========================================================================
@@ -523,7 +523,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru silme hatası: {e!s}")
+            logger.error(f"Soru silme hatası: {e!s}", exc_info=True)
             return False
 
     async def archive_question(self, question_id: str, archived_by: str) -> bool:
@@ -557,7 +557,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru arşivleme hatası: {e!s}")
+            logger.error(f"Soru arşivleme hatası: {e!s}", exc_info=True)
             return False
 
     async def restore_question(self, question_id: str, restored_by: str) -> bool:
@@ -592,7 +592,7 @@ class QuestionCRUDService:
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Soru geri yükleme hatası: {e!s}")
+            logger.error(f"Soru geri yükleme hatası: {e!s}", exc_info=True)
             return False
 
     async def get_archived_questions(
@@ -627,7 +627,7 @@ class QuestionCRUDService:
             return list(questions)
 
         except Exception as e:
-            logger.error(f"Arşiv sorgusu hatası: {e!s}")
+            logger.error(f"Arşiv sorgusu hatası: {e!s}", exc_info=True)
             return []
 
     # ========================================================================
@@ -771,7 +771,7 @@ class QuestionCRUDService:
             }
 
         except Exception as e:
-            logger.error(f"Arama hatası: {e!s}")
+            logger.error(f"Arama hatası: {e!s}", exc_info=True)
             return {
                 "questions": [],
                 "total_count": 0,
@@ -865,7 +865,7 @@ class QuestionCRUDService:
             return facet_results
 
         except Exception as e:
-            logger.error(f"Facet hesaplama hatası: {e!s}")
+            logger.error(f"Facet hesaplama hatası: {e!s}", exc_info=True)
             return {}
 
     async def advanced_search_with_elasticsearch(
@@ -953,7 +953,7 @@ class QuestionCRUDService:
             return []
 
         except Exception as e:
-            logger.error(f"Elasticsearch arama hatası: {e!s}")
+            logger.error(f"Elasticsearch arama hatası: {e!s}", exc_info=True)
             # Fallback: Normal arama yap
             search_result = await self.search_questions(
                 search_query=search_query, filters=filters, limit=limit
@@ -996,7 +996,7 @@ class QuestionCRUDService:
             return question
 
         except Exception as e:
-            logger.error(f"Soru getirme hatası: {e!s}")
+            logger.error(f"Soru getirme hatası: {e!s}", exc_info=True)
             return None
 
     async def bulk_create_questions(
@@ -1031,7 +1031,7 @@ class QuestionCRUDService:
             }
 
         except Exception as e:
-            logger.error(f"Toplu oluşturma hatası: {e!s}")
+            logger.error(f"Toplu oluşturma hatası: {e!s}", exc_info=True)
             return {
                 "success_count": 0,
                 "failed_count": len(questions_data),
@@ -1103,7 +1103,7 @@ class QuestionCRUDService:
             }
 
         except Exception as e:
-            logger.error(f"İstatistik hatası: {e!s}")
+            logger.error(f"İstatistik hatası: {e!s}", exc_info=True)
             return {}
 
     # ================================================================

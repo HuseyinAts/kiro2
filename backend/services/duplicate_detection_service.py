@@ -133,7 +133,7 @@ class DuplicateDetectionService:
             return True
 
         except Exception as e:
-            logger.error(f"Initialization failed: {e}")
+            logger.error(f"Initialization failed: {e}", exc_info=True)
             return False
 
     def _embed_text(self, text: str) -> list[float]:
@@ -230,7 +230,7 @@ class DuplicateDetectionService:
             )
 
         except Exception as e:
-            logger.error(f"Duplicate check failed: {e}")
+            logger.error(f"Duplicate check failed: {e}", exc_info=True)
             return DuplicateCheckResult(
                 status=DuplicateStatus.UNIQUE,
                 is_duplicate=False,
@@ -343,7 +343,7 @@ class DuplicateDetectionService:
             return True, question_id, check_result
 
         except Exception as e:
-            logger.error(f"Add failed: {e}")
+            logger.error(f"Add failed: {e}", exc_info=True)
             check_result.recommendation = f"Ekleme hatası: {e!s}"
             return False, "", check_result
 
@@ -432,7 +432,7 @@ class DuplicateDetectionService:
             )
 
         except Exception as e:
-            logger.error(f"Merge failed: {e}")
+            logger.error(f"Merge failed: {e}", exc_info=True)
             return MergeResult(
                 success=False,
                 merged_id=primary_id,
@@ -560,7 +560,7 @@ class DuplicateDetectionService:
             }
 
         except Exception as e:
-            logger.error(f"Stats failed: {e}")
+            logger.error(f"Stats failed: {e}", exc_info=True)
             return {"error": str(e)}
 
 

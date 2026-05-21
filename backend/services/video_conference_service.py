@@ -4,6 +4,11 @@ Task 108: Video Conference Service
 Service for managing video conferences with Zoom and Google Meet integration.
 """
 
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
+
 import hashlib
 import logging
 import secrets

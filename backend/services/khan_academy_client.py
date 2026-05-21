@@ -217,7 +217,7 @@ class KhanAcademyClient:
             }
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"[KHAN OAUTH] Token exchange failed: {e.response.text}")
+            logger.error(f"[KHAN OAUTH] Token exchange failed: {e.response.text}", exc_info=True)
             raise Exception(f"OAuth token exchange failed: {e.response.status_code}")
 
     async def refresh_access_token(self) -> dict[str, Any]:
@@ -259,7 +259,7 @@ class KhanAcademyClient:
             }
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"[KHAN OAUTH] Token refresh failed: {e.response.text}")
+            logger.error(f"[KHAN OAUTH] Token refresh failed: {e.response.text}", exc_info=True)
             raise Exception(f"Token refresh failed: {e.response.status_code}")
 
     async def _ensure_valid_token(self):
@@ -328,7 +328,7 @@ class KhanAcademyClient:
             return content_list
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"Failed to fetch Turkish content: {e.response.text}")
+            logger.error(f"Failed to fetch Turkish content: {e.response.text}", exc_info=True)
             raise
 
     def _parse_content_item(
@@ -413,7 +413,7 @@ class KhanAcademyClient:
             return progress_list
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"Failed to fetch user progress: {e.response.text}")
+            logger.error(f"Failed to fetch user progress: {e.response.text}", exc_info=True)
             raise
 
     def _parse_progress_item(
@@ -483,7 +483,7 @@ class KhanAcademyClient:
             return True
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"Failed to update progress: {e.response.text}")
+            logger.error(f"Failed to update progress: {e.response.text}", exc_info=True)
             return False
 
     # ============================================
@@ -517,7 +517,7 @@ class KhanAcademyClient:
             return certificates
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"Failed to fetch badges: {e.response.text}")
+            logger.error(f"Failed to fetch badges: {e.response.text}", exc_info=True)
             raise
 
     def _parse_badge(self, user_id: str, badge: dict[str, Any]) -> KhanCertificate:

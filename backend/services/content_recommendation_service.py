@@ -186,7 +186,7 @@ class ContentRecommendationService:
             return True
 
         except Exception as e:
-            logger.error(f"Initialization failed: {e}")
+            logger.error(f"Initialization failed: {e}", exc_info=True)
             return False
 
     def _embed_text(self, text: str) -> list[float]:
@@ -225,7 +225,7 @@ class ContentRecommendationService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to record interaction: {e}")
+            logger.error(f"Failed to record interaction: {e}", exc_info=True)
             return False
 
     def _update_ctr_tracking(self, interaction: UserInteraction) -> None:
@@ -484,7 +484,7 @@ class ContentRecommendationService:
             )
 
         except Exception as e:
-            logger.error(f"Cold start recommendations failed: {e}")
+            logger.error(f"Cold start recommendations failed: {e}", exc_info=True)
             return RecommendationResponse(
                 user_id=user_id,
                 recommendations=[],
@@ -567,7 +567,7 @@ class ContentRecommendationService:
             return recommendations
 
         except Exception as e:
-            logger.error(f"Hybrid recommendations failed: {e}")
+            logger.error(f"Hybrid recommendations failed: {e}", exc_info=True)
             return []
 
     def _get_collaborative_score(self, content_id: str, user_id: str) -> float:

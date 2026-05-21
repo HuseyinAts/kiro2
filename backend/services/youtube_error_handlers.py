@@ -108,7 +108,7 @@ class YouTubeAPIErrorHandler:
             return await self.get_mock_videos(context)
 
         except Exception as e:
-            logger.error(f"Error in error handler: {e!s}")
+            logger.error(f"Error in error handler: {e!s}", exc_info=True)
             return FallbackResponse(
                 videos=[], source="error", message=f"Hata yönetimi başarısız: {e!s}"
             )
@@ -151,7 +151,7 @@ class YouTubeAPIErrorHandler:
             )
 
         except Exception as e:
-            logger.error(f"Error getting cached videos: {e!s}")
+            logger.error(f"Error getting cached videos: {e!s}", exc_info=True)
             return FallbackResponse(
                 videos=[], source="cache", message=f"Cache hatası: {e!s}"
             )
@@ -194,7 +194,7 @@ class YouTubeAPIErrorHandler:
             )
 
         except Exception as e:
-            logger.error(f"Error getting mock videos: {e!s}")
+            logger.error(f"Error getting mock videos: {e!s}", exc_info=True)
             return FallbackResponse(
                 videos=[], source="mock", message=f"Mock data hatası: {e!s}"
             )
@@ -266,12 +266,12 @@ class YouTubeAPIErrorHandler:
                     )
                     await asyncio.sleep(wait_time)
                 else:
-                    logger.error(f"Max retries ({max_retries}) reached, giving up")
+                    logger.error(f"Max retries ({max_retries}) reached, giving up", exc_info=True)
                     raise last_error
 
             except (QuotaExceededError, InvalidAPIKeyError) as e:
                 # Bu hatalar için retry yapma, direkt fallback'e geç
-                logger.error(f"Non-retryable error: {type(e).__name__}")
+                logger.error(f"Non-retryable error: {type(e).__name__}", exc_info=True)
                 raise e
 
             except Exception as e:
@@ -285,7 +285,7 @@ class YouTubeAPIErrorHandler:
                     )
                     await asyncio.sleep(wait_time)
                 else:
-                    logger.error(f"Max retries ({max_retries}) reached")
+                    logger.error(f"Max retries ({max_retries}) reached", exc_info=True)
                     raise last_error
 
         # Bu noktaya gelmemeli ama güvenlik için
@@ -474,7 +474,7 @@ class ValidationErrorHandler:
                 )
 
         except Exception as e:
-            logger.error(f"Error handling validation failure: {e!s}")
+            logger.error(f"Error handling validation failure: {e!s}", exc_info=True)
 
     def get_failure_stats(self) -> dict[str, int]:
         """
@@ -538,7 +538,7 @@ class TimeoutHandler:
             return fallback_value
 
         except Exception as e:
-            logger.error(f"Error during timeout operation: {e!s}")
+            logger.error(f"Error during timeout operation: {e!s}", exc_info=True)
             return fallback_value
 
     async def with_timeout_and_retry(
@@ -590,12 +590,12 @@ class TimeoutHandler:
                 else:
                     logger.error(
                         f"Operation timed out after {max_retries + 1} attempts"
-                    )
+                    , exc_info=True)
                     raise last_error
 
             except Exception as e:
                 last_error = e
-                logger.error(f"Error during operation: {e!s}")
+                logger.error(f"Error during operation: {e!s}", exc_info=True)
                 raise e
 
         if last_error:

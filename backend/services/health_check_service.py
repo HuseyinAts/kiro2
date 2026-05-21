@@ -231,7 +231,7 @@ class HealthCheckService:
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            logger.error(f"YouTube API sağlık kontrolü başarısız: {e!s}")
+            logger.error(f"YouTube API sağlık kontrolü başarısız: {e!s}", exc_info=True)
 
             return ComponentHealth(
                 name="YouTube API",
@@ -293,7 +293,7 @@ class HealthCheckService:
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            logger.error(f"Database sağlık kontrolü başarısız: {e!s}")
+            logger.error(f"Database sağlık kontrolü başarısız: {e!s}", exc_info=True)
 
             return ComponentHealth(
                 name="Database",
@@ -339,7 +339,7 @@ class HealthCheckService:
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            logger.error(f"Redis Cache sağlık kontrolü başarısız: {e!s}")
+            logger.error(f"Redis Cache sağlık kontrolü başarısız: {e!s}", exc_info=True)
 
             return ComponentHealth(
                 name="Redis Cache",
@@ -519,7 +519,7 @@ class HealthCheckService:
         except Exception as e:
             error_msg = f"Database check failed: {e!s}"
             errors.append(error_msg)
-            logger.error(f"❌ {error_msg}")
+            logger.error(f"❌ {error_msg}", exc_info=True)
 
         # 2. Redis cache health check (Req 0.1)
         logger.info("💾 Redis Cache sağlık kontrolü yapılıyor...")
@@ -542,7 +542,7 @@ class HealthCheckService:
         except Exception as e:
             error_msg = f"Cache check failed: {e!s}"
             errors.append(error_msg)
-            logger.error(f"❌ {error_msg}")
+            logger.error(f"❌ {error_msg}", exc_info=True)
 
         # 3. YouTube API health check (Req 0.1)
         logger.info("🎥 YouTube API sağlık kontrolü yapılıyor...")
@@ -565,7 +565,7 @@ class HealthCheckService:
         except Exception as e:
             error_msg = f"YouTube API check failed: {e!s}"
             errors.append(error_msg)
-            logger.error(f"❌ {error_msg}")
+            logger.error(f"❌ {error_msg}", exc_info=True)
 
         # 4. Calculate startup time
         startup_time_ms = (time.time() - start_time) * 1000

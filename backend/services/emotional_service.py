@@ -24,7 +24,9 @@ try:
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
 
-from api.schemas.diary import (
+# B-P0-21: wrong-direction import (service→api). Plan: move to
+# services/schemas/diary.py in a separate sprint to break the cycle.
+from api.schemas.diary import (  # noqa: TID  # B-P0-21
     EmotionalStateCreate,
     MoodTrendResponse,
 )

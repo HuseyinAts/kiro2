@@ -193,6 +193,10 @@ SEÇENEKLER:
 
         return "\n".join(examples)
 
+    # S179 fix (B-P1-24): 17-parameter function (primitive obsession).
+    # Sprint plan: replace with `OsymGenerationRequest` Pydantic schema
+    # so swapped-position args (subject↔topic↔difficulty) become
+    # type errors at construction time. Do NOT add more params.
     async def generate_with_few_shot(
         self,
         subject: str,

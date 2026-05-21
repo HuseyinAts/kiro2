@@ -100,7 +100,7 @@ class SearchEngineMixin:
             return videos
 
         except Exception as e:
-            logger.error(f"Concurrent search error for '{query}': {e}")
+            logger.error(f"Concurrent search error for '{query}': {e}", exc_info=True)
             return []
 
     async def _search_youtube_direct(
@@ -156,7 +156,7 @@ class SearchEngineMixin:
             return videos[:max_results]
 
         except Exception as e:
-            logger.error(f"YouTube arama hatasi: {e}")
+            logger.error(f"YouTube arama hatasi: {e}", exc_info=True)
             return []
 
     def _extract_video_data(self: "YouTubeDiscovery", youtube_data: dict) -> list[dict]:
@@ -247,7 +247,7 @@ class SearchEngineMixin:
                     videos.append(video_data)
 
         except Exception as e:
-            logger.error(f"Video data extraction error: {e}")
+            logger.error(f"Video data extraction error: {e}", exc_info=True)
 
         return videos
 

@@ -7,6 +7,11 @@ PERFORMANCE FIX: Converted from sync SQLAlchemy (.query()) to async (.execute(se
 Previously: Sync calls blocked event loop for 50-200ms per query
 Now: Proper async operations allow concurrent request handling
 """
+
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
 import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any, Union

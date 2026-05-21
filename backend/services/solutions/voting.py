@@ -57,7 +57,7 @@ class SolutionVotingMixin:
                 "vote_type": vote_type,
             }
         except Exception as e:
-            logger.error(f"Oy verme hatasi: {e}")
+            logger.error(f"Oy verme hatasi: {e}", exc_info=True)
             return None
 
     async def get_statistics(
@@ -82,7 +82,7 @@ class SolutionVotingMixin:
                 "difficulty_distribution": self._get_difficulty_distribution(solutions),
             }
         except Exception as e:
-            logger.error(f"Istatistik hatasi: {e}")
+            logger.error(f"Istatistik hatasi: {e}", exc_info=True)
             return None
 
     def _calculate_average_difficulty(
@@ -143,5 +143,5 @@ class SolutionVotingMixin:
 
             return sorted_solutions[:limit]
         except Exception as e:
-            logger.error(f"Top rated hatasi: {e}")
+            logger.error(f"Top rated hatasi: {e}", exc_info=True)
             return []

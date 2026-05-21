@@ -104,7 +104,7 @@ class DistractorGenerationSystem:
             return scored_distractors[:count]
 
         except Exception as e:
-            logger.error(f"Celdirici uretim hatasi: {e}")
+            logger.error(f"Celdirici uretim hatasi: {e}", exc_info=True)
             return self._generate_fallback_distractors(correct_answer, count)
 
     def _generate_misconception_distractors(
@@ -169,7 +169,7 @@ CIKTI FORMATI (JSON):
                 ]
 
         except Exception as e:
-            logger.error(f"LLM celdirici uretim hatasi: {e}")
+            logger.error(f"LLM celdirici uretim hatasi: {e}", exc_info=True)
 
         return []
 

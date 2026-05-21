@@ -3,6 +3,11 @@ Soru bankası yönetimi servisi
 Gelişmiş IRT parametreli soru seçimi ve database entegrasyonu ile
 """
 
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
+
 import logging
 import math
 import random
@@ -371,7 +376,7 @@ class SoruBankasiServisi:
 
                 return soru
             except Exception as e:
-                logger.error(f"Soru getirme hatası: {e}")
+                logger.error(f"Soru getirme hatası: {e}", exc_info=True)
                 return None
 
     async def sorular_listele(
@@ -441,7 +446,7 @@ class SoruBankasiServisi:
                 return questions
 
             except Exception as e:
-                logger.error(f"Soru listeleme hatası: {e}")
+                logger.error(f"Soru listeleme hatası: {e}", exc_info=True)
                 return []
 
     async def rastgele_sorular_sec(
@@ -543,7 +548,7 @@ class SoruBankasiServisi:
                 return secilen_sorular
 
             except Exception as e:
-                logger.error(f"Rastgele soru seçimi hatası: {e}")
+                logger.error(f"Rastgele soru seçimi hatası: {e}", exc_info=True)
                 return []
 
     async def get_interleaved_questions(
@@ -599,6 +604,13 @@ class SoruBankasiServisi:
         # AMA sözel branşlarda paragraf bazlı sorular zaten image gerektiriyor
         # (yukarıdaki parça/şu cümlede vb.) — exclude EDEBIYAT pool'unu 2618 → 38'e düşürüyor.
         # Subject-aware: sayısal EXCLUDE, sözel KEEP.
+        #
+        # S179 fix (B-P0-20): EDEBIYAT 3/10 + COGRAFYA 4/10 UNSAFE content
+        # rating from `content_quality_llm_review.md` — Gemini Flash
+        # hallucinated author/work pairings (Hemingway / Stendhal /
+        # "Pürranameler"). Filter both subjects until the rationale
+        # regen sprint (B-P0-18) lands. Override with env
+        # KIRO2_ALLOW_UNSAFE_SUBJECTS=true for QA testing.
         _quantitative_subjects = {
             "MATEMATIK",
             "FIZIK",
@@ -607,6 +619,16 @@ class SoruBankasiServisi:
             "BIYOLOJI",
             "COGRAFYA",
         }
+        import os as _os
+
+        if _os.environ.get("KIRO2_ALLOW_UNSAFE_SUBJECTS", "").lower() not in (
+            "1",
+            "true",
+            "yes",
+        ):
+            # Treat the audit-flagged subjects as quantitative-equivalent
+            # so the rest of the exclusion logic also blocks them.
+            _quantitative_subjects = _quantitative_subjects | {"EDEBIYAT"}
         _has_quantitative = bool(set(subjects_upper) & _quantitative_subjects)
 
         # Bug #11 fix (18 May 2026): IMAGE-REQUIRED soruları HARIÇ.
@@ -708,7 +730,7 @@ class SoruBankasiServisi:
                 return result_list
 
             except Exception as e:
-                logger.error(f"get_interleaved_questions hatası: {e}")
+                logger.error(f"get_interleaved_questions hatası: {e}", exc_info=True)
                 return []
 
     async def get_exit_quiz_questions(
@@ -874,7 +896,7 @@ class SoruBankasiServisi:
                 return questions
 
             except Exception as e:
-                logger.error(f"get_exit_quiz_questions hatası: {e}")
+                logger.error(f"get_exit_quiz_questions hatası: {e}", exc_info=True)
                 return []
 
     async def irt_parametreli_soru_sec(
@@ -965,7 +987,7 @@ class SoruBankasiServisi:
             return secilen_sorular
 
         except Exception as e:
-            logger.error(f"IRT parametreli soru seçimi hatası: {e}")
+            logger.error(f"IRT parametreli soru seçimi hatası: {e}", exc_info=True)
             # Fallback: Normal rastgele seçim
             return await self.rastgele_sorular_sec(sinav_tipi, soru_sayisi)
 
@@ -1003,7 +1025,7 @@ class SoruBankasiServisi:
             return max(0.0, bilgi)
 
         except Exception as e:
-            logger.error(f"Bilgi fonksiyonu hesaplama hatası: {e}")
+            logger.error(f"Bilgi fonksiyonu hesaplama hatası: {e}", exc_info=True)
             return 0.0
 
     async def _hesapla_dogru_cevap_olasiligi(
@@ -1027,7 +1049,7 @@ class SoruBankasiServisi:
             return max(tahmin, min(1.0, olaslik))
 
         except Exception as e:
-            logger.error(f"Olasılık hesaplama hatası: {e}")
+            logger.error(f"Olasılık hesaplama hatası: {e}", exc_info=True)
             return 0.5
 
     async def soru_guncelle(
@@ -1087,7 +1109,7 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                logger.error(f"Soru güncelleme hatası: {e}")
+                logger.error(f"Soru güncelleme hatası: {e}", exc_info=True)
                 return None
 
     async def soru_sil(self, soru_id: str) -> bool:
@@ -1122,7 +1144,7 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                logger.error(f"Soru silme hatası: {e}")
+                logger.error(f"Soru silme hatası: {e}", exc_info=True)
                 return False
 
     async def konu_listesi_getir(self, sinav_tipi: str | None = None) -> list[str]:
@@ -1158,7 +1180,7 @@ class SoruBankasiServisi:
                 return sorted([subject.value for subject in subject_areas])
 
             except Exception as e:
-                logger.error(f"Konu listesi getirme hatası: {e}")
+                logger.error(f"Konu listesi getirme hatası: {e}", exc_info=True)
                 return []
 
     async def istatistikler_getir(self) -> dict:
@@ -1252,7 +1274,7 @@ class SoruBankasiServisi:
                 }
 
             except Exception as e:
-                logger.error(f"İstatistik hesaplama hatası: {e}")
+                logger.error(f"İstatistik hesaplama hatası: {e}", exc_info=True)
                 return {
                     "toplam_soru_sayisi": 0,
                     "sinav_tipi_dagilimi": {},
@@ -1402,7 +1424,7 @@ class SoruBankasiServisi:
                 return result.scalars().all()
 
             except Exception as e:
-                logger.error(f"Zorluk filtrele hatası: {e}")
+                logger.error(f"Zorluk filtrele hatası: {e}", exc_info=True)
                 return []
 
     async def toplu_soru_ekle(self, sorular_listesi: list[dict]) -> dict[str, int]:
@@ -1537,7 +1559,7 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                logger.error(f"Performans güncelleme hatası: {e}")
+                logger.error(f"Performans güncelleme hatası: {e}", exc_info=True)
                 return False
 
     async def irt_parametrelerini_yeniden_hesapla(self, soru_id: str) -> bool:
@@ -1589,7 +1611,7 @@ class SoruBankasiServisi:
 
             except Exception as e:
                 await session.rollback()
-                logger.error(f"IRT parametresi güncelleme hatası: {e}")
+                logger.error(f"IRT parametresi güncelleme hatası: {e}", exc_info=True)
                 return False
 
 

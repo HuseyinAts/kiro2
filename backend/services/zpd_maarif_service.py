@@ -260,7 +260,7 @@ class ZPDMaarifService:
         except Exception as e:
             logger.error(
                 f"ZPD hesaplama hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     async def optimize_zpd_parametreleri(
@@ -343,7 +343,7 @@ class ZPDMaarifService:
         except Exception as e:
             logger.error(
                 f"ZPD optimizasyon hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     # Yardımcı metodlar
@@ -840,7 +840,7 @@ class ZPDMaarifService:
         except Exception as e:
             logger.error(
                 f"DEVRİMSEL ZPD hesaplama hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     async def generate_revolutionary_recommendation(
@@ -887,7 +887,7 @@ class ZPDMaarifService:
         except Exception as e:
             logger.error(
                 f"DEVRİMSEL öneri oluşturma hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     async def adapt_difficulty_culturally_revolutionary(
@@ -926,7 +926,7 @@ class ZPDMaarifService:
         except Exception as e:
             logger.error(
                 f"DEVRİMSEL zorluk adaptasyon hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     async def monitor_cultural_learning_patterns_revolutionary(
@@ -951,7 +951,7 @@ class ZPDMaarifService:
         except Exception as e:
             logger.error(
                 f"DEVRİMSEL kalıp analizi hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     async def calculate_maarif_alignment_revolutionary(
@@ -976,7 +976,7 @@ class ZPDMaarifService:
         except Exception as e:
             logger.error(
                 f"DEVRİMSEL Maarif uyum hatası - Konu: {subject}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     async def get_revolutionary_learning_balance(
@@ -1029,5 +1029,5 @@ class ZPDMaarifService:
         except Exception as e:
             logger.error(
                 f"DEVRİMSEL öğrenme dengesi hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise

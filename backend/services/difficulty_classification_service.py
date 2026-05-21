@@ -550,7 +550,7 @@ class DifficultyClassificationService:
                 )
                 results[question_id] = classification
             except Exception as e:
-                logger.error(f"Failed to update difficulty for {question_id}: {e}")
+                logger.error(f"Failed to update difficulty for {question_id}: {e}", exc_info=True)
                 continue
 
         logger.info(f"Batch updated {len(results)} question difficulties")

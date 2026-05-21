@@ -84,7 +84,7 @@ class PDFLayoutAnalyzer:
                 }
 
         except Exception as e:
-            logger.error(f"PDF layout analysis failed: {e}")
+            logger.error(f"PDF layout analysis failed: {e}", exc_info=True)
             raise
 
     def _extract_tables(self, page) -> list[dict[str, Any]]:
@@ -200,7 +200,7 @@ class PDFLayoutAnalyzer:
             return text
 
         except Exception as e:
-            logger.error(f"OCR failed: {e}")
+            logger.error(f"OCR failed: {e}", exc_info=True)
             return ""
 
     def _extract_questions_from_pages(self, pages: list[dict]) -> list[dict[str, Any]]:
@@ -280,7 +280,7 @@ class PDFLayoutAnalyzer:
                             break
 
         except Exception as e:
-            logger.error(f"Metadata extraction failed: {e}")
+            logger.error(f"Metadata extraction failed: {e}", exc_info=True)
 
         return metadata
 

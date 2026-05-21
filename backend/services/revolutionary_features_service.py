@@ -219,7 +219,7 @@ class RevolutionaryFeaturesService:
             return profile
 
         except Exception as e:
-            logger.error(f"Hibrit öğrenme stili tespit hatası: {e}")
+            logger.error(f"Hibrit öğrenme stili tespit hatası: {e}", exc_info=True)
             raise
 
     async def _calculate_vark_profile(
@@ -591,7 +591,7 @@ class RevolutionaryFeaturesService:
             return zpd_range
 
         except Exception as e:
-            logger.error(f"ZPD hesaplama hatası: {e}")
+            logger.error(f"ZPD hesaplama hatası: {e}", exc_info=True)
             raise
 
     async def detect_cultural_context(
@@ -802,7 +802,7 @@ class RevolutionaryFeaturesService:
             return recommendation
 
         except Exception as e:
-            logger.error(f"Öneri oluşturma hatası: {e}")
+            logger.error(f"Öneri oluşturma hatası: {e}", exc_info=True)
             raise
 
     def _generate_reasoning(

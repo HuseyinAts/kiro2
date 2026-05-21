@@ -184,7 +184,7 @@ class LearningStyleService:
         except Exception as e:
             logger.error(
                 f"Öğrenme stili tespit hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     async def _calculate_vark_profile(
@@ -614,7 +614,7 @@ class LearningStyleService:
         except Exception as e:
             logger.error(
                 f"Öğrenme önerileri hatası - Öğrenci: {student_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     def _generate_hibrit_code(

@@ -408,7 +408,7 @@ class MathVerificationService:
             )
 
         except Exception as e:
-            logger.error(f"Algebra verification error: {e}")
+            logger.error(f"Algebra verification error: {e}", exc_info=True)
             return VerificationResult(
                 is_correct=False,
                 confidence=0.0,
@@ -508,7 +508,7 @@ class MathVerificationService:
             )
 
         except Exception as e:
-            logger.error(f"Calculus verification error: {e}")
+            logger.error(f"Calculus verification error: {e}", exc_info=True)
             return VerificationResult(
                 is_correct=False,
                 confidence=0.0,
@@ -591,7 +591,7 @@ class MathVerificationService:
             )
 
         except Exception as e:
-            logger.error(f"Geometry verification error: {e}")
+            logger.error(f"Geometry verification error: {e}", exc_info=True)
             return VerificationResult(
                 is_correct=False,
                 confidence=0.0,

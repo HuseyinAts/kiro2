@@ -315,7 +315,7 @@ class TurkishContentFilter:
             return result
 
         except Exception as e:
-            logger.error(f"Turkish validation error: {e!s}")
+            logger.error(f"Turkish validation error: {e!s}", exc_info=True)
             # Hata durumunda güvenli tarafta kal
             return TurkishValidationResult(
                 is_turkish=False,
@@ -575,7 +575,7 @@ class TurkishContentFilter:
             return passed_videos
 
         except Exception as e:
-            logger.error(f"Video filtering error: {e!s}")
+            logger.error(f"Video filtering error: {e!s}", exc_info=True)
             # Hata durumunda orijinal listeyi döndür
             return videos
 
@@ -665,7 +665,7 @@ class TurkishContentFilter:
             )
 
         except Exception as e:
-            logger.error(f"Video evaluation error: {e!s}")
+            logger.error(f"Video evaluation error: {e!s}", exc_info=True)
             # Hata durumunda videoyu geçir
             return FilterResult(
                 video=video,

@@ -5,6 +5,11 @@ Haftalık tier tabanlı sıralama: BRONZE → SILVER → GOLD → PLATINUM → C
 Her hafta üst %10 yükselir, alt %10 düşer. XP haftalık sıfırlanır.
 """
 
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
+
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
@@ -315,7 +320,7 @@ async def process_weekly_reset(*, db: AsyncSession) -> dict:
         }
 
     except Exception as exc:
-        logger.error(
+        logger.exception(
             "Weekly reset failed",
             extra_data={"error": str(exc)},
         )

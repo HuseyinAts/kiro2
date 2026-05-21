@@ -168,7 +168,7 @@ class VisualGenerationEngine:
             }
 
         except Exception as e:
-            logger.error(f"Grafik olusturma hatasi: {e}")
+            logger.error(f"Grafik olusturma hatasi: {e}", exc_info=True)
             return {"success": False, "error": str(e)}
 
     def generate_geometry_figure(
@@ -259,7 +259,7 @@ class VisualGenerationEngine:
             }
 
         except Exception as e:
-            logger.error(f"Geometrik sekil olusturma hatasi: {e}")
+            logger.error(f"Geometrik sekil olusturma hatasi: {e}", exc_info=True)
             return {"success": False, "error": str(e)}
 
     def generate_chart(
@@ -335,7 +335,7 @@ class VisualGenerationEngine:
             }
 
         except Exception as e:
-            logger.error(f"Grafik olusturma hatasi: {e}")
+            logger.error(f"Grafik olusturma hatasi: {e}", exc_info=True)
             return {"success": False, "error": str(e)}
 
     def generate_interactive_plot(
@@ -395,5 +395,5 @@ class VisualGenerationEngine:
             return {"success": True, "html": html_str, "plot_type": plot_type}
 
         except Exception as e:
-            logger.error(f"Interaktif grafik olusturma hatasi: {e}")
+            logger.error(f"Interaktif grafik olusturma hatasi: {e}", exc_info=True)
             return {"success": False, "error": str(e)}

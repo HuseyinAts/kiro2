@@ -64,7 +64,7 @@ class GeminiOCRService:
             )
             logger.info("Gemini OCR service initialized")
         except Exception as e:
-            logger.error(f"Failed to initialize Gemini: {e}")
+            logger.error(f"Failed to initialize Gemini: {e}", exc_info=True)
             self.model = None
 
         # Tezdeki prompt stratejisi
@@ -152,7 +152,7 @@ class GeminiOCRService:
             return data
 
         except Exception as e:
-            logger.error(f"OCR hatası: {e}")
+            logger.error(f"OCR hatası: {e}", exc_info=True)
             return None
 
     async def extract_metadata(self, image: np.ndarray, metadata_type: str) -> str:
@@ -188,7 +188,7 @@ class GeminiOCRService:
             return response.text.strip()
 
         except Exception as e:
-            logger.error(f"Metadata OCR hatası: {e}")
+            logger.error(f"Metadata OCR hatası: {e}", exc_info=True)
             return ""
 
     async def batch_process(self, images: list[np.ndarray], types: list[str]) -> list[Any]:
@@ -232,7 +232,7 @@ class GeminiOCRService:
                         return result
                     except Exception as e:
                         if attempt == max_retries - 1:
-                            logger.error(f"OCR failed for image {idx}: {e}")
+                            logger.error(f"OCR failed for image {idx}: {e}", exc_info=True)
                             return None
                         await asyncio.sleep(2 ** attempt)  # Exponential backoff
 

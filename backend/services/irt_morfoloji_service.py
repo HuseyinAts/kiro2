@@ -146,7 +146,7 @@ class IRTMorfolojiService:
             return soru_analizi
 
         except Exception as e:
-            logger.error(f"Tam soru analizi hatası - ID: {soru_id}, Hata: {e!s}")
+            logger.error(f"Tam soru analizi hatası - ID: {soru_id}, Hata: {e!s}", exc_info=True)
             await self._guncelle_performans_metrikleri(baslangic_zamani, False)
             raise
 
@@ -202,7 +202,7 @@ class IRTMorfolojiService:
             }
 
         except Exception as e:
-            logger.error(f"Hızlı değerlendirme hatası: {e!s}")
+            logger.error(f"Hızlı değerlendirme hatası: {e!s}", exc_info=True)
             raise
 
     async def ogrenci_uyumlu_soru_onerisi(
@@ -282,7 +282,7 @@ class IRTMorfolojiService:
             return oneriler[:10]  # En iyi 10 öneri
 
         except Exception as e:
-            logger.error(f"Soru önerisi hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}")
+            logger.error(f"Soru önerisi hatası - Öğrenci: {ogrenci_id}, Hata: {e!s}", exc_info=True)
             raise
 
     async def toplu_soru_kalite_analizi(
@@ -356,7 +356,7 @@ class IRTMorfolojiService:
             }
 
         except Exception as e:
-            logger.error(f"Toplu analiz hatası: {e!s}")
+            logger.error(f"Toplu analiz hatası: {e!s}", exc_info=True)
             raise
 
     async def osym_ets_karsilastirma_raporu(self, soru_id: str) -> dict[str, Any]:
@@ -450,7 +450,7 @@ class IRTMorfolojiService:
         except Exception as e:
             logger.error(
                 f"ÖSYM/ETS karşılaştırma hatası - Soru: {soru_id}, Hata: {e!s}"
-            )
+            , exc_info=True)
             raise
 
     # Yardımcı metodlar

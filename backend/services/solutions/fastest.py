@@ -42,7 +42,7 @@ class FastestSolutionMixin:
                 "shortcuts": self._identify_shortcuts([fastest]),
             }
         except Exception as e:
-            logger.error(f"En hizli cozum hatasi: {e}")
+            logger.error(f"En hizli cozum hatasi: {e}", exc_info=True)
             return None
 
     def _calculate_time_saved(

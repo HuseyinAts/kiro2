@@ -116,7 +116,7 @@ class KhanContentSyncService:
                 )
 
             except Exception as e:
-                logger.error(f"[KHAN SYNC] Failed to sync {subject.value}: {e}")
+                logger.error(f"[KHAN SYNC] Failed to sync {subject.value}: {e}", exc_info=True)
                 stats["errors"] += 1
                 # Rollback on error to avoid partial commits
                 await self.db.rollback()
@@ -301,7 +301,7 @@ class KhanProgressSyncService:
             return stats
 
         except Exception as e:
-            logger.error(f"[KHAN PROGRESS] Pull sync failed: {e}")
+            logger.error(f"[KHAN PROGRESS] Pull sync failed: {e}", exc_info=True)
             await self.db.rollback()
             raise
 
@@ -397,7 +397,7 @@ class KhanProgressSyncService:
             return success
 
         except Exception as e:
-            logger.error(f"[KHAN PROGRESS] Push failed for {content_id}: {e}")
+            logger.error(f"[KHAN PROGRESS] Push failed for {content_id}: {e}", exc_info=True)
             await self.db.rollback()
             return False
 
@@ -464,7 +464,7 @@ async def scheduled_khan_sync(db: AsyncSession, use_mock: bool = False):
         return stats
 
     except Exception as e:
-        logger.error(f"[SCHEDULED] Khan sync failed: {e}")
+        logger.error(f"[SCHEDULED] Khan sync failed: {e}", exc_info=True)
         raise
 
     finally:

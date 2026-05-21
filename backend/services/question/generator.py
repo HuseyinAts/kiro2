@@ -145,7 +145,7 @@ class TopicBasedQuestionGenerator:
             return generated_question
 
         except Exception as e:
-            logger.error(f"Soru uretim hatasi: {e}")
+            logger.error(f"Soru uretim hatasi: {e}", exc_info=True)
             return None
 
     def _inject_context(
@@ -227,7 +227,7 @@ Lutfen OSYM standartlarina uygun, Turkce dilbilgisi kurallarina uygun, net ve an
                 "explanation": data.get("explanation", ""),
             }
         except json.JSONDecodeError:
-            logger.error("LLM yaniti JSON formatinda degil")
+            logger.error("LLM yaniti JSON formatinda degil", exc_info=True)
             return self._generate_mock_question(
                 SubjectType.MATEMATIK, "Mock", DifficultyLevel.ORTA
             )

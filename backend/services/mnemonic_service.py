@@ -97,7 +97,7 @@ async def generate_mnemonic(
             "generated": True,
         }
     except Exception as e:
-        logger.error(f"Mnemonic generation failed: {e}")
+        logger.error(f"Mnemonic generation failed: {e}", exc_info=True)
         return {"error": f"Mnemonic üretilemedi: {e!s}"}
 
 

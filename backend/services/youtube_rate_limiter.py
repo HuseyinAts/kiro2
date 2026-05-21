@@ -103,7 +103,7 @@ class YouTubeRateLimiter:
             return True
 
         except Exception as e:
-            logger.error(f"YouTube rate limiter başlatma hatası: {e}")
+            logger.error(f"YouTube rate limiter başlatma hatası: {e}", exc_info=True)
             # Fallback: yeni quota bilgisi oluştur
             self._quota_info = YouTubeQuotaInfo()
             return False
@@ -257,7 +257,7 @@ class YouTubeRateLimiter:
 
         # Kritik seviye (%95+)
         if usage_ratio >= self.QUOTA_CRITICAL_THRESHOLD:
-            logger.error(
+            logger.exception(
                 f"[CRITICAL] YouTube API quota kritik seviyede: %{usage_ratio * 100:.1f}",
                 extra_data={
                     "used_quota": self._quota_info.used_quota,
@@ -296,7 +296,7 @@ class YouTubeRateLimiter:
             await cache_manager.set(self.cache_key, quota_dict, ttl=90000)  # 25 hours
 
         except Exception as e:
-            logger.error(f"Quota bilgisi kaydetme hatası: {e}")
+            logger.error(f"Quota bilgisi kaydetme hatası: {e}", exc_info=True)
 
     def should_use_cache(self) -> bool:
         """

@@ -283,7 +283,7 @@ class EnhancedBloomClassifier:
             )
 
         except Exception as e:
-            logger.error(f"TF-IDF classification failed: {e}")
+            logger.error(f"TF-IDF classification failed: {e}", exc_info=True)
             return self._classify_keyword(question_text)
 
     def _classify_bert(self, question_text: str) -> BloomPrediction:

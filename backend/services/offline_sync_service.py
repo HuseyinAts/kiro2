@@ -55,16 +55,21 @@ async def build_sync_package(
     # ------------------------------------------------------------------
     # 1. Fetch FSRS due cards
     # ------------------------------------------------------------------
-    fsrs_query = select(FSRSCard).where(
-        and_(
-            FSRSCard.student_id == student_id,
-            FSRSCard.due_date <= now,
+    fsrs_query = (
+        select(FSRSCard)
+        .where(
+            and_(
+                FSRSCard.student_id == student_id,
+                FSRSCard.due_date <= now,
+            )
         )
-    ).limit(min(limit, 50))
+        .limit(min(limit, 50))
+    )
 
     if subject:
         # FSRSCard.subject_area is an Enum; compare by value string
         from models.enums_db import SubjectArea
+
         try:
             subject_enum = SubjectArea(subject.lower())
             fsrs_query = fsrs_query.where(FSRSCard.subject_area == subject_enum)
@@ -281,12 +286,14 @@ async def process_sync_results(
 
             # Update FSRS card if one exists for this student and matches topic
             card_result = await db.execute(
-                select(FSRSCard).where(
+                select(FSRSCard)
+                .where(
                     and_(
                         FSRSCard.student_id == student_id,
                         FSRSCard.front_text.contains(question_id),
                     )
-                ).limit(1)
+                )
+                .limit(1)
             )
             card = card_result.scalar_one_or_none()
             if card is not None:
@@ -298,9 +305,10 @@ async def process_sync_results(
             synced += 1
 
         except Exception as exc:
-            logger.error(
-                f"Failed to process offline result: {exc}",
-                extra_data={"student_id": student_id, "item": item},
+            logger.exception(
+                "Failed to process offline result: %s",
+                exc,
+                extra={"student_id": student_id, "item": item},
             )
             failed += 1
 
@@ -405,7 +413,9 @@ async def get_sync_status(*, db: AsyncSession, student_id: str) -> dict[str, Any
 
     # Count FSRS cards that are currently due (proxy for pending review work)
     pending_result = await db.execute(
-        select(func.count()).select_from(FSRSCard).where(
+        select(func.count())
+        .select_from(FSRSCard)
+        .where(
             and_(
                 FSRSCard.student_id == student_id,
                 FSRSCard.due_date <= now,
@@ -416,9 +426,7 @@ async def get_sync_status(*, db: AsyncSession, student_id: str) -> dict[str, Any
 
     # Last review time across all FSRS cards
     last_review_result = await db.execute(
-        select(func.max(FSRSCard.last_review)).where(
-            FSRSCard.student_id == student_id
-        )
+        select(func.max(FSRSCard.last_review)).where(FSRSCard.student_id == student_id)
     )
     last_review: datetime | None = last_review_result.scalar_one_or_none()
 

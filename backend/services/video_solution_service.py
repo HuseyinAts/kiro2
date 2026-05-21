@@ -252,7 +252,7 @@ class VideoValidator:
             return True, None, properties
 
         except Exception as e:
-            logger.error(f"Video properties validation error: {e}")
+            logger.error(f"Video properties validation error: {e}", exc_info=True)
             return False, f"Video analiz hatası: {e!s}", None
 
 
@@ -341,7 +341,7 @@ class VideoProcessor:
             return True, None, stats
 
         except Exception as e:
-            logger.error(f"Video compression error: {e}")
+            logger.error(f"Video compression error: {e}", exc_info=True)
             return False, f"Sıkıştırma hatası: {e!s}", None
 
     @staticmethod
@@ -389,7 +389,7 @@ class VideoProcessor:
             return True, None
 
         except Exception as e:
-            logger.error(f"Thumbnail generation error: {e}")
+            logger.error(f"Thumbnail generation error: {e}", exc_info=True)
             return False, f"Thumbnail oluşturma hatası: {e!s}"
 
 
@@ -495,7 +495,7 @@ class VideoSolutionService:
             return True, None, video_solution
 
         except Exception as e:
-            logger.error(f"Video upload error: {e}")
+            logger.error(f"Video upload error: {e}", exc_info=True)
             await self.db.rollback()
             return False, f"Video yükleme hatası: {e!s}", None
 
@@ -567,7 +567,7 @@ class VideoSolutionService:
             logger.info(f"Video processing completed: {video_id}")
 
         except Exception as e:
-            logger.error(f"Video processing error: {e}")
+            logger.error(f"Video processing error: {e}", exc_info=True)
 
             # Hata durumunu kaydet
             try:
@@ -676,7 +676,7 @@ class VideoStreamingService:
                     error_msg = stderr.decode()
                     logger.error(
                         f"HLS generation error for {variant_name}: {error_msg}"
-                    )
+                    , exc_info=True)
                     continue
 
                 variant_playlists.append(
@@ -716,7 +716,7 @@ class VideoStreamingService:
             return True, None, result
 
         except Exception as e:
-            logger.error(f"HLS generation error: {e}")
+            logger.error(f"HLS generation error: {e}", exc_info=True)
             return False, f"HLS oluşturma hatası: {e!s}", None
 
     @staticmethod
@@ -798,7 +798,7 @@ class VideoStreamingService:
             return True, None, str(manifest_path)
 
         except Exception as e:
-            logger.error(f"DASH generation error: {e}")
+            logger.error(f"DASH generation error: {e}", exc_info=True)
             return False, f"DASH oluşturma hatası: {e!s}", None
 
     @staticmethod
@@ -914,6 +914,6 @@ class VideoAnalyticsService:
             return True
 
         except Exception as e:
-            logger.error(f"Video analytics tracking error: {e}")
+            logger.error(f"Video analytics tracking error: {e}", exc_info=True)
             await self.db.rollback()
             return False

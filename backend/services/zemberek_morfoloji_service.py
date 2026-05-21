@@ -210,7 +210,7 @@ class ZemberekMorfolojiService:
             return analiz
 
         except Exception as e:
-            logger.error(f"Kelime analiz hatası - Kelime: {kelime}, Hata: {e!s}")
+            logger.error(f"Kelime analiz hatası - Kelime: {kelime}, Hata: {e!s}", exc_info=True)
 
             # Hata durumunda basit analiz döndür
             return MorfolojiAnalizi(
@@ -284,7 +284,7 @@ class ZemberekMorfolojiService:
             return soru_analizi
 
         except Exception as e:
-            logger.error(f"Soru analiz hatası - ID: {soru_id}, Hata: {e!s}")
+            logger.error(f"Soru analiz hatası - ID: {soru_id}, Hata: {e!s}", exc_info=True)
             raise
 
     async def _zemberek_analiz(self, kelime: str) -> dict[str, Any]:
@@ -317,7 +317,7 @@ class ZemberekMorfolojiService:
             }
 
         except Exception as e:
-            logger.error(f"Zemberek analiz hatası: {e!s}")
+            logger.error(f"Zemberek analiz hatası: {e!s}", exc_info=True)
             return {
                 "kelime": kelime,
                 "kok": kelime,

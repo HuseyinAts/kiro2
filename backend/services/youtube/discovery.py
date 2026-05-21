@@ -259,7 +259,7 @@ class YouTubeDiscovery(
                         recommendations[key] = []
 
                 except (ValueError, KeyError) as e:
-                    logger.error(f"Recommendation error for {subject_key}: {e}")
+                    logger.error(f"Recommendation error for {subject_key}: {e}", exc_info=True)
                     continue
 
         return recommendations

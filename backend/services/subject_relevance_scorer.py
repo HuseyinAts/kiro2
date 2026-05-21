@@ -386,7 +386,7 @@ class SubjectRelevanceScorer:
             return result
 
         except Exception as e:
-            logger.error(f"Relevance scoring error: {e!s}")
+            logger.error(f"Relevance scoring error: {e!s}", exc_info=True)
             # Hata durumunda düşük skor döndür
             return RelevanceScore(
                 overall_score=0.0,
@@ -582,7 +582,7 @@ class SubjectRelevanceScorer:
             return float(normalized_similarity)
 
         except Exception as e:
-            logger.error(f"Semantic similarity calculation error: {e!s}")
+            logger.error(f"Semantic similarity calculation error: {e!s}", exc_info=True)
             return 0.5
 
     def get_subject_keywords(self, subject: str) -> dict[str, Any]:

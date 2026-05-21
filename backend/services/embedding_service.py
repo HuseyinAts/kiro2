@@ -112,7 +112,7 @@ class EmbeddingService:
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Model loaded successfully: {self.model_name}")
             except Exception as e:
-                logger.error(f"Failed to load model {self.model_name}: {e}")
+                logger.error(f"Failed to load model {self.model_name}: {e}", exc_info=True)
                 return False
         else:
             logger.warning("sentence-transformers not available, using hash fallback")
@@ -242,7 +242,7 @@ class EmbeddingService:
                 embedding = self._model.encode(text, convert_to_numpy=True)
                 embedding_list = embedding.tolist()
             except Exception as e:
-                logger.error(f"Embedding generation failed: {e}")
+                logger.error(f"Embedding generation failed: {e}", exc_info=True)
                 embedding_list = self._fallback_embedding(text)
         else:
             embedding_list = self._fallback_embedding(text)
@@ -328,7 +328,7 @@ class EmbeddingService:
                             self._set_to_cache(batch_texts[j], embedding_list)
 
             except Exception as e:
-                logger.error(f"Batch embedding failed: {e}")
+                logger.error(f"Batch embedding failed: {e}", exc_info=True)
                 # Fallback
                 for i, text in zip(uncached_indices, uncached_texts):
                     results[i] = self._fallback_embedding(text)
@@ -457,7 +457,7 @@ class EmbeddingService:
                 return self._redis.delete(*keys)
             return 0
         except Exception as e:
-            logger.error(f"Cache clear failed: {e}")
+            logger.error(f"Cache clear failed: {e}", exc_info=True)
             return 0
 
 

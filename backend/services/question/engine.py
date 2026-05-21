@@ -109,5 +109,5 @@ class QuestionGenerationEngine:
             return question
 
         except Exception as e:
-            logger.error(f"Tam soru uretim hatasi: {e}")
+            logger.error(f"Tam soru uretim hatasi: {e}", exc_info=True)
             return None

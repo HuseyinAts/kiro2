@@ -366,7 +366,7 @@ class YOLOQuestionDetector:
                 result = self.detect(source, save_results, output_dir)
                 results.append(result)
             except Exception as e:
-                logger.error(f"Tespit hatası ({source}): {e}")
+                logger.error(f"Tespit hatası ({source}): {e}", exc_info=True)
                 # Hatalı görsel için boş sonuç
                 results.append(PageDetectionResult(
                     image_path=str(source),

@@ -393,7 +393,7 @@ class SequentialReasoningService:
                 )
 
         except Exception as e:
-            logger.error(f"Logic validation failed for session {session.id}: {e}")
+            logger.error(f"Logic validation failed for session {session.id}: {e}", exc_info=True)
             validation_result["error"] = str(e)
 
         # Store validation result in session metadata
@@ -596,7 +596,7 @@ class SequentialReasoningService:
         try:
             sorted_ids = graph.topological_sort()
         except Exception as e:
-            logger.error(f"Topological sort failed: {e}")
+            logger.error(f"Topological sort failed: {e}", exc_info=True)
             # Return original order if sort fails
             return sub_problems
 

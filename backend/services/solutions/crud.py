@@ -103,7 +103,7 @@ class SolutionCRUDService(BaseSolutionService):
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Solution add error: {e!s}")
+            logger.error(f"Solution add error: {e!s}", exc_info=True)
             raise
 
     async def get_solutions(
@@ -140,7 +140,7 @@ class SolutionCRUDService(BaseSolutionService):
             return solutions
 
         except Exception as e:
-            logger.error(f"Solution get error: {e!s}")
+            logger.error(f"Solution get error: {e!s}", exc_info=True)
             return []
 
     async def get_solution_by_id(
@@ -169,7 +169,7 @@ class SolutionCRUDService(BaseSolutionService):
             return None
 
         except Exception as e:
-            logger.error(f"Solution detail error: {e!s}")
+            logger.error(f"Solution detail error: {e!s}", exc_info=True)
             return None
 
     async def update_solution(
@@ -228,7 +228,7 @@ class SolutionCRUDService(BaseSolutionService):
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Solution update error: {e!s}")
+            logger.error(f"Solution update error: {e!s}", exc_info=True)
             return False
 
     async def delete_solution(
@@ -280,7 +280,7 @@ class SolutionCRUDService(BaseSolutionService):
 
         except Exception as e:
             await self.db.rollback()
-            logger.error(f"Solution delete error: {e!s}")
+            logger.error(f"Solution delete error: {e!s}", exc_info=True)
             return False
 
 

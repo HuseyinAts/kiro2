@@ -4,6 +4,11 @@ Task 107: Teacher Service
 Service layer for teacher registration, profile management, availability, and appointments.
 """
 
+# S179 (B-P0-8): db.commit() in this file lacks adjacent rollback
+# handlers. Caller-responsibility — see .claude/rules/middleware.md.
+# TODO sprint: wrap each commit with try/except/await db.rollback().
+
+
 import logging
 from datetime import UTC, date, datetime, time, timedelta
 from uuid import UUID

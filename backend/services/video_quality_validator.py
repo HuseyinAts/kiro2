@@ -145,7 +145,7 @@ class VideoQualityValidator:
             return result
 
         except Exception as e:
-            logger.error(f"Video accessibility check error for {video_id}: {e!s}")
+            logger.error(f"Video accessibility check error for {video_id}: {e!s}", exc_info=True)
             return VideoAccessibilityResult(
                 is_accessible=False,
                 is_embeddable=False,
@@ -238,7 +238,7 @@ class VideoQualityValidator:
             return final_score
 
         except Exception as e:
-            logger.error(f"Quality score calculation error: {e!s}")
+            logger.error(f"Quality score calculation error: {e!s}", exc_info=True)
             # Return 0.0 for invalid metadata, not 0.5
             return 0.0
 
@@ -311,7 +311,7 @@ class VideoQualityValidator:
             return result_dict
 
         except Exception as e:
-            logger.error(f"Batch validation error: {e!s}")
+            logger.error(f"Batch validation error: {e!s}", exc_info=True)
             return {}
 
     async def _make_api_request(
@@ -374,22 +374,22 @@ class VideoQualityValidator:
                     raise RateLimitError("Rate limit exceeded, max retries reached")
                 logger.error(
                     f"YouTube API error {response.status}: {await response.text()}"
-                )
+                , exc_info=True)
                 return None
 
         except TimeoutError:
-            logger.error(f"API request timeout for {endpoint}")
+            logger.error(f"API request timeout for {endpoint}", exc_info=True)
             if retry_count < self.max_retries:
                 return await self._make_api_request(endpoint, params, retry_count + 1)
             return None
         except aiohttp.ClientError as e:
-            logger.error(f"Network error calling YouTube API: {e!s}")
+            logger.error(f"Network error calling YouTube API: {e!s}", exc_info=True)
             if retry_count < self.max_retries:
                 await asyncio.sleep(1)
                 return await self._make_api_request(endpoint, params, retry_count + 1)
             return None
         except Exception as e:
-            logger.error(f"Error calling YouTube API: {e!s}")
+            logger.error(f"Error calling YouTube API: {e!s}", exc_info=True)
             return None
 
     def _is_trusted_channel(self, channel_name: str) -> bool:
@@ -439,7 +439,7 @@ class VideoQualityValidator:
             return int(total_minutes)
 
         except Exception as e:
-            logger.error(f"Error parsing duration {duration}: {e!s}")
+            logger.error(f"Error parsing duration {duration}: {e!s}", exc_info=True)
             return 15  # Default 15 minutes
 
 

@@ -316,13 +316,15 @@ class AIChatService:
     # ============================================================
 
     async def generate_ai_response(
-        self, session_id: UUID, user_message: str, image_text: str | None = None
+        self,
+        session_id: UUID,
+        user_message: str,
+        image_text: str | None = None,
     ) -> dict[str, Any]:
         """
         Generate AI response with enhanced context
 
-        This is a placeholder - in production, this would call
-        OpenAI API or other LLM service
+        In production, this would call OpenAI/Claude API with proper context
         """
         # Get conversation context
         context = await self.get_conversation_context(session_id)

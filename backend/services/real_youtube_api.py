@@ -186,7 +186,7 @@ class RealYouTubeAPI:
                 return filtered_videos[:max_results]
 
         except Exception as e:
-            logger.error(f"YouTube API araması başarısız: {e!s}")
+            logger.error(f"YouTube API araması başarısız: {e!s}", exc_info=True)
             return []
 
     async def _get_video_details(self, video_ids: list[str]) -> list[dict]:
@@ -211,7 +211,7 @@ class RealYouTubeAPI:
                 return data.get("items", [])
 
         except Exception as e:
-            logger.error(f"Video detayları hatası: {e!s}")
+            logger.error(f"Video detayları hatası: {e!s}", exc_info=True)
             return []
 
     def _filter_turkish_education_videos(
@@ -297,7 +297,7 @@ class RealYouTubeAPI:
                 results.append(result)
 
             except Exception as e:
-                logger.error(f"Video işleme hatası: {e!s}")
+                logger.error(f"Video işleme hatası: {e!s}", exc_info=True)
                 continue
 
         # Skorlara göre sırala

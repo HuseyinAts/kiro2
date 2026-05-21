@@ -66,7 +66,7 @@ class MathematicalValidationEngine:
             return {"valid": True, "expression": str(expr), "error": None}
 
         except Exception as e:
-            logger.error(f"Denklem dogrulama hatasi: {e}")
+            logger.error(f"Denklem dogrulama hatasi: {e}", exc_info=True)
             return {"valid": False, "error": str(e)}
 
     def solve_equation(self, equation_str: str, variable: str = "x") -> dict[str, Any]:
@@ -107,7 +107,7 @@ class MathematicalValidationEngine:
             }
 
         except Exception as e:
-            logger.error(f"Denklem cozme hatasi: {e}")
+            logger.error(f"Denklem cozme hatasi: {e}", exc_info=True)
             return {"solved": False, "error": str(e)}
 
     def verify_solution(
@@ -162,7 +162,7 @@ class MathematicalValidationEngine:
             }
 
         except Exception as e:
-            logger.error(f"Cozum dogrulama hatasi: {e}")
+            logger.error(f"Cozum dogrulama hatasi: {e}", exc_info=True)
             return {"verified": False, "error": str(e)}
 
     def validate_math_question(
@@ -217,7 +217,7 @@ class MathematicalValidationEngine:
                     pass
 
         except Exception as e:
-            logger.error(f"Matematik soru dogrulama hatasi: {e}")
+            logger.error(f"Matematik soru dogrulama hatasi: {e}", exc_info=True)
             validation_result["warnings"].append(f"Dogrulama hatasi: {e!s}")
 
         return validation_result

@@ -87,7 +87,7 @@ async def extract_text_from_image(image_path: Path) -> dict[str, Any]:
             "processing_time_ms": elapsed_ms,
         }
     except Exception as e:
-        logger.error(f"All OCR methods failed: {e}")
+        logger.error(f"All OCR methods failed: {e}", exc_info=True)
         elapsed_ms = int((time.monotonic() - start) * 1000)
         return {"text": "", "confidence": 0.0, "processing_time_ms": elapsed_ms}
 
@@ -124,7 +124,7 @@ async def find_similar_questions(
             resp.raise_for_status()
             result = resp.json()
     except Exception as e:
-        logger.error(f"Embedding generation failed: {e}")
+        logger.error(f"Embedding generation failed: {e}", exc_info=True)
         return []
 
     embeddings = result.get("embeddings")
@@ -219,7 +219,7 @@ async def generate_ai_solution(ocr_text: str) -> dict[str, Any]:
             "generated": True,
         }
     except Exception as e:
-        logger.error(f"AI solution generation failed: {e}")
+        logger.error(f"AI solution generation failed: {e}", exc_info=True)
         return {
             "solution": "",
             "model": "unavailable",

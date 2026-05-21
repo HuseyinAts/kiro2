@@ -116,7 +116,7 @@ class ExamAnswerTrackingService:
             )
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Cevap durumu getirme hatası: {e}",
                 extra_data={
                     "exam_session_id": exam_session_id,
@@ -234,7 +234,7 @@ class ExamAnswerTrackingService:
             return stats
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Tamamlanma istatistikleri hesaplama hatası: {e}",
                 extra_data={"exam_session_id": exam_session_id},
             )
@@ -331,7 +331,7 @@ class ExamAnswerTrackingService:
             return statuses
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Cevap durumları getirme hatası: {e}",
                 extra_data={"exam_session_id": exam_session_id},
             )
@@ -380,7 +380,7 @@ class ExamAnswerTrackingService:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Sınav oturumu istatistikleri güncelleme hatası: {e}",
                 extra_data={"exam_session_id": exam_session_id},
             )
@@ -448,7 +448,7 @@ class ExamAnswerTrackingService:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Boş cevap işaretleme hatası: {e}",
                 extra_data={
                     "exam_session_id": exam_session_id,
@@ -556,7 +556,7 @@ class ExamAnswerTrackingService:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Hata tipi atama hatası: {e}",
                 extra_data={
                     "exam_session_id": exam_session_id,

@@ -503,7 +503,7 @@ class IRTCalibrationService:
                     batch_params.append(params)
 
                 except Exception as e:
-                    logger.error(f"Soru kalibrasyonu hatası: {e}")
+                    logger.error(f"Soru kalibrasyonu hatası: {e}", exc_info=True)
                     # Varsayılan parametreler
                     default_params = IRTParameters(
                         difficulty=0.0,

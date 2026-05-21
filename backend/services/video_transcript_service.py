@@ -111,7 +111,7 @@ class VideoTranscriptService:
             return True, None, transcript
 
         except Exception as e:
-            logger.error(f"Auto transcript generation error: {e}")
+            logger.error(f"Auto transcript generation error: {e}", exc_info=True)
             await self.db.rollback()
             return False, f"Transkript oluşturma hatası: {e!s}", None
 
@@ -164,7 +164,7 @@ class VideoTranscriptService:
             return True, None, transcript
 
         except Exception as e:
-            logger.error(f"Transcript update error: {e}")
+            logger.error(f"Transcript update error: {e}", exc_info=True)
             await self.db.rollback()
             return False, f"Transkript güncelleme hatası: {e!s}", None
 
@@ -231,7 +231,7 @@ class VideoTranscriptService:
             return search_results
 
         except Exception as e:
-            logger.error(f"Transcript search error: {e}")
+            logger.error(f"Transcript search error: {e}", exc_info=True)
             return []
 
     @staticmethod
@@ -306,6 +306,6 @@ class VideoTranscriptService:
             return True, None, top_keywords
 
         except Exception as e:
-            logger.error(f"Keyword extraction error: {e}")
+            logger.error(f"Keyword extraction error: {e}", exc_info=True)
             await self.db.rollback()
             return False, f"Anahtar kelime çıkarma hatası: {e!s}", None

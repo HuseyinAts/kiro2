@@ -120,7 +120,7 @@ class YouTubeSearchService:
             return videos
 
         except Exception as e:
-            logger.error(f"Concurrent search error for '{query}': {e}")
+            logger.error(f"Concurrent search error for '{query}': {e}", exc_info=True)
             return []
 
     async def search_youtube_direct(
@@ -176,7 +176,7 @@ class YouTubeSearchService:
             return videos[:max_results]
 
         except Exception as e:
-            logger.error(f"YouTube arama hatası: {e}")
+            logger.error(f"YouTube arama hatası: {e}", exc_info=True)
             return []
 
     def _extract_video_data(self, youtube_data: dict) -> list[dict]:
@@ -267,7 +267,7 @@ class YouTubeSearchService:
                     videos.append(video_data)
 
         except Exception as e:
-            logger.error(f"Video data extraction error: {e}")
+            logger.error(f"Video data extraction error: {e}", exc_info=True)
 
         return videos
 

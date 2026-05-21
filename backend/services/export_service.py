@@ -7,6 +7,7 @@ Multi-format export, privacy redaction ve encrypted backup.
 
 import io
 import json
+import logging
 import os
 import re
 import secrets
@@ -14,6 +15,8 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from uuid import UUID
+
+logger = logging.getLogger(__name__)
 
 from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,6 +27,7 @@ try:
     from cryptography.fernet import Fernet
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
     CRYPTOGRAPHY_AVAILABLE = True
 except ImportError:
     CRYPTOGRAPHY_AVAILABLE = False
@@ -42,11 +46,14 @@ try:
         Table,
         TableStyle,
     )
+
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
 
-from api.schemas.diary import (
+# B-P0-21: wrong-direction import (service→api). Plan: move to
+# services/schemas/diary.py in a separate sprint to break the cycle.
+from api.schemas.diary import (  # noqa: TID  # B-P0-21
     ExportRequest,
     ShareLinkCreate,
     ShareLinkResponse,
@@ -77,12 +84,15 @@ class ExportService:
 
     # Privacy patterns to redact
     PRIVACY_PATTERNS = [
-        (r'\b[\w.-]+@[\w.-]+\.\w+\b', '[EMAIL]'),  # Email
-        (r'\b\d{10,11}\b', '[PHONE]'),  # Phone
-        (r'\b(?:password|sifre|parola)[\s:=]+\S+', '[PASSWORD]'),  # Password
-        (r'\bsk-[a-zA-Z0-9]{48}\b', '[API_KEY]'),  # OpenAI API key
-        (r'\b[A-Za-z0-9]{32,}\b(?=.*[A-Z])(?=.*[a-z])(?=.*\d)', '[TOKEN]'),  # Generic token
-        (r'\b(?:AKIA|ABIA|ACCA|ASIA)[A-Z0-9]{16}\b', '[AWS_KEY]'),  # AWS key
+        (r"\b[\w.-]+@[\w.-]+\.\w+\b", "[EMAIL]"),  # Email
+        (r"\b\d{10,11}\b", "[PHONE]"),  # Phone
+        (r"\b(?:password|sifre|parola)[\s:=]+\S+", "[PASSWORD]"),  # Password
+        (r"\bsk-[a-zA-Z0-9]{48}\b", "[API_KEY]"),  # OpenAI API key
+        (
+            r"\b[A-Za-z0-9]{32,}\b(?=.*[A-Z])(?=.*[a-z])(?=.*\d)",
+            "[TOKEN]",
+        ),  # Generic token
+        (r"\b(?:AKIA|ABIA|ACCA|ASIA)[A-Z0-9]{16}\b", "[AWS_KEY]"),  # AWS key
     ]
 
     # Export directory
@@ -128,7 +138,9 @@ class ExportService:
             content, file_path = await self._export_json(data, request)
 
         # Dosya boyutu
-        file_size = len(content) if isinstance(content, bytes) else len(content.encode('utf-8'))
+        file_size = (
+            len(content) if isinstance(content, bytes) else len(content.encode("utf-8"))
+        )
 
         # Redacted fields
         redacted_fields: list[str] = []
@@ -222,7 +234,9 @@ class ExportService:
             insight_query = select(Insight).where(
                 and_(
                     Insight.user_id == user_id,
-                    Insight.diary_entry_id.in_([e.id for e in entries]) if entries else False
+                    Insight.diary_entry_id.in_([e.id for e in entries])
+                    if entries
+                    else False,
                 )
             )
             result = await self.db.execute(insight_query)
@@ -238,7 +252,9 @@ class ExportService:
                 }
 
                 if request.apply_privacy_filter:
-                    insight_data, redacted = self._apply_privacy_filter_to_dict(insight_data)
+                    insight_data, redacted = self._apply_privacy_filter_to_dict(
+                        insight_data
+                    )
                     data["redacted_fields"].extend(redacted)
 
                 data["insights"].append(insight_data)
@@ -248,7 +264,9 @@ class ExportService:
             reflection_query = select(Reflection).where(
                 and_(
                     Reflection.user_id == user_id,
-                    Reflection.diary_entry_id.in_([e.id for e in entries]) if entries else False
+                    Reflection.diary_entry_id.in_([e.id for e in entries])
+                    if entries
+                    else False,
                 )
             )
             result = await self.db.execute(reflection_query)
@@ -265,21 +283,22 @@ class ExportService:
                 }
 
                 if request.apply_privacy_filter:
-                    reflection_data, redacted = self._apply_privacy_filter_to_dict(reflection_data)
+                    reflection_data, redacted = self._apply_privacy_filter_to_dict(
+                        reflection_data
+                    )
                     data["redacted_fields"].extend(redacted)
 
                 data["reflections"].append(reflection_data)
 
         # Learning entries
         if request.include_learning:
-            learning_query = (
-                select(LearningEntry)
-                .where(
-                    and_(
-                        LearningEntry.user_id == user_id,
-                        LearningEntry.created_at >= datetime.combine(request.date_from, datetime.min.time()),
-                        LearningEntry.created_at <= datetime.combine(request.date_to, datetime.max.time()),
-                    )
+            learning_query = select(LearningEntry).where(
+                and_(
+                    LearningEntry.user_id == user_id,
+                    LearningEntry.created_at
+                    >= datetime.combine(request.date_from, datetime.min.time()),
+                    LearningEntry.created_at
+                    <= datetime.combine(request.date_to, datetime.max.time()),
                 )
             )
             result = await self.db.execute(learning_query)
@@ -289,28 +308,31 @@ class ExportService:
                 learning_data = {
                     "id": str(learning.id),
                     "title": learning.title,
-                    "content": learning.content[:200] + "..." if len(learning.content) > 200 else learning.content,
+                    "content": learning.content[:200] + "..."
+                    if len(learning.content) > 200
+                    else learning.content,
                     "tags": learning.tags or [],
                     "domain": learning.domain,
                     "retention_score": learning.retention_score,
                 }
 
                 if request.apply_privacy_filter:
-                    learning_data, redacted = self._apply_privacy_filter_to_dict(learning_data)
+                    learning_data, redacted = self._apply_privacy_filter_to_dict(
+                        learning_data
+                    )
                     data["redacted_fields"].extend(redacted)
 
                 data["learning_entries"].append(learning_data)
 
         # Goals
         if request.include_goals:
-            goal_query = (
-                select(Goal)
-                .where(
-                    and_(
-                        Goal.user_id == user_id,
-                        Goal.created_at >= datetime.combine(request.date_from, datetime.min.time()),
-                        Goal.created_at <= datetime.combine(request.date_to, datetime.max.time()),
-                    )
+            goal_query = select(Goal).where(
+                and_(
+                    Goal.user_id == user_id,
+                    Goal.created_at
+                    >= datetime.combine(request.date_from, datetime.min.time()),
+                    Goal.created_at
+                    <= datetime.combine(request.date_to, datetime.max.time()),
                 )
             )
             result = await self.db.execute(goal_query)
@@ -322,7 +344,9 @@ class ExportService:
                     "title": goal.title,
                     "progress": goal.progress,
                     "status": goal.status.value if goal.status else None,
-                    "target_date": goal.target_date.isoformat() if goal.target_date else None,
+                    "target_date": goal.target_date.isoformat()
+                    if goal.target_date
+                    else None,
                 }
 
                 if request.apply_privacy_filter:
@@ -354,80 +378,87 @@ class ExportService:
         md = f"""# Claude Diary Export
 
 **Tarih Aralığı:** {request.date_from} - {request.date_to}
-**Oluşturulma:** {data['export_date']}
+**Oluşturulma:** {data["export_date"]}
 
 ---
 
 ## 📊 Özet
 
-- **Toplam Gün:** {len(data['entries'])}
-- **Toplam Insight:** {len(data['insights'])}
-- **Toplam Yansıtma:** {len(data['reflections'])}
-- **Toplam Öğrenme:** {len(data['learning_entries'])}
-- **Toplam Hedef:** {len(data['goals'])}
+- **Toplam Gün:** {len(data["entries"])}
+- **Toplam Insight:** {len(data["insights"])}
+- **Toplam Yansıtma:** {len(data["reflections"])}
+- **Toplam Öğrenme:** {len(data["learning_entries"])}
+- **Toplam Hedef:** {len(data["goals"])}
 
 """
 
         # Entries
-        if data['entries']:
+        if data["entries"]:
             md += "\n## 📔 Günlük Kayıtları\n\n"
-            for entry in data['entries']:
+            for entry in data["entries"]:
                 md += f"### {entry['date']}\n\n"
                 md += f"- **Başarılı:** {entry['success_count']} | **Başarısız:** {entry['failure_count']}\n"
-                if entry['highlights']:
+                if entry["highlights"]:
                     md += f"- **Öne Çıkanlar:** {', '.join(entry['highlights'][:3])}\n"
-                if entry['learnings']:
+                if entry["learnings"]:
                     md += f"- **Öğrenimler:** {', '.join(entry['learnings'][:3])}\n"
                 md += "\n"
 
         # Insights
-        if data['insights']:
+        if data["insights"]:
             md += "\n## 💡 İçgörüler\n\n"
-            for insight in data['insights']:
+            for insight in data["insights"]:
                 md += f"- **[{insight.get('category', 'N/A')}]** {insight['pattern']}\n"
                 md += f"  - *Öneri:* {insight['recommendation']}\n"
                 md += f"  - *Güven:* %{int(insight['confidence'] * 100)}\n\n"
 
         # Reflections
-        if data['reflections']:
+        if data["reflections"]:
             md += "\n## 🪞 Yansıtmalar\n\n"
-            for reflection in data['reflections']:
+            for reflection in data["reflections"]:
                 md += f"- **Derinlik:** {reflection.get('depth', 'N/A')} (skor: {reflection.get('depth_score', 0)})\n"
-                if reflection.get('what_went_well'):
+                if reflection.get("what_went_well"):
                     md += f"  - *İyi giden:* {reflection['what_went_well'][:100]}...\n"
-                if reflection.get('what_did_i_learn'):
-                    md += f"  - *Öğrenilen:* {reflection['what_did_i_learn'][:100]}...\n"
+                if reflection.get("what_did_i_learn"):
+                    md += (
+                        f"  - *Öğrenilen:* {reflection['what_did_i_learn'][:100]}...\n"
+                    )
                 md += "\n"
 
         # Learning entries
-        if data['learning_entries']:
+        if data["learning_entries"]:
             md += "\n## 📚 Öğrenme Günlüğü\n\n"
-            for learning in data['learning_entries']:
+            for learning in data["learning_entries"]:
                 md += f"- **{learning['title']}**\n"
-                if learning.get('tags'):
+                if learning.get("tags"):
                     md += f"  - *Etiketler:* {', '.join(learning['tags'])}\n"
                 md += f"  - *Retention:* %{int(learning.get('retention_score', 0) * 100)}\n\n"
 
         # Goals
-        if data['goals']:
+        if data["goals"]:
             md += "\n## 🎯 Hedefler\n\n"
-            for goal in data['goals']:
-                status_emoji = {"active": "🟡", "completed": "✅", "at_risk": "🔴", "cancelled": "⚫"}.get(
-                    goal.get('status'), "❓"
-                )
+            for goal in data["goals"]:
+                status_emoji = {
+                    "active": "🟡",
+                    "completed": "✅",
+                    "at_risk": "🔴",
+                    "cancelled": "⚫",
+                }.get(goal.get("status"), "❓")
                 md += f"- {status_emoji} **{goal['title']}** - %{goal.get('progress', 0)}\n"
 
         # Privacy notice
-        if request.apply_privacy_filter and data['redacted_fields']:
+        if request.apply_privacy_filter and data["redacted_fields"]:
             md += f"\n---\n\n*{len(data['redacted_fields'])} hassas alan gizlendi.*\n"
 
         md += "\n---\n\n*Claude Diary Plugin ile oluşturuldu*\n"
 
         # Dosyaya kaydet
-        file_path = self._get_export_path(request.format, request.date_from, request.date_to)
+        file_path = self._get_export_path(
+            request.format, request.date_from, request.date_to
+        )
         file_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(md)
 
         return md, file_path
@@ -450,91 +481,107 @@ class ExportService:
         if not REPORTLAB_AVAILABLE:
             # Fallback to markdown if reportlab not available
             md_content, _ = await self._export_markdown(data, request)
-            return md_content.encode('utf-8'), None
+            return md_content.encode("utf-8"), None
 
         buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=2*cm, bottomMargin=2*cm)
+        doc = SimpleDocTemplate(
+            buffer, pagesize=A4, topMargin=2 * cm, bottomMargin=2 * cm
+        )
 
         styles = getSampleStyleSheet()
         story = []
 
         # Title
         title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=styles['Heading1'],
+            "CustomTitle",
+            parent=styles["Heading1"],
             fontSize=18,
             spaceAfter=20,
         )
         story.append(Paragraph("Claude Diary Export", title_style))
 
         # Date range
-        story.append(Paragraph(
-            f"<b>Tarih Aralığı:</b> {request.date_from} - {request.date_to}",
-            styles['Normal']
-        ))
+        story.append(
+            Paragraph(
+                f"<b>Tarih Aralığı:</b> {request.date_from} - {request.date_to}",
+                styles["Normal"],
+            )
+        )
         story.append(Spacer(1, 20))
 
         # Summary table
         summary_data = [
             ["Metrik", "Değer"],
-            ["Toplam Gün", str(len(data['entries']))],
-            ["Toplam Insight", str(len(data['insights']))],
-            ["Toplam Yansıtma", str(len(data['reflections']))],
-            ["Toplam Öğrenme", str(len(data['learning_entries']))],
-            ["Toplam Hedef", str(len(data['goals']))],
+            ["Toplam Gün", str(len(data["entries"]))],
+            ["Toplam Insight", str(len(data["insights"]))],
+            ["Toplam Yansıtma", str(len(data["reflections"]))],
+            ["Toplam Öğrenme", str(len(data["learning_entries"]))],
+            ["Toplam Hedef", str(len(data["goals"]))],
         ]
 
         summary_table = Table(summary_data, colWidths=[200, 100])
-        summary_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ]))
+        summary_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONTSIZE", (0, 0), (-1, -1), 10),
+                    ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                    ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ]
+            )
+        )
         story.append(summary_table)
         story.append(Spacer(1, 30))
 
         # Entries
-        if data['entries']:
-            story.append(Paragraph("Günlük Kayıtları", styles['Heading2']))
-            for entry in data['entries'][:10]:  # Limit to 10 for PDF
-                story.append(Paragraph(
-                    f"<b>{entry['date']}</b> - Başarılı: {entry['success_count']}, Başarısız: {entry['failure_count']}",
-                    styles['Normal']
-                ))
+        if data["entries"]:
+            story.append(Paragraph("Günlük Kayıtları", styles["Heading2"]))
+            for entry in data["entries"][:10]:  # Limit to 10 for PDF
+                story.append(
+                    Paragraph(
+                        f"<b>{entry['date']}</b> - Başarılı: {entry['success_count']}, Başarısız: {entry['failure_count']}",
+                        styles["Normal"],
+                    )
+                )
             story.append(Spacer(1, 20))
 
         # Insights
-        if data['insights']:
-            story.append(Paragraph("İçgörüler", styles['Heading2']))
-            for insight in data['insights'][:5]:  # Limit
-                story.append(Paragraph(
-                    f"• [{insight.get('category', 'N/A')}] {insight['pattern'][:100]}...",
-                    styles['Normal']
-                ))
+        if data["insights"]:
+            story.append(Paragraph("İçgörüler", styles["Heading2"]))
+            for insight in data["insights"][:5]:  # Limit
+                story.append(
+                    Paragraph(
+                        f"• [{insight.get('category', 'N/A')}] {insight['pattern'][:100]}...",
+                        styles["Normal"],
+                    )
+                )
             story.append(Spacer(1, 20))
 
         # Goals
-        if data['goals']:
-            story.append(Paragraph("Hedefler", styles['Heading2']))
-            for goal in data['goals'][:5]:
-                story.append(Paragraph(
-                    f"• {goal['title']} - %{goal.get('progress', 0)} ({goal.get('status', 'N/A')})",
-                    styles['Normal']
-                ))
+        if data["goals"]:
+            story.append(Paragraph("Hedefler", styles["Heading2"]))
+            for goal in data["goals"][:5]:
+                story.append(
+                    Paragraph(
+                        f"• {goal['title']} - %{goal.get('progress', 0)} ({goal.get('status', 'N/A')})",
+                        styles["Normal"],
+                    )
+                )
 
         # Build PDF
         doc.build(story)
         pdf_bytes = buffer.getvalue()
 
         # Dosyaya kaydet
-        file_path = self._get_export_path(request.format, request.date_from, request.date_to)
+        file_path = self._get_export_path(
+            request.format, request.date_from, request.date_to
+        )
         file_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(file_path, 'wb') as f:
+        with open(file_path, "wb") as f:
             f.write(pdf_bytes)
 
         return pdf_bytes, file_path
@@ -557,10 +604,12 @@ class ExportService:
         json_str = json.dumps(data, indent=2, ensure_ascii=False, default=str)
 
         # Dosyaya kaydet
-        file_path = self._get_export_path(request.format, request.date_from, request.date_to)
+        file_path = self._get_export_path(
+            request.format, request.date_from, request.date_to
+        )
         file_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(json_str)
 
         return json_str, file_path
@@ -650,10 +699,7 @@ class ExportService:
         """
         # Export'u bul
         query = select(DiaryExport).where(
-            and_(
-                DiaryExport.id == data.export_id,
-                DiaryExport.user_id == user_id
-            )
+            and_(DiaryExport.id == data.export_id, DiaryExport.user_id == user_id)
         )
         result = await self.db.execute(query)
         export_record = result.scalar_one_or_none()
@@ -703,7 +749,7 @@ class ExportService:
             and_(
                 DiaryExport.share_token == share_token,
                 DiaryExport.is_public == True,
-                DiaryExport.share_expires_at > datetime.now()
+                DiaryExport.share_expires_at > datetime.now(),
             )
         )
 
@@ -712,7 +758,9 @@ class ExportService:
 
         if export_record:
             # Access count artir
-            export_record.share_access_count = (export_record.share_access_count or 0) + 1
+            export_record.share_access_count = (
+                export_record.share_access_count or 0
+            ) + 1
             await self.db.commit()
 
         return export_record
@@ -789,7 +837,7 @@ class ExportService:
 
         # Sifrele
         fernet = Fernet(key)
-        encrypted_data = fernet.encrypt(json_data.encode('utf-8'))
+        encrypted_data = fernet.encrypt(json_data.encode("utf-8"))
 
         # Backup kaydi olustur
         backup_export = DiaryExport(
@@ -832,7 +880,7 @@ class ExportService:
         fernet = Fernet(key)
 
         decrypted_data = fernet.decrypt(encrypted_data)
-        return json.loads(decrypted_data.decode('utf-8'))
+        return json.loads(decrypted_data.decode("utf-8"))
 
     # =========================================================================
     # CRUD Operations
@@ -879,10 +927,7 @@ class ExportService:
             Optional[DiaryExport] - Export veya None
         """
         query = select(DiaryExport).where(
-            and_(
-                DiaryExport.id == export_id,
-                DiaryExport.user_id == user_id
-            )
+            and_(DiaryExport.id == export_id, DiaryExport.user_id == user_id)
         )
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
@@ -906,12 +951,26 @@ class ExportService:
         if not export_record:
             return False
 
-        # Dosyayi da sil
+        # S179 fix (B-P0-11 / SF-18): KVKK Article 7 ("right to be
+        # forgotten") requires the actual file on disk to be removed, not
+        # just the DB row. Pre-fix `except: pass` swallowed permission
+        # errors and left PII on disk while the DB row pointed nowhere.
+        # We now refuse to delete the DB record if the file delete fails;
+        # caller (admin or background sweeper) must retry or escalate.
         if export_record.file_path:
             try:
                 Path(export_record.file_path).unlink(missing_ok=True)
             except Exception:
-                pass
+                logger.exception(
+                    "KVKK export file delete FAILED export_id=%s path=%s "
+                    "user=%s — DB record preserved so audit trail is not lost.",
+                    export_id,
+                    export_record.file_path,
+                    user_id,
+                )
+                # Do NOT delete the DB record while the file persists on
+                # disk — otherwise KVKK compliance proof is gone.
+                raise
 
         await self.db.delete(export_record)
         await self.db.commit()

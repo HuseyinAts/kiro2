@@ -253,7 +253,7 @@ class ExamPerformanceService:
                 return analysis
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Performans analizi hatası: {e}",
                 extra_data={"exam_session_id": exam_session_id},
             )

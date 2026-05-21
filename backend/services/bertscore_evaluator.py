@@ -125,7 +125,7 @@ class BERTScoreEvaluator:
             # If all models failed
             logger.error(
                 "All BERTScore models failed to initialize. Disabling BERTScore."
-            )
+            , exc_info=True)
             self._available = False
 
         return self._scorer
@@ -173,7 +173,7 @@ class BERTScoreEvaluator:
             return result
 
         except Exception as e:
-            logger.error(f"BERTScore evaluation failed: {e}")
+            logger.error(f"BERTScore evaluation failed: {e}", exc_info=True)
             return None
 
     def evaluate_batch(
@@ -243,7 +243,7 @@ class BERTScoreEvaluator:
             return result
 
         except Exception as e:
-            logger.error(f"Batch BERTScore evaluation failed: {e}")
+            logger.error(f"Batch BERTScore evaluation failed: {e}", exc_info=True)
             return None
 
     def find_best_match(
@@ -305,7 +305,7 @@ class BERTScoreEvaluator:
             return top_matches
 
         except Exception as e:
-            logger.error(f"Best match search failed: {e}")
+            logger.error(f"Best match search failed: {e}", exc_info=True)
             return None
 
     def _interpret_f1(self, f1_score: float) -> str:

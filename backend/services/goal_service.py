@@ -12,7 +12,9 @@ from uuid import UUID
 from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.schemas.diary import (
+# B-P0-21: wrong-direction import (service→api). Plan: move to
+# services/schemas/diary.py in a separate sprint to break the cycle.
+from api.schemas.diary import (  # noqa: TID  # B-P0-21
     GoalCreate,
     GoalProgressUpdate,
     GoalRiskResponse,

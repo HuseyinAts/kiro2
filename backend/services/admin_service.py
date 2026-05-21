@@ -95,7 +95,7 @@ class AdminService:
             return kullanici.rol in self.admin_rolleri
 
         except Exception as e:
-            logger.error("Admin yetki kontrolü hatası: %s", e)
+            logger.error("Admin yetki kontrolü hatası: %s", e, exc_info=True)
             return False
 
     async def _super_admin_yetkisi_kontrol(self, kullanici_id_veya_obje) -> bool:
@@ -118,7 +118,7 @@ class AdminService:
             return kullanici.rol in self.super_admin_rolleri
 
         except Exception as e:
-            logger.error("Süper admin yetki kontrolü hatası: %s", e)
+            logger.error("Süper admin yetki kontrolü hatası: %s", e, exc_info=True)
             return False
 
     async def kullanici_yetki_kontrol(
@@ -148,7 +148,7 @@ class AdminService:
             return kullanici_seviye >= gerekli_seviye
 
         except Exception as e:
-            logger.error("Kullanıcı yetki kontrolü hatası: %s", e)
+            logger.error("Kullanıcı yetki kontrolü hatası: %s", e, exc_info=True)
             return False
 
     async def admin_aktivite_kaydet(
@@ -176,7 +176,7 @@ class AdminService:
             return True
 
         except Exception as e:
-            logger.error("Admin aktivite kaydetme hatası: %s", e)
+            logger.error("Admin aktivite kaydetme hatası: %s", e, exc_info=True)
             return False
 
     # ==================== KULLANICI YÖNETİMİ ====================
@@ -221,7 +221,7 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            logger.error("Kullanıcı listeleme hatası: %s", e)
+            logger.error("Kullanıcı listeleme hatası: %s", e, exc_info=True)
             return []
 
     @admin_required
@@ -267,7 +267,7 @@ class AdminService:
         try:
             return await kullanici_servisi.kullanici_getir(kullanici_id)
         except Exception as e:
-            logger.error("Kullanıcı getirme hatası: %s", e)
+            logger.error("Kullanıcı getirme hatası: %s", e, exc_info=True)
             return None
 
     @admin_required
@@ -358,7 +358,7 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            logger.error("Kullanıcı silme hatası: %s", e)
+            logger.error("Kullanıcı silme hatası: %s", e, exc_info=True)
             return False
 
     # ==================== DASHBOARD İSTATİSTİKLERİ ====================
@@ -400,7 +400,7 @@ class AdminService:
             return istatistikler
 
         except Exception as e:
-            logger.error("Dashboard istatistikleri hatası: %s", e)
+            logger.error("Dashboard istatistikleri hatası: %s", e, exc_info=True)
             return {}
 
     async def _toplam_soru_sayisi(self) -> int:
@@ -487,7 +487,7 @@ class AdminService:
             return soru_listesi
 
         except Exception as e:
-            logger.error("Soru bankası listesi hatası: %s", e)
+            logger.error("Soru bankası listesi hatası: %s", e, exc_info=True)
             return []
 
     @admin_required
@@ -578,7 +578,7 @@ class AdminService:
         except AdminAuthorizationError:
             raise
         except Exception as e:
-            logger.error("Soru silme hatası: %s", e)
+            logger.error("Soru silme hatası: %s", e, exc_info=True)
             return False
 
     @admin_required
@@ -615,7 +615,7 @@ class AdminService:
             return materyaller
 
         except Exception as e:
-            logger.error("Eğitim materyalleri listesi hatası: %s", e)
+            logger.error("Eğitim materyalleri listesi hatası: %s", e, exc_info=True)
             return []
 
     @admin_required
@@ -687,7 +687,7 @@ class AdminService:
             # Mock implementasyon
             return True
         except Exception as e:
-            logger.error("Eğitim materyali silme hatası: %s", e)
+            logger.error("Eğitim materyali silme hatası: %s", e, exc_info=True)
             return False
 
     @admin_required
@@ -796,7 +796,7 @@ class AdminService:
             }
 
         except Exception as e:
-            logger.error("İçerik arama hatası: %s", e)
+            logger.error("İçerik arama hatası: %s", e, exc_info=True)
             return {"sonuclar": [], "toplam_sonuc": 0, "arama_terimi": arama_terimi}
 
 
