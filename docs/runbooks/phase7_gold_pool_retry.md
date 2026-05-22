@@ -1,9 +1,9 @@
 # Phase 7 Gold Pool Rationale Generation Runbook
 
-**Status**: Script ready, NOT executed. Operator must run.
+**Status**: ✅ EXECUTED 2026-05-22 (S181) — see [Execution History](#execution-history)
 **Audit reference**: `docs/audits/2026-05-22_product_ready_audit/05_data_quality.md` §Phase 7
-**Estimated cost**: ~$300 (15,321 questions × ~$0.0023 Gemini Flash Batch API)
-**Estimated wall time**: 24h (Gemini batch async)
+**Actual cost**: ~$5-8 (15,518 q × Gemini 2.5 Flash Batch — _initial $300 estimate was stale Faz 5.6 80K Bronze projection_)
+**Actual wall time**: 30 dakika (S181 ana batch, 23.4MB JSONL — Gemini SLA 24h ama queue boş olunca hızlı)
 
 ## Problem statement
 
@@ -90,11 +90,43 @@ WHERE created_at >= '2026-05-22'::date
   );
 ```
 
-## Cost monitoring
+## Cost monitoring (gerçek S181 ölçümü)
 
-- Gemini Flash Batch API: ~$0.0023 per rationale × 5 options × ~15,500 questions = **~$178** worst case
-- Free tier may absorb partial volume (check Gemini dashboard before running)
-- Hard ceiling: set `--limit 1000` for a pilot run first, validate quality, then scale up
+Per-question token analysis (`metadata_phase7_llm_generation.py:111`):
+- **Input**: ~600 tok/q (system prompt + question + 5 options + instructions)
+- **Output**: ~225 tok/q (5 rationale × 25 kelime + tags + steps + formula JSON)
+- **15,518 q total**: 9.3M input + 3.5M output tokens
+
+Gemini 2.5 Flash Batch pricing (May 2026, %50 batch discount):
+- Input: 9.3M × $0.15/M = **$1.40**
+- Output: 3.5M × $1.25/M = **$4.38**
+- **Total ~$5-8** (Türkçe tokenization +%30 buffer ile)
+
+Önceki "$300" projeksiyonu yanlıştı — token sayısı 7K input/q sanılmıştı, gerçek ~600.
+
+Hard ceiling: pilot için `--limit 200` yeter (135 fail soru recovery için).
+
+## Execution History
+
+### S181 Ana Batch — 2026-05-22 15:57→16:27 (30dk runtime) ✅
+- Batch ID: `batches/y291wn12e8zugymclye8w40p6p0nalpbe8hp`
+- Build: 15,518 q (auto_judged_high 15,321 + bronze_clean 197) → 23.4MB JSONL
+- Submit: gemini-flash-latest, resumable upload
+- Apply: success 15,377 / 15,518 (**%99.1**), fail 141 (%0.9 — önceki R4 batch %5.7'den dramatik iyileşme)
+- DB: 76,885 rationale rows + 15,377 question_bank UPDATE
+- Coverage: auto_judged_high **0% → 99.1%**, bronze_clean **0% → 97.0%**
+- Commits: `6bcd4e626..3693f2f09`
+- S180 audit P0 #2 ÇÖZÜLDÜ
+
+### S181 Bonus Apply — stale R4 batch (1,898 q, S180 öncesi build)
+- Apply: success 1,790 / 1,898 (%94.3)
+- Net value: 485 pending LIVE (%27) + 1,413 rejected DEAD (%73)
+- Idempotent ON CONFLICT — zarar yok, sunk cost
+
+### S181 Mini Retry — 2026-05-22 ~22:00 (141 fail questions) 🟡 IN PROGRESS
+- Batch ID: `batches/7cknizzmrgl3m5j47be46z6w1clypkyks6u6`
+- Target: auto_judged_high'da kalan 135 + bronze_clean kalan 6
+- Beklenen: gold %99.1 → %99.8
 
 ## Quality gate (post-apply)
 
