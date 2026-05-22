@@ -237,6 +237,57 @@ backend/scripts/quality/_phase7_audit_tmp/
 
 ---
 
-## Status: ✅ COMPLETE — Triage hazır, action önerileri P0/P1/P2'de
+## Status: ✅ COMPLETE — DB UPDATE APPLIED 2026-05-23
 
-Kalan adım: DB UPDATE batch çalıştır + 1,237 parse_fail soru için ikinci LLM batch (opsiyonel).
+### Apply Execution Log
+
+```
+PRE-FLIGHT (2026-05-23):
+  588/588 IDs found in DB
+  Overlap wrong-garbage: 0
+  All in auto_judged_high
+
+BACKUP:
+  CREATE TABLE question_bank_math_audit_backup_20260523 (588 rows)
+
+PILOT (5 questions, transaction):
+  3 SymPy wrong + 2 LLM real wrong
+  UPDATE rowcount: 5
+  Spot verify: 5/5 status=pending audit=S182
+  ✅ COMMITTED
+
+FULL (583 remaining, transaction):
+  227 wrong UPDATE -> pending (rowcount 227 ✅)
+  356 garbage UPDATE -> rejected (rowcount 356 ✅)
+  ✅ COMMITTED
+
+POST-VERIFY:
+  S182 audit marker: 232 pending + 356 rejected (exact match)
+  Matematik auto_judged_high: 4,899 → 4,311 (−588)
+  Genel gold pool: 15,321 → 14,733
+```
+
+### Bug Fix During Apply
+
+`pipeline_metadata` column tipi `json` (jsonb değil) — `||` concat operator çalışmadı.
+Cast ile çözüldü: `(COALESCE(pipeline_metadata::jsonb, '{}'::jsonb) || ...)::json`
+
+### Rollback (eğer gerekirse)
+
+```sql
+UPDATE question_bank q SET
+  correct_answer = b.correct_answer,
+  quality_review_status = b.quality_review_status,
+  pipeline_metadata = b.pipeline_metadata
+FROM question_bank_math_audit_backup_20260523 b
+WHERE q.id = b.id;
+DROP TABLE question_bank_math_audit_backup_20260523;
+-- Restore: 588 rows
+```
+
+### Sonraki Adımlar
+
+- Curator UI'de 232 yeni `pending` sorular review edilmeli (audit marker görünür)
+- 356 `rejected` sorular gold pool'dan çıktı, beta için kullanılamaz
+- 1,237 LLM parse_fail soru için ikinci batch (max_tokens 1500+) — gelecek session
+- Diğer subject_area'lar (geometri, fizik, kimya) için benzer audit — sonraki sprint
