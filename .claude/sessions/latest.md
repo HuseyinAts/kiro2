@@ -1,62 +1,32 @@
-## Session Handoff — 2026-05-22 (S180: Product-Ready Audit + Sprint 0-4)
+## Session Handoff — 2026-05-22 16:35 (S181)
+**Branch:** master | **Pushed:** `768bd06bd..6bcd4e626` (1 commit, GitHub senkron)
+**Son commit:** `6bcd4e626 fix(security): bump TruffleHog v3.82.13 -> v3.95.3`
+**Uncommitted:** temiz
 
-**Branch:** master | **Push range:** `217d9e879..6bdde688a` (9 commit)
-**Last commit:** `6bdde688a docs(audit): full product-readiness audit`
+### Yapilanlar
+- **Phase 7 gold pool retry COMPLETE** — `backend/scripts/quality/metadata_phase7_batch_gemini.py`: batch `y291wn12e8zu...` (15,518 q), 30dk runtime, success 15,377/15,518 (%99.1), fail 141 (%0.9). **Coverage: auto_judged_high 0% → 99.1%, bronze_clean 0% → 97.0%.** 76,885 yeni rationale + 15,377 question_bank metadata UPDATE. S180 audit P0 #2 ÇÖZÜLDÜ.
+- **Bonus apply** — stale R4 batch'ten 1,790/1,898 rationale (rejected 1,413 DEAD + pending 485 LIVE) `question_option_rationales` INSERT
+- **TruffleHog version bump** — `.github/workflows/security.yml:155` v3.82.13→v3.95.3, `--debug --only-verified` → `--results=verified,unknown` (commit `6bcd4e626`)
+- **`.gitignore` glob fix** — `_batch_state_gemini*/` (archive klasörlerini de exclude eder)
+- **Working-tree cleanup** — 2 path-encoded phantom dosya silindi (`c:Usershusey...` formatı, biri 1 byte boş)
+- **MEMORY.md drift fix** — Phase 7 maliyet $300→$5.70 (gerçek token analizi), S181 batch detay, rejected vs pending value açıklaması
+- **3 paralel araştırma agent** raporu üretildi (LLM pricing, alternatives, mock-to-real/secrets) — `docs/audits/` ekleme yapılmadı, sentez chat'te
 
-### Bu Session
+### Fail Eden Testler
+- YOK (test çalıştırılmadı; sadece DB write + dry-run apply)
 
-1. **7 paralel Explore agent** dispatch — 7 domain audit + cross-cutting synthesis
-2. **18 P0 product-blocker** identified + sprint plan
-3. **Sprint 0-4 SIRAYLA tamamlandı**, onaysız (kullanıcı talebi)
-4. **8 S180 commit + 1 audit commit** push edildi
+### Engelleyiciler
+- **API key chat'te yapıştırıldı** (`AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I`) — kullanıcı Google AI Studio'dan rotate etmeli (mevcut batch zaten queue'da, bekleyen iş yok)
 
-### Sprint Completion
+### Sonraki Adimlar (maks 5)
+1. **API key rotate** (kullanıcı) — Google AI Studio → revoke + yeni üret → `.env.local`'a yaz
+2. **135 fail soru retry** — auto_judged_high'da kalan rationale'sız 135 soru için 2. mini batch (~$0.50)
+3. **Mock-to-real sprint** (5 gün) — `fastapi-featureflags` + `syrupy` snapshot + `schemathesis` CI gate; 35 mock endpoint wire (advanced_reports 4 + analytics 23 + content 8)
+4. **Auth coverage** (2 sprint) — `unified_auth_service.py` (397 LOC), `auth_middleware.py` (405 LOC), `security_middleware.py` (455 LOC) %0 coverage; smoke → unit → integration
+5. **DB pool tuning** — login latency'nin kalan 841ms (PgBouncer hazırlığı, pool size tune)
 
-| Sprint | Commits | İçerik |
-|---|---|---|
-| **0** Quick wins | 3f70591bf, 1be9262b8, 755aa9940 | depends_on (zaten OK), migration env-gate, subject enum +GENEL/TDE, placement fallback raise, TS build 5 fix, Redis rate limiter wire |
-| **1** Data integrity | 1fe3d3cdf | MEMORY.md refresh, Phase 7 filter `auto_judged_high+bronze_clean`, runbook, 13 auth smoke test (was 0% coverage) |
-| **2** Perf+sec | 059c9324d | bcrypt 12→10 (-225ms login), Sentry init, .env orphan cleanup, WCAG-A reject (agent claim yanlış) |
-| **3** Mock burndown | d9cb7e2e4, 7ca8c643b | Fire-forget `_ALGO_ERRORS` increment, 11 endpoint mock guard + `computed_by:"mock"` markers |
-| **4** Missing features | 01e932542 | Study Rooms stub (23 endpoint, 501), apiClient migration runbook |
-| **audit** | 6bdde688a | 7 raporu + 99_SYNTHESIS |
-
-### Karpathy Self-Correction Discipline
-
-6 agent iddiası bağımsız doğrulandı, **3'ü YANLIŞ**:
-- ❌ Agent 6 "migration chain broken" → alembic 1 head, OK
-- ❌ Agent 6 "depends_on missing service_healthy" → zaten mevcut
-- ❌ Agent 3 "8 missing alt=" → multi-line tarama 0 violation
-- ✅ Agent 5 "MEMORY 77K→live 167K" doğrulandı (+116% drift)
-- ✅ Agent 3 "TS build 5 error" doğrulandı (fix edildi)
-- ✅ Agent 2 partial: 2 subject (GENEL+TDE), 6 değil
-
-### Doğrulanmış Durum (production state)
-
-- ✅ Backend: 199 unit test PASS
-- ✅ Frontend: `npm run build` (`tsc + vite`) clean
-- ✅ Live DB: 167,559 active questions (MEMORY refresh edildi)
-- ✅ Login latency: bcrypt 10 = -225ms saving
-- ✅ Rate limiter: Redis backed, 8 site await + 6 caller fixed
-- ✅ Sentry: init guarded by SENTRY_DSN env
-
-### Bekleyen (sonraki session)
-
-1. **Phase 7 gold pool retry** — runbook hazır, ~$300 + 24h batch run gerek (operator-run)
-2. **35 endpoint full wire to DB** — mock guard koyduk, gerçek implementation 5d sprint
-3. **Study Rooms backend** — stub 501, gerçek implementation 2w sprint (product spec gerek)
-4. **Raw fetch → apiClient** migration — 10 service, 5d sprint (runbook hazır)
-5. **Auth modülleri test coverage** — 13 smoke landed, asıl test suite 2 sprint scope
-6. **DB pool tuning** — login latency'nin diğer 841ms'i (PgBouncer + pool size)
-
-### Engelleyici / Notlar
-
-- `gh` CLI lokal yok — CI sonuçları GitHub Actions web'den izlenmeli
-- 2 path-encoded `.env*` dosya tracked'den silindi (cUsershusey*); working-tree'de duruyor (untracked)
-- Agent claim'leri ASLA doğrulama yapmadan kabul edilemez (3/6 yanlış oranı çok yüksek)
-
-### Karar
-
-- master'a 9 commit doğrudan push (kullanıcı onayıyla)
-- Audit doc kalıcı kayıt (docs/audits/2026-05-22_product_ready_audit/)
-- Yeni runbook'lar: phase7_gold_pool_retry + frontend_apiclient_migration
+### Kararlar (gelecek session tekrar tartismasin)
+- **Gemini 2.5 Flash Batch baseline** korunur — Türkçe akademik kalite kanıtlanmış, switching cost = 0. Distillation/lokal Qwen3/DeepSeek/Aya seçenekleri REDDEDİLDİ (kalite riski + CC-BY-NC ticari yasak + setup overhead vs $5-8 maliyet). Detay: 3 paralel research agent raporu chat history'de.
+- **Phase 7 prompt template değişmedi** — fail rate 5.7%→0.9% düşüşü Gemini model güncellemesinden (gemini-flash-latest auto-resolve), prompt sağlam.
+- **Gitleaks/detect-secrets eklenmedi** — KIRO2'de zaten kurulu (`.pre-commit-config.yaml:74 Yelp/detect-secrets v1.4.0` + `.github/workflows/security.yml:162 gitleaks-action@v2`). KISS: var olanı kullan, çakıştırma.
+- **`.env` "leak" iddiası phantom** — `git ls-files` ile teknofest .env hiç tracked değildi; sadece working-tree'de path-encoded kazara dosyalar. Force-push gereksiz, audit yanlış.
