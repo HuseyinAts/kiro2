@@ -324,3 +324,4 @@ backend/audit_out.json
 # Phase 7 LLM batch state (large JSONL inputs/outputs, ephemeral)
 backend/scripts/quality/_batch_state/
 backend/scripts/quality/_batch_state_gemini*/
+backend/scripts/quality/_phase7_audit_tmp/
