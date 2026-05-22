@@ -1,6 +1,6 @@
-## Session Handoff — 2026-05-22 16:35 (S181)
-**Branch:** master | **Pushed:** `768bd06bd..6bcd4e626` (1 commit, GitHub senkron)
-**Son commit:** `6bcd4e626 fix(security): bump TruffleHog v3.82.13 -> v3.95.3`
+## Session Handoff — 2026-05-22 16:42 (S181 CLOSED)
+**Branch:** master | **Pushed:** `768bd06bd..3693f2f09` (2 commit, local + remote senkron)
+**Son commit:** `3693f2f09 chore: session handoff S181`
 **Uncommitted:** temiz
 
 ### Yapilanlar
