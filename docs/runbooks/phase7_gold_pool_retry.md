@@ -123,10 +123,21 @@ Hard ceiling: pilot için `--limit 200` yeter (135 fail soru recovery için).
 - Net value: 485 pending LIVE (%27) + 1,413 rejected DEAD (%73)
 - Idempotent ON CONFLICT — zarar yok, sunk cost
 
-### S181 Mini Retry — 2026-05-22 ~22:00 (141 fail questions) 🟡 IN PROGRESS
+### S181 Mini Retry — 2026-05-22 23:00→23:03 (141 questions, 3dk runtime) ✅
 - Batch ID: `batches/7cknizzmrgl3m5j47be46z6w1clypkyks6u6`
-- Target: auto_judged_high'da kalan 135 + bronze_clean kalan 6
-- Beklenen: gold %99.1 → %99.8
+- Build: 141 q (auto_judged_high kalan 135 + bronze_clean kalan 6)
+- Apply: success 133 / 141 (%94.3), fail 8 (%5.7 — yapısal sorunlar, uzun text/tablo)
+- DB: 665 rationale rows + 133 question_bank UPDATE
+- **Final coverage: auto_judged_high %99.95 (15,314/15,321), bronze_clean %99.49 (196/197)**
+- Hedef %99.8'di, %99.95 ile aşıldı
+
+### Kalan 8 soru (rationale'sız)
+Yapısal sorunlar (next retry'da düzelmeyebilir):
+- Çok uzun question_text (>1000 char truncation)
+- Karmaşık tablo/formül markdown
+- JSON parse hatası (Gemini response 16K token limit hit)
+
+Pratik amaçla %100 sayılabilir. Beta launch blocker DEĞİL.
 
 ## Quality gate (post-apply)
 
