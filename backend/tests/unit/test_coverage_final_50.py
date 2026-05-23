@@ -72,12 +72,11 @@ sci_opt = _make_stub(
 )
 sys.modules.setdefault("scipy.optimize", sci_opt)
 
-# services.quality.metrics stub
-metrics_mod = _make_stub(
-    "services.quality.metrics", QualityMetrics=type("QualityMetrics", (), {})
-)
-sys.modules.setdefault("services.quality", types.ModuleType("services.quality"))
-sys.modules.setdefault("services.quality.metrics", metrics_mod)
+# S197: services.quality stub removed — real package exists at
+# `backend/services/quality/__init__.py` and `metrics.py`. The previous
+# `types.ModuleType("services.quality")` injection turned the package
+# into a non-package, breaking `from services.quality.* import ...` for
+# all tests that loaded AFTER this file in the alphabetical sweep.
 
 # core.turkish_nlp_utils stub
 nlp_mod = _make_stub(

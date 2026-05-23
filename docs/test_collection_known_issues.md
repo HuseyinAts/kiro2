@@ -1,7 +1,8 @@
 # Test Collection — Known Issues (Post-S197)
 
-**Updated**: 23 May 2026 (S197)
-**Status**: 5 collection errors remain (was 12 pre-S197)
+**Updated**: 23 May 2026 (S197 — Cat B+E pollution fix)
+**Status**: ✅ **0 collection errors** (was 12 pre-S197, then 5 post-Cat A/C/D, now 0)
+**Total tests collected**: 16,259 (was 14,733 — **+1,526 newly accessible**)
 
 ## Fixed in S197 (Commit `392c00459`)
 
@@ -11,52 +12,65 @@
 | A — auth middleware imports | 2 | Wrong order (sec_mod before patch) + `backend.` prefix | `import tests.conftest_security` at top (isort:skip), no prefix |
 | D — locust/Py3.13 SSL recursion | 2 | urllib3 minimum_version setter infinite loop on Py3.13 | Module-level `pytest.skip` guarded by `sys.version_info >= (3, 13)` |
 
-## Remaining (Pollution — Collect Pass Individually)
+## Cat B+E Pollution — RESOLVED ✅
 
-These 5 files collect successfully in **isolation** but fail in the **full sweep**.
-Root cause: shared sys.modules state pollution by some earlier test.
+Identified 2 polluter files via alphabetical bisect (~30 min):
 
-| File | Individual collect | Sweep error |
-|------|---------------------|-------------|
-| tests/unit/test_exam_curriculum_models.py | 1,250 tests | AttributeError |
-| tests/unit/test_quality_ab_testing.py | 35 tests | ModuleNotFoundError |
-| tests/unit/test_quality_expert_review.py | ? | ModuleNotFoundError |
-| tests/unit/test_quality_nlp_metrics.py | ? | ModuleNotFoundError |
-| tests/unit/test_quality_question_scorer.py | 39 tests | "services.quality is not a package" |
+### Polluter 1: `tests/unit/test_coverage_final_50.py` (line 79)
+```python
+# BEFORE (poisoned 4 quality tests):
+sys.modules.setdefault("services.quality", types.ModuleType("services.quality"))
+sys.modules.setdefault("services.quality.metrics", metrics_mod)
 
-## Investigation Done (S197)
+# AFTER (removed — real package exists at backend/services/quality/):
+# S197: services.quality stub removed — real package exists.
+```
+- Root cause: `types.ModuleType("services.quality")` turns the real package
+  into a non-package, breaking `from services.quality.* import ...`
+- Real path: `backend/services/quality/__init__.py` exists
 
-- ❌ `backend/quality.py` shadow hypothesis (top-level script): refuted — direct import test passed
-- ❌ `services/youtube/quality.py` conflict: same dir tree, no shadow
-- ❌ Direct sys.modules manipulation: only `test_social_content_filter.py` does `sys.modules["services.social_content_filter"] = _mod`, not related
-- ❌ Pairing with test_social_content_filter: both collect fine together
+### Polluter 2: `tests/unit/test_core_security_content.py` (line 127-129)
+```python
+# BEFORE (poisoned test_exam_curriculum_models):
+sys.modules["models.curriculum"] = _curriculum_mod  # _SubjectType has only 2 values
 
-## Next Investigation (Deferred)
+# AFTER (conditional guard, same pattern they used for 'models'):
+if "models.curriculum" not in sys.modules:
+    sys.modules["models.curriculum"] = _curriculum_mod
+```
+- Root cause: partial `_SubjectType` stub (only MATEMATIK + FEN) replaced
+  the real 12-value enum (TURKCE, FEN_BILIMLERI, ...)
+- Fix: respect the same conditional pattern used for parent `models` package
 
-Bisect the full sweep:
-1. `pytest tests/ --co --collect-only` and find files alphabetically BEFORE first failure
-2. Binary search by progressively narrowing the prefix
-3. Look for `MagicMock` / `unittest.mock.patch` on `services` or `services.quality`
-4. Check for `from services import quality` patterns (importing as attribute, not subpackage)
+## Bisect Method (for future similar issues)
 
-## Workaround (Until Pollution Fixed)
+1. Identify failing files in sweep but pass in isolation
+2. Run `tests/[half-of-alphabet]/test_*.py + failing.py --co`
+3. Narrow by halves until single polluter range
+4. Run each candidate × failing target to confirm
 
-```bash
-# These tests still work — just run them individually or in their own subset
-pytest tests/unit/test_quality_ab_testing.py tests/unit/test_quality_expert_review.py \
-       tests/unit/test_quality_nlp_metrics.py tests/unit/test_quality_question_scorer.py \
-       tests/unit/test_exam_curriculum_models.py -v
+Time: ~30 minutes for 2 polluters across 14k+ tests.
 
-# Full sweep skipping these (CI workaround):
-pytest tests/ --ignore=tests/unit/test_quality_ab_testing.py \
-              --ignore=tests/unit/test_quality_expert_review.py \
-              --ignore=tests/unit/test_quality_nlp_metrics.py \
-              --ignore=tests/unit/test_quality_question_scorer.py \
-              --ignore=tests/unit/test_exam_curriculum_models.py
+## Key Lesson — Coverage-Hack Anti-Pattern
+
+Files like `test_coverage_final_50.py` and `test_core_security_content.py`
+mock heavy dependencies via `sys.modules` injection to hit coverage targets.
+When the mock is PARTIAL (missing enum values, missing attributes), it
+poisons OTHER tests that load AFTER them in the alphabetical sweep.
+
+**Rule of thumb**: When mocking modules via `sys.modules[...]`, ALWAYS use
+the conditional guard pattern:
+```python
+if "models.X" not in sys.modules:  # only stub if real not yet loaded
+    sys.modules["models.X"] = stub_mod
 ```
 
-## Impact
+This was already done for top-level `models` in test_core_security_content.py
+but missed for the subpackage `models.curriculum`. Same fix applies.
 
-- 1,250 + 35 + 39 + ~unknown = **~1,400 tests** affected
-- Tests themselves work — only collection fails in sweep
-- Real coverage measurement requires fix OR running them in separate process
+## Outcome
+
+- **12 → 0** collection errors
+- **14,733 → 16,259** tests collected (+1,526)
+- **2 surgical fixes** (line removal + conditional guard)
+- Coverage measurement now unblocked for all auth+quality modules

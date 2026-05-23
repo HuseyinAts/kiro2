@@ -126,7 +126,12 @@ _curriculum_mod.GradeLevel = _GradeLevel
 # that import from it (e.g. models.teacher_pool).
 if "models" not in sys.modules:
     sys.modules["models"] = MagicMock()
-sys.modules["models.curriculum"] = _curriculum_mod
+# S197: same conditional guard for models.curriculum — the partial
+# _SubjectType stub (MATEMATIK + FEN only) poisoned test_exam_curriculum_models
+# which expects the full 12-value enum (TURKCE, FEN_BILIMLERI, ...). If a
+# previous test has already loaded the real package, keep it.
+if "models.curriculum" not in sys.modules:
+    sys.modules["models.curriculum"] = _curriculum_mod
 
 # Patch structured_logger used by exam_quality_validators
 sys.modules["core.structured_logger"] = MagicMock()
