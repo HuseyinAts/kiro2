@@ -837,20 +837,65 @@ async def _get_detailed_student_analysis(
         return {}
 
 
-async def _get_class_students(class_id: str) -> list[dict[str, Any]]:
-    """Sınıf öğrencilerini al"""
+async def _get_class_students_real(class_id: str) -> list[dict[str, Any]]:
+    """Real class students via ``teacher_classroom_students`` JOIN ``users`` (S196 Day 4).
+
+    Schema parity preserved: returns list of ``{"id": str, "name": str}``.
+    Invalid UUID class_id → empty list (consistent with empty-table behavior).
+    """
     try:
-        # Mock implementation - gerçek implementasyonda DB'den gelecek
-        return [
-            {"id": "student_1", "name": "Ahmet Yılmaz"},
-            {"id": "student_2", "name": "Ayşe Demir"},
-            {"id": "student_3", "name": "Mehmet Kaya"},
-            {"id": "student_4", "name": "Fatma Özkan"},
-            {"id": "student_5", "name": "Ali Çelik"},
-        ]
+        from uuid import UUID
+
+        try:
+            classroom_uuid = UUID(class_id)
+        except (ValueError, TypeError):
+            logger.warning(f"_get_class_students_real: invalid class_id={class_id!r}")
+            return []
+
+        async with get_db_session_context() as db:
+            result = await db.execute(
+                text(
+                    """
+                    SELECT u.id, COALESCE(u.first_name, '') AS first_name,
+                           COALESCE(u.last_name, '') AS last_name
+                    FROM teacher_classroom_students tcs
+                    JOIN users u ON u.id = tcs.student_user_id
+                    WHERE tcs.classroom_id = :class_id
+                    ORDER BY u.last_name, u.first_name
+                    """
+                ),
+                {"class_id": classroom_uuid},
+            )
+            return [
+                {
+                    "id": row.id,
+                    "name": f"{row.first_name} {row.last_name}".strip() or row.id,
+                }
+                for row in result
+            ]
     except Exception as e:
-        logger.error(f"Get class students error: {e!s}")
+        logger.error(f"_get_class_students_real error: {e!s}")
         return []
+
+
+async def _get_class_students_mock(class_id: str) -> list[dict[str, Any]]:
+    """Sınıf öğrencilerini al — mock fallback."""
+    return [
+        {"id": "student_1", "name": "Ahmet Yılmaz"},
+        {"id": "student_2", "name": "Ayşe Demir"},
+        {"id": "student_3", "name": "Mehmet Kaya"},
+        {"id": "student_4", "name": "Fatma Özkan"},
+        {"id": "student_5", "name": "Ali Çelik"},
+    ]
+
+
+async def _get_class_students(class_id: str) -> list[dict[str, Any]]:
+    """Class students — feature-flagged dispatcher (S196 Day 4)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("analytics.class_students"):
+        return await _get_class_students_real(class_id)
+    return await _get_class_students_mock(class_id)
 
 
 async def _calculate_class_metrics(
@@ -1039,21 +1084,95 @@ async def _get_user_statistics(
         return {}
 
 
+async def _get_exam_statistics_real(
+    start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Real exam statistics via ``exam_sessions`` aggregate (S196 Day 4).
+
+    Semantics:
+    - ``total_exams_taken`` = count of completed exams in window
+    - ``exam_types`` = completed count per exam_type
+    - ``average_scores`` = AVG(raw_score) per exam_type (completed only)
+    - ``completion_rates`` = completed / all-non-not-started per exam_type
+      (abandoned counts as "took the exam but didn't finish")
+
+    Window filter uses ``created_at`` so abandoned sessions in window still
+    contribute to the denominator. Empty window → zeros, not empty dict
+    (schema parity preserved).
+    """
+    try:
+        async with get_db_session_context() as db:
+            # Per-type aggregates in one query: count completed, AVG score,
+            # count any-non-not-started (for completion rate denominator).
+            result = await db.execute(
+                text(
+                    """
+                    SELECT
+                        UPPER(exam_type::text) AS etype,
+                        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed_count,
+                        AVG(CASE WHEN status = 'completed' THEN raw_score END) AS avg_score,
+                        SUM(CASE WHEN status IN ('completed','abandoned') THEN 1 ELSE 0 END) AS attempted_count
+                    FROM exam_sessions
+                    WHERE created_at BETWEEN :start_date AND :end_date
+                    GROUP BY exam_type
+                    """
+                ),
+                {"start_date": start_date, "end_date": end_date},
+            )
+            rows = result.all()
+
+        exam_types: dict[str, int] = {}
+        average_scores: dict[str, float] = {}
+        completion_rates: dict[str, float] = {}
+        total = 0
+        for row in rows:
+            etype = row.etype
+            completed = int(row.completed_count or 0)
+            attempted = int(row.attempted_count or 0)
+            exam_types[etype] = completed
+            average_scores[etype] = round(float(row.avg_score or 0.0), 1)
+            completion_rates[etype] = (
+                round(completed / attempted, 2) if attempted else 0.0
+            )
+            total += completed
+
+        return {
+            "total_exams_taken": total,
+            "exam_types": exam_types,
+            "average_scores": average_scores,
+            "completion_rates": completion_rates,
+        }
+    except Exception as e:
+        logger.error(f"_get_exam_statistics_real error: {e!s}")
+        return {
+            "total_exams_taken": 0,
+            "exam_types": {},
+            "average_scores": {},
+            "completion_rates": {},
+        }
+
+
+async def _get_exam_statistics_mock(
+    start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Sınav istatistikleri — mock fallback."""
+    return {
+        "total_exams_taken": 45896,
+        "exam_types": {"TYT": 28456, "AYT": 12847, "YDT": 4593},
+        "average_scores": {"TYT": 76.8, "AYT": 72.3, "YDT": 78.9},
+        "completion_rates": {"TYT": 0.89, "AYT": 0.85, "YDT": 0.92},
+    }
+
+
 async def _get_exam_statistics(
     start_date: datetime, end_date: datetime
 ) -> dict[str, Any]:
-    """Sınav istatistikleri"""
-    try:
-        # Mock implementation
-        return {
-            "total_exams_taken": 45896,
-            "exam_types": {"TYT": 28456, "AYT": 12847, "YDT": 4593},
-            "average_scores": {"TYT": 76.8, "AYT": 72.3, "YDT": 78.9},
-            "completion_rates": {"TYT": 0.89, "AYT": 0.85, "YDT": 0.92},
-        }
-    except Exception as e:
-        logger.error(f"Exam statistics error: {e!s}")
-        return {}
+    """Exam statistics — feature-flagged dispatcher (S196 Day 4)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("analytics.exam_statistics"):
+        return await _get_exam_statistics_real(start_date, end_date)
+    return await _get_exam_statistics_mock(start_date, end_date)
 
 
 async def _get_content_usage_statistics(
