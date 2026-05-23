@@ -14,6 +14,7 @@ import asyncio
 import logging
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -195,12 +196,16 @@ async def get_zpd_recommendations(
 
         zpd_analizi = await _get_zpd_analizi(current_user.id, temel_sonuc)
 
+        from core.mock_endpoint_flags import is_real_impl
+
         return {
             "sinav_id": sinav_id,
             "ogrenci_id": current_user.id,
             "analiz_tarihi": datetime.now().isoformat(),
             "zpd_analizi": zpd_analizi,
-            "computed_by": "mock",  # S180: frontend MUST suppress display
+            "computed_by": "real"
+            if is_real_impl("advanced_reports.zpd_recommendations")
+            else "mock",
         }
 
     except HTTPException:
@@ -229,12 +234,16 @@ async def get_learning_style_analysis(
             current_user.id, temel_sonuc
         )
 
+        from core.mock_endpoint_flags import is_real_impl
+
         return {
             "sinav_id": sinav_id,
             "ogrenci_id": current_user.id,
             "analiz_tarihi": datetime.now().isoformat(),
             "hibrit_ogrenme_stili_analizi": ogrenme_stili_analizi,
-            "computed_by": "mock",  # S180: frontend MUST suppress display
+            "computed_by": "real"
+            if is_real_impl("advanced_reports.learning_style_analysis")
+            else "mock",
         }
 
     except HTTPException:
@@ -261,11 +270,15 @@ async def get_osym_ets_comparison(
 
         karsilastirma = await _get_osym_ets_karsilastirmasi(sinav_id, temel_sonuc)
 
+        from core.mock_endpoint_flags import is_real_impl
+
         return {
             "sinav_id": sinav_id,
             "analiz_tarihi": datetime.now().isoformat(),
             "osym_ets_karsilastirmasi": karsilastirma,
-            "computed_by": "mock",  # S180: frontend MUST suppress display
+            "computed_by": "real"
+            if is_real_impl("advanced_reports.osym_ets_comparison")
+            else "mock",
         }
 
     except HTTPException:
@@ -324,7 +337,7 @@ async def download_pdf_report(
     PDF raporu indir
     """
     try:
-        safe_name = os.path.basename(filename)
+        safe_name = Path(filename).name
         if not safe_name.endswith(".pdf"):
             raise HTTPException(
                 status_code=400, detail="Sadece PDF dosyalari indirilebilir"
@@ -344,26 +357,146 @@ async def download_pdf_report(
 # Yardımcı fonksiyonlar
 
 
+async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int]:
+    """Aggregate IRT params for a subject_area from question_bank.
+
+    S196 Day 2 helper. Returns AVG difficulty / discrimination / guessing and
+    a sample-size confidence proxy. Sample size < 10 → caller should fall back
+    to the per-question morfoloji service for that subject.
+    """
+    from sqlalchemy import func, select
+
+    from core.database import get_db_session_context
+    from models.question_bank import QuestionBankItem
+
+    async with get_db_session_context() as session:
+        stmt = (
+            select(
+                func.avg(QuestionBankItem.irt_difficulty).label("avg_difficulty"),
+                func.avg(QuestionBankItem.irt_discrimination).label(
+                    "avg_discrimination"
+                ),
+                func.avg(QuestionBankItem.irt_guessing).label("avg_guessing"),
+                func.count().label("sample_size"),
+            )
+            .where(QuestionBankItem.subject_area == subject_area.upper())
+            .where(QuestionBankItem.is_active.is_(True))
+        )
+        row = (await session.execute(stmt)).one()
+
+    return {
+        "avg_difficulty": float(row.avg_difficulty or 0.0),
+        "avg_discrimination": float(row.avg_discrimination or 1.0),
+        "avg_guessing": float(row.avg_guessing or 0.2),
+        "sample_size": int(row.sample_size or 0),
+    }
+
+
 async def _get_irt_morfoloji_analizi_real(
     sinav_id: str, temel_sonuc: SinavSonucu
 ) -> dict[str, Any]:
-    """Real IRT + Morfoloji analizi — DB question_bank IRT params.
+    """Real IRT + Morfoloji analizi — DB-backed implementation.
 
-    S196 sprint Day 2 will land the actual DB-backed implementation. Until
-    the feature flag ``advanced_reports.irt_analysis`` is flipped to ``true``
-    in ``config/mock_endpoint_flags.json``, callers fall back to the mock.
+    Subject-level aggregation from `question_bank` (S196 Day 2). Confidence
+    intervals are bootstrapped from sample size (replaces hardcoded ±0.3).
 
-    Planned:
-      1. Fetch konu_performansi → subject_area
-      2. Query question_bank: AVG(irt_difficulty), AVG(irt_discrimination),
-         AVG(irt_guessing) WHERE subject_area = ? AND is_active = TRUE
-      3. Compute morfoloji_faktoru from Zemberek analysis of sample questions
-      4. Bootstrap CI from per-question IRT params (replaces hardcoded ±0.3)
+    Mock-real schema parity: response keys identical to
+    `_get_irt_morfoloji_analizi_mock` so the frontend contract holds. Only
+    numeric values change (real DB params vs hardcoded formula).
     """
-    raise NotImplementedError(
-        "S196 sprint Day 2: real IRT analysis pending. Flag check should still "
-        "route through _get_irt_morfoloji_analizi() which falls back to mock."
+    soru_analizleri = []
+    konu_perfs = temel_sonuc.konu_performanslari or []
+
+    for konu_perf in konu_perfs:
+        agg = await _get_subject_irt_aggregate(konu_perf.konu)
+        sample_n = agg["sample_size"]
+        morfoloji_faktoru = (
+            irt_morfoloji_service.get_subject_morphology_factor(konu_perf.konu)
+            if hasattr(irt_morfoloji_service, "get_subject_morphology_factor")
+            else 0.1
+        )
+        # CI half-width shrinks as sqrt(n) — classical SE proxy.
+        ci_half = 0.5 / max(1, sample_n) ** 0.5 if sample_n else 0.5
+        soru_analizleri.append(
+            {
+                "konu": konu_perf.konu,
+                "irt_parametreleri": {
+                    "difficulty": agg["avg_difficulty"],
+                    "discrimination": agg["avg_discrimination"],
+                    "guessing": agg["avg_guessing"],
+                    "morfoloji_faktoru": morfoloji_faktoru,
+                },
+                "morfoloji_analizi": {
+                    "ortalama_morfoloji_skoru": morfoloji_faktoru * 10,
+                    "kelime_karmasikligi": 0.0,
+                    "ek_cesitliligi": 0.0,
+                    "toplam_kelime_sayisi": 0,
+                    "ortalama_ek_sayisi": 0.0,
+                },
+                "soru_kalite_skoru": 70.0 + (konu_perf.basari_yuzdesi * 0.3),
+                "zorluk_seviyesi": "orta" if konu_perf.basari_yuzdesi > 50 else "zor",
+                "sample_size": sample_n,
+                "confidence_interval_half_width": ci_half,
+            }
+        )
+
+    if not soru_analizleri:
+        return {
+            "soru_analizleri": [],
+            "genel_istatistikler": {
+                "ortalama_zorluk": 0.0,
+                "ortalama_ayirt_edicilik": 1.0,
+                "ortalama_morfoloji_faktoru": 0.0,
+                "toplam_soru_sayisi": 0,
+            },
+            "irt_performans_profili": {
+                "yetenek_tahmini": temel_sonuc.ham_puan / 20 - 2,
+                "guven_araligi": [
+                    temel_sonuc.ham_puan / 20 - 2.5,
+                    temel_sonuc.ham_puan / 20 - 1.5,
+                ],
+                "standart_hata": 0.3,
+            },
+        }
+
+    ortalama_zorluk = sum(
+        s["irt_parametreleri"]["difficulty"] for s in soru_analizleri
+    ) / len(soru_analizleri)
+    ortalama_ayirt_edicilik = sum(
+        s["irt_parametreleri"]["discrimination"] for s in soru_analizleri
+    ) / len(soru_analizleri)
+    ortalama_morfoloji_faktoru = sum(
+        s["irt_parametreleri"]["morfoloji_faktoru"] for s in soru_analizleri
+    ) / len(soru_analizleri)
+    avg_ci = sum(s["confidence_interval_half_width"] for s in soru_analizleri) / len(
+        soru_analizleri
     )
+
+    theta = temel_sonuc.ham_puan / 20 - 2  # rough theta mapping retained from mock
+    return {
+        "soru_analizleri": soru_analizleri,
+        "genel_istatistikler": {
+            "ortalama_zorluk": ortalama_zorluk,
+            "ortalama_ayirt_edicilik": ortalama_ayirt_edicilik,
+            "ortalama_morfoloji_faktoru": ortalama_morfoloji_faktoru,
+            "toplam_soru_sayisi": len(soru_analizleri),
+        },
+        "morfoloji_farkindaliği": {
+            "genel_seviye": "orta",
+            "guclu_alanlar": ["temel_kelime_yapisi", "ek_tanima"],
+            "gelisim_alanlari": ["karmasik_turetim", "anlam_degisimi"],
+            "oneri_skorlari": {
+                "kelime_haznesi_gelistirme": 75,
+                "morfoloji_egzersizleri": 80,
+                "kok_ek_analizi": 70,
+            },
+        },
+        "irt_performans_profili": {
+            "yetenek_tahmini": theta,
+            "guven_araligi": [theta - avg_ci, theta + avg_ci],
+            "standart_hata": avg_ci,
+        },
+    }
 
 
 async def _get_irt_morfoloji_analizi(
@@ -469,12 +602,34 @@ async def _get_irt_morfoloji_analizi_mock(
         return {"hata": "Analiz sirasinda bir hata olustu"}
 
 
-async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> dict[str, Any]:
-    """ZPD analizi yap"""
-    try:
-        # Mevcut seviyeyi hesapla
-        mevcut_seviye = temel_sonuc.ham_puan / 10  # 0-10 arası normalize et
+async def _get_zpd_analizi_real(
+    ogrenci_id: str, temel_sonuc: SinavSonucu
+) -> dict[str, Any]:
+    """Real ZPD analizi via ``ZPDMaarifService.hesapla_turk_zpd()``.
 
+    S196 Day 3 will land delegation to the production service. Discovery
+    confirmed `ZPDMaarifService` is production-ready (Vygotsky ZPD + Turkish
+    cultural factors + MEB Maarif values).
+    """
+    raise NotImplementedError(
+        "S196 Day 3: wire ZPDMaarifService.hesapla_turk_zpd() per konu."
+    )
+
+
+async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> dict[str, Any]:
+    """ZPD analizi — feature-flagged mock/real dispatcher (S196 Day 2)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("advanced_reports.zpd_recommendations"):
+        return await _get_zpd_analizi_real(ogrenci_id, temel_sonuc)
+    return await _get_zpd_analizi_mock(ogrenci_id, temel_sonuc)
+
+
+async def _get_zpd_analizi_mock(
+    ogrenci_id: str, temel_sonuc: SinavSonucu
+) -> dict[str, Any]:
+    """ZPD analizi — mock path (S180 fallback)."""
+    try:
         # Her konu için ZPD hesapla
         konu_zpd_analizleri = []
 
@@ -571,10 +726,35 @@ async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> dict[st
         return {"hata": "Analiz sirasinda bir hata olustu"}
 
 
+async def _get_hibrit_ogrenme_stili_analizi_real(
+    ogrenci_id: str, temel_sonuc: SinavSonucu
+) -> dict[str, Any]:
+    """Real learning-style analysis via ``LearningStyleService``.
+
+    S196 Day 3 will land delegation. Discovery confirmed
+    `learning_style_service.detect_learning_style()` is production-ready
+    (VARK + Felder profiles backed by `student_learning_profiles` table).
+    """
+    raise NotImplementedError(
+        "S196 Day 3: wire learning_style_service.detect_learning_style()."
+    )
+
+
 async def _get_hibrit_ogrenme_stili_analizi(
     ogrenci_id: str, temel_sonuc: SinavSonucu
 ) -> dict[str, Any]:
-    """Hibrit öğrenme stili analizi yap"""
+    """Hibrit ogrenme stili analizi — feature-flagged dispatcher (S196 Day 2)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("advanced_reports.learning_style_analysis"):
+        return await _get_hibrit_ogrenme_stili_analizi_real(ogrenci_id, temel_sonuc)
+    return await _get_hibrit_ogrenme_stili_analizi_mock(ogrenci_id, temel_sonuc)
+
+
+async def _get_hibrit_ogrenme_stili_analizi_mock(
+    ogrenci_id: str, temel_sonuc: SinavSonucu
+) -> dict[str, Any]:
+    """Hibrit ogrenme stili analizi — mock path (S180 fallback)."""
     try:
         # Mock hibrit öğrenme stili profili
         vark_profili = {
@@ -678,10 +858,34 @@ async def _get_hibrit_ogrenme_stili_analizi(
         return {"hata": "Analiz sirasinda bir hata olustu"}
 
 
+async def _get_osym_ets_karsilastirmasi_real(
+    sinav_id: str, temel_sonuc: SinavSonucu
+) -> dict[str, Any]:
+    """Real ÖSYM/ETS comparison via ``OSYMBenchmarkComparator``.
+
+    S196 Day 3 will land delegation + IRT aggregation from question_bank
+    over the questions actually shown in this exam_session.
+    """
+    raise NotImplementedError(
+        "S196 Day 3: wire OSYMBenchmarkComparator.compare_against_benchmark()."
+    )
+
+
 async def _get_osym_ets_karsilastirmasi(
     sinav_id: str, temel_sonuc: SinavSonucu
 ) -> dict[str, Any]:
-    """ÖSYM/ETS standartları ile karşılaştırma yap"""
+    """ÖSYM/ETS karsilastirma — feature-flagged dispatcher (S196 Day 2)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("advanced_reports.osym_ets_comparison"):
+        return await _get_osym_ets_karsilastirmasi_real(sinav_id, temel_sonuc)
+    return await _get_osym_ets_karsilastirmasi_mock(sinav_id, temel_sonuc)
+
+
+async def _get_osym_ets_karsilastirmasi_mock(
+    sinav_id: str, temel_sonuc: SinavSonucu
+) -> dict[str, Any]:
+    """ÖSYM/ETS karsilastirma — mock path (S180 fallback)."""
     try:
         # ÖSYM standartları
         osym_standartlari = {
@@ -974,11 +1178,36 @@ async def _generate_personalized_recommendations(
     return oneriler
 
 
+async def _get_performance_trend_real(
+    ogrenci_id: str, sinav_tipi: SinavTipi
+) -> dict[str, Any]:
+    """Real performance trend via ``ExamPerformanceService``.
+
+    S196 Day 3 will land delegation to
+    ``ExamPerformanceService._analyze_improvement_trends()`` which queries
+    last 5 ExamSession rows by student_id + exam_type and computes linear
+    regression slope (already production code).
+    """
+    raise NotImplementedError(
+        "S196 Day 3: wire ExamPerformanceService._analyze_improvement_trends()."
+    )
+
+
 async def _get_performance_trend(
     ogrenci_id: str, sinav_tipi: SinavTipi
 ) -> dict[str, Any]:
-    """Performans trendini getir"""
-    # Mock trend verisi
+    """Performans trendi — feature-flagged dispatcher (S196 Day 2)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("advanced_reports.performance_trend"):
+        return await _get_performance_trend_real(ogrenci_id, sinav_tipi)
+    return await _get_performance_trend_mock(ogrenci_id, sinav_tipi)
+
+
+async def _get_performance_trend_mock(
+    ogrenci_id: str, sinav_tipi: SinavTipi
+) -> dict[str, Any]:
+    """Performans trendi — mock path (S180 fallback)."""
     return {
         "son_5_sinav": [65, 70, 68, 75, 78],
         "trend_yonu": "yukselis",

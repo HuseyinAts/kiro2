@@ -4,6 +4,7 @@
   "advanced_reports.zpd_recommendations": false,
   "advanced_reports.learning_style_analysis": false,
   "advanced_reports.osym_ets_comparison": false,
+  "advanced_reports.performance_trend": false,
   "analytics.student": false,
   "analytics.class": false,
   "analytics.admin_dashboard": false,
