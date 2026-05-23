@@ -1,6 +1,9 @@
 """Tests for AuthorizationMiddleware, RateLimiter, SecurityValidator,
 and ComprehensiveSecurityMiddleware from security_middleware.py"""
 
+# Patch broken fastapi.middleware.base BEFORE loading security_middleware
+import tests.conftest_security  # noqa: F401, isort: skip
+
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -9,11 +12,8 @@ import pytest
 from starlette.datastructures import Headers, QueryParams
 from starlette.responses import JSONResponse
 
-import backend.core.security_middleware as sec_mod
-
-# Patch broken fastapi.middleware.base import before loading the module
-import backend.tests.conftest_security  # noqa: F401
-from backend.core.rbac_system import Action, ResourceType
+import core.security_middleware as sec_mod
+from core.rbac_system import Action, ResourceType
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -265,7 +265,9 @@ class TestRateLimiterGetClientIp:
         )
         assert rl._get_client_ip(req) == "203.0.113.50"
 
-    def test_forwarded_from_untrusted_proxy_uses_direct(self, _patch_heavy: Any) -> None:
+    def test_forwarded_from_untrusted_proxy_uses_direct(
+        self, _patch_heavy: Any
+    ) -> None:
         rl = _build_rate_limiter()
         req = _make_request(
             client_host="8.8.8.8",
@@ -327,7 +329,9 @@ class TestCheckRateLimit:
         assert any(v["type"] == "per_ip" for v in result["violations"])
 
     @pytest.mark.asyncio
-    async def test_progressive_ban_after_repeated_violations(self, _patch_heavy: Any) -> None:
+    async def test_progressive_ban_after_repeated_violations(
+        self, _patch_heavy: Any
+    ) -> None:
         rl = _build_rate_limiter(ip_limit=2)
         req = _make_request(client_host="10.0.0.3")
 

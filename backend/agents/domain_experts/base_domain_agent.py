@@ -12,6 +12,7 @@ Sid Bidasaria subagent mimarisi uygulamasi:
 
 import logging
 from abc import abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -85,10 +86,7 @@ class DomainContext:
         return total_chars // 4
 
     def add_domain_knowledge(
-        self,
-        content: str,
-        topic: str = "general",
-        estimated_tokens: int = 0
+        self, content: str, topic: str = "general", estimated_tokens: int = 0
     ) -> bool:
         """
         Domain bilgisi ekle
@@ -106,7 +104,9 @@ class DomainContext:
             estimated_tokens = len(str(content)) // 4
 
         if not self.can_add_tokens(estimated_tokens):
-            logger.warning(f"Cannot add domain knowledge '{topic}': token limit would be exceeded")
+            logger.warning(
+                f"Cannot add domain knowledge '{topic}': token limit would be exceeded"
+            )
             return False
 
         self.domain_knowledge[topic] = content
@@ -130,11 +130,9 @@ class DomainContext:
             logger.warning("Cannot add to history: token limit would be exceeded")
             return False
 
-        self.conversation_history.append({
-            "role": role,
-            "content": content,
-            "timestamp": datetime.now().isoformat()
-        })
+        self.conversation_history.append(
+            {"role": role, "content": content, "timestamp": datetime.now().isoformat()}
+        )
         self.add_tokens(estimated_tokens)
         return True
 
@@ -473,11 +471,11 @@ class BaseDomainAgent(BaseAgent):
         )
         return adjusted
 
-    def get_tool(self, tool_name: str) -> callable | None:
+    def get_tool(self, tool_name: str) -> Callable[..., Any] | None:
         """Kayitli araci al"""
         return self.tools.get(tool_name)
 
-    def register_tool(self, name: str, func: callable, description: str = ""):
+    def register_tool(self, name: str, func: Callable[..., Any], description: str = ""):
         """Yeni arac kaydet"""
         self.tools[name] = func
         logger.debug(f"Registered tool '{name}' for {self.domain.value} agent")

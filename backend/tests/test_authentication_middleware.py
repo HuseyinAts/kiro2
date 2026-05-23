@@ -1,5 +1,8 @@
 """Tests for AuthenticationMiddleware from security_middleware.py"""
 
+# Patch broken fastapi.middleware.base BEFORE loading security_middleware
+import tests.conftest_security  # noqa: F401, isort: skip
+
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -7,10 +10,7 @@ import pytest
 from starlette.datastructures import Headers, QueryParams
 from starlette.responses import JSONResponse
 
-import backend.core.security_middleware as sec_mod
-
-# Patch broken fastapi.middleware.base import before loading the module
-import backend.tests.conftest_security  # noqa: F401
+import core.security_middleware as sec_mod
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -321,7 +321,9 @@ class TestAuthMiddlewareDispatch:
 
         mw.auth_manager.token_manager.verify_token.return_value = payload
 
-        req = _make_request(path="/api/v1/data", headers={"authorization": "Bearer tok"})
+        req = _make_request(
+            path="/api/v1/data", headers={"authorization": "Bearer tok"}
+        )
         call_next = _async_call_next(200)
 
         resp = await mw.dispatch(req, call_next)
