@@ -633,3 +633,67 @@ Phantom filter sonucu **8.5/15 phantom** çıkardıktan sonra **gerçek 3 kalan 
 **Files modified**: 2 (loader.py, meta-audit doc)
 **Test sayısı eklenen**: 159 (28 unit study_rooms + 69 sec_mw + 62 tr_exam_mw)
 **Coverage delta**: 2 modül %0 → ~%25-28, 1 yeni modül %35
+
+---
+
+## 14. SON 2 P0 — PHASE 7 + ORM CLUSTER 2 KARARI (S197 Stage 4)
+
+### P0 #17 — Phase 7 Quality Retry: DEFER
+
+**Live durum (23 May)**:
+- Gold pool: 13,310 (auto_judged_high) + 197 (bronze_clean) = 13,507 sorular
+- Rationale coverage: **13,303/13,310 = %99.95** ✅ (COMPLETE)
+- Quality concern: %26.7 unacceptable (89 sample / 445 rationale, S181 audit)
+- Cost projection (full retry): $5.70 (~13,303 q × ~600 input tok + 225 output tok @ Gemini Flash)
+
+**Karar**: **DEFER** — coverage zaten %99.95, quality issue sonraki sprint için backlog. Sebepler:
+1. Aynı Gemini-CIRCULAR pattern bug fix edilmedi → full retry kaliteyi artırmayabilir
+2. Beta launch için %26.7 partial → curator manual override layer kritik
+3. Prompt iyileştirme + pilot test daha disciplined (sonraki session: ~$0.05, 100 sample)
+
+**Doc trail**: `docs/audits/2026-05-22_phase7_quality_sample.md` korunur, MEMORY.md güncellenir.
+
+### P0 #1 — ORM Drift Cluster 2: DEFER + AUDIT REFORM CONFIRM
+
+**Live durum** (script: `backend/scripts/audit_orm_schema_drift.py`):
+- HIGH findings: **159** (was 203 in S155 baseline → -44 = **%22 self-fix improvement**)
+- MEDIUM/LOW: filter değişmiş, 0 görünüyor
+- 22 tables aktif drift (per `database.py:395` yorum)
+- Realistic fix effort: 11-40+ saat (multi-session refactor)
+
+**Karar**: **DEFER** + **CI GATE LIVE CONFIRM (Phantom #9!)**
+
+**Phantom #9 tespit edildi**: Meta-audit Section 5 Pattern 1'de "CI gate `--fail` mode script yazılmış ama canlıda değil" iddiası **YANLIŞ**. Live verify:
+- `.github/workflows/quality-gate.yml` Step 4 (line 75-76) **ZATEN** `audit_orm_schema_drift.py --fail` çalıştırıyor
+- Commit `79b160bb3` (Task 8) — origin/master'a push edilmiş
+- 6-step CI workflow live: router registration, golden flows, path drift, **ORM drift**, new-endpoint checklist, ruff+mypy
+
+Meta-audit doc'unu oluşturan agent (4 paralel Explore) bu workflow'u görmemiş — yine **stale audit pattern**.
+
+### S197 Phantom Toplam Final
+
+| Stage | Verified | Phantom | Real | Phantom % |
+|-------|----------|---------|------|-----------|
+| TIER 1+2 (Phase 1) | 8 | 6 | 1+1 dev | %75 |
+| Pattern A/B (linter) | 2 | 2 | 0 | %100 |
+| TIER 3 full sweep | 5 | 4 + 1 partial | 0+1 partial | %80-90 |
+| **CI gate (audit reform)** | **1** | **1** | **0** | **%100** |
+| **GENEL TOPLAM** | **16** | **13.5** | **1 real + 1 partial + 0.5 dev** | **~%87** |
+
+**Yeni rekor: %87 phantom rate**. Meta-audit %87 stale.
+
+### 14.4 — Mega Audit Lock Önerisi → CLAUDE.md Hard Rule
+
+Bu meta-audit kanıtladı: **yeni mega audit dalgası AÇMAK ZARARLI**. Mevcut audit doc'lar 4-6 hafta stale, kod ileride, agent'lar eski baseline okuyup yeni "P0" sunuyor. Çözüm:
+
+**Yeni hard rule** (CLAUDE.md'ye eklenecek):
+> Yeni audit doc oluşturmadan ÖNCE: önceki audit'in P0/P1 backlog'unun %80'i kapanmış olmalı VEYA önceki audit'in her bulgusu için "git log --since=<audit_date> -- <file>" verify edilmeli. Aksi halde yeni audit = phantom üretimi.
+
+**Gerekçe**: 6 hafta sonra meta-audit, 18 P0'ın %87'sini phantom buldu. Audit ekibinin (subagent'lar) eski baseline okumasının structural sorunu. Yeni audit yapmadan önce **regression verify pass** disiplini zorunlu.
+
+---
+
+**S197 Stage 4 Final**: 23 May 2026 | **Action**: Phase 7 + ORM Cluster 2 DEFER kararı + mega audit lock rule
+**Phantom rate**: %75 → %80 → %87 (3 stage cumulative)
+**Real action remaining**: 1 (CLAUDE.md rule eklemek) + 1 partial (2 middleware coverage hâlâ %0)
+**Audit fatigue lesson**: 2 ay 149 doc → %87 phantom. Yeni audit yasak, P0 backlog kapatma sprinti zorunlu.

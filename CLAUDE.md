@@ -220,6 +220,20 @@ Her commit SONRASI `.claude/sessions/latest.md` guncelle:
 2. Paralel agent kullan (tek-threaded tarama YASAK)
 3. Sonuclari docs/audits/ altina kaydet
 
+### Mega Audit Lock (S197 — ZORUNLU)
+
+Yeni mega audit (10+ doc, 4+ paralel agent) açmadan ÖNCE:
+
+1. **Önceki audit'in P0/P1 backlog'unun %80'i kapanmış olmalı** (veya audit doc'unda explicit "deferred" markı), VEYA
+2. **Önceki audit'in HER bulgusu için phantom verify pass** yapılmış olmalı:
+   - `git log --since=<audit_date> -- <file>` ile son commit kontrol
+   - Audit'in iddia ettiği `dosya:satır` bulgusu canlı kodda hâlâ var mı?
+   - Eğer fix edilmişse audit doc güncellenmeli (strikethrough + ✅ FIXED marker)
+
+**Gerekçe**: 23 May 2026 meta-audit (`docs/audits/2026-05-23_meta_audit_review.md`) 18 P0'ın **%87'sini phantom** buldu. 4-6 hafta önceki audit'ler fix sonrası güncellenmedi, agent'lar eski baseline'ı "current" sanıp yeni P0 olarak sundu. Structural waste — phantom üretimi.
+
+**Cezası**: Bu kural ihlal edilirse, yeni audit doc'u oluşturulmadan önce kullanıcıdan **explicit override** alınmalı (`AskUserQuestion` ile sun).
+
 ## Git Operations
 
 - **Push fail (>2GB pack)**: 1) `git-lfs` ile büyük dosyaları track et, 2) `.gitignore` güncelle, 3) BFG Repo-Cleaner ile history temizle. Push'u tekrar tekrar deneme.
