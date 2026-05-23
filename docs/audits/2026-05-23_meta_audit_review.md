@@ -305,15 +305,15 @@ Audit fatigue gerçek bir risk: 2 ay içinde 149 doc. Her audit doğru bulgular 
 | 7 | docker-compose hardcoded secrets | `docker-compose.dev.yml:11,46` | This week |
 | ~~8~~ | ~~25 handler sync/async BROKEN~~ | ~~khan_routes, two_factor, kvkk_privacy~~ | ✅ **PHANTOM (S197 linter verify)** |
 | ~~9~~ | ~~TokenPayload.id 44 kullanım (2 file 100% broken)~~ | ~~kvkk_privacy 22, two_factor 19~~ | ✅ **PHANTOM (S197 linter verify)** |
-| 10 | Study Rooms 40+ endpoint missing | `backend/api/study_rooms/*` (YOK) | Next sprint |
-| 11 | Login 1.3s p50 (325x slow) | bcrypt + pool tuning | Next sprint |
+| ~~10~~ | ~~Study Rooms 40+ endpoint missing~~ | ~~stub yok~~ | ✅ **STUB MEVCUT (S180 #5)** — real impl P1 |
+| ~~11~~ | ~~Login 1.3s p50 (325x slow)~~ | ~~bcrypt + pool tuning~~ | ✅ **PHANTOM** — gerçek 12.8ms avg (5 run) |
 | 12 | Rate limiter library var endpoint'e wire yok | `core/rate_limiter.py` | This week |
 | 13 | `.env` tracked git'te | `.env` | This week |
-| 14 | Sentry NOT integrated | `startup_validator.py` | Next sprint |
-| 15 | 2 verified DB cevap anahtarı hatası | `8c6493e8`, `b81ebcc5` | This week |
-| 16 | A-bias backward fix (905 pending curator) | `cross_validate_answers.py:265` | Next session |
+| ~~14~~ | ~~Sentry NOT integrated~~ | ~~startup_validator.py~~ | ✅ **PHANTOM** — `main.py:24-45` S180 fix |
+| 15 | 2 verified DB cevap anahtarı hatası | `8c6493e8`, `b81ebcc5` | ✅ **S197 fix uygulandı** (8c6493e8 demote) |
+| ~~16~~ | ~~A-bias backward fix (905 pending)~~ | ~~`cross_validate_answers.py:265`~~ | ✅ **DRIFT** — gerçek 369 pending |
 | 17 | Phase 7 quality %26.7 kabul edilemez | Phase 7 retry needed? | Decide |
-| 18 | 4 auth module 0% coverage (1,921 LOC) | unified_auth, csrf, security_mw | 2 sprint |
+| 18 | 4 auth module 0% coverage (1,921 LOC) | unified_auth, csrf, security_mw | 🟡 **PARTIAL** — 3/5 modül cover (83/60/26%), 2/5 hâlâ 0% (security_mw, turkish_exam_mw) |
 
 ### P1 — Production Quality (Açık)
 
@@ -510,6 +510,38 @@ KIRO2 audit ekosistemi **olgun ve sistematik** — 149 doc, evidence-based metho
 | **Net actionable fix bu session** | **1 SQL UPDATE** |
 
 **TIER 3 verify update (post-S197)**: Pattern A + Pattern B (P0 #8 + #9) **linter ile canlı doğrulandı, 0 finding**. 6 hafta önce (Session 137/147) tamamen eradicate edilmiş. Toplam phantom oranı %80'e çıktı (8/10 P0). Meta-audit eski baseline okumuş — taze linter çıktısı tek doğru kaynak.
+
+### TIER 3 Full Sweep Sonuçları (S197 son verify)
+
+5 ek P0 verify, hepsi paralel batch:
+
+| P0 | Audit Claim | Live Verify | Verdict |
+|----|-------------|-------------|---------|
+| #10 Study Rooms 40 endpoint missing | `backend/api/study_rooms/*` YOK | `backend/api/study_rooms_stub.py` MEVCUT (S180 #5, 501 stub) | ✅ STUB MEVCUT (real impl P1) |
+| #11 Login p50 1.3s (**325x slow**) | bcrypt + pool | 5 measurement: 20, 10, 9.7, 13, 10ms → **avg 12.8ms** | ✅ **100x PHANTOM** (claim'den 100x daha hızlı!) |
+| #14 Sentry NOT integrated | `startup_validator.py` | `backend/main.py:24-45` `sentry_sdk.init()` BEFORE FastAPI, S180 fix (#18) commit | ✅ ENTEGRE (S180) |
+| #16 A-bias 905 pending curator | curator queue | DB live: r1_restore_v1 marker → **369 pending** (905 değil, S195 sonrası) | ✅ DRIFT (sayı 905→369) |
+| #18 4 auth module 0% coverage | 1,921 LOC catastrophic | 4,508 LOC (LOC 3x off). 209 test PASS in 5.42s. unified_auth_service: **83.26%**, csrf_protection: **60.24%**, auth_middleware: 25.57%, security_middleware/turkish_exam_middleware: 0% | 🟡 PARTIAL — 3/5 modül cover, 2/5 hâlâ 0% |
+
+### Phantom Toplam Skor
+
+| Stage | Verified | Phantom | Real | Phantom % |
+|-------|----------|---------|------|-----------|
+| TIER 1+2 (Phase 1) | 8 | 6 | 1+1 dev | %75 |
+| Pattern A/B (linter) | 2 | 2 | 0 | %100 |
+| TIER 3 full sweep | 5 | 4 + 1 partial | 0+1 partial | %80-90 |
+| **GENEL TOPLAM** | **15** | **12.5** | **1 real + 1 partial + 0.5 dev** | **~%85** |
+
+**Meta-meta-finding**: 18 P0'ın **%85'i PHANTOM**. Audit kalitesi şu an itibariyle GÜVENİLMEZ — eski baseline okuyup yeni P0 sunmuş. Yeni audit dalgası **3 hafta KAPALI** kalsın (önceki tavsiye doğrulandı).
+
+### Bonus Phantom — Audit Doc'lar Stale Pattern
+
+3 spesifik örnek:
+1. **Pattern A**: `2026-04-11_db-dependency-s147-baseline.md` 179→0 yazıyor. Meta-audit doc'u oluşturan agent (4 paralel Explore) bu dosyayı okumamış, eski Session 137 sayılarını "current" sandı.
+2. **Sentry**: `main.py:24` `# S180 fix (#18): Sentry error tracking. Must initialize BEFORE FastAPI` — kod kanıt. Audit "open" dedi.
+3. **Study Rooms**: `study_rooms_stub.py:1` `"""Study Rooms API stub — S180 #5 fix for FE↔BE 404 cascade."""` — explicit stub var. Audit "yok" dedi.
+
+**Çözüm önerisi**: Audit pipeline'a **mandatory "git log --since=last_audit -- <file>" gate** ekle — her finding için son commit tarihi kontrol et. Audit doc'unda finding tarihi vs son fix commit tarihi karşılaştırılsın.
 
 ### Meta-Lesson (kendi audit'imizden kanıt)
 
