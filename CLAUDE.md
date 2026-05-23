@@ -736,6 +736,7 @@ npm test -- --coverage
 - Bash env vars: `VAR=value python script.py` works in Git Bash but not cmd/PowerShell
 - **Python stdout UTF-8 fix** (Türkçe karakter print): script başında `import sys; sys.stdout.reconfigure(encoding="utf-8", errors="replace")` — cp1254 console crash önler
 - **PSQL Windows yolu**: `"C:/Program Files/PostgreSQL/18/bin/psql.exe"` (quoted, forward slash). Türkçe SQL için `-f dosya.sql` zorunlu (`-c "inline"` 0xfe encoding error verir)
+- **Claude Code reinstall riski**: v2.1.120+ (Nis 2026) yeni Windows kurulumlarında PowerShell default. Mevcut session bash grandfathered. `.claude/commands/*.md` ve `.claude/skills/*/SKILL.md` (26 dosya) Unix-only komutlar kullanıyor (`head -N`, `tail -N`, `wc -l`, `/dev/null`, `2>/dev/null`). Reinstall/yeni makine durumunda dual-syntax migration gerekir — özellikle `/status` (head/tail/wc bağımlı)
 
 ## 🔧 Environment Variables
 
