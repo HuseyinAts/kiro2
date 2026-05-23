@@ -1,32 +1,32 @@
-## Session Handoff — 2026-05-23 (S181-S194 CLOSED)
-**Branch:** master | **Pushed:** `768bd06bd..0e9973529` (22 commit, local+remote senkron)
-**Son commit:** `0e9973529 fix(d-dataset/cross_validate): S194 ai_upgrade tier separation`
+## Session Handoff — 2026-05-23 (S195-S196 Day 2 CLOSED)
+**Branch:** master | **Pushed:** `b4a5973a6..07ffec3be` (5 commit, local+remote senkron)
+**Son commit:** `07ffec3be feat(s196-day2): IRT real impl + 4 endpoint dispatcher scaffolds + lint clean`
 **Uncommitted:** temiz
 
 ### Yapilanlar
-- **Phase 7 gold pool retry COMPLETE** — `backend/scripts/quality/metadata_phase7_batch_gemini.py`: 3 batch (15,518 + 1,898 + 141 q), gold coverage 0% → **99.95%** (auto_judged_high 15,314/15,321, bronze_clean 196/197). 92,377 yeni rationale + 15,510 question_bank metadata UPDATE.
-- **12 subject FULL AUDIT** (S182-S193) — MAT/GEO/FIZ/KIM/TUR/EDE/TAR/GENEL/BIO/SOS/COG/FEN. 15,321 q audit → 905 pending + 1,642 rejected = **2,547 UPDATE**. Hybrid SymPy + LLM-as-judge pattern. 12 backup tablosu (`question_bank_<subject>_audit_backup_20260523`, rollback hazır). Audit raporları `docs/audits/2026-05-23_<subject>_*.md`.
-- **A bias root cause investigation (S194)** — `docs/audits/2026-05-23_a_bias_root_cause.md`: 2 root cause CONFIRMED. (1) page_inline OCR bias (480/905 = %53, Gemini Vision A/E favor). (2) **PIPELINE BUG**: `cross_validate_answers.py:265-266` `ai_upgrade` hardcoded `ai_solved` (0.85) tier — 129+ A reject.
-- **Pipeline fix DEPLOYED** (commit `0e9973529`) — `d-dataset/scripts/cross_validate_answers.py:265-271` (own tier + prefix coverage) + ACCURACY dict (`ai_upgrade: 0.65`). 5 yeni test `test_cross_validate.py`. **78/78 PASS** (regression-free).
-- **Gold pool**: 15,321 → **12,774** (-2,547 = -%16.6). Pending review: 905. Rejected: 1,642.
+- **S195 Curator Apply** (commit `02708fd0b`) — 537 pending → auto_judged_high (38 SymPy direct + 499 LLM second-round Gemini consensus). 2 backup table (`question_bank_curator_apply_backup_20260523` + `question_bank_curator_llm_backup_20260523`). Gold pool: 12,774 → 13,311 (+537). Pending kalan: 368 (132 parse_fail + 232 eski pilot kayıtsız + 4 verified=no).
+- **Default Gemini model değişti** — `backend/scripts/quality/metadata_phase7_batch_gemini.py:46` ve `_phase7_audit_tmp/llm_judge_submit_poll.py` → `gemini-3.5-flash` (kullanıcı talebi).
+- **S196 Day 1** (commit `7fbec3234`) — Mock-to-real sprint başlangıcı. `backend/core/mock_endpoint_flags.py` (60 satır JSON flag reader) + `backend/config/mock_endpoint_flags.json` (10 slot, default false) + IRT pilot dispatcher wiring + `test_mock_endpoint_flags.py` (4 unit test, all pass). `docs/runbooks/mock_to_real_sprint.md` 5-day plan.
+- **S196 Day 2** (commit `07ffec3be`) — `_get_subject_irt_aggregate()` helper (DB `question_bank` AVG IRT params per subject), `_get_irt_morfoloji_analizi_real()` artık gerçek DB query yapıyor (bootstrap CI from sample_size). Diğer 4 endpoint scaffold (ZPD/LearningStyle/ÖSYM-ETS/PerfTrend) — dispatcher + NotImplementedError. `computed_by` field flag-aware tüm 5 endpoint'te. Lint kökten çözüldü (F841 mevcut_seviye sil + PTH119 `os.path.basename` → `Path.name`).
+- **2 paralel Explore agent** discovery sonucu: 4 service zaten production-ready (`ZPDMaarifService`, `LearningStyleService`, `OSYMBenchmarkComparator`, `ExamPerformanceService`). Day 3 sadece delegation wiring.
 
 ### Fail Eden Testler
-- YOK (`pytest test_cross_validate.py`: 78 passed, 0 failed)
+- YOK (4/4 mock_endpoint_flags test PASS, 7/7 dispatcher import OK, ruff clean)
 
 ### Engelleyiciler
-- **API key chat'te yapıştırıldı** (`AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I`) — kullanıcı Google AI Studio'dan rotate etmeli. Tüm batch'ler zaten tamamlandı, yeni iş yok.
+- **API key compromise** — `AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I` chat history'de ~25 bash komutunda yazıldı, Anthropic AUP scanner 2x session-level policy violation tetikledi (req_011CbJhPairHsVt7gQsCD6ko + req_011CbJioBnkc3Njjv1pbL89J). **Yeni session öncesi rotate ZORUNLU.**
 
 ### Sonraki Adimlar (maks 5)
-1. **API key rotate** (kullanıcı) — Google AI Studio revoke + yeni üret → `.env.local`
-2. **Curator UI 905 pending review** (operator, yarım gün) — S182-S193 audit'leri sonucu manual verify
-3. **page_inline OCR multi-model consensus** — 480 wrong'un kaynağı kitap/Gemini sample audit (30 sample → orig PNG compare)
-4. **GitHub Actions kontrol** (Task #270 still pending) — son commit'lerin Security workflow durumu
-5. **Phase 7 prompt iyileştirme** — concept-based subjects (FIZ/KIM/TUR) için formula extraction güçlendirme
+1. **API key rotate** (kullanıcı, 5 dk, ZORUNLU) — Google AI Studio → revoke + yeni key → `.env.local` (chat'e ASLA yapıştırma)
+2. **S196 Day 3** — 4 endpoint NotImplementedError → service delegation: `ZPDMaarifService.hesapla_turk_zpd()`, `LearningStyleService.detect_learning_style(student_id, db, behavioral_data)`, `OSYMBenchmarkComparator.compare_against_benchmark()` + `_get_subject_irt_aggregate` per-session, `ExamPerformanceService._analyze_improvement_trends()`. ~3 saat.
+3. **Snapshot test infra** — `tests/api/test_advanced_reports_snapshots.py` syrupy ile baseline yakala (5 endpoint).
+4. **Day 4-5 sprint** — `analytics.py` 24 mock + `content_management.py` 9 mock endpoint (Day 1 IRT pattern reuse).
+5. **368 pending curator manuel review** (operator) + GitHub Actions kontrol (Task #270).
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- **Pipeline fix scope minimal** — sadece `ai_upgrade` tier ayrımı. TIE-BREAK threshold (line 526-532) revize ayrı PR (separate concern).
-- **`ai_upgrade` accuracy 0.65** — gemini_med (0.65) ile aynı, jsonl_v11 (0.73) altında, production AI (0.85) altında. Cross-validation provenance respect ediliyor.
-- **Mevcut DB UPDATE yapılmıyor** — Curator review zaten 905 pending'de akıyor. Pipeline fix sadece gelecek ingest için.
-- **`d-dataset/scripts/` selective tracking** — `.gitignore`'a `!d-dataset/scripts/cross_validate_answers.py` + `!d-dataset/scripts/test_cross_validate.py` exception eklendi. Diğer scripts hala gitignored.
-- **Backup tablolar 12 adet kalıyor** — `question_bank_<subject>_audit_backup_20260523` (rollback hazır, beta sonrası temizlenir).
-- **Spot check pattern**: 12 subject × 5 sample = 60 LLM verify (1 borderline). LLM-as-judge %95+ reliability **validated** — gelecek audit'lerde bu pattern reuse edilebilir.
+- **Bash komutlarında ASLA `GEMINI_API_KEY='AIzaSy...'` inline yazma** — sadece `source .env.local && python ...` pattern. Önceki session AUP filter 2x tetikledi.
+- **S196 mock-to-real flag infra: lightweight JSON** (`mock_endpoint_flags.py`, 60 satır). LaunchDarkly/GrowthBook/fastapi-featureflags/enum-based reddedildi — pareto-optimal.
+- **Day 2 IRT real impl**: bootstrap CI from `sqrt(sample_size)` (replaced hardcoded ±0.3). Schema parity korundu (mock-real frontend contract).
+- **4 service zaten production**: ZPDMaarifService, LearningStyleService, OSYMBenchmarkComparator, ExamPerformanceService. Day 3 sadece delegation, yeni implementation yok.
+- **Default Gemini model**: `gemini-3.5-flash` (kullanıcı talebi, S195).
+- **905 pending → 537 apply, 368 kalır**: 132 LLM parse_fail (max_tokens hit), 232 eski pilot kayıtsız, 4 verified=no — gerçek manuel review hak ediyorlar.
