@@ -89,18 +89,90 @@
 
 ---
 
-## Day 3-4 (2026-05-25/26) — analytics.py (24 endpoints)
+## Day 3 (2026-05-23) ✅ COMPLETE
 
-Pattern: snapshot existing mock response → implement real path → flip flag.
+### Delivered (4 _real impls in `advanced_reports.py`)
 
-Endpoint groups (process by group, single PR per group):
+1. `_get_zpd_analizi_real` → `ZPDMaarifService.hesapla_turk_zpd()` per konu
+2. `_get_hibrit_ogrenme_stili_analizi_real` → `LearningStyleService.detect_learning_style()`
+3. `_get_osym_ets_karsilastirmasi_real` → weighted IRT aggregates via
+   `_get_subject_irt_aggregate` + existing `_karsilastir_*` static helpers
+   (intentionally skipped `OSYMBenchmarkComparator` — wrong abstraction;
+   it scores AI-generated questions, not exam IRT params)
+4. `_get_performance_trend_real` → `ExamPerformanceService._analyze_improvement_trends()`
+   with TR localization (improving→yukselis) + 0-100→0-1 normalization
 
-- **Group A — Student analytics (5 endpoints)**: per-student dashboard data
-- **Group B — Class analytics (4 endpoints)**: teacher dashboard
-- **Group C — Admin dashboard (3 endpoints)**: system-wide metrics
-- **Group D — Export endpoints (3 endpoints)**: PDF/Excel/CSV
-- **Group E — Retention/web-vitals (2 endpoints)**: leave as-is (already real)
-- **Group F — Helper functions (7 functions)**: refactor into shared module
+### Smoke test (real DB, 5/5 PASS)
+
+- IRT: 184ms cold (slow query — see below)
+- ZPD: real Vygotsky + Maarif calculation, optimal_zorluk=9.98 for 75% cohort
+- LearningStyle: VARK + Felder profile created in `student_learning_profiles`
+- OSYM-ETS: real IRT-driven thresholds
+- PerfTrend: empty branch correct shape
+
+### Day 3 follow-up: IRT slow query — Redis cache solution
+
+EXPLAIN ANALYZE on `_get_subject_irt_aggregate` showed **184ms Parallel Seq
+Scan** on 187K rows. Investigation:
+
+- Pre-existing `idx_qb_cat_subject_active` uses `LOWER(subject_area::text)` —
+  unusable for plain equality (case-convention requires UPPERCASE).
+- Created `idx_qbank_subject_active_irt` (partial INCLUDE) — **planner refused**
+  to use it. Root cause: 30% selectivity (MATEMATIK = 57K of 187K active rows)
+  makes Bitmap Index Scan + heap fetch more expensive than Parallel Seq Scan
+  in the cost model. Even forced index plan: 201ms (no improvement).
+- **Dropped the index** (9MB waste with no benefit).
+- **Added Redis cache @ 1h TTL** in `_get_subject_irt_aggregate`.
+  - Cold: 458ms → Cache warm: **0.25–0.39ms** (1500-1800x speedup)
+  - Cache footprint: ~3KB (12 subjects)
+  - Invalidation risk: ~zero (IRT params change only on Curator UPDATE, rare)
+
+This pattern (`cache_manager.get/set` with subject-scoped key) is the
+template for any future IRT/aggregate hot-path.
+
+---
+
+## Day 4 (2026-05-24) — analytics.py (24 endpoints)
+
+### Pre-work delivered (sprint start)
+
+- **9 analytics.* flag entries** added to `mock_endpoint_flags.json` (8 false
+  + `analytics.d7_retention: true`)
+- **`get_d7_retention` tagged with `computed_by`** — it was already
+  DB-backed (not a hardcoded mock); flag flip just signals provenance.
+
+### Tier-1 pilot targets (Day 4 morning, easy complexity)
+
+| Function | Lines | Real candidate | Flag |
+|---|---|---|---|
+| `_get_exam_statistics` | 1035-1049 | `exam_session` COUNT/AVG grouped by exam_type | `analytics.exam_statistics` |
+| `_get_class_students` | 833-846 | `student_profiles` JOIN `class_membership` | `analytics.class_students` |
+
+### Tier-2 (Day 4 afternoon, medium complexity)
+
+| Function | Lines | Real candidate |
+|---|---|---|
+| `_calculate_student_performance_metrics` | 678-697 | `exam_session.score` AVG + `student_answer` COUNT WHERE correct |
+| `_get_exam_performance_analysis` | 730-754 | `exam_session` JOIN `question_bank` grouped by exam_type |
+| `_get_subject_performance_analysis` | 757-793 | `student_answer` JOIN `question_bank` grouped by subject |
+| `_calculate_class_metrics` | 849-869 | Aggregate Tier-1 student metrics over class |
+| `_get_user_statistics` | 1011-1032 | `users` COUNT by role + registration/last_login filters |
+| `_get_content_usage_statistics` | 1052-1081 | `video_analytics`, `content` tables |
+
+### Tier-3 — DEFERRED (hard / blocked by missing tables)
+
+- `_get_learning_style_analysis` — requires ML model or pre-computed profile
+- `_get_detailed_student_analysis` — time-of-day bucketing + feature tables
+- `_get_class_learning_style_distribution` — aggregate profiles over class
+- `_calculate_system_metrics`, `_get_system_performance_metrics` — APM tools
+- `_get_revolutionary_features_usage` — feature-flag event log table missing
+
+### Code duplication finding
+
+`_get_system_performance_metrics`, `_get_revolutionary_features_usage`,
+export helpers, and PDF/Excel/CSV generators appear **twice** in
+`analytics.py` (lines 1084-1163 & 1371-1450, then 1401-1672). Dedupe
+before flag integration to avoid double-dispatcher confusion.
 
 ---
 

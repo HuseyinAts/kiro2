@@ -12,6 +12,7 @@ analytics (learning-style scores, retention curves, trends). The
 import csv
 import io
 import logging
+import os
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -467,6 +468,8 @@ async def get_d7_retention(
         retained_count = int(data["retained_count"]) if data else 0
         d7_pct = float(data["d7_retention_pct"]) if data else 0.0
 
+        from core.mock_endpoint_flags import is_real_impl
+
         return {
             "metric": "d7_retention",
             "cohort_window": "days_8_to_14_ago",
@@ -474,6 +477,10 @@ async def get_d7_retention(
             "cohort_size": cohort_size,
             "retained_count": retained_count,
             "d7_retention_pct": d7_pct,
+            # S196 Day 4: this endpoint is already DB-backed (not a mock helper).
+            # Tag for frontend telemetry so the same UI badge logic works as
+            # the advanced_reports endpoints.
+            "computed_by": "real" if is_real_impl("analytics.d7_retention") else "mock",
         }
 
     except HTTPException:

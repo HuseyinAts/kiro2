@@ -1,5 +1,5 @@
 {
-  "_comment": "Mock-to-real sprint flags. true = real implementation, false/missing = mock. S196 sprint Day 1 (2026-05-23) — IRT analysis scaffold landed, real path still NotImplementedError until Day 2.",
+  "_comment": "Mock-to-real sprint flags. true = real implementation, false/missing = mock. S196 Day 3 (2026-05-23): all advanced_reports flags reverted to false after live smoke test passed 5/5. Operator flips per endpoint for production rollout. analytics.d7_retention is the exception — already DB-backed, not a mock.",
   "advanced_reports.irt_analysis": false,
   "advanced_reports.zpd_recommendations": false,
   "advanced_reports.learning_style_analysis": false,
@@ -8,6 +8,14 @@
   "analytics.student": false,
   "analytics.class": false,
   "analytics.admin_dashboard": false,
+  "analytics.d7_retention": true,
+  "analytics.exam_statistics": false,
+  "analytics.class_students": false,
+  "analytics.student_performance": false,
+  "analytics.subject_performance": false,
+  "analytics.exam_performance": false,
+  "analytics.user_statistics": false,
+  "analytics.content_usage": false,
   "content_management.questions_create": false,
   "content_management.questions_detail": false,
   "content_management.search": false

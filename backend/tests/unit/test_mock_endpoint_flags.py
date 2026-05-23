@@ -59,12 +59,24 @@ def test_corrupt_json_does_not_crash(monkeypatch, tmp_path):
 
 
 def test_production_config_defaults_all_mock():
-    """S196 Day 1 baseline: every flag in the committed config is False.
+    """S196 invariant: only deliberately-promoted flags may be True.
 
-    This guards against accidentally flipping a flag without an accompanying
-    real implementation. When Day 2 lands the real path, this test should
-    be updated to assert the specific flag is True.
+    Day 1 (2026-05-23): all flags false (sprint baseline).
+    Day 3 (2026-05-23): advanced_reports flags reverted to false after live
+        smoke test passed — operator flips per endpoint for production.
+    Day 4 (2026-05-23): `analytics.d7_retention` promoted because that
+        endpoint was already DB-backed; flag is a provenance tag, not a
+        mock-vs-real toggle.
+
+    Add new flag slugs to ``PROMOTED_FLAGS`` ONLY after:
+    - A real implementation exists and passes schema parity tests.
+    - A live smoke test (preferably in `docker exec`) confirms no crash.
+    - The promotion is documented in `docs/runbooks/mock_to_real_sprint.md`.
     """
+    PROMOTED_FLAGS: set[str] = {
+        "analytics.d7_retention",  # S196 Day 4: already-real endpoint, provenance tag only
+    }
+
     config_path = (
         Path(__file__).resolve().parent.parent.parent
         / "config"
@@ -77,8 +89,11 @@ def test_production_config_defaults_all_mock():
         for k, v in json.loads(config_path.read_text(encoding="utf-8")).items()
         if not k.startswith("_")
     }
-    real_flags = [k for k, v in flags.items() if v is True]
-    assert real_flags == [], (
-        f"Day 1 sprint: no real implementations landed yet, but {real_flags} "
-        f"are flipped to True. Update this assertion when promoting a flag."
+    unauthorized = [
+        k for k, v in flags.items() if v is True and k not in PROMOTED_FLAGS
+    ]
+    assert unauthorized == [], (
+        f"Flags flipped to True without explicit promotion: {unauthorized}. "
+        f"Either add them to PROMOTED_FLAGS here (with rationale comment) "
+        f"or revert the flag in mock_endpoint_flags.json."
     )

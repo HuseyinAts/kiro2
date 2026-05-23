@@ -363,11 +363,31 @@ async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int
     S196 Day 2 helper. Returns AVG difficulty / discrimination / guessing and
     a sample-size confidence proxy. Sample size < 10 → caller should fall back
     to the per-question morfoloji service for that subject.
+
+    Cache (S196 Day 3 follow-up): Redis cache @ 1h TTL.
+
+    Why cache instead of an index: The IRT aggregate query has %30 selectivity
+    on subject_area (e.g., MATEMATIK = 57K of 187K active rows). The PostgreSQL
+    planner ignores even a tailored partial INCLUDE index because Parallel Seq
+    Scan costs less than Bitmap Index Scan + heap fetch at this selectivity.
+    Adding 9MB of index storage that the planner refuses to use is waste.
+
+    IRT aggregates change only on Curator UPDATE (rare — daily at most), so a
+    1-hour cache TTL has near-zero staleness risk and turns 175ms cold queries
+    into <2ms cache hits. With 12 subject_areas, total cache footprint is ~3KB.
     """
     from sqlalchemy import func, select
 
+    from core.cache import cache_manager
     from core.database import get_db_session_context
     from models.question_bank import QuestionBankItem
+
+    canonical = subject_area.upper()
+    cache_key = f"irt_aggregate:{canonical}"
+
+    cached = await cache_manager.get(cache_key)
+    if cached is not None:
+        return cached
 
     async with get_db_session_context() as session:
         stmt = (
@@ -379,17 +399,20 @@ async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int
                 func.avg(QuestionBankItem.irt_guessing).label("avg_guessing"),
                 func.count().label("sample_size"),
             )
-            .where(QuestionBankItem.subject_area == subject_area.upper())
+            .where(QuestionBankItem.subject_area == canonical)
             .where(QuestionBankItem.is_active.is_(True))
         )
         row = (await session.execute(stmt)).one()
 
-    return {
+    result = {
         "avg_difficulty": float(row.avg_difficulty or 0.0),
         "avg_discrimination": float(row.avg_discrimination or 1.0),
         "avg_guessing": float(row.avg_guessing or 0.2),
         "sample_size": int(row.sample_size or 0),
     }
+    # 1h TTL — IRT params change only on Curator update (rare).
+    await cache_manager.set(cache_key, result, ttl=3600)
+    return result
 
 
 async def _get_irt_morfoloji_analizi_real(
