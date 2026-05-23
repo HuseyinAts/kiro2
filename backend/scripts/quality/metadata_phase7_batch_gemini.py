@@ -43,7 +43,7 @@ DSN = os.environ.get("DATABASE_URL") or (
     __import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)")
 )
 GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
 
 GEN_BASE = "https://generativelanguage.googleapis.com/v1beta"
 UPLOAD_BASE = "https://generativelanguage.googleapis.com/upload/v1beta"
