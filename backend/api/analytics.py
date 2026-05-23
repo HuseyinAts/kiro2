@@ -682,26 +682,143 @@ async def export_analytics_csv(
 # Helper functions
 
 
+async def _calculate_student_performance_metrics_real(
+    student_id: str, start_date: datetime, end_date: datetime, es_service
+) -> dict[str, Any]:
+    """Real student performance metrics (S196 Day 4 Tier-2).
+
+    Sources:
+    - ``student_answers JOIN exam_sessions`` filtered by ``student_id`` +
+      ``answered_at`` window → total_questions_solved, correct_answers, accuracy_rate.
+    - ``exam_sessions`` AVG duration → average_session_duration_minutes.
+    - ``student_answers JOIN question_bank`` subject_area accuracy →
+      weak_subjects (lowest 2 by accuracy, min 10 answers), strong_subjects (top 2).
+    - ``exam_sessions`` total time → total_study_time_hours.
+
+    Placeholder fields (need additional sources): ``improvement_trend``,
+    ``study_consistency_score``. Return neutral defaults so frontend can
+    suppress until Day 5+ wires proper sources.
+    """
+    try:
+        async with get_db_session_context() as db:
+            base = await db.execute(
+                text(
+                    """
+                    SELECT
+                        COUNT(*) AS total_q,
+                        SUM(CASE WHEN sa.is_correct THEN 1 ELSE 0 END) AS correct_q
+                    FROM student_answers sa
+                    JOIN exam_sessions es ON es.id = sa.exam_session_id
+                    WHERE es.student_id = :sid
+                      AND sa.answered_at BETWEEN :s AND :e
+                    """
+                ),
+                {"sid": student_id, "s": start_date, "e": end_date},
+            )
+            row = base.one()
+            total_q = int(row.total_q or 0)
+            correct_q = int(row.correct_q or 0)
+            accuracy = round(correct_q / total_q, 3) if total_q else 0.0
+
+            sess = await db.execute(
+                text(
+                    """
+                    SELECT AVG(duration_minutes) AS avg_dur,
+                           SUM(time_spent_seconds) AS total_secs
+                    FROM exam_sessions
+                    WHERE student_id = :sid
+                      AND created_at BETWEEN :s AND :e
+                      AND status = 'completed'
+                    """
+                ),
+                {"sid": student_id, "s": start_date, "e": end_date},
+            )
+            sess_row = sess.one()
+            avg_dur = round(float(sess_row.avg_dur or 0.0), 1)
+            total_hours = round(float(sess_row.total_secs or 0) / 3600.0, 1)
+
+            # Subject breakdown — min 10 answers per subject for statistical stability.
+            subj = await db.execute(
+                text(
+                    """
+                    SELECT qb.subject_area AS subject,
+                           COUNT(*) AS n,
+                           AVG(CASE WHEN sa.is_correct THEN 1.0 ELSE 0.0 END) AS acc
+                    FROM student_answers sa
+                    JOIN exam_sessions es ON es.id = sa.exam_session_id
+                    JOIN question_bank qb ON qb.id = sa.question_id
+                    WHERE es.student_id = :sid
+                      AND sa.answered_at BETWEEN :s AND :e
+                    GROUP BY qb.subject_area
+                    HAVING COUNT(*) >= 10
+                    """
+                ),
+                {"sid": student_id, "s": start_date, "e": end_date},
+            )
+            subj_rows = sorted(subj.all(), key=lambda r: float(r.acc or 0.0))
+            weak = [r.subject for r in subj_rows[:2]]
+            strong = (
+                [r.subject for r in subj_rows[-2:][::-1]] if len(subj_rows) >= 2 else []
+            )
+
+        return {
+            "total_study_time_hours": total_hours,
+            "total_questions_solved": total_q,
+            "correct_answers": correct_q,
+            "accuracy_rate": accuracy,
+            "average_session_duration_minutes": avg_dur,
+            # Placeholders — improvement_trend needs prior-window comparison,
+            # consistency needs day-by-day variance (Day 5+).
+            "improvement_trend": "insufficient_data",
+            "weak_subjects": weak,
+            "strong_subjects": strong,
+            "study_consistency_score": 0.0,
+        }
+    except Exception as e:
+        logger.error(f"_calculate_student_performance_metrics_real error: {e!s}")
+        return {
+            "total_study_time_hours": 0.0,
+            "total_questions_solved": 0,
+            "correct_answers": 0,
+            "accuracy_rate": 0.0,
+            "average_session_duration_minutes": 0.0,
+            "improvement_trend": "insufficient_data",
+            "weak_subjects": [],
+            "strong_subjects": [],
+            "study_consistency_score": 0.0,
+        }
+
+
+async def _calculate_student_performance_metrics_mock(
+    student_id: str, start_date: datetime, end_date: datetime, es_service
+) -> dict[str, Any]:
+    """Öğrenci performans metrikleri — mock fallback."""
+    return {
+        "total_study_time_hours": 45.5,
+        "total_questions_solved": 1247,
+        "correct_answers": 892,
+        "accuracy_rate": 0.715,
+        "average_session_duration_minutes": 28.3,
+        "improvement_trend": "increasing",
+        "weak_subjects": ["Matematik", "Fizik"],
+        "strong_subjects": ["Türkçe", "Tarih"],
+        "study_consistency_score": 0.82,
+    }
+
+
 async def _calculate_student_performance_metrics(
     student_id: str, start_date: datetime, end_date: datetime, es_service
 ) -> dict[str, Any]:
-    """Öğrenci performans metrikleri hesapla"""
-    try:
-        # Mock implementation - gerçek implementasyonda DB'den veri alınacak
-        return {
-            "total_study_time_hours": 45.5,
-            "total_questions_solved": 1247,
-            "correct_answers": 892,
-            "accuracy_rate": 0.715,
-            "average_session_duration_minutes": 28.3,
-            "improvement_trend": "increasing",
-            "weak_subjects": ["Matematik", "Fizik"],
-            "strong_subjects": ["Türkçe", "Tarih"],
-            "study_consistency_score": 0.82,
-        }
-    except Exception as e:
-        logger.error(f"Student performance metrics error: {e!s}")
-        return {}
+    """Student performance metrics — dispatcher (S196 Day 4 Tier-2)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("analytics.student_performance"):
+        return await _calculate_student_performance_metrics_real(
+            student_id, start_date, end_date, es_service
+        )
+    return await _calculate_student_performance_metrics_mock(
+        student_id, start_date, end_date, es_service
+    )
 
 
 async def _get_learning_style_analysis(student_id: str) -> dict[str, Any]:
@@ -898,6 +1015,102 @@ async def _get_class_students(class_id: str) -> list[dict[str, Any]]:
     return await _get_class_students_mock(class_id)
 
 
+async def _calculate_class_metrics_real(
+    class_id: str,
+    students: list[dict[str, Any]],
+    start_date: datetime,
+    end_date: datetime,
+    es_service,
+) -> dict[str, Any]:
+    """Real class metrics by aggregating per-student stats (S196 Day 4 Tier-2).
+
+    Aggregates ``_calculate_student_performance_metrics_real`` over each
+    student in ``students``. Fully-real: ``total_questions_solved``,
+    ``class_accuracy_rate``, ``average_study_time_hours``,
+    ``active_students_percentage`` (students with >=1 answer in window).
+
+    Placeholders: ``improvement_rate``, ``engagement_score`` (need
+    cross-window or behavioral signal, Day 5+).
+    """
+    if not students:
+        return {
+            "average_study_time_hours": 0.0,
+            "total_questions_solved": 0,
+            "class_accuracy_rate": 0.0,
+            "active_students_percentage": 0.0,
+            "improvement_rate": 0.0,
+            "engagement_score": 0.0,
+        }
+
+    try:
+        per_student = []
+        for s in students:
+            sid = s.get("id") if isinstance(s, dict) else None
+            if not sid:
+                continue
+            metrics = await _calculate_student_performance_metrics_real(
+                sid, start_date, end_date, es_service
+            )
+            per_student.append(metrics)
+
+        if not per_student:
+            return {
+                "average_study_time_hours": 0.0,
+                "total_questions_solved": 0,
+                "class_accuracy_rate": 0.0,
+                "active_students_percentage": 0.0,
+                "improvement_rate": 0.0,
+                "engagement_score": 0.0,
+            }
+
+        total_q = sum(m["total_questions_solved"] for m in per_student)
+        total_correct = sum(m["correct_answers"] for m in per_student)
+        total_hours = sum(m["total_study_time_hours"] for m in per_student)
+        active_count = sum(1 for m in per_student if m["total_questions_solved"] > 0)
+        n = len(per_student)
+
+        return {
+            "average_study_time_hours": round(total_hours / n, 1) if n else 0.0,
+            "total_questions_solved": total_q,
+            "class_accuracy_rate": (
+                round(total_correct / total_q, 3) if total_q else 0.0
+            ),
+            "active_students_percentage": (round(active_count / n, 2) if n else 0.0),
+            # Placeholders — improvement needs prior window, engagement needs
+            # behavioral signal (Day 5+).
+            "improvement_rate": 0.0,
+            "engagement_score": 0.0,
+        }
+    except Exception as e:
+        logger.error(f"_calculate_class_metrics_real error: {e!s}")
+        return {
+            "average_study_time_hours": 0.0,
+            "total_questions_solved": 0,
+            "class_accuracy_rate": 0.0,
+            "active_students_percentage": 0.0,
+            "improvement_rate": 0.0,
+            "engagement_score": 0.0,
+        }
+
+
+async def _calculate_class_metrics_mock(
+    class_id: str,
+    students: list[dict[str, Any]],
+    start_date: datetime,
+    end_date: datetime,
+    es_service,
+) -> dict[str, Any]:
+    """Sınıf metrikleri — mock fallback."""
+    return {
+        "average_study_time_hours": 38.2,
+        "total_questions_solved": 5847,
+        "class_accuracy_rate": 0.742,
+        "active_students_percentage": 0.89,
+        "improvement_rate": 0.12,
+        "engagement_score": 0.78,
+    }
+
+
 async def _calculate_class_metrics(
     class_id: str,
     students: list[dict[str, Any]],
@@ -905,20 +1118,16 @@ async def _calculate_class_metrics(
     end_date: datetime,
     es_service,
 ) -> dict[str, Any]:
-    """Sınıf metrikleri hesapla"""
-    try:
-        # Mock implementation
-        return {
-            "average_study_time_hours": 38.2,
-            "total_questions_solved": 5847,
-            "class_accuracy_rate": 0.742,
-            "active_students_percentage": 0.89,
-            "improvement_rate": 0.12,
-            "engagement_score": 0.78,
-        }
-    except Exception as e:
-        logger.error(f"Class metrics calculation error: {e!s}")
-        return {}
+    """Class metrics — dispatcher (S196 Day 4 Tier-2)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("analytics.class_metrics"):
+        return await _calculate_class_metrics_real(
+            class_id, students, start_date, end_date, es_service
+        )
+    return await _calculate_class_metrics_mock(
+        class_id, students, start_date, end_date, es_service
+    )
 
 
 async def _get_class_performance_distribution(
@@ -1060,28 +1269,99 @@ async def _calculate_system_metrics(
     return metrics
 
 
+async def _get_user_statistics_real(
+    start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Real user statistics via ``users`` table aggregate (S196 Day 4 Tier-2).
+
+    Fully-real fields: ``total_users``, ``new_registrations``, ``active_users``,
+    ``user_types`` (role distribution).
+
+    Placeholder fields (need activity log / last_login_at column): ``retention_rate``,
+    ``churn_rate``. Return ``0.0`` here so frontend gauge can suppress display
+    until Day 5+ wires the proper data source.
+    """
+    try:
+        async with get_db_session_context() as db:
+            roles_result = await db.execute(
+                text(
+                    "SELECT role::text AS role, COUNT(*) AS cnt FROM users GROUP BY role::text"
+                )
+            )
+            user_types = {"students": 0, "teachers": 0, "parents": 0, "admins": 0}
+            total = 0
+            role_map = {
+                "student": "students",
+                "teacher": "teachers",
+                "parent": "parents",
+                "admin": "admins",
+            }
+            for row in roles_result:
+                total += int(row.cnt)
+                key = role_map.get(row.role.lower())
+                if key:
+                    user_types[key] = int(row.cnt)
+
+            new_reg = await db.execute(
+                text("SELECT COUNT(*) FROM users WHERE created_at BETWEEN :s AND :e"),
+                {"s": start_date, "e": end_date},
+            )
+            new_count = int(new_reg.scalar() or 0)
+
+            active = await db.execute(
+                text("SELECT COUNT(*) FROM users WHERE is_active = TRUE")
+            )
+            active_count = int(active.scalar() or 0)
+
+        return {
+            "total_users": total,
+            "new_registrations": new_count,
+            "active_users": active_count,
+            "user_types": user_types,
+            # Placeholders until last_login_at activity tracking lands (Day 5+).
+            "retention_rate": 0.0,
+            "churn_rate": 0.0,
+        }
+    except Exception as e:
+        logger.error(f"_get_user_statistics_real error: {e!s}")
+        return {
+            "total_users": 0,
+            "new_registrations": 0,
+            "active_users": 0,
+            "user_types": {"students": 0, "teachers": 0, "parents": 0, "admins": 0},
+            "retention_rate": 0.0,
+            "churn_rate": 0.0,
+        }
+
+
+async def _get_user_statistics_mock(
+    start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Kullanıcı istatistikleri — mock fallback."""
+    return {
+        "total_users": 25847,
+        "new_registrations": 1247,
+        "active_users": 15896,
+        "user_types": {
+            "students": 22456,
+            "teachers": 2847,
+            "parents": 456,
+            "admins": 88,
+        },
+        "retention_rate": 0.78,
+        "churn_rate": 0.05,
+    }
+
+
 async def _get_user_statistics(
     start_date: datetime, end_date: datetime
 ) -> dict[str, Any]:
-    """Kullanıcı istatistikleri"""
-    try:
-        # Mock implementation
-        return {
-            "total_users": 25847,
-            "new_registrations": 1247,
-            "active_users": 15896,
-            "user_types": {
-                "students": 22456,
-                "teachers": 2847,
-                "parents": 456,
-                "admins": 88,
-            },
-            "retention_rate": 0.78,
-            "churn_rate": 0.05,
-        }
-    except Exception as e:
-        logger.error(f"User statistics error: {e!s}")
-        return {}
+    """User statistics — feature-flagged dispatcher (S196 Day 4 Tier-2)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("analytics.user_statistics"):
+        return await _get_user_statistics_real(start_date, end_date)
+    return await _get_user_statistics_mock(start_date, end_date)
 
 
 async def _get_exam_statistics_real(

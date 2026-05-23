@@ -139,3 +139,136 @@ async def test_exam_statistics_empty_window_returns_zeros():
     assert result["exam_types"] == {}
     assert result["average_scores"] == {}
     assert result["completion_rates"] == {}
+
+
+@pytest.mark.asyncio
+async def test_user_statistics_real_keys_match_mock():
+    """``_get_user_statistics_real`` matches mock top-level + nested keys."""
+    from api.analytics import (
+        _get_user_statistics_mock,
+        _get_user_statistics_real,
+    )
+
+    start = datetime(2026, 1, 1, tzinfo=UTC)
+    end = datetime(2026, 12, 31, tzinfo=UTC)
+    mock_result = await _get_user_statistics_mock(start, end)
+
+    roles_rows = [
+        SimpleNamespace(role="STUDENT", cnt=71),
+        SimpleNamespace(role="TEACHER", cnt=1),
+        SimpleNamespace(role="PARENT", cnt=2),
+        SimpleNamespace(role="ADMIN", cnt=1),
+    ]
+    counters = iter([roles_rows, 5, 60])  # rows + new_reg + active
+
+    async def _exec(*_args, **_kw):
+        nxt = next(counters)
+        if isinstance(nxt, list):
+            return iter(nxt)
+        return SimpleNamespace(scalar=lambda v=nxt: v)
+
+    fake_db = AsyncMock()
+    fake_db.execute = _exec
+
+    @asynccontextmanager
+    async def _fake_ctx():
+        yield fake_db
+
+    with patch("api.analytics.get_db_session_context", new=_fake_ctx):
+        real_result = await _get_user_statistics_real(start, end)
+
+    assert set(real_result.keys()) == set(mock_result.keys())
+    assert set(real_result["user_types"].keys()) == set(
+        mock_result["user_types"].keys()
+    )
+    assert real_result["total_users"] == 75
+    assert real_result["user_types"]["students"] == 71
+
+
+@pytest.mark.asyncio
+async def test_student_performance_real_keys_match_mock():
+    """``_calculate_student_performance_metrics_real`` matches mock shape."""
+    from api.analytics import (
+        _calculate_student_performance_metrics_mock,
+        _calculate_student_performance_metrics_real,
+    )
+
+    start = datetime(2026, 1, 1, tzinfo=UTC)
+    end = datetime(2026, 12, 31, tzinfo=UTC)
+    mock_result = await _calculate_student_performance_metrics_mock(
+        "sid", start, end, None
+    )
+
+    call_outputs = [
+        SimpleNamespace(one=lambda: SimpleNamespace(total_q=100, correct_q=72)),
+        SimpleNamespace(
+            one=lambda: SimpleNamespace(avg_dur=28.5, total_secs=3600 * 12)
+        ),
+        SimpleNamespace(
+            all=lambda: [
+                SimpleNamespace(subject="MATEMATIK", n=30, acc=0.45),
+                SimpleNamespace(subject="TURKCE", n=20, acc=0.85),
+                SimpleNamespace(subject="FIZIK", n=25, acc=0.50),
+            ]
+        ),
+    ]
+    output_iter = iter(call_outputs)
+    fake_db = AsyncMock()
+    fake_db.execute = AsyncMock(side_effect=lambda *a, **kw: next(output_iter))
+
+    @asynccontextmanager
+    async def _fake_ctx():
+        yield fake_db
+
+    with patch("api.analytics.get_db_session_context", new=_fake_ctx):
+        real_result = await _calculate_student_performance_metrics_real(
+            "sid", start, end, None
+        )
+
+    assert set(real_result.keys()) == set(mock_result.keys())
+    assert real_result["total_questions_solved"] == 100
+    assert real_result["correct_answers"] == 72
+    assert real_result["accuracy_rate"] == 0.72
+    assert "MATEMATIK" in real_result["weak_subjects"]
+    assert "TURKCE" in real_result["strong_subjects"]
+
+
+@pytest.mark.asyncio
+async def test_class_metrics_real_aggregates_students():
+    """``_calculate_class_metrics_real`` matches mock shape + aggregates."""
+    from api.analytics import (
+        _calculate_class_metrics_mock,
+        _calculate_class_metrics_real,
+    )
+
+    start = datetime(2026, 1, 1, tzinfo=UTC)
+    end = datetime(2026, 12, 31, tzinfo=UTC)
+    mock_result = await _calculate_class_metrics_mock("c1", [], start, end, None)
+
+    fake_metrics = {
+        "total_study_time_hours": 10.0,
+        "total_questions_solved": 50,
+        "correct_answers": 35,
+        "accuracy_rate": 0.7,
+        "average_session_duration_minutes": 20.0,
+        "improvement_trend": "insufficient_data",
+        "weak_subjects": [],
+        "strong_subjects": [],
+        "study_consistency_score": 0.0,
+    }
+    with patch(
+        "api.analytics._calculate_student_performance_metrics_real",
+        new=AsyncMock(return_value=fake_metrics),
+    ):
+        real_result = await _calculate_class_metrics_real(
+            "c1",
+            [{"id": "s1"}, {"id": "s2"}, {"id": "s3"}],
+            start,
+            end,
+            None,
+        )
+
+    assert set(real_result.keys()) == set(mock_result.keys())
+    assert real_result["total_questions_solved"] == 150  # 3 students × 50
+    assert real_result["class_accuracy_rate"] == 0.7  # 105/150
+    assert real_result["active_students_percentage"] == 1.0

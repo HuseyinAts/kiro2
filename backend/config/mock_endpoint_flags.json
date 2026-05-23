@@ -15,6 +15,7 @@
   "analytics.subject_performance": false,
   "analytics.exam_performance": false,
   "analytics.user_statistics": false,
+  "analytics.class_metrics": false,
   "analytics.content_usage": false,
   "content_management.questions_create": false,
   "content_management.questions_detail": false,
