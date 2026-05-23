@@ -111,6 +111,11 @@ ACCURACY = {
     "gemini_low":  0.30,  # Gemini conf < 0.7
     # Legacy sources
     "ai_solved":   0.85,  # Previously AI-verified answers (curated)
+    "ai_upgrade":  0.65,  # S194 fix: v3.0 Bayesian cross-validation (lower than production AI)
+                          # Was hardcoded to ai_solved (0.85) tier, causing systematic A-rejection
+                          # in 129+ audit cases (rematch=A vs ai_upgrade=C → C wins 17x).
+                          # 0.65 placed between gemini_med (0.65) and jsonl_v11 (0.73) —
+                          # respects cross-validation provenance without over-trusting it.
     "jsonl_v11":   0.73,  # Original OCR-matched answers
     "db_v7":       0.25,  # DEPRECATED: answers table removed in v8, 0 questions in v3.3
     "rematch":     0.25,  # DEPRECATED: 0 questions in v3.3
@@ -262,8 +267,15 @@ def classify_original(source: str) -> str:
     # v3.0 replacement sources (from replace_db_v7_sources.py)
     if source == "page_inline_upgrade":
         return "tier1"  # page_inline exact match, same accuracy as tier1
-    if source == "ai_upgrade":
-        return "ai_solved"  # AI cross-validated answer, same tier as ai_solved
+    if source == "ai_upgrade" or source.startswith("ai_upgrade_"):
+        # S194 fix: own tier (0.65), NOT ai_solved (0.85). Previous bug caused
+        # systematic A-rejection in 129+ audit cases — see
+        # docs/audits/2026-05-23_a_bias_root_cause.md
+        # Includes prefixed variants written by replace_db_v7_sources.py:173 as
+        # f"ai_upgrade_{method}" (e.g., "ai_upgrade_bayes_2of4_orig"). Without
+        # the startswith() coverage these prefixed variants fell through to the
+        # generic "other" branch (0.40), still mis-tiered.
+        return "ai_upgrade"
     if source == "jsonl_v11":
         return "jsonl_v11"
     # v3 match tiers from match_crop_answers.py output

@@ -179,6 +179,8 @@ c:Usershusey*/
 
 # Sub-projects (may have separate repos)
 d-dataset/
+!d-dataset/scripts/cross_validate_answers.py
+!d-dataset/scripts/test_cross_validate.py
 ai_ml/
 mobile/
 agent/
