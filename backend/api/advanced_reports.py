@@ -605,15 +605,119 @@ async def _get_irt_morfoloji_analizi_mock(
 async def _get_zpd_analizi_real(
     ogrenci_id: str, temel_sonuc: SinavSonucu
 ) -> dict[str, Any]:
-    """Real ZPD analizi via ``ZPDMaarifService.hesapla_turk_zpd()``.
+    """Real ZPD analizi via ``ZPDMaarifService.hesapla_turk_zpd()`` (S196 Day 3).
 
-    S196 Day 3 will land delegation to the production service. Discovery
-    confirmed `ZPDMaarifService` is production-ready (Vygotsky ZPD + Turkish
-    cultural factors + MEB Maarif values).
+    Per-konu real ZPD via the production Turkish ZPD + MEB Maarif service.
+    Cultural and Maarif profiles use the service's Turkish baseline defaults
+    (no per-student override yet — Day 4+ wiring).
+
+    Mock-real schema parity preserved: same keys + value scales as
+    ``_get_zpd_analizi_mock`` so the frontend contract holds.
     """
-    raise NotImplementedError(
-        "S196 Day 3: wire ZPDMaarifService.hesapla_turk_zpd() per konu."
-    )
+    konu_perfs = temel_sonuc.konu_performanslari or []
+    if not konu_perfs:
+        return {
+            "konu_zpd_analizleri": [],
+            "genel_zpd_profili": {
+                "ortalama_mevcut_seviye": 0.0,
+                "ortalama_optimal_zorluk": 0.0,
+                "kulturel_uyum_seviyesi": "yuksek",
+                "maarif_degerleri_uyumu": "iyi",
+            },
+            "kisisellestirilmis_oneriler": [],
+            "kulturel_faktorler": zpd_maarif_service.varsayilan_kulturel_profil,
+            "maarif_degerleri_profili": {
+                "milli_degerler_uyumu": 0.8,
+                "evrensel_degerler_uyumu": 0.9,
+                "kok_degerler_uyumu": 0.8,
+            },
+        }
+
+    konu_zpd_analizleri = []
+    for konu_perf in konu_perfs:
+        mevcut_seviye = konu_perf.basari_yuzdesi / 10  # %0-100 → 0-10 ZPD scale
+        zpd = await zpd_maarif_service.hesapla_turk_zpd(
+            ogrenci_id=ogrenci_id or "anonymous_student",
+            konu=konu_perf.konu,
+            mevcut_seviye=mevcut_seviye,
+        )
+        konu_zpd_analizleri.append(
+            {
+                "konu": konu_perf.konu,
+                "mevcut_seviye": zpd.mevcut_seviye,
+                "alt_sinir": zpd.alt_sinir,
+                "ust_sinir": zpd.ust_sinir,
+                "optimal_zorluk": zpd.optimal_zorluk,
+                "kulturel_carpan": zpd.kulturel_carpan,
+                "maarif_uyum_katsayisi": zpd.maarif_uyum_katsayisi,
+                "grup_calismasi_bonusu": zpd.grup_calismasi_bonusu,
+                "ogretmen_rehberlik_faktoru": zpd.ogretmen_rehberlik_faktoru,
+                "hesaplama_guveni": zpd.hesaplama_guveni,
+                "kulturel_uyum_guveni": zpd.kulturel_uyum_guveni,
+            }
+        )
+
+    kisisellestirilmis_oneriler = []
+    for z in konu_zpd_analizleri:
+        if z["mevcut_seviye"] < 5:
+            kisisellestirilmis_oneriler.append(
+                {
+                    "konu": z["konu"],
+                    "oneri_tipi": "temel_pekistirme",
+                    "aciklama": f"{z['konu']} konusunda temel kavramları pekiştirin",
+                    "onerilen_zorluk": z["optimal_zorluk"],
+                    "ogrenme_yontemi": "grup_calismasi"
+                    if z["grup_calismasi_bonusu"] > 0.2
+                    else "bireysel",
+                    "tahmini_sure": "2-3 hafta",
+                }
+            )
+        elif z["mevcut_seviye"] > 8:
+            kisisellestirilmis_oneriler.append(
+                {
+                    "konu": z["konu"],
+                    "oneri_tipi": "ileri_seviye_gelistirme",
+                    "aciklama": f"{z['konu']} konusunda ileri seviye problemlere odaklanın",
+                    "onerilen_zorluk": z["optimal_zorluk"],
+                    "ogrenme_yontemi": "bireysel_arastirma",
+                    "tahmini_sure": "1-2 hafta",
+                }
+            )
+        else:
+            kisisellestirilmis_oneriler.append(
+                {
+                    "konu": z["konu"],
+                    "oneri_tipi": "dengeli_gelistirme",
+                    "aciklama": f"{z['konu']} konusunda mevcut seviyenizi koruyarak ilerleyin",
+                    "onerilen_zorluk": z["optimal_zorluk"],
+                    "ogrenme_yontemi": "karma_yontem",
+                    "tahmini_sure": "1-2 hafta",
+                }
+            )
+
+    n = len(konu_zpd_analizleri)
+    return {
+        "konu_zpd_analizleri": konu_zpd_analizleri,
+        "genel_zpd_profili": {
+            "ortalama_mevcut_seviye": sum(
+                z["mevcut_seviye"] for z in konu_zpd_analizleri
+            )
+            / n,
+            "ortalama_optimal_zorluk": sum(
+                z["optimal_zorluk"] for z in konu_zpd_analizleri
+            )
+            / n,
+            "kulturel_uyum_seviyesi": "yuksek",
+            "maarif_degerleri_uyumu": "iyi",
+        },
+        "kisisellestirilmis_oneriler": kisisellestirilmis_oneriler,
+        "kulturel_faktorler": zpd_maarif_service.varsayilan_kulturel_profil,
+        "maarif_degerleri_profili": {
+            "milli_degerler_uyumu": 0.8,
+            "evrensel_degerler_uyumu": 0.9,
+            "kok_degerler_uyumu": 0.8,
+        },
+    }
 
 
 async def _get_zpd_analizi(ogrenci_id: str, temel_sonuc: SinavSonucu) -> dict[str, Any]:
@@ -729,15 +833,117 @@ async def _get_zpd_analizi_mock(
 async def _get_hibrit_ogrenme_stili_analizi_real(
     ogrenci_id: str, temel_sonuc: SinavSonucu
 ) -> dict[str, Any]:
-    """Real learning-style analysis via ``LearningStyleService``.
+    """Real learning-style analysis via ``LearningStyleService`` (S196 Day 3).
 
-    S196 Day 3 will land delegation. Discovery confirmed
-    `learning_style_service.detect_learning_style()` is production-ready
-    (VARK + Felder profiles backed by `student_learning_profiles` table).
+    VARK + Felder-Silverman profile from ``student_learning_profiles`` (cached
+    by student_id). Falls back to service-computed defaults if no profile
+    exists yet. Empty ``behavioral_data`` is intentional — Day 4+ will pull
+    LearningAnalytics rows for richer signal.
+
+    Mock-real schema parity preserved.
     """
-    raise NotImplementedError(
-        "S196 Day 3: wire learning_style_service.detect_learning_style()."
-    )
+    from core.database import get_db_session_context
+
+    async with get_db_session_context() as db:
+        profile = await learning_style_service.detect_learning_style(
+            student_id=ogrenci_id or "anonymous_student",
+            db=db,
+            behavioral_data={},
+        )
+
+    vark_profili = {
+        "visual": profile.get("vark_visual", 0.5),
+        "auditory": profile.get("vark_auditory", 0.5),
+        "reading": profile.get("vark_reading", 0.5),
+        "kinesthetic": profile.get("vark_kinesthetic", 0.5),
+    }
+    felder_silverman_profili = {
+        "active_reflective": profile.get("felder_active_reflective", 0.0),
+        "sensing_intuitive": profile.get("felder_sensing_intuitive", 0.0),
+        "visual_verbal": profile.get("felder_visual_verbal", 0.0),
+        "sequential_global": profile.get("felder_sequential_global", 0.0),
+    }
+    hibrit_kod = profile.get("hybrid_code") or "V-R-A-S-V-S"
+
+    performans_uyumu = []
+    for konu_perf in temel_sonuc.konu_performanslari:
+        konu_norm = normalize_tr(konu_perf.konu)
+        if "matematik" in konu_norm:
+            uyum_skoru = (
+                vark_profili["visual"]
+                + abs(felder_silverman_profili["sequential_global"])
+            ) / 2
+        elif "türkçe" in konu_norm:
+            uyum_skoru = (
+                vark_profili["reading"] + abs(felder_silverman_profili["visual_verbal"])
+            ) / 2
+        else:
+            uyum_skoru = sum(vark_profili.values()) / 4
+
+        performans_uyumu.append(
+            {
+                "konu": konu_perf.konu,
+                "basari_yuzdesi": konu_perf.basari_yuzdesi,
+                "ogrenme_stili_uyumu": uyum_skoru * 100,
+                "onerilen_yontem": _get_onerilen_ogrenme_yontemi(
+                    konu_perf.konu, vark_profili, felder_silverman_profili
+                ),
+                "uyum_analizi": "yuksek"
+                if uyum_skoru > 0.7
+                else "orta"
+                if uyum_skoru > 0.5
+                else "dusuk",
+            }
+        )
+
+    hibrit_profil_ozeti = {
+        "dominant_vark_stili": profile.get(
+            "dominant_vark_style", max(vark_profili, key=vark_profili.get)
+        ),
+        "dominant_felder_boyutu": profile.get(
+            "dominant_felder_dimension",
+            max(
+                felder_silverman_profili, key=lambda k: abs(felder_silverman_profili[k])
+            ),
+        ),
+        "hibrit_kod": hibrit_kod,
+        "guven_seviyesi": profile.get("confidence_score", 0.5),
+        "profil_aciklamasi": profile.get("profile_description")
+        or _get_hibrit_profil_aciklamasi(hibrit_kod),
+    }
+
+    ogrenme_onerileri = [
+        {
+            "konu": uyum["konu"],
+            "oneri": f"{uyum['konu']} için {uyum['onerilen_yontem']} yöntemini deneyin",
+            "detay": "Mevcut öğrenme stilinizle uyumlu değil, alternatif yaklaşımlar önerilir",
+            "oncelik": "yuksek",
+        }
+        for uyum in performans_uyumu
+        if uyum["uyum_analizi"] == "dusuk"
+    ]
+
+    return {
+        "vark_profili": vark_profili,
+        "felder_silverman_profili": felder_silverman_profili,
+        "hibrit_profil_ozeti": hibrit_profil_ozeti,
+        "performans_uyumu": performans_uyumu,
+        "ogrenme_onerileri": ogrenme_onerileri,
+        "stil_bazli_performans_analizi": {
+            "en_uyumlu_konular": [
+                p["konu"] for p in performans_uyumu if p["uyum_analizi"] == "yuksek"
+            ],
+            "gelisim_gerektiren_konular": [
+                p["konu"] for p in performans_uyumu if p["uyum_analizi"] == "dusuk"
+            ],
+            "ortalama_uyum_skoru": (
+                sum(p["ogrenme_stili_uyumu"] for p in performans_uyumu)
+                / len(performans_uyumu)
+            )
+            if performans_uyumu
+            else 0.0,
+        },
+    }
 
 
 async def _get_hibrit_ogrenme_stili_analizi(
@@ -861,14 +1067,126 @@ async def _get_hibrit_ogrenme_stili_analizi_mock(
 async def _get_osym_ets_karsilastirmasi_real(
     sinav_id: str, temel_sonuc: SinavSonucu
 ) -> dict[str, Any]:
-    """Real ÖSYM/ETS comparison via ``OSYMBenchmarkComparator``.
+    """Real ÖSYM/ETS comparison via per-konu IRT aggregates (S196 Day 3).
 
-    S196 Day 3 will land delegation + IRT aggregation from question_bank
-    over the questions actually shown in this exam_session.
+    Computes weighted-average IRT params over the konular present in this
+    exam (weighted by `toplam_soru` per konu), then compares against static
+    ÖSYM/ETS thresholds using the existing `_karsilastir_*` helpers.
+
+    Mock-real schema parity preserved.
+
+    Design note: ``OSYMBenchmarkComparator`` service is intentionally NOT
+    used here. That service compares AI-generated question pipelines against
+    ÖSYM (length / difficulty / bloom similarity for Wave 2B generation QA)
+    — a different domain than exam-level IRT benchmark comparison. Forcing
+    it would break frontend contract. See S196 Day 3 design discussion.
     """
-    raise NotImplementedError(
-        "S196 Day 3: wire OSYMBenchmarkComparator.compare_against_benchmark()."
+    osym_standartlari = {
+        "ayirt_edicilik_min": 0.3,
+        "ayirt_edicilik_ideal": 1.0,
+        "zorluk_araligi": (-2.0, 2.0),
+        "sans_faktoru_max": 0.25,
+        "guvenilirlik_min": 0.8,
+    }
+    ets_standartlari = {
+        "ayirt_edicilik_min": 0.4,
+        "ayirt_edicilik_ideal": 1.2,
+        "zorluk_araligi": (-2.5, 2.5),
+        "sans_faktoru_max": 0.2,
+        "guvenilirlik_min": 0.85,
+    }
+
+    konu_perfs = temel_sonuc.konu_performanslari or []
+    if konu_perfs:
+        total_weight = 0
+        wsum_disc = wsum_diff = wsum_guess = 0.0
+        for kp in konu_perfs:
+            agg = await _get_subject_irt_aggregate(kp.konu)
+            w = max(1, kp.toplam_soru)  # weight by # of questions in this konu
+            wsum_disc += agg["avg_discrimination"] * w
+            wsum_diff += agg["avg_difficulty"] * w
+            wsum_guess += agg["avg_guessing"] * w
+            total_weight += w
+        sinav_parametreleri = {
+            "ortalama_ayirt_edicilik": wsum_disc / total_weight,
+            "ortalama_zorluk": wsum_diff / total_weight,
+            "ortalama_sans_faktoru": wsum_guess / total_weight,
+            # Cronbach α not yet wired (Day 4+ task); keep mock placeholder.
+            "guvenilirlik_katsayisi": 0.82,
+            "morfoloji_avantaji": 0.15,
+        }
+    else:
+        sinav_parametreleri = {
+            "ortalama_ayirt_edicilik": 1.0,
+            "ortalama_zorluk": 0.0,
+            "ortalama_sans_faktoru": 0.2,
+            "guvenilirlik_katsayisi": 0.82,
+            "morfoloji_avantaji": 0.15,
+        }
+
+    osym_karsilastirma = {
+        "ayirt_edicilik_durumu": _karsilastir_parametre(
+            sinav_parametreleri["ortalama_ayirt_edicilik"],
+            osym_standartlari["ayirt_edicilik_min"],
+            osym_standartlari["ayirt_edicilik_ideal"],
+        ),
+        "zorluk_durumu": _karsilastir_zorluk(
+            sinav_parametreleri["ortalama_zorluk"],
+            osym_standartlari["zorluk_araligi"],
+        ),
+        "sans_faktoru_durumu": _karsilastir_sans_faktoru(
+            sinav_parametreleri["ortalama_sans_faktoru"],
+            osym_standartlari["sans_faktoru_max"],
+        ),
+        "genel_uyum_skoru": 0.0,
+    }
+    ets_karsilastirma = {
+        "ayirt_edicilik_durumu": _karsilastir_parametre(
+            sinav_parametreleri["ortalama_ayirt_edicilik"],
+            ets_standartlari["ayirt_edicilik_min"],
+            ets_standartlari["ayirt_edicilik_ideal"],
+        ),
+        "zorluk_durumu": _karsilastir_zorluk(
+            sinav_parametreleri["ortalama_zorluk"],
+            ets_standartlari["zorluk_araligi"],
+        ),
+        "sans_faktoru_durumu": _karsilastir_sans_faktoru(
+            sinav_parametreleri["ortalama_sans_faktoru"],
+            ets_standartlari["sans_faktoru_max"],
+        ),
+        "genel_uyum_skoru": 0.0,
+    }
+    osym_karsilastirma["genel_uyum_skoru"] = _hesapla_genel_uyum_skoru(
+        osym_karsilastirma
     )
+    ets_karsilastirma["genel_uyum_skoru"] = _hesapla_genel_uyum_skoru(ets_karsilastirma)
+
+    morfoloji_avantaji = {
+        "morfoloji_faktoru_etkisi": sinav_parametreleri["morfoloji_avantaji"],
+        "dil_analizi_derinligi": "yuksek",
+        "osym_ets_uzerindeki_avantaj": "Türkçe morfolojik analiz ile ÖSYM/ETS'nin sunmadığı detaylı dil analizi",
+        "ek_bilgi_boyutlari": [
+            "Kelime kökü analizi",
+            "Ek türetim karmaşıklığı",
+            "Morfolojik belirsizlik çözümü",
+            "Türkçe'ye özel dil yapısı analizi",
+        ],
+    }
+    sonuc_degerlendirmesi = _belirle_karsilastirma_sonucu(
+        osym_karsilastirma["genel_uyum_skoru"],
+        ets_karsilastirma["genel_uyum_skoru"],
+    )
+
+    return {
+        "sinav_parametreleri": sinav_parametreleri,
+        "osym_karsilastirma": osym_karsilastirma,
+        "ets_karsilastirma": ets_karsilastirma,
+        "morfoloji_avantaji": morfoloji_avantaji,
+        "sonuc_degerlendirmesi": sonuc_degerlendirmesi,
+        "iyilestirme_onerileri": _generate_improvement_suggestions(
+            osym_karsilastirma, ets_karsilastirma, sinav_parametreleri
+        ),
+    }
 
 
 async def _get_osym_ets_karsilastirmasi(
@@ -1181,16 +1499,79 @@ async def _generate_personalized_recommendations(
 async def _get_performance_trend_real(
     ogrenci_id: str, sinav_tipi: SinavTipi
 ) -> dict[str, Any]:
-    """Real performance trend via ``ExamPerformanceService``.
+    """Real performance trend via ``ExamPerformanceService`` (S196 Day 3).
 
-    S196 Day 3 will land delegation to
-    ``ExamPerformanceService._analyze_improvement_trends()`` which queries
-    last 5 ExamSession rows by student_id + exam_type and computes linear
-    regression slope (already production code).
+    Pulls latest completed ExamSession for this student+type and delegates
+    to the service's linear-regression trend analyzer (which queries the
+    last 5 sessions internally).
+
+    Mock-real schema parity preserved: maps service keys (`trend`,
+    `improvement_rate`, `recent_scores`, `consistency` on 0-100) to mock
+    keys (`trend_yonu` TR-localized, `ortalama_artis`, `son_5_sinav`,
+    `tutarlilik_skoru` on 0-1 scale).
+
+    Note: calls ``_analyze_improvement_trends`` (leading underscore). This
+    is intentional — public wrapper for one caller would be premature
+    abstraction (Karpathy "Önce Sadelik" / S196 Day 3 design decision).
     """
-    raise NotImplementedError(
-        "S196 Day 3: wire ExamPerformanceService._analyze_improvement_trends()."
-    )
+    from sqlalchemy import desc, select
+
+    from core.database import get_db_session_context
+    from models.enums_db import ExamType
+    from models.exam_db import ExamSession
+    from services.exam_performance_service import exam_performance_service
+
+    empty_response = {
+        "son_5_sinav": [],
+        "trend_yonu": "veri_yetersiz",
+        "ortalama_artis": 0.0,
+        "en_iyi_performans": 0,
+        "en_dusuk_performans": 0,
+        "tutarlilik_skoru": 0.0,
+    }
+
+    # SinavTipi values are uppercase ("TYT"); ExamSession.exam_type stores
+    # lowercase ExamType enum. Map via .value.lower() — guard for unknown.
+    try:
+        exam_type = ExamType(sinav_tipi.value.lower())
+    except ValueError:
+        logger.warning(f"Bilinmeyen sinav_tipi: {sinav_tipi!r}; veri_yetersiz dön")
+        return empty_response
+
+    async with get_db_session_context() as db:
+        result = await db.execute(
+            select(ExamSession)
+            .where(ExamSession.student_id == ogrenci_id)
+            .where(ExamSession.exam_type == exam_type)
+            .where(ExamSession.status == "completed")
+            .order_by(desc(ExamSession.completed_at))
+            .limit(1)
+        )
+        latest = result.scalar_one_or_none()
+        if latest is None:
+            return empty_response
+
+        trend_data = await exam_performance_service._analyze_improvement_trends(
+            db, latest
+        )
+
+    trend_map = {
+        "improving": "yukselis",
+        "declining": "dusus",
+        "stable": "stabil",
+        "insufficient_data": "veri_yetersiz",
+    }
+    scores = list(trend_data.get("recent_scores") or [])
+
+    return {
+        "son_5_sinav": scores,
+        "trend_yonu": trend_map.get(trend_data.get("trend", "stable"), "stabil"),
+        "ortalama_artis": float(trend_data.get("improvement_rate", 0.0)),
+        "en_iyi_performans": max(scores) if scores else 0,
+        "en_dusuk_performans": min(scores) if scores else 0,
+        # Service emits consistency on 0-100; mock contract is 0-1. Normalize.
+        "tutarlilik_skoru": float(trend_data.get("consistency", 0.0)) / 100.0,
+    }
 
 
 async def _get_performance_trend(
