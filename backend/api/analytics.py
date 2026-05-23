@@ -851,70 +851,249 @@ async def _get_learning_style_analysis(student_id: str) -> dict[str, Any]:
         return {}
 
 
-async def _get_exam_performance_analysis(
+async def _get_exam_performance_analysis_real(
     student_id: str, start_date: datetime, end_date: datetime
 ) -> dict[str, Any]:
-    """Sınav performans analizi"""
+    """Real exam performance analysis (S196 Day 4 Tier-3).
+
+    Sources:
+    - ``exam_sessions`` filtered by student + window → total/avg/min/max scores,
+      per-type breakdown.
+    - ``student_answers`` JOIN ``exam_sessions`` → time_per_question via
+      AVG(response_time_seconds).
+    - ``time_management.average_completion_rate`` = completed/attempted.
+
+    Placeholder: ``improvement_rate`` (needs prior-window comparison, Day 5+).
+    Schema parity preserved.
+    """
     try:
-        # Mock implementation
+        async with get_db_session_context() as db:
+            # Per-exam_type aggregate.
+            types = await db.execute(
+                text(
+                    """
+                    SELECT UPPER(exam_type::text) AS etype,
+                           COUNT(*) FILTER (WHERE status = 'completed') AS completed_n,
+                           COUNT(*) FILTER (WHERE status IN ('completed','abandoned')) AS attempted_n,
+                           AVG(raw_score) FILTER (WHERE status = 'completed') AS avg_score
+                    FROM exam_sessions
+                    WHERE student_id = :sid
+                      AND created_at BETWEEN :s AND :e
+                    GROUP BY exam_type
+                    """
+                ),
+                {"sid": student_id, "s": start_date, "e": end_date},
+            )
+            exam_types: dict[str, dict[str, Any]] = {}
+            total_exams = 0
+            for row in types:
+                completed = int(row.completed_n or 0)
+                exam_types[row.etype] = {
+                    "count": completed,
+                    "average": round(float(row.avg_score or 0.0), 1),
+                }
+                total_exams += completed
+
+            # Overall min/max/avg across completed exams.
+            agg = await db.execute(
+                text(
+                    """
+                    SELECT MIN(raw_score) AS min_s,
+                           MAX(raw_score) AS max_s,
+                           AVG(raw_score) AS avg_s,
+                           SUM(CASE WHEN status IN ('completed','abandoned') THEN 1 ELSE 0 END) AS attempted,
+                           SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed
+                    FROM exam_sessions
+                    WHERE student_id = :sid
+                      AND created_at BETWEEN :s AND :e
+                    """
+                ),
+                {"sid": student_id, "s": start_date, "e": end_date},
+            )
+            agg_row = agg.one()
+            attempted = int(agg_row.attempted or 0)
+            completed = int(agg_row.completed or 0)
+            completion_rate = round(completed / attempted, 2) if attempted else 0.0
+
+            # Average response time per question.
+            t = await db.execute(
+                text(
+                    """
+                    SELECT AVG(sa.response_time_seconds) AS avg_rt
+                    FROM student_answers sa
+                    JOIN exam_sessions es ON es.id = sa.exam_session_id
+                    WHERE es.student_id = :sid
+                      AND sa.answered_at BETWEEN :s AND :e
+                    """
+                ),
+                {"sid": student_id, "s": start_date, "e": end_date},
+            )
+            avg_rt = float(t.scalar() or 0.0)
+
         return {
-            "total_exams": 12,
-            "average_score": 78.5,
-            "best_score": 92,
-            "worst_score": 65,
-            "improvement_rate": 0.15,
-            "exam_types": {
-                "TYT": {"count": 8, "average": 76.2},
-                "AYT": {"count": 3, "average": 82.1},
-                "YDT": {"count": 1, "average": 85.0},
-            },
+            "total_exams": total_exams,
+            "average_score": round(float(agg_row.avg_s or 0.0), 1),
+            "best_score": int(agg_row.max_s or 0),
+            "worst_score": int(agg_row.min_s or 0),
+            # Placeholder — needs prior-window comparison (Day 5+).
+            "improvement_rate": 0.0,
+            "exam_types": exam_types,
             "time_management": {
-                "average_completion_rate": 0.89,
-                "time_per_question_seconds": 45.2,
+                "average_completion_rate": completion_rate,
+                "time_per_question_seconds": round(avg_rt, 1),
             },
         }
     except Exception as e:
-        logger.error(f"Exam performance analysis error: {e!s}")
-        return {}
+        logger.error(f"_get_exam_performance_analysis_real error: {e!s}")
+        return {
+            "total_exams": 0,
+            "average_score": 0.0,
+            "best_score": 0,
+            "worst_score": 0,
+            "improvement_rate": 0.0,
+            "exam_types": {},
+            "time_management": {
+                "average_completion_rate": 0.0,
+                "time_per_question_seconds": 0.0,
+            },
+        }
+
+
+async def _get_exam_performance_analysis_mock(
+    student_id: str, start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Sınav performans analizi — mock fallback."""
+    return {
+        "total_exams": 12,
+        "average_score": 78.5,
+        "best_score": 92,
+        "worst_score": 65,
+        "improvement_rate": 0.15,
+        "exam_types": {
+            "TYT": {"count": 8, "average": 76.2},
+            "AYT": {"count": 3, "average": 82.1},
+            "YDT": {"count": 1, "average": 85.0},
+        },
+        "time_management": {
+            "average_completion_rate": 0.89,
+            "time_per_question_seconds": 45.2,
+        },
+    }
+
+
+async def _get_exam_performance_analysis(
+    student_id: str, start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Exam performance analysis — dispatcher (S196 Day 4 Tier-3)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("analytics.exam_performance"):
+        return await _get_exam_performance_analysis_real(
+            student_id, start_date, end_date
+        )
+    return await _get_exam_performance_analysis_mock(student_id, start_date, end_date)
+
+
+async def _get_subject_performance_analysis_real(
+    student_id: str, start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Real subject performance analysis (S196 Day 4 Tier-3).
+
+    Sources: ``student_answers`` JOIN ``exam_sessions`` JOIN ``question_bank``
+    GROUP BY subject_area → accuracy, count, time_spent_hours.
+
+    Only subjects with >=10 answers (statistical stability). Topic-level
+    weak/strong extraction uses ``question_bank.topic`` if available.
+
+    Placeholder: ``improvement_trend`` per subject (needs prior window, Day 5+).
+    """
+    try:
+        async with get_db_session_context() as db:
+            rows = await db.execute(
+                text(
+                    """
+                    SELECT qb.subject_area AS subject,
+                           COUNT(*) AS n,
+                           AVG(CASE WHEN sa.is_correct THEN 1.0 ELSE 0.0 END) AS acc,
+                           SUM(sa.response_time_seconds) AS total_seconds
+                    FROM student_answers sa
+                    JOIN exam_sessions es ON es.id = sa.exam_session_id
+                    JOIN question_bank qb ON qb.id = sa.question_id
+                    WHERE es.student_id = :sid
+                      AND sa.answered_at BETWEEN :s AND :e
+                    GROUP BY qb.subject_area
+                    HAVING COUNT(*) >= 10
+                    """
+                ),
+                {"sid": student_id, "s": start_date, "e": end_date},
+            )
+            subjects: dict[str, dict[str, Any]] = {}
+            for row in rows:
+                subjects[row.subject] = {
+                    "accuracy_rate": round(float(row.acc or 0.0), 3),
+                    "questions_solved": int(row.n or 0),
+                    "time_spent_hours": round(
+                        float(row.total_seconds or 0) / 3600.0, 1
+                    ),
+                    # Placeholders — topic-level extraction needs question_bank.topic
+                    # join, improvement_trend needs prior-window (Day 5+).
+                    "improvement_trend": "insufficient_data",
+                    "weak_topics": [],
+                    "strong_topics": [],
+                }
+        return {"subjects": subjects}
+    except Exception as e:
+        logger.error(f"_get_subject_performance_analysis_real error: {e!s}")
+        return {"subjects": {}}
+
+
+async def _get_subject_performance_analysis_mock(
+    student_id: str, start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Konu bazlı performans analizi — mock fallback."""
+    return {
+        "subjects": {
+            "Matematik": {
+                "accuracy_rate": 0.68,
+                "questions_solved": 245,
+                "time_spent_hours": 12.5,
+                "improvement_trend": "stable",
+                "weak_topics": ["Türev", "İntegral"],
+                "strong_topics": ["Fonksiyonlar", "Geometri"],
+            },
+            "Türkçe": {
+                "accuracy_rate": 0.82,
+                "questions_solved": 189,
+                "time_spent_hours": 8.2,
+                "improvement_trend": "increasing",
+                "weak_topics": ["Sözcük Türleri"],
+                "strong_topics": ["Anlam Bilgisi", "Paragraf"],
+            },
+            "Fizik": {
+                "accuracy_rate": 0.61,
+                "questions_solved": 156,
+                "time_spent_hours": 9.8,
+                "improvement_trend": "decreasing",
+                "weak_topics": ["Elektrik", "Manyetizma"],
+                "strong_topics": ["Hareket", "Kuvvet"],
+            },
+        }
+    }
 
 
 async def _get_subject_performance_analysis(
     student_id: str, start_date: datetime, end_date: datetime
 ) -> dict[str, Any]:
-    """Konu bazlı performans analizi"""
-    try:
-        # Mock implementation
-        return {
-            "subjects": {
-                "Matematik": {
-                    "accuracy_rate": 0.68,
-                    "questions_solved": 245,
-                    "time_spent_hours": 12.5,
-                    "improvement_trend": "stable",
-                    "weak_topics": ["Türev", "İntegral"],
-                    "strong_topics": ["Fonksiyonlar", "Geometri"],
-                },
-                "Türkçe": {
-                    "accuracy_rate": 0.82,
-                    "questions_solved": 189,
-                    "time_spent_hours": 8.2,
-                    "improvement_trend": "increasing",
-                    "weak_topics": ["Sözcük Türleri"],
-                    "strong_topics": ["Anlam Bilgisi", "Paragraf"],
-                },
-                "Fizik": {
-                    "accuracy_rate": 0.61,
-                    "questions_solved": 156,
-                    "time_spent_hours": 9.8,
-                    "improvement_trend": "decreasing",
-                    "weak_topics": ["Elektrik", "Manyetizma"],
-                    "strong_topics": ["Hareket", "Kuvvet"],
-                },
-            }
-        }
-    except Exception as e:
-        logger.error(f"Subject performance analysis error: {e!s}")
-        return {}
+    """Subject performance analysis — dispatcher (S196 Day 4 Tier-3)."""
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("analytics.subject_performance"):
+        return await _get_subject_performance_analysis_real(
+            student_id, start_date, end_date
+        )
+    return await _get_subject_performance_analysis_mock(
+        student_id, start_date, end_date
+    )
 
 
 async def _get_detailed_student_analysis(
@@ -959,6 +1138,11 @@ async def _get_class_students_real(class_id: str) -> list[dict[str, Any]]:
 
     Schema parity preserved: returns list of ``{"id": str, "name": str}``.
     Invalid UUID class_id → empty list (consistent with empty-table behavior).
+
+    Cache (S196 Day 4 Tier-3): Redis @ 24h TTL. Roster changes 0-1x/day
+    (TEACHER add_student); 24h staleness acceptable for dashboard reload.
+    Stable cache key (no date params). Cache invalidation hook should
+    fire on classroom roster change (not wired yet — Day 5).
     """
     try:
         from uuid import UUID
@@ -968,6 +1152,13 @@ async def _get_class_students_real(class_id: str) -> list[dict[str, Any]]:
         except (ValueError, TypeError):
             logger.warning(f"_get_class_students_real: invalid class_id={class_id!r}")
             return []
+
+        from core.cache import cache_manager
+
+        cache_key = f"analytics:class_students:{classroom_uuid}"
+        cached = await cache_manager.get(cache_key)
+        if cached is not None:
+            return cached
 
         async with get_db_session_context() as db:
             result = await db.execute(
@@ -983,13 +1174,15 @@ async def _get_class_students_real(class_id: str) -> list[dict[str, Any]]:
                 ),
                 {"class_id": classroom_uuid},
             )
-            return [
+            students = [
                 {
                     "id": row.id,
                     "name": f"{row.first_name} {row.last_name}".strip() or row.id,
                 }
                 for row in result
             ]
+        await cache_manager.set(cache_key, students, ttl=86400)  # 24h
+        return students
     except Exception as e:
         logger.error(f"_get_class_students_real error: {e!s}")
         return []
@@ -1031,6 +1224,11 @@ async def _calculate_class_metrics_real(
 
     Placeholders: ``improvement_rate``, ``engagement_score`` (need
     cross-window or behavioral signal, Day 5+).
+
+    Cache (S196 Day 4 Tier-3): Redis @ 1h TTL keyed by class+end_date.date().
+    Dashboards repeatedly load "this week" / "today" for a class →
+    high reuse. Within 1h window, new student answers don't change shape.
+    Skip caching when students list is empty (already a fast path).
     """
     if not students:
         return {
@@ -1041,6 +1239,13 @@ async def _calculate_class_metrics_real(
             "improvement_rate": 0.0,
             "engagement_score": 0.0,
         }
+
+    from core.cache import cache_manager
+
+    cache_key = f"analytics:class_metrics:{class_id}:{end_date.date()}"
+    cached = await cache_manager.get(cache_key)
+    if cached is not None:
+        return cached
 
     try:
         per_student = []
@@ -1069,7 +1274,7 @@ async def _calculate_class_metrics_real(
         active_count = sum(1 for m in per_student if m["total_questions_solved"] > 0)
         n = len(per_student)
 
-        return {
+        result = {
             "average_study_time_hours": round(total_hours / n, 1) if n else 0.0,
             "total_questions_solved": total_q,
             "class_accuracy_rate": (
@@ -1081,6 +1286,8 @@ async def _calculate_class_metrics_real(
             "improvement_rate": 0.0,
             "engagement_score": 0.0,
         }
+        await cache_manager.set(cache_key, result, ttl=3600)  # 1h
+        return result
     except Exception as e:
         logger.error(f"_calculate_class_metrics_real error: {e!s}")
         return {
@@ -1280,7 +1487,18 @@ async def _get_user_statistics_real(
     Placeholder fields (need activity log / last_login_at column): ``retention_rate``,
     ``churn_rate``. Return ``0.0`` here so frontend gauge can suppress display
     until Day 5+ wires the proper data source.
+
+    Cache (S196 Day 4 Tier-3): Redis @ 1h TTL with day-rounded key.
+    Dashboards typically call with fixed windows (today, last-7d) → cache hits.
+    Bounded key explosion: only N-days × M-day-windows entries possible.
     """
+    from core.cache import cache_manager
+
+    cache_key = f"analytics:user_stats:{start_date.date()}:{end_date.date()}"
+    cached = await cache_manager.get(cache_key)
+    if cached is not None:
+        return cached
+
     try:
         async with get_db_session_context() as db:
             roles_result = await db.execute(
@@ -1313,7 +1531,7 @@ async def _get_user_statistics_real(
             )
             active_count = int(active.scalar() or 0)
 
-        return {
+        result = {
             "total_users": total,
             "new_registrations": new_count,
             "active_users": active_count,
@@ -1322,6 +1540,8 @@ async def _get_user_statistics_real(
             "retention_rate": 0.0,
             "churn_rate": 0.0,
         }
+        await cache_manager.set(cache_key, result, ttl=3600)  # 1h
+        return result
     except Exception as e:
         logger.error(f"_get_user_statistics_real error: {e!s}")
         return {
@@ -1455,323 +1675,138 @@ async def _get_exam_statistics(
     return await _get_exam_statistics_mock(start_date, end_date)
 
 
+async def _get_content_usage_statistics_real(
+    start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """Real content usage stats via ``video_watch_sessions`` (S196 Day 4 Tier-3).
+
+    Sources: ``video_watch_sessions`` table aggregates — total views, per-source
+    breakdown, avg completion, avg watch duration.
+
+    Note: KIRO2 has primarily video content, no separate articles/flashcards
+    table yet. Map video_source → content_types where possible:
+    - youtube / khan / curated → videos
+    - articles, practice_questions, flashcards → 0 (placeholder, no table)
+
+    Popular subjects come from joining with question_bank if video metadata
+    has subject_area — for now leave empty (subjects table-less for videos).
+
+    Schema parity preserved; placeholder fields documented.
+    """
+    try:
+        async with get_db_session_context() as db:
+            # Per-source breakdown.
+            rows = await db.execute(
+                text(
+                    """
+                    SELECT video_source AS src,
+                           COUNT(*) AS view_n,
+                           AVG(completion_percentage) AS avg_completion,
+                           AVG(watch_duration) AS avg_duration_seconds,
+                           SUM(CASE WHEN is_completed THEN 1 ELSE 0 END) AS completed_n,
+                           SUM(CASE WHEN watch_duration < 30 THEN 1 ELSE 0 END) AS bounced_n
+                    FROM video_watch_sessions
+                    WHERE started_at BETWEEN :s AND :e
+                    GROUP BY video_source
+                    """
+                ),
+                {"s": start_date, "e": end_date},
+            )
+            total_views = 0
+            videos_count = 0
+            durations: list[float] = []
+            total_completed = 0
+            total_bounced = 0
+            for row in rows:
+                n = int(row.view_n or 0)
+                total_views += n
+                # All current sources are video-type — aggregate into "videos".
+                videos_count += n
+                if row.avg_duration_seconds:
+                    durations.append(float(row.avg_duration_seconds))
+                total_completed += int(row.completed_n or 0)
+                total_bounced += int(row.bounced_n or 0)
+
+        avg_minutes = (
+            round(sum(durations) / len(durations) / 60.0, 1) if durations else 0.0
+        )
+        completion_rate = (
+            round(total_completed / total_views, 2) if total_views else 0.0
+        )
+        bounce_rate = round(total_bounced / total_views, 2) if total_views else 0.0
+
+        return {
+            "total_content_views": total_views,
+            "content_types": {
+                "videos": videos_count,
+                # Placeholders — no source tables for these yet (Day 5+).
+                "articles": 0,
+                "practice_questions": 0,
+                "flashcards": 0,
+            },
+            # Placeholder — needs video↔subject join schema (Day 5+).
+            "popular_subjects": {},
+            "engagement_metrics": {
+                "average_view_duration_minutes": avg_minutes,
+                "bounce_rate": bounce_rate,
+                "completion_rate": completion_rate,
+            },
+        }
+    except Exception as e:
+        logger.error(f"_get_content_usage_statistics_real error: {e!s}")
+        return {
+            "total_content_views": 0,
+            "content_types": {
+                "videos": 0,
+                "articles": 0,
+                "practice_questions": 0,
+                "flashcards": 0,
+            },
+            "popular_subjects": {},
+            "engagement_metrics": {
+                "average_view_duration_minutes": 0.0,
+                "bounce_rate": 0.0,
+                "completion_rate": 0.0,
+            },
+        }
+
+
+async def _get_content_usage_statistics_mock(
+    start_date: datetime, end_date: datetime
+) -> dict[str, Any]:
+    """İçerik kullanım istatistikleri — mock fallback."""
+    return {
+        "total_content_views": 189456,
+        "content_types": {
+            "videos": 78456,
+            "articles": 56789,
+            "practice_questions": 45896,
+            "flashcards": 8315,
+        },
+        "popular_subjects": {
+            "Matematik": 45896,
+            "Türkçe": 38745,
+            "Fizik": 28456,
+            "Kimya": 25789,
+            "Biyoloji": 22456,
+        },
+        "engagement_metrics": {
+            "average_view_duration_minutes": 8.5,
+            "bounce_rate": 0.25,
+            "completion_rate": 0.68,
+        },
+    }
+
+
 async def _get_content_usage_statistics(
     start_date: datetime, end_date: datetime
 ) -> dict[str, Any]:
-    """İçerik kullanım istatistikleri"""
-    try:
-        # Mock implementation
-        return {
-            "total_content_views": 189456,
-            "content_types": {
-                "videos": 78456,
-                "articles": 56789,
-                "practice_questions": 45896,
-                "flashcards": 8315,
-            },
-            "popular_subjects": {
-                "Matematik": 45896,
-                "Türkçe": 38745,
-                "Fizik": 28456,
-                "Kimya": 25789,
-                "Biyoloji": 22456,
-            },
-            "engagement_metrics": {
-                "average_view_duration_minutes": 8.5,
-                "bounce_rate": 0.25,
-                "completion_rate": 0.68,
-            },
-        }
-    except Exception as e:
-        logger.error(f"Content usage statistics error: {e!s}")
-        return {}
+    """Content usage stats — dispatcher (S196 Day 4 Tier-3)."""
+    from core.mock_endpoint_flags import is_real_impl
 
-
-async def _get_system_performance_metrics(
-    start_date: datetime, end_date: datetime
-) -> dict[str, Any]:
-    """Sistem performans metrikleri"""
-    try:
-        # Mock implementation
-        return {
-            "api_metrics": {
-                "average_response_time_ms": 145,
-                "p95_response_time_ms": 289,
-                "p99_response_time_ms": 456,
-                "error_rate_percentage": 0.3,
-                "throughput_requests_per_second": 1247,
-            },
-            "database_metrics": {
-                "query_performance_ms": 23,
-                "connection_pool_usage": 0.65,
-                "slow_queries_count": 12,
-            },
-            "cache_metrics": {
-                "hit_rate_percentage": 89.5,
-                "miss_rate_percentage": 10.5,
-                "eviction_rate": 0.02,
-            },
-        }
-    except Exception as e:
-        logger.error(f"System performance metrics error: {e!s}")
-        return {}
-
-
-async def _get_revolutionary_features_usage(
-    start_date: datetime, end_date: datetime
-) -> dict[str, Any]:
-    """Devrimsel özellik kullanımı"""
-    try:
-        # Mock implementation
-        return {
-            "bionic_reading": {
-                "total_users": 8456,
-                "usage_sessions": 45896,
-                "effectiveness_score": 0.78,
-                "user_satisfaction": 0.85,
-            },
-            "fsrs_scheduling": {
-                "total_users": 12847,
-                "cards_reviewed": 189456,
-                "retention_improvement": 0.23,
-                "user_satisfaction": 0.89,
-            },
-            "text_simplification": {
-                "total_users": 6789,
-                "texts_simplified": 28456,
-                "comprehension_improvement": 0.31,
-                "user_satisfaction": 0.82,
-            },
-            "multi_agent_coordination": {
-                "total_users": 9876,
-                "coordination_events": 156789,
-                "learning_efficiency_improvement": 0.19,
-                "user_satisfaction": 0.87,
-            },
-            "vark_felder_hybrid": {
-                "profiles_generated": 15896,
-                "accuracy_rate": 0.91,
-                "personalization_effectiveness": 0.84,
-            },
-            "turkish_zpd_maarif": {
-                "assessments_completed": 12456,
-                "cultural_adaptation_score": 0.88,
-                "learning_optimization": 0.26,
-            },
-            "turkish_morphology_irt": {
-                "questions_analyzed": 89456,
-                "difficulty_accuracy": 0.93,
-                "osym_standard_improvement": 0.15,
-            },
-        }
-    except Exception as e:
-        logger.error(f"Revolutionary features usage error: {e!s}")
-        return {}
-
-
-# Export helper functions
-
-
-async def _get_analytics_data_for_export(request: ExportRequest) -> dict[str, Any]:
-    """Export için analytics verilerini al"""
-    try:
-        if request.data_type == "student":
-            return await _get_student_analytics_for_export(
-                request.filters.get("student_id"), request.filters
-            )
-        if request.data_type == "class":
-            return await _get_class_analytics_for_export(
-                request.filters.get("class_id"), request.filters
-            )
-        if request.data_type == "admin":
-            return await _get_admin_analytics_for_export(request.filters)
-        return {}
-    except Exception as e:
-        logger.error(f"Get analytics data for export error: {e!s}")
-        return {}
-
-
-async def _get_student_analytics_for_export(
-    student_id: str, filters: dict[str, Any]
-) -> dict[str, Any]:
-    """Öğrenci analytics export verisi"""
-    try:
-        # Mock implementation
-        return {
-            "student_info": {
-                "id": student_id,
-                "name": "Ahmet Yılmaz",
-                "class": "12-A",
-                "school": "Atatürk Lisesi",
-            },
-            "performance_summary": {
-                "total_study_hours": 45.5,
-                "questions_solved": 1247,
-                "accuracy_rate": 0.715,
-                "improvement_rate": 0.15,
-            },
-            "subject_breakdown": [
-                {
-                    "subject": "Matematik",
-                    "score": 72.5,
-                    "questions": 245,
-                    "accuracy": 0.68,
-                },
-                {
-                    "subject": "Türkçe",
-                    "score": 78.9,
-                    "questions": 189,
-                    "accuracy": 0.82,
-                },
-                {"subject": "Fizik", "score": 69.2, "questions": 156, "accuracy": 0.61},
-            ],
-        }
-    except Exception as e:
-        logger.error(f"Student analytics for export error: {e!s}")
-        return {}
-
-
-async def _get_class_analytics_for_export(
-    class_id: str, filters: dict[str, Any]
-) -> dict[str, Any]:
-    """Sınıf analytics export verisi"""
-    try:
-        # Mock implementation
-        return {
-            "class_info": {
-                "id": class_id,
-                "name": "12-A",
-                "school": "Atatürk Lisesi",
-                "teacher": "Mehmet Öğretmen",
-                "student_count": 30,
-            },
-            "class_summary": {
-                "average_score": 76.8,
-                "total_study_hours": 1247,
-                "questions_solved": 5847,
-                "class_accuracy": 0.742,
-            },
-            "student_list": [
-                {"name": "Ahmet Yılmaz", "score": 85.2, "rank": 1},
-                {"name": "Ayşe Demir", "score": 82.7, "rank": 2},
-                {"name": "Mehmet Kaya", "score": 79.3, "rank": 3},
-            ],
-        }
-    except Exception as e:
-        logger.error(f"Class analytics for export error: {e!s}")
-        return {}
-
-
-async def _get_admin_analytics_for_export(filters: dict[str, Any]) -> dict[str, Any]:
-    """Admin analytics export verisi"""
-    try:
-        # Mock implementation
-        return {
-            "system_summary": {
-                "total_users": 25847,
-                "active_users": 15896,
-                "total_exams": 45896,
-                "system_uptime": 99.7,
-            },
-            "performance_metrics": {
-                "api_response_time": 145,
-                "error_rate": 0.3,
-                "throughput": 1247,
-            },
-            "usage_statistics": {
-                "content_views": 189456,
-                "questions_solved": 1247896,
-                "study_hours": 89456,
-            },
-        }
-    except Exception as e:
-        logger.error(f"Admin analytics for export error: {e!s}")
-        return {}
-
-
-async def _generate_pdf_content(
-    pdf_canvas, analytics_data: dict[str, Any], data_type: str
-):
-    """PDF içeriği oluştur"""
-    try:
-        # PDF başlığı
-        pdf_canvas.setFont("Helvetica-Bold", 16)
-        pdf_canvas.drawString(50, 750, f"Analytics Raporu - {data_type.title()}")
-
-        # Tarih
-        pdf_canvas.setFont("Helvetica", 10)
-        pdf_canvas.drawString(
-            50, 730, f"Oluşturulma Tarihi: {datetime.now().strftime('%d.%m.%Y %H:%M')}"
-        )
-
-        # İçerik (basit metin formatında)
-        y_position = 700
-        pdf_canvas.setFont("Helvetica", 12)
-
-        for key, value in analytics_data.items():
-            if y_position < 50:  # Yeni sayfa
-                pdf_canvas.showPage()
-                y_position = 750
-
-            pdf_canvas.drawString(50, y_position, f"{key}: {str(value)[:80]}")
-            y_position -= 20
-
-    except Exception as e:
-        logger.error(f"PDF content generation error: {e!s}")
-
-
-async def _generate_excel_content(
-    workbook, analytics_data: dict[str, Any], data_type: str
-):
-    """Excel içeriği oluştur"""
-    try:
-        # Ana worksheet
-        worksheet = workbook.add_worksheet(f"{data_type}_analytics")
-
-        # Başlık formatı
-        header_format = workbook.add_format(
-            {
-                "bold": True,
-                "font_size": 14,
-                "bg_color": "#4472C4",
-                "font_color": "white",
-            }
-        )
-
-        # Başlık
-        worksheet.write(0, 0, f"Analytics Raporu - {data_type.title()}", header_format)
-        worksheet.write(1, 0, f"Tarih: {datetime.now().strftime('%d.%m.%Y %H:%M')}")
-
-        # Veri yazma
-        row = 3
-        for key, value in analytics_data.items():
-            worksheet.write(row, 0, key)
-            worksheet.write(row, 1, str(value))
-            row += 1
-
-    except Exception as e:
-        logger.error(f"Excel content generation error: {e!s}")
-
-
-async def _generate_csv_content(
-    csv_writer, analytics_data: dict[str, Any], data_type: str
-):
-    """CSV içeriği oluştur"""
-    try:
-        # Başlık
-        csv_writer.writerow([f"Analytics Raporu - {data_type.title()}"])
-        csv_writer.writerow([f"Tarih: {datetime.now().strftime('%d.%m.%Y %H:%M')}"])
-        csv_writer.writerow([])  # Boş satır
-
-        # Başlık satırı
-        csv_writer.writerow(["Metrik", "Değer"])
-
-        # Veri satırları
-        for key, value in analytics_data.items():
-            csv_writer.writerow([key, str(value)])
-
-    except Exception as e:
-        logger.error(f"CSV content generation error: {e!s}")
+    if is_real_impl("analytics.content_usage"):
+        return await _get_content_usage_statistics_real(start_date, end_date)
+    return await _get_content_usage_statistics_mock(start_date, end_date)
 
 
 async def _get_system_performance_metrics(
