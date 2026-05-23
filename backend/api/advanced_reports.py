@@ -160,11 +160,15 @@ async def get_irt_morfoloji_analysis(
 
         irt_analizi = await _get_irt_morfoloji_analizi(sinav_id, temel_sonuc)
 
+        from core.mock_endpoint_flags import is_real_impl
+
         return {
             "sinav_id": sinav_id,
             "analiz_tarihi": datetime.now().isoformat(),
             "irt_morfoloji_analizi": irt_analizi,
-            "computed_by": "mock",  # S180: frontend MUST suppress display
+            "computed_by": "real"
+            if is_real_impl("advanced_reports.irt_analysis")
+            else "mock",
         }
 
     except HTTPException:
@@ -340,10 +344,54 @@ async def download_pdf_report(
 # Yardımcı fonksiyonlar
 
 
+async def _get_irt_morfoloji_analizi_real(
+    sinav_id: str, temel_sonuc: SinavSonucu
+) -> dict[str, Any]:
+    """Real IRT + Morfoloji analizi — DB question_bank IRT params.
+
+    S196 sprint Day 2 will land the actual DB-backed implementation. Until
+    the feature flag ``advanced_reports.irt_analysis`` is flipped to ``true``
+    in ``config/mock_endpoint_flags.json``, callers fall back to the mock.
+
+    Planned:
+      1. Fetch konu_performansi → subject_area
+      2. Query question_bank: AVG(irt_difficulty), AVG(irt_discrimination),
+         AVG(irt_guessing) WHERE subject_area = ? AND is_active = TRUE
+      3. Compute morfoloji_faktoru from Zemberek analysis of sample questions
+      4. Bootstrap CI from per-question IRT params (replaces hardcoded ±0.3)
+    """
+    raise NotImplementedError(
+        "S196 sprint Day 2: real IRT analysis pending. Flag check should still "
+        "route through _get_irt_morfoloji_analizi() which falls back to mock."
+    )
+
+
 async def _get_irt_morfoloji_analizi(
     sinav_id: str, temel_sonuc: SinavSonucu
 ) -> dict[str, Any]:
-    """IRT + Morfoloji analizi yap"""
+    """IRT + Morfoloji analizi — feature-flagged mock/real dispatcher.
+
+    Default = mock (safe). Real path lands when
+    ``config/mock_endpoint_flags.json`` flips
+    ``advanced_reports.irt_analysis`` to ``true``.
+    """
+    from core.mock_endpoint_flags import is_real_impl
+
+    if is_real_impl("advanced_reports.irt_analysis"):
+        return await _get_irt_morfoloji_analizi_real(sinav_id, temel_sonuc)
+
+    return await _get_irt_morfoloji_analizi_mock(sinav_id, temel_sonuc)
+
+
+async def _get_irt_morfoloji_analizi_mock(
+    sinav_id: str, temel_sonuc: SinavSonucu
+) -> dict[str, Any]:
+    """IRT + Morfoloji analizi — mock path (S180 fallback).
+
+    Hardcoded synthetic IRT parametrization. Returns ``computed_by: mock``
+    in the caller's response envelope so the frontend can suppress the
+    display until the real implementation ships.
+    """
     try:
         # Sınav sorularını al ve analiz et
         soru_analizleri = []

@@ -1,0 +1,13 @@
+{
+  "_comment": "Mock-to-real sprint flags. true = real implementation, false/missing = mock. S196 sprint Day 1 (2026-05-23) — IRT analysis scaffold landed, real path still NotImplementedError until Day 2.",
+  "advanced_reports.irt_analysis": false,
+  "advanced_reports.zpd_recommendations": false,
+  "advanced_reports.learning_style_analysis": false,
+  "advanced_reports.osym_ets_comparison": false,
+  "analytics.student": false,
+  "analytics.class": false,
+  "analytics.admin_dashboard": false,
+  "content_management.questions_create": false,
+  "content_management.questions_detail": false,
+  "content_management.search": false
+}
