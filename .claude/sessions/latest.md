@@ -1,34 +1,44 @@
-## Session Handoff — 2026-05-23 03:30 (S196 Day 3 CLOSED + Day 4 STARTED)
-**Branch:** master | **Pushed:** `2e37c336e..482c34bc9` (2 commit, local+remote senkron)
-**Son commit:** `482c34bc9 perf(s196): IRT Redis cache + Day 4 analytics scaffold + flag revert`
-**Uncommitted:** temiz
+## Session Handoff — 2026-05-23 (S197 — Meta-Audit Phantom Filter Sweep)
+**Branch:** master | **Pushed:** `cf39a9a40..2158f649e` (8 commit, senkron)
+**Son commit:** `2158f649e test(s197): kill last 5 collection errors (pollution bisect)`
+**Uncommitted:** `.claude/settings.json` (plugin install yan etki, session dışı)
 
-### Yapilanlar
-- **Day 3 wire** (commit `6a31cae33`) — 4 NotImplementedError → service delegation: `backend/api/advanced_reports.py` `_get_zpd_analizi_real` (ZPDMaarifService), `_get_hibrit_ogrenme_stili_analizi_real` (LearningStyleService), `_get_osym_ets_karsilastirmasi_real` (IRT aggregate, NOT OSYMBenchmarkComparator — wrong abstraction), `_get_performance_trend_real` (ExamPerformanceService._analyze_improvement_trends, TR localization + 0-100→0-1 normalize). `backend/tests/unit/test_advanced_reports_schema_parity.py` 4/4 PASS.
-- **Live smoke test** (Docker `kiro2-backend`) — 5/5 PASS gerçek DB ile (`/app/api/advanced_reports.py` sync sonrası). IRT cold 184ms, ZPD optimal 9.98, LearningStyle VARK+Felder profili oluşturuldu, OSYM-ETS IRT-driven thresholds, PerfTrend empty branch. LearningStyle FK constraint smoke artifact (fake user_id) — production'da `current_user.id` JWT'den garanti.
-- **IRT slow query fix** (commit `482c34bc9`) — Partial INCLUDE index oluşturuldu, planner kullanmadı (%30 selectivity, cost(Seq Scan) < cost(Bitmap+heap)). Index drop edildi (9MB lekele). Yerine Redis cache `_get_subject_irt_aggregate` @ 1h TTL: **cold 458ms → cache warm 0.25-0.39ms (1500-1800x)**.
-- **Day 4 scaffold** — `backend/config/mock_endpoint_flags.json` 8 analytics.* flag eklendi. `backend/api/analytics.py` `get_d7_retention` `computed_by` provenance tag. `docs/runbooks/mock_to_real_sprint.md` Day 3 sonuçları + Day 4 tier-1/2/3 endpoint plan + duplication finding (lines 1084-1163 ↔ 1371-1450).
-- **Pre-existing bug fix** — `analytics.py` `import os` eksikti, `_mock_analytics_guard` çağrılınca NameError verirdi (production crash potansiyeli).
-- **Test guard evolution** — `test_production_config_defaults_all_mock` artık `PROMOTED_FLAGS` whitelist kullanıyor.
+### Yapilanlar (8 commit, ~6 saat)
+- `docs/audits/2026-05-23_meta_audit_review.md` (yeni, 699 satır) — 149 audit doc sentezi + Section 12-14 phantom
+- `backend/api/study_rooms.py` (yeni, 314 LOC) — 6 endpoint real CRUD (create/list/get/delete/join/leave)
+- 3 yeni test dosyası: `test_security_middleware_s197` (69 test, %28.18), `test_turkish_exam_middleware_s197` (62, %25.42), `test_study_rooms_s197` (28, %35.42)
+- `backend/agents/domain_experts/base_domain_agent.py:18,476,480` — `callable` typing prod bug fix
+- `backend/tests/test_auth*_middleware.py` — import order + `backend.` prefix fix (Cat A)
+- `backend/tests/load/test_*.py` — Py3.13 SSL recursion guard (Cat D)
+- `tests/unit/test_coverage_final_50.py:75-80` — services.quality polluter removed (Cat B)
+- `tests/unit/test_core_security_content.py:127` — models.curriculum conditional guard (Cat E)
+- DB: `8c6493e8` MATEMATIK `auto_judged_high → pending` (S197 phantom audit, backup `question_bank_s197_phantom_audit_backup`)
+- CLAUDE.md: Mega Audit Lock rule (yeni hard rule, ~%87 phantom rate kanıtı)
+
+### Test Durumu
+- **16,259 tests collected, 0 errors** (was 14,733 + 12 errors başlangıçta, +1,526 yeni accessible)
+- Auth coverage: unified_auth 83%, csrf 60%, auth_mw 26%, security/turkish_exam_mw ~%25
+- Full coverage measurement: kullanıcı atladı, sonraki session
 
 ### Fail Eden Testler
-- YOK (8/8 PASS: schema parity 4/4 + flag invariants 4/4. Ruff clean.)
+- YOK (collection clean, runtime test'leri çalıştırılmadı — coverage measurement skip)
 
 ### Engelleyiciler
-- **`gh` CLI Windows'ta yüklü değil** — Task #270 (GitHub Actions kontrol) Wave 1B agent doğruladı. CI durumu manuel kontrol: https://github.com/HuseyinAts/kiro2/actions
-- **Alembic chain broken** — `s179_hot_path_idx_20260521` referansı `curator_audit_20260521` (missing). Migration dosyaları yazılabiliyor ama `alembic upgrade head` çalışmıyor. S179 DRY-RUN guard'lı, dokunulmadı (Karpathy "Cerrahi Müdahale").
-- **API key compromise** — Bu session yeni Gemini key (`AIzaSyDhdaXj...`) chat'te yazıldı. Sonraki session öncesi `.env.local`'e taşı + revoke.
+- YOK (8 commit master'a push, integrity tam)
 
-### Sonraki Adimlar (maks 5)
-1. **API key rotate** (kullanıcı, 5 dk, ZORUNLU)
-2. **Day 4 Tier-1 pilot wire** — `_get_exam_statistics` (analytics.py:1035-1049) → `exam_session` COUNT/AVG by exam_type; `_get_class_students` (line 833-846) → `student_profiles` JOIN `class_membership`. ~30 dk.
-3. **Day 4 Tier-2 batch** — 6 medium-complexity endpoints (student_performance, subject_performance, exam_performance, class_metrics, user_statistics, content_usage). ~3 saat.
-4. **`gh` CLI install + Task #270** — `winget install GitHub.cli` → `gh auth login` → CI durumu kontrol.
-5. **Code duplication temizle** — `analytics.py` lines 1371-1672 (system_performance + revolutionary_features + export helpers + PDF/Excel/CSV dup). Day 4 öncesi dedupe, dispatcher confusion önler.
+### Sonraki Adimlar (P1)
+1. **Full coverage measurement** — pytest --cov targeted (api+core+services+models+algorithms), S179 ile delta
+2. **Frontend Study Rooms entegrasyon** — ChatInterface/StudyRoomList real API call
+3. **`_deprecated/` purge** — 38,567 LOC backend dead code
+4. **Phase 7 retry karar** — defer (sonraki sprint)
+5. **ORM Cluster 2** — defer (multi-sprint, CI gate `--fail` zaten live)
 
-### Kararlar (gelecek session tekrar tartismasin)
-- **OSYM-ETS için OSYMBenchmarkComparator skip** — service "AI sorular ÖSYM'ye benziyor mu?" sorusunu cevaplıyor (Wave 2B). Bizim use case sınav IRT params'ları ÖSYM thresholds'a uyuyor mu — farklı semantik. Schema parity korundu, 60+ satır adapter kodu yazılmadı.
-- **IRT slow query: cache > index** — Selectivity %30, planner partial INCLUDE index'i kullanmadı (forced plan da 201ms). Redis cache 1500-1800x speedup verdi. **Aynı pattern başka aggregate hotspot'lara uygulanmalı** (analytics.py'da çok var).
-- **`_analyze_improvement_trends` private method çağrısı kabul** — Code smell ama yeni public wrapper oluşturmak premature abstraction. Docstring'de işaret koyuldu.
-- **Day 4 d7_retention pilot wire** — endpoint ZATEN real, sadece `computed_by` provenance tag eklendi. Frontend telemetri için yeterli.
-- **`PROMOTED_FLAGS` whitelist pattern** — gelecek flag flips ZORUNLU bu set'e rationale comment ile eklenmeli. Production-safety guardrail.
+### Kararlar (Tekrar Tartışma Yok)
+- Phase 7 retry: **DEFER** — %99.95 coverage already, %26.7 quality issue curator override layer ile
+- ORM Cluster 2: **DEFER** — 159 HIGH (S155'den %22 self-fix), CI gate live, multi-sprint
+- Mega audit: **3 hafta KAPALI** — %87 phantom rate, P0 backlog kapatma sprinti gerek
+- Coverage hack files (sys.modules injection): HER ZAMAN conditional guard zorunlu
+- Study Rooms stub coexists: backward-compat (messages/files/whiteboard 501 stub kalır)
+
+### Phantom Rate (Meta-audit kendi kanıtı)
+13.5/16 ≈ **%87** — yeni mega audit yasak, mevcut findings phantom verify et
