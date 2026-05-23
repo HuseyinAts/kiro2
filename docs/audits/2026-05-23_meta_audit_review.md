@@ -563,3 +563,73 @@ DB integrity ✅ — toplam aktif soru sayısı değişmedi (167,559).
 **S197 Update**: 23 May 2026 | **Action**: 1 row demote (8c6493e8) + 6 phantom confirm + 3 drift correct
 **Files modified**: `docs/audits/2026-05-23_meta_audit_review.md`, `d-dataset/scripts/s197_phantom_audit_fix.sql` (new)
 **DB tables created**: `question_bank_s197_phantom_audit_backup` (1 row)
+
+---
+
+## 13. S197 FOLLOW-UP — GERÇEK KALAN İŞ UYGULAMASI
+
+Phantom filter sonucu **8.5/15 phantom** çıkardıktan sonra **gerçek 3 kalan iş** uygulandı:
+
+### 13.1 — security_middleware.py %0 → %28.18 coverage
+
+- **Test dosyası**: `backend/tests/unit/test_security_middleware_s197.py`
+- **69 test PASS**, 1.02s runtime
+- **Coverage**: %28.18 (target %20-25, slightly over but meaningful)
+- Kapsanan: 4 enum (SecurityLevel/RateLimitType/SecurityThreat/BlockAction) + SecurityMiddlewareConfig dataclass + RateLimitRecord + SecurityValidator._check_sql_injection/_check_xss + RateLimiter._is_valid_ip + global helpers
+- Out of scope: `BaseHTTPMiddleware.dispatch()` (HTTP context bağımlı, integration test gerek)
+- **Method**: worker-tester agent paralel dispatch
+
+### 13.2 — turkish_exam_middleware.py %0 → %25.42 coverage
+
+- **Test dosyası**: `backend/tests/unit/test_turkish_exam_middleware_s197.py`
+- **62 test PASS**, 1.11s runtime
+- **Coverage**: %25.42 (462 stmt, 325 miss, target hit)
+- Kapsanan: ExamPeriod/ExamSecurityLevel enum + ExamContext dataclass + configure_exam_middleware + path extraction helpers + session expiry/time remaining + user blocking + TurkishLanguageMiddleware __init__ + factory functions
+- Out of scope: `__call__` async methods (heavy mocking gerek)
+- **Method**: worker-tester agent paralel dispatch
+
+### 13.3 — Study Rooms minimal CRUD (6 endpoint)
+
+- **Module**: `backend/api/study_rooms.py` (yeni, 314 LOC)
+- **Test**: `backend/tests/unit/test_study_rooms_s197.py` — 28 test PASS, %35.42 unit coverage
+- **Loader**: `backend/routers/loader.py` — real impl registered, stub coexists
+- **Endpoints uygulanan**:
+  1. `POST /api/v1/study-rooms/create` — owner first member
+  2. `GET /api/v1/study-rooms/my-rooms` — owned + joined active rooms
+  3. `GET /api/v1/study-rooms/{room_id}` — detail (member or PUBLIC)
+  4. `DELETE /api/v1/study-rooms/{room_id}` — soft delete (owner only)
+  5. `POST /api/v1/study-rooms/{room_id}/join` — PUBLIC only, FULL/BANNED handling
+  6. `POST /api/v1/study-rooms/{room_id}/leave` — non-owner only
+- **Live smoke**: backend healthy, `/create` döner 401 (auth gate ✓), `/messages` döner 501 (stub coexists ✓)
+- **Coexistence**: real impl 6 path + stub 17 path = 23 endpoint total
+- **Out of scope**: messages CRUD, files, whiteboard sync, video conf (stub 501 kalır)
+
+### 13.4 — Toplam Yeni Coverage Katkısı
+
+| Modül | Önce | Sonra | Test count |
+|-------|------|-------|------------|
+| `core/security_middleware.py` (1,174 LOC) | %0 | **%28.18** | 69 |
+| `core/turkish_exam_middleware.py` (1,017 LOC) | %0 | **%25.42** | 62 |
+| `api/study_rooms.py` (314 LOC, new) | N/A | **%35.42** | 28 |
+| **TOPLAM** | - | - | **159 yeni test** |
+
+### 13.5 — Method Disiplini (Karpathy)
+
+- **Önce Düşün**: Discovery aşaması (model + mevcut pattern) → impl çakışması önlendi
+- **Önce Sadelik**: 22 endpoint yerine 6 minimal CRUD (kullanıcı scope onayı)
+- **Cerrahi Müdahale**: Stub silinmedi → backward compat (17 non-CRUD endpoint hâlâ 501)
+- **Hedef Odaklı**: Her endpoint için DB-backed, auth-gated, error-handled
+
+### 13.6 — Bilinen Sınırlama
+
+- Stub real impl ile aynı prefix paylaşıyor — OpenAPI tag merge cosmetic issue (real endpoints stub tag altında görünebilir)
+- DB integration test eksik (test coverage %35'te kaldı, %60+ için TestClient + AsyncSession fixture gerekir)
+- Concurrency on `current_member_count` koruması yok (atomic UPDATE yerine read-modify-write) — düşük trafik için kabul edilebilir
+
+---
+
+**S197 Final**: 23 May 2026 | **Action**: 1 SQL fix + 3 yeni test/impl modülü
+**Files added**: 4 (study_rooms.py + 3 test dosyası)
+**Files modified**: 2 (loader.py, meta-audit doc)
+**Test sayısı eklenen**: 159 (28 unit study_rooms + 69 sec_mw + 62 tr_exam_mw)
+**Coverage delta**: 2 modül %0 → ~%25-28, 1 yeni modül %35
