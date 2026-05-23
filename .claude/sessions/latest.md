@@ -1,32 +1,34 @@
-## Session Handoff — 2026-05-23 (S195-S196 Day 2 CLOSED)
-**Branch:** master | **Pushed:** `b4a5973a6..07ffec3be` (5 commit, local+remote senkron)
-**Son commit:** `07ffec3be feat(s196-day2): IRT real impl + 4 endpoint dispatcher scaffolds + lint clean`
+## Session Handoff — 2026-05-23 03:30 (S196 Day 3 CLOSED + Day 4 STARTED)
+**Branch:** master | **Pushed:** `2e37c336e..482c34bc9` (2 commit, local+remote senkron)
+**Son commit:** `482c34bc9 perf(s196): IRT Redis cache + Day 4 analytics scaffold + flag revert`
 **Uncommitted:** temiz
 
 ### Yapilanlar
-- **S195 Curator Apply** (commit `02708fd0b`) — 537 pending → auto_judged_high (38 SymPy direct + 499 LLM second-round Gemini consensus). 2 backup table (`question_bank_curator_apply_backup_20260523` + `question_bank_curator_llm_backup_20260523`). Gold pool: 12,774 → 13,311 (+537). Pending kalan: 368 (132 parse_fail + 232 eski pilot kayıtsız + 4 verified=no).
-- **Default Gemini model değişti** — `backend/scripts/quality/metadata_phase7_batch_gemini.py:46` ve `_phase7_audit_tmp/llm_judge_submit_poll.py` → `gemini-3.5-flash` (kullanıcı talebi).
-- **S196 Day 1** (commit `7fbec3234`) — Mock-to-real sprint başlangıcı. `backend/core/mock_endpoint_flags.py` (60 satır JSON flag reader) + `backend/config/mock_endpoint_flags.json` (10 slot, default false) + IRT pilot dispatcher wiring + `test_mock_endpoint_flags.py` (4 unit test, all pass). `docs/runbooks/mock_to_real_sprint.md` 5-day plan.
-- **S196 Day 2** (commit `07ffec3be`) — `_get_subject_irt_aggregate()` helper (DB `question_bank` AVG IRT params per subject), `_get_irt_morfoloji_analizi_real()` artık gerçek DB query yapıyor (bootstrap CI from sample_size). Diğer 4 endpoint scaffold (ZPD/LearningStyle/ÖSYM-ETS/PerfTrend) — dispatcher + NotImplementedError. `computed_by` field flag-aware tüm 5 endpoint'te. Lint kökten çözüldü (F841 mevcut_seviye sil + PTH119 `os.path.basename` → `Path.name`).
-- **2 paralel Explore agent** discovery sonucu: 4 service zaten production-ready (`ZPDMaarifService`, `LearningStyleService`, `OSYMBenchmarkComparator`, `ExamPerformanceService`). Day 3 sadece delegation wiring.
+- **Day 3 wire** (commit `6a31cae33`) — 4 NotImplementedError → service delegation: `backend/api/advanced_reports.py` `_get_zpd_analizi_real` (ZPDMaarifService), `_get_hibrit_ogrenme_stili_analizi_real` (LearningStyleService), `_get_osym_ets_karsilastirmasi_real` (IRT aggregate, NOT OSYMBenchmarkComparator — wrong abstraction), `_get_performance_trend_real` (ExamPerformanceService._analyze_improvement_trends, TR localization + 0-100→0-1 normalize). `backend/tests/unit/test_advanced_reports_schema_parity.py` 4/4 PASS.
+- **Live smoke test** (Docker `kiro2-backend`) — 5/5 PASS gerçek DB ile (`/app/api/advanced_reports.py` sync sonrası). IRT cold 184ms, ZPD optimal 9.98, LearningStyle VARK+Felder profili oluşturuldu, OSYM-ETS IRT-driven thresholds, PerfTrend empty branch. LearningStyle FK constraint smoke artifact (fake user_id) — production'da `current_user.id` JWT'den garanti.
+- **IRT slow query fix** (commit `482c34bc9`) — Partial INCLUDE index oluşturuldu, planner kullanmadı (%30 selectivity, cost(Seq Scan) < cost(Bitmap+heap)). Index drop edildi (9MB lekele). Yerine Redis cache `_get_subject_irt_aggregate` @ 1h TTL: **cold 458ms → cache warm 0.25-0.39ms (1500-1800x)**.
+- **Day 4 scaffold** — `backend/config/mock_endpoint_flags.json` 8 analytics.* flag eklendi. `backend/api/analytics.py` `get_d7_retention` `computed_by` provenance tag. `docs/runbooks/mock_to_real_sprint.md` Day 3 sonuçları + Day 4 tier-1/2/3 endpoint plan + duplication finding (lines 1084-1163 ↔ 1371-1450).
+- **Pre-existing bug fix** — `analytics.py` `import os` eksikti, `_mock_analytics_guard` çağrılınca NameError verirdi (production crash potansiyeli).
+- **Test guard evolution** — `test_production_config_defaults_all_mock` artık `PROMOTED_FLAGS` whitelist kullanıyor.
 
 ### Fail Eden Testler
-- YOK (4/4 mock_endpoint_flags test PASS, 7/7 dispatcher import OK, ruff clean)
+- YOK (8/8 PASS: schema parity 4/4 + flag invariants 4/4. Ruff clean.)
 
 ### Engelleyiciler
-- **API key compromise** — `AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I` chat history'de ~25 bash komutunda yazıldı, Anthropic AUP scanner 2x session-level policy violation tetikledi (req_011CbJhPairHsVt7gQsCD6ko + req_011CbJioBnkc3Njjv1pbL89J). **Yeni session öncesi rotate ZORUNLU.**
+- **`gh` CLI Windows'ta yüklü değil** — Task #270 (GitHub Actions kontrol) Wave 1B agent doğruladı. CI durumu manuel kontrol: https://github.com/HuseyinAts/kiro2/actions
+- **Alembic chain broken** — `s179_hot_path_idx_20260521` referansı `curator_audit_20260521` (missing). Migration dosyaları yazılabiliyor ama `alembic upgrade head` çalışmıyor. S179 DRY-RUN guard'lı, dokunulmadı (Karpathy "Cerrahi Müdahale").
+- **API key compromise** — Bu session yeni Gemini key (`AIzaSyDhdaXj...`) chat'te yazıldı. Sonraki session öncesi `.env.local`'e taşı + revoke.
 
 ### Sonraki Adimlar (maks 5)
-1. **API key rotate** (kullanıcı, 5 dk, ZORUNLU) — Google AI Studio → revoke + yeni key → `.env.local` (chat'e ASLA yapıştırma)
-2. **S196 Day 3** — 4 endpoint NotImplementedError → service delegation: `ZPDMaarifService.hesapla_turk_zpd()`, `LearningStyleService.detect_learning_style(student_id, db, behavioral_data)`, `OSYMBenchmarkComparator.compare_against_benchmark()` + `_get_subject_irt_aggregate` per-session, `ExamPerformanceService._analyze_improvement_trends()`. ~3 saat.
-3. **Snapshot test infra** — `tests/api/test_advanced_reports_snapshots.py` syrupy ile baseline yakala (5 endpoint).
-4. **Day 4-5 sprint** — `analytics.py` 24 mock + `content_management.py` 9 mock endpoint (Day 1 IRT pattern reuse).
-5. **368 pending curator manuel review** (operator) + GitHub Actions kontrol (Task #270).
+1. **API key rotate** (kullanıcı, 5 dk, ZORUNLU)
+2. **Day 4 Tier-1 pilot wire** — `_get_exam_statistics` (analytics.py:1035-1049) → `exam_session` COUNT/AVG by exam_type; `_get_class_students` (line 833-846) → `student_profiles` JOIN `class_membership`. ~30 dk.
+3. **Day 4 Tier-2 batch** — 6 medium-complexity endpoints (student_performance, subject_performance, exam_performance, class_metrics, user_statistics, content_usage). ~3 saat.
+4. **`gh` CLI install + Task #270** — `winget install GitHub.cli` → `gh auth login` → CI durumu kontrol.
+5. **Code duplication temizle** — `analytics.py` lines 1371-1672 (system_performance + revolutionary_features + export helpers + PDF/Excel/CSV dup). Day 4 öncesi dedupe, dispatcher confusion önler.
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- **Bash komutlarında ASLA `GEMINI_API_KEY='AIzaSy...'` inline yazma** — sadece `source .env.local && python ...` pattern. Önceki session AUP filter 2x tetikledi.
-- **S196 mock-to-real flag infra: lightweight JSON** (`mock_endpoint_flags.py`, 60 satır). LaunchDarkly/GrowthBook/fastapi-featureflags/enum-based reddedildi — pareto-optimal.
-- **Day 2 IRT real impl**: bootstrap CI from `sqrt(sample_size)` (replaced hardcoded ±0.3). Schema parity korundu (mock-real frontend contract).
-- **4 service zaten production**: ZPDMaarifService, LearningStyleService, OSYMBenchmarkComparator, ExamPerformanceService. Day 3 sadece delegation, yeni implementation yok.
-- **Default Gemini model**: `gemini-3.5-flash` (kullanıcı talebi, S195).
-- **905 pending → 537 apply, 368 kalır**: 132 LLM parse_fail (max_tokens hit), 232 eski pilot kayıtsız, 4 verified=no — gerçek manuel review hak ediyorlar.
+- **OSYM-ETS için OSYMBenchmarkComparator skip** — service "AI sorular ÖSYM'ye benziyor mu?" sorusunu cevaplıyor (Wave 2B). Bizim use case sınav IRT params'ları ÖSYM thresholds'a uyuyor mu — farklı semantik. Schema parity korundu, 60+ satır adapter kodu yazılmadı.
+- **IRT slow query: cache > index** — Selectivity %30, planner partial INCLUDE index'i kullanmadı (forced plan da 201ms). Redis cache 1500-1800x speedup verdi. **Aynı pattern başka aggregate hotspot'lara uygulanmalı** (analytics.py'da çok var).
+- **`_analyze_improvement_trends` private method çağrısı kabul** — Code smell ama yeni public wrapper oluşturmak premature abstraction. Docstring'de işaret koyuldu.
+- **Day 4 d7_retention pilot wire** — endpoint ZATEN real, sadece `computed_by` provenance tag eklendi. Frontend telemetri için yeterli.
+- **`PROMOTED_FLAGS` whitelist pattern** — gelecek flag flips ZORUNLU bu set'e rationale comment ile eklenmeli. Production-safety guardrail.
