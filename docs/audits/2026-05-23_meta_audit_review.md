@@ -303,8 +303,8 @@ Audit fatigue gerçek bir risk: 2 ay içinde 149 doc. Her audit doğru bulgular 
 | 5 | Auth token race | `backend/api/auth.py:1315` | This week |
 | 6 | ADHD IDOR | `backend/api/adhd_task_management_api.py:477` | This week |
 | 7 | docker-compose hardcoded secrets | `docker-compose.dev.yml:11,46` | This week |
-| 8 | 25 handler sync/async BROKEN | khan_routes, two_factor, kvkk_privacy | This sprint |
-| 9 | TokenPayload.id 44 kullanım (2 file 100% broken) | kvkk_privacy 22, two_factor 19 | This sprint |
+| ~~8~~ | ~~25 handler sync/async BROKEN~~ | ~~khan_routes, two_factor, kvkk_privacy~~ | ✅ **PHANTOM (S197 linter verify)** |
+| ~~9~~ | ~~TokenPayload.id 44 kullanım (2 file 100% broken)~~ | ~~kvkk_privacy 22, two_factor 19~~ | ✅ **PHANTOM (S197 linter verify)** |
 | 10 | Study Rooms 40+ endpoint missing | `backend/api/study_rooms/*` (YOK) | Next sprint |
 | 11 | Login 1.3s p50 (325x slow) | bcrypt + pool tuning | Next sprint |
 | 12 | Rate limiter library var endpoint'e wire yok | `core/rate_limiter.py` | This week |
@@ -464,6 +464,8 @@ KIRO2 audit ekosistemi **olgun ve sistematik** — 149 doc, evidence-based metho
 | 5 | `auth.py:1315` token race | ✅ PHANTOM | Line 1315 sadece `# Expired — clean up` comment, race değil |
 | 6 | `adhd_task_management_api.py:477` IDOR | ✅ PHANTOM | Lines 488-499 zaten 404+403 gate (`tasks_db` membership check + `user_id` ownership check) |
 | 13 | `.env` git'te tracked | ✅ PHANTOM | Sadece `.env.mvp.example` + `frontend/.env.example` (örnek dosyalar, secret yok) |
+| **8** | **Pattern A: 25 handler sync/async BROKEN** | ✅ **PHANTOM** | **Linter live check** (`backend/scripts/audit_db_dependency.py --fail-on-high`): **0 finding**. Session 137/147'de eradicate edilmiş (Session 147 baseline: 179→0). `docs/audits/2026-04-11_db-dependency-s147-baseline.md` confirms. |
+| **9** | **Pattern B: TokenPayload.id 44 use** | ✅ **PHANTOM** | Aynı linter: 0 finding. kvkk_privacy + 2FA tüm referansları temizlenmiş. |
 
 ### Drift Confirmed (MEMORY.md yanlış)
 
@@ -497,15 +499,17 @@ KIRO2 audit ekosistemi **olgun ve sistematik** — 149 doc, evidence-based metho
 
 **Karar**: Şimdilik dokunma — dev workflow'u bozmamak için. Production için `docker-compose.prod.yml`'da default YOK kuralı zaten enforce edilmiş.
 
-### Phase 1 Sonuç İstatistiği
+### Phase 1 Sonuç İstatistiği (S197 + Pattern A/B verify)
 
 | Kategori | Adet |
 |----------|------|
-| Phantom (already fixed or never bug) | **6/8** = %75 |
+| Phantom (already fixed or never bug) | **8/10** = %80 |
 | Drift (MEMORY stale) | 3 item |
 | Real & fixed bu session | **1** (8c6493e8 → pending) |
 | Real & skip (intentional design) | 1 (docker-compose dev defaults) |
 | **Net actionable fix bu session** | **1 SQL UPDATE** |
+
+**TIER 3 verify update (post-S197)**: Pattern A + Pattern B (P0 #8 + #9) **linter ile canlı doğrulandı, 0 finding**. 6 hafta önce (Session 137/147) tamamen eradicate edilmiş. Toplam phantom oranı %80'e çıktı (8/10 P0). Meta-audit eski baseline okumuş — taze linter çıktısı tek doğru kaynak.
 
 ### Meta-Lesson (kendi audit'imizden kanıt)
 
