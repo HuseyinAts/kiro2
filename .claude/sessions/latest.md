@@ -1,34 +1,32 @@
-## Session Handoff — 2026-05-22 23:15 (S181 EXTENDED)
-**Branch:** master | **Pushed:** `768bd06bd..0a9341bcb` (5 commit, local + remote senkron)
-**Son commit:** `0a9341bcb docs(runbook): Phase 7 mini retry COMPLETE — gold pool 99.95%`
+## Session Handoff — 2026-05-23 (S181-S194 CLOSED)
+**Branch:** master | **Pushed:** `768bd06bd..0e9973529` (22 commit, local+remote senkron)
+**Son commit:** `0e9973529 fix(d-dataset/cross_validate): S194 ai_upgrade tier separation`
 **Uncommitted:** temiz
 
 ### Yapilanlar
-- **Phase 7 gold pool retry COMPLETE** — `backend/scripts/quality/metadata_phase7_batch_gemini.py`: ana batch `y291wn12e8zu...` (15,518 q, 30dk, %99.1 success) + mini retry `7cknizzmrgl...` (141 q, 3dk, %94.3 success). **Final coverage: auto_judged_high 0% → 99.95% (15,314/15,321), bronze_clean 0% → 99.49% (196/197).** Toplam 92,377 yeni rationale + 15,510 question_bank metadata UPDATE. S180 audit P0 #2 ÇÖZÜLDÜ.
-- **Mini batch quality KARIŞIK** — 3 random spot check: 1 iyi (Türkçe noktalama), 1 zayıf (matematik karekök "circular reasoning"), 1 garbage (gibberish soru — pre-existing data quality issue, Phase 7 değil). **Phase 7 prompt template matematik hesap soruları için yetersiz** (25 kelime/cümle sınırı sayısal eliminasyon için kısıtlayıcı). **Curator manuel override katmanı kritik** — auto_judged_high'taki rationale'lar otomatik onay almamalı.
-- **Runbook tam güncel** — `docs/runbooks/phase7_gold_pool_retry.md`: gerçek runtime, gerçek maliyet, S181 ana+mini execution history (commits `dd6c02829` + `0a9341bcb`)
-- **Bonus apply** — stale R4 batch'ten 1,790/1,898 rationale (rejected 1,413 DEAD + pending 485 LIVE) `question_option_rationales` INSERT
-- **TruffleHog version bump** — `.github/workflows/security.yml:155` v3.82.13→v3.95.3, `--debug --only-verified` → `--results=verified,unknown` (commit `6bcd4e626`)
-- **`.gitignore` glob fix** — `_batch_state_gemini*/` (archive klasörlerini de exclude eder)
-- **Working-tree cleanup** — 2 path-encoded phantom dosya silindi (`c:Usershusey...` formatı, biri 1 byte boş)
-- **MEMORY.md drift fix** — Phase 7 maliyet $300→$5.70 (gerçek token analizi), S181 batch detay, rejected vs pending value açıklaması
-- **3 paralel araştırma agent** raporu üretildi (LLM pricing, alternatives, mock-to-real/secrets) — `docs/audits/` ekleme yapılmadı, sentez chat'te
+- **Phase 7 gold pool retry COMPLETE** — `backend/scripts/quality/metadata_phase7_batch_gemini.py`: 3 batch (15,518 + 1,898 + 141 q), gold coverage 0% → **99.95%** (auto_judged_high 15,314/15,321, bronze_clean 196/197). 92,377 yeni rationale + 15,510 question_bank metadata UPDATE.
+- **12 subject FULL AUDIT** (S182-S193) — MAT/GEO/FIZ/KIM/TUR/EDE/TAR/GENEL/BIO/SOS/COG/FEN. 15,321 q audit → 905 pending + 1,642 rejected = **2,547 UPDATE**. Hybrid SymPy + LLM-as-judge pattern. 12 backup tablosu (`question_bank_<subject>_audit_backup_20260523`, rollback hazır). Audit raporları `docs/audits/2026-05-23_<subject>_*.md`.
+- **A bias root cause investigation (S194)** — `docs/audits/2026-05-23_a_bias_root_cause.md`: 2 root cause CONFIRMED. (1) page_inline OCR bias (480/905 = %53, Gemini Vision A/E favor). (2) **PIPELINE BUG**: `cross_validate_answers.py:265-266` `ai_upgrade` hardcoded `ai_solved` (0.85) tier — 129+ A reject.
+- **Pipeline fix DEPLOYED** (commit `0e9973529`) — `d-dataset/scripts/cross_validate_answers.py:265-271` (own tier + prefix coverage) + ACCURACY dict (`ai_upgrade: 0.65`). 5 yeni test `test_cross_validate.py`. **78/78 PASS** (regression-free).
+- **Gold pool**: 15,321 → **12,774** (-2,547 = -%16.6). Pending review: 905. Rejected: 1,642.
 
 ### Fail Eden Testler
-- YOK (test çalıştırılmadı; sadece DB write + dry-run apply)
+- YOK (`pytest test_cross_validate.py`: 78 passed, 0 failed)
 
 ### Engelleyiciler
-- **API key chat'te yapıştırıldı** (`AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I`) — kullanıcı Google AI Studio'dan rotate etmeli (mevcut batch zaten queue'da, bekleyen iş yok)
+- **API key chat'te yapıştırıldı** (`AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I`) — kullanıcı Google AI Studio'dan rotate etmeli. Tüm batch'ler zaten tamamlandı, yeni iş yok.
 
 ### Sonraki Adimlar (maks 5)
-1. **API key rotate** (kullanıcı — kritik, chat'te 3+ kere kullanıldı) — Google AI Studio → revoke `AIzaSyAMOL36HfFNpQEjdouXwqzuGz4utRivQ6I` → yeni üret → `.env.local`
-2. **Phase 7 quality audit** (yarım gün) — auto_judged_high'tan 50-100 random sample manuel review, özellikle matematik hesap soruları için. Curator UI manuel override çalışıyor mu test.
-3. **GitHub Actions kontrol** (kullanıcı sende — Task #270 pending): commits `0a9341bcb`/`dd6c02829`/`153827a03`/`3693f2f09`/`6bcd4e626` Security Scanning workflow durumu (TruffleHog v3.95.3 noise sorunu?)
-4. **Mock-to-real sprint** (5 gün) — `fastapi-featureflags` + `syrupy` + `schemathesis` CI gate; 35 mock endpoint
-5. **Auth coverage** (2 sprint) — `unified_auth_service.py` (397 LOC), `auth_middleware.py` (405 LOC), `security_middleware.py` (455 LOC) %0 coverage
+1. **API key rotate** (kullanıcı) — Google AI Studio revoke + yeni üret → `.env.local`
+2. **Curator UI 905 pending review** (operator, yarım gün) — S182-S193 audit'leri sonucu manual verify
+3. **page_inline OCR multi-model consensus** — 480 wrong'un kaynağı kitap/Gemini sample audit (30 sample → orig PNG compare)
+4. **GitHub Actions kontrol** (Task #270 still pending) — son commit'lerin Security workflow durumu
+5. **Phase 7 prompt iyileştirme** — concept-based subjects (FIZ/KIM/TUR) için formula extraction güçlendirme
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- **Gemini 2.5 Flash Batch baseline** korunur — Türkçe akademik kalite kanıtlanmış, switching cost = 0. Distillation/lokal Qwen3/DeepSeek/Aya seçenekleri REDDEDİLDİ (kalite riski + CC-BY-NC ticari yasak + setup overhead vs $5-8 maliyet). Detay: 3 paralel research agent raporu chat history'de.
-- **Phase 7 prompt template değişmedi** — fail rate 5.7%→0.9% düşüşü Gemini model güncellemesinden (gemini-flash-latest auto-resolve), prompt sağlam.
-- **Gitleaks/detect-secrets eklenmedi** — KIRO2'de zaten kurulu (`.pre-commit-config.yaml:74 Yelp/detect-secrets v1.4.0` + `.github/workflows/security.yml:162 gitleaks-action@v2`). KISS: var olanı kullan, çakıştırma.
-- **`.env` "leak" iddiası phantom** — `git ls-files` ile teknofest .env hiç tracked değildi; sadece working-tree'de path-encoded kazara dosyalar. Force-push gereksiz, audit yanlış.
+- **Pipeline fix scope minimal** — sadece `ai_upgrade` tier ayrımı. TIE-BREAK threshold (line 526-532) revize ayrı PR (separate concern).
+- **`ai_upgrade` accuracy 0.65** — gemini_med (0.65) ile aynı, jsonl_v11 (0.73) altında, production AI (0.85) altında. Cross-validation provenance respect ediliyor.
+- **Mevcut DB UPDATE yapılmıyor** — Curator review zaten 905 pending'de akıyor. Pipeline fix sadece gelecek ingest için.
+- **`d-dataset/scripts/` selective tracking** — `.gitignore`'a `!d-dataset/scripts/cross_validate_answers.py` + `!d-dataset/scripts/test_cross_validate.py` exception eklendi. Diğer scripts hala gitignored.
+- **Backup tablolar 12 adet kalıyor** — `question_bank_<subject>_audit_backup_20260523` (rollback hazır, beta sonrası temizlenir).
+- **Spot check pattern**: 12 subject × 5 sample = 60 LLM verify (1 borderline). LLM-as-judge %95+ reliability **validated** — gelecek audit'lerde bu pattern reuse edilebilir.
