@@ -1,0 +1,76 @@
+[
+  {
+    "file": "backend\\core\\_deprecated\\automated_question_generator.py",
+    "module": "automated_question_generator",
+    "importers": [
+      "backend/core/automated_question_generator.py"
+    ],
+    "safe_to_delete": false
+  },
+  {
+    "file": "backend\\models\\_deprecated\\learning_models.py",
+    "module": "learning_models",
+    "importers": [
+      "backend/models/learning_models.py",
+      "backend/models/__init__.py"
+    ],
+    "safe_to_delete": false
+  },
+  {
+    "file": "backend\\models\\_deprecated\\revolutionary_models.py",
+    "module": "revolutionary_models",
+    "importers": [
+      "backend/models/revolutionary_models.py",
+      "backend/models/__init__.py"
+    ],
+    "safe_to_delete": false
+  },
+  {
+    "file": "backend\\services\\_deprecated\\feedback_service.py",
+    "module": "feedback_service",
+    "importers": [
+      "backend/tasks/claude_md_improvement_tasks.py"
+    ],
+    "safe_to_delete": false
+  },
+  {
+    "file": "backend\\services\\_deprecated\\fsrs_service.py",
+    "module": "fsrs_service",
+    "importers": [
+      "backend/tests/integration/test_fsrs_system.py"
+    ],
+    "safe_to_delete": false
+  },
+  {
+    "file": "backend\\services\\_deprecated\\pattern_service.py",
+    "module": "pattern_service",
+    "importers": [
+      "backend/tasks/claude_md_improvement_tasks.py"
+    ],
+    "safe_to_delete": false
+  },
+  {
+    "file": "backend\\services\\_deprecated\\performance_monitor_service.py",
+    "module": "performance_monitor_service",
+    "importers": [
+      "backend/tasks/claude_md_improvement_tasks.py"
+    ],
+    "safe_to_delete": false
+  },
+  {
+    "file": "backend\\services\\_deprecated\\rule_evolution_service.py",
+    "module": "rule_evolution_service",
+    "importers": [
+      "backend/tasks/claude_md_improvement_tasks.py"
+    ],
+    "safe_to_delete": false
+  },
+  {
+    "file": "backend\\services\\_deprecated\\team_challenges.py",
+    "module": "team_challenges",
+    "importers": [
+      "backend/api/team_challenges_api.py"
+    ],
+    "safe_to_delete": false
+  }
+]
