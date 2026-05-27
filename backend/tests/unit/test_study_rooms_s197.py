@@ -19,18 +19,56 @@ import pytest
 from pydantic import ValidationError
 
 from api.study_rooms import (
+    RoomMemberResponse,
+    RoomMembersListResponse,
     StudyRoomCreate,
     StudyRoomListResponse,
     StudyRoomResponse,
+    _serialize_member,
     _serialize_room,
     router,
 )
 from models.study_room import (
     MemberRole,
+    MemberStatus,
+    RoomMember,
     RoomStatus,
     RoomVisibility,
     StudyRoom,
 )
+
+
+def _make_room_member(role=MemberRole.MEMBER, status=MemberStatus.ACTIVE):
+    """Test fixture: RoomMember instance for serialize tests."""
+    member = RoomMember(
+        room_id="room-1",
+        user_id="user-2",
+        role=role,
+        status=status,
+    )
+    member.joined_at = datetime(2026, 5, 27, tzinfo=UTC)
+    return member
+
+
+def _make_user(
+    user_id="user-2",
+    username="ali",
+    first_name="Ali",
+    last_name="Yılmaz",
+):
+    """Test fixture: User instance for serialize tests (no DB)."""
+    # User has SQLAlchemy descriptors; build a plain object that walks like a duck.
+    user = type(
+        "U",
+        (),
+        {
+            "id": user_id,
+            "username": username,
+            "first_name": first_name,
+            "last_name": last_name,
+        },
+    )()
+    return user
 
 
 class TestStudyRoomCreate:
@@ -143,10 +181,13 @@ class TestSerializeRoom:
 
 
 class TestRouterRegistration:
-    def test_six_endpoints_registered(self):
+    def test_endpoint_count(self):
         # Filter out OPTIONS/HEAD auto-generated routes
+        # Distinct paths after S198 W4.1 additions:
+        #   "" (POST create alias), /create, /my-rooms, /joined,
+        #   /{room_id}, /{room_id}/members, /{room_id}/join, /{room_id}/leave
         paths = sorted({r.path for r in router.routes if hasattr(r, "methods")})
-        assert len(paths) == 5  # 6 endpoints, 2 share /{room_id} path (GET+DELETE)
+        assert len(paths) == 8
 
     def test_create_endpoint_exists(self):
         assert any(
@@ -220,3 +261,112 @@ class TestStudyRoomListResponse:
         resp = StudyRoomListResponse(rooms=[room_data], total=1)
         assert resp.total == 1
         assert resp.rooms[0].id == "r1"
+
+
+# ============================================================
+# S198 W4.1 — Joined/Members/Create-alias endpoints
+# ============================================================
+
+
+class TestJoinedRoomsEndpoint:
+    """GAP 1: GET /api/v1/study-rooms/joined registration."""
+
+    def test_joined_endpoint_registered(self):
+        assert any(
+            r.path == "/api/v1/study-rooms/joined" and "GET" in r.methods
+            for r in router.routes
+            if hasattr(r, "methods")
+        )
+
+    def test_joined_path_resolves_before_room_id(self):
+        # Path order matters: /joined must register BEFORE /{room_id}
+        # otherwise FastAPI captures "joined" as room_id parameter.
+        paths = [r.path for r in router.routes if hasattr(r, "methods")]
+        joined_idx = paths.index("/api/v1/study-rooms/joined")
+        room_id_idx = paths.index("/api/v1/study-rooms/{room_id}")
+        assert joined_idx < room_id_idx
+
+
+class TestMembersEndpoint:
+    """GAP 2: GET /api/v1/study-rooms/{room_id}/members."""
+
+    def test_members_endpoint_registered(self):
+        assert any(
+            r.path == "/api/v1/study-rooms/{room_id}/members" and "GET" in r.methods
+            for r in router.routes
+            if hasattr(r, "methods")
+        )
+
+    def test_serialize_member_basic(self):
+        member = _make_room_member(role=MemberRole.OWNER)
+        user = _make_user(user_id="u1", username="huseyin")
+        result = _serialize_member(member, user)
+        assert isinstance(result, RoomMemberResponse)
+        assert result.user_id == "u1"
+        assert result.username == "huseyin"
+        assert result.role == "owner"
+        assert result.status == "active"
+        assert result.full_name == "Ali Yılmaz"
+        assert result.joined_at == datetime(2026, 5, 27, tzinfo=UTC)
+
+    def test_serialize_member_partial_name(self):
+        member = _make_room_member()
+        user = _make_user(first_name="Ali", last_name=None)
+        result = _serialize_member(member, user)
+        assert result.full_name == "Ali"
+
+    def test_serialize_member_no_name(self):
+        member = _make_room_member()
+        user = _make_user(first_name=None, last_name=None)
+        result = _serialize_member(member, user)
+        assert result.full_name is None
+
+    def test_serialize_member_banned_status(self):
+        member = _make_room_member(role=MemberRole.MEMBER, status=MemberStatus.BANNED)
+        user = _make_user()
+        result = _serialize_member(member, user)
+        assert result.status == "banned"
+
+    def test_members_list_response_empty(self):
+        resp = RoomMembersListResponse(members=[], total=0)
+        assert resp.members == []
+        assert resp.total == 0
+
+    def test_members_list_response_with_entries(self):
+        member = _make_room_member(role=MemberRole.MEMBER)
+        user = _make_user()
+        entry = _serialize_member(member, user)
+        resp = RoomMembersListResponse(members=[entry], total=1)
+        assert resp.total == 1
+        assert resp.members[0].username == "ali"
+
+
+class TestCreateAliasEndpoint:
+    """GAP 3: POST /api/v1/study-rooms accepted as alias of /create."""
+
+    def test_root_post_registered(self):
+        assert any(
+            r.path == "/api/v1/study-rooms" and "POST" in r.methods
+            for r in router.routes
+            if hasattr(r, "methods")
+        )
+
+    def test_create_legacy_still_registered(self):
+        # Backwards compatibility: /create path must still work
+        assert any(
+            r.path == "/api/v1/study-rooms/create" and "POST" in r.methods
+            for r in router.routes
+            if hasattr(r, "methods")
+        )
+
+    def test_both_paths_share_same_handler(self):
+        # Both POST routes should bind to the same create_room callable
+        post_routes = [
+            r
+            for r in router.routes
+            if hasattr(r, "methods")
+            and "POST" in r.methods
+            and r.path in ("/api/v1/study-rooms", "/api/v1/study-rooms/create")
+        ]
+        assert len(post_routes) == 2
+        assert post_routes[0].endpoint is post_routes[1].endpoint

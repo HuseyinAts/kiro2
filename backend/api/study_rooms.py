@@ -1,12 +1,15 @@
 """Study Rooms API — S197 minimal CRUD impl.
 
 Replaces `study_rooms_stub.py` (S180 #5 stub) with real DB-backed CRUD for
-the 6 core endpoints frontend depends on for room lifecycle:
+the core endpoints frontend depends on for room lifecycle:
 
-- POST   /api/v1/study-rooms/create        — create room (owner becomes first member)
-- GET    /api/v1/study-rooms/my-rooms      — owned + joined rooms
-- GET    /api/v1/study-rooms/{room_id}     — room detail (must be member or PUBLIC)
-- DELETE /api/v1/study-rooms/{room_id}     — soft delete (owner only)
+- POST   /api/v1/study-rooms              — create room (alias of /create)
+- POST   /api/v1/study-rooms/create       — create room (owner becomes first member)
+- GET    /api/v1/study-rooms/my-rooms     — owned + joined rooms
+- GET    /api/v1/study-rooms/joined       — only joined (non-owner) rooms (S198 W4.1)
+- GET    /api/v1/study-rooms/{room_id}    — room detail (must be member or PUBLIC)
+- GET    /api/v1/study-rooms/{room_id}/members — room member list (S198 W4.1)
+- DELETE /api/v1/study-rooms/{room_id}    — soft delete (owner only)
 - POST   /api/v1/study-rooms/{room_id}/join — join (PUBLIC or via invitation)
 - POST   /api/v1/study-rooms/{room_id}/leave — leave (non-owner; owner must delete)
 
@@ -37,6 +40,7 @@ from models.study_room import (
     RoomVisibility,
     StudyRoom,
 )
+from models.user_models import User
 
 router = APIRouter(prefix="/api/v1/study-rooms", tags=["study-rooms"])
 
@@ -70,6 +74,41 @@ class StudyRoomResponse(BaseModel):
 class StudyRoomListResponse(BaseModel):
     rooms: list[StudyRoomResponse]
     total: int
+
+
+class RoomMemberResponse(BaseModel):
+    """Member entry in a room (S198 W4.1)."""
+
+    user_id: str
+    username: str
+    full_name: str | None = None
+    role: str
+    status: str
+    joined_at: datetime | None = None
+
+
+class RoomMembersListResponse(BaseModel):
+    members: list[RoomMemberResponse]
+    total: int
+
+
+def _serialize_member(member: RoomMember, user: User) -> RoomMemberResponse:
+    """Convert RoomMember + User join row to response."""
+    role = member.role.value if hasattr(member.role, "value") else str(member.role)
+    status = (
+        member.status.value if hasattr(member.status, "value") else str(member.status)
+    )
+    full_name = (
+        " ".join(part for part in (user.first_name, user.last_name) if part) or None
+    )
+    return RoomMemberResponse(
+        user_id=user.id,
+        username=user.username,
+        full_name=full_name,
+        role=role,
+        status=status,
+        joined_at=member.joined_at,
+    )
 
 
 def _serialize_room(room: StudyRoom, user_role: str | None = None) -> StudyRoomResponse:
@@ -117,13 +156,19 @@ async def _get_membership(
     return result.scalar_one_or_none()
 
 
+@router.post("", response_model=StudyRoomResponse, status_code=201)
 @router.post("/create", response_model=StudyRoomResponse, status_code=201)
 async def create_room(
     body: StudyRoomCreate,
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ) -> StudyRoomResponse:
-    """Create a new study room. Caller becomes OWNER + first ACTIVE member."""
+    """Create a new study room. Caller becomes OWNER + first ACTIVE member.
+
+    Two paths accepted for backwards compatibility:
+    - POST /api/v1/study-rooms        (RESTful, S198 W4.1)
+    - POST /api/v1/study-rooms/create (legacy, pre-S198)
+    """
     visibility = (
         RoomVisibility.PUBLIC if body.visibility == "public" else RoomVisibility.PRIVATE
     )
@@ -194,6 +239,43 @@ async def my_rooms(
     return StudyRoomListResponse(rooms=items, total=len(items))
 
 
+@router.get("/joined", response_model=StudyRoomListResponse)
+async def joined_rooms(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+) -> StudyRoomListResponse:
+    """List active rooms where caller is an ACTIVE member but NOT the owner.
+
+    Counterpart to /my-rooms (owned + joined). Frontend StudyRoomList Tab 2
+    uses this to show only joined rooms (S198 W4.1).
+    """
+    user_id = str(current_user.id)
+
+    result = await db.execute(
+        select(StudyRoom, RoomMember.role)
+        .join(RoomMember, RoomMember.room_id == StudyRoom.id)
+        .where(
+            and_(
+                RoomMember.user_id == user_id,
+                RoomMember.status == MemberStatus.ACTIVE,
+                StudyRoom.status == RoomStatus.ACTIVE,
+                StudyRoom.owner_id != user_id,
+            )
+        )
+        .order_by(StudyRoom.created_at.desc())
+    )
+    rows = result.all()
+
+    items = [
+        _serialize_room(
+            room,
+            user_role=role.value if hasattr(role, "value") else str(role),
+        )
+        for room, role in rows
+    ]
+    return StudyRoomListResponse(rooms=items, total=len(items))
+
+
 @router.get("/{room_id}", response_model=StudyRoomResponse)
 async def room_detail(
     room_id: str,
@@ -220,6 +302,35 @@ async def room_detail(
             else str(membership.role)
         )
     return _serialize_room(room, user_role=user_role)
+
+
+@router.get("/{room_id}/members", response_model=RoomMembersListResponse)
+async def room_members(
+    room_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+) -> RoomMembersListResponse:
+    """List members of a room. Only active members of the room can view.
+
+    Returns user_id, username, full_name (first+last), role, status, joined_at
+    for each RoomMember row joined with User. (S198 W4.1)
+    """
+    await _get_room_or_404(db, room_id)
+
+    caller_membership = await _get_membership(db, room_id, str(current_user.id))
+    if caller_membership is None or caller_membership.status != MemberStatus.ACTIVE:
+        raise HTTPException(status_code=403, detail="Bu odanın üyesi değilsiniz")
+
+    result = await db.execute(
+        select(RoomMember, User)
+        .join(User, User.id == RoomMember.user_id)
+        .where(RoomMember.room_id == room_id)
+        .order_by(RoomMember.joined_at.asc().nullslast())
+    )
+    rows = result.all()
+
+    items = [_serialize_member(member, user) for member, user in rows]
+    return RoomMembersListResponse(members=items, total=len(items))
 
 
 @router.delete("/{room_id}", status_code=204)
