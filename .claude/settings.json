@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_TASK_LIST_ID": "kiro2-master"
+  },
   "permissions": {
     "allow": [
       "Bash(ruff:*)",
@@ -55,6 +58,7 @@
       "Write(d-dataset/eslesmis_sorucevap.jsonl)"
     ]
   },
+  "model": "claude-sonnet-4-6",
   "hooks": {
     "PreToolUse": [
       {
@@ -134,14 +138,12 @@
       }
     ]
   },
+  "enabledPlugins": {},
   "contextManagement": {
     "warningThreshold": 60,
     "clearThreshold": 70,
     "progressFile": "progress.md",
     "autoCompact": true
-  },
-  "env": {
-    "CLAUDE_CODE_TASK_LIST_ID": "kiro2-master"
   },
   "excludePatterns": [
     "node_modules",
@@ -191,6 +193,5 @@
     ".temp",
     ".tmp",
     "**/desktop.ini"
-  ],
-  "model": "claude-sonnet-4-6"
+  ]
 }
