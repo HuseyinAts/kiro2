@@ -91,29 +91,45 @@ missing columns to all 8 tables. None of these are on the user-facing path
 yet (no Golden Flow probe has hit them), so the order matters less than
 the volume — one batch migration closes 140 of the 203 findings.
 
-### Cluster 2 — Inverse rule-of-seven (41 findings, ~22 tables)
+### ~~Cluster 2 — Inverse rule-of-seven (41 findings, ~22 tables)~~ ✅ FIXED 2026-05-27
 
-The pattern Session 153/154 ground out at the model level for 7 tables is
+> **STATUS: %100 PHANTOM — Cluster 2 closed.** W4.2 (Session 198) audit:
+> baseline 41 finding → live re-audit **0 finding**. All 23 tables aligned
+> (ORM=UUID, DB=uuid). Sample verify: `kiro2_learning_events` (254 row),
+> `kiro2_cat_sessions` (8), `topic_prerequisites` (106), `reasoning_cache` (0),
+> `universities` (0) — hepsi temiz.
+>
+> Evidence: `backend/models/cat_models.py:8-12` self-doc says "Session 155
+> Cluster 2 fix... no migration needed". S155 baseline yazıldıktan sonra
+> model-level fix uygulanmış ama bu doc güncellenmemiş — klasik phantom
+> pattern (S197 Mega Audit Lock kuralı bu yüzden var).
+>
+> Detay rapor: `docs/audits/2026-05-27_orm_cluster2_sample5.md`
+
+~~The pattern Session 153/154 ground out at the model level for 7 tables is
 still live in 22 more, **including these production-critical tables with
-real row counts**:
+real row counts**:~~
 
-| Table                  | Rows | Affected columns               |
-|------------------------|-----:|--------------------------------|
-| `kiro2_learning_events`|  243 | `id`, `user_id`, `session_id`  |
-| `topic_prerequisites`  |  106 | `id`                           |
-| `kiro2_cat_sessions`   |    8 | `id`, `user_id`                |
-| `osym_questions`       |    ? | many                           |
+| Table                  | Rows | Status |
+|------------------------|-----:|--------|
+| `kiro2_learning_events`|  254 | ✅ aligned |
+| `topic_prerequisites`  |  106 | ✅ aligned |
+| `kiro2_cat_sessions`   |    8 | ✅ aligned |
+| `osym_questions`       |    ? | ✅ aligned (re-audit clean) |
 
-These tables have data but the ORM declares VARCHAR while the DB is uuid.
-Whatever currently writes to them must be using either raw SQL or a
+~~Whatever currently writes to them must be using either raw SQL or a
 caller-side `str(uuid)` shim — anything that goes through the ORM as
-declared will trip `DatatypeMismatchError` on the next INSERT.
+declared will trip `DatatypeMismatchError` on the next INSERT.~~
 
-**Recommended action:** convert each model's `id` (and FK) declarations
+~~**Recommended action:** convert each model's `id` (and FK) declarations
 from `Column(String, default=lambda: str(uuid4()))` to
 `Column(UUID(as_uuid=True), default=uuid4)`. Each fix is one-line, no
 migration needed (the DB is already correct). Repeat the Session 154
-recipe.
+recipe.~~
+
+**Updated HIGH total: 203 → 159** (Cluster 2 -41 + Cluster 3 -3 = -44).
+Cluster 1 (university-info, 158 finding) ve Cluster 3 kalan 1 (`osym_questions.bloom_level`)
+hâlâ açık — bu mega audit'in tek aktif backlog'u.
 
 ### Cluster 3 — int-vs-string (4 findings, 2 tables)
 
