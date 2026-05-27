@@ -37,32 +37,23 @@ import {
   Tab,
   Badge,
 } from '@mui/material';
-import axios from 'axios';
 import * as React from 'react';
-import {  useState, useEffect  } from 'react';
+import { useState, useEffect } from 'react';
+
+import { useStudyRooms } from '../../hooks/useStudyRooms';
+import { studyRoomService } from '../../services/studyRoomService';
+import type { StudyRoom as ApiStudyRoom } from '../../services/studyRoomService';
 
 // ============================================================
 // Types
 // ============================================================
 
-interface StudyRoom {
-  id: string;
-  name: string;
-  description: string;
-  topic: string;
-  subject: string;
-  visibility: 'public' | 'private' | 'password';
-  status: 'active' | 'archived' | 'deleted';
-  max_members: number;
-  member_count: number;
-  owner_id: string;
-  owner_name?: string;
-  created_at: string;
-  updated_at: string;
-  tags?: string[];
+// Local display type extends the API type with optional UI-only fields
+type StudyRoom = ApiStudyRoom & {
+  // UI-only fields not returned by backend (kept for future compatibility)
   has_active_video?: boolean;
   unread_messages?: number;
-}
+};
 
 interface StudyRoomListProps {
   onRoomSelect: (roomId: string) => void;
@@ -73,81 +64,53 @@ interface StudyRoomListProps {
 // ============================================================
 
 const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
+  // Wire to real API via useStudyRooms hook
+  const { rooms: apiRooms, isLoading: loading, createRoom } = useStudyRooms();
   const [rooms, setRooms] = useState<StudyRoom[]>([]);
   const [filteredRooms, setFilteredRooms] = useState<StudyRoom[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [subjectFilter, setSubjectFilter] = useState<string>('all');
   const [visibilityFilter, setVisibilityFilter] = useState<string>('all');
-  const [tabValue, setTabValue] = useState(0); // 0: All, 1: My Rooms, 2: Joined
+  const [tabValue, setTabValue] = useState(0); // 0: All (my-rooms), 1: Owned, 2: Joined
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newRoom, setNewRoom] = useState({
     name: '',
     description: '',
     topic: '',
-    subject: '',
-    visibility: 'public' as 'public' | 'private' | 'password',
+    visibility: 'public' as 'public' | 'private',
     max_members: 50,
-    password: '',
+    tags: [] as string[],
   });
 
-  // Subjects for filtering
-  const subjects = [
-    'Matematik',
-    'Fizik',
-    'Kimya',
-    'Biyoloji',
-    'Türkçe',
-    'Tarih',
-    'Coğrafya',
-    'İngilizce',
-    'Felsefe',
-    'Din Kültürü',
-  ];
+  // subject field does not exist on the backend StudyRoom model — use topic/tags for filtering
 
+  // Sync API rooms into local state (supports tab-level client filtering)
   useEffect(() => {
-    fetchRooms();
-  }, [tabValue]);
+    setRooms(apiRooms as StudyRoom[]);
+  }, [apiRooms]);
 
   useEffect(() => {
     filterRooms();
-  }, [rooms, searchQuery, subjectFilter, visibilityFilter]);
-
-  const fetchRooms = async () => {
-    setLoading(true);
-    try {
-      let url = '/api/v1/study-rooms';
-      if (tabValue === 1) {
-        url = '/api/v1/study-rooms/my-rooms'; // Rooms I created
-      } else if (tabValue === 2) {
-        url = '/api/v1/study-rooms/joined'; // Rooms I'm a member of
-      }
-
-      const response = await axios.get(url);
-      setRooms(response.data);
-    } catch (error) {
-      console.error('Error fetching study rooms:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [rooms, searchQuery, visibilityFilter, tabValue]);
 
   const filterRooms = () => {
     let filtered = [...rooms];
+
+    // Tab filter: 1 = rooms I own, 2 = rooms I joined (not owner)
+    // Tab 0 = all my rooms (owned + joined) — backend my-rooms returns both
+    if (tabValue === 1) {
+      filtered = filtered.filter((room) => room.user_role === 'owner');
+    } else if (tabValue === 2) {
+      filtered = filtered.filter((room) => room.user_role !== 'owner');
+    }
 
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter(
         (room) =>
           room.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          room.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          room.topic?.toLowerCase().includes(searchQuery.toLowerCase()),
+          (room.description ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (room.topic ?? '').toLowerCase().includes(searchQuery.toLowerCase()),
       );
-    }
-
-    // Subject filter
-    if (subjectFilter !== 'all') {
-      filtered = filtered.filter((room) => room.subject === subjectFilter);
     }
 
     // Visibility filter
@@ -160,17 +123,22 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
 
   const handleCreateRoom = async () => {
     try {
-      const response = await axios.post('/api/v1/study-rooms', newRoom);
-      setRooms([response.data, ...rooms]);
+      await createRoom({
+        name: newRoom.name,
+        description: newRoom.description || undefined,
+        topic: newRoom.topic || undefined,
+        visibility: newRoom.visibility,
+        max_members: newRoom.max_members,
+        tags: newRoom.tags,
+      });
       setCreateDialogOpen(false);
       setNewRoom({
         name: '',
         description: '',
         topic: '',
-        subject: '',
         visibility: 'public',
         max_members: 50,
-        password: '',
+        tags: [],
       });
     } catch (error) {
       console.error('Error creating room:', error);
@@ -179,13 +147,12 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
 
   const handleJoinRoom = async (roomId: string, visibility: string) => {
     try {
-      if (visibility === 'password') {
-        const password = prompt('Bu oda şifre korumalı. Lütfen şifreyi girin:');
-        if (!password) {return;}
-        await axios.post(`/api/v1/study-rooms/${roomId}/join`, { password });
-      } else {
-        await axios.post(`/api/v1/study-rooms/${roomId}/join`);
+      if (visibility === 'private') {
+        // Private rooms require invitation — guide user instead
+        alert('Bu oda davetiye gerektirir. Oda sahibinden davet isteyin.');
+        return;
       }
+      await studyRoomService.joinRoom(roomId);
       onRoomSelect(roomId);
     } catch (error) {
       console.error('Error joining room:', error);
@@ -255,21 +222,6 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
           sx={{ flex: 1, minWidth: 250 }}
         />
         <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>Ders</InputLabel>
-          <Select
-            value={subjectFilter}
-            label="Ders"
-            onChange={(e) => setSubjectFilter(e.target.value)}
-          >
-            <MenuItem value="all">Tümü</MenuItem>
-            {subjects.map((subject) => (
-              <MenuItem key={subject} value={subject}>
-                {subject}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ minWidth: 150 }}>
           <InputLabel>Gizlilik</InputLabel>
           <Select
             value={visibilityFilter}
@@ -279,7 +231,6 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
             <MenuItem value="all">Tümü</MenuItem>
             <MenuItem value="public">Herkese Açık</MenuItem>
             <MenuItem value="private">Özel</MenuItem>
-            <MenuItem value="password">Şifre Korumalı</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -330,14 +281,14 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
                     />
                   </Box>
 
-                  {/* Subject and Topic */}
+                  {/* Topic and Tags */}
                   <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-                    {room.subject && (
-                      <Chip label={room.subject} color="primary" size="small" />
-                    )}
                     {room.topic && (
-                      <Chip label={room.topic} variant="outlined" size="small" />
+                      <Chip label={room.topic} color="primary" size="small" />
                     )}
+                    {room.tags.slice(0, 2).map((tag) => (
+                      <Chip key={tag} label={tag} variant="outlined" size="small" />
+                    ))}
                   </Box>
 
                   {/* Description */}
@@ -361,7 +312,7 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <PeopleIcon fontSize="small" color="action" />
                       <Typography variant="body2" color="text.secondary">
-                        {room.member_count}/{room.max_members}
+                        {room.current_member_count}/{room.max_members}
                       </Typography>
                     </Box>
                     {room.has_active_video && (
@@ -382,9 +333,9 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
                     fullWidth
                     variant="contained"
                     onClick={() => handleJoinRoom(room.id, room.visibility)}
-                    disabled={room.member_count >= room.max_members}
+                    disabled={room.current_member_count >= room.max_members}
                   >
-                    {room.member_count >= room.max_members ? 'Dolu' : 'Katıl'}
+                    {room.current_member_count >= room.max_members ? 'Dolu' : 'Katıl'}
                   </Button>
                 </CardActions>
               </Card>
@@ -421,43 +372,18 @@ const StudyRoomList: React.FC<StudyRoomListProps> = ({ onRoomSelect }) => {
               fullWidth
             />
             <FormControl fullWidth>
-              <InputLabel>Ders</InputLabel>
-              <Select
-                value={newRoom.subject}
-                label="Ders"
-                onChange={(e) => setNewRoom({ ...newRoom, subject: e.target.value })}
-              >
-                {subjects.map((subject) => (
-                  <MenuItem key={subject} value={subject}>
-                    {subject}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
               <InputLabel>Gizlilik</InputLabel>
               <Select
                 value={newRoom.visibility}
                 label="Gizlilik"
                 onChange={(e) =>
-                  setNewRoom({ ...newRoom, visibility: e.target.value as 'public' | 'private' | 'password' })
+                  setNewRoom({ ...newRoom, visibility: e.target.value as 'public' | 'private' })
                 }
               >
                 <MenuItem value="public">Herkese Açık</MenuItem>
                 <MenuItem value="private">Özel (Sadece Davetli)</MenuItem>
-                <MenuItem value="password">Şifre Korumalı</MenuItem>
               </Select>
             </FormControl>
-            {newRoom.visibility === 'password' && (
-              <TextField
-                label="Oda Şifresi"
-                type="password"
-                value={newRoom.password}
-                onChange={(e) => setNewRoom({ ...newRoom, password: e.target.value })}
-                required
-                fullWidth
-              />
-            )}
             <TextField
               label="Maksimum Üye Sayısı"
               type="number"
