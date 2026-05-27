@@ -1,44 +1,42 @@
-## Session Handoff — 2026-05-23 (S197 — Meta-Audit Phantom Filter Sweep)
-**Branch:** master | **Pushed:** `cf39a9a40..2158f649e` (8 commit, senkron)
-**Son commit:** `2158f649e test(s197): kill last 5 collection errors (pollution bisect)`
-**Uncommitted:** `.claude/settings.json` (plugin install yan etki, session dışı)
+## Session Handoff — 2026-05-27 (S198 — Curator 368 Apply via Claude Subagent)
+**Branch:** master | **Senkron:** origin/master ile aynı (push beklemede)
+**Son commit:** TBD (S198 commit yapılacak)
+**Uncommitted (pre-S198):** `.claude/settings.json` (sürünüyor, S197'den beri)
 
-### Yapilanlar (8 commit, ~6 saat)
-- `docs/audits/2026-05-23_meta_audit_review.md` (yeni, 699 satır) — 149 audit doc sentezi + Section 12-14 phantom
-- `backend/api/study_rooms.py` (yeni, 314 LOC) — 6 endpoint real CRUD (create/list/get/delete/join/leave)
-- 3 yeni test dosyası: `test_security_middleware_s197` (69 test, %28.18), `test_turkish_exam_middleware_s197` (62, %25.42), `test_study_rooms_s197` (28, %35.42)
-- `backend/agents/domain_experts/base_domain_agent.py:18,476,480` — `callable` typing prod bug fix
-- `backend/tests/test_auth*_middleware.py` — import order + `backend.` prefix fix (Cat A)
-- `backend/tests/load/test_*.py` — Py3.13 SSL recursion guard (Cat D)
-- `tests/unit/test_coverage_final_50.py:75-80` — services.quality polluter removed (Cat B)
-- `tests/unit/test_core_security_content.py:127` — models.curriculum conditional guard (Cat E)
-- DB: `8c6493e8` MATEMATIK `auto_judged_high → pending` (S197 phantom audit, backup `question_bank_s197_phantom_audit_backup`)
-- CLAUDE.md: Mega Audit Lock rule (yeni hard rule, ~%87 phantom rate kanıtı)
+### Yapılanlar
 
-### Test Durumu
-- **16,259 tests collected, 0 errors** (was 14,733 + 12 errors başlangıçta, +1,526 yeni accessible)
-- Auth coverage: unified_auth 83%, csrf 60%, auth_mw 26%, security/turkish_exam_mw ~%25
-- Full coverage measurement: kullanıcı atladı, sonraki session
+- **S198 Curator 368 apply COMPLETE** — 250/368 (%67.9 consensus)
+- **Plan adaptasyon (Plan D → Plan E)**: GEMINI_API_KEY env'de yoktu → 6 paralel Claude subagent ile dispatch (~2.5 dk, $0 cost)
+- **Discovery**: 368 = (DB pending) - (S195 apply 537) = 232 no_plan + 136 in_plan
+- **6 shard × ~62 q** subagent dispatch (run_in_background), tamamı bitti
+- **Consensus build**: 250 apply candidate (db_match=false AND !unsolvable AND conf in {high,medium})
+- **Pilot 5/5 ✅** apply_pilot.py auto-COMMIT
+- **Full apply 250/250 ✅** auto-COMMIT
+- **Spot 3/3 ✅ verify** — pre→post: TURKCE C→E, MATEMATIK D→C, D→C (hepsi mantıksal doğru)
+- **Gold pool**: 13,310 → 13,560 (+250)
+- **Audit doc**: `docs/audits/2026-05-27_s198_curator_368_apply.md`
+- **MEMORY.md update**: status distribution + S198 entry
 
 ### Fail Eden Testler
-- YOK (collection clean, runtime test'leri çalıştırılmadı — coverage measurement skip)
+- YOK (test çalıştırılmadı — DB data UPDATE only)
 
 ### Engelleyiciler
-- YOK (8 commit master'a push, integrity tam)
+- **GEMINI_API_KEY rotation** hâlâ pending (MEMORY S195 P0 #2 — S198'de bypass edildi ama tekrar gerek)
 
-### Sonraki Adimlar (P1)
-1. **Full coverage measurement** — pytest --cov targeted (api+core+services+models+algorithms), S179 ile delta
-2. **Frontend Study Rooms entegrasyon** — ChatInterface/StudyRoomList real API call
-3. **`_deprecated/` purge** — 38,567 LOC backend dead code
-4. **Phase 7 retry karar** — defer (sonraki sprint)
-5. **ORM Cluster 2** — defer (multi-sprint, CI gate `--fail` zaten live)
+### Kalan İşler (S198 sonrası)
+1. **Commit + push S198** — TBD (bu session)
+2. **Kalan 118 pending** (78 unsolvable + 76 low conf + 36 db_match=true):
+   - 36 db_match=true → ayrı promotion pass (Claude DB ile aynı fikirde, audit yanlış)
+   - 76 low conf → Curator UI manuel review
+   - 78 unsolvable → image-bound, OCR re-process gerek
+3. **S197'den devralınan backlog (değişiklik yok):**
+   - Full coverage measurement
+   - Frontend Study Rooms entegrasyonu
+   - `_deprecated/` purge (38,567 LOC)
+   - `.claude/plans/concurrent-sniffing-liskov.md` triage
+   - `.claude/settings.json` commit/revert
 
-### Kararlar (Tekrar Tartışma Yok)
-- Phase 7 retry: **DEFER** — %99.95 coverage already, %26.7 quality issue curator override layer ile
-- ORM Cluster 2: **DEFER** — 159 HIGH (S155'den %22 self-fix), CI gate live, multi-sprint
-- Mega audit: **3 hafta KAPALI** — %87 phantom rate, P0 backlog kapatma sprinti gerek
-- Coverage hack files (sys.modules injection): HER ZAMAN conditional guard zorunlu
-- Study Rooms stub coexists: backward-compat (messages/files/whiteboard 501 stub kalır)
-
-### Phantom Rate (Meta-audit kendi kanıtı)
-13.5/16 ≈ **%87** — yeni mega audit yasak, mevcut findings phantom verify et
+### Kararlar (gelecek session tekrar tartışmasın)
+- **Plan adaptasyon başarılı**: Subagent dispatch + 0 cost + %68 hit rate = Gemini Batch'ten verimli (key bloğu yokken)
+- **MEMORY GEMINI_API_KEY rotation**: hâlâ açık, sonraki Gemini-bağımlı işten ÖNCE rotate
+- **Backup tablo**: `question_bank_s198_curator_backup_20260527` — rollback hazır, 250 row
