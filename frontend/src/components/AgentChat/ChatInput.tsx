@@ -144,6 +144,7 @@ export function ChatInput({ onSendMessage, isLoading, placeholder }: ChatInputPr
             onKeyDown={handleKeyDown}
             disabled={isLoading}
             className="flex-1"
+            inputProps={{ 'aria-label': 'Mesajınızı yazın' }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '20px',
@@ -183,6 +184,7 @@ export function ChatInput({ onSendMessage, isLoading, placeholder }: ChatInputPr
               onClick={handleSend}
               disabled={!message.trim() || isLoading}
               color="primary"
+              aria-label="Mesajı gönder"
               className="bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-300"
             >
               <Send />
@@ -196,7 +198,7 @@ export function ChatInput({ onSendMessage, isLoading, placeholder }: ChatInputPr
             {message.length} / 4000 karakter
           </span>
           {isLoading && (
-            <span className="text-xs text-blue-500 animate-pulse">
+            <span role="status" className="text-xs text-blue-500 animate-pulse">
               AI yanıt yazıyor...
             </span>
           )}
