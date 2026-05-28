@@ -1,31 +1,33 @@
-## Session Handoff — 2026-05-28 (Register 422 deploy + A2 CVE Sweep)
-**Branch:** master | **HEAD:** 11b25dd2d | origin senkron | working tree temiz
-**Stratejik yön:** Kurumsal/okul satışı → tam roadmap (Faz A+B+C+D)
+## Session Handoff — 2026-05-28 23:00
+**Branch:** master | **Son commit:** 6d30af8a1 feat(kvkk): Faz 1 — veli onayı capture
+**Uncommitted:** temiz (origin senkron) | **Stratejik yön:** Kurumsal/okul satışı (tam roadmap A+B+C+D)
 
-### Yapılanlar (bu session, 5 commit push edildi)
-- `ed0f5ce38` (pre-existing, push'landı) register 422 fix — authService ad_soyad/sifre mapping
-- `17fd1f81a` fix: bozuk frontend dep bump geri al (lodash ^4.18.1 yok → ^4.17.21; axios/dompurify) — `npm ci` unblock
-- `9de7ea3bb` A2 frontend CVE sweep — `npm audit fix`, 32 CVE (1 crit+15 high+16 mod) → **0**
-- `4bc872168` A2 pypdf2 EOL → pypdf 6.12.2 (2 import + 5 requirements)
-- `11b25dd2d` A2 dead python-jose kaldırıldı → vulnerable ecdsa düştü
+### Yapilanlar (bu session, sırayla)
+- `ed0f5ce38` register 422 fix push'landı (authService ad_soyad/sifre mapping) → API+UI E2E 201
+- `17fd1f81a` `frontend/package.json` bozuk dep bump geri al (lodash ^4.18.1 yok) — npm ci unblock
+- `9de7ea3bb` A2 frontend `npm audit fix`: 32 CVE → **0** (sadece package-lock.json)
+- `4bc872168` A2 pypdf2 EOL → pypdf 6.12.2 (`multimedia_content_processor.py`+`api/rag.py`+5 req)
+- `11b25dd2d` A2 dead `python-jose` kaldırıldı → ecdsa düştü; safety **0 vuln** (158 paket)
+- `6d30af8a1` **KVKK Faz 1**: `core/kvkk_compliance.py` is_minor (10/10 test) + `models/user.py`
+  KullaniciOlustur (birth_date+veli_email) + `api/auth.py` register (minor→422, veli_onay, persist)
+  + `models/user_models.py`+alembic `student_profiles.veli_email` + frontend
+  (`ModernRegisterPage.tsx` Doğum Tarihi + koşullu Veli E-postası, `types.ts`, `authService.ts`)
 
-### Doğrulama (hepsi canlı)
-- Register: API GREEN 201 + tarayıcı E2E (Playwright) 201 → /learning-path (2x rebuild sonrası)
-- Frontend: `npm audit` = 0 vuln; docker rebuild GREEN
-- Backend: `safety` = 158 paket / **0 vuln**; health 200; login JWT path 401 (PyJWT, jose'suz boot OK)
-- Test kullanıcıları temizlendi (@kiro2qa.com = 0; users'a 135 FK tablo var, dinamik silindi)
+### Fail Eden Testler
+- YOK — `tests/unit/test_kvkk_age.py` 10/10 PASS. (Full suite koşulmadı; backend rebuild + E2E geçti.)
 
-### Durum
-- **Güvenlik (CVE/deps):** frontend 0 + backend 0 → A2 kod/dep tarafı KAPANDI
-- Stack: backend healthy (pypdf, no-jose), frontend healthy (CVE-clean) — ikisi de bu session rebuild
-- :3000=frontend, :8000=backend, :3001=Grafana (KIRO2 değil), vite dev çalışmıyor
+### Engelleyiciler
+- A1 PG restart operatör bekliyor; gh CLI yok (A2-OPS); GEMINI_API_KEY rotate bekliyor (AUP leak)
 
-### Kalan / Sonraki
-- **A2-OPS** (operatör): gh CLI kurulu değil → Dependabot PR triage (artık büyük ölçüde redundant)
-- **A1** (operatör): `Restart-Service postgresql-x64-18` → shared_buffers 4GB, cache hit %56→%92
-- **Faz B (KVKK Faz 1):** veli rıza akışı + dogum_tarihi capture (mevcut KVKK backend üzerine)
-- GEMINI_API_KEY rotate hâlâ bekliyor (AUP leak, önceki session)
+### Sonraki Adimlar (maks 5)
+1. **A1** (operatör): `Restart-Service postgresql-x64-18` → shared_buffers 4GB, cache hit %56→%92
+2. **KVKK Faz 2:** veli'ye email/token onay akışı (passwordless_auth reuse) + minor erişim enforcement
+3. **A2-OPS** (operatör): `winget install GitHub.cli` → Dependabot (artık büyük ölçüde redundant)
+4. GEMINI_API_KEY rotate
 
-### Notlar
-- `requirements-minimal.txt` = deployed backend (Dockerfile.minimal). requirements.txt/qa ayrı.
-- Roadmap CVE/AGPL rakamları stale çıktı: "~60 CVE"→gerçek 3, AGPL phantom. Live-verify > audit-doc.
+### Kararlar (gelecek session tekrar tartismasin)
+- KVKK yaş eşiği = **18** (reşitlik); minor hesabı **erişim açık/pending** (block değil); Faz 1 = **capture+flag** (email Faz 2)
+- Canlı `KullaniciOlustur` = `models/user.py` (backend/models.py SHADOWED/ölü — paket modülü kazanır)
+- Backend deployed deps = `requirements-minimal.txt` (Dockerfile.minimal); diğer req'ler dev/QA
+- Frontend rebuild sonrası UI E2E: PWA service worker + workbox-precache cache temizlenmeli (yoksa eski bundle)
+- Edit'lerde import'u kullanımıyla AYNI ANDA ekle (ruff PostToolUse hook unused import'u siler)
