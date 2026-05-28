@@ -31,9 +31,17 @@ class AuthService {
 
   async register(userData: RegisterRequest): Promise<{ success: boolean; message?: string }> {
     try {
+      // Backend (KullaniciOlustur) `ad_soyad` + `sifre` bekler; form ad/soyad/password
+      // toplar. Gönderim öncesi backend sözleşmesine eşle (aksi halde 422).
+      const payload = {
+        email: userData.email,
+        ad_soyad: `${userData.ad ?? ''} ${userData.soyad ?? ''}`.trim(),
+        sifre: userData.password,
+        rol: userData.rol,
+      };
       const response = await apiRequest<{ success: boolean; message?: string }>(`${this.baseUrl}/register`, {
         method: 'POST',
-        body: JSON.stringify(userData),
+        body: JSON.stringify(payload),
         credentials: 'include',
       });
 
