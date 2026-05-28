@@ -3,8 +3,9 @@ Kullanıcı yönetimi veri modelleri
 SECURITY FIX: Strong password policy validation
 TIMEZONE FIX: Using timezone-aware datetime
 """
+
 import re
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
@@ -13,10 +14,10 @@ from .enums import KullaniciRolu, OgrenmeStili, SinavTipi
 
 class KullaniciBase(BaseModel):
     """Temel kullanıcı bilgileri.
-    
+
     Tüm kullanıcı modellerinin temelini oluşturur.
     Email, ad-soyad ve telefon gibi temel bilgileri içerir.
-    
+
     Attributes:
         email: Kullanıcı e-posta adresi (unique)
         ad_soyad: Kullanıcının tam adı (2-100 karakter)
@@ -32,18 +33,18 @@ class KullaniciBase(BaseModel):
 
 class KullaniciOlustur(KullaniciBase):
     """Kullanıcı oluşturma modeli.
-    
+
     Yeni kullanıcı kaydı için gerekli tüm bilgileri içerir.
     Güçlü şifre politikası uygulanır.
-    
+
     Attributes:
         sifre: Kullanıcı şifresi (güçlü şifre kuralları uygulanır)
         rol: Kullanıcı rolü (OGRENCI, OGRETMEN, VELI, ADMIN)
-        
+
     Note:
         Şifre en az 8 karakter olmalı ve şunları içermeli:
         - En az bir büyük harf
-        - En az bir küçük harf  
+        - En az bir küçük harf
         - En az bir rakam
         - En az bir özel karakter
     """
@@ -55,23 +56,29 @@ class KullaniciOlustur(KullaniciBase):
         description="Kullanıcı şifresi (min 8 karakter, büyük/küçük harf, rakam, özel karakter)",
     )
     rol: KullaniciRolu = Field(..., description="Kullanıcı rolü")
+    birth_date: date = Field(
+        ..., description="Doğum tarihi (KVKK reşitlik / veli onayı için)"
+    )
+    veli_email: EmailStr | None = Field(
+        None, description="Veli e-postası (18 yaş altı için zorunlu, KVKK Faz 1)"
+    )
 
     @field_validator("sifre")
     @classmethod
     def validate_password_strength(cls, v: str) -> str:
         """Güçlü şifre doğrulaması yapar.
-        
+
         Şifrenin güvenlik gereksinimlerini karşıladığını kontrol eder.
-        
+
         Args:
             v: Doğrulanacak şifre
-            
+
         Returns:
             str: Doğrulanmış şifre
-            
+
         Raises:
             ValueError: Şifre gereksinimleri karşılanmazsa
-            
+
         Requirements:
             - Min 8 karakter
             - En az bir büyük harf
@@ -101,32 +108,83 @@ class KullaniciOlustur(KullaniciBase):
         # Extended list includes Turkish common passwords (SECURITY FIX #27)
         common_passwords = [
             # English common passwords
-            "password", "password123", "password1", "passw0rd",
-            "12345678", "123456789", "1234567890",
-            "qwerty123", "qwertyuiop", "qwerty12",
-            "admin123", "administrator", "letmein",
-            "welcome123", "welcome1", "welcome",
-            "test1234", "test123", "testing123",
-            "abc12345", "abcd1234", "abcdefgh",
-            "monkey123", "dragon123", "master123",
-            "football", "baseball", "basketball",
-            "sunshine", "princess", "shadow123",
-            "superman", "batman123", "spiderman",
-            "michael1", "jordan23", "ashley123",
-            "iloveyou", "trustno1", "whatever",
+            "password",
+            "password123",
+            "password1",
+            "passw0rd",
+            "12345678",
+            "123456789",
+            "1234567890",
+            "qwerty123",
+            "qwertyuiop",
+            "qwerty12",
+            "admin123",
+            "administrator",
+            "letmein",
+            "welcome123",
+            "welcome1",
+            "welcome",
+            "test1234",
+            "test123",
+            "testing123",
+            "abc12345",
+            "abcd1234",
+            "abcdefgh",
+            "monkey123",
+            "dragon123",
+            "master123",
+            "football",
+            "baseball",
+            "basketball",
+            "sunshine",
+            "princess",
+            "shadow123",
+            "superman",
+            "batman123",
+            "spiderman",
+            "michael1",
+            "jordan23",
+            "ashley123",
+            "iloveyou",
+            "trustno1",
+            "whatever",
             # Turkish common passwords
-            "sifre123", "sifremi", "parola123",
-            "turkiye1", "istanbul1", "ankara123",
-            "galatasaray", "fenerbahce", "besiktas",
-            "trabzon", "antalya", "izmir123",
-            "ogrenci", "ogrenci1", "okul1234",
-            "universite", "sinav123", "yks12345",
-            "merhaba1", "hosgeld", "nasilsin",
-            "annebaba", "ailem123", "evim1234",
-            "aslan123", "kaplan12", "kartal12",
-            "mustafa1", "mehmet12", "ahmet123",
-            "fatma123", "ayse1234", "zeynep12",
-            "atatürk", "ataturk1", "cumhur",
+            "sifre123",
+            "sifremi",
+            "parola123",
+            "turkiye1",
+            "istanbul1",
+            "ankara123",
+            "galatasaray",
+            "fenerbahce",
+            "besiktas",
+            "trabzon",
+            "antalya",
+            "izmir123",
+            "ogrenci",
+            "ogrenci1",
+            "okul1234",
+            "universite",
+            "sinav123",
+            "yks12345",
+            "merhaba1",
+            "hosgeld",
+            "nasilsin",
+            "annebaba",
+            "ailem123",
+            "evim1234",
+            "aslan123",
+            "kaplan12",
+            "kartal12",
+            "mustafa1",
+            "mehmet12",
+            "ahmet123",
+            "fatma123",
+            "ayse1234",
+            "zeynep12",
+            "atatürk",
+            "ataturk1",
+            "cumhur",
         ]
         # Remove special characters for comparison
         base_password = re.sub(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]', "", v).lower()
@@ -140,16 +198,16 @@ class KullaniciOlustur(KullaniciBase):
 
 class Kullanici(KullaniciBase):
     """Tam kullanıcı modeli.
-    
+
     Veritabanında saklanan kullanıcı bilgilerinin tamamını içerir.
     Bu model API response'larında kullanılır (şifre hariç).
-    
+
     Attributes:
         kullanici_id: Benzersiz kullanıcı kimliği (UUID)
         rol: Kullanıcı rolü
         olusturma_tarihi: Hesap oluşturulma tarihi (UTC)
         son_giris: Son giriş tarihi (UTC, opsiyonel)
-        
+
     Config:
         from_attributes: SQLAlchemy model'lerinden otomatik dönüşüm
     """
@@ -160,8 +218,6 @@ class Kullanici(KullaniciBase):
     son_giris: datetime | None = Field(None, description="Son giriş tarihi")
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
-
-
 
 
 class OgrenciProfilOlusturGirdi(BaseModel):
@@ -201,10 +257,10 @@ class VeliProfilOlusturGirdi(BaseModel):
 
 class OgrenciProfili(BaseModel):
     """Öğrenci profil bilgileri.
-    
+
     Öğrenci kullanıcılarına özel profil bilgilerini içerir.
     Eğitim durumu, öğrenme özellikleri ve veli onay bilgileri bulunur.
-    
+
     Attributes:
         ogrenci_id: Öğrenci profil kimliği
         kullanici_id: İlişkili kullanıcı kimliği
@@ -301,15 +357,15 @@ class VeliProfili(BaseModel):
 
 class KullaniciGiris(BaseModel):
     """Kullanıcı giriş modeli.
-    
+
     Login endpoint'i için kullanılır. Hem Türkçe 'sifre' hem de
     İngilizce 'password' field'ını destekler (backward compatibility).
-    
+
     Attributes:
         email: Kullanıcı e-posta adresi
         sifre: Şifre (Türkçe field adı)
         password: Şifre (İngilizce field adı, uyumluluk için)
-        
+
     Methods:
         get_password: Hangi field doluysa o şifreyi döndürür
     """
@@ -325,10 +381,10 @@ class KullaniciGiris(BaseModel):
 
     def get_password(self) -> str:
         """Şifreyi döndürür.
-        
+
         'sifre' veya 'password' field'larından hangisi doluysa
         onu döndürür. Her ikisi de boşsa boş string döner.
-        
+
         Returns:
             str: Kullanıcı şifresi
         """

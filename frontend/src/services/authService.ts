@@ -38,6 +38,9 @@ class AuthService {
         ad_soyad: `${userData.ad ?? ''} ${userData.soyad ?? ''}`.trim(),
         sifre: userData.password,
         rol: userData.rol,
+        birth_date: userData.birth_date,
+        // veli_email yalnızca doluysa gönder (boş string EmailStr validation'ı bozar)
+        veli_email: userData.veli_email || undefined,
       };
       const response = await apiRequest<{ success: boolean; message?: string }>(`${this.baseUrl}/register`, {
         method: 'POST',

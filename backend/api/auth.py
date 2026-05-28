@@ -523,6 +523,16 @@ async def kullanici_kayit(
 
     from sqlalchemy import text as _text
 
+    from core.kvkk_compliance import is_minor
+
+    # KVKK Faz 1: 18 yaş altı kullanıcı için veli e-postası zorunlu
+    minor = is_minor(kullanici_data.birth_date)
+    if minor and not kullanici_data.veli_email:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="18 yaşından küçük kullanıcılar için veli e-postası zorunludur (KVKK)",
+        )
+
     # Rol eşleştirme: Türkçe → enum değeri
     ROL_MAP = {
         "ogrenci": "STUDENT",
@@ -562,11 +572,11 @@ async def kullanici_kayit(
         INSERT INTO users
             (id, email, username, password_hash, first_name, last_name,
              role, is_active, is_verified, total_xp, level,
-             elo_rating, is_premium, is_parent, created_at, updated_at)
+             elo_rating, is_premium, is_parent, birth_date, created_at, updated_at)
         VALUES
             (:id, :email, :username, :pw_hash, :first_name, :last_name,
              CAST(:role AS userrole), TRUE, FALSE, 0, 1,
-             1200, FALSE, FALSE, NOW(), NOW())
+             1200, FALSE, FALSE, :birth_date, NOW(), NOW())
     """),
         {
             "id": user_id,
@@ -576,6 +586,7 @@ async def kullanici_kayit(
             "first_name": first_name,
             "last_name": last_name,
             "role": rol_str,
+            "birth_date": kullanici_data.birth_date,
         },
     )
 
@@ -591,11 +602,11 @@ async def kullanici_kayit(
         await db.execute(
             _text("""
             INSERT INTO student_profiles
-                (id, user_id, grade_level, veli_onay, current_level,
+                (id, user_id, grade_level, veli_onay, veli_email, current_level,
                  total_study_hours, total_questions_solved, correct_answers,
                  irt_ability, created_at, updated_at)
             VALUES
-                (:id, :user_id, :grade_level, FALSE, 0.0,
+                (:id, :user_id, :grade_level, :veli_onay, :veli_email, 0.0,
                  0, 0, 0,
                  0.0, NOW(), NOW())
         """),
@@ -603,6 +614,8 @@ async def kullanici_kayit(
                 "id": profile_id,
                 "user_id": user_id,
                 "grade_level": grade_level,
+                "veli_onay": not minor,
+                "veli_email": kullanici_data.veli_email if minor else None,
             },
         )
 

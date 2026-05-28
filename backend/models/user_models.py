@@ -60,7 +60,9 @@ class User(Base):
         Index("idx_user_email_role", "email", "role"),  # Login + role check
         Index("idx_user_created_active", "created_at", "is_active"),  # User listing
         Index("idx_user_role_active", "role", "is_active"),  # Active users by role
-        Index("idx_user_premium_expires", "is_premium", "premium_expires_at"),  # Premium check
+        Index(
+            "idx_user_premium_expires", "is_premium", "premium_expires_at"
+        ),  # Premium check
         {"extend_existing": True},
     )
 
@@ -108,9 +110,7 @@ class User(Base):
     # Gamification fields (Task 91)
     total_xp: Mapped[int] = mapped_column(Integer, default=0)
     level: Mapped[int] = mapped_column(Integer, default=1)
-    last_level_up_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True)
-    )
+    last_level_up_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # System fields
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -217,6 +217,8 @@ class StudentProfile(Base):
     target_department: Mapped[str | None] = mapped_column(String(200))
     hedef_sinav: Mapped[str | None] = mapped_column(String(20))
     veli_onay: Mapped[bool] = mapped_column(Boolean, default=True)
+    # KVKK Faz 1: reşit olmayan öğrenci için veli iletişim e-postası (capture-only)
+    veli_email: Mapped[str | None] = mapped_column(String(255))
 
     # Learning preferences
     learning_style: Mapped[LearningStyle | None] = mapped_column(Enum(LearningStyle))
@@ -262,6 +264,7 @@ class StudentProfile(Base):
             New LearningPathStudentProfile instance
         """
         from .learning_path_models import LearningPathStudentProfile
+
         return LearningPathStudentProfile.from_legacy_profile(self)
 
 

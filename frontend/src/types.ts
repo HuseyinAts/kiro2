@@ -189,9 +189,11 @@ export interface RegisterRequest {
   password: string
   ad: string
   soyad: string
+  birth_date: string
   rol: UserRole
   telefon?: string
   okul_id?: string
+  veli_email?: string
 }
 
 // Rol bazlı izinler

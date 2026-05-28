@@ -12,7 +12,7 @@ import hashlib
 import json
 import logging
 import os
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from enum import Enum
 from typing import Any
 from uuid import uuid4
@@ -22,6 +22,25 @@ from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 logger = logging.getLogger(__name__)
+
+
+# KVKK reşitlik yaşı — 18 yaşından küçük kullanıcı için veli onayı zorunlu.
+KVKK_RESIT_YASI = 18
+
+
+def is_minor(birth_date: date, today: date | None = None) -> bool:
+    """Kullanıcı KVKK'ya göre reşit değil mi (veli onayı gerekir mi)?
+
+    18 yaşından küçükse True. 18. doğum gününü dolduran reşit sayılır.
+    """
+    if today is None:
+        today = date.today()
+    age = (
+        today.year
+        - birth_date.year
+        - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    )
+    return age < KVKK_RESIT_YASI
 
 
 # ============================================================================
@@ -51,7 +70,9 @@ class KVKKEncryption:
         try:
             from cryptography.fernet import Fernet
         except ImportError:
-            logger.warning("cryptography package not installed, using fallback encryption")
+            logger.warning(
+                "cryptography package not installed, using fallback encryption"
+            )
             self._fernet = None
             self._key = key or self._get_key_from_env()
             return
@@ -166,7 +187,9 @@ class KVKKEncryption:
         salted = f"{salt}:{data}".encode()
         return hashlib.sha256(salted).hexdigest()
 
-    def encrypt_dict(self, data: dict[str, Any], pii_fields: list[str]) -> dict[str, Any]:
+    def encrypt_dict(
+        self, data: dict[str, Any], pii_fields: list[str]
+    ) -> dict[str, Any]:
         """
         Encrypt specific PII fields in a dictionary.
 
@@ -184,7 +207,9 @@ class KVKKEncryption:
                     result[field] = self.encrypt_pii(result[field])
         return result
 
-    def decrypt_dict(self, data: dict[str, Any], pii_fields: list[str]) -> dict[str, Any]:
+    def decrypt_dict(
+        self, data: dict[str, Any], pii_fields: list[str]
+    ) -> dict[str, Any]:
         """
         Decrypt specific PII fields in a dictionary.
 
@@ -807,34 +832,34 @@ class KVKKComplianceManager:
             <html>
               <body style="font-family: Arial, sans-serif;">
                 <h2 style="color: #d32f2f;">Kişisel Veri İhlali Bildirimi</h2>
-                <p><strong>Bildirim Tarihi:</strong> {notification_data['notification_timestamp']}</p>
-                <p><strong>İhmal ID:</strong> {notification_data['breach_id']}</p>
-                <p><strong>Ciddiyet Seviyesi:</strong> {notification_data['severity'].upper()}</p>
+                <p><strong>Bildirim Tarihi:</strong> {notification_data["notification_timestamp"]}</p>
+                <p><strong>İhmal ID:</strong> {notification_data["breach_id"]}</p>
+                <p><strong>Ciddiyet Seviyesi:</strong> {notification_data["severity"].upper()}</p>
 
                 <h3>Kuruluş Bilgileri</h3>
                 <ul>
-                  <li><strong>Kuruluş Adı:</strong> {notification_data['organization']['name']}</li>
-                  <li><strong>İletişim E-posta:</strong> {notification_data['organization']['contact_email']}</li>
-                  <li><strong>İletişim Telefon:</strong> {notification_data['organization']['contact_phone']}</li>
+                  <li><strong>Kuruluş Adı:</strong> {notification_data["organization"]["name"]}</li>
+                  <li><strong>İletişim E-posta:</strong> {notification_data["organization"]["contact_email"]}</li>
+                  <li><strong>İletişim Telefon:</strong> {notification_data["organization"]["contact_phone"]}</li>
                 </ul>
 
                 <h3>İhlal Detayları</h3>
                 <ul>
-                  <li><strong>İhlal Türü:</strong> {notification_data['breach_type']}</li>
-                  <li><strong>İhlal Tarihi:</strong> {notification_data['breach_date']}</li>
-                  <li><strong>Tespit Tarihi:</strong> {notification_data['detection_date']}</li>
-                  <li><strong>Etkilenen Kullanıcı Sayısı:</strong> {notification_data['affected_users_count']}</li>
+                  <li><strong>İhlal Türü:</strong> {notification_data["breach_type"]}</li>
+                  <li><strong>İhlal Tarihi:</strong> {notification_data["breach_date"]}</li>
+                  <li><strong>Tespit Tarihi:</strong> {notification_data["detection_date"]}</li>
+                  <li><strong>Etkilenen Kullanıcı Sayısı:</strong> {notification_data["affected_users_count"]}</li>
                 </ul>
 
                 <h3>Açıklama</h3>
-                <p>{notification_data['description']}</p>
+                <p>{notification_data["description"]}</p>
 
                 <h3>Alınan Önlemler</h3>
                 <ul>
-                  {"".join(f"<li>{action}</li>" for action in notification_data['mitigation_actions'])}
+                  {"".join(f"<li>{action}</li>" for action in notification_data["mitigation_actions"])}
                 </ul>
 
-                <p><strong>Tahmini Çözüm Tarihi:</strong> {notification_data['expected_resolution_date']}</p>
+                <p><strong>Tahmini Çözüm Tarihi:</strong> {notification_data["expected_resolution_date"]}</p>
 
                 <hr>
                 <p style="font-size: 12px; color: #666;">
@@ -883,9 +908,12 @@ class KVKKComplianceManager:
             if kvkk_api_key:
                 headers["Authorization"] = f"Bearer {kvkk_api_key}"
 
-            async with aiohttp.ClientSession() as session, session.post(
-                kvkk_api_url, json=notification_data, headers=headers, timeout=30
-            ) as response:
+            async with (
+                aiohttp.ClientSession() as session,
+                session.post(
+                    kvkk_api_url, json=notification_data, headers=headers, timeout=30
+                ) as response,
+            ):
                 if response.status in [200, 201, 202]:
                     logger.info(
                         f"KVKK API notification sent successfully: {response.status}"

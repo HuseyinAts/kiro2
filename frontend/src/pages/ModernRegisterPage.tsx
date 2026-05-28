@@ -48,9 +48,11 @@ export const ModernRegisterPage: React.FC = () => {
     password: '',
     ad: '',
     soyad: '',
+    birth_date: '',
     rol: 'ogrenci',
     telefon: '',
     okul_id: '',
+    veli_email: '',
   });
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -75,6 +77,18 @@ export const ModernRegisterPage: React.FC = () => {
   };
 
   const passwordStrength = getPasswordStrength(formData.password);
+
+  // KVKK Faz 1: 18 yaş altı kullanıcı için veli e-postası zorunlu
+  const computeIsMinor = (birthDate: string): boolean => {
+    if (!birthDate) {return false;}
+    const today = new Date();
+    const b = new Date(birthDate);
+    let age = today.getFullYear() - b.getFullYear();
+    const m = today.getMonth() - b.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < b.getDate())) {age--;}
+    return age < 18;
+  };
+  const isMinor = computeIsMinor(formData.birth_date);
 
   const getPasswordStrengthColor = (strength: number): string => {
     if (strength < 30) {return modernColors.gradients.error;}
@@ -131,6 +145,12 @@ export const ModernRegisterPage: React.FC = () => {
       errors.confirmPassword = 'Şifre tekrarı gerekli';
     } else if (formData.password !== confirmPassword) {
       errors.confirmPassword = 'Şifreler eşleşmiyor';
+    }
+
+    if (!formData.birth_date) {
+      errors.birth_date = 'Doğum tarihi gerekli';
+    } else if (isMinor && !formData.veli_email) {
+      errors.veli_email = '18 yaşından küçükler için veli e-postası gerekli (KVKK)';
     }
 
     setFieldErrors(errors);
@@ -515,6 +535,60 @@ export const ModernRegisterPage: React.FC = () => {
                     }}
                   />
                 </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="birth_date"
+                    label="Doğum Tarihi"
+                    type="date"
+                    value={formData.birth_date}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                    autoComplete="bday"
+                    error={!!fieldErrors.birth_date}
+                    helperText={fieldErrors.birth_date}
+                    InputLabelProps={{ shrink: true }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        backdropFilter: 'blur(10px)',
+                      },
+                    }}
+                  />
+                </Grid>
+
+                {isMinor && (
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      required
+                      fullWidth
+                      name="veli_email"
+                      label="Veli E-postası (KVKK)"
+                      type="email"
+                      value={formData.veli_email}
+                      onChange={handleInputChange}
+                      disabled={isLoading}
+                      autoComplete="email"
+                      error={!!fieldErrors.veli_email}
+                      helperText={fieldErrors.veli_email || '18 yaş altı için zorunlu'}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Email />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(10px)',
+                        },
+                      }}
+                    />
+                  </Grid>
+                )}
 
                 <Grid item xs={12} sm={6}>
                   <TextField
