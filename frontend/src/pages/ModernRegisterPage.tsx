@@ -58,6 +58,7 @@ export const ModernRegisterPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const { register } = useAuthStore();
   const navigate = useNavigate();
@@ -94,6 +95,13 @@ export const ModernRegisterPage: React.FC = () => {
       [name]: value,
     }));
     if (error) {setError(null);}
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
   };
 
   const handleRoleSelect = (role: UserRole) => {
@@ -101,27 +109,35 @@ export const ModernRegisterPage: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.email || !formData.password || !formData.ad || !formData.soyad) {
-      setError('Lütfen zorunlu alanları doldurun');
-      return false;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır');
-      return false;
-    }
-
-    if (formData.password !== confirmPassword) {
-      setError('Şifreler eşleşmiyor');
-      return false;
-    }
-
+    const errors: Record<string, string> = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError('Geçerli bir e-posta adresi girin');
-      return false;
+
+    if (!formData.ad) {errors.ad = 'Ad gerekli';}
+    if (!formData.soyad) {errors.soyad = 'Soyad gerekli';}
+
+    if (!formData.email) {
+      errors.email = 'E-posta adresi gerekli';
+    } else if (!emailRegex.test(formData.email)) {
+      errors.email = 'Geçerli bir e-posta adresi girin';
     }
 
+    if (!formData.password) {
+      errors.password = 'Şifre gerekli';
+    } else if (formData.password.length < 6) {
+      errors.password = 'Şifre en az 6 karakter olmalıdır';
+    }
+
+    if (!confirmPassword) {
+      errors.confirmPassword = 'Şifre tekrarı gerekli';
+    } else if (formData.password !== confirmPassword) {
+      errors.confirmPassword = 'Şifreler eşleşmiyor';
+    }
+
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setError('Lütfen formdaki hataları düzeltin.');
+      return false;
+    }
     return true;
   };
 
@@ -294,7 +310,7 @@ export const ModernRegisterPage: React.FC = () => {
 
           {/* Registration Form */}
           <GlassCard glassIntensity="medium" elevated>
-            <Box component="form" onSubmit={handleSubmit}>
+            <Box component="form" onSubmit={handleSubmit} noValidate>
               <AnimatePresence mode="wait">
                 {error && (
                   <motion.div
@@ -424,6 +440,9 @@ export const ModernRegisterPage: React.FC = () => {
                     value={formData.ad}
                     onChange={handleInputChange}
                     disabled={isLoading}
+                    autoComplete="given-name"
+                    error={!!fieldErrors.ad}
+                    helperText={fieldErrors.ad}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -449,6 +468,9 @@ export const ModernRegisterPage: React.FC = () => {
                     value={formData.soyad}
                     onChange={handleInputChange}
                     disabled={isLoading}
+                    autoComplete="family-name"
+                    error={!!fieldErrors.soyad}
+                    helperText={fieldErrors.soyad}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -475,6 +497,9 @@ export const ModernRegisterPage: React.FC = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     disabled={isLoading}
+                    autoComplete="email"
+                    error={!!fieldErrors.email}
+                    helperText={fieldErrors.email}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -501,6 +526,9 @@ export const ModernRegisterPage: React.FC = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     disabled={isLoading}
+                    autoComplete="new-password"
+                    error={!!fieldErrors.password}
+                    helperText={fieldErrors.password}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -545,6 +573,7 @@ export const ModernRegisterPage: React.FC = () => {
                       <LinearProgress
                         variant="determinate"
                         value={passwordStrength}
+                        aria-label={`Şifre gücü: ${getPasswordStrengthLabel(passwordStrength)}`}
                         sx={{
                           height: 6,
                           borderRadius: 3,
@@ -567,8 +596,20 @@ export const ModernRegisterPage: React.FC = () => {
                     label="Şifre Tekrar"
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      if (fieldErrors.confirmPassword) {
+                        setFieldErrors((prev) => {
+                          const next = { ...prev };
+                          delete next.confirmPassword;
+                          return next;
+                        });
+                      }
+                    }}
                     disabled={isLoading}
+                    autoComplete="new-password"
+                    error={!!fieldErrors.confirmPassword}
+                    helperText={fieldErrors.confirmPassword}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -596,7 +637,7 @@ export const ModernRegisterPage: React.FC = () => {
                     }}
                   />
                   {confirmPassword && (
-                    <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box role="status" aria-live="polite" sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
                       {formData.password === confirmPassword ? (
                         <>
                           <CheckCircle sx={{ fontSize: 18, color: 'success.main' }} />
@@ -630,6 +671,7 @@ export const ModernRegisterPage: React.FC = () => {
                     value={formData.telefon}
                     onChange={handleInputChange}
                     disabled={isLoading}
+                    autoComplete="tel"
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -655,6 +697,7 @@ export const ModernRegisterPage: React.FC = () => {
                       value={formData.okul_id}
                       onChange={handleInputChange}
                       disabled={isLoading}
+                      autoComplete="off"
                       helperText="Okulunuzun verdiği özel kod"
                       InputProps={{
                         startAdornment: (
