@@ -1,29 +1,31 @@
-## Session Handoff — 2026-05-28 (A3 a11y + KVKK scoping)
-**Branch:** master
-**Son commit:** 73cc5614f fix(a2): seed_admin import os
-**Uncommitted:** temiz | **3 commit bu session — PUSH EDİLMEDİ**
+## Session Handoff — 2026-05-28 (Register 422 deploy + A2 CVE Sweep)
+**Branch:** master | **HEAD:** 11b25dd2d | origin senkron | working tree temiz
+**Stratejik yön:** Kurumsal/okul satışı → tam roadmap (Faz A+B+C+D)
 
-### Yapılanlar (3 commit)
-- `5fc6a7d11` feat(a3): kayıt formu WCAG a11y — ModernRegisterPage per-field error + autoComplete + aria-live + noValidate
-- `0619bb070` feat(a3): ChatInput WCAG 4.1.2 — input aria-label + Send butonu aria-label + role=status
-- `73cc5614f` fix(a2): seed_admin.py NameError — eksik `import os` (ruff F821 RED→GREEN)
+### Yapılanlar (bu session, 5 commit push edildi)
+- `ed0f5ce38` (pre-existing, push'landı) register 422 fix — authService ad_soyad/sifre mapping
+- `17fd1f81a` fix: bozuk frontend dep bump geri al (lodash ^4.18.1 yok → ^4.17.21; axios/dompurify) — `npm ci` unblock
+- `9de7ea3bb` A2 frontend CVE sweep — `npm audit fix`, 32 CVE (1 crit+15 high+16 mod) → **0**
+- `4bc872168` A2 pypdf2 EOL → pypdf 6.12.2 (2 import + 5 requirements)
+- `11b25dd2d` A2 dead python-jose kaldırıldı → vulnerable ecdsa düştü
 
-### Verdict / canlı doğrulanan phantom'lar (roadmap 27 May fazla iyimser)
-- AGPL paketleri requirements'ta YOK; AccessibilityProvider App.tsx:204'te MOUNT; soru_bankasi 14 endpoint auth TAM; seed_admin env-driven (sadece import os eksikti) → P0-4/P0-5/P1-2/P1-3 phantom
-- A3 form a11y GERÇEKTİ → register + chat düzeltildi. Login zaten doğruydu. OSB toggle (useAccessibilitySettings hook + accessibility.css + DOM class) + modal focus trap (AccessibleModal+useFocusTrap, MUI native) ALTYAPI TAM → beta-blocker değil. *Tech-debt: SensoryControl vs useAccessibilitySettings ikisi de `.no-animations` toggle ediyor (acil değil).*
-- KVKK backend MEVCUT (roadmap "hiç başlanmadı" = phantom): kvkk_consent_api (/give /withdraw /my-consents /check) + ferpa_coppa_compliance_api + parent_child approval + KVKKConsent/COPPAParentalConsent models. 503 shim S152'de kalktı. `student_profiles.veli_onay` (default FALSE) = minor rıza hook. COPPA `<13` cap → 13-17 için KVKKConsent.
+### Doğrulama (hepsi canlı)
+- Register: API GREEN 201 + tarayıcı E2E (Playwright) 201 → /learning-path (2x rebuild sonrası)
+- Frontend: `npm audit` = 0 vuln; docker rebuild GREEN
+- Backend: `safety` = 158 paket / **0 vuln**; health 200; login JWT path 401 (PyJWT, jose'suz boot OK)
+- Test kullanıcıları temizlendi (@kiro2qa.com = 0; users'a 135 FK tablo var, dinamik silindi)
 
-### ⚠️ YENİ KRİTİK LEAD — KVKK Faz 1'i blokladı
-**Register contract mismatch (muhtemel beta-blocker, DOĞRULANMADI):**
-frontend `RegisterRequest` (`frontend/src/types.ts:187`) = {email, **password**, **ad**, **soyad**, rol, telefon?, okul_id?} → `authService.register` HAM gönderiyor (mapping YOK) → backend `KullaniciOlustur` (`backend/models.py:88`, /kayit + /register alias `api/auth.py:509,627`) = {email, **ad_soyad**, **sifre**, rol, aktif}. `ad_soyad`/`sifre` zorunlu ama frontend göndermiyor → registration muhtemelen 422. İzini süremediğim bir transform olabilir → STACK ile doğrula.
+### Durum
+- **Güvenlik (CVE/deps):** frontend 0 + backend 0 → A2 kod/dep tarafı KAPANDI
+- Stack: backend healthy (pypdf, no-jose), frontend healthy (CVE-clean) — ikisi de bu session rebuild
+- :3000=frontend, :8000=backend, :3001=Grafana (KIRO2 değil), vite dev çalışmıyor
 
-### Engelleyiciler (operatör aksiyonu)
-- Dev stack DOWN (Frontend=000 Backend=000) → register mismatch + KVKK e2e doğrulanamıyor: `cd frontend && npm run dev` + backend
-- PostgreSQL restart (A1): `Restart-Service postgresql-x64-18` (shared_buffers 4GB)
-- GEMINI_API_KEY rotate (chat leak, AUP) | gh CLI yok → A2 CVE/Dependabot bloklu
+### Kalan / Sonraki
+- **A2-OPS** (operatör): gh CLI kurulu değil → Dependabot PR triage (artık büyük ölçüde redundant)
+- **A1** (operatör): `Restart-Service postgresql-x64-18` → shared_buffers 4GB, cache hit %56→%92
+- **Faz B (KVKK Faz 1):** veli rıza akışı + dogum_tarihi capture (mevcut KVKK backend üzerine)
+- GEMINI_API_KEY rotate hâlâ bekliyor (AUP leak, önceki session)
 
-### Sonraki adımlar
-1. **Register mismatch'i stack ile doğrula** → kırıksa authService'te map (ad/soyad→ad_soyad, password→sifre). KVKK Faz 1 ön-koşulu.
-2. KVKK Faz 1: dogum_tarihi + veli_email capture → users.birth_date + minor→veli_onay
-3. KVKK Faz 2 (email+token; passwordless_auth.py reuse?) + Faz 3 (aydınlatma metni = kullanıcı/hukuk)
-4. 3 commit'i push et
+### Notlar
+- `requirements-minimal.txt` = deployed backend (Dockerfile.minimal). requirements.txt/qa ayrı.
+- Roadmap CVE/AGPL rakamları stale çıktı: "~60 CVE"→gerçek 3, AGPL phantom. Live-verify > audit-doc.
