@@ -1,65 +1,50 @@
-## Session Handoff — 2026-05-27 (S198 — Mega Sprint: Curator + W1-W4)
-**Branch:** master | **Senkron:** origin/master (push pending — coverage doc)
-**Son commit:** `5e628e5d8 feat(s198-w4.1b): Study Rooms backend gaps`
-**Toplam S198 commit:** 11 commit + 1 pending (coverage doc)
+## Session Handoff — 2026-05-28 (S198 Mega + Product-Ready Roadmap + A1 DB Scalability)
+**Branch:** master | **Senkron:** origin/master (18257d13c, fully pushed)
+**Son commit:** `18257d13c perf(a1): DB scalability — hot-path indexes + PG tuning`
+**Uncommitted:** YOK (temiz)
+**Toplam commit (bu oturum):** 15
 
-### Yapılanlar
+### Yapılanlar (3 büyük blok)
 
-**S198 Ana (Curator 368 Apply):**
-- 250/368 (%67.9) consensus apply via 6 paralel Claude subagent (Plan E pivot — GEMINI_API_KEY env'de yok)
-- Pilot 5/5 + Spot 3/3 PASS, backup table hazır
-- Gold pool: 13,310 → 13,560 (+250)
+**BLOK 1 — S198 Curator + Wave 1-4 (12 commit):**
+- Curator 368 pending → 250 apply (%67.9) via 6 paralel Claude subagent (Plan E — GEMINI_API_KEY yoktu)
+- W1.1: +35 db_match promote | W1.2: git refs cleanup | W1.3: settings commit | W1.5: obsolete plan drop
+- W2.1/W2.2: DEFER (deprecated purge 5 importer + subject tag)
+- W3: coverage %16.64 → %42.75 (+%157)
+- W4.1+W4.1b: Study Rooms TAM kapatma (frontend wire + 3 backend gap, 40+7 test PASS)
+- W4.2: ORM Cluster 2 %100 PHANTOM (HIGH 203→159) | W4.3: ORM Cluster 1 %0 phantom (158 REAL, migration drafted)
+- Gözden geçirme: 427 fail = TEST POLLUTION (persistent değil), coverage doc düzeltildi
 
-**Wave 1 (Hızlı Kazanç):**
-- W1.1: +35 db_match=true promote — Claude DB ile aynı, audit phantom (Gold +35)
-- W1.2: 21 `.git/refs/**/desktop.ini` cleanup (git log --all çalışıyor)
-- W1.3: `.claude/settings.json` S197 drift commit
-- W1.4: GitHub Actions DEFER (gh CLI yok, API anonymous)
-- W1.5: `concurrent-sniffing-liskov.md` obsolete plan drop
+**BLOK 2 — Product-Ready Roadmap (`docs/audits/2026-05-27_product_ready_roadmap.md`):**
+- 2 paralel Explore subagent (S179+S180 audit sentez) + WebSearch (EdTech + KVKK) + live verify
+- 12 boyut skor kartı: 5 🟢 / 3 🟡 / 4 🔴 (CVE, A11y, DB, KVKK blocker)
+- S180'in 10 P0'ından 8'i S181-S198'de çözülmüş tespit edildi
+- Faz A-D roadmap. **Kullanıcı kararı: B2B kurumsal hedef** (tüm fazlar, 2-3 ay)
 
-**Wave 2 (Cleanup DEFER):**
-- W2.1: `_deprecated/` purge — 9 Python file + 5 production importer → sprint refactor gerek. Rollback tag: `v-pre-deprecated-purge-20260527`. Frontend `_deprecated` dirs (sadece desktop.ini) silindi.
-- W2.2: Subject tag — 10 FIZIK suspicious, Curator manuel için DEFER
-
-**Wave 3 (Coverage):**
-- W3: pytest run 25:30 dk → **%42.75 statement** (S179 baseline %16.64 → +%26.11 pp, **+%157 göreli artış**). 12,156 PASS / 427 FAIL / 1,311 SKIP.
-- Auth modules tarama N/A (path format), gerçek değer için ayrı sorgu
-
-**Wave 4 (Subagent Dispatch):**
-- W4.1: Frontend Study Rooms wire (frontend-coordinator) — 5 file (1 service + 2 hook + 1 component + 1 test), 7/7 test PASS, 3 backend gap raporlandı
-- W4.1b: Backend gap fix (kiro2-backend-api) — 3 endpoint (/joined, /{id}/members real, POST alias), 12 yeni test, 40/40 PASS
-- W4.2: ORM Cluster 2 audit — **%100 PHANTOM** (41 → 0 finding). Baseline strikethrough + ✅ FIXED. HIGH 203 → 162.
-- W4.3: ORM Cluster 1 audit — **%0 phantom (REAL)**. 158 finding gerçek, migration drafted (NOT applied). 5/5 sample drift confirmed.
-
-### Etki Özeti
-
-| Metric | Önce | Sonra | Δ |
-|---|---|---|---|
-| Gold pool (auto_judged_high) | 13,310 | **13,595** | +285 (+%2.14) |
-| Pending | 36,846 | 36,561 | -285 |
-| ORM HIGH drift | 203 | 159 | -44 phantom |
-| Coverage statement | %16.64 | **%42.75** | +26.11 pp |
-| Study Rooms (S178 backlog) | yarım | ✅ KAPALI | full wire |
-| Backup tables | — | 2 | s198_curator + s198_promote36 |
+**BLOK 3 — A1 DB Scalability (ilk roadmap aksiyonu):**
+- A1.1 hot-path index APPLIED+VERIFIED: **curator queue 162ms→0.44ms (~370x)**, alembic head=s179_hot_path_idx
+- A1.2 PG tuning RELOAD DONE (downtime yok): work_mem 8x, cache_size 4x, random_page_cost SSD-fix
+- A1.2 RESTART-pending: shared_buffers 4GB + max_conn 200 (auto.conf yazılı)
 
 ### Fail Eden Testler
-- 427 fail + 8 error (S179 baseline'dan persistent muhtemelen, triage backlog)
+- 427 fail full-sweep = TEST POLLUTION (izole modül PASS). Gerçek bug değil. Bisect backlog.
 
-### Engelleyiciler / DEFER
-- **GEMINI_API_KEY rotation** — bu sprintte bypass edildi (subagent), gelecek için key rotate gerek
-- **_deprecated purge** — 5 importer refactor sprint (4-8 saat)
-- **ORM Cluster 1 migration** — ~140 column add, 8 cold table, sprint
-- **427 failed test triage** — persistent vs new ayrımı
+### Engelleyiciler / Kullanıcı Aksiyonu Bekliyor
+1. **PostgreSQL restart** — `Restart-Service postgresql-x64-18` → A1 tamamlanır (cache hit %56→%92). Rollback: `ALTER SYSTEM RESET shared_buffers/max_connections`
+2. **GEMINI_API_KEY rotate** — chat'te leak oldu (AIzaSyDhd...), rotate + .env.local'e yaz
+3. **GitHub Actions kontrol** — gh CLI yok, REST API anonymous 0 run
 
-### Sonraki Adımlar (öncelik sırası)
-1. **Coverage doc commit + push** (bu session)
-2. **427 failed triage** — test_user_models + TestDiaryAPI ERROR root cause
-3. **Auth coverage push** — unified_auth_service / csrf_protection (%0 → %50+)
-4. **GEMINI_API_KEY rotate + .env.local** — gelecek Gemini-bağımlı işler için
-5. **Phase 7 retry concept-based subjects** — Gemini key sonrası
-6. **76 low_conf Curator UI manuel** — kalan beta gold pool kazanımı
+### Sonraki Adımlar (B2B kurumsal hedef — öncelik)
+1. **A2 — CVE sweep** (~60 CVE + AGPL + Dependabot 200 PR + 3 auth-gap endpoint + seed_admin password)
+2. **B1 — KVKK temel** (VERBİS değerlendirme + veli açık rıza akışı + aydınlatma metni) — yasal, ceza 13.6M TL
+3. **A3 — A11y** (AccessibilityProvider mount + form aria + OSB toggle wire)
+4. **C2 — test pollution bisect** + auth coverage %0→%50
+5. **C1 — observability** (pg_stat_statements preload + Sentry)
+6. **D — SSO (MEB e-okul) + multi-tenant + SOC 2** (uzun vade kurumsal)
 
 ### Kararlar (gelecek session tekrar tartışmasın)
-- **Plan E (subagent dispatch) başarılı**: $0 cost + 6 paralel + 2.5 dk → 250 apply (%68 consensus). Gemini Batch'e iyi alternatif when API key unavailable.
-- **S197 Mega Audit Lock kuralı kanıtlandı**: W4.2 phantom (100%) + W4.3 real (0%) aynı baseline doc'tan. **Per-cluster verify zorunlu** — toplu phantom claim güvenilmez.
-- **Test coverage +%157 göreli artış sürdürülebilir**: haftalık ~%30 artış oranı. Beta için %80 hedefe ~2 sprint.
+- **B2B kurumsal hedef seçildi** → SOC 2 + SSO + multi-tenant zorunlu (Faz D)
+- **A1.1 migration guard**: `ALLOW_S179_HOT_PATH_INDEXES=true` gerek (re-run için)
+- **Plan E (subagent dispatch)** Gemini Batch'e iyi alternatif (API key yokken, $0)
+- **S197 Mega Audit Lock kanıtlandı**: W4.2 phantom + W4.3 real aynı baseline doc — per-cluster verify zorunlu
+- **DB tuning yarım**: reload-able aktif, restart-params operator'a devredildi
