@@ -22,7 +22,7 @@ import numpy as np
 import soundfile as sf
 from moviepy.editor import VideoFileClip
 from PIL import Image
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 
 from content.unified_content_management import ContentFile
 from core.structured_logging import LogCategory, get_logger
@@ -345,7 +345,7 @@ class VideoProcessor:
 
                 for i, timestamp in enumerate(timestamps):
                     if timestamp < video.duration:
-                        thumbnail_path = Path(output_dir) / f"thumbnail_{i+1:03d}.jpg"
+                        thumbnail_path = Path(output_dir) / f"thumbnail_{i + 1:03d}.jpg"
 
                         # Extract frame at timestamp
                         frame = video.get_frame(timestamp)
@@ -1007,9 +1007,9 @@ class DocumentProcessor:
             elif file_ext == ".txt":
                 analysis = await self._analyze_txt(file_path, analysis)
             else:
-                analysis.content_features[
-                    "analysis_error"
-                ] = f"Unsupported format: {file_ext}"
+                analysis.content_features["analysis_error"] = (
+                    f"Unsupported format: {file_ext}"
+                )
 
         except Exception as e:
             logger.error(f"Error analyzing document {file_path}: {e}")

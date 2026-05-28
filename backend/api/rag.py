@@ -230,18 +230,18 @@ async def index_file_document(
         if file_ext in ["txt", "md"]:
             text = content.decode("utf-8")
         elif file_ext == "pdf":
-            # PDF extraction (requires PyPDF2)
+            # PDF extraction (requires pypdf)
             try:
                 from io import BytesIO
 
-                from PyPDF2 import PdfReader
+                from pypdf import PdfReader
 
                 pdf = PdfReader(BytesIO(content))
                 text = "\n\n".join([page.extract_text() for page in pdf.pages])
             except ImportError:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="PDF support requires PyPDF2 package",
+                    detail="PDF support requires pypdf package",
                 )
         else:
             raise HTTPException(

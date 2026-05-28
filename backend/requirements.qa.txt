@@ -97,7 +97,7 @@ pyttsx3==2.90
 
 # PDF Processing
 pdfplumber==0.11.0
-PyPDF2==3.0.1
+pypdf==6.12.2
 pytesseract==0.3.10
 pdf2image==1.16.3
 
