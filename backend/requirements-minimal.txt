@@ -108,6 +108,3 @@ chromadb>=0.4.22,<0.6
 # Text-to-Speech
 gtts>=2.4.0
 pyttsx3>=2.90
-
-# JWT (python-jose)
-python-jose[cryptography]>=3.3.0
