@@ -10,10 +10,11 @@ name: Quality Gate (New-Endpoint Checklist)
 # guards that already exist in `backend/scripts/`.
 
 on:
+  # Actions-minute reduction: PR yeterli (push'ta tekrar koşmaya gerek yok).
+  # Tek hafif job (new-endpoint checklist) — değerli, PR'da kalır.
   pull_request:
     branches: [main, master]
-  push:
-    branches: [main, master]
+  workflow_dispatch:
   workflow_dispatch:
 
 env:

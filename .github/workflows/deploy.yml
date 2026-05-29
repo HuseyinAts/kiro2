@@ -1,15 +1,12 @@
 name: Production Deployment Pipeline
 
 on:
+  # Actions-minute reduction: deploy yalnız version tag'inde veya manuel.
+  # Eskiden her push/PR'da 10 deploy job'u koşuyordu (KUBE_CONFIG yokken
+  # zaten fail). push-branches + pull_request kaldırıldı.
   push:
-    branches:
-      - master
-      - develop
     tags:
       - 'v*.*.*'
-  pull_request:
-    branches:
-      - master
   workflow_dispatch:
     inputs:
       environment:

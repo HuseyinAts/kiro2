@@ -7,8 +7,10 @@ name: CI
 on:
   push:
     branches: [main, master, develop]
+    paths-ignore: ['**.md', 'docs/**', '.claude/**']
   pull_request:
     branches: [main, master, develop]
+    paths-ignore: ['**.md', 'docs/**', '.claude/**']
   workflow_dispatch:
 
 concurrency:
@@ -179,7 +181,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+        # Actions-minute reduction: single version on push/PR (3.12/3.13
+        # coverage moved to scheduled run). Was [3.11, 3.12, 3.13].
+        python-version: ["3.11"]
 
     services:
       postgres:
