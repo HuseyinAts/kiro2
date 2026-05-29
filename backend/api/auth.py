@@ -23,7 +23,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.authorization import require_student_owner_or_privileged
@@ -1983,3 +1983,115 @@ async def revoke_device(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
         )
+
+
+# ============================================================================
+# KVKK Faz 2: Veli onay (parental consent) endpoint'leri
+# ============================================================================
+
+
+class VeliOnayVerifyRequest(BaseModel):
+    token: str = Field(..., min_length=10, max_length=200)
+
+
+class VeliOnayResponse(BaseModel):
+    status: str
+    message: str
+
+
+class VeliOnayStatusResponse(BaseModel):
+    status: str
+
+
+def _send_veli_onay_email(veli_email: str, token: str) -> None:
+    """Veli onay + geri-çek linkli email gönder (fire-and-forget)."""
+    import os
+
+    from core.email_util import send_email
+
+    frontend = os.getenv("FRONTEND_URL", "http://localhost:3001").rstrip("/")
+    onay = f"{frontend}/veli-onay?token={token}"
+    geri = f"{frontend}/veli-onay?token={token}&action=withdraw"
+    html = (
+        "<p>Merhaba,</p>"
+        "<p>Velisi olduğunuz öğrenci KIRO2'ye kayıt oldu. Eğitim platformunu "
+        "kullanabilmesi için açık rızanız gerekmektedir.</p>"
+        f'<p><a href="{onay}">Onaylıyorum</a> (bağlantı 7 gün geçerli)</p>'
+        f'<p style="font-size:12px;color:#888">Onayı geri çekmek için: '
+        f'<a href="{geri}">tıklayın</a></p>'
+    )
+    send_email(veli_email, "KIRO2 — Veli Onayı Gerekiyor", html)
+
+
+@router.post("/veli-onay/verify", response_model=VeliOnayResponse)
+async def veli_onay_verify(
+    request: Request,
+    body: VeliOnayVerifyRequest,
+    db: AsyncSession = Depends(get_db),
+) -> VeliOnayResponse:
+    """Veli email linkindeki token ile açık rızayı onaylar (public — token=auth)."""
+    from services.veli_onay_service import VeliOnayService
+
+    ip = request.client.host if request.client else None
+    ua = request.headers.get("user-agent")
+    result = await VeliOnayService(db).verify_and_grant(body.token, ip=ip, ua=ua)
+    if not result.success:
+        raise HTTPException(status_code=400, detail=result.message)
+    return VeliOnayResponse(
+        status=result.status or "granted", message=result.message or ""
+    )
+
+
+@router.post("/veli-onay/withdraw", response_model=VeliOnayResponse)
+async def veli_onay_withdraw(
+    body: VeliOnayVerifyRequest,
+    db: AsyncSession = Depends(get_db),
+) -> VeliOnayResponse:
+    """Veli onayını geri çeker (public — token=auth, KVKK Madde 11)."""
+    from services.veli_onay_service import VeliOnayService
+
+    ok = await VeliOnayService(db).withdraw(body.token)
+    if not ok:
+        raise HTTPException(
+            status_code=400, detail="Geçersiz veya zaten geri çekilmiş bağlantı"
+        )
+    return VeliOnayResponse(status="withdrawn", message="Veli onayı geri çekildi")
+
+
+@router.get("/veli-onay/status", response_model=VeliOnayStatusResponse)
+async def veli_onay_status(
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
+) -> VeliOnayStatusResponse:
+    """Öğrencinin kendi veli onay durumu."""
+    from services.veli_onay_service import VeliOnayService
+
+    status_str = await VeliOnayService(db).get_status(str(mevcut_kullanici.id))
+    return VeliOnayStatusResponse(status=status_str)
+
+
+@router.post("/veli-onay/resend", response_model=VeliOnayResponse)
+async def veli_onay_resend(
+    request: Request,
+    mevcut_kullanici: Kullanici = Depends(mevcut_kullanici_getir),
+    db: AsyncSession = Depends(get_db),
+) -> VeliOnayResponse:
+    """Öğrenci veli onay email'ini tekrar gönderir (rate-limit'li)."""
+    from services.veli_onay_service import VeliOnayService
+
+    await _check_rate_limit(request, "register")
+    svc = VeliOnayService(db)
+    row = (
+        await db.execute(
+            text("SELECT veli_email FROM student_profiles WHERE user_id = :u"),
+            {"u": str(mevcut_kullanici.id)},
+        )
+    ).first()
+    if not row or not row[0]:
+        raise HTTPException(status_code=400, detail="Kayıtlı veli e-postası yok")
+    veli_email = row[0]
+    token = await svc.resend(str(mevcut_kullanici.id), veli_email)
+    _send_veli_onay_email(veli_email, token)
+    return VeliOnayResponse(
+        status="pending", message="Onay e-postası tekrar gönderildi"
+    )
