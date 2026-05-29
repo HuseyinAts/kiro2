@@ -4,6 +4,7 @@
 **Trigger:** S182-S193 12-subject audit'inde A bias pipeline-wide doğrulandı (%29-32 her subject'te)
 **Methodology:** Data forensics + 2 paralel Explore agent codebase scan
 **Status:** ✅ CONFIRMED — iki ayrı root cause tespit edildi
+**Update (2026-05-29):** ✅ **Root cause #2 (pipeline bug) FIXED** — `cross_validate_answers.py:114` `ai_upgrade=0.65` tier + `:270-278` `startswith("ai_upgrade_")` kapsamı (S194 fix, task #305, 78/78 PASS). Adversarial verify pass ile canlı kodda doğrulandı. Root cause #1 (page_inline OCR bias) kod-dışı, Curator review fallback'ında kalıyor (P2).
 
 ---
 
