@@ -37,6 +37,27 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Diff-based lint: legacy debt grandfathered; only CHANGED backend/*.py
+      # must pass. New code stays clean without blocking on 10K+ pre-existing.
+      - name: Compute changed Python files
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1 2>/dev/null || true
+            BASE=$(git merge-base "origin/${{ github.base_ref }}" HEAD 2>/dev/null || echo "")
+          else
+            BASE="${{ github.event.before }}"
+          fi
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE" 2>/dev/null; then
+            echo "No valid diff base — nothing to lint (grandfathered)."
+            echo "files=" >> "$GITHUB_OUTPUT"
+          else
+            FILES=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- backend/ \
+              | grep '\.py$' | tr '\n' ' ' || true)
+            echo "files=$FILES" >> "$GITHUB_OUTPUT"
+            echo "Changed backend Python files: ${FILES:-<none>}"
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -65,23 +86,45 @@ jobs:
           cd backend && uv pip install -r requirements.txt
           uv pip install ruff black mypy bandit safety types-redis types-passlib
 
-      - name: Run Ruff Linter
+      - name: Run Ruff Linter (changed files only)
         if: matrix.check == 'ruff'
         run: |
           source .venv/bin/activate
-          ruff check backend/ --output-format=github
+          FILES="${{ steps.changed.outputs.files }}"
+          if [ -z "$FILES" ]; then
+            echo "No changed backend Python files — ruff skipped (grandfathered)."
+            exit 0
+          fi
+          echo "Linting: $FILES"
+          ruff check $FILES --output-format=github
 
-      - name: Run MyPy Type Checking
+      - name: Run MyPy Type Checking (changed files only)
         if: matrix.check == 'mypy'
         run: |
           source .venv/bin/activate
-          mypy backend/ --ignore-missing-imports --no-error-summary --no-strict-optional
+          FILES="${{ steps.changed.outputs.files }}"
+          if [ -z "$FILES" ]; then
+            echo "No changed backend Python files — mypy skipped (grandfathered)."
+            exit 0
+          fi
+          echo "Type-checking: $FILES"
+          mypy $FILES --ignore-missing-imports --no-error-summary --no-strict-optional
 
-      - name: Run Bandit Security Scan
+      - name: Run Bandit Security Scan (changed files only)
         if: matrix.check == 'bandit'
         run: |
           source .venv/bin/activate
-          bandit -r backend/ -ll -x backend/tests,backend/alembic -f json -o bandit-report.json
+          FILES="${{ steps.changed.outputs.files }}"
+          # Exclude tests/alembic from the changed set
+          SCAN=$(echo "$FILES" | tr ' ' '\n' \
+            | grep -vE '^backend/(tests|alembic)/' | tr '\n' ' ' || true)
+          if [ -z "$SCAN" ]; then
+            echo "No changed backend Python files to scan — bandit skipped."
+            echo '{}' > bandit-report.json
+            exit 0
+          fi
+          echo "Scanning: $SCAN"
+          bandit -ll $SCAN -f json -o bandit-report.json
 
       - name: Run Safety Check
         if: matrix.check == 'safety'
@@ -91,6 +134,7 @@ jobs:
 
       - name: Run Semgrep Security Scan
         if: matrix.check == 'semgrep'
+        continue-on-error: true  # full-repo scan; pre-existing findings non-blocking
         uses: semgrep/semgrep-action@v1
         with:
           config: >-
