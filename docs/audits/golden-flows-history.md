@@ -622,3 +622,13 @@ ports, Session 153+ "DONE" status), see the "Next development phase" section
 of `.claude/rules/golden-flows.md`. Implementation file
 `backend/tests/e2e/test_golden_flows.py`, CI gate
 `.github/workflows/golden-flows.yml`, marker `@pytest.mark.golden_flow`.
+
+---
+
+## KVKK Faz 2 — Veli onay GF (29 May 2026)
+
+`test_gf_veli_onay_verify_invalid`: `/api/v1/auth/veli-onay/verify` geçersiz
+token ile semantik 4xx (400/422) döner, asla 500. Reşit olmayan öğrenci veli
+açık rıza akışının public verify yüzeyini korur. Davranış in-process olarak
+`tests/integration/test_veli_onay_endpoints.py::test_verify_invalid_token_returns_400`
+ile de kanıtlı. Canlı GF çalıştırması backend redeploy gerektirir (stale backend 404).

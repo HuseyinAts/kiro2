@@ -183,15 +183,18 @@ from .user import (
     Kullanici,
     KullaniciGiris,
     KullaniciOlustur,
-    OgrenciProfilOlusturGirdi,
     OgrenciProfili,
-    OgretmenProfilOlusturGirdi,
+    OgrenciProfilOlusturGirdi,
     OgretmenProfili,
+    OgretmenProfilOlusturGirdi,
     TokenYaniti,
-    VeliProfilOlusturGirdi,
     VeliProfili,
+    VeliProfilOlusturGirdi,
 )
 from .usta_cirak import MentorFeedback, MentorPair, MentorSession
+
+# KVKK Faz 2: veli onay kaydı
+from .veli_consent import VeliConsent
 
 # DEPRECATED: Use StudentProfile directly
 Student = StudentProfile
@@ -391,6 +394,8 @@ __all__ = [
     "TopicPrerequisite",
     # Dungeon Learning Path
     "DungeonProgress",
+    # KVKK Faz 2
+    "VeliConsent",
     # Aliases for backward compatibility
     "Student",
     "CanonicalStudentProfile",  # Alias for LearningPathStudentProfile

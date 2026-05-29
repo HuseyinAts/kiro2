@@ -31,7 +31,11 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_async_session
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_user,
+    require_veli_consent,
+)
 from models.study_room import (
     MemberRole,
     MemberStatus,
@@ -161,6 +165,7 @@ async def _get_membership(
 async def create_room(
     body: StudyRoomCreate,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    _consent: AuthenticatedUser = Depends(require_veli_consent),
     db: AsyncSession = Depends(get_async_session),
 ) -> StudyRoomResponse:
     """Create a new study room. Caller becomes OWNER + first ACTIVE member.
@@ -352,6 +357,7 @@ async def delete_room(
 async def join_room(
     room_id: str,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    _consent: AuthenticatedUser = Depends(require_veli_consent),
     db: AsyncSession = Depends(get_async_session),
 ) -> StudyRoomResponse:
     """Join a room. Requires PUBLIC visibility (private rooms need invite)."""

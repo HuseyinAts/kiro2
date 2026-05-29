@@ -12,6 +12,7 @@ import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field, field_validator
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class AuthenticatedUser(BaseModel):
     Replaces SimpleNamespace for better type safety and validation.
     KVKK compliant: email masked in repr to prevent accidental PII logging.
     """
+
     id: int | str = Field(..., description="User ID (primary key)")
     username: str = Field(..., min_length=1, max_length=255)
     role: UserRole = Field(..., description="User role")
@@ -86,6 +88,7 @@ class AuthenticatedUser(BaseModel):
 
     class Config:
         """Pydantic config."""
+
         use_enum_values = False  # Keep enum objects
         frozen = True  # Security: Prevent privilege escalation
 
@@ -125,6 +128,7 @@ async def get_current_user(
     try:
         # P0-1e: Check blacklist before decoding (Redis-backed with in-memory fallback)
         from core.jwt_auth import get_jwt_manager
+
         jwt_mgr = get_jwt_manager()
         if await jwt_mgr.is_blacklisted_async(token):
             raise HTTPException(
@@ -262,6 +266,7 @@ def create_mock_jwt_token(user_id: str = "test_user", role: str = "student") -> 
     WARNING: Only use in test environment!
     """
     import os
+
     if os.getenv("ENVIRONMENT") == "production":
         raise RuntimeError("Mock tokens not allowed in production")
 
@@ -367,7 +372,9 @@ def create_access_token(data: dict[str, Any], expires_delta: int = None) -> str:
 
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=expires_delta)
+        expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
+            minutes=expires_delta
+        )
     else:
         expire = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
             minutes=ACCESS_TOKEN_EXPIRE_MINUTES
@@ -385,3 +392,31 @@ def create_access_token(data: dict[str, Any], expires_delta: int = None) -> str:
 get_database_session = get_db
 get_session = get_db
 get_async_db = get_db
+
+
+# ============================================================================
+# KVKK Faz 2: Veli onay enforcement dependency
+# ============================================================================
+async def require_veli_consent(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> AuthenticatedUser:
+    """Reşit olmayan öğrenci + veli_onay=False ise sosyal/PII erişimini 403'ler.
+
+    Çekirdek öğrenme (soru/sınav/plan) bu dependency'i KULLANMAZ — açık kalır.
+    Profil yoksa (öğrenci değilse) veya veli_onay=True ise geçer.
+    """
+    from sqlalchemy import text as _text
+
+    row = (
+        await db.execute(
+            _text("SELECT veli_onay FROM student_profiles WHERE user_id = :uid"),
+            {"uid": str(current_user.id)},
+        )
+    ).first()
+    if row is None or row[0] is True:
+        return current_user
+    raise HTTPException(
+        status_code=403,
+        detail="Bu özellik için veli onayı gereklidir (KVKK reşit olmayan kullanıcı).",
+    )

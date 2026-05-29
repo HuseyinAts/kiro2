@@ -88,6 +88,34 @@ class AuthService {
   }
 
   /**
+   * KVKK Faz 2: Veli onay token'ını onaylar (public — token=auth)
+   */
+  async veliOnayVerify(token: string): Promise<{ status: string; message: string }> {
+    try {
+      return await apiRequest(`${this.baseUrl}/veli-onay/verify`, {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+    } catch (error: unknown) {
+      throw new Error(getErrorMessage(error) || 'Onay işlemi başarısız');
+    }
+  }
+
+  /**
+   * KVKK Faz 2: Veli onayını geri çeker (public — token=auth, KVKK Madde 11)
+   */
+  async veliOnayWithdraw(token: string): Promise<{ status: string; message: string }> {
+    try {
+      return await apiRequest(`${this.baseUrl}/veli-onay/withdraw`, {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+    } catch (error: unknown) {
+      throw new Error(getErrorMessage(error) || 'Geri çekme başarısız');
+    }
+  }
+
+  /**
    * Validate current session via httpOnly cookie
    */
   async validateToken(): Promise<boolean> {
