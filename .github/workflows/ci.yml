@@ -76,13 +76,13 @@ jobs:
           path: |
             ~/.cache/uv
             ~/.cache/pip
-            .venv
           key: ${{ runner.os }}-uv-${{ hashFiles('**/requirements.txt', '**/pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-uv-
 
       - name: Install dependencies
         run: |
+          rm -rf .venv  # eski cache'ten restore edilmiş bozuk venv'i temizle
           uv venv
           source .venv/bin/activate
           cd backend && uv pip install -r requirements.txt
@@ -236,13 +236,13 @@ jobs:
           path: |
             ~/.cache/uv
             ~/.cache/pip
-            .venv
           key: ${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-py${{ matrix.python-version }}-
 
       - name: Install dependencies
         run: |
+          rm -rf .venv  # eski cache'ten restore edilmiş bozuk venv'i temizle
           uv venv
           source .venv/bin/activate
           cd backend && uv pip install -r requirements.txt
