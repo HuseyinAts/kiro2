@@ -621,6 +621,18 @@ async def kullanici_kayit(
 
     await db.commit()
 
+    # KVKK Faz 2: minor ise veli onay token üret + email (fire-and-forget)
+    if minor and kullanici_data.veli_email:
+        try:
+            from services.veli_onay_service import VeliOnayService
+
+            token = await VeliOnayService(db).request_consent(
+                child_user_id=user_id, veli_email=kullanici_data.veli_email
+            )
+            _send_veli_onay_email(kullanici_data.veli_email, token)
+        except Exception as e:
+            logger.error("veli onay tetikleme hatası: %s", e)
+
     logger.info(f"Yeni kullanıcı kaydı: {kullanici_data.email} ({rol_str})")
     return {
         "success": True,
