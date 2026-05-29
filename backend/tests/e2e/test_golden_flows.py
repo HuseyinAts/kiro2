@@ -5006,3 +5006,21 @@ def test_gf150_public_journey_health_probes_not_500(client: httpx.Client):
     )
     assert push_data.get("service") == "pwa_push", push_data
     assert "subscribe_implemented" in push_data, push_data
+
+
+# ---------------------------------------------------------------------------
+# GF (KVKK Faz 2): Veli onay verify — geçersiz token semantik 4xx, asla 500
+# ---------------------------------------------------------------------------
+
+
+def test_gf_veli_onay_verify_invalid(client: httpx.Client):
+    """Veli onay verify (geçersiz token) — semantik 4xx döner, asla 500."""
+    resp = client.post(
+        "/api/v1/auth/veli-onay/verify", json={"token": "gf-gecersiz-token"}
+    )
+    assert resp.status_code < 500, (
+        f"GF veli-onay crashed: {resp.status_code} {resp.text[:300]}"
+    )
+    assert resp.status_code in (400, 422), (
+        f"GF veli-onay beklenen 400/422, gelen: {resp.status_code} {resp.text[:200]}"
+    )
