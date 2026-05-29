@@ -17,6 +17,7 @@ import { ModernLoginPage as LoginPage } from './pages/ModernLoginPage';
 import { Modern404Page } from './pages/Modern404Page';
 import { ModernErrorPage } from './pages/ModernErrorPage';
 import { ModernRegisterPage as RegisterPage } from './pages/ModernRegisterPage';
+import { VeliOnayPage } from './pages/VeliOnayPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
 // S179 (F-P0-2): ParentDashboard route now redirects to /parent/dashboard;
 // no eager import needed. ParentDashboardPage (Modern) is still lazy.
@@ -216,6 +217,7 @@ function AppContent() {
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/veli-onay" element={<VeliOnayPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               <Route path="/404" element={<Modern404Page />} />
               <Route path="/error" element={<ModernErrorPage />} />
