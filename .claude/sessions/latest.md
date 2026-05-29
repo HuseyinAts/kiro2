@@ -1,30 +1,33 @@
-## Session Handoff — 2026-05-29 12:35
-**Branch:** feat/kvkk-faz2 (local) | **Remote master:** 8545927b4 (PR #34 merged)
-**Son commit:** 5734020ee chore(kvkk-faz2): session handoff — 11/11 task tamam
+## Session Handoff — 2026-05-29 13:45
+**Branch:** master | **Son commit:** c433cd434 ci: .venv cache fix (#37)
 **Uncommitted:** temiz
 
-### Yapilanlar
-- **KVKK Faz 2 — 11/11 task TAMAM** (inline TDD, 8 commit `6672132a9`→`5734020ee`): `backend/models/veli_consent.py`, `backend/alembic/versions/kvkk2_veli_consent_20260529.py`, `backend/core/email_util.py`, `backend/services/veli_onay_service.py`, `backend/api/auth.py` (4 endpoint + register tetikleme), `backend/core/dependencies.py` (`require_veli_consent`), `backend/api/study_rooms.py` (create/join enforcement), `frontend/src/pages/VeliOnayPage.tsx` + `App.tsx` + `services/authService.ts`, `backend/tests/e2e/test_golden_flows.py` (GF testi)
-- **15/15 yeni test PASS** (5434 strict-rollback fixture, `KVKK_VERIFY_DSN` env, sıfır pollution)
-- **PR #34 → master MERGED** (8545927b4); base master (clean-main 672K geride olduğu için değiştirildi). gh CLI yok → GitHub REST API + stored credential ile açıldı/merge edildi
-- **Backend kalıcı rebuild:** `docker compose build backend` (233s) + `up -d --no-deps backend` → healthy; `/veli-onay/verify`=400 baked image'dan (ephemeral cp değil), `/auth/me`=401
-- Canlı E2E: minor register → pending consent (7g token) doğrulandı + test verisi temizlendi
+### Yapilanlar (bu session)
+- **KVKK Faz 2 — 11/11 task TAMAM** → PR #34 master'a merge (`8545927b4`) + container kalıcı rebuild (`docker compose build backend`) + canlı E2E doğrulandı. 15/15 test PASS. Detay: auto-memory `project_kvkk-faz2-shipped`.
+- **CI infra onarımı (PR #35/#36/#37, hepsi merged):**
+  - Kök neden: Actions dakika **2000/2000 tükenmiş** → startup_failure (ruff değil!). Operatör **$10 limit** açtı.
+  - Tüketim azaltma: push/PR başına **~40→6 job** (claude-ci/quality-gates→manuel, deploy→tag-only, security→PR+schedule, backend-test matrix 3→1).
+  - Diff-based lint: `quality` job yalnız değişen `backend/**/*.py` (10,870 legacy borç grandfathered).
+  - bandit guard fix (#36) + `.venv` cache fix (#37, `rm -rf .venv` + cache path'ten çıkar).
+  - **DOĞRULANDI:** workflow_dispatch run → install success → ruff/mypy/bandit/safety **success → quality gate YEŞİL**.
 
 ### Fail Eden Testler
-- YOK (KVKK suite 15/15 PASS). NOT: repo CI master'da pre-existing kırmızı (25 failure/20 skipped — eksik GitHub secrets, infra; KVKK PR'ı değil)
+- YOK (yeni iş). CI `backend-test` gate'i hâlâ kırmızı olur — AYRI tail (aşağı).
 
 ### Engelleyiciler
-- YOK (KVKK için). Pre-existing: CI secrets eksik (ANTHROPIC_API_KEY/SNYK vb.)
+- **key rotate** teyidi gelmedi (GEMINI_API_KEY AUP leak — operatör, hâlâ açık).
 
 ### Sonraki Adimlar (maks 5)
-1. `git checkout master && git pull` — local master'ı 8545927b4'e güncelle, feat/kvkk-faz2 sil
-2. CI infra onar: GitHub secrets ekle (CLAUDE.md secrets tablosu) — pre-existing 25 failure'ı yeşile çevir
-3. GEMINI_API_KEY rotate (AUP leak, operatör) + A1 PG restart (shared_buffers 4GB)
-4. KVKK Faz B: aydınlatma metni + veri silme/taşıma hakkı (roadmap)
-5. SMTP yapılandırması (prod) — veli onay email'i şu an SMTP yoksa sessiz atlanıyor
+1. **#4 ürün işi:** KVKK Faz B (aydınlatma metni + veri silme/taşıma) VEYA SMTP prod config
+2. CI full-green tail (opsiyonel, büyük iş): backend-test `--cov-fail-under=60` (gerçek ~%43) + test pollution bisect; frontend coverage %70
+3. GEMINI_API_KEY rotate teyit (operatör)
+4. A1 PG restart (shared_buffers 4GB, operatör)
+5. Operatör secrets: ANTHROPIC_API_KEY / KUBE_CONFIG (artık manuel/tag-only workflow'lar için)
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- Integration test deseni: kök conftest `db_session` PRE-EXISTING BROKEN (ScopeMismatch) → inline strict-rollback fixture + `KVKK_VERIFY_DSN` (5434) kullan. Detay: auto-memory `reference_backend-integration-test-db`
-- PR base = master (clean-main terk edildi, 672K geride)
-- Enforcement: sosyal/PII gated (study_rooms create/join), çekirdek öğrenme açık
-- Formatter tuzağı: import + ilk kullanımı AYNI edit'te ekle (isort unused sanıp siler)
+- CI kök neden = Actions dakika; lint/test değil. Detay: auto-memory `project_ci-state`.
+- ci.yml tek CI kaynağı; diğer workflow'lar manuel/scheduled.
+- Diff-based lint: yeni kod temiz, 10,870 legacy ruff borcu grandfathered.
+- `.git/refs/**/desktop.ini` Windows artifact `git pull`'u bozuyor → `find .git -name desktop.ini -delete`.
+- PR base = master (clean-main 672K geride). gh CLI yok → GitHub REST API + stored credential ile PR aç/merge.
+- Integration test: kök `db_session` BROKEN → inline strict-rollback + `KVKK_VERIFY_DSN` (auto-memory `reference_backend-integration-test-db`).
