@@ -327,3 +327,6 @@ backend/audit_out.json
 backend/scripts/quality/_batch_state/
 backend/scripts/quality/_batch_state_gemini*/
 backend/scripts/quality/_phase7_audit_tmp/
+
+# Serena MCP local cache
+.serena/
