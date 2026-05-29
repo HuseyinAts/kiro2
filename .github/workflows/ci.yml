@@ -117,11 +117,17 @@ jobs:
         run: |
           source .venv/bin/activate
           FILES="${{ steps.changed.outputs.files }}"
-          # Exclude tests/alembic from the changed set
+          if [ -z "$FILES" ]; then
+            echo "No changed backend Python files — bandit skipped (grandfathered)."
+            echo '{}' > bandit-report.json
+            exit 0
+          fi
+          # Exclude tests/alembic; keep only .py
           SCAN=$(echo "$FILES" | tr ' ' '\n' \
-            | grep -vE '^backend/(tests|alembic)/' | tr '\n' ' ' || true)
-          if [ -z "$SCAN" ]; then
-            echo "No changed backend Python files to scan — bandit skipped."
+            | grep -E '\.py$' | grep -vE '^backend/(tests|alembic)/' \
+            | tr '\n' ' ' || true)
+          if [ -z "$(echo "$SCAN" | tr -d '[:space:]')" ]; then
+            echo "Only tests/alembic changed — bandit skipped."
             echo '{}' > bandit-report.json
             exit 0
           fi
