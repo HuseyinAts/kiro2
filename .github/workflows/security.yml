@@ -1,8 +1,8 @@
 name: Security Scanning
 
 on:
-  push:
-    branches: [ master, develop ]
+  # Actions-minute reduction: push kaldırıldı (PR + haftalık schedule yeterli).
+  # 10 ağır job (CodeQL matrix vb.) her push'ta koşmasın.
   pull_request:
     branches: [ master ]
   schedule:

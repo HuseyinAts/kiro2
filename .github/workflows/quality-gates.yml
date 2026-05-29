@@ -1,10 +1,8 @@
 name: Quality Gates Pipeline
 
 on:
-  pull_request:
-    branches: [ main, master ]
-  push:
-    branches: [ main, master ]
+  # Actions-minute reduction: 6 gate ci.yml quality + security.yml ile
+  # büyük ölçüde örtüşüyor. push/pull_request kaldırıldı; yalnız manuel.
   workflow_dispatch:
     inputs:
       gates:
