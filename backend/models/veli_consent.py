@@ -43,7 +43,8 @@ class VeliConsent(Base):
     veli_email = Column(String(255), nullable=False)
     # pending / granted / withdrawn / expired
     status = Column(String(20), nullable=False, default="pending")
-    # sha256(token); granted'da KORUNUR (idempotency + withdraw-by-token), withdrawn/expired'da NULL
+    # sha256(token); granted'da KORUNUR (idempotency + withdraw-by-token);
+    # withdrawn/expired'da NULL
     token_hash = Column(String(64), index=True, nullable=True)
     token_expires_at = Column(DateTime(timezone=True), nullable=True)
     requested_at = Column(
