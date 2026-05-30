@@ -148,6 +148,10 @@ coverage.xml
 # Claude Code personal notes (not for git)
 CLAUDE.local.md
 
+# Claude Code plugin local state (ralph-loop, vb.) — makineye ozel, tracked olmamali
+.claude/ralph-loop.local.md
+.claude/*.local.md
+
 # === KIRO2 SPECIFIC ADDITIONS ===
 
 # Additional venv variants
