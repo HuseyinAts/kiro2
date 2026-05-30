@@ -33,6 +33,7 @@ celery_app = Celery(
         "tasks.mega_feature_tasks",
         "tasks.social_tasks",
         "tasks.daily_plan_tasks",  # Günlük plan yenileme
+        "tasks.push_tasks",  # Streak retention push (P0.1)
     ],
 )
 
@@ -180,6 +181,11 @@ celery_app.conf.update(
         "refresh-daily-plans": {
             "task": "tasks.refresh_daily_plans",
             "schedule": crontab(hour=2, minute=0),
+        },
+        # RETENTION (P0.1): Streak hatırlatıcı — her akşam 20:00
+        "send-streak-reminders": {
+            "task": "tasks.push_tasks.send_streak_reminders",
+            "schedule": crontab(hour=20, minute=0),
         },
     },
 )
