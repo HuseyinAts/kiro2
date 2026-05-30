@@ -74,7 +74,7 @@ class OSYMExamConfig:
     ayt_field_type: AYTFieldType | None = None  # AYT için alan türü
     ydt_language: YDTLanguage | None = None  # YDT için dil seçimi - REQ-1.3
     difficulty: str | None = None  # "kolay", "orta", "zor", "cok_zor"
-    # Beta pratik: kör 3-solver gate'inden geçmiş (beta_clean_verified) havuzdan
+    # Beta pratik: tutarlılık gate'inden geçmiş (student_coherent) havuzdan
     # karışık soru seç; standart base_filters/subject_distribution UYGULANMAZ.
     beta_practice: bool = False
 
@@ -347,7 +347,7 @@ class OSYMExamEngine:
             if custom_config:
                 if custom_config.get("beta_practice"):
                     # Beta pratik: subject_distribution/base_filters yok say,
-                    # beta_clean havuzundan karışık seç (bkz. _select_beta_questions)
+                    # student_coherent havuzundan karışık seç (bkz. _select_beta_questions)
                     exam_config.beta_practice = True
                 if "duration_minutes" in custom_config:
                     exam_config.duration_minutes = custom_config["duration_minutes"]
@@ -1175,14 +1175,14 @@ class OSYMExamEngine:
         Cache anahtarı ``BETA:*`` ile standart subject havuzundan ayrıdır;
         beta-dışı sorunun beta moduna sızması mümkün değildir.
         """
-        cache_key = "BETA:clean:all"
+        cache_key = "BETA:student_coherent:all"
         pool = self._question_pool_cache.get(cache_key)
         if pool is None:
             async with get_db_session_context() as db_session:
                 id_result = await db_session.execute(
                     select(Question.id).where(
                         Question.is_active.is_(True),
-                        Question.pipeline_metadata.op("->>")("beta_clean_verified")
+                        Question.pipeline_metadata.op("->>")("student_coherent")
                         == "true",
                     )
                 )

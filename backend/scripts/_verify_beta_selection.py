@@ -14,7 +14,8 @@ from core.osym_exam_engine import OSYMExamEngine  # noqa: E402
 
 def _is_beta_clean(q) -> bool:
     meta = q.pipeline_metadata or {}
-    return meta.get("beta_clean_verified") in (True, "true")
+    # Beta artık student_coherent gate'ine güvenir (gold pool tam-run, 31 May 2026)
+    return meta.get("student_coherent") in (True, "true")
 
 
 async def main() -> int:

@@ -54,12 +54,23 @@
 - Backend restart → in-memory pool cache temizlendi → beta canlıda 221'den çekiyor (20 soru,
   all_clean, doğrulandı). Detay: `docs/audits/2026-05-30_beta_recurate_coherence_gate.md`.
 
+### ✅ GOLD POOL TAM-RUN (P1) — tutarlılık gate'i tüm havuza
+- Stratified pilot (572) → %63 drop → tam-run gerekçeli.
+- **Workflow** `wf_9a48d483-e16`: 13,595 yargılandı. **İlk 136-eşzamanlı run 529
+  rate-limit yedi (0 iş)** → script ≤6 sıralı dalgaya çevrildi → başarılı (18.7M tok, ~102dk).
+- **keep 5,513 (%40.6) / drop 7,835 / missing 238.** Drop baskın: garbled 4,915.
+- DB: `pipeline_metadata.student_coherent=true` (5,513), backup
+  `question_bank_student_coherent_backup_20260531`, `quality_review_status` dokunulmadı.
+- **Beta-practice → student_coherent'a çevrildi** (221→5,513): `_select_beta_questions`
+  filtresi + cache key `BETA:student_coherent:all`. Canlı doğrulandı (20 soru, all_clean PASS).
+- Doc: `docs/audits/2026-05-31_goldpool_coherence_pilot.md`. Commits: f4cb61632, 61a243e90, +bu.
+
 ### ⏳ KALAN (sonraki adımlar)
-1. **Commit + push** — beta backend+frontend+test+audit (bu adımda commit; push HÂLÂ lokal).
-2. **Öğrenci daveti** — 10-20 kişi (kayıt açık/KVKK hazır → buton görünür). Artık 221 temiz.
-3. **(P1 KRİTİK) Aynı tutarlılık-gate'i tüm gold pool'a uygula** — %42 kör nokta 386'ya özgü
-   değil; `auto_judged_high` (13,595) tamamında olası. Ekstrapolasyon ürkütücü.
-4. Önceki bekleyenler: 721eeddd9'a kadarki commit'ler + bunlar HÂLÂ lokal (push), 114 disputed.
+1. **Öğrenci daveti** — 10-20 kişi (kayıt açık/KVKK hazır → buton görünür). Artık 5,513 temiz havuz.
+2. **garbled 4,915 → Vision re-OCR** (GEMINI key AUP rotate bekliyor) — flag gizler, re-gen çözer.
+3. **figure_dependent 1,880** → görsel-ekleme veya kalıcı eleme.
+4. **subject_tag kontaminasyonu** (6 ajan raporladı: FİZİK/EDEBİYAT etiketi sıkça bozuk-matematik) — ayrı P1.
+5. Önceki: 114 disputed Curator.
 
 ## 🔧 STATE
 - Branch **master**. Backend/Frontend/Redis/PG **UP & healthy** (handoff yanılmış).
