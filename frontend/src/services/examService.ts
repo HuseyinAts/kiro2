@@ -175,6 +175,25 @@ class ExamService {
   }
 
   /**
+   * Beta pratik testi oluştur.
+   *
+   * Kör 3-solver gate'inden geçmiş (okunabilir + cevap-onaylı) çekirdek
+   * sorulardan karışık, kısa bir pratik testi kurar. Standart ÖSYM
+   * dağılımını zorlamaz.
+   */
+  async createBetaPractice(numQuestions = 20): Promise<ExamSessionResponse> {
+    try {
+      const response = await apiClient.post(
+        `/api/v1/osym-exam/beta-practice?num_questions=${numQuestions}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Beta pratik oluşturma hatası:', error);
+      throw error;
+    }
+  }
+
+  /**
    * ÖSYM sınavını başlat
    */
   async startExam(sessionId: string): Promise<ExamSessionResponse> {

@@ -1,75 +1,79 @@
-# Session — Kalite Kök-Neden Kazısı + Beta Clean Core (30 May 2026)
+# Session — Beta Pratik Testi (Plan A) (30 May 2026)
 
-> Bu oturum Opus 4.8 harness demosu olarak başladı, **KIRO2'nin "kalite neden hiç yakalanamadı" kök-neden kazısına** ve somut bir **beta-ready 386-soru çekirdeği** üretimine dönüştü. Kapsamlı handoff — bir sonraki oturum buradan devam edebilir.
-
----
-
-## 🎯 BU OTURUMUN MERKEZİ BULGUSU (en önemli)
-
-**Kalite 198 session'a rağmen yakalanamadı çünkü "kalite" hiç öğrenci-deneyimi olarak tanımlanmadı; ölçmesi-kolay PROXY'ler (validate %95 PASS = sadece JSON format, soru-sayısı 45K vanity, cevap-doğruluğu) yerine kondu — hiçbiri öğrencinin yaşadığı tek katmanı (soruyu okuyup çözebiliyor mu?) ölçmedi. Ground-truth dairesel (0/167K insan onayı). En derin motor: yargıdan kaçınma — simülasyonda "harika olabilir" yaşar, gerçek öğrencide "vasat" olabilir.**
-
-3 katmanlı doc (oku):
-- `docs/audits/2026-05-30_kalite_kok_neden.md` (mekanizma: proxy + dairesel)
-- `docs/audits/2026-05-30_kalite_kok_neden_DERIN.md` (yapı: kapalı-simülasyon, sıralama-imkânsızlığı, imkânsızlık üçgeni)
-- `docs/audits/2026-05-30_kalite_kok_neden_EN_DERIN.md` (insan: yargıdan kaçınma, insan+AI amplifikasyon)
-
-**AMPİRİK KANIT:** Kör 3-solver gate ile havuzun **~%80'i okunamaz** çıktı (pilot %28→val %14→full run %30 temiz verim). Format-validation "100% PASS" diyordu. Garble semantik (SQL/regex göremez).
+> Önceki oturum: kalite kök-neden + 386 beta clean core üretildi. Bu oturum
+> kök-neden reçetesinin **TEK ACT**'ini uyguluyor: 386'yı gerçek öğrenciye aç.
 
 ---
 
-## ✅ ÜRETİLEN SOMUT ARTIFACT: Beta Clean Core (386 soru)
+## 🎯 BU OTURUM: Beta Pratik Testi (backend GREEN, frontend kod-tamam)
 
-`docs/audits/2026-05-30_beta_clean_core.md` — DB'de canlı, beta'ya hazır.
-- **386 çift-doğrulanmış** soru: hem okunabilir (3 bağımsız kör-solver çözdü) hem cevap-onaylı (consensus==DB).
-- DB flag: `pipeline_metadata.beta_clean_verified=true` (metadata-only; cevap/status DEĞİŞMEDİ).
-- Sorgu: `SELECT * FROM question_bank WHERE pipeline_metadata::jsonb->>'beta_clean_verified'='true'`
-- Backup: `question_bank_beta_core_backup_20260530` (500 satır, rollback hazır).
-- Subject: MAT 156, GEO 78, FIZ 51, KIM 26, TUR 21, GENEL 16, BIY 13, EDE 11, TAR 10, SOS 3, COG 1.
-- **114 disputed** (`pipeline_metadata.beta_answer_disputed=true`, +consensus_answer/db_answer): consensus≠DB. 20'si DB=A→A-bias DB hatası (gerçek). Curator review bekliyor.
-- consensus-vs-DB sadece %77 uyum → "okunabilir" ≠ "cevap-doğru" (ayrı katmanlar).
+386 beta_clean soru standart ÖSYM formatına (TYT 120 / AYT 160) sığmıyor
+(TUR 21, COG 1). Karar: **kısa karışık pratik** — 20 soru, ÖSYM dağılımı yok,
+386'dan rastgele, süre serbest (120 dk taşıyıcı).
 
-Gate = kök-neden reçetesi: render `question_text` üzerinde KÖR çözüm (DB cevabı gösterilmez → dairesellik yok).
+### ✅ TAMAMLANAN + DOĞRULANAN
+- **Premise doğrulandı (iyi haber):** cevap-leak riski zaten kapalı.
+  `ModernOSYMExamInterface.tsx:551 false &&` görsel suppress = kasıtlı Bug #11
+  defansı. `content` kolonu YOK → frontend daima gate-onaylı `question_text`
+  gösteriyor. API'de `correct_answer` da YOK (E2E doğrulandı).
+- **Backend (TDD RED→GREEN, gerçek DB):**
+  - `core/osym_exam_engine.py`: `OSYMExamConfig.beta_practice` alanı +
+    `_select_beta_questions(count)` (beta_clean havuzundan rastgele, proxy
+    base_filters UYGULANMAZ — gate daha güçlü) + `_select_questions` erken-dal +
+    `create_exam_session` beta flag.
+  - `api/sinav.py`: `POST /api/v1/osym-exam/beta-practice?num_questions=20`.
+  - **E2E canlı stack (kiro2-backend):** create=200 (20 soru) → start=200 →
+    current-question = okunabilir MATEMATIK sorusu + şıklar, `correct_answer`
+    sızıntısı YOK. `_select_beta_questions(20)` → 9 ders karışık, all_clean=True.
+  - Test: `backend/tests/integration/test_beta_practice_selection.py` (gerçek DB,
+    DB yoksa skip). Doğrulama script: `backend/scripts/_verify_beta_selection.py`.
+- **Frontend (tip-temiz + BROWSER DOĞRULANDI):**
+  - `services/examService.ts`: `createBetaPractice(numQuestions=20)`.
+  - `pages/ModernExamStartPage.tsx`: üstte "🚀 Beta Pratik Testi" banner +
+    `handleStartBeta` → `/exam/{id}` (mevcut sınav arayüzü + sonuç akışını kullanır).
+  - `npx tsc --noEmit` değişen dosyalarda 0 hata.
+  - **Playwright E2E (kiro2-frontend yeni build):** login → /exam/start → banner
+    görünür → "Beta Pratiğe Başla" → ön-sınav "20 Soru/120 dk" → checklist+sistem
+    kontrol → Sınavı Başlat → **Soru 1/20 render: gerçek metin + 5 şık, görsel yok,
+    cevap sızıntısı yok, 0 console error.** Kök-neden reçetesi: gerçek UI'da soru.
+  - **Build gotcha:** İlk `docker compose build frontend` BuildKit cache (#14 CACHED)
+    eski dist kopyaladı → değişiklik gelmedi. `--no-cache` ile çözüldü. Bundle
+    `/usr/share/nginx/html/js/` altında (assets/ DEĞİL).
 
----
+### ✅ RE-CURATE (kullanıcı browser'da dairesel soru yakaladı → ikinci gate)
+- Hüseyin gerçek UI'da "ABC üçgenünde A açısı 60° ise A açısı kaç?" (dairesel) yakaladı.
+  Kör 3-solver gate'in kör noktası: dairesel/garbled soru metin kendini cevaplıyorsa geçer.
+- **6 paralel Claude subagent tutarlılık yargıcı** 386'yı yeniden yargıladı (metin+şık,
+  görsel yok): **221 keep / 165 drop (~%42!)**. Defects: garbled 75, circular 34,
+  answer_wrong 30, open_ended 13, figure_dependent 8.
+- Spot-check: kullanıcının sorusu+2 kopya → drop/circular ✅; meşru benzerler ("A=60,B=45→C")
+  → keep ✅. Yargıç ayrımı güçlü.
+- **DB applied:** backup `question_bank_beta_recurate_backup_20260530` (386). 165 drop →
+  `beta_clean_verified=false` + audit `beta_recurate_2026_05_30`. Metadata-only.
+  Doğrulama: **beta_clean_verified=true → 221** | backup 386 | audit-marked 165.
+- Backend restart → in-memory pool cache temizlendi → beta canlıda 221'den çekiyor (20 soru,
+  all_clean, doğrulandı). Detay: `docs/audits/2026-05-30_beta_recurate_coherence_gate.md`.
 
-## 📦 BU OTURUMUN COMMIT'LERİ (master, push DURUMU aşağıda)
-- `6862bef8a` (önceki) beta pool pilot
-- `6a98e81d3` (önceki, oturum-öncesi) IRT cold-start bootstrap
-- `246085612` fix: ralph-loop stale state sil + .local.md gitignore (jq hatası kök-çözüm)
-- `6fe910f28` docs: YKS ürün-kalite %95 yol haritası (4 eksen workflow, skor 63/100)
-- `8d2568a69` fix(retention): streak push canlıya (P0.1, TDD 5/5, celery beat + include + gerçek INSERT)
-- `ec691a224` docs: kalite kök-neden 3-katman + görsel-metin brainstorm + P0.2 recon
-- `721eeddd9` docs: beta clean core 386
+### ⏳ KALAN (sonraki adımlar)
+1. **Commit + push** — beta backend+frontend+test+audit (bu adımda commit; push HÂLÂ lokal).
+2. **Öğrenci daveti** — 10-20 kişi (kayıt açık/KVKK hazır → buton görünür). Artık 221 temiz.
+3. **(P1 KRİTİK) Aynı tutarlılık-gate'i tüm gold pool'a uygula** — %42 kör nokta 386'ya özgü
+   değil; `auto_judged_high` (13,595) tamamında olası. Ekstrapolasyon ürkütücü.
+4. Önceki bekleyenler: 721eeddd9'a kadarki commit'ler + bunlar HÂLÂ lokal (push), 114 disputed.
 
 ## 🔧 STATE
-- Branch **master**, son commit `721eeddd9`. **PUSH EDİLMEDİ** (tüm oturum commit'leri lokal).
-- PG 5434 OK. Backend/Frontend muhtemelen DOWN (oturum boyunca DB-direkt çalışıldı).
-- Git temiz değil: `_beta_core_tmp/`, `_beta_pool_tmp/`, `_p0_2_tmp/` working data (untracked, commit edilmedi — kasıtlı).
+- Branch **master**. Backend/Frontend/Redis/PG **UP & healthy** (handoff yanılmış).
+- Beta backend değişiklikleri **canlı container'a deploy edildi** (cp+restart),
+  ama **commit edilmedi** + frontend rebuild edilmedi.
+- 386 beta_clean: `pipeline_metadata::jsonb->>'beta_clean_verified'='true'`, 386
+  total/active, 0 bozuk metin, 11 ders.
 
-## ⚙️ ÖNEMLİ TEKNİK NOTLAR / GOTCHA
-- **Workflow schema+dosya-okuma KIRILIR:** `agent({schema})` + Read + 50-cevap → StructuredOutput çağrılmıyor, batch'ler düşer. **Çözüm: schema YOK, düz JSON metni döndür + JS'te parse.** (1. run 87/500 düştü, fixed run 500 başardı.)
-- **529/rate-limit:** 210 eşzamanlı ajan tetikledi. Sunucu-taraflı, geçici. Çözüm: dalga küçült (waveSize=3 → 9 eşzamanlı), bekle, retry'lama.
-- `question_bank.id` VARCHAR (UUID değil) — `::uuid` cast kırar. `id = ANY(%s)` ile liste sorgula.
-- `pipeline_metadata` tipi `json` (jsonb değil) → `(COALESCE(pm::jsonb,'{}')||%s::jsonb)::json` ile yaz.
-- psql Windows: `PGPASSWORD=postgres "/c/Program Files/PostgreSQL/18/bin/psql.exe" -p 5434 -U postgres -d kiro2`
-- Python stdout: `≥` cp1254'te crash → `sys.stdout.reconfigure(encoding="utf-8",errors="replace")`
-
-## ⏳ BEKLEYENLER / SONRAKİ ADIMLAR
-1. **TEK ACT — beta'yı 386 ile aç** (10-20 gerçek öğrenci, 1 hafta). Gerçek-yanıt → IRT kalibrasyon + cevap-anahtarı gerçek-doğrulama kilidi açılır. Hiçbir audit bunu ikame edemez. **EN ÖNEMLİ.**
-2. Tüm oturum commit'lerini **push et** (`721eeddd9`'a kadar).
-3. **114 disputed'ı Curator'da çöz** — 20 A-bias DB hatası düzelt, gerisi consensus-hatası mı ayır.
-4. Çekirdeği büyüt (gerekirse): fixed workflow hazır — `scriptPath: .../beta-clean-core-500-wf_fca581e6-b49.js`, kalan 67 batch / havuz. ~%30 verimle daha çok temiz.
-5. (Uzun yol) Garbage'ı kurtar: Vision re-gen (brainstorm `docs/brainstorms/2026-05-30_gorsel_metin_cozum.md` Faz 3) — crop'tan temiz metin üret. GEMINI_API_KEY rotate bekliyor (AUP P0).
-6. Önceki bekleyenler (hâlâ geçerli): rationale %26.7 circular pass, beta-sonrası IRT EM→CAT döngüsü.
-
-## 🔑 KRİTİK KÖK SORUN (referans, gelecek işler için)
-Tüm soru havuzu **%100 görsel-türevli**; görseller frontend'de KAPALI (`ModernOSYMExamInterface.tsx:551` `false &&`, "Bug #11" cevap-leak — premise SPOT-CHECK'siz, doğrulanmamış olabilir). Öğrenci sadece OCR `question_text` görür, o da sık bozuk. cat_session.py:247/283 exclusion-regex sadece "şekil/grafik" KELİMESİ geçeni eler, bozuk LaTeX'i yakalayamaz. → görsel-türevli + görsel-kapalı + bozuk-metin = beta-core gate'inin var olma sebebi.
-
-## 📂 ANAHTAR DOSYALAR
-- Beta core: `backend/scripts/quality/_beta_core_tmp/{clean_final.json, apply_beta_core.py, batches/}`
-- Gate workflow: `~/.claude/projects/.../workflows/scripts/beta-clean-core-500-wf_fca581e6-b49.js`
-- P0.2 recon: `backend/scripts/quality/p0_2_abias_recon.sql`
-- MEMORY güncellendi: `project_kalite-kok-neden.md` + beta-clean-core satırı.
-
-## 🎭 META-DERS (bu oturum dahil)
-"Cilayı bırak, gerçeğe dokun" reçetesi — ama oturum 4 tur "daha derin analiz" üretti; AI-işbirliği ajanı bunu yüzümüze tuttu: AI sınırsız proxy-artifact üretir, gerçek öğrenci getiremez. **Kural: kalite-task çıktısı gerçek kullanıcıya gösterilene kadar "tamamlandı" değildir.** 386 core bunun ilk adımı — şimdi #1 (beta aç) yapılmalı, daha fazla analiz değil.
+## ⚙️ GOTCHA (bu oturum)
+- Git Bash `/tmp/...`'i Windows yoluna çevirir → `docker exec` için
+  `MSYS_NO_PATHCONV=1` + `-e PYTHONPATH=/app -w /app`.
+- `.venv_win`'de cachetools/ruff YOK → backend Python doğrulaması container'da.
+- Test conftest `TEST_DATABASE_URL` yoksa SQLite → integration test beta havuzunu
+  göremez (skip). Gerçek doğrulama: container script veya curl E2E.
+- ModernButton variant: `gradient|glass|solid|outlined|text` (primary YOK).
+- `_select_beta_questions` ilk sorgu 161ms (seq scan, JSON ->> index yok); pool
+  cache'leniyor. 10-20 öğrenci için sorun değil (YAGNI).

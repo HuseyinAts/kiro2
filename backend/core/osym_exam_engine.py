@@ -74,6 +74,9 @@ class OSYMExamConfig:
     ayt_field_type: AYTFieldType | None = None  # AYT için alan türü
     ydt_language: YDTLanguage | None = None  # YDT için dil seçimi - REQ-1.3
     difficulty: str | None = None  # "kolay", "orta", "zor", "cok_zor"
+    # Beta pratik: kör 3-solver gate'inden geçmiş (beta_clean_verified) havuzdan
+    # karışık soru seç; standart base_filters/subject_distribution UYGULANMAZ.
+    beta_practice: bool = False
 
 
 @dataclass
@@ -342,6 +345,10 @@ class OSYMExamEngine:
 
             # Özel konfigürasyonları uygula
             if custom_config:
+                if custom_config.get("beta_practice"):
+                    # Beta pratik: subject_distribution/base_filters yok say,
+                    # beta_clean havuzundan karışık seç (bkz. _select_beta_questions)
+                    exam_config.beta_practice = True
                 if "duration_minutes" in custom_config:
                     exam_config.duration_minutes = custom_config["duration_minutes"]
                 if "time_limit" in custom_config:
@@ -1156,6 +1163,47 @@ class OSYMExamEngine:
         "cok_zor": ["HARD", "VERY_HARD"],
     }
 
+    async def _select_beta_questions(self, count: int) -> list[Question]:
+        """Beta pratik için soru seç.
+
+        Kör 3-solver gate'inden geçmiş (pipeline_metadata.beta_clean_verified
+        == 'true') havuzdan rastgele ``count`` soru döndürür. Standart
+        ``base_filters`` (uzunluk, passage regex, geometri-görsel şartı)
+        UYGULANMAZ — gate, bu sezgisel proxy'lerden daha güçlü bir
+        okunabilirlik + çözülebilirlik kanıtıdır (öğrenci-eşdeğeri kör çözüm).
+
+        Cache anahtarı ``BETA:*`` ile standart subject havuzundan ayrıdır;
+        beta-dışı sorunun beta moduna sızması mümkün değildir.
+        """
+        cache_key = "BETA:clean:all"
+        pool = self._question_pool_cache.get(cache_key)
+        if pool is None:
+            async with get_db_session_context() as db_session:
+                id_result = await db_session.execute(
+                    select(Question.id).where(
+                        Question.is_active.is_(True),
+                        Question.pipeline_metadata.op("->>")("beta_clean_verified")
+                        == "true",
+                    )
+                )
+                pool = [row[0] for row in id_result.all()]
+                if pool:
+                    self._question_pool_cache[cache_key] = pool
+
+        if not pool:
+            logger.warning("Beta clean havuzu boş — beta pratik soru seçilemedi")
+            return []
+
+        sampled_ids = random.sample(pool, min(count, len(pool)))
+        async with get_db_session_context() as db_session:
+            result = await db_session.execute(
+                select(Question).where(
+                    Question.id.in_(sampled_ids),
+                    Question.is_active.is_(True),
+                )
+            )
+            return list(result.scalars().all())
+
     async def _select_questions(self, exam_config: OSYMExamConfig) -> list[Question]:
         """
         Sınav için soruları seç
@@ -1166,6 +1214,11 @@ class OSYMExamEngine:
         Returns:
             List[Question]: Seçilen sorular
         """
+        # Beta pratik: subject_distribution ve proxy base_filters'ı atla,
+        # doğrudan beta_clean havuzundan karışık seç.
+        if getattr(exam_config, "beta_practice", False):
+            return await self._select_beta_questions(exam_config.total_questions)
+
         selected_questions = []
         difficulty_levels = None
         if exam_config.difficulty:

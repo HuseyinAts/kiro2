@@ -457,6 +457,83 @@ async def create_exam(
 
 
 @router.post(
+    "/beta-practice",
+    response_model=ExamSessionResponse,
+    summary="Beta Pratik Testi Oluştur",
+)
+async def create_beta_practice(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    num_questions: int = 20,
+) -> ExamSessionResponse:
+    """
+    Beta pratik testi oluştur.
+
+    Kör 3-solver gate'inden geçmiş (okunabilir + cevap-onaylı) çekirdek
+    sorulardan karışık, kısa bir pratik testi kurar. Standart ÖSYM
+    dağılımını (TYT 120 / AYT 160) zorlamaz — beta için doğrulanmış
+    havuzdan rastgele ``num_questions`` soru seçilir.
+    """
+    num = max(1, min(int(num_questions), 50))
+    try:
+        session_id = await osym_exam_engine.create_exam_session(
+            student_id=current_user.id,
+            exam_type=ExamType.TYT,  # taşıyıcı; beta dalı dağılımı yok sayar
+            custom_config={
+                "beta_practice": True,
+                "question_count": num,
+                "duration_minutes": 120,
+            },
+        )
+        session_data = await osym_exam_engine.get_session_data(session_id)
+        if not session_data:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Beta pratik oturumu oluşturulamadı",
+            )
+
+        logger.info(
+            "Beta pratik testi oluşturuldu",
+            extra_data={
+                "session_id": session_id,
+                "student_id": current_user.id,
+                "num_questions": num,
+            },
+        )
+
+        return ExamSessionResponse(
+            session_id=session_data.session_id,
+            student_id=session_data.student_id,
+            exam_type=session_data.exam_config.exam_type.value,
+            status=session_data.status.value,
+            total_questions=session_data.exam_config.total_questions,
+            duration_minutes=session_data.exam_config.duration_minutes,
+            current_question_index=session_data.current_question_index,
+            started_at=session_data.started_at,
+            completed_at=session_data.completed_at,
+        )
+    except ValueError as e:
+        logger.error(
+            f"Beta pratik oluşturma hatası: {e}",
+            extra_data={"student_id": current_user.id},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Beta pratik testi oluşturulamadı. Lütfen tekrar deneyin.",
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(
+            f"Beklenmeyen beta pratik hatası: {e}",
+            extra_data={"student_id": current_user.id},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Beta pratik testi oluşturulurken beklenmeyen bir hata oluştu",
+        )
+
+
+@router.post(
     "/{session_id}/start",
     response_model=ExamSessionResponse,
     summary="ÖSYM Sınavını Başlat",

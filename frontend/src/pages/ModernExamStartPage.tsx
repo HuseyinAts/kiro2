@@ -106,6 +106,23 @@ export const ModernExamStartPage: React.FC = () => {
     }
   };
 
+  const handleStartBeta = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await apiRequest<{ session_id: string }>(
+        '/api/v1/osym-exam/beta-practice?num_questions=20',
+        { method: 'POST' },
+      );
+      navigate(`/exam/${data.session_id}`);
+    } catch (err: any) {
+      setError(err.message || 'Beta pratik başlatılamadı');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const selectedDifficulty = difficulties.find(d => d.value === config.difficulty);
 
   return (
@@ -159,6 +176,43 @@ export const ModernExamStartPage: React.FC = () => {
           <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
         </motion.div>
       )}
+
+      {/* Beta Pratik Testi — doğrulanmış çekirdek sorular */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+      >
+        <GlassCard sx={{ mb: 3 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { sm: 'center' },
+              justifyContent: 'space-between',
+              gap: 2,
+            }}
+          >
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+                🚀 Beta Pratik Testi
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Bağımsız olarak doğrulanmış, okunabilir sorulardan oluşan kısa
+                karışık bir test (20 soru). Hızlıca başla, deneyimini bize bildir.
+              </Typography>
+            </Box>
+            <ModernButton
+              variant="gradient"
+              onClick={handleStartBeta}
+              disabled={loading}
+              sx={{ whiteSpace: 'nowrap' }}
+            >
+              Beta Pratiğe Başla
+            </ModernButton>
+          </Box>
+        </GlassCard>
+      </motion.div>
 
       <Grid container spacing={3}>
         {/* Sol Kolon - Konfigürasyon */}
