@@ -152,6 +152,31 @@ olduğu **ancak döngü-dışı kör-çözüm gate ile ölçülebilir.** 31 May 
 
 ---
 
+## 6. Envanter Genişlemesi — 4 Yeni Kök (K21-K24)
+
+> Kaynak: 31 May eksiksiz envanter (`2026-05-31_ocr_attempt_inventory.md`, 275 script
+> + veri-artifact, 18 ajan). Bu 4 mod 8-eksen ilk turun KAPSAMADIĞI gerçek-yeni kökler.
+> Her biri ana-loop'ta satır-doğrulandı. **Hiçbiri TOP-5'i çürütmüyor — üzerine genişletiyor.**
+
+| # | Kök-neden | Mekanizma | Kanıt (satır-doğrulandı) | Eksen | Şiddet | Fix-yönü |
+|---|---|---|---|---|---|---|
+| **K21** | **Subject-tag yanlış-sınıflama (YENİ EKSEN)** | Soru→`subject_area` etiketi tek-sinyal keyword ile atanıyor/yeniden-sınıflanıyor → Fizik etiketli aslında aritmetik; yanlış soru yanlış derse giriyor (beta'da görünür ürün hatası). 8-eksen "etiket-doğruluğu" eksenini hiç içermiyordu. | `backend/scripts/validate_subject_classification.py` (MATH_INDICATORS keyword reclassify); Phase 7 audit "Fizik→aritmetik, Kimya→dilbilgisi 5+ vaka" | tüm eksenler (sınıflama) | **P1** | Çift-sinyal sınıflama (keyword + LLM); tek-keyword reclassify YASAK |
+| **K22** | **VLM safety-filter sistematik içerik kaybı** | Gemini `HARM_CATEGORY_DANGEROUS_CONTENT` geometrik şekilleri bloke ediyor (`finish_reason != STOP`) → subject-bias'lı SESSİZ veri kaybı (yanlış-okuma değil, hiç-okumama). K2/K7 akraba ama mekanizma farklı (reddetme). | `backend/scripts/tier_i_geometri_retry.py:9-10` ("safety filter geometrik şekilleri sistematik bloke", `BLOCK_NONE` retry) | metin/görsel (özellikle GEO) | **P1** | Çok-model konsensüs (biri bloklarsa diğeri tamamlar); blok-oranı subject-bazlı izle |
+| **K23** | **Chi-square-driven cevap MUTASYONU (EN TEHLİKELİ)** | Vanity-metrik yalnız ÖLÇMÜYOR — yanlış metriğe göre **production cevabını DEĞİŞTİRİYOR**: "chi-square'i iyileştiren kitaplarda cevap değişikliği UYGULA". YKS dağılımı uniform olmadığı için gerçek-doğru cevapları bozma riski. K18'in aktif-mutasyon hali. | `d-dataset/scripts/validate_3tier_selective.py:2` ("apply answer changes ONLY for books that improve"), `:102,121,150` (`per_book_changes[book][key]=new_ans`) | cevap | **P0** | Chi-square-tabanlı cevap UPDATE'i YASAKLA; cevap değişimi yalnız içerik-eşleşme kanıtıyla |
+| **K24** | **Disk-üzeri " (1)" kopya / kanonik-dosya belirsizliği** | ≥14 kazara dosya-kopyası (`script_common (1).py`, `ocr_crops (1).py` [farklı engine!], `preprocess_screenshots (1).py` [farklı girdi!], `answers_v8 (1).db`...). Davranışsal FARKLI, isim neredeyse aynı → hangi sürüm çalıştı izlenemez. K11'in kazara hali. | `find` ile ≥14 vaka; **ana-loop doğrulama:** `cross_validate_answers (1).py` `ai_upgrade` İÇERMEZ (S194-öncesi) + boşluklu ad import-EDİLEMEZ → K14 fix kanonik için geçerli, bu kopya orphan | tüm eksenler (provenance) | **P1** | Tüm " (1)" → `_deprecated/`; tek kanonik import path |
+
+**Sayısal teyit (envanter):** 275 scriptin ~%98'i K1-K20'ye oturdu; 2 sistemik daire rakamla
+doğrulandı — **ÖLÇÜM (K1a+K1b+K18+K19) ≈105 vuruş** + **POST-HOC YAMA (K3+K8+K11) ≈89 vuruş**
+→ Bölüm 1'deki "meta-kök = ölçüm + determinizm-açığı" iki-kol tezi sayısal desteklendi.
+**K23, ölçüm dairesinin en zararlı tezahürü:** yanlış metrik yalnız gizlemiyor, gerçek veriyi
+aktif bozuyor → FAZ 0'da K1a/K1b ile birlikte ele alınmalı.
+
+**Aksiyon güncellemesi:** FAZ 0'a **K23 (chi-square cevap-UPDATE yasağı)** + **K24 (" (1)" kopya
+temizliği)**; K21 (subject-tag çift-sinyal) FAZ 3'e; K22 (VLM-safety çok-model) FAZ 2'ye eklenir.
+
+---
+
 *Tüm kod iddiaları 31 May 2026 canlı dosyalarda satır-doğrulandı. KESİN-güven kökler bizzat
 re-verify edildi (K1a, K1b, K2b, K4b, K7, K14). Phantom'lar (Bayesian fix, kalibrasyon dosyaları)
-Bölüm 4'te işaretli. Determinizm meta-kök kapsamı 3 challenge ile ~4 köke daraltıldı.*
+Bölüm 4'te işaretli. Determinizm meta-kök kapsamı 3 challenge ile ~4 köke daraltıldı.
+K21-K24 (envanter genişlemesi) ana-loop'ta satır-doğrulandı (M-A1/M-A2/M-A3/M-A4).*
