@@ -74,7 +74,7 @@ class OSYMExamConfig:
     ayt_field_type: AYTFieldType | None = None  # AYT için alan türü
     ydt_language: YDTLanguage | None = None  # YDT için dil seçimi - REQ-1.3
     difficulty: str | None = None  # "kolay", "orta", "zor", "cok_zor"
-    # Beta pratik: tutarlılık gate'inden geçmiş (student_coherent) havuzdan
+    # Beta pratik: kör-çözüm doğrulamasından geçmiş (verified_gold) havuzdan
     # karışık soru seç; standart base_filters/subject_distribution UYGULANMAZ.
     beta_practice: bool = False
 
@@ -347,7 +347,7 @@ class OSYMExamEngine:
             if custom_config:
                 if custom_config.get("beta_practice"):
                     # Beta pratik: subject_distribution/base_filters yok say,
-                    # student_coherent havuzundan karışık seç (bkz. _select_beta_questions)
+                    # verified_gold havuzundan karışık seç (bkz. _select_beta_questions)
                     exam_config.beta_practice = True
                 if "duration_minutes" in custom_config:
                     exam_config.duration_minutes = custom_config["duration_minutes"]
@@ -1166,24 +1166,24 @@ class OSYMExamEngine:
     async def _select_beta_questions(self, count: int) -> list[Question]:
         """Beta pratik için soru seç.
 
-        Kör 3-solver gate'inden geçmiş (pipeline_metadata.beta_clean_verified
-        == 'true') havuzdan rastgele ``count`` soru döndürür. Standart
-        ``base_filters`` (uzunluk, passage regex, geometri-görsel şartı)
-        UYGULANMAZ — gate, bu sezgisel proxy'lerden daha güçlü bir
-        okunabilirlik + çözülebilirlik kanıtıdır (öğrenci-eşdeğeri kör çözüm).
+        Kör-çözüm doğrulamasından geçmiş (pipeline_metadata.verified_gold ==
+        'true') havuzdan rastgele ``count`` soru döndürür: kör solver DB cevabını
+        GÖRMEDEN aynı cevabı bulmuş + okunabilir + çözülebilir + figürsüz
+        (verified core build, 31 May 2026, ~2,734 soru). Standart ``base_filters``
+        UYGULANMAZ — bu gate proxy'lerden daha güçlüdür ve cevap-doğruluğunu da
+        dairesel olmadan teyit eder.
 
         Cache anahtarı ``BETA:*`` ile standart subject havuzundan ayrıdır;
         beta-dışı sorunun beta moduna sızması mümkün değildir.
         """
-        cache_key = "BETA:student_coherent:all"
+        cache_key = "BETA:verified_gold:all"
         pool = self._question_pool_cache.get(cache_key)
         if pool is None:
             async with get_db_session_context() as db_session:
                 id_result = await db_session.execute(
                     select(Question.id).where(
                         Question.is_active.is_(True),
-                        Question.pipeline_metadata.op("->>")("student_coherent")
-                        == "true",
+                        Question.pipeline_metadata.op("->>")("verified_gold") == "true",
                     )
                 )
                 pool = [row[0] for row in id_result.all()]
