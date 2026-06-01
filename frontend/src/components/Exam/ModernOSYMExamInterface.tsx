@@ -59,6 +59,7 @@ import { ModernButton } from '@/components/ui/ModernButton';
 import { MathText } from '@/components/ui/MathText';
 import { QuestionImage } from '@/components/ui/ImageZoomModal';
 import { ModernLoader } from '@/components/ui/ModernLoader';
+import { FlagButton } from '../Quality/FlagButton';
 import modernColors from '@/theme/modern-colors';
 
 interface ModernOSYMExamInterfaceProps {
@@ -516,11 +517,15 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
                     }}
                   />
 
-                  <Tooltip title={isFlagged ? 'İşareti Kaldır' : 'İşaretle'}>
-                    <IconButton onClick={handleFlagToggle}>
-                      {isFlagged ? <Bookmark sx={{ color: 'error.main' }} /> : <BookmarkBorder />}
-                    </IconButton>
-                  </Tooltip>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {/* Beta kalite-bildirimi: hatalı/tuhaf soru raporu (5 sebep + not) */}
+                    {currentQuestionId && <FlagButton questionId={currentQuestionId} />}
+                    <Tooltip title={isFlagged ? 'İşareti Kaldır' : 'İşaretle'}>
+                      <IconButton onClick={handleFlagToggle}>
+                        {isFlagged ? <Bookmark sx={{ color: 'error.main' }} /> : <BookmarkBorder />}
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Box>
 
                 {/* Question Text + Image — side-by-side on desktop.

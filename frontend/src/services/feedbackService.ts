@@ -12,6 +12,8 @@ export type FlagType =
   | 'wrong_topic'
   | 'solution_visible'
   | 'incomplete_text'
+  | 'circular'
+  | 'figure_needed'
   | 'other';
 
 export interface FlagCreatePayload {

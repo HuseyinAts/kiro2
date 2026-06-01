@@ -37,6 +37,8 @@ const FLAG_OPTIONS: { value: FlagType; label: string }[] = [
   { value: 'wrong_topic', label: 'Konu yanlış (örn. matematik sorusu fizik olarak işaretlenmiş)' },
   { value: 'solution_visible', label: 'Çözüm/cevap görselde görünüyor' },
   { value: 'incomplete_text', label: 'Metin eksik veya bozuk' },
+  { value: 'circular', label: 'Soru kendini cevaplıyor (dairesel)' },
+  { value: 'figure_needed', label: 'Şekil/görsel gerekiyor ama yok' },
   { value: 'other', label: 'Diğer' },
 ];
 
