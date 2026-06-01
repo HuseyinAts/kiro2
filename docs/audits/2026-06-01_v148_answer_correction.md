@@ -46,3 +46,24 @@ Bunlar artık doğru cevaplı, kullanılabilir.
 ## Artifactlar (untracked)
 `_beta_core_tmp/`: v148_solve_input.jsonl, v148_key.jsonl, v148_batches/, v148_third_solve.json,
 consensus_apply_148.py, apply_148.sql. Workflow: `wf_e92ab0c7-373`.
+
+---
+
+## EK: 2. Tur — 135 MAT+GEO (conf<0.9) — 1 Haz 2026
+
+148'in (conf≥0.9) ardından kalan **135 MAT+GEO real_error** (conf 0.78-0.82) aynı
+3-sinyal pipeline'ıyla (Workflow `wf_28e051c2-4be`, 135/135). **Flip-flop önleme:**
+148'de zaten `verify3_disagree` olan 5 id CONFIRMED'den HARİÇ tutuldu (curator'da kaldı).
+
+| | Sayı |
+|---|---|
+| CONFIRMED (3/3 → correct_answer) | **127** |
+| UNCERTAIN → curator | 3 |
+| EXCLUDED (prev-disagree) | 5 |
+
+127/130 = **%97.7** triple-hizalanma (148 ile tutarlı). Backup `question_bank_v135_correct_backup_20260601`.
+Düzeltilenler run=`2026_06_01_r2`. Spot: 001f1380 → A (xy-min −48) ✓.
+
+**BİRLEŞİK (148+135):** 480 real_error'ın **270'i (%56) 3-sinyal-doğrulanmış correct_answer'a kavuştu.**
+MAT+GEO deterministik kısım büyük oranda bitti. Kalan 210 (202 concept + 5 prev-disagree + 3 uncertain) → curator manual.
+auto_judged_high 13,085 → 13,355.
