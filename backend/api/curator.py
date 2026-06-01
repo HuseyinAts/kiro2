@@ -71,6 +71,13 @@ class QueueItem(BaseModel):
     misconception_tags: list[str] | None = None
     solution_steps: list[str] | None = None
     similar_question_ids: list[str] | None = None
+    dispute_suggestion: dict[str, Any] | None = Field(
+        None,
+        description=(
+            "Kör-çözüm cevap-hatası önerisi: {suggested, db, reason, conf}. "
+            "İki bağımsız kör solver DB'ye karşı hemfikir; curator hızlı onay için."
+        ),
+    )
 
     model_config = ConfigDict(from_attributes=False)
 
@@ -155,6 +162,18 @@ def _row_to_queue_item(row: QuestionBankItem) -> QueueItem:
         difficulty.value if hasattr(difficulty, "value") else str(difficulty)
     )
 
+    # pipeline_metadata.dispute_suggestion: kör-çözüm cevap-hatası önerisi
+    # (str veya dict olabilir; raw SQL row'da JSON string gelebilir).
+    _pm = getattr(row, "pipeline_metadata", None) or {}
+    if isinstance(_pm, str):
+        try:
+            _pm = json.loads(_pm)
+        except (ValueError, TypeError):
+            _pm = {}
+    dispute_suggestion = (
+        _pm.get("dispute_suggestion") if isinstance(_pm, dict) else None
+    )
+
     return QueueItem(
         id=str(row.id),
         question_text=row.question_text,
@@ -175,6 +194,7 @@ def _row_to_queue_item(row: QuestionBankItem) -> QueueItem:
         misconception_tags=_json_to_list(getattr(row, "misconception_tags", None)),
         solution_steps=_json_to_list(getattr(row, "solution_steps", None)),
         similar_question_ids=_json_to_list(getattr(row, "similar_question_ids", None)),
+        dispute_suggestion=dispute_suggestion,
     )
 
 
