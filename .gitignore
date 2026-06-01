@@ -332,5 +332,9 @@ backend/scripts/quality/_batch_state/
 backend/scripts/quality/_batch_state_gemini*/
 backend/scripts/quality/_phase7_audit_tmp/
 
+# Quality audit working dirs (blind-solve / dispute / beta — ephemeral, disk-only)
+backend/scripts/quality/_*_tmp/
+backend/scripts/quality/_beta_figure_audit.sql
+
 # Serena MCP local cache
 .serena/
