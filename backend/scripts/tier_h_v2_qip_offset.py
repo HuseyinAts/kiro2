@@ -58,7 +58,11 @@ def get_engine():
         load_dotenv(Path(__file__).parent.parent / ".env")
     except ImportError:
         pass
-    db_url = os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
+    db_url = os.environ.get("DATABASE_URL") or (
+        __import__("sys").exit(
+            "ERROR: DATABASE_URL env required (no hardcoded fallback)"
+        )
+    )
     db_url = db_url.replace("postgresql+asyncpg://", "postgresql://")
     db_url = db_url.replace("postgresql+aiopg://", "postgresql://")
     db_url = db_url.replace("/kiro2_db", "/kiro2")
@@ -384,4 +388,13 @@ def main():
 
 
 if __name__ == "__main__":
+    # --- DEPRECATED MÜHÜR (K9/Tier-H, 31 May 2026) ---
+    # Tier-H v2 offset varyantı — konsept iptal, pilot %75 yanlış. Tek-sinyal
+    # pattern (K9). Çift-sinyal kuralı olmadan çalıştırma YASAK.
+    if os.environ.get("ALLOW_DEPRECATED_TIER_H") != "1":
+        sys.stderr.write(
+            "DEPRECATED (K9/Tier-H v2): pilot %75 yanlış, konsept iptal. "
+            "Override: ALLOW_DEPRECATED_TIER_H=1\n"
+        )
+        sys.exit(2)
     main()

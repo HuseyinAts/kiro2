@@ -62,7 +62,11 @@ def get_engine():
         load_dotenv(Path(__file__).parent.parent / ".env")
     except ImportError:
         pass
-    db_url = os.environ.get("DATABASE_URL") or (__import__("sys").exit("ERROR: DATABASE_URL env required (no hardcoded fallback)"))
+    db_url = os.environ.get("DATABASE_URL") or (
+        __import__("sys").exit(
+            "ERROR: DATABASE_URL env required (no hardcoded fallback)"
+        )
+    )
     db_url = db_url.replace("postgresql+asyncpg://", "postgresql://")
     db_url = db_url.replace("postgresql+aiopg://", "postgresql://")
     db_url = db_url.replace("/kiro2_db", "/kiro2")
@@ -268,4 +272,14 @@ def main():
 
 
 if __name__ == "__main__":
+    # --- DEPRECATED MÜHÜR (K9/Tier-H, 31 May 2026) ---
+    # Tek-sinyal (q_index_in_page exact filename) eşleşme → 49,468 satır YANLIŞ,
+    # rollback 6a3fa7fc0. Jaccard çift-sinyal atlandığı için 0/1-index kayması
+    # yakalanamadı. Çift-sinyal kuralı (CLAUDE.md) olmadan çalıştırma YASAK.
+    if os.environ.get("ALLOW_DEPRECATED_TIER_H") != "1":
+        sys.stderr.write(
+            "DEPRECATED (K9/Tier-H): tek-sinyal eşleşme 49,468 satır rollback'e "
+            "yol açtı. Override: ALLOW_DEPRECATED_TIER_H=1\n"
+        )
+        sys.exit(2)
     main()

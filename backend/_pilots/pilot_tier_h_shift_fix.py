@@ -41,6 +41,16 @@ def _fold(s):
     return s.translate(str.maketrans("ÇĞİÖŞÜçğıöşü", "CGIOSUcgiosu")).lower()
 
 
+# --- DEPRECATED MÜHÜR (K9/Tier-H, 31 May 2026) — EN YÜKSEK RİSK ---
+# Bu script rollback EDİLMİŞ Tier-H'i (49,468 satır yanlış, 6a3fa7fc0) diriltmeye
+# çalışıyor. Modül seviyesinde çalıştığı için import bile tetikler. Çalıştırma YASAK.
+if os.environ.get("ALLOW_DEPRECATED_TIER_H") != "1":
+    sys.stderr.write(
+        "DEPRECATED (K9/Tier-H shift-fix): rollback edilmiş Tier-H'i diriltiyor — "
+        "EN yüksek tekrar-riski. Override: ALLOW_DEPRECATED_TIER_H=1\n"
+    )
+    sys.exit(2)
+
 print("[load] JSONL prefix index...")
 jsonl_idx = defaultdict(list)
 with JSONL_PATH.open(encoding="utf-8") as f:
