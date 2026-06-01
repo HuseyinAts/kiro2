@@ -1,7 +1,7 @@
 """Beta pratik soru seçimi testleri.
 
 Beta pratik modu, kör-çözüm doğrulamasından geçmiş (pipeline_metadata.
-verified_gold == 'true') ~2,734 çekirdek soruyu kullanır. Standart ÖSYM
+verified_provisional == 'true') ~2,734 çekirdek soruyu kullanır. Standart ÖSYM
 soru-seçim base_filters'ı (uzunluk>=50, passage regex, geometri-görsel şartı
 vb.) bu mod için UYGULANMAZ — gate, o sezgisel proxy'lerden daha güçlü bir
 kalite kanıtı sağlar (öğrenci-eşdeğeri kör çözüm).
@@ -29,7 +29,8 @@ async def _beta_pool_available() -> bool:
                 .select_from(Question)
                 .where(
                     Question.is_active.is_(True),
-                    Question.pipeline_metadata.op("->>")("verified_gold") == "true",
+                    Question.pipeline_metadata.op("->>")("verified_provisional")
+                    == "true",
                 )
             )
             return (result.scalar() or 0) >= 20
@@ -40,7 +41,7 @@ async def _beta_pool_available() -> bool:
 def _is_beta_clean(question) -> bool:
     meta = question.pipeline_metadata or {}
     # JSON boolean true veya string "true" — her iki serileştirmeyi de kabul et
-    return meta.get("verified_gold") in (True, "true")
+    return meta.get("verified_provisional") in (True, "true")
 
 
 @pytest.fixture(scope="module")
@@ -58,7 +59,7 @@ async def test_select_beta_questions_returns_requested_count(beta_pool_ready):
 
 
 async def test_select_beta_questions_all_beta_clean(beta_pool_ready):
-    """Dönen her soru verified_gold ve aktif."""
+    """Dönen her soru verified_provisional ve aktif."""
     engine = OSYMExamEngine()
     questions = await engine._select_beta_questions(20)
     assert questions, "Beta havuzundan soru gelmedi"
