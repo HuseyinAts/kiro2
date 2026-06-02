@@ -11,6 +11,7 @@ import * as ReactDOM from 'react-dom/client';
 
 import { App } from './App';
 import { registerOnlineSync } from './db/kiro2DB';
+import './styles/fonts.css';
 import './styles.css';
 
 // Global axios defaults — ensures all direct axios calls send cookies

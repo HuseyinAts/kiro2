@@ -63,7 +63,7 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
       }[accessibilitySettings.settings.fontSize],
       fontFamily: accessibilitySettings.settings.dyslexiaSupport
         ? '"OpenDyslexic", "Comic Sans MS", cursive'
-        : '"Roboto", "Helvetica", "Arial", sans-serif',
+        : '"Inter", "system-ui", "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
     },
     components: {
       MuiButton: {
