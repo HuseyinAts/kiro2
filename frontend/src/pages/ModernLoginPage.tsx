@@ -246,6 +246,7 @@ export const ModernLoginPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <Alert
+                  id="login-error"
                   severity="error"
                   sx={{
                     mb: 3,
@@ -270,6 +271,8 @@ export const ModernLoginPage: React.FC = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 disabled={isLoading}
+                error={!!error}
+                inputProps={{ 'aria-describedby': error ? 'login-error' : undefined }}
                 sx={{
                   mb: 2,
                   '& .MuiOutlinedInput-root': {
@@ -297,6 +300,8 @@ export const ModernLoginPage: React.FC = () => {
                 value={formData.password}
                 onChange={handleInputChange}
                 disabled={isLoading}
+                error={!!error}
+                inputProps={{ 'aria-describedby': error ? 'login-error' : undefined }}
                 sx={{
                   mb: 3,
                   '& .MuiOutlinedInput-root': {

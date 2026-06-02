@@ -90,6 +90,29 @@ describe('LoginPage', () => {
     })
   })
 
+  it('marks inputs aria-invalid and links the error alert on failure (WCAG 3.3.1)', async () => {
+    const user = userEvent.setup()
+    render(<LoginPage />)
+
+    const emailInput = screen.getByLabelText(/posta/i)
+    const passwordInput = screen.getByLabelText(/ifre/i)
+
+    // Submit with empty fields → validation error surfaces
+    await user.click(screen.getByRole('button', { name: /giri/i }))
+
+    await waitFor(() => {
+      // Error region is announced as an alert and carries the linking id
+      const alert = screen.getByRole('alert')
+      expect(alert).toHaveAttribute('id', 'login-error')
+    })
+
+    // Both inputs are programmatically marked invalid and point to the error
+    expect(emailInput).toHaveAttribute('aria-invalid', 'true')
+    expect(passwordInput).toHaveAttribute('aria-invalid', 'true')
+    expect(emailInput).toHaveAttribute('aria-describedby', 'login-error')
+    expect(passwordInput).toHaveAttribute('aria-describedby', 'login-error')
+  })
+
   it('shows loading state during form submission', async () => {
     const user = userEvent.setup()
     loginMock.mockImplementation(() => new Promise(() => {}))
