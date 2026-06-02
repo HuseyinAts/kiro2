@@ -198,7 +198,9 @@ async def list_active_sessions() -> list["ExamSessionData"]:
                         sessions.append(_deserialize_session(data))
                     except Exception as e:
                         logger.warning(f"Skipping corrupt session {key}: {e}")
-            await r.aclose()
+            # NOT: r SHARED pool client (_REDIS_POOL_CLIENT) — aclose() ÇAĞIRMA,
+            # global havuzu kapatır → sonraki tüm load/persist sessizce fail eder
+            # (S179 pooling refactor'da atlanmıştı, beta resume 404'un kökü).
             return sessions
     except Exception as e:
         logger.warning(f"Redis list_active_sessions failed: {e}")
@@ -220,7 +222,7 @@ async def get_student_sessions(student_id: str) -> list["ExamSessionData"]:
                     session = _deserialize_session(data)
                     if session.student_id == student_id:
                         sessions.append(session)
-            await r.aclose()
+            # NOT: r SHARED pool client — aclose() ÇAĞIRMA (yukarıdaki açıklama).
             return sessions
     except Exception as e:
         logger.warning(f"Redis student sessions failed for {student_id}: {e}")

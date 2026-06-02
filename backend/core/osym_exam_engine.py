@@ -917,6 +917,18 @@ class OSYMExamEngine:
         from core.exam_session_store import load_session
 
         session = await load_session(session_id)
+
+        # L3: DB fallback — 4 uvicorn worker + in-memory L1 paylaşılmıyor ve
+        # Redis anahtarı kaybolabilir; exam_sessions+exam_questions+
+        # student_answers source-of-truth olduğundan resume bulletproof olur.
+        if not session:
+            session = await self._reconstruct_session_from_db(session_id)
+            if session and session.status != ExamStatus.COMPLETED:
+                # Redis L2'yi onar (diğer worker'lar da görebilsin)
+                from core.exam_session_store import persist_session
+
+                await persist_session(session)
+
         if session:
             # Populate L1 cache
             self.active_sessions[session_id] = session
@@ -931,6 +943,72 @@ class OSYMExamEngine:
                     self._auto_complete_task(session_id)
                 )
         return session
+
+    async def _reconstruct_session_from_db(
+        self, session_id: str
+    ) -> "ExamSessionData | None":
+        """Redis L2 miss → exam_sessions tablosundan oturumu yeniden kur.
+
+        Multi-worker (in-memory L1 paylaşılmaz) + Redis anahtar kaybı
+        senaryolarında sınav devam ettirme (resume) için DB source-of-truth.
+        """
+        try:
+            from models.exam_db import ExamQuestion, ExamSession, StudentAnswer
+
+            async with get_db_session_context() as db:
+                row = (
+                    await db.execute(
+                        select(ExamSession).where(ExamSession.id == session_id)
+                    )
+                ).scalar_one_or_none()
+                if not row:
+                    return None
+
+                q_ids = (
+                    (
+                        await db.execute(
+                            select(ExamQuestion.question_id)
+                            .where(ExamQuestion.exam_session_id == session_id)
+                            .order_by(ExamQuestion.question_order)
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+
+                ans_rows = (
+                    await db.execute(
+                        select(
+                            StudentAnswer.question_id,
+                            StudentAnswer.selected_answer,
+                        ).where(StudentAnswer.exam_session_id == session_id)
+                    )
+                ).all()
+                answers = {str(qid): sel for qid, sel in ans_rows if sel}
+
+            config = OSYMExamConfig(
+                exam_type=row.exam_type,
+                total_questions=row.total_questions,
+                duration_minutes=row.duration_minutes,
+                subject_distribution={},
+            )
+            return ExamSessionData(
+                session_id=str(row.id),
+                student_id=str(row.student_id),
+                exam_config=config,
+                status=ExamStatus(row.status),
+                started_at=row.started_at,
+                completed_at=row.completed_at,
+                current_question_index=row.current_question_index or 0,
+                questions=[str(q) for q in q_ids],
+                answers=answers,
+            )
+        except Exception as e:
+            logger.error(
+                f"DB session reconstruct hatası: {e}",
+                extra_data={"session_id": session_id},
+            )
+            return None
 
     async def get_unanswered_questions(self, session_id: str) -> list[str]:
         """

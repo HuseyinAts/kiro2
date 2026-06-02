@@ -215,6 +215,11 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
           currentQuestion: questionData,
           remainingTime: timeData.remaining_seconds,
         }));
+
+        // RESUME FIX: sayfa yenilenince/sekme dönülünce lokal soru index'i 0'a
+        // resetleniyordu → "başa döndü". Backend'in kaydettiği
+        // current_question_index'ten geri yükle, kullanıcı kaldığı soruda devam etsin.
+        setCurrentQuestionIndex(sessionData.current_question_index ?? 0);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to load exam data');
