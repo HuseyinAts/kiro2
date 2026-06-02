@@ -65,10 +65,17 @@ Kör-solver bu soruları çözemedi — **figür eksik olduğu için DEĞİL**, 
 
 ---
 
-## Sonraki adım (opsiyonel, düşük öncelik)
+## Aksiyon: 884 REDDEDİLDİ (Hüseyin kararı, "çoğu kötüyse sil")
 
-ISO_OK ~53 soru P3 (kör-solve ölçekleme) veya gelecek re-OCR turuna etiketlenebilir. Acil değil.
-884 olduğu gibi `blind_unsolvable` kalır (beta dışı, gizli). Hiçbir DB değişikliği yapılmadı (salt-okuma ölçüm).
+Ölçüm öncesi 884'ün **hepsi `is_active=true` + `auto_judged_high`** idi — yani %94 çöp, **aktif gold havuzunda servis ediliyordu** (beta dışı ama genel gold içinde). %6 ISO_OK'u tek tek ayıklamak = "uğraşma" → hepsi reddedildi.
+
+- **Yöntem:** soft-reject (geri-alınabilir), `backend/scripts/quality/_p2_measure_tmp/reject_884.sql`
+- `is_active = false`, `quality_review_status = 'rejected'`, metadata flag `p2_rejected_blind_unsolvable=true`
+- **Backup:** `question_bank_blind_unsolvable_reject_backup_20260603` (884 tam satır, rollback hazır)
+- `correct_answer` DOKUNULMADI. Doğrulama: 884 backup / 0 aktif kaldı / 884 rejected.
+- **Etki:** auto_judged_high ~13,355 → ~12,471 (çöp gold temizlendi). Beta (verified_provisional) etkilenmedi.
+
+~53 ISO_OK soru bilinçli feda edildi — gelecek genel re-OCR turunda kaynak kitaplardan zaten yeniden gelecek.
 
 ---
 
