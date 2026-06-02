@@ -85,13 +85,18 @@ export const ModernExamResultsPage: React.FC = () => {
 
       let subjectData: any[] = [];
       let sessionData: any = null;
-      try {
-        [subjectData, sessionData] = await Promise.all([
-          apiRequest(`/api/v1/osym-exam/${sinavId}/subject-performance`),
-          apiRequest(`/api/v1/osym-exam/${sinavId}/session`),
-        ]);
-      } catch {
-        // subject/session data optional — performance is primary
+      // allSettled: ders kırılımı (subject-performance) ile oturum bilgisi
+      // (session) BAĞIMSIZ alınır. Promise.all idi → session 404'ü tüm bloğu
+      // reject edip ders kırılımını siliyordu (D3 bug).
+      const [subjRes, sessRes] = await Promise.allSettled([
+        apiRequest(`/api/v1/osym-exam/${sinavId}/subject-performance`),
+        apiRequest(`/api/v1/osym-exam/${sinavId}/session`),
+      ]);
+      if (subjRes.status === 'fulfilled' && Array.isArray(subjRes.value)) {
+        subjectData = subjRes.value;
+      }
+      if (sessRes.status === 'fulfilled') {
+        sessionData = sessRes.value;
       }
 
       // Gerçek geçen süreyi hesapla (dakika)
