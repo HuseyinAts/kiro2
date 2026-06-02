@@ -17,8 +17,8 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 // Custom hooks
 import { VideoResponse } from '../api';
 import { LearningStyleQuiz } from '../components/LearningPath/LearningStyleQuiz';
-import { DungeonMap } from '../components/LearningPath/DungeonMap';
-// Replaced by DungeonMap — keeping import for potential fallback
+import { TopicList } from '../components/LearningPath/TopicList';
+// DungeonMap (parşömen + fog-of-war) sade TopicList ile değiştirildi (fallback olarak korunuyor)
 // import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
 import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel';
 import type { LayoutNode } from '../hooks/useDungeonMap';
@@ -945,7 +945,7 @@ export function ModernLearningPathPage() {
 
                   {/* Learning Path Visualizer */}
                   {pathNodes.length > 0 ? (
-                    <DungeonMap
+                    <TopicList
                       subject={dungeonSubject}
                       onNodeClick={handleDungeonNodeClick}
                     />

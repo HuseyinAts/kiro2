@@ -14,7 +14,6 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
-  IconButton,
   Radio,
   RadioGroup,
   Snackbar,
@@ -88,15 +87,26 @@ export const FlagButton: React.FC<FlagButtonProps> = ({ questionId, size = 'smal
 
   return (
     <>
-      <Tooltip title="Bu soruda hata var">
-        <IconButton
-          size={size}
+      <Tooltip title="Bu soruda bir hata mı var? Bize bildir.">
+        <Button
+          size={size === 'medium' ? 'medium' : 'small'}
+          color="warning"
+          variant="outlined"
           onClick={() => setOpen(true)}
           aria-label="Soru hatası bildir"
-          sx={{ color: 'text.secondary', '&:hover': { color: 'warning.main' } }}
+          startIcon={<ReportProblemOutlined fontSize="small" />}
+          sx={{
+            textTransform: 'none',
+            borderRadius: 2,
+            px: 1.25,
+            py: 0.25,
+            minWidth: 0,
+            whiteSpace: 'nowrap',
+            fontWeight: 600,
+          }}
         >
-          <ReportProblemOutlined fontSize={size === 'small' ? 'small' : 'medium'} />
-        </IconButton>
+          Hata bildir
+        </Button>
       </Tooltip>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
