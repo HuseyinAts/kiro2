@@ -1,46 +1,38 @@
-## Session Handoff — 2026-06-02 19:00
-**Branch:** master | **Son commit:** `47c41ec0e` — Track 3 phantom-verify
-**Uncommitted:** temiz | **Push:** bu oturumda 6 commit pushlandı
+## Session Handoff — 2026-06-02 (akşam)
+**Branch:** master | **Son commit:** `556ee05e6` | **Push:** EDİLMEDİ (7 commit master'da bekliyor)
+**Uncommitted:** sadece bu handoff (temp script'ler gitignore'da, diskte)
 
-### Yapilanlar (bu session)
+### Yapılanlar — İçerik kalite çarkı (Gemini'siz, Claude-Workflow kör-solve)
+"Elimdeki veriyi analiz et + beyin fırtınası" → seçenek 1 (içerik çarkı). 9 Workflow, ~28M token, 7 commit.
 
-Tüm kalite/beta/ürün audit verisi (21+ doc + MEMORY) 4 paralel ajanla eksiksiz
-okundu → adım-adım analiz + 3-track beyin fırtınası → Track 1 sırayla + Track 3 başlandı.
+- **L1 (`5c2599f0`):** 997 student_coherent aday kör-solve → AGREE 420→**beta promote** / UNSOLVABLE 193→flag / DISAGREE 334→dispute. Pilot %59.6 + spot 15/15. Beta 2,689→3,109.
+- **L1d (`ebbf0a8e`):** 334 dispute → 2. bağımsız kör-solve (628-deseni). FALSE_DISPUTE 55→beta / REAL_ERROR 143 (2-sinyal DB hatası) / UNSOLVABLE 57 / SPLIT 39. Beta 3,109→3,164.
+- **L1d-3 (`810227d3`):** 143 REAL_ERROR'ın MAT+GEO=30 → 3. kör-solve → **25 correct_answer DÜZELTİLDİ** (3-sinyal + elle 4/4 teyit).
+- **Retry (`3696e0f2`):** ertelenen 90→30 çözüldü, +5 beta. 60 kalıcı erteleme.
+- **Curator (`556ee05e`):** 123 concept REAL_ERROR → `pending` + `dispute_suggestion`. Worklist: `backend/scripts/quality/_l1_curator_tmp/curator_worklist_123_FULL.csv` (tam şıklar, Excel/UTF-8 BOM, `karar_accept_reject` kolonu boş).
 
-**TRACK 1 (gerçek-öğrenci döngüsü) — TAMAMLANDI:**
-- A1 (`f6e2a2ef0`): 44 flag'li soru beta'dan çıktı (35 figure_needed + 9 incomplete_text),
-  verified_provisional=false + beta_pull, flag resolution=confirmed. **Beta 2734→2690.**
-  Backup `question_bank_a1_beta_cleanup_backup_20260602`. correct_answer DOKUNULMADI.
-- A2 (`82b5adadc`): 36 figref aday KÖR yargılandı → 35 SOLVABLE + 1 NEEDS_FIGURE.
-  **Beta 2690→2689. Havuz figür-temiz** (verified_core filtresi doğru).
-- A3 (`390617295`): Curator dispute_suggestion UI (DB≠kör-solver uyarısı, test 10/10 PASS).
+**SONUÇ: beta 2,689→3,169 (+480, +%17.9) + 25 DB hatası düzeltildi + 123 curator'a.** correct_answer sadece 25'te değişti (hepsi 3-sinyal+elle). 7 backup tablo (`question_bank_l1*_20260602`).
 
-**TRACK 3 (B2B ürün-hazırlık) — phantom-verify + 1 güvenlik fix:**
-- Phantom-verify (`47c41ec0e`): product_ready_roadmap %75 STALE — retention/a11y-provider/
-  KVKK-endpoints/AGPL/CVE/raw-input hepsi zaten yapılmış (phantom).
-- Güvenlik fix (`a8d318ec1`): seed_database hardcoded admin123 → env-driven + prod guard
-  (runtime test PASS, ruff temiz).
+### State
+- Beta (verified_provisional): **3,169** | DB PG 5434 sağlıklı | correct_answer integrity: tüm apply'larda fark=0
+- 7 backup tablo rollback hazır
 
 ### Fail Eden Testler
-- YOK. CuratorPage 10/10, seed runtime test PASS, tsc 0, ruff temiz.
+- YOK (DB-only iş, kod değişmedi). Spot-check elle 4/4 + 15/15 pilot.
 
-### Engelleyiciler
-1. **Track 2 BLOKE**: B1/B2 GEMINI_API_KEY rotate bekliyor (AUP).
-2. **Track 3 büyük blocker'lar DESIGN gerektirir**: multi-tenant (tenant_id/RLS yok, L) +
-   SSO MEB/SAML (kod yok, L) — körlemesine kod YASAK, `/brainstorm`+design doc+plan ister.
-3. A1 engine TTLCache 1h self-healing (restart edilmedi, aktif öğrenci).
-4. A3 dispute UI canlıya almak için frontend docker rebuild (operatör).
+### Engelleyiciler / Workflow dersleri (KRİTİK — MEMORY'de)
+- **Workflow 16+ eşzamanlı agent → 529 rate-limit → 0 token.** Çözüm: sıralı dalga ≤6 (`for`+`await parallel(chunk)`).
+- **Workflow `schema`/StructuredOutput bu harness'ta güvenilmez** (15/15 fail). Çözüm: schema YOK → düz JSON text → workflow JS'inde `JSON.parse`.
+- Gemini'siz havuz ~997 ile TÜKENDİ; 60 soru workflow-dirençli.
 
-### Sonraki Adimlar (maks 5)
-1. **Multi-tenant VEYA SSO design session** (`/brainstorm`) — gerçek B2B ilerlemesi
-2. Track 3 küçük S-item'lar: login field validation + nltk bump + stale req dosyası sil
-3. Hüseyin: 202 concept worklist (`_beta_core_tmp/concept202_review_worklist.csv`) accept/reject
-4. Track 2: Gemini key rotate → havuz büyüt (B1) / re-OCR garble (B2)
-5. Beta gerçek-öğrenci sürüyor — yeni flag geldikçe A1 pattern'i tekrarla
+### Sonraki Adımlar (maks 5)
+1. **Hüseyin: 123 curator worklist** doldur (accept/reject) → toplu apply VEYA /admin/curator (frontend rebuild gerek).
+2. **60 kalıcı-ertelenen** → manuel/curator.
+3. **Gemini key rotate → 61K garble re-OCR** — en büyük kilit, hâlâ bloke (AUP).
+4. `git push` (7 commit bekliyor).
+5. Beta gerçek-öğrenci sürüyor — yeni flag → A1 + L1 pattern tekrarla.
 
 ### Kararlar
-- Track 1 = kök-neden panzehiri (gerçek-öğrenci döngüsü), en yüksek kaldıraç → önce yapıldı
-- Beta havuzu figür-temiz (A2) — figür artık birincil kirletici değil
-- Track 3 roadmap %75 phantom — yeni iş öncesi phantom-verify ZORUNLU (S197 dersi tekrar)
-- Multi-tenant + SSO = gerçek B2B blocker, design-first (kod-first DEĞİL)
-- Tüm DB değişiklikleri non-destructive (metadata flag, backup'lı, correct_answer korundu)
+- Çok-sinyalli kör-solve: 1=provisional / 2=dispute sınıf / 3+insan=kalıcı düzeltme. Dairesellik panzehiri.
+- 2-sinyal-yanlış soru gold'da kalmaz (628 deseni: auto_judged_high→pending).
+- Tüm DB değişikliği non-destructive: metadata flag + backup; correct_answer sadece 3-sinyal+elle (25).
