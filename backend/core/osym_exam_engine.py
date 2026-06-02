@@ -992,6 +992,25 @@ class OSYMExamEngine:
                 duration_minutes=row.duration_minutes,
                 subject_distribution={},
             )
+            # Tamamlanmış sınav için performans metriklerini de DB'den kur —
+            # aksi halde get_performance_analysis live-branch'i (perf None) 400 atar.
+            perf = None
+            if str(row.status) == "completed":
+                _c = row.total_correct or 0
+                _w = row.total_wrong or 0
+                _e = row.total_empty or 0
+                perf = ExamPerformanceMetrics(
+                    total_questions=row.total_questions,
+                    answered_questions=_c + _w,
+                    correct_answers=_c,
+                    wrong_answers=_w,
+                    empty_answers=_e,
+                    net_score=float(_c),  # ÖSYM 2023+ ceza yok → net = doğru
+                    raw_score=float(row.raw_score or 0.0),
+                    percentile=row.percentile,
+                    estimated_ability=float(row.estimated_ability or 0.0),
+                    confidence_level=float(row.ability_confidence or 0.0),
+                )
             return ExamSessionData(
                 session_id=str(row.id),
                 student_id=str(row.student_id),
@@ -1002,6 +1021,7 @@ class OSYMExamEngine:
                 current_question_index=row.current_question_index or 0,
                 questions=[str(q) for q in q_ids],
                 answers=answers,
+                performance_metrics=perf,
             )
         except Exception as e:
             logger.error(
