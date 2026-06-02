@@ -7,7 +7,6 @@ Gelişmiş IRT parametreli soru seçimi ve database entegrasyonu ile
 # handlers. Caller-responsibility — see .claude/rules/middleware.md.
 # TODO sprint: wrap each commit with try/except/await db.rollback().
 
-
 import logging
 import math
 import random
@@ -28,6 +27,16 @@ from models.question_bank import QuestionDifficultyLevel, TopicHierarchy
 from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
+
+# Convention v2 (15 May 2026) — student-facing seçim için kalite filtresi.
+# Sadece auto_judged_high (R4 promoted) + human_verified (manual curator) kabul.
+# rejected / unverified / pending / legacy_v3_unaudited havuza GİRMEZ — aksi
+# halde yargılanmamış/reddedilmiş sorular öğrenciye sızar
+# (.claude/rules/testing.md lesson #31, is_active-only servis sızıntısı).
+# NOT: soru_getir (ID nokta-arama) ve admin update/delete yolları bilinçli
+# olarak filtrelenmez — atanmış soruların resume/review akışını korumak için.
+# Bkz: docs/quality_review_status_convention.md
+_ACCEPTED_QUALITY_STATUS: tuple[str, ...] = ("human_verified", "auto_judged_high")
 
 # Türkçe → UPPERCASE konu dönüşüm haritası (DRY: tek tanım)
 _KONU_MAP: dict[str, str] = {
@@ -411,7 +420,10 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # Base query - questions tablosundan (Question modeli)
-                stmt = select(Question).where(Question.is_active.is_(True))
+                stmt = select(Question).where(
+                    Question.is_active.is_(True),
+                    Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                )
 
                 # Sınav tipi filtresi — DB UPPERCASE: "TYT", "AYT"
                 if sinav_tipi:
@@ -501,7 +513,10 @@ class SoruBankasiServisi:
 
                 # FIX N+1: Tek sorguda tüm konuların sorularını getir
                 sinav_upper = sinav_tipi.upper() if sinav_tipi else None
-                stmt = select(Question).where(Question.is_active.is_(True))
+                stmt = select(Question).where(
+                    Question.is_active.is_(True),
+                    Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                )
                 if sinav_upper:
                     stmt = stmt.where(Question.exam_type == sinav_upper)
 
@@ -592,11 +607,7 @@ class SoruBankasiServisi:
         exam_type_upper = exam_type.upper()
         pool_size = count * 3
 
-        # Convention v2 (15 May 2026) — quality filter zorunlu:
-        # auto_judged_high (R4 promoted) + human_verified (manual curator) kabul.
-        # rejected, unverified, legacy_v3_unaudited havuza girmez.
-        # Bkz: docs/quality_review_status_convention.md
-        _accepted_status = ("human_verified", "auto_judged_high")
+        # Kalite filtresi: module-level _ACCEPTED_QUALITY_STATUS (DRY).
 
         # Bug #8 fix v2 (17 May 2026): subject-aware page-level exclusion.
         # Page-level crop'lar (tier1/tier1b/tier5) sayısal branşlarda solution leak
@@ -662,7 +673,7 @@ class SoruBankasiServisi:
             s = select(Question).where(
                 Question.is_active == True,
                 Question.subject_area.in_(subjects_upper),
-                Question.quality_review_status.in_(_accepted_status),
+                Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
                 # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
                 text(f"question_text !~* '{_img_required_pattern}'"),
             )
@@ -789,6 +800,7 @@ class SoruBankasiServisi:
                 stmt = select(Question).where(
                     Question.is_active == True,
                     Question.subject_area == subject_upper,
+                    Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
                 )
 
                 # Topic varsa exam_type filtresi uygulanmaz (Türev=AYT, Çarpan=TYT olabilir)
@@ -873,6 +885,7 @@ class SoruBankasiServisi:
                         Question.is_active == True,
                         Question.subject_area == subject_upper,
                         Question.exam_type == exam_type_upper,
+                        Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
                     )
                     if difficulty_levels:
                         stmt_fallback = stmt_fallback.where(
@@ -1415,6 +1428,9 @@ class SoruBankasiServisi:
                             Question.exam_type == exam_type,
                             Question.irt_difficulty >= min_zorluk,
                             Question.irt_difficulty <= max_zorluk,
+                            Question.quality_review_status.in_(
+                                _ACCEPTED_QUALITY_STATUS
+                            ),
                         )
                     )
                     .order_by(Question.irt_discrimination.desc())

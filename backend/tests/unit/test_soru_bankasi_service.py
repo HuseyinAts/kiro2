@@ -988,6 +988,108 @@ class TestEnumDonusturucu:
 
 
 # ---------------------------------------------------------------------------
+# Quality-status filter leak (lesson #31 — is_active-only servis sızıntısı)
+# ---------------------------------------------------------------------------
+
+
+class TestQualityStatusFilterLeak:
+    """Regression: student-facing selection methods MUST filter
+    quality_review_status (auto_judged_high, human_verified), not just
+    is_active. Otherwise unverified/pending/legacy_v3_unaudited questions
+    leak to students (see .claude/rules/testing.md lesson #31).
+
+    These tests inspect the compiled SQL statement (real query behavior),
+    because the mocked session returns rows regardless of the WHERE clause.
+    soru_getir (ID point-lookup) is intentionally EXCLUDED — it serves
+    already-assigned questions in resume/review flows.
+    """
+
+    @staticmethod
+    def _capturing_session(mock_session) -> list[str]:
+        # Capture ONLY the WHERE clause — select(Question) renders every model
+        # column (incl. quality_review_status) in the SELECT list, so checking
+        # the full statement string would always match. The filter lives in WHERE.
+        captured: list[str] = []
+
+        async def _exec(stmt, *args, **kwargs):
+            whereclause = getattr(stmt, "whereclause", None)
+            captured.append(str(whereclause) if whereclause is not None else "")
+            return _scalars_result([])
+
+        mock_session.execute = AsyncMock(side_effect=_exec)
+        return captured
+
+    @pytest.mark.asyncio
+    async def test_sorular_listele_filters_quality_status(self, patches, mock_session):
+        captured = self._capturing_session(mock_session)
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        svc = SoruBankasiServisi()
+        await svc.sorular_listele(sinav_tipi="TYT")
+
+        assert any("quality_review_status" in s for s in captured), (
+            f"sorular_listele kalite filtresi eksik (leak): {captured}"
+        )
+
+    @pytest.mark.asyncio
+    async def test_rastgele_sorular_sec_filters_quality_status(
+        self, patches, mock_session
+    ):
+        captured = self._capturing_session(mock_session)
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        svc = SoruBankasiServisi()
+        await svc.rastgele_sorular_sec(sinav_tipi="TYT", soru_sayisi=5)
+
+        assert any("quality_review_status" in s for s in captured), (
+            f"rastgele_sorular_sec kalite filtresi eksik (leak): {captured}"
+        )
+
+    @pytest.mark.asyncio
+    async def test_get_exit_quiz_questions_filters_quality_status(
+        self, patches, mock_session
+    ):
+        captured = self._capturing_session(mock_session)
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        svc = SoruBankasiServisi()
+        await svc.get_exit_quiz_questions(subject="Matematik", count=5, exam_type="TYT")
+
+        assert any("quality_review_status" in s for s in captured), (
+            f"get_exit_quiz_questions kalite filtresi eksik (leak): {captured}"
+        )
+
+    @pytest.mark.asyncio
+    async def test_zorluk_seviyesi_filtrele_filters_quality_status(
+        self, patches, mock_session
+    ):
+        captured = self._capturing_session(mock_session)
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        svc = SoruBankasiServisi()
+        await svc.zorluk_seviyesi_filtrele(ogrenci_yetenek=0.0, sinav_tipi="TYT")
+
+        assert any("quality_review_status" in s for s in captured), (
+            f"zorluk_seviyesi_filtrele kalite filtresi eksik (leak): {captured}"
+        )
+
+    @pytest.mark.asyncio
+    async def test_get_interleaved_questions_still_filters(self, patches, mock_session):
+        """Guard: the already-filtered method must not regress."""
+        captured = self._capturing_session(mock_session)
+        from services.soru_bankasi_service import SoruBankasiServisi
+
+        svc = SoruBankasiServisi()
+        await svc.get_interleaved_questions(
+            subjects=["Matematik"], count=5, exam_type="TYT"
+        )
+
+        assert any("quality_review_status" in s for s in captured), (
+            f"get_interleaved_questions kalite filtresi kayboldu: {captured}"
+        )
+
+
+# ---------------------------------------------------------------------------
 # Singleton instance
 # ---------------------------------------------------------------------------
 
