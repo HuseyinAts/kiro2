@@ -8,6 +8,7 @@ import asyncio
 import json
 import logging
 import os
+import secrets
 import sys
 from datetime import date
 
@@ -185,7 +186,7 @@ class DatabaseSeeder:
             {
                 "email": "admin@turkiyesinav.com",
                 "username": "admin",
-                "password_hash": self._hash_password("admin123"),
+                "password_hash": self._resolve_admin_password("SEED_ADMIN_PASSWORD"),
                 "first_name": "Platform",
                 "last_name": "Yöneticisi",
                 "role": UserRole.ADMIN,
@@ -195,7 +196,9 @@ class DatabaseSeeder:
             {
                 "email": "superadmin@turkiyesinav.com",
                 "username": "superadmin",
-                "password_hash": self._hash_password("superadmin123"),
+                "password_hash": self._resolve_admin_password(
+                    "SEED_SUPERADMIN_PASSWORD"
+                ),
                 "first_name": "Süper",
                 "last_name": "Yönetici",
                 "role": UserRole.ADMIN,
@@ -866,9 +869,40 @@ class DatabaseSeeder:
 
         return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
+    def _resolve_admin_password(self, env_key: str) -> str:
+        """Admin seed parolasını ortam değişkeninden çöz; yoksa güvenli rastgele üret.
+
+        Hardcoded admin parolası YASAK (güvenlik/B2B). ``env_key`` tanımlıysa
+        kullanılır; değilse ``secrets.token_urlsafe`` ile rastgele üretilir ve
+        operatöre stdout'tan bir kez bildirilir (kalıcı log'a yazılmaz).
+        """
+        value = os.environ.get(env_key)
+        if value:
+            return self._hash_password(value)
+        generated = secrets.token_urlsafe(16)
+        # stdout (uygulama log'u değil) — operatör tek seferlik görür.
+        # Emoji YOK: Windows cp1254 console UnicodeEncodeError verir.
+        print(
+            f"[UYARI] {env_key} tanimsiz - rastgele admin parolasi uretildi: {generated}\n"
+            f"        Uretim icin bu degiskeni .env'e ekleyin; bu parola yeniden gosterilmez."
+        )
+        return self._hash_password(generated)
+
 
 async def main():
     """Ana fonksiyon"""
+    # Üretim guard: zayıf demo hesaplar (teacher123/student123/...) prod'a sızmasın.
+    environment = os.environ.get("ENVIRONMENT", "development").lower()
+    if (
+        environment == "production"
+        and os.environ.get("SEED_ALLOW_PRODUCTION") != "true"
+    ):
+        print(
+            "[HATA] seed_database.py uretimde demo hesaplar olusturur ve engellendi.\n"
+            "       Gercekten gerekiyorsa SEED_ALLOW_PRODUCTION=true ayarlayin.\n"
+            "       Uretim admin'i icin scripts/production_seed.py kullanin."
+        )
+        sys.exit(2)
     seeder = DatabaseSeeder()
     await seeder.seed_all()
 
