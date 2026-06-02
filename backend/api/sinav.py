@@ -1327,9 +1327,54 @@ async def get_performance_analysis(
     """
     try:
         session_data = await osym_exam_engine.get_session_data(session_id)
+
+        # Live session yoksa: complete_exam tamamlanan sınavın session'ını
+        # Redis+L1'den siler ama sonuçları exam_sessions tablosuna yazar.
+        # Sonuç ekranı bu kalıcı satırdan okunur (restart-safe + IDOR guard).
         if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
+            from sqlalchemy import select as _select
+
+            from core.database import get_db_session_context
+            from models.exam_db import ExamSession
+
+            async with get_db_session_context() as _db:
+                row = (
+                    await _db.execute(
+                        _select(ExamSession).where(ExamSession.id == session_id)
+                    )
+                ).scalar_one_or_none()
+
+            if not row:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Sınav oturumu bulunamadı",
+                )
+            if str(row.student_id) != str(current_user.id):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Bu sınava erişim yetkiniz yok",
+                )
+            if row.status != "completed":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Sınav henüz tamamlanmamış, performans analizi mevcut değil",
+                )
+
+            correct = row.total_correct or 0
+            wrong = row.total_wrong or 0
+            empty = row.total_empty or 0
+            return PerformanceResponse(
+                total_questions=row.total_questions,
+                answered_questions=correct + wrong,
+                correct_answers=correct,
+                wrong_answers=wrong,
+                empty_answers=empty,
+                # ÖSYM 2023+ 1/4 ceza kaldırıldı → net = doğru (engine ile tutarlı)
+                net_score=float(correct),
+                raw_score=float(row.raw_score or 0.0),
+                percentile=row.percentile,
+                estimated_ability=float(row.estimated_ability or 0.0),
+                confidence_level=float(row.ability_confidence or 0.0),
             )
 
         # Kullanıcı kontrolü
