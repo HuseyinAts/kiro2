@@ -204,9 +204,10 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
           performance: performanceData,
         }));
       } else if (sessionData.status === ExamStatus.IN_PROGRESS) {
-        const [questionData, timeData] = await Promise.all([
+        const [questionData, timeData, savedAnswers] = await Promise.all([
           examService.getCurrentQuestion(sessionId),
           examService.getRemainingTime(sessionId),
+          examService.getSavedAnswers(sessionId),
         ]);
 
         setExamState((prev) => ({
@@ -214,6 +215,10 @@ export const ModernOSYMExamInterface: React.FC<ModernOSYMExamInterfaceProps> = (
           session: sessionData,
           currentQuestion: questionData,
           remainingTime: timeData.remaining_seconds,
+          // RESUME FIX: kaydedilmiş şıkları + cevaplanmış soru index'lerini geri
+          // yükle, aksi halde önceden seçtiğin şıklar boş görünüyordu.
+          answers: savedAnswers.answers || {},
+          answeredIndices: new Set(savedAnswers.answered_indices || []),
         }));
 
         // RESUME FIX: sayfa yenilenince/sekme dönülünce lokal soru index'i 0'a

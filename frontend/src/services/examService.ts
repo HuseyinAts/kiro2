@@ -289,6 +289,23 @@ class ExamService {
   }
 
   /**
+   * Kaydedilmiş cevapları getir (resume — yenileme sonrası şıkları geri yükle)
+   */
+  async getSavedAnswers(
+    sessionId: string,
+  ): Promise<{ answers: Record<string, string>; answered_indices: number[] }> {
+    try {
+      const response = await apiClient.get(
+        `/api/v1/osym-exam/${sessionId}/answers?_t=${Date.now()}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Kaydedilmiş cevap getirme hatası:', error);
+      return { answers: {}, answered_indices: [] };
+    }
+  }
+
+  /**
    * Sınavı tamamla
    */
   async completeExam(sessionId: string): Promise<PerformanceResponse> {

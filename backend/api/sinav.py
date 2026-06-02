@@ -1624,6 +1624,39 @@ class CompletionStatsResponse(BaseModel):
 
 
 @router.get(
+    "/{session_id}/answers",
+    summary="Kaydedilmiş Cevapları Getir",
+)
+async def get_saved_answers(
+    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+) -> dict[str, Any]:
+    """Sınav devam ettirme (resume) için kaydedilmiş cevapları döndür.
+
+    Sayfa yenilenince/sekme dönülünce frontend işaretli şıkları geri yükler;
+    aksi halde cevaplar boş görünür (DB'de durur, skorlanır — sadece görsel).
+    """
+    session_data = await osym_exam_engine.get_session_data(session_id)
+    if not session_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
+        )
+    if str(session_data.student_id) != str(current_user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu sınava erişim yetkiniz yok",
+        )
+    answers = session_data.answers or {}
+    answered_indices = [
+        i for i, qid in enumerate(session_data.questions) if str(qid) in answers
+    ]
+    return {
+        "session_id": session_id,
+        "answers": answers,
+        "answered_indices": answered_indices,
+    }
+
+
+@router.get(
     "/{session_id}/unanswered-questions",
     response_model=UnansweredQuestionsResponse,
     summary="Cevaplanmamış Soruları Getir",
