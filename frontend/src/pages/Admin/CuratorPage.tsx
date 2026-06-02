@@ -125,9 +125,10 @@ function StatsBar({ pendingCount, verifiedToday, rejectedToday, avgVelocitySec, 
 interface FilterChipsProps {
   filters: QueueFilters;
   onChange: (patch: Partial<QueueFilters>) => void;
+  flaggedCount?: number;
 }
 
-function FilterChips({ filters, onChange }: FilterChipsProps) {
+function FilterChips({ filters, onChange, flaggedCount }: FilterChipsProps) {
   return (
     <div className="space-y-2 mb-3" data-testid="curator-filter-chips">
       <div className="flex flex-wrap gap-1.5">
@@ -143,7 +144,7 @@ function FilterChips({ filters, onChange }: FilterChipsProps) {
             }
             aria-pressed={filters.status === s.value}
           >
-            {s.label}
+            {s.value === 'flagged' && flaggedCount ? `${s.label} (${flaggedCount})` : s.label}
           </button>
         ))}
       </div>
@@ -664,7 +665,11 @@ export function CuratorPage() {
       <div className="grid grid-cols-10 gap-4 min-h-[70vh]">
         {/* Left: queue list (30%) */}
         <aside className="col-span-3 flex flex-col">
-          <FilterChips filters={filters} onChange={handleFilterChange} />
+          <FilterChips
+            filters={filters}
+            onChange={handleFilterChange}
+            flaggedCount={statsQuery.data?.flagged_count}
+          />
           <QueueList
             items={items}
             selectedId={selectedId}

@@ -80,6 +80,7 @@ export interface CuratorStats {
   pending_count: number;
   verified_today: number;
   rejected_today: number;
+  flagged_count?: number;
   avg_velocity_sec: number | null;
 }
 

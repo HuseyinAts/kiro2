@@ -140,6 +140,10 @@ class StatsResponse(BaseModel):
     pending_status_count: int
     verified_count: int = Field(..., description="Lifetime curator_verdict=verify")
     rejected_today: int = Field(..., description="Bugün rejected (UTC)")
+    flagged_count: int = Field(
+        0,
+        description="Öğrenci tarafından flag'lenmiş (çözülmemiş, aktif) distinct soru",
+    )
     avg_velocity_sec: float | None = Field(
         None, description="Ortalama curator review velocity (saniye)"
     )
@@ -396,14 +400,23 @@ async def get_flagged_queue(
     Sıralama: en çok flag alan + en yeni soru üstte (öğrenci sinyali güçlü olan
     önce gözden geçirilsin). Soru hangi statüde olursa olsun (gold dahil) görünür.
     """
-    # 1) Çözülmemiş flag'i olan distinct question_id + flag sayısı + en yeni tarih
+    # 1) Çözülmemiş flag'i olan distinct question_id + flag sayısı + en yeni tarih.
+    #    question_bank join ile is_active=TRUE filtrelenir (pasifleştirilmiş soru
+    #    curator'a sızmasın — /queue ile tutarlı).
     flag_agg = (
         select(
             StudentQuestionFlag.question_id.label("qid"),
             func.count().label("cnt"),
             func.max(StudentQuestionFlag.created_at).label("latest"),
         )
-        .where(StudentQuestionFlag.resolved_at.is_(None))
+        .join(
+            QuestionBankItem,
+            QuestionBankItem.id == StudentQuestionFlag.question_id,
+        )
+        .where(
+            StudentQuestionFlag.resolved_at.is_(None),
+            QuestionBankItem.is_active.is_(True),
+        )
         .group_by(StudentQuestionFlag.question_id)
         .subquery()
     )
@@ -634,6 +647,23 @@ async def get_stats(
     result = await db.execute(sql)
     row = result.first()
 
+    # Öğrenci flag'lenmiş (çözülmemiş, aktif) distinct soru — 🚩 sekmesi rozeti.
+    flagged_count = int(
+        (
+            await db.execute(
+                text(
+                    """
+                    SELECT COUNT(DISTINCT f.question_id)
+                    FROM student_question_flags f
+                    JOIN question_bank q ON q.id = f.question_id
+                    WHERE f.resolved_at IS NULL AND q.is_active = TRUE
+                    """
+                )
+            )
+        ).scalar()
+        or 0
+    )
+
     if row is None:
         return StatsResponse(
             pending_count=0,
@@ -642,6 +672,7 @@ async def get_stats(
             pending_status_count=0,
             verified_count=0,
             rejected_today=0,
+            flagged_count=flagged_count,
             avg_velocity_sec=None,
         )
 
@@ -654,5 +685,6 @@ async def get_stats(
         pending_status_count=int(row.pending_status_count or 0),
         verified_count=int(row.verified_count or 0),
         rejected_today=int(row.rejected_today or 0),
+        flagged_count=flagged_count,
         avg_velocity_sec=float(avg_velocity) if avg_velocity is not None else None,
     )
