@@ -92,10 +92,22 @@ Elle spot-check 4/4 (4c452c22 C→B a=12; 580ed94a A→E mesafe∈[256,648]; f39
 - Figür/garble flag: 250 (beta-dışı) | curator/split: 39
 - Tüm değişiklikler backup'lı, 5 backup tablo
 
+## L1-retry — ertelenen 90 (L1 50 + L1d 40)
+
+wave=3 retry → 30 çözüldü (60 kalıcı erteleme, tekrar parse-fail = gerçekten zor/belirsiz).
+L1: agree 5 (→beta), unsolv 4, disagree 7. L1d: real_error 5, unsolvable 5, split 4, false_dispute 0.
+**Beta 3,164 → 3,169 (+5).** correct_answer DOKUNULMADI, backup `question_bank_retry_backup_20260602`.
+
+## SESSION FİNAL (güncel)
+- **Beta havuzu: 2,689 → 3,169 (+480, +%17.9)**
+- **25 DB cevap-hatası düzeltildi** (3-sinyal MAT+GEO)
+- **123 REAL_ERROR** (113 concept + 5 retry + 5 MAT/GEO reject) → curator
+- 60 soru kalıcı erteleme (parse-fail dirençli)
+
 ## Sonraki
 
-1. **118 kalan REAL_ERROR → curator** (concept subjects: TÜRKÇE 71, KİMYA/TARİH 11'er vb.).
-2. **L1 50 + L1d 40 ertelenen** → wave=2 tekrar.
+1. **123 REAL_ERROR → curator** (concept subjects: TÜRKÇE 71 vb.).
+2. **60 kalıcı-ertelenen** → curator veya manuel (workflow direnci).
 3. Gemini key rotate → 61K garble re-OCR (en büyük kilit).
 
 ## Dosyalar
