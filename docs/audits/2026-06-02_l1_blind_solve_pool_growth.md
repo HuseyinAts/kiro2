@@ -58,10 +58,29 @@ TARİH 41, EDEB 36, BİYO 30, diğer 7.
 - Asıl kilit **61K unverified/garble + 884 unsolvable + figür** → re-OCR / figür-crop = **Gemini-bloke**.
 - L1 tavan ~3,400'dü, ulaşılan 3,109 (50 ertelenen + 193 unsolvable çıkınca beklenen aralıkta).
 
+## L1d — DISAGREE 334 → 2. bağımsız kör-solve (628-dispute deseni)
+
+334 dispute → 2. bağımsız kör-solve (34 batch, sıralı 6 dalga, 3.36M token). 294 kapsandı, 40 eksik.
+
+| Sınıf | Sayı | Mantık | Aksiyon |
+|-------|------|--------|---------|
+| FALSE_DISPUTE | 55 | 2.blind==DB≠L1 (L1 yanıldı) | `verified_provisional=true` → **beta terfi** |
+| REAL_ERROR | **143** | 2.blind==L1≠DB (2 sinyal DB'ye karşı) | `l1d_real_error`+suggested → curator/3-sinyal |
+| UNSOLVABLE | 57 | 2.blind figür/garble | `l1d_unsolvable` |
+| SPLIT | 39 | 2.blind ≠ L1 ≠ DB | `l1d_split` → curator |
+| EKSİK | 40 | rate-limit | ertelendi |
+
+**Beta: 3,109 → 3,164 (+55).** 143 gerçek DB cevap-hatası 2-sinyalle teyit (A-bias canlı doğrulaması).
+`correct_answer` DOKUNULMADI (backup vs canlı fark=0). Backup `question_bank_l1d_backup_20260602`,
+marker `l1d_run=2026_06_02_l1d`.
+
+**SESSION TOPLAM: beta 2,689 → 3,164 (+475, +%17.7) + 143 DB hatası bulundu.**
+
 ## Sonraki
 
-1. **DISAGREE 334 → 2. bağımsız kör-solve** (628-dispute deseni): gerçek DB hataları (A-bias) düzelt, false-dispute temizle.
-2. **50 ertelenen** → wave=2 ile tekrar veya curator.
+1. **143 REAL_ERROR → 3. sinyal düzeltme**: MAT+GEO conf≥0.9 alt-kümesine 3. kör-solve, teyit ederse
+   `correct_answer`=blind (148/135 deseni); concept'ler curator. **correct_answer DEĞİŞİR → onay gerekir.**
+2. **L1 50 + L1d 40 ertelenen** → wave=2 tekrar veya curator.
 3. Gemini key rotate → 61K garble re-OCR (en büyük kilit).
 
 ## Dosyalar
