@@ -1436,19 +1436,42 @@ async def get_subject_performance(
     """
     try:
         session_data = await osym_exam_engine.get_session_data(session_id)
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
-            )
 
-        # Kullanıcı kontrolü
-        if str(session_data.student_id) != str(current_user.id):
+        # Live session yoksa (tamamlanınca silinir) ownership'i exam_sessions
+        # satırından doğrula; konu kırılımı zaten DB join'den hesaplanıyor.
+        if not session_data:
+            from sqlalchemy import select as _select
+
+            from core.database import get_db_session_context
+            from models.exam_db import ExamSession
+
+            async with get_db_session_context() as _db:
+                _row = (
+                    await _db.execute(
+                        _select(ExamSession.student_id).where(
+                            ExamSession.id == session_id
+                        )
+                    )
+                ).first()
+
+            if not _row:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Sınav oturumu bulunamadı",
+                )
+            if str(_row.student_id) != str(current_user.id):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Bu sınava erişim yetkiniz yok",
+                )
+        # Kullanıcı kontrolü (live session)
+        elif str(session_data.student_id) != str(current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
             )
 
-        # Konu performanslarını getir
+        # Konu performanslarını getir (DB join — session'a bağımlı değil)
         subject_performances = await osym_exam_engine.get_subject_performance(
             session_id
         )

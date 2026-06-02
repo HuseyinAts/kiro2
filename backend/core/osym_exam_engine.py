@@ -1055,10 +1055,11 @@ class OSYMExamEngine:
             List[SubjectPerformance]: Konu performansları
         """
         try:
-            session_data = await self.get_session_data(session_id)
-            if not session_data:
-                return []
-
+            # NOT: session_data guard'ı kaldırıldı — konu kırılımı tamamen
+            # DB join'den (ExamQuestion+StudentAnswer+Question, session_id ile)
+            # hesaplanır. complete_exam session'ı Redis'ten siler ama
+            # ExamQuestion/StudentAnswer satırları DB'de kalır, bu yüzden
+            # tamamlanmış sınavlarda da çalışır. Bilinmeyen session_id → [].
             subject_stats = {}
 
             async with get_db_session_context() as db_session:
