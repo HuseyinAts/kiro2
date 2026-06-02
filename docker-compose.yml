@@ -48,6 +48,10 @@ services:
   redis:
     image: redis:7-alpine
     container_name: kiro2-redis
+    # Host'a 6379 yayınla — native script/araçların localhost:6379 erişimi için.
+    # (Eski kiro2_redis orphan'ı kaldırıldı; tek kanonik redis bu.)
+    ports:
+      - "6379:6379"
     command: >
       redis-server
       --appendonly yes
