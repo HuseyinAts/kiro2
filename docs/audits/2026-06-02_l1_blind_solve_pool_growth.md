@@ -76,11 +76,26 @@ marker `l1d_run=2026_06_02_l1d`.
 
 **SESSION TOPLAM: beta 2,689 → 3,164 (+475, +%17.7) + 143 DB hatası bulundu.**
 
+## L1d-3 — 143 REAL_ERROR → 3. sinyal düzeltme (MAT+GEO)
+
+143 REAL_ERROR'ın MAT+GEO alt-kümesi = 30 (16 MAT + 14 GEO; 113 concept → curator).
+3. bağımsız kör-solve → **25 CONFIRM** (3==agreed), 1 REJECT, 4 UNSOLVABLE.
+**25 `correct_answer` DÜZELTİLDİ** (`correct_answer`=blind, marker `answer_corrected_3signal`,
+`answer_corrected_from`). Backup `question_bank_l1d_correct_backup_20260602`.
+Elle spot-check 4/4 (4c452c22 C→B a=12; 580ed94a A→E mesafe∈[256,648]; f39f3956 A→E 13·14·15=2730=15!/12!;
+7fa7bb9f E→C der[P·Q]=2n çift). **Bu session'ın TEK correct_answer değişikliği** (3-sinyal + elle teyit).
+
+## SESSION FİNAL TOPLAM
+- **Beta havuzu: 2,689 → 3,164 (+475, +%17.7)**
+- **25 DB cevap-hatası düzeltildi** (3-sinyal, MAT+GEO)
+- **118 REAL_ERROR kaldı** (113 concept + 5 MAT/GEO reject/unsolvable) → curator
+- Figür/garble flag: 250 (beta-dışı) | curator/split: 39
+- Tüm değişiklikler backup'lı, 5 backup tablo
+
 ## Sonraki
 
-1. **143 REAL_ERROR → 3. sinyal düzeltme**: MAT+GEO conf≥0.9 alt-kümesine 3. kör-solve, teyit ederse
-   `correct_answer`=blind (148/135 deseni); concept'ler curator. **correct_answer DEĞİŞİR → onay gerekir.**
-2. **L1 50 + L1d 40 ertelenen** → wave=2 tekrar veya curator.
+1. **118 kalan REAL_ERROR → curator** (concept subjects: TÜRKÇE 71, KİMYA/TARİH 11'er vb.).
+2. **L1 50 + L1d 40 ertelenen** → wave=2 tekrar.
 3. Gemini key rotate → 61K garble re-OCR (en büyük kilit).
 
 ## Dosyalar
