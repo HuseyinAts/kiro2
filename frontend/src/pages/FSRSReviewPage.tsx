@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { CheckCircle, Cancel, Replay, EmojiEvents } from '@mui/icons-material';
 import { apiRequest } from '../utils/apiHelpers';
+import { FlagButton } from '../components/Quality/FlagButton';
 
 interface DueCard {
   question_id: string;
@@ -129,9 +130,12 @@ export default function FSRSReviewPage() {
       {/* Soru kartı */}
       <Card elevation={2} sx={{ borderRadius: 3, mb: 2 }}>
         <CardContent sx={{ p: 3 }}>
-          <Typography variant="h6" fontWeight={600} mb={3} sx={{ lineHeight: 1.6 }}>
-            {card.stem ?? 'Soru metni yükleniyor...'}
-          </Typography>
+          <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={1} mb={3}>
+            <Typography variant="h6" fontWeight={600} sx={{ lineHeight: 1.6, flex: 1 }}>
+              {card.stem ?? 'Soru metni yükleniyor...'}
+            </Typography>
+            <FlagButton questionId={card.question_id} />
+          </Stack>
 
           {/* Seçenekler */}
           {card.options && (
