@@ -1,6 +1,10 @@
 # Brainstorm: P2 Figür-İzolasyon (884 unsolvable)
 Tarih: 2026-06-02 | Domain: content | Perspektifler: Kalite · Hız · Hata Toleransı
 
+> ⛔ **SONUÇ (2026-06-03): Aksiyon-1 ölçümü P2'yi ERTELEDİ.** İzole-edilebilirlik %6 (eşik %20).
+> 884'ün ~%90'ı OCR artefaktı (%46 tam-sayfa çok-soru screenshot + %44 figürsüz garble), figür-bağımlı değil.
+> Detay + karar: `docs/audits/2026-06-03_p2_figure_isolatability_measurement.md`. Bu brainstorm'un öncülü (tam-blok crop) çürüdü.
+
 ## TL;DR
 884 figure-dependent sorunun hepsi tam-blok crop (soru+figür+şıklar birlikte) içerdiği için
 frontend `false &&` ile gizliyor — gösterse şıklar görsel sızar. Üç perspektif de **partial-yield**'de
