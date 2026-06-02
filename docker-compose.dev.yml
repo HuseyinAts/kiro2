@@ -1,5 +1,17 @@
 version: '3.8'
 
+# ============================================================================
+# ⚠️  UYARI — BU DOSYAYI VARSAYILAN STACK İLE BİRLİKTE ÇALIŞTIRMA!
+# Bu dev compose; frontend(3000), backend(8000) ve KENDİ postgres(PG15)
+# servisini tanımlar. Kanonik prod stack (docker-compose.yml) zaten 3000/8000
+# kullanır ve host PostgreSQL 18 (port 5434) ile çalışır.
+# Bu dosyayı `-f docker-compose.dev.yml up` ile açmak:
+#   • 3000/8000 port çakışması → prod stack bozulur
+#   • PG15 gölge-DB'si 5434 yerine kendi portunda kalkar → veri karışıklığı
+# BETA = SADECE `docker compose up -d` (docker-compose.yml). Dev için önce
+# `docker compose down`, sonra dev'i ayrı portlarla çalıştır.
+# ============================================================================
+
 services:
   # PostgreSQL Database (Development)
   postgres:
