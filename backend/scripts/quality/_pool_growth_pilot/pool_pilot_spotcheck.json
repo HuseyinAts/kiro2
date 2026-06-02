@@ -1,0 +1,166 @@
+{
+  "agree_sample": [
+    {
+      "id": "3e034408",
+      "subject": "KIMYA",
+      "category": "AGREE_PROMOTE",
+      "blind1": "D",
+      "blind2": "D",
+      "db_answer": "D",
+      "question": "$Al(OH)_3 + 3HNO_3 \\rightarrow Al(NO_3)_3 + 3H_2O$ tepkimesine göre $0,4 \text{ mol } Al(OH)_3$ ile kaç mol $HNO_3$ tepkimeye girmelidir?",
+      "options": {
+        "A": "0,2",
+        "B": "0,6",
+        "C": "0,8",
+        "D": "1,2",
+        "E": "1,6"
+      }
+    },
+    {
+      "id": "e9f34197",
+      "subject": "EDEBIYAT",
+      "category": "AGREE_PROMOTE",
+      "blind1": "D",
+      "blind2": "D",
+      "db_answer": "D",
+      "question": "İlk kitabı Yazma'nın yayımından şundan yirmi yıl aşkın bir süre sonra Sevgili Duygu'yla İlizce'nin humor ögelerini ustalıkla birleştiren bir şair kimliği gösterdi. 1974'te yayımlanan Bir Siyasinin Şiirleri'yle toplumsal yergi türüne yeni bir canlılık ve güncellik kazandırdı.\nBu parçada söz edilen şair aşağıdakilerden hangisidir?",
+      "options": {
+        "A": "Süreyya Berfe",
+        "B": "Nihat Behram",
+        "C": "Refik Durbaş",
+        "D": "Can Yücel",
+        "E": "Kemal Özer"
+      }
+    },
+    {
+      "id": "37ce9597",
+      "subject": "MATEMATIK",
+      "category": "AGREE_PROMOTE",
+      "blind1": "D",
+      "blind2": "D",
+      "db_answer": "D",
+      "question": "$x, y, 2, z, t$ terimleri geometrik bir dizinin ardışık 5 terimi olduğuna göre, $x \\cdot y \\cdot z \\cdot t$ çarpımı kaçtır?",
+      "options": {
+        "A": "2",
+        "B": "4",
+        "C": "8",
+        "D": "16",
+        "E": "32"
+      }
+    },
+    {
+      "id": "912d1d7b",
+      "subject": "MATEMATIK",
+      "category": "AGREE_PROMOTE",
+      "blind1": "B",
+      "blind2": "B",
+      "db_answer": "B",
+      "question": "limitinin değeri kaçtır?\n$\\lim_{x \\to \\frac{\\pi}{4}} \\frac{\\cos(2x)}{\\cos x - \\sin x}$",
+      "options": {
+        "A": "$\\frac{\\sqrt{2}}{2}$",
+        "B": "$\\sqrt{2}$",
+        "C": "$\\frac{3\\sqrt{2}}{2}$",
+        "D": "$2\\sqrt{2}$",
+        "E": "$3\\sqrt{2}$"
+      }
+    },
+    {
+      "id": "076b2ff5",
+      "subject": "MATEMATIK",
+      "category": "AGREE_PROMOTE",
+      "blind1": "D",
+      "blind2": "D",
+      "db_answer": "D",
+      "question": "$a$ ve $b$ gerçel sayılar olmak üzere, ${\\left(\\frac{2a}{bx} - \\frac{b^2}{a}\\right)}^3$ ifadesinin açılımı $x$'in azalan kuvvetlerine göre sıralandığında sabit terim $12$ oluyor. Buna göre, $\\frac{a}{b}$ oranı kaçtır?",
+      "options": {
+        "A": "2",
+        "B": "1",
+        "C": "-1",
+        "D": "-2",
+        "E": "6"
+      }
+    },
+    {
+      "id": "265d49c7",
+      "subject": "FIZIK",
+      "category": "AGREE_PROMOTE",
+      "blind1": "E",
+      "blind2": "E",
+      "db_answer": "E",
+      "question": "Adözyon ve kohezyon kuvvetleri ile ilgili,\n\nI. Adözyon, sıvıların cam gibi yüzeyle yapışmasında etkilidir.\n\nII. Adözyon kuvvetleri kohezyon kuvvetlerinden fazla olan sıvılar, yüzeyleri daha çok ıslatır.\n\nIII. Kohezyon kuvvetleri sıvılarda yüzey gerilimine neden olur.\n\nyargılarından hangileri doğrudur?",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "I ve III",
+        "D": "II ve III",
+        "E": "I, II ve III"
+      }
+    }
+  ],
+  "dispute_sample": [
+    {
+      "id": "374cb28b",
+      "subject": "FIZIK",
+      "category": "DISPUTE",
+      "blind1": "D",
+      "blind2": "D",
+      "db_answer": "E",
+      "question": "Einstein'ın özel görelilik kuramı, bazı fiziksel niceliklerin büyüklüğünün gözlenen referans sistemine göre değişkenlik gösterebileceğini söyler. Buna göre, I. Su damlacıklarının hacmi II. Bir atletin katıldığı yarışı tamamlama süresi III. Bir kurşun kalemin uzunluğu niceliklerinden hangilerinin ölçüm sonuçları, gözlenen referans sistemine göre değişebilir?",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "I ve III",
+        "D": "II ve III",
+        "E": "I, II ve III"
+      }
+    },
+    {
+      "id": "04aa946b",
+      "subject": "FIZIK",
+      "category": "DISPUTE",
+      "blind1": "D",
+      "blind2": "D",
+      "db_answer": "E",
+      "question": "Çift yarık deneyinde, I. Kaynakla yarıklar arasını su ile doldurma II. Yarıklarla perde arasını su ile doldurma III. Işığın rengini değiştirme işlemlerinden hangileri saçak genişliğini etkiler?",
+      "options": {
+        "A": "Yalnız I",
+        "B": "Yalnız II",
+        "C": "Yalnız III",
+        "D": "I veya II",
+        "E": "II veya III"
+      }
+    },
+    {
+      "id": "0a6b60f3",
+      "subject": "MATEMATIK",
+      "category": "DISPUTE",
+      "blind1": "D",
+      "blind2": "D",
+      "db_answer": "B",
+      "question": "Bir tiyatro salonunda 20 sıra koltuk vardır. Birinci sırada (en ön) 15 koltuk, ikinci sırada 18 koltuk, üçüncü sırada 21 koltuk ve diğer sıralarda aynı şekilde üçer üçer artan koltuklar vardır. Salondaki önden ilk 10 sıra 50 TL, son 10 sıra 40 TL olduğuna göre, salon tamamen dolduğunda kaç TL hasılat elde edilir?",
+      "options": {
+        "A": "34800",
+        "B": "37650",
+        "C": "39500",
+        "D": "43500",
+        "E": "45000"
+      }
+    },
+    {
+      "id": "49688124",
+      "subject": "MATEMATIK",
+      "category": "DISPUTE",
+      "blind1": "B",
+      "blind2": "B",
+      "db_answer": "A",
+      "question": "Selim, Pascal üçgenini yazıp 101 sayısının kuvvetlerini o satırda bulunan en soldaki 1 rakamının dışındaki rakamların hemen sonuna \"0\" yazarak oluşturabileceğini fark etmiştir. Arada kalan iki basamaklı sayıların sonuna \"0\" yazılmayacaktır. Selim bu işlemi $101^5$ e kadar aşağıdaki gibi yapmıştır. Kuralı en çok $101^7$ ye kadar kullanabildiğini farkeden Selim, $101^7$ ye eşit olan sayının değerini",
+      "options": {
+        "A": "0",
+        "B": "1",
+        "C": "2",
+        "D": "3",
+        "E": "4"
+      }
+    }
+  ]
+}
