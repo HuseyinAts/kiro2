@@ -1,28 +1,45 @@
-## Session Handoff — 2026-06-02 13:00
-**Branch:** master | **Son commit:** `6a94a42ad` (push'lu) — verdict→flag regresyon testi
+## Session Handoff — 2026-06-02 18:35
+**Branch:** master | **Son commit:** `390617295` (push EDİLMEDİ) — A3 dispute_suggestion UI
 **Uncommitted:** temiz
 
-### Yapilanlar (bu session)
-- **Hata-bildir yaygınlaştırma:** `frontend/src/pages/FSRSReviewPage.tsx` + `ModernLearningPathPage.tsx` (DungeonMap→yeni `components/LearningPath/TopicList.tsx`) + `Quality/FlagButton.tsx` ikon→etiketli buton (`407f87c9b`, `f6c500d10`)
-- **Tasarım/yazı kök-neden (6-ajan workflow):** ASIL BUG = tüm metin Roboto'ydu, Inter değil → `components/Common/AccessibilityProvider.tsx:64` Roboto→Inter; self-host fontlar `public/fonts/*.woff2` + `src/styles/fonts.css` (`bd390b3c6`)
-- **İnfra konsolidasyon (runtime):** gölge docker PG15 durduruldu (5434 tek=native PG18), Grafana 3001'den çekildi, 8 orphan container temizlendi; `docker-compose.yml` redis `ports:6379` (`cba428585`), `index.html` ölü preload + `docker-compose.dev.yml` uyarı (`d3149eb70`)
-- **Flag→curator köprüsü:** `backend/api/curator.py` `GET /flagged` + verdict'te flag auto-resolve + `/stats.flagged_count` + is_active filtresi; `frontend hooks/useCuratorQueue.ts` + `pages/Admin/CuratorPage.tsx` "🚩 Öğrenci Bildirimleri (N)" sekme; testler: `tests/e2e/test_golden_flows.py::test_gf_curator_flagged_bridge` + `tests/integration/test_curator_verdict_flag_resolve.py` (`36b014122`,`63aa86341`,`6a94a42ad`)
+### Yapilanlar (bu session) — TRACK 1 TAMAMLANDI
+
+Önce: tüm kalite/beta audit verisi (21 doc + MEMORY) 4 paralel ajanla eksiksiz
+okundu → adım-adım analiz + 3-track beyin fırtınası. Karar: Track 1 sırayla.
+
+- **A1** (`f6e2a2ef0`): Beta hedefli temizlik — 55 öğrenci flag'inden 44'ü
+  (35 figure_needed + 9 incomplete_text) beta'dan çıkarıldı. `verified_provisional=false`
+  + `beta_pull` metadata; 44 flag `resolution=confirmed`. correct_answer DOKUNULMADI.
+  Backup `question_bank_a1_beta_cleanup_backup_20260602`. Beta **2734→2690**.
+- **A2** (`82b5adadc`): Sistemik figür süpürme — 36 güçlü-figref aday KÖR yargılandı
+  (cevapsız): 35 SOLVABLE (analitik geo, veri metinde) + 1 NEEDS_FIGURE. Havuz
+  figür-temiz doğrulandı. 1 soru çıkarıldı. Backup `_a2_figure_sweep_backup_20260602`.
+  Beta **2690→2689**.
+- **A3** (`390617295`): Curator dispute_suggestion UI — DB cevabı != kör-solver önerisi
+  ise kırmızı uyarı bloğu (QueueItem tipi + render + test 10/10 PASS, tsc exit 0).
+  Backend alanı zaten vardı, frontend eksikti.
 
 ### Fail Eden Testler
-- YOK. test_gf_curator_flagged_bridge PASS; test_curator_verdict_flag_resolve 3/3 PASS (USE_POSTGRES_TESTS=true + KVKK_VERIFY_DSN ile). Full pytest koşulmadı.
+- YOK. CuratorPage 10/10 PASS. tsc exit 0. ESLint 19 hata = pre-existing (>500. satır).
 
-### Engelleyiciler
-- YOK. Beta canlı (Inter, tek-temiz stack). Backend/frontend rebuild'li (kalıcı).
+### Engelleyiciler (operatör/Hüseyin)
+1. **Frontend docker rebuild** (operatör): A3 dispute_suggestion UI'sini canlıya almak için
+   `docker compose build frontend && up -d --no-deps frontend`.
+2. **A1 cache**: engine TTLCache `BETA:verified_provisional:all` 1h self-healing — restart
+   edilmedi (2 aktif öğrenci). ≤1 saatte 44 soru beta'dan tamamen düşer.
+3. **Track 2 BLOKE**: B1 (havuz büyüt) + B2 (re-OCR garble) GEMINI_API_KEY rotate bekliyor (AUP).
 
 ### Sonraki Adimlar (maks 5)
-1. **Gerçek-öğrenci beta sürüyor** — Hüseyin test ediyor, bugün **52 flag** geldi (curator 🚩 sekmesi=54 soru). LAN link 192.168.8.28:3000
-2. **Beta içerik temizliği (bekliyor):** 54 flag'li sorunun %85'i render/OCR (35 figure_needed + 12 incomplete_text). Komut: "toplu temizle" → backup+reject. Hüseyin "önce daha çok sinyal" dedi
-3. (Hipotez) Geometri havuzu genel şekil-bağımlılık testi (flag'siz örneklem kör-çözüm)
-4. (Backlog düşük) Tailwind hiç derlenmiyor (riskli), CuratorPage stilsiz; 'flagged' frontend testi
-5. Pre-existing: frontend `CuratorStats.verified_today` ↔ backend `verified_count` uyumsuzluğu
+1. **Push** (4 commit bekliyor): A1/A2/A3 + push
+2. **Hüseyin manuel**: 202 concept worklist (`_beta_core_tmp/concept202_review_worklist.csv`)
+   accept/reject → bulk apply
+3. **Track 2 vs Track 3 kararı**: Track 2 Gemini-key-bloke → Track 3 (B2B gatekeeper:
+   CVE/A11y/KVKK Faz B/SSO MEB) daha uygun olabilir. Kullanıcıya sor.
+4. Kalan beta flag'leri (4 wrong_answer + 1 circular) curator /flagged sekmesinde — verdict
+5. Beta gerçek-öğrenci sürüyor — yeni flag geldikçe A1 pattern'i tekrarla
 
 ### Kararlar
-- Beta görseli "kötü"ydü çünkü tema Roboto kullanıyordu (Inter değil) — REGRESYON DEĞİL, uzun süredir vardı. Tailwind hiç derlenmiyor ama açmak riskli → ertelendi.
-- "İki frontend/backend" = container kaosu + çift-PG; tek çalışan frontend(3000)+backend(8000) var.
-- Flag→curator köprüsü: gold sorular eski queue'da görünmüyordu (46'nın 44'ü) → /flagged ayrı endpoint. Curator verdict flag'i otomatik kapatır.
-- DB temizliği Hüseyin onayı olmadan YAPILMAZ (beta havuzu).
+- Track 1 (gerçek-öğrenci döngüsü) = kök-neden panzehiri, en yüksek kaldıraç → önce yapıldı
+- Beta havuzu figür-temiz çıktı (A2): figür-bağımlılık artık birincil kirletici değil
+- Tüm DB değişiklikleri non-destructive (metadata flag, backup'lı, correct_answer korundu)
+- Track 2 içerik-ölçekleme Gemini-key bekliyor → Track 3 B2B paralel ilerletilebilir
