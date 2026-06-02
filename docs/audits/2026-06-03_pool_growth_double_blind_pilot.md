@@ -65,6 +65,20 @@ olur. Düşük riskli, reversible. **APPLY YAPILMADI** (insan onayı bekliyor).
 3. **37 adayı uygula** (opsiyonel, düşük değer) — pilot kanıtı için, üçlü-teyitli
    alt küme verified_provisional'a (backup + correct_answer DOKUNMA).
 
+## APPLY (3 Haz 2026, onaylandı)
+37 üçlü-teyitli aday (31 unverified + 6 pending) → `verified_provisional` flag.
+- Mekanizma: `pipeline_metadata.verified_provisional='true'` + marker
+  `pool_growth_dblind='2026_06_03'` / `dblind_method='b1==b2==db_triple_corroborated'`.
+- **correct_answer DEĞİŞMEDİ (0/37), quality_review_status DEĞİŞMEDİ (0/37)** — doğrulandı.
+- Sadece **beta-practice** yoluna girer (is_active + verified_provisional); ana servis
+  (auto_judged_high/human_verified) etkilenmez.
+- verified_provisional havuz: 3169 → **3206** (+37).
+- Backup: `question_bank_pool_growth_dblind_backup_20260603` (id, pipeline_metadata,
+  quality_review_status, correct_answer, is_active).
+- Rollback: `UPDATE question_bank qb SET pipeline_metadata=b.pipeline_metadata FROM
+  question_bank_pool_growth_dblind_backup_20260603 b WHERE qb.id=b.id;`
+- Script: `apply_candidates.py`.
+
 ## Reprodüksiyon
 `backend/scripts/quality/_pool_growth_pilot/` — prep_pilot.py, generate_workflow.py,
 dblind_workflow.mjs, classify_results.py. Run: prep → generate 120 4 → Workflow →
