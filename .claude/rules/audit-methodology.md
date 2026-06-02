@@ -109,11 +109,65 @@ Audit'te "X probleminin oranı %Y" raporlandığında ÖNCE:
 
 ---
 
+## Varsayım ≠ Ölçüm (3 Haz 2026, garble efsanesi)
+
+Bir sayı MEMORY/audit-doc'ta "toplam" olarak geçiyor diye **satır-bazında kanıt** sanma.
+
+**Vaka:** "61K garble soru" 198 oturum boyunca tekrarlandı, plan kararlarını yönlendirdi.
+Ölçünce: `unverified=61,482` sadece **incelenmemiş** demekti — garble-yargılı değil.
+DB'de `student_coherent='false'` = **0 satır** (kör-yargı yalnız keep'leri işaretledi,
+drop nedenleri persist EDİLMEDİ). Yani "61K garble" hiç ölçülmemiş bir varsayımdı.
+
+**Kural:** Bir kategoriyi (garble, figure-dependent, wrong-answer) "şu kadar var" diye
+kullanmadan önce, o etiketin **satır-bazında DB'de sorgulanabilir** olduğunu doğrula.
+Sorgulanamıyorsa o sayı bir tahmindir — "ölçülmedi" diye işaretle, aksiyona temel yapma.
+
+> Karpathy bağı: "61K garble → re-OCR → Gemini-bloke → çıkmaz" ezberi 3 oturum üst üste
+> yazıldı. Kullanıcı itince ölçüm yapıldı, ezber çürüdü. **Ezbere kategori-sayısı yazma.**
+
+## Metrik Doğrulama Gate (detector'a güvenmeden önce)
+
+Bir ölçüm metriği (garble skoru, kalite skoru, benzerlik) uygulamadan ÖNCE
+**kendi doğrulamasını geçmeli.** Geçemezse o metrikle aksiyon ALMA.
+
+İki zorunlu test:
+
+1. **Bilinen-iyi vs bilinen-kötü ayrımı:** metrik, etiketli temiz seti (örn.
+   `student_coherent=true`) etiketli bozuk setten ayırıyor mu? Medyanlar çakışıyorsa
+   metrik kördür.
+2. **Sentetik bozma testi:** temiz veriye bilinen hata enjekte et (OCR char-swap,
+   l↔t/o↔e), skor YÜKSELMELİ. Yükselmiyorsa metrik o hataya duyarsız.
+
+**Vaka:** word-DF "nadir-token" metriği DOĞRULAMA-1'i geçemedi (auto_judged_high garble
+skoru unverified'den yüksek — çünkü nadir=meşru özel ad/teknik terim). Atıldı.
+Char-trigram LM her iki testi de geçti (sentetik bozma 2.68→4.27), uygulandı.
+(`backend/scripts/quality/garble_char_lm.py`)
+
+## Ucuz Filtre Tuzağı (içerik silmeden önce)
+
+Deterministik ucuz kural (regex, sözlük-yokluğu, char-yokluğu) ile içerik silerken
+**geçerli içeriği yanlış-pozitif yakalama riski yüksektir.** Türkçe STEM özellikle.
+
+**Vaka:** garble-tail'i silmek için 3 ucuz filtre denendi, her biri geçerli Türkçe'yi
+çöpe attı: word-DF (MmBb genotip), no-Türkçe-char ("olduguna gore" ASCII-Türkçe +
+"3-Metil-3-heksen" kimya), no-Türkçe-word ("Otozomal çekinik özelliği" biyoloji).
+
+**Kurallar:**
+- **Pozitif kanıt** ara, negatif yokluk değil. "Yabancı" = İngilizce/Romance kelime VAR,
+  "Türkçe-char yok" DEĞİL.
+- **Guard zinciri:** Türkçe karakter (ç/ğ/ı/ö/ş/ü) içereni silme listesinden ZORUNLU çıkar.
+- **Yargılanmamışı silme:** `unverified` (incelenmemiş) "işe yaramaz" sayılamaz — silmek
+  varsayımdır. Sadece **yargılanmış-kötü** (`rejected`, kör-judge drop) silinir.
+- Tail küçük + heterojense (geçerli + çöp karışık) → ucuz kuralı bırak, gözle/LLM-yargı.
+
+---
+
 ## İlişkili Kurallar
 
 - `.claude/rules/systematic-debugging.md` — Phantom sorun filtresi (gercek/fake ayrimi)
 - `.claude/rules/debugging-first.md` — Root cause analysis tablosu
 - `.claude/rules/verification.md` — Boris Cherny verification standards
+- `.claude/rules/testing.md` — Lesson #31 (rejected+is_active=true servis sızıntısı)
 
 ---
 
@@ -122,6 +176,8 @@ Audit'te "X probleminin oranı %Y" raporlandığında ÖNCE:
 | Tarih | Audit | Hata | Fix |
 |---|---|---|---|
 | 14 May 2026 | C2 audit (Faz 0.2) | LEFT(question_text, 200) truncation | Sample size 30 LIMIT, full text |
+| 3 Haz 2026 | Garble efsanesi | "61K garble" = ölçülmemiş varsayım (unverified=incelenmemiş); word-DF metriği doğrulama geçemedi | Char-trigram LM (sentetik-bozma doğrulamalı); satır-bazında etiket şartı |
+| 3 Haz 2026 | Garble-tail silme | 3 ucuz filtre geçerli Türkçe STEM'i yanlış-pozitif sildi | Pozitif yabancı-kanıt + Türkçe-char guard |
 | ... | ... | ... | ... |
 
 ---

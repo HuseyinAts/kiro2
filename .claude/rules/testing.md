@@ -644,3 +644,28 @@ docker compose build --no-cache backend && docker compose up -d
 
 **Env var tuzagi:** Container icinden `localhost` = container kendisi.
 Host servislerine `host.docker.internal` ile ulas (Redis, PostgreSQL).
+
+### 31. Status Yargisi ≠ Servis Disi — is_active Sizinti Tuzagi (3 Haz 2026)
+Bir soruyu `quality_review_status='rejected'` yapmak onu servis disi BIRAKMAZ.
+Servis filtresi tutarsizsa `is_active=true` kalan rejected'lar ogrenciye sizar.
+3 Haz: **55,768 rejected hala is_active=true** — S182-S198 audit'leri status'u
+'rejected' yapmis ama is_active cevirmemis. `soru_bankasi_service.py` tutarsiz:
+satir 599-665 kalite filtreli ama 366/414/504/789 sadece `is_active==True`.
+
+```python
+# Lesson #24'un (devre disi sonrasi is_active audit) ikiz hatasi:
+# YANLIS - status reddet, is_active'e dokunma
+UPDATE question_bank SET quality_review_status='rejected' WHERE ...
+# rejected ama is_active=true → is_active-only servis yollari hala servis ediyor
+
+# DOGRU - iki katman birlikte
+# 1. Veri: rejected → is_active=false (backup tablo + reversible)
+# 2. Kod: TUM soru-secim metodlarina _accepted_status filtresi
+#    (auto_judged_high, human_verified) ekle — defense in depth
+```
+
+**Kural:** Yeni bir status degeri "kotu" anlamina geliyorsa, o status'u set eden
+HER audit `is_active=false` DA yapmali VEYA servis sorgusu status filtreli olmali.
+Ikisi de yoksa = sessiz servis sizintisi. Silmeden once: **yargilanmis-kotu**
+(`rejected`, kor-judge drop) silinir; **yargilanmamis** (`unverified`) silinmez
+(varsayim olur). Bkz `.claude/rules/audit-methodology.md` (Ucuz Filtre Tuzagi).
