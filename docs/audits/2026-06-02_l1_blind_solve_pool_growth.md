@@ -104,10 +104,24 @@ L1: agree 5 (→beta), unsolv 4, disagree 7. L1d: real_error 5, unsolvable 5, sp
 - **123 REAL_ERROR** (113 concept + 5 retry + 5 MAT/GEO reject) → curator
 - 60 soru kalıcı erteleme (parse-fail dirençli)
 
+## L1d-curator — 123 REAL_ERROR curator-ready paketleme (202-concept deseni)
+
+123 uncorrected REAL_ERROR (TÜRKÇE 71, KİMYA 12, TARİH 11, EDEBİYAT 10, MAT 8, FİZİK 8, diğer 3):
+- `quality_review_status` auto_judged_high → **pending** (curator kuyruğuna girdi, gold'dan çıktı — 628 deseni: 2-sinyal-yanlış gold'da kalmaz)
+- `dispute_suggestion` metadata = "Kör-solver 2-sinyal: DB=X → öneri=Y" (curator UI yüzeye çıkarır)
+- `correct_answer` DOKUNULMADI (0). Backup `question_bank_l1d_curator_backup_20260602` (123).
+- Worklist CSV: `backend/scripts/quality/_l1_curator_tmp/concept_real_error_worklist.tsv` (Hüseyin accept/reject).
+
+## SESSION FİNAL (güncel)
+- **Beta havuzu: 2,689 → 3,169 (+480, +%17.9)**
+- **25 DB cevap-hatası düzeltildi** (3-sinyal MAT+GEO)
+- **123 REAL_ERROR → curator kuyruğu** (dispute_suggestion + pending + worklist)
+- 60 soru kalıcı erteleme
+
 ## Sonraki
 
-1. **123 REAL_ERROR → curator** (concept subjects: TÜRKÇE 71 vb.).
-2. **60 kalıcı-ertelenen** → curator veya manuel (workflow direnci).
+1. **Hüseyin: 123 curator worklist** accept/reject (curator UI'da dispute_suggestion görünür).
+2. **60 kalıcı-ertelenen** → curator veya manuel.
 3. Gemini key rotate → 61K garble re-OCR (en büyük kilit).
 
 ## Dosyalar
