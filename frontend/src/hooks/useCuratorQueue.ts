@@ -22,7 +22,15 @@ import { apiRequest } from '../utils/apiHelpers';
 
 export type CuratorVerdict = 'verify' | 'reject' | 'archive';
 
-export type QueueStatus = 'bronze_clean' | 'pending' | 'unverified';
+// 'flagged' = öğrenci hata bildirimleri (/curator/flagged), diğerleri
+// quality_review_status filtreleri (/curator/queue).
+export type QueueStatus = 'bronze_clean' | 'pending' | 'unverified' | 'flagged';
+
+export interface StudentFlagInfo {
+  flag_type: string;
+  count: number;
+  notes: string[];
+}
 
 export interface QueueItem {
   id: string;
@@ -42,6 +50,8 @@ export interface QueueItem {
   misconception_tags?: string[] | null;
   solution_steps?: string[] | null;
   similar_question_ids?: string[] | null;
+  student_flags?: StudentFlagInfo[] | null;
+  flag_count?: number | null;
 }
 
 export interface QueueResponse {
@@ -110,8 +120,18 @@ function buildQueueQuery(filters: QueueFilters): string {
 export function useCuratorQueue(filters: QueueFilters) {
   return useQuery<QueueResponse, Error>({
     queryKey: curatorKeys.queue(filters),
-    queryFn: () =>
-      apiRequest<QueueResponse>(`/api/v1/curator/queue?${buildQueueQuery(filters)}`),
+    queryFn: () => {
+      // 'flagged' → öğrenci bildirim kuyruğu (ayrı endpoint, subject/diagram
+      // filtresi yok; sadece sayfalama).
+      if (filters.status === 'flagged') {
+        const p = new URLSearchParams({ page: String(filters.page) });
+        if (filters.per_page) p.set('per_page', String(filters.per_page));
+        return apiRequest<QueueResponse>(`/api/v1/curator/flagged?${p.toString()}`);
+      }
+      return apiRequest<QueueResponse>(
+        `/api/v1/curator/queue?${buildQueueQuery(filters)}`,
+      );
+    },
     keepPreviousData: true,
     staleTime: 30 * 1000, // 30s — queue moves fast
     retry: 1,

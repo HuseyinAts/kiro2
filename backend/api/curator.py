@@ -25,11 +25,12 @@ from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import func, select, text
+from sqlalchemy import func, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dependencies import AuthenticatedUser, get_current_admin_user, get_db
 from models.question_bank import QuestionBankItem
+from models.student_question_flag import StudentQuestionFlag
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,14 @@ VERDICT_TO_STATUS: dict[str, str] = {
 # ============================================================================
 # Pydantic Models
 # ============================================================================
+class StudentFlagInfo(BaseModel):
+    """Tek bir soru için öğrenci hata bildirimi özeti (flag_type bazlı)."""
+
+    flag_type: str
+    count: int
+    notes: list[str] = Field(default_factory=list)
+
+
 class QueueItem(BaseModel):
     """Curator kuyruğundaki tek bir soru."""
 
@@ -77,6 +86,13 @@ class QueueItem(BaseModel):
             "Kör-çözüm cevap-hatası önerisi: {suggested, db, reason, conf}. "
             "İki bağımsız kör solver DB'ye karşı hemfikir; curator hızlı onay için."
         ),
+    )
+    student_flags: list[StudentFlagInfo] | None = Field(
+        None,
+        description="Öğrenci hata bildirimleri (flag_type bazlı sayı + notlar)",
+    )
+    flag_count: int | None = Field(
+        None, description="Bu soruya ait toplam çözülmemiş öğrenci flag sayısı"
     )
 
     model_config = ConfigDict(from_attributes=False)
@@ -367,6 +383,103 @@ async def get_queue(
     return QueueResponse(items=items, total=total, page=page, per_page=per_page)
 
 
+@router.get("/flagged", response_model=QueueResponse)
+async def get_flagged_queue(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(25, ge=1, le=200),
+    admin: AuthenticatedUser = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
+) -> QueueResponse:
+    """Öğrenci tarafından flag'lenmiş (çözülmemiş) soruları curator kuyruğuna getir.
+
+    Köprü: `student_question_flags` (resolved_at IS NULL) → `question_bank` join.
+    Sıralama: en çok flag alan + en yeni soru üstte (öğrenci sinyali güçlü olan
+    önce gözden geçirilsin). Soru hangi statüde olursa olsun (gold dahil) görünür.
+    """
+    # 1) Çözülmemiş flag'i olan distinct question_id + flag sayısı + en yeni tarih
+    flag_agg = (
+        select(
+            StudentQuestionFlag.question_id.label("qid"),
+            func.count().label("cnt"),
+            func.max(StudentQuestionFlag.created_at).label("latest"),
+        )
+        .where(StudentQuestionFlag.resolved_at.is_(None))
+        .group_by(StudentQuestionFlag.question_id)
+        .subquery()
+    )
+
+    total = int(
+        (await db.execute(select(func.count()).select_from(flag_agg))).scalar() or 0
+    )
+    if total == 0:
+        return QueueResponse(items=[], total=0, page=page, per_page=per_page)
+
+    # 2) Sayfalı, sıralı question_id listesi (en çok flag → en yeni)
+    page_qids_stmt = (
+        select(flag_agg.c.qid)
+        .order_by(flag_agg.c.cnt.desc(), flag_agg.c.latest.desc())
+        .limit(per_page)
+        .offset((page - 1) * per_page)
+    )
+    qids = [r[0] for r in (await db.execute(page_qids_stmt)).all()]
+    if not qids:
+        return QueueResponse(items=[], total=total, page=page, per_page=per_page)
+
+    # 3) question_bank içerikleri (sıra qids ile korunur)
+    q_rows = (
+        (
+            await db.execute(
+                select(QuestionBankItem).where(QuestionBankItem.id.in_(qids))
+            )
+        )
+        .scalars()
+        .all()
+    )
+    q_by_id = {str(r.id): r for r in q_rows}
+
+    # 4) Flag detayları (flag_type + not) — question_id bazlı grupla
+    detail_rows = (
+        await db.execute(
+            select(
+                StudentQuestionFlag.question_id,
+                StudentQuestionFlag.flag_type,
+                StudentQuestionFlag.note,
+            ).where(
+                StudentQuestionFlag.question_id.in_(qids),
+                StudentQuestionFlag.resolved_at.is_(None),
+            )
+        )
+    ).all()
+
+    flags_by_qid: dict[str, dict[str, dict[str, Any]]] = {}
+    for qid, ftype, note in detail_rows:
+        per_type = flags_by_qid.setdefault(str(qid), {})
+        entry = per_type.setdefault(ftype, {"count": 0, "notes": []})
+        entry["count"] += 1
+        if note:
+            entry["notes"].append(note)
+
+    # 5) qids sırasını koruyarak QueueItem'ları kur
+    items: list[QueueItem] = []
+    for qid in qids:
+        row = q_by_id.get(str(qid))
+        if row is None:
+            # FK CASCADE normalde önler; soru silinmişse atla
+            continue
+        item = _row_to_queue_item(row)
+        per_type = flags_by_qid.get(str(qid), {})
+        item.student_flags = [
+            StudentFlagInfo(flag_type=ft, count=v["count"], notes=v["notes"])
+            for ft, v in sorted(
+                per_type.items(), key=lambda kv: kv[1]["count"], reverse=True
+            )
+        ]
+        item.flag_count = sum(v["count"] for v in per_type.values())
+        items.append(item)
+
+    return QueueResponse(items=items, total=total, page=page, per_page=per_page)
+
+
 @router.post("/verdict", response_model=VerdictResponse)
 async def post_verdict(
     body: VerdictRequest,
@@ -421,6 +534,25 @@ async def post_verdict(
     # JSON-embedded pipeline_metadata.curator_verdict.reviewed_at ile birlikte
     # tutulur (column = fast stats; JSON = full audit trail).
     row.reviewed_at = reviewed_at
+
+    # Köprü (flag→curator): bu soruya ait çözülmemiş öğrenci flag'lerini de kapat.
+    # reject/archive → flag "confirmed" (öğrenci haklıydı); verify → "rejected"
+    # (yanlış alarm). Aynı transaction içinde; flag yoksa no-op.
+    flag_resolution = (
+        "confirmed" if body.verdict in ("reject", "archive") else "rejected"
+    )
+    await db.execute(
+        update(StudentQuestionFlag)
+        .where(
+            StudentQuestionFlag.question_id == body.question_id,
+            StudentQuestionFlag.resolved_at.is_(None),
+        )
+        .values(
+            resolution=flag_resolution,
+            resolved_at=reviewed_at,
+            resolved_by=str(admin.id),
+        )
+    )
 
     # Audit log yaz (commit'ten önce — atomik)
     await _write_audit_log(

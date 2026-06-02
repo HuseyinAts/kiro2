@@ -5024,3 +5024,30 @@ def test_gf_veli_onay_verify_invalid(client: httpx.Client):
     assert resp.status_code in (400, 422), (
         f"GF veli-onay beklenen 400/422, gelen: {resp.status_code} {resp.text[:200]}"
     )
+
+
+# ---------------------------------------------------------------------------
+# GF flag→curator köprüsü: admin /curator/flagged öğrenci bildirimlerini görür
+# ---------------------------------------------------------------------------
+def test_gf_curator_flagged_bridge(client: httpx.Client):
+    """Köprü: admin /curator/flagged ile öğrenci hata bildirimlerini görebilmeli.
+
+    student_question_flags (resolved_at IS NULL) → question_bank join. Gold
+    sorular dahil (eski /queue'da görünmeyen) flag'li sorular curator'a düşer.
+    """
+    token = _login(client, ADMIN)
+    resp = client.get(
+        "/api/v1/curator/flagged?page=1&per_page=5",
+        headers=_auth_headers(token),
+    )
+    assert resp.status_code < 500, (
+        f"GF curator/flagged crashed: {resp.status_code} {resp.text[:300]}"
+    )
+    if resp.status_code == 200:
+        body = resp.json()
+        assert "items" in body and "total" in body, f"şema eksik: {body}"
+        if body["items"]:
+            item = body["items"][0]
+            assert "student_flags" in item, "QueueItem.student_flags eksik"
+            if item.get("flag_count") is not None:
+                assert item["flag_count"] >= 1

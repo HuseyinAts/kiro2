@@ -46,7 +46,19 @@ const STATUSES: Array<{ value: QueueStatus; label: string }> = [
   { value: 'bronze_clean', label: 'Bronze Clean' },
   { value: 'pending', label: 'Pending' },
   { value: 'unverified', label: 'Unverified' },
+  { value: 'flagged', label: '🚩 Öğrenci Bildirimleri' },
 ];
+
+// Öğrenci flag_type → okunur Türkçe etiket (FlagButton ile aynı sözlük).
+const FLAG_TYPE_LABELS: Record<string, string> = {
+  wrong_answer: 'Cevap yanlış',
+  wrong_topic: 'Konu yanlış',
+  solution_visible: 'Çözüm görselde görünüyor',
+  incomplete_text: 'Metin eksik/bozuk',
+  circular: 'Soru kendini cevaplıyor (dairesel)',
+  figure_needed: 'Şekil/görsel gerekiyor ama yok',
+  other: 'Diğer',
+};
 
 const DIAGRAM_OPTIONS: Array<{ value: 'all' | 'yes' | 'no'; label: string }> = [
   { value: 'all', label: 'Tüm Sorular' },
@@ -275,6 +287,34 @@ function QuestionView({ item, highlightedOption, onHighlight }: QuestionViewProp
             className="max-h-96 object-contain"
             data-testid="curator-question-image"
           />
+        </div>
+      )}
+
+      {item.student_flags && item.student_flags.length > 0 && (
+        <div
+          className="rounded-lg border border-amber-300 bg-amber-50 p-3"
+          data-testid="curator-student-flags"
+        >
+          <div className="text-xs font-semibold text-amber-800 mb-1.5">
+            🚩 Öğrenci bildirimleri ({item.flag_count})
+          </div>
+          <ul className="space-y-1">
+            {item.student_flags.map((f) => (
+              <li key={f.flag_type} className="text-sm text-amber-900">
+                <span className="font-medium">
+                  {FLAG_TYPE_LABELS[f.flag_type] ?? f.flag_type}
+                </span>
+                <span className="text-amber-700"> × {f.count}</span>
+                {f.notes.length > 0 && (
+                  <ul className="ml-4 mt-0.5 list-disc text-xs text-amber-800">
+                    {f.notes.slice(0, 3).map((n, i) => (
+                      <li key={i}>{n}</li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
