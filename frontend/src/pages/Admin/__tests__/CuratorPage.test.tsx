@@ -139,6 +139,37 @@ describe('CuratorPage', () => {
     expect(screen.getByText('47')).toBeInTheDocument();
   });
 
+  it('renders blind-solve dispute_suggestion warning when db != suggested', async () => {
+    const disputeItem = {
+      ...mockItem,
+      id: 'q-dispute',
+      correct_answer: 'A',
+      dispute_suggestion: {
+        suggested: 'C',
+        db: 'A',
+        reason: '2 bağımsız kör solver C diyor',
+        conf: 0.85,
+        method: '2blind_agree',
+      },
+    };
+    mockApiRequest.mockImplementation((url: string) => {
+      if (url.startsWith('/api/v1/curator/queue')) {
+        return Promise.resolve({ items: [disputeItem], total: 1, page: 1, per_page: 25 });
+      }
+      if (url === '/api/v1/curator/stats') {
+        return Promise.resolve(statsResponse);
+      }
+      return Promise.reject(new Error(`Unmocked URL: ${url}`));
+    });
+    renderPage();
+    await waitFor(() => {
+      expect(screen.getByTestId('curator-dispute-suggestion')).toBeInTheDocument();
+    });
+    const block = screen.getByTestId('curator-dispute-suggestion');
+    expect(block).toHaveTextContent('güven 85%');
+    expect(block).toHaveTextContent('2 bağımsız kör solver C diyor');
+  });
+
   it("sends 'verify' verdict when V key is pressed", async () => {
     renderPage();
 

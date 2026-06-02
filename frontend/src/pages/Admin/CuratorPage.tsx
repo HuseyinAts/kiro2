@@ -363,6 +363,38 @@ function QuestionView({ item, highlightedOption, onHighlight }: QuestionViewProp
         })}
       </div>
 
+      {item.dispute_suggestion &&
+        item.dispute_suggestion.suggested &&
+        item.dispute_suggestion.suggested !== item.dispute_suggestion.db && (
+          <div
+            className="rounded-lg border border-rose-300 bg-rose-50 px-3 py-2"
+            data-testid="curator-dispute-suggestion"
+          >
+            <div className="text-xs font-semibold text-rose-700 uppercase tracking-wider mb-1">
+              ⚠️ Kör-çözüm cevap-hatası önerisi
+            </div>
+            <div className="text-sm text-rose-900">
+              DB cevabı{' '}
+              <span className="font-bold">{item.dispute_suggestion.db}</span> yanlış
+              olabilir → 2 bağımsız kör solver:{' '}
+              <span className="font-bold text-rose-700">
+                {item.dispute_suggestion.suggested}
+              </span>
+              {typeof item.dispute_suggestion.conf === 'number' && (
+                <span className="text-rose-600">
+                  {' '}
+                  (güven {Math.round(item.dispute_suggestion.conf * 100)}%)
+                </span>
+              )}
+            </div>
+            {item.dispute_suggestion.reason && (
+              <div className="mt-1 text-xs text-rose-800">
+                {item.dispute_suggestion.reason}
+              </div>
+            )}
+          </div>
+        )}
+
       {item.misconception_tags && item.misconception_tags.length > 0 && (
         <div>
           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">

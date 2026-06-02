@@ -52,6 +52,14 @@ export interface QueueItem {
   similar_question_ids?: string[] | null;
   student_flags?: StudentFlagInfo[] | null;
   flag_count?: number | null;
+  // Kör-çözüm cevap-hatası önerisi (2 bağımsız solver DB'ye karşı hemfikir).
+  dispute_suggestion?: {
+    suggested?: string | null;
+    db?: string | null;
+    reason?: string | null;
+    conf?: number | null;
+    method?: string | null;
+  } | null;
 }
 
 export interface QueueResponse {
