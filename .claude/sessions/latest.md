@@ -1,37 +1,28 @@
-## Session Handoff — 2026-06-02 (Beta Sınav-Akışı Kapsamlı Test + 7 Bug Fix)
+## Session Handoff — 2026-06-02 13:00
+**Branch:** master | **Son commit:** `6a94a42ad` (push'lu) — verdict→flag regresyon testi
+**Uncommitted:** temiz
 
-**Branch:** master | **Son commit:** `4cd0b3d73` (push'lu) | **Alembic head:** `beta_vp_idx_20260602`
-**Uncommitted:** temiz (yalnız untracked `backend/scripts/quality/_*_tmp/` — gitignore'lu)
-**Servisler:** backend healthy, frontend healthy, redis healthy
-**Beta havuzu:** verified_provisional = **2,734** | student_question_flags = **60**
-
-### Yapılanlar — "sen tıkla ben teşhis" derin sınav-akışı testi (A→D), 7 bug fix
-1. `21b6c82a5` flag CHECK constraint → +circular/figure_needed (migration `sqf_flagtype_2new_20260602`)
-2. `d9bc55467` sonuç /performance → session silinince DB-fallback (404 fix)
-3. `db3c83eef` subject-performance → guard kaldır + DB join (tamamlanan sınavda ders kırılımı)
-4. `d5f285b84` resume → currentQuestionIndex restore + backend get_session_data DB-reconstruct + Redis pool aclose() zehirlenmesi (yenileme Q1'e atıyordu)
-5. `be3642487` 0-cevap bitir → reconstruct'a performance_metrics (sonuç 400)
-6. `b92e1a264` ders kırılımı → Promise.all → allSettled (session 404 tüm bloğu reject ediyordu)
-7. `4cd0b3d73` cevap geri-yükleme (GET /{id}/answers + frontend restore) + **verified_provisional partial index 3507ms→11ms (~320x)**
-
-### Test sonucu: Beta sınav-akışı %100 — A/B/C1-4/D1-5 hepsi PASS (canlı doğrulandı)
+### Yapilanlar (bu session)
+- **Hata-bildir yaygınlaştırma:** `frontend/src/pages/FSRSReviewPage.tsx` + `ModernLearningPathPage.tsx` (DungeonMap→yeni `components/LearningPath/TopicList.tsx`) + `Quality/FlagButton.tsx` ikon→etiketli buton (`407f87c9b`, `f6c500d10`)
+- **Tasarım/yazı kök-neden (6-ajan workflow):** ASIL BUG = tüm metin Roboto'ydu, Inter değil → `components/Common/AccessibilityProvider.tsx:64` Roboto→Inter; self-host fontlar `public/fonts/*.woff2` + `src/styles/fonts.css` (`bd390b3c6`)
+- **İnfra konsolidasyon (runtime):** gölge docker PG15 durduruldu (5434 tek=native PG18), Grafana 3001'den çekildi, 8 orphan container temizlendi; `docker-compose.yml` redis `ports:6379` (`cba428585`), `index.html` ölü preload + `docker-compose.dev.yml` uyarı (`d3149eb70`)
+- **Flag→curator köprüsü:** `backend/api/curator.py` `GET /flagged` + verdict'te flag auto-resolve + `/stats.flagged_count` + is_active filtresi; `frontend hooks/useCuratorQueue.ts` + `pages/Admin/CuratorPage.tsx` "🚩 Öğrenci Bildirimleri (N)" sekme; testler: `tests/e2e/test_golden_flows.py::test_gf_curator_flagged_bridge` + `tests/integration/test_curator_verdict_flag_resolve.py` (`36b014122`,`63aa86341`,`6a94a42ad`)
 
 ### Fail Eden Testler
-- YOK (pytest koşulmadı — canlı E2E + py_compile/ruff hook temiz). **Backlog: GF e2e + unit test yaz.**
+- YOK. test_gf_curator_flagged_bridge PASS; test_curator_verdict_flag_resolve 3/3 PASS (USE_POSTGRES_TESTS=true + KVKK_VERIFY_DSN ile). Full pytest koşulmadı.
 
-### Engelleyiciler / Notlar
-- DB yazma: `PGPASSWORD=1470 "C:/Program Files/PostgreSQL/18/bin/psql.exe" -p 5434`. Türkçe inline `-c` bozuk → `-f`/ASCII.
-- Docker dosya değişikliği: `docker cp` + `find -name "*.pyc" -delete` + restart. CONCURRENTLY index psql -c (autocommit).
-- Her frontend deploy sonrası kullanıcı **Ctrl+Shift+R** (bayat bundle).
+### Engelleyiciler
+- YOK. Beta canlı (Inter, tek-temiz stack). Backend/frontend rebuild'li (kalıcı).
 
-### Sonraki Adımlar (maks 5)
-1. **Gerçek öğrenciyle beta testi** (kök-neden reçetesi: 2,734 yeterli) → beta'yı dışarı aç (tunnel/deploy) + 20 öğrenci
-2. Flag→curator köprüsü (60 flag tabloda, curator UI'da görünmüyor) + onboarding
-3. (Küçük) resume cevap-restore TAMAM ama ileride E2E test yaz
-4. P1: ~1,395 relabel/mismatch recovery (tek ucuz içerik genişlemesi, re-OCR'sız)
-5. (Strateji) re-OCR 61K garbled — ölçeğin tek kapısı, beta validasyonundan SONRA
+### Sonraki Adimlar (maks 5)
+1. **Gerçek-öğrenci beta sürüyor** — Hüseyin test ediyor, bugün **52 flag** geldi (curator 🚩 sekmesi=54 soru). LAN link 192.168.8.28:3000
+2. **Beta içerik temizliği (bekliyor):** 54 flag'li sorunun %85'i render/OCR (35 figure_needed + 12 incomplete_text). Komut: "toplu temizle" → backup+reject. Hüseyin "önce daha çok sinyal" dedi
+3. (Hipotez) Geometri havuzu genel şekil-bağımlılık testi (flag'siz örneklem kör-çözüm)
+4. (Backlog düşük) Tailwind hiç derlenmiyor (riskli), CuratorPage stilsiz; 'flagged' frontend testi
+5. Pre-existing: frontend `CuratorStats.verified_today` ↔ backend `verified_count` uyumsuzluğu
 
 ### Kararlar
-- Sonuç/analiz endpoint'leri **Redis session'a değil DB'ye** dayanmalı (session ephemeral; tamamlanınca silinir).
-- 4 uvicorn worker + in-memory L1 paylaşılmaz → cross-worker continuity DB-reconstruct ile garanti.
-- Beta içerik ölçeği kovalanmadan önce gerçek-öğrenci validasyonu (yargıdan-kaçınma kök-nedeni).
+- Beta görseli "kötü"ydü çünkü tema Roboto kullanıyordu (Inter değil) — REGRESYON DEĞİL, uzun süredir vardı. Tailwind hiç derlenmiyor ama açmak riskli → ertelendi.
+- "İki frontend/backend" = container kaosu + çift-PG; tek çalışan frontend(3000)+backend(8000) var.
+- Flag→curator köprüsü: gold sorular eski queue'da görünmüyordu (46'nın 44'ü) → /flagged ayrı endpoint. Curator verdict flag'i otomatik kapatır.
+- DB temizliği Hüseyin onayı olmadan YAPILMAZ (beta havuzu).
