@@ -338,3 +338,12 @@ backend/scripts/quality/_beta_figure_audit.sql
 
 # Serena MCP local cache
 .serena/
+
+# Pool-growth / calibration data blobs (reproducible from DB via export.sql)
+backend/scripts/quality/_pool_growth_wave*/master.csv
+backend/scripts/quality/_pool_growth_wave*/master.jsonl
+backend/scripts/quality/_pool_growth_wave*/apply.sql
+backend/scripts/quality/_pool_growth_wave*/batches/
+backend/scripts/quality/_calib_fazA/master.csv
+backend/scripts/quality/_calib_fazA/input.jsonl
+backend/scripts/quality/_calib_fazA/preds.json
