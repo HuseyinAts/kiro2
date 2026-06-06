@@ -166,7 +166,7 @@ class CustomHuggingFaceEndpoint:
 
     async def agenerate(self, prompt: str) -> str:
         """Async generation"""
-        return self.generate(prompt)
+        return await asyncio.to_thread(self.generate, prompt)
 
     def predict(self, text: str) -> str:
         """Predict method for compatibility"""

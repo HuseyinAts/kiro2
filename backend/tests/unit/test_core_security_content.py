@@ -49,89 +49,15 @@ sys.modules["core.enhanced_database"].get_enhanced_db_manager = MagicMock(
     return_value=MagicMock()
 )
 
-# Mock models.curriculum before importing compliance system
-import types as _types
+# S197: Use the real models.curriculum module (which is lightweight and has no database side effects)
+# to prevent poisoning of other tests like test_exam_curriculum_models.
+try:
+    import models.curriculum
+except Exception:
+    pass
 
-_curriculum_mod = _types.ModuleType("models.curriculum")
-
-
-class _MEBCurriculumStandard:
-    def __init__(self, **kw):
-        for k, v in kw.items():
-            setattr(self, k, v)
-
-
-class _OSYMStandard:
-    def __init__(self, **kw):
-        for k, v in kw.items():
-            setattr(self, k, v)
-
-
-class _LearningOutcome:
-    def __init__(self, **kw):
-        for k, v in kw.items():
-            setattr(self, k, v)
-
-
-class _CurriculumAlignment:
-    def __init__(self, **kw):
-        for k, v in kw.items():
-            setattr(self, k, v)
-
-
-class _CurriculumComplianceReport:
-    def __init__(self, **kw):
-        for k, v in kw.items():
-            setattr(self, k, v)
-
-
-class _CurriculumUpdateRequest:
-    def __init__(self, **kw):
-        for k, v in kw.items():
-            setattr(self, k, v)
-
-
-class _QuestionBankCompliance:
-    def __init__(self, **kw):
-        for k, v in kw.items():
-            setattr(self, k, v)
-
-
-class _SubjectType:
-    MATEMATIK = "matematik"
-    FEN = "fen"
-
-
-class _ExamType:
-    TYT = "tyt"
-    AYT = "ayt"
-
-
-class _GradeLevel:
-    GRADE_12 = 12
-
-
-_curriculum_mod.MEBCurriculumStandard = _MEBCurriculumStandard
-_curriculum_mod.OSYMStandard = _OSYMStandard
-_curriculum_mod.LearningOutcome = _LearningOutcome
-_curriculum_mod.CurriculumAlignment = _CurriculumAlignment
-_curriculum_mod.CurriculumComplianceReport = _CurriculumComplianceReport
-_curriculum_mod.CurriculumUpdateRequest = _CurriculumUpdateRequest
-_curriculum_mod.QuestionBankCompliance = _QuestionBankCompliance
-_curriculum_mod.SubjectType = _SubjectType
-_curriculum_mod.ExamType = _ExamType
-_curriculum_mod.GradeLevel = _GradeLevel
-# Only stub the `models` package when it has not yet been loaded as a real
-# package; replacing a real package with MagicMock breaks other test files
-# that import from it (e.g. models.teacher_pool).
 if "models" not in sys.modules:
     sys.modules["models"] = MagicMock()
-# S197: same conditional guard for models.curriculum — the partial
-# _SubjectType stub (MATEMATIK + FEN only) poisoned test_exam_curriculum_models
-# which expects the full 12-value enum (TURKCE, FEN_BILIMLERI, ...). If a
-# previous test has already loaded the real package, keep it.
-if "models.curriculum" not in sys.modules:
-    sys.modules["models.curriculum"] = _curriculum_mod
 
 # Patch structured_logger used by exam_quality_validators
 sys.modules["core.structured_logger"] = MagicMock()

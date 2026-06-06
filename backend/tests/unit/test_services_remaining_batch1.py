@@ -17,6 +17,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
+# Save original sys.modules state to clean up poisoning after this test module runs
+_original_sys_modules = dict(sys.modules)
+
 # ---------------------------------------------------------------------------
 # Heavy dependency stubs BEFORE any project imports
 # ---------------------------------------------------------------------------
@@ -25,18 +28,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-# ---------------------------------------------------------------------------
-# numpy stub: hypothesis does `import numpy.random` at module level, which
-# requires `numpy` to be a real types.ModuleType (not a MagicMock) so that
-# Python's import machinery can resolve the subpackage from sys.modules.
-# Also, hypothesis does isinstance(x, numpy.ndarray) so ndarray must be a
-# real type.
-# ---------------------------------------------------------------------------
-
-
 class _FakeNdarray:
     pass
-
 
 _numpy_stub = types.ModuleType("numpy")
 _numpy_stub.ndarray = _FakeNdarray  # type: ignore[attr-defined]
@@ -53,55 +46,11 @@ _numpy_random_stub.set_state = lambda s: None  # type: ignore[attr-defined]
 _numpy_random_stub.RandomState = MagicMock  # type: ignore[attr-defined]
 _numpy_stub.random = _numpy_random_stub  # type: ignore[attr-defined]
 
-# Register both so `import numpy.random` resolves from sys.modules
-sys.modules.setdefault("numpy", _numpy_stub)
-sys.modules.setdefault("numpy.random", _numpy_random_stub)
-
-# matplotlib stubs (after numpy so they don't re-set numpy)
-for _mod in [
-    "matplotlib",
-    "matplotlib.pyplot",
-    "matplotlib.patches",
-]:
-    sys.modules.setdefault(_mod, MagicMock())
-
-# graph / map_diagram generator stubs (imported by visual_content_generator)
-sys.modules.setdefault("services.graph_generator", MagicMock(GraphGenerator=MagicMock))
-sys.modules.setdefault(
-    "services.map_diagram_generator", MagicMock(MapDiagramGenerator=MagicMock)
-)
-# geometry_generator itself uses matplotlib/numpy; stub it for visual_content_generator
-sys.modules.setdefault(
-    "services.geometry_generator", MagicMock(GeometryGenerator=MagicMock)
-)
-
-# LLM provider stubs
-for _mod in [
-    "services.llm.gemini_provider",
-    "services.llm.openai_provider",
-    "services.llm.claude_provider",
-    "services.llm.qwen_provider",
-]:
-    sys.modules.setdefault(_mod, MagicMock())
-
-# advanced_reports heavy deps
-for _mod in [
-    "core.osym_exam_engine",
-    "core.turkish_nlp_utils",
-    "services.irt_morfoloji_service",
-    "services.learning_style_service",
-    "services.zpd_maarif_service",
-    "utils.pdf_generator",
-]:
-    sys.modules.setdefault(_mod, MagicMock())
-
 # models stub (used by advanced_reports: from models import SinavSonucu, SinavTipi)
 _models_stub = MagicMock()
-sys.modules.setdefault("models", _models_stub)
 
 # core.dependencies stub (used by advanced_reports)
 _core_deps = MagicMock()
-
 
 class _AuthenticatedUser:
     def __init__(self, id=1, email="test@test.com", role="STUDENT"):
@@ -109,19 +58,8 @@ class _AuthenticatedUser:
         self.email = email
         self.role = role
 
-
 _core_deps.AuthenticatedUser = _AuthenticatedUser
 _core_deps.get_current_user = MagicMock()
-sys.modules.setdefault("core.dependencies", _core_deps)
-
-# sqlalchemy stubs
-for _mod in [
-    "sqlalchemy",
-    "sqlalchemy.ext.asyncio",
-    "sqlalchemy.orm",
-    "sqlalchemy.future",
-]:
-    sys.modules.setdefault(_mod, MagicMock())
 
 # ---------------------------------------------------------------------------
 # Diary API: schemas must be real Pydantic models for FastAPI response_model
@@ -130,7 +68,6 @@ from datetime import date, datetime
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel
-
 
 class _DiaryEntryResponse(BaseModel):
     id: UUID
@@ -149,17 +86,14 @@ class _DiaryEntryResponse(BaseModel):
     updated_at: datetime
     success_rate: float = 0.0
 
-
 class _DiaryEntryCreate(BaseModel):
     date: date
     tasks: list = []
-
 
 class _DiaryEntryUpdate(BaseModel):
     highlights: list = []
     learnings: list = []
     challenges: list = []
-
 
 class _GoalResponse(BaseModel):
     id: UUID
@@ -170,33 +104,27 @@ class _GoalResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-
 class _GoalCreate(BaseModel):
     title: str
     category: str | None = None
     deadline: date | None = None
     measurable_target: str | None = None
 
-
 class _GoalUpdate(BaseModel):
     title: str | None = None
     status: str | None = None
 
-
 class _GoalProgressUpdate(BaseModel):
     progress: float = 0.0
-
 
 class _GoalRiskResponse(BaseModel):
     goal_id: UUID
     is_at_risk: bool = False
     reasons: list = []
 
-
 class _EmotionalStateCreate(BaseModel):
     mood: str
     notes: str | None = None
-
 
 class _EmotionalStateResponse(BaseModel):
     id: UUID
@@ -205,14 +133,11 @@ class _EmotionalStateResponse(BaseModel):
     notes: str | None = None
     created_at: datetime
 
-
 class _MoodTrendResponse(BaseModel):
     trend: list = []
 
-
 class _ReflectionCreate(BaseModel):
     content: str
-
 
 class _ReflectionResponse(BaseModel):
     id: UUID
@@ -220,15 +145,12 @@ class _ReflectionResponse(BaseModel):
     content: str
     created_at: datetime
 
-
 class _ReflectionPromptsResponse(BaseModel):
     prompts: list = []
-
 
 class _LearningEntryCreate(BaseModel):
     subject: str
     notes: str
-
 
 class _LearningEntryResponse(BaseModel):
     id: UUID
@@ -237,10 +159,8 @@ class _LearningEntryResponse(BaseModel):
     notes: str
     created_at: datetime
 
-
 class _LearningReviewResponse(BaseModel):
     reviews: list = []
-
 
 class _InsightResponse(BaseModel):
     id: UUID
@@ -248,31 +168,24 @@ class _InsightResponse(BaseModel):
     content: str
     created_at: datetime
 
-
 class _ExportRequest(BaseModel):
     format: str = "markdown"
-
 
 class _ExportResponse(BaseModel):
     url: str
 
-
 class _ShareLinkCreate(BaseModel):
     entry_id: UUID
-
 
 class _ShareLinkResponse(BaseModel):
     link: str
 
-
 class _PeerComparisonResponse(BaseModel):
     comparison: dict = {}
-
 
 class _SuccessResponse(BaseModel):
     success: bool
     message: str = ""
-
 
 _diary_schemas_stub = MagicMock()
 _diary_schemas_stub.DiaryEntryResponse = _DiaryEntryResponse
@@ -300,11 +213,8 @@ _diary_schemas_stub.ShareLinkResponse = _ShareLinkResponse
 _diary_schemas_stub.PeerComparisonResponse = _PeerComparisonResponse
 _diary_schemas_stub.SuccessResponse = _SuccessResponse
 
-sys.modules["api.schemas.diary"] = _diary_schemas_stub
-
 # models.diary: GoalStatus enum must be a real enum for FastAPI query params
 from enum import Enum
-
 
 class _GoalStatus(str, Enum):
     ACTIVE = "active"
@@ -312,11 +222,9 @@ class _GoalStatus(str, Enum):
     AT_RISK = "at_risk"
     CANCELLED = "cancelled"
 
-
 class _ExportFormat(str, Enum):
     MARKDOWN = "markdown"
     PDF = "pdf"
-
 
 _models_diary_stub = MagicMock()
 _models_diary_stub.GoalStatus = _GoalStatus
@@ -327,16 +235,13 @@ _models_diary_stub.Goal = MagicMock()
 _models_diary_stub.Insight = MagicMock()
 _models_diary_stub.LearningEntry = MagicMock()
 _models_diary_stub.Reflection = MagicMock()
-sys.modules["models.diary"] = _models_diary_stub
 
 # models.user
 _models_user_stub = MagicMock()
 _models_user_stub.User = MagicMock
-sys.modules["models.user"] = _models_user_stub
 
 # core.auth_dependencies: AuthenticationDependency must be callable returning a dependency
 _auth_dep_stub = MagicMock()
-
 
 class _AuthDep:
     def __init__(self, required: bool = True):
@@ -345,38 +250,87 @@ class _AuthDep:
     async def __call__(self, request=None, credentials=None):
         return None  # overridden in tests via dependency_overrides
 
-
 _auth_dep_stub.AuthenticationDependency = _AuthDep
-sys.modules["core.auth_dependencies"] = _auth_dep_stub
 
 # core.database
 _core_db_stub = MagicMock()
 _core_db_stub.get_db = MagicMock()
-sys.modules["core.database"] = _core_db_stub
 
 # core.service_dependencies
 _core_svc_deps = MagicMock()
 _core_svc_deps.get_diary_service = MagicMock()
-sys.modules["core.service_dependencies"] = _core_svc_deps
 
-# remaining service stubs
-for _mod in [
-    "services.diary_service",
-    "services.emotional_service",
-    "services.export_service",
-    "services.goal_service",
-    "services.insight_service",
-    "services.learning_journal_service",
-    "services.peer_comparison_service",
-    "services.reflection_service",
-]:
-    sys.modules.setdefault(_mod, MagicMock())
+_stubbed_modules = {
+    "numpy": _numpy_stub,
+    "numpy.random": _numpy_random_stub,
+    "matplotlib": MagicMock(),
+    "matplotlib.pyplot": MagicMock(),
+    "matplotlib.patches": MagicMock(),
+    "services.graph_generator": MagicMock(GraphGenerator=MagicMock),
+    "services.map_diagram_generator": MagicMock(MapDiagramGenerator=MagicMock),
+    "services.geometry_generator": MagicMock(GeometryGenerator=MagicMock),
+    "services.llm.gemini_provider": MagicMock(),
+    "services.llm.openai_provider": MagicMock(),
+    "services.llm.claude_provider": MagicMock(),
+    "services.llm.qwen_provider": MagicMock(),
+    "core.osym_exam_engine": MagicMock(),
+    "core.turkish_nlp_utils": MagicMock(),
+    "services.irt_morfoloji_service": MagicMock(),
+    "services.learning_style_service": MagicMock(),
+    "services.zpd_maarif_service": MagicMock(),
+    "utils.pdf_generator": MagicMock(),
+    "models": _models_stub,
+    "core.dependencies": _core_deps,
+    "sqlalchemy": MagicMock(),
+    "sqlalchemy.ext.asyncio": MagicMock(),
+    "sqlalchemy.orm": MagicMock(),
+    "sqlalchemy.future": MagicMock(),
+    "api.schemas.diary": _diary_schemas_stub,
+    "models.diary": _models_diary_stub,
+    "models.user": _models_user_stub,
+    "core.auth_dependencies": _auth_dep_stub,
+    "core.database": _core_db_stub,
+    "core.service_dependencies": _core_svc_deps,
+    "services.diary_service": MagicMock(),
+    "services.emotional_service": MagicMock(),
+    "services.export_service": MagicMock(),
+    "services.goal_service": MagicMock(),
+    "services.insight_service": MagicMock(),
+    "services.learning_journal_service": MagicMock(),
+    "services.peer_comparison_service": MagicMock(),
+    "services.reflection_service": MagicMock(),
+}
+
+def _apply_stubs():
+    import sys
+    for k, v in _stubbed_modules.items():
+        sys.modules[k] = v
+
+def _restore_stubs():
+    import sys
+    current_keys = list(sys.modules.keys())
+    for key in current_keys:
+        if key not in _original_sys_modules:
+            sys.modules.pop(key, None)
+        else:
+            sys.modules[key] = _original_sys_modules[key]
+
+# Apply stubs at collection time
+_apply_stubs()
 
 # sqlalchemy.select must return a mock (used in diary_api body).
 # Use setdefault so we never overwrite a real SQLAlchemy already loaded by
 # other test files — replacing the real module would break services that
 # rely on real sqlalchemy.func, select, etc.
 sys.modules.setdefault("sqlalchemy", MagicMock())
+
+
+@pytest.fixture(scope="module", autouse=True)
+def setup_stubs():
+    _apply_stubs()
+    yield
+    _restore_stubs()
+
 
 # ---------------------------------------------------------------------------
 # Actual imports
@@ -394,6 +348,10 @@ from services.reasoning.logic_validation_service import (  # noqa: E402
     Proposition,
 )
 from services.visual_content_generator import VisualContentGenerator  # noqa: E402
+
+# Restore original modules at module level after imports complete so collection-phase poisoning is prevented
+_restore_stubs()
+
 
 # ============================================================
 # Helpers

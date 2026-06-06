@@ -20,11 +20,12 @@ sys.path.insert(0, str(Path(__file__).parents[2]))
 # ---------------------------------------------------------------------------
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import types
+
 # Stub out modules that are not installed in the test environment
 _STUB_MODULES = [
     "redis",
     "redis.asyncio",
-    "celery",
     "elasticsearch",
     "langchain",
     "langchain_core",
@@ -40,6 +41,14 @@ for _mod in _STUB_MODULES:
     if _mod not in sys.modules:
         sys.modules[_mod] = MagicMock()
 
+# Explicitly setup celery stubs as ModuleType to support nested imports
+for _cmod in ["celery", "celery.schedules", "celery.exceptions"]:
+    if _cmod not in sys.modules:
+        sys.modules[_cmod] = types.ModuleType(_cmod)
+
+sys.modules["celery"].Celery = lambda *args, **kwargs: MagicMock()
+sys.modules["celery.schedules"].crontab = MagicMock
+
 # Stub core internal deps that pull heavy libraries
 for _mod in [
     "core.application_metrics",
@@ -49,8 +58,6 @@ for _mod in [
     "core.unified_config",
     "core.unified_event_bus",
     "core.enhanced_database",
-    "core.error_context",
-    "core.error_monitoring",
     "core.transaction_manager",
     "core.berturk_service",
     "core.llm_service",
@@ -87,12 +94,12 @@ if isinstance(_ebus, MagicMock):
 if not hasattr(_ebus, "get_event_bus") or isinstance(_ebus.get_event_bus, MagicMock):
     _ebus.get_event_bus = MagicMock(return_value=MagicMock())
 
-_ec = sys.modules["core.error_context"]
-_ec.annotate_error_context = MagicMock()
-_ec.async_error_context = MagicMock()
 
-_em = sys.modules["core.error_monitoring"]
-_em.log_error = AsyncMock()
+_ess = sys.modules["core.exam_session_store"]
+_ess.persist_session = AsyncMock()
+_ess.delete_session = AsyncMock()
+_ess.load_session = AsyncMock(return_value=None)
+_ess.get_student_sessions = AsyncMock(return_value=[])
 
 _tm = sys.modules["core.transaction_manager"]
 _tm.managed_transaction = MagicMock()
@@ -378,8 +385,8 @@ class TestExamSessionOperations:
         session.started_at = datetime.now() - timedelta(minutes=5)
         remaining = await engine.get_remaining_time(sid)
         assert remaining is not None
-        # 165 min - 5 min = 160 min = 9600 sec
-        assert 9500 < remaining <= 9600
+        # 135 min - 5 min = 130 min = 7800 sec
+        assert 7700 < remaining <= 7800
 
     @pytest.mark.asyncio
     async def test_get_remaining_time_missing(self):

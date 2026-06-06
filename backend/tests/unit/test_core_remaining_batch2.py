@@ -46,7 +46,6 @@ for _mod in _NEED_REAL:
 _STUBS = [
     "redis",
     "redis.asyncio",
-    "celery",
     "elasticsearch",
     "langchain",
     "langchain_core",
@@ -65,6 +64,15 @@ _STUBS = [
 
 for _mod in _STUBS:
     sys.modules.setdefault(_mod, MagicMock())
+
+# Explicitly setup celery stubs as ModuleType to support nested imports
+import types as _types
+for _cmod in ["celery", "celery.schedules", "celery.exceptions"]:
+    if _cmod not in sys.modules:
+        sys.modules[_cmod] = _types.ModuleType(_cmod)
+
+sys.modules["celery"].Celery = lambda *args, **kwargs: MagicMock()
+sys.modules["celery.schedules"].crontab = MagicMock
 
 # Core internal deps strategy:
 #   - Modules our code under test calls with fake attribute names (API_REQUEST, EXAM_STARTED, etc.)
@@ -103,40 +111,10 @@ for _mod in _TRY_REAL:
         except Exception:
             sys.modules[_mod] = MagicMock()
 
-# error_context needs async_error_context that returns an async context manager
+# error_context has no heavy deps — use the real module so combined test runs work.
 import types as _types
 
-_ec_mod = _types.ModuleType("core.error_context")
-
-
-class _FakeAsyncCtx:
-    def __init__(self, *a, **kw):
-        self.tags: dict = {}
-        self._annotations: list = []
-
-    async def __aenter__(self):
-        return self
-
-    async def __aexit__(self, *args):
-        pass
-
-    def add_annotation(self, msg):
-        self._annotations.append(msg)
-
-    def to_dict(self):
-        return {"tags": self.tags, "annotations": self._annotations}
-
-
-def _fake_async_error_context(*a, **kw):
-    return _FakeAsyncCtx(*a, **kw)
-
-
-_ec_mod.async_error_context = _fake_async_error_context  # type: ignore[attr-defined]
-sys.modules["core.error_context"] = _ec_mod
-
-_em_mod = _types.ModuleType("core.error_monitoring")
-_em_mod.log_error = AsyncMock()  # type: ignore[attr-defined]
-sys.modules["core.error_monitoring"] = _em_mod
+# error_monitoring has no heavy deps — use the real module so combined test runs work.
 
 # core.exceptions has no heavy deps — use the real module so combined test runs work.
 # This also ensures all names (AuthorizationError etc.) are available for other test files.

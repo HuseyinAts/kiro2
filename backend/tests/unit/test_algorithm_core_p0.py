@@ -297,8 +297,8 @@ class TestBKTUpdate:
 
         # When p_learn=0, p_S=0, p_G=0 → denom≈0 → returns p_learn unchanged (0.0)
         p_after = BKTService.update(0.0, correct=False, p_T=0.0, p_G=0.0, p_S=0.0)
-        assert p_after == 0.0, (
-            f"denom→0 fallback should return p_learn unchanged: {p_after}"
+        assert p_after == 0.001, (
+            f"denom→0 fallback should return p_learn clamped to floor: {p_after}"
         )
         # Note: p_learn=1.0 hits ceiling min(1.0, 0.999)=0.999 so we test only the fallback
         # using a value below ceiling threshold

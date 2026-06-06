@@ -140,46 +140,48 @@ class StructuredLogger:
             self.logger = self.logger.bind(**self._context)
         return self
 
-    def info(self, message: str, extra: dict[str, Any] | None = None, **kwargs):
+    def info(self, message: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """
         Log info message
 
         Args:
             message: Event name/message
+            *args: Positional formatting arguments
             extra: Backward compatible extra dict
             **kwargs: Additional structured data
         """
         if extra:
             kwargs.update(extra)
-        self.logger.info(message, **kwargs)
+        self.logger.info(message, *args, **kwargs)
 
-    def error(self, message: str, extra: dict[str, Any] | None = None, **kwargs):
+    def error(self, message: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log error message"""
         if extra:
             kwargs.update(extra)
-        self.logger.error(message, **kwargs)
+        self.logger.error(message, *args, **kwargs)
 
-    def warning(self, message: str, extra: dict[str, Any] | None = None, **kwargs):
+    def warning(self, message: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log warning message"""
         if extra:
             kwargs.update(extra)
-        self.logger.warning(message, **kwargs)
+        self.logger.warning(message, *args, **kwargs)
 
-    def debug(self, message: str, extra: dict[str, Any] | None = None, **kwargs):
+    def debug(self, message: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log debug message"""
         if extra:
             kwargs.update(extra)
-        self.logger.debug(message, **kwargs)
+        self.logger.debug(message, *args, **kwargs)
 
-    def critical(self, message: str, extra: dict[str, Any] | None = None, **kwargs):
+    def critical(self, message: str, *args, extra: dict[str, Any] | None = None, **kwargs):
         """Log critical message"""
         if extra:
             kwargs.update(extra)
-        self.logger.critical(message, **kwargs)
+        self.logger.critical(message, *args, **kwargs)
 
     def exception(
         self,
         message: str,
+        *args,
         extra: dict[str, Any] | None = None,
         exc_info: bool = True,
         **kwargs,
@@ -187,7 +189,7 @@ class StructuredLogger:
         """Log exception with traceback"""
         if extra:
             kwargs.update(extra)
-        self.logger.exception(message, exc_info=exc_info, **kwargs)
+        self.logger.exception(message, *args, exc_info=exc_info, **kwargs)
 
     # ==================== CONVENIENCE METHODS ====================
 

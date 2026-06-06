@@ -112,13 +112,13 @@ def calculate_difficulty_score(
 
     # 3. Complex question structure
     complex_count = sum(
-        1 for pattern in COMPLEX_PATTERNS if re.search(pattern, text, re.IGNORECASE)
+        1 for pattern in COMPLEX_PATTERNS if re.search(pattern, text, re.IGNORECASE | re.DOTALL)
     )
     score += complex_count * 0.4
 
     # 4. Easy question indicators
     easy_count = sum(
-        1 for pattern in EASY_PATTERNS if re.search(pattern, text, re.IGNORECASE)
+        1 for pattern in EASY_PATTERNS if re.search(pattern, text, re.IGNORECASE | re.DOTALL)
     )
     score -= easy_count * 0.3
 

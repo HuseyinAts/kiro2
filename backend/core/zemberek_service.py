@@ -18,6 +18,8 @@ from core.structured_logger import get_logger
 
 logger = get_logger(__name__)
 
+from core.turkish_nlp_utils import normalize_tr
+
 
 class MorphemeType(str, Enum):
     """Türkçe morfem tipleri"""
@@ -255,22 +257,8 @@ class ZemberekService:
             str: Normalize edilmiş metin
         """
         try:
-            # Temel normalizasyon
-            normalized = text.lower()
-
-            # Türkçe karakter kontrolü
-            turkish_map = {
-                "I": "ı",
-                "İ": "i",
-                "Ğ": "ğ",
-                "Ü": "ü",
-                "Ş": "ş",
-                "Ö": "ö",
-                "Ç": "ç",
-            }
-
-            for old, new in turkish_map.items():
-                normalized = normalized.replace(old, new)
+            # Temel normalizasyon (Turkish locale-safe)
+            normalized = normalize_tr(text)
 
             # Birden fazla boşluğu tek boşluğa indir
             import re
@@ -281,7 +269,7 @@ class ZemberekService:
 
         except Exception as e:
             logger.error(f"normalization_error: {e}")
-            return text.lower()
+            return normalize_tr(text)
 
     async def sentence_boundary_detection(self, text: str) -> list[str]:
         """
@@ -360,7 +348,7 @@ class ZemberekService:
             token_infos.append(
                 TokenInfo(
                     text=token,
-                    normalized=token.lower(),
+                    normalized=normalize_tr(token),
                     is_word=token.isalpha(),
                     is_punctuation=not token.isalnum(),
                     is_number=token.isdigit(),

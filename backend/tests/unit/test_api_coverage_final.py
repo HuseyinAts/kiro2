@@ -36,12 +36,17 @@ def _stub(name: str) -> types.ModuleType:
 # slowapi stubs (used by learning_path_v2)
 _slowapi = _stub("slowapi")
 _slowapi.Limiter = MagicMock  # type: ignore[attr-defined]
+_slowapi._rate_limit_exceeded_handler = MagicMock  # type: ignore[attr-defined]
 _slowapi_util = _stub("slowapi.util")
 _slowapi_util.get_remote_address = lambda req: "127.0.0.1"  # type: ignore[attr-defined]
+_slowapi_errors = _stub("slowapi.errors")
+class MockRateLimitExceeded(Exception): pass
+_slowapi_errors.RateLimitExceeded = MockRateLimitExceeded  # type: ignore[attr-defined]
 
 # celery stubs
 _celery = _stub("celery")
-_celery.Celery = MagicMock  # type: ignore[attr-defined]
+_celery.Celery = lambda *args, **kwargs: MagicMock()  # type: ignore[attr-defined]
+_stub("celery.schedules")
 
 # redis stubs (for services that import redis directly)
 _redis_mod = _stub("redis")
@@ -1187,6 +1192,14 @@ class TestTeacherServiceRegistration:
 
 class TestDiaryHelpers:
     """Tests for pure helper functions in diary_api."""
+
+    @pytest.fixture(autouse=True)
+    def unpoison_diary_schemas(self):
+        import sys
+        from unittest.mock import Mock, MagicMock
+        if "api.schemas.diary" in sys.modules:
+            if isinstance(sys.modules["api.schemas.diary"], (Mock, MagicMock)):
+                del sys.modules["api.schemas.diary"]
 
     def _make_goal_mock(self):
         from models.diary import GoalStatus

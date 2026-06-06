@@ -385,9 +385,44 @@ class CacheMiddleware(BaseHTTPMiddleware):
 
         # Response body'yi oku (streaming response degil ise)
         try:
-            response_body = b""
+            content_length = response.headers.get("content-length")
+            if content_length:
+                try:
+                    if int(content_length) > 2 * 1024 * 1024:  # 2MB
+                        logger.debug("Response size exceeds 2MB limit, skipping ETag")
+                        return response
+                except ValueError:
+                    pass
+
+            chunks_read = []
+            total_size = 0
+            limit_exceeded = False
+
             async for chunk in response.body_iterator:
-                response_body += chunk
+                chunks_read.append(chunk)
+                total_size += len(chunk)
+                if total_size > 2 * 1024 * 1024:  # 2MB
+                    limit_exceeded = True
+                    break
+
+            if limit_exceeded:
+                logger.debug("Response body size exceeded 2MB while reading, converting to StreamingResponse")
+                from starlette.responses import StreamingResponse
+
+                async def stream_remaining():
+                    for c in chunks_read:
+                        yield c
+                    async for c in response.body_iterator:
+                        yield c
+
+                return StreamingResponse(
+                    stream_remaining(),
+                    status_code=response.status_code,
+                    headers=dict(response.headers),
+                    media_type=response.media_type,
+                )
+
+            response_body = b"".join(chunks_read)
 
             # ETag uret
             etag = generate_etag(response_body)

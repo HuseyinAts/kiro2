@@ -27,9 +27,6 @@ import pytest
 _MOCKED = [
     "fastapi.middleware.base",
     "core.enhanced_authentication",
-    "core.error_context",
-    "core.error_monitoring",
-    "core.exceptions",
     "core.rbac_system",
     "core.response_models",
 ]

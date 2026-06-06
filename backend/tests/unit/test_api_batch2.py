@@ -336,7 +336,7 @@ class TestOsymExamStartEndpoint:
             with pytest.raises(HTTPException) as exc_info:
                 await start_exam("invalid-session", mock_user)
 
-            assert exc_info.value.status_code == 500  # API wraps not found as 500
+            assert exc_info.value.status_code == 404  # API returns 404
             # Encoding issue - skip Turkish character check
             # assert "bulunamadı" in exc_info.value.detail
 
@@ -355,8 +355,8 @@ class TestOsymExamStartEndpoint:
                 await start_exam("session-123", mock_user)
 
             assert (
-                exc_info.value.status_code == 500
-            )  # API wraps permission error as 500
+                exc_info.value.status_code == 403
+            )  # API returns 403
             # Check for error message (handle encoding variations)
             assert (
                 "yok" in exc_info.value.detail or "beklenmeyen" in exc_info.value.detail
@@ -664,6 +664,7 @@ class TestOsymExamCompletionEndpoint:
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.complete_exam = AsyncMock(return_value=mock_performance)
+            mock_engine.get_subject_performance = AsyncMock(return_value=[])
 
             response = await complete_exam("session-123", mock_user)
 
@@ -925,25 +926,25 @@ class TestFSRSAPIImports:
 
     def test_fsrs_router_exists(self):
         """FSRS router exists"""
-        from api.fsrs import router
+        from app.api.fsrs import router
 
         assert router is not None
 
     def test_fsrs_router_prefix(self):
         """FSRS router has correct prefix"""
-        from api.fsrs import router
+        from app.api.fsrs import router
 
         assert router.prefix == "/api/v1/fsrs"
 
     def test_fsrs_router_tags(self):
         """FSRS router has correct tags"""
-        from api.fsrs import router
+        from app.api.fsrs import router
 
         assert "FSRS" in router.tags
 
     def test_fsrs_models_import(self):
         """Import FSRS Pydantic models"""
-        from api.fsrs import (
+        from app.api.fsrs import (
             CreateFlashcardRequest,
             FlashcardResponse,
             ReviewFlashcardRequest,
@@ -963,7 +964,7 @@ class TestFSRSAPIImports:
 
     def test_create_flashcard_request_model(self):
         """CreateFlashcardRequest model works"""
-        from api.fsrs import CreateFlashcardRequest
+        from app.api.fsrs import CreateFlashcardRequest
 
         request = CreateFlashcardRequest(
             subject="Matematik",
@@ -976,7 +977,7 @@ class TestFSRSAPIImports:
 
     def test_review_flashcard_request_model(self):
         """ReviewFlashcardRequest model works"""
-        from api.fsrs import ReviewFlashcardRequest
+        from app.api.fsrs import ReviewFlashcardRequest
 
         request = ReviewFlashcardRequest(grade=3, response_time_ms=5000)
         assert request.grade == 3
@@ -984,14 +985,14 @@ class TestFSRSAPIImports:
 
     def test_review_flashcard_request_validation_min(self):
         """ReviewFlashcardRequest validates ge=1"""
-        from api.fsrs import ReviewFlashcardRequest
+        from app.api.fsrs import ReviewFlashcardRequest
 
         with pytest.raises(Exception):
             ReviewFlashcardRequest(grade=0, response_time_ms=1000)
 
     def test_review_flashcard_request_validation_max(self):
         """ReviewFlashcardRequest validates le=4"""
-        from api.fsrs import ReviewFlashcardRequest
+        from app.api.fsrs import ReviewFlashcardRequest
 
         with pytest.raises(Exception):
             ReviewFlashcardRequest(grade=5, response_time_ms=1000)
@@ -1017,7 +1018,7 @@ class TestFSRSFlashcardEndpoints:
     @pytest.mark.asyncio
     async def test_create_flashcard_success(self, mock_student_user):
         """Create flashcard successfully"""
-        from api.fsrs import CreateFlashcardRequest, create_flashcard
+        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
 
         request = CreateFlashcardRequest(
             subject="Matematik",
@@ -1028,7 +1029,7 @@ class TestFSRSFlashcardEndpoints:
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_card = Mock()
             mock_card.id = "card-123"
             mock_card.subject = "Matematik"
@@ -1048,7 +1049,7 @@ class TestFSRSFlashcardEndpoints:
     @pytest.mark.asyncio
     async def test_create_flashcard_non_student(self, mock_teacher_user):
         """Non-student cannot create flashcard"""
-        from api.fsrs import CreateFlashcardRequest, create_flashcard
+        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
 
         request = CreateFlashcardRequest(
             subject="Matematik", topic="Türev", content="Test", answer="Answer"
@@ -1062,11 +1063,11 @@ class TestFSRSFlashcardEndpoints:
     @pytest.mark.asyncio
     async def test_get_due_flashcards_success(self, mock_student_user):
         """Get due flashcards successfully"""
-        from api.fsrs import get_due_flashcards
+        from app.api.fsrs import get_due_flashcards
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_cards = [
                 {"id": "card-1", "subject": "Math"},
                 {"id": "card-2", "subject": "Turkish"},
@@ -1083,11 +1084,11 @@ class TestFSRSFlashcardEndpoints:
     @pytest.mark.asyncio
     async def test_get_due_flashcards_with_limit(self, mock_student_user):
         """Get due flashcards with custom limit"""
-        from api.fsrs import get_due_flashcards
+        from app.api.fsrs import get_due_flashcards
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_cards = [{"id": f"card-{i}"} for i in range(50)]
             mock_service.get_due_cards = AsyncMock(return_value=mock_cards)
 
@@ -1111,13 +1112,13 @@ class TestFSRSReviewEndpoint:
     @pytest.mark.asyncio
     async def test_review_flashcard_success(self, mock_student_user):
         """Review flashcard successfully"""
-        from api.fsrs import ReviewFlashcardRequest, review_flashcard
+        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
 
         request = ReviewFlashcardRequest(grade=3, response_time_ms=5000)
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_result = {
                 "success": True,
                 "interval_days": 7,
@@ -1135,12 +1136,12 @@ class TestFSRSReviewEndpoint:
     @pytest.mark.asyncio
     async def test_review_flashcard_grade_1(self, mock_student_user):
         """Review flashcard with grade 1 (Again)"""
-        from api.fsrs import ReviewFlashcardRequest, review_flashcard
+        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
 
         request = ReviewFlashcardRequest(grade=1, response_time_ms=3000)
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_result = {"interval_days": 0}
             mock_service.review_flashcard = AsyncMock(return_value=mock_result)
 
@@ -1153,12 +1154,12 @@ class TestFSRSReviewEndpoint:
     @pytest.mark.asyncio
     async def test_review_flashcard_grade_4(self, mock_student_user):
         """Review flashcard with grade 4 (Easy)"""
-        from api.fsrs import ReviewFlashcardRequest, review_flashcard
+        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
 
         request = ReviewFlashcardRequest(grade=4, response_time_ms=2000)
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_result = {"interval_days": 14}
             mock_service.review_flashcard = AsyncMock(return_value=mock_result)
 
@@ -1171,12 +1172,12 @@ class TestFSRSReviewEndpoint:
     @pytest.mark.asyncio
     async def test_review_flashcard_not_found(self, mock_student_user):
         """Review non-existent flashcard"""
-        from api.fsrs import ReviewFlashcardRequest, review_flashcard
+        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
 
         request = ReviewFlashcardRequest(grade=3, response_time_ms=5000)
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_service.review_flashcard = AsyncMock(
                 side_effect=ValueError("Card not found")
             )
@@ -1202,11 +1203,11 @@ class TestFSRSRecommendationsEndpoint:
     @pytest.mark.asyncio
     async def test_get_study_recommendations_success(self, mock_student_user):
         """Get study recommendations successfully"""
-        from api.fsrs import get_study_recommendations
+        from app.api.fsrs import get_study_recommendations
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_recommendations = {
                 "due_cards_count": 15,
                 "upcoming_cards_count": 25,
@@ -1232,11 +1233,11 @@ class TestFSRSRecommendationsEndpoint:
     @pytest.mark.asyncio
     async def test_get_study_recommendations_ramadan(self, mock_student_user):
         """Get study recommendations during Ramadan"""
-        from api.fsrs import get_study_recommendations
+        from app.api.fsrs import get_study_recommendations
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_recommendations = {
                 "cultural_period": "ramadan",
                 "period_advice": "Sahur sonrası çalışın",
@@ -1264,11 +1265,11 @@ class TestFSRSStatisticsEndpoint:
     @pytest.mark.asyncio
     async def test_get_student_statistics_success(self, mock_student_user):
         """Get student statistics successfully"""
-        from api.fsrs import get_student_statistics
+        from app.api.fsrs import get_student_statistics
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_stats = {
                 "total_cards": 100,
                 "cards_reviewed_today": 15,
@@ -1296,11 +1297,11 @@ class TestFSRSStudySessionEndpoints:
     @pytest.mark.asyncio
     async def test_start_study_session_success(self, mock_student_user):
         """Start study session successfully"""
-        from api.fsrs import start_study_session
+        from app.api.fsrs import start_study_session
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_service.start_study_session = AsyncMock(return_value="session-123")
 
             response = await start_study_session(
@@ -1313,11 +1314,11 @@ class TestFSRSStudySessionEndpoints:
     @pytest.mark.asyncio
     async def test_start_exam_prep_session(self, mock_student_user):
         """Start exam preparation session"""
-        from api.fsrs import start_study_session
+        from app.api.fsrs import start_study_session
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_service.start_study_session = AsyncMock(return_value="session-456")
 
             response = await start_study_session(
@@ -1329,11 +1330,11 @@ class TestFSRSStudySessionEndpoints:
     @pytest.mark.asyncio
     async def test_end_study_session_success(self, mock_student_user):
         """End study session successfully"""
-        from api.fsrs import end_study_session
+        from app.api.fsrs import end_study_session
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_summary = {
                 "session_id": "session-123",
                 "duration_minutes": 45,
@@ -1352,11 +1353,11 @@ class TestFSRSStudySessionEndpoints:
     @pytest.mark.asyncio
     async def test_end_study_session_not_found(self, mock_student_user):
         """End non-existent study session"""
-        from api.fsrs import end_study_session
+        from app.api.fsrs import end_study_session
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_service.end_study_session = AsyncMock(
                 side_effect=ValueError("Session not found")
             )
@@ -1373,7 +1374,7 @@ class TestFSRSCulturalPeriodsEndpoint:
     @pytest.mark.asyncio
     async def test_get_cultural_periods_info_success(self):
         """Get cultural periods info successfully"""
-        from api.fsrs import get_cultural_periods_info
+        from app.api.fsrs import get_cultural_periods_info
 
         response = await get_cultural_periods_info()
 
@@ -1385,7 +1386,7 @@ class TestFSRSCulturalPeriodsEndpoint:
     @pytest.mark.asyncio
     async def test_cultural_periods_ramadan_info(self):
         """Cultural periods contains Ramadan information"""
-        from api.fsrs import get_cultural_periods_info
+        from app.api.fsrs import get_cultural_periods_info
 
         response = await get_cultural_periods_info()
 
@@ -1396,7 +1397,7 @@ class TestFSRSCulturalPeriodsEndpoint:
     @pytest.mark.asyncio
     async def test_cultural_periods_exam_season_info(self):
         """Cultural periods contains exam season information"""
-        from api.fsrs import get_cultural_periods_info
+        from app.api.fsrs import get_cultural_periods_info
 
         response = await get_cultural_periods_info()
 
@@ -1411,9 +1412,9 @@ class TestFSRSHealthCheckEndpoint:
     @pytest.mark.asyncio
     async def test_fsrs_health_check_success(self):
         """FSRS health check succeeds"""
-        from api.fsrs import fsrs_health_check
+        from app.api.fsrs import fsrs_health_check
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_algorithm = Mock()
             mock_algorithm.turkish_params = [0.1] * 17
             mock_algorithm.cultural_adjustments = {"ramadan": 0.75}
@@ -1428,9 +1429,9 @@ class TestFSRSHealthCheckEndpoint:
     @pytest.mark.asyncio
     async def test_fsrs_health_check_unhealthy(self):
         """FSRS health check detects unhealthy state"""
-        from api.fsrs import fsrs_health_check
+        from app.api.fsrs import fsrs_health_check
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_algorithm = Mock()
             mock_algorithm.turkish_params = [0.1] * 10  # Wrong count
             mock_algorithm.cultural_adjustments = {}
@@ -2730,6 +2731,7 @@ class TestOsymExamAPIEdgeCases:
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.complete_exam = AsyncMock(return_value=mock_performance)
+            mock_engine.get_subject_performance = AsyncMock(return_value=[])
 
             response = await complete_exam("session-123", mock_user)
 
@@ -2760,6 +2762,7 @@ class TestOsymExamAPIEdgeCases:
 
             mock_engine.get_session_data = AsyncMock(return_value=mock_session)
             mock_engine.complete_exam = AsyncMock(return_value=mock_performance)
+            mock_engine.get_subject_performance = AsyncMock(return_value=[])
 
             response = await complete_exam("session-123", mock_user)
 
@@ -2836,7 +2839,7 @@ class TestFSRSAPIEdgeCases:
 
     def test_flashcard_response_model(self):
         """FlashcardResponse model structure"""
-        from api.fsrs import FlashcardResponse
+        from app.api.fsrs import FlashcardResponse
 
         response = FlashcardResponse(
             id="card-1",
@@ -2858,7 +2861,7 @@ class TestFSRSAPIEdgeCases:
 
     def test_study_session_response_model(self):
         """StudySessionResponse model structure"""
-        from api.fsrs import StudySessionResponse
+        from app.api.fsrs import StudySessionResponse
 
         response = StudySessionResponse(
             session_id="session-1",
@@ -2873,7 +2876,7 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_create_flashcard_with_image(self, mock_student):
         """Create flashcard with image content"""
-        from api.fsrs import CreateFlashcardRequest, create_flashcard
+        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
 
         request = CreateFlashcardRequest(
             subject="Fizik",
@@ -2884,7 +2887,7 @@ class TestFSRSAPIEdgeCases:
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_card = Mock()
             mock_card.id = "card-img"
             mock_card.subject = "Fizik"
@@ -2903,12 +2906,12 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_review_flashcard_grade_2(self, mock_student):
         """Review with grade 2 (Hard)"""
-        from api.fsrs import ReviewFlashcardRequest, review_flashcard
+        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
 
         request = ReviewFlashcardRequest(grade=2, response_time_ms=8000)
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_result = {"interval_days": 3}
             mock_service.review_flashcard = AsyncMock(return_value=mock_result)
 
@@ -2921,11 +2924,11 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_get_due_flashcards_limit_validation(self, mock_student):
         """Get due flashcards respects limit"""
-        from api.fsrs import get_due_flashcards
+        from app.api.fsrs import get_due_flashcards
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_cards = [{"id": f"card-{i}"} for i in range(100)]
             mock_service.get_due_cards = AsyncMock(return_value=mock_cards[:100])
 
@@ -2938,11 +2941,11 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_get_study_recommendations_exam_season(self, mock_student):
         """Get recommendations during exam season"""
-        from api.fsrs import get_study_recommendations
+        from app.api.fsrs import get_study_recommendations
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_recommendations = {
                 "cultural_period": "exam_season",
                 "period_advice": "Sınavlara hazırlanın",
@@ -2959,11 +2962,11 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_get_study_recommendations_summer_break(self, mock_student):
         """Get recommendations during summer break"""
-        from api.fsrs import get_study_recommendations
+        from app.api.fsrs import get_study_recommendations
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_recommendations = {
                 "cultural_period": "summer_break",
                 "period_advice": "Düzenli çalışın",
@@ -2980,11 +2983,11 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_start_review_session(self, mock_student):
         """Start review-type study session"""
-        from api.fsrs import start_study_session
+        from app.api.fsrs import start_study_session
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_service.start_study_session = AsyncMock(return_value="session-review")
 
             response = await start_study_session(
@@ -2996,11 +2999,11 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_end_study_session_with_zero_cards(self, mock_student):
         """End study session with no cards reviewed"""
-        from api.fsrs import end_study_session
+        from app.api.fsrs import end_study_session
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_summary = {
                 "session_id": "session-123",
                 "duration_minutes": 5,
@@ -3016,11 +3019,11 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_get_student_statistics_new_user(self, mock_student):
         """Get statistics for new user with no data"""
-        from api.fsrs import get_student_statistics
+        from app.api.fsrs import get_student_statistics
 
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_stats = {
                 "total_cards": 0,
                 "cards_reviewed_today": 0,
@@ -3036,7 +3039,7 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_cultural_periods_religious_holiday(self):
         """Check religious holiday period info"""
-        from api.fsrs import get_cultural_periods_info
+        from app.api.fsrs import get_cultural_periods_info
 
         response = await get_cultural_periods_info()
 
@@ -3047,9 +3050,9 @@ class TestFSRSAPIEdgeCases:
     @pytest.mark.asyncio
     async def test_fsrs_health_check_algorithm_params_count(self):
         """FSRS health check validates parameter count"""
-        from api.fsrs import fsrs_health_check
+        from app.api.fsrs import fsrs_health_check
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_algorithm = Mock()
             mock_algorithm.turkish_params = [0.1] * 17
             mock_algorithm.cultural_adjustments = {"ramadan": 0.75, "exam_season": 1.35}
@@ -3845,19 +3848,19 @@ class TestFSRSComprehensive:
 
     def test_import_fsrs_service(self):
         """Test FSRS service import"""
-        from api.fsrs import fsrs_service
+        from app.api.fsrs import fsrs_service
 
         assert fsrs_service is not None
 
     def test_import_logger(self):
         """Test logger import"""
-        from api.fsrs import logger
+        from app.api.fsrs import logger
 
         assert logger is not None
 
     def test_cultural_factors_info(self):
         """Test cultural factors in periods info"""
-        from api.fsrs import get_cultural_periods_info
+        from app.api.fsrs import get_cultural_periods_info
 
         response = asyncio.run(get_cultural_periods_info())
 
@@ -3868,7 +3871,7 @@ class TestFSRSComprehensive:
 
     def test_algorithm_info(self):
         """Test algorithm info in cultural periods"""
-        from api.fsrs import get_cultural_periods_info
+        from app.api.fsrs import get_cultural_periods_info
 
         response = asyncio.run(get_cultural_periods_info())
 
@@ -3880,7 +3883,7 @@ class TestFSRSComprehensive:
     @pytest.mark.asyncio
     async def test_create_multiple_flashcards(self, mock_student):
         """Test creating multiple flashcards"""
-        from api.fsrs import CreateFlashcardRequest, create_flashcard
+        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
 
         mock_db = Mock()
 
@@ -3894,7 +3897,7 @@ class TestFSRSComprehensive:
             for i in range(5)
         ]
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             for i, request in enumerate(requests):
                 mock_card = Mock()
                 mock_card.id = f"card-{i}"
@@ -3913,14 +3916,14 @@ class TestFSRSComprehensive:
     @pytest.mark.asyncio
     async def test_review_multiple_grades(self, mock_student):
         """Test reviewing with all different grades"""
-        from api.fsrs import ReviewFlashcardRequest, review_flashcard
+        from app.api.fsrs import ReviewFlashcardRequest, review_flashcard
 
         mock_db = Mock()
 
         for grade in [1, 2, 3, 4]:
             request = ReviewFlashcardRequest(grade=grade, response_time_ms=5000)
 
-            with patch("api.fsrs.fsrs_service") as mock_service:
+            with patch("app.api.fsrs.fsrs_service") as mock_service:
                 mock_result = {"interval_days": grade * 2}
                 mock_service.review_flashcard = AsyncMock(return_value=mock_result)
 
@@ -3932,12 +3935,12 @@ class TestFSRSComprehensive:
     @pytest.mark.asyncio
     async def test_study_session_lifecycle(self, mock_student):
         """Test complete study session lifecycle"""
-        from api.fsrs import end_study_session, start_study_session
+        from app.api.fsrs import end_study_session, start_study_session
 
         mock_db = Mock()
 
         # Start session
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_service.start_study_session = AsyncMock(
                 return_value="session-lifecycle"
             )
@@ -3950,7 +3953,7 @@ class TestFSRSComprehensive:
             session_id = start_response["data"]["session_id"]
 
         # End session
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_summary = {
                 "session_id": session_id,
                 "duration_minutes": 30,
@@ -4381,7 +4384,7 @@ class TestAllAPIsErrorHandling:
     @pytest.mark.asyncio
     async def test_fsrs_database_connection_error(self):
         """Test FSRS API database connection error"""
-        from api.fsrs import CreateFlashcardRequest, create_flashcard
+        from app.api.fsrs import CreateFlashcardRequest, create_flashcard
 
         request = CreateFlashcardRequest(
             subject="Test", topic="Test", content="Test", answer="Test"
@@ -4391,7 +4394,7 @@ class TestAllAPIsErrorHandling:
         mock_user.role.value = "student"
         mock_db = Mock()
 
-        with patch("api.fsrs.fsrs_service") as mock_service:
+        with patch("app.api.fsrs.fsrs_service") as mock_service:
             mock_service.create_flashcard = AsyncMock(
                 side_effect=Exception("Database connection failed")
             )
@@ -4473,14 +4476,14 @@ class TestAPIInputValidation:
 
     def test_fsrs_grade_min_value(self):
         """FSRS grade minimum is 1"""
-        from api.fsrs import ReviewFlashcardRequest
+        from app.api.fsrs import ReviewFlashcardRequest
 
         with pytest.raises(Exception):
             ReviewFlashcardRequest(grade=0, response_time_ms=1000)
 
     def test_fsrs_grade_max_value(self):
         """FSRS grade maximum is 4"""
-        from api.fsrs import ReviewFlashcardRequest
+        from app.api.fsrs import ReviewFlashcardRequest
 
         with pytest.raises(Exception):
             ReviewFlashcardRequest(grade=5, response_time_ms=1000)
@@ -4603,7 +4606,7 @@ class TestAPIInputValidation:
 
     def test_flashcard_content_not_empty(self):
         """Flashcard content cannot be empty"""
-        from api.fsrs import CreateFlashcardRequest
+        from app.api.fsrs import CreateFlashcardRequest
 
         request = CreateFlashcardRequest(
             subject="Math", topic="Calc", content="Question", answer="Answer"
@@ -4612,7 +4615,7 @@ class TestAPIInputValidation:
 
     def test_flashcard_answer_not_empty(self):
         """Flashcard answer cannot be empty"""
-        from api.fsrs import CreateFlashcardRequest
+        from app.api.fsrs import CreateFlashcardRequest
 
         request = CreateFlashcardRequest(
             subject="Math", topic="Calc", content="Question", answer="Answer"
@@ -4621,7 +4624,7 @@ class TestAPIInputValidation:
 
     def test_response_time_positive(self):
         """Response time must be positive"""
-        from api.fsrs import ReviewFlashcardRequest
+        from app.api.fsrs import ReviewFlashcardRequest
 
         request = ReviewFlashcardRequest(grade=3, response_time_ms=5000)
         assert request.response_time_ms > 0
@@ -5102,7 +5105,7 @@ class TestAPIPerformanceScenarios:
 
     def test_validation_performance(self):
         """Input validation is fast"""
-        from api.fsrs import ReviewFlashcardRequest
+        from app.api.fsrs import ReviewFlashcardRequest
 
         start = datetime.now()
         for i in range(1000):
@@ -5552,7 +5555,7 @@ class TestAPIModelSchemaValidation:
 
     def test_flashcard_response_required(self):
         """FlashcardResponse requires fields"""
-        from api.fsrs import FlashcardResponse
+        from app.api.fsrs import FlashcardResponse
 
         r = FlashcardResponse(
             id="c1",
@@ -5601,7 +5604,7 @@ class TestAPIModelSchemaValidation:
 
     def test_review_flashcard_optional_time(self):
         """ReviewFlashcardRequest response_time_ms optional"""
-        from api.fsrs import ReviewFlashcardRequest
+        from app.api.fsrs import ReviewFlashcardRequest
 
         r = ReviewFlashcardRequest(grade=3, response_time_ms=5000)
         assert r.grade

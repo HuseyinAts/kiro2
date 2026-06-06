@@ -177,6 +177,16 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     await db_manager.close()
     logger.info("✅ Database closed")
+
+    try:
+        from core.cache.cache_manager import cache_manager
+
+        if cache_manager is not None and hasattr(cache_manager, "close"):
+            await cache_manager.close()
+            logger.info("✅ Cache manager closed")
+    except Exception as e:
+        logger.debug(f"Cache manager close: {e}")
+
     logger.info("✅ KIRO2 Backend Shut Down Successfully!")
 
 

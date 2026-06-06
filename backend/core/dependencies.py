@@ -11,7 +11,7 @@ from typing import Any
 import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
@@ -86,11 +86,10 @@ class AuthenticatedUser(BaseModel):
         masked_email = "***@***" if self.email else None
         return f"AuthenticatedUser(id={self.id}, username={self.username}, role={self.role.value}, email={masked_email})"
 
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False  # Keep enum objects
-        frozen = True  # Security: Prevent privilege escalation
+    model_config = ConfigDict(
+        use_enum_values=False,  # Keep enum objects
+        frozen=True,  # Security: Prevent privilege escalation
+    )
 
 
 # ============================================================================

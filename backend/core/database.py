@@ -87,6 +87,7 @@ class DatabaseManager:
         self.engine: AsyncEngine | None = None
         self.async_session_maker: async_sessionmaker[AsyncSession] | None = None
         self._initialized: bool = False
+        self._loop: asyncio.AbstractEventLoop | None = None
 
     async def initialize(self) -> None:
         """
@@ -101,9 +102,22 @@ class DatabaseManager:
 
         Requirements: REQ-1.2
         """
-        if self._initialized:
-            logger.warning("Database already initialized")
+        import asyncio
+        try:
+            current_loop = asyncio.get_running_loop()
+        except RuntimeError:
+            current_loop = None
+
+        if self._initialized and self._loop == current_loop:
             return
+
+        if self._initialized:
+            logger.info("Event loop changed, re-initializing DatabaseManager")
+            self.engine = None
+            self.async_session_maker = None
+            self._initialized = False
+
+        self._loop = current_loop
 
         # TESTING MODE: Skip initialization if TESTING=true (smoke tests)
         import os
@@ -202,6 +216,7 @@ class DatabaseManager:
                 await self._test_connection()
 
             self._initialized = True
+            self._loop = current_loop
             logger.info("Database connection initialized successfully with asyncpg")
 
         except Exception as e:

@@ -139,10 +139,14 @@ class DuplicateDetectionService:
     def _embed_text(self, text: str) -> list[float]:
         """Metin için embedding oluştur."""
         if self._embedding_model is None:
-            # Fallback hash-based embedding
+            # Fallback hash-based embedding (Turkish locale-safe & correct dimension)
             import hashlib
-            hash_bytes = hashlib.sha256(text.encode()).digest()
-            return [float(b) / 255.0 for b in hash_bytes[:128]]
+            import random
+            from core.config import EmbeddingConfig
+            dim = EmbeddingConfig.get_model_dimension()
+            seed_int = int(hashlib.sha256(text.encode()).hexdigest(), 16)
+            rng = random.Random(seed_int)
+            return [rng.random() for _ in range(dim)]
 
         embedding = self._embedding_model.encode(text)
         return embedding.tolist()

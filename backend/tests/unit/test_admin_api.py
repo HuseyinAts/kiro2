@@ -664,17 +664,17 @@ class TestAddQuestion:
     @pytest.mark.asyncio
     async def test_add_question_success(self, admin_client: AsyncClient):
         """Valid question data returns 200 with success flag."""
-        new_question = {
-            "id": "newq1",
-            "soru_metni": "Soru?",
-            "konu": "matematik",
-            "zorluk_seviyesi": "ORTA",
-            "sinav_tipi": "TYT",
-            "dogru_cevap": "B",
-            "secenekler": {"A": "1", "B": "2"},
-        }
-        with patch("api.admin.admin_servisi") as mock_service:
-            mock_service.soru_ekle = AsyncMock(return_value=new_question)
+        new_question = MagicMock()
+        new_question.id = "newq1"
+        new_question.question_text = "Soru?"
+        new_question.exam_type = "TYT"
+        new_question.subject_area = "matematik"
+        new_question.difficulty_level = MagicMock()
+        new_question.difficulty_level.value = "ORTA"
+        new_question.created_at = None
+
+        with patch("services.soru_bankasi_service.soru_bankasi_servisi.soru_ekle") as mock_soru_ekle:
+            mock_soru_ekle.return_value = new_question
 
             response = await admin_client.post(
                 "/api/v1/admin/content/questions",
@@ -698,8 +698,8 @@ class TestAddQuestion:
         self, admin_client: AsyncClient
     ):
         """Service raises ValueError → endpoint returns 400."""
-        with patch("api.admin.admin_servisi") as mock_service:
-            mock_service.soru_ekle = AsyncMock(side_effect=ValueError("Alan eksik"))
+        with patch("services.soru_bankasi_service.soru_bankasi_servisi.soru_ekle") as mock_soru_ekle:
+            mock_soru_ekle.side_effect = ValueError("Alan eksik")
 
             response = await admin_client.post(
                 "/api/v1/admin/content/questions",
@@ -813,8 +813,8 @@ class TestDeleteQuestion:
                 "/api/v1/admin/content/questions/missing"
             )
 
-        # TODO: change to 404 once the bare-except bug is fixed in soru_sil
-        assert response.status_code == 500
+        # The bare-except bug is fixed in soru_sil, now returns 404
+        assert response.status_code == 404
 
     @pytest.mark.asyncio
     async def test_delete_question_returns_403_for_student(

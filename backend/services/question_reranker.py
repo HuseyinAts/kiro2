@@ -9,6 +9,8 @@ Based on DEEP_RESEARCH_FINDINGS_2024.md:
 
 import re
 
+from core.turkish_nlp_utils import normalize_tr
+
 
 class KeywordQuestionReranker:
     """
@@ -76,8 +78,8 @@ class KeywordQuestionReranker:
         4. Remove stopwords
         5. Keep words >= 3 chars
         """
-        # Lowercase and remove punctuation
-        text = text.lower()
+        # Lowercase (Turkish locale-safe) and remove punctuation
+        text = normalize_tr(text)
         text = re.sub(r"[^\w\sğüşıöçĞÜŞİÖÇ]", " ", text)
 
         # Split and filter
@@ -138,7 +140,7 @@ class KeywordQuestionReranker:
         Returns: 0.0 to 1.0
         """
         topic_keywords = self.extract_keywords(topic)
-        question_text_lower = question_text.lower()
+        question_text_lower = normalize_tr(question_text)
 
         if not topic_keywords:
             return 0.5
