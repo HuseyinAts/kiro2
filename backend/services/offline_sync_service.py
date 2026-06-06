@@ -250,6 +250,35 @@ async def process_sync_results(
             result_count=len(results),
         )
 
+    # Batch fetch all potential questions and FSRS cards in one go to prevent N+1 queries
+    question_ids = [item["question_id"] for item in results if "question_id" in item]
+    
+    questions_map = {}
+    if question_ids:
+        q_result = await db.execute(
+            select(QuestionBankItem).where(
+                and_(
+                    QuestionBankItem.id.in_(question_ids),
+                    QuestionBankItem.is_active == True,  # noqa: E712
+                )
+            )
+        )
+        questions_map = {q.id: q for q in q_result.scalars().all()}
+
+    cards = []
+    if question_ids:
+        from sqlalchemy import or_
+        clauses = [FSRSCard.front_text.contains(qid) for qid in question_ids]
+        card_result = await db.execute(
+            select(FSRSCard).where(
+                and_(
+                    FSRSCard.student_id == student_id,
+                    or_(*clauses)
+                )
+            )
+        )
+        cards = card_result.scalars().all()
+
     for item in results:
         try:
             question_id = item["question_id"]
@@ -267,15 +296,7 @@ async def process_sync_results(
                 continue
 
             # Check question exists
-            q_result = await db.execute(
-                select(QuestionBankItem).where(
-                    and_(
-                        QuestionBankItem.id == question_id,
-                        QuestionBankItem.is_active == True,  # noqa: E712
-                    )
-                )
-            )
-            question = q_result.scalar_one_or_none()
+            question = questions_map.get(question_id)
             if question is None:
                 logger.warning(
                     f"Question not found or inactive: {question_id}",
@@ -284,18 +305,8 @@ async def process_sync_results(
                 failed += 1
                 continue
 
-            # Update FSRS card if one exists for this student and matches topic
-            card_result = await db.execute(
-                select(FSRSCard)
-                .where(
-                    and_(
-                        FSRSCard.student_id == student_id,
-                        FSRSCard.front_text.contains(question_id),
-                    )
-                )
-                .limit(1)
-            )
-            card = card_result.scalar_one_or_none()
+            # Find matching FSRS card in pre-fetched list
+            card = next((c for c in cards if question_id in c.front_text), None)
             if card is not None:
                 _apply_fsrs_grade(
                     card=card, is_correct=is_correct, time_seconds=time_seconds

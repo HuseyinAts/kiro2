@@ -116,9 +116,22 @@ class TestAssessmentEventWiring:
     async def test_multi_subject_upsert(self):
         """Multiple subjects should each get ability + BKT rows."""
         from unittest.mock import MagicMock
+        from types import SimpleNamespace
 
         db = AsyncMock()
-        db.execute = AsyncMock(return_value=MagicMock())
+        mock_topic_result = MagicMock()
+        mock_topic_result.all.return_value = [
+            SimpleNamespace(id="topic-1", subject_area="MATEMATIK"),
+            SimpleNamespace(id="topic-2", subject_area="FIZIK"),
+            SimpleNamespace(id="topic-3", subject_area="KIMYA"),
+        ]
+        db.execute = AsyncMock(
+            side_effect=[
+                mock_topic_result,
+                MagicMock(),
+                MagicMock(),
+            ]
+        )
         db.commit = AsyncMock()
 
         report = await LearningEventService.on_assessment_completed(
@@ -133,8 +146,8 @@ class TestAssessmentEventWiring:
 
         assert report["abilities"] == 3
         assert report["bkt_states"] == 3
-        # 3 subjects * 2 upserts = 6 execute calls
-        assert db.execute.call_count == 6
+        # 1 topic fetch + 2 bulk upserts = 3 execute calls
+        assert db.execute.call_count == 3
 
     @pytest.mark.asyncio
     async def test_theta_to_p_learn_mapping(self):

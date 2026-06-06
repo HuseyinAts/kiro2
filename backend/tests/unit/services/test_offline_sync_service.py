@@ -15,6 +15,16 @@ class _ScalarResult:
     def scalar_one_or_none(self):
         return self._value
 
+    def scalars(self):
+        return self
+
+    def all(self):
+        if self._value is None:
+            return []
+        if isinstance(self._value, list):
+            return self._value
+        return [self._value]
+
 
 class _MappingsResult:
     def __init__(self, row):
@@ -33,8 +43,8 @@ async def test_sync_results_s1_happy_path_accepts_package():
     db.execute = AsyncMock(
         side_effect=[
             _MappingsResult({"student_id": "stu-1", "consumed_at": None}),
-            _ScalarResult(SimpleNamespace(id="q1")),
-            _ScalarResult(None),
+            _ScalarResult([SimpleNamespace(id="q1")]),
+            _ScalarResult([]),
             _ScalarResult(None),
         ]
     )
@@ -65,6 +75,8 @@ async def test_sync_results_s2_happy_path_invalid_answer_counted_as_failed():
     db.execute = AsyncMock(
         side_effect=[
             _MappingsResult({"student_id": "stu-1", "consumed_at": None}),
+            _ScalarResult([SimpleNamespace(id="q1")]),
+            _ScalarResult([]),
             _ScalarResult(None),
         ]
     )
@@ -95,7 +107,8 @@ async def test_sync_results_s3_happy_path_unknown_question_counted_as_failed():
     db.execute = AsyncMock(
         side_effect=[
             _MappingsResult({"student_id": "stu-1", "consumed_at": None}),
-            _ScalarResult(None),
+            _ScalarResult([]),
+            _ScalarResult([]),
             _ScalarResult(None),
         ]
     )

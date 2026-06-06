@@ -185,6 +185,8 @@ class LearningEventService:
 
         try:
             from models.gamification import BKTState, StudentAbility
+            from models.question_bank import TopicHierarchy
+            from sqlalchemy import and_
 
             SUBJECT_ID_MAP = {
                 "matematik": 1,
@@ -200,7 +202,26 @@ class LearningEventService:
                 "din": 11,
             }
 
-            from sqlalchemy import text as _sql_text
+            # Batch fetch active topic_ids for all subjects at once
+            subjects_upper = [s.upper() for s in subjects.keys()]
+            
+            topic_rows = await db.execute(
+                select(TopicHierarchy.id, TopicHierarchy.subject_area).where(
+                    and_(
+                        TopicHierarchy.subject_area.in_(subjects_upper),
+                        TopicHierarchy.is_active == True
+                    )
+                )
+            )
+            
+            from collections import defaultdict
+            topics_by_subject = defaultdict(list)
+            for row in topic_rows.all():
+                subj = row.subject_area.lower() if row.subject_area else ""
+                topics_by_subject[subj].append(str(row.id))
+
+            abilities_to_upsert = []
+            bkt_states_to_upsert = []
 
             for subj_name, data in subjects.items():
                 theta = data.get("theta", 0.0)
@@ -209,54 +230,18 @@ class LearningEventService:
                 if subj_id is None:
                     continue
 
-                # Upsert StudentAbility
-                stmt = (
-                    pg_insert(StudentAbility)
-                    .values(
-                        student_id=student_id,
-                        subject_id=subj_id,
-                        theta=theta,
-                        theta_se=se,
-                    )
-                    .on_conflict_do_update(
-                        index_elements=["student_id", "subject_id"],
-                        set_={"theta": theta, "theta_se": se},
-                    )
-                )
-                await db.execute(stmt)
-                report["abilities"] += 1
+                abilities_to_upsert.append({
+                    "student_id": student_id,
+                    "subject_id": subj_id,
+                    "theta": theta,
+                    "theta_se": se,
+                })
 
-                # Init BKT state with p_learn derived from theta.
-                # S179 fix (B-P0-30): write seed per real topic UUID, not the
-                # subject-name placeholder. The quiz/IRT pipeline reads
-                # BKTState WHERE topic_id = primary_topic_id (UUID), so
-                # writing topic_id='matematik' here orphans the seed —
-                # placement signal is silently lost.
                 p_learn = max(0.05, min(0.95, (theta + 3) / 6))
                 mastery_status = "learning" if p_learn < 0.80 else "mastered"
 
-                # Resolve real topic UUIDs for this subject.
-                topic_rows = await db.execute(
-                    _sql_text(
-                        """
-                        SELECT id::text AS topic_id
-                        FROM topic_hierarchy
-                        WHERE subject_area = :subj
-                          AND is_active = TRUE
-                        """
-                    ),
-                    {"subj": subj_name.upper()},
-                )
-                topic_ids = [row.topic_id for row in topic_rows.fetchall()]
-
+                topic_ids = topics_by_subject.get(subj_name.lower(), [])
                 if not topic_ids:
-                    # S180 (2026-05-22 audit gap): pre-fix legacy code wrote
-                    # `topic_id = subject_name.lower()` (e.g. "matematik") as
-                    # a fallback. That's a string, but quiz BKT lookup keys
-                    # on UUID — every subsequent answer would write a fresh
-                    # row instead of updating the seed = silent placement
-                    # signal loss. Now: log + SKIP this subject. Surfacing
-                    # the gap is better than corrupting state.
                     logger.warning(
                         "Placement seed skipped — no topics for subject=%s "
                         "in topic_hierarchy (student=%s). "
@@ -268,28 +253,38 @@ class LearningEventService:
                     continue
 
                 for topic_id in topic_ids:
-                    stmt_bkt = (
-                        pg_insert(BKTState)
-                        .values(
-                            student_id=student_id,
-                            topic_id=topic_id,
-                            p_learn=round(p_learn, 4),
-                            p_transit=0.10,
-                            p_guess=0.20,
-                            p_slip=0.10,
-                            mastery_status=mastery_status,
-                        )
-                        .on_conflict_do_update(
-                            index_elements=["student_id", "topic_id"],
-                            # Don't overwrite progress earned after placement.
-                            # Only seed if p_learn never been updated (i.e.
-                            # placement->quiz transition).
-                            set_={"p_learn": round(p_learn, 4)},
-                            where=BKTState.p_learn == 0.10,  # default seed
-                        )
-                    )
-                    await db.execute(stmt_bkt)
-                    report["bkt_states"] += 1
+                    bkt_states_to_upsert.append({
+                        "student_id": student_id,
+                        "topic_id": topic_id,
+                        "p_learn": round(p_learn, 4),
+                        "p_transit": 0.10,
+                        "p_guess": 0.20,
+                        "p_slip": 0.10,
+                        "mastery_status": mastery_status,
+                    })
+
+            # Execute bulk upserts
+            if abilities_to_upsert:
+                insert_stmt = pg_insert(StudentAbility)
+                stmt = insert_stmt.values(abilities_to_upsert).on_conflict_do_update(
+                    index_elements=["student_id", "subject_id"],
+                    set_={
+                        "theta": insert_stmt.excluded.theta,
+                        "theta_se": insert_stmt.excluded.theta_se,
+                    },
+                )
+                await db.execute(stmt)
+                report["abilities"] = len(abilities_to_upsert)
+
+            if bkt_states_to_upsert:
+                insert_bkt_stmt = pg_insert(BKTState)
+                stmt_bkt = insert_bkt_stmt.values(bkt_states_to_upsert).on_conflict_do_update(
+                    index_elements=["student_id", "topic_id"],
+                    set_={"p_learn": insert_bkt_stmt.excluded.p_learn},
+                    where=BKTState.p_learn == 0.10,
+                )
+                await db.execute(stmt_bkt)
+                report["bkt_states"] = len(bkt_states_to_upsert)
 
             await db.commit()
         except Exception as e:
@@ -543,17 +538,19 @@ class GamificationDBService:
             ("consistent_30", current_streak >= 30),
         ]
 
-        for badge_id, criteria_met in badge_checks:
-            if not criteria_met:
-                continue
-            # Check if already earned
-            existing = await db.execute(
-                select(UserBadge).where(
+        candidate_badge_ids = [badge_id for badge_id, criteria_met in badge_checks if criteria_met]
+        earned_badge_ids = set()
+        if candidate_badge_ids:
+            existing_badges = await db.execute(
+                select(UserBadge.badge_id).where(
                     UserBadge.user_id == student_id,
-                    UserBadge.badge_id == badge_id,
+                    UserBadge.badge_id.in_(candidate_badge_ids),
                 )
             )
-            if existing.scalar_one_or_none():
+            earned_badge_ids = set(existing_badges.scalars().all())
+
+        for badge_id in candidate_badge_ids:
+            if badge_id in earned_badge_ids:
                 continue
             # Award the badge
             new_badge = UserBadge(

@@ -251,7 +251,19 @@ class TestOnAssessmentCompleted:
     @pytest.mark.asyncio
     async def test_creates_abilities_and_bkt(self, mock_db):
         """Should upsert StudentAbility and BKTState per subject."""
-        mock_db.execute = AsyncMock(return_value=MagicMock())
+        from types import SimpleNamespace
+        mock_topic_result = MagicMock()
+        mock_topic_result.all.return_value = [
+            SimpleNamespace(id="topic-1", subject_area="MATEMATIK"),
+            SimpleNamespace(id="topic-2", subject_area="FIZIK"),
+        ]
+        mock_db.execute = AsyncMock(
+            side_effect=[
+                mock_topic_result,
+                MagicMock(),
+                MagicMock(),
+            ]
+        )
 
         report = await LearningEventService.on_assessment_completed(
             student_id="s1",
@@ -264,13 +276,24 @@ class TestOnAssessmentCompleted:
 
         assert report["abilities"] == 2
         assert report["bkt_states"] == 2
-        # 2 subjects * 2 upserts (ability + bkt) = 4 execute calls + 1 commit
-        assert mock_db.execute.call_count == 4
+        # 1 topic fetch + 2 bulk upserts = 3 execute calls
+        assert mock_db.execute.call_count == 3
 
     @pytest.mark.asyncio
     async def test_skips_unknown_subjects(self, mock_db):
         """Subjects not in SUBJECT_ID_MAP should be skipped."""
-        mock_db.execute = AsyncMock(return_value=MagicMock())
+        from types import SimpleNamespace
+        mock_topic_result = MagicMock()
+        mock_topic_result.all.return_value = [
+            SimpleNamespace(id="topic-1", subject_area="MATEMATIK"),
+        ]
+        mock_db.execute = AsyncMock(
+            side_effect=[
+                mock_topic_result,
+                MagicMock(),
+                MagicMock(),
+            ]
+        )
 
         report = await LearningEventService.on_assessment_completed(
             student_id="s1",
