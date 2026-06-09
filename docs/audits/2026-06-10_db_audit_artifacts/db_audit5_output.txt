@@ -1,0 +1,101 @@
+KIRO2 ROOT-CAUSE FORENSICS - 2026-06-09T23:22:13.113772
+
+======================================================================
+A. is_calibrated=TRUE (82,530) — what set it? (bootstrap vs real vs synthetic)
+======================================================================
+is_calibrated TRUE total: 82530
+of those: has calib_history with se=0 & iter=0 (BOOTSTRAP signature): 0
+of those: has calib_history with se>0 (REAL EM signature): 360
+of those: NO calib_history row at all (pure flag set, no record): 82170
+of those: has ANY real learning_event (cat/exam) — i.e. response-backed: 196
+irt_method distribution for is_calibrated=TRUE:
+   bootstrap_difficulty_prior | 82517
+    | 13
+irt_calibrated (the SEPARATE 4PL flag) TRUE count: 0
+irt_calibration_history total rows + se=0/iter=0 share:
+   1080 | 0
+
+======================================================================
+B. student_answers (161,910) — origin fingerprints
+======================================================================
+sample student_answers.question_id (10):
+   
+   0034e9d3-fa7f-5558-b009-4ceb67a95325
+   003cd77b-38bd-5765-ba4f-1b1bb68065da
+   007b224f-d80e-5863-9604-c4bb86988e13
+   0087a629-2819-5b93-94ea-56634865b753
+   00891495-f805-5a3f-92f9-dc8d6b79dc60
+   00b9caec-9095-553d-87af-8d8b8b4de8c0
+   00bba86f-855f-5635-bf90-f22ea3458817
+   00c6848b-dbde-5000-911a-f730c2473ebb
+   00cc4834-152d-5b25-b27d-a8619ba94e6e
+sample question_bank.id (5):
+   00000e5e-add3-533c-b489-c96001add984
+   00004128-53a2-5c8e-add8-5b538b37e519
+   0001b030-5b89-595d-a1b3-0831ec1ddc7f
+   0001b886-0c15-5659-842e-a7ecc89b57ee
+   0002205f-26cf-569b-8884-c4a3af608eb8
+distinct exam_session_id: 159
+exam_session_id resolves to exam_sessions?: 159
+those exam_sessions -> distinct student/user (try student_id then user_id): 4
+answered_at by DAY (top 15 — bulk = load-test runs):
+   2026-06-09 | 161658
+   2026-06-02 | 70
+   2026-03-08 | 63
+   2026-04-11 | 23
+   2026-05-17 | 19
+   2026-03-09 | 18
+   2026-04-23 | 13
+   2026-03-11 | 12
+   2026-04-12 | 11
+   2026-04-10 | 10
+   2026-03-20 | 3
+   2026-05-19 | 2
+   2026-05-27 | 2
+   2026-03-07 | 2
+   2026-06-07 | 2
+response_time_seconds stats (min/max/avg/stddev):
+   0.0 | 15.5 | 15.5 | 0.6
+selected_answer distribution:
+   A | 32473
+   D | 32448
+   E | 32412
+   C | 32304
+   B | 32272
+    | 1
+answer_changes / time_to_first_answer stats:
+   0.20 | 0.00 | 133995
+rows per exam_session (min/max/avg):
+   1 | 3937 | 1018.3
+question_id format: how many are 36-char UUID vs other:
+   249 | 161661
+
+======================================================================
+C. exam_sessions (323) — are they real or test?
+======================================================================
+exam_sessions columns:
+   id
+   student_id
+   exam_type
+   exam_name
+   total_questions
+   duration_minutes
+   status
+   current_question_index
+   started_at
+   completed_at
+   time_spent_seconds
+   total_correct
+   total_wrong
+   total_empty
+   raw_score
+   scaled_score
+   percentile
+   estimated_ability
+   ability_confidence
+   created_at
+   updated_at
+
+======================================================================
+FORENSICS COMPLETE 2026-06-09T23:22:14.223811
+======================================================================

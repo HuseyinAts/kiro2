@@ -1,0 +1,30 @@
+KIRO2 LOGICAL ORPHAN CHECK (FK-less links) - 2026-06-09T23:13:31.358293
+child.col -> parent.col                                          nonnull   orphans  orphan%  resolved
+------------------------------------------------------------------------------------------------------
+kiro2_learning_events.user_id -> users.id                            287         0     0.0%       287  OK
+kiro2_learning_events.question_id -> question_bank.id                287         0     0.0%       287  OK
+kiro2_learning_events.question_id -> questions.id                    287       287   100.0%         0  <-- ALL ORPHAN
+kiro2_learning_events.session_id -> kiro2_cat_sessions.id            142         0     0.0%       142  OK
+user_item_fsrs.user_id -> users.id                                   147         0     0.0%       147  OK
+user_item_fsrs.question_id -> question_bank.id                       147         2     1.4%       145  <-- partial
+user_item_fsrs.question_id -> questions.id                           147       147   100.0%         0  <-- ALL ORPHAN
+fsrs_cards.student_id -> users.id                                    116         0     0.0%       116  OK
+bkt_states.student_id -> users.id                                     26         0     0.0%        26  OK
+bkt_states.topic_id -> topic_hierarchy.id                             26         0     0.0%        26  OK
+bkt_states.topic_id -> knowledge_components.kc_id                     26         0     0.0%        26  OK
+user_theta.user_id -> users.id                                       103         0     0.0%       103  OK
+zpd_history.student_id -> users.id                                   156         0     0.0%       156  OK
+zpd_history.topic_id -> topic_hierarchy.id                           156         0     0.0%       156  OK
+zpd_history.topic_id -> knowledge_components.kc_id                   156         0     0.0%       156  OK
+student_abilities.student_id -> users.id                             631         0     0.0%       631  OK
+student_abilities.subject_id -> subjects.id                          631         0     0.0%       631  OK
+daily_plans.user_id -> users.id                                      157         0     0.0%       157  OK
+chat_sessions.user_id -> users.id                                     64         0     0.0%        64  OK
+xp_transactions.topic_id -> topic_hierarchy.id                         0         0     0.0%         0  OK
+student_answers.question_id -> question_bank.id                   161910    161663    99.8%       247  <-- partial
+exam_questions.question_id -> question_bank.id                     28508      1300     4.6%     27208  <-- partial
+question_kc_mapping.question_id -> question_bank.id               168283         0     0.0%    168283  OK
+question_math.question_id -> question_bank.id                      37088         0     0.0%     37088  OK
+question_option_rationales.question_id -> question_bank.id        486270         0     0.0%    486270  OK
+
+NOTE: a link resolving 0 orphans does NOT mean an FK exists — only that current values happen to match.
