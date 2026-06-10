@@ -25,8 +25,11 @@
 - **R3:** `question_bank.embedding` HNSW index (`idx_qb_embedding_hnsw`, vector_cosine_ops, CONCURRENTLY, valid) + migration `b2f1a9c7d3e4` (down_revision=5aabf9a6c658). Semantik arama artık ANN index'li.
 - Detay + geri-alma: `docs/audits/2026-06-10_full_db_audit.md` §J. Script'ler: `docs/audits/2026-06-10_db_audit_artifacts/`.
 
+- **R4:** exam_sessions 323→**0** + exam_questions 28,508→**0** (test temizliği, CASCADE; backup'lar `exam_*_backup_20260610`).
+- **R5:** FK `student_answers_question_id_fkey` (question_id→question_bank.id) eklendi + migration `c3d2e1f0a9b8`. Artık junk insert DB seviyesinde engellenir.
+
 ### Sonraki Adımlar
-1. **P0:** aktif havuz inceleme stratejisi (98,361 unverified/pending yargı pipeline'ı).
-2. **P1:** kritik FK ekleme (student_answers boş → FK güvenli); exam_sessions/exam_questions test artığı temizliği.
-3. **P1/P2:** 3 backup tablosunu (sa + iscalib + R1/R2) güven periyodu sonrası DROP; gerçek IRT kalibrasyon (yanıt büyüdükçe `irt_calibration_runner`).
-4. **Not:** alembic head `5aabf9a6c658` git'te untracked — yeni HNSW migration'ı commit'lemeden önce o dosyayı da commit'le (zincir tutarlılığı).
+1. **P0:** aktif havuz inceleme — judge pipeline (98,361 unverified/pending). Bütçe+API key gerektirir (~$5-7K, 27-40s); strateji belgelenmedi (atlandı). Pilot (1K, ~$60) ile başlanmalı.
+2. **P1/P2:** 5 yeni backup tablosunu güven periyodu sonrası DROP; diğer kritik FK'ler; gerçek IRT kalibrasyon (yanıt büyüdükçe).
+3. **P2:** 161 boş + 35 eski yedek tablo; json→jsonb (9 qb kolonu); tz'siz timestamp; 7 dup index.
+4. **Not:** alembic zincir `5aabf9a6c658(head,untracked) → b2f1a9c7d3e4(HNSW) → c3d2e1f0a9b8(FK)`. 5aabf9a6c658'i commit'le (zincir tutarlılığı).

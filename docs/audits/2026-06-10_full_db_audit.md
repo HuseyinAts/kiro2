@@ -235,6 +235,8 @@ Tümü backup'lı + atomik (eng.begin), dry-run → apply → verify; salt veri 
 | R1 | `student_answers` load-test temizliği (P1: 4 test hesabı — test@/admin@/ogrenci@/beta01@kiro2.com) | 161,910 → **0** | `student_answers_backup_20260610` (161,910) |
 | R2 | `is_calibrated` bootstrap-flag reset (guard: yanıt yok → FALSE) | TRUE 82,530 → **196** | `question_bank_iscalib_reset_backup_20260610` (82,334) |
 | R3 | `question_bank.embedding` HNSW index (vector_cosine_ops, CONCURRENTLY) | ANN index YOK → `idx_qb_embedding_hnsw` (valid) | — (DROP INDEX ile geri al) + migration `b2f1a9c7d3e4` |
+| R4 | exam_sessions/exam_questions test temizliği (323 test session → CASCADE) | exam_sessions 323→**0**, exam_questions 28,508→**0** | `exam_sessions_backup_20260610` (323) + `exam_questions_backup_20260610` (28,508) |
+| R5 | FK `student_answers.question_id → question_bank.id` (enforcement gap kapatma) | FK yok → `student_answers_question_id_fkey` | DROP CONSTRAINT + migration `c3d2e1f0a9b8` |
 
 **Doğrulama:** R2 sonrası kalan 196 TRUE'nun hepsi gerçek `kiro2_learning_events` destekli (0 desteksiz). `irt_calibration_history` SE=0&iter=0 = 0 → geçmiş silinmedi.
 
