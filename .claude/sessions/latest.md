@@ -19,7 +19,12 @@
 - Alembic head `5aabf9a6c658_fix_schema_drift_concurrently.py` git'te **untracked** (DB head sürüm kontrolünde değil).
 - Kökte paralel audit artefaktları (`ENTERPRISE_*_AUDIT.md`, `_universal_db_auditor_results.json`, `brutal_db_*.py`) — phantom önlemek için bizim raporla karşılaştır.
 
+### Remediation UYGULANDI (2026-06-10, backup'lı, atomik, salt-veri)
+- **R1:** `student_answers` 161,910 → **0** (4 test hesabı; backup `student_answers_backup_20260610`).
+- **R2:** `is_calibrated` TRUE 82,530 → **196** (bootstrap-flag reset; backup `question_bank_iscalib_reset_backup_20260610` 82,334). Kalan 196 hepsi learning_event destekli ama irt_method hâlâ bootstrap_difficulty_prior (gerçek EM değil).
+- Detay + geri-alma SQL: `docs/audits/2026-06-10_full_db_audit.md` §J. Remediation script'leri repo kökünde (`db_sa_cleanup.py`, `db_reset_apply.py`, `db_verify.py`).
+
 ### Sonraki Adımlar
-1. **P0:** `irt_reset_bootstrap_flags.py --dry-run` → uygula (is_calibrated temizliği); CAT önceliklendirmesini gözden geçir.
-2. **P0:** `student_answers` load-test artığını ayıkla (`answered_at::date='2026-06-09'` + 4 test-user); load-test'i prod DB'den ayır; is_correct grading bağla.
-3. **P1:** embedding HNSW index; 161 boş + 35 yedek + 2 ölü tablo temizliği; kritik FK'ler (önce student_answers temizliği).
+1. **P1:** embedding HNSW index (`vector_cosine_ops`, CONCURRENTLY) — semantik arama hızlı kazanım.
+2. **P0:** aktif havuz inceleme stratejisi (98,361 unverified/pending yargı pipeline'ı).
+3. **P1:** kritik FK ekleme (student_answers boş → FK güvenli); exam_sessions/exam_questions test artığı; 2 yeni backup tablosunu güven periyodu sonrası DROP.

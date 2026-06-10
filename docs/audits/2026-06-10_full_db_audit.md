@@ -224,4 +224,26 @@ Newline/tab hariç control char: **179 satır**; ayrıca metinde **NUL byte** i�
 
 ---
 
-*Oluşturma: 2026-06-10. Ham çıktılar + script'ler: `docs/audits/2026-06-10_db_audit_artifacts/`. Tüm ölçümler salt-okunur, evren-level.*
+---
+
+## J. Remediation Log (2026-06-10, aynı gün uygulandı)
+
+Tümü backup'lı + atomik (eng.begin), dry-run → apply → verify; salt veri değişikliği (kod/git değil).
+
+| # | Aksiyon | Önce → Sonra | Backup tablosu |
+|---|---|---|---|
+| R1 | `student_answers` load-test temizliği (P1: 4 test hesabı — test@/admin@/ogrenci@/beta01@kiro2.com) | 161,910 → **0** | `student_answers_backup_20260610` (161,910) |
+| R2 | `is_calibrated` bootstrap-flag reset (guard: yanıt yok → FALSE) | TRUE 82,530 → **196** | `question_bank_iscalib_reset_backup_20260610` (82,334) |
+
+**Doğrulama:** R2 sonrası kalan 196 TRUE'nun hepsi gerçek `kiro2_learning_events` destekli (0 desteksiz). `irt_calibration_history` SE=0&iter=0 = 0 → geçmiş silinmedi.
+
+**Artık bilinen / dürüstlük notu:**
+- Kalan 196'nın `irt_method` hâlâ `bootstrap_difficulty_prior` → gerçek EM-kalibre değil; `irt_calibrated`=0. Gerçek kalibrasyon ≥50 yanıt + `irt_calibration_runner` gerektirir (şu an ~287 learning_event).
+- CAT motoru (`cat_session.py`) artık bootstrap-prior'ları "kalibre" diye öne almaz; kalanları Öncelik-3 default-param ile ele alır (doğru davranış).
+- Geri alma: her iki backup tablosundan tek SQL ile (script footer'larında). Güven periyodu sonrası `DROP` edilebilir.
+
+**Bekleyen P0/P1:** aktif havuz inceleme (98,361 unverified/pending), embedding HNSW index, FK ekleme (student_answers boş artık — FK eklemek güvenli), exam_sessions/exam_questions test artığı temizliği.
+
+---
+
+*Oluşturma: 2026-06-10. Ham çıktılar + script'ler: `docs/audits/2026-06-10_db_audit_artifacts/`. Tüm ölçümler salt-okunur, evren-level. Remediation script'leri: `docs/audits/2026-06-10_db_audit_artifacts/` (`db_sa_cleanup.py`, `db_reset_apply.py`, `db_verify.py`, `db_sa_profile.py`, `db_reset_dryrun.py`).*

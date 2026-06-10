@@ -1,0 +1,52 @@
+student_answers CLEANUP PROFILE - 2026-06-09T23:49:52.250013
+
+================================================================
+1. DEPENDENCY: any FK referencing student_answers (child tables)?
+================================================================
+FKs with parent=student_answers:
+(bos = student_answers'a bagli child tablo yok -> satir silmek guvenli)
+
+================================================================
+2. SCOPE: total + classification
+================================================================
+total rows: 161910
+resolves to question_bank: 247
+orphan (not in qb): 161663
+is_correct NOT NULL (graded): 145
+KEEP-candidate = resolves to qb AND is_correct NOT NULL: 145
+answered 2026-06-09 (today bulk): 161658
+answered NOT 2026-06-09 (scattered): 252
+
+================================================================
+3. WHO: users behind these answers (via exam_sessions.student_id)
+================================================================
+distinct users + role + count + date range:
+   0d3b011a-8be9-49cb-9a87-f8a8317ccc3d | STUDENT | 161739 | 2026-03-08 | 2026-06-09
+   88663876-cba3-53bc-9b03-85fc4dfd138e | STUDENT | 91 | 2026-03-09 | 2026-06-02
+   de384ad3-93f6-4ff4-8efb-d430bdc55733 | ADMIN | 59 | 2026-03-07 | 2026-03-08
+   4ce67404-4a40-46b2-91ba-9659cc3f0e12 | STUDENT | 21 | 2026-05-17 | 2026-05-19
+user email/username if columns exist:
+   de384ad3-93f6-4ff4-8efb-d430bdc55733 | ADMIN | admin@kiro2.com
+   0d3b011a-8be9-49cb-9a87-f8a8317ccc3d | STUDENT | test@kiro2.com
+   88663876-cba3-53bc-9b03-85fc4dfd138e | STUDENT | ogrenci@kiro2.com
+   4ce67404-4a40-46b2-91ba-9659cc3f0e12 | STUDENT | beta01@kiro2.com
+
+================================================================
+4. exam_sessions tied to these answers (clean candidates too?)
+================================================================
+distinct sessions referenced: 159
+those sessions: status + exam_name sample:
+   in_progress | 61
+   abandoned | 57
+   completed | 41
+exam_sessions total rows: 323
+
+================================================================
+5. proposed DELETE predicate counts (pick one)
+================================================================
+P1: DELETE all student_answers: 161910
+P2: DELETE where answered_at::date='2026-06-09': 161658
+P3: DELETE orphan question_id (not in qb): 161663
+P3 KEEP (resolves to qb): 247
+
+NOT: P3 (orphan sil) en guvenli — gercek soruya baglanani korur. P1 hepsini siler.
