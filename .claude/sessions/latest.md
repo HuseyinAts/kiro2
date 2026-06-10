@@ -22,9 +22,11 @@
 ### Remediation UYGULANDI (2026-06-10, backup'lı, atomik, salt-veri)
 - **R1:** `student_answers` 161,910 → **0** (4 test hesabı; backup `student_answers_backup_20260610`).
 - **R2:** `is_calibrated` TRUE 82,530 → **196** (bootstrap-flag reset; backup `question_bank_iscalib_reset_backup_20260610` 82,334). Kalan 196 hepsi learning_event destekli ama irt_method hâlâ bootstrap_difficulty_prior (gerçek EM değil).
-- Detay + geri-alma SQL: `docs/audits/2026-06-10_full_db_audit.md` §J. Remediation script'leri repo kökünde (`db_sa_cleanup.py`, `db_reset_apply.py`, `db_verify.py`).
+- **R3:** `question_bank.embedding` HNSW index (`idx_qb_embedding_hnsw`, vector_cosine_ops, CONCURRENTLY, valid) + migration `b2f1a9c7d3e4` (down_revision=5aabf9a6c658). Semantik arama artık ANN index'li.
+- Detay + geri-alma: `docs/audits/2026-06-10_full_db_audit.md` §J. Script'ler: `docs/audits/2026-06-10_db_audit_artifacts/`.
 
 ### Sonraki Adımlar
-1. **P1:** embedding HNSW index (`vector_cosine_ops`, CONCURRENTLY) — semantik arama hızlı kazanım.
-2. **P0:** aktif havuz inceleme stratejisi (98,361 unverified/pending yargı pipeline'ı).
-3. **P1:** kritik FK ekleme (student_answers boş → FK güvenli); exam_sessions/exam_questions test artığı; 2 yeni backup tablosunu güven periyodu sonrası DROP.
+1. **P0:** aktif havuz inceleme stratejisi (98,361 unverified/pending yargı pipeline'ı).
+2. **P1:** kritik FK ekleme (student_answers boş → FK güvenli); exam_sessions/exam_questions test artığı temizliği.
+3. **P1/P2:** 3 backup tablosunu (sa + iscalib + R1/R2) güven periyodu sonrası DROP; gerçek IRT kalibrasyon (yanıt büyüdükçe `irt_calibration_runner`).
+4. **Not:** alembic head `5aabf9a6c658` git'te untracked — yeni HNSW migration'ı commit'lemeden önce o dosyayı da commit'le (zincir tutarlılığı).

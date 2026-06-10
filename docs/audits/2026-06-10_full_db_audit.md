@@ -234,6 +234,7 @@ Tümü backup'lı + atomik (eng.begin), dry-run → apply → verify; salt veri 
 |---|---|---|---|
 | R1 | `student_answers` load-test temizliği (P1: 4 test hesabı — test@/admin@/ogrenci@/beta01@kiro2.com) | 161,910 → **0** | `student_answers_backup_20260610` (161,910) |
 | R2 | `is_calibrated` bootstrap-flag reset (guard: yanıt yok → FALSE) | TRUE 82,530 → **196** | `question_bank_iscalib_reset_backup_20260610` (82,334) |
+| R3 | `question_bank.embedding` HNSW index (vector_cosine_ops, CONCURRENTLY) | ANN index YOK → `idx_qb_embedding_hnsw` (valid) | — (DROP INDEX ile geri al) + migration `b2f1a9c7d3e4` |
 
 **Doğrulama:** R2 sonrası kalan 196 TRUE'nun hepsi gerçek `kiro2_learning_events` destekli (0 desteksiz). `irt_calibration_history` SE=0&iter=0 = 0 → geçmiş silinmedi.
 
@@ -242,7 +243,7 @@ Tümü backup'lı + atomik (eng.begin), dry-run → apply → verify; salt veri 
 - CAT motoru (`cat_session.py`) artık bootstrap-prior'ları "kalibre" diye öne almaz; kalanları Öncelik-3 default-param ile ele alır (doğru davranış).
 - Geri alma: her iki backup tablosundan tek SQL ile (script footer'larında). Güven periyodu sonrası `DROP` edilebilir.
 
-**Bekleyen P0/P1:** aktif havuz inceleme (98,361 unverified/pending), embedding HNSW index, FK ekleme (student_answers boş artık — FK eklemek güvenli), exam_sessions/exam_questions test artığı temizliği.
+**Bekleyen P0/P1:** aktif havuz inceleme (98,361 unverified/pending), FK ekleme (student_answers boş artık — FK eklemek güvenli), exam_sessions/exam_questions test artığı temizliği, 35 yedek + 161 boş tablo gözden geçir, gerçek IRT kalibrasyon (yanıt verisi büyüdükçe).
 
 ---
 
