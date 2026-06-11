@@ -16,6 +16,8 @@ from transformers import pipeline
 
 logger = logging.getLogger(__name__)
 
+from core.turkish_nlp_utils import normalize_tr
+
 
 class TextComplexityLevel(Enum):
     """Text complexity levels for Turkish education"""
@@ -331,7 +333,7 @@ class EnhancedTurkishNLP:
         text = re.sub(r"\s+", " ", text.strip())
 
         # Split into words
-        words = text.lower().split()
+        words = normalize_tr(text).split()
 
         # Filter out very short or long words
         words = [w for w in words if 2 <= len(w) <= 25]
@@ -370,16 +372,7 @@ class EnhancedTurkishNLP:
     def _count_syllables_turkish(self, word: str) -> int:
         """Count syllables in Turkish word"""
         vowels = "aeıioöuü"
-        syllables = 0
-        prev_was_vowel = False
-
-        for char in word.lower():
-            is_vowel = char in vowels
-            if is_vowel and not prev_was_vowel:
-                syllables += 1
-            prev_was_vowel = is_vowel
-
-        return max(1, syllables)
+        return max(1, sum(1 for char in normalize_tr(word) if char in vowels))
 
     async def _analyze_vocabulary_difficulty(self, words: list[str]) -> float:
         """Analyze vocabulary difficulty"""
@@ -435,21 +428,22 @@ class EnhancedTurkishNLP:
             # Count complex structures
             complexity = 0
 
+            sentence_norm = normalize_tr(sentence)
             # Subordinate clauses
             subordinates = len(
-                re.findall(r"\b(ki|çünkü|eğer|ama|ancak|fakat)\b", sentence.lower())
+                re.findall(r"\b(ki|çünkü|eğer|ama|ancak|fakat)\b", sentence_norm)
             )
             complexity += subordinates * 0.2
 
             # Passive voice indicators
             passive_indicators = len(
-                re.findall(r"\w+(ıl|il|ul|ül)(di|dı)", sentence.lower())
+                re.findall(r"\w+(ıl|il|ul|ül)(di|dı)", sentence_norm)
             )
             complexity += passive_indicators * 0.1
 
             # Complex verb forms
             complex_verbs = len(
-                re.findall(r"\w+(miş|mış|muş|müş|acak|ecek)", sentence.lower())
+                re.findall(r"\w+(miş|mış|muş|müş|acak|ecek)", sentence_norm)
             )
             complexity += complex_verbs * 0.1
 
@@ -518,7 +512,7 @@ class EnhancedTurkishNLP:
         foreign_count = 0
         for word in words:
             for pattern in foreign_patterns:
-                if re.search(pattern, word.lower()):
+                if re.search(pattern, normalize_tr(word)):
                     foreign_count += 1
                     break
 
@@ -531,7 +525,7 @@ class EnhancedTurkishNLP:
         technical_count = 0
 
         for subject, pattern in self.technical_terms_patterns.items():
-            matches = len(re.findall(pattern, text.lower()))
+            matches = len(re.findall(pattern, normalize_tr(text)))
             technical_count += matches
 
         word_count = len(self._tokenize_turkish(text))
@@ -540,7 +534,7 @@ class EnhancedTurkishNLP:
     async def _extract_key_concepts(self, text: str) -> list[str]:
         """Extract key educational concepts from text"""
         concepts = []
-        text_lower = text.lower()
+        text_lower = normalize_tr(text)
 
         # Find concepts in our database
         for concept, entity in self.concept_database.items():
@@ -663,8 +657,9 @@ class EnhancedTurkishNLP:
         }
 
         for word in words:
-            if word.lower() in word_alternatives:
-                alternatives[word] = word_alternatives[word.lower()]
+            word_norm = normalize_tr(word)
+            if word_norm in word_alternatives:
+                alternatives[word] = word_alternatives[word_norm]
 
         return alternatives
 

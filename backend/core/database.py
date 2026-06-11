@@ -24,7 +24,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
+from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool, StaticPool
 
 from .config import settings
 
@@ -87,6 +87,7 @@ class DatabaseManager:
         self.engine: AsyncEngine | None = None
         self.async_session_maker: async_sessionmaker[AsyncSession] | None = None
         self._initialized: bool = False
+        self._loop: asyncio.AbstractEventLoop | None = None
 
     async def initialize(self) -> None:
         """
@@ -101,9 +102,22 @@ class DatabaseManager:
 
         Requirements: REQ-1.2
         """
-        if self._initialized:
-            logger.warning("Database already initialized")
+        import asyncio
+        try:
+            current_loop = asyncio.get_running_loop()
+        except RuntimeError:
+            current_loop = None
+
+        if self._initialized and self._loop == current_loop:
             return
+
+        if self._initialized:
+            logger.info("Event loop changed, re-initializing DatabaseManager")
+            self.engine = None
+            self.async_session_maker = None
+            self._initialized = False
+
+        self._loop = current_loop
 
         # TESTING MODE: Skip initialization if TESTING=true (smoke tests)
         import os
@@ -115,7 +129,7 @@ class DatabaseManager:
 
         try:
             # Ensure asyncpg driver is used for PostgreSQL
-            database_url = settings.database_url
+            database_url = os.getenv("DATABASE_URL") or settings.database_url
             if "postgresql://" in database_url:
                 # Replace psycopg2 with asyncpg driver
                 database_url = database_url.replace(
@@ -140,22 +154,26 @@ class DatabaseManager:
                     "command_timeout": 60.0,  # Command timeout (seconds)
                     "timeout": 30.0,  # Connection timeout (seconds)
                 }
+            elif "sqlite" in database_url:
+                connect_args = {
+                    "check_same_thread": False
+                }
 
-            # Pool settings only for PostgreSQL (SQLite doesn't support pooling)
+            # Pool settings only for PostgreSQL and SQLite
             engine_args = {
                 "echo": settings.database_echo,
                 "connect_args": connect_args,
             }
 
-            if "postgresql" in database_url:
-                # PERFORMANCE OPTIMIZED: Pool settings for high concurrency (100K+ users)
-                # FIX: Updated defaults to match config.py - pool_size=50, max_overflow=100
-                pool_size = getattr(
-                    settings, "db_pool_size", 50
-                )  # Use config or default (50)
-                max_overflow = getattr(
-                    settings, "db_max_overflow", 100
-                )  # Use config or default (100)
+            if "sqlite" in database_url:
+                # SQLite: Use StaticPool to prevent losing in-memory database across connection closes
+                engine_args["poolclass"] = StaticPool
+                logger.info("SQLite connection configured with StaticPool and check_same_thread=False")
+            elif "postgresql" in database_url:
+                # SRE forced settings for 1000 concurrent user I/O (optimised for max_connections=200 limit)
+                pool_size = 20
+                max_overflow = 20
+                pool_recycle = 1800
 
                 engine_args.update(
                     {
@@ -163,16 +181,15 @@ class DatabaseManager:
                         "pool_pre_ping": True,  # Connection health check before each use
                         "pool_size": pool_size,  # Base pool size
                         "max_overflow": max_overflow,  # Additional connections during peak
-                        "pool_recycle": 600,  # Recycle at PostgreSQL default idle timeout (600s)
-                        # 300s was < PostgreSQL idle timeout → "server closed connection" errors
+                        "pool_recycle": pool_recycle,  # Connection recycle time
                         "pool_timeout": 30,  # Wait up to 30s for connection from pool
                     }
                 )
                 logger.info(
-                    f"PostgreSQL asyncpg pool configured: size={pool_size}, overflow={max_overflow}"
+                    f"PostgreSQL asyncpg pool configured (SRE optimized): size={pool_size}, overflow={max_overflow}, recycle={pool_recycle}"
                 )
             else:
-                # SQLite: Use NullPool (no pooling for file-based DB)
+                # Fallback: Use NullPool
                 engine_args["poolclass"] = NullPool
 
             self.engine = create_async_engine(database_url, **engine_args)
@@ -188,6 +205,27 @@ class DatabaseManager:
                 """Log connection closures"""
                 logger.debug("Database connection closed")
 
+            # SRE Slow Query Telemetry: Log queries taking > 500ms at WARNING level
+            @event.listens_for(self.engine.sync_engine, "before_cursor_execute")
+            def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+                import time
+                if context is not None:
+                    context._query_start_time = time.perf_counter()
+
+            @event.listens_for(self.engine.sync_engine, "after_cursor_execute")
+            def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+                import time
+                if context is not None:
+                    start_time = getattr(context, "_query_start_time", None)
+                    if start_time is not None:
+                        total_time = (time.perf_counter() - start_time) * 1000.0  # in ms
+                        if total_time > 500.0:
+                            logger.warning(
+                                f"[SLOW QUERY WARNING] Execution time: {total_time:.2f}ms\n"
+                                f"SQL: {statement}\n"
+                                f"Parameters: {parameters}"
+                            )
+
             # Session maker oluştur
             self.async_session_maker = async_sessionmaker(
                 bind=self.engine,
@@ -202,6 +240,7 @@ class DatabaseManager:
                 await self._test_connection()
 
             self._initialized = True
+            self._loop = current_loop
             logger.info("Database connection initialized successfully with asyncpg")
 
         except Exception as e:

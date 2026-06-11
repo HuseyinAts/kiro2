@@ -1,0 +1,1468 @@
+{
+  "timestamp": "2026-06-08T03:35:52.362029",
+  "tables": {
+    "api_keys": {
+      "total_rows": 5,
+      "null_counts": {
+        "revoked_at": 5,
+        "last_used_at": 5,
+        "revoke_reason": 5,
+        "last_used_ip": 5
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "student_question_flags": {
+      "total_rows": 70,
+      "null_counts": {
+        "resolved_at": 11,
+        "note": 55,
+        "resolution": 11,
+        "resolved_by": 11
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "questions": {
+      "total_rows": 36381,
+      "null_counts": {
+        "visual_content": 17,
+        "source_page": 17,
+        "question_image_url": 36381,
+        "option_e": 19,
+        "subtopic": 36364,
+        "created_by": 36381
+      },
+      "empty_whitespace_strings": {
+        "option_a": 12,
+        "option_b": 12,
+        "option_c": 12,
+        "option_d": 16
+      },
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "refresh_tokens": {
+      "total_rows": 4308,
+      "null_counts": {
+        "revoked_at": 4306,
+        "last_used_at": 4306,
+        "device_id": 4308,
+        "device_name": 4308,
+        "ip_address": 4306,
+        "user_agent": 4306,
+        "revoke_reason": 4306
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "student_profiles": {
+      "total_rows": 73,
+      "null_counts": {
+        "learning_style": 73,
+        "study_hours_per_day": 73,
+        "vark_profile": 73,
+        "zpd_range": 73,
+        "fsrs_parameters": 73,
+        "school_name": 73,
+        "target_university": 73,
+        "target_department": 73,
+        "hedef_sinav": 59,
+        "preferred_study_time": 73,
+        "veli_email": 73
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "users": {
+      "total_rows": 75,
+      "null_counts": {
+        "backup_codes_hashed": 75,
+        "premium_expires_at": 75,
+        "birth_date": 75,
+        "last_level_up_at": 75,
+        "last_login": 61,
+        "secret_2fa": 75,
+        "phone": 75
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "weekly_progress": {
+      "total_rows": 2,
+      "null_counts": {
+        "daily_data": 2
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "exam_sessions": {
+      "total_rows": 246,
+      "null_counts": {
+        "started_at": 40,
+        "completed_at": 165,
+        "scaled_score": 165,
+        "percentile": 246
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "student_answers": {
+      "total_rows": 252,
+      "null_counts": {
+        "is_correct": 107,
+        "confidence_level": 252,
+        "selected_answer": 1,
+        "error_type": 252
+      },
+      "empty_whitespace_strings": {
+        "question_id": 3
+      },
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "learning_paths": {
+      "total_rows": 57,
+      "null_counts": {
+        "target_date": 57,
+        "reasoning": 57
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "realm_progress": {
+      "total_rows": 2,
+      "null_counts": {
+        "completed_at": 2
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "xp_transactions": {
+      "total_rows": 164,
+      "null_counts": {
+        "topic_id": 164
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "parent_child": {
+      "total_rows": 1,
+      "null_counts": {
+        "approved_at": 1
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "kiro2_learning_events": {
+      "total_rows": 287,
+      "null_counts": {
+        "session_id": 145,
+        "theta_after": 287,
+        "response_ms": 142
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "yks_exam_goals": {
+      "total_rows": 52,
+      "null_counts": {
+        "target_university": 52,
+        "target_department": 52
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "content_reports": {
+      "total_rows": 22,
+      "null_counts": {
+        "reviewed_at": 22,
+        "reported_user_id": 22,
+        "content_snapshot": 22,
+        "reviewed_by": 22,
+        "resolution_note": 22
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "user_item_fsrs": {
+      "total_rows": 147,
+      "null_counts": {
+        "last_review": 3
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "mentor_pairs": {
+      "total_rows": 27,
+      "null_counts": {
+        "ended_at": 27
+      },
+      "empty_whitespace_strings": {
+        "mentor_id": 27
+      },
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "chat_sessions": {
+      "total_rows": 64,
+      "null_counts": {
+        "last_message_at": 41
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "chat_messages": {
+      "total_rows": 47,
+      "null_counts": {
+        "tokens_used": 47,
+        "cost": 47,
+        "response_time_ms": 47,
+        "confidence_score": 27,
+        "relevance_score": 47,
+        "user_rating": 47,
+        "is_helpful": 47,
+        "image_id": 47,
+        "model": 24,
+        "feedback_comment": 47
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "learning_path_student_profiles": {
+      "total_rows": 38,
+      "null_counts": {
+        "weekly_study_commitment": 38,
+        "exam_date": 38,
+        "vark_visual_score": 33,
+        "vark_auditory_score": 33,
+        "vark_reading_score": 33,
+        "vark_kinesthetic_score": 33,
+        "felder_active_reflective": 38,
+        "felder_sensing_intuitive": 38,
+        "felder_visual_verbal": 38,
+        "felder_sequential_global": 38,
+        "average_quiz_score": 38,
+        "last_activity_at": 38,
+        "last_study_date": 38,
+        "target_university": 38,
+        "target_department": 38,
+        "target_ranking": 38
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "forum_questions": {
+      "total_rows": 11,
+      "null_counts": {
+        "question_bank_id": 11,
+        "accepted_solution_id": 11
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "coaching_events": {
+      "total_rows": 67,
+      "null_counts": {
+        "metadata": 67,
+        "shown_at": 67,
+        "clicked_at": 67,
+        "dismissed_at": 67,
+        "suggestion_text": 67,
+        "interaction": 67
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "league_memberships": {
+      "total_rows": 7,
+      "null_counts": {
+        "rank": 7
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "topic_hierarchy": {
+      "total_rows": 137,
+      "null_counts": {
+        "meb_kazanim": 118,
+        "parent_id": 117,
+        "name_en": 98,
+        "description": 118,
+        "meb_code": 118,
+        "subject_area": 14
+      },
+      "empty_whitespace_strings": {
+        "description": 19,
+        "meb_code": 19
+      },
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "student_engagement_signals": {
+      "total_rows": 28,
+      "null_counts": {
+        "signal_value": 28,
+        "metadata": 28,
+        "recorded_at": 28
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "streak_tracking": {
+      "total_rows": 1,
+      "null_counts": {
+        "last_activity_date": 1
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "learning_progress_daily": {
+      "total_rows": 1,
+      "null_counts": {
+        "theta_before": 1,
+        "theta_after": 1
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "pomodoro_rooms": {
+      "total_rows": 2,
+      "null_counts": {
+        "started_at": 2,
+        "ended_at": 1,
+        "topic": 1
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "pomodoro_participants": {
+      "total_rows": 2,
+      "null_counts": {
+        "left_at": 1
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "streak_pairs": {
+      "total_rows": 13,
+      "null_counts": {
+        "broken_at": 13
+      },
+      "empty_whitespace_strings": {
+        "student_b_id": 13
+      },
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "solution_duels": {
+      "total_rows": 2,
+      "null_counts": {
+        "voting_ends_at": 2,
+        "started_at": 2,
+        "ended_at": 2,
+        "opponent_id": 2,
+        "winner_id": 2
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "kiro2_learning_events_synthetic": {
+      "total_rows": 117179,
+      "null_counts": {
+        "session_id": 117179,
+        "theta_after": 72000,
+        "response_ms": 72000
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "fsrs_cards": {
+      "total_rows": 116,
+      "null_counts": {
+        "last_review": 93,
+        "cultural_factors": 20
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "daily_quests": {
+      "total_rows": 48,
+      "null_counts": {
+        "completed_at": 37
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "kvkk_consents": {
+      "total_rows": 1,
+      "null_counts": {
+        "withdrawn_at": 1,
+        "expires_at": 1,
+        "additional_data": 1
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "kvkk_audit_logs": {
+      "total_rows": 1,
+      "null_counts": {
+        "resource_id": 1
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_s197_phantom_audit_backup": {
+      "total_rows": 1,
+      "null_counts": {
+        "last_calibration_date": 1,
+        "last_used_date": 1,
+        "osym_year": 1,
+        "irt_a": 1,
+        "irt_b": 1,
+        "irt_c": 1,
+        "irt_calibrated_at": 1,
+        "embedding_updated_at": 1,
+        "answer_equivalent_forms": 1,
+        "numeric_tolerance": 1,
+        "dina_slip": 1,
+        "dina_guess": 1,
+        "similar_question_ids": 1,
+        "last_flagged_date": 1,
+        "ocr_confidence_avg": 1,
+        "metadata_completeness_score": 1,
+        "reviewed_at": 1,
+        "alternative_solutions": 1,
+        "secondary_topics": 1,
+        "last_difficulty_update": 1,
+        "embedding_model": 1,
+        "mufredat_kazanim_id": 1,
+        "mufredat_versiyon": 1,
+        "diagram_type": 1,
+        "alt_text": 1,
+        "question_html": 1,
+        "question_latex": 1,
+        "question_audio_url": 1,
+        "explanation_video_url": 1,
+        "created_by": 1,
+        "reviewed_by": 1,
+        "irt_method": 1
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_s198_curator_backup_20260527": {
+      "total_rows": 250,
+      "null_counts": {
+        "alternative_solutions": 250,
+        "secondary_topics": 250,
+        "last_difficulty_update": 250,
+        "last_calibration_date": 250,
+        "last_used_date": 249,
+        "osym_year": 250,
+        "image_width": 34,
+        "image_height": 34,
+        "irt_a": 250,
+        "irt_b": 250,
+        "irt_c": 250,
+        "irt_calibrated_at": 250,
+        "embedding_updated_at": 250,
+        "answer_equivalent_forms": 250,
+        "numeric_tolerance": 250,
+        "dina_slip": 250,
+        "dina_guess": 250,
+        "similar_question_ids": 250,
+        "last_flagged_date": 250,
+        "ocr_confidence_avg": 250,
+        "metadata_completeness_score": 250,
+        "reviewed_at": 250,
+        "question_html": 250,
+        "question_latex": 250,
+        "question_audio_url": 250,
+        "explanation": 5,
+        "explanation_video_url": 250,
+        "created_by": 250,
+        "reviewed_by": 250,
+        "image_ocr_text": 34,
+        "irt_method": 250,
+        "embedding_model": 250,
+        "expected_answer_formula": 118,
+        "mufredat_kazanim_id": 250,
+        "mufredat_versiyon": 250,
+        "diagram_type": 250,
+        "alt_text": 250
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_s198_promote36_backup_20260527": {
+      "total_rows": 35,
+      "null_counts": {
+        "alternative_solutions": 35,
+        "secondary_topics": 35,
+        "last_difficulty_update": 35,
+        "last_calibration_date": 35,
+        "last_used_date": 35,
+        "osym_year": 35,
+        "irt_a": 35,
+        "irt_b": 35,
+        "irt_c": 35,
+        "irt_calibrated_at": 35,
+        "embedding_updated_at": 35,
+        "answer_equivalent_forms": 35,
+        "numeric_tolerance": 35,
+        "dina_slip": 35,
+        "dina_guess": 35,
+        "similar_question_ids": 35,
+        "last_flagged_date": 35,
+        "ocr_confidence_avg": 35,
+        "metadata_completeness_score": 35,
+        "reviewed_at": 35,
+        "question_html": 35,
+        "question_latex": 35,
+        "question_audio_url": 35,
+        "explanation_video_url": 35,
+        "created_by": 35,
+        "reviewed_by": 35,
+        "irt_method": 35,
+        "embedding_model": 35,
+        "expected_answer_formula": 25,
+        "mufredat_kazanim_id": 35,
+        "mufredat_versiyon": 35,
+        "diagram_type": 35,
+        "alt_text": 35
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_blind_unsolvable_reject_backup_20260603": {
+      "total_rows": 884,
+      "null_counts": {
+        "alternative_solutions": 884,
+        "secondary_topics": 884,
+        "last_calibration_date": 884,
+        "last_used_date": 881,
+        "osym_year": 884,
+        "image_width": 192,
+        "image_height": 192,
+        "irt_a": 884,
+        "irt_b": 884,
+        "irt_c": 884,
+        "irt_calibrated_at": 884,
+        "embedding_updated_at": 884,
+        "answer_equivalent_forms": 884,
+        "numeric_tolerance": 884,
+        "dina_slip": 884,
+        "dina_guess": 884,
+        "similar_question_ids": 884,
+        "last_flagged_date": 884,
+        "ocr_confidence_avg": 884,
+        "metadata_completeness_score": 884,
+        "reviewed_at": 884,
+        "question_html": 884,
+        "question_latex": 884,
+        "question_audio_url": 884,
+        "explanation": 85,
+        "explanation_video_url": 884,
+        "created_by": 884,
+        "reviewed_by": 884,
+        "image_ocr_text": 193,
+        "embedding_model": 884,
+        "expected_answer_formula": 316,
+        "mufredat_kazanim_id": 884,
+        "mufredat_versiyon": 884,
+        "diagram_type": 884,
+        "alt_text": 884
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {
+        "question_text": 1,
+        "option_d": 1,
+        "option_e": 1,
+        "image_ocr_text": 1
+      },
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_irt_bootstrap_backup_20260530": {
+      "total_rows": 167559,
+      "null_counts": {
+        "irt_method": 167559
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_cleanup_rejected_backup_20260603": {
+      "total_rows": 55768,
+      "null_counts": {
+        "alternative_solutions": 55768,
+        "secondary_topics": 17363,
+        "last_calibration_date": 55768,
+        "last_used_date": 55727,
+        "osym_year": 55710,
+        "source_page": 66,
+        "embedding": 1113,
+        "image_width": 40297,
+        "image_height": 40297,
+        "irt_a": 55141,
+        "irt_b": 55141,
+        "irt_c": 55141,
+        "irt_calibrated_at": 55768,
+        "embedding_updated_at": 33179,
+        "solution_steps": 5195,
+        "answer_equivalent_forms": 55768,
+        "numeric_tolerance": 55768,
+        "dina_slip": 55768,
+        "dina_guess": 55768,
+        "misconception_tags": 5185,
+        "similar_question_ids": 6746,
+        "last_flagged_date": 55768,
+        "ocr_confidence_avg": 55768,
+        "metadata_completeness_score": 55768,
+        "reviewed_at": 55768,
+        "question_html": 55768,
+        "question_latex": 55768,
+        "question_image_url": 1423,
+        "question_audio_url": 55768,
+        "option_e": 280,
+        "explanation": 19049,
+        "explanation_video_url": 55768,
+        "source_book": 53,
+        "created_by": 55756,
+        "reviewed_by": 55768,
+        "image_ocr_text": 38390,
+        "embedding_model": 33179,
+        "expected_answer_formula": 34237,
+        "mufredat_kazanim_id": 55768,
+        "mufredat_versiyon": 55768,
+        "solo_level": 5189,
+        "marzano_level": 5188,
+        "diagram_type": 55768,
+        "alt_text": 55768
+      },
+      "empty_whitespace_strings": {
+        "option_e": 17
+      },
+      "control_chars_strings": {
+        "question_text": 53,
+        "option_a": 17,
+        "option_b": 17,
+        "option_c": 16,
+        "option_d": 15,
+        "option_e": 16,
+        "explanation": 83,
+        "image_ocr_text": 6
+      },
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "diary_entries": {
+      "total_rows": 1,
+      "null_counts": {},
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {
+        "date": 1
+      },
+      "jsonb_schema_variance": {}
+    },
+    "emotional_states": {
+      "total_rows": 24,
+      "null_counts": {
+        "predicted_state": 24,
+        "actual_state": 24
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "goals": {
+      "total_rows": 28,
+      "null_counts": {
+        "predicted_completion": 28,
+        "completed_at": 28
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_beta_core_backup_20260530": {
+      "total_rows": 500,
+      "null_counts": {
+        "alternative_solutions": 500,
+        "secondary_topics": 500,
+        "last_calibration_date": 500,
+        "last_used_date": 497,
+        "osym_year": 500,
+        "image_width": 120,
+        "image_height": 120,
+        "irt_a": 500,
+        "irt_b": 500,
+        "irt_c": 500,
+        "irt_calibrated_at": 500,
+        "embedding_updated_at": 500,
+        "answer_equivalent_forms": 500,
+        "numeric_tolerance": 500,
+        "dina_slip": 500,
+        "dina_guess": 500,
+        "similar_question_ids": 500,
+        "last_flagged_date": 500,
+        "ocr_confidence_avg": 500,
+        "metadata_completeness_score": 500,
+        "reviewed_at": 500,
+        "embedding_model": 500,
+        "expected_answer_formula": 149,
+        "mufredat_kazanim_id": 500,
+        "mufredat_versiyon": 500,
+        "diagram_type": 500,
+        "alt_text": 500,
+        "question_html": 500,
+        "question_latex": 500,
+        "question_audio_url": 500,
+        "explanation": 5,
+        "explanation_video_url": 500,
+        "created_by": 500,
+        "reviewed_by": 500,
+        "image_ocr_text": 120
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "live_sessions": {
+      "total_rows": 24,
+      "null_counts": {
+        "actual_start": 24,
+        "actual_end": 24,
+        "teacher_id": 24,
+        "meeting_password": 24,
+        "host_url": 24
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_cleanup_foreign_backup_20260603": {
+      "total_rows": 11,
+      "null_counts": {
+        "alternative_solutions": 11,
+        "secondary_topics": 11,
+        "last_calibration_date": 11,
+        "last_used_date": 11,
+        "osym_year": 11,
+        "image_width": 5,
+        "image_height": 5,
+        "irt_a": 11,
+        "irt_b": 11,
+        "irt_c": 11,
+        "irt_calibrated_at": 11,
+        "embedding_updated_at": 11,
+        "answer_equivalent_forms": 11,
+        "numeric_tolerance": 11,
+        "dina_slip": 11,
+        "dina_guess": 11,
+        "similar_question_ids": 11,
+        "last_flagged_date": 11,
+        "ocr_confidence_avg": 11,
+        "metadata_completeness_score": 11,
+        "reviewed_at": 11,
+        "question_html": 11,
+        "question_latex": 11,
+        "question_audio_url": 11,
+        "explanation_video_url": 11,
+        "created_by": 11,
+        "reviewed_by": 11,
+        "image_ocr_text": 5,
+        "embedding_model": 11,
+        "expected_answer_formula": 5,
+        "mufredat_kazanim_id": 11,
+        "mufredat_versiyon": 11,
+        "diagram_type": 11,
+        "alt_text": 11
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_beta_recurate_backup_20260530": {
+      "total_rows": 386,
+      "null_counts": {
+        "alternative_solutions": 386,
+        "secondary_topics": 386,
+        "last_calibration_date": 386,
+        "last_used_date": 384,
+        "osym_year": 386,
+        "image_width": 104,
+        "image_height": 104,
+        "irt_a": 386,
+        "irt_b": 386,
+        "irt_c": 386,
+        "irt_calibrated_at": 386,
+        "embedding_updated_at": 386,
+        "answer_equivalent_forms": 386,
+        "numeric_tolerance": 386,
+        "dina_slip": 386,
+        "dina_guess": 386,
+        "similar_question_ids": 386,
+        "last_flagged_date": 386,
+        "ocr_confidence_avg": 386,
+        "metadata_completeness_score": 386,
+        "reviewed_at": 386,
+        "question_html": 386,
+        "question_latex": 386,
+        "question_audio_url": 386,
+        "explanation": 4,
+        "explanation_video_url": 386,
+        "created_by": 386,
+        "reviewed_by": 386,
+        "image_ocr_text": 104,
+        "embedding_model": 386,
+        "expected_answer_formula": 107,
+        "mufredat_kazanim_id": 386,
+        "mufredat_versiyon": 386,
+        "diagram_type": 386,
+        "alt_text": 386
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "video_watch_sessions": {
+      "total_rows": 23,
+      "null_counts": {
+        "dropped_at": 23,
+        "completed_at": 23
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "video_notes": {
+      "total_rows": 15,
+      "null_counts": {
+        "session_id": 15,
+        "video_caption": 15
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "student_reviews": {
+      "total_rows": 4,
+      "null_counts": {
+        "university_id": 4,
+        "department_id": 4,
+        "dormitory_id": 4,
+        "student_year": 4,
+        "enrollment_year": 4,
+        "moderated_at": 4,
+        "verified_at": 4,
+        "published_at": 4,
+        "professor_id": 4,
+        "course_id": 4,
+        "moderation_notes": 4,
+        "moderated_by": 4,
+        "verification_method": 4,
+        "ip_address": 4,
+        "user_agent": 4
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "moderation_queue": {
+      "total_rows": 4,
+      "null_counts": {
+        "assigned_at": 4,
+        "completed_at": 4,
+        "assigned_to": 4
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "offline_sync_packages": {
+      "total_rows": 5,
+      "null_counts": {
+        "consumed_at": 4
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "hard_fix_backup_20260423": {
+      "total_rows": 519,
+      "null_counts": {},
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {
+        "original_question_text": 3
+      },
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "_bak_paketa_20260428_questions": {
+      "total_rows": 6532,
+      "null_counts": {
+        "alternative_solutions": 6532,
+        "secondary_topics": 6532,
+        "last_difficulty_update": 6532,
+        "last_calibration_date": 6532,
+        "last_used_date": 6517,
+        "osym_year": 6526,
+        "source_page": 58,
+        "pipeline_metadata": 58,
+        "embedding": 50,
+        "image_width": 604,
+        "image_height": 604,
+        "irt_a": 6532,
+        "irt_b": 6532,
+        "irt_c": 6532,
+        "irt_calibrated_at": 6532,
+        "image_ocr_text": 604,
+        "irt_method": 6532,
+        "question_html": 6532,
+        "question_latex": 6532,
+        "question_image_url": 1706,
+        "question_audio_url": 6532,
+        "option_e": 82,
+        "explanation": 402,
+        "explanation_video_url": 6532,
+        "source_book": 58,
+        "created_by": 6480,
+        "reviewed_by": 6532
+      },
+      "empty_whitespace_strings": {
+        "option_e": 7
+      },
+      "control_chars_strings": {
+        "image_ocr_text": 5,
+        "question_text": 10
+      },
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "manual_review_queue": {
+      "total_rows": 1842,
+      "null_counts": {
+        "source_page": 9,
+        "reviewed_at": 1833,
+        "old_question_id": 1842,
+        "reviewed_by": 1842,
+        "decision": 1833
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank_staging": {
+      "total_rows": 5071,
+      "null_counts": {
+        "alternative_solutions": 5071,
+        "secondary_topics": 5071,
+        "last_difficulty_update": 5071,
+        "last_calibration_date": 5071,
+        "last_used_date": 5071,
+        "osym_year": 4779,
+        "source_page": 9,
+        "pipeline_metadata": 9,
+        "embedding": 5071,
+        "image_width": 5071,
+        "image_height": 5071,
+        "irt_a": 5071,
+        "irt_b": 5071,
+        "irt_c": 5071,
+        "irt_calibrated_at": 5071,
+        "created_by": 5071,
+        "reviewed_by": 5071,
+        "image_ocr_text": 5071,
+        "irt_method": 5071,
+        "question_html": 5071,
+        "question_latex": 5071,
+        "question_image_url": 5071,
+        "question_audio_url": 5071,
+        "option_e": 160,
+        "correct_answer": 392,
+        "explanation": 5071,
+        "explanation_video_url": 5071
+      },
+      "empty_whitespace_strings": {
+        "question_text": 62,
+        "option_a": 134,
+        "option_b": 134,
+        "option_c": 133,
+        "option_d": 135
+      },
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_bank": {
+      "total_rows": 187834,
+      "null_counts": {
+        "alternative_solutions": 187834,
+        "secondary_topics": 80318,
+        "last_difficulty_update": 20275,
+        "last_calibration_date": 187834,
+        "last_used_date": 187605,
+        "osym_year": 187609,
+        "source_page": 122,
+        "embedding": 40638,
+        "image_width": 117434,
+        "image_height": 117434,
+        "irt_a": 185470,
+        "irt_b": 185470,
+        "irt_c": 185470,
+        "irt_calibrated_at": 187834,
+        "irt_se_a": 20275,
+        "irt_se_b": 20275,
+        "irt_se_c": 20275,
+        "fisher_info_max": 20275,
+        "fisher_info_theta": 20275,
+        "kc_ids": 20275,
+        "q_matrix": 20275,
+        "embedding_updated_at": 160485,
+        "solution_steps": 90592,
+        "answer_equivalent_forms": 187834,
+        "numeric_tolerance": 187834,
+        "estimated_solve_time_seconds": 20275,
+        "dina_slip": 187834,
+        "dina_guess": 187834,
+        "misconception_tags": 90580,
+        "similar_question_ids": 106058,
+        "last_flagged_date": 187834,
+        "ocr_confidence_avg": 185059,
+        "metadata_completeness_score": 187834,
+        "metadata_filled_at": 20275,
+        "reviewed_at": 187834,
+        "question_html": 187834,
+        "question_latex": 187834,
+        "question_image_url": 6182,
+        "question_audio_url": 187834,
+        "option_e": 536,
+        "explanation": 67727,
+        "explanation_video_url": 187834,
+        "source_book": 109,
+        "created_by": 187770,
+        "reviewed_by": 187834,
+        "image_ocr_text": 115344,
+        "irt_method": 20275,
+        "irt_method_used": 20275,
+        "embedding_model": 160485,
+        "expected_answer_formula": 149106,
+        "mufredat_kazanim_id": 187834,
+        "mufredat_versiyon": 187834,
+        "osym_section": 20275,
+        "solo_level": 90586,
+        "marzano_level": 90585,
+        "diagram_type": 187834,
+        "alt_text": 187834,
+        "variant_id": 20275,
+        "canonical_form_id": 20275
+      },
+      "empty_whitespace_strings": {
+        "option_a": 173,
+        "option_b": 183,
+        "option_c": 217,
+        "option_d": 275,
+        "option_e": 158
+      },
+      "control_chars_strings": {
+        "question_text": 179,
+        "option_a": 58,
+        "option_b": 60,
+        "option_c": 56,
+        "option_d": 57,
+        "option_e": 61,
+        "explanation": 179,
+        "image_ocr_text": 25
+      },
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_option_rationales": {
+      "total_rows": 486270,
+      "null_counts": {
+        "misconception_tag": 486270
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {
+        "rationale": 174
+      },
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "question_math": {
+      "total_rows": 37088,
+      "null_counts": {
+        "numeric_tolerance": 37088,
+        "equivalent_forms": 37088,
+        "math_complexity_score": 37088
+      },
+      "empty_whitespace_strings": {},
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    },
+    "knowledge_components": {
+      "total_rows": 136,
+      "null_counts": {
+        "parent_topic_id": 116
+      },
+      "empty_whitespace_strings": {
+        "description": 19
+      },
+      "control_chars_strings": {},
+      "numeric_anomalies": {},
+      "datetime_drift": {},
+      "jsonb_schema_variance": {}
+    }
+  },
+  "logical_orphans": [
+    {
+      "relation": "irt_calibration_history(question_id) -> question_bank(id)",
+      "orphan_type": "inactive_parent",
+      "count": 381
+    },
+    {
+      "relation": "student_question_flags(question_id) -> question_bank(id)",
+      "orphan_type": "inactive_parent",
+      "count": 15
+    }
+  ],
+  "sequence_depletion": [
+    {
+      "sequence_name": "weekly_progress_id_seq",
+      "table_name": "weekly_progress",
+      "column_name": "id",
+      "last_value": 2,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "realms_id_seq",
+      "table_name": "realms",
+      "column_name": "id",
+      "last_value": 16,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "realm_progress_id_seq",
+      "table_name": "realm_progress",
+      "column_name": "id",
+      "last_value": 2,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "topic_progress_id_seq",
+      "table_name": "topic_progress",
+      "column_name": "id",
+      "last_value": 8,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "xp_transactions_id_seq",
+      "table_name": "xp_transactions",
+      "column_name": "id",
+      "last_value": 166,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "obalar_id_seq",
+      "table_name": "obalar",
+      "column_name": "id",
+      "last_value": 1,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "oba_uyeler_id_seq",
+      "table_name": "oba_uyeler",
+      "column_name": "id",
+      "last_value": 1,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "badges_id_seq",
+      "table_name": "badges",
+      "column_name": "id",
+      "last_value": 5,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "parent_child_id_seq",
+      "table_name": "parent_child",
+      "column_name": "id",
+      "last_value": 1,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "subjects_id_seq",
+      "table_name": "subjects",
+      "column_name": "id",
+      "last_value": 12,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "daily_quests_id_seq",
+      "table_name": "daily_quests",
+      "column_name": "id",
+      "last_value": 48,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "osym_questions_id_seq",
+      "table_name": "osym_questions",
+      "column_name": "id",
+      "last_value": 2,
+      "usage_ratio_pct": 0.0
+    },
+    {
+      "sequence_name": "question_option_rationales_id_seq",
+      "table_name": "question_option_rationales",
+      "column_name": "id",
+      "last_value": 495263,
+      "usage_ratio_pct": 0.0231
+    }
+  ],
+  "table_bloat": [
+    {
+      "table_name": "question_bank",
+      "n_live_tup": 187386,
+      "n_dead_tup": 152,
+      "dead_tuple_ratio_pct": 0.08
+    },
+    {
+      "table_name": "student_abilities",
+      "n_live_tup": 631,
+      "n_dead_tup": 144,
+      "dead_tuple_ratio_pct": 18.58
+    },
+    {
+      "table_name": "zpd_history",
+      "n_live_tup": 156,
+      "n_dead_tup": 64,
+      "dead_tuple_ratio_pct": 29.09
+    },
+    {
+      "table_name": "users",
+      "n_live_tup": 75,
+      "n_dead_tup": 54,
+      "dead_tuple_ratio_pct": 41.86
+    },
+    {
+      "table_name": "exam_questions",
+      "n_live_tup": 480,
+      "n_dead_tup": 39,
+      "dead_tuple_ratio_pct": 7.51
+    },
+    {
+      "table_name": "fsrs_cards",
+      "n_live_tup": 116,
+      "n_dead_tup": 29,
+      "dead_tuple_ratio_pct": 20.0
+    },
+    {
+      "table_name": "bkt_states",
+      "n_live_tup": 26,
+      "n_dead_tup": 18,
+      "dead_tuple_ratio_pct": 40.91
+    },
+    {
+      "table_name": "topic_prerequisites",
+      "n_live_tup": 106,
+      "n_dead_tup": 15,
+      "dead_tuple_ratio_pct": 12.4
+    },
+    {
+      "table_name": "student_question_flags",
+      "n_live_tup": 1,
+      "n_dead_tup": 10,
+      "dead_tuple_ratio_pct": 90.91
+    },
+    {
+      "table_name": "exam_sessions",
+      "n_live_tup": 246,
+      "n_dead_tup": 6,
+      "dead_tuple_ratio_pct": 2.38
+    },
+    {
+      "table_name": "student_answers",
+      "n_live_tup": 2,
+      "n_dead_tup": 2,
+      "dead_tuple_ratio_pct": 50.0
+    },
+    {
+      "table_name": "streaks",
+      "n_live_tup": 0,
+      "n_dead_tup": 1,
+      "dead_tuple_ratio_pct": 100.0
+    },
+    {
+      "table_name": "alembic_version",
+      "n_live_tup": 0,
+      "n_dead_tup": 1,
+      "dead_tuple_ratio_pct": 100.0
+    },
+    {
+      "table_name": "refresh_tokens",
+      "n_live_tup": 32,
+      "n_dead_tup": 1,
+      "dead_tuple_ratio_pct": 3.03
+    }
+  ],
+  "type_anomalies": {
+    "time_drift": 1,
+    "numeric_out_of_bounds": 0,
+    "string_control_chars": 1094,
+    "string_empty_whitespace": 1780
+  }
+}

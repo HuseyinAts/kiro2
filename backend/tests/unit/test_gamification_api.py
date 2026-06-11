@@ -54,6 +54,7 @@ def _make_async_db(fetchall=None, scalars_all=None):
     result_mock = MagicMock()
     if fetchall is not None:
         result_mock.fetchall.return_value = fetchall
+        result_mock.all.return_value = fetchall
     if scalars_all is not None:
         result_mock.scalars.return_value.all.return_value = scalars_all
     db.execute.return_value = result_mock
@@ -358,7 +359,7 @@ class TestAwardPoints:
                 current_user=_make_test_user("cumul-user"),
                 db=db,
                 body=AwardPointsRequest(
-                    points=25, reason="streak_bonus"
+                    points=25, reason="streak_milestone"
                 ),
             )
 
@@ -384,7 +385,7 @@ class TestAwardPoints:
                 current_user=_make_test_user("field-test"),
                 db=db,
                 body=AwardPointsRequest(
-                    points=5, reason="reason"
+                    points=5, reason="streak_milestone"
                 ),
             )
 
@@ -625,7 +626,7 @@ class TestGetEarnedBadges:
         earned_row.badge_id = "consistent_7"
         earned_row.earned_at = None
 
-        db = _make_async_db(scalars_all=[earned_row])
+        db = _make_async_db(fetchall=[(earned_row, "consistent_7")])
         result = await get_earned_badges(
             current_user=_make_test_user("has-badges"), db=db
         )
@@ -873,7 +874,7 @@ class TestGetNearbyUsers:
         redis = MagicMock()
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
-            result = await get_nearby_users_in_leaderboard(
+            result = get_nearby_users_in_leaderboard(
                 current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"),
                 leaderboard_type="global",
                 range_size=5,
@@ -895,7 +896,7 @@ class TestGetNearbyUsers:
         uid = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
-            await get_nearby_users_in_leaderboard(
+            get_nearby_users_in_leaderboard(
                 current_user=_make_test_user(uid),
                 leaderboard_type="weekly",
                 range_size=3,
@@ -904,10 +905,9 @@ class TestGetNearbyUsers:
             )
 
         mgr.get_nearby_users.assert_called_once_with(
-            user_id=UUID(uid),
+            user_id=uid,
             leaderboard_type="weekly",
             range_size=3,
-            with_details=True,
         )
 
 
@@ -930,7 +930,7 @@ class TestGetUserLeaderboardRank:
         redis = MagicMock()
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
-            result = await get_user_leaderboard_rank(
+            result = get_user_leaderboard_rank(
                 current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"),
                 leaderboard_type="global",
                 db=db,
@@ -948,7 +948,7 @@ class TestGetUserLeaderboardRank:
         redis = MagicMock()
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
-            result = await get_user_leaderboard_rank(
+            result = get_user_leaderboard_rank(
                 current_user=_make_test_user("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"),
                 leaderboard_type="global",
                 db=db,
@@ -973,7 +973,7 @@ class TestGetLeaderboardStatistics:
         redis = MagicMock()
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
-            result = await get_leaderboard_statistics(
+            result = get_leaderboard_statistics(
                 current_user=_make_test_user("stats-user"),
                 leaderboard_type="global",
                 db=db,
@@ -991,7 +991,7 @@ class TestGetLeaderboardStatistics:
         redis = MagicMock()
 
         with patch("api.gamification_api.get_leaderboard_manager", return_value=mgr):
-            await get_leaderboard_statistics(
+            get_leaderboard_statistics(
                 current_user=_make_test_user("stats-user"),
                 leaderboard_type="weekly",
                 db=db,

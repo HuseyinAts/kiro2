@@ -11,7 +11,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Request, Path
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,6 +20,9 @@ from core.dependencies import AuthenticatedUser, get_current_user
 from core.multi_layer_cache import MultiLayerCache
 from models.enums_db import UserRole
 from services.soru_bankasi_service import soru_bankasi_servisi
+from core.ddos_protection import limiter
+
+PATTERN_UUID_OR_TEST = r"^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[a-zA-Z0-9_-]{1,36})$"
 
 router = APIRouter(tags=["Soru Bankası"])
 
@@ -43,7 +46,9 @@ async def invalidate_question_cache():
 
 
 @router.get("/sorular", response_model=list[dict[str, Any]])
+@limiter.limit("30/minute")
 async def sorular_listele(
+    request: Request,
     sinav_tipi: str | None = Query(None, description="Sınav türü (TYT, AYT, YDT)"),
     konu: str | None = Query(None, description="Konu filtresi"),
     zorluk_seviyesi: str | None = Query(
@@ -168,7 +173,7 @@ async def sorular_listele(
 
 @router.get("/soru/{soru_id}", response_model=dict[str, Any])
 async def soru_detay(
-    soru_id: str,
+    soru_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ):
@@ -637,7 +642,7 @@ async def zorluk_seviyesi_filtrele(
 
 # Servisle tam uyumlu ek endpoint'ler
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class SoruEkleRequest(BaseModel):
@@ -662,6 +667,55 @@ class SoruEkleRequest(BaseModel):
     created_by: str | None = Field(
         None, max_length=100, description="Oluşturan kullanıcı"
     )
+    soru_hash: str | None = Field(None, description="Soru hash değeri")
+
+    @model_validator(mode='before')
+    @classmethod
+    def calculate_canonical_hash(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            soru_metni = data.get("soru_metni", "")
+            secenekler = data.get("secenekler", [])
+            
+            if soru_metni and isinstance(secenekler, list):
+                import re
+                import hashlib
+                
+                # Canonicalize question text
+                # 1. Clean HTML tags (preserving LaTeX formulas)
+                cleaned_text = re.sub(r'<[^>]+>', '', soru_metni)
+                # 2. Clean ZWSP and invisible spaces
+                for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
+                    cleaned_text = cleaned_text.replace(space_char, '')
+                # 3. Normalize consecutive whitespaces to a single space
+                cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+                # 4. Convert to lowercase
+                cleaned_text = cleaned_text.lower()
+                
+                # Canonicalize options (up to 5 options)
+                cleaned_opts = []
+                for opt in secenekler[:5]:
+                    if isinstance(opt, str):
+                        opt_cleaned = re.sub(r'<[^>]+>', '', opt)
+                        for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
+                            opt_cleaned = opt_cleaned.replace(space_char, '')
+                        opt_cleaned = re.sub(r'\s+', ' ', opt_cleaned).strip()
+                        opt_cleaned = opt_cleaned.lower()
+                        # Strip standard option prefix like 'a) ', 'b) ' if any
+                        opt_cleaned = re.sub(r'^[a-e]\)\s*', '', opt_cleaned)
+                        cleaned_opts.append(opt_cleaned)
+                    else:
+                        cleaned_opts.append("")
+                
+                # Construct canonical hash input
+                hash_input = cleaned_text
+                for opt in cleaned_opts:
+                    hash_input += '|' + opt
+                if len(cleaned_opts) < 5:
+                    hash_input += '|'
+                
+                # Compute SHA-256 hash and slice to 32 chars to fit VARCHAR(32)
+                data["soru_hash"] = hashlib.sha256(hash_input.encode('utf-8')).hexdigest()[:32]
+        return data
 
 
 class SoruGuncelleRequest(BaseModel):
@@ -703,6 +757,7 @@ async def soru_ekle(
             "alt_konu": request.alt_konu,
             "zorluk_seviyesi": request.zorluk_seviyesi,
             "created_by": current_user.id,
+            "soru_hash": request.soru_hash,
         }
 
         yeni_soru = await soru_bankasi_servisi.soru_ekle(soru_data)

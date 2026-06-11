@@ -23,6 +23,23 @@ import pytest
 # Stub out heavy third-party modules BEFORE any local import
 # ---------------------------------------------------------------------------
 
+_ORIG_SYS_MODULES = {}
+_STUBBED_KEYS = [
+    "slowapi",
+    "slowapi.util",
+    "slowapi.errors",
+    "celery",
+    "celery.schedules",
+    "redis",
+    "redis.asyncio",
+    "pgvector",
+    "pgvector.sqlalchemy",
+    "zemberek",
+    "zemberek.morphology",
+]
+for k in _STUBBED_KEYS:
+    if k in sys.modules:
+        _ORIG_SYS_MODULES[k] = sys.modules[k]
 
 def _stub(name: str) -> types.ModuleType:
     """Return existing module or create a lightweight stub."""
@@ -36,12 +53,17 @@ def _stub(name: str) -> types.ModuleType:
 # slowapi stubs (used by learning_path_v2)
 _slowapi = _stub("slowapi")
 _slowapi.Limiter = MagicMock  # type: ignore[attr-defined]
+_slowapi._rate_limit_exceeded_handler = MagicMock  # type: ignore[attr-defined]
 _slowapi_util = _stub("slowapi.util")
 _slowapi_util.get_remote_address = lambda req: "127.0.0.1"  # type: ignore[attr-defined]
+_slowapi_errors = _stub("slowapi.errors")
+class MockRateLimitExceeded(Exception): pass
+_slowapi_errors.RateLimitExceeded = MockRateLimitExceeded  # type: ignore[attr-defined]
 
 # celery stubs
 _celery = _stub("celery")
-_celery.Celery = MagicMock  # type: ignore[attr-defined]
+_celery.Celery = lambda *args, **kwargs: MagicMock()  # type: ignore[attr-defined]
+_stub("celery.schedules")
 
 # redis stubs (for services that import redis directly)
 _redis_mod = _stub("redis")
@@ -55,6 +77,42 @@ _pgvector_sqlalchemy.Vector = MagicMock  # type: ignore[attr-defined]
 # zemberek stubs
 _stub("zemberek")
 _stub("zemberek.morphology")
+
+# Immediately restore original sys.modules to prevent pollution during collection
+for k in _STUBBED_KEYS:
+    if k in _ORIG_SYS_MODULES:
+        sys.modules[k] = _ORIG_SYS_MODULES[k]
+    else:
+        sys.modules.pop(k, None)
+
+
+@pytest.fixture(scope="module", autouse=True)
+def setup_stubs_fixture():
+    orig = {}
+    for k in _STUBBED_KEYS:
+        if k in sys.modules:
+            orig[k] = sys.modules[k]
+    
+    # Re-apply the stubs
+    sys.modules["slowapi"] = _slowapi
+    sys.modules["slowapi.util"] = _slowapi_util
+    sys.modules["slowapi.errors"] = _slowapi_errors
+    sys.modules["celery"] = _celery
+    sys.modules["celery.schedules"] = sys.modules.get("celery.schedules")
+    sys.modules["redis"] = _redis_mod
+    sys.modules["redis.asyncio"] = sys.modules.get("redis.asyncio")
+    sys.modules["pgvector"] = sys.modules.get("pgvector")
+    sys.modules["pgvector.sqlalchemy"] = _pgvector_sqlalchemy
+    sys.modules["zemberek"] = sys.modules.get("zemberek")
+    sys.modules["zemberek.morphology"] = sys.modules.get("zemberek.morphology")
+    
+    yield
+    
+    for k in _STUBBED_KEYS:
+        if k in orig:
+            sys.modules[k] = orig[k]
+        else:
+            sys.modules.pop(k, None)
 
 # ---------------------------------------------------------------------------
 # Now import FastAPI / httpx infrastructure
@@ -1187,6 +1245,14 @@ class TestTeacherServiceRegistration:
 
 class TestDiaryHelpers:
     """Tests for pure helper functions in diary_api."""
+
+    @pytest.fixture(autouse=True)
+    def unpoison_diary_schemas(self):
+        import sys
+        from unittest.mock import Mock, MagicMock
+        if "api.schemas.diary" in sys.modules:
+            if isinstance(sys.modules["api.schemas.diary"], (Mock, MagicMock)):
+                del sys.modules["api.schemas.diary"]
 
     def _make_goal_mock(self):
         from models.diary import GoalStatus

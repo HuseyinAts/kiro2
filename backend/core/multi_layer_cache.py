@@ -28,6 +28,7 @@ Architecture:
 
 import asyncio
 import json
+import random
 import time
 from collections import OrderedDict
 from collections.abc import Callable
@@ -184,6 +185,10 @@ class MultiLayerCache:
         self.default_ttl = default_ttl
         self.namespace = namespace
 
+        # Key-level locks for Cache Stampede protection
+        self._key_locks: dict[str, asyncio.Lock] = {}
+        self._key_locks_lock = asyncio.Lock()
+
         # L1 Cache: In-memory LRU cache (OrderedDict for LRU)
         # Req 6.7: LRU eviction policy
         self._l1_cache: OrderedDict[str, CacheEntry] = OrderedDict()
@@ -275,17 +280,10 @@ class MultiLayerCache:
         except (TypeError, ValueError, OverflowError):
             return 0
 
-    async def get(self, key: str) -> Any | None:
+    async def _get_with_status(self, key: str) -> tuple[bool, Any]:
         """
-        Get value from cache (L1 → L2 hierarchy)
-
-        Req 6.2: L1 cache'den 100ms içinde dönme
-
-        Args:
-            key: Cache key
-
-        Returns:
-            Cached value or None
+        Get value from cache along with a boolean indicating if it was a hit.
+        This allows distinguishing a cached None (Cache Penetration protection) from a cache miss.
         """
         full_key = self._make_key(key)
 
@@ -311,7 +309,10 @@ class MultiLayerCache:
                     logger.debug(
                         "l1_cache_hit", key=key, access_count=entry.access_count
                     )
-                    return entry.value
+                    val = entry.value
+                    if isinstance(val, dict) and val.get("__sentinel_null__"):
+                        return True, None
+                    return True, val
 
         self.metrics.l1_misses += 1
 
@@ -331,7 +332,9 @@ class MultiLayerCache:
                     self.metrics.promotions += 1
 
                     logger.debug("l2_cache_hit_promoted", key=key)
-                    return value
+                    if isinstance(value, dict) and value.get("__sentinel_null__"):
+                        return True, None
+                    return True, value
 
             except json.JSONDecodeError as e:
                 logger.error("cache_deserialize_error", key=key, error=str(e))
@@ -344,7 +347,22 @@ class MultiLayerCache:
 
         self.metrics.l2_misses += 1
         logger.debug("cache_miss", key=key)
-        return None
+        return False, None
+
+    async def get(self, key: str) -> Any | None:
+        """
+        Get value from cache (L1 → L2 hierarchy)
+
+        Req 6.2: L1 cache'den 100ms içinde dönme
+
+        Args:
+            key: Cache key
+
+        Returns:
+            Cached value or None
+        """
+        hit, value = await self._get_with_status(key)
+        return value if hit else None
 
     async def _promote_to_l1(self, full_key: str, value: Any):
         """
@@ -411,7 +429,18 @@ class MultiLayerCache:
             True if successful
         """
         full_key = self._make_key(key)
-        ttl = ttl or self.default_ttl
+        
+        # Cache Penetration Protection: cache None/Null as sentinel with a very short TTL
+        if value is None:
+            value = {"__sentinel_null__": True}
+            ttl = 60
+        else:
+            ttl = ttl or self.default_ttl
+
+        # Add Jitter to TTL to prevent Cache Stampede from simultaneous expiration
+        if ttl:
+            # KESİNLİKLE ±%10 Jitter: random.uniform(0.90, 1.10)
+            ttl = int(ttl * random.uniform(0.90, 1.10))
 
         self.metrics.sets += 1
 
@@ -562,28 +591,41 @@ class MultiLayerCache:
     ) -> Any:
         """
         Get from cache or compute if missing
-
-        Args:
-            key: Cache key
-            compute_fn: Async function to compute value
-            ttl: Time to live
-
-        Returns:
-            Cached or computed value
         """
-        # Try cache first
-        value = await self.get(key)
-        if value is not None:
+        # 1. Try cache first
+        hit, value = await self._get_with_status(key)
+        if hit:
             return value
 
-        # Compute value
-        if asyncio.iscoroutinefunction(compute_fn):
-            value = await compute_fn()
-        else:
-            value = compute_fn()
+        # 2. Cache Stampede Protection: Acquire lock for key
+        async with self._key_locks_lock:
+            if key not in self._key_locks:
+                self._key_locks[key] = asyncio.Lock()
+            lock = self._key_locks[key]
 
-        # Cache result
-        await self.set(key, value, ttl)
+        async with lock:
+            # Double-check cache inside lock (Double-Checked Locking Pattern)
+            hit, value = await self._get_with_status(key)
+            if hit:
+                return value
+
+            # Compute value
+            if asyncio.iscoroutinefunction(compute_fn):
+                value = await compute_fn()
+            else:
+                value = compute_fn()
+
+            # Cache result
+            if value is None:
+                # Cache Penetration Protection: Cache None/Null as sentinel with a very short TTL
+                await self.set(key, {"__sentinel_null__": True}, ttl=60)
+            else:
+                await self.set(key, value, ttl)
+
+        # 3. Clean up key lock
+        async with self._key_locks_lock:
+            if key in self._key_locks and not self._key_locks[key].locked():
+                del self._key_locks[key]
 
         return value
 

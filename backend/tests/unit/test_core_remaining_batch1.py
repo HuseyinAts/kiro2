@@ -76,7 +76,6 @@ if not _langchain_already_real:
 _STUBS.extend(
     [
         "core.application_metrics",
-        "core.auth_middleware",
         "core.cache_system_integration",
         "core.structured_logging",
         "core.turkish_exam_event_handlers",
@@ -613,14 +612,11 @@ class TestEducationalRAG:
         edu = EducationalRAG(llm_service)
         assert isinstance(edu.subject_stores, dict)
 
-    def test_answer_question_subject_not_indexed(self):
+    @pytest.mark.asyncio
+    async def test_answer_question_subject_not_indexed(self):
         llm_service = MagicMock()
         edu = EducationalRAG(llm_service)
-        import asyncio
-
-        result = asyncio.get_event_loop().run_until_complete(
-            edu.answer_question("What is X?", "matematik")
-        )
+        result = await edu.answer_question("What is X?", "matematik")
         assert result["success"] is False
         assert "not indexed" in result["error"]
 

@@ -267,8 +267,8 @@ class TurkishContentFilter:
                 "langdetect kütüphanesi bulunamadı, temel analiz kullanılacak"
             )
 
-        # Minimum Türkçe skoru - langdetect yoksa daha düşük threshold
-        self.min_turkish_score = 0.5 if not self._langdetect_available else 0.7
+        # Minimum Türkçe skoru - langdetect yoksa daha düşük threshold (0.5), varsa 0.6 (kısa metinlerde hatalı tespiti tolere etmek için)
+        self.min_turkish_score = 0.5 if not self._langdetect_available else 0.6
 
     async def validate_turkish_content(
         self, video_title: str, video_description: str, channel_name: str

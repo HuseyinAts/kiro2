@@ -1,0 +1,171 @@
+KIRO2 DEEP PROFILE - 2026-06-09T22:36:54.186842
+
+======================================================================
+1. question_bank — VALUE checks (is '0% null' real or default?)
+======================================================================
+rows total: 187834
+is_calibrated=true: 82530
+irt_calibrated=true: 0
+is_calib_pool=true: 1854
+irt_a IS NOT NULL (new 3PL set): 2364
+irt_difficulty<>0 OR irt_discrimination<>1 (non-default old set): 174772
+calibration_sample_size>0: 360
+irt_n_responses>0: 0
+times_asked>0 (ever served?): 346
+times_correct>0: 58
+student_success_rate<>0: 107561
+exposure_rate<>0: 0
+flag_count>0: 0
+quality_score stats (min/max/avg/zeros):
+   0.0 | 100.0 | 80.309 | 10242
+difficulty_level distribution:
+   MEDIUM | 124154
+   EASY | 25338
+   HARD | 21264
+   VERY_EASY | 9335
+   VERY_HARD | 7743
+bloom_level distribution:
+   2 | 142509
+   3 | 17142
+   1 | 14710
+   4 | 7538
+   5 | 3830
+   6 | 2105
+grade_level distribution:
+   12 | 107655
+   11 | 80179
+metadata_filled_at NOT NULL (pipeline cluster): 167559
+overlap metadata_filled_at & irt_a both not null: 2364
+
+======================================================================
+2. Does the 'enriched' cluster line up with quality status / active?
+======================================================================
+metadata_filled_at NOT NULL  x quality_review_status:
+   unverified | 61482 | 61482
+   rejected | 56652 | 56652
+   pending | 36880 | 36924
+   auto_judged_high | 12348 | 12348
+   bronze_clean | 197 | 197
+   legacy_v3_unaudited | 0 | 20231
+irt_a NOT NULL  x quality_review_status:
+   unverified | 1451 | 61482
+   rejected | 627 | 56652
+   pending | 286 | 36924
+   auto_judged_high | 0 | 12348
+   bronze_clean | 0 | 197
+   legacy_v3_unaudited | 0 | 20231
+
+======================================================================
+3. ACTIVE pool quality by subject and exam_type
+======================================================================
+by subject_area (active | active_good | active_unreviewed):
+   MATEMATIK | 44193 | 4276 | 39917
+   TURKCE | 14789 | 1863 | 12926
+   KIMYA | 13715 | 838 | 12877
+   FIZIK | 11242 | 1180 | 10062
+   GEOMETRI | 8436 | 2195 | 6241
+   BIYOLOJI | 5754 | 369 | 5385
+   EDEBIYAT | 5284 | 486 | 4798
+   TARIH | 4092 | 587 | 3505
+   GENEL | 1413 | 306 | 1107
+   SOSYAL | 988 | 277 | 711
+   COGRAFYA | 887 | 142 | 745
+   FEN | 102 | 15 | 87
+   INGILIZCE | 0 | 0 | 0
+   TDE | 0 | 0 | 0
+by exam_type:
+   TYT | 94255 | 8916 | 85339
+   AYT | 16640 | 3618 | 13022
+
+======================================================================
+4. student_answers (161,910) — what is actually recorded?
+======================================================================
+selected_answer NULL: 1
+is_correct true/false/null:
+   45 | 100 | 161765
+error_type distribution:
+    | 161910
+answered_at min/max:
+   2026-03-07 14:38:26.441404+03:00 | 2026-06-09 18:39:55.449063+03:00
+distinct exam_session_id / distinct question_id:
+   159 | 10246
+question_id resolves to question_bank?: 247
+question_id resolves to legacy questions?: 2
+question_id resolves to NEITHER (logical orphan): 161661
+backfillable is_correct (selected_answer set, is_correct null, resolves to qb): 101
+
+======================================================================
+5. question_bank duplicates — active? cross-subject? near-dup?
+======================================================================
+exact dup extra rows that are ACTIVE: 6233
+normalized dup groups (btrim+lower) vs exact:
+   3955 | 3970
+top 10 dup groups (count | subjects | active | statuses):
+   44 | 1 | 0 | pending
+   43 | 2 | 43 | auto_judged_high,pending,unverified
+   41 | 2 | 11 | legacy_v3_unaudited,pending,unverified
+   31 | 2 | 31 | unverified
+   30 | 2 | 14 | legacy_v3_unaudited,pending,unverified
+   26 | 2 | 19 | legacy_v3_unaudited,pending,unverified
+   25 | 2 | 11 | legacy_v3_unaudited,pending,unverified
+   22 | 2 | 13 | legacy_v3_unaudited,pending,unverified
+   20 | 1 | 19 | pending,rejected,unverified
+   19 | 2 | 19 | unverified
+
+======================================================================
+6. control chars EXCLUDING \n \t \r (real corruption signal)
+======================================================================
+rows with non-whitespace control char: 179
+rows with NUL char: ERROR OperationalError: (psycopg2.errors.ProgramLimitExceeded) null character not permitted
+
+[SQL: SELECT count(*) FROM question_bank WHERE position(chr(0) in question_text)>0]
+(Backgr
+rows with newline/tab only (benign): 86778
+
+======================================================================
+7. embedding vs embedding_model consistency
+======================================================================
+embedding NOT NULL & model NULL: 119847
+embedding NULL & model NOT NULL: 0
+embedding NOT NULL total: 147196
+
+======================================================================
+8. Question-table family: roles & coverage vs question_bank
+======================================================================
+question_math: rows / distinct qid / resolve to qb:
+   37088 | 37088 | 37088
+question_option_rationales: rows / distinct qid / qb-coverage:
+   486270 | 97255 | 97255
+question_kc_mapping: rows / distinct qid / qb-coverage:
+   168283 | 167559 | 167559
+exam_questions: distinct qid / resolve to qb / resolve to legacy:
+   22083 | 20934 | 1149
+osym_questions row count (FK target of student_question_responses): 0
+student_question_responses row count: 0
+
+======================================================================
+9. legacy 'questions' (36,381) — live? overlaps question_bank?
+======================================================================
+aktif=true / is_reviewed=true:
+   36381 | 36381
+created_at min/max:
+   2026-01-26 05:45:29.873580+03:00 | 2026-01-26 05:59:04.518252+03:00
+text overlap with question_bank (md5 match): 15662
+
+======================================================================
+10. Backup tables footprint (size + rows)
+======================================================================
+count / total size / total rows: ERROR TypeError: sqlalchemy.cyextension.immutabledict.immutabledict is not a sequence
+
+======================================================================
+11. Tiny/suspect subject_area buckets
+======================================================================
+INGILIZCE/TDE/FEN/GENEL detail (active | statuses):
+   INGILIZCE | 5 | 0 | rejected
+   TDE | 13 | 0 | rejected
+   FEN | 418 | 102 | auto_judged_high,legacy_v3_unaudited,pending,rejected,unverified
+   GENEL | 2607 | 1413 | auto_judged_high,legacy_v3_unaudited,pending,rejected,unverified
+
+======================================================================
+DEEP PROFILE COMPLETE 2026-06-09T22:37:07.364184
+======================================================================

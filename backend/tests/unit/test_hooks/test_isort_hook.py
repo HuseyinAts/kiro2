@@ -188,7 +188,7 @@ class TestRunIsortFunction:
     @pytest.mark.asyncio
     async def test_run_isort_default_config(self):
         """Test run_isort with default config."""
-        with patch('backend.hooks.isort_hook.IsortHook.run_with_timeout', new_callable=AsyncMock) as mock_run:
+        with patch.object(IsortHook, 'run_with_timeout', new_callable=AsyncMock) as mock_run:
             from backend.hooks.models import QualityCheckResult
             mock_run.return_value = QualityCheckResult(
                 tool="isort",
@@ -208,7 +208,7 @@ class TestRunIsortFunction:
     async def test_run_isort_custom_config(self):
         """Test run_isort with custom config."""
         config = HookConfig(check_only=True, line_length=100)
-        with patch('backend.hooks.isort_hook.IsortHook.run_with_timeout', new_callable=AsyncMock) as mock_run:
+        with patch.object(IsortHook, 'run_with_timeout', new_callable=AsyncMock) as mock_run:
             from backend.hooks.models import QualityCheckResult
             mock_run.return_value = QualityCheckResult(
                 tool="isort",

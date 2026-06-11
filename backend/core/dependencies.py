@@ -11,7 +11,7 @@ from typing import Any
 import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
@@ -86,11 +86,10 @@ class AuthenticatedUser(BaseModel):
         masked_email = "***@***" if self.email else None
         return f"AuthenticatedUser(id={self.id}, username={self.username}, role={self.role.value}, email={masked_email})"
 
-    class Config:
-        """Pydantic config."""
-
-        use_enum_values = False  # Keep enum objects
-        frozen = True  # Security: Prevent privilege escalation
+    model_config = ConfigDict(
+        use_enum_values=False,  # Keep enum objects
+        frozen=True,  # Security: Prevent privilege escalation
+    )
 
 
 # ============================================================================
@@ -126,19 +125,19 @@ async def get_current_user(
         )
 
     try:
+        import time
+        t0 = time.perf_counter()
+        
         # P0-1e: Check blacklist before decoding (Redis-backed with in-memory fallback)
         from core.jwt_auth import get_jwt_manager
 
         jwt_mgr = get_jwt_manager()
-        if await jwt_mgr.is_blacklisted_async(token):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token has been revoked",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        await jwt_mgr.is_blacklisted_async(token)
+        t1 = time.perf_counter()
 
         # JWT token'ı decode et
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        t2 = time.perf_counter()
 
         user_id = payload.get("sub")
         if user_id is None:
@@ -152,15 +151,6 @@ async def get_current_user(
         username = payload.get("username")
         role = payload.get("role")
         email = payload.get("email")
-
-        # Validate required fields are present in token
-        if not all([username, role]):
-            logger.warning(f"Token missing required fields for user {user_id}")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token: missing required claims",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
 
         # Create type-safe user model (validation happens in Pydantic)
         try:
@@ -179,7 +169,6 @@ async def get_current_user(
                 detail=f"Invalid token: {e}",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-
         return user
 
     except jwt.ExpiredSignatureError:

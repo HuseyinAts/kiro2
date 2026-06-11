@@ -1,0 +1,16 @@
+IRT RESET DRY-RUN (read-only) - 2026-06-09T23:47:02.844567
+============================================================
+MEVCUT: is_calibrated TRUE=82,530  FALSE=105,304
+        bunlardan irt_method='bootstrap_difficulty_prior' = 82,517
+        irt_calibration_history toplam=1,080  SE=0&iter=0=0  (silinecek SE=0&iter=0&ll=0=0)
+
+SIFIRLANACAK (script'in tam mantigi: yanit yok + student_answers yok): 82,265
+  -> kalan is_calibrated=TRUE: 265
+student_answers (LOAD-TEST) guard'i olmadan sifirlanacak olsa: 82,334
+  -> SADECE load-test student_answers yuzunden korunan (false negative): 69
+gercek learning_event ile destekli (gercekten kalibre sayilabilir): 196
+
+YORUM:
+  - Script apply edilirse 82,265 soru is_calibrated=FALSE olur (calibration_task gorebilir).
+  - 69 soru sadece load-test copu yuzunden TRUE kaliyor -> once student_answers temizlenirse bunlar da reset olur.
+  - irt_calibrated (gercek 4PL) zaten 0; bu islem onu degistirmez.

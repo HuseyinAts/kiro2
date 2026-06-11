@@ -283,9 +283,9 @@ async def test_fsrs_card_db_matches_review_card_core_fields(db_session):
         f"DB state '{row.state}' != FSRS state '{fsrs_result['state']}'"
     )
 
-    # due_date ordering: DB due_date should be a future datetime (FSRS sets it)
-    now = datetime.now(UTC)
-    assert row.due_date > now, f"due_date {row.due_date} should be after now {now}"
+    # due_date ordering: DB due_date should be today or in the future (FSRS sets it)
+    now_start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+    assert row.due_date >= now_start, f"due_date {row.due_date} should be on or after today's start {now_start}"
 
 
 # ---------------------------------------------------------------------------

@@ -30,6 +30,31 @@ import pytest
 # ============================================================
 
 
+_ORIG_SYS_MODULES = {}
+_STUB_KEYS = [
+    "bleach",
+    "numpy",
+    "scipy",
+    "scipy.optimize",
+    "core.turkish_nlp_utils",
+    "models.irt_morfoloji",
+    "models.video_analytics",
+    "sqlalchemy",
+    "sqlalchemy.orm",
+    "sqlalchemy.ext.asyncio",
+    "sqlalchemy.ext",
+    "models.question_bank",
+    "core.irt_validators",
+    "core.multi_layer_cache",
+    "core.structured_logger",
+    "core.metrics_collector",
+    "aiofiles",
+    "aiofiles.os",
+]
+for k in _STUB_KEYS:
+    if k in sys.modules:
+        _ORIG_SYS_MODULES[k] = sys.modules[k]
+
 def _make_stub(name: str, **attrs):
     m = types.ModuleType(name)
     for k, v in attrs.items():
@@ -150,11 +175,44 @@ class _TurkceIRTSoruAnalizi:
     pass
 
 
+class _MorfolojiAnalizi:
+    pass
+
+
+from enum import Enum
+
+class _MorfolojiKarmasiklikSeviyesi(Enum):
+    BASIT = 1
+    ORTA = 2
+    KARMASIK = 3
+    COK_KARMASIK = 4
+
+
+class _IRTParametreTipi(Enum):
+    BIR_PARAMETRE = "1PL"
+    IKI_PARAMETRE = "2PL"
+    UC_PARAMETRE = "3PL"
+    DORT_PARAMETRE = "4PL"
+
+
+class _TurkceEkTipi(Enum):
+    ISIM_CEKIM = "isim_cekim"
+    FIIL_CEKIM = "fiil_cekim"
+    ISIM_YAPIM = "isim_yapim"
+    FIIL_YAPIM = "fiil_yapim"
+    SIFAT_YAPIM = "sifat_yapim"
+    ZARF_YAPIM = "zarf_yapim"
+
+
 irt_morfo_mod.IRTParametreleri = _IRTParametreleri
 irt_morfo_mod.IRTKalibrasyonSonucu = _IRTKalibrasyonSonucu
 irt_morfo_mod.OgrenciMorfolojiProfili = _OgrenciMorfolojiProfili
 irt_morfo_mod.SoruMorfolojiAnalizi = _SoruMorfolojiAnalizi
 irt_morfo_mod.TurkceIRTSoruAnalizi = _TurkceIRTSoruAnalizi
+irt_morfo_mod.MorfolojiAnalizi = _MorfolojiAnalizi
+irt_morfo_mod.MorfolojiKarmasiklikSeviyesi = _MorfolojiKarmasiklikSeviyesi
+irt_morfo_mod.IRTParametreTipi = _IRTParametreTipi
+irt_morfo_mod.TurkceEkTipi = _TurkceEkTipi
 sys.modules.setdefault("models.irt_morfoloji", irt_morfo_mod)
 
 # models.video_analytics stub
@@ -261,21 +319,10 @@ qb_mod.IRTCalibrationHistory = _IRTCalHist
 qb_mod.QuestionDifficultyLevel = _QDiffLevel
 qb_mod.calculate_irt_based_difficulty = lambda v: float(v or 5)
 qb_mod.should_update_difficulty = lambda *a: True
-sys.modules.setdefault("models.question_bank", qb_mod)
+sys.modules["models.question_bank"] = qb_mod
 
-# core.irt_validators stub
-iv_mod = types.ModuleType("core.irt_validators")
-iv_mod.validate_irt_difficulty = lambda v: v
-iv_mod.validate_irt_discrimination = lambda v: v
-iv_mod.validate_irt_guessing = lambda v: v
-iv_mod.validate_irt_upper_asymptote = lambda v: v
-
-
-class _IRTValError(Exception):
-    pass
-
-
-iv_mod.IRTValidationError = _IRTValError
+# core.irt_validators - import real module to avoid stub collision
+import core.irt_validators as iv_mod
 sys.modules.setdefault("core.irt_validators", iv_mod)
 
 # multi_layer_cache stub
@@ -381,8 +428,8 @@ async def _fake_remove(path):
 aiofiles_os_mod.stat = _fake_stat
 aiofiles_os_mod.remove = _fake_remove
 aiofiles_mod.os = aiofiles_os_mod
-sys.modules.setdefault("aiofiles", aiofiles_mod)
-sys.modules.setdefault("aiofiles.os", aiofiles_os_mod)
+sys.modules["aiofiles"] = aiofiles_mod
+sys.modules["aiofiles.os"] = aiofiles_os_mod
 
 
 # ============================================================
@@ -1581,13 +1628,16 @@ class TestQuestionBankCRUD:
         assert db.commit.called
 
     def _patch_sa(self):
-        """Context manager that patches select + joinedload in qbs_mod namespace."""
+        """Context manager that patches select + joinedload + selectinload in qbs_mod namespace."""
         from contextlib import ExitStack
 
         stack = ExitStack()
         stack.enter_context(patch.object(qbs_mod, "select", return_value=MagicMock()))
         stack.enter_context(
             patch.object(qbs_mod, "joinedload", return_value=MagicMock())
+        )
+        stack.enter_context(
+            patch.object(qbs_mod, "selectinload", return_value=MagicMock())
         )
         return stack
 
@@ -1750,6 +1800,12 @@ class TestLearningPathCacheProgress:
 # ============================================================
 
 fu_mod = _load("core/file_utils.py", "file_utils_final50")
+# Restore the original state of sys.modules to prevent mock pollution for subsequent tests
+for k in _STUB_KEYS:
+    if k in _ORIG_SYS_MODULES:
+        sys.modules[k] = _ORIG_SYS_MODULES[k]
+    else:
+        sys.modules.pop(k, None)
 
 
 class TestFileInfo:

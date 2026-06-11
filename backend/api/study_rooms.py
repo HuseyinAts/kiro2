@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import and_, select
 from sqlalchemy.exc import IntegrityError
@@ -343,7 +343,7 @@ async def delete_room(
     room_id: str,
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
-) -> None:
+) -> Response:
     """Soft-delete a room (status → DELETED). Owner only."""
     room = await _get_room_or_404(db, room_id)
     if room.owner_id != str(current_user.id):
@@ -351,6 +351,7 @@ async def delete_room(
 
     room.status = RoomStatus.DELETED
     await db.commit()
+    return Response(status_code=204)
 
 
 @router.post("/{room_id}/join", response_model=StudyRoomResponse)
@@ -411,7 +412,7 @@ async def leave_room(
     room_id: str,
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
-) -> None:
+) -> Response:
     """Leave a room. Owner cannot leave (must delete instead)."""
     room = await _get_room_or_404(db, room_id)
     user_id = str(current_user.id)
@@ -429,3 +430,4 @@ async def leave_room(
     await db.delete(membership)
     room.current_member_count = max(1, room.current_member_count - 1)
     await db.commit()
+    return Response(status_code=204)

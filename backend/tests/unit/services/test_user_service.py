@@ -13,7 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[3]))
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from unittest.mock import patch
 
 import pytest
@@ -57,7 +57,8 @@ def valid_user_data():
         ad_soyad="Test User",
         telefon="+905001234567",
         rol=KullaniciRolu.OGRENCI,
-        sifre="Kx9$mWpL7vRq"  # Strong password (12+ chars, no sequential)
+        sifre="Kx9$mWpL7vRq",  # Strong password (12+ chars, no sequential)
+        birth_date=date(2005, 1, 1)
     )
 
 
@@ -235,7 +236,8 @@ async def test_list_users_pagination(user_service):
             ad_soyad=f"User {i}",
             telefon=f"+9050012345{i}0",
             rol=KullaniciRolu.OGRENCI,
-            sifre=f"Kx9$mWpL{i}vRq"
+            sifre=f"Kx9$mWpL{i}vRq",
+            birth_date=date(2005, 1, 1)
         )
         await user_service.kullanici_olustur(user_data)
 
@@ -253,14 +255,16 @@ async def test_search_users_by_name(user_service):
         ad_soyad="Ahmet Yılmaz",
         telefon="+905001234567",
         rol=KullaniciRolu.OGRENCI,
-        sifre="Kx9$mWpL7vRq"
+        sifre="Kx9$mWpL7vRq",
+        birth_date=date(2005, 1, 1)
     )
     user2 = KullaniciOlustur(
         email="mehmet@example.com",
         ad_soyad="Mehmet Kaya",
         telefon="+905001234568",
         rol=KullaniciRolu.OGRENCI,
-        sifre="Jt8#nQbK5wFm"
+        sifre="Jt8#nQbK5wFm",
+        birth_date=date(2005, 1, 1)
     )
 
     await user_service.kullanici_olustur(user1)

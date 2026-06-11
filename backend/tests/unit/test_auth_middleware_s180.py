@@ -43,9 +43,11 @@ def test_module_imports_without_side_effects():
     """Re-importing the module should not crash — guards against module-level
     side effects added unintentionally (DB connection, network, etc.).
     """
-    import importlib
+    import subprocess
+    import sys
+    from pathlib import Path
 
-    import core.auth_middleware as m
-
-    importlib.reload(m)  # If this raises, the test fails.
-    assert m is not None
+    backend_dir = str(Path(__file__).parents[2])
+    cmd = [sys.executable, "-c", "import sys; sys.path.insert(0, '.'); import core.auth_middleware"]
+    result = subprocess.run(cmd, cwd=backend_dir, capture_output=True, text=True)
+    assert result.returncode == 0, f"Failed to import core.auth_middleware: {result.stderr}"

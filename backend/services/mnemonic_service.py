@@ -140,16 +140,36 @@ async def batch_generate_mnemonics(
     from sqlalchemy import func as sa_func
 
     # Note: mnemonic_hint and is_active columns not in DB yet
-    result = await db.execute(
-        select(QuestionBankItem.id)
-        .where(
-            QuestionBankItem.subject_area == subject.upper(),
-            # mnemonic_hint/is_active filters removed - columns not in DB
+    dialect = db.bind.dialect.name if db.bind else "sqlite"
+    if dialect == "postgresql":
+        result = await db.execute(
+            select(QuestionBankItem.id)
+            .tablesample(sa_func.bernoulli(20))
+            .where(
+                QuestionBankItem.subject_area == subject.upper(),
+            )
+            .limit(limit)
         )
-        .order_by(sa_func.random())
-        .limit(limit)
-    )
-    question_ids = [r[0] for r in result.all()]
+        question_ids = [r[0] for r in result.all()]
+        if len(question_ids) < limit:
+            result = await db.execute(
+                select(QuestionBankItem.id)
+                .where(
+                    QuestionBankItem.subject_area == subject.upper(),
+                )
+                .limit(limit)
+            )
+            question_ids = [r[0] for r in result.all()]
+    else:
+        result = await db.execute(
+            select(QuestionBankItem.id)
+            .where(
+                QuestionBankItem.subject_area == subject.upper(),
+            )
+            .order_by(sa_func.random())
+            .limit(limit)
+        )
+        question_ids = [r[0] for r in result.all()]
 
     generated = 0
     failed = 0

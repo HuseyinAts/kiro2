@@ -11,6 +11,7 @@ import time
 from typing import Any
 
 from .base import BaseToolHandler
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
 
@@ -254,16 +255,16 @@ class LemmatizationHandler(BaseToolHandler):
         Convert verb stem to infinitive form
 
         Turkish verbs: stem + mek/mak
-        Vowel harmony: e, i, o, u -> mek; a, ı, o, u -> mak
+        Vowel harmony: e, i, ö, ü -> mek; a, ı, o, u -> mak
         """
-        # Check last vowel for vowel harmony
+        # Check last vowel for vowel harmony (Turkish locale-safe)
         last_vowel = None
-        for char in reversed(lemma.lower()):
+        for char in reversed(normalize_tr(lemma)):
             if char in "aeıioöuü":
                 last_vowel = char
                 break
 
-        if last_vowel in "eioö":
+        if last_vowel in "eiöü":
             return lemma + "mek"
         return lemma + "mak"
 

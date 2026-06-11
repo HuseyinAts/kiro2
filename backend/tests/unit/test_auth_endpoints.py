@@ -520,6 +520,7 @@ class TestRegister:
                 "sifre": "StrongPass1!",
                 "ad_soyad": "Yeni Kullanici",
                 "rol": "ogrenci",
+                "birth_date": "2000-01-01",
             },
         )
 
@@ -543,6 +544,7 @@ class TestRegister:
                 "sifre": "StrongPass1!",
                 "ad_soyad": "Duplicate User",
                 "rol": "ogrenci",
+                "birth_date": "2000-01-01",
             },
         )
 
@@ -556,7 +558,12 @@ class TestRegister:
         client, _app, _mock_db = app_client
         resp = client.post(
             "/api/v1/auth/kayit",
-            json={"sifre": "StrongPass1!", "ad_soyad": "Test", "rol": "ogrenci"},
+            json={
+                "sifre": "StrongPass1!",
+                "ad_soyad": "Test",
+                "rol": "ogrenci",
+                "birth_date": "2000-01-01",
+            },
         )
         assert resp.status_code == 422
 
@@ -575,6 +582,7 @@ class TestRegister:
                 "sifre": "ValidPass2@",
                 "ad_soyad": "Another User",
                 "rol": "ogretmen",
+                "birth_date": "2000-01-01",
             },
         )
 
@@ -876,13 +884,13 @@ class TestPasswordChange:
                 },
             )
 
-        assert resp.status_code == 200
+        assert resp.status_code == 401
         body = resp.json()
-        assert body["success"] is False
+        assert "detail" in body
         assert (
-            "yanlış" in body["message"]
-            or "wrong" in body["message"].lower()
-            or "mevcut" in body["message"].lower()
+            "yanlış" in body["detail"].lower()
+            or "wrong" in body["detail"].lower()
+            or "mevcut" in body["detail"].lower()
         )
 
     def test_change_password_weak_new_password_returns_failure(self):
@@ -907,9 +915,9 @@ class TestPasswordChange:
                 },
             )
 
-        assert resp.status_code == 200
+        assert resp.status_code == 400
         body = resp.json()
-        assert body["success"] is False
+        assert "detail" in body
 
     def test_change_password_user_not_found_returns_failure(self):
         mock_select_result = MagicMock()
@@ -927,9 +935,9 @@ class TestPasswordChange:
                 },
             )
 
-        assert resp.status_code == 200
+        assert resp.status_code == 404
         body = resp.json()
-        assert body["success"] is False
+        assert "detail" in body
 
 
 # ---------------------------------------------------------------------------

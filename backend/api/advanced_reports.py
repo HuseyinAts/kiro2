@@ -303,14 +303,27 @@ async def generate_pdf_report(
         # Gelişmiş raporu al
         gelismis_rapor = await get_advanced_exam_report(sinav_id, current_user)
 
-        # PDF oluşturma task'ını background'a ekle
         pdf_filename = (
             f"sinav_raporu_{sinav_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
         )
 
-        background_tasks.add_task(
-            pdf_generator.generate_advanced_exam_report, gelismis_rapor, pdf_filename
-        )
+        # SRE Bulkhead: Run PDF generation in the custom PDF_POOL executor
+        import asyncio
+        from core.worker_pools import PDF_POOL
+
+        async def generate_pdf_in_background():
+            loop = asyncio.get_running_loop()
+            try:
+                await loop.run_in_executor(
+                    PDF_POOL,
+                    pdf_generator.generate_advanced_exam_report,
+                    gelismis_rapor,
+                    pdf_filename
+                )
+            except Exception as e:
+                logger.error(f"Background PDF generation error: {e}")
+
+        asyncio.create_task(generate_pdf_in_background())
 
         return {
             "message": "PDF rapor oluşturuluyor",

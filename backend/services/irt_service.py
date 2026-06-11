@@ -479,7 +479,22 @@ class IRTService:
         baslangic_parametreleri: dict[str, float],
         morfoloji_faktoru: float,
     ) -> dict[str, Any]:
-        """IRT parametrelerini kalibre et"""
+        """IRT parametrelerini kalibre et - Offloaded to thread pool"""
+        import asyncio
+        return await asyncio.to_thread(
+            self._irt_kalibrasyonu_sync,
+            cevap_verileri,
+            baslangic_parametreleri,
+            morfoloji_faktoru
+        )
+
+    def _irt_kalibrasyonu_sync(
+        self,
+        cevap_verileri: list[dict[str, Any]],
+        baslangic_parametreleri: dict[str, float],
+        morfoloji_faktoru: float,
+    ) -> dict[str, Any]:
+        """IRT parametrelerini senkron olarak kalibre et (CPU-bound)"""
         try:
             # Veriyi numpy array'e çevir
             theta_values = np.array([veri["theta"] for veri in cevap_verileri])

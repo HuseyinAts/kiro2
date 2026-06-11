@@ -292,8 +292,17 @@ class GeminiOCRService:
                 option = line[0]
                 result['options'][option] = line[2:].strip()
             # Soru metni
-            elif not any(line.startswith(x) for x in ['Soru', 'Konu:', 'Ders:', 'Test']):
-                result['question_text'] += line + ' '
+            else:
+                clean_line = line.strip()
+                if clean_line.startswith('Soru:'):
+                    clean_line = clean_line[5:].strip()
+                elif clean_line.startswith('Soru Metni:'):
+                    clean_line = clean_line[11:].strip()
+                elif clean_line.startswith('Soru Gövdesi:'):
+                    clean_line = clean_line[13:].strip()
+                
+                if clean_line and clean_line not in ['Soru', 'Test', 'Soru Metni', 'Soru Gövdesi']:
+                    result['question_text'] += clean_line + ' '
 
         # LaTeX ve görsel tespiti
         result['has_equation'] = '\\' in result['question_text'] or '$' in result['question_text']

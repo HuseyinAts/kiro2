@@ -2,6 +2,10 @@ import asyncio
 import os
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock
+
+sys.modules.setdefault('chromadb', MagicMock())
+sys.modules.setdefault('chromadb.config', MagicMock())
 
 # CRITICAL: Prevent HuggingFace model downloads during tests (MUST be before any imports)
 os.environ["HF_HUB_OFFLINE"] = "1"
@@ -116,16 +120,33 @@ if not SYNC_DATABASE_URL:
     SYNC_DATABASE_URL = "sqlite:///:memory:"
     print("WARNING: SYNC_TEST_DATABASE_URL not set, using in-memory SQLite")
 
-# Note: event_loop fixture removed - pytest-asyncio handles this automatically
+@pytest.fixture(scope="session")
+def event_loop():
+    """Create an instance of the default event loop for each test session."""
+    loop = asyncio.new_event_loop()
+    yield loop
+    # Gracefully cancel all pending tasks in the loop before letting it go
+    try:
+        pending = asyncio.all_tasks(loop)
+        for task in pending:
+            task.cancel()
+    except Exception:
+        pass
 
 
 # Session-scoped engine for performance
 @pytest.fixture(scope="session")
-async def test_async_engine():
+async def test_async_engine(event_loop):
     """Create async engine once per test session (PERFORMANCE FIX)"""
     # SQLite doesn't support pool_size/max_overflow - only use for PostgreSQL
     if "sqlite" in TEST_DATABASE_URL.lower():
-        engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+        from sqlalchemy.pool import StaticPool
+        engine = create_async_engine(
+            TEST_DATABASE_URL,
+            echo=False,
+            poolclass=StaticPool,
+            connect_args={"check_same_thread": False}
+        )
     else:
         engine = create_async_engine(
             TEST_DATABASE_URL,
@@ -609,3 +630,15 @@ def pytest_collection_modifyitems(config, items):
                     has_integration = any(m.name == "integration" for m in markers)
                     if not has_integration:
                         item.add_marker(_pytest.mark.integration)
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """
+    Teardown hook called after the entire test session finishes.
+    Ensures SRE Bulkhead worker pools are cleanly shut down to avoid hanging.
+    """
+    try:
+        from core.worker_pools import shutdown_pools
+        shutdown_pools()
+    except Exception:
+        pass

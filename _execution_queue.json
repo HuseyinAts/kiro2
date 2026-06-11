@@ -1,0 +1,653 @@
+[
+    {
+        "ID": "TASK_001",
+        "table_name": "PostgreSQL Connection Saturation",
+        "defect_description": "Under 1,000 active students, FastAPI worker scaling ($N \\ge 5$) combined with default pool configurations ($20 \text{ pool} + 20 \text{ overflow}$ per worker) will exceed PostgreSQL's `max_connections` limit (200), resulting in immediate client-side `500/504` errors.",
+        "remediation_action": "Address high-impact vulnerability (see Showstoppers)",
+        "sha256": "98369976bca718cbf95384daa5dadeafee2e0282c15b84b2ef432af6042d68c0"
+    },
+    {
+        "ID": "TASK_002",
+        "table_name": "Table Bloat & Page Fragmentation",
+        "defect_description": "Dynamic tables suffer from massive bloat—notably `student_question_flags` (90.91% dead tuples), `users` (41.86%), `bkt_states` (40.91%), and `student_answers` (50%). This bloat, combined with duplicate indexes, increases page fragmentation and write amplification.",
+        "remediation_action": "Address high-impact vulnerability (see Showstoppers)",
+        "sha256": "2cb16d4e5e054ad071c9fa2a6cb07a3c9ad3498d4444d1c2d75e86ec96e582eb"
+    },
+    {
+        "ID": "TASK_003",
+        "table_name": "Pedagogical Bias via TABLESAMPLE SYSTEM",
+        "defect_description": "The use of `TABLESAMPLE SYSTEM` for question retrieval samples database disk blocks rather than random rows. Since PostgreSQL heap files store rows in insertion order, students receive clustered, highly correlated question blocks, skewing IRT theta ($\theta$) estimates.",
+        "remediation_action": "Address high-impact vulnerability (see Showstoppers)",
+        "sha256": "4a2636183be73ac9296c92afe52f7822fa6af4aba0c81b84f7645bfc84562e05"
+    },
+    {
+        "ID": "TASK_004",
+        "table_name": "Sentinel Cache Penetration & OOM Risk",
+        "defect_description": "The current Redis Sentinel caching architecture caches negative lookups (`{\"__sentinel_null__\": True}`) for 60 seconds. A lack of API rate-limiting or strict input validation allows attackers to flood the system with arbitrary key inputs, causing cache penetration and risk of Redis Out-Of-Memory (OOM) crashes.",
+        "remediation_action": "Address high-impact vulnerability (see Showstoppers)",
+        "sha256": "d8e5f11987deda1cf6ede586cd2892c3ba4df5036aacc10874b208ff0c8b7848"
+    },
+    {
+        "ID": "TASK_005",
+        "table_name": "Logical Foreign Key Orphans",
+        "defect_description": "Inactive questions (`is_active = False`) in `question_bank` have active reference records in child tables: 381 rows in `irt_calibration_history` and 15 rows in `student_question_flags`. This creates analytical skew in calibration pipelines and causes client-side rendering crashes.",
+        "remediation_action": "Address high-impact vulnerability (see Showstoppers)",
+        "sha256": "f2a4aeb59d67cb1b356d6b1bd089d66dce50f273bce9b47a8690b5bb397f9596"
+    },
+    {
+        "ID": "TASK_006",
+        "table_name": "api_keys",
+        "defect_description": "Cleanliness: Total rows: 5. 100% NULL rates on tracking columns: `revoked_at` (5), `last_used_at` (5), `revoke_reason` (5), `last_used_ip` (5). | Bloat: Negligible. | Gaps: Missing unique index constraints on API keys. | Risk: Request authorization triggers sequential scans on `api_keys` if indices are missing, causing latency amplification.",
+        "remediation_action": "Enforce structured metadata schemas containing empty arrays or placeholder objects instead of nulls.",
+        "sha256": "00ed46b608ae949b2957b66ad28e8918712dca640583cfb45f8178f2db28e306"
+    },
+    {
+        "ID": "TASK_007",
+        "table_name": "student_question_flags",
+        "defect_description": "Cleanliness: Total rows: 70. NULL counts: `resolved_at` (11), `note` (55), `resolution` (11), `resolved_by` (11). Contains 15 logical orphan rows pointing to inactive parent questions. | Bloat: **90.91%** (1 live tuple, 10 dead tuples). | Gaps: Missing conditional index for unresolved flags. | Risk: Frequent updates trigger high bloat. Sequential scans on unresolved flags will lock pages, slowing queue management queries.",
+        "remediation_action": "Execute `VACUUM ANALYZE student_question_flags;`. Purge orphan flags where the question has been deactivated.",
+        "sha256": "091938c479ff269c026b9f13e92ad83c017e6963242d39ed5c5da2041057e1de"
+    },
+    {
+        "ID": "TASK_008",
+        "table_name": "questions",
+        "defect_description": "Cleanliness: Total rows: 36,381. 100% NULL rates on `question_image_url` and `created_by`. Empty/whitespace options: `option_a` (12), `option_b` (12), `option_c` (12), `option_d` (16). | Bloat: Unmeasured due to stale statistics (optimizer reports 0 live rows). | Gaps: Redundant indexes: `idx_questions_text_search` (23MB), `idx_questions_text_gin` (6.5MB), `idx_questions_topic_search` (6.2MB) wasting 35MB+ disk space. | Risk: Stale statistics force the optimizer to default to parallel sequential scans instead of index scans, thrashing shared buffers.",
+        "remediation_action": "Execute `ANALYZE questions;`. Run `DROP TABLE questions CASCADE;` if it is confirmed to be legacy.",
+        "sha256": "b23859cdc754f68491094a7a8638e9b673b69ec6cab470052df5247881ba63e5"
+    },
+    {
+        "ID": "TASK_009",
+        "table_name": "refresh_tokens",
+        "defect_description": "Cleanliness: Total rows: 4,308. NULL counts: `revoked_at` (4,306), `last_used_at` (4,306), `device_id` (4,308), `device_name` (4,308), `ip_address` (4,306), `user_agent` (4,306). | Bloat: 3.03%. | Gaps: Duplicate index groups: `idx_refresh_token_expires` vs `ix_refresh_tokens_expires_at`, `idx_refresh_token_user` vs `ix_refresh_tokens_user_id`. | Risk: Duplicate index updates double write amplification during login peaks, leading to connection timeouts.",
+        "remediation_action": "Drop duplicate indexes: `idx_refresh_token_expires`, `idx_refresh_token_user`, and `idx_refresh_token_revoked`.",
+        "sha256": "f78a2a9a3237dc65ada162ffc812ae78c60baf599d240c27ab9186167ebea2ce"
+    },
+    {
+        "ID": "TASK_010",
+        "table_name": "student_profiles",
+        "defect_description": "Cleanliness: Total rows: 73. 100% NULL rates on core profiling columns: `learning_style`, `study_hours_per_day`, `vark_profile`, `zpd_range`, `fsrs_parameters`, `target_university`, `target_department`. | Bloat: Negligible. | Gaps: Lack of non-null constraints on student preference variables. | Risk: Missing profiles force real-time engines to execute expensive fallback calculations, adding API latency.",
+        "remediation_action": "Enforce mandatory profile completion on user registration.",
+        "sha256": "4fd62d44a7d9e8fec34c19b2e01f3f088af33f6de586c4c01513ad012e2f1d89"
+    },
+    {
+        "ID": "TASK_011",
+        "table_name": "users",
+        "defect_description": "Cleanliness: Total rows: 93. NULL counts: `backup_codes_hashed` (75), `premium_expires_at` (75), `birth_date` (75), `last_level_up_at` (75), `last_login` (61), `secret_2fa` (75). | Bloat: **41.86%** (75 live tuples, 54 dead tuples). | Gaps: Duplicate unique indexes: `idx_user_email` vs `ix_users_email`, `idx_user_username` vs `ix_users_username`. | Risk: High bloat on the core authentication table causes page fragmentation. Duplicate indexes slow down validation routines.",
+        "remediation_action": "Drop duplicate indexes: `idx_user_email` and `idx_user_username`. Run `VACUUM ANALYZE users;`.",
+        "sha256": "55202f9abb783c149ba1e2d5e4d18dae31ed1d5fe74a3d3186f0130905a0dff8"
+    },
+    {
+        "ID": "TASK_012",
+        "table_name": "weekly_progress",
+        "defect_description": "Cleanliness: Total rows: 2. NULL counts: `daily_data` (2). | Bloat: Negligible. | Gaps: Missing expression check constraints. | Risk: Weekly reporting runs fail due to null payload reads.",
+        "remediation_action": "Add check constraints to ensure json schemas are strictly structured.",
+        "sha256": "e64954f5b351541765b3c8abc4b81bc9fdf466b8c7ae5f32390d7b99263a702c"
+    },
+    {
+        "ID": "TASK_013",
+        "table_name": "exam_sessions",
+        "defect_description": "Cleanliness: Total rows: 246. NULL counts: `started_at` (40), `completed_at` (165), `scaled_score` (165), `percentile` (246). | Bloat: 2.38%. | Gaps: Lack of partial index on active sessions. | Risk: Unindexed lookups of active sessions cause sequential scans as row counts scale.",
+        "remediation_action": "Create a partial index on `(user_id) WHERE completed_at IS NULL;`.",
+        "sha256": "a17bd2adf6af5dd62606091d8d151e0cf42c9e03839f28fe0316960ad96d2b5e"
+    },
+    {
+        "ID": "TASK_014",
+        "table_name": "student_answers",
+        "defect_description": "Cleanliness: Total rows: 252. NULL counts: `is_correct` (107), `confidence_level` (252), `selected_answer` (1), `error_type` (252). Empty/whitespace on `question_id` (3). | Bloat: **50.0%** (2 live tuples, 2 dead tuples). | Gaps: Missing composite index on student answers. | Risk: 50% dead tuple ratio on a major transactional table will result in massive write overhead under concurrent loads.",
+        "remediation_action": "Run `VACUUM ANALYZE student_answers;`. Repair the whitespace entries in `question_id`.",
+        "sha256": "8610200e0e990237e53e6480fef6c8d6af896cfc1af063965b2206d0ab384c83"
+    },
+    {
+        "ID": "TASK_015",
+        "table_name": "learning_paths",
+        "defect_description": "Cleanliness: Total rows: 57. NULL counts: `target_date` (57), `reasoning` (57). | Bloat: Negligible. | Gaps: Missing default constraints on date boundaries. | Risk: Empty paths cause frontend layout crashes when rendering target dates.",
+        "remediation_action": "Add default constraints to `target_date` and reasoning payload.",
+        "sha256": "0a675dede610a3de3cf45ff916af157a894e63b8b741f48a49968a8ae632c8a1"
+    },
+    {
+        "ID": "TASK_016",
+        "table_name": "realm_progress",
+        "defect_description": "Cleanliness: Total rows: 2. NULL counts: `completed_at` (2). | Bloat: Negligible. | Gaps: Missing index on completed timestamps. | Risk: Progression calculations fail when matching incomplete user-to-realm records.",
+        "remediation_action": "Enforce state checks in transaction handlers.",
+        "sha256": "9084ae3a532a73c00efa82036c6f7bcbc87c60a44f55630aea077e1c3f476d68"
+    },
+    {
+        "ID": "TASK_017",
+        "table_name": "xp_transactions",
+        "defect_description": "Cleanliness: Total rows: 164. NULL counts: `topic_id` (164). | Bloat: Negligible. | Gaps: Missing index on user aggregate paths. | Risk: Leaderboard calculations scan the entire table, leading to database lock contention.",
+        "remediation_action": "Index `(user_id, created_at)`.",
+        "sha256": "17c75bd13e1b40a02e0fb25947be02e905116ace0172c886bed3e435d4acd1ab"
+    },
+    {
+        "ID": "TASK_018",
+        "table_name": "parent_child",
+        "defect_description": "Cleanliness: Total rows: 1. NULL counts: `approved_at` (1). | Bloat: Negligible. | Gaps: Missing kvkk/coppa consent timestamps. | Risk: Missing audit trail for parent approvals.",
+        "remediation_action": "Force non-nullable `approved_at` on approval.",
+        "sha256": "5ad816f53209149cf60a830d3f7eb4f39c873f8351fab4daed17fa175be8eef5"
+    },
+    {
+        "ID": "TASK_019",
+        "table_name": "kiro2_learning_events",
+        "defect_description": "Cleanliness: Total rows: 287. NULL counts: `session_id` (145), `theta_after` (287), `response_ms` (142). | Bloat: Negligible. | Gaps: Duplicate index `idx_kiro2_le_user` vs `idx_learning_events_user` (11MB). | Risk: Duplicate index updates slow down event collection pipelines under load.",
+        "remediation_action": "Drop `idx_kiro2_le_user` concurrently.",
+        "sha256": "e8002ded5cea2d3ea899afa3d6007ded7f54efb08bc95bee179dba3820d7be29"
+    },
+    {
+        "ID": "TASK_020",
+        "table_name": "yks_exam_goals",
+        "defect_description": "Cleanliness: Total rows: 52. NULL counts: `target_university` (52), `target_department` (52). | Bloat: Negligible. | Gaps: Lack of check constraints. | Risk: Target ranking calculations fail on null entries.",
+        "remediation_action": "Apply default inputs.",
+        "sha256": "6e9471b9bf83828ea190f1d4ce350ee6907b11a769755104bfc13a67fa4cb24c"
+    },
+    {
+        "ID": "TASK_021",
+        "table_name": "content_reports",
+        "defect_description": "Cleanliness: Total rows: 22. 100% NULL rates on administrative review fields. | Bloat: Negligible. | Gaps: Missing indexes on reported users. | Risk: Moderation audits fail due to unpopulated review metrics.",
+        "remediation_action": "Force review payload validation.",
+        "sha256": "6727a5a7d565d873daf9c68da301bbb44bbcfc5e4ee486bb8bf50752c9dcb21e"
+    },
+    {
+        "ID": "TASK_022",
+        "table_name": "user_item_fsrs",
+        "defect_description": "Cleanliness: Total rows: 147. NULL counts: `last_review` (3). | Bloat: Negligible. | Gaps: Triple duplicate index definitions: `idx_fsrs_due`, `idx_uif_due`, `idx_uif_user_due`. | Risk: High write amplification during real-time FSRS recalculations.",
+        "remediation_action": "Consolidate these indexes into a single composite index on `(user_id, due_date)`.",
+        "sha256": "ac9ecc139e8b04f8a6bc3256248d08b3171a0fa643e9d8c628e3b55098f6f885"
+    },
+    {
+        "ID": "TASK_023",
+        "table_name": "mentor_pairs",
+        "defect_description": "Cleanliness: Total rows: 27. NULL counts: `ended_at` (27). Empty/whitespace on `mentor_id` (27). | Bloat: Negligible. | Gaps: Empty string allows bypass of foreign keys. | Risk: Social features crash when attempting to fetch null mentor profiles.",
+        "remediation_action": "Add CHECK constraint on `mentor_id` length.",
+        "sha256": "e9d964d240e07b7292495f58362694b1f360c9f94fb5bbd5aacd66ffd827c6b4"
+    },
+    {
+        "ID": "TASK_024",
+        "table_name": "chat_sessions",
+        "defect_description": "Cleanliness: Total rows: 64. NULL counts: `last_message_at` (41). | Bloat: Negligible. | Gaps: Missing clean-up index. | Risk: Dangling session objects cause memory retention in Redis.",
+        "remediation_action": "Enforce default timestamps.",
+        "sha256": "2d6697e3902c0276933a8339435fc4c6d17a41b0fed4e29c5433cffd4e8576fe"
+    },
+    {
+        "ID": "TASK_025",
+        "table_name": "chat_messages",
+        "defect_description": "Cleanliness: Total rows: 47. 100% NULL rates on token count, cost, and latency metrics. | Bloat: Negligible. | Gaps: Missing composite tracking index. | Risk: Lack of token/cost telemetry leads to untracked API spend.",
+        "remediation_action": "Capture cost metrics asynchronously.",
+        "sha256": "b3d233ae0518b6b3615a191523337c4c14161b0608778a6f9efeeb173cd7f461"
+    },
+    {
+        "ID": "TASK_026",
+        "table_name": "learning_path_student_profiles",
+        "defect_description": "Cleanliness: Total rows: 38. 100% NULL rates on Felder-Silverman cognitive dimensions. | Bloat: Negligible. | Gaps: Missing validation checks. | Risk: Path recommendation calculations return blind defaults.",
+        "remediation_action": "Enforce profile defaults.",
+        "sha256": "d48654872a8e912354ac0c80ce299c93b6fb817c8d26a970f4cd8539e3bd2f7b"
+    },
+    {
+        "ID": "TASK_027",
+        "table_name": "forum_questions",
+        "defect_description": "Cleanliness: Total rows: 11. NULL counts: `question_bank_id` (11), `accepted_solution_id` (11). | Bloat: Negligible. | Gaps: Missing foreign key indexes. | Risk: Thread aggregations trigger sequential scans.",
+        "remediation_action": "Index the foreign keys.",
+        "sha256": "2d4175e8f1df3f9e92afefaf1c3cf5bdf46589b65317a7a261ec9a488ef3297d"
+    },
+    {
+        "ID": "TASK_028",
+        "table_name": "coaching_events",
+        "defect_description": "Cleanliness: Total rows: 67. 100% NULL rates on event metadata and interaction flags. | Bloat: Negligible. | Gaps: Missing foreign key index on user references. | Risk: Tracking triggers write blank rows under concurrency.",
+        "remediation_action": "Restructure schema to reject empty coaching events.",
+        "sha256": "2daee6596fb4ec60d582f00d3663ad2c71c7257c1efa488e554c2bdd2c9a6b4c"
+    },
+    {
+        "ID": "TASK_029",
+        "table_name": "league_memberships",
+        "defect_description": "Cleanliness: Total rows: 7. NULL counts: `rank` (7). | Bloat: Negligible. | Gaps: Missing index on user/league combinations. | Risk: Leaderboard checks trigger lock contention during league sweeps.",
+        "remediation_action": "Index `(league_id, user_id)`.",
+        "sha256": "b5d39f0e2e1db51f18867e99136b3f3d9833a0d52f2f4291a4aa967019aa0aa1"
+    },
+    {
+        "ID": "TASK_030",
+        "table_name": "topic_hierarchy",
+        "defect_description": "Cleanliness: Total rows: 137. NULL counts: `parent_id` (117), `description` (118). Empty/whitespace on description (19). | Bloat: Negligible. | Gaps: 117 rootless nodes break graph traversal. | Risk: Graph traversal queries fail or loop, freezing API workers.",
+        "remediation_action": "Restructure topic hierarchy relationships.",
+        "sha256": "d0e7bdab291616105fd91868667321ab25021ef613448b5515ba913d8610b8ba"
+    },
+    {
+        "ID": "TASK_031",
+        "table_name": "student_engagement_signals",
+        "defect_description": "Cleanliness: Total rows: 28. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing index on signals. | Risk: Event validation sweeps sequential scan, spiking CPU.",
+        "remediation_action": "Index the signals.",
+        "sha256": "29c3b0dae3123738063e88179f452c72ea5f07a26bc2de9407345e573bcb4c80"
+    },
+    {
+        "ID": "TASK_032",
+        "table_name": "streak_tracking",
+        "defect_description": "Cleanliness: Total rows: 1. NULL counts: `last_activity_date` (1). | Bloat: Negligible. | Gaps: Missing unique constraint on user references. | Risk: Streak checking resets user stats to 0.",
+        "remediation_action": "Enforce date presence constraints.",
+        "sha256": "6c3a73fb955f7d8ea9b8be7b2d2a602915db94fe16d5613768a0e6e86c28e781"
+    },
+    {
+        "ID": "TASK_033",
+        "table_name": "learning_progress_daily",
+        "defect_description": "Cleanliness: Total rows: 1. NULL counts: `theta_before` (1), `theta_after` (1). | Bloat: Negligible. | Gaps: Missing composite index on user date. | Risk: Progress sweeps fail due to missing theta metrics.",
+        "remediation_action": "Add non-nullable defaults.",
+        "sha256": "454b64137a256f220285fdd8bd92e30d3b894147dc144316fb45ea3c1975519d"
+    },
+    {
+        "ID": "TASK_034",
+        "table_name": "pomodoro_rooms",
+        "defect_description": "Cleanliness: Total rows: 2. NULL counts: `started_at` (2), `ended_at` (1), `topic` (1). | Bloat: Negligible. | Gaps: Missing partial index. | Risk: Active room discovery scans the entire table.",
+        "remediation_action": "Index where `ended_at IS NULL`.",
+        "sha256": "3aaa6440bb3d77c43a06cd4e3367aab75932bc8228319fb4313bf7098a4bf99a"
+    },
+    {
+        "ID": "TASK_035",
+        "table_name": "pomodoro_participants",
+        "defect_description": "Cleanliness: Total rows: 2. NULL counts: `left_at` (1). | Bloat: Negligible. | Gaps: Missing composite index. | Risk: High-frequency updates during study sessions lock tables.",
+        "remediation_action": "Index `(room_id, user_id)`.",
+        "sha256": "fb34742646d2680a183ce53cbf6e0aea164e7a5c10091d0c562c98750018d698"
+    },
+    {
+        "ID": "TASK_036",
+        "table_name": "streak_pairs",
+        "defect_description": "Cleanliness: Total rows: 13. NULL counts: `broken_at` (13). Empty/whitespace: `student_b_id` (13). | Bloat: Negligible. | Gaps: Missing foreign key on student references. | Risk: Social streaks exist with only one active student.",
+        "remediation_action": "Enforce double-sided validation constraints.",
+        "sha256": "e81301da1a517c03f266a5632c149b857d58e0d112c5cf8ae90199e3aa684b9e"
+    },
+    {
+        "ID": "TASK_037",
+        "table_name": "solution_duels",
+        "defect_description": "Cleanliness: Total rows: 2. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing foreign key checks. | Risk: Dead matchmaking rows cause lobbies to freeze.",
+        "remediation_action": "Require matching constraints.",
+        "sha256": "89c970cec4d717dce0e334863f897d55a5b0146c7c7241a45c472f8a76763247"
+    },
+    {
+        "ID": "TASK_038",
+        "table_name": "kiro2_learning_events_synthetic",
+        "defect_description": "Cleanliness: Total rows: 117,179. NULL counts: `session_id` (117,179), `theta_after` (72,000). | Bloat: Negligible. | Gaps: Duplicate index `idx_synthetic_events_user` (6MB). | Risk: Massive non-transactional table pollutes shared buffers.",
+        "remediation_action": "Drop table from production workspace.",
+        "sha256": "744c3bee42c854dd056f194001be96810f7f02da1c268a655a308351b7262f97"
+    },
+    {
+        "ID": "TASK_039",
+        "table_name": "fsrs_cards",
+        "defect_description": "Cleanliness: Total rows: 116. NULL counts: `last_review` (93). | Bloat: **20.0%** (116 live tuples, 29 dead tuples). | Gaps: Stale indexes. | Risk: Memory cache thrashing during review sweeps due to bloated indices.",
+        "remediation_action": "Run manual vacuum and optimize autovacuum triggers.",
+        "sha256": "7a2dfe4d22aa63c84b864528312abf2cf71a1640ba131bea9231ce3ffaed958f"
+    },
+    {
+        "ID": "TASK_040",
+        "table_name": "daily_quests",
+        "defect_description": "Cleanliness: Total rows: 48. NULL counts: `completed_at` (37). | Bloat: Negligible. | Gaps: Missing index on user progress. | Risk: Midnight transaction spikes create table locks.",
+        "remediation_action": "Index `(user_id, completed_at)`.",
+        "sha256": "2850309ba7836995a58801e7ebfe39a1452e3212587aea82bb0cb87d51579234"
+    },
+    {
+        "ID": "TASK_041",
+        "table_name": "kvkk_consents",
+        "defect_description": "Cleanliness: Total rows: 1. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing unique constraint. | Risk: Compliance audits fail.",
+        "remediation_action": "Require consent metadata payload.",
+        "sha256": "0cbba7da3cd9a1bf15617381a3e42ac4875c01f4905a6755ec1be2b667683151"
+    },
+    {
+        "ID": "TASK_042",
+        "table_name": "kvkk_audit_logs",
+        "defect_description": "Cleanliness: Total rows: 1. NULL counts: `resource_id` (1). | Bloat: Negligible. | Gaps: Missing indexes on target resources. | Risk: High-frequency logging causes disk IO spikes.",
+        "remediation_action": "Enforce resource metadata.",
+        "sha256": "3341578a643a00bd22a4e42b0080699737cc4cd939f5c8690770f2b5366dd85a"
+    },
+    {
+        "ID": "TASK_043",
+        "table_name": "question_bank_s197_phantom_audit_backup",
+        "defect_description": "Cleanliness: Total rows: 1. Backup table. | Bloat: Negligible. | Gaps: Missing indexes. | Risk: Wastes shared buffers.",
+        "remediation_action": "Drop legacy table.",
+        "sha256": "d3abbcd514ea6874656e81e6c2e06334f623f4ff880a6778d7761c1009590635"
+    },
+    {
+        "ID": "TASK_044",
+        "table_name": "question_bank_s198_curator_backup_20260527",
+        "defect_description": "Cleanliness: Total rows: 250. Backup table. | Bloat: Negligible. | Gaps: Redundant indexes. | Risk: Pollutes system catalogs.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "881fbfa629bd4b6cdc418ebbf6bc06a1c6de1b18092de8ef59fe5af53ab04ad4"
+    },
+    {
+        "ID": "TASK_045",
+        "table_name": "question_bank_s198_promote36_backup_20260527",
+        "defect_description": "Cleanliness: Total rows: 35. Backup table. | Bloat: Negligible. | Gaps: Missing constraints. | Risk: None.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "b9ff402a93a13d422fd421c202e5578fd8c50b61dbf689280cd80ff2c1b9494a"
+    },
+    {
+        "ID": "TASK_046",
+        "table_name": "question_bank_blind_unsolvable_reject_backup_20260603",
+        "defect_description": "Cleanliness: Total rows: 884. Contains control characters in text fields. | Bloat: Negligible. | Gaps: Invalid constraints. | Risk: Restores fail.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "b66a46e3b819034d12cc492c33a5f26f409f01f3c4291bbfadd5eec139f597dd"
+    },
+    {
+        "ID": "TASK_047",
+        "table_name": "question_bank_irt_bootstrap_backup_20260530",
+        "defect_description": "Cleanliness: Total rows: 167,559. 100% NULL rates on `irt_method`. | Bloat: Negligible. | Gaps: Redundant indexing. | Risk: Wastes 100MB+ in production buffer space.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "d68e8f7a7f5de4790d70f4f459ad7cfc5566cfd0d2e428a4e2a9a8d2be8f677e"
+    },
+    {
+        "ID": "TASK_048",
+        "table_name": "question_bank_cleanup_rejected_backup_20260603",
+        "defect_description": "Cleanliness: Total rows: 55,768. Contains control characters. | Bloat: Negligible. | Gaps: Stale statistics. | Risk: Wastes shared buffer footprint.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "6fc7edc437a9721e643bd1fcb8999e1d99a960f47cadada40eae3bed77ceb539"
+    },
+    {
+        "ID": "TASK_049",
+        "table_name": "diary_entries",
+        "defect_description": "Cleanliness: Total rows: 1. Contains 1 datetime drift occurrence. | Bloat: Negligible. | Gaps: Missing index. | Risk: Out-of-bounds timestamps trigger SQL errors.",
+        "remediation_action": "Enforce timezone validation.",
+        "sha256": "dd60225f1c5ee340e6d12cac5dd14f49f573d33fd89e53b2a36402cbfea3aafb"
+    },
+    {
+        "ID": "TASK_050",
+        "table_name": "emotional_states",
+        "defect_description": "Cleanliness: Total rows: 24. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing user indexes. | Risk: Prediction writes lock without index.",
+        "remediation_action": "populate on prediction.",
+        "sha256": "a282f925714c2e07a1d70ab779d773e685543d1dc5bcb03c48f4c5aee3d08061"
+    },
+    {
+        "ID": "TASK_051",
+        "table_name": "goals",
+        "defect_description": "Cleanliness: Total rows: 28. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing indices. | Risk: Out-of-bounds goal lookup defaults.",
+        "remediation_action": "Require date parameters.",
+        "sha256": "3385e6af20f4a1a08b7f1d30e17fee1c6c43b7385a042282648bf2d31fd37cd9"
+    },
+    {
+        "ID": "TASK_052",
+        "table_name": "question_bank_beta_core_backup_20260530",
+        "defect_description": "Cleanliness: Total rows: 500. Backup table. | Bloat: Negligible. | Gaps: Stale constraints. | Risk: Catalog pollution.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "7022d148d3aaf5b33587fcd86a8584875cde145ff56dc86e529c226ecf26306d"
+    },
+    {
+        "ID": "TASK_053",
+        "table_name": "live_sessions",
+        "defect_description": "Cleanliness: Total rows: 24. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing meeting references. | Risk: Class sessions fail to route.",
+        "remediation_action": "Validate URLs prior to routing.",
+        "sha256": "43c24f2d58b29f967073eb0d854f107f882825a4f6cc033b2f8b009207af8b0f"
+    },
+    {
+        "ID": "TASK_054",
+        "table_name": "question_bank_cleanup_foreign_backup_20260603",
+        "defect_description": "Cleanliness: Total rows: 11. Backup table. | Bloat: Negligible. | Gaps: Redundant indexes. | Risk: None.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "37b6cbc6c2e6b718986b3d1808c2311a51f4175913a8969f3e1921e73788ccef"
+    },
+    {
+        "ID": "TASK_055",
+        "table_name": "question_bank_beta_recurate_backup_20260530",
+        "defect_description": "Cleanliness: Total rows: 386. Backup table. | Bloat: Negligible. | Gaps: Stale parameters. | Risk: None.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "42be78405e85321c6ab07ce62f6d64b736c88003e18044ceba67f02f67b40dbf"
+    },
+    {
+        "ID": "TASK_056",
+        "table_name": "video_watch_sessions",
+        "defect_description": "Cleanliness: Total rows: 23. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing session keys. | Risk: Dangling sessions block connection pool release.",
+        "remediation_action": "Add non-null session states.",
+        "sha256": "226139bf764dc407109f565725efd97d41c87b3646130189628800149f05078c"
+    },
+    {
+        "ID": "TASK_057",
+        "table_name": "video_notes",
+        "defect_description": "Cleanliness: Total rows: 15. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing foreign keys. | Risk: None.",
+        "remediation_action": "enforce association constraints.",
+        "sha256": "6e02241215978abf5c0f897b038a449617f79f540b90159b28e4e94fa248b420"
+    },
+    {
+        "ID": "TASK_058",
+        "table_name": "student_reviews",
+        "defect_description": "Cleanliness: Total rows: 4. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing author indexing. | Risk: Empty reviews render blank portals.",
+        "remediation_action": "Require review validation.",
+        "sha256": "1f448aa2a78703de68a9cfd7391b26c076eb8519123584f9ed3f407958a24374"
+    },
+    {
+        "ID": "TASK_059",
+        "table_name": "moderation_queue",
+        "defect_description": "Cleanliness: Total rows: 4. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing assignments. | Risk: Queue lookups fail.",
+        "remediation_action": "Enforce assignment metadata.",
+        "sha256": "5c7b1c87f843cdf8696d3eb98b0616a9c7be20ebbf8e2b63f235fb286d9cfa3a"
+    },
+    {
+        "ID": "TASK_060",
+        "table_name": "offline_sync_packages",
+        "defect_description": "Cleanliness: Total rows: 5. NULL counts: `consumed_at` (4). | Bloat: Negligible. | Gaps: Missing consumption index. | Risk: Binary payloads cause buffer thrashing.",
+        "remediation_action": "Auto-delete packages after 24 hours.",
+        "sha256": "141ad4711dbaed8b02eacd273bbf6cc55bac9b74bd2cf9c0caf8a3f4821fb350"
+    },
+    {
+        "ID": "TASK_061",
+        "table_name": "hard_fix_backup_20260423",
+        "defect_description": "Cleanliness: Total rows: 519. Contains control characters. | Bloat: Negligible. | Gaps: Redundant indexes. | Risk: None.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "cea4392ab9419aeadfdc9f5b52985de4443e70d660eb428199cfdd068fc3eac9"
+    },
+    {
+        "ID": "TASK_062",
+        "table_name": "_bak_paketa_20260428_questions",
+        "defect_description": "Cleanliness: Total rows: 6,532. Contains control characters. | Bloat: Negligible. | Gaps: Redundant indexes. | Risk: Catalog clutter.",
+        "remediation_action": "Drop backup table.",
+        "sha256": "4a82a6eb38b77296375d3816b7012c616e800dc3508b0c3d7be34bd9440320fd"
+    },
+    {
+        "ID": "TASK_063",
+        "table_name": "manual_review_queue",
+        "defect_description": "Cleanliness: Total rows: 1,842. NULL counts: `reviewed_at` (1833). | Bloat: Negligible. | Gaps: Missing review indexes. | Risk: Curator UI loads freeze due to unindexed sweeps.",
+        "remediation_action": "Index where `reviewed_at IS NULL`.",
+        "sha256": "a9bc1b4bcb22ea0939d7cba82d68ef8e060c3dc9a488a8de5db9acb73656b907"
+    },
+    {
+        "ID": "TASK_064",
+        "table_name": "question_bank_staging",
+        "defect_description": "Cleanliness: Total rows: 5,071. Empty/whitespace: `question_text` (62), `option_a` (134), `option_b` (134), `option_c` (133), `option_d` (135). | Bloat: Negligible. | Gaps: Missing staging constraints. | Risk: Corrupted questions leak into production.",
+        "remediation_action": "Apply strict schema validators.",
+        "sha256": "505a99b47ef94ef2593971026ebd4ce230968b1cdae3523f5b3832d06c92b9ce"
+    },
+    {
+        "ID": "TASK_065",
+        "table_name": "question_bank",
+        "defect_description": "Cleanliness: Total rows: 187,834. NULL counts: `explanation` (67,727), `image_ocr_text` (115,344). Empty/whitespace option options (158-275). Control characters (179). | Bloat: 0.08%. | Gaps: Missing GIN indexes on `pipeline_metadata`. Missing FK indexes on `created_by` and `reviewed_by`. Redundant index groups: `idx_qbank_topic`, `idx_qbank_calibrated`, `idx_qbank_subject`, `idx_qb_soru_hash`. | Risk: Sequential scans on JSONB metadata and status fields block connection pools, causing connection timeouts under load.",
+        "remediation_action": "Deploy partial indexes concurrently. Drop duplicate indexes.",
+        "sha256": "9ed3c3d20eceb9119c75ecb7071bbb9fb036550db284d5b8c185169ddfee8352"
+    },
+    {
+        "ID": "TASK_066",
+        "table_name": "question_option_rationales",
+        "defect_description": "Cleanliness: Total rows: 486,270. 100% NULL rates on `misconception_tag`. Control characters in `rationale` (174). | Bloat: Negligible. | Gaps: Sequence `question_option_rationales_id_seq` at 495,263. Missing index on `question_id`. | Risk: Option retrieval triggers sequential scans on 480k rows, freezing workers.",
+        "remediation_action": "Index `question_id`. Migrate sequence to `BIGINT`.",
+        "sha256": "ffbb40225f7e1ac71eac0e4e88a3c89d2a3b74e5cb88352232eabe137d362f0b"
+    },
+    {
+        "ID": "TASK_067",
+        "table_name": "question_math",
+        "defect_description": "Cleanliness: Total rows: 37,088. 100% NULL rates. | Bloat: Negligible. | Gaps: Missing tolerances. | Risk: Symbolic evaluations fail.",
+        "remediation_action": "Enforce validation rules.",
+        "sha256": "d28a550b012c83964d205dfa5cf059c360067242f00d4d5a3d6fa0c136827e5b"
+    },
+    {
+        "ID": "TASK_068",
+        "table_name": "knowledge_components",
+        "defect_description": "Cleanliness: Total rows: 136. NULL counts: `parent_topic_id` (116). Empty/whitespace `description` (19). | Bloat: Negligible. | Gaps: Missing parent node index. | Risk: Prerequisite tree rendering halts due to loop scans.",
+        "remediation_action": "Index `parent_topic_id`.",
+        "sha256": "1f8f848acd04ca6180a28cf0a73cd5c14e6c5285f762587c9a72495a88650a7f"
+    },
+    {
+        "ID": "TASK_069",
+        "table_name": "student_abilities",
+        "defect_description": "Cleanliness: Total rows: 775. Live tuples: 631. Dead tuples: 144. | Bloat: **18.58%**. | Gaps: High update write amplification. | Risk: Frequent IRT updates lock student rows, slowing level lookups.",
+        "remediation_action": "Run aggressive autovacuum, index `student_id`.",
+        "sha256": "e04da7443df18f15b9444e0d20d8dd97fb2377cd29b19954036be0387761165c"
+    },
+    {
+        "ID": "TASK_070",
+        "table_name": "zpd_history",
+        "defect_description": "Cleanliness: Total rows: 220. Live tuples: 156. Dead tuples: 64. | Bloat: **29.09%**. | Gaps: High write bloat. | Risk: Page fragmentation slows down adaptive logs.",
+        "remediation_action": "Vacuum table. Index `student_id`.",
+        "sha256": "ab0d15db48409568007de20659566ae3f5f28288883bbb362a2b18cbe8ab766b"
+    },
+    {
+        "ID": "TASK_071",
+        "table_name": "exam_questions",
+        "defect_description": "Cleanliness: Live tuples: 480. Dead tuples: 39. | Bloat: 7.51%. | Gaps: Missing composite index. | Risk: Session question sweeps trigger sequential scans.",
+        "remediation_action": "Index `(exam_id, question_id)`.",
+        "sha256": "c915b00bf3a50072dd6c372fd04b18d8c66d9c7cf407f23f560015b02af3cbf3"
+    },
+    {
+        "ID": "TASK_072",
+        "table_name": "bkt_states",
+        "defect_description": "Cleanliness: Total rows: 44. Live tuples: 26. Dead tuples: 18. | Bloat: **40.91%**. | Gaps: High bloat on adaptive parameters. | Risk: BKT state updates lock pages, degrading adaptation performance.",
+        "remediation_action": "Set `autovacuum_vacuum_scale_factor = 0.05` on `bkt_states`.",
+        "sha256": "879c52467d5f34b650ed6efc2e96f71420ebb5034711c6fe367efe59c5e335ee"
+    },
+    {
+        "ID": "TASK_073",
+        "table_name": "topic_prerequisites",
+        "defect_description": "Cleanliness: Live tuples: 106. Dead tuples: 15. | Bloat: 12.4%. | Gaps: Missing composite index. | Risk: Low.",
+        "remediation_action": "Index `(topic_id, prerequisite_id)`.",
+        "sha256": "48d275219a3b533be743268ba7678cd50aaebe01f9c20d34e58bf03ce68c5031"
+    },
+    {
+        "ID": "TASK_074",
+        "table_name": "streaks",
+        "defect_description": "Cleanliness: Live tuples: 0. Dead tuples: 1. | Bloat: **100.0%**. | Gaps: Stale stats. | Risk: None.",
+        "remediation_action": "Manual vacuum.",
+        "sha256": "9abf1f110df1a5333b9c85e8f759c014983d01e8c2ea425d5b6827a408f9f474"
+    },
+    {
+        "ID": "TASK_075",
+        "table_name": "alembic_version",
+        "defect_description": "Cleanliness: Live tuples: 0. Dead tuples: 1. | Bloat: **100.0%**. | Gaps: None. | Risk: None.",
+        "remediation_action": "Manual vacuum.",
+        "sha256": "a014cff16ba8373359a96f7b7b2d0626ec10dbee95bef23b70cbacd4e3392aea"
+    },
+    {
+        "ID": "TASK_076",
+        "table_name": "realms",
+        "defect_description": "Cleanliness: Static metadata. Sequence at 16. | Bloat: Negligible. | Gaps: Missing redis cache bindings. | Risk: Constant DB hits on static data.",
+        "remediation_action": "Cache static metadata in Redis.",
+        "sha256": "e38ff2be25a438c0055c66c25b4354d74cc0e9a15171622b9f79950a1d093706"
+    },
+    {
+        "ID": "TASK_077",
+        "table_name": "topic_progress",
+        "defect_description": "Cleanliness: Sequence at 8. | Bloat: Negligible. | Gaps: Missing composite index. | Risk: Lookups sequential scan under load.",
+        "remediation_action": "Composite index on `(user_id, topic_id)`.",
+        "sha256": "a6c76c8bb7036e69ab293b6893bbab9a235c47a91c6f1c6e214fd36ae444f2e3"
+    },
+    {
+        "ID": "TASK_078",
+        "table_name": "obalar",
+        "defect_description": "Cleanliness: Sequence at 1. | Bloat: Negligible. | Gaps: None. | Risk: None.",
+        "remediation_action": "None.",
+        "sha256": "a8d18b24f9c385c250545334cf23ab457c095b5f9da1100485b333544d170279"
+    },
+    {
+        "ID": "TASK_079",
+        "table_name": "oba_uyeler",
+        "defect_description": "Cleanliness: Sequence at 1. | Bloat: Negligible. | Gaps: Missing indexes on member lookups. | Risk: Social sweeps slow down student dashboards.",
+        "remediation_action": "Index `(oba_id, user_id)`.",
+        "sha256": "046aebe6f1b3c5d35a9efc7a021a225caee4044ef48a0c58e122e6abee2dde10"
+    },
+    {
+        "ID": "TASK_080",
+        "table_name": "badges",
+        "defect_description": "Cleanliness: Sequence at 5. | Bloat: Negligible. | Gaps: Missing indexes. | Risk: Dashboard loading locks on badge sweeps.",
+        "remediation_action": "Index `user_id`.",
+        "sha256": "aa20931ca34575319654433b5000ec983e3c92b36d11fb5c4570ad1576e9350e"
+    },
+    {
+        "ID": "TASK_081",
+        "table_name": "subjects",
+        "defect_description": "Cleanliness: Sequence at 12. | Bloat: Negligible. | Gaps: None. | Risk: None.",
+        "remediation_action": "None.",
+        "sha256": "9d05ded5dde69f7e035cd21835c6434b38bb06be6b1f7dafc204ea48485f7ff6"
+    },
+    {
+        "ID": "TASK_082",
+        "table_name": "osym_questions",
+        "defect_description": "Cleanliness: Sequence at 2. | Bloat: Negligible. | Gaps: `bloom_level` has potential type coercion issues. | Risk: Query crashes during type castings.",
+        "remediation_action": "Alter column type to correct numeric field.",
+        "sha256": "98d3296856c2296880f3dc64c35c23294877a7e580bd2d895304b027a08f4928"
+    },
+    {
+        "ID": "TASK_083",
+        "table_name": "`question_bank`",
+        "defect_description": "Column: `pipeline_metadata`, Path: `-> 'ai_extras' ->> 'has_diagram'`, Deviation: Boolean values (`true`/`false`) represented as strings (`\"true\"`) or nulls., Threat: Cast exceptions (`invalid input syntax for type boolean`) abort query execution.",
+        "remediation_action": "Enforce rigid Pydantic formats on ingest; run migration to cast values.",
+        "sha256": "30732c28ea6fd44e4cb1997e56563bf053782799c1c4b002f07e7b9c9c362da7"
+    },
+    {
+        "ID": "TASK_084",
+        "table_name": "`question_bank`",
+        "defect_description": "Column: `pipeline_metadata`, Path: `-> 'ai_extras' ->> 'q_index_in_page'`, Deviation: Numeric index values stored as strings., Threat: Index scans revert to sequential sweeps on casting mismatches.",
+        "remediation_action": "Cast existing rows to integers; enforce Pydantic type constraints.",
+        "sha256": "065fc2e6df17970e69c5803cc378bdb539d8db087871d0690a8b2076c5cc3070"
+    },
+    {
+        "ID": "TASK_085",
+        "table_name": "`users`",
+        "defect_description": "Column: `backup_codes_hashed`, Path: Base, Deviation: Array of hashes vs nested validation dictionaries., Threat: Authentication lookup key-errors abort login sequences.",
+        "remediation_action": "Restrict schema via strict Pydantic list structure.",
+        "sha256": "6e934589ab61d32c10b8ebac894c56dc42970ac5e9163945c34f25fa2191c1d9"
+    },
+    {
+        "ID": "TASK_086",
+        "table_name": "`coaching_events`",
+        "defect_description": "Column: `metadata`, Path: Base, Deviation: Arbitrary JSON objects vs structured feedback fields., Threat: UI layout breaks due to unmapped payload variations.",
+        "remediation_action": "Enforce JSON Schema validators on event ingestion.",
+        "sha256": "7df89a95ce0e9266d11695f4f6420d3fc8c41cc08d8d94861aea507b5aec8239"
+    },
+    {
+        "ID": "TASK_087",
+        "table_name": "FastAPI Pool & DB Connection Mismatch",
+        "defect_description": "Showstopper: FastAPI Pool & DB Connection Mismatch",
+        "remediation_action": "Lower connection pool sizing variables (`db_pool_size = 15`, `db_pool_max_overflow = 15`) and scale PostgreSQL kernel limits to `max_connections = 250` immediately to prevent connection starvation.",
+        "sha256": "4dde86b49f90fac6f35b588c88e7bda502467c857e467ecbefd043ce8f581d0d"
+    },
+    {
+        "ID": "TASK_088",
+        "table_name": "Missing Indexes on `question_bank`",
+        "defect_description": "Showstopper: Missing Indexes on `question_bank`",
+        "remediation_action": "Deploy `idx_qb_review_status_active` and `idx_qb_beta_filter_rule` concurrently to stop 1.5s sequential scans.",
+        "sha256": "41091b1febf1d59842f9047dd6c3f706f3a8bed724e0ba2179aa71cf7bc9576e"
+    },
+    {
+        "ID": "TASK_089",
+        "table_name": "TABLESAMPLE SYSTEM Replacement",
+        "defect_description": "Showstopper: TABLESAMPLE SYSTEM Replacement",
+        "remediation_action": "Remove block-based sampling from Repository layers. Utilize randomized ID index lookups to guarantee fair pedagogical randomness.",
+        "sha256": "7ffb464363ca489aa27d9f13b58e1659ba112bdfbfd53991bf3024e86d51a0b2"
+    },
+    {
+        "ID": "TASK_090",
+        "table_name": "Logical Orphan Cleanup",
+        "defect_description": "Showstopper: Logical Orphan Cleanup",
+        "remediation_action": "Run cleanup scripts to cascade updates/purges for active reference records pointing to deactivated parent questions in `irt_calibration_history` and `student_question_flags`.",
+        "sha256": "f431b80e1b010eb9e0f32deac83443eb098283d4d260aa30a7345bfc783bf1f1"
+    },
+    {
+        "ID": "TASK_091",
+        "table_name": "Sentinel Cache Protection Enforcement",
+        "defect_description": "Showstopper: Sentinel Cache Protection Enforcement",
+        "remediation_action": "Implement strict UUID validation on target endpoints and configure rate limit filters on cache routers to prevent Redis memory exhaustion.",
+        "sha256": "cdb015cd00c1714a16882268487c7dffbb6ef46b7fefe15dc089a36538cebec2"
+    },
+    {
+        "ID": "TASK_092",
+        "table_name": "Pydantic Input Validation Gaps",
+        "defect_description": "Showstopper: Pydantic Input Validation Gaps",
+        "remediation_action": "Implement trimmed validation constraints (`strip()`) and control-character filters on API router inputs to sanitize options and rationales prior to write actions.",
+        "sha256": "5f32acf00dbdfa8c3375c851b24ea2eaefe31d245879eea60f709f666fc474c9"
+    },
+    {
+        "ID": "TASK_093",
+        "table_name": "Production Workspace Cleanup",
+        "defect_description": "Showstopper: Production Workspace Cleanup",
+        "remediation_action": "Drop the large legacy backup tables (`question_bank_irt_bootstrap_backup_20260530`, `question_bank_cleanup_rejected_backup_20260603`) to free catalog memory and storage buffers.",
+        "sha256": "2ad48a897be17dd2e6e2e4c0c92e6b7d88cdb896023689aad46dd76cd09e1e70"
+    }
+]

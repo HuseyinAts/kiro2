@@ -54,7 +54,7 @@ class TestJWTTokenCreation:
 
         assert payload["sub"] == "student_001"
         assert payload["email"] == "student@test.com"
-        assert payload["role"] == UserRole.STUDENT.value
+        assert payload["role"] == UserRole.STUDENT.jwt_value
         assert payload["type"] == TokenType.ACCESS.value
         assert "exp" in payload
         assert "iat" in payload

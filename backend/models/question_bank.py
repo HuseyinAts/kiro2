@@ -28,6 +28,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -495,6 +496,10 @@ class QuestionBankItem(Base):
         String, ForeignKey("users.id", ondelete="CASCADE")
     )
 
+    soru_hash: Mapped[str] = mapped_column(
+        String(32), nullable=False, comment="Soru hash değeri"
+    )
+
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_public: Mapped[bool] = mapped_column(Boolean, default=False)
 
@@ -584,6 +589,29 @@ class QuestionBankItem(Base):
         Index("idx_qbank_topic_difficulty", "primary_topic_id", "difficulty_level"),
         Index(
             "idx_qbank_calibrated_active", "is_calibrated", "is_active", "quality_score"
+        ),
+        Index(
+            "idx_qb_primary_topic",
+            "primary_topic_id",
+            postgresql_where=text("primary_topic_id IS NOT NULL")
+        ),
+        Index(
+            "idx_qb_calib_pool",
+            "is_calib_pool",
+            postgresql_where=text("is_calib_pool = true")
+        ),
+        Index(
+            "idx_qb_cat_subject_active",
+            func.lower(text("subject_area")),
+            "is_active",
+            postgresql_where=text("is_active = true")
+        ),
+        Index("idx_qb_soru_hash", "soru_hash"),
+        Index(
+            "uq_qb_soru_hash_active",
+            "soru_hash",
+            unique=True,
+            postgresql_where=text("is_active = true")
         ),
     )
 

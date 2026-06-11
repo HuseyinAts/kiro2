@@ -1,0 +1,359 @@
+KIRO2 AUDIT PASS 3 - 2026-06-09T23:00:35.795717
+
+======================================================================
+1. embedding column: type + ANY index?
+======================================================================
+embedding column type: vector(768)
+indexes whose def mentions embedding/hnsw/ivfflat/vector: ERROR TypeError: sqlalchemy.cyextension.immutabledict.immutabledict is not a sequence
+ALL indexes on question_bank:
+   idx_fk_question_bank_reviewed_by | CREATE INDEX idx_fk_question_bank_reviewed_by ON public.question_bank USING btree (reviewed_by)
+   idx_qb_beta_filter_rule | CREATE INDEX idx_qb_beta_filter_rule ON public.question_bank USING btree (is_calib_pool)
+   idx_qb_cat_subject_active | CREATE INDEX idx_qb_cat_subject_active ON public.question_bank USING btree (lower((subject_area)::text), is_active) WHERE (is_active = true)
+   idx_qb_review_status_active | CREATE INDEX idx_qb_review_status_active ON public.question_bank USING btree (quality_review_status) WHERE (is_active = true)
+   idx_qb_soru_hash | CREATE INDEX idx_qb_soru_hash ON public.question_bank USING btree (soru_hash)
+   idx_qbank_beta_filter_rule | CREATE INDEX idx_qbank_beta_filter_rule ON public.question_bank USING btree (((((pipeline_metadata)::jsonb -> 'beta_filter_v1'::text) ->> 'rule'::text))) WHERE (is_active = true)
+   idx_qbank_calibrated | CREATE INDEX idx_qbank_calibrated ON public.question_bank USING btree (is_calibrated)
+   idx_qbank_calibrated_active | CREATE INDEX idx_qbank_calibrated_active ON public.question_bank USING btree (is_calibrated, is_active, quality_score)
+   idx_qbank_difficulty | CREATE INDEX idx_qbank_difficulty ON public.question_bank USING btree (difficulty_level)
+   idx_qbank_exam_subject_difficulty | CREATE INDEX idx_qbank_exam_subject_difficulty ON public.question_bank USING btree (exam_type, subject_area, irt_difficulty)
+   idx_qbank_exam_type | CREATE INDEX idx_qbank_exam_type ON public.question_bank USING btree (exam_type)
+   idx_qbank_irt_difficulty | CREATE INDEX idx_qbank_irt_difficulty ON public.question_bank USING btree (irt_difficulty)
+   idx_qbank_quality_subject_exam | CREATE INDEX idx_qbank_quality_subject_exam ON public.question_bank USING btree (subject_area, exam_type) WHERE ((is_active = true) AND ((quality_review_status)::text = ANY ((ARRAY['auto_judged_high'::character varying, 'human_verified'::character varying])::text[])))
+   idx_qbank_status_active | CREATE INDEX idx_qbank_status_active ON public.question_bank USING btree (quality_review_status) WHERE (is_active = true)
+   idx_qbank_subject | CREATE INDEX idx_qbank_subject ON public.question_bank USING btree (subject_area)
+   idx_qbank_topic | CREATE INDEX idx_qbank_topic ON public.question_bank USING btree (primary_topic_id)
+   question_bank_pkey | CREATE UNIQUE INDEX question_bank_pkey ON public.question_bank USING btree (id)
+   uq_qb_soru_hash_active | CREATE UNIQUE INDEX uq_qb_soru_hash_active ON public.question_bank USING btree (soru_hash) WHERE (is_active = true)
+pgvector extension installed?:
+   vector | 0.8.2
+
+======================================================================
+2. ID / PK type consistency audit
+======================================================================
+type of every column named 'id':
+   character varying | 193
+   uuid | 38
+   integer | 31
+question_bank.id / users.id / student_answers.question_id types:
+   question_bank | id | character varying
+   questions | id | character varying
+   student_answers | id | character varying
+   student_answers | question_id | character varying
+   users | id | character varying
+PK columns whose type is character varying (VARCHAR PK — CLAUDE.md note): ERROR TypeError: sqlalchemy.cyextension.immutabledict.immutabledict is not a sequence
+
+======================================================================
+3. The 7 VIEWS — definitions (what the app serves)
+======================================================================
+view list:
+   pg_stat_statements
+   pg_stat_statements_info
+   v_calibration_candidates
+   v_response_log
+   v_safe_for_beta
+   v_safe_for_beta_unfiltered
+   vw_user_topic_mastery
+
+--- VIEW pg_stat_statements ---
+ SELECT userid,
+    dbid,
+    toplevel,
+    queryid,
+    query,
+    plans,
+    total_plan_time,
+    min_plan_time,
+    max_plan_time,
+    mean_plan_time,
+    stddev_plan_time,
+    calls,
+    total_exec_time,
+    min_exec_time,
+    max_exec_time,
+    mean_exec_time,
+    stddev_exec_time,
+    rows,
+    shared_blks_hit,
+    shared_blks_read,
+    shared_blks_dirtied,
+    shared_blks_written,
+    local_blks_hit,
+    local_blks_read,
+    local_blks_dirtied,
+    local_blks_written,
+    temp_blks_read,
+    temp_blks_written,
+    shared_blk_read_time,
+    shared_blk_write_time,
+    local_blk_read_time,
+    local_blk_write_time,
+    temp_blk_read_time,
+    temp_blk_write_time,
+    wal_records,
+    wal_fpi,
+    wal_bytes,
+    wal_buffers_full,
+    jit_functions,
+    jit_generation_time,
+    jit_inlining_count,
+    jit_inlining_time,
+    jit_optimization_count,
+    jit_optimization_time,
+    jit_emi
+
+--- VIEW pg_stat_statements_info ---
+ SELECT dealloc,
+    stats_reset
+   FROM pg_stat_statements_info() pg_stat_statements_info(dealloc, stats_reset);
+
+--- VIEW v_calibration_candidates ---
+ SELECT question_id,
+    count(*) AS n_responses,
+    round(avg(is_correct::integer), 4) AS p_value,
+    sum(
+        CASE
+            WHEN source = 'cat'::text THEN 1
+            ELSE 0
+        END) AS cat_responses,
+    sum(
+        CASE
+            WHEN source = 'exam'::text THEN 1
+            ELSE 0
+        END) AS exam_responses,
+    sum(
+        CASE
+            WHEN source = 'synthetic'::text THEN 1
+            ELSE 0
+        END) AS synthetic_responses
+   FROM v_response_log
+  GROUP BY question_id
+ HAVING count(*) >= 50
+  ORDER BY (count(*)) DESC;
+
+--- VIEW v_response_log ---
+ SELECT kiro2_learning_events.user_id::text AS student_id,
+    kiro2_learning_events.question_id,
+    kiro2_learning_events.is_correct,
+    kiro2_learning_events.response_ms::double precision / 1000.0::double precision AS response_time_sec,
+    kiro2_learning_events.occurred_at AS answered_at,
+    'cat'::text AS source
+   FROM kiro2_learning_events
+  WHERE kiro2_learning_events.event_type = 'cat_answer'::text AND kiro2_learning_events.is_correct IS NOT NULL
+UNION ALL
+ SELECT kiro2_learning_events.user_id::text AS student_id,
+    kiro2_learning_events.question_id,
+    kiro2_learning_events.is_correct,
+    kiro2_learning_events.response_ms::double precision / 1000.0::double precision AS response_time_sec,
+    kiro2_learning_events.occurred_at AS answered_at,
+    'exam'::text AS source
+   FROM kiro2_learning_events
+  WHERE kiro2_learning_events.event_type = 'exam_answer'::text AND kiro2_lea
+
+--- VIEW v_safe_for_beta ---
+ SELECT id,
+    question_text,
+    question_html,
+    question_latex,
+    question_image_url,
+    question_audio_url,
+    option_a,
+    option_b,
+    option_c,
+    option_d,
+    option_e,
+    correct_answer,
+    explanation,
+    explanation_video_url,
+    alternative_solutions,
+    primary_topic_id,
+    secondary_topics,
+    bloom_level,
+    bloom_category,
+    difficulty_level,
+    irt_based_difficulty,
+    student_success_rate,
+    last_difficulty_update,
+    difficulty_update_count,
+    irt_discrimination,
+    irt_difficulty,
+    irt_guessing,
+    irt_upper_asymptote,
+    is_calibrated,
+    calibration_sample_size,
+    last_calibration_date,
+    calibration_quality_score,
+    morphology_complexity,
+    word_count,
+    unique_word_count,
+    average_word_length,
+    readability_score,
+    times_asked,
+    times_correct,
+    times_wrong,
+    times_skipped,
+    average_response_time,
+   
+
+--- VIEW v_safe_for_beta_unfiltered ---
+ SELECT id,
+    question_text,
+    question_html,
+    question_latex,
+    question_image_url,
+    question_audio_url,
+    option_a,
+    option_b,
+    option_c,
+    option_d,
+    option_e,
+    correct_answer,
+    explanation,
+    explanation_video_url,
+    alternative_solutions,
+    primary_topic_id,
+    secondary_topics,
+    bloom_level,
+    bloom_category,
+    difficulty_level,
+    irt_based_difficulty,
+    student_success_rate,
+    last_difficulty_update,
+    difficulty_update_count,
+    irt_discrimination,
+    irt_difficulty,
+    irt_guessing,
+    irt_upper_asymptote,
+    is_calibrated,
+    calibration_sample_size,
+    last_calibration_date,
+    calibration_quality_score,
+    morphology_complexity,
+    word_count,
+    unique_word_count,
+    average_word_length,
+    readability_score,
+    times_asked,
+    times_correct,
+    times_wrong,
+    times_skipped,
+    average_response_time,
+   
+
+--- VIEW vw_user_topic_mastery ---
+ SELECT cs.user_id,
+    q.primary_topic_id AS topic_id,
+    th.name_tr AS topic_name,
+    q.subject_area AS subject_name,
+    max(cs.theta_final) AS best_theta,
+    count(*) AS session_count,
+    max(cs.completed_at) AS last_studied
+   FROM kiro2_cat_sessions cs
+     JOIN question_bank q ON q.subject_area::text = cs.subject_id
+     JOIN topic_hierarchy th ON th.id::text = q.primary_topic_id::text
+  WHERE cs.state = 'completed'::text
+  GROUP BY cs.user_id, q.primary_topic_id, th.name_tr, q.subject_area;
+
+======================================================================
+4. question_bank_staging (5071) — what is it?
+======================================================================
+staging_status distribution:
+   validated | 2766
+   conflict_kept_old | 1833
+   conflict_replaced | 435
+   pending | 37
+
+======================================================================
+5. irt_calibration_history (1080) — was IRT ever really run?
+======================================================================
+distinct question_id / date range: ERROR ProgrammingError: (psycopg2.errors.UndefinedColumn) column "created_at" does not exist
+LINE 1: SELECT count(DISTINCT question_id), min(created_at), max(cre...
+sample columns:
+   id
+   question_id
+   calibration_date
+   calibration_method
+   sample_size
+   old_discrimination
+   old_difficulty
+   old_guessing
+   old_upper_asymptote
+   new_discrimination
+   new_difficulty
+   new_guessing
+   new_upper_asymptote
+   standard_error
+   convergence_iterations
+   log_likelihood
+   discrimination_ci_lower
+   discrimination_ci_upper
+   difficulty_ci_lower
+   difficulty_ci_upper
+
+======================================================================
+6. manual_review_queue (1842)
+======================================================================
+decision distribution:
+    | 1833
+   replace | 9
+status distribution (if any status col):
+   id
+   old_question_id
+   new_payload_json
+   reason
+   source_book
+   source_page
+   created_at
+   reviewed_at
+   reviewed_by
+   decision
+
+======================================================================
+7. question_option_rationales (486k) — quality
+======================================================================
+is_correct balance:
+   False | 389016
+   True | 97254
+generated_by distribution:
+   gemini-flash-latest | 416090
+   qwen3:8b | 70130
+   gpt-4o-mini | 50
+misconception_tag null rate:
+   486270 | 486270
+
+======================================================================
+8. users (75) — who are they?
+======================================================================
+role distribution:
+   STUDENT | 71
+   PARENT | 2
+   TEACHER | 1
+   ADMIN | 1
+id type sample:
+   41411c25-5c85-4470-a6ac-ac31c60ce732
+   e5675924-0f81-4c14-801c-eef5b4cbbf0b
+   f52cb3ba-9f76-4996-a350-61b5bf641f7d
+created_at range:
+   2026-01-30 18:20:40.525492+03:00 | 2026-05-17 02:45:18.117635+03:00
+
+======================================================================
+9. is_active vs quality cross (full matrix, re-confirm)
+======================================================================
+quality_review_status x is_active x is_public:
+   auto_judged_high | False | 11
+   auto_judged_high | True | 12337
+   bronze_clean | True | 197
+   legacy_v3_unaudited | False | 20231
+   pending | False | 44
+   pending | True | 36880
+   rejected | False | 56652
+   unverified | False | 1
+   unverified | True | 61481
+
+======================================================================
+10. legacy 'questions' aktif/is_reviewed already true — referenced anywhere by FK?
+======================================================================
+FKs that REFERENCE questions (legacy):
+
+======================================================================
+PASS 3 COMPLETE 2026-06-09T23:00:36.372616
+======================================================================

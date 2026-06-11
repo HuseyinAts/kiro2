@@ -197,33 +197,20 @@ class IRTMorfolojiService:
     ) -> MorphologyComplexity:
         """Türkçe morfolojik karmaşıklık analizi"""
         try:
+            import asyncio
             # Metni kelimelere ayır
             words = text.split()
 
-            # En karmaşık kelimeyi bul (soru zorluğunu belirler)
-            max_complexity = 0.0
-            most_complex_word = ""
-            complex_analysis = None
-
+            # Noktalama işaretlerini temizle
+            word_clean_list = []
             for word in words:
-                # Noktalama işaretlerini temizle
                 clean_word = "".join(
                     c for c in word if c.isalnum() or c in "çğıöşüÇĞIİÖŞÜ"
                 )
-                if len(clean_word) < 2:
-                    continue
+                if len(clean_word) >= 2:
+                    word_clean_list.append(clean_word)
 
-                # Morfolojik analiz
-                analysis = await turkish_nlp_service.analyze_morphology(clean_word)
-                if analysis:
-                    word_complexity = self._calculate_word_complexity(analysis)
-                    if word_complexity > max_complexity:
-                        max_complexity = word_complexity
-                        most_complex_word = clean_word
-                        complex_analysis = analysis
-
-            # En karmaşık kelime bulunamazsa basit analiz
-            if not complex_analysis:
+            if not word_clean_list:
                 return MorphologyComplexity(
                     word="unknown",
                     root="unknown",
@@ -236,30 +223,84 @@ class IRTMorfolojiService:
                     overall_complexity=0.3,
                 )
 
-            # Detaylı karmaşıklık analizi
-            suffix_count = len(complex_analysis.suffixes)
-            derivational_depth = self._calculate_derivational_depth(
-                complex_analysis.suffixes
-            )
-            compound_complexity = self._calculate_compound_complexity(most_complex_word)
-            phonetic_changes = self._count_phonetic_changes(
-                complex_analysis.root, complex_analysis.suffixes
-            )
-            semantic_ambiguity = self._calculate_semantic_ambiguity(
-                most_complex_word, complex_analysis.root
+            # Redundant çağrıları önlemek için tekilleştir
+            unique_words = list(set(word_clean_list))
+
+            # Morfolojik analizleri paralel yap
+            analyses = await asyncio.gather(
+                *[turkish_nlp_service.analyze_morphology(w) for w in unique_words],
+                return_exceptions=True
             )
 
-            return MorphologyComplexity(
-                word=most_complex_word,
-                root=complex_analysis.root,
-                suffixes=complex_analysis.suffixes,
-                suffix_count=suffix_count,
-                derivational_depth=derivational_depth,
-                compound_complexity=compound_complexity,
-                phonetic_changes=phonetic_changes,
-                semantic_ambiguity=semantic_ambiguity,
-                overall_complexity=max_complexity,
-            )
+            # Eşleştirme tablosu
+            word_to_analysis = {}
+            exceptions = []
+            for w, analysis in zip(unique_words, analyses):
+                if isinstance(analysis, Exception):
+                    exceptions.append(analysis)
+                elif analysis:
+                    word_to_analysis[w] = analysis
+
+            if exceptions and not word_to_analysis:
+                raise exceptions[0]
+
+            # Offload heavy CPU-bound complexity calculations to worker thread
+            def compute_complexity():
+                max_complexity = 0.0
+                most_complex_word = ""
+                complex_analysis = None
+
+                for clean_word in word_clean_list:
+                    analysis = word_to_analysis.get(clean_word)
+                    if analysis:
+                        word_complexity = self._calculate_word_complexity(analysis)
+                        if word_complexity > max_complexity:
+                            max_complexity = word_complexity
+                            most_complex_word = clean_word
+                            complex_analysis = analysis
+
+                # En karmaşık kelime bulunamazsa basit analiz
+                if not complex_analysis:
+                    return MorphologyComplexity(
+                        word="unknown",
+                        root="unknown",
+                        suffixes=[],
+                        suffix_count=0,
+                        derivational_depth=0,
+                        compound_complexity=0.0,
+                        phonetic_changes=0,
+                        semantic_ambiguity=0.3,
+                        overall_complexity=0.3,
+                    )
+
+                # Detaylı karmaşıklık analizi
+                suffix_count = len(complex_analysis.suffixes)
+                derivational_depth = self._calculate_derivational_depth(
+                    complex_analysis.suffixes
+                )
+                compound_complexity = self._calculate_compound_complexity(most_complex_word)
+                phonetic_changes = self._count_phonetic_changes(
+                    complex_analysis.root, complex_analysis.suffixes
+                )
+                semantic_ambiguity = self._calculate_semantic_ambiguity(
+                    most_complex_word, complex_analysis.root
+                )
+
+                return MorphologyComplexity(
+                    word=most_complex_word,
+                    root=complex_analysis.root,
+                    suffixes=complex_analysis.suffixes,
+                    suffix_count=suffix_count,
+                    derivational_depth=derivational_depth,
+                    compound_complexity=compound_complexity,
+                    phonetic_changes=phonetic_changes,
+                    semantic_ambiguity=semantic_ambiguity,
+                    overall_complexity=max_complexity,
+                )
+
+            from core.worker_pools import NLP_POOL
+            loop = asyncio.get_running_loop()
+            return await loop.run_in_executor(NLP_POOL, compute_complexity)
 
         except Exception as e:
             logger.error(f"Morfolojik karmaşıklık analiz hatası: {e!s}")
@@ -777,17 +818,30 @@ class IRTMorfolojiService:
         Toplu soru analizi
         """
         try:
-            results = []
+            import asyncio
+            sem = asyncio.Semaphore(15)
 
-            for question_data in questions:
-                analysis = await self.analyze_question_irt_morphology(
-                    question_id=question_data.get("question_id", ""),
-                    question_text=question_data.get("question_text", ""),
-                    correct_answer=question_data.get("correct_answer", "A"),
-                    student_responses=question_data.get("student_responses", []),
-                    base_difficulty=question_data.get("base_difficulty"),
-                )
-                results.append(analysis)
+            async def sem_analyze(question_data):
+                async with sem:
+                    return await self.analyze_question_irt_morphology(
+                        question_id=question_data.get("question_id", ""),
+                        question_text=question_data.get("question_text", ""),
+                        correct_answer=question_data.get("correct_answer", "A"),
+                        student_responses=question_data.get("student_responses", []),
+                        base_difficulty=question_data.get("base_difficulty"),
+                    )
+
+            tasks = [sem_analyze(q) for q in questions]
+
+            raw_results = await asyncio.gather(*tasks, return_exceptions=True)
+            results = []
+            for r, question_data in zip(raw_results, questions):
+                if isinstance(r, Exception):
+                    logger.error(
+                        f"Soru toplu analiz hatası (Soru ID: {question_data.get('question_id')}): {r!s}"
+                    )
+                elif r is not None:
+                    results.append(r)
 
             logger.info(f"Toplu analiz tamamlandı - {len(results)} soru işlendi")
             return results

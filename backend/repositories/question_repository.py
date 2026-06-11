@@ -66,38 +66,52 @@ class QuestionRepository(BaseRepository[Question]):
     ) -> list[Question]:
         """Get random questions with optional difficulty distribution"""
         try:
+            import random
+            from sqlalchemy import func
+            
+            async def _fetch_gap_safe(filters: list, needed: int) -> list[Question]:
+                count_query = select(func.count()).select_from(Question).where(and_(*filters))
+                total_count = await self.session.scalar(count_query)
+                if not total_count:
+                    return []
+                
+                selected = []
+                used_offsets = set()
+                attempts = 0
+                # While loop fallback over gaps / sequential isolation
+                while len(selected) < needed and attempts < needed * 10:
+                    attempts += 1
+                    offset_val = random.randint(0, total_count - 1)
+                    if offset_val in used_offsets:
+                        continue
+                    used_offsets.add(offset_val)
+                    
+                    res = await self.session.execute(
+                        select(Question).where(and_(*filters)).offset(offset_val).limit(1)
+                    )
+                    q = res.scalar_one_or_none()
+                    if q:
+                        selected.append(q)
+                return selected
+
             if difficulty_distribution:
-                # Get questions by difficulty levels
                 all_questions = []
                 for difficulty, needed_count in difficulty_distribution.items():
-                    questions = await self.get_all(
-                        filters={
-                            "exam_type": exam_type,
-                            "subject_area": subject_area,
-                            "difficulty": difficulty,
-                            "is_active": True,
-                        },
-                        limit=needed_count * 2,  # Get more to have selection
-                    )
-
-                    # Randomly select needed count
-                    selected = random.sample(
-                        questions, min(needed_count, len(questions))
-                    )
-                    all_questions.extend(selected)
-
+                    filters = [
+                        Question.exam_type == exam_type,
+                        Question.subject_area == subject_area,
+                        Question.difficulty == difficulty,
+                        Question.is_active == True,
+                    ]
+                    all_questions.extend(await _fetch_gap_safe(filters, needed_count))
                 return all_questions
-            # Get random questions without difficulty constraint
-            questions = await self.get_all(
-                filters={
-                    "exam_type": exam_type,
-                    "subject_area": subject_area,
-                    "is_active": True,
-                },
-                limit=count * 2,  # Get more to have selection
-            )
 
-            return random.sample(questions, min(count, len(questions)))
+            filters = [
+                Question.exam_type == exam_type,
+                Question.subject_area == subject_area,
+                Question.is_active == True,
+            ]
+            return await _fetch_gap_safe(filters, count)
 
         except Exception as e:
             logger.error(f"Error getting random questions: {e!s}")
@@ -113,21 +127,56 @@ class QuestionRepository(BaseRepository[Question]):
     ) -> list[Question]:
         """Get questions within IRT difficulty range"""
         try:
-            result = await self.session.execute(
-                select(Question)
-                .where(
-                    and_(
-                        Question.exam_type == exam_type,
-                        Question.subject_area == subject_area,
-                        Question.irt_difficulty >= min_difficulty,
-                        Question.irt_difficulty <= max_difficulty,
-                        Question.is_active == True,
+            dialect = self.session.bind.dialect.name if self.session.bind else "sqlite"
+            if dialect == "postgresql":
+                result = await self.session.execute(
+                    select(Question)
+                    .tablesample(func.bernoulli(20))
+                    .where(
+                        and_(
+                            Question.exam_type == exam_type,
+                            Question.subject_area == subject_area,
+                            Question.irt_difficulty >= min_difficulty,
+                            Question.irt_difficulty <= max_difficulty,
+                            Question.is_active == True,
+                        )
                     )
+                    .limit(count)
                 )
-                .order_by(func.random())
-                .limit(count)
-            )
-            return result.scalars().all()
+                rows = result.scalars().all()
+                if len(rows) < count:
+                    result = await self.session.execute(
+                        select(Question)
+                        .where(
+                            and_(
+                                Question.exam_type == exam_type,
+                                Question.subject_area == subject_area,
+                                Question.irt_difficulty >= min_difficulty,
+                                Question.irt_difficulty <= max_difficulty,
+                                Question.is_active == True,
+                            )
+                        )
+                        .order_by(func.random())
+                        .limit(count)
+                    )
+                    rows = result.scalars().all()
+                return rows
+            else:
+                result = await self.session.execute(
+                    select(Question)
+                    .where(
+                        and_(
+                            Question.exam_type == exam_type,
+                            Question.subject_area == subject_area,
+                            Question.irt_difficulty >= min_difficulty,
+                            Question.irt_difficulty <= max_difficulty,
+                            Question.is_active == True,
+                        )
+                    )
+                    .order_by(func.random())
+                    .limit(count)
+                )
+                return result.scalars().all()
         except Exception as e:
             logger.error(f"Error getting questions by IRT difficulty: {e!s}")
             raise

@@ -110,10 +110,10 @@ class TestDatabaseManager:
 
                             # Verify pool settings were used
                             call_kwargs = mock_create.call_args[1]
-                            assert call_kwargs["pool_size"] == 25
-                            assert call_kwargs["max_overflow"] == 50
+                            assert call_kwargs["pool_size"] == 20
+                            assert call_kwargs["max_overflow"] == 20
                             assert call_kwargs["pool_pre_ping"] is True
-                            assert call_kwargs["pool_recycle"] == 300
+                            assert call_kwargs["pool_recycle"] == 1800
 
     @pytest.mark.asyncio
     async def test_sqlite_no_pool_settings(self):
@@ -426,7 +426,12 @@ class TestGetAsyncSession:
             # Create async context manager
             async_cm = AsyncMock()
             async_cm.__aenter__.return_value = mock_session
-            async_cm.__aexit__.return_value = None
+            
+            async def mock_aexit(exc_type, exc_val, exc_tb):
+                await mock_session.commit()
+                await mock_session.close()
+            async_cm.__aexit__ = AsyncMock(side_effect=mock_aexit)
+            
             mock_manager.get_session.return_value = async_cm
 
             async for session in get_async_session():
@@ -445,7 +450,17 @@ class TestGetAsyncSession:
             # Create async context manager
             async_cm = AsyncMock()
             async_cm.__aenter__.return_value = mock_session
-            async_cm.__aexit__.return_value = None
+            
+            async def mock_aexit(exc_type, exc_val, exc_tb):
+                try:
+                    await mock_session.commit()
+                except Exception:
+                    await mock_session.rollback()
+                    raise
+                finally:
+                    await mock_session.close()
+            async_cm.__aexit__ = AsyncMock(side_effect=mock_aexit)
+            
             mock_manager.get_session.return_value = async_cm
 
             with pytest.raises(SQLAlchemyError):
@@ -464,7 +479,11 @@ class TestGetAsyncSession:
             # Create async context manager
             async_cm = AsyncMock()
             async_cm.__aenter__.return_value = mock_session
-            async_cm.__aexit__.return_value = None
+            
+            async def mock_aexit(exc_type, exc_val, exc_tb):
+                await mock_session.close()
+            async_cm.__aexit__ = AsyncMock(side_effect=mock_aexit)
+            
             mock_manager.get_session.return_value = async_cm
 
             async for session in get_async_session():
@@ -692,10 +711,10 @@ class TestDatabaseManagerEdgeCases:
 
                             await manager.initialize()
 
-                            # Should use defaults: pool_size=50, max_overflow=100
+                            # Should use defaults: pool_size=20, max_overflow=20
                             call_kwargs = mock_create.call_args[1]
-                            assert call_kwargs["pool_size"] == 50
-                            assert call_kwargs["max_overflow"] == 100
+                            assert call_kwargs["pool_size"] == 20
+                            assert call_kwargs["max_overflow"] == 20
 
 
 class TestGlobalDatabaseManager:

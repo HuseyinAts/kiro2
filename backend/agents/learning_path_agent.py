@@ -1410,19 +1410,45 @@ class LearningPathAgent:
                         set([ALL_DIFFICULTIES[low], ALL_DIFFICULTIES[high]])
                     )
 
-                    query = (
-                        select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
-                        .where(
-                            QuestionBankItem.is_active == True,
-                            QuestionBankItem.subject_area == subject.upper(),
-                            QuestionBankItem.difficulty_level.in_(target_difficulties),
+                    dialect = session.bind.dialect.name if session.bind else "sqlite"
+                    if dialect == "postgresql":
+                        query = (
+                            select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
+                            .tablesample(sa_func.bernoulli(20))
+                            .where(
+                                QuestionBankItem.is_active == True,
+                                QuestionBankItem.subject_area == subject.upper(),
+                                QuestionBankItem.difficulty_level.in_(target_difficulties),
+                            )
+                            .limit(10)
                         )
-                        .order_by(sa_func.random())
-                        .limit(10)
-                    )
-
-                    result = await session.execute(query)
-                    questions = result.all()
+                        result = await session.execute(query)
+                        questions = result.all()
+                        if len(questions) < 10:
+                            query = (
+                                select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
+                                .where(
+                                    QuestionBankItem.is_active == True,
+                                    QuestionBankItem.subject_area == subject.upper(),
+                                    QuestionBankItem.difficulty_level.in_(target_difficulties),
+                                )
+                                .limit(10)
+                            )
+                            result = await session.execute(query)
+                            questions = result.all()
+                    else:
+                        query = (
+                            select(QuestionBankItem.id, QuestionBankItem.difficulty_level)
+                            .where(
+                                QuestionBankItem.is_active == True,
+                                QuestionBankItem.subject_area == subject.upper(),
+                                QuestionBankItem.difficulty_level.in_(target_difficulties),
+                            )
+                            .order_by(sa_func.random())
+                            .limit(10)
+                        )
+                        result = await session.execute(query)
+                        questions = result.all()
 
                     phase["quiz"] = {
                         "question_ids": [str(q.id) for q in questions],

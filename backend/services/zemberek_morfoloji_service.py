@@ -24,6 +24,73 @@ from models.irt_morfoloji import (
 logger = logging.getLogger(__name__)
 
 
+from collections import OrderedDict
+
+class AsyncLRUCacheDecorator:
+    """
+    Decorator to cache coroutine results (async def) preventing the double-await issue.
+    It mimics the functools.lru_cache interface (cache_info, maxsize, hits, misses).
+    Thread-safe & Task-safe with asyncio.Lock and true OrderedDict LRU eviction.
+    """
+    def __init__(self, maxsize=5000):
+        self.maxsize = maxsize
+        self.cache = OrderedDict()
+        self.hits = 0
+        self.misses = 0
+        self.lock = asyncio.Lock()
+
+    class CacheInfo:
+        def __init__(self, currsize, hits, misses, maxsize):
+            self.currsize = currsize
+            self.hits = hits
+            self.misses = misses
+            self.maxsize = maxsize
+
+    def cache_info(self):
+        return self.CacheInfo(len(self.cache), self.hits, self.misses, self.maxsize)
+
+    def __call__(self, fn):
+        self.fn = fn
+        return self
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        
+        class BoundMethod:
+            def __init__(self, decorator, inst):
+                self._decorator = decorator
+                self._instance = inst
+
+            async def __call__(self, *args, **kwargs):
+                key = (args, tuple(sorted(kwargs.items())))
+                async with self._decorator.lock:
+                    if key in self._decorator.cache:
+                        self._decorator.hits += 1
+                        self._decorator.cache.move_to_end(key)
+                        return self._decorator.cache[key]
+                    self._decorator.misses += 1
+
+                # Execute function outside lock to prevent deadlock during await
+                val = await self._decorator.fn(self._instance, *args, **kwargs)
+
+                async with self._decorator.lock:
+                    if key in self._decorator.cache:
+                        self._decorator.cache.move_to_end(key)
+                        return self._decorator.cache[key]
+                    
+                    if len(self._decorator.cache) >= self._decorator.maxsize:
+                        # Pop oldest (LRU Eviction)
+                        self._decorator.cache.popitem(last=False)
+                    self._decorator.cache[key] = val
+                return val
+
+            def cache_info(self):
+                return self._decorator.cache_info()
+
+        return BoundMethod(self, instance)
+
+
 class ZemberekMorfolojiService:
     """
     Zemberek-NLP tabanlı Türkçe morfoloji analiz servisi
@@ -242,12 +309,35 @@ class ZemberekMorfolojiService:
             # Metni kelimelere ayır
             kelimeler = self._temizle_ve_ayir_kelimeler(soru_metni)
 
-            # Her kelime için analiz yap
+            # Her kelime için paralel analiz yap
+            kelime_listesi = [k for k in kelimeler if len(k) > 1]
+            benzersiz_kelimeler = list(set(kelime_listesi))
+            
+            kelime_tasklari = [self.analiz_et_kelime(k) for k in benzersiz_kelimeler]
+            kelime_sonuclari = await asyncio.gather(*kelime_tasklari, return_exceptions=True)
+            
+            kelime_to_analiz = {}
+            for k, res in zip(benzersiz_kelimeler, kelime_sonuclari):
+                if not isinstance(res, Exception) and res:
+                    kelime_to_analiz[k] = res
+                    
             kelime_analizleri = []
-            for kelime in kelimeler:
-                if len(kelime) > 1:  # Tek harfli kelimeleri atla
-                    analiz = await self.analiz_et_kelime(kelime)
+            for kelime in kelime_listesi:
+                analiz = kelime_to_analiz.get(kelime)
+                if analiz:
                     kelime_analizleri.append(analiz)
+                else:
+                    kelime_analizleri.append(
+                        MorfolojiAnalizi(
+                            kelime=kelime,
+                            kok=kelime,
+                            ekler=[],
+                            ek_tipleri=[],
+                            ek_sayisi=0,
+                            morfoloji_skoru=1.0,
+                            karmasiklik_seviyesi=MorfolojiKarmasiklikSeviyesi.BASIT,
+                        )
+                    )
 
             # İstatistikleri hesapla
             istatistikler = self._hesapla_soru_istatistikleri(kelime_analizleri)
@@ -447,7 +537,7 @@ class ZemberekMorfolojiService:
             "ortalama_yaygınlık_skoru": ortalama_yaygınlık,
         }
 
-    @lru_cache(maxsize=1000)
+    @AsyncLRUCacheDecorator(maxsize=5000)
     async def get_kelime_karmasiklik_cache(self, kelime: str) -> float:
         """Kelime karmaşıklığını cache ile al"""
         analiz = await self.analiz_et_kelime(kelime)

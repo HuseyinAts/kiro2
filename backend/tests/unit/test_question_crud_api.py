@@ -403,17 +403,8 @@ def test_elasticsearch_search_with_filters(mock_service):
     assert call_kwargs.kwargs["filters"]["subject_area"] == "MATEMATIK"
 
 
-def test_elasticsearch_search_missing_query_returns_422():
-    from api.question_crud_api import get_question_service
-    from api.question_crud_api import router as q_router
-
-    app = FastAPI()
-
-    async def _svc():
-        return AsyncMock()
-
-    app.dependency_overrides[get_question_service] = _svc
-    app.include_router(q_router)
+def test_elasticsearch_search_missing_query_returns_422(mock_service):
+    app = _create_app(mock_service)
     client = TestClient(app)
 
     response = client.get("/api/v1/questions/search/elasticsearch")
@@ -429,10 +420,19 @@ def test_elasticsearch_search_missing_query_returns_422():
 @pytest.mark.asyncio
 async def test_get_random_questions_happy_path(mock_service, mock_question):
     from api.question_crud_api import get_random_questions
+    from unittest.mock import MagicMock
+    from fastapi import Request
+
+    mock_request = MagicMock(spec=Request)
+    mock_request.state = MagicMock()
+    mock_request.state.user = None
+    mock_request.headers = {}
+    mock_request.client = MagicMock()
+    mock_request.client.host = "127.0.0.1"
 
     mock_service.get_random_questions = AsyncMock(return_value=[mock_question] * 3)
     response = await get_random_questions(
-        count=3, subject_area=None, exam_type=None, service=mock_service
+        request=mock_request, count=3, subject_area=None, exam_type=None, service=mock_service
     )
     import json
 
@@ -448,10 +448,19 @@ async def test_get_random_questions_includes_options_and_answer(
     import json
 
     from api.question_crud_api import get_random_questions
+    from unittest.mock import MagicMock
+    from fastapi import Request
+
+    mock_request = MagicMock(spec=Request)
+    mock_request.state = MagicMock()
+    mock_request.state.user = None
+    mock_request.headers = {}
+    mock_request.client = MagicMock()
+    mock_request.client.host = "127.0.0.1"
 
     mock_service.get_random_questions = AsyncMock(return_value=[mock_question])
     response = await get_random_questions(
-        count=10, subject_area=None, exam_type=None, service=mock_service
+        request=mock_request, count=10, subject_area=None, exam_type=None, service=mock_service
     )
     data = json.loads(response.body)
     q = data["data"]["questions"][0]
@@ -465,10 +474,19 @@ async def test_get_random_questions_with_filters(mock_service):
     import json
 
     from api.question_crud_api import get_random_questions
+    from unittest.mock import MagicMock
+    from fastapi import Request
+
+    mock_request = MagicMock(spec=Request)
+    mock_request.state = MagicMock()
+    mock_request.state.user = None
+    mock_request.headers = {}
+    mock_request.client = MagicMock()
+    mock_request.client.host = "127.0.0.1"
 
     mock_service.get_random_questions = AsyncMock(return_value=[])
     response = await get_random_questions(
-        count=5, subject_area="MATEMATIK", exam_type="TYT", service=mock_service
+        request=mock_request, count=5, subject_area="MATEMATIK", exam_type="TYT", service=mock_service
     )
     data = json.loads(response.body)
     assert data["data"]["count"] == 0
@@ -482,11 +500,20 @@ async def test_get_random_questions_service_error_raises_500(mock_service):
     from fastapi import HTTPException
 
     from api.question_crud_api import get_random_questions
+    from unittest.mock import MagicMock
+    from fastapi import Request
+
+    mock_request = MagicMock(spec=Request)
+    mock_request.state = MagicMock()
+    mock_request.state.user = None
+    mock_request.headers = {}
+    mock_request.client = MagicMock()
+    mock_request.client.host = "127.0.0.1"
 
     mock_service.get_random_questions = AsyncMock(side_effect=Exception("DB error"))
     with pytest.raises(HTTPException) as exc_info:
         await get_random_questions(
-            count=10, subject_area=None, exam_type=None, service=mock_service
+            request=mock_request, count=10, subject_area=None, exam_type=None, service=mock_service
         )
     assert exc_info.value.status_code == 500
 

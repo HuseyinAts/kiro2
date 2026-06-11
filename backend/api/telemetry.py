@@ -7,7 +7,7 @@ Henuz backend'de islenmiyor — 404 console hatalarini onlemek icin stub.
 
 import logging
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +22,7 @@ async def receive_web_vitals(request: Request):
         logger.debug("Web Vitals: %s", body[:500])
     except Exception:
         pass
+    return Response(status_code=204)
 
 
 @router.post("/errors/report", status_code=204)
@@ -32,3 +33,4 @@ async def receive_error_report(request: Request):
         logger.warning("Frontend error: %s", body[:1000])
     except Exception:
         pass
+    return Response(status_code=204)

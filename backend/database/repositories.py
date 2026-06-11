@@ -263,16 +263,37 @@ class SoruRepository(BaseRepository):
         sorular = []
 
         for konu, sayi in konu_dagilimi.items():
-            query = select(SoruBankasi).where(
-                and_(SoruBankasi.konu == konu, SoruBankasi.aktif == True)
-            )
+            dialect = self.session.bind.dialect.name if self.session.bind else "sqlite"
+            if dialect == "postgresql":
+                query = select(SoruBankasi).tablesample(func.bernoulli(20)).where(
+                    and_(SoruBankasi.konu == konu, SoruBankasi.aktif == True)
+                )
+            else:
+                query = select(SoruBankasi).where(
+                    and_(SoruBankasi.konu == konu, SoruBankasi.aktif == True)
+                )
 
             if zorluk_seviyesi:
                 query = query.where(SoruBankasi.zorluk_seviyesi == zorluk_seviyesi)
 
-            query = query.order_by(func.random()).limit(sayi)
-            result = await self.session.execute(query)
-            sorular.extend(result.scalars().all())
+            if dialect == "postgresql":
+                query = query.limit(sayi)
+                result = await self.session.execute(query)
+                rows = result.scalars().all()
+                if len(rows) < sayi:
+                    fallback_query = select(SoruBankasi).where(
+                        and_(SoruBankasi.konu == konu, SoruBankasi.aktif == True)
+                    )
+                    if zorluk_seviyesi:
+                        fallback_query = fallback_query.where(SoruBankasi.zorluk_seviyesi == zorluk_seviyesi)
+                    fallback_query = fallback_query.limit(sayi)
+                    result = await self.session.execute(fallback_query)
+                    rows = result.scalars().all()
+                sorular.extend(rows)
+            else:
+                query = query.order_by(func.random()).limit(sayi)
+                result = await self.session.execute(query)
+                sorular.extend(result.scalars().all())
 
         return sorular
 

@@ -8,17 +8,18 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 # ── Request ──────────────────────────────────────────────────────
 
 class StartSessionRequest(BaseModel):
     subject_id: str = Field(..., description="Ders kodu (örn: MATEMATIK, TURKCE)")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {"subject_id": "MATEMATIK"}
         }
+    )
 
 
 class SubmitAnswerRequest(BaseModel):
@@ -35,14 +36,15 @@ class SubmitAnswerRequest(BaseModel):
         """selected_option veya answer field'ından seçimi al."""
         return (self.selected_option or self.answer or "").upper()
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "question_id": "660e8400-e29b-41d4-a716-446655440001",
                 "selected_option": "B",
                 "response_ms": 12500,
             }
         }
+    )
 
 
 # ── Response ─────────────────────────────────────────────────────

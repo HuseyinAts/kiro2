@@ -120,7 +120,7 @@ class PDFReportGenerator:
             )
         )
 
-    async def generate_advanced_exam_report(
+    def generate_advanced_exam_report(
         self, rapor_data: dict[str, Any], filename: str
     ) -> str:
         """
