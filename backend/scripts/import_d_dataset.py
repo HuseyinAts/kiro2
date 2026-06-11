@@ -62,7 +62,6 @@ SUBJECT_PATTERNS: list[tuple[list[str], str, str | None]] = [
     ),
     (["kat\u0131 cisim", "kati cisim", "analitik geometri"], "GEOMETRI", "AYT"),
     # Generic subjects
-<<<<<<< Updated upstream
     (
         ["geometri", "\u00fc\u00e7gen", "ucgen", "d\u00f6rtgen", "dortgen"],
         "GEOMETRI",
@@ -84,12 +83,6 @@ SUBJECT_PATTERNS: list[tuple[list[str], str, str | None]] = [
         "MATEMATIK",
         None,
     ),
-=======
-    (["geometri", "\u00fc\u00e7gen", "ucgen", "d\u00f6rtgen", "dortgen"], "GEOMETRI", None),
-    (["matematik", "problemler", "say\u0131lar", "sayilar",
-      "matemateik", "matemat,k", "matemati\u011fin", "matematig",
-      "ilac\u0131", "ilaci"], "MATEMATIK", None),
->>>>>>> Stashed changes
     (["fizik", "fizipedia", "neofizik"], "FIZIK", None),
     (["kimya", "aromat"], "KIMYA", None),
     (["biyoloji"], "BIYOLOJI", None),

@@ -13,10 +13,7 @@ SQLAlchemy models for Learning Path system
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 from sqlalchemy import (
     JSON,
     Boolean,

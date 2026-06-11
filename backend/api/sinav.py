@@ -158,17 +158,10 @@ class QuestionResponse(BaseModel):
 
     id: str
     question_text: str
-<<<<<<< Updated upstream
     question_image_url: str | None
     image_alt_text: str | None = None
     image_width: int | None = None
     image_height: int | None = None
-=======
-    question_image_url: Optional[str]
-    image_alt_text: Optional[str] = None
-    image_width: Optional[int] = None
-    image_height: Optional[int] = None
->>>>>>> Stashed changes
     option_a: str
     option_b: str
     option_c: str
@@ -664,13 +657,9 @@ async def get_current_question(
             id=question.id,
             question_text=question.question_text,
             question_image_url=question.question_image_url,
-<<<<<<< Updated upstream
             image_alt_text=question.image_ocr_text[:200]
             if question.image_ocr_text
             else None,
-=======
-            image_alt_text=question.image_ocr_text[:200] if question.image_ocr_text else None,
->>>>>>> Stashed changes
             image_width=question.image_width,
             image_height=question.image_height,
             option_a=question.option_a,
@@ -951,13 +940,9 @@ async def navigate_to_question(
             id=question.id,
             question_text=question.question_text,
             question_image_url=question.question_image_url,
-<<<<<<< Updated upstream
             image_alt_text=question.image_ocr_text[:200]
             if question.image_ocr_text
             else None,
-=======
-            image_alt_text=question.image_ocr_text[:200] if question.image_ocr_text else None,
->>>>>>> Stashed changes
             image_width=question.image_width,
             image_height=question.image_height,
             option_a=question.option_a,
