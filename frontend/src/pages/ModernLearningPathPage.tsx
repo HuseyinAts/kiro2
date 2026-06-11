@@ -1,27 +1,18 @@
 /**
  * Modern Learning Path Page - Glassmorphism Design
- * Kişiselleştirilmiş öğrenme yolu ve kaynaklar.
- *
- * @TODO S179 fix (B-P1-21): this file is 1,165 LOC and has 6 direct
- * `fetch()` calls bypassing `services/learningPathService.ts`. Sprint
- * plan: split into `LearningPathOverview` + `QuizPanel` +
- * `InterleavedSession` + `DuelLaunchPanel` sub-components, route via
- * `lazy()`. DO NOT add new responsibilities to this file.
+ * Kişiselleştirilmiş öğrenme yolu ve kaynaklar
  */
 
-import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science, SportsEsports } from '@mui/icons-material';
-import { Container, Box, Tabs, Tab, Typography, Alert, Chip, ToggleButton, ToggleButtonGroup, Dialog, DialogContent, IconButton } from '@mui/material';
+import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science } from '@mui/icons-material';
+import { Container, Box, Tabs, Tab, Typography, Alert, Chip } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
 // Custom hooks
 import { VideoResponse } from '../api';
 import { LearningStyleQuiz } from '../components/LearningPath/LearningStyleQuiz';
-import { TopicList } from '../components/LearningPath/TopicList';
-// DungeonMap (parşömen + fog-of-war) sade TopicList ile değiştirildi (fallback olarak korunuyor)
-// import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
+import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
 import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel';
-import type { LayoutNode } from '../hooks/useDungeonMap';
 import { PathNodeData } from '../components/LearningPath/PathNode';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
@@ -33,17 +24,13 @@ import { mapApiToQuizQuestion } from '../utils/questionMappers';
 import { ReviewQueuePanel } from '../components/LearningPath/ReviewQueuePanel';
 import { ErrorClusterCard } from '../components/Quiz/ErrorClusterCard';
 import { ProductiveFailureFlow } from '../components/LearningPath/ProductiveFailureFlow';
-import { LeaguePanel } from '../components/LearningPath/LeaguePanel';
-import { StudyPlannerWidget } from '../components/LearningPath/StudyPlannerWidget';
-import { DuelMode } from '../components/LearningPath/DuelMode';
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
 import modernColors from '../theme/modern-colors';
 
 // Types
-// import { generateConnections } from '../utils/learningPathHelpers';
-import { turkishLowerCase } from '../utils/turkishUtils';
+import { generateConnections } from '../utils/learningPathHelpers';
 
 // Lazy-loaded tab content components
 
@@ -79,7 +66,7 @@ export function ModernLearningPathPage() {
   const {
     pathNodes,
     learningStyle,
-    currentNodeId: _currentNodeId,
+    currentNodeId,
     loading,
     error,
     needsQuiz,
@@ -90,9 +77,10 @@ export function ModernLearningPathPage() {
     markNodeComplete,
     updateProgress,
     studentId,
-    selectedSubject,
-    changeSubject,
-    setError,
+    startSession,
+    endSession,
+    streak,
+    studySession,
   } = useLearningPath();
 
   const {
@@ -106,17 +94,11 @@ export function ModernLearningPathPage() {
   // Local UI state
   // ========================================
   const [tabValue, setTabValue] = useState(0);
-  const dungeonSubject = selectedSubject?.toUpperCase() || 'MATEMATIK';
   const [showNodeDetails, setShowNodeDetails] = useState(false);
   const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null);
   const [interleavedQuestions, setInterleavedQuestions] = useState<Question[] | null>(null);
   const [nodeQuizQuestions, setNodeQuizQuestions] = useState<Question[] | null>(null);
   const [activeQuizNode, setActiveQuizNode] = useState<PathNodeData | null>(null);
-
-  // Quiz loading/error states
-  const [quizLoading, setQuizLoading] = useState(false);
-  const [quizError, setQuizError] = useState<string | null>(null);
-  const [interleavedLoading, setInterleavedLoading] = useState(false);
 
   // F8: Collect error type selections during quiz (ref to avoid re-renders)
   const errorTypesRef = useRef<Record<string, ErrorType>>({});
@@ -127,42 +109,20 @@ export function ModernLearningPathPage() {
   // F15: Last completed quiz subject for error cluster card
   const [lastQuizSubject, setLastQuizSubject] = useState<string | null>(null);
 
-  // F16: Duel mode dialog
-  const [showDuel, setShowDuel] = useState(false);
-
-  // Subject status from /status endpoint (theta, zpd_zone, prereq info)
-  interface SubjectStatusInfo {
-    subject: string; theta: number; mastery_pct: number; level_label: string;
-    theta_se?: number; zpd_zone?: string; prereq_blocked?: boolean; prereq_topic_name?: string;
-  }
-  const [subjectStatuses, setSubjectStatuses] = useState<SubjectStatusInfo[]>([]);
-
   // ========================================
   // Effects
   // ========================================
-
-  /**
-   * Fetch subject statuses (theta, zpd_zone, prereq) from Daily API
-   */
-  useEffect(() => {
-    // F-06: AbortController ile unmount cleanup
-    const controller = new AbortController();
-    fetch('/api/v1/learning-path/status', { credentials: 'include', signal: controller.signal })
-      .then(r => r.ok ? r.json() : [])
-      .then(data => { if (Array.isArray(data)) setSubjectStatuses(data); })
-      .catch(() => { /* silent — LP page works without status data */ });
-    return () => controller.abort();
-  }, []);
 
   /**
    * Load videos when path is ready
    */
   useEffect(() => {
     if (pathNodes.length > 0 && learningStyle) {
-      const path = { modules: [{ title: selectedSubject }] };
-      loadVideosForPath(path, learningStyle, selectedSubject);
+      // Build a minimal path object from nodes for video loading
+      const path = { modules: [{ title: pathNodes[0]?.title || 'matematik' }] };
+      loadVideosForPath(path, learningStyle);
     }
-  }, [pathNodes, learningStyle, selectedSubject, loadVideosForPath]);
+  }, [pathNodes, learningStyle, loadVideosForPath]);
 
   // ========================================
   // Event handlers
@@ -187,17 +147,6 @@ export function ModernLearningPathPage() {
     [setCurrentNode, loadVideosForNode, learningStyle],
   );
 
-  const handleDungeonNodeClick = useCallback((node: LayoutNode) => {
-    // Bridge dungeon node to existing node click handler
-    handleNodeClick({
-      id: node.topic_id,
-      title: node.name_tr,
-      description: node.name_tr || node.code,
-      status: node.progress.completed ? 'completed' : node.progress.attempt_count > 0 ? 'in_progress' : 'locked',
-      difficulty: 'medium',
-    } as unknown as PathNodeData);
-  }, [handleNodeClick]);
-
   /**
    * Handle video play
    */
@@ -217,24 +166,6 @@ export function ModernLearningPathPage() {
    * F9: If node is new (available), show Productive Failure pretest first.
    * Otherwise, fetch quiz questions directly.
    */
-
-  // Subject extraction: match known YKS subjects from node title
-  const SUBJECT_KEYWORDS: Record<string, string> = {
-    'matematik': 'matematik', 'fizik': 'fizik', 'kimya': 'kimya',
-    'biyoloji': 'biyoloji', 'türkçe': 'turkce', 'tarih': 'tarih',
-    'geometri': 'geometri', 'coğrafya': 'cografya', 'edebiyat': 'edebiyat',
-    'felsefe': 'felsefe',
-  };
-
-  const extractSubject = useCallback((title: string): string => {
-    const words = turkishLowerCase(title.normalize('NFC')).split(/\s+/);
-    for (const word of words) {
-      if (SUBJECT_KEYWORDS[word]) return SUBJECT_KEYWORDS[word];
-    }
-    // Fallback: first word (original behavior)
-    return words[0] || 'matematik';
-  }, []);
-
   const handleStartQuiz = useCallback(async (node: PathNodeData) => {
     // F9: Productive Failure — show pretest before new topic
     if (node.status === 'available' && !pretestNode) {
@@ -243,71 +174,30 @@ export function ModernLearningPathPage() {
       return;
     }
 
-    // Her zaman selectedSubject kullan (ders bazlı doğru filtreleme)
-    const subject = selectedSubject;
-
-    // node.title doğrudan konu adı (örn: "Türev") - split gerekmez
-    const topic = node.title || null;
-
-    setQuizLoading(true);
-    setQuizError(null);
+    const subject = node.title.split(' ')[0];
     try {
-      // Konu parametresini API'ye gönder
-      const topicParam = topic ? `&topic=${encodeURIComponent(topic)}` : '';
-      const url = `/api/v1/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}${topicParam}`;
-      const res = await fetch(url, { credentials: 'include' });
+      const res = await fetch(
+        `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
+        { credentials: 'include' },
+      );
       const data = await res.json();
-
       if (data.success && data.questions?.length > 0) {
         setNodeQuizQuestions(data.questions.map(mapApiToQuizQuestion));
         setActiveQuizNode(node);
         setShowNodeDetails(false);
         setLastQuizSubject(subject);
-      } else {
-        setQuizError('Bu konu için soru bulunamadı.');
+        // Start study session (non-blocking — quiz proceeds even if session fails)
+        try { await startSession(); } catch (e) { console.warn('Session başlatılamadı:', e); }
       }
     } catch (err) {
       console.error('Quiz soruları yüklenemedi:', err);
-      setQuizError('Quiz soruları yüklenemedi. Lütfen tekrar deneyin.');
-    } finally {
-      setQuizLoading(false);
     }
-  }, [pretestNode, selectedSubject]);
+  }, [startSession]);
 
   /**
    * Handle quiz completion — register wrong answers to FSRS + update node progress
    */
-  const handleQuizComplete = useCallback(async (results: { score: number; totalScore: number; percentage: number; answers: Record<string, any>; correctCount: number; incorrectCount: number; isTimeout?: boolean }) => {
-    // Guard: Ensure studentId is available
-    if (!studentId) {
-      console.error('Quiz complete failed: studentId is null');
-      setError('Profil bulunamadi. Lutfen sayfayi yenileyin.');
-      return;
-    }
-
-    // Helper: Retry fetch with exponential backoff
-    const fetchWithRetry = async (url: string, options: RequestInit, retries = 3): Promise<Response> => {
-      for (let i = 0; i < retries; i++) {
-        try {
-          const res = await fetch(url, options);
-          if (res.ok) return res;
-          // Server error - retry
-          if (res.status >= 500) {
-            await new Promise(r => setTimeout(r, 1000 * (i + 1))); // 1s, 2s, 3s
-            continue;
-          }
-          return res; // Client error - don't retry
-        } catch (err) {
-          if (i < retries - 1) {
-            await new Promise(r => setTimeout(r, 1000 * (i + 1)));
-            continue;
-          }
-          throw err;
-        }
-      }
-      throw new Error('Max retries exceeded');
-    };
-
+  const handleQuizComplete = useCallback(async (results: { score: number; totalScore: number; percentage: number; answers: Record<string, any>; correctCount: number; incorrectCount: number }) => {
     // 1. Find wrong answer question IDs
     const questions = nodeQuizQuestions || [];
     const wrongIds = questions
@@ -317,53 +207,56 @@ export function ModernLearningPathPage() {
       })
       .map(q => q.id);
 
-    // 2. Register wrong answers to FSRS (with F8 error types if available) - with retry
+    // 2. Register wrong answers to FSRS (with F8 error types if available)
     if (wrongIds.length > 0) {
       try {
         const errorTypes = Object.keys(errorTypesRef.current).length > 0
           ? errorTypesRef.current
           : undefined;
-        const response = await fetchWithRetry('/api/v1/learning-path/register-wrong-answers', {
+        await fetch('/api/learning-path/register-wrong-answers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes, is_timeout: results.isTimeout }),
+          body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes }),
         });
-        await response.json().catch(() => ({}));
-      } catch (err: any) {
-        console.error('FSRS kaydi basarisiz (retry dahil):', err);
-        // Don't block quiz completion for FSRS errors - continue
+      } catch (err) {
+        console.error('FSRS kaydi basarisiz:', err);
       }
     }
 
     // 3. Update node progress
     if (activeQuizNode) {
       const passed = results.percentage >= (activeQuizNode.quiz?.passing_score || 60);
-      try {
-        const result = passed
-          ? await markNodeComplete(activeQuizNode.id)
-          : await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
-
-        if (result?.allCompleted) {
-          window.alert('Tebrikler! Bu konudaki tum adimlari tamamladiniz!');
-        }
-      } catch (err: any) {
-        console.error('Node progress guncelleme hatasi:', err);
-        setError(err.message || 'Node progress guncellenemedi');
+      if (passed) {
+        await markNodeComplete(activeQuizNode.id);
+      } else {
+        await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
       }
     }
 
-    // 4. Gamification points: backend on_quiz_completed() handles XP award automatically
-    // (removed duplicate frontend XP call — was causing double XP)
-
-    // 5. Show timeout warning if applicable
-    if (results.isTimeout) {
-      console.warn('Quiz süre dolduğu için sonlandırıldı');
+    // 4. Award gamification points
+    if (studentId) {
+      const points = results.correctCount * 10 + (results.percentage >= (activeQuizNode?.quiz?.passing_score || 60) ? 50 : 0);
+      if (points > 0) {
+        fetch(`/api/v1/gamification/points/award?points=${points}&reason=quiz_complete`, {
+          method: 'POST',
+          credentials: 'include',
+        }).catch(err => console.error('Gamification puan hatası:', err));
+      }
     }
 
-    // 6. Reset error types (quiz UI closes when user clicks exit in results screen)
+    // 5. End study session (non-blocking — streak updated server-side)
+    if (studySession?.isActive) {
+      const topic = activeQuizNode?.title || 'quiz';
+      endSession([topic], questions.length, results.correctCount)
+        .catch(err => console.warn('Session bitirilemedi:', err));
+    }
+
+    // 6. Close quiz + reset error types
     errorTypesRef.current = {};
-  }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId]);
+    setNodeQuizQuestions(null);
+    setActiveQuizNode(null);
+  }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId, endSession, studySession]);
 
   /**
    * F8: Handle error type selection during immediate feedback.
@@ -372,63 +265,6 @@ export function ModernLearningPathPage() {
   const handleErrorTypeSelect = useCallback((questionId: string, errorType: ErrorType) => {
     errorTypesRef.current[questionId] = errorType;
   }, []);
-
-  /**
-   * Quiz exit with confirmation
-   */
-  const handleQuizExit = useCallback((submitted?: boolean) => {
-    if (submitted || window.confirm('Quiz\'den çıkmak istediğinize emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
-      errorTypesRef.current = {};
-      setNodeQuizQuestions(null);
-      setActiveQuizNode(null);
-    }
-  }, []);
-
-  const handleInterleavedExit = useCallback((submitted?: boolean) => {
-    if (submitted || window.confirm('Quiz\'den çıkmak istediğinize emin misiniz? İlerlemeniz kaydedilmeyecek.')) {
-      errorTypesRef.current = {};
-      setInterleavedQuestions(null);
-    }
-  }, []);
-
-  /**
-   * Start interleaved practice with loading state
-   */
-  const handleStartInterleaved = useCallback(async () => {
-    // Use selectedSubject as primary; extractSubject from node titles as additional variety
-    const topicSubjects = [...new Set(pathNodes.map(n => extractSubject(n.title)))];
-    const subjects = [selectedSubject, ...topicSubjects.filter(s => s !== selectedSubject)].slice(0, 5);
-    setInterleavedLoading(true);
-    setQuizError(null);
-    try {
-      // Cache-bust: ?_t=Date.now() + Cache-Control: no-cache
-      // Backend middleware'i cache-control: private, max-age=300 set ediyor
-      // → reject edilen sorular cached response'da kalıyor. Bypass et.
-      const res = await fetch(
-        `/api/v1/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10&_t=${Date.now()}`,
-        { credentials: 'include', headers: { 'Cache-Control': 'no-cache' } },
-      );
-      const data = await res.json();
-      if (data.success && data.questions?.length > 0) {
-        setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));
-      } else {
-        setQuizError('Karışık pratik soruları bulunamadı.');
-      }
-    } catch (err) {
-      console.error('Karışık pratik yüklenemedi:', err);
-      setQuizError('Karışık pratik yüklenemedi. Lütfen tekrar deneyin.');
-    } finally {
-      setInterleavedLoading(false);
-    }
-  }, [pathNodes, extractSubject, selectedSubject]);
-
-  /**
-   * Tab change with quiz guard
-   */
-  const handleTabChange = useCallback((_: unknown, newValue: number) => {
-    if (nodeQuizQuestions || interleavedQuestions) return;
-    setTabValue(newValue);
-  }, [nodeQuizQuestions, interleavedQuestions]);
 
   // ========================================
   // Memoized values
@@ -441,12 +277,6 @@ export function ModernLearningPathPage() {
     () => pathNodes.length > 0,
     [pathNodes.length],
   );
-
-  // Replaced by DungeonMap — DAG edges come from backend now
-  // const pathConnections = useMemo(
-  //   () => generateConnections(pathNodes),
-  //   [pathNodes],
-  // );
 
   /**
    * Calculate progress stats
@@ -510,7 +340,7 @@ export function ModernLearningPathPage() {
     );
   }
 
-  // Error state — show subject selector so user can switch to a different subject
+  // Error state
   if (error) {
     return (
       <Box
@@ -524,39 +354,6 @@ export function ModernLearningPathPage() {
         }}
       >
         <Container maxWidth="sm">
-          <Box sx={{ mb: 2, overflowX: 'auto', pb: 1, display: 'flex', justifyContent: 'center' }}>
-            <ToggleButtonGroup
-              value={selectedSubject}
-              exclusive
-              onChange={(_e, val) => { if (val) changeSubject(val); }}
-              size="small"
-              sx={{
-                '& .MuiToggleButton-root': {
-                  textTransform: 'none', fontWeight: 600,
-                  borderRadius: '20px !important', px: 1.5, py: 0.5,
-                  border: '1px solid rgba(59,130,246,0.3)',
-                  '&.Mui-selected': {
-                    background: modernColors.gradients.primary,
-                    color: '#fff', borderColor: 'transparent',
-                  },
-                },
-              }}
-            >
-              {[
-                { value: 'matematik', label: 'Mat' },
-                { value: 'fizik', label: 'Fiz' },
-                { value: 'kimya', label: 'Kim' },
-                { value: 'biyoloji', label: 'Bio' },
-                { value: 'turkce', label: 'Tur' },
-                { value: 'tarih', label: 'Tar' },
-                { value: 'geometri', label: 'Geo' },
-                { value: 'cografya', label: 'Cog' },
-                { value: 'edebiyat', label: 'Ede' },
-              ].map(s => (
-                <ToggleButton key={s.value} value={s.value}>{s.label}</ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Box>
           <GlassCard glassIntensity="medium" elevated>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: 'error.main' }}>
@@ -585,7 +382,7 @@ export function ModernLearningPathPage() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: `linear-gradient(180deg, ${modernColors.primary[50]} 0%, ${modernColors.background.default} 40%, #fff 100%)`,
+        background: modernColors.gradients.mesh,
         py: 4,
       }}
     >
@@ -617,23 +414,37 @@ export function ModernLearningPathPage() {
                     variant="h3"
                     sx={{
                       fontWeight: 900,
-                      color: modernColors.text.dark,
+                      background: modernColors.gradients.primary,
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
                     }}
                   >
                     Öğrenme Yolunuz
                   </Typography>
-                  <Typography variant="body1" sx={{ color: modernColors.text.secondary }}>
+                  <Typography variant="body1" color="text.secondary">
                     Kişiselleştirilmiş öğrenme yolunuz ve size özel kaynaklar
                   </Typography>
                 </Box>
               </Box>
-              <ModernButton
-                variant="glass"
-                icon={<Refresh />}
-                onClick={reload}
-              >
-                Yenile
-              </ModernButton>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {streak && streak.dailyStreak > 0 && (
+                  <Chip
+                    icon={<span role="img" aria-label="fire">🔥</span>}
+                    label={`${streak.dailyStreak} gün seri`}
+                    color="warning"
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+                <ModernButton
+                  variant="glass"
+                  icon={<Refresh />}
+                  onClick={reload}
+                >
+                  Yenile
+                </ModernButton>
+              </Box>
             </Box>
 
             {/* Learning Style Badge */}
@@ -660,71 +471,6 @@ export function ModernLearningPathPage() {
                 </Box>
               </GlassCard>
             )}
-
-            {/* Subject Selector — disabled during active quiz to prevent state corruption */}
-            <Box sx={{ mt: 2, overflowX: 'auto', pb: 1 }}>
-              <ToggleButtonGroup
-                value={selectedSubject}
-                exclusive
-                onChange={(_e, val) => { if (val) changeSubject(val); }}
-                size="small"
-                disabled={!!(nodeQuizQuestions || interleavedQuestions || pretestNode)}
-                sx={{
-                  flexWrap: 'nowrap',
-                  '& .MuiToggleButton-root': {
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    borderRadius: '20px !important',
-                    px: 2,
-                    py: 0.5,
-                    border: '1px solid rgba(59,130,246,0.3)',
-                    '&.Mui-selected': {
-                      background: modernColors.gradients.primary,
-                      color: '#fff',
-                      borderColor: 'transparent',
-                      '&:hover': { background: modernColors.gradients.primary, opacity: 0.9 },
-                    },
-                  },
-                }}
-              >
-                {[
-                  { value: 'matematik', label: 'Matematik' },
-                  { value: 'fizik', label: 'Fizik' },
-                  { value: 'kimya', label: 'Kimya' },
-                  { value: 'biyoloji', label: 'Biyoloji' },
-                  { value: 'turkce', label: 'Turkce' },
-                  { value: 'tarih', label: 'Tarih' },
-                  { value: 'geometri', label: 'Geometri' },
-                  { value: 'cografya', label: 'Cografya' },
-                  { value: 'edebiyat', label: 'Edebiyat' },
-                ].map(s => {
-                  const st = subjectStatuses.find(ss => ss.subject.toLowerCase() === s.value);
-                  return (
-                    <ToggleButton key={s.value} value={s.value} sx={{ flexDirection: 'column', lineHeight: 1.2 }}>
-                      <span>{s.label}</span>
-                      {st && (
-                        <span style={{ fontSize: 9, opacity: 0.8, fontWeight: 400 }}>
-                          θ{st.theta.toFixed(1)} · {st.mastery_pct.toFixed(0)}%
-                        </span>
-                      )}
-                    </ToggleButton>
-                  );
-                })}
-              </ToggleButtonGroup>
-            </Box>
-
-            {/* Prereq warning for selected subject */}
-            {(() => {
-              const st = subjectStatuses.find(ss => ss.subject.toLowerCase() === selectedSubject);
-              if (st?.prereq_blocked && st.prereq_topic_name) {
-                return (
-                  <Alert severity="warning" sx={{ mt: 1 }}>
-                    Bu konuyu başlatmak için önce <strong>{st.prereq_topic_name}</strong> tamamlanmalı.
-                  </Alert>
-                );
-              }
-              return null;
-            })()}
           </Box>
         </motion.div>
 
@@ -737,7 +483,7 @@ export function ModernLearningPathPage() {
           <GlassCard glassIntensity="medium" elevated>
             <Tabs
               value={tabValue}
-              onChange={handleTabChange}
+              onChange={(_, newValue) => setTabValue(newValue)}
               variant="fullWidth"
               sx={{
                 borderBottom: 1,
@@ -778,20 +524,6 @@ export function ModernLearningPathPage() {
                     <ReviewQueuePanel />
                   )}
 
-                  {/* Quiz/Interleaved error message */}
-                  {quizError && (
-                    <Alert severity="error" onClose={() => setQuizError(null)} sx={{ mb: 2 }}>
-                      {quizError}
-                    </Alert>
-                  )}
-
-                  {/* Quiz loading indicator */}
-                  {quizLoading && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
-                      <ModernLoader message="Quiz soruları yükleniyor..." />
-                    </Box>
-                  )}
-
                   {/* F9: Productive Failure Pretest */}
                   {pretestNode && (
                     <Box sx={{ mb: 3 }}>
@@ -818,7 +550,7 @@ export function ModernLearningPathPage() {
                       subject={lastQuizSubject}
                       onNavigateToTopic={(topic) => {
                         // Find the node with this topic and navigate to it
-                        const targetNode = pathNodes.find(n => extractSubject(n.title) === extractSubject(topic));
+                        const targetNode = pathNodes.find(n => n.title.toLowerCase().includes(topic.toLowerCase()));
                         if (targetNode) handleNodeClick(targetNode);
                       }}
                     />
@@ -837,7 +569,7 @@ export function ModernLearningPathPage() {
                           showCorrectAnswers: true,
                         }}
                         onSubmit={handleQuizComplete}
-                        onExit={handleQuizExit}
+                        onExit={() => { setNodeQuizQuestions(null); setActiveQuizNode(null); }}
                         onErrorTypeSelect={handleErrorTypeSelect}
                       />
                     </Box>
@@ -864,7 +596,7 @@ export function ModernLearningPathPage() {
                               const errorTypes = Object.keys(errorTypesRef.current).length > 0
                                 ? errorTypesRef.current
                                 : undefined;
-                              await fetch('/api/v1/learning-path/register-wrong-answers', {
+                              await fetch('/api/learning-path/register-wrong-answers', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
@@ -874,30 +606,9 @@ export function ModernLearningPathPage() {
                               console.error('FSRS kaydi basarisiz:', err);
                             }
                           }
-                          // Interleaved: tek kaynak FE award (LP quiz submit = backend on_quiz_completed)
-                          if (studentId) {
-                            const raw =
-                              results.correctCount * 10 + (results.percentage >= 60 ? 50 : 0);
-                            const points = Math.min(100, Math.max(0, raw));
-                            if (points > 0) {
-                              try {
-                                await fetch('/api/v1/gamification/points/award', {
-                                  method: 'POST',
-                                  credentials: 'include',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({
-                                    points,
-                                    reason: 'interleaved_practice',
-                                  }),
-                                });
-                              } catch (err) {
-                                console.error('Gamification puan hatasi:', err);
-                              }
-                            }
-                          }
                           errorTypesRef.current = {};
                         }}
-                        onExit={handleInterleavedExit}
+                        onExit={() => { errorTypesRef.current = {}; setInterleavedQuestions(null); }}
                         onErrorTypeSelect={handleErrorTypeSelect}
                       />
                     </Box>
@@ -913,10 +624,20 @@ export function ModernLearningPathPage() {
                         <ModernButton
                           variant="glass"
                           icon={<Science />}
-                          onClick={handleStartInterleaved}
-                          disabled={interleavedLoading}
+                          onClick={async () => {
+                            const subjects = [...new Set(pathNodes.map(n => n.title.split(' ')[0]))].slice(0, 5);
+                            try {
+                              const res = await fetch(`/api/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
+                              const data = await res.json();
+                              if (data.success && data.questions?.length > 0) {
+                                setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));
+                              }
+                            } catch (err) {
+                              console.error('Karışık pratik yüklenemedi:', err);
+                            }
+                          }}
                         >
-                          {interleavedLoading ? 'Yükleniyor...' : 'Karışık Pratik'}
+                          Karışık Pratik
                         </ModernButton>
                       }
                     >
@@ -939,15 +660,18 @@ export function ModernLearningPathPage() {
                   {/* Node Details Panel (conditional) */}
                   {showNodeDetails && selectedNode && (
                     <Box sx={{ mb: 3 }}>
-                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} quizLoading={quizLoading} />
+                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} />
                     </Box>
                   )}
 
                   {/* Learning Path Visualizer */}
                   {pathNodes.length > 0 ? (
-                    <TopicList
-                      subject={dungeonSubject}
-                      onNodeClick={handleDungeonNodeClick}
+                    <ModernLearningPathVisualizer
+                      nodes={pathNodes}
+                      connections={generateConnections(pathNodes)}
+                      currentNodeId={currentNodeId}
+                      onNodeClick={handleNodeClick}
+                      viewMode="tree"
                     />
                   ) : (
                     <GlassCard glassIntensity="light">
@@ -989,7 +713,7 @@ export function ModernLearningPathPage() {
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                           {videos.map((video, index) => (
                             <motion.div
-                              key={video.video_id || index}
+                              key={(video as any).id || video.video_id || index}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -1125,45 +849,12 @@ export function ModernLearningPathPage() {
                       </Box>
                     )}
                   </GlassCard>
-
-                  {/* League + Study Planner + Duel */}
-                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mt: 3 }}>
-                    <LeaguePanel compact={false} />
-                    <StudyPlannerWidget pathNodes={pathNodes} />
-                  </Box>
-
-                  <Box sx={{ mt: 3, textAlign: 'center' }}>
-                    <ModernButton
-                      variant="solid"
-                      icon={<SportsEsports />}
-                      onClick={() => setShowDuel(true)}
-                      sx={{ background: modernColors.gradients.sunset, px: 4 }}
-                    >
-                      Düello Başlat
-                    </ModernButton>
-                  </Box>
                 </motion.div>
               </AnimatePresence>
             </TabPanel>
           </GlassCard>
         </motion.div>
       </Container>
-
-      {/* Duel Mode Dialog */}
-      <Dialog
-        open={showDuel}
-        onClose={() => setShowDuel(false)}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{ sx: { borderRadius: 3, minHeight: '60vh' } }}
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
-          <IconButton onClick={() => setShowDuel(false)} size="small">✕</IconButton>
-        </Box>
-        <DialogContent>
-          <DuelMode subject={turkishLowerCase(selectedSubject) === 'matematik' ? 'MATEMATIK' : selectedSubject.toUpperCase()} />
-        </DialogContent>
-      </Dialog>
     </Box>
   );
 }
