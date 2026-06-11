@@ -29,15 +29,25 @@ from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
 
-# Convention v2 (15 May 2026) — student-facing seçim için kalite filtresi.
-# Sadece auto_judged_high (R4 promoted) + human_verified (manual curator) kabul.
-# rejected / unverified / pending / legacy_v3_unaudited havuza GİRMEZ — aksi
-# halde yargılanmamış/reddedilmiş sorular öğrenciye sızar
-# (.claude/rules/testing.md lesson #31, is_active-only servis sızıntısı).
+# Convention v3 (12 Haz 2026) — student-facing seçim TEK doğruluk kaynağı
+# olarak v_safe_for_beta view'ini kullanır. View; is_active + status
+# (human_verified/auto_judged_high) + pipeline_metadata dışlamalarını
+# (demoted / tier1 tek-sinyal / fallback-topic / görselsiz-şekil / bozuk-LaTeX)
+# TEK yerde kodlar; kod bu filtreleri REPLİKE ETMEZ (kod↔view drift biter).
+# Eski status-only gate, view'in reddettiği 2.424 tier1 tek-sinyal cevap-
+# eşleşmesini öğrenciye servis ediyordu. rejected/unverified/pending/
+# legacy_v3_unaudited zaten view dışı.
 # NOT: soru_getir (ID nokta-arama) ve admin update/delete yolları bilinçli
 # olarak filtrelenmez — atanmış soruların resume/review akışını korumak için.
-# Bkz: docs/quality_review_status_convention.md
-_ACCEPTED_QUALITY_STATUS: tuple[str, ...] = ("human_verified", "auto_judged_high")
+# Bkz: docs/quality_review_status_convention.md, .claude/rules/testing.md #31
+def _safe_for_beta_gate():
+    """student-facing seçim filtresi: yalnız v_safe_for_beta'daki id'ler.
+
+    Tek doğruluk kaynağı view'dir; status/pipeline_metadata filtreleri kodda
+    replike edilmez. Canlı view (~256ms, planlayıcı inline eder); sonuçlar
+    çağıran tarafta Redis ile cache'lenir.
+    """
+    return Question.id.in_(text("SELECT id FROM v_safe_for_beta"))
 
 # Türkçe → UPPERCASE konu dönüşüm haritası (DRY: tek tanım)
 _KONU_MAP: dict[str, str] = {
@@ -507,7 +517,7 @@ class SoruBankasiServisi:
                 try:
                     stmt = select(Question).where(
                         Question.is_active.is_(True),
-                        Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                        _safe_for_beta_gate(),
                     )
                     if sinav_tipi:
                         stmt = stmt.where(Question.exam_type == sinav_tipi.upper())
@@ -541,7 +551,7 @@ class SoruBankasiServisi:
                 async with db_manager.get_session() as session:
                     stmt = select(Question).where(
                         Question.is_active.is_(True),
-                        Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                        _safe_for_beta_gate(),
                     )
 
                     if sinav_tipi:
@@ -629,12 +639,12 @@ class SoruBankasiServisi:
                 if dialect == "postgresql":
                     stmt = select(Question).tablesample(func.bernoulli(20)).where(
                         Question.is_active.is_(True),
-                        Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                        _safe_for_beta_gate(),
                     )
                 else:
                     stmt = select(Question).where(
                         Question.is_active.is_(True),
-                        Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                        _safe_for_beta_gate(),
                     )
                 if sinav_upper:
                     stmt = stmt.where(Question.exam_type == sinav_upper)
@@ -651,7 +661,7 @@ class SoruBankasiServisi:
                     if len(tum_sorular) < toplam_ihtiyac:
                         stmt_fallback = select(Question).where(
                             Question.is_active.is_(True),
-                            Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                            _safe_for_beta_gate(),
                         )
                         if sinav_upper:
                             stmt_fallback = stmt_fallback.where(Question.exam_type == sinav_upper)
@@ -743,7 +753,7 @@ class SoruBankasiServisi:
         exam_type_upper = exam_type.upper()
         pool_size = count * 3
 
-        # Kalite filtresi: module-level _ACCEPTED_QUALITY_STATUS (DRY).
+        # Kalite filtresi: _safe_for_beta_gate() — v_safe_for_beta view (tek kaynak).
 
         # Bug #8 fix v2 (17 May 2026): subject-aware page-level exclusion.
         # Page-level crop'lar (tier1/tier1b/tier5) sayısal branşlarda solution leak
@@ -814,7 +824,7 @@ class SoruBankasiServisi:
                         s = select(Question).tablesample(func.bernoulli(20)).where(
                             Question.is_active == True,
                             Question.subject_area.in_(subjects_upper),
-                            Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                            _safe_for_beta_gate(),
                             # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
                             text(f"question_text !~* '{_img_required_pattern}'"),
                         )
@@ -822,7 +832,7 @@ class SoruBankasiServisi:
                         s = select(Question).where(
                             Question.is_active == True,
                             Question.subject_area.in_(subjects_upper),
-                            Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                            _safe_for_beta_gate(),
                             # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
                             text(f"question_text !~* '{_img_required_pattern}'"),
                         )
@@ -968,13 +978,13 @@ class SoruBankasiServisi:
                     stmt = select(Question).tablesample(func.bernoulli(20)).where(
                         Question.is_active == True,
                         Question.subject_area == subject_upper,
-                        Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                        _safe_for_beta_gate(),
                     )
                 else:
                     stmt = select(Question).where(
                         Question.is_active == True,
                         Question.subject_area == subject_upper,
-                        Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                        _safe_for_beta_gate(),
                     )
 
                 # Topic varsa exam_type filtresi uygulanmaz (Türev=AYT, Çarpan=TYT olabilir)
@@ -1053,7 +1063,7 @@ class SoruBankasiServisi:
                         stmt_no_sample = select(Question).where(
                             Question.is_active == True,
                             Question.subject_area == subject_upper,
-                            Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                            _safe_for_beta_gate(),
                         )
                         if not topic:
                             stmt_no_sample = stmt_no_sample.where(Question.exam_type == exam_type_upper)
@@ -1083,7 +1093,7 @@ class SoruBankasiServisi:
                             Question.is_active == True,
                             Question.subject_area == subject_upper,
                             Question.exam_type == exam_type_upper,
-                            Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                            _safe_for_beta_gate(),
                         )
                         if difficulty_levels:
                             stmt_fallback = stmt_fallback.where(
@@ -1098,7 +1108,7 @@ class SoruBankasiServisi:
                                 Question.is_active == True,
                                 Question.subject_area == subject_upper,
                                 Question.exam_type == exam_type_upper,
-                                Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                                _safe_for_beta_gate(),
                             )
                             if difficulty_levels:
                                 stmt_fallback = stmt_fallback.where(
@@ -1112,7 +1122,7 @@ class SoruBankasiServisi:
                             Question.is_active == True,
                             Question.subject_area == subject_upper,
                             Question.exam_type == exam_type_upper,
-                            Question.quality_review_status.in_(_ACCEPTED_QUALITY_STATUS),
+                            _safe_for_beta_gate(),
                         )
                         if difficulty_levels:
                             stmt_fallback = stmt_fallback.where(
@@ -1654,9 +1664,7 @@ class SoruBankasiServisi:
                             Question.exam_type == exam_type,
                             Question.irt_difficulty >= min_zorluk,
                             Question.irt_difficulty <= max_zorluk,
-                            Question.quality_review_status.in_(
-                                _ACCEPTED_QUALITY_STATUS
-                            ),
+                            _safe_for_beta_gate(),
                         )
                     )
                     .order_by(Question.irt_discrimination.desc())
