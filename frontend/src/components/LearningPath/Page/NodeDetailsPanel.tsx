@@ -30,7 +30,10 @@ export interface NodeDetailsPanelProps {
   onStartProductiveFailure?: (node: PathNodeData) => void
   resources?: VideoResponse[]
   resourcesLoading?: boolean
+<<<<<<< Updated upstream
   quizLoading?: boolean
+=======
+>>>>>>> Stashed changes
 }
 
 /**
@@ -45,7 +48,10 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
   onStartProductiveFailure,
   resources = [],
   resourcesLoading = false,
+<<<<<<< Updated upstream
   quizLoading = false,
+=======
+>>>>>>> Stashed changes
 }) => {
   const [showChat, setShowChat] = React.useState(false);
 
@@ -244,9 +250,14 @@ export const NodeDetailsPanel: React.FC<NodeDetailsPanelProps> = ({
                   color="primary"
                   size="small"
                   onClick={() => onStartQuiz(node)}
+<<<<<<< Updated upstream
                   disabled={quizLoading}
                 >
                   {quizLoading ? 'Yükleniyor...' : 'Quiz Başlat'}
+=======
+                >
+                  Quiz Başlat
+>>>>>>> Stashed changes
                 </Button>
               )}
               {onStartProductiveFailure && (

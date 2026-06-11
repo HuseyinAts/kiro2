@@ -3,15 +3,27 @@
  * Kişiselleştirilmiş öğrenme yolu ve kaynaklar
  */
 
-import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science } from '@mui/icons-material';
+<<<<<<< Updated upstream
+import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science, SportsEsports } from '@mui/icons-material';
+import { Container, Box, Tabs, Tab, Typography, Alert, Chip, ToggleButton, ToggleButtonGroup, Dialog, DialogContent, IconButton } from '@mui/material';
+=======
+import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science, CalendarToday, PlayArrow, Stop, LocalFireDepartment, Timer, AccountTree } from '@mui/icons-material';
 import { Container, Box, Tabs, Tab, Typography, Alert, Chip } from '@mui/material';
+>>>>>>> Stashed changes
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
 // Custom hooks
 import { VideoResponse } from '../api';
+<<<<<<< Updated upstream
 import { LearningStyleQuiz } from '../components/LearningPath/LearningStyleQuiz';
+import { TopicList } from '../components/LearningPath/TopicList';
+// DungeonMap (parşömen + fog-of-war) sade TopicList ile değiştirildi (fallback olarak korunuyor)
+// import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
+=======
+import { OnboardingWizard } from '../components/LearningPath/OnboardingWizard';
 import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
+>>>>>>> Stashed changes
 import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel';
 import { PathNodeData } from '../components/LearningPath/PathNode';
 import { GlassCard } from '../components/ui/GlassCard';
@@ -22,8 +34,24 @@ import type { Question } from '../components/Quiz/QuizInterface';
 import type { ErrorType } from '../components/Quiz/ErrorTypeSelector';
 import { mapApiToQuizQuestion } from '../utils/questionMappers';
 import { ReviewQueuePanel } from '../components/LearningPath/ReviewQueuePanel';
+<<<<<<< Updated upstream
 import { ErrorClusterCard } from '../components/Quiz/ErrorClusterCard';
 import { ProductiveFailureFlow } from '../components/LearningPath/ProductiveFailureFlow';
+import { LeaguePanel } from '../components/LearningPath/LeaguePanel';
+import { StudyPlannerWidget } from '../components/LearningPath/StudyPlannerWidget';
+import { DuelMode } from '../components/LearningPath/DuelMode';
+=======
+import { AdaptiveFeedbackPanel } from '../components/LearningPath/AdaptiveFeedbackPanel';
+import { ProgressDashboard } from '../components/LearningPath/Page/ProgressDashboard';
+import { StudyPlannerWidget } from '../components/LearningPath/StudyPlannerWidget';
+import { AccessibilitySettings } from '../components/LearningPath/AccessibilitySettings';
+import { SkillGraphView } from '../components/LearningPath/SkillGraphView';
+import { ProductiveFailureFlow } from '../components/LearningPath/ProductiveFailureFlow';
+import { LeaguePanel } from '../components/LearningPath/LeaguePanel';
+import { ProactiveCoachWidget } from '../components/LearningPath/ProactiveCoachWidget';
+import { SuccessAnimation } from '../components/ADHD/InstantFeedback/SuccessAnimation';
+import { StreakTracker } from '../components/ADHD/InstantFeedback/StreakTracker';
+>>>>>>> Stashed changes
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
@@ -69,18 +97,24 @@ export function ModernLearningPathPage() {
     currentNodeId,
     loading,
     error,
-    needsQuiz,
+    needsOnboarding,
     reload,
     setCurrentNode,
-    submitQuizResult,
-    skipQuiz,
+    submitOnboardingResult,
+    skipOnboarding,
     markNodeComplete,
     updateProgress,
     studentId,
+<<<<<<< Updated upstream
+    selectedSubject,
+    changeSubject,
+    setError,
+=======
+    studySession,
+    streak,
     startSession,
     endSession,
-    streak,
-    studySession,
+>>>>>>> Stashed changes
   } = useLearningPath();
 
   const {
@@ -94,11 +128,58 @@ export function ModernLearningPathPage() {
   // Local UI state
   // ========================================
   const [tabValue, setTabValue] = useState(0);
+<<<<<<< Updated upstream
+  const dungeonSubject = selectedSubject?.toUpperCase() || 'MATEMATIK';
+=======
+  const [pathViewMode, setPathViewMode] = useState<'linear' | 'graph'>('linear');
+>>>>>>> Stashed changes
   const [showNodeDetails, setShowNodeDetails] = useState(false);
   const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null);
   const [interleavedQuestions, setInterleavedQuestions] = useState<Question[] | null>(null);
   const [nodeQuizQuestions, setNodeQuizQuestions] = useState<Question[] | null>(null);
   const [activeQuizNode, setActiveQuizNode] = useState<PathNodeData | null>(null);
+  const [productiveFailureActive, setProductiveFailureActive] = useState(false);
+
+  // A1: Milestone celebration
+  const [celebration, setCelebration] = useState<{ visible: boolean; type: 'correct' | 'streak' | 'achievement' | 'levelup'; message: string }>({
+    visible: false, type: 'correct', message: '',
+  });
+
+  // Faz 4: Adaptive feedback after quiz
+  const [feedbackData, setFeedbackData] = useState<{
+    visible: boolean;
+    score: number;
+    total: number;
+    correct: number;
+    passed: boolean;
+  }>({ visible: false, score: 0, total: 0, correct: 0, passed: false });
+
+  // A4: Quiz streak tracker
+  const [quizStreak, setQuizStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  useEffect(() => {
+    if (!studentId) return;
+    try {
+      const stored = parseInt(localStorage.getItem(`lp_best_streak_${studentId}`) || '0', 10);
+      setBestStreak(stored);
+    } catch { /* ignore */ }
+  }, [studentId]);
+
+  // B1: Elapsed timer for active session
+  const [elapsedMinutes, setElapsedMinutes] = useState(0);
+  useEffect(() => {
+    if (!studySession.isActive || !studySession.startedAt) {
+      setElapsedMinutes(0);
+      return;
+    }
+    const tick = () => {
+      const diff = Math.floor((Date.now() - studySession.startedAt!.getTime()) / 60000);
+      setElapsedMinutes(diff);
+    };
+    tick();
+    const interval = setInterval(tick, 60000);
+    return () => clearInterval(interval);
+  }, [studySession.isActive, studySession.startedAt]);
 
   // F8: Collect error type selections during quiz (ref to avoid re-renders)
   const errorTypesRef = useRef<Record<string, ErrorType>>({});
@@ -194,6 +275,26 @@ export function ModernLearningPathPage() {
     }
   }, [startSession]);
 
+  /** Start productive failure flow — same fetch, different UI mode */
+  const handleStartProductiveFailure = useCallback(async (node: PathNodeData) => {
+    const subject = node.title.split(' ')[0];
+    try {
+      const res = await fetch(
+        `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
+        { credentials: 'include' },
+      );
+      const data = await res.json();
+      if (data.success && data.questions?.length > 0) {
+        setNodeQuizQuestions(data.questions.map(mapApiToQuizQuestion));
+        setActiveQuizNode(node);
+        setProductiveFailureActive(true);
+        setShowNodeDetails(false);
+      }
+    } catch (err) {
+      console.error('Productive failure soruları yüklenemedi:', err);
+    }
+  }, []);
+
   /**
    * Handle quiz completion — register wrong answers to FSRS + update node progress
    */
@@ -224,8 +325,10 @@ export function ModernLearningPathPage() {
       }
     }
 
-    // 3. Update node progress
+    // 3. Update node progress + A1 celebration
+    const passed = results.percentage >= (activeQuizNode?.quiz?.passing_score || 60);
     if (activeQuizNode) {
+<<<<<<< Updated upstream
       const passed = results.percentage >= (activeQuizNode.quiz?.passing_score || 60);
       if (passed) {
         await markNodeComplete(activeQuizNode.id);
@@ -254,9 +357,64 @@ export function ModernLearningPathPage() {
 
     // 6. Close quiz + reset error types
     errorTypesRef.current = {};
+=======
+      if (passed) {
+        await markNodeComplete(activeQuizNode.id);
+        // A1: Milestone kutlama
+        setCelebration({
+          visible: true,
+          type: 'achievement',
+          message: `${activeQuizNode.title} tamamlandı!`,
+        });
+      } else {
+        await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
+      }
+    }
+
+    // A4: Quiz streak hesapla (ardışık doğru cevap sayısı)
+    const answers = results.answers || {};
+    const orderedQuestions = nodeQuizQuestions || [];
+    let currentRun = 0;
+    let maxRun = 0;
+    for (const q of orderedQuestions) {
+      if (answers[q.id] === q.correctAnswer) {
+        currentRun++;
+        maxRun = Math.max(maxRun, currentRun);
+      } else {
+        currentRun = 0;
+      }
+    }
+    setQuizStreak(maxRun);
+    if (maxRun > bestStreak) {
+      setBestStreak(maxRun);
+      try { localStorage.setItem(`lp_best_streak_${studentId}`, String(maxRun)); } catch {}
+    }
+
+    // 4. Award gamification points
+    if (studentId) {
+      const points = results.correctCount * 10 + (passed ? 50 : 0);
+      if (points > 0) {
+        fetch(`/api/v1/gamification/points/award?points=${points}&reason=quiz_complete`, {
+          method: 'POST',
+          credentials: 'include',
+        }).catch(err => console.error('Gamification puan hatası:', err));
+      }
+    }
+
+    // 5. Show adaptive feedback
+    setFeedbackData({
+      visible: true,
+      score: results.percentage,
+      total: questions.length,
+      correct: results.correctCount,
+      passed,
+    });
+
+    // 6. Close quiz
     setNodeQuizQuestions(null);
     setActiveQuizNode(null);
-  }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId, endSession, studySession]);
+>>>>>>> Stashed changes
+  }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId]);
 
   /**
    * F8: Handle error type selection during immediate feedback.
@@ -279,22 +437,23 @@ export function ModernLearningPathPage() {
   );
 
   /**
-   * Calculate progress stats
+   * A2: Daily plan — current + next 2 available nodes
    */
-  const progressStats = useMemo(() => {
-    const completed = pathNodes.filter((n) => n.status === 'completed').length;
-    const inProgress = pathNodes.filter((n) => n.status === 'current').length;
-    const available = pathNodes.filter((n) => n.status === 'available').length;
-    const total = pathNodes.length;
+  const dailyPlan = useMemo(() => {
+    const currentNode = pathNodes.find(n => n.status === 'current');
+    const availableNodes = pathNodes.filter(n => n.status === 'available');
+    const suggested = [currentNode, ...availableNodes.slice(0, 2)].filter(Boolean) as PathNodeData[];
 
-    return {
-      completed,
-      inProgress,
-      available,
-      total,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
-    };
+    // Parse estimated time (e.g. "30 dk" → 30)
+    const totalMinutes = suggested.reduce((sum, n) => {
+      const match = n.estimatedTime?.match(/(\d+)/);
+      return sum + (match ? parseInt(match[1], 10) : 20);
+    }, 0);
+
+    return { nodes: suggested, totalMinutes };
   }, [pathNodes]);
+
+  // progressStats moved to ProgressDashboard (A5)
 
   // ========================================
   // Render states
@@ -317,8 +476,8 @@ export function ModernLearningPathPage() {
     );
   }
 
-  // Quiz state — show VARK questionnaire before creating path
-  if (needsQuiz) {
+  // Onboarding state — show AI-guided wizard before creating path
+  if (needsOnboarding) {
     return (
       <Box
         sx={{
@@ -331,9 +490,10 @@ export function ModernLearningPathPage() {
         }}
       >
         <Container maxWidth="sm">
-          <LearningStyleQuiz
-            onComplete={submitQuizResult}
-            onSkip={skipQuiz}
+          <OnboardingWizard
+            studentId={studentId || ''}
+            onComplete={submitOnboardingResult}
+            onSkip={skipOnboarding}
           />
         </Container>
       </Box>
@@ -386,6 +546,15 @@ export function ModernLearningPathPage() {
         py: 4,
       }}
     >
+      {/* A1: Milestone Kutlama */}
+      <SuccessAnimation
+        isVisible={celebration.visible}
+        type={celebration.type}
+        message={celebration.message}
+        onComplete={() => setCelebration(prev => ({ ...prev, visible: false }))}
+        showConfetti
+      />
+
       <Container maxWidth="xl">
         {/* Header */}
         <motion.div
@@ -427,16 +596,44 @@ export function ModernLearningPathPage() {
                   </Typography>
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                {streak && streak.dailyStreak > 0 && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                {/* League badge */}
+                <LeaguePanel compact />
+
+                {/* B2: Streak badge */}
+                {streak.dailyStreak > 0 && (
                   <Chip
-                    icon={<span role="img" aria-label="fire">🔥</span>}
-                    label={`${streak.dailyStreak} gün seri`}
-                    color="warning"
+                    icon={<LocalFireDepartment sx={{ color: '#f97316' }} />}
+                    label={`${streak.dailyStreak} gün`}
                     variant="outlined"
-                    size="small"
+                    sx={{ fontWeight: 700, borderColor: '#f97316', color: '#f97316' }}
                   />
                 )}
+
+                {/* B1: Session timer button */}
+                {studySession.isActive ? (
+                  <ModernButton
+                    variant="gradient"
+                    gradient="linear-gradient(135deg, #ef4444, #dc2626)"
+                    icon={<Stop />}
+                    onClick={() => endSession()}
+                  >
+                    <Timer sx={{ fontSize: 16, mr: 0.5 }} />
+                    {elapsedMinutes} dk — Bitir
+                  </ModernButton>
+                ) : (
+                  <ModernButton
+                    variant="gradient"
+                    gradient={modernColors.gradients.success}
+                    icon={<PlayArrow />}
+                    onClick={startSession}
+                  >
+                    Oturum Başlat
+                  </ModernButton>
+                )}
+
+                <AccessibilitySettings />
+
                 <ModernButton
                   variant="glass"
                   icon={<Refresh />}
@@ -519,6 +716,71 @@ export function ModernLearningPathPage() {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
                 >
+                  {/* Proaktif AI Koçluk — davranışsal sinyal bazlı öneriler */}
+                  {!nodeQuizQuestions && !interleavedQuestions && (
+                    <ProactiveCoachWidget />
+                  )}
+
+                  {/* A2: Günlük Çalışma Planı */}
+                  {!nodeQuizQuestions && !interleavedQuestions && dailyPlan.nodes.length > 0 && (
+                    <GlassCard glassIntensity="light" sx={{ mb: 3 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                        <CalendarToday sx={{ color: '#3b82f6' }} />
+                        <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                          Bugünün Planı
+                        </Typography>
+                        <Chip
+                          label={`~${dailyPlan.totalMinutes} dk`}
+                          size="small"
+                          sx={{ ml: 'auto', fontWeight: 600, backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}
+                        />
+                      </Box>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        {dailyPlan.nodes.map((node, i) => (
+                          <Box
+                            key={node.id}
+                            onClick={() => handleNodeClick(node)}
+                            sx={{
+                              display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, borderRadius: 2,
+                              cursor: 'pointer', transition: 'background 0.2s',
+                              backgroundColor: i === 0 ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                              '&:hover': { backgroundColor: 'rgba(59, 130, 246, 0.12)' },
+                            }}
+                          >
+                            <Box sx={{
+                              width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              backgroundColor: i === 0 ? '#3b82f6' : 'rgba(0,0,0,0.08)', color: i === 0 ? 'white' : 'text.secondary',
+                              fontWeight: 700, fontSize: 14,
+                            }}>
+                              {i + 1}
+                            </Box>
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                              <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>{node.title}</Typography>
+                              <Typography variant="caption" color="text.secondary">{node.estimatedTime} · {node.difficulty}</Typography>
+                            </Box>
+                            {node.status === 'current' && (
+                              <Chip label="Devam" size="small" color="primary" variant="outlined" />
+                            )}
+                          </Box>
+                        ))}
+                      </Box>
+                    </GlassCard>
+                  )}
+
+                  {/* Faz 4: Adaptive Feedback — quiz sonrası göster */}
+                  {feedbackData.visible && (
+                    <Box sx={{ mb: 3 }}>
+                      <AdaptiveFeedbackPanel
+                        quizScore={feedbackData.score}
+                        totalQuestions={feedbackData.total}
+                        correctCount={feedbackData.correct}
+                        passed={feedbackData.passed}
+                        onClose={() => setFeedbackData(prev => ({ ...prev, visible: false }))}
+                        onAdaptPath={reload}
+                      />
+                    </Box>
+                  )}
+
                   {/* FSRS Tekrar Paneli — due kartlar varsa göster */}
                   {!nodeQuizQuestions && !interleavedQuestions && !pretestNode && (
                     <ReviewQueuePanel />
@@ -559,6 +821,7 @@ export function ModernLearningPathPage() {
                   {/* Node Quiz — node'dan başlatılan quiz */}
                   {nodeQuizQuestions && activeQuizNode && (
                     <Box sx={{ mb: 3 }}>
+<<<<<<< Updated upstream
                       <QuizInterface
                         config={{
                           title: `${activeQuizNode.title} Quiz`,
@@ -572,6 +835,47 @@ export function ModernLearningPathPage() {
                         onExit={() => { setNodeQuizQuestions(null); setActiveQuizNode(null); }}
                         onErrorTypeSelect={handleErrorTypeSelect}
                       />
+=======
+                      {productiveFailureActive ? (
+                        /* "Çöz-Sonra-Gör" productive failure mode */
+                        <ProductiveFailureFlow
+                          config={{
+                            title: `${activeQuizNode.title} Quiz`,
+                            description: `${activeQuizNode.title} konusunu test et`,
+                            questions: nodeQuizQuestions,
+                            passingScore: activeQuizNode.quiz?.passing_score || 60,
+                          }}
+                          nodeTitle={activeQuizNode.title}
+                          onComplete={() => {}}
+                          onExit={() => {
+                            setNodeQuizQuestions(null);
+                            setActiveQuizNode(null);
+                            setProductiveFailureActive(false);
+                          }}
+                        />
+                      ) : (
+                        <>
+                          {/* A4: Quiz streak tracker */}
+                          {quizStreak > 0 && (
+                            <Box sx={{ mb: 2 }}>
+                              <StreakTracker currentStreak={quizStreak} bestStreak={bestStreak} position="top-right" />
+                            </Box>
+                          )}
+                          <QuizInterface
+                            config={{
+                              title: `${activeQuizNode.title} Quiz`,
+                              description: `${activeQuizNode.title} konusunu test et`,
+                              questions: nodeQuizQuestions,
+                              passingScore: activeQuizNode.quiz?.passing_score || 60,
+                              immediateFeedback: true,
+                              showCorrectAnswers: true,
+                            }}
+                            onSubmit={handleQuizComplete}
+                            onExit={() => { setNodeQuizQuestions(null); setActiveQuizNode(null); }}
+                          />
+                        </>
+                      )}
+>>>>>>> Stashed changes
                     </Box>
                   )}
 
@@ -660,19 +964,81 @@ export function ModernLearningPathPage() {
                   {/* Node Details Panel (conditional) */}
                   {showNodeDetails && selectedNode && (
                     <Box sx={{ mb: 3 }}>
-                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} />
+<<<<<<< Updated upstream
+                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} quizLoading={quizLoading} />
+=======
+                      <NodeDetailsPanel
+                        node={selectedNode}
+                        onClose={handleCloseDetails}
+                        onStartQuiz={handleStartQuiz}
+                        onStartProductiveFailure={handleStartProductiveFailure}
+                        resources={videos}
+                        resourcesLoading={videosLoading}
+                      />
+>>>>>>> Stashed changes
                     </Box>
                   )}
 
-                  {/* Learning Path Visualizer */}
+                  {/* View mode toggle */}
+                  {pathNodes.length > 0 && (
+                    <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                      <Chip
+                        icon={<Timeline sx={{ fontSize: 16 }} />}
+                        label="Yol Haritası"
+                        size="small"
+                        onClick={() => setPathViewMode('linear')}
+                        sx={{
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          ...(pathViewMode === 'linear' ? {
+                            bgcolor: '#3b82f620',
+                            color: '#3b82f6',
+                            borderColor: '#3b82f6',
+                            borderWidth: 1.5,
+                            borderStyle: 'solid',
+                          } : {}),
+                        }}
+                      />
+                      <Chip
+                        icon={<AccountTree sx={{ fontSize: 16 }} />}
+                        label="Skill Haritası"
+                        size="small"
+                        onClick={() => setPathViewMode('graph')}
+                        sx={{
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          ...(pathViewMode === 'graph' ? {
+                            bgcolor: '#8b5cf620',
+                            color: '#8b5cf6',
+                            borderColor: '#8b5cf6',
+                            borderWidth: 1.5,
+                            borderStyle: 'solid',
+                          } : {}),
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Learning Path Visualizer / Skill Graph */}
                   {pathNodes.length > 0 ? (
-                    <ModernLearningPathVisualizer
-                      nodes={pathNodes}
-                      connections={generateConnections(pathNodes)}
-                      currentNodeId={currentNodeId}
-                      onNodeClick={handleNodeClick}
-                      viewMode="tree"
+<<<<<<< Updated upstream
+                    <TopicList
+                      subject={dungeonSubject}
+                      onNodeClick={handleDungeonNodeClick}
                     />
+=======
+                    pathViewMode === 'graph' ? (
+                      <SkillGraphView pathNodes={pathNodes} />
+                    ) : (
+                      <ModernLearningPathVisualizer
+                        nodes={pathNodes}
+                        connections={generateConnections(pathNodes)}
+                        currentNodeId={currentNodeId}
+                        onNodeClick={handleNodeClick}
+                        viewMode="tree"
+                      />
+                    )
+>>>>>>> Stashed changes
                   ) : (
                     <GlassCard glassIntensity="light">
                       <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -771,7 +1137,7 @@ export function ModernLearningPathPage() {
               </AnimatePresence>
             </TabPanel>
 
-            {/* Tab 3: Progress Tracking */}
+            {/* Tab 3: Progress Tracking (A5: ProgressDashboard) */}
             <TabPanel value={tabValue} index={2}>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -781,74 +1147,46 @@ export function ModernLearningPathPage() {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <GlassCard glassIntensity="light">
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 3 }}>
-                      İlerleme İstatistikleri
-                    </Typography>
-
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 2 }}>
-                      <GlassCard
-                        glassIntensity="light"
-                        hoverable
-                        gradient={modernColors.gradients.success}
-                      >
-                        <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5 }}>
-                          {progressStats.completed}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Tamamlanan Modül
-                        </Typography>
-                      </GlassCard>
-
-                      <GlassCard
-                        glassIntensity="light"
-                        hoverable
-                        gradient={modernColors.gradients.primary}
-                      >
-                        <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5 }}>
-                          {progressStats.inProgress}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Devam Eden
-                        </Typography>
-                      </GlassCard>
-
-                      <GlassCard
-                        glassIntensity="light"
-                        hoverable
-                        gradient={modernColors.gradients.ocean}
-                      >
-                        <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5 }}>
-                          {progressStats.available}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Erişilebilir
-                        </Typography>
-                      </GlassCard>
-
-                      <GlassCard
-                        glassIntensity="light"
-                        hoverable
-                        gradient={modernColors.gradients.warning}
-                      >
-                        <Typography variant="h3" sx={{ fontWeight: 800, mb: 0.5 }}>
-                          {progressStats.percentage}%
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Tamamlanma Oranı
-                        </Typography>
-                      </GlassCard>
-                    </Box>
-
-                    {!hasPath && (
-                      <Box sx={{ mt: 4, textAlign: 'center' }}>
+                  {hasPath ? (
+                    <>
+                      <StudyPlannerWidget pathNodes={pathNodes} />
+                      <LeaguePanel />
+                      <Box sx={{ mt: 2 }}>
+                        <ProgressDashboard pathNodes={pathNodes} />
+                      </Box>
+                    </>
+                  ) : (
+                    <GlassCard glassIntensity="light">
+                      <Box sx={{ textAlign: 'center', py: 8 }}>
                         <Assessment sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
                         <Typography variant="h6" color="text.secondary">
                           İlerleme takibi için önce bir öğrenme yolu oluşturun
                         </Typography>
                       </Box>
+<<<<<<< Updated upstream
                     )}
                   </GlassCard>
+
+                  {/* League + Study Planner + Duel */}
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mt: 3 }}>
+                    <LeaguePanel compact={false} />
+                    <StudyPlannerWidget pathNodes={pathNodes} />
+                  </Box>
+
+                  <Box sx={{ mt: 3, textAlign: 'center' }}>
+                    <ModernButton
+                      variant="solid"
+                      icon={<SportsEsports />}
+                      onClick={() => setShowDuel(true)}
+                      sx={{ background: modernColors.gradients.sunset, px: 4 }}
+                    >
+                      Düello Başlat
+                    </ModernButton>
+                  </Box>
+=======
+                    </GlassCard>
+                  )}
+>>>>>>> Stashed changes
                 </motion.div>
               </AnimatePresence>
             </TabPanel>

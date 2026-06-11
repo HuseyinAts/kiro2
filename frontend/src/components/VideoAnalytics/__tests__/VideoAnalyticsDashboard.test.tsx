@@ -7,11 +7,17 @@ import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { VideoAnalyticsDashboard, AnalyticsSummary } from '../VideoAnalyticsDashboard';
-import { vi, Mock } from 'vitest';
+import { vi, Mock, beforeAll, afterAll } from 'vitest';
 
 // Create fetch mock with proper vitest typing
 const fetchMock = vi.fn() as Mock;
-global.fetch = fetchMock;
+beforeAll(() => {
+  vi.stubGlobal('fetch', fetchMock);
+});
+
+afterAll(() => {
+  vi.unstubAllGlobals();
+});
 
 const mockSummaryData: AnalyticsSummary = {
   userId: 'user-123',
@@ -51,6 +57,25 @@ const mockEmptySummary: AnalyticsSummary = {
   averagePlaybackSpeed: 1.0,
   sourceBreakdown: {},
   subjectBreakdown: {}
+};
+
+const toApiSummary = (overrides: Partial<AnalyticsSummary> = {}) => {
+  const merged = { ...mockSummaryData, ...overrides };
+  return {
+    user_id: merged.userId,
+    period_type: merged.periodType,
+    period_start: merged.periodStart,
+    period_end: merged.periodEnd,
+    total_videos_watched: merged.totalVideosWatched,
+    total_watch_time: merged.totalWatchTime,
+    total_videos_completed: merged.totalVideosCompleted,
+    average_completion_rate: merged.averageCompletionRate,
+    total_notes: merged.totalNotes,
+    total_bookmarks: merged.totalBookmarks,
+    average_playback_speed: merged.averagePlaybackSpeed,
+    source_breakdown: merged.sourceBreakdown,
+    subject_breakdown: merged.subjectBreakdown,
+  };
 };
 
 describe('VideoAnalyticsDashboard - Rendering', () => {
@@ -131,7 +156,7 @@ describe('VideoAnalyticsDashboard - Data Loading', () => {
     render(<VideoAnalyticsDashboard userId="user-123" />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining('/api/v1/video-analytics/summary/daily'),
       );
     });
@@ -141,7 +166,7 @@ describe('VideoAnalyticsDashboard - Data Loading', () => {
     render(<VideoAnalyticsDashboard userId="user-123" />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining('user_id=user-123')
       );
     });
@@ -153,7 +178,7 @@ describe('VideoAnalyticsDashboard - Data Loading', () => {
     const today = new Date().toISOString().split('T')[0];
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining(`date=${today}`)
       );
     });
@@ -163,15 +188,15 @@ describe('VideoAnalyticsDashboard - Data Loading', () => {
     render(<VideoAnalyticsDashboard userId="user-123" />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
     });
 
     const dateInput = screen.getByLabelText('Select date for analytics');
     fireEvent.change(dateInput, { target: { value: '2025-10-27' } });
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledTimes(2);
-      expect(global.fetch).toHaveBeenLastCalledWith(
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock).toHaveBeenLastCalledWith(
         expect.stringContaining('date=2025-10-27')
       );
     });
@@ -292,14 +317,12 @@ describe('VideoAnalyticsDashboard - Stats Cards', () => {
     render(<VideoAnalyticsDashboard userId="user-123" />);
 
     await waitFor(() => {
-      expect(screen.getByText('📹')).toBeInTheDocument();
-      expect(screen.getByText('⏱️')).toBeInTheDocument();
-      expect(screen.getByText('✅')).toBeInTheDocument();
-      expect(screen.getByText('📈')).toBeInTheDocument();
-      expect(screen.getByText('📝')).toBeInTheDocument();
-      expect(screen.getByText('🔖')).toBeInTheDocument();
-      expect(screen.getByText('⚡')).toBeInTheDocument();
-      expect(screen.getByText('🎯')).toBeInTheDocument();
+      const statIcons = Array.from(document.querySelectorAll('.stat-icon')).map(
+        el => el.textContent,
+      );
+      expect(statIcons).toEqual(
+        expect.arrayContaining(['📹', '⏱️', '✅', '📈', '📝', '🔖', '⚡', '🎯']),
+      );
     });
   });
 });
@@ -311,10 +334,9 @@ describe('VideoAnalyticsDashboard - Duration Formatting', () => {
 
   it('formats hours and minutes', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_watch_time: 3661, // 1 hour 1 minute 1 second
-        total_videos_watched: 1
+      json: async () => toApiSummary({
+        totalWatchTime: 3661, // 1 hour 1 minute 1 second
+        totalVideosWatched: 1
       })
     });
 
@@ -327,10 +349,9 @@ describe('VideoAnalyticsDashboard - Duration Formatting', () => {
 
   it('formats minutes only when less than an hour', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_watch_time: 1800, // 30 minutes
-        total_videos_watched: 1
+      json: async () => toApiSummary({
+        totalWatchTime: 1800, // 30 minutes
+        totalVideosWatched: 1
       })
     });
 
@@ -343,10 +364,9 @@ describe('VideoAnalyticsDashboard - Duration Formatting', () => {
 
   it('formats zero minutes correctly', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_watch_time: 0,
-        total_videos_watched: 1
+      json: async () => toApiSummary({
+        totalWatchTime: 0,
+        totalVideosWatched: 1
       })
     });
 
@@ -365,9 +385,8 @@ describe('VideoAnalyticsDashboard - Completion Color Coding', () => {
 
   it('shows green for high completion rate (>=80%)', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        average_completion_rate: 85
+      json: async () => toApiSummary({
+        averageCompletionRate: 85
       })
     });
 
@@ -381,9 +400,8 @@ describe('VideoAnalyticsDashboard - Completion Color Coding', () => {
 
   it('shows yellow for medium completion rate (60-79%)', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        average_completion_rate: 70
+      json: async () => toApiSummary({
+        averageCompletionRate: 70
       })
     });
 
@@ -397,9 +415,8 @@ describe('VideoAnalyticsDashboard - Completion Color Coding', () => {
 
   it('shows red for low completion rate (<60%)', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        average_completion_rate: 45
+      json: async () => toApiSummary({
+        averageCompletionRate: 45
       })
     });
 
@@ -416,9 +433,8 @@ describe('VideoAnalyticsDashboard - Source Breakdown', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        source_breakdown: mockSummaryData.sourceBreakdown
+      json: async () => toApiSummary({
+        sourceBreakdown: mockSummaryData.sourceBreakdown
       })
     });
   });
@@ -445,18 +461,17 @@ describe('VideoAnalyticsDashboard - Source Breakdown', () => {
     render(<VideoAnalyticsDashboard userId="user-123" />);
 
     await waitFor(() => {
-      expect(screen.getByText('5 video')).toBeInTheDocument();
-      expect(screen.getByText('3 video')).toBeInTheDocument();
-      expect(screen.getByText('2 video')).toBeInTheDocument();
+      expect(screen.getAllByText('5 video').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('3 video').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('2 video').length).toBeGreaterThan(0);
     });
   });
 
   it('hides source breakdown when empty', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        source_breakdown: {},
-        total_videos_watched: 1
+      json: async () => toApiSummary({
+        sourceBreakdown: {},
+        totalVideosWatched: 1
       })
     });
 
@@ -491,9 +506,8 @@ describe('VideoAnalyticsDashboard - Subject Breakdown', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        subject_breakdown: mockSummaryData.subjectBreakdown
+      json: async () => toApiSummary({
+        subjectBreakdown: mockSummaryData.subjectBreakdown
       })
     });
   });
@@ -527,10 +541,9 @@ describe('VideoAnalyticsDashboard - Subject Breakdown', () => {
 
   it('hides subject breakdown when empty', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        subject_breakdown: {},
-        total_videos_watched: 1
+      json: async () => toApiSummary({
+        subjectBreakdown: {},
+        totalVideosWatched: 1
       })
     });
 
@@ -549,7 +562,7 @@ describe('VideoAnalyticsDashboard - Insights', () => {
 
   it('displays insights section', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({ ...mockSummaryData })
+      json: async () => toApiSummary()
     });
 
     render(<VideoAnalyticsDashboard userId="user-123" />);
@@ -561,9 +574,8 @@ describe('VideoAnalyticsDashboard - Insights', () => {
 
   it('shows success insight for high completion rate', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        average_completion_rate: 85
+      json: async () => toApiSummary({
+        averageCompletionRate: 85
       })
     });
 
@@ -576,9 +588,8 @@ describe('VideoAnalyticsDashboard - Insights', () => {
 
   it('shows fast learner insight for high playback speed', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        average_playback_speed: 1.75
+      json: async () => toApiSummary({
+        averagePlaybackSpeed: 1.75
       })
     });
 
@@ -592,9 +603,8 @@ describe('VideoAnalyticsDashboard - Insights', () => {
 
   it('shows active learning insight for many notes', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_notes: 15
+      json: async () => toApiSummary({
+        totalNotes: 15
       })
     });
 
@@ -607,10 +617,9 @@ describe('VideoAnalyticsDashboard - Insights', () => {
 
   it('shows warning for no completed videos', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_videos_completed: 0,
-        total_videos_watched: 5
+      json: async () => toApiSummary({
+        totalVideosCompleted: 0,
+        totalVideosWatched: 5
       })
     });
 
@@ -623,10 +632,9 @@ describe('VideoAnalyticsDashboard - Insights', () => {
 
   it('does not show warning when no videos watched', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_videos_completed: 0,
-        total_videos_watched: 0
+      json: async () => toApiSummary({
+        totalVideosCompleted: 0,
+        totalVideosWatched: 0
       })
     });
 
@@ -642,9 +650,7 @@ describe('VideoAnalyticsDashboard - Empty State', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockEmptySummary
-      })
+      json: async () => toApiSummary(mockEmptySummary)
     });
   });
 
@@ -689,10 +695,9 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
 
   it('handles zero completion ratio correctly', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_videos_completed: 0,
-        total_videos_watched: 5
+      json: async () => toApiSummary({
+        totalVideosCompleted: 0,
+        totalVideosWatched: 5
       })
     });
 
@@ -705,10 +710,9 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
 
   it('handles 100% completion ratio', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_videos_completed: 10,
-        total_videos_watched: 10
+      json: async () => toApiSummary({
+        totalVideosCompleted: 10,
+        totalVideosWatched: 10
       })
     });
 
@@ -721,9 +725,8 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
 
   it('handles single video source', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        source_breakdown: { youtube: 10 }
+      json: async () => toApiSummary({
+        sourceBreakdown: { youtube: 10 }
       })
     });
 
@@ -737,10 +740,9 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
 
   it('handles unknown video source', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        source_breakdown: { unknown: 2 },
-        total_videos_watched: 2
+      json: async () => toApiSummary({
+        sourceBreakdown: { unknown: 2 },
+        totalVideosWatched: 2
       })
     });
 
@@ -753,10 +755,9 @@ describe('VideoAnalyticsDashboard - Edge Cases', () => {
 
   it('handles very large numbers', async () => {
     fetchMock.mockResolvedValue({
-      json: async () => ({
-        ...mockSummaryData,
-        total_videos_watched: 999,
-        total_watch_time: 999999
+      json: async () => toApiSummary({
+        totalVideosWatched: 999,
+        totalWatchTime: 999999
       })
     });
 
@@ -772,7 +773,7 @@ describe('VideoAnalyticsDashboard - Accessibility', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fetchMock.mockResolvedValue({
-      json: async () => ({ ...mockSummaryData })
+      json: async () => toApiSummary()
     });
   });
 

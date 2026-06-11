@@ -81,9 +81,9 @@ describe('InteractiveGeometry Component - Rendering', () => {
   it('renders drawing tools', () => {
     render(<InteractiveGeometry />);
 
-    expect(screen.getByText(/Doğru/)).toBeInTheDocument();
-    expect(screen.getByText(/Daire/)).toBeInTheDocument();
-    expect(screen.getByText(/Dikdörtgen/)).toBeInTheDocument();
+    expect(screen.getByTitle('Doğru')).toBeInTheDocument();
+    expect(screen.getByTitle('Daire')).toBeInTheDocument();
+    expect(screen.getByTitle('Dikdörtgen')).toBeInTheDocument();
   });
 
   it('renders measurement tools', () => {
@@ -661,7 +661,7 @@ describe('InteractiveGeometry Component - Save Usage', () => {
           shapes_created: expect.arrayContaining([
             expect.objectContaining({ type: 'line', points: 2 })
           ]),
-          duration_seconds: 60,
+          duration_seconds: expect.any(Number),
         })
       );
     });

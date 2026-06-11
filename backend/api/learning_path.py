@@ -432,32 +432,25 @@ async def assess_knowledge(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def _safe_get_agent():
-    """Safe agent factory — returns None instead of raising on missing dependencies."""
-    if get_learning_path_agent is None:
-        return None
-    try:
-        return get_learning_path_agent()
-    except Exception as e:
-        logger.warning(f"Learning path agent unavailable: {e}")
-        return None
-
-
-@router.post("/create-path")
-async def create_learning_path(
-    request: LearningPathCreateRequest,
-    http_request: Request = None,
-    current_user=Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    agent = _safe_get_agent()
-    if agent is not None:
+if get_learning_path_agent is not None:
+    @router.post("/create-path")
+    async def create_learning_path(
+        request: LearningPathCreateRequest,
+        agent: LearningPathAgent = Depends(get_learning_path_agent),
+        http_request: Request = None,
+        current_user=Depends(get_current_user),  # 🔒 AUTH ADDED
+        db: AsyncSession = Depends(get_db),
+    ):
         return await _create_learning_path_impl(request, agent, http_request, current_user, db=db)
-    # Agent unavailable (missing langchain_core etc.) — use fallback path
-    logger.warning("AI agent not available, returning fallback learning path")
-    return await ai_agent_fallback_handler(
-        Exception("Agent unavailable"), request.student_id, request.subject
-    )
+else:
+    @router.post("/create-path")
+    async def create_learning_path(
+        request: LearningPathCreateRequest,
+        http_request: Request = None,
+        current_user=Depends(get_current_user),
+        db: AsyncSession = Depends(get_db),
+    ):
+        raise HTTPException(status_code=503, detail="Learning path agent not available")
 
 
 async def _create_learning_path_impl(
@@ -497,23 +490,8 @@ async def _create_learning_path_impl(
     success = False
 
     try:
-        # 🔒 IDOR Prevention for create-path
-        # First-time users have no DB profile yet, so verify_student_access would fail.
-        # Students: forced to use their own ID (prevents IDOR)
-        # Teachers/Admins: can create paths for any student (use request.student_id)
-        user_id = getattr(current_user, 'id', None) or getattr(current_user, 'sub', None)
-        user_role = getattr(current_user, 'role', None)
-
-        from core.jwt_auth import UserRole
-        privileged_roles = {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
-
-        if user_role in privileged_roles and request.student_id:
-            # Privileged user creating path for a specific student
-            student_id = request.student_id
-        else:
-            # Student creating their own path
-            student_id = str(user_id)
-            request.student_id = student_id
+        # 🔒 Verify ownership: students can only create their own paths
+        await verify_student_access(request.student_id, current_user, db)
 
         logger.info(
             f"Creating AI-powered learning path for student {request.student_id}, subject: {request.subject}"
@@ -533,12 +511,6 @@ async def _create_learning_path_impl(
             logger.warning(f"Circuit breaker triggered: {cb_error.message}")
             return await ai_agent_fallback_handler(
                 cb_error, request.student_id, request.subject
-            )
-        except Exception as agent_error:
-            # AI agent failed (e.g. Ollama not available) - use fallback template
-            logger.exception(f"AI agent failed, using fallback: {agent_error}")
-            return await ai_agent_fallback_handler(
-                agent_error, request.student_id, request.subject
             )
 
         success = True
@@ -863,20 +835,13 @@ async def _search_resources_impl(
 
 
 @router.post("/adapt-path")
-async def adapt_learning_path(
-    adaptation: PathAdaptation,
-    current_user: AuthenticatedUser = Depends(get_current_user),  # 🔒 AUTH
-    db: AsyncSession = Depends(get_db),
-):
+async def adapt_learning_path(adaptation: PathAdaptation):
     """
     Öğrenme yolunu performansa göre uyarla
 
     Öğrencinin performans verilerine göre öğrenme yolunu dinamik olarak günceller.
     """
     try:
-        # 🔒 Verify ownership: students can only adapt their own paths
-        await verify_student_access(adaptation.student_id, current_user, db)
-
         logger.info(
             f"Adapting learning path {adaptation.path_id} for "
             f"student {adaptation.student_id}"
@@ -934,8 +899,6 @@ async def adapt_learning_path(
             ),
         }
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"Error adapting learning path: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -1542,8 +1505,6 @@ async def submit_review(
 
 class RegisterWrongAnswersRequest(BaseModel):
     question_ids: List[str] = Field(..., min_length=1)
-    # F8: Optional error type classifications from ErrorTypeSelector
-    error_types: Optional[Dict[str, str]] = None
 
 
 @router.post("/register-wrong-answers")
@@ -1563,8 +1524,7 @@ async def register_wrong_answers(
         student_id = str(current_user.id)
         adapter = QuestionReviewAdapter()
         created = await adapter.register_wrong_answers(
-            student_id, request.question_ids, db,
-            error_types=request.error_types,
+            student_id, request.question_ids, db
         )
         await db.commit()
         return {

@@ -19,8 +19,12 @@ import { ModernErrorPage } from './pages/ModernErrorPage';
 import { ModernRegisterPage as RegisterPage } from './pages/ModernRegisterPage';
 import { VeliOnayPage } from './pages/VeliOnayPage';
 import { UnauthorizedPage } from './pages/UnauthorizedPage';
+<<<<<<< Updated upstream:frontend/src/App.tsx
 // S179 (F-P0-2): ParentDashboard route now redirects to /parent/dashboard;
 // no eager import needed. ParentDashboardPage (Modern) is still lazy.
+=======
+import { ParentDashboard } from './pages/ParentDashboard';
+>>>>>>> Stashed changes:frontend/src/app.tsx
 import './styles/touch-optimized.css';
 import { modernLightTheme as lightTheme } from './theme/modern-theme';
 import {
@@ -221,11 +225,19 @@ function AppContent() {
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               <Route path="/404" element={<Modern404Page />} />
               <Route path="/error" element={<ModernErrorPage />} />
+<<<<<<< Updated upstream:frontend/src/App.tsx
               {/* S179 fix (F-P0-2): Turkish `/veli-takip` route deprecated.
                   Canonical English route is `/parent/dashboard`; keep an
                   HTTP redirect so existing bookmarks/notification links
                   still land on the right page. See .claude/rules/path-naming.md. */}
               <Route path="/veli-takip" element={<Navigate to="/parent/dashboard" replace />} />
+=======
+              <Route path="/veli-takip" element={
+                <ProtectedRoute requiredRoles={['veli']}>
+                  <ParentDashboard />
+                </ProtectedRoute>
+              } />
+>>>>>>> Stashed changes:frontend/src/app.tsx
 
               {/* Student Routes */}
               <Route

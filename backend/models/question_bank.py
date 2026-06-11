@@ -289,11 +289,19 @@ class QuestionBankItem(Base):
     question_latex: Mapped[str | None] = mapped_column(
         Text
     )  # LaTeX formatında matematik
+<<<<<<< Updated upstream
     question_image_url: Mapped[str | None] = mapped_column(String(500))
     image_ocr_text: Mapped[str | None] = mapped_column(Text)
     image_width: Mapped[int | None] = mapped_column(Integer)
     image_height: Mapped[int | None] = mapped_column(Integer)
     question_audio_url: Mapped[str | None] = mapped_column(String(500))
+=======
+    question_image_url: Mapped[Optional[str]] = mapped_column(String(500))
+    image_ocr_text: Mapped[Optional[str]] = mapped_column(Text)
+    image_width: Mapped[Optional[int]] = mapped_column(Integer)
+    image_height: Mapped[Optional[int]] = mapped_column(Integer)
+    question_audio_url: Mapped[Optional[str]] = mapped_column(String(500))
+>>>>>>> Stashed changes
 
     # Seçenekler
     option_a: Mapped[str] = mapped_column(Text, nullable=False)

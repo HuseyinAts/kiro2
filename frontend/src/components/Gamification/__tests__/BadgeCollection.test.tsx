@@ -319,7 +319,7 @@ describe('BadgeCollection - Badge Details', () => {
     mockedUseGamification.useBadges = vi.fn().mockReturnValue({
       allBadges: mockAllBadges,
       earnedBadges: mockEarnedBadges,
-      badgeProgress: [],
+      badgeProgress: mockBadgeProgress,
       loading: false,
       error: null,
     });
@@ -419,8 +419,9 @@ describe('BadgeCollection - Empty States', () => {
 
     render(<BadgeCollection />);
 
+    fireEvent.click(screen.getByText(/Tümü/));
     const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: 'legendary' } });
+    fireEvent.change(select, { target: { value: 'epic' } });
 
     expect(screen.getByText('Rozet bulunamadı')).toBeInTheDocument();
   });

@@ -18,8 +18,12 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
+<<<<<<< Updated upstream
 from cachetools import TTLCache
 from sqlalchemy import and_, func, or_, select, update
+=======
+from sqlalchemy import and_, or_, func, select, update
+>>>>>>> Stashed changes
 
 from core.database import get_db_session_context
 from core.structured_logger import get_logger
@@ -1458,12 +1462,17 @@ class OSYMExamEngine:
                     # Her iki form: diacritics'siz (OCR) ve Türkçe karakterli
                     or_(
                         and_(
+<<<<<<< Updated upstream
                             ~func.lower(Question.question_text).contains(
                                 "parcaya gore"
                             ),
                             ~func.lower(Question.question_text).contains(
                                 "parçaya göre"
                             ),
+=======
+                            ~func.lower(Question.question_text).contains("parcaya gore"),
+                            ~func.lower(Question.question_text).contains("parçaya göre"),
+>>>>>>> Stashed changes
                         ),
                         func.length(Question.question_text) >= 300,
                     ),
@@ -1507,6 +1516,7 @@ class OSYMExamEngine:
                 # $\frac/$\sqrt: LaTeX delimiter — safe filter
                 # x^2, 2x +: No delimiter — theoretical false positive risk, 0 actual hits
                 if subject in ("TURKCE", "EDEBIYAT", "TARIH", "COGRAFYA", "SOSYAL"):
+<<<<<<< Updated upstream
                     filters.extend(
                         [
                             ~Question.question_text.contains("$\\frac"),
@@ -1515,6 +1525,21 @@ class OSYMExamEngine:
                             ~Question.question_text.contains("2x +"),
                         ]
                     )
+=======
+                    filters.extend([
+                        ~Question.question_text.contains("$\\frac"),
+                        ~Question.question_text.contains("$\\sqrt"),
+                        ~Question.question_text.contains("x^2"),
+                        ~Question.question_text.contains("2x +"),
+                    ])
+
+                result = await db_session.execute(
+                    select(Question)
+                    .where(and_(*filters))
+                    .order_by(func.random())
+                    .limit(count)
+                )
+>>>>>>> Stashed changes
 
                 # P2: Cached ID pool + random.sample (replaces ORDER BY RANDOM())
                 difficulty_key = (
