@@ -15,7 +15,6 @@ import {
   Refresh,
   EmojiEvents,
   TrendingUp,
-  Warning,
 } from '@mui/icons-material';
 import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
 import {
@@ -40,12 +39,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-
-import { FlagButton } from '../Quality/FlagButton';
-import { MathText } from '../ui/MathText';
-
-import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
-import { MnemonicHint } from './MnemonicHint';
 
 export interface Question {
   id: string
@@ -79,10 +72,7 @@ export interface QuizConfig {
 interface QuizInterfaceProps {
   config: QuizConfig
   onSubmit?: (results: QuizResults) => void
-  onExit?: (submitted?: boolean) => void
-  onRetry?: () => void
-  /** F8: Called when student classifies a wrong answer's error type */
-  onErrorTypeSelect?: (questionId: string, errorType: ErrorType) => void
+  onExit?: () => void
   className?: string
 }
 
@@ -94,20 +84,14 @@ interface QuizResults {
   timeSpent: number
   correctCount: number
   incorrectCount: number
-<<<<<<< Updated upstream
-  isTimeout?: boolean  // True if quiz ended due to timeout
-=======
   /** Hata taksonomisi: questionId → ErrorType (sadece yanlış cevaplar) */
   errorTypes?: Record<string, ErrorType>
->>>>>>> Stashed changes
 }
 
 export function QuizInterface({
   config,
   onSubmit,
   onExit,
-  onRetry,
-  onErrorTypeSelect,
   className,
 }: QuizInterfaceProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -141,12 +125,7 @@ export function QuizInterface({
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
-<<<<<<< Updated upstream
-          // Timeout: submit with timeout flag
-          setTimeout(() => handleSubmit(true), 0);
-=======
           handleSubmitRef.current?.();
->>>>>>> Stashed changes
           return 0;
         }
         return prev - 1;
@@ -216,7 +195,7 @@ export function QuizInterface({
     setFlagged(newFlagged);
   };
 
-  const calculateResults = (timeout: boolean = false): QuizResults => {
+  const calculateResults = (): QuizResults => {
     let correctCount = 0;
     let totalScore = 0;
     let earnedScore = 0;
@@ -253,16 +232,12 @@ export function QuizInterface({
       timeSpent,
       correctCount,
       incorrectCount: config.questions.length - correctCount,
-<<<<<<< Updated upstream
-      isTimeout: timeout,  // Include timeout flag in results
-=======
       errorTypes: Object.keys(errorTypes).length > 0 ? errorTypes : undefined,
->>>>>>> Stashed changes
     };
   };
 
-  const handleSubmit = (timeout: boolean = false) => {
-    const quizResults = calculateResults(timeout);
+  const handleSubmit = () => {
+    const quizResults = calculateResults();
     setResults(quizResults);
     setIsSubmitted(true);
 
@@ -430,27 +405,13 @@ export function QuizInterface({
             )}
             <Button
               variant="contained"
-              onClick={() => {
-                if (onRetry) {
-                  onRetry();
-                } else {
-                  setIsSubmitted(false);
-                  setResults(null);
-                  setCurrentIndex(0);
-                  setAnswers({});
-                  setFlagged(new Set());
-                  setReviewMode(false);
-                  setFeedbackVisible(false);
-                  setTimeLeft(config.timeLimit || 0);
-                }
-              }}
+              onClick={() => window.location.reload()}
               startIcon={<Refresh />}
             >
               Tekrar Dene
             </Button>
             <Button
-              variant="contained"
-              onClick={() => onExit?.(true)}
+              onClick={onExit}
             >
               Çıkış
             </Button>
@@ -471,22 +432,12 @@ export function QuizInterface({
           </div>
 
           {config.timeLimit && (
-            <>
-              <Chip
-                icon={<Timer />}
-                label={formatTime(timeLeft)}
-                color={timeLeft < 60 ? 'error' : 'default'}
-                className={timeLeft < 60 ? 'animate-pulse' : ''}
-              />
-              {timeLeft <= 30 && timeLeft > 0 && (
-                <Chip
-                  icon={<Warning />}
-                  label="Süre bitiyor!"
-                  color="error"
-                  className="animate-pulse"
-                />
-              )}
-            </>
+            <Chip
+              icon={<Timer />}
+              label={formatTime(timeLeft)}
+              color={timeLeft < 60 ? 'error' : 'default'}
+              className={timeLeft < 60 ? 'animate-pulse' : ''}
+            />
           )}
         </div>
 
@@ -527,47 +478,39 @@ export function QuizInterface({
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
           >
-            {/* Question Card - Improved styling */}
+            {/* Question */}
             <div className="mb-6">
-              <Paper
-                elevation={2}
-                className="p-6 mb-4 rounded-xl bg-white shadow-sm border border-gray-100"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold flex-1 break-words text-gray-800 leading-relaxed">
-                    <MathText inline>{currentQuestion.question}</MathText>
-                  </h3>
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-lg font-semibold flex-1">
+                  {currentQuestion.question}
+                </h3>
 
-                  <div className="flex items-start ml-2">
-                    <FlagButton questionId={currentQuestion.id} size="small" />
-                    <IconButton onClick={toggleFlag} size="small">
-                      {flagged.has(currentQuestion.id) ? (
-                        <Bookmark color="warning" />
-                      ) : (
-                        <BookmarkBorder />
-                      )}
-                    </IconButton>
-                  </div>
-                </div>
+                <IconButton onClick={toggleFlag} size="small">
+                  {flagged.has(currentQuestion.id) ? (
+                    <Bookmark color="warning" />
+                  ) : (
+                    <BookmarkBorder />
+                  )}
+                </IconButton>
+              </div>
 
-                {currentQuestion.description && (
-                  <p className="text-gray-600 mb-4 text-base">
-                    <MathText inline>{currentQuestion.description}</MathText>
-                  </p>
-                )}
+              {currentQuestion.description && (
+                <p className="text-gray-600 mb-4">
+                  {currentQuestion.description}
+                </p>
+              )}
 
-                {currentQuestion.code && (
-                  <Paper variant="outlined" className="p-6 mb-6 bg-gray-900 rounded-xl">
-                    <SyntaxHighlighter
-                      language="javascript"
-                      style={vscDarkPlus}
-                      showLineNumbers
-                    >
-                      {currentQuestion.code}
-                    </SyntaxHighlighter>
-                  </Paper>
-                )}
-              </Paper>
+              {currentQuestion.code && (
+                <Paper variant="outlined" className="p-4 mb-4 bg-gray-900 rounded-lg">
+                  <SyntaxHighlighter
+                    language="javascript"
+                    style={vscDarkPlus}
+                    showLineNumbers
+                  >
+                    {currentQuestion.code}
+                  </SyntaxHighlighter>
+                </Paper>
+              )}
             </div>
 
             {/* Answer Options */}
@@ -581,15 +524,14 @@ export function QuizInterface({
                     <FormControlLabel
                       key={index}
                       value={option}
-                      control={<Radio className="mt-1" />}
-                      label={<span className="text-base text-gray-700"><MathText inline>{option}</MathText></span>}
+                      control={<Radio />}
+                      label={option}
                       className={clsx(
-                        'mb-4 p-5 min-h-[70px] rounded-xl border-2 transition-all break-words w-full cursor-pointer',
+                        'mb-2 p-2 rounded-lg border transition-all',
                         answers[currentQuestion.id] === option
-                          ? 'border-blue-500 bg-blue-50 shadow-md'
-                          : 'border-gray-200 hover:bg-gray-50 hover:shadow-md hover:border-blue-300',
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:bg-gray-50',
                       )}
-                      sx={{ alignItems: 'flex-start', ml: 0 }}
                     />
                   ))}
                 </RadioGroup>
@@ -606,7 +548,7 @@ export function QuizInterface({
                           onChange={() => handleMultiSelectChange(option)}
                         />
                       }
-                      label={<MathText inline>{option}</MathText>}
+                      label={option}
                       className={clsx(
                         'p-2 rounded-lg border transition-all',
                         (answers[currentQuestion.id] || []).includes(option)
@@ -699,7 +641,7 @@ export function QuizInterface({
 
                 {showHint && (
                   <Alert severity="info" className="mt-2">
-                    <MathText inline>{currentQuestion.hints[currentHintIndex]}</MathText>
+                    {currentQuestion.hints[currentHintIndex]}
                   </Alert>
                 )}
               </div>
@@ -720,12 +662,12 @@ export function QuizInterface({
                   <div className="mb-1">
                     <strong>{feedbackCorrect ? 'Doğru!' : 'Yanlış'}</strong>
                     {!feedbackCorrect && currentQuestion.correctAnswer && (
-                      <span> — Doğru cevap: <strong><MathText inline>{String(currentQuestion.correctAnswer)}</MathText></strong></span>
+                      <span> — Doğru cevap: <strong>{currentQuestion.correctAnswer}</strong></span>
                     )}
                   </div>
                   {currentQuestion.explanation && (
                     <div className="text-sm mt-1">
-                      <MathText inline>{currentQuestion.explanation}</MathText>
+                      {currentQuestion.explanation}
                     </div>
                   )}
                   {/* "Neden Yanlış?" — Metacognition error taxonomy (d=0.69) */}
@@ -737,17 +679,6 @@ export function QuizInterface({
                     />
                   )}
                 </Alert>
-
-                {/* F8: Error Type Selector — shown after wrong answer */}
-                {!feedbackCorrect && onErrorTypeSelect && (
-                  <ErrorTypeSelector
-                    questionId={currentQuestion.id}
-                    onSelect={onErrorTypeSelect}
-                  />
-                )}
-
-                {/* F19: Mnemonic Hint — memory aid for the concept */}
-                <MnemonicHint questionId={currentQuestion.id} compact />
               </motion.div>
             )}
 
@@ -769,10 +700,6 @@ export function QuizInterface({
                     <strong>Açıklama:</strong> {currentQuestion.explanation}
                   </div>
                 )}
-<<<<<<< Updated upstream
-                {/* F19: Mnemonic Hint in review mode */}
-                <MnemonicHint questionId={currentQuestion.id} />
-=======
                 {/* Review modunda da hata türü seçilebilir */}
                 {answers[currentQuestion.id] !== currentQuestion.correctAnswer && (
                   <ErrorTypeSelector
@@ -781,7 +708,6 @@ export function QuizInterface({
                     selected={errorTypes[currentQuestion.id]}
                   />
                 )}
->>>>>>> Stashed changes
               </Alert>
             )}
           </motion.div>
@@ -832,7 +758,7 @@ export function QuizInterface({
                 variant="contained"
                 color="success"
                 endIcon={<Send />}
-                onClick={() => handleSubmit(false)}
+                onClick={handleSubmit}
               >
                 Gönder
               </Button>
@@ -848,7 +774,7 @@ export function QuizInterface({
           ) : (
             <Button
               variant="contained"
-              onClick={() => onExit?.(isSubmitted)}
+              onClick={() => onExit?.()}
             >
               Çıkış
             </Button>

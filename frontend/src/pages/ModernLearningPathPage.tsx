@@ -3,27 +3,15 @@
  * Kişiselleştirilmiş öğrenme yolu ve kaynaklar
  */
 
-<<<<<<< Updated upstream
-import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science, SportsEsports } from '@mui/icons-material';
-import { Container, Box, Tabs, Tab, Typography, Alert, Chip, ToggleButton, ToggleButtonGroup, Dialog, DialogContent, IconButton } from '@mui/material';
-=======
 import { Timeline, VideoLibrary, Assessment, Refresh, AutoAwesome, Shuffle, Science, CalendarToday, PlayArrow, Stop, LocalFireDepartment, Timer, AccountTree } from '@mui/icons-material';
 import { Container, Box, Tabs, Tab, Typography, Alert, Chip } from '@mui/material';
->>>>>>> Stashed changes
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 // Custom hooks
 import { VideoResponse } from '../api';
-<<<<<<< Updated upstream
-import { LearningStyleQuiz } from '../components/LearningPath/LearningStyleQuiz';
-import { TopicList } from '../components/LearningPath/TopicList';
-// DungeonMap (parşömen + fog-of-war) sade TopicList ile değiştirildi (fallback olarak korunuyor)
-// import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
-=======
 import { OnboardingWizard } from '../components/LearningPath/OnboardingWizard';
 import { ModernLearningPathVisualizer } from '../components/LearningPath/ModernLearningPathVisualizer';
->>>>>>> Stashed changes
 import { NodeDetailsPanel } from '../components/LearningPath/Page/NodeDetailsPanel';
 import { PathNodeData } from '../components/LearningPath/PathNode';
 import { GlassCard } from '../components/ui/GlassCard';
@@ -31,16 +19,8 @@ import { ModernButton } from '../components/ui/ModernButton';
 import { ModernLoader } from '../components/ui/ModernLoader';
 import { QuizInterface } from '../components/Quiz/QuizInterface';
 import type { Question } from '../components/Quiz/QuizInterface';
-import type { ErrorType } from '../components/Quiz/ErrorTypeSelector';
 import { mapApiToQuizQuestion } from '../utils/questionMappers';
 import { ReviewQueuePanel } from '../components/LearningPath/ReviewQueuePanel';
-<<<<<<< Updated upstream
-import { ErrorClusterCard } from '../components/Quiz/ErrorClusterCard';
-import { ProductiveFailureFlow } from '../components/LearningPath/ProductiveFailureFlow';
-import { LeaguePanel } from '../components/LearningPath/LeaguePanel';
-import { StudyPlannerWidget } from '../components/LearningPath/StudyPlannerWidget';
-import { DuelMode } from '../components/LearningPath/DuelMode';
-=======
 import { AdaptiveFeedbackPanel } from '../components/LearningPath/AdaptiveFeedbackPanel';
 import { ProgressDashboard } from '../components/LearningPath/Page/ProgressDashboard';
 import { StudyPlannerWidget } from '../components/LearningPath/StudyPlannerWidget';
@@ -51,7 +31,6 @@ import { LeaguePanel } from '../components/LearningPath/LeaguePanel';
 import { ProactiveCoachWidget } from '../components/LearningPath/ProactiveCoachWidget';
 import { SuccessAnimation } from '../components/ADHD/InstantFeedback/SuccessAnimation';
 import { StreakTracker } from '../components/ADHD/InstantFeedback/StreakTracker';
->>>>>>> Stashed changes
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useLearningPathVideos } from '../hooks/useLearningPathVideos';
 
@@ -105,16 +84,10 @@ export function ModernLearningPathPage() {
     markNodeComplete,
     updateProgress,
     studentId,
-<<<<<<< Updated upstream
-    selectedSubject,
-    changeSubject,
-    setError,
-=======
     studySession,
     streak,
     startSession,
     endSession,
->>>>>>> Stashed changes
   } = useLearningPath();
 
   const {
@@ -128,11 +101,7 @@ export function ModernLearningPathPage() {
   // Local UI state
   // ========================================
   const [tabValue, setTabValue] = useState(0);
-<<<<<<< Updated upstream
-  const dungeonSubject = selectedSubject?.toUpperCase() || 'MATEMATIK';
-=======
   const [pathViewMode, setPathViewMode] = useState<'linear' | 'graph'>('linear');
->>>>>>> Stashed changes
   const [showNodeDetails, setShowNodeDetails] = useState(false);
   const [selectedNode, setSelectedNode] = useState<PathNodeData | null>(null);
   const [interleavedQuestions, setInterleavedQuestions] = useState<Question[] | null>(null);
@@ -180,15 +149,6 @@ export function ModernLearningPathPage() {
     const interval = setInterval(tick, 60000);
     return () => clearInterval(interval);
   }, [studySession.isActive, studySession.startedAt]);
-
-  // F8: Collect error type selections during quiz (ref to avoid re-renders)
-  const errorTypesRef = useRef<Record<string, ErrorType>>({});
-
-  // F9: Productive failure pretest state
-  const [pretestNode, setPretestNode] = useState<PathNodeData | null>(null);
-
-  // F15: Last completed quiz subject for error cluster card
-  const [lastQuizSubject, setLastQuizSubject] = useState<string | null>(null);
 
   // ========================================
   // Effects
@@ -244,17 +204,9 @@ export function ModernLearningPathPage() {
 
   /**
    * Handle start quiz from NodeDetailsPanel
-   * F9: If node is new (available), show Productive Failure pretest first.
-   * Otherwise, fetch quiz questions directly.
+   * Fetches questions via exit-quiz endpoint and renders QuizInterface
    */
   const handleStartQuiz = useCallback(async (node: PathNodeData) => {
-    // F9: Productive Failure — show pretest before new topic
-    if (node.status === 'available' && !pretestNode) {
-      setPretestNode(node);
-      setShowNodeDetails(false);
-      return;
-    }
-
     const subject = node.title.split(' ')[0];
     try {
       const res = await fetch(
@@ -266,14 +218,11 @@ export function ModernLearningPathPage() {
         setNodeQuizQuestions(data.questions.map(mapApiToQuizQuestion));
         setActiveQuizNode(node);
         setShowNodeDetails(false);
-        setLastQuizSubject(subject);
-        // Start study session (non-blocking — quiz proceeds even if session fails)
-        try { await startSession(); } catch (e) { console.warn('Session başlatılamadı:', e); }
       }
     } catch (err) {
       console.error('Quiz soruları yüklenemedi:', err);
     }
-  }, [startSession]);
+  }, []);
 
   /** Start productive failure flow — same fetch, different UI mode */
   const handleStartProductiveFailure = useCallback(async (node: PathNodeData) => {
@@ -308,17 +257,14 @@ export function ModernLearningPathPage() {
       })
       .map(q => q.id);
 
-    // 2. Register wrong answers to FSRS (with F8 error types if available)
+    // 2. Register wrong answers to FSRS
     if (wrongIds.length > 0) {
       try {
-        const errorTypes = Object.keys(errorTypesRef.current).length > 0
-          ? errorTypesRef.current
-          : undefined;
         await fetch('/api/learning-path/register-wrong-answers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes }),
+          body: JSON.stringify({ question_ids: wrongIds }),
         });
       } catch (err) {
         console.error('FSRS kaydi basarisiz:', err);
@@ -328,36 +274,6 @@ export function ModernLearningPathPage() {
     // 3. Update node progress + A1 celebration
     const passed = results.percentage >= (activeQuizNode?.quiz?.passing_score || 60);
     if (activeQuizNode) {
-<<<<<<< Updated upstream
-      const passed = results.percentage >= (activeQuizNode.quiz?.passing_score || 60);
-      if (passed) {
-        await markNodeComplete(activeQuizNode.id);
-      } else {
-        await updateProgress({ nodeId: activeQuizNode.id, progress: results.percentage });
-      }
-    }
-
-    // 4. Award gamification points
-    if (studentId) {
-      const points = results.correctCount * 10 + (results.percentage >= (activeQuizNode?.quiz?.passing_score || 60) ? 50 : 0);
-      if (points > 0) {
-        fetch(`/api/v1/gamification/points/award?points=${points}&reason=quiz_complete`, {
-          method: 'POST',
-          credentials: 'include',
-        }).catch(err => console.error('Gamification puan hatası:', err));
-      }
-    }
-
-    // 5. End study session (non-blocking — streak updated server-side)
-    if (studySession?.isActive) {
-      const topic = activeQuizNode?.title || 'quiz';
-      endSession([topic], questions.length, results.correctCount)
-        .catch(err => console.warn('Session bitirilemedi:', err));
-    }
-
-    // 6. Close quiz + reset error types
-    errorTypesRef.current = {};
-=======
       if (passed) {
         await markNodeComplete(activeQuizNode.id);
         // A1: Milestone kutlama
@@ -413,16 +329,7 @@ export function ModernLearningPathPage() {
     // 6. Close quiz
     setNodeQuizQuestions(null);
     setActiveQuizNode(null);
->>>>>>> Stashed changes
   }, [nodeQuizQuestions, activeQuizNode, markNodeComplete, updateProgress, studentId]);
-
-  /**
-   * F8: Handle error type selection during immediate feedback.
-   * Stores selections in ref; sent with register-wrong-answers on quiz completion.
-   */
-  const handleErrorTypeSelect = useCallback((questionId: string, errorType: ErrorType) => {
-    errorTypesRef.current[questionId] = errorType;
-  }, []);
 
   // ========================================
   // Memoized values
@@ -782,72 +689,23 @@ export function ModernLearningPathPage() {
                   )}
 
                   {/* FSRS Tekrar Paneli — due kartlar varsa göster */}
-                  {!nodeQuizQuestions && !interleavedQuestions && !pretestNode && (
+                  {!nodeQuizQuestions && !interleavedQuestions && (
                     <ReviewQueuePanel />
-                  )}
-
-                  {/* F9: Productive Failure Pretest */}
-                  {pretestNode && (
-                    <Box sx={{ mb: 3 }}>
-                      <ProductiveFailureFlow
-                        topic={pretestNode.title}
-                        onComplete={() => {
-                          // After pretest, start the actual quiz directly (skip pretest check)
-                          const node = { ...pretestNode, status: 'current' as const };
-                          setPretestNode(null);
-                          handleStartQuiz(node);
-                        }}
-                        onSkip={() => {
-                          const node = { ...pretestNode, status: 'current' as const };
-                          setPretestNode(null);
-                          handleStartQuiz(node);
-                        }}
-                      />
-                    </Box>
-                  )}
-
-                  {/* F15: Error Cluster Recommendations — after quiz completion */}
-                  {lastQuizSubject && !nodeQuizQuestions && !interleavedQuestions && !pretestNode && (
-                    <ErrorClusterCard
-                      subject={lastQuizSubject}
-                      onNavigateToTopic={(topic) => {
-                        // Find the node with this topic and navigate to it
-                        const targetNode = pathNodes.find(n => n.title.toLowerCase().includes(topic.toLowerCase()));
-                        if (targetNode) handleNodeClick(targetNode);
-                      }}
-                    />
                   )}
 
                   {/* Node Quiz — node'dan başlatılan quiz */}
                   {nodeQuizQuestions && activeQuizNode && (
                     <Box sx={{ mb: 3 }}>
-<<<<<<< Updated upstream
-                      <QuizInterface
-                        config={{
-                          title: `${activeQuizNode.title} Quiz`,
-                          description: `${activeQuizNode.title} konusunu test et`,
-                          questions: nodeQuizQuestions,
-                          passingScore: activeQuizNode.quiz?.passing_score || 60,
-                          immediateFeedback: true,
-                          showCorrectAnswers: true,
-                        }}
-                        onSubmit={handleQuizComplete}
-                        onExit={() => { setNodeQuizQuestions(null); setActiveQuizNode(null); }}
-                        onErrorTypeSelect={handleErrorTypeSelect}
-                      />
-=======
                       {productiveFailureActive ? (
                         /* "Çöz-Sonra-Gör" productive failure mode */
                         <ProductiveFailureFlow
-                          config={{
-                            title: `${activeQuizNode.title} Quiz`,
-                            description: `${activeQuizNode.title} konusunu test et`,
-                            questions: nodeQuizQuestions,
-                            passingScore: activeQuizNode.quiz?.passing_score || 60,
+                          topic={activeQuizNode.title}
+                          onComplete={() => {
+                            setNodeQuizQuestions(null);
+                            setActiveQuizNode(null);
+                            setProductiveFailureActive(false);
                           }}
-                          nodeTitle={activeQuizNode.title}
-                          onComplete={() => {}}
-                          onExit={() => {
+                          onSkip={() => {
                             setNodeQuizQuestions(null);
                             setActiveQuizNode(null);
                             setProductiveFailureActive(false);
@@ -875,7 +733,6 @@ export function ModernLearningPathPage() {
                           />
                         </>
                       )}
->>>>>>> Stashed changes
                     </Box>
                   )}
 
@@ -897,23 +754,18 @@ export function ModernLearningPathPage() {
                             .map(q => q.id);
                           if (wrongIds.length > 0) {
                             try {
-                              const errorTypes = Object.keys(errorTypesRef.current).length > 0
-                                ? errorTypesRef.current
-                                : undefined;
                               await fetch('/api/learning-path/register-wrong-answers', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
-                                body: JSON.stringify({ question_ids: wrongIds, error_types: errorTypes }),
+                                body: JSON.stringify({ question_ids: wrongIds }),
                               });
                             } catch (err) {
                               console.error('FSRS kaydi basarisiz:', err);
                             }
                           }
-                          errorTypesRef.current = {};
                         }}
-                        onExit={() => { errorTypesRef.current = {}; setInterleavedQuestions(null); }}
-                        onErrorTypeSelect={handleErrorTypeSelect}
+                        onExit={() => setInterleavedQuestions(null)}
                       />
                     </Box>
                   )}
@@ -964,9 +816,6 @@ export function ModernLearningPathPage() {
                   {/* Node Details Panel (conditional) */}
                   {showNodeDetails && selectedNode && (
                     <Box sx={{ mb: 3 }}>
-<<<<<<< Updated upstream
-                      <NodeDetailsPanel node={selectedNode} onClose={handleCloseDetails} onStartQuiz={handleStartQuiz} quizLoading={quizLoading} />
-=======
                       <NodeDetailsPanel
                         node={selectedNode}
                         onClose={handleCloseDetails}
@@ -975,7 +824,6 @@ export function ModernLearningPathPage() {
                         resources={videos}
                         resourcesLoading={videosLoading}
                       />
->>>>>>> Stashed changes
                     </Box>
                   )}
 
@@ -1021,14 +869,8 @@ export function ModernLearningPathPage() {
 
                   {/* Learning Path Visualizer / Skill Graph */}
                   {pathNodes.length > 0 ? (
-<<<<<<< Updated upstream
-                    <TopicList
-                      subject={dungeonSubject}
-                      onNodeClick={handleDungeonNodeClick}
-                    />
-=======
                     pathViewMode === 'graph' ? (
-                      <SkillGraphView pathNodes={pathNodes} />
+                      <SkillGraphView subject={pathNodes[0]?.title?.split(' ')[0]?.toLowerCase() || 'matematik'} />
                     ) : (
                       <ModernLearningPathVisualizer
                         nodes={pathNodes}
@@ -1038,7 +880,6 @@ export function ModernLearningPathPage() {
                         viewMode="tree"
                       />
                     )
->>>>>>> Stashed changes
                   ) : (
                     <GlassCard glassIntensity="light">
                       <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -1163,30 +1004,8 @@ export function ModernLearningPathPage() {
                           İlerleme takibi için önce bir öğrenme yolu oluşturun
                         </Typography>
                       </Box>
-<<<<<<< Updated upstream
-                    )}
-                  </GlassCard>
-
-                  {/* League + Study Planner + Duel */}
-                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mt: 3 }}>
-                    <LeaguePanel compact={false} />
-                    <StudyPlannerWidget pathNodes={pathNodes} />
-                  </Box>
-
-                  <Box sx={{ mt: 3, textAlign: 'center' }}>
-                    <ModernButton
-                      variant="solid"
-                      icon={<SportsEsports />}
-                      onClick={() => setShowDuel(true)}
-                      sx={{ background: modernColors.gradients.sunset, px: 4 }}
-                    >
-                      Düello Başlat
-                    </ModernButton>
-                  </Box>
-=======
                     </GlassCard>
                   )}
->>>>>>> Stashed changes
                 </motion.div>
               </AnimatePresence>
             </TabPanel>
