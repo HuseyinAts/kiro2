@@ -1,35 +1,25 @@
-## Session Handoff — 2026-06-10 (Tam DB Audit + Kök Neden)
-**Branch:** `fix/linguistic-concurrency-issues`
-**Son commit:** `d73f0de1e` — docs(audit): 2026-06-10 tam DB audit (sema+kalite+kok-neden, 5 gecis)
-**Uncommitted:** 70+ önceden var olan `M` dosya (config.py dahil — benim değil) + paralel audit artefaktları untracked. Audit dosyaları commit'lendi.
+## Session Handoff — 2026-06-12 (Serving-gate fix + commit'li conflict kurtarma)
+**Branch:** `master` (origin ile senkron)
+**Son commit:** `03ef96b83`
+**Önceki session:** 2026-06-10 DB audit + R1-R5 remediation (aşağıda "Geçmiş").
 
-### Yapılanlar
-- **Tam DB audit** (host PG18 `host.docker.internal:5434/kiro2`, backend container üzerinden, salt-okunur, 5 geçiş, evren-level).
-- Rapor: [2026-06-10_full_db_audit.md](file:///C:/Users/husey/kiro2/docs/audits/2026-06-10_full_db_audit.md); ham çıktı+script: `docs/audits/2026-06-10_db_audit_artifacts/` (12 dosya).
-- **Bulgular:** 276 tablo (161 boş), question_bank 187,834. Aktif havuz %88.7 incelenmemiş. embedding vector(768) ama HNSW index YOK. 35 yedek + 19 ölü kolon + 74 FK-siz link + 7 dup index + 38 json(jsonb değil) + 30 tz'siz ts.
-- **Kök neden A:** `is_calibrated=82,530` → 82,517'si `bootstrap_difficulty_prior` (`bootstrap_irt_params.py`), `irt_calibrated=0`; reset script (`irt_reset_bootstrap_flags.py`) hiç koşmamış. CAT motoru bootstrap-prior'u kalibre sanıyor.
-- **Kök neden B:** `student_answers` 161,910 → 161,658'i 2026-06-09 load-test artığı (4 user, sabit 15.5s, uniform şık, is_correct boş, %99.8 orphan). Gerçek sinyal `kiro2_learning_events` (287, temiz).
-- Düzeltmeler: metadata enrichment %89 (ilk "11" ters okumaydı); yedekler ~50MB (1.8GB değil); control char gerçek bozulma ~179+NUL.
+### Bu session — 3 commit (hepsi push'lu)
+- **`13eb6b07a` Option A** — `soru_bankasi_service.py` artık öğrenciye soruyu `v_safe_for_beta` view'inden servis ediyor (`id IN (SELECT id FROM v_safe_for_beta)`, helper `_safe_for_beta_gate()`, eski `_ACCEPTED_QUALITY_STATUS` kaldırıldı). Kod↔view drift bitti; servis havuzu 12,337→**9,913**; 2,424 tier1 tek-sinyal soru düştü. Canlı view ~256ms (kullanıcı seçimi: en basit; matview sonraya).
+- **`818bacb21` Dalga 1** — master HEAD'e commit'lenmiş conflict marker'lı 7 dosya (kök: commit `28b2f8083` "Recovered stash 2"). Backend 6 + NodeDetailsPanel keep-upstream çözüldü. Bonus: `osym_exam_engine.py`'de düşmüş kapanış parantezi (`on_conflict_do_update`) düzeltildi. host py_compile temiz.
+- **`03ef96b83` Dalga 2** — 5 frontend dosyası. Mekanik keep-upstream 78 tsc hatası verdi (mimari ayrışma). Çözüm: 3 özellik dosyasını (`ModernLearningPathPage`, `useLearningPath`, `QuizInterface`) `recover/clean-main-wip-1261` branch'inden aldık → WIP özellikleri (celebration/streak/adaptive-feedback/onboarding/skillgraph) **kurtarıldı**; 78→2; 2 prop hizalandı (ProductiveFailureFlow `topic/onComplete/onSkip`, SkillGraphView `subject`). App.tsx + ModernOSYMExamInterface keep-upstream (zaten temizdi).
 
 ### State
-- DB: host PG18 :5434 sağlıklı; sandbox host'a ulaşamıyor (insan-döngüsü psql/docker).
-- Phantom-doğrulandı: rejected/legacy aktif=0 (Lesson #31 kapalı), 0 FK orphan (tanımlı FK), subject_area UPPERCASE, tek alembic head.
+- **Tüm conflict marker'lar gitti; backend+frontend rebuild-güvenli.** 10 WIP component zaten mevcut ağaçta var.
+- Backend container: Option A deploy edildi (docker cp + restart, health OK). Dalga 1/2 dosyaları henüz container'a kopyalanmadı (rebuild'de gelir; kaynak commit'li).
 
-### Engelleyiciler / Notlar
-- Alembic head `5aabf9a6c658_fix_schema_drift_concurrently.py` git'te **untracked** (DB head sürüm kontrolünde değil).
-- Kökte paralel audit artefaktları (`ENTERPRISE_*_AUDIT.md`, `_universal_db_auditor_results.json`, `brutal_db_*.py`) — phantom önlemek için bizim raporla karşılaştır.
+### Bilinen sorunlar / notlar
+- **bash sandbox mount güvenilmez** (büyük dosyalarda stale/truncate — osym 1971'de kesik göründü ama host tamdı). Frontend/Python doğrulaması HOST araçlarıyla (Read/Grep + kullanıcı py_compile/tsc) yapıldı.
+- `recover/clean-main-wip-1261` = stash WIP'in tam/tutarlı hali (gerekirse kaynak). `e25b1dd1d` = bozuk merge'in temiz parent'ı (pre-stash master).
 
-### Remediation UYGULANDI (2026-06-10, backup'lı, atomik, salt-veri)
-- **R1:** `student_answers` 161,910 → **0** (4 test hesabı; backup `student_answers_backup_20260610`).
-- **R2:** `is_calibrated` TRUE 82,530 → **196** (bootstrap-flag reset; backup `question_bank_iscalib_reset_backup_20260610` 82,334). Kalan 196 hepsi learning_event destekli ama irt_method hâlâ bootstrap_difficulty_prior (gerçek EM değil).
-- **R3:** `question_bank.embedding` HNSW index (`idx_qb_embedding_hnsw`, vector_cosine_ops, CONCURRENTLY, valid) + migration `b2f1a9c7d3e4` (down_revision=5aabf9a6c658). Semantik arama artık ANN index'li.
-- Detay + geri-alma: `docs/audits/2026-06-10_full_db_audit.md` §J. Script'ler: `docs/audits/2026-06-10_db_audit_artifacts/`.
+### Sonraki adımlar (bu session'dan)
+1. **Frontend testleri:** `useLearningPath.test.ts` + `.bugfix.test.ts` hook'u import ediyor; recover hook API'si farklı (`studySession/streak` vs eski `selectedSubject`). `cd frontend; npx vitest run src/hooks/__tests__` — kırılırsa güncelle.
+2. **Düşen master özellikleri:** 3 frontend dosyasında `subject-switching` (selectedSubject/changeSubject), `DuelMode`, `ErrorClusterCard` düştü. Özellikle subject-switching geri port + SkillGraphView'a gerçek seçili ders bağla (şu an `pathNodes[0].title.split(' ')[0]`).
+3. Opsiyonel: Option A için matview (`mv_safe_for_beta`) ile ~256ms→~3ms.
 
-- **R4:** exam_sessions 323→**0** + exam_questions 28,508→**0** (test temizliği, CASCADE; backup'lar `exam_*_backup_20260610`).
-- **R5:** FK `student_answers_question_id_fkey` (question_id→question_bank.id) eklendi + migration `c3d2e1f0a9b8`. Artık junk insert DB seviyesinde engellenir.
-
-### Sonraki Adımlar
-1. **P0:** aktif havuz inceleme — judge pipeline (98,361 unverified/pending). Bütçe+API key gerektirir (~$5-7K, 27-40s); strateji belgelenmedi (atlandı). Pilot (1K, ~$60) ile başlanmalı.
-2. **P1/P2:** 5 yeni backup tablosunu güven periyodu sonrası DROP; diğer kritik FK'ler; gerçek IRT kalibrasyon (yanıt büyüdükçe).
-3. **P2:** 161 boş + 35 eski yedek tablo; json→jsonb (9 qb kolonu); tz'siz timestamp; 7 dup index.
-4. **Not:** alembic zincir `5aabf9a6c658(head,untracked) → b2f1a9c7d3e4(HNSW) → c3d2e1f0a9b8(FK)`. 5aabf9a6c658'i commit'le (zincir tutarlılığı).
+### Geçmiş (2026-06-10 audit) — özet
+question_bank 187,834; aktif 110,895 (98,361 yargılanmamış ama servis v_safe_for_beta=9,913 ile gated). R1 student_answers→0, R2 is_calibrated 82,530→196, R4 exam→0, R5 FK eklendi. **R3 HNSW index migration'ı (`b2f1a9c7d3e4`) applied zincirde ama canlıda YOK** — sync-stamp atlamış; pgvector+mem hazır, tek komutla kurulabilir (P0). Detay: `docs/audits/2026-06-10_full_db_audit.md`.
