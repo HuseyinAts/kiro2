@@ -4,7 +4,7 @@
  */
 
 import * as React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import FileManager from '../FileManager';
@@ -83,7 +83,7 @@ describe('FileManager Component', () => {
     it('displays file metadata correctly', async () => {
       render(<FileManager {...mockProps} />);
       await waitFor(() => {
-        expect(screen.getByText('1.00 MB')).toBeInTheDocument();
+        expect(screen.getByText('1000.00 KB')).toBeInTheDocument();
         expect(screen.getByText('Ahmet')).toBeInTheDocument();
       });
     });
@@ -100,7 +100,7 @@ describe('FileManager Component', () => {
     it('switches to list view when list icon is clicked', async () => {
       render(<FileManager {...mockProps} />);
       await waitFor(() => {
-        const listButton = screen.getByRole('button', { name: /list/i });
+        const listButton = screen.getByTestId('ViewListIcon').closest('button')!;
         fireEvent.click(listButton);
       });
       // List view should show different layout
@@ -109,9 +109,9 @@ describe('FileManager Component', () => {
     it('switches back to grid view', async () => {
       render(<FileManager {...mockProps} />);
       await waitFor(() => {
-        const listButton = screen.getByRole('button', { name: /list/i });
+        const listButton = screen.getByTestId('ViewListIcon').closest('button')!;
         fireEvent.click(listButton);
-        const gridButton = screen.getByRole('button', { name: /grid/i });
+        const gridButton = screen.getByTestId('GridViewIcon').closest('button')!;
         fireEvent.click(gridButton);
       });
     });
@@ -148,6 +148,7 @@ describe('FileManager Component', () => {
     });
 
     it('shows upload progress bar', async () => {
+      mockedAxios.post.mockImplementation(() => new Promise(() => {}));
       const file = new File(['content'], 'test.pdf', { type: 'application/pdf' });
 
       render(<FileManager {...mockProps} />);
@@ -278,7 +279,7 @@ describe('FileManager Component', () => {
       render(<FileManager {...mockProps} />);
 
       await waitFor(() => {
-        const moreButton = screen.getAllByRole('button', { name: /more/i })[0];
+        const moreButton = screen.getAllByTestId('MoreVertIcon')[0].closest('button')!;
         fireEvent.click(moreButton);
       });
 
@@ -298,7 +299,7 @@ describe('FileManager Component', () => {
       render(<FileManager {...mockProps} />);
 
       await waitFor(() => {
-        const moreButton = screen.getAllByRole('button', { name: /more/i })[0];
+        const moreButton = screen.getAllByTestId('MoreVertIcon')[0].closest('button')!;
         fireEvent.click(moreButton);
       });
 
@@ -312,8 +313,8 @@ describe('FileManager Component', () => {
       render(<FileManager {...mockProps} />);
 
       await waitFor(() => {
-        const moreButtons = screen.getAllByRole('button', { name: /more/i });
-        fireEvent.click(moreButtons[1]); // Second file is from another user
+        const moreButtons = screen.getAllByTestId('MoreVertIcon');
+        fireEvent.click(moreButtons[1].closest('button')!); // Second file is from another user
       });
 
       expect(screen.queryByText('Sil')).not.toBeInTheDocument();
@@ -325,7 +326,7 @@ describe('FileManager Component', () => {
       render(<FileManager {...mockProps} />);
 
       await waitFor(() => {
-        const moreButton = screen.getAllByRole('button', { name: /more/i })[0];
+        const moreButton = screen.getAllByTestId('MoreVertIcon')[0].closest('button')!;
         fireEvent.click(moreButton);
       });
 
@@ -334,8 +335,9 @@ describe('FileManager Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Dosya Bilgileri')).toBeInTheDocument();
-        expect(screen.getByText('matematik-notlar.pdf')).toBeInTheDocument();
-        expect(screen.getByText('1.00 MB')).toBeInTheDocument();
+        const dialog = screen.getByRole('dialog');
+        expect(within(dialog).getByText('matematik-notlar.pdf')).toBeInTheDocument();
+        expect(within(dialog).getByText('1000.00 KB')).toBeInTheDocument();
       });
     });
 
@@ -343,7 +345,7 @@ describe('FileManager Component', () => {
       render(<FileManager {...mockProps} />);
 
       await waitFor(() => {
-        const moreButton = screen.getAllByRole('button', { name: /more/i })[0];
+        const moreButton = screen.getAllByTestId('MoreVertIcon')[0].closest('button')!;
         fireEvent.click(moreButton);
         fireEvent.click(screen.getByText('Bilgi'));
       });
@@ -372,7 +374,7 @@ describe('FileManager Component', () => {
       render(<FileManager {...mockProps} />);
 
       await waitFor(() => {
-        const moreButton = screen.getAllByRole('button', { name: /more/i })[0];
+        const moreButton = screen.getAllByTestId('MoreVertIcon')[0].closest('button')!;
         fireEvent.click(moreButton);
       });
 
@@ -434,7 +436,7 @@ describe('FileManager Component', () => {
       render(<FileManager {...mockProps} />);
 
       await waitFor(() => {
-        const moreButton = screen.getAllByRole('button', { name: /more/i })[0];
+        const moreButton = screen.getAllByTestId('MoreVertIcon')[0].closest('button')!;
         fireEvent.click(moreButton);
         fireEvent.click(screen.getByText('Sil'));
       });

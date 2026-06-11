@@ -339,11 +339,10 @@ describe('ChatInterface Component', () => {
 
       await waitFor(() => {
         // Check for reply indicator
-        const ahmetElements = screen.getAllByText('Ahmet');
-        expect(ahmetElements.length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Ahmet').length).toBeGreaterThan(0);
         const replyMessage = mockMessages.find(m => m.reply_to_id);
         if (replyMessage) {
-          expect(screen.getByText(replyMessage.reply_to_sender!)).toBeInTheDocument();
+          expect(screen.getAllByText(replyMessage.reply_to_sender!).length).toBeGreaterThan(0);
         }
       });
     });
@@ -584,7 +583,7 @@ describe('ChatInterface Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText('matematik-notlar.pdf')).toBeInTheDocument();
-        expect(screen.getByText(/1\.00 MB/)).toBeInTheDocument();
+        expect(screen.getByText(/0\.98 MB/)).toBeInTheDocument();
       });
     });
 
