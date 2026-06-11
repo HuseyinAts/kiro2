@@ -78,8 +78,8 @@ class TestEnums:
         assert UserRole.ADMIN.value == "ADMIN"
 
     def test_user_role_enum_count(self):
-        """Test UserRole enum has exactly 4 values"""
-        assert len(UserRole) == 4
+        """Test UserRole enum has exactly 5 values"""
+        assert len(UserRole) == 5
 
     def test_user_role_is_enum(self):
         """Test UserRole is an enum"""

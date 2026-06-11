@@ -59,7 +59,15 @@ class _AuthenticatedUser:
         self.role = role
 
 _core_deps.AuthenticatedUser = _AuthenticatedUser
-_core_deps.get_current_user = MagicMock()
+
+async def _fake_get_current_user():
+    pass
+
+async def _fake_get_db():
+    pass
+
+_core_deps.get_current_user = _fake_get_current_user
+_core_deps.get_db = _fake_get_db
 
 # ---------------------------------------------------------------------------
 # Diary API: schemas must be real Pydantic models for FastAPI response_model
@@ -254,7 +262,7 @@ _auth_dep_stub.AuthenticationDependency = _AuthDep
 
 # core.database
 _core_db_stub = MagicMock()
-_core_db_stub.get_db = MagicMock()
+_core_db_stub.get_db = _fake_get_db
 
 # core.service_dependencies
 _core_svc_deps = MagicMock()
@@ -961,7 +969,7 @@ class TestDiaryAPI:
         async def _get_test_db():
             yield mock_db
 
-        app.dependency_overrides[diary_module.get_db] = _get_test_db
+        app.dependency_overrides[diary_module.get_async_session] = _get_test_db
 
         # Override get_diary_service
         mock_diary_svc = AsyncMock()

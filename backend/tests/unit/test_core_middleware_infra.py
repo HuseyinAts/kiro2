@@ -279,30 +279,20 @@ class TestSecurityMiddleware:
     def setup_method(self):
         self.mw = SecurityMiddleware({})
 
-    def test_blocked_ip_returns_403(self):
+    @pytest.mark.asyncio
+    async def test_blocked_ip_returns_403(self):
         self.mw.blocked_ips.add("10.0.0.1")
         request = _make_request(client_ip="10.0.0.1")
-
-        async def _run():
-            return await self.mw(request, AsyncMock())
-
-        import asyncio
-
-        resp = asyncio.get_event_loop().run_until_complete(_run())
+        resp = await self.mw(request, AsyncMock())
         assert resp.status_code == 403
         assert resp.body["error"] == "Forbidden"
 
-    def test_blocked_user_agent_returns_403(self):
+    @pytest.mark.asyncio
+    async def test_blocked_user_agent_returns_403(self):
         request = _make_request()
         request.user_agent = "evil-bot"
         self.mw.blocked_user_agents.add("evil-bot")
-
-        async def _run():
-            return await self.mw(request, AsyncMock())
-
-        import asyncio
-
-        resp = asyncio.get_event_loop().run_until_complete(_run())
+        resp = await self.mw(request, AsyncMock())
         assert resp.status_code == 403
 
     @pytest.mark.asyncio
@@ -1002,37 +992,43 @@ class TestAgentRegistry:
         agent = DummyAgent(manifest)
         return registry, agent, manifest
 
-    def test_register_and_retrieve(self):
+    @pytest.mark.asyncio
+    async def test_register_and_retrieve(self):
         registry, agent, manifest = self._make_registry_with_agent()
         registry.register_agent("math_tutor", agent, manifest)
         retrieved = registry.get_agent_by_capability(AgentCapability.TEACHING)
         assert retrieved is agent
 
-    def test_get_agent_by_subject(self):
+    @pytest.mark.asyncio
+    async def test_get_agent_by_subject(self):
         registry, agent, manifest = self._make_registry_with_agent()
         registry.register_agent("math_tutor", agent, manifest)
         retrieved = registry.get_agent_by_subject("matematik")
         assert retrieved is agent
 
-    def test_get_agent_missing_capability(self):
+    @pytest.mark.asyncio
+    async def test_get_agent_missing_capability(self):
         registry = AgentRegistry()
         result = registry.get_agent_by_capability(AgentCapability.RESEARCH)
         assert result is None
 
-    def test_get_all_agents(self):
+    @pytest.mark.asyncio
+    async def test_get_all_agents(self):
         registry, agent, manifest = self._make_registry_with_agent()
         registry.register_agent("math_tutor", agent, manifest)
         all_agents = registry.get_all_agents()
         assert len(all_agents) == 1
 
-    def test_unregister_agent(self):
+    @pytest.mark.asyncio
+    async def test_unregister_agent(self):
         registry, agent, manifest = self._make_registry_with_agent()
         registry.register_agent("math_tutor", agent, manifest)
         result = registry.unregister_agent("math_tutor")
         assert result is True
         assert registry.get_agent_by_capability(AgentCapability.TEACHING) is None
 
-    def test_unregister_nonexistent(self):
+    @pytest.mark.asyncio
+    async def test_unregister_nonexistent(self):
         registry = AgentRegistry()
         assert registry.unregister_agent("ghost") is False
 
@@ -1087,27 +1083,32 @@ class TestAgentOrchestrator:
         registry.register_agent("teacher", agent, manifest)
         return AgentOrchestrator(registry)
 
-    def test_analyze_request_teaching_keywords(self):
+    @pytest.mark.asyncio
+    async def test_analyze_request_teaching_keywords(self):
         orch = self._make_orchestrator()
         caps = orch._analyze_request("lütfen açıkla")
         assert AgentCapability.TEACHING in caps
 
-    def test_analyze_request_default_teaching(self):
+    @pytest.mark.asyncio
+    async def test_analyze_request_default_teaching(self):
         orch = self._make_orchestrator()
         caps = orch._analyze_request("random text")
         assert AgentCapability.TEACHING in caps
 
-    def test_has_dependencies_with_assessment_and_teaching(self):
+    @pytest.mark.asyncio
+    async def test_has_dependencies_with_assessment_and_teaching(self):
         orch = self._make_orchestrator()
         caps = [AgentCapability.ASSESSMENT, AgentCapability.TEACHING]
         assert orch._has_dependencies(caps) is True
 
-    def test_has_no_dependencies_teaching_only(self):
+    @pytest.mark.asyncio
+    async def test_has_no_dependencies_teaching_only(self):
         orch = self._make_orchestrator()
         caps = [AgentCapability.TEACHING]
         assert orch._has_dependencies(caps) is False
 
-    def test_combine_results_single(self):
+    @pytest.mark.asyncio
+    async def test_combine_results_single(self):
         orch = self._make_orchestrator()
         result = orch._combine_results(
             {"teaching": "answer"}, [AgentCapability.TEACHING]

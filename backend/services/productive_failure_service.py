@@ -55,27 +55,73 @@ async def get_pretest_questions(
 
     subject_upper = subject.upper() if subject else "MATEMATIK"
 
-    result = await db.execute(
-        select(
-            QuestionBankItem.id,
-            QuestionBankItem.question_text,
-            QuestionBankItem.option_a,
-            QuestionBankItem.option_b,
-            QuestionBankItem.option_c,
-            QuestionBankItem.option_d,
-            QuestionBankItem.option_e,
-            QuestionBankItem.correct_answer,
-            QuestionBankItem.difficulty_level,
+    dialect = db.bind.dialect.name if db.bind else "sqlite"
+    if dialect == "postgresql":
+        result = await db.execute(
+            select(
+                QuestionBankItem.id,
+                QuestionBankItem.question_text,
+                QuestionBankItem.option_a,
+                QuestionBankItem.option_b,
+                QuestionBankItem.option_c,
+                QuestionBankItem.option_d,
+                QuestionBankItem.option_e,
+                QuestionBankItem.correct_answer,
+                QuestionBankItem.difficulty_level,
+            )
+            .tablesample(func.bernoulli(20))
+            .where(
+                QuestionBankItem.is_active == True,  # noqa: E712
+                QuestionBankItem.subject_area == subject_upper,
+                QuestionBankItem.primary_topic_id == topic_id,
+            )
+            .limit(count)
         )
-        .where(
-            QuestionBankItem.is_active == True,  # noqa: E712
-            QuestionBankItem.subject_area == subject_upper,
-            QuestionBankItem.primary_topic_id == topic_id,
+        rows = result.all()
+        
+        if len(rows) < count:
+            result = await db.execute(
+                select(
+                    QuestionBankItem.id,
+                    QuestionBankItem.question_text,
+                    QuestionBankItem.option_a,
+                    QuestionBankItem.option_b,
+                    QuestionBankItem.option_c,
+                    QuestionBankItem.option_d,
+                    QuestionBankItem.option_e,
+                    QuestionBankItem.correct_answer,
+                    QuestionBankItem.difficulty_level,
+                )
+                .where(
+                    QuestionBankItem.is_active == True,  # noqa: E712
+                    QuestionBankItem.subject_area == subject_upper,
+                    QuestionBankItem.primary_topic_id == topic_id,
+                )
+                .limit(count)
+            )
+            rows = result.all()
+    else:
+        result = await db.execute(
+            select(
+                QuestionBankItem.id,
+                QuestionBankItem.question_text,
+                QuestionBankItem.option_a,
+                QuestionBankItem.option_b,
+                QuestionBankItem.option_c,
+                QuestionBankItem.option_d,
+                QuestionBankItem.option_e,
+                QuestionBankItem.correct_answer,
+                QuestionBankItem.difficulty_level,
+            )
+            .where(
+                QuestionBankItem.is_active == True,  # noqa: E712
+                QuestionBankItem.subject_area == subject_upper,
+                QuestionBankItem.primary_topic_id == topic_id,
+            )
+            .order_by(func.random())
+            .limit(count)
         )
-        .order_by(func.random())
-        .limit(count)
-    )
-    rows = result.all()
+        rows = result.all()
 
     return [
         {

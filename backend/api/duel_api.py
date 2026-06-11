@@ -657,39 +657,96 @@ async def _select_duel_questions(subject: str, count: int = 5) -> list[str]:
     band is empty.
     """
     from sqlalchemy import func, select
-
     from models.question_bank import QuestionBankItem
 
     async with get_db_session_context() as db:
+        dialect = db.bind.dialect.name if db.bind else "sqlite"
+        
         # Calibrated pool first.
-        result = await db.execute(
-            select(QuestionBankItem.id)
-            .where(
-                QuestionBankItem.is_active == True,  # noqa: E712
-                QuestionBankItem.subject_area == subject.upper(),
-                QuestionBankItem.irt_difficulty.isnot(None),
-                QuestionBankItem.irt_difficulty >= -1.0,
-                QuestionBankItem.irt_difficulty <= 1.0,
+        if dialect == "postgresql":
+            result = await db.execute(
+                select(QuestionBankItem.id)
+                .tablesample(func.bernoulli(20))
+                .where(
+                    QuestionBankItem.is_active == True,  # noqa: E712
+                    QuestionBankItem.subject_area == subject.upper(),
+                    QuestionBankItem.irt_difficulty.isnot(None),
+                    QuestionBankItem.irt_difficulty >= -1.0,
+                    QuestionBankItem.irt_difficulty <= 1.0,
+                )
+                .limit(count)
             )
-            .order_by(func.random())
-            .limit(count)
-        )
-        ids = [r[0] for r in result.all()]
-
-        if len(ids) < count:
-            # Top-up from full pool if calibrated band is thin.
-            need = count - len(ids)
-            extra = await db.execute(
+            ids = [r[0] for r in result.all()]
+            
+            # Fallback if tablesample returns too few
+            if len(ids) < count:
+                result = await db.execute(
+                    select(QuestionBankItem.id)
+                    .where(
+                        QuestionBankItem.is_active == True,  # noqa: E712
+                        QuestionBankItem.subject_area == subject.upper(),
+                        QuestionBankItem.irt_difficulty.isnot(None),
+                        QuestionBankItem.irt_difficulty >= -1.0,
+                        QuestionBankItem.irt_difficulty <= 1.0,
+                    )
+                    .limit(count)
+                )
+                ids = [r[0] for r in result.all()]
+        else:
+            result = await db.execute(
                 select(QuestionBankItem.id)
                 .where(
                     QuestionBankItem.is_active == True,  # noqa: E712
                     QuestionBankItem.subject_area == subject.upper(),
-                    QuestionBankItem.id.notin_(ids) if ids else True,
+                    QuestionBankItem.irt_difficulty.isnot(None),
+                    QuestionBankItem.irt_difficulty >= -1.0,
+                    QuestionBankItem.irt_difficulty <= 1.0,
                 )
                 .order_by(func.random())
-                .limit(need)
+                .limit(count)
             )
-            ids.extend(r[0] for r in extra.all())
+            ids = [r[0] for r in result.all()]
+
+        if len(ids) < count:
+            # Top-up from full pool if calibrated band is thin.
+            need = count - len(ids)
+            if dialect == "postgresql":
+                extra = await db.execute(
+                    select(QuestionBankItem.id)
+                    .tablesample(func.bernoulli(20))
+                    .where(
+                        QuestionBankItem.is_active == True,  # noqa: E712
+                        QuestionBankItem.subject_area == subject.upper(),
+                        QuestionBankItem.id.notin_(ids) if ids else True,
+                    )
+                    .limit(need)
+                )
+                ids.extend(r[0] for r in extra.all())
+                
+                if len(ids) < count:
+                    need = count - len(ids)
+                    extra = await db.execute(
+                        select(QuestionBankItem.id)
+                        .where(
+                            QuestionBankItem.is_active == True,  # noqa: E712
+                            QuestionBankItem.subject_area == subject.upper(),
+                            QuestionBankItem.id.notin_(ids) if ids else True,
+                        )
+                        .limit(need)
+                    )
+                    ids.extend(r[0] for r in extra.all())
+            else:
+                extra = await db.execute(
+                    select(QuestionBankItem.id)
+                    .where(
+                        QuestionBankItem.is_active == True,  # noqa: E712
+                        QuestionBankItem.subject_area == subject.upper(),
+                        QuestionBankItem.id.notin_(ids) if ids else True,
+                    )
+                    .order_by(func.random())
+                    .limit(need)
+                )
+                ids.extend(r[0] for r in extra.all())
 
     if not ids:
         logger.warning(

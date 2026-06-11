@@ -1,0 +1,98 @@
+{
+  "total_questions": 187834,
+  "orphan_count": 0,
+  "orphan_sample_ids": [],
+  "trash_count": 4,
+  "trash_sample": [
+    {
+      "id": "d7aa3c97-be47-4b58-a92e-a07e611d07a1",
+      "text": "Nesne nedir?"
+    },
+    {
+      "id": "869ad685-78a1-416d-8356-8d285adb8c40",
+      "text": "Fiil nedir?"
+    },
+    {
+      "id": "56a761a6-c81a-5e88-a44e-50abe0043300",
+      "text": "$12x^2y^3$"
+    },
+    {
+      "id": "21116b73-9396-587d-9ffb-1f07a9ffbbc0",
+      "text": "Haritaya göre;"
+    }
+  ],
+  "missing_correct_count": 0,
+  "missing_correct_sample_ids": [],
+  "duplicate_groups_count": 268,
+  "duplicate_total_count": 591.0,
+  "duplicate_redundant_count": 323.0,
+  "irt_stats": {
+    "avg": -0.1603537431996487,
+    "min": -2.1,
+    "max": 2.25,
+    "std": 0.7191150158410753
+  },
+  "irt_default_count": 19025,
+  "irt_distribution": {
+    "bin_extreme_easy": 1218,
+    "bin_easy": 33220,
+    "bin_centered_around_zero": 124389,
+    "bin_hard": 28536,
+    "bin_extreme_hard": 471
+  },
+  "broken_latex_count": 125,
+  "broken_latex_samples": [
+    {
+      "id": "050e9ef0-2ad1-569b-baed-374848864dff",
+      "text_preview": "Bir kargo firması gönderilen ürünlerden alınacak fiyatı hesaplarken şu adımları izliyor.\n• Ağırlığın...",
+      "latex_preview": ""
+    },
+    {
+      "id": "09102a12-a8ac-58c0-97ac-5ec29aa93e51",
+      "text_preview": "$$ \\frac { 6 0 } { 2 5 + \\frac { 1 5 } { x - 4 } } = 2 $$ olduğuna göre, x değeri kaçtır?...",
+      "latex_preview": ""
+    },
+    {
+      "id": "0f0fe971-be51-5bee-a135-06645bae877e",
+      "text_preview": "a ve b gerçek sayılar olmak üzere, gerçek sayılar kümesi üzerinde sürekli bir f fonksiyonu\n\n$$f(x)=\\...",
+      "latex_preview": ""
+    },
+    {
+      "id": "1464970e-84a9-555f-b7e6-a94b5a1f864d",
+      "text_preview": "$a$ ve $b$ birbirinden farklı birer gerçek sayı olmak üzere,\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n...",
+      "latex_preview": ""
+    },
+    {
+      "id": "149b83d0-fd2e-5383-8715-6bfdbb3cf108",
+      "text_preview": "ABCD yamuk\n$DC \\parallel AB$\n$KL \\parallel AB$\n$EF \\parallel AB$\n$|FB| = 6$ birim\n$|DK| = 3$ birim\n$...",
+      "latex_preview": ""
+    },
+    {
+      "id": "14a430c3-fc5d-5341-8ed5-59371271d081",
+      "text_preview": "Doğrusal bir yolda düzgün hızlanan hareket yapan bir kamyonun aralarında $400 \\text{ metre}$ mesafe ...",
+      "latex_preview": ""
+    },
+    {
+      "id": "16395a80-a630-5931-83ac-5df6a1fef371",
+      "text_preview": "$$ \\frac { \\sqrt { 2 . 2 5 } \\cdot ( \\sqrt { 1 . 2 1 } + \\sqrt { 0 . 8 1 } ) } { \\sqrt { 0 . 3 6 } }...",
+      "latex_preview": ""
+    },
+    {
+      "id": "196e0504-a917-576d-b1fa-cc8ea6167272",
+      "text_preview": "Bir ABC üçgeni ve bu üçgenin BC kenarı üzerinde alınan bir D noktası ile ilgili aşağıdaki dört ifade...",
+      "latex_preview": ""
+    },
+    {
+      "id": "1a6f2d87-133b-53e2-a8ca-e9336acd7b78",
+      "text_preview": "$28 \\text{ \\text{kişilik bir turist kafilesi } } A, B \\text{ \\text{ve } } C \\text{ \\text{bölümleri o...",
+      "latex_preview": ""
+    },
+    {
+      "id": "1af4eac2-a60c-5981-b8b5-de910dc29e60",
+      "text_preview": "Zn(k) + Sn²⁺(suda) ⇌ Zn²⁺(suda) + Sn(k)\n\n25°C'deki hücre tepkimesinde [Sn²⁺] = 0,1 mol/L ve [Zn²⁺] =...",
+      "latex_preview": ""
+    }
+  ],
+  "broken_html_count": 0,
+  "broken_html_samples": []
+}

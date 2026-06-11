@@ -34,6 +34,8 @@ from models.student_question_flag import StudentQuestionFlag
 
 logger = logging.getLogger(__name__)
 
+PATTERN_UUID_OR_TEST = r"^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[a-zA-Z0-9_-]{1,36})$"
+
 router = APIRouter(prefix="/api/v1/curator", tags=["Curator"])
 
 
@@ -110,7 +112,7 @@ class QueueResponse(BaseModel):
 class VerdictRequest(BaseModel):
     """Curator verdict payload'ı."""
 
-    question_id: str = Field(..., min_length=1)
+    question_id: str = Field(..., min_length=1, pattern=PATTERN_UUID_OR_TEST)
     verdict: Literal["verify", "reject", "archive"]
     notes: str | None = Field(None, max_length=2000)
     reviewer_velocity_seconds: int | None = Field(None, ge=0, le=3600)

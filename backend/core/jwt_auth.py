@@ -82,6 +82,7 @@ class JWTManager:
         # In-memory fallback blacklist: {identifier: added_timestamp}
         # Bounded to MAX_MEMORY_BLACKLIST; evicts oldest entries when full.
         self.blacklisted_tokens: dict[str, float] = {}
+        self.valid_tokens: dict[str, float] = {}
 
         # Redis client (initialized lazily via connect_redis)
         self._redis = None
@@ -456,6 +457,11 @@ class JWTManager:
         if not identifier:
             return False
 
+        # Fast path: in-memory check for valid tokens
+        valid_ts = self.valid_tokens.get(identifier)
+        if valid_ts and time.time() - valid_ts < 60:
+            return False
+
         # Fast path: in-memory check
         if identifier in self.blacklisted_tokens:
             return True
@@ -469,12 +475,22 @@ class JWTManager:
                     # Sync to in-memory for faster subsequent checks
                     self.blacklisted_tokens[identifier] = time.time()
                     return True
+                else:
+                    self.valid_tokens[identifier] = time.time()
             except Exception as e:
                 logger.warning(
                     "Redis blacklist read failed, disabling Redis "
                     f"(using in-memory only): {e}"
                 )
                 self._redis_available = False
+
+        if identifier not in self.valid_tokens:
+            self.valid_tokens[identifier] = time.time()
+            
+        # Periodically clean up cache
+        if len(self.valid_tokens) > 10000:
+            now = time.time()
+            self.valid_tokens = {k: v for k, v in self.valid_tokens.items() if now - v < 60}
 
         return False
 

@@ -23,9 +23,13 @@ from fastapi import (
     Request,
     UploadFile,
     status,
+    Path,
 )
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from core.ddos_protection import limiter
+
+PATTERN_UUID_OR_TEST = r"^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[a-zA-Z0-9_-]{1,36})$"
 from sqlalchemy import select
 from sqlalchemy import text as sa_text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -72,6 +76,105 @@ class QuestionCreateRequest(BaseModel):
     etiketler: list[str] | None = Field(None, description="Soru etiketleri")
     genel_erisim: bool = Field(False, description="Genel erişime açık mı")
 
+    @field_validator("soru_html")
+    @classmethod
+    def validate_and_repair_html(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        
+        from html.parser import HTMLParser
+        class HTMLRepairer(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.tags = []
+                self.output = []
+            def handle_starttag(self, tag, attrs):
+                self.output.append(f"<{tag}")
+                for attr, val in attrs:
+                    self.output.append(f' {attr}="{val}"')
+                self.output.append(">")
+                if tag not in ('img', 'br', 'hr', 'input', 'meta', 'link'):
+                    self.tags.append(tag)
+            def handle_endtag(self, tag):
+                if tag in ('img', 'br', 'hr', 'input', 'meta', 'link'):
+                    return
+                if tag in self.tags:
+                    while self.tags:
+                        t = self.tags.pop()
+                        self.output.append(f"</{t}>")
+                        if t == tag:
+                            break
+            def handle_data(self, data):
+                self.output.append(data)
+            def get_repaired(self):
+                out = "".join(self.output)
+                while self.tags:
+                    t = self.tags.pop()
+                    out += f"</{t}>"
+                return out
+
+        repairer = HTMLRepairer()
+        try:
+            repairer.feed(v)
+            repairer.close()
+            return repairer.get_repaired()
+        except Exception as e:
+            raise ValueError(f"Invalid HTML format: {e!s}")
+
+    @field_validator("soru_latex")
+    @classmethod
+    def validate_and_repair_latex(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        
+        import re
+        open_braces = v.count('{')
+        close_braces = v.count('}')
+        if open_braces > close_braces:
+            v = v + '}' * (open_braces - close_braces)
+        elif close_braces > open_braces:
+            raise ValueError("LaTeX contains mismatched curly braces (too many closing braces)")
+
+        dollar_count = v.count('$')
+        if dollar_count % 2 != 0:
+            v = v + '$'
+
+        frac_matches = re.finditer(r'\\frac', v)
+        for m in frac_matches:
+            idx = m.end()
+            if idx < len(v) and v[idx] != '{':
+                raise ValueError("LaTeX \\frac must be followed by an opening curly brace '{'")
+                
+        return v
+
+    @field_validator("soru_metni")
+    @classmethod
+    def validate_and_repair_text(cls, v: str) -> str:
+        # Smart Math Shield: Bypass length check for math/science formulas
+        is_math = any(char in v for char in ['+', '=', 'x', 'y', '$', '{', '²', '³', '\\'])
+        if not is_math and len(v.strip()) < 15:
+            raise ValueError("Question text must be at least 15 characters long")
+            
+        import re
+        dollar_count = v.count('$')
+        if dollar_count % 2 != 0:
+            v = v + '$'
+            
+        open_braces = v.count('{')
+        close_braces = v.count('}')
+        if open_braces > close_braces:
+            v = v + '}' * (open_braces - close_braces)
+        elif close_braces > open_braces:
+            raise ValueError("Question text contains mismatched curly braces (too many closing braces)")
+
+        frac_matches = re.finditer(r'\\frac', v)
+        for m in frac_matches:
+            idx = m.end()
+            if idx < len(v) and v[idx] != '{':
+                raise ValueError("LaTeX \\frac in text must be followed by an opening curly brace '{'")
+                
+        return v
+
 
 class QuestionUpdateRequest(BaseModel):
     """Soru güncelleme isteği"""
@@ -84,6 +187,27 @@ class QuestionUpdateRequest(BaseModel):
     cozum_aciklamasi: str | None = None
     zorluk_seviyesi: str | None = None
     etiketler: list[str] | None = None
+
+    @field_validator("soru_html")
+    @classmethod
+    def validate_and_repair_html(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        return QuestionCreateRequest.validate_and_repair_html(v)
+
+    @field_validator("soru_latex")
+    @classmethod
+    def validate_and_repair_latex(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        return QuestionCreateRequest.validate_and_repair_latex(v)
+
+    @field_validator("soru_metni")
+    @classmethod
+    def validate_and_repair_text(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        return QuestionCreateRequest.validate_and_repair_text(v)
 
 
 class QuestionSearchRequest(BaseModel):
@@ -234,8 +358,8 @@ async def bulk_create_questions(
 
 @router.put("/{question_id}", status_code=status.HTTP_200_OK)
 async def update_question(
-    question_id: str,
     request: QuestionUpdateRequest,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     create_version: bool = Query(True, description="Versiyon oluştur"),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
@@ -295,7 +419,7 @@ async def update_question(
 
 @router.get("/{question_id}/history", status_code=status.HTTP_200_OK)
 async def get_question_history(
-    question_id: str,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     _current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
@@ -337,7 +461,7 @@ async def get_question_history(
 
 @router.delete("/{question_id}", status_code=status.HTTP_200_OK)
 async def delete_question(
-    question_id: str,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     permanent: bool = Query(False, description="Kalıcı silme"),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
@@ -387,7 +511,7 @@ async def delete_question(
 
 @router.post("/{question_id}/archive", status_code=status.HTTP_200_OK)
 async def archive_question(
-    question_id: str,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
@@ -428,7 +552,7 @@ async def archive_question(
 
 @router.post("/{question_id}/restore", status_code=status.HTTP_200_OK)
 async def restore_question(
-    question_id: str,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),
 ):
@@ -769,7 +893,9 @@ async def health_check():
 
 
 @router.get("/random", status_code=status.HTTP_200_OK)
+@limiter.limit("30/minute")
 async def get_random_questions(
+    request: Request,
     count: int = Query(10, ge=1, le=50, description="Soru sayısı"),
     subject_area: str | None = Query(None, description="Konu filtresi"),
     exam_type: str | None = Query(None, description="Sınav türü (TYT/AYT/YDT)"),
@@ -1097,7 +1223,11 @@ async def download_questions(
 
     from models.question_bank import QuestionBankItem, QuestionDifficultyLevel
 
-    stmt = select(QuestionBankItem).where(QuestionBankItem.is_active)
+    dialect = db.bind.dialect.name if db.bind else "sqlite"
+    if dialect == "postgresql":
+        stmt = select(QuestionBankItem).tablesample(func.bernoulli(20)).where(QuestionBankItem.is_active)
+    else:
+        stmt = select(QuestionBankItem).where(QuestionBankItem.is_active)
     stmt = stmt.where(QuestionBankItem.subject_area == db_subject)
     # Only easy/medium/hard — frontend only sends these three
     stmt = stmt.where(
@@ -1109,16 +1239,48 @@ async def download_questions(
             ]
         )
     )
-    stmt = stmt.order_by(func.random()).limit(pool_size)
-
-    result = await db.execute(stmt)
-    scalars_result = result.scalars()
-    if asyncio.iscoroutine(scalars_result):
-        scalars_result = await scalars_result
-    all_result = scalars_result.all()
-    if asyncio.iscoroutine(all_result):
-        all_result = await all_result
-    pool = list(all_result)
+    if dialect == "postgresql":
+        stmt = stmt.limit(pool_size)
+        result = await db.execute(stmt)
+        scalars_result = result.scalars()
+        if asyncio.iscoroutine(scalars_result):
+            scalars_result = await scalars_result
+        all_result = scalars_result.all()
+        if asyncio.iscoroutine(all_result):
+            all_result = await all_result
+        pool = list(all_result)
+        
+        if len(pool) < pool_size:
+            stmt_fallback = select(QuestionBankItem).where(QuestionBankItem.is_active)
+            stmt_fallback = stmt_fallback.where(QuestionBankItem.subject_area == db_subject)
+            stmt_fallback = stmt_fallback.where(
+                QuestionBankItem.difficulty_level.in_(
+                    [
+                        QuestionDifficultyLevel.EASY,
+                        QuestionDifficultyLevel.MEDIUM,
+                        QuestionDifficultyLevel.HARD,
+                    ]
+                )
+            )
+            stmt_fallback = stmt_fallback.limit(pool_size)
+            result = await db.execute(stmt_fallback)
+            scalars_result = result.scalars()
+            if asyncio.iscoroutine(scalars_result):
+                scalars_result = await scalars_result
+            all_result = scalars_result.all()
+            if asyncio.iscoroutine(all_result):
+                all_result = await all_result
+            pool = list(all_result)
+    else:
+        stmt = stmt.order_by(func.random()).limit(pool_size)
+        result = await db.execute(stmt)
+        scalars_result = result.scalars()
+        if asyncio.iscoroutine(scalars_result):
+            scalars_result = await scalars_result
+        all_result = scalars_result.all()
+        if asyncio.iscoroutine(all_result):
+            all_result = await all_result
+        pool = list(all_result)
     logger.info(f"[download] subject={db_subject} pool_size={len(pool)}")
 
     VALID_ANSWERS = {"A", "B", "C", "D", "E"}
@@ -1164,8 +1326,10 @@ async def download_questions(
 
 
 @router.get("/{question_id}", status_code=status.HTTP_200_OK)
+@limiter.limit("30/minute")
 async def get_question(
-    question_id: str,
+    request: Request,
+    question_id: str = Path(..., pattern=PATTERN_UUID_OR_TEST),
     include_relations: bool = Query(False, description="İlişkileri dahil et"),
     current_user: AuthenticatedUser = Depends(get_current_user),
     service: QuestionCRUDService = Depends(get_question_service),

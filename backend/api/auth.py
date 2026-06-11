@@ -173,12 +173,26 @@ def _record_attempt(request: Request, bucket: str = "login") -> None:
 
 
 # Backward compat aliases
-async def _check_login_rate_limit(request: Request) -> None:
-    await _check_rate_limit(request, "login")
+def _check_login_rate_limit(request: Request):
+    import asyncio
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        return _check_rate_limit(request, "login")
+    else:
+        return asyncio.run(_check_rate_limit(request, "login"))
 
 
 def _record_failed_login(request: Request) -> None:
     _record_attempt(request, "login")
+
+
+LOGIN_RATE_LIMIT = RATE_LIMITS["login"][0]
+LOGIN_RATE_WINDOW = RATE_LIMITS["login"][1]
+_login_attempts = _rate_buckets["login"]
 
 
 _GENERIC_ERROR = "Islem basarisiz. Lutfen tekrar deneyin."
@@ -342,7 +356,11 @@ async def database_authenticate(
     password = giris_data.get_password()
     if not password:
         raise ValueError("Şifre alanı boş olamaz")
-    if not pwd_context.verify(password, db_user.password_hash):
+        
+    import asyncio
+    loop = asyncio.get_running_loop()
+    is_valid = await loop.run_in_executor(None, pwd_context.verify, password, db_user.password_hash)
+    if not is_valid:
         raise ValueError("Geçersiz e-posta veya şifre")
 
     # 2FA gate: if user has 2FA enabled, don't issue tokens yet

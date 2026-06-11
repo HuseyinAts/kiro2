@@ -56,8 +56,8 @@ class TestSettingsInitialization:
 
             assert "sqlite+aiosqlite" in settings.database_url
             assert settings.database_echo is False
-            assert settings.db_pool_size == 200  # Updated default
-            assert settings.db_max_overflow == 300  # Updated default
+            assert settings.db_pool_size == 15  # Updated default
+            assert settings.db_max_overflow == 15  # Updated default
 
     def test_redis_defaults(self):
         """Test Redis configuration defaults"""

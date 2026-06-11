@@ -24,7 +24,7 @@ Features:
 """
 
 import json
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any
 
 import pytest
@@ -572,6 +572,7 @@ class TestKullaniciOlustur:
             ad_soyad="Test User",
             sifre=password,
             rol=KullaniciRolu.OGRENCI,
+            birth_date=date(2005, 1, 1),
         )
         assert user.sifre == password
 
@@ -593,6 +594,7 @@ class TestKullaniciOlustur:
                 ad_soyad="Test User",
                 sifre=password,
                 rol=KullaniciRolu.OGRENCI,
+                birth_date=date(2005, 1, 1),
             )
         assert expected_error in str(exc_info.value)
 
@@ -605,6 +607,7 @@ class TestKullaniciOlustur:
                 ad_soyad="Test User",
                 sifre="Short1!",  # 7 chars
                 rol=KullaniciRolu.OGRENCI,
+                birth_date=date(2005, 1, 1),
             )
         error_msg = str(exc_info.value)
         assert "8 karakter" in error_msg or "at least 8 characters" in error_msg
@@ -616,6 +619,7 @@ class TestKullaniciOlustur:
                 ad_soyad="Test User",
                 sifre="A" * 129 + "1!",  # > 128 chars
                 rol=KullaniciRolu.OGRENCI,
+                birth_date=date(2005, 1, 1),
             )
         error_msg = str(exc_info.value)
         assert "128 karakter" in error_msg or "at most 128 characters" in error_msg

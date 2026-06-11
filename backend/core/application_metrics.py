@@ -23,6 +23,26 @@ class MetricType(str, Enum):
     THROUGHPUT = "throughput"
     LATENCY = "latency"
     SUCCESS_RATE = "success_rate"
+    
+    # Custom metric types referenced across core/analytics
+    API_REQUEST = "api_request"
+    API_RESPONSE_TIME = "api_response_time"
+    API_ERROR = "api_error"
+    AUTH_SUCCESS = "auth_success"
+    AUTH_FAILED = "auth_failed"
+    JOB_COMPLETED = "job_completed"
+    JOB_FAILED = "job_failed"
+    QUEUE_ENQUEUE = "queue_enqueue"
+    QUEUE_PROCESS_SUCCESS = "queue_process_success"
+    QUEUE_PROCESS_FAILURE = "queue_process_failure"
+    WEBSOCKET_MESSAGE_SENT = "websocket_message_sent"
+    WEBSOCKET_MESSAGE_FAILED = "websocket_message_failed"
+    EXAM_STARTED = "exam_started"
+    EXAM_COMPLETED = "exam_completed"
+    EVENT_PUBLISHED = "event_published"
+    EVENT_HANDLED = "event_handled"
+    EVENT_ERROR = "event_error"
+
 
 
 @dataclass

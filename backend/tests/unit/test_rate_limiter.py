@@ -62,13 +62,14 @@ class TestGetClientIp:
         assert _get_client_ip(req) == "unknown"
 
 
+@pytest.mark.asyncio
 class TestCheckRateLimit:
-    def test_under_limit_passes(self):
+    async def test_under_limit_passes(self):
         req = _make_request()
         # Should not raise for first attempt
-        _check_rate_limit(req, "login")
+        await _check_rate_limit(req, "login")
 
-    def test_at_limit_raises_429(self):
+    async def test_at_limit_raises_429(self):
         req = _make_request(ip="5.5.5.5")
         max_attempts, _ = RATE_LIMITS["login"]
 
@@ -77,11 +78,11 @@ class TestCheckRateLimit:
             _record_attempt(req, "login")
 
         with pytest.raises(HTTPException) as exc_info:
-            _check_rate_limit(req, "login")
+            await _check_rate_limit(req, "login")
         assert exc_info.value.status_code == 429
         assert "saniye" in exc_info.value.detail
 
-    def test_different_ips_independent(self):
+    async def test_different_ips_independent(self):
         req_a = _make_request(ip="1.1.1.1")
         req_b = _make_request(ip="2.2.2.2")
         max_attempts, _ = RATE_LIMITS["login"]
@@ -92,12 +93,12 @@ class TestCheckRateLimit:
 
         # IP A should be blocked
         with pytest.raises(HTTPException):
-            _check_rate_limit(req_a, "login")
+            await _check_rate_limit(req_a, "login")
 
         # IP B should be fine
-        _check_rate_limit(req_b, "login")
+        await _check_rate_limit(req_b, "login")
 
-    def test_different_buckets_independent(self):
+    async def test_different_buckets_independent(self):
         req = _make_request(ip="3.3.3.3")
         max_attempts, _ = RATE_LIMITS["login"]
 
@@ -107,12 +108,12 @@ class TestCheckRateLimit:
 
         # Login blocked
         with pytest.raises(HTTPException):
-            _check_rate_limit(req, "login")
+            await _check_rate_limit(req, "login")
 
         # Register bucket should be fine
-        _check_rate_limit(req, "register")
+        await _check_rate_limit(req, "register")
 
-    def test_expired_attempts_cleaned(self):
+    async def test_expired_attempts_cleaned(self):
         req = _make_request(ip="4.4.4.4")
         max_attempts, window = RATE_LIMITS["register"]
 
@@ -121,12 +122,12 @@ class TestCheckRateLimit:
         _rate_buckets["register"]["4.4.4.4"] = [old_time] * max_attempts
 
         # Should pass because old attempts are expired
-        _check_rate_limit(req, "register")
+        await _check_rate_limit(req, "register")
 
-    def test_unknown_bucket_uses_defaults(self):
+    async def test_unknown_bucket_uses_defaults(self):
         req = _make_request(ip="6.6.6.6")
         # Unknown bucket should use default (10, 60)
-        _check_rate_limit(req, "unknown_bucket")
+        await _check_rate_limit(req, "unknown_bucket")
 
     def test_register_bucket_config(self):
         assert RATE_LIMITS["register"] == (5, 60)

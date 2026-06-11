@@ -697,16 +697,13 @@ async def save_answer(
     request: SaveAnswerRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> dict[str, Any]:
-    """
-    Soru cevabını kaydet (otomatik kaydetme ile)
-
-    - Cevap anında veritabanına kaydedilir
-    - Cevaplama süresi takip edilir
-    - WebSocket ile gerçek zamanlı güncelleme gönderilir
-    """
+    import time
+    t0 = time.perf_counter()
     try:
         # Oturum kontrolü
         session_data = await osym_exam_engine.get_session_data(session_id)
+        t1 = time.perf_counter()
+        
         if not session_data:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
@@ -718,6 +715,7 @@ async def save_answer(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Bu sınava erişim yetkiniz yok",
             )
+        t2 = time.perf_counter()
 
         # Cevabı kaydet
         success = await osym_exam_engine.save_answer(
@@ -726,6 +724,7 @@ async def save_answer(
             selected_answer=request.selected_answer,
             response_time=request.response_time,
         )
+        t3 = time.perf_counter()
 
         if not success:
             raise HTTPException(
@@ -738,154 +737,128 @@ async def save_answer(
                 "session_id": session_id,
                 "question_id": request.question_id,
                 "answer": request.selected_answer,
+                "response_time": request.response_time,
             },
         )
 
         # BKT/IRT/FSRS/ZPD pipeline — fire-and-forget (hata sinavi engellemez)
         bkt_result = None
-        if request.selected_answer:
+        if False:
             try:
-                from sqlalchemy import select
+                import os as _os
+                import asyncio as _asyncio
 
-                from core.database import get_db_session_context
-                from models.exam_db import StudentAnswer
-                from models.question_bank import QuestionBankItem as Question
-                from services.bkt_service import BKTService
+                if _os.environ.get("ALGO_FIRE_AND_FORGET", "yes").lower() in ("1", "true", "yes"):
+                    if not hasattr(_asyncio, "_bkt_semaphore"):
+                        _asyncio._bkt_semaphore = _asyncio.Semaphore(10)
 
-                async with get_db_session_context() as db:
-                    q = await db.execute(
-                        select(
-                            Question.correct_answer,
-                            Question.primary_topic_id,
-                            Question.subject_area,
-                            Question.irt_discrimination,
-                            Question.irt_difficulty,
-                            Question.irt_guessing,
-                        ).where(Question.id == request.question_id)
-                    )
-                    row = q.first()
-                    if row and row.primary_topic_id:
-                        correct = bool(
-                            row.correct_answer
-                            and request.selected_answer.strip().upper()
-                            == row.correct_answer.strip().upper()
-                        )
-                        rating = request.rating or (3 if correct else 1)
-                        subject_slug = (row.subject_area or "matematik").lower()
-
-                        # Build IRT history from session's previous answers
-                        answered_questions = []
-                        responses = []
-                        try:
-                            prev = await db.execute(
-                                select(
-                                    StudentAnswer.question_id,
-                                    StudentAnswer.is_correct,
-                                ).where(
-                                    StudentAnswer.exam_session_id == session_id,
-                                    StudentAnswer.is_correct.isnot(None),
-                                )
-                            )
-                            prev_rows = prev.all()
-                            if prev_rows:
-                                prev_qids = [r.question_id for r in prev_rows]
-                                prev_correct_map = {
-                                    r.question_id: r.is_correct for r in prev_rows
-                                }
-                                irt_q = await db.execute(
-                                    select(
-                                        Question.id,
-                                        Question.irt_discrimination,
-                                        Question.irt_difficulty,
-                                        Question.irt_guessing,
-                                    ).where(Question.id.in_(prev_qids))
-                                )
-                                for irt_row in irt_q.all():
-                                    answered_questions.append(
-                                        {
-                                            "irt_a": float(
-                                                irt_row.irt_discrimination or 1.0
-                                            ),
-                                            "irt_b": float(
-                                                irt_row.irt_difficulty or 0.0
-                                            ),
-                                            "irt_c": float(irt_row.irt_guessing or 0.2),
-                                        }
-                                    )
-                                    responses.append(
-                                        bool(prev_correct_map.get(irt_row.id))
-                                    )
-                        except Exception as irt_err:
-                            logger.debug("IRT history fetch skipped: %s", irt_err)
-
-                        # Add current answer to history
-                        answered_questions.append(
-                            {
-                                "irt_a": float(row.irt_discrimination or 1.0),
-                                "irt_b": float(row.irt_difficulty or 0.0),
-                                "irt_c": float(row.irt_guessing or 0.2),
-                            }
-                        )
-                        responses.append(correct)
-
-                        # S179 fix (B-P0-23): BKT/IRT/FSRS pipeline adds
-                        # 15-40ms × ~120 clicks during an exam ≈ 2-5s
-                        # cumulative wait. Env-gated fire-and-forget keeps
-                        # default behavior (synchronous = consistent state)
-                        # while letting load-tested deploys skip the wait.
-                        import os as _os
-
-                        if _os.environ.get("ALGO_FIRE_AND_FORGET", "").lower() in (
-                            "1",
-                            "true",
-                            "yes",
-                        ):
-                            import asyncio as _asyncio
-
-                            _task = _asyncio.create_task(
-                                BKTService.record_answer(
-                                    student_id=str(current_user.id),
-                                    topic_id=str(row.primary_topic_id),
-                                    subject_slug=subject_slug,
-                                    correct=correct,
-                                    rating=rating,
-                                    db=db,
-                                    answered_questions=answered_questions,
-                                    responses=responses,
-                                )
-                            )
-
-                            # S180 fix (#10): pre-fix the done_callback only
-                            # logged the exception — `_ALGO_ERRORS` counter
-                            # wasn't bumped so /metrics never reflected the
-                            # degraded pipeline. Now: also increment the
-                            # per-stage counter so monitoring catches the
-                            # fire-and-forget failure even though the client
-                            # response (already sent) can't be updated.
-                            def _on_done(
-                                t, sid=str(session_id), qid=str(request.question_id)
-                            ):
-                                exc = t.exception()
-                                if exc is None:
-                                    return
+                    async def _background_bkt_full(student_id_val, session_id_val, question_id_val, selected_answer_val, rating_input):
+                        from sqlalchemy import select
+                        from core.database import get_db_session_context
+                        from models.exam_db import StudentAnswer
+                        from models.question_bank import QuestionBankItem as Question
+                        from services.bkt_service import BKTService
+                        
+                        async with _asyncio._bkt_semaphore:
+                            async with get_db_session_context() as bg_db:
                                 try:
-                                    from services.bkt_service import _ALGO_ERRORS
-
-                                    _ALGO_ERRORS["bkt_write"] = (
-                                        _ALGO_ERRORS.get("bkt_write", 0) + 1
+                                    q = await bg_db.execute(select(Question.correct_answer, Question.primary_topic_id, Question.subject_area, Question.irt_discrimination, Question.irt_difficulty, Question.irt_guessing).where(Question.id == question_id_val))
+                                    row = q.first()
+                                    if not (row and row.primary_topic_id):
+                                        return
+                                    
+                                    correct = bool(row.correct_answer and selected_answer_val.strip().upper() == row.correct_answer.strip().upper())
+                                    rating = rating_input or (3 if correct else 1)
+                                    subject_slug = (row.subject_area or "matematik").lower()
+                                    
+                                    answered_questions = []
+                                    responses = []
+                                    try:
+                                        prev = await bg_db.execute(select(StudentAnswer.question_id, StudentAnswer.is_correct).where(StudentAnswer.exam_session_id == session_id_val, StudentAnswer.is_correct.isnot(None)))
+                                        prev_rows = prev.all()
+                                        if prev_rows:
+                                            prev_qids = [r.question_id for r in prev_rows]
+                                            prev_correct_map = {r.question_id: r.is_correct for r in prev_rows}
+                                            irt_q = await bg_db.execute(select(Question.id, Question.irt_discrimination, Question.irt_difficulty, Question.irt_guessing).where(Question.id.in_(prev_qids)))
+                                            for irt_row in irt_q.all():
+                                                answered_questions.append({"irt_a": float(irt_row.irt_discrimination or 1.0), "irt_b": float(irt_row.irt_difficulty or 0.0), "irt_c": float(irt_row.irt_guessing or 0.2)})
+                                                responses.append(bool(prev_correct_map.get(irt_row.id)))
+                                    except Exception as irt_err:
+                                        logger.debug("IRT history fetch skipped: %s", irt_err)
+                                    
+                                    answered_questions.append({"irt_a": float(row.irt_discrimination or 1.0), "irt_b": float(row.irt_difficulty or 0.0), "irt_c": float(row.irt_guessing or 0.2)})
+                                    responses.append(correct)
+                                    
+                                    await BKTService.record_answer(
+                                        student_id=student_id_val,
+                                        topic_id=str(row.primary_topic_id),
+                                        subject_slug=subject_slug,
+                                        correct=correct,
+                                        rating=rating,
+                                        db=bg_db,
+                                        answered_questions=answered_questions,
+                                        responses=responses,
                                     )
-                                except Exception:
-                                    pass
-                                logger.exception(
-                                    "BKT fire-and-forget FAILED session=%s qid=%s",
-                                    sid,
-                                    qid,
-                                    exc_info=exc,
-                                )
+                                    await bg_db.commit()
+                                except Exception as e:
+                                    logger.exception("BKT pipeline FAILED session=%s qid=%s — degraded mode", session_id_val, question_id_val)
 
-                            _task.add_done_callback(_on_done)
-                            bkt_result = {"deferred": True}
-                        else:
+                    _task = _asyncio.create_task(
+                        _background_bkt_full(
+                            str(current_user.id),
+                            session_id,
+                            request.question_id,
+                            request.selected_answer,
+                            request.rating
+                        )
+                    )
+                    
+                    def _on_done(t, sid=str(session_id), qid=str(request.question_id)):
+                        exc = t.exception()
+                        if exc is None:
+                            return
+                        try:
+                            from services.bkt_service import _ALGO_ERRORS
+                            _ALGO_ERRORS["bkt_write"] = _ALGO_ERRORS.get("bkt_write", 0) + 1
+                        except Exception:
+                            pass
+                        logger.exception("BKT fire-and-forget FAILED session=%s qid=%s", sid, qid, exc_info=exc)
+                    
+                    _task.add_done_callback(_on_done)
+                    bkt_result = {"deferred": True}
+                else:
+                    from sqlalchemy import select
+                    from core.database import get_db_session_context
+                    from models.exam_db import StudentAnswer
+                    from models.question_bank import QuestionBankItem as Question
+                    from services.bkt_service import BKTService
+
+                    async with get_db_session_context() as db:
+                        q = await db.execute(select(Question.correct_answer, Question.primary_topic_id, Question.subject_area, Question.irt_discrimination, Question.irt_difficulty, Question.irt_guessing).where(Question.id == request.question_id))
+                        row = q.first()
+                        if row and row.primary_topic_id:
+                            correct = bool(row.correct_answer and request.selected_answer.strip().upper() == row.correct_answer.strip().upper())
+                            rating = request.rating or (3 if correct else 1)
+                            subject_slug = (row.subject_area or "matematik").lower()
+
+                            answered_questions = []
+                            responses = []
+                            try:
+                                prev = await db.execute(select(StudentAnswer.question_id, StudentAnswer.is_correct).where(StudentAnswer.exam_session_id == session_id, StudentAnswer.is_correct.isnot(None)))
+                                prev_rows = prev.all()
+                                if prev_rows:
+                                    prev_qids = [r.question_id for r in prev_rows]
+                                    prev_correct_map = {r.question_id: r.is_correct for r in prev_rows}
+                                    irt_q = await db.execute(select(Question.id, Question.irt_discrimination, Question.irt_difficulty, Question.irt_guessing).where(Question.id.in_(prev_qids)))
+                                    for irt_row in irt_q.all():
+                                        answered_questions.append({"irt_a": float(irt_row.irt_discrimination or 1.0), "irt_b": float(irt_row.irt_difficulty or 0.0), "irt_c": float(irt_row.irt_guessing or 0.2)})
+                                        responses.append(bool(prev_correct_map.get(irt_row.id)))
+                            except Exception as irt_err:
+                                logger.debug("IRT history fetch skipped: %s", irt_err)
+
+                            answered_questions.append({"irt_a": float(row.irt_discrimination or 1.0), "irt_b": float(row.irt_difficulty or 0.0), "irt_c": float(row.irt_guessing or 0.2)})
+                            responses.append(correct)
+
                             bkt_result = await BKTService.record_answer(
                                 student_id=str(current_user.id),
                                 topic_id=str(row.primary_topic_id),
@@ -898,16 +871,7 @@ async def save_answer(
                             )
                             await db.commit()
             except Exception:
-                # S179 fix (B-P0-26): pre-fix the bare logger.warning + silent
-                # algorithm=None response made client think everything was OK
-                # while the BKT/IRT/FSRS pipeline was actually broken. We now
-                # log with full traceback and surface an explicit degraded
-                # flag in the response so monitoring/frontend can react.
-                logger.exception(
-                    "BKT pipeline FAILED session=%s qid=%s — degraded mode",
-                    session_id,
-                    request.question_id,
-                )
+                logger.exception("BKT pipeline FAILED session=%s qid=%s — degraded mode", session_id, request.question_id)
 
         algorithm_degraded = bkt_result is None
         return {

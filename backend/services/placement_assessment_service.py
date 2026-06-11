@@ -192,24 +192,44 @@ async def load_assessment_items(
     """
     from models.question_bank import QuestionBankItem
 
-    query = select(QuestionBankItem).where(
-        QuestionBankItem.is_active == True,  # noqa: E712
-        QuestionBankItem.difficulty_level.isnot(None),
-    )
+    dialect = db.bind.dialect.name if db.bind else "sqlite"
+    limit_val = max_per_subject * len(subjects or SUBJECT_AREAS)
+    if dialect == "postgresql":
+        query = select(QuestionBankItem).tablesample(func.bernoulli(20)).where(
+            QuestionBankItem.is_active == True,  # noqa: E712
+            QuestionBankItem.difficulty_level.isnot(None),
+        )
+    else:
+        query = select(QuestionBankItem).where(
+            QuestionBankItem.is_active == True,  # noqa: E712
+            QuestionBankItem.difficulty_level.isnot(None),
+        )
 
     if subjects:
         query = query.where(
             QuestionBankItem.subject_area.in_([s.upper() for s in subjects])
         )
 
-    # Get a diverse sample: order by random, limit per subject
-    # For simplicity, get a larger pool and filter
-    query = query.order_by(func.random()).limit(
-        max_per_subject * len(subjects or SUBJECT_AREAS)
-    )
+    if dialect == "postgresql":
+        query = query.limit(limit_val)
+    else:
+        query = query.order_by(func.random()).limit(limit_val)
 
     result = await db.execute(query)
     rows = result.scalars().all()
+
+    if dialect == "postgresql" and len(rows) < limit_val:
+        fallback_query = select(QuestionBankItem).where(
+            QuestionBankItem.is_active == True,  # noqa: E712
+            QuestionBankItem.difficulty_level.isnot(None),
+        )
+        if subjects:
+            fallback_query = fallback_query.where(
+                QuestionBankItem.subject_area.in_([s.upper() for s in subjects])
+            )
+        fallback_query = fallback_query.limit(limit_val)
+        result = await db.execute(fallback_query)
+        rows = result.scalars().all()
 
     items = []
     for q in rows:

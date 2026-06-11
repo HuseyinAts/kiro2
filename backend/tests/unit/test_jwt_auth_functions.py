@@ -73,19 +73,19 @@ class TestUserRoleEnum:
     """UserRole enum must expose all five expected roles."""
 
     def test_student_value(self) -> None:
-        assert UserRole.STUDENT.value == "student"
+        assert UserRole.STUDENT.value == "STUDENT"
 
     def test_teacher_value(self) -> None:
-        assert UserRole.TEACHER.value == "teacher"
+        assert UserRole.TEACHER.value == "TEACHER"
 
     def test_parent_value(self) -> None:
-        assert UserRole.PARENT.value == "parent"
+        assert UserRole.PARENT.value == "PARENT"
 
     def test_admin_value(self) -> None:
-        assert UserRole.ADMIN.value == "admin"
+        assert UserRole.ADMIN.value == "ADMIN"
 
     def test_super_admin_value(self) -> None:
-        assert UserRole.SUPER_ADMIN.value == "super_admin"
+        assert UserRole.SUPER_ADMIN.value == "SUPER_ADMIN"
 
     def test_five_roles_total(self) -> None:
         assert len(UserRole) == 5
@@ -361,7 +361,7 @@ class TestCreateAccessToken:
         payload = pyjwt.decode(
             token, manager.secret_key, algorithms=[manager.algorithm]
         )
-        assert payload["role"] == UserRole.ADMIN.value
+        assert payload["role"] == UserRole.ADMIN.jwt_value
 
     def test_jti_is_present_and_non_empty(self, manager: JWTManager) -> None:
         token = manager.create_access_token("1", "u@test.com", UserRole.STUDENT)
@@ -395,7 +395,7 @@ class TestCreateAccessToken:
         payload = pyjwt.decode(
             token, manager.secret_key, algorithms=[manager.algorithm]
         )
-        assert payload["role"] == role.value
+        assert payload["role"] == role.jwt_value
 
 
 # ==================== create_refresh_token ====================
@@ -903,7 +903,7 @@ class TestRequireRole:
         user = _make_token_payload(role=UserRole.STUDENT)
         with pytest.raises(HTTPException) as exc_info:
             await require_role([UserRole.ADMIN], user)
-        assert "admin" in exc_info.value.detail
+        assert "ADMIN" in exc_info.value.detail
 
 
 class TestRequirePermission:

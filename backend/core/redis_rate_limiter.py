@@ -134,6 +134,8 @@ _INSTANCE: RedisRateLimiter | None = None
 async def get_rate_limiter() -> RedisRateLimiter | None:
     """Return a shared RedisRateLimiter, or None if Redis unavailable."""
     global _INSTANCE
+    if os.environ.get("ENABLE_REDIS", "").lower() == "false" or os.environ.get("REDIS_ENABLED", "").lower() == "false":
+        return None
     if _INSTANCE is not None:
         return _INSTANCE
     try:

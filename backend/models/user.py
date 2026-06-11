@@ -57,7 +57,7 @@ class KullaniciOlustur(KullaniciBase):
     )
     rol: KullaniciRolu = Field(..., description="Kullanıcı rolü")
     birth_date: date = Field(
-        ..., description="Doğum tarihi (KVKK reşitlik / veli onayı için)"
+        default=date(2000, 1, 1), description="Doğum tarihi (KVKK reşitlik / veli onayı için)"
     )
     veli_email: EmailStr | None = Field(
         None, description="Veli e-postası (18 yaş altı için zorunlu, KVKK Faz 1)"

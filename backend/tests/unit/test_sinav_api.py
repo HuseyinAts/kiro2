@@ -440,10 +440,6 @@ class TestStartExam:
         assert response.status_code == 200
         assert response.json()["status"] == "in_progress"
 
-    @pytest.mark.xfail(
-        reason="BUG: missing 'except HTTPException: raise' — 404 swallowed into 500",
-        strict=True,
-    )
     def test_returns_404_when_session_not_found(self, client):
         """Non-existent session should return 404, but gets swallowed to 500."""
         with patch(ENGINE_PATH) as mock_engine:
@@ -451,10 +447,6 @@ class TestStartExam:
             response = client.post("/api/v1/osym-exam/nonexistent/start")
         assert response.status_code == 404
 
-    @pytest.mark.xfail(
-        reason="BUG: missing 'except HTTPException: raise' — 403 swallowed into 500",
-        strict=True,
-    )
     def test_returns_403_when_session_belongs_to_other_user(self, client):
         """Wrong-owner session should return 403, but gets swallowed to 500."""
         other_session = _make_session(student_id=OTHER_USER_ID)
@@ -933,10 +925,6 @@ class TestCompleteExam:
         assert data["confidence_level"] == pytest.approx(0.95)
         assert data["konu_performanslari"] == []
 
-    @pytest.mark.xfail(
-        reason="BUG: missing 'except HTTPException: raise' — 404 swallowed into 500",
-        strict=True,
-    )
     def test_returns_404_when_session_not_found(self, client):
         """Non-existent session should return 404, but gets swallowed to 500."""
         with patch(ENGINE_PATH) as mock_engine:
@@ -944,10 +932,6 @@ class TestCompleteExam:
             response = client.post("/api/v1/osym-exam/ghost/complete")
         assert response.status_code == 404
 
-    @pytest.mark.xfail(
-        reason="BUG: missing 'except HTTPException: raise' — 403 swallowed into 500",
-        strict=True,
-    )
     def test_returns_403_for_wrong_user(self, client):
         """Wrong-owner session should return 403, but gets swallowed to 500."""
         session = _make_session(student_id=OTHER_USER_ID)
@@ -1071,7 +1055,16 @@ class TestGetPerformanceAnalysis:
         """Non-existent session returns 404."""
         with patch(ENGINE_PATH) as mock_engine:
             mock_engine.get_session_data = AsyncMock(return_value=None)
-            response = client.get("/api/v1/osym-exam/ghost/performance")
+            with patch("core.database.get_db_session_context") as mock_ctx:
+                mock_db = AsyncMock()
+                mock_execute_res = MagicMock()
+                mock_execute_res.first.return_value = None
+                mock_execute_res.scalar_one_or_none.return_value = None
+                mock_db.execute = AsyncMock(return_value=mock_execute_res)
+                mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_db)
+                mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
+                
+                response = client.get("/api/v1/osym-exam/ghost/performance")
         assert response.status_code == 404
 
     def test_returns_403_for_wrong_user(self, client):
@@ -1138,7 +1131,16 @@ class TestGetSubjectPerformance:
         """Non-existent session returns 404."""
         with patch(ENGINE_PATH) as mock_engine:
             mock_engine.get_session_data = AsyncMock(return_value=None)
-            response = client.get("/api/v1/osym-exam/ghost/subject-performance")
+            with patch("core.database.get_db_session_context") as mock_ctx:
+                mock_db = AsyncMock()
+                mock_execute_res = MagicMock()
+                mock_execute_res.first.return_value = None
+                mock_execute_res.scalar_one_or_none.return_value = None
+                mock_db.execute = AsyncMock(return_value=mock_execute_res)
+                mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_db)
+                mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
+                
+                response = client.get("/api/v1/osym-exam/ghost/subject-performance")
         assert response.status_code == 404
 
 

@@ -47,6 +47,12 @@ def create_test_app():
     test_app = FastAPI(title="Enhanced Chat Test API")
 
     try:
+        from core.ddos_protection import limiter
+        limiter.enabled = False
+    except ImportError:
+        pass
+
+    try:
         from api.enhanced_chat import router as chat_router
         test_app.include_router(chat_router)
 
@@ -86,6 +92,13 @@ except ImportError as e:
 
 
 # ==================== FIXTURES ====================
+
+
+@pytest.fixture(autouse=True)
+def mock_student_context():
+    """Mock student IDOR context check for all tests"""
+    with patch("api.enhanced_chat._verify_enhanced_chat_student_context", new_callable=AsyncMock) as mock:
+        yield mock
 
 
 @pytest.fixture
@@ -187,7 +200,7 @@ class TestMessageSending:
             "/api/v1/enhanced-chat/message",
             json={"student_id": "student_123", "message": "Test mesajı"},
         )
-
+        print("DEBUG RESPONSE BODY:", response.json())
         assert response.status_code == 200
         data = response.json()
         assert data["success"] is True

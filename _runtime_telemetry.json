@@ -1,0 +1,19 @@
+{
+  "max_connections": {
+    "name": "max_connections",
+    "setting": "200",
+    "pending_restart": false
+  },
+  "dead_tuples": [
+    {
+      "relname": "irt_calibration_history",
+      "n_dead_tup": 0,
+      "n_live_tup": 0
+    },
+    {
+      "relname": "student_question_flags",
+      "n_dead_tup": 0,
+      "n_live_tup": 70
+    }
+  ]
+}

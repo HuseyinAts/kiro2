@@ -518,7 +518,7 @@ TEST_DATABASE_URL = os.getenv(
 
 
 @pytest_asyncio.fixture(scope="session")
-async def setup_database(test_database_url):
+async def setup_database(test_async_engine: AsyncEngine):
     """Create all tables safely, handling DuplicateTable/DuplicateObject errors.
 
     This fixture uses create_all(checkfirst=True) and catches PostgreSQL
@@ -529,14 +529,10 @@ async def setup_database(test_database_url):
         async def test_something(setup_database, db_session):
             ...
     """
-    from sqlalchemy.ext.asyncio import create_async_engine
-
-    engine = create_async_engine(test_database_url, echo=False)
-
     try:
         from models.base import Base
 
-        async with engine.begin() as conn:
+        async with test_async_engine.begin() as conn:
             # checkfirst=True is default but explicit for clarity
             await conn.run_sync(Base.metadata.create_all, checkfirst=True)
     except Exception as e:
@@ -549,8 +545,6 @@ async def setup_database(test_database_url):
             pass  # Tables already exist - safe to continue
         else:
             pytest.skip(f"Database setup failed: {e}")
-    finally:
-        await engine.dispose()
 
     yield
 
@@ -575,7 +569,7 @@ async def db_session(
             await db_session.commit()
     """
     # Create a connection
-    async with test_engine.connect() as connection:
+    async with test_async_engine.connect() as connection:
         # Start a transaction
         async with connection.begin() as transaction:
             # Create session bound to the transaction
@@ -605,7 +599,7 @@ async def db_session_autocommit(
     Use with caution or implement manual cleanup.
     """
     async_session_factory = async_sessionmaker(
-        bind=test_engine,
+        bind=test_async_engine,
         class_=AsyncSession,
         expire_on_commit=False,
     )

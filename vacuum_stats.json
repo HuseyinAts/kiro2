@@ -1,0 +1,1 @@
+{"before": [{"relname": "irt_calibration_history", "n_dead_tup": 0, "n_live_tup": 0}, {"relname": "student_question_flags", "n_dead_tup": 0, "n_live_tup": 70}], "after": [{"relname": "irt_calibration_history", "n_dead_tup": 0, "n_live_tup": 1080}, {"relname": "student_question_flags", "n_dead_tup": 0, "n_live_tup": 70}], "settings": {"setting": "200", "pending_restart": false}}

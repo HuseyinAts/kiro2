@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from sqlalchemy import and_, func, or_, select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 # Note: IRTValidationError is raised by validators - re-exported for external use
 from core.irt_validators import IRTValidationError as IRTValidationError
@@ -33,6 +33,7 @@ from models.question_bank import (
     calculate_irt_based_difficulty,
     should_update_difficulty,
 )
+from core.resilience import db_retry
 
 
 class QuestionBankService:
@@ -45,6 +46,7 @@ class QuestionBankService:
     # TASK 70.1: Question CRUD Operations
     # ========================================================================
 
+    @db_retry
     async def create_question(
         self, question_data: dict[str, Any], created_by: str | None = None
     ) -> QuestionBankItem:
@@ -79,13 +81,14 @@ class QuestionBankService:
             select(QuestionBankItem)
             .options(
                 joinedload(QuestionBankItem.primary_topic),
-                joinedload(QuestionBankItem.tag_associations),
-                joinedload(QuestionBankItem.calibration_history),
+                selectinload(QuestionBankItem.tag_associations),
+                selectinload(QuestionBankItem.calibration_history),
             )
             .where(QuestionBankItem.id == question_id)
         )
         return result.scalar_one_or_none()
 
+    @db_retry
     async def update_question(
         self, question_id: str, update_data: dict[str, Any]
     ) -> QuestionBankItem | None:
@@ -104,6 +107,7 @@ class QuestionBankService:
 
         return question
 
+    @db_retry
     async def delete_question(self, question_id: str) -> bool:
         """Soru sil (soft delete)"""
         question = await self.get_question(question_id)
@@ -120,6 +124,7 @@ class QuestionBankService:
     # TASK 70.2: Topic Hierarchy Management
     # ========================================================================
 
+    @db_retry
     async def create_topic(
         self,
         code: str,
@@ -250,6 +255,7 @@ class QuestionBankService:
             path.reverse()
             return path
 
+    @db_retry
     async def add_question_tags(
         self, question_id: str, tag_names: list[str]
     ) -> list[QuestionTagAssociation]:
@@ -297,6 +303,7 @@ class QuestionBankService:
     # TASK 70.3: Dynamic Difficulty Adjustment
     # ========================================================================
 
+    @db_retry
     async def update_question_difficulty(
         self, question_id: str, force: bool = False
     ) -> QuestionBankItem | None:
@@ -347,6 +354,7 @@ class QuestionBankService:
 
         return question
 
+    @db_retry
     async def batch_update_difficulties(self, min_attempts: int = 100) -> int:
         """
         Tüm soruların zorluk seviyelerini toplu güncelle
@@ -410,6 +418,7 @@ class QuestionBankService:
     # TASK 70.4: IRT Parameter Management
     # ========================================================================
 
+    @db_retry
     async def calibrate_question_irt(
         self,
         question_id: str,
@@ -576,7 +585,7 @@ class QuestionBankService:
             select(QuestionBankItem)
             .options(
                 joinedload(QuestionBankItem.primary_topic),
-                joinedload(QuestionBankItem.tag_associations),
+                selectinload(QuestionBankItem.tag_associations),
             )
             .where(QuestionBankItem.is_active == True)
         )

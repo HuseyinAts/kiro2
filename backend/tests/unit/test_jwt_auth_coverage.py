@@ -1102,7 +1102,7 @@ class TestRefreshAccessTokenEdgeCases:
         )
         assert new_payload["sub"] == "99"
         assert new_payload["email"] == "preserve@test.com"
-        assert new_payload["role"] == UserRole.ADMIN.value
+        assert UserRole(new_payload["role"]) == UserRole.ADMIN
 
     @pytest.mark.asyncio
     async def test_device_id_preserved_through_rotation(

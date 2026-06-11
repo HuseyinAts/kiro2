@@ -19,7 +19,7 @@ _BACKEND_DIR = str(Path(__file__).resolve().parents[2])
 if _BACKEND_DIR not in sys.path:
     sys.path.insert(0, _BACKEND_DIR)
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import pytest
 
@@ -396,6 +396,7 @@ async def _create_ogrenci(service, email="ogrenci@test.com", sifre="Zr8!mQpLx@Yw
         telefon="+905001234567",
         rol=KullaniciRolu.OGRENCI,
         sifre=sifre,
+        birth_date=date(2005, 1, 1),
     )
     return await service.kullanici_olustur(data)
 
@@ -409,6 +410,7 @@ async def _create_ogretmen(service, email="ogretmen@test.com"):
         telefon="+905009876543",
         rol=KullaniciRolu.OGRETMEN,
         sifre="Ax7!mQpLx@Yw",
+        birth_date=date(1990, 1, 1),
     )
     return await service.kullanici_olustur(data)
 
@@ -422,6 +424,7 @@ async def _create_veli(service, email="veli@test.com"):
         telefon="+905005551234",
         rol=KullaniciRolu.VELI,
         sifre="P@ssW0rd!XqZ",
+        birth_date=date(1985, 1, 1),
     )
     return await service.kullanici_olustur(data)
 
@@ -804,6 +807,7 @@ class TestKullaniciOlustur:
             telefon="+905001234567",
             rol=KullaniciRolu.OGRENCI,
             sifre="Zr8!mQpLx@Yw",
+            birth_date=date(2005, 1, 1),
         )
         user = await service.kullanici_olustur(user_data)
 

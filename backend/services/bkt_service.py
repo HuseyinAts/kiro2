@@ -11,6 +11,10 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 from typing import Any
+import concurrent.futures
+import asyncio
+
+_global_process_pool = concurrent.futures.ProcessPoolExecutor(max_workers=4)
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -299,8 +303,9 @@ class BKTService:
             from services.irt_service_3pl import IRTService3PL
 
             if answered_questions and responses:
-                theta_after, theta_se = IRTService3PL.eap_theta(
-                    answered_questions, responses
+                theta_after, theta_se = await asyncio.get_running_loop().run_in_executor(
+                    _global_process_pool,
+                    IRTService3PL.eap_theta, answered_questions, responses
                 )
             else:
                 # DM-05: BKT→IRT bridge: logit dönüşümü (lineer yerine)
@@ -397,12 +402,14 @@ class BKTService:
             prev_due = fsrs_card.due_date if fsrs_card else None
             prev_reps = fsrs_card.reps if fsrs_card else 0
 
-            fsrs_result = FSRSService.review_card(
-                stability=prev_stability,
-                difficulty=prev_difficulty,
-                due_date=prev_due,
-                rating_int=rating,
-                reps=prev_reps,
+            fsrs_result = await asyncio.get_running_loop().run_in_executor(
+                _global_process_pool,
+                FSRSService.review_card,
+                prev_stability,
+                prev_difficulty,
+                prev_due,
+                rating,
+                prev_reps,
             )
             fsrs_next_review = fsrs_result.get("due_date")
 

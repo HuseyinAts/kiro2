@@ -58,8 +58,11 @@ class SkillProfileResponse(BaseModel):
     profile_updated_at: str | None = None
 
 
+PATTERN_UUID_OR_TEST = r"^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[a-zA-Z0-9_-]{1,36})$"
+
+
 class MasteryEstimateRequest(BaseModel):
-    question_id: str = Field(..., min_length=1, description="Soru UUID'si")
+    question_id: str = Field(..., min_length=1, pattern=PATTERN_UUID_OR_TEST, description="Soru UUID'si")
     is_correct: bool = Field(..., description="Öğrenci doğru yanıtladı mı?")
 
 

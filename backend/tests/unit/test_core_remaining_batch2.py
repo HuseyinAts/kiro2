@@ -16,6 +16,23 @@ import sys
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
+# Save sys.modules state to prevent mock pollution in other unit test files
+_RESTORE_MODULES = [
+    "redis", "redis.asyncio", "elasticsearch", "langchain", "langchain_core", 
+    "websockets", "websockets.exceptions", "websockets.server", "cryptography", 
+    "cryptography.fernet", "zemberek", "structlog", "structlog.stdlib", 
+    "structlog.processors", "structlog.dev", "structlog.types", "celery", 
+    "celery.schedules", "celery.exceptions", "core.application_metrics", 
+    "core.message_queue_system", "core.unified_event_bus", 
+    "core.background_job_processor", "core.enhanced_database", 
+    "core.transaction_manager", "core.structured_logging", "core.unified_config", 
+    "core.realtime_notification_system", "core.exceptions"
+]
+_original_modules = {}
+for _mod in _RESTORE_MODULES:
+    if _mod in sys.modules:
+        _original_modules[_mod] = sys.modules[_mod]
+
 # ---------------------------------------------------------------------------
 # Path setup
 # ---------------------------------------------------------------------------
@@ -94,7 +111,7 @@ _ALWAYS_MOCK = [
     "core.transaction_manager",
 ]
 for _mod in _ALWAYS_MOCK:
-    sys.modules.setdefault(_mod, MagicMock())
+    sys.modules[_mod] = MagicMock()
 
 # These may be needed as real by other test files — try real import first.
 _TRY_REAL = [
@@ -223,6 +240,13 @@ from core.unified_api_gateway import (
     RouteManager,
     RouteType,
 )
+
+# Restore sys.modules to prevent mock pollution in other unit test files
+for _mod in _RESTORE_MODULES:
+    if _mod in _original_modules:
+        sys.modules[_mod] = _original_modules[_mod]
+    elif _mod in sys.modules:
+        del sys.modules[_mod]
 
 # ===========================================================================
 # =====================  SECTION 1: rbac_system.py  =========================

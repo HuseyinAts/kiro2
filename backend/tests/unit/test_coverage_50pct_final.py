@@ -871,6 +871,7 @@ class TestBackgroundJobProcessor:
         assert job_id in proc.jobs
         # Should create a scheduled task
         assert job_id in proc.scheduled_jobs
+        proc.cancel_job(job_id)
 
     def test_get_job_status_existing(self):
         proc = self._make()

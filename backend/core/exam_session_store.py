@@ -29,37 +29,42 @@ _REDIS_TTL = 3 * 60 * 60  # 3 hours (max exam duration is 165 min)
 
 
 def _serialize_session(data: "ExamSessionData") -> str:
-    """Serialize ExamSessionData to JSON string."""
-    d = asdict(data)
-    # Convert enums to values
-    d["status"] = d["status"].value if hasattr(d["status"], "value") else d["status"]
-    if d.get("exam_config"):
-        cfg = d["exam_config"]
-        cfg["exam_type"] = (
-            cfg["exam_type"].value
-            if hasattr(cfg["exam_type"], "value")
-            else cfg["exam_type"]
-        )
-        if cfg.get("ayt_field_type"):
-            cfg["ayt_field_type"] = (
-                cfg["ayt_field_type"].value
-                if hasattr(cfg["ayt_field_type"], "value")
-                else cfg["ayt_field_type"]
-            )
-        if cfg.get("ydt_language"):
-            cfg["ydt_language"] = (
-                cfg["ydt_language"].value
-                if hasattr(cfg["ydt_language"], "value")
-                else cfg["ydt_language"]
-            )
-    # Convert datetimes to ISO strings
-    for key in ("started_at", "completed_at", "last_auto_save"):
-        if d.get(key) and isinstance(d[key], datetime):
-            d[key] = d[key].isoformat()
-    # Performance metrics — nested dataclass
-    if d.get("performance_metrics"):
-        # Already a dict from asdict()
-        pass
+    """Serialize ExamSessionData to JSON string.
+    Optimized to bypass dataclass.asdict() which causes GIL blocking under high load.
+    """
+    cfg = data.exam_config
+    exam_config_dict = {
+        "exam_type": cfg.exam_type.value if hasattr(cfg.exam_type, "value") else cfg.exam_type,
+        "total_questions": cfg.total_questions,
+        "duration_minutes": cfg.duration_minutes,
+        "subject_distribution": cfg.subject_distribution,
+        "difficulty": cfg.difficulty,
+        "beta_practice": cfg.beta_practice,
+        "ayt_field_type": cfg.ayt_field_type.value if hasattr(cfg.ayt_field_type, "value") and cfg.ayt_field_type else cfg.ayt_field_type,
+        "ydt_language": cfg.ydt_language.value if hasattr(cfg.ydt_language, "value") and cfg.ydt_language else cfg.ydt_language,
+    }
+
+    perf_metrics = None
+    if data.performance_metrics:
+        # Use asdict here ONLY for the small nested metrics dataclass
+        perf_metrics = asdict(data.performance_metrics)
+
+    d = {
+        "session_id": data.session_id,
+        "student_id": data.student_id,
+        "exam_config": exam_config_dict,
+        "status": data.status.value if hasattr(data.status, "value") else data.status,
+        "started_at": data.started_at.isoformat() if data.started_at else None,
+        "completed_at": data.completed_at.isoformat() if data.completed_at else None,
+        "current_question_index": data.current_question_index,
+        "questions": data.questions,
+        "answers": data.answers,
+        "flagged_questions": data.flagged_questions,
+        "time_spent_per_question": data.time_spent_per_question,
+        "last_auto_save": data.last_auto_save.isoformat() if data.last_auto_save else None,
+        "performance_metrics": perf_metrics
+    }
+    
     return json.dumps(d, ensure_ascii=False)
 
 
@@ -136,7 +141,7 @@ async def _get_redis():
             r = aioredis.from_url(
                 url,
                 decode_responses=True,
-                max_connections=20,
+                max_connections=100,
                 health_check_interval=30,
             )
             await r.ping()
@@ -152,7 +157,8 @@ async def persist_session(session_data: "ExamSessionData") -> None:
         r = await _get_redis()
         if r:
             key = f"{_REDIS_PREFIX}{session_data.session_id}"
-            await r.set(key, _serialize_session(session_data), ex=_REDIS_TTL)
+            json_data = _serialize_session(session_data)
+            await r.set(key, json_data, ex=_REDIS_TTL)
     except Exception as e:
         logger.warning(f"Redis persist failed for {session_data.session_id}: {e}")
 

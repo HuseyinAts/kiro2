@@ -377,11 +377,12 @@ class TestRedisMessageQueue:
         for qt_stats in stats["queue_stats"].values():
             assert "error" in qt_stats
 
-    def test_stop_consumers_sets_running_false(self):
+    @pytest.mark.asyncio
+    async def test_stop_consumers_sets_running_false(self):
         queue = RedisMessageQueue()
         queue.running = True
         # No tasks, just ensure flag flips
-        asyncio.get_event_loop().run_until_complete(queue.stop_consumers())
+        await queue.stop_consumers()
         assert queue.running is False
 
     @pytest.mark.asyncio

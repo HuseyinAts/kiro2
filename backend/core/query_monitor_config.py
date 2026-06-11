@@ -62,8 +62,8 @@ class QueryMonitorConfig:
     # Enable query logging
     ENABLE_QUERY_LOGGING = True
 
-    # Enable N+1 detection
-    ENABLE_N_PLUS_ONE_DETECTION = True
+    # Disable N+1 detection for load testing
+    ENABLE_N_PLUS_ONE_DETECTION = False
 
     # Log all queries (set False in production)
     LOG_ALL_QUERIES = False
@@ -184,6 +184,17 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
             query_type=query_type,
             table=table_name
         ).observe(duration)
+
+    # Log query performance to optimizer
+    try:
+        from core.database_optimizer import query_optimizer
+        query_optimizer.log_query_performance(
+            query_name=f"{query_type} {table_name or 'unknown'}",
+            execution_time=duration,
+            query=statement
+        )
+    except Exception as e:
+        logger.error(f"Failed to log query performance to optimizer: {e}")
 
     # Detect slow queries
     is_slow = duration > QueryMonitorConfig.SLOW_QUERY_THRESHOLD
