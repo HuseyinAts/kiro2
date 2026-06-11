@@ -2,7 +2,7 @@
 
 **Tarih:** 2026-04-21  
 **Plan:** `.cursor/plans/20260421_student_ready_autonomous_master.md` §8  
-**Durum:** Kısmi (kod/compose tarafı başlatıldı; runtime smoke bekliyor)
+**Durum:** Kısmi tamamlandı — bkz. `.cursor/plans/20260421_chroma_stack_RESULT.md`
 
 ## Özet
 

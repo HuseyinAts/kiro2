@@ -1,4 +1,4 @@
-# KIRO2 SESSION BRIEFING — 28 Nisan 2026 (v18)
+# KIRO2 SESSION BRIEFING - 24 Nisan 2026 (v15)
 
 ## YENİ SOHBET BAŞLATMAK İÇİN
 ```
@@ -29,13 +29,9 @@ Test öğrenci: beta001@kiro2test.com / Test2026!
 DB:           localhost:5434  user=postgres  pw=1470  db=kiro2
 ```
 
-Token al (alan adı `access_token`, `.token` YANLIŞ):
-```powershell
-$body='{"email":"admin@kiro2.com","password":"Kiro2Beta2026@x"}'
-$t=((Invoke-WebRequest http://localhost:8000/api/v1/auth/giris -Method POST `
-     -ContentType "application/json" -Body $body -UseBasicParsing).Content `
-     | ConvertFrom-Json).access_token
-```
+Token al (DİKKAT: alan adı `access_token`, eski briefing'lerdeki `.token` YANLIŞ):
+  $body='{"email":"admin@kiro2.com","password":"Kiro2Beta2026@x"}'
+  $t=((Invoke-WebRequest http://localhost:8000/api/v1/auth/giris -Method POST -ContentType "application/json" -Body $body -UseBasicParsing).Content | ConvertFrom-Json).access_token
 
 psql:
 ```powershell
@@ -50,165 +46,279 @@ Auth çift modlu:
 
 ---
 
-## VERİTABANI DURUMU (28 Nisan 2026)
-
-### Aktif tablolar
-```
-question_bank: 77.445 toplam
-  ├─ 57.920 aktif
-  └─ 19.525 pasif
-       ├─ 13.246 metadata yok
-       ├─  6.278 K1_K2_K3_dead_data (28 Nis cleanup, Paket A)
-       └─      1 prepilot dedup (Esen APS)
-
-users: 65 | exam_sessions: 186 | kiro2_cat_sessions: 8
-irt_calibration_history: 1.080 | topic_prerequisites: 90
-fsrs_cards: 57 | zpd_history: 0   ← FSRS akışı başladı, ZPD organik birikim bekliyor
-```
-
-ES doc sayısı: `[DOĞRULA — 28 Nis cleanup sonrası ES reindex yapıldı mı?]`
-
-### LEGACY — KULLANMAYIN
-- `questions` tablosu (36.381 satır). **Platform bu tabloyu kullanmıyor.**
-- `emergency_content.sql`: DEPRECATED, bu legacy tabloya yazıyor. **Çalıştırma.**
-- `KullaniciServisi`: DEPRECATED, in-memory. `core.database.db_manager.get_session()` ile direkt SQLAlchemy kullan.
-
-### D-Dataset (kriz çözüldü, Nis 2026)
-- Yol: `C:\Users\husey\kiro2\d-dataset` (kök'teki `C:\Users\husey\d-dataset` yalnızca çıktı kalıntısı)
-- Kaynak: `eslesmis_sorucevap.jsonl` — 77.336 record, v3.5 production, 405 kitap
-- Doğrulama: 100% pass, 0 critical error, 99.86% match rate
-
-### Alembic
-HEAD: `prepilot_m2_indexes_20260428` (commit `36549f9`, 28 Nis prepilot M1+S1+M2)
-
-**Kurallar:**
-- ID 32 char sınırı (`alembic_version` kolon limiti). Daha uzun = truncate, zincir kırılır.
-- `alembic revision --autogenerate` artık **izinli**. CLAUDE.md akışı: önce ORM modeli düzenle, sonra autogenerate. (v16'daki "kalıcı yasak" notu **geçersiz**.)
-- Migration dosyaları lokalde yazılır → container'a `docker cp` ile kopyalanır (içeride yazma izni yok).
+## ÇALIŞAN SERVİSLER (20 Nisan 2026)
+kiro2-backend     :8000  healthy (tüm 141 router ROUTER_MAPPING'de, DISABLED_ROUTERS boş)
+kiro2-celery-worker     healthy (concurrency=8, 31 task)
+kiro2-celery-beat       running (8 scheduled task)
+kiro2-frontend    :3000  healthy
+kiro2-ollama      :11434 healthy (qwen3:8b)
+kiro2_postgres    :5434  native host (~162 tablo)
+kiro2_redis       :6379  native host
+ES                :9200  yellow/normal (64.270 doc — ES yellow beklenen durum)
 
 ---
 
-## PREPİLOT SCHEMA (28 Nis 2026, commit 36549f9)
+## VERİTABANI DURUMU (24.04.2026)
+question_bank: 77.401 toplam / 64.270 aktif
+  is_calibrated=TRUE : 360  (IRT 3PL gerçek kalibrasyon)
+  is_calib_pool=TRUE : 1909 (her ders x zorluk 30 soru)
+users: 65
+Alembic head: offline_sync_pkg_20260420 (tek head, çift head yok)
+Son Alembic zinciri (Nisan): 20260406_uni_dept → 20260410_* (4) → 20260412_* (2) → student_review_drift_001 → offline_sync_pkg_20260420 (24 Nisan)
+ALTIN KURAL: alembic revision --autogenerate YASAK (IRT kolonlarini DROP eder)
+ALTIN KURAL: alembic revision ID'si `alembic_version` kolonunda **32 char sınırı**. Uzun ID'ler truncate olup zincir kırılır (Lesson 10).
 
-İçerik pipeline'ının fizik temeli. M1 + S1 + M2 birlikte commit'lendi.
-
-**`question_bank.soru_hash`**
-- Tip: `VARCHAR(32) NOT NULL`
-- Formül: `MD5(LOWER(TRIM(question_text)) || '|' || option_a..d || '|' || COALESCE(option_e,''))`
-
-**İndeksler**
-- `uq_qb_soru_hash_active`: partial UNIQUE WHERE `is_active=TRUE`
-- `idx_qb_soru_hash`: lookup için (UNIQUE değil)
-
-**Yeni tablolar**
-- `manual_review_queue` → MRQ akışı
-- `question_bank_staging` → pipeline staging katmanı
-
-**Doğrulama snapshot'ı (28 Nis post-deploy)**
-```
-distinct hash    : 77.249
-dup_excess       :    196   (hepsi pasif — partial UNIQUE çakışmıyor)
-active_dup_pairs :      0   ✅
-```
-
-Esen Coğrafya dedup örneği:
-- TYT `0d6e5dbe` → canonical, aktif kaldı
-- APS `10e2304d` → pasifleştirildi
+### ⚠️ ALEMBIC DRIFT (20.04.2026 diary pilotunda tespit)
+Bazı tablolar (örn. 8 diary tablosu) DB'de FİZİKSEL olarak mevcut ama Alembic revision grafiğinde kayıtlı değil. Anlamı:
+- Mevcut DB'de endpointler çalışır ✅
+- Taze DB kurulumunda `alembic upgrade head` → diary tabloları OLUŞMAZ ❌
+- Staging/production deploy → 500 riski
+Çözüm kararı bekliyor (A: yok say + doküman / B: idempotent recovery migration / C: resmi migration + alembic stamp)
 
 ---
 
-## KRİTİK KOLON ADLARI / TUZAKLAR
+## KRİTİK KOLON ADLARI (YANLIŞ VARSAYIMDAN KAÇIN)
+ExamSession : student_id (NOT user_id), raw_score (NOT score)
+users.role  : BUYUK HARF (STUDENT/TEACHER/PARENT/ADMIN)
+users.id    : VARCHAR (NOT UUID!) — FK'ler sa.String olmali, UUID degil
+user_badges.id : VARCHAR (NOT UUID!)
+video_watch_sessions.id : UUID
+sub_problems.id : UUID (reasoning domain, productive_failure_api ile İLGİSİZ)
+IRT kolonlar: irt_discrimination(a), irt_difficulty(b), irt_guessing(c)
+YKS field   : "puan" (NOT "puan_tahmini")
+CAT tablo   : kiro2_cat_sessions (NOT cat_sessions)
+Refresh EP  : /api/v1/auth/refresh/secure (NOT /refresh, cookie gerekli)
+Auth yanıt  : TokenYaniti.access_token (NOT .token)
 
+### offline_sync_packages (24.04.2026 yeni)
+Tablo şeması (borç #2 ile oluştu):
 ```
-ExamSession             student_id (NOT user_id), raw_score (NOT score)
-users.role              BÜYÜK HARF (STUDENT/TEACHER/PARENT/ADMIN)
-                         require_role'daki .lower() input hoşgörüsü, DB enum BÜYÜK
-users.id                VARCHAR — FK'ler sa.String, UUID DEĞİL
-user_badges.id          VARCHAR — aynı kural
-video_watch_sessions.id UUID
-sub_problems.id         UUID (reasoning_api domeni — productive_failure_api'ye DEĞİL)
-IRT kolonları           irt_discrimination(a), irt_difficulty(b), irt_guessing(c)
-YKS field               "puan" (NOT "puan_tahmini")
-CAT tablo               kiro2_cat_sessions (NOT cat_sessions)
+package_id    VARCHAR PRIMARY KEY
+student_id    VARCHAR NOT NULL REFERENCES users(id) ON DELETE CASCADE
+created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+consumed_at   TIMESTAMPTZ NULL
+question_ids  JSONB NULL
 ```
-
-`sa.Enum(create_type=False)` güvensiz → `sa.String(N)` kullan.
+Endpoint davranışları:
+- `POST /api/v1/offline-sync/sync-results` → `answered_at` alanı **ISO-8601 zorunlu** (Round 2'de keşfedildi). Eksikse 422.
+- `GET /api/v1/offline-sync/sync-package?limit=N` → sıra dışı davranış: `remaining_slots<1` iken deterministik değil (K-2 açık karar).
+- 3 katman guard: `already_consumed` / `unknown_package` / `ownership_mismatch` (log pattern'leri aynen).
 
 ---
 
-## SERVİS DURUMU (28 Nis)
+## ROUTER DURUMU (20.04.2026 — batch ADIM 0 sonrası)
 
-```
-kiro2-backend          :8000   healthy   118 router yüklü, 23 disabled, 0 fail
-kiro2-celery-worker            healthy   concurrency=8, 30 task
-kiro2-celery-beat              running   8 scheduled task
-kiro2-frontend         :3000   healthy
-kiro2-redis            :6379   AOF + save "60 1000", external volume kiro2_redis-data
-ES                     :9200   yellow/normal
-Ollama                 :11434  qwen3:8b
-```
+**Briefing v12'deki "13 disabled router" iddiası GÜNCEL DEĞİL.** Gerçek durum (20.04.2026 itibariyle, 5434 dev DB):
 
-Orphan container'lar (kullanılmıyor): `kiro2-ollama`, `kiro2_postgres`, `turkiye_sinav_*`
+- `backend/routers/loader.py` → `DISABLED_ROUTERS = {}` (boş)
+- Briefing'in v12'de disabled diye listelediği 13 router hepsi `ROUTER_MAPPING`'de kayıtlı
+- Hepsi log'da "Registered" satırı veriyor
 
-Middleware (6): Timing + CORS + CSRF + CacheHeaders + GZip + VersionRedirect
-Startup: DB → JWT Redis → ExamRecovery → OrphanCleanup → Agents → Blackboard → ANALYZE → Ready
+Ama runtime'da hepsinin "çalıştığı" anlamına gelmez. Batch ADIM 0 (`backend/_pilots/20260420_batch_router_state.md`) şu sınıflandırmayı üretti:
 
-Beat schedule:
-```
-02:00 daily    refresh_daily_plans
-03:00 Pazar    irt_calibration (kwargs batch_size=200)
-06:00 daily    daily_coaching
-08:00 daily    daily_analytics_report
-09:00 Pzt      weekly_summary
-00:00 Pzt      weekly_league_reset
-23:00 Pazar    weekly_error_cluster
-00:05 daily    check_birlikte_streaks
-```
-`[DOĞRULA]` Üst iki task (refresh_daily_plans + irt_calibration) 28 Nis'te userMemories tarafından teyitli. Alt 6 task v16'dan taşındı, hâlâ aktif olduğu doğrulanmadı.
+### Aşama B — Tablolar var, Alembic drift olası (pilot için uygun)
+- `api.diary_api` ✅ **20.04 pilot aktivasyonu tamamlandı** (smoke test geçti)
+- `api.productive_failure_api` — gerçek bağımlılık: `question_bank` + `topic_progress` (VARCHAR uyumlu). v12 briefing'deki `sub_problems`/`solution_steps` notu YANLIŞ (farklı domain, UUID, reasoning_api'ye ait)
+- `api.offline_sync_api` — `question_bank` + FSRS akışı mevcut
+- `api.pwa_sync_api` — `exam_sessions`, `student_answers` mevcut. ⚠️ prefix `/api/pwa-sync-api` (tutarsız, `/api/v1/...` değil)
 
----
+### Aşama D — Dış bağımlılık (altyapı kararı gerekli, önce ADIM 0 değil)
+- `api.v1.semantic_search` — ChromaDB yok, "WARNING chromadb not available"
+- `api.clustering_api` — ChromaDB
+- `api.v1.content_recommendation` — ChromaDB
+- `api.v1.duplicate_detection` — ChromaDB
+- `api.v1.expert_agents_api` — Expert agent framework deploy edilmedi
+- `api.vision_api` — YOLO + Gemini pipeline entegre değil
 
-## DEPLOY AKIŞI
+### Aşama E — Belirsiz / manuel inceleme (pilot öncesi kod review)
+- `api.live_session_routes` — **🔥 GERÇEK BOZUK ROUTER**: kodda ham SQL `live_session_participants`, DB'de tablo adı `session_participants`. Runtime'da 500 üretme riski yüksek.
+- `api.revolutionary_features` — hesaplama ağırlıklı, hangi endpoint'ler DB yazıyor belirsiz
+- `api.team_challenges_api` — `services/_deprecated/team_challenges` kullanıyor, kalıcı tablo yok
 
-**Python dosya değişikliği** (image rebuild yok)
-1. Host'ta düzenle
-2. `docker cp C:\...\backend\path\dosya.py kiro2-backend:/app/path/dosya.py`
-3. `docker exec kiro2-backend bash -c "find /app -name '*.pyc' -delete"`
-4. `docker restart kiro2-backend`
-5. `Start-Sleep 22`
-6. Health check (`curl localhost:8000/health`)
-
-**Env değişikliği:** `docker compose up -d --no-deps backend`
-**Kalıcı (image bake):** `docker compose build backend` + `docker compose up -d --no-deps backend`
-
-**Türkçe SQL:** `psql -f dosya.sql` (inline `-c "..."` Türkçe karakteri bozar)
-**Karmaşık Python:** Host'ta yaz → `docker cp` → `docker exec python /tmp/script.py`
-**Bytecode:** Model/service edit sonrası `.pyc` temizle, aksi halde SQLAlchemy cached UUID kullanır.
-
-**Endpoint smoke testi:** `powershell -ExecutionPolicy Bypass -File scripts\test_endpoints.ps1`
-
-⚠️ `ENVIRONMENT=production` lokal'de = crash loop (postgres parola validasyonu + localhost CORS reddedilir). Geliştirme = `development`.
+### Bilinen kategori bug'ı (fonksiyonel değil, log/doküman)
+`router_registry.ROUTER_CATEGORIES` içinde `"search"` YOK. `ROUTER_MAPPING` ise 4 ChromaDB router'ını `"search"` kategorisinde tanımlıyor. Sonuç: `backend/routers/__init__.py` bilinmeyen kategoriyi `misc/`'e düşürüyor → loglar `misc/semantic_search` vb. gösteriyor. Çözüm: registry'ye `search` ekle veya mapping'i düzelt.
 
 ---
 
-## PİLOT SİSTEMİ
+## 06 NİSAN 2026 — OTURUMLAR (tarihçe)
 
-Her pilot 3 dosya:
-```
-.cursor/plans/YYYYMMDD_<name>.md             → Plan
-backend/_pilots/YYYYMMDD_<name>_state.md     → ADIM 0 durum tespiti
-.cursor/plans/YYYYMMDD_<name>_RESULT.md      → Sonuç raporu
-```
+### Oturum 1:
+1. Auth ölü kod temizliği: jwt_auth_docker.py + consolidated_auth_dependencies.py silindi (48KB) [ede451a]
+2. Disabled router analizi: gerçek sayı 23 (önceki audit 43 demişti — yanlış)
+3. KVKK 5 tablo oluşturuldu (migration: 20260406_kvkk_recreate) [3b5e688]
+4. KVKK 2 router aktif edildi (kvkk_consent_api, kvkk_privacy_api)
 
-Akış: ADIM 0 (kod dokunmadan tespit) → Aşama kararı (insan onayı) → migration/kod → staging deploy → smoke → commit + rapor.
+### Oturum 2:
+5. KVKK router commit + deploy tamamlandı [8190c65]
+6. FERPA/COPPA 5 tablo oluşturuldu (migration: 20260406_ferpa_coppa) [c0aa533]
+   Tablolar: ferpa_consents, coppa_parental_consents, educational_record_access_logs,
+   data_retention_policies, data_processing_agreements
+   NOT: sa.Enum create_type=False çalışmadı, sa.String(20) kullanıldı
+7. FERPA/COPPA router aktif edildi (ferpa_coppa_compliance_api)
+8. ChromaDB bağımlı 4 router → P2 roadmap (disabled kalacak, ES alternatifi)
+9. Frontend api.ts 4.4MB iddiası → yanlış, gerçek: 42KB/1263 satır, sağlıklı yapı
+10. 99 console.log temizlendi (production koddan) [83a092c]. Kalan 14 meşru runtime log.
+11. Video analytics 4 tablo oluşturuldu (migration: 20260406_video_analytics) [fc6d0ff]
+    Tablolar: video_completion_milestones, video_notes, video_bookmarks, video_analytics_summary
+    NOT: users.id VARCHAR → user_id kolonları sa.String olmalı; user_badges.id de VARCHAR
+    video_analytics_routes aktif edildi
+12. Sequential reasoning 4 tablo oluşturuldu (migration: 20260406_reasoning) [88dc01f]
+    Tablolar: reasoning_sessions, reasoning_steps, sub_problems, reasoning_cache
+    Enum'lar DO $$ BEGIN..EXCEPTION ile oluşturuldu ama sa.String kullanıldı
+    sequential_reasoning_api aktif edildi
+13. Üniversite/Bölüm/Review 21 tablo oluşturuldu (migration: 20260406_uni_dept) [a51626f]
+    21 tablo; 5 router aktif: university_advisory, preference_simulation,
+    department_info, university_info, student_review_routes
+
+### Toplam Nisan 6: 34 yeni tablo, 10 router aktifleştirildi. Disabled 23→13.
 
 ---
 
-## ORCHESTRATOR
-- Konum: `C:\Users\husey\kiro2\orchestrator\core\`
-- Stack: LangGraph v1.0.5 — v2.5.0 STABLE phase (Oca 2026)
-- Kapsam: 24 modül, 45 policy, 139 export. `graph.py` aktif.
-- Test: `test_complete_system.py` OK.
+## 20 NİSAN 2026 — OTURUMLAR
+
+### Keşif turu (3 tur gözden geçirme)
+- Audit raporları okundu (5 tur: REPO_MAP, AUDIT_PLAN, BACKEND_AUDIT, FRONTEND_AUDIT, AI_PIPELINE_AUDIT, INFRA_TEST_AUDIT)
+- Composer 2 güçlü alanları × KIRO2 P1/P2 listesi eşleştirildi
+- 3 tur yanlış derinleşmeden sonra plan sadeleştirildi: tek pilot (`diary_api`) ile başla
+
+### diary_api pilot aktivasyonu
+Plan: `.cursor/plans/20260420_diary_api_activation.md`
+ADIM 0 (durum tespiti): `backend/_pilots/20260420_diary_api_state.md`
+RESULT: `.cursor/plans/20260420_diary_api_RESULT.md`
+
+Bulgular:
+- **Aşama B** ortaya çıktı — 8 diary tablosu DB'de mevcut, VARCHAR uyumlu, router canlı
+- Eski `20260119_add_diary_tables.py.disabled` ve `c937128ce051_merge_diary_and_quality_gates.py.disabled` migrations `backend/alembic/versions/_archive/` dizinine taşındı (UUID yazılmış — mevcut VARCHAR şemayla uyumsuz, arşivde tutulacak)
+- Alembic drift tespit edildi (bkz. yukarıdaki DB durumu bölümü)
+- Smoke test sonuçları:
+  - `POST /api/v1/auth/giris` → 200, yanıt alanı `access_token`
+  - `GET /api/v1/diary/goals` (Bearer) → 200
+  - `POST /api/v1/diary/summary` + `DiaryEntryCreate` → 200, kayıt DB'ye yazıldı
+
+### Batch ADIM 0 — kalan 12 router durum tespiti
+Plan: `.cursor/plans/20260420_batch_router_adim0.md`
+RESULT: `backend/_pilots/20260420_batch_router_state.md`
+
+Bulgular yukarıdaki "ROUTER DURUMU" bölümüne yansıtıldı. Önerilen sonraki pilot: `api.offline_sync_api` veya `api.pwa_sync_api` (ikisi de Aşama B, dış bağımlılık yok).
+
+### Git (20 Nisan)
+- `d5c803c` chore(diary): archive old UUID migration + add pilot RESULT
+- `ab6c8b8` chore(pilots): create backend/_pilots/ for router activation state reports (amend, hook'suz)
+- `83421cc` chore(pilots): add batch ADIM 0 router state matrix (12 routers)
+
+---
+
+## 21-24 NİSAN 2026 — offline_sync DÖRTLÜ PİLOT
+
+### 21 Nisan — offline_sync_api aktivasyon (Pilot 2)
+Plan: `.cursor/plans/20260421_offline_sync_activation.md`
+RESULT: `.cursor/plans/20260421_offline_sync_RESULT.md`
+
+Bulgular: Aşama B olarak yürütüldü. 4 kod borcu tespit edildi:
+- #1 student_answers persist yok (ürün kararı)
+- #2 package_id persist yok
+- #3 FSRS eşleme `front_text.contains` kırılgan
+- #4 `q.options` ORM uyumsuz
+
+### 22 Nisan — Borç #4 kapandı (Pilot 3)
+Plan: `.cursor/plans/20260422_offline_sync_code_fix.md`
+RESULT: `.cursor/plans/20260422_offline_sync_code_fix_RESULT.md`
+Commit: `ff06119` fix(offline_sync): build_sync_package compose options from option_a..e (debt #4)
+
+### 23 Nisan — Borç #2 plan + Round 1 deploy drift (Pilot 4)
+Plan: `.cursor/plans/20260423_offline_sync_debt_2_package_persist.md`
+RESULT: `.cursor/plans/20260420_offline_sync_debt_2_RESULT.md` (Round 1 FAIL bu turda append)
+
+Composer 2 migration + guard yazdı ama smoke **FAIL** — deploy drift (D-12):
+kod lokal değişti, container'a `docker cp` yapılmadı. Claude bu durumu
+repo'yu bizzat okumadan fark edemedi (§1.9 dersi).
+
+### 24 Nisan — Round 2 PASS + hijyen bekliyor
+Commit: `5008ab6` (footer'lı, amend bekliyor)
+
+Round 2 Composer 2 tarafından (`docker cp + pyc temizle + restart`) ardından
+gerçek smoke S1-S6 hepsi PASS:
+- S1 /sync-status 200 | S2 /sync-package?limit=5 PASS | S3 happy /sync-results PASS
+- S4 replay (already_consumed) PASS | S5 unknown UUID PASS | S6 ownership_mismatch PASS
+Mock kullanılmadı, log pattern'leri `docker logs` ile doğrulanıyor.
+
+### Composer 2 Sapma Matrisi (Borç #2 pilot zinciri)
+- D-8 KABUL: raw SQL (sqlalchemy.text) ORM yerine — fonksiyonel eşdeğer
+- D-9 KABUL: 6 unit test eklendi (AsyncMock) — zararsız
+- D-10 KABUL: ADIM 0 state.md hiç üretilmedi (22+23 Nisan) — K-1 kararı ayrı
+- D-11 FIX: `down_revision` yanlış yazıldı — `5008ab6`'da düzeltildi
+- D-12 FIX: container deploy drift — Round 2 ile tamamlandı
+
+### Git (21-24 Nisan)
+Push yapılmadı. `origin/master` fb18866, HEAD `5008ab6`. 10-11 commit ileri
+(hijyen 4'lü + autogenerate commit'i ile push bekleniyor).
+
+### Açık Kararlar (Hüseyin'e ait)
+- **K-1** state.md dosya yolu (3 seçenek, Claude önerisi A: mevcut yolu koru, ADIM 0 sertleştir)
+- **K-2** `sync-package?limit=N` davranışı bug mu kasıtlı mı? Bug ise borç #5 açılır
+- **K-3** kiro2-celery-worker/beat + kiro2-frontend container'ları kapalı — kasıtlı mı?
+
+---
+
+## 24 NİSAN 2026 — CLAUDE (DESKTOP) §1.9 DERSİ
+
+Claude Desktop, Files 7 dosyasını yeniden yazarken **transkript özetine**
+dayandı. Compaction özeti "Round 2 bekliyor" diyordu, gerçekte RESULT
+dosyasına Round 2 PASS zaten append edilmişti. Claude repo'daki RESULT
+dosyasını bizzat okumadan Files'ı yanlış zemine yazdı. Hüseyin "gözdengeçir" dedi, hata yakalandı.
+
+İroni: Aynı turda `30_DERSLER §6`'ya "Tuzak 9: Files Dosyaları Güncel Varsayımı" eklenmişti. Claude kendi yazdığı dersi ihlal etti.
+
+Ders (30_DERSLER.md §1.9'a giriyor): Files yazmadan önce `40_OPEN_DEBTS`'in bahsettiği RESULT dosyasını **aç oku**, Round N sayısını gör, status matrisini taramadan yazma.
+
+---
+
+## GIT DURUMU (24.04.2026)
+Branch: master
+HEAD: `5008ab6` fix(offline_sync): persist package_id in offline_sync_packages with guard (debt #2)
+  — footer'lı, hijyen amend bekliyor
+Origin/master: `fb18866` (10 commit ileri, amend sonrası 11 olacak).
+
+Uncommitted (M):
+  KIRO2_SESSION_BRIEFING.md        ← v15 update (bu dosya, pending)
+
+Untracked (??):
+  .cursor/plans/20260423_offline_sync_debt_2_package_persist.md   (docs commit)
+  .cursor/plans/20260420_offline_sync_debt_2_RESULT.md            (Round 1+2)
+  backend/tests/unit/services/test_offline_sync_service.py        (D-9 mock)
+  AGENTS.md, DERSLER.md, NEXT_SESSION_HANDOFF.md, backups/
+  CHAT_SUMMARY_20260422.md, CHAT_SUMMARY_20260423.md
+  tmp_db_tables.txt, tmp_existing_tables.txt, tmp_token.txt
+
+Son commitler (push yapılmadı):
+  5008ab6 fix(offline_sync): persist package_id (debt #2) [footer, amend bekliyor]
+  ff06119 fix(offline_sync): build_sync_package compose options (debt #4, 22 Nisan)
+  83421cc chore(pilots): batch ADIM 0 router state matrix
+  ab6c8b8 chore(pilots): create backend/_pilots/ for router activation state
+  d5c803c chore(diary): archive old UUID migration + add pilot RESULT
+  a51626f fix(university): 21 university/department/review tables + 5 routers
+  88dc01f fix(reasoning): reasoning tables + router
+  fc6d0ff fix(video): video analytics tables + router
+  83a092c chore(frontend): 99 console.log temizliği
+  c0aa533 fix(ferpa): FERPA/COPPA tables + router
+  8190c65 fix(kvkk): enable kvkk_consent_api and kvkk_privacy_api
+  3b5e688 fix(kvkk): create missing KVKK tables + routers
+  ede451a chore(auth): remove jwt_auth_docker.py + consolidated_auth_dependencies.py
+
+---
+
+## MİGRASYON YAZARKEN ÖĞRENİLEN DERSLER
+1. users.id VARCHAR — tüm user_id FK'lerinde sa.String kullan, UUID değil
+2. user_badges.id VARCHAR — badge FK'lerinde de sa.String
+3. video_watch_sessions.id UUID — bu FK'de UUID kullanılabilir
+4. sub_problems.id UUID — ama bu tablo reasoning_api'ye ait, productive_failure_api'ye DEĞİL
+5. sa.Enum(create_type=False) SQLAlchemy'de çalışmıyor — enum kolonları için sa.String kullan
+6. DO $$ BEGIN CREATE TYPE ... EXCEPTION WHEN duplicate_object THEN NULL; END $$; enum oluşturmak için güvenli
+7. Container'da /app/alembic/versions/ yazma izni yok — migration dosyalarını lokalde yaz, docker cp ile kopyala
+8. PowerShell here-string (@'...'@) ile dosya oluştur veya Desktop Commander write_file kullan
+9. **Alembic drift pattern'i**: tablolar fiziksel var ama revision graph'ta yok — diary pilotunda görüldü, taze DB için ayrı migration stratejisi gerekli
+10. **`alembic_version` kolonu 32 char sınırlı** — `revision = "..."` ID'si 32 karakteri geçmemeli, aksi halde truncate olur ve zincir kırılır
+11. **Migration ≠ Deploy** (D-12): migration dosyasını repo'ya eklemek yeterli değil. Container'a `docker cp`, `.pyc` temizleme, `restart`, `grep` ile doğrulama zinciri **zorunlu**. Smoke test deploy olmadan asla "PASS" demez
 
 ---
 
@@ -226,101 +336,87 @@ Son commit zinciri (push bekliyor — `60d4db5` + `ac2dee5` + bu briefing v18 co
 - `f05e5d6` chore: archive superseded migration + add behavior test doc *(28 Nis Pist 3)*
 - `36549f9` prepilot M1+S1+M2 (28 Nis, soru_hash + MRQ + staging)
 
-Origin/master: 2 commit ileri (`60d4db5` + `ac2dee5`; bu briefing v18 commit'i sonrası 3 olur). Push v18 ile birlikte atılır.
+### P1 — Teknik borç
+- Auth audit: ~50 mutating endpoint review (IDOR + role check + rate limit + audit log)
+- Router aktivasyonu — 12 router kaldı, sınıflandırma yukarıda. Önerilen sıra:
+  1. `api.offline_sync_api` veya `api.pwa_sync_api` (Aşama B, düşük risk)
+  2. `api.productive_failure_api` (Aşama B, `topic_progress` önkoşulu ile)
+  3. `api.live_session_routes` (Aşama E — SQL tablo adı drift'i önce düzeltilmeli)
+  4. ChromaDB dörtlüsü (Aşama D — ES migrasyon altyapı kararı)
+  5. Expert agents + vision (Aşama D — deploy altyapısı)
+  6. Revolutionary features + team challenges (Aşama E — endpoint haritalama)
+- **Alembic drift stratejisi** (A/B/C): diary için pilot ertelendi, genel karar bekliyor
+- **Kategori bug'ı**: `ROUTER_CATEGORIES`'e `"search"` eklemek veya mapping'i düzeltmek
+- Frontend 14 kalan console.log (meşru, temizlik gerekmez)
 
-**Untracked: yok** — tüm WIP dosyaları commit zincirine girdi (`5f89ad4` + `ac2dee5`).
-
----
-
-## AÇIK PİSTLER (28 Nis devir notu)
-
-### Pist 1 — M3 / İçerik Pipeline — DEVAM (pilot script yazımı bekliyor)  **[ASIL İŞ]**
-Tamamlandı:
-- Plan v1.2.1 (`.cursor/plans/20260427_icerik_pipeline_v1_2.md`, commit `a16826f`+`5f89ad4`)
-- Pre-pilot M1+S1+M2 PASS (commit `36549f9`, head `prepilot_m2_indexes_20260428`)
-- M3 iskelet v1.0 (commit `5f89ad4`) → v1.1 (commit `60d4db5`, 7 karar K-M3-1...7 KAPALI, 3 değişiklik)
-
-Sıradaki: Pilot script yazımı (`backend/scripts/pipeline/pilot_500p.py`)
-
-Önce şu dokümanı oku: `.cursor/plans/20260428_pipeline_M3_iskelet.md` (v1.1)
-- §7 Karar Tablosu (KAPALI) — 7 kararın gerekçesi + hangi 3'ü değiştirildi (K-M3-2 async, K-M3-3 pool, K-M3-7 hibrit)
-- §2.3 Modül imzaları + connection notu
-- §3 Conflict policy + pool/transaction notu
-- §4.4 Concurrency × idempotency
-- §6.1 Smoke kabul kriterleri (1a dry-run + 1b host)
-
-Pilot script kısıtları (§7'den, ezberden değil dokümandan):
-- Async + concurrency flag (`--concurrency=N`, smoke=1, 500p=4, prod=8)
-- asyncpg pool (size=concurrency+2), sayfa-başı 1 connection 1 transaction
-- Dry-run flag (`--dry-run`) — DB yazımı yok, JSON çıktı, MCP'de imza testi için
-- Resume flag (`--resume <batch_id>`) — pending+failed sayfaları paralel re-process
-- Model env/flag (`claude-opus-4-7` default)
-
-Sonra: Smoke iki adımda — `--dry-run --concurrency=1` (MCP veya host, imza testi) → `--concurrency=1` host smoke 5-10 sayfa Matematik kitabı → RESULT raporu (`.cursor/plans/<tarih>_pipeline_M3_smoke_RESULT.md`) → PASS ise 500p pilot (`--concurrency=4`).
-
-### Pist 2 — Paket A dead-data cleanup — KAPANDI ✅
-Commit `ac2dee5`. RESULT + state (1132 satır) tracked. PASS — 6 kabul kriterinin tamamı geçti, 6.278 satır pasifleştirildi (`is_active=FALSE`), 148 koruma kuralı tetiklendi (kalibre/havuz/yanıtlanmış kayıtlar korundu), 1 test seed silindi.
-
-### Pist 3 — KAPANDI ✅
-Kök dizin temizliği. Commit `f05e5d6`. 49 path → 8 path.
-
-### Pist 4 — KAPANDI ✅
-CLAUDE.md (v3.6 Karpathy Behavioral Foundation) ve docker-compose.yml (Redis fix kalıcılaştırma) commit + push (28 Nis).
-
----
-
-## DİĞER AÇIK İŞLER
-
-**Bakım**
-- IRT gerçek kalibrasyon: max 5 yanıt/soru, 50 eşiği için organik birikim bekliyor
-- 23 disabled router `[DOĞRULA: liste toplamı 13 düşüyor — eksik 10 router'ın listesi nereden gelir?]`: ChromaDB-bağımlı 4 (P2) + diary_api / live_session_routes / productive_failure_api / expert_agents_api / vision_api / PWA-offline 2 / stub 2 + diğerleri
-- D-Dataset Phase 2+ (YOLO crops, answer matching pipeline) — düşük öncelik (kriz çözüldü, v3.5 production)
-
-**P2**
-- ChromaDB → ES migration (4 router için)
-- TÜBİTAK BİGG başvuru
+### P2 — Planlama
+- TÜBİTAK BİGG başvuru hazırlığı
+- ChromaDB → ES migration (4 router, Aşama D'deki)
 - Risk Map sistemi (orchestrator)
-- Otonom multi-agent sistem (`KIRO2_Tam_Otonom_Sistem_Rehberi.md`, L4-L5 hedef)
+- Gamification, adventure mode, DAG visualization, PWA
+
+### Bakım
+- IRT gerçek kalibrasyon: 236 yanıt/64K soru (50 eşiği gerekli, Celery Pazar 03:00)
+- Educational materials tablosu (admin /content/educational 501 stub)
+- Admin CRUD mock'lar (POST/PUT/DELETE hala mock)
+- Git push yapılmadı — origin'den ~11 commit ileride
 
 ---
 
-## HARD RULES — İHLAL EDİLMEZ
+## BACKEND MİMARİSİ
+main.py → core/application.py → routers/loader.py (141 router ROUTER_MAPPING'de, DISABLED_ROUTERS boş)
 
-1. `questions` tablosu LEGACY → `question_bank` kullan
-2. `emergency_content.sql` DEPRECATED → çalıştırma
-3. `KullaniciServisi` DEPRECATED → `core.database.db_manager.get_session()`
-4. İki PG ayrımı: 5434 native = backend, `kiro2_postgres` container ≠ `kiro2` DB
-5. `ENVIRONMENT=development` (production = crash loop)
-6. `users.id` / `user_badges.id` = VARCHAR → FK'ler `sa.String`
-7. Türkçe SQL: `psql -f` (inline `-c` bozar)
-8. **Onaysız `bash` / `docker exec` / `psql` çalıştırma** (insan döngüsünde pattern; tek istisna: salt-okunur dosya görüntüleme)
+AUTH CIFT MODLU:
+  Bearer header VEYA httpOnly cookie
+  /api/v1/auth/giris       → Bearer token (alan adı: access_token)
+  /api/v1/auth/login/secure → httpOnly cookie set eder
+  /api/v1/auth/refresh/secure → cookie ile yeniler
+
+Celery Beat (8 task):
+  02:00 daily → refresh_daily_plans  |  03:00 Pazar → irt_calibration
+  06:00 daily → daily_coaching       |  08:00 daily → daily_analytics_report
+  09:00 Pzt  → weekly_summary       |  00:00 Pzt  → weekly_league_reset
+  23:00 Pazar → weekly_error_cluster |  00:05 daily → check_birlikte_streaks
 
 ---
 
-## v17 DEĞİŞİKLİK NOTU (v16'dan, 28 Nis 2026)
+## PİLOT ARTIFACT SİSTEMİ (20 Nisan'da kuruldu)
 
-- **Yapı konsolide edildi (B yaklaşımı):** 06 Nis tarihçesi + 21-24 Nis offline_sync 4'lü pilot kronolojisi + v13/v15/v16 değişiklik notları çıkarıldı. Detay arayan: `git log` + `.cursor/plans/`.
-- **DSN parolası düzeltildi:** `postgres` → `1470` (kaynak `claude_desktop_config.json` MCP config; backend authority `.env.mvp`)
-- **PostgreSQL ayrımı netleştirildi:** 5434 native PG18 = `kiro2` (236 tablo, backend) | `kiro2_postgres` container = `kiro2_db` (49 tablo, kullanılmıyor)
-- **question_bank rakamları güncellendi:** 77.401/64.270 → 77.445/57.920 (28 Nis K1_K2_K3 cleanup 6.278 + Esen dedup 1 satır sonrası)
-- **Alembic head:** `diary_drift_recovery_20260422` → `prepilot_m2_indexes_20260428` (commit `36549f9`)
-- **Alembic autogenerate kuralı tersine döndü:** v16 "kalıcı yasak" → artık **izinli**, CLAUDE.md akışı (önce ORM, sonra autogenerate)
-- **Yeni bölüm:** PREPİLOT SCHEMA (`soru_hash`, MRQ, staging tabloları, dedup snapshot)
-- **Yeni bölüm:** ORCHESTRATOR (LangGraph v1.0.5, v2.5.0 STABLE, 24 modül)
-- **Yeni alt-bölüm:** D-Dataset durum (kriz çözüldü, doğru yol, v3.5 production)
-- **Geri eklendi:** Endpoint smoke testi referansı (`scripts\test_endpoints.ps1`)
-- **Pist 3 kapanış commit'i eklendi:** `f05e5d6` (kök dizin 49 → 8 path)
-- **Pist 4 kapatıldı:** CLAUDE.md v3.6 + docker-compose.yml redis fix commit + push (28 Nis batch)
-- **Auth pattern v16'dan korundu:** `access_token` alan adı, `/refresh/secure` endpoint, çift modlu auth
-- **Orphan container listesi netleştirildi:** `kiro2-ollama`, `kiro2_postgres`, `turkiye_sinav_*`
+KIRO2'de router/feature aktivasyon işleri artık "pilot" olarak yürütülüyor. Her pilot 3 dosya üretir:
 
-**`[DOĞRULA]` satırları (lokal makinede teyit edilmeli):**
-- ES doc sayısı (28 Nis cleanup sonrası reindex yapıldı mı?)
-- 23-27 Nis arası commit hash listesi (briefing'de yakın commit özeti için)
-- Celery beat alt 6 task (`daily_coaching`, `daily_analytics_report`, `weekly_summary`, `weekly_league_reset`, `weekly_error_cluster`, `check_birlikte_streaks`) — v16'dan taşındı, hâlâ aktif olduğu doğrulanmadı
-- 23 disabled router sayısı: liste toplamı 13 düşüyor, eksik 10 router'ın listesi nereden gelir?
-- 236 tablo sayısı (28 Nis cleanup sonrası post-state teyidi yapılmadı; cleanup yalnız satır pasifleştirme olmalı, tablo sayısı değişmemeli)
-- `30_DERSLER.md` / `40_OPEN_DEBTS.md` / `50_KARARLAR.md` ardışık doküman zinciri hâlâ duruyor mu? v17'de referansı isteniyorsa eklenir.
+```
+.cursor/plans/YYYYMMDD_<name>.md          ← Plan (pilot öncesi)
+backend/_pilots/YYYYMMDD_<name>_state.md  ← ADIM 0 durum tespiti çıktısı
+.cursor/plans/YYYYMMDD_<name>_RESULT.md   ← Pilot sonrası rapor
+```
+
+Pilot pattern'i (tüm router aktivasyonları için):
+1. **ADIM 0** — Gerçek durum tespiti (psql + docker logs + loader kontrolü). Kod dokunma.
+2. **Aşama kararı** — A/B/C/D/E sınıflandırması, insan onayı.
+3. **Arşivle** — Eski `.disabled` migration'ları varsa `_archive/`'a taşı.
+4. **Migration yaz** (varsa gerekli) — Pattern: `20260406_uni_dept.py`. Lokalde yaz, sonra `docker cp`.
+5. **Staging deploy** — dry-run SQL preview, sonra gerçek upgrade. İnsan elle.
+6. **Loader güncelle** — Sadece gerekirse (DISABLED_ROUTERS'a dokunma, boş tut).
+7. **Runtime smoke** — Auth + endpoint testleri.
+8. **Commit + rapor** — Kapsam dar tut, hook'suz amend ile `Made-with: Cursor` footer atla.
+
+### Composer 2 × Pilot İş Bölümü
+- ✅ Composer 2'ye: terminal sorguları, dosya taşıma, migration yazımı (pattern'den), smoke testler, rapor üretimi
+- ❌ İnsan: backup alma, `alembic upgrade`, `git push`, aşama kararı, kapsam genişletme
+
+### Prior Knowledge Pattern
+Yeni pilot açarken Composer 2'ye verilecek prompt:
+```
+@.cursor/plans/<yeni_plan>.md — uygula
+Prior: backend/_pilots/ dizinindeki önceki _state.md dosyalarını oku.
+Aynı ortamdaki tespitleri tekrar sorma (users.id VARCHAR, DISABLED_ROUTERS boş vs).
+```
+
+---
+
+## ENV UYARILARI
+ENVIRONMENT=production → CRASH (postgres sifresi + localhost CORS reddedilir)
+Simdilik development modda kal. .env.mvp tek kaynak.
 
 ---
 
@@ -331,154 +427,54 @@ CLAUDE.md (v3.6 Karpathy Behavioral Foundation) ve docker-compose.yml (Redis fix
 - **GİT DURUMU güncellendi:** Yeni commit'ler (`60d4db5` M3 v1.1, `ac2dee5` Paket A) zincire eklendi. Untracked listesi → "yok" (tüm WIP commit'lendi).
 - **Yeni sohbet için signal:** Pilot script yazımı bu sohbette başlatılmadı (context budget korundu); yeni sohbet açıldığında Pist 1 talimatları doğrudan pilot script yazımına yönlendiriyor.
 
-**Sohbet özeti (28 Nis akşam, bu sohbet):**
-1. Briefing/memory drift teyidi (canlı sistem doğrulama, 5 nokta hepsi memory ile uyumlu çıktı)
-2. M3 iskelet §7 7 kararı tartışıldı (K-M3-1...7) — 3 değişiklik (K-M3-2 sync→async, K-M3-3 per-batch→pool, K-M3-7 saf MCP→hibrit), 4 doküman önerisi kabul
-3. M3 iskelet v1.0 → v1.1 patch'lendi + commit (`60d4db5`)
-4. Paket A RESULT + state commit'lendi (`ac2dee5`)
-5. Briefing v17 → v18 patch'lendi (bu commit)
+---
 
-**Sıradaki sohbete iş:** Pilot script yazımı (`backend/scripts/pipeline/pilot_500p.py`) — Pist 1 talimatlarına göre.
+## ROUTER AKTİVASYON PATTERNİ (eski v12 pattern'i, güncellendi)
 
+**Artık doğrudan bu pattern'i uygulama.** 20 Nisan itibariyle pilot-based yürütüm standardı (yukarıdaki "PİLOT ARTIFACT SİSTEMİ" bölümü). Ama hızlı referans için adımlar:
+
+1. Model dosyasını oku: docker exec kiro2-backend bash -c "grep '__tablename__' /app/models/MODEL.py"
+2. Eksik tabloları bul (önce DB'de var mı bak):
+   psql -c "SELECT table_name FROM information_schema.tables WHERE table_name IN (...);"
+3. FK tiplerini kontrol et: users.id=VARCHAR, diğer tablolar karışık
+4. Migration yaz (lokalde, gerekirse): backend\alembic\versions\YYYYMMDD_isim.py
+   - Enum'lar için sa.String kullan
+   - user_id FK'leri için sa.String kullan
+5. Deploy: docker cp → alembic upgrade head (İNSAN yapar, Composer 2'ye verme)
+6. **DISABLED_ROUTERS'a dokunma** — set boş, dokunursa accidental re-disable riski
+7. docker cp (değiştiyse) → pyc temizle → restart → log kontrol
 
 ---
 
-## Session 87 — 1 Mayıs 2026 (M3 manuel-OCR pipeline + W4r workflow)
-
-**Commit:** `d79a76e` "M3 manuel-OCR pipeline: 27 soru INSERT + W4r workflow + kalibrasyon"
-
-### YAPILANLAR
-
-**INSERT batch'leri** (claude_opus_4_7_v1 havuzu: 0 → 49 aktif):
-
-| Topic | Batch | Sayfa | Adet | osym_year |
-|---|---|---|---|---|
-| TUR.ANL | Test 3 K.O.3 | 10-11 | 11 | 1×2022 |
-| TUR.ANL | Test 4 K.O.4 | 12-13 | 11 | 0 |
-| TUR.ANL | ÖSYM Tadında 1 | 14-15 | 8 | 1×2025 |
-| TUR.ANL | **ÖSYM Tadında 2** | 16-17 | 8 | 1×2023 |
-| TUR.PAR | Aromat Den.02 (migrate) | — | 11 | 11× (2019-2023) |
-
-Toplam: TUR.ANL=38, TUR.PAR=11. ÖSYM yıl-işaretli: 14/49.
-
-**Migration:** Aromat 11 satır TYT-TR-03 → TUR.PAR (audit izli `pipeline_metadata.topic_migrated_from`).
-
-**Workflow değişikliği — W4r:**
-- Tam-sayfa thumbnail YASAKLANDI (15/19 OCR hatası kök-nedeni)
-- Default: sol+sağ yarı zoom (2x LANCZOS, q=88, long_edge=1568)
-- Pre-INSERT pixel-onay zorunlu (yüksek-risk 2-3 soru, Hüseyin onayı)
-- ÖTS 2 batch'i ile pratik test geçildi (8/8 başarılı, 0 hata)
-
-**Yeni dokümanlar:**
-- `kitap_crop_coords.json`: kitap-bazlı crop kalibrasyon kayıt (5 kitap analizi, 1 kalibre)
-- `CLAUDE.local.md` (gitignore'da, lokal): Manuel-OCR Pipeline Workflow (W4r) + Kitap-bazlı crop kalibrasyonu prosedürü
-
-**Schema gerçeği keşfedildi:**
-- `pipeline_metadata` = `json` (jsonb DEĞİL)
-- UPDATE/merge'de `::jsonb` cast şart (`||`, `?` operatörleri jsonb-only)
-- INSERT'te psycopg2 `extras.Json()` adapter sorunsuz
-
-### W4r METRİKLER (ÖTS 2 batch'inde gerçek)
-
-| Metrik | Hedef | Gerçek |
-|---|---|---|
-| Image MCP çağrı | 6-8 | 7 |
-| INSERT hatası | <%1 | 0 |
-| Pre-INSERT pixel-onay | Zorunlu | ✓ S1, S3, S4 |
-| Post-INSERT dbhub doğrulama | ✓ | 8/8 |
-
-### AÇIK İŞLER
-
-- **ÖSYM Tadında 3** (s.18-19, ~8 soru) — sıradaki natural batch (cevap anahtarı: 1.D 2.C 3.C 4.C 5.C 6.A 7.E 8.C, dbhub'dan görüldü)
-- 345 Türkçe Test 1 + Test 2 (s.6-9, 21 soru) — eksik K.O. testleri
-- ÖSYM Tadında 4-6 (sözcükte anlam başlığında 5 test daha)
-- Sözcükte Anlam komple bitince → Cümlede Kavramlar / Deyim Atasözü vs.
-- 5 batch sonra W4r yeniden değerlendirme (hata oranı eşik testi)
-- Diğer kitaplar (ACİL Geometri, Aromat Paragraf, Aktif Öğrenme Fizik, 345 AYT Kimya) için kalibrasyon — `kitap_crop_coords.json` "kalibre_edilmemis" listesinde
-
-### SIRADAKİ SOHBET İÇİN
-
-Pist: ÖSYM Tadında 3 batch'i (s.18-19) — W4r workflow'u zaten kalibre 345 Türkçe için, doğrudan başlanabilir.
-
-Akış:
-1. `kitap_crop_coords.json` kontrol (kitap kalibre ✓)
-2. p18+p19 sol+sağ yarı zoom (4 image)
-3. OCR + sözlük/gramer/eser-adı/numaralı kontroller
-4. Cevap anahtarı pixel-doğrulama (s.432, ÖTS 3 satırı)
-5. INSERT script (şablon: insert_345_osym_tadinda_02_sozcukte_anlam.py)
-6. Pre-INSERT pixel-onay (yüksek-risk 2-3 soru)
-7. INSERT + dbhub post-doğrulama
-
-Cache klasörleri (temizlenebilir): `_tmp_test4_ocr/`, `_tmp_test5_ocr/`, `_tmp_ots2_ocr/`, `_tmp_crop_analysis/`
-
-
+## TEST SCRİPTİ
+C:\Users\husey\kiro2\scripts\test_endpoints.ps1
+Calistir: powershell -ExecutionPolicy Bypass -File scripts\test_endpoints.ps1
 
 ---
 
-## Session 88 — 3 Mayıs 2026 (M3 pipeline quality gate + Layer 3 fallback)
+## v15 DEĞİŞİKLİK NOTU (v13'ten, 24 Nisan)
+- Tarih 20.04 → 24.04, versiyon v13 → v15 (v14 sessiz: gün içi tutulan ara taşlak)
+- Alembic head `student_review_drift_001` → `offline_sync_pkg_20260420`
+- `offline_sync_packages` tablo şeması + endpoint davranışları Kritik Kolon Adları'na eklendi
+- `answered_at` ISO-8601 zorunluluğu (Round 2'de keşfedildi, plan'da yoktu)
+- `sync-package?limit=N` deterministik olmayan davranış (K-2 açık karar)
+- Alembic revision ID 32 char sınırı (Lesson 10)
+- Migration ≠ Deploy dersi (D-12, Lesson 11)
+- 21-24 Nisan offline_sync dörtlü pilot kronolojisi
+- 24 Nisan Claude Desktop §1.9 dersi
+- Açık kararlar bloku (K-1 state.md yol, K-2 limit bug, K-3 container durumu)
+- Git durumu 5008ab6 HEAD, origin fb18866 (10 ileri, hijyen 11 yapacak)
 
-**Commit:** `acd6049` "M3 pipeline fix: quality gate (Layer 3 fallback) + pilot_500p ilk seri"
-
-### YAPILANLAR
-
-**Pilot çalıştırma (50 sayfa AYT Matematik, sayfa 50-99):**
-- Süre: 17.5 dk, concurrency=4
-- 45/50 sayfa başarılı, 238 soru staging'e
-- 5 sayfa NULL correct_answer yüzünden DB constraint patladı (~25 soru kayıp)
-
-**Kök neden analizi:**
-- Vision model şekilli/grafik sorularda `correct_answer` çıkaramıyor → JSON'da `null`
-- `staging.correct_answer NOT NULL` → sayfa rollback → vision çıktısı tamamen kayboluyor
-- M3 plan §6 niyeti "flag + devam" idi ama implementasyon eksikti
-
-**3 katmanlı fix:**
-1. **DB schema:** `question_bank_staging.correct_answer` NOT NULL kaldırıldı
-2. **DB schema:** `manual_review_queue.old_question_id` NOT NULL kaldırıldı (yeni use-case: "yeni soru, eskisi yok")
-3. **Kod:**
-   - `validate_page`: `correct_answer` invalid → `needs_manual_review=True` (tutarlılık)
-   - `resolve_conflict`: kalite gate eklendi (NULL/invalid CA → Layer 3'e zorla)
-   - `apply_decision` + `_staging_to_mrq`: `old_question_id` None geçişi
-
-**End-to-end doğrulama:**
-- Eksik 3 sayfa retry (s.66, s.85, s.90) — hepsi başarılı, L3=14 toplam
-- Sayfa 63 ilk smoke + 61'in retroaktif resolve+apply
-- Toplam 274 soru staging'de (0 kayıp), 24 soru manual_review_queue'da quality_gate ile
-
-### PİPELİNE NİHAİ TABLO (50-sayfa AYT Mat)
-
-| Metrik | Değer |
-|---|---|
-| İşlenen sayfa | 49/50 (s.97 boş) |
-| Toplam staging | 274 |
-| L1 validated | 246 |
-| L2 conflict_replaced | 4 |
-| L3 conflict_kept_old | 24 |
-| pending (kayıp) | 0 |
-| MRQ quality_gate (NULL old_question_id) | 24 |
-
-**Reason etiketi:** `quality_gate:correct_answer=None,needs_review=True`
-
-### YENİ DOSYALAR
-
-- `fix_staging_correct_answer_nullable.sql`
-- `fix_mrq_old_question_id_nullable.sql`
-- `backend/scripts/pipeline/pilot_500p.py` (M3 v1.2.1, 1454 satır — Session 87 öncesi committed değildi)
-- `backend/scripts/pipeline/crop_preprocessor.py` (yayınevi-bazlı crop)
-
-### AÇIK İŞLER
-
-- **Manual review akışı**: 24 satır kuyrukta, correct_answer manuel doldurulup question_bank'e taşınmalı (offline iş)
-- **Yayinevi-bazlı crop kalibrasyonu** (Session 87 W4r): 5 kitap "kalibre_edilmemis" listesinde
-- **345 Türkçe** Sözcükte Anlam batch'leri (Session 87): ÖSYM Tadında 3-6, Test 1+2 eksik
-- **AYT Matematik 100-500 sayfa**: pilot devam ettirilebilir (M3 sec.6 smoke kabul kriterleri karşılandı, prod-scale onaylı)
-- **resolve_conflict kalite gate testi**: smoke test yarım kaldıysa retro-resolve helper script (`session88_retroactive_resolve.py` benzeri) gelecek seansta yazılabilir, ama mevcut çözüm yeterli
-
-### SIRADAKİ SOHBET İÇİN
-
-**İki paralel pist:**
-
-1. **AYT Matematik pilot devam (büyük ölçek)**: sayfa 100-500, concurrency=4, ~3 saat tahmini, ~2000+ soru
-2. **345 Türkçe içerik (küçük ölçek, manuel-OCR W4r)**: ÖSYM Tadında 3 (s.18-19, 8 soru, ~35 dk)
-
-`KIRO2_SESSION_BRIEFING.md` v20 commit'lendiğinde bağlam tam aktarılmış olur.
-
+## v13 DEĞİŞİKLİK NOTU (v12'den, referans)
+- Tarih 06.04 → 20.04, versiyon v12 → v13
+- Token alanı `.token` → `.access_token` (diary pilotunda tespit)
+- Alembic head `20260406_uni_dept` → `student_review_drift_001`
+- "13 disabled router" bloğu kaldırıldı, yerine Aşama A/B/C/D/E sınıflandırması (batch ADIM 0 sonucu)
+- `productive_failure_api` bağımlılık notu düzeltildi (question_bank+topic_progress, sub_problems DEĞİL)
+- `live_session_routes` SQL tablo adı drift'i (session_participants vs live_session_participants) eklendi
+- `search` kategori bug'ı eklendi
+- Alembic drift konsepti eklendi (diary pilot dersi)
+- `pwa_sync_api` prefix tutarsızlığı notu (/api/pwa-sync-api)
+- 20 Nisan oturumları bölümü eklendi
+- "PİLOT ARTIFACT SİSTEMİ" yeni bölüm (Composer 2 × KIRO2 iş bölümü)
+- Git durumu + açık konular güncellendi

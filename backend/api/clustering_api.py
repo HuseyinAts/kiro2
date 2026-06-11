@@ -20,12 +20,42 @@ from core.dependencies import (
 )
 from services.concept_clustering_service import (
     ClusteringAlgorithm,
+    HDBSCAN_AVAILABLE,
+    SKLEARN_AVAILABLE,
+    UMAP_AVAILABLE,
     get_clustering_service,
 )
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/clustering", tags=["clustering"])
+
+
+@router.get("/health", summary="Clustering servis saglik kontrolu")
+async def health_check() -> dict[str, Any]:
+    """Clustering servisinin temel calisma durumunu raporla."""
+    try:
+        deps = {
+            "sklearn_available": SKLEARN_AVAILABLE,
+            "hdbscan_available": HDBSCAN_AVAILABLE,
+            "umap_available": UMAP_AVAILABLE,
+        }
+        # K-means temel fonksiyon, digerleri optional degiskenlerdir.
+        healthy = deps["sklearn_available"]
+        return {
+            "status": "healthy" if healthy else "degraded",
+            "service": "concept_clustering",
+            "chromadb_available": True,
+            "dependencies": deps,
+        }
+    except Exception as e:
+        logger.error(f"Clustering health check failed: {e}")
+        return {
+            "status": "unhealthy",
+            "service": "concept_clustering",
+            "error": "Internal error",
+            "chromadb_available": False,
+        }
 
 
 # Request/Response Models

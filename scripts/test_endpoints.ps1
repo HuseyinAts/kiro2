@@ -1,5 +1,7 @@
 $body='{"email":"admin@kiro2.com","password":"Kiro2Beta2026@x"}'
-$t=((Invoke-WebRequest http://localhost:8000/api/v1/auth/giris -Method POST -ContentType "application/json" -Body $body -UseBasicParsing).Content | ConvertFrom-Json).token
+$authJson = ((Invoke-WebRequest http://localhost:8000/api/v1/auth/giris -Method POST -ContentType "application/json" -Body $body -UseBasicParsing).Content | ConvertFrom-Json)
+$t = $authJson.access_token
+if (-not $t) { $t = $authJson.token }
 $h=@{Authorization="Bearer $t"}
 $api = Invoke-RestMethod http://localhost:8000/openapi.json
 
@@ -29,6 +31,10 @@ $targetPaths = @(
   "/api/v1/turkish-nlp-chat/health",
   "/api/v1/notifications/list",
   "/api/v1/search/quick",
+  "/api/v1/search/health",
+  "/api/v1/recommendations/health",
+  "/api/v1/duplicates/health",
+  "/api/v1/clustering/health",
   "/api/v1/yks-roadmap/status"
 )
 

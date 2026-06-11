@@ -24,6 +24,21 @@ async def _monitoring_test_user() -> AuthenticatedUser:
         exp=None,
     )
 
+from core.auth_dependencies import authenticate_user
+from core.dependencies import AuthenticatedUser
+from models.enums_db import UserRole
+
+
+async def _monitoring_test_user() -> AuthenticatedUser:
+    return AuthenticatedUser(
+        id="monitor-test-admin",
+        username="monitor_admin",
+        role=UserRole.ADMIN,
+        email=None,
+        permissions=["*"],
+        exp=None,
+    )
+
 
 # Mock missing modules before importing
 @pytest.fixture(scope="module", autouse=True)

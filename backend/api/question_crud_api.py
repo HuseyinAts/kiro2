@@ -690,7 +690,7 @@ async def search_questions(
             offset=request.offset,
         )
 
-        # Response formatina donustur
+        # Response formatina donustur (auth: get_current_user Depends yukarida)
         questions_data = []
         for q in result["questions"]:
             item: dict[str, Any] = {

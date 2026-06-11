@@ -12,7 +12,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import and_, func, select, text
+from sqlalchemy import select, func, and_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.structured_logger import get_logger
@@ -269,35 +269,6 @@ async def process_sync_results(
             result_count=len(results),
         )
 
-    # Batch fetch all potential questions and FSRS cards in one go to prevent N+1 queries
-    question_ids = [item["question_id"] for item in results if "question_id" in item]
-    
-    questions_map = {}
-    if question_ids:
-        q_result = await db.execute(
-            select(QuestionBankItem).where(
-                and_(
-                    QuestionBankItem.id.in_(question_ids),
-                    QuestionBankItem.is_active == True,  # noqa: E712
-                )
-            )
-        )
-        questions_map = {q.id: q for q in q_result.scalars().all()}
-
-    cards = []
-    if question_ids:
-        from sqlalchemy import or_
-        clauses = [FSRSCard.front_text.contains(qid) for qid in question_ids]
-        card_result = await db.execute(
-            select(FSRSCard).where(
-                and_(
-                    FSRSCard.student_id == student_id,
-                    or_(*clauses)
-                )
-            )
-        )
-        cards = card_result.scalars().all()
-
     for item in results:
         try:
             question_id = item["question_id"]
@@ -387,7 +358,7 @@ def _reject_batch(
 
 def _next_sync_at_iso() -> str:
     # Recommend next sync in ~6 hours
-    next_sync = datetime.now(UTC) + timedelta(hours=6)
+    next_sync = datetime.now(timezone.utc) + timedelta(hours=6)
     return next_sync.isoformat()
 
 
