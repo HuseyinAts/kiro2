@@ -4,6 +4,7 @@ KIRO2 Application Factory
 FastAPI application factory pattern.
 """
 
+<<<<<<< Updated upstream
 import logging
 import os
 from collections.abc import AsyncGenerator
@@ -15,6 +16,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+=======
+import os
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator, Dict, Any
+import logging
+>>>>>>> Stashed changes
 
 from agents import initialize_agents, shutdown_agents
 from core.config import settings

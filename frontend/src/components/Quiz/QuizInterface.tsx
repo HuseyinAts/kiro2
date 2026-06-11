@@ -17,6 +17,7 @@ import {
   TrendingUp,
   Warning,
 } from '@mui/icons-material';
+import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
 import {
   Paper,
   Button,
@@ -36,7 +37,7 @@ import {
 import confetti from 'canvas-confetti';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -93,7 +94,12 @@ interface QuizResults {
   timeSpent: number
   correctCount: number
   incorrectCount: number
+<<<<<<< Updated upstream
   isTimeout?: boolean  // True if quiz ended due to timeout
+=======
+  /** Hata taksonomisi: questionId → ErrorType (sadece yanlış cevaplar) */
+  errorTypes?: Record<string, ErrorType>
+>>>>>>> Stashed changes
 }
 
 export function QuizInterface({
@@ -118,10 +124,15 @@ export function QuizInterface({
   // Immediate feedback state — shows correct/wrong after answering (d=1.29)
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [feedbackCorrect, setFeedbackCorrect] = useState(false);
+  // Error taxonomy — "Neden Yanlış?" metacognition (d=0.69)
+  const [errorTypes, setErrorTypes] = useState<Record<string, ErrorType>>({});
 
   const currentQuestion = config.questions[currentIndex];
   const isLastQuestion = currentIndex === config.questions.length - 1;
   const isFirstQuestion = currentIndex === 0;
+
+  // Ref to avoid stale closure in timer interval
+  const handleSubmitRef = useRef<() => void>();
 
   // Timer effect
   useEffect(() => {
@@ -130,8 +141,12 @@ export function QuizInterface({
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
+<<<<<<< Updated upstream
           // Timeout: submit with timeout flag
           setTimeout(() => handleSubmit(true), 0);
+=======
+          handleSubmitRef.current?.();
+>>>>>>> Stashed changes
           return 0;
         }
         return prev - 1;
@@ -238,7 +253,11 @@ export function QuizInterface({
       timeSpent,
       correctCount,
       incorrectCount: config.questions.length - correctCount,
+<<<<<<< Updated upstream
       isTimeout: timeout,  // Include timeout flag in results
+=======
+      errorTypes: Object.keys(errorTypes).length > 0 ? errorTypes : undefined,
+>>>>>>> Stashed changes
     };
   };
 
@@ -258,6 +277,7 @@ export function QuizInterface({
 
     onSubmit?.(quizResults);
   };
+  handleSubmitRef.current = handleSubmit;
 
   const handleReview = () => {
     setReviewMode(true);
@@ -355,6 +375,47 @@ export function QuizInterface({
             <Alert severity="error" className="mb-4">
               Maalesef testi geçemediniz. Geçme notu: %{config.passingScore}
             </Alert>
+          )}
+
+          {/* Error Type Summary — Hata Dağılımı */}
+          {results.errorTypes && Object.keys(results.errorTypes).length > 0 && (
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <div className="text-sm font-semibold mb-2 text-gray-700">Hata Dağılımı</div>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {(['concept', 'procedural', 'careless', 'knowledge_gap'] as ErrorType[]).map(et => {
+                  const count = Object.values(results.errorTypes!).filter(v => v === et).length;
+                  if (count === 0) return null;
+                  const labels: Record<ErrorType, string> = {
+                    concept: 'Kavram',
+                    procedural: 'İşlem',
+                    careless: 'Dikkatsizlik',
+                    knowledge_gap: 'Bilgi Eksikliği',
+                  };
+                  const colors: Record<ErrorType, string> = {
+                    concept: '#8b5cf6',
+                    procedural: '#f59e0b',
+                    careless: '#6366f1',
+                    knowledge_gap: '#ef4444',
+                  };
+                  return (
+                    <Chip
+                      key={et}
+                      label={`${labels[et]}: ${count}`}
+                      size="small"
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: 11,
+                        backgroundColor: `${colors[et]}15`,
+                        color: colors[et],
+                        borderColor: colors[et],
+                        borderWidth: 1,
+                        borderStyle: 'solid',
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           )}
 
           <div className="flex gap-2 justify-center">
@@ -667,6 +728,14 @@ export function QuizInterface({
                       <MathText inline>{currentQuestion.explanation}</MathText>
                     </div>
                   )}
+                  {/* "Neden Yanlış?" — Metacognition error taxonomy (d=0.69) */}
+                  {!feedbackCorrect && (
+                    <ErrorTypeSelector
+                      questionId={currentQuestion.id}
+                      onSelect={(qId, et) => setErrorTypes(prev => ({ ...prev, [qId]: et }))}
+                      selected={errorTypes[currentQuestion.id]}
+                    />
+                  )}
                 </Alert>
 
                 {/* F8: Error Type Selector — shown after wrong answer */}
@@ -700,8 +769,19 @@ export function QuizInterface({
                     <strong>Açıklama:</strong> {currentQuestion.explanation}
                   </div>
                 )}
+<<<<<<< Updated upstream
                 {/* F19: Mnemonic Hint in review mode */}
                 <MnemonicHint questionId={currentQuestion.id} />
+=======
+                {/* Review modunda da hata türü seçilebilir */}
+                {answers[currentQuestion.id] !== currentQuestion.correctAnswer && (
+                  <ErrorTypeSelector
+                    questionId={currentQuestion.id}
+                    onSelect={(qId, et) => setErrorTypes(prev => ({ ...prev, [qId]: et }))}
+                    selected={errorTypes[currentQuestion.id]}
+                  />
+                )}
+>>>>>>> Stashed changes
               </Alert>
             )}
           </motion.div>
@@ -724,6 +804,9 @@ export function QuizInterface({
             {config.questions.map((q, index) => (
               <Tooltip key={q.id} title={`Soru ${index + 1}`}>
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Soru ${index + 1}`}
                   className={clsx(
                     'w-8 h-8 rounded-full flex items-center justify-center text-xs cursor-pointer',
                     'transition-all duration-200',
@@ -735,6 +818,7 @@ export function QuizInterface({
                     flagged.has(q.id) && 'ring-2 ring-yellow-400',
                   )}
                   onClick={() => setCurrentIndex(index)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCurrentIndex(index); } }}
                 >
                   {index + 1}
                 </div>
