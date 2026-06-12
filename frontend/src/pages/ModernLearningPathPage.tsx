@@ -86,6 +86,8 @@ export function ModernLearningPathPage() {
     studentId,
     studySession,
     streak,
+    selectedSubject,
+    changeSubject,
     startSession,
     endSession,
   } = useLearningPath();
@@ -867,10 +869,24 @@ export function ModernLearningPathPage() {
                     </Box>
                   )}
 
+                  {/* Subject switcher */}
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                    {['matematik', 'fizik', 'kimya', 'biyoloji', 'turkce', 'geometri'].map((subj) => (
+                      <Chip
+                        key={subj}
+                        label={subj.charAt(0).toUpperCase() + subj.slice(1)}
+                        onClick={() => changeSubject(subj)}
+                        color={selectedSubject === subj ? 'primary' : 'default'}
+                        variant={selectedSubject === subj ? 'filled' : 'outlined'}
+                        size="small"
+                      />
+                    ))}
+                  </Box>
+
                   {/* Learning Path Visualizer / Skill Graph */}
                   {pathNodes.length > 0 ? (
                     pathViewMode === 'graph' ? (
-                      <SkillGraphView subject={pathNodes[0]?.title?.split(' ')[0]?.toLowerCase() || 'matematik'} />
+                      <SkillGraphView subject={selectedSubject} />
                     ) : (
                       <ModernLearningPathVisualizer
                         nodes={pathNodes}

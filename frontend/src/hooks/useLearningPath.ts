@@ -48,6 +48,8 @@ export interface UseLearningPathReturn {
   studentId: string | null
   studySession: StudySessionInfo
   streak: StreakInfo
+  selectedSubject: string
+  changeSubject: (subject: string) => void
   loadPath: () => Promise<void>
   reload: () => void
   setCurrentNode: (nodeId: string) => void
@@ -67,6 +69,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
   const [currentNodeId, setCurrentNodeId] = useState<string>('');
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [studentId, setStudentId] = useState<string | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string>('matematik');
 
   // B1: Study session
   const [studySession, setStudySession] = useState<StudySessionInfo>({
@@ -279,6 +282,16 @@ export const useLearningPath = (): UseLearningPathReturn => {
     }
   }, [studentId, createAndLoadPath]);
 
+  /** Change subject → reload learning path for the new subject */
+  const changeSubject = useCallback((subject: string) => {
+    setSelectedSubject(subject);
+    if (studentId) {
+      setLoading(true);
+      setError(null);
+      createAndLoadPath(studentId, subject).finally(() => setLoading(false));
+    }
+  }, [studentId, createAndLoadPath]);
+
   /** Reload path data */
   const reload = useCallback(() => {
     loadPath();
@@ -434,6 +447,8 @@ export const useLearningPath = (): UseLearningPathReturn => {
     studentId,
     studySession,
     streak,
+    selectedSubject,
+    changeSubject,
     loadPath,
     reload,
     setCurrentNode,
