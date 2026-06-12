@@ -16,6 +16,7 @@
 ### ✅ Bu session kapanan takipler
 - **HNSW embedding index (P0)** — `idx_qb_embedding_hnsw` (hnsw, vector_cosine_ops, valid) canlıda kuruldu (2026-06-12, tek-thread build). Planlayıcı kullanıyor (EXPLAIN doğrulandı) → semantik arama full-scan'den ANN'e. Windows parallel-build tuzağı: `.claude/rules/windows-hnsw-build.md`.
 - **Embedding backfill (P1)** — 40,638 eksik embedding üretildi (`scripts/generate_embeddings.py`, Ollama nomic-embed-text, search_document prefix, 9.9dk @67q/s) → **%100 kapsama** (NULL 40,638→0, aktif_null=0, 0 bozuk vektör). HNSW'ye insert-incremental girdi (rebuild YOK, index 551→695MB) — kural canlıda doğrulandı.
+- **DB VACUUM reclaim (P2)** — student_answers 30MB→40kB (`VACUUM FULL`, 0 satır) + bkt_states/alembic_version dead-tuple temizlendi (MCP autocommit ile). ~30MB geri kazanıldı.
 - **Frontend testleri** — yeniden yazıldı, 20/20 geçiyor (eski `learningPathService` mimarisi → cookie-auth).
 - **Subject-switching port** — geri eklendi, SkillGraphView gerçek seçili derse bağlı.
 
@@ -23,7 +24,8 @@
 1. **P1 — aktif havuz judge** (98,361 unverified+pending): LLM judge pipeline, pilot (1K) ile başla. Servis zaten `v_safe_for_beta` ile gated → acil değil. (embedding boşluğu artık YOK → judge'lanınca direkt servise hazır.)
 2. **P2 — düşen master özellikleri:** recover-base 3 frontend dosyasından `DuelMode` + `ErrorClusterCard` düştü (küçük; istenirse portlanır). subject-switching + Fix 5 zaten geri alındı.
 3. **P2 — Option A matview** (`mv_safe_for_beta` + id index + REFRESH): ~256ms→~3ms.
-4. **P2 — DB temizlik** (audit, ölçülü): 3,264 mükerrer aktif; 171MB pipeline_metadata bloat (~150MB budanabilir); student_answers 30MB `VACUUM FULL` (0 satır); 6 qb json→jsonb; 53 tz'siz timestamp; 40 ölü kolon; boş/kullanılmayan tablolar.
+4. **P2 — DB temizlik kalanı** (audit): 3,264 mükerrer aktif (`db_pool_cleanup.py` hazır, dry-run onaylı, apply edilmedi); 171MB pipeline_metadata bloat (~150MB budanabilir — data surgery); 53 tz'siz timestamp; 40 ölü kolon; boş/kullanılmayan tablolar. (VACUUM yapıldı ↑.)
+5. **P2 — json→jsonb ERTELENDİ (ağır):** 6 qb json kolonu (alternative_solutions, misconception_tags, **pipeline_metadata 171MB**, secondary_topics, similar_question_ids, solution_steps). `ALTER COLUMN TYPE json→jsonb` = **tüm tablo (1.4GB) rewrite + 695MB HNSW rebuild** (Windows'ta `SET max_parallel_maintenance_workers=0` ŞART, serving ACCESS EXCLUSIVE kilit). ROI düşük → yeni kurulan HNSW'yi boşa rewrite etmeye değmez. Somut jsonb-indeks ihtiyacında düşük-trafik penceresinde tek ALTER + ORM 6 kolon JSON→JSONB.
 
 ### Notlar
 - **bash sandbox mount güvenilmez** (büyük dosyalarda stale/truncate — osym 1971'de kesik göründü ama host tamdı). Frontend/Python doğrulaması HOST araçları + kullanıcı py_compile/tsc/vitest ile yapıldı.
