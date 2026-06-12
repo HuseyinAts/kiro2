@@ -14,14 +14,16 @@
 - Backend container: Option A deploy edildi (health OK). Dalga 1/2 + frontend dosyaları henüz container'a kopyalanmadı (rebuild'de gelir; kaynak commit'li).
 
 ### ✅ Bu session kapanan takipler
+- **HNSW embedding index (P0)** — `idx_qb_embedding_hnsw` (hnsw, vector_cosine_ops, 551MB, valid) canlıda kuruldu (2026-06-12, tek-thread build). Planlayıcı kullanıyor (EXPLAIN doğrulandı) → semantik arama full-scan'den ANN'e. Windows parallel-build tuzağı: `.claude/rules/windows-hnsw-build.md`.
 - **Frontend testleri** — yeniden yazıldı, 20/20 geçiyor (eski `learningPathService` mimarisi → cookie-auth).
 - **Subject-switching port** — geri eklendi, SkillGraphView gerçek seçili derse bağlı.
 
 ### Açık işler (öncelik sıralı)
-1. **P0 — HNSW embedding index** (2026-06-10 audit'ten): migration `b2f1a9c7d3e4` applied zincirde AMA canlıda **YOK** (sync-stamp atlamış). pgvector + maintenance_work_mem hazır. Tek komut: `CREATE INDEX CONCURRENTLY idx_qb_embedding_hnsw ON question_bank USING hnsw (embedding vector_cosine_ops);`
-2. **P2 — düşen master özellikleri:** recover-base 3 frontend dosyasından `DuelMode` + `ErrorClusterCard` düştü (küçük; istenirse portlanır). subject-switching + Fix 5 zaten geri alındı.
-3. **P2 — Option A matview** (`mv_safe_for_beta` + id index + REFRESH): ~256ms→~3ms.
-4. **P2 — DB temizlik** (audit): 161 boş + 35 eski yedek tablo; json→jsonb (9 qb kolonu); tz'siz timestamp; 7 dup index; 5 remediation backup tablosu (güven periyodu sonrası DROP).
+1. **P1 — 39,496 aktif soruda embedding NULL** (%36, %95'i unverified): üret + `UPDATE` → mevcut HNSW index'e OTOMATİK eklenir (rebuild YOK, insert-incremental; bkz windows-hnsw-build.md). Sonra semantik arama tam kapsar.
+2. **P1 — aktif havuz judge** (98,361 unverified+pending): LLM judge pipeline, pilot (1K) ile başla. Servis zaten `v_safe_for_beta` ile gated → acil değil.
+3. **P2 — düşen master özellikleri:** recover-base 3 frontend dosyasından `DuelMode` + `ErrorClusterCard` düştü (küçük; istenirse portlanır). subject-switching + Fix 5 zaten geri alındı.
+4. **P2 — Option A matview** (`mv_safe_for_beta` + id index + REFRESH): ~256ms→~3ms.
+5. **P2 — DB temizlik** (audit, ölçülü): 3,264 mükerrer aktif; 171MB pipeline_metadata bloat (~150MB budanabilir); student_answers 30MB `VACUUM FULL` (0 satır); 6 qb json→jsonb; 53 tz'siz timestamp; 40 ölü kolon; boş/kullanılmayan tablolar.
 
 ### Notlar
 - **bash sandbox mount güvenilmez** (büyük dosyalarda stale/truncate — osym 1971'de kesik göründü ama host tamdı). Frontend/Python doğrulaması HOST araçları + kullanıcı py_compile/tsc/vitest ile yapıldı.
