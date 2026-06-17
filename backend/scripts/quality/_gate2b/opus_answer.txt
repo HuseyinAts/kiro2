@@ -1,0 +1,277 @@
+=== OPUS BLIND SOLVE — her soru için sadece doğru şıkkı ver (A-E). Anahtar gösterilmedi.
+
+#1 [MATEMATIK]
+  Q: Aşağıdaki ifadelerden hangisi tam bir kare sayıdır?
+  A) 16
+  B) 25
+  C) 36
+  D) 49
+  E) 50
+
+#2 [TURKCE]
+  Q: Paris'teki Eyfel Kulesi, mimarlık alanında pek tercih edilmeyen demirin ön plana çıkması ve dünyada bu türdeki yapıların çoğalmasını sağlayan önemli bir yapıdır. Ancak inşa edilmeye başlandığı dönemde işlevsiz bir nesneyi sadece güzel olması durumunda sanatsal açıdan değerli gören dönemin hâkim anlayışı tarafından estetik tartışmalara konu edilmiştir. Kimi sanatçılar tarafından kara ve dev bir fabrika bacası olarak betimlenmiştir. Hatta Maupassant 'Paris'te onu görmediğim tek yer burası.' diyerek yemeklerini sıklıkla kulenin lokantasında yemiştir. Bütün bu olumsuz görüşlere rağmen Eyfel, anıtsal özelliği ile estetik değerler konusundaki hükümlerin sabit olmadığını ve geleceğin önceden kestirilemeyeceğini gösterip dünyaya egemen olan yeni bir estetik değer kazandırarak o zamana kadar sanata boyun eğmiş olan tekniği estetize etmiştir. Böylece kule; dönemin bazı sanatçılarının düşündüğü gibi sanatın yozlaşmasının değil, değişimi ve yeni kuralları kabul etmesinin bir simgesi hâline gelmiştir.
+
+Bu parçanın yazarının aşağıdakilerden hangisini söylemesi beklenmez?
+  A) Sanat, zamanla evrilip kendine yönelik genel kanıları yıkabilir.
+  B) Bir nesne, işlevselliği gözetilmeksizin sanat olarak kabul edilebilir.
+  C) Sanat eserlerinin inşasında farklı malzemelerden yararlanılabilir.
+  D) Dönemin toplumsal yapısı, mimari dönüşümleri beraberinde getirebilir.
+  E) Çağının ötesindeki yenilikler üretildiği çevreye göre yadırgatıcı olabilir.
+
+#3 [COGRAFYA]
+  Q: Aynı üniversitede okuyan Alper ve Bülent mezun olduktan sonra dil öğrenmek için farklı ülkelere gitmişlerdir. Aralarında telefonda aşağıdaki mesajlaşma geçmiştir. Merhaba Bülent. Nasılsın? İyiyim Alper. Ben de uyumak üzereydim. Saat 02.20 ve günlerden salı Saat farkını unutmuşum. Pardon. Burada saat 22.00 ve günlerden pazartesi Sorun değil Alper. Seni yarın arayayım ben. İyi geceler. İyi geceler. Bu mesajlaşmalara bakılarak Alper ve Bülent'in yaşadığı ülkeler arasında kaç derecelik boylam farkı olduğu söylenebilir?
+  A) 40
+  B) 65
+  C) 90
+  D) 100
+  E) 120
+
+#4 [GEOMETRI]
+  Q: ABC üçgenünde A = 60°, AB = 12 cm, AC = 10 cm olduğunda BC uzunluğu kaç cm'dir?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+#5 [GEOMETRI]
+  Q: ABC üçgenü verilmiştir. ABC üçgeninin alanı 10 cm²'dir. ABD üçgeninin alanı 4 cm²'dir. ABD üçgeninin yüksekliği 2 cm'dir. ABD üçgeninin taban uzunluğu kaç cm'dir?
+  A) 2 cm
+  B) 3 cm
+  C) 4 cm
+  D) 5 cm
+  E) 6 cm
+
+#6 [GEOMETRI]
+  Q: Bir üçgenin açıları toplamı 180° dir. Bu açıların ölçülerinin orani 2:3:4 ise bu üçgenin en uzun kenarının uzunluğu 12 cm ise, üçgenin çevresi kaç cm dir?
+  A) 24 cm
+  B) 30 cm
+  C) 36 cm
+  D) 42 cm
+  E) 48 cm
+
+#7 [MATEMATIK]
+  Q: a, b birer gerçek sayı olmak üzere.
+a - b = 3
+a - |b - a| = 7
+olduğuna göre, a + b toplamı kaçtır?
+  A) 20
+  B) 17
+  C) 13
+  D) 10
+  E) 7
+
+#8 [GEOMETRI]
+  Q: ABC üçgenü verilmiştir. m∠B = 40° ve m∠C = 70° olduğuna göre, m∠A kaç derecedir?
+  A) 30
+  B) 40
+  C) 50
+  D) 60
+  E) 70
+
+#9 [MATEMATIK]
+  Q: Aşağıdaki ifadelerden hangisi tam olarak doğru ifade eder?
+  A) x^2 + 2x + 1 = (x + 1)^2
+  B) x^2 - 2x + 1 = (x - 1)^2
+  C) x^2 + 2x - 1 = (x + 1)^2
+  D) x^2 - 2x - 1 = (x - 1)^2
+  E) x^2 + 2x + 1 = (x - 1)^2
+
+#10 [MATEMATIK]
+  Q: Gerçek sayılar kümesi üzerinde sürekli f fonksiyonunda
+$$ \int_{0}^{4} f(\sqrt{x} + 1)dx = 10 $$
+$$ \int_{1}^{3} f(x)dx = 6 $$
+eşitlikleri sağlanıyor.
+Buna göre, $$ \int_{1}^{3} xf(x)dx $$ integralinin değeri kaçtır?
+  A) 9
+  B) 10
+  C) 11
+  D) 12
+  E) 13
+
+#11 [MATEMATIK]
+  Q: Bir havaalanı otogarı bir kafes şeklinde düzenlenmiş. Her kafesin içinde 4 otobüs bulunur. Otoparkta toplam 160 otobüs bulunmaktadır. Kaç kafes vardır?
+  A) 20
+  B) 40
+  C) 60
+  D) 80
+  E) 100
+
+#12 [GEOMETRI]
+  Q: Dik koordinat düzleminde merkezi M(4, 6) noktası olan çember A(1, 2) noktasından geçmektedir. M merkezli çemberin y eksenini kestiği noktalar B(0, $y_1$) ve C(0, $y_2$) noktalarıdır.
+Buna göre, A(1, 2), B(0, $y_1$) ve C(0, $y_2$) noktalarını köşe kabul eden ABC üçgeninin alanı kaç birimkaredir?
+  A) 3
+  B) 4.5
+  C) 6
+  D) 7.5
+  E) 9
+
+#13 [MATEMATIK]
+  Q: Görge yapılan bir testte 100 öğrenci katıldı. Bu öğrencilerin %20'si erkek ve %80'si kız olup, erkeklerin %50'si ve kızların %40'si A grubunda, kalan öğrenciler ise B grubunda yer aldı. B grubunda kaç öğrenci yer aldı?
+  A) 20
+  B) 25
+  C) 40
+  D) 50
+  E) 60
+
+#14 [MATEMATIK]
+  Q: Dolaylı logaritma kullanarak log_2(16) + log_2(8) + log_2(4) + log_2(2) = ?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+#15 [TURKCE]
+  Q: Dijital, bilişim, internet... Yaşadığımız döneme damga vuran bu kavramların bu denli belirleyici olmalarının başlıca nedenlerinden biri hayatın yalnızca belirli alanlarına değil, hayatın her alanına nüfuz etmeleridir. Söz konusu kavramların ortaya çıkardığı dönüşümün payını elbette posta sektörü de aldı. İletişim kazancının muazzam hızı ve bununla bağlantılı olarak süreçlerin hızlanması, mektup ve belge gibi geleneksel posta hizmetlerinin tercih edilirdiği azaltılmasına daha fazla faaliyet ve karlık alanları aramaya sevk etti.
+
+Bu parçada altı çizili sözü asıl anlatılmak istenen aşağıdakilerden hangisidir?
+  A) Açlara, zorluklara göğüs germe becerisi kazanmak
+  B) Kazanılan hızın artışı onu daha ileriye götürdüğünü düşünmek
+  C) Yaşadığı gelişmelere karşı kaygısız çaresiz kalmak
+  D) Hayattaki değişime gidileceğini önlemeyen duruma gelmek
+  E) Değişimlere karşı dayanayamayacak duruma düşmek
+
+#16 [MATEMATIK]
+  Q: Bir kişinin dişlerine yaptırdığı bir dolgunun ömrü en az 2 sene, en çok 8 senedir.
+
+Art arda gelen üç farklı yılın herhangi bir ayının ilk gününde farklı üç dişine birer dolgu yaptıran bir kişinin tüm dolgularının düşmesi en az x ay, en çok y ay sürmektedir.
+
+Buna göre, x + y toplamı kaçtır?
+  A) 168
+  B) 170
+  C) 172
+  D) 176
+  E) 179
+
+#17 [GENEL]
+  Q: 6. Eski kıta ülkelerinde en çok kullanılan ambalaj materyalleri arasında en fazla yer alan ambalaj materyali hangisidir?
+  A) Karton
+  B) Plastik
+  C) Alüminyum
+  D) Bambu
+  E) Kireç
+
+#18 [MATEMATIK]
+  Q: Dik koordinat düzleminde $3x + 4y - 18 = 0$ doğrusu x-eksenini A(a, 0) noktasında, $3x + 4y - 48 = 0$ doğrusu y-eksenini B(0, b) noktasında kesmektedir.
+Buna göre, E(2, 4), A(a, 0) ve B(0, b) noktalarını köşe kabul eden ABE üçgensel bölgesinin alanı kaç birimkaredir?
+  A) 12
+  B) 18
+  C) 24
+  D) 30
+  E) 36
+
+#19 [MATEMATIK]
+  Q: a + b = 0 olmak üzere x genel bir sayı olmak üzere aşağıdaki eşitliklerin hangisi pozitifdir?
+  A) x^2 - ab
+  B) x^2 + ab
+  C) x^2 - a^2
+  D) x^2 + a^2
+  E) x^2 - a^2 - b^2
+
+#20 [MATEMATIK]
+  Q: Boş bir kağıda yazılan iki sayının;
+• en büyük ortak böleni iki basamaklı AB,
+• ve küçük ortak katı dört basamaklı AB23
+doğal sayısına eşittir.
+
+Buna göre, kağıttaki büyük sayı küçük sayıdan kaç fazladır?
+  A) 620
+  B) 830
+  C) 1300
+  D) 1710
+  E) 2300
+
+#21 [TARIH]
+  Q: Osmanlı devlet ve toplum hiyerarşisinin oluşumunda aşağıdakilerden hangisinin en az etkili olduğu söylenebilir?
+  A) Bireyin aldığı eğitim
+  B) Etnik köken
+  C) Türkçe bilmek
+  D) Sosyoe-konomik faaliyetler
+  E) Din ve mezhep
+
+#22 [MATEMATIK]
+  Q: a, b ve c birer asal sayı olmak üzere,
+a · b + a · c = 28
+olduğuna göre, b · c çarpımının alabileceği değerler
+toplamı kaçtır?
+  A) 78
+  B) 80
+  C) 82
+  D) 84
+  E) 86
+
+#23 [MATEMATIK]
+  Q: Bir ekonomide bir malın elde edilmesi için gerekli olan faktörlerin sayısı 4'tür. Bu faktörlerin her biri için 10 farklı seçeneğe sahip olduğuna göre, bu malın elde edilmesi için kaç farklı seçeneğe sahip olabilir?
+  A) 10
+  B) 40
+  C) 100
+  D) 256
+  E) 1000
+
+#24 [GEOMETRI]
+  Q: 1. Bir dikdörtgenin çevresi 30 cm ve en 5 cm olan dikdörtgenin alanını bulalım.
+  A) 25 cm²
+  B) 30 cm²
+  C) 35 cm²
+  D) 40 cm²
+  E) 45 cm²
+
+#25 [MATEMATIK]
+  Q: x, y ve z sıfırdan farklı birer gerçek sayı olduğuna göre, $\frac{|x|}{x} + \frac{|y|}{y} + \frac{|z|}{z}$ ifadesi kaç farklı değer alabilir?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#26 [GEOMETRI]
+  Q: Bir doğrugensel prizma için verilen bilgiler:
+- Taban dikdörtgendir.
+- Tabanın bir kenarı 6 cm, diğer kenarı 8 cm'dir.
+- Yüksekliği 10 cm'dir.
+
+Bu prizmanın hacmini bulun.
+  A) 240 cm³
+  B) 360 cm³
+  C) 480 cm³
+  D) 600 cm³
+  E) 720 cm³
+
+#27 [MATEMATIK]
+  Q: 10. Bir eşitkenin çözüm kümesi [-2, 2] ise, aşağıdaki ifadelerden hangisi doğrudur?
+  A) x + 2 = 0
+  B) x - 2 = 0
+  C) x^2 - 4 = 0
+  D) x^2 + 4 = 0
+  E) x^2 - 2x = 0
+
+#28 [MATEMATIK]
+  Q: Türkiye'de 1961-1965 yılları arasında yapılan bir demografik araştırmasında, aşağıdaki veriler verildi:
+
+- 1961 yılında nüfus: 52.100.000
+- 1965 yılında nüfus: 56.000.000
+
+Bu dönemde nüfusun değişim oranı kaçtır?
+  A) 10%
+  B) 15%
+  C) 20%
+  D) 25%
+  E) 30%
+
+#29 [SOSYAL]
+  Q: O, insanları karanlıktan aydınlığa çıkaran bir ışık ve ebedî saadetın yolunu gösteren en güzel rehberdir. Dünya ve ahiret mutluluğunun esasları, hak, adalet ve eşitliğin temel prensipleri ve yüksek ahlak ilkeleri ondandır. Onda yer alan emir ve tavsiyelere uyanlar, hem dünyada huzur içinde yaşayacaklar hem de ölüm ötesinde devam edecek olan sonsuz hayatta gerçek mutluluğu kazanmış olacaklardır.
+Bu parçada aşağıdaki İnanç esaslarının hangisi üzerinde durulmuştur?
+  A) Kitaplara iman
+  B) Meleklere iman
+  C) Ahirete iman
+  D) Kaza ve kadere iman
+  E) Peygamberlere iman
+
+#30 [TARIH]
+  Q: Tevhid-i Tedrisat Kanunu ile I. düşünce ve duyguda birleşen bir toplum oluşturmak, II. yerli üreticiyi korumak, III. rejim sorununu ortadan kaldırmak gibi hedeflerin hangisine ulaşılmak istenmiştir?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III

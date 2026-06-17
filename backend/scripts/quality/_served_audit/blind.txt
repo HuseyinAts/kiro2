@@ -1,0 +1,419 @@
+=== SERVED-POOL AUDIT (NO key). Output '#N: <A-E>'.
+
+#1 [MATEMATIK]
+  Q: 1. Bir sayı dizisi, her bir teriminden önceki terimden 2 fazla olup, ilk terimi 3 olan bir geometrik dizidir. Bu dizideki 5. terim kaçtır?
+  A) 15
+  B) 16
+  C) 17
+  D) 18
+  E) 19
+
+#2 [GEOMETRI]
+  Q: Bir dikdörtgenin A(-4, 0), B(0, 0), C(0, 3), D(-4, 3) köşeleri veriliyor. Bu dikdörtgenin çevresi kaç birimdir?
+  A) 14
+  B) 16
+  C) 18
+  D) 20
+  E) 22
+
+#3 [GEOMETRI]
+  Q: ABC üçgenünün köşeleri A(0,0), B(12,0), C(0,3) dir. A(0,0) noktasından geçen, B ve C köşelerini birbirinden ayıran doğru parçasının denklemi nedir?
+  A) y = -1/4x
+  B) y = 1/4x
+  C) y = -1/3x
+  D) y = 1/3x
+  E) y = 1/2x
+
+#4 [MATEMATIK]
+  Q: a doğal logaritma tabanı için verildiğine göre, aşağıdaki ifadelerden hangisi doğrudur?
+  A) logₐ(a) = 1
+  B) logₐ(a²) = 2
+  C) logₐ(a³) = 3
+  D) logₐ(a⁻¹) = -1
+  E) logₐ(a⁰) = 0
+
+#5 [MATEMATIK]
+  Q: a ve b tam sayılar için aşağıdaki ifadeler veriliyor:
+
+P_{a,b}(x) = x^{a} - b^{2} - x
+
+P_{a,b}(a) = a^{a} - b^{2} - a
+
+P_{a,b}(b) = b^{a} - b^{2} - b
+
+a ve b pozitif gerçel sayılar için, P_{a,b} polinomunun aşağıdaki özelliklerinden hangisi doğrudur?
+  A) P_{a,b}(a) = P_{a,b}(b)
+  B) P_{a,b}(a) = P_{a,b}(b) + 1
+  C) P_{a,b}(a) = P_{a,b}(b) - 1
+  D) P_{a,b}(a) = P_{a,b}(b) + 2
+  E) P_{a,b}(a) = P_{a,b}(b) - 2
+
+#6 [SOSYAL]
+  Q: “Çilek” kavramının doğruluğu ya da yanlışlığı diye bir durum söz konusu değildir. Buna karşılık “Çilek kırmızıdır.”, “Çilek güzel kokar.” ve “Çilek lezzetlidir.” gibi ifadeler için doğru ya da yanlış nitelemeleri yapılabilir.
+Bu parçadan aşağıdakilerden hangisine ulaşılamaz?
+  A) Varlık bildiren kavramların doğruluğu ya da yanlışlığı yoktur.
+  B) Haber bildiren yargılar doğru ya da yanlış olabilir.
+  C) İddia dile getiren yargıların doğruluğu veya yanlışlığı olabilir.
+  D) Doğruluk ve gerçeklik birbirine indirgenebilir.
+  E) Doğruluk, bilginin nesneye uygunluğudur.
+
+#7 [MATEMATIK]
+  Q: A ve B iki nokta arasındaki uzaklığı hesaplamak için hangi formül kullanılır?
+  A) a = b + c
+  B) a = b - c
+  C) a = b × c
+  D) a = √(b² + c²)
+  E) a = b ÷ c
+
+#8 [EDEBIYAT]
+  Q: 1-2. yüzyıl Osmanlı İmparatorluğu'nda en önemli devlet görevlisi kimdir?
+  A) Mehmed Han
+  B) Mehmed Fatih
+  C) Osman Gazi
+  D) Yavuz Sultan Selim
+  E) Osman Bey
+
+#9 [EDEBIYAT]
+  Q: Aşağıdaki hamselik eşyalarından hangisinin hangi özelliğine verilen bilgi ile uygun değildir?
+  A) Furkan: Mavi, Yeşil, Pembe, Karmen
+  B) Kutu: Tavşan, Kedi, Köpek, Sıçrayan
+  C) Kuş: Kuşkuşu, Kızılcık, Kızılcıkkuşu, Kızılcıkkuşu
+  D) Bebek: Evi, Yatağı, Bebek odası, Bebek odası
+  E) Saat: Saat, Saat, Saat, Saat
+
+#10 [GEOMETRI]
+  Q: ABC üçgenünde, (BC) = 10 cm, (AB) = 13 cm, (AC) = 15 cm. Yanak açıların vertexleri göre, x kaç cm'dir?
+  A) 10
+  B) 12
+  C) 13
+  D) 14
+  E) 15
+
+#11 [TURKCE]
+  Q: Zurun adı: Allahgazi. Bu isim neye atıfta bulunur?
+  A) Bir asker
+  B) Bir şair
+  C) Bir şair ve bir asker
+  D) Bir şair ve bir imam
+  E) Bir şair ve bir hukukçu
+
+#12 [TURKCE]
+  Q: 1. Bu tespitler, tıkanık yapıştırıcı olarak kullanılır. Hangi tıkanık yapıştırıcıdır?
+  A) A) Silikon
+  B) B) Klorür
+  C) C) Klorür
+  D) D) Klorür
+  E) E) Klorür
+
+#13 [GEOMETRI]
+  Q: 1. Yarışta iki sporcunun gergin bir rekabeti oluyor. Bir sporcunun 10 kg'lık bir ağırlığı olan ve 1000 m'lik bir mesafeyi 20 saniyede koşması durumunda, diğer sporcunun 8 kg'lık bir ağırlığı olan ve aynı mesafeyi 25 saniyede koşması durumunda, hangi sporcunun daha hızlı koşmuş olur?
+  A) Açıklamalı
+  B) Birinci sporcudur
+  C) İkinci sporcudur
+  D) İkisinde bir fark yoktur
+  E) Verilen bilgiler yeterli değildir
+
+#14 [KIMYA]
+  Q: Tübaçın formülü verilen iki bileşenin birleşimi için, aşağıdaki hangisi doğru?
+  A) CH₃-CH₂-OH
+  B) CH₃-CH₂-CH₂-OH
+  C) CH₃-CH₂-CH₂-CH₂-OH
+  D) CH₃-CH₂-CH₂-CH₂-CH₂-OH
+  E) CH₃-CH₂-CH₂-CH₂-CH₂-CH₂-OH
+
+#15 [MATEMATIK]
+  Q: Kavram Test 2
+CEBİREL İFADELERDE BÖLME İŞLEMİ
+
+Rational ve real sayılar egrilerinden hangileri?
+  A) $y = x^2$
+  B) $y = x^3$
+  C) $y = x^4$
+  D) $y = x^5$
+  E) $y = x^6$
+
+#16 [TURKCE]
+  Q: Eğer deniz seviyesinden deprem merkezi yüksekliği 1000 m, deniz seviyesinden deprem merkezi yüksekliği 2000 m ise, deprem merkezi yüksekliği 1500 m olan bir depremin deprem merkezi yüksekliği kaç m'dir?
+  A) 1000
+  B) 1250
+  C) 1500
+  D) 1750
+  E) 2000
+
+#17 [MATEMATIK]
+  Q: Doğru açısal ölçümü gösteren periyodik fonksiyonun grafiği hangisidir?
+  A) Şekil 1
+  B) Şekil 2
+  C) Şekil 3
+  D) Şekil 4
+  E) Şekil 5
+
+#18 [GEOMETRI]
+  Q: Bir dairesel tabanlı silindirin yüksekliği 10 cm'dir. Silindirin taban yarıçapı 5 cm'dir. Silindirin hacmi kaç cm³'dür?
+  A) 157 cm³
+  B) 314 cm³
+  C) 785 cm³
+  D) 1570 cm³
+  E) 3140 cm³
+
+#19 [MATEMATIK]
+  Q: Doğal sayılarla ilgili aşağıdaki ifadelerden hangisi doğrudur?
+  A) Her doğal sayının karesi doğal sayıdır.
+  B) Her doğal sayının karesi tam sayıdır.
+  C) Her doğal sayının karesi rasyonel sayıdır.
+  D) Her doğal sayının karesi irrasyonel sayıdır.
+  E) Her doğal sayının karesi gerçek sayıdır.
+
+#20 [TURKCE]
+  Q: Bugün dijital yerlilerle ilgili olarak genellikle mevcut durumun tespiti üzerine çalışmalar yapılmıyor. Fakat bunun ötesini de anlayarak gelecek tasavvuru ona göre şekillendirmemiz gerekiyor. Yarının dünyasını kuracak dijital yerliler sadece sanal "avatarlarını" mutluluğu bir düzlem mi getirecek, yoksa sahip oldukları devasa bilgi birikimi bulundukları evrene yansıtsa daha yaşanabilir bir geleceği mi inşa edecekler?
+
+Bu parçada altı çizili sözle asıl anlatılmak istenen aşağıdakilerden hangisidir?
+  A) Kişinin hayal ettiği şeyleri zihninde canlandırması
+  B) Geçmişte kaçırılmış olduğu fırsatların üzüntüye dönüşmesi
+  C) İnsanın, insandan insana farklılıklarını bilip ona göre davranması
+  D) Gelecek ve geçmiş sıkıntısının insanda çöküntüye sebebiyet vermesi
+  E) Psikolojik olarak çıkmaza girip bunaltma sürüklenmesi
+
+#21 [MATEMATIK]
+  Q: ABC üçgenü, ABC üçgeninin çevresi 30 cm ve ABC üçgeninin alanı 12 cm² ise, ABC üçgeninin en uzun kenarının uzunluğu kaç cm'dir?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+#22 [TARIH]
+  Q: 6. NATO'yu kurucuları arasında Rusya'nın bulunduğu bir ülke de dahil etmektedir.
+  A) ABD
+  B) İngiltere
+  C) Türkiye
+  D) Rusya
+  E) Fransa
+
+#23 [KIMYA]
+  Q: A ve Z ile Z' ile gösterilen bazı sayılar ve geçişlerin
+  A) A) 1000 ve 10000
+  B) B) 100 ve 1000
+  C) C) 10 ve 100
+  D) D) 1 ve 10
+  E) E) 0 ve 1
+
+#24 [TURKCE]
+  Q: Akıl almaz bir hızla ilerleyen gen teknolojisi; artık sadece bir araştırma alanı olmaktan çıkıp sağlıkta tüketici ürünlerine, kullandığımız eşyalardan evcil hayvanlarımıza kadar birçok alanda gündelik hayatımıza girmiştir. Bu teknolojinin; daha fazla üretimin yolunu açacağı, beslerin besleyici değerini artırarak dünyanın birçok yerindeki açlık sorununa çözüm getireceği, bazı besinlerin alerjik özelliklerini ortadan kaldıralıcıcağı, besinlere eklenerek ögeleri hastalıklara karşı kolayca bağışıklık sağlayacağı ve üretim maliyetlerini düşürdüğü toplumlarda birçok kesimin besine kolayca ulaşabilmesinin sağlanacağı genetiği değiştirilmiş organizmalar hakkında olumlu görüşler şekillendirir. Olumsuz görüşü savunanlar ise gen teknolojisi ile üretilen besinlerin, toplulda görülen alerjik reaksiyonları arttıracağı, antibiyotiklere dirençli mikroorganizmaların kısa sürede gelişeceği, ekolojik açıdan zaman içinde dünyada genetik çeşitliliğin azaltılacağı, ekonomik açıdan daha da dağılmının artacağı ve özellikle küçük çiftçilerin bundan zarar göreceğini ileri sürmektelerdir.
+
+Bu paragrafta genetik bilimi ile ilgili aşağıdakilerden hangisine değinilmemiştir?
+  A) Gen teknolojisi; bir canlıya, başka bir canlıdan gen aktarılması veya genetik yapıya müdahale ile yeni genetik özellikler kazandırılmasını sağlayan teknolojidir.
+  B) Gen teknolojisi hakkında olumlu düşünen bilim insanlarının yanında olumsuz görüş ileri sürenler de vardır.
+  C) Gen teknolojisi hakkında olumsuz görüşü savunanların, üretim artması sonunda küçük çiftçilerin bundan zarar görecelerini ileri sürmektelerdir.
+  D) Bu bilimin gelişmesini savunanlar ise bu teknolojinin gıdaların besleyici değerini artırarak dünyadaki açlık sorununa çözüm getireceğini düşünmektedirler.
+  E) Sürekli gelişen gen teknolojisi, artık sadece bir araştırma alanı olmaktan çıkıp birçok alanda günlük hayatımıza girmiştir.
+
+#25 [MATEMATIK]
+  Q: Dışarıdan gelen bir dizi 6 sayının toplamı 120'dir. Bu sayılardan en büyük sayının en küçük sayının 3 katı olduğuna göre, en küçük sayı kaçtır?
+  A) 10
+  B) 12
+  C) 13
+  D) 14
+  E) 15
+
+#26 [FIZIK]
+  Q: Laser parçacık 60.000 km/s hızıyla bir taşınan parçacığın üzerine çarparak parçacığın hızını 0.0001 km/s azalttı. Parçacığın hızını azaltan faktörün değeri kaçtır?
+  A) 100
+  B) 1000
+  C) 10000
+  D) 100000
+  E) 1000000
+
+#27 [MATEMATIK]
+  Q: 12. Bir kareli parkta, bir köşeden başlayarak, köşeye doğru ilerleyen bir kişi, her bir köşeden 100 m uzaklıkta bir noktaya gelmektedir. Bu kişi, köşelerden geçen her bir noktaya bir köşegen çizmektedir. Bu köşegenlerin uzunlukları toplamı kaç metredir?
+  A) 400
+  B) 500
+  C) 600
+  D) 700
+  E) 800
+
+#28 [GEOMETRI]
+  Q: Dikdörtgenin alanını bulmak için hangi formül kullanılır?
+  A) a + b
+  B) a × b
+  C) a²
+  D) a + b + c
+  E) a × b + c
+
+#29 [MATEMATIK]
+  Q: Üçgen ABC'nin kenar uzunlukları sırasıyla 3, 4, 5 birimdir. Bu üçgenin bir kenarının uzunluğu 6 birim olan üçgenin çevresi kaç birimdir?
+  A) 18
+  B) 20
+  C) 22
+  D) 24
+  E) 26
+
+#30 [MATEMATIK]
+  Q: 11. Yerleşim yerindeki bir kömür, her gün olduğu gibi bir hafta boyunca 10 tonunun %20'si tüketiliyor. Bu kömür, bir hafta boyunca tüketildiğinde 72 ton kalmıştır. Her gün kömür tüketimi kaç tondur?
+  A) 60
+  B) 65
+  C) 70
+  D) 75
+  E) 80
+
+#31 [SOSYAL]
+  Q: Bir filozofun bir konuda ileri sürdüğü savı, aynı konuda başka bir filozofun ileri sürdüğü savıyla karşıt veya çelişik olabilir. Bunda bir anormallik yoktur. Hatta bu durumu felsefenin doğasında olan bir durumdur. Ancak hiçbir filozof kurduğu kendi sisteminde ileri sürdüğü savlar arasında bir uyumsuzluk, çelişki olmamalıdır. Çelişkili olan sistemlerin filozoflar ve onları dinleyenler nazarında bir değeri yoktur. Bu durum felsefenin doğasına aykırıdır. Bu parçaya göre filozoflar aşağıdakilerden hangisine önem vermelidirler?
+  A) Tutarlı olmaya
+  B) Eleştirel olmaya
+  C) Soru sormaya
+  D) Analiz ve sentez yapmaya
+  E) Bütüncül bakmaya
+
+#32 [TURKCE]
+  Q: Kesinlikle en çetin ve en hassas bir durum olan hangisidir?
+  A) Açık bir gölgeneli
+  B) Kış aylarında kar
+  C) Havaların sıcaklığı sabit
+  D) Hava sivrisineklerin sayısının azalması
+  E) Hava sivrisineklerin sayısının artması
+
+#33 [GEOMETRI]
+  Q: Bir eşkenar üçgenin çevresi 36 cm ise, bu üçgenin bir kenarının uzunluğu kaç cm'dir?
+  A) 12 cm
+  B) 18 cm
+  C) 24 cm
+  D) 36 cm
+  E) 48 cm
+
+#34 [KIMYA]
+  Q: Bir küre, bir dikdörtgen prizma ve bir dikdörtgen tabanlı dik prizma ile birlikte bir kutu içinde yerleştiriliyor. Kürenin yüksekliği 10 cm, dikdörtgen prizmanın yüksekliği 15 cm ve dikdörtgen tabanlı dik prizmanın yüksekliği 20 cm'dir. Kürenin ve dikdörtgen prizmanın yükseklikleri dikdörtgen tabanlı dik prizmanın yüksekliğinden daha az olduğuna göre, bu kutunun yüksekliği en az kaç cm olabilir?
+  A) 30 cm
+  B) 35 cm
+  C) 40 cm
+  D) 45 cm
+  E) 50 cm
+
+#35 [TARIH]
+  Q: Kısa ve uzun voleybol turnuvası düzenlediğinde, kaç kişi voleybol oynayabilir?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+#36 [MATEMATIK]
+  Q: P(x) = (x^2 + 3x + 4) (x + 1) polinomunun köklerini bul.
+  A) x = -1, x = -4
+  B) x = -1, x = -3
+  C) x = -1, x = 4
+  D) x = -1, x = 3
+  E) x = -1, x = 0
+
+#37 [GEOMETRI]
+  Q: Bir üçgenin yüksekliği, dik kenarının iki katıdır. Bu üçgenin dik kenarının uzunluğu 12 cm ise, bu üçgenin alanı kaç cm²'dir?
+  A) 72 cm²
+  B) 96 cm²
+  C) 144 cm²
+  D) 192 cm²
+  E) 288 cm²
+
+#38 [GEOMETRI]
+  Q: ABC üçgeninin iç açılarının ölçülerinin toplamı 180° dir. Bu açıların ölçülerinin toplamı 180° olduğuna göre, A açısının ölçüsü kaç derecedir?
+  A) 30°
+  B) 45°
+  C) 60°
+  D) 90°
+  E) 120°
+
+#39 [MATEMATIK]
+  Q: Her nokta bir rakamı temsil etmek üzere; 125 x xyz işleminin sonucu 65750 olarak verilmiştir. Bir öğrenci yukarıda verilen çarpma işlemini hatalı yaparak bir sonuç bulmuştur. Buna göre, bu öğrenci işlemi doğru yapsaydı bulacağı sonuç kaç olurdu?
+  A) 81500
+  B) 78125
+  C) 70250
+  D) 33125
+  E) 32000
+
+#40 [MATEMATIK]
+  Q: Birbirinden farklı iki sayıdan biri diğerinin 2 katıdır. Bu iki sayının toplamı 120'dir. Bu iki sayının farklı farkı kaçtır?
+  A) 20
+  B) 30
+  C) 40
+  D) 50
+  E) 60
+
+#41 [MATEMATIK]
+  Q: Polinomların köklerini bulmak için kullanılan formül nedir?
+  A) P(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_1x + a_0
+  B) P(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_1x + a_0 = 0
+  C) P(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_1x + a_0 = 1
+  D) P(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_1x + a_0 = 2
+  E) P(x) = a_nx^n + a_{n-1}x^{n-1} + ... + a_1x + a_0 = 3
+
+#42 [GEOMETRI]
+  Q: Bir dik üçgenin bir kenarının uzunluğu 5 cm ve bu kenarın karşısındaki açının ölçüsü 30° ise, bu dik üçgenin hipotenüsünün uzunluğu kaç cm'dir?
+  A) 5 cm
+  B) 5√3 cm
+  C) 10 cm
+  D) 10√3 cm
+  E) 20 cm
+
+#43 [KIMYA]
+  Q: 1. Dışa doğru açılan bir dikdörtgenin bir köşesinin koordinatları (x, y) = (3, 4) ise, dikdörtgenin alanı kaç birimkaredir?
+  A) 12
+  B) 15
+  C) 20
+  D) 24
+  E) 30
+
+#44 [TARIH]
+  Q: Aşağıdaki haritada, çöllerin bazıları ve bazı kırsal alanlar gösterilmiştir. Hangi kırsal alanın çöllerinin en fazla olduğu yerini belirleyiniz?
+  A) Bakır
+  B) Bilinç
+  C) Dünyanın
+  D) Doğal ger
+  E) Jenerel enerji
+
+#45 [MATEMATIK]
+  Q: Bir dikdörtgenin bir kenarı 12 cm ve diğer kenarı 15 cm ise, bu dikdörtgenin çevresi kaç cm'dir?
+  A) 34 cm
+  B) 36 cm
+  C) 38 cm
+  D) 40 cm
+  E) 42 cm
+
+#46 [COGRAFYA]
+  Q: Türkiye'deki doğal ebatların dağılımı hakkında bilgi veren haritayı inceleyiniz ve aşağıdaki soruyu cevaplayınız.
+
+Sorunun doğru cevabı hangisidir?
+  A) A) Türkiye'nin doğusunda en fazla doğal ebat bulunmaktadır.
+  B) B) Türkiye'nin batısında en fazla doğal ebat bulunmaktadır.
+  C) C) Türkiye'nin güneyinde en fazla doğal ebat bulunmaktadır.
+  D) D) Türkiye'nin kuzeyinde en fazla doğal ebat bulunmaktadır.
+  E) E) Türkiye'nin ortasında en fazla doğal ebat bulunmaktadır.
+
+#47 [MATEMATIK]
+  Q: 1. $x^2$-e отношении гром. 12x в какой термин входит?
+  A) A1 - 4x
+  B) B1 - 4x^2
+  C) C1 4x
+  D) D1 4x^2
+  E) E1 4x^3
+
+#48 [MATEMATIK]
+  Q: Aşağıdaki kuvvetlerden hangisinin en büyük olduğu hangisidir?
+  A) 2^3
+  B) 3^2
+  C) 4^1
+  D) 5^0
+  E) 6^(-1)
+
+#49 [EDEBIYAT]
+  Q: Bilgi Sarmal - 2023 - AYT - Edücatif Video Ders Kitabı
+  A) a) Belirli bir zaman diliminde, bir nesne hareket ederken, bu nesnenin konumunun her an için belirli bir değer almasıdır.
+  B) b) Belirli bir zaman diliminde, bir nesne hareket ederken, bu nesnenin konumunun her an için belirli bir değer almasıdır.
+  C) c) Belirli bir zaman diliminde, bir nesne hareket ederken, bu nesnenin konumunun her an için belirli bir değer almasıdır.
+  D) d) Belirli bir zaman diliminde, bir nesne hareket ederken, bu nesnenin konumunun her an için belirli bir değer almasıdır.
+  E) e) Belirli bir zaman diliminde, bir nesne hareket ederken, bu nesnenin konumunun her an için belirli bir değer almasıdır.
+
+#50 [TARIH]
+  Q: 1. Çeşitli çapraz şeritlerle yapılan bir deneyde, bir çapraz şeritin uzunluğu 10 cm'dir. Bu şeritin bir kenarının uzunluğu 4 cm'dir. Çapraz şeritin diğer kenarının uzunluğu kaç cm'dir?
+  A) 2 cm
+  B) 3 cm
+  C) 4 cm
+  D) 5 cm
+  E) 6 cm

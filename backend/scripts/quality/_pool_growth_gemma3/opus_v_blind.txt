@@ -1,0 +1,546 @@
+=== OPUS BLIND SAMPLE — verbal/science disputes (NO answer key) ===
+Solve each. Output one line per #: '#N: <A-E>'.
+
+#1 [KIMYA]
+  Q: Sıcaklık arttıkça tepkime hızının artması;
+I. Tepkime verebilen minimum enerjiye sahip tanecik sayısının artması
+II. İleri yöndeki aktifleşme enerjisinin azalması
+III. Aktifleşmiş kompleks oluşturabilecek tanecik sayısının artması
+hangileri ile açıklanabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#2 [FIZIK]
+  Q: Dalga boyu $3100 \text{ Å}$ ile $6200 \text{ Å}$ arasında olan ışıkların kullanıldığı bir fotoelektrik olayda, deneyde kullanılan metalden elektron koparılabilmesi için kullanılacak metalin eşik enerjisi aşağıdakilerden hangisi olamaz? ($hc=12400 \text{ eVÅ}$)
+  A) $3,6 \text{ eV}$
+  B) $1,5 \text{ eV}$
+  C) $4,5 \text{ eV}$
+  D) $4,0 \text{ eV}$
+  E) $3,1 \text{ eV}$
+
+#3 [KIMYA]
+  Q: $Al_4C_3 + 12H_2O \rightarrow 4Al(OH)_3 + 3CH_4$ denklemine göre $0,5$ mol $Al_4C_3$ bileşiğini tamamen tepkimeye sokmak için kaç gram $H_2O$ gereklidir? (H:1, O:16)
+  A) 9
+  B) 36
+  C) 90
+  D) 108
+  E) 216
+
+#4 [TARIH]
+  Q: Mondros Ateşkes Antlaşması ile ilgili aşağıdaki bilgilerden hangisi yanlıştır?
+  A) Limni Adası'nda imzalanmıştır.
+  B) Damat Ferit Hükûmeti imzalamıştır.
+  C) Osmanlı Devleti'ni Rauf Bey temsil etmiştir.
+  D) Ateşkes'te İtilafian İngiliz General Cathorpe temsil etmiştir.
+  E) 30 Ekim 1918'de imzalanmıştır.
+
+#5 [KIMYA]
+  Q: 0,1 mol $C_nH_{2n+2}$ bileşiğinin mol kütlesi 5,8 gram olduğuna göre n kaçtır? (C: 12 H: 1)
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#6 [KIMYA]
+  Q: $X_2Y$ bileşiğinin kütlece %20'si Y ise bileşikteki elementlerin kütlece birleşme oranı $\frac{m_X}{m_Y}$ kaçtır?
+  A) 2
+  B) \frac{1}{2}
+  C) 4
+  D) \frac{1}{4}
+  E) 5
+
+#7 [FIZIK]
+  Q: Bir kuvvetin bir cisim üzerinde iş yapabilmesi için, cismin kuvvet doğrultusunda hareket etmesi gerekir.
+Buna göre;
+I. Cemil'in yerdeki bir koliyi yukarı doğru kaldırması,
+II. Bir kayakçının dağın zirvesinden kendini serbest bırakarak aşağı doğru hızlanarak kayması,
+III. Sami'nin yerde duran bir kasayı yere paralel olacak şekilde iterek hareket ettirmesi
+olaylarından hangilerinde olaydaki kişi fiziksel anlamda iş yapmıştır?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#8 [KIMYA]
+  Q: $CaO + H_3PO_4 \rightarrow Ca_3(PO_4)_2 + H_2O$ tepkimesinde $Ca_3(PO_4)_2$'nin katsayısı 1 alınarak denkleştirildiğinde $H_2O$'nun katsayısı kaç olur?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 6
+
+#9 [EDEBIYAT]
+  Q: Aşağıdaki eserlerden hangisi Mehmet Emin Yurda-kul'a ait değildir?
+  A) Şarkın Sultanları
+  B) Türk Sazı
+  C) Turan'a Doğru
+  D) Zafer Yolunda
+  E) Tan Sesleri
+
+#10 [KIMYA]
+  Q: Saf olmayan $60 \text{ gram}$ kütlece $%80$ saflıktaki $Mg$ örneği, $Mg_{(k)} + 2HCl_{(aq)} \rightarrow MgCl_{2(aq)} + H_{2(g)}$ denklemine göre tepkimeye giriyor. Buna göre oluşan $H_2$ gazı kaç moldür? $(Mg: 24)$
+  A) 0,5
+  B) 1
+  C) 1,5
+  D) 2
+  E) 2,5
+
+#11 [FIZIK]
+  Q: Eşik enerjisi $3 \text{ eV}$ olan bir metale enerjisi $7 \text{ eV}$ olan fotonlar gönderilerek fotoelektrik etki gerçekleştiriliyor.
+Buna göre;
+I. Metalden $2 \text{ elektron}$ kopar, foton $1 \text{ eV}$ enerji ile metalden uzaklaşır.
+II. Metalden $1 \text{ elektron}$ kopar, foton $4 \text{ eV}$ enerji ile metalden uzaklaşır.
+III. Metalden $4 \text{ eV}$ kinetik enerjili $1 \text{ elektron}$ kopar, foton yok olur.
+durumlarından hangileri gerçekleşebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#12 [KIMYA]
+  Q: Erimiş NaCl tuzunun elektrolizinde devreden 0,2 Faradaylık yük geçtiğine göre, I. Katotta, $Na^+_{(s)} + e^- \to Na_{(k)}$ tepkimesi gerçekleşir. II. Katotta 0,2 mol Na toplanır. III. Anotta, $2Cl^-_{(s)} \to Cl_{2(g)} + 2e^-$ tepkimesi gerçekleşir. yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+#13 [BIYOLOJI]
+  Q: Canlılar arasında akrabalık ilişkilerinde dikkate alınan bazı organların "homolog organ" olarak kabul edilmesinde bu organların hangi özellikleri etkili olmuştur?
+  A) Bulundukları canlılara adaptasyon yeteneği kazandırma
+  B) Hareket organı olma
+  C) Yapı ve kökenleri farklı olduğu hâlde dış görünüş ve görevleri benzer olma
+  D) Farklı canlılarda bulunma
+  E) Yapı ve kökenleri aynı olduğu hâlde dış görünüş ve görevleri aynı ya da farklı olma
+
+#14 [KIMYA]
+  Q: Fonksiyonel grubu olan bileşikler ve bileşiklerin özellikleri ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?
+  A) $CH_3-CH(OH)-CH_3$ bileşiği sekonder alkoldür.
+  B) Eterler polarliği az olduğu için organik maddeler için iyi çözücüdür.
+  C) Aldehitler, ketonlar, karboksilli asitler ve esterler karbonil grubu içerirler.
+  D) Aldehitler indirgendiğinde primer alkol oluşur.
+  E) Etanoik asit ve metil alkolün tepkimesinden etil metanoat oluşur.
+
+#15 [KIMYA]
+  Q: Proton sayısı elektron sayısına eşit olan atomlara ne ad verilir?
+  A) İzotop
+  B) İzoton
+  C) İzobar
+  D) İzoelektronik
+  E) Nötr
+
+#16 [FIZIK]
+  Q: Eşik dalga boyu $\lambda$ olan bir metalden, dalga boyu aşağıda verilen fotonlardan hangisi elektron koparabilir?
+  A) $\frac{\lambda}{4}$
+  B) $\frac{\lambda}{2}$
+  C) $\frac{2\lambda}{3}$
+  D) $\frac{3\lambda}{2}$
+  E) $2\lambda$
+
+#17 [TURKCE]
+  Q: Aşağıdaki cümlelerin hangisinde bir isim tamlaması, başka bir ismi niteleme görevinde kullanılmıştır?
+  A) El işi kazaklar satan bir mağazanın önünde durduk.
+  B) Onların bazılarını lise yıllarımda okumuştum.
+  C) Babamın bana naklettiği anıların hiçbirini hatırlamıyorum.
+  D) Öyle bir hat yazabilmek için hat tekniklerinin birçoğunu bilmek gerekir.
+  E) Dostlarımın pek çoğunu davette görememek bizde şaşkınlığa yol açtı.
+
+#18 [FIZIK]
+  Q: Çocuklar ve hamileler, X - ışınlarına maruz kaldığında bu durumdan olumsuz etkilenebilirken, aynı süre boyunca radyo dalgalarına maruz kaldıklarında, bu durumdan olumsuz etkilenmeyebilirler. Buna göre, X - ışınlarının radyo dalgalarına göre daha fazla olumsuz etkisinin olması X - ışınlarına ait; I. dalga boyu II. frekans III. yük miktarı niceliklerinden hangilerinin, radyo dalgalarına göre daha büyük olmasından kaynaklanır?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#19 [FIZIK]
+  Q: Derinliği sabit olan su leğenindeki aralarında açıklık olan iki engele gelen periyodik ve doğrusal su dalgaları kırınıma uğramıyor. Bu dalgaların kırınıma uğraması için; I. Leğendeki su derinliğini artırma, II. Frekansı öncekinden daha büyük olan su dalgaları kullanma, III. Engellerin açıklığını azaltma işlemlerinden hangileri tek başına yapılabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ya da II
+  D) II ya da III
+  E) I ya da III
+
+#20 [KIMYA]
+  Q: 0,1 M 200 mL KOH çözeltisi ile 0,2 M 300 mL HCl çözeltisi $KOH_{(suda)} + HCl_{(suda)} \rightarrow KCl_{(suda)} + H_2O_{(s)}$ denklemine göre tam verimle tepkimeye girmektedir. Buna göre son durumda karışımdaki $Cl^-$ iyon derişimi kaç molardır?
+  A) 0,03
+  B) 0,06
+  C) 0,10
+  D) 0,12
+  E) 0,24
+
+#21 [KIMYA]
+  Q: Açısal momentum kuantum sayısı ($l$) 1 olan orbitallerle ilgili olarak;
+I. Baş kuantum sayısı 1 olabilir.
+II. Küresel yapılıdır.
+III. Enerjisi 1. katmandaki elektronlardan yüksektir.
+ifadelerinden hangileri yanlıştır?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#22 [KIMYA]
+  Q: Sadece $CH_3CHO$ ile $CH_3COCH_3$ karbonil bileşiklerini içeren 40 g'lık karışım yeterince Tollens ayıracı ($AgNO_3$ sulu çözeltisi ve $NH_3$ sulu çözeltilerinin karışımı) ile tepkimeye girmesi sağlanıyor. Tepkimede 1 mol karbonil bileşiğinden 2 mol Ag katısı oluştuğu biliniyor. %100 verimle gerçekleşen tepkime sonucu 108 g Ag katısı elde ediliyor.
+Buna göre,
+I. Karışımdaki bileşikler birbirinin yapı izomeridir.
+II. Tepkime sonucu oluşan organik bileşik $CH_3COOH$ 'dir.
+III. Karışımdaki $CH_3COCH_3$ bileşiğinin kütlesi 18 g'dır.
+ifadelerinden hangileri doğrudur?
+($CH_3CHO = 44$ g/mol, $CH_3COCH_3 = 58$ g/mol, $Ag = 108$ g/mol)
+  A) Yalnız I
+  B) Yalnız III
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#23 [EDEBIYAT]
+  Q: 16. yy'da Türk divan şiiri, kendi içinde özgünlüğüne kavuşmuştur. Bu yüzyılda Azeri ve Çağatay Türkçesi de önem kazanmıştır. Türkçe, Arapça ve Farsça sözcüklerin terkibi Osmanlı Türkçesi; her türlü duygu ve hayal inceliğini anlatmaya elverişli bir şiir dili hâline gelmiş ve şairlerin gittikçe Türkçeden uzaklaşmalarına yol açmıştır. Bu durumdan kaygılanan bazı şairler, salt Türkçe şiirler yazmaya yönelmişler ve bu yönelim Türkî-i Basit (Sade Türkçecilik) akımına dönüşmüştür. Türk Divan edebiyatında Türkçeciliğin temelleri de bu yüzyılda atılmıştır. 16. yy şairleri arasında ---- sayılabilir. Bu parçada boş bırakılan yere aşağıdakilerden hangisi getirilebilir?
+  A) Hoca Dehhani
+  B) Bağdatlı Ruhi
+  C) Şeyh Galip
+  D) Şeyyat Hamza
+  E) Kecceci İzzet Molla
+
+#24 [COGRAFYA]
+  Q: Türkiye'de yer alan göllerin özellikleri ile ilgili, I. Ülke genelinde dengeli bir dağılıma sahiptir. II. Yükseklikleri, batıdan doğuya doğru genellikle artmaktadır. III. Bazıları taşımacılık yapmaya elverişlidir. IV. Tamamı tektonik aktivitelere bağlı olarak gelişmiştir. ifadelerinden hangileri doğrudur?
+  A) I ve II
+  B) I ve III
+  C) II ve III
+  D) II ve IV
+  E) III ve IV
+
+#25 [BIYOLOJI]
+  Q: J ve S tipi büyüme eğrisine sahip popülasyonlarla ilgili aşağıdakilerden hangisi yanlıştır?
+  A) J tipi popülasyonlarda kaynaklar boldur.
+  B) J tipi popülasyonlarda büyüme hızlıdır.
+  C) J tipi popülasyonlarda ani azalış görülür.
+  D) S tipi popülasyonlarda geometrik artış evresi görülmez.
+  E) S tipi popülasyonlarda büyüme daha yavaştır.
+
+#26 [KIMYA]
+  Q: $3CH_2=CH_2 + 2KMnO_4 + 4H_2O \xrightarrow{Seyreltik NaOH} 3X + 2MnO_2 + 2KOH$
+Yukarıda verilen tepkimeyle ilgili aşağıdaki ifadelerden hangisi yanlıştır?
+  A) X maddesi gliserindir.
+  B) Alkenlerin ayıracı olan Baeyer testinin tepkimesidir.
+  C) Tepkimede renk değişimi olur.
+  D) Tepkimede alken yükseltgenir.
+  E) X maddesi pi bağı içermez.
+
+#27 [COGRAFYA]
+  Q: Coğrafi ortamlarda gerçekleşen aşağıdaki olaylara ait yapılan nitelemelerden hangisi yanlıştır?
+  A) Bir dağ yamacı boyunca yükselen nemli hava kütlesinin yağış bırakması - Doğal ortamda gerçekleşen doğa olayı
+  B) Şehirdeki binaların depremden hasar görmesi - Beşerî ortamda gerçekleşen doğa olayı
+  C) Deniz kıyılarının taş ve topraklarla doldurularak yeni yerleşim alanlarının oluşturulması - Doğal ortamda gerçekleşen beşerî olay
+  D) Seralarda sebze ve meyve yetiştirilmesi - Beşerî ortamda gerçekleşen beşerî olay
+  E) Baraj gölündeki su seviyesinin yağışlarla birlikte yükselmesi - Doğal ortamda gerçekleşen doğa olayı
+
+#28 [FIZIK]
+  Q: Bir kaynak tarafından üretilen dalgaların yayılma hızı V, dalga boyu $\lambda$, frekansı f'dir.
+Buna göre, dalganın hızı iki katına çıkarılırsa dalga boyu ve frekansı nasıl değişir?
+  A) $\frac{\lambda}{2}$, 2f
+  B) $\lambda$, f
+  C) $\lambda$, $\frac{f}{2}$
+  D) 2$\lambda$, f
+  E) 2$\lambda$, 2f
+
+#29 [BIYOLOJI]
+  Q: Bir bitki hücresinde kloroplast organelinin aktivitesine bağlı olarak; I. hücre dışına oksijen verilmesi, II. hücredeki diğer organellerin kullanacağı ATP enerjisinin sentezlenmesi, III. hücreye gerekli organik besinlerin üretilmesi olaylarından hangilerinin gerçekleşmesi beklenmez?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#30 [BIYOLOJI]
+  Q: İnsanlardaki eşeysel bezler tarafından;
+I. testosteron,
+II. FSH,
+III. östrojen,
+IV. progesteron
+hormonlarından hangileri salgılanır?
+  A) Yalnız I
+  B) III ve IV
+  C) I ve III
+  D) I, II ve IV
+  E) I, III ve IV
+
+#31 [TARIH]
+  Q: Cumhuriyetin ilanı ile birlikte, meclis başkanının aynı zamanda hükûmetin başı olduğu ve bakanların meclisin salt oyu ile belirlendiği meclis başkanının TBMM üyelerinden birini başbakan olarak atayıp hükûmeti kurmakla görevlendirdiği Kabine Sistemi'ne geçilmiştir. Buna göre, Kabine Sistemi'ne geçilmesinin, I. devletçilik, II. millî bağımsızlık, III. kuvvetler ayrılığı ilkelerinden hangilerinin benimsenmesi yolunda atılmış adımlardan biri olduğu söylenebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#32 [BIYOLOJI]
+  Q: Etil alkol fermantasyonunda gözlenen
+I. $CO_2$ oluşturma,
+II. ortamı asidikleştirme,
+III. ATP sentezleme
+olaylarından hangileri laktik asit fermantasyonunda da gerçekleşir?
+  A) I ve III
+  B) II ve III
+  C) Yalnız I
+  D) Yalnız III
+  E) I ve II
+
+#33 [TARIH]
+  Q: Türkiye yoğun ısrarlara rağmen II. Dünya Savaşı'na fiilen katılmamıştır. Türkiye'nin II. Dünya Savaşı'na fiilen katılmamış olmasına rağmen savaşın getirdiği ekonomik zorlukları savaşa giren devletler ile beraber yaşamıştır. Türkiye'nin savaşa girmemesine rağmen ekonomik zorluklar yaşamasının nedenleri arasında; I. millî bankaların kurulması, II. okuryazar oranının artması, III. Müttefik grubunun baskısıyla Avrupalı bazı devletler ile ticari bağların kopartılması durumlarından hangileri olduğu söylenemez?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#34 [TURKCE]
+  Q: I. Kar giderek daha derinleşiyor, yol giderek daha tehlikeli olmaya başlıyordu.
+II. Yolcu dağların derinliklerinde, kalın bir kar tabakasıyla kaplı az kullanılan bir patikada tek başına yürüyordu.
+III. Sonunda yolcu soğuğa dayanamayacak hâle geldi ve yere yığıldı. Diğerinin durumunu görünce çok üzüldü.
+IV. Şansı varmış ki aynı yoldan ikinci bir yolcu geçti.
+V. Onu kaldırdı ve kendine getirecek bir şeyler verdi.
+Yukarıdaki numaralanmış cümleler anlamlı bir bütün oluşturacak biçimde sıralandığında hangisi baştan ikinci olur?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#35 [TARIH]
+  Q: Osmanlı Devleti'nin Kuruluş Dönemi'nde uygulanan iskan politikasının;
+
+I. İskan edileceklerin yakın bölgelerden seçilmesi
+II. Aralarında anlaşmazlık olan ailelerden birinin tercih edilmesi
+III. İskan edilen ailelere zirai yardım yapılması
+
+durumlarından hangilerinin kültür çatışmasını engelleme amacı taşıdığı savunulabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#36 [TURKCE]
+  Q: (I) Osman Hamdi Bey, önemli bir ressam olmasının yanı sıra arkeoloji, müzecilik, sanat eğitimi gibi kültür ve sanat alanında pek çok farklı ve öncü roller üstlenmiş, önemli görevlerde bulunmuş çok yönlü bir kişilikti. (II) Bu çok yönlü kişiliği ve bilinmeyen yönleri, çağdaş Türk resim sanatının ve müzeciliğinin öncüsü olarak 50'ye yakın özel eseri sanatseverlerle buluşacak. (III) Sergide yeteneğiyle bugün bile tüm dünyayı kendisine hayran bırakan Osman Hamdi Bey'in paha biçilemez eserleri, hayatı ve yaşadığı dönem, özel olarak tasarlanan gösterim tekniklerinin kullanılacağı dijital ortamda görülebilecek. (IV) Türkiye'de müzeciliğin kurucusu sayılan, Tanzimat Dönemi'nde bilim, sanat, arkeoloji ve müzecilik anlamında büyük atılımlar gerçekleştiren Osman Hamdi Bey, müzeleri kişiliği ve sanata adanmış ruhuyla kendisinden geriye paha biçilemez eserler bıraktı. (V) Osman Hamdi Bey, özellikle Kaplumbağa Terbiyecisi ve Silah Taciri eserleriyle tüm dünyada adından söz ettirdi. (VI) Bu eserleriyle haklı bir üne kavuştu.
+Bu parça iki paragrafa ayrılmak istense ikinci paragraf numaralanmış cümlelerin hangisiyle başlar?
+  A) II
+  B) III
+  C) IV
+  D) V
+  E) VI
+
+#37 [KIMYA]
+  Q: N.K. da 6,72 litre $CO_2$ gazı kaç gramdır? (C: 12 O: 16)
+  A) 4,4
+  B) 8,8
+  C) 13,2
+  D) 88
+  E) 132
+
+#38 [TURKCE]
+  Q: I. Eğer benim ile gitmek dilersen
+Eğlen güzel yaz olsun da gidelim
+II. Adı sanı bilinmedik illere
+Gitmeyince gönül yardan ayrılmaz
+III. Severim güzeli nice olursa
+Boyu uzun, beli ince olursa
+IV. Mecliste arif ol kelamı dinle
+El iki söylüyorsa sen birin söyle
+V. Azrail gelmiş de can talep eyler
+Benim can vermeye dermanım mı var
+Bu dizelerin hangisinde koşul-sonuç ilişkisi yoktur?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#39 [EDEBIYAT]
+  Q: Aşağıdaki açıklamaların hangisi ayraç içinde belirtilen sanatçı ile ilgili değildir?
+  A) Git Bahar, Gel Bahar şairi, "ümmül muharrirat" (yazarların annesi) olarak da bilinir. (Halide Nusret Zorlutuna)
+  B) Eski Korsan Hikâyeleri, Gemiciler'le, Türk denizciliğini şiire getirir. (Enis Behiç Koryürek)
+  C) Feylesof diye bilinen şairin şiirleri, Serab-ı Ömrüm'de toplanır. (Rıza Tevfik Bölükbaşı)
+  D) Türkçü-Turancı şiirlerini, Yolların Sonu adlı kitapla toplamıştır. (Hüseyin Nihal Atsız)
+  E) Ağaç, Büyük Doğu dergilerinde, mistik şiirlere yer verir. (Ahmet Kutsi Tecer)
+
+#40 [BIYOLOJI]
+  Q: Bir bitki hücresinde bulunan kloroplast, mitokondri ve ribozom organelleri için aşağıdaki özelliklerden hangisi ortaktır?
+  A) Nükleik asit taşıma
+  B) ETS bulundurma
+  C) Bölünerek çoğalma
+  D) Zarsız olma
+  E) ATP sentezleyebilme
+
+#41 [KIMYA]
+  Q: 3. periyot 5A grubunda bulunan X elementi için aşağıdakilerden hangisi yanlıştır?
+  A) Temel haldeki elektron dağılımı $1s^2 2s^2 2p^6 3s^2 3p^3$ tür.
+  B) Küresel simetri özelliği gösterir.
+  C) Kararlı bileşiklerinde 3 elektron alarak oktede ulaşır.
+  D) Ametallerle iyonik bağlı bileşik oluşturur.
+  E) Atom numarası 15'tir.
+
+#42 [KIMYA]
+  Q: $4FeS_2 + 11O_2 \rightarrow 2Fe_2O_3 + 8SO_2$ denklemine göre 1,4 mol $FeS_2$ ve 3,3 mol $O_2$ tam verimle tepkimeye giriyor. Buna göre, I. 2,4 mol $SO_2$ oluşur. II. $O_2$ sınırlayıcı bileşendir. III. 0,2 mol $FeS_2$ artar. yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#43 [FIZIK]
+  Q: Bir demir çubuğun geçici mıknatıslık özelliği kazanması için,
+I. Sürtünme ile mıknatıslanma
+II. Etki ile mıknatıslanma
+III. Dokunma ile mıknatıslanma
+yöntemlerinden hangileri kullanılabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#44 [KIMYA]
+  Q: Atom numarası 10 olan bir elementin orbitallerinin $m_s = +\frac{1}{2}$ olan toplam kaç elektronu bulunur?
+  A) 10
+  B) 8
+  C) 5
+  D) 3
+  E) 2
+
+#45 [FIZIK]
+  Q: Kütle çekim alanı ile ilgili, I. Her kütle çekim alanı oluşturur. II. İçinde boşluk olan homojen kürenin içinde çekim alan çizgileri yoktur. III. İçi dolu homojen kürenin yüzeyinde kendi çekim alan çizgileri maksimumdur. yargılarından hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#46 [KIMYA]
+  Q: $2.10^{-4}$ M $CuNO_3$ çözeltisine eşit hacimde $NaBr$ çözeltisi ilave edildiğinde bir çökelme olmaması için $NaCl$ çözeltisinin başlangıç derişimi en fazla kaç molar olmalıdır? ($CuBr$ için çözünürlük çarpımı $(K_{cc}) = 4.10^{-8}$)
+  A) $8.10^{-6}$
+  B) $8.10^{-4}$
+  C) $8.10^{-2}$
+  D) $4.10^{-4}$
+  E) $0.4$
+
+#47 [BIYOLOJI]
+  Q: Aşağıdakilerden hangisi canlıların tepki verdiği çevresel uyaranlardan biri değildir?
+  A) Soğuk hava
+  B) Gürültü
+  C) Ekşi erik
+  D) Yüksek ateş
+  E) Sivri taş
+
+#48 [FIZIK]
+  Q: Etki - tepki kuvvetleri ile ilgili, I. Etki - tepki kuvvetleri aynı cisim üzerine uygulanamaz. II. Etki kuvveti tepki kuvvetine eşittir. III. Etki - tepki kuvvetleri eşit büyüklükte kuvvetlerdir. bilgilerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+#49 [KIMYA]
+  Q: $C_{2}H_{5}OH_{(s)}$, $CO_{2(g)}$ ve $H_{2}O_{(s)}$'nin molar oluşum ısıları sırasıyla $-325$, $-94$ ve $-58$ kkal'dir. $m$ gram $C_{2}H_{5}OH$ sıvısının tamamen yanmasından $7,4$ kkal ısı açığa çıktığına göre, $m$ değeri kaçtır? (Mol kütleleri: $H=1 \text{ g/mol}$, $C=12 \text{ g/mol}$, $O=16 \text{ g/mol}$)
+  A) 1,6
+  B) 3,2
+  C) 7,4
+  D) 9,2
+  E) 10,6
+
+#50 [KIMYA]
+  Q: $Zn^{2+}$ iyonu ile aşağıdaki bileşiklerden hangisi oluşamaz?
+  A) $ZnCl_2$
+  B) $Zn_3N_2$
+  C) $ZnCO_3$
+  D) $Zn_2SO_4$
+  E) $Zn(NO_3)_2$
+
+#51 [KIMYA]
+  Q: CH$_3$-C(=O)-H bileşiği ile ilgili aşağıdakilerden hangisi yanlıştır? (H$_4$C$_2$O)
+  A) Yaygın adı asetaldehittir.
+  B) Molekül polardır.
+  C) Tollens ayracı ile tepkimesi sonucu asetik asit oluşur.
+  D) Aynı koşullarda kaynama noktası etanolden büyüktür.
+  E) Su molekülleri ile hidrojen bağı oluşturur.
+
+#52 [TURKCE]
+  Q: Öğretmenlik yaptığım köyde çocukların babaları tarlada çalıştığı, iş güç peşinde olduğu için çocuklarla anneleri ilgilenirdi. Bir gün, bir öğrencinin annesi okula geldi. Çocuğuyla ilgili bir karar alınması gerekiyordu. Ben, anneye dönüp ne düşündüğünü sordum. "Çocukların babası ne der, bilemem." dedi. Ben, annenin kararsızlığından çok, en yakınındaki kişi için "çocukların babası" demesine şaşırmıştım.
+Bu parçada geçen "çocukların babası" sözünde aşağıdaki açıklamalardan hangisine uygun bir söyleyiş özelliği vardır?
+  A) Bir varlığı bir başka varlığa benzeterek anlatma
+  B) Bildiği bir şeyi bilmez görünme
+  C) Bir durumu uygun gerekçeler öne sürme
+  D) Bir kavramı dolaylamayla yoluyla anlatma
+  E) Sözü, hem gerçek hem mecaz anlama gelecek biçimde kullanma
+
+#53 [FIZIK]
+  Q: Bir çukur aynanın önündeki bir cismin görüntüsü; I. gerçek ve eşit boyda, II. sanal ve eşit boyda, III. gerçek ve daha büyük boyda öncüllerinde verilenlerden hangisi gibi olabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#54 [KIMYA]
+  Q: $X^{2+}$ iyonu ile ilgili bazı bilgiler aşağıda verilmiştir. • Soy gaz elektron dizilimine sahiptir. • Elektron dizilimindeki en büyük baş kuantum sayısı (n) 3'tür. Buna göre X atomuyla ilgili aşağıdaki ifadelerden hangisi doğrudur?
+  A) Açısal momentum kuantum sayısı (l) 0 olan orbitallerde toplam 10 elektron vardır.
+  B) Değerlik elektronlarının baş kuantum sayısı (n) 3'tür.
+  C) Manyetik kuantum sayısı ($m_l$) 0 olan 12 elektron vardır.
+  D) Açısal momentum kuantum sayısı (l) 1 olan toplam 10 elektron vardır.
+  E) Spin kuantum sayısı ($m_s$) +1/2 olan toplam 12 elektron vardır.
+
+#55 [KIMYA]
+  Q: $25\ \text{°C}$'de $0,4\ M\ 2\ L\ HI$ sulu çözeltisi ile $0,1\ M\ 3\ L\ NaOH$ sulu çözeltisi karıştırıldığında oluşan çözeltinin pH değeri kaç olur?
+  A) 1
+  B) 2
+  C) 7
+  D) 12
+  E) 13
+
+#56 [EDEBIYAT]
+  Q: Servetifünun Dönemi'nin az tercih edilen türleri hakkında bir çalışma yapmak istedim dört arkadaşımla. Dönem ve sanatçılarına dair tüm gelişmeleri bir şiir, roman ve öykü üçlüsünün mutlak hâkimiyetine karşı ben araştırmamı sadece öteki türler üzerine yaptım. Yine de Servetifünun şiir ve yazarlarınca yazılan tüm şiir, roman ve öykü kitaplarını da okudum. Aslında Recaizade'nin ve Abdülhak Hamit'in yaşadığı, harcadığı o edebî etkiyi dikkate almam ve onları okuyarak başlamam gerekirdi ancak bunun için yeterli zamanım yoktu. Bir araştırmacı olarak kabul etmeliyim ki Servetifünun Dönemi'nin portresi, bu iki sanatçının eserlerini okumadığım ve değerlendirmediğim için eksik kaldı. Hatta bu süreçte çalışmamda Servetifünun'un şimdiye değin pek çizilmemiş bir edebî türler portresini çizdim. Servetifünun'dan şiir, roman ve öyküyü çıkardığınızda geriye ne kalır sorusuna yanıt aradım.
+Bu parçada söz edilen araştırmacı hakkında aşağıdakilerden hangisi söylenemez?
+  A) Röbaab-ı Şikeste ve Kırık Hayatlar'ı çalışmasına katmamış fakat okumuştur.
+  B) Tanzimat'ın II. dönemi ile Servetifünun arasında bir geçiş olduğunu düşünür.
+  C) Teklîf-i Edebiyat, Çok Bilen Çok Yanılır ve Sahra adlı eserleri değerlendirmiştir.
+  D) Kırk Yıl, Saray ve Ötesi, Kavgalaşma adlı eserleri değerlendirmemiştir.
+  E) Hüseyin Cahit, çalışmasında yer verdiği sanatçılardandır.
+
+#57 [TURKCE]
+  Q: Sanatçıları finansal açıdan destekleyen ve bu yolla İngiltere'de çok sesli bir sanat ortamı yaratmayı amaçlayan bir sanat vakfının yayımladığı rapor, kurgu kitaplarının satış oranlarının ve kitap fiyatlarının düştüğüne vurgu yapıyor. Vakıf, bu düşüşün edebiyatın çeşitliliğini ve renkliliğini körelttiğini düşünüyor. Sadece kurgu yazarak yaşamak neredeyse imkânsız. ----, kurgunun, tek geliri kalemi olmayan bu grubun elinde tekelleşmesinden çekinen vakıf, kurgu yazarlarını desteklemek için fon ayırarak Londra dışındaki bağımsız butik kurgu yayıncılarına yardım ediyor.
+Bu parçada boş bırakılan yere düşüncenin akışına göre aşağıdakilerden hangisi getirilmelidir?
+  A) Bu durum da iyi edebiyat yapanın değil okurları memnun edecek çeşitlilikte eser sunabilenlerin ön plana çıkmasına sebep oluyor
+  B) Bu yüzden pek çok yazar tüm hayatını ekonomik koşulları neredeyse hiç değişmeden sadece üretken olmanın tatminiyle geçiriyor
+  C) Hâl böyleyken kurgusal edebiyat dünyasına ekonomik geliri yüksek olan ve yazdıklarından para kazanmak zorunda hissetmeyen yazarlar egemen oluyor
+  D) Kitap üretimi için yapılan masrafı karşılamak telaşında olan yayıncılar sadece çok satacak ucuz kitaplar basmaya yanaşıyor
+  E) Ancak farklı tarzda metinler üretmek zorunda kalan yazarlar bir süre sonra yaratıcılıklarının köreldiğini ve tekrara düştüklerini fark ediyor
+
+#58 [TURKCE]
+  Q: Aşağıdaki cümlelerden hangisinde kişi zamiri yönelme durum ekini aldığı için ses değişimine uğramıştır?
+  A) Zorlu bir kış geçirdim, seninki gibi narin.
+  B) Biliriz dünyadaki yorgunluk habire mızraklanır dağlarda gürbüz bir ölümdür bizim arkadaşlarımız.
+  C) Yazık ki uzaktaki kuşları, sokaklarıyla bizim olan şehir ama ancak lanetli hırsla tırpanlayamayız koyuyor insana.
+  D) Pusmuş bir şahınız şimdilik, ne kadar şahan olsak ama budandıkça fışkıran da bizleriz.
+  E) Sana durulanmış kelimeler getireceğim pörsümüş bir dünyayı kahreden kelimeler.
+
+#59 [KIMYA]
+  Q: $CS_2 + O_2 \rightarrow CO_2 + SO_2$ Yukarıdaki tepkime en küçük tam sayılarla denkleştirildiğinde $O_2$'nin katsayısı kaç olur?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#60 [FIZIK]
+  Q: De Broglie'ye göre hidrojen atomunda $n=3$ yörüngesinde dolanan elektrona eşlik eden dalganın dalga boyu $\lambda$ ise, bu yörüngenin çevresi neye eşittir?
+  A) $6\pi r$
+  B) $3\lambda$
+  C) $6\lambda$
+  D) $\frac{3\lambda}{2}$
+  E) $9\lambda$

@@ -1,0 +1,146 @@
+=== TOP 15 HIGH-CONF AGREES (2-model consensus sanity) ===
+
+#1  [TARIH] id=9aa2b785-c78f-547b-afc1-3570baa7f858  DB_key=A  gemma3=A  conf=1.0
+  Q: Tabloda "A" ve "B" ile gösterilen yerlere hangi ifadeler gelmelidir?
+Konar Göçerler:
+• Savaşçı bir yaşam tarzına sahiptirler.
+• A
+Yerleşikler:
+• Temel geçim kaynakları tarımdır.
+• B
+  A) Temel geçim kaynakları hayvancılıktır.
+  B) Kalıcı mimari eserleri inşa ederler.
+  C) Özel mülkiyet anlayışı gelişmiştir.
+  D) Yazılı hukuk oluşturmuşlardır.
+  E) Özgür düşünce ortamı kurulmuştur.
+
+#2  [BIYOLOJI] id=e3fbaa60-7203-5ee9-8e72-978dae63cb10  DB_key=E  gemma3=E  conf=1.0
+  Q: Bir öğrenci yaşadığı yerin yakınında bulunan bir gölün renginin değişmeye başladığını fark etmiştir. Bunun nedenini merak ederek sudan örnek almış ve okuluna götürmüştür. Öğretmeni ile beraber suyun pH'ını ölçmüş asidik olduğunu belirlemiştir. Öğretmeni kendisine göl suyunun asidik olmasının ne gibi değişimlere yol açabileceğini internetten araştırmasını söylemiştir. Bu öğrenci ile ilgili aşağıdaki yorumlardan hangisi yapılamaz?
+  A) Göldeki renk değişimini nitel gözlem yaparak fark etmiştir.
+  B) Çevresindeki doğa olaylarına ilgi duyan bir kişiliğe sahiptir.
+  C) Suyun asidik pH'a sahip olduğunu nicel gözlem yaparak tespit etmiştir.
+  D) Teknolojiyi bilgi edinme aracı olarak kullanmıştır.
+  E) Bilimsel çalışma basamaklarının tümünü uygulamıştır.
+
+#3  [EDEBIYAT] id=1015a8c5-a264-5f2c-bef3-f7e568f9460a  DB_key=E  gemma3=E  conf=1.0
+  Q: Bu akımın ilk sırasında yer alan özelliği nesnelliktir. Şairin duygu ve hayallerinin esas olduğu lirik, sentimental ve ferdiyetçi romantik şiir reddedilir. Bu bağlamda şairden beklenen tıpkı bir ressam ve heykeltıraş gibi dış dünya- nın güzelliklerini veya duygusallıktan arınmış evrensel düşünceyi anlatmaktır. İnsanın iç dünyası ve toplumun problemlerine duyarsız olan bu akımda tasvir ve felsefi şiir esastır. Edebiyatta güzellik ölçüsü esas alan bu akım, yetkinlik endişesini öne çıkarır. Yetkinlik, şiirin dili, yapısı ve bu yapıyı oluşturan alt unsurların (nazım şekli, nazım birimi, misra, kafiye, vezin) kusursuzluğundan doğar. İlçe- likten, sıradanlıktan kaçınan, uzak ve egzotik konulara yönelen bu akım, şiirde biçim mükemmelliğini ve nesnelliği ön planda tutar. Bu parçada aşağıdaki edebiyat akımlarının hangisin- den söz edilmektedir?
+  A) Klasisizm
+  B) Romantizm
+  C) Sembolizm
+  D) Fütürizm
+  E) Parnasizm
+
+#4  [BIYOLOJI] id=a386e8ca-420e-55fe-bd0e-0219c3a1bd94  DB_key=A  gemma3=A  conf=1.0
+  Q: İnsanda sperm ve yumurta hücrelerinin oluşmasını sağlayan mayoz bölünme için; I. Sonuçta oluşan hücreler her bir özellik için bir gen taşır. II. Metafaz - I'de kardeş kromatitler arasında genetik farklılıklar gözlenebilir. III. Anafaz - I'deki kromozom sayısı Profaz - I'deki kromozom sayısının iki katı olur. IV. Telofaz - I'deki toplam kromozom sayısı, ana hücrenin kromozom sayısının dört katı olur. ifadelerinden hangileri doğru olur?
+  A) I ve II
+  B) II ve III
+  C) III ve IV
+  D) I, II ve III
+  E) I, II, III ve IV
+
+#5  [COGRAFYA] id=681a99a1-605f-54ae-9226-a4dd0c01a5b7  DB_key=E  gemma3=E  conf=1.0
+  Q: • Sera Gölü
+• Nemrut Gölü
+• Beyşehir Gölü
+• Tuz Gölü
+Bu göllerin oluşum özellikleri düşünüldüğünde Türkiye'de hangi doğal olayın yer şekillerinin oluşumu üzerinde etkili olduğu söylenemez?
+  A) Heyelan
+  B) Volkanizma
+  C) Tektonik hareketler
+  D) Kimyasal çözünme
+  E) Gelgit
+
+#6  [MATEMATIK] id=d48df274-de16-5a8a-980a-5a6da69801e2  DB_key=B  gemma3=B  conf=1.0
+  Q: Tanımlı olduğu aralıkta, $f(x) = (x-1)(\sqrt{x}+1)$ olduğuna göre, $f'(1)$ kaçtır?
+  A) 1
+  B) 2
+  C) 3
+  D) 4
+  E) 5
+
+#7  [KIMYA] id=6d22f109-7654-5cbb-bf2f-255ddab179d0  DB_key=D  gemma3=D  conf=1.0
+  Q: 4. periyodun 5B grubunda bulunan bir elementin nötron sayısı 25'tir. Buna göre, bu elementin kütle numarası kaçtır?
+  A) 15
+  B) 23
+  C) 27
+  D) 48
+  E) 58
+
+#8  [MATEMATIK] id=043b79f5-c82f-5605-bef9-16c091b058bd  DB_key=D  gemma3=D  conf=1.0
+  Q: Bilgi: Mersenne Asalı $M_p = 2^p - 1$ biçiminde olup, hem $p$ asal sayı hem de $M_p$ asal sayı ise bu sayıya mersenne asalı denir. Yukarıdaki bilgiye göre sayılarından hangileri mersenne asalıdır?
+I. 31
+II. 127
+III. 53
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#9  [KIMYA] id=8e9469f4-0408-5998-ba99-f0045add9bcb  DB_key=C  gemma3=C  conf=1.0
+  Q: I. Ölümsüzlük iksirini bulma
+II. Değersiz madenlerden altın elde etme
+III. Elektroliz ile bileşenleri elementlere ayırma
+Yukarıdakilerden hangileri simyanın temel hedeflerindendir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+#10  [TARIH] id=fbb347a9-5d1b-5920-acb7-b0f2539b76ae  DB_key=E  gemma3=E  conf=1.0
+  Q: Osmanlı Devleti'nde, Müslüman olmayanlar her türlü devlet hizmetine girerken, Müslüman olmayanların kamu hizmetlerinde çalıştırılmasına izin verilmemiştir.
+Bu durumun ilerleyen dönemlerde;
+I. gayrimüslimlerin taleplerinin artması,
+II. azınlık haklarının gündeme gelmesi,
+III. azınlık cemiyetlerinin kurulması
+gelişmelerinden hangilerine neden olacağı söylenebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#11  [TARIH] id=4095b477-9bfb-53e6-9099-4ebfbd79c93c  DB_key=D  gemma3=D  conf=1.0
+  Q: I. Balkan Savaşı devam ederken Osmanlı Devleti'nde yaşanan iç gelişmeler arasında;
+I. ordu içerisinde politik çekişmenin yaşanması,
+II. Padişah değişikliğinin olması,
+III. Babıali Baskını'nın gerçekleşmesi
+durumlarından hangilerinin yer aldığı söylenebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve III
+  E) I, II ve III
+
+#12  [MATEMATIK] id=40f72b95-1f47-5fe9-89a7-fa5906e01f26  DB_key=A  gemma3=A  conf=1.0
+  Q: Gerçek sayılar kümesi üzerinde bir $f$ fonksiyonu $f(x) = x^2 - 7x + 10$ biçiminde tanımlanıyor. Buna göre, $f(a - 3) \le 0$ eşitsizliğini sağlayan farklı $a$ gerçek sayılarının çözüm kümesi aşağıdakilerden hangisidir?
+  A) $[5, 8]$
+  B) $[2, 8]$
+  C) $[-1, 8]$
+  D) $[-1, 5]$
+  E) $[-1, 2]$
+
+#13  [GEOMETRI] id=6291d1d9-d65c-5a65-8775-9a7c841d47da  DB_key=A  gemma3=A  conf=1.0
+  Q: Denklemi $x^2 + y^2 - 4x + 6y - 4 = 0$ olan çemberin üzerindeki $A(1, -7)$ noktasından geçen çap $[AB]$ olduğuna göre, $B$ noktasının koordinatları toplamı kaçtır?
+  A) 4
+  B) 2
+  C) -1
+  D) -2
+  E) -5
+
+#14  [KIMYA] id=d1f9dc05-d6d5-559a-bc47-71e3e519f6d4  DB_key=E  gemma3=E  conf=1.0
+  Q: Bir asit çözeltisi ile bir baz çözeltisi karıştırıldığında aralarında $X + 2Y \rightarrow Tuz + 2H_2O$ tepkimesi gerçekleşiyor. Buna göre, X ve Y çözeltileri aşağıda verilenlerden hangisi olamaz?
+  A) $H_2CO_3$ / $NaOH$
+  B) $H_2SO_4$ / $LiOH$
+  C) $H_2S$ / $NaOH$
+  D) $H_2CO_3$ / $KOH$
+  E) $Ba(OH)_2$ / $H_2SO_4$
+
+#15  [MATEMATIK] id=09901d42-fd75-5c50-b8ef-2227d803f04e  DB_key=C  gemma3=C  conf=1.0
+  Q: $(x^2 - 2x + m) \cdot (x^2 + 3x - 10) = 0$ denkleminin çözüm kümesi üç elemanlıdır. Buna göre, $m$'nin alabileceği değerler toplamı kaçtır?
+  A) -24
+  B) -30
+  C) -34
+  D) -36
+  E) -45

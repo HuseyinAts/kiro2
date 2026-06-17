@@ -1,0 +1,630 @@
+=== OPUS BLIND SAMPLE — Faz D (NO key). Output '#N: <A-E>'.
+
+#1 [BIYOLOJI]
+  Q: Kayısı, üzüm ve fındık gibi meyveler kurutularak saklanır. Bu durum enzimlerin aşağıdaki özelliklerinden hangisiyle ilgilidir?
+  A) Yüksek sıcaklıkta bozulmaları
+  B) Düşük sıcaklıkta işlevlerini kaybetmeleri
+  C) Protein yapıda olmaları
+  D) Hücre dışı ortamda çalışabilmeleri
+  E) Su oranının düşük olduğu ortamlarda etkinlik gösterememeleri
+
+#2 [FEN]
+  Q: Altuğ, ocak sıcaklığında olan patates, soğan ve sarımsağı
+150°C'ye kadar ısıtılmış fırın içine koyduktan hemen sonra
+elektrik kesiliyor. Fırın dış ortam ile tamamen ısı yalıtımlı
+olup malzemeler o anki varlığı bitene kadar fırında
+bekletiliyor.
+
+Buna göre, alış verisi kesinlikle;
+
+I. Malzemelerin son sıcaklıkları eşit olur.
+II. Fırının içindeki sıcaklık azalır.
+III. Malzemelerin aldıkları enerji miktarları farklıdır.
+
+yargılarından hangileri kesinlikle doğru olur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#3 [GENEL]
+  Q: Tarla farosiyi ile farosı arkadaş olmuşlar. Tarla farosiyi bir gün evfarosını yemeye çağırmış. Cüzbir yemek umuduyla tarla farosiyi davetini kabul eden ev farosı gelmiş ama bir de ne görsün! Sofrada biraz ot ve biraz buğdaydan yapılmış bir yiyecek yok, yumurtu buruşmuş. Tarla farosiyi hâline acıyan ev farosı arkadaşına dönmüş; "Canım arkadaşım, senin bu hayatına hayır demez. Buna olsa olsa yoklukluk denir. Bense, bolluk içinde yaşıyorum. Sen de benimle ben, benim evdekileri paylaşıp ikimiz de gül gibi geçiniriz," demiş.
+
+Bu parçanın alındığı edebi türe ilgili aşağıdakilerden hangisi söylenemez?
+  A) Alegorik bir anlatımla okuyucuya ders vermek hedeflenir.
+  B) Kişileştirme ve konuşma sanatlarından sıklıkla yararlanılır.
+  C) Türklerin dünya edebiyatında kazandırdığı metin türlerindenidir.
+  D) Yer ve zaman ögesi genellikle belirsizdir.
+  E) En bilindik örnekleri, Fransız La Fontaine tarafından yazılmıştır.
+
+#4 [TARIH]
+  Q: Duraklama Dönemi'nin sonuna kadar Osmanlı İmparatorluğu dünyanın en büyük güçlerinden biridir. Bu dönemde devletin sınırları da genişlemiş, dış görünüşü özel özellikleri ve gücünü korumuştur. Fakat iç yapıda çok önemli bozulmalar ortaya çıkmıştır. Buna göre, Duraklama Döneminin aşağıya yer alan iç nedenlerinden hangisinin Osmanlı Devleti üzerinde olumsuz sonuçları doğurduğu söylenebilir?
+  A) Ordu ve donanmanın bozulması
+  B) Eğitim sisteminin bozulması
+  C) Ekonomik durumun bozulması
+  D) Eyalet yönetiminin bozulması
+  E) Merkez yönetiminin bozulması
+
+#5 [TARIH]
+  Q: Küçük Kaynarca Antlaşması ile Rusya'ya; "Ticaret amacıyla boğazlardan geçiş hakkı ve Karadeniz-Akdeniz limanlarından serbestçe yararlanma hakkı" tanınmıştır.
+
+Buna göre,
+
+I. Rusya'nın denizlerdeki etkinliği artmıştır.
+II. Osmanlı Devleti izlediği denge siyasetinde başarısız olmuştur.
+III. Rusya, sıcak denizlere inme emelinde önemli bir adım atmıştır.
+
+yargılarından hangilerine ulaşılabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) I, II ve III
+
+#6 [BIYOLOJI]
+  Q: Glikoliz sonunda oluşan pirüvik asit yükseltgenerek Asetil Co A'yı oluşturur. Buna ara evre veya krebs hazırlık reaksiyonları denir.
+
+Buna göre, ara evre tepkimelerinin ilk substratı ile son ürününün
+
+I. hidrojen sayıları,
+II. oksijen sayıları,
+III. karbon sayıları
+
+niceliklerinden hangileri farklılık gösterir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I, II ve III
+
+#7 [BIYOLOJI]
+  Q: Canlıların yedikleri besinlerle aldıkları bazı zehirli maddeler, vücutta parçalanmaz ve değişik dokularda birikir. Alt trofik basamakta biriken bu maddeler besin zinciri yoluyla daha yüksek trofik basamaklara aktarılır ve üst trofik basamaklarda daha yoğun hâle gelir. Bu olaya biyolojik birikim denir.
+
+Buna göre, bir göl ekosisteminde karışan bir zehirli maddenin yayan besin zincirinde yer alan aşağıdaki canlılardan hangisinin dokusunda biyolojik birikim daha fazla olur?
+  A) Fitoplankton
+  B) Zooplankton
+  C) Herbivor balık
+  D) Omnivor balık
+  E) Balık kartalı
+
+#8 [TARIH]
+  Q: Mısır'da kurulan düzenli orduda piyade birlikleri askeriye- nin temeliydi. Askerler savaş olmadığı dönemlerde kendi- lerine verilen topraklarla geçimlerini sağlarlar, savaş zama- nında orduya katılırlardı. Mısır'daki bu uygulamanın Osmanlı Devleti'ndeki hangi sistem ile benzerlik gösterdiği savunulabilir?
+  A) Ekber ve erşed sistemi
+  B) Tımar sistemi
+  C) Devşirme sistemi
+  D) İltizam sistemi
+  E) Lonca sistemi
+
+#9 [BIYOLOJI]
+  Q: Aşağıdakilerden hangisi iskelet sisteminin görevlerinden değildir?
+  A) Vücuda desteklik sağlama
+  B) İç organları koruma
+  C) Kan hücrelerini üretme
+  D) Hormon salgılama
+  E) Mineral depo etme
+
+#10 [BIYOLOJI]
+  Q: DNA'ya ait olan;
+I. nükleotit,
+II. genetik kod,
+III. azotlu organik baz
+yapılarının küçükten büyüğe doğru sıralanışı, aşağıdakilerden hangisinde doğru verilmiştir?
+  A) I - III - II
+  B) III - I - II
+  C) II - I - III
+  D) II - III - I
+  E) III - II - I
+
+#11 [BIYOLOJI]
+  Q: Aşağıdakilerden hangisi, bitkisel bir boşalım şekli olarak kabul edilmez?
+  A) Kaktüs gibi bitkilerde suyun bir kısmının gövdede depo edilmesi
+  B) Yaprak dökülmesi
+  C) Bazı organik tuzların köklerden toprağa atılması
+  D) Bitkilerle fazla suyun bir kısmının damlama ile sıvı halde atılması
+  E) Stomalarından terleme ile buhar halinde su atılması
+
+#12 [EDEBIYAT]
+  Q: Şire Sevettin'in etkisi ile başlayan ve şairler, Yeni Lisan hareketinin öncüleri Ömer Seyfettin ve Ziya Gökalp'in teşvikleriyle hızla yayılan şiirlerdir. Şirin sade, süsüz olması, şiire konu olarak günlük dilin kullanılması, ilkelereğin hareketle hele büyükliği eserler kaleme aldılar. Konuşulan Türkçe'yi doğru ustalıkla kullandıkları için yerli unsurlarla yaşayan hayatı yansıtan bu şairler, Milli Edebiyat Dönemi'nin en başarılı başyapıtlarını yazmışlardır.
+
+Aşağıdakilerden hangisi bu parçadaki altı çizili söze kastedilen şairlerden biri değildir?
+  A) Halit Fahri Ozansoy
+  B) Yusuf Ziya Ortaç
+  C) Ziya Osman Saba
+  D) Orhan Seyfi Orhon
+  E) Enis Behiç Koryürek
+
+#13 [COGRAFYA]
+  Q: Aşağıdakilerden hangisi kuzey ve güneydeki levhaların Anadolu'yu günümüzde de sıkıştırmaya devam etmesinin sonucudur?
+  A) Zaman zaman tektonik depremlerin görülmesi
+  B) Kuzey ve güneyden gelen hava kütlelerinin Türkiye üzerinde karşılaşması
+  C) Aktif volkanların yerini sönmüş volkanlara bırakması
+  D) Akdeniz ve Karadeniz çanakları alçaklarının Anadolu Yarımadası'nın yükselmesinin devam etmesi
+  E) Masif arazilerin ortaya çıkması
+
+#14 [BIYOLOJI]
+  Q: ATP molekülünün üretilmesi ve tüketilmesi ile ilgili,
+
+I. Tüm canlı hücreler tarafından gerçekleştirilebilir.
+II. Canlı hücrelerde en fazla gerçekleşen yapım ve yıkım olaylarıdır.
+III. Sadece hücre içinde gerçekleşebilir.
+
+ifadelerinden hangileri doğrudur?
+  A) II ve III
+  B) I ve II
+  C) I ve III
+  D) Yalnız I
+  E) I, II ve III
+
+#15 [GENEL]
+  Q: P(x) = x² - bx + c polinomunun tam sayı köklerinden biri diğerinin 4 katıdır.
+Buna göre, b ile c arasındaki bağıntı aşağıdakilerden hangisi olabilir?
+  A) 25c = 16b
+  B) 16c = 25b²
+  C) 4b² - 16c
+  D) 25c = 4b²
+  E) 25c² = 16b
+
+#16 [BIYOLOJI]
+  Q: 1 Sürekli şişirilen bir balona ne olur?
+Patlar.
+3 Peki neden?
+4 Yüzey hacme orantılı olarak artışı göstermediği için.
+5 Büyüyen bir hücrede de benzer bir durum ortaya çıkar. Hücre zarı yüzeyi hücrenin hacmiyle doğru orantılı artmadığı için hücrenin ihtiyaçlarını karşılamada yetersiz kalır. Bu yetersizlik çekirdekten bölünme uyarısı oluşmasına neden olur.
+
+Öğretmen ve öğrenciler arasındaki bu konuşmalara göre,
+I. Hücreler belirli bir büyüklüğe eriştiklerinde bölünürler.
+II. Bölünme uyarısı çekirdek tarafından oluşturulur.
+III. Çekirdeğin bölünme uyarısı oluşturmasının tek nedeni hücre zarı yetersizliğidir.
+
+ifadelerinden hangileri söylenebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I, II ve III
+
+#17 [EDEBIYAT]
+  Q: I. Dâm-gân-ı aşktan tut bir konar ey mürg-i dil
+Sınmadan seni melâmetten per ü bâlin senin
+
+II. Sâyê-veş çoktan Fuzûlî hâk-i köyün yasdanır
+Ol ümid ile ki bir gün ola pâ-mâlin senin
+
+III. Kıldı zülfün tek perişân hâlimi hâlin senin
+Bir gün ey bi-derd somsazın nedir hâlin senin
+
+Gazel türündeki bir şiirden alınarak sıralaması karışık olarak verilen bu beyitlerle ilgili aşağıdaki tespitlerden hangisi yanlıştır?
+  A) Matla beyti üçüncü beyittir.
+  B) Makta beyti ikinci beyittir.
+  C) Âşikane bir gazel örneğidir.
+  D) 16. yüzyıla kaleme alınmıştır.
+  E) Musammat gazelden alınmış beyitlerdir.
+
+#18 [BIYOLOJI]
+  Q: "Aşağıdaki özelliklerden hangisine sahip olması bir hayvanın kuş olduğunu kanıtlar?" Bu sorunun yöneltildiği bir öğrenci, aşağıdakilerden hangisini işaretlerse soruyu doğru cevaplamış olur?
+  A) Uçma yeteneğine sahip olma
+  B) Kanatlara sahip olma
+  C) Yumurtlayarak çoğalma
+  D) Sabit vücut sıcaklığına sahip olma
+  E) Vücutlarında tüylere sahip olma
+
+#19 [EDEBIYAT]
+  Q: Sanatçının şiirinde etkili olan kaynaklardan biri klasik Türk şiiridir. Daha ilk şiirlerinden itibaren geçmiş kültürümüzün önemine vurgu yapan yeni, yeni Türk şiirinin bu kültür mirasından olabildiğince yararlanmasını gerektiğini birçok yazısında defalarca vurgulamıştır. İlk şiir kitabı Duvar'da bu anlayış göze çarpmaktadır. Duvar'ın ön sözünde ise 'Garipçilerin Batı kırması ya da kenar mahalle ağzı içinşi karışık halkçı ve toplumu iyi, halk yığınlarını sarabilacak geniş soluklu bir kokacalma şiirini tutturmak istiyordu. Böylelikle yeni Türk şiiri yeni koşullara yerleşenler hem yüzyıllardır değişge değişge sürdürdüğü gelmiş milli sesi korumuş olacak hem de halk şiiri geleniği aydın şairlerin işe karsılayışıyla yeni bir kazanıp değeri olacaktır.' demiştir. ki şiirinde halk edebiyatının etkisi daha fazla olmakla birlikte özellikle beşinci şiir kitabı olan Bela Çiçeği ile klasik Türk edebiyatının tesiri, sanatçının şiir üzerinde derin bir etki bırakacaktır.
+
+Bu parçada tanıtılan şair aşağıdakilerden hangisidir?
+  A) Nazım Hikmet
+  B) Faruk Nafiz Çamlıbel
+  C) Atilla İlhan
+  D) Ataoğlu Behramoğlu
+  E) Bedri Rahmi Eyüpoğlu
+
+#20 [BIYOLOJI]
+  Q: Rh kan karakterinde, annenin Rh- olması durumunda, çocuklarda kan uyumsuzluğu görülme ihtimali vardır. Bu olayın oluşabilmesi için, aşağıdakilerden hangisinin meydana gelmesine gerek yoktur?
+  A) Babanın kanında Rh antijeni bulunmalıdır.
+  B) En az iki çocuk Rh+ kan grubundan olmalıdır.
+  C) Baba, homozigot Rh+ olmalıdır.
+  D) Rh+ bir çocuğun kanı annenin kanına karışmalıdır.
+  E) Anne kanında oluşan antikorlar, plasentadan çocuğa geçmelidir.
+
+#21 [BIYOLOJI]
+  Q: İki kahverengi göz rengine sahip bireyin mavi ya da yeşil gözlü çocuğu olabilir. Ancak iki mavi ya da iki yeşil gözlü bireyin kahverengi gözlü çocukları olamaz. Buna göre göz rengi kalıtımıyla ilgili I. Kahverengi göz aleli mavi ve yeşil göz aleline baskındır. II. Heterozigot genotipli bireyde çekinik aleller, fenotipte etkisini gösteremez. III. Erkeklerde tek alel tarafından belirlenir. ifadelerinden hangileri söylenebilir? (Göz rengi otozomal kromozomlarda kalıtılır.)
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) II ve III
+
+#22 [COGRAFYA]
+  Q: Eski çağlarda ticari istikamet doğudan batıya doğruydu. Çin, Hindistan ve diğer Doğu medeniyetlerinde üretilen ürünlerin Avrupalı tüketiciye ulaşması Anadolu'nun kara yolları ve limanları vasıtasıyla mümkündü. Buna göre; I. İpek, II. Baharat, III. Kral, IV. Likya yollarından hangileri, bu ticarete daha fazla katkı sağlamıştır?
+  A) I ve II
+  B) I ve III
+  C) II ve III
+  D) II ve IV
+  E) III ve IV
+
+#23 [BIYOLOJI]
+  Q: Doğadan rastgele seçilen bir bitki türünün aşağıdaki özelliklerden hangisine sahip olma ihtimali en yüksektir?
+  A) Eti meyveye sahip olma
+  B) Odunsu gövdeye sahip olma
+  C) Çiçeğe sahip olma
+  D) Tohumunda birden fazla çenek bulundurma
+  E) Selüloz yapılı hücre duvarına sahip olma
+
+#24 [EDEBIYAT]
+  Q: Namık Kemal'in Vatan yahut Silistre adlı oyunundan alınan bu parça için aşağıdakilerden hangisi söylenemez?
+  A) Jest ve mimikler ayraç içinde belirtilmiştir.
+  B) Tarihsel bir konu içinde "Vatan Sevgisi" teması işlenmiştir.
+  C) Eserin dramatik örgüsünde şaşırtıcı olaylara ve tesadüflere yer verilmiştir.
+  D) Karamservatansever tipler olan kahramanlar, tek boyutlu işlenmiştir.
+  E) Seyircide heyecan, korku, acıma hissi uyandırılarak ruhu kötülüklerden koruma amaçlanmıştır.
+
+#25 [EDEBIYAT]
+  Q: Sunucu: Haber ve yorum yazılarının tarihçesine dair neler söyleyebilirsiniz?
+Yazar: Yazının kamuoyunu güncel haberler aracılığıyla bilgilendirmesinin tarihi, insanlık tarihiyle karşılaştırıldığında çok kısadır. Buna karşın toplumsal yaşam; kitapların, dergilerin ve gazetelerin yazılı kültürün asıl unsurları olarak öne çıkmalarından bu yana çok hızlı bir değişim ve dönüşüm içine girmiştir. Hiç şüphesiz bu niteliğiyle birlikte süreli yayınlar, içinde yaşanılan çağın şartlarına ilişkin önemli verileri ve yorumlarını içerirler.
+Sunucu: Edebiyat dergileriyle aranız nasıl?
+Yazar: Yazın dergilerinin benim dünyamdaki yeri bir başkadır. Yazın sanatına adım attığım ilk günlerde elimden tutan ve şiirlerimi yayınlayarak beni yazmaya teşvik eden o yazın dergileri olmasaydı bunca kitabı yazamazdım. Kısacası, nitelikli yazın dergilerinin özellikle genç edebiyatçılar için birer okul olduğuna inanıyorum.
+Bu diyalogdan hareketle aşağıdakilerden hangisine ulaşılamaz?
+  A) Yazarın sözlerinden toplumsal koşul ve yapıların statik olduğu anlaşılmaktadır.
+  B) Fıkra, yazarın sözünü ettiği süreli yayınlarda çıkan yazılardandır.
+  C) Yazar, süreli yayınların sosyal görünümü yansıttığını belirtmiştir.
+  D) Yazar, yazın dergilerinin kendi şiirlerine yer verdiğini ifade etmiştir.
+  E) Sunucu, haber yazılarının kökeniyle ilgili bir soru yöneltmiştir.
+
+#26 [BIYOLOJI]
+  Q: Sinir sisteminde, nöronların dışında glia hücreleri de bulunur. Bu hücreler, nöronların beslenmesini, desteklenmesini ve hastalıklara karşı korunmasını sağlar. Buna göre, glia hücreleri ve görevleriyle ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?
+  A) Schwann hücreleri → Çevresel sinir sisteminde bulunan nöronlara miyelin kılıf oluşturur.
+  B) Ependim hücreleri → Beyin - Omurilik sıvısı üretimi ve akışını düzenler.
+  C) Astrositler → Beyin ile kılcal damarlar arasında madde alışverişini düzenler.
+  D) Oligodendrositler → Merkezi sinir sisteminde bulunan nöronlara miyelin kılıf oluşturur.
+  E) Mikroglia → Sinir sisteminde zarar gören nöronları yenileyerek impuls iletimini sağlar.
+
+#27 [BIYOLOJI]
+  Q: Bir bilim insanı, 'Lenf sistemi vücut bağışıklığının sağlanmasında etkilidir.' hipotezini kuruyor.
+
+Bu hipotezi kuran bilim insanı, lenf sisteminin ait aşağıdaki özelliklerden hangisini kanıt olarak kullanmış olabilir?
+  A) Kılcal lenf damarlarının birleşme yeri olan lenf düğümünde akyuvar üretilir.
+  B) Emilen orijinal vitaminler yağdan zengin lenf kıllarına geçer.
+  C) Sindirim sonucu oluşan yağ asiti ve gliserol lenf damarlarında taşınır.
+  D) Lenf kılları doku sıvısının fazlasını alarak kan dolaşımına katar.
+  E) Lenf kılları, bir ucu kapalı tüp görünümündedir.
+
+#28 [BIYOLOJI]
+  Q: Bir bakteri türünün S (kapsüllü) ve R (kapsülsüz) tipleri bulunmaktadır. Bu bakteri tipleriyle değişik aşamalardan geçirilip farelere enjekte edilerek aşağıdaki çalışma yapılmıştır.
+Bu çalışmaya göre,
+I. R-tipi bakteriler çevresel nedenlerle mutasyona uğrayarak S-tipine dönüşebilir.
+II. S-tipi bakterilerin canlı olup olmamalarına bakılmaksızın enjeksiyonu, her durumda farelerin ölümüyle sonuçlanır.
+III. Canlı R-tipi bakteriler, ölü S-tipi bakterilere ait bazı faktörlerin etkisiyle kapsül oluşturma özelliği kazanabilir.
+yargılarından hangilerine ulaşılabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#29 [COGRAFYA]
+  Q: Yer kabuğunun geniş alanlarında yükselme ve alçalma hareketleri epirojenik hareketler olarak ifade edilir. Buna göre; I. levhaların birbirinden uzaklaşması, II. kara içlerinde volkan faaliyetlerinin artması, III. okyanus tabanlarında tortulanmanın oluşması, IV. gelgit olayıyla suların yükselmesi olaylarından hangileri bu durumun gerçekleşmesinde etkili olmaz?
+  A) I ve II
+  B) I ve III
+  C) I ve IV
+  D) II ve III
+  E) III ve IV
+
+#30 [BIYOLOJI]
+  Q: Renk körlüğü bakımından normal görüşlü olan bir ailede, renk körü çocuklar dünyaya geliyor. Renk körlüğü X kromozomunda taşınan çekinik bir genle oluştuğuna göre; I. Renk körü olan çocukların tamamı erkektir. II. Babada renk körlüğü geni çekinik olarak bulunmaktadır. III. Anne renk körlüğü bakımından heterozigot genotiplidir. açıklamalarından hangileri doğrudur?
+  A) I ve III
+  B) II ve III
+  C) I ve II
+  D) Yalnız II
+  E) Yalnız I
+
+#31 [TARIH]
+  Q: 1933'te devletçilik ilkesinin fiilen uygulanmaya başlaması ile ülkedeki maden yataklarından birçoğu işletmeye açılmış, başta Karabük Demir Çelik Fabrikası olmak üzere çok sayıda fabrika kurulmuş, bayındırlık hizmetlerinde büyük gelişme olmuştur. Bu bilgilere göre devletçilik ilkesinin uygulamaya konulmasının, I. işsizlik oranının azalmasına, II. ekonomik kalkınmanın hızlanmasına, III. millî ekonomi politikasının başarıya ulaşmasına sonuçlarından hangilerine ortam hazırladığı savunulabilir?
+  A) Yalnız I
+  B) I ve II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#32 [TARIH]
+  Q: Osmanlı Devleti'ne katılan ilk beylik aşağıdakilerden hangisidir?
+  A) Germiyanoğulları
+  B) Karesioğulları
+  C) Karamanoğulları
+  D) Aydınoğulları
+  E) Candaroğulları
+
+#33 [TARIH]
+  Q: TBMM'nin açılmasından sonra İstanbul Hükümeti'nin ve işgalci devletlerin Milli Mücadele aleyhine yürüttükleri propagandalara karşı halkı doğru bilgilendirmek maksadıyla İstanbul'da bazı gazeteler Milli Mücadele yanlısı yazılar yayınlamışlardır.
+
+Aşağıdakilerden hangisi bu gazeteler arasında yer almaz?
+  A) Akşam
+  B) İkdam
+  C) Tercüman
+  D) Peyam-ı Sabah
+  E) Yeni Gün
+
+#34 [BIYOLOJI]
+  Q: Bir hücrenin canlılığını devam ettirebilmesi için
+I. sentrozom,
+II. sitoplazma,
+III. çekirdek,
+IV. mitokondri
+yapılarından hangilerini bulundurması zorunlu değildir?
+  A) I ve II
+  B) I ve III
+  C) II ve III
+  D) III ve IV
+  E) I, III ve IV
+
+#35 [SOSYAL]
+  Q: I. Bir kişinin Allah'ın varlığına, Peygamberlerin gönderildiğine, ahiret hayatına ve diğer temel inançları kalpten onaylamasını ifade eder.
+II. Kişinin kabul ettiği inançlarını pratiğe dökülmesidir.
+III. Bir inancın yalnızca sözle değil, aynı zamanda kalpten de onaylanmasını ifade eder.
+Yukarıda "Tasdik" ile ilgili verilen bilgilerden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve III
+  D) II ve III
+  E) I, II ve III
+
+#36 [BIYOLOJI]
+  Q: Bir mantar hücresinde aşağıdaki bileşiklerden hangisi bulunmaz?
+  A) Kitin
+  B) Protein
+  C) Nişasta
+  D) Glikojen
+  E) Glikoz
+
+#37 [BIYOLOJI]
+  Q: Meyve sineklerinde eşeyin oluşmasında X ve Y kromozomları rol oynar. Erkek sineklerde X ve Y, dişi sineklerde iki X kromozomu birlikte bulunur. Bu sineklerde gözün beyaz renkli olmasını sağlayan gen çekinik özellikte olup sadece X kromozomu üzerinde taşınırken baskın aleli kırmızı gözlü olmayı sağlar. Buna göre, kırmızı gözlü erkek meyve sineği ile beyaz gözlü dişi meyve sineğinin çaprazlanması sonucu; I. heterozigot kırmızı gözlü dişi, II. beyaz gözlü erkek, III. beyaz gözlü dişi, IV. homozigot kırmızı gözlü dişi bireylerinden hangileri oluşabilir?
+  A) I ve II
+  B) II ve III
+  C) III ve IV
+  D) I, II ve III
+  E) I, II, III ve IV
+
+#38 [BIYOLOJI]
+  Q: Vitamin D'ye dayanıklı raşitizm X kromozomuna bağlı baskın bir gen ile kalıtılır. Bu gene sahip bireylere bol miktarda D vitamini verilse bile yine de raşitizm hastası olurlar. Bu hastalıkla ilgili; I. Dişiler üç farklı genotipe olabilir. II. Toplumda erkek bireylerde görülme ihtimali daha fazladır. III. Bazı dişi bireyler bu özellik yönüyle taşıyıcı olabilir. ifadelerinden hangileri doğrudur?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I ve III
+
+#39 [EDEBIYAT]
+  Q: 18. yüzyıl araştırmacı bir kişiliğe sahip mutasavvıf şairidir.
+
+• Eserlerinin adlarına dair divanı ve Mani'at-nâme isimli kitaplarıdır.
+
+• Pozitif bilimlere de ilgi duymuş, mutasavvıf bir bilim insanıdır.
+
+Bu özelliklere sahip dini-tasavvufi halk edebiyatı temsilcisi aşağıdakilerden hangisidir?
+  A) Aziz Mahmud Hüdayi
+  B) Hacı Bayram-ı Veli
+  C) Hacı Bektaş-ı Veli
+  D) Kaygusuz Abdal
+  E) Erzurumlu İbrahim Hakkı
+
+#40 [BIYOLOJI]
+  Q: Biyokimyasal tepkimelere enerji veren ATP'de; I. pürin bazı, II. pirimidin bazı, III. karbonhidrat, IV. yağ, V. protein moleküllerinden hangileri bulunur?
+  A) I ve III
+  B) I, II ve III
+  C) IV ve V
+  D) II, III ve IV
+  E) I, IV ve V
+
+#41 [GENEL]
+  Q: Oksijenli solunum yapan ökaryot bir hücre ile ilgili,
+I. NADH+H+ ve FADH2, NAD+ ve FAD+ formlarına mitokondride yükseltgenir.
+II. Glikoz oksijen varlığında mitokondriye girerek krebs döngüsüne katılır.
+III. ETS mitokondri kristalarında bulunur.
+IV. Glikoliz, mitokondrinin matrisinde gerçekleşir.
+
+İfadelerinden hangileri doğrudur?
+  A) I ve III
+  B) II ve III
+  C) III ve IV
+  D) I, III ve IV
+  E) II, III ve IV
+
+#42 [EDEBIYAT]
+  Q: ----, 1073 yılında Kaşgarlı Mahmud tarafından oluşturulmuştur. Ebu'l Kasım Abdullah'a takdim edilmiştir. Eserin adı, Türk Dillerinin Sözlüğü anlamına gelir.
+
+Türkçenin ilk sözlüğü ve ilk gramer kitabı kabul edilir. Eser için "ansiklopedik sözük" tanımının kullanılması uygundur.
+
+Bu parçada boş bırakılan yere aşağıdakilerden hangisi getirilmelidir?
+  A) Divan-ı Hikmet
+  B) Divanu Lügati't-Türk
+  C) Atabetü'l-Hakayık
+  D) Kutadgu Bilig
+  E) Selçuklu Şehnamesi
+
+#43 [COGRAFYA]
+  Q: I. Enerji kaynaklarının paylaşımı konusunda yaşanan bölgesel sorunlar
+II. İklim koşullarının ekonomik faaliyetlere olan etkisi
+III. Canlıların genetik yapısı ve özellikleri
+IV. Hayvan topluluklarının yeryüzündeki dağılışı
+Yukarıdakilerden hangileri coğrafyanın araştırma konusu değildir?
+  A) Yalnız II
+  B) Yalnız III
+  C) I ve II
+  D) II ve III
+  E) III ve IV
+
+#44 [TARIH]
+  Q: Aşağıdakilerden hangisi Sakarya Zaferi'nin ardından İtilaf Devletleri'nin kendi çıkarları doğrultusunda fikir ayrılıkları yaşayarak almış oldukları kararlar sonrasında ortaya çıkan durumlardan biri değildir?
+  A) Ankara Antlaşması'nın imzalanması
+  B) Güneybatı Anadolu'daki işgale son ermesi
+  C) Mal'taki Türk esirlerinin serbest bırakılması
+  D) Yunan ordusunun Afyon'da savunma hattı kurması
+  E) Kars Antlaşması'nın imzalanması
+
+#45 [TARIH]
+  Q: Safeviler, Osmanlı Devleti ile girdiği mücadelelerde çoğu zaman Osmanlı ordularının karşısına doğrudan doğruya çıkmayıp İran içlerine çekilme taktiğini uygulamışlar zamanı geldiğinde de tekrardan kaybettikleri bölgeleri almak için harekete geçmişlerdir. Buna göre Safevilerle ilgili aşağıdaki yargılardan hangisine ulaşılabilir?
+  A) Askerî alandaki ıslahatlarda başarı sağlamışlardır.
+  B) Anadolu'da Şiilik mezhebini yaymaya çalışmışlardır.
+  C) Osmanlı Devleti ile ilgili sorunları diplomatik yollarla çözme yoluna gitmişlerdir.
+  D) Osmanlı Devleti'nin üstünlüğünü kabul etmişlerdir.
+  E) Cihan hâkimiyeti anlayışını benimsemişlerdir.
+
+#46 [TARIH]
+  Q: Osmanlı Devleti XVII. yüzyıldan itibaren yaşadığı ekonomik sıkıntılar karşısında avarez vergilerini ve imdadiye vergilerini daha sık ve daha çok toplamaya başladı. Ancak Osmanlı Devleti aldığı tüm bu önlemlerle istediği sonuçlara ulaşamadı.
+
+Parçada yer alan altı çizili kavramların yerine aşağıdakilerden hangileri getirilirse herhangi bir anlam değişliği yaşanmaz?
+  A) Gayrimüslim erkeklerden alınan vergi - Varlıklı kimselerden alınan vergi
+  B) Olağanüstü durumlarda alınan vergi - Müslüman çiftçilerden alınan vergi
+  C) Yabancı tüccarlardan alınan vergi - Esnaf ve zanaatkârlardan alınan vergi
+  D) Kamu görevlilerinden alınan vergi - Gayrimüslim çiftçilerden alınan vergi
+  E) Olağanüstü durumlarda alınan vergi - Varlıklı kimselerden alınan vergi
+
+#47 [BIYOLOJI]
+  Q: Virüslere ait olan aşağıdaki özelliklerden hangisi, başka hiçbir canlı grubunda görülmez?
+  A) Özel bir nükleotit dizisine sahip olma
+  B) Kendine özgü bir protein yapısına sahip olma
+  C) DNA veya RNA'dan sadece birine sahip olma
+  D) Konak canlı hücre içinde çoğalma
+  E) Konak hücreye girebilmek için, bazı özel enzimlere sahip olma
+
+#48 [EDEBIYAT]
+  Q: Birçok din ve kültürde güvercin, gerek bir canlı, gerek sembol olarak önemli bir hayvan konumundadır. Eski Suriye verimlilik tanrıçası Atargatis, Tanrı Adad'ın eşi olarak kabul edilir, balık ve güvercin onun kutsal hayvanları olduğuna inanılırdı. "Ba" Sabit'te kurban edilen güvercindi. Eski Ahit'te güvercin, Nuh Peygamber'in, fırtınanın dinip dinmediğini öğrenmek üzere gemiden dışarı gönderdiği hayvan olarak karşımıza çıkar.
+
+Bu parçanın anlatımıyla ilgili;
+I. Niteleyici ögelere yer verilmiştir.
+II. Bir savı örneklere inandırma kılınmıştır.
+III. I. Kişili anlatım kullanılmıştır.
+
+yargılarından hangilerine ulaşılamaz?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve III
+  E) II ve III
+
+#49 [EDEBIYAT]
+  Q: Aşağıdaki cümlelerde hakkında bilgi verilen eserlerden hangisi, ayraç içindeki yazara ait değildir?
+  A) Boş Beşik oyununda, geleneklerin göçü karşısında kadının kaderinin sadece mutsuzluk olduğu temasını işlemiştir. (Güngör Dilmen)
+  B) Elif Ana oyununda, köy kadınının çilesini tragedya olarak işlemiştir. (Turan Oflazoğlu)
+  C) Fadik Kız oyununda, Anadolu insanının sömürülüşünü işlemiştir. (Orhan Asena)
+  D) Pembe Evin Kaderi oyununda, kuşaklar arası kopuşu, yabancılaşmayı ele alır. (Turgut Özakman)
+  E) Ben Devletim oyununda, vatandaşın haksızlık yapmadan ve hakkını çiğnetmeden haksızlıkla savaşması gerektiğini ortaya koymaya çalışır. (Recep Bilginer)
+
+#50 [BIYOLOJI]
+  Q: Sağlıklı bir insanın vücudunda, aşağıdaki enzimatik olaylardan hangisi, hem hücre içinde hem de hücre dışında gerçekleşebilir?
+  A) Nişastanın glikozlara kadar sindirilmesi
+  B) Yağ asitlerinin, $H_2O$ ve $CO_2$'ye kadar yıkılması
+  C) Glikojenin glikozlara kadar parçalanması
+  D) Nükleotitlerden nükleik asit üretilmesi
+  E) Amino asitlerden protein sentezlenmesi
+
+#51 [TARIH]
+  Q: MÖ 1200'lü yıllarda meydana gelen ve Anadolu tarihi için "karanlık dönem" diye bahsedilen;
+I. uzun süre iç karışıklıkların yaşanması,
+II. Hitit uygarlığının yıkılma sürecine girmesi,
+III. olayların kayıt altına alınmaması
+durumlarının hangilerinden kaynaklandığı söylenebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve II
+  E) I, II ve III
+
+#52 [EDEBIYAT]
+  Q: Aşağıdaki dörtlüklerden hangisi bir şathiyeden alınmıştır?
+  A) Gel benim şen tanburam Dertler üstüne yatıram Yine kırıldı hâtıram Gelün kulun geçsin deyi
+  B) Yemeyenler kalır naçar Göğsünden kanlar saçar Bu bir demdir gelir geçer Dünyamızın demedim mi?
+  C) Kıldan köprü yaratmışsın Gelsin kulum geçsin deyi Hele biz şöyle duralım Yiğitsen geç a Tanrı
+  D) Haber aldık mahkemattan Geçmeyiz zâlim sıfattan Balım nihan söyler Haktan İrşadımız sırdır bizim
+  E) Biz erenler gerçeğiyiz Hak bahçesinin çiçeğiyiz Hacı Bektaş köçeğiyiz Edep erkan yol bizdedir.
+
+#53 [BIYOLOJI]
+  Q: Aşağıdakilerden hangisi tüm canlıların hayatta kalabilmek için gerçekleştirmek zorunda oldukları olaylardan biridir?
+  A) Oksijenli solunum
+  B) Eşeyli üreme
+  C) Hücre bölünmesiyle büyüme
+  D) Yer değiştirme hareketi
+  E) Çevresel uyarana tepki
+
+#54 [EDEBIYAT]
+  Q: HÜRRİYET KASİDESİ
+Görüp ahkâm-ı asrı mühafız sıdk u selâmetten
+Çekildik izzet ü iktibâl ile bâb-ı hükûmetten
+Usanmaz kendini insan bilenler halka hizmetten
+Mürevvet-mond olan mazluma el çekmez lâneton
+Namık KEMÂL
+
+MAKBER
+Eyvah ne yer ne yâr kaldı
+Gönlüm özü âh u zâr kaldı
+Şimdi buradaydı gitti oldun
+Gitti ebede gelip ezelden
+Ben gittim o hâksâr kaldı
+Bir köşede tarumar kaldı
+A. Hamîd TARHAN
+
+Bu şiirler konu, yapı, dil, yazıldıkları Tanzimat dönemleri ve yazarlarının edebî anlayışları göz önünde bulundurularak karşılaştırıldığında aşağıdakilerden hangisi söylenemez?
+  A) Hürriyet Kasidesi, Tanzimat'ın I. Dönemi'ne; Makber, Tanzimat'ın II. Dönemi'ne ait şiirdir.
+  B) I. Dönem'de yurtseverlik, adalet, hürriyet gibi konular; II. Dönem'e ise felsefi konular, ölüm, aşk, metafizik, bireysel ağır basmaktadır.
+  C) I. Dönem'de toplumcu; II. Dönem'de bireysel bir şiir vardır; bunun sonucu olarak I. Dönem'de anlatılan, II. Dönem'de ise anlatımı yani estetik önemsenmiştir.
+  D) I. Dönem'de bazı biçimsel yenilikler denenmiştir. II. Dönem'de ise yeni düşünceler, eski biçimlerle (gazel, kaside...) anlatılmıştır.
+  E) Her iki dönemde de şiirlere konuyu yansıtan başlıklar konmuştur.
+
+#55 [BIYOLOJI]
+  Q: Aşağıda verilen bitkisel yapı çiftlerinin hangilerinde solunum ve protein sentezi gerçekleşmez?
+  A) Epidermis - periderm
+  B) Ksilem - floem
+  C) Parankima - kambiyum
+  D) Kollenkima - sklerenkima
+  E) Mantar doku - ksilem
+
+#56 [EDEBIYAT]
+  Q: Çıtırçık aşık alnına on yılda her savaşan;
+On yılda on beş milyon genç yaratıcı her yastan;
+Başta bütün dünyanın saygılı başkomutanı,
+Demir ağlarla ördkü anayurdu örtü baştan.
+
+Bu dizeleri Onuncu Yıl Marşı adlı Kayseri Lisesinde görev yapan -----, "Ankaralı Aşık Ömer" mahlasını kullanan ----- ile birlikte yazmıştır.
+
+Yukarıdaki parçada boş bırakılan yerlere aşağıdakilerden hangisi sırasıyla getirilmelidir?
+  A) Kemalettin Kamu - Ahmet Kutsi Tecer
+  B) Faruk Nafiz Çamlıbel - Behçet Kemal Çağlar
+  C) Faruk Nafiz Çamlıbel - Behçet Necatigil
+  D) Zeki Ömer Defne - Ömer Bedrettin Uşaklı
+  E) Kemalettin Kamu - Faruk Nafiz Çamlıbel
+
+#57 [BIYOLOJI]
+  Q: Aşağıdaki soyağacında X kromozomu üzerindeki çekinik bir alel tarafından kalıtılan özelliğin bir ailedeki kalıtım seyri verilmiştir. Soyağacında sadece 3 numaralı birey bu özelliği fenotipinde gösterdiğine göre özelliğin kalıtımı ile ilgili aşağıdaki ifadelerden hangileri yanlıştır?
+  A) 1 numaralı bireyin genotipinde bu özellikten sorumlu alel bulunur.
+  B) 2 numaralı bireyin genotipinde bu özellikten sorumlu alel bulunmaz.
+  C) 3 numaralı bireyle bu özellikle ilgili alel, 2 numaralı bireyden kalıtılmıştır.
+  D) 4 numaralı bireyin bu özellik bakımından heterozigot genotipe olma olasılığı $1/2$'dir.
+  E) 2 ve 5 numaralı bireylerin bu özellik bakımından genotipleri aynıdır.
+
+#58 [BIYOLOJI]
+  Q: Bir kertenkele türünde deri rengi çok alelli kalıtım gösterir. Bu aleller siyah (S), kahverengi (K) ve yeşil (Y) şeklindedir. Aleller arasındaki baskınlık ilişkisi $S > K > Y$ şeklindedir. Bu kertenkele popülasyonunda, siyah ve kahverengi iki kertenkelenin çaprazlanmasıyla oluşan yavrular için aşağıdaki ifadelerden hangisi yanlıştır?
+  A) Deri rengiyle ilgili iki alel taşıyabilirler.
+  B) Üç farklı fenotipe olabilirler.
+  C) Dört farklı genotipe olabilirler.
+  D) Çekinik özellikte yavrular oluşabilir.
+  E) Homozigot genotipli olamazlar.
+
+#59 [EDEBIYAT]
+  Q: Yandaki parçaya dayanarak
+I. Zaman ve mekânla ilgili ayrıntılara yer verildiği
+II. Zehra dışındaki kadınların kaderlerine rıza gösterdikleri
+III. Eserin komedi niteliklerinin ağır bastığı
+IV. Yazarın kurnazlıkla ilgili düşüncesini Zehra üzerinden ortaya koyduğu
+yargılarından hangilerine ulaşılamaz?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I, II ve IV
+  E) III ve IV
+
+#60 [TARIH]
+  Q: Aşağıdakilerden hangisi TBMM'ye karşı çıkan isyanların nedenlerinden biri değildir?
+  A) Bazı zengin ve nüfuz sahibi kişilerin menfaatlerini korumak istemesi
+  B) Düzenli ordunun düşmanı ilerleyişini durduramaması
+  C) Azınlıkların bağımsız devletler için çalışması
+  D) Kuva-yi Milliye'nin komutanlarının düzenli orduya katılmak istemesi
+  E) İstanbul Hükümeti ve işgal devletlerinin halkı kışkırtması

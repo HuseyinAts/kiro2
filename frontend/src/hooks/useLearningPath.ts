@@ -53,8 +53,8 @@ export interface UseLearningPathReturn {
   loadPath: () => Promise<void>
   reload: () => void
   setCurrentNode: (nodeId: string) => void
-  updateProgress: (update: ProgressUpdate) => Promise<boolean>
-  markNodeComplete: (nodeId: string) => Promise<boolean>
+  updateProgress: (update: ProgressUpdate) => Promise<{ success: boolean; allCompleted: boolean }>
+  markNodeComplete: (nodeId: string) => Promise<{ success: boolean; allCompleted: boolean }>
   submitOnboardingResult: (result: OnboardingResult) => Promise<void>
   skipOnboarding: () => void
   startSession: () => Promise<void>
@@ -303,12 +303,12 @@ export const useLearningPath = (): UseLearningPathReturn => {
   }, []);
 
   /** Update progress for a node — syncs with backend */
-  const updateProgress = useCallback(async (update: ProgressUpdate): Promise<boolean> => {
+  const updateProgress = useCallback(async (update: ProgressUpdate): Promise<{ success: boolean; allCompleted: boolean }> => {
     const { nodeId, progress, completed } = update;
 
     if (!user) {
       console.error('Not authenticated');
-      return false;
+      return { success: false, allCompleted: false };
     }
 
     const sid = studentId || String(user.id);
@@ -352,15 +352,19 @@ export const useLearningPath = (): UseLearningPathReturn => {
         }
       }
 
-      return true;
+      // Fix 5: report whether the whole path is now complete
+      const isCompleting = completed === true || progress === 100;
+      const allCompleted =
+        isCompleting && pathNodes.every(n => n.id === nodeId || n.status === 'completed');
+      return { success: true, allCompleted };
     } catch (error) {
       console.error('Error updating progress:', error);
-      return false;
+      return { success: false, allCompleted: false };
     }
   }, [user, studentId, pathNodes]);
 
   /** Mark a node as complete */
-  const markNodeComplete = useCallback(async (nodeId: string): Promise<boolean> => {
+  const markNodeComplete = useCallback(async (nodeId: string): Promise<{ success: boolean; allCompleted: boolean }> => {
     return updateProgress({ nodeId, completed: true, progress: 100 });
   }, [updateProgress]);
 
