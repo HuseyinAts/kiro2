@@ -60,7 +60,7 @@ class AuditStatsResponse(BaseModel):
 
 
 @router.get("/", response_model=AuditLogListResponse)
-def get_audit_logs(
+async def get_audit_logs(
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=500),
     event_type: str | None = None,
@@ -87,34 +87,40 @@ def get_audit_logs(
         - end_date: Filter until this date
         - search: Search in description and user email
     """
-    query = db.query(AuditLog)
+    from fastapi.concurrency import run_in_threadpool
+    
+    def fetch_data():
+        query = db.query(AuditLog)
 
-    # Apply filters
-    if event_type:
-        query = query.filter(AuditLog.event_type == event_type)
-    if user_id:
-        query = query.filter(AuditLog.user_id == user_id)
-    if severity:
-        query = query.filter(AuditLog.severity == severity)
-    if start_date:
-        query = query.filter(AuditLog.timestamp >= start_date)
-    if end_date:
-        query = query.filter(AuditLog.timestamp <= end_date)
-    if search:
-        search_filter = f"%{search}%"
-        query = query.filter(
-            (AuditLog.description.ilike(search_filter))
-            | (AuditLog.user_email.ilike(search_filter))
+        # Apply filters
+        if event_type:
+            query = query.filter(AuditLog.event_type == event_type)
+        if user_id:
+            query = query.filter(AuditLog.user_id == user_id)
+        if severity:
+            query = query.filter(AuditLog.severity == severity)
+        if start_date:
+            query = query.filter(AuditLog.timestamp >= start_date)
+        if end_date:
+            query = query.filter(AuditLog.timestamp <= end_date)
+        if search:
+            search_filter = f"%{search}%"
+            query = query.filter(
+                (AuditLog.description.ilike(search_filter))
+                | (AuditLog.user_email.ilike(search_filter))
+            )
+
+        # Get total count
+        total = query.count()
+
+        # Apply pagination
+        offset = (page - 1) * per_page
+        logs = (
+            query.order_by(AuditLog.timestamp.desc()).offset(offset).limit(per_page).all()
         )
+        return total, logs
 
-    # Get total count
-    total = query.count()
-
-    # Apply pagination
-    offset = (page - 1) * per_page
-    logs = (
-        query.order_by(AuditLog.timestamp.desc()).offset(offset).limit(per_page).all()
-    )
+    total, logs = await run_in_threadpool(fetch_data)
 
     return AuditLogListResponse(
         total=total,

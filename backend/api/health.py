@@ -39,59 +39,52 @@ async def health_check(
     RELIABILITY FIX: Full system health with all dependencies
     PERFORMANCE: 99% faster with caching (2000ms → <10ms)
     """
-    from core.redis_cache import get_cache
+    # In-memory local cache to avoid thread pool exhaustion under 5000 CCU
+    if not hasattr(health_check, "_cache"):
+        health_check._cache = {}
+    if not hasattr(health_check, "_lock"):
+        health_check._lock = asyncio.Lock()
 
-    cache_key = "health_check"
+    current_time = time.time()
+    if "data" in health_check._cache and (current_time - health_check._cache["time"]) < 60:
+        return health_check._cache["data"]
 
-    # Try to get from cache first
-    try:
-        cache = get_cache()
-        cached_result = await asyncio.to_thread(cache.get, cache_key)
-        if cached_result:
-            logger.info(f"[CACHE HIT] {cache_key}")
-            return cached_result
-        logger.info(f"[CACHE MISS] {cache_key}")
-    except Exception as e:
-        logger.warning(f"Cache read failed: {e}, continuing without cache")
+    async with health_check._lock:
+        if "data" in health_check._cache and (current_time - health_check._cache["time"]) < 60:
+            return health_check._cache["data"]
 
-    # Cache miss - fetch fresh data
-    health = await health_checker.check_all(session)
+        # Cache miss - fetch fresh data
+        health = await health_checker.check_all(session)
 
-    # Map health status to standard response format
-    status_mapping = {"healthy": "success", "degraded": "warning", "unhealthy": "error"}
+        # Map health status to standard response format
+        status_mapping = {"healthy": "success", "degraded": "warning", "unhealthy": "error"}
 
-    response_data = {
-        "status": status_mapping.get(health.status.value, "success"),
-        "health_status": health.status.value,  # Keep original for monitoring
-        "service": "Türkiye Üniversite Sınavları Hazırlık Platformu",
-        "version": "1.0.0",
-        "environment": settings.environment,
-        "timestamp": health.timestamp,
-        "response_time_ms": health.response_time_ms,
-        "components": [
-            {
-                "name": c.name,
-                "status": status_mapping.get(
-                    c.status.value, "success"
-                ),  # Map component status too
-                "component_status": c.status.value,  # Keep original for monitoring
-                "healthy": c.healthy,
-                "response_time_ms": c.response_time_ms,
-                "message": c.message,
-                "details": c.details,
-                "error": c.error,
-            }
-            for c in health.components
-        ],
-        "summary": health.summary,
-    }
+        response_data = {
+            "status": status_mapping.get(health.status.value, "success"),
+            "health_status": health.status.value,
+            "service": "Türkiye Üniversite Sınavları Hazırlık Platformu",
+            "version": "1.0.0",
+            "environment": settings.environment,
+            "timestamp": health.timestamp,
+            "response_time_ms": health.response_time_ms,
+            "components": [
+                {
+                    "name": c.name,
+                    "status": status_mapping.get(c.status.value, "success"),
+                    "component_status": c.status.value,
+                    "healthy": c.healthy,
+                    "response_time_ms": c.response_time_ms,
+                    "message": c.message,
+                    "details": c.details,
+                    "error": c.error,
+                }
+                for c in health.components
+            ],
+            "summary": health.summary,
+        }
 
-    # Store in cache with 60 second TTL
-    try:
-        await asyncio.to_thread(cache.set, cache_key, response_data, 60)
-        logger.info(f"[CACHE SET] {cache_key} (TTL: 60s)")
-    except Exception as e:
-        logger.warning(f"Cache write failed: {e}")
+        health_check._cache["data"] = response_data
+        health_check._cache["time"] = time.time()
 
     # Return 503 if unhealthy
     if health.status.value == "unhealthy":

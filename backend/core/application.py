@@ -53,11 +53,16 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("🚀 KIRO2 Backend Starting...")
     logger.info(f"  Environment: {settings.environment}")
     logger.info(f"  Debug Mode: {settings.debug}")
-    logger.info(f"  Database: {settings.database_url[:30]}...")
-
     # S179 fix (B-P0-49): AGPL exposure warning. See
     # docs/compliance/AGPL_LICENSE_EXPOSURE.md. ultralytics + PyMuPDF
     # are AGPL-3.0; commercial production deployment without a
+    import anyio
+    try:
+        limiter = anyio.to_thread.current_default_thread_limiter()
+        limiter.total_tokens = 5000
+        logger.info(f"✅ AnyIO thread pool expanded to {limiter.total_tokens} for high CCU sync endpoints")
+    except Exception as e:
+        logger.warning(f"⚠️ AnyIO thread pool expansion failed: {e}")
     # licensing decision risks copyleft trigger.
     import os as _os
 
