@@ -1,33 +1,23 @@
-## Session Handoff — 2026-06-13 (Pool growth: 2-model consensus + Opus validasyonu)
-**Branch:** `master`
-**Önceki session:** 2026-06-12 (serving-gate + conflict kurtarma — aşağıda "Geçmiş").
+## Session Handoff — 2026-06-19 (Serving-path leak fix + gate2c demote + answer-wrong scan)
+**Branch:** `feature/self-evolution-optimization`
+**Son commit:** `cce6807fe` (offline_sync F821) | `7c6731940` (serving-path gate)
 
-### Bu session — servis havuzu 9,913 → **13,831 (+3,918, +%39.5)**
-`verified_provisional` havuzunu (3,960 v_safe-uygun) ikinci bağımsız sinyalle doğrulayıp promote ettik. Üç faz, üç backup, hepsi geri-alınabilir. **`correct_answer`/`is_active` hiç değişmedi** (yalnız `quality_review_status` unverified→`auto_judged_high` + provenance metadata).
+### Bu session — 4 iş, hepsi kanıtlı/geri-alınabilir
+1. **Serving-path sızıntı fix (HEADLINE, committed):** placement (`load_assessment_items`) ve offline (`build_sync_package`) `question_bank`'i yalniz `is_active` ile sorguluyor, `v_safe_for_beta` kapisini BYPASS ediyordu. Canli DB: placement havuzu **110.895 (94.443 unverified/pending) → 6.544 (%100 v_safe)**. TDD: `tests/test_serving_path_leak.py` kaynak-introspeksiyon guard (red→green), 26 mevcut placement testi geçti. Fix = kanonik `id IN (SELECT id FROM v_safe_for_beta)` her iki serviste (3'er sorgu).
+2. **gate2c demote (committed, D6):** 62 Opus-doğrulanmış çöp soru (50 dup/OCR proxy + 12 Opus-confirmed garble) → geri-alınabilir `gate2c_demoted` exclusion tablosu + view predicate. **v_safe 6.606 → 6.544**, leak=0 (canlı teyit). `correct_answer`/`is_active`'e DOKUNULMADI.
+3. **Answer-wrong taraması (214/214, %100):** consensus answer-wrong (gemma3==qwen3≠stored) Opus ile kör-çözüldü. **~%1,4 wrong-key** (3 aday, biri güçlü), ham %27 değil. Anahtar değişikliği YOK (`correct_answer` korumalı). Detay aşağıda.
+4. **offline_sync F821 fix (committed `cce6807fe`):** `process_sync_results` tanımsız `questions_map`/`cards` kullanıyordu (her cevap sessizce failed) + `_next_sync_at_iso` `timezone.utc` (tanımsız). Döngü öncesi soru/kart ön-getirme + `UTC`. TDD `tests/test_offline_sync_service.py` (3 test red→green); kullanılmayan import'lar da çözüldü.
 
-| Faz | Yöntem | Validasyon | Eklenen | Backup tablosu |
-|---|---|---|---|---|
-| A | gemma3:12b 2-model consensus (agree) | A-bias ok | +1,908 | `question_bank_gemma3_consensus_backup_20260612` |
-| B | qwen3+DB math/geo dispute | **Opus 4.8 60/60** | +1,265 | `question_bank_math_qwen3_promote_backup_20260613` |
-| C | qwen3+DB sözel/fen dispute | **Opus 4.8 58/60** | +745 | `question_bank_verbal_promote_backup_20260613` |
-
-### Metodoloji (veri-temelli, kaynaklı belge: `docs/audits/2026-06-13_gemma3_consensus_pool_growth.md`)
-- **2. sinyal = gemma3:12b-it-qat** (Google, non-Qwen bağımsızlık; TurkBench Türkçe 71.0 ≈ 27b'nin 73.0; 16GB GPU'ya sığar). Kapsamlı model araştırması: Gemma 4 / gpt-oss / Phi-4 / DeepSeek elendi (Türkçe ölçümsüz ya da sığmıyor).
-- **gemma3 yalnız agree'lerde güvenilir** (math'te MA~22≈random). gemma3 confidence metriği **dejenere** (agree/dispute medyan=1.0) → atıldı.
-- **Lokal ≤16GB Türkçe-math uzmanı YOK** (veri-kanıtlı, TurkBench MA tablosu). Bağımsız doğrulayıcı = **Opus 4.8, Cowork/Max üzerinden (no-API)**, örneklem-ölçekli: ~150 soru → 3,918 promotion kilitlendi. **Net DB-hatası 0.**
-- gemma3 dispute'ları (math + sözel/fen) %96-100 gemma3 hatası, DB doğru — Opus 118/120 örnekte DB'yi doğruladı.
-
-### Scaffolding (not git-tracked: `backend/scripts/quality/`)
-`ollama_blind_solve.py` (`--model` bayrağı eklendi), `_pool_growth_gemma3/{export,split,consensus_apply,opus_sample,opus_sample_verbal,analyze_pilot}.py`. **Solver `kiro2-ollama` container'a (`:11434`) bağlanır** — modeli `docker exec kiro2-ollama ollama pull <tag>` ile çek (native Ollama'ya pull `/api/generate`'de "not found" verir — iki instance tuzağı).
+### Önemli durum düzeltmesi
+Eski handoff'taki "v_safe 13.831" ESKİ. Bu session öncesi **D5 sıkılaştırması** (coherence/promote bayrak şartı) 13.831 → 6.606 indirdi; D6 demote 6.606 → **6.544**. Bu kasıtlı (status-only gate çok gevşekti).
 
 ### Açık işler (öncelik sıralı)
-1. **P1 — kalan unverified havuz:** `verified_provisional` OLMAYAN ~92K unverified/pending. Bunlar hiç blind-solve görmedi → sıfırdan wave (export→gemma3 solve→consensus) gerekir. Servis zaten `v_safe_for_beta` gated → acil değil.
-2. **P2 — ~42 figür-bağımlı unsolvable:** gemma3 "UNSOLVABLE" dedi, `unverified` bırakıldı. Multimodal model (gemma3 vision / qwen3-vl) ile re-solve denenebilir.
-3. **P2 — eski backlog:** DuelMode/ErrorClusterCard port; `mv_safe_for_beta` matview (~256ms→~3ms); 3,264 mükerrer dedup; json→jsonb (ERTELENDİ, ağır — HNSW rebuild).
+1. **Push** — `7c6731940` push'landı; `cce6807fe` + bu handoff bekliyor (`git push origin feature/self-evolution-optimization`).
+2. **3 wrong-key adayı** (manuel uzman onayı, `correct_answer` korumalı): `f41b7323`(stored C→D, güçlü), `e9c247a6`(B→A), `e829870c`(E→C, bozuk soru). + ~25 bozuk soru (seçenekte cevap yok / çoklu doğru) → gate2c'ye eklenebilir.
+3. **`verified_provisional` 5.879** — v_safe'in en büyük denetlenmemiş bloğu, sıradaki Opus turu hedefi.
 
-### Notlar
-- **bash sandbox mount + VM güvenilmez** (bu session VM çökük kaldı) — dosya işlemleri HOST araçları (Read/Write) + kullanıcı PowerShell ile yapıldı.
-- DB yazımları MCP (`dbhub-kiro2`) ile, her biri backup'lı. v_safe canlı doğrulandı (13,831).
-
-### Geçmiş (2026-06-12) — özet
-Option A serving-gate (`v_safe_for_beta` view), conflict marker kurtarma (Dalga 1/2), subject-switching + Fix 5, HNSW index + embedding %100 kapsama. Detay önceki handoff git history'de.
+### Notlar / araçlar
+- DB: native PG 5434 (servis `postgresql-x64-18`, bu session admin/RunAs ile başlatıldı). Read'ler MCP `dbhub-kiro2` ile.
+- bash VM bu session boyunca çökük → tüm script'ler HOST PowerShell ile çalıştırıldı (human-in-loop).
+- gate2c scaffolding: `backend/scripts/quality/_gate2b/` (D6_*.sql, build_final_demote.py, final_demote_ids.json committed; gate2c_*.py + preds/batches/master.csv transient, commit edilmedi).
+- **Serving-path:** sadece placement+offline canlı sızıntıydı. `exam_performance_service` = geçmiş analiz (düşük risk), `question_repository` = admin (student-facing değil) — fix kapsamı dışı.
