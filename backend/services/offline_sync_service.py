@@ -110,11 +110,15 @@ async def build_sync_package(
             select(QuestionBankItem)
             .tablesample(func.bernoulli(20))
             .where(QuestionBankItem.is_active == True)  # noqa: E712
+            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
+            .where(QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")))
         )
     else:
         q_query = (
             select(QuestionBankItem)
             .where(QuestionBankItem.is_active == True)  # noqa: E712
+            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
+            .where(QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")))
         )
 
     if subject:
@@ -129,7 +133,11 @@ async def build_sync_package(
     questions_db = q_result.scalars().all()
 
     if dialect == "postgresql" and len(questions_db) < remaining_slots:
-        fallback_query = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
+        fallback_query = (
+            select(QuestionBankItem)
+            .where(QuestionBankItem.is_active == True)  # noqa: E712
+            .where(QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")))
+        )
         if subject:
             fallback_query = fallback_query.where(QuestionBankItem.subject_area == subject.upper())
         fallback_query = fallback_query.limit(remaining_slots)

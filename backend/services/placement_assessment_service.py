@@ -20,7 +20,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 import numpy as np
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from algorithms.irt_model import FourParameterIRTModel, IRTItem, IRTResponse
@@ -198,11 +198,17 @@ async def load_assessment_items(
         query = select(QuestionBankItem).tablesample(func.bernoulli(20)).where(
             QuestionBankItem.is_active == True,  # noqa: E712
             QuestionBankItem.difficulty_level.isnot(None),
+            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
+            # is_active-only sorgu 94K unverified/pending soruyu sızdırıyordu.
+            QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")),
         )
     else:
         query = select(QuestionBankItem).where(
             QuestionBankItem.is_active == True,  # noqa: E712
             QuestionBankItem.difficulty_level.isnot(None),
+            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
+            # is_active-only sorgu 94K unverified/pending soruyu sızdırıyordu.
+            QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")),
         )
 
     if subjects:
@@ -222,6 +228,9 @@ async def load_assessment_items(
         fallback_query = select(QuestionBankItem).where(
             QuestionBankItem.is_active == True,  # noqa: E712
             QuestionBankItem.difficulty_level.isnot(None),
+            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
+            # is_active-only sorgu 94K unverified/pending soruyu sızdırıyordu.
+            QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")),
         )
         if subjects:
             fallback_query = fallback_query.where(
