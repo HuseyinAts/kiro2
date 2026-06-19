@@ -119,6 +119,18 @@ async def _check_rate_limit(request: Request, bucket: str = "login") -> None:
     max_attempts, window = RATE_LIMITS.get(bucket, (10, 60))
     client_ip = _get_client_ip(request)
 
+    # Local/test convenience: skip rate limiting ONLY in development so the
+    # test suite isn't throttled. In production this stays enforced even if a
+    # misconfigured proxy makes requests appear to originate from localhost.
+    if _IS_DEV and client_ip in (
+        "127.0.0.1",
+        "localhost",
+        "host.docker.internal",
+        "::1",
+        "testserver",
+    ):
+        return
+
     # ---- Try Redis-backed limiter first ----
     try:
         from core.redis_rate_limiter import get_rate_limiter
@@ -175,6 +187,7 @@ def _record_attempt(request: Request, bucket: str = "login") -> None:
 # Backward compat aliases
 def _check_login_rate_limit(request: Request):
     import asyncio
+
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
@@ -182,8 +195,7 @@ def _check_login_rate_limit(request: Request):
 
     if loop and loop.is_running():
         return _check_rate_limit(request, "login")
-    else:
-        return asyncio.run(_check_rate_limit(request, "login"))
+    return asyncio.run(_check_rate_limit(request, "login"))
 
 
 def _record_failed_login(request: Request) -> None:
@@ -356,10 +368,13 @@ async def database_authenticate(
     password = giris_data.get_password()
     if not password:
         raise ValueError("Şifre alanı boş olamaz")
-        
+
     import asyncio
+
     loop = asyncio.get_running_loop()
-    is_valid = await loop.run_in_executor(None, pwd_context.verify, password, db_user.password_hash)
+    is_valid = await loop.run_in_executor(
+        None, pwd_context.verify, password, db_user.password_hash
+    )
     if not is_valid:
         raise ValueError("Geçersiz e-posta veya şifre")
 
@@ -1275,8 +1290,13 @@ async def change_password(
         if not db_user:
             raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
 
+        import anyio
+
         # Verify current password
-        if not pwd_context.verify(request_data.currentPassword, db_user.password_hash):
+        is_valid = await anyio.to_thread.run_sync(
+            pwd_context.verify, request_data.currentPassword, db_user.password_hash
+        )
+        if not is_valid:
             raise HTTPException(status_code=401, detail="Mevcut şifre yanlış")
 
         # Validate new password (same policy as registration)
@@ -1285,7 +1305,9 @@ async def change_password(
             raise HTTPException(status_code=400, detail=pw_error)
 
         # Hash and update new password
-        db_user.password_hash = pwd_context.hash(request_data.newPassword)
+        db_user.password_hash = await anyio.to_thread.run_sync(
+            pwd_context.hash, request_data.newPassword
+        )
         db_user.updated_at = datetime.now(UTC)
         await db.commit()
 
