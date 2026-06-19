@@ -1,3 +1,16 @@
+## Session Handoff — 2026-06-19 (D) — VP116 status-promote: +42 v_safe + base-filter ceiling bulundu
+**Branch:** `feature/self-evolution-optimization` | correct_answer/is_active DOKUNULMADI, reversible
+
+- **A lever (fallback ÖLÜ çıktı):** Veri kanıtı — fallback ONLY-block = 0 (tüm 23.214 fallback unverified-status; fallback asla bağımsız engellemiyor). Gerçek darboğaz STATUS. Lever fallback→ABANDON.
+- **ONLY_status vp = 116** → Workflow 3-Opus-solver/soru SIRALI 6-dalga (348 ajan, %100 başarı) → **%98.2 precision (111/113, 2 TYT-Mat disagree + 3 UNSOLVABLE hariç).** 2-sinyal (vp+Opus) = MEMORY'nin gold-terfi kuralı.
+- **111 status promote** (unverified→auto_judged_high + `vp_status_promote_2signal` flag), backup `question_bank_vp116_status_backup_20260619`. **Ama yalnız 42 v_safe'e girdi.**
+- **KEŞİF: `v_safe_for_beta_unfiltered` base content-integrity filtresi** (bare-stem `^aşağıdaki...hangisi yanlış$`, `^yukarıdaki/^bu parça` + has_diagram yok, tek-`$` LaTeX) **69'u eledi**. Bu **bir sonraki gerçek tavan** — bazı bare-stem option-only sorular fazla-eleniyor olabilir (gelecek lever).
+- **v_safe 7.770 → 7.812 (+42).** leak gate2c/fallback=0. total_active 110.895 değişmedi. 42: TYT-Türkçe 13/Kimya 10/Mat 7/AYT-Edebiyat 6...
+- **SESSION TOPLAM: v_safe 6.544 → 7.812 (+1.268):** wave1 +56, tier1-unlock +1.170, vp116 +42.
+- Artefaktlar `_wave1/vp116_*`, `compare_vp116.py`, `gen_vp116_promote.py`. Uncommitted: vp116 + latest.md.
+
+---
+
 ## Session Handoff — 2026-06-19 (C) — TIER1 UNLOCK: +1.170 v_safe (workflow, %100 precision)
 **Branch:** `feature/self-evolution-optimization` | DB-yazımı YOK (view-only D8), reversible
 
