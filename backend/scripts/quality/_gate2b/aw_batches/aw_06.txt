@@ -1,0 +1,35 @@
+=== AW CONSENSUS BATCH 06 — her soru: sadece doğru şık (A-E). Anahtar gizli.
+
+#1 [MATEMATIK]
+  Q: a ve b pozitif gerçel sayıları için aşağıdaki ifadelerden hangisi her zaman pozitifdir?
+  A) a + b
+  B) a - b
+  C) ab
+  D) a/b
+  E) a^2 + b^2
+
+#2 [TURKCE]
+  Q: İki yanı ağaçla geniş caddeler, insanın içini ferahlatan boş meydanlar, çok kalınlı olmayan bahçeli binalar... Konya, çoğu ortasındakı bir vaha sanki. Bozkırlardan sonra Meram bağlarının yeşilliği, orman içindeki suların serinliği insana iyi aynı iklimde yaşadığı izlenimini verir. Hule Meram yolundaki lokantalarda, buz gibi yayık ayranının eşliğinde mis kokusu ve eşiş lezzette eti ekmeği de eklerken... Başka şehirlerde de başka adlarla bilinen eti ekmeğin dahi burada bambaşka
+  A) Benzetmeye başvurulmuştur.
+  B) Betimleme ağırdır.
+  C) Farklı duyularla ilgili ayrıntılara yer verilmiştir.
+  D) İnsana özgü bir özellik doğaya aktarılmıştır.
+  E) Esnekli cümlelere yer verilmiştir.
+
+#3 [MATEMATIK]
+  Q: Bir ülkede erkeklerin emekli olma yaşı bayanların emekli olma yaşından beş fazladır. Ferit Bey, emekli olma yaşına geldiğinde eşinin emekli olma yaşına gelmesine bir yıl vardır.
+
+Eşi emekli olma yaşına geldiğinde ikisinin yaşları toplamı 120 olacağına göre, bu ülkede erkeklerin emekli olma yaşı kaçtır?
+  A) 62
+  B) 63
+  C) 64
+  D) 65
+  E) 66
+
+#4 [FIZIK]
+  Q: Bir çemberin çevresi 12 cm'dir. Bu çemberin yarıçapı kaç cm'dir?
+  A) 3 cm
+  B) 4 cm
+  C) 5 cm
+  D) 6 cm
+  E) 7 cm

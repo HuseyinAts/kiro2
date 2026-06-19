@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
-DATABASE_URL = "postgresql+asyncpg://postgres:postgres@host.docker.internal:5434/kiro2"
+DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2"
 engine = create_async_engine(DATABASE_URL)
 
 async def main():
@@ -16,11 +16,11 @@ async def main():
         try:
             await conn.execute(
                 text("""
-                    INSERT INTO users (id, email, hashed_password, full_name, is_active)
-                    VALUES (:id, :email, 'hashed', 'Mock User', true)
+                    INSERT INTO users (id, email, password_hash, username, first_name, last_name, role, is_active)
+                    VALUES (:id, :email, 'hashed', :username, 'Mock', 'User', 'STUDENT', true)
                     ON CONFLICT DO NOTHING
                 """),
-                {"id": user_id, "email": f"mock_{user_id}@example.com"}
+                {"id": user_id, "email": f"mock_{user_id}@example.com", "username": f"mock_{user_id}"}
             )
         except Exception as e:
             print("Could not insert user, it might be due to schema. Error:", e)
@@ -43,7 +43,7 @@ async def main():
                     "title": "Mock Session",
                     "created_at": datetime.now(timezone.utc),
                     "updated_at": datetime.now(timezone.utc),
-                    "is_active": True
+                    "status": "ACTIVE"
                 })
                 
                 for j in range(8):
@@ -68,8 +68,8 @@ async def main():
             try:
                 await conn.execute(
                     text("""
-                        INSERT INTO chat_sessions (id, user_id, title, created_at, updated_at, is_active)
-                        VALUES (:id, :user_id, :title, :created_at, :updated_at, :is_active)
+                        INSERT INTO chat_sessions (id, user_id, title, created_at, updated_at, status)
+                        VALUES (:id, :user_id, :title, :created_at, :updated_at, :status)
                     """),
                     sessions
                 )

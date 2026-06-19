@@ -1,0 +1,330 @@
+=== AW CONSENSUS BATCH 04 — her soru: sadece doğru şık (A-E). Anahtar gizli.
+
+#1 [MATEMATIK]
+  Q: Aşağıdaki verilerle ilgili:
+
+- Bir öğrencilerin sınavda aldığı puanlar: 50, 60, 70, 80, 90, 100
+- Bir öğrencilerin sınavda aldığı puanlar: 40, 50, 60, 70, 80, 90
+
+Bu verilerle ilgili olarak:
+  A) Ortalama puanlar eşittir.
+  B) Ortalama puanlar farklıdır.
+  C) Çeşitlikler eşittir.
+  D) Çeşitlikler farklıdır.
+  E) Çeşitlikler sıfırdan büyük değildir.
+
+#2 [TURKCE]
+  Q: (I) Lale Devri, zevk ve sefa devri olarak bilinir. (II) Adını, o dönemde İstanbul'a yerleştirilen ve zamanla tüm dünyaya yayılan lale çiçeklerinden almaları, çok sonradan oluşmuş. (III) Bu dönem Osmanlı İmparatorluğu'nun hiçbir devrinde Lale Devri olarak anılmamıştır. (IV) Yahya Kemal savmını arketip Ahmet Refik Altınay ile bir sohbeti sırasında, III. Ahmed Hattabı 1718-1730 yılları arasındaki dönemi Lale Devri olarak tanımlar. (V) Sultan III. Ahmed, Sadrazam Damat Ibrahim Paşa ile uyum içerisinde çalışma, sanat ve toplumsal hayata özgün bir anlayış getirilmiştir. (VI) Topkapı Sarayı ile Yeni Çamlı'da birer köşküne, şenşor sayılan III. Ahmet Çeşmesi ve İstanbul'un su ihtiyacını karşılamak amacıyla da Derbent Sim adlı bir su bendi inşa ettirilmiştir.
+
+Bu parça iki paragrafa ayrılmak istense ikinci paragrafta numaralandırılmış cümlelerin hangisinden başlar?
+  A) II
+  B) III
+  C) IV
+  D) V
+  E) VI
+
+#3 [GEOMETRI]
+  Q: AC = 12 cm, BC = 16 cm, AB = 20 cm olan üçgen ABC'de, AC kenarına dik olan yüksekliklerin uzunlukları toplamı kaç cm'dir?
+  A) 12
+  B) 16
+  C) 20
+  D) 24
+  E) 30
+
+#4 [MATEMATIK]
+  Q: 1.50 saatlik bir çalışma için 12.00 saatte başlamış olup, 13.00 saatte sona erdiğine göre, çalışma süresi kaç dakikadır?
+  A) 60 dakika
+  B) 70 dakika
+  C) 80 dakika
+  D) 90 dakika
+  E) 100 dakika
+
+#5 [MATEMATIK]
+  Q: Bir dairesel parkurun çevresi 2000 m'dir. Bir bisikletçi bu parkuru 10 dakikada tamamlamak istiyor. Bisikletçinin hızı kaç km/sa olmalıdır?
+  A) 20 km/sa
+  B) 200 km/sa
+  C) 2000 km/sa
+  D) 20000 km/sa
+  E) 200000 km/sa
+
+#6 [MATEMATIK]
+  Q: a ve b iki pozitif tam sayıdır. a ve b'nin en küçük ortak katı 120'dir. a ve b'nin en büyük ortak böleni 10'dur. a ve b'nin toplamı kaçtır?
+  A) 130
+  B) 140
+  C) 150
+  D) 160
+  E) 170
+
+#7 [COGRAFYA]
+  Q: Aşağıda bir iklim tipi ile ilgili bazı bilgiler verilmiştir. Yıllık sıcaklık ortalaması 20 °C, yıllık sıcaklık farkı 3 - 5 °C civarındadır. Yıllık yağış miktarı 1.000 - 1.200 mm arasındadır. Yağış rejimi düzensizdir. Güneş ışınlarının dik geldiği sıcak yaz dönemi yağışlı, kışlar ise kurak geçer. Bu iklim tipi aşağıdakilerden hangisidir?
+  A) Ekvatoral iklim
+  B) Muson iklimi
+  C) Akdeniz iklimi
+  D) Savan iklimi
+  E) Tundra iklimi
+
+#8 [TURKCE]
+  Q: (I) Farsçada "kırmızı" anlamına gelen lâ'l kelimesinden türetilen lale, Türk kültürünün en önemli simgelerindendir. (II) Asıl vatanının Orta Asya olduğu düşünülen lale; Türklerden önce, Anadolu'da tanınıyordu. (III) Lale, İstanbul'daki Avrupalı bir elçinin Avrupa'ya giderken yanındaki lale soğanlarını götürmüş olmasıyla Avrupa'ya da taşınmıştır. (IV) 16. ve 17. yüzyılda ise lale yetiştirildiği gibi Osmanlı Devleti'nin de Avrupa ülkelerine bir hayli yaygınlaşmıştır. (V) Parklar ve bahçeleri süsleyen lale güzel sanatlar ve edebiyatta da kendine yer bulmuştur. (VI) Gerek çinilerde gerekse ebru sanatında lale motifi çokça kullanılmıştır.
+
+Bu parça iki paragrafa ayrılmak istense ikinci paragrafta numaralandırılmış cümlelerden hangisinden başlar?
+  A) II
+  B) III
+  C) IV
+  D) V
+  E) VI
+
+#9 [MATEMATIK]
+  Q: Bir sınıfta öğrencilerin dağılımı aşağıdaki gibidir:
+- 50 kişilik bir grupta öğrencilerin dağılımı: 10 erkek, 40 kız
+- 60 kişilik bir grupta öğrencilerin dağılı: 20 erkek, 40 kız
+- 70 kişilik bir grupta öğrencilerin dağılımı: 30 erkek, 40 kız
+
+Bu sınıfta toplam kaç erkek öğrenci vardır?
+  A) 100
+  B) 110
+  C) 120
+  D) 130
+  E) 140
+
+#10 [MATEMATIK]
+  Q: Bir küpün bir yüzüne 1 cm², diğer yüzüne 2 cm², üçüncü yüzüne 3 cm², dördüncü yüzüne 4 cm², beşinci yüzüne 5 cm², altıncı yüzüne 6 cm² yazıldığında, bu küpün yüzlerinin alanları toplamı kaç cm²'dir?
+  A) 21 cm²
+  B) 22 cm²
+  C) 23 cm²
+  D) 24 cm²
+  E) 25 cm²
+
+#11 [MATEMATIK]
+  Q: Sayısal bir dizi için aşağıdaki ifade veriliyor:
+1, 2, 4, 8, 16, ...
+  A) Sayısal dizi 10. elemanı 1024'dür.
+  B) Sayısal dizi 10. elemanı 512'dür.
+  C) Sayısal dizi 10. elemanı 256'dır.
+  D) Sayısal dizi 10. elemanı 128'dir.
+  E) Sayısal dizi 10. elemanı 64'dür.
+
+#12 [GEOMETRI]
+  Q: Bir eşkenar üçgenin çevresi 12 cm ise, bu üçgenin bir kenarının uzunluğu kaç cm'dir?
+  A) 2 cm
+  B) 3 cm
+  C) 4 cm
+  D) 5 cm
+  E) 6 cm
+
+#13 [GEOMETRI]
+  Q: ABC üçgenin dik kenarları 6 cm ve 8 cm ise, ABC üçgeninin çevresi kaç cm?
+  A) 24 cm
+  B) 28 cm
+  C) 30 cm
+  D) 32 cm
+  E) 36 cm
+
+#14 [TARIH]
+  Q: TBMM'nin 1 Kasım 1922'de Saltanatı kaldırması ile ilgili aşağıdakilerden hangisi söylenemez?
+  A) Milli Mücadele'nin diplomatik safhası sona ermiştir.
+  B) Osmanlı Devleti resmen sona ermiştir.
+  C) TBMM, Lozan Görüşmeleri'ne tek temsilci olarak katılmıştır.
+  D) Laiklik yolunda önemli bir adım atılmıştır.
+  E) TBMM'nin Anadolu'daki siyasi otoritesi artmıştır.
+
+#15 [MATEMATIK]
+  Q: Geriye kalan 1000 TL değerli bir parayı 100 TL parçalarına bölün. Kaç parçaya bölünebilir?
+  A) 10
+  B) 100
+  C) 1000
+  D) 10000
+  E) 100000
+
+#16 [MATEMATIK]
+  Q: Süper Lig'de bulunan 18 takımın her birinin taraftar temsilcilerinin çağrıldığı bir toplulukta en az kaç kişi bulunursa kesinlikle herhangi bir takımın taraftarlarından 5 kişi bulunur?
+  A) 72
+  B) 73
+  C) 90
+  D) 91
+  E) 93
+
+#17 [MATEMATIK]
+  Q: a ve b, sıfırdan farklı sayılardır. a + b = 0 ise, aşağıdaki ifadelerden hangisi doğrudur?
+  A) a^2 + b^2 = 0
+  B) a^2 - b^2 = 0
+  C) a^2 + b^2 = 2ab
+  D) a^2 - b^2 = 2ab
+  E) a^2 + b^2 = 2a^2
+
+#18 [MATEMATIK]
+  Q: Bir bilgisayar programı yardımıyla soru yazan Süleyman'ın yazdığı sorular ile ilgili aşağıdaki bilgiler verilmektedir.
+
+• Yazdığı soruda şekil var ise bir soru 18 KB yer kaplamaktadır.
+
+• Yazdığı soruda şekil yok ise bir soru 12 KB yer kaplamaktadır.
+
+Süleyman'ın yazdığı soruların bulunduğu dosya toplam 288 KB yer kapladığına göre yazdığı soru sayısı aşağıdakilerden hangisi olamaz?
+  A) 15
+  B) 17
+  C) 19
+  D) 21
+  E) 23
+
+#19 [SOSYAL]
+  Q: Felsefe insanın kendisi, hayatı, yaşadığı toplum ve dünya üzerine akla dayalı, düşünsel bir çaba olup, görünenlerin arkasındaki şeyleri görebilme çabasıdır.
+Bu ifadeden felsefe için;
+I. Eleştirel düşünceye dayalıdır.
+II. Mantık ilkelerine göre hareket eder.
+III. Bulunduğu çağın koşullarından etkilenir.
+yargılarından hangileri çıkarılabilir?
+  A) I ve II
+  B) Yalnız II
+  C) II ve III
+  D) Yalnız III
+  E) I, II ve III
+
+#20 [TURKCE]
+  Q: (I) Gaziantep'in -o dönemdeki adıyla Antep'in- Osmanlı tarihinde önemli bir yeri var; bakırcılarının eşsiz maharetleriyle üretilen bardaklar, çanaklar ve daha nicesi sadece ailelerin değil sarayın da göz nuruydu âdeta. (II) Yani bu vilayet Osmanlı İmparatorluğu'nun bir çeşit züccaciye fabrikasıydı. (III) Burada 15. yüzyılın ortalarında başlayan bakır işlemeciliği Acem ve Arap illerinden gelen tüccar ve gezginlerin de ilgisini çekti. (IV) Çünkü Diyarbakır'da hâlâ yer alan 14. yüzyıldan kalma bir bakırcı atölyesi olduğu bilinmekte. (V) Anadolu'daki ilk bakır işlemeciliğinin burada yapıldığı da bilinenler arasında.
+Bu parçadaki numaralanmış cümlelerin hangisinden sonra düşüncenin akışına göre "Ancak bakırcılığın Gaziantep'te başladığı pek söylenemez." cümlesi getirilmelidir?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#21 [MATEMATIK]
+  Q: a ve b iki doğal sayıdır. a ve b'nin en küçük ortak katı 120'dir. a ve b'nin en büyük ortak böleni 10'dur. a ve b'nin toplamı kaçtır?
+  A) 130
+  B) 140
+  C) 150
+  D) 160
+  E) 170
+
+#22 [MATEMATIK]
+  Q: Bir matematikçi ilk 6 asal sayının tamamını birer kez ve toplama (+), çıkarma (-), çarpma (•) ve bölme (:) işlemlerini istediği sayıda kullanarak 71 sayısına ulaşmak istiyor.
+
+Örneğin, bu matematikçi 2, 3 ve 5 asal sayılarını kullanarak işlem yapmak isteseydi 2 + 3 + 5 = 10 veya (2 - 3) • 5 = -5 sayılarına ulaşabilirdi.
+
+Buna göre, bu matematikçinin istediği sonuca ulaşabilmesi için en az kaç çarpma (•) sembolü kullanması gerekir?
+  A) 3
+  B) 4
+  C) 5
+  D) 6
+  E) 7
+
+#23 [MATEMATIK]
+  Q: Aşağıdaki ifadelerden hangisi tam bir kare sayıdır?
+  A) 16
+  B) 25
+  C) 36
+  D) 49
+  E) 50
+
+#24 [GEOMETRI]
+  Q: Bir üçgenin yüksekliği, dik kenarının iki katıdır. Bu üçgenin dik kenarının uzunluğu 12 cm ise, bu üçgenin alanı kaç cm²'dir?
+  A) 72 cm²
+  B) 96 cm²
+  C) 144 cm²
+  D) 192 cm²
+  E) 288 cm²
+
+#25 [MATEMATIK]
+  Q: Bileşke Fonksiyonun Limiti
+
+Örnek: f(x) = x^2 ve g(x) = x + 1 ise f(g(x)) = ?
+  A) x^2 + 1
+  B) x^2 + x + 1
+  C) x^2 + x
+  D) x^2 + 2x + 1
+  E) x^2 + 2x
+
+#26 [MATEMATIK]
+  Q: sinx + cosx = 1 olduğunda x'nin değerleri hangileridir?
+  A) x = 0, x = π/2, x = π
+  B) x = 0, x = π/2, x = 3π/2
+  C) x = 0, x = π/2, x = 2π
+  D) x = 0, x = π/2, x = π, x = 3π/2
+  E) x = 0, x = π/2, x = π, x = 3π/2, x = 2π
+
+#27 [BIYOLOJI]
+  Q: 1. İnsülin ile hormonların bağlantı oluşturduğu, etkili bir hormonun etkisini artıran bir hormonun adı nedir?
+  A) A. Adrenalin
+  B) B. Tiroksin
+  C) C. Dijetin
+  D) D. Glukagon
+  E) E. Kalsitonin
+
+#28 [MATEMATIK]
+  Q: A bir küme olmak üzere, A ∪ {1, 2, 3, 4} ve A − {1, 2, 3, 4} kümelerinin eleman sayılarının oranı 3'tür.
+Buna göre, s(A) ifadesinin alabileceği değerler toplamı kaçtır?
+  A) 18
+  B) 20
+  C) 22
+  D) 24
+  E) 26
+
+#29 [TURKCE]
+  Q: (I) Ağaçlar: ekosistemin önemli, insan ve hayvan varlığı açısından korunması gereken unsurlardır. (II) Kuzey Kaliforniya'daki dünyanın en uzun ağaçlarının yaşadığı yerdir. (III) Burada bulunan ve sahih sekoyalar türünden olan ve Hyperion ad verilen ağacın boyu neredeyse 116 metre. (IV) Yine, 25 Ağustos 2008 de doğa bilimciler Chris Atkins ve Michael Taylor tarafından keşfedilmiştir. (V) Ağaç kesin konumu, insanların yoğun ilgisi nedeniyle orman ekosisteminin zarar göreceği endişesiyle kamuoyuyla paylaşılmamıştır.
+
+Bu parçadaki numaralanmış cümlelerden hangisi düşünce akışını bozmaktadır?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#30 [GEOMETRI]
+  Q: ABC üçgenünde, A = 30°, B = 60° ve BC = 4 cm ise, AB kaç cm?
+  A) 2 cm
+  B) 2√3 cm
+  C) 4 cm
+  D) 4√3 cm
+  E) 8 cm
+
+#31 [MATEMATIK]
+  Q: 1. Sayılar sırasında terimler 1 + 6 + 11 + ... şeklinde devam eder. Bu seride 10. terim kaçtır?
+  A) 50
+  B) 55
+  C) 60
+  D) 65
+  E) 70
+
+#32 [MATEMATIK]
+  Q: sinx ve cosx fonksiyonları için aşağıdaki eşitlikler veriliyor:
+
+sinx + cosx = 1
+sinx - cosx = 0
+
+Buna göre, x değerinin kaçtır?
+  A) 0
+  B) π/4
+  C) π/2
+  D) π
+  E) 2π
+
+#33 [MATEMATIK]
+  Q: Ergün Bey, aracının yakıt deposunun $\frac{2}{5}$'i dolu iken benzinin litre fiyatına 1 TL zam geldiğini öğrenmiş ve aracını depodaki zamlı fiyat üzerinden doldurmuştur.
+
+Depodaki benzinin $\frac{3}{4}$'ünü kullanıldıktan sonra benzinin litre fiyatına son fiyat üzerinden 3 TL indirim yapıldığını öğrenen Ergün Bey depoyu tamamen doldurmuştur.
+
+Ergün Bey'in her iki durumda da aracının deposunu doldurmak için ödediği ücret aynı olduğuna göre, benzinin zam gelmeden önceki fiyatı kaç TL'dir?
+  A) 14
+  B) 16
+  C) 18
+  D) 20
+  E) 24
+
+#34 [MATEMATIK]
+  Q: Aşağıdaki denklemlerden hangisinin çözümü x = 1'tir?
+  A) x + 1 = 0
+  B) x - 1 = 0
+  C) x^2 - 1 = 0
+  D) x^2 + 1 = 0
+  E) x^2 - 2x + 1 = 0
+
+#35 [MATEMATIK]
+  Q: m bir tam sayı olmak üzere,
+$x^2 - (2m - 3)x - 3 = 0$
+denkleminin bir kökü (0, 1) aralığında, diğer kökü ise
+(-4, -2) aralığındadır.
+Buna göre, verilen denklemin kökleri toplamı kaçtır?
+  A) -5
+  B) -4
+  C) -3
+  D) -2
+  E) -1

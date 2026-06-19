@@ -1,0 +1,330 @@
+=== AW CONSENSUS BATCH 05 — her soru: sadece doğru şık (A-E). Anahtar gizli.
+
+#1 [MATEMATIK]
+  Q: Bir üçgende açıların ölçüleri topllamı 180° dir. Bu açıların ölçüleri sırasıyla x, 2x ve 3x olsun. Bu üçgenenin en büyük açısı kaç derecedir?
+  A) 30°
+  B) 60°
+  C) 90°
+  D) 120°
+  E) 150°
+
+#2 [MATEMATIK]
+  Q: Gerçek sayılar kümesinin bir alt kümesi olan [0, a] aralığı üzerinde sürekli, artan ve pozitif değerli olan f fonksiyonunda
+$$\int_{0}^{n} f(x)dx = 12$$
+eşitliği sağlanıyor.
+Buna göre,
+$$n \cdot \left[ f\left(\frac{n}{12}\right) + f\left(\frac{2n}{12}\right) + f\left(\frac{3n}{12}\right) + ... + f\left(\frac{11n}{12}\right) \right]$$
+toplamının en büyük tam sayı değeri kaçtır?
+  A) 11
+  B) 25
+  C) 75
+  D) 143
+  E) 145
+
+#3 [MATEMATIK]
+  Q: 1. Bir zarla iki kez atıldığında, zarın üst yüzeylerinin toplamı 7 olma olasılığı kaçtır?
+  A) 1/6
+  B) 1/3
+  C) 1/2
+  D) 1/4
+  E) 1/8
+
+#4 [GEOMETRI]
+  Q: ABC üçgenünde, A, B, C köşelerinin kenar orta noktaları A1, B1, C1'dir. A1B1C1 üçgenü ABC üçgeninin:
+  A) kenar uzunlukları
+  B) açları
+  C) kenar uzunlukları ve açıları
+  D) kenar uzunlukları ve köşelerinin konumları
+  E) köşelerinin konumları
+
+#5 [MATEMATIK]
+  Q: A sınıfındaki her 5 öğrenciden ikisi, B sınıfındaki her 3 öğrenciden biri Fenerbahçeli, diğerleri ise Beşiktaşlıdır. A ve B sınıflarındaki toplam Fenerbahçeli öğrenci sayısının Beşiktaşlı öğrenci sayısına oranı \frac{8}{13}'tür. Buna göre, A sınıfındaki Beşiktaşlı öğrenci sayısının B sınıfındaki Beşiktaşlı öğrenci sayısına oranı kaçtır?
+  A) \frac{3}{4}
+  B) \frac{4}{3}
+  C) \frac{7}{5}
+  D) \frac{5}{6}
+  E) \frac{9}{4}
+
+#6 [MATEMATIK]
+  Q: Aşağıdaki aritmetik dizilerden hangisi 10. terimini 100'den büyük bir sayıya eşitlemez?
+  A) a_1 = 2, d = 3
+  B) a_1 = 5, d = 2
+  C) a_1 = 3, d = 4
+  D) a_1 = 1, d = 5
+  E) a_1 = 4, d = 1
+
+#7 [GEOMETRI]
+  Q: ABC üçgeni veriliyor. A, B, C köşelerinin uzunlukları sırasıyla 10 cm, 17 cm, 10 cm'dir. Bu üçgenin çevresi kaç cm'dir?
+  A) 47 cm
+  B) 40 cm
+  C) 37 cm
+  D) 30 cm
+  E) 27 cm
+
+#8 [GEOMETRI]
+  Q: ABC üçgenü veriliyor. ABC üçgeninin açıları A = 60°, B = 45°, C = 75° ise, bu üçgenin en uzun kenarının uzunluğu 10 cm ise, bu üçgenin en kısa kenarının uzunluğu kaç cm'dir?
+  A) 5
+  B) 5√2
+  C) 5√3
+  D) 10
+  E) 10√2
+
+#9 [GEOMETRI]
+  Q: Bir çemberde, merkez açısı 120° olan bir kesir dilimi çizilmiştir. Bu kesir diliminin uzunluğu 10 cm'dir. Çemberin yarıçapı kaç cm'dir?
+  A) 5 cm
+  B) 6 cm
+  C) 7 cm
+  D) 8 cm
+  E) 9 cm
+
+#10 [MATEMATIK]
+  Q: Aşağıda İstanbul Park'ta Formula 1 yarışı izleyen Osman ve Niyazi arasında geçen konuşma verilmiştir.
+
+Osman
+• Az önce geçen kırmızı araç tahminen 200 km/sa ile 240 km/sa arasında bir hızla gidiyordu.
+
+Niyazi
+• Dikkat etmemiş ama aracın motor sesinden anladığım kadariyla 180 km/sa ile 220 km/sa arasında bir hızla gidiyordu.
+
+Bu iki kişi aracın hızlı olan x gerçek sayısını doğru tahmin ettigine göre, bu aracın saatteki hızını gösteren eşitsizlik aşağıdakilerden hangisidir?
+  A) |x - 150| < 100
+  B) |x - 200| < 20
+  C) |x - 210| < 10
+  D) |x - 170| < 30
+  E) |x - 180| < 20
+
+#11 [GEOMETRI]
+  Q: ABC üçgeni veriliyor. A = 6 cm, B = 8 cm, C = 10 cm. ABC üçgeninin çevresi kaç cm'dir?
+  A) 24
+  B) 25
+  C) 27
+  D) 30
+  E) 36
+
+#12 [MATEMATIK]
+  Q: 10. Bir eşitkenin çözüm kümesi [-2, 2] ise, aşağıdaki ifadelerden hangisi doğrudur?
+  A) x + 2 = 0
+  B) x - 2 = 0
+  C) x^2 - 4 = 0
+  D) x^2 + 4 = 0
+  E) x^2 - 2x = 0
+
+#13 [MATEMATIK]
+  Q: x, m $\in$ R olmak üzere
+$5^x - 4 = 5^{-x} + 3 = m$
+eşitlikleri veriliyor.
+Buna göre,
+$14m - m^3$
+ifadesinin eşiti kaçtır?
+  A) 10
+  B) 11
+  C) 12
+  D) 13
+  E) 14
+
+#14 [TURKCE]
+  Q: Aşağıdaki araştırma sonuçlarından hangisi bu sorulardan herhangi biriyle ilişkili değildir?
+  A) Sigara dumanından en hızlı ve en yoğun şekilde etkilenen organlar akciğerler olduğu ortaya konmuştur.
+  B) Özellikle kanser, kalp krizi, inme, depresyon gibi pek çok sağlık sorununun sigara ile ilişkili olduğu saptanmıştır.
+  C) Sigara içmenin asıl sebebinin psikolojik olduğu bunun nedenlerinden birinin de özgüven eksikliği olduğu tespit edilmiştir.
+  D) Uzmanlar birçok hastalığa neden olan sigarayı bırakmak için profesyonel destek almak gerektiğini ileri sürmüştür.
+  E) Dünya genelinde her 6 saniyede bir kişinin ölümünün temel nedeninin sigara olduğu belirlenmiştir.
+
+#15 [MATEMATIK]
+  Q: P1 ve P2 polinomları için aşağıdaki eşitlikler veriliyor:
+P1 = x^2 + 3x + 2
+P2 = x^2 + 5x + 6
+Buna göre, P1 ve P2 polinomlarının köklerinin toplamı kaçtır?
+  A) 8
+  B) 10
+  C) 12
+  D) 14
+  E) 16
+
+#16 [GEOMETRI]
+  Q: ABC dik üçgen, A=90°, AB=6 cm, AC=8 cm olduguına göre ABC üçgenin çevresi kaç cm'dir?
+  A) 20
+  B) 24
+  C) 30
+  D) 36
+  E) 40
+
+#17 [MATEMATIK]
+  Q: Aşağıdaki denklemlerden hangisinin çözümü tam olarak x = 7'dir?
+  A) 3x - 1 = 19
+  B) 3x + 1 = 19
+  C) 3x - 2 = 19
+  D) 3x + 2 = 19
+  E) 3x + 1 = 13
+
+#18 [MATEMATIK]
+  Q: Kazançların toplamı 200 TL'dir. Kazançların oraneleri 3:2:1 ise kazançların miktarları kaç TL'dir?
+  A) 100 TL, 60 TL, 40 TL
+  B) 120 TL, 80 TL, 40 TL
+  C) 150 TL, 100 TL, 50 TL
+  D) 180 TL, 120 TL, 60 TL
+  E) 200 TL, 130 TL, 70 TL
+
+#19 [TURKCE]
+  Q: (I) Dünyanın en güzel ve iz bırakan yolculukları; bilinmeyen uzak ülkelere, bambaşka kültürlere, farklı doğa güzelliklerine yapıldıklarında. (II) İnsanlar, coğrafi gereği keşfetmeyi çok severler. (III) Bilinmeyen, her zaman insanıoğlu için çekici bir tutku olmuştur. (IV) O yüzyıldan otonik, mistik ülkeler, oryantalist diyarlar ve masallardan fırlamış gibi duran şark ülkeleri, yüzyıllardır Batının rüyalarında süsleyir. (V) Belki de o yüzyılın binası en çok gezilecek yolu yapmayı istiyor.
+  A) I. cümlede karşılaştırma yapılmıştır.
+  B) II. cümlede insanın bir yönü ele alınmıştır.
+  C) III. cümlede çıkarımda bulunulmuştur.
+  D) IV. cümlede benzetme yapılmıştır.
+  E) V. cümlede sonuca varılmıştır.
+
+#20 [KIMYA]
+  Q: 4. Aşağıdaki iki molekülün hangisinde daha çok hidrojen atomu bulunur?
+  A) CH₃CH₂OH
+  B) CH₃CH₂OCH₃
+  C) CH₃CH₂COOH
+  D) CH₃CH₂COOCH₃
+  E) CH₃CH₂COOCH₂CH₃
+
+#21 [GEOMETRI]
+  Q: ABC üçgenünde, A = 90°, AB = 12 cm, AC = 16 cm ise, BC uzunluğu kaç cm'dir?
+  A) 12
+  B) 15
+  C) 17
+  D) 20
+  E) 25
+
+#22 [TURKCE]
+  Q: Neydi o dünkü kar? Durmayacak gibi yağıdı. Önce bir keyif veriyor, sonra içe sıkıyor. Kitap bile okuyamadım, gözlerim hep penceredeydi: 'Bir bin dınsa!' diye bağırdım. Ama o sessiz sessiz dökülüyor, hiç dinmeyecekmiş gibi geliyordu insana. Hani Yahya Kemal Bey, 'Bin yıl sürecek zannedilen kar sesidir bu.' diyor, sesi bir yana bırakın; doğdu. Bin yıl sürecek sanılan yıldızlar, bunaltıyor. Bugün de sokaklarda yürüyebilsen yine! Başka yerlere göre korkutucu Ankara'nın soğuğu! Kaldırımlarda buz, demir kesilir sanki.
+
+Bu parçanın anlatımıyla ilgili aşağıdakilerden hangisi söylenemez?
+  A) Birinci kişili anlatım kullanılmıştır.
+  B) Öykülemeye başvurulmuştur.
+  C) Karşılaştırmadan yararlanılmıştır.
+  D) Benzetme yapılmıştır.
+  E) Tanık göstermeden faydalanılmıştır.
+
+#23 [MATEMATIK]
+  Q: $x! - (x - 2)!$ işleminin sonucunun sondan 3 basamağı sıfır olduğuna göre, x aşağıdakilerden hangisi olabilir?
+  A) 16
+  B) 15
+  C) 14
+  D) 13
+  E) 12
+
+#24 [MATEMATIK]
+  Q: x ve y gerçel sayılar olmak üzere,
+$x^3 + y = 6$
+$x^2 - 2y = -12$
+olduğuna göre, y sayısının en büyük değeri en küçük değerinden kaç fazladır?
+  A) \frac{1}{8}
+  B) \frac{1}{6}
+  C) \frac{1}{5}
+  D) \frac{1}{4}
+  E) \frac{1}{2}
+
+#25 [GEOMETRI]
+  Q: ABC üçgenü verilmiştir. m∠B = 40° ve m∠C = 70° olduğuna göre, m∠A kaç derecedir?
+  A) 30
+  B) 40
+  C) 50
+  D) 60
+  E) 70
+
+#26 [TARIH]
+  Q: I. Millî egemenlik
+II. Ulusal bağımsızlık
+III. Ekonomik bağımsızlık
+Yukarıdaki kavramların hangileri cumhuriyetçilik ilkesi ile doğrudan bağlantılıdır?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) I ve III
+  E) II ve III
+
+#27 [MATEMATIK]
+  Q: İki farklı ağaçın yüksekliklerinin toplamı 10 metredir. Bu iki ağaçın yüksekliklerinin farkı 2 metredir. Bu iki ağaçın yüksekliklerini bulunuz.
+  A) 4 ve 6
+  B) 5 ve 5
+  C) 6 ve 4
+  D) 7 ve 3
+  E) 8 ve 2
+
+#28 [MATEMATIK]
+  Q: 1. Stokastik analiz için aşağıdaki veriler verilmiştir:
+
+| X | 1 | 2 | 3 | 4 | 5 |
+|---|---|---|---|---|---|
+| P(X) | 0.2 | 0.1 | 0.3 | 0.2 | 0.2 |
+
+X değişkeninin beklenen değerini bulmak için hangi formül kullanılmalıdır?
+  A) E(X) = 1.2
+  B) E(X) = 2.5
+  C) E(X) = 3.0
+  D) E(X) = 3.5
+  E) E(X) = 4.0
+
+#29 [TURKCE]
+  Q: Edebiyat, hayatımızın dışında olup da ara sıra başvurduğumuz bir etkinlik çeşidi olma gereği duymaz. Edebiyat, iyi bir okur için yaşamla bir ilişki kurma biçimidir. Bu nedenle edebiyat etkiliyken etkili olmaz. Ama maalesef Türkiye'de edebiyat ve diğer sanat etkinlikleri genellikle biraz müsamere havasında ve öğretici amaç üzerine kurgulanır. Bu nedenle ortaya ne yeteri ne de doyurucu bir sonuç çıkar. Oysa edebiyatın bir ihtiyaç olduğunu kavrayarak halkı eğitmek gibi yüce gönüllü hâlleri bırakıp bir ihtiyacın karşılanmasına yönelik alçak gönüllü işler yapmaya başlarsak bunun karşılığı olarak...
+  A) Edebiyat, yaşama bağlılığı sağlayan bir ihtiyaç olduğundan etkileri yeterli olmaz.
+  B) Edebiyat etkinlikleri, sayıca yeterli olmakla birlikte nitelikleri tamamlanmalıdır.
+  C) Edebiyat, toplum için bir ihtiyaç olduğundan halkı eğitmek gibi bir görevi vardır.
+  D) Edebiyat, hayatımızın dışında olup o ara sıra başvurduğumuz bir etkinlik türü değildir.
+  E) Ülkemizde kültürel etkinlikler çoğunlukla didaktik bir tarzda kurgulanır.
+
+#30 [MATEMATIK]
+  Q: Dünya kupası turnuvası, başladığı yıldan itibaren her dört yılda bir tekrar düzenlenmektedir. Mustafa ile Sertaş arasında geçen konuşma aşağıda verilmiştir.
+
+Mustafa : "Ben 7 yaşında iken 12. Dünya kupası turnuvası vardı."
+
+Sertaş : "Ben 24 yaşında iken Dünya kupasının 15. turnuvası vardı."
+
+2024 yılında Sertaş ile Mustafa'nın yaşları toplamı 87 olduğuna göre, Mustafa'nın doğum tarihi aşağıdakilerden hangisidir?
+  A) 1979
+  B) 1980
+  C) 1961
+  D) 1982
+  E) 1983
+
+#31 [SOSYAL]
+  Q: Aristoteles'in ifadesiyle "doğal olarak bilmeyi isteyen insan" hayatını kuşatan varlığı sürekli olarak merak etmiştir. Varlığın ne olduğu sorusu, felsefenin temel sorularından biri olmuştur. Felsefe de var olan şeyleri, onların temellerini, derinliklerini ve aralarındaki bağı bir bütün olarak açıklamak ister.
+Bu parçada aşağıdaki felsefe alt dallarının hangisinden bahsedilmektedir?
+  A) Epistemoloji
+  B) Metafizik
+  C) Etik
+  D) Estetik
+  E) Ontoloji
+
+#32 [MATEMATIK]
+  Q: Bir aile ile ilgili aşağıdaki bilgiler veriliyor.
+* Anne ve babanın 2 erkek, 3 kız çocuğu bulunmak-tadır.
+* Erkek çocukların ikişer, kız çocukların üçer erkek çocuğu bulunmaktadır.
+* Anne ve babanın torunlarının her birinin birer kız çocuğu bulunmaktadır.
+Bu ailede anne ve babanın torunlarının çocukları hariç herkes evli ve çocuk sahibi olduğuna göre; bu ailedeki kız sayısı erkek sayısından kaç fazladır?
+  A) 9
+  B) 10
+  C) 11
+  D) 12
+  E) 13
+
+#33 [TURKCE]
+  Q: Bugün dijital yerlilerle ilgili olarak genellikle mevcut durumun tespiti üzerine çalışmalar yapılmıyor. Fakat bunun ötesini de anlayarak gelecek tasavvuru ona göre şekillendirmemiz gerekiyor. Yarının dünyasını kuracak dijital yerliler sadece sanal "avatarlarını" mutluluğu bir düzlem mi getirecek, yoksa sahip oldukları devasa bilgi birikimi bulundukları evrene yansıtsa daha yaşanabilir bir geleceği mi inşa edecekler?
+
+Bu parçada altı çizili sözle asıl anlatılmak istenen aşağıdakilerden hangisidir?
+  A) Kişinin hayal ettiği şeyleri zihninde canlandırması
+  B) Geçmişte kaçırılmış olduğu fırsatların üzüntüye dönüşmesi
+  C) İnsanın, insandan insana farklılıklarını bilip ona göre davranması
+  D) Gelecek ve geçmiş sıkıntısının insanda çöküntüye sebebiyet vermesi
+  E) Psikolojik olarak çıkmaza girip bunaltma sürüklenmesi
+
+#34 [GEOMETRI]
+  Q: 4. Bir üçgenin bir kenarı 10 cm, bu kenarın karşısındaki açı 60° ve bu kenarın kenarlarına dik olan yükseklik 5 cm ise, bu üçgenin alanı kaç cm²'dir?
+  A) 25 cm²
+  B) 50 cm²
+  C) 75 cm²
+  D) 100 cm²
+  E) 150 cm²
+
+#35 [TURKCE]
+  Q: (I) Asansör, insanların merdiven kullanmaksızın bir binanın üst katlarına çıkmalarını sağlayan önemli araçtır. (II) İlk asansör MS I. yüzyılda kullanılmıştır. (III) Bu asansörde çekme işlemi elle ya da hayvanlarla sağlanıyordu. (IV) Bugün çok kullandığımız elektrikli asansörü, yüz yıl önce Elisha Otis adında Amerikalı bilim insanı bulmuştur. (V) Oysa bugün asansör çok kısa süre içinde bir gökdelenin en üst katına çıkmamızı sağlamaktadır. (VI) Asansörün bulunmasından önce çok yüksek binalar yoktu.
+Bu parçadaki anlam bütünlüğünün sağlanması için numaralanmış cümlelerden hangileri yer değiştirmelidir?
+  A) I ve III
+  B) II ve IV
+  C) IV ve V
+  D) III ve IV
+  E) V ve VI

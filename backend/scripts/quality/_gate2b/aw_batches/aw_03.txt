@@ -1,0 +1,319 @@
+=== AW CONSENSUS BATCH 03 — her soru: sadece doğru şık (A-E). Anahtar gizli.
+
+#1 [SOSYAL]
+  Q: 18. yüzyıl filozoflarından olan Hutcheson'un ahlak felsefesinde "ahlak duyusu" yer alır. Ona göre insan, bilinen beş duyuya ek olarak doğuştan gelen altıncı bir duyuya sahiptir. Bu ise ahlak duyusudur. Bu ahlak duyusu insanın kendisinde ve başkalarındaki erdem veya erdemsizliği algılamasına yarar. O, ahlak duyusu öğretisi ile Hobbes'un bencillik kuramına karşı çıkmıştır. Çünkü ona göre; acıma, yardım severlik, başkalarının sevincini veya üzüntüsünü paylaşma gibi ahlaki algılar tıpkı diğer duyular gibi irademizin herhangi bir yönlendirmesine maruz kalmayan doğal algılardır.
+Bu parçada verilen görüşler aşağıdaki yargılardan hangisine eleştiri niteliğindedir?
+  A) Doğa durumunda insan, insanın kurdudur.
+  B) Ahlaki eylemlerin ölçütü özgürlüktür.
+  C) Ahlaki eylemin amacı mutluluktur.
+  D) İnsan yaratılışı gereği iyidir.
+  E) İyi eylemin ölçütü haz vermesidir.
+
+#2 [MATEMATIK]
+  Q: 3, 7, 1, 4, 6, 8 sayıları ile oluşturulan veri grubunda x sayısı silinip yerine y sayısı yazıldığında veri grubunun medyanı aritmetik ortalamasına eşit olmaktadır.
+Buna göre, (x, y) ikilisi aşağıdakilerden hangisi olabilir?
+  A) (3, 4)
+  B) (1, 3)
+  C) (6, 7)
+  D) (6, 4)
+  E) (8, 4)
+
+#3 [GEOMETRI]
+  Q: 5. Bir dairesel parkurun yarıçapı 500 m'dir. Bu parkurun çevresi kaç metredir?
+  A) 1000 m
+  B) 1500 m
+  C) 2000 m
+  D) 2500 m
+  E) 3000 m
+
+#4 [MATEMATIK]
+  Q: Bir konut projesinde tüm daireler özdeş olup dairelerin zemin alanları toplamı 800 metrekaredir.
+
+Projedeki dairelerden
+
+• 5 tanesinin tüm zeminine fayans döşenecektir.
+• Diğer dairelere hiç fayans döşenmeyecektir.
+
+Proje sorumlusu fiyat araştırması yaptığında, daire başına 10000 TL cam maliyeti ve fayans döşenecek dairelerin zeminlerinde metrekareye 1000 TL fayans maliyeti olduğunu öğrenmiştir.
+
+Buna göre, bu projede dairelerin cam ve fayans giderleri toplamı en az kaç TL'dir?
+  A) 220 000
+  B) 270 000
+  C) 300 000
+  D) 360 000
+  E) 400 000
+
+#5 [GEOMETRI]
+  Q: Dik koordinat düzleminde [OP] doğru parçası ile P(a, b) noktası verilmiştir. [OP] doğru parçasının sırasıyla y = x ve y = –x doğrularına göre simetriği alındığında P noktası sırasıyla P₁ ve P₂ noktalarına gelmektedir. (a < b)
+|OP| = 6 birim
+Buna göre, P₁ ile P₂ noktaları arasındaki uzaklık kaç birimdir?
+  A) 6
+  B) $6\sqrt{2}$
+  C) 10
+  D) $6\sqrt{3}$
+  E) 12
+
+#6 [MATEMATIK]
+  Q: Bu alıştırma matematiksel işlemler ile ilgilidir. Aşağıdaki işlemlerden hangisi yanlışdır?
+  A) 450 ÷ 90 = 5
+  B) 450 ÷ 90 = 6
+  C) 450 ÷ 90 = 7
+  D) 450 ÷ 90 = 8
+  E) 450 ÷ 90 = 9
+
+#7 [GEOMETRI]
+  Q: Dişli çemberin dış çapı 6 cm, iç çapı ise 4 cm olduğunda, bu çemberin iç çemberi ile dış çemberi arasında kalan kapalı bölge kaç cm² dir?
+  A) 12,56
+  B) 10,28
+  C) 15,70
+  D) 18,84
+  E) 20,36
+
+#8 [GEOMETRI]
+  Q: ABC üçgenünde A açısının ölçüsü 120°, B açısının ölçüsü 30° ise C açısının ölçüsü kaç derecedir?
+  A) 30°
+  B) 45°
+  C) 60°
+  D) 90°
+  E) 120°
+
+#9 [TURKCE]
+  Q: 1954 yılında, başkent Ankara'da gözlemsel astronomi faaliyetlerini başlatmak amacıyla Ankara Üniversitesi bünyesinde bir gözlemevi kurulması kararlaştırıldı. Bu görev, Hollandalı astrofizikçi Prof. Egbert Adriaan Kreiken'e verildi. Üniversitenin Fen Fakültesi'nin binası için merkezinoğlu olan, rasathanenin inşa edilebileceği gözlem yapmaya uygun bir arazi bulmak için çalışmalara başlandı. Prof. Dr. Kreiken'in gerçekleştirdiği uzun araştırmaların ardından, Ankara'nın 18 km güneyinde, Altlabat mevkiinde bir alan belirlendi. Burası; yüksekliği iyi, merkezden uzaklaş kolay ancak şehir ışıklarından yetersizce uzak, yılın yaklaşık 300 günü açık gözlem imkânı sunan bir bölgeydi.
+
+Bu parçada Ankara Üniversitesi ile ilgili aşağıdakilerden hangisine değinilmemiştir?
+  A) Cumhuriyet'in kurulmasından bir süre sonra içinde rasathanesi kurulduğuna
+  B) Üniversitedeki rasathaneyi Hollandalı fizikçinin kurduğunu
+  C) Bünyesindeki gözlemsel astronomi faaliyetlerinin Ankara'ya yakın bir yerde gerçekleştiğini
+  D) Kurulan gözlemsel astronomi tesislerinin teknik anlamda yeterliliğe sahip olduğunu
+  E) Ankara yakınında bulunan rasathanesinin büyük tesisi olduğuna
+
+#10 [MATEMATIK]
+  Q: Bir topluluktaki kadınların sayısı, çocukların sayısının 2 katından 5 eksiktir.
+
+Aynı topluluktaki erkeklerin sayısı, çocukların sayısının 3 katının 4 fazlasının yarısıdır.
+
+Yukarıda verilen bilgilere göre, bu topluluktaki erkeklerin sayısını kadınların sayısı cinsinden tanımlayan cümle aşağıdakilerden hangisidir?
+  A) Erkeklerin sayısı, kadınların sayısının 2 katının 21 fazlasının yarısıdır.
+  B) Erkeklerin sayısı, kadınların sayısının 3 katının 23 fazlasının dörtte biridir.
+  C) Erkeklerin sayısı, kadınların sayısının 3 katının 25 fazlasının dörtte biridir.
+  D) Erkeklerin sayısı, kadınların sayısının 4 katının 27 fazlasının sekizde biridir.
+  E) Erkeklerin sayısı, kadınların sayısının 5 katının 12 eksiğidir.
+
+#11 [TURKCE]
+  Q: Her yıl, milyonlarca ton plastik üretiliyor. Diğer yandan da plastik su şişeleri gibi geri dönüşümü sağlanamayan büyük miktarda atığın denizleri doldurmaması için çözüm arayışı sürüyor. Bu çözümlerden en umut verici olanı atıkları veya plastikleri parçalayan organizmalar. Ancak daha basit çözümler de var. Yakın zamanda bir araştırmacı, plastiğin aksine kalıcı olmayan ve kullanıldıktan sonra biyolojik olarak parçalanabilen bir malzemeden şişe üretme fikrini ortaya attı.
+
+Bu parçadan hareketle aşağıdakilerden hangisi söylenebilir?
+  A) Biyolojik olarak parçalanabilen şişe, şimdilik tasarım aşamasında olan sonuç odaklı çalışmalardan biridir.
+  B) Geri dönüşüm sorununun ortadan kaldırılmasında parçalanabilen şişe fikriyle önemli bir adım atılmış oldu.
+  C) Plastiğin yerine alternatif malzeme üretme fikrinin ortaya atılması, kısa vadede bir çözüm olarak görünmüyor.
+  D) Geri dönüşümü sağlanamayan plastik ve benzeri maddeler doğal hayata kalıcı hasarlar vermektedir.
+  E) Plastiğin doğada dönüşüme uğramaması, ilerleyen zamanlarda ciddi sağlık sorunlarına yol açacaktır.
+
+#12 [GEOMETRI]
+  Q: A ve B kümeleri eş iki çember ile aşağıdaki gibi gösterilmiştir. A $\cup$ B ve A $\cap$ B kümelerinin çevreleri sırasıyla $20\pi$ ve $4\pi$ birim olarak hesaplanmıştır. Buna göre, A $\cap$ B kümesinin alanı kaç birimkaredir?
+  A) $6\pi - 9\sqrt{3}$
+  B) $6\pi - 6\sqrt{3}$
+  C) $9\pi - 6\sqrt{3}$
+  D) $12\pi - 12\sqrt{3}$
+  E) $12\pi - 18\sqrt{3}$
+
+#13 [GEOMETRI]
+  Q: ABC üçgenünde A açısının ölçüsü 100° ve A açısının açıortayı AD ise, ABD açısının ölçüsü 20° olduğuna göre, BAC açısının ölçüsü kaç derecedir?
+  A) 40°
+  B) 50°
+  C) 60°
+  D) 70°
+  E) 80°
+
+#14 [TURKCE]
+  Q: Kelimeler anlamı 'yavaş kuluplar' olan Tai Chi Chuan, iki kez Çin kraliçliğini ön ve kadın eseri Yi Jing'de geçer. Birbirinden farklı hikayeleri arasıında en bilinenine göre, 13. yüzyılın ortalarında yaşayan taijia adlı bir Zhang Sanfeng isimli usta tarafından bir savas sanatı haline getirilmiştir. Sanfeng uzun süre çalıştı; savas sanatının içindeki set teknikleri aylar ve yerlerine işçül gücün gelişimini sağlayan enerji ve nefes egzersizlerini koyar. Böylece bu günümüze kadar gelen ve işçi hareket sanatı olarak tanımlayabileceğimiz Tai Chi Chuan ortaya çıkmış olur. Kısaça Tai Chi olarak anılan bu savas sanatı çoğunlukla yavaş hareket dizileri şeklinde öğretilir. Bugün en yaygın olan modern Tai Chi dişi de bilinen ve 24 formdan oluşan Yang stiliidir. Ayrıca, 36 formu bulunan Wudang Tai Chi stili ve 75 formdan meydana gelen geleneksel Chen Tai Chi stili de vardır.
+
+Bu parçada Tai Chi Chuan ile ilgili aşağıdakilerden hangisine değinilmemiştir?
+  A) Sözük anlamının hangi kaynakta ve ne olduğu
+  B) Ortaya çıkış tarihi ve ortaya çıkaran kişinin adına
+  C) Amacının işçi hareketi sağlama olduğu
+  D) Bu sanatın genellikle yavaş hareketlerle oluştuğuna
+  E) En popüler olanının adını ve içeriğini ne olduğuna
+
+#15 [MATEMATIK]
+  Q: Türk lirasında 5 TL, 10 TL, 20 TL, 50 TL ve 100 TL'lik banknotlar bulunmaktadır. Günlük 10 adet banknot kazanan birisi için aşağıdaki bilgiler veriliyor.
+Aynı banknottan en çok 3 adet kazanmıştır.
+Her bir banknottan en az 1 tane kazanmıştır.
+Buna göre; bu kişinin kazandığı para en çok A TL, en az B TL olduğuna göre A – B kaçtır?
+  A) 315
+  B) 300
+  C) 285
+  D) 270
+  E) 255
+
+#16 [MATEMATIK]
+  Q: 1. ÇEMBER TARAŞI TEST 1
+a) Çemberin merkezi O, çemberin yarıçapı r ve çemberin bir parçası AOB olup, AOB açısının ölçüsü 60° ise, AOB açısının sinüs değeri kaçtır?
+  A) 0.5
+  B) 0.75
+  C) 0.866
+  D) 1
+  E) 1.732
+
+#17 [MATEMATIK]
+  Q: Tüm sayıların toplamı 100 olan 5 tane tam sayıdan biri 10, ikisi 20 ve biri 30 ise, kalan sayının değeri kaçtır?
+  A) 10
+  B) 15
+  C) 20
+  D) 25
+  E) 30
+
+#18 [GEOMETRI]
+  Q: ABC üçgenünde, A = 60°, AB = 2 cm, BC = 3 cm ise, AC uzunluğu kaç cm'dir?
+  A) 2 cm
+  B) 3 cm
+  C) 4 cm
+  D) 5 cm
+  E) 6 cm
+
+#19 [MATEMATIK]
+  Q: dizinin n dilimli terimleri için, \(a_n = 2n + 1\) veriliyor. Bu dizinin 10. terimi kaçtır?
+  A) 19
+  B) 20
+  C) 21
+  D) 22
+  E) 23
+
+#20 [MATEMATIK]
+  Q: Gerçek sayılar kümesi üzerinde sürekli f fonksiyonunda
+$$ \int_{0}^{4} f(\sqrt{x} + 1)dx = 10 $$
+$$ \int_{1}^{3} f(x)dx = 6 $$
+eşitlikleri sağlanıyor.
+Buna göre, $$ \int_{1}^{3} xf(x)dx $$ integralinin değeri kaçtır?
+  A) 9
+  B) 10
+  C) 11
+  D) 12
+  E) 13
+
+#21 [MATEMATIK]
+  Q: Bir kafeye giden iki farklı arkadaş grubunun kafede içtikleri içecekler ve ödedikleri ücretler aşağıdaki gibidir. SİPARİŞ FİŞİ Ayran 2 Adet Kola 1 Adet Çay 3 Adet TOPLAM 35 TL. SİPARİŞ FİŞİ Ayran 4 Adet Kola 7 Adet Çay 1 Adet TOPLAM 115 TL. Buna göre; kafede satılan ayran, kola ve çayın birer tanesinin toplam fiyatı kaç TL'dir?
+  A) 19
+  B) 22
+  C) 23
+  D) 25
+  E) 28
+
+#22 [MATEMATIK]
+  Q: Bir üçgenin bir kenar uzunluğu 5 birim, diğer kenar uzunluğu 7 birim ve bu kenarların arasındaki açı 60 derecedir. Bu üçgenin alanını bulmak isteniyor.
+  A) 10.83
+  B) 12.5
+  C) 14.43
+  D) 16.25
+  E) 18.33
+
+#23 [TURKCE]
+  Q: Çeşitli zeka alanları birbirleri ile sürekli olarak etkileşim içindedir. Örneğin, bir yemeği pişirecek kişinin önce tarif okuması ve anlaması (sözel-zihinsel zeka alanı), yemek tarifi oluşturulan elementleri tasniflemesi ve yemeğe karşı oranlarını hesaplabilmesi (mantıksal-matematiksel zeka alanı) ve yemeğin kendi damak zevkine uygunluğu (görsel-zekâ alanı) yanında, ailedaki bütün fertlerin memnuniyetini de sağlayabilmesi (kişiler arası zeka alanı) gerekir.
+
+Bu cümlede altı çizili sözü hangisinde karşılıyabilecek bir kullanım aşağıdakilerin hangisinde vardır?
+  A) İnsanları bizden ya da öteki çoğu sınıflandırmak, insanlığa karşı yapılan en büyük suçlardan biridir.
+  B) Doğru bir planlamayla bu zor işin üstesinden rahatlıkla gelebileceğimizi inanıyorum.
+  C) Bazı olaylar vardır insanlık üzerinde hem iz bırakır hem de insanları hayata küstürür.
+  D) Aklın, insanoğluna verilmiş en büyük nimetlerden biri olduğunu çoğumuz bilemiyoruz.
+  E) Akıl ve zekâ arasındaki fark çoğu dönem tartışma konusu olmuştur.
+
+#24 [MATEMATIK]
+  Q: a_{n}=2n+1, aritmetik dizinin n. sıradaki terimi için verilen formülde, bu terimin 52. terimi kaçtır?
+  A) 103
+  B) 101
+  C) 102
+  D) 100
+  E) 104
+
+#25 [MATEMATIK]
+  Q: Aşağıdaki denklemlerden hangisi x = 7 değerini sağlayan x için doğrudur?
+  A) x + 1 = 8
+  B) x - 1 = 6
+  C) x + 1 = 6
+  D) x - 1 = 8
+  E) x + 1 = 7
+
+#26 [MATEMATIK]
+  Q: Bir okulda 100 öğrenci vardır. Bu öğrencilerin %40'ı 9. sınıf, %30'ü 8. sınıf ve kalanları 7. sınıf öğrencisi ise, 7. sınıf öğrencisi kaçtır?
+  A) 30
+  B) 40
+  C) 50
+  D) 60
+  E) 70
+
+#27 [GEOMETRI]
+  Q: Bir üçgenin dik kenarları 3 cm ve 4 cm uzunluğunda ise, bu üçgenin çevresi kaç cm'dir?
+  A) 12 cm
+  B) 14 cm
+  C) 15 cm
+  D) 16 cm
+  E) 18 cm
+
+#28 [GEOMETRI]
+  Q: ABC üçgenünde A = 60°, AB = 2 cm ve AC = 3 cm olduğunda BC uzunluğu kaç cm'dir?
+  A) 2.5 cm
+  B) 3 cm
+  C) 3.5 cm
+  D) 4 cm
+  E) 4.5 cm
+
+#29 [GEOMETRI]
+  Q: Bir dik silindirin yüksekliği 10 cm ve taban çapı 6 cm'dir. Bu silindirin hacmi kaç cm³'dür?
+  A) 180
+  B) 240
+  C) 360
+  D) 480
+  E) 540
+
+#30 [TURKCE]
+  Q: I. Aniden sağ kolunda, sanki iğne batırılmış gibi bir acı hissetti.
+II. Gizemli adam ise, insanların içine karışıp gözden kaybolmuştu bile.
+III. 26 Kasım 1933 günü, Hindistan'ın Kalküta şehrinde kalabalık bir tren istasyonunda, genç bir toprak sahibi ailesiyle yürüyordu.
+IV. 20 yaşındaki Amarendra Chandra Pandey, Howrah istasyonundayken bu olayı yaşadığında, yakınlarına "Biri bir şey batırdı!" diye seslendi.
+V. O sırada yanından geçen ufak tefek bir adam ona hafifçe çarptı.
+Yukarıdaki numaralanmış cümleler anlamlı bir bütün oluşturacak biçimde sıralandığında hangisi baştan üçüncü olur?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#31 [MATEMATIK]
+  Q: 1. Sayısal veri kümesi {1, 2, 3, 4, 5} için aşağıdaki ifadelerden hangisi doğrudur?
+  A) 1 + 2 + 3 + 4 + 5 = 15
+  B) 1 × 2 × 3 × 4 × 5 = 120
+  C) 1² + 2² + 3² + 4² + 5² = 55
+  D) 1³ + 2³ + 3³ + 4³ + 5³ = 225
+  E) 1! + 2! + 3! + 4! + 5! = 153
+
+#32 [MATEMATIK]
+  Q: ABC üçgenünde A açısının ölçüsü 30° olduğuna göre, A açısının cosinusu kaçtır?
+  A) 0.5
+  B) 0.75
+  C) 0.866
+  D) 0.966
+  E) 1.000
+
+#33 [MATEMATIK]
+  Q: 11. Bir öğrencinin ders notları şöyledir: 85, 88, 90, 92, 95. Bu notların ortalaması kaçtır?
+  A) 85
+  B) 87
+  C) 88
+  D) 89
+  E) 90
+
+#34 [GENEL]
+  Q: Aşağıdaki hangi döngü metnindeki döngü ifadesi doğru olarak yazılmıştır?
+  A) for i in range(10):
+  B) while i < 10:
+  C) for i in range(10): print(i)
+  D) while i < 10: print(i)
+  E) for i in range(10): print(i) while i < 10:
+
+#35 [GEOMETRI]
+  Q: Bir üçgenin bir kenarı 20 cm, diğer kenarı 30 cm, üçüncü kenarı ise 40 cm ise bu üçgenün çevresi kaç cm'dir?
+  A) 100 cm
+  B) 80 cm
+  C) 50 cm
+  D) 60 cm
+  E) 90 cm

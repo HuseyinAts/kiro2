@@ -1,0 +1,342 @@
+=== AW CONSENSUS BATCH 02 — her soru: sadece doğru şık (A-E). Anahtar gizli.
+
+#1 [TURKCE]
+  Q: Edebiyat, yaşamlı beslenir. Yaşama ayna tutar, onu yansıtır. Bunun için de bilgiden soyutlamazsa kendini. Romanların, oyunların, öykülerin, deneme ve şiirlerin dokusuna sindirilmiş olan bilgi; güzel duyuşal bir içerikle yüklenmiştir. Roman için okuduğumcu romanı, öykü ya da şiir ikinci kez okuma gereksinimi duyamaz. Yori bir tat alırız her okuyuşta.
+
+Bu parçanın anlatımıyla ilgili aşağıdakilerden hangisi söylenemez?
+  A) Karşılaştırmadan yararlanılmıştır.
+  B) Birden fazla tanımlama yapılmıştır.
+  C) Alıntıya yer verilmiştir.
+  D) Kişileştirme ve benzetmeye başvurulmuştur.
+  E) Öznel cümlelere yer verilmiştir.
+
+#2 [MATEMATIK]
+  Q: 90° < α < 180° olmak üzere,
+x = cos α
+y = sin α
+z = tan α
+olduğuna göre, aşağıdakilerden hangisinin sonucu sıfır olabilir?
+  A) y - z
+  B) y + x · z
+  C) x + z
+  D) x + y
+  E) y + z
+
+#3 [MATEMATIK]
+  Q: 10. Bir kişinin aylık geliri 1000 TL'dir. Bu geliri 10 aylık bir borç ödemesi için kullanmak istiyor. Borç ödemesi için her ay 100 TL'ye eşit parçalar şeklinde 10 ayda ödenecektir. Aylık gelirin kalanı 10 aylık borç ödemesi için kullanılmak isteniyor. Aylık gelirin kalanı kaç TL'dir?
+  A) 900 TL
+  B) 800 TL
+  C) 700 TL
+  D) 600 TL
+  E) 500 TL
+
+#4 [MATEMATIK]
+  Q: Aşağıdaki verilen fonksiyonların hangisi doğrudan fonksiyon değildir?
+  A) f(x) = x^2
+  B) g(x) = 1/x
+  C) h(x) = |x|
+  D) k(x) = x + 1
+  E) l(x) = x^3
+
+#5 [MATEMATIK]
+  Q: Kazançların toplamı 1000 TL'dir. Bu kazançların %20'si 100 TL'dir. Kazançların %40'si kaç TL'dir?
+  A) 400 TL
+  B) 300 TL
+  C) 200 TL
+  D) 100 TL
+  E) 50 TL
+
+#6 [GEOMETRI]
+  Q: Dik koordinat düzleminde bir köşesi orijinde, diğer köşeleri ise $y - 2x = 0$ ve $2y + x = 0$ doğruları üzerinde olan bir üçgenin ağırlık merkezi $G(-3, 4)$ noktasıdır.
+Buna göre, bu üçgenin alanı kaç birimkaredir?
+  A) 27
+  B) 36
+  C) 45
+  D) 54
+  E) 63
+
+#7 [MATEMATIK]
+  Q: f(x) = x^2 + 4x + 3 fonksiyonunun grafiği aşağıdaki gibi veriliyor. f(x) = 0 eşitsizliğinin çözüm kümesi hangi doğrudur?
+  A) x < -3 veya x > 1
+  B) x < -1 veya x > 3
+  C) x < -3 veya x > 3
+  D) x < -1 veya x > 1
+  E) x < -3 veya x > -1
+
+#8 [MATEMATIK]
+  Q: 11. Sayısal dizilerde A1 = 5, A2 = 7, A3 = 9 veriliyor. Bu dizideki her bir sayı, önceki sayıdan 2 fazla olup, sonraki sayıdan 2 azaldırsa, bu sayı dizisi hangi türdür?
+  A) Artan
+  B) Azalan
+  C) Dengeli
+  D) Alternatif
+  E) Konstant
+
+#9 [COGRAFYA]
+  Q: I. Rotterdam
+II. Hamburg
+III. Marsilya
+IV. Paris
+V. İzmir
+Numaralanmış olarak verilen şehirlerden hangisinin fonksiyonu diğerlerinden farklıdır?
+  A) I
+  B) II
+  C) III
+  D) IV
+  E) V
+
+#10 [MATEMATIK]
+  Q: Bir dairesel tabanlı silindirin yüksekliği 50 cm, taban çapı 20 cm'dir. Silindirin hacmi kaç cm³'dür?
+  A) 5000
+  B) 10000
+  C) 15000
+  D) 20000
+  E) 25000
+
+#11 [TURKCE]
+  Q: Yeni nesil, maaş değil ünvan peşinde!
+
+Bir araştırma şirketi, maaşlı çalışan 18-25 yaş aralığındaki 830 kişiyle yapmış olduğu görüşmede işlerine yönelik tercihleri hakkında sorular sormuştu. Araştırma sonucunda katılımcıların %60'ının "Çalıştığım yerdeki önceliğim ünvan değil, maaşım," cevabı verdiği, %15'in "Ünvanın yükseltileceği maaşımın aynı kalması önemli değil." görüşünü belirttiği, %15'in de "Ünvanın yükselirse maaşımın düşmesi için ünvan olmaz!" dediği tespit edilmiştir. Araştırma sonucuna, son dönemde popüler hale gelen iş parçalamasının nesil yapıcılığı konusunda şirketlere önemli geri bildirim sunmuştur.
+
+Bu köşe yazısına ilişkin aşağıdakilerden hangisi söylenebilir?
+  A) Kanıtlanamayan varsayımlar üzerinden yorum yapılmaktadır.
+  B) Kendi içinde tutarsızlık ve yanlıtlıklar bulunmaktadır.
+  C) İstatistiksel verilerin gerçeği yansıtmadığı ortaya konulmaktadır.
+  D) Güncel bir konunun ekonomik etkilerine değinilmektedir.
+  E) Toplumun farklı kesimlerinin bakış açıları karşılaştırılmaktadır.
+
+#12 [MATEMATIK]
+  Q: Beyaz ve Siyah bir kareli bir kutu içinde 4 beyaz ve 3 siyah top var. Bu kutudan rastgele 2 top çekildiğinde, bu topların en az biri beyaz olma olasılığı kaçtır?
+  A) 0.5
+  B) 0.6
+  C) 0.7
+  D) 0.8
+  E) 0.9
+
+#13 [GEOMETRI]
+  Q: ABC üçgenünde A = 70°, B = 40° ise C açısı kaç derecedir?
+  A) 70°
+  B) 50°
+  C) 60°
+  D) 80°
+  E) 90°
+
+#14 [MATEMATIK]
+  Q: 1. Her dğilgenin çiçeğinin yüksekliği ve çiçeğin yaşının uzunluğu ile ilgili veriler aşağıdaki gibidir:
+
+| Yaş | Yükseklik (cm) |
+|---|---|
+| 1 | 10 |
+| 2 | 15 |
+| 3 | 20 |
+| 4 | 25 |
+| 5 | 30 |
+
+Bu verilere göre, çiçeğin yüksekliği ile yaşının uzunluğu arasındaki ilişki nedir?
+  A) Yükseklik, yaşın karesiyle doğru orantılıdır.
+  B) Yükseklik, yaşın karesiyle ters orantılıdır.
+  C) Yükseklik, yaşın karesiyle doğrusal bir ilişki vardır.
+  D) Yükseklik, yaşın karesiyle doğrusal bir ilişki değildir.
+  E) Veriler yeterli değildir.
+
+#15 [TURKCE]
+  Q: Kültür ve yaşam iç içe, gönül gönüldür. Yaşamın her bir anı kültür tadında, yaşama ve yaşamanın değercek kadar eşsizdir. Anadolu'yu karg kış gezmen insan araştırma yolculuğuna çıksa ne çok şey bulacaktır. Yıl içinde adını bilmediğin ve nindenenden yeni yeri öğrendiğin ev ve çiçekler, ata binmenin üslubu, Türk ada sporumuz olan yağlı güreşteki kurallar, bir ağacı yaşatmanın püf noktası, bir yöreye ait yöresel yemek tarifleri, el yapımı kıyafetler, abideler ve tarihi harabeler... kültürün ne olduğunu yansıtır bize. Kültür; bir yaşam biçimi, yaşayarak görme felsefesi, hayata ta kendisidir. Ana dilimizdeki Türkçe, atalarından bize kalan masallar, dedemiz özü bir gir ve daha fazla örneğin bir biri kültüre kucağa açar. Kültür, hayatın parçasıdır ve biz de o parçanın canlı bir varlığız.
+
+Bu parçanın anlatımıyla ilgili aşağıdakilerden hangisi söylenemez?
+  A) Tanımlanmadan yararlanılmıştır.
+  B) İklime yer verilmiştir.
+  C) Tanık göstermeye başvurulmuştur.
+  D) Kişisel gözlemlere yer verilmiştir.
+  E) Yalın dil kullanılmıştır.
+
+#16 [MATEMATIK]
+  Q: Bir tane 100 gram alkol içeren içecek, 100 gram su ile karıştırıldığında, alkolun yüzdesi kaç olur?
+  A) 10%
+  B) 20%
+  C) 30%
+  D) 40%
+  E) 50%
+
+#17 [MATEMATIK]
+  Q: 3. Sayıların toplamı 6 olan beş tane polinomdur. Bu polinomların dereceleri sırasıyla 1, 2, 3, 4, 5 ise, bu polinomların derecelerinin toplamı kaçtır?
+  A) 15
+  B) 16
+  C) 17
+  D) 18
+  E) 19
+
+#18 [MATEMATIK]
+  Q: x, y ve z pozitif gerçek sayılar için
+
+$\frac{30}{x} < \frac{25}{y} < \frac{20}{z}$
+
+eşitsizliği veriliyor.
+
+Buna göre, aşağıdakilerden hangisi kesinlikle doğrudur?
+  A) $5x < 6y$
+  B) $2x < 3z$
+  C) $4y < 5z$
+  D) $7x > 6y + 3z$
+  E) $8z > 2x + 4y$
+
+#19 [MATEMATIK]
+  Q: 1. Herhangi iki sayı a ve b için, a + b = b + a eşitliğinin doğru olduğuna göre, aşağıdaki ifadelerden hangisi her zaman doğrudur?
+  A) a + b = b + a
+  B) a - b = b - a
+  C) a × b = b × a
+  D) a ÷ b = b ÷ a
+  E) a × b = a + b
+
+#20 [TURKCE]
+  Q: Yazıların çoğu edebiyat ve şiirin yalnızca dilsel sorun olduğunu ileri süren ve bunların toplumsal ve tarihsel işlevlerini siren çeviren bir anlayışın egemenlik kurma girişimleri karşısında biraz tirik kinliğindendi. Bu yazılar; yazısal ya da pizdil, dilsel, yazınsal nitelikleri, onun tarihsel ve toplumsal niteliklerini ayırmayan bir anlayışın ürünüydü. Ülkemizde yazının ortasında resmin ve belirsiz bir değerlendirmede düşünceyi, eleştirelin başlıca öğretisi durumunda gelmesinden yanaydı.
+
+Aşağıdakilerden hangisi bu paragrafta sözü edilen yazarın düşüncesi olamaz?
+  A) Eleştirmen bir sanatçı gibi düşünür, geniş görüşlü bir bilinçli davranır; eleştirelin sanatsalık değil, yargılayıcılık olduğu unutulmaz.
+  B) Ben nesnel eleştiriden yanayım. eleştiri anlayışımı asla tarihsel ve toplumsal gerçeklerle uyumu üzerine kurarım.
+  C) İyi bir eleştirmenin eleştiri anlayışında kişisel beğeni ve metnin edebi dış uyarımda işlevi önceliklidir.
+  D) Bir eserin sosyolojik, psikolojik, dil bilimi ve felsefe gibi farklı alanlardan yararlanarak açıklanması gerektiğini düşünüyorum.
+  E) Eserimde 'halka dönmek, kitlelerin yaşamını gerçekliği içinde aktarmak' gibi toplumcu gerçekçilik temel ilkelerine önem veririm.
+
+#21 [TURKCE]
+  Q: Yolun alt yanındaki mersinler şimşeden acı acı kokmaya başladı. Güneş bugün de kasıp kavuracak. Güçsüz poyraz, denizi hafiften köpürtüp duruyor. Terasın önündeki pembe üzümlü asmının dalları sarmış döleş... İki tekerlekli bir arabaşı şosonun çakıllarını ve sessizliğini ezerek geçti. Solam verdi arabının arka köşesinde oturan arabacı. Selam verdim.
+
+Bu parçanın anlatımında aşağıdakilerden hangisi yoktur?
+  A) Yansıma sözcüklerinden yararlanılmıştır.
+  B) Birden çok duyum alanı kullanılmıştır.
+  C) İnsana ait özellikler doğaya aktarılmıştır.
+  D) Niteleyici bildiren sözcüklere yer verilmiştir.
+  E) Duyular arasında aktarma yapılmıştır.
+
+#22 [MATEMATIK]
+  Q: Soru: Bir kütüphanede kitapların sayısı 1000'den 10000'e kadar değişir. Bu aralığın ortalaması kaçtır?
+  A) 5000
+  B) 5500
+  C) 6000
+  D) 6500
+  E) 7000
+
+#23 [MATEMATIK]
+  Q: Türkiye'de 1961-1965 yılları arasında yapılan bir demografik araştırmasında, aşağıdaki veriler verildi:
+
+- 1961 yılında nüfus: 52.100.000
+- 1965 yılında nüfus: 56.000.000
+
+Bu dönemde nüfusun değişim oranı kaçtır?
+  A) 10%
+  B) 15%
+  C) 20%
+  D) 25%
+  E) 30%
+
+#24 [FIZIK]
+  Q: Bir cisim bir doğru üzerinde bulunan K ve L noktaları arasında basit harmonik hareket yapmaktadır.
+
+K ve L noktaları arasındaki uzaklık 60 cm olup cisim 6 saniyede 12 sayıda yaptığında göre cismin hareketinin genliği ve frekansı aşağıdakilerden hangisinde birlikte doğru verilmiştir?
+  A) 30 cm ; 1/2 s^-1
+  B) 30 cm ; 2 s^-1
+  C) 60 cm ; 1/2 s^-1
+  D) 60 cm ; 2 s^-1
+  E) 60 cm ; 12 s^-1
+
+#25 [MATEMATIK]
+  Q: 15. Basa çevrilmiş sayılarla ilgili aşağıdaki ifadelerden hangisi doğru?
+  A) 2^3 = 8
+  B) 3^2 = 6
+  C) 4^1 = 4
+  D) 5^0 = 1
+  E) 6^2 = 12
+
+#26 [TARIH]
+  Q: Millî Mücadele'nin yol haritası olan Misak-ı Millî ile ilgili,
+I. Son Osmanlı Mebusan Meclisi'nde alınan kararlardır.
+II. Kabulünden sonra İstanbul, İtilaf devletlerince resmen işgal edilmiştir.
+III. Bu kararlar padişah tarafından uygulanmıştır.
+yorumlarından hangileri yapılabilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) I ve II
+  D) II ve III
+  E) I, II ve III
+
+#27 [MATEMATIK]
+  Q: Boş bir kağıda yazılan iki sayının;
+• en büyük ortak böleni iki basamaklı AB,
+• ve küçük ortak katı dört basamaklı AB23
+doğal sayısına eşittir.
+
+Buna göre, kağıttaki büyük sayı küçük sayıdan kaç fazladır?
+  A) 620
+  B) 830
+  C) 1300
+  D) 1710
+  E) 2300
+
+#28 [TARIH]
+  Q: Osmanlı'da II.Selim ve III.Murat dönemlerinde, Sadrazam Sokullu Mehmet Paşa devlet yönetiminde etkili olduğu bu dönemlere Sokullu Dönemi de denir.
+Bu bilgiye göre Osmanlı'da Sokullu Dönemi için aşağıdakilerden hangisi söylenebilir?
+  A) Fetihlerin durduğu
+  B) II.Selim ve III. Murat'ın Kanuni Sultan Süleyman kadar etkili olamadığı
+  C) Ordunun eski gücünü kaybettiği
+  D) Osmanlı yönetim anlayışında köklü değişiklikler meydana geldiği
+  E) II.Selim'den itibaren toprak kayıpları yaşandığı
+
+#29 [MATEMATIK]
+  Q: Dolaylı logaritma kullanarak log_2(16) + log_2(8) + log_2(4) + log_2(2) = ?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+#30 [MATEMATIK]
+  Q: a, b ve c gerçel sayılar olmak üzere, aşağıdaki eşitlikler veriliyor:
+a + b = 5
+c + a = 7
+c + b = 8
+a, b ve c'nin toplamı kaçtır?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+#31 [GEOMETRI]
+  Q: 1. Bir dikdörtgenin çevresi 30 cm ve en 5 cm olan dikdörtgenin alanını bulalım.
+  A) 25 cm²
+  B) 30 cm²
+  C) 35 cm²
+  D) 40 cm²
+  E) 45 cm²
+
+#32 [MATEMATIK]
+  Q: Bir öğrenci, okulda 1000 TL'lik bir burs kazanmıştır. Bu bursun %20'sini kütüphaneye bağışlamak istiyor. Kütüphane başkanı ise bu bursun %30'una ek olarak 500 TL daha bağışlamak istiyor. Bu durumda kütüphane başkanı ne kadar para bağışlamak istiyor?
+  A) 150 TL
+  B) 200 TL
+  C) 250 TL
+  D) 300 TL
+  E) 350 TL
+
+#33 [MATEMATIK]
+  Q: Dik koordinat düzleminde; biri (1, 2) noktasından, diğeri (7, 4) noktasından geçen iki ayrı doğru x-eksenindeki bir noktada dik kesişmektedir.
+Buna göre, bu iki doğrunun eğimleri toplamı en fazla kaçtır?
+  A) 0
+  B) 1/2
+  C) 3/2
+  D) 2
+  E) 5/2
+
+#34 [MATEMATIK]
+  Q: Dik koordinat düzleminde $3x + 4y - 18 = 0$ doğrusu x-eksenini A(a, 0) noktasında, $3x + 4y - 48 = 0$ doğrusu y-eksenini B(0, b) noktasında kesmektedir.
+Buna göre, E(2, 4), A(a, 0) ve B(0, b) noktalarını köşe kabul eden ABE üçgensel bölgesinin alanı kaç birimkaredir?
+  A) 12
+  B) 18
+  C) 24
+  D) 30
+  E) 36
+
+#35 [FIZIK]
+  Q: Açık hava ve kış aylarında hava sıcaklığına göre hava yoğunluğu nasıl değişir?
+  A) Hava sıcaklığı arttıkça hava yoğunluğu artar
+  B) Hava sıcaklığı arttıkça hava yoğunluğu azalır
+  C) Hava sıcaklığı azaldıkça hava yoğunluğu artar
+  D) Hava sıcaklığı azaldıkça hava yoğunluğu azalır
+  E) Hava sıcaklığına bağlı olmayan bir şekilde değişir

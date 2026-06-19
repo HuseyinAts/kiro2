@@ -1,0 +1,326 @@
+=== AW CONSENSUS BATCH 01 — her soru: sadece doğru şık (A-E). Anahtar gizli.
+
+#1 [MATEMATIK]
+  Q: Dik koordinat düzleminde P(6, 8) noktasında bulunan üç arkadaş farklı yönlere doğru aynı anda ve eşit hızlarla doğrusal bir hat boyunca koşmaya başlıyorlar. Bir süre sonra bu üç arkadaş aynı anda sırasıyla A(a, 0), O(0, 0) ve B(0, b) noktalarına varıyorlar.
+
+Buna göre, a + b toplamı kaçtır?
+  A) 14
+  B) 16
+  C) 20
+  D) 24
+  E) 28
+
+#2 [GEOMETRI]
+  Q: 11. Bir konik denkleminin merkezi (0,0) ve çapı 4 olan bir çemberin denklemi hangi denklemdir?
+  A) x^2 + y^2 = 4
+  B) x^2 + y^2 = 16
+  C) x^2 + y^2 = 8
+  D) x^2 + y^2 = 2
+  E) x^2 + y^2 = 1
+
+#3 [TARIH]
+  Q: Mustafa Kemal; "Savaş demek yalnız iki ordunun de-ğil, iki milletin bütün maddi ve manevi güçleriyle vuruş-masıdır. Bundan ötürü Türk ulusunun cephedeki ordu kadar bizzat işin içinde olması gerekir." demiştir.
+Buna göre;
+I. Tekalif-i Milliye Emirleri'nin yayımlanması
+II. Fransızlarla Ankara Antlaşması'nın yapılması
+III. Lozan Antlaşması'nın imzalanması
+gibi gelişmelerden hangilerinin Mustafa Kemal'in bu sözleri doğrultusunda gerçekleştirildiği söyle-nebilir?
+  A) Yalnız I
+  B) Yalnız II
+  C) Yalnız III
+  D) I ve III
+  E) II ve III
+
+#4 [GEOMETRI]
+  Q: ABC üçgenünde A = 60° ve BC = 2 cm olmak üzere, ABC üçgenünün çevresi 6 cm ise, AB uzunluğu kaç cm'dir?
+  A) 1 cm
+  B) 2 cm
+  C) 3 cm
+  D) 4 cm
+  E) 5 cm
+
+#5 [GEOMETRI]
+  Q: ABCD paralelkenarının çevresi 48 cm'dir. ABCD paralelkenarının bir kenarının uzunluğu 12 cm ise, diğer kenarın uzunluğu kaç cm'dir?
+  A) 10 cm
+  B) 12 cm
+  C) 16 cm
+  D) 20 cm
+  E) 24 cm
+
+#6 [MATEMATIK]
+  Q: Bir kutu içindeki 10 adet karttan 5 adet kırmızı kart ve 5 adet beyaz kart vardır. Kutudan rastgele bir kart seçildiğinde, bu kartın beyaz olduğunu biliyoruz. Bu durumda, kutudan rastgele bir kart daha seçildiğinde, bu kartın da beyaz olma olasılığı kaçtır?
+  A) 0.5
+  B) 0.6
+  C) 0.7
+  D) 0.8
+  E) 0.9
+
+#7 [SOSYAL]
+  Q: O, insanları karanlıktan aydınlığa çıkaran bir ışık ve ebedî saadetın yolunu gösteren en güzel rehberdir. Dünya ve ahiret mutluluğunun esasları, hak, adalet ve eşitliğin temel prensipleri ve yüksek ahlak ilkeleri ondandır. Onda yer alan emir ve tavsiyelere uyanlar, hem dünyada huzur içinde yaşayacaklar hem de ölüm ötesinde devam edecek olan sonsuz hayatta gerçek mutluluğu kazanmış olacaklardır.
+Bu parçada aşağıdaki İnanç esaslarının hangisi üzerinde durulmuştur?
+  A) Kitaplara iman
+  B) Meleklere iman
+  C) Ahirete iman
+  D) Kaza ve kadere iman
+  E) Peygamberlere iman
+
+#8 [GEOMETRI]
+  Q: ABC üçgenünde A = 60°, AB = 12 cm, AC = 10 cm olduğunda BC uzunluğu kaç cm'dir?
+  A) 10
+  B) 12
+  C) 14
+  D) 16
+  E) 18
+
+#9 [MATEMATIK]
+  Q: KÖKLÜ SAYILARIN EŞİTLİĞİ ÇÖZÜMÜ
+1. $x-\sqrt{3}=\sqrt{3}-x$ eşitliğini çözelim.
+2. $\sqrt{3}-x=x-\sqrt{3}$ eşitliğini çözelim.
+  A) x = 0
+  B) x = \sqrt{3}
+  C) x = 2\sqrt{3}
+  D) x = 3
+  E) x = 4
+
+#10 [TURKCE]
+  Q: Türkiye'de bağımsız sinema kavramı, ekonomik bağımsızlıktan ziyade filmlerin içeriğine ---- Tüm toplumu için olan temel sorunlardan kişisel ---- biçimlendirdiği psikolojik çatlaklara hem bireysel hem de toplumsal meseleler bu filmlerin konularını oluşturmakta.
+
+Bu parçada boş bırakılan yerlere aşağıdakilerden hangisi sırasıyla getirilmelidir?
+  A) atıfta bulunulmaktadır - yaşam öykülerinin
+  B) dönüktür - bağımsızlığın
+  C) gönderme yapmaktadır - soğukların
+  D) yol açmıştır - görüşlerin
+  E) ağırlık vermektedir - cinsiyet sorunlarının
+
+#11 [GEOMETRI]
+  Q: Bir üçgenin bir kenarının uzunluğu 10 cm, diğer kenarının uzunluğu 6 cm ve bu kenarların arasındaki açı 90° ise, üçgenin alanı kaç cm²'dir?
+  A) 24
+  B) 30
+  C) 36
+  D) 40
+  E) 48
+
+#12 [MATEMATIK]
+  Q: a ve b iki farklı tam sayı olmak üzere, aşağıdaki eşitlikler veriliyor:
+a + b = 10
+a - b = 2
+a ve b nin değerleri toplamı kaçtır?
+  A) 12
+  B) 14
+  C) 16
+  D) 18
+  E) 20
+
+#13 [MATEMATIK]
+  Q: A ve B noktaları bir çember üzerinde ve A noktasının koordinatları (3, 4) olsun. Çemberin merkezi O ve çemberin çapı 5 birim olsun. Çemberin denklemi aşağıdaki gibi veriliyor: (x - 3)^2 + (y - 4)^2 = 25. Çemberin denklemi verilen denkleme uygun olup olmadığını kontrol edin.
+  A) Uygun
+  B) Uygun değil
+  C) Merkez A
+  D) Merkez B
+  E) Çap 4 birim
+
+#14 [MATEMATIK]
+  Q: 8. Birinci dereceden iki bilinmeyenli bir denklemin grafikleri verilmiştir. Bu denklemlerden hangisi doğrudan birbirine paralel değildir?
+  A) x + y = 3
+  B) x - y = 1
+  C) 2x + y = 4
+  D) x + 2y = 5
+  E) x - 2y = 2
+
+#15 [TURKCE]
+  Q: Muhabir:
+(I) ----
+Ressam:
+— Figüratif çalışıyorum. Beni etkileyen şey insan. Daha çok da kadınların ruh hâlleri resimlerimin konusunu oluş-
+turuyor. Genellikle kent kadınını yapıyorum. Kalabalık
+içindeki yalnızlıklar kadınlı - erkekli sosyal mekânlardaki
+soyutlanmışlıklar ilgi alanlarımı oluşturuyor. Her resmimin
+bir hikâyesi var.
+Muhabir:
+(II) ----
+Ressam:
+— Belki eskiden zorlamış olabilir ama artık deneyimlerim
+sonucu oluşturduğum tarz beni çok fazla zorlamıyor. Daha
+çok yapmak istediğim şeye yoğunlaşıyorum. Vaktinde ha-
+fızama kaydettiğim çok şey tuvalimin başına oturunca ba-
+zen model ihtiyacı bile olmadan kendiliğinden çıkabiliyor.
+Bu diyalogda boş bırakılan yerlere aşağıdakilerden
+hangisi sırasıyla getirilmelidir?
+  A) (I) Kullanacağınız malzemeler ve boya çeşitleri neye göre şekilleniyor?
+(II) Etkilendiğiniz veya örnek aldığınız sanatçılar var mı?
+  B) (I) Siz tarzınızı nasıl tanımlıyorsunuz ve çalışmaları-
+nızla vermek istediğiniz mesaj nedir?
+(II) Yaptığınız eserlerin başarılı olabilmesi için sizce olmazsa olmaz koşul nedir?
+  C) (I) Ne tür resimler yapıyorsunuz? Felsefi olarak tema-
+nız nedir?
+(II) Sanatınızı icra ederken çok detay çalışma yapma-
+nız gerekiyor mu? Bu sizi nasıl etkiliyor?
+  D) (I) Resim yaparken çektiğiniz zorluklar var mı?
+(II) Resimlerinizin tanıtımını nerelerde yapıyorsunuz ve faydalı oluyor mu?
+  E) (I) Resim yapmaya ne zaman başladınız? Sizi resim yapma sanatına yönlendiren ne olmuştu?
+(II) Türkiye'de sizin temanızdaki sanat eserlerinden hedefe ulaşılıyor mu?
+
+#16 [GEOMETRI]
+  Q: ABC üçgen içindeki açılar için aşağıdaki eşitlikler veriliyor: \( \angle A = 2 \angle C \) ve \( \angle B = 3 \angle C \). Bu açılarla birlikte üçgenin iç açıları toplamı \( 180^{\circ} \) olduğunu biliyoruz. Bu bilgilere göre \( \angle C \) açısının ölçüsü kaç derecedir?
+  A) 10
+  B) 15
+  C) 20
+  D) 25
+  E) 30
+
+#17 [TURKCE]
+  Q: (I) Resim, görüşün kendi olan bir şeyi kayılamayı uyarır, en yüksek gücünü verir ona. (II) Değil mi ki görmek, uzaktan sahip olmaktır ve resim bu garip sahip oluşu varlığın bütün yönlerini yansıtmaktadır. (III) O'nun ki bu sahip oluş girmek için bir biçimde kondorların görünüleri kalmalıdır, diyor Maurice Merleau-Ponty. (IV) Sürekli değişen varlığı resim yoluyla anıya dönüştürmek kurmak, kendi varlığının sürekliliğine de bir başlangıççılık devşirmektir. (V) Resim, en merhametli ölümlülüklerdir; kadri olmayan tek şey bir şeyi hazine bulmaktır.
+
+Bu parçada numaralanmış cümlelerle ilgili olarak aşağıdakilerden hangisi yanlıştır?
+  A) I. cümlede saptamada bulunulmuştur.
+  B) II. cümlede mecazlı bir söyleyişe yer verilmiştir.
+  C) III. cümlede dolaylı anlatım kullanılmıştır.
+  D) IV. cümlede olumsuz sorudan yararlanılmıştır.
+  E) V. cümlede tanım yapılmıştır.
+
+#18 [MATEMATIK]
+  Q: Bir sayının karesinin 2 katı, bu sayının 3 katının 10 fazlası ile eşittir. Bu sayının karesi kaçtır?
+  A) 20
+  B) 25
+  C) 30
+  D) 35
+  E) 40
+
+#19 [GEOMETRI]
+  Q: Bir silindirin taban yarıçapı 10 cm ve yüksekliği 20 cm olan bir silindirin hacmini bulmak isteniyor. Silindirin hacmi kaç cm³'dür?
+  A) 6283.18 cm³
+  B) 3141.59 cm³
+  C) 1570.79 cm³
+  D) 7853.98 cm³
+  E) 15707.96 cm³
+
+#20 [GEOMETRI]
+  Q: 14. Esnek bir silindirin yüksekliği 10 cm, çapı 5 cm'dir. Silindirin yüksekliği 2 katına çıkarıldığında, hacmi kaç katına çıkarılır?
+  A) 2 katına
+  B) 4 katına
+  C) 5 katına
+  D) 10 katına
+  E) 20 katına
+
+#21 [MATEMATIK]
+  Q: a ve b iki tam sayı olmak üzere, a + b = 7 ve a - b = 5 ise a ve b sayıları kaçtır?
+  A) 2 ve 5
+  B) 3 ve 4
+  C) 4 ve 3
+  D) 5 ve 2
+  E) 6 ve 1
+
+#22 [TARIH]
+  Q: Osmanlı Devleti, XVII. yüzyılda stratejik tehditlerle karşı karşıya kalmış ve Venedik, Avusturya, Rusya karşısında toprak kaybetmiştir.
+Aşağıdakilerden hangisi, Osmanlı Devleti'nin bu durum karşısında aldığı önlemlerden biri değildir?
+  A) Konjonktürel ittifaklar kurarak denge stratejisi izleme
+  B) İltizam sisteminden malikane sistemine geçme
+  C) Batı'dan askeri uzmanlar getirme
+  D) Tüfekli piyade birliklerinden oluşan yeni bir ordu kurma
+  E) Batı tarzı askeri okullar açma
+
+#23 [GEOMETRI]
+  Q: ABC üçgenünde, A = 120°, B = 30° ise C açısının ölçüsü kaç derecedir?
+  A) 30°
+  B) 45°
+  C) 60°
+  D) 90°
+  E) 120°
+
+#24 [GEOMETRI]
+  Q: ABC üçgenü veriliyor. A, B ve C köşelerinin açıları sırasıyla 40°, 50° ve 90° dir. ABC üçgeninin kenar uzunlukları a, b ve c olmak üzere, a² + b² = c² dir. Bu durumda, ABC üçgeninin çevresi 24 cm ise, ABC üçgeninin alanını bulalım.
+  A) 12 cm²
+  B) 16 cm²
+  C) 20 cm²
+  D) 24 cm²
+  E) 28 cm²
+
+#25 [KIMYA]
+  Q: Göreli potansiyeller, redoks ve E° değerleri kullanarak aşağıdaki redoks tepkimelerinden hangisi doğru verilmiştir?
+  A) Ag(s) + Hg2Cl4(aq) → AgCl(s) + Hg2Cl2(s)
+  B) Zn(s) + 2Fe3+(aq) → Zn2+(aq) + 2Fe2+(aq)
+  C) 2Cu(s) + 3Ag+(aq) → 2Cu2+(aq) + 3Ag(s)
+  D) 2Al(s) + 3Fe3+(aq) → 2Al3+(aq) + 3Fe(s)
+  E) 2Mg(s) + 3Cu2+(aq) → 2Mg2+(aq) + 3Cu(s)
+
+#26 [MATEMATIK]
+  Q: Bir masa üzerindeki eşit hizmetli bir pıçakta, pıçakta bulunan renklerin sırası şöyledir: kırmızı, mavi, sarı, yeşil, mor, turuncu, kırmızı, mavi, sarı, yeşil, mor, turuncu, ... Bu sıralama devam ederse, 20. renk hangi renktir?
+  A) kırmızı
+  B) mavi
+  C) sarı
+  D) yeşil
+  E) mor
+
+#27 [FIZIK]
+  Q: Düzenli verilerin grafiği çizmek için aşağıdaki adımlardan hangisi yanlış?
+  A) Verileri toplamak
+  B) Verileri sıralamak
+  C) Verileri gruplamak
+  D) Verileri grafikleştirmek
+  E) Verileri analiz etmek
+
+#28 [MATEMATIK]
+  Q: a ve b iki pozitif tam sayı olmak üzere, a ve b'nin en küçük ortak katı 120'dir. a ve b'nin en büyük ortak böleni 10'dur. a ve b'nin toplamı kaçtır?
+  A) 130
+  B) 140
+  C) 150
+  D) 160
+  E) 170
+
+#29 [GENEL]
+  Q: 6. Eski kıta ülkelerinde en çok kullanılan ambalaj materyalleri arasında en fazla yer alan ambalaj materyali hangisidir?
+  A) Karton
+  B) Plastik
+  C) Alüminyum
+  D) Bambu
+  E) Kireç
+
+#30 [MATEMATIK]
+  Q: Bir öğrencinin sınavda 100 puan alması gerekiyor. Bu öğrencinin sınavda 40 puan alması durumunda, kaç puan daha fazla alması gerekiyor?
+  A) 20
+  B) 30
+  C) 40
+  D) 50
+  E) 60
+
+#31 [GEOMETRI]
+  Q: ABC üçgenü veriliyor. ABC üçgeninin çevresi 18 cm, AB = 5 cm ve BC = 7 cm ise, AC uzunluğu kaç cm'dir?
+  A) 6 cm
+  B) 7 cm
+  C) 8 cm
+  D) 9 cm
+  E) 10 cm
+
+#32 [MATEMATIK]
+  Q: Tüm zaman dilimlerinde aynı hızla hareket eden bir araç, 100 km hızla 2 saatte yol kat etti. Bu araç, 120 km hızla kaç saatte yol kat etti?
+  A) 1 saat
+  B) 1.5 saat
+  C) 2 saat
+  D) 2.5 saat
+  E) 3 saat
+
+#33 [GEOMETRI]
+  Q: Bir üçgenin bir kenar uzunluğu 10 cm, diğer kenar uzunluğu 6 cm ve bu kenarların arasındaki açı 90° ise üçgenin alanı kaç cm²'dir?
+  A) 24
+  B) 30
+  C) 36
+  D) 48
+  E) 60
+
+#34 [GEOMETRI]
+  Q: Kenar uzunlukları tam sayı olan bazı dik üçgenlerde hipotenüs ile dik kenarlardan birinin uzunlukları toplamı diğer dik kenar uzunluğunun karesinin yarısına eşittir. $ [AB] \perp [BC] $ Yukarıdaki ABC üçgeni bu kuralı sağlamaktadır. Buna göre, aşağıdakilerden hangisi doğru olabilir?
+  A) $c - a = 1$
+  B) $b - c = 1$
+  C) $b - a = 2$
+  D) $a + c = 2b$
+  E) $(a + c)^2 = 2b^2$
+
+#35 [TURKCE]
+  Q: "Yazmak" kimi yazarlar ya da yazmayı deneyenler için kaçış yoludur ya da yazar, yazarken başkası olur. Onun işi ise yazmak bir kaçış değil yaşamın kendisidir, kaçarken doğul tam da yaşayan yazar. Bir başkası olmaya öykünen biri değişil tem olarak kendisini. Yaşayan yazarın yaşamındaki öneriler sunar, alternatifler gösterir.
+
+Bu paragrafta geçen altı çizili cümleyle söz edilen yazarın hangi özelliği vurgulanmıştır?
+  A) Özlülüğü
+  B) Doğallığı
+  C) Evrenselliği
+  D) Özgünlüğü
+  E) Öğreticiliği
