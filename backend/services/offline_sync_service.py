@@ -277,6 +277,25 @@ async def process_sync_results(
             result_count=len(results),
         )
 
+    # Pre-fetch referenced questions (existence + active) and the student's FSRS
+    # cards. Bu map'ler aşağıda kullanılıyordu ama hiç oluşturulmamıştı (F821):
+    # sonuçta her yüklenen cevap NameError'a düşüp sessizce "failed" sayılıyordu.
+    result_qids = [str(r.get("question_id")) for r in results if r.get("question_id")]
+    questions_map: dict[str, QuestionBankItem] = {}
+    if result_qids:
+        q_rows = await db.execute(
+            select(QuestionBankItem).where(
+                QuestionBankItem.id.in_(result_qids),
+                QuestionBankItem.is_active == True,  # noqa: E712
+            )
+        )
+        questions_map = {str(q.id): q for q in q_rows.scalars().all()}
+
+    card_rows = await db.execute(
+        select(FSRSCard).where(FSRSCard.student_id == student_id)
+    )
+    cards = list(card_rows.scalars().all())
+
     for item in results:
         try:
             question_id = item["question_id"]
@@ -366,7 +385,7 @@ def _reject_batch(
 
 def _next_sync_at_iso() -> str:
     # Recommend next sync in ~6 hours
-    next_sync = datetime.now(timezone.utc) + timedelta(hours=6)
+    next_sync = datetime.now(UTC) + timedelta(hours=6)
     return next_sync.isoformat()
 
 
