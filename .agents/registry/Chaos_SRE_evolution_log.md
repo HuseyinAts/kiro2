@@ -40,3 +40,7 @@
 - Error Rate: 0.00%
 - SLA Met: Yes
 
+### Chaos Run
+- Concurrent Users: 5000
+- P99 Latency: 74128.59ms
+- Error Rate: 98.98%
