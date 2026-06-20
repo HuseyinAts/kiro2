@@ -37,3 +37,9 @@ BIYOLOJI 331, FIZIK 116, EDEBIYAT 32, COGRAFYA 29, MATEMATIK 6, KIMYA 5, TURKCE 
 - **Big-batch cozumu rate-limit'i KESIN cozdu:** 80 soru/agent, WAVE=3, 120sn cooldown -> 22 agent, 0 hata.
 - retag_in_vsafe=1.636/1.636 (hepsi v_safe'e girdi). correct_answer/is_active DOKUNULMADI.
 - backup question_bank_fallback_retag_backup_20260620 (2.058 reversible).
+
+---
+## 422 TAKSONOMI (20 Haz, ek) — v_safe 9.448 -> 9.724 (+276)
+- (A) Esik 0.70'e indir (subject_ok ∧ 0.70-0.79 ∧ valid-topic): +155 (spot 8/8 subject dogru, topic kaba ama kabul). flag 2026-06-20-t070.
+- (B) KIMYA taksonomi-gap: topic_hierarchy'ye 4 KIMYA topic eklendi (Cozeltiler ve Karisimlar, Maddenin Halleri ve Gazlar, Cevre Kimyasi, Mol ve Kimyasal Hesaplamalar). 132 KIMYA yeniden siniflandi (conf <0.70 -> 0.85-0.93). 121 apply. flag 2026-06-20-kimya.
+- **TOPLAM SESSION: v_safe 7.812 -> 9.724 (+1.912).** kalan fallback-vp 2.058 -> 146 (cogu gercek yanlis-ders SOSYAL din/felsefe = subject-relabel gerek).
