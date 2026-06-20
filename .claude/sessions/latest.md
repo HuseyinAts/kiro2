@@ -1,28 +1,62 @@
-## Session Handoff — 2026-06-19 19:45
+# Session Handoff — 2026-06-20/21 (DERİN)
+
 **Branch:** `feature/self-evolution-optimization`
-**Son commit:** `4e9c540f4` feat(quality): vp116 status-promote (+42 v_safe, 2-signal validated)
-**Uncommitted:** temiz (tümü commit+push: `42639b85e..4e9c540f4`)
+**Son commit:** `ca0cb3e1d` blind-solve wave20
+**Working tree:** temiz. **TÜM commit'ler LOCAL — push EDİLMEDİ** (feature branch).
+**Infra:** PG18 5434 `pg_ctl` ile manuel açık (servis admin gerektiriyor; makine restart'ında DÜŞER → `pg_ctl -D "C:/Program Files/PostgreSQL/18/data" -l C:/Users/husey/pg18_manual_start.log start`). Backend/frontend DOWN.
 
-### Yapilanlar (DB canlı, hepsi reversible, correct_answer/is_active DOKUNULMADI)
-- **wave1 AYT-Edebiyat** (`ee4c1d074`): consensus gate ÇÖKTÜ (Opus-blind TIER-A %75/B %50) → 4-yönlü narrowing → **+56**. `_wave1/RESULT.md`.
-- **tier1-unlock** (`ee4c1d074`): teşhis — 3.459 vp view-bloke, tier1 tek başına 1.176. Workflow 72-soru blind val %100 precision → **D8 view** (`match_tier`'a `OR verified_provisional`) → **+1.170**. `_wave1/TIER1_UNLOCK_RESULT.md`, `D8_part2_view.sql`(+rollback).
-- **vp116 status-promote** (`4e9c540f4`): fallback ÖLÜ kanıtlandı (23.214 fallback hep unverified-status, asla bağımsız engellemez). Gerçek darboğaz STATUS. 116 ONLY_status vp → workflow 3-Opus-solver/soru %98.2 (111/113) → 111 promote, **+42** (69 base-filter'e takıldı). backup `question_bank_vp116_status_backup_20260619`.
-- **v_safe: 6.544 → 7.812 (+1.268)**. AYT fen rebalance: Kimya 27→112, Fizik 35→97, Bio 14→57.
-- Pre-session temizlik commit'lendi: `.agents/*` (`a3a5fc036`), gate2b+migration+mock (`233dfebf7`), auth.py async bcrypt + dev-gated rate-limit bypass (`f9127731c`).
-- alembic `3dfb6239addd_phase2_indexes` **UYGULANDI** (users email/username index, DB head).
+## ⭐ TOPLAM BU SESSION: v_safe 7.812 → 20.907 (+13.095, +%168)
 
-### Fail Eden Testler
-- YOK (bu session test çalıştırmadı; DB değişiklikleri view/status-only, kod testine dokunmadı)
+Tüm değişiklikler **reversible** (her adımın backup tablosu var), **correct_answer/is_active DOKUNULMADI** (yalnız `quality_review_status` + `pipeline_metadata` flag).
 
-### Engelleyiciler
-- Workflow rate-limit: 14-paralel+schema → 529 server-throttle. ÇÖZÜM kanıtlı: **schema YOK + 6'lık SIRALI dalga**. Yeni workflow'da bu desene uy.
+| Faz | Kazanç | Commit'ler |
+|---|---|---|
+| Fallback re-tag (ana) | +1.636 | `60a1843cb` |
+| 422 taksonomi (eşik-0.70 + KIMYA 4 yeni topic) | +276 | `daa1efef3` |
+| Blind-solve (calib + 20 dalga + 2 partial) | +11.183 | `d03891ae6`…`ca0cb3e1d` |
 
-### Sonraki Adimlar (ROI sıralı)
-1. **Blind-solve ölçeklendir** (~61K unverified) — D8 sayesinde tier1 sonuçları otomatik v_safe'e akar; asıl hacim. Workflow (sıralı dalga, schema yok).
-2. **Base-filter audit** — `v_safe_for_beta_unfiltered` content-integrity filtresi (bare-stem/`yukarıdaki`/`bu parça`+diagram-yok/tek-`$`) over-excluded option-only soruları ölç (vp116'da 69 takıldı).
-3. Beta E2E smoke (yeni 7.812 havuzla AYT simülasyonu).
+## 1) Fallback re-tag (TAMAMLANDI)
+2.058 fallback-vp sorunun topic-etiketi LLM batch-classify ile düzeltildi. Kalan 146 (gerçek yanlış-ders SOSYAL din/felsefe = subject-relabel gerek). KIMYA taksonomisine 4 kalıcı topic eklendi (`topic_hierarchy`): Çözeltiler ve Karışımlar / Maddenin Halleri ve Gazlar / Çevre Kimyası / Mol ve Kimyasal Hesaplamalar. Detay: `backend/scripts/quality/_vp_unlock/VP_RETAG_RESULT.md`.
 
-### Kararlar (gelecek session tekrar tartışmasın)
-- **Hard subjects'te consensus-gate güvensiz** (AYT-Edebiyat kanıt). Çözüm: 4-yönlü Opus-blind veya unlock.
-- **tier1 ≠ fallback:** tier1 eşleştirme-vekili (blind-val süperseder, bypass OK); fallback konu-doğruluğu (bypass YASAK, gerçek re-tag gerek ama standalone +0).
-- **Promote yalnız status + pipeline_metadata flag**; correct_answer/is_active ASLA. View değişiklikleri canonical viewdef'ten birebir, reversible rollback.
+## 2) Blind-solve #1 (DEVAM EDİYOR — ana iş)
+**Mekanizma:** unverified soruyu KÖR çöz (cevap-anahtarı verilmez) → blind==DB key = AGREE = 2-sinyal → `verified_provisional`=true + status `auto_judged_high`. **Hedef havuz = "direkt-kazanç"** (unfiltered/content-temiz ∧ status-only-blocked ∧ NOT fallback/demoted/gate2c/tier1) → AGREE'de DİREKT v_safe'e girer.
+- **20 tam dalga + calib + 2 partial koşuldu. blind_total=11.183. AGREE kararlı ~%56-58. promote ~%37/dalga (AGREE∧conf≥0.80).**
+- **KALAN direkt-kazanç: 7.251 (~5 dalga, ~+2.700 v_safe daha → ~23.600).**
+- Her dalga: 1.600 aday, 40 batch (40 soru/agent), WAVE=3, ~40dk, 0 throttle.
+- promote-edilmeyen solved adaylar `blind_seen` flag'li → export bunları hariç tutar (çakışma yok).
+
+### SONRAKİ SESSION — wave-21 reçetesi (kopyala-çalıştır):
+```bash
+cd C:/Users/husey/kiro2/backend/scripts/quality/_blindsolve
+PSQL="C:/Program Files/PostgreSQL/18/bin/psql.exe"
+# setseed her dalgada DEĞİŞ (kullanılanlar dahil yeni bir değer, örn 0.43)
+sed 's/setseed(0.59)/setseed(0.43)/; s/wave20_master.csv/wave21_master.csv/' export_wave20.sql > export_wave21.sql
+"$PSQL" -p 5434 -U postgres -d kiro2 -f export_wave21.sql
+# python ile w21batches/ (40'lık) + wave21_keymap.json üret (önceki dalga python bloğunu kopyala)
+# Workflow scriptPath: .../blind-solve-calib-420-wf_34005c63-076.js , args = w21manifest (40 dosya)
+# Sonuç: apply (AGREE∧conf>=0.80 → vp+status) + flag_seen + commit. apply_w20.sql şablon.
+```
+**Apply şablonu (her dalga aynı):** AGREE∧conf≥0.80 → `quality_review_status='auto_judged_high'` + `pipeline_metadata` jsonb_set `verified_provisional=true` + `blind_solve_wave='...'`. backup tablo + `blind_seen` flag (promote-edilmeyen solved). Scriptler `_blindsolve/` altında.
+
+## ⚠️ RATE-LIMIT — İKİ AYRI ŞEY (memory: reference_workflow-rate-limit-batching)
+1. **529 "Server temporarily limiting"** = sunucu RPM throttle. ÇÖZÜM: büyük-batch (40-80 soru/agent) + WAVE=3 + 45sn cooldown. Tekil-agent (1 soru=1 çağrı) YASAK.
+2. **"You've hit your session limit · resets HH:MM"** = hesabın GERÇEK token kotası. Çözümü YOK — reset bekle. Bu session'da 2 kez vuruldu. Her seferinde partial salvage edildi (psql lokal kota yemez). Reset sonrası 1-batch probe ile test et, geçerse full dalga.
+
+## Açık kalemler (ROI sıralı)
+1. **Blind-solve devam** — kalan 7.251 direkt-kazanç (~5 dalga). Sonra fallback'li 16K (re-tag de gerek) + geniş unverified evreni.
+2. **PUSH** — tüm session commit'leri LOCAL; `git push` (kullanıcı isterse).
+3. **Beta E2E smoke** — 20.907 havuzla AYT simülasyonu (backend up gerek).
+4. **DISAGREE havuzu** (~%24/dalga) — DB-key-hatası VEYA solver-hatası; 2. FARKLI-model sinyaliyle ayrış (gold terfi; A-bias var, single-blind gold için yetmez).
+5. **146 fallback artığı + SOSYAL yanlış-ders** — subject-relabel (topic değil).
+
+## Kararlar (tekrar tartışma)
+- vp bari = single-blind AGREE∧conf≥0.80. Gold terfi 2. farklı-model şart (A-bias hafif: solver A'yı ~%5 fazla seçer ama dağılım DB'ye yakın = key sızmıyor).
+- promote yalnız status + pipeline_metadata flag; **correct_answer ASLA**.
+- LLM batch işlerinde ≥15-80 öğe/agent ZORUNLU (rate-limit).
+
+## Doğrulama (yeni session açılışında)
+```sql
+SELECT count(*) FROM v_safe_for_beta;  -- 20.907 olmalı
+SELECT count(*) FROM question_bank WHERE pipeline_metadata::jsonb ? 'blind_solve_wave';  -- 11.183
+```
+Eşleşmiyorsa MEMORY/handoff drift — kullanıcıya bildir.
