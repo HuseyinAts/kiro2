@@ -60,3 +60,60 @@ SELECT count(*) FROM v_safe_for_beta;  -- 20.907 olmalı
 SELECT count(*) FROM question_bank WHERE pipeline_metadata::jsonb ? 'blind_solve_wave';  -- 11.183
 ```
 Eşleşmiyorsa MEMORY/handoff drift — kullanıcıya bildir.
+
+---
+
+## 🚀 YENİ SESSION AÇILIŞ PROMPT'U (kopyala-yapıştır — sınır-zorlayan otonom mod)
+
+> Bu prompt'u yeni session'ın İLK mesajı olarak yapıştır. Dalga-başına dur-sor YOK;
+> pool kuruyana veya session-limit'e kadar otomatik zincirler, her dalga commit'li
+> (loss-free). Proven reçete (40 soru/agent, WAVE=3) değişmez.
+
+```
+KIRO2 blind-solve devam — OTONOM ÇOK-DALGA MOD. Şu sırayı uygula, dalgalar arası BANA SORMA:
+
+ADIM 0 — HANDOFF + INFRA:
+1. .claude/sessions/latest.md'yi OKU (bu dosya). Reçete + iki rate-limit tipi orada.
+2. PG18'i ayağa kaldır (restart'ta düşmüş olabilir; pg_ctl PATH'te YOK, tam yol şart):
+   "C:/Program Files/PostgreSQL/18/bin/pg_ctl.exe" -D "C:/Program Files/PostgreSQL/18/data" -l C:/Users/husey/pg18_manual_start.log start
+   Zaten açıksa "another server might be running" döner — sorun değil, devam.
+
+ADIM 1 — DOĞRULAMA GATE (eşleşmezse DUR + bana bildir, devam ETME):
+   PSQL="C:/Program Files/PostgreSQL/18/bin/psql.exe"
+   "$PSQL" -p 5434 -U postgres -d kiro2 -c "SELECT count(*) FROM v_safe_for_beta;"           -- 20907 bekle
+   "$PSQL" -p 5434 -U postgres -d kiro2 -c "SELECT count(*) FROM question_bank WHERE pipeline_metadata::jsonb ? 'blind_solve_wave';"  -- 11183 bekle
+   Sayılar tutmuyorsa = drift → DUR, raporla.
+
+ADIM 2 — DALGA DÖNGÜSÜ (wave-21'den başla, POOL KURUYANA KADAR zincirle):
+   cd C:/Users/husey/kiro2/backend/scripts/quality/_blindsolve
+   Yardımcı scriptler bu dizinde KALICI: split_wave.py, aggregate_wave.py, blind_solve_wave.js
+   Her dalga için (<N> = 21,22,...):
+   a) EXPORT: sed 's/setseed(0.59)/setseed(0.<YENİ>)/; s/wave20_master.csv/wave<N>_master.csv/' export_wave20.sql > export_wave<N>.sql
+      setseed her dalgada FARKLI. KULLANILMIŞ (tekrarlama): 0.05 0.07 0.13 0.19 0.23 0.29 0.31 0.37 0.42 0.49 0.53 0.59 0.61 0.67 0.71 0.77 0.83 0.89 0.91
+      BOŞ öneri (w21→w25): 0.43 0.47 0.03 0.17 0.73
+      "$PSQL" -p 5434 -U postgres -d kiro2 -f export_wave<N>.sql   → wave<N>_master.csv (1600 satır, KEY dahil)
+   b) SPLIT: python split_wave.py <N>   → w<N>batches/g01..g40.json (KEY YOK=kör) + w<N>manifest.json
+   c) WORKFLOW (kör çöz): Workflow tool, scriptPath=C:/Users/husey/kiro2/backend/scripts/quality/_blindsolve/blind_solve_wave.js
+      args = w<N>manifest.json İÇERİĞİ (JSON array, 40 obje). WAVE=3 script içinde, ~40dk.
+      Dönen {rows:[{id,ans,conf}]} sonucunu w<N>_solved.json dosyasına YAZ (Write tool).
+   d) AGGREGATE: python aggregate_wave.py <N>   → apply_w<N>.sql + flag_seen_w<N>.sql ÜRETİR (AGREE∧conf≥0.80, backup dahil). Çıktı satırı: solved/agree/promote sayıları.
+   e) APPLY: "$PSQL" -p 5434 -U postgres -d kiro2 -f apply_w<N>.sql
+   f) FLAG_SEEN: "$PSQL" -p 5434 -U postgres -d kiro2 -f flag_seen_w<N>.sql   (bu dalganın 1600'ü blind_seen → sonraki export hariç tutar)
+   g) CHECKPOINT: git add -A && git commit -m "feat(quality): blind-solve wave<N> v_safe promote"
+   h) VERIFY: v_safe + blind_total say (ADIM 1 SQL'i), önceki dalgaya göre arttığını DOĞRULA, bana 1 satır rapor ver, SONRAKİ DALGAYA GEÇ (sorma).
+   Direkt-kazanç pool'u (~7.251) bitince (export <50 satır döner) VEYA 5 dalga dolunca DUR.
+
+RATE-LIMIT — İKİ AYRI ŞEY (handoff §⚠️):
+   • 529 "Server temporarily limiting" → RPM throttle. Workflow'u retry et, gerekirse batch'i 40→60 büyüt + 45sn cooldown. DURMA.
+   • "session limit · resets HH:MM" → GERÇEK token kotası, çözümü YOK. O ANKİ dalganın partial sonucunu salvage et (psql lokal, kota yemez) → apply + flag_seen + commit → DUR, reset saatini bana yaz.
+
+KISITLAR (ihlal etme):
+   • correct_answer / is_active ASLA dokunma — yalnız quality_review_status + pipeline_metadata.
+   • Her dalga backup tablolu + reversible.
+   • Workflow schema KULLANMA (StructuredOutput güvenilmez); düz JSON text parse.
+   • Tekil-agent (1 soru = 1 çağrı) YASAK — min 40 soru/agent.
+
+Hazırsan ADIM 0'dan başla, bitince her dalgayı 1 satır raporla ama durma.
+```
+
+*Eklendi: 2026-06-21 — sınır-zorlayan otonom çok-dalga açılış prompt'u (insan-round-trip elendi, loss-free checkpoint korundu).*
