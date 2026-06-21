@@ -9,7 +9,7 @@ Methods:
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_async_session
@@ -35,6 +35,8 @@ router = APIRouter(
 class HybridQuestionRequest(BaseModel):
     """Hibrit soru üretim isteği"""
 
+    model_config = ConfigDict(populate_by_name=True)
+
     subject: str = Field(..., description="Ders adı (Matematik, Fizik, Türkçe, vb.)")
     topic: str = Field(..., description="Konu başlığı (Türev,Limit, vb.)")
     difficulty: str = Field(
@@ -49,7 +51,9 @@ class HybridQuestionRequest(BaseModel):
         default="claude",
         description="AI provider for osym_guided: claude (default), openai",
     )
-    validate: bool = Field(default=True, description="Run quality validation checks")
+    should_validate: bool = Field(
+        default=True, alias="validate", description="Run quality validation checks"
+    )
     enable_wave2b: bool = Field(
         default=False,
         description="✨ Enable Wave 2B quality evaluation (BERTScore + Bloom + ÖSYM Benchmark)",
@@ -195,7 +199,7 @@ async def generate_hybrid_question(
                 difficulty=request.difficulty,
                 exam_type=request.exam_type,
                 provider=request.provider,
-                validate=request.validate,
+                validate=request.should_validate,
             )
 
         elif request.method == "ensemble":
