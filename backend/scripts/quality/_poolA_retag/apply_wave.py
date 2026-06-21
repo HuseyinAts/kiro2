@@ -19,6 +19,7 @@ TAX = HERE.parent / "_vp_unlock" / "taxonomy.tsv"
 RUNDATE = "2026-06-21"
 
 tag = sys.argv[1]
+wave_num = int(tag.lstrip("w"))
 rows = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
 keymap = json.loads(Path(sys.argv[3]).read_text(encoding="utf-8"))
 
@@ -101,10 +102,10 @@ UPDATE question_bank q SET
   quality_review_status = 'auto_judged_high',
   pipeline_metadata = (
     jsonb_set(q.pipeline_metadata::jsonb, '{{ai_extras,topic_match_quality}}', '"poolA_retag_verified"')
-    || jsonb_build_object('blind_seen', true, 'poolA_wave', 1,
+    || jsonb_build_object('blind_seen', true, 'poolA_wave', {wave_num},
          'verified_provisional', true,
          'poolA_retag_run', '{RUNDATE}', 'blind_solve_answer', d.blind_ans,
-         'blind_conf', d.blind_conf::float, 'blind_solve_wave', 'poolA_w1')
+         'blind_conf', d.blind_conf::float, 'blind_solve_wave', 'poolA_{tag}')
   )::json
 FROM _poolA_{tag} d
 WHERE q.id::text = d.id AND d.promote = '1';
@@ -112,7 +113,7 @@ WHERE q.id::text = d.id AND d.promote = '1';
 UPDATE question_bank q SET
   pipeline_metadata = (
     q.pipeline_metadata::jsonb
-    || jsonb_build_object('blind_seen', true, 'poolA_wave', 1, 'poolA_cat', d.cat)
+    || jsonb_build_object('blind_seen', true, 'poolA_wave', {wave_num}, 'poolA_cat', d.cat)
   )::json
 FROM _poolA_{tag} d
 WHERE q.id::text = d.id AND d.promote = '0';
