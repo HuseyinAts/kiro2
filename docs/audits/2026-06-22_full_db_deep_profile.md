@@ -2,6 +2,17 @@
 
 **Kapsam (eksiksiz, kanıtlı):** 178 tablo · **2.421 sütun** · 7 view · 671.531 satır. Her sütun **deterministik profiler** ile tarandı (`generate_profile.py` → `column_profile.tsv` 1.262 dolu-tablo sütunu + `columns_meta.tsv` 2.421 sütun yapı; 0 atlama, LLM-bağımsız). İçerik kalitesi 14-agent kör-yargı workflow ile ölçüldü. Hiçbir sayı ezberden değil — psql/profiler çıktısından.
 
+## 0. Eksiksizlik Mutabakatı (her sütun + satır hesapta)
+
+| Sütun sınıfı | Adet | İçerik okundu mu? |
+|---|---|---|
+| Dolu-tablo sütunu | **1.261** | ✅ tamamı (column_profile.tsv, EKSİK 0) |
+| View sütunu (7 view) | **221** | ✅ tamamı (view_profile.tsv, 0 hata) |
+| Boş-tablo sütunu (82 tablo) | **939** | — 0 satır var, **okunacak veri yok** (yapı columns_meta.tsv'de) |
+| **TOPLAM** | **2.421** | columns_meta ile birebir |
+
+**Satır tarafı:** profiler `LIMIT 200000` kullandı; en büyük tablo question_bank=187.834 < 200.000 → **hiçbir satır kesilmedi, tüm satırlar tarandı**. Veri taşıyan 1.482 sütunun tamamı içerik-profilli; geri kalan 939 sütun yalnızca boş (0-satır) tablolarda — fiziksel olarak okunacak satır yok.
+
 ## 1. Tablo Envanteri (kategori)
 
 | Kategori | Tablo | Satır | Not |
