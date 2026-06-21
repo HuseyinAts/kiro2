@@ -1,0 +1,4 @@
+-- Pool A wave-1: 1600 fallback-unverified candidates across ALL subjects (natural proportional).
+-- key column is for APPLY-side comparison only; solver agents never see it.
+SELECT setseed(0.53);
+\copy (SELECT u.id::text AS id, u.subject_area, u.question_text AS q, u.option_a oa, u.option_b ob, u.option_c oc, u.option_d od, u.option_e oe, upper(trim(u.correct_answer)) AS key FROM v_safe_for_beta_unfiltered u WHERE u.quality_review_status='unverified' AND u.option_a<>'' AND u.option_e<>'' AND upper(trim(u.correct_answer)) IN ('A','B','C','D','E') AND u.word_count>=8 AND NOT (u.pipeline_metadata::jsonb ? 'blind_seen') AND (u.pipeline_metadata::jsonb->'ai_extras'->>'topic_match_quality')='fallback' ORDER BY random() LIMIT 1600) TO 'C:/Users/husey/kiro2/backend/scripts/quality/_poolA_retag/wave2_master.csv' WITH (FORMAT csv, HEADER true);

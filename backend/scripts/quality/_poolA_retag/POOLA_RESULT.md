@@ -45,6 +45,20 @@ DOĞRU flag (single-blind AGREE∧conf≥0.80).
 - Kalan fallback-unverified (blind_seen'siz): **11.301** (~7-8 dalga daha → ~+4.300 potansiyel).
 - apply_wave.py wave_num parametreli; her wave reversible backup. correct_answer/is_active DOKUNULMADI.
 
+## Açık-uçlu AUDIT (anchoring + 2.sinyal, workflow wcr4dkfmh)
+Derin gözden geçirmede 3 kalıcı risk bulundu → workflow ile çözüldü.
+- **Mekanizma:** 2377 soru (1829 promote + 548 lowconf) **karışık batch'lerde** (ders-sızıntısız) **açık-uçlu** kör reklasifiye edildi (agent'a ne ders ne anahtar verildi) → stored ile karşılaştır. 63 agent, ~26 dk, 2366/2377 parse.
+- **PROMOTE seti (1829):** 2signal-CONFIRM (subj+ans ikisi de uyuştu) **1469 (%80)** / answer-dispute 253 / wrong-subject 96.
+- **Anchoring HASARI ~0:** 96 wrong-subject'in **90'ı komşu-ders** (GEO↔MAT, FİZ↔KİM, TÜR↔EDB — zararsız), **6'sı domain-aşan** ve el-ile incelendi → **hepsi savunulabilir sınır vakası** (enerji→coğrafya/kimya, bilim-felsefesi→biyoloji/sosyal). **Gerçek wrong-subject = 0.** Hiçbiri de-promote edilmedi.
+- **LOWCONF kurtarma:** 548'in **309'u 3-yön AGREE** (kitap+solve1+solve2) → **PROMOTE (+309)**, topic orijinal dalga çözümünden re-tag.
+- **Apply (reversible, backup `question_bank_poolA_audit_backup_20260621` 2127 satır):**
+  - recover 309 → promote (v_safe 25.446→**25.755**)
+  - 2signal 1469+309=**1778** → `poolA_2signal=true` (vp güçlendirme)
+  - dispute 253 → `poolA_answer_dispute=true` (kitap anahtarı yetkili, 3.sinyal için)
+  - wrong 96 → `poolA_subject_2nd=<open>` (kayıt, hepsi tutuldu)
+  - correct_answer/is_active diff **0**.
+- **Çözülen riskler:** (1) anchoring→wrong-subject = ölçüldü, ~0 hasar; (2) 548 lowconf'tan 309 recall kurtarıldı; (3) manuel 10/1829 yerine **2377/2377 ikinci-sinyal örtüsü**; 1778 promote artık 2-bağımsız-sinyal (kitap+2 solve) = gold-aday (farklı-model 3.sinyal eklenince).
+
 ## Reçete (sonraki dalga)
 1. `export_wave<N>.sql` (setseed değiştir, blind_seen dışla) → wave<N>_master.csv
 2. `python build_wave.py wave<N>_master.csv w<N> 40`
