@@ -38,6 +38,13 @@ DOĞRU flag (single-blind AGREE∧conf≥0.80).
 - unsolvable 128: figür-bağımlı
 - lowconf 196 / topic_unresolved 94 / subject_mismatch 33
 
+## Wave-2 / Wave-3 (otonom)
+- **w2** (seed 0.53): 1552/1600 parse, promote 576 (%37.2). v_safe 24.254→24.830 (+576). backup `_poolA_w2_backup_20260621`.
+- **w3** (seed 0.59): 1556/1600 parse, promote 616 (%39.7). v_safe 24.830→25.446 (+616). backup `_poolA_w3_backup_20260621`.
+- **KÜMÜLATİF: v_safe 23.617→25.446 (+1.829, 3 dalga).** Funnel kararlı (promote %37-40, AGREE-bağımlı).
+- Kalan fallback-unverified (blind_seen'siz): **11.301** (~7-8 dalga daha → ~+4.300 potansiyel).
+- apply_wave.py wave_num parametreli; her wave reversible backup. correct_answer/is_active DOKUNULMADI.
+
 ## Reçete (sonraki dalga)
 1. `export_wave<N>.sql` (setseed değiştir, blind_seen dışla) → wave<N>_master.csv
 2. `python build_wave.py wave<N>_master.csv w<N> 40`
