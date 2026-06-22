@@ -19,10 +19,10 @@ from core.dependencies import (
     get_current_user,  # fixed: was auth_dependencies (no blacklist)
 )
 from services.concept_clustering_service import (
-    ClusteringAlgorithm,
     HDBSCAN_AVAILABLE,
     SKLEARN_AVAILABLE,
     UMAP_AVAILABLE,
+    ClusteringAlgorithm,
     get_clustering_service,
 )
 
@@ -34,6 +34,20 @@ router = APIRouter(prefix="/api/v1/clustering", tags=["clustering"])
 @router.get("/health", summary="Clustering servis saglik kontrolu")
 async def health_check() -> dict[str, Any]:
     """Clustering servisinin temel calisma durumunu raporla."""
+    # Lightweight DB liveness ping — sibling /health endpoints all report a
+    # `database` flag (GF150 health-probe convention).
+    db_ok = False
+    try:
+        from sqlalchemy import text as _text
+
+        from core.database import get_db_session_context
+
+        async with get_db_session_context() as _db:
+            await _db.execute(_text("SELECT 1"))
+        db_ok = True
+    except Exception as _dbe:
+        logger.debug("clustering health DB ping failed: %s", _dbe)
+
     try:
         deps = {
             "sklearn_available": SKLEARN_AVAILABLE,
@@ -45,6 +59,7 @@ async def health_check() -> dict[str, Any]:
         return {
             "status": "healthy" if healthy else "degraded",
             "service": "concept_clustering",
+            "database": db_ok,
             "chromadb_available": True,
             "dependencies": deps,
         }
@@ -53,6 +68,7 @@ async def health_check() -> dict[str, Any]:
         return {
             "status": "unhealthy",
             "service": "concept_clustering",
+            "database": db_ok,
             "error": "Internal error",
             "chromadb_available": False,
         }
@@ -61,6 +77,7 @@ async def health_check() -> dict[str, Any]:
 # Request/Response Models
 class ClusterRequest(BaseModel):
     """Request for clustering operation"""
+
     embeddings: list[list[float]] = Field(
         ...,
         description="List of embeddings to cluster",
@@ -89,6 +106,7 @@ class ClusterRequest(BaseModel):
 
 class ClusterResponse(BaseModel):
     """Response from clustering operation"""
+
     labels: list[int]
     n_clusters: int
     silhouette_score: float | None
@@ -99,6 +117,7 @@ class ClusterResponse(BaseModel):
 
 class ElbowRequest(BaseModel):
     """Request for elbow method analysis"""
+
     embeddings: list[list[float]] = Field(
         ...,
         description="List of embeddings to analyze",
@@ -114,6 +133,7 @@ class ElbowRequest(BaseModel):
 
 class ElbowResponse(BaseModel):
     """Response from elbow analysis"""
+
     k_values: list[int]
     inertias: list[float]
     silhouette_scores: list[float]
@@ -123,6 +143,7 @@ class ElbowResponse(BaseModel):
 
 class VisualizationRequest(BaseModel):
     """Request for visualization data"""
+
     embeddings: list[list[float]] = Field(
         ...,
         description="High-dimensional embeddings",
@@ -139,6 +160,7 @@ class VisualizationRequest(BaseModel):
 
 class VisualizationResponse(BaseModel):
     """Response with 2D visualization coordinates"""
+
     x: list[float]
     y: list[float]
     labels: list[int]

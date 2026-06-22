@@ -4954,7 +4954,7 @@ def test_gf150_public_journey_health_probes_not_500(client: httpx.Client):
         ("/api/v1/offline/health", "offline_sync"),
         ("/api/v1/sync/health", "pwa_sync"),
         ("/api/v1/live-sessions/health", "live_sessions"),
-        ("/api/v1/clustering/health", "clustering"),
+        ("/api/v1/clustering/health", "concept_clustering"),
     )
     for path, expected_service in paths:
         resp = client.get(path)
