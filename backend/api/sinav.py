@@ -698,12 +698,13 @@ async def save_answer(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> dict[str, Any]:
     import time
+
     t0 = time.perf_counter()
     try:
         # Oturum kontrolü
         session_data = await osym_exam_engine.get_session_data(session_id)
         t1 = time.perf_counter()
-        
+
         if not session_data:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
@@ -742,53 +743,132 @@ async def save_answer(
         )
 
         # BKT/IRT/FSRS/ZPD pipeline — fire-and-forget (hata sinavi engellemez)
+        # Re-enabled (GF1w): was hard-disabled with `if False:` in a 2026-06-11
+        # chore commit, silently dropping all mastery updates. The block is
+        # failure-isolated (fire-and-forget task + outer try/except + NULL
+        # primary_topic_id guard) so it can never 500 the save-answer path.
         bkt_result = None
-        if False:
+        if True:
             try:
-                import os as _os
                 import asyncio as _asyncio
+                import os as _os
 
-                if _os.environ.get("ALGO_FIRE_AND_FORGET", "yes").lower() in ("1", "true", "yes"):
+                if _os.environ.get("ALGO_FIRE_AND_FORGET", "yes").lower() in (
+                    "1",
+                    "true",
+                    "yes",
+                ):
                     if not hasattr(_asyncio, "_bkt_semaphore"):
                         _asyncio._bkt_semaphore = _asyncio.Semaphore(10)
 
-                    async def _background_bkt_full(student_id_val, session_id_val, question_id_val, selected_answer_val, rating_input):
+                    async def _background_bkt_full(
+                        student_id_val,
+                        session_id_val,
+                        question_id_val,
+                        selected_answer_val,
+                        rating_input,
+                    ):
                         from sqlalchemy import select
+
                         from core.database import get_db_session_context
                         from models.exam_db import StudentAnswer
                         from models.question_bank import QuestionBankItem as Question
                         from services.bkt_service import BKTService
-                        
+
                         async with _asyncio._bkt_semaphore:
                             async with get_db_session_context() as bg_db:
                                 try:
-                                    q = await bg_db.execute(select(Question.correct_answer, Question.primary_topic_id, Question.subject_area, Question.irt_discrimination, Question.irt_difficulty, Question.irt_guessing).where(Question.id == question_id_val))
+                                    q = await bg_db.execute(
+                                        select(
+                                            Question.correct_answer,
+                                            Question.primary_topic_id,
+                                            Question.subject_area,
+                                            Question.irt_discrimination,
+                                            Question.irt_difficulty,
+                                            Question.irt_guessing,
+                                        ).where(Question.id == question_id_val)
+                                    )
                                     row = q.first()
                                     if not (row and row.primary_topic_id):
                                         return
-                                    
-                                    correct = bool(row.correct_answer and selected_answer_val.strip().upper() == row.correct_answer.strip().upper())
+
+                                    correct = bool(
+                                        row.correct_answer
+                                        and selected_answer_val.strip().upper()
+                                        == row.correct_answer.strip().upper()
+                                    )
                                     rating = rating_input or (3 if correct else 1)
-                                    subject_slug = (row.subject_area or "matematik").lower()
-                                    
+                                    subject_slug = (
+                                        row.subject_area or "matematik"
+                                    ).lower()
+
                                     answered_questions = []
                                     responses = []
                                     try:
-                                        prev = await bg_db.execute(select(StudentAnswer.question_id, StudentAnswer.is_correct).where(StudentAnswer.exam_session_id == session_id_val, StudentAnswer.is_correct.isnot(None)))
+                                        prev = await bg_db.execute(
+                                            select(
+                                                StudentAnswer.question_id,
+                                                StudentAnswer.is_correct,
+                                            ).where(
+                                                StudentAnswer.exam_session_id
+                                                == session_id_val,
+                                                StudentAnswer.is_correct.isnot(None),
+                                            )
+                                        )
                                         prev_rows = prev.all()
                                         if prev_rows:
-                                            prev_qids = [r.question_id for r in prev_rows]
-                                            prev_correct_map = {r.question_id: r.is_correct for r in prev_rows}
-                                            irt_q = await bg_db.execute(select(Question.id, Question.irt_discrimination, Question.irt_difficulty, Question.irt_guessing).where(Question.id.in_(prev_qids)))
+                                            prev_qids = [
+                                                r.question_id for r in prev_rows
+                                            ]
+                                            prev_correct_map = {
+                                                r.question_id: r.is_correct
+                                                for r in prev_rows
+                                            }
+                                            irt_q = await bg_db.execute(
+                                                select(
+                                                    Question.id,
+                                                    Question.irt_discrimination,
+                                                    Question.irt_difficulty,
+                                                    Question.irt_guessing,
+                                                ).where(Question.id.in_(prev_qids))
+                                            )
                                             for irt_row in irt_q.all():
-                                                answered_questions.append({"irt_a": float(irt_row.irt_discrimination or 1.0), "irt_b": float(irt_row.irt_difficulty or 0.0), "irt_c": float(irt_row.irt_guessing or 0.2)})
-                                                responses.append(bool(prev_correct_map.get(irt_row.id)))
+                                                answered_questions.append(
+                                                    {
+                                                        "irt_a": float(
+                                                            irt_row.irt_discrimination
+                                                            or 1.0
+                                                        ),
+                                                        "irt_b": float(
+                                                            irt_row.irt_difficulty
+                                                            or 0.0
+                                                        ),
+                                                        "irt_c": float(
+                                                            irt_row.irt_guessing or 0.2
+                                                        ),
+                                                    }
+                                                )
+                                                responses.append(
+                                                    bool(
+                                                        prev_correct_map.get(irt_row.id)
+                                                    )
+                                                )
                                     except Exception as irt_err:
-                                        logger.debug("IRT history fetch skipped: %s", irt_err)
-                                    
-                                    answered_questions.append({"irt_a": float(row.irt_discrimination or 1.0), "irt_b": float(row.irt_difficulty or 0.0), "irt_c": float(row.irt_guessing or 0.2)})
+                                        logger.debug(
+                                            "IRT history fetch skipped: %s", irt_err
+                                        )
+
+                                    answered_questions.append(
+                                        {
+                                            "irt_a": float(
+                                                row.irt_discrimination or 1.0
+                                            ),
+                                            "irt_b": float(row.irt_difficulty or 0.0),
+                                            "irt_c": float(row.irt_guessing or 0.2),
+                                        }
+                                    )
                                     responses.append(correct)
-                                    
+
                                     await BKTService.record_answer(
                                         student_id=student_id_val,
                                         topic_id=str(row.primary_topic_id),
@@ -800,8 +880,12 @@ async def save_answer(
                                         responses=responses,
                                     )
                                     await bg_db.commit()
-                                except Exception as e:
-                                    logger.exception("BKT pipeline FAILED session=%s qid=%s — degraded mode", session_id_val, question_id_val)
+                                except Exception:
+                                    logger.exception(
+                                        "BKT pipeline FAILED session=%s qid=%s — degraded mode",
+                                        session_id_val,
+                                        question_id_val,
+                                    )
 
                     _task = _asyncio.create_task(
                         _background_bkt_full(
@@ -809,54 +893,113 @@ async def save_answer(
                             session_id,
                             request.question_id,
                             request.selected_answer,
-                            request.rating
+                            request.rating,
                         )
                     )
-                    
+
                     def _on_done(t, sid=str(session_id), qid=str(request.question_id)):
                         exc = t.exception()
                         if exc is None:
                             return
                         try:
                             from services.bkt_service import _ALGO_ERRORS
-                            _ALGO_ERRORS["bkt_write"] = _ALGO_ERRORS.get("bkt_write", 0) + 1
+
+                            _ALGO_ERRORS["bkt_write"] = (
+                                _ALGO_ERRORS.get("bkt_write", 0) + 1
+                            )
                         except Exception:
                             pass
-                        logger.exception("BKT fire-and-forget FAILED session=%s qid=%s", sid, qid, exc_info=exc)
-                    
+                        logger.exception(
+                            "BKT fire-and-forget FAILED session=%s qid=%s",
+                            sid,
+                            qid,
+                            exc_info=exc,
+                        )
+
                     _task.add_done_callback(_on_done)
                     bkt_result = {"deferred": True}
                 else:
                     from sqlalchemy import select
+
                     from core.database import get_db_session_context
                     from models.exam_db import StudentAnswer
                     from models.question_bank import QuestionBankItem as Question
                     from services.bkt_service import BKTService
 
                     async with get_db_session_context() as db:
-                        q = await db.execute(select(Question.correct_answer, Question.primary_topic_id, Question.subject_area, Question.irt_discrimination, Question.irt_difficulty, Question.irt_guessing).where(Question.id == request.question_id))
+                        q = await db.execute(
+                            select(
+                                Question.correct_answer,
+                                Question.primary_topic_id,
+                                Question.subject_area,
+                                Question.irt_discrimination,
+                                Question.irt_difficulty,
+                                Question.irt_guessing,
+                            ).where(Question.id == request.question_id)
+                        )
                         row = q.first()
                         if row and row.primary_topic_id:
-                            correct = bool(row.correct_answer and request.selected_answer.strip().upper() == row.correct_answer.strip().upper())
+                            correct = bool(
+                                row.correct_answer
+                                and request.selected_answer.strip().upper()
+                                == row.correct_answer.strip().upper()
+                            )
                             rating = request.rating or (3 if correct else 1)
                             subject_slug = (row.subject_area or "matematik").lower()
 
                             answered_questions = []
                             responses = []
                             try:
-                                prev = await db.execute(select(StudentAnswer.question_id, StudentAnswer.is_correct).where(StudentAnswer.exam_session_id == session_id, StudentAnswer.is_correct.isnot(None)))
+                                prev = await db.execute(
+                                    select(
+                                        StudentAnswer.question_id,
+                                        StudentAnswer.is_correct,
+                                    ).where(
+                                        StudentAnswer.exam_session_id == session_id,
+                                        StudentAnswer.is_correct.isnot(None),
+                                    )
+                                )
                                 prev_rows = prev.all()
                                 if prev_rows:
                                     prev_qids = [r.question_id for r in prev_rows]
-                                    prev_correct_map = {r.question_id: r.is_correct for r in prev_rows}
-                                    irt_q = await db.execute(select(Question.id, Question.irt_discrimination, Question.irt_difficulty, Question.irt_guessing).where(Question.id.in_(prev_qids)))
+                                    prev_correct_map = {
+                                        r.question_id: r.is_correct for r in prev_rows
+                                    }
+                                    irt_q = await db.execute(
+                                        select(
+                                            Question.id,
+                                            Question.irt_discrimination,
+                                            Question.irt_difficulty,
+                                            Question.irt_guessing,
+                                        ).where(Question.id.in_(prev_qids))
+                                    )
                                     for irt_row in irt_q.all():
-                                        answered_questions.append({"irt_a": float(irt_row.irt_discrimination or 1.0), "irt_b": float(irt_row.irt_difficulty or 0.0), "irt_c": float(irt_row.irt_guessing or 0.2)})
-                                        responses.append(bool(prev_correct_map.get(irt_row.id)))
+                                        answered_questions.append(
+                                            {
+                                                "irt_a": float(
+                                                    irt_row.irt_discrimination or 1.0
+                                                ),
+                                                "irt_b": float(
+                                                    irt_row.irt_difficulty or 0.0
+                                                ),
+                                                "irt_c": float(
+                                                    irt_row.irt_guessing or 0.2
+                                                ),
+                                            }
+                                        )
+                                        responses.append(
+                                            bool(prev_correct_map.get(irt_row.id))
+                                        )
                             except Exception as irt_err:
                                 logger.debug("IRT history fetch skipped: %s", irt_err)
 
-                            answered_questions.append({"irt_a": float(row.irt_discrimination or 1.0), "irt_b": float(row.irt_difficulty or 0.0), "irt_c": float(row.irt_guessing or 0.2)})
+                            answered_questions.append(
+                                {
+                                    "irt_a": float(row.irt_discrimination or 1.0),
+                                    "irt_b": float(row.irt_difficulty or 0.0),
+                                    "irt_c": float(row.irt_guessing or 0.2),
+                                }
+                            )
                             responses.append(correct)
 
                             bkt_result = await BKTService.record_answer(
@@ -871,7 +1014,11 @@ async def save_answer(
                             )
                             await db.commit()
             except Exception:
-                logger.exception("BKT pipeline FAILED session=%s qid=%s — degraded mode", session_id, request.question_id)
+                logger.exception(
+                    "BKT pipeline FAILED session=%s qid=%s — degraded mode",
+                    session_id,
+                    request.question_id,
+                )
 
         algorithm_degraded = bkt_result is None
         return {
