@@ -181,25 +181,30 @@ async def _fetch_responses(
     *,
     group_by_topic: bool = False,
 ) -> list[dict[str, Any]]:
-    """Fetch student response history from exam_responses + question_bank.
+    """Fetch student response history from student_answers + question_bank.
 
     Returns list of {is_correct, difficulty, topic_id?, topic_name?}.
     """
     try:
-        # Try to get from exam_responses table
+        # Read graded answers from student_answers (the table save-answer writes
+        # to). The old query targeted a phantom `exam_responses` table (no model,
+        # never created) and silently returned empty for every student. The real
+        # answers live in student_answers; student_id is reached via exam_sessions.
         from sqlalchemy import text
 
         query = text("""
             SELECT
-                er.is_correct,
+                sa.is_correct,
                 qb.difficulty_level,
                 qb.primary_topic_id,
                 qb.subject_area
-            FROM exam_responses er
-            JOIN question_bank qb ON er.question_id = CAST(qb.id AS TEXT)
-            WHERE er.student_id = :student_id
+            FROM student_answers sa
+            JOIN exam_sessions es ON sa.exam_session_id = es.id
+            JOIN question_bank qb ON sa.question_id = CAST(qb.id AS TEXT)
+            WHERE es.student_id = :student_id
               AND qb.subject_area = :subject
-            ORDER BY er.created_at DESC
+              AND sa.is_correct IS NOT NULL
+            ORDER BY sa.answered_at DESC
             LIMIT 500
         """)
 
