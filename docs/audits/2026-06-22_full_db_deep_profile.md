@@ -94,3 +94,12 @@
 
 ---
 *Profiler: `docs/audits/_dbprofile/` (inventory.tsv, columns_meta.tsv, column_profile.tsv, generate_profile.py). Workflow'lar: w38f5d6ro (kod), we4z2d375 (içerik kalite). Tüm sayılar canlı psql/profiler çıktısı.*
+
+## 8. FAZ-1 TEMİZLİK UYGULANDI (22 Haz)
+| Çözüm | Durum | Kanıt |
+|---|---|---|
+| Ç1 mock drop (200K) | ✅ kaldırıldı | mock_ai_telemetry+mock_ocr_data DB'de YOK; question_bank/v_safe sağlam |
+| Ç3 eski backup (gemma3/fallback/qwen3/verbal ~8K) | ✅ kaldırıldı | pattern araması boş |
+| Ç4 platform_stats (tek DEAD) | ✅ DROP | 0 satır, modelsiz |
+| Ç2 sözel garble (41 demote, 331 FP kurtarıldı) | ✅ uygulandı | v_safe 25.343→25.302 |
+**Tablo: 178→174. Bu session 36 backup KORUNDU (reversibility). correct_answer/is_active hiç dokunulmadı.**
