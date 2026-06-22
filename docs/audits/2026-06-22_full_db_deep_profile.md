@@ -68,6 +68,14 @@
 | Garble demote (kör-yargı 56) | 25.399→**25.343** (−56) | question_bank_garble_demote_backup_20260622 |
 | (önceki) I5 stale vp / F4 index / F5 / F2 | — | stale_vp_backup; meta-audit doc |
 
+## 5b. Ç2 Sözel Garble Süpürmesi UYGULANDI (2-pass, false-pozitif guard'lı)
+- **Kapsam:** 3.187 sözel served (TÜRKÇE/EDEBİYAT/GENEL), workflow wjcuwr8fa.
+- **Pass-1:** 372 garble-flag (%11.7 — blind-örneklemle birebir).
+- **Spot-check:** 5'te 1 yanlış-pozitif (divan rubaisi) → körlemesine demote RİSKLİ teşhis edildi.
+- **Pass-2 (adversarial, divan/edebiyat guard):** 372 → **yalnız 41 teyitli garble**; **331 yanlış-pozitif KURTARILDI** (geçerli Türkçe/divan şiiri/arkaik dil). FP oranı %89!
+- **Demote:** 41 (2-pass Y∧Y) → `demoted_at`/`garble_verbal_2pass`. **v_safe 25.343→25.302.** backup question_bank_garble_verbal_backup_20260622. correct_answer/is_active dokunulmadı.
+- **DERS:** Tek-pass garble filtresi sözel Türkçe'de %89 false-pozitif üretti — audit-methodology "ucuz filtre geçerli Türkçe'yi siler" kuralının canlı kanıtı. 2-pass + guard zorunlu.
+
 ## 6. Öncelikli Öneriler (ORM-farkında / operatör kararı gerektirir — körlemesine silinmedi)
 
 | # | Aksiyon | Gerekçe (kanıt) | Risk |
