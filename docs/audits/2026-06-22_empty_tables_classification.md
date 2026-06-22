@@ -42,3 +42,17 @@ study_rooms, study_sessions, teacher_profiles, user_badges, user_achievements, v
 
 ---
 *Workflow wlibjxlwy (7 ajan, 159 tool-use, 82/82). Kanıt: empty_classify.json. Hiçbir drop uygulanmadı.*
+
+---
+## C1 TAM DOĞRULAMA (30/30, 2-pass + deterministik) — 22 Haz
+**Sonuç: otonom-güvenli DROP YOK. Şema-silme deploy-gate'li refactor gerektirir.**
+
+- 8 tablo "safe" işaretlendi AMA kesin değil — verification scope'u tekrar tekrar komplikasyon çıkardı:
+  - **fallback_videos:** ilk-pass "safe", resume-pass "BLOCKED" — `database/learning_path_repository.py:481-536` FallbackVideo CRUD + canlı endpoint (learning_path_v2.py:1693) bulundu. Scope `api/services/app` idi, **`database/` repository-katmanı kaçtı.**
+  - **sessions:** `Session` SQLAlchemy ile 182-dosya isim-çakışması → grep'le güvenli denemez.
+  - **duels:** gamification.Duel kullanılmıyor ama 10 `\bDuel\b` hit (alembic/celery) — inceleme gerek.
+  - **quality_gates_override_audit:** tüm-backend 0 hit — tek net-temiz aday.
+- **22 blocked:** relationship-target (EBAVideo→usage/recommendations, FSRSCard/User→fsrs_reviews, curriculum standards→alignments, User→classrooms), test-coverage (eba_*, educational_contents 25+ test), incoming-FK (osym_standards), seed-script (educational_contents).
+
+### Kanıta dayalı karar
+Mass tablo+model silme: (1) repository/seed/alembic katmanlarını da tarayan tam-scope verify, (2) ORM-model + tablo + test birlikte kaldırma, (3) container rebuild + golden-flow test, (4) per-tablo insan onayı gerektirir. **Otonom DB-drop YASAK** (deprecation-guard.md + İnsan-Döngüsü). Bu oturumda hiçbir şema-silme uygulanmadı; yalnız `platform_stats` (DEAD, 0-model) daha önce düşürüldü.
