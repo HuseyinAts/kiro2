@@ -111,3 +111,17 @@
 - **Demote:** 17 → v_safe 25.302→**25.285**. backup question_bank_garble_stem_backup_20260622. correct_answer/is_active dokunulmadı.
 - **DERS:** STEM gerçek garble %0.08 (17/20.319) — havuz çok temiz; tam-sweep getirisi çok düşük (ama eksiksizlik için yapıldı). Verbal (%11.7) vs STEM (%1.1) farkı = OCR sözel metinde zorlanıyor, formül/sayıda değil.
 - **A1+A3 kümülatif (bu tur):** v_safe 25.343→25.285 (garble −41 verbal −17 STEM = −58); A3 5.315 dup-flag.
+
+## 10. B1 Pool A AYT/Sözel-Sosyal Büyüme UYGULANDI
+- **Hedef:** v_safe %92-TYT/%43-math dengesizliğini azalt → az-temsil edilen AYT + sözel/sosyal fallback (2.219: AYT-EDEBİYAT 392 + TYT TÜRKÇE/TARİH/SOSYAL/COĞRAFYA 1.827).
+- **Workflow** wp769bt7m→resume wn1hqv9ho (session-limit yedi, resume ile 2.214/2.219 çözüldü). Combined-pass (solve+ders+konu).
+- **Funnel:** promote 570 (%25.8 — verbal zor, dispute %35.2 flag'li) / lowconf 541 / unsolvable 123 / subject_mismatch 104.
+- **v_safe 25.285 → 25.855 (+570).** AYT 2.041→2.160 (+119), TYT-sözel/sosyal +451. backup question_bank_poolA_wb1_backup_20260622. correct_answer/is_active dokunulmadı, verified_provisional flag'li.
+- Kalan fallback (çoğu STEM-TYT, zaten fazla-temsil): ~9.000.
+
+## 11. SESSION KÜMÜLATİF (DB profil + içerik + temizlik)
+- **v_safe net:** 25.755 → dedup −356 → garble −114 (56+41+17) → B1 +570 = **25.855**.
+- **DB:** 178→174 tablo (mock 200K + eski backup + platform_stats kaldırıldı); 5.315 dup-flag.
+- **İçerik kalite kanıtı:** served %89.5 okunabilir / %96.9 çözülebilir; garble verbal %11.7→2-pass 41, STEM %1.1→2-pass 17 (toplam 537+206=743 yanlış-pozitif KURTARILDI guard'la).
+- **Şema:** 82 boş tablo sınıflandı (51 wired/30 stub/1 dead); otonom-drop güvenli DEĞİL (deploy-gate).
+- correct_answer/is_active HİÇ dokunulmadı; tüm değişiklikler reversible (40+ backup tablo).

@@ -19,7 +19,7 @@ TAX = HERE.parent / "_vp_unlock" / "taxonomy.tsv"
 RUNDATE = "2026-06-21"
 
 tag = sys.argv[1]
-wave_num = int(tag.lstrip("w"))
+wave_num = int("".join(c for c in tag if c.isdigit()) or "1")
 rows = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
 keymap = json.loads(Path(sys.argv[3]).read_text(encoding="utf-8"))
 
