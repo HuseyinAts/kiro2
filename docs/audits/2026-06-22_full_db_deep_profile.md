@@ -103,3 +103,11 @@
 | Ç4 platform_stats (tek DEAD) | ✅ DROP | 0 satır, modelsiz |
 | Ç2 sözel garble (41 demote, 331 FP kurtarıldı) | ✅ uygulandı | v_safe 25.343→25.302 |
 **Tablo: 178→174. Bu session 36 backup KORUNDU (reversibility). correct_answer/is_active hiç dokunulmadı.**
+
+## 9. A1 STEM Garble Süpürmesi UYGULANDI (2-pass)
+- **Kapsam:** 20.345 STEM v_safe (MATEMATİK/FİZİK/KİMYA/BİYOLOJİ), workflow wb4u0wem9→resume wpi2418gp (haftalık-limit yedi, resume ile tamamlandı 20.319/20.345).
+- **Pass-1:** 223 garble-flag (%1.1 — STEM zaten temiz; sözel %12'nin onda biri).
+- **Pass-2 (LaTeX/formül guard):** 223 → **17 teyitli**; **206 yanlış-pozitif KURTARILDI** (matematik/formül metni).
+- **Demote:** 17 → v_safe 25.302→**25.285**. backup question_bank_garble_stem_backup_20260622. correct_answer/is_active dokunulmadı.
+- **DERS:** STEM gerçek garble %0.08 (17/20.319) — havuz çok temiz; tam-sweep getirisi çok düşük (ama eksiksizlik için yapıldı). Verbal (%11.7) vs STEM (%1.1) farkı = OCR sözel metinde zorlanıyor, formül/sayıda değil.
+- **A1+A3 kümülatif (bu tur):** v_safe 25.343→25.285 (garble −41 verbal −17 STEM = −58); A3 5.315 dup-flag.
