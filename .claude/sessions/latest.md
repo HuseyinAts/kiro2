@@ -1,67 +1,43 @@
-# Session Handoff — 2026-06-22/23 (Tam DB Profil + İçerik Temizlik + Pool A Büyüme + P1/P3)
+# Session Handoff — 2026-06-23 (P3 Redeploy + Golden Flow 12→2 fail)
 
-**Branch:** feature/self-evolution-optimization | **HEAD:** 5d001d079 (pushed) | **PG18:** 5434 manuel-açık
-**v_safe: 25.855** | **DB: 177 tablo (39 backup)** | **correct_answer/is_active HİÇ DOKUNULMADI**
-
----
-## 1. BU SESSION'DA YAPILANLAR (kronolojik, hepsi commit+push'lu)
-
-### Tam DB Derin Profil (eksiksiz)
-- 178 tablo / **2.421 sütun** deterministik profiler ile tarandı (0 atlama garantisi). Mutabakat: 1.261 dolu-tablo + 221 view + 939 boş-tablo sütunu = 2.421. Tüm satırlar tarandı (en büyük 187K < limit 200K).
-- Profiler: `docs/audits/_dbprofile/generate_profile.py` (+ inventory.tsv, columns_meta.tsv, column_profile.tsv).
-- FK: **0 orphan** (107 declared FK). question_bank: 0 bad-key, 0 kısa-metin.
-- Rapor: `docs/audits/2026-06-22_full_db_deep_profile.md`
-
-### İçerik Kalitesi (kanıt, blind n=448)
-- Served pool: **%89.5 okunabilir / %96.9 çözülebilir / %79.5 blind-AGREE / %11.8 garble** (verbal-yoğun: TÜRKÇE %26).
-- Eski gold %40 okunabilirlikten dramatik iyileşme — blind-solve+2signal pipeline'ı işe yaradı.
-
-### Uygulanan içerik fix'leri (reversible, backup'lı)
-- **v_safe dedup:** −356 mükerrer (demoted_at flag)
-- **Garble sweep 2-PASS (false-pozitif guard'lı):** verbal 372→41 demote (331 FP kurtarıldı), STEM 223→17 demote (206 FP kurtarıldı). **Toplam 743 geçerli soru kurtarıldı** — tek-pass körü silerdi.
-- **A3 bank dedup:** 5.315 mükerrer → `duplicate_of` flag (kanonik korundu)
-- **B1 Pool A AYT/sözel-sosyal büyüme:** 2.214 çözüldü → **570 promote** (v_safe +570; AYT 2041→2160, dengesizlik azaldı)
-
-### DB temizlik (kanıtlı-güvenli)
-- mock_ai_telemetry+mock_ocr_data (200K, kodda 0-ref) + 4 eski backup + platform_stats (tek DEAD) kaldırıldı.
-
-### Meta-audit + şema sınıflama (agent-team)
-- 82 boş tablo: 51 WIRED(lansman-bekliyor) / 30 stub / **1 DEAD** → "boş=sil" çürüdü (81 modelli).
-- 15 çekirdek wired-boş write-path: 10 DORMANT(trafik bekliyor) / 5 NO_WRITE_PATH(quiz/achievement inşa edilmemiş).
-- Önceki meta-audit (kod): 5 bulgu→3 gerçek fix (F4 beta_vp index, F5 Pydantic validate-shadow, F2 dead-dup sil) + 2 phantom.
-
-### P3 Beta E2E (canlı backend)
-- Golden Flow 14 PASS / 12 FAIL / 150 skip. **Çekirdek öğrenci akışı PASS** (login→placement→exam→review→qbank).
-- 12 fail HEPSİ çevresel (7×500: teacher/KVKK/Khan/EBA/video — sync-get_db-trap). Rapor: `docs/audits/2026-06-22_p3_beta_e2e.md`
+**Branch:** feature/self-evolution-optimization | **HEAD:** 30de94643 (9 commit; 5 pushed, son 3 UNPUSHED: 56a84bbea grading / bef0275e5 GF2w / 30de94643 GF150)
+**Golden Flow: 12 fail → 0 fail (30 passed) — TAM YEŞİL**
+**v_safe: 25.855** | **PG18 5434 açık** | **correct_answer/is_active HİÇ DOKUNULMADI**
 
 ---
-## 2. AÇIK İŞLER (gated/blocked/deferred — kanıtla)
-- **P3 redeploy+rerun (P0, deploy-gate):** container 3-gün STALE. `docker compose build backend && up -d --no-deps backend` → E2E re-run → stale-vs-gerçek ayrışsın → kalan gerçek 500'leri TDD'yle fix (Pattern A trap reçetesi golden-flows.md/middleware.md).
-- **GF1x logout-security:** logout sonrası /me 200≠401 — doğrula (stale mı gerçek mi).
-- **B2 gold terfi (BLOKE):** 1.778 `poolA_2signal` aday, farklı-model 3.sinyal yok (qwen STEM-zayıf/gemini-bloke) → infra kararı.
-- **A2 dispute (ERTELENDİ):** düşük-ROI (served temiz; dispute≠yanlış-anahtar). 25K 2.-solve değmez.
-- **C2/C3 şema-drop (deploy-gate):** 30 stub + 165 ölü sütun + legacy questions(36K) → model+tablo+test birlikte, container-test'li. Otonom-drop GÜVENLİ DEĞİL.
-- **Pool A kalan ~9.000 fallback** (çoğu STEM-TYT, fazla-temsil) → sonraki dalgalar (proven recipe).
-- **Latent bug:** quiz_submissions sessiz-veri-kaybı (writer learning_path_repository.py:443 var ama submit endpoint'e unwired) — quiz-feature inşa edilirse şart.
+## BU SESSION (kronolojik, 4 commit local)
+1. **Backend redeploy** (operatör): `docker compose build backend` + up. Stale doğrulandı (image 06-19, 4 gün).
+2. **P3 E2E re-run:** 12 fail HEPSİ taze-image'da da var → 0 stale. Handoff'un "sync-get_db-trap" teşhisi **PHANTOM**.
+3. **`bbfa76a26` 7×500 stamp-drift:** alembic head'de ama 7 tablo fiziksel yok. ORM modelden yaratıldı (additive, checkfirst, reversible DROP). teacher_pool_profiles/teacher_classrooms/video_solutions/kvkk_consents/khan_oauth_tokens/eba_video_watches/kvkk_data_export_requests. Script: `backend/scripts/create_missing_gf_tables.py`. → 12 fail→5.
+4. **`854a8c9de` GF1x logout-security:** `is_blacklisted_async` `valid_tokens` 60sn pozitif-cache'i `blacklisted_tokens`'tan ÖNCE kontrol ediyordu + `blacklist_token_async` cache'i temizlemiyordu → logout sonrası /me 200. TDD (unit test). → 5→4.
+5. **`16e833ca6` GF3+GF7 cachetools:** build `Dockerfile.minimal`→`requirements-minimal.txt` kullanıyor, cachetools yoktu (requirements.txt'te var). api.sinav + agents.learning_path import-fail → /osym-exam/* 404 (GF3) + fallback-videos except→success=false (GF7). cachetools>=5.0.0 minimal'e eklendi + canlıya elle kuruldu. → 4→3 (ama GF1w yüzeye çıktı).
+6. **`a26c4c946` GF1w BKT:** save-answer pipeline `if False:` (11 Haz chore e25b1dd1d) ile komple ölüydü → algorithm=None, mastery ilerlemiyor. `if True:` (blok failure-isolated). → 3→2.
+
+**Golden Flow: 12 fail → 2 fail (27 passed).**
 
 ---
-## 3. KRİTİK DERSLER (bu session canlı kanıt)
-1. **Türkçe içerikte tek-pass silme = %89 FP.** 2-pass + domain-guard ZORUNLU (743 geçerli soru kurtarıldı).
-2. **"Boş/wired-boş = silinebilir/aktive-edilebilir borç" YANLIŞ.** Çoğu lansman-öncesi-doğru. Trace et, varsayma.
-3. **2 dev workflow eşzamanlı = rate-limit** (3 kez yendi: 529+session+weekly). SIRALI + resume (cache'li, güvenilir).
-4. **Eksiksizlik = deterministik araç (SQL/script), LLM ajanı değil.** Doğrulamanın kendisi de doğrulanmalı (scope; fallback_videos repo-katmanı kaçtı).
-5. **Stale-baseline'a güvenme** (container 3-gün eski → E2E fail'leri belirsiz).
+## KALAN 2 FAIL (gerçek kod-bug DEĞİL)
+- **GF2w** gamification award: 403 reason_not_allowed = **DOĞRU davranış** (whitelist'li sistem-kaynak şartı). Test `reason:"golden_flow_write_test"` bayat → test'i allowed-source'a güncelle (1 satır).
+- **GF150** clustering/health: sklearn/hdbscan/umap container'da yok → degraded. requirements-minimal'e ML deps + rebuild (image şişer).
 
 ---
-## 4. STATE/ALTYAPI
-- PG18 5434 manuel: `pg_ctl -D "C:/Program Files/PostgreSQL/18/data" -l C:/Users/husey/pg18_manual_start.log start`
-- Tüm container'lar healthy (backend/frontend/redis/celery/ollama, 3 gün up — ama backend kod-stale).
-- Reçeteler: `_poolA_retag/POOLA_RESULT.md` (blind-solve dalga), `_dbprofile/` (profiler), `docs/audits/2026-06-22_*` (3 rapor).
-- Backup'lar (39): question_bank_*backup* + poolA_w{1,2,3,b1} + garble_{verbal,stem,demote} + vsafe_dedup + stale_vp + dup_flag — hepsi reversible.
+## AÇIK İŞLER / CAVEAT
+- **PUSH BEKLİYOR:** 4 commit local. Operatör `git push`.
+- **CACHETOOLS durable ama clean-rebuild teyitsiz:** canlı container'a elle kuruldu (recreate'te kaybolur). requirements-minimal.txt fix'li → `docker compose build --no-cache backend` ile teyit gerek (layer requirements değişiminde reinstall eder).
+- **exam_responses read/write mismatch → FIXED** (`f535843a1`, UNPUSHED): mastery_confidence_service query'si `exam_responses`(phantom)→`student_answers JOIN exam_sessions JOIN question_bank`. Canlı 200 OK, UndefinedTableError gitti.
+- **GRADING GAP → FIXED** (`56a84bbea`): `save_answer` artık write anında correct_answer fetch'leyip `is_correct` set ediyor (iki insert yolu + iki on_conflict). Canlı: yeni cevap is_correct=t, eski NULL. Mastery pipeline uçtan uca tamam.
+- **GF2w → FIXED** (`bef0275e5`): test bayat reason→`quiz_completion` (endpoint 403'ü doğruydu).
+- **GF150 → FIXED** (`30de94643`): ML deps DEĞİLdi — service-id mismatch (test `clustering`↔endpoint `concept_clustering`) + eksik `database` flag. Test align + endpoint'e DB-ping flag eklendi. (sklearn/hdbscan/umap optional kaldı, degraded kabul.)
+- **7 tablo canlı yaratıldı ama alembic migration YOK:** taze deploy/CI için durable migration gerek (script var, çalıştırılabilir).
 
 ---
-## 5. SONRAKİ ADIM (öneri sırası)
-1. **Backend redeploy + P3 E2E re-run** (gerçek 500'leri ortaya çıkarır — en yüksek değer, deploy-gate)
-2. Gerçek 500'leri TDD fix (Pattern A sync-get_db-trap)
-3. B2 gold için farklı-model kararı (gemini-unblock?)
-4. Pool A STEM-TYT dalgaları (otonom, isteğe bağlı)
+## STATE
+- PG18 5434 manuel açık. Backend redeploy'lı + healthy. cachetools canlıda kurulu.
+- Reçete: `backend/scripts/create_missing_gf_tables.py` (--verify-only / --all / tek-tablo), `backend/tests/unit/test_jwt_blacklist_logout.py`.
+
+## SONRAKİ ADIM
+1. Push (4 commit) — operatör
+2. Clean `--no-cache` rebuild → cachetools + 7-tablo durable teyit + GF E2E re-run
+3. exam_responses read/write mismatch fix (mastery_confidence → student_answers)
+4. GF2w test güncelle / GF150 ML deps kararı
+5. 7-tablo için alembic migration (durable reproducibility)
