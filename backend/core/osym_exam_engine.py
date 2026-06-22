@@ -624,16 +624,19 @@ class OSYMExamEngine:
 
             # Veritabanına kaydet — UPSERT işlemini arka plana al (DB pool starvation'u engellemek için)
             import asyncio
+            import uuid
+
+            from sqlalchemy.dialects.postgresql import insert as pg_insert
+
             from core.database import get_db_session_context
             from models.exam_db import StudentAnswer
-            from sqlalchemy.dialects.postgresql import insert as pg_insert
-            import uuid
 
             if not hasattr(self, "_db_queue"):
                 self._db_queue = asyncio.Queue()
                 self._db_worker_task = None
 
             if self._db_worker_task is None or self._db_worker_task.done():
+
                 async def _db_worker():
                     while True:
                         batch = []
@@ -641,14 +644,14 @@ class OSYMExamEngine:
                             # Wait for at least 1 item
                             item = await self._db_queue.get()
                             batch.append(item)
-                            
+
                             # Drain the queue up to 1000 items
                             while len(batch) < 1000:
                                 try:
                                     batch.append(self._db_queue.get_nowait())
                                 except asyncio.QueueEmpty:
                                     break
-                            
+
                             # Bulk UPSERT
                             if batch:
                                 async with get_db_session_context() as db_session:
@@ -659,7 +662,8 @@ class OSYMExamEngine:
                                             "selected_answer": stmt.excluded.selected_answer,
                                             "response_time_seconds": stmt.excluded.response_time_seconds,
                                             "answered_at": datetime.now(),
-                                            "answer_changes": StudentAnswer.answer_changes + 1,
+                                            "answer_changes": StudentAnswer.answer_changes
+                                            + 1,
                                         },
                                     )
                                     await db_session.execute(stmt, batch)
@@ -669,16 +673,36 @@ class OSYMExamEngine:
                         finally:
                             for _ in batch:
                                 self._db_queue.task_done()
-                
+
                 self._db_worker_task = asyncio.create_task(_db_worker())
 
             normalized_answer = (
-                selected_answer.strip().upper()
-                if selected_answer
-                else selected_answer
+                selected_answer.strip().upper() if selected_answer else selected_answer
             )
-            
+
+            # Grade the answer at write time so student_answers.is_correct is
+            # populated. The mastery pipeline filters on is_correct; it was always
+            # NULL because save_answer never compared the answer to correct_answer.
+            is_correct_val: bool | None = None
+            if normalized_answer:
+                try:
+                    from sqlalchemy import select as _select
+
+                    from models.question_bank import QuestionBankItem as _QB
+
+                    async with get_db_session_context() as _grade_db:
+                        _ca = (
+                            await _grade_db.execute(
+                                _select(_QB.correct_answer).where(_QB.id == question_id)
+                            )
+                        ).scalar_one_or_none()
+                    if _ca:
+                        is_correct_val = normalized_answer == str(_ca).strip().upper()
+                except Exception as _ge:
+                    logger.debug("save_answer grade skipped: %s", _ge)
+
             import os
+
             if os.environ.get("TESTING") == "true":
                 # Testlerde senkron çalıştır
                 async def _sync_save():
@@ -689,21 +713,25 @@ class OSYMExamEngine:
                             question_id=question_id,
                             selected_answer=normalized_answer,
                             response_time_seconds=response_time or 0.0,
+                            is_correct=is_correct_val,
                         )
                         stmt = stmt.on_conflict_do_update(
                             constraint="uq_student_answer",
                             set_={
                                 "selected_answer": stmt.excluded.selected_answer,
                                 "response_time_seconds": stmt.excluded.response_time_seconds,
+                                "is_correct": stmt.excluded.is_correct,
                                 "answered_at": datetime.now(),
                                 "answer_changes": StudentAnswer.answer_changes + 1,
                             },
                         )
                         await db_session.execute(stmt)
                         await db_session.commit()
+
                 await _sync_save()
             else:
                 import uuid
+
                 # Gerçek yük altında global batch queue'ya at
                 self._db_queue.put_nowait(
                     {
@@ -712,6 +740,7 @@ class OSYMExamEngine:
                         "question_id": question_id,
                         "selected_answer": normalized_answer,
                         "response_time_seconds": response_time or 0.0,
+                        "is_correct": is_correct_val,
                         "answer_changes": 0,
                         "time_to_first_answer": 0.0,
                     }
@@ -725,16 +754,19 @@ class OSYMExamEngine:
             else:
                 if not hasattr(self, "_persist_tasks"):
                     self._persist_tasks = {}
-                    
+
                 if session_id not in self._persist_tasks:
+
                     async def _debounced_persist():
                         try:
                             await asyncio.sleep(0.2)  # Wait for burst to finish
                             await persist_session(session_data)
                         finally:
                             self._persist_tasks.pop(session_id, None)
-                            
-                    self._persist_tasks[session_id] = asyncio.create_task(_debounced_persist())
+
+                    self._persist_tasks[session_id] = asyncio.create_task(
+                        _debounced_persist()
+                    )
 
             logger.debug(
                 "Cevap kaydedildi",
@@ -990,44 +1022,48 @@ class OSYMExamEngine:
         # L1 cache stampede protection
         if not hasattr(self, "_session_locks"):
             self._session_locks = {}
-            
+
         if session_id not in self._session_locks:
             import asyncio
+
             self._session_locks[session_id] = asyncio.Lock()
-            
+
         # L1 cache stampede protection WITHOUT asyncio.Lock convoys
         if not hasattr(self, "_session_loading"):
             self._session_loading = {}
-            
+
         session = self.active_sessions.get(session_id)
         if session:
             return session
-            
+
         if session_id in self._session_loading:
             # Wait for the first request to finish loading
             return await self._session_loading[session_id]
-            
+
         # We are the first request, let's load it
         import asyncio
+
         loop = asyncio.get_running_loop()
         future = loop.create_future()
         self._session_loading[session_id] = future
-        
+
         try:
             # L2: Redis fallback (restart recovery)
             from core.exam_session_store import load_session
+
             session = await load_session(session_id)
-            
+
             # L3: DB fallback
             if not session:
                 session = await self._reconstruct_session_from_db(session_id)
                 if session and session.status != ExamStatus.COMPLETED:
                     from core.exam_session_store import persist_session
+
                     await persist_session(session)
-                    
+
             if session:
                 self.active_sessions[session_id] = session
-                
+
             # Resolve future so all waiters wake up
             future.set_result(session)
         except Exception as e:
