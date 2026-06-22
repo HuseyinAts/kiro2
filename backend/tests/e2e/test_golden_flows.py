@@ -856,10 +856,13 @@ def test_gf2w_gamification_points_award_advances_balance(client: httpx.Client):
         f"GF2w gamification points: no total_points in response {before_resp.json()}"
     )
 
+    # `reason` MUST be a whitelisted system source — the award endpoint rejects
+    # arbitrary reasons with 403 reason_not_allowed (only system-generated points
+    # are accepted). Use a real allowed source to exercise the award mechanism.
     award_resp = client.post(
         "/api/v1/gamification/points/award",
         headers={**headers, "Content-Type": "application/json"},
-        json={"points": 3, "reason": "golden_flow_write_test"},
+        json={"points": 3, "reason": "quiz_completion"},
     )
     assert award_resp.status_code == 200, (
         f"GF2w gamification award HTTP {award_resp.status_code}: "
