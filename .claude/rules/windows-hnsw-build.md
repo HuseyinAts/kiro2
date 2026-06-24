@@ -1,3 +1,13 @@
+---
+name: windows-hnsw-build
+description: Windows pgvector HNSW index build kuralı (parallel build patlaması)
+paths:
+  - "backend/alembic/**"
+  - "backend/**/*embedding*"
+  - "backend/**/*vector*"
+  - "backend/scripts/**/*hnsw*"
+---
+
 # Windows pgvector HNSW Index Build Kuralı
 
 2026-06-12'de eklendi. Kök neden: `question_bank.embedding` (vector 768, 147K dolu)

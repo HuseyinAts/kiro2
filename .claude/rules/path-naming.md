@@ -1,3 +1,12 @@
+---
+name: path-naming
+description: Endpoint path naming (İngilizce canonical) + TR/EN duplicate yasağı + frontend drift
+paths:
+  - "backend/api/**"
+  - "backend/app/api/**"
+  - "frontend/src/services/**"
+---
+
 # Path Naming Convention — Backend ↔ Frontend Drift Control
 
 Session 135'de eklendi. Kök neden: aynı özellik için hem Türkçe (`/ogretmen`,

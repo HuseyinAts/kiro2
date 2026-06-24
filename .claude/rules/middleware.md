@@ -1,3 +1,12 @@
+---
+name: middleware
+description: BaseHTTPMiddleware'den HTTPException raise etme — JSONResponse döndür (500 tuzağı)
+paths:
+  - "backend/core/**"
+  - "backend/middleware/**"
+  - "backend/**/*middleware*"
+---
+
 # Middleware — HTTPException propagation
 
 Session 148 (GF99 root cause). This rule exists because the CSRF

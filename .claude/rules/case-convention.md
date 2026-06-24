@@ -1,3 +1,13 @@
+---
+name: case-convention
+description: subject_area / exam_type UPPERCASE-DB vs lowercase-slug case kuralı + endpoint gate
+paths:
+  - "backend/api/**"
+  - "backend/app/api/**"
+  - "backend/services/**"
+  - "backend/algorithms/**"
+---
+
 # Case Convention — Subject Area & Exam Type
 
 Bu kural Session 133 kapsamlı audit sonucu oluşturuldu.
