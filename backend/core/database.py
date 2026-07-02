@@ -119,14 +119,6 @@ class DatabaseManager:
 
         self._loop = current_loop
 
-        # TESTING MODE: Skip initialization if TESTING=true (smoke tests)
-        import os
-
-        if os.environ.get("TESTING") == "true":
-            logger.info("⚠️  TESTING mode: Skipping database initialization")
-            self._initialized = True
-            return
-
         try:
             # Ensure asyncpg driver is used for PostgreSQL
             database_url = os.getenv("DATABASE_URL") or settings.database_url

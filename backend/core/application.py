@@ -177,7 +177,7 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Shutdown
     logger.info("🛑 KIRO2 Backend Shutting Down...")
-    
+
     # Stop IRT Daemon
     try:
         from core.irt_daemon import irt_daemon
@@ -395,6 +395,12 @@ def create_app() -> FastAPI:
     # Global catch-all exception handler (prevent internal detail leaks)
     @app.exception_handler(Exception)
     async def _unhandled_exception_handler(request: Request, exc: Exception):
+        import sys
+        import traceback
+        sys.stderr.write("!!! EXCEPTION CAUGHT BY GLOBAL HANDLER !!!\n")
+        sys.stderr.write(traceback.format_exc())
+        sys.stderr.write("!!! END OF EXCEPTION !!!\n")
+        
         # B-P0-52: Exception Swallowing. Bypass default HTTP & validation errors
         from fastapi.exception_handlers import (
             http_exception_handler,
@@ -404,6 +410,8 @@ def create_app() -> FastAPI:
         from starlette.exceptions import HTTPException as StarletteHTTPException
 
         if isinstance(exc, StarletteHTTPException):
+            sys.stderr.write(f"!!! HTTP EXCEPTION CAUGHT: {exc.status_code} {exc.detail} !!!\n")
+            sys.stderr.write(traceback.format_exc() + "\n")
             return await http_exception_handler(request, exc)
         if isinstance(exc, RequestValidationError):
             return await request_validation_exception_handler(request, exc)
@@ -415,18 +423,10 @@ def create_app() -> FastAPI:
             exc,
             exc_info=True,
         )
-        # In dev/debug mode, expose error class + message so the client
-        # isn't left guessing when the frontend surfaces a 500. Production
-        # keeps the generic message to avoid leaking internals.
         if settings.debug:
             return JSONResponse(
                 status_code=500,
-                content={
-                    "detail": "Dahili sunucu hatasi",
-                    "error_type": type(exc).__name__,
-                    "error_message": str(exc),
-                    "path": request.url.path,
-                },
+                content={"detail": "Dahili sunucu hatasi", "error": str(exc)},
             )
         return JSONResponse(
             status_code=500,

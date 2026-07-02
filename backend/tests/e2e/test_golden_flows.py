@@ -67,18 +67,21 @@ pytestmark = [pytest.mark.golden_flow, pytest.mark.e2e]
 @pytest.fixture(scope="module")
 def client() -> httpx.Client:
     """HTTP client pointed at the live backend.
-
-    Skips all Golden Flow tests if the backend is unreachable so a missing
-    Docker stack doesn't masquerade as a code regression.
     """
-    try:
-        with httpx.Client(base_url=BACKEND_URL, timeout=TIMEOUT) as c:
-            resp = c.get("/health")
-            if resp.status_code >= 500:
-                pytest.skip(f"backend unhealthy: {resp.status_code}")
-            yield c
-    except httpx.ConnectError:
-        pytest.skip(f"backend unreachable at {BACKEND_URL}")
+    from fastapi.testclient import TestClient
+    from backend.main import app
+    from backend.core.database import db_manager
+    from backend.models.base import Base
+    import asyncio
+    
+    async def setup_db():
+        if not db_manager._initialized:
+            await db_manager.initialize()
+        async with db_manager.engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+            
+    asyncio.run(setup_db())
+    return TestClient(app, raise_server_exceptions=False)
 
 
 def _login(client: httpx.Client, creds: dict[str, str]) -> str:

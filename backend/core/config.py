@@ -6,11 +6,13 @@ import os
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
+
 from dotenv import load_dotenv
+
 _current_dir = Path(__file__).parent.parent
 _root_dir = _current_dir.parent
 _env_file = _root_dir / '.env' if (_root_dir / '.env').exists() else _current_dir / '.env'
-load_dotenv(_env_file, override=True)
+load_dotenv(_env_file)
 
 class EmbeddingModelType(str, Enum):
     """Desteklenen embedding model tipleri."""
@@ -148,14 +150,14 @@ class Settings:
                 if f':{weak_pwd}@' in self.database_url:
                     errors.append(f"Weak database password detected: '{weak_pwd}' - use strong random password")
         weak_secrets = ['your-secret-key-change-in-production', 'kiro2-docker-secret-key-change-in-production', 'secret', 'dev', 'test']
-        if any((weak in self.secret_key.lower() for weak in weak_secrets)):
+        if any(weak in self.secret_key.lower() for weak in weak_secrets):
             errors.append('Weak SECRET_KEY detected - use strong random key (64+ characters)')
         if len(self.secret_key) < 32:
             errors.append('SECRET_KEY too short - must be at least 32 characters')
         if self.jwt_secret_key == self.secret_key:
             errors.append('JWT_SECRET_KEY should be different from SECRET_KEY')
         weak_jwt_secrets = ['kiro2-docker-jwt-secret-change-in-production', 'jwt', 'token']
-        if any((weak in self.jwt_secret_key.lower() for weak in weak_jwt_secrets)):
+        if any(weak in self.jwt_secret_key.lower() for weak in weak_jwt_secrets):
             errors.append('Weak JWT_SECRET_KEY detected - use strong random key (64+ characters)')
         if self.youtube_api_key:
             if len(self.youtube_api_key) < 20:
@@ -166,10 +168,10 @@ class Settings:
             errors.append('DEBUG mode is enabled in production - this is a security risk!')
         if '*' in self.allowed_origins:
             errors.append('Wildcard CORS (*) is not allowed in production')
-        if any(('localhost' in origin for origin in self.allowed_origins)):
+        if any('localhost' in origin for origin in self.allowed_origins):
             errors.append('localhost in CORS origins - remove for production')
         if errors:
-            error_msg = '\n'.join((f'  - {err}' for err in errors))
+            error_msg = '\n'.join(f'  - {err}' for err in errors)
             raise ValueError(f'\n{"=" * 70}\nCRITICAL PRODUCTION VALIDATION ERRORS:\n{error_msg}\n{"=" * 70}\nFix these issues before deploying to production!\nSee .env.example for secure configuration template.')
 
     def is_feature_enabled(self, feature_name: str) -> bool:

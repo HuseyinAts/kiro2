@@ -413,18 +413,19 @@ async def database_authenticate(
             if _payload
             else datetime.now(UTC)
         )
-        await db.execute(
-            _text("""
-                INSERT INTO refresh_tokens
-                    (id, user_id, token_hash, jti, device_type, expires_at,
-                     revoked, usage_count, created_at, updated_at)
-                VALUES
-                    (gen_random_uuid(), :uid, :th, :jti, 'desktop', :exp,
-                     false, 0, now(), now())
-                ON CONFLICT DO NOTHING
-            """),
-            {"uid": str(db_user.id), "th": _token_hash, "jti": _jti, "exp": _exp},
-        )
+        async with db.begin_nested():
+            await db.execute(
+                _text("""
+                    INSERT INTO refresh_tokens
+                        (id, user_id, token_hash, jti, device_type, expires_at,
+                         revoked, usage_count, created_at, updated_at)
+                    VALUES
+                        (gen_random_uuid(), :uid, :th, :jti, 'desktop', :exp,
+                         false, 0, now(), now())
+                    ON CONFLICT DO NOTHING
+                """),
+                {"uid": str(db_user.id), "th": _token_hash, "jti": _jti, "exp": _exp},
+            )
     except Exception as _rt_err:
         logger.warning(f"Failed to persist refresh token to DB: {_rt_err}")
 
@@ -580,7 +581,7 @@ async def kullanici_kayit(
 
     # E-posta benzersizlik kontrolü
     dup = await db.execute(
-        _text("SELECT id FROM users WHERE email = :email"),
+        _text("SELECT id FROM kullanicilar WHERE email = :email"),
         {"email": kullanici_data.email},
     )
     if dup.fetchone():

@@ -34,11 +34,22 @@ def upgrade() -> None:
 
     # Helper: check if table exists before indexing
     def table_exists(name: str) -> bool:
-        result = conn.execute(
-            sa.text("SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=:t)"),
-            {"t": name}
-        )
-        return result.scalar()
+        # Check if we are using SQLite
+        is_sqlite = conn.dialect.name == "sqlite"
+        if is_sqlite:
+            result = conn.execute(
+                sa.text("SELECT 1 FROM sqlite_master WHERE type='table' AND name=:t"),
+                {"t": name}
+            )
+        else:
+            result = conn.execute(
+                sa.text("SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name=:t)"),
+                {"t": name}
+            )
+        row = result.fetchone()
+        if is_sqlite:
+            return row is not None
+        return row[0] if row else False
 
     if table_exists('users'):
         op.create_index('idx_users_email', 'users', ['email'], unique=False, if_not_exists=True)
