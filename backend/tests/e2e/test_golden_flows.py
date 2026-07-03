@@ -66,22 +66,22 @@ pytestmark = [pytest.mark.golden_flow, pytest.mark.e2e]
 
 @pytest.fixture(scope="module")
 def client() -> httpx.Client:
-    """HTTP client pointed at the live backend.
+    """HTTP client pointed at the LIVE backend (BACKEND_URL).
+
+    Golden Flows probe the REAL running server over HTTP — the deployed
+    container, not an in-process app. Bu bilinçli: (1) hızlı (full-app import +
+    Zemberek JVM cold-start yok), (2) GÜVENLİ (eski fixture prod DB'ye
+    create_all çalıştırıyordu — kaldırıldı), (3) gerçekten deploy edilen kodu
+    test eder. Backend ulaşılamazsa auto-skip (golden-flows.md kuralı).
     """
-    from fastapi.testclient import TestClient
-    from backend.main import app
-    from backend.core.database import db_manager
-    from backend.models.base import Base
-    import asyncio
-    
-    async def setup_db():
-        if not db_manager._initialized:
-            await db_manager.initialize()
-        async with db_manager.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-            
-    asyncio.run(setup_db())
-    return TestClient(app, raise_server_exceptions=False)
+    c = httpx.Client(base_url=BACKEND_URL, timeout=TIMEOUT)
+    try:
+        c.get("/health")
+    except Exception as exc:
+        c.close()
+        pytest.skip(f"backend {BACKEND_URL} ulaşılamıyor: {exc}")
+    yield c
+    c.close()
 
 
 def _login(client: httpx.Client, creds: dict[str, str]) -> str:

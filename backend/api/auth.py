@@ -581,7 +581,7 @@ async def kullanici_kayit(
 
     # E-posta benzersizlik kontrolü
     dup = await db.execute(
-        _text("SELECT id FROM kullanicilar WHERE email = :email"),
+        _text("SELECT id FROM users WHERE email = :email"),
         {"email": kullanici_data.email},
     )
     if dup.fetchone():
