@@ -51,3 +51,20 @@ Panelin ~%9.2 kusur **tahmini** (428 örnek, LLM-yargı) — varsayımsal. Bu i�
 
 ## Kalan (ölçek — çok-oturumlu)
 Bu 1330-örnek dalgası servis havuzunun %5.3'ünü kapsadı. Tam-havuz (25.127) doğrulama = ~19 dalga daha (her ~1330). Ölçülmüş oran kararlıysa (%97 AGREE) tam-tarama düşük-ROI; hedefli dalgalar (EDEBIYAT %91 en düşük → öncelik) daha verimli. Scriptler: `backend/scripts/quality/_keyverify/`.
+
+---
+
+## EDEBIYAT hedefli tam-havuz dalgası (1144, 2026-07-04)
+
+En düşük ölçülen (56-örnek %91.1) branş hedeflendi → **tam 1144 havuz kör-çözüldü** (workflow w479x6edk, 46 agent, 1130 tahmin).
+
+### Sonuç: küçük-örneklem gürültüsü çürüdü
+- **AGREE %98.0** (1099/1121 çözülebilir) — 56-örnek %91.1 şanssız-cluster'dı. EDEBIYAT aslında ~%98, en kötü değil.
+- DISAGREE 22 (%2.0), yüksek-güven 8.
+- 2. sinyal (8): **5 STORED_WRONG + 3 model-hatası** (0 ambiguous). Doğrulanmış hata **5/1121 = %0.45**.
+- 5 STORED_WRONG sağlam factual gerekçeli (Panorama=Yakup Kadri, gazel-mahlas yapısı, "Modern Türk Şiirinin Doğası"=Ebubekir Eroğlu, Şermin=hece/Tevfik Fikret).
+
+### Kümülatif kanıt (2 dalga)
+- Toplam **13 doğrulanmış cevap-anahtarı hatası** (8 genel + 5 EDEBIYAT) + 2 ambiguous → hepsi curator-flag'li (`keyverify_stored_wrong_20260704` / `keyverify_ambiguous_20260704`), correct_answer DOKUNULMADI.
+- Backuplar: `question_bank_keyverify_flag_backup_20260704` (10) + `question_bank_keyverify_edb_backup_20260704` (5).
+- **En kötü ölçülen branş bile ~%98 (EDEBIYAT), hata ~%0.45.** Servis havuzu anahtar-kalitesi satış için sağlam kanıtlandı.

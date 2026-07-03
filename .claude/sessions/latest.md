@@ -98,3 +98,10 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - 8 STORED_WRONG + 2 AMBIGUOUS flag'li (pipeline_metadata.keyverify_*, backup question_bank_keyverify_flag_backup_20260704). correct_answer/is_active DOKUNULMADI (curator/3.-sinyal işi).
 - Rapor docs/audits/2026-07-04_keyverify_blindsolve_evidence.md. Scriptler _keyverify/.
 - **3 iz durumu:** semantik=ölçüldü(%97 sağlam, hedefli-dalga backlog) · Faz1 tenancy=tasarım hazır(Katman A sonraki) · B2B=%25 tasarım(DPA/billing sonraki).
+
+## GÜNCELLEME 11 (EDEBIYAT hedefli tam-havuz dalgası)
+- EDEBIYAT tam 1144 havuz kör-çözüldü (workflow w479x6edk, 46 agent). AGREE %98.0 (1099/1121) — 56-örnek %91.1 KÜÇÜK-ÖRNEKLEM GÜRÜLTÜSÜYMÜŞ, EDEBIYAT aslında ~%98.
+- 2. sinyal (8 hiConf): 5 STORED_WRONG + 3 model-hatası. Doğrulanmış hata 5/1121=%0.45.
+- Kümülatif 13 anahtar-hatası curator-flag'li (backup ×2), correct_answer DOKUNULMADI.
+- KANIT: en kötü branş bile ~%98 anahtar-doğru → servis havuzu satış için sağlam.
+- Scriptler _keyverify_edebiyat/. HEAD sonraki commit.
