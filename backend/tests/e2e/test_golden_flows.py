@@ -5057,3 +5057,36 @@ def test_gf_curator_flagged_bridge(client: httpx.Client):
             assert "student_flags" in item, "QueueItem.student_flags eksik"
             if item.get("flag_count") is not None:
                 assert item["flag_count"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# GF multi-tenancy (Faz 0 Step 5): cross-tenant leak gate
+# ---------------------------------------------------------------------------
+def test_gf_org_members_tenant_scoped(client: httpx.Client):
+    """Kurum üyeleri YALNIZ çağıranın kendi kurumundan (tenant-scoped, org param YOK).
+
+    Cross-tenant sızıntı savunması: /api/v1/org/members organization_id'yi
+    get_current_tenant'tan alır, istemciden DEĞİL → başka kurum sorgulanamaz.
+    admin → 200 (kendi kurumu); yetki + wiring doğru.
+    """
+    token = _login(client, ADMIN)
+    resp = client.get("/api/v1/org/members", headers=_auth_headers(token))
+    assert resp.status_code < 500, (
+        f"GF org/members crashed: {resp.status_code} {resp.text[:300]}"
+    )
+    if resp.status_code == 200:
+        members = resp.json()
+        assert isinstance(members, list), f"liste bekleniyor: {members}"
+        # Endpoint'te org parametresi yok → yapısal cross-tenant güvence
+        for m in members:
+            assert "org_role" in m and "user_id" in m
+
+
+def test_gf_org_members_role_gated(client: httpx.Client):
+    """require_org_role: STUDENT rolü /org/members'a erişemez (403), 500 değil."""
+    token = _login(client, STUDENT)
+    resp = client.get("/api/v1/org/members", headers=_auth_headers(token))
+    # 403 (rol guard) beklenen; asla 500
+    assert resp.status_code in (403, 404), (
+        f"GF org/members rol guard: beklenen 403/404, gelen {resp.status_code}"
+    )

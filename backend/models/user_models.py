@@ -366,6 +366,7 @@ class ParentProfile(Base):
 
 
 # Import gamification models at the end to avoid circular imports
+from .organization import Organization, OrgMembership  # noqa: E402, F401
 from .point_transaction import PointTransaction  # noqa: E402
 from .user_achievement import UserAchievement  # noqa: E402
 from .user_badge import UserBadge  # noqa: E402

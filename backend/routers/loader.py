@@ -40,6 +40,7 @@ ROUTER_MAPPING = {
     "api.rate_limit_api": ("security", "api.rate_limit_api"),
     "api.ddos_management_api": ("security", "api.ddos_management_api"),
     "api.audit_api": ("security", "api.audit_api"),
+    "api.org_api": ("security", "api.org_api"),  # Faz 0 multi-tenancy
     "api.audit_logs_api": ("security", "api.audit_logs_api"),
     "api.encryption_management": ("security", "api.encryption_management"),
     "api.api_key_api": ("security", "api.api_key_api"),
