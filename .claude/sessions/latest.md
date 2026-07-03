@@ -89,3 +89,12 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - #3 76-tablo retrofit: staged tasarım (Katman A yüksek-PII→B analytics→C büyük/düşük-hassas + RLS Faz1). Tek seferde 80-tablo YASAK (=#1 risk). Backfill deseni user_id join.
 - Rapor: docs/audits/2026-07-04_content_fullscan_and_retrofit_design.md.
 - **4 AÇIK MADDE TAMAM:** #1 durable✅ #2 GF harness✅ #3 tasarım✅ #4 tarama✅.
+
+## GÜNCELLEME 10 (semantik cevap-anahtarı ÖLÇÜLDÜ — kanıt-tabanlı)
+- Blind-solve workflow wmwwzt222 (54 agent, 1330 stratified, key AYRI=kör): 1309 tahmin.
+- ÖLÇÜLMÜŞ AGREE %96.8 (1250/1302). Branş: KIMYA/SOSYAL/MAT %97-99, EDEBIYAT %91 en düşük.
+- 2. sinyal (17 hiConf disagree): 8 STORED_WRONG + 7 STORED_CORRECT + 2 AMBIGUOUS. A-bias dersi: tek-model disagree'nin %47'si gerçek.
+- ÖLÇÜLMÜŞ anahtar-hatası %0.77 (2-sinyal) — panelin %9.2'sinin ~1/12'si. Panel ŞİŞİKMİŞ; servis anahtar-kalitesi ~%97-99.
+- 8 STORED_WRONG + 2 AMBIGUOUS flag'li (pipeline_metadata.keyverify_*, backup question_bank_keyverify_flag_backup_20260704). correct_answer/is_active DOKUNULMADI (curator/3.-sinyal işi).
+- Rapor docs/audits/2026-07-04_keyverify_blindsolve_evidence.md. Scriptler _keyverify/.
+- **3 iz durumu:** semantik=ölçüldü(%97 sağlam, hedefli-dalga backlog) · Faz1 tenancy=tasarım hazır(Katman A sonraki) · B2B=%25 tasarım(DPA/billing sonraki).
