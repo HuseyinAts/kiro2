@@ -448,3 +448,49 @@ async def get_current_tenant(
             detail="Kullanıcı bir kuruma bağlı değil (tenant bağlamı yok).",
         )
     return str(row[0])
+
+
+async def get_current_membership(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """Geçerli kullanıcının aktif org üyeliğini (organization_id + org_role) döndürür.
+
+    Kaynak: org_memberships (Step 4 backfill). Üyelik yoksa 403.
+    """
+    from sqlalchemy import text as _text
+
+    row = (
+        await db.execute(
+            _text(
+                "SELECT organization_id, org_role FROM org_memberships "
+                "WHERE user_id = :uid AND is_active = true LIMIT 1"
+            ),
+            {"uid": str(current_user.id)},
+        )
+    ).first()
+    if row is None:
+        raise HTTPException(status_code=403, detail="Kullanıcının kurum üyeliği yok.")
+    return {"organization_id": str(row[0]), "org_role": str(row[1])}
+
+
+def require_org_role(*allowed_roles: str):
+    """org_role tabanlı erişim guard'ı (factory).
+
+    Örn: `Depends(require_org_role("SCHOOL_ADMIN"))`. SCHOOL_ADMIN kurum içi
+    süper-yetkili sayılır (her guard'ı geçer). İzin yoksa 403.
+    """
+    allowed = set(allowed_roles)
+
+    async def _guard(
+        membership: dict = Depends(get_current_membership),
+    ) -> dict:
+        role = membership["org_role"]
+        if role == "SCHOOL_ADMIN" or role in allowed:
+            return membership
+        raise HTTPException(
+            status_code=403,
+            detail=f"Bu işlem için yetki yok (gerekli: {sorted(allowed)}).",
+        )
+
+    return _guard
