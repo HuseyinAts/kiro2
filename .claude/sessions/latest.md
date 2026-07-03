@@ -76,3 +76,10 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - CANLI TEYİT: admin org/members 200 (kendi kurumu), org/info 200, student 403 (rol guard), login 200, health 200. Faz 0 unit 17/17.
 - **FAZ 0 TAMAM (5/5):** Step1 tablolar→Step2 org_id retrofit→Step3 repo izolasyon(kanıtlı)→Step4 org_admin→Step5 wiring+leak GF+deploy. correct_answer/içerik dokunulmadı. 6 tenancy commit + push.
 - **Kalan (Faz 1, ayrı):** diğer ~76 tabloya org_id, PostgreSQL RLS, JWT org_id claim (perf), gerçek okul-admin CRUD (öğretmen davet/roster), SSO wiring. Enforcement primitifleri hazır+deploy'lu.
+
+## GÜNCELLEME 8 (#1 durable deploy ÇÖZÜLDÜ + latent register bug fix)
+- FINAL rebuild (3 build: cache'li) → backend image 01:07 (tüm session kodu + auth.py fix baked). Backend + celery --force-recreate (docker cp YOK).
+- KESİN durabilite testi: fresh-image recreate → login 200/admin org-members 200/student 403/register 201/reviews 404. Ephemeral risk GİTTİ.
+- LATENT BUG: api/auth.py:584 register 'kullanicilar' (yok) sorguluyordu → 500. Oturum-öncesi commit a2da1dae4, hiç deploy edilmemiş (4-gün bayat container gizledi). rebuild açığa çıkardı. Fix kullanicilar→users. commit d549f3bd6.
+- #2 DONE: GF harness in-process→canlı httpx (golden-flows.md). commit d549f3bd6.
+- Kalan: #3 (76-tablo retrofit tasarımı) + #4 (tüm-havuz içerik tarama) — workflow ile.
