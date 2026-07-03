@@ -1,27 +1,35 @@
-## Session Handoff — 2026-06-24 (CC best-practice audit)
-**Branch:** feature/self-evolution-optimization
-**Son commit:** 54074cc77 chore(rules): lazy-load 4 domain-specific rules via paths: frontmatter (pushed)
-**Uncommitted:** ModernOSYMExamInterface.tsx (+22/-22) + 5 untracked audit/sql dosyası — BU SESSION'A AİT DEĞİL, dokunulmadı
+# Session — 3 Temmuz 2026: Satış-hazırlık + İçerik Uzman Paneli
 
-### Yapilanlar
-- `shanraisshan/claude-code-best-practice` repo tamamı clone+okundu (5 paralel Explore agent ile satır satır)
-- Audit: KIRO2 best-practice'lerin ~%95'ini zaten karşılıyor/aşıyor (hooks/permissions/memory/tasks/plan/cross-model/verification)
-- Tek gerçek boşluk uygulandı: 4 domain-specific rule'a `paths:` frontmatter (lazy-load) — `windows-hnsw-build`, `case-convention`, `middleware`, `path-naming` (commit 54074cc77)
-- `paths:` mekanizması claude-code-guide agent ile RESMİ doküman üzerinden doğrulandı (code.claude.com/docs/en/memory.md)
+**Branch:** feature/self-evolution-optimization · **Soru:** "proje satışa hazır mı + içerik kalitesi (disiplin uzmanları + ÖSYM)"
 
-### Fail Eden Testler
-- YOK (config-only değişiklik, kod/test dokunulmadı)
+## ✅ Yapıldı (canlı doğrulandı)
+1. **P0 DB (kritik blocker):** `postgresql-x64-18` STOPPED idi → boş docker pg15 5434'ü kapmıştı → platform HİÇ soru servis etmiyordu ("healthy/200" yanıltıcı). Fix: `docker stop turkiye_sinav_postgres_dev` + admin `Start-Service postgresql-x64-18` → question_bank=**187.835** (CLAUDE.md'deki 77K/192K yanlış), v_safe=25.165, backend reconnect.
+2. **P1 Redis/celery:** kiro2-redis çalışmıyordu (turkiye_sinav_redis_dev 6379'u işgal). Fix: eski durdur → `docker compose up -d redis` → backend/celery restart → **celery healthy** (önce unhealthy), gaierror gitti.
+3. **İçerik uzman paneli** (Workflow wf_dcd9146d, 24 agent, 12 branş+ÖSYM+adversaryal): verdict **KOŞULLU, ~%90.8 servis kalite / ~%9.2 ağırlıklı kusur.** Temiz EDEBIYAT(A-)/COGRAFYA(B+), kötü GENEL(F,%62)/TURKCE(D,OCR58)/GEOMETRI(D+). Rapor: `docs/audits/2026-07-03_content_quality_expert_panel.md`.
+4. **İçerik P0/P1 uygulandı (reversible):** 13 doğrulanmış anahtar-hatası + 25 GENEL/FEN → is_active=false. Backuplar: `question_bank_content_panel_deact_backup_20260703` (13), `question_bank_content_panel_genelfen_backup_20260703` (25). v_safe 25.165→**25.127**. correct_answer DOKUNULMADI.
+5. **GF canlı doğrulama** (161 endpoint curl sweep): yalnız **1 gerçek 500** = `GET /api/v1/reviews/` (student_reviews tablosu yok, üniversite-değerlendirme alt-sistemi hiç yaratılmamış, ikincil özellik). Diğer hepsi <500.
 
-### Engelleyiciler
-- YOK
+## ⏳ Kalan backlog (sonraki oturum — workflow-shaped)
+- **P1:** student_reviews alt-sistemi → 503-shim veya universities/departments/... migration. GF pytest harness bug: `query_monitor_config.py:24` bare Histogram çift-import → idempotent guard ekle.
+- **P2 içerik (Workflow):** TYT/AYT etiket denetimi (MATEMATIK/KIMYA) + tam-havuz garble taraması (char-trigram LM). TURKCE/GEOMETRI re-OCR. re-curate 23 ID: `backend/scripts/quality/_content_panel/recurate_ids.json`.
+- **P2 B2B (design Workflow):** okul SSO/MEB, multi-tenant, SOC2/VERBİS — büyük ölçüde eksik, go-to-market blocker.
 
-### Sonraki Adimlar (maks 5)
-1. (opsiyonel) Agent memory: `memory: project` → code-reviewer/test-runner/data-pipeline-specialist agent'larına ekle
-2. (opsiyonel) `settings.json`'a `attribution.commit` ile Co-Authored-By otomasyonu
-3. ModernOSYMExamInterface.tsx uncommitted değişikliğinin sahibini/amacını netleştir (bu session'a ait değil)
-4. Önceki iş: GitHub Actions kontrol (task #270 pending)
+## 🔧 State
+- Stack: PG18(5434, 187835 soru)+kiro2-redis+backend+celery(worker/beat)+frontend HEPSİ healthy. Health 200.
+- **DİKKAT:** kiro2 compose 4-dosya merge drift'i (dev.yml turkiye_sinav_* duplike servisleri). Temiz çözüm: turkiye_sinav_* kaldır + tek `down`+`up`.
+- Git: değişiklikler commit EDİLMEDİ (scriptler + audit doc untracked). DB değişiklikleri backup'lı uygulandı.
+- Scriptler: `backend/scripts/quality/_content_panel/` (export/apply/branches).
 
-### Kararlar (gelecek session tekrar tartismasin)
-- `paths:` bilinen bug'ı (gh #22170/#23478: Read'de enjekte, Write'da güvenilmez DEĞİL) kabul edildi — en kötü ihtimalle eski global-load davranışına düşer, guardrail kaybı YOK. Davranışsal gate'ler (debugging/plan/verification/testing/security/golden-flows) bilerek global bırakıldı.
-- `trigger:`/`priority:` frontmatter dekoratiftir — core okumuyor (13 rule de yüklendi). Mevcut 5 rule'da var, dokunulmadı.
-- RPI workflow / sound-effect hooks / weather-time demo'ları bilerek atlandı (KISS/YAGNI — KIRO2 zaten aşıyor).
+## Sonraki tek adım
+Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + garble scan), (b) B2B design workflow, (c) student_reviews shim+GF harness fix. Rate-limit: tek workflow.
+
+## GÜNCELLEME (aynı oturum, P2 içerik "a" tamamlandı)
+- **TYT/AYT relabel:** Workflow wf_83250ded (30 uzman) → 748 soru TYT→AYT (MATEMATIK 484+KIMYA 264, conf≥0.8), 67 keyword-FP TYT'de bırakıldı, 5 halüsinasyon-id guard'landı. Backup `question_bank_tytayt_relabel_backup_20260703`. v_safe exam_type 22918/2209→22170/2957. exam_type-only, reversible.
+- **Garble taraması:** garble_char_lm.py tüm-aktif (110858) — ≥4.0 sadece 41 aday, servis(v_safe)=1 borderline → AKSIYON YOK (char-garble≈0; panelin "garble"si semantik/re-OCR işi). Garble efsanesi tekrar doğrulandı.
+- Scriptler: `backend/scripts/quality/_content_panel/` (tytayt/, apply_tytayt_relabel.py, garble_served_ids.json) + `_garble_tmp/qb_full.tsv`.
+- **Kalan sıradaki:** (b) B2B design workflow VEYA (c) student_reviews shim+GF harness fix VEYA TURKCE/GEOMETRI re-OCR (23 recurate_ids).
+
+## GÜNCELLEME 2 (b tamamlandı — B2B design)
+- Workflow wq7tmlsni (13 agent): B2B hazırlık **%25**. multi-tenancy=YOK (load-bearing, tüm B2B ön koşulu), RBAC/billing/SSO=BAŞLANGIÇ, SOC2/KVKK=KISMİ. Rapor: docs/audits/2026-07-03_b2b_readiness_design.md.
+- Faz 0 (ilk-okul MVP, ~8-12hf XL): 5 sıralı tenancy kalemi (organizations+org_memberships → organization_id FK ~15-20 tablo [question_bank hariç] → JWT org_id+get_current_tenant+zorunlu repo filtre → org_admin rolü → cross-tenant leak GF gate) + ucuz-aktivasyonlar (audit-log wire, security middleware aç, KVKK konsolide, DPA modeli, min lisanslama havale/PO).
+- En büyük risk: sessiz cross-tenant PII sızıntısı (kod tabanının is_active-sızıntı geçmişi bu sınıfı kanıtlıyor). Ertele: MEB SSO/RLS/SOC2-denetim/e-Fatura.

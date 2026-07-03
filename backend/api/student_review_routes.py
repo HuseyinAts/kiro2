@@ -20,7 +20,35 @@ from core.dependencies import (
 from models.student_review import RatingCategory, ReportReason, ReviewStatus, ReviewType
 from services.student_review_service import StudentReviewService
 
-router = APIRouter(prefix="/api/v1/reviews", tags=["Student Reviews"])
+_reviews_table_ok: bool | None = None
+
+
+async def _reviews_available(db: AsyncSession = Depends(get_db)) -> None:
+    """Alt-sistem tabloları (student_reviews) yoksa 500 yerine graceful 404.
+
+    Üniversite-değerlendirme alt-sistemi yarım modellenmiş (professors/courses/
+    dormitories tabloları yok). Feature hazır olana dek endpoint'ler 404 döner.
+    """
+    global _reviews_table_ok
+    if _reviews_table_ok is None:
+        from sqlalchemy import text
+
+        try:
+            r = await db.execute(text("SELECT to_regclass('public.student_reviews')"))
+            _reviews_table_ok = r.scalar() is not None
+        except Exception:
+            _reviews_table_ok = False
+    if not _reviews_table_ok:
+        raise HTTPException(
+            status_code=404, detail="Öğrenci değerlendirme özelliği henüz aktif değil"
+        )
+
+
+router = APIRouter(
+    prefix="/api/v1/reviews",
+    tags=["Student Reviews"],
+    dependencies=[Depends(_reviews_available)],
+)
 
 
 # ============================================================

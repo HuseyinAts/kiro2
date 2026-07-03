@@ -12,6 +12,7 @@ Requirements: REQ-1.2
 """
 
 import logging
+import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -103,6 +104,7 @@ class DatabaseManager:
         Requirements: REQ-1.2
         """
         import asyncio
+
         try:
             current_loop = asyncio.get_running_loop()
         except RuntimeError:
@@ -147,9 +149,7 @@ class DatabaseManager:
                     "timeout": 30.0,  # Connection timeout (seconds)
                 }
             elif "sqlite" in database_url:
-                connect_args = {
-                    "check_same_thread": False
-                }
+                connect_args = {"check_same_thread": False}
 
             # Pool settings only for PostgreSQL and SQLite
             engine_args = {
@@ -160,7 +160,9 @@ class DatabaseManager:
             if "sqlite" in database_url:
                 # SQLite: Use StaticPool to prevent losing in-memory database across connection closes
                 engine_args["poolclass"] = StaticPool
-                logger.info("SQLite connection configured with StaticPool and check_same_thread=False")
+                logger.info(
+                    "SQLite connection configured with StaticPool and check_same_thread=False"
+                )
             elif "postgresql" in database_url:
                 # SRE forced settings for 1000 concurrent user I/O (optimised for max_connections=200 limit)
                 pool_size = 20
@@ -199,18 +201,26 @@ class DatabaseManager:
 
             # SRE Slow Query Telemetry: Log queries taking > 500ms at WARNING level
             @event.listens_for(self.engine.sync_engine, "before_cursor_execute")
-            def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+            def before_cursor_execute(
+                conn, cursor, statement, parameters, context, executemany
+            ):
                 import time
+
                 if context is not None:
                     context._query_start_time = time.perf_counter()
 
             @event.listens_for(self.engine.sync_engine, "after_cursor_execute")
-            def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+            def after_cursor_execute(
+                conn, cursor, statement, parameters, context, executemany
+            ):
                 import time
+
                 if context is not None:
                     start_time = getattr(context, "_query_start_time", None)
                     if start_time is not None:
-                        total_time = (time.perf_counter() - start_time) * 1000.0  # in ms
+                        total_time = (
+                            time.perf_counter() - start_time
+                        ) * 1000.0  # in ms
                         if total_time > 500.0:
                             logger.warning(
                                 f"[SLOW QUERY WARNING] Execution time: {total_time:.2f}ms\n"

@@ -20,38 +20,76 @@ logger = logging.getLogger("query_monitor")
 # Prometheus Metrics
 # ============================================================================
 
+
+def _metric(cls, name, *args, **kwargs):
+    """Idempotent metric factory — çift-import'ta (ör. pytest conftest app'i iki
+    kez import ederse) 'Duplicated timeseries in CollectorRegistry' hatasını önler,
+    mevcut collector'ı geri döndürür. Tek-import (prod) davranışı değişmez.
+    """
+    from prometheus_client import REGISTRY
+
+    try:
+        return cls(name, *args, **kwargs)
+    except ValueError:
+        existing = getattr(REGISTRY, "_names_to_collectors", {}).get(name)
+        if existing is not None:
+            return existing
+        raise
+
+
 # Query execution time histogram
-query_duration = Histogram(
-    'database_query_duration_seconds',
-    'Database query execution time in seconds',
-    ['query_type', 'table'],
-    buckets=(0.001, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0)
+query_duration = _metric(
+    Histogram,
+    "database_query_duration_seconds",
+    "Database query execution time in seconds",
+    ["query_type", "table"],
+    buckets=(
+        0.001,
+        0.005,
+        0.01,
+        0.025,
+        0.05,
+        0.075,
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        2.5,
+        5.0,
+        7.5,
+        10.0,
+    ),
 )
 
 # Slow query counter
-slow_queries = Counter(
-    'database_slow_queries_total',
-    'Total number of slow database queries (>100ms)',
-    ['query_type', 'table']
+slow_queries = _metric(
+    Counter,
+    "database_slow_queries_total",
+    "Total number of slow database queries (>100ms)",
+    ["query_type", "table"],
 )
 
 # Total queries counter
-total_queries = Counter(
-    'database_queries_total',
-    'Total number of database queries',
-    ['query_type']
+total_queries = _metric(
+    Counter,
+    "database_queries_total",
+    "Total number of database queries",
+    ["query_type"],
 )
 
 # N+1 detection counter
-n_plus_one_detected = Counter(
-    'database_n_plus_one_queries_total',
-    'Potential N+1 queries detected',
-    ['table']
+n_plus_one_detected = _metric(
+    Counter,
+    "database_n_plus_one_queries_total",
+    "Potential N+1 queries detected",
+    ["table"],
 )
 
 # ============================================================================
 # Configuration
 # ============================================================================
+
 
 class QueryMonitorConfig:
     """Query monitoring configuration"""
@@ -75,6 +113,7 @@ class QueryMonitorConfig:
 # ============================================================================
 # Query Monitoring Functions
 # ============================================================================
+
 
 def extract_query_info(statement: str) -> tuple[str, str | None]:
     """
@@ -135,21 +174,18 @@ def log_query(statement: str, duration: float, is_slow: bool = False):
 
     # Truncate long queries
     if len(statement) > QueryMonitorConfig.MAX_QUERY_LOG_LENGTH:
-        statement = statement[:QueryMonitorConfig.MAX_QUERY_LOG_LENGTH] + "..."
+        statement = statement[: QueryMonitorConfig.MAX_QUERY_LOG_LENGTH] + "..."
 
     if is_slow:
-        logger.warning(
-            f"SLOW QUERY ({duration*1000:.2f}ms): {statement}"
-        )
+        logger.warning(f"SLOW QUERY ({duration * 1000:.2f}ms): {statement}")
     elif QueryMonitorConfig.LOG_ALL_QUERIES:
-        logger.debug(
-            f"Query ({duration*1000:.2f}ms): {statement}"
-        )
+        logger.debug(f"Query ({duration * 1000:.2f}ms): {statement}")
 
 
 # ============================================================================
 # SQLAlchemy Event Listeners
 # ============================================================================
+
 
 @event.listens_for(Engine, "before_cursor_execute")
 def before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
@@ -158,7 +194,7 @@ def before_cursor_execute(conn, cursor, statement, parameters, context, executem
 
     Records start time for duration measurement
     """
-    conn.info.setdefault('query_start_time', []).append(time.time())
+    conn.info.setdefault("query_start_time", []).append(time.time())
 
 
 @event.listens_for(Engine, "after_cursor_execute")
@@ -169,7 +205,7 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
     Measures duration, logs slow queries, updates metrics
     """
     # Calculate duration
-    start_time = conn.info['query_start_time'].pop()
+    start_time = conn.info["query_start_time"].pop()
     duration = time.time() - start_time
 
     # Extract query info
@@ -180,18 +216,16 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
 
     # Record query duration
     if table_name:
-        query_duration.labels(
-            query_type=query_type,
-            table=table_name
-        ).observe(duration)
+        query_duration.labels(query_type=query_type, table=table_name).observe(duration)
 
     # Log query performance to optimizer
     try:
         from core.database_optimizer import query_optimizer
+
         query_optimizer.log_query_performance(
             query_name=f"{query_type} {table_name or 'unknown'}",
             execution_time=duration,
-            query=statement
+            query=statement,
         )
     except Exception as e:
         logger.error(f"Failed to log query performance to optimizer: {e}")
@@ -200,10 +234,7 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
     is_slow = duration > QueryMonitorConfig.SLOW_QUERY_THRESHOLD
     if is_slow:
         if table_name:
-            slow_queries.labels(
-                query_type=query_type,
-                table=table_name
-            ).inc()
+            slow_queries.labels(query_type=query_type, table=table_name).inc()
 
         log_query(statement, duration, is_slow=True)
     else:
@@ -213,6 +244,7 @@ def after_cursor_execute(conn, cursor, statement, parameters, context, executema
 # ============================================================================
 # N+1 Query Detection
 # ============================================================================
+
 
 class N1QueryDetector:
     """
@@ -283,7 +315,8 @@ class N1QueryDetector:
         """
         # Basic normalization - replace numbers with ?
         import re
-        normalized = re.sub(r'\b\d+\b', '?', statement)
+
+        normalized = re.sub(r"\b\d+\b", "?", statement)
         return normalized.strip()
 
 
@@ -302,6 +335,7 @@ def detect_n_plus_one(conn, cursor, statement, parameters, context, executemany)
 # ============================================================================
 # Context Manager for Query Tracking
 # ============================================================================
+
 
 @contextmanager
 def track_query_performance(operation_name: str):
@@ -324,7 +358,7 @@ def track_query_performance(operation_name: str):
         query_count = query_count_after - query_count_before
 
         logger.info(
-            f"Operation '{operation_name}': {query_count} queries in {duration*1000:.2f}ms"
+            f"Operation '{operation_name}': {query_count} queries in {duration * 1000:.2f}ms"
         )
 
         if query_count > 10:
@@ -337,6 +371,7 @@ def track_query_performance(operation_name: str):
 # Initialization
 # ============================================================================
 
+
 def setup_query_monitoring():
     """
     Initialize query monitoring
@@ -344,8 +379,12 @@ def setup_query_monitoring():
     Call this during application startup
     """
     logger.info("Query monitoring initialized")
-    logger.info(f"Slow query threshold: {QueryMonitorConfig.SLOW_QUERY_THRESHOLD*1000}ms")
-    logger.info(f"N+1 detection: {'enabled' if QueryMonitorConfig.ENABLE_N_PLUS_ONE_DETECTION else 'disabled'}")
+    logger.info(
+        f"Slow query threshold: {QueryMonitorConfig.SLOW_QUERY_THRESHOLD * 1000}ms"
+    )
+    logger.info(
+        f"N+1 detection: {'enabled' if QueryMonitorConfig.ENABLE_N_PLUS_ONE_DETECTION else 'disabled'}"
+    )
 
 
 # Auto-initialize on import
