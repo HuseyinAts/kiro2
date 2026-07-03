@@ -69,6 +69,14 @@ class User(Base):
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
     )
+    # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     email: Mapped[str] = mapped_column(
         String(255), unique=True, nullable=False, index=True
     )
@@ -209,6 +217,14 @@ class StudentProfile(Base):
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
+    # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # Academic information
     grade_level: Mapped[int] = mapped_column(Integer, nullable=False)  # 9, 10, 11, 12
@@ -279,6 +295,14 @@ class TeacherProfile(Base):
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
+    # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # Professional information
     school_name: Mapped[str] = mapped_column(String(200), nullable=False)
@@ -311,6 +335,14 @@ class ParentProfile(Base):
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    )
+    # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
 
     # Children information (JSON array of student IDs)
