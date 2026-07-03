@@ -83,3 +83,9 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - LATENT BUG: api/auth.py:584 register 'kullanicilar' (yok) sorguluyordu → 500. Oturum-öncesi commit a2da1dae4, hiç deploy edilmemiş (4-gün bayat container gizledi). rebuild açığa çıkardı. Fix kullanicilar→users. commit d549f3bd6.
 - #2 DONE: GF harness in-process→canlı httpx (golden-flows.md). commit d549f3bd6.
 - Kalan: #3 (76-tablo retrofit tasarımı) + #4 (tüm-havuz içerik tarama) — workflow ile.
+
+## GÜNCELLEME 9 (#3 + #4 çözüldü — 4 açık madde TAMAM)
+- #4 tüm-havuz içerik: 25.127 servis sorusu DETERMİNİSTİK tarandı (örneklem değil). ~%0 yapısal kusur (11 flag=false-positive: figure_orphan regex Türkçe şekilde/şekillenen/tablo-deyim substring yakaladı + 1 borderline garble). Deaktivasyon YOK (körü körüne silmedim). Panelin ~%9.2'si SEMANTİK (cevap-anahtarı/çeldirici) = blind-solve backlog, deterministik yakalanamaz. Script _content_fullscan/deterministic_scan.py.
+- #3 76-tablo retrofit: staged tasarım (Katman A yüksek-PII→B analytics→C büyük/düşük-hassas + RLS Faz1). Tek seferde 80-tablo YASAK (=#1 risk). Backfill deseni user_id join.
+- Rapor: docs/audits/2026-07-04_content_fullscan_and_retrofit_design.md.
+- **4 AÇIK MADDE TAMAM:** #1 durable✅ #2 GF harness✅ #3 tasarım✅ #4 tarama✅.
