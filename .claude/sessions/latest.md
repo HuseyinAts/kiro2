@@ -105,3 +105,11 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - Kümülatif 13 anahtar-hatası curator-flag'li (backup ×2), correct_answer DOKUNULMADI.
 - KANIT: en kötü branş bile ~%98 anahtar-doğru → servis havuzu satış için sağlam.
 - Scriptler _keyverify_edebiyat/. HEAD sonraki commit.
+
+## GÜNCELLEME 12 (Faz 1 Katman A tenancy — yüksek-PII tablolar)
+- 9 yüksek-PII tabloya organization_id retrofit (migration faz1_katmanA_20260704): fsrs_cards(120)/student_abilities(631)/bkt_states(28)/performance_history(15)/exam_sessions(27) + 4 boş (fsrs_reviews/schedules, student_knowledge_states, kvkk_consents).
+- Desen: nullable→user-join+COALESCE-legacy backfill→NOT NULL→server_default. Tüm mevcut veri tek-kiracılı→legacy. FK→organizations RESTRICT.
+- TDD 4/4 (NOT NULL + 0 NULL + FK + server_default). Canlı: health 200, NotNull ihlali YOK.
+- NOT: /fsrs/flashcards/due 500 = ÖNCEDEN VAR OLAN bug (services/_deprecated/fsrs_service.py:253 db.query on AsyncSession, sync/async karışması testing.md#25), migration'la İLGİSİZ, _deprecated'te — cerrahi disiplinle dokunulmadı.
+- Alembic head: faz1_katmanA_20260704. Reversible (downgrade).
+- **Kalan Faz 1:** Katman A grup-2 (exam_sessions zaten yapıldı; learning_paths→lp_student_profiles, topic_progress, user_theta/kiro2_learning_events FK'siz) + Katman B analytics + Katman C büyük(image_uploads 70K) + RLS + ORM org_id kolonları(bu 9 tablo) + repo-scoping wiring.
