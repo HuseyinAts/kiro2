@@ -126,8 +126,9 @@ async def get_current_user(
 
     try:
         import time
+
         t0 = time.perf_counter()
-        
+
         # P0-1e: Check blacklist before decoding (Redis-backed with in-memory fallback)
         from core.jwt_auth import get_jwt_manager
 
@@ -294,8 +295,15 @@ async def get_db():
     """
     from core.database import get_async_session
 
-    async for session in get_async_session():
-        yield session
+    try:
+        async for session in get_async_session():
+            yield session
+    except Exception:
+        import sys
+        import traceback
+
+        sys.stderr.write(f"GET_DB EXCEPTION: {traceback.format_exc()}\n")
+        raise
 
 
 async def get_redis():
@@ -409,3 +417,34 @@ async def require_veli_consent(
         status_code=403,
         detail="Bu özellik için veli onayı gereklidir (KVKK reşit olmayan kullanıcı).",
     )
+
+
+# ============================================================================
+# Faz 0 Multi-tenancy: tenant bağlamı resolver
+# ============================================================================
+async def get_current_tenant(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> str:
+    """Geçerli kullanıcının organization_id'sini döndürür (tenant bağlamı).
+
+    Faz 0 Step 3: repositories/base.py zorunlu org filtresi + org-scoped
+    endpoint'ler bunu kullanır. Kaynak: users.organization_id (Step 2 retrofit;
+    tüm mevcut kullanıcılar org_legacy_default'a bağlı).
+
+    org_id çözülemezse 403 — tenant'sız kullanıcı korumalı kaynağa erişemez.
+    """
+    from sqlalchemy import text as _text
+
+    row = (
+        await db.execute(
+            _text("SELECT organization_id FROM users WHERE id = :uid"),
+            {"uid": str(current_user.id)},
+        )
+    ).first()
+    if row is None or row[0] is None:
+        raise HTTPException(
+            status_code=403,
+            detail="Kullanıcı bir kuruma bağlı değil (tenant bağlamı yok).",
+        )
+    return str(row[0])
