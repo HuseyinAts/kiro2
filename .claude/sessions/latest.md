@@ -135,3 +135,10 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - Direct-legacy backfill → NOT NULL → server_default. 78/80 tenant-owned tablo org-scoped.
 - Canlı regresyon YOK: login 200 (refresh_tokens server_default aldı), register 201, GF 0 yeni 500.
 - **Kalan Faz 1:** RLS'i 60 Katman B/C tablosuna genişlet + 73 tabloya ORM org_id + repo-scoping wiring + operatör RLS-cutover (.env flip).
+
+## GÜNCELLEME 16 (SIRAYLA TÜMÜ: #1 RLS-extend + #2 ORM-wiring + #3 B2B DPA/billing)
+- #1 RLS→60 tablo (73 RLS-aktif, izolasyon kanıtlı chat_sessions GUC=nonexistent→0). commit 574dcdf25.
+- #2 ORM org_id wiring: workflow wd0ykw5yh 37 agent/37 dosya, 62 tabloda ORM org_id, configure_mappers OK, F821 yok, 6/6 test. commit c2e4b2be8. Ders: workflow require yok→args; 1 agent/DOSYA (tablo değil, çakışma önleme); formatter ForeignKey-strip → global configure_mappers teyidi şart.
+- #3 B2B DPA/billing MVP: models/billing.py (Plan/OrganizationLicense/DataProcessingAgreement/Invoice) + migration faz1_billing (3 plan seed free/okul_basic/okul_pro) + services/billing_service.py (is_dpa_signed gate, get_active_license, seat_usage=aktif üye sayımı, has_feature entitlement). TDD 3/3 (DPA-gate false→signed→true, entitlement sso=true, seat 3/500). Migration seed dersi: JSON :true → sa.text bind-param sanır → json_build_object kullan.
+- #4 operatör RLS cutover: runbook hazır+canlı-kanıtlı, .env guardrail nedeniyle operatör işi.
+- **SIRAYLA TÜMÜ TAMAM (ben-yapabilir kısım):** #1✅ #2✅ #3✅ #4=operatör-gate.
