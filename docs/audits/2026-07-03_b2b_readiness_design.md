@@ -64,3 +64,9 @@ Tek load-bearing yeni-inşa = tenancy omurgası (5 sıralı kalem). Diğer HER �
 - get_current_tenant → `set_config('app.current_org_id')` GUC wiring eklendi.
 - **CANLI AKTİVASYON GATE'İ:** App `postgres` (superuser+bypassrls) → RLS şu an BYPASS (no-op, kırmıyor). RLS'i etkin kılmak için: (1) non-superuser DB rolü oluştur + GRANT, (2) DATABASE_URL o role çevir, (3) tam re-test (function/sequence privileges). Bu ayrı infra adımı. App-katman `_scope_tenant` (Faz 0) AKTIF savunma; RLS defense-in-depth.
 - identity tablolar (users/profiles/org_memberships) RLS-dışı bırakıldı (özel auth akışları, ayrı değerlendirme).
+
+### Katman B/C: kalan 60 tenant-owned tabloya org_id (2026-07-04)
+- 60 tablo (analytics/dashboard + büyük: image_uploads 70K, chat_sessions 10K, refresh_tokens 4.8K + 30+ boş). topic_hierarchy HARİÇ (parent_id=üst-konu, global taksonomi).
+- Direct-legacy backfill (tek-kiracılı) → NOT NULL + server_default. Migration faz1_katmanBC_20260704.
+- **78/80 tenant-owned tablo artık org-scoped.** Canlı regresyon YOK: login 200 (refresh_tokens yazımı server_default aldı), register 201, GF sweep 0 yeni 500.
+- Kalan: RLS'i bu 60 tabloya genişlet (faz1_rls 13 tabloydu) + 13+60 tabloya ORM org_id + repo-scoping wiring.

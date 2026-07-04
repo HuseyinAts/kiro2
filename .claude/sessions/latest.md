@@ -129,3 +129,9 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - Runbook: docs/runbooks/rls_activation.md (adımlar + revert + canlı-kanıt).
 - **GATE:** durable aktivasyon = operatör .env.mvp:5 DATABASE_URL→kiro2_app flip + GUC-wiring rebuild (asistan .env* değiştirmez, guardrail). Cutover GÜVENLİ+kanıtlı.
 - RLS artık: policy'ler kurulu + rol hazır+kanıtlı + GUC wiring commit'li. Tek eksik = operatörün 1-satır .env flip'i.
+
+## GÜNCELLEME 15 (Faz 1 Katman B/C — kalan 60 tablo org_id)
+- 60 tenant-owned tabloya org_id (migration faz1_katmanBC_20260704, programatik üretildi). topic_hierarchy HARİÇ (global taksonomi). Büyükler image_uploads 70K/chat_sessions 10K/refresh_tokens 4.8K + 30+ boş.
+- Direct-legacy backfill → NOT NULL → server_default. 78/80 tenant-owned tablo org-scoped.
+- Canlı regresyon YOK: login 200 (refresh_tokens server_default aldı), register 201, GF 0 yeni 500.
+- **Kalan Faz 1:** RLS'i 60 Katman B/C tablosuna genişlet + 73 tabloya ORM org_id + repo-scoping wiring + operatör RLS-cutover (.env flip).
