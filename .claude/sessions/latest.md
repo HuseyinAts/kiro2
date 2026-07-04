@@ -121,3 +121,11 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - GATE: app postgres=superuser+bypassrls → RLS şu an NO-OP (kırmıyor). Aktivasyon = non-superuser rol + DATABASE_URL değişikliği + re-test (ayrı infra). _scope_tenant (Faz 0) aktif savunma.
 - Canlı: health/login 200. get_current_tenant değişikliği inert (superuser'da GUC no-op), sonraki rebuild'de gömülür.
 - **Kalan Faz 1:** non-superuser rol infra (RLS aktivasyon) + Katman B analytics + Katman C image_uploads(70K) + bu 13 tabloya ORM org_id + repo-scoping wiring.
+
+## GÜNCELLEME 14 (RLS aktivasyon infra — non-superuser rol KANITLANDI)
+- kiro2_app rolü (NOSUPERUSER NOBYPASSRLS) + kapsamlı grant'lar (200 tablo SELECT + INSERT/UPDATE/DELETE + sequences + functions + default-privilege). Script backend/scripts/rls/create_app_role.sql (idempotent, committed).
+- KANIT-1: kiro2_app olarak bağlanıp app sorguları (login/join/SELECT/INSERT-DELETE) çalıştı + RLS aktif (GUC=nonexistent→0 satır izolasyon, GUC-boş→hepsi permissive).
+- KANIT-2 (CANLI): geçici override ile backend kiro2_app recreate → health/login 200 + GF sweep 162 endpoint 0 permission-500. App non-superuser'da kusursuz. Sonra postgres'e geri alındı (canonical), override silindi.
+- Runbook: docs/runbooks/rls_activation.md (adımlar + revert + canlı-kanıt).
+- **GATE:** durable aktivasyon = operatör .env.mvp:5 DATABASE_URL→kiro2_app flip + GUC-wiring rebuild (asistan .env* değiştirmez, guardrail). Cutover GÜVENLİ+kanıtlı.
+- RLS artık: policy'ler kurulu + rol hazır+kanıtlı + GUC wiring commit'li. Tek eksik = operatörün 1-satır .env flip'i.
