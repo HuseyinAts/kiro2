@@ -113,3 +113,11 @@ Kullanıcı seçsin: (a) P2 içerik remediasyon workflow'u (TYT/AYT relabel + ga
 - NOT: /fsrs/flashcards/due 500 = ÖNCEDEN VAR OLAN bug (services/_deprecated/fsrs_service.py:253 db.query on AsyncSession, sync/async karışması testing.md#25), migration'la İLGİSİZ, _deprecated'te — cerrahi disiplinle dokunulmadı.
 - Alembic head: faz1_katmanA_20260704. Reversible (downgrade).
 - **Kalan Faz 1:** Katman A grup-2 (exam_sessions zaten yapıldı; learning_paths→lp_student_profiles, topic_progress, user_theta/kiro2_learning_events FK'siz) + Katman B analytics + Katman C büyük(image_uploads 70K) + RLS + ORM org_id kolonları(bu 9 tablo) + repo-scoping wiring.
+
+## GÜNCELLEME 13 (Faz 1 RLS — kuruldu + kanıtlandı + gate'li)
+- 13 data tablosuna RLS tenant_isolation policy (permissive-when-unset) + FORCE (faz1_rls_20260704).
+- KANIT: geçici non-superuser rol + SET ROLE → org=A GUC yalnız A satırı, org=B yalnız B, GUC-boş hepsi. RLS izolasyon ÇALIŞIYOR.
+- get_current_tenant → set_config('app.current_org_id') GUC wiring.
+- GATE: app postgres=superuser+bypassrls → RLS şu an NO-OP (kırmıyor). Aktivasyon = non-superuser rol + DATABASE_URL değişikliği + re-test (ayrı infra). _scope_tenant (Faz 0) aktif savunma.
+- Canlı: health/login 200. get_current_tenant değişikliği inert (superuser'da GUC no-op), sonraki rebuild'de gömülür.
+- **Kalan Faz 1:** non-superuser rol infra (RLS aktivasyon) + Katman B analytics + Katman C image_uploads(70K) + bu 13 tabloya ORM org_id + repo-scoping wiring.

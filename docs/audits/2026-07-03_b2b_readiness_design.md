@@ -48,3 +48,19 @@ schema-per-tenant · Vault/KMS · metered/proration/dunning · iyzico/PayTR kart
 
 ## Tavsiye
 Tek load-bearing yeni-inşa = tenancy omurgası (5 sıralı kalem). Diğer HER ŞEY buna asılır — omurga bitmeden başlamak boşa iş. Paralelde ucuz-aktivasyonlarla maturity'yi hızla yükselt. Billing'i minimum tut. SSO/MEB/RLS/SOC2-denetim ertelenebilir. Faz 0 ≈ XL / 8-12 hafta disiplinli **tek-akış** (paralel dev-workflow rate-limit yer — MEMORY dersi).
+
+---
+
+## Faz 1 tenancy ilerleme (2026-07-04)
+
+### Katman A + grup-2: 13 data tablosuna org_id (18 toplam org-scoped)
+- Katman A (9): exam_sessions, fsrs_cards/reviews/schedules, student_abilities, bkt_states, student_knowledge_states, performance_history, kvkk_consents.
+- Grup-2 (4): learning_paths, topic_progress, user_theta, kiro2_learning_events.
+- Desen: nullable org_id FK → backfill (user-join/direct-legacy) → NOT NULL + server_default. Tümü tek-kiracılı→legacy. TDD + canlı-regresyon-yok.
+
+### RLS (Row-Level Security) — kuruldu + kanıtlandı + gate'li
+- 13 data tablosuna `tenant_isolation` policy (permissive-when-unset) + FORCE ROW LEVEL SECURITY (migration faz1_rls_20260704).
+- **KANIT (geçici non-superuser rol + SET ROLE):** org=A GUC → yalnız A satırı; org=B → yalnız B; GUC-boş → hepsi (permissive). RLS izolasyon mekanizması ÇALIŞIYOR.
+- get_current_tenant → `set_config('app.current_org_id')` GUC wiring eklendi.
+- **CANLI AKTİVASYON GATE'İ:** App `postgres` (superuser+bypassrls) → RLS şu an BYPASS (no-op, kırmıyor). RLS'i etkin kılmak için: (1) non-superuser DB rolü oluştur + GRANT, (2) DATABASE_URL o role çevir, (3) tam re-test (function/sequence privileges). Bu ayrı infra adımı. App-katman `_scope_tenant` (Faz 0) AKTIF savunma; RLS defense-in-depth.
+- identity tablolar (users/profiles/org_memberships) RLS-dışı bırakıldı (özel auth akışları, ayrı değerlendirme).

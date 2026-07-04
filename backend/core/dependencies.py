@@ -447,7 +447,18 @@ async def get_current_tenant(
             status_code=403,
             detail="Kullanıcı bir kuruma bağlı değil (tenant bağlamı yok).",
         )
-    return str(row[0])
+    org_id = str(row[0])
+    # RLS aktivasyon prerequisite: transaction-local GUC. App superuser (postgres)
+    # olduğundan RLS şu an bypass edilir (no-op); non-superuser role geçilince
+    # RLS policy'leri bu GUC ile tenant izolasyonu uygular (faz1_rls_20260704).
+    try:
+        await db.execute(
+            _text("SELECT set_config('app.current_org_id', :org, true)"),
+            {"org": org_id},
+        )
+    except Exception:
+        pass
+    return org_id
 
 
 async def get_current_membership(
