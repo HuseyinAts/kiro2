@@ -37,6 +37,7 @@ ROUTER_MAPPING = {
     "api.billing_api": ("security", "api.billing_api"),
     "api.kvkk_consent_api": ("security", "api.kvkk_consent_api"),
     "api.kvkk_privacy_api": ("security", "api.kvkk_privacy_api"),
+    "api.kvkk_notice_api": ("security", "api.kvkk_notice_api"),  # KVKK Md.10 aydınlatma
     "api.rate_limit_api": ("security", "api.rate_limit_api"),
     "api.ddos_management_api": ("security", "api.ddos_management_api"),
     "api.audit_api": ("security", "api.audit_api"),
