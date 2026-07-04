@@ -640,4 +640,175 @@ async def cancel_deletion_request(
         )
 
 
+# ============================================================================
+# Data Erasure Executor (KVKK Md.7) — admin onaylı, anonimleştirme
+# ============================================================================
+
+
+async def process_data_erasure(request_id: str, user_id: str, db_url: str):
+    """APPROVED silme talebini işle: PII anonimleştir (backup'lı), COMPLETED yap.
+
+    Yıkıcı-değil (anonimleştirme). Yalnız admin onayı sonrası approve endpoint'inden
+    dispatch edilir. Hata olursa talep PROCESSING'de kalır + audit'e yazılır.
+    """
+    from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+    from sqlalchemy.orm import sessionmaker
+
+    from services.kvkk_erasure_service import anonymize_user
+
+    engine = create_async_engine(db_url)
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    async with async_session() as db:
+        try:
+            await db.execute(
+                update(KVKKDataDeletionRequest)
+                .where(KVKKDataDeletionRequest.id == request_id)
+                .values(
+                    status=DeletionRequestStatus.PROCESSING,
+                    processed_at=datetime.now(UTC),
+                )
+            )
+            await db.commit()
+
+            touched = await anonymize_user(db, user_id, request_id)
+
+            await db.execute(
+                update(KVKKDataDeletionRequest)
+                .where(KVKKDataDeletionRequest.id == request_id)
+                .values(
+                    status=DeletionRequestStatus.COMPLETED,
+                    completed_at=datetime.now(UTC),
+                )
+            )
+            db.add(
+                KVKKAuditLog(
+                    id=str(uuid.uuid4()),
+                    user_id=user_id,
+                    accessed_by=user_id,
+                    action="data_erasure_completed",
+                    resource_type="user_data",
+                    resource_id=user_id,
+                    details={"request_id": request_id, "anonymized_tables": touched},
+                )
+            )
+            await db.commit()
+            logger.info(
+                "data_erasure_completed",
+                request_id=request_id,
+                user_id=user_id,
+                tables=touched,
+            )
+        except Exception as e:
+            logger.error("data_erasure_failed", request_id=request_id, error=str(e))
+            await db.rollback()
+
+
+class DeletionRejectRequest(BaseModel):
+    """Silme talebi reddi (gerekçe zorunlu)."""
+
+    reason: str
+
+
+def _require_admin(current_user: TokenPayload) -> None:
+    """Silme onay/red yetkisi — yalnız admin/super_admin.
+
+    role enum ('ADMIN') veya jwt string ('admin') olabilir → normalize et.
+    """
+    raw = getattr(current_user.role, "value", current_user.role)
+    role = str(raw).lower().replace("userrole.", "")
+    if role not in ("admin", "super_admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu işlem için admin yetkisi gerekli.",
+        )
+
+
+@router.post("/delete/{request_id}/approve")
+async def approve_deletion(
+    request_id: str,
+    background_tasks: BackgroundTasks,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Silme talebini ONAYLA (admin) → anonimleştirme executor'ını dispatch et.
+
+    İnsan-döngüsü: gerçek silme yalnız bir admin bu ucu çağırınca çalışır.
+    """
+    _require_admin(current_user)
+    req = (
+        await db.execute(
+            select(KVKKDataDeletionRequest).where(
+                KVKKDataDeletionRequest.id == request_id
+            )
+        )
+    ).scalar_one_or_none()
+    if not req:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Deletion request not found"
+        )
+    if req.status not in (
+        DeletionRequestStatus.PENDING,
+        DeletionRequestStatus.APPROVED,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Request not approvable (status: {req.status})",
+        )
+
+    await db.execute(
+        update(KVKKDataDeletionRequest)
+        .where(KVKKDataDeletionRequest.id == request_id)
+        .values(
+            status=DeletionRequestStatus.APPROVED,
+            reviewed_by=current_user.sub,
+            reviewed_at=datetime.now(UTC),
+        )
+    )
+    await db.commit()
+
+    from core.config import settings
+
+    background_tasks.add_task(
+        process_data_erasure,
+        request_id=request_id,
+        user_id=req.user_id,
+        db_url=str(settings.database_url),
+    )
+    return {"success": True, "status": "approved", "message": "Erasure scheduled"}
+
+
+@router.post("/delete/{request_id}/reject")
+async def reject_deletion(
+    request_id: str,
+    payload: DeletionRejectRequest,
+    current_user: TokenPayload = Depends(get_current_user),
+    db: AsyncSession = Depends(get_async_session),
+):
+    """Silme talebini REDDET (admin, gerekçeli)."""
+    _require_admin(current_user)
+    req = (
+        await db.execute(
+            select(KVKKDataDeletionRequest).where(
+                KVKKDataDeletionRequest.id == request_id
+            )
+        )
+    ).scalar_one_or_none()
+    if not req:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Deletion request not found"
+        )
+    await db.execute(
+        update(KVKKDataDeletionRequest)
+        .where(KVKKDataDeletionRequest.id == request_id)
+        .values(
+            status=DeletionRequestStatus.REJECTED,
+            rejection_reason=payload.reason,
+            reviewed_by=current_user.sub,
+            reviewed_at=datetime.now(UTC),
+        )
+    )
+    await db.commit()
+    return {"success": True, "status": "rejected"}
+
+
 __all__ = ["router"]
