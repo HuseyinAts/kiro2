@@ -41,6 +41,10 @@ ROUTER_MAPPING = {
     "api.ddos_management_api": ("security", "api.ddos_management_api"),
     "api.audit_api": ("security", "api.audit_api"),
     "api.org_api": ("security", "api.org_api"),  # Faz 0 multi-tenancy
+    "api.org_billing_api": (
+        "security",
+        "api.org_billing_api",
+    ),  # Faz 1 B2B DPA/license/invoice
     "api.audit_logs_api": ("security", "api.audit_logs_api"),
     "api.encryption_management": ("security", "api.encryption_management"),
     "api.api_key_api": ("security", "api.api_key_api"),

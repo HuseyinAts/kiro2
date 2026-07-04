@@ -505,3 +505,25 @@ def require_org_role(*allowed_roles: str):
         )
 
     return _guard
+
+
+async def require_dpa_signed(
+    organization_id: str = Depends(get_current_tenant),
+    db: AsyncSession = Depends(get_db),
+) -> str:
+    """Aktivasyon gate'i: kurumun imzalı DPA'sı yoksa 403.
+
+    B2B akışında okul (veri sorumlusu) DPA imzalamadan ürünü aktive edemez
+    (KVKK işleyen sözleşmesi). DPA imzalıysa organization_id döner (tenant bağlamı
+    zaten get_current_tenant ile GUC'a set edilmiştir).
+    """
+    from services.billing_service import is_dpa_signed
+
+    if not await is_dpa_signed(db, organization_id):
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "Kurum DPA (veri işleme sözleşmesi) imzalamadı — aktivasyon bekliyor."
+            ),
+        )
+    return organization_id
