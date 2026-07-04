@@ -9,6 +9,7 @@ These models will be removed in v3.0.0.
 
 Part of Mock Data Cleanup - Phase 4
 """
+
 import warnings
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
@@ -28,7 +29,7 @@ def _deprecation_warning(model_name: str) -> None:
         "backend.models.learning_path_models instead. "
         "This model will be removed in v3.0.0.",
         DeprecationWarning,
-        stacklevel=3
+        stacklevel=3,
     )
 
 
@@ -54,8 +55,19 @@ class StudentLearningProfile(Base):
     # Primary Key
     id = Column(String, primary_key=True, index=True)
 
+    # Tenant
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
+
     # Foreign Keys
-    student_id = Column(String, ForeignKey("users.id"), nullable=False, unique=True, index=True)
+    student_id = Column(
+        String, ForeignKey("users.id"), nullable=False, unique=True, index=True
+    )
 
     # VARK Profile (4 dimensions, 0.0-1.0 range)
     vark_visual = Column(Float, default=0.0, nullable=False)
@@ -64,27 +76,43 @@ class StudentLearningProfile(Base):
     vark_kinesthetic = Column(Float, default=0.0, nullable=False)
 
     # Felder-Silverman Profile (4 dimensions, -1.0 to +1.0 range)
-    felder_active_reflective = Column(Float, default=0.0, nullable=False)  # -1 (reflective) to +1 (active)
-    felder_sensing_intuitive = Column(Float, default=0.0, nullable=False)  # -1 (intuitive) to +1 (sensing)
-    felder_visual_verbal = Column(Float, default=0.0, nullable=False)      # -1 (verbal) to +1 (visual)
-    felder_sequential_global = Column(Float, default=0.0, nullable=False)  # -1 (global) to +1 (sequential)
+    felder_active_reflective = Column(
+        Float, default=0.0, nullable=False
+    )  # -1 (reflective) to +1 (active)
+    felder_sensing_intuitive = Column(
+        Float, default=0.0, nullable=False
+    )  # -1 (intuitive) to +1 (sensing)
+    felder_visual_verbal = Column(
+        Float, default=0.0, nullable=False
+    )  # -1 (verbal) to +1 (visual)
+    felder_sequential_global = Column(
+        Float, default=0.0, nullable=False
+    )  # -1 (global) to +1 (sequential)
 
     # Computed values
     hybrid_code = Column(String(20), nullable=False, index=True)  # e.g., "VR-ASVS"
-    dominant_vark_style = Column(String(20), nullable=False)  # "visual", "auditory", etc.
-    dominant_felder_dimension = Column(String(30), nullable=False)  # "active_reflective", etc.
+    dominant_vark_style = Column(
+        String(20), nullable=False
+    )  # "visual", "auditory", etc.
+    dominant_felder_dimension = Column(
+        String(30), nullable=False
+    )  # "active_reflective", etc.
 
     # Metadata
     confidence_score = Column(Float, default=0.0, nullable=False)  # 0.0-1.0
     profile_description = Column(Text, nullable=True)
 
     # Behavioral data used for calculation (JSON)
-    behavioral_data_snapshot = Column(JSON, nullable=True)  # Snapshot of data used for calculation
+    behavioral_data_snapshot = Column(
+        JSON, nullable=True
+    )  # Snapshot of data used for calculation
     questionnaire_responses = Column(JSON, nullable=True)  # Survey responses if any
 
     # Timestamps
     detected_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     # Relationships (optional)
     # student = relationship("User", back_populates="learning_profile")
@@ -133,4 +161,5 @@ class StudentLearningProfile(Base):
             New LearningPathStudentProfile instance
         """
         from .learning_path_models import LearningPathStudentProfile
+
         return LearningPathStudentProfile.from_legacy_profile(self)

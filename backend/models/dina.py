@@ -66,9 +66,7 @@ class QMatrix(Base):
         UniqueConstraint(
             "question_id", "nano_skill_id", name="uq_qmatrix_question_skill"
         ),
-        Index(
-            "idx_qmatrix_pair", "question_id", "nano_skill_id", unique=True
-        ),
+        Index("idx_qmatrix_pair", "question_id", "nano_skill_id", unique=True),
     )
 
     def __repr__(self) -> str:
@@ -108,6 +106,13 @@ class StudentNanoSkillMastery(Base):
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
     )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
@@ -122,9 +127,7 @@ class StudentNanoSkillMastery(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint(
-            "student_id", "nano_skill_id", name="uq_student_nano_skill"
-        ),
+        UniqueConstraint("student_id", "nano_skill_id", name="uq_student_nano_skill"),
     )
 
     def __repr__(self) -> str:

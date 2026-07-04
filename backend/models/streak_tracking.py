@@ -19,6 +19,13 @@ class StreakTracking(Base):
     __tablename__ = "streak_tracking"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Current streak
@@ -67,6 +74,13 @@ class PerformanceHistory(Base):
     __tablename__ = "performance_history"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Performance data

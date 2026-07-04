@@ -29,6 +29,13 @@ class StudyPlan(Base):
     __tablename__ = "study_plans"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )

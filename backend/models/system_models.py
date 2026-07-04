@@ -46,6 +46,13 @@ class RefreshToken(Base):
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
     )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
@@ -106,6 +113,13 @@ class APIKey(Base):
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
@@ -195,6 +209,13 @@ class AuditLog(Base):
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
     )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # Audit information
     user_id: Mapped[str | None] = mapped_column(
@@ -228,6 +249,13 @@ class Session(Base):
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     user_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False

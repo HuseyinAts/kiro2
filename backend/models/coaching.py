@@ -7,7 +7,7 @@ CoachingEvent ve StudentEngagementSignal modelleri — AI koçluk ve etkileşim 
 import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, Float, Integer, String, Text
+from sqlalchemy import JSON, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -21,6 +21,13 @@ class CoachingEvent(Base):
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     event_type: Mapped[str] = mapped_column(String(30), nullable=False)
@@ -55,6 +62,13 @@ class StudentEngagementSignal(Base):
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     signal_type: Mapped[str] = mapped_column(String(50), nullable=False)

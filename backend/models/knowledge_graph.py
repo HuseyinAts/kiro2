@@ -34,13 +34,19 @@ class KnowledgePoint(Base):
         String, primary_key=True, default=lambda: str(uuid.uuid4())
     )
     topic_id: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
-    code: Mapped[str] = mapped_column(String(50), nullable=False, unique=True, index=True)
+    code: Mapped[str] = mapped_column(
+        String(50), nullable=False, unique=True, index=True
+    )
     name_tr: Mapped[str] = mapped_column(String(200), nullable=False)
     name: Mapped[str | None] = mapped_column(String(300), nullable=True)
     subject: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    prerequisite_ids: Mapped[list | None] = mapped_column(JSON, nullable=True, default=list)
-    difficulty_range: Mapped[list | None] = mapped_column(JSON, nullable=True, default=lambda: [0.0, 1.0])
+    prerequisite_ids: Mapped[list | None] = mapped_column(
+        JSON, nullable=True, default=list
+    )
+    difficulty_range: Mapped[list | None] = mapped_column(
+        JSON, nullable=True, default=lambda: [0.0, 1.0]
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -95,12 +101,17 @@ class StudentKnowledgeState(Base):
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
     )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     student_id: Mapped[str] = mapped_column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    knowledge_point_id: Mapped[str] = mapped_column(
-        String, nullable=False, index=True
-    )
+    knowledge_point_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     subject: Mapped[str] = mapped_column(String(50), nullable=False)
     mastery_level: Mapped[float] = mapped_column(Float, default=0.0)
     confidence: Mapped[float | None] = mapped_column(Float, default=0.5)

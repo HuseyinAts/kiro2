@@ -86,6 +86,13 @@ class ChatSession(Base):
     __tablename__ = "chat_sessions"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Session info
@@ -216,6 +223,13 @@ class ImageUpload(Base):
     __tablename__ = "image_uploads"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     session_id = Column(
         String,
         ForeignKey("chat_sessions.id", ondelete="CASCADE"),
@@ -347,6 +361,13 @@ class ChatAnalytics(Base):
     __tablename__ = "chat_analytics"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"))
 
     # Time period

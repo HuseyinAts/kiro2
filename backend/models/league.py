@@ -7,7 +7,7 @@ LeagueMembership ve LeagueHistory modelleri — haftalik lig sistemi.
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -21,6 +21,13 @@ class LeagueMembership(Base):
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     league_tier: Mapped[str] = mapped_column(String(20), default="BRONZE")
@@ -47,6 +54,13 @@ class LeagueHistory(Base):
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     week_start: Mapped[datetime] = mapped_column(

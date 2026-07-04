@@ -27,6 +27,13 @@ class ParentNotification(Base):
     __tablename__ = "parent_notifications"
 
     id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     parent_id = Column(
         String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )

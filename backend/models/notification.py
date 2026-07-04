@@ -2,6 +2,7 @@
 Notification ORM Model - Dashboard Service
 Part of Mock Data Cleanup Phase 2
 """
+
 from datetime import UTC, datetime
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Text
@@ -17,6 +18,13 @@ class Notification(Base):
 
     # Primary Key
     id = Column(String, primary_key=True, index=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # Foreign Keys
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
@@ -24,7 +32,9 @@ class Notification(Base):
     # Notification Data
     title = Column(String(200), nullable=False)
     message = Column(Text, nullable=False)
-    notification_type = Column(String(20), nullable=False)  # 'basari', 'uyari', 'bilgi', 'hata'
+    notification_type = Column(
+        String(20), nullable=False
+    )  # 'basari', 'uyari', 'bilgi', 'hata'
 
     # Status
     is_read = Column(Boolean, default=False, nullable=False, index=True)
@@ -45,6 +55,7 @@ class Notification(Base):
     def is_recent(self) -> bool:
         """Check if notification is from last 24 hours"""
         from datetime import timedelta
+
         if self.created_at is None:
             return False
         now = datetime.now(UTC)

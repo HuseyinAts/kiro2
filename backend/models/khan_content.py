@@ -84,9 +84,7 @@ class KhanUserProgress(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Foreign keys
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     khan_user_id = Column(
         String(100), nullable=True, index=True
     )  # Khan Academy user ID
@@ -140,9 +138,7 @@ class KhanCertificate(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Foreign keys
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     khan_user_id = Column(String(100), nullable=True, index=True)
 
     # Badge details
@@ -179,6 +175,13 @@ class KhanOAuthToken(Base):
     __tablename__ = "khan_oauth_tokens"
 
     id = Column(String, primary_key=True, default=uuid.uuid4)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # User association
     user_id = Column(

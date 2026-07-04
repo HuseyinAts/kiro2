@@ -2,6 +2,7 @@
 Student Goal ORM Model - Dashboard Service
 Part of Mock Data Cleanup Phase 2
 """
+
 from datetime import UTC, datetime
 
 from sqlalchemy import Column, DateTime, Float, ForeignKey, String, Text
@@ -13,10 +14,19 @@ class StudentGoal(Base):
     """Student goal tracking model for dashboard"""
 
     __tablename__ = "student_goals"
-    __table_args__ = {'extend_existing': True}
+    __table_args__ = {"extend_existing": True}
 
     # Primary Key
     id = Column(String, primary_key=True, index=True)
+
+    # Tenant
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # Foreign Keys
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
@@ -37,7 +47,9 @@ class StudentGoal(Base):
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
 
     # Relationships (optional - if User model exists)
     # user = relationship("User", back_populates="goals")
@@ -67,7 +79,4 @@ class StudentGoal(Base):
         now = datetime.now(UTC)
         if self.start_date is None or self.end_date is None:
             return self.status == "aktif"
-        return bool(
-            self.status == "aktif"
-            and self.start_date <= now <= self.end_date
-        )
+        return bool(self.status == "aktif" and self.start_date <= now <= self.end_date)

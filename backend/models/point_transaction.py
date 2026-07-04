@@ -20,9 +20,14 @@ class PointTransaction(Base):
     __table_args__ = {"extend_existing": True}
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     points = Column(Integer, nullable=False)
     reason = Column(String(255), nullable=False)
     meta_data = Column(JSON, nullable=True)  # Ek bilgiler için

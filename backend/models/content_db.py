@@ -51,7 +51,7 @@ class Question(Base):
         ),
         CheckConstraint(
             "irt_upper_asymptote >= 0.85 AND irt_upper_asymptote <= 1.0",
-            name="check_irt_upper_asymptote"
+            name="check_irt_upper_asymptote",
         ),
         Index("idx_question_exam_type", "exam_type"),
         Index("idx_question_subject", "subject_area"),
@@ -80,20 +80,35 @@ class Question(Base):
 
     # Classification - use values_callable for correct lowercase enum mapping
     exam_type: Mapped[ExamType] = mapped_column(
-        Enum(ExamType, values_callable=lambda x: [e.value for e in x], native_enum=False, create_constraint=False),
-        nullable=False
+        Enum(
+            ExamType,
+            values_callable=lambda x: [e.value for e in x],
+            native_enum=False,
+            create_constraint=False,
+        ),
+        nullable=False,
     )
     subject_area: Mapped[SubjectArea] = mapped_column(
-        Enum(SubjectArea, values_callable=lambda x: [e.value for e in x], native_enum=False, create_constraint=False),
-        nullable=False
+        Enum(
+            SubjectArea,
+            values_callable=lambda x: [e.value for e in x],
+            native_enum=False,
+            create_constraint=False,
+        ),
+        nullable=False,
     )
     topic: Mapped[str] = mapped_column(String(200), nullable=False)
     subtopic: Mapped[str | None] = mapped_column(String(200))
 
     # Difficulty and IRT parameters
     difficulty: Mapped[QuestionDifficulty] = mapped_column(
-        Enum(QuestionDifficulty, values_callable=lambda x: [e.value for e in x], native_enum=False, create_constraint=False),
-        nullable=False
+        Enum(
+            QuestionDifficulty,
+            values_callable=lambda x: [e.value for e in x],
+            native_enum=False,
+            create_constraint=False,
+        ),
+        nullable=False,
     )
     irt_difficulty: Mapped[float] = mapped_column(Float, default=0.0)
     irt_discrimination: Mapped[float] = mapped_column(Float, default=1.0)
@@ -215,6 +230,13 @@ class ClassRoom(Base):
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     teacher_id: Mapped[str] = mapped_column(
         String, ForeignKey("teacher_profiles.id", ondelete="CASCADE"), nullable=False

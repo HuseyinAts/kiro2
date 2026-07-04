@@ -108,6 +108,13 @@ class StudyRoom(Base):
     __tablename__ = "study_rooms"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
 
     # Basic Information
     name = Column(String(255), nullable=False)

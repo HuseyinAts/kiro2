@@ -38,6 +38,13 @@ class ManipulativeProgress(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     manipulative_type = Column(String(50), nullable=False)
     activity_type = Column(String(50))
@@ -74,6 +81,13 @@ class ManipulativeActivity(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     manipulative_type = Column(String(50), nullable=False)
     activity_type = Column(String(50))
@@ -104,6 +118,13 @@ class WeeklyProgress(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
     user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
 
     # Week info

@@ -18,6 +18,7 @@ from datetime import datetime
 from sqlalchemy import (
     Boolean,
     DateTime,
+    ForeignKey,
     Integer,
     String,
     Text,
@@ -190,6 +191,13 @@ class ParentSocialSettings(Base):
 
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
     )
     parent_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     student_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
