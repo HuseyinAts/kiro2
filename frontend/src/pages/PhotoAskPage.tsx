@@ -31,27 +31,52 @@ import {
   Image as ImageIcon,
 } from '@mui/icons-material';
 
-interface SimilarQuestion {
-  question_id: string;
+// Mirrors backend/api/photo_ask_api.py response models exactly (S200 audit fix —
+// the old interfaces here, e.g. similar_questions/solution_text, never matched
+// what the backend actually sends and crashed on every successful upload).
+interface MatchedQuestion {
+  id: string;
+  question_text: string | null;
+  question_image_url: string | null;
+  exam_type: string | null;
+  subject_area: string | null;
+  source_book: string | null;
+  difficulty: string | null;
+  correct_answer: string | null;
+  options: Record<string, string | null> | null;
+  explanation: string | null;
   similarity: number;
-  question_text: string;
-  subject: string;
-  topic: string;
-  correct_answer: string;
-  has_solution: boolean;
+}
+
+interface AISolutionEmbedded {
+  solution: string;
+  model: string;
+  generated: boolean;
+  error: string | null;
 }
 
 interface UploadResult {
+  status: 'matched' | 'partial_match' | 'ai_solved' | 'ocr_failed';
   ocr_text: string;
-  similar_questions: SimilarQuestion[];
-  processing_time_ms: number;
+  ocr_confidence: number;
+  ocr_time_ms: number | null;
+  matched_questions: MatchedQuestion[];
+  ai_solution: AISolutionEmbedded | null;
+  total_time_ms: number;
+  message: string;
 }
 
-interface SolutionResult {
-  solution_text: string;
-  source: 'database' | 'ai_generated';
-  question_text?: string;
+interface QuestionSolution {
+  question_id: string;
+  question_text: string | null;
+  correct_answer: string | null;
+  explanation: string | null;
+  options: Record<string, string | null> | null;
 }
+
+type SolutionView =
+  | { kind: 'matched'; data: QuestionSolution }
+  | { kind: 'ai'; solution: string; model: string };
 
 type PageState = 'upload' | 'processing' | 'results' | 'solution' | 'error';
 
@@ -60,7 +85,7 @@ export default function PhotoAskPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
-  const [solution, setSolution] = useState<SolutionResult | null>(null);
+  const [solution, setSolution] = useState<SolutionView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +93,7 @@ export default function PhotoAskPage() {
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {return;}
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -99,7 +124,7 @@ export default function PhotoAskPage() {
   }, [preview]);
 
   const handleUpload = useCallback(async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) {return;}
 
     setState('processing');
     setError(null);
@@ -120,7 +145,15 @@ export default function PhotoAskPage() {
 
       const data: UploadResult = await response.json();
       setUploadResult(data);
-      setState('results');
+
+      // Backend already runs AI-solve during upload when nothing matched
+      // (status=ai_solved) — show it directly instead of waiting for a second click.
+      if (data.status === 'ai_solved' && data.ai_solution) {
+        setSolution({ kind: 'ai', solution: data.ai_solution.solution, model: data.ai_solution.model });
+        setState('solution');
+      } else {
+        setState('results');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Bir hata oluştu');
       setState('error');
@@ -134,10 +167,10 @@ export default function PhotoAskPage() {
         credentials: 'include',
       });
 
-      if (!response.ok) throw new Error('Çözüm yüklenemedi');
+      if (!response.ok) {throw new Error('Çözüm yüklenemedi');}
 
-      const data: SolutionResult = await response.json();
-      setSolution(data);
+      const data: QuestionSolution = await response.json();
+      setSolution({ kind: 'matched', data });
       setState('solution');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Çözüm yüklenemedi');
@@ -147,21 +180,21 @@ export default function PhotoAskPage() {
   }, []);
 
   const handleAISolve = useCallback(async () => {
-    if (!uploadResult?.ocr_text) return;
+    if (!uploadResult?.ocr_text) {return;}
 
     setAiLoading(true);
     try {
-      const response = await fetch('/api/v1/photo-ask/ai-solve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ ocr_text: uploadResult.ocr_text }),
-      });
+      // Backend reads question_text as a query param (no request-body model on this
+      // endpoint), not a JSON body field.
+      const response = await fetch(
+        `/api/v1/photo-ask/ai-solve?question_text=${encodeURIComponent(uploadResult.ocr_text)}`,
+        { method: 'POST', credentials: 'include' },
+      );
 
-      if (!response.ok) throw new Error('AI çözüm oluşturulamadı');
+      if (!response.ok) {throw new Error('AI çözüm oluşturulamadı');}
 
-      const data: SolutionResult = await response.json();
-      setSolution(data);
+      const data: { solution: string; model: string } = await response.json();
+      setSolution({ kind: 'ai', solution: data.solution, model: data.model });
       setState('solution');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'AI çözüm hatası');
@@ -298,7 +331,7 @@ export default function PhotoAskPage() {
           <Card variant="outlined" sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant="subtitle2" color="text.secondary">
-                OCR Sonucu ({uploadResult.processing_time_ms}ms)
+                OCR Sonucu {uploadResult.ocr_time_ms !== null ? `(${uploadResult.ocr_time_ms}ms)` : ''}
               </Typography>
               <Typography variant="body2" sx={{ mt: 1, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
                 {uploadResult.ocr_text.slice(0, 200)}
@@ -307,24 +340,26 @@ export default function PhotoAskPage() {
             </CardContent>
           </Card>
 
-          {uploadResult.similar_questions.length > 0 ? (
+          {uploadResult.matched_questions.length > 0 ? (
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  Benzer Sorular ({uploadResult.similar_questions.length})
+                  Benzer Sorular ({uploadResult.matched_questions.length})
                 </Typography>
                 <List disablePadding>
-                  {uploadResult.similar_questions.map((q, idx) => (
-                    <Box key={q.question_id}>
+                  {uploadResult.matched_questions.map((q, idx) => {
+                    const text = q.question_text || '';
+                    return (
+                    <Box key={q.id}>
                       {idx > 0 && <Divider />}
                       <ListItem disablePadding>
-                        <ListItemButton onClick={() => handleViewSolution(q.question_id)} disabled={aiLoading}>
+                        <ListItemButton onClick={() => handleViewSolution(q.id)} disabled={aiLoading}>
                           <ListItemText
-                            primary={q.question_text.slice(0, 100) + (q.question_text.length > 100 ? '...' : '')}
+                            primary={text.length > 100 ? `${text.slice(0, 100)}...` : text}
                             secondary={
                               <Stack direction="row" spacing={0.5} sx={{ mt: 0.5 }}>
-                                <Chip label={q.subject} size="small" />
-                                <Chip label={q.topic} size="small" variant="outlined" />
+                                {q.subject_area && <Chip label={q.subject_area} size="small" />}
+                                {q.exam_type && <Chip label={q.exam_type} size="small" variant="outlined" />}
                                 <Chip
                                   label={`%${Math.round(q.similarity * 100)} benzerlik`}
                                   size="small"
@@ -336,7 +371,8 @@ export default function PhotoAskPage() {
                         </ListItemButton>
                       </ListItem>
                     </Box>
-                  ))}
+                    );
+                  })}
                 </List>
               </CardContent>
             </Card>
@@ -344,16 +380,19 @@ export default function PhotoAskPage() {
             <Card variant="outlined">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography color="text.secondary" sx={{ mb: 2 }}>
-                  Benzer soru bulunamadı. AI ile çözmek ister misin?
+                  {uploadResult.message || 'Benzer soru bulunamadı.'}
+                  {uploadResult.status !== 'ocr_failed' && ' AI ile çözmek ister misin?'}
                 </Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<AIIcon />}
-                  onClick={handleAISolve}
-                  disabled={aiLoading}
-                >
-                  {aiLoading ? 'AI Çözüyor...' : 'AI ile Çöz'}
-                </Button>
+                {uploadResult.status !== 'ocr_failed' && (
+                  <Button
+                    variant="contained"
+                    startIcon={<AIIcon />}
+                    onClick={handleAISolve}
+                    disabled={aiLoading}
+                  >
+                    {aiLoading ? 'AI Çözüyor...' : 'AI ile Çöz'}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}
@@ -378,14 +417,38 @@ export default function PhotoAskPage() {
                   Çözüm
                 </Typography>
                 <Chip
-                  label={solution.source === 'database' ? 'Veritabanı' : 'AI Üretim'}
+                  label={solution.kind === 'matched' ? 'Veritabanı' : 'AI Üretim'}
                   size="small"
-                  color={solution.source === 'database' ? 'success' : 'info'}
+                  color={solution.kind === 'matched' ? 'success' : 'info'}
                 />
               </Stack>
-              <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                {solution.solution_text}
-              </Typography>
+              {solution.kind === 'matched' ? (
+                <>
+                  {solution.data.correct_answer && (
+                    <Typography variant="body1" fontWeight={600} sx={{ mb: 1 }}>
+                      Doğru Cevap: {solution.data.correct_answer}
+                    </Typography>
+                  )}
+                  {solution.data.options && (
+                    <Stack spacing={0.5} sx={{ mb: 1 }}>
+                      {Object.entries(solution.data.options)
+                        .filter(([, value]) => value)
+                        .map(([key, value]) => (
+                          <Typography key={key} variant="body2" color="text.secondary">
+                            {key}) {value}
+                          </Typography>
+                        ))}
+                    </Stack>
+                  )}
+                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                    {solution.data.explanation || 'Bu soru için ayrıntılı açıklama bulunmuyor.'}
+                  </Typography>
+                </>
+              ) : (
+                <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                  {solution.solution}
+                </Typography>
+              )}
             </CardContent>
           </Card>
 

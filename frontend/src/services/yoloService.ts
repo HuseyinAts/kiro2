@@ -132,7 +132,9 @@ class YOLOService {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = `${API_BASE_URL}/yolo`;
+    // Backend router is mounted at prefix "/api/v1/yolo"
+    // (backend/api/yolo_detection_api.py) — S200 audit fix.
+    this.baseUrl = `${API_BASE_URL}/api/v1/yolo`;
   }
 
   /**
