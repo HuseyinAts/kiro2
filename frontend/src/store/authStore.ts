@@ -67,6 +67,7 @@ interface AuthStore extends Omit<AuthState, 'token' | 'refreshToken'> {
   // 2FA flow: `'2fa_required'` literal returned when backend requests TOTP step
   // (see types.ts LoginResponse.requires_2fa). Caller branches on this.
   login: (credentials: LoginRequest) => Promise<boolean | '2fa_required'>
+  verifyTwoFactor: (email: string, password: string, totpCode: string) => Promise<boolean>
   register: (userData: RegisterRequest) => Promise<boolean>
   logout: () => Promise<void>
   refreshAuth: () => Promise<boolean>
@@ -194,6 +195,40 @@ export const useAuthStore = create<AuthStore>()(
             set({
               loading: false,
               error: response.message || 'Giriş başarısız',
+            });
+            return false;
+          } catch (error: unknown) {
+            set({
+              loading: false,
+              error: getErrorMessage(error),
+            });
+            return false;
+          }
+        },
+
+        /**
+         * Complete a 2FA-gated login (second step after login() returns '2fa_required').
+         * SECURITY: Server re-validates credentials + TOTP and sets httpOnly cookies.
+         */
+        verifyTwoFactor: async (email: string, password: string, totpCode: string): Promise<boolean> => {
+          try {
+            set({ loading: true, error: null });
+
+            const response = await authService.loginVerify2FA(email, password, totpCode);
+
+            if (response.success && response.user) {
+              set({
+                isAuthenticated: true,
+                user: response.user,
+                loading: false,
+                error: null,
+              });
+              return true;
+            }
+
+            set({
+              loading: false,
+              error: response.message || 'Doğrulama başarısız',
             });
             return false;
           } catch (error: unknown) {

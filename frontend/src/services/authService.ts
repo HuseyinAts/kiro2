@@ -29,6 +29,25 @@ class AuthService {
     }
   }
 
+  /**
+   * Complete a 2FA-gated login: second step after login() returns '2fa_required'.
+   * Calls the registered /auth/2fa/login-verify endpoint (re-checks credentials +
+   * TOTP code server-side, then sets the same httpOnly cookies as a normal login).
+   */
+  async loginVerify2FA(email: string, password: string, totpCode: string): Promise<LoginResponse> {
+    try {
+      const response = await apiRequest<LoginResponse>(`${this.baseUrl}/2fa/login-verify`, {
+        method: 'POST',
+        body: JSON.stringify({ email, password, totp_code: totpCode }),
+        credentials: 'include',
+      });
+
+      return response;
+    } catch (error: unknown) {
+      throw new Error(getErrorMessage(error) || 'Doğrulama başarısız');
+    }
+  }
+
   async register(userData: RegisterRequest): Promise<{ success: boolean; message?: string }> {
     try {
       // Backend (KullaniciOlustur) `ad_soyad` + `sifre` bekler; form ad/soyad/password
@@ -41,6 +60,8 @@ class AuthService {
         birth_date: userData.birth_date,
         // veli_email yalnızca doluysa gönder (boş string EmailStr validation'ı bozar)
         veli_email: userData.veli_email || undefined,
+        // telefon backend KullaniciBase alanı — doluysa gönder (S200 audit fix)
+        telefon: userData.telefon || undefined,
       };
       const response = await apiRequest<{ success: boolean; message?: string }>(`${this.baseUrl}/register`, {
         method: 'POST',

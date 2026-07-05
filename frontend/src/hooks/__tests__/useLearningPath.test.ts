@@ -120,7 +120,7 @@ describe('useLearningPath', () => {
       renderHook(() => useLearningPath())
       await waitFor(() =>
         expect(mockApiRequest).toHaveBeenCalledWith(
-          expect.stringContaining('/api/learning-path/completion/'),
+          expect.stringContaining('/api/v1/learning-path/completion/'),
         ),
       )
     })

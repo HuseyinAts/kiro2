@@ -135,10 +135,21 @@ export const ModernRegisterPage: React.FC = () => {
       errors.email = 'Geçerli bir e-posta adresi girin';
     }
 
+    // Backend (KullaniciOlustur.validate_password_strength, backend/models/user.py)
+    // requires 8+ chars + upper + lower + digit + special char — mirror it here so
+    // the form doesn't accept passwords the server will reject with a generic 422.
     if (!formData.password) {
       errors.password = 'Şifre gerekli';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Şifre en az 6 karakter olmalıdır';
+    } else if (formData.password.length < 8) {
+      errors.password = 'Şifre en az 8 karakter olmalıdır';
+    } else if (!/[A-Z]/.test(formData.password)) {
+      errors.password = 'Şifre en az bir büyük harf içermelidir';
+    } else if (!/[a-z]/.test(formData.password)) {
+      errors.password = 'Şifre en az bir küçük harf içermelidir';
+    } else if (!/\d/.test(formData.password)) {
+      errors.password = 'Şifre en az bir rakam içermelidir';
+    } else if (!/[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/~`]/.test(formData.password)) {
+      errors.password = 'Şifre en az bir özel karakter içermelidir (!@#$%^&* vb.)';
     }
 
     if (!confirmPassword) {

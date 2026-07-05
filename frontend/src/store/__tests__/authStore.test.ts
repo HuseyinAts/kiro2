@@ -16,6 +16,7 @@ import type { User, UserRole } from '../../types'
 vi.mock('../../services/authService', () => ({
   authService: {
     login: vi.fn(),
+    loginVerify2FA: vi.fn(),
     register: vi.fn(),
     logout: vi.fn(),
     refreshToken: vi.fn(),
@@ -175,6 +176,42 @@ describe('authStore', () => {
       })
 
       expect(useAuthStore.getState().error).toContain('ba')
+    })
+  })
+
+  describe('Two-Factor Verification (S200 audit: 2FA dead-end fix)', () => {
+    it('should set user and isAuthenticated on successful TOTP verification', async () => {
+      const mockUser = createMockUser()
+      ;(authService.loginVerify2FA as Mock).mockResolvedValue({
+        success: true,
+        user: mockUser,
+      })
+
+      let result: boolean
+      await act(async () => {
+        result = await useAuthStore.getState().verifyTwoFactor('test@example.com', 'password123', '123456')
+      })
+
+      expect(authService.loginVerify2FA).toHaveBeenCalledWith('test@example.com', 'password123', '123456')
+      const state = useAuthStore.getState()
+      expect(result!).toBe(true)
+      expect(state.isAuthenticated).toBe(true)
+      expect(state.user).toEqual(mockUser)
+      expect(state.error).toBeNull()
+    })
+
+    it('should set error and return false on invalid TOTP code', async () => {
+      ;(authService.loginVerify2FA as Mock).mockRejectedValue(new Error('Geçersiz 2FA kodu'))
+
+      let result: boolean
+      await act(async () => {
+        result = await useAuthStore.getState().verifyTwoFactor('test@example.com', 'password123', '000000')
+      })
+
+      const state = useAuthStore.getState()
+      expect(result!).toBe(false)
+      expect(state.isAuthenticated).toBe(false)
+      expect(state.error).toBe('Geçersiz 2FA kodu')
     })
   })
 

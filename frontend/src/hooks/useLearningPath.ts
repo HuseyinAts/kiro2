@@ -58,7 +58,7 @@ export interface UseLearningPathReturn {
   submitOnboardingResult: (result: OnboardingResult) => Promise<void>
   skipOnboarding: () => void
   startSession: () => Promise<void>
-  endSession: (topics?: string[], questionsAnswered?: number, correctCount?: number) => Promise<void>
+  endSession: () => Promise<void>
 }
 
 export const useLearningPath = (): UseLearningPathReturn => {
@@ -88,7 +88,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
   const loadCompletionStatus = useCallback(async (sid: string): Promise<Record<string, boolean>> => {
     try {
       const data = await apiRequest<{ data: Record<string, boolean> }>(
-        `/api/learning-path/completion/${sid}`,
+        `/api/v1/learning-path/completion/${sid}`,
       );
       return data.data || {};
     } catch {
@@ -122,7 +122,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
   const ensureProfile = useCallback(async (): Promise<string> => {
     try {
       const myProfile = await apiRequest<{ student_id: string }>(
-        '/api/learning-path/my-profile',
+        '/api/v1/learning-path/my-profile',
       );
       return myProfile.student_id;
     } catch (profileErr: any) {
@@ -219,7 +219,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
 
   /** Submit onboarding result → update profile → send VARK → create path with real params */
   const submitOnboardingResult = useCallback(async (result: OnboardingResult) => {
-    if (!studentId) return;
+    if (!studentId) {return;}
 
     try {
       setLoading(true);
@@ -314,7 +314,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
     const sid = studentId || String(user.id);
 
     try {
-      await apiRequest(`/api/learning-path/progress/${sid}/${nodeId}`, {
+      await apiRequest(`/api/v1/learning-path/progress/${sid}/${nodeId}`, {
         method: 'PUT',
         body: JSON.stringify({
           progress: progress ?? (completed ? 100 : undefined),
@@ -325,7 +325,7 @@ export const useLearningPath = (): UseLearningPathReturn => {
       // Update local state
       setPathNodes(prevNodes =>
         prevNodes.map(node => {
-          if (node.id !== nodeId) return node;
+          if (node.id !== nodeId) {return node;}
           const newProgress = progress ?? (completed ? 100 : node.progress);
           const isCompleted = completed || newProgress === 100;
           return {
@@ -368,63 +368,14 @@ export const useLearningPath = (): UseLearningPathReturn => {
     return updateProgress({ nodeId, completed: true, progress: 100 });
   }, [updateProgress]);
 
-  // B1: Start study session
-  const startSession = useCallback(async () => {
-    try {
-      const data = await apiRequest<{ session_id: string; started_at: string }>(
-        '/api/learning-path/study-session/start',
-        { method: 'POST' },
-      );
-      setStudySession({
-        sessionId: data.session_id,
-        startedAt: new Date(data.started_at),
-        isActive: true,
-      });
-    } catch (err) {
-      console.error('Oturum başlatılamadı:', err);
-    }
-  }, []);
-
-  // B1: End study session
-  const endSession = useCallback(async (
-    topics: string[] = [],
-    questionsAnswered = 0,
-    correctCount = 0,
-  ) => {
-    if (!studySession.sessionId) return;
-    try {
-      const data = await apiRequest<{
-        duration_minutes: number;
-        daily_streak: number;
-        best_streak: number;
-      }>('/api/learning-path/study-session/end', {
-        method: 'POST',
-        body: JSON.stringify({
-          session_id: studySession.sessionId,
-          topics_studied: topics,
-          questions_answered: questionsAnswered,
-          correct_count: correctCount,
-        }),
-      });
-      setStudySession({ sessionId: null, startedAt: null, isActive: false });
-      setStreak(prev => ({
-        ...prev,
-        dailyStreak: data.daily_streak,
-        bestStreak: data.best_streak,
-      }));
-    } catch (err) {
-      console.error('Oturum sonlandırılamadı:', err);
-    }
-  }, [studySession.sessionId]);
-
-  // B2: Load streak on mount
+  // B2: Load streak — declared before startSession/endSession so endSession can refresh it
   const loadStreak = useCallback(async () => {
     try {
       const data = await apiRequest<{
         daily_streak: number;
         best_streak: number;
         last_study_date: string | null;
-      }>('/api/learning-path/streak');
+      }>('/api/v1/learning-path/streak');
       setStreak({
         dailyStreak: data.daily_streak,
         bestStreak: data.best_streak,
@@ -434,6 +385,39 @@ export const useLearningPath = (): UseLearningPathReturn => {
       // Not critical
     }
   }, []);
+
+  // B1: Start study session — backed by the registered FSRS study-sessions endpoint.
+  // (The old /api/learning-path/study-session/* path was never registered by any router.)
+  const startSession = useCallback(async () => {
+    try {
+      const response = await apiRequest<{
+        data: { session_id: string; started_at: string };
+      }>('/api/v1/fsrs/study-sessions/start', { method: 'POST' });
+      setStudySession({
+        sessionId: response.data.session_id,
+        startedAt: new Date(response.data.started_at),
+        isActive: true,
+      });
+    } catch (err) {
+      console.error('Oturum başlatılamadı:', err);
+    }
+  }, []);
+
+  // B1: End study session — session_id is a path param on this endpoint, not a body
+  // field, and the response carries no streak data (a separate subsystem), so the
+  // streak is refreshed with a follow-up call once the session closes.
+  const endSession = useCallback(async () => {
+    if (!studySession.sessionId) {return;}
+    try {
+      await apiRequest(`/api/v1/fsrs/study-sessions/${studySession.sessionId}/end`, {
+        method: 'POST',
+      });
+      setStudySession({ sessionId: null, startedAt: null, isActive: false });
+      await loadStreak();
+    } catch (err) {
+      console.error('Oturum sonlandırılamadı:', err);
+    }
+  }, [studySession.sessionId, loadStreak]);
 
   /** Auto-load on mount */
   useEffect(() => {

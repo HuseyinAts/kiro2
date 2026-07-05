@@ -129,7 +129,7 @@ export function ModernLearningPathPage() {
   const [quizStreak, setQuizStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   useEffect(() => {
-    if (!studentId) return;
+    if (!studentId) {return;}
     try {
       const stored = parseInt(localStorage.getItem(`lp_best_streak_${studentId}`) || '0', 10);
       setBestStreak(stored);
@@ -212,7 +212,7 @@ export function ModernLearningPathPage() {
     const subject = node.title.split(' ')[0];
     try {
       const res = await fetch(
-        `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
+        `/api/v1/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
         { credentials: 'include' },
       );
       const data = await res.json();
@@ -231,7 +231,7 @@ export function ModernLearningPathPage() {
     const subject = node.title.split(' ')[0];
     try {
       const res = await fetch(
-        `/api/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
+        `/api/v1/learning-path/exit-quiz/${encodeURIComponent(subject)}?count=${node.quiz?.question_count || 5}`,
         { credentials: 'include' },
       );
       const data = await res.json();
@@ -262,7 +262,7 @@ export function ModernLearningPathPage() {
     // 2. Register wrong answers to FSRS
     if (wrongIds.length > 0) {
       try {
-        await fetch('/api/learning-path/register-wrong-answers', {
+        await fetch('/api/v1/learning-path/register-wrong-answers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -756,7 +756,7 @@ export function ModernLearningPathPage() {
                             .map(q => q.id);
                           if (wrongIds.length > 0) {
                             try {
-                              await fetch('/api/learning-path/register-wrong-answers', {
+                              await fetch('/api/v1/learning-path/register-wrong-answers', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
@@ -785,7 +785,7 @@ export function ModernLearningPathPage() {
                           onClick={async () => {
                             const subjects = [...new Set(pathNodes.map(n => n.title.split(' ')[0]))].slice(0, 5);
                             try {
-                              const res = await fetch(`/api/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
+                              const res = await fetch(`/api/v1/learning-path/interleaved-practice?subjects=${subjects.join(',')}&count=10`, { credentials: 'include' });
                               const data = await res.json();
                               if (data.success && data.questions?.length > 0) {
                                 setInterleavedQuestions(data.questions.map(mapApiToQuizQuestion));

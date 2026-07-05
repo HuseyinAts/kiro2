@@ -38,8 +38,11 @@ export const ModernLoginPage: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 2FA challenge step — shown when login() signals '2fa_required' (TOTP-enabled account)
+  const [twoFactorRequired, setTwoFactorRequired] = useState(false);
+  const [totpCode, setTotpCode] = useState('');
 
-  const { login, isAuthenticated, user } = useAuthStore();
+  const { login, verifyTwoFactor, isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -80,11 +83,36 @@ export const ModernLoginPage: React.FC = () => {
 
     try {
       const success = await login(formData);
-      if (!success) {
+      if (success === '2fa_required') {
+        setTwoFactorRequired(true);
+      } else if (!success) {
         setError('E-posta veya şifre hatalı');
       }
     } catch (error: any) {
       setError(error.message || 'Giriş sırasında bir hata oluştu');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyTwoFactor = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!totpCode) {
+      setError('Lütfen doğrulama kodunu girin');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const success = await verifyTwoFactor(formData.email, formData.password, totpCode);
+      if (!success) {
+        setError('Doğrulama kodu hatalı veya süresi dolmuş');
+      }
+    } catch (error: any) {
+      setError(error.message || 'Doğrulama sırasında bir hata oluştu');
     } finally {
       setIsLoading(false);
     }
@@ -237,7 +265,7 @@ export const ModernLoginPage: React.FC = () => {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Giriş Yap
+              {twoFactorRequired ? 'Doğrulama Kodu' : 'Giriş Yap'}
             </Typography>
 
             {error && (
@@ -259,6 +287,70 @@ export const ModernLoginPage: React.FC = () => {
               </motion.div>
             )}
 
+            {twoFactorRequired ? (
+              <Box component="form" onSubmit={handleVerifyTwoFactor}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Kimlik doğrulama uygulamanızdaki 6 haneli kodu girin.
+                </Typography>
+                <TextField
+                  fullWidth
+                  id="totpCode"
+                  name="totpCode"
+                  label="Doğrulama Kodu"
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                  value={totpCode}
+                  onChange={(e) => setTotpCode(e.target.value)}
+                  disabled={isLoading}
+                  error={!!error}
+                  inputProps={{ 'aria-describedby': error ? 'login-error' : undefined, maxLength: 6 }}
+                  sx={{
+                    mb: 3,
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      borderRadius: '12px',
+                      '&:hover': { backgroundColor: 'rgba(255, 255, 255, 1)' },
+                      '&.Mui-focused': { backgroundColor: 'rgba(255, 255, 255, 1)' },
+                    },
+                  }}
+                />
+                <ModernButton
+                  type="submit"
+                  variant="gradient"
+                  gradient={modernColors.gradients.sunset}
+                  fullWidth
+                  size="large"
+                  loading={isLoading}
+                  endIcon={<ArrowForward />}
+                  glow
+                >
+                  Doğrula
+                </ModernButton>
+                <Box sx={{ textAlign: 'center', mt: 2 }}>
+                  <Typography
+                    component="button"
+                    type="button"
+                    variant="body2"
+                    onClick={() => {
+                      setTwoFactorRequired(false);
+                      setTotpCode('');
+                      setError(null);
+                    }}
+                    sx={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: modernColors.primary[700],
+                      fontWeight: 600,
+                      '&:hover': { textDecoration: 'underline' },
+                    }}
+                  >
+                    Geri dön
+                  </Typography>
+                </Box>
+              </Box>
+            ) : (
             <Box component="form" onSubmit={handleSubmit}>
               {/* Email Field */}
               <TextField
@@ -353,7 +445,10 @@ export const ModernLoginPage: React.FC = () => {
                 </Link>
               </Box>
             </Box>
+            )}
 
+            {!twoFactorRequired && (
+            <>
             {/* Divider */}
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" color="text.secondary" fontWeight={500}>
@@ -420,6 +515,8 @@ export const ModernLoginPage: React.FC = () => {
                 </Link>
               </Typography>
             </Box>
+            </>
+            )}
           </GlassCard>
 
           {/* Footer */}
