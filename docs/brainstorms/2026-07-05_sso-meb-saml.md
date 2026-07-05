@@ -2,6 +2,23 @@
 
 Tarih: 2026-07-05 | Domain: architecture | Perspektifler: Performans, Bakım, Maliyet
 
+## Update (aynı gün) — Top 5 #1 FIXED + 2 yeni flagged bulgu
+
+`enhanced_auth_api.py` `oauth2_callback()` fake-JWT bug'ı TDD ile düzeltildi
+(commit `8d23c6d4f`, pushed — bkz. Top 5 Aksiyon #1). Fix sırasında iki EK
+bulgu (bu dosyanın orijinal 3-perspektif araştırmasında yoktu):
+
+- **`verify_magic_link()`** (`enhanced_auth_api.py` ~satır 582) — AYNI
+  `secrets.token_urlsafe(32)` fake-token deseni, ayrı endpoint (passwordless
+  magic-link login). Henüz fix edilmedi — flagged, kullanıcı kararı bekliyor.
+- **`JWTManager.create_token_pair()`** (`core/jwt_auth.py`) — pozisyonel
+  argüman hatası: `create_access_token(user_id, email, role, permissions,
+  device_id)` çağırıyor ama `create_access_token`'ın 4. pozisyonel parametresi
+  `username`, `permissions` değil. `database_authenticate` ve şimdi
+  `oauth2_callback` bu yüzden `create_token_pair`'i KULLANMIYOR,
+  `create_access_token`/`create_refresh_token`'ı ayrı ayrı çağırıyor —
+  bu bug yüzünden zaten kaçınılmış bir desen. Henüz fix edilmedi.
+
 ## TL;DR
 
 Kapsam netleşti: MEB e-Okul entegrasyonu mühendislik sorunu değil, iş geliştirme/hukuk sorunu (resmi ortaklık gerektirir, LOI/pilot okul yok) — **dondur**, sadece kurumsal OIDC (Google Workspace/Microsoft Entra/Okta) ile ilerle, SAML2'yi MVP dışı bırak. Araştırma sırasında SSO'dan bağımsız **iki doğrulanmış canlı/potansiyel bug** bulundu: (1) mevcut "Google ile giriş" akışı gerçek JWT üretmiyor — `secrets.token_urlsafe(32)` rastgele string basıyor, kullanıcı login sonrası hiçbir korumalı endpoint'e giremiyor (router kayıtlı/canlı, ACİL fix); (2) `link_or_create_user` organization_id kontrolü yapmadan email'e göre hesap bağlıyor — kurumsal SSO'nun üzerine inşa edilecek zemin şu an cross-tenant hesap ele geçirmeye açık. Her iki bug da SSO kararından önce kapatılmalı.
