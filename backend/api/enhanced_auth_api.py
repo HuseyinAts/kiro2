@@ -32,6 +32,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.dependencies import AuthenticatedUser, get_current_user, get_db
+from core.jwt_auth import UserRole as JWTUserRole
 from core.jwt_auth import get_jwt_manager
 from core.oauth2_service import (
     OAuth2Exception,
@@ -324,10 +325,20 @@ async def oauth2_callback(
             db=db,
         )
 
-        # JWT token olustur
+        # JWT token olustur (P0-1 deseni — bkz. api/auth.py database_authenticate)
         jwt_manager = get_jwt_manager()
-        access_token = secrets.token_urlsafe(32)
-        refresh_token = secrets.token_urlsafe(32)
+        jwt_role = JWTUserRole(user.role.value.lower())
+        access_token = jwt_manager.create_access_token(
+            user_id=str(user.id),
+            email=user.email,
+            role=jwt_role,
+            username=user.first_name,
+        )
+        refresh_token = jwt_manager.create_refresh_token(
+            user_id=str(user.id),
+            email=user.email,
+            role=jwt_role,
+        )
 
         logger.info(
             "oauth2_login_success",
