@@ -61,6 +61,7 @@ const AdminPanel = lazy(() => import('./components/Admin/AdminPanel'));
 const AdminUsersPage = lazy(() => import('./pages/ModernAdminUsersPage'));
 const AdminContentPage = lazy(() => import('./pages/ModernAdminContentPage'));
 const AdminSettingsPage = lazy(() => import('./pages/ModernAdminSettingsPage'));
+const OrgOnboardingPage = lazy(() => import('./pages/ModernOrgOnboardingPage'));
 const OSYMQuestionGeneratorPage = lazy(() => import('./pages/OSYMQuestionGeneratorPage'));
 const TokenOptimizationDashboard = lazy(() => import('./pages/TokenOptimizationDashboard'));
 const ABTestResultsPage = lazy(() => import('./pages/ABTestResultsPage'));
@@ -156,7 +157,7 @@ function AppContent() {
                   if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
                     // Sonsuz döngü koruması: 10s içinde tekrar reload engelle
                     const lastReload = sessionStorage.getItem('sw-reload-ts');
-                    if (lastReload && Date.now() - Number(lastReload) < 10000) return;
+                    if (lastReload && Date.now() - Number(lastReload) < 10000) {return;}
                     sessionStorage.setItem('sw-reload-ts', String(Date.now()));
                     window.location.reload();
                   }
@@ -612,6 +613,14 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
                     <AdminSettingsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/organizasyon"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <OrgOnboardingPage />
                   </ProtectedRoute>
                 }
               />

@@ -28,6 +28,7 @@ import {
   Map,
   Groups,
   Assignment,
+  Business,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -265,6 +266,13 @@ const navigationItems: NavigationItem[] = [
     icon: <CameraAlt />,
     roles: ['admin'],
     gradient: modernColors.gradients.sunset,
+  },
+  {
+    label: 'Okul Yönetimi',
+    path: '/admin/organizasyon',
+    icon: <Business />,
+    roles: ['admin'],
+    gradient: modernColors.gradients.forest,
   },
 ];
 
