@@ -462,12 +462,19 @@ async def get_current_tenant(
 
 
 async def get_current_membership(
+    organization_id: str = Depends(get_current_tenant),
     current_user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict:
-    """Geçerli kullanıcının aktif org üyeliğini (organization_id + org_role) döndürür.
+    """Kullanıcının OPERATED tenant'taki aktif org üyeliğini döndürür.
 
-    Kaynak: org_memberships (Step 4 backfill). Üyelik yoksa 403.
+    Kaynak: org_memberships (Step 4 backfill). Bu org'da aktif üyelik yoksa 403.
+
+    GÜVENLİK (cross-tenant authz divergence guard): rol daima operated-tenant
+    (get_current_tenant → users.organization_id) ile aynı org'da doğrulanır — yetki
+    kaynağı (org_memberships) ile operated-org iki ayrı kaynaktan gelip AYRIŞAMAZ.
+    get_current_tenant önce çözülür → RLS GUC set edilir → bu okuma da RLS-scoped
+    olur (defense-in-depth). ORDER BY created_at → LIMIT-1 non-determinizmi giderilir.
     """
     from sqlalchemy import text as _text
 
@@ -475,13 +482,16 @@ async def get_current_membership(
         await db.execute(
             _text(
                 "SELECT organization_id, org_role FROM org_memberships "
-                "WHERE user_id = :uid AND is_active = true LIMIT 1"
+                "WHERE user_id = :uid AND organization_id = :org AND is_active = true "
+                "ORDER BY created_at LIMIT 1"
             ),
-            {"uid": str(current_user.id)},
+            {"uid": str(current_user.id), "org": organization_id},
         )
     ).first()
     if row is None:
-        raise HTTPException(status_code=403, detail="Kullanıcının kurum üyeliği yok.")
+        raise HTTPException(
+            status_code=403, detail="Kullanıcının bu kurumda aktif üyeliği yok."
+        )
     return {"organization_id": str(row[0]), "org_role": str(row[1])}
 
 
