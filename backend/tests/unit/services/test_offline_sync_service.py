@@ -14,6 +14,12 @@ class _ScalarResult:
 
     def scalar_one_or_none(self):
         return self._value
+        
+    def scalars(self):
+        return self
+        
+    def all(self):
+        return [self._value] if self._value is not None else []
 
 
 class _MappingsResult:
@@ -65,6 +71,8 @@ async def test_sync_results_s2_happy_path_invalid_answer_counted_as_failed():
     db.execute = AsyncMock(
         side_effect=[
             _MappingsResult({"student_id": "stu-1", "consumed_at": None}),
+            _ScalarResult(SimpleNamespace(id="q1")),
+            _ScalarResult(None),
             _ScalarResult(None),
         ]
     )
@@ -95,6 +103,7 @@ async def test_sync_results_s3_happy_path_unknown_question_counted_as_failed():
     db.execute = AsyncMock(
         side_effect=[
             _MappingsResult({"student_id": "stu-1", "consumed_at": None}),
+            _ScalarResult(None),
             _ScalarResult(None),
             _ScalarResult(None),
         ]

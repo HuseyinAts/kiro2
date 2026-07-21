@@ -30,7 +30,7 @@ export class ErrorBoundary3D extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      if (this.props.fallback) return this.props.fallback;
+      if (this.props.fallback) {return this.props.fallback;}
       return (
         <div className="flex flex-col items-center justify-center rounded-2xl bg-gray-100 p-8 gap-3 text-center">
           <span className="text-4xl">🔧</span>

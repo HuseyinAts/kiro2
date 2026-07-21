@@ -34,7 +34,7 @@ export function MnemonicHint({ questionId, hint: initialHint, compact = false }:
   const [error, setError] = useState(false);
 
   const fetchHint = useCallback(async () => {
-    if (hint || loading) return;
+    if (hint || loading) {return;}
     setLoading(true);
     setError(false);
     try {

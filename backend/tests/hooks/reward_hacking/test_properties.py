@@ -254,7 +254,7 @@ def test_fake():
 
 try:
     risky()
-except:
+except Exception:
     pass
 """
         path = create_temp_file(code)

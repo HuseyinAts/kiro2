@@ -51,7 +51,7 @@ export default function ParentDashboardNew() {
             const eRes = await fetch(`/api/v1/veli/cocuk/${child.id}/performans`, opts);
             const estimate = eRes.ok ? await eRes.json() : null;
             return { ...child, statuses: [], plan: null, estimate };
-          })
+          }),
         );
         setChildren(enriched);
         setSelected(enriched[0]);
@@ -60,7 +60,7 @@ export default function ParentDashboardNew() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div style={s.center}><div style={s.spinner} /><p style={s.hint}>Yükleniyor…</p></div>;
+  if (loading) {return <div style={s.center}><div style={s.spinner} /><p style={s.hint}>Yükleniyor…</p></div>;}
 
   return (
     <div style={s.page}>

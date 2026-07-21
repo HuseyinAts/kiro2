@@ -72,7 +72,7 @@ class TestCoreEncodingIntegration:
 
                     if isinstance(data, str):
                         turkish_safe_decode(data.encode("utf-8"))
-                except:
+                except Exception:
                     pass  # Continue testing even if individual calls fail
 
             # Test JSON functions
@@ -81,13 +81,13 @@ class TestCoreEncodingIntegration:
                 encoded = safe_json_encode(json_data)
                 if encoded:
                     safe_json_decode(encoded)
-            except:
+            except Exception:
                 pass
 
             # Test system encoding
             try:
                 get_system_encoding()
-            except:
+            except Exception:
                 pass
 
         except ImportError:
@@ -183,7 +183,7 @@ class TestAgentsModulesDeepIntegration:
                         request_type="help_study", parameters={"topic": "matematik"}
                     )
                     assert isinstance(result, dict)
-                except:
+                except Exception:
                     pass  # Method might fail but we tested the code path
 
             # Run async test
@@ -235,7 +235,7 @@ class TestAlgorithmsIntegration:
             if hasattr(engine, "initialize"):
                 try:
                     engine.initialize()
-                except:
+                except Exception:
                     pass
 
             # Test with mock data
@@ -246,7 +246,7 @@ class TestAlgorithmsIntegration:
                         content_id="test_content",
                         performance_data={"score": 0.8},
                     )
-                except:
+                except Exception:
                     pass
 
         except Exception:
@@ -268,7 +268,7 @@ class TestAlgorithmsIntegration:
                     engine.get_recommendations(
                         user_id="test_user", context={"subject": "matematik"}
                     )
-                except:
+                except Exception:
                     pass
 
         except Exception:
@@ -293,7 +293,7 @@ class TestAlgorithmsIntegration:
                         user_profile={"level": "beginner"},
                         content_pool=[{"id": "1", "difficulty": "easy"}],
                     )
-                except:
+                except Exception:
                     pass
 
         except Exception:
@@ -317,7 +317,7 @@ class TestAlgorithmsIntegration:
                     detector.detect_learning_style(
                         user_data={"interactions": [], "preferences": {}}
                     )
-                except:
+                except Exception:
                     pass
 
         except Exception:
@@ -341,7 +341,7 @@ class TestServicesIntegration:
             if hasattr(service, "get_content"):
                 try:
                     service.get_content(content_id="test_content")
-                except:
+                except Exception:
                     pass
 
         except Exception:
@@ -372,7 +372,7 @@ class TestIntegrationsModulesUsage:
                     with patch.object(service, "_make_api_request") as mock_request:
                         mock_request.return_value = {"items": []}
                         service.search_videos("matematik", max_results=5)
-                except:
+                except Exception:
                     pass
 
         except Exception:
@@ -398,7 +398,7 @@ class TestIntegrationsModulesUsage:
                         mock_get.return_value = mock_response
 
                         service.search("matematik")
-                except:
+                except Exception:
                     pass
 
         except Exception:

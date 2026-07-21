@@ -1,5 +1,9 @@
-import csv, json, sys, collections
+import collections
+import csv
+import json
+import sys
 from pathlib import Path
+
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 keys={}
 with open("vp116_keys.csv", encoding="utf-8") as f:

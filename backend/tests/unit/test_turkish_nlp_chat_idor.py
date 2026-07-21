@@ -3,6 +3,7 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import BackgroundTasks
 
 import api.turkish_nlp_chat as chat_mod
 from api.turkish_nlp_chat import (
@@ -12,7 +13,6 @@ from api.turkish_nlp_chat import (
     manage_conversation_context,
     send_chat_message,
 )
-from fastapi import BackgroundTasks
 
 
 @pytest.mark.asyncio

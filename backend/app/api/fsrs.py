@@ -13,11 +13,11 @@ Bu dosya ayrıca eski FSRS API uyumluluğunu da korur.
 from __future__ import annotations
 
 import logging
-from uuid import UUID
 from datetime import datetime
 from typing import Any
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,7 +35,8 @@ from app.schemas.fsrs_schemas import (
 from app.services.fsrs_service import FSRSService
 
 # Eski API bağımlılıkları
-from core.dependencies import get_current_user as get_current_user_old, get_db as get_db_old
+from core.dependencies import get_current_user as get_current_user_old
+from core.dependencies import get_db as get_db_old
 from models.database import User as DBUser
 from services._deprecated.fsrs_service import FSRSService as DeprecatedFSRSService
 

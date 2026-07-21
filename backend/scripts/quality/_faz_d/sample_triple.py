@@ -3,8 +3,11 @@
   TWO_VS_STORED -> if Opus==(qwen3/gemma3 answer)!=stored, confirms DB error.
 Outputs opus_t_blind.txt (no key) + opus_t_key.csv (id, cat, stored, model_ans)."""
 
-import csv, glob, json, random, sys
-from collections import defaultdict
+import csv
+import glob
+import json
+import random
+import sys
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")

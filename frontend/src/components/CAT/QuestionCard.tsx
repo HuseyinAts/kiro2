@@ -33,15 +33,15 @@ export function QuestionCard({
   }, [stem]);
 
   const handleSelect = (key: string) => {
-    if (disabled || selected) return;
+    if (disabled || selected) {return;}
     setSelected(key);
     onAnswer(key, Date.now() - startTime.current);
   };
 
   const getColor = (key: string): 'inherit' | 'success' | 'error' | 'primary' => {
-    if (!feedback) return selected === key ? 'primary' : 'inherit';
-    if (key === feedback.correct_option) return 'success';
-    if (key === feedback.selected && !feedback.is_correct) return 'error';
+    if (!feedback) {return selected === key ? 'primary' : 'inherit';}
+    if (key === feedback.correct_option) {return 'success';}
+    if (key === feedback.selected && !feedback.is_correct) {return 'error';}
     return 'inherit';
   };
 

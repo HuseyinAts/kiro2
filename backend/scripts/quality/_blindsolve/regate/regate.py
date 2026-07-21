@@ -117,5 +117,5 @@ ids_sql = ",".join("'" + i + "'" for i in demote)
         for i, r in ([(x, "coherence") for x in dem_coh] + [(x, "consensus_fail") for x in dem_cons]))
     + "\n\n-- SONRA: v_safe_for_beta'ya canlı pg_get_viewdef'ten 'AND id NOT IN (SELECT id FROM blindsolve_regate_demoted)' ekle (bayrak-grubu DIŞINA, gate2c gibi). Apply sonrası leak=0 doğrula.\n",
     encoding="utf-8")
-print(f"yazıldı: keep_ids.json, demote_ids.json, opus_keep.txt(25), opus_demote.txt(25), D_regate_demote.sql")
+print("yazıldı: keep_ids.json, demote_ids.json, opus_keep.txt(25), opus_demote.txt(25), D_regate_demote.sql")
 print("SIRA: opus_keep.txt + opus_demote.txt'i Opus ile doğrula -> KEEP temiz & DEMOTE haklıysa D_regate_demote.sql + view edit uygula.")

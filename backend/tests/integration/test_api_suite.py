@@ -500,7 +500,7 @@ class TurkishExamAPITester:
                     try:
                         response_data = await response.json()
                         test_result.response_data = response_data
-                    except:
+                    except Exception:
                         test_result.response_data = {"text": await response.text()}
 
                     # For rate limiting, we expect the last request to fail

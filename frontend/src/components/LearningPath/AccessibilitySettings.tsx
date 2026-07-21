@@ -43,7 +43,7 @@ const FONT_LABELS: Record<string, string> = {
 function loadSettings(): A11ySettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
+    if (raw) {return { ...DEFAULTS, ...JSON.parse(raw) };}
   } catch { /* ignore */ }
   return DEFAULTS;
 }

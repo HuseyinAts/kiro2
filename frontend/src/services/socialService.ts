@@ -30,20 +30,20 @@ export const moderation = {
   filterTest: (text: string) =>
     request<{ success: boolean; data: ContentFilterResult }>(
       `${BASE}/moderation/filter-test`,
-      { method: 'POST', body: JSON.stringify({ text }) }
+      { method: 'POST', body: JSON.stringify({ text }) },
     ),
 
   report: (data: { content_type: string; content_id: string; reason: string; details?: string }) =>
     request<{ success: boolean; data: { report_id: string } }>(
       `${BASE}/moderation/report`,
-      { method: 'POST', body: JSON.stringify(data) }
+      { method: 'POST', body: JSON.stringify(data) },
     ),
 
   getMyReports: (limit?: number) => {
     const q = new URLSearchParams();
-    if (limit) q.set('limit', String(limit));
+    if (limit) {q.set('limit', String(limit));}
     return request<{ success: boolean; data: ContentReport[] }>(
-      `${BASE}/moderation/my-reports?${q}`
+      `${BASE}/moderation/my-reports?${q}`,
     );
   },
 
@@ -59,7 +59,7 @@ export const moderation = {
 
   getBlockedUsers: () =>
     request<{ success: boolean; data: { user_id: string; blocked_at: string }[] }>(
-      `${BASE}/moderation/blocked-users`
+      `${BASE}/moderation/blocked-users`,
     ),
 };
 
@@ -72,20 +72,20 @@ export interface ParentSocialSettings {
 export const parentSocial = {
   getSettings: (childId: string) =>
     request<{ success: boolean; data: ParentSocialSettings }>(
-      `${BASE}/parent-social/settings/${childId}`
+      `${BASE}/parent-social/settings/${childId}`,
     ),
 
   updateSettings: (childId: string, data: Partial<ParentSocialSettings>) =>
     request<{ success: boolean }>(
       `${BASE}/parent-social/settings/${childId}`,
-      { method: 'PUT', body: JSON.stringify(data) }
+      { method: 'PUT', body: JSON.stringify(data) },
     ),
 
   getActivity: (childId: string, days?: number) => {
     const q = new URLSearchParams();
-    if (days) q.set('days', String(days));
+    if (days) {q.set('days', String(days));}
     return request<{ success: boolean; data: { date: string; feature: string; minutes: number }[] }>(
-      `${BASE}/parent-social/activity/${childId}?${q}`
+      `${BASE}/parent-social/activity/${childId}?${q}`,
     );
   },
 };
@@ -135,23 +135,23 @@ export interface ForumSolution {
 export const soruMeydani = {
   getQuestionTypes: () =>
     request<{ success: boolean; data: { type: string; label: string }[] }>(
-      `${BASE}/soru-meydani/question-types`
+      `${BASE}/soru-meydani/question-types`,
     ),
 
   listQuestions: (params?: { subject_area?: string; status?: string; limit?: number; offset?: number }) => {
     const q = new URLSearchParams();
-    if (params?.subject_area) q.set('subject_area', params.subject_area);
-    if (params?.status) q.set('status', params.status);
-    if (params?.limit) q.set('limit', String(params.limit));
-    if (params?.offset) q.set('offset', String(params.offset));
+    if (params?.subject_area) {q.set('subject_area', params.subject_area);}
+    if (params?.status) {q.set('status', params.status);}
+    if (params?.limit) {q.set('limit', String(params.limit));}
+    if (params?.offset) {q.set('offset', String(params.offset));}
     return request<{ success: boolean; data: { items: ForumQuestion[]; total: number } }>(
-      `${BASE}/soru-meydani/questions?${q}`
+      `${BASE}/soru-meydani/questions?${q}`,
     );
   },
 
   getQuestion: (id: string) =>
     request<{ success: boolean; data: { question: ForumQuestion; solutions: ForumSolution[] } }>(
-      `${BASE}/soru-meydani/questions/${id}`
+      `${BASE}/soru-meydani/questions/${id}`,
     ),
 
   askQuestion: (data: {
@@ -170,7 +170,7 @@ export const soruMeydani = {
   submitSolution: (questionId: string, data: { body: string; image_url?: string }) =>
     request<{ success: boolean; data: { id: string } }>(
       `${BASE}/soru-meydani/questions/${questionId}/solutions`,
-      { method: 'POST', body: JSON.stringify(data) }
+      { method: 'POST', body: JSON.stringify(data) },
     ),
 
   voteSolution: (solutionId: string, vote_type: 'helpful' | 'not_helpful') =>
@@ -214,32 +214,32 @@ export const cozumDuellosu = {
   create: (data: { question_bank_id: string; subject_area: string; solve_time_seconds?: number }) =>
     request<{ success: boolean; data: { duel_id: string; matched: boolean }; message: string }>(
       `${BASE}/cozum-duellosu/create`,
-      { method: 'POST', body: JSON.stringify(data) }
+      { method: 'POST', body: JSON.stringify(data) },
     ),
 
   getDuel: (duelId: string) =>
     request<{ success: boolean; data: { duel: DuelInfo; submissions: DuelSubmission[] } }>(
-      `${BASE}/cozum-duellosu/${duelId}`
+      `${BASE}/cozum-duellosu/${duelId}`,
     ),
 
   submit: (duelId: string, data: { body: string; image_url?: string }) =>
     request<{ success: boolean; data: { id: string }; message: string }>(
       `${BASE}/cozum-duellosu/${duelId}/submit`,
-      { method: 'POST', body: JSON.stringify(data) }
+      { method: 'POST', body: JSON.stringify(data) },
     ),
 
   vote: (duelId: string, submissionId: string) =>
     request<{ success: boolean; message: string }>(
       `${BASE}/cozum-duellosu/${duelId}/vote`,
-      { method: 'POST', body: JSON.stringify({ submission_id: submissionId }) }
+      { method: 'POST', body: JSON.stringify({ submission_id: submissionId }) },
     ),
 
   listActive: (params?: { subject_area?: string; limit?: number }) => {
     const q = new URLSearchParams();
-    if (params?.subject_area) q.set('subject_area', params.subject_area);
-    if (params?.limit) q.set('limit', String(params.limit));
+    if (params?.subject_area) {q.set('subject_area', params.subject_area);}
+    if (params?.limit) {q.set('limit', String(params.limit));}
     return request<{ success: boolean; data: { id: string; subject_area: string; question_bank_id: string; voting_ends_at: string | null }[] }>(
-      `${BASE}/cozum-duellosu/active/list?${q}`
+      `${BASE}/cozum-duellosu/active/list?${q}`,
     );
   },
 };
@@ -271,28 +271,28 @@ export interface ObaContributor {
 export const obaSeferleri = {
   getActive: (obaId: string) =>
     request<{ success: boolean; data: { challenge: ObaChallengeInfo; contributors: ObaContributor[] } | null; message?: string }>(
-      `${BASE}/oba-seferleri/active/${obaId}`
+      `${BASE}/oba-seferleri/active/${obaId}`,
     ),
 
   contribute: (challengeId: string, amount: number) =>
     request<{ success: boolean; data: { contribution: number; challenge_current: number; challenge_target: number; completed: boolean }; message: string }>(
       `${BASE}/oba-seferleri/contribute/${challengeId}`,
-      { method: 'POST', body: JSON.stringify({ amount }) }
+      { method: 'POST', body: JSON.stringify({ amount }) },
     ),
 
   getHistory: (obaId: string, limit?: number) => {
     const q = new URLSearchParams();
-    if (limit) q.set('limit', String(limit));
+    if (limit) {q.set('limit', String(limit));}
     return request<{ success: boolean; data: { id: string; title: string; challenge_type: string; target_value: number; current_value: number; completed: boolean; start_date: string; end_date: string }[] }>(
-      `${BASE}/oba-seferleri/history/${obaId}?${q}`
+      `${BASE}/oba-seferleri/history/${obaId}?${q}`,
     );
   },
 
   getMyContributions: (limit?: number) => {
     const q = new URLSearchParams();
-    if (limit) q.set('limit', String(limit));
+    if (limit) {q.set('limit', String(limit));}
     return request<{ success: boolean; data: { challenge_id: string; contribution: number; ratio: number; xp_earned: number }[] }>(
-      `${BASE}/oba-seferleri/my-contributions?${q}`
+      `${BASE}/oba-seferleri/my-contributions?${q}`,
     );
   },
 };
@@ -323,12 +323,12 @@ export const pomodoro = {
   join: (data: { subject_area: string; topic?: string }) =>
     request<{ success: boolean; data: { room_id: string; status: string; participants: number } }>(
       `${BASE}/pomodoro/join`,
-      { method: 'POST', body: JSON.stringify(data) }
+      { method: 'POST', body: JSON.stringify(data) },
     ),
 
   getRoom: (roomId: string) =>
     request<{ success: boolean; data: { room: PomodoroRoom; participants: PomodoroParticipant[] } }>(
-      `${BASE}/pomodoro/room/${roomId}`
+      `${BASE}/pomodoro/room/${roomId}`,
     ),
 
   updateStatus: (roomId: string, status: 'working' | 'on_break' | 'left') =>
@@ -340,7 +340,7 @@ export const pomodoro = {
   completeRound: (roomId: string) =>
     request<{ success: boolean; data: { rounds_completed: number; xp_earned: number; total_xp: number } }>(
       `${BASE}/pomodoro/room/${roomId}/complete-round`,
-      { method: 'POST' }
+      { method: 'POST' },
     ),
 };
 
@@ -362,18 +362,18 @@ export const streak = {
   request: () =>
     request<{ success: boolean; data: { pair_id: string; matched: boolean } }>(
       `${BASE}/birlikte-streak/request`,
-      { method: 'POST' }
+      { method: 'POST' },
     ),
 
   getStatus: () =>
     request<{ success: boolean; data: StreakStatus | null }>(
-      `${BASE}/birlikte-streak/status`
+      `${BASE}/birlikte-streak/status`,
     ),
 
   completeToday: () =>
     request<{ success: boolean; data: { streak: number; xp_earned: number; bonus: number } }>(
       `${BASE}/birlikte-streak/complete-today`,
-      { method: 'POST' }
+      { method: 'POST' },
     ),
 };
 
@@ -425,7 +425,7 @@ export const ustaCirak = {
   requestMatch: (data: { subject_area: string; role: 'mentor' | 'mentee' }) =>
     request<{ success: boolean; data: { pair_id: string; matched: boolean } }>(
       `${BASE}/usta-cirak/request`,
-      { method: 'POST', body: JSON.stringify(data) }
+      { method: 'POST', body: JSON.stringify(data) },
     ),
 
   getPairs: () =>
@@ -434,13 +434,13 @@ export const ustaCirak = {
   startSession: (pairId: string, data?: { question_bank_id?: string; topic?: string }) =>
     request<{ success: boolean; data: { session_id: string } }>(
       `${BASE}/usta-cirak/pairs/${pairId}/session`,
-      { method: 'POST', body: JSON.stringify(data || {}) }
+      { method: 'POST', body: JSON.stringify(data || {}) },
     ),
 
   endSession: (sessionId: string) =>
     request<{ success: boolean; data: { duration_minutes: number; mentor_xp: number; mentee_xp: number } }>(
       `${BASE}/usta-cirak/sessions/${sessionId}/end`,
-      { method: 'POST' }
+      { method: 'POST' },
     ),
 
   submitFeedback: (sessionId: string, data: { rating: number; tags?: string[] }) =>

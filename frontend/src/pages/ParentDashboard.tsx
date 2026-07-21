@@ -110,7 +110,7 @@ export function ParentDashboard() {
     );
   }
 
-  if (!data) return null;
+  if (!data) {return null;}
 
   const progressPercent = data.totalTopics > 0
     ? Math.round((data.completedTopics / data.totalTopics) * 100)

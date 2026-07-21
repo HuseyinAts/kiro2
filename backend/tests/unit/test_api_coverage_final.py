@@ -92,7 +92,7 @@ def setup_stubs_fixture():
     for k in _STUBBED_KEYS:
         if k in sys.modules:
             orig[k] = sys.modules[k]
-    
+
     # Re-apply the stubs
     sys.modules["slowapi"] = _slowapi
     sys.modules["slowapi.util"] = _slowapi_util
@@ -105,9 +105,9 @@ def setup_stubs_fixture():
     sys.modules["pgvector.sqlalchemy"] = _pgvector_sqlalchemy
     sys.modules["zemberek"] = sys.modules.get("zemberek")
     sys.modules["zemberek.morphology"] = sys.modules.get("zemberek.morphology")
-    
+
     yield
-    
+
     for k in _STUBBED_KEYS:
         if k in orig:
             sys.modules[k] = orig[k]
@@ -445,8 +445,7 @@ class TestAdvancedReportsAPI:
         app = FastAPI()
         app.dependency_overrides[get_current_user] = lambda: _make_authenticated_user()
         app.include_router(router)
-
-        with patch.object(ose, "session_to_sinav_sonucu", AsyncMock(return_value=None)):
+        with patch("api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)):
             async with AsyncClient(
                 transport=ASGITransport(app=app), base_url="http://test"
             ) as client:
@@ -462,8 +461,7 @@ class TestAdvancedReportsAPI:
         app = FastAPI()
         app.dependency_overrides[get_current_user] = lambda: _make_authenticated_user()
         app.include_router(router)
-
-        with patch.object(ose, "session_to_sinav_sonucu", AsyncMock(return_value=None)):
+        with patch("api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)):
             async with AsyncClient(
                 transport=ASGITransport(app=app), base_url="http://test"
             ) as client:
@@ -479,8 +477,7 @@ class TestAdvancedReportsAPI:
         app = FastAPI()
         app.dependency_overrides[get_current_user] = lambda: _make_authenticated_user()
         app.include_router(router)
-
-        with patch.object(ose, "session_to_sinav_sonucu", AsyncMock(return_value=None)):
+        with patch("api.advanced_reports.session_to_sinav_sonucu", AsyncMock(return_value=None)):
             async with AsyncClient(
                 transport=ASGITransport(app=app), base_url="http://test"
             ) as client:
@@ -1249,7 +1246,7 @@ class TestDiaryHelpers:
     @pytest.fixture(autouse=True)
     def unpoison_diary_schemas(self):
         import sys
-        from unittest.mock import Mock, MagicMock
+        from unittest.mock import MagicMock, Mock
         if "api.schemas.diary" in sys.modules:
             if isinstance(sys.modules["api.schemas.diary"], (Mock, MagicMock)):
                 del sys.modules["api.schemas.diary"]

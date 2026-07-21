@@ -57,12 +57,12 @@ export default function BossFightPage() {
   useEffect(() => {
     const subject = realmSlug.toUpperCase();
     apiRequest<{ questions?: BossQuestion[]; data?: BossQuestion[] }>(
-      `/api/v1/soru-bankasi/random?subject_area=${subject}&limit=10&difficulty=hard`
+      `/api/v1/soru-bankasi/random?subject_area=${subject}&limit=10&difficulty=hard`,
     )
       .then(res => {
         const qs = res.questions ?? res.data ?? [];
-        if (Array.isArray(qs) && qs.length > 0) setQuestions(qs);
-        else setError('Bu konu icin boss sorulari bulunamadi.');
+        if (Array.isArray(qs) && qs.length > 0) {setQuestions(qs);}
+        else {setError('Bu konu icin boss sorulari bulunamadi.');}
       })
       .catch(e => setError(String(e)))
       .finally(() => setLoading(false));
@@ -70,7 +70,7 @@ export default function BossFightPage() {
 
   // Timer
   useEffect(() => {
-    if (loading || gameOver || victory || revealed) return;
+    if (loading || gameOver || victory || revealed) {return;}
     timerRef.current = setInterval(() => {
       setTimer(prev => {
         if (prev <= 1) {
@@ -81,7 +81,7 @@ export default function BossFightPage() {
         return prev - 1;
       });
     }, 1000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    return () => { if (timerRef.current) {clearInterval(timerRef.current);} };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, gameOver, victory, revealed, idx]);
 
@@ -89,7 +89,7 @@ export default function BossFightPage() {
     setRevealed(true);
     setPlayerLives(prev => {
       const next = prev - 1;
-      if (next <= 0) setGameOver(true);
+      if (next <= 0) {setGameOver(true);}
       return next;
     });
     setBossHP(prev => Math.min(prev + 10, 100));
@@ -97,10 +97,10 @@ export default function BossFightPage() {
   }, []);
 
   const handleSelect = (key: string) => {
-    if (revealed || gameOver || victory) return;
+    if (revealed || gameOver || victory) {return;}
     setSelected(key);
     setRevealed(true);
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {clearInterval(timerRef.current);}
 
     // Check correctness (simplified — correct_answer may not be provided, use first option as placeholder)
     const q = questions[idx];
@@ -125,7 +125,7 @@ export default function BossFightPage() {
     } else {
       setPlayerLives(prev => {
         const next = prev - 1;
-        if (next <= 0) setGameOver(true);
+        if (next <= 0) {setGameOver(true);}
         return next;
       });
       setBossHP(prev => Math.min(prev + 10, 100));
@@ -135,8 +135,8 @@ export default function BossFightPage() {
   const nextQuestion = () => {
     if (idx + 1 >= questions.length) {
       // Sorular bitti — dogru orana gore karar ver
-      if (bossHP <= 0) setVictory(true);
-      else setGameOver(true);
+      if (bossHP <= 0) {setVictory(true);}
+      else {setGameOver(true);}
       return;
     }
     setIdx(i => i + 1);
@@ -145,22 +145,22 @@ export default function BossFightPage() {
     setTimer(30);
   };
 
-  if (loading) return (
+  if (loading) {return (
     <Box textAlign="center" py={8}>
       <CircularProgress size={52} />
       <Typography mt={2} color="text.secondary">Boss hazirlaniyor...</Typography>
     </Box>
-  );
+  );}
 
-  if (error) return (
+  if (error) {return (
     <Box maxWidth={520} mx="auto" mt={4}>
       <Alert severity="error">{error}</Alert>
       <Button sx={{ mt: 2 }} onClick={() => navigate('/realms')}>Alemlere Don</Button>
     </Box>
-  );
+  );}
 
   // Victory screen
-  if (victory) return (
+  if (victory) {return (
     <Box maxWidth={520} mx="auto" mt={4} textAlign="center">
       <Typography fontSize={64}>{boss.emoji}</Typography>
       <Typography variant="h4" fontWeight={800} color="success.main" mt={1}>
@@ -171,14 +171,14 @@ export default function BossFightPage() {
         <Chip icon={<EmojiEvents />} label={`${correctCount}/${totalAnswered} Dogru`} color="success" />
         <Chip label={`${playerLives} Can Kaldi`} color="primary" />
       </Stack>
-      <Button variant="contained" sx={{ mt: 3 }} onClick={() => navigate(`/realms`)}>
+      <Button variant="contained" sx={{ mt: 3 }} onClick={() => navigate('/realms')}>
         Alemlere Don
       </Button>
     </Box>
-  );
+  );}
 
   // Game over screen
-  if (gameOver) return (
+  if (gameOver) {return (
     <Box maxWidth={520} mx="auto" mt={4} textAlign="center">
       <Typography fontSize={64}>💀</Typography>
       <Typography variant="h4" fontWeight={800} color="error.main" mt={1}>
@@ -194,7 +194,7 @@ export default function BossFightPage() {
         <Button variant="contained" onClick={() => window.location.reload()}>Tekrar Dene</Button>
       </Stack>
     </Box>
-  );
+  );}
 
   const q = questions[idx];
 
@@ -257,9 +257,9 @@ export default function BossFightPage() {
                 const isSelected = selected === key;
                 const isCorrect = revealed && q.correct_answer === key;
                 let btnColor: 'primary' | 'success' | 'error' | 'inherit' = 'inherit';
-                if (revealed && isCorrect) btnColor = 'success';
-                else if (revealed && isSelected && !isCorrect) btnColor = 'error';
-                else if (isSelected) btnColor = 'primary';
+                if (revealed && isCorrect) {btnColor = 'success';}
+                else if (revealed && isSelected && !isCorrect) {btnColor = 'error';}
+                else if (isSelected) {btnColor = 'primary';}
 
                 return (
                   <Button

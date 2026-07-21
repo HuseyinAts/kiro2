@@ -3,22 +3,17 @@ Unit tests for SoruEkleRequest hashing and SoruBankasiServisi zero-crash upsert.
 """
 
 import hashlib
-import re
-import asyncio
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import AsyncMock, patch
-from pydantic import ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import select
-from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.compiler import compiles
 
 from api.soru_bankasi import SoruEkleRequest
-from services.soru_bankasi_service import soru_bankasi_servisi
-from models.question_bank import QuestionBankItem as Question
-from models.question_bank import TopicHierarchy, QuestionDifficultyLevel
 from core.database import db_manager
+from models.question_bank import TopicHierarchy
+from services.soru_bankasi_service import soru_bankasi_servisi
 
 
 @compiles(JSONB, "sqlite")
@@ -38,16 +33,16 @@ def test_soru_ekle_request_canonical_hash():
         "konu": "Matematik",
         "zorluk_seviyesi": "kolay",
     }
-    
+
     req = SoruEkleRequest(**payload)
-    
+
     # Expected inputs cleaned:
     # question: "2+2 kaçtır?"
     # options: "1", "2", "3", "4"
     # hash_input: "2+2 kaçtır?|1|2|3|4|"
     expected_hash_input = "2+2 kaçtır?|1|2|3|4|"
     expected_hash = hashlib.sha256(expected_hash_input.encode('utf-8')).hexdigest()[:32]
-    
+
     assert req.soru_hash == expected_hash
     assert len(req.soru_hash) == 32
 
@@ -67,9 +62,9 @@ async def test_soru_ekle_upsert_fallback(db_session: AsyncSession):
     )
     db_session.add(topic)
     await db_session.commit()
-    
+
     from contextlib import asynccontextmanager
-    
+
     @asynccontextmanager
     async def mock_get_session():
         yield db_session
@@ -85,17 +80,17 @@ async def test_soru_ekle_upsert_fallback(db_session: AsyncSession):
             "zorluk_seviyesi": "orta",
             "created_by": None
         }
-        
+
         # Ingestion 1: First insert (should succeed)
         req1 = SoruEkleRequest(**payload)
         soru_data1 = payload.copy()
         soru_data1["soru_hash"] = req1.soru_hash
-        
+
         yeni_soru1 = await soru_bankasi_servisi.soru_ekle(soru_data1)
         assert yeni_soru1 is not None
         assert yeni_soru1.question_text == "Unique question text here"
         assert yeni_soru1.soru_hash == req1.soru_hash
-        
+
         # Ingestion 2: Duplicate insert (should catch IntegrityError, rollback, and return first)
         yeni_soru2 = await soru_bankasi_servisi.soru_ekle(soru_data1)
         assert yeni_soru2 is not None

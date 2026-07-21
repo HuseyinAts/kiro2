@@ -14,8 +14,8 @@ import unicodedata
 from datetime import datetime
 
 from sqlalchemy import and_, func, or_, select, text
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # PERFORMANCE: Redis cache integration
 from core.cache import cache_manager
@@ -275,16 +275,16 @@ class SoruBankasiServisi:
                 # --- soru_hash calculation fallback (if not provided by API/schema) ---
                 soru_hash = soru_data.get("soru_hash")
                 if not soru_hash:
-                    import re
                     import hashlib
-                    
+                    import re
+
                     # Clean question text
                     cleaned_text = re.sub(r'<[^>]+>', '', soru_data["soru_metni"])
                     for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
                         cleaned_text = cleaned_text.replace(space_char, '')
                     cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
                     cleaned_text = cleaned_text.lower()
-                    
+
                     # Clean options (up to 5 options)
                     cleaned_opts = []
                     for opt in secenekler[:5]:
@@ -298,13 +298,13 @@ class SoruBankasiServisi:
                             cleaned_opts.append(opt_cleaned)
                         else:
                             cleaned_opts.append("")
-                            
+
                     hash_input = cleaned_text
                     for opt in cleaned_opts:
                         hash_input += '|' + opt
                     if len(cleaned_opts) < 5:
                         hash_input += '|'
-                        
+
                     soru_hash = hashlib.sha256(hash_input.encode('utf-8')).hexdigest()[:32]
 
                 # --- Build QuestionBankItem (no legacy topic/subtopic/difficulty) ---
@@ -352,7 +352,7 @@ class SoruBankasiServisi:
                     existing = res.scalar_one_or_none()
                     if existing:
                         return existing
-                        
+
                     # If it wasn't found under is_active=True, search without active status filter
                     stmt_any = select(Question).where(
                         Question.soru_hash == soru_hash
@@ -361,7 +361,7 @@ class SoruBankasiServisi:
                     existing_any = res_any.scalar_one_or_none()
                     if existing_any:
                         return existing_any
-                    
+
                     # If still not found, propagate exception
                     raise
 
@@ -657,7 +657,7 @@ class SoruBankasiServisi:
                     stmt = stmt.limit(toplam_ihtiyac)
                     result = await session.execute(stmt)
                     tum_sorular = result.scalars().all()
-                    
+
                     if len(tum_sorular) < toplam_ihtiyac:
                         stmt_fallback = select(Question).where(
                             Question.is_active.is_(True),
@@ -840,17 +840,16 @@ class SoruBankasiServisi:
                         s = s.where(Question.exam_type == et)
                     if difficulty_levels:
                         s = s.where(Question.difficulty_level.in_(difficulty_levels))
-                    
+
                     if dialect == "postgresql":
                         return s.limit(pool_size)
-                    else:
-                        return s.order_by(func.random()).limit(pool_size)
+                    return s.order_by(func.random()).limit(pool_size)
 
                 # Önce exam_type ile dene
                 if dialect == "postgresql":
                     result = await session.execute(_base_stmt(exam_type_upper, use_tablesample=True))
                     pool: list[Question] = list(result.scalars().all())
-                    
+
                     if len(pool) < pool_size:
                         result = await session.execute(_base_stmt(exam_type_upper, use_tablesample=False))
                         pool = list(result.scalars().all())
@@ -1058,7 +1057,7 @@ class SoruBankasiServisi:
                     stmt = stmt.limit(count)
                     result = await session.execute(stmt)
                     questions: list[Question] = list(result.scalars().all())
-                    
+
                     if len(questions) < count:
                         stmt_no_sample = select(Question).where(
                             Question.is_active == True,
@@ -1102,7 +1101,7 @@ class SoruBankasiServisi:
                         stmt_fallback = stmt_fallback.limit(count)
                         result_fallback = await session.execute(stmt_fallback)
                         questions = list(result_fallback.scalars().all())
-                        
+
                         if len(questions) < count:
                             stmt_fallback = select(Question).where(
                                 Question.is_active == True,

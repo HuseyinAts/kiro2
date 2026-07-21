@@ -53,13 +53,13 @@ export const DungeonRoom: React.FC<DungeonRoomProps> = ({
 
   useEffect(() => {
     const g = gRef.current;
-    if (!g) return;
+    if (!g) {return;}
 
     const svg = g.ownerSVGElement;
-    if (!svg) return;
+    if (!svg) {return;}
 
     // Clear previous Rough.js rendering
-    while (g.firstChild) g.removeChild(g.firstChild);
+    while (g.firstChild) {g.removeChild(g.firstChild);}
 
     const rc = rough.svg(svg);
     const rect = rc.rectangle(
@@ -78,7 +78,7 @@ export const DungeonRoom: React.FC<DungeonRoomProps> = ({
     g.appendChild(rect);
 
     return () => {
-      while (g.firstChild) g.removeChild(g.firstChild);
+      while (g.firstChild) {g.removeChild(g.firstChild);}
     };
   }, [level, style]);
 

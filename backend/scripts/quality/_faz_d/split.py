@@ -35,6 +35,7 @@ for idx, batch in enumerate(batches):
     )
 
 from collections import Counter
+
 sd = Counter(r["subject"] for r in rows)
 st = Counter(r.get("status") for r in rows)
 print(f"total_rows={len(rows)} batches={len(batches)} subj={dict(sd)} status={dict(st)}")

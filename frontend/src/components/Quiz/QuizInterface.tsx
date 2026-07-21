@@ -16,7 +16,6 @@ import {
   EmojiEvents,
   TrendingUp,
 } from '@mui/icons-material';
-import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
 import {
   Paper,
   Button,
@@ -39,6 +38,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { ErrorTypeSelector, type ErrorType } from './ErrorTypeSelector';
 
 export interface Question {
   id: string
@@ -359,7 +359,7 @@ export function QuizInterface({
               <div className="flex flex-wrap gap-2 justify-center">
                 {(['concept', 'procedural', 'careless', 'knowledge_gap'] as ErrorType[]).map(et => {
                   const count = Object.values(results.errorTypes!).filter(v => v === et).length;
-                  if (count === 0) return null;
+                  if (count === 0) {return null;}
                   const labels: Record<ErrorType, string> = {
                     concept: 'Kavram',
                     procedural: 'İşlem',

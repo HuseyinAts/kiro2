@@ -83,21 +83,21 @@ export function ProgressDashboard({ pathNodes }: ProgressDashboardProps) {
 
   // Save today's snapshot
   useEffect(() => {
-    if (total > 0) saveSnapshot(completed, total);
+    if (total > 0) {saveSnapshot(completed, total);}
   }, [completed, total]);
 
   const snapshots = useMemo(() => loadSnapshots(), [completed]);
 
   // Estimated completion date
   const estimatedDate = useMemo(() => {
-    if (snapshots.length < 2 || completed >= total) return null;
+    if (snapshots.length < 2 || completed >= total) {return null;}
     const first = snapshots[0];
     const last = snapshots[snapshots.length - 1];
     const daysBetween = Math.max(1, Math.round(
-      (new Date(last.date).getTime() - new Date(first.date).getTime()) / 86400000
+      (new Date(last.date).getTime() - new Date(first.date).getTime()) / 86400000,
     ));
     const progressMade = last.completed - first.completed;
-    if (progressMade <= 0) return null;
+    if (progressMade <= 0) {return null;}
     const remaining = total - completed;
     const daysNeeded = Math.ceil((remaining / progressMade) * daysBetween);
     const target = new Date();

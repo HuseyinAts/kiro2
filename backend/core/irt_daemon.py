@@ -1,13 +1,13 @@
 import asyncio
 import logging
 from typing import Any
+
 from sqlalchemy import select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import db_manager
+from core.worker_pools import NLP_POOL
 from models.question_bank import QuestionBankItem, QuestionDifficultyLevel
 from services.irt_calibration_service import IRTCalibrationService
-from core.worker_pools import NLP_POOL
 
 logger = logging.getLogger("irt_daemon")
 
@@ -78,7 +78,7 @@ class IRTCalibrationDaemon:
                     # Idle sleep if no questions need calibration (SIGKILL-proof interruptible wait)
                     try:
                         await asyncio.wait_for(self.cancel_event.wait(), timeout=60.0)
-                    except asyncio.TimeoutError:
+                    except TimeoutError:
                         pass
                     continue
 
@@ -87,7 +87,7 @@ class IRTCalibrationDaemon:
                 for q in questions_data:
                     if not self._running:
                         break
-                    
+
                     try:
                         # Map difficulty levels to standard string values (kolay/orta/zor)
                         dif_lvl = q["difficulty_level"]
@@ -97,7 +97,7 @@ class IRTCalibrationDaemon:
                             dif_str = dif_lvl.name.lower()
                         else:
                             dif_str = str(dif_lvl).lower()
-                        
+
                         if "easy" in dif_str or "kolay" in dif_str:
                             dif_param = "kolay"
                         elif "hard" in dif_str or "zor" in dif_str:
@@ -116,7 +116,7 @@ class IRTCalibrationDaemon:
                             q["subject_area"] or "Matematik",
                             dif_param
                         )
-                        
+
                         calibrated_results.append({
                             "id": q["id"],
                             "difficulty": params.difficulty,
@@ -136,7 +136,7 @@ class IRTCalibrationDaemon:
                 # Batch pause to throttle backpressure (Interruptible sleep)
                 try:
                     await asyncio.wait_for(self.cancel_event.wait(), timeout=2.0)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     pass
 
             except Exception as e:
@@ -156,23 +156,23 @@ class IRTCalibrationDaemon:
                     (QuestionBankItem.is_active == True) &
                     ((QuestionBankItem.is_calibrated == False) | (QuestionBankItem.irt_difficulty == 0.0))
                 )
-                
+
                 # Check dialect to avoid syntax error in SQLite
                 if session.bind.dialect.name == 'postgresql':
                     stmt = stmt.with_for_update(skip_locked=True)
-                
+
                 stmt = stmt.limit(100)
-                
+
                 res = await session.execute(stmt)
                 questions = res.scalars().all()
-                
+
                 # Detach items from session by mapping to basic dict DTOs
                 data = []
                 for q in questions:
                     options = [q.option_a, q.option_b, q.option_c, q.option_d]
                     if q.option_e:
                         options.append(q.option_e)
-                        
+
                     data.append({
                         "id": q.id,
                         "question_text": q.question_text,

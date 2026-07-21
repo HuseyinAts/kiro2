@@ -173,7 +173,7 @@ function aiBotAnswer(questionId: string): string {
   // AI bot doğru cevabı %70 ihtimalle verir
   const correct = AI_BOT_CORRECT[questionId] ?? 'A';
   const roll = Math.random();
-  if (roll < 0.70) return correct;
+  if (roll < 0.70) {return correct;}
   const options = ['A', 'B', 'C', 'D', 'E'].filter(o => o !== correct);
   return options[Math.floor(Math.random() * options.length)];
 }
@@ -266,11 +266,11 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
       setLoadingRating(true);
       try {
         const data = await apiRequest<DuelRating>('/api/v1/duel/rating');
-        if (!cancelled) setRating(data);
+        if (!cancelled) {setRating(data);}
       } catch {
         // Rating endpoint unavailable — show placeholder
       } finally {
-        if (!cancelled) setLoadingRating(false);
+        if (!cancelled) {setLoadingRating(false);}
       }
     }
 
@@ -448,10 +448,10 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
   // Answer submission
   // ------------------------------------------------------------------
   const handleSubmitAnswer = useCallback(async (answer: string | null) => {
-    if (answerSubmitting) return;
+    if (answerSubmitting) {return;}
     const elapsed = Date.now() - questionStartMs.current;
     const currentQ = questions[currentQIndex];
-    if (!currentQ) return;
+    if (!currentQ) {return;}
 
     setSelectedAnswer(answer ?? '');
     setAnswerSubmitting(true);
@@ -691,7 +691,7 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
   }
 
   function renderPlaying() {
-    if (!currentQuestion) return null;
+    if (!currentQuestion) {return null;}
 
     const timerColor = timeLeft > 10 ? '#22c55e' : timeLeft > 5 ? '#f59e0b' : '#ef4444';
 
@@ -859,7 +859,7 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
   }
 
   function renderRoundResult() {
-    if (!roundResult || !currentQuestion) return null;
+    if (!roundResult || !currentQuestion) {return null;}
 
     const correct = AI_BOT_CORRECT[currentQuestion.id] ?? null;
     const isLastRound = currentQIndex >= questions.length - 1;

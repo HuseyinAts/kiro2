@@ -418,7 +418,7 @@ class TestWebSocketRealTimeCommunication:
         for connection in connections:
             try:
                 await connection.send(json.dumps(test_complete_message))
-            except:
+            except Exception:
                 pass
 
         # Client task'larÄ± tamamla

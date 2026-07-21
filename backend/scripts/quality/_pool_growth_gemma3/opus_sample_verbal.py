@@ -68,5 +68,6 @@ for i, (qid, m, g) in enumerate(sample, 1):
 (BASE / "opus_v_blind.txt").write_text("\n".join(blind), encoding="utf-8")
 (BASE / "opus_v_key.csv").write_text("\n".join(keyrows), encoding="utf-8")
 from collections import Counter
+
 dist = Counter(m["subject"] for _, m, _ in sample)
 print(f"sample={len(sample)} -> opus_v_blind.txt + opus_v_key.csv  dist={dict(dist)}")

@@ -199,11 +199,11 @@ export const QuestionBank: React.FC = () => {
         show_answers: true,
       };
 
-      if (debouncedSearch) body.search_query = debouncedSearch;
-      if (examTypeFilter !== 'all') body.exam_type = examTypeFilter;
-      if (subjectFilter !== 'all') body.subject_area = subjectFilter;
-      if (sourceBookFilter !== 'all') body.source_book = sourceBookFilter;
-      if (difficultyFilter !== 'all') body.difficulty = difficultyFilter;
+      if (debouncedSearch) {body.search_query = debouncedSearch;}
+      if (examTypeFilter !== 'all') {body.exam_type = examTypeFilter;}
+      if (subjectFilter !== 'all') {body.subject_area = subjectFilter;}
+      if (sourceBookFilter !== 'all') {body.source_book = sourceBookFilter;}
+      if (difficultyFilter !== 'all') {body.difficulty = difficultyFilter;}
 
       const response = await fetch(url, {
         method: 'POST',
@@ -464,7 +464,7 @@ export const QuestionBank: React.FC = () => {
                   <div className="grid grid-cols-1 gap-2 mb-4">
                     {['A', 'B', 'C', 'D', 'E'].map(option => {
                       const optionValue = question.options?.[option];
-                      if (!optionValue) return null;
+                      if (!optionValue) {return null;}
                       const isCorrect = question.correct_answer === option;
 
                       return (

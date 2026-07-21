@@ -224,7 +224,7 @@ def main():
                 for pred in predecessors[:3]:
                     if kg_service.graph.nodes[pred].get("type") == "question":
                         print(f"      - {pred}")
-        except:
+        except Exception:
             pass
 
     # Final summary

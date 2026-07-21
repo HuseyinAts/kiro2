@@ -10,8 +10,9 @@ import logging
 import time
 from typing import Any
 
-from .base import BaseToolHandler
 from backend.core.turkish_nlp_utils import normalize_tr
+
+from .base import BaseToolHandler
 
 logger = logging.getLogger(__name__)
 

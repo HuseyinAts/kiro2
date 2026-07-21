@@ -35,8 +35,8 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import * as React from 'react';
-import SubjectThetaCards from '@/components/Dashboard/SubjectThetaCards';
 import { useNavigate } from 'react-router-dom';
+import SubjectThetaCards from '@/components/Dashboard/SubjectThetaCards';
 
 import { StaggerContainer, StaggerItem } from '@/components/Animations/PageTransition';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -155,7 +155,7 @@ export const ModernStudentDashboard: React.FC = () => {
     apiRequest<{ success: boolean; data: DailyQuestSummary }>('/api/v1/daily-quests/today')
       .then((res) => {
         const d = res.data ?? res;
-        if (d && typeof d === 'object' && 'completed_count' in d) setDailyQuests(d as DailyQuestSummary);
+        if (d && typeof d === 'object' && 'completed_count' in d) {setDailyQuests(d as DailyQuestSummary);}
       })
       .catch(() => {});
   }, []);
@@ -251,9 +251,9 @@ export const ModernStudentDashboard: React.FC = () => {
   const formatRelativeTime = (dateStr: string): string => {
     const diff = Date.now() - new Date(dateStr).getTime();
     const minutes = Math.floor(diff / 60000);
-    if (minutes < 60) return `${minutes} dk önce`;
+    if (minutes < 60) {return `${minutes} dk önce`;}
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} saat önce`;
+    if (hours < 24) {return `${hours} saat önce`;}
     const days = Math.floor(hours / 24);
     return `${days} gün önce`;
   };

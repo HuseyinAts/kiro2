@@ -1,6 +1,8 @@
 import pytest
 from pydantic import ValidationError
-from api.question_crud_api import QuestionCreateRequest, QuestionUpdateRequest
+
+from api.question_crud_api import QuestionCreateRequest
+
 
 def test_content_shield_html_repair():
     # Test valid HTML is unchanged

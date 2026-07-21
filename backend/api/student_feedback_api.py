@@ -17,7 +17,6 @@ Faz 4.1 vision findings'den türetilen flag_type'lar:
 - other: serbest metin
 """
 
-from __future__ import annotations
 
 import uuid
 from datetime import datetime

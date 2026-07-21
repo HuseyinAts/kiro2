@@ -45,7 +45,7 @@ export function NodeChatPanel({ nodeTitle, nodeDescription: _nodeDescription }: 
   }, [messages]);
 
   const sendMessage = useCallback(async (text: string) => {
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoading) {return;}
 
     const userMessage = text.trim();
     setInput('');

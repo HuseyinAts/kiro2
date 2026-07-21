@@ -68,11 +68,11 @@ export default function LearningPathMapPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API}/weekly`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
-      fetch(`${API}/status`, { credentials: 'include' }).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }),
+      fetch(`${API}/weekly`, { credentials: 'include' }).then(r => { if (!r.ok) {throw new Error(`HTTP ${r.status}`);} return r.json(); }),
+      fetch(`${API}/status`, { credentials: 'include' }).then(r => { if (!r.ok) {throw new Error(`HTTP ${r.status}`);} return r.json(); }),
     ]).then(([weekData, statusData]) => {
       if (weekData.weekly_plan) { setWeekly(weekData.weekly_plan); setExamDate(weekData.exam_date); }
-      if (Array.isArray(statusData)) setStatuses(statusData);
+      if (Array.isArray(statusData)) {setStatuses(statusData);}
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
@@ -84,7 +84,7 @@ export default function LearningPathMapPage() {
         credentials: 'include',
         body: JSON.stringify(goalForm),
       });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      if (!r.ok) {throw new Error(`HTTP ${r.status}`);}
       setGoalSaved(true);
       setTimeout(() => setGoalSaved(false), 3000);
     } catch {
@@ -95,9 +95,9 @@ export default function LearningPathMapPage() {
   const sorted = [...statuses].sort((a, b) => b.priority_score - a.priority_score);
   const selected = statuses.find(s => s.subject === selectedSubject);
 
-  if (loading) return (
+  if (loading) {return (
     <div style={s.center}><div style={s.spinner} /><p style={{ color: '#94a3b8', marginTop: 16 }}>Harita yükleniyor…</p></div>
-  );
+  );}
 
   return (
     <div style={s.page}>

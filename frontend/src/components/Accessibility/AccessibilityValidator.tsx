@@ -27,7 +27,7 @@ export const AccessibilityValidator: React.FC<AccessibilityValidatorProps> = ({
       runValidation();
     }
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {clearTimeout(timerRef.current);}
     };
   }, [autoRun]);
 

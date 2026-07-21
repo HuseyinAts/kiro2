@@ -142,6 +142,7 @@ class DuplicateDetectionService:
             # Fallback hash-based embedding (Turkish locale-safe & correct dimension)
             import hashlib
             import random
+
             from core.config import EmbeddingConfig
             dim = EmbeddingConfig.get_model_dimension()
             seed_int = int(hashlib.sha256(text.encode()).hexdigest(), 16)

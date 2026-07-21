@@ -60,7 +60,7 @@ export default function ObaSeferleriPage() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleContribute = async (amount: number) => {
-    if (!challenge) return;
+    if (!challenge) {return;}
     setActing(true);
     setError('');
     try {

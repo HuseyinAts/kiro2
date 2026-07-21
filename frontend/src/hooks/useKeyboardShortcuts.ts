@@ -22,10 +22,10 @@ export interface KeyboardShortcutOptions {
 }
 
 function isTypingInField(target: EventTarget | null): boolean {
-  if (!target || !(target instanceof HTMLElement)) return false;
+  if (!target || !(target instanceof HTMLElement)) {return false;}
   const tag = target.tagName;
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
-  if (target.isContentEditable) return true;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {return true;}
+  if (target.isContentEditable) {return true;}
   return false;
 }
 
@@ -37,12 +37,12 @@ export function useKeyboardShortcut(
   const { enabled = true, allowInInputs = false } = options;
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {return;}
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (!allowInInputs && isTypingInField(e.target)) return;
-      if (e.key.toLowerCase() !== key.toLowerCase()) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) {return;}
+      if (!allowInInputs && isTypingInField(e.target)) {return;}
+      if (e.key.toLowerCase() !== key.toLowerCase()) {return;}
 
       e.preventDefault();
       handler(e);
@@ -70,14 +70,14 @@ export function useKeyboardShortcuts(
   const { enabled = true, allowInInputs = false } = options;
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {return;}
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (!allowInInputs && isTypingInField(e.target)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) {return;}
+      if (!allowInInputs && isTypingInField(e.target)) {return;}
 
       const handler = bindings[e.key] || bindings[e.key.toLowerCase()];
-      if (!handler) return;
+      if (!handler) {return;}
 
       e.preventDefault();
       handler(e);

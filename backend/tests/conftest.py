@@ -1112,7 +1112,7 @@ def client():
     """
     from main import app
 
-    c = TestClient(app)
+    c = TestClient(app, raise_server_exceptions=True)
     c.headers.pop("Authorization", None)
     yield c
     c.close()

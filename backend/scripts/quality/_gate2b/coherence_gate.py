@@ -60,7 +60,7 @@ for qid, m in master.items():
         keep.append((qid, m, g))
 
 solved = len(keep) + len(fail_unsolv) + len(fail_proxy)
-print(f"=== GATE2b COHERENCE (gemma3-only) ===")
+print("=== GATE2b COHERENCE (gemma3-only) ===")
 print(f"master={len(master)}  solved={solved}  not-yet-solved={len(missing)}")
 if solved:
     print(f"KEEP(coherent)={len(keep)} ({100*len(keep)/solved:.1f}%)  "

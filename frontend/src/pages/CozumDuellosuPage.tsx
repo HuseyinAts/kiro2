@@ -94,7 +94,7 @@ export default function CozumDuellosuPage() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedDuel || !solutionText.trim()) return;
+    if (!selectedDuel || !solutionText.trim()) {return;}
     setActing(true);
     try {
       const res = await cozumDuellosu.submit(selectedDuel.id, { body: solutionText });
@@ -111,7 +111,7 @@ export default function CozumDuellosuPage() {
   };
 
   const handleVote = async (submissionId: string) => {
-    if (!selectedDuel) return;
+    if (!selectedDuel) {return;}
     setActing(true);
     try {
       const res = await cozumDuellosu.vote(selectedDuel.id, submissionId);

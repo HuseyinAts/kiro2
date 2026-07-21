@@ -429,7 +429,7 @@ class MultiLayerCache:
             True if successful
         """
         full_key = self._make_key(key)
-        
+
         # Cache Penetration Protection: cache None/Null as sentinel with a very short TTL
         if value is None:
             value = {"__sentinel_null__": True}

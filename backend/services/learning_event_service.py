@@ -184,9 +184,10 @@ class LearningEventService:
         report: dict[str, Any] = {"abilities": 0, "bkt_states": 0}
 
         try:
+            from sqlalchemy import and_
+
             from models.gamification import BKTState, StudentAbility
             from models.question_bank import TopicHierarchy
-            from sqlalchemy import and_
 
             SUBJECT_ID_MAP = {
                 "matematik": 1,
@@ -203,8 +204,8 @@ class LearningEventService:
             }
 
             # Batch fetch active topic_ids for all subjects at once
-            subjects_upper = [s.upper() for s in subjects.keys()]
-            
+            subjects_upper = [s.upper() for s in subjects]
+
             topic_rows = await db.execute(
                 select(TopicHierarchy.id, TopicHierarchy.subject_area).where(
                     and_(
@@ -213,7 +214,7 @@ class LearningEventService:
                     )
                 )
             )
-            
+
             from collections import defaultdict
             topics_by_subject = defaultdict(list)
             for row in topic_rows.all():

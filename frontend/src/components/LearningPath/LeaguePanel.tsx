@@ -98,7 +98,7 @@ function getTierByApiKey(apiKey: string): LeagueTier {
 
 function getTierByXP(xp: number): LeagueTier {
   for (let i = LEAGUE_TIERS.length - 1; i >= 0; i--) {
-    if (xp >= LEAGUE_TIERS[i].minXP) return LEAGUE_TIERS[i];
+    if (xp >= LEAGUE_TIERS[i].minXP) {return LEAGUE_TIERS[i];}
   }
   return LEAGUE_TIERS[0];
 }
@@ -151,7 +151,7 @@ export function LeaguePanel({ weeklyXP = 0, compact = false }: LeaguePanelProps)
       setError(null);
       try {
         const data = await apiRequest<APIStandingsResponse>('/api/v1/leagues/current');
-        if (cancelled) return;
+        if (cancelled) {return;}
 
         const apiTier = getTierByApiKey(data.tier);
         setXp(data.weekly_xp);
@@ -166,13 +166,13 @@ export function LeaguePanel({ weeklyXP = 0, compact = false }: LeaguePanelProps)
           setNotInLeague(false);
         }
       } catch {
-        if (cancelled) return;
+        if (cancelled) {return;}
         // API unavailable — show empty state, keep prop XP
         setError('Lig verisi alınamadı');
         setNotInLeague(true);
         setLeaderboard([]);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {setLoading(false);}
       }
     }
 
@@ -183,9 +183,9 @@ export function LeaguePanel({ weeklyXP = 0, compact = false }: LeaguePanelProps)
   const nextTier = useMemo(() => getNextTier(tier), [tier]);
 
   const progressToNext = useMemo(() => {
-    if (!nextTier) return 100;
+    if (!nextTier) {return 100;}
     const range = nextTier.minXP - tier.minXP;
-    if (range <= 0) return 100;
+    if (range <= 0) {return 100;}
     return Math.min(100, Math.round(((xp - tier.minXP) / range) * 100));
   }, [xp, tier, nextTier]);
 

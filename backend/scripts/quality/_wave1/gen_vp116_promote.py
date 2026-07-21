@@ -1,5 +1,7 @@
-import json, sys
+import json
+import sys
 from pathlib import Path
+
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ids=json.load(open("vp116_confirmed_ids.json", encoding="utf-8"))
 assert ids, "no confirmed ids"

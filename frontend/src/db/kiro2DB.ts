@@ -120,7 +120,7 @@ export async function cacheQuestions(questions: Omit<CachedQuestion, 'cached_at'
   const now = Date.now();
   const ttl = 7 * 24 * 60 * 60 * 1000; // 7 days
   return db.cachedQuestions.bulkPut(
-    questions.map((q) => ({ ...q, cached_at: now, expires_at: now + ttl }))
+    questions.map((q) => ({ ...q, cached_at: now, expires_at: now + ttl })),
   );
 }
 
@@ -128,7 +128,7 @@ export async function cacheQuestions(questions: Omit<CachedQuestion, 'cached_at'
 export async function getCachedQuestions(
   subject_area?: string,
   exam_type?: string,
-  limit = 20
+  limit = 20,
 ): Promise<CachedQuestion[]> {
   const now = Date.now();
   let collection = db.cachedQuestions.where('expires_at').above(now);
@@ -175,7 +175,7 @@ export async function queueFsrsReview(question_id: string, rating: 1 | 2 | 3 | 4
 /** Sync queued FSRS reviews to backend */
 export async function syncFsrsQueue(apiBase = '/api'): Promise<number> {
   const pending = await db.fsrsQueue.where('synced').equals(0).toArray();
-  if (!pending.length) return 0;
+  if (!pending.length) {return 0;}
 
   let synced = 0;
   for (const item of pending) {
@@ -200,7 +200,7 @@ export async function syncFsrsQueue(apiBase = '/api'): Promise<number> {
 /** Sync all pending answers to backend */
 export async function syncPendingAnswers(apiBase = '/api'): Promise<number> {
   const pending = await getUnsyncedAnswers();
-  if (!pending.length) return 0;
+  if (!pending.length) {return 0;}
 
   let synced = 0;
   for (const answer of pending) {
@@ -232,7 +232,7 @@ export async function syncPendingAnswers(apiBase = '/api'): Promise<number> {
 // ---------------------------------------------------------------------------
 
 export function registerOnlineSync(): () => void {
-  if (typeof window === 'undefined') return () => {};
+  if (typeof window === 'undefined') {return () => {};}
 
   const handleOnline = async () => {
     const [answers, fsrs] = await Promise.all([

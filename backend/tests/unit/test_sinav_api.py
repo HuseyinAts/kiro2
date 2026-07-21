@@ -1063,7 +1063,7 @@ class TestGetPerformanceAnalysis:
                 mock_db.execute = AsyncMock(return_value=mock_execute_res)
                 mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_db)
                 mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
-                
+
                 response = client.get("/api/v1/osym-exam/ghost/performance")
         assert response.status_code == 404
 
@@ -1139,7 +1139,7 @@ class TestGetSubjectPerformance:
                 mock_db.execute = AsyncMock(return_value=mock_execute_res)
                 mock_ctx.return_value.__aenter__ = AsyncMock(return_value=mock_db)
                 mock_ctx.return_value.__aexit__ = AsyncMock(return_value=False)
-                
+
                 response = client.get("/api/v1/osym-exam/ghost/subject-performance")
         assert response.status_code == 404
 

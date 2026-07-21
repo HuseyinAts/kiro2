@@ -124,7 +124,7 @@ java -Xmx4G -jar {ZEMBEREK_JAR_PATH} --server --port 6789
     # Shell script'i executable yap
     try:
         os.chmod("start_zemberek.sh", 0o755)
-    except:
+    except Exception:
         pass
 
     logger.info("[CHECK] Zemberek servis scriptleri oluşturuldu:")

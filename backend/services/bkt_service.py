@@ -8,11 +8,11 @@ Bu servis sadece saf hesaplama yapar (DB islemi yok).
 
 from __future__ import annotations
 
+import asyncio
+import concurrent.futures
 import logging
 from datetime import UTC, datetime
 from typing import Any
-import concurrent.futures
-import asyncio
 
 _global_process_pool = concurrent.futures.ProcessPoolExecutor(max_workers=4)
 

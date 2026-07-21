@@ -1,6 +1,7 @@
 import asyncio
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -29,32 +30,32 @@ async def main():
         print("Inserting mock data into chat_sessions, chat_messages, image_uploads...")
         total_sessions = 10000
         batch_size = 500
-        
+
         for i in range(0, total_sessions, batch_size):
             sessions = []
             messages = []
             images = []
-            
+
             for _ in range(batch_size):
                 session_id = str(uuid.uuid4())
                 sessions.append({
                     "id": session_id,
                     "user_id": user_id,
                     "title": "Mock Session",
-                    "created_at": datetime.now(timezone.utc),
-                    "updated_at": datetime.now(timezone.utc),
+                    "created_at": datetime.now(UTC),
+                    "updated_at": datetime.now(UTC),
                     "status": "ACTIVE"
                 })
-                
+
                 for j in range(8):
                     messages.append({
                         "id": str(uuid.uuid4()),
                         "session_id": session_id,
                         "role": "user" if j % 2 == 0 else "assistant",
                         "content": f"Mock message {j} for seq_scan tests",
-                        "created_at": datetime.now(timezone.utc)
+                        "created_at": datetime.now(UTC)
                     })
-                    
+
                 for k in range(2):
                     images.append({
                         "id": str(uuid.uuid4()),
@@ -73,7 +74,7 @@ async def main():
                     """),
                     sessions
                 )
-                
+
                 await conn.execute(
                     text("""
                         INSERT INTO chat_messages (id, session_id, role, content, created_at)
@@ -81,7 +82,7 @@ async def main():
                     """),
                     messages
                 )
-                
+
                 await conn.execute(
                     text("""
                         INSERT INTO image_uploads (id, session_id, user_id, filename, file_path, ocr_text, processing_status)
@@ -92,9 +93,9 @@ async def main():
             except Exception as e:
                 print(f"Batch failed at {i}:", e)
                 break
-                
+
             print(f"Inserted batch up to {i + batch_size} sessions")
-            
+
     print("Mock data injection completed.")
 
 if __name__ == "__main__":

@@ -61,19 +61,17 @@ import sys
 import time
 import unicodedata
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Literal, TypedDict
+from typing import Any, TypedDict
 
 import asyncpg
-
 from tenacity import (
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
 )
-
 
 # ============================================================================
 # Sabitler
@@ -232,7 +230,7 @@ def _slugify(name: str) -> str:
 def _make_batch_id(book_dir: Path) -> str:
     """pilot_<book_slug>_<YYYYMMDD_HHMMSS> (M3 sec.4.1)."""
     slug = _slugify(book_dir.name)
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    ts = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     return f"pilot_{slug}_{ts}"
 
 
@@ -392,11 +390,11 @@ async def _run_claude_cli(png_path: Path, user_prompt: str, model: str) -> str:
         stdout, stderr = await asyncio.wait_for(
             proc.communicate(), timeout=CLAUDE_TIMEOUT,
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         proc.kill()
         try:
             await asyncio.wait_for(proc.wait(), timeout=5)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             pass
         raise ClaudeCliError(f"claude CLI timeout ({CLAUDE_TIMEOUT}s): {png_path.name}")
 
@@ -660,7 +658,7 @@ async def write_staging(
         "pipeline": "v1.2.1",
         "model": model,                            # K-M3-6 + runtime --model flag
         "batch_id": batch_id,
-        "extracted_at": datetime.now(timezone.utc).isoformat(),
+        "extracted_at": datetime.now(UTC).isoformat(),
         "extraction_confidence": _safe_float(extracted.get("extraction_confidence"), 0.0),
         "page_type": extracted.get("page_type", ""),
         "test_no": extracted.get("test_no"),
@@ -1085,7 +1083,7 @@ async def finalize_batch(
 
     summary = {
         "batch_id": batch_id,
-        "finalized_at": datetime.now(timezone.utc).isoformat(),
+        "finalized_at": datetime.now(UTC).isoformat(),
         "total_staged": total_staged,
         "status_counts": status_counts,
         "manual_review_queue_added": mrq_count,

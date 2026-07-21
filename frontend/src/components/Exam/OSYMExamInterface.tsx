@@ -80,10 +80,10 @@ import QuestionGraph from '../QuestionGraph';
 import QuestionMapDiagram from '../QuestionMapDiagram';
 import QuestionTable from '../QuestionTable';
 
-import { MathText } from '@/components/ui/MathText';
-import { QuestionImage } from '@/components/ui/ImageZoomModal';
 import ExamTimer from './ExamTimer';
 import FlaggedQuestionsPanel from './FlaggedQuestionsPanel';
+import { MathText } from '@/components/ui/MathText';
+import { QuestionImage } from '@/components/ui/ImageZoomModal';
 
 interface OSYMExamInterfaceProps {
   sessionId: string

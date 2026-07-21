@@ -37,35 +37,35 @@ def create_test_app():
         from api.auth import router as auth_router
 
         test_app.include_router(auth_router)
-    except:
+    except Exception:
         pass
 
     try:
         from api.health import router as health_router
 
         test_app.include_router(health_router)
-    except:
+    except Exception:
         pass
 
     try:
         from api.content_api import router as content_router
 
         test_app.include_router(content_router)
-    except:
+    except Exception:
         pass
 
     try:
         from api.validation import router as validation_router
 
         test_app.include_router(validation_router)
-    except:
+    except Exception:
         pass
 
     try:
         from api.student_dashboard import router as dashboard_router
 
         test_app.include_router(dashboard_router)
-    except:
+    except Exception:
         pass
 
     return test_app

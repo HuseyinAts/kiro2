@@ -636,7 +636,7 @@ class TestErrorHandling:
             start_date = datetime.fromisoformat(start)
             end_date = datetime.fromisoformat(end)
             valid = start_date <= end_date
-        except:
+        except Exception:
             valid = False
 
         # Validation should catch invalid ranges

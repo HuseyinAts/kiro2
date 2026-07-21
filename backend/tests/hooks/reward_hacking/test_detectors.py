@@ -292,7 +292,7 @@ class TestEmptyExceptionDetector:
         content = """
 try:
     risky()
-except:
+except Exception:
     pass
 """
         results = await detector.detect("file.py", content)
@@ -317,7 +317,7 @@ except Exception:
         content = """
 try:
     something()
-except:
+except Exception:
     handle_error()
 """
         results = await detector.detect("file.py", content)

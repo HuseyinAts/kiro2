@@ -29,4 +29,5 @@ for idx, batch in enumerate(batches):
         "\n".join(json.dumps(r, ensure_ascii=False) for r in stripped), encoding="utf-8")
 
 from collections import Counter
+
 print(f"total_rows={len(rows)} batches={len(batches)} subj={dict(Counter(r['subject'] for r in rows))}")

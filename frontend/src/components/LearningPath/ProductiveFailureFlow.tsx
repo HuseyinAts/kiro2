@@ -64,7 +64,7 @@ export function ProductiveFailureFlow({ topic, onComplete, onSkip }: ProductiveF
     const fetchQuestions = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/v1/productive-failure/pretest/start`, {
+        const res = await fetch('/api/v1/productive-failure/pretest/start', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -157,7 +157,7 @@ export function ProductiveFailureFlow({ topic, onComplete, onSkip }: ProductiveF
     );
   }
 
-  if (questions.length === 0) return null;
+  if (questions.length === 0) {return null;}
 
   return (
     <Card variant="outlined" sx={{ borderColor: 'secondary.light' }}>

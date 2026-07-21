@@ -44,7 +44,7 @@ export const LevelDisplay: React.FC<LevelDisplayProps> = ({
       setPreviousLevel(levelProgress.current_level);
     }
     return () => {
-      if (levelUpTimerRef.current) clearTimeout(levelUpTimerRef.current);
+      if (levelUpTimerRef.current) {clearTimeout(levelUpTimerRef.current);}
     };
   }, [levelProgress, previousLevel, onLevelUp]);
 

@@ -4,7 +4,6 @@ Soru bankası ve sınav yönetimi için özel repository
 """
 
 import logging
-import random
 from datetime import datetime
 from typing import Any
 
@@ -67,14 +66,15 @@ class QuestionRepository(BaseRepository[Question]):
         """Get random questions with optional difficulty distribution"""
         try:
             import random
+
             from sqlalchemy import func
-            
+
             async def _fetch_gap_safe(filters: list, needed: int) -> list[Question]:
                 count_query = select(func.count()).select_from(Question).where(and_(*filters))
                 total_count = await self.session.scalar(count_query)
                 if not total_count:
                     return []
-                
+
                 selected = []
                 used_offsets = set()
                 attempts = 0
@@ -85,7 +85,7 @@ class QuestionRepository(BaseRepository[Question]):
                     if offset_val in used_offsets:
                         continue
                     used_offsets.add(offset_val)
-                    
+
                     res = await self.session.execute(
                         select(Question).where(and_(*filters)).offset(offset_val).limit(1)
                     )
@@ -161,22 +161,21 @@ class QuestionRepository(BaseRepository[Question]):
                     )
                     rows = result.scalars().all()
                 return rows
-            else:
-                result = await self.session.execute(
-                    select(Question)
-                    .where(
-                        and_(
-                            Question.exam_type == exam_type,
-                            Question.subject_area == subject_area,
-                            Question.irt_difficulty >= min_difficulty,
-                            Question.irt_difficulty <= max_difficulty,
-                            Question.is_active == True,
-                        )
+            result = await self.session.execute(
+                select(Question)
+                .where(
+                    and_(
+                        Question.exam_type == exam_type,
+                        Question.subject_area == subject_area,
+                        Question.irt_difficulty >= min_difficulty,
+                        Question.irt_difficulty <= max_difficulty,
+                        Question.is_active == True,
                     )
-                    .order_by(func.random())
-                    .limit(count)
                 )
-                return result.scalars().all()
+                .order_by(func.random())
+                .limit(count)
+            )
+            return result.scalars().all()
         except Exception as e:
             logger.error(f"Error getting questions by IRT difficulty: {e!s}")
             raise

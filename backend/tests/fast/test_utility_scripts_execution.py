@@ -87,7 +87,7 @@ class TestAlembicConfiguration:
             assert hasattr(env, "run_migrations_online") or hasattr(
                 env, "run_migrations_offline"
             )
-        except:
+        except Exception:
             pytest.skip("Alembic env not available")
 
     def test_alembic_config(self):

@@ -28,6 +28,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+
 class _FakeNdarray:
     pass
 
@@ -76,6 +77,7 @@ from datetime import date, datetime
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel
+
 
 class _DiaryEntryResponse(BaseModel):
     id: UUID
@@ -223,6 +225,7 @@ _diary_schemas_stub.SuccessResponse = _SuccessResponse
 
 # models.diary: GoalStatus enum must be a real enum for FastAPI query params
 from enum import Enum
+
 
 class _GoalStatus(str, Enum):
     ACTIVE = "active"

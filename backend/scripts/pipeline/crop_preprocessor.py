@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import json
 import re
-import unicodedata
 from functools import lru_cache
 from pathlib import Path
 

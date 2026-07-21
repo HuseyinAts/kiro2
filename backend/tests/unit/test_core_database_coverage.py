@@ -426,12 +426,12 @@ class TestGetAsyncSession:
             # Create async context manager
             async_cm = AsyncMock()
             async_cm.__aenter__.return_value = mock_session
-            
+
             async def mock_aexit(exc_type, exc_val, exc_tb):
                 await mock_session.commit()
                 await mock_session.close()
             async_cm.__aexit__ = AsyncMock(side_effect=mock_aexit)
-            
+
             mock_manager.get_session.return_value = async_cm
 
             async for session in get_async_session():
@@ -450,7 +450,7 @@ class TestGetAsyncSession:
             # Create async context manager
             async_cm = AsyncMock()
             async_cm.__aenter__.return_value = mock_session
-            
+
             async def mock_aexit(exc_type, exc_val, exc_tb):
                 try:
                     await mock_session.commit()
@@ -460,7 +460,7 @@ class TestGetAsyncSession:
                 finally:
                     await mock_session.close()
             async_cm.__aexit__ = AsyncMock(side_effect=mock_aexit)
-            
+
             mock_manager.get_session.return_value = async_cm
 
             with pytest.raises(SQLAlchemyError):
@@ -479,11 +479,11 @@ class TestGetAsyncSession:
             # Create async context manager
             async_cm = AsyncMock()
             async_cm.__aenter__.return_value = mock_session
-            
+
             async def mock_aexit(exc_type, exc_val, exc_tb):
                 await mock_session.close()
             async_cm.__aexit__ = AsyncMock(side_effect=mock_aexit)
-            
+
             mock_manager.get_session.return_value = async_cm
 
             async for session in get_async_session():

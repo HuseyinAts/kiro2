@@ -29,10 +29,10 @@ def mock_zpd_cache(monkeypatch):
     """Disable cache hit in service tests to prevent pollution from local Redis"""
     async def mock_get(*args, **kwargs):
         return None
-        
+
     async def mock_set(*args, **kwargs):
         return True
-        
+
     from services.zpd_maarif_service import cache_manager
     monkeypatch.setattr(cache_manager, "get", mock_get)
     monkeypatch.setattr(cache_manager, "set", mock_set)

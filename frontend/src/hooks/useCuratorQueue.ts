@@ -110,8 +110,8 @@ function buildQueueQuery(filters: QueueFilters): string {
   const params = new URLSearchParams();
   params.set('status', filters.status);
   params.set('page', String(filters.page));
-  if (filters.per_page) params.set('per_page', String(filters.per_page));
-  if (filters.subject) params.set('subject', filters.subject);
+  if (filters.per_page) {params.set('per_page', String(filters.per_page));}
+  if (filters.subject) {params.set('subject', filters.subject);}
   if (filters.has_diagram && filters.has_diagram !== 'all') {
     params.set('has_diagram', filters.has_diagram);
   }
@@ -134,7 +134,7 @@ export function useCuratorQueue(filters: QueueFilters) {
       // filtresi yok; sadece sayfalama).
       if (filters.status === 'flagged') {
         const p = new URLSearchParams({ page: String(filters.page) });
-        if (filters.per_page) p.set('per_page', String(filters.per_page));
+        if (filters.per_page) {p.set('per_page', String(filters.per_page));}
         return apiRequest<QueueResponse>(`/api/v1/curator/flagged?${p.toString()}`);
       }
       return apiRequest<QueueResponse>(

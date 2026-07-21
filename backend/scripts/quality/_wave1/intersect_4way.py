@@ -1,5 +1,8 @@
-import csv, json, sys
+import csv
+import json
+import sys
 from pathlib import Path
+
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 BASE = Path("C:/Users/husey/kiro2/backend/scripts/quality/_wave1")
 

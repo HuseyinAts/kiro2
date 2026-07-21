@@ -59,7 +59,7 @@ export default function ObaPage() {
       // Fetch members if in an oba
       if (my && typeof my === 'object' && 'id' in my) {
         const membersRes = await apiRequest<{ success: boolean; data: ObaUye[] }>(
-          `/api/v1/oba/${(my as ObaInfo).id}/members`
+          `/api/v1/oba/${(my as ObaInfo).id}/members`,
         );
         setMembers(Array.isArray(membersRes.data) ? membersRes.data : []);
       }
@@ -73,7 +73,7 @@ export default function ObaPage() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleCreate = async () => {
-    if (!createName.trim()) return;
+    if (!createName.trim()) {return;}
     setSubmitting(true);
     try {
       await apiRequest('/api/v1/oba/create', {
@@ -120,12 +120,12 @@ export default function ObaPage() {
     }
   };
 
-  if (loading) return (
+  if (loading) {return (
     <Box textAlign="center" py={8}>
       <CircularProgress size={52} />
       <Typography mt={2} color="text.secondary">Oba bilgileri yukleniyor...</Typography>
     </Box>
-  );
+  );}
 
   return (
     <Box maxWidth={800} mx="auto" py={3}>

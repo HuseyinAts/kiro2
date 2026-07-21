@@ -65,10 +65,10 @@ const DONEMLER: Donem[] = [
 ];
 
 function thetaToStars(theta: number): number {
-  if (theta >= 1.5) return 5;
-  if (theta >= 0.5) return 4;
-  if (theta >= -0.5) return 3;
-  if (theta >= -1.5) return 2;
+  if (theta >= 1.5) {return 5;}
+  if (theta >= 0.5) {return 4;}
+  if (theta >= -0.5) {return 3;}
+  if (theta >= -1.5) {return 2;}
   return 1;
 }
 
@@ -88,7 +88,7 @@ function DonemKart({ donem, theta, onClick }: {
       transition:'all 0.2s',
       '&:hover': locked ? {} : { transform:'translateY(-3px)', boxShadow:4 },
     }}>
-      <CardContent sx={{ p:2, '&:last-child':{pb:2} }}>
+      <CardContent sx={{ p:2, '&:last-child':{ pb:2 } }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
           <Typography fontSize={28}>{locked ? '🔒' : emoji}</Typography>
           {!locked && (

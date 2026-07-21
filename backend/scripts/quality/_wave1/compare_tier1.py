@@ -1,5 +1,8 @@
-import csv, json, sys, collections
-from pathlib import Path
+import collections
+import csv
+import json
+import sys
+
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 keys={}

@@ -86,20 +86,20 @@ export default function DailyQuestPage() {
     }
   };
 
-  if (loading) return (
+  if (loading) {return (
     <Box textAlign="center" py={8}>
       <CircularProgress size={52} />
       <Typography mt={2} color="text.secondary">Gorevler yukleniyor...</Typography>
     </Box>
-  );
+  );}
 
-  if (error) return (
+  if (error) {return (
     <Box maxWidth={520} mx="auto" mt={4}>
       <Alert severity="error">{error}</Alert>
     </Box>
-  );
+  );}
 
-  if (!data) return null;
+  if (!data) {return null;}
 
   const progress = (data.completed_count / data.total_count) * 100;
 

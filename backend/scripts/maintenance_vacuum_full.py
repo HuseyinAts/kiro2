@@ -9,6 +9,7 @@ Must only be scheduled during off-peak maintenance hours (nightly).
 
 import asyncio
 import logging
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -21,9 +22,9 @@ DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2"
 async def run_maintenance():
     logger.info("Initializing Nightly DBA VACUUM Maintenance Engine...")
     engine = create_async_engine(DATABASE_URL, isolation_level="AUTOCOMMIT")
-    
+
     reclaimed_tables = 0
-    
+
     async with engine.connect() as conn:
         # Retrieve all public tables
         tables_query = text("""
@@ -32,12 +33,12 @@ async def run_maintenance():
             WHERE schemaname = 'public'
             ORDER BY tablename;
         """)
-        
+
         logger.info("Fetching public tables list...")
         result = await conn.execute(tables_query)
         tables = result.fetchall()
         logger.info(f"Discovered {len(tables)} tables to vacuum.")
-        
+
         for idx, row in enumerate(tables):
             table_name = row[0]
             # Strip quotes or schema prefixes
@@ -49,7 +50,7 @@ async def run_maintenance():
                 reclaimed_tables += 1
             except Exception as e:
                 logger.error(f"Failed to VACUUM FULL table {clean_table}: {e}")
-                
+
     logger.info("Nightly DBA maintenance completed successfully.")
     logger.info(f"Summary: Reclaimed and analyzed {reclaimed_tables} tables.")
     await engine.dispose()

@@ -12,12 +12,12 @@ mock-real contract, not service-level behaviour (covered elsewhere).
 from __future__ import annotations
 
 import sys
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
+
 sys.modules["utils.pdf_generator"] = MagicMock()
 
 from contextlib import asynccontextmanager
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, patch
 
 import pytest
 

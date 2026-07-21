@@ -78,7 +78,7 @@ async def get_pretest_questions(
             .limit(count)
         )
         rows = result.all()
-        
+
         if len(rows) < count:
             result = await db.execute(
                 select(

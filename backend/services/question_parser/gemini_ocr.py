@@ -300,7 +300,7 @@ class GeminiOCRService:
                     clean_line = clean_line[11:].strip()
                 elif clean_line.startswith('Soru Gövdesi:'):
                     clean_line = clean_line[13:].strip()
-                
+
                 if clean_line and clean_line not in ['Soru', 'Test', 'Soru Metni', 'Soru Gövdesi']:
                     result['question_text'] += clean_line + ' '
 

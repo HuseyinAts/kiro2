@@ -39,7 +39,7 @@ function autoWrapBareLatex(text: string): string {
 
 export const MathText: React.FC<MathTextProps> = ({ children, inline = false }) => {
   // Null/undefined guard — content + question_text ikisi de boşsa crash önle
-  if (!children) return inline ? <span /> : <div />;
+  if (!children) {return inline ? <span /> : <div />;}
 
   // LaTeX yoksa doğrudan metin döndür (performans)
   if (!hasLatex(children)) {

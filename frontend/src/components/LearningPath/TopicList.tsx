@@ -32,9 +32,9 @@ export const TopicList: React.FC<TopicListProps> = ({ subject, onNodeClick }) =>
     () =>
       [...nodes].sort((a, b) => {
         // Açık konular önce
-        if (a.prereqs_met !== b.prereqs_met) return a.prereqs_met ? -1 : 1;
+        if (a.prereqs_met !== b.prereqs_met) {return a.prereqs_met ? -1 : 1;}
         // Sonra DAG derinliği
-        if (a.dag_depth !== b.dag_depth) return a.dag_depth - b.dag_depth;
+        if (a.dag_depth !== b.dag_depth) {return a.dag_depth - b.dag_depth;}
         return a.name_tr.localeCompare(b.name_tr, 'tr');
       }),
     [nodes],

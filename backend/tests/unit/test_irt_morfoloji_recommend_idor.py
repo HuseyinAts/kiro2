@@ -23,16 +23,15 @@ async def test_recommend_questions_teacher_skips_verify() -> None:
     db = AsyncMock()
     with patch(
         "core.learning_path_auth.verify_student_access", new_callable=AsyncMock
-    ) as v:
-        with patch(
-            "services.irt_morfoloji_service.IRTMorfolojiService",
-        ) as Svc:
-            inst = MagicMock()
-            inst.ogrenci_uyumlu_soru_onerisi = AsyncMock(return_value=[])
-            Svc.return_value = inst
-            out = await recommend_questions_for_student(req, user, db)
-            v.assert_not_called()
-            assert out["success"] is True
+    ) as v, patch(
+        "services.irt_morfoloji_service.IRTMorfolojiService",
+    ) as Svc:
+        inst = MagicMock()
+        inst.ogrenci_uyumlu_soru_onerisi = AsyncMock(return_value=[])
+        Svc.return_value = inst
+        out = await recommend_questions_for_student(req, user, db)
+        v.assert_not_called()
+        assert out["success"] is True
 
 
 @pytest.mark.asyncio

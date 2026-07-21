@@ -9,6 +9,7 @@ This script runs outside SQLAlchemy transactions (isolation_level="AUTOCOMMIT") 
 
 import asyncio
 import logging
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -20,13 +21,13 @@ DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2"
 
 async def run_surgery():
     logger.info("Initializing DBA Surgery Engine...")
-    
+
     # Establish asyncpg engine with autocommit to prevent active transaction block on CONCURRENT operations
     engine = create_async_engine(DATABASE_URL, isolation_level="AUTOCOMMIT")
-    
+
     dropped_count = 0
     created_count = 0
-    
+
     async with engine.connect() as conn:
         # 1. Fetch unused indexes (idx_scan = 0, excluding PKs and unique constraints)
         unused_query = text("""
@@ -41,12 +42,12 @@ async def run_surgery():
               AND NOT i.indisprimary
               AND ui.schemaname = 'public';
         """)
-        
+
         logger.info("Scanning for unused indexes (idx_scan = 0)...")
         unused_results = await conn.execute(unused_query)
         unused_indexes = unused_results.fetchall()
         logger.info(f"Discovered {len(unused_indexes)} unused indexes.")
-        
+
         # 2. Fetch missing FK indexes
         fk_query = text("""
             SELECT
@@ -70,12 +71,12 @@ async def run_surgery():
               )
             ORDER BY table_name, constraint_name;
         """)
-        
+
         logger.info("Scanning for missing Foreign Key indexes...")
         fk_results = await conn.execute(fk_query)
         missing_fks = fk_results.fetchall()
         logger.info(f"Discovered {len(missing_fks)} missing FK indexes.")
-        
+
         # 3. Drop unused indexes concurrently
         logger.info("Starting unused index drops (DROP INDEX CONCURRENTLY)...")
         for idx, row in enumerate(unused_indexes):
@@ -89,7 +90,7 @@ async def run_surgery():
                 dropped_count += 1
             except Exception as e:
                 logger.error(f"Failed to drop index {clean_index_name}: {e}")
-                
+
         # 4. Create missing FK indexes concurrently
         logger.info("Starting missing FK index creation (CREATE INDEX CONCURRENTLY)...")
         for idx, row in enumerate(missing_fks):
@@ -99,10 +100,10 @@ async def run_surgery():
             # Clean columns for index name creation
             clean_cols = column_names.replace(', ', '_').replace(' ', '_').replace('"', '')
             index_name = f"idx_fk_{clean_table}_{clean_cols}"
-            
+
             # Format columns properly for statement: wrap each column in double quotes
             formatted_cols = ", ".join([f'"{c.strip()}"' for c in column_names.split(",")])
-            
+
             create_stmt = f'CREATE INDEX CONCURRENTLY IF NOT EXISTS "{index_name}" ON "{clean_table}" ({formatted_cols})'
             try:
                 logger.info(f"[{idx+1}/{len(missing_fks)}] Creating index {index_name} on table {clean_table}({column_names})...")
@@ -110,7 +111,7 @@ async def run_surgery():
                 created_count += 1
             except Exception as e:
                 logger.error(f"Failed to create index {index_name}: {e}")
-                
+
     logger.info("Surgery completed successfully.")
     logger.info(f"Summary: Dropped {dropped_count} unused indexes. Created {created_count} missing FK indexes.")
     await engine.dispose()

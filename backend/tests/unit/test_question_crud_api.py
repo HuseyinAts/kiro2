@@ -419,9 +419,11 @@ def test_elasticsearch_search_missing_query_returns_422(mock_service):
 
 @pytest.mark.asyncio
 async def test_get_random_questions_happy_path(mock_service, mock_question):
-    from api.question_crud_api import get_random_questions
     from unittest.mock import MagicMock
+
     from fastapi import Request
+
+    from api.question_crud_api import get_random_questions
 
     mock_request = MagicMock(spec=Request)
     mock_request.state = MagicMock()
@@ -446,10 +448,11 @@ async def test_get_random_questions_includes_options_and_answer(
     mock_service, mock_question
 ):
     import json
+    from unittest.mock import MagicMock
+
+    from fastapi import Request
 
     from api.question_crud_api import get_random_questions
-    from unittest.mock import MagicMock
-    from fastapi import Request
 
     mock_request = MagicMock(spec=Request)
     mock_request.state = MagicMock()
@@ -472,10 +475,11 @@ async def test_get_random_questions_includes_options_and_answer(
 @pytest.mark.asyncio
 async def test_get_random_questions_with_filters(mock_service):
     import json
+    from unittest.mock import MagicMock
+
+    from fastapi import Request
 
     from api.question_crud_api import get_random_questions
-    from unittest.mock import MagicMock
-    from fastapi import Request
 
     mock_request = MagicMock(spec=Request)
     mock_request.state = MagicMock()
@@ -497,11 +501,11 @@ async def test_get_random_questions_with_filters(mock_service):
 
 @pytest.mark.asyncio
 async def test_get_random_questions_service_error_raises_500(mock_service):
-    from fastapi import HTTPException
+    from unittest.mock import MagicMock
+
+    from fastapi import HTTPException, Request
 
     from api.question_crud_api import get_random_questions
-    from unittest.mock import MagicMock
-    from fastapi import Request
 
     mock_request = MagicMock(spec=Request)
     mock_request.state = MagicMock()

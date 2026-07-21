@@ -23,6 +23,7 @@ from core.irt_validators import (
     validate_irt_guessing,
     validate_irt_upper_asymptote,
 )
+from core.resilience import db_retry
 from models.question_bank import (
     IRTCalibrationHistory,
     QuestionBankItem,
@@ -33,7 +34,6 @@ from models.question_bank import (
     calculate_irt_based_difficulty,
     should_update_difficulty,
 )
-from core.resilience import db_retry
 
 
 class QuestionBankService:

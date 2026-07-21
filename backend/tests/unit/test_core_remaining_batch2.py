@@ -18,14 +18,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 # Save sys.modules state to prevent mock pollution in other unit test files
 _RESTORE_MODULES = [
-    "redis", "redis.asyncio", "elasticsearch", "langchain", "langchain_core", 
-    "websockets", "websockets.exceptions", "websockets.server", "cryptography", 
-    "cryptography.fernet", "zemberek", "structlog", "structlog.stdlib", 
-    "structlog.processors", "structlog.dev", "structlog.types", "celery", 
-    "celery.schedules", "celery.exceptions", "core.application_metrics", 
-    "core.message_queue_system", "core.unified_event_bus", 
-    "core.background_job_processor", "core.enhanced_database", 
-    "core.transaction_manager", "core.structured_logging", "core.unified_config", 
+    "redis", "redis.asyncio", "elasticsearch", "langchain", "langchain_core",
+    "websockets", "websockets.exceptions", "websockets.server", "cryptography",
+    "cryptography.fernet", "zemberek", "structlog", "structlog.stdlib",
+    "structlog.processors", "structlog.dev", "structlog.types", "celery",
+    "celery.schedules", "celery.exceptions", "core.application_metrics",
+    "core.message_queue_system", "core.unified_event_bus",
+    "core.background_job_processor", "core.enhanced_database",
+    "core.transaction_manager", "core.structured_logging", "core.unified_config",
     "core.realtime_notification_system", "core.exceptions"
 ]
 _original_modules = {}
@@ -84,6 +84,7 @@ for _mod in _STUBS:
 
 # Explicitly setup celery stubs as ModuleType to support nested imports
 import types as _types
+
 for _cmod in ["celery", "celery.schedules", "celery.exceptions"]:
     if _cmod not in sys.modules:
         sys.modules[_cmod] = _types.ModuleType(_cmod)
@@ -129,13 +130,11 @@ for _mod in _TRY_REAL:
             sys.modules[_mod] = MagicMock()
 
 # error_context has no heavy deps — use the real module so combined test runs work.
-import types as _types
-
 # error_monitoring has no heavy deps — use the real module so combined test runs work.
-
 # core.exceptions has no heavy deps — use the real module so combined test runs work.
 # This also ensures all names (AuthorizationError etc.) are available for other test files.
 import importlib as _importlib
+import types as _types
 
 if "core.exceptions" not in sys.modules:
     try:

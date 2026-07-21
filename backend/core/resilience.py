@@ -7,8 +7,15 @@ import asyncio
 import functools
 import logging
 import os
-from tenacity import AsyncRetrying, stop_after_attempt, wait_fixed, wait_none, retry_if_exception_type
+
 from sqlalchemy.exc import SQLAlchemyError
+from tenacity import (
+    AsyncRetrying,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_fixed,
+    wait_none,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -21,26 +28,26 @@ def db_retry(fn_or_max_attempts=None, *, max_attempts=3, wait_seconds=1):
     """
     if fn_or_max_attempts is None:
         return lambda fn: db_retry(fn, max_attempts=max_attempts, wait_seconds=wait_seconds)
-    
+
     if callable(fn_or_max_attempts):
         func = fn_or_max_attempts
-        
+
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
             # Check if testing environment
             is_testing = (
-                os.environ.get("TESTING") == "true" 
+                os.environ.get("TESTING") == "true"
                 or "sqlite" in os.environ.get("DATABASE_URL", "").lower()
             )
             wait_strategy = wait_none() if is_testing else wait_fixed(wait_seconds)
-            
+
             retrier = AsyncRetrying(
                 stop=stop_after_attempt(max_attempts),
                 wait=wait_strategy,
                 retry=retry_if_exception_type(SQLAlchemyError),
                 reraise=True
             )
-            
+
             # Identify the database session
             session = None
             # 1. Check if args[0] (self) has a 'db' attribute
@@ -81,5 +88,4 @@ def db_retry(fn_or_max_attempts=None, *, max_attempts=3, wait_seconds=1):
                 with state:
                     return await attempt()
         return wrapper
-    else:
-        return lambda fn: db_retry(fn, max_attempts=fn_or_max_attempts, wait_seconds=wait_seconds)
+    return lambda fn: db_retry(fn, max_attempts=fn_or_max_attempts, wait_seconds=wait_seconds)

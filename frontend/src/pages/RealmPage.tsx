@@ -34,7 +34,7 @@ export const RealmPage: React.FC = () => {
     const load = async () => {
       try {
         const res = await fetch(`${API_BASE}/realms/`, { credentials: 'include' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {throw new Error(`HTTP ${res.status}`);}
         const data = await res.json();
         setRealms(data.realms ?? []);
       } catch (e) {
@@ -51,7 +51,7 @@ export const RealmPage: React.FC = () => {
     const load = async () => {
       try {
         const res = await fetch('/api/v1/gamification/profile', { credentials: 'include' });
-        if (!res.ok) return;
+        if (!res.ok) {return;}
         const data = await res.json();
         setGamification({
           total_xp: data.total_xp ?? 0,
@@ -73,7 +73,7 @@ export const RealmPage: React.FC = () => {
 
   const handleQuestAction = useCallback(
     async (action: 'start' | 'complete') => {
-      if (!selectedRealm) return;
+      if (!selectedRealm) {return;}
       try {
         await fetch(`${API_BASE}/realms/${selectedRealm.slug}/quest/${action}`, {
           method: 'POST',
@@ -97,8 +97,8 @@ export const RealmPage: React.FC = () => {
                       completed: prog.completed,
                     },
                   }
-                : r
-            )
+                : r,
+            ),
           );
           setSelectedRealm((prev) =>
             prev?.slug === selectedRealm.slug
@@ -111,14 +111,14 @@ export const RealmPage: React.FC = () => {
                     completed: prog.completed,
                   },
                 }
-              : prev
+              : prev,
           );
         }
       } catch {
         /* ignore */
       }
     },
-    [selectedRealm]
+    [selectedRealm],
   );
 
   const level = gamification?.current_level ?? 1;

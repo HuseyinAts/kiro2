@@ -181,6 +181,7 @@ class _MorfolojiAnalizi:
 
 from enum import Enum
 
+
 class _MorfolojiKarmasiklikSeviyesi(Enum):
     BASIT = 1
     ORTA = 2
@@ -323,6 +324,7 @@ sys.modules["models.question_bank"] = qb_mod
 
 # core.irt_validators - import real module to avoid stub collision
 import core.irt_validators as iv_mod
+
 sys.modules.setdefault("core.irt_validators", iv_mod)
 
 # multi_layer_cache stub

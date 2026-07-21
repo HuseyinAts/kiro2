@@ -1142,10 +1142,9 @@ class QuestionCRUDService:
                 result = await self.db.execute(stmt_fallback)
                 rows = list(result.scalars().all())
             return rows
-        else:
-            stmt = stmt.order_by(func.random()).limit(count)
-            result = await self.db.execute(stmt)
-            return list(result.scalars().all())
+        stmt = stmt.order_by(func.random()).limit(count)
+        result = await self.db.execute(stmt)
+        return list(result.scalars().all())
 
     async def list_source_books(
         self,

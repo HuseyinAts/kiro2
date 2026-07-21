@@ -41,12 +41,12 @@ export default function SubjectThetaCards() {
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading) return <CircularProgress size={28} />;
-  if (!data.length) return (
+  if (loading) {return <CircularProgress size={28} />;}
+  if (!data.length) {return (
     <Typography variant="body2" color="text.secondary">
       Henüz tamamlanmış ders testi yok. CAT veya Seviye Tespiti yap.
     </Typography>
-  );
+  );}
 
   return (
     <Box>
