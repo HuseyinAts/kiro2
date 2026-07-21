@@ -362,3 +362,6 @@ backend/scripts/quality/_pool_growth_wave*/batches/
 backend/scripts/quality/_calib_fazA/master.csv
 backend/scripts/quality/_calib_fazA/input.jsonl
 backend/scripts/quality/_calib_fazA/preds.json
+
+# poolA retag scratch SQL output
+backend/scripts/quality/_poolA_retag/export_*.sql
