@@ -54,3 +54,19 @@ v1 yalnız 1 model çözdü → v2 consensus için **2. modeli bulk'ta çalışt
 - Ölçüm görselleri + 112-örnek detayı: bu oturum (Cowork).
 - gate2c demote deseni: `_gate2b/D6_*.sql`.
 - careful pipeline (referans doğru desen): `_gate2b/gate2c_combined.py` + Opus sample.
+
+---
+
+## GÜNCELLEME (24 Haz 2026): RE-GATE ÖNERİLMİYOR — bulk ~%95 temiz
+Re-gate'i çalıştırmadan önce bulk'un gerçek bozuk-oranı **Opus 40-örnek kör-çöz** ile ölçüldü
+(v_safe içi blind_solve_wave, self-contained, rastgele md5-salt):
+- **38/40 = %95 Opus==stored** (corroborated-temiz).
+- 1 kırık (geometri, doğru cevap −8 şıklarda yok → `ccf7f73d` gate2c'ye alındı `no_correct_option_broken`).
+- 1 tartışmalı (biyoloji, net yanlış-anahtar değil).
+
+**Sonuç:** bulk zaten ~%93-95 temiz (S160+ ölçümleriyle tutarlı). 2-model **zayıf-consensus**
+(gemma3+qwen3 14B) gate'i **zor-ama-doğru** soruları (türev/limit, kombinatorik, log-sistem,
+geometri — Opus çözer, 14B çözemez) kitle halinde YANLIŞ-demote eder: beklenen demote ~%30-50,
+gerçek bozuk ~%5 → ~%25-45 false-demote = temiz havuzu boşaltır. Bölüm 40-46'daki "%40-50 düşer"
+planı **iptal** (bulk "%55 temiz" sanılırken yazılmıştı). Kalan ~%5 için: hedefli Opus-doğrulama
+(zayıf 2-model değil), düşük ROI (16K'da %5). Driver banner'ında ⛔ uyarısı eklendi.

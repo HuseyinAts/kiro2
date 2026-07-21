@@ -1,3 +1,17 @@
+> # ⛔ ÇALIŞTIRMA — bu re-gate ARTIK ÖNERİLMİYOR (24 Haz 2026)
+> **Sebep:** Bulk **~%95 temiz** ölçüldü (Opus 40-örnek kör-çöz → 38/40 stored anahtarla aynı;
+> 1 kırık-soru demote, 1 tartışmalı). 2-model **zayıf-consensus** (gemma3+qwen3 **14B**) gate'i
+> "iki model de stored'la aynı vermezse düşür" mantığıyla **zor-ama-doğru** soruları (türev/limit,
+> kombinatorik, log-sistemi, geometri — Opus çözer, 14B çözemez) kitle halinde YANLIŞ-demote eder.
+> Beklenen demote ~%30-50, gerçek bozuk ~%5 → **~%25-45 false-demote = temiz havuzu boşaltır.**
+> Aşağıdaki "%40-50 düşer" tahmini bulk'un "%55 temiz" sanıldığı zamandı (sonra %93-95 ölçüldü).
+> **7-8h×2 GPU harcayıp havuza zarar verme.** Kalan ~%5 için doğru yöntem: hedefli **Opus-doğrulama**
+> (zayıf 2-model değil). Yine de denenecekse: ÖNCE küçük pilot (200 soru) + Opus demote-precision
+> doğrula, %95+ precision değilse DUR. Ölçüm detayı: `docs/audits/2026-06-23_blindsolve_rootcause.md`
+> (24 Haz GÜNCELLEME bölümü).
+
+---
+
 # blind_solve Bulk RE-GATE — sonraki seans driver'ı
 
 Amaç: gevşek v1 pipeline'ının promote ettiği 16.344 bulk'u **v2 mantığıyla yeniden
