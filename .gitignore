@@ -178,6 +178,21 @@ d-dataset/scripts/*.bak*
 # MCP
 .mcp_pids/
 
+# ML model cache (root cache/ — backend/cache/ already ignored above)
+cache/
+
+# Generated health reports (reports/*.json only catches direct children)
+reports/health/
+
+# Pipeline scratch outputs (quality _-prefixed dirs)
+backend/scripts/quality/_content_*/
+backend/scripts/quality/_keyverify*/
+backend/scripts/quality/_ormwire/
+docs/audits/_*/
+
+# Dangerous self-modifying one-off (rewrites all .py) — keep out of repo
+backend/auto_audit.py
+
 # Broken directory names (Windows path issues)
 c:Usershusey*/
 
