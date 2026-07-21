@@ -10,8 +10,14 @@ import json
 import os
 from typing import Any
 
-import google.generativeai as genai
+from google import genai
 from fastmcp import FastMCP
+from dotenv import load_dotenv
+
+# Try to load environment variables from .env files
+load_dotenv(".env.local")
+load_dotenv(".env.development")
+load_dotenv(".env")
 
 # MCP sunucusunu başlat
 mcp = FastMCP("Gemini Education")
@@ -21,13 +27,9 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY environment variable bulunamadı")
 
-genai.configure(api_key=GOOGLE_API_KEY)
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
-# Model seçimi (Gemini 2.0 Flash veya mevcut en iyi model)
-try:
-    model = genai.GenerativeModel("gemini-2.0-flash-exp")
-except Exception:
-    model = genai.GenerativeModel("gemini-1.5-pro")
+MODEL_NAME = "gemini-2.0-flash-exp"
 
 
 @mcp.tool()
@@ -66,7 +68,11 @@ async def generate_educational_content(
     """
 
     try:
-        response = await asyncio.to_thread(model.generate_content, prompt)
+        response = await asyncio.to_thread(
+            client.models.generate_content,
+            model=MODEL_NAME,
+            contents=prompt
+        )
         return response.text
     except Exception as e:
         return f"Hata: {e!s}"
@@ -113,7 +119,11 @@ async def analyze_student_answer(
     """
 
     try:
-        response = await asyncio.to_thread(model.generate_content, prompt)
+        response = await asyncio.to_thread(
+            client.models.generate_content,
+            model=MODEL_NAME,
+            contents=prompt
+        )
         result_text = response.text.strip()
 
         # JSON parse et
@@ -173,7 +183,11 @@ async def generate_exam_question(
     """
 
     try:
-        response = await asyncio.to_thread(model.generate_content, prompt)
+        response = await asyncio.to_thread(
+            client.models.generate_content,
+            model=MODEL_NAME,
+            contents=prompt
+        )
         result_text = response.text.strip()
 
         if result_text.startswith("```json"):
@@ -234,7 +248,11 @@ async def create_learning_path(
     """
 
     try:
-        response = await asyncio.to_thread(model.generate_content, prompt)
+        response = await asyncio.to_thread(
+            client.models.generate_content,
+            model=MODEL_NAME,
+            contents=prompt
+        )
         result_text = response.text.strip()
 
         if result_text.startswith("```json"):
@@ -259,10 +277,11 @@ async def gemini_health() -> str:
     """Gemini API sağlık durumunu kontrol eder"""
     try:
         response = await asyncio.to_thread(
-            model.generate_content,
-            "Merhaba, test mesajı"
+            client.models.generate_content,
+            model=MODEL_NAME,
+            contents="Merhaba, test mesajı"
         )
-        return f"✅ Gemini API aktif - Model: {model.model_name}"
+        return f"✅ Gemini API aktif - Model: {MODEL_NAME}"
     except Exception as e:
         return f"❌ Gemini API hatası: {e!s}"
 
