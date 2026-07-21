@@ -49,8 +49,10 @@ fsrs_service = DeprecatedFSRSService()
 
 # ==================== ESKİ API PYDANTIC MODELLERİ ====================
 
+
 class CreateFlashcardRequest(BaseModel):
     """Flashcard oluşturma isteği"""
+
     subject: str = Field(..., description="Konu (Matematik, Türkçe, vb.)")
     topic: str = Field(..., description="Alt konu")
     content: str = Field(..., description="Kart içeriği")
@@ -59,6 +61,7 @@ class CreateFlashcardRequest(BaseModel):
 
 class ReviewFlashcardRequest(BaseModel):
     """Flashcard inceleme isteği"""
+
     grade: int = Field(
         ..., ge=1, le=4, description="Değerlendirme (1=Again, 2=Hard, 3=Good, 4=Easy)"
     )
@@ -67,6 +70,7 @@ class ReviewFlashcardRequest(BaseModel):
 
 class FlashcardResponse(BaseModel):
     """Flashcard yanıt modeli"""
+
     id: str
     subject: str
     topic: str
@@ -85,6 +89,7 @@ class FlashcardResponse(BaseModel):
 
 class StudyRecommendationsResponse(BaseModel):
     """Çalışma önerileri yanıt modeli"""
+
     due_cards_count: int
     upcoming_cards_count: int
     difficult_cards_count: int
@@ -100,6 +105,7 @@ class StudyRecommendationsResponse(BaseModel):
 
 class StudySessionResponse(BaseModel):
     """Çalışma oturumu yanıt modeli"""
+
     session_id: str
     duration_minutes: int | None = None
     cards_reviewed: int = 0
@@ -110,6 +116,7 @@ class StudySessionResponse(BaseModel):
 
 # ==================== YENİ API ENDPOINT'LERİ ====================
 
+
 @router.get(
     "/due",
     response_model=list[DueItemResponse],
@@ -118,15 +125,28 @@ class StudySessionResponse(BaseModel):
 async def get_due_items(
     subject_id: UUID | None = Query(None, description="Derse göre filtrele"),
     limit: int = Query(20, ge=1, le=100),
+    mercy: bool = Query(
+        False,
+        description="Catch-up modu: uzun devamsızlık sonrası yığılmış vadesi geçmiş "
+        "kartları bilişsel yük limitiyle (stability/zorluk önceliğiyle) getir",
+    ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> list[DueItemResponse]:
     svc = FSRSService(db)
-    items = await svc.get_due_items(
-        str(current_user.id),
-        subject_id=str(subject_id) if subject_id else None,
-        limit=limit,
-    )
+    subject = str(subject_id) if subject_id else None
+    if mercy:
+        items = await svc.get_due_items_with_mercy(
+            str(current_user.id),
+            subject_id=subject,
+            max_cognitive_load=limit,
+        )
+    else:
+        items = await svc.get_due_items(
+            str(current_user.id),
+            subject_id=subject,
+            limit=limit,
+        )
     results = []
     for s, irt in items:
         if not isinstance(irt, dict):
@@ -248,6 +268,7 @@ async def get_stats(
 
 # ==================== ESKİ API ENDPOINT'LERİ (UYUMLULUK KATMANI) ====================
 
+
 @router.post("/flashcards", response_model=dict[str, Any])
 async def create_flashcard(
     request: CreateFlashcardRequest,
@@ -354,7 +375,8 @@ async def review_flashcard(
 
 @router.get("/recommendations", response_model=dict[str, Any])
 async def get_study_recommendations(
-    current_user: DBUser = Depends(get_current_user_old), db: Session = Depends(get_db_old)
+    current_user: DBUser = Depends(get_current_user_old),
+    db: Session = Depends(get_db_old),
 ):
     try:
         recommendations = await fsrs_service.get_study_recommendations(
@@ -375,7 +397,8 @@ async def get_study_recommendations(
 
 @router.get("/statistics", response_model=dict[str, Any])
 async def get_student_statistics(
-    current_user: DBUser = Depends(get_current_user_old), db: Session = Depends(get_db_old)
+    current_user: DBUser = Depends(get_current_user_old),
+    db: Session = Depends(get_db_old),
 ):
     try:
         statistics = await fsrs_service.get_student_statistics(
