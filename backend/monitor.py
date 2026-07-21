@@ -1,8 +1,7 @@
-import psycopg2
 import subprocess
-import time
-import sys
-import winreg
+
+import psycopg2
+
 
 def get_time_wait():
     # Use powershell
@@ -37,12 +36,12 @@ def apply_registry_fix():
 if __name__ == "__main__":
     count = get_time_wait()
     print(f"TIME_WAIT Count: {count}")
-    
+
     if count > 4000:
         apply_registry_fix()
-        
+
     activity = get_pg_activity()
-    print(f"Postgres Blocked/Waiting Queries:")
+    print("Postgres Blocked/Waiting Queries:")
     if isinstance(activity, list):
         if not activity:
             print("  None")

@@ -10,10 +10,10 @@ param(
 $ErrorActionPreference = "Continue"
 
 # Color output functions
-function Write-Success { Write-Host "✓ $args" -ForegroundColor Green }
-function Write-Error { Write-Host "✗ $args" -ForegroundColor Red }
-function Write-Info { Write-Host "ℹ $args" -ForegroundColor Cyan }
-function Write-Warning { Write-Host "⚠ $args" -ForegroundColor Yellow }
+function Write-Success { Write-Host "[OK] $args" -ForegroundColor Green }
+function Write-Error { Write-Host "[FAIL] $args" -ForegroundColor Red }
+function Write-Info { Write-Host "[INFO] $args" -ForegroundColor Cyan }
+function Write-Warning { Write-Host "[WARN] $args" -ForegroundColor Yellow }
 
 # Configuration
 $PROJECT_ROOT = Split-Path -Parent $PSScriptRoot

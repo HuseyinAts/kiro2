@@ -25,16 +25,16 @@ class Colors:
     BOLD = '\033[1m'
 
 def print_success(msg: str):
-    print(f"{Colors.GREEN}✓{Colors.RESET} {msg}")
+    print(f"{Colors.GREEN}[+]{Colors.RESET} {msg}")
 
 def print_error(msg: str):
-    print(f"{Colors.RED}✗{Colors.RESET} {msg}")
+    print(f"{Colors.RED}[x]{Colors.RESET} {msg}")
 
 def print_warning(msg: str):
-    print(f"{Colors.YELLOW}⚠{Colors.RESET} {msg}")
+    print(f"{Colors.YELLOW}[!]{Colors.RESET} {msg}")
 
 def print_info(msg: str):
-    print(f"{Colors.CYAN}ℹ{Colors.RESET} {msg}")
+    print(f"{Colors.CYAN}[i]{Colors.RESET} {msg}")
 
 def check_port(host: str, port: int, timeout: float = 2.0) -> bool:
     """Check if a port is open and listening"""
@@ -116,7 +116,7 @@ def check_docker_services() -> Dict[str, bool]:
     services = {
         "Redis": {"port": 6379, "check": lambda: check_redis()},
         "Elasticsearch": {"port": 9200, "check": lambda: check_elasticsearch()[0]},
-        "PostgreSQL": {"port": 5432, "check": lambda: check_port("localhost", 5432)},
+        "PostgreSQL": {"port": 5434, "check": lambda: check_port("localhost", 5434)},
         "Prometheus": {"port": 9090, "check": lambda: check_port("localhost", 9090)},
     }
 
@@ -189,9 +189,8 @@ def check_specific_ports() -> Dict[str, bool]:
     print_info("\n=== Service Ports Check ===\n")
 
     ports = {
+        "FastAPI Backend (8000)": 8000,
         "Zemberek NLP (8081)": 8081,
-        "Blackboard WS (8765)": 8765,
-        "Prometheus Metrics (9091)": 9091,
     }
 
     results = {}
