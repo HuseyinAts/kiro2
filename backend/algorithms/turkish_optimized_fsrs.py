@@ -279,6 +279,13 @@ class TurkishOptimizedFSRS:
             # Final interval hesaplama
             adjusted_interval = base_interval * cultural_multiplier
 
+            # OMNI-PATCH (Psikolojik Adaptasyon): Stres/Tükenmişlik tespiti
+            # Öğrenci üst üste hata yapıyorsa veya stresliyse, zor/yanlış soruları hemen sorma, aralığı uzat.
+            stress_factor = getattr(student_context, 'stress_level', 0.0)
+            if stress_factor > 0.6 and grade in [FSRSGrade.AGAIN, FSRSGrade.HARD]:
+                adjusted_interval = max(adjusted_interval, 3.0 + (stress_factor * 2))
+                cultural_multiplier *= 1.5 # Zorluk baskısını azalt
+
             # Sınırları uygula
             adjusted_interval = max(
                 self.min_interval, min(self.max_interval, adjusted_interval)

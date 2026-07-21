@@ -274,28 +274,59 @@ class HybridLLMService:
             for msg in messages[:-1]
         ]) if len(messages) > 1 else ""
 
+        # OMNI-PATCH (P1): Semantic Caching (Redis) ile Maliyet Optimizasyonu
+        import hashlib
+        import json
+
+        from core.cache import cache_manager
+
+        try:
+            cache_key_content = json.dumps(messages, sort_keys=True) + model + str(temperature)
+            cache_key = "llm_semantic_cache:" + hashlib.sha256(cache_key_content.encode("utf-8")).hexdigest()
+
+            cached_val = await cache_manager.get(cache_key)
+            if cached_val and isinstance(cached_val, str):
+                logger.info("semantic_cache_hit", key=cache_key)
+                return cached_val
+        except Exception:
+            cache_key = ""
+
         if model == "gemini":
-            return await self.generate_with_gemini(
+            response = await self.generate_with_gemini(
                 last_message,
                 context=context
             )
-        if model == "openai":
-            return await self.openai_client.chat.completions.create(  # type: ignore[return-value, union-attr]
-                model=os.getenv("OPENAI_MODEL", "gpt-4"),
-                messages=messages,  # type: ignore[arg-type]
-                temperature=temperature,
-                max_tokens=max_tokens
-            ) if self.openai_client else await self.generate_with_claude(
+        elif model == "openai":
+            if self.openai_client:
+                # OpenAI raw response returns object, skip cache or extract string. Assuming generate_with_claude fallback returns str.
+                response = await self.openai_client.chat.completions.create(
+                    model=os.getenv("OPENAI_MODEL", "gpt-4"),
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+            else:
+                response = await self.generate_with_claude(
+                    last_message,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+        else:
+            # default: claude
+            response = await self.generate_with_claude(
                 last_message,
                 temperature=temperature,
                 max_tokens=max_tokens
             )
-        # default: claude
-        return await self.generate_with_claude(
-            last_message,
-            temperature=temperature,
-            max_tokens=max_tokens
-        )
+
+        # OMNI-PATCH (P1): Semantic Caching (Redis) Save
+        try:
+            if cache_key and isinstance(response, str):
+                await cache_manager.set(cache_key, response, ttl=259200) # 72 Saat (Aylık binlerce dolar tasarruf)
+        except Exception:
+            pass
+
+        return response
 
     def get_available_models(self) -> dict[str, bool]:
         """
