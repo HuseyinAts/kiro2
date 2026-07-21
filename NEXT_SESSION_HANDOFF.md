@@ -1,173 +1,44 @@
+# NEXT SESSION HANDOFF
+
+**Tarih:** 2026-07-21
+**Proje:** KIRO2 (YKS/TYT/AYT Hazırlık Platformu)
+**Branch:** `feature/self-evolution-optimization` @ `2a1bb42e5` — origin ile senkron
+**Bağlam:** ~19 gün boyunca commit'lenmeden birikmiş "War Room" (2 Tem otonom oturum) + lint churn + cache çöpü yığınının elden geçirilmesi.
+
+## 1. BU OTURUMDA NE YAPILDI
+
+Commit'lenmemiş 600+ dosyalık karışık yığın 3 paralel agent ile sınıflandırıldı, sonra ayrıştırılıp **11 commit** halinde temizlendi (hepsi push edildi):
+
+| Commit | İçerik |
+|---|---|
+| `075e37ba5` | Çöp untrack (64K satır cache/berturk + pid + reports/health) + gitignore |
+| `8a3028c8b` | `ai_tasks.py` celery worker register + 2 pool-growth audit md |
+| `7bff8af80` | 159 dosya kozmetik lint (ruff+eslint autofix, davranış-koruyan) |
+| `ce80ed5b5` | `irt_analysis_service` legacy `Soru` → prod `question_bank` + is_active (dual-table fix) |
+| `da73bab85` | gemini MCP `google.generativeai` → `google.genai` SDK + requirements google-genai==2.0.0 |
+| `1cc5106c9` | War Room tweaks: hybrid_llm redis cache, FSRS stres adaptasyonu, figonly-gate, chat disclaimer |
+| `038e1c132` | Dev-ops: PostgreSQL health check port 5432→**5434** fix + ASCII console marker (cp1254) |
+| `ef71e023c` | blindsolve re-gate audit doc (bulk %95 temiz) |
+| `ac4936f8b` | **FSRS mercy** `/due?mercy=true` wire + TDD (3 test) |
+| `97c6c0211` | mercy metodu (`get_due_items_with_mercy`) commit — caller/callee bütünlüğü |
+| `2a1bb42e5` | gitignore poolA retag scratch SQL |
+
+### Verification-driven kararlar (Karpathy push-back)
+- **3 phantom yakalandı, wire EDİLMEDİ:** `analytics_engine.py` IRT theta guard (her iki estimator zaten NaN/Inf/bounds korumalı), `ai_chat_service.py` guardrail+cache (mock method'a ölü — system_prompt hiç kullanılmıyor; gerçek chat `enhanced_chat.py`/qwen3:8b), `security_guard.py` (mevcut `verify_student_access` IDOR ile mükerrer + global body-read riski).
+- **1 gerçek hata düzeltildi:** mercy caller (`ac4936f8b`) commit'lenmiş ama callee değildi → temiz checkout'ta AttributeError; `97c6c0211` ile kapatıldı.
+- **REVERT:** `ai_chat_service.py` (mock'a ölü), `docker-compose.yml` (spekülatif pgbouncer + yanlış DB adı), `.cursor/mcp.json` (şifre churn), 5 alembic migration (history NEVER MODIFY), requirements sympy pin.
+- **SİLİNDİ (orphan, unimported, kullanıcı onaylı):** `data_masking.py`, `security_guard.py`, `analytics_engine.py`, `indexedDBExamStore.ts`.
+
+## 2. MEVCUT DURUM
+- **Working tree:** temiz (bu handoff hariç).
+- **FSRS mercy:** canlı — `GET /api/v1/fsrs/due?mercy=true` yığılma/catch-up modu (stability/zorluk önceliği, bilişsel yük limiti).
+- **Test:** mercy 3 + fsrs regresyon 62 PASS; proje-standart lint temiz.
+
+## 3. SONRAKİ OTURUM İÇİN (TODO)
+1. **MEB guardrail'i gerçek yola taşı** — `ai_chat_service` mock'undaki guardrail değersizdi; istenirse `backend/api/enhanced_chat.py` (qwen3:8b gerçek chat) system prompt'una eklenmeli.
+2. **security_guard prompt-injection** — global middleware yerine, LLM input noktasına (enhanced_chat) cerrahi guard olarak istenirse eklenebilir (verify_student_access IDOR zaten yeterli).
+3. **KVKK data masking** — Faz B (anonimleştirme) zaten DONE; ek maskeleme gerekirse env-based salt ile yeniden yazılmalı (silinen hardcoded-salt versiyonu değil).
+4. **Bekleyen (task backlog):** `#390` gh CLI + Dependabot (operatör), `#415` A11y/WCAG AccessibilityProvider, `#270` GitHub Actions kontrol.
+
 ---
-dosya_adi: 60_NEXT_HANDOFF.md
-amac: Bir sonraki sohbete devir notu — somut açılış aksiyonu
-ne_zaman_oku: Yeni sohbet başında, "şimdi ne yapalım?" öncesi
-versiyon: 20260422-v2 (akşam — Round 2 zaten PASS, birincil aksiyon hijyen)
-guncellendi: 2026-04-22
-durum: dinamik
-ilgili_dosyalar: [00_INDEX.md, 40_OPEN_DEBTS.md, 50_CHAT_SUMMARY_LATEST.md]
----
-
-# Sonraki Sohbet Devri — 22 Nisan Devamı
-
-## Açılış Mesajı (Claude'a yapıştır)
-
-```
-KIRO2'ye devam. Files 7 dosyayı sırayla oku: 00_INDEX, 10_BRIEFING (v15),
-20_PILOT_PROTOCOL (v3.1), 30_DERSLER (v5), 40_OPEN_DEBTS (v5),
-50_CHAT_SUMMARY_LATEST (20260422-v2), 60_NEXT_HANDOFF (bu dosya).
-
-SONRA filesystem MCP ile bizzat doğrula — Files dinamik (Tuzak 9 + §1.9):
-
-A) .git/refs/heads/master ve .git/refs/remotes/origin/master oku.
-   Beklenti: HEAD ya 5008ab6 (hijyen yapılmamış) ya da yeni SHA (amend sonrası).
-   Origin muhtemelen hâlâ fb18866.
-
-B) .cursor/plans/20260420_offline_sync_debt_2_RESULT.md aç, SON satırları
-   kontrol et. Round 2 bölümü var mı? S1-S6 PASS mi? (Beklenti: hepsi PASS,
-   22 Nisan tespiti.)
-
-C) backend/services/offline_sync_service.py içinde "_reject_batch" var mı?
-
-D) Hüseyin'e sor: "Hijyen 4'lü (amend + docs commit + briefing + push)
-   başladı mı?"
-
-KURALLAR: 30_DERSLER §1.9 (Files yazarken bizzat doğrula), §Bölüm 4 Prensip 6
-(Composer 2 raporuna güvenme), §Bölüm 6 Tuzak 9 (Files dinamik varsayımı).
-Transkript özetine tek başına güvenme — repo bizzat oku.
-```
-
-## Birincil Aksiyon — Borç #2 Hijyen 4'lü
-
-**Round 2 ZATEN YAPILDI, smoke S1-S6 hepsi PASS** (Composer 2, 22 Nisan gündüz,
-RESULT'ta dokümante). Sonraki aksiyon doğrudan git hijyeni — yeni smoke yok.
-
-### Adım a — `5008ab6` amend (footer çıkar)
-
-```powershell
-cd C:\Users\husey\kiro2
-
-# Mevcut gövdeyi oku, footer'ı görmek için
-git log -1 --format='%H%n---SUBJECT---%n%s%n---BODY---%n%b'
-
-# Amend: tek satır subject, gövde temiz
-$msg = "fix(offline_sync): persist package_id in offline_sync_packages with guard (debt #2)"
-git -c core.hooksPath=.git/hooks-empty commit --amend -m $msg --no-verify
-
-# Teyit
-git log -1 --format='%H%n%s%n---%n%b'
-# Beklenen: SHA değişmiş, subject aynı, --- altı boş
-```
-
-### Adım b — Docs commit (plan + RESULT + mock testler)
-
-```powershell
-cd C:\Users\husey\kiro2
-git status --short
-
-git add .cursor/plans/20260423_offline_sync_debt_2_package_persist.md
-git add .cursor/plans/20260420_offline_sync_debt_2_RESULT.md
-git add backend/tests/unit/services/test_offline_sync_service.py
-
-git -c core.hooksPath=.git/hooks-empty commit -m "docs(pilot): debt #2 plan + RESULT + mock tests (Round 1 drift + Round 2 PASS)" -m "Composer 2 sapmalari (Prensip 7 karari):
-- D-8 KABUL: raw SQL (sqlalchemy.text) ORM yerine
-- D-9 KABUL: 6 unit test eklendi (AsyncMock)
-- D-10 KABUL: ADIM 0 state.md hic uretilmedi (K-1 karari bekliyor)
-- D-11 FIX: down_revision yanlis yazildi, 5008ab6'da dogru
-- D-12 FIX: container deploy drift, Round 2 ile tamamlandi
-
-Smoke Round 2 kabul: S1-S6 hepsi PASS gercek backend uzerinde.
-answered_at ISO-8601 zorunlulugu RESULT'ta kesfedildi (plan'da yoktu)."
-```
-
-### Adım c — Briefing v15 commit
-
-Önce `C:\Users\husey\kiro2\KIRO2_SESSION_BRIEFING.md` dosyasını elle güncelle
-(Files'taki v15 patch'ine göre — `10_BRIEFING` patch'i bu handoff'un yanında
-mesajda verildi). Özet değişiklikler:
-- Alembic head: `offline_sync_pkg_20260420`
-- `answered_at` kritik alan olarak eklendi
-- `sync-package limit` davranışı açık soru notu
-- 22 Nisan oturumu (Round 1 drift + Round 2 PASS + Claude §1.9)
-- Migration ≠ Deploy dersi (Lesson 11)
-
-```powershell
-git diff KIRO2_SESSION_BRIEFING.md   # önce gör
-
-git add KIRO2_SESSION_BRIEFING.md
-git -c core.hooksPath=.git/hooks-empty commit -m "docs(briefing): v15 update — 22 Nisan dersleri" -m "- Alembic head: offline_sync_pkg_20260420 (22 Nisan migration)
-- offline_sync_packages tablo + kritik kolon listesi
-- answered_at ISO-8601 zorunlulugu (sync-results)
-- sync-package?limit=N davranisi acik soru (K-2)
-- Asama C 'Deploy drift' formal tanimi
-- alembic_version 32 char siniri (Lesson 10)
-- Migration != Deploy (D-12, Lesson 11)
-- Celery worker/beat + frontend kapali (K-3 radar)
-- 22 Nisan oturum log: Round 1 drift + Round 2 PASS + Claude §1.9"
-```
-
-### Adım d — Push (gerçek sayım önce)
-
-
-```powershell
-cd C:\Users\husey\kiro2
-
-# Gerçek sayım
-git log origin/master..HEAD --oneline | Measure-Object -Line
-# Beklenen: 10 satır (8 daha önce + amend + docs commit + briefing)
-
-# Review
-git log origin/master..HEAD --oneline
-
-# Push (hook'suz)
-git -c core.hooksPath=.git/hooks-empty push origin master
-
-# Doğrula
-git fetch origin
-git log origin/master..HEAD --oneline | Measure-Object -Line
-# Beklenen: 0 satır
-```
-
-## İkincil İşler (Hijyen Sonrası)
-
-### Açık Kararlar (40_OPEN_DEBTS §Açık Kararlar)
-
-**K-1: state.md yolu** — Son 2 pilotta state.md üretilmedi. 3 seçenek:
-- A) state.md'yi `.cursor/plans/` altına taşı (tek dizin)
-- B) state.md zorunlu tut, `backend/_pilots/` kal (disiplin güçlendir)
-- C) state.md opsiyonel yap, RESULT'a inline ADIM 0 yeter
-
-**K-2: `sync-package?limit=N` davranışı** — RESULT'ta keşfedildi: `limit`
-parametresi etkisiz (her zaman tüm soru seti dönüyor). Borç #5 açılsın mı?
-
-**K-3: Celery + frontend container'ları kapalı** — 23 Nisan tespiti. Offline
-sync için kritik değil ama genel radar. Kapalı olmasının nedeni belirsiz.
-
-### Borç #3 Planı (Hijyen Sonrası)
-
-FSRS FK eşleme borç. Detay: `40_OPEN_DEBTS §Borç #3`. Plan yazımı Borç #2
-hijyen tamamlandıktan sonra.
-
-### Files Repo Sync Meselesi
-
-`DERSLER.md`, `NEXT_SESSION_HANDOFF.md` repo'da untracked. Files'taki 30/60
-ile ilişki belirsiz — senkronizasyon politikası kararı lazım:
-- Files canonical + repo export mı?
-- Repo canonical + Files snapshot mı?
-- İki ayrı koleksiyon, farklı amaçlar mı?
-
-## Referanslar
-
-- `50_CHAT_SUMMARY_LATEST.md` — 22 Nisan oturumunun tam özeti
-- `40_OPEN_DEBTS.md` — Açık borçlar + kararlar
-- `30_DERSLER.md` — §1.9 (Files yazarken bizzat doğrula), §11 (Migration ≠ Deploy)
-- `20_PILOT_PROTOCOL.md` — §D-12 (deploy drift), ADIM Z (grep doğrulama)
-- `10_BRIEFING.md` — v15 patch (alembic head, answered_at, Aşama C)
-- `.cursor/plans/20260420_offline_sync_debt_2_RESULT.md` — Round 1 + Round 2
-- `.cursor/plans/20260423_offline_sync_debt_2_package_persist.md` — Plan
-
-## Durum Özeti (Tek Satır)
-
-Borç #2 Round 2 PASS (Composer 2 gündüz, RESULT'ta dokümante). Hijyen 4'lü
-bekliyor. Claude §1.9 hatası + Files yeniden yazımı tamamlandı. Yeni sohbet
-açılışında **hijyen yap, yeniden smoke yapma**.
+*Önceki War Room handoff (2 Tem) bu oturumda gerçek duruma göre baştan yazıldı; o içerik commit'lenmemiş yığındaki yarım/ölü kodu anlatıyordu — hepsi elden geçirildi.*
