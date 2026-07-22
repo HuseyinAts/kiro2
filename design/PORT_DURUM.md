@@ -95,6 +95,22 @@
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT4 Durumu (2026-07-22)
+
+**Adaptif Test + Harmanlanmış Deneme + Sınav Sonuç ✅** — Grup 3 çekirdek döngü TAMAM (rapor: `docs/audits/2026-07-22_sprint4-cekirdek-II.md`).
+- **Adaptif Test**: tam ekran + motor paneli (θ/yakınsama/SE, SUNUCU değerleriyle çizilir; istemci IRT hesaplamaz).
+  Geri bildirim yok (yerleştirme); 'Emin değilim'=secim:null; QuestionCard seçenek deseni copy-adapt; Enter=Cevapla.
+- **Harmanlanmış Deneme**: lobi; harman/bloklu toggle üretimde kalır; getReviewTopics().slice(0,4); →/cozum/harman-{id}.
+- **Sınav Sonuç**: net-birincil (sıralama küçük+çerçeveli); 'yalnız yön göstergesi' birebir; ConfettiDawn YOK; #FBE8E2.
+- **Adversarial review** (4 boyut, kopya boyutu odaklı re-run): 0 blocker · 2 major (Harman rozet coral, Sonuç sıralama
+  de-emphasis) · minorlar → hepsi giderildi. Sunucu-otoriter TAM TEMİZ.
+- **Test-flake**: tam-suite flaky axe-timeout (paralel yük) — TAP reporter + izolasyon ile 0 gerçek hata (33/33 dosya).
+- **Kapı:** kanon 0 · tsc 0 · vitest 33/33 dosya · breakpoint 91/91 (13 story × 7).
+
+**İlerleme: 11/42 ekran + 1 composite (QuestionCard). Grup 3 (Çekirdek döngü) TAMAM.**
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -123,15 +139,15 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 |---|---|---|---|---|---|---|---|
 | Öğrenci Paneli (Rahat/Kompakt) | KIRO2 Ogrenci Paneli.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
-## 3 · Çekirdek döngü (6)
+## 3 · Çekirdek döngü (6) — ✅ TAMAM (2026-07-22, SPRINT3+3B+4)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
 | Soru Çözme | KIRO2 Soru Cozme.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Neden Geri Bildirim | KIRO2 Neden Geri Bildirim.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | FSRS Tekrar | KIRO2 FSRS Tekrar.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| Adaptif Test | KIRO2 Adaptif Test.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Harmanlanmış Deneme | KIRO2 Harmanlanmis Deneme.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Sınav Sonuç (net-birincil) | KIRO2 Sinav Sonuc.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Adaptif Test | KIRO2 Adaptif Test.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Harmanlanmış Deneme | KIRO2 Harmanlanmis Deneme.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Sınav Sonuç (net-birincil) | KIRO2 Sinav Sonuc.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
 ## 4 · Planlama (4)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
