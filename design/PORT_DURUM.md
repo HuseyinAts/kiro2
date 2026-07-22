@@ -26,9 +26,9 @@
 - **Doğrulama:** vitest **115 test / 21 dosya PASS** · kanon-lint **0 ihlal** · scoped strict tsc **0** · BackstopJS **111 story → 222/222 ≤%1** (LOKAL dev gate: `npm run kiro:visual:ref|test`).
 - Skeleton: kiroSweep (2.6s) + 3sn güvence + gün-mantrası (`role=status`) — spec-mandated, story+test dahil.
 
-**A11y bulguları (design kararı bekliyor — GİZLENMEDİ):**
+**A11y bulguları (çözüldü — GİZLENMEDİ):**
 - ProgressBar: `role=progressbar` erişilebilir ad yoktu → **`ariaLabel` prop eklendi** (fix).
-- ChatBubble(me) · Button primary · SideNav-aktif: beyaz metin coral `#FF6F5C` üzerinde ~2.75:1 < WCAG AA. Sistemik coral-CTA; jsdom-axe ölçemez. **Design kararı:** coral'ı koyulaştır (≥3:1) veya metin-taşıyan yüzeyde daha koyu coral.
+- ChatBubble(me) · Button primary · SideNav-aktif: beyaz metin coral `#FF6F5C` üzerinde ~2.75:1 < AA idi → **düzeltildi** (yeni token `coralCtaBg = #C2452B`; beyaz metin 5:1, `#C2452B`/`#FFF3EE` 4.69:1 — AA ✓). Bright coral yalnız aksan/glow için kalır.
 
 **Sapmalar → ADR-007** (`docs/adr/README.md`).
 

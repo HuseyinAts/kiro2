@@ -31,7 +31,7 @@ export function Button({ variant = 'primary', size = 'md', icon, disabled, onCli
   if (disabled) {
     look = { backgroundColor: color.paper.borderFaint, color: color.ink.faded3 };
   } else if (variant === 'primary') {
-    look = { backgroundColor: color.dawn.coral, color: '#fff', boxShadow: shadow.coralCta };
+    look = { backgroundColor: color.dawn.coralCtaBg, color: '#fff', boxShadow: shadow.coralCta };
   } else if (variant === 'goldDark') {
     // Yalnız KOYU ekranlarda kullan
     look = { background: `linear-gradient(110deg, ${color.dawn.gold2}, ${color.dawn.gold})`, color: '#2A1810' };

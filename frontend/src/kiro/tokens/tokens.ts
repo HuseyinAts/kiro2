@@ -55,6 +55,8 @@ export const color = {
     gold2: '#FCD34D',
     /** Açık zeminde CORAL METİN için AA karşılığı (dolgu değil) */
     coralTextOnLight: '#C2452B',
+    /** Beyaz metin taşıyan coral CTA/balon zemini — AA-güvenli derin coral (beyaz metin 5:1) */
+    coralCtaBg: '#C2452B',
   },
   /** Semantik */
   semantic: {

@@ -19,7 +19,7 @@ export interface ChatBubbleProps {
 export function ChatBubble({ role, children, tag, tagBg = '#FFF3EE', tagFg = '#C2452B', pending }: ChatBubbleProps) {
   if (role === 'me') {
     return (
-      <div style={{ alignSelf: 'flex-end', maxWidth: '78%', background: '#FF6F5C', color: '#fff',
+      <div style={{ alignSelf: 'flex-end', maxWidth: '78%', background: '#C2452B', color: '#fff',
         borderRadius: '14px 4px 14px 14px', padding: '12px 16px', fontFamily: font.sans,
         fontSize: 14, lineHeight: 1.55, fontWeight: 500 }}>
         {children}

@@ -81,6 +81,9 @@ görsel-diff. Storybook depoda kurulu değildi.
   ui-starter'a a11y fix; test kural-dışlaması kaldırıldı.
 - **Story renk literalleri:** stories `../tokens` import yerine token-eşdeğer hex literal kullanır
   (agent whitelist'i sınırlıydı); kanon-güvenli, ileride token-import'a refactor edilebilir (P3).
-**Açık a11y bulgusu (design kararı):** white-on-coral `#FF6F5C` ~2.75:1 < AA — Button primary /
-ChatBubble(me) / SideNav-aktif. Sistemik coral-CTA seçimi; koyulaştırma (≥3:1) veya metin-taşıyan
-yüzeyde daha koyu coral önerilir. jsdom-axe kontrastı ölçemediği için otomatik yakalanmaz.
+**A11y kontrast fix (uygulandı · 2026-07-22):** white-on-coral `#FF6F5C` ~2.75:1 < AA idi →
+CTA/balon/aktif-nav yüzeyleri yeni token **`dawn.coralCtaBg = #C2452B`** (ve `coralTextOnLight`
+= `#C2452B`) ile düzeltildi: beyaz metin/`#C2452B` = **5:1**, `#C2452B`/`#FFF3EE` = **4.69:1** (AA ✓).
+Bright `dawn.coral` yalnız aksan/glow/kenar (metin taşımayan) için kalır. Button primary +
+ChatBubble(me) + SideNav-aktif düzeltildi; oran manuel doğrulandı (jsdom-axe kontrastı ölçemez).
+Not: `design/` reference tokens/ui-starter bright coral'ı korur (tarihsel); `kiro/` AA-düzeltilmiş üretim.

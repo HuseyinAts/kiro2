@@ -143,7 +143,7 @@ export interface SideNavProps {
 }
 
 export function SideNav({
-  role = 'ogrenci', sections, activeId, accent = '#FF6F5C', collapsed = false,
+  role = 'ogrenci', sections, activeId, accent = '#C2452B', collapsed = false,
   userName, userSub, renderLink, onAssistant, showSettings = false, settingsHref = '/ayarlar',
 }: SideNavProps) {
   const secs = sections ?? PRESET[role];

@@ -14,6 +14,7 @@
   --k-gold: #FFD98C;
   --k-gold-2: #FCD34D;
   --k-coral-text-on-light: #C2452B;
+  --k-coral-cta-bg: #C2452B; /* beyaz metin taşıyan CTA/balon zemini — AA (beyaz metin 5:1) */
 
   /* Semantik */
   --k-risk: #C77A1E;               /* dolgu/grafik amber'i */
