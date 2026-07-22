@@ -173,16 +173,41 @@ export interface AnswerResult {
   theta?: number;
   bkt?: number;
   xpKazanilan?: number;
+  // --- Neden Geri Bildirim sağ ray (sunucudan; ekran salt-okur) ---
+  /** "{n} gün sonra tekrar göreceksin" — FSRS zamanlaması sunucuda */
+  fsrsNextDays?: number;
+  /** Kavram hâkimiyeti etkisi (yanlışta trend down) */
+  mastery?: { konu: string; pct: number; trend: 'up' | 'stable' | 'down' };
+  /** İlgili kavramlar (renk noktalı) — /topics/{konu}/atoms ilişkilerinden */
+  relatedConcepts?: { ad: string; renk: string }[];
+  /** Yanlış senaryoda "NEDEN {Y} YANLIŞ" gövdesi (sunucu şablonu; doğruda gelmez) */
+  nedenYanlis?: string;
 }
 
 export async function postAnswer(questionId: string, secilen: number): Promise<AnswerResult> {
   if (cfg.mode === 'mock') {
     const q = (await mock()).questionBank.find((x) => x.id === questionId);
     if (!q) throw new KiroApiError(404, '/questions/' + questionId + '/answer');
-    return { correct: secilen === q.dogru, dogru: q.dogru, cozum: q.cozum, neden: q.neden, xpKazanilan: secilen === q.dogru ? 10 : 2 };
+    const dogru = secilen === q.dogru;
+    return {
+      correct: dogru, dogru: q.dogru, cozum: q.cozum, neden: q.neden, xpKazanilan: dogru ? 10 : 2,
+      fsrsNextDays: dogru ? 5 : 2,
+      mastery: { konu: q.konu, pct: dogru ? 72 : 58, trend: dogru ? 'up' : 'down' },
+      relatedConcepts: [
+        { ad: 'Bileşke fonksiyon türevi', renk: color_subject_mor },
+        { ad: 'Üstel fonksiyon türevi', renk: color_subject_mavi },
+        { ad: 'Çarpım kuralı', renk: color_subject_yesil },
+      ],
+      nedenYanlis: dogru ? undefined : `${q.secenekler[secilen] ?? '—'} işaretledin — doğrusu ${q.secenekler[q.dogru] ?? '—'}. Aşağıdaki adımlar nerede saptığını tam olarak gösteriyor.`,
+    };
   }
   return live<AnswerResult>('/questions/' + questionId + '/answer', { method: 'POST', body: JSON.stringify({ secilen }) });
 }
+
+// İlgili-kavram nokta renkleri (mock; üretimde /topics/{konu}/atoms'tan)
+const color_subject_mor = '#8B5CF6';
+const color_subject_mavi = '#3B82F6';
+const color_subject_yesil = '#1FB683';
 
 export interface CatNextResult { item: Omit<CatItem, 'dogru'>; theta: number; se: number; done: boolean }
 
