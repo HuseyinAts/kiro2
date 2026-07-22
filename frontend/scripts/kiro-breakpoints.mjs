@@ -3,7 +3,7 @@
 // <a> text linkleri bilinçli istisna (§2). Kullanım: node scripts/kiro-breakpoints.mjs
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
@@ -13,15 +13,15 @@ const ROOT = path.resolve(__dirname, '..');
 const STATIC = path.join(ROOT, 'storybook-static');
 const PORT = Number(process.env.KIRO_BP_PORT || 6098);
 const WIDTHS = [390, 768, 834, 1024, 1194, 1280, 1440];
-const SCREENS = [
-  { id: 'kiro-ekran-giris--varsayilan', ad: 'Giriş' },
-  { id: 'kiro-ekran-odevlerim--varsayilan', ad: 'Ödevlerim' },
-];
-
 if (!existsSync(path.join(STATIC, 'iframe.html'))) {
   console.error('storybook-static yok — önce `npm run build-storybook`.');
   process.exit(2);
 }
+
+// Ekran story'lerini index.json'dan türet (Kiro/Ekran/* — otomatik ölçeklenir)
+const SCREENS = Object.values(JSON.parse(readFileSync(path.join(STATIC, 'index.json'), 'utf8')).entries)
+  .filter((e) => e.type === 'story' && String(e.title).startsWith('Kiro/Ekran/'))
+  .map((e) => ({ id: e.id, ad: String(e.title).replace('Kiro/Ekran/', '') }));
 
 const MIME = {
   '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',

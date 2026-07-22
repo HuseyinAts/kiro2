@@ -92,7 +92,7 @@ export function OnboardingPage(): React.ReactElement {
     background: color.paper.card, borderRadius: radius.cardLg, border: `1px solid ${color.paper.border}`,
     boxShadow: '0 20px 50px -24px rgba(42,36,51,0.3)', padding: '26px 28px 30px',
   };
-  const linkBtn: React.CSSProperties = { fontSize: 13, fontWeight: 700, color: color.dawn.coralTextOnLight, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: font.sans };
+  const linkBtn: React.CSSProperties = { minHeight: 44, display: 'inline-flex', alignItems: 'center', fontSize: 13, fontWeight: 700, color: color.dawn.coralTextOnLight, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: font.sans };
 
   return (
     <KiroThemeProvider theme="paper">
