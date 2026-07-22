@@ -13,6 +13,7 @@
 
 import type {
   Engine, Persona, Subject, Topic, Curriculum, CurriculumDers, AtomKirilim,
+  PlanWeek, PlanBlok, PlanGun,
   ReviewItem, LastExam, CatItem, SeviyeBilgi, SubjectKey, KiroData,
   KatalogKey,
   Question,
@@ -116,9 +117,62 @@ export async function getAllCurriculum(): Promise<Curriculum> {
 
 export async function getTopicAtoms(konu: string): Promise<AtomKirilim | null> {
   if (cfg.mode === 'mock') {
-    return (await mock()).atomKirilim.find((x) => x.konu === konu) ?? null;
+    const found = (await mock()).atomKirilim.find((x) => x.konu === konu);
+    return found ? markEnZayif(found) : null;
   }
   return live<AtomKirilim | null>('/topics/' + encodeURIComponent(konu) + '/atoms');
+}
+
+/** Sunucu-otoriter simülasyon: en zayıf (min hâkimiyet) atomu işaretle.
+ *  İstemci min-hesabı YAPMAZ — SPRINT5 açık-nokta 2 (enZayif sunucudan gelir). */
+export function markEnZayif(k: AtomKirilim): AtomKirilim {
+  if (k.atomlar.length === 0) return k;
+  const min = Math.min(...k.atomlar.map((a) => a.hakimiyet));
+  let marked = false;
+  return {
+    ...k,
+    atomlar: k.atomlar.map((a) => {
+      const enZayif = !marked && a.hakimiyet === min;
+      if (enZayif) marked = true;
+      return { ...a, enZayif };
+    }),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Haftalık Plan — GET /plan/week (openapi'de YOK; plan motoru Faz 4 sözleşmesi)
+// Mock: reviewQueue (due) + topics (zayıf) + sabit iskelet kompozisyonu.
+// Bu kompozisyon YALNIZ mock katmanında yaşar — üretim koduna sızmaz.
+// ---------------------------------------------------------------------------
+
+/** Deterministik mock hafta (DC ile birebir: Pzt 29 Haz bugün → Paz 5 Tem). */
+export function buildMockPlanWeek(d: MockData): PlanWeek {
+  const due = (d.reviewQueue ?? []).filter((r) => r.dueIn === 0);
+  const tekrar = (r: ReviewItem): PlanBlok => ({
+    tur: 'tekrar', ders: r.ders, baslik: `${r.konu} tekrarı`,
+    meta: `${r.kart} kart · ~${r.kart * 4} dk`, dk: r.kart * 4, hedefRota: '/tekrar',
+  });
+  const calisma = (ders: SubjectKey, konu: string): PlanBlok => ({
+    tur: 'calisma', ders, baslik: konu, meta: '12 soru · ~30 dk', dk: 30, hedefRota: '/soru-cozme',
+  });
+  const deneme: PlanBlok = { tur: 'deneme', baslik: 'Harmanlanmış Deneme', meta: 'TYT + AYT · ~135 dk', dk: 135, hedefRota: '/deneme' };
+  const analiz: PlanBlok = { tur: 'analiz', baslik: 'Deneme analizi', meta: 'net + zayıf konu · ~25 dk', dk: 25, hedefRota: '/sinav-sonuc' };
+  const mola: PlanBlok = { tur: 'mola', baslik: 'Nefes molası', meta: 'sakinleş · ~10 dk', dk: 10, hedefRota: '/mola' };
+  const gunler: PlanGun[] = [
+    { gun: 'Pzt', tarih: '29 Haz', bugun: true, bloklar: [calisma('mat', 'Türev'), ...(due[0] ? [tekrar(due[0])] : [])] },
+    { gun: 'Sal', tarih: '30 Haz', bugun: false, bloklar: [calisma('kim', 'Gazlar'), ...(due[1] ? [tekrar(due[1])] : [])] },
+    { gun: 'Çar', tarih: '1 Tem', bugun: false, bloklar: [calisma('fiz', 'Elektrik'), ...(due[2] ? [tekrar(due[2])] : [])] },
+    { gun: 'Per', tarih: '2 Tem', bugun: false, bloklar: [calisma('kim', 'Kimyasal Tepkimeler')] },
+    { gun: 'Cum', tarih: '3 Tem', bugun: false, bloklar: [calisma('mat', 'Limit ve Süreklilik')] },
+    { gun: 'Cmt', tarih: '4 Tem', bugun: false, bloklar: [deneme] },
+    { gun: 'Paz', tarih: '5 Tem', bugun: false, bloklar: [analiz, mola] },
+  ];
+  return { gunler, aralik: '29 Haz – 5 Tem', gunlukHedefDk: d.persona.gunlukHedefDk };
+}
+
+export async function getPlanWeek(): Promise<PlanWeek> {
+  if (cfg.mode === 'mock') return buildMockPlanWeek(await mock());
+  return live<PlanWeek>('/plan/week');
 }
 
 export async function getReviewDue(): Promise<ReviewItem[]> {

@@ -264,6 +264,8 @@ export type Curriculum = Record<SubjectKey, CurriculumDers>;
 export interface Atom {
   ad: string;
   hakimiyet: number; // 0-100
+  /** En zayıf (min hâkimiyet) atom SUNUCU yanıtında işaretlenir — istemci min-hesabı YAPMAZ */
+  enZayif?: boolean;
 }
 
 export interface AtomKirilim {
@@ -271,6 +273,37 @@ export interface AtomKirilim {
   konu: string;
   kavram: string;
   atomlar: Atom[];
+}
+
+// ---------- GET /plan/week (Faz 4 sözleşmesi — şimdilik mock katmanı) ----------
+// Plan motoru sunucuda kurar (kanon: motorlar sunucuda; istemci blok kaydırmaz).
+// Mock kompozisyonu (reviewQueue + topics) YALNIZ mock katmanında yaşar, üretim
+// koduna sızmaz — ekran her zaman api-client'tan okur.
+
+/** Plan bloğu türü — tag + renk + hedef rota bundan türer */
+export type PlanBlokTur = 'calisma' | 'tekrar' | 'deneme' | 'analiz' | 'mola';
+
+export interface PlanBlok {
+  tur: PlanBlokTur;
+  /** 'calisma' bloğunda ders rengi/adı için (diğer türlerde yok) */
+  ders?: SubjectKey;
+  baslik: string;    // kart başlığı (konu adı ya da sabit metin)
+  meta: string;      // '12 soru · ~30 dk' vb. (birebir kopya)
+  dk: number;        // süre (dakika) — sütun toplamı için
+  hedefRota: string; // '/soru-cozme' | '/tekrar' | '/mola' vb.
+}
+
+export interface PlanGun {
+  gun: string;   // 'Pzt'
+  tarih: string; // '29 Haz'
+  bugun: boolean;
+  bloklar: PlanBlok[]; // boş → "Serbest" (doldurulmaz)
+}
+
+export interface PlanWeek {
+  gunler: PlanGun[];
+  aralik: string;       // '29 Haz – 5 Tem'
+  gunlukHedefDk: number;
 }
 
 // ---------- GET /level ----------

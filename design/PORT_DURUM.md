@@ -111,6 +111,20 @@
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT5 Durumu (2026-07-22)
+
+**4/4 ekran ✅** — Haftalık Plan · Öğrenme Yolu · Bilgi Atomları · Çalışma Modları — **Grup 4 (Planlama) TAMAM** (rapor: `docs/audits/2026-07-22_sprint5-planlama.md`).
+- **Tema:** dördü de **paper**. Süreç: keşif workflow (6 ajan) → paylaşılan-infra → build workflow (4 ajan) → gate → adversarial review (4 boyut) → fix.
+- **Infra (mock-katmanı, üretime sızmaz):** `getPlanWeek()`/`buildMockPlanWeek()` + `PlanWeek` tipleri (açık-nokta 1) · `Atom.enZayif` + `markEnZayif()` (açık-nokta 2, sunucu-otorite sim) · MSW `/plan/week`·`/curriculum`(+`:ders`)·`/topics/:konu/atoms`. kiro-data.json'a plan İÇERİĞİ eklenmedi.
+- **Adversarial review:** 11 bulgu → **8 fix** (h1 italik→düz, gün h1/h2, "Serbest" AA, mod-CTA AA `ctaRenk`, ProgressRing 11px, EmptyState bekleyiş-dili) · 2 red (SideNav 1023=rail kuralı; chip=spec "zayıf konular") · 1 ertele (chip roving-tabindex).
+- **Breakpoint bug (2):** HaftalikPlan `minmax(0,1fr)` (min-content blowout); OgrenmeYolu içerik-sarmalayıcı `boxSizing:border-box` (content-box padding taşması — 2 yanlış hipotez sonrası **parent-zincirli Playwright teşhisiyle** bulundu).
+- **Kapı:** kanon **0 ihlal** · tsc **0** · vitest **37 dosya / 203 test** · breakpoint **119/119** (17 story × 7) · axe temiz.
+
+**İlerleme: 15/42 ekran + 1 composite (QuestionCard). Grup 4 (Planlama) TAMAM.**
+Sonraki: Grup 5 Hub/duygusal — **Bugün/Şafak = İLK dusk ekran** (S6).
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -149,13 +163,13 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Harmanlanmış Deneme | KIRO2 Harmanlanmis Deneme.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Sınav Sonuç (net-birincil) | KIRO2 Sinav Sonuc.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
-## 4 · Planlama (4)
+## 4 · Planlama (4) — ✅ TAMAM (2026-07-22, SPRINT5)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| Haftalık Plan | KIRO2 Haftalik Plan.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Öğrenme Yolu | KIRO2 Ogrenme Yolu.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Bilgi Atomları | KIRO Bilgi Atomlari.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Çalışma Modları | KIRO Calisma Modlari.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Haftalık Plan | KIRO2 Haftalik Plan.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Öğrenme Yolu | KIRO2 Ogrenme Yolu.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Bilgi Atomları | KIRO Bilgi Atomlari.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Çalışma Modları | KIRO Calisma Modlari.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
 ## 5 · Hub / duygusal — KOYU (6)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |

@@ -6,7 +6,7 @@
 // ============================================================================
 import { http, HttpResponse } from 'msw';
 
-import type { MockData } from './api-client';
+import { buildMockPlanWeek, markEnZayif, type MockData } from './api-client';
 import kiroData from './kiro-data.json';
 
 const D = kiroData as unknown as MockData;
@@ -25,6 +25,19 @@ export const kiroHandlers = [
   http.get('*/teacher/classes', () =>
     HttpResponse.json([{ id: 'c1', ad: '12-A', katilimKodu: '482913', ogrenci: (D.sinifRoster ?? []).length }]),
   ),
+
+  // --- SPRINT5 Planlama uçları ---
+  http.get('*/plan/week', () => HttpResponse.json(buildMockPlanWeek(D))),
+  http.get('*/curriculum', () => HttpResponse.json(D.curriculum)),
+  http.get('*/curriculum/:ders', ({ params }) => {
+    const c = D.curriculum[params.ders as keyof typeof D.curriculum];
+    return c ? HttpResponse.json(c) : hata('ders_yok', 'Ders bulunamadı.', 404);
+  }),
+  http.get('*/topics/:konu/atoms', ({ params }) => {
+    const konu = decodeURIComponent(params.konu as string);
+    const a = (D.atomKirilim ?? []).find((x) => x.konu === konu);
+    return HttpResponse.json(a ? markEnZayif(a) : null);
+  }),
 
   http.post('*/auth/login', async ({ request }) => {
     const b = (await request.json().catch(() => ({}))) as { eposta?: string };
