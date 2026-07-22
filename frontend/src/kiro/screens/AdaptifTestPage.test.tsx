@@ -28,6 +28,17 @@ describe('AdaptifTestPage', () => {
     expect(await screen.findByText('1 doğru')).toBeInTheDocument();
   });
 
+  it('klavye: rakam seçer, Enter gönderir (DoD Enter=Cevapla)', async () => {
+    render(<AdaptifTestPage />);
+    await screen.findByText('Yetenek tahmini (θ)');
+    const grp = screen.getByRole('radiogroup');
+    within(grp).getAllByRole('radio')[0]!.focus();
+    await userEvent.keyboard('1');
+    expect(within(grp).getAllByRole('radio')[0]!).toHaveAttribute('aria-checked', 'true');
+    await userEvent.keyboard('{Enter}');
+    expect(await screen.findByText('1 doğru')).toBeInTheDocument();
+  });
+
   it('"Emin değilim" (secim:null) ilerletir', async () => {
     render(<AdaptifTestPage />);
     await screen.findByText('Yetenek tahmini (θ)');

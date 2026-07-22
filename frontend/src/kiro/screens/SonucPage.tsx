@@ -7,9 +7,9 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getExamResult, getTopics, getSubjects, getMe } from '../api/api-client';
+import { configureKiroApi, getExamResult, getTopics, getMe } from '../api/api-client';
 import type { MockData } from '../api/api-client';
-import type { LastExam, Topic, Subject, SubjectKey, Persona } from '../types';
+import type { LastExam, Topic, SubjectKey, Persona } from '../types';
 import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -66,14 +66,11 @@ export function SonucPage(): React.ReactElement {
   React.useEffect(() => {
     let alive = true;
     setExam(null); setHata(false);
-    Promise.all([getExamResult(), getTopics(), getSubjects(), getMe()])
-      .then(([e, topics, subs, me]: [LastExam, Topic[], Subject[], Persona]) => {
+    Promise.all([getExamResult(), getTopics(), getMe()])
+      .then(([e, topics, me]: [LastExam, Topic[], Persona]) => {
         if (!alive) return;
         setExam(e);
         setAd(me.adKisa || me.ad);
-        const nameKey = new Map(subs.map((s) => [s.ad, s.key]));
-        // subs.key kullanılıyor sadece renk join'i için; şu an doğrudan light[key]
-        void nameKey;
         setZayif(topics.filter((t) => t.durum === 'zayif').sort((a, b) => a.hakimiyet - b.hakimiyet).slice(0, 4).map((t) => ({ ad: t.ad, hakimiyet: t.hakimiyet })));
       })
       .catch(() => { if (alive) setHata(true); });
@@ -131,7 +128,7 @@ export function SonucPage(): React.ReactElement {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
                     <div><div style={{ ...numText, fontSize: 27, fontWeight: 800, lineHeight: 1 }}>{trNet(exam.tytNet)}</div><div style={{ fontSize: 12.5, color: color.ink.muted, marginTop: 5 }}>TYT neti</div></div>
                     <div><div style={{ ...numText, fontSize: 27, fontWeight: 800, lineHeight: 1, color: color.dawn.coralTextOnLight }}>{trNet(toplamNet)}</div><div style={{ fontSize: 12.5, color: color.ink.muted, marginTop: 5 }}>Toplam net</div></div>
-                    <div><div style={{ ...numText, fontSize: 27, fontWeight: 800, lineHeight: 1 }}>{exam.tahminiSiralama.toLocaleString('tr-TR')}</div><div style={{ fontSize: 12.5, color: color.ink.muted, marginTop: 5 }}>Tahmini sıralama · <strong style={{ color: color.ink.secondary }}>yalnız yön göstergesi</strong></div></div>
+                    <div style={{ alignSelf: 'center', border: `1px solid ${color.paper.border}`, borderRadius: 10, background: color.paper.subtle, padding: '8px 11px' }}><div style={{ ...numText, fontSize: 15, fontWeight: 700, lineHeight: 1, color: color.ink.secondary }}>{exam.tahminiSiralama.toLocaleString('tr-TR')}</div><div style={{ fontSize: 11, color: color.ink.muted, marginTop: 3 }}>Tahmini sıralama · <strong style={{ color: color.ink.secondary }}>yalnız yön göstergesi</strong></div></div>
                   </div>
                 </div>
               </div>

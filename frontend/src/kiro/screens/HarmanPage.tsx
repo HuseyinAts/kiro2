@@ -135,9 +135,9 @@ export function HarmanPage(): React.ReactElement {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
                     <span style={{ fontSize: 16, fontWeight: 800 }}>Soru sırası · {modeLabel}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                      <span aria-hidden style={{ display: 'inline-flex', gap: 12 }}>
+                      <span style={{ display: 'inline-flex', gap: 12 }}>
                         {comp.slice(0, N).map((c) => (
-                          <span key={c.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: '#4A4456' }}><span style={{ width: 11, height: 11, borderRadius: 3, background: c.color }} />{c.name}</span>
+                          <span key={c.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: '#4A4456' }}><span aria-hidden style={{ width: 11, height: 11, borderRadius: 3, background: c.color }} />{c.name}</span>
                         ))}
                       </span>
                       <button type="button" onClick={() => setMode((m) => (m === 'harmanli' ? 'bloklu' : 'harmanli'))} title="Modu değiştir" aria-pressed={mode === 'bloklu'} style={{ minHeight: 44, padding: '0 14px', borderRadius: 999, border: `1px solid ${color.paper.border}`, background: color.paper.subtle, color: color.ink.secondary, cursor: 'pointer', fontFamily: font.sans, fontSize: 12.5, fontWeight: 700 }}>{mode === 'harmanli' ? 'Bloklu görünüm' : 'Harmanlı görünüm'}</button>
@@ -166,7 +166,7 @@ export function HarmanPage(): React.ReactElement {
                   </div>
                   <div style={{ background: '#FFF3EE', border: '1.5px solid #F2CFC2', borderRadius: 16, padding: 20 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                      <span style={{ fontSize: 11, fontWeight: 800, color: '#fff', background: color.dawn.coral, borderRadius: 7, padding: '3px 8px' }}>HARMANLANMIŞ</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: '#fff', background: color.dawn.coralCtaBg, borderRadius: 7, padding: '3px 8px' }}>HARMANLANMIŞ</span>
                       <span style={{ ...numText, fontSize: 12, fontWeight: 600, color: color.dawn.coralTextOnLight }}>abc abc abc</span>
                     </div>
                     <ul style={{ margin: 0, padding: 0, display: 'grid', gap: 7, listStyle: 'none', fontSize: 13, color: color.dawn.coralTextOnLight }}>

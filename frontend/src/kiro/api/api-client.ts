@@ -217,6 +217,8 @@ export interface CatNextResult {
   theta: number; se: number; done: boolean;
   seviye: 'zayif' | 'orta' | 'guclu';
   topPct: number; netTahmini: number; madde: number;
+  /** Motor paneli değerleri — SUNUCUDAN (istemci IRT/eşik hesaplamaz) */
+  kalanTahmini: number; guvenilirlik: number;
   uygulananlar: CatUygulanan[];
 }
 
@@ -242,6 +244,8 @@ export async function postCatNext(args: CatNextArgs = {}): Promise<CatNextResult
       item: { ...ham, id: 'mad-' + (n + 1) }, theta, se, done, seviye,
       topPct: Math.max(1, Math.round(30 - theta * 14)),
       netTahmini: Math.round(28 + theta * 8),
+      kalanTahmini: done ? 0 : Math.max(0, Math.ceil((se - 0.30) / 0.04)),
+      guvenilirlik: Math.round((1 - se * se) * 100),
       madde: n, uygulananlar,
     };
   }

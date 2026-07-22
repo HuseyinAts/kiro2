@@ -89,6 +89,7 @@ export function AdaptifTestPage(): React.ReactElement {
   const [hata, setHata] = React.useState(false);
   const [yeniden, setYeniden] = React.useState(0);
   const grpRef = React.useRef<HTMLDivElement>(null);
+  const bitisRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     let alive = true;
@@ -117,6 +118,8 @@ export function AdaptifTestPage(): React.ReactElement {
     const n = item.secenekler.length;
     const radios = grpRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]');
     const tasi = (to: number) => { e.preventDefault(); setOdak(to); radios?.[to]?.focus(); };
+    if (e.key === 'Enter') { e.preventDefault(); if (secilen !== null && !gonderiliyor) void gonder(secilen); return; } // DoD: Enter=Cevapla
+    if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); setSecilen(odak); return; } // Boşluk odaklı şıkkı seçer
     if (e.key === 'ArrowDown' || e.key === 'ArrowRight') return tasi((odak + 1) % n);
     if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') return tasi((odak - 1 + n) % n);
     const d = Number(e.key);
@@ -132,7 +135,8 @@ export function AdaptifTestPage(): React.ReactElement {
   const markLeft = motor ? Math.max(0, Math.min(100, ((motor.theta + 3) / 6) * 100)) : 50;
   const bandLeft = motor ? Math.max(0, ((motor.theta - motor.se + 3) / 6) * 100) : 0;
   const bandW = motor ? ((2 * motor.se) / 6) * 100 : 0;
-  const kalan = motor ? Math.max(0, Math.ceil((motor.se - 0.28) / 0.04)) : 0;
+
+  React.useEffect(() => { if (bitti) bitisRef.current?.focus(); }, [bitti]);
 
   return (
     <KiroThemeProvider theme="paper">
@@ -201,7 +205,7 @@ export function AdaptifTestPage(): React.ReactElement {
                   </div>
                 ) : (
                   /* Bitiş kartı */
-                  <div style={{ ...kart, padding: '28px 30px', textAlign: 'center' }} aria-live="polite">
+                  <div ref={bitisRef} tabIndex={-1} style={{ ...kart, padding: '28px 30px', textAlign: 'center', outline: 'none' }} aria-live="polite">
                     <div aria-hidden style={{ width: 60, height: 60, margin: '0 auto 16px', borderRadius: 18, background: 'linear-gradient(135deg,#1FB683,#34D399)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 24px -8px rgba(16,185,129,0.5)' }}><Tik /></div>
                     <h2 style={{ margin: 0, fontSize: 23, fontWeight: 800 }}>Yerleştirme tamamlandı</h2>
                     <p style={{ margin: '10px 0 0', fontSize: 14.5, color: color.ink.muted }}><span style={numText}>{ug.length}</span> maddede seviyeni ölçtük — tahmin yeterince kararlı (SE {trOndalik(motor.se)}).</p>
@@ -281,12 +285,12 @@ export function AdaptifTestPage(): React.ReactElement {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginTop: 8, fontSize: 11.5 }}>
                     <span style={{ color: color.ink.muted }}>Hedef: SE &lt; 0,30 (yeşil çizgi)</span>
-                    <span style={{ ...numText, fontWeight: 800, color: '#047857' }}>{bitti ? 'tamamlandı' : `~${kalan} soru kaldı`}</span>
+                    <span style={{ ...numText, fontWeight: 800, color: '#047857' }}>{bitti ? 'tamamlandı' : `~${motor.kalanTahmini} soru kaldı`}</span>
                   </div>
                   <div style={{ height: 1, background: color.paper.border, margin: '15px 0' }} />
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, textAlign: 'center' }}>
                     {[
-                      { v: `%${Math.round((1 - motor.se * motor.se) * 100)}`, e: 'Güvenilirlik' },
+                      { v: `%${motor.guvenilirlik}`, e: 'Güvenilirlik' },
                       { v: String(ug.length), e: 'Madde' },
                       { v: `%${ug.length ? Math.round((dogruSay / ug.length) * 100) : 0}`, e: 'Doğruluk' },
                     ].map((t) => (
