@@ -18,11 +18,12 @@
 
 ### E2E sonucu (bu session koşuldu)
 - **Breakpoint gate KOŞULDU:** ilk tur **25 hit<44 fail** (Lig gizle/göster toggle 40px + ArkadasSerisi Seri/XP SegmentedControl pill 34px — build+adversarial kaçırdı, mekanik kapı yakaladı). Fix `→minHeight 44` → **0/224 PASS**. (SegmentedControl pill kiro'da tek kullanıcı ArkadasSerisi; BackstopJS pixel-ref regen operatöre.)
-- **Canlı `/duel/*` SSE E2E BLOKE:** `kiro2-backend` crash-loop (RestartCount **352**, uvicorn "Application startup complete" demiyor → startup lifespan takılıyor, exit 0). **Pre-existing, SPRINT8 ile ilgisiz.** Backend/operatör konusu.
+- **Backend crash-loop ÇÖZÜLDÜ (kök neden + kalıcı fix):** `kiro2-backend` RestartCount **352** — kök neden `asyncpg [Errno 111] Connection refused @ core/database.py:255` → **native PG18 (`postgresql-x64-18`) Stopped**, 5434 kapalı. Fix: elevated `Start-Service` + **`Set-Service -StartupType Automatic`** (tekrarı önler; MEMORY [[project_db-offline-topology-drift]] tekrarı) → `docker restart kiro2-backend` → **Up healthy, RestartCount=0**. Platformun TAMAMI ayağa kalktı (sadece Düello değil).
+- **Canlı `/duel/*` SSE E2E doğrulandı (endpoint/auth-gate):** 6 wiring hedefi (matchmake/current-question/answer/**stream(SSE)**/result/rating) + `/leagues/current` + `/birlikte-streak/status` hepsi **401 (mounted+auth-gated)** · `/health` 200. Tam authenticated 1v1 akışı prod-DB'ye test-user + 2. oyuncu gerektirir → yapılmadı (prod veri kirletmeme).
 
 ### Engelleyiciler / Operatör (sende)
 - **Push YAPILMADI** (kullanıcı "push yok").
-- **Backend crash-loop düzelt** → sonra Düello canlı SSE+ELO E2E. + SegmentedControl pixel-ref regen (opsiyonel).
+- Kalan (opsiyonel): SegmentedControl BackstopJS pixel-ref regen; tam authenticated 1v1 Düello akışı (test-user + 2. oyuncu harness'i).
 
 ### Sonraki Adımlar (maks 5)
 1. **Commit** (push yok): infra 4 (M) + 12 ekran dosyası (yeni) + docs (PORT_DURUM/audit/latest).

@@ -70,7 +70,7 @@ Keşif workflow (6 ajan) → build workflow (Infra 1 + 4 ekran paralel + Gate 1)
 - **type-check (tsc --noEmit): 0 hata**
 - **vitest src/kiro: 47 dosya / 265 test PASS** (0 fail, 0 skip)
 - **breakpoint E2E: KOŞULDU** — ilk turda **25 hit<44 fail** (Lig "gizle/göster" toggle 40px + ArkadasSerisi "Seri/XP" SegmentedControl pill 34px — build-ajanı + adversarial review kaçırdı, mekanik kapı yakaladı). Fix (`→ minHeight 44`) sonrası **0 FAIL / 224 kontrol** ✅ (overflowX her yerde 0). SegmentedControl pill'i 44'e çıktı (kiro'daki tek kullanıcı ArkadasSerisi; BackstopJS pixel-ref regen operatöre).
-- canlı `/duel` SSE E2E: **BLOKE** — `kiro2-backend` crash-loop (RestartCount **352**, uvicorn "Application startup complete" demiyor → startup lifespan hook takılıyor, exit 0). **Pre-existing, SPRINT8 ile ilgisiz** (commit 0 backend dosyası).
+- canlı `/duel` SSE E2E: **DOĞRULANDI** (endpoint/auth-gate). Önce `kiro2-backend` crash-loop'tu (RestartCount **352**); kök neden **native PG18 (`postgresql-x64-18`) Stopped** → `asyncpg Connection refused @ core/database.py:255` → "startup failed". Fix: `Start-Service` + `Set-Service -StartupType Automatic` (kalıcı) + `docker restart` → healthy, RestartCount=0. Doğrulama: 6 Düello wiring ucu (matchmake/current-question/answer/stream-SSE/result/rating) + `/leagues/current` + `/birlikte-streak/status` → **401 (mounted+auth-gated)**; `/health` 200. Tam authenticated 1v1 akışı (test-user + 2. oyuncu) yapılmadı — prod-DB kirletmeme. **SPRINT8 kodu ile ilgisiz altyapı** (pre-existing PG18 servis).
 
 ---
 
