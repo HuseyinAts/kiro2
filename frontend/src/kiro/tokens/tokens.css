@@ -58,7 +58,7 @@
   --k-ease: cubic-bezier(0.33, 0, 0.2, 1);
 
   /* Şafak göğü gradyanları (koyu hero zeminleri) */
-  --k-gradient-dawn-sky: linear-gradient(176deg, #141029, #241640, #3E1F4E, #6A2B52, #A33C4E, #D35F49, #F2974C, #FFC76F);
+  --k-gradient-dawn-sky: linear-gradient(176deg, #141029 0%, #241640 17%, #3E1F4E 33%, #6A2B52 51%, #A33C4E 66%, #D35F49 80%, #F2974C 92%, #FFC76F 100%);
   --k-gradient-dawn-underglow: radial-gradient(130% 100% at 50% 118%, #FFB57E, #FF8A5B, #C24E7E, #5B2F66, #1A0F26);
 }
 

@@ -37,5 +37,5 @@ describe('HaftalikPlanPage', () => {
     const { container } = render(<HaftalikPlanPage />);
     await screen.findByText('Türev');
     expect(await axe(container)).toHaveNoViolations();
-  }, 20000);
+  }, 40000); // 7-sütun grid — jsdom+axe yavaş; paralel yük altında 20s yetmiyor
 });

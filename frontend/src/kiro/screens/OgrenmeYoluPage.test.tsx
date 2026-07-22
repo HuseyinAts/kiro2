@@ -77,5 +77,5 @@ describe('OgrenmeYoluPage', () => {
     const { container } = render(<OgrenmeYoluPage />);
     await screen.findByText('Temel Kavramlar');
     expect(await axe(container)).toHaveNoViolations();
-  }, 20000);
+  }, 40000); // ağır patika — jsdom+axe yavaş; paralel yük altında 20s yetmiyor
 });

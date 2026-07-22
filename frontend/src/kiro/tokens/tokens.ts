@@ -44,6 +44,11 @@ export const color = {
     textWarm: '#FBEFE6',
     text2: '#ECE4F0',
     textSecondary: 'rgba(241,233,242,0.6)',
+    /* Koyu-zemin ikincil metin tonları (SPRINT6 §7 kanonu — dusk'ta açık-zemin grisi YASAK) */
+    ink2: '#B6A6C4', // ikincil (leylak-gri)
+    iconMuted: '#9B8FB5', // ikon / soluk-ikincil
+    faded: '#8C8398', // soluk
+    body80: 'rgba(236,228,240,0.8)', // gövde (0.8 alfa)
   },
   /** Dawn aksanı — marka ipliği (her iki yüzeyde) */
   dawn: {
@@ -92,7 +97,7 @@ export const color = {
   /** Şafak göğü gradyanları (kanon stringleri — koyu hero zeminleri) */
   gradient: {
     dawnSkyLinear:
-      'linear-gradient(176deg, #141029, #241640, #3E1F4E, #6A2B52, #A33C4E, #D35F49, #F2974C, #FFC76F)',
+      'linear-gradient(176deg, #141029 0%, #241640 17%, #3E1F4E 33%, #6A2B52 51%, #A33C4E 66%, #D35F49 80%, #F2974C 92%, #FFC76F 100%)',
     dawnUnderglowRadial:
       'radial-gradient(130% 100% at 50% 118%, #FFB57E, #FF8A5B, #C24E7E, #5B2F66, #1A0F26)',
   },

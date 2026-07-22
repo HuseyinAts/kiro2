@@ -125,6 +125,20 @@ Sonraki: Grup 5 Hub/duygusal — **Bugün/Şafak = İLK dusk ekran** (S6).
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT6 Durumu (2026-07-22 · İLK DUSK)
+
+**3/3 ekran ✅** — Bugün/Şafak hub · Kutlama · Mola — **Grup 5 (Hub/duygusal) ilk yarısı TAMAM; İLK KOYU (dusk) EKRANLAR** (rapor: `docs/audits/2026-07-22_sprint6-duygusal-cekirdek-I.md`).
+- **Tema:** üçü de **dusk**. Süreç: keşif workflow (6) → paylaşılan-infra → build workflow (3) → gate → adversarial review (4 boyut) → fix.
+- **Dusk infra (İLK):** `.k-dusk` shell + `surf('dusk')` ilk ekrana bağlandı; `tokens.ts` dusk ikincil tonları (ink2/iconMuted/faded/body80, §7 kanonu); **`dawnSkyLinear` durak-yüzdeleri düzeltildi** (kanon gradyan, tokens.ts+css); `// kanon-allow: kutlama` (MOTION_KANON §5 dusk motion). DUSK CTA = parlak coral + **koyu mürekkep** (#2A1018 — paper'ın tersi, AA-güvenli). ConfettiDawn reuse.
+- **Adversarial review:** 18 bulgu (çoğu dedup) → **tümü fix**. Mola 0; Bugün 1 (gradyan token); **Kutlama 7** (kurucu ajan DC dosyasını bulamadı → eyebrow uppercase, ödül-chip row, yıldız nokta, seviye-recompute, halo/CTA/mantra drift).
+- **Test flake:** 2 axe-**timeout** (SPRINT5 ağır paper ekranlar, 40-dosya paralel yük) → 20s→40s bump (ihlal değil).
+- **Kapı:** kanon **0 ihlal** · tsc **0** · vitest **40 dosya / 222 test** · breakpoint **147/147** (21 story × 7) · axe temiz.
+
+**İlerleme: 18/42 ekran + 1 composite (QuestionCard). Grup 5 ilk yarısı TAMAM.**
+Sonraki: Grup 5 ikinci yarısı (S7) — Geri Sayım · Başarımlar · Boss Savaşı (kırmızı istisnası boss-arena).
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -171,12 +185,12 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Bilgi Atomları | KIRO Bilgi Atomlari.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Çalışma Modları | KIRO Calisma Modlari.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
-## 5 · Hub / duygusal — KOYU (6)
+## 5 · Hub / duygusal — KOYU (6) — ilk yarı ✅ TAMAM (2026-07-22, SPRINT6 · İLK DUSK)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| Bugün (hub) | KIRO Safak.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Kutlama | KIRO2 Kutlama.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Mola | KIRO2 Mola.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Bugün (hub) | KIRO Safak.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Kutlama | KIRO2 Kutlama.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Mola | KIRO2 Mola.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Geri Sayım (kaygı-nötr varsayılan) | KIRO2 Sinav Geri Sayim.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Başarımlar | KIRO2 Basarimlar.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Boss Savaşı | KIRO2 Boss Savasi.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
