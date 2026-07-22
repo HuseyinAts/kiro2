@@ -139,6 +139,21 @@ Sonraki: Grup 5 ikinci yarısı (S7) — Geri Sayım · Başarımlar · Boss Sav
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT7 Durumu (2026-07-22 · GRUP 5 BİTER)
+
+**3/3 ekran ✅** — Sınav Geri Sayım · Başarımlar · Boss Savaşı — **Grup 5 (Hub/duygusal) TAMAM (6/6)** (rapor: `docs/audits/2026-07-22_sprint7-duygusal-cekirdek-II.md`).
+- **Tema:** üçü de **dusk** (Boss = kırmızı arena istisnası). Süreç: keşif workflow (6) → paylaşılan-infra → build workflow (3) → gate → adversarial review (4 boyut) → fix.
+- **Infra (YENİ):** `lib/gunSayaci.ts` (`gunKalan`/`haftaKalan`, Math.max(1,…) DC alt-sınırı; YALNIZ Geri Sayım tüketir) · api-client `postBossSession`+`postBossAnswer` (mock server-sim; **sunucu-otorite:** correct/hasar/hp/kombo/can API yanıtından, Boss soruları `getQuestionSet` STRIP'li). **Boss KIRMIZI:** `// kanon-allow: boss-arena, kutlama` (kırmızı aile inline, 2026-07-04 onaylı; kullanıcı-hata TERRACOTTA, doğru şık YEŞİL).
+- **Ekranlar:** Geri Sayım 2-varyant (default **kaygı-nötr** "gün saymaya gerek yok") · Başarımlar hâkimiyet halkaları (96px SVG, tierFromPct 40/65/85) + seri kilometre taşları · Boss ağır (arena + ejderha + combat döngüsü + zafer/yenilgi overlay + ConfettiDawn zaferde, HP role=progressbar + focus-trap).
+- **Adversarial review:** 4 bulgu (3 dedup) → **2 fix** (GeriSayım haftaKalan Math.max alt-sınırı; Boss overlay Tab focus-trap) · 1 ertele (Başarımlar `siralama` prop = editör-prop, görünür kontrol değil). Boss server-otorite/kopya/kırmızı-scope/hareket-guard **TAM TEMİZ**.
+- **Build-turu:** Boss HP `transition:width`→`transform:scaleX` (layout-anim yasak); Başarımlar `kazanilan` = ders + taş (DC birebir 8).
+- **Kapı:** kanon **0 ihlal** · tsc **0** · vitest **43 dosya / 240 test PASS** (canlı doğrulandı) · breakpoint **175/175** (25 story × 7) · axe temiz.
+
+**İlerleme: 21/42 ekran + 1 composite (QuestionCard). Grup 5 (Hub/duygusal) TAMAM (6/6).**
+Sonraki: **Grup 6 Oyunlaştırma (S8)** — Lig · 1v1 Düello · Arkadaş Serisi · Seri Dondurma (lig ucu: önce backend keşfi).
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.

@@ -372,6 +372,68 @@ export function seviyeBilgiFrom(seviyeEsik: number[], xp: number): SeviyeBilgi {
 }
 
 // ---------------------------------------------------------------------------
+// Boss Savaşı — POST /boss/session + /boss/answer (openapi'de YOK; Faz 4 sözleşmesi)
+// Sunucu-otorite: dogru + hasar/HP/kombo/can SUNUCUDA (mock server-sim; istemci HESAPLAMAZ).
+// Boss teması = en zayıf mat konu + o konunun en zayıf atomu. Sorular getQuestionSet STRIP'li.
+// ---------------------------------------------------------------------------
+
+export interface BossSession {
+  oturumId: string;
+  bossAd: string;         // "{konu} Ejderhası"
+  konu: string;
+  zayifAtom: string;
+  bossSeviye: number;     // mock sabit 9; üretimde sunucu (açık-nokta 5)
+  maxHP: number;          // 2000
+  maxCan: number;         // 5
+  sorular: SoruSetItem[]; // dogru/cozum/neden STRIP'li (istemciye sızmaz)
+  odulXp: number;         // 800 (mock sabit; üretimde sunucu — Kutlama'daki +120 ile çakışır, açık-nokta 5)
+  odulRozet: string;      // "Efsanevi rozet"
+}
+
+export async function postBossSession(): Promise<BossSession> {
+  if (cfg.mode === 'mock') {
+    const d = await mock();
+    const matTopics = d.topics.filter((t) => t.ders === 'mat');
+    const zayif = matTopics.reduce<{ ad: string; hakimiyet: number }>(
+      (a, b) => (b.hakimiyet < a.hakimiyet ? b : a),
+      matTopics[0] ?? { ad: 'Türev', hakimiyet: 48 },
+    );
+    const kir = d.atomKirilim.find((x) => x.konu === zayif.ad);
+    const atom = kir ? (markEnZayif(kir).atomlar.find((a) => a.enZayif)?.ad ?? kir.atomlar[0]?.ad ?? '—') : 'İç-fonksiyon türevi';
+    const sorular = await getQuestionSet('mat', zayif.ad);
+    return {
+      oturumId: 'boss-' + zayif.ad, bossAd: zayif.ad + ' Ejderhası', konu: zayif.ad, zayifAtom: atom,
+      bossSeviye: 9, maxHP: 2000, maxCan: 5, sorular, odulXp: 800, odulRozet: 'Efsanevi rozet',
+    };
+  }
+  return live<BossSession>('/boss/session', { method: 'POST', body: JSON.stringify({}) });
+}
+
+export interface BossDurum { hp: number; kombo: number; can: number }
+export interface BossAnswerResult extends BossDurum {
+  correct: boolean;
+  dogru: number;          // doğru şık — YANITTAN SONRA (sunucu)
+  hasar: number;          // 280 + (kombo-1)*70 — mock server-sim (istemci hesaplamaz)
+  sonuc?: 'won' | 'lost';
+}
+
+/** Boss saldırı: correct + hasar/HP/kombo/can SUNUCUDA (mock: dogru bank'tan, hasar formülü mock-izole).
+ *  durum = istemcinin son bilinen HP/kombo/can'ı; sunucu (mock) sonrakini döner (postCatNext deseni). */
+export async function postBossAnswer(questionId: string, secim: number | null, durum: BossDurum): Promise<BossAnswerResult> {
+  if (cfg.mode === 'mock') {
+    const q = (await mock()).questionBank.find((x) => x.id === questionId);
+    const correct = q != null && secim === q.dogru;
+    let { hp, kombo, can } = durum;
+    let hasar = 0;
+    if (correct) { hasar = 280 + (kombo - 1) * 70; hp = Math.max(0, hp - hasar); kombo += 1; }
+    else { can -= 1; kombo = 1; }
+    const sonuc: 'won' | 'lost' | undefined = hp <= 0 ? 'won' : can <= 0 ? 'lost' : undefined;
+    return { correct, dogru: q?.dogru ?? 0, hasar, hp, kombo, can, sonuc };
+  }
+  return live<BossAnswerResult>('/boss/answer', { method: 'POST', body: JSON.stringify({ questionId, secim, durum }) });
+}
+
+// ---------------------------------------------------------------------------
 // Kimlik — POST /auth/* (mock: sahte token; gerçek doğrulama sunucuda)
 // ---------------------------------------------------------------------------
 
