@@ -15,6 +15,7 @@ import type {
   Engine, Persona, Subject, Topic, Curriculum, CurriculumDers, AtomKirilim,
   ReviewItem, LastExam, CatItem, SeviyeBilgi, SubjectKey, KiroData,
   KatalogKey,
+  Question,
   Odev,
   SinifOgrenci,
   AuthTokens,
@@ -141,6 +142,21 @@ export async function getLevel(): Promise<SeviyeBilgi> {
     return seviyeBilgiFrom(d.seviyeEsik, d.persona.xp);
   }
   return live<SeviyeBilgi>('/level');
+}
+
+/** Soru seti maddesi — sunucu-otoriter: dogru/cozum/neden İÇERMEZ (postAnswer'da iner). */
+export type SoruSetItem = Pick<Question, 'id' | 'ders' | 'konu' | 'b' | 'soru' | 'secenekler'>;
+
+/** Günlük/konu seti (Soru Çözme). Mock: questionBank filtre + STRIP; live: GET /questions/set. */
+export async function getQuestionSet(ders: KatalogKey = 'mat', konu?: string): Promise<SoruSetItem[]> {
+  if (cfg.mode === 'mock') {
+    const bank = (await mock()).questionBank.filter((q) => q.ders === ders);
+    const sirali = konu ? [...bank].sort((a, b) => Number(b.konu === konu) - Number(a.konu === konu)) : bank;
+    // Açık pick → dogru/cozum/neden asla kopyalanmaz (istemciye sızmaz).
+    return sirali.map(({ id, ders: d, konu: k, b, soru, secenekler }) => ({ id, ders: d, konu: k, b, soru, secenekler }));
+  }
+  const q = konu ? '?ders=' + ders + '&konu=' + encodeURIComponent(konu) : '?ders=' + ders;
+  return live<SoruSetItem[]>('/questions/set' + q);
 }
 
 // ---------------------------------------------------------------------------

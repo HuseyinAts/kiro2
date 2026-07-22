@@ -43,3 +43,5 @@ export { ChatBubble } from './ChatBubble';
 export type { ChatBubbleProps } from './ChatBubble';
 export { ConfettiDawn, useReducedMotion } from './ConfettiDawn';
 export type { ConfettiDawnProps } from './ConfettiDawn';
+export { QuestionCard } from './QuestionCard';
+export type { QuestionCardProps } from './QuestionCard';
