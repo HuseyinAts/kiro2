@@ -225,17 +225,19 @@ export async function postCatNext(prev?: { konu: string; correct: boolean }): Pr
 /** FSRS 4 derece (Anki): tekrar=again · zor=hard · iyi=good · kolay=easy */
 export type ReviewGrade = 'tekrar' | 'zor' | 'iyi' | 'kolay';
 
-export async function postReviewGrade(konu: string, grade: ReviewGrade): Promise<{ nextDueIn: number }> {
+/** Kart-bazlı derecelendirme — kanon: POST /review/{kartId}/grade (konu değil; aynı konudan çok kart) */
+export async function postReviewGrade(kartId: string, grade: ReviewGrade): Promise<{ nextDueIn: number }> {
   if (cfg.mode === 'mock') {
     // FSRS aralığı SUNUCUDA hesaplanır; mock kaba bir aralık döner (istemci hesaplamaz)
     const next = grade === 'kolay' ? 12 : grade === 'iyi' ? 6 : grade === 'zor' ? 3 : 0;
     return { nextDueIn: next };
   }
-  return live<{ nextDueIn: number }>('/review/' + encodeURIComponent(konu) + '/grade', { method: 'POST', body: JSON.stringify({ grade }) });
+  return live<{ nextDueIn: number }>('/review/' + encodeURIComponent(kartId) + '/grade', { method: 'POST', body: JSON.stringify({ grade }) });
 }
 
 /** Tekrar oturumu kartı — aralık önizlemeleri SUNUCUDAN (FSRS projeksiyonu; istemci hesaplamaz) */
 export interface ReviewCard {
+  id: string;
   ders: SubjectKey;
   konu: string;
   front: string;
@@ -246,8 +248,8 @@ export interface ReviewCard {
 export async function getReviewSession(): Promise<ReviewCard[]> {
   if (cfg.mode === 'mock') {
     const cards = (await mock()).flashcards;
-    // previews sunucu FSRS projeksiyonu (mock: tipik değerler) — ekran yalnız gösterir
-    return cards.map((c) => ({ ...c, previews: { tekrar: '<1 dk', zor: '3 gün', iyi: '6 gün', kolay: '12 gün' } }));
+    // id per-kart (aynı konudan çok kart olabilir); previews sunucu FSRS projeksiyonu (mock: tipik)
+    return cards.map((c, i) => ({ id: 'fsrs-' + i, ...c, previews: { tekrar: '<1 dk', zor: '3 gün', iyi: '6 gün', kolay: '12 gün' } }));
   }
   return live<ReviewCard[]>('/review/session');
 }

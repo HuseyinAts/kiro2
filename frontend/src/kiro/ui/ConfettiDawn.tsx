@@ -35,19 +35,26 @@ export interface ConfettiDawnProps {
 
 export function ConfettiDawn({ count = 20, zIndex = 2 }: ConfettiDawnProps) {
   const reduced = useReducedMotion();
-  if (reduced) return null;
+  const [gizle, setGizle] = React.useState(false);
+  // WCAG 2.2.2: otomatik hareket 5sn'yi geçmemeli — düşüş tamamlanınca temizle (sonlu).
+  React.useEffect(() => {
+    if (reduced) return;
+    const t = window.setTimeout(() => setGizle(true), 5000);
+    return () => window.clearTimeout(t);
+  }, [reduced]);
+  if (reduced || gizle) return null;
 
   const pieces: React.ReactNode[] = [];
   for (let i = 0; i < count; i++) {
     const left = (i * 53 + 7) % 100;
     const w = 6 + (i % 3) * 3;
-    const dur = 2.6 + (i % 5) * 0.55;
-    const delay = (i % 7) * 0.45;
+    const dur = 2.2 + (i % 4) * 0.45; // ≤3.55s
+    const delay = (i % 5) * 0.28; // ≤1.12s → toplam hareket <5s
     pieces.push(
       <div key={i} style={{ position: 'absolute', left: `${left}%`, top: '-8%',
         width: w, height: w + 2, background: CC[i % CC.length],
         borderRadius: i % 2 ? 2 : '50%', opacity: 0.9,
-        animation: `kiroCfall ${dur}s linear ${delay}s infinite` }} />,
+        animation: `kiroCfall ${dur}s linear ${delay}s 1 forwards` }} />,
     );
   }
 

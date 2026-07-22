@@ -99,6 +99,7 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
   const [kartIdx, setKartIdx] = React.useState(0);
   const [acik, setAcik] = React.useState(false);
   const [bitti, setBitti] = React.useState(false);
+  const [tekrarlanmis, setTekrarlanmis] = React.useState(0);
   const overlayRef = React.useRef<HTMLDivElement>(null);
   const tetikleyici = React.useRef<HTMLElement | null>(null);
 
@@ -112,16 +113,25 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
     return () => { alive = false; };
   }, [yeniden]);
 
-  // Overlay: scroll kilidi + odak yönetimi (aç → ilk odak; kapat → tetikleyiciye iade)
+  // Overlay: scroll kilidi + kapanışta tetikleyiciye odak iadesi
   React.useEffect(() => {
     if (!aktif || typeof document === 'undefined') return;
     const onceki = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const t = window.setTimeout(() => {
-      overlayRef.current?.querySelector<HTMLElement>('button:not([disabled])')?.focus();
-    }, 0);
-    return () => { document.body.style.overflow = onceki; window.clearTimeout(t); tetikleyici.current?.focus(); };
+    return () => { document.body.style.overflow = onceki; tetikleyici.current?.focus(); };
   }, [aktif]);
+
+  // Her geçişte odağı overlay içindeki birincil aksiyona ver — focus trap sızmasın,
+  // Esc/Tab/1-4 handler'ı canlı kalsın (odak body'ye düşmesin).
+  React.useEffect(() => {
+    if (!aktif || typeof window === 'undefined') return;
+    const t = window.setTimeout(() => {
+      const root = overlayRef.current;
+      const hedef = root?.querySelector<HTMLElement>('[data-oto-odak]') ?? root?.querySelector<HTMLElement>('button:not([disabled])');
+      hedef?.focus();
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [aktif, acik, kartIdx, bitti]);
 
   const dueCount = cards.length;
   const estMin = Math.max(1, Math.round(cards.length * 0.75));
@@ -130,13 +140,18 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
 
   const basla = (e: React.MouseEvent) => {
     tetikleyici.current = e.currentTarget as HTMLElement;
-    setKartIdx(0); setAcik(false); setBitti(false); setAktif(true);
+    if (tekrarlanmis === 0) setKartIdx(0); // taze başla; devam ise kaldığın karttan
+    setAcik(false); setBitti(false); setAktif(true);
   };
-  const kapat = () => setAktif(false);
+  const kapat = () => {
+    setAktif(false);
+    if (bitti) { setBitti(false); setKartIdx(0); setTekrarlanmis(0); } // tamamlandı → sonraki oturum taze
+  };
   const goster = () => setAcik(true);
   const derecele = async (grade: ReviewGrade) => {
     if (!kart0) return;
-    try { await postReviewGrade(kart0.konu, grade); } catch { /* çevrimdışı: /sync/events kuyruğa (ERTELENDİ) */ }
+    try { await postReviewGrade(kart0.id, grade); } catch { /* çevrimdışı: /sync/events kuyruğa (ERTELENDİ) */ }
+    setTekrarlanmis((n) => n + 1);
     if (kartIdx + 1 >= cards.length) setBitti(true);
     else { setKartIdx((n) => n + 1); setAcik(false); }
   };
@@ -152,6 +167,7 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
       else if (!e.shiftKey && document.activeElement === son) { e.preventDefault(); ilk.focus(); }
       return;
     }
+    if (!acik && !bitti && (e.key === ' ' || e.key === 'Spacebar')) { e.preventDefault(); goster(); return; }
     if (acik && !bitti) {
       const d = Number(e.key);
       if (d >= 1 && d <= 4) { e.preventDefault(); void derecele(DERECE[d - 1]!.key); }
@@ -167,7 +183,7 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
           {/* Header */}
           <header style={{ position: 'sticky', top: 0, zIndex: 5, minHeight: 64, display: 'flex', alignItems: 'center', gap: 12, padding: '10px 24px', flexWrap: 'wrap', background: color.paper.card, borderBottom: `1px solid ${color.paper.border}` }}>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 16, fontWeight: 800 }}>Tekrar · Hafıza Motoru</div>
+              <h1 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>Tekrar · Hafıza Motoru</h1>
               <div style={{ fontSize: 12, color: color.ink.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>FSRS · ne zaman unutacağını tahmin eder, tam zamanında getirir</div>
             </div>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: color.paper.subtle, borderRadius: 999, padding: '6px 12px', fontSize: 12, fontWeight: 700, color: color.ink.secondary }}>Hedef tutma <span style={numText}>{HEDEF_TUTMA}%</span></span>
@@ -182,20 +198,20 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>{[0, 1, 2].map((i) => <div key={i} style={kart}><Skeleton shape="row" delayMs={0} /></div>)}</div>
               </div>
             ) : dueCount === 0 ? (
-              <EmptyState serifTitle="Bugün tekrar yok — eğrin sağlıklı." body="Hafıza eğrin şu an güçlü; yarın yeni kartlar burada olacak." action={<Button variant="primary" onClick={() => undefined}>Panele dön</Button>} />
+              <EmptyState serifTitle="Bugün tekrar yok — eğrin sağlıklı." action={<Button variant="primary" onClick={() => undefined}>Panele dön</Button>} />
             ) : (
               <div style={{ display: 'grid', gap: 18 }}>
                 {/* Hero */}
                 <div className="k-hero" style={{ display: 'grid', gridTemplateColumns: heroStack ? '1fr' : '1fr 1.15fr', gap: 18 }}>
-                  <div style={{ borderRadius: 20, padding: 22, background: `linear-gradient(135deg, ${color.dawn.coralCtaBg}, ${color.dawn.coral})`, color: '#fff' }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 700, opacity: 0.92 }}>Bugün tekrar edilecek</div>
+                  <div style={{ borderRadius: 20, padding: 22, background: `linear-gradient(135deg, ${color.dawn.coralCtaBg}, #E0593F)`, color: '#fff' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 700 }}>Bugün tekrar edilecek</div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginTop: 4 }}>
                       <span style={{ ...numText, fontSize: 60, fontWeight: 800, lineHeight: 1 }}>{dueCount}</span>
                       <span style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>kart</span>
                     </div>
-                    <div style={{ fontSize: 13, marginTop: 6, opacity: 0.95 }}>Tahmini süre ~<span style={numText}>{estMin}</span> dk · tam zamanında, fazlası değil</div>
+                    <div style={{ fontSize: 13, marginTop: 6 }}>Tahmini süre ~<span style={numText}>{estMin}</span> dk · tam zamanında, fazlası değil</div>
                     <div style={{ marginTop: 16 }}>
-                      <button type="button" onClick={basla} style={{ minHeight: 44, padding: '0 18px', borderRadius: 12, border: 'none', background: '#fff', color: color.dawn.coralCtaBg, fontFamily: font.sans, fontSize: 14.5, fontWeight: 800, cursor: 'pointer' }}>Tekrara başla</button>
+                      <button type="button" onClick={basla} style={{ minHeight: 44, padding: '0 18px', borderRadius: 12, border: 'none', background: '#fff', color: color.dawn.coralCtaBg, fontFamily: font.sans, fontSize: 14.5, fontWeight: 800, cursor: 'pointer' }}>{tekrarlanmis > 0 ? 'Tekrara devam et' : 'Tekrara başla'}</button>
                     </div>
                   </div>
                   <div style={{ ...kart, borderRadius: 20 }}>
@@ -211,7 +227,7 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
                   </div>
                 </div>
 
-                {/* Stats */}
+                {/* Stats (Tutma/haftalık: API alanı yok → mock, HEDEF_TUTMA/HAFTA gibi; Risk gerçek) */}
                 <div className="k-stats" style={{ display: 'grid', gridTemplateColumns: heroStack ? '1fr' : 'repeat(3, 1fr)', gap: 14 }}>
                   {[
                     { et: 'Tutma oranı', v: '91%', vc: '#1FB683', alt: 'son 30 gün · hedefin üstünde' },
@@ -282,7 +298,7 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
                 <>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 15, fontWeight: 800 }}>Tekrar oturumu</div>
+                      <h2 style={{ margin: 0, fontSize: 15, fontWeight: 800 }}>Tekrar oturumu</h2>
                       <div style={{ ...numText, fontSize: 12, color: color.ink.muted }}>Kart {kartIdx + 1} / {cards.length}</div>
                     </div>
                     <button type="button" onClick={kapat} aria-label="Kapat" style={{ width: 44, height: 44, borderRadius: 12, border: `1px solid ${color.paper.border}`, background: color.paper.card, color: color.ink.secondary, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Kapat /></button>
@@ -297,7 +313,7 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
 
                   {!acik ? (
                     <div style={{ marginTop: 20 }}>
-                      <Button variant="primary" size="lg" icon={<Goz />} onClick={goster}>Cevabı göster</Button>
+                      <button type="button" data-oto-odak onClick={goster} aria-keyshortcuts="Space" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 48, padding: '0 20px', borderRadius: 13, border: 'none', background: color.dawn.coralCtaBg, color: '#fff', fontFamily: font.sans, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}><Goz />Cevabı göster</button>
                     </div>
                   ) : (
                     <div style={{ marginTop: 18 }}>
@@ -310,6 +326,7 @@ export function FSRSPage({ demoOverlay = false }: FSRSPageProps): React.ReactEle
                         {DERECE.map((d, i) => (
                           <button
                             key={d.key} type="button" onClick={() => void derecele(d.key)}
+                            data-oto-odak={i === 0 || undefined}
                             aria-keyshortcuts={String(i + 1)}
                             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, minHeight: 56, padding: '10px 6px', borderRadius: 12, cursor: 'pointer', fontFamily: font.sans,
                               border: `1.5px solid ${d.bd}`, background: d.bg, color: d.fg }}

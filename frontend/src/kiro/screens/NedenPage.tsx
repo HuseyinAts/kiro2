@@ -101,7 +101,7 @@ export function NedenPage({ senaryo = 'yanlis' }: NedenPageProps): React.ReactEl
           {/* Header */}
           <header style={{ flexShrink: 0, minHeight: 64, display: 'flex', alignItems: 'center', gap: 12, padding: '10px 24px', flexWrap: 'wrap', background: color.paper.card, borderBottom: `1px solid ${color.paper.border}` }}>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 16, fontWeight: 800 }}>Çözüm &amp; Açıklama</div>
+              <h1 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>Çözüm &amp; Açıklama</h1>
               <div style={{ fontSize: 12, color: color.ink.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>AYT Matematik · {q?.konu ?? 'Türev'} · Soru <span style={numText}>7/20</span></div>
             </div>
             <Pil bg={color.semantic.riskBgSoft} fg={color.semantic.riskTextOnLight}><Alev /><span style={numText}>{persona?.seri ?? 0}</span></Pil>
@@ -163,7 +163,7 @@ export function NedenPage({ senaryo = 'yanlis' }: NedenPageProps): React.ReactEl
                   <div style={kart}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                       <span aria-hidden style={{ width: 30, height: 30, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFF3EE', color: color.dawn.coral }}><Soru /></span>
-                      <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800 }}>Neden?</h3>
+                      <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800 }}>Neden?</h2>
                     </div>
                     <div style={{ display: 'grid', gap: 12 }}>
                       <div style={{ padding: '13px 15px', borderRadius: 12, background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
@@ -201,7 +201,7 @@ export function NedenPage({ senaryo = 'yanlis' }: NedenPageProps): React.ReactEl
                 {!rayGizli && (
                   <aside aria-label="Etki özeti" style={{ flexShrink: 0, width: 312, borderLeft: `1px solid ${color.paper.border}`, background: color.paper.card, padding: 20, display: 'grid', gap: 16, alignContent: 'start' }}>
                     {/* Hafıza motoru (coral gradyan) */}
-                    <div style={{ borderRadius: 16, padding: 18, background: `linear-gradient(135deg, ${color.dawn.coralCtaBg}, ${color.dawn.coral})`, color: '#fff' }}>
+                    <div style={{ borderRadius: 16, padding: 18, background: `linear-gradient(135deg, ${color.dawn.coralCtaBg}, #E0593F)`, color: '#fff' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13.5, fontWeight: 800 }}><Refresh />Hafıza motoru (FSRS)</div>
                       <p style={{ margin: '10px 0 12px', fontSize: 13, lineHeight: 1.55 }}>Yanlış yaptığın için bu kavram <strong>tekrar kuyruğuna</strong> eklendi.</p>
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 700, background: 'rgba(255,255,255,0.16)', borderRadius: 9, padding: '7px 11px' }}><Takvim /><span style={numText}>{sonuc.fsrsNextDays ?? 2}</span> gün sonra tekrar göreceksin</div>
