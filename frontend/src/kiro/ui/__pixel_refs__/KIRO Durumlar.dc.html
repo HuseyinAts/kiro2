@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #F7F4EF; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  :focus-visible { outline: 2px solid rgba(255,111,92,0.7); outline-offset: 2px; }
+  @keyframes kSkel { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+  .ksk { animation: kSkel 1.6s ease-in-out infinite; }
+  @keyframes kShine { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+  @media (prefers-reduced-motion: reduce) { .ksk, .kshine { animation: none !important; } }
+  @media (max-width: 860px) { .drow { grid-template-columns: 1fr !important; } }
+</style>
+</helmet>
+
+<div data-screen-label="Durum Deseni" style="min-height:100vh; width:100%; background:#F7F4EF; font-family:'Hanken Grotesk',-apple-system,sans-serif; color:#2A2433; font-size:14px; line-height:1.55;">
+  <div style="max-width:1060px; margin:0 auto; padding:30px 28px 80px; display:flex; flex-direction:column; gap:26px;">
+
+    <!-- header -->
+    <header>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <div style="width:32px; height:32px; border-radius:10px; background:#FF6F5C; display:flex; align-items:center; justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"></path><path d="M3 16l9 5 9-5"></path><path d="M3 12l9 5 9-5"></path></svg>
+        </div>
+        <span style="font-weight:800; font-size:15px;">KIRO<span style="color:#FF6F5C;">2</span> Tasarım Standardı</span>
+        <span style="font-size:11px; font-weight:800; letter-spacing:0.06em; color:#9A5D0D; background:#FBF0DE; border:1px solid #F2D9AC; padding:4px 10px; border-radius:99px; text-transform:uppercase;">Spec</span>
+      </div>
+      <h1 style="margin:0 0 8px; font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-size:36px; line-height:1.08;">Durum deseni — yükleniyor · boş · hata</h1>
+      <p style="margin:0; max-width:640px; color:#6B6478; font-size:14.5px;">Her veri ekranı bu üç durumu aynı dille karşılar. Üretimde <strong style="color:#2A2433;">Skeleton · EmptyState · ErrorState</strong> bileşenlerine gömülür (bkz. BILESEN_ENVANTER.md).</p>
+    </header>
+
+    <!-- principles -->
+    <section style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px;" class="drow">
+      <div style="background:#fff; border:1px solid #ECE6DD; border-radius:16px; padding:17px 18px;">
+        <div style="font-size:12px; font-weight:800; letter-spacing:0.08em; color:#FF6F5C; text-transform:uppercase; margin-bottom:7px;">1 · Zıplamayan iskelet</div>
+        <div style="font-size:13px; color:#4A4456;">Yükleniyor = spinner değil, gerçek düzenin geometrisini koruyan iskelet. 400 ms'ten kısa yüklemede hiç gösterilmez.</div>
+      </div>
+      <div style="background:#fff; border:1px solid #ECE6DD; border-radius:16px; padding:17px 18px;">
+        <div style="font-size:12px; font-weight:800; letter-spacing:0.08em; color:#FF6F5C; text-transform:uppercase; margin-bottom:7px;">2 · Yönlendiren boşluk</div>
+        <div style="font-size:13px; color:#4A4456;">Boş durum suçlamaz, sıradaki adımı gösterir. Serif tek cümle + kısa gövde + tek eylem.</div>
+      </div>
+      <div style="background:#fff; border:1px solid #ECE6DD; border-radius:16px; padding:17px 18px;">
+        <div style="font-size:12px; font-weight:800; letter-spacing:0.08em; color:#FF6F5C; text-transform:uppercase; margin-bottom:7px;">3 · Sakin hata</div>
+        <div style="font-size:13px; color:#4A4456;">Hata amber'dir, asla alarm-kırmızısı. "Sorun sende değil" + güvence + tek kurtarma eylemi.</div>
+      </div>
+    </section>
+
+    <!-- ============ 1 · YÜKLENIYOR ============ -->
+    <section>
+      <h2 style="margin:0 0 4px; font-family:'Hanken Grotesk',sans-serif; font-size:19px; font-weight:800;">1 · Yükleniyor — Skeleton</h2>
+      <p style="margin:0 0 14px; font-size:13px; color:#6B6478;">Nabız 1,6 sn + karta saniyede bir değil, 2,6 sn'de bir geçen <strong style="color:#2A2433;">şafak süpürmesi</strong> (tek ışık, soldan doğar — dawn-aksan kişilik); <code style="font-size:12px; background:#F0EAE1; padding:1px 6px; border-radius:6px;">prefers-reduced-motion</code>'da ikisi de statik. İskelet rengi: açıkta #ECE6DD, koyuda rgba(255,255,255,0.08). 3 sn'yi geçen yüklemede alta bilgilendirme + gün mantrası gelir (aşağıda).</p>
+      <div class="drow" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <!-- paper skeleton -->
+        <div style="position:relative; overflow:hidden; background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+          <div class="kshine" aria-hidden="true" style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(100deg, transparent 38%, rgba(224,137,90,0.09) 50%, transparent 62%); background-size:230% 100%; animation:kShine 2.6s linear infinite;"></div>
+          <div style="font-size:11px; font-weight:800; letter-spacing:0.07em; color:#6B6478; text-transform:uppercase; margin-bottom:14px;">Açık · kart iskeleti</div>
+          <div class="ksk" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:40px; height:40px; border-radius:11px; background:#ECE6DD;"></div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:7px;">
+                <div style="width:55%; height:12px; border-radius:6px; background:#ECE6DD;"></div>
+                <div style="width:35%; height:10px; border-radius:6px; background:#F0EAE1;"></div>
+              </div>
+            </div>
+            <div style="width:100%; height:8px; border-radius:99px; background:#F0EAE1;"></div>
+            <div style="width:82%; height:8px; border-radius:99px; background:#F0EAE1;"></div>
+            <div style="display:flex; gap:10px; margin-top:4px;">
+              <div style="width:104px; height:40px; border-radius:12px; background:#ECE6DD;"></div>
+              <div style="width:104px; height:40px; border-radius:12px; background:#F0EAE1;"></div>
+            </div>
+          </div>
+          <div style="margin-top:16px; padding-top:12px; border-top:1px dashed #F0EAE1; text-align:center;">
+            <div style="font-size:12px; color:#6B6478;">Biraz uzun sürdü, getiriyoruz…</div>
+            <div style="margin-top:3px; font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:14.5px; color:#9A5D0D;">“Küçük adım, her gün.”</div>
+          </div>
+        </div>
+        <!-- dusk skeleton -->
+        <div style="position:relative; overflow:hidden; background:#150E20; border:1px solid rgba(255,240,230,0.14); border-radius:18px; padding:20px;">
+          <div class="kshine" aria-hidden="true" style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(100deg, transparent 38%, rgba(255,180,140,0.10) 50%, transparent 62%); background-size:230% 100%; animation:kShine 2.6s linear infinite;"></div>
+          <div style="font-size:11px; font-weight:800; letter-spacing:0.07em; color:rgba(241,233,242,0.55); text-transform:uppercase; margin-bottom:14px;">Koyu · kart iskeleti</div>
+          <div class="ksk" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:40px; height:40px; border-radius:11px; background:rgba(255,255,255,0.1);"></div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:7px;">
+                <div style="width:55%; height:12px; border-radius:6px; background:rgba(255,255,255,0.1);"></div>
+                <div style="width:35%; height:10px; border-radius:6px; background:rgba(255,255,255,0.06);"></div>
+              </div>
+            </div>
+            <div style="width:100%; height:8px; border-radius:99px; background:rgba(255,255,255,0.06);"></div>
+            <div style="width:82%; height:8px; border-radius:99px; background:rgba(255,255,255,0.06);"></div>
+            <div style="display:flex; gap:10px; margin-top:4px;">
+              <div style="width:104px; height:40px; border-radius:12px; background:rgba(255,255,255,0.1);"></div>
+              <div style="width:104px; height:40px; border-radius:12px; background:rgba(255,255,255,0.06);"></div>
+            </div>
+          </div>
+          <div style="margin-top:16px; padding-top:12px; border-top:1px dashed rgba(255,240,230,0.14); text-align:center;">
+            <div style="font-size:12px; color:rgba(241,233,242,0.6);">Biraz uzun sürdü, getiriyoruz…</div>
+            <div style="margin-top:3px; font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:14.5px; color:#FFC59B;">“Dünkü senden bir adım önde.”</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 2 · BOŞ ============ -->
+    <section>
+      <h2 style="margin:0 0 4px; font-family:'Hanken Grotesk',sans-serif; font-size:19px; font-weight:800;">2 · Boş durum — EmptyState</h2>
+      <p style="margin:0 0 14px; font-size:13px; color:#6B6478;">Reçete: kesikli kart · yumuşak ikon karesi · serif tek cümle · ≤2 satır gövde · tek eylem. Boşluk çoğu zaman İYİ haberdir — kopya bunu söyler.</p>
+      <div class="drow" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <!-- paper empty (FSRS örneği) -->
+        <div style="background:#fff; border:1px dashed #E0D8CB; border-radius:18px; padding:36px 26px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;">
+          <div style="width:48px; height:48px; border-radius:14px; background:#FFF3EE; display:flex; align-items:center; justify-content:center;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6F5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.6L21 8"></path><path d="M21 4v4h-4"></path><path d="M21 12a9 9 0 0 1-15 6.6L3 16"></path><path d="M3 20v-4h4"></path></svg>
+          </div>
+          <div style="font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:21px; color:#2A2433;">Bugün tekrar yok.</div>
+          <p style="margin:0; font-size:13px; color:#6B6478; max-width:340px;">Kartların zamanı gelince dönecek — FSRS tam unutulmadan getirir. Bu bir boşluk değil, iyi zamanlama.</p>
+          <a href="KIRO2 Soru Cozme.dc.html" style="margin-top:6px; display:inline-flex; align-items:center; gap:8px; height:42px; padding:0 18px; border-radius:12px; background:#FF6F5C; color:#fff; font-size:13.5px; font-weight:800; text-decoration:none; box-shadow:0 10px 22px -10px rgba(255,111,92,0.7);" style-hover="filter:brightness(1.05);">Yeni soru çöz</a>
+        </div>
+        <!-- dusk empty (Başarımlar örneği) -->
+        <div style="background:#150E20; border:1px dashed rgba(255,240,230,0.22); border-radius:18px; padding:36px 26px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;">
+          <div style="width:48px; height:48px; border-radius:14px; background:rgba(255,140,95,0.14); display:flex; align-items:center; justify-content:center;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF9F84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M8.2 13.9 7 22l5-3 5 3-1.2-8.1"></path></svg>
+          </div>
+          <div style="font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:21px; color:#FBEFE6;">İlk rozetin seni bekliyor.</div>
+          <p style="margin:0; font-size:13px; color:rgba(241,233,242,0.6); max-width:340px;">Bugünkü ilk tuğlayı koy — seri rozeti bir çalışma uzağında.</p>
+          <a href="KIRO Safak.dc.html" style="margin-top:6px; display:inline-flex; align-items:center; gap:8px; height:42px; padding:0 18px; border-radius:12px; background:linear-gradient(110deg,#FF8A5B,#FF5E7E); color:#fff; font-size:13.5px; font-weight:800; text-decoration:none;" style-hover="filter:brightness(1.06);">Bugüne başla</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3 · HATA ============ -->
+    <section>
+      <h2 style="margin:0 0 4px; font-family:'Hanken Grotesk',sans-serif; font-size:19px; font-weight:800;">3 · Hata — ErrorState</h2>
+      <p style="margin:0 0 14px; font-size:13px; color:#6B6478;">Amber çerçeve; kırmızı ünlem YOK. Kopya formülü: <strong style="color:#2A2433;">ne oldu · sorun sende değil · çalışman güvende · tek kurtarma eylemi</strong>. Sınav kaygısı bağlamında "kayıp" hissi vermek yasak.</p>
+      <div class="drow" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <!-- paper error -->
+        <div style="background:#fff; border:1px solid #F2D9AC; border-radius:18px; padding:36px 26px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;">
+          <div style="width:48px; height:48px; border-radius:14px; background:#FBF0DE; display:flex; align-items:center; justify-content:center;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9A5D0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"></path><path d="M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+          </div>
+          <div style="font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:21px; color:#2A2433;">Veri şu an yüklenemedi.</div>
+          <p style="margin:0; font-size:13px; color:#6B6478; max-width:360px;">Sorun sende değil. Çalışman ve ilerlemen güvende — bağlantını kontrol edip yeniden deneyebilirsin.</p>
+          <button onClick="{{ retryDemo }}" style="margin-top:6px; display:inline-flex; align-items:center; gap:8px; height:42px; padding:0 18px; border:1px solid #ECE6DD; border-radius:12px; background:#fff; color:#4A4456; font-family:inherit; font-size:13.5px; font-weight:800; cursor:pointer;" style-hover="background:#F2EEE7;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.6L21 8"></path><path d="M21 4v4h-4"></path></svg>
+            Tekrar dene{{ retryEcho }}
+          </button>
+        </div>
+        <!-- dusk error -->
+        <div style="background:#150E20; border:1px solid rgba(255,197,155,0.3); border-radius:18px; padding:36px 26px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;">
+          <div style="width:48px; height:48px; border-radius:14px; background:rgba(255,181,112,0.14); display:flex; align-items:center; justify-content:center;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFB570" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"></path><path d="M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+          </div>
+          <div style="font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:21px; color:#FBEFE6;">Bağlantı koptu — sorun sende değil.</div>
+          <p style="margin:0; font-size:13px; color:rgba(241,233,242,0.6); max-width:360px;">Seri ve XP'n kayıtlı. Bağlantı dönünce kaldığın yerden devam edersin.</p>
+          <button style="margin-top:6px; display:inline-flex; align-items:center; gap:8px; height:42px; padding:0 18px; border:1px solid rgba(255,240,230,0.25); border-radius:12px; background:rgba(255,255,255,0.08); color:#FBEFE6; font-family:inherit; font-size:13.5px; font-weight:800; cursor:pointer;" style-hover="filter:brightness(1.15);">Tekrar dene</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- copy table -->
+    <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:22px;">
+      <h2 style="margin:0 0 12px; font-family:'Hanken Grotesk',sans-serif; font-size:16px; font-weight:800;">Kopya formülleri (kaygı-duyarlı)</h2>
+      <sc-for list="{{ copyRules }}" as="c" hint-placeholder-count="3">
+        <div style="display:flex; gap:14px; padding:11px 0; border-bottom:{{ c.divider }}; align-items:baseline;">
+          <span style="width:96px; flex-shrink:0; font-size:12px; font-weight:800; color:{{ c.color }}; text-transform:uppercase; letter-spacing:0.05em;">{{ c.state }}</span>
+          <span style="flex:1; font-size:13px; color:#4A4456;">{{ c.rule }}</span>
+        </div>
+      </sc-for>
+      <p style="margin:14px 0 0; font-size:12px; color:#B0A9B8;">Üretim eşlemesi: Skeleton · EmptyState · ErrorState → BILESEN_ENVANTER.md §B. Prototipte veri senkron seed'den gelir (yükleniyor pratikte görünmez); bu standart üretimin ağ gerçekliği içindir.</p>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{ &quot;$preview&quot;: { &quot;width&quot;: 1120, &quot;height&quot;: 1050 } }">
+class Component extends DCLogic {
+  state = { retries: 0 };
+
+  renderVals() {
+    const copyRules = [
+      { state: 'Yükleniyor', color: '#6B6478', rule: 'Metin yok — iskelet kendini açıklar; şafak süpürmesi tek kalp atışı gibi geçer (dekoratif, RM\'de durur). 3 sn geçerse iki satır: "Biraz uzun sürdü, getiriyoruz…" + altında onaylı havuzdan gün mantrası (serif italik — telas değil, marka nefesi).', divider: '1px solid #F0EAE1' },
+      { state: 'Boş', color: '#17936B', rule: 'Serif tek cümle iyi haberi verir ("Bugün tekrar yok."), gövde nedenini akran sesiyle açıklar, CTA sıradaki en iyi adımı gösterir. "Henüz hiçbir şey yok" gibi eksiklik dili yasak.', divider: '1px solid #F0EAE1' },
+      { state: 'Hata', color: '#9A5D0D', rule: '"Sorun sende değil" + "çalışman/ilerlemen güvende" güvencesi zorunlu. Tek kurtarma eylemi (Tekrar dene). Teknik jargon, hata kodu, kırmızı renk yasak.', divider: 'none' },
+    ];
+    return {
+      copyRules,
+      retryDemo: () => this.setState((s) => ({ retries: s.retries + 1 })),
+      retryEcho: this.state.retries > 0 ? ' · ' + this.state.retries : '',
+    };
+  }
+}
+</script>
+</body>
+</html>

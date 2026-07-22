@@ -7,6 +7,9 @@ design/**/*.zip
 # .dc.html piksel referansları Faz 2/3'te temiz bir konuma bilinçli alınır (şimdilik disk'te, izlenmez).
 design/Kiro2 Projesi Frontend Stratejisi/
 
+# Kiro scoped typecheck config (dev-only hızlı tsc; commit edilmez)
+frontend/tsconfig.kiro.json
+
 # Leaked secrets / session cookies (NEVER commit)
 cookies*.txt
 

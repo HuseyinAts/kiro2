@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  /* ==== KIRO2 geçiş + micro-interaction ==== */
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) { animation: kv-out 0.22s ease both; }
+    ::view-transition-new(root) { animation: kv-in 0.30s cubic-bezier(0.33,0,0.2,1) both; }
+    a, button, [role="button"] { transition: transform 0.12s ease, filter 0.15s ease; }
+  }
+  @keyframes kv-out { to { opacity: 0; transform: translateY(-6px); } }
+  @keyframes kv-in { from { opacity: 0; transform: translateY(12px); } }
+  :focus-visible { outline: 2px solid rgba(255,111,92,0.7); outline-offset: 2px; }
+  .kn::-webkit-scrollbar { width: 7px; }
+  .kn::-webkit-scrollbar-thumb { background: #E2E5EB; border-radius: 99px; }
+  @container (max-width: 150px) {
+    .nl { display: none !important; }
+    .ni { justify-content: center !important; gap: 0 !important; padding-left: 0 !important; padding-right: 0 !important; min-height: 44px !important; }
+    .kn { padding-left: 8px !important; padding-right: 8px !important; }
+    .nlogo { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; }
+    .nfoot { justify-content: center !important; padding-left: 8px !important; padding-right: 8px !important; }
+    .nprofile { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; }
+  }
+</style>
+</helmet>
+
+<aside style="width:100%; container-type:inline-size; flex-shrink:0; background:#FFFFFF; border-right:1px solid #ECE6DD; display:flex; flex-direction:column; height:100vh; position:sticky; top:0; font-family:'Hanken Grotesk',-apple-system,sans-serif; font-size:14px; color:#2A2433; overflow:hidden;">
+
+  <!-- Logo -> hub -->
+  <div style="flex-shrink:0; padding:18px 16px 12px;">
+    <a href="KIRO2 Tasarim Sistemi.dc.html" class="nlogo" aria-label="Tüm ekranlar · ana sayfa" style="display:flex; align-items:center; gap:10px; padding:0 6px; text-decoration:none; color:inherit;" title="Tüm ekranlar">
+      <div style="width:34px; height:34px; flex-shrink:0; border-radius:10px; background:{{ accent }}; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px -3px {{ accent }}66;">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 16l9 5 9-5"/><path d="M3 12l9 5 9-5"/></svg>
+      </div>
+      <div class="nl" style="display:flex; flex-direction:column; line-height:1.1;">
+        <span style="font-family:'Hanken Grotesk',sans-serif; font-weight:800; font-size:17px; letter-spacing:-0.02em; color:#2A2433;">KIRO<span style="color:{{ accent }};">2</span></span>
+        <span style="font-size:10.5px; font-weight:600; color:#6B6478; letter-spacing:0.02em;">YKS Hazırlık</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Scrollable nav -->
+  <nav class="kn" style="flex:1; min-height:0; overflow-y:auto; padding:2px 14px 8px;">
+
+    <div class="nl" style="font-size:10.5px; font-weight:700; letter-spacing:0.07em; color:#6B6478; text-transform:uppercase; padding:0 10px; margin:4px 0 6px;">Çalışma</div>
+
+    <a href="KIRO2 Ogrenci Paneli.dc.html" class="ni" aria-label="Panel" style="{{ sPanel }} color:{{ cPanel }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/></svg>
+      <span class="nl">Panel</span>
+    </a>
+
+    <a href="KIRO2 Haftalik Plan.dc.html" class="ni" aria-label="Haftalık Plan" style="{{ sPlan }} color:{{ cPlan }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="m8 14 2.4 2.4L15 12"/></svg>
+      <span class="nl">Haftalık Plan</span>
+    </a>
+
+    <a href="KIRO2 Odevlerim.dc.html" class="ni" aria-label="Ödevlerim" style="{{ sOdev }} color:{{ cOdev }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M9 12h6M9 16h4"></path></svg>
+      <span class="nl">Ödevlerim</span>
+    </a>
+
+    <a href="KIRO2 Ogrenme Yolu.dc.html" class="ni" aria-label="Öğrenme Yolu" style="{{ sPath }} color:{{ cPath }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="12" r="2.4"/><path d="M6 8.5v7"/><path d="M8.4 18H13a3 3 0 0 0 3-3v-.8"/></svg>
+      <span class="nl">Öğrenme Yolu</span>
+    </a>
+
+    <a href="KIRO2 Soru Cozme.dc.html" class="ni" aria-label="Soru Çözme" style="{{ sSolve }} color:{{ cSolve }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+      <span class="nl">Soru Çözme</span>
+    </a>
+
+    <a href="KIRO2 Adaptif Test.dc.html" class="ni" aria-label="Adaptif Test" style="{{ sCat }} color:{{ cCat }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.2"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg>
+      <span class="nl">Adaptif Test</span>
+      <span class="nl" style="margin-left:auto; font-size:10px; font-weight:700; color:{{ accent }}; background:#FFF3EE; padding:1px 7px; border-radius:99px;">CAT</span>
+    </a>
+
+    <a href="KIRO2 FSRS Tekrar.dc.html" class="ni" aria-label="Tekrar" style="{{ sReview }} color:{{ cReview }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.6L21 8"/><path d="M21 4v4h-4"/><path d="M21 12a9 9 0 0 1-15 6.6L3 16"/><path d="M3 20v-4h4"/></svg>
+      <span class="nl">Tekrar</span>
+      <span class="nl" style="margin-left:auto; font-size:11px; font-weight:700; color:#E0593F;">8</span>
+    </a>
+
+    <a href="KIRO2 Harmanlanmis Deneme.dc.html" class="ni" aria-label="Harmanlanmış Deneme" style="{{ sDeneme }} color:{{ cDeneme }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M8 3H3v5M21 3 3 21M16 21h5v-5"/></svg>
+      <span class="nl">Harmanlanmış Deneme</span>
+    </a>
+
+    <div class="nl" style="font-size:10.5px; font-weight:700; letter-spacing:0.07em; color:#6B6478; text-transform:uppercase; padding:0 10px; margin:16px 0 6px;">AI &amp; Çözüm</div>
+
+    <a href="KIRO2 AI Sohbet.dc.html" class="ni" aria-label="AI Sohbet" style="{{ sAssistant }} color:{{ cAssistant }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+      <span class="nl">AI Sohbet</span>
+    </a>
+
+    <a href="KIRO2 Sokratik AI.dc.html" class="ni" aria-label="Sokratik AI" style="{{ sAi }} color:{{ cAi }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/></svg>
+      <span class="nl">Sokratik AI</span>
+    </a>
+
+    <a href="KIRO2 Interaktif Cozum.dc.html" class="ni" aria-label="İnteraktif Çözüm" style="{{ sInteraktif }} color:{{ cInteraktif }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      <span class="nl">İnteraktif Çözüm</span>
+    </a>
+
+    <a href="KIRO2 Neden Geri Bildirim.dc.html" class="ni" aria-label="Neden Geri Bildirim" style="{{ sPractice }} color:{{ cPractice }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.7-2.5 2-2.5 4"/><path d="M12 17h.01"/></svg>
+      <span class="nl">Neden Geri Bildirim</span>
+    </a>
+
+    <div class="nl" style="font-size:10.5px; font-weight:700; letter-spacing:0.07em; color:#6B6478; text-transform:uppercase; padding:0 10px; margin:16px 0 6px;">Yarışma &amp; Seri</div>
+
+    <a href="KIRO2 Lig.dc.html" class="ni" aria-label="Lig Sıralaması" style="{{ sLeague }} color:{{ cLeague }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M7 20V10M12 20V5M17 20v-7"/></svg>
+      <span class="nl">Lig Sıralaması</span>
+    </a>
+
+    <a href="KIRO2 Duello.dc.html" class="ni" aria-label="1v1 Düello" style="{{ sDuel }} color:{{ cDuel }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
+      <span class="nl">1v1 Düello</span>
+    </a>
+
+    <a href="KIRO2 Boss Savasi.dc.html" class="ni" aria-label="Boss Savaşı" style="{{ sBoss }} color:{{ cBoss }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 8 10 8 10s8-5 8-10V6Z"/></svg>
+      <span class="nl">Boss Savaşı</span>
+    </a>
+
+    <a href="KIRO2 Arkadas Serisi.dc.html" class="ni" aria-label="Arkadaş Serisi" style="{{ sArkadas }} color:{{ cArkadas }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      <span class="nl">Arkadaş Serisi</span>
+    </a>
+
+    <a href="KIRO2 Seri Dondurma.dc.html" class="ni" aria-label="Seri ve Nudge" style="{{ sSeri }} color:{{ cSeri }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1.2 3 4 4.2 4 7.8A4 4 0 0 1 8 10c0-1.4.5-2.4 1-3 .2 1 .9 1.6 1.6 1.6C9.6 6.4 10.8 4.2 12 2Z"/></svg>
+      <span class="nl">Seri &amp; Nudge</span>
+    </a>
+
+    <a href="KIRO2 Basarimlar.dc.html" class="ni" aria-label="Başarımlar" style="{{ sBasarim }} color:{{ cBasarim }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4a4 4 0 0 1-8 0Z"/><path d="M8 5H5v1a3 3 0 0 0 3 3M16 5h3v1a3 3 0 0 1-3 3"/><path d="M12 12v3"/><path d="M9.5 20h5l-.7-3h-3.6Z"/></svg>
+      <span class="nl">Başarımlar</span>
+    </a>
+
+    <a href="KIRO2 Mola.dc.html" class="ni" aria-label="Mola" style="{{ sMola }} color:{{ cMola }}; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      <span class="nl">Mola</span>
+    </a>
+
+    <div class="nl" style="font-size:10.5px; font-weight:700; letter-spacing:0.07em; color:#6B6478; text-transform:uppercase; padding:0 10px; margin:16px 0 6px;">Motor &amp; Analiz</div>
+
+    <a href="KIRO Birlesik Motor.dc.html" class="ni" aria-label="Öğrenme Motoru" style="display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:10px; cursor:pointer; font-weight:600; color:#6B6478; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 12l5-3"/></svg>
+      <span class="nl">Öğrenme Motoru</span>
+    </a>
+    <a href="KIRO Bilgi Atomlari.dc.html" class="ni" aria-label="Bilgi Atomları" style="display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:10px; cursor:pointer; font-weight:600; color:#6B6478; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="12" r="2.2"/><circle cx="7" cy="18" r="2.2"/><path d="M8 6.4h5a3 3 0 0 1 3 3M16 13.6a3 3 0 0 1-3 3H9"/></svg>
+      <span class="nl">Bilgi Atomları</span>
+    </a>
+    <a href="KIRO Calisma Modlari.dc.html" class="ni" aria-label="Çalışma Modları" style="display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:10px; cursor:pointer; font-weight:600; color:#6B6478; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span class="nl">Çalışma Modları</span>
+    </a>
+    <a href="KIRO Ilk Hafta.dc.html" class="ni" aria-label="İlk Hafta" style="display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:10px; cursor:pointer; font-weight:600; color:#6B6478; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+      <span class="nl">İlk Hafta</span>
+    </a>
+    <a href="KIRO Uyarlanir Ton.dc.html" class="ni" aria-label="Uyarlanır Koç" style="display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:10px; cursor:pointer; font-weight:600; color:#6B6478; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-4 3V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2Z"/></svg>
+      <span class="nl">Uyarlanır Koç</span>
+    </a>
+    <a href="KIRO Cozum Paylas.dc.html" class="ni" aria-label="Çözüm Paylaş" style="display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:10px; cursor:pointer; font-weight:600; color:#6B6478; text-decoration:none;" style-hover="background:#F2EEE7;">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      <span class="nl">Çözüm Paylaş</span>
+    </a>
+
+  </nav>
+
+  <!-- Footer -->
+  <div style="flex-shrink:0; padding:8px 14px 14px;">
+    <a href="KIRO2 AI Sohbet.dc.html" class="nfoot" aria-label="KIRO Asistan" style="display:flex; align-items:center; gap:11px; padding:11px 12px; border-radius:12px; background:#2A2433; color:#fff; font-weight:700; cursor:pointer; margin-bottom:8px; text-decoration:none;" style-hover="filter:brightness(1.15);">
+      <svg width="18" height="18" style="flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/><path d="m11 8 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z"/></svg>
+      <span class="nl">KIRO Asistan</span>
+      <svg class="nl" style="margin-left:auto;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+    </a>
+
+    <div class="nprofile" style="display:flex; align-items:center; gap:10px; padding:9px 8px; border-top:1px solid #ECE6DD;">
+      <div style="width:34px; height:34px; flex-shrink:0; border-radius:10px; background:linear-gradient(135deg,#2A2433,#4A4456); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;">HA</div>
+      <div class="nl" style="line-height:1.2; min-width:0;">
+        <div style="font-weight:700; font-size:13px; color:#2A2433; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Hüseyin Ateş</div>
+        <div style="font-size:11px; color:#6B6478;">12. Sınıf · Sayısal</div>
+      </div>
+    </div>
+  </div>
+</aside>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 250, &quot;height&quot;: 900 },
+  &quot;accent&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#FF6F5C&quot;, &quot;options&quot;: [&quot;#FF6F5C&quot;, &quot;#0D9488&quot;, &quot;#FF6F5C&quot;], &quot;tsType&quot;: &quot;string&quot; },
+  &quot;active&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;panel&quot;, &quot;options&quot;: [&quot;panel&quot;, &quot;plan&quot;, &quot;path&quot;, &quot;solve&quot;, &quot;cat&quot;, &quot;review&quot;, &quot;deneme&quot;, &quot;assistant&quot;, &quot;ai&quot;, &quot;interaktif&quot;, &quot;practice&quot;, &quot;league&quot;, &quot;duel&quot;, &quot;boss&quot;, &quot;arkadas&quot;, &quot;seri&quot;], &quot;tsType&quot;: &quot;string&quot; }
+}">
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent || '#FF6F5C';
+    const active = this.props.active || 'panel';
+    const base = 'display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:10px; cursor:pointer;';
+    const sty = (id) => active === id
+      ? base + ' background:#FFF3EE; font-weight:700;'
+      : base + ' font-weight:600;';
+    const col = (id) => active === id ? accent : '#6B6478';
+    const ids = ['panel','plan','odev','path','solve','cat','review','deneme','assistant','ai','interaktif','practice','league','duel','boss','arkadas','seri','basarim','mola'];
+    const out = { accent };
+    const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+    ids.forEach((id) => {
+      out['s' + cap(id)] = sty(id);
+      out['c' + cap(id)] = col(id);
+    });
+    return out;
+  }
+}
+</script>
+</body>
+</html>

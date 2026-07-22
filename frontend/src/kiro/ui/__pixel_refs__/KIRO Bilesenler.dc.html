@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #F7F4EF; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  :focus-visible { outline: 2px solid rgba(255,111,92,0.7); outline-offset: 2px; }
+  @keyframes kSkel { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+  .ksk { animation: kSkel 1.6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .ksk { animation: none; } }
+  .bgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 980px) { .bgrid { grid-template-columns: 1fr !important; } }
+  .bprops { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10.5px; color: #6B6478; background: #FBF8F3; border: 1px solid #F0EAE1; border-radius: 8px; padding: 6px 10px; line-height: 1.5; }
+  .blabel { font-size: 10.5px; font-weight: 700; color: #B0A9B8; margin-top: 6px; }
+</style>
+</helmet>
+
+<div data-screen-label="Bileşen Sayfası" style="min-height:100vh; width:100%; background:#F7F4EF; font-family:'Hanken Grotesk',-apple-system,sans-serif; color:#2A2433; font-size:14px; line-height:1.5;">
+  <div style="max-width:1180px; margin:0 auto; padding:30px 28px 80px; display:flex; flex-direction:column; gap:18px;">
+
+    <!-- header -->
+    <header style="margin-bottom:6px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+        <div style="width:32px; height:32px; border-radius:10px; background:#FF6F5C; display:flex; align-items:center; justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"></path><path d="M3 16l9 5 9-5"></path><path d="M3 12l9 5 9-5"></path></svg>
+        </div>
+        <span style="font-weight:800; font-size:15px;">KIRO<span style="color:#FF6F5C;">2</span> Tasarım Standardı</span>
+        <span style="font-size:11px; font-weight:800; letter-spacing:0.06em; color:#9A5D0D; background:#FBF0DE; border:1px solid #F2D9AC; padding:4px 10px; border-radius:99px; text-transform:uppercase;">Spec</span>
+        <div style="flex:1;"></div>
+        <a href="KIRO Durumlar.dc.html" style="font-size:12px; font-weight:700; color:#4A4456; text-decoration:none; border:1px solid #ECE6DD; background:#fff; border-radius:9px; padding:8px 12px;" style-hover="background:#F2EEE7;">Durum Deseni →</a>
+        <a href="KIRO2 Tasarim Sistemi.dc.html" style="font-size:12px; font-weight:700; color:#4A4456; text-decoration:none; border:1px solid #ECE6DD; background:#fff; border-radius:9px; padding:8px 12px;" style-hover="background:#F2EEE7;">Tasarım Sistemi →</a>
+      </div>
+      <h1 style="margin:0 0 8px; font-family:'Instrument Serif',Georgia,serif; font-weight:400; font-size:36px; line-height:1.08;">P0 Bileşen Sayfası — 15 yapı taşı</h1>
+      <p style="margin:0; max-width:680px; color:#6B6478; font-size:14.5px;">Üretim kütüphanesinin (packages/ui) tek-sayfa piksel referansı. Props imzaları <strong style="color:#2A2433;">BILESEN_ENVANTER.md</strong> ile, kod iskeletleri <strong style="color:#2A2433;">design_handoff_kiro2/ui-starter/</strong> ile birebir. Tüm renkler tokens.ts'ten.</p>
+    </header>
+
+    <div class="bgrid">
+
+      <!-- 01 Button -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">01</span><h2 style="margin:0; font-size:16px; font-weight:800;">Button</h2></div>
+        <div class="bprops">variant: 'primary' | 'ghost' | 'goldDark' · size: 'md'(40) | 'lg'(48) · icon? · disabled?</div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:14px;">
+          <div><span style="display:inline-flex; align-items:center; gap:8px; height:48px; padding:0 20px; border-radius:13px; background:#FF6F5C; color:#fff; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 10px 22px -10px rgba(255,111,92,0.7);" style-hover="filter:brightness(1.05);">Çalışmaya başla</span><div class="blabel">primary · lg</div></div>
+          <div><span style="display:inline-flex; align-items:center; height:40px; padding:0 16px; border-radius:11px; background:#fff; border:1px solid #ECE6DD; color:#4A4456; font-size:13.5px; font-weight:700; cursor:pointer;" style-hover="background:#F2EEE7;">Yeniden çöz</span><div class="blabel">ghost · md</div></div>
+          <div><span style="display:inline-flex; align-items:center; height:48px; padding:0 20px; border-radius:13px; background:#F0EAE1; color:#B5AEA2; font-size:14px; font-weight:800; cursor:default;">Kaydet</span><div class="blabel">primary · disabled</div></div>
+        </div>
+        <div style="margin-top:12px; background:#150E20; border-radius:12px; padding:14px; display:flex; gap:12px; align-items:center;">
+          <span style="display:inline-flex; align-items:center; height:44px; padding:0 18px; border-radius:12px; background:linear-gradient(110deg,#E0A82E,#FCD34D); color:#2A1810; font-size:13.5px; font-weight:800; cursor:pointer;" style-hover="filter:brightness(1.05);">Seviyeyi kutla</span>
+          <span style="font-size:10.5px; font-weight:700; color:rgba(241,233,242,0.5);">goldDark — yalnız koyu ekran</span>
+        </div>
+      </section>
+
+      <!-- 02 Chip / Pill -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">02</span><h2 style="margin:0; font-size:16px; font-weight:800;">Chip / Pill</h2></div>
+        <div class="bprops">kind: 'streak' | 'tag' | 'status' · label · icon? · tone</div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:14px;">
+          <div><span style="display:inline-flex; align-items:center; gap:7px; height:38px; padding:0 12px; background:#FBF0DE; border:1px solid #F2D9AC; border-radius:10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9A5D0D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1.2 3 4 4.2 4 7.8A4 4 0 0 1 8 10c0-1.4.5-2.4 1-3 .2 1 .9 1.6 1.6 1.6C9.6 6.4 10.8 4.2 12 2Z"></path></svg><span style="font-weight:800; font-size:14px; color:#9A5D0D; font-variant-numeric:tabular-nums;">12</span></span><div class="blabel">streak</div></div>
+          <div><span style="display:inline-flex; align-items:center; height:18px; padding:0 7px; border-radius:6px; background:#EEF3F8; color:#5A6B82; font-size:10px; font-weight:800; letter-spacing:0.04em;">TYT</span> <span style="display:inline-flex; align-items:center; height:18px; padding:0 7px; border-radius:6px; background:#FBF0DE; color:#9A5D0D; font-size:10px; font-weight:800; letter-spacing:0.04em;">AYT</span><div class="blabel">tag</div></div>
+          <div><span style="font-size:11.5px; font-weight:700; color:#6B6478; background:#F0EAE1; padding:5px 11px; border-radius:99px;">Şu an: Ücretsiz</span><div class="blabel">status</div></div>
+          <div><span style="display:inline-flex; align-items:center; gap:7px; height:22px; padding:0 10px; border-radius:99px; background:#fff; border:1px solid #F6D9CB;"><span style="width:6px; height:6px; border-radius:99px; background:#FF6F5C;"></span><span style="font-size:10.5px; font-weight:800; letter-spacing:0.05em; color:#FF6F5C; text-transform:uppercase;">Sen vs dün</span></span><div class="blabel">eyebrow</div></div>
+        </div>
+      </section>
+
+      <!-- 03 Card -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">03</span><h2 style="margin:0; font-size:16px; font-weight:800;">Card</h2></div>
+        <div class="bprops">variant: 'solid' | 'dashed' | 'dusk' · radius: 16-20 · padding: 18-24</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:14px;">
+          <div style="background:#fff; border:1px solid #ECE6DD; border-radius:16px; padding:14px; box-shadow:0 1px 2px rgba(16,24,40,.04);"><div style="font-size:12px; font-weight:700;">solid</div><div style="font-size:10.5px; color:#6B6478;">içerik kartı</div></div>
+          <div style="background:#fff; border:1px dashed #E0D8CB; border-radius:16px; padding:14px;"><div style="font-size:12px; font-weight:700;">dashed</div><div style="font-size:10.5px; color:#6B6478;">boş durum</div></div>
+          <div style="background:#2A2433; border-radius:16px; padding:14px; color:#fff;"><div style="font-size:12px; font-weight:700;">dusk</div><div style="font-size:10.5px; color:#9B93A8;">vurgu rayı</div></div>
+        </div>
+      </section>
+
+      <!-- 04 StatBlock -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">04</span><h2 style="margin:0; font-size:16px; font-weight:800;">StatBlock</h2></div>
+        <div class="bprops">value · label · delta? · tone? — sayılar HER ZAMAN tabular-nums</div>
+        <div style="display:flex; gap:26px; flex-wrap:wrap; margin-top:14px;">
+          <div><div style="display:flex; align-items:baseline; gap:8px;"><span style="font-size:28px; font-weight:800; font-variant-numeric:tabular-nums;">312</span><span style="font-size:12px; font-weight:700; color:#17936B;">+48</span></div><div style="font-size:12.5px; color:#6B6478; font-weight:600;">Çözülen soru</div></div>
+          <div><div style="font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; color:#FF6F5C;">%86</div><div style="font-size:12.5px; color:#6B6478; font-weight:600;">Plana uyum</div></div>
+          <div><div style="font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; color:#9A5D0D;">12</div><div style="font-size:12.5px; color:#6B6478; font-weight:600;">Günlük seri</div></div>
+        </div>
+      </section>
+
+      <!-- 05 ProgressBar -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">05</span><h2 style="margin:0; font-size:16px; font-weight:800;">ProgressBar</h2></div>
+        <div class="bprops">pct · color(ders paleti — açık panel) · height: 6-9</div>
+        <div style="display:flex; flex-direction:column; gap:11px; margin-top:14px;">
+          <div><div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:5px;"><span>Matematik</span><span style="font-variant-numeric:tabular-nums;">%78</span></div><div style="height:8px; background:#ECE6DD; border-radius:99px; overflow:hidden;"><div style="height:100%; width:78%; border-radius:99px; background:#3B82F6;"></div></div></div>
+          <div><div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:5px;"><span>Kimya</span><span style="font-variant-numeric:tabular-nums;">%52</span></div><div style="height:8px; background:#ECE6DD; border-radius:99px; overflow:hidden;"><div style="height:100%; width:52%; border-radius:99px; background:#E0593F;"></div></div></div>
+        </div>
+      </section>
+
+      <!-- 06 ProgressRing -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">06</span><h2 style="margin:0; font-size:16px; font-weight:800;">ProgressRing</h2></div>
+        <div class="bprops">pct · size · label · sublabel — stroke-linecap:round, -90° başlangıç</div>
+        <div style="display:flex; gap:20px; align-items:center; margin-top:14px;">
+          <div style="position:relative; width:72px; height:72px;">
+            <svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="28" fill="none" stroke="#ECE6DD" stroke-width="8"></circle><circle cx="36" cy="36" r="28" fill="none" stroke="#FF6F5C" stroke-width="8" stroke-linecap="round" stroke-dasharray="175.9" stroke-dashoffset="49.3" transform="rotate(-90 36 36)"></circle></svg>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; font-variant-numeric:tabular-nums;">%72</div>
+          </div>
+          <span style="font-size:12px; color:#6B6478;">Sınav Sonuç doğru-oranı ringi ile birebir (148px orijinal).</span>
+        </div>
+      </section>
+
+      <!-- 07 SegmentedControl -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">07</span><h2 style="margin:0; font-size:16px; font-weight:800;">SegmentedControl</h2></div>
+        <div class="bprops">options · value · onChange — seçili: mürekkep #2A2433 dolgu (⚠️ background-color longhand)</div>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px;">
+          <div style="display:inline-flex; padding:4px; border-radius:12px; background:#F0EAE1; gap:3px; align-self:flex-start;">
+            <span style="display:inline-flex; align-items:center; height:34px; padding:0 16px; border-radius:9px; font-size:13px; font-weight:700; color:#6B6478; cursor:pointer;">Aylık</span>
+            <span style="display:inline-flex; align-items:center; height:34px; padding:0 16px; border-radius:9px; font-size:13px; font-weight:700; background:#fff; color:#2A2433; box-shadow:0 1px 3px rgba(0,0,0,0.08); cursor:pointer;">Yıllık</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <span style="display:inline-flex; align-items:center; min-height:44px; padding:0 15px; border-radius:11px; font-size:13px; font-weight:700; background:#fff; color:#4A4456; border:1px solid #ECE6DD; cursor:pointer;">Hiç</span>
+            <span style="display:inline-flex; align-items:center; min-height:44px; padding:0 15px; border-radius:11px; font-size:13px; font-weight:700; background:#2A2433; color:#FFF6EC; border:1px solid #2A2433; cursor:pointer;">Biraz</span>
+            <span style="display:inline-flex; align-items:center; min-height:44px; padding:0 15px; border-radius:11px; font-size:13px; font-weight:700; background:#fff; color:#4A4456; border:1px solid #ECE6DD; cursor:pointer;">Oldukça</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 08 Input -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">08</span><h2 style="margin:0; font-size:16px; font-weight:800;">Input</h2></div>
+        <div class="bprops">value · onChange · placeholder · ariaLabel(zorunlu) — hedef ≥44px, odak: coral halka</div>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:14px;">
+          <input placeholder="Katılımcı kodu" aria-label="Katılımcı kodu (örnek)" style="width:160px; height:44px; padding:0 13px; border:1px solid #ECE6DD; border-radius:11px; background:#fff; font-family:inherit; font-size:13px; font-weight:600; color:#2A2433;">
+          <input value="HA-07" aria-label="Dolu alan (örnek)" style="width:120px; height:44px; padding:0 13px; border:1px solid #ECE6DD; border-radius:11px; background:#fff; font-family:inherit; font-size:13px; font-weight:600; color:#2A2433;">
+        </div>
+      </section>
+
+      <!-- 09 Avatar -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">09</span><h2 style="margin:0; font-size:16px; font-weight:800;">Avatar</h2></div>
+        <div class="bprops">initials · size: 24-70 · bg(PAL) · ring?</div>
+        <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px;">
+          <span style="width:24px; height:24px; border-radius:8px; background:#3B82F6; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800;">AD</span>
+          <span style="width:38px; height:38px; border-radius:11px; background:#1FB683; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:13px; font-weight:800;">ZÇ</span>
+          <span style="width:58px; height:58px; border-radius:16px; background:#2A2433; color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; border:3px solid #F59E0B;">HA</span>
+          <span style="font-size:11px; color:#6B6478;">ring = podyum vurgusu</span>
+        </div>
+      </section>
+
+      <!-- 10 IconBadge -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">10</span><h2 style="margin:0; font-size:16px; font-weight:800;">IconBadge</h2></div>
+        <div class="bprops">icon(inline SVG, stroke 1.8-2.2 round) · tone · size: 32-56</div>
+        <div style="display:flex; gap:12px; align-items:center; margin-top:14px;">
+          <span style="width:40px; height:40px; border-radius:11px; background:#FFF3EE; color:#FF6F5C; display:inline-flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path></svg></span>
+          <span style="width:40px; height:40px; border-radius:11px; background:#ECFDF5; color:#1FB683; display:inline-flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+          <span style="width:40px; height:40px; border-radius:11px; background:#FBF0DE; color:#9A5D0D; display:inline-flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"></path><path d="M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle></svg></span>
+          <span style="font-size:11px; color:#6B6478;">dawn · success · attention</span>
+        </div>
+      </section>
+
+      <!-- 11 Callout -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">11</span><h2 style="margin:0; font-size:16px; font-weight:800;">Callout</h2></div>
+        <div class="bprops">tone: 'success' | 'attention'(amber) | 'dawn' · icon · children</div>
+        <div style="display:flex; flex-direction:column; gap:9px; margin-top:14px;">
+          <div style="display:flex; gap:10px; padding:11px 13px; background:#ECFDF5; border:1px solid #BBF7D0; border-radius:12px; font-size:12.5px; color:#1E5631;"><strong>+8 net</strong> — güzel ivme.</div>
+          <div style="display:flex; gap:10px; padding:11px 13px; background:#FFFBEB; border:1px solid #FDE9B8; border-radius:12px; font-size:12.5px; color:#854D0E;">Kimya bu hafta daha az çalışıldı.</div>
+          <div style="display:flex; gap:10px; padding:11px 13px; background:#FFF3EE; border:1px solid #F6D9CB; border-radius:12px; font-size:12.5px; color:#C2452B;">Yeni rozet: <strong>7 günlük seri</strong>.</div>
+        </div>
+      </section>
+
+      <!-- 12 ZoneHeader -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">12</span><h2 style="margin:0; font-size:16px; font-weight:800;">ZoneHeader</h2></div>
+        <div class="bprops">label · tone · icon? — sakin modda düşme bölgesi AMBER (kırmızı yok)</div>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px;">
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:11.5px; font-weight:800; color:#17936B; letter-spacing:0.04em; text-transform:uppercase;">Yükselme bölgesi · ilk 7</span><div style="flex:1; height:1px; background:#D1FAE5;"></div></div>
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:11.5px; font-weight:800; color:#6B6478; letter-spacing:0.04em; text-transform:uppercase;">Güvenli bölge</span><div style="flex:1; height:1px; background:#F0EAE1;"></div></div>
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:11.5px; font-weight:800; color:#9A5D0D; letter-spacing:0.04em; text-transform:uppercase;">Alt bölge · son 5</span><div style="flex:1; height:1px; background:#F2D9AC;"></div></div>
+        </div>
+      </section>
+
+      <!-- 13 Skeleton -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">13</span><h2 style="margin:0; font-size:16px; font-weight:800;">Skeleton</h2><a href="KIRO Durumlar.dc.html" style="margin-left:auto; font-size:11px; font-weight:700; color:#C2452B; text-decoration:none;">tam standart →</a></div>
+        <div class="bprops">shape: 'card' | 'row' | 'bar' · 1,6s nabız · reduced-motion'da statik · &lt;400ms gösterilmez</div>
+        <div class="ksk" style="display:flex; flex-direction:column; gap:9px; margin-top:14px;">
+          <div style="display:flex; align-items:center; gap:10px;"><div style="width:32px; height:32px; border-radius:9px; background:#ECE6DD;"></div><div style="flex:1; height:11px; border-radius:6px; background:#ECE6DD;"></div></div>
+          <div style="width:100%; height:8px; border-radius:99px; background:#F0EAE1;"></div>
+          <div style="width:70%; height:8px; border-radius:99px; background:#F0EAE1;"></div>
+        </div>
+      </section>
+
+      <!-- 14 EmptyState -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">14</span><h2 style="margin:0; font-size:16px; font-weight:800;">EmptyState</h2><a href="KIRO Durumlar.dc.html" style="margin-left:auto; font-size:11px; font-weight:700; color:#C2452B; text-decoration:none;">tam standart →</a></div>
+        <div class="bprops">icon · serifTitle · body · action? — "yönlendiren boşluk"; eksiklik dili yasak</div>
+        <div style="margin-top:14px; border:1px dashed #E0D8CB; border-radius:14px; padding:20px; text-align:center;">
+          <div style="font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:17px;">Bugün tekrar yok.</div>
+          <div style="font-size:11.5px; color:#6B6478; margin-top:4px;">FSRS tam unutulmadan getirir — iyi zamanlama.</div>
+        </div>
+      </section>
+
+      <!-- 15 ErrorState -->
+      <section style="background:#fff; border:1px solid #ECE6DD; border-radius:18px; padding:20px;">
+        <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:10px;"><span style="font-size:11px; font-weight:800; color:#B0A9B8; font-variant-numeric:tabular-nums;">15</span><h2 style="margin:0; font-size:16px; font-weight:800;">ErrorState</h2><a href="KIRO Durumlar.dc.html" style="margin-left:auto; font-size:11px; font-weight:700; color:#C2452B; text-decoration:none;">tam standart →</a></div>
+        <div class="bprops">serifTitle · body · onRetry — amber; "sorun sende değil" + güvence zorunlu</div>
+        <div style="margin-top:14px; border:1px solid #F2D9AC; border-radius:14px; padding:20px; text-align:center;">
+          <div style="font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:17px;">Veri şu an yüklenemedi.</div>
+          <div style="font-size:11.5px; color:#6B6478; margin-top:4px;">Sorun sende değil — çalışman güvende.</div>
+        </div>
+      </section>
+    </div>
+
+    <p style="margin:8px 0 0; text-align:center; font-size:11.5px; color:#B0A9B8;">Kod iskeletleri: <strong style="color:#6B6478;">design_handoff_kiro2/ui-starter/</strong> (React + tokens.ts; test edilmemiş başlangıç kodu) · Composites için envanter §C-D.</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{ &quot;$preview&quot;: { &quot;width&quot;: 1240, &quot;height&quot;: 1200 } }"></script>
+</body>
+</html>
