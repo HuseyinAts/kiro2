@@ -17,6 +17,23 @@
 
 ---
 
+# KIRO2 — Faz 2 Bileşen Kalite Kapısı (2026-07-22)
+
+**20/20 bileşen ✅** — her biri story + RTL + axe + BackstopJS kapısından geçti.
+- Storybook **10.5.3** (Vite 7 builder) + `@storybook/addon-a11y`; `.storybook/` config; `npm run storybook` / `build-storybook`.
+- Piksel refleri `frontend/src/kiro/ui/__pixel_refs__/` (7 `.dc.html`; gitignore'lu Deckset'e bağımlı değil).
+- Kalibrasyon trio: Button · Card · StatusChip. Kalan 17: **17-agent workflow fan-out** (kanon 0 + strict tsc 0 ilk geçişte).
+- **Doğrulama:** vitest **115 test / 21 dosya PASS** · kanon-lint **0 ihlal** · scoped strict tsc **0** · BackstopJS **111 story → 222/222 ≤%1** (LOKAL dev gate: `npm run kiro:visual:ref|test`).
+- Skeleton: kiroSweep (2.6s) + 3sn güvence + gün-mantrası (`role=status`) — spec-mandated, story+test dahil.
+
+**A11y bulguları (design kararı bekliyor — GİZLENMEDİ):**
+- ProgressBar: `role=progressbar` erişilebilir ad yoktu → **`ariaLabel` prop eklendi** (fix).
+- ChatBubble(me) · Button primary · SideNav-aktif: beyaz metin coral `#FF6F5C` üzerinde ~2.75:1 < WCAG AA. Sistemik coral-CTA; jsdom-axe ölçemez. **Design kararı:** coral'ı koyulaştır (≥3:1) veya metin-taşıyan yüzeyde daha koyu coral.
+
+**Sapmalar → ADR-007** (`docs/adr/README.md`).
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.

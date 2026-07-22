@@ -64,3 +64,23 @@ içeriği loglanmaz.
 **Karar:** Sunucu verisi TanStack Query v5; yerel state Zustand/useState.
 Mevcut `react-query` v3 bağımlılığı v5'e yükseltilir (`@tanstack/react-query`).
 Redux eklenmez — prototipteki tüm state ekran-yereldi.
+
+## ADR-007 · Faz 2 bileşen kalite kapısı: Storybook 10 + BackstopJS (lokal) + a11y
+**Durum:** kabul · 2026-07-22 (uygulama kararı)
+**Bağlam:** 20 ui-starter bileşeni "test edilmemiş başlangıç"tı; Faz 2 DoD = story + RTL + axe +
+görsel-diff. Storybook depoda kurulu değildi.
+**Kararlar:**
+- **Storybook 10.5.3** (`@storybook/react-vite`, Vite 7 destekli) + `addon-a11y`. SB10'un optional
+  `vite-plus`→vitest-4 peer'i repo vitest 3 ile çakıştı → `--legacy-peer-deps` + `frontend/.npmrc`
+  (`legacy-peer-deps=true`, CI `npm ci` paritesi). Repo vitest **3.2.4 korundu**.
+- **BackstopJS = LOKAL dev gate.** Senaryolar `storybook-static/index.json`'dan türetilir;
+  `misMatchThreshold=1` (≤%1); referans = BİZİM bileşenimiz (regresyon guard). Cross-OS
+  font-render farkı nedeniyle CI'da koşmaz; `.dc.html` insan PX referansı; bitmaps gitignore.
+  **CI gate'i = kanon-lint + tsc + vitest + axe.**
+- **ProgressBar sapma:** `ariaLabel` prop eklendi (role=progressbar erişilebilir ad — WCAG 1.1.1).
+  ui-starter'a a11y fix; test kural-dışlaması kaldırıldı.
+- **Story renk literalleri:** stories `../tokens` import yerine token-eşdeğer hex literal kullanır
+  (agent whitelist'i sınırlıydı); kanon-güvenli, ileride token-import'a refactor edilebilir (P3).
+**Açık a11y bulgusu (design kararı):** white-on-coral `#FF6F5C` ~2.75:1 < AA — Button primary /
+ChatBubble(me) / SideNav-aktif. Sistemik coral-CTA seçimi; koyulaştırma (≥3:1) veya metin-taşıyan
+yüzeyde daha koyu coral önerilir. jsdom-axe kontrastı ölçemediği için otomatik yakalanmaz.
