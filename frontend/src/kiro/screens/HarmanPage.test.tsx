@@ -23,7 +23,7 @@ describe('HarmanPage', () => {
     render(<HarmanPage />);
     await screen.findByText('Konuları karıştır, daha iyi öğren');
     expect(screen.getByText('Soru sırası · Harmanlanmış')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Bloklu görünüm' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Harmanlanmış' }));
     expect(screen.getByText('Soru sırası · Bloklu (karşılaştırma)')).toBeInTheDocument();
   });
 

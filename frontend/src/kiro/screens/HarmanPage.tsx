@@ -140,7 +140,7 @@ export function HarmanPage(): React.ReactElement {
                           <span key={c.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: '#4A4456' }}><span aria-hidden style={{ width: 11, height: 11, borderRadius: 3, background: c.color }} />{c.name}</span>
                         ))}
                       </span>
-                      <button type="button" onClick={() => setMode((m) => (m === 'harmanli' ? 'bloklu' : 'harmanli'))} title="Modu değiştir" aria-pressed={mode === 'bloklu'} style={{ minHeight: 44, padding: '0 14px', borderRadius: 999, border: `1px solid ${color.paper.border}`, background: color.paper.subtle, color: color.ink.secondary, cursor: 'pointer', fontFamily: font.sans, fontSize: 12.5, fontWeight: 700 }}>{mode === 'harmanli' ? 'Bloklu görünüm' : 'Harmanlı görünüm'}</button>
+                      <button type="button" onClick={() => setMode((m) => (m === 'harmanli' ? 'bloklu' : 'harmanli'))} title="Modu değiştir" aria-pressed={mode === 'bloklu'} style={{ minHeight: 44, padding: '0 14px', borderRadius: 999, border: `1px solid ${color.paper.border}`, background: color.paper.subtle, color: color.ink.secondary, cursor: 'pointer', fontFamily: font.sans, fontSize: 12.5, fontWeight: 700 }}>{mode === 'harmanli' ? 'Harmanlanmış' : 'Bloklu (karşılaştırma)'}</button>
                     </div>
                   </div>
                   <p style={{ margin: '0 0 16px', fontSize: 12.5, color: color.ink.muted }}>{mode === 'harmanli' ? 'Konular bilinçli karıştırıldı — her soruda yöntem seçimi yeniden tetiklenir.' : 'Aynı konu üst üste gruplanmış — akıcı ama zayıf transfer. (Karşılaştırma için)'}</p>

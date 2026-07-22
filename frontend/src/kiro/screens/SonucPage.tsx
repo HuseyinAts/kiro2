@@ -59,7 +59,7 @@ export function SonucPage(): React.ReactElement {
   const ikiTek = useMedia('(max-width: 900px)');
   const [exam, setExam] = React.useState<LastExam | null>(null);
   const [ad, setAd] = React.useState('');
-  const [zayif, setZayif] = React.useState<{ ad: string; hakimiyet: number }[]>([]);
+  const [zayif, setZayif] = React.useState<{ ad: string; ders: string; hakimiyet: number }[]>([]);
   const [hata, setHata] = React.useState(false);
   const [yeniden, setYeniden] = React.useState(0);
 
@@ -71,7 +71,7 @@ export function SonucPage(): React.ReactElement {
         if (!alive) return;
         setExam(e);
         setAd(me.adKisa || me.ad);
-        setZayif(topics.filter((t) => t.durum === 'zayif').sort((a, b) => a.hakimiyet - b.hakimiyet).slice(0, 4).map((t) => ({ ad: t.ad, hakimiyet: t.hakimiyet })));
+        setZayif(topics.filter((t) => t.durum === 'zayif').sort((a, b) => a.hakimiyet - b.hakimiyet).slice(0, 4).map((t) => ({ ad: t.ad, ders: t.ders, hakimiyet: t.hakimiyet })));
       })
       .catch(() => { if (alive) setHata(true); });
     return () => { alive = false; };
@@ -79,6 +79,7 @@ export function SonucPage(): React.ReactElement {
 
   // Ders adı → renk (light paleti; eşleşmezse nötr)
   const renkAdi: Record<string, SubjectKey> = { 'Türkçe': 'tur', 'Matematik': 'mat', 'Fizik': 'fiz', 'Kimya': 'kim', 'Biyoloji': 'biy' };
+  const dersAd: Record<string, string> = { mat: 'Matematik', fiz: 'Fizik', kim: 'Kimya', biy: 'Biyoloji', tur: 'Türkçe', edb: 'Edebiyat', tar: 'Tarih', cog: 'Coğrafya', fel: 'Felsefe', din: 'Din' };
   const dersRenk = (adı: string) => color.subject.light[renkAdi[adı] as SubjectKey] ?? '#9A93A5';
 
   const satirlar: Satir[] = exam
@@ -98,7 +99,7 @@ export function SonucPage(): React.ReactElement {
           <button type="button" onClick={() => undefined} aria-label="Panele dön" style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: `1px solid ${color.paper.border}`, background: color.paper.card, color: color.ink.muted, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Geri /></button>
           <div style={{ minWidth: 0 }}>
             <h1 style={{ margin: 0, fontSize: 15.5, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{exam?.ad ?? 'Sınav Sonucu'}</h1>
-            <div style={{ fontSize: 12, color: color.ink.muted }}>{exam ? new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(exam.tarih)) : ''}</div>
+            <div style={{ fontSize: 12, color: color.ink.muted }}>{exam ? 'Sonuç · ' + new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(exam.tarih)) : ''}</div>
           </div>
         </header>
 
@@ -124,7 +125,7 @@ export function SonucPage(): React.ReactElement {
                 </div>
                 <div style={{ padding: '26px 30px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>Güzel iş, {ad}!</h2>
-                  <p style={{ margin: '6px 0 18px', fontSize: 14, color: color.ink.muted }}><strong style={{ color: color.ink.primary }}>{exam.ad}</strong> · <span style={numText}>{totalQ}</span> soru tamamlandı</p>
+                  <p style={{ margin: '6px 0 18px', fontSize: 14, color: color.ink.muted }}><strong style={{ color: color.ink.primary }}>{exam.tip}</strong> · <span style={numText}>{totalQ}</span> soru tamamlandı</p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14 }}>
                     <div><div style={{ ...numText, fontSize: 27, fontWeight: 800, lineHeight: 1 }}>{trNet(exam.tytNet)}</div><div style={{ fontSize: 12.5, color: color.ink.muted, marginTop: 5 }}>TYT neti</div></div>
                     <div><div style={{ ...numText, fontSize: 27, fontWeight: 800, lineHeight: 1, color: color.dawn.coralTextOnLight }}>{trNet(toplamNet)}</div><div style={{ fontSize: 12.5, color: color.ink.muted, marginTop: 5 }}>Toplam net</div></div>
@@ -186,7 +187,7 @@ export function SonucPage(): React.ReactElement {
                       {zayif.map((z) => (
                         <li key={z.ad} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                           <span aria-hidden style={{ width: 8, height: 8, borderRadius: 999, flexShrink: 0, background: z.hakimiyet < 50 ? '#E0593F' : '#F59E0B' }} />
-                          <span style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{z.ad}</span>
+                          <span style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{dersAd[z.ders] ? dersAd[z.ders] + ' · ' : ''}{z.ad}</span>
                           <span style={{ ...numText, fontSize: 12, fontWeight: 700, color: z.hakimiyet < 50 ? color.dawn.coralTextOnLight : '#9A5D0D' }}>%{z.hakimiyet}</span>
                         </li>
                       ))}
