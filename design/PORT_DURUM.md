@@ -61,6 +61,23 @@
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT3 Durumu (2026-07-22)
+
+**QuestionCard composite + Soru Çözme ✅** (rapor: `docs/audits/2026-07-22_sprint3-cekirdek.md`).
+- **QuestionCard** (ui/, paylaşılan composite): kontrollü/sunum — `dogru`/çözüm/neden'i HESAPLAMAZ,
+  `sonuc` (postAnswer→AnswerResult) prop'undan alır. Neden/Adaptif/Deneme'de yeniden kullanılacak.
+- **Soru Çözme** (ekran): tam ekran odak (SideNav yok, paper), pasif amber sayaç, tap→postAnswer→review,
+  Soru Navigatörü + lejant, ←/→/M klavye, 3 durum.
+- **Süreç:** keşif workflow → build → **adversarial review workflow** (4 boyut) → 3 major + 4 minor fix.
+  Sunucu-otoriter boyut TAM TEMİZ. **Kapı:** kanon 0 · tsc 0 · vitest 157/157 · breakpoint 42/42.
+- **Kopya (ONAY BEKLER):** DC kanon-temiz (görünür kopya birebir); DC'de olmayan 3 inferred dize —
+  ErrorState/EmptyState/pending (raporda).
+- **Kalibrasyon:** composite ~1.6 + ekran ~1.8; SPRINT1 "composite→çekirdek ucuzlar" formülü doğrulandı.
+
+**İlerleme: 6/42 ekran portlu** (+ 1 paylaşılan composite: QuestionCard).
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -92,7 +109,7 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 ## 3 · Çekirdek döngü (6)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| Soru Çözme | KIRO2 Soru Cozme.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Soru Çözme | KIRO2 Soru Cozme.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Neden Geri Bildirim | KIRO2 Neden Geri Bildirim.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | FSRS Tekrar | KIRO2 FSRS Tekrar.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Adaptif Test | KIRO2 Adaptif Test.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
