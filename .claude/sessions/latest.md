@@ -13,11 +13,16 @@
 - Rapor: `docs/audits/2026-07-22_sprint8-oyunlastirma.md`; durum: `design/PORT_DURUM.md`.
 
 ### Fail Eden Testler
-- YOK. vitest **47 dosya / 265 test PASS** (kiro scoped, canlı doğrulandı, ~116s). Kapı: kanon 0 · tsc 0 · axe temiz.
+- YOK. vitest **47 dosya / 265 test PASS** · kanon 0 · tsc 0 · axe temiz · **breakpoint 0 FAIL / 224 kontrol** (koşuldu).
+- Not: tam-suite paralelde LigPage axe testi timeout-flake verir (izole 5/5 PASS, axe ~20s); S6/S7 dokümante flake.
+
+### E2E sonucu (bu session koşuldu)
+- **Breakpoint gate KOŞULDU:** ilk tur **25 hit<44 fail** (Lig gizle/göster toggle 40px + ArkadasSerisi Seri/XP SegmentedControl pill 34px — build+adversarial kaçırdı, mekanik kapı yakaladı). Fix `→minHeight 44` → **0/224 PASS**. (SegmentedControl pill kiro'da tek kullanıcı ArkadasSerisi; BackstopJS pixel-ref regen operatöre.)
+- **Canlı `/duel/*` SSE E2E BLOKE:** `kiro2-backend` crash-loop (RestartCount **352**, uvicorn "Application startup complete" demiyor → startup lifespan takılıyor, exit 0). **Pre-existing, SPRINT8 ile ilgisiz.** Backend/operatör konusu.
 
 ### Engelleyiciler / Operatör (sende)
 - **Push YAPILMADI** (kullanıcı "push yok").
-- **Operatör E2E:** dev stack ayağa (`docker compose up -d` / native) → Düello canlı `/duel/*` SSE+ELO + breakpoint kapısı (`npm run kiro:breakpoints`, +~28 story×7). Backend session başında kapalıydı (000).
+- **Backend crash-loop düzelt** → sonra Düello canlı SSE+ELO E2E. + SegmentedControl pixel-ref regen (opsiyonel).
 
 ### Sonraki Adımlar (maks 5)
 1. **Commit** (push yok): infra 4 (M) + 12 ekran dosyası (yeni) + docs (PORT_DURUM/audit/latest).

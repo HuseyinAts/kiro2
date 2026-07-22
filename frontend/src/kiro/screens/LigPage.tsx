@@ -429,7 +429,7 @@ function Icerik({
             type="button"
             onClick={onToggle}
             aria-pressed={rankHidden}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 7, height: 40, padding: '0 14px', border: `1px solid ${color.paper.border}`, borderRadius: 12, background: color.paper.card, color: color.ink.secondary, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 700, cursor: 'pointer', boxSizing: 'border-box' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 7, minHeight: 44, padding: '0 14px', border: `1px solid ${color.paper.border}`, borderRadius: 12, background: color.paper.card, color: color.ink.secondary, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 700, cursor: 'pointer', boxSizing: 'border-box' }}
           >
             <EyeIcon off={rankHidden} />
             {rankHidden ? 'Sıralamayı göster' : 'Sıralamayı gizle'}
@@ -504,7 +504,7 @@ function GizliDurumKarti({ onToggle }: { onToggle: () => void }): React.ReactEle
       <button
         type="button"
         onClick={onToggle}
-        style={{ marginTop: 6, display: 'inline-flex', alignItems: 'center', gap: 8, height: 42, padding: '0 18px', border: `1px solid ${color.paper.border}`, borderRadius: 12, background: color.paper.card, color: color.ink.secondary, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxSizing: 'border-box' }}
+        style={{ marginTop: 6, display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 44, padding: '0 18px', border: `1px solid ${color.paper.border}`, borderRadius: 12, background: color.paper.card, color: color.ink.secondary, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer', boxSizing: 'border-box' }}
       >
         Sıralamayı göster
       </button>

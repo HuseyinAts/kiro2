@@ -69,7 +69,8 @@ Keşif workflow (6 ajan) → build workflow (Infra 1 + 4 ekran paralel + Gate 1)
 - **kanon-lint: 0 ihlal** (11 uyarı — hepsi pre-existing: kutlama kanon-allow + token `#6B6478`)
 - **type-check (tsc --noEmit): 0 hata**
 - **vitest src/kiro: 47 dosya / 265 test PASS** (0 fail, 0 skip)
-- breakpoint (build-storybook) ve canlı `/duel` SSE E2E: **operatöre bırakıldı** (backend ayakta gerektirir)
+- **breakpoint E2E: KOŞULDU** — ilk turda **25 hit<44 fail** (Lig "gizle/göster" toggle 40px + ArkadasSerisi "Seri/XP" SegmentedControl pill 34px — build-ajanı + adversarial review kaçırdı, mekanik kapı yakaladı). Fix (`→ minHeight 44`) sonrası **0 FAIL / 224 kontrol** ✅ (overflowX her yerde 0). SegmentedControl pill'i 44'e çıktı (kiro'daki tek kullanıcı ArkadasSerisi; BackstopJS pixel-ref regen operatöre).
+- canlı `/duel` SSE E2E: **BLOKE** — `kiro2-backend` crash-loop (RestartCount **352**, uvicorn "Application startup complete" demiyor → startup lifespan hook takılıyor, exit 0). **Pre-existing, SPRINT8 ile ilgisiz** (commit 0 backend dosyası).
 
 ---
 
@@ -85,7 +86,7 @@ S1-S7 normuyla yazıldı + işaretlendi (ön-blok değil):
 
 ## Faz 4 / operatör backlog
 
-1. **Operatör E2E (sende):** dev stack ayağa (`docker compose up -d` / native) → Düello canlı `/duel/*` SSE + ELO doğrulaması; breakpoint kapısı (`npm run kiro:breakpoints`, ~28 yeni story × 7 = +196 snapshot).
+1. **Operatör E2E (sende):** (a) breakpoint gate **KOŞULDU → 0/224 PASS** (25 hit<44 fix'lendi). (b) Düello canlı `/duel/*` SSE+ELO doğrulaması → **`kiro2-backend` crash-loop düzeltilince** (RestartCount 352, uvicorn "startup complete" demiyor, exit 0 — pre-existing backend startup lifespan sorunu; SPRINT8 ile ilgisiz). (c) SegmentedControl BackstopJS pixel-ref regen (pill 34→44; lokal dev gate).
 2. **Backend wiring (Faz 4):** Lig `standings` per-oyuncu seviye/trend/zon-eşiği/senVsDun DTO'da YOK (mock zengin, live iskeletsel); "sakin mod / sıralamayı gizle" preference ucu YOK; **freeze mekaniği YOK**; **friend sistemi YOK** (birlikte-streak otomatik-eşleşmeli). Hepsi Faz 3'te mock-katmanı.
 3. **KVKK (Arkadaş):** arkadaş günlük-durum + tam XP görünürlüğü → karşılıklı-onay + opt-in gerekir (17-19 yaş, hassas).
 4. **#6** VS skor puan/galibiyet ayrımı (contract).

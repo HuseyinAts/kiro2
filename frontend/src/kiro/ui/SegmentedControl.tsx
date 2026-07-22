@@ -45,7 +45,7 @@ export function SegmentedControl<T extends string>({ options, value, onChange, v
         const on = o.key === value;
         return (
           <button key={o.key} type="button" role="radio" aria-checked={on} onClick={() => onChange(o.key)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 34, padding: '0 16px', borderRadius: 9,
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, minHeight: hit.minTarget, padding: '0 16px', borderRadius: 9,
               fontFamily: font.sans, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: 'none',
               backgroundColor: on ? '#fff' : 'transparent',
               color: on ? color.ink.primary : color.ink.muted,
