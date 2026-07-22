@@ -46,6 +46,21 @@
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT2 Durumu (2026-07-22)
+
+**3/3 ekran ✅** — Hesap Kurtarma · Onboarding (§C0 ton) · Öğrenci Paneli (rapor: `docs/audits/2026-07-22_sprint2-ekranlar.md`).
+- **Tema:** 3'ü de **paper** (route-bazlı, toggle YOK).
+- **DoD:** axe temiz · breakpoint **35/35** (5 ekran × 7 genişlik; denetçi index.json'dan otomatik türetir) ·
+  odak halkası · kanon 0 · tsc 0 · vitest **15/15** (Panel 5 + Onboarding 5 + Kurtarma 5).
+- **§C0 ton adımı:** DC'den birebir çıkarıldı (agir/gelgit/sakin + adaptif yanıt); "Seriyi koru" (TALIMAT v2).
+- **Panel duyarlılığı:** kompozit dashboard 10 breakpoint-FAIL → 3 kırılım + topbar-wrap + ders-kompakt ile 0.
+- **Kopya sapması (ONAY BEKLER):** Onboarding "Devam et" CTA (DC-çıkarım) · Kurtarma e-posta hint "yarım".
+- **Kalibrasyon:** composite ~2.3 birim (2.0 taban + 0.3 duyarlılık); SPRINT1 formülü <%40 sapma → korunur. Detay raporda.
+
+**İlerleme: 5/42 ekran portlu** (Giriş · Ödevlerim · Hesap Kurtarma · Onboarding · Öğrenci Paneli).
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -63,8 +78,8 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
 | Giriş & Kayıt | KIRO2 Giris.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| Hesap Kurtarma (3 adım) | KIRO2 Hesap Kurtarma.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Onboarding (misafir yerleştirme) | KIRO2 Onboarding.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Hesap Kurtarma (3 adım) | KIRO2 Hesap Kurtarma.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Onboarding (misafir yerleştirme) | KIRO2 Onboarding.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | İlk Hafta | KIRO Ilk Hafta.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 
 + route guard + rol yönlendirmesi (öğrenci/veli/öğretmen): ☐
@@ -72,7 +87,7 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 ## 2 · SideNav + Öğrenci Paneli (1)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| Öğrenci Paneli (Rahat/Kompakt) | KIRO2 Ogrenci Paneli.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Öğrenci Paneli (Rahat/Kompakt) | KIRO2 Ogrenci Paneli.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
 ## 3 · Çekirdek döngü (6)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
@@ -145,7 +160,9 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 ---
 **Kapsam dışı (2):** Kaygı Ölçüm · Moderatör Kılavuzu — araştırma saha paketi, üretime port edilmez.
 
-**Kalibrasyon (ilk sprint):** Button+Card+StatusChip + Giriş + Ödevlerim → ekran-başı/bileşen-başı gerçek süreyi buraya yaz:
-- Bileşen-başı ölçülen süre: ___
-- Ekran-başı ölçülen süre: ___
-- Tahmin: kalan ≈ (ekran-süresi × 37) + (bileşen-süresi × 17) + (uç-süresi × 34)
+**Kalibrasyon (S1+S2 ölçüldü):** infra bir-seferlik kuruldu (template + MSW + `kiro:breakpoints` denetçisi).
+Ekran-başı marjinal iş (birim = form-ağırlıklı Giriş referansı):
+- Form/wizard (Giriş ~1.0, Hesap Kurtarma ~1.2) · Layout+veri (Ödevlerim ~1.3) · 3-durum+mock (Onboarding ~1.5)
+- **Composite dashboard (Öğrenci Paneli ~2.3)** = ~2.0 taban + ~0.3 breakpoint-remediation (yoğun-grid ilk turda geçmez).
+- **Revize tahmin:** kalan 39 ekran ≈ **46–55 birim** (composite-yoğun S3–S5 üst-sınır; basit paneller ~0.7).
+  Paylaşılan composite'ler (QuestionCard seti, TopBar) bir kez yapılınca çekirdek-döngü ekranları ucuzlar.
