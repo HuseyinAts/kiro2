@@ -200,6 +200,10 @@ export interface LastExam {
   /** Prototipte getter — API'de düz sayı döner */
   tytNet: number;
   aytNet: number;
+  /** Sınav Sonuç: önceki denemeye net farkı (sunucu; yoksa chip gizlenir) */
+  trendNet?: number;
+  /** Sınav Sonuç: AI analizi tam metni (sunucu/AI proxy — istemci şablon doldurmaz) */
+  aiOzet?: string;
 }
 
 // ---------- Soru bankası / CAT ----------
@@ -221,6 +225,8 @@ export interface Question {
 
 /** CAT yerleştirme maddesi (catBankMat) */
 export interface CatItem {
+  /** maddeId — idempotent cevap gönderimi (sunucu; mock atar) */
+  id?: string;
   b: number;
   konu: string;
   soru: string;

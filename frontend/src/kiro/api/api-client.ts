@@ -209,17 +209,56 @@ const color_subject_mor = '#8B5CF6';
 const color_subject_mavi = '#3B82F6';
 const color_subject_yesil = '#1FB683';
 
-export interface CatNextResult { item: Omit<CatItem, 'dogru'>; theta: number; se: number; done: boolean }
+/** Uygulanan madde (motor paneli + θ yakınsaması) */
+export interface CatUygulanan { b: number; ok: boolean; theta: number; se: number }
+export interface CatNextArgs { oturumId?: string; maddeId?: string; secim?: number | null; madde?: number }
+export interface CatNextResult {
+  item: Omit<CatItem, 'dogru'>;
+  theta: number; se: number; done: boolean;
+  seviye: 'zayif' | 'orta' | 'guclu';
+  topPct: number; netTahmini: number; madde: number;
+  uygulananlar: CatUygulanan[];
+}
 
-export async function postCatNext(prev?: { konu: string; correct: boolean }): Promise<CatNextResult> {
+/** Adaptif yerleştirme — θ/SE/madde-seçimi/durdurma SUNUCUDA (istemci IRT HESAPLAMAZ).
+ *  args.madde = istemcinin cevapladığı madde sayısı; sunucu yanıtı motor panelini çizer. */
+export async function postCatNext(args: CatNextArgs = {}): Promise<CatNextResult> {
   if (cfg.mode === 'mock') {
-    // Basit simülasyon: sıradaki maddeyi güçlük sırasıyla ver (gerçek MLE/EAP sunucuda)
     const bank = (await mock()).catBankMat;
-    const i = Math.min(bank.length - 1, Math.floor(Math.random() * bank.length));
-    const { dogru: _gizli, ...item } = bank[i];
-    return { item, theta: 0, se: 0.6, done: false };
+    const n = Math.min(12, Math.max(0, args.madde ?? 0)); // uygulanan madde sayısı
+    // Sunucu-simülasyon: yakınsayan θ/SE (deterministik; istemci hesaplamaz)
+    const uygulananlar: CatUygulanan[] = Array.from({ length: n }, (_, i) => ({
+      b: bank[i % bank.length]!.b,
+      ok: i % 3 !== 2,
+      theta: Math.min(0.62, 0.08 + (i + 1) * 0.045),
+      se: Math.max(0.24, 0.72 - (i + 1) * 0.04),
+    }));
+    const theta = n === 0 ? 0 : uygulananlar[n - 1]!.theta;
+    const se = n === 0 ? 0.72 : uygulananlar[n - 1]!.se;
+    const done = (n >= 1 && se < 0.30) || n >= 12;
+    const { dogru: _g, ...ham } = bank[n % bank.length]!;
+    const seviye = theta < -0.3 ? 'zayif' : theta < 0.5 ? 'orta' : 'guclu';
+    return {
+      item: { ...ham, id: 'mad-' + (n + 1) }, theta, se, done, seviye,
+      topPct: Math.max(1, Math.round(30 - theta * 14)),
+      netTahmini: Math.round(28 + theta * 8),
+      madde: n, uygulananlar,
+    };
   }
-  return live<CatNextResult>('/cat/next', { method: 'POST', body: JSON.stringify(prev ?? {}) });
+  return live<CatNextResult>('/cat/next', { method: 'POST', body: JSON.stringify(args) });
+}
+
+/** Sınav Sonuç — GET /exams/:id; mock trend/AI-özeti ekler (sunucu-otoriter alanlar). */
+export async function getExamResult(id?: string): Promise<LastExam> {
+  if (cfg.mode === 'mock') {
+    const e = (await mock()).lastExam;
+    const secs = [...e.tyt, ...e.ayt];
+    const strong = secs.reduce((a, b) => (b.net > a.net ? b : a), secs[0]!);
+    const weak = secs.reduce((a, b) => (b.net / Math.max(1, b.soru) < a.net / Math.max(1, a.soru) ? b : a), secs[0]!);
+    const netStr = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 }).format(e.tytNet + e.aytNet);
+    return { ...e, trendNet: 8.5, aiOzet: `Toplam netin ${netStr} — en güçlü dersin ${strong.ad}. En çok gelişim alanın ${weak.ad}; zayıf konularını tekrar listene ekledim.` };
+  }
+  return live<LastExam>('/exams/' + (id ?? 'last'));
 }
 
 /** FSRS 4 derece (Anki): tekrar=again · zor=hard · iyi=good · kolay=easy */

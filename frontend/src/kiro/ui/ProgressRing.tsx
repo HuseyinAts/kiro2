@@ -9,9 +9,11 @@ export interface ProgressRingProps {
   ringColor?: string; // varsayılan dawn coral
   label?: string;     // ortadaki büyük metin (varsayılan %pct)
   sublabel?: string;
+  /** role=img erişilebilir ad — verilmezse label/sublabel'den kurulur */
+  ariaLabel?: string;
 }
 
-export function ProgressRing({ pct, size = 72, strokeWidth = 8, ringColor = color.dawn.coral, label, sublabel }: ProgressRingProps) {
+export function ProgressRing({ pct, size = 72, strokeWidth = 8, ringColor = color.dawn.coral, label, sublabel, ariaLabel }: ProgressRingProps) {
   const theme = useKiroTheme();
   const s = surf(theme);
   const clamped = Math.max(0, Math.min(100, pct));
@@ -20,7 +22,7 @@ export function ProgressRing({ pct, size = 72, strokeWidth = 8, ringColor = colo
   const offset = c * (1 - clamped / 100);
   const cx = size / 2;
   return (
-    <div style={{ position: 'relative', width: size, height: size }} role="img" aria-label={`${label ?? `%${clamped}`}${sublabel ? ` — ${sublabel}` : ''}`}>
+    <div style={{ position: 'relative', width: size, height: size }} role="img" aria-label={ariaLabel ?? `${label ?? `%${clamped}`}${sublabel ? ` — ${sublabel}` : ''}`}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         <circle cx={cx} cy={cx} r={r} fill="none" stroke={s.skeleton} strokeWidth={strokeWidth} />
         <circle cx={cx} cy={cx} r={r} fill="none" stroke={ringColor} strokeWidth={strokeWidth}
