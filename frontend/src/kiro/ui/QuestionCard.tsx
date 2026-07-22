@@ -20,8 +20,9 @@ const HARFLER = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 // Review durum paletleri — DC'den birebir; yeşil=doğru, terracotta=yanlış (alarm DEĞİL).
 const REVIEW = {
-  dogru: { bg: '#E9F8F1', border: '#6FD9B0', rozet: '#1FB683', etiket: '#0E9E6E' },
-  yanlis: { bg: '#FCEDE8', border: '#F0A593', rozet: '#E8836B', etiket: color.dawn.coralTextOnLight },
+  // Satır bg/kenar DC-birebir; harf rozeti beyaz metin taşıdığı için AA-güvenli derin ton (iki-katman kanonu).
+  dogru: { bg: '#E9F8F1', border: '#6FD9B0', rozet: '#047857', etiket: '#0E9E6E' },
+  yanlis: { bg: '#FCEDE8', border: '#F0A593', rozet: color.dawn.coralCtaBg, etiket: color.dawn.coralTextOnLight },
 } as const;
 
 // Çözüm paneli (DC "Çözüm · adım adım") — kanon-temiz yeşil aile.
@@ -83,25 +84,33 @@ export function QuestionCard({
   const kilitli = review || !onSelect;
   const zor = zorlukChip(zorlukB);
   const grpRef = React.useRef<HTMLDivElement>(null);
+  const cozumRef = React.useRef<HTMLElement>(null);
+  const [odak, setOdak] = React.useState(0);
+
+  React.useEffect(() => { setOdak(0); }, [soru]);
+  // Cevap gelince odağı çözüm bölümüne taşı (radyo disable olunca odak body'ye düşmesin).
+  React.useEffect(() => { if (review) cozumRef.current?.focus(); }, [review]);
 
   const oku = (i: number) => {
     if (kilitli || !onSelect) return;
     onSelect(i);
   };
 
-  // Klavye: ok tuşları seçim gezinir; 1-5 / A-E doğrudan seçer (SPRINT3 klavye DoD).
+  // Klavye: ok tuşları YALNIZ odağı taşır (gönderim YOK — kazara cevap gönderimini önler);
+  // 1-5 / A-E doğrudan seçer/gönderir; Enter/Space odaklı şıkkı native onClick ile gönderir (SPRINT3 DoD).
   const grupTus = (e: React.KeyboardEvent) => {
     if (kilitli) return;
     const n = secenekler.length;
-    const cur = secilen ?? 0;
-    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); oku((cur + 1) % n); return; }
-    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); oku((cur - 1 + n) % n); return; }
-    if (e.key === 'Home') { e.preventDefault(); oku(0); return; }
-    if (e.key === 'End') { e.preventDefault(); oku(n - 1); return; }
+    const radios = grpRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]');
+    const tasi = (to: number) => { e.preventDefault(); setOdak(to); radios?.[to]?.focus(); };
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') return tasi((odak + 1) % n);
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') return tasi((odak - 1 + n) % n);
+    if (e.key === 'Home') return tasi(0);
+    if (e.key === 'End') return tasi(n - 1);
     const d = Number(e.key);
-    if (Number.isInteger(d) && d >= 1 && d <= n) { e.preventDefault(); oku(d - 1); return; }
+    if (Number.isInteger(d) && d >= 1 && d <= n) { e.preventDefault(); setOdak(d - 1); oku(d - 1); return; }
     const h = HARFLER.indexOf(e.key.toUpperCase());
-    if (h >= 0 && h < n) { e.preventDefault(); oku(h); }
+    if (h >= 0 && h < n) { e.preventDefault(); setOdak(h); oku(h); }
   };
 
   const satirGorunum = (i: number): { bg: string; border: string; rozetBg: string; rozetFg: string; etiket?: string; etiketFg?: string } => {
@@ -150,13 +159,12 @@ export function QuestionCard({
         {secenekler.map((sec, i) => {
           const g = satirGorunum(i);
           const secili = i === secilen;
-          const odaklanabilir = !kilitli && (secilen == null ? i === 0 : secili);
           return (
             <button
               key={i} type="button" role="radio"
               aria-checked={secili} aria-disabled={kilitli || undefined}
-              disabled={kilitli} tabIndex={kilitli ? -1 : odaklanabilir ? 0 : -1}
-              onClick={() => oku(i)}
+              disabled={kilitli} tabIndex={kilitli ? -1 : i === odak ? 0 : -1}
+              onClick={() => { setOdak(i); oku(i); }}
               style={{ display: 'flex', alignItems: 'center', gap: 14, minHeight: 44, padding: '13px 16px', textAlign: 'left', width: '100%',
                 borderRadius: 13, cursor: kilitli ? 'default' : 'pointer', fontFamily: font.sans,
                 background: g.bg, border: `1.5px solid ${g.border}` }}
@@ -169,17 +177,17 @@ export function QuestionCard({
         })}
       </div>
 
-      {/* Cevap geri bildirimi (aria-live) + çözüm paneli — yalnız review */}
-      <div aria-live="assertive">
+      {/* Cevap geri bildirimi (aria-live polite — sakin ton) + çözüm paneli — yalnız review */}
+      <div aria-live="polite">
         {review && sonuc && (
           <div style={{ marginTop: 20 }}>
             {sonuc.correct ? (
               <Callout tone="success" icon={Im.onay}>
-                <strong>Doğru!</strong> Güzel iş — yine de mantığı pekiştirelim.
+                <strong>Doğru!</strong><br />Güzel iş. Yine de mantığı pekiştirelim.
               </Callout>
             ) : (
               <Callout tone="attention">
-                <strong>Yanlış — hadi nedenini görelim.</strong> Hata, öğrenmenin en değerli anı; aşağıda tam olarak neden.
+                <strong>Yanlış — hadi nedenini görelim</strong><br />Hata, öğrenmenin en değerli anı. Aşağıda tam olarak neden.
               </Callout>
             )}
           </div>
@@ -187,7 +195,7 @@ export function QuestionCard({
       </div>
 
       {review && sonuc && (
-        <section aria-label="Çözüm" style={{ marginTop: 16, padding: '20px 22px', background: PANEL.bg, border: `1px solid ${PANEL.border}`, borderRadius: 14 }}>
+        <section ref={cozumRef} tabIndex={-1} aria-label="Çözüm" style={{ marginTop: 16, padding: '20px 22px', background: PANEL.bg, border: `1px solid ${PANEL.border}`, borderRadius: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <span style={{ color: PANEL.baslik, display: 'inline-flex' }}>{Im.onay}</span>
             <span style={{ fontSize: 14.5, fontWeight: 800, color: PANEL.baslik }}>Çözüm · adım adım</span>

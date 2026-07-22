@@ -150,7 +150,7 @@ export function SoruCozmePage(): React.ReactElement {
           <button type="button" onClick={kapat} aria-label="Kapat" style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: `1px solid ${color.paper.border}`, background: color.paper.card, color: color.ink.secondary, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{Im.kapat}</button>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ fontSize: 15.5, fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Matematik · Günlük Set</div>
-            <div style={{ fontSize: 12, color: color.ink.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Türev odağı · <span style={numText}>{toplam}</span> soru</div>
+            <div style={{ fontSize: 12, color: color.ink.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Türev odağı · <span style={numText}>{set === null ? '…' : toplam}</span> soru</div>
           </div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 9, height: 40, padding: '0 16px', borderRadius: 11, background: '#FBF0DE', border: '1px solid #F2D9AC', color: '#9A5D0D', flexShrink: 0 }}>
             {Im.saat}
@@ -239,6 +239,20 @@ export function SoruCozmePage(): React.ReactElement {
                       </button>
                     );
                   })}
+                </div>
+                {/* Lejant (DC birebir · Cevaplanan / Şu anki soru / İşaretli / Boş) */}
+                <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${color.paper.border}`, display: 'grid', gap: 8 }}>
+                  {[
+                    { et: `Cevaplanan (${cevaplanan})`, sw: color.dawn.coralCtaBg, bd: color.dawn.coralCtaBg },
+                    { et: 'Şu anki soru', sw: '#FFF3EE', bd: color.dawn.coral },
+                    { et: `İşaretli (${isaretli.size})`, sw: '#FBF0DE', bd: '#F0D9AC' },
+                    { et: `Boş (${Math.max(0, toplam - cevaplanan)})`, sw: '#F4F0EA', bd: color.paper.border },
+                  ].map((l) => (
+                    <div key={l.et} style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 12.5, color: color.ink.secondary }}>
+                      <span aria-hidden style={{ flexShrink: 0, width: 14, height: 14, borderRadius: 5, background: l.sw, border: `1.5px solid ${l.bd}` }} />
+                      <span>{l.et}</span>
+                    </div>
+                  ))}
                 </div>
               </nav>
             </>

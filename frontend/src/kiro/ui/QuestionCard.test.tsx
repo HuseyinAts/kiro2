@@ -45,11 +45,20 @@ describe('QuestionCard', () => {
     expect(radios[2]!).toHaveAttribute('aria-checked', 'true');
   });
 
-  it('klavye: ok tuşu seçimi gezinir', async () => {
+  it('klavye: ok tuşu odağı gezinir ama cevabı GÖNDERMEZ', async () => {
     render(<Harness />);
     const radios = within(screen.getByRole('radiogroup')).getAllByRole('radio');
     radios[0]!.focus();
     await userEvent.keyboard('{ArrowDown}');
+    expect(radios[1]!).toHaveFocus();
+    expect(radios[1]!).toHaveAttribute('aria-checked', 'false'); // kazara gönderim yok
+  });
+
+  it('klavye: Enter odaklı şıkkı gönderir (native onClick)', async () => {
+    render(<Harness />);
+    const radios = within(screen.getByRole('radiogroup')).getAllByRole('radio');
+    radios[1]!.focus();
+    await userEvent.keyboard('{Enter}');
     expect(radios[1]!).toHaveAttribute('aria-checked', 'true');
   });
 
