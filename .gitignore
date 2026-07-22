@@ -10,6 +10,10 @@ design/Kiro2 Projesi Frontend Stratejisi/
 # Kiro scoped typecheck config (dev-only hızlı tsc; commit edilmez)
 frontend/tsconfig.kiro.json
 
+# Storybook build çıktısı + log
+frontend/storybook-static/
+*storybook.log
+
 # Leaked secrets / session cookies (NEVER commit)
 cookies*.txt
 
