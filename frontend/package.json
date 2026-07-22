@@ -126,6 +126,8 @@
     "kanon:lint": "node ../design/scripts/kanon-lint.mjs src/kiro",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
+    "kiro:visual:ref": "npm run build-storybook && node scripts/kiro-visual.mjs reference",
+    "kiro:visual:test": "npm run build-storybook && node scripts/kiro-visual.mjs test",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "type-check": "tsc --noEmit",

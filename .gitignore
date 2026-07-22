@@ -14,6 +14,9 @@ frontend/tsconfig.kiro.json
 frontend/storybook-static/
 *storybook.log
 
+# Kiro BackstopJS bitmaps/report (env-özel, cross-OS render; commit edilmez)
+frontend/backstop_data_kiro/
+
 # Leaked secrets / session cookies (NEVER commit)
 cookies*.txt
 
