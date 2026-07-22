@@ -373,6 +373,11 @@ jobs:
         working-directory: frontend
         run: npm run lint
 
+      # KIRO tasarım kanonu (emoji / alarm-kırmızısı / indigo / "eksik" / motion guard /
+      # stok-ikon importu). Repo kökünden koşar; ihlalde exit 1. design/CLAUDE_CODE_TALIMAT §4.
+      - name: Kanon lint (frontend/src/kiro)
+        run: node design/scripts/kanon-lint.mjs frontend/src/kiro
+
       - name: TypeScript Type Check
         working-directory: frontend
         run: npm run type-check

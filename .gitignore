@@ -1,6 +1,12 @@
 # Minimal AI Education Platform
 # Simple .gitignore for minimal system
 
+# KIRO2 tasarım handoff — redundant zip export (design/ ağacı zaten repoda)
+design/**/*.zip
+# Ham Deckset export wrapper — design_handoff_kiro2 zaten design/ köküne düzleştirildi (kanonik).
+# .dc.html piksel referansları Faz 2/3'te temiz bir konuma bilinçli alınır (şimdilik disk'te, izlenmez).
+design/Kiro2 Projesi Frontend Stratejisi/
+
 # Leaked secrets / session cookies (NEVER commit)
 cookies*.txt
 
