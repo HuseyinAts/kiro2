@@ -1,28 +1,34 @@
-## Session Handoff — 2026-07-05 06:23
+## Session Handoff — 2026-07-22 09:40
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `8d23c6d4f` fix(auth): OAuth2 callback şimdi gerçek JWT üretiyor, rastgele string değil
-**Uncommitted:** Bu oturumun kendi işi TEMİZ/pushed. Repo'da ~209 dosyalık pre-existing/oturum-dışı working-tree drift var (bu oturumdan ÖNCE mevcuttu — kaynağı araştırılmadı, dokunulmadı).
+**Son commit:** 85ed52801 fix(kiro): SPRINT4 kopya-boyutu odaklı re-run — 4 minor DC sapması giderildi
+**Uncommitted:** temiz (working tree clean)
 
-### Yapılanlar
-- Okul onboarding paneli frontend TAMAM, pushed (`d5023fe60`): `frontend/src/services/organizationService.ts`, `frontend/src/pages/ModernOrgOnboardingPage.tsx`, `App.tsx` route `/admin/organizasyon`, `ModernNavigation.tsx` nav link, 9 vitest test PASS. Detay: `memory/project_onboarding-panel.md`.
-- SSO (MEB/SAML) brainstorm, pushed (`a4554ad6c`): `docs/brainstorms/2026-07-05_sso-meb-saml.md` — kapsam kararı MEB dondur, sadece kurumsal OIDC, SAML2 MVP dışı.
-- Confirmed bug fix, pushed (`8d23c6d4f`): `backend/api/enhanced_auth_api.py` `oauth2_callback()` fake JWT (`secrets.token_urlsafe`) → gerçek JWT (`jwt_manager.create_access_token/create_refresh_token`). Test: `backend/tests/unit/test_oauth2_callback_jwt.py`.
+### Yapilanlar (Faz 3 tasarım-portu — Şafak design system → frontend/src/kiro/)
+- **Grup 3 çekirdek döngü TAMAM (6/6).** SPRINT1-4 boyunca **11/42 ekran + 1 composite** portlandı.
+- SPRINT4 (bu session): `screens/AdaptifTestPage.tsx` (motor paneli, sunucu-otoriter, geri bildirim yok),
+  `screens/HarmanPage.tsx` (lobi, harman/bloklu toggle), `screens/SonucPage.tsx` (net-birincil, #FBE8E2, confetti yok).
+- `api/api-client.ts`: postCatNext(args)+motor alanları, getExamResult, CatItem.id, LastExam.trendNet/aiOzet.
+- `ui/ProgressRing.tsx`: ariaLabel prop. `ui/ConfettiDawn.tsx` (SPRINT3-B): infinite→sonlu (WCAG 2.2.2).
+- Her sprint: keşif workflow → build → **adversarial review workflow (P0)** → fix → docs/audits + PORT_DURUM.
+- Raporlar: `docs/audits/2026-07-22_sprint{1,2,3,3b,4}-*.md`; durum tablosu: `design/PORT_DURUM.md`.
 
 ### Fail Eden Testler
-YOK — 106 auth regresyon testi + yeni oauth2_callback testi hepsi PASS.
+- YOK. vitest **33/33 dosya**. (Tam-suite "flaky axe-timeout" paralel yükte — TAP reporter + izolasyonla 0 gerçek hata doğrulandı.)
+- Kapı: kanon-lint 0 · scoped tsc 0 · breakpoint 91/91 (13 story × 7) · axe temiz · backstop re-baseline exit 0.
 
 ### Engelleyiciler
-- Onboarding paneli tarayıcıda E2E doğrulanmadı (admin login ile `/admin/organizasyon` ziyaret edilmedi).
-- ~209 dosyalık pre-existing git working-tree drift (bu oturumdan mı önceki bir oturumdan mı belirsiz).
+- YOK. Push YAPILMADI (kullanıcı "push yok" dedi — 20+ commit local).
 
-### Sonraki Adımlar (maks 5)
-1. Onboarding paneli tarayıcı E2E (admin login + `/admin/organizasyon` ziyaret).
-2. `verify_magic_link()` (`enhanced_auth_api.py` ~satır 582) — AYNI fake-token bug'ı, flagli, TDD ile fix.
-3. `oauth2_service.link_or_create_user()` — organization_id/tenant guard ekle (cross-tenant account-linking riski, kurumsal SSO'dan önce kapanmalı).
-4. SSO Top 5 aksiyon (`docs/brainstorms/2026-07-05_sso-meb-saml.md`) — kapsam onaylıysa kodlamaya başla.
-5. ~209 dosyalık working-tree drift'i araştır (`git status` + hangi oturumdan kaldığını tespit et).
+### Sonraki Adimlar (maks 5)
+1. Kalan gruplar (kullanıcı grup seçer): Planlama(4) · Hub/duygusal-KOYU(6) · Oyunlaştırma(4) · Roller(6) · İş(7) · AI(4). SPEC'ler design/SPRINT5-12_SPEC.md hazır.
+2. Hub grubu **ilk dusk tema** kullanımı olacak (şimdiye dek hepsi paper) — KiroThemeProvider theme="dusk".
+3. Reuse: Panel/SideNav/MasteryBadge/QuestionCard/ProgressRing → çarpan düşer (~1.0-1.5/ekran).
+4. Aynı pipeline: keşif workflow → build → adversarial review P0 → fix → docs.
+5. Ertelenenler (ops): Harman TYT/AYT kaba ders→tür (DC-formül); trend/kalanTahmini openapi alanları (Faz 4).
 
-### Kararlar (gelecek session tekrar tartışmasın)
-- SSO kapsamı: MEB e-Okul entegrasyonu DONDURULDU (iş geliştirme/hukuk sorusu, LOI/pilot okul yok) — sadece kurumsal OIDC (Google Workspace/Entra ID/Okta), SAML2 MVP dışı.
-- Okul onboarding: MVP direct-management (e-posta davet YOK), FE gate = platform `'admin'` rolü.
-- `JWTManager.create_token_pair()` (pozisyonel argüman hatası) ve `unified_auth_service.py` vs `dependencies.py` dual-secret (confirmed ama dormant) — bilinen, flagli, henüz fix edilmedi.
+### Kararlar (gelecek session tekrar tartismasin)
+- **Kopya tiebreaker:** DC (pixel-ref, spec line-5) + kanon > spec-BİREBİR. Genuine ambiguity → dur-sor.
+- **Coral iki-katman (ADR-007):** beyaz-metin coral zemin = coralCtaBg #C2452B; dekoratif = #FF6F5C. Gradyan kartlar #C2452B→#E0593F (AA).
+- **Yeni composite ÇIKARMA (KISS):** tek-kullanım bespoke inline; QuestionCard reuse = copy-adapt.
+- **Motorlar sunucuda:** dogru/θ/SE/FSRS/durdurma yalnız API yanıtından; istemci hesaplamaz.
+- **Adversarial review P0:** yoğun-etkileşim ekranlarında zorunlu — mekanik kapılar (kanon/tsc/axe-jsdom) major a11y/focus kusurlarını kaçırdı.
