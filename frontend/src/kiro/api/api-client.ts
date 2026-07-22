@@ -222,15 +222,40 @@ export async function postCatNext(prev?: { konu: string; correct: boolean }): Pr
   return live<CatNextResult>('/cat/next', { method: 'POST', body: JSON.stringify(prev ?? {}) });
 }
 
-export type ReviewGrade = 'kolay' | 'iyi' | 'zor';
+/** FSRS 4 derece (Anki): tekrar=again · zor=hard · iyi=good · kolay=easy */
+export type ReviewGrade = 'tekrar' | 'zor' | 'iyi' | 'kolay';
 
 export async function postReviewGrade(konu: string, grade: ReviewGrade): Promise<{ nextDueIn: number }> {
   if (cfg.mode === 'mock') {
-    // FSRS aralığı sunucuda hesaplanır; mock kaba bir genişleyen aralık döner
-    const next = grade === 'kolay' ? 7 : grade === 'iyi' ? 3 : 1;
+    // FSRS aralığı SUNUCUDA hesaplanır; mock kaba bir aralık döner (istemci hesaplamaz)
+    const next = grade === 'kolay' ? 12 : grade === 'iyi' ? 6 : grade === 'zor' ? 3 : 0;
     return { nextDueIn: next };
   }
   return live<{ nextDueIn: number }>('/review/' + encodeURIComponent(konu) + '/grade', { method: 'POST', body: JSON.stringify({ grade }) });
+}
+
+/** Tekrar oturumu kartı — aralık önizlemeleri SUNUCUDAN (FSRS projeksiyonu; istemci hesaplamaz) */
+export interface ReviewCard {
+  ders: SubjectKey;
+  konu: string;
+  front: string;
+  back: string;
+  previews: { tekrar: string; zor: string; iyi: string; kolay: string };
+}
+
+export async function getReviewSession(): Promise<ReviewCard[]> {
+  if (cfg.mode === 'mock') {
+    const cards = (await mock()).flashcards;
+    // previews sunucu FSRS projeksiyonu (mock: tipik değerler) — ekran yalnız gösterir
+    return cards.map((c) => ({ ...c, previews: { tekrar: '<1 dk', zor: '3 gün', iyi: '6 gün', kolay: '12 gün' } }));
+  }
+  return live<ReviewCard[]>('/review/session');
+}
+
+/** Konuya göre hafıza gücü (tüm kuyruk — due dahil) */
+export async function getReviewTopics(): Promise<ReviewItem[]> {
+  if (cfg.mode === 'mock') return (await mock()).reviewQueue;
+  return live<ReviewItem[]>('/review/topics');
 }
 
 // ---------------------------------------------------------------------------
