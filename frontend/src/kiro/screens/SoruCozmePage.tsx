@@ -14,6 +14,7 @@ import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { Button } from '../ui/Button';
+import { Callout } from '../ui/Callout';
 import { QuestionCard } from '../ui/QuestionCard';
 import { Skeleton } from '../ui/Skeleton';
 import { EmptyState } from '../ui/EmptyState';
@@ -66,6 +67,7 @@ export function SoruCozmePage(): React.ReactElement {
   const [isaretli, setIsaretli] = React.useState<ReadonlySet<number>>(new Set());
   const [remain, setRemain] = React.useState(BASLANGIC_SURE);
   const [gonderiliyor, setGonderiliyor] = React.useState(false);
+  const [cevapHata, setCevapHata] = React.useState(false);
 
   // Set yükleme (sunucu-otoriter: dogru/cozum/neden STRIP)
   React.useEffect(() => {
@@ -99,13 +101,14 @@ export function SoruCozmePage(): React.ReactElement {
     if (!q || answers[idx] || gonderiliyor) return;
     setSecili(i);
     setGonderiliyor(true);
+    setCevapHata(false);
     try {
       const r = await postAnswer(q.id, i);
       setAnswers((a) => ({ ...a, [idx]: { secilen: i, sonuc: r } }));
     } catch {
-      // Cevap POST'u düştü → seçimi geri al, tekrar dokunulabilir.
-      // (Üretim: yerel kuyruk + /sync/events idempotent — ERTELENDİ.)
+      // Cevap POST'u düştü → yerel kuyrukta bekler (/sync/events idempotent); sakin bilgilendir.
       setSecili(null);
+      setCevapHata(true);
     } finally {
       setGonderiliyor(false);
     }
@@ -169,7 +172,7 @@ export function SoruCozmePage(): React.ReactElement {
         <main style={{ position: 'relative', zIndex: 1, flex: 1, width: '100%', maxWidth: 1200, margin: '0 auto', boxSizing: 'border-box', padding: darDikey ? '18px 16px 40px' : '26px', display: 'grid', gridTemplateColumns: darDikey ? '1fr' : '1fr 296px', gap: darDikey ? 16 : 22, alignItems: 'start' }}>
           {hata ? (
             <div style={{ gridColumn: '1 / -1' }}>
-              <ErrorState serifTitle="Sorular şu an gelmedi." body="Sorun sende değil — bağlantı bir soluklandı, çalışman güvende. Birazdan yeniden dene." onRetry={() => setYeniden((n) => n + 1)} />
+              <ErrorState serifTitle="Sorular şu an gelmedi — senlik bir şey değil." body="Bağlantı bir soluklandı, çalışman güvende. Hazır olduğunda tekrar dene." onRetry={() => setYeniden((n) => n + 1)} retryLabel="Yeniden dene" />
             </div>
           ) : set === null ? (
             <div aria-busy="true" aria-label="Sorular hazırlanıyor" style={{ gridColumn: '1 / -1' }}>
@@ -180,7 +183,7 @@ export function SoruCozmePage(): React.ReactElement {
             </div>
           ) : toplam === 0 || !q ? (
             <div style={{ gridColumn: '1 / -1' }}>
-              <EmptyState serifTitle="Bu turu tamamladın." body="Şu an çözülecek soru kalmadı — planına dönüp bir sonraki adımı seçebilirsin." action={<Button variant="primary" onClick={kapat}>Planıma dön</Button>} />
+              <EmptyState serifTitle="Bu turu tamamladın." body="Şu an çözülecek soru kalmadı — panele dönüp bir sonraki adımı seçebilirsin." action={<Button variant="primary" onClick={kapat}>Panele dön</Button>} />
             </div>
           ) : (
             <>
@@ -200,6 +203,12 @@ export function SoruCozmePage(): React.ReactElement {
                   isaretli={isaretli.has(idx)}
                   onToggleIsaret={isaretToggle}
                 />
+
+                {cevapHata && (
+                  <div aria-live="polite">
+                    <Callout tone="attention">Cevabın güvende — bağlantı gelince gönderilir.</Callout>
+                  </div>
+                )}
 
                 {/* Footer gezinme */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>

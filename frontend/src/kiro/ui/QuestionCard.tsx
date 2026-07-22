@@ -177,8 +177,8 @@ export function QuestionCard({
         })}
       </div>
 
-      {/* Cevap geri bildirimi (aria-live polite — sakin ton) + çözüm paneli — yalnız review */}
-      <div aria-live="polite">
+      {/* Cevap geri bildirimi (aria-live assertive — SPEC §161 a11y DoD) + çözüm paneli — yalnız review */}
+      <div aria-live="assertive">
         {review && sonuc && (
           <div style={{ marginTop: 20 }}>
             {sonuc.correct ? (
