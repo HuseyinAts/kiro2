@@ -78,6 +78,23 @@
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT3-B Durumu (2026-07-22)
+
+**Neden Geri Bildirim + FSRS Tekrar ✅** — çekirdek-döngü I TAMAM (rapor: `docs/audits/2026-07-22_sprint3b-neden-fsrs.md`).
+- **Neden Geri Bildirim**: SideNav(practice) + sonuç bandı + "Neden?" bloğu + sağ ray (FSRS/hâkimiyet/ilgili);
+  DC glyph'leri bespoke SVG; içerik tümüyle AnswerResult'tan (genişletildi).
+- **FSRS Tekrar**: sayfa (hero + Unutma eğrisi SVG + hafıza gücü + 7-gün) + tekrar-oturumu overlay (focus trap +
+  Esc + Boşluk/1-4 klavye + RM-guard ConfettiDawn). Aralıklar sunucudan; postReviewGrade(kartId).
+- **Soru Çözme kopya-sync**: ErrorState/kuyruk/EmptyState onaylı kopyaya çekildi; aria-live assertive (SPEC §161).
+- **Adversarial review** (4 boyut): 0 blocker · 4 major (FSRS overlay focus-trap/Boşluk/kartId/CTA) · 7 minor → hepsi giderildi.
+  Yoğun-etkileşim **P0 doğrulandı** — 4 major yalnız adversarial pass ile yakalandı (mekanik kapılar kaçırdı).
+- **Kopya çelişkisi**: FSRS alt başlık DC vs spec §118 → DC (line-5 kuralı). ConfettiDawn `infinite`→sonlu (WCAG 2.2.2).
+- **Kapı:** kanon 0 · tsc 0 · vitest 166/166 · breakpoint 70/70 (10 story × 7).
+
+**İlerleme: 8/42 ekran + 1 composite (QuestionCard). Grup 3 çekirdek-döngü I (Soru Çözme·Neden·FSRS) TAMAM.**
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -110,8 +127,8 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
 | Soru Çözme | KIRO2 Soru Cozme.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| Neden Geri Bildirim | KIRO2 Neden Geri Bildirim.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| FSRS Tekrar | KIRO2 FSRS Tekrar.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Neden Geri Bildirim | KIRO2 Neden Geri Bildirim.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| FSRS Tekrar | KIRO2 FSRS Tekrar.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Adaptif Test | KIRO2 Adaptif Test.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Harmanlanmış Deneme | KIRO2 Harmanlanmis Deneme.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Sınav Sonuç (net-birincil) | KIRO2 Sinav Sonuc.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
