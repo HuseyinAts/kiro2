@@ -22,6 +22,17 @@ import type {
   AuthTokens,
   LoginRequest,
   RegisterRequest,
+  LeagueData,
+  DuelQuestion, DuelMatch, DuelAnswerResult, DuelTurSonucu, DuelResult, DuelRating,
+  FriendsData, StreakData,
+} from '../types';
+
+// SPRINT8 · Grup 6 tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
+export type {
+  LeagueStanding, LeagueData,
+  DuelQuestion, DuelMatch, DuelAnswerResult, DuelTurSonucu, DuelResult, DuelRating, DuelOpponent,
+  Friend, CoopQuest, FriendsData,
+  StreakDay, StreakData,
 } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -44,7 +55,8 @@ export type MockData = Pick<KiroData,
   'engine' | 'persona' | 'subjects' | 'topics' | 'dersKatalog' | 'alanlar' | 'katalogKonular' |
   'katalogUniteler' | 'sinifRoster' | 'odevler' |
   'reviewQueue' | 'lastExam' | 'questionBank' | 'flashcards' | 'catBankMat' |
-  'curriculum' | 'atomKirilim' | 'seviyeEsik'>;
+  'curriculum' | 'atomKirilim' | 'seviyeEsik' |
+  'league' | 'duelOpponent' | 'friends' | 'streak'>;
 
 let cfg: KiroApiConfig = { mode: 'mock' };
 let mockCache: MockData | null = null;
@@ -489,6 +501,402 @@ export async function postAssignmentProgress(id: string, soruId: string, cevap: 
 export async function getClassRoster(sinifId: string): Promise<SinifOgrenci[]> {
   if (cfg.mode === 'mock') return (await mock()).sinifRoster ?? [];
   return live<SinifOgrenci[]>('/class/' + sinifId + '/roster');
+}
+
+// ===========================================================================
+// SPRINT8 · Grup 6 — Oyunlaştırma (Lig · Düello · Arkadaş Serisi · Seri Dondurma)
+// İki kollu: mock (jsdom/Storybook/ekran portu) · live (gerçek REST/SSE).
+// Sunucu-otorite: puan/tur-sonucu/skor/elo mock'ta bile İZOLE server-sim'de
+// hesaplanır — ekran ASLA doğruluk/skor hesaplamaz. Sorular STRIP'li (doğru sızmaz).
+// ===========================================================================
+
+/** EventSource/live taban URL — live()/cfg ile aynı kaynak. */
+function esBase(): string {
+  return cfg.baseUrl ?? '';
+}
+
+// --- Lig — GET /api/v1/leagues/current (+ /me + /level) snake→camel map ------
+
+interface StandingsEntryDTO {
+  student_id: string;
+  display_name: string;
+  xp: number;
+  rank: number;
+  is_self: boolean;
+}
+interface LeagueCurrentDTO {
+  tier: string;
+  rank: number;
+  weekly_xp: number;
+  total_in_tier: number;
+  week_start: string;
+  standings: StandingsEntryDTO[];
+}
+
+/** Ad → baş harfler (avatar). Sunucu display_name'i genel olabilir; self için /me. */
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toLocaleUpperCase('tr-TR');
+  return (parts[0][0] + parts[parts.length - 1][0]).toLocaleUpperCase('tr-TR');
+}
+
+function mapLeague(cur: LeagueCurrentDTO, me: Persona, lvl: SeviyeBilgi): LeagueData {
+  const end = new Date(cur.week_start);
+  end.setDate(end.getDate() + 7);
+  const ms = end.getTime() - Date.now();
+  const gun = Math.max(0, Math.floor(ms / 86_400_000));
+  const saat = Math.max(0, Math.floor((ms % 86_400_000) / 3_600_000));
+  // Not: seviye/trend + zonEsik/oduller/senVsDun backend DTO'da YOK. Self için
+  // /level; diğerleri için istekçi seviyesi placeholder (mock zengin; live best-effort).
+  return {
+    tier: cur.tier,
+    rank: cur.rank,
+    haftalikXp: cur.weekly_xp,
+    tierToplam: cur.total_in_tier,
+    haftaBitisText: ms > 0 ? `${gun} gün ${saat} saat` : 'Hafta bitti',
+    zonEsik: { yukselme: 10, dusme: Math.max(1, cur.total_in_tier - 4) },
+    senVsDun: { buHafta: cur.weekly_xp, gecenHafta: 0 },
+    oduller: [],
+    standings: cur.standings.map((e) => ({
+      studentId: e.student_id,
+      ad: e.is_self ? me.ad : e.display_name,
+      ini: e.is_self ? me.bas : initials(e.display_name),
+      xp: e.xp,
+      rank: e.rank,
+      seviye: lvl.seviye,
+      trend: 'same' as const,
+      benMi: e.is_self,
+    })),
+  };
+}
+
+/** Lig durumu. mock: kiro-data.league; live: /api/v1/leagues/current + /me + /level (map).
+ *  Ekran gizli-modda standings'i ÇEKMEZ (gizlilik) — bu karar ekranda, client'ta değil. */
+export async function getLeague(): Promise<LeagueData> {
+  if (cfg.mode === 'mock') return (await mock()).league;
+  const [cur, me, lvl] = await Promise.all([
+    live<LeagueCurrentDTO>('/api/v1/leagues/current'),
+    getMe(),
+    getLevel(),
+  ]);
+  return mapLeague(cur, me, lvl);
+}
+
+// --- Düello — GERÇEK WIRING (/api/v1/duel/*) --------------------------------
+// Mock kolu EventSource KULLANMAZ (jsdom'da yok): setTimeout ile SCRIPTED
+// deterministik rakip cevapları (server-sim izole). Skor/tur-sonucu/elo burada
+// hesaplanır — ekran değil. Doğru şık STRIP'li sorularda İSTEMCİYE SIZMAZ.
+
+interface DuelSimRound { rakipDogru: boolean; rakipSure: number }
+interface DuelUserRound { benDogru: boolean; benSure: number }
+interface DuelSimState {
+  toplamTur: number;
+  script: DuelSimRound[];
+  full: Question[];                       // doğru şık burada kalır (server-sim); sızmaz
+  userRounds: (DuelUserRound | undefined)[];
+  benCevaplanan: number;
+}
+
+/** Mock düello oturum durumu (sunucu-oturum eşdeğeri; sadece mock kolunda yaşar). */
+const duelSim = new Map<string, DuelSimState>();
+
+const HARF = ['A', 'B', 'C', 'D', 'E'];
+const RAKIP_DOGRU_SCRIPT = [true, true, false, true, false];
+const RAKIP_SURE_SCRIPT = [4200, 3100, 5800, 2600, 5000];
+
+function rakipSkorKismi(st: DuelSimState, orderDahil: number): number {
+  return st.script.slice(0, orderDahil + 1).filter((s) => s.rakipDogru).length;
+}
+function rakipSkorToplam(st: DuelSimState): number {
+  return st.script.filter((s) => s.rakipDogru).length;
+}
+function benSkorHesap(st: DuelSimState): number {
+  return st.userRounds.filter((u) => u?.benDogru).length;
+}
+/** Tur sonucu SUNUCU-OTORİTE: her iki oyuncunun sonucundan türer (ekran değil). */
+function turSonucuHesap(u: DuelUserRound | undefined, r: DuelSimRound): 'me' | 'opp' | 'draw' {
+  const bd = u?.benDogru ?? false;
+  if (bd && r.rakipDogru) return (u?.benSure ?? Infinity) <= r.rakipSure ? 'me' : 'opp';
+  if (bd) return 'me';
+  if (r.rakipDogru) return 'opp';
+  return 'draw';
+}
+
+/** Eşleşme kuyruğuna gir. live: POST /api/v1/duel/matchmake {subject}. */
+export async function postDuelMatchmake(ders: string): Promise<DuelMatch> {
+  if (cfg.mode === 'mock') {
+    const d = await mock();
+    const bank = d.questionBank.filter((q) => q.ders === ders);
+    const pool = bank.length ? bank : d.questionBank;
+    const full = pool.slice(0, 5);
+    const toplamTur = full.length;
+    const sessionId = 'duel-' + ders;
+    duelSim.set(sessionId, {
+      toplamTur,
+      script: full.map((_, i) => ({
+        rakipDogru: RAKIP_DOGRU_SCRIPT[i % RAKIP_DOGRU_SCRIPT.length],
+        rakipSure: RAKIP_SURE_SCRIPT[i % RAKIP_SURE_SCRIPT.length],
+      })),
+      full,
+      userRounds: [],
+      benCevaplanan: 0,
+    });
+    return { sessionId, durum: 'matched', rakip: d.duelOpponent, mod: ders, toplamTur };
+  }
+  const r = await live<{ status: string; session_id: string | null; message: string }>(
+    '/api/v1/duel/matchmake', { method: 'POST', body: JSON.stringify({ subject: ders }) },
+  );
+  return {
+    sessionId: r.session_id ?? '',
+    durum: r.status === 'matched' ? 'matched' : 'queued',
+    // Not: matchmake yanıtı rakip kimliği/tur sayısı DÖNMEZ — best-effort placeholder.
+    rakip: { ad: 'Rakip', ini: '?', seviye: 0 },
+    mod: ders,
+    toplamTur: 5,
+  };
+}
+
+interface DuelCurrentQuestionDTO {
+  session_id: string;
+  status: string;
+  question_order: number | null;
+  question_id: string | null;
+  question_text: string | null;
+  options: Record<string, string> | null;
+  time_per_question_sec: number;
+  total_questions: number;
+  answered: boolean;
+}
+
+/** Sıradaki cevaplanmamış soru (STRIP'li). live: GET /api/v1/duel/{id}/current-question. */
+export async function getDuelCurrentQuestion(sessionId: string): Promise<DuelQuestion | null> {
+  if (cfg.mode === 'mock') {
+    const st = duelSim.get(sessionId);
+    if (!st || st.benCevaplanan >= st.toplamTur) return null;
+    const q = st.full[st.benCevaplanan];
+    if (!q) return null;
+    // Açık pick → dogru/cozum/neden asla kopyalanmaz.
+    return { order: st.benCevaplanan, id: q.id, soru: q.soru, secenekler: q.secenekler, sure: q.sure };
+  }
+  const r = await live<DuelCurrentQuestionDTO>('/api/v1/duel/' + sessionId + '/current-question');
+  if (r.question_order == null || !r.question_id || !r.question_text || !r.options) return null;
+  const opts = r.options;
+  const secenekler = HARF.filter((k) => opts[k] != null).map((k) => opts[k]);
+  return {
+    order: r.question_order, id: r.question_id, soru: r.question_text,
+    secenekler, sure: r.time_per_question_sec,
+  };
+}
+
+interface DuelAnswerDTO {
+  round_complete: boolean;
+  question_order: number;
+  player1_score: number;
+  player2_score: number;
+  is_correct: boolean;
+}
+
+/** Cevap gönder — correct/puan SUNUCUDA. live: POST /api/v1/duel/{id}/answer.
+ *  secimHarfi 'A'-'E'; mock'ta doğru şık indeksten türer, ekran doğruluğu HESAPLAMAZ. */
+export async function postDuelAnswer(
+  sessionId: string, order: number, secimHarfi: string, timeMs: number,
+): Promise<DuelAnswerResult> {
+  if (cfg.mode === 'mock') {
+    const st = duelSim.get(sessionId);
+    if (!st) throw new KiroApiError(404, '/api/v1/duel/' + sessionId + '/answer');
+    const q = st.full[order];
+    const secimIndex = HARF.indexOf(secimHarfi.toUpperCase());
+    const benDogru = q != null && secimIndex === q.dogru;
+    st.userRounds[order] = { benDogru, benSure: timeMs };
+    st.benCevaplanan = Math.max(st.benCevaplanan, order + 1);
+    // Tur kazananı SUNUCU-OTORİTE: bu turun userRound'u + RAKİP script'inden (izole);
+    // ekran hesaplamaz, yanıttan okur. (Stream timer'ı DEĞİL — MAJOR-1 yeniden-tahsis.)
+    const rr = st.script[order];
+    const turSonucu: DuelTurSonucu = rr ? turSonucuHesap(st.userRounds[order], rr) : 'draw';
+    return {
+      turTamam: true, soruOrder: order,
+      benPuan: benSkorHesap(st), rakipPuan: rakipSkorKismi(st, order), benDogru, turSonucu,
+    };
+  }
+  const r = await live<DuelAnswerDTO>('/api/v1/duel/' + sessionId + '/answer', {
+    method: 'POST',
+    body: JSON.stringify({ question_order: order, answer: secimHarfi.toUpperCase(), time_ms: timeMs }),
+  });
+  // Not: answer yanıtı istekçinin rolünü döndürmez — p1=ben best-effort (kesin sonuç getDuelResult'ta).
+  // turSonucu best-effort: backend tur-kazananını DÖNDÜRMEZ; round_complete + kümülatif skor
+  // yönünden türetiyoruz. Rakip henüz cevaplamadıysa (round_complete=false) yön geçici —
+  // kesin tur/maç sonucu getDuelResult'ta. (Mock kolu izole server-sim ile kesin hesaplar.)
+  const turSonucu: DuelTurSonucu = !r.round_complete
+    ? (r.is_correct ? 'me' : 'opp')
+    : r.player1_score === r.player2_score ? 'draw'
+    : r.player1_score > r.player2_score ? 'me' : 'opp';
+  return {
+    turTamam: r.round_complete, soruOrder: r.question_order,
+    benPuan: r.player1_score, rakipPuan: r.player2_score, benDogru: r.is_correct, turSonucu,
+  };
+}
+
+interface DuelResultDTO {
+  session_id: string;
+  finished: boolean;
+  my_score: number;
+  opponent_score: number;
+  won: boolean;
+  draw: boolean;
+  elo_change: number;
+}
+
+/** Düello sonucu. live: GET /api/v1/duel/{id}/result. */
+export async function getDuelResult(sessionId: string): Promise<DuelResult> {
+  if (cfg.mode === 'mock') {
+    const st = duelSim.get(sessionId);
+    if (!st) {
+      return { sessionId, bitti: false, benSkor: 0, rakipSkor: 0, kazandin: false, berabere: false, eloDelta: 0 };
+    }
+    const bitti = st.benCevaplanan >= st.toplamTur;
+    const benSkor = benSkorHesap(st);
+    const rakipSkor = rakipSkorToplam(st);
+    const kazandin = bitti && benSkor > rakipSkor;
+    const berabere = bitti && benSkor === rakipSkor;
+    const eloDelta = bitti ? (kazandin ? 18 : berabere ? 0 : -12) : 0;
+    return { sessionId, bitti, benSkor, rakipSkor, kazandin, berabere, eloDelta };
+  }
+  const r = await live<DuelResultDTO>('/api/v1/duel/' + sessionId + '/result');
+  return {
+    sessionId: r.session_id, bitti: r.finished, benSkor: r.my_score, rakipSkor: r.opponent_score,
+    kazandin: r.won, berabere: r.draw, eloDelta: r.elo_change,
+  };
+}
+
+interface DuelRatingDTO {
+  elo_rating: number;
+  wins: number;
+  losses: number;
+  draws: number;
+}
+
+/** Düello ELO. live: GET /api/v1/duel/rating. */
+export async function getDuelRating(): Promise<DuelRating> {
+  if (cfg.mode === 'mock') return { elo: 1240, galibiyet: 14, maglubiyet: 6, beraberlik: 2 };
+  const r = await live<DuelRatingDTO>('/api/v1/duel/rating');
+  return { elo: r.elo_rating, galibiyet: r.wins, maglubiyet: r.losses, beraberlik: r.draws };
+}
+
+export interface DuelStreamHandlers {
+  onConnected?: () => void;
+  /** YALNIZ rakip durum-pili (rakipDogru/rakipSure). Tur kazananı stream'den GELMEZ —
+   *  turSonucu postDuelAnswer yanıtındadır (sunucu-otorite; MAJOR-1 yeniden-tahsis). */
+  onAnswer?: (d: { rakipDogru: boolean; rakipSure: number }) => void;
+  onFinished?: (r: DuelResult) => void;
+  onError?: () => void;
+}
+
+/** Canlı düello akışı. live: EventSource(<base>/api/v1/duel/stream/<id>) — {type} parse eder,
+ *  unsubscribe (es.close) DÖNER. mock: setTimeout SCRIPTED rakip cevapları + finished (server-sim
+ *  izole); unsubscribe = clearTimeout temizleyici. jsdom'da EventSource yok → mock kolu KULLANMAZ. */
+export function duelStream(sessionId: string, h: DuelStreamHandlers): () => void {
+  if (cfg.mode === 'mock') {
+    const st = duelSim.get(sessionId);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    timers.push(setTimeout(() => h.onConnected?.(), 0));
+    if (st) {
+      st.script.forEach((r, i) => {
+        timers.push(setTimeout(() => {
+          // Rakip bu turu cevapladı — YALNIZ durum-pili sinyali. Tur kazananı
+          // postDuelAnswer(turSonucu) ile döner (userRound + script'ten; ekran değil).
+          h.onAnswer?.({ rakipDogru: r.rakipDogru, rakipSure: r.rakipSure });
+        }, (i + 1) * 900));
+      });
+      timers.push(setTimeout(() => {
+        const benSkor = benSkorHesap(st);
+        const rakipSkor = rakipSkorToplam(st);
+        const kazandin = benSkor > rakipSkor;
+        const berabere = benSkor === rakipSkor;
+        h.onFinished?.({
+          sessionId, bitti: true, benSkor, rakipSkor, kazandin, berabere,
+          eloDelta: kazandin ? 18 : berabere ? 0 : -12,
+        });
+      }, (st.script.length + 1) * 900));
+    }
+    return () => timers.forEach((t) => clearTimeout(t));
+  }
+
+  // live — gerçek SSE. EventSource cookie-auth için withCredentials.
+  const es = new EventSource(esBase() + '/api/v1/duel/stream/' + sessionId, { withCredentials: true });
+  es.onmessage = (ev: MessageEvent) => {
+    let d: Record<string, unknown>;
+    try { d = JSON.parse(ev.data as string) as Record<string, unknown>; }
+    catch { return; }
+    const t = d.type;
+    if (t === 'connected') h.onConnected?.();
+    else if (t === 'answer') {
+      // Stream YALNIZ rakip durum-pili besler; tur kazananı postDuelAnswer'da.
+      h.onAnswer?.({
+        rakipDogru: Boolean(d.is_correct),
+        rakipSure: Number(d.time_ms ?? 0),
+      });
+    } else if (t === 'finished') {
+      h.onFinished?.({
+        sessionId,
+        bitti: true,
+        benSkor: Number(d.my_score ?? d.player1_score ?? 0),
+        rakipSkor: Number(d.opponent_score ?? d.player2_score ?? 0),
+        kazandin: Boolean(d.won),
+        berabere: Boolean(d.draw),
+        eloDelta: Number(d.elo_change ?? 0),
+      });
+    } else if (t === 'error') h.onError?.();
+  };
+  es.onerror = () => h.onError?.();
+  return () => es.close();
+}
+
+// --- Arkadaş Serisi — mock-katmanı (backend YOK; live yolu ileri sözleşme) ---
+
+/** Arkadaş serisi + ortak görev. mock: kiro-data.friends. */
+export async function getFriends(): Promise<FriendsData> {
+  if (cfg.mode === 'mock') return (await mock()).friends;
+  return live<FriendsData>('/friends');
+}
+
+/** Dürtme gönder (server-sim; günde 1 sunucuda enforce, mock her zaman 'sent'). */
+export async function postFriendNudge(id: string): Promise<{ durum: 'sent' }> {
+  if (cfg.mode === 'mock') return { durum: 'sent' };
+  return live<{ durum: 'sent' }>('/friends/' + id + '/nudge', { method: 'POST', body: JSON.stringify({}) });
+}
+
+/** Tebrik gönder (server-sim). */
+export async function postFriendCongrats(id: string): Promise<{ gonderildi: boolean }> {
+  if (cfg.mode === 'mock') return { gonderildi: true };
+  return live<{ gonderildi: boolean }>('/friends/' + id + '/congrats', { method: 'POST', body: JSON.stringify({}) });
+}
+
+// --- Seri Dondurma — mock (backend YOK; freeze mekaniği mock) ----------------
+
+/** Deterministik hafta: Pzt→Çar done · Per freeze · Cum-Cmt done · Bugün today; dondurmaHak=2.
+ *  seri/rekor persona'dan (sunucu; mock persona ile birebir). */
+export function buildMockStreak(p: Persona): StreakData {
+  return {
+    seri: p.seri,
+    rekor: p.seriRekor,
+    dondurmaHak: 2,
+    hafta: [
+      { label: 'Pzt', durum: 'done' },
+      { label: 'Sal', durum: 'done' },
+      { label: 'Çar', durum: 'done' },
+      { label: 'Per', durum: 'freeze' },
+      { label: 'Cum', durum: 'done' },
+      { label: 'Cmt', durum: 'done' },
+      { label: 'Bugün', durum: 'today' },
+    ],
+  };
+}
+
+/** Seri + dondurma hakkı. mock: buildMockStreak(persona) deterministik. */
+export async function getStreak(): Promise<StreakData> {
+  if (cfg.mode === 'mock') return buildMockStreak((await mock()).persona);
+  return live<StreakData>('/streak');
 }
 
 // ---------------------------------------------------------------------------

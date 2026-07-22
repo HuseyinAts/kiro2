@@ -6,7 +6,7 @@
 // ============================================================================
 import { http, HttpResponse } from 'msw';
 
-import { buildMockPlanWeek, markEnZayif, type MockData } from './api-client';
+import { buildMockPlanWeek, markEnZayif, seviyeBilgiFrom, type MockData } from './api-client';
 import kiroData from './kiro-data.json';
 
 const D = kiroData as unknown as MockData;
@@ -55,6 +55,88 @@ export const kiroHandlers = [
     const b = (await request.json().catch(() => ({}))) as { cozulen?: number };
     return HttpResponse.json({ id: params.id, cozulen: b.cozulen ?? 0 });
   }),
+
+  // --- SPRINT8 · Grup 6 Oyunlaştırma uçları ---
+  // /level — Lig kompozisyonu getLevel() için (getLeague live → /me + /level).
+  http.get('*/level', () => HttpResponse.json(seviyeBilgiFrom(D.seviyeEsik, D.persona.xp))),
+
+  // Lig — backend snake_case DTO (client snake→camel + /me/level ile map eder).
+  http.get('*/api/v1/leagues/current', () =>
+    HttpResponse.json({
+      tier: D.league.tier,
+      rank: D.league.rank,
+      weekly_xp: D.league.haftalikXp,
+      total_in_tier: D.league.tierToplam,
+      week_start: '2026-07-20',
+      standings: D.league.standings.map((s) => ({
+        student_id: s.studentId,
+        display_name: s.ad,
+        xp: s.xp,
+        rank: s.rank,
+        is_self: s.benMi,
+      })),
+    }),
+  ),
+
+  // Düello — gerçek backend snake_case sözleşmesi (STRIP'li: correct_answer sızmaz).
+  http.post('*/api/v1/duel/matchmake', () =>
+    HttpResponse.json({ status: 'matched', session_id: 'duel-msw', message: 'Eşleşme bulundu!' }),
+  ),
+  http.get('*/api/v1/duel/rating', () =>
+    HttpResponse.json({ elo_rating: 1240, wins: 14, losses: 6, draws: 2, peak_rating: 1310 }),
+  ),
+  http.get('*/api/v1/duel/:id/current-question', ({ params }) => {
+    const q = D.questionBank.find((x) => x.ders === 'mat');
+    const opts: Record<string, string> = {};
+    (q?.secenekler ?? []).forEach((s, i) => { opts['ABCDE'[i]!] = s; });
+    return HttpResponse.json({
+      session_id: params.id,
+      status: 'active',
+      question_order: 0,
+      question_id: q?.id ?? 'mat-turev-1',
+      question_text: q?.soru ?? '',
+      options: opts,
+      time_per_question_sec: q?.sure ?? 60,
+      total_questions: 5,
+      player1_score: 0,
+      player2_score: 0,
+      answered: false,
+    });
+  }),
+  http.post('*/api/v1/duel/:id/answer', async ({ request }) => {
+    const b = (await request.json().catch(() => ({}))) as { question_order?: number };
+    return HttpResponse.json({
+      round_complete: true,
+      question_order: b.question_order ?? 0,
+      player1_score: 1,
+      player2_score: 0,
+      is_correct: true,
+    });
+  }),
+  http.get('*/api/v1/duel/:id/result', ({ params }) =>
+    HttpResponse.json({
+      session_id: params.id,
+      status: 'finished',
+      subject: 'MATEMATIK',
+      finished: true,
+      my_score: 3,
+      opponent_score: 2,
+      won: true,
+      draw: false,
+      elo_change: 18,
+      finished_at: '2026-07-22T12:00:00Z',
+    }),
+  ),
+  // Not: SSE (/api/v1/duel/stream/:id) MSW ile taklit edilmez — EventSource E2E'de
+  // gerçek backend'e bağlanır; jsdom/Storybook mock kolu setTimeout server-sim kullanır.
+
+  // Arkadaş Serisi — client sözleşmesi (camelCase; backend ileri faz).
+  http.get('*/friends', () => HttpResponse.json(D.friends)),
+  http.post('*/friends/:id/nudge', () => HttpResponse.json({ durum: 'sent' })),
+  http.post('*/friends/:id/congrats', () => HttpResponse.json({ gonderildi: true })),
+
+  // Seri Dondurma — client sözleşmesi (camelCase; backend YOK, freeze mock).
+  http.get('*/streak', () => HttpResponse.json(D.streak)),
 ];
 
 export default kiroHandlers;

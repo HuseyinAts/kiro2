@@ -324,6 +324,148 @@ export interface SeviyeBilgi {
   kalanXp: number;
 }
 
+// ============================================================================
+// SPRINT8 · Grup 6 — Oyunlaştırma (Lig · Düello · Arkadaş Serisi · Seri Dondurma)
+// Şekiller api-client sözleşmesiyle birebir. Motorlar/otorite SUNUCUDA:
+//   - Lig sıralaması + tier eşikleri sunucuda (istemci rank hesaplamaz)
+//   - Düello: puan/tur-sonucu/skor/elo SUNUCUDAN (mock'ta bile izole server-sim)
+//   - Seri dondurma: freeze mekaniği sunucuda (mock: buildMockStreak)
+// ============================================================================
+
+// ---------- Lig (GET /api/v1/leagues/current — snake→camel map) ----------
+
+/** Lig sıralaması satırı — trend/seviye/rank sunucudan (istemci sıralama YAPMAZ) */
+export interface LeagueStanding {
+  studentId: string;
+  ad: string;
+  ini: string;               // baş harfler (avatar)
+  xp: number;                // haftalık XP
+  rank: number;
+  seviye: number;
+  trend: 'up' | 'down' | 'same';
+  benMi: boolean;
+}
+
+export interface LeagueData {
+  tier: string;              // 'Zümrüt Lig'
+  rank: number;              // öğrencinin tier içi sırası
+  haftalikXp: number;
+  tierToplam: number;        // tier'daki toplam oyuncu
+  haftaBitisText: string;    // '2 gün 14 saat'
+  /** Yükselme/düşme zon eşikleri (rank) — sunucu (istemci hesaplamaz) */
+  zonEsik: { yukselme: number; dusme: number };
+  senVsDun: { buHafta: number; gecenHafta: number };
+  oduller: string[];
+  standings: LeagueStanding[];
+}
+
+// ---------- Düello (GERÇEK WIRING — /api/v1/duel/*) ----------
+
+/** Düello sorusu — STRIP'li (doğru şık İSTEMCİYE SIZMAZ; sunucu doğrular) */
+export interface DuelQuestion {
+  order: number;
+  id: string;
+  soru: string;
+  secenekler: string[];
+  sure: number; // saniye
+}
+
+export interface DuelMatch {
+  sessionId: string;
+  durum: 'matched' | 'queued';
+  rakip: { ad: string; ini: string; seviye: number };
+  mod: string;        // ders/konu
+  toplamTur: number;
+}
+
+/** Tur kazananı — SUNUCU-OTORİTE (her iki oyuncunun sonucundan türer; ekran HESAPLAMAZ) */
+export type DuelTurSonucu = 'me' | 'opp' | 'draw';
+
+/** Cevap sonucu — benDogru/puan/turSonucu SUNUCUDAN (ekran doğruluğu HESAPLAMAZ) */
+export interface DuelAnswerResult {
+  turTamam: boolean;
+  soruOrder: number;
+  benPuan: number;
+  rakipPuan: number;
+  benDogru: boolean;
+  /** Bu turun kazananı — sunucu (mock: server-sim izole) hesaplar; ekran yanıttan okur */
+  turSonucu: DuelTurSonucu;
+}
+
+export interface DuelResult {
+  sessionId: string;
+  bitti: boolean;
+  benSkor: number;
+  rakipSkor: number;
+  kazandin: boolean;
+  berabere: boolean;
+  eloDelta: number;
+}
+
+export interface DuelRating {
+  elo: number;
+  galibiyet: number;
+  maglubiyet: number;
+  beraberlik: number;
+}
+
+/** duelOpponent mock anahtarı (Mert K. / MK / seviye) */
+export interface DuelOpponent {
+  ad: string;
+  ini: string;
+  seviye: number;
+}
+
+// ---------- Arkadaş Serisi (/birlikte-streak'e yakın + friend-gap) ----------
+
+export interface Friend {
+  id: string;
+  ad: string;
+  sinif: string;
+  ini: string;
+  avatarGradient: string;
+  seri: number;
+  xp: number;
+  durum: 'calisti' | 'henuz';
+  tebrikGonderildi: boolean;
+}
+
+export interface CoopQuest {
+  baslik: string;
+  hedef: number;
+  ilerleme: number;
+  benPay: number;
+  partnerPay: number;
+  kalanGun: number;
+  odul: string;
+}
+
+export interface FriendsData {
+  ortakSeri: {
+    partner: string;
+    sayi: number;
+    benBugun: boolean;
+    partnerBugun: boolean;
+    nudgeDurum: 'idle' | 'sent';
+  };
+  gorev: CoopQuest;
+  arkadaslar: Friend[];
+}
+
+// ---------- Seri Dondurma (backend YOK — freeze mekaniği mock) ----------
+
+export interface StreakDay {
+  label: string;
+  durum: 'done' | 'freeze' | 'today';
+}
+
+export interface StreakData {
+  seri: number;
+  rekor: number;
+  dondurmaHak: number;
+  hafta: StreakDay[];
+}
+
 // ---------- Canlı "bugün" yardımcıları ----------
 
 export interface BugunBilgi {
@@ -375,4 +517,9 @@ export interface KiroData extends KiroHelpers {
   katalogUniteler: KatalogUniteler;
   sinifRoster: SinifOgrenci[];
   odevler: Odev[];
+  // --- SPRINT8 · Grup 6 mock anahtarları ---
+  league: LeagueData;
+  duelOpponent: DuelOpponent;
+  friends: FriendsData;
+  streak: StreakData;
 }

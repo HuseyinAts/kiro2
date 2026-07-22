@@ -1,39 +1,34 @@
-## Session Handoff — 2026-07-22 (SPRINT7 kapanış)
-**Branch:** feature/self-evolution-optimization
-**Son commit:** (SPRINT7 commit — bkz. git log; öncesi aa0c4ad1f = SPRINT6)
-**Uncommitted:** temiz (SPRINT7 commit'lendi)
+## Session Handoff — 2026-07-22 (SPRINT8 kapanış · GRUP 6 TAMAM)
+**Branch:** feature/self-evolution-optimization (origin'in 30+ commit önünde — push YOK)
+**Son commit:** (SPRINT8 commit — bkz. git log; öncesi 803337053 = SPRINT7)
+**Uncommitted:** SPRINT8 commit'lenecek (aşağıya bak)
 
-### Yapilanlar (Faz 3 tasarım-portu — Şafak design system → frontend/src/kiro/)
-- **Grup 5 (Hub/duygusal) TAMAM (6/6).** SPRINT1-7 boyunca **21/42 ekran + 1 composite** portlandı.
-- SPRINT7 (bu session): `screens/GeriSayimPage.tsx` (2-varyant, kaygı-nötr default, dusk batım göğü),
-  `screens/BasarimlarPage.tsx` (hâkimiyet halkaları SVG + seri kilometre taşları, dusk),
-  `screens/BossSavasiPage.tsx` (kırmızı arena + combat döngüsü + zafer/yenilgi overlay, ağır).
-- `lib/gunSayaci.ts` (YENİ): gunKalan/haftaKalan (Math.max(1,…) DC alt-sınırı; yalnız Geri Sayım).
-- `api/api-client.ts`: postBossSession + postBossAnswer (mock server-sim, sunucu-otorite; Boss soruları STRIP'li).
-- Boss KIRMIZI istisnası: `// kanon-allow: boss-arena, kutlama` (2026-07-04 onaylı).
-- Her sprint: keşif workflow → build → **adversarial review workflow (P0)** → fix → docs/audits + PORT_DURUM.
-- Rapor: `docs/audits/2026-07-22_sprint7-duygusal-cekirdek-II.md`; durum tablosu: `design/PORT_DURUM.md`.
+### Yapılanlar (Faz 3 tasarım-portu — Grup 6 Oyunlaştırma → frontend/src/kiro/)
+- **Grup 6 (Oyunlaştırma) TAMAM (4/4).** İlerleme **25/42 ekran + 1 composite (QuestionCard)**.
+- Ekranlar: `LigPage` (paper, 766) · `DuelloPage` (dusk-arena, 778) · `ArkadasSerisiPage` (paper, 404) · `SeriDondurmaPage` (paper, 494) + her biri .test + .stories.
+- **Düello = gerçek `/api/v1/duel/*` SSE+ELO'ya bağlı** (kullanıcı kararı; çift-kollu: live REST+EventSource / mock deterministik server-sim). Seri "%48 istatistiği" çıkarıldı (kullanıcı kararı). 4 ekran tek sprint.
+- Infra (additive): `api-client.ts` +410 (getLeague/getDuel*/getFriends/getStreak/duelStream/buildMockStreak) · `types.ts` +147 · `kiro-data.json` +60 · `mswHandlers.ts` +84. Düello soruları STRIP'li.
+- Süreç: keşif workflow (6) → build workflow (infra+4 ekran+gate) → **adversarial review (19 ajan, 4 boyut + skeptik doğrulama)** → fix workflow (4+gate).
+- Adversarial: P0 **0** · major **2** · minor **10** · phantom **0**. 2 major (Düello turSonucu mantık çelişkisi + CTA AA) + 9 minor **fix**; #6 (VS skor puan/galibiyet) **ertelendi** (contract Faz 4).
+- Rapor: `docs/audits/2026-07-22_sprint8-oyunlastirma.md`; durum: `design/PORT_DURUM.md`.
 
 ### Fail Eden Testler
-- YOK. vitest **43/43 dosya · 240/240 test PASS** (kiro scoped, canlı doğrulandı, 223s).
-- Kapı: kanon-lint 0 · scoped tsc 0 · breakpoint 175/175 (25 story × 7) · axe temiz.
+- YOK. vitest **47 dosya / 265 test PASS** (kiro scoped, canlı doğrulandı, ~116s). Kapı: kanon 0 · tsc 0 · axe temiz.
 
-### Engelleyiciler
-- YOK. Push YAPILMADI (kullanıcı "push yok" dedi — commit'ler local birikir).
+### Engelleyiciler / Operatör (sende)
+- **Push YAPILMADI** (kullanıcı "push yok").
+- **Operatör E2E:** dev stack ayağa (`docker compose up -d` / native) → Düello canlı `/duel/*` SSE+ELO + breakpoint kapısı (`npm run kiro:breakpoints`, +~28 story×7). Backend session başında kapalıydı (000).
 
-### Sonraki Adimlar (maks 5)
-1. **Grup 6 Oyunlaştırma (S8):** Lig · 1v1 Düello · Arkadaş Serisi · Seri Dondurma.
-   Lig ucu: **önce backend keşfi** (league_api.py VAR — yeni /league YAZMA; "sakin mod/sıralamayı gizle" YENİ).
-2. Kalan gruplar: Roller(6) · İş(7) · AI(4) · Auth kalıntı (İlk Hafta + route guard). SPEC'ler design/SPRINT*_SPEC.md.
-3. Aynı pipeline: keşif workflow → build → adversarial review P0 → fix → docs.
-4. Ertelenenler (ops): Geri Sayım A/B PostHog + /me.geriSayimTercihi + Ayarlar toggle (S8);
-   Boss uçları openapi (/boss/session + /boss/answer); Başarımlar kazanilan+siralama sunucudan.
-5. **+800 XP (Boss arena) vs +120 XP (Kutlama boss) çakışması** → sunucu tek-kaynağa indirmeli (Faz 4).
+### Sonraki Adımlar (maks 5)
+1. **Commit** (push yok): infra 4 (M) + 12 ekran dosyası (yeni) + docs (PORT_DURUM/audit/latest).
+2. **Grup 7 Roller (S9):** Veli Paneli · Öğretmen Paneli · Öğrenci Özeti · Veli Bağlama · Ödev Atama · Sınıf Kurulumu. Aynı pipeline (keşif→build→adversarial review→fix).
+3. Faz 4 backend wiring: Lig standings DTO eksik alanlar · sakin-mod/freeze/friend backend YOK · #6 puan/galibiyet.
+4. KVKK (Arkadaş): günlük-durum + XP görünürlüğü karşılıklı-onay + opt-in.
+5. Rota wiring: ekranlar App router'a bağlanmadı (route guard ile birlikte, ayrı backlog).
 
-### Kararlar (gelecek session tekrar tartismasin)
-- **Kopya tiebreaker:** DC (pixel-ref, spec line-5) + kanon > spec-BİREBİR. Genuine ambiguity → dur-sor.
-- **Coral iki-katman (ADR-007):** beyaz-metin coral = coralCtaBg #C2452B; dusk CTA = parlak coral + koyu mürekkep (#2A1018).
-- **Dusk ikincil tonlar:** tokens.dusk.ink2/iconMuted/faded/body80 (dusk'ta #6B6478 YASAK).
-- **Motorlar sunucuda:** dogru/hasar/hp/kombo/θ/SE/FSRS yalnız API yanıtından; istemci hesaplamaz.
-- **Adversarial review P0:** yoğun-etkileşim ekranlarında zorunlu (mekanik kapılar major a11y/focus kaçırdı).
-- **gunSayaci yalnız Geri Sayım'da:** Bugün hub'ı çaba-tuğlası metaforu korur (migrate EDİLMEDİ); SPEC §A satır 43 düzeltilmeli.
+### Kararlar (gelecek session tekrar tartışmasın)
+- **Düello = gerçek `/duel/*` SSE (live) + deterministik mock-sim (test).** Sunucu-otorite mock'ta bile izole (turSonucu/puan/skor sim/sunucuda; ekran yanıttan okur).
+- **Tema DC-kanıtından:** Lig/Arkadaş/Seri paper, Düello dusk-arena. "Oyunlaştırma=dusk" naif tahmini çürütüldü.
+- **Rota `/arkadas-serisi`** (SideNav preset ile hizalı; SPRINT8_SPEC `/arkadaslar` reddedildi).
+- **%48 istatistiği kalıcı çıkarıldı** (doğrulanmamış iddia).
+- Coral kanonu: paper CTA coralCtaBg #C2452B+beyaz; **dusk CTA parlak coral + koyu mürekkep #2A1018/#0A0E1B** (Düello).

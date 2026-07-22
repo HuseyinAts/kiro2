@@ -2501,5 +2501,63 @@
       "durum": "tamam",
       "kisisel": true
     }
-  ]
+  ],
+  "league": {
+    "tier": "Zümrüt Lig",
+    "rank": 4,
+    "haftalikXp": 820,
+    "tierToplam": 30,
+    "haftaBitisText": "2 gün 14 saat",
+    "zonEsik": { "yukselme": 10, "dusme": 26 },
+    "senVsDun": { "buHafta": 820, "gecenHafta": 610 },
+    "oduller": ["Safir Lig'e yükselme", "+200 XP bonus", "Efsanevi çerçeve"],
+    "standings": [
+      { "studentId": "s-01", "ad": "Zeynep Aksoy", "ini": "ZA", "xp": 1240, "rank": 1, "seviye": 9, "trend": "up", "benMi": false },
+      { "studentId": "s-02", "ad": "Kaan Demir", "ini": "KD", "xp": 1080, "rank": 2, "seviye": 8, "trend": "same", "benMi": false },
+      { "studentId": "s-03", "ad": "Elif Yıldız", "ini": "EY", "xp": 910, "rank": 3, "seviye": 7, "trend": "up", "benMi": false },
+      { "studentId": "s-self", "ad": "Hüseyin Ateş", "ini": "HA", "xp": 820, "rank": 4, "seviye": 7, "trend": "down", "benMi": true },
+      { "studentId": "s-05", "ad": "Mert Kaya", "ini": "MK", "xp": 760, "rank": 5, "seviye": 6, "trend": "up", "benMi": false },
+      { "studentId": "s-06", "ad": "Selin Barış", "ini": "SB", "xp": 690, "rank": 6, "seviye": 6, "trend": "same", "benMi": false },
+      { "studentId": "s-07", "ad": "Emir Tunç", "ini": "ET", "xp": 640, "rank": 7, "seviye": 6, "trend": "down", "benMi": false },
+      { "studentId": "s-08", "ad": "Deniz Çelik", "ini": "DÇ", "xp": 580, "rank": 8, "seviye": 5, "trend": "same", "benMi": false },
+      { "studentId": "s-09", "ad": "Ada Nur", "ini": "AN", "xp": 520, "rank": 9, "seviye": 5, "trend": "up", "benMi": false },
+      { "studentId": "s-10", "ad": "Berk Sönmez", "ini": "BS", "xp": 470, "rank": 10, "seviye": 5, "trend": "down", "benMi": false },
+      { "studentId": "s-11", "ad": "Naz Korkmaz", "ini": "NK", "xp": 410, "rank": 11, "seviye": 4, "trend": "same", "benMi": false },
+      { "studentId": "s-12", "ad": "Efe Mutlu", "ini": "EM", "xp": 360, "rank": 12, "seviye": 4, "trend": "down", "benMi": false }
+    ]
+  },
+  "duelOpponent": { "ad": "Mert K.", "ini": "MK", "seviye": 6 },
+  "friends": {
+    "ortakSeri": { "partner": "Elif", "sayi": 8, "benBugun": true, "partnerBugun": false, "nudgeDurum": "idle" },
+    "gorev": {
+      "baslik": "Bu hafta birlikte 200 soru",
+      "hedef": 200,
+      "ilerleme": 148,
+      "benPay": 86,
+      "partnerPay": 62,
+      "kalanGun": 3,
+      "odul": "+150 XP · Ortak rozet"
+    },
+    "arkadaslar": [
+      { "id": "fr-1", "ad": "Elif Yıldız", "sinif": "12-A", "ini": "EY", "avatarGradient": "linear-gradient(135deg,#8B5CF6,#3B82F6)", "seri": 15, "xp": 910, "durum": "calisti", "tebrikGonderildi": false },
+      { "id": "fr-2", "ad": "Mert Kaya", "sinif": "12-A", "ini": "MK", "avatarGradient": "linear-gradient(135deg,#1FB683,#3B82F6)", "seri": 9, "xp": 760, "durum": "calisti", "tebrikGonderildi": true },
+      { "id": "fr-3", "ad": "Selin Barış", "sinif": "12-B", "ini": "SB", "avatarGradient": "linear-gradient(135deg,#F59E0B,#F97316)", "seri": 4, "xp": 690, "durum": "henuz", "tebrikGonderildi": false },
+      { "id": "fr-4", "ad": "Kaan Demir", "sinif": "11-C", "ini": "KD", "avatarGradient": "linear-gradient(135deg,#EC4899,#8B5CF6)", "seri": 21, "xp": 1080, "durum": "calisti", "tebrikGonderildi": false },
+      { "id": "fr-5", "ad": "Ada Nur", "sinif": "12-A", "ini": "AN", "avatarGradient": "linear-gradient(135deg,#06B6D4,#3B82F6)", "seri": 0, "xp": 520, "durum": "henuz", "tebrikGonderildi": false }
+    ]
+  },
+  "streak": {
+    "seri": 12,
+    "rekor": 21,
+    "dondurmaHak": 2,
+    "hafta": [
+      { "label": "Pzt", "durum": "done" },
+      { "label": "Sal", "durum": "done" },
+      { "label": "Çar", "durum": "done" },
+      { "label": "Per", "durum": "freeze" },
+      { "label": "Cum", "durum": "done" },
+      { "label": "Cmt", "durum": "done" },
+      { "label": "Bugün", "durum": "today" }
+    ]
+  }
 }

@@ -154,6 +154,21 @@ Sonraki: **Grup 6 Oyunlaştırma (S8)** — Lig · 1v1 Düello · Arkadaş Seris
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT8 Durumu (2026-07-22 · GRUP 6 TAMAM)
+
+**4/4 ekran ✅** — Lig · 1v1 Düello · Arkadaş Serisi · Seri Dondurma — **Grup 6 (Oyunlaştırma) TAMAM** (rapor: `docs/audits/2026-07-22_sprint8-oyunlastirma.md`).
+- **Tema (DC-kanıtından):** Lig/Arkadaş/Seri **paper**, Düello **dusk-arena** (`// kanon-allow: boss-arena, kutlama`). "Oyunlaştırma=dusk" naif tahmini DC ile çürütüldü.
+- **Backend gerçeği:** `/leagues/*`, `/duel/*` (SSE+ELO), `/cozum-duellosu/*`, `/birlikte-streak/*` MEVCUT çıktı (session notları "yok" sanıyordu). "sakin-mod/sıralamayı-gizle", freeze mekaniği, friend sistemi backend'de YOK → Faz 3 mock-katmanı.
+- **Kararlar (kullanıcı):** Düello **gerçek `/duel/*` SSE+ELO'ya bağlandı** (çift-kollu: live REST+EventSource / mock server-sim); Seri "%48 istatistiği" **çıkarıldı**; 4 ekran tek sprint.
+- **Adversarial review (19 ajan, 4 boyut + bulgu-bazlı skeptik doğrulama):** P0 **0** · major **2** · minor **10** · phantom **0**. 2 major (Düello turSonucu mantık çelişkisi + CTA AA kontrast) + 9 minor **fix**; 1 **ertele** (#6 VS skor puan/galibiyet ayrımı — contract Faz 4).
+- **Infra (additive, üretime sızmaz):** api-client +410 · types +147 · kiro-data +60 · msw +84. Düello soruları STRIP'li (doğru sızmaz).
+- **Kapı:** kanon **0** · tsc **0** · vitest **47 dosya / 265 test PASS** · axe temiz. breakpoint (build-storybook) + canlı `/duel` SSE E2E → **operatör** (backend ayakta gerektirir).
+
+**İlerleme: 25/42 ekran + 1 composite (QuestionCard). Grup 6 (Oyunlaştırma) TAMAM (4/4).**
+Sonraki: **Grup 7 Roller (S9+)** — Veli Paneli · Öğretmen Paneli · Öğrenci Özeti · Veli Bağlama · Ödev Atama · Sınıf Kurulumu.
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -210,13 +225,13 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Başarımlar | KIRO2 Basarimlar.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Boss Savaşı | KIRO2 Boss Savasi.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 
-## 6 · Oyunlaştırma (4)
+## 6 · Oyunlaştırma (4) — ✅ TAMAM (2026-07-22, SPRINT8)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| Lig (siralamaGizli + gizle düğmesi) | KIRO2 Lig.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| 1v1 Düello | KIRO2 Duello.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Arkadaş Serisi | KIRO2 Arkadas Serisi.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Seri Dondurma | KIRO2 Seri Dondurma.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Lig (siralamaGizli + gizle düğmesi) | KIRO2 Lig.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 1v1 Düello | KIRO2 Duello.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Arkadaş Serisi | KIRO2 Arkadas Serisi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Seri Dondurma | KIRO2 Seri Dondurma.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
 ## 7 · Roller (6)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
