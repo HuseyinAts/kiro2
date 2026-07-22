@@ -34,6 +34,18 @@
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT1 Durumu (2026-07-22)
+
+**2/2 ekran ✅** — Giriş & Kayıt · Ödevlerim (rapor: `docs/audits/2026-07-22_sprint1-ekranlar.md`).
+- **Tema:** her ikisi **paper** (Giriş "dusk" talimatı → SPEC/DC gereği **paper** onaylandı; route-bazlı, toggle YOK).
+- **DoD:** axe temiz · breakpoint **14/14** (390→1440 overflowX=0 + hit≥44 ≤1199, `npm run kiro:breakpoints`) · odak halkası `:focus-visible` · kanon 0 · tsc 0 · vitest **13/13**.
+- **Veri:** configureKiroApi mock + MSW handler seti (`kiro/api/mswHandlers.ts`, kiro-api.js'ten türetildi).
+- **Coral-CTA:** `coralCtaBg #C2452B` + beyaz (onaylı sapma). **Button md 40→44px** (SPEC A1 + hit≥44).
+- **Kopya sapması (ONAY BEKLER):** 2 dize spec'in kendi "absence-dili yok" kuralı gereği nötrlendi — e-posta hint "yarım görünüyor"; liste dipnotu "Geciken ödev kapanmaz — 'bekliyor'".
+- **Kalibrasyon:** ekran-port infra (template + MSW kalıbı + `kiro:breakpoints` Playwright denetçisi) tek-seferlik kuruldu; kalan 40 ekran ≈ **44–52 birim** (S2'de yeniden ölç). Detay raporda.
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -50,7 +62,7 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 ## 1 · Auth & ilk temas (4)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| Giriş & Kayıt | KIRO2 Giris.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Giriş & Kayıt | KIRO2 Giris.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Hesap Kurtarma (3 adım) | KIRO2 Hesap Kurtarma.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Onboarding (misafir yerleştirme) | KIRO2 Onboarding.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | İlk Hafta | KIRO Ilk Hafta.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
@@ -107,7 +119,7 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Veli Bağlama (KVKK, iki taraf) | KIRO2 Veli Baglama.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Ödev Atama | KIRO2 Odev Atama.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Sınıf Kurulumu ("İlk sınıfını kur") | KIRO2 Sinif Kurulum.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Ödevlerim | KIRO2 Odevlerim.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Ödevlerim | KIRO2 Odevlerim.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
 Ödev Atama ↔ Ödevlerim tek döngü olarak test edildi: ☐
 

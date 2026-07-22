@@ -16,7 +16,7 @@ export interface ButtonProps {
 export function Button({ variant = 'primary', size = 'md', icon, disabled, onClick, ariaLabel, children }: ButtonProps) {
   const theme = useKiroTheme();
   const s = surf(theme);
-  const h = size === 'lg' ? 48 : 40;
+  const h = size === 'lg' ? 48 : 44; // ≥44 dokunma hedefi (SPRINT1_SPEC A1)
 
   const base: React.CSSProperties = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,

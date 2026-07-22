@@ -128,6 +128,7 @@
     "build-storybook": "storybook build",
     "kiro:visual:ref": "npm run build-storybook && node scripts/kiro-visual.mjs reference",
     "kiro:visual:test": "npm run build-storybook && node scripts/kiro-visual.mjs test",
+    "kiro:breakpoints": "npm run build-storybook && node scripts/kiro-breakpoints.mjs",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
