@@ -1,40 +1,37 @@
-## Session Handoff — 2026-07-22 (SPRINT8 kapanış · GRUP 6 TAMAM)
-**Branch:** feature/self-evolution-optimization (origin'in 30+ commit önünde — push YOK)
-**Son commit:** (SPRINT8 commit — bkz. git log; öncesi 803337053 = SPRINT7)
-**Uncommitted:** SPRINT8 commit'lenecek (aşağıya bak)
+## Session Handoff — 2026-07-23 (SPRINT9-A · GRUP 7 kısmi 4/6)
+**Branch:** feature/self-evolution-optimization (origin'in önünde — push YOK)
+**Son commit:** (SPRINT9-A commit — bkz. git log; öncesi 05e6cf04a = SPRINT8 E2E docs)
 
-### Yapılanlar (Faz 3 tasarım-portu — Grup 6 Oyunlaştırma → frontend/src/kiro/)
-- **Grup 6 (Oyunlaştırma) TAMAM (4/4).** İlerleme **25/42 ekran + 1 composite (QuestionCard)**.
-- Ekranlar: `LigPage` (paper, 766) · `DuelloPage` (dusk-arena, 778) · `ArkadasSerisiPage` (paper, 404) · `SeriDondurmaPage` (paper, 494) + her biri .test + .stories.
-- **Düello = gerçek `/api/v1/duel/*` SSE+ELO'ya bağlı** (kullanıcı kararı; çift-kollu: live REST+EventSource / mock deterministik server-sim). Seri "%48 istatistiği" çıkarıldı (kullanıcı kararı). 4 ekran tek sprint.
-- Infra (additive): `api-client.ts` +410 (getLeague/getDuel*/getFriends/getStreak/duelStream/buildMockStreak) · `types.ts` +147 · `kiro-data.json` +60 · `mswHandlers.ts` +84. Düello soruları STRIP'li.
-- Süreç: keşif workflow (6) → build workflow (infra+4 ekran+gate) → **adversarial review (19 ajan, 4 boyut + skeptik doğrulama)** → fix workflow (4+gate).
-- Adversarial: P0 **0** · major **2** · minor **10** · phantom **0**. 2 major (Düello turSonucu mantık çelişkisi + CTA AA) + 9 minor **fix**; #6 (VS skor puan/galibiyet) **ertelendi** (contract Faz 4).
-- Rapor: `docs/audits/2026-07-22_sprint8-oyunlastirma.md`; durum: `design/PORT_DURUM.md`.
+### Yapılanlar (Faz 3 tasarım-portu — Grup 7 Roller A → frontend/src/kiro/)
+- **Grup 7 kısmi (4/6).** Veli Paneli · Öğretmen Paneli · Öğrenci Özeti · Sınıf Kurulumu (hepsi **paper**). İlerleme **29/42 ekran + 1 composite (QuestionCard) + `ui/WeeklyActivityBars`**.
+- **Ayrı tur (kullanıcı "ağırları ayır"):** Veli Bağlama (KVKK) + Ödev Atama.
+- Rol/gizlilik: Veli **SİZ-dili** + çocuk **salt-okur** (sohbet/AI/mood gizli); Öğretmen SİZ + roster salt-okur; Öğrenci Özeti salt-okur (tek yazma=ödev-ata link); Sınıf Kurulumu **DC SEN korundu** (DC>spec).
+- **Kullanıcı kararı:** Veli Bağlama → **DC 6-haneli kod-akışı + mock** (Faz 4 gerçek /parent email-onay).
+- Backend: `/teacher`+`/parent` MEVCUT (Faz 4 wiring); katılım-kodu/rotate/join + öğrenci Ödevlerim + zengin-atama = **mock**.
+- Süreç: keşif (7) → build (infra + WeeklyActivityBars + 4 ekran + gate) → adversarial (11) → fix → breakpoint gate.
+- Rapor: `docs/audits/2026-07-23_sprint9a-roller.md`; durum: `design/PORT_DURUM.md`.
 
 ### Fail Eden Testler
-- YOK. vitest **47 dosya / 265 test PASS** · kanon 0 · tsc 0 · axe temiz · **breakpoint 0 FAIL / 224 kontrol** (koşuldu).
-- Not: tam-suite paralelde LigPage axe testi timeout-flake verir (izole 5/5 PASS, axe ~20s); S6/S7 dokümante flake.
+- YOK. vitest **52 dosya / 294 test PASS** · kanon 0 · tsc 0 · axe temiz · **breakpoint 0 FAIL / 280**.
 
-### E2E sonucu (bu session koşuldu)
-- **Breakpoint gate KOŞULDU:** ilk tur **25 hit<44 fail** (Lig gizle/göster toggle 40px + ArkadasSerisi Seri/XP SegmentedControl pill 34px — build+adversarial kaçırdı, mekanik kapı yakaladı). Fix `→minHeight 44` → **0/224 PASS**. (SegmentedControl pill kiro'da tek kullanıcı ArkadasSerisi; BackstopJS pixel-ref regen operatöre.)
-- **Backend crash-loop ÇÖZÜLDÜ (kök neden + kalıcı fix):** `kiro2-backend` RestartCount **352** — kök neden `asyncpg [Errno 111] Connection refused @ core/database.py:255` → **native PG18 (`postgresql-x64-18`) Stopped**, 5434 kapalı. Fix: elevated `Start-Service` + **`Set-Service -StartupType Automatic`** (tekrarı önler; MEMORY [[project_db-offline-topology-drift]] tekrarı) → `docker restart kiro2-backend` → **Up healthy, RestartCount=0**. Platformun TAMAMI ayağa kalktı (sadece Düello değil).
-- **Canlı `/duel/*` SSE E2E doğrulandı (endpoint/auth-gate):** 6 wiring hedefi (matchmake/current-question/answer/**stream(SSE)**/result/rating) + `/leagues/current` + `/birlikte-streak/status` hepsi **401 (mounted+auth-gated)** · `/health` 200. Tam authenticated 1v1 akışı prod-DB'ye test-user + 2. oyuncu gerektirir → yapılmadı (prod veri kirletmeme).
+### Adversarial + breakpoint (bu session)
+- Adversarial (11 ajan): P0 **0** · major **2** · minor **2** · phantom **0** → hepsi fix (VeliPaneli yeşil-token AA+rozet; OgrenciOzeti h1→h2→h3; OgretmenPaneli negatif-delta amber).
+- Breakpoint: SinifKurulumu kök-div `content-box` 12px taşma → **deterministik Playwright teşhisi** → `box-sizing` fix → 0/280. (Build+adversarial kaçırdı — mekanik kapı yakaladı; SPRINT8 dersi tekrar.)
 
 ### Engelleyiciler / Operatör (sende)
 - **Push YAPILMADI** (kullanıcı "push yok").
-- Kalan (opsiyonel): SegmentedControl BackstopJS pixel-ref regen; tam authenticated 1v1 Düello akışı (test-user + 2. oyuncu harness'i).
+- Backend healthy (PG18 Automatic fix'i önceki turda kalıcı çözdü — RestartCount 0).
+- Kalan (opsiyonel): SegmentedControl BackstopJS pixel-ref regen; rota wiring (App router).
 
 ### Sonraki Adımlar (maks 5)
-1. **Commit** (push yok): infra 4 (M) + 12 ekran dosyası (yeni) + docs (PORT_DURUM/audit/latest).
-2. **Grup 7 Roller (S9):** Veli Paneli · Öğretmen Paneli · Öğrenci Özeti · Veli Bağlama · Ödev Atama · Sınıf Kurulumu. Aynı pipeline (keşif→build→adversarial review→fix).
-3. Faz 4 backend wiring: Lig standings DTO eksik alanlar · sakin-mod/freeze/friend backend YOK · #6 puan/galibiyet.
-4. KVKK (Arkadaş): günlük-durum + XP görünürlüğü karşılıklı-onay + opt-in.
-5. Rota wiring: ekranlar App router'a bağlanmadı (route guard ile birlikte, ayrı backlog).
+1. **Grup 7 kalanı (ayrı tur):** Veli Bağlama (KVKK kod-akışı, en hassas) + Ödev Atama (Ödevlerim döngüsü). Aynı pipeline.
+2. Sonra Grup 8 (İş: Abonelik/Ödeme/Plan/Ayarlar/Bildirim/Alan Kütüphanesi/Çevrimdışı) + Grup 9 (AI).
+3. Faz 4 backend wiring: /teacher+/parent gerçek; katılım-kodu/Ödevlerim/zengin-atama backend YOK.
+4. Premium (Veli Paneli) → Grup 8 Abonelik ekranı (CTA link ertelendi).
+5. KVKK (Veli): çocuk günlük-durum/XP görünürlüğü karşılıklı-onay + opt-in.
 
 ### Kararlar (gelecek session tekrar tartışmasın)
-- **Düello = gerçek `/duel/*` SSE (live) + deterministik mock-sim (test).** Sunucu-otorite mock'ta bile izole (turSonucu/puan/skor sim/sunucuda; ekran yanıttan okur).
-- **Tema DC-kanıtından:** Lig/Arkadaş/Seri paper, Düello dusk-arena. "Oyunlaştırma=dusk" naif tahmini çürütüldü.
-- **Rota `/arkadas-serisi`** (SideNav preset ile hizalı; SPRINT8_SPEC `/arkadaslar` reddedildi).
-- **%48 istatistiği kalıcı çıkarıldı** (doğrulanmamış iddia).
-- Coral kanonu: paper CTA coralCtaBg #C2452B+beyaz; **dusk CTA parlak coral + koyu mürekkep #2A1018/#0A0E1B** (Düello).
+- 4 rol-paneli **paper**; Veli/Öğretmen **SİZ-dili**; çocuk/öğrenci verisi **salt-okur** (sohbet/AI/mood gizli).
+- Sınıf Kurulumu **DC SEN** (DC>spec tiebreaker); Veli Bağlama = **DC kod-akışı + mock**.
+- **Overflow teşhisi deterministik:** breakpoint fail'de tahmin YOK → Playwright parent-zincir ile taşan öğeyi bul. Kök div de box-sizing:border-box olmalı (SPRINT8 pitfall).
+- `ui/WeeklyActivityBars` paylaşımlı (3 ekran); transform:scaleY (layout-anim değil) + RM-guard + per-bar SR metni.

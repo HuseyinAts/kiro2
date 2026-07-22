@@ -45,3 +45,6 @@ export { ConfettiDawn, useReducedMotion } from './ConfettiDawn';
 export type { ConfettiDawnProps } from './ConfettiDawn';
 export { QuestionCard } from './QuestionCard';
 export type { QuestionCardProps } from './QuestionCard';
+// --- SPRINT9 · Grup 7-A paylaşılan çubuk (Veli · Öğretmen · Öğrenci-Özeti) ---
+export { WeeklyActivityBars } from './WeeklyActivityBars';
+export type { WeeklyActivityBarsProps } from './WeeklyActivityBars';

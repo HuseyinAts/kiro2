@@ -466,6 +466,166 @@ export interface StreakData {
   hafta: StreakDay[];
 }
 
+// ============================================================================
+// SPRINT9 · Grup 7-A — Rol panelleri (Veli · Öğretmen · Öğrenci-Özeti · Sınıf)
+// Şekiller api-client sözleşmesiyle birebir. Rol-bazlı SALT-OKUR paneller.
+// SUNUCU-OTORİTE: öğrenci net/hâkimiyet/risk/theta SUNUCUDA hesaplanır; istemci
+// bu türevleri ÜRETMEZ — mock'ta bile veri kiro-data'dan okunur, ekranda değil.
+// ============================================================================
+
+/** Haftalık aktivite çubuğu — Veli + Öğretmen + Öğrenci-Özeti paylaşır (WeeklyActivityBars) */
+export interface HaftaGun {
+  label: string;   // 'Pzt'
+  dk: number;      // o günkü çalışma (dakika) — sunucudan
+  aktif: boolean;  // çalışma var mı (dk>0) — sunucu türetir; ekran metrik hesaplamaz
+}
+
+/** Ders-düzeyi birleşik hâkimiyet (Veli ders ilerleme + Öğretmen sınıf hâkimiyet + Öğrenci-Özeti) */
+export interface DersIlerleme {
+  ders: string;      // 'Matematik' (görünen ad; renk ekranda ders→palet)
+  hakimiyet: number; // 0-100 (sunucu birleşik kestirim)
+}
+
+// ---------- Veli Paneli (rol=veli; çocuk verisi SALT-OKUR) ----------
+
+export interface VeliCocuk {
+  id: string;
+  ad: string;
+  sinif: string;
+  hedef: string;
+  ini: string;            // baş harfler (avatar)
+  avatarGradient: string; // CSS gradient string
+}
+
+export type VeliUyariTip = 'success' | 'risk' | 'sevinc';
+/** Uyarı & öne çıkanlar — risk = amber (alarm değil), sevinç = kutlama tonu */
+export interface VeliUyari {
+  tip: VeliUyariTip;
+  metin: string;
+}
+
+/** Son sınav özet satırı (veli görünümü) */
+export interface SinavOzet {
+  ders: string;
+  tarih: string;  // '2 gün önce' / ISO
+  net: number;
+  tur: string;    // 'TYT' | 'AYT' vb.
+}
+
+export interface VeliDashboard {
+  cocuklar: VeliCocuk[];
+  aktifCocukId: string;
+  kpi: {
+    cozulenSoru: number;
+    cozulenSoruDelta: number;
+    cozulenDeneme: number;
+    cozulenDenemeDelta: number;
+    planUyumu: number;   // %
+    netDegisimi: number; // +8.5
+  };
+  haftalik: HaftaGun[];
+  haftaToplamSa: number;  // hafta toplamı (saat)
+  haftaTrend: string;     // '+1,1 sa'
+  dersIlerleme: DersIlerleme[];
+  sonSinavlar: SinavOzet[];
+  uyarilar: VeliUyari[];
+  /** Premium ROI kanıt bloğu (veli satın-alma yüzeyi) */
+  roi: {
+    netArtisi: number;
+    planUyum: number;
+    seri: number;
+    haftaOrtDk: number;
+  };
+  premium: {
+    fiyatAy: number;
+    indirimYuzde: number;
+    maddeler: string[];
+  };
+}
+
+// ---------- Öğretmen Paneli (rol=öğretmen; öğrenci metrik SALT-OKUR) ----------
+
+export interface OgretmenSinif {
+  id: string;
+  ad: string;      // '12-A'
+  seviye: string;  // '12. Sınıf'
+  ders: string;    // 'Sayısal'
+  ogrenciSayisi: number;
+}
+
+export type OgrenciRisk = 'yok' | 'dikkat';
+export interface OgretmenOgrenci {
+  id: string;
+  ad: string;
+  ini: string;
+  ortNet: number;
+  hakimiyet: number;  // 0-100
+  sonAktif: string;
+  risk: OgrenciRisk;  // sunucu türetir; öğrenciye bayrak gösterilmez
+  odevDurum: string;
+}
+
+/** Dikkat gerektiren öğrenci kartı (yalnız yetişkine görünür) */
+export interface DikkatKarti {
+  tip: string;   // risk türü etiketi
+  ad: string;
+  metin: string;
+}
+
+export interface OgretmenPanel {
+  siniflar: OgretmenSinif[];
+  aktifSinifId: string;
+  kpi: {
+    ogrenci: number;
+    ogrenciDelta: number;
+    gecikmisOdev: number;
+    ortNet: number;
+    ortNetDelta: number;
+  };
+  ogrenciler: OgretmenOgrenci[];
+  dikkat: DikkatKarti[];
+  sinifHakimiyet: DersIlerleme[];
+}
+
+// ---------- Öğrenci Özeti (rol=öğretmen; TEK öğrenci SALT-OKUR) ----------
+
+export type OgrenciDurum = 'saglikli' | 'dikkat';
+export interface OgrenciOzeti {
+  id: string;
+  ad: string;
+  ini: string;
+  sinif: string;
+  ders: string;
+  sonAktivite: string;
+  durum: OgrenciDurum;
+  kpi: {
+    net: number;
+    hakimiyet: number;
+    seri: number;
+    cozulen: number;
+  };
+  haftalik: HaftaGun[];
+  dersHakimiyet: DersIlerleme[];
+  /** Yalnız risk durumunda dolu (amber şerit metni) */
+  riskMetni?: string;
+}
+
+// ---------- Sınıf Kurulumu (rol=öğretmen; katılım-kodu backend YOK → mock) ----------
+
+export interface YeniSinif {
+  ad: string;
+  seviye: string;
+  ders: string;
+}
+export interface KurulanSinif {
+  id: string;
+  ad: string;
+  seviye: string;
+  ders: string;
+  katilimKodu: string;  // 6-haneli (server-sim; deterministik)
+  katilimLink: string;
+}
+
 // ---------- Canlı "bugün" yardımcıları ----------
 
 export interface BugunBilgi {
@@ -522,4 +682,10 @@ export interface KiroData extends KiroHelpers {
   duelOpponent: DuelOpponent;
   friends: FriendsData;
   streak: StreakData;
+  // --- SPRINT9 · Grup 7-A mock anahtarları ---
+  veliDashboard: VeliDashboard;
+  ogretmenPanel: OgretmenPanel;
+  /** id → tek öğrenci özeti (öğretmen salt-okur görünümü) */
+  ogrenciOzetleri: Record<string, OgrenciOzeti>;
+  siniflar: OgretmenSinif[];
 }

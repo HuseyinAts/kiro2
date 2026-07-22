@@ -2559,5 +2559,146 @@
       { "label": "Cmt", "durum": "done" },
       { "label": "Bugün", "durum": "today" }
     ]
-  }
+  },
+  "veliDashboard": {
+    "cocuklar": [
+      { "id": "cocuk-ha", "ad": "Hüseyin Ateş", "sinif": "12. Sınıf · Sayısal", "hedef": "Bilgisayar Müh.", "ini": "HA", "avatarGradient": "linear-gradient(135deg,#2A2433,#4A4456)" },
+      { "id": "cocuk-ea", "ad": "Elif Ateş", "sinif": "10. Sınıf · Sayısal", "hedef": "Tıp", "ini": "EA", "avatarGradient": "linear-gradient(135deg,#8B5CF6,#3B82F6)" }
+    ],
+    "aktifCocukId": "cocuk-ha",
+    "kpi": {
+      "cozulenSoru": 312,
+      "cozulenSoruDelta": 48,
+      "cozulenDeneme": 3,
+      "cozulenDenemeDelta": 1,
+      "planUyumu": 86,
+      "netDegisimi": 8.5
+    },
+    "haftalik": [
+      { "label": "Pzt", "dk": 45, "aktif": true },
+      { "label": "Sal", "dk": 60, "aktif": true },
+      { "label": "Çar", "dk": 30, "aktif": true },
+      { "label": "Per", "dk": 75, "aktif": true },
+      { "label": "Cum", "dk": 50, "aktif": true },
+      { "label": "Cmt", "dk": 90, "aktif": true },
+      { "label": "Paz", "dk": 40, "aktif": true }
+    ],
+    "haftaToplamSa": 6.5,
+    "haftaTrend": "+1,1 sa",
+    "dersIlerleme": [
+      { "ders": "Matematik", "hakimiyet": 78 },
+      { "ders": "Fizik", "hakimiyet": 64 },
+      { "ders": "Kimya", "hakimiyet": 52 },
+      { "ders": "Biyoloji", "hakimiyet": 71 },
+      { "ders": "Türkçe", "hakimiyet": 83 }
+    ],
+    "sonSinavlar": [
+      { "ders": "KIRO Genel Deneme #7", "tarih": "2 gün önce", "net": 83, "tur": "TYT" },
+      { "ders": "Matematik", "tarih": "2 gün önce", "net": 17, "tur": "AYT" },
+      { "ders": "Türkçe", "tarih": "2 gün önce", "net": 33, "tur": "TYT" }
+    ],
+    "uyarilar": [
+      { "tip": "success", "metin": "Matematik denemesinde +8 net artış — güzel ivme." },
+      { "tip": "risk", "metin": "Kimya hâkimiyeti %52 — bu hafta daha az çalışıldı." },
+      { "tip": "sevinc", "metin": "Yeni rozet: 7 günlük seri tamamlandı." }
+    ],
+    "roi": { "netArtisi": 8.5, "planUyum": 86, "seri": 12, "haftaOrtDk": 56 },
+    "premium": {
+      "fiyatAy": 124,
+      "indirimYuzde": 38,
+      "maddeler": [
+        "Sınırsız soru + adaptif test (kişiye özel zorluk)",
+        "FSRS aralıklı tekrar — kalıcı öğrenme",
+        "Sokratik AI koç · sınırsız",
+        "Detaylı veli raporu + haftalık özet"
+      ]
+    }
+  },
+  "ogretmenPanel": {
+    "siniflar": [
+      { "id": "12a-say", "ad": "12-A", "seviye": "12. Sınıf", "ders": "Sayısal", "ogrenciSayisi": 32 },
+      { "id": "11b-ea", "ad": "11-B", "seviye": "11. Sınıf", "ders": "Eşit Ağırlık", "ogrenciSayisi": 28 }
+    ],
+    "aktifSinifId": "12a-say",
+    "kpi": { "ogrenci": 32, "ogrenciDelta": 28, "gecikmisOdev": 6, "ortNet": 72.4, "ortNetDelta": 3.1 },
+    "ogrenciler": [
+      { "id": "o-zk", "ad": "Zeynep Kaya", "ini": "ZK", "ortNet": 94, "hakimiyet": 88, "sonAktif": "Bugün", "risk": "yok", "odevDurum": "Aktif" },
+      { "id": "o-ma", "ad": "Merve Aydın", "ini": "MA", "ortNet": 88, "hakimiyet": 80, "sonAktif": "Bugün", "risk": "yok", "odevDurum": "Aktif" },
+      { "id": "o-ha", "ad": "Hüseyin Ateş", "ini": "HA", "ortNet": 83, "hakimiyet": 70, "sonAktif": "Bugün", "risk": "yok", "odevDurum": "Aktif" },
+      { "id": "o-ad", "ad": "Ahmet Demir", "ini": "AD", "ortNet": 82, "hakimiyet": 76, "sonAktif": "Bugün", "risk": "yok", "odevDurum": "Aktif" },
+      { "id": "o-es", "ad": "Elif Şahin", "ini": "ES", "ortNet": 78, "hakimiyet": 71, "sonAktif": "Dün", "risk": "yok", "odevDurum": "Aktif" },
+      { "id": "o-cy", "ad": "Can Yıldız", "ini": "CY", "ortNet": 61, "hakimiyet": 58, "sonAktif": "3 gün önce", "risk": "dikkat", "odevDurum": "Net düşüşte" },
+      { "id": "o-bc", "ad": "Burak Çelik", "ini": "BÇ", "ortNet": 54, "hakimiyet": 49, "sonAktif": "5 gün önce", "risk": "dikkat", "odevDurum": "Pasif" }
+    ],
+    "dikkat": [
+      { "tip": "pasif", "ad": "Burak Çelik", "metin": "5 gündür giriş yok" },
+      { "tip": "dususte", "ad": "Can Yıldız", "metin": "Net düşüşte (−4)" },
+      { "tip": "odev", "ad": "Deniz Arslan", "metin": "2 ödev teslim edilmedi" }
+    ],
+    "sinifHakimiyet": [
+      { "ders": "Fonksiyonlar", "hakimiyet": 80 },
+      { "ders": "Limit & Süreklilik", "hakimiyet": 72 },
+      { "ders": "Türev", "hakimiyet": 58 },
+      { "ders": "İntegral", "hakimiyet": 45 }
+    ]
+  },
+  "ogrenciOzetleri": {
+    "o-ha": {
+      "id": "o-ha",
+      "ad": "Hüseyin Ateş",
+      "ini": "HA",
+      "sinif": "12. Sınıf · Sayısal",
+      "ders": "Sayısal",
+      "sonAktivite": "Bugün",
+      "durum": "saglikli",
+      "kpi": { "net": 83, "hakimiyet": 70, "seri": 12, "cozulen": 312 },
+      "haftalik": [
+        { "label": "Pzt", "dk": 42, "aktif": true },
+        { "label": "Sal", "dk": 55, "aktif": true },
+        { "label": "Çar", "dk": 30, "aktif": true },
+        { "label": "Per", "dk": 38, "aktif": true },
+        { "label": "Cum", "dk": 60, "aktif": true },
+        { "label": "Cmt", "dk": 45, "aktif": true },
+        { "label": "Paz", "dk": 30, "aktif": true }
+      ],
+      "dersHakimiyet": [
+        { "ders": "Matematik", "hakimiyet": 78 },
+        { "ders": "Fizik", "hakimiyet": 64 },
+        { "ders": "Kimya", "hakimiyet": 52 },
+        { "ders": "Biyoloji", "hakimiyet": 71 },
+        { "ders": "Türkçe", "hakimiyet": 83 }
+      ]
+    },
+    "emre-sahin": {
+      "id": "emre-sahin",
+      "ad": "Emre Şahin",
+      "ini": "EŞ",
+      "sinif": "12. Sınıf · Sayısal",
+      "ders": "Sayısal",
+      "sonAktivite": "9 gün önce",
+      "durum": "dikkat",
+      "riskMetni": "9 gündür oturum açmadı",
+      "kpi": { "net": 58.5, "hakimiyet": 46, "seri": 0, "cozulen": 88 },
+      "haftalik": [
+        { "label": "Pzt", "dk": 25, "aktif": true },
+        { "label": "Sal", "dk": 0, "aktif": false },
+        { "label": "Çar", "dk": 0, "aktif": false },
+        { "label": "Per", "dk": 0, "aktif": false },
+        { "label": "Cum", "dk": 0, "aktif": false },
+        { "label": "Cmt", "dk": 0, "aktif": false },
+        { "label": "Paz", "dk": 0, "aktif": false }
+      ],
+      "dersHakimiyet": [
+        { "ders": "Matematik", "hakimiyet": 46 },
+        { "ders": "Fizik", "hakimiyet": 38 },
+        { "ders": "Kimya", "hakimiyet": 35 },
+        { "ders": "Biyoloji", "hakimiyet": 52 },
+        { "ders": "Türkçe", "hakimiyet": 61 }
+      ]
+    }
+  },
+  "siniflar": [
+    { "id": "12a-say", "ad": "12-A", "seviye": "12. Sınıf", "ders": "Sayısal", "ogrenciSayisi": 32 },
+    { "id": "11b-ea", "ad": "11-B", "seviye": "11. Sınıf", "ders": "Eşit Ağırlık", "ogrenciSayisi": 28 }
+  ]
 }

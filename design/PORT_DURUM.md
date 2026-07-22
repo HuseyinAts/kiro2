@@ -169,6 +169,21 @@ Sonraki: **Grup 7 Roller (S9+)** — Veli Paneli · Öğretmen Paneli · Öğren
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT9-A Durumu (2026-07-23 · GRUP 7 kısmi 4/6)
+
+**4/6 panel ✅** — Veli Paneli · Öğretmen Paneli · Öğrenci Özeti · Sınıf Kurulumu (rapor: `docs/audits/2026-07-23_sprint9a-roller.md`). Veli Bağlama (KVKK) + Ödev Atama **ayrı tur** (kullanıcı "ağırları ayır").
+- **Tema:** 4'ü de **paper** (rol/panel/iş ekranı). Rol/gizlilik: Veli **SİZ-dili** + çocuk **salt-okur** (sohbet/AI/mood gizli); Öğretmen SİZ + roster salt-okur; Öğrenci Özeti salt-okur (tek yazma = ödev-ata link); Sınıf Kurulumu **DC SEN korundu** (DC>spec tiebreaker).
+- **Backend gerçeği:** `/api/v1/teacher` + `/api/v1/parent` (email iki-taraf onay) MEVCUT → Faz 4 wiring; katılım-kodu/rotate/join + öğrenci Ödevlerim + zengin-atama alanları **YOK → mock**. Karar (kullanıcı): Veli Bağlama **DC kod-akışı + mock**.
+- **Paylaşımlı `ui/WeeklyActivityBars`** (Veli+Öğretmen+ÖğrenciÖzeti; transform:scaleY layout-anim değil, RM-guard, per-bar SR metni).
+- **Adversarial review (11 ajan, rol-gizlilik odaklı):** P0 **0** · major **2** · minor **2** · phantom **0** → hepsi fix (VeliPaneli yeşil-token AA `success→successTextOnLight` + rozet; OgrenciOzeti başlık h1→h2→h3; OgretmenPaneli negatif-delta amber).
+- **Breakpoint:** SinifKurulumu kök-div `content-box` 12px yatay taşma → **deterministik Playwright teşhisi** (parent-zincir) → `box-sizing:border-box` fix → **0 FAIL / 280**. (Build+adversarial kaçırdı, mekanik kapı yakaladı — SPRINT8 dersi tekrar.)
+- **Kapı:** kanon **0** · tsc **0** · vitest **52 dosya / 294 test PASS** · axe temiz · breakpoint **0 / 280**.
+
+**İlerleme: 29/42 ekran + 1 composite (QuestionCard) + `ui/WeeklyActivityBars` (paylaşımlı). Grup 7 kısmi (4/6).**
+Sonraki: **Grup 7 kalanı** — Veli Bağlama (KVKK kod-akışı) + Ödev Atama (Ödevlerim döngüsü) ayrı tur.
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -233,15 +248,15 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Arkadaş Serisi | KIRO2 Arkadas Serisi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Seri Dondurma | KIRO2 Seri Dondurma.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
-## 7 · Roller (6)
+## 7 · Roller (6) — 4/6 (SPRINT9-A; Veli Bağlama + Ödev Atama ayrı tur)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| Veli Paneli (SİZ-dili) | KIRO2 Veli Paneli.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Öğretmen Paneli | KIRO2 Ogretmen Paneli.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Öğrenci Özeti (öğretmen, salt-okur) | KIRO2 Ogretmen Ogrenci Ozet.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Veli Paneli (SİZ-dili) | KIRO2 Veli Paneli.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Öğretmen Paneli | KIRO2 Ogretmen Paneli.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Öğrenci Özeti (öğretmen, salt-okur) | KIRO2 Ogretmen Ogrenci Ozet.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Veli Bağlama (KVKK, iki taraf) | KIRO2 Veli Baglama.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Ödev Atama | KIRO2 Odev Atama.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Sınıf Kurulumu ("İlk sınıfını kur") | KIRO2 Sinif Kurulum.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Sınıf Kurulumu ("İlk sınıfını kur") | KIRO2 Sinif Kurulum.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Ödevlerim | KIRO2 Odevlerim.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
 Ödev Atama ↔ Ödevlerim tek döngü olarak test edildi: ☐

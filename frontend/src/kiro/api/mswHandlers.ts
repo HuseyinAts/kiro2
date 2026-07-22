@@ -137,6 +137,45 @@ export const kiroHandlers = [
 
   // Seri Dondurma — client sözleşmesi (camelCase; backend YOK, freeze mock).
   http.get('*/streak', () => HttpResponse.json(D.streak)),
+
+  // --- SPRINT9 · Grup 7-A Rol panelleri (best-effort; SSE yok) ---
+  // Veli — dashboard + children + performance kompoze (client snake VEYA camel okur).
+  http.get('*/parent/dashboard', () => HttpResponse.json(D.veliDashboard)),
+  http.get('*/parent/children', () => HttpResponse.json(D.veliDashboard.cocuklar)),
+  http.get('*/parent/children/:id/performance', () =>
+    HttpResponse.json({ kpi: D.veliDashboard.kpi, haftalik: D.veliDashboard.haftalik }),
+  ),
+
+  // Öğretmen — students + reports (classes handler yukarıda mevcut, çift kayıt YOK).
+  http.get('*/teacher/students', () => HttpResponse.json(D.ogretmenPanel.ogrenciler)),
+  http.get('*/teacher/reports', () =>
+    HttpResponse.json({
+      kpi: D.ogretmenPanel.kpi,
+      dikkat: D.ogretmenPanel.dikkat,
+      sinifHakimiyet: D.ogretmenPanel.sinifHakimiyet,
+    }),
+  ),
+  http.get('*/teacher/students/:id', ({ params }) => {
+    const map = D.ogrenciOzetleri;
+    const o = map[params.id as string] ?? Object.values(map)[0];
+    return o ? HttpResponse.json(o) : hata('ogrenci_yok', 'Öğrenci bulunamadı.', 404);
+  }),
+
+  // Sınıf kurulumu — POST create + rotate-code (snake_case body; server-sim kod).
+  http.post('*/api/v1/teacher/classes', async ({ request }) => {
+    const b = (await request.json().catch(() => ({}))) as { name?: string; grade_level?: string; subject_area?: string };
+    return HttpResponse.json({
+      id: 'sinif-msw',
+      ad: b.name ?? '12-A',
+      seviye: b.grade_level ?? '12. Sınıf',
+      ders: b.subject_area ?? 'Sayısal',
+      katilimKodu: '482913',
+      katilimLink: 'https://kiro2.app/katil/482913',
+    }, { status: 201 });
+  }),
+  http.post('*/api/v1/teacher/classes/:id/rotate-code', () =>
+    HttpResponse.json({ katilimKodu: '731028', katilimLink: 'https://kiro2.app/katil/731028' }),
+  ),
 ];
 
 export default kiroHandlers;

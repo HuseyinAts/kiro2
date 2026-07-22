@@ -25,6 +25,9 @@ import type {
   LeagueData,
   DuelQuestion, DuelMatch, DuelAnswerResult, DuelTurSonucu, DuelResult, DuelRating,
   FriendsData, StreakData,
+  VeliDashboard, VeliCocuk, VeliUyari, SinavOzet, DersIlerleme, HaftaGun,
+  OgretmenPanel, OgretmenSinif, OgretmenOgrenci, DikkatKarti,
+  OgrenciOzeti, YeniSinif, KurulanSinif,
 } from '../types';
 
 // SPRINT8 · Grup 6 tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
@@ -33,6 +36,14 @@ export type {
   DuelQuestion, DuelMatch, DuelAnswerResult, DuelTurSonucu, DuelResult, DuelRating, DuelOpponent,
   Friend, CoopQuest, FriendsData,
   StreakDay, StreakData,
+} from '../types';
+
+// SPRINT9 · Grup 7-A panel tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
+export type {
+  HaftaGun, DersIlerleme,
+  VeliDashboard, VeliCocuk, VeliUyari, VeliUyariTip, SinavOzet,
+  OgretmenPanel, OgretmenSinif, OgretmenOgrenci, OgrenciRisk, DikkatKarti,
+  OgrenciOzeti, OgrenciDurum, YeniSinif, KurulanSinif,
 } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -56,7 +67,8 @@ export type MockData = Pick<KiroData,
   'katalogUniteler' | 'sinifRoster' | 'odevler' |
   'reviewQueue' | 'lastExam' | 'questionBank' | 'flashcards' | 'catBankMat' |
   'curriculum' | 'atomKirilim' | 'seviyeEsik' |
-  'league' | 'duelOpponent' | 'friends' | 'streak'>;
+  'league' | 'duelOpponent' | 'friends' | 'streak' |
+  'veliDashboard' | 'ogretmenPanel' | 'ogrenciOzetleri' | 'siniflar'>;
 
 let cfg: KiroApiConfig = { mode: 'mock' };
 let mockCache: MockData | null = null;
@@ -904,3 +916,276 @@ export async function getStreak(): Promise<StreakData> {
 // GET /notifications · POST /sync/events · POST /billing/trial — ekran portu
 // sırasında bu kalıpla eklenir (mock kısa devre + live fetch).
 // ---------------------------------------------------------------------------
+
+// ===========================================================================
+// SPRINT9 · Grup 7-A — Rol panelleri (Veli · Öğretmen · Öğrenci-Özeti · Sınıf)
+// İki kollu: mock (kiro-data) · live (gerçek /parent + /teacher; snake→camel).
+// Zarf karışık ({success,data} | {data} | ham Pydantic) → unwrapData ile normalize.
+// SUNUCU-OTORİTE: öğrenci net/hâkimiyet/risk/theta SUNUCUDA hesaplanır; istemci
+// bu türevleri ÜRETMEZ — mock'ta bile veri kiro-data'dan OKUNUR, ekranda değil.
+// ===========================================================================
+
+type Rec = Record<string, unknown>;
+const asRec = (v: unknown): Rec => (v != null && typeof v === 'object' ? (v as Rec) : {});
+/** Zarf çöz: {success,data} | {data} | ham gövde — hepsinden gövdeyi çıkar. */
+const unwrapData = (raw: unknown): unknown => {
+  const o = asRec(raw);
+  return 'data' in o && o.data != null ? o.data : raw;
+};
+const asArr = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
+const nnum = (v: unknown, def = 0): number => (typeof v === 'number' && Number.isFinite(v) ? v : def);
+const nstr = (v: unknown, def = ''): string => (typeof v === 'string' ? v : def);
+/** İlk dolu anahtar (snake VEYA camel) — best-effort normalize. */
+const pick = (o: Rec, ...keys: string[]): unknown => {
+  for (const k of keys) if (o[k] != null) return o[k];
+  return undefined;
+};
+
+// --- snake→camel eşleyiciler (live; şekil belirsiz → esnek okuma + neutral fallback) ---
+
+function mapHaftaGun(v: unknown): HaftaGun {
+  const o = asRec(v);
+  const dk = nnum(pick(o, 'dk', 'minutes', 'dakika'));
+  const aktifRaw = pick(o, 'aktif', 'active');
+  return { label: nstr(pick(o, 'label', 'gun', 'day')), dk, aktif: typeof aktifRaw === 'boolean' ? aktifRaw : dk > 0 };
+}
+function mapDersIlerleme(v: unknown): DersIlerleme {
+  const o = asRec(v);
+  return { ders: nstr(pick(o, 'ders', 'subject', 'ad', 'name')), hakimiyet: nnum(pick(o, 'hakimiyet', 'mastery', 'pct')) };
+}
+function mapVeliCocuk(v: unknown): VeliCocuk {
+  const o = asRec(v);
+  const ad = nstr(pick(o, 'ad', 'name', 'display_name'));
+  return {
+    id: nstr(pick(o, 'id', 'student_id', 'child_id')),
+    ad,
+    sinif: nstr(pick(o, 'sinif', 'class_name', 'grade')),
+    hedef: nstr(pick(o, 'hedef', 'target', 'goal')),
+    ini: nstr(pick(o, 'ini', 'initials')) || initials(ad),
+    avatarGradient: nstr(pick(o, 'avatarGradient', 'avatar_gradient'), 'linear-gradient(135deg,#2A2433,#4A4456)'),
+  };
+}
+function mapSinavOzet(v: unknown): SinavOzet {
+  const o = asRec(v);
+  return {
+    ders: nstr(pick(o, 'ders', 'subject', 'name', 'ad')),
+    tarih: nstr(pick(o, 'tarih', 'date')),
+    net: nnum(pick(o, 'net', 'score')),
+    tur: nstr(pick(o, 'tur', 'type', 'tip')),
+  };
+}
+function mapVeliUyari(v: unknown): VeliUyari {
+  const o = asRec(v);
+  const t = nstr(pick(o, 'tip', 'type'), 'success');
+  const tip: VeliUyari['tip'] = t === 'risk' || t === 'sevinc' ? t : 'success';
+  return { tip, metin: nstr(pick(o, 'metin', 'message', 'text')) };
+}
+function mapOgretmenSinif(v: unknown): OgretmenSinif {
+  const o = asRec(v);
+  return {
+    id: nstr(pick(o, 'id', 'class_id')),
+    ad: nstr(pick(o, 'ad', 'name')),
+    seviye: nstr(pick(o, 'seviye', 'grade_level', 'level')),
+    ders: nstr(pick(o, 'ders', 'subject_area', 'subject')),
+    ogrenciSayisi: nnum(pick(o, 'ogrenciSayisi', 'ogrenci', 'student_count', 'students')),
+  };
+}
+function toRisk(v: unknown): OgretmenOgrenci['risk'] {
+  if (v === true) return 'dikkat';
+  if (typeof v === 'string' && v !== '' && v !== 'yok' && v !== 'none') return 'dikkat';
+  return 'yok';
+}
+function mapOgretmenOgrenci(v: unknown): OgretmenOgrenci {
+  const o = asRec(v);
+  const ad = nstr(pick(o, 'ad', 'name', 'display_name'));
+  return {
+    id: nstr(pick(o, 'id', 'student_id')),
+    ad,
+    ini: nstr(pick(o, 'ini', 'initials')) || initials(ad),
+    ortNet: nnum(pick(o, 'ortNet', 'avg_net', 'net')),
+    hakimiyet: nnum(pick(o, 'hakimiyet', 'mastery')),
+    sonAktif: nstr(pick(o, 'sonAktif', 'last_active', 'last_seen')),
+    risk: toRisk(pick(o, 'risk', 'risk_level', 'at_risk')),
+    odevDurum: nstr(pick(o, 'odevDurum', 'assignment_status')),
+  };
+}
+function mapDikkatKarti(v: unknown): DikkatKarti {
+  const o = asRec(v);
+  return {
+    tip: nstr(pick(o, 'tip', 'type')),
+    ad: nstr(pick(o, 'ad', 'name')),
+    metin: nstr(pick(o, 'metin', 'message', 'reason')),
+  };
+}
+
+/** Veli paneli. mock: kiro-data.veliDashboard (cocukId → aktif çocuk).
+ *  live: GET /parent/dashboard + /parent/children + /parent/children/{id}/performance kompoze. */
+export async function getVeliDashboard(cocukId?: string): Promise<VeliDashboard> {
+  if (cfg.mode === 'mock') {
+    const base = (await mock()).veliDashboard;
+    // SALT-OKUR: aktif çocuk değişse de net/hâkimiyet sunucudan gelir (mock tek çocuk verisi).
+    return cocukId && base.cocuklar.some((c) => c.id === cocukId) ? { ...base, aktifCocukId: cocukId } : base;
+  }
+  const [dashRaw, childrenRaw] = await Promise.all([
+    live<unknown>('/parent/dashboard'),
+    live<unknown>('/parent/children'),
+  ]);
+  const dash = asRec(unwrapData(dashRaw));
+  const cocuklar = asArr(unwrapData(childrenRaw)).map(mapVeliCocuk);
+  const aktifCocukId = cocukId || nstr(pick(dash, 'aktifCocukId', 'active_child_id')) || cocuklar[0]?.id || '';
+  const perf = aktifCocukId
+    ? asRec(unwrapData(await live<unknown>('/parent/children/' + encodeURIComponent(aktifCocukId) + '/performance')))
+    : {};
+  // Zarf içindeki `kpi` bloğunu da düz oku (Pydantic karışık şekil).
+  const src: Rec = { ...dash, ...asRec(pick(dash, 'kpi')), ...perf, ...asRec(pick(perf, 'kpi')) };
+  const kpi = {
+    cozulenSoru: nnum(pick(src, 'cozulenSoru', 'solved_questions')),
+    cozulenSoruDelta: nnum(pick(src, 'cozulenSoruDelta', 'solved_questions_delta')),
+    cozulenDeneme: nnum(pick(src, 'cozulenDeneme', 'exams_taken', 'solved_exams')),
+    cozulenDenemeDelta: nnum(pick(src, 'cozulenDenemeDelta', 'exams_taken_delta')),
+    planUyumu: nnum(pick(src, 'planUyumu', 'plan_adherence')),
+    netDegisimi: nnum(pick(src, 'netDegisimi', 'net_change')),
+  };
+  const roiSrc = asRec(pick(src, 'roi'));
+  const premSrc = asRec(pick(src, 'premium'));
+  return {
+    cocuklar,
+    aktifCocukId,
+    kpi,
+    haftalik: asArr(pick(src, 'haftalik', 'weekly', 'week')).map(mapHaftaGun),
+    haftaToplamSa: nnum(pick(src, 'haftaToplamSa', 'week_total_hours')),
+    haftaTrend: nstr(pick(src, 'haftaTrend', 'week_trend')),
+    dersIlerleme: asArr(pick(src, 'dersIlerleme', 'subject_progress')).map(mapDersIlerleme),
+    sonSinavlar: asArr(pick(src, 'sonSinavlar', 'recent_exams')).map(mapSinavOzet),
+    uyarilar: asArr(pick(src, 'uyarilar', 'alerts')).map(mapVeliUyari),
+    roi: {
+      netArtisi: nnum(pick(roiSrc, 'netArtisi', 'net_gain'), kpi.netDegisimi),
+      planUyum: nnum(pick(roiSrc, 'planUyum', 'plan_adherence'), kpi.planUyumu),
+      seri: nnum(pick(roiSrc, 'seri', 'streak')),
+      haftaOrtDk: nnum(pick(roiSrc, 'haftaOrtDk', 'avg_daily_minutes')),
+    },
+    premium: {
+      fiyatAy: nnum(pick(premSrc, 'fiyatAy', 'price_month'), 124),
+      indirimYuzde: nnum(pick(premSrc, 'indirimYuzde', 'discount_pct'), 38),
+      maddeler: asArr(pick(premSrc, 'maddeler', 'items')).map((x) => nstr(x)).filter(Boolean),
+    },
+  };
+}
+
+/** Öğretmen paneli. mock: kiro-data.ogretmenPanel (sinifId → aktif sınıf).
+ *  live: GET /teacher/classes + /teacher/students + /teacher/reports kompoze. */
+export async function getOgretmenPanel(sinifId?: string): Promise<OgretmenPanel> {
+  if (cfg.mode === 'mock') {
+    const base = (await mock()).ogretmenPanel;
+    return sinifId && base.siniflar.some((s) => s.id === sinifId) ? { ...base, aktifSinifId: sinifId } : base;
+  }
+  const [classesRaw, studentsRaw, reportsRaw] = await Promise.all([
+    live<unknown>('/teacher/classes'),
+    live<unknown>('/teacher/students'),
+    live<unknown>('/teacher/reports'),
+  ]);
+  const siniflar = asArr(unwrapData(classesRaw)).map(mapOgretmenSinif);
+  const ogrenciler = asArr(unwrapData(studentsRaw)).map(mapOgretmenOgrenci);
+  const rep = asRec(unwrapData(reportsRaw));
+  const src: Rec = { ...rep, ...asRec(pick(rep, 'kpi')) };
+  return {
+    siniflar,
+    aktifSinifId: sinifId || siniflar[0]?.id || '',
+    kpi: {
+      ogrenci: nnum(pick(src, 'ogrenci', 'student_count', 'students')),
+      ogrenciDelta: nnum(pick(src, 'ogrenciDelta', 'active_students', 'student_delta')),
+      gecikmisOdev: nnum(pick(src, 'gecikmisOdev', 'overdue_assignments', 'pending_assignments')),
+      ortNet: nnum(pick(src, 'ortNet', 'avg_net')),
+      ortNetDelta: nnum(pick(src, 'ortNetDelta', 'avg_net_delta')),
+    },
+    ogrenciler,
+    dikkat: asArr(pick(src, 'dikkat', 'attention', 'at_risk')).map(mapDikkatKarti),
+    sinifHakimiyet: asArr(pick(src, 'sinifHakimiyet', 'class_mastery', 'topic_mastery')).map(mapDersIlerleme),
+  };
+}
+
+/** Tek öğrenci özeti (öğretmen salt-okur). mock: kiro-data.ogrenciOzetleri[id].
+ *  live: GET /teacher/students/{id} (özet /teacher/reports'a düşebilir). */
+export async function getOgrenciOzeti(ogrenciId: string): Promise<OgrenciOzeti> {
+  if (cfg.mode === 'mock') {
+    const map = (await mock()).ogrenciOzetleri;
+    const found = map[ogrenciId] ?? Object.values(map)[0];
+    if (!found) throw new KiroApiError(404, '/teacher/students/' + ogrenciId);
+    return found;
+  }
+  const o = asRec(unwrapData(await live<unknown>('/teacher/students/' + encodeURIComponent(ogrenciId))));
+  const src: Rec = { ...o, ...asRec(pick(o, 'kpi')) };
+  const durumRaw = pick(o, 'durum', 'status');
+  const durum: OgrenciOzeti['durum'] = durumRaw === 'dikkat' || durumRaw === 'risk' ? 'dikkat' : 'saglikli';
+  const ad = nstr(pick(o, 'ad', 'name'));
+  const riskMetni = nstr(pick(o, 'riskMetni', 'risk_message'));
+  return {
+    id: nstr(pick(o, 'id', 'student_id')) || ogrenciId,
+    ad,
+    ini: nstr(pick(o, 'ini', 'initials')) || initials(ad),
+    sinif: nstr(pick(o, 'sinif', 'class_name')),
+    ders: nstr(pick(o, 'ders', 'subject')),
+    sonAktivite: nstr(pick(o, 'sonAktivite', 'last_active', 'sonAktif')),
+    durum,
+    kpi: {
+      net: nnum(pick(src, 'net', 'avg_net', 'tytNet')),
+      hakimiyet: nnum(pick(src, 'hakimiyet', 'mastery', 'genelHakimiyet')),
+      seri: nnum(pick(src, 'seri', 'streak')),
+      cozulen: nnum(pick(src, 'cozulen', 'solved', 'solved_questions')),
+    },
+    haftalik: asArr(pick(src, 'haftalik', 'weekly')).map(mapHaftaGun),
+    dersHakimiyet: asArr(pick(src, 'dersHakimiyet', 'subject_mastery', 'dersler')).map(mapDersIlerleme),
+    ...(riskMetni ? { riskMetni } : {}),
+  };
+}
+
+// --- Sınıf kurulumu — katılım kodu SERVER-SIM (backend YOK; deterministik 6-hane) ---
+
+/** Deterministik 6-haneli katılım kodu (server-sim; aynı seed → aynı kod). */
+function katilimKodUret(seed: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return String(100000 + ((h >>> 0) % 900000)); // 6 hane, baştaki sıfır yok
+}
+const katilimLink = (kod: string): string => 'https://kiro2.app/katil/' + kod;
+
+/** Sınıf oluştur. live: POST /api/v1/teacher/classes {name,grade_level,subject_area}.
+ *  mock: server-sim — id + deterministik 6-hane kod + davet linki üret. */
+export async function postSinif(s: YeniSinif): Promise<KurulanSinif> {
+  if (cfg.mode === 'mock') {
+    const kod = katilimKodUret(s.ad + '|' + s.seviye + '|' + s.ders);
+    return { id: 'sinif-' + kod, ad: s.ad, seviye: s.seviye, ders: s.ders, katilimKodu: kod, katilimLink: katilimLink(kod) };
+  }
+  const o = asRec(unwrapData(await live<unknown>('/api/v1/teacher/classes', {
+    method: 'POST',
+    body: JSON.stringify({ name: s.ad, grade_level: s.seviye, subject_area: s.ders }),
+  })));
+  const kod = nstr(pick(o, 'katilimKodu', 'join_code', 'code')) || katilimKodUret(s.ad + '|' + s.seviye + '|' + s.ders);
+  return {
+    id: nstr(pick(o, 'id', 'class_id')),
+    ad: nstr(pick(o, 'ad', 'name'), s.ad),
+    seviye: nstr(pick(o, 'seviye', 'grade_level'), s.seviye),
+    ders: nstr(pick(o, 'ders', 'subject_area'), s.ders),
+    katilimKodu: kod,
+    katilimLink: nstr(pick(o, 'katilimLink', 'join_link')) || katilimLink(kod),
+  };
+}
+
+/** Katılım kodu yenile — BACKEND YOK → mock server-sim (her çağrıda yeni kod).
+ *  live yolu ileri sözleşme (POST .../rotate-code); backend 501 dönerse mock-flag'e düşülür. */
+let _kodNonce = 0;
+export async function rotateKatilimKodu(sinifId: string): Promise<{ katilimKodu: string; katilimLink: string }> {
+  if (cfg.mode === 'mock') {
+    _kodNonce += 1;
+    const kod = katilimKodUret(sinifId + '#' + _kodNonce);
+    return { katilimKodu: kod, katilimLink: katilimLink(kod) };
+  }
+  const o = asRec(unwrapData(await live<unknown>('/api/v1/teacher/classes/' + encodeURIComponent(sinifId) + '/rotate-code', {
+    method: 'POST', body: JSON.stringify({}),
+  })));
+  const kod = nstr(pick(o, 'katilimKodu', 'join_code', 'code'));
+  return { katilimKodu: kod, katilimLink: nstr(pick(o, 'katilimLink', 'join_link')) || katilimLink(kod) };
+}
