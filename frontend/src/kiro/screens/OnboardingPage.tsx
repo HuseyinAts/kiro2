@@ -4,7 +4,7 @@
 // Kopya §C0 ton adımı DC'den BİREBİR; §C calib/hazir SPRINT2_SPEC'ten. Auth GEREKMEZ (misafir).
 // Kanon: DC'deki lacivert hover TAŞINMAZ — Button coralCtaBg kullanır; stepper tik bespoke SVG.
 // Motorlar SUNUCUDA: live'da yerleştirme /cat/next; MOCK modda catBankMat merdiveni (dogru yerel).
-// (ton-adım "Devam et" CTA etiketi DC'den çıkarılamadı — çıkarım; diğer kopya birebir.)
+// (ton-adım CTA "Seviyeni ölçelim →" — SPRINT2_SPEC §C0; tüm kopya birebir.)
 // ============================================================================
 import * as React from 'react';
 
@@ -135,7 +135,7 @@ export function OnboardingPage(): React.ReactElement {
                   </div>
                 )}
                 <div style={{ marginTop: space[5], display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-                  <Button variant="primary" size="lg" disabled={!ton} onClick={() => setAdim('calib')}>Devam et</Button>
+                  <Button variant="primary" size="lg" disabled={!ton} onClick={() => setAdim('calib')}>Seviyeni ölçelim →</Button>
                   <button type="button" onClick={() => { setTon(null); setAdim('calib'); }} style={linkBtn}>Bu soruyu geç</button>
                 </div>
               </div>
