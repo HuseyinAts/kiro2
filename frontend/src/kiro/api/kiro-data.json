@@ -2830,5 +2830,84 @@
       { "id": "pk-yanlis", "baslik": "Son deneme yanlışları", "aciklama": "Yeniden çözmek için indirildi", "tur": "soru", "hazir": true },
       { "id": "pk-video", "baslik": "Konu anlatım videoları", "aciklama": "Bağlantı gelince inecek", "tur": "video", "hazir": false }
     ]
+  },
+  "abonelik": {
+    "rol": "veli",
+    "mevcutTier": "free",
+    "denemeGunu": 7,
+    "bankSize": 187835,
+    "motorlar": [
+      "CAT/IRT",
+      "FSRS",
+      "BKT"
+    ],
+    "childFirst": false,
+    "planlar": [
+      {
+        "tier": "free",
+        "ad": "Ücretsiz",
+        "fiyatAy": 0,
+        "fiyatYil": 0,
+        "maddeler": [
+          "Günde 20 soru + temel tekrar",
+          "Sınırlı deneme analizi",
+          "Tek ders takibi"
+        ]
+      },
+      {
+        "tier": "premium",
+        "ad": "Premium",
+        "fiyatAy": 124,
+        "fiyatYil": 924,
+        "indirimYuzde": 38,
+        "oneCikan": true,
+        "maddeler": [
+          "Sınırsız soru + adaptif test (kişiye özel zorluk)",
+          "FSRS aralıklı tekrar — kalıcı öğrenme",
+          "Sokratik AI koç · sınırsız",
+          "Detaylı veli raporu + haftalık özet"
+        ]
+      }
+    ],
+    "kanit": {
+      "netArtisi": "+8,5 net",
+      "planUyum": "%86 plan uyumu",
+      "seri": "12 günlük seri"
+    }
+  },
+  "abonelikYonetim": {
+    "rol": "veli",
+    "durum": "deneme",
+    "fatura": "aylik",
+    "yenilemeTarih": "30 Temmuz 2026",
+    "denemeBitis": "30 Temmuz 2026",
+    "plan": {
+      "tier": "premium",
+      "ad": "Premium",
+      "fiyatAy": 124,
+      "fiyatYil": 924,
+      "indirimYuzde": 38,
+      "oneCikan": true,
+      "maddeler": [
+        "Sınırsız soru + adaptif test (kişiye özel zorluk)",
+        "FSRS aralıklı tekrar — kalıcı öğrenme",
+        "Sokratik AI koç · sınırsız",
+        "Detaylı veli raporu + haftalık özet"
+      ]
+    },
+    "odemeYontem": {
+      "tur": "Kredi kartı",
+      "son4": "4242",
+      "sonKullanma": "08/28"
+    },
+    "faturalar": [
+      {
+        "id": "fat-2026-07",
+        "tarih": "23 Temmuz 2026",
+        "tutar": 0,
+        "durum": "odendi",
+        "makbuzHref": "/makbuz/fat-2026-07"
+      }
+    ]
   }
 }

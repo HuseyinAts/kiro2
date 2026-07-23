@@ -31,6 +31,7 @@ import type {
   LinkCodeSonuc, PendingVeliIstek, KvkkNotice,
   KonuAtom, AtamaOgrenci, AtamaForm,
   BildirimYanit, AlanKutuphaneData, SyncStatus,
+  PlanTier, FaturaDonem, AbonelikData, OdemeOzeti, ThreeDSDurum, AbonelikYonetim,
 } from '../types';
 
 // SPRINT8 · Grup 6 tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
@@ -62,6 +63,12 @@ export type {
   AlanKutuphaneDers, AlanKutuphaneAlan, AlanKutuphaneData,
 } from '../types';
 
+// SPRINT10-B · Grup 8 (billing infra) tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
+export type {
+  PlanTier, FaturaDonem, AbonelikPlan, AbonelikData,
+  OdemeFaz, OdemeOzeti, KartFormState, ThreeDSDurum, OdemeYontem, Fatura, AbonelikYonetim,
+} from '../types';
+
 // ---------------------------------------------------------------------------
 // Konfigürasyon
 // ---------------------------------------------------------------------------
@@ -86,7 +93,8 @@ export type MockData = Pick<KiroData,
   'league' | 'duelOpponent' | 'friends' | 'streak' |
   'veliDashboard' | 'ogretmenPanel' | 'ogrenciOzetleri' | 'siniflar' |
   'veliBaglama' | 'odevAtama' |
-  'bildirimler' | 'alanKutuphane' | 'cevrimdisi'>;
+  'bildirimler' | 'alanKutuphane' | 'cevrimdisi' |
+  'abonelik' | 'abonelikYonetim'>;
 
 let cfg: KiroApiConfig = { mode: 'mock' };
 let mockCache: MockData | null = null;
@@ -1427,4 +1435,110 @@ export async function getAlanKutuphane(): Promise<AlanKutuphaneData> {
 export async function getCevrimdisiDurum(): Promise<SyncStatus> {
   if (cfg.mode === 'mock') return (await mock()).cevrimdisi;
   return live<SyncStatus>('/offline/durum');
+}
+
+// ===========================================================================
+// SPRINT10-B · Grup 8 (billing infra) — Abonelik · Ödeme (3DS sim) · Plan Yönetimi
+// İki kollu: mock (kiro-data/server-sim) · live (forward REST sözleşmesi).
+// SAF-MOCK: gerçek PSP (iyzico/PayTR/Stripe) YOK — 3DS timer-sim; kart verisi PCI
+// UI-only, backend'e GİTMEZ. SUNUCU-OTORİTE: fiyat/tier/durum/3DS-sonucu/fatura
+// SUNUCUDA belirlenir — istemci (mock'ta bile) fiyat hesaplamaz, 3DS sonucu ÜRETMEZ.
+// Fiyat/ROI modeli veliDashboard.premium+roi ile HİZALIDIR (çelişen 2. model yok).
+// ÖĞRENCİ FİYAT GİZLİ: getAbonelik('ogrenci') planları dönebilir ama ekran GÖSTERMEZ
+// (childFirst=true → VeliYonlendirmeKarti). Satın-alma/kart/iptal yalnız veli.
+// ===========================================================================
+
+// --- Abonelik + Plan Yönetimi (rol'e göre) ---
+
+/** Abonelik verisi (rol param). mock: kiro-data.abonelik; öğrenci bağlamında childFirst=true
+ *  (ekran fiyat GÖSTERMEZ → VeliYonlendirmeKarti). live: GET /billing/abonelik?rol. */
+export async function getAbonelik(rol: 'ogrenci' | 'veli'): Promise<AbonelikData> {
+  if (cfg.mode === 'mock') {
+    const base = (await mock()).abonelik;
+    return { ...base, rol, childFirst: rol === 'ogrenci' };
+  }
+  return live<AbonelikData>('/billing/abonelik?rol=' + rol);
+}
+
+/** İlk ödeme tarihi (deneme bitişi) — sunucu-otorite; mock deterministik türetir (istemci fiyat değil). */
+function ilkOdemeTarihHesap(gun: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + gun);
+  return new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+}
+
+/** Ödeme özeti (tutar/tarih SUNUCUDAN; istemci fiyat HESAPLAMAZ). mock: abonelik planından türer.
+ *  live: GET /odeme/ozet?tier&fatura. */
+export async function getOdemeOzeti(tier: PlanTier, fatura: FaturaDonem): Promise<OdemeOzeti> {
+  if (cfg.mode === 'mock') {
+    const ab = (await mock()).abonelik;
+    const plan = ab.planlar.find((p) => p.tier === tier) ?? ab.planlar[ab.planlar.length - 1]!;
+    const denemeGunu = ab.denemeGunu ?? 7;
+    return {
+      planAd: plan.ad,
+      tier,
+      fatura,
+      tutar: fatura === 'yillik' ? plan.fiyatYil : plan.fiyatAy,
+      ilkOdemeTarih: ilkOdemeTarihHesap(denemeGunu),
+      denemeGunu,
+    };
+  }
+  return live<OdemeOzeti>('/odeme/ozet?tier=' + tier + '&fatura=' + fatura);
+}
+
+/** Ödeme denemesi başlat — intentId SUNUCUDAN (mock: server-sim). live: POST /odeme/deneme-baslat. */
+export async function postOdemeDeneme(): Promise<{ intentId: string }> {
+  if (cfg.mode === 'mock') return { intentId: 'intent-mock' };
+  const o = asRec(unwrapData(await live<unknown>('/odeme/deneme-baslat', { method: 'POST', body: JSON.stringify({}) })));
+  return { intentId: nstr(pick(o, 'intentId', 'intent_id', 'id')) };
+}
+
+/** 3DS sonucu — MOCK TİMER-SİM: kısa gecikme sonra 'onaylandi' (SAF-MOCK; gerçek PSP YOK).
+ *  SUNUCU-OTORİTE: istemci 3DS sonucunu ÜRETMEZ — çözülebilir Promise döner (test-deterministik).
+ *  live: GET /odeme/3ds/{intentId} (backend 3DS callback durumu). */
+export async function getOdeme3dsSonuc(intentId: string): Promise<ThreeDSDurum> {
+  if (cfg.mode === 'mock') {
+    return new Promise<ThreeDSDurum>((resolve) => setTimeout(() => resolve('onaylandi'), 400));
+  }
+  const o = asRec(unwrapData(await live<unknown>('/odeme/3ds/' + encodeURIComponent(intentId))));
+  const d = nstr(pick(o, 'durum', 'status'), 'onaylandi');
+  return d === 'reddedildi' || d === 'bekliyor' ? d : 'onaylandi';
+}
+
+/** Plan Yönetimi verisi (rol param). mock: kiro-data.abonelikYonetim. live: GET /abonelik/yonetim?rol. */
+export async function getAbonelikYonetim(rol: 'ogrenci' | 'veli'): Promise<AbonelikYonetim> {
+  if (cfg.mode === 'mock') {
+    const base = (await mock()).abonelikYonetim;
+    return { ...base, rol };
+  }
+  return live<AbonelikYonetim>('/abonelik/yonetim?rol=' + rol);
+}
+
+/** Aboneliği iptal et — iptalTarih SUNUCUDAN (yenileme tarihinde sona erer; iptal RED değil → coral).
+ *  live: POST /abonelik/iptal. mock: server-sim (yenilemeTarih'i iptal-bitiş olarak döner). */
+export async function postAbonelikIptal(): Promise<{ durum: 'iptal'; iptalTarih: string }> {
+  if (cfg.mode === 'mock') {
+    const y = (await mock()).abonelikYonetim;
+    return { durum: 'iptal', iptalTarih: y.yenilemeTarih };
+  }
+  const o = asRec(unwrapData(await live<unknown>('/abonelik/iptal', { method: 'POST', body: JSON.stringify({}) })));
+  return { durum: 'iptal', iptalTarih: nstr(pick(o, 'iptalTarih', 'cancel_date', 'ends_at')) };
+}
+
+/** İptali geri al — abonelik aktifleşir. live: POST /abonelik/geri-ac. mock: server-sim. */
+export async function postAbonelikGeriAc(): Promise<{ durum: 'aktif' }> {
+  if (cfg.mode === 'mock') return { durum: 'aktif' };
+  await live('/abonelik/geri-ac', { method: 'POST', body: JSON.stringify({}) });
+  return { durum: 'aktif' };
+}
+
+/** Fatura makbuzu bağlantısı — href SUNUCUDAN. mock: fatura kaydından. live: GET /abonelik/fatura/{id}/makbuz. */
+export async function getFaturaMakbuz(id: string): Promise<{ href: string }> {
+  if (cfg.mode === 'mock') {
+    const y = (await mock()).abonelikYonetim;
+    const f = y.faturalar.find((x) => x.id === id);
+    return { href: f?.makbuzHref ?? '/makbuz/' + id };
+  }
+  const o = asRec(unwrapData(await live<unknown>('/abonelik/fatura/' + encodeURIComponent(id) + '/makbuz')));
+  return { href: nstr(pick(o, 'href', 'url', 'makbuzHref')) || '/makbuz/' + id };
 }

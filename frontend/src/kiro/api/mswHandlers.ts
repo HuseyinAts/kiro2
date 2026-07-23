@@ -207,6 +207,43 @@ export const kiroHandlers = [
 
   // Çevrimdışı — senkron durumu (son eşitleme + kuyruk + paketler).
   http.get('*/offline/durum', () => HttpResponse.json(D.cevrimdisi)),
+
+  // --- SPRINT10-B · Grup 8 (billing infra) uçları (SAF-MOCK; gerçek PSP yok) ---
+  // Abonelik + Plan Yönetimi (rol query; öğrenci fiyat ekranda GİZLİ — sözleşme rol'ü döner).
+  http.get('*/billing/abonelik', ({ request }) => {
+    const rol = new URL(request.url).searchParams.get('rol') === 'ogrenci' ? 'ogrenci' : 'veli';
+    return HttpResponse.json({ ...D.abonelik, rol, childFirst: rol === 'ogrenci' });
+  }),
+  http.get('*/abonelik/yonetim', ({ request }) => {
+    const rol = new URL(request.url).searchParams.get('rol') === 'ogrenci' ? 'ogrenci' : 'veli';
+    return HttpResponse.json({ ...D.abonelikYonetim, rol });
+  }),
+  // Ödeme — özet + deneme-başlat (intentId) + 3DS sonucu (timer-sim → onaylandi).
+  http.get('*/odeme/ozet', ({ request }) => {
+    const u = new URL(request.url).searchParams;
+    const tier = u.get('tier') === 'free' ? 'free' : 'premium';
+    const fatura = u.get('fatura') === 'yillik' ? 'yillik' : 'aylik';
+    const plan = D.abonelik.planlar.find((p) => p.tier === tier) ?? D.abonelik.planlar[D.abonelik.planlar.length - 1];
+    const denemeGunu = D.abonelik.denemeGunu ?? 7;
+    return HttpResponse.json({
+      planAd: plan?.ad ?? 'Premium',
+      tier,
+      fatura,
+      tutar: fatura === 'yillik' ? (plan?.fiyatYil ?? 0) : (plan?.fiyatAy ?? 0),
+      ilkOdemeTarih: '30 Temmuz 2026',
+      denemeGunu,
+    });
+  }),
+  http.post('*/odeme/deneme-baslat', () => HttpResponse.json({ intentId: 'intent-msw' }, { status: 201 })),
+  http.get('*/odeme/3ds/:id', () => HttpResponse.json({ durum: 'onaylandi' })),
+  // Abonelik iptal / geri-aç / fatura makbuzu (server-sim; iptal RED değil → coral METİN).
+  http.post('*/abonelik/iptal', () => HttpResponse.json({ durum: 'iptal', iptalTarih: D.abonelikYonetim.yenilemeTarih })),
+  http.post('*/abonelik/geri-ac', () => HttpResponse.json({ durum: 'aktif' })),
+  http.get('*/abonelik/fatura/:id/makbuz', ({ params }) => {
+    const id = params.id as string;
+    const f = D.abonelikYonetim.faturalar.find((x) => x.id === id);
+    return HttpResponse.json({ href: f?.makbuzHref ?? '/makbuz/' + id });
+  }),
 ];
 
 export default kiroHandlers;

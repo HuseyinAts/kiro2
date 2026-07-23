@@ -213,6 +213,20 @@ Sonraki: **S10-B billing zinciri** (Abonelik · Ödeme · Plan Yönetimi) → S1
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT10-B Durumu (2026-07-23 · GRUP 8 billing zinciri, 6/7)
+
+**3/3 ekran ✅** — Abonelik · Ödeme(+3DS mock) · Plan Yönetimi + paylaşılan VeliYonlendirmeKarti (rapor: `docs/audits/2026-07-23_sprint10b-billing.md`).
+- **Tema:** 3'ü de **paper**. Kullanıcı kararları uygulandı: PSP saf-mock (3DS timer-sim, kart PCI UI-only) · öğrenci fiyat gizli→VeliYonlendirmeKarti (Abonelik+Plan+Ödeme guard) · `AbonelikPlan`/`AbonelikYonetim` ayrı ad · fiyat `veliDashboard.premium`+`roi` hizalı.
+- **Infra (additive):** types +11 · api-client +8 metod · msw +8 route · kiro-data +2 anahtar + `screens/billing/VeliYonlendirmeKarti.tsx` (KVKK).
+- **Ödeme composite:** 3-fazlı state machine (form→3ds→tamam); banka-decline amber; spinner RM-guard + bespoke stepper (role=list/aria-current).
+- **Adversarial (23 ajan, 4 boyut):** 16 doğrulandı / 13 unique / 3 phantom. major (Abonelik `ink.faded2` AA→muted; Ödeme kart-input odak WCAG 2.4.7 + decline role=alert 4.1.3) + nit (CTA veli-kopya, öğrenci guard/MarkaBar KVKK, geri-aç sunucu-otorite refetch). Phantom: getAbonelik öğrenci-payload strip + 3DS re-poll = Faz 4.
+- **Kapı:** kanon **0** · tsc **0** · vitest **61 dosya / 383 test PASS** · **breakpoint 0 FAIL / 455** · axe temiz.
+
+**İlerleme: 37/42 ekran + QuestionCard + WeeklyActivityBars + VeliYonlendirmeKarti. Grup 8 kısmi (6/7).**
+Sonraki: **S10-C Ayarlar** (composite + yeni `ui/Switch`; KullaniciAyar tek-kaynak + tam davranış) → Grup 8 TAMAM.
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -290,12 +304,12 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 
 Ödev Atama ↔ Ödevlerim tek döngü olarak test edildi: ☐
 
-## 8 · İş & dayanıklılık (7) — kısmi 3/7 (SPRINT10-A, 2026-07-23)
+## 8 · İş & dayanıklılık (7) — kısmi 6/7 (SPRINT10-A+B, 2026-07-23)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| Abonelik (?rol=veli) | KIRO2 Abonelik.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Ödeme (+3DS bekleme durumu) | KIRO2 Odeme.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Plan Yönetimi (premium) | KIRO2 Plan Yonetimi.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Abonelik (?rol=veli) | KIRO2 Abonelik.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Ödeme (+3DS bekleme durumu) | KIRO2 Odeme.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Plan Yönetimi (premium) | KIRO2 Plan Yonetimi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Ayarlar | KIRO2 Ayarlar.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Bildirim Merkezi | KIRO2 Bildirim Merkezi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Alan Kütüphanesi (ünite drill) | KIRO2 Alan Kutuphanesi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |

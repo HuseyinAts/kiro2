@@ -793,6 +793,99 @@ export interface AlanKutuphaneData {
   dersler: AlanKutuphaneDers[]; // seninKey dersleri (live: alan filtreli)
 }
 
+// ============================================================================
+// SPRINT10-B · Grup 8 (billing infra) — Abonelik · Ödeme (3DS sim) · Plan Yönetimi
+// Şekiller api-client sözleşmesiyle birebir. Ödeme SAF-MOCK (gerçek iyzico/PayTR/
+// Stripe YOK); kart alanları PCI: UI-only, gerçek backend'e GİTMEZ; 3DS = timer-sim.
+// SUNUCU-OTORİTE: fiyat/tier/durum/3DS-sonucu/fatura SUNUCUDA belirlenir — istemci
+// (mock'ta bile) bunları ÜRETMEZ. ÖĞRENCİ FİYAT GİZLİ: rol=ogrenci ekranı fiyat/
+// plan-grid/ödeme göstermez → paylaşılan VeliYonlendirmeKarti çizer (KVKK). Fiyat/
+// ROI modeli veliDashboard.premium{fiyatAy,indirimYuzde,maddeler}+roi ile HİZALIDIR.
+// ============================================================================
+
+/** Abonelik kademesi — sunucu belirler (istemci tier ÜRETMEZ) */
+export type PlanTier = 'free' | 'premium';
+/** Fatura dönemi — aylık ya da yıllık (yıllık = indirimli) */
+export type FaturaDonem = 'aylik' | 'yillik';
+
+/** Tek abonelik planı (fiyat sunucudan; yıllık indirimYuzde veliDashboard.premium ile hizalı) */
+export interface AbonelikPlan {
+  tier: PlanTier;
+  ad: string;
+  fiyatAy: number;
+  fiyatYil: number;
+  indirimYuzde?: number;
+  maddeler: string[];
+  oneCikan?: boolean;
+}
+
+/** Abonelik ekranı verisi (rol'e göre; öğrenci ekranı planları GÖSTERMEZ → VeliYonlendirmeKarti) */
+export interface AbonelikData {
+  rol: 'ogrenci' | 'veli';
+  mevcutTier: PlanTier;
+  denemeGunu?: number;
+  bankSize?: number;
+  motorlar?: string[];
+  planlar: AbonelikPlan[];
+  /** ROI kanıt bloğu (veli satın-alma yüzeyi; veliDashboard.roi ile tutarlı — string display) */
+  kanit?: { netArtisi: string; planUyum: string; seri: string };
+  /** true → öğrenci bağlamı: fiyat GİZLİ, veli yönlendirmesi göster (sunucu türetir) */
+  childFirst?: boolean;
+}
+
+/** Ödeme akışı fazı — form → 3DS (timer-sim) → tamam */
+export type OdemeFaz = 'form' | '3ds' | 'tamam';
+
+/** Ödeme özeti (tutar/ilkÖdemeTarih SUNUCUDAN; istemci fiyat hesaplamaz) */
+export interface OdemeOzeti {
+  planAd: string;
+  tier: PlanTier;
+  fatura: FaturaDonem;
+  tutar: number;
+  ilkOdemeTarih: string;
+  denemeGunu: number;
+}
+
+/** Kart formu — PCI: UI-only, gerçek backend'e GİTMEZ (3DS = sunucu-otorite timer-sim) */
+export interface KartFormState {
+  ad: string;
+  numara: string;
+  sonKullanma: string;
+  cvv: string;
+}
+
+/** 3DS doğrulama durumu — SUNUCUDAN (istemci sonuç ÜRETMEZ; getOdeme3dsSonuc döner) */
+export type ThreeDSDurum = 'bekliyor' | 'onaylandi' | 'reddedildi';
+
+/** Kayıtlı ödeme yöntemi (yalnız son4 taşınır — PCI) */
+export interface OdemeYontem {
+  tur: string;
+  son4: string;
+  sonKullanma: string;
+}
+
+/** Fatura/makbuz satırı (durum sunucudan; makbuz href getFaturaMakbuz'dan) */
+export interface Fatura {
+  id: string;
+  tarih: string;
+  tutar: number;
+  durum: 'odendi' | 'bekliyor';
+  makbuzHref?: string;
+}
+
+/** Plan Yönetimi ekranı verisi (durum/plan/fatura/yenileme SUNUCUDAN; iptal RED değil → coral) */
+export interface AbonelikYonetim {
+  rol: 'ogrenci' | 'veli';
+  durum: 'aktif' | 'deneme' | 'iptal';
+  plan: AbonelikPlan;
+  fatura: FaturaDonem;
+  yenilemeTarih: string;
+  denemeBitis?: string;
+  iptalTarih?: string;
+  odemeYontem?: OdemeYontem;
+  faturalar: Fatura[];
+}
+
 // ---------- Canlı "bugün" yardımcıları ----------
 
 export interface BugunBilgi {
@@ -862,4 +955,7 @@ export interface KiroData extends KiroHelpers {
   bildirimler: BildirimYanit;
   alanKutuphane: AlanKutuphaneData;
   cevrimdisi: SyncStatus;
+  // --- SPRINT10-B · Grup 8 (billing infra) mock anahtarları ---
+  abonelik: AbonelikData;
+  abonelikYonetim: AbonelikYonetim;
 }
