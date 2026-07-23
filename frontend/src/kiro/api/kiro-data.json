@@ -2909,5 +2909,25 @@
         "makbuzHref": "/makbuz/fat-2026-07"
       }
     ]
+  },
+  "sohbet": {
+    "id": "oturum-1",
+    "baslik": "AI Sohbet",
+    "mesajlar": [
+      {
+        "id": "ai-acilis",
+        "rol": "ai",
+        "metin": "Selam! Ben senin çalışma arkadaşınım. Bugün hangi konuya birlikte bakalım? Takıldığın bir soru varsa olduğu gibi yaz; acele yok, adım adım ilerleriz."
+      }
+    ]
+  },
+  "sokratik": {
+    "acilis": "Güzel soru — cevabı hemen söylemek yerine birlikte keşfedelim, böylece sınavda da kendin çözebilirsin.",
+    "adimlar": [
+      "Sence soruda sana verilen bilgiler neler; önce onları bir yazalım mı?",
+      "Peki bulman istenen şey tam olarak ne?",
+      "Bu iki bilgiyi bağlayan hangi kuralı hatırlıyorsun?",
+      "İlk adımı sen dener misin; nereden başlarsın?"
+    ]
   }
 }

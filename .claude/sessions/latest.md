@@ -1,33 +1,33 @@
-## Session Handoff — 2026-07-23 (SPRINT10-C · GRUP 8 TAMAM 7/7)
+## Session Handoff — 2026-07-23 (SPRINT11 · GRUP 9 TAMAM · 41/42)
 **Branch:** feature/self-evolution-optimization (origin'in önünde — push YOK)
-**Son commit:** (SPRINT10-C commit — bkz. git log; zincir 296d74d7c→7f08a8e2d[S10-A]→8af4e31ec[S10-B]→[S10-C])
+**Son commit:** (SPRINT11 commit — bkz. git log; zincir 296d74d7c→7f08a8e2d[S10-A]→8af4e31ec[S10-B]→11f3eca1e[S10-C]→[S11])
 
 ### Yapılanlar (Faz 3 tasarım-portu → frontend/src/kiro/)
-- **Grup 8 (İş & dayanıklılık) TAMAM 7/7.** S10-A (Bildirim·Alan·Çevrimdışı) + S10-B billing (Abonelik·Ödeme·Plan) + S10-C (Ayarlar + davranış wiring). İlerleme **38/42 ekran + QuestionCard + WeeklyActivityBars + VeliYonlendirmeKarti + ui/Switch + ayarStore**.
-- **S10-C rapor:** `docs/audits/2026-07-23_sprint10c-ayarlar.md`. Durum: `design/PORT_DURUM.md`.
-- **Yeni altyapı:** `ui/Switch` (role=switch, KAPALI track görünür sınır #8F8577 3.63:1, ariaDescribedby) · `kiro/lib/ayarStore.ts` (Zustand persist, resetAyar test izolasyonu) · `theme.tsx` calmMode kök `.k-calm` + `tokens.css` `.k-calm` bloğu.
+- **Grup 9 (AI & Çözüm) TAMAM 3/3.** AI Sohbet · Sokratik AI · İnteraktif Çözüm (Çözüm Paylaş MVP-dışı). İlerleme **41/42 ekran** (kalan yalnız İlk Hafta + auth kalıntı).
+- **S11 rapor:** `docs/audits/2026-07-23_sprint11-grup9-aicozum.md`. Keşif: `2026-07-23_sprint11-grup9-kesif.md`. Durum: `design/PORT_DURUM.md`.
+- **Infra:** types +8 (Sohbet*) · api-client +3 (`getSohbet`·`postSohbetMesaj`·**`streamSohbet` çift-kollu**) · msw +2 · kiro-data +2 (sohbet + sokratik scripted). `ui/ChatBubble` REUSE (ilk gerçek chat tüketicisi).
 
-### Kullanıcı Kararı uygulandı (S10-C — "Tek kaynak + TAM davranış")
-- `KullaniciAyar` (dailyGoal·5 bildirim·calmMode·hideRanking) tek-kaynak. **calmMode→reduced-motion GLOBAL** (JS-motion `useReducedMotion` + CSS-ambient `.k-calm`); **hideRanking→Lig** çift-yönlü tek-kaynak; **calmMode→Arkadaş Serisi dürtme-sustur**. Faz3 localStorage persist; Faz4 per-user `/preferences`.
+### Kullanıcı Kararları uygulandı (S11)
+- **Streaming = ÇİFT-KOLLU:** mock setTimeout token-sim + gerçek `/enhanced-chat/stream` fetch+ReadableStream (Düello deseni). Sokratik = `teaching_mode='socratic'` (SOCRATIC_SYSTEM_PROMPT enhanced_chat.py:207 doğrulandı; bilge_alp değil).
+- **İnteraktif Çözüm = DC birebir istemci manipülatif** (a/b/c kaydırıcı → canlı SVG parabol + içgörü; keşif-öğrenme). Backend/ChatBubble yok; istemci-matematik meşru (deterministik render).
 
 ### Fail Eden Testler
-- YOK. vitest **65 dosya / 423 test PASS** · kanon **0 ihlal** (14 uyarı pre-existing) · tsc **0** · **breakpoint 0 FAIL / 462** · axe temiz.
+- YOK. vitest **69 dosya / 472 test PASS** · kanon **0 ihlal** (15 uyarı pre-existing) · tsc **0** · **breakpoint 0 FAIL / 483** · axe temiz.
 
-### Adversarial (S10-C, 13 ajan)
-- 8 doğrulandı / 1 phantom (0 P0/major). **faded2 AA tuzağı YOK** (S10-A Alan + S10-B Abonelik'te çıkmıştı — ders alındı). Fix: DC Gizlilik&veri(KVKK)/Şifre-değiştir/Vurgu-rengi satırları geri; Switch KAPALI track 1.44:1→3.63:1; calmMode gerçek-global (.k-calm); box-sizing; aria-describedby; Lig override no-op.
+### Adversarial (S11, 19 ajan)
+- 13 doğrulandı / 10 unique / 2 phantom (0 P0). major: Sokratik giriş `outline:none` odak-halkasını eziyor (WCAG 2.4.7)→`.k-sok-field`. minör: Sokratik ≤1023 "Çözümü göster" fallback + sayaç/adım hizası; AI Sohbet onConnected + SR "yazıyor"; İnteraktif eyebrow AA. nit: ChatBubble uzun-token wrap. Breakpoint rebuild: Sokratik giriş input hit 20→44 (5 FAIL→0).
 
 ### Engelleyiciler / Operatör
-- **Push YAPILMADI** (kullanıcı "push yok" — 4 local commit birikti: 296d74d7c→7f08a8e2d→8af4e31ec→[S10-C]).
-- storybook-static/ (gitignore) commit'e girmemeli. Breakpoint gate build-storybook ~10dk+ (storybook büyüdü).
+- **Push YAPILMADI** (kullanıcı "push yok" — 5 local commit: 296d74d7c→7f08a8e2d→8af4e31ec→11f3eca1e→[S11]).
+- storybook-static/ (gitignore) commit'e girmemeli. Breakpoint rebuild ~10dk+ (storybook 483 kontrol).
 
 ### Sonraki Adımlar (maks 5)
-1. **Grup 9 — AI & Çözüm (3 ekran):** AI Sohbet · Sokratik AI (mock→Faz4 proxy `enhanced_chat.py`, bilge_alp DEĞİL) · İnteraktif Çözüm. (Çözüm Paylaş MVP-dışı.) Aynı pipeline.
-2. **İlk Hafta** (Grup 1 auth kalıntı) + **route guard + rol yönlendirmesi** (öğrenci/veli/öğretmen) → Faz 3 kapanış (42/42).
-3. **Ödev Atama ↔ Ödevlerim tam döngü E2E** (ortak mock-store).
-4. **Faz 3 kapanış:** push (onayla) + full frontend derleme (`tsc` proje-geneli + `vite build`, kiro/ dışı entegrasyon) + opsiyonel BackstopJS pixel-ref.
-5. **Faz 4 backend wiring:** billing (öğrenci-strip+PSP), Çevrimdışı `/offline/*`, Bildirim birleşik+mark-read, Ayarlar `/preferences`, Alan getCurriculum path drift.
+1. **Auth kalıntı → Faz 3 KAPANIŞ (42/42):** İlk Hafta ekranı (KIRO Ilk Hafta.dc.html) + **route guard + rol yönlendirmesi** (öğrenci/veli/öğretmen giriş→doğru panel). Keşif+build+adversarial+gate.
+2. **Ödev Atama ↔ Ödevlerim tam döngü E2E** (ortak mock-store; contract hizalı).
+3. **Faz 3 kapanış:** push (onayla) + full frontend derleme (`tsc` proje-geneli + `vite build`, kiro/ dışı entegrasyon).
+4. **Faz 4 backend wiring:** AI Sohbet/Sokratik canlı SSE (enhanced_chat.py hazır); billing (öğrenci-strip+PSP), Çevrimdışı `/offline/*`, Bildirim birleşik+mark-read, Ayarlar `/preferences`.
 
 ### Kararlar (gelecek session tekrar tartışmasın)
-- Grup 8 tema=**paper** (7/7 DC-kanıtlı). **Her yeni ekranda faded/faded2 okunur-metin taraması yap** (3 sprint üst üste çıktı → ink.muted). risk=amber; pozitif metrikte coral. İptal düğmesi coral-METİN (kırmızı değil). KVKK: öğrenci fiyat/plan/tier-adı gösterme (screen-gate; Faz4 sunucu-strip). PCI: kart UI-only.
-- calmMode global mekanizma: `theme.tsx` `.k-calm` kök-sınıf + `tokens.css` bloğu (JS-motion useReducedMotion + CSS-ambient). Yeni motion eklerken ikisi de calmMode'a saygı duyar.
-- Metod/tip collision → yeni-ad; Plan*/PlanWeek=çalışma planı, dokunma. Kök box-sizing:border-box; hit-target ≥44; UI-bileşen kontrastı ≥3:1; breakpoint fail→deterministik parent-zincir teşhisi.
+- **Her yeni ekranda faded/faded2 okunur-metin taraması + inline `outline:none` odak-halkası taraması** (S11'de tekrar çıktı → `.k-*:focus-visible` deseni). **Yeni interaktif giriş/input → minHeight ≥44** (breakpoint hit-target; S11 Sokratik input 20→44).
+- Streaming çift-kollu (mock setTimeout + live fetch-stream); onConnected ile server session_id benimse (sunucu-otorite). İstemci-manipülatif (İnteraktif) deterministik-matematik meşru — cevap-uydurma değil.
+- Grup 8+9 tema=paper. risk=amber; iptal=coral-metin. Kök box-sizing:border-box; hit-target ≥44; UI-kontrast ≥3:1; breakpoint fail→deterministik parent-zincir/hit teşhisi.

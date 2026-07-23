@@ -40,6 +40,24 @@ describe('ChatBubble', () => {
     expect(screen.queryByText(/eksik/i)).not.toBeInTheDocument();
   });
 
+  it('uzun-token satır-kaydırma güvencesi (me + ai balon)', () => {
+    const longToken =
+      'https://ornek.com/cok/uzun/tek-parca-token-satiri-tasirmasin-diye-kaydirma-guvencesi-gerekli-1234567890';
+    const { rerender } = paper(<ChatBubble role="me">{longToken}</ChatBubble>);
+    const meText = screen.getByText(longToken);
+    expect(meText.style.overflowWrap).toBe('anywhere');
+    expect(meText.style.wordBreak).toBe('break-word');
+
+    rerender(
+      <KiroThemeProvider theme="paper">
+        <ChatBubble role="ai">{longToken}</ChatBubble>
+      </KiroThemeProvider>
+    );
+    const aiText = screen.getByText(longToken);
+    expect(aiText.style.overflowWrap).toBe('anywhere');
+    expect(aiText.style.wordBreak).toBe('break-word');
+  });
+
   it('axe: AI + kullanıcı balonları ihlal yok', async () => {
     const { container } = paper(
       <>

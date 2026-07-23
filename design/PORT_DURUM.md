@@ -241,6 +241,19 @@ Sonraki: **Grup 9 AI & Çözüm (3)** + Auth kalıntı (İlk Hafta + route guard
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT11 Durumu (2026-07-23 · GRUP 9 TAMAM 3/3)
+
+**3/3 ekran ✅** — AI Sohbet · Sokratik AI · İnteraktif Çözüm (rapor: `docs/audits/2026-07-23_sprint11-grup9-aicozum.md`; keşif: `2026-07-23_sprint11-grup9-kesif.md`). Çözüm Paylaş MVP-dışı.
+- **Tema:** 3'ü de **paper**. Kararlar: streaming **çift-kollu** (mock sim + gerçek `/enhanced-chat/stream` SSE; Sokratik teaching_mode=socratic, SOCRATIC_SYSTEM_PROMPT:207 doğrulandı); **İnteraktif Çözüm = DC birebir istemci manipülatif** (a/b/c kaydırıcı + canlı SVG parabol, meşru istemci-matematik).
+- **Infra:** types +8 · api-client +3 (`streamSohbet` çift-kollu) · msw +2 · kiro-data +2 (sohbet + sokratik scripted). `ui/ChatBubble` REUSE.
+- **Adversarial (19 ajan):** 13 doğrulandı / 10 unique / 2 phantom (0 P0). major: Sokratik giriş `outline:none` odak-halkasını eziyor (WCAG 2.4.7)→`.k-sok-field`. minör: Sokratik ≤1023 "Çözümü göster" fallback + sayaç/adım hizası; AI Sohbet onConnected (canlı session_id) + SR "yazıyor"; İnteraktif eyebrow AA. nit: ChatBubble uzun-token wrap. Breakpoint: Sokratik giriş input hit 20→44 (5 FAIL→0).
+- **Kapı:** kanon **0** · tsc **0** · vitest **69 dosya / 472 test PASS** · **breakpoint 0 FAIL / 483** · axe temiz.
+
+**İlerleme: 41/42 ekran + QuestionCard + WeeklyActivityBars + VeliYonlendirmeKarti + ui/Switch + ayarStore. Grup 9 (AI & Çözüm) TAMAM (3/3).**
+Sonraki: **Auth kalıntı** — İlk Hafta + route guard/rol yönlendirmesi → **Faz 3 KAPANIŞ (42/42)**.
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -329,12 +342,12 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Alan Kütüphanesi (ünite drill) | KIRO2 Alan Kutuphanesi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Çevrimdışı | KIRO2 Cevrimdisi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
-## 9 · AI & çözüm (4)
+## 9 · AI & çözüm (4) — ✅ 3/3 port TAMAM (SPRINT11, 2026-07-23; Çözüm Paylaş MVP-dışı)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
-| AI Sohbet | KIRO2 AI Sohbet.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Sokratik AI (mock → Faz 4 proxy) | KIRO2 Sokratik AI.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| İnteraktif Çözüm | KIRO2 Interaktif Cozum.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| AI Sohbet | KIRO2 AI Sohbet.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Sokratik AI (mock → Faz 4 proxy) | KIRO2 Sokratik AI.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| İnteraktif Çözüm | KIRO2 Interaktif Cozum.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Çözüm Paylaş — **MVP DIŞI** (karar 2026-07-04; pilot kararı gelirse açılır) | KIRO Cozum Paylas.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 
 ---

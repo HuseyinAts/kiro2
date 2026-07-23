@@ -886,6 +886,60 @@ export interface AbonelikYonetim {
   faturalar: Fatura[];
 }
 
+// ============================================================================
+// SPRINT11 · AI Sohbet + Sokratik AI (çift-kollu streaming)
+// Şekiller api-client sözleşmesiyle birebir. SUNUCU-OTORİTE: AI yanıtı/çözümü
+// SUNUCUDAN gelir (streamSohbet); istemci CEVAP UYDURMAZ. Sokratik ton cevabı
+// VERMEZ — yönlendirir. İnteraktif Çözüm bu sözleşmeyi KULLANMAZ (o manipülatif
+// istemci-matematik; deterministik render, cevap-uydurma değil).
+// ============================================================================
+
+/** Sohbet balonu rolü — 'ai' (asistan) · 'ben' (öğrenci; SEN dili) */
+export type SohbetRol = 'ai' | 'ben';
+
+/** Tek sohbet mesajı — ChatBubble props'una eşlenir (rol→role, pending→pending, tag→tag) */
+export interface SohbetMesaj {
+  id: string;
+  rol: SohbetRol;
+  metin: string;
+  /** AI balonu altı küçük etiket (örn. 'Sokratik') — opsiyonel */
+  tag?: string;
+  /** "düşünüyor…" token akışı sürerken soluk balon (stream pending) */
+  pending?: boolean;
+}
+
+/** Sohbet oturumu — açılış mesajları + oturum kimliği (sunucudan) */
+export interface SohbetOturum {
+  id: string;
+  baslik?: string;
+  mesajlar: SohbetMesaj[];
+}
+
+/** Öğretim kipi — direct (yöntemi doğrudan anlatır) · socratic (cevabı vermez, yönlendirir) */
+export type SohbetTeachingMode = 'direct' | 'socratic';
+
+/** streamSohbet/postSohbetMesaj argümanları — teaching → sunucuda teaching_mode gövde alanı */
+export interface SohbetStreamArgs {
+  oturumId?: string;
+  metin: string;
+  teaching?: SohbetTeachingMode;
+}
+
+/** Çift-kollu akış geri çağrıları — onConnected(session_id) → onToken(t)×N → onFinished(mesaj) */
+export interface SohbetStreamHandlers {
+  onConnected?(oturumId: string): void;
+  onToken?(t: string): void;
+  onFinished?(mesaj: SohbetMesaj): void;
+  onError?(e: unknown): void;
+}
+
+/** kiro-data.sokratik mock anahtarı — mock LLM yerine senaryolu yönlendirici sorular
+ *  (cevabı VERMEZ; "Sence ilk adım ne olmalı?" gibi). SUNUCU-OTORİTE eşdeğeri. */
+export interface SokratikSenaryo {
+  acilis: string;
+  adimlar: string[];
+}
+
 // ---------- Canlı "bugün" yardımcıları ----------
 
 export interface BugunBilgi {
@@ -958,4 +1012,7 @@ export interface KiroData extends KiroHelpers {
   // --- SPRINT10-B · Grup 8 (billing infra) mock anahtarları ---
   abonelik: AbonelikData;
   abonelikYonetim: AbonelikYonetim;
+  // --- SPRINT11 · AI Sohbet + Sokratik AI mock anahtarları ---
+  sohbet: SohbetOturum;
+  sokratik: SokratikSenaryo;
 }

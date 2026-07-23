@@ -244,6 +244,22 @@ export const kiroHandlers = [
     const f = D.abonelikYonetim.faturalar.find((x) => x.id === id);
     return HttpResponse.json({ href: f?.makbuzHref ?? '/makbuz/' + id });
   }),
+
+  // --- SPRINT11 · AI Sohbet + Sokratik AI (non-stream uçları) ---
+  // Stream (/enhanced-chat/stream) MSW ile taklit EDİLMEZ — istemci-içi setTimeout server-sim
+  // (jsdom'da EventSource/ReadableStream yok); yalnız oturum + tek-atım mesaj uçları.
+  http.get('*/enhanced-chat/sessions', () =>
+    HttpResponse.json([{ id: D.sohbet.id, baslik: D.sohbet.baslik, mesajlar: D.sohbet.mesajlar }]),
+  ),
+  http.post('*/enhanced-chat/message', async ({ request }) => {
+    const b = (await request.json().catch(() => ({}))) as { teaching_mode?: string };
+    const socratic = b.teaching_mode === 'socratic';
+    const metin = socratic
+      ? [D.sokratik.acilis, ...D.sokratik.adimlar].join(' ')
+      : 'Tabii, birlikte bakalım. Önce soruda verilenleri ve neyi bulman istendiğini ayrı ayrı yazalım; '
+        + 'sonra uygun kuralı seçip adımları sırayla uygularız. Takıldığın adımı bana söyle, oradan devam edelim.';
+    return HttpResponse.json({ id: 'msg-msw', rol: 'ai', metin, ...(socratic ? { tag: 'Sokratik' } : {}) });
+  }),
 ];
 
 export default kiroHandlers;

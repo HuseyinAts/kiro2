@@ -32,6 +32,7 @@ import type {
   KonuAtom, AtamaOgrenci, AtamaForm,
   BildirimYanit, AlanKutuphaneData, SyncStatus,
   PlanTier, FaturaDonem, AbonelikData, OdemeOzeti, ThreeDSDurum, AbonelikYonetim,
+  SohbetRol, SohbetMesaj, SohbetOturum, SohbetTeachingMode, SohbetStreamArgs, SohbetStreamHandlers,
 } from '../types';
 
 // SPRINT8 · Grup 6 tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
@@ -69,6 +70,12 @@ export type {
   OdemeFaz, OdemeOzeti, KartFormState, ThreeDSDurum, OdemeYontem, Fatura, AbonelikYonetim,
 } from '../types';
 
+// SPRINT11 · AI Sohbet + Sokratik AI tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
+export type {
+  SohbetRol, SohbetMesaj, SohbetOturum, SohbetTeachingMode,
+  SohbetStreamArgs, SohbetStreamHandlers, SokratikSenaryo,
+} from '../types';
+
 // ---------------------------------------------------------------------------
 // Konfigürasyon
 // ---------------------------------------------------------------------------
@@ -94,7 +101,8 @@ export type MockData = Pick<KiroData,
   'veliDashboard' | 'ogretmenPanel' | 'ogrenciOzetleri' | 'siniflar' |
   'veliBaglama' | 'odevAtama' |
   'bildirimler' | 'alanKutuphane' | 'cevrimdisi' |
-  'abonelik' | 'abonelikYonetim'>;
+  'abonelik' | 'abonelikYonetim' |
+  'sohbet' | 'sokratik'>;
 
 let cfg: KiroApiConfig = { mode: 'mock' };
 let mockCache: MockData | null = null;
@@ -1541,4 +1549,178 @@ export async function getFaturaMakbuz(id: string): Promise<{ href: string }> {
   }
   const o = asRec(unwrapData(await live<unknown>('/abonelik/fatura/' + encodeURIComponent(id) + '/makbuz')));
   return { href: nstr(pick(o, 'href', 'url', 'makbuzHref')) || '/makbuz/' + id };
+}
+
+// ===========================================================================
+// SPRINT11 · AI Sohbet + Sokratik AI — çift-kollu streaming (duelStream deseni)
+// İki kollu: mock (jsdom/Storybook/ekran portu; EventSource/ReadableStream YOK →
+// setTimeout scripted token akışı) · live (POST /enhanced-chat/stream; fetch +
+// ReadableStream reader — EventSource GET-only olduğundan POST-SSE elle ayrıştırılır).
+// SUNUCU-OTORİTE: AI yanıtı/çözümü SUNUCUDAN gelir — mock katmanı bunun deterministik
+// server-sim eşdeğeridir; istemci CEVAP UYDURMAZ. Sokratik ton cevabı VERMEZ —
+// yönlendirir (kiro-data.sokratik senaryolu sorular). İnteraktif Çözüm bunu KULLANMAZ.
+// ===========================================================================
+
+/** Token akış gecikmesi (ms) — kısa/deterministik (fake-timer testinde runAllTimers). */
+const SOHBET_TOKEN_MS = 24;
+
+/** Sohbet mesajı snake→camel eşleyici (live; şekil belirsiz → esnek okuma). */
+function mapSohbetMesaj(v: unknown, i: number): SohbetMesaj {
+  const o = asRec(v);
+  const rolRaw = nstr(pick(o, 'rol', 'role', 'sender'));
+  const rol: SohbetRol = rolRaw === 'ben' || rolRaw === 'user' || rolRaw === 'student' ? 'ben' : 'ai';
+  const tag = pick(o, 'tag', 'label');
+  return {
+    id: nstr(pick(o, 'id', 'message_id')) || 'm-' + i,
+    rol,
+    metin: nstr(pick(o, 'metin', 'content', 'text', 'message')),
+    ...(tag != null ? { tag: nstr(tag) } : {}),
+  };
+}
+
+/** Sohbet server-sim yanıtı — mock LLM yerine senaryolu metin (istemci CEVAP UYDURMAZ;
+ *  bu mock katmanı sunucu-otorite yanıtın deterministik eşdeğeridir).
+ *  socratic: cevabı VERMEZ, yönlendirici sorular sorar (kiro-data.sokratik).
+ *  direct: yöntemi sakin dille doğrudan anlatır (somut sayısal sonuç uydurmaz — yöntem verir). */
+function sohbetScriptedYanit(d: MockData, teaching: SohbetTeachingMode): string {
+  if (teaching === 'socratic') {
+    const s = d.sokratik;
+    return [s.acilis, ...s.adimlar].join(' ');
+  }
+  return 'Tabii, birlikte bakalım. Önce soruda verilenleri ve neyi bulman istendiğini ayrı ayrı yazalım; '
+    + 'sonra uygun kuralı seçip adımları sırayla uygularız. Takıldığın adımı bana söyle, oradan devam edelim.';
+}
+
+/** Açılış oturumu. mock: kiro-data.sohbet (direct) / kiro-data.sokratik.acilis (socratic; SEN, kaygı-duyarlı).
+ *  live: GET /enhanced-chat/sessions → son oturum + mesajları (snake→camel). */
+export async function getSohbet(teaching: SohbetTeachingMode = 'direct'): Promise<SohbetOturum> {
+  if (cfg.mode === 'mock') {
+    const d = await mock();
+    if (teaching === 'socratic') {
+      return {
+        id: d.sohbet.id,
+        ...(d.sohbet.baslik != null ? { baslik: d.sohbet.baslik } : {}),
+        mesajlar: [{ id: 'sok-acilis', rol: 'ai', metin: d.sokratik.acilis, tag: 'Sokratik' }],
+      };
+    }
+    return d.sohbet;
+  }
+  const sessions = asArr(unwrapData(await live<unknown>('/enhanced-chat/sessions')));
+  const last = asRec(sessions[sessions.length - 1]);
+  const baslik = nstr(pick(last, 'baslik', 'title', 'name'));
+  const mesajlar = asArr(pick(last, 'mesajlar', 'messages', 'history')).map(mapSohbetMesaj);
+  return {
+    id: nstr(pick(last, 'id', 'session_id')) || 'oturum',
+    ...(baslik ? { baslik } : {}),
+    mesajlar,
+  };
+}
+
+/** Stream'siz fallback — tek atımda AI yanıtı. mock: server-sim senaryolu metin;
+ *  live: POST /enhanced-chat/message (teaching→teaching_mode gövde alanı). */
+export async function postSohbetMesaj(args: SohbetStreamArgs): Promise<SohbetMesaj> {
+  const teaching: SohbetTeachingMode = args.teaching ?? 'direct';
+  if (cfg.mode === 'mock') {
+    const d = await mock();
+    return {
+      id: 'msg-' + (args.oturumId ?? d.sohbet.id),
+      rol: 'ai',
+      metin: sohbetScriptedYanit(d, teaching),
+      ...(teaching === 'socratic' ? { tag: 'Sokratik' } : {}),
+    };
+  }
+  const o = asRec(unwrapData(await live<unknown>('/enhanced-chat/message', {
+    method: 'POST',
+    body: JSON.stringify({ session_id: args.oturumId, message: args.metin, teaching_mode: teaching }),
+  })));
+  return mapSohbetMesaj(o, 0);
+}
+
+/** Canlı sohbet akışı — ÇİFT-KOLLU (duelStream deseni). unsubscribe DÖNER.
+ *  mock: setTimeout scripted token akışı (onConnected → onToken×N → onFinished); jsdom'da
+ *   EventSource/ReadableStream YOK → mock kolu KULLANMAZ. Senkron seam: mockCache varsa
+ *   timer'lar SENKRON kurulur (test-deterministik; fake-timer runAllTimers ile sürer).
+ *  live: POST /enhanced-chat/stream — fetch + response.body ReadableStream reader; 'data: {content}'
+ *   → onToken, 'data: [DONE]' → onFinished, ilk event session_id → onConnected. AbortController ile
+ *   unsubscribe. teaching → teaching_mode gövde alanı. */
+export function streamSohbet(args: SohbetStreamArgs, h: SohbetStreamHandlers): () => void {
+  const teaching: SohbetTeachingMode = args.teaching ?? 'direct';
+
+  if (cfg.mode === 'mock') {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let cancelled = false;
+    const basla = (d: MockData): void => {
+      if (cancelled) return;
+      const oturumId = args.oturumId ?? d.sohbet.id;
+      const tam = sohbetScriptedYanit(d, teaching);
+      // Kelime + boşluk token'ları — join('') tam metni birebir yeniden kurar (reconstruction).
+      const tokenlar = tam.split(/(\s+)/).filter((t) => t.length > 0);
+      timers.push(setTimeout(() => { if (!cancelled) h.onConnected?.(oturumId); }, 0));
+      tokenlar.forEach((tok, i) => {
+        timers.push(setTimeout(() => { if (!cancelled) h.onToken?.(tok); }, (i + 1) * SOHBET_TOKEN_MS));
+      });
+      timers.push(setTimeout(() => {
+        if (cancelled) return;
+        h.onFinished?.({
+          id: 'msg-' + oturumId + '-' + tokenlar.length,
+          rol: 'ai',
+          metin: tam,
+          ...(teaching === 'socratic' ? { tag: 'Sokratik' } : {}),
+        });
+      }, (tokenlar.length + 1) * SOHBET_TOKEN_MS));
+    };
+    // mockCache SENKRON hazırsa hemen kur (test-deterministik seam); yoksa async yükle.
+    if (mockCache) basla(mockCache);
+    else void mock().then(basla).catch((e) => { if (!cancelled) h.onError?.(e); });
+    return () => { cancelled = true; timers.forEach((t) => clearTimeout(t)); };
+  }
+
+  // live — POST-SSE (EventSource GET-only): fetch + ReadableStream reader.
+  const controller = new AbortController();
+  let acc = '';
+  let connectedSent = false;
+  void (async () => {
+    const f = cfg.fetchImpl ?? fetch;
+    const headers: Record<string, string> = { 'Content-Type': 'application/json', Accept: 'text/event-stream' };
+    if (cfg.getToken) headers.Authorization = 'Bearer ' + (await cfg.getToken());
+    const res = await f(esBase() + '/enhanced-chat/stream', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ session_id: args.oturumId, message: args.metin, teaching_mode: teaching }),
+      signal: controller.signal,
+    });
+    if (!res.ok || !res.body) { h.onError?.(new KiroApiError(res.status, '/enhanced-chat/stream')); return; }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const parts = buf.split('\n');
+      buf = parts.pop() ?? '';
+      for (const line of parts) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('data:')) continue;
+        const payload = trimmed.slice(5).trim();
+        if (payload === '[DONE]') {
+          h.onFinished?.({
+            id: 'msg-live-' + acc.length,
+            rol: 'ai',
+            metin: acc,
+            ...(teaching === 'socratic' ? { tag: 'Sokratik' } : {}),
+          });
+          return;
+        }
+        let content = payload;
+        try {
+          const j = JSON.parse(payload) as Record<string, unknown>;
+          if (!connectedSent && typeof j.session_id === 'string') { h.onConnected?.(j.session_id); connectedSent = true; }
+          content = typeof j.content === 'string' ? j.content : '';
+        } catch { /* düz metin token (JSON değil) */ }
+        if (content) { acc += content; h.onToken?.(content); }
+      }
+    }
+  })().catch((e) => { if (!controller.signal.aborted) h.onError?.(e); });
+  return () => controller.abort();
 }

@@ -21,7 +21,7 @@ export function ChatBubble({ role, children, tag, tagBg = '#FFF3EE', tagFg = '#C
     return (
       <div style={{ alignSelf: 'flex-end', maxWidth: '78%', background: '#C2452B', color: '#fff',
         borderRadius: '14px 4px 14px 14px', padding: '12px 16px', fontFamily: font.sans,
-        fontSize: 14, lineHeight: 1.55, fontWeight: 500 }}>
+        fontSize: 14, lineHeight: 1.55, fontWeight: 500, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
         {children}
       </div>
     );
@@ -35,10 +35,10 @@ export function ChatBubble({ role, children, tag, tagBg = '#FFF3EE', tagFg = '#C
           <path d="M5 12h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1ZM12 8V4M8 4h8" />
         </svg>
       </div>
-      <div>
+      <div style={{ minWidth: 0 }}>
         <div style={{ background: '#fff', border: '1px solid #ECE6DD', borderRadius: '4px 14px 14px 14px',
           padding: '13px 16px', fontFamily: font.sans, fontSize: 14, color: '#2A2433',
-          lineHeight: 1.6, opacity: pending ? 0.65 : 1 }}>
+          lineHeight: 1.6, opacity: pending ? 0.65 : 1, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
           {children}
         </div>
         {tag ? (
