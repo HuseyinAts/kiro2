@@ -705,6 +705,94 @@ export interface OdevAtamaData {
   roster: AtamaOgrenci[];
 }
 
+// ============================================================================
+// SPRINT10-A · Grup 8 (paylaşılan infra) — Bildirim Merkezi · Alan Kütüphanesi · Çevrimdışı
+// Şekiller api-client sözleşmesiyle birebir; üç ekran PAPER (öğrenci → SEN).
+// SUNUCU-OTORİTE: okunmamış sayısı, senkron kuyruğu ve önbellek paketleri
+// SUNUCUDA belirlenir; istemci (mock'ta bile) veriyi kiro-data'dan OKUR — okunmamış
+// sayacı bile sunucudan gelir (ekran filtre-say YAPMAZ, bağlantı durumu hariç).
+// ============================================================================
+
+// ---------- Bildirim Merkezi (GET /notifications) ----------
+
+/** Bildirim tonu — ekranda nokta/şerit rengine eşlenir (risk = amber, alarm-kırmızısı YOK) */
+export type BildirimTon = 'amber' | 'blue' | 'coral' | 'violet' | 'teal' | 'gold';
+
+export interface Bildirim {
+  id: string;
+  ton: BildirimTon;
+  baslik: string;
+  aciklama: string;
+  zaman: string;   // '2 saat önce' vb. (sunucu; istemci relatif hesaplamaz)
+  okundu: boolean;
+  href?: string;   // tıklanınca gidilecek rota (opsiyonel)
+}
+
+/** Zaman-kümelenmiş bildirim grubu ('Bugün' / 'Bu hafta') */
+export interface BildirimGrup {
+  baslik: string;
+  items: Bildirim[];
+}
+
+export interface BildirimYanit {
+  gruplar: BildirimGrup[];
+  okunmamis: number; // SUNUCU sayar (istemci filtre-say YAPMAZ)
+}
+
+// ---------- Çevrimdışı / Senkron (GET /offline/durum) ----------
+
+/** Bağlanabilirlik durumu — ekran YEREL yönetir (network event); sunucu şekli değil */
+export type ConnectivityState = 'cevrimdisi' | 'yeniden_baglaniyor' | 'baglandi';
+
+/** Önbelleğe alınmış çalışma paketi (çevrimdışı erişilebilir içerik) */
+export interface CachedPack {
+  id: string;
+  baslik: string;
+  aciklama: string;
+  tur: string;    // 'plan' | 'tekrar' | 'soru' | 'video' vb.
+  hazir: boolean; // indirme tamam mı (sunucu/servis-worker türetir)
+}
+
+/** Senkron kuyruğundaki bekleyen öğe (çevrimdışıyken biriken yanıtlar) */
+export interface SyncQueueItem {
+  id: string;
+  baslik: string;
+  durum: 'bekliyor' | 'esitleniyor';
+}
+
+export interface SyncStatus {
+  sonEsitleme: string;      // tam göreli etiket, ör. 'bugün 14:32'/'dün 09:10' (sunucu; istemci saat/gün türetmez)
+  kuyruk: SyncQueueItem[];
+  paketler: CachedPack[];
+}
+
+// ---------- Alan Kütüphanesi (GET /alan-kutuphane) ----------
+// MEVCUT Alan/AlanKey/DersKatalogEntry/KatalogUnite tiplerini REUSE eder —
+// yeni Alan/AlanKey TANIMLANMAZ. Composite VM'ler ekran içi gezinme/filtre içindir.
+
+/** Alan kütüphanesi ders kartı — konu/soru sayıları + ünite ağacı (sunucu birleşik) */
+export interface AlanKutuphaneDers {
+  ders: string;      // KatalogKey ('mat' vb.) — string olarak taşınır
+  ad: string;        // görünen ad ('Matematik')
+  alan: AlanKey;     // hangi alana ait (say/ea/soz)
+  konuToplam: number;
+  soruSayisi: number; // 0 → "örnek soru havuzda" şeridi GİZLİ (koşullu)
+  uniteler: { ad: string; konular: string[] }[];
+}
+
+/** Alan özet kartı (gezinilebilir 3 alan) */
+export interface AlanKutuphaneAlan {
+  key: AlanKey;
+  ad: string;
+  dersSayisi: number;
+}
+
+export interface AlanKutuphaneData {
+  seninKey: AlanKey;            // personanın alanı (say/ea/soz)
+  alanlar: AlanKutuphaneAlan[]; // 3 alan (say/ea/soz)
+  dersler: AlanKutuphaneDers[]; // seninKey dersleri (live: alan filtreli)
+}
+
 // ---------- Canlı "bugün" yardımcıları ----------
 
 export interface BugunBilgi {
@@ -770,4 +858,8 @@ export interface KiroData extends KiroHelpers {
   // --- SPRINT9-B · Grup 7-B mock anahtarları ---
   veliBaglama: VeliBaglamaData;
   odevAtama: OdevAtamaData;
+  // --- SPRINT10-A · Grup 8 (paylaşılan infra) mock anahtarları ---
+  bildirimler: BildirimYanit;
+  alanKutuphane: AlanKutuphaneData;
+  cevrimdisi: SyncStatus;
 }

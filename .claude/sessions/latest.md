@@ -1,34 +1,36 @@
-## Session Handoff — 2026-07-23 (SPRINT9-B · GRUP 7 TAMAM 6/6)
+## Session Handoff — 2026-07-23 (SPRINT10-A · GRUP 8 kısmi 3/7)
 **Branch:** feature/self-evolution-optimization (origin'in önünde — push YOK)
-**Son commit:** (SPRINT9-B commit — bkz. git log; öncesi e40baefa3 = SPRINT9-A)
+**Son commit:** (SPRINT10-A commit — bkz. git log; öncesi 296d74d7c = SPRINT9-B / Grup 7 TAMAM)
 
-### Yapılanlar (Faz 3 tasarım-portu — Grup 7 Roller kalanı → frontend/src/kiro/)
-- **Grup 7 (Roller) TAMAM (6/6).** Veli Bağlama + Ödev Atama (ikisi de **paper**). İlerleme **31/42 ekran + 1 composite (QuestionCard) + `ui/WeeklyActivityBars`**.
-- **Veli Bağlama (KVKK):** SideNav YOK merkezi kart-akışı; **veli SİZ 4-adım (Kod→Rıza→Bekle→Tamam) + öğrenci SEN 2-durum**; DC 6-haneli kod-akışı + mock (kullanıcı kararı); iç-içe checkbox-link fix + consent-gate gerçek disabled; kod/consent/durum **sunucu-otorite**.
-- **Ödev Atama:** öğretmen "sana" dili; konu radiogroup + öğrenci checkbox + θ switch; **θ-set sunucuda**; Ödevlerim döngü sözleşmesi hizalı + OgrenciOzeti CTA rotası hizalandı.
-- **Infra:** metod-collision → getAtamaKonular/getAtamaRoster/postAtama + AtamaOgrenci (SPRINT4 bozulmadı). Veli Bağlama uçları collision-free.
-- Süreç: keşif (S9-A'da yapıldı) → build (infra + 2 ekran + gate) → adversarial (4) → fix → breakpoint gate.
-- Rapor: `docs/audits/2026-07-23_sprint9b-roller-kalan.md`; durum: `design/PORT_DURUM.md`.
+### Yapılanlar (Faz 3 tasarım-portu → frontend/src/kiro/)
+- **Grup 8 (İş & dayanıklılık) başladı — S10-A: 3/7 ekran TAMAM.** Bildirim Merkezi · Alan Kütüphanesi · Çevrimdışı (hepsi öğrenci, **paper**). İlerleme **34/42 ekran + QuestionCard + WeeklyActivityBars**.
+- **Keşif (11 ajan):** `docs/audits/2026-07-23_sprint10-grup8-kesif.md`. 7/7 Grup 8 paper (DC-kanıtlı); backend spektrumu (Çevrimdışı tam-gerçek ↔ Ödeme/Plan tam-mock); ~12.3 birim.
+- **S10-A rapor:** `docs/audits/2026-07-23_sprint10a-is-dayaniklilik.md`; durum: `design/PORT_DURUM.md`.
+- **Infra (additive):** types +11 · api-client +6 (getBildirimler/mark*/clear/getAlanKutuphane/getCevrimdisiDurum) · msw +6 · kiro-data +3 (bildirimler/alanKutuphane/cevrimdisi). `Alan/AlanKey/KatalogUnite` REUSE; Plan* çakışması önlendi.
+
+### Kullanıcı Kararları (Grup 8 — S10-B/C'de uygulanacak)
+- **Ödeme/PSP:** Faz 3 saf-mock (timer sim, PCI yok; PSP Faz 4).
+- **Öğrenci fiyat:** GÖSTERİLMEZ → "veli hesabından yönet" yönlendirme; satın-alma yalnız veli (KVKK).
+- **Sakin-mod + Sıralamayı-gizle:** tek `KullaniciAyar` (hideRanking+calmMode) + tam davranış (Lig gizle · reduced-motion · dürtme-sustur · konfeti-kıs), Faz3 localStorage mock.
+- **Dilimleme:** 3 alt-tur → S10-A (bitti) → **S10-B billing zinciri** → S10-C Ayarlar (composite + yeni `ui/Switch`).
 
 ### Fail Eden Testler
-- YOK. vitest **54 dosya / 308 test PASS** · kanon 0 · tsc 0 · axe temiz · **breakpoint 0 FAIL / 329**.
+- YOK. vitest **57 dosya / 340 test PASS** · kanon **0 ihlal** (14 uyarı pre-existing) · tsc **0** · **breakpoint 0 FAIL / 364** · axe temiz.
 
-### Adversarial (bu session)
-- 4 ajan: P0 **0** · major **0** · minor **2** · phantom **0**. **VeliBaglama tertemiz** (KVKK/server-otorite/checkbox-nesting/SEN-SİZ). 2 minor DC-kopya (OdevAtama) fix — biri kanon-lint "eksik" yasağı gereği kanon-güvenli reword (DC'ye körlemesine dönmek gate kırardı).
+### Adversarial (bu tur, 22 ajan)
+- 12 doğrulandı / 6 phantom. 1 major (Alan `ink.faded2` AA→`ink.muted`) + minör/nit fix (DC dipnot, akordeon DC-sadık sunucu-sayaç, Bildirim h1, Çevrimdışı 'bugün' sunucu-otorite + getMe tolere + minWidth). Breakpoint 5 FAIL (Alan hit-target 36→44) → 0.
 
-### Engelleyiciler / Operatör (sende)
-- **Push YAPILMADI** (kullanıcı "push yok").
-- Backend healthy (PG18 Automatic — kalıcı). Kalan (opsiyonel): SegmentedControl BackstopJS pixel-ref regen; rota wiring.
+### Engelleyiciler / Operatör
+- **Push YAPILMADI** (kullanıcı "push yok" — commit'ler local birikiyor).
+- storybook-static/ build artefaktı (gitignore'da) commit'e girmemeli.
 
 ### Sonraki Adımlar (maks 5)
-1. **Grup 8 İş & dayanıklılık (7):** Abonelik · Ödeme (+3DS) · Plan Yönetimi · Ayarlar · Bildirim Merkezi · Alan Kütüphanesi · Çevrimdışı. Aynı pipeline.
-2. Sonra Grup 9 (AI: AI Sohbet · Sokratik · İnteraktif Çözüm; Çözüm Paylaş MVP-dışı) + Auth kalıntı (İlk Hafta + route guard).
-3. Faz 4 backend wiring: /parent kod-akışı sözleşmesi · zengin /teacher/assignments + öğrenci Ödevlerim · katılım-kodu.
-4. Ödev Atama ↔ Ödevlerim tam döngü E2E (ortak-mock-store; şu an contract hizalı).
-5. Premium (Veli Paneli) → Grup 8 Abonelik ekranı bağlanır (CTA link).
+1. **S10-B billing zinciri (3):** Abonelik · Ödeme(+3DS mock) · Plan Yönetimi. `AbonelikPlan`/`AbonelikYonetim` ayrı ad (Plan* çalışma planı); öğrenci fiyat gizli→veli yönlendirme; PSP saf-mock (3DS timer sim 5s/12s, istemci sonuç üretmez). Aynı pipeline.
+2. **S10-C Ayarlar (composite):** yeni `ui/Switch` (role=switch); `KullaniciAyar` tek-kaynak + tam davranış sözleşmesi; abonelik-banner gömülü dusk aksan.
+3. Sonra Grup 9 (AI: AI Sohbet · Sokratik · İnteraktif Çözüm; Çözüm Paylaş MVP-dışı) + Auth kalıntı (İlk Hafta + route guard).
+4. Faz 4 backend wiring: Çevrimdışı `/offline/*`+`/sync/*` gerçek uçlara; Bildirim öğrenci GET gerçek + mark-read mock.
 
 ### Kararlar (gelecek session tekrar tartışmasın)
-- Veli Bağlama = **DC kod-akışı + mock**; veli **SİZ** / öğrenci **SEN** iki-dil; kod/consent/durum sunucu-otorite.
-- **kanon-lint > DC-birebir** çakışmada (DC "eksik" → kanon `/\beksik\b/i` yasak → kanon-güvenli reword).
-- **Metod/tip collision** → yeni-ad (getAtama*/AtamaOgrenci); mevcut imzayı BOZMA (additive).
-- Kök div box-sizing:border-box (SPRINT9-A dersi); breakpoint fail'de deterministik Playwright teşhisi.
+- Grup 8 tema = **paper** (7/7 DC-kanıtlı). Zayıf-konu/risk = **amber** (kanon>DC). Sunucu-otorite: sayaç/durum istemci üretmez (sunucu-değer toplama serbest).
+- Metod/tip collision → yeni-ad (get*Abonelik/AbonelikPlan); Plan*/PlanWeek = çalışma planı, dokunma.
+- Kök div box-sizing:border-box; hit-target ≥44 (≤1199px); breakpoint fail→deterministik parent-zincir teşhisi.

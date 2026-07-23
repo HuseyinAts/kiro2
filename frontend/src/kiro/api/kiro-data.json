@@ -2758,5 +2758,77 @@
       { "id": "o-cy", "no": 6, "ad": "Can Yıldız", "ini": "CY", "theta": -0.1, "hakimiyet": 58, "risk": "Net düşüşte", "sonAktif": "3 gün önce" },
       { "id": "o-bc", "no": 7, "ad": "Burak Çelik", "ini": "BÇ", "theta": -0.5, "hakimiyet": 49, "risk": "5 gündür giriş yok", "sonAktif": "5 gün önce" }
     ]
+  },
+  "bildirimler": {
+    "gruplar": [
+      {
+        "baslik": "Bugün",
+        "items": [
+          { "id": "bld-1", "ton": "teal", "baslik": "3 kartın bugün tekrar zamanında", "aciklama": "Türev kartların tam hatırlanma anında — kısa bir tur yeter.", "zaman": "1 saat önce", "okundu": false, "href": "/tekrar" },
+          { "id": "bld-2", "ton": "amber", "baslik": "Limit konusuna biraz daha zaman ayıralım", "aciklama": "Son sette biraz zorlandın; birlikte pekiştirelim, acelesi yok.", "zaman": "3 saat önce", "okundu": false, "href": "/soru-cozme" },
+          { "id": "bld-3", "ton": "coral", "baslik": "Mert seni düelloya çağırdı", "aciklama": "Matematik · 5 tur. Hazır olduğunda kabul edebilirsin.", "zaman": "5 saat önce", "okundu": false, "href": "/duello" }
+        ]
+      },
+      {
+        "baslik": "Bu hafta",
+        "items": [
+          { "id": "bld-4", "ton": "gold", "baslik": "12 günlük serine devam", "aciklama": "Bugün de bir adım atarsan serin büyümeye devam eder.", "zaman": "Dün", "okundu": true, "href": "/" },
+          { "id": "bld-5", "ton": "violet", "baslik": "Yeni rozet: Kararlı Başlangıç", "aciklama": "Bu hafta 5 gün çalıştın — rozetin profilinde seni bekliyor.", "zaman": "2 gün önce", "okundu": true, "href": "/basarimlar" }
+        ]
+      }
+    ],
+    "okunmamis": 3
+  },
+  "alanKutuphane": {
+    "seninKey": "say",
+    "alanlar": [
+      { "key": "say", "ad": "Sayısal", "dersSayisi": 4 },
+      { "key": "ea", "ad": "Eşit Ağırlık", "dersSayisi": 4 },
+      { "key": "soz", "ad": "Sözel", "dersSayisi": 4 }
+    ],
+    "dersler": [
+      {
+        "ders": "mat", "ad": "Matematik", "alan": "say", "konuToplam": 16, "soruSayisi": 340,
+        "uniteler": [
+          { "ad": "Fonksiyonlar & Limit", "konular": ["Fonksiyonlar", "Limit ve Süreklilik"] },
+          { "ad": "Türev", "konular": ["Türev Kuralları", "Türevin Uygulamaları"] },
+          { "ad": "İntegral", "konular": ["Belirsiz İntegral", "Belirli İntegral"] }
+        ]
+      },
+      {
+        "ders": "fiz", "ad": "Fizik", "alan": "say", "konuToplam": 10, "soruSayisi": 180,
+        "uniteler": [
+          { "ad": "Kuvvet ve Hareket", "konular": ["Newton Yasaları", "Dinamik"] },
+          { "ad": "Elektrik & Manyetizma", "konular": ["Elektrik", "Manyetizma"] }
+        ]
+      },
+      {
+        "ders": "kim", "ad": "Kimya", "alan": "say", "konuToplam": 11, "soruSayisi": 0,
+        "uniteler": [
+          { "ad": "Maddenin Halleri", "konular": ["Gazlar", "Sıvılar ve Katılar"] },
+          { "ad": "Tepkimeler", "konular": ["Asit-Baz", "Kimyasal Tepkimeler"] }
+        ]
+      },
+      {
+        "ders": "biy", "ad": "Biyoloji", "alan": "say", "konuToplam": 9, "soruSayisi": 0,
+        "uniteler": [
+          { "ad": "Hücre & Kalıtım", "konular": ["Hücre", "Genetik"] },
+          { "ad": "Sistemler", "konular": ["Sindirim Sistemi", "Dolaşım Sistemi"] }
+        ]
+      }
+    ]
+  },
+  "cevrimdisi": {
+    "sonEsitleme": "bugün 14:32",
+    "kuyruk": [
+      { "id": "sq-1", "baslik": "Türev seti — 12 yanıt", "durum": "bekliyor" },
+      { "id": "sq-2", "baslik": "Limit tekrarı — 3 kart", "durum": "bekliyor" }
+    ],
+    "paketler": [
+      { "id": "pk-plan", "baslik": "Bugünkü plan", "aciklama": "Günün blokları çevrimdışı hazır", "tur": "plan", "hazir": true },
+      { "id": "pk-fsrs", "baslik": "FSRS tekrar kartları", "aciklama": "Bugün tekrar zamanı gelen kartlar", "tur": "tekrar", "hazir": true },
+      { "id": "pk-yanlis", "baslik": "Son deneme yanlışları", "aciklama": "Yeniden çözmek için indirildi", "tur": "soru", "hazir": true },
+      { "id": "pk-video", "baslik": "Konu anlatım videoları", "aciklama": "Bağlantı gelince inecek", "tur": "video", "hazir": false }
+    ]
   }
 }

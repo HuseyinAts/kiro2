@@ -30,6 +30,7 @@ import type {
   OgrenciOzeti, YeniSinif, KurulanSinif,
   LinkCodeSonuc, PendingVeliIstek, KvkkNotice,
   KonuAtom, AtamaOgrenci, AtamaForm,
+  BildirimYanit, AlanKutuphaneData, SyncStatus,
 } from '../types';
 
 // SPRINT8 · Grup 6 tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
@@ -52,6 +53,13 @@ export type {
 export type {
   LinkCodeSonuc, PendingVeliIstek, KvkkNotice, VeliBaglamaData,
   KonuAtom, AtamaOgrenci, AtamaForm, OdevAtamaData,
+} from '../types';
+
+// SPRINT10-A · Grup 8 (paylaşılan infra) tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
+export type {
+  BildirimTon, Bildirim, BildirimGrup, BildirimYanit,
+  ConnectivityState, CachedPack, SyncQueueItem, SyncStatus,
+  AlanKutuphaneDers, AlanKutuphaneAlan, AlanKutuphaneData,
 } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -77,7 +85,8 @@ export type MockData = Pick<KiroData,
   'curriculum' | 'atomKirilim' | 'seviyeEsik' |
   'league' | 'duelOpponent' | 'friends' | 'streak' |
   'veliDashboard' | 'ogretmenPanel' | 'ogrenciOzetleri' | 'siniflar' |
-  'veliBaglama' | 'odevAtama'>;
+  'veliBaglama' | 'odevAtama' |
+  'bildirimler' | 'alanKutuphane' | 'cevrimdisi'>;
 
 let cfg: KiroApiConfig = { mode: 'mock' };
 let mockCache: MockData | null = null;
@@ -1365,4 +1374,57 @@ export async function postAtama(form: AtamaForm): Promise<{ id: string; atananSa
     id: nstr(pick(o, 'id', 'assignment_id')),
     atananSayi: nnum(pick(o, 'atananSayi', 'assigned_count', 'count'), form.ogrenciIds.length),
   };
+}
+
+// ===========================================================================
+// SPRINT10-A · Grup 8 (paylaşılan infra) — Bildirim Merkezi · Alan Kütüphanesi · Çevrimdışı
+// İki kollu: mock (kiro-data) · live (gerçek REST). SUNUCU-OTORİTE: okunmamış
+// sayacı, senkron kuyruğu ve önbellek paketleri SUNUCUDA belirlenir. Mutation
+// metodları server-sim (ok döner) — ekran optimistik günceller; istemci sayaç
+// veya kuyruk türetmez (bağlantı durumu ekran-yerel, veri değil).
+// ===========================================================================
+
+// --- Bildirim Merkezi — GET /notifications (+ read / read-all / clear) ---
+
+/** Bildirim listesi (zaman-gruplu + okunmamış sayısı SUNUCUDAN). mock: kiro-data.bildirimler. */
+export async function getBildirimler(): Promise<BildirimYanit> {
+  if (cfg.mode === 'mock') return (await mock()).bildirimler;
+  return live<BildirimYanit>('/notifications');
+}
+
+/** Tek bildirimi okundu işaretle — server-sim (mock her zaman ok; ekran optimistik günceller). */
+export async function markBildirimOkundu(id: string): Promise<{ okundu: true }> {
+  if (cfg.mode === 'mock') return { okundu: true };
+  await live('/notifications/' + encodeURIComponent(id) + '/read', { method: 'POST', body: JSON.stringify({}) });
+  return { okundu: true };
+}
+
+/** Tümünü okundu işaretle — okunmamış sayısı SUNUCUDAN (mock: 0). */
+export async function markTumBildirimOkundu(): Promise<{ okunmamis: number }> {
+  if (cfg.mode === 'mock') return { okunmamis: 0 };
+  const o = asRec(unwrapData(await live<unknown>('/notifications/read-all', { method: 'POST', body: JSON.stringify({}) })));
+  return { okunmamis: nnum(pick(o, 'okunmamis', 'unread', 'unread_count')) };
+}
+
+/** Bildirimleri temizle — server-sim (mock her zaman temizlendi). */
+export async function clearBildirimler(): Promise<{ temizlendi: true }> {
+  if (cfg.mode === 'mock') return { temizlendi: true };
+  await live('/notifications/clear', { method: 'POST', body: JSON.stringify({}) });
+  return { temizlendi: true };
+}
+
+// --- Alan Kütüphanesi — GET /alan-kutuphane ---
+
+/** Alan kütüphanesi (senin alanın + 3 alan + dersler). mock: kiro-data.alanKutuphane. */
+export async function getAlanKutuphane(): Promise<AlanKutuphaneData> {
+  if (cfg.mode === 'mock') return (await mock()).alanKutuphane;
+  return live<AlanKutuphaneData>('/alan-kutuphane');
+}
+
+// --- Çevrimdışı / Senkron — GET /offline/durum ---
+
+/** Çevrimdışı senkron durumu (son eşitleme + kuyruk + paketler SUNUCUDAN). mock: kiro-data.cevrimdisi. */
+export async function getCevrimdisiDurum(): Promise<SyncStatus> {
+  if (cfg.mode === 'mock') return (await mock()).cevrimdisi;
+  return live<SyncStatus>('/offline/durum');
 }

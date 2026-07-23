@@ -198,6 +198,21 @@ Sonraki: **Grup 8 İş & dayanıklılık (7)** — Abonelik · Ödeme · Plan Y�
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT10-A Durumu (2026-07-23 · GRUP 8 kısmi 3/7)
+
+**3/3 ekran ✅** — Bildirim Merkezi · Alan Kütüphanesi · Çevrimdışı (rapor: `docs/audits/2026-07-23_sprint10a-is-dayaniklilik.md`; keşif: `2026-07-23_sprint10-grup8-kesif.md`).
+- **Tema:** 3'ü de **paper** (DC-kanıtlı, 7/7 Grup 8 paper). Dilimleme: **3 alt-tur** (kullanıcı) — S10-A basit 3 → S10-B billing zinciri → S10-C Ayarlar.
+- **Kararlar (kullanıcı, keşif sonrası):** Ödeme/PSP saf-mock · öğrenci fiyat gizli→veli yönlendirme · sakin-mod+sıralamayı-gizle tek `KullaniciAyar`+tam davranış (S10-B/C'de uygulanır).
+- **Infra (additive):** types +11 · api-client +6 metod · msw +6 route · kiro-data +3 anahtar. `Alan/AlanKey/DersKatalogEntry/KatalogUnite` REUSE; Plan* çakışması önlendi.
+- **Adversarial (22 ajan, 4 boyut):** 12 doğrulandı / 6 phantom. 1 major (Alan `ink.faded2` AA 2.08:1 → `ink.muted`) + minör/nit fix (DC dipnot geri, akordeon DC-sadık sunucu-sayaç, Bildirim `<h1>`, Çevrimdışı 'bugün' sunucu-otorite + getMe tolere + minWidth guard) + test kapsamı.
+- **Breakpoint:** ilk tur 5 FAIL (Alan akordeon `minHeight:36<44` hit-target) → `minHeight:44` → 0 FAIL.
+- **Kapı:** kanon **0** · tsc **0** · vitest **57 dosya / 340 test PASS** · **breakpoint 0 FAIL / 364** · axe temiz.
+
+**İlerleme: 34/42 ekran + 1 composite (QuestionCard) + `ui/WeeklyActivityBars`. Grup 8 kısmi (3/7).**
+Sonraki: **S10-B billing zinciri** (Abonelik · Ödeme · Plan Yönetimi) → S10-C Ayarlar.
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -275,16 +290,16 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 
 Ödev Atama ↔ Ödevlerim tek döngü olarak test edildi: ☐
 
-## 8 · İş & dayanıklılık (7)
+## 8 · İş & dayanıklılık (7) — kısmi 3/7 (SPRINT10-A, 2026-07-23)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
 | Abonelik (?rol=veli) | KIRO2 Abonelik.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Ödeme (+3DS bekleme durumu) | KIRO2 Odeme.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Plan Yönetimi (premium) | KIRO2 Plan Yonetimi.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | Ayarlar | KIRO2 Ayarlar.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Bildirim Merkezi | KIRO2 Bildirim Merkezi.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Alan Kütüphanesi (ünite drill) | KIRO2 Alan Kutuphanesi.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Çevrimdışı | KIRO2 Cevrimdisi.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Bildirim Merkezi | KIRO2 Bildirim Merkezi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Alan Kütüphanesi (ünite drill) | KIRO2 Alan Kutuphanesi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Çevrimdışı | KIRO2 Cevrimdisi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
 ## 9 · AI & çözüm (4)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |

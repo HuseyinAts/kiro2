@@ -193,6 +193,20 @@ export const kiroHandlers = [
     const b = (await request.json().catch(() => ({}))) as { student_ids?: string[] };
     return HttpResponse.json({ id: 'atama-msw', atananSayi: (b.student_ids ?? []).length }, { status: 201 });
   }),
+
+  // --- SPRINT10-A · Grup 8 (paylaşılan infra) uçları ---
+  // Bildirim Merkezi — liste + tümü-okundu / temizle / tek-okundu (server-sim).
+  // read-all + clear önce (spesifik); :id/read en sonda (çift kayıt YOK).
+  http.get('*/notifications', () => HttpResponse.json(D.bildirimler)),
+  http.post('*/notifications/read-all', () => HttpResponse.json({ okunmamis: 0 })),
+  http.post('*/notifications/clear', () => HttpResponse.json({ temizlendi: true })),
+  http.post('*/notifications/:id/read', () => HttpResponse.json({ okundu: true })),
+
+  // Alan Kütüphanesi — alanlar + dersler (sunucu birleşik).
+  http.get('*/alan-kutuphane', () => HttpResponse.json(D.alanKutuphane)),
+
+  // Çevrimdışı — senkron durumu (son eşitleme + kuyruk + paketler).
+  http.get('*/offline/durum', () => HttpResponse.json(D.cevrimdisi)),
 ];
 
 export default kiroHandlers;
