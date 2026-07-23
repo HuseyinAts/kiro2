@@ -1,37 +1,34 @@
-## Session Handoff — 2026-07-23 (SPRINT9-A · GRUP 7 kısmi 4/6)
+## Session Handoff — 2026-07-23 (SPRINT9-B · GRUP 7 TAMAM 6/6)
 **Branch:** feature/self-evolution-optimization (origin'in önünde — push YOK)
-**Son commit:** (SPRINT9-A commit — bkz. git log; öncesi 05e6cf04a = SPRINT8 E2E docs)
+**Son commit:** (SPRINT9-B commit — bkz. git log; öncesi e40baefa3 = SPRINT9-A)
 
-### Yapılanlar (Faz 3 tasarım-portu — Grup 7 Roller A → frontend/src/kiro/)
-- **Grup 7 kısmi (4/6).** Veli Paneli · Öğretmen Paneli · Öğrenci Özeti · Sınıf Kurulumu (hepsi **paper**). İlerleme **29/42 ekran + 1 composite (QuestionCard) + `ui/WeeklyActivityBars`**.
-- **Ayrı tur (kullanıcı "ağırları ayır"):** Veli Bağlama (KVKK) + Ödev Atama.
-- Rol/gizlilik: Veli **SİZ-dili** + çocuk **salt-okur** (sohbet/AI/mood gizli); Öğretmen SİZ + roster salt-okur; Öğrenci Özeti salt-okur (tek yazma=ödev-ata link); Sınıf Kurulumu **DC SEN korundu** (DC>spec).
-- **Kullanıcı kararı:** Veli Bağlama → **DC 6-haneli kod-akışı + mock** (Faz 4 gerçek /parent email-onay).
-- Backend: `/teacher`+`/parent` MEVCUT (Faz 4 wiring); katılım-kodu/rotate/join + öğrenci Ödevlerim + zengin-atama = **mock**.
-- Süreç: keşif (7) → build (infra + WeeklyActivityBars + 4 ekran + gate) → adversarial (11) → fix → breakpoint gate.
-- Rapor: `docs/audits/2026-07-23_sprint9a-roller.md`; durum: `design/PORT_DURUM.md`.
+### Yapılanlar (Faz 3 tasarım-portu — Grup 7 Roller kalanı → frontend/src/kiro/)
+- **Grup 7 (Roller) TAMAM (6/6).** Veli Bağlama + Ödev Atama (ikisi de **paper**). İlerleme **31/42 ekran + 1 composite (QuestionCard) + `ui/WeeklyActivityBars`**.
+- **Veli Bağlama (KVKK):** SideNav YOK merkezi kart-akışı; **veli SİZ 4-adım (Kod→Rıza→Bekle→Tamam) + öğrenci SEN 2-durum**; DC 6-haneli kod-akışı + mock (kullanıcı kararı); iç-içe checkbox-link fix + consent-gate gerçek disabled; kod/consent/durum **sunucu-otorite**.
+- **Ödev Atama:** öğretmen "sana" dili; konu radiogroup + öğrenci checkbox + θ switch; **θ-set sunucuda**; Ödevlerim döngü sözleşmesi hizalı + OgrenciOzeti CTA rotası hizalandı.
+- **Infra:** metod-collision → getAtamaKonular/getAtamaRoster/postAtama + AtamaOgrenci (SPRINT4 bozulmadı). Veli Bağlama uçları collision-free.
+- Süreç: keşif (S9-A'da yapıldı) → build (infra + 2 ekran + gate) → adversarial (4) → fix → breakpoint gate.
+- Rapor: `docs/audits/2026-07-23_sprint9b-roller-kalan.md`; durum: `design/PORT_DURUM.md`.
 
 ### Fail Eden Testler
-- YOK. vitest **52 dosya / 294 test PASS** · kanon 0 · tsc 0 · axe temiz · **breakpoint 0 FAIL / 280**.
+- YOK. vitest **54 dosya / 308 test PASS** · kanon 0 · tsc 0 · axe temiz · **breakpoint 0 FAIL / 329**.
 
-### Adversarial + breakpoint (bu session)
-- Adversarial (11 ajan): P0 **0** · major **2** · minor **2** · phantom **0** → hepsi fix (VeliPaneli yeşil-token AA+rozet; OgrenciOzeti h1→h2→h3; OgretmenPaneli negatif-delta amber).
-- Breakpoint: SinifKurulumu kök-div `content-box` 12px taşma → **deterministik Playwright teşhisi** → `box-sizing` fix → 0/280. (Build+adversarial kaçırdı — mekanik kapı yakaladı; SPRINT8 dersi tekrar.)
+### Adversarial (bu session)
+- 4 ajan: P0 **0** · major **0** · minor **2** · phantom **0**. **VeliBaglama tertemiz** (KVKK/server-otorite/checkbox-nesting/SEN-SİZ). 2 minor DC-kopya (OdevAtama) fix — biri kanon-lint "eksik" yasağı gereği kanon-güvenli reword (DC'ye körlemesine dönmek gate kırardı).
 
 ### Engelleyiciler / Operatör (sende)
 - **Push YAPILMADI** (kullanıcı "push yok").
-- Backend healthy (PG18 Automatic fix'i önceki turda kalıcı çözdü — RestartCount 0).
-- Kalan (opsiyonel): SegmentedControl BackstopJS pixel-ref regen; rota wiring (App router).
+- Backend healthy (PG18 Automatic — kalıcı). Kalan (opsiyonel): SegmentedControl BackstopJS pixel-ref regen; rota wiring.
 
 ### Sonraki Adımlar (maks 5)
-1. **Grup 7 kalanı (ayrı tur):** Veli Bağlama (KVKK kod-akışı, en hassas) + Ödev Atama (Ödevlerim döngüsü). Aynı pipeline.
-2. Sonra Grup 8 (İş: Abonelik/Ödeme/Plan/Ayarlar/Bildirim/Alan Kütüphanesi/Çevrimdışı) + Grup 9 (AI).
-3. Faz 4 backend wiring: /teacher+/parent gerçek; katılım-kodu/Ödevlerim/zengin-atama backend YOK.
-4. Premium (Veli Paneli) → Grup 8 Abonelik ekranı (CTA link ertelendi).
-5. KVKK (Veli): çocuk günlük-durum/XP görünürlüğü karşılıklı-onay + opt-in.
+1. **Grup 8 İş & dayanıklılık (7):** Abonelik · Ödeme (+3DS) · Plan Yönetimi · Ayarlar · Bildirim Merkezi · Alan Kütüphanesi · Çevrimdışı. Aynı pipeline.
+2. Sonra Grup 9 (AI: AI Sohbet · Sokratik · İnteraktif Çözüm; Çözüm Paylaş MVP-dışı) + Auth kalıntı (İlk Hafta + route guard).
+3. Faz 4 backend wiring: /parent kod-akışı sözleşmesi · zengin /teacher/assignments + öğrenci Ödevlerim · katılım-kodu.
+4. Ödev Atama ↔ Ödevlerim tam döngü E2E (ortak-mock-store; şu an contract hizalı).
+5. Premium (Veli Paneli) → Grup 8 Abonelik ekranı bağlanır (CTA link).
 
 ### Kararlar (gelecek session tekrar tartışmasın)
-- 4 rol-paneli **paper**; Veli/Öğretmen **SİZ-dili**; çocuk/öğrenci verisi **salt-okur** (sohbet/AI/mood gizli).
-- Sınıf Kurulumu **DC SEN** (DC>spec tiebreaker); Veli Bağlama = **DC kod-akışı + mock**.
-- **Overflow teşhisi deterministik:** breakpoint fail'de tahmin YOK → Playwright parent-zincir ile taşan öğeyi bul. Kök div de box-sizing:border-box olmalı (SPRINT8 pitfall).
-- `ui/WeeklyActivityBars` paylaşımlı (3 ekran); transform:scaleY (layout-anim değil) + RM-guard + per-bar SR metni.
+- Veli Bağlama = **DC kod-akışı + mock**; veli **SİZ** / öğrenci **SEN** iki-dil; kod/consent/durum sunucu-otorite.
+- **kanon-lint > DC-birebir** çakışmada (DC "eksik" → kanon `/\beksik\b/i` yasak → kanon-güvenli reword).
+- **Metod/tip collision** → yeni-ad (getAtama*/AtamaOgrenci); mevcut imzayı BOZMA (additive).
+- Kök div box-sizing:border-box (SPRINT9-A dersi); breakpoint fail'de deterministik Playwright teşhisi.

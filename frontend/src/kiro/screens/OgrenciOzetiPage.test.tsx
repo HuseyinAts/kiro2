@@ -44,7 +44,7 @@ describe('OgrenciOzetiPage', () => {
   it('CTA "Bu öğrenciye ödev ata" → Ödev Atama link; geri-link → /ogretmen', async () => {
     render(<OgrenciOzetiPage ogrenciId="o-ha" />);
     const cta = await screen.findByRole('link', { name: /Bu öğrenciye ödev ata/ });
-    expect(cta.getAttribute('href')).toMatch(/^\/ogretmen\/odev-ata/);
+    expect(cta.getAttribute('href')).toMatch(/^\/ogretmen\/odev\/yeni/);
     const geri = screen.getByRole('link', { name: /Öğretmen Paneli/ });
     expect(geri).toHaveAttribute('href', '/ogretmen');
   });

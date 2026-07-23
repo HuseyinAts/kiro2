@@ -176,6 +176,23 @@ export const kiroHandlers = [
   http.post('*/api/v1/teacher/classes/:id/rotate-code', () =>
     HttpResponse.json({ katilimKodu: '731028', katilimLink: 'https://kiro2.app/katil/731028' }),
   ),
+
+  // --- SPRINT9-B · Grup 7-B Veli Bağlama (KVKK) + Ödev Atama (best-effort) ---
+  // KVKK — aydınlatma metni sürümü + açık rıza kaydı (server-sim; consentId sunucudan).
+  http.get('*/api/v1/kvkk/notice', () => HttpResponse.json({ version: 'v3' })),
+  http.post('*/api/v1/kvkk/consent/give', async ({ request }) => {
+    const b = (await request.json().catch(() => ({}))) as { purpose?: string };
+    return HttpResponse.json({ ok: true, consentId: 'consent-' + (b.purpose ?? 'veli') }, { status: 201 });
+  }),
+  // Veli bağlama — ilişki onayı/reddi (PUT; ?approved query). Öğrenci-tarafı GET ucu YOK.
+  http.put('*/api/v1/parent/approval/:id', () => HttpResponse.json({ ok: true })),
+  // Ödev Atama — konu atomları (zayıflık sıralı) + atama (server-sim id; θ-set sunucuda).
+  // Not: /teacher/students SPRINT9-A'da mevcut (getAtamaRoster onu kullanır) — çift kayıt YOK.
+  http.get('*/teacher/class/:id/topics', () => HttpResponse.json(D.odevAtama.konular)),
+  http.post('*/teacher/assignments', async ({ request }) => {
+    const b = (await request.json().catch(() => ({}))) as { student_ids?: string[] };
+    return HttpResponse.json({ id: 'atama-msw', atananSayi: (b.student_ids ?? []).length }, { status: 201 });
+  }),
 ];
 
 export default kiroHandlers;

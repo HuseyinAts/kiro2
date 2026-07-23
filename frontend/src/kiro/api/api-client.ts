@@ -28,6 +28,8 @@ import type {
   VeliDashboard, VeliCocuk, VeliUyari, SinavOzet, DersIlerleme, HaftaGun,
   OgretmenPanel, OgretmenSinif, OgretmenOgrenci, DikkatKarti,
   OgrenciOzeti, YeniSinif, KurulanSinif,
+  LinkCodeSonuc, PendingVeliIstek, KvkkNotice,
+  KonuAtom, AtamaOgrenci, AtamaForm,
 } from '../types';
 
 // SPRINT8 · Grup 6 tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
@@ -44,6 +46,12 @@ export type {
   VeliDashboard, VeliCocuk, VeliUyari, VeliUyariTip, SinavOzet,
   OgretmenPanel, OgretmenSinif, OgretmenOgrenci, OgrenciRisk, DikkatKarti,
   OgrenciOzeti, OgrenciDurum, YeniSinif, KurulanSinif,
+} from '../types';
+
+// SPRINT9-B · Grup 7-B tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
+export type {
+  LinkCodeSonuc, PendingVeliIstek, KvkkNotice, VeliBaglamaData,
+  KonuAtom, AtamaOgrenci, AtamaForm, OdevAtamaData,
 } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -68,7 +76,8 @@ export type MockData = Pick<KiroData,
   'reviewQueue' | 'lastExam' | 'questionBank' | 'flashcards' | 'catBankMat' |
   'curriculum' | 'atomKirilim' | 'seviyeEsik' |
   'league' | 'duelOpponent' | 'friends' | 'streak' |
-  'veliDashboard' | 'ogretmenPanel' | 'ogrenciOzetleri' | 'siniflar'>;
+  'veliDashboard' | 'ogretmenPanel' | 'ogrenciOzetleri' | 'siniflar' |
+  'veliBaglama' | 'odevAtama'>;
 
 let cfg: KiroApiConfig = { mode: 'mock' };
 let mockCache: MockData | null = null;
@@ -1188,4 +1197,172 @@ export async function rotateKatilimKodu(sinifId: string): Promise<{ katilimKodu:
   })));
   const kod = nstr(pick(o, 'katilimKodu', 'join_code', 'code'));
   return { katilimKodu: kod, katilimLink: nstr(pick(o, 'katilimLink', 'join_link')) || katilimLink(kod) };
+}
+
+// ===========================================================================
+// SPRINT9-B · Grup 7-B — Veli Bağlama (KVKK) + Ödev Atama
+// İki kollu: mock (kiro-data/server-sim) · live (gerçek /kvkk + /parent + /teacher).
+// SUNUCU-OTORİTE: bağlantı kodunun üretimi/doğrulaması, KVKK rıza kaydı ve θ-set
+// kurulumu SUNUCUDA yapılır — istemci (mock'ta bile) kod üretmez, rızayı
+// hesaplamaz, soru setini seçmez. Kod doğrulama + relationId üretimi server-sim
+// İZOLE fonksiyonlarda yaşar; ekran bunları çağırmaz/hesaplamaz.
+// ===========================================================================
+
+// --- Veli Bağlama (KVKK) ---
+
+/** Kod → relationId (server-sim; deterministik). İstemci bu id'yi ÜRETMEZ — sunucu döndürür. */
+function relationIdUret(kod: string): string {
+  return 'rel-' + kod;
+}
+
+/** 6-hane bağlantı kodu doğrulama — SUNUCU-OTORİTE. mock: kiro-data.veliBaglama.veliBaglamaKodu
+ *  ile deterministik karşılaştırma (istemci kod üretmez/doğrulamaz; yalnız eşitlik sonucunu alır).
+ *  live: backend e-posta tabanlı — kod ucu YOK → NEW forward sözleşme (POST verify-code). */
+export async function verifyLinkCode(kod: string): Promise<LinkCodeSonuc> {
+  const temiz = kod.replace(/\D/g, '').slice(0, 6);
+  if (cfg.mode === 'mock') {
+    const vb = (await mock()).veliBaglama;
+    if (temiz.length === 6 && temiz === vb.veliBaglamaKodu) {
+      return { gecerli: true, cocukAd: vb.cocukAd, cocukBas: vb.cocukBas, relationId: relationIdUret(temiz) };
+    }
+    return { gecerli: false };
+  }
+  const o = asRec(unwrapData(await live<unknown>('/api/v1/parent/verify-code', {
+    method: 'POST', body: JSON.stringify({ code: temiz }),
+  })));
+  const gecerli = pick(o, 'gecerli', 'valid') === true;
+  return gecerli
+    ? {
+        gecerli: true,
+        cocukAd: nstr(pick(o, 'cocukAd', 'child_name')),
+        cocukBas: nstr(pick(o, 'cocukBas', 'child_initials')),
+        relationId: nstr(pick(o, 'relationId', 'relation_id', 'id')),
+      }
+    : { gecerli: false };
+}
+
+/** KVKK aydınlatma metni sürümü. live: GET /api/v1/kvkk/notice; mock: {version:'v3'}. */
+export async function getKvkkNotice(): Promise<KvkkNotice> {
+  if (cfg.mode === 'mock') return { version: 'v3' };
+  const o = asRec(unwrapData(await live<unknown>('/api/v1/kvkk/notice')));
+  return { version: nstr(pick(o, 'version', 'notice_version'), 'v3') };
+}
+
+/** KVKK açık rıza ver — rıza kaydı SUNUCUDA tutulur (consentId sunucudan).
+ *  live: POST /api/v1/kvkk/consent/give; mock: server-sim (deterministik consentId). */
+export async function giveConsent(purpose: string): Promise<{ ok: boolean; consentId: string }> {
+  if (cfg.mode === 'mock') return { ok: true, consentId: 'consent-' + purpose };
+  const o = asRec(unwrapData(await live<unknown>('/api/v1/kvkk/consent/give', {
+    method: 'POST', body: JSON.stringify({ purpose }),
+  })));
+  return {
+    ok: pick(o, 'ok', 'success') !== false,
+    consentId: nstr(pick(o, 'consentId', 'consent_id', 'id')),
+  };
+}
+
+/** Bağlantı durumu yoklama (veli tarafı). mock: server-sim — ilk yoklama 'bekliyor',
+ *  sonraki 'onaylandi' (çocuk onayı simülasyonu; istemci karar vermez).
+ *  live: GET /parent/children polling — relation çocuk listesine düştüyse 'onaylandi'. */
+const _pollSeen = new Set<string>();
+export async function pollLinkStatus(relationId: string): Promise<{ durum: 'bekliyor' | 'onaylandi' }> {
+  if (cfg.mode === 'mock') {
+    if (_pollSeen.has(relationId)) return { durum: 'onaylandi' };
+    _pollSeen.add(relationId);
+    return { durum: 'bekliyor' };
+  }
+  const children = asArr(unwrapData(await live<unknown>('/parent/children')));
+  const onayli = children.some((c) => {
+    const o = asRec(c);
+    return nstr(pick(o, 'relationId', 'relation_id', 'id', 'child_id')) === relationId;
+  });
+  return { durum: onayli ? 'onaylandi' : 'bekliyor' };
+}
+
+/** Öğrenci tarafı bekleyen veli isteği. mock: kiro-data.veliBaglama.pending.
+ *  live: öğrenci-tarafı bekleyen-istek GET ucu backend'de YOK → istemci beslemez (null). */
+export async function getPendingParentRequest(): Promise<PendingVeliIstek | null> {
+  if (cfg.mode === 'mock') return (await mock()).veliBaglama.pending;
+  return null;
+}
+
+/** İlişki onayı/reddi (öğrenci tarafı). live: PUT /api/v1/parent/approval/{id}?approved.
+ *  mock: server-sim (onay/ret SUNUCUDA işlenir; mock her zaman ok). */
+export async function approveRelation(relationId: string, approved: boolean): Promise<{ ok: boolean }> {
+  if (cfg.mode === 'mock') return { ok: true };
+  const o = asRec(unwrapData(await live<unknown>(
+    '/api/v1/parent/approval/' + encodeURIComponent(relationId) + '?approved=' + (approved ? 'true' : 'false'),
+    { method: 'PUT', body: JSON.stringify({ approved }) },
+  )));
+  return { ok: pick(o, 'ok', 'success') !== false };
+}
+
+// --- Ödev Atama (zengin-atama backend YOK → mock; live yolları forward sözleşme) ---
+
+function mapKonuAtom(v: unknown): KonuAtom {
+  const o = asRec(v);
+  const durumRaw = nstr(pick(o, 'durum', 'status'), 'gelisiyor');
+  const durum: KonuAtom['durum'] = durumRaw === 'zayif' || durumRaw === 'iyi' ? durumRaw : 'gelisiyor';
+  const havuzRaw = pick(o, 'soruHavuzuHazir', 'pool_ready', 'has_pool');
+  return {
+    id: nstr(pick(o, 'id', 'topic_id', 'konuId')),
+    ad: nstr(pick(o, 'ad', 'name', 'topic')),
+    hakimiyet: nnum(pick(o, 'hakimiyet', 'mastery')),
+    durum,
+    soruHavuzuHazir: typeof havuzRaw === 'boolean' ? havuzRaw : true,
+  };
+}
+
+function mapAtamaOgrenci(v: unknown): AtamaOgrenci {
+  const o = asRec(v);
+  const ad = nstr(pick(o, 'ad', 'name', 'display_name'));
+  const riskRaw = pick(o, 'risk', 'risk_note', 'at_risk');
+  return {
+    id: nstr(pick(o, 'id', 'student_id')),
+    no: nnum(pick(o, 'no', 'number')),
+    ad,
+    ini: nstr(pick(o, 'ini', 'initials')) || initials(ad),
+    theta: nnum(pick(o, 'theta', 'ability')),
+    hakimiyet: nnum(pick(o, 'hakimiyet', 'mastery')),
+    risk: typeof riskRaw === 'string' && riskRaw !== '' ? riskRaw : null,
+    sonAktif: nstr(pick(o, 'sonAktif', 'last_active', 'last_seen')),
+  };
+}
+
+/** Atama konu atomları — zayıflık sıralı (SUNUCU sıralar; istemci sıralama YAPMAZ).
+ *  mock: kiro-data.odevAtama.konular; live: GET /teacher/class/{id}/topics (NEW). */
+export async function getAtamaKonular(sinifId: string): Promise<KonuAtom[]> {
+  if (cfg.mode === 'mock') return (await mock()).odevAtama.konular;
+  return asArr(unwrapData(await live<unknown>('/teacher/class/' + encodeURIComponent(sinifId) + '/topics'))).map(mapKonuAtom);
+}
+
+/** Atama öğrenci listesi (θ/hâkimiyet/risk SUNUCUDAN). mock: kiro-data.odevAtama.roster;
+ *  live: GET /teacher/students (class_id filtreli). */
+export async function getAtamaRoster(sinifId: string): Promise<AtamaOgrenci[]> {
+  if (cfg.mode === 'mock') return (await mock()).odevAtama.roster;
+  return asArr(unwrapData(await live<unknown>('/teacher/students?class_id=' + encodeURIComponent(sinifId)))).map(mapAtamaOgrenci);
+}
+
+/** Ödev ata — istemci YALNIZ formu gönderir; θ-set kurulumu SUNUCUDA (kisisel=true ise
+ *  her öğrencinin seti sunucuda θ'ya göre seçilir). mock: server-sim id + atananSayı.
+ *  live: POST /teacher/assignments (genişletilmiş alanlar). */
+export async function postAtama(form: AtamaForm): Promise<{ id: string; atananSayi: number }> {
+  if (cfg.mode === 'mock') {
+    const seed = form.konuId + '|' + form.teslimTarihi + '|' + form.ogrenciIds.join(',');
+    return { id: 'atama-' + katilimKodUret(seed), atananSayi: form.ogrenciIds.length };
+  }
+  const o = asRec(unwrapData(await live<unknown>('/teacher/assignments', {
+    method: 'POST',
+    body: JSON.stringify({
+      topic_id: form.konuId,
+      count: form.adet,
+      due_date: form.teslimTarihi,
+      personalized: form.kisisel,
+      student_ids: form.ogrenciIds,
+    }),
+  })));
+  return {
+    id: nstr(pick(o, 'id', 'assignment_id')),
+    atananSayi: nnum(pick(o, 'atananSayi', 'assigned_count', 'count'), form.ogrenciIds.length),
+  };
 }

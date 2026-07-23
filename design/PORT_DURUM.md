@@ -184,6 +184,20 @@ Sonraki: **Grup 7 kalanı** — Veli Bağlama (KVKK kod-akışı) + Ödev Atama 
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT9-B Durumu (2026-07-23 · GRUP 7 TAMAM 6/6)
+
+**2/2 ekran ✅** — Veli Bağlama · Ödev Atama — **Grup 7 (Roller) TAMAM (6/6)** (rapor: `docs/audits/2026-07-23_sprint9b-roller-kalan.md`).
+- **Veli Bağlama (paper, KVKK):** SideNav YOK merkezi kart-akışı; **iki muhatap/iki dil** — veli **SİZ** 4-adım (Kod→Rıza→Bekle→Tamam) + öğrenci **SEN** 2-durum (Bekliyor→Tamam). Karar: **DC 6-haneli kod-akışı + mock** (IDOR-güvenli; gerçek /parent email-onay Faz 4). İç-içe checkbox-link FIX; consent-gate gerçek disabled; kod/consent/durum **sunucu-otorite** (istemci üretmez).
+- **Ödev Atama (paper):** öğretmen "sana" meslektaş dili; konu **radiogroup** + öğrenci **checkbox** + θ **switch**; **θ-set kurulumu sunucuda** (istemci yalnız form gönderir); risk=amber; kaygı-varsayılanları kartı (kanon öğretir); Ödevlerim (SPRINT1) döngü sözleşmesi hizalı + OgrenciOzeti "ödev ata" CTA rotası hizalandı.
+- **Infra:** metod-collision (getTopics/postAssignment/SinifOgrenci mevcut) → `getAtamaKonular`/`getAtamaRoster`/`postAtama` + `AtamaOgrenci` (SPRINT4 bozulmadı). Veli Bağlama uçları collision-free.
+- **Adversarial review (4 ajan):** P0 **0** · major **0** · minor **2** · phantom **0** → 2 DC-kopya fix (Sınıfın; kaygı-madde kanon-güvenli, DC "eksik" yasağı). **Veli Bağlama tertemiz** (KVKK/server-otorite/checkbox-nesting/SEN-SİZ hepsi geçti).
+- **Kapı:** kanon **0** · tsc **0** · vitest **54 dosya / 308 test PASS** · axe temiz · **breakpoint 0 FAIL / 329**.
+
+**İlerleme: 31/42 ekran + 1 composite (QuestionCard) + `ui/WeeklyActivityBars`. Grup 7 (Roller) TAMAM (6/6).**
+Sonraki: **Grup 8 İş & dayanıklılık (7)** — Abonelik · Ödeme · Plan Yönetimi · Ayarlar · Bildirim Merkezi · Alan Kütüphanesi · Çevrimdışı.
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -248,14 +262,14 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Arkadaş Serisi | KIRO2 Arkadas Serisi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Seri Dondurma | KIRO2 Seri Dondurma.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
-## 7 · Roller (6) — 4/6 (SPRINT9-A; Veli Bağlama + Ödev Atama ayrı tur)
+## 7 · Roller (6) — ✅ TAMAM (SPRINT9-A + SPRINT9-B, 2026-07-23)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
 | Veli Paneli (SİZ-dili) | KIRO2 Veli Paneli.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Öğretmen Paneli | KIRO2 Ogretmen Paneli.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Öğrenci Özeti (öğretmen, salt-okur) | KIRO2 Ogretmen Ogrenci Ozet.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| Veli Bağlama (KVKK, iki taraf) | KIRO2 Veli Baglama.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Ödev Atama | KIRO2 Odev Atama.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Veli Bağlama (KVKK, iki taraf) | KIRO2 Veli Baglama.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Ödev Atama | KIRO2 Odev Atama.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Sınıf Kurulumu ("İlk sınıfını kur") | KIRO2 Sinif Kurulum.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Ödevlerim | KIRO2 Odevlerim.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 

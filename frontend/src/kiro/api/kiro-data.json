@@ -2700,5 +2700,63 @@
   "siniflar": [
     { "id": "12a-say", "ad": "12-A", "seviye": "12. Sınıf", "ders": "Sayısal", "ogrenciSayisi": 32 },
     { "id": "11b-ea", "ad": "11-B", "seviye": "11. Sınıf", "ders": "Eşit Ağırlık", "ogrenciSayisi": 28 }
-  ]
+  ],
+  "veliBaglama": {
+    "veliBaglamaKodu": "482913",
+    "cocukAd": "Hüseyin",
+    "cocukBas": "HA",
+    "veliAd": "Ayşe Ateş",
+    "veliBas": "AA",
+    "scope": {
+      "gorur": [
+        "Haftalık çalışma süresi ve plan uyumu",
+        "Deneme sonuçları ve net gelişimi",
+        "Ders bazında hâkimiyet özeti",
+        "Günlük seri (istikrar göstergesi)"
+      ],
+      "gormez": [
+        "AI sohbet içerikleri",
+        "Ruh hâli kayıtları",
+        "Soru bazlı cevap detayları",
+        "Arkadaş etkileşimleri"
+      ]
+    },
+    "pending": {
+      "relationId": "rel-482913",
+      "veliAd": "Ayşe Ateş",
+      "veliBas": "AA",
+      "scope": {
+        "gorur": [
+          "Haftalık çalışma süresi ve plan uyumu",
+          "Deneme sonuçları ve net gelişimi",
+          "Ders bazında hâkimiyet özeti",
+          "Günlük seri (istikrar göstergesi)"
+        ],
+        "gormez": [
+          "Sohbetlerin (AI koç dahil)",
+          "Ruh hâli seçimlerin",
+          "Tek tek hangi soruya ne dediğin",
+          "Arkadaş mesajlaşmaların"
+        ]
+      }
+    }
+  },
+  "odevAtama": {
+    "konular": [
+      { "id": "mat-integral", "ad": "İntegral", "hakimiyet": 45, "durum": "zayif", "soruHavuzuHazir": true },
+      { "id": "mat-turev", "ad": "Türev", "hakimiyet": 58, "durum": "zayif", "soruHavuzuHazir": true },
+      { "id": "mat-trig", "ad": "Trigonometri", "hakimiyet": 70, "durum": "gelisiyor", "soruHavuzuHazir": false },
+      { "id": "mat-limit", "ad": "Limit ve Süreklilik", "hakimiyet": 72, "durum": "gelisiyor", "soruHavuzuHazir": true },
+      { "id": "mat-fonk", "ad": "Fonksiyonlar", "hakimiyet": 80, "durum": "iyi", "soruHavuzuHazir": true }
+    ],
+    "roster": [
+      { "id": "o-zk", "no": 1, "ad": "Zeynep Kaya", "ini": "ZK", "theta": 1.4, "hakimiyet": 88, "risk": null, "sonAktif": "Bugün" },
+      { "id": "o-ma", "no": 2, "ad": "Merve Aydın", "ini": "MA", "theta": 1, "hakimiyet": 80, "risk": null, "sonAktif": "Bugün" },
+      { "id": "o-ad", "no": 3, "ad": "Ahmet Demir", "ini": "AD", "theta": 0.9, "hakimiyet": 76, "risk": null, "sonAktif": "Bugün" },
+      { "id": "o-ha", "no": 4, "ad": "Hüseyin Ateş", "ini": "HA", "theta": 0.7, "hakimiyet": 70, "risk": null, "sonAktif": "Bugün" },
+      { "id": "o-es", "no": 5, "ad": "Elif Şahin", "ini": "EŞ", "theta": 0.7, "hakimiyet": 71, "risk": null, "sonAktif": "Dün" },
+      { "id": "o-cy", "no": 6, "ad": "Can Yıldız", "ini": "CY", "theta": -0.1, "hakimiyet": 58, "risk": "Net düşüşte", "sonAktif": "3 gün önce" },
+      { "id": "o-bc", "no": 7, "ad": "Burak Çelik", "ini": "BÇ", "theta": -0.5, "hakimiyet": 49, "risk": "5 gündür giriş yok", "sonAktif": "5 gün önce" }
+    ]
+  }
 }

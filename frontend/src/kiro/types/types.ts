@@ -626,6 +626,85 @@ export interface KurulanSinif {
   katilimLink: string;
 }
 
+// ============================================================================
+// SPRINT9-B · Grup 7-B — Veli Bağlama (KVKK) + Ödev Atama
+// Şekiller api-client sözleşmesiyle birebir. SUNUCU-OTORİTE: bağlantı kodunun
+// üretimi/doğrulaması, KVKK rıza kaydı ve θ-set kurulumu SUNUCUDA yapılır —
+// istemci (mock'ta bile) kod üretmez, rızayı hesaplamaz, soru setini seçmez.
+// ============================================================================
+
+// ---------- Veli Bağlama (KVKK; kod-akışı mock — backend e-posta tabanlı) ----------
+
+/** 6-hane bağlantı kodu doğrulama sonucu — SUNUCU doğrular (istemci kod üretmez).
+ *  gecerli=false ise diğer alanlar boş bırakılır. */
+export interface LinkCodeSonuc {
+  gecerli: boolean;
+  cocukAd?: string;
+  cocukBas?: string;   // baş harfler (avatar)
+  relationId?: string; // sonraki adım (rıza/poll) bu id ile ilerler (sunucudan)
+}
+
+/** Öğrenci tarafı bekleyen veli isteği — scope iki yönlü şeffaflık (görür/görmez) */
+export interface PendingVeliIstek {
+  relationId: string;
+  veliAd: string;
+  veliBas: string;     // baş harfler (avatar)
+  scope: { gorur: string[]; gormez: string[] };
+}
+
+/** KVKK aydınlatma metni sürümü — rıza kaydında sunucu bu sürümü mühürler */
+export interface KvkkNotice {
+  version: string;
+}
+
+/** kiro-data.veliBaglama mock anahtarı (server-sim doğrulama + iki-taraf şeffaflık) */
+export interface VeliBaglamaData {
+  /** Geçerli 6-hane kod (server-sim; verifyLinkCode bununla deterministik karşılaştırır) */
+  veliBaglamaKodu: string;
+  cocukAd: string;
+  cocukBas: string;
+  veliAd: string;
+  veliBas: string;
+  /** Öğrenci tarafı bekleyen istek (getPendingParentRequest mock kaynağı) */
+  pending: PendingVeliIstek;
+  /** Veli tarafı rıza ekranı kapsam listeleri */
+  scope: { gorur: string[]; gormez: string[] };
+}
+
+// ---------- Ödev Atama (Ödevlerim/SPRINT1 döngüsü; zengin-atama backend YOK → mock) ----------
+
+/** Atama için konu atomu — zayıflık sıralı (sunucu sıralar; istemci sıralama YAPMAZ) */
+export interface KonuAtom {
+  id: string;
+  ad: string;
+  hakimiyet: number;                     // 0-100 (sınıf birleşik kestirim)
+  durum: 'zayif' | 'gelisiyor' | 'iyi';
+  soruHavuzuHazir: boolean;              // set kurulabilir mi (sunucu türetir)
+}
+
+/** Atama ekranı öğrenci satırı — SinifOgrenci + id + ini (avatar).
+ *  net/hâkimiyet/theta/risk SUNUCUDAN; istemci türev üretmez. */
+export interface AtamaOgrenci extends SinifOgrenci {
+  id: string;
+  ini: string;
+}
+
+/** Ödev atama formu — istemci YALNIZ formu gönderir; θ-set kurulumu SUNUCUDA
+ *  (kisisel=true → her öğrencinin seti sunucuda θ'sına göre seçilir). */
+export interface AtamaForm {
+  konuId: string;
+  adet: number;
+  teslimTarihi: string;
+  kisisel: boolean;
+  ogrenciIds: string[];
+}
+
+/** kiro-data.odevAtama mock anahtarı (zayıflık-sıralı konular + zengin roster) */
+export interface OdevAtamaData {
+  konular: KonuAtom[];
+  roster: AtamaOgrenci[];
+}
+
 // ---------- Canlı "bugün" yardımcıları ----------
 
 export interface BugunBilgi {
@@ -688,4 +767,7 @@ export interface KiroData extends KiroHelpers {
   /** id → tek öğrenci özeti (öğretmen salt-okur görünümü) */
   ogrenciOzetleri: Record<string, OgrenciOzeti>;
   siniflar: OgretmenSinif[];
+  // --- SPRINT9-B · Grup 7-B mock anahtarları ---
+  veliBaglama: VeliBaglamaData;
+  odevAtama: OdevAtamaData;
 }

@@ -205,7 +205,7 @@ export function OgrenciOzetiPage({ ogrenciId = 'o-ha' }: OgrenciOzetiPageProps =
                   </div>
                   <span style={{ flex: 1 }} />
                   <a
-                    href={`/ogretmen/odev-ata?ogrenci=${encodeURIComponent(ozeti.id)}`}
+                    href={`/ogretmen/odev/yeni?ogrenci=${encodeURIComponent(ozeti.id)}`}
                     style={{ boxSizing: 'border-box', display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 44, padding: '0 16px', borderRadius: 11, background: color.dawn.coralCtaBg, color: '#fff', fontSize: 13.5, fontWeight: 700, textDecoration: 'none' }}
                   >
                     {Ikon.arti}
