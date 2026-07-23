@@ -16,6 +16,7 @@ import * as React from 'react';
 import { configureKiroApi, getLeague, getLevel, getMe } from '../api/api-client';
 import type { LeagueData, LeagueStanding, MockData } from '../api/api-client';
 import kiroData from '../api/kiro-data.json';
+import { useAyar } from '../lib/ayarStore';
 import { color, font } from '../tokens';
 import type { Persona, SeviyeBilgi } from '../types';
 import { KiroThemeProvider, numText, serifText, SideNav, ErrorState, EmptyState, Skeleton, useReducedMotion } from '../ui';
@@ -209,17 +210,23 @@ interface Veri {
 export interface LigPageProps {
   /** Kaygı-duyarlı sakin çerçeve (varsayılan AÇIK) — kapalıyken yarışmacı dil + amber geri-sayım */
   sakinMod?: boolean;
-  /** Başlangıçta sıralama gizli mi (kullanıcı tercihi; toggle ile değişir) */
+  /**
+   * Storybook/test override — verilirse store yerine bu değeri gösterir.
+   * OMITTED (varsayılan) → durum useAyar.hideRanking'ten okunur (Ayarlar ile tek kaynak).
+   */
   siralamaGizli?: boolean;
   /** Sunucu bu turda seviye atlattıysa (getLevel'de sinyal YOK → dışarıdan gelir; varsayılan false) */
   leveledUp?: boolean;
 }
 
-export function LigPage({ sakinMod = true, siralamaGizli = false, leveledUp = false }: LigPageProps): React.ReactElement {
+export function LigPage({ sakinMod = true, siralamaGizli, leveledUp = false }: LigPageProps): React.ReactElement {
   const reduced = useReducedMotion();
   const darNav = useMedia('(max-width: 1023px)');
   const darGrid = useMedia('(max-width: 760px)');
-  const [rankHidden, setRankHidden] = React.useState(siralamaGizli);
+  // Sıralama-gizleme TEK KAYNAK: useAyar.hideRanking (Ayarlar "Sıralamayı gizle" ile çift-yönlü).
+  // siralamaGizli prop yalnız Storybook/test override'ı — verilmezse store okunur.
+  const storeHidden = useAyar((s) => s.hideRanking);
+  const rankHidden = siralamaGizli ?? storeHidden;
   const [duyuru, setDuyuru] = React.useState('');
   const [veri, setVeri] = React.useState<Veri | null>(null);
   const [hata, setHata] = React.useState(false);
@@ -242,12 +249,13 @@ export function LigPage({ sakinMod = true, siralamaGizli = false, leveledUp = fa
   }, [yeniden]);
 
   const toggle = React.useCallback(() => {
-    setRankHidden((prev) => {
-      const next = !prev;
-      setDuyuru(next ? 'Sıralama gizlendi' : 'Sıralama gösteriliyor');
-      return next;
-    });
-  }, []);
+    // Override modu (siralamaGizli prop verilmiş — Storybook/test): NO-OP.
+    // Görünen durum prop'a kilitli; store'a yazmak görünür etki yapmaz + global store'u kirletir.
+    if (siralamaGizli != null) {return;}
+    const next = !useAyar.getState().hideRanking;
+    useAyar.getState().setHideRanking(next);
+    setDuyuru(next ? 'Sıralama gizlendi' : 'Sıralama gösteriliyor');
+  }, [siralamaGizli]);
 
   // Süre 450ms (<600ms; paper — kanon-allow gerekmez). Stagger reduced-motion guard'lı.
   const anim = (delay: number): React.CSSProperties =>

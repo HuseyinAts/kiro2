@@ -13,6 +13,7 @@ import * as React from 'react';
 import { configureKiroApi, getFriends, getMe, postFriendCongrats, postFriendNudge } from '../api/api-client';
 import type { MockData } from '../api/api-client';
 import kiroData from '../api/kiro-data.json';
+import { useAyar } from '../lib/ayarStore';
 import { color, font } from '../tokens';
 import type { Friend, FriendsData, Persona } from '../types';
 import {
@@ -179,6 +180,8 @@ function FriendRow({ f, gold, kompakt, sent, onCongrats, floating, reduced }: {
 
 export function ArkadasSerisiPage(): React.ReactElement {
   const reduced = useReducedMotion();
+  // Sakin mod: seri-dürtme baskısını sustur (nudge CTA gizlenir). Congrats KORUNUR.
+  const calmMode = useAyar((s) => s.calmMode);
   const dar = useMedia('(max-width: 1023px)');
   const kompakt = useMedia('(max-width: 560px)');
 
@@ -318,25 +321,35 @@ export function ArkadasSerisiPage(): React.ReactElement {
                       <span style={{ fontSize: 13, color: 'rgba(255,240,232,0.92)', flex: 1, lineHeight: 1.4, minWidth: 0 }}>
                         Sen bugün <Tik srText="tamamlandı" c="#FFE4D0" size={12} /> · {nudgedEff ? `${partner}'e nazik bir dürtme gönderildi` : `${partner} henüz çalışmadı`}
                       </span>
-                      <button
-                        type="button" onClick={durt} disabled={nudgedEff} aria-pressed={!!nudgedEff}
-                        aria-label={nudgedEff ? 'Dürtme gönderildi' : `${partner} arkadaşını dürt`}
-                        style={{
-                          flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          border: 'none', padding: 0, background: 'transparent', fontFamily: 'inherit',
-                          cursor: nudgedEff ? 'default' : 'pointer', minHeight: 44, boxSizing: 'border-box',
-                        }}
-                      >
+                      {calmMode ? (
+                        // Sakin mod: dürtme sustur — baskı-azaltma. CTA render edilmez, kısa açıklama kalır.
                         <span style={{
-                          display: 'inline-flex', alignItems: 'center', gap: 5,
-                          background: nudgedEff ? 'rgba(255,255,255,0.18)' : '#fff',
-                          color: nudgedEff ? 'rgba(255,240,232,0.92)' : color.dawn.coralTextOnLight,
-                          borderRadius: 9, padding: '7px 13px', fontSize: 12, fontWeight: 800,
-                          whiteSpace: 'nowrap', minHeight: 34, boxSizing: 'border-box',
+                          flexShrink: 0, maxWidth: 132, fontSize: 12, fontWeight: 700,
+                          color: 'rgba(255,240,232,0.92)', lineHeight: 1.35, textAlign: 'right', boxSizing: 'border-box',
                         }}>
-                          {nudgedEff ? <>Gönderildi <Tik srText="" c="#FFE4D0" size={12} /></> : `${partner}'i dürt`}
+                          Sakin mod açık — dürtme kapalı
                         </span>
-                      </button>
+                      ) : (
+                        <button
+                          type="button" onClick={durt} disabled={nudgedEff} aria-pressed={!!nudgedEff}
+                          aria-label={nudgedEff ? 'Dürtme gönderildi' : `${partner} arkadaşını dürt`}
+                          style={{
+                            flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            border: 'none', padding: 0, background: 'transparent', fontFamily: 'inherit',
+                            cursor: nudgedEff ? 'default' : 'pointer', minHeight: 44, boxSizing: 'border-box',
+                          }}
+                        >
+                          <span style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 5,
+                            background: nudgedEff ? 'rgba(255,255,255,0.18)' : '#fff',
+                            color: nudgedEff ? 'rgba(255,240,232,0.92)' : color.dawn.coralTextOnLight,
+                            borderRadius: 9, padding: '7px 13px', fontSize: 12, fontWeight: 800,
+                            whiteSpace: 'nowrap', minHeight: 34, boxSizing: 'border-box',
+                          }}>
+                            {nudgedEff ? <>Gönderildi <Tik srText="" c="#FFE4D0" size={12} /></> : `${partner}'i dürt`}
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </div>
 

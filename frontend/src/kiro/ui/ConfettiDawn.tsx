@@ -1,11 +1,15 @@
 import * as React from 'react';
 
+import { useAyar } from '../lib/ayarStore';
+
 // Kaynak: KIRO2 Kutlama.dc.html — deterministik şafak konfetisi.
 // KANON: transform-only animasyon; prefers-reduced-motion'da TAMAMEN kapalı.
 // Kutlama yalnız GERÇEK kademe geçişi / gerçek başarıda — sahte tamamlanmada değil.
 
-/** Faz 1.4'teki temel a11y aracı — başka bileşenler de kullanabilir. */
+/** Faz 1.4'teki temel a11y aracı — başka bileşenler de kullanabilir.
+ *  OS tercihine EK OLARAK ayarlardaki "Sakin mod" (calmMode) da hareketi kısar. */
 export function useReducedMotion(): boolean {
+  const calmMode = useAyar((s) => s.calmMode);
   const [reduced, setReduced] = React.useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
@@ -15,7 +19,7 @@ export function useReducedMotion(): boolean {
     mq.addEventListener('change', on);
     return () => mq.removeEventListener('change', on);
   }, []);
-  return reduced;
+  return reduced || calmMode;
 }
 
 /** Şafak paleti — coral · şeftali · altın · leylak · nane */

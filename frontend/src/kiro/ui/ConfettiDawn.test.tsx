@@ -3,6 +3,7 @@ import { axe, toHaveNoViolations } from 'jest-axe';
 import * as React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+import { useAyar, resetAyar } from '../lib/ayarStore';
 import { ConfettiDawn } from './ConfettiDawn';
 import { KiroThemeProvider } from './theme';
 
@@ -26,9 +27,13 @@ function setReducedMotion(reduce: boolean) {
 }
 
 describe('ConfettiDawn', () => {
-  beforeEach(() => setReducedMotion(false));
+  beforeEach(() => {
+    setReducedMotion(false);
+    resetAyar();
+  });
   afterEach(() => {
     window.matchMedia = originalMatchMedia;
+    resetAyar();
   });
 
   it('konfeti parçalarını count kadar render eder', () => {
@@ -46,6 +51,13 @@ describe('ConfettiDawn', () => {
 
   it('azaltılmış hareket tercihinde konfeti render edilmez', () => {
     setReducedMotion(true);
+    const { container } = paper(<ConfettiDawn count={12} />);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it('sakin mod açıkken (calmMode) OS tercihi olmasa da konfeti render edilmez', () => {
+    setReducedMotion(false);
+    useAyar.getState().setCalmMode(true);
     const { container } = paper(<ConfettiDawn count={12} />);
     expect(container).toBeEmptyDOMElement();
   });

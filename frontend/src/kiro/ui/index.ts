@@ -48,3 +48,6 @@ export type { QuestionCardProps } from './QuestionCard';
 // --- SPRINT9 · Grup 7-A paylaşılan çubuk (Veli · Öğretmen · Öğrenci-Özeti) ---
 export { WeeklyActivityBars } from './WeeklyActivityBars';
 export type { WeeklyActivityBarsProps } from './WeeklyActivityBars';
+// --- SPRINT10-C · Ayarlar aç/kapa anahtarı ---
+export { Switch } from './Switch';
+export type { SwitchProps } from './Switch';

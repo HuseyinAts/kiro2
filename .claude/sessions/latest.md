@@ -1,35 +1,33 @@
-## Session Handoff — 2026-07-23 (SPRINT10-B · GRUP 8 billing 6/7)
+## Session Handoff — 2026-07-23 (SPRINT10-C · GRUP 8 TAMAM 7/7)
 **Branch:** feature/self-evolution-optimization (origin'in önünde — push YOK)
-**Son commit:** (SPRINT10-B commit — bkz. git log; öncesi 7f08a8e2d = SPRINT10-A)
+**Son commit:** (SPRINT10-C commit — bkz. git log; zincir 296d74d7c→7f08a8e2d[S10-A]→8af4e31ec[S10-B]→[S10-C])
 
 ### Yapılanlar (Faz 3 tasarım-portu → frontend/src/kiro/)
-- **Grup 8 → 6/7.** S10-A (Bildirim·Alan·Çevrimdışı) + S10-B billing zinciri (Abonelik·Ödeme·Plan Yönetimi) + paylaşılan VeliYonlendirmeKarti. İlerleme **37/42 ekran + QuestionCard + WeeklyActivityBars + VeliYonlendirmeKarti**.
-- **S10-B rapor:** `docs/audits/2026-07-23_sprint10b-billing.md`. Keşif: `2026-07-23_sprint10-grup8-kesif.md`. Durum: `design/PORT_DURUM.md`.
-- **Infra (additive):** types +11 (PlanTier/FaturaDonem/AbonelikPlan/AbonelikData/OdemeFaz/OdemeOzeti/KartFormState/ThreeDSDurum/OdemeYontem/Fatura/AbonelikYonetim) · api-client +8 · msw +8 · kiro-data +2 · `screens/billing/VeliYonlendirmeKarti.tsx`.
+- **Grup 8 (İş & dayanıklılık) TAMAM 7/7.** S10-A (Bildirim·Alan·Çevrimdışı) + S10-B billing (Abonelik·Ödeme·Plan) + S10-C (Ayarlar + davranış wiring). İlerleme **38/42 ekran + QuestionCard + WeeklyActivityBars + VeliYonlendirmeKarti + ui/Switch + ayarStore**.
+- **S10-C rapor:** `docs/audits/2026-07-23_sprint10c-ayarlar.md`. Durum: `design/PORT_DURUM.md`.
+- **Yeni altyapı:** `ui/Switch` (role=switch, KAPALI track görünür sınır #8F8577 3.63:1, ariaDescribedby) · `kiro/lib/ayarStore.ts` (Zustand persist, resetAyar test izolasyonu) · `theme.tsx` calmMode kök `.k-calm` + `tokens.css` `.k-calm` bloğu.
 
-### Kullanıcı Kararları (uygulandı — S10-B)
-- **Ödeme/PSP saf-mock:** 3DS timer-sim (`getOdeme3dsSonuc`, istemci sonuç üretmez); kart PCI UI-only (backend'e gitmez). Gerçek PSP Faz 4.
-- **Öğrenci fiyat GİZLİ:** Abonelik+Plan+Ödeme guard → `VeliYonlendirmeKarti`; satın-alma yalnız veli (KVKK). Öğrenci MarkaBar 'Premium' de gizlendi.
-- **İsim:** Plan*/PlanWeek (çalışma planı) dokunulmadı; AbonelikPlan/AbonelikYonetim. Fiyat `veliDashboard.premium`+`roi` hizalı.
-- **Sakin-mod + Sıralamayı-gizle:** tek `KullaniciAyar` + tam davranış — **S10-C'de uygulanacak**.
+### Kullanıcı Kararı uygulandı (S10-C — "Tek kaynak + TAM davranış")
+- `KullaniciAyar` (dailyGoal·5 bildirim·calmMode·hideRanking) tek-kaynak. **calmMode→reduced-motion GLOBAL** (JS-motion `useReducedMotion` + CSS-ambient `.k-calm`); **hideRanking→Lig** çift-yönlü tek-kaynak; **calmMode→Arkadaş Serisi dürtme-sustur**. Faz3 localStorage persist; Faz4 per-user `/preferences`.
 
 ### Fail Eden Testler
-- YOK. vitest **61 dosya / 383 test PASS** · kanon **0 ihlal** (14 uyarı pre-existing) · tsc **0** · **breakpoint 0 FAIL / 455** · axe temiz.
+- YOK. vitest **65 dosya / 423 test PASS** · kanon **0 ihlal** (14 uyarı pre-existing) · tsc **0** · **breakpoint 0 FAIL / 462** · axe temiz.
 
-### Adversarial (S10-B, 23 ajan)
-- 16 doğrulandı / 13 unique / 3 phantom. major: Abonelik `ink.faded2` AA (2.08:1)→muted (S10-A Alan ile aynı sınıf; **DİKKAT: her yeni ekranda faded/faded2 okunur-metin taraması yap**) + Ödeme kart-input odak (WCAG 2.4.7) + decline role=alert (4.1.3). nit KVKK: öğrenci guard/MarkaBar 'Premium' sızıntı; geri-aç sunucu-otorite refetch.
-- **Phantom (Faz 4)**: getAbonelik('ogrenci') fiyat-payload sunucu-strip (ekran-gating yeterli); 3DS 'bekliyor' re-poll (live).
+### Adversarial (S10-C, 13 ajan)
+- 8 doğrulandı / 1 phantom (0 P0/major). **faded2 AA tuzağı YOK** (S10-A Alan + S10-B Abonelik'te çıkmıştı — ders alındı). Fix: DC Gizlilik&veri(KVKK)/Şifre-değiştir/Vurgu-rengi satırları geri; Switch KAPALI track 1.44:1→3.63:1; calmMode gerçek-global (.k-calm); box-sizing; aria-describedby; Lig override no-op.
 
 ### Engelleyiciler / Operatör
-- **Push YAPILMADI** (kullanıcı "push yok" — commit'ler local birikiyor: 296d74d7c→7f08a8e2d→(S10-B)).
-- storybook-static/ (gitignore) commit'e girmemeli.
+- **Push YAPILMADI** (kullanıcı "push yok" — 4 local commit birikti: 296d74d7c→7f08a8e2d→8af4e31ec→[S10-C]).
+- storybook-static/ (gitignore) commit'e girmemeli. Breakpoint gate build-storybook ~10dk+ (storybook büyüdü).
 
 ### Sonraki Adımlar (maks 5)
-1. **S10-C Ayarlar (composite, Grup 8 BİTER):** yeni `ui/Switch` (role=switch+aria-checked+Space/Enter); `KullaniciAyar` tek-kaynak (hideRanking+calmMode) + tam davranış sözleşmesi (Lig gizle · reduced-motion · dürtme-sustur · konfeti-kıs), Faz3 localStorage/Zustand mock; SideNav(ogrenci); abonelik-banner gömülü **dusk aksan** (ikincil metin tokens.dusk.ink2, paper #6B6478 DEĞİL); tema kilitli (SegmentedControl kullanma). OSB ayarları gerçek backend (Faz 4).
-2. Sonra **Grup 9 (AI: AI Sohbet · Sokratik · İnteraktif Çözüm; Çözüm Paylaş MVP-dışı)** + Auth kalıntı (İlk Hafta + route guard).
-3. Faz 4 backend wiring: billing (getAbonelik öğrenci-strip + PSP), Çevrimdışı `/offline/*`, Bildirim mark-read.
+1. **Grup 9 — AI & Çözüm (3 ekran):** AI Sohbet · Sokratik AI (mock→Faz4 proxy `enhanced_chat.py`, bilge_alp DEĞİL) · İnteraktif Çözüm. (Çözüm Paylaş MVP-dışı.) Aynı pipeline.
+2. **İlk Hafta** (Grup 1 auth kalıntı) + **route guard + rol yönlendirmesi** (öğrenci/veli/öğretmen) → Faz 3 kapanış (42/42).
+3. **Ödev Atama ↔ Ödevlerim tam döngü E2E** (ortak mock-store).
+4. **Faz 3 kapanış:** push (onayla) + full frontend derleme (`tsc` proje-geneli + `vite build`, kiro/ dışı entegrasyon) + opsiyonel BackstopJS pixel-ref.
+5. **Faz 4 backend wiring:** billing (öğrenci-strip+PSP), Çevrimdışı `/offline/*`, Bildirim birleşik+mark-read, Ayarlar `/preferences`, Alan getCurriculum path drift.
 
 ### Kararlar (gelecek session tekrar tartışmasın)
-- Grup 8 tema=**paper** (7/7 DC-kanıtlı). Faded/faded2 okunur metinde YASAK→ink.muted (her ekran tara). risk=amber (pozitif metrikte amber KULLANMA→coral). İptal düğmesi coral-METİN (kırmızı değil).
-- KVKK öğrenci: fiyat/plan/tier-adı GÖSTERME (screen-gate); Faz4 sunucu-strip. PCI: kart UI-only.
-- Metod/tip collision → yeni-ad. Kök box-sizing:border-box; hit-target ≥44; breakpoint fail→deterministik parent-zincir teşhisi.
+- Grup 8 tema=**paper** (7/7 DC-kanıtlı). **Her yeni ekranda faded/faded2 okunur-metin taraması yap** (3 sprint üst üste çıktı → ink.muted). risk=amber; pozitif metrikte coral. İptal düğmesi coral-METİN (kırmızı değil). KVKK: öğrenci fiyat/plan/tier-adı gösterme (screen-gate; Faz4 sunucu-strip). PCI: kart UI-only.
+- calmMode global mekanizma: `theme.tsx` `.k-calm` kök-sınıf + `tokens.css` bloğu (JS-motion useReducedMotion + CSS-ambient). Yeni motion eklerken ikisi de calmMode'a saygı duyar.
+- Metod/tip collision → yeni-ad; Plan*/PlanWeek=çalışma planı, dokunma. Kök box-sizing:border-box; hit-target ≥44; UI-bileşen kontrastı ≥3:1; breakpoint fail→deterministik parent-zincir teşhisi.

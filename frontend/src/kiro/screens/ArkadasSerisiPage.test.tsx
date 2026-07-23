@@ -1,12 +1,17 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
+import { useAyar, resetAyar } from '../lib/ayarStore';
 import { ArkadasSerisiPage } from './ArkadasSerisiPage';
 
 expect.extend(toHaveNoViolations);
 
 describe('ArkadasSerisiPage', () => {
+  // ayarStore global + persist(localStorage) → her testte izole et (sızıntı önle).
+  beforeEach(() => resetAyar());
+  afterEach(() => resetAyar());
+
   it('varsayılan render: başlık + ortak seri hero + birlikte görev + arkadaşlar (sunucu verisi)', async () => {
     render(<ArkadasSerisiPage />);
     // Header
@@ -56,6 +61,24 @@ describe('ArkadasSerisiPage', () => {
     fireEvent.click(kaanTebrik);
     expect(kaanTebrik).toHaveAttribute('aria-pressed', 'true');
     expect(kaanTebrik).toBeDisabled();
+  });
+
+  it('sakin mod: calmMode açıkken dürtme CTA render edilmez + kısa açıklama görünür (baskı-azaltma); tebrik korunur', async () => {
+    useAyar.getState().setCalmMode(true);
+    render(<ArkadasSerisiPage />);
+    await screen.findByText('Kaan Demir');
+    // Dürtme CTA'sı yok — ne "dürt" ne "Dürtme gönderildi" butonu
+    expect(screen.queryByRole('button', { name: /dürt/i })).not.toBeInTheDocument();
+    // Kısa açıklama görünür (seri-dürtme sustur)
+    expect(screen.getByText(/Sakin mod açık/)).toBeInTheDocument();
+    // Congrats/tebrik davranışı KORUNUR
+    expect(screen.getByRole('button', { name: 'Kaan Demir için tebrik gönder' })).toBeInTheDocument();
+  });
+
+  it('sakin mod kapalı (varsayılan): dürtme CTA görünür', async () => {
+    render(<ArkadasSerisiPage />);
+    expect(await screen.findByRole('button', { name: /Elif arkadaşını dürt/ })).toBeInTheDocument();
+    expect(screen.queryByText(/Sakin mod açık/)).not.toBeInTheDocument();
   });
 
   it('sıralama: Seri/XP segmented control seçimi değişir (radio state)', async () => {

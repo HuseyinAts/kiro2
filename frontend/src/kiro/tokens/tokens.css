@@ -119,7 +119,21 @@
 /* Odak halkası (kanon) */
 :focus-visible { outline: 2px solid rgba(255, 111, 92, 0.7); outline-offset: 2px; }
 
+/* Switch (aç/kapa) odak halkası — pill için özel yarıçap (SPRINT10-C · Switch.tsx'ten
+   taşındı: her örnekte ayrı <style> enjekte etmek yerine tek CSS kuralı). */
+.kiro-switch:focus-visible { outline: 2px solid var(--k-coral-cta-bg); outline-offset: 2px; border-radius: var(--k-r-pill); }
+
 /* Kaygı-duyarlı motion tabanı */
 @media (prefers-reduced-motion: no-preference) {
   a, button, [role='button'] { transition: transform var(--k-dur-fast) ease, filter var(--k-dur-base) ease; }
+}
+
+/* Sakin mod (calmMode) — kök <html>'e .k-calm eklenir (theme.tsx). JS store yalnız
+   JS-motion'ı (useReducedMotion) kısar; CSS-@media ambient motion (Skeleton kiroSweep,
+   konfeti keyframe'leri) store'u göremez. Bu blok prefers-reduced-motion'ı aynalayıp
+   CSS-ambient motion'ı da etkisizler. ADDITIVE: sınıf yoksa hiçbir etki yok. */
+.k-calm *, .k-calm *::before, .k-calm *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
 }

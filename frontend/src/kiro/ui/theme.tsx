@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { color, font } from '../tokens';
+import { useAyar } from '../lib/ayarStore';
 
 /** Tema = ekran TÜRÜ (çalışma=paper, duygusal=dusk). Kullanıcı toggle'ı DEĞİL. */
 export type KiroTheme = 'paper' | 'dusk';
@@ -7,6 +8,17 @@ export type KiroTheme = 'paper' | 'dusk';
 const ThemeCtx = React.createContext<KiroTheme>('paper');
 
 export function KiroThemeProvider(props: { theme: KiroTheme; children: React.ReactNode }) {
+  // Sakin mod GLOBAL: useReducedMotion (JS store) yalnız JS-motion'ı kısar; CSS-@media
+  // ambient motion (Skeleton kiroSweep, konfeti keyframe'leri) store'u göremez. Kök
+  // <html>'e .k-calm eklenince tokens.css'teki blok CSS-ambient motion'ı da etkisizler.
+  // ADDITIVE: calmMode default false → sınıf yok → mevcut davranış değişmez.
+  const calmMode = useAyar((s) => s.calmMode);
+  React.useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    const root = document.documentElement;
+    root.classList.toggle('k-calm', calmMode);
+    return () => root.classList.remove('k-calm');
+  }, [calmMode]);
   return React.createElement(ThemeCtx.Provider, { value: props.theme }, props.children);
 }
 

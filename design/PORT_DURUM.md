@@ -227,6 +227,20 @@ Sonraki: **S10-C Ayarlar** (composite + yeni `ui/Switch`; KullaniciAyar tek-kayn
 
 ---
 
+# KIRO2 — Faz 3 · SPRINT10-C Durumu (2026-07-23 · GRUP 8 BİTER 7/7)
+
+**Ayarlar ✅ + ui/Switch + KullaniciAyar store + davranış wiring** (rapor: `docs/audits/2026-07-23_sprint10c-ayarlar.md`).
+- **Karar (Tek kaynak + TAM davranış):** `KullaniciAyar` (Zustand+localStorage) tek-kaynak. calmMode→reduced-motion GLOBAL (`useReducedMotion` + `theme.tsx` kök `.k-calm` + `tokens.css` bloğu → CSS-ambient de kısılır); hideRanking→Lig çift-yönlü; calmMode→Arkadaş Serisi dürtme-sustur.
+- **Yeni:** `ui/Switch` (role=switch, KAPALI track görünür sınır #8F8577 3.63:1 WCAG 1.4.11, ariaDescribedby) + `kiro/lib/ayarStore.ts` (resetAyar test izolasyonu).
+- **Ayarlar:** öğrenci paper + tema KİLİTLİ; gömülü dusk abonelik-banner (dusk.ink2); Hesap (Şifre değiştir·Gizlilik&veri KVKK·Çıkış); "Kaydedildi" sonlu flash.
+- **Adversarial (13 ajan):** 8 doğrulandı / 1 phantom (0 P0/major; faded2 tuzağı YOK). Fix: DC satırları geri · Switch kontrast · calmMode gerçek-global · box-sizing · aria-describedby · Lig override no-op · +test.
+- **Kapı:** kanon **0** · tsc **0** · vitest **65 dosya / 423 test PASS** · **breakpoint 0 FAIL / 462** · axe temiz.
+
+**İlerleme: 38/42 ekran + QuestionCard + WeeklyActivityBars + VeliYonlendirmeKarti + ui/Switch + ayarStore. Grup 8 TAMAM (7/7).**
+Sonraki: **Grup 9 AI & Çözüm (3)** + Auth kalıntı (İlk Hafta + route guard) → Faz 3 kapanış (42/42).
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -304,13 +318,13 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 
 Ödev Atama ↔ Ödevlerim tek döngü olarak test edildi: ☐
 
-## 8 · İş & dayanıklılık (7) — kısmi 6/7 (SPRINT10-A+B, 2026-07-23)
+## 8 · İş & dayanıklılık (7) — ✅ TAMAM 7/7 (SPRINT10-A+B+C, 2026-07-23)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
 | Abonelik (?rol=veli) | KIRO2 Abonelik.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Ödeme (+3DS bekleme durumu) | KIRO2 Odeme.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Plan Yönetimi (premium) | KIRO2 Plan Yonetimi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| Ayarlar | KIRO2 Ayarlar.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Ayarlar | KIRO2 Ayarlar.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Bildirim Merkezi | KIRO2 Bildirim Merkezi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Alan Kütüphanesi (ünite drill) | KIRO2 Alan Kutuphanesi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Çevrimdışı | KIRO2 Cevrimdisi.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
