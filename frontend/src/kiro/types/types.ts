@@ -940,6 +940,52 @@ export interface SokratikSenaryo {
   adimlar: string[];
 }
 
+// ============================================================================
+// FAZ 3 KAPANIŞ · İlk Hafta (onboarding momentum yayı) + Rol (route guard kaynağı)
+// Şekiller api-client sözleşmesiyle birebir. SUNUCU-OTORİTE: currentDay/yüzde/
+// odakKonu (mastery-sıralı)/tier/zayifAtom + gün durumları SUNUCUDA belirlenir —
+// istemci (mock'ta bile) bunları TÜRETMEZ; veri kiro-data'dan OKUNUR. Rol AYRI
+// kaynak — Persona'ya EKLENMEZ; route guard landing bundan türer. Öğrenci → SEN.
+// ============================================================================
+
+/** Kullanıcı rolü — route guard landing kaynağı (Persona'dan AYRI; GET /me/rol). */
+export type KiroRol = 'ogrenci' | 'veli' | 'ogretmen';
+
+/** İlk Hafta 7-gün yayı düğümü — durum + (soldaki) bağlaç rengi SUNUCUDAN. */
+export interface IlkHaftaGun {
+  dayNo: number;
+  label: string;
+  durum: 'done' | 'current' | 'lock';
+  /** Soldaki bağlaç çizgisinin rengi (done=yeşil · current=şeftali · lock=nötr); gün 1'de yok */
+  connColor?: string;
+}
+
+/** Kilometre-taşı kartı (BUGÜN/YARIN/GÜN7/NEDEN) — DC kopyası birebir; öğrenci → SEN. */
+export interface IlkHaftaKart {
+  tag: string;
+  title: string;
+  desc: string;
+  tur: 'bugun' | 'yarin' | 'gun7' | 'neden';
+}
+
+/** İlerleme özeti — currentDay/yüzde SUNUCUDAN (istemci gün/oran hesaplamaz). */
+export interface IlkHaftaOzet {
+  currentDay: number;
+  totalDays: number;
+  yuzde: number;
+  mesaj: string;
+}
+
+/** GET /onboarding/ilk-hafta — momentum yayı + kartlar + odak (öğrenci → SEN). */
+export interface IlkHaftaResponse {
+  ozet: IlkHaftaOzet;
+  gunler: IlkHaftaGun[];
+  kartlar: IlkHaftaKart[];
+  odakKonu: string;
+  tier: string;
+  zayifAtom: string;
+}
+
 // ---------- Canlı "bugün" yardımcıları ----------
 
 export interface BugunBilgi {
@@ -1015,4 +1061,7 @@ export interface KiroData extends KiroHelpers {
   // --- SPRINT11 · AI Sohbet + Sokratik AI mock anahtarları ---
   sohbet: SohbetOturum;
   sokratik: SokratikSenaryo;
+  // --- FAZ 3 KAPANIŞ · İlk Hafta + Rol mock anahtarları ---
+  ilkHafta: IlkHaftaResponse;
+  rol: KiroRol;
 }

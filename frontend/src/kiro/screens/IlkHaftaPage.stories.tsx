@@ -1,14 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { fn } from 'storybook/test';
 
-import { GirisPage } from './GirisPage';
+import { IlkHaftaPage } from './IlkHaftaPage';
 
 const meta = {
-  title: 'Kiro/Ekran/Giriş',
-  component: GirisPage,
+  title: 'Kiro/Ekran/IlkHafta',
+  component: IlkHaftaPage,
   parameters: { layout: 'fullscreen' },
-  args: { onLanding: fn() },
-} satisfies Meta<typeof GirisPage>;
+} satisfies Meta<typeof IlkHaftaPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

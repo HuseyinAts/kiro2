@@ -2929,5 +2929,32 @@
       "Bu iki bilgiyi bağlayan hangi kuralı hatırlıyorsun?",
       "İlk adımı sen dener misin; nereden başlarsın?"
     ]
-  }
+  },
+  "ilkHafta": {
+    "ozet": {
+      "currentDay": 3,
+      "totalDays": 7,
+      "yuzde": 36,
+      "mesaj": "Bugün 3. gün — tek görev kaldı, sonra yarına taşırsın."
+    },
+    "gunler": [
+      { "dayNo": 1, "label": "Kalibrasyon · seviyen bulundu", "durum": "done" },
+      { "dayNo": 2, "label": "İlk \"sıradaki adım\"", "durum": "done", "connColor": "#1FB683" },
+      { "dayNo": 3, "label": "Bugün · Türev", "durum": "current", "connColor": "#F0D9CE" },
+      { "dayNo": 4, "label": "İlk Yetkin rozeti", "durum": "lock", "connColor": "#ECE6DD" },
+      { "dayNo": 5, "label": "Harmanlanmış deneme", "durum": "lock", "connColor": "#ECE6DD" },
+      { "dayNo": 6, "label": "Seri güçlenir", "durum": "lock", "connColor": "#ECE6DD" },
+      { "dayNo": 7, "label": "Kilometre taşı + dondurma", "durum": "lock", "connColor": "#ECE6DD" }
+    ],
+    "kartlar": [
+      { "tur": "bugun", "tag": "BUGÜN", "title": "Gün 3 · tek görev", "desc": "30 dk Türev · İç-fonksiyon türevi adımı — motor bugünü tam bu noktaya ayırdı, serini 4. güne taşı. Acelesi yok." },
+      { "tur": "yarin", "tag": "YARIN", "title": "Gün 4 · ilk rozet", "desc": "İlk \"Yetkin\" hâkimiyet rozetini kazanacaksın — motor bunu takip ediyor." },
+      { "tur": "gun7", "tag": "GÜN 7", "title": "Kilometre taşı", "desc": "7 günlük seri + \"dondurma\" açılır: bir gün kaçırsan bile serin korunur." },
+      { "tur": "neden", "tag": "NEDEN", "title": "İlk hafta neden kritik", "desc": "7-gün serisini kuran öğrenci sınava kadar kalır — bu yüzden hafta tasarlandı." }
+    ],
+    "odakKonu": "Türev",
+    "tier": "Yetkin",
+    "zayifAtom": "İç-fonksiyon türevi"
+  },
+  "rol": "ogrenci"
 }

@@ -1,13 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import { GirisPage } from './GirisPage';
+import * as apiClient from '../api/api-client';
 
 expect.extend(toHaveNoViolations);
 
 describe('GirisPage', () => {
+  afterEach(() => vi.restoreAllMocks());
+
   it('giriş sekmesi seçili + serif başlık render eder', () => {
     render(<GirisPage />);
     expect(screen.getByRole('radio', { name: 'Giriş' })).toHaveAttribute('aria-checked', 'true');
@@ -44,6 +47,48 @@ describe('GirisPage', () => {
     await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
     await userEvent.click(screen.getByRole('button', { name: 'Devam edelim' }));
     expect(await screen.findByText('İçerdesin.')).toBeInTheDocument();
+  });
+
+  it('onLanding verilince giriş-tamam CTA rol landing ile çağrılır (ogrenci→/panel)', async () => {
+    const onLanding = vi.fn();
+    render(<GirisPage onLanding={onLanding} rol="ogrenci" />);
+    await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
+    await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
+    await userEvent.click(screen.getByRole('button', { name: 'Devam edelim' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Panele geç' }));
+    expect(onLanding).toHaveBeenCalledWith('/panel');
+  });
+
+  it('onLanding verilince kayıt-tamam CTA seviye-ölçüme yönlendirir (/onboarding)', async () => {
+    const onLanding = vi.fn();
+    render(<GirisPage onLanding={onLanding} />);
+    await userEvent.click(screen.getByRole('radio', { name: 'Kayıt' }));
+    await userEvent.type(screen.getByLabelText('Adın'), 'Ali');
+    await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
+    await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
+    await userEvent.click(screen.getByRole('button', { name: 'Hesabımı aç' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Seviyeni ölçelim' }));
+    expect(onLanding).toHaveBeenCalledWith('/onboarding');
+  });
+
+  it('getRol mount\'ta çağrılmaz, giriş başarısından sonra çekilir (sunucu-otorite)', async () => {
+    const spy = vi.spyOn(apiClient, 'getRol').mockResolvedValue('ogrenci');
+    render(<GirisPage />);
+    expect(spy).not.toHaveBeenCalled();
+    await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
+    await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
+    await userEvent.click(screen.getByRole('button', { name: 'Devam edelim' }));
+    await screen.findByText('İçerdesin.');
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('onLanding verilmezse giriş-tamam CTA no-op (regresyon, kırılmaz)', async () => {
+    render(<GirisPage />);
+    await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
+    await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
+    await userEvent.click(screen.getByRole('button', { name: 'Devam edelim' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Panele geç' }));
+    expect(screen.getByText('İçerdesin.')).toBeInTheDocument();
   });
 
   it('axe: erişilebilirlik ihlali yok', async () => {

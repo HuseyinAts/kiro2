@@ -7,7 +7,9 @@
 // ============================================================================
 import * as React from 'react';
 
-import { login as apiLogin, register as apiRegister } from '../api/api-client';
+import type { KiroRol } from '../types';
+import { getRol, login as apiLogin, register as apiRegister } from '../api/api-client';
+import { roleLanding } from '../lib/routeGuard';
 import { color, font, radius, space } from '../tokens';
 import { KiroThemeProvider } from '../ui/theme';
 import { Button } from '../ui/Button';
@@ -106,7 +108,18 @@ function Alan({ id, label, tip = 'text', value, onChange, placeholder, aciklama,
   );
 }
 
-export function GirisPage(): React.ReactElement {
+/** GirisPage props — WIRING (ADDITIVE): giriş-sonrası rol-landing köprüsü.
+ *  onLanding: 'tamam' CTA'sında çağrılır (prop-enjekte; Faz 4 router'a bağlar) —
+ *    giriş → roleLanding(rol); kayıt → /onboarding (6 soruluk seviye ölçüm).
+ *    Verilmezse eski davranış (no-op) korunur.
+ *  rol: verilirse landing kaynağı; verilmezse giriş BAŞARISINDAN sonra getRol()
+ *    ile yüklenir (kimliksiz mount'ta ÇEKİLMEZ; fallback 'ogrenci'). */
+export interface GirisPageProps {
+  onLanding?: (rota: string) => void;
+  rol?: KiroRol;
+}
+
+export function GirisPage({ onLanding, rol: rolProp }: GirisPageProps = {}): React.ReactElement {
   const [mod, setMod] = React.useState<Mod>('giris');
   const [durum, setDurum] = React.useState<Durum>('form');
   const [ad, setAd] = React.useState('');
@@ -115,6 +128,12 @@ export function GirisPage(): React.ReactElement {
   const [goster, setGoster] = React.useState(false);
   const [hint, setHint] = React.useState<string | null>(null);
   const [gonderiliyor, setGonderiliyor] = React.useState(false);
+  const [yuklenenRol, setYuklenenRol] = React.useState<KiroRol>('ogrenci');
+
+  // Rol = giriş-sonrası landing kaynağı (Persona'dan AYRI). Prop verilirse onu kullan;
+  // yoksa giriş BAŞARISINDAN sonra getRol() ile yüklenir (gonder()) — kimliksiz mount'ta
+  // ÇEKİLMEZ (live'da pre-auth GET /me/rol 401 önlenir); hata/mock-yoksa fallback 'ogrenci'.
+  const rol = rolProp ?? yuklenenRol;
 
   const modaGec = (m: Mod) => {
     setMod(m);
@@ -137,6 +156,9 @@ export function GirisPage(): React.ReactElement {
     try {
       if (mod === 'giris') await apiLogin({ eposta, sifre });
       else await apiRegister({ eposta, sifre, ad });
+      // Kimlik OLUŞTUKTAN sonra rolü çek (sunucu-otorite; pre-auth çağrı YOK). rolProp
+      // verilmişse o kazanır (rol = rolProp ?? yuklenenRol) — bu yük best-effort/fallback.
+      if (rolProp == null) void getRol().then(setYuklenenRol).catch(() => undefined);
       setDurum('tamam');
     } catch {
       // Sunucu hatası → aynı amber hint (sorun sende değil tonu; alarm-kırmızısı YOK)
@@ -215,7 +237,7 @@ export function GirisPage(): React.ReactElement {
                   {mod === 'giris' ? T.tamamGirisAlt : T.tamamKayitAlt}
                 </p>
                 <div style={{ marginTop: space[5] }}>
-                  <Button variant="primary" size="lg" onClick={() => undefined}>
+                  <Button variant="primary" size="lg" onClick={() => onLanding?.(mod === 'kayit' ? '/onboarding' : roleLanding(rol))}>
                     {mod === 'giris' ? T.tamamGirisCta : T.tamamKayitCta}
                   </Button>
                 </div>

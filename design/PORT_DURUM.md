@@ -254,6 +254,20 @@ Sonraki: **Auth kalıntı** — İlk Hafta + route guard/rol yönlendirmesi → 
 
 ---
 
+# 🎯 KIRO2 — FAZ 3 KAPANIŞ (2026-07-24 · 42/42 TAMAM)
+
+**İlk Hafta + route guard** (rapor: `docs/audits/2026-07-24_faz3-kapanis-ilk-hafta-routeguard.md`) → **Faz 3 ekran-portu TAMAM (42/42).**
+- **İlk Hafta:** paper "İlk 7 Gün" yayı (7-gün timeline + 4 milestone; getIlkHafta sunucu-otorite; coral-gradyan→#C2452B, pulse RM-gate).
+- **Route guard:** `kiro/lib/routeGuard.ts` (`KiroRol`/`ROL_LANDING`/`roleLanding`/`AuthGate` prop-enjekte) + `getRol` (Persona'ya dokunmadan) + GirisPage `onLanding` wiring (kayıt→/onboarding, giriş→rol-landing). Faz4: ProtectedRoute reuse.
+- **Adversarial (22 ajan):** 17 doğrulandı / 14 unique / 1 phantom (0 P0). Guard/Persona TEMİZ. major: YARIN tag AA→#3163C4. minör: lock faded3→muted, srOnly durum, scroll a11y, progressbar, MSW handler, GirisPage kayıt-landing. Pre-existing GirisPage nit'leri ertelendi.
+- **Kapı:** kanon **0** · tsc **0** · vitest **71 dosya / 489 test PASS** · **breakpoint 0 FAIL / 490** · axe temiz.
+
+**Faz 3 TOPLAM: 42/42 ekran + paylaşılan varlıklar (QuestionCard · WeeklyActivityBars · VeliYonlendirmeKarti · ui/Switch · ayarStore · routeGuard · ChatBubble).**
+Kapsam-dışı: Çözüm Paylaş (MVP-dışı), Tasarım Dili + E-posta Bildirim (referans yüzeyi), Kaygı Ölçüm + Moderatör Kılavuzu (saha paketi).
+Sonraki (roadmap C/D): Ödev Atama↔Ödevlerim E2E · push (onayla) · full frontend derleme · Faz 4 backend wiring.
+
+---
+
 # KIRO2 — Faz 3 Ekran Port Takibi (43 ekran × 6 DoD — 42 port + 1 MVP-dışı bekleme)
 
 2026-07-22: +1 Sınıf Kurulumu (S11). Tasarım Dili (public sayfa) ve E-posta & Bildirim (kopya sistemi spec'i) PORT EDİLMEZ — referans yüzeyleri.
@@ -267,15 +281,15 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 
 İşaretleme: `☐` → `☑`. Her PR bu dosyayı günceller; grup bitince gruba tarih yaz.
 
-## 1 · Auth & ilk temas (4)
+## 1 · Auth & ilk temas (4) — ✅ TAMAM 4/4 (Faz3 kapanış, 2026-07-24)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |
 |---|---|---|---|---|---|---|---|
 | Giriş & Kayıt | KIRO2 Giris.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Hesap Kurtarma (3 adım) | KIRO2 Hesap Kurtarma.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Onboarding (misafir yerleştirme) | KIRO2 Onboarding.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| İlk Hafta | KIRO Ilk Hafta.dc.html | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| İlk Hafta | KIRO Ilk Hafta.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
-+ route guard + rol yönlendirmesi (öğrenci/veli/öğretmen): ☐
++ route guard + rol yönlendirmesi (öğrenci/veli/öğretmen): ☑ (`kiro/lib/routeGuard.ts` + GirisPage `onLanding` wiring; Faz4 ProtectedRoute reuse)
 
 ## 2 · SideNav + Öğrenci Paneli (1)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |

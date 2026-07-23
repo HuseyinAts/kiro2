@@ -15,6 +15,10 @@ const hata = (code: string, message: string, status = 400) =>
   HttpResponse.json({ error: { code, message } }, { status });
 
 export const kiroHandlers = [
+  // /me/rol önce (spesifik) — /me exact-path olduğundan gölgelemez, ama sıra netliği için üstte.
+  http.get('*/me/rol', () => HttpResponse.json(D.rol ?? 'ogrenci')),
+  // İlk Hafta momentum yayı — live GET /onboarding/ilk-hafta (IlkHaftaPage).
+  http.get('*/onboarding/ilk-hafta', () => HttpResponse.json(D.ilkHafta)),
   http.get('*/me', () => HttpResponse.json(D.persona)),
   http.get('*/engine', () => HttpResponse.json(D.engine)),
   http.get('*/subjects', () => HttpResponse.json(D.subjects)),

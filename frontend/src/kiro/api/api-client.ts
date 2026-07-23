@@ -33,6 +33,7 @@ import type {
   BildirimYanit, AlanKutuphaneData, SyncStatus,
   PlanTier, FaturaDonem, AbonelikData, OdemeOzeti, ThreeDSDurum, AbonelikYonetim,
   SohbetRol, SohbetMesaj, SohbetOturum, SohbetTeachingMode, SohbetStreamArgs, SohbetStreamHandlers,
+  KiroRol, IlkHaftaResponse,
 } from '../types';
 
 // SPRINT8 · Grup 6 tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
@@ -76,6 +77,11 @@ export type {
   SohbetStreamArgs, SohbetStreamHandlers, SokratikSenaryo,
 } from '../types';
 
+// FAZ 3 KAPANIŞ · İlk Hafta + Rol tiplerini ekranlara `../api` üzerinden de açık tut (re-export).
+export type {
+  KiroRol, IlkHaftaGun, IlkHaftaKart, IlkHaftaOzet, IlkHaftaResponse,
+} from '../types';
+
 // ---------------------------------------------------------------------------
 // Konfigürasyon
 // ---------------------------------------------------------------------------
@@ -102,7 +108,8 @@ export type MockData = Pick<KiroData,
   'veliBaglama' | 'odevAtama' |
   'bildirimler' | 'alanKutuphane' | 'cevrimdisi' |
   'abonelik' | 'abonelikYonetim' |
-  'sohbet' | 'sokratik'>;
+  'sohbet' | 'sokratik' |
+  'ilkHafta' | 'rol'>;
 
 let cfg: KiroApiConfig = { mode: 'mock' };
 let mockCache: MockData | null = null;
@@ -1723,4 +1730,27 @@ export function streamSohbet(args: SohbetStreamArgs, h: SohbetStreamHandlers): (
     }
   })().catch((e) => { if (!controller.signal.aborted) h.onError?.(e); });
   return () => controller.abort();
+}
+
+// ===========================================================================
+// FAZ 3 KAPANIŞ · İlk Hafta (onboarding momentum) + Rol (route guard kaynağı)
+// İki kollu: mock (kiro-data) · live (gerçek REST). SUNUCU-OTORİTE: İlk Hafta'nın
+// currentDay/yüzde/odakKonu (mastery-sıralı)/tier/zayifAtom + gün durumları
+// SUNUCUDA belirlenir — istemci (mock'ta bile) bunları TÜRETMEZ, veri kiro-data'dan
+// OKUNUR. Rol AYRI kaynak: Persona'ya rol EKLENMEZ (API sözleşmesi birebir korunur).
+// ===========================================================================
+
+/** İlk Hafta momentum yayı + kilometre-taşı kartları (öğrenci → SEN).
+ *  mock: kiro-data.ilkHafta; live: GET /onboarding/ilk-hafta. */
+export async function getIlkHafta(): Promise<IlkHaftaResponse> {
+  if (cfg.mode === 'mock') return (await mock()).ilkHafta;
+  return live<IlkHaftaResponse>('/onboarding/ilk-hafta');
+}
+
+/** Kullanıcı rolü — route guard landing kaynağı (Persona'dan AYRI; rol Persona'ya EKLENMEZ).
+ *  mock: kiro-data.rol (yoksa 'ogrenci'). live: GET /me/rol — auth katmanı bağlanınca
+ *  bu uç authStore.user.rol'a köprülenir (rol tek kanon; ekran authStore'dan da okuyabilir). */
+export async function getRol(): Promise<KiroRol> {
+  if (cfg.mode === 'mock') return (await mock()).rol ?? 'ogrenci';
+  return live<KiroRol>('/me/rol');
 }
