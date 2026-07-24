@@ -38,7 +38,8 @@ import { initWebVitals, initWebVitalsFallback } from './utils/webVitals';
 
 // Pages - Student (lazy-loaded)
 const StudentDashboardPage = lazy(() => import('./pages/ModernStudentDashboard'));
-const ChatPage = lazy(() => import('./pages/ModernChatPage'));
+const ChatPage = lazy(() => import('./kiro/routes/KiroAISohbetRoute')); // F4-S1b: kademeli-swap → kiro AI Sohbet (live)
+const SokratikAIPage = lazy(() => import('./kiro/routes/KiroSokratikRoute')); // F4-S1b: yeni rota (App'te karşılığı yok)
 
 // Pages - Teacher (lazy-loaded)
 const TeacherDashboardPage = lazy(() => import('./pages/ModernTeacherDashboard'));
@@ -242,6 +243,14 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci']}>
                     <ChatPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/sokratik"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                    <SokratikAIPage />
                   </ProtectedRoute>
                 }
               />

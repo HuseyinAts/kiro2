@@ -923,6 +923,9 @@ export interface SohbetStreamArgs {
   oturumId?: string;
   metin: string;
   teaching?: SohbetTeachingMode;
+  /** Backend ChatMessageRequest.student_id (zorunlu alan) — App-side route wrapper
+   *  authStore.user.id'den enjekte eder (mevcut chatService.ts sözleşmesiyle aynı). */
+  studentId?: string;
 }
 
 /** Çift-kollu akış geri çağrıları — onConnected(session_id) → onToken(t)×N → onFinished(mesaj) */

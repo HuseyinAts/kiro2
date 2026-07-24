@@ -124,3 +124,110 @@ describe('SPRINT11 · streamSohbet mock kolu (setTimeout scripted token akışı
     expect(direct).not.toContain(D.sokratik.adimlar[0]!);
   });
 });
+
+// ===========================================================================
+// F4-S1b · live sözleşme: {success,sessions} zarf-çöz + student_id (backend
+// ChatMessageRequest zorunlu alanı) — canlı curl ile doğrulanmış backend şekilleri.
+// ===========================================================================
+describe('F4-S1b · getSohbet/postSohbetMesaj/streamSohbet (live sözleşme)', () => {
+  afterEach(() => {
+    configureKiroApi({ mode: 'mock', mockData: D });
+  });
+
+  it('getSohbet live: {success,sessions} zarfını çözer, en güncel oturumun (sessions[0]) mesajlarını AYRI uçtan çeker', async () => {
+    const calls: string[] = [];
+    const fetchImpl = (async (url: string | URL) => {
+      const u = String(url);
+      calls.push(u);
+      if (u.endsWith('/enhanced-chat/sessions')) {
+        return {
+          ok: true, status: 200,
+          json: async () => ({
+            success: true,
+            sessions: [
+              { id: 'yeni-oturum', title: 'Türev', message_count: 2 },
+              { id: 'eski-oturum', title: 'Limit', message_count: 1 },
+            ],
+          }),
+        };
+      }
+      if (u.includes('/enhanced-chat/sessions/yeni-oturum/messages')) {
+        return {
+          ok: true, status: 200,
+          json: async () => ({
+            success: true,
+            session_id: 'yeni-oturum',
+            messages: [
+              { id: 'm1', role: 'user', content: 'Türev nedir?' },
+              { id: 'm2', role: 'agent', content: 'Birlikte bakalım...' },
+            ],
+          }),
+        };
+      }
+      throw new Error('beklenmeyen çağrı: ' + u);
+    }) as unknown as typeof fetch;
+    configureKiroApi({ mode: 'live', baseUrl: 'http://test', fetchImpl });
+
+    const o = await getSohbet('direct');
+
+    expect(o.id).toBe('yeni-oturum'); // sessions[0] — backend updated_at DESC (en güncel)
+    expect(o.baslik).toBe('Türev');
+    expect(o.mesajlar).toHaveLength(2);
+    expect(o.mesajlar[0]!.rol).toBe('ben'); // backend 'user' → kiro 'ben'
+    expect(o.mesajlar[0]!.metin).toBe('Türev nedir?');
+    expect(o.mesajlar[1]!.rol).toBe('ai'); // backend 'agent' → kiro 'ai'
+    expect(calls).toHaveLength(2); // /sessions + /sessions/{id}/messages
+  });
+
+  it('getSohbet live: oturum yoksa (boş sessions) mesaj ucu ÇAĞRILMAZ, boş oturum döner', async () => {
+    const calls: string[] = [];
+    const fetchImpl = (async (url: string | URL) => {
+      calls.push(String(url));
+      return { ok: true, status: 200, json: async () => ({ success: true, sessions: [] }) };
+    }) as unknown as typeof fetch;
+    configureKiroApi({ mode: 'live', baseUrl: 'http://test', fetchImpl });
+
+    const o = await getSohbet('direct');
+
+    expect(o.mesajlar).toHaveLength(0);
+    expect(calls).toHaveLength(1); // sadece /sessions
+  });
+
+  it('postSohbetMesaj live: student_id gövdeye geçer (backend ChatMessageRequest zorunlu alanı)', async () => {
+    let govde: Record<string, unknown> | null = null;
+    const fetchImpl = (async (_url: string | URL, init?: RequestInit) => {
+      govde = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return {
+        ok: true, status: 200,
+        json: async () => ({ success: true, data: { response_id: 'r1', message: 'yanıt', session_id: 's1' } }),
+      };
+    }) as unknown as typeof fetch;
+    configureKiroApi({ mode: 'live', baseUrl: 'http://test', fetchImpl });
+
+    await postSohbetMesaj({ oturumId: 's1', metin: 'merhaba', teaching: 'direct', studentId: 'STU_abc' });
+
+    expect(govde).toMatchObject({
+      session_id: 's1', message: 'merhaba', teaching_mode: 'direct', student_id: 'STU_abc',
+    });
+  });
+
+  it('streamSohbet live: student_id gövdeye geçer', async () => {
+    let govde: Record<string, unknown> | null = null;
+    const fetchImpl = (async (_url: string | URL, init?: RequestInit) => {
+      govde = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return { ok: true, status: 200, body: null }; // gövde-kontrolü yeterli; akış kapsam dışı
+    }) as unknown as typeof fetch;
+    configureKiroApi({ mode: 'live', baseUrl: 'http://test', fetchImpl });
+
+    await new Promise<void>((resolve) => {
+      streamSohbet(
+        { oturumId: 's1', metin: 'merhaba', teaching: 'socratic', studentId: 'STU_abc' },
+        { onError: () => resolve() },
+      );
+    });
+
+    expect(govde).toMatchObject({
+      session_id: 's1', message: 'merhaba', teaching_mode: 'socratic', student_id: 'STU_abc',
+    });
+  });
+});

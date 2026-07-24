@@ -83,7 +83,14 @@ function AsistanIkon(): React.ReactElement {
   );
 }
 
-export function AISohbetPage(): React.ReactElement {
+/** studentId (F4-S1b): backend chat isteklerine (streamSohbet) student_id olarak geçer.
+ *  App-side route wrapper (authStore.user.id) enjekte eder; verilmezse mock modda
+ *  etkisiz, live modda backend zorunlu alan olduğundan istek 422 döner (auth/mount hatası sinyali). */
+export interface AISohbetPageProps {
+  studentId?: string;
+}
+
+export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.ReactElement {
   const dar = useDarEkran();
   const reduced = useReducedMotion();
 
@@ -154,7 +161,7 @@ export function AISohbetPage(): React.ReactElement {
       setStreaming(true);
 
       unsubRef.current = streamSohbet(
-        { oturumId: oturumIdRef.current, metin, teaching: 'direct' },
+        { oturumId: oturumIdRef.current, metin, teaching: 'direct', studentId },
         {
           // Sunucu bağlanınca gerçek session_id'yi benimse (sonraki gönderiler bunu kullanır).
           onConnected: (id) => { oturumIdRef.current = id; },
@@ -173,7 +180,7 @@ export function AISohbetPage(): React.ReactElement {
         },
       );
     },
-    [streaming, oturum, hata],
+    [streaming, oturum, hata, studentId],
   );
 
   const onKey = React.useCallback(

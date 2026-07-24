@@ -1657,12 +1657,23 @@ export async function getSohbet(teaching: SohbetTeachingMode = 'direct'): Promis
     }
     return d.sohbet;
   }
-  const sessions = asArr(unwrapData(await live<unknown>('/enhanced-chat/sessions')));
-  const last = asRec(sessions[sessions.length - 1]);
+  // Zarf {success, sessions:[...]} — merkezi unwrapData 'data' anahtarını arar, burada
+  // YOK; 'sessions' anahtarını AÇIKÇA çöz. En güncel oturum sessions[0] (backend
+  // updated_at DESC sıralar) — mesajlar backend'de İNLİNE dönmez, AYRI uçtan çekilir.
+  const sessionsEnvelope = asRec(await live<unknown>('/enhanced-chat/sessions'));
+  const sessions = asArr(pick(sessionsEnvelope, 'sessions', 'data'));
+  const last = asRec(sessions[0]);
+  const sessionId = nstr(pick(last, 'id', 'session_id'));
   const baslik = nstr(pick(last, 'baslik', 'title', 'name'));
-  const mesajlar = asArr(pick(last, 'mesajlar', 'messages', 'history')).map(mapSohbetMesaj);
+  let mesajlar: SohbetMesaj[] = [];
+  if (sessionId) {
+    const msgEnvelope = asRec(
+      await live<unknown>('/enhanced-chat/sessions/' + encodeURIComponent(sessionId) + '/messages'),
+    );
+    mesajlar = asArr(pick(msgEnvelope, 'messages', 'data')).map(mapSohbetMesaj);
+  }
   return {
-    id: nstr(pick(last, 'id', 'session_id')) || 'oturum',
+    id: sessionId || 'oturum',
     ...(baslik ? { baslik } : {}),
     mesajlar,
   };
@@ -1681,10 +1692,12 @@ export async function postSohbetMesaj(args: SohbetStreamArgs): Promise<SohbetMes
       ...(teaching === 'socratic' ? { tag: 'Sokratik' } : {}),
     };
   }
-  const o = asRec(unwrapData(await live<unknown>('/enhanced-chat/message', {
+  const o = asRec(await live<unknown>('/enhanced-chat/message', {
     method: 'POST',
-    body: JSON.stringify({ session_id: args.oturumId, message: args.metin, teaching_mode: teaching }),
-  })));
+    body: JSON.stringify({
+      session_id: args.oturumId, message: args.metin, teaching_mode: teaching, student_id: args.studentId,
+    }),
+  }));
   return mapSohbetMesaj(o, 0);
 }
 
@@ -1738,7 +1751,9 @@ export function streamSohbet(args: SohbetStreamArgs, h: SohbetStreamHandlers): (
       method: 'POST',
       credentials: 'include',
       headers,
-      body: JSON.stringify({ session_id: args.oturumId, message: args.metin, teaching_mode: teaching }),
+      body: JSON.stringify({
+        session_id: args.oturumId, message: args.metin, teaching_mode: teaching, student_id: args.studentId,
+      }),
       signal: controller.signal,
     });
     if (!res.ok || !res.body) { h.onError?.(new KiroApiError(res.status, '/enhanced-chat/stream')); return; }

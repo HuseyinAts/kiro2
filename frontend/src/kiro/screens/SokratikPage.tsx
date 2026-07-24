@@ -169,7 +169,13 @@ function MerdivenSatir({ label, durum, no }: { label: string; durum: 'done' | 'a
   );
 }
 
-export function SokratikPage(): React.ReactElement {
+/** studentId (F4-S1b): backend chat isteklerine (streamSohbet/postSohbetMesaj) student_id
+ *  olarak geçer. App-side route wrapper (authStore.user.id) enjekte eder. */
+export interface SokratikPageProps {
+  studentId?: string;
+}
+
+export function SokratikPage({ studentId }: SokratikPageProps = {}): React.ReactElement {
   const reduced = useReducedMotion();
   const railGizli = useMedia('(max-width: 1023px)'); // sağ ray gizle
   const navDar = useMedia('(max-width: 760px)'); // SideNav 64px
@@ -239,7 +245,7 @@ export function SokratikPage(): React.ReactElement {
     setPending(true);
     if (unsubRef.current) { unsubRef.current(); unsubRef.current = null; }
     unsubRef.current = streamSohbet(
-      { oturumId: oturumIdRef.current, metin, teaching: 'socratic' },
+      { oturumId: oturumIdRef.current, metin, teaching: 'socratic', studentId },
       {
         onConnected: (id) => { oturumIdRef.current = id; },
         onToken: (t) => {
@@ -259,7 +265,7 @@ export function SokratikPage(): React.ReactElement {
         },
       },
     );
-  }, [aiTamamlanan, pending]);
+  }, [aiTamamlanan, pending, studentId]);
 
   // --- Çözümü göster (son çare) → sunucudan DIRECT-mode yöntem açıklaması ---
   const cozumuGoster = React.useCallback(async () => {
@@ -269,7 +275,9 @@ export function SokratikPage(): React.ReactElement {
     setMesajlar((prev) => [...prev, { id: aiId, rol: 'ai', metin: '', pending: true, tag: 'Doğrudan çözüm' }]);
     setPending(true);
     try {
-      const msg = await postSohbetMesaj({ oturumId: oturumIdRef.current, metin: 'Çözümü göster', teaching: 'direct' });
+      const msg = await postSohbetMesaj({
+        oturumId: oturumIdRef.current, metin: 'Çözümü göster', teaching: 'direct', studentId,
+      });
       setMesajlar((prev) => prev.map((m) => (m.id === aiId ? { ...msg, id: aiId, tag: 'Doğrudan çözüm', pending: false } : m)));
       setCozuldu(true);
     } catch {
@@ -278,7 +286,7 @@ export function SokratikPage(): React.ReactElement {
     } finally {
       setPending(false);
     }
-  }, [pending]);
+  }, [pending, studentId]);
 
   // --- Yeniden başla (çözüldü → yeni açılış) ---
   const bastan = React.useCallback(() => {
