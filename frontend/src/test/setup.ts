@@ -321,3 +321,14 @@ import { server } from './mocks/server'
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
+
+// ---------------------------------------------------------------------------
+// KIRO2 Faz 4 — kiro api-client merkezi mock köprüsü
+// Ekran modül-üstü configureKiroApi(mock) çağrıları F4-S0'da kaldırıldı; testler
+// artık bu paylaşılan default'a dayanır (dosya başına bir kez; structuredClone izole).
+// Kendi configureKiroApi'sini çağıran testler bunu geçersiz kılar.
+// ---------------------------------------------------------------------------
+import kiroApiData from '../kiro/api/kiro-data.json'
+import { configureKiroApi as _configureKiroApiForTests, type MockData as _KiroMockData } from '../kiro/api/api-client'
+
+_configureKiroApiForTests({ mode: 'mock', mockData: kiroApiData as unknown as _KiroMockData })

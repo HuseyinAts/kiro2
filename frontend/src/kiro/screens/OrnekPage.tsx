@@ -6,16 +6,13 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe, getSubjects, getLevel } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getMe, getSubjects, getLevel } from '../api/api-client';
 import { color, radius, space } from '../tokens';
 import type { Persona, Subject, SeviyeBilgi } from '../types';
 import { KiroThemeProvider, surf, baseText, numText } from '../ui/theme';
 import '../tokens/tokens.css';
 
 // Mock modda yapılandır — ekran kodu YALNIZ api-client'ı çağırır (mock→live tek konfig).
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 export function OrnekPage(): React.ReactElement {
   const [persona, setPersona] = React.useState<Persona | null>(null);

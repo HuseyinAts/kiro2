@@ -9,15 +9,11 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getMe } from '../api/api-client';
 import type { Persona } from '../types';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText, useReducedMotion, Skeleton } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 /** Bugünkü çalışma süresi etiketi — DC fmtDk ile birebir. */
 function fmtDk(dk: number): string {

@@ -49,14 +49,14 @@ describe('GirisPage', () => {
     expect(await screen.findByText('İçerdesin.')).toBeInTheDocument();
   });
 
-  it('onLanding verilince giriş-tamam CTA rol landing ile çağrılır (ogrenci→/panel)', async () => {
+  it('onLanding verilince giriş-tamam CTA rol landing ile çağrılır (ogrenci→/dashboard)', async () => {
     const onLanding = vi.fn();
     render(<GirisPage onLanding={onLanding} rol="ogrenci" />);
     await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
     await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
     await userEvent.click(screen.getByRole('button', { name: 'Devam edelim' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Panele geç' }));
-    expect(onLanding).toHaveBeenCalledWith('/panel');
+    expect(onLanding).toHaveBeenCalledWith('/dashboard');
   });
 
   it('onLanding verilince kayıt-tamam CTA seviye-ölçüme yönlendirir (/onboarding)', async () => {

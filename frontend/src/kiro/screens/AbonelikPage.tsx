@@ -17,9 +17,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getAbonelik, getMe } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getAbonelik, getMe } from '../api/api-client';
 import { color, font, radius, shadow } from '../tokens';
 import type { AbonelikData, AbonelikPlan, FaturaDonem, PlanTier, Persona } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -29,8 +27,6 @@ import { ErrorState } from '../ui/ErrorState';
 import { Skeleton } from '../ui/Skeleton';
 import { VeliYonlendirmeKarti } from './billing/VeliYonlendirmeKarti';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // --- Bespoke ikonlar (emoji/stok-ikon YOK) ----------------------------------
 

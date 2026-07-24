@@ -17,7 +17,6 @@
 import * as React from 'react';
 
 import {
-  configureKiroApi,
   verifyLinkCode,
   getKvkkNotice,
   giveConsent,
@@ -25,15 +24,11 @@ import {
   getPendingParentRequest,
   approveRelation,
 } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
 import type { KvkkNotice, LinkCodeSonuc, PendingVeliIstek } from '../types';
 import { color, font, radius } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { useReducedMotion } from '../ui/ConfettiDawn';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 type Taraf = 'veli' | 'ogrenci';
 type VeliAdim = 'kod' | 'riza' | 'bekle' | 'tamam';

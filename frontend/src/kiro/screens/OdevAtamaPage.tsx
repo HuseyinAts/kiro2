@@ -14,9 +14,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getAtamaKonular, getAtamaRoster, postAtama } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getAtamaKonular, getAtamaRoster, postAtama } from '../api/api-client';
 import { color, font, hit } from '../tokens';
 import type { AtamaForm, AtamaOgrenci, KonuAtom } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -27,8 +25,6 @@ import { SegmentedControl } from '../ui/SegmentedControl';
 import { Skeleton } from '../ui/Skeleton';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const ACCENT = color.dawn.coralCtaBg; // #C2452B — beyaz-metin coral CTA (DC #FF6F5C AA-değil → override)
 

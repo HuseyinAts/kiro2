@@ -10,9 +10,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getFriends, getMe, postFriendCongrats, postFriendNudge } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getFriends, getMe, postFriendCongrats, postFriendNudge } from '../api/api-client';
 import { useAyar } from '../lib/ayarStore';
 import { color, font } from '../tokens';
 import type { Friend, FriendsData, Persona } from '../types';
@@ -21,8 +19,6 @@ import {
   SideNav, Skeleton, useReducedMotion,
 } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // +1 tebrik uçuşu (paper micro-motion) — HER animasyon reduced-motion guard'lı.
 const KEYFRAMES = `@keyframes kiroCongratsFloat { 0%{transform:translateY(0);opacity:0;} 20%{opacity:1;} 100%{transform:translateY(-26px);opacity:0;} }`;

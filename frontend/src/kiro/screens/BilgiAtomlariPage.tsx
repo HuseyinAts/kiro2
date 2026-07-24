@@ -7,9 +7,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getTopics, getTopicAtoms } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getTopics, getTopicAtoms } from '../api/api-client';
 import type { AtomKirilim, Topic } from '../types';
 import { color, font, shadow } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -19,8 +17,6 @@ import { MasteryBadge } from '../ui/MasteryBadge';
 import { Skeleton } from '../ui/Skeleton';
 import { useReducedMotion } from '../ui/ConfettiDawn';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const VARSAYILAN_KONU = 'Türev';
 

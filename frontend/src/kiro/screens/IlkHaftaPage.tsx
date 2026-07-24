@@ -18,15 +18,11 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getIlkHafta } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getIlkHafta } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { IlkHaftaResponse, IlkHaftaGun, IlkHaftaKart } from '../types';
 import { KiroThemeProvider, numText, useReducedMotion, Skeleton, ErrorState } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const CORAL = color.dawn.coralCtaBg; // #C2452B — solid coral CTA/vurgu (beyaz metin AA-güvenli)
 const CORAL_TEXT = color.dawn.coralTextOnLight; // #C2452B — açık zeminde coral METİN

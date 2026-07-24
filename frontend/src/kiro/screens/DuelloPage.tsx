@@ -14,7 +14,6 @@
 import * as React from 'react';
 
 import {
-  configureKiroApi,
   postDuelMatchmake,
   getDuelCurrentQuestion,
   postDuelAnswer,
@@ -22,17 +21,14 @@ import {
   duelStream,
   getMe,
 } from '../api/api-client';
-import type { DuelMatch, DuelQuestion, DuelResult, DuelTurSonucu, MockData } from '../api/api-client';
+import type { DuelMatch, DuelQuestion, DuelResult, DuelTurSonucu } from '../api/api-client';
 import type { Persona } from '../types';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { ConfettiDawn, useReducedMotion } from '../ui/ConfettiDawn';
 import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const HARF = ['A', 'B', 'C', 'D', 'E'];
 

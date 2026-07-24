@@ -7,10 +7,9 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe, getReviewTopics, getReviewSession, postReviewGrade } from '../api/api-client';
-import type { MockData, ReviewCard, ReviewGrade } from '../api/api-client';
+import { getMe, getReviewTopics, getReviewSession, postReviewGrade } from '../api/api-client';
+import type { ReviewCard, ReviewGrade } from '../api/api-client';
 import type { Persona, ReviewItem } from '../types';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { SideNav } from '../ui/SideNav';
@@ -20,8 +19,6 @@ import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 import { ConfettiDawn } from '../ui/ConfettiDawn';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const HEDEF_TUTMA = 90; // /me hedef (mock)
 const HAFTA = [

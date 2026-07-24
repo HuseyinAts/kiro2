@@ -7,9 +7,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getTopics, getReviewDue } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getTopics, getReviewDue } from '../api/api-client';
 import type { ReviewItem, Topic } from '../types';
 import { color, font } from '../tokens';
 import {
@@ -21,8 +19,6 @@ import {
   ErrorState,
 } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const TIER_AD: Record<ReturnType<typeof tierFromPct>, string> = {
   tanidik: 'Tanıdık',

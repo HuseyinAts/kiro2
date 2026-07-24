@@ -93,8 +93,6 @@ export interface KiroApiConfig {
   /** mock modda veri kaynağı: import edilmiş kiro-data.json ya da fetch edilecek URL */
   mockData?: MockData | string;
   fetchImpl?: typeof fetch;
-  /** Auth token sağlayıcı (live) */
-  getToken?: () => string | Promise<string>;
 }
 
 /** kiro-data.json'ın şekli (KiroData'nın salt-veri alt kümesi — fonksiyonlar hariç) */
@@ -136,14 +134,34 @@ async function mock(): Promise<MockData> {
   throw new Error('KiroApi: mock modda mockData verilmedi (kiro-data.json import edin ya da URL geçin).');
 }
 
+// B2 (Faz 4): tek konvansiyon — her istek yolu '/api/v1' ile başlar. Zaten prefixli
+// (duel/league/kvkk/teacher) yollar idempotent geçer; çıplak yollar (/me,/subjects…)
+// normalize edilir. baseUrl = origin (VITE_API_URL DEĞİL — same-origin cookie zorunlu).
+function apiPath(path: string): string {
+  return path.startsWith('/api/v1') ? path : '/api/v1' + path;
+}
+
+// B1 (Faz 4): 401 → gerçek app'in /login akışına yönlendir (apiHelpers ile aynı sözleşme).
+function redirectToLogin(): void {
+  if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+    window.location.href = '/login';
+  }
+}
+
 async function live<T>(path: string, init?: RequestInit): Promise<T> {
-  if (!cfg.baseUrl) throw new Error('KiroApi: live modda baseUrl zorunlu.');
+  if (cfg.baseUrl == null) throw new Error('KiroApi: live modda baseUrl zorunlu.');
   const f = cfg.fetchImpl ?? fetch;
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (cfg.getToken) headers.Authorization = 'Bearer ' + (await cfg.getToken());
-  const res = await f(cfg.baseUrl + path, { ...init, headers: { ...headers, ...(init?.headers as object) } });
+  // Auth = httpOnly COOKIE (Bearer/getToken düştü). credentials:'include' → cookie gider.
+  const res = await f(cfg.baseUrl + apiPath(path), {
+    ...init,
+    credentials: 'include',
+    headers: { ...headers, ...(init?.headers as object) },
+  });
+  if (res.status === 401) { redirectToLogin(); throw new KiroApiError(401, path); }
   if (!res.ok) throw new KiroApiError(res.status, path);
-  return (await res.json()) as T;
+  // Zarf çöz (merkezi): {success,data}|{data}|ham → gövde. Zaten çözen uçlar idempotent.
+  return unwrapData(await res.json()) as T;
 }
 
 export class KiroApiError extends Error {
@@ -1716,9 +1734,9 @@ export function streamSohbet(args: SohbetStreamArgs, h: SohbetStreamHandlers): (
   void (async () => {
     const f = cfg.fetchImpl ?? fetch;
     const headers: Record<string, string> = { 'Content-Type': 'application/json', Accept: 'text/event-stream' };
-    if (cfg.getToken) headers.Authorization = 'Bearer ' + (await cfg.getToken());
-    const res = await f(esBase() + '/enhanced-chat/stream', {
+    const res = await f(esBase() + apiPath('/enhanced-chat/stream'), {
       method: 'POST',
+      credentials: 'include',
       headers,
       body: JSON.stringify({ session_id: args.oturumId, message: args.metin, teaching_mode: teaching }),
       signal: controller.signal,

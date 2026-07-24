@@ -17,9 +17,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getAlanKutuphane } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getAlanKutuphane } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { AlanKey, AlanKutuphaneAlan, AlanKutuphaneData, AlanKutuphaneDers } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -27,8 +25,6 @@ import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 import { Skeleton } from '../ui/Skeleton';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Alan → dekoratif renk (veride YOK; tokens'tan). Kaynak alan renkleri: say=mavi, ea=yeşil, soz=amber.
 const ALAN_RENK: Record<AlanKey, string> = {

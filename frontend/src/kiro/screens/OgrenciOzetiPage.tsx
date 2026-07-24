@@ -13,9 +13,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getOgrenciOzeti } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getOgrenciOzeti } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { OgrenciOzeti } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -25,8 +23,6 @@ import { Skeleton } from '../ui/Skeleton';
 import { WeeklyActivityBars } from '../ui/WeeklyActivityBars';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Ders adı → açık-panel ders rengi (subject.light). Görünen ad eşlemesi — türetme değil.
 const DERS_RENK: Record<string, string> = {

@@ -8,9 +8,8 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getQuestionSet, postAnswer } from '../api/api-client';
-import type { MockData, SoruSetItem, AnswerResult } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getQuestionSet, postAnswer } from '../api/api-client';
+import type { SoruSetItem, AnswerResult } from '../api/api-client';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { Button } from '../ui/Button';
@@ -20,8 +19,6 @@ import { Skeleton } from '../ui/Skeleton';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const SET_BOYU = 10;
 const BASLANGIC_SURE = 20 * 60; // 20:00 — prototip sabiti (üretimde plan verisinden)

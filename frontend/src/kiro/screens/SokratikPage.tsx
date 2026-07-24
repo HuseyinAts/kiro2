@@ -20,10 +20,8 @@
 import * as React from 'react';
 
 import {
-  configureKiroApi, getMe, getSohbet, postSohbetMesaj, streamSohbet,
+  getMe, getSohbet, postSohbetMesaj, streamSohbet,
 } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import type { Persona, SohbetMesaj, SohbetOturum } from '../types';
 import { ChatBubble } from '../ui/ChatBubble';
@@ -34,8 +32,6 @@ import { SideNav } from '../ui/SideNav';
 import { Skeleton } from '../ui/Skeleton';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Ekranda tutulan mesaj — SohbetMesaj + streaming sırasında soluk balon işareti.
 type EkranMesaj = SohbetMesaj & { pending?: boolean };

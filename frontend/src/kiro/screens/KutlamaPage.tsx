@@ -9,7 +9,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe, getTopics, seviyeBilgiFrom } from '../api/api-client';
+import { getMe, getTopics, seviyeBilgiFrom } from '../api/api-client';
 import type { MockData } from '../api/api-client';
 import type { Persona } from '../types';
 import kiroData from '../api/kiro-data.json';
@@ -19,8 +19,6 @@ import { ConfettiDawn, useReducedMotion } from '../ui/ConfettiDawn';
 import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 type KutlamaTur = 'gunluk' | 'seviye' | 'seri' | 'boss';
 const TURLER: readonly KutlamaTur[] = ['gunluk', 'seviye', 'seri', 'boss'];

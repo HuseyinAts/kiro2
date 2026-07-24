@@ -10,16 +10,12 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getMe } from '../api/api-client';
 import { gunKalan, haftaKalan } from '../lib/gunSayaci';
 import type { Persona } from '../types';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText, useReducedMotion, Skeleton, ErrorState } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Ufuk-batımı göğü — Bugün hub'ından bilinçli olarak FARKLI (SPRINT7 §A).
 const SKY =

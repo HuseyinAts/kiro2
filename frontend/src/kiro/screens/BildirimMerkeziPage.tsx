@@ -10,14 +10,11 @@ import * as React from 'react';
 
 import {
   clearBildirimler,
-  configureKiroApi,
   getBildirimler,
   getMe,
   markBildirimOkundu,
   markTumBildirimOkundu,
 } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import type { Bildirim, BildirimTon, Persona } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -27,8 +24,6 @@ import { ErrorState } from '../ui/ErrorState';
 import { Skeleton } from '../ui/Skeleton';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Ton → açık-zemin renk + bespoke ikon eşlemesi (risk = amber; alarm-kırmızısı YOK).
 // coral = kanon coralTextOnLight (#C2452B, AA); violet = Fizik mor'u (#8B5CF6).

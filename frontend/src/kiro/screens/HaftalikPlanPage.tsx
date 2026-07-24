@@ -7,9 +7,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getPlanWeek, getMe } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getPlanWeek, getMe } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { PlanBlok, PlanGun, PlanWeek, Persona, SubjectKey } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -19,8 +17,6 @@ import { ErrorState } from '../ui/ErrorState';
 import { Skeleton } from '../ui/Skeleton';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const DERS_AD: Record<SubjectKey, string> = { mat: 'Matematik', fiz: 'Fizik', kim: 'Kimya', biy: 'Biyoloji', tur: 'Türkçe' };
 const GUN_TAM: Record<string, string> = { Pzt: 'Pazartesi', Sal: 'Salı', Çar: 'Çarşamba', Per: 'Perşembe', Cum: 'Cuma', Cmt: 'Cumartesi', Paz: 'Pazar' };

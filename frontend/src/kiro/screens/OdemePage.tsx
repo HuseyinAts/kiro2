@@ -20,13 +20,10 @@
 import * as React from 'react';
 
 import {
-  configureKiroApi,
   getOdemeOzeti,
   postOdemeDeneme,
   getOdeme3dsSonuc,
 } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
 import type {
   OdemeFaz,
   OdemeOzeti,
@@ -41,8 +38,6 @@ import { useReducedMotion } from '../ui/ConfettiDawn';
 import { Card, Callout, IconBadge, Skeleton, ErrorState } from '../ui';
 import { VeliYonlendirmeKarti } from './billing/VeliYonlendirmeKarti';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // --- DC-özgü sıcak tint'ler (token karşılığı yok; dekoratif ham hex istisnası) -----
 const HERO_BG = `radial-gradient(1200px 500px at 50% -10%, #FFF3EE 0%, ${color.paper.bg} 60%)`;

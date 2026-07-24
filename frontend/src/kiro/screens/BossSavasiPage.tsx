@@ -10,20 +10,16 @@
 import * as React from 'react';
 
 import {
-  configureKiroApi,
   postBossSession,
   postBossAnswer,
 } from '../api/api-client';
-import type { BossSession, MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import type { BossSession } from '../api/api-client';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { ConfettiDawn, useReducedMotion } from '../ui/ConfettiDawn';
 import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // --- Kırmızı arena paleti (inline · token DEĞİL — boss-arena istisnası) ---
 const KIRMIZI = {

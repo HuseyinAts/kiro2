@@ -15,13 +15,10 @@
 import * as React from 'react';
 
 import {
-  configureKiroApi,
   getMe,
   getSohbet,
   streamSohbet,
 } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import type { Persona, SohbetMesaj, SohbetOturum } from '../types';
 import { KiroThemeProvider } from '../ui/theme';
@@ -31,8 +28,6 @@ import { ErrorState } from '../ui/ErrorState';
 import { Skeleton } from '../ui/Skeleton';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // "Yazıyor" opasite nabzı — yalnız transform/opacity (layout hareketi YOK).
 const DOT_KEYFRAMES = '@keyframes kiroChatDot{0%,80%,100%{opacity:.3}40%{opacity:1}}';

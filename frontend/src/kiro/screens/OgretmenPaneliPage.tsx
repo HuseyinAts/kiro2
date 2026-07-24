@@ -12,9 +12,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getOgretmenPanel } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getOgretmenPanel } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { DikkatKarti, DersIlerleme, OgretmenOgrenci, OgretmenPanel } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -23,8 +21,6 @@ import { ProgressBar } from '../ui/ProgressBar';
 import { Skeleton } from '../ui/Skeleton';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Rotalar (bu sprintte port EDİLMEYEN yazma-ekranları için placeholder link):
 const ROTA = {

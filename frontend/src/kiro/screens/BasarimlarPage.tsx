@@ -9,16 +9,12 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe, getSubjects } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getMe, getSubjects } from '../api/api-client';
 import type { Persona, Subject } from '../types';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText, useReducedMotion, Skeleton, ErrorState, tierFromPct } from '../ui';
 import type { MasteryTier } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Kademe renk + etiket (dusk) — eşikler tierFromPct ile AYNI (40/65/85). tokens.color.mastery.
 const TIER_META: Record<MasteryTier, { label: string; color: string }> = {

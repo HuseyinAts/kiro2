@@ -10,9 +10,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe, getSubjects, getCurriculum, getTopics, getTopicAtoms } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getMe, getSubjects, getCurriculum, getTopics, getTopicAtoms } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { AtomKirilim, CurriculumDers, Persona, Subject, SubjectKey, Topic } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -23,8 +21,6 @@ import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
 import { useReducedMotion } from '../ui/ConfettiDawn';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const ACCENT = color.dawn.coralCtaBg; // #C2452B — AA-güvenli coral CTA/vurgu (beyaz metin taşır)
 const ACCENT_LEDGE = '#973622'; // koyu coral 3D ledge

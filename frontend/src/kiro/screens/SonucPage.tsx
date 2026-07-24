@@ -7,10 +7,8 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getExamResult, getTopics, getMe } from '../api/api-client';
-import type { MockData } from '../api/api-client';
+import { getExamResult, getTopics, getMe } from '../api/api-client';
 import type { LastExam, Topic, SubjectKey, Persona } from '../types';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { ProgressRing } from '../ui/ProgressRing';
@@ -18,8 +16,6 @@ import { ProgressBar } from '../ui/ProgressBar';
 import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const trNet = (n: number) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 2 }).format(n);
 

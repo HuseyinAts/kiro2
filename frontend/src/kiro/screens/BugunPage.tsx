@@ -15,15 +15,11 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe, getSubjects, getReviewDue, getPlanWeek } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getMe, getSubjects, getReviewDue, getPlanWeek } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { Persona, Subject, ReviewItem, PlanWeek, PlanBlok } from '../types';
 import { KiroThemeProvider, numText, useReducedMotion, ErrorState, Skeleton } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // --- Ambient hareket (reduced-motion'da <style> koşullu enjekte edilir) ---
 const KEYFRAMES = `

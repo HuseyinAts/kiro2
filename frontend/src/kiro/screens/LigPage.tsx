@@ -13,16 +13,13 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getLeague, getLevel, getMe } from '../api/api-client';
-import type { LeagueData, LeagueStanding, MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getLeague, getLevel, getMe } from '../api/api-client';
+import type { LeagueData, LeagueStanding } from '../api/api-client';
 import { useAyar } from '../lib/ayarStore';
 import { color, font } from '../tokens';
 import type { Persona, SeviyeBilgi } from '../types';
 import { KiroThemeProvider, numText, serifText, SideNav, ErrorState, EmptyState, Skeleton, useReducedMotion } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // --- Renk kanonu (paper) ------------------------------------------------------
 const ACCENT = color.dawn.coral;               // #FF6F5C — dekoratif aksan (nokta/kenar/ikon)

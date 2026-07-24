@@ -20,9 +20,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getAbonelik, getMe } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getAbonelik, getMe } from '../api/api-client';
 import { color, font, radius } from '../tokens';
 import type { AbonelikData, Persona } from '../types';
 import { useAyar } from '../lib/ayarStore';
@@ -34,8 +32,6 @@ import { Skeleton } from '../ui/Skeleton';
 import { Switch } from '../ui';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Görünüm ekran sabiti: çalışma yüzeyleri hep aydınlık — tema-değiştirme yok.
 const themeLocked = true;

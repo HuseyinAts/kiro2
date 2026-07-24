@@ -6,10 +6,8 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getReviewTopics, getTopics } from '../api/api-client';
-import type { MockData } from '../api/api-client';
+import { getReviewTopics, getTopics } from '../api/api-client';
 import type { ReviewItem, Topic } from '../types';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { SideNav } from '../ui/SideNav';
@@ -18,8 +16,6 @@ import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 import { Button } from '../ui/Button';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const DURUM: Record<string, string> = { zayif: 'zayıf', gelisiyor: 'gelişiyor', iyi: 'iyi', guclu: 'güçlü' };
 

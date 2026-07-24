@@ -6,10 +6,9 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getQuestionSet, getMe, postAnswer } from '../api/api-client';
-import type { MockData, SoruSetItem, AnswerResult } from '../api/api-client';
+import { getQuestionSet, getMe, postAnswer } from '../api/api-client';
+import type { SoruSetItem, AnswerResult } from '../api/api-client';
 import type { Persona } from '../types';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { SideNav } from '../ui/SideNav';
@@ -18,8 +17,6 @@ import { Button } from '../ui/Button';
 import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const HARFLER = ['A', 'B', 'C', 'D', 'E', 'F'];
 

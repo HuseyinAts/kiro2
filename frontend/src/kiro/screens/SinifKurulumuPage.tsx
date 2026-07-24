@@ -8,16 +8,12 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, postSinif, rotateKatilimKodu } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { postSinif, rotateKatilimKodu } from '../api/api-client';
 import { color, font, radius, shadow, motion } from '../tokens';
 import type { KurulanSinif } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { useReducedMotion } from '../ui/ConfettiDawn';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // DC'ye özgü sıcak tint'ler — token karşılığı yok (dekoratif; ham hex istisnası).
 const PEACH_TINT = '#FFF8F2';   // seçili segment + kaygı-duyarlı panel zemini

@@ -10,9 +10,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getVeliDashboard } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getVeliDashboard } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { DersIlerleme, SinavOzet, VeliDashboard, VeliUyari } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -24,8 +22,6 @@ import { Skeleton } from '../ui/Skeleton';
 import { SideNav } from '../ui/SideNav';
 import { WeeklyActivityBars } from '../ui/WeeklyActivityBars';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Ders görünen adı → açık panel paleti (DC panelColor ile birebir).
 const DERS_RENK: Record<string, string> = {

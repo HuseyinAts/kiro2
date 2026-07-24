@@ -6,9 +6,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe, getSubjects, getLastExam } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getMe, getSubjects, getLastExam } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { LastExam, Persona, Subject, SubjectKey } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -21,8 +19,6 @@ import { Skeleton } from '../ui/Skeleton';
 import { StatBlock } from '../ui/StatBlock';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const dersRenk = color.subject.light;
 const trTR = (n: number) => new Intl.NumberFormat('tr-TR').format(n);

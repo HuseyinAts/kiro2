@@ -7,9 +7,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getAssignments, getMe } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getAssignments, getMe } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { Odev, Persona, SubjectKey } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
@@ -22,8 +20,6 @@ import { Skeleton } from '../ui/Skeleton';
 import { StatusChip } from '../ui/StatusChip';
 import { SideNav } from '../ui/SideNav';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const DERS_AD: Record<SubjectKey, string> = { mat: 'Matematik', fiz: 'Fizik', kim: 'Kimya', biy: 'Biyoloji', tur: 'Türkçe' };
 const dersRenk = color.subject.light;

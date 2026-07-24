@@ -13,9 +13,7 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, getMe, getStreak } from '../api/api-client';
-import type { MockData } from '../api/api-client';
-import kiroData from '../api/kiro-data.json';
+import { getMe, getStreak } from '../api/api-client';
 import { color, font } from '../tokens';
 import type { Persona, StreakData, StreakDay } from '../types';
 import {
@@ -29,8 +27,6 @@ import {
   SideNav,
 } from '../ui';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 // Dondurma SEMANTİK rengi (buz-mavi) — indigo-yasak istisnası (SPRINT6 §7 / kanon).
 const BUZ = { bg: '#DBEAFE', ink: '#2563EB', shield: '#3B82F6' } as const;

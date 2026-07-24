@@ -10,11 +10,13 @@ import * as React from 'react';
 
 import type { KiroRol } from '../types';
 
-/** Rol → giriş sonrası landing rotası (TEK KANON; TR/EN rota drift'i buraya hizalanır). */
+/** Rol → giriş sonrası landing rotası. İNGİLİZCE KANON — components/Auth/ProtectedRoute
+ *  `getRedirectPathByRole` ile AYNI olmalı (değişirse ikisini birlikte güncelle; F4-S1'de
+ *  kiro ekranları ProtectedRoute ile mount edilince o fonksiyon tek-kaynak olur). */
 export const ROL_LANDING: Record<KiroRol, string> = {
-  ogrenci: '/panel',
-  veli: '/veli',
-  ogretmen: '/ogretmen',
+  ogrenci: '/dashboard',
+  veli: '/parent/dashboard',
+  ogretmen: '/teacher/dashboard',
 };
 
 /** Rolün landing rotası (ROL_LANDING araması). */
@@ -22,7 +24,7 @@ export function roleLanding(rol: KiroRol): string {
   return ROL_LANDING[rol];
 }
 
-/** AuthGate props — rol null (kimlik yok) → /giris; rol var → rolün landing'i.
+/** AuthGate props — rol null (kimlik yok) → /login; rol var → rolün landing'i.
  *  Navigasyon PROP-ENJEKTE (onRedirect); children opsiyonel (guard geçince içerik). */
 export interface AuthGateProps {
   rol: KiroRol | null;
@@ -35,7 +37,7 @@ export interface AuthGateProps {
 export function AuthGate(props: AuthGateProps): React.ReactElement | null {
   const { rol, onRedirect, children } = props;
   React.useEffect(() => {
-    onRedirect(rol == null ? '/giris' : roleLanding(rol));
+    onRedirect(rol == null ? '/login' : roleLanding(rol));
   }, [rol, onRedirect]);
   return children != null ? React.createElement(React.Fragment, null, children) : null;
 }

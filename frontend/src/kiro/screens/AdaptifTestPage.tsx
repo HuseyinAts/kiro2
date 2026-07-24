@@ -7,17 +7,14 @@
 // ============================================================================
 import * as React from 'react';
 
-import { configureKiroApi, postCatNext } from '../api/api-client';
-import type { MockData, CatNextResult, CatUygulanan } from '../api/api-client';
+import { postCatNext } from '../api/api-client';
+import type { CatNextResult, CatUygulanan } from '../api/api-client';
 import type { CatItem } from '../types';
-import kiroData from '../api/kiro-data.json';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
 import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
 import '../tokens/tokens.css';
-
-configureKiroApi({ mode: 'mock', mockData: kiroData as unknown as MockData });
 
 const HARFLER = ['A', 'B', 'C', 'D', 'E'];
 const MAT = color.subject.light.mat;
