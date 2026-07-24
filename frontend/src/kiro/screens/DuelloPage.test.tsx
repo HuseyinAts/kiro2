@@ -35,11 +35,11 @@ describe('DuelloPage', () => {
     expect(screen.getByText(/Hızlı \+ doğru cevap = daha çok puan/)).toBeInTheDocument();
   });
 
-  it('kapat (X) bağlantısı → /lig', async () => {
+  it('kapat (X) bağlantısı → /league', async () => {
     render(<DuelloPage />);
     await screen.findByText('1v1 Düello');
     const kapat = screen.getByRole('link', { name: 'Kapat' });
-    expect(kapat).toHaveAttribute('href', '/lig');
+    expect(kapat).toHaveAttribute('href', '/league');
   });
 
   it('reduced-motion: kfRing keyframe enjekte EDİLMEZ, içerik yine gelir', async () => {

@@ -426,7 +426,7 @@ export function DuelloPage(): React.ReactElement {
                   }}
                 >
                   <a
-                    href="/lig"
+                    href="/league"
                     aria-label="Kapat"
                     style={{
                       width: 38, height: 38, flexShrink: 0, border: `1px solid ${ARENA.border}`,
@@ -753,7 +753,7 @@ export function DuelloPage(): React.ReactElement {
                           Tekrar oyna
                         </button>
                         <a
-                          href="/lig"
+                          href="/league"
                           style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 48, border: `1px solid ${ARENA.border2}`, borderRadius: 13, background: 'rgba(255,255,255,0.04)', color: TXT, fontFamily: font.sans, fontSize: 14, fontWeight: 700, textDecoration: 'none', boxSizing: 'border-box' }}
                         >
                           Lige dön

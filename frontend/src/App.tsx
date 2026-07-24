@@ -99,7 +99,7 @@ const YKSEstimatePage = lazy(() => import('./pages/YKSEstimatePage'));
 const FSRSReviewPage = lazy(() => import('./pages/FSRSReviewPage'));
 // Lig + Duel + KIRO Destanı + Kalibrasyon
 const LeaguePage            = lazy(() => import('./pages/LeaguePage'));
-const DuelPage              = lazy(() => import('./pages/DuelPage'));
+const DuelPage              = lazy(() => import('./kiro/screens/DuelloPage')); // F4-S1: kademeli-swap → kiro DuelloPage (live)
 const KiroDestanPage        = lazy(() => import('./pages/KiroDestanPage'));
 const CalibrationStatusPage = lazy(() => import('./pages/CalibrationStatusPage'));
 // Learning Path Daily + Map (ZPD+DAG+IRT+FSRS)
