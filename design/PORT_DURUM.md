@@ -343,7 +343,7 @@ Sütunlar (URETIM_YOL_HARITASI Faz 3 DoD'si):
 | Sınıf Kurulumu ("İlk sınıfını kur") | KIRO2 Sinif Kurulum.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Ödevlerim | KIRO2 Odevlerim.dc.html | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
-Ödev Atama ↔ Ödevlerim tek döngü olarak test edildi: ☐
+Ödev Atama ↔ Ödevlerim tek döngü olarak test edildi: ☑ (2026-07-24 · `api/odev-dongu.test.ts`; postAtama→ortak-store→getAssignments; configureKiroApi klon-izolasyonu)
 
 ## 8 · İş & dayanıklılık (7) — ✅ TAMAM 7/7 (SPRINT10-A+B+C, 2026-07-23)
 | Ekran | Kaynak DC | PX | DUR | 390 | KOPYA | A11Y | TEMA |

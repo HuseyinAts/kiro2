@@ -116,7 +116,13 @@ let mockCache: MockData | null = null;
 
 export function configureKiroApi(next: KiroApiConfig): void {
   cfg = next;
-  mockCache = typeof next.mockData === 'object' && next.mockData ? next.mockData : null;
+  // Mock verisi KLONLANIR: her config çağrısı özel, değiştirilebilir bir oturum-store'u
+  // verir (mutasyonlar paylaşılan import'u kirletmez + testler arası izolasyon). Bu,
+  // postAtama gibi server-sim mutasyonların (odevler'e yazma) getAssignments'a
+  // yansımasını sağlayan Ödev Atama↔Ödevlerim döngüsünün temelidir.
+  mockCache = typeof next.mockData === 'object' && next.mockData
+    ? (structuredClone(next.mockData) as MockData)
+    : null;
 }
 
 async function mock(): Promise<MockData> {
@@ -1381,7 +1387,28 @@ export async function getAtamaRoster(sinifId: string): Promise<AtamaOgrenci[]> {
 export async function postAtama(form: AtamaForm): Promise<{ id: string; atananSayi: number }> {
   if (cfg.mode === 'mock') {
     const seed = form.konuId + '|' + form.teslimTarihi + '|' + form.ogrenciIds.join(',');
-    return { id: 'atama-' + katilimKodUret(seed), atananSayi: form.ogrenciIds.length };
+    const id = 'atama-' + katilimKodUret(seed);
+    // Server-sim: atama, ortak mock-store'daki `odevler`'e yeni bir Odev olarak yazılır →
+    // öğrencinin Ödevlerim (getAssignments) listesinde görünür (tam döngü). Gerçek backend
+    // Faz 4'te bu Odev'i sunucu üretir; burada mock konuId→konu adı eşlemesiyle türetir.
+    const c = await mock();
+    const konu = (c.odevAtama?.konular ?? []).find((k) => k.id === form.konuId);
+    const yeni: Odev = {
+      id,
+      baslik: (konu?.ad ?? 'Yeni ödev') + ' · ' + form.adet + ' soru',
+      ders: 'mat',
+      konu: konu?.ad ?? form.konuId,
+      atayan: 'Öğretmenin',
+      adet: form.adet,
+      yapilan: 0,
+      dakika: Math.max(10, form.adet * 2),
+      teslim: form.teslimTarihi,
+      kalan: null,
+      durum: 'acik',
+      kisisel: form.kisisel,
+    };
+    c.odevler = [yeni, ...(c.odevler ?? [])];
+    return { id, atananSayi: form.ogrenciIds.length };
   }
   const o = asRec(unwrapData(await live<unknown>('/teacher/assignments', {
     method: 'POST',

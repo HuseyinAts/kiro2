@@ -21,9 +21,12 @@ QuestionCard · WeeklyActivityBars · VeliYonlendirmeKarti · ui/Switch · ayarS
 - storybook-static/ (gitignore) commit'e girmemeli.
 - **Ertelenen (pre-existing, ayrı a11y-polish işi):** GirisPage aria-invalid / 'tamam' focus-move / bazı box-sizing / Sunrise SVG #FF6F5C.
 
+### Roadmap C — İLERLEME (2026-07-24)
+- ✅ **C#1 Full frontend derleme:** proje-geneli `tsc --noEmit` **0 hata** (0 kiro + 0 toplam) + `vite build:fast` BAŞARILI (PWA üretildi; yalnız chunk-size uyarısı). Port tüm frontend'e regresyonsuz entegre.
+- ✅ **C#2 Ödev Atama ↔ Ödevlerim tam döngü E2E** (`api/odev-dongu.test.ts`): postAtama server-sim → ortak mock-store `odevler` → getAssignments; **configureKiroApi artık structuredClone** (izolasyon+mutasyon; 489→491 test, regresyonsuz).
+
 ### Sonraki Adımlar (roadmap C/D)
-1. **Ödev Atama ↔ Ödevlerim tam döngü E2E** (ortak mock-store; contract hizalı).
-2. **Faz 3 kapanış operasyon:** push (onayla) + **full frontend derleme** (proje-geneli `tsc --noEmit` + `vite build`; şu ana kadar yalnız `tsconfig.kiro` scoped doğrulandı — kiro/ dışı entegrasyon).
+1. **C#3 Push** (onayla) — 7 local commit origin'e.
 3. **Faz 4 backend wiring:** AI Sohbet/Sokratik canlı SSE (enhanced_chat.py hazır) · billing (öğrenci-strip + PSP) · Çevrimdışı `/offline/*` · Bildirim birleşik+mark-read · Ayarlar `/preferences` · route guard → ProtectedRoute+getRedirectPathByRole reuse (TR/EN rota drift hizala).
 4. Backend test coverage %53→%80 (ayrı P0) · GitHub Actions/Dependabot triage (operatör).
 
