@@ -13,7 +13,7 @@ import { PageSkeleton } from './components/Common/PageSkeleton';
 import { RoleBasedLayout } from './components/Layout/RoleBasedLayout';
 import { OfflineIndicator, PWAInstallButton } from './components/PWAStatus';
 import { AuthProvider } from './context/AuthProvider';
-import { ModernLoginPage as LoginPage } from './pages/ModernLoginPage';
+import KiroLoginRoute from './kiro/routes/KiroLoginRoute'; // F4-S1a/A2.2b: kademeli-swap → kiro GirisPage (live, eager — entry page)
 import { Modern404Page } from './pages/Modern404Page';
 import { ModernErrorPage } from './pages/ModernErrorPage';
 import { ModernRegisterPage as RegisterPage } from './pages/ModernRegisterPage';
@@ -217,7 +217,7 @@ function AppContent() {
                   <Suspense fallback={<PageSkeleton />}>
                     <Routes>
               {/* Public Routes */}
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<KiroLoginRoute />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/veli-onay" element={<VeliOnayPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
