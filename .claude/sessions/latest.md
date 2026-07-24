@@ -27,7 +27,7 @@ QuestionCard · WeeklyActivityBars · VeliYonlendirmeKarti · ui/Switch · ayarS
 
 ### Sonraki Adımlar (roadmap C/D)
 1. ✅ **C#3 Push TAMAM** (41 commit → origin).
-2. **Faz 4 backend wiring** (ayrı faz/oturum) — AI SSE (enhanced_chat.py hazır) · billing PSP · Çevrimdışı `/offline/*` · Bildirim birleşik+mark-read · Ayarlar `/preferences` · route guard→ProtectedRoute.
+2. **Faz 4 backend wiring — PLAN HAZIR + kararlar KİLİTLİ:** `docs/plans/2026-07-24_faz4-backend-wiring-plan.md`. Port zaten çift-kollu (mock|live). Kararlar: **kademeli-swap** migrasyon · auth=**cookie** (Bearer düşer) · baseUrl=**/api/v1** normalize · ilk sprint=**F4-S0 blocker+S1 quick-wins** · **Billing PSP ertele**. Sıradaki icra: **F4-S0** (B1 cookie `live()`+streamSohbet `credentials:'include'` · B2 baseUrl normalize · B3 rota→getRedirectPathByRole · merkezi configureKiroApi(main.tsx)+ekran mock-çağrı kaldır · unwrapData/401/503 · mappers.ts). Gate: 491 mock testi bozulmaz (default mock) + F4-S1 canlı-smoke. 🟢 hazır yüzeyler: AI·Düello·Çevrimdışı·Veli/KVKK.
 3. **Faz 4 backend wiring:** AI Sohbet/Sokratik canlı SSE (enhanced_chat.py hazır) · billing (öğrenci-strip + PSP) · Çevrimdışı `/offline/*` · Bildirim birleşik+mark-read · Ayarlar `/preferences` · route guard → ProtectedRoute+getRedirectPathByRole reuse (TR/EN rota drift hizala).
 4. Backend test coverage %53→%80 (ayrı P0) · GitHub Actions/Dependabot triage (operatör).
 
