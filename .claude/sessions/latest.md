@@ -1,6 +1,6 @@
 ## Session Handoff — 2026-07-24 (🎯 FAZ 3 KAPANIŞ · 42/42)
-**Branch:** feature/self-evolution-optimization (origin'in önünde — push YOK)
-**Son commit:** (Faz 3 kapanış commit — bkz. git log; zincir 296d74d7c→7f08a8e2d[S10-A]→8af4e31ec[S10-B]→11f3eca1e[S10-C]→a66d89ee8[S11]→[kapanış])
+**Branch:** feature/self-evolution-optimization — ✅ **PUSHED** (2026-07-24, origin = local HEAD `ccfe794e0`; 41 commit gitti; kullanıcı explicit onayı)
+**Son commit:** `ccfe794e0` (Ödev döngü E2E). Faz 3 zinciri: 296d74d7c→7f08a8e2d[S10-A]→8af4e31ec[S10-B]→11f3eca1e[S10-C]→a66d89ee8[S11]→6c7b245ef[kapanış]→ccfe794e0[Ödev döngü].
 
 ### 🎯 FAZ 3 EKRAN-PORTU TAMAM — 42/42
 Şafak design system → `frontend/src/kiro/` port BİTTİ. Grup 1-9 tümü + auth kalıntı (İlk Hafta + route guard).
@@ -17,7 +17,7 @@ QuestionCard · WeeklyActivityBars · VeliYonlendirmeKarti · ui/Switch · ayarS
 - 17 doğrulandı / 14 unique / 1 phantom (0 P0). **Guard/Persona TEMİZ** (AuthGate koşulsuz-redirect phantom'u doğru elendi). major: İlk Hafta YARIN tag AA→#3163C4. minör: lock faded3→muted, srOnly durum, 7-gün scroll klavye-a11y, progressbar, MSW /onboarding/ilk-hafta handler, GirisPage kayıt-landing→/onboarding.
 
 ### Engelleyiciler / Operatör
-- **Push YAPILMADI** (kullanıcı "push yok" — **6 local commit** birikti: 296d74d7c→7f08a8e2d→8af4e31ec→11f3eca1e→a66d89ee8→[kapanış]).
+- ✅ **PUSH EDİLDİ** (2026-07-24, kullanıcı onayı; 41 commit → origin `ccfe794e0`). Origin senkron. NOT: bu latest.md güncellemesi push SONRASI (origin 1 doc-commit geride kalabilir — önemsiz handoff notu).
 - storybook-static/ (gitignore) commit'e girmemeli.
 - **Ertelenen (pre-existing, ayrı a11y-polish işi):** GirisPage aria-invalid / 'tamam' focus-move / bazı box-sizing / Sunrise SVG #FF6F5C.
 
@@ -26,7 +26,8 @@ QuestionCard · WeeklyActivityBars · VeliYonlendirmeKarti · ui/Switch · ayarS
 - ✅ **C#2 Ödev Atama ↔ Ödevlerim tam döngü E2E** (`api/odev-dongu.test.ts`): postAtama server-sim → ortak mock-store `odevler` → getAssignments; **configureKiroApi artık structuredClone** (izolasyon+mutasyon; 489→491 test, regresyonsuz).
 
 ### Sonraki Adımlar (roadmap C/D)
-1. **C#3 Push** (onayla) — 7 local commit origin'e.
+1. ✅ **C#3 Push TAMAM** (41 commit → origin).
+2. **Faz 4 backend wiring** (ayrı faz/oturum) — AI SSE (enhanced_chat.py hazır) · billing PSP · Çevrimdışı `/offline/*` · Bildirim birleşik+mark-read · Ayarlar `/preferences` · route guard→ProtectedRoute.
 3. **Faz 4 backend wiring:** AI Sohbet/Sokratik canlı SSE (enhanced_chat.py hazır) · billing (öğrenci-strip + PSP) · Çevrimdışı `/offline/*` · Bildirim birleşik+mark-read · Ayarlar `/preferences` · route guard → ProtectedRoute+getRedirectPathByRole reuse (TR/EN rota drift hizala).
 4. Backend test coverage %53→%80 (ayrı P0) · GitHub Actions/Dependabot triage (operatör).
 
