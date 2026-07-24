@@ -1,38 +1,28 @@
-## Session Handoff — 2026-07-24 (🎯 FAZ 3 KAPANIŞ · 42/42)
-**Branch:** feature/self-evolution-optimization — ✅ **PUSHED** (2026-07-24, origin = local HEAD `ccfe794e0`; 41 commit gitti; kullanıcı explicit onayı)
-**Son commit:** `ccfe794e0` (Ödev döngü E2E). Faz 3 zinciri: 296d74d7c→7f08a8e2d[S10-A]→8af4e31ec[S10-B]→11f3eca1e[S10-C]→a66d89ee8[S11]→6c7b245ef[kapanış]→ccfe794e0[Ödev döngü].
+## Session Handoff — 2026-07-24 21:30
+**Branch:** feature/self-evolution-optimization
+**Son commit:** dbb455970 docs(kiro): Faz 4 backend wiring planı + kilitli kararlar
+**Uncommitted:** temiz (origin `ccfe794e0` senkron; 2 local doc-commit önde: fe4ddfc03 + dbb455970, push YOK — standing kural)
 
-### 🎯 FAZ 3 EKRAN-PORTU TAMAM — 42/42
-Şafak design system → `frontend/src/kiro/` port BİTTİ. Grup 1-9 tümü + auth kalıntı (İlk Hafta + route guard).
-- **Bu tur:** İlk Hafta (paper "İlk 7 Gün" yayı) + `kiro/lib/routeGuard.ts` (KiroRol/roleLanding/AuthGate prop-enjekte) + `getRol` (Persona'ya dokunmadan) + GirisPage `onLanding` wiring (kayıt→/onboarding, giriş→rol-landing).
-- **Rapor:** `docs/audits/2026-07-24_faz3-kapanis-ilk-hafta-routeguard.md`. Durum: `design/PORT_DURUM.md` (FAZ 3 KAPANIŞ bölümü).
-
-### Paylaşılan varlıklar (port ürünleri)
-QuestionCard · WeeklyActivityBars · VeliYonlendirmeKarti · ui/Switch · ayarStore (calmMode/.k-calm global) · routeGuard · ChatBubble (ilk gerçek tüketici) + tam kiro tasarım-sistemi (20 ui bileşen + tokens + theme).
+### Yapılanlar
+- 🎯 **Faz 3 ekran-portu TAMAM 42/42** — Şafak design system → `frontend/src/kiro/`. Bu oturum Grup 8 (S10-A/B/C) + Grup 9 (S11) + auth kalıntı (İlk Hafta + `kiro/lib/routeGuard.ts` + GirisPage `onLanding` wiring).
+- Her sprint: keşif→build→adversarial→fix→breakpoint-gate→docs→commit. Raporlar: `docs/audits/2026-07-2{3,4}_*` (sprint10a/b/c, sprint11-grup9, faz3-kapanis).
+- Roadmap C: full frontend derleme ✓ (proje-tsc 0 + `vite build` ✓) · **Ödev Atama↔Ödevlerim döngü E2E** `frontend/src/kiro/api/odev-dongu.test.ts` (postAtama→ortak-store→getAssignments; `configureKiroApi` structuredClone izolasyon) · **push ✓** (41 commit → origin ccfe794e0).
+- 📋 **Faz 4 planı** `docs/plans/2026-07-24_faz4-backend-wiring-plan.md` — kararlar kilitli.
 
 ### Fail Eden Testler
-- YOK. vitest **71 dosya / 489 test PASS** · kanon **0 ihlal** (16 uyarı pre-existing) · tsc **0** · **breakpoint 0 FAIL / 490** · axe temiz.
+- YOK. kiro suite: vitest **72 dosya / 491 test PASS** · kanon 0 ihlal · scoped tsc 0 · breakpoint 0 FAIL/490 · axe temiz. Proje-geneli tsc 0.
 
-### Adversarial (kapanış, 22 ajan)
-- 17 doğrulandı / 14 unique / 1 phantom (0 P0). **Guard/Persona TEMİZ** (AuthGate koşulsuz-redirect phantom'u doğru elendi). major: İlk Hafta YARIN tag AA→#3163C4. minör: lock faded3→muted, srOnly durum, 7-gün scroll klavye-a11y, progressbar, MSW /onboarding/ilk-hafta handler, GirisPage kayıt-landing→/onboarding.
+### Engelleyiciler
+- YOK. (F4-S0 için dev-stack — backend+PG5434+Redis — F4-S1 canlı-smoke'ta gerekir; şu an kapalı.)
 
-### Engelleyiciler / Operatör
-- ✅ **PUSH EDİLDİ** (2026-07-24, kullanıcı onayı; 41 commit → origin `ccfe794e0`). Origin senkron. NOT: bu latest.md güncellemesi push SONRASI (origin 1 doc-commit geride kalabilir — önemsiz handoff notu).
-- storybook-static/ (gitignore) commit'e girmemeli.
-- **Ertelenen (pre-existing, ayrı a11y-polish işi):** GirisPage aria-invalid / 'tamam' focus-move / bazı box-sizing / Sunrise SVG #FF6F5C.
-
-### Roadmap C — İLERLEME (2026-07-24)
-- ✅ **C#1 Full frontend derleme:** proje-geneli `tsc --noEmit` **0 hata** (0 kiro + 0 toplam) + `vite build:fast` BAŞARILI (PWA üretildi; yalnız chunk-size uyarısı). Port tüm frontend'e regresyonsuz entegre.
-- ✅ **C#2 Ödev Atama ↔ Ödevlerim tam döngü E2E** (`api/odev-dongu.test.ts`): postAtama server-sim → ortak mock-store `odevler` → getAssignments; **configureKiroApi artık structuredClone** (izolasyon+mutasyon; 489→491 test, regresyonsuz).
-
-### Sonraki Adımlar (roadmap C/D)
-1. ✅ **C#3 Push TAMAM** (41 commit → origin).
-2. **Faz 4 backend wiring — PLAN HAZIR + kararlar KİLİTLİ:** `docs/plans/2026-07-24_faz4-backend-wiring-plan.md`. Port zaten çift-kollu (mock|live). Kararlar: **kademeli-swap** migrasyon · auth=**cookie** (Bearer düşer) · baseUrl=**/api/v1** normalize · ilk sprint=**F4-S0 blocker+S1 quick-wins** · **Billing PSP ertele**. Sıradaki icra: **F4-S0** (B1 cookie `live()`+streamSohbet `credentials:'include'` · B2 baseUrl normalize · B3 rota→getRedirectPathByRole · merkezi configureKiroApi(main.tsx)+ekran mock-çağrı kaldır · unwrapData/401/503 · mappers.ts). Gate: 491 mock testi bozulmaz (default mock) + F4-S1 canlı-smoke. 🟢 hazır yüzeyler: AI·Düello·Çevrimdışı·Veli/KVKK.
-3. **Faz 4 backend wiring:** AI Sohbet/Sokratik canlı SSE (enhanced_chat.py hazır) · billing (öğrenci-strip + PSP) · Çevrimdışı `/offline/*` · Bildirim birleşik+mark-read · Ayarlar `/preferences` · route guard → ProtectedRoute+getRedirectPathByRole reuse (TR/EN rota drift hizala).
-4. Backend test coverage %53→%80 (ayrı P0) · GitHub Actions/Dependabot triage (operatör).
+### Sonraki Adımlar (maks 5)
+1. **F4-S0** (Faz 4 blocker+plumbing): B1 `live()`+`streamSohbet` → `credentials:'include'` (cookie, Bearer kaldır) · B2 baseUrl tek `/api/v1` (çıplak yolları normalize) · B3 `routeGuard`→`getRedirectPathByRole` hizala · merkezi `configureKiroApi` (main.tsx, VITE_API_URL) + ekran modül-başı mock çağrılarını kaldır · `live()` unwrapData + 401→/login + `kiro/api/mappers.ts` iskeleti. Gate: 491 mock testi bozulmaz (default mock).
+2. **F4-S1** quick-win + uçtan-uca kanıt: AI·Düello·Çevrimdışı·Veli/KVKK live + kiro ekranları App.tsx İngilizce rotalara ProtectedRoute ile mount + GirisPage→authStore.login (cookie) + her yüzeye canlı-smoke.
+3. F4-S2 çekirdek-döngü adaptör (soru/CAT/FSRS BFF — ürünün kalbi, en ağır) → F4-S3 roller → F4-S4 iş katmanı.
+4. Opsiyonel: fe4ddfc03+dbb455970 doc-commit'lerini push (onayla).
 
 ### Kararlar (gelecek session tekrar tartışmasın)
-- **Faz 3 port TAMAM (42/42)** — kiro/ mock-katmanı; Faz 4 = gerçek backend wiring. Persona API-sözleşmesi BİREBİR (rol ayrı kaynak, dokunma).
-- Her yeni ekranda **faded/faded2/faded3 okunur-metin AA taraması + inline outline:none odak-halkası taraması + interaktif input minHeight≥44** (5 sprint üst üste çıktı → ink.muted / :focus-visible / hit-target).
-- routeGuard rota kanonu: kiro TR (/panel · /veli · /ogretmen); Faz4 ana app EN rotalarla hizalanır (path-naming.md drift).
-- calmMode global: theme.tsx .k-calm + tokens.css + useReducedMotion. Kök box-sizing:border-box; UI-kontrast ≥3:1; breakpoint fail→deterministik hit/parent-zincir teşhisi.
+- Faz 3 = mock-katmanı port BİTTİ; Faz 4 = gerçek backend wiring. Port zaten çift-kollu (mock|live) — F4 sıfırdan-yazma değil, blocker+adaptör.
+- Faz 4 kilitli kararlar: **kademeli-swap** migrasyon (Modern* rota-rota) · auth=**cookie** (Bearer düşer) · baseUrl=**/api/v1** · ilk sprint **F4-S0+S1** · **Billing PSP ertele** (B2B invoice-tabanlı).
+- Yeni guard İCAT ETME → `ProtectedRoute`+`getRedirectPathByRole` reuse. Persona API-sözleşmesi BİREBİR (rol ayrı kaynak `getRol`).
+- Her yeni ekranda: faded/faded2/faded3 okunur-metin AA + inline `outline:none` odak-halkası + interaktif input minHeight≥44 taraması (5 sprint tekrarladı).
