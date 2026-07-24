@@ -3,7 +3,10 @@ import * as React from 'react';
 
 // import { RoleBasedNavigation } from '../Navigation/RoleBasedNavigation'  // Old navigation
 import { ModernNavigation } from '../Navigation/ModernNavigation';  // New modern navigation
+import { useLocation } from 'react-router-dom';
+
 import { useAuthStore } from '@/store/authStore';
+import { isKiroFullBleed } from '@/kiro/kiroRoutes';
 import modernColors from '@/theme/modern-colors';
 
 interface RoleBasedLayoutProps {
@@ -12,12 +15,14 @@ interface RoleBasedLayoutProps {
 
 export const RoleBasedLayout: React.FC<RoleBasedLayoutProps> = ({ children }) => {
   const {  isAuthenticated  } = useAuthStore();
+  const { pathname } = useLocation();
   // theme and useMediaQuery kept for future responsive enhancements
   useTheme();
   useMediaQuery('(max-width:900px)');
 
-  // Giriş yapılmamışsa navigation gösterme
-  if (!isAuthenticated) {
+  // Giriş yapılmamışsa VEYA kiro full-bleed rotasında App kabuğunu (nav+header) gösterme —
+  // kiro ekranları kendi tema/SideNav'ını (KiroThemeProvider) getirir (tam-ekran, Faz 4).
+  if (!isAuthenticated || isKiroFullBleed(pathname)) {
     return <>{children}</>;
   }
 
