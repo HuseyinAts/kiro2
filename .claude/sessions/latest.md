@@ -1,33 +1,32 @@
-## Session Handoff — 2026-07-25 (F4-S1b AI yüzeyi — CANLI PASS)
+## Session Handoff — 2026-07-25 (F4-S1a/b/c TAM — chat 200+gerçek yanıt CANLI)
 **Branch:** feature/self-evolution-optimization · **PUSH YOK**
-**Son commit:** d1ffa2cde (F4-S1b AI fix + mount)
-**Kod zinciri:** b8626be6a (F4-S0) → c9c771e0e (Düello) → 24cac0bcc (login wiring, henüz mount değil) → 14f53afe1 (full-bleed) → d1ffa2cde (AI yüzeyi)
-**Frontend docker :3000:** tüm zincir DEPLOY (rebuild edildi, healthy).
+**Son commit:** 91d64d4b6 (F4-S1c student_id fix)
+**Kod zinciri:** b8626be6a(F4-S0)→c9c771e0e(Düello)→24cac0bcc(login wiring)→14f53afe1(full-bleed)→d1ffa2cde(AI fix)→05ccfae1f(A2.2b /login mount)→91d64d4b6(F4-S1c student_id)
+**Frontend docker :3000:** tüm zincir DEPLOY, healthy.
 
-### 🎯 CANLI KANITLAR (docker :3000, bu turda)
-- **422 fix**: `POST /enhanced-chat/stream` artık **403** dönüyor (422 DEĞİL) — `student_id` artık gövdede, Pydantic geçiyor. 403 = dokümante edilmiş kapsam-dışı IDOR (bkz aşağı).
-- **session-unwrap fix**: `/chat` sayfa yüklemesinde GERÇEK geçmiş oturum (`00f34a29-...`, sessions[0]=en güncel) + gerçek mesajlar (`merhaba` → AI yanıtı, bu oturumun BAŞINDA curl ile oluşturduğum session) doğru render oldu. `/sokratik` aynı kod yolunu paylaşıyor, aynı 200/200.
-- **Full-bleed**: `/chat` ve `/sokratik` App shell'siz, kiro SideNav ile tam-ekran.
-- **403 zarif ele alındı**: ErrorState + "Tekrar dene" (çökme yok, onError doğru tetiklendi).
+### 🎯🎯 TAM UÇTAN-UCA BAŞARI (docker :3000, gerçek kullanıcı, bu turda)
+- `/login` (kiro GirisPage, full-bleed) → gerçek `authStore.login` → cookie → "İçerdesin." → "Panele geç" → `getRedirectPathByRole` → `/dashboard`.
+- `/chat` (kiro AISohbetPage, full-bleed) → mesaj gönder → **`POST /enhanced-chat/stream` → 200 OK** → **GERÇEK Qwen3-8B AI yanıtı Türkçe stream oldu, UI'de göründü.**
+- Aynı oturumda 3 aşama canlı kanıtlandı: 422 (F4-S0 öncesi, student_id yok) → 403 (F4-S1b sonrası, yanlış id) → **200+gerçek-yanıt** (F4-S1c sonrası, doğru id).
 
-### Yapılanlar (commit'li, bu turda: d1ffa2cde)
-- **Backend keşif (canlı curl kanıtlı)**: `student_id` gövdede eksikti → HER ZAMAN 422. `GET /sessions` `{success,sessions}` zarfı merkezi unwrapData'nın anladığı `data` anahtarını kullanmıyor → mesajlar hep boş + `sessions[length-1]` (EN ESKİ oturum) alınıyordu.
-- **Kritik mimari bulgu**: backend IDOR guard `student_id`'nin `users.id` DEĞİL `learning_path_student_profiles.student_id` (`STU_xxx`) olmasını şart koşuyor (curl: users.id→403, STU_→200). Bu, **mevcut prod `ModernChatPage`/`chatService.ts`'de de aynı sorun** (`student_id: user?.id`) — kiro'nun icat ettiği bir kontrat değil. **Bilinçli kapsam dışı bırakıldı** — backend/DB değişikliği bu turda yapılmadı.
-- **Fix**: `getSohbet` → `sessions` zarfını açıkça çöz + `sessions[0]` (en güncel) + mesajları AYRI uçtan (`/enhanced-chat/sessions/{id}/messages`) çek. `postSohbetMesaj`/`streamSohbet` → `student_id: args.studentId` gövdeye eklendi.
-- **Wiring**: `SohbetStreamArgs.studentId?` (additive) · `AISohbetPage`/`SokratikPage` `studentId?` prop (additive) · YENİ `kiro/routes/KiroAISohbetRoute.tsx` + `KiroSokratikRoute.tsx` (authStore.user.id → studentId, ekran store-bağımsız kalır).
-- **Mount**: App.tsx `/chat` kademeli-swap (ModernChatPage→kiro AISohbetPage) + yeni `/sokratik` route. `kiroRoutes.ts` KIRO_FULLBLEED_ROUTES += `/chat`, `/sokratik`.
+### Bu turda tamamlanan görevler (SIRAYLA — kullanıcı talimatı)
+1. **A2.2b** (05ccfae1f): `/login` → `KiroLoginRoute` mount. Field-map {eposta,sifre}→{email,password}. **Kayıt gerçek `authStore.register`'a BAĞLANMADI** (backend soyad/birth_date/veli_email-KVKK zorunlu, kiro formu toplamıyor) → `/register`'a (ModernRegisterPage, tam KVKK-uyumlu) yönlendiriliyor. `onLanding` → `getRedirectPathByRole` (admin dahil tam kanon, kiro'nun `roleLanding`'i DEĞİL).
+2. **Backend veri sorunu araştırması** (91d64d4b6 içinde): Kök neden **bug DEĞİL** — `learning_path_student_profiles` satırı zaten VARDI (`STU_d04020744222`, Mart'tan beri). Gerçek sorun: frontend'in bu id'ye erişecek yolu yoktu. Backend'de tam bunun için var olan `GET /api/v1/learning-path/my-profile` ("Returns student_id for use in other endpoints") hiç kullanılmıyordu. **Backend değişikliği YOK** — `useKiroStudentId()` hook'u (yeni) bu ucu çağırıp doğru id'yi `KiroAISohbetRoute`/`KiroSokratikRoute`'a besliyor.
 
-### Gate
-tsc 0 · **kiro vitest 501/501** (74 dosya, +10 bu oturumda: sohbet.test +4, wrapper testleri +2 yeni dosya, GirisPage.test +4 önceki turdan) · vite build OK.
+### Gate (tüm adımlarda)
+tsc 0 · kiro vitest **507/507** (76 dosya) · vite build OK.
 
-### Sonraki Adımlar
-1. **F4-S1a tamamlama (A2.2b)**: `/login` → GirisPage swap (henüz mount değil — sadece wiring hazır, commit 24cac0bcc). Link hizala (`/hesap-kurtarma`→`/forgot-password`, `/onboarding`→`/register`) + register field-set (soyad/birth_date/rol/veli_email KVKK).
-2. **İnteraktifCozumPage**: 3. AI ekranı (kapsam dışı bırakıldı, App'te karşılığı yok, aynı pattern uygulanabilir).
-3. **Backend/veri sorunu (ayrı, büyük scope)**: `learning_path_student_profiles` linkajı — chat'in gerçekten çalışması için (mevcut prod dahil) bu tabloya satır gerekiyor. Onboarding akışı mı oluşturuyor, yoksa eksik mi — araştırılmalı.
-4. F4-S2+ backend yüzeyler: Çevrimdışı · Veli (mapVeliCocuk bug + ParentDashboard alanları) · KVKK.
+### Sonraki Adımlar (kullanıcı: "sırayla tümünü yap" — devam ediyor)
+1. **F4-S2 Çevrimdışı** (task #421): path fix (`/offline/durum`→`/offline/sync-status`) + backend veri modeli boşluğu (kuyruk/paketler) — keşif + scope kararı gerekiyor.
+2. **F4-S2 Veli** (task #422): `mapVeliCocuk` `child_name`/`child_id` bug fix (kolay) + `ParentDashboard`/`ChildPerformanceData` alan boşluğu (KPI/haftalık/roi/premium — büyük, backend-build).
+3. **F4-S2 KVKK** (task #423): `verifyLinkCode` backend'te yok (6-hane kod vs e-posta akışı — mimari karar noktası, kullanıcıya sorulmalı) + `giveConsent` zorunlu alan/enum uyumsuzluğu.
 
-### Seed test kullanıcı
-test@kiro2.com / Kiro2Beta2026@x (STUDENT). users.id=`0d3b011a-8be9-49cb-9a87-f8a8317ccc3d`, gerçek learning-path student_id=`STU_d04020744222` (DB'den, chat 200 için gerekli).
+### Bilinen kapsam-dışı gap'ler (dokunulmadı, not düşüldü)
+- GirisPage iç linkleri `/hesap-kurtarma`, `/onboarding` (üst "İlk kez mi?") App'te mount değil (404'e düşer) — ayrı ekran-mount işi.
+- `İnteraktifCozumPage` (3. AI ekranı) mount edilmedi — aynı pattern uygulanabilir, ayrı görev.
 
-### Operasyonel ders (tekrar): PWA service worker
-Her frontend docker rebuild sonrası smoke ÖNCESİ SW unregister + `caches.delete` ZORUNLU (Playwright: `navigator.serviceWorker.getRegistrations()→unregister` + `caches.keys()→delete`).
+### Kararlar / Notlar
+- **Kayıt akışı bilinçli ayrıştırıldı**: kiro "Kayıt" tab'ı gerçek register'a asla bağlanmayacak (KVKK-minor compliance riski) — her zaman `/register`'a yönlendirir.
+- `useKiroStudentId` deseni: kiro screens store/backend-agnostic kalır, TÜM gerçek-backend kuplajı `kiro/routes/*.tsx` wrapper'larında.
+- Docker deploy: `docker compose build frontend` + `up -d --no-deps frontend` + **SW-cache temizleme ZORUNLU** (`serviceWorker.getRegistrations()→unregister` + `caches.keys()→delete`) her rebuild sonrası smoke öncesi.
+- Seed test kullanıcı: test@kiro2.com / Kiro2Beta2026@x, gerçek learning-path student_id=`STU_d04020744222`.
