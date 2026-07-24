@@ -17,6 +17,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.structured_logger import get_logger
 
+# Import garantisi: SQLAlchemy mapper registry'sine kayit olsun ki Alembic
+# autogenerate offline_sync_packages'i bir daha "yetim" tablo sanip DUSURMESIN
+# (kok neden: bu import hic yoktu, bkz models/offline_sync_models.py docstring).
+from models.offline_sync_models import OfflineSyncPackage  # noqa: F401
+
 logger = get_logger("offline_sync_service")
 
 # Estimate: 2 minutes per question for offline study
@@ -104,45 +109,24 @@ async def build_sync_package(
     if remaining_slots < 1:
         remaining_slots = 10  # always include at least some questions
 
-    dialect = db.bind.dialect.name if db.bind else "sqlite"
-    if dialect == "postgresql":
-        q_query = (
-            select(QuestionBankItem)
-            .tablesample(func.bernoulli(20))
-            .where(QuestionBankItem.is_active == True)  # noqa: E712
-            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
-            .where(QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")))
-        )
-    else:
-        q_query = (
-            select(QuestionBankItem)
-            .where(QuestionBankItem.is_active == True)  # noqa: E712
-            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
-            .where(QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")))
-        )
+    # NOT: Select.tablesample() SQLAlchemy 2.0'da mevcut değil (kaldırıldı/hiç
+    # eklenmedi) — postgresql dalı bu API'yi kullanmaya çalışıyordu ve HER ZAMAN
+    # 500 ile patlıyordu (canlı doğrulandı). func.random() her iki dialect'te de
+    # (postgresql RANDOM(), sqlite RANDOM()) çalışır — dialect ayrımına gerek yok.
+    q_query = (
+        select(QuestionBankItem)
+        .where(QuestionBankItem.is_active == True)  # noqa: E712
+        # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
+        .where(QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")))
+    )
 
     if subject:
         q_query = q_query.where(QuestionBankItem.subject_area == subject.upper())
 
-    if dialect == "postgresql":
-        q_query = q_query.limit(remaining_slots)
-    else:
-        q_query = q_query.order_by(func.random()).limit(remaining_slots)
+    q_query = q_query.order_by(func.random()).limit(remaining_slots)
 
     q_result = await db.execute(q_query)
     questions_db = q_result.scalars().all()
-
-    if dialect == "postgresql" and len(questions_db) < remaining_slots:
-        fallback_query = (
-            select(QuestionBankItem)
-            .where(QuestionBankItem.is_active == True)  # noqa: E712
-            .where(QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")))
-        )
-        if subject:
-            fallback_query = fallback_query.where(QuestionBankItem.subject_area == subject.upper())
-        fallback_query = fallback_query.limit(remaining_slots)
-        q_result = await db.execute(fallback_query)
-        questions_db = q_result.scalars().all()
 
     questions: list[dict[str, Any]] = []
     for q in questions_db:
