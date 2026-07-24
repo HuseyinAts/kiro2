@@ -1,14 +1,14 @@
 // ============================================================================
-// KIRO2 — Faz 4 F4-S1b: App-router adaptörü. SokratikPage'i gerçek authStore'a
-// bağlar (student_id kaynağı = user.id — bkz KiroAISohbetRoute.tsx).
+// KIRO2 — Faz 4 F4-S1b/F4-S1c: App-router adaptörü. SokratikPage'i gerçek backend'e
+// bağlar (student_id kaynağı = gerçek öğrenme-yolu id'si — bkz KiroAISohbetRoute.tsx).
 // ============================================================================
 import * as React from 'react';
 
-import { useAuthStore } from '@/store/authStore';
-
 import { SokratikPage } from '../screens/SokratikPage';
 
+import { useKiroStudentId } from './useKiroStudentId';
+
 export default function KiroSokratikRoute(): React.ReactElement {
-  const { user } = useAuthStore();
-  return <SokratikPage studentId={user?.id} />;
+  const studentId = useKiroStudentId();
+  return <SokratikPage studentId={studentId} />;
 }

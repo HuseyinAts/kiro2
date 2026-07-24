@@ -1,17 +1,17 @@
 // ============================================================================
-// KIRO2 — Faz 4 F4-S1b: App-router adaptörü. AISohbetPage'i gerçek authStore'a
-// bağlar (student_id kaynağı = user.id — mevcut chatService.ts/ModernChatPage ile
-// AYNI sözleşme; STU_ öğrenme-yolu id'si DEĞİL, bkz backend verify_student_access).
-// Ekranın kendisi store-bağımsız kalır (mock/Storybook izolasyonu korunur) — kuplaj
-// SADECE bu adaptörde.
+// KIRO2 — Faz 4 F4-S1b/F4-S1c: App-router adaptörü. AISohbetPage'i gerçek backend'e
+// bağlar. student_id kaynağı: GET /api/v1/learning-path/my-profile (useKiroStudentId)
+// — users.id DEĞİL, gerçek öğrenme-yolu student_id'si (STU_xxx). Bkz useKiroStudentId.ts
+// keşif notu. Ekranın kendisi store-bağımsız kalır (mock/Storybook izolasyonu
+// korunur) — kuplaj SADECE bu adaptörde.
 // ============================================================================
 import * as React from 'react';
 
-import { useAuthStore } from '@/store/authStore';
-
 import { AISohbetPage } from '../screens/AISohbetPage';
 
+import { useKiroStudentId } from './useKiroStudentId';
+
 export default function KiroAISohbetRoute(): React.ReactElement {
-  const { user } = useAuthStore();
-  return <AISohbetPage studentId={user?.id} />;
+  const studentId = useKiroStudentId();
+  return <AISohbetPage studentId={studentId} />;
 }
