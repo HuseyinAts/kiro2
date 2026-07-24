@@ -1303,17 +1303,30 @@ export async function verifyLinkCode(kod: string): Promise<LinkCodeSonuc> {
 
 /** KVKK aydınlatma metni sürümü. live: GET /api/v1/kvkk/notice; mock: {version:'v3'}. */
 export async function getKvkkNotice(): Promise<KvkkNotice> {
-  if (cfg.mode === 'mock') return { version: 'v3' };
+  if (cfg.mode === 'mock') return { version: 'v3', text: 'KVKK aydınlatma metni (mock).' };
   const o = asRec(unwrapData(await live<unknown>('/api/v1/kvkk/notice')));
-  return { version: nstr(pick(o, 'version', 'notice_version'), 'v3') };
+  return {
+    version: nstr(pick(o, 'version', 'notice_version'), 'v3'),
+    text: nstr(pick(o, 'text', 'notice_text')) || undefined,
+  };
 }
 
 /** KVKK açık rıza ver — rıza kaydı SUNUCUDA tutulur (consentId sunucudan).
+ *  Backend ConsentGiveRequest 3 zorunlu alan ister (purpose enum, consent_text,
+ *  privacy_policy_version) — purpose bu akış için sabit 'account_management'
+ *  (veli-çocuk hesap bağlama; backend/models/kvkk_models.py DataProcessingPurpose).
  *  live: POST /api/v1/kvkk/consent/give; mock: server-sim (deterministik consentId). */
-export async function giveConsent(purpose: string): Promise<{ ok: boolean; consentId: string }> {
-  if (cfg.mode === 'mock') return { ok: true, consentId: 'consent-' + purpose };
+export async function giveConsent(
+  args: { consentText: string; policyVersion: string },
+): Promise<{ ok: boolean; consentId: string }> {
+  if (cfg.mode === 'mock') return { ok: true, consentId: 'consent-' + args.policyVersion };
   const o = asRec(unwrapData(await live<unknown>('/api/v1/kvkk/consent/give', {
-    method: 'POST', body: JSON.stringify({ purpose }),
+    method: 'POST',
+    body: JSON.stringify({
+      purpose: 'account_management',
+      consent_text: args.consentText,
+      privacy_policy_version: args.policyVersion,
+    }),
   })));
   return {
     ok: pick(o, 'ok', 'success') !== false,

@@ -655,6 +655,8 @@ export interface PendingVeliIstek {
 /** KVKK aydınlatma metni sürümü — rıza kaydında sunucu bu sürümü mühürler */
 export interface KvkkNotice {
   version: string;
+  /** Aydınlatma metni — giveConsent'in consent_text alanına kaynak olur. */
+  text?: string;
 }
 
 /** kiro-data.veliBaglama mock anahtarı (server-sim doğrulama + iki-taraf şeffaflık) */

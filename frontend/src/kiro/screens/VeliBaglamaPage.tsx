@@ -306,7 +306,10 @@ export function VeliBaglamaPage({ taraf: tarafProp, baslangicAdim }: VeliBaglama
     if (!riza || basliyor) {return;}
     setBasliyor(true);
     // Rıza kaydı SUNUCUDA — görülen KVKK sürümü mühürlenir (istemci rızayı hesaplamaz).
-    giveConsent('veli-baglama · KVKK ' + (notice?.version ?? 'v3'))
+    giveConsent({
+      consentText: notice?.text ?? 'Veli-çocuk hesap bağlama için KVKK açık rızası.',
+      policyVersion: notice?.version ?? 'v3',
+    })
       .then(() => setAdim('bekle'))
       .catch(() => setHint(HINT.genel))
       .finally(() => setBasliyor(false));
