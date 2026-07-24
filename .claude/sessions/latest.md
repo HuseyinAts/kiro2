@@ -1,32 +1,46 @@
-## Session Handoff — 2026-07-25 (F4-S1a/b/c TAM — chat 200+gerçek yanıt CANLI)
+## Session Handoff — 2026-07-25 (F4-S1 TAM + F4-S2 5/5 TAMAMLANDI)
 **Branch:** feature/self-evolution-optimization · **PUSH YOK**
-**Son commit:** 91d64d4b6 (F4-S1c student_id fix)
-**Kod zinciri:** b8626be6a(F4-S0)→c9c771e0e(Düello)→24cac0bcc(login wiring)→14f53afe1(full-bleed)→d1ffa2cde(AI fix)→05ccfae1f(A2.2b /login mount)→91d64d4b6(F4-S1c student_id)
-**Frontend docker :3000:** tüm zincir DEPLOY, healthy.
+**Son commit:** d7c4edc43 (KVKK giveConsent fix)
+**Frontend docker :3000 + backend:8000:** tüm zincir DEPLOY, healthy.
 
-### 🎯🎯 TAM UÇTAN-UCA BAŞARI (docker :3000, gerçek kullanıcı, bu turda)
-- `/login` (kiro GirisPage, full-bleed) → gerçek `authStore.login` → cookie → "İçerdesin." → "Panele geç" → `getRedirectPathByRole` → `/dashboard`.
-- `/chat` (kiro AISohbetPage, full-bleed) → mesaj gönder → **`POST /enhanced-chat/stream` → 200 OK** → **GERÇEK Qwen3-8B AI yanıtı Türkçe stream oldu, UI'de göründü.**
-- Aynı oturumda 3 aşama canlı kanıtlandı: 422 (F4-S0 öncesi, student_id yok) → 403 (F4-S1b sonrası, yanlış id) → **200+gerçek-yanıt** (F4-S1c sonrası, doğru id).
+### Kod zinciri (bu uzun oturumda, sırayla — "sırayla tümünü yap")
+b8626be6a(F4-S0) → c9c771e0e(Düello) → 24cac0bcc(login wiring) → 14f53afe1(full-bleed)
+→ d1ffa2cde(AI fix) → **05ccfae1f(A2.2b /login mount)** → **91d64d4b6(F4-S1c student_id)**
+→ **0cfeda660(offline sync backend fix)** → **51ff2da78(mapVeliCocuk fix)**
+→ **d7c4edc43(giveConsent fix)**
 
-### Bu turda tamamlanan görevler (SIRAYLA — kullanıcı talimatı)
-1. **A2.2b** (05ccfae1f): `/login` → `KiroLoginRoute` mount. Field-map {eposta,sifre}→{email,password}. **Kayıt gerçek `authStore.register`'a BAĞLANMADI** (backend soyad/birth_date/veli_email-KVKK zorunlu, kiro formu toplamıyor) → `/register`'a (ModernRegisterPage, tam KVKK-uyumlu) yönlendiriliyor. `onLanding` → `getRedirectPathByRole` (admin dahil tam kanon, kiro'nun `roleLanding`'i DEĞİL).
-2. **Backend veri sorunu araştırması** (91d64d4b6 içinde): Kök neden **bug DEĞİL** — `learning_path_student_profiles` satırı zaten VARDI (`STU_d04020744222`, Mart'tan beri). Gerçek sorun: frontend'in bu id'ye erişecek yolu yoktu. Backend'de tam bunun için var olan `GET /api/v1/learning-path/my-profile` ("Returns student_id for use in other endpoints") hiç kullanılmıyordu. **Backend değişikliği YOK** — `useKiroStudentId()` hook'u (yeni) bu ucu çağırıp doğru id'yi `KiroAISohbetRoute`/`KiroSokratikRoute`'a besliyor.
+### 🎯 Bu turda tamamlanan 5 görev
 
-### Gate (tüm adımlarda)
-tsc 0 · kiro vitest **507/507** (76 dosya) · vite build OK.
+1. **A2.2b — `/login` mount**: `KiroLoginRoute` (gerçek `authStore.login`, field-map, `getRedirectPathByRole`). Kayıt bilinçli `/register`'a devredildi (KVKK-minor alan eksikliği). **Canlı e2e**: login→cookie→"İçerdesin."→`/dashboard`.
 
-### Sonraki Adımlar (kullanıcı: "sırayla tümünü yap" — devam ediyor)
-1. **F4-S2 Çevrimdışı** (task #421): path fix (`/offline/durum`→`/offline/sync-status`) + backend veri modeli boşluğu (kuyruk/paketler) — keşif + scope kararı gerekiyor.
-2. **F4-S2 Veli** (task #422): `mapVeliCocuk` `child_name`/`child_id` bug fix (kolay) + `ParentDashboard`/`ChildPerformanceData` alan boşluğu (KPI/haftalık/roi/premium — büyük, backend-build).
-3. **F4-S2 KVKK** (task #423): `verifyLinkCode` backend'te yok (6-hane kod vs e-posta akışı — mimari karar noktası, kullanıcıya sorulmalı) + `giveConsent` zorunlu alan/enum uyumsuzluğu.
+2. **Backend veri sorunu araştırması**: Kök neden **bug değildi** — `learning_path_student_profiles` zaten vardı. Gerçek sorun: frontend'in erişim yolu yoktu. `GET /learning-path/my-profile` (zaten var, kullanılmıyordu) → `useKiroStudentId()` hook. **Backend değişikliği YOK.** Canlı: chat 422→403→**200+gerçek Qwen yanıtı**.
 
-### Bilinen kapsam-dışı gap'ler (dokunulmadı, not düşüldü)
-- GirisPage iç linkleri `/hesap-kurtarma`, `/onboarding` (üst "İlk kez mi?") App'te mount değil (404'e düşer) — ayrı ekran-mount işi.
-- `İnteraktifCozumPage` (3. AI ekranı) mount edilmedi — aynı pattern uygulanabilir, ayrı görev.
+3. **F4-S2 Çevrimdışı** (kullanıcı kararı: "sadece 2 backend bug'ı düzelt"): `GET /sync-package` ve `POST /sync-results` **6 Haziran'dan beri kırıktı** (kiro'dan bağımsız prod bug) — `.tablesample()` SQLAlchemy uyumsuzluğu + migration'ın kendi tablosunu silmesi (ORM model'siz raw-SQL tablo, autogenerate "yetim" sanıp düşürmüş). Yeni ORM model + migration (superuser ile uygulandı, `kiro2_app` DDL yetkisiz) + servis fix. **Canlı: her iki uç artık 200.**
 
-### Kararlar / Notlar
-- **Kayıt akışı bilinçli ayrıştırıldı**: kiro "Kayıt" tab'ı gerçek register'a asla bağlanmayacak (KVKK-minor compliance riski) — her zaman `/register`'a yönlendirir.
-- `useKiroStudentId` deseni: kiro screens store/backend-agnostic kalır, TÜM gerçek-backend kuplajı `kiro/routes/*.tsx` wrapper'larında.
-- Docker deploy: `docker compose build frontend` + `up -d --no-deps frontend` + **SW-cache temizleme ZORUNLU** (`serviceWorker.getRegistrations()→unregister` + `caches.keys()→delete`) her rebuild sonrası smoke öncesi.
-- Seed test kullanıcı: test@kiro2.com / Kiro2Beta2026@x, gerçek learning-path student_id=`STU_d04020744222`.
+4. **F4-S2 Veli**: `mapVeliCocuk` yanlış id seçiyordu (`pick()` ilk-dolu mantığıyla relation-id'yi öğrenci-id sanıyordu) — sadece kozmetik değil, sonraki `/parent/children/{id}/performance` çağrısına yanlış id gidiyordu. Fix: pick sırası backend'in gerçek `child_name`/`child_id` alanlarını önceliklendirir. KPI/haftalık/roi/premium boşluğu (backend-build, büyük) **kapsam dışı bırakıldı**.
+
+5. **F4-S2 KVKK**: `giveConsent` HER ZAMAN 422 veriyordu (3 zorunlu alandan 2'si hiç gönderilmiyordu, `purpose` enum'a uymuyordu) — fix: `getKvkkNotice` genişletildi (`text` eklendi) + `giveConsent` artık 3 alanı doğru gönderiyor. `verifyLinkCode` (6-hane kod, backend'te route YOK — e-posta tabanlı akış) **mimari fark olarak belgelenip kapsam dışı bırakıldı** (ürün kararı gerektirir).
+
+### Gate (her adımda)
+tsc 0 · kiro vitest **510/510** (78 dosya) · vite build OK · backend ruff temiz + mevcut 13 offline test PASS.
+
+### Operatör/mimari notlar
+- **DB migration deseni öğrenildi**: `kiro2_app` (RLS non-superuser) DDL yapamıyor (`users` FK referansı reddedildi) — host native `postgres` superuser + `DATABASE_URL_SYNC` env-override (`.env` DEĞİŞTİRİLMEDİ) ile migration uygulandı. Runtime yetkisi (`SELECT/INSERT/UPDATE/DELETE`) otomatik grant edilmiş bulundu.
+- **Git Bash + docker path-conversion tuzağı**: `docker exec ... find /app/...` gibi mutlak-yol argümanları MSYS tarafından Windows yoluna çevriliyor → `MSYS_NO_PATHCONV=1` prefix'i zorunlu.
+- **PWA service worker**: her frontend rebuild sonrası smoke öncesi SW-cache temizleme zorunlu (tekrarlanan ders).
+
+### Bilinen kapsam-dışı gap'ler (dokunulmadı, net belgelendi)
+- `verifyLinkCode`/6-hane-kod akışı: backend'te yok, ürün kararı gerekiyor (kod-akışı korunsun mu, e-posta-akışına mı geçilsin).
+- ParentDashboard KPI/haftalık/roi/premium alanları: backend şemasında hiç yok, backend-build gerektirir.
+- Çevrimdışı `paketler`/`kuyruk` kavramları: backend veri modelinde yok (backend artık ÇALIŞIYOR ama kiro'nun zengin UI'sine denk düşen kavramlar yok) — ayrı ürün-tasarım kararı.
+- GirisPage iç linkleri (`/hesap-kurtarma`, üst `/onboarding`) + `İnteraktifCozumPage` mount edilmedi.
+- VeliPaneliPage/VeliBaglamaPage henüz App'e mount değil (F4-S2 fix'leri sadece api-client seviyesinde, mount ayrı kademeli-swap kararı).
+
+### Sonraki Adımlar (F4 devam ederse)
+1. Veli/Offline ekranlarını App'e mount (full-bleed pattern, kanıtlanmış).
+2. `verifyLinkCode` mimari kararı (kullanıcıya sorulmalı).
+3. ParentDashboard/Offline paketler backend-build (ayrı, büyük scope).
+4. İnteraktifCozumPage (3. AI ekranı) mount.
+
+### Seed test kullanıcılar
+test@kiro2.com (STUDENT, `STU_d04020744222`) · ogretmen@/veli@/admin@kiro2.com — hepsi `Kiro2Beta2026@x`.
