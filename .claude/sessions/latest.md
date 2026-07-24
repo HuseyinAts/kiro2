@@ -1,29 +1,29 @@
-## Session Handoff — 2026-07-24 (F4-S1a devam)
+## Session Handoff — 2026-07-24 (F4-S1a — Düello e2e CANLI PASS)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** 24cac0bcc feat(kiro): F4-S1a GirisPage→authStore login wiring
-**Commit zinciri (push YOK):** b8626be6a (F4-S0) · 95a5ebe6f (handoff) · c9c771e0e (Düello live) · 24cac0bcc (login wiring)
+**Son commit:** f53b8bf8c (handoff) · kod: 24cac0bcc (login wiring) · c9c771e0e (Düello live) · b8626be6a (F4-S0)
+**PUSH YOK.** Frontend docker :3000 REBUILD edildi (F0+A1+A2.1 deploy, healthy).
 
-### Yapılanlar
-- **F4-S0 TAMAM** (b8626be6a): 3 blocker (B1 cookie · B2 /api/v1 apiPath · B3 rota) + merkezi config + 39 ekran mock-strip. Gate 491/491.
-- **F4-S1 keşif** (wf_6f30bedd-a95): plan matrisini kısmen çürüttü — gerçek quick-win YALNIZ Düello. AI frontend-fixable (student_id eksik→422 + session-unwrap). Çevrimdışı/Veli/KVKK **backend işi** (offline veri modeli / ParentDashboard alanları / KVKK verify-code+consent kontratı). Kullanıcı kapsamı **"Temel + Düello e2e"** seçti.
-- **A1 Düello live** (c9c771e0e): App /duel → kiro DuelloPage (kademeli-swap) + /lig→/league. DuelloPage.test 6/6 · build ✓.
-- **A2.1 login wiring** (24cac0bcc): GirisPage onLogin/onVerify2fa/onRegister prop-enjekte (fallback korunur) + 2FA TOTP adımı + ProtectedRoute.getRedirectPathByRole export. GirisPage.test 14/14 · tsc 0.
+### 🎯 UÇTAN-UCA KANIT (canlı, docker :3000 + native PG18 + backend)
+- **Backend cookie e2e (curl):** login/secure→200 {user.rol:ogrenci} + httpOnly access/refresh cookie · /auth/me→200 · /api/v1/duel/rating→200 {elo:1200}.
+- **Frontend e2e (Playwright):** ModernLoginPage login (test@kiro2.com / Kiro2Beta2026@x) → cookie → ProtectedRoute geçti (/learning-path) → **/duel → kiro DuelloPage CANLI render → POST /api/v1/duel/matchmake → 200 OK** → "rakip yok" (tek kullanıcı doğru).
+- Bu, F4-S0'ı canlıda doğrular: B1 cookie (200≠401) · B2 /api/v1 · merkezi live config (origin) · A1 mount.
+- **Seed test kullanıcı:** test@kiro2.com / Kiro2Beta2026@x (STUDENT, GF testlerinden; TEACHER=ogretmen@, PARENT=veli@, ADMIN=admin@, hepsi aynı şifre).
 
-### Fail Eden Testler
-YOK. (GirisPage.test 14/14, DuelloPage.test 6/6, tsc 0. Full kiro gate A2.2 başında koşulacak — beklenen 495/495.)
+### Yapılanlar (commit'li)
+- **F4-S0** (b8626be6a): 3 blocker + merkezi config + 39 strip. Gate 491/491.
+- **A1 Düello live** (c9c771e0e): App /duel→kiro DuelloPage + /lig→/league. DuelloPage.test 6/6. **CANLI PASS.**
+- **A2.1 login wiring** (24cac0bcc): GirisPage onLogin/onVerify2fa/onRegister prop-enjekte + 2FA TOTP + ProtectedRoute.getRedirectPathByRole export. GirisPage.test 14/14. (Henüz mount DEĞİL — A2.2b.)
 
-### Engelleyiciler / Operatör girdisi (A2.2 için)
-1. **Test öğrenci kimliği** (email+şifre, seed'li) — canlı login-smoke (login→cookie→/duel) için ZORUNLU.
-2. **FE serve kararı**: canlı UI-smoke için ya `docker compose build frontend`+redeploy (:3000 stale 43h) YA `npm run dev` (:3001, vite proxy). Hangisi?
+### Fail Eden Testler / Engelleyiciler
+YOK. (1 console error /duel'de — fonksiyonel değil, network 200 + render OK; ileride bakılabilir.)
 
 ### Sonraki Adımlar
-1. **A2.2**: App.tsx `/login` → `KiroLoginRoute` wrapper swap (useAuthStore.login field-map {eposta,sifre}→{email,password} + verifyTwoFactor + onRegister→/register + onLanding→getRedirectPathByRole(store.user.rol)). Full kiro gate + build. **Canlı login-smoke** (cred gelince) → commit.
-2. F4-S1b: AI yüzeyi frontend-fix (student_id + session-unwrap+mesaj-çekme).
-3. F4-S2+: Çevrimdışı/Veli/KVKK backend işi (ayrı scope, migration + KVKK ürün kararı).
-
-### Stack durumu (canlı, doğrulandı)
-Docker stack AYAKTA: kiro2-backend healthy (/health 200, OpenAPI 1135 path, 4 yüzey uçları + /auth/login/secure + /auth/me[gizli] mevcut) · redis · frontend(:3000 STALE) · native PG18 5434 · celery. `/api/v1/auth/me` include_in_schema=False (phantom değil).
+1. **Layout stratejisi** (kademeli-swap kritik): kiro ekranları App ModernLayout kabuğu İÇİNDE render oluyor (full-bleed tasarıma aykırı). Karar: kiro rotaları layout-bypass mı, App kabuğu mu? Tüm kiro mount'ları etkiler.
+2. **A2.2b** — /login → GirisPage swap: kiro iç linkleri (/hesap-kurtarma→/forgot-password, /onboarding→/register) hizala + register field-set (soyad/birth_date/rol/veli_email KVKK) + KiroLoginRoute wrapper (login({email,password}) + verify2fa + onLanding→getRedirectPathByRole(store.user.rol)).
+3. **F4-S1b** — AI yüzeyi frontend-fix: postSohbetMesaj/streamSohbet gövdesine student_id (persona.id) + getSohbet /sessions zarf-aç ({success,sessions}) + mesaj ayrı uçtan çek.
+4. F4-S2+ backend yüzeyler: Çevrimdışı (offline veri modeli) · Veli (mapVeliCocuk child_name/child_id bug + ParentDashboard alanları) · KVKK (verify-code/consent kontratı — mimari karar).
 
 ### Kararlar / Notlar
-- baseUrl=origin (VITE_API_URL DEĞİL — cookie SameSite). unwrapData lenient DOĞRU (keşif teyit: sıkılaştırma duel/parent/kvkk/offline'ı kırardı).
-- Rol tek-kaynak: gerçek user.rol (GET /api/v1/auth/me); kiro getRol wrapper'da atlanır (onLogin path). getRedirectPathByRole export edildi.
+- baseUrl=origin (VITE_API_URL DEĞİL). unwrapData lenient DOĞRU (canlı duel/parent RAW pydantic zarfsız — teyit edildi).
+- Docker: `docker compose build frontend` + `up -d --no-deps frontend` (:3000). Native PG18 5434 (docker pg15 çakışması YOK — footgun'dan kaçınıldı).
+- Keşif workflow'ları: F4-S1 recon wf_6f30bedd-a95.
