@@ -95,4 +95,53 @@ describe('GirisPage', () => {
     const { container } = render(<GirisPage />);
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  // --- F4-S1: gerçek authStore enjeksiyonu (onLogin/onVerify2fa/onRegister) ---
+
+  it('onLogin verilince prop-enjekte auth kullanır → tamam + onLanding(/dashboard)', async () => {
+    const onLogin = vi.fn().mockResolvedValue(true);
+    const onLanding = vi.fn();
+    render(<GirisPage onLogin={onLogin} onLanding={onLanding} rol="ogrenci" />);
+    await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
+    await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
+    await userEvent.click(screen.getByRole('button', { name: 'Devam edelim' }));
+    expect(onLogin).toHaveBeenCalledWith({ eposta: 'ali@eposta.com', sifre: 'sifre123' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Panele geç' }));
+    expect(onLanding).toHaveBeenCalledWith('/dashboard');
+  });
+
+  it('onLogin yanlış kimlikte false → amber hint, tamam durumuna geçmez', async () => {
+    const onLogin = vi.fn().mockResolvedValue(false);
+    render(<GirisPage onLogin={onLogin} />);
+    await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
+    await userEvent.type(screen.getByLabelText('Şifren'), 'yanlis123');
+    await userEvent.click(screen.getByRole('button', { name: 'Devam edelim' }));
+    expect(await screen.findByText(/eşleşmedi/)).toBeInTheDocument();
+    expect(screen.queryByText('İçerdesin.')).not.toBeInTheDocument();
+  });
+
+  it('onLogin 2fa_required → TOTP adımı; onVerify2fa true ile tamam', async () => {
+    const onLogin = vi.fn().mockResolvedValue('2fa_required');
+    const onVerify2fa = vi.fn().mockResolvedValue(true);
+    render(<GirisPage onLogin={onLogin} onVerify2fa={onVerify2fa} />);
+    await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
+    await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
+    await userEvent.click(screen.getByRole('button', { name: 'Devam edelim' }));
+    expect(await screen.findByText('İki adımlı doğrulama')).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Doğrulama kodu'), '123456');
+    await userEvent.click(screen.getByRole('button', { name: 'Doğrula' }));
+    expect(onVerify2fa).toHaveBeenCalledWith({ eposta: 'ali@eposta.com', sifre: 'sifre123', kod: '123456' });
+    expect(await screen.findByText('İçerdesin.')).toBeInTheDocument();
+  });
+
+  it('onRegister verilince kayıt gerçek /register akışına delege edilir', async () => {
+    const onRegister = vi.fn();
+    render(<GirisPage onRegister={onRegister} />);
+    await userEvent.click(screen.getByRole('radio', { name: 'Kayıt' }));
+    await userEvent.type(screen.getByLabelText('Adın'), 'Ali');
+    await userEvent.type(screen.getByLabelText('E-posta adresin'), 'ali@eposta.com');
+    await userEvent.type(screen.getByLabelText('Şifren'), 'sifre123');
+    await userEvent.click(screen.getByRole('button', { name: 'Hesabımı aç' }));
+    expect(onRegister).toHaveBeenCalledWith({ eposta: 'ali@eposta.com', sifre: 'sifre123', ad: 'Ali' });
+  });
 });

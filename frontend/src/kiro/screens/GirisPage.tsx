@@ -16,7 +16,7 @@ import { Button } from '../ui/Button';
 import '../tokens/tokens.css';
 
 type Mod = 'giris' | 'kayit';
-type Durum = 'form' | 'tamam';
+type Durum = 'form' | '2fa' | 'tamam';
 
 // Türkçe harf dahil — SPRINT1_SPEC §B kural satırı
 const HARF = /[a-zA-ZçğıöşüÇĞİÖŞÜ]/;
@@ -113,13 +113,19 @@ function Alan({ id, label, tip = 'text', value, onChange, placeholder, aciklama,
  *    giriş → roleLanding(rol); kayıt → /onboarding (6 soruluk seviye ölçüm).
  *    Verilmezse eski davranış (no-op) korunur.
  *  rol: verilirse landing kaynağı; verilmezse giriş BAŞARISINDAN sonra getRol()
- *    ile yüklenir (kimliksiz mount'ta ÇEKİLMEZ; fallback 'ogrenci'). */
+ *    ile yüklenir (kimliksiz mount'ta ÇEKİLMEZ; fallback 'ogrenci').
+ *  onLogin/onVerify2fa/onRegister (F4-S1): gerçek authStore enjeksiyonu (prop-enjekte).
+ *    Verilmezse kiro api-client (mock/live) fallback — test/story izolasyonu korunur.
+ *    Çağıran {eposta,sifre} → gerçek {email,password}'e map eder. */
 export interface GirisPageProps {
   onLanding?: (rota: string) => void;
   rol?: KiroRol;
+  onLogin?: (creds: { eposta: string; sifre: string }) => Promise<boolean | '2fa_required'>;
+  onVerify2fa?: (args: { eposta: string; sifre: string; kod: string }) => Promise<boolean>;
+  onRegister?: (creds: { eposta: string; sifre: string; ad: string }) => void | Promise<void>;
 }
 
-export function GirisPage({ onLanding, rol: rolProp }: GirisPageProps = {}): React.ReactElement {
+export function GirisPage({ onLanding, rol: rolProp, onLogin, onVerify2fa, onRegister }: GirisPageProps = {}): React.ReactElement {
   const [mod, setMod] = React.useState<Mod>('giris');
   const [durum, setDurum] = React.useState<Durum>('form');
   const [ad, setAd] = React.useState('');
@@ -129,6 +135,7 @@ export function GirisPage({ onLanding, rol: rolProp }: GirisPageProps = {}): Rea
   const [hint, setHint] = React.useState<string | null>(null);
   const [gonderiliyor, setGonderiliyor] = React.useState(false);
   const [yuklenenRol, setYuklenenRol] = React.useState<KiroRol>('ogrenci');
+  const [kod, setKod] = React.useState(''); // F4-S1: 2FA TOTP kodu
 
   // Rol = giriş-sonrası landing kaynağı (Persona'dan AYRI). Prop verilirse onu kullan;
   // yoksa giriş BAŞARISINDAN sonra getRol() ile yüklenir (gonder()) — kimliksiz mount'ta
@@ -154,15 +161,41 @@ export function GirisPage({ onLanding, rol: rolProp }: GirisPageProps = {}): Rea
     if (h) return;
     setGonderiliyor(true);
     try {
-      if (mod === 'giris') await apiLogin({ eposta, sifre });
-      else await apiRegister({ eposta, sifre, ad });
-      // Kimlik OLUŞTUKTAN sonra rolü çek (sunucu-otorite; pre-auth çağrı YOK). rolProp
-      // verilmişse o kazanır (rol = rolProp ?? yuklenenRol) — bu yük best-effort/fallback.
-      if (rolProp == null) void getRol().then(setYuklenenRol).catch(() => undefined);
+      if (mod === 'kayit') {
+        // Kayıt: gerçek /register akışına delege et (varsa); yoksa kiro api-client fallback.
+        if (onRegister) { await onRegister({ eposta, sifre, ad }); return; }
+        await apiRegister({ eposta, sifre, ad });
+      } else if (onLogin) {
+        // Gerçek auth (cookie). 2FA dalı ve hatalı-kimlik ayrı ele alınır.
+        const r = await onLogin({ eposta, sifre });
+        if (r === '2fa_required') { setHint(null); setDurum('2fa'); return; }
+        if (r === false) { setHint('E-posta ya da şifre eşleşmedi — bir daha dener misin?'); return; }
+      } else {
+        await apiLogin({ eposta, sifre });
+      }
+      // Kimlik OLUŞTUKTAN sonra rolü çek (sunucu-otorite; pre-auth çağrı YOK). Gerçek auth'ta
+      // (onLogin) rol store'dan gelir → getRol atlanır (/me/rol 404 gürültüsü önlenir).
+      if (!onLogin && rolProp == null) void getRol().then(setYuklenenRol).catch(() => undefined);
       setDurum('tamam');
     } catch {
       // Sunucu hatası → aynı amber hint (sorun sende değil tonu; alarm-kırmızısı YOK)
       setHint('Koç şu an toparlanıyor — birazdan yeniden dene, çalışman güvende.');
+    } finally {
+      setGonderiliyor(false);
+    }
+  };
+
+  // F4-S1: 2FA doğrulama adımı (TOTP). onVerify2fa prop-enjekte; başarıda 'tamam'a geçer.
+  const dogrula2fa = async () => {
+    if (!onVerify2fa) return;
+    if (kod.trim().length < 6) { setHint('6 haneli kodu tam gir — acele yok.'); return; }
+    setGonderiliyor(true);
+    try {
+      const ok = await onVerify2fa({ eposta, sifre, kod: kod.trim() });
+      if (ok) { setHint(null); setDurum('tamam'); }
+      else setHint('Kod doğrulanmadı — tekrar dener misin?');
+    } catch {
+      setHint('Doğrulama şu an yapılamadı — birazdan yeniden dene.');
     } finally {
       setGonderiliyor(false);
     }
@@ -202,7 +235,7 @@ export function GirisPage({ onLanding, rol: rolProp }: GirisPageProps = {}): Rea
           <div style={{ marginTop: 8, marginBottom: 18 }}><Sunrise /></div>
 
           <div style={kartStil}>
-            {!tamamMi && (
+            {durum === 'form' && (
               <div role="radiogroup" aria-label="Giriş ya da Kayıt" style={{ display: 'flex', gap: 4, background: color.paper.subtle, borderRadius: radius.button, padding: 4, marginBottom: 4 }}>
                 {(['giris', 'kayit'] as const).map((m) => {
                   const aktif = mod === m;
@@ -228,7 +261,34 @@ export function GirisPage({ onLanding, rol: rolProp }: GirisPageProps = {}): Rea
               </div>
             )}
 
-            {tamamMi ? (
+            {durum === '2fa' ? (
+              <div style={{ paddingTop: space[4] }}>
+                <h1 style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 30, fontWeight: 400, margin: 0, color: color.ink.primary }}>
+                  İki adımlı doğrulama
+                </h1>
+                <p style={{ marginTop: 10, fontSize: 14.5, lineHeight: 1.6, color: color.ink.secondary }}>
+                  Doğrulama uygulamandaki 6 haneli kodu gir — hesabın güvende kalsın.
+                </p>
+                <Alan
+                  id="giris-2fa"
+                  label="Doğrulama kodu"
+                  value={kod}
+                  onChange={setKod}
+                  placeholder="123456"
+                  aciklama={hint ? 'giris-hint' : undefined}
+                />
+                {hint && (
+                  <div id="giris-hint" role="status" aria-live="polite" style={{ marginTop: space[4], padding: '10px 13px', borderRadius: radius.chip, background: color.semantic.riskBgSoft, border: `1px solid ${color.semantic.riskBorderSoft}`, color: color.semantic.riskTextOnLight, fontSize: 13, lineHeight: 1.5 }}>
+                    {hint}
+                  </div>
+                )}
+                <div style={{ marginTop: space[5] }}>
+                  <Button variant="primary" size="lg" disabled={gonderiliyor} onClick={() => void dogrula2fa()}>
+                    Doğrula
+                  </Button>
+                </div>
+              </div>
+            ) : tamamMi ? (
               <div style={{ paddingTop: space[4] }}>
                 <h1 style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 30, fontWeight: 400, margin: 0, color: color.ink.primary }}>
                   {mod === 'giris' ? T.tamamGirisBaslik : T.tamamKayitBaslik}
