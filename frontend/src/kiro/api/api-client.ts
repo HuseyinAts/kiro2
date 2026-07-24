@@ -1020,9 +1020,13 @@ function mapDersIlerleme(v: unknown): DersIlerleme {
 }
 function mapVeliCocuk(v: unknown): VeliCocuk {
   const o = asRec(v);
-  const ad = nstr(pick(o, 'ad', 'name', 'display_name'));
+  // Backend ParentChildRelationResponse 'child_name'/'child_id' döner (backend/models/parent.py) —
+  // ÖNCELİKLİ dene: 'id' relation'ın kendi id'si (int), 'child_id' DEĞİL — pick() ilk-dolu
+  // seçtiği için sıralama kritik (aksi halde relation-id, öğrenci id'si sanılıp sonraki
+  // /parent/children/{id}/performance çağrısına yanlış id gider).
+  const ad = nstr(pick(o, 'child_name', 'ad', 'name', 'display_name'));
   return {
-    id: nstr(pick(o, 'id', 'student_id', 'child_id')),
+    id: nstr(pick(o, 'child_id', 'id', 'student_id')),
     ad,
     sinif: nstr(pick(o, 'sinif', 'class_name', 'grade')),
     hedef: nstr(pick(o, 'hedef', 'target', 'goal')),
