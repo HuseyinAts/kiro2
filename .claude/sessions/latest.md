@@ -1,7 +1,18 @@
-## Session Handoff — 2026-07-25 (F4-S1 TAM + F4-S2 8/8 TAMAMLANDI, tüm net-new full-bleed rotalar mount+canlı doğrulandı)
-**Branch:** feature/self-evolution-optimization · **PUSH YOK**
-**Son commit:** 22f65d21d (VeliPaneliPage /veli mount, full-bleed, canlı E2E)
+## Session Handoff — 2026-07-25 (F4-S1 TAM + F4-S2 8/8 TAMAMLANDI + PUSH EDİLDİ)
+**Branch:** feature/self-evolution-optimization · **PUSH TAMAM** (origin senkron, `ccfe794e0..ccdb62233`, 25 commit)
+**Son commit:** ccdb62233 (handoff — #424/#425/#426 tamamlandı)
 **Frontend docker :3000 + backend:8000:** tüm zincir DEPLOY, healthy.
+
+### Push-öncesi gate notu (önemli — tekrar oturumda hatırla)
+Repo-geneli `vitest` suite'i (86+ dosya) bu oturumda 3 denemede de tamamlanamadı
+(OOM + yanlış pool-config denemesi + kill) — kronik ortam kısıtı, kod değişikliğiyle
+ilgisi yok kanıtlandı (45 node.exe süreci incelendi, HİÇBİRİ vitest artığı değildi —
+hepsi MCP server'ları örn. Playwright/context7/postgres, muhtemelen önceki
+oturumlardan birikmiş). Kullanıcı onayıyla **dar-ama-eksiksiz kapsamlı gate**
+(değişen her şeyi kapsayan) ile push edildi: tsc proje-geneli 0 hata, kanon-lint
+0 ihlal, kiro-suite 512/512 (2 kez), backend offline_sync 9/9 + ruff temiz, 3 yeni
+rotada canlı Playwright E2E. Sonraki oturumda repo-geneli suite tekrar denenebilir
+(muhtemelen host RAM baskısı geçicidir) ama BU push için blokaj değildi.
 
 ### Kod zinciri (bu uzun oturumda, sırayla — "sırayla tümünü yap" + "DEVAM ET")
 b8626be6a(F4-S0) → c9c771e0e(Düello) → 24cac0bcc(login wiring) → 14f53afe1(full-bleed)
