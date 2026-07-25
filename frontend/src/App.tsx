@@ -41,6 +41,7 @@ const StudentDashboardPage = lazy(() => import('./pages/ModernStudentDashboard')
 const ChatPage = lazy(() => import('./kiro/routes/KiroAISohbetRoute')); // F4-S1b: kademeli-swap → kiro AI Sohbet (live)
 const CevrimdisiPage = lazy(() => import('./kiro/screens/CevrimdisiPage')); // F4-S2: yeni rota (backend artik calisiyor)
 const SokratikAIPage = lazy(() => import('./kiro/routes/KiroSokratikRoute')); // F4-S1b: yeni rota (App'te karşılığı yok)
+const InteraktifCozumPage = lazy(() => import('./kiro/screens/InteraktifCozumPage')); // F4-S2: yeni rota — saf istemci-matematik, backend/store YOK
 
 // Pages - Teacher (lazy-loaded)
 const TeacherDashboardPage = lazy(() => import('./pages/ModernTeacherDashboard'));
@@ -260,6 +261,14 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci']}>
                     <CevrimdisiPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/interaktif-cozum"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                    <InteraktifCozumPage />
                   </ProtectedRoute>
                 }
               />

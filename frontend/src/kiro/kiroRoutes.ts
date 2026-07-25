@@ -9,7 +9,7 @@
 // ============================================================================
 
 /** Kiro full-bleed (App kabuğu bypass) rotaları. */
-export const KIRO_FULLBLEED_ROUTES: readonly string[] = ['/duel', '/chat', '/sokratik', '/login', '/offline'];
+export const KIRO_FULLBLEED_ROUTES: readonly string[] = ['/duel', '/chat', '/sokratik', '/login', '/offline', '/interaktif-cozum'];
 
 /** pathname bir kiro full-bleed rotası mı (exact eşleşme veya alt-yol, ör. /duel/123). */
 export function isKiroFullBleed(pathname: string): boolean {
