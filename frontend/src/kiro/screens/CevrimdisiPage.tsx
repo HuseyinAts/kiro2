@@ -283,11 +283,15 @@ export function CevrimdisiPage({ durumBaslangic }: CevrimdisiPageProps = {}): Re
                     <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800 }}>Cihazında hazır</h2>
                     <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.05em', color: GREEN, background: GREEN_TINT, borderRadius: 99, padding: '3px 9px', textTransform: 'uppercase' }}>Çevrimdışı çalışır</span>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {paketler.map((p) => (
-                      <PaketSatiri key={p.id} p={p} />
-                    ))}
-                  </div>
+                  {paketler.length === 0 ? (
+                    <EmptyState serifTitle="Henüz hazır paket yok" body="Çevrimiçiyken bir sonraki bağlantında paketler cihazına inecek." />
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {paketler.map((p) => (
+                        <PaketSatiri key={p.id} p={p} />
+                      ))}
+                    </div>
+                  )}
                   <p style={{ margin: '14px 0 0', fontSize: 12, color: color.ink.muted, lineHeight: 1.55 }}>
                     Paketler sen çevrimiçiyken kendiliğinden indirilir: sıradaki plan görevin + bugünkü tekrar kartların her zaman hazır tutulur.
                   </p>

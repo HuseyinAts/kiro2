@@ -1511,7 +1511,17 @@ export async function getAlanKutuphane(): Promise<AlanKutuphaneData> {
 /** Çevrimdışı senkron durumu (son eşitleme + kuyruk + paketler SUNUCUDAN). mock: kiro-data.cevrimdisi. */
 export async function getCevrimdisiDurum(): Promise<SyncStatus> {
   if (cfg.mode === 'mock') return (await mock()).cevrimdisi;
-  return live<SyncStatus>('/offline/durum');
+  // Gerçek yol '/offline/sync-status' (backend SyncStatusResponse: last_sync_at,
+  // pending_results_count, offline_package_version — F4-S2 keşif). 'kuyruk' (senkron-
+  // olmamış öğeler tanım gereği CİHAZ-YEREL, sunucu bilemez) ve 'paketler' (adlandırılmış
+  // plan/tekrar/soru/video paketleri) kavramları backend'de hiç yok — uydurma YAPILMAZ,
+  // dürüst boş liste döner (ekranın kendi EmptyState'i zarif gösterir).
+  const o = asRec(await live<unknown>('/offline/sync-status'));
+  const lastSync = nstr(pick(o, 'last_sync_at'));
+  const sonEsitleme = lastSync
+    ? new Date(lastSync).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+    : 'Henüz eşitlenmedi';
+  return { sonEsitleme, kuyruk: [], paketler: [] };
 }
 
 // ===========================================================================
