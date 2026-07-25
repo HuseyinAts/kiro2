@@ -1,13 +1,31 @@
-## Session Handoff — 2026-07-25 (F4-S1 TAM + F4-S2 5/5 TAMAMLANDI)
+## Session Handoff — 2026-07-25 (F4-S1 TAM + F4-S2 6/6 TAMAMLANDI, Offline mount canlı doğrulandı)
 **Branch:** feature/self-evolution-optimization · **PUSH YOK**
-**Son commit:** d7c4edc43 (KVKK giveConsent fix)
+**Son commit:** d60e453f1 (CevrimdisiPage /offline mount, full-bleed, canlı E2E)
 **Frontend docker :3000 + backend:8000:** tüm zincir DEPLOY, healthy.
 
 ### Kod zinciri (bu uzun oturumda, sırayla — "sırayla tümünü yap")
 b8626be6a(F4-S0) → c9c771e0e(Düello) → 24cac0bcc(login wiring) → 14f53afe1(full-bleed)
 → d1ffa2cde(AI fix) → **05ccfae1f(A2.2b /login mount)** → **91d64d4b6(F4-S1c student_id)**
 → **0cfeda660(offline sync backend fix)** → **51ff2da78(mapVeliCocuk fix)**
-→ **d7c4edc43(giveConsent fix)**
+→ **d7c4edc43(giveConsent fix)** → **d60e453f1(#424: /offline mount, full-bleed)**
+
+### #424 tamamlandı (bu turda) — Mount CevrimdisiPage → App
+`getCevrimdisiDurum()` kiro `/offline/durum` çağırıyordu (backend'de yok) →
+`/offline/sync-status` fix + `last_sync_at`→saat etiketi + kuyruk/paketler dürüst
+`[]` (backend'de bu kavramlar yok, uydurma yapılmadı). `CevrimdisiPage.tsx`'e
+`paketler.length===0` için EmptyState eklendi. `/offline` full-bleed mount
+(App.tsx + kiroRoutes.ts, wrapper gerekmedi — store bağımlılığı yok).
+Gate: tsc 0 · kiro vitest **79/79 dosya · 512/512 test** (+2 yeni offline.test.ts)
+· build ✓ · docker rebuild+redeploy ✓ · **canlı Playwright E2E** (test@kiro2.com):
+gerçek backend'den "Son eşitleme: 18:08" + "Bağlantı geldi" bandı + 2 EmptyState
++ full-bleed SideNav doğru render.
+**Test-harness tuzağı (not, gerçek bug değil):** `page.goto()` ile hızlı ardışık
+navigate+SW-unregister döngülerinde geçici olarak STATİK `public/offline.html`
+(PWA-fallback, farklı bir dosya) göründü — curl + in-app client-navigasyon
+(`history.pushState`+`popstate`) ile DOĞRU render kanıtlandı. Gerçek smoke test
+yaparken `page.goto()` yerine SPA-içi link tıklama/route değişimi tercih et,
+zira full sayfa navigasyonu + taze SW register (`skipWaiting`+`clientsClaim`)
+arasında yarış durumu snapshot'ı yanıltabiliyor.
 
 ### 🎯 Bu turda tamamlanan 5 görev
 
@@ -36,11 +54,10 @@ tsc 0 · kiro vitest **510/510** (78 dosya) · vite build OK · backend ruff tem
 - GirisPage iç linkleri (`/hesap-kurtarma`, üst `/onboarding`) + `İnteraktifCozumPage` mount edilmedi.
 - VeliPaneliPage/VeliBaglamaPage henüz App'e mount değil (F4-S2 fix'leri sadece api-client seviyesinde, mount ayrı kademeli-swap kararı).
 
-### Sonraki Adımlar (F4 devam ederse)
-1. Veli/Offline ekranlarını App'e mount (full-bleed pattern, kanıtlanmış).
-2. `verifyLinkCode` mimari kararı (kullanıcıya sorulmalı).
-3. ParentDashboard/Offline paketler backend-build (ayrı, büyük scope).
-4. İnteraktifCozumPage (3. AI ekranı) mount.
+### Sonraki Adımlar (F4 devam ederse — #425, #426 pending)
+1. **#425 İnteraktifÇözümPage**: backend-hazırlık kontrolü + mount (full-bleed pattern, kanıtlanmış).
+2. **#426 Veli ekranları mount kararı**: VeliBaglamaPage'in çekirdek `verifyLinkCode` akışı backend'te YOK (mimari karar gerekir — kullanıcıya sorulmalı) → VeliPaneliPage'i tek başına mı mount etsin, yoksa AskUserQuestion mı?
+3. ParentDashboard KPI/Offline paketler backend-build (ayrı, büyük scope, kapsam dışı bırakıldı).
 
 ### Seed test kullanıcılar
 test@kiro2.com (STUDENT, `STU_d04020744222`) · ogretmen@/veli@/admin@kiro2.com — hepsi `Kiro2Beta2026@x`.
