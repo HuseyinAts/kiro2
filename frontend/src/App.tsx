@@ -42,6 +42,7 @@ const ChatPage = lazy(() => import('./kiro/routes/KiroAISohbetRoute')); // F4-S1
 const CevrimdisiPage = lazy(() => import('./kiro/screens/CevrimdisiPage')); // F4-S2: yeni rota (backend artik calisiyor)
 const SokratikAIPage = lazy(() => import('./kiro/routes/KiroSokratikRoute')); // F4-S1b: yeni rota (App'te karşılığı yok)
 const InteraktifCozumPage = lazy(() => import('./kiro/screens/InteraktifCozumPage')); // F4-S2: yeni rota — saf istemci-matematik, backend/store YOK
+const VeliPaneliPage = lazy(() => import('./kiro/screens/VeliPaneliPage')); // F4-S2: yeni rota — getVeliDashboard canlı, VeliBaglamaPage'den bağımsız (o mimari-blokeli, ayrı karar)
 
 // Pages - Teacher (lazy-loaded)
 const TeacherDashboardPage = lazy(() => import('./pages/ModernTeacherDashboard'));
@@ -569,6 +570,14 @@ function AppContent() {
               />
 
               {/* Parent Routes */}
+              <Route
+                path="/veli"
+                element={
+                  <ProtectedRoute requiredRoles={['veli']}>
+                    <VeliPaneliPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/parent/dashboard"
                 element={
