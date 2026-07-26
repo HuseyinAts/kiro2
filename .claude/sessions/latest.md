@@ -19,13 +19,13 @@
 - Adversarial 37 bulgunun P0/P1'leri kapatıldı; kalan P2'ler (SE çubuğu ekranda %0'da çakılı, "tahmin yeterince kararlı" metni gerçek dışı, kalibre edilmemiş parametreler üzerinden nüfus-referanslı iddialar) **ekran/kalibrasyon işi** — backend adaptörü değil.
 
 ### Sonraki Adimlar (maks 5)
-1. **G4-A `/auth/recover`** — email/SMTP repo'da YOK; endpoint-stub mu ertele mi (karar bekliyor).
-2. **AdaptifTestPage mount + KaTeX** — ekran hiçbir route'a bağlı değil; LaTeX render'ı ön koşul.
+1. **AdaptifTestPage mount + KaTeX** — ekran hiçbir route'a bağlı değil; LaTeX render'ı ön koşul.
 3. **Canlı E2E** — Redis + Docker ayağa kalkınca `/api/v1/cat/next` gerçek havuzla smoke.
 4. **Görev 2 Offline** — SW+IndexedDB çöz-döngüsü (ürün-fork).
 5. **IRT kalibrasyonu** — panel iddiaları (üst %X, N net, seviye) bootstrap parametreler üzerinde; gerçek kalibrasyon ayrı iş.
 
 ### Kararlar
+- **G4-A `/auth/recover` ERTELENDİ** (kullanıcı kararı, 26 Tem): e-posta/SMTP altyapısı repo'da yok → işlevsel kurtarma yazılamaz. Endpoint-stub da KONMAYACAK (çalışmayan uç, çalışıyor sanılır). SMTP geldiğinde açılacak. **G4 (C→B→A) bu kararla KAPANDI.**
 - Oturum kimliği = anonim HttpOnly `cat_sid` çerezi (frontend'e 0 dosya dokunuldu, sözleşme birebir).
 - Yerleştirme = 12 madde + SE≤0.45. Ölçüm: havuz a≈1.00/c=0.20/b∈[-1.05,0.89] → motorun SE 0.35 eşiği 20 maddede bile yakalanmıyor (SE≈0.51). 12 sayısı panelin θ-SVG'siyle de uyumlu (`cx=20+(i/11)*300`).
 - `app/api/cat.py`'de `from __future__ import annotations` YASAK — slowapi wrapper'ı `__globals__`'ı değiştirdiği için gövde parametresi query'ye düşüp 422 üretiyor.
