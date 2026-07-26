@@ -1,7 +1,26 @@
-## Session Handoff — 2026-07-25 (F4-S1 TAM + F4-S2 8/8 TAMAMLANDI + PUSH EDİLDİ)
-**Branch:** feature/self-evolution-optimization · **PUSH TAMAM** (origin senkron, `ccfe794e0..ccdb62233`, 25 commit)
-**Son commit:** ccdb62233 (handoff — #424/#425/#426 tamamlandı)
+## Session Handoff — 2026-07-26 (F4-S1/S2 push edildi + GirisPage iç link discovery)
+**Branch:** feature/self-evolution-optimization · **PUSH TAMAM** (origin senkron, `9c1d094d5`)
+**Son commit:** 9c1d094d5 (handoff — push tamam + repo-geneli suite ortam-kısıtı notu)
 **Frontend docker :3000 + backend:8000:** tüm zincir DEPLOY, healthy.
+
+### YENİ BULGU (26 Tem) — HesapKurtarmaPage + OnboardingPage MOUNT EDİLMEDİ (kullanıcı kararı)
+"GirisPage iç linkleri" görevi araştırıldı, ikisi de VeliBaglamaPage ile AYNI
+kategoride çıktı (basit wiring değil, güvenlik-hassas mimari boşluk):
+- **HesapKurtarmaPage** (`/hesap-kurtarma`): `kodGonder()` gerçek `POST /auth/recover`'ı
+  çağırıyor ama bu path backend'de YOK (sadece alakasız `/2fa/recovery/*` MFA-kurtarma
+  + gizli `/reset-password` var, grep ile doğrulandı). `dogrula()` (kod-doğrulama) ve
+  `sifreGuncelle()` (şifre-güncelleme) adımları HİÇBİR backend çağrısı yapmıyor — her
+  6 haneli kodu ve "güçlü" görünen her şifreyi kabul edip "Şifren güncellendi" diyor,
+  gerçekte HİÇBİR ŞEY değişmiyor. Canlıya alınsaydı kullanıcı hesabına erişemeyip
+  şifresinin değiştiğini sanacaktı — aktif olarak yanıltıcı/güvenlik riski.
+- **OnboardingPage** (`/onboarding`): kod içi yorum "live'da yerleştirme /cat/next"
+  diyor ama `/cat/next` backend'de HİÇ YOK (grep sıfır sonuç). Component mode fark
+  etmeksizin HER ZAMAN sabit 6 mock soru gösteriyor (`kiroData.catBankMat`), cevabı
+  istemcide JSON'daki gömülü doğru cevaba göre değerlendiriyor — mock/live ayrımı
+  kodda YOK, her ikisi de aynı sahte akış.
+**Karar (AskUserQuestion):** İkisi de MOUNT EDİLMEDİ, kapsam-dışı belgelendi (VeliBaglamaPage
+ile aynı muamele). Backend-build veya ürün kararı ayrı bir sprint gerektirir. Kod
+değişikliği yapılmadı.
 
 ### Push-öncesi gate notu (önemli — tekrar oturumda hatırla)
 Repo-geneli `vitest` suite'i (86+ dosya) bu oturumda 3 denemede de tamamlanamadı
