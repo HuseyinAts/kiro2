@@ -1,29 +1,32 @@
-## Session Handoff — 2026-07-26 17:30
+## Session Handoff — 2026-07-26 (G4-B)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** df635ebe4 chore(kiro): handoff — G1/G3/G4-C shipped + migration applied + smoke green
-**Uncommitted:** temiz (origin senkron, push edildi a83e76f80..df635ebe4)
+**Son commit:** d6ff32d5d fix(cat): omit ("Emin değilim") artık θ'ya yanlış olarak girmiyor
+**Push:** EDİLDİ (f8339ffa6..d6ff32d5d)
 
 ### Yapilanlar
-- **G1 · #415D OSB toggle** `144eb42f9` — `frontend/src/services/osbService.ts` (YENİ, camel↔snake no-clobber) + `hooks/useOSBSettings.ts` + `__tests__/osbService.test.ts` (6/6); 3 yetim UI wire (`hooks/useAccessibilitySettings.ts`, `store/settingsStore.ts`, `components/LearningPath/AccessibilitySettings.tsx`). Backend zaten hazırdı.
-- **G3 · Parent KPI** `590eafdfc` — `backend/services/parent_service.py` (9 saf helper + StudentAnswer/StudyPlan query) + `backend/models/parent.py` (10 Optional alan) + `tests/unit/test_parent_kpi_aggregation.py` (22/22) + `frontend/src/kiro/api/api-client.ts` adapter 2 gap. **Live smoke:** join'ler gerçek şemada OK, non-zero (TURKCE 14%/21).
-- **G4-C · Veli kod-link** `b268b92fb` — `backend/models/gamification.py` ParentLinkCode + `alembic/versions/20260726_parent_link_codes.py` + `backend/api/parent.py` 2 endpoint + `services/parent_service.py` (verify/generate) + `tests/unit/test_parent_link_code.py` (17/17) + api-client `generateLinkCode`. **Migration UYGULANDI + kiro2_app RLS INSERT smoke OK.**
+- **G4-B `/cat/next`** `125fb87f1` — `app/api/cat.py` (+`POST /next`, `get_optional_user`, `cat_sid` HttpOnly çerez, `@limiter.limit("30/minute")`) + `app/schemas/cat_schemas.py` (4 şema, TR camelCase sözleşme paritesi) + `app/services/cat_session.py` (`is_guest`, `pending_question_id`, `max_items`/`se_threshold`, `topic_hierarchy` JOIN, `fetch_question_detail`) + `app/services/irt_engine.py` (6 panel türevi) + `tests/unit/test_cat_next_adapter.py` (32 test, YENİ).
+- **Pre-existing P0 fix:** `app/api/cat.py` FastAPI 0.103.2'de import edilemiyordu (`abandon_session() -> None` + 204) → TÜM CAT router'ı kayıtsız, `/api/v1/cat/*` 404. GF13 `!= 500` dediği için false-green'di.
+- **Adversarial (5 skeptik, 37 bulgu)** sonrası kapatılanlar: cevap-anahtarı oracle'ı (P0), misafir oturum sızıntısı (P0), rate-limit yokluğu (P0), şık indeks kayması (P1), sessiz misafire düşme (P1).
+
+- **Omit fix** `d6ff32d5d` — `skip_question()`: omit θ'ya girmez (12/12 omit → prior, güvenilirlik %0), tekrar sunulmaz, bütçeden düşer. `kalanTahmini` bütçesi de düzeltildi (yeni test yakaladı).
 
 ### Fail Eden Testler
-- YOK (yeni testler G1 6/6, G3 22/22, G4-C 17/17 + parent_api 40/40 regresyon yok; repo-geneli suite çalıştırılmadı)
+- YOK. 34/34 yeni + bağımlı modüller dahil 166/166 pass. Ruff: değişen satırlarda 0 (kalan 2 B905 `_persist_session_to_db` pre-existing).
 
 ### Engelleyiciler
-- backend HTTP :8000 DOWN — G4-B canlı testi + full E2E için dev stack ayağa kaldırılmalı.
-- G4-A `/auth/recover`: email/SMTP altyapısı repo'da YOK (TODO) → işlevsel kurtarma yazılamaz.
+- Redis + Docker DOWN → canlı E2E yapılamadı (PG 5434 UP, SQL'ler canlı doğrulandı).
+- **Ekran blocker:** CAT-uygun MATEMATIK havuzunun %60.7'si (6,129/10,102) LaTeX içeriyor; `AdaptifTestPage.tsx:180` düz metin basıyor → KaTeX/MathJax olmadan mount edilmemeli.
+- Adversarial 37 bulgunun P0/P1'leri kapatıldı; kalan P2'ler (SE çubuğu ekranda %0'da çakılı, "tahmin yeterince kararlı" metni gerçek dışı, kalibre edilmemiş parametreler üzerinden nüfus-referanslı iddialar) **ekran/kalibrasyon işi** — backend adaptörü değil.
 
 ### Sonraki Adimlar (maks 5)
-1. **G4-B `/cat/next`** — CATSessionService+IRT motoru VAR; çeviri adaptörü + **misafir-auth** (get_optional_user yok, guest için user-FK persist atla). Migration YOK.
-2. **G4-A `/auth/recover`** — email kararı: endpoint-stub mu, SMTP'ye kadar ertele mi (kullanıcı kararı bekliyor).
-3. **Görev 2 Offline** — çöz-döngüsü ürün-fork (SW+IndexedDB loop mu, dürüst-yüzey son mu?).
-4. ModernParentDashboard/VeliBaglamaPage mount + öğrenci-branch wiring (G3/G4-C follow-up).
-5. #270 GitHub Actions + #390 Dependabot (operatör; gh CLI kurulu değil).
+1. **G4-A `/auth/recover`** — email/SMTP repo'da YOK; endpoint-stub mu ertele mi (karar bekliyor).
+2. **AdaptifTestPage mount + KaTeX** — ekran hiçbir route'a bağlı değil; LaTeX render'ı ön koşul.
+3. **Canlı E2E** — Redis + Docker ayağa kalkınca `/api/v1/cat/next` gerçek havuzla smoke.
+4. **Görev 2 Offline** — SW+IndexedDB çöz-döngüsü (ürün-fork).
+5. **IRT kalibrasyonu** — panel iddiaları (üst %X, N net, seviye) bootstrap parametreler üzerinde; gerçek kalibrasyon ayrı iş.
 
 ### Kararlar
-- #2 mimari = "Backend'i inşa et (kod-akışı)" (kullanıcı onayı) → G4 = C→B→A sırası.
-- Her görev izole subagent + ayrı commit (fat-turn zehirlenmesi önleme).
-- G3: ModernParentDashboard repoint ERTELENDİ (hangi parent UI kalıcı — /veli mi eski mock mu — ayrı ürün-fork).
-- Live smoke DB-seviyesinde yapıldı (backend down); `SET ROLE kiro2_app` ile RLS gerçek-rol doğrulaması (postgres süperuser RLS baypas eder).
+- Oturum kimliği = anonim HttpOnly `cat_sid` çerezi (frontend'e 0 dosya dokunuldu, sözleşme birebir).
+- Yerleştirme = 12 madde + SE≤0.45. Ölçüm: havuz a≈1.00/c=0.20/b∈[-1.05,0.89] → motorun SE 0.35 eşiği 20 maddede bile yakalanmıyor (SE≈0.51). 12 sayısı panelin θ-SVG'siyle de uyumlu (`cx=20+(i/11)*300`).
+- `app/api/cat.py`'de `from __future__ import annotations` YASAK — slowapi wrapper'ı `__globals__`'ı değiştirdiği için gövde parametresi query'ye düşüp 422 üretiyor.
+- Keşif devir notunu çürüttü: **OnboardingPage `/cat/next` çağırmıyor** (statik JSON + istemci-taraflı puanlama); tek tüketici AdaptifTestPage ve o da mount edilmemiş.
