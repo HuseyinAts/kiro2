@@ -1121,7 +1121,7 @@ export async function getVeliDashboard(cocukId?: string): Promise<VeliDashboard>
     cocuklar,
     aktifCocukId,
     kpi,
-    haftalik: asArr(pick(src, 'haftalik', 'weekly', 'week')).map(mapHaftaGun),
+    haftalik: asArr(pick(src, 'haftalik', 'weekly', 'week', 'weekly_activity')).map(mapHaftaGun),
     haftaToplamSa: nnum(pick(src, 'haftaToplamSa', 'week_total_hours')),
     haftaTrend: nstr(pick(src, 'haftaTrend', 'week_trend')),
     dersIlerleme: asArr(pick(src, 'dersIlerleme', 'subject_progress')).map(mapDersIlerleme),
@@ -1130,7 +1130,7 @@ export async function getVeliDashboard(cocukId?: string): Promise<VeliDashboard>
     roi: {
       netArtisi: nnum(pick(roiSrc, 'netArtisi', 'net_gain'), kpi.netDegisimi),
       planUyum: nnum(pick(roiSrc, 'planUyum', 'plan_adherence'), kpi.planUyumu),
-      seri: nnum(pick(roiSrc, 'seri', 'streak')),
+      seri: nnum(pick(roiSrc, 'seri', 'streak'), nnum(pick(src, 'current_streak'))),
       haftaOrtDk: nnum(pick(roiSrc, 'haftaOrtDk', 'avg_daily_minutes')),
     },
     premium: {

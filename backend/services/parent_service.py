@@ -4,7 +4,9 @@ Türkiye Üniversite Sınavları Hazırlık Platformu için veli takip sistemi
 """
 
 import json
+from collections import defaultdict
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +14,7 @@ from sqlalchemy.orm import selectinload
 
 from models.database import ExamSession, User
 from models.enums_db import UserRole
+from models.exam_db import StudentAnswer
 from models.gamification import ParentChild as ParentChildRelation
 from models.parent import (
     ChildPerformanceData,
@@ -24,6 +27,174 @@ from models.parent import (
     WeeklyReport,
     WeeklyReportData,
 )
+from models.question_bank import QuestionBankItem
+from models.study_planner import StudyPlan
+
+# ---------------------------------------------------------------------------
+# Saf (DB'siz) KPI toplama yardımcıları
+# ---------------------------------------------------------------------------
+# Bu fonksiyonlar ExamSession / StudentAnswer / WeeklyGoal benzeri hafif
+# nesneler (herhangi bir .attr taşıyan) üzerinde çalışır — gerçek DB gerekmez,
+# birim testlerle doğrulanır (tests/unit/test_parent_kpi_aggregation.py).
+
+
+def _completed_exams_desc(exams: list[Any]) -> list[Any]:
+    """`completed_at` dolu sınavları en yeniden eskiye sıralar."""
+    completed = [e for e in exams if getattr(e, "completed_at", None) is not None]
+    completed.sort(key=lambda e: e.completed_at, reverse=True)
+    return completed
+
+
+def compute_recent_exams(exams: list[Any], limit: int = 5) -> list[dict]:
+    """En son `limit` sınavı [{date, score, type, name}] olarak şekillendirir."""
+    out: list[dict] = []
+    for e in _completed_exams_desc(exams)[:limit]:
+        item: dict = {
+            "date": e.completed_at,
+            "score": round(float(getattr(e, "raw_score", 0.0) or 0.0), 2),
+        }
+        exam_type = getattr(e, "exam_type", None)
+        if exam_type is not None:
+            item["type"] = getattr(exam_type, "value", None) or str(exam_type)
+        name = getattr(e, "exam_name", None)
+        if name is not None:
+            item["name"] = name
+        out.append(item)
+    return out
+
+
+def compute_weekly_activity(
+    exams: list[Any], now: datetime, days: int = 7
+) -> tuple[list[dict], float]:
+    """Son `days` günün günlük çalışma dakikasını grupla (eski→yeni).
+
+    Returns:
+        (activity, week_total_hours). activity her gün için
+        {date, label, minutes}; eksik günler 0 dakika ile doldurulur.
+    """
+    today = now.date()
+    day_keys = [today - timedelta(days=i) for i in range(days - 1, -1, -1)]
+    minutes_by_day: dict = dict.fromkeys(day_keys, 0)
+    for e in exams:
+        completed_at = getattr(e, "completed_at", None)
+        if completed_at is None:
+            continue
+        d = completed_at.date()
+        if d in minutes_by_day:
+            minutes_by_day[d] += int(getattr(e, "duration_minutes", 0) or 0)
+    activity = [
+        {"date": d.isoformat(), "label": d.isoformat(), "minutes": minutes_by_day[d]}
+        for d in day_keys
+    ]
+    week_total_hours = round(sum(minutes_by_day.values()) / 60.0, 1)
+    return activity, week_total_hours
+
+
+def compute_net_change(exams: list[Any], limit: int = 5) -> float:
+    """En son yarının ort. raw_score'u eksi önceki yarı (işaretli).
+
+    <2 tamamlanmış sınav → 0.0.
+    """
+    recent_desc = _completed_exams_desc(exams)[:limit]
+    if len(recent_desc) < 2:
+        return 0.0
+    recent_asc = list(reversed(recent_desc))  # eski→yeni
+    n = len(recent_asc)
+    half = n // 2
+    prior = recent_asc[:half]  # eski yarı
+    latest = recent_asc[half:]  # yeni yarı (tek sayıda ortadaki yeni tarafta)
+    prior_avg = sum(float(e.raw_score or 0.0) for e in prior) / len(prior)
+    latest_avg = sum(float(e.raw_score or 0.0) for e in latest) / len(latest)
+    return round(latest_avg - prior_avg, 2)
+
+
+def compute_current_streak(exams: list[Any], now: datetime) -> int:
+    """Bugünden (UTC) geriye kesintisiz ≥1 tamamlanmış sınav günü sayısı."""
+    active_days = {
+        e.completed_at.date()
+        for e in exams
+        if getattr(e, "completed_at", None) is not None
+    }
+    streak = 0
+    cursor = now.date()
+    while cursor in active_days:
+        streak += 1
+        cursor -= timedelta(days=1)
+    return streak
+
+
+def _window_counts(dts: list, now: datetime) -> tuple[int, int]:
+    """(bu_hafta, geçen_hafta) sayıları — kayan 7'şer günlük pencereler."""
+    this_start = now - timedelta(days=7)
+    last_start = now - timedelta(days=14)
+    this_week = sum(1 for d in dts if d is not None and this_start < d <= now)
+    last_week = sum(1 for d in dts if d is not None and last_start < d <= this_start)
+    return this_week, last_week
+
+
+def compute_exams_delta(exams: list[Any], now: datetime) -> int:
+    """Bu hafta - geçen hafta tamamlanan sınav sayısı."""
+    dts = [getattr(e, "completed_at", None) for e in exams]
+    this_week, last_week = _window_counts(dts, now)
+    return this_week - last_week
+
+
+def compute_solved_delta(answered_at_list: list, now: datetime) -> int:
+    """Bu hafta - geçen hafta cevaplanan soru sayısı."""
+    this_week, last_week = _window_counts(list(answered_at_list), now)
+    return this_week - last_week
+
+
+def classify_subjects(
+    subject_stats: list[tuple[str, int, int]],
+    min_questions: int = 3,
+    weak_below: float = 50.0,
+    strong_at: float = 75.0,
+    top_n: int = 3,
+) -> tuple[list[str], list[str], list[dict]]:
+    """Ders bazlı doğruluktan zayıf/güçlü dersleri ve ilerleme listesini çıkarır.
+
+    Args:
+        subject_stats: (subject_area, correct, total) üçlüleri.
+        min_questions: Bir dersi yargılamak için gereken min cevaplı soru.
+        weak_below: Bu yüzdenin altı zayıf ders.
+        strong_at: Bu yüzde ve üstü güçlü ders.
+        top_n: Zayıf/güçlü listelerinin maks uzunluğu.
+
+    Returns:
+        (weak_subjects, strong_subjects, subject_progress).
+        subject_progress: [{subject, mastery, answered}] (mastery yüzde, desc).
+    """
+    progress: list[dict] = []
+    for subject, correct, total in subject_stats:
+        if not subject or total < min_questions:
+            continue
+        pct = round(100.0 * correct / total, 1)
+        progress.append({"subject": subject, "mastery": pct, "answered": total})
+    progress.sort(key=lambda p: p["mastery"], reverse=True)
+    weak = [
+        p["subject"]
+        for p in sorted(progress, key=lambda p: p["mastery"])
+        if p["mastery"] < weak_below
+    ][:top_n]
+    strong = [p["subject"] for p in progress if p["mastery"] >= strong_at][:top_n]
+    return weak, strong, progress
+
+
+def compute_plan_adherence(goals: list[Any]) -> float | None:
+    """Aktif planın uyum yüzdesi = tamamlanan/hedef (soru+tekrar). Hedef 0 → None."""
+    total_target = 0
+    total_done = 0
+    for g in goals:
+        total_target += int(getattr(g, "target_questions", 0) or 0) + int(
+            getattr(g, "target_reviews", 0) or 0
+        )
+        total_done += int(getattr(g, "completed_questions", 0) or 0) + int(
+            getattr(g, "completed_reviews", 0) or 0
+        )
+    if total_target <= 0:
+        return None
+    return round(min(100.0, 100.0 * total_done / total_target), 1)
 
 
 class ParentService:
@@ -186,7 +357,8 @@ class ParentService:
             raise ValueError("Çocuk bulunamadı")
 
         # Son 30 günün verilerini al
-        thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
+        now = datetime.now(UTC)
+        thirty_days_ago = now - timedelta(days=30)
 
         # student_profiles.id == users.id olduğundan student_id = child_id
         # FIX 2026-04-02: user_id → student_id, score → raw_score
@@ -198,7 +370,7 @@ class ParentService:
                 )
             )
         )
-        exam_results = exam_result.scalars().all()
+        exam_results = list(exam_result.scalars().all())
 
         # Performans hesaplamaları
         total_study_time = sum([r.duration_minutes or 0 for r in exam_results])
@@ -213,9 +385,63 @@ class ParentService:
             max(exam_results, key=lambda x: x.completed_at) if exam_results else None
         )
 
-        # Konu analizi (basit implementasyon)
-        weak_subjects = ["Matematik", "Fizik"] if average_score < 60 else []
-        strong_subjects = ["Türkçe", "Tarih"] if average_score > 80 else []
+        # ExamSession tabanlı KPI'lar (saf yardımcılar)
+        recent_exams = compute_recent_exams(exam_results)
+        weekly_activity, week_total_hours = compute_weekly_activity(exam_results, now)
+        net_change = compute_net_change(exam_results)
+        current_streak = compute_current_streak(exam_results, now)
+        exams_taken_delta = compute_exams_delta(exam_results, now)
+
+        # StudentAnswer → question_bank: çözülen soru + ders bazlı doğruluk.
+        # NOT: question_id FK'si zaten question_bank'e bağlı (legacy `questions`
+        # tablosuna değil). Kalite/is_active filtresi UYGULANMAZ: bu, öğrencinin
+        # GERÇEK geçmiş performansını ölçen bir istatistik yolu — status filtresi
+        # cevapların çoğunu (unverified/pending) düşürüp doğruluğu çarpıtırdı.
+        answers_stmt = (
+            select(
+                QuestionBankItem.subject_area,
+                StudentAnswer.selected_answer,
+                StudentAnswer.is_correct,
+                StudentAnswer.answered_at,
+            )
+            .join(ExamSession, StudentAnswer.exam_session_id == ExamSession.id)
+            .join(QuestionBankItem, StudentAnswer.question_id == QuestionBankItem.id)
+            .where(ExamSession.student_id == child_id)
+        )
+        answer_rows = (await self.db.execute(answers_stmt)).all()
+
+        subj_correct: dict[str, int] = defaultdict(int)
+        subj_total: dict[str, int] = defaultdict(int)
+        answered_dates: list = []
+        solved_questions = 0
+        for subject_area, selected_answer, is_correct, answered_at in answer_rows:
+            if selected_answer is not None:  # gerçekten cevaplanmış
+                solved_questions += 1
+                answered_dates.append(answered_at)
+            if subject_area and is_correct is not None:  # notlanmış → doğruluk
+                subj_total[subject_area] += 1
+                if is_correct:
+                    subj_correct[subject_area] += 1
+
+        subject_stats = [(s, subj_correct[s], subj_total[s]) for s in subj_total]
+        weak_subjects, strong_subjects, subject_progress = classify_subjects(
+            subject_stats
+        )
+        solved_questions_delta = compute_solved_delta(answered_dates, now)
+
+        # Aktif çalışma planı uyumu
+        plan_result = await self.db.execute(
+            select(StudyPlan)
+            .options(selectinload(StudyPlan.weekly_goals))
+            .where(
+                and_(StudyPlan.student_id == child_id, StudyPlan.is_active == True)  # noqa: E712
+            )
+            .order_by(desc(StudyPlan.created_at))
+        )
+        active_plan = plan_result.scalars().first()
+        plan_adherence = (
+            compute_plan_adherence(active_plan.weekly_goals) if active_plan else None
+        )
 
         recent_achievements = []
         if average_score > 85:
@@ -234,6 +460,16 @@ class ParentService:
             weak_subjects=weak_subjects,
             strong_subjects=strong_subjects,
             recent_achievements=recent_achievements,
+            recent_exams=recent_exams,
+            weekly_activity=weekly_activity,
+            week_total_hours=week_total_hours,
+            net_change=net_change,
+            current_streak=current_streak,
+            exams_taken_delta=exams_taken_delta,
+            solved_questions=solved_questions,
+            solved_questions_delta=solved_questions_delta,
+            subject_progress=subject_progress,
+            plan_adherence=plan_adherence,
         )
 
     async def generate_weekly_report(self, child_id: str) -> WeeklyReportData:
@@ -394,7 +630,9 @@ class ParentService:
                 ParentNotificationResponse(
                     id=notification.id,
                     child_id=notification.child_id,
-                    child_name=f"{child.first_name} {child.last_name}" if child else "Bilinmeyen",
+                    child_name=f"{child.first_name} {child.last_name}"
+                    if child
+                    else "Bilinmeyen",
                     title=notification.title,
                     message=notification.message,
                     notification_type=notification.notification_type,

@@ -119,6 +119,32 @@ class ChildPerformanceData(BaseModel):
     strong_subjects: list[str]
     recent_achievements: list[str]
 
+    # ------------------------------------------------------------------
+    # Gerçek KPI alanları (additive, Optional — eski çağıranlar kırılmaz).
+    # Veli paneli (VeliPaneliPage) getVeliDashboard adaptörü bunları okur.
+    # Tümü ExamSession / StudentAnswer / StudyPlan gerçek verisinden hesaplanır.
+    # ------------------------------------------------------------------
+    # Son ~5 sınav: [{date, score, type, name}] (type = exam_type tyt/ayt)
+    recent_exams: list[dict] = Field(default_factory=list)
+    # Son 7 gün günlük çalışma dakikası: [{date, label, minutes}] (7 kayıt)
+    weekly_activity: list[dict] = Field(default_factory=list)
+    # Son 7 günün toplam çalışma saati (dakika/60, 1 ondalık)
+    week_total_hours: float = 0.0
+    # Son yarının ort. raw_score'u eksi önceki yarı (işaretli; <2 sınav → 0.0)
+    net_change: float = 0.0
+    # Bugüne (UTC) kadar kesintisiz ≥1 tamamlanmış sınav günü sayısı
+    current_streak: int = 0
+    # Bu hafta - geçen hafta tamamlanan sınav sayısı farkı
+    exams_taken_delta: int = 0
+    # Öğrencinin cevapladığı toplam soru sayısı (StudentAnswer, tüm zaman)
+    solved_questions: int = 0
+    # Bu hafta - geçen hafta çözülen soru sayısı farkı
+    solved_questions_delta: int = 0
+    # Ders bazlı doğruluk: [{subject, mastery, answered}] (question_bank.subject_area)
+    subject_progress: list[dict] = Field(default_factory=list)
+    # Aktif çalışma planı uyum yüzdesi (tamamlanan/hedef); plan yoksa None
+    plan_adherence: float | None = None
+
 
 class WeeklyReportData(BaseModel):
     """Haftalık rapor verisi"""
