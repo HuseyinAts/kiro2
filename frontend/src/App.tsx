@@ -41,6 +41,7 @@ const StudentDashboardPage = lazy(() => import('./pages/ModernStudentDashboard')
 const ChatPage = lazy(() => import('./kiro/routes/KiroAISohbetRoute')); // F4-S1b: kademeli-swap → kiro AI Sohbet (live)
 const CevrimdisiPage = lazy(() => import('./kiro/screens/CevrimdisiPage')); // F4-S2: yeni rota (backend artik calisiyor)
 const SokratikAIPage = lazy(() => import('./kiro/routes/KiroSokratikRoute')); // F4-S1b: yeni rota (App'te karşılığı yok)
+const YerlestirmePage = lazy(() => import('./kiro/screens/AdaptifTestPage')); // F4: yeni rota — CAT yerlestirme (/cat ders-secimi DOKUNULMADI)
 const InteraktifCozumPage = lazy(() => import('./kiro/screens/InteraktifCozumPage')); // F4-S2: yeni rota — saf istemci-matematik, backend/store YOK
 const VeliPaneliPage = lazy(() => import('./kiro/screens/VeliPaneliPage')); // F4-S2: yeni rota — getVeliDashboard canlı, VeliBaglamaPage'den bağımsız (o mimari-blokeli, ayrı karar)
 
@@ -262,6 +263,14 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci']}>
                     <CevrimdisiPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/yerlestirme"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci']}>
+                    <YerlestirmePage />
                   </ProtectedRoute>
                 }
               />

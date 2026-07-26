@@ -51,3 +51,6 @@ export type { WeeklyActivityBarsProps } from './WeeklyActivityBars';
 // --- SPRINT10-C · Ayarlar aç/kapa anahtarı ---
 export { Switch } from './Switch';
 export type { SwitchProps } from './Switch';
+// --- FAZ4 · LaTeX'li soru metni (havuzun %60.7'si formül içeriyor) ---
+export { MathText } from './MathText';
+export type { MathTextProps } from './MathText';

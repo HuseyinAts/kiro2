@@ -12,6 +12,7 @@ import type { CatNextResult, CatUygulanan } from '../api/api-client';
 import type { CatItem } from '../types';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
+import { MathText } from '../ui/MathText';
 import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
 import '../tokens/tokens.css';
@@ -177,7 +178,7 @@ export function AdaptifTestPage(): React.ReactElement {
                       </span>
                     </div>
                     {/* Stem */}
-                    <p style={{ margin: '0 0 24px', fontSize: 17, lineHeight: 1.75 }}>{item.soru}</p>
+                    <p style={{ margin: '0 0 24px', fontSize: 17, lineHeight: 1.75 }}><MathText>{item.soru}</MathText></p>
                     {/* Seçenekler (geri bildirim YOK) */}
                     <div ref={grpRef} role="radiogroup" aria-label="Şıklar" onKeyDown={grupTus} style={{ display: 'grid', gap: 11 }}>
                       {item.secenekler.map((sec, i) => {
@@ -187,7 +188,7 @@ export function AdaptifTestPage(): React.ReactElement {
                             onClick={() => { setOdak(i); setSecilen(i); }}
                             style={{ display: 'flex', alignItems: 'center', gap: 14, minHeight: 44, padding: '13px 16px', textAlign: 'left', width: '100%', borderRadius: 13, cursor: 'pointer', fontFamily: font.sans, background: sc ? '#FFF3EE' : color.paper.card, border: `1.5px solid ${sc ? color.dawn.coral : color.paper.border}` }}>
                             <span aria-hidden style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13.5, fontWeight: 800, background: sc ? color.dawn.coralCtaBg : '#ECE6DD', color: sc ? '#fff' : '#4A4456' }}>{HARFLER[i]}</span>
-                            <span style={{ ...numText, flex: 1, fontSize: 15, fontWeight: 600 }}>{sec}</span>
+                            <span style={{ ...numText, flex: 1, minWidth: 0, fontSize: 15, fontWeight: 600 }}><MathText>{sec}</MathText></span>
                           </button>
                         );
                       })}

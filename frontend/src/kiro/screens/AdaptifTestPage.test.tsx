@@ -72,4 +72,54 @@ describe('AdaptifTestPage', () => {
     await screen.findByText('Yetenek tahmini (θ)');
     expect(await axe(container)).toHaveNoViolations();
   }, 20000);
+
+
+  // --- FAZ4 · LaTeX render (üretim havuzunun %60.7'si formül içeriyor) ---
+
+  it('soru metnindeki LaTeX KaTeX ile render edilir, ham kalmaz', async () => {
+    const { configureKiroApi } = await import('../api/api-client');
+    const ham = (await import('../api/kiro-data.json')).default as Record<string, unknown>;
+    const veri = structuredClone(ham) as { catBankMat: { soru: string; secenekler: string[] }[] };
+    veri.catBankMat[0]!.soru = '$2x^2 - 4x + 6 = 0$ denkleminin kökleri toplamı kaçtır?';
+    const BS = String.fromCharCode(92); // ters bolu — kaynak-kacis belirsizligini eler
+    veri.catBankMat[0]!.secenekler = [`$${BS}frac{2}{7}$`, '2', '3', '4'];
+    configureKiroApi({ mode: 'mock', mockData: veri as never });
+
+    const { container } = render(<AdaptifTestPage />);
+    await screen.findByRole('radiogroup');
+
+    // KaTeX gerçekten çalıştı mı?
+    expect(container.querySelector('.katex')).not.toBeNull();
+    // Öğrencinin GÖRDÜĞÜ metinde ham delimiter kalmamalı (MathML annotation hariç)
+    const kopya = container.cloneNode(true) as HTMLElement;
+    kopya.querySelectorAll('annotation, .katex-mathml').forEach((n) => n.remove());
+    expect(kopya.textContent).not.toContain('$2x^2');
+    expect(kopya.textContent).not.toContain(`${BS}frac`);
+
+    // Geçersiz iç içelik: stem <p> içinde; MathText blok öğe ÜRETMEMELİ
+    expect(container.querySelectorAll('p p').length).toBe(0);
+    expect(container.querySelectorAll('p div').length).toBe(0);
+
+    configureKiroApi({ mode: 'mock', mockData: ham as never });
+  });
+
+  it('LaTeX render edilse de şık radio sözleşmesi bozulmaz', async () => {
+    const { configureKiroApi } = await import('../api/api-client');
+    const ham = (await import('../api/kiro-data.json')).default as Record<string, unknown>;
+    const veri = structuredClone(ham) as { catBankMat: { secenekler: string[] }[] };
+    veri.catBankMat[0]!.secenekler = ['$x_1$', '$x_2$', '$x_3$', '$x_4$'];
+    configureKiroApi({ mode: 'mock', mockData: veri as never });
+
+    render(<AdaptifTestPage />);
+    const grp = await screen.findByRole('radiogroup');
+    const radios = within(grp).getAllByRole('radio');
+    expect(radios.length).toBeGreaterThan(0);
+    // Roving tabindex + aria-checked korunuyor mu
+    expect(radios[0]!.getAttribute('aria-checked')).toBe('false');
+    await userEvent.click(radios[0]!);
+    expect(radios[0]!.getAttribute('aria-checked')).toBe('true');
+
+    configureKiroApi({ mode: 'mock', mockData: ham as never });
+  });
+
 });
