@@ -319,6 +319,38 @@ class ParentChild(Base):
 
 
 # ---------------------------------------------------------------------------
+# ParentLinkCode (kod-tabanli veli-ogrenci baglama)
+# ---------------------------------------------------------------------------
+
+
+class ParentLinkCode(Base):
+    """Kod-tabanli veli-ogrenci baglama kodu.
+
+    Email-tabanli akisa ek: ogrenci kisa-omurlu (10 dk) 6-hane kod uretir,
+    veli bu kodu girerek ParentChild(approved=False) iliskisi baslatir.
+    organization_id ParentChild ile ayni tenancy desenini takip eder
+    (nullable=False + server_default) — RLS WITH CHECK (tenant_isolation) uyumu.
+    """
+
+    __tablename__ = "parent_link_codes"
+
+    id = Column(Integer, primary_key=True)
+    organization_id = Column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
+        nullable=False,
+        server_default="org_legacy_default",
+        index=True,
+    )
+    code = Column(String(6), nullable=False, index=True)
+    student_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    consumed = Column(Boolean, nullable=False, default=False)
+    consumed_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# ---------------------------------------------------------------------------
 # StudentAbility (IRT kalibrasyonu)
 # ---------------------------------------------------------------------------
 

@@ -89,6 +89,16 @@ class ParentChildRelationCreate(BaseModel):
     relation_type: str = Field(default="parent", description="İlişki türü")
 
 
+class VerifyCodeRequest(BaseModel):
+    """Veli 6-hane bağlantı kodu doğrulama isteği.
+
+    Uzunluk/desen kısıtı YOK: geçersiz kod (yanlış/eksik/süresi geçmiş) servis
+    tarafından {valid: false} ile HTTP 200 döner — Pydantic 422 ile kesilmez.
+    """
+
+    code: str = Field(..., description="6-hane bağlantı kodu")
+
+
 class ParentChildRelationResponse(BaseModel):
     """Veli-çocuk ilişkisi yanıt modeli"""
 

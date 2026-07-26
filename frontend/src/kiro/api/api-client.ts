@@ -1301,6 +1301,18 @@ export async function verifyLinkCode(kod: string): Promise<LinkCodeSonuc> {
     : { gecerli: false };
 }
 
+/** Öğrenci: veli bağlama için 6-hane kısa-ömürlü kod üret — SUNUCU-OTORİTE.
+ *  mock: kiro-data.veliBaglama.veliBaglamaKodu (istemci kod üretmez).
+ *  live: POST /api/v1/parent/link-code → {code, expires_at} (10 dk geçerli). */
+export async function generateLinkCode(): Promise<{ kod: string; gecerlilikSonu: string }> {
+  if (cfg.mode === 'mock') {
+    const vb = (await mock()).veliBaglama;
+    return { kod: vb.veliBaglamaKodu, gecerlilikSonu: '' };
+  }
+  const o = asRec(unwrapData(await live<unknown>('/api/v1/parent/link-code', { method: 'POST' })));
+  return { kod: nstr(pick(o, 'kod', 'code')), gecerlilikSonu: nstr(pick(o, 'gecerlilikSonu', 'expires_at')) };
+}
+
 /** KVKK aydınlatma metni sürümü. live: GET /api/v1/kvkk/notice; mock: {version:'v3'}. */
 export async function getKvkkNotice(): Promise<KvkkNotice> {
   if (cfg.mode === 'mock') return { version: 'v3', text: 'KVKK aydınlatma metni (mock).' };

@@ -4,11 +4,12 @@ Türkiye Üniversite Sınavları Hazırlık Platformu için veli takip sistemi
 """
 
 import json
+import secrets
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import and_, desc, select
+from sqlalchemy import and_, desc, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -16,6 +17,7 @@ from models.database import ExamSession, User
 from models.enums_db import UserRole
 from models.exam_db import StudentAnswer
 from models.gamification import ParentChild as ParentChildRelation
+from models.gamification import ParentLinkCode
 from models.parent import (
     ChildPerformanceData,
     ParentChildRelationCreate,
@@ -181,6 +183,32 @@ def classify_subjects(
     return weak, strong, progress
 
 
+_TR_UPPER = str.maketrans(
+    {"i": "İ", "ı": "I", "ş": "Ş", "ğ": "Ğ", "ü": "Ü", "ö": "Ö", "ç": "Ç"}
+)
+
+
+def compute_initials(first_name: str | None, last_name: str | None) -> str:
+    """Ad-soyad baş harflerinden 2-harfli kısaltma üretir (Türkçe upper).
+
+    Örn. ("Ali", "Yılmaz") → "AY", ("irem", "şahin") → "İŞ".
+
+    Args:
+        first_name: Öğrencinin adı (None/boş olabilir).
+        last_name: Öğrencinin soyadı (None/boş olabilir).
+
+    Returns:
+        Türkçe büyük harfe çevrilmiş baş harfler (0-2 karakter).
+    """
+
+    def _first_letter(name: str | None) -> str:
+        s = (name or "").strip()
+        return s[0] if s else ""
+
+    initials = _first_letter(first_name) + _first_letter(last_name)
+    return initials.translate(_TR_UPPER).upper()
+
+
 def compute_plan_adherence(goals: list[Any]) -> float | None:
     """Aktif planın uyum yüzdesi = tamamlanan/hedef (soru+tekrar). Hedef 0 → None."""
     total_target = 0
@@ -258,6 +286,148 @@ class ParentService:
             created_at=new_relation.created_at,
             approved_at=new_relation.approved_at,
         )
+
+    # ------------------------------------------------------------------
+    # Kod-tabanlı veli-öğrenci bağlama (6-hane, 10dk TTL)
+    # ------------------------------------------------------------------
+
+    async def _unique_link_code(self, now: datetime) -> str:
+        """Aktif (tüketilmemiş, süresi geçmemiş) kodlar arasında benzersiz üret.
+
+        Args:
+            now: Şu anki tz-aware zaman (süre karşılaştırması için).
+
+        Returns:
+            Çakışmayan 6-hane kod (baştaki sıfırlar korunur, örn. "004217").
+
+        Raises:
+            ValueError: 50 denemede benzersiz kod üretilemezse.
+        """
+        for _ in range(50):
+            code = f"{secrets.randbelow(1_000_000):06d}"
+            existing = await self.db.execute(
+                select(ParentLinkCode.id).where(
+                    and_(
+                        ParentLinkCode.code == code,
+                        ParentLinkCode.consumed == False,  # noqa: E712
+                        ParentLinkCode.expires_at > now,
+                    )
+                )
+            )
+            if existing.first() is None:
+                return code
+        raise ValueError("Benzersiz bağlantı kodu üretilemedi, tekrar deneyin")
+
+    async def generate_link_code(self, student_id: str) -> dict[str, Any]:
+        """Öğrenci için 6-hane kısa-ömürlü bağlantı kodu üret (10 dk geçerli).
+
+        Öğrencinin önceki tüketilmemiş kodları geçersiz kılınır (tek aktif kod).
+
+        Args:
+            student_id: Kodu üreten öğrencinin id'si.
+
+        Returns:
+            {"code": "<6-hane>", "expires_at": datetime} (tz-aware UTC).
+        """
+        now = datetime.now(UTC)
+        expires_at = now + timedelta(minutes=10)
+
+        # Önceki tüketilmemiş kodları geçersiz kıl (tek aktif kod invariantı).
+        await self.db.execute(
+            update(ParentLinkCode)
+            .where(
+                and_(
+                    ParentLinkCode.student_id == student_id,
+                    ParentLinkCode.consumed == False,  # noqa: E712
+                )
+            )
+            .values(consumed=True, consumed_at=now)
+        )
+
+        code = await self._unique_link_code(now)
+
+        row = ParentLinkCode(
+            code=code,
+            student_id=student_id,
+            expires_at=expires_at,
+            consumed=False,
+        )
+        self.db.add(row)
+        await self.db.commit()
+        return {"code": code, "expires_at": expires_at}
+
+    async def verify_link_code(self, parent_id: str, code: str) -> dict[str, Any]:
+        """Veli girdisi 6-hane kodu doğrula ve ilişkiyi başlat.
+
+        Geçersiz/süresi geçmiş/tüketilmiş kod veya öğrenci-olmayan hedef →
+        {"valid": False}. Geçerli → mevcut ilişki döndürülür ya da yeni
+        ParentChild(approved=False) oluşturulup öğrenciye onay bildirimi gider,
+        ardından kod tüketilir.
+
+        Args:
+            parent_id: Kodu giren velinin id'si.
+            code: 6-hane bağlantı kodu.
+
+        Returns:
+            {"valid": False} VEYA
+            {"valid": True, "child_name", "child_initials", "relation_id"}.
+        """
+        now = datetime.now(UTC)
+        clean = (code or "").strip()
+
+        result = await self.db.execute(
+            select(ParentLinkCode).where(
+                and_(
+                    ParentLinkCode.code == clean,
+                    ParentLinkCode.consumed == False,  # noqa: E712
+                    ParentLinkCode.expires_at > now,
+                )
+            )
+        )
+        link = result.scalar_one_or_none()
+        if link is None:
+            return {"valid": False}
+
+        # Öğrenciyi çöz — sadece STUDENT hesabı ile ilişki kurulabilir.
+        child_result = await self.db.execute(
+            select(User).where(User.id == link.student_id)
+        )
+        child = child_result.scalar_one_or_none()
+        if child is None or child.role != UserRole.STUDENT:
+            return {"valid": False}
+
+        # Mevcut ilişki varsa onu kullan, yoksa oluştur (approved=False) + bildir.
+        existing = await self.db.execute(
+            select(ParentChildRelation).where(
+                and_(
+                    ParentChildRelation.parent_id == parent_id,
+                    ParentChildRelation.child_id == child.id,
+                )
+            )
+        )
+        relation = existing.scalar_one_or_none()
+        if relation is None:
+            relation = ParentChildRelation(
+                parent_id=parent_id,
+                child_id=child.id,
+                relation_type="parent",
+                approved=False,
+            )
+            self.db.add(relation)
+            await self.db.flush()  # relation.id
+            await self._send_approval_request_notification(child.id, parent_id)
+
+        # Kodu tüket (tek kullanımlık).
+        link.consumed = True
+        link.consumed_at = now
+        await self.db.commit()
+
+        return {
+            "valid": True,
+            "child_name": f"{child.first_name} {child.last_name}",
+            "child_initials": compute_initials(child.first_name, child.last_name),
+            "relation_id": str(relation.id),
+        }
 
     async def approve_parent_child_relation(
         self, child_id: str, relation_id: int, approved: bool
