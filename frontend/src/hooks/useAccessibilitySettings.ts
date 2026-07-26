@@ -11,7 +11,8 @@
  * - Kullanıcı tercihlerini kaydetme
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { osbService, type OSBSettings } from '../services/osbService';
 
 interface AccessibilitySettings {
   // Görsel ayarlar
@@ -73,6 +74,10 @@ export const useAccessibilitySettings = () => {
   const [settings, setSettings] = useState<AccessibilitySettings>(DEFAULT_SETTINGS);
   const [isLoading, setIsLoading] = useState(true);
 
+  // #415-D: Son bilinen tam OSB ayar seti (backend'den). Yalnız backend'e
+  // yazarken clobber'ı önlemek için tutulur; hook'un dönen API'sini etkilemez.
+  const osbSnapshotRef = useRef<OSBSettings | null>(null);
+
   // Ayarları localStorage'dan yükle
   useEffect(() => {
     try {
@@ -89,6 +94,25 @@ export const useAccessibilitySettings = () => {
     } finally {
       setIsLoading(false);
     }
+
+    // #415-D: Backend OSB ayarlarından erişilebilirlik toggle'larını hydrate et.
+    // localStorage yukarıda offline cache görevi görür; backend erişilebilirken
+    // sunucu kaynak-doğrusudur. Hata yutulur — çevrimdışı çalışmaya devam eder.
+    osbService
+      .getSettings()
+      .then((osb) => {
+        osbSnapshotRef.current = osb;
+        setSettings((prev) => ({
+          ...prev,
+          highContrast: osb.highContrastMode,
+          reducedMotion: osb.reducedMotion,
+          noAnimations: osb.noAnimations,
+          noShadows: osb.noShadows,
+        }));
+      })
+      .catch(() => {
+        /* offline: localStorage cache stands */
+      });
   }, []);
 
   // Sistem tercihlerini tespit et
@@ -129,16 +153,40 @@ export const useAccessibilitySettings = () => {
     }
   }, []);
 
+  // #415-D: Erişilebilirlik toggle'larını backend OSB ayarlarına yaz (fire-and-forget).
+  // Yalnız backend'den bir baseline aldıysak (snapshot) gönderiririz; böylece
+  // dokunulmamış 12 OSB alanı (layout/navigation/icons) asla clobber olmaz.
+  // Çevrimdışı / henüz yüklenmemişse localStorage yereldeki değişikliği korur.
+  const pushOSBSettings = useCallback((s: AccessibilitySettings) => {
+    const snapshot = osbSnapshotRef.current;
+    if (!snapshot) {return;}
+    osbService
+      .updateSettings({
+        ...snapshot,
+        highContrastMode: s.highContrast,
+        reducedMotion: s.reducedMotion,
+        noAnimations: s.noAnimations,
+        noShadows: s.noShadows,
+      })
+      .then((updated) => {
+        osbSnapshotRef.current = updated;
+      })
+      .catch(() => {
+        /* offline: değişiklik localStorage üzerinden yerelde kalır */
+      });
+  }, []);
+
   // Ayarları kaydet
   const saveSettings = useCallback((newSettings: AccessibilitySettings) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
       setSettings(newSettings);
       applySettingsToDOM(newSettings);
+      pushOSBSettings(newSettings);
     } catch (error) {
       console.error('Erişilebilirlik ayarları kaydedilemedi:', error);
     }
-  }, []);
+  }, [pushOSBSettings]);
 
   // Tek bir ayarı güncelle
   const updateSetting = useCallback(<K extends keyof AccessibilitySettings>(

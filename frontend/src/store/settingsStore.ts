@@ -16,6 +16,7 @@
 
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { osbService, type OSBSettings } from '../services/osbService';
 
 // Accessibility settings
 export interface AccessibilitySettings {
@@ -227,6 +228,33 @@ const initialState: SettingsState = {
   initialized: false,
 };
 
+// #415-D: Backend OSB ayarları köprüsü. Son bilinen tam OSB seti burada
+// tutulur; erişilebilirlik toggle'ı backend'e yazılırken dokunulmamış OSB
+// alanları (layout/navigation/icons/noShadows) clobber olmasın diye.
+let osbSnapshot: OSBSettings | null = null;
+
+/**
+ * Erişilebilirlik dilimindeki OSB-eşleşen alanları backend'e yaz
+ * (fire-and-forget). Yalnız sunucudan bir baseline aldıysak gönderilir;
+ * aksi halde persist middleware değişikliği yerelde saklar.
+ */
+function pushOSBFromAccessibility(acc: AccessibilitySettings): void {
+  if (!osbSnapshot) {return;}
+  osbService
+    .updateSettings({
+      ...osbSnapshot,
+      highContrastMode: acc.highContrast,
+      reducedMotion: acc.reduceMotion,
+      noAnimations: acc.disableAnimations,
+    })
+    .then((updated) => {
+      osbSnapshot = updated;
+    })
+    .catch(() => {
+      /* offline: persist middleware keeps the change locally */
+    });
+}
+
 export const useSettingsStore = create<SettingsStore>()(
   devtools(
     persist(
@@ -251,6 +279,26 @@ export const useSettingsStore = create<SettingsStore>()(
           } else {
             set({ initialized: true });
           }
+
+          // #415-D: Backend OSB ayarlarından erişilebilirlik dilimini hydrate et
+          // (erişilebilirken sunucu kaynak-doğrusu). Fire-and-forget; çevrimdışı
+          // için hata yutulur, persist middleware yerel değeri korur.
+          osbService
+            .getSettings()
+            .then((osb) => {
+              osbSnapshot = osb;
+              set((state) => ({
+                accessibility: {
+                  ...state.accessibility,
+                  highContrast: osb.highContrastMode,
+                  reduceMotion: osb.reducedMotion,
+                  disableAnimations: osb.noAnimations,
+                },
+              }));
+            })
+            .catch(() => {
+              /* offline: local persisted settings stand */
+            });
         },
 
         // Accessibility actions
@@ -285,6 +333,7 @@ export const useSettingsStore = create<SettingsStore>()(
               highContrast: !state.accessibility.highContrast,
             },
           }));
+          pushOSBFromAccessibility(get().accessibility);
         },
 
         toggleReduceMotion: () => {
@@ -294,6 +343,7 @@ export const useSettingsStore = create<SettingsStore>()(
               reduceMotion: !state.accessibility.reduceMotion,
             },
           }));
+          pushOSBFromAccessibility(get().accessibility);
         },
 
         setFontSize: (size: number) => {

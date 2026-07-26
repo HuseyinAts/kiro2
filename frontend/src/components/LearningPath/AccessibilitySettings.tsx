@@ -7,7 +7,7 @@
  * WCAG 2.2 + DevQube nörodiversite 7 prensibi
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -17,6 +17,7 @@ import {
   Popover,
 } from '@mui/material';
 import { Settings, TextFields, Animation, Contrast } from '@mui/icons-material';
+import { osbService } from '../../services/osbService';
 
 const STORAGE_KEY = 'kiro2_accessibility';
 
@@ -62,9 +63,28 @@ function applyToDOM(settings: A11ySettings) {
   body.classList.toggle('high-contrast', settings.highContrast);
 }
 
+// #415-D: Bu panelin OSB-eşleşen toggle'larını backend'e yaz. Dokunulmamış 14
+// OSB alanını korumak için fetch-merge-put yapılır. Fire-and-forget; çevrimdışı
+// için hata yutulur (localStorage yerel kopyayı zaten saklıyor).
+async function syncOSBToBackend(settings: A11ySettings): Promise<void> {
+  try {
+    const current = await osbService.getSettings();
+    await osbService.updateSettings({
+      ...current,
+      reducedMotion: settings.reducedMotion,
+      highContrastMode: settings.highContrast,
+    });
+  } catch {
+    /* offline: localStorage cache stands */
+  }
+}
+
 export function AccessibilitySettings() {
   const [settings, setSettings] = useState<A11ySettings>(loadSettings);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  // #415-D: mount çalıştırmasında backend'e yazmamak için (yükleme sırasında
+  // sunucu durumunu ezmeyi önler) — yalnız kullanıcı değişikliklerinde push.
+  const didMountRef = useRef(false);
 
   // Apply on mount and when settings change
   useEffect(() => {
@@ -72,6 +92,13 @@ export function AccessibilitySettings() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     } catch { /* ignore */ }
+
+    // #415-D: kullanıcı değişikliklerini backend OSB ayarlarına yaz (mount hariç).
+    if (didMountRef.current) {
+      void syncOSBToBackend(settings);
+    } else {
+      didMountRef.current = true;
+    }
   }, [settings]);
 
   // Apply on initial mount (for page reloads)
