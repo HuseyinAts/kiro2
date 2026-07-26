@@ -55,6 +55,8 @@ from typing import Any
 import redis.asyncio as aioredis
 
 from app.services.irt_engine import (
+    MAX_ITEMS,
+    SE_STOP,
     IRTResult,
     ItemParams,
     eap_update,
@@ -111,6 +113,15 @@ class CATState:
     state: str = "active"  # active|completed|abandoned
     termination_reason: str = ""
     warm_up_done: bool = False  # ilk 3 kolay soru bitti mi
+    # Misafir (auth'suz) yerleştirme: user_id gerçek bir users satırı DEĞİL
+    # ("guest:<uuid>"). Bu oturumun hiçbir kalıcı tabloya yazılmaması gerekir —
+    # FK ihlali ve RLS'li tablolara sahipsiz satır yazımı önlenir.
+    is_guest: bool = False
+    # SUNUCUNUN SERVİS ETTİĞİ madde. Yanıtın gerçekten bu maddeye ait olduğu
+    # doğrulanmazsa istemci hangi sorunun puanlanacağını seçebilir; yanıt
+    # doğru/yanlış bilgisini geri verdiği için bu, soru bankasının cevap
+    # anahtarını sızdıran bir oracle'a dönüşür.
+    pending_question_id: str = ""
 
     # ------- Yardımcı metodlar -------
 
@@ -144,6 +155,8 @@ class CATState:
             "state": self.state,
             "termination_reason": self.termination_reason,
             "warm_up_done": "1" if self.warm_up_done else "0",
+            "is_guest": "1" if self.is_guest else "0",
+            "pending_question_id": self.pending_question_id,
         }
 
     @classmethod
@@ -164,6 +177,8 @@ class CATState:
             state=d.get("state", "active"),
             termination_reason=d.get("termination_reason", ""),
             warm_up_done=d.get("warm_up_done", "0") == "1",
+            is_guest=d.get("is_guest", "0") == "1",
+            pending_question_id=d.get("pending_question_id", ""),
         )
 
 
@@ -318,27 +333,29 @@ class CATSessionService:
         from sqlalchemy import text
 
         stmt = text("""
-            SELECT id::text,
-                   question_text AS stem,
+            SELECT qb.id::text,
+                   qb.question_text AS stem,
                    CASE
-                       WHEN option_e IS NOT NULL AND option_e != ''
-                       THEN json_build_object('A', option_a, 'B', option_b,
-                                             'C', option_c, 'D', option_d, 'E', option_e)
-                       ELSE json_build_object('A', option_a, 'B', option_b,
-                                             'C', option_c, 'D', option_d)
+                       WHEN qb.option_e IS NOT NULL AND qb.option_e != ''
+                       THEN json_build_object('A', qb.option_a, 'B', qb.option_b,
+                                             'C', qb.option_c, 'D', qb.option_d, 'E', qb.option_e)
+                       ELSE json_build_object('A', qb.option_a, 'B', qb.option_b,
+                                             'C', qb.option_c, 'D', qb.option_d)
                    END AS options,
-                   correct_answer AS correct_option,
-                   irt_difficulty AS difficulty,
-                   irt_discrimination AS discrimination,
-                   irt_guessing AS guessing,
-                   primary_topic_id::text AS topic_id,
-                   subject_area AS subject_id,
-                   question_image_url,
-                   image_width,
-                   image_height,
-                   image_ocr_text
-            FROM question_bank
-            WHERE id = :qid AND is_active = TRUE
+                   qb.correct_answer AS correct_option,
+                   qb.irt_difficulty AS difficulty,
+                   qb.irt_discrimination AS discrimination,
+                   qb.irt_guessing AS guessing,
+                   qb.primary_topic_id::text AS topic_id,
+                   th.name_tr AS konu,
+                   qb.subject_area AS subject_id,
+                   qb.question_image_url,
+                   qb.image_width,
+                   qb.image_height,
+                   qb.image_ocr_text
+            FROM question_bank qb
+            LEFT JOIN topic_hierarchy th ON th.id = qb.primary_topic_id
+            WHERE qb.id = :qid AND qb.is_active = TRUE
         """)
         result = await self.db.execute(stmt, {"qid": question_id})
         row = result.fetchone()
@@ -350,6 +367,7 @@ class CATSessionService:
             "options": row.options,
             "correct_option": row.correct_option,
             "topic_id": row.topic_id,
+            "konu": row.konu,
             "subject_id": row.subject_id,
             "irt": {
                 "difficulty": round(float(row.difficulty), 4),
@@ -364,11 +382,17 @@ class CATSessionService:
 
     # ---- Ana API ----
 
+    async def fetch_question_detail(self, question_id: str) -> dict | None:
+        """Soru içeriğinin dışarıya açık okuyucusu (adaptörler için)."""
+        return await self._fetch_question_detail(question_id)
+
     async def start_session(
         self,
         user_id: str,
         subject_id: str,
         placement_theta: float = 0.0,
+        *,
+        is_guest: bool = False,
     ) -> dict[str, Any]:
         """
         Yeni CAT oturumu başlat.
@@ -414,6 +438,7 @@ class CATSessionService:
             theta=placement_theta,
             se=1.0,
             started_at=now_iso,
+            is_guest=is_guest,
         )
 
         # İlk soru: warm-up (kolay)
@@ -443,6 +468,10 @@ class CATSessionService:
 
         question_detail = await self._fetch_question_detail(first_item.question_id)
 
+        # Sunulan maddeyi state'e yaz: yanıtın bu maddeye ait olduğu
+        # doğrulanabilsin (cevap-anahtarı oracle'ı önleme).
+        state.pending_question_id = first_item.question_id
+
         await self._write_state(state)
         # Aktif oturum kaydını Redis'e yaz (önceki iptal için)
         await self.redis.setex(prev_key, CAT_SESSION_TTL, session_id)
@@ -463,6 +492,9 @@ class CATSessionService:
         question_id: str,
         is_correct: bool,
         response_ms: int | None = None,
+        *,
+        max_items: int = MAX_ITEMS,
+        se_threshold: float = SE_STOP,
     ) -> dict[str, Any]:
         """
         Yanıtı işle ve bir sonraki soruyu getir.
@@ -540,72 +572,80 @@ class CATSessionService:
         if state.n_questions >= 3:
             state.warm_up_done = True
 
-        # 3b. PROGRESSIVE PERSIST: Her cevaptan sonra theta'yı DB'ye yaz
-        # Böylece öğrenci oturumu tamamlamasa bile son theta kaydedilir.
-        try:
-            _SUBJ_MAP = {
-                "matematik": 1,
-                "geometri": 2,
-                "fizik": 3,
-                "kimya": 4,
-                "biyoloji": 5,
-                "turkce": 6,
-                "tarih": 7,
-                "cografya": 8,
-                "edebiyat": 9,
-                "felsefe": 10,
-                "din": 11,
-                "sosyal": 12,
-            }
-            _sid = _SUBJ_MAP.get(_normalize_subject(state.subject_id))
-            if _sid is not None:
-                from sqlalchemy import text as _txt
+        # 3b/3c. PROGRESSIVE PERSIST — misafir oturumunda TAMAMEN atlanır.
+        # Misafirin user_id'si ("guest:<uuid>") gerçek bir users satırı değildir:
+        # student_abilities/xp_transactions FK'yı ihlal eder, üstelik bu tablolar
+        # FORCE RLS altında olduğu için sahipsiz satır yazımı zaten reddedilir.
+        if not state.is_guest:
+            # Her cevaptan sonra theta'yı DB'ye yaz — öğrenci oturumu
+            # tamamlamasa bile son theta kaydedilir.
+            try:
+                _SUBJ_MAP = {
+                    "matematik": 1,
+                    "geometri": 2,
+                    "fizik": 3,
+                    "kimya": 4,
+                    "biyoloji": 5,
+                    "turkce": 6,
+                    "tarih": 7,
+                    "cografya": 8,
+                    "edebiyat": 9,
+                    "felsefe": 10,
+                    "din": 11,
+                    "sosyal": 12,
+                }
+                _sid = _SUBJ_MAP.get(_normalize_subject(state.subject_id))
+                if _sid is not None:
+                    from sqlalchemy import text as _txt
 
+                    await self.db.execute(
+                        _txt("""
+                        INSERT INTO student_abilities (student_id, subject_id, theta, theta_se, updated_at)
+                        VALUES (:uid, :sid, :theta, :se, NOW())
+                        ON CONFLICT (student_id, subject_id)
+                        DO UPDATE SET theta = :theta, theta_se = :se, updated_at = NOW()
+                        """),
+                        {
+                            "uid": state.user_id,
+                            "sid": _sid,
+                            "theta": round(state.theta, 4),
+                            "se": round(state.se, 4),
+                        },
+                    )
+                    await self.db.commit()
+            except Exception as e:
+                logger.error("CAT theta persist HATASI — theta kaybı riski: %s", e)
+
+            # XP: Doğru 10XP, Yanlış 3XP (katılım ödülü)
+            try:
+                from sqlalchemy import text as _txt2
+
+                _xp = 10 if is_correct else 3
+                # 1) xp_transactions INSERT (gamification endpoint bunu okur)
                 await self.db.execute(
-                    _txt("""
-                    INSERT INTO student_abilities (student_id, subject_id, theta, theta_se, updated_at)
-                    VALUES (:uid, :sid, :theta, :se, NOW())
-                    ON CONFLICT (student_id, subject_id)
-                    DO UPDATE SET theta = :theta, theta_se = :se, updated_at = NOW()
-                    """),
-                    {
-                        "uid": state.user_id,
-                        "sid": _sid,
-                        "theta": round(state.theta, 4),
-                        "se": round(state.se, 4),
-                    },
+                    _txt2("""INSERT INTO xp_transactions (student_id, amount, source, created_at)
+                             VALUES (:uid, :xp, 'cat', NOW())"""),
+                    {"uid": state.user_id, "xp": _xp},
+                )
+                # 2) users.total_xp UPDATE (dashboard bunu okur)
+                await self.db.execute(
+                    _txt2("UPDATE users SET total_xp = total_xp + :xp WHERE id = :uid"),
+                    {"uid": state.user_id, "xp": _xp},
                 )
                 await self.db.commit()
-        except Exception as e:
-            logger.error("CAT theta persist HATASI — theta kaybı riski: %s", e)
-
-        # 3c. PROGRESSIVE XP: Her cevaptan sonra XP ekle
-        try:
-            from sqlalchemy import text as _txt2
-
-            _xp = 10 if is_correct else 3  # Doğru: 10XP, Yanlış: 3XP (katılım ödülü)
-            # 1) xp_transactions INSERT (gamification endpoint bunu okur)
-            await self.db.execute(
-                _txt2("""INSERT INTO xp_transactions (student_id, amount, source, created_at)
-                         VALUES (:uid, :xp, 'cat', NOW())"""),
-                {"uid": state.user_id, "xp": _xp},
-            )
-            # 2) users.total_xp UPDATE (dashboard bunu okur)
-            await self.db.execute(
-                _txt2("UPDATE users SET total_xp = total_xp + :xp WHERE id = :uid"),
-                {"uid": state.user_id, "xp": _xp},
-            )
-            await self.db.commit()
-        except Exception as e:
-            logger.warning("CAT XP persist hatası: %s", e)
+            except Exception as e:
+                logger.warning("CAT XP persist hatası: %s", e)
 
         # 4. Bitiş kontrolü
-        terminate, reason = should_terminate(state.se, state.n_questions)
+        terminate, reason = should_terminate(
+            state.se, state.n_questions, se_threshold=se_threshold, max_items=max_items
+        )
 
         if terminate:
             # 5a. Oturumu kapat
             state.state = "completed"
             state.termination_reason = reason
+            state.pending_question_id = ""
             await self._write_state(state)
 
             # DB'ye toplu kayıt (async, non-blocking tercih edilir)
@@ -650,6 +690,7 @@ class CATSessionService:
             # Havuz tükendi → oturumu bitir
             state.state = "completed"
             state.termination_reason = "pool_exhausted"
+            state.pending_question_id = ""
             await self._write_state(state)
             await self._persist_session_to_db(state)
             return {
@@ -669,6 +710,7 @@ class CATSessionService:
             }
 
         next_question_detail = await self._fetch_question_detail(next_item.question_id)
+        state.pending_question_id = next_item.question_id
 
         # 6. State'i Redis'e geri yaz
         await self._write_state(state)
@@ -709,7 +751,17 @@ class CATSessionService:
         Bu fonksiyon sadece oturum bittiğinde çağrılır.
         Her yanıtta DB yazımı yapmak yerine,
         sadece son durumu toplu olarak kaydediyoruz.
+
+        Misafir oturumu hiçbir tabloya yazılmaz — sahibi olmayan bir user_id ile
+        kiro2_cat_sessions/learning_events/user_theta satırı üretmek FK ve RLS
+        ihlalidir; yerleştirme sonucu yalnız Redis'te (TTL'li) yaşar.
         """
+        if state.is_guest:
+            logger.debug(
+                "Misafir CAT oturumu — DB persist atlandı: %s", state.session_id
+            )
+            return
+
         from sqlalchemy import text
 
         stmt = text("""
