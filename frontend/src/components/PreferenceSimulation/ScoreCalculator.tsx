@@ -62,8 +62,8 @@ export const ScoreCalculator: React.FC = () => {
 
       <div className="calculator-form">
         <div className="form-group">
-          <label>Puan Türü</label>
-          <select value={scoreType} onChange={(e) => setScoreType(e.target.value)}>
+          <label htmlFor="sc-score-type">Puan Türü</label>
+          <select id="sc-score-type" value={scoreType} onChange={(e) => setScoreType(e.target.value)}>
             <option value="SAY">SAY (Sayısal)</option>
             <option value="EA">EA (Eşit Ağırlık)</option>
             <option value="SOZ">SÖZ (Sözel)</option>
@@ -75,8 +75,9 @@ export const ScoreCalculator: React.FC = () => {
           <h3>TYT Netleri</h3>
           <div className="score-grid">
             <div className="score-input">
-              <label>Türkçe (40)</label>
+              <label htmlFor="sc-tyt-turkish">Türkçe (40)</label>
               <input
+                id="sc-tyt-turkish"
                 type="number"
                 min="0"
                 max="40"
@@ -86,8 +87,9 @@ export const ScoreCalculator: React.FC = () => {
               />
             </div>
             <div className="score-input">
-              <label>Matematik (40)</label>
+              <label htmlFor="sc-tyt-math">Matematik (40)</label>
               <input
+                id="sc-tyt-math"
                 type="number"
                 min="0"
                 max="40"
@@ -97,8 +99,9 @@ export const ScoreCalculator: React.FC = () => {
               />
             </div>
             <div className="score-input">
-              <label>Fen (20)</label>
+              <label htmlFor="sc-tyt-science">Fen (20)</label>
               <input
+                id="sc-tyt-science"
                 type="number"
                 min="0"
                 max="20"
@@ -108,8 +111,9 @@ export const ScoreCalculator: React.FC = () => {
               />
             </div>
             <div className="score-input">
-              <label>Sosyal (20)</label>
+              <label htmlFor="sc-tyt-social">Sosyal (20)</label>
               <input
+                id="sc-tyt-social"
                 type="number"
                 min="0"
                 max="20"
@@ -127,29 +131,29 @@ export const ScoreCalculator: React.FC = () => {
             {scoreType === 'SAY' && (
               <>
                 <div className="score-input">
-                  <label>Matematik (40)</label>
-                  <input type="number" min="0" max="40" step="0.25"
+                  <label htmlFor="sc-ayt-math">Matematik (40)</label>
+                  <input id="sc-ayt-math" type="number" min="0" max="40" step="0.25"
                     value={aytScores.math}
                     onChange={(e) => setAytScores({ ...aytScores, math: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
                 <div className="score-input">
-                  <label>Fizik (14)</label>
-                  <input type="number" min="0" max="14" step="0.25"
+                  <label htmlFor="sc-ayt-physics">Fizik (14)</label>
+                  <input id="sc-ayt-physics" type="number" min="0" max="14" step="0.25"
                     value={aytScores.physics}
                     onChange={(e) => setAytScores({ ...aytScores, physics: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
                 <div className="score-input">
-                  <label>Kimya (13)</label>
-                  <input type="number" min="0" max="13" step="0.25"
+                  <label htmlFor="sc-ayt-chemistry">Kimya (13)</label>
+                  <input id="sc-ayt-chemistry" type="number" min="0" max="13" step="0.25"
                     value={aytScores.chemistry}
                     onChange={(e) => setAytScores({ ...aytScores, chemistry: parseFloat(e.target.value) || 0 })}
                   />
                 </div>
                 <div className="score-input">
-                  <label>Biyoloji (13)</label>
-                  <input type="number" min="0" max="13" step="0.25"
+                  <label htmlFor="sc-ayt-biology">Biyoloji (13)</label>
+                  <input id="sc-ayt-biology" type="number" min="0" max="13" step="0.25"
                     value={aytScores.biology}
                     onChange={(e) => setAytScores({ ...aytScores, biology: parseFloat(e.target.value) || 0 })}
                   />
@@ -163,8 +167,9 @@ export const ScoreCalculator: React.FC = () => {
           <h3>Ek Puanlar</h3>
           <div className="bonus-grid">
             <div className="form-group">
-              <label>Diploma Notu (0-100)</label>
+              <label htmlFor="sc-diploma-grade">Diploma Notu (0-100)</label>
               <input
+                id="sc-diploma-grade"
                 type="number"
                 min="0"
                 max="100"
@@ -174,8 +179,8 @@ export const ScoreCalculator: React.FC = () => {
               />
             </div>
             <div className="form-group">
-              <label>Dil Sertifikası</label>
-              <select value={languageCert} onChange={(e) => setLanguageCert(e.target.value)}>
+              <label htmlFor="sc-language-cert">Dil Sertifikası</label>
+              <select id="sc-language-cert" value={languageCert} onChange={(e) => setLanguageCert(e.target.value)}>
                 <option value="">Yok</option>
                 <option value="TOEFL">TOEFL</option>
                 <option value="IELTS">IELTS</option>

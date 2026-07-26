@@ -134,6 +134,9 @@ export const QuestionImage: React.FC<QuestionImageProps> = ({
       >
         <Box
           onClick={handleClose}
+          role="dialog"
+          aria-modal="true"
+          aria-label={alt}
           sx={{
             position: 'relative',
             outline: 'none',
@@ -144,6 +147,7 @@ export const QuestionImage: React.FC<QuestionImageProps> = ({
           {/* Close button */}
           <IconButton
             onClick={handleClose}
+            aria-label="Kapat"
             sx={{
               position: 'absolute',
               top: 8,

@@ -115,14 +115,14 @@ export default function LearningPathMapPage() {
       <div style={s.goalCard}>
         <h3 style={s.sectionTitle}>🎯 Sınav Hedefi</h3>
         <div style={s.goalRow}>
-          <select value={goalForm.exam_type} onChange={e => setGoalForm(f => ({ ...f, exam_type: e.target.value }))} style={s.select}>
+          <select aria-label="Sınav türü" value={goalForm.exam_type} onChange={e => setGoalForm(f => ({ ...f, exam_type: e.target.value }))} style={s.select}>
             <option value="TYT">TYT</option>
             <option value="AYT_SAY">AYT Sayısal</option>
             <option value="AYT_EA">AYT EA</option>
             <option value="AYT_SOZ">AYT Sözel</option>
           </select>
-          <input type="date" value={goalForm.exam_date} onChange={e => setGoalForm(f => ({ ...f, exam_date: e.target.value }))} style={s.input} />
-          <input type="number" value={goalForm.daily_minutes} min={30} max={480} step={15}
+          <input aria-label="Sınav tarihi" type="date" value={goalForm.exam_date} onChange={e => setGoalForm(f => ({ ...f, exam_date: e.target.value }))} style={s.input} />
+          <input aria-label="Günlük çalışma dakikası" type="number" value={goalForm.daily_minutes} min={30} max={480} step={15}
             onChange={e => setGoalForm(f => ({ ...f, daily_minutes: +e.target.value }))} style={{ ...s.input, width: 90 }} placeholder="dk/gün" />
           <button onClick={saveGoal} style={s.saveBtn}>{goalSaved ? '✅ Kaydedildi' : 'Kaydet'}</button>
         </div>

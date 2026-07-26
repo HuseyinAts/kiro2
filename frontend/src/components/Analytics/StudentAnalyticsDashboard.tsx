@@ -225,6 +225,7 @@ const StudentAnalyticsDashboard: React.FC<StudentAnalyticsDashboardProps> = ({
         <div className="flex items-center space-x-2">
           {/* Tarih aralığı seçici */}
           <select
+            aria-label="Tarih aralığı"
             value={dateRange}
             onChange={(e) => setDateRange(Number(e.target.value))}
             className="px-3 py-2 border border-gray-300 rounded-md"
