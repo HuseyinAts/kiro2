@@ -1,7 +1,23 @@
-## Session Handoff — 2026-07-26 (F4-S1/S2 push edildi + GirisPage iç link discovery)
-**Branch:** feature/self-evolution-optimization · **PUSH TAMAM** (origin senkron, `9c1d094d5`)
-**Son commit:** 9c1d094d5 (handoff — push tamam + repo-geneli suite ortam-kısıtı notu)
+## Session Handoff — 2026-07-26 (F4 kapanış + #415 A11y/WCAG A/B/C tamamlandı)
+**Branch:** feature/self-evolution-optimization · **PUSH GEREKİYOR** (commit `70910dbdc` henüz push edilmedi)
+**Son commit:** 70910dbdc (#415 A/B/C — layout kısayolları + form label + modal focus-trap)
 **Frontend docker :3000 + backend:8000:** tüm zincir DEPLOY, healthy.
+
+### #415 A11y/WCAG TAMAMLANDI (A/B/C; D ayrı bırakıldı)
+Discovery (Explore agent) 4 alt-iş buldu, kullanıcı A+B+C onayladı, D (OSB
+backend-bağlama — backend REST yüzeyi var ama frontend hiç çağırmıyor, 3 yetim
+UI mevcut) ayrı büyük görev olarak bırakıldı.
+- **A**: RoleBasedLayout'a Alt+M/Alt+N kısayolları + reduced-motion'a saygılı
+  scroll-to-top FAB (AccessibleLayout dead-code'dan taşındı, kod zaten yazılıydı).
+- **B**: 6 dosyada ~17 alan aria-invalid/label boşluğu kapatıldı (ScoreCalculator
+  11 alan sibling-label kopukluğu, LearningPathMapPage 3 alan hiç label yoktu,
+  3× analytics sayfası yorum-etiket).
+- **C**: 2 modal focus-trap boşluğu — **BadgeEarned.tsx gerçek bug**: modal modda
+  hiç focus-trap yoktu (Tab arka plana kaçıyordu), `useFocusTrap` hook'uyla
+  düzeltildi + regresyon testi eklendi. ImageZoomModal.tsx'e role=dialog+aria-modal.
+- Gate: tsc 0, scoped eslint 0 yeni hata, yeni test 2/2 PASS, canlı Playwright
+  E2E (Alt+M/N + scroll-to-top doğrulandı, /parent/dashboard).
+- **PUSH BEKLİYOR** — bir sonraki adım: push onayı al.
 
 ### YENİ BULGU (26 Tem) — HesapKurtarmaPage + OnboardingPage MOUNT EDİLMEDİ (kullanıcı kararı)
 "GirisPage iç linkleri" görevi araştırıldı, ikisi de VeliBaglamaPage ile AYNI
