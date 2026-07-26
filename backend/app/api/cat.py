@@ -318,7 +318,11 @@ def _panel(state: CATState, soru: dict | None, *, done: bool) -> CatNextResponse
             theta=state.theta,
             item_params=item_params,
             target_se=PLACEMENT_SE_STOP,
-            remaining_budget=max(0, PLACEMENT_MAX_ITEMS - state.n_questions),
+            # Bütçe: cevaplanan + atlanan (omit de bir madde sunumudur).
+            remaining_budget=max(
+                0,
+                PLACEMENT_MAX_ITEMS - state.n_questions - len(state.skipped_ids),
+            ),
         )
     )
 
@@ -430,18 +434,24 @@ async def cat_next(
         if body.secim is not None and 0 <= body.secim < len(harfler)
         else None
     )
-    dogru_mu = (
-        harf is not None and harf == str(sunulan.get("correct_option") or "").upper()
-    )
-
     try:
-        sonuc = await service.submit_answer(
-            session_id=state.session_id,
-            question_id=body.maddeId,
-            is_correct=dogru_mu,
-            max_items=PLACEMENT_MAX_ITEMS,
-            se_threshold=PLACEMENT_SE_STOP,
-        )
+        if harf is None:
+            # "Emin değilim" → OMIT: madde UYGULANMAMIŞ sayılır, θ'ya girmez.
+            # Yanlış (0) kodlamak dürüst belirsizliği kör tahminden ağır
+            # cezalandırırdı (θ_true=+1.0, 6/12 omit → θ̂=-1.04 vs -0.56).
+            sonuc = await service.skip_question(
+                session_id=state.session_id,
+                question_id=body.maddeId,
+                max_items=PLACEMENT_MAX_ITEMS,
+            )
+        else:
+            sonuc = await service.submit_answer(
+                session_id=state.session_id,
+                question_id=body.maddeId,
+                is_correct=harf == str(sunulan.get("correct_option") or "").upper(),
+                max_items=PLACEMENT_MAX_ITEMS,
+                se_threshold=PLACEMENT_SE_STOP,
+            )
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail=str(exc)

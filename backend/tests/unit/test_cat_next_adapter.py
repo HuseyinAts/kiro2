@@ -163,6 +163,7 @@ class _FakeCatService:
         self.states: dict[str, CATState] = {}
         self.start_cagrilari: list[dict] = []
         self.submit_cagrilari: list[dict] = []
+        self.skip_cagrilari: list[dict] = []
         self._sayac = 0
 
     async def get_session_state(self, session_id: str) -> CATState | None:
@@ -192,6 +193,26 @@ class _FakeCatService:
             "n_questions": 0,
             "phase": "warm_up",
             "is_complete": False,
+        }
+
+    async def skip_question(self, **kw) -> dict:
+        """Omit: θ'ya girmez, bütçeden düşer, tekrar sunulmaz."""
+        self.skip_cagrilari.append(kw)
+        st = self.states[kw["session_id"]]
+        st.answered_ids.append(kw["question_id"])
+        st.skipped_ids.append(kw["question_id"])
+        sunulan = st.n_questions + len(st.skipped_ids)
+        bitti = sunulan >= kw.get("max_items", 12)
+        st.state = "completed" if bitti else st.state
+        st.pending_question_id = "" if bitti else "q-2"
+        return {
+            "is_complete": bitti,
+            "theta": st.theta,
+            "se": st.se,
+            "n_questions": st.n_questions,
+            "termination_reason": "max_questions" if bitti else None,
+            "next_question": None if bitti else _SORULAR["q-2"],
+            "phase": "completed" if bitti else "core",
         }
 
     async def submit_answer(self, **kw) -> dict:
@@ -320,11 +341,47 @@ def test_yanlis_secim_indeksi_yanlis_sayilir(istemci):
     assert istemci._servis.submit_cagrilari[-1]["is_correct"] is False
 
 
-def test_secim_null_bos_birakma_yanlis_sayilir(istemci):
-    """'Emin değilim' (AdaptifTestPage.tsx) — atlanan madde yerleştirmede yanlış sayılır."""
+def test_secim_null_omit_thetaya_yazilmaz(istemci):
+    """'Emin değilim' = UYGULANMADI; θ'ya yanlış yanıt olarak GİRMEZ.
+
+    Yanlış saymak dürüst belirsizliği kör tahminden ağır cezalandırıyordu
+    (θ_true=+1.0, 6/12 omit → θ̂=-1.04; kör tahminde -0.56).
+    """
     istemci.post("/api/v1/cat/next", json={"madde": 0})
-    istemci.post("/api/v1/cat/next", json={"madde": 1, "maddeId": "q-1", "secim": None})
-    assert istemci._servis.submit_cagrilari[-1]["is_correct"] is False
+    g = istemci.post(
+        "/api/v1/cat/next", json={"madde": 1, "maddeId": "q-1", "secim": None}
+    ).json()
+    assert istemci._servis.submit_cagrilari == [], "omit EAP'ye yanıt olarak girdi"
+    assert istemci._servis.skip_cagrilari[-1]["question_id"] == "q-1"
+    assert g["uygulananlar"] == [], "atlanan madde uygulanmış gibi panele düştü"
+
+
+def test_omit_ayni_maddeyi_tekrar_sunmaz_ve_butceden_duser(istemci):
+    """Atlanan madde yeniden sorulmaz ama 12 madde bütçesinden düşer."""
+    istemci.post("/api/v1/cat/next", json={"madde": 0})
+    g = istemci.post(
+        "/api/v1/cat/next", json={"madde": 1, "maddeId": "q-1", "secim": None}
+    ).json()
+    assert g["item"]["id"] != "q-1"
+    assert g["kalanTahmini"] <= 11
+
+
+def test_tamamen_omit_edilen_oturum_prior_dondurur(istemci):
+    """12/12 'Emin değilim' → sıfır bilgi: θ prior'da, güvenilirlik %0."""
+    from app.api.cat import PLACEMENT_MAX_ITEMS
+
+    istemci.post("/api/v1/cat/next", json={"madde": 0})
+    g = None
+    for i in range(PLACEMENT_MAX_ITEMS):
+        sid = next(iter(istemci._servis.states))
+        madde_id = istemci._servis.states[sid].pending_question_id
+        g = istemci.post(
+            "/api/v1/cat/next",
+            json={"madde": i + 1, "maddeId": madde_id, "secim": None},
+        ).json()
+    assert g["theta"] == 0.0, "sıfır bilgiden θ üretildi"
+    assert g["guvenilirlik"] == 0, "sıfır bilgiye güvenilirlik atandı"
+    assert g["done"] is True
 
 
 def test_cevap_sonrasi_uygulananlar_dolar(istemci):

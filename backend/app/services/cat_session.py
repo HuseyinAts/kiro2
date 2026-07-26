@@ -122,6 +122,9 @@ class CATState:
     # doğru/yanlış bilgisini geri verdiği için bu, soru bankasının cevap
     # anahtarını sızdıran bir oracle'a dönüşür.
     pending_question_id: str = ""
+    # "Emin değilim" ile atlanan maddeler. θ'ya GİRMEZ (uygulanmamış sayılır)
+    # ama madde bütçesinden düşer ve tekrar sunulmaz.
+    skipped_ids: list[str] = field(default_factory=list)
 
     # ------- Yardımcı metodlar -------
 
@@ -157,6 +160,7 @@ class CATState:
             "warm_up_done": "1" if self.warm_up_done else "0",
             "is_guest": "1" if self.is_guest else "0",
             "pending_question_id": self.pending_question_id,
+            "skipped_ids": json.dumps(self.skipped_ids),
         }
 
     @classmethod
@@ -179,6 +183,7 @@ class CATState:
             warm_up_done=d.get("warm_up_done", "0") == "1",
             is_guest=d.get("is_guest", "0") == "1",
             pending_question_id=d.get("pending_question_id", ""),
+            skipped_ids=json.loads(d.get("skipped_ids", "[]")),
         )
 
 
@@ -637,8 +642,12 @@ class CATSessionService:
                 logger.warning("CAT XP persist hatası: %s", e)
 
         # 4. Bitiş kontrolü
+        # Bütçe = cevaplanan + atlanan (omit de madde sunumudur).
         terminate, reason = should_terminate(
-            state.se, state.n_questions, se_threshold=se_threshold, max_items=max_items
+            state.se,
+            state.n_questions + len(state.skipped_ids),
+            se_threshold=se_threshold,
+            max_items=max_items,
         )
 
         if terminate:
@@ -727,6 +736,94 @@ class CATSessionService:
                 "is_correct": is_correct,
                 "correct_option": q_detail.get("correct_option") if q_detail else None,
             },
+        }
+
+    async def skip_question(
+        self,
+        session_id: str,
+        question_id: str,
+        *,
+        max_items: int = MAX_ITEMS,
+    ) -> dict[str, Any]:
+        """
+        Maddeyi ATLA ("Emin değilim") — omit UYGULANMAMIŞ sayılır.
+
+        Omit'i yanlış (0) kodlamak dürüst belirsizliği kör tahminden ağır
+        cezalandırır: θ_true=+1.0 olan öğrenci 12 maddenin 6'sında omit derse
+        θ̂=-1.04 çıkar, kör tahmin etseydi -0.56 olurdu. IRT'de omit'in doğru
+        muamelesi "bu madde uygulanmadı"dır; YKS'de de boş bırakmanın maliyeti
+        sıfırdır.
+
+        Bu yüzden madde:
+          - responses/item_params'a GİRMEZ (θ ve SE değişmez),
+          - answered_ids'e girer (tekrar sunulmaz),
+          - skipped_ids'e girer ve madde BÜTÇESİNDEN düşer (test sonsuza gitmez).
+        """
+        state = await self._read_state(session_id)
+        if state is None:
+            raise ValueError(f"Oturum bulunamadı veya süresi dolmuş: {session_id}")
+        if not state.is_active():
+            raise ValueError(f"Oturum zaten tamamlanmış: {session_id} ({state.state})")
+        if question_id in state.answered_ids:
+            raise ValueError(f"Bu soru zaten işlendi: {question_id}")
+
+        state.answered_ids.append(question_id)
+        state.skipped_ids.append(question_id)
+
+        sunulan = state.n_questions + len(state.skipped_ids)
+        if sunulan >= max_items:
+            state.state = "completed"
+            state.termination_reason = "max_questions"
+            state.pending_question_id = ""
+            await self._write_state(state)
+            await self._persist_session_to_db(state)
+            return {
+                "is_complete": True,
+                "theta": state.theta,
+                "se": state.se,
+                "n_questions": state.n_questions,
+                "termination_reason": "max_questions",
+                "next_question": None,
+                "phase": "completed",
+            }
+
+        candidates = await self._get_candidate_questions(
+            state.subject_id, state.theta, warm_up=(not state.warm_up_done)
+        )
+        next_item = select_next_question(
+            theta=state.theta,
+            candidates=candidates,
+            answered_ids=set(state.answered_ids),
+            epsilon=0.20,
+        )
+        if next_item is None:
+            state.state = "completed"
+            state.termination_reason = "pool_exhausted"
+            state.pending_question_id = ""
+            await self._write_state(state)
+            await self._persist_session_to_db(state)
+            return {
+                "is_complete": True,
+                "theta": state.theta,
+                "se": state.se,
+                "n_questions": state.n_questions,
+                "termination_reason": "pool_exhausted",
+                "next_question": None,
+                "phase": "completed",
+            }
+
+        next_detail = await self._fetch_question_detail(next_item.question_id)
+        state.pending_question_id = next_item.question_id
+        await self._write_state(state)
+
+        return {
+            "is_complete": False,
+            "theta": state.theta,
+            "se": state.se,
+            "n_questions": state.n_questions,
+            "termination_reason": None,
+            "next_question": next_detail,
+            "phase": "warm_up" if not state.warm_up_done else "core",
         }
 
     async def get_session_state(self, session_id: str) -> CATState | None:
