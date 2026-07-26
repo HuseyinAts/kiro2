@@ -10,19 +10,20 @@
 
 - **Omit fix** `d6ff32d5d` — `skip_question()`: omit θ'ya girmez (12/12 omit → prior, güvenilirlik %0), tekrar sunulmaz, bütçeden düşer. `kalanTahmini` bütçesi de düzeltildi (yeni test yakaladı).
 
+- **KaTeX + mount** `6a97a5c17` + `30f6752a5` — MathText testsizdi → 7 test (gerçek DB dizeleri). `kiro/ui/MathText.tsx` sarmalayıcı (`inline` zorlar, dış import tek dosyada). AdaptifTestPage stem+şık sarmalandı. `/yerlestirme` mount (ProtectedRoute['ogrenci'] + full-bleed); `/cat` DOKUNULMADI. kiro süiti **80 dosya/518 test PASS**, tsc temiz, kanon-lint 0 ihlal.
+
 ### Fail Eden Testler
 - YOK. 34/34 yeni + bağımlı modüller dahil 166/166 pass. Ruff: değişen satırlarda 0 (kalan 2 B905 `_persist_session_to_db` pre-existing).
 
 ### Engelleyiciler
 - Redis + Docker DOWN → canlı E2E yapılamadı (PG 5434 UP, SQL'ler canlı doğrulandı).
-- **Ekran blocker:** CAT-uygun MATEMATIK havuzunun %60.7'si (6,129/10,102) LaTeX içeriyor; `AdaptifTestPage.tsx:180` düz metin basıyor → KaTeX/MathJax olmadan mount edilmemeli.
+- ~~Ekran blocker (LaTeX)~~ **ÇÖZÜLDÜ** — `30f6752a5`. Kalan: gerçek tarayıcıda tipografi/taşma gözle kontrolü.
 - Adversarial 37 bulgunun P0/P1'leri kapatıldı; kalan P2'ler (SE çubuğu ekranda %0'da çakılı, "tahmin yeterince kararlı" metni gerçek dışı, kalibre edilmemiş parametreler üzerinden nüfus-referanslı iddialar) **ekran/kalibrasyon işi** — backend adaptörü değil.
 
 ### Sonraki Adimlar (maks 5)
-1. **AdaptifTestPage mount + KaTeX** — ekran hiçbir route'a bağlı değil; LaTeX render'ı ön koşul.
-3. **Canlı E2E** — Redis + Docker ayağa kalkınca `/api/v1/cat/next` gerçek havuzla smoke.
-4. **Görev 2 Offline** — SW+IndexedDB çöz-döngüsü (ürün-fork).
-5. **IRT kalibrasyonu** — panel iddiaları (üst %X, N net, seviye) bootstrap parametreler üzerinde; gerçek kalibrasyon ayrı iş.
+1. **Canlı E2E + GÖRSEL doğrulama** — Redis+Docker kalkınca: `/api/v1/cat/next` gerçek havuzla smoke **ve** `/yerlestirme`de KaTeX tipografisi (KaTeX_Main serif 1.21em vs Hanken Grotesk 17px) 390px+1280pxte gözle kontrol. jsdom render kanıtlandı, GÖRÜNÜM doğrulanmadı.
+2. **Görev 2 Offline** — SW+IndexedDB çöz-döngüsü (ürün-fork).
+3. **IRT kalibrasyonu** — panel iddiaları (üst %X, N net, seviye) bootstrap parametreler üzerinde; gerçek kalibrasyon ayrı iş.
 
 ### Kararlar
 - **G4-A `/auth/recover` ERTELENDİ** (kullanıcı kararı, 26 Tem): e-posta/SMTP altyapısı repo'da yok → işlevsel kurtarma yazılamaz. Endpoint-stub da KONMAYACAK (çalışmayan uç, çalışıyor sanılır). SMTP geldiğinde açılacak. **G4 (C→B→A) bu kararla KAPANDI.**
