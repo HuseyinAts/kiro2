@@ -12,6 +12,8 @@
 
 - **KaTeX + mount** `6a97a5c17` + `30f6752a5` — MathText testsizdi → 7 test (gerçek DB dizeleri). `kiro/ui/MathText.tsx` sarmalayıcı (`inline` zorlar, dış import tek dosyada). AdaptifTestPage stem+şık sarmalandı. `/yerlestirme` mount (ProtectedRoute['ogrenci'] + full-bleed); `/cat` DOKUNULMADI. kiro süiti **80 dosya/518 test PASS**, tsc temiz, kanon-lint 0 ihlal.
 
+- **Görsel + a11y doğrulama** `53c9c3762` — Storybook `Formullu` story (gerçek DB dizeleri) + Chromium ölçümü. **Bulgu:** KaTeX MathML `<annotation>` ham TeX'i erişilebilir ada sokuyordu (4 şıkkın 2'si); `.k-math .katex annotation{display:none}` ile 2→0. Ayrıca doğrulandı: iç içe `<p>`=0, 390px'te taşma YOK, buton 58px, `.katex` 20.57px=1.21×17px.
+
 ### Fail Eden Testler
 - YOK. 34/34 yeni + bağımlı modüller dahil 166/166 pass. Ruff: değişen satırlarda 0 (kalan 2 B905 `_persist_session_to_db` pre-existing).
 
@@ -21,7 +23,7 @@
 - Adversarial 37 bulgunun P0/P1'leri kapatıldı; kalan P2'ler (SE çubuğu ekranda %0'da çakılı, "tahmin yeterince kararlı" metni gerçek dışı, kalibre edilmemiş parametreler üzerinden nüfus-referanslı iddialar) **ekran/kalibrasyon işi** — backend adaptörü değil.
 
 ### Sonraki Adimlar (maks 5)
-1. **Canlı E2E + GÖRSEL doğrulama** — Redis+Docker kalkınca: `/api/v1/cat/next` gerçek havuzla smoke **ve** `/yerlestirme`de KaTeX tipografisi (KaTeX_Main serif 1.21em vs Hanken Grotesk 17px) 390px+1280pxte gözle kontrol. jsdom render kanıtlandı, GÖRÜNÜM doğrulanmadı.
+1. **Canlı backend E2E** — Redis+Docker kalkınca `/api/v1/cat/next` gerçek havuzla smoke (misafir çerezi + oracle 409 + omit yolu). Görsel/a11y doğrulaması TAMAM (Storybook+Chromium).
 2. **Görev 2 Offline** — SW+IndexedDB çöz-döngüsü (ürün-fork).
 3. **IRT kalibrasyonu** — panel iddiaları (üst %X, N net, seviye) bootstrap parametreler üzerinde; gerçek kalibrasyon ayrı iş.
 
