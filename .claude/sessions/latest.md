@@ -1,40 +1,48 @@
-## Session Handoff — 2026-07-27 06:20
-**Branch:** feature/self-evolution-optimization (upstream takibi YOK — filter-repo `origin`'i kaldırdı, geri eklendi ama `-u` set edilmedi)
-**Son commit:** 68a2aa6b3 fix(security): HEAD'deki iki sır izini kaldır + .archive'ı gitignore'a al — **PUSH EDİLMEDİ**
+## Session Handoff — 2026-07-27 16:10
+
+**Branch:** feature/self-evolution-optimization (upstream **kuruldu**, push edildi)
+**Son commit:** `5f981a557` fix(auth): kayıt student_profiles.id == users.id değişmezini bozuyordu — **PUSH EDİLDİ**
 **Uncommitted:** temiz
+**Test durumu:** `pytest tests/e2e -m golden_flow` → **32 passed / 148 skipped / 0 failed** (30 baseline + 2 yeni bekçi)
 
-### Yapilanlar
-- **Satışa hazırlık denetimi** (canlı sistem + 19-ajan kod denetimi). Karar: **iki kapı da NO-GO** — B2B pilot ~6-9 hafta, genel satış ~4-6 ay.
-- `backend/api/auth.py:1459` — `# TODO: Send email with reset link`. Token Redis'e yazılıyor, e-posta GİTMİYOR, kullanıcıya "gönderildi" deniyor. Konteynerde SMTP env yok. `/hesap-kurtarma` kayıtlı rota değil (`kiro/screens/GirisPage.tsx:337` sadece `<a href>`).
-- `exam_sessions.student_id` → FK `student_profiles.id`, kod `users.id` yolluyor. DB: 74 profilin 60'ında `id <> user_id` → `/osym-exam/beta-practice` yeni kullanıcıda **500 ForeignKeyViolation** (canlı üretildi).
-- `backend/api/billing_api.py:62` — `billing_subscriptions` tablosu DB'de YOK, migration zincirde ve `alembic_version` head'de → `/api/v1/billing/me` **500**. `alembic_version` gerçek şemanın güvenilir kaydı değil (aynı sınıf: `.claude/rules/windows-hnsw-build.md`).
-- `backend/app/services/cat_session.py:263,299` — status-only filtre, `v_safe_for_beta` kullanmıyor → **9.855 soru kapıyı atlıyor** (34.982 vs 25.127). `/cat/next` canlıda kendi kendini cevaplayan bozuk soru döndürdü.
-- **RLS fiilen KAPALI** (önceki oturumların "güçlü yan" kaydı YANLIŞ): politika `current_setting(...) IS NULL OR ...='' OR ...` → GUC yokken tüm satırlar geçer. Canlı: `SET ROLE kiro2_app` + GUC yok → `users` 77/77 görünür. `get_current_tenant` **153 router dosyasının 2'sinde**.
-- 3 pano %100 mock / 0 API çağrısı: `ModernTeacherDashboard.tsx`, `ModernParentDashboard.tsx`, `ModernAdminDashboard.tsx` — üçü de giriş sonrası varsayılan iniş ekranı.
-- `backend/app/api/teacher_classroom.py` — `POST /students` YOK → öğretmen sınıfına öğrenci ekleyemiyor (B2B çekirdek fiili).
-- **Sır envanteri**: geçmişte 12 gerçek kimlik bilgisi (11 Google `AIzaSy…`, 1 HF `hf_…`) + `backend/.env (1)` içinde OpenAI/Anthropic. Hepsi GitHub'a push edilmiş.
-- `68a2aa6b3` — `.archive/root_cleanup_20260402/question_gen_output.txt` silindi; `.gitignore` `archive/` deseni `.archive/`'i kaçırıyordu (KÖK NEDEN) → eklendi; `tests/fast/test_core_config_comprehensive.py` fixture'ı `AIza` önekinden arındırıldı (41/41 PASS).
-- **Geçmiş purge HAZIR, PUSH EDİLMEDİ**: `C:\Users\husey\kiro2_purge.git` (209 MB). Doğrulandı: 21.904 blob **0 sır**, commit 1166=1166, kayıp yok, 6,0 GB→209 MB. Yedek: `C:\Users\husey\kiro2_backup_prepurge.git`.
+### Yapılanlar
 
-### Fail Eden Testler
-- Tam paket 15 dk'da BİTMİYOR (timeout %46'da). Kısmi: **5.023 pass / 109 fail / 2.719 skip (%35)**.
-- Kırmızılar: `fast/test_webb_dok_classifier.py` (20F), `integration/health/test_health_api.py` (11F), `slow/test_phase1_berturk_comprehensive.py` (13F), `smoke/test_smoke_database.py`, `smoke/test_smoke_startup.py`, `test_api_contract.py` (5F).
-- CLAUDE.md'deki "1.223 passed / 1 fail" tablosu gerçeği YANSITMIYOR.
+- **Satışa hazırlık yeniden doğrulama** (11 ajan, canlı stack + DB). Sabahki 7 blocker'ın **7'si de AÇIK, 0 fantom**. Üçü iddia edilenden geniş:
+  - şema kaybı 1 tablo değil **131 tablo** (kök: `c555a10f4b93` upgrade()'inde 145 DROP TABLE)
+  - roster değil **öğretmen modülünün tamamı** servis dışıydı (6/6 uç 500)
+  - kalite sızıntısı cat_session'ın ~14 katı: `productive_failure` + `duel_api` + `osym_questions_api` sadece `is_active` → **85.731 soru**
+- **Yeni bulgular:** GF paketi %83 skip (login 429 fixture'ları düşürüyor) · `golden-flows.yml` geçersiz YAML → 12 Nis'ten beri hiç koşmamış · `feature/**` hiçbir CI tetiklemiyor · pre-commit hook sır taraması OLMAYAN config'i çağırıyor (11 anahtar sızıntısının kök nedeni) · KVKK açık rıza 0 kayıt/77 kullanıcı · KVKK export'u `password_hash` sızdırıyor · ödeme sağlayıcısı SIFIR · `ENVIRONMENT=production` import anında çöküyor · yedek 2,5 ay eski + DB'nin tek kopyası bu makinede.
+- **Kapı 1 / Adım 5 TAMAM (`7291645a7`)**: restore migration (billing_subscriptions, student_question_flags, teacher_classroom_students, teacher_exam_configs, teacher_assignments, teacher_contents) + `env.py include_object` DROP kapısı + `tests/e2e/test_db_schema_parity.py` (RED→GREEN).
+  - Canlı: `/api/v1/billing/me` 500→**200**; `/api/v1/teacher/{classes,students,exams,assignments,contents,reports}` 6/6 500→**200**.
+  - DDL öncesi tam yedek: `backups/kiro2_pre_schema_restore_20260727.dump` (976 MB, `pg_restore --list` 202 tablo ile doğrulandı).
+  - alembic head: `restore_dropped_tables_20260727`.
+
+- **Kapı 1 / Adım 6 TAMAM (`5f981a557`)**: `api/auth.py:631` `str(uuid4())` → `user_id` + 60 satır backfill (yedek tablo `student_profiles_bak_20260727`) + `tests/e2e/test_student_profile_id_invariant.py` (RED 60 → GREEN 0).
+  - Canlı E2E: yeni kayıt 201 → profil `id == user_id` → `POST /osym-exam/beta-practice` **HTTP 200** (session oluştu). Test hesabı silindi, sayımlar 77/74/61'e döndü.
+  - Bağımlı satır 0, FK'lar `ON UPDATE NO ACTION`, id çakışması 0 → backfill risksizdi.
 
 ### Engelleyiciler
-- Force-push kullanıcı tarafından REDDEDİLDİ — purge klonu gönderilmeyi bekliyor.
-- 12 anahtarın sağlayıcı konsollarından iptali SADECE Hüseyin yapabilir; purge ifşayı geri almaz.
 
-### Sonraki Adimlar (maks 5)
-1. **Anahtar rotasyonu** (Google×11, HF×1, OpenAI, Anthropic) — purge'den bağımsız, ertelenemez.
-2. **Pre-commit sır tarayıcısı** (gitleaks/detect-secrets) — 12 anahtarın hepsini commit anında yakalardı.
-3. Kiracı izolasyonu: `get_current_tenant` yayılımı ÖNCE, RLS fail-closed SONRA (ters sıra tüm sorguları 0 satıra düşürür).
-4. `student_profiles.id` FK uyuşmazlığı — TDD, en ucuz görünür kazanç.
-5. `cat_session.py` havuzunu `v_safe_for_beta`'ya çevir + regresyon testi.
+- 11 anahtar (10 Google + 1 HF) hâlâ **rotasyona uğramadı** — yalnız Hüseyin yapabilir; geçmiş purge'ü ifşayı geri almaz.
+- Force-push (purge klonu `C:\Users\husey\kiro2_purge.git`) kullanıcı tarafından REDDEDİLDİ, bekliyor.
 
-### Kararlar (gelecek session tekrar tartismasin)
-- **Purge kapsamı**: sırlar + build artefaktları BİRLİKTE. Tek başına sır purge'ü repoyu 6 GB bırakırdı, push düşerdi.
-- **İki geçişli filter-repo ZORUNLU**: `--replace-text` tüm blob'ları akıtır → Windows `fast-import` "cannot truncate pack: Permission denied" ile düşer (84 MB nvidia wheel'de). Önce `--invert-paths` (4 sn), sonra `--replace-text` (15 sn).
-- **`--mirror` KULLANMA**: yayımlanmamış 14 yerel WIP dalını (`claude/*`, `recovered-stash-*`, `archive/*`) GitHub'a açar. Sadece ortak 3 dal: `feature/self-evolution-optimization`, `master`, `recover/clean-main-wip-1261`. Uzaktaki 20 dependabot dalı eski sırlı geçmişi taşıdığı için silinmeli (Dependabot yeniden üretir).
-- **Entropi ile sır sınıflandırma ATILDI**: gerçek OpenAI anahtarını "sentetik", sentetik test anahtarını "gerçek" saydı. Ölçüt = köken (gerçek .env/shell çıktısı mı, fixture mı).
-- Push sonrası bu çalışma reposu yeniden klonlanmalı (hash'ler değişecek); `git push -u` ile upstream geri kurulmalı.
+### Sonraki Adımlar (satış planı sırası, maks 5)
+
+1. **Kapı 1 / #7**: kalite kapısını 5 servise yay — `_safe_for_beta_gate()` helper'ı zaten var, benimsenmemiş. En büyük sızıntı `productive_failure_service`/`duel_api`/`osym_questions_api` (sadece `is_active`, 85.731 soru). *~6h*
+2. **Kapı 1 / #8**: şifre kurtarma uçtan uca (`email_util.send_email` bağla + SMTP env + `HesapKurtarmaPage` mount + `SMTP_SERVER`/`SMTP_HOST` isim çatalını birleştir). *~8h*
+3. **Kapı 1 / #9-10**: roster yazma uçları → 3 panoyu gerçek API'ye bağla (artık tablolar var). *~22h*
+4. **Kapı 1 / #11**: `golden-flows.yml` satır 172 YAML fix + `feature/**` tetikleyici + GF skip-oranı bekçisi (%83 skip = yeşil hiçbir şey kanıtlamıyor) + `sympy` pin çakışması (pip-audit bloke). *~15h*
+5. **Kapı 0**: anahtar rotasyonu (Hüseyin) + pre-commit hook'unu kök config'e çevir + günlük pg_dump otomasyonu. *~28h*
+
+### Ayrı iş olarak kaydedildi (kapsam dışı bırakıldı)
+
+- `repositories/user_repository.py:66` — `StudentProfile(id default=uuid4)` aynı kusuru taşıyor, hiçbir canlı endpoint çağırmıyor.
+- Kalan ~125 kayıp tablo — DORMANT mı NO_WRITE_PATH mı triyajı.
+- `coppa_parental_consents` + FERPA/COPPA router'ı — kaldırma kararı bekliyor (KIRO2 Türkiye-only).
+
+### Kararlar (gelecek session tekrar tartışmasın)
+
+- **Restore kapsamı**: yalnızca canlı kod yolu olan 6 tablo. Kalan ~125 kayıp tablo için "DORMANT mı NO_WRITE_PATH mı" triyajı ayrı iş — hepsini geri getirmek gürültü.
+- **RLS bu migration'da YOK**: bu 6 tablonun `organization_id` kolonu yok, 79-tablo `tenant_isolation` deseni uygulanamaz. Politika icat etmek yerine kiracı izolasyonu iş emrine (GUC → kapsam → predicate) bırakıldı.
+- **`teacher_classrooms` ve `coppa_parental_consents` kapsam dışı**: ilki canlıda mevcut; ikincisi FERPA/COPPA router'ının kaderi ayrı karar (G3 kaldırılmasını öneriyor — KIRO2 Türkiye-only, minor koruması KVKK veli onayı).
+- **Sıra bağımlılığı**: RLS'te GUC beslemesi → kapsam → predicate flip. Ters sıra 153 router dosyasını anında boş sonuca düşürür.
