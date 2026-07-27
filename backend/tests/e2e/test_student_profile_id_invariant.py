@@ -18,36 +18,22 @@ auth.py bir daha bağımsız kimlik üretmeye başlarsa, ilk kayıttan sonra kı
 döner.
 """
 
-import os
-
 import pytest
 import pytest_asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import NullPool
 
+from tests.e2e.pg_dsn import SKIP_REASON, resolve_pg_dsn
+
 pytestmark = pytest.mark.golden_flow
-
-
-def _resolve_dsn() -> str | None:
-    dsn = (
-        os.environ.get("KVKK_VERIFY_DSN")
-        or os.environ.get("DATABASE_URL_SYNC")
-        or os.environ.get("DATABASE_URL")
-    )
-    if not dsn:
-        return None
-    for prefix in ("postgresql+psycopg2://", "postgresql://"):
-        if dsn.startswith(prefix):
-            return dsn.replace(prefix, "postgresql+asyncpg://", 1)
-    return dsn
 
 
 @pytest_asyncio.fixture
 async def db_conn():
-    dsn = _resolve_dsn()
+    dsn = resolve_pg_dsn()
     if not dsn:
-        pytest.skip("KVKK_VERIFY_DSN / DATABASE_URL ayarlı değil")
+        pytest.skip(SKIP_REASON)
 
     engine = create_async_engine(dsn, poolclass=NullPool)
     try:

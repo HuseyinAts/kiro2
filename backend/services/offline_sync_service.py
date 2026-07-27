@@ -15,6 +15,7 @@ from typing import Any
 from sqlalchemy import and_, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
 
 # Import garantisi: SQLAlchemy mapper registry'sine kayit olsun ki Alembic
@@ -116,8 +117,8 @@ async def build_sync_package(
     q_query = (
         select(QuestionBankItem)
         .where(QuestionBankItem.is_active == True)  # noqa: E712
-        # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
-        .where(QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")))
+        # Kalite kapısı — tanım core/quality_gate.py.
+        .where(safe_for_beta_gate(QuestionBankItem.id))
     )
 
     if subject:

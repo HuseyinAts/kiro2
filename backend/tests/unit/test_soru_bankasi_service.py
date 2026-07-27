@@ -993,15 +993,26 @@ class TestEnumDonusturucu:
 
 
 class TestQualityStatusFilterLeak:
-    """Regression: student-facing selection methods MUST filter
-    quality_review_status (auto_judged_high, human_verified), not just
-    is_active. Otherwise unverified/pending/legacy_v3_unaudited questions
-    leak to students (see .claude/rules/testing.md lesson #31).
+    """Regression: öğrenci-yüzü seçim metodları kalite kapısından geçmeli.
 
-    These tests inspect the compiled SQL statement (real query behavior),
-    because the mocked session returns rows regardless of the WHERE clause.
-    soru_getir (ID point-lookup) is intentionally EXCLUDED — it serves
-    already-assigned questions in resume/review flows.
+    27 Tem 2026 — BU TESTLER SESSİZCE KIRMIZIYDI. Convention v3 (12 Haz)
+    kapıyı `quality_review_status IN (...)` literalinden `id IN (SELECT id
+    FROM <safe pool>)` biçimine çevirdi; testler eski stringi aradığı için
+    5'i de FAIL veriyordu ve kimse görmemişti (golden_flow seçimine
+    girmiyorlar). Yani kalite filtresini koruyan bekçi, koruduğu şey
+    değiştiği anda körelmişti.
+
+    Artık iddia iki parçalı ve `core.quality_gate` sabitine bağlı (ad
+    sürüklenirse test de birlikte taşınır):
+      1. WHERE cümlesi kapı ilişkisini içermeli,
+      2. `is_active` filtresi YANINDA durmalı — kapı onun YERİNE geçmez.
+         Matview bayat olabilir; arşivlenen sorunun anında düşmesini
+         sağlayan tek şey canlı `is_active` koşuludur.
+
+    soru_getir (ID nokta-araması) bilinçli olarak HARİÇ — atanmış sorunun
+    resume/review akışını korur.
+
+    Bkz: .claude/rules/testing.md #31, core/quality_gate.py
     """
 
     @staticmethod
@@ -1019,6 +1030,20 @@ class TestQualityStatusFilterLeak:
         mock_session.execute = AsyncMock(side_effect=_exec)
         return captured
 
+    @staticmethod
+    def _assert_gated(captured: list[str], method: str) -> None:
+        """WHERE cümlesi hem kapıyı hem is_active'i taşımalı."""
+        from core.quality_gate import SAFE_POOL_RELATION
+
+        assert any(SAFE_POOL_RELATION in s for s in captured), (
+            f"{method} kalite kapısından geçmiyor "
+            f"(WHERE içinde '{SAFE_POOL_RELATION}' yok): {captured}"
+        )
+        assert any("is_active" in s for s in captured), (
+            f"{method} is_active filtresini kaybetmiş. Kapı is_active'in "
+            f"YERİNE geçmez; bayat matview arşivlenmiş soruyu diriltir: {captured}"
+        )
+
     @pytest.mark.asyncio
     async def test_sorular_listele_filters_quality_status(self, patches, mock_session):
         captured = self._capturing_session(mock_session)
@@ -1027,9 +1052,7 @@ class TestQualityStatusFilterLeak:
         svc = SoruBankasiServisi()
         await svc.sorular_listele(sinav_tipi="TYT")
 
-        assert any("quality_review_status" in s for s in captured), (
-            f"sorular_listele kalite filtresi eksik (leak): {captured}"
-        )
+        self._assert_gated(captured, "sorular_listele")
 
     @pytest.mark.asyncio
     async def test_rastgele_sorular_sec_filters_quality_status(
@@ -1041,9 +1064,7 @@ class TestQualityStatusFilterLeak:
         svc = SoruBankasiServisi()
         await svc.rastgele_sorular_sec(sinav_tipi="TYT", soru_sayisi=5)
 
-        assert any("quality_review_status" in s for s in captured), (
-            f"rastgele_sorular_sec kalite filtresi eksik (leak): {captured}"
-        )
+        self._assert_gated(captured, "rastgele_sorular_sec")
 
     @pytest.mark.asyncio
     async def test_get_exit_quiz_questions_filters_quality_status(
@@ -1055,9 +1076,7 @@ class TestQualityStatusFilterLeak:
         svc = SoruBankasiServisi()
         await svc.get_exit_quiz_questions(subject="Matematik", count=5, exam_type="TYT")
 
-        assert any("quality_review_status" in s for s in captured), (
-            f"get_exit_quiz_questions kalite filtresi eksik (leak): {captured}"
-        )
+        self._assert_gated(captured, "get_exit_quiz_questions")
 
     @pytest.mark.asyncio
     async def test_zorluk_seviyesi_filtrele_filters_quality_status(
@@ -1069,9 +1088,7 @@ class TestQualityStatusFilterLeak:
         svc = SoruBankasiServisi()
         await svc.zorluk_seviyesi_filtrele(ogrenci_yetenek=0.0, sinav_tipi="TYT")
 
-        assert any("quality_review_status" in s for s in captured), (
-            f"zorluk_seviyesi_filtrele kalite filtresi eksik (leak): {captured}"
-        )
+        self._assert_gated(captured, "zorluk_seviyesi_filtrele")
 
     @pytest.mark.asyncio
     async def test_get_interleaved_questions_still_filters(self, patches, mock_session):
@@ -1084,9 +1101,7 @@ class TestQualityStatusFilterLeak:
             subjects=["Matematik"], count=5, exam_type="TYT"
         )
 
-        assert any("quality_review_status" in s for s in captured), (
-            f"get_interleaved_questions kalite filtresi kayboldu: {captured}"
-        )
+        self._assert_gated(captured, "get_interleaved_questions")
 
 
 # ---------------------------------------------------------------------------

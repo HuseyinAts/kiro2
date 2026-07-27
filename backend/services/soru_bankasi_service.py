@@ -20,6 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # PERFORMANCE: Redis cache integration
 from core.cache import cache_manager
 from core.database import db_manager
+from core.quality_gate import safe_for_beta_gate
 from core.turkish_nlp_utils import subject_db
 from models import SinavTipi
 from models.database import ExamType, QuestionDifficulty, SubjectArea
@@ -42,13 +43,14 @@ logger = logging.getLogger(__name__)
 # olarak filtrelenmez — atanmış soruların resume/review akışını korumak için.
 # Bkz: docs/quality_review_status_convention.md, .claude/rules/testing.md #31
 def _safe_for_beta_gate():
-    """student-facing seçim filtresi: yalnız v_safe_for_beta'daki id'ler.
+    """student-facing seçim filtresi — tanım core/quality_gate.py'de.
 
-    Tek doğruluk kaynağı view'dir; status/pipeline_metadata filtreleri kodda
-    replike edilmez. Canlı view (~256ms, planlayıcı inline eder); sonuçlar
-    çağıran tarafta Redis ile cache'lenir.
+    27 Tem 2026: kapı canlı view yerine `mv_safe_for_beta` matview'ini okur
+    (sıcak yol 730-907 ms -> 58-87 ms, EXPLAIN ANALYZE ile ölçüldü) ve tanım
+    tek modüle taşındı; üç dosyada elle yazılan `text("SELECT id FROM ...")`
+    kopyaları ad sürüklenmesine açıktı.
     """
-    return Question.id.in_(text("SELECT id FROM v_safe_for_beta"))
+    return safe_for_beta_gate(Question.id)
 
 
 # Türkçe → UPPERCASE konu dönüşüm haritası (DRY: tek tanım)
