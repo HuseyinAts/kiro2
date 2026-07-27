@@ -221,6 +221,7 @@ mobile/
 agent/
 annotation/
 archive/
+.archive/
 yolo_dataset/
 veriseti/
 !veriseti/
