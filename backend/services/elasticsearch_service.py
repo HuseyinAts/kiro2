@@ -7,6 +7,64 @@ import logging
 from datetime import datetime
 from typing import Any
 
+# Öğrenciye dönebilecek soru alanları — BEYAZ LİSTE.
+#
+# 27 Tem 2026 ÖLÇÜMÜ: seed öğrenci token'ıyla /elasticsearch/questions/search
+# `correct_answer` ve `explanation` döndürüyordu. 64.270/64.270 dokümanda
+# `correct_answer` dolu; yani sınırsız arama + her sonuçta cevap = tüm soru
+# bankasının cevap anahtarı. `explanation` tek başına da yeterliydi, içeriği
+# birebir şuydu: "Doğru cevap: A (Güven: %76, Kaynak: bayes_2of4_orig)" —
+# hem cevabı hem iç pipeline kaynağını.
+#
+# NEDEN BEYAZ LİSTE (kara liste değil): index'e sonradan eklenen her alan
+# kara listede otomatik olarak SIZAR. Beyaz listede otomatik olarak GİZLENİR.
+# Yeni bir alanın öğrenciye açılması bilinçli bir düzenleme gerektirsin.
+#
+# Listede OLMAYAN ve bilinçli dışarıda bırakılanlar:
+#   correct_answer, explanation      -> cevap anahtarı
+#   is_calib_pool, is_calibrated,
+#   quality_score, is_active         -> iç kalite/pipeline sinyalleri
+STUDENT_SAFE_QUESTION_FIELDS = [
+    "id",
+    "question_text",
+    "option_a",
+    "option_b",
+    "option_c",
+    "option_d",
+    "option_e",
+    "subject_area",
+    "primary_topic_id",
+    "exam_type",
+    "difficulty_level",
+    "irt_difficulty",
+    "grade_level",
+    "osym_year",
+    "source_book",
+    "bloom_level",
+    "word_count",
+]
+
+# İçerik aramasının döndürebileceği alanlar.
+#
+# ContentSearchService, SORU index'ini paylaşıyor (ELASTICSEARCH_INDEX aynı) ama
+# orada olmayan alanlarda arıyor (title/description/content/tags) — bu yüzden
+# bugün 0 sonuç dönüyor, ölçüldü. Yani şu an sızdırmıyor; ama index paylaşımı
+# nedeniyle bir gün bir soru dokümanı eşleşirse ham `_source` dışarı çıkardı.
+# Beyaz liste bunu yapısal olarak imkânsız kılar: soru dokümanında bu
+# anahtarların hiçbiri yok, dolayısıyla kaynak boş döner.
+#
+# Asıl düzeltme içeriğin AYRI bir index'e taşınması; o ayrı bir iş.
+CONTENT_SAFE_FIELDS = [
+    "id",
+    "title",
+    "description",
+    "content",
+    "tags",
+    "content_type",
+    "subject",
+    "difficulty_level",
+]
+
 try:
     from core.elasticsearch_client import ElasticsearchClient, SearchResponse
 except ImportError:
@@ -14,12 +72,12 @@ except ImportError:
         from core.elasticsearch_client import ElasticsearchClient, SearchResponse
     except ImportError:
         # Elasticsearch client not available - create mock classes
-        class SearchResponse:
+        class SearchResponse:  # type: ignore[no-redef]
             def __init__(self, hits=None, total=0):
                 self.hits = hits or []
                 self.total = total
 
-        class ElasticsearchClient:
+        class ElasticsearchClient:  # type: ignore[no-redef]
             def __init__(self):
                 pass
 
@@ -41,7 +99,7 @@ except ImportError:
         from models.database import User
     except ImportError:
         # Mock User class for testing
-        class User:
+        class User:  # type: ignore[no-redef]
             def __init__(self):
                 self.id = None
 
@@ -55,7 +113,10 @@ class QuestionSearchService:
     def __init__(self, es_client: ElasticsearchClient):
         self.es_client = es_client
         import os as _os
-        self.index_name = _os.environ.get("ELASTICSEARCH_INDEX", "turkiye_sinav_platform")
+
+        self.index_name = _os.environ.get(
+            "ELASTICSEARCH_INDEX", "turkiye_sinav_platform"
+        )
 
         # Soru indeks mapping'i
         self.question_mapping = {
@@ -96,7 +157,7 @@ class QuestionSearchService:
             if success:
                 logger.info(f"Soru indeksi başlatıldı: {self.index_name}")
 
-            return success
+            return success  # type: ignore[no-any-return]
 
         except Exception as e:
             logger.error(f"Soru indeksi başlatma hatası: {e!s}", exc_info=True)
@@ -121,7 +182,7 @@ class QuestionSearchService:
                 "updated_at": question.get("updated_at"),
             }
 
-            return await self.es_client.index_document(
+            return await self.es_client.index_document(  # type: ignore[no-any-return]
                 index_name=self.index_name,
                 document=doc,
                 doc_id=str(question.get("id", "")),
@@ -153,7 +214,7 @@ class QuestionSearchService:
                 }
                 documents.append(doc)
 
-            return await self.es_client.bulk_index(
+            return await self.es_client.bulk_index(  # type: ignore[no-any-return]
                 index_name=self.index_name, documents=documents, id_field="id"
             )
 
@@ -184,11 +245,29 @@ class QuestionSearchService:
 
         # Zorluk aralığı filtresi
         if difficulty_range:
-            min_diff, max_diff = difficulty_range
+            # `_` öneki bilinçli, bastırma yorumu KULLANILAMIYOR: pre-commit'in
+            # pinlediği ruff 0.7.1 bu kuralı tanımıyor, bastırma yorumunu
+            # "kullanılmayan" sayıp RUF100 ile siliyor; yerel yeni ruff tekrar
+            # istiyor — sonsuz salınım (bkz. commit 8e5011a3d, aynı tuzak).
+            # NOT: kuralın kodu bu yoruma BİLEREK yazılmadı — ruff onu düz
+            # metinde bile gerçek direktif sanıp cümleyi ortadan kesti.
+            _min_diff, _max_diff = difficulty_range
             # Range query için özel işlem gerekli
+            # 27 Tem 2026: bu iki değişken hiçbir yerde kullanılmıyor, yani
+            # difficulty_min/max API parametreleri fiilen YOK SAYILIYOR.
+            # `aggs` ile aynı sınıf: yarım kalmış özellik. Silmiyoruz —
+            # silmek çağıranın beklentisiyle gerçek arasındaki farkı gizler.
 
-        # Arama alanları
-        search_fields = ["question_text^3", "option_a", "option_b", "option_c", "option_d", "option_e", "explanation"]
+        # Arama alanları — `explanation` BİLİNÇLİ OLARAK YOK (bkz.
+        # STUDENT_SAFE_QUESTION_FIELDS açıklaması).
+        search_fields = [
+            "question_text^3",
+            "option_a",
+            "option_b",
+            "option_c",
+            "option_d",
+            "option_e",
+        ]
 
         return await self.es_client.turkish_full_text_search(
             index_name=self.index_name,
@@ -197,6 +276,7 @@ class QuestionSearchService:
             size=size,
             from_=from_,
             filters=filters,
+            source_includes=STUDENT_SAFE_QUESTION_FIELDS,
         )
 
     async def get_similar_questions(
@@ -226,7 +306,10 @@ class QuestionSearchService:
             }
 
             return await self.es_client.search(
-                index_name=self.index_name, query=query, size=size
+                index_name=self.index_name,
+                query=query,
+                size=size,
+                source_includes=STUDENT_SAFE_QUESTION_FIELDS,
             )
 
         except Exception as e:
@@ -242,7 +325,10 @@ class ContentSearchService:
     def __init__(self, es_client: ElasticsearchClient):
         self.es_client = es_client
         import os as _os
-        self.index_name = _os.environ.get("ELASTICSEARCH_INDEX", "turkiye_sinav_platform")
+
+        self.index_name = _os.environ.get(
+            "ELASTICSEARCH_INDEX", "turkiye_sinav_platform"
+        )
 
         # İçerik indeks mapping'i
         self.content_mapping = {
@@ -282,7 +368,7 @@ class ContentSearchService:
             if success:
                 logger.info(f"İçerik indeksi başlatıldı: {self.index_name}")
 
-            return success
+            return success  # type: ignore[no-any-return]
 
         except Exception as e:
             logger.error(f"İçerik indeksi başlatma hatası: {e!s}", exc_info=True)
@@ -291,7 +377,7 @@ class ContentSearchService:
     async def index_content(self, content: dict[str, Any]) -> bool:
         """İçeriği indeksle"""
         try:
-            return await self.es_client.index_document(
+            return await self.es_client.index_document(  # type: ignore[no-any-return]
                 index_name=self.index_name, document=content, doc_id=content.get("id")
             )
 
@@ -329,6 +415,7 @@ class ContentSearchService:
             size=size,
             from_=from_,
             filters=filters,
+            source_includes=CONTENT_SAFE_FIELDS,
         )
 
 
@@ -371,7 +458,7 @@ class AnalyticsService:
             if success:
                 logger.info(f"Analytics indeksi başlatıldı: {index_name}")
 
-            return success
+            return success  # type: ignore[no-any-return]
 
         except Exception as e:
             logger.error(f"Analytics indeksi başlatma hatası: {e!s}", exc_info=True)
@@ -400,7 +487,7 @@ class AnalyticsService:
                 **kwargs,
             }
 
-            return await self.es_client.index_document(
+            return await self.es_client.index_document(  # type: ignore[no-any-return]
                 index_name=index_name, document=event_doc
             )
 
@@ -431,7 +518,7 @@ class AnalyticsService:
             }
 
             # Aggregations
-            aggs = {
+            aggs = {  # noqa: F841 — hiç kullanılmıyor: search() aggs almıyor, özellik yarım (bkz. 'Bu kısım düzeltilmeli')
                 "event_types": {"terms": {"field": "event_type"}},
                 "daily_activity": {
                     "date_histogram": {"field": "timestamp", "calendar_interval": "day"}
@@ -639,7 +726,7 @@ elasticsearch_service: ElasticsearchService | None = None
 
 async def get_elasticsearch_service() -> ElasticsearchService:
     """Elasticsearch service dependency"""
-    global elasticsearch_service
+    global elasticsearch_service  # noqa: PLW0603 — modül-tekil servis, bilinçli
 
     if not elasticsearch_service:
         from core.elasticsearch_client import get_elasticsearch_client

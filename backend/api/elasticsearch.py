@@ -14,6 +14,8 @@ try:
     from core.auth_dependencies import require_role
     from core.dependencies import AuthenticatedUser, UserRole, get_current_user
     from services.elasticsearch_service import (
+        CONTENT_SAFE_FIELDS,
+        STUDENT_SAFE_QUESTION_FIELDS,
         ElasticsearchService,
         get_elasticsearch_service,
     )
@@ -22,11 +24,17 @@ except ImportError:
     from core.auth_dependencies import require_role
     from core.dependencies import AuthenticatedUser, UserRole, get_current_user
     from services.elasticsearch_service import (
+        STUDENT_SAFE_QUESTION_FIELDS,
         ElasticsearchService,
         get_elasticsearch_service,
     )
 
 logger = logging.getLogger(__name__)
+
+# Servisteki beyaz listenin uç-katman kopyası. Tek tanım noktası servis;
+# burası yalnız o listeye göre süzer (bkz. arama yanıtındaki açıklama).
+_STUDENT_SAFE_FIELD_SET = frozenset(STUDENT_SAFE_QUESTION_FIELDS)
+_CONTENT_SAFE_FIELD_SET = frozenset(CONTENT_SAFE_FIELDS)
 
 router = APIRouter(prefix="/api/v1/elasticsearch", tags=["elasticsearch"])
 
@@ -150,7 +158,15 @@ async def search_questions(
                 {
                     "id": result.get("id", result.get("_id", "")),
                     "score": result.get("_score"),
-                    "source": result,
+                    # İKİNCİ KATMAN. Asıl kesme ES sorgusunda yapılıyor
+                    # (STUDENT_SAFE_QUESTION_FIELDS -> source_includes), ama
+                    # `"source": result` demek "servis ne verirse aynen aktar"
+                    # demekti; sızıntı tam olarak böyle oluştu. Burada da
+                    # süzerek, servis tarafında ileride yapılacak bir hatanın
+                    # doğrudan uca ulaşmasını engelliyoruz.
+                    "source": {
+                        k: v for k, v in result.items() if k in _STUDENT_SAFE_FIELD_SET
+                    },
                     "highlight": result.get("highlight", {}),
                 }
                 for result in search_result.results
@@ -161,7 +177,9 @@ async def search_questions(
         raise
     except Exception as e:
         logger.error(f"Soru arama hatası: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 @router.get("/questions/{question_id}/similar", response_model=SearchResponse)
@@ -193,7 +211,15 @@ async def get_similar_questions(
             max_score=search_result.max_score,
             took=search_result.took,
             results=[
-                {"id": result.get("id", result.get("_id", "")), "score": result.get("_score"), "source": result}
+                {
+                    "id": result.get("id", result.get("_id", "")),
+                    "score": result.get("_score"),
+                    # /similar de aynı sızıntıyı taşıyordu — canlı ölçümde
+                    # correct_answer='A' dönüyordu. Arama ucuyla aynı süzgeç.
+                    "source": {
+                        k: v for k, v in result.items() if k in _STUDENT_SAFE_FIELD_SET
+                    },
+                }
                 for result in search_result.results
             ],
         )
@@ -253,7 +279,12 @@ async def search_content(
                 {
                     "id": result.get("id", result.get("_id", "")),
                     "score": result.get("_score"),
-                    "source": result,
+                    # İçerik servisi SORU index'ini paylaşıyor. Bugün 0 sonuç
+                    # dönüyor (aradığı alanlar mapping'de yok, ölçüldü) ama bir
+                    # soru dokümanı eşleşirse ham _source dışarı çıkardı.
+                    "source": {
+                        k: v for k, v in result.items() if k in _CONTENT_SAFE_FIELD_SET
+                    },
                     "highlight": result.get("highlight", {}),
                 }
                 for result in search_result.results
@@ -264,7 +295,9 @@ async def search_content(
         raise
     except Exception as e:
         logger.error(f"İçerik arama hatası: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # Analytics endpoint'leri
@@ -281,9 +314,10 @@ async def get_user_analytics(
     Son N gün içindeki kullanıcı aktivitelerini analiz eder
     """
     try:
-        if str(current_user.id) != str(
-            user_id
-        ) and current_user.role not in _ES_USER_ANALYTICS_STAFF:
+        if (
+            str(current_user.id) != str(user_id)
+            and current_user.role not in _ES_USER_ANALYTICS_STAFF
+        ):
             raise HTTPException(
                 status_code=403, detail="Bu verilere erişim yetkiniz yok"
             )
@@ -310,7 +344,9 @@ async def get_user_analytics(
         raise
     except Exception as e:
         logger.error(f"Analytics getirme hatası: {e!s}")
-        raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+        raise HTTPException(
+            status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+        )
 
 
 # Admin endpoint'leri
@@ -324,7 +360,6 @@ async def reindex_questions(
     Soru bankasını yeniden indeksle (Admin only)
     """
     try:
-
         # İndeksi yeniden oluştur
         success = await es_service.question_service.initialize_index()
 
@@ -408,7 +443,13 @@ async def reindex_questions(
                                 {
                                     "question_id": question.id,
                                     "stem": question.question_text,
-                                    "options": {"A": question.option_a, "B": question.option_b, "C": question.option_c, "D": question.option_d, "E": question.option_e},
+                                    "options": {
+                                        "A": question.option_a,
+                                        "B": question.option_b,
+                                        "C": question.option_c,
+                                        "D": question.option_d,
+                                        "E": question.option_e,
+                                    },
                                     "correct_answer": question.correct_answer,
                                     "explanation": question.explanation or "",
                                     "subject": question.subject_area,
