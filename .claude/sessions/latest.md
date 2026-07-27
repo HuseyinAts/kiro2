@@ -22,6 +22,10 @@
   - **misafir kalıcı yazım: 6 tabloda da 0 satır** (kiro2_cat_sessions, student_abilities, xp_transactions, user_theta, kiro2_learning_events, streaks)
   - Redis'te `cat:active:guest:<uuid>:MATEMATIK` mevcut → misafir kimliği korunuyor (oturum sızıntısı fix'i canlı doğrulandı)
 
+- **Sessiz-404 sınıfı KAPATILDI** `66154afc5` + `fe7fafc9f` — `api/alternative_solutions_api.py` 4 fonksiyonda defaultsuz-parametre-defaultludan-sonra → SyntaxError → router hiç yüklenmiyordu (**8 endpoint 404**). Fix + `tests/test_router_registration.py::test_mapped_routers_are_importable` (ROUTER_MAPPING'deki her modülü gerçekten import eder). **Mutasyon testiyle kanıtlandı**: iki hata sınıfında da (SyntaxError · FastAPI 204 assert) bozunca KIRMIZI, düzeltince YEŞİL.
+- **Image kalıcılaştırıldı** — `docker compose build backend` + `up -d --no-deps` (image 2026-07-27T04:15). `docker cp` yaması artık yok; rebuild sonrası `/api/v1/cat/next` **200**, `/api/v1/questions/alternatives/health` **200**, loglarda import hatası **yok**.
+- **CAT 204 hatasının gerçek mekanizması**: `-> None` TEK BAŞINA yetmiyor; `from __future__ import annotations` ile BİRLİKTE gerekiyor (ölçüldü). cat.py'deki uyarı yorumu düzeltildi.
+
 ### Fail Eden Testler
 - YOK. 34/34 yeni + bağımlı modüller dahil 166/166 pass. Ruff: değişen satırlarda 0 (kalan 2 B905 `_persist_session_to_db` pre-existing).
 
