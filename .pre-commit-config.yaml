@@ -169,14 +169,32 @@ repos:
         stages: [pre-commit]
         verbose: true
 
-      - id: pytest-changed
-        name: Pytest on changed files
-        entry: pytest
+      # SON SAVUNMA HATTI — push edilen ARALIĞIN TAMAMINDA sır taraması.
+      #
+      # 28 Tem 2026: depo GitHub'da PUBLIC (auth'suz API 200 ile doğrulandı).
+      # İçeriğin geri alınamaz biçimde kamuya çıktığı an push'tur, commit değil;
+      # commit bekçisi bir gün yine sessizce ölürse (27 Tem'de tam olarak bu
+      # oldu, 12 anahtar o pencerede geçmişe girdi) bu kapı yakalar.
+      #
+      # `pass_filenames: false` + `always_run: true`: aralık bilgisi stdin'den
+      # geliyor, dosya listesinden değil.
+      - id: push-secret-guard
+        name: Push edilen aralıkta sır taraması
+        entry: python backend/hooks/push_secret_guard.py
         language: system
         pass_filenames: false
-        always_run: false
+        always_run: true
         stages: [pre-push]
-        args: [-x, --tb=short, -q, backend/tests/]
+        verbose: true
+
+      # KALDIRILDI (28 Tem 2026): `pytest -x --tb=short -q backend/tests/`
+      #
+      # Bu kapı hiç koşmamıştı (pre-push hook'u ölüydü) ve koşsaydı da
+      # yürütülebilir değildi: 16.743 test + `-x` demek, bilinen tek bir
+      # pre-existing fail'in HER push'u bloke etmesi demek. Böyle bir kapının
+      # tek sonucu `--no-verify`'ın alışkanlığa dönüşmesidir — bu depoda sır
+      # tarayıcısının fiilen kapanmasının hikâyesi tam olarak budur.
+      # Tam paket CI'ın işi; pre-push dar ve hızlı kalmalı.
 
       - id: reward-hacking-check
         name: Reward Hacking Prevention (Daisy Stanton Standards)
@@ -210,6 +228,20 @@ repos:
         stages: [commit-msg]
 
 # Configuration
+
+# 28 Tem 2026 — ZORUNLU. pre-commit'te `stages:` belirtilmeyen bir hook
+# TÜM aşamalarda koşar. Bu config'deki hook'ların çoğunda `stages:` yok, yani
+# pre-push hook'u onarılır onarılmaz biçimlendiriciler/linter'lar da push'ta
+# koşmaya başladı ve push, depoda önceden var olan sorunlara takıldı
+# (`openapi.json` UTF-16 olduğu için check-json çöküyor).
+#
+# Böyle bir kapının tek sonucu `--no-verify`'ın alışkanlığa dönüşmesidir —
+# bu depoda sır tarayıcısının fiilen kapanma hikâyesi tam olarak budur.
+# Bu yüzden varsayılan aşama pre-commit'e sabitlendi; push'ta YALNIZ
+# `stages: [pre-push]` diyen hook'lar koşar (şu an: push-secret-guard,
+# reward-hacking-check).
+default_stages: [pre-commit]
+
 default_language_version:
   # 27 Tem 2026: 'python3.11' pin'lenmişti ama o yorumlayıcı bu makinede YOK
   # (PEP-514 registry kaydı bozuk: HKCU/PythonCore/3.11 var olmayan exe'yi
