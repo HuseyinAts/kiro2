@@ -14,6 +14,14 @@
 
 - **Görsel + a11y doğrulama** `53c9c3762` — Storybook `Formullu` story (gerçek DB dizeleri) + Chromium ölçümü. **Bulgu:** KaTeX MathML `<annotation>` ham TeX'i erişilebilir ada sokuyordu (4 şıkkın 2'si); `.k-math .katex annotation{display:none}` ile 2→0. Ayrıca doğrulandı: iç içe `<p>`=0, 390px'te taşma YOK, buton 58px, `.katex` 20.57px=1.21×17px.
 
+- **CANLI E2E `/api/v1/cat/next`** — Docker stack (27 Tem 04:0x). Image 2026-07-04 tarihliydi → 404; kanonik döngü (docker cp 4 dosya + pyc temizlik + restart + 22sn) ile yamalandı. Sonuçlar:
+  - misafir ilk çağrı **200** (auth YOK), `Set-Cookie: cat_sid=…; HttpOnly; Max-Age=3600; Path=/api/v1/cat; SameSite=lax` (dev'de Secure yok — doğru), gerçek havuzdan madde (`konu=Geometri`, 5 şık), **`dogru` sızıntısı YOK**
+  - **oracle denemesi (yabancı maddeId) → 409** ✓ P0 fix canlıda çalışıyor
+  - gerçek cevap → 200, madde=1, θ=0.2706 SE=0.9538 güvenilirlik %9 kalan=11
+  - **omit (secim=null)** → madde ARTMADI (1), θ **DEĞİŞMEDİ** (0.2706→0.2706), bütçe 11→10 ✓ tasarım birebir
+  - **misafir kalıcı yazım: 6 tabloda da 0 satır** (kiro2_cat_sessions, student_abilities, xp_transactions, user_theta, kiro2_learning_events, streaks)
+  - Redis'te `cat:active:guest:<uuid>:MATEMATIK` mevcut → misafir kimliği korunuyor (oturum sızıntısı fix'i canlı doğrulandı)
+
 ### Fail Eden Testler
 - YOK. 34/34 yeni + bağımlı modüller dahil 166/166 pass. Ruff: değişen satırlarda 0 (kalan 2 B905 `_persist_session_to_db` pre-existing).
 
@@ -23,7 +31,7 @@
 - Adversarial 37 bulgunun P0/P1'leri kapatıldı; kalan P2'ler (SE çubuğu ekranda %0'da çakılı, "tahmin yeterince kararlı" metni gerçek dışı, kalibre edilmemiş parametreler üzerinden nüfus-referanslı iddialar) **ekran/kalibrasyon işi** — backend adaptörü değil.
 
 ### Sonraki Adimlar (maks 5)
-1. **Canlı backend E2E** — Redis+Docker kalkınca `/api/v1/cat/next` gerçek havuzla smoke (misafir çerezi + oracle 409 + omit yolu). Görsel/a11y doğrulaması TAMAM (Storybook+Chromium).
+1. **`docker compose build backend`** — canlı doğrulama `docker cp` ile yapıldı, GEÇİCİ. Container yeniden yaratılırsa 2026-07-04 image'ına döner ve `/cat/next` yine 404 olur. Kod git'te, rebuild kalıcılaştırır.
 2. **Görev 2 Offline** — SW+IndexedDB çöz-döngüsü (ürün-fork).
 3. **IRT kalibrasyonu** — panel iddiaları (üst %X, N net, seviye) bootstrap parametreler üzerinde; gerçek kalibrasyon ayrı iş.
 
