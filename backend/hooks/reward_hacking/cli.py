@@ -19,6 +19,17 @@ import json
 import sys
 from pathlib import Path
 
+# 28 Tem 2026 — bu hook pre-push'ta HER ZAMAN çöküyordu:
+#   Error: 'charmap' codec can't encode character '✅'
+# Rapor çıktısı ✅ / ❌ kullanıyor, Windows konsolu ise cp1254. Sonuç: hook
+# hiç sonuç veremiyor, exit 1 ile düşüyor ve HER push'u bloke ediyor —
+# yani bekçi "hep kırmızı" olduğu için fiilen bypass'a zorluyordu.
+# CLAUDE.md'de belgelenmiş Windows kuralı: stdout'u UTF-8'e sabitle.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 from .hook_manager import HookManager
 from .models.detection_result import GlobalConfig
 
@@ -28,39 +39,31 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="reward-hacking-check",
         description="Detect reward hacking patterns in code files",
-        epilog="Exit codes: 0=clean, 1=warning, 2=critical (blocks commit)"
+        epilog="Exit codes: 0=clean, 1=warning, 2=critical (blocks commit)",
     )
 
-    parser.add_argument(
-        "files",
-        nargs="+",
-        help="Files or directories to analyze"
-    )
+    parser.add_argument("files", nargs="+", help="Files or directories to analyze")
 
     parser.add_argument(
-        "-c", "--config",
+        "-c",
+        "--config",
         type=str,
         default=None,
-        help="Path to custom configuration file (YAML/JSON)"
+        help="Path to custom configuration file (YAML/JSON)",
     )
 
     parser.add_argument(
-        "-v", "--verbose",
-        action="store_true",
-        help="Enable verbose output"
+        "-v", "--verbose", action="store_true", help="Enable verbose output"
     )
 
     parser.add_argument(
-        "--json",
-        action="store_true",
-        dest="json_output",
-        help="Output results as JSON"
+        "--json", action="store_true", dest="json_output", help="Output results as JSON"
     )
 
     parser.add_argument(
         "--fail-on-warning",
         action="store_true",
-        help="Exit with code 2 on warnings (not just critical)"
+        help="Exit with code 2 on warnings (not just critical)",
     )
 
     parser.add_argument(
@@ -68,7 +71,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=str,
         action="append",
         default=[],
-        help="Disable specific detector(s) by name"
+        help="Disable specific detector(s) by name",
     )
 
     parser.add_argument(
@@ -76,27 +79,27 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=str,
         action="append",
         default=[],
-        help="Enable only specific detector(s)"
+        help="Enable only specific detector(s)",
     )
 
     parser.add_argument(
         "--timeout",
         type=float,
         default=30.0,
-        help="Timeout per file in seconds (default: 30)"
+        help="Timeout per file in seconds (default: 30)",
     )
 
     parser.add_argument(
         "--max-files",
         type=int,
         default=100,
-        help="Maximum number of files to analyze (default: 100)"
+        help="Maximum number of files to analyze (default: 100)",
     )
 
     parser.add_argument(
         "--list-detectors",
         action="store_true",
-        help="List all available detectors and exit"
+        help="List all available detectors and exit",
     )
 
     return parser.parse_args(argv)
@@ -124,8 +127,11 @@ def collect_files(paths: list[str]) -> list[str]:
             for ext in HookManager.SUPPORTED_EXTENSIONS:
                 for file in path.rglob(f"*{ext}"):
                     # Skip common excluded directories
-                    if any(part.startswith('.') or part in ('node_modules', '__pycache__', 'venv', '.venv')
-                           for part in file.parts):
+                    if any(
+                        part.startswith(".")
+                        or part in ("node_modules", "__pycache__", "venv", ".venv")
+                        for part in file.parts
+                    ):
                         continue
                     files.append(str(file.absolute()))
 
@@ -153,8 +159,9 @@ def load_config(config_path: str | None) -> GlobalConfig:
     try:
         content = path.read_text()
 
-        if path.suffix in ('.yml', '.yaml'):
+        if path.suffix in (".yml", ".yaml"):
             import yaml
+
             data = yaml.safe_load(content)
         else:
             data = json.loads(content)
@@ -166,9 +173,15 @@ def load_config(config_path: str | None) -> GlobalConfig:
         return GlobalConfig()
 
 
-async def main_async(args: argparse.Namespace) -> int:
+async def main_async(args: argparse.Namespace) -> int:  # noqa: PLR0912
     """
     Async main function.
+
+    Dal sayısı eşiği bilinçli aşılıyor (28 Tem 2026): bu bir CLI argüman
+    dağıtıcısı, dallanma doğası gereği. Kural bu dosyaya ilk kez koştu —
+    encoding düzeltmesi için dosyaya dokununca ortaya çıktı, yani önceden
+    var olan bir durum. Bölmek davranışı değiştirme riski taşır ve bu
+    commit'in konusu değil.
 
     Args:
         args: Parsed arguments
@@ -244,7 +257,7 @@ async def main_async(args: argparse.Namespace) -> int:
                     "confidence": r.confidence,
                 }
                 for r in result.results
-            ]
+            ],
         }
         print(json.dumps(output, indent=2))
     else:
