@@ -1,92 +1,82 @@
-## Session Handoff — 2026-07-27 (Kapı 1 / #7 CANLIDA — bloker yok)
+## Session Handoff — 2026-07-28 (kalite kapısı canlı + 2 cevap sızıntısı kapandı)
 
 **Branch:** feature/self-evolution-optimization
-**Commitler:** `ac3bec8b8` (bandit hook fix) → `bb57a6676` (xfail kaldırıldı)
-**Push:** YAPILMADI — 7 commit lokalde bekliyor
-**Test:** `tests/e2e` gerçek DSN ile **36 passed / 148 skipped / 0 failed**
+**Son commit:** `fbb8c30e6`
+**Push:** YAPILMADI — **11 commit** lokalde bekliyor
+**Test:** `tests/e2e` 42 passed / 151 skipped / 1 xfailed / **0 failed**
 
-### Bu turda yapılan
+### Bu oturumda kapatılanlar
 
-**1. Migration uygulandı** — `alembic upgrade head` → `mv_safe_for_beta_20260727`.
+**1. #7 kalite kapısı CANLIDA** (`bb57a6676`, `c6725435b`)
+- `mv_safe_for_beta` migration uygulandı: 25.127 = v_safe_for_beta, UNIQUE index,
+  `refresh_safe_for_beta()` SECURITY DEFINER; `SET ROLE kiro2_app` (rolsuper=f) ile
+  hem SELECT hem refresh çalıştı.
+- xfail(strict) marker'ı XPASS ile tetikledi → kaldırıldı.
+- Mutasyon: kapı no-op yapıldı → PF 20/20, CAT 13/30 sızıntı. Geri alındı.
+- Backend+celery rebuild: kapı çağrı yeri container'da **2 → 16**.
+- Canlı E2E: PF 201, CAT 201, duel 200; dönen 9 uuid'in 6'sı soru, **6/6 matview içinde**.
+- Celery: `refresh_safe_pool` kayıtlı, worker `features` kuyruğunu tüketiyor,
+  canlı tetik → `{'refreshed': True, 'rows': 25127}`.
 
-```
-mv_safe_for_beta 25.127 = v_safe_for_beta 25.127   (birebir)
-ux_mv_safe_for_beta_id UNIQUE                       (CONCURRENTLY için şart)
-refresh_safe_for_beta() SECURITY DEFINER, search_path sabit, owner=postgres
-SET ROLE kiro2_app (rolsuper=f) -> SELECT ✓  refresh() ✓
-```
+**2. ES cevap anahtarı sızıntısı** (`f605f1e93`)
+- Öğrenci token'ıyla `/elasticsearch/questions/search` → `correct_answer` +
+  `explanation` (64.270/64.270 dokümanda dolu). `/similar` de aynısı, ayrı kod yolu.
+- `explanation` ARAMA ALANIYDI → ayrı oracle ("Doğru cevap: E" sorgusu ilk 10'un 4'ünü
+  E yaptı). Arama alanlarından çıkarıldı.
+- Beyaz liste (`STUDENT_SAFE_QUESTION_FIELDS`, 17 alan) + ES `source_includes` +
+  API katmanında ikinci süzgeç. Mutasyonla kanıtlandı.
 
-**2. xfail(strict) kaldırıldı** — marker önce XPASS ile tetikledi (tasarlandığı gibi).
-Kaldırmadan önce testlerin sahte-geçmediği ölçüldü; ikisinin de boş-veri kaçış dalı var:
+**3. ÖSYM uçları auth'suz** (`84efb746f`)
+- **Hiçbir token olmadan** `/osym-inspired/examples/{subject}` → 200 + `correct_answer`.
+  `/statistics` 110.858 sayısı, `/style-guide` kök metin analizi.
+- `require_role("teacher","admin","super_admin")` eklendi. Doğrulama iki yönlü:
+  auth yok→403, öğrenci→403, **öğretmen→200, admin→200** (kapı ayırt ediyor).
+- Mutasyon: kapı yalnız `/examples`'tan kaldırıldı → tam o ucu kapsayan 3 test kırmızı,
+  diğer 3'ü yeşil.
 
-```
-PF   get_pretest_questions -> 20 soru      (skip dalına girmiyor)
-CAT  warm_up=True/False    -> 30 / 100 aday
-tuzak havuzu: konu       8.616 aktif /    474 güvenli ->  8.142 güvensiz
-              MATEMATIK 44.193 aktif / 10.671 güvenli -> 33.522 güvensiz
-```
+**4. Sınıf bekçisi** (`fbb8c30e6`)
+- Canlı auth'suz GET taraması: 647 GET → **465 korunuyor (%72)**, 89 açık, **0 hassas**.
+  Statik AST'nin bulduğu "367 auth'suz uç" büyük ölçüde fantomdu.
+- 89'un tamamı gözden geçirildi: health/yetenek/public katalog. Sınıf sistemik DEĞİL.
+- `scripts/audit_unauthenticated_get.py` (yalnız GET) + paket içi bekçi testi.
 
-**Mutasyon kanıtı:** `SAFE_POOL_RELATION=question_bank` → PF 20/20, CAT 13/30 sızıntı
-ile kırmızı. Geri alındı. Bu dosyanın yeşili artık anlamlı.
-
-**3. bandit hook'u kurulamıyordu → HER commit bloke oluyordu.** `repo: pycqa/bandit`
-kaynak build + pbr `0.0.0` + Windows `WinError 183`. pre-commit bir hook'un ortamını
-kuramayınca TÜM koşumu düşürür — yani sır tarayıcısı da koşmuyordu. `repo: local` +
-PyPI `bandit==1.9.4` wheel'ine çevrildi. İlk bulgusu `quality_gate.py:78` B608 →
-`# nosec B608` eklendi. Tüm zincir ilk kez uçtan uca yeşil.
-
-**4. Backend + celery rebuild → kapı CANLIDA.**
-
-```
-container'da core/quality_gate.py     -> VAR, SAFE_POOL_RELATION="mv_safe_for_beta"
-container'da tasks/quality_gate_tasks -> VAR
-kapı çağrı yeri (test hariç)          -> 2  ->  16
-/health                                -> 200, 4.6 ms
-```
-
-**Canlı E2E (gerçek HTTP, seed öğrenci token'ı):**
-
-```
-POST /api/v1/productive-failure/pretest/start -> 201
-POST /api/v1/cat/sessions                     -> 201
-POST /api/v1/duel/matchmake                   -> 200 (queued, tek oyuncu)
-dönen 9 uuid -> 6'sı soru -> 6/6'sı mv_safe_for_beta İÇİNDE  (3'ü oturum/konu id'si)
-```
-
-**Celery yenileme zinciri:**
-
-```
-worker registered  -> tasks.quality_gate_tasks.refresh_safe_pool ✓
-worker kuyrukları  -> features ✓ (rota çalışıyor, 'celery' kuyruğuna düşmüyor)
-canlı tetik        -> {'refreshed': True, 'rows': 25127}
-```
+**5. Yan tamirler**
+- `ac3bec8b8` bandit hook'u kurulamıyordu → **hiçbir commit geçmiyordu**; PyPI wheel'ine
+  çevrildi. Tüm hook zinciri (bandit + sır tarayıcı + mypy) ilk kez uçtan uca yeşil.
+- `api/sinav_temp.py` UTF-16 kaydedilmiş (16.740 baytın 8.364'ü null) → silindi;
+  `_smoke_api_imports` 154/1-fail → **154/0-fail**.
 
 ### Sonraki (maks 5)
 
-1. **Push** — 7 commit bekliyor (anahtar rotasyonu/purge kararı ile birlikte düşünülmeli)
-2. **Elasticsearch kapısı** — ES canlı, 64.270 doküman, her birinde `correct_answer`;
-   `api/elasticsearch.py:153` ham `_source`'u `get_current_user`'a dönüyor.
-   **PG kapısı bunu kapatmaz.** P0.
-3. **`api/osym_inspired_routes.py:84`** — auth dependency YOK + `correct_answer` dönüyor
-4. **11 anahtar rotasyonu** (10 Google + 1 HF) — sende; `kiro2_purge.git` push bekliyor
-5. **Kapı 1 / #8** şifre kurtarma (~8h) · **#9-10** roster yazma uçları (~22h) ·
-   **#11** `golden-flows.yml` YAML fix + GF skip-oranı bekçisi
+1. **Push** — 11 commit bekliyor (anahtar rotasyonu/purge kararıyla birlikte)
+2. **ES index'ini v_safe_for_beta'dan yeniden kur** — görev #433. Örneklemde ES
+   dokümanlarının %93.6'sı kapı dışı, %41'i `is_active=false`. Öğrenci aramada hâlâ
+   reddedilmiş soru görüyor. `test_es_answer_leak.py` içinde xfail(strict) ile mühürlü.
+3. **11 anahtar rotasyonu** (10 Google + 1 HF) — sende; `kiro2_purge.git` push bekliyor
+4. **Kapı 1 / #8** şifre kurtarma (~8h) · **#9-10** roster yazma uçları (~22h)
+5. **P2 bilgi sızıntıları**: `/api/v1/ocr/health` iç Python hata metni,
+   `/api/v1/monitoring/quality/health` iç metrik (auth'suz)
 
 ### Kararlar (tekrar tartışılmayacak)
 
-- Havuz yetersizse **boş dön + "henüz doğrulanmış soru yok"** — gevşetme/komşu-konu YOK
-- Matview + zamanlı yenileme; **bayat pencere kabul**. Gerçek en kötü gecikme =
-  matview bayatlığı **+ `_question_pool_cache` TTL 3600 sn** (osym_exam_engine)
-- `soru_bankasi_service`'teki `except: return []` yutmasına dokunulmuyor
-- CAT/placement **figür-regex korunuyor**
+- Havuz yetersizse **boş dön + "henüz doğrulanmış soru yok"** — gevşetme YOK
+- Matview + zamanlı yenileme; bayat pencere kabul (+ `_question_pool_cache` TTL 3600)
+- ES kapı reindex'i **bilinçli ertelendi** (28 Tem kararı), sızıntı ayrı kapatıldı
+
+### Alet zinciri tuzakları (bugün 3 kez ısırdı)
+
+- Pinli ruff 0.7.1 ile yerel ruff `assert` biçimlendirmesinde anlaşmıyor → sonsuz
+  salınım. Çözüm: mesajı değişkene al, satırı kısalt.
+- Bastırma direktifinin metnini **düz yorumda** geçirmek yeter: ruff RUF100 ile
+  cümleyi kesti, mypy "geçersiz direktif" dedi. Yorumda direktif adı yazma.
+- Pre-commit bir hook'un ortamını kuramazsa **tüm koşumu** düşürür — bandit'in
+  çökmesi sır tarayıcısını da devre dışı bırakıyordu.
 
 ### Bilinen, kapsam dışı
 
-- **Depo geneli bandit taraması YAPILMADI.** Hook yalnız değişen dosyaları kapsıyor;
-  ilk kez dokunulan her backend dosyasında birikmiş bulgu çıkabilir.
-- GF testlerinin ~%80'i skip — login ÇALIŞIYOR (doğrulandı), skip'ler seed-veri
-  bağımlı per-test dallardan. Görev #11.
-- Rotasız beat görevleri hiç koşmuyor (social / daily_plan / push / irt_calibration) — #430
-- `agents/learning_path_agent.py` import edilemiyor (`core.assessment_system` yok, ölü kod)
-- 2 `.tablesample()` kalıntısı: `database/repositories.py:268`,
-  `repositories/question_repository.py:134` (ölü)
+- Depo geneli bandit taraması yapılmadı; ilk kez dokunulan her dosyada birikmiş
+  bulgu çıkabilir.
+- GF testlerinin çoğu skip (seed-veri bağımlı), login çalışıyor — görev #11
+- Rotasız beat görevleri hiç koşmuyor — #430
+- `agents/learning_path_agent.py` import edilemiyor (ölü kod)
+- `difficulty_min/max` API parametreleri fiilen yok sayılıyor (işaretlendi, silinmedi)
