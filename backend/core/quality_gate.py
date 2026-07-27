@@ -75,7 +75,7 @@ SAFE_POOL_SOURCE_VIEW = "v_safe_for_beta"
 
 # girdisi hiçbir zaman buraya ulaşmıyor. Sabiti string'e gömmek yerine tek yerde
 # tutmanın amacı zaten enjeksiyon değil, ad sürüklenmesini engellemek.
-_SAFE_POOL_ID_SQL = f"SELECT id FROM {SAFE_POOL_RELATION}"  # noqa: S608
+_SAFE_POOL_ID_SQL = f"SELECT id FROM {SAFE_POOL_RELATION}"  # noqa: S608  # nosec B608
 
 
 def safe_for_beta_gate(id_column: ColumnElement) -> ColumnElement:

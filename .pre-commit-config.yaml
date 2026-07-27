@@ -40,19 +40,47 @@ repos:
         files: ^backend/.*\.py$
         exclude: ^backend/(alembic/versions/|migrations/)
 
-  - repo: https://github.com/pycqa/bandit
-    rev: 1.7.5
+  # bandit — PyPI wheel'inden, kaynak repodan DEĞİL.
+  #
+  # 27 Tem 2026 (2. tur) — hook bu makinede HİÇ KURULAMIYORDU, yani hiç
+  # koşmamıştı. `repo: https://github.com/pycqa/bandit` pre-commit'e depoyu
+  # klonlatıp `pip install .` yaptırır; bandit paketlemede `pbr` kullanır ve
+  # klonda git tag bağlamı olmadığı için sürümü `0.0.0` üretir. Windows'ta
+  # bdist_wheel bu adla çakışıyor:
+  #
+  #     error: [WinError 183] Halen varolan bir dosya oluşturulamaz:
+  #            'build\bdist.win-amd64\wheel\bandit-0.0.0.dist-info'
+  #     ERROR: Failed building wheel for bandit
+  #
+  # Etkisi kozmetik değildi: pre-commit bir hook'un ortamını kuramayınca TÜM
+  # koşumu düşürür — yani bandit'in çökmesi, aynı config'deki sır tarayıcısı
+  # dahil her hook'u ve dolayısıyla her commit'i bloke ediyordu.
+  #
+  # Aynı turda eklenen `additional_dependencies: ['pbr']` bu çöküşü YARATMADI,
+  # sadece görünür kıldı: ortam imzasını değiştirip yeniden kurulumu tetikledi.
+  # Önceki `ModuleNotFoundError: pbr` de aynı kökün başka bir yüzüydü.
+  #
+  # Çözüm: `repo: local` + `language: python` + sürümü sabitlenmiş PyPI
+  # bağımlılığı. pip hazır wheel'i indirir, kaynak build hiç olmaz.
+  # Ölçüldü: temiz venv'de `pip install --only-binary=:all: bandit` -> 1.9.4 OK.
+  #
+  # NOT: ruff `S` (flake8-bandit) kural seti backend/pyproject.toml'da zaten
+  # açık, yani bu hook'un çoğu kuralı ruff'ta da var. Yine de kaldırılmadı —
+  # bandit'in AST tabanlı kontrolleri (B3xx/B5xx ailesi) ruff'ta birebir
+  # karşılanmıyor ve çalışmayan bir güvenlik hook'unu silmek yerine
+  # çalıştırmak doğrusu.
+  - repo: local
     hooks:
       - id: bandit
-        # 27 Tem 2026 — İKİ DÜZELTME:
-        # 1. bandit 1.7.5 `pbr`'a bağımlı ama onu kendi ortamına çekmiyor ->
-        #    her koşumda `ModuleNotFoundError: No module named 'pbr'`. Kök
-        #    config hiç çalışmadığı için bu fark edilmemişti.
-        # 2. args TIRNAKLANDI: prettier YAML akış dizisini yeniden biçimlerken
-        #    `--skip=B101,B601`'i `--skip=B101, B601` yapıp İKİ ARGÜMANA
-        #    bölüyordu — bandit `B601`'i yol sanardı. Tırnak bunu engeller.
-        additional_dependencies: ['pbr']
-        args: ['-r', '--skip=B101,B601']
+        name: bandit (PyPI wheel)
+        entry: bandit
+        language: python
+        additional_dependencies: ["bandit==1.9.4"]
+        # args TIRNAKLI kalmalı: prettier YAML akış dizisini yeniden
+        # biçimlerken `--skip=B101,B601`'i `--skip=B101, B601` yapıp İKİ
+        # argümana bölüyordu; bandit `B601`'i yol sanardı.
+        args: ["-r", "--skip=B101,B601"]
+        types: [python]
         files: ^backend/.*\.py$
         exclude: ^backend/(tests/|.*test.*\.py)
 
