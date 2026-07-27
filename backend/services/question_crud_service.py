@@ -17,6 +17,7 @@ from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from core.quality_gate import safe_for_beta_gate
 from models.question_bank import (
     QuestionBankItem,
     QuestionDifficultyLevel,
@@ -657,7 +658,12 @@ class QuestionCRUDService:
         """
         try:
             # Base query
-            stmt = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
+            # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+            # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
+            stmt = select(QuestionBankItem).where(
+                QuestionBankItem.is_active == True,
+                safe_for_beta_gate(QuestionBankItem.id),
+            )
 
             # Full-text search (PostgreSQL için)
             if search_query:
@@ -945,6 +951,12 @@ class QuestionCRUDService:
                 stmt = select(QuestionBankItem).where(
                     QuestionBankItem.id.in_(question_ids),
                     QuestionBankItem.is_active == True,
+                    # Kalite kapısı — ES yolu da kapılı olmalı. Aksi hâlde
+                    # sızıntı ALTYAPI DURUMUNA bağlı olurdu: ES ayaktayken bu
+                    # dal (kapısız) koşar, ES düşünce except-fallback kapılı
+                    # search_questions'a düşerdi. Aynı ucun iki komşu yolu
+                    # farklı kalite politikası uygulayamaz.
+                    safe_for_beta_gate(QuestionBankItem.id),
                 )
                 result = await self.db.execute(stmt)
                 questions = result.scalars().all()
@@ -1123,7 +1135,12 @@ class QuestionCRUDService:
         # func modül düzeyinde import edilmemiş (dosyanın kalıbı lokal import).
         from sqlalchemy import func
 
-        stmt = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
+        # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+        # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
+        stmt = select(QuestionBankItem).where(
+            QuestionBankItem.is_active == True,
+            safe_for_beta_gate(QuestionBankItem.id),
+        )
 
         if subject_area:
             stmt = stmt.where(QuestionBankItem.subject_area == subject_area)

@@ -58,8 +58,33 @@ APP_ROLE = "kiro2_app"
 
 
 def upgrade() -> None:
+    # ÖN KOŞUL. `v_safe_for_beta` alembic ile DEĞİL, elle çalıştırılan
+    # migrations/*.sql dosyalarıyla yaratıldı (safe_for_beta_exclude_*.sql,
+    # D4/D5_*.sql, image_audit_v1_apply_filter.sql). Yani alembic zinciri
+    # alembic-DIŞI SQL'e örtük bağımlı. Temiz bir DB'de (CI, yeni ortam)
+    # aşağıdaki CREATE, "relation v_safe_for_beta does not exist" gibi
+    # bağlamsız bir hatayla düşerdi. Nedeni söyleyerek düş.
+    op.execute(
+        """
+        DO $pre$
+        BEGIN
+            IF to_regclass('public.v_safe_for_beta') IS NULL THEN
+                RAISE EXCEPTION
+                    'mv_safe_for_beta ön koşulu eksik: v_safe_for_beta view''i yok. '
+                    'Bu view alembic ile değil backend/migrations/*.sql ile '
+                    'yaratılıyor (safe_for_beta_exclude_*.sql + D4/D5). Önce '
+                    'onları uygula, sonra bu migration''ı çalıştır.';
+            END IF;
+        END
+        $pre$
+        """
+    )
+
     # WITH DATA: migration anında doldur (~2,3 s). Boş bırakmak, kapıyı
     # açtığımız anda tüm soru servisinin 0 sonuç dönmesi demek olurdu.
+    # CONCURRENTLY yenileme ÖNCEDEN DOLU matview ister; WITH NO DATA ile
+    # yaratılsaydı ilk yenileme AccessExclusiveLock alıp ~2 sn boyunca tüm
+    # öğrenci soru sorgularını bloklardı.
     op.execute(
         """
         CREATE MATERIALIZED VIEW IF NOT EXISTS mv_safe_for_beta AS

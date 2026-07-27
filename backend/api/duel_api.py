@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 
 from core.database import get_db_session_context
 from core.dependencies import AuthenticatedUser, get_current_user
+from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
 
 router = APIRouter(prefix="/api/v1/duel", tags=["Düello"])
@@ -669,6 +670,9 @@ async def _select_duel_questions(subject: str, count: int = 5) -> list[str]:
             select(QuestionBankItem.id)
             .where(
                 QuestionBankItem.is_active == True,  # noqa: E712
+                # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+                # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
+                safe_for_beta_gate(QuestionBankItem.id),
                 QuestionBankItem.subject_area == subject.upper(),
                 QuestionBankItem.irt_difficulty.isnot(None),
                 QuestionBankItem.irt_difficulty >= -1.0,
@@ -686,6 +690,9 @@ async def _select_duel_questions(subject: str, count: int = 5) -> list[str]:
                 select(QuestionBankItem.id)
                 .where(
                     QuestionBankItem.is_active == True,  # noqa: E712
+                    # Kalite kapısı — top-up fallback da kapılı olmalı, aksi
+                    # halde IRT bandı ince olduğunda sızıntı buradan geri gelir.
+                    safe_for_beta_gate(QuestionBankItem.id),
                     QuestionBankItem.subject_area == subject.upper(),
                     QuestionBankItem.id.notin_(ids) if ids else True,
                 )

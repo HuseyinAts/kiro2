@@ -9,6 +9,7 @@ from __future__ import annotations
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
 from models.question_bank import QuestionBankItem
 
@@ -72,6 +73,9 @@ async def get_pretest_questions(
         )
         .where(
             QuestionBankItem.is_active == True,  # noqa: E712
+            # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+            # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
+            safe_for_beta_gate(QuestionBankItem.id),
             QuestionBankItem.subject_area == subject_upper,
             QuestionBankItem.primary_topic_id == topic_id,
         )

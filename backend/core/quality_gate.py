@@ -47,6 +47,15 @@ etki eder. Bu yüzden:
     KURAL: safe_for_beta_gate() `is_active` filtresinin YERİNE geçmez,
            YANINA gelir. Kapı eklerken mevcut is_active koşulunu KALDIRMA.
 
+İKİNCİ BAYATLIK KATMANI (matview'den bağımsız)
+----------------------------------------------
+`core/osym_exam_engine.py` seçilen id havuzunu `_question_pool_cache`'e
+TTL=3600 sn ile yazıyor. Kapı cache'e YAZILMADAN ÖNCE uygulanıyor (doğru),
+ama matview tazelense bile demote edilmiş bir soru süreç-içi havuzda bir
+saate kadar servis edilmeye devam edebilir. Yani gerçek en kötü gecikme
+= matview bayatlığı + 1 saat. Kapı yayılımını "anında etkili" saymadan
+önce bu katman hatırlanmalı.
+
 Bkz: docs/quality_review_status_convention.md
      backend/alembic/versions/20260727_mv_safe_for_beta.py
 """

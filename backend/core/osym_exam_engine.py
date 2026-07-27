@@ -22,6 +22,7 @@ from cachetools import TTLCache
 from sqlalchemy import and_, func, or_, select, update
 
 from core.database import get_db_session_context
+from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
 from models.database import (
     ExamQuestion,
@@ -1475,6 +1476,12 @@ class OSYMExamEngine:
                     Question.exam_type == exam_config.exam_type.value.upper(),
                     Question.subject_area == subject,
                     Question.is_active == True,  # noqa: E712
+                    # Kalite kapısı (core/quality_gate.py) — is_active'in YANINA
+                    # gelir, yerine DEĞİL. Kapısız havuz 85.731 yargılanmamış/
+                    # reddedilmiş soruyu öğrenciye servis ediyordu. base_filters'a
+                    # konuldu: hem id-havuzu cache'e YAZILMADAN önce, hem de
+                    # zorluk-fallback havuzu bu listeyi kullandığı için otomatik kapanır.
+                    safe_for_beta_gate(Question.id),
                     Question.question_text.isnot(None),
                     func.length(Question.question_text) >= 50,
                     Question.option_a.isnot(None),

@@ -33,12 +33,14 @@ from app.services.fsrs_engine import (
     combined_priority_score,
     fsrs_update,
 )
+from core.quality_gate import safe_for_beta_sql
 
 logger = logging.getLogger(__name__)
 
 # ─── SQL sorguları ────────────────────────────────────────────────────────────
 
-_FETCH_DUE_SQL = text("""
+_FETCH_DUE_SQL = text(
+    """
     SELECT
         f.question_id::text,
         f.stability,
@@ -66,11 +68,18 @@ _FETCH_DUE_SQL = text("""
       AND f.due_date <= NOW() + INTERVAL '4 hours'
       AND f.state IN (1, 2, 3)
       AND q.is_active = TRUE
-    ORDER BY f.due_date ASC
+"""
+    # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731 yargılanmamış/
+    # reddedilmiş soruyu öğrenciye servis ediyordu. is_active'in YERİNE değil
+    # YANINA gelir: bayat matview'a rağmen arşivleme anında etki etsin.
+    + f"      AND {safe_for_beta_sql('q.id')}\n"
+    + """    ORDER BY f.due_date ASC
     LIMIT :limit
-""")
+"""
+)
 
-_FETCH_DUE_MERCY_SQL = text("""
+_FETCH_DUE_MERCY_SQL = text(
+    """
     SELECT
         f.question_id::text,
         f.stability,
@@ -98,9 +107,14 @@ _FETCH_DUE_MERCY_SQL = text("""
       AND f.due_date <= NOW()
       AND f.state IN (1, 2, 3)
       AND q.is_active = TRUE
-    ORDER BY f.stability ASC, f.difficulty DESC
+"""
+    # Kalite kapısı (core/quality_gate.py) — merhamet yolu da öğrenciye soru
+    # metni/şık servis ediyor; kapısız 85.731 soruluk sızıntının parçasıydı.
+    + f"      AND {safe_for_beta_sql('q.id')}\n"
+    + """    ORDER BY f.stability ASC, f.difficulty DESC
     LIMIT :limit
-""")
+"""
+)
 
 _FETCH_ITEM_SQL = text("""
     SELECT
@@ -216,7 +230,7 @@ class FSRSService:
         """
         FSRS Merhamet Algoritması (Catch-up Mode)
         Öğrenci günlerce sisteme girmediyse FSRS Avalanche (Yığılma) krizini önler.
-        Vadesi geçmiş kartları stability (retrievability proxy) ve zorluğa göre sıralar, 
+        Vadesi geçmiş kartları stability (retrievability proxy) ve zorluğa göre sıralar,
         sadece en kritik olanları sınırlar.
         """
         result = await self.db.execute(

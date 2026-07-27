@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_async_session as get_db
 from core.dependencies import AuthenticatedUser, get_current_user
+from core.quality_gate import safe_for_beta_sql
 
 logger = logging.getLogger(__name__)
 
@@ -163,6 +164,9 @@ async def get_random_questions(
     """Get random OSYM questions for practice"""
     try:
         conditions = ["is_active = TRUE"]
+        # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+        # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
+        conditions.append(safe_for_beta_sql("id"))
         params: dict = {}
 
         if subject:
@@ -278,23 +282,30 @@ async def generate_practice_exam(
                 "subject": section["subject"],
             }
 
+            # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+            # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
+            _gate = f"AND {safe_for_beta_sql('id')}"
+
             if year:
                 params["year"] = year
                 result = await db.execute(
                     text(
-                        "SELECT id, question_text, option_a, option_b, option_c, option_d, option_e, "
+                        # _gate sabit kod parçası, kullanıcı girdisi yok
+                        "SELECT id, question_text, option_a, option_b, option_c, option_d, option_e, "  # noqa: S608
                         "difficulty_level, osym_year FROM question_bank "
                         "WHERE exam_type = :exam_type AND subject_area = :subject "
-                        "AND osym_year = :year AND is_active = TRUE"
+                        "AND osym_year = :year AND is_active = TRUE " + _gate
                     ),
                     params,
                 )
             else:
                 result = await db.execute(
                     text(
-                        "SELECT id, question_text, option_a, option_b, option_c, option_d, option_e, "
+                        # _gate sabit kod parçası, kullanıcı girdisi yok
+                        "SELECT id, question_text, option_a, option_b, option_c, option_d, option_e, "  # noqa: S608
                         "difficulty_level, osym_year FROM question_bank "
-                        "WHERE exam_type = :exam_type AND subject_area = :subject AND is_active = TRUE"
+                        "WHERE exam_type = :exam_type AND subject_area = :subject AND is_active = TRUE "
+                        + _gate
                     ),
                     params,
                 )
@@ -355,6 +366,9 @@ async def get_questions(
     """Get OSYM questions with filters"""
     try:
         conditions = ["is_active = TRUE"]
+        # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+        # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
+        conditions.append(safe_for_beta_sql("id"))
         params: dict = {"limit": limit, "offset": offset}
 
         if subject:
@@ -422,5 +436,3 @@ async def get_questions(
     except Exception as e:
         logger.error(f"OSYM API Error: {e!s}")
         raise HTTPException(500, "Soru bankası verilerine erişilirken bir hata oluştu")
-
-

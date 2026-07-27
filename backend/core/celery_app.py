@@ -34,6 +34,7 @@ celery_app = Celery(
         "tasks.social_tasks",
         "tasks.daily_plan_tasks",  # Günlük plan yenileme
         "tasks.push_tasks",  # Streak retention push (P0.1)
+        "tasks.quality_gate_tasks",  # mv_safe_for_beta yenileme
     ],
 )
 
@@ -53,6 +54,10 @@ celery_app.conf.update(
         "tasks.bulk_tasks.*": {"queue": "bulk"},
         "tasks.claude_md_improvement_tasks.*": {"queue": "claude_md"},
         "tasks.mega_feature_tasks.*": {"queue": "features"},
+        # Kalite kapısı bakımı: rota ZORUNLU. task_default_queue set
+        # edilmemiş ve "default" adında bir Queue tanımlı değil; rotasız
+        # görev "celery" kuyruğuna düşer ve hiçbir worker onu tüketmez.
+        "tasks.quality_gate_tasks.*": {"queue": "features"},
     },
     # Task queues with priorities
     task_queues=(
@@ -107,6 +112,15 @@ celery_app.conf.update(
         "generate-weekly-reports": {
             "task": "tasks.report_tasks.generate_weekly_summary_report",
             "schedule": crontab(hour=9, minute=0, day_of_week=1),
+        },
+        # Kalite kapısı: mv_safe_for_beta gecelik yenileme (03:30).
+        # Asıl tetik küratör yargısıdır (tasks.quality_gate_tasks.
+        # schedule_safe_pool_refresh); bu yalnız emniyet ağı — offline demote
+        # script'leri uygulama dışından çalıştığı için tetiklenemiyor.
+        # 03:00 IRT kalibrasyonuyla çakışmasın diye 03:30.
+        "refresh-safe-pool-nightly": {
+            "task": "tasks.quality_gate_tasks.refresh_safe_pool",
+            "schedule": crontab(hour=3, minute=30),
         },
         # Cache cleanup (every hour)
         "cleanup-expired-cache": {

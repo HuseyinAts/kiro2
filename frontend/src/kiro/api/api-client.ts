@@ -1394,7 +1394,12 @@ function mapKonuAtom(v: unknown): KonuAtom {
     ad: nstr(pick(o, 'ad', 'name', 'topic')),
     hakimiyet: nnum(pick(o, 'hakimiyet', 'mastery')),
     durum,
-    soruHavuzuHazir: typeof havuzRaw === 'boolean' ? havuzRaw : true,
+    // FAIL-CLOSED (27 Tem 2026). Eskiden default `true` idi ve backend bu alanı
+    // HİÇBİR yerde üretmiyor (pool_ready/has_pool grep = 0) → alan hep undefined
+    // → her konu "soru havuzunda hazır" görünüyordu. Kalite kapısı yayılınca 26
+    // konu ile GENEL/FEN dersleri sıfır soruya düşüyor; bilinmeyeni "hazır"
+    // saymak öğretmene olmayan havuz için ödev kurdurur. Bilinmiyorsa hazır değil.
+    soruHavuzuHazir: typeof havuzRaw === 'boolean' ? havuzRaw : false,
   };
 }
 

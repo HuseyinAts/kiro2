@@ -19,6 +19,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.quality_gate import safe_for_beta_gate
 from models.enums_db import SubjectArea
 from models.fsrs_models import FSRSCard as DBFSRSCard
 from models.question_bank import QuestionBankItem
@@ -66,6 +67,10 @@ class QuestionReviewAdapter:
             select(QuestionBankItem).where(
                 QuestionBankItem.id == question_id,
                 QuestionBankItem.is_active == True,
+                # Kalite kapısı (core/quality_gate.py): kapısız soru KALICI FSRS
+                # kuyruğuna girmesin — kart bir kez yazıldıktan sonra öğrenciye
+                # tekrar tekrar gösterilir, yani sızıntı burada kalıcılaşır.
+                safe_for_beta_gate(QuestionBankItem.id),
             )
         )
         question = q_result.scalar_one_or_none()
@@ -160,6 +165,8 @@ class QuestionReviewAdapter:
             select(QuestionBankItem).where(
                 QuestionBankItem.id.in_(qb_ids),
                 QuestionBankItem.is_active == True,
+                # Kalite kapısı: geçmişten kalmış kapısız kartları da eler.
+                safe_for_beta_gate(QuestionBankItem.id),
             )
         )
         questions = {str(q.id): q for q in questions_result.scalars().all()}

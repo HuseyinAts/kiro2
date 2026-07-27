@@ -29,6 +29,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 
 from core.ddos_protection import limiter
+from core.quality_gate import safe_for_beta_gate, safe_for_beta_sql
 
 PATTERN_UUID_OR_TEST = r"^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[a-zA-Z0-9_-]{1,36})$"
 from sqlalchemy import select
@@ -1117,8 +1118,16 @@ async def semantic_search(
             filters.append("q.subject_area = :subject_area")
             params["subject_area"] = request.subject_area
 
+        # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+        # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
+        # is_active YERİNE değil YANINA: bayat matview'a karşı canlı guard.
         where_clause = " AND ".join(
-            ["q.embedding IS NOT NULL", "q.is_active = true"] + filters
+            [
+                "q.embedding IS NOT NULL",
+                "q.is_active = true",
+                safe_for_beta_sql("q.id"),
+            ]
+            + filters
         )
         params["top_k"] = request.top_k
 
@@ -1244,7 +1253,14 @@ async def download_questions(
     # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql dalı
     # AttributeError ile patlıyordu. func.random() her iki dialect'te de çalışır
     # (bkz offline_sync_service.py:112).
-    stmt = select(QuestionBankItem).where(QuestionBankItem.is_active)
+    # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
+    # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu. Bu uç 200
+    # soruya kadar tam metin + cevabı çevrimdışı indirtiyor.
+    # is_active YERİNE değil YANINA: bayat matview'a karşı canlı guard.
+    stmt = select(QuestionBankItem).where(
+        QuestionBankItem.is_active,
+        safe_for_beta_gate(QuestionBankItem.id),
+    )
     stmt = stmt.where(QuestionBankItem.subject_area == db_subject)
     # Only easy/medium/hard — frontend only sends these three
     stmt = stmt.where(

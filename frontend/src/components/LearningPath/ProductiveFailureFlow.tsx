@@ -30,6 +30,7 @@ import {
 } from '@mui/icons-material';
 
 import { MathText } from '../ui/MathText';
+import { API_ERROR_MESSAGES } from '../../constants/errorMessages';
 
 interface PretestQuestion {
   id: string;
@@ -157,7 +158,25 @@ export function ProductiveFailureFlow({ topic, onComplete, onSkip }: ProductiveF
     );
   }
 
-  if (questions.length === 0) {return null;}
+  // Boş havuz SESSİZ OLMAMALI (27 Tem 2026). Eskiden `return null` ile hiçbir
+  // şey çizilmiyordu: öğrenci neden boş ekrana baktığını bilmiyordu.
+  // Kalite kapısı yayılınca bu yol gerçek hâle geldi — 26 konu ile GENEL/FEN
+  // derslerinde doğrulanmış soru YOK. Ürün kararı (Hüseyin, 27 Tem): kapı
+  // gevşetilmez, komşu konudan doldurulmaz — boş dönülür ve SÖYLENİR.
+  if (questions.length === 0) {
+    return (
+      <Card variant="outlined">
+        <CardContent sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {API_ERROR_MESSAGES.NO_VERIFIED_QUESTIONS}
+          </Typography>
+          <Button variant="text" startIcon={<SkipIcon />} onClick={onSkip}>
+            Konuya geç
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card variant="outlined" sx={{ borderColor: 'secondary.light' }}>

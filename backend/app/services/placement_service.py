@@ -35,6 +35,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
+from core.quality_gate import safe_for_beta_sql
+
 logger = logging.getLogger(__name__)
 
 # ─── Lise türüne göre prior ayarı ────────────────────────────────────────────
@@ -279,7 +281,8 @@ class PlacementTestService:
         from sqlalchemy import text
 
         result = await self.db.execute(
-            text(r"""
+            text(
+                r"""
             SELECT
                 id::text                AS question_id,
                 question_text,
@@ -307,9 +310,18 @@ class PlacementTestService:
               -- Bug #11 v3: PostgreSQL C locale fix (LOWER('Ş')='Ş')
               -- char class [şŞ] her Türkçe ilk-harf için
               AND question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
+            """  # noqa: S608
+                # Kalite kapısı (core/quality_gate.py). Bu sorgunun kapısız
+                # havuzu 19.873, kapılı 13.756 (27 Tem ölçümü): 6.117
+                # demote/tek-sinyal/fallback-topic soru placement testinde
+                # öğrenciye servis ediliyordu. is_active YANINDA durur,
+                # yerine değil (bayat matview'a karşı canlı arşiv filtresi).
+                + f"AND {safe_for_beta_sql('question_bank.id')}\n"
+                + r"""
             ORDER BY RANDOM()
             LIMIT 80
-        """),
+        """
+            ),
             {"sid": subject_id},
         )
         return [dict(r._mapping) for r in result.fetchall()]

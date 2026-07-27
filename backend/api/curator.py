@@ -17,6 +17,7 @@ Verdict mapping (Convention v2):
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import uuid
@@ -592,6 +593,22 @@ async def post_verdict(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database commit failed",
         ) from e
+
+    # Kalite kapısı havuzunu tazele. Öğrenci-yüzü seçim `mv_safe_for_beta`
+    # matview'ini okuyor; bu yargı orada görünene kadar REDDEDİLEN bir soru
+    # servis edilmeye devam eder (Ders #31'in zaman-penceresi hâli).
+    # Fire-and-forget: yargı DB'ye YAZILDIKTAN sonra çalışır, bu yüzden HİÇBİR
+    # hata uca sızmamalı — aksi halde küratör "500 aldım" deyip aynı yargıyı
+    # tekrar verir, oysa veri çoktan yazılmıştır. try/except import'u da kapsıyor:
+    # modül eksikse (deploy kazası) uç yine 200 döner, yalnız yenileme gecikir.
+    # asyncio.to_thread: kombu publish BLOKLAYICI I/O'dur; broker yavaşsa event
+    # loop'u kilitleyip tüm eşzamanlı istekleri geciktirirdi.
+    try:
+        from tasks.quality_gate_tasks import schedule_safe_pool_refresh
+
+        await asyncio.to_thread(schedule_safe_pool_refresh)
+    except Exception as exc:
+        logger.warning("safe_pool_refresh_dispatch_failed: %s", exc)
 
     return VerdictResponse(
         question_id=body.question_id,

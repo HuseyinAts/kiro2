@@ -63,6 +63,7 @@ from app.services.irt_engine import (
     select_next_question,
     should_terminate,
 )
+from core.quality_gate import safe_for_beta_sql
 
 logger = logging.getLogger(__name__)
 
@@ -254,13 +255,20 @@ class CATSessionService:
             #   1. is_calib_pool=TRUE ve kolay (b < 0) → zorunlu ilk temas
             #   2. is_calib_pool=TRUE tumu → havuz doluysa genisle
             #   3. Normal kolay sorular (fallback)
-            stmt = text(r"""
+            stmt = text(
+                r"""
                 SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
                 FROM question_bank
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
                   AND is_active = TRUE
                   -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
                   AND quality_review_status IN ('human_verified', 'auto_judged_high')
+                  -- Kalite kapısı (core/quality_gate.py) — status-only filtre 34.982 satır
+                  -- görüyor, kapı 25.127; aradaki 9.855 demoted/tek-sinyal/bozuk soru
+                  -- öğrenciye servis ediliyordu. Status satırı savunma katmanı olarak kalır.
+                  AND """  # noqa: S608 (kapı sabiti, kullanıcı girdisi değil)
+                + safe_for_beta_sql("id")
+                + r"""
                   -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ
                   -- Vision audit: tüm image'lar options leak içeriyor, text-self-contained dar
                   -- Bug #11 v3: PostgreSQL C locale fix — [şŞ] char class her Türkçe ilk-harf için
@@ -285,11 +293,13 @@ class CATSessionService:
                          ELSE 2 END ASC,
                     RANDOM()
                 LIMIT 30
-            """)
+            """
+            )
         else:
             # ZPD bolgesi: theta - 1.5 < b < theta + 1.5
             # Kalibrasyon havuzundaki sorulari tercih et
-            stmt = text(r"""
+            stmt = text(
+                r"""
                 SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
                 FROM question_bank
                 WHERE LOWER(subject_area) = LOWER(:subject_id)
@@ -297,6 +307,12 @@ class CATSessionService:
                   AND is_active = TRUE
                   -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
                   AND quality_review_status IN ('human_verified', 'auto_judged_high')
+                  -- Kalite kapısı (core/quality_gate.py) — status-only filtre 34.982 satır
+                  -- görüyor, kapı 25.127; aradaki 9.855 demoted/tek-sinyal/bozuk soru
+                  -- öğrenciye servis ediliyordu. Status satırı savunma katmanı olarak kalır.
+                  AND """  # noqa: S608 (kapı sabiti, kullanıcı girdisi değil)
+                + safe_for_beta_sql("id")
+                + r"""
                   -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ
                   -- Vision audit: tüm image'lar options leak içeriyor, text-self-contained dar
                   -- Bug #11 v3: PostgreSQL C locale fix — [şŞ] char class her Türkçe ilk-harf için
@@ -308,7 +324,8 @@ class CATSessionService:
                          ELSE 2 END ASC,
                     RANDOM()
                 LIMIT 100
-            """)
+            """
+            )
 
         params = (
             {"subject_id": subject_id, "b_max": max(theta - 1.0, -0.5)}
