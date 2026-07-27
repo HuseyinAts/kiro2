@@ -36,7 +36,7 @@ const BANT: Record<ConnectivityState, { bg: string; border: string; nokta: strin
   },
   yeniden_baglaniyor: {
     bg: '#FFF3EE', border: '#F6D9CB', nokta: color.dawn.coral2, fg: color.dawn.coralTextOnLight,
-    baslik: 'Yeniden bağlanıyor…', alt: 'çalışmaya devam edebilirsin, kesinti hissetmezsin.',
+    baslik: 'Yeniden bağlanıyor…', alt: 'bağlantı kurulunca kaldığın yerden devam edebilirsin.',
   },
   baglandi: {
     bg: GREEN_TINT, border: '#BEE9D9', nokta: color.semantic.success, fg: GREEN,
@@ -256,7 +256,7 @@ export function CevrimdisiPage({ durumBaslangic }: CevrimdisiPageProps = {}): Re
             <header>
               <h1 style={{ margin: '0 0 6px', fontFamily: font.serif, fontStyle: 'italic', fontWeight: 400, fontSize: 32, lineHeight: 1.1 }}>{heroBaslik}</h1>
               <p style={{ margin: 0, fontSize: 14, color: color.ink.muted, maxWidth: 560, lineHeight: 1.5 }}>
-                Çalışman cihazında güvende — çözdüğün her soru kaydedilir, bağlantı gelince kendiliğinden eşitlenir. Hiçbir şey kaybolmaz.
+                İndirdiğin paketleri çevrimdışı görüntüleyebilirsin. Cevaplarının kaydedilmesi için bağlantı gerekir.
               </p>
             </header>
 

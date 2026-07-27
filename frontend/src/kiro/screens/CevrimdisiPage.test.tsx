@@ -82,10 +82,12 @@ describe('CevrimdisiPage', () => {
     }
   });
 
-  it('yeniden_baglaniyor: dawn bant + kesintisiz-çalışma güvencesi', async () => {
+  it('yeniden_baglaniyor: dawn bant + DÜRÜST bekleme mesajı (kesintisiz-çalışma VAAT ETMEZ)', async () => {
     render(<CevrimdisiPage durumBaslangic="yeniden_baglaniyor" />);
     expect(await screen.findByText('Yeniden bağlanıyor…')).toBeInTheDocument();
-    expect(screen.getByText('çalışmaya devam edebilirsin, kesinti hissetmezsin.')).toBeInTheDocument();
+    expect(
+      screen.getByText('bağlantı kurulunca kaldığın yerden devam edebilirsin.'),
+    ).toBeInTheDocument();
   });
 
   it('yükleme: veri gelmeden aria-busy iskelet gösterir', async () => {
