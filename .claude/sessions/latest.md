@@ -26,6 +26,9 @@
 - **Image kalıcılaştırıldı** — `docker compose build backend` + `up -d --no-deps` (image 2026-07-27T04:15). `docker cp` yaması artık yok; rebuild sonrası `/api/v1/cat/next` **200**, `/api/v1/questions/alternatives/health` **200**, loglarda import hatası **yok**.
 - **CAT 204 hatasının gerçek mekanizması**: `-> None` TEK BAŞINA yetmiyor; `from __future__ import annotations` ile BİRLİKTE gerekiyor (ölçüldü). cat.py'deki uyarı yorumu düzeltildi.
 
+- **Yüzdelik aşırı-özgüveni** `cbea98413` — `theta_percentile` ölçüm hatasını yok sayıyordu: E[Φ(θ)] = Φ(θ̂/√(1+SE²)). Etki: θ̂=2.0/SE=0.95'te "üst %2" → "üst %7". Canlı doğrulandı (rebuild sonrası θ=0→%50, θ=-0.46/SE=0.90→%63).
+- **Görev 2 Offline KAPANDI** `bec215698` — kullanıcı kararı: çöz-döngüsü YAPILMAYACAK, dürüst yüzey son hâl. Ama yüzey dürüst DEĞİLDİ (ölçüldü: kiro `live()`'da offline yolu yok, `backgroundSyncService` hiçbir cevap yolunda değil, kuyruk sayacı backend'den geliyor, IndexedDB README'de işaretsiz) → çevrimdışı cevap **kayboluyor** ama ekran "hiçbir şey kaybolmaz" diyordu. 2 cümlelik kopya düzeltmesi + test güncellendi.
+
 ### Fail Eden Testler
 - YOK. 34/34 yeni + bağımlı modüller dahil 166/166 pass. Ruff: değişen satırlarda 0 (kalan 2 B905 `_persist_session_to_db` pre-existing).
 
@@ -36,8 +39,8 @@
 
 ### Sonraki Adimlar (maks 5)
 1. **`docker compose build backend`** — canlı doğrulama `docker cp` ile yapıldı, GEÇİCİ. Container yeniden yaratılırsa 2026-07-04 image'ına döner ve `/cat/next` yine 404 olur. Kod git'te, rebuild kalıcılaştırır.
-2. **Görev 2 Offline** — SW+IndexedDB çöz-döngüsü (ürün-fork).
-3. **IRT kalibrasyonu** — panel iddiaları (üst %X, N net, seviye) bootstrap parametreler üzerinde; gerçek kalibrasyon ayrı iş.
+2. **IRT kalibrasyonu ERTELENDİ (veri yok)** — ölçüldü: 110,858 aktif sorudan yalnız 263'ünde yanıt var, **hiçbirinde ≥30** (2PL ~100, 3PL ~200 ister). Parametreler uzun süre bootstrap kalacak; panelin nüfus-referanslı iddiaları bu kısıtla okunmalı.
+3. **Çevrimdışı çöz-döngüsü** — kapsam dışı bırakıldı (karar). Yapılacaksa: kiro `live()`'a kuyruk + IndexedDB + SW sync; kopya da geri alınmalı.
 
 ### Kararlar
 - **G4-A `/auth/recover` ERTELENDİ** (kullanıcı kararı, 26 Tem): e-posta/SMTP altyapısı repo'da yok → işlevsel kurtarma yazılamaz. Endpoint-stub da KONMAYACAK (çalışmayan uç, çalışıyor sanılır). SMTP geldiğinde açılacak. **G4 (C→B→A) bu kararla KAPANDI.**
