@@ -50,7 +50,7 @@ def _run(tmp_path: Path, filename: str, content: str) -> subprocess.CompletedPro
     # türetiliyor, kullanıcı girdisi yok. Dedektörü ALT SÜREÇ olarak koşmak
     # kasıtlı: testin ölçtüğü şey ÇIKIŞ KODU (2 = blokla), import edilebilir
     # bir fonksiyonun dönüş değeri değil — pre-commit de onu böyle görür.
-    return subprocess.run(  # noqa: S603
+    return subprocess.run(
         [sys.executable, str(DETECTOR), str(p)],
         capture_output=True,
         text=True,
@@ -122,8 +122,8 @@ def test_git_hooks_are_not_disabled():
     SESSİZCE devam eder — hata yok, uyarı yok. 11 anahtarın sızmasının
     birincil sebebi buydu.
     """
-    r = subprocess.run(  # noqa: S603
-        ["git", "config", "--get", "core.hooksPath"],  # noqa: S607
+    r = subprocess.run(
+        ["git", "config", "--get", "core.hooksPath"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,

@@ -191,6 +191,13 @@ exclude = [
     "PLR2004", # magic value comparison in tests
     "PLR0913", # many arguments in test fixtures
     "T20",     # print statements in tests
+    # 27 Tem 2026: testler alt süreç çağırabilir (bir CLI hook'unun ÇIKIŞ
+    # KODUNU ölçmek için tek yol budur). Argümanlar sabit, kullanıcı girdisi
+    # yok. Satır-içi `# noqa` denendi ama yerel ruff ile pre-commit'in
+    # pinlediği ruff 0.7.1 noqa'nın kullanılıp kullanılmadığında anlaşmadığı
+    # için RUF100 <-> S603 SALINIMI oluştu ve commit hiç geçmedi.
+    "S603",    # subprocess call (sabit argüman)
+    "S607",    # kısmi yol ile süreç başlatma ("git")
 ]
 "**/models/*.py" = [
     "N815",    # mixedCase variable in class scope (Pydantic models)
