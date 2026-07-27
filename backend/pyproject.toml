@@ -177,7 +177,7 @@ ignore = [
 ]
 exclude = [
     ".git",
-    ".venv", 
+    ".venv",
     "__pycache__",
     "migrations/",
     "htmlcov/",
@@ -201,6 +201,13 @@ exclude = [
 "scripts/**/*.py" = [
     "T201",    # print statements allowed in CLI scripts
     "S608",    # SQL string build from internal boolean flags (no user input)
+]
+"hooks/**/*.py" = [
+    # 27 Tem 2026: pre-commit hook'ları git'e stdout üzerinden konuşur —
+    # print onların ARAYÜZÜ. Bu girdi eklenene kadar ruff hook'u
+    # backend/hooks/secret_detector.py'yi T201 ile düşürüyor, yani sır
+    # bekçisinin bulunduğu dosyaya dokunan her commit bloklanıyordu.
+    "T201",
 ]
 
 [tool.ruff.lint.isort]

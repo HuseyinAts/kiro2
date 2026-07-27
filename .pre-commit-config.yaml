@@ -16,7 +16,7 @@ repos:
       - id: check-xml
       - id: check-merge-conflict
       - id: check-added-large-files
-        args: ['--maxkb=10000']
+        args: ["--maxkb=10000"]
       - id: detect-private-key
       - id: check-case-conflict
       - id: mixed-line-ending
@@ -31,10 +31,10 @@ repos:
     hooks:
       - id: ruff
         name: Ruff linter
-        args: ['--fix', '--exit-non-zero-on-fix']
+        args: ["--fix", "--exit-non-zero-on-fix"]
         files: ^backend/.*\.py$
         exclude: ^backend/(alembic/versions/|migrations/)
-      
+
       - id: ruff-format
         name: Ruff formatter
         files: ^backend/.*\.py$
@@ -44,7 +44,15 @@ repos:
     rev: 1.7.5
     hooks:
       - id: bandit
-        args: [-r, --skip=B101,B601]
+        # 27 Tem 2026 — İKİ DÜZELTME:
+        # 1. bandit 1.7.5 `pbr`'a bağımlı ama onu kendi ortamına çekmiyor ->
+        #    her koşumda `ModuleNotFoundError: No module named 'pbr'`. Kök
+        #    config hiç çalışmadığı için bu fark edilmemişti.
+        # 2. args TIRNAKLANDI: prettier YAML akış dizisini yeniden biçimlerken
+        #    `--skip=B101,B601`'i `--skip=B101, B601` yapıp İKİ ARGÜMANA
+        #    bölüyordu — bandit `B601`'i yol sanardı. Tırnak bunu engeller.
+        additional_dependencies: ['pbr']
+        args: ['-r', '--skip=B101,B601']
         files: ^backend/.*\.py$
         exclude: ^backend/(tests/|.*test.*\.py)
 
@@ -62,11 +70,12 @@ repos:
           - types-passlib
           - types-PyYAML
           - types-python-dateutil
-        args: [
-          '--config-file=pyproject.toml',
-          '--ignore-missing-imports',
-          '--no-strict-optional',
-        ]
+        args:
+          [
+            "--config-file=pyproject.toml",
+            "--ignore-missing-imports",
+            "--no-strict-optional",
+          ]
         files: ^backend/.*\.py$
         exclude: ^backend/(tests/|.*test.*\.py|migrations/|alembic/)
 
@@ -75,7 +84,7 @@ repos:
     rev: v1.4.0
     hooks:
       - id: detect-secrets
-        args: ['--baseline', '.secrets.baseline']
+        args: ["--baseline", ".secrets.baseline"]
         exclude: package.lock.json
 
   # Jupyter notebooks (using ruff)
@@ -84,9 +93,9 @@ repos:
     hooks:
       - id: nbqa-ruff
         name: Ruff on notebooks
-        args: ['--fix']
+        args: ["--fix"]
         files: '\.ipynb$'
-      
+
       - id: nbqa-mypy
         name: MyPy on notebooks
         files: '\.ipynb$'
@@ -109,13 +118,27 @@ repos:
   - repo: local
     hooks:
       # SECURITY: Custom secret detector for KIRO2-specific patterns
+      #
+      # 27 Tem 2026 — ÜÇ SESSİZ KUSUR DÜZELTİLDİ:
+      #  1. `types: [python]` -> sadece .py taranıyordu. Sızan 11 anahtarın
+      #     yaşayabileceği .env / .json / .yml / .md / .sh dosyaları KAPSAM
+      #     DIŞIYDI. `types: [text]` tüm metin dosyalarını kapsar.
+      #  2. `stages: [commit]` -> pre-commit 3.x'te `pre-commit` olarak
+      #     yeniden adlandırıldı, 4.x'te `commit` GEÇERSİZ. Yanlış stage adı
+      #     hook'un sessizce hiç koşmaması demekti.
+      #  3. Kurulu .git/hooks/pre-commit bu kök config'i DEĞİL
+      #     backend/.pre-commit-config.yaml'ı çağırıyordu — orada sır taraması
+      #     hiç yok. Üstüne `core.hooksPath = nul` ayarlıydı, yani hiçbir hook
+      #     çalışmıyordu (koşulsuz `exit 1` yapan bir hook bile commit'i
+      #     bloklamadı — canlı deneyle ölçüldü).
       - id: kiro2-secret-detector
         name: KIRO2 Secret Detector
         entry: python backend/hooks/secret_detector.py
         language: system
-        types: [python]
+        types: [text]
+        exclude: '^(\.secrets\.baseline|.*\.lock|package-lock\.json|.*\.min\.(js|css))$'
         pass_filenames: true
-        stages: [commit]
+        stages: [pre-commit]
         verbose: true
 
       - id: pytest-changed
@@ -160,7 +183,13 @@ repos:
 
 # Configuration
 default_language_version:
-  python: python3.11
+  # 27 Tem 2026: 'python3.11' pin'lenmişti ama o yorumlayıcı bu makinede YOK
+  # (PEP-514 registry kaydı bozuk: HKCU/PythonCore/3.11 var olmayan exe'yi
+  # gösteriyor). Sonuç: kök config'i kullanan HER pre-commit koşumu
+  # 'failed to find interpreter' ile çöküyordu — yani config koşulamıyordu.
+  # Bu, hook'un neden sır taraması olmayan backend/ config'ine yönlendirilmiş
+  # olabileceğini de açıklıyor. Sabit sürüm pin'i yerine çalışan yorumlayıcı.
+  python: python3
 
 ci:
   autofix_commit_msg: |
@@ -168,8 +197,8 @@ ci:
 
     for more information, see https://pre-commit.ci
   autofix_prs: true
-  autoupdate_branch: ''
-  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_branch: ""
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit autoupdate"
   autoupdate_schedule: weekly
   skip: []
   submodules: false
