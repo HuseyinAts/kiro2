@@ -1,9 +1,9 @@
-## Session Handoff — 2026-07-27 16:10
+## Session Handoff — 2026-07-27 17:20
 
-**Branch:** feature/self-evolution-optimization (upstream **kuruldu**, push edildi)
-**Son commit:** `5f981a557` fix(auth): kayıt student_profiles.id == users.id değişmezini bozuyordu — **PUSH EDİLDİ**
-**Uncommitted:** temiz
-**Test durumu:** `pytest tests/e2e -m golden_flow` → **32 passed / 148 skipped / 0 failed** (30 baseline + 2 yeni bekçi)
+**Branch:** feature/self-evolution-optimization (upstream kuruldu, push edildi)
+**Son commit:** `ead9e9948` fix(db): select(...).tablesample() SQLAlchemy 2.0'da yok — 11 site çöküyordu — **PUSH EDİLDİ**
+**Uncommitted:** `backend/tests/e2e/test_quality_gate_leak.py` — **KASITLI KIRMIZI**, #7'nin RED testi (adım 3'te yeşile dönecek, o yüzden repoya sokulmadı)
+**Test durumu:** `pytest tests/e2e -m golden_flow` → **34 passed / 148 skipped**; ayrıca 2 kasıtlı RED (yukarıdaki dosya)
 
 ### Yapılanlar
 
@@ -21,6 +21,11 @@
   - Canlı E2E: yeni kayıt 201 → profil `id == user_id` → `POST /osym-exam/beta-practice` **HTTP 200** (session oluştu). Test hesabı silindi, sayımlar 77/74/61'e döndü.
   - Bağımlı satır 0, FK'lar `ON UPDATE NO ACTION`, id çakışması 0 → backfill risksizdi.
 
+- **#7 sırasında 2 yeni blocker ölçüldü (denetimde yoktu):**
+  1. **`select(...).tablesample()` SQLAlchemy 2.0'da YOK** → 11 site PostgreSQL'de çöküyordu. duel/PF 500 veriyor, `soru_bankasi_service` `except: return []` ile yutuyordu (sınav üretimi sessizce "soru yok"). `offline_sync_service.py:112` bunu tek dosyada zaten çözmüştü. **DÜZELTİLDİ** (`ead9e9948`), AST kapısı eklendi, canlı 500→201.
+  2. **Kalite kapısı sıcak yolda 843 ms** (`v_safe_for_beta` ham hâli 2.283 ms; TABLESAMPLE+gate 13.465 ms). Materyalize + unique index ölçüldü: **94 ms**.
+- **Ürün kararları (Hüseyin, 27 Tem):** (a) kapı sonrası havuz yetersizse **boş dön + "henüz doğrulanmış soru yok"**, gevşetme/komşu-konu doldurma YOK. (b) Kapı hızı için **materyalize view + zamanlı yenileme** (bayat pencere kabul). (c) `soru_bankasi_service`'teki `except: return []` yutmasına **şimdilik dokunma**.
+
 ### Engelleyiciler
 
 - 11 anahtar (10 Google + 1 HF) hâlâ **rotasyona uğramadı** — yalnız Hüseyin yapabilir; geçmiş purge'ü ifşayı geri almaz.
@@ -28,7 +33,10 @@
 
 ### Sonraki Adımlar (satış planı sırası, maks 5)
 
-1. **Kapı 1 / #7**: kalite kapısını 5 servise yay — `_safe_for_beta_gate()` helper'ı zaten var, benimsenmemiş. En büyük sızıntı `productive_failure_service`/`duel_api`/`osym_questions_api` (sadece `is_active`, 85.731 soru). *~6h*
+1. **Kapı 1 / #7 — KALAN 2 ADIM** (1/3 bitti):
+   - **Adım 2 (matview altyapısı)**: `mv_safe_for_beta` migration (matview + unique index) + `_safe_for_beta_gate()`'i ona çevir + celery-beat yenileme görevi (gecelik + küratör yargısı sonrası). Zaten gate'li 3 dosya (soru_bankasi ×4, placement_assessment, offline_sync) anında 843ms→94ms kazanır. *~4h*
+   - **Adım 3 (gate yayılımı)**: `cat_session.py` (2 raw SQL, status-only), `placement_service.py:302` (status-only), `productive_failure_service`, `duel_api`, `osym_questions_api` (sadece is_active). RED testi hazır ve elde duruyor. *~4h*
+   - Canlı kanıt (27 Tem, PF pretest 201): dönen 3 sorunun **üçünün de cevabı "A"** ve ilki tutarsız — uç artık çalışıyor ama kapısız.
 2. **Kapı 1 / #8**: şifre kurtarma uçtan uca (`email_util.send_email` bağla + SMTP env + `HesapKurtarmaPage` mount + `SMTP_SERVER`/`SMTP_HOST` isim çatalını birleştir). *~8h*
 3. **Kapı 1 / #9-10**: roster yazma uçları → 3 panoyu gerçek API'ye bağla (artık tablolar var). *~22h*
 4. **Kapı 1 / #11**: `golden-flows.yml` satır 172 YAML fix + `feature/**` tetikleyici + GF skip-oranı bekçisi (%83 skip = yeşil hiçbir şey kanıtlamıyor) + `sympy` pin çakışması (pip-audit bloke). *~15h*
