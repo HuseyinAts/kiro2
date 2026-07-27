@@ -192,53 +192,28 @@ async def load_assessment_items(
     """
     from models.question_bank import QuestionBankItem
 
-    dialect = db.bind.dialect.name if db.bind else "sqlite"
     limit_val = max_per_subject * len(subjects or SUBJECT_AREAS)
-    if dialect == "postgresql":
-        query = select(QuestionBankItem).tablesample(func.bernoulli(20)).where(
-            QuestionBankItem.is_active == True,  # noqa: E712
-            QuestionBankItem.difficulty_level.isnot(None),
-            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
-            # is_active-only sorgu 94K unverified/pending soruyu sızdırıyordu.
-            QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")),
-        )
-    else:
-        query = select(QuestionBankItem).where(
-            QuestionBankItem.is_active == True,  # noqa: E712
-            QuestionBankItem.difficulty_level.isnot(None),
-            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
-            # is_active-only sorgu 94K unverified/pending soruyu sızdırıyordu.
-            QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")),
-        )
+    # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql dalı
+    # AttributeError ile patlıyordu. func.random() her iki dialect'te de çalışır,
+    # dolayısıyla dialect ayrımına ve "az geldiyse tekrar sor" fallback'ine gerek
+    # kalmadı (bkz offline_sync_service.py:112).
+    query = select(QuestionBankItem).where(
+        QuestionBankItem.is_active == True,  # noqa: E712
+        QuestionBankItem.difficulty_level.isnot(None),
+        # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
+        # is_active-only sorgu 94K unverified/pending soruyu sızdırıyordu.
+        QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")),
+    )
 
     if subjects:
         query = query.where(
             QuestionBankItem.subject_area.in_([s.upper() for s in subjects])
         )
 
-    if dialect == "postgresql":
-        query = query.limit(limit_val)
-    else:
-        query = query.order_by(func.random()).limit(limit_val)
+    query = query.order_by(func.random()).limit(limit_val)
 
     result = await db.execute(query)
     rows = result.scalars().all()
-
-    if dialect == "postgresql" and len(rows) < limit_val:
-        fallback_query = select(QuestionBankItem).where(
-            QuestionBankItem.is_active == True,  # noqa: E712
-            QuestionBankItem.difficulty_level.isnot(None),
-            # student-facing seçim TEK doğruluk kaynağı: v_safe_for_beta.
-            # is_active-only sorgu 94K unverified/pending soruyu sızdırıyordu.
-            QuestionBankItem.id.in_(text("SELECT id FROM v_safe_for_beta")),
-        )
-        if subjects:
-            fallback_query = fallback_query.where(
-                QuestionBankItem.subject_area.in_([s.upper() for s in subjects])
-            )
-        fallback_query = fallback_query.limit(limit_val)
-        result = await db.execute(fallback_query)
-        rows = result.scalars().all()
 
     items = []
     for q in rows:

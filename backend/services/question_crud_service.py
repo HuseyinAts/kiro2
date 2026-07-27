@@ -1117,31 +1117,19 @@ class QuestionCRUDService:
         exam_type: str | None = None,
     ) -> list[QuestionBankItem]:
         """Rastgele soru seçimi (adaptif öğrenme için)."""
-        dialect = self.db.bind.dialect.name if self.db.bind else "sqlite"
-        if dialect == "postgresql":
-            stmt = select(QuestionBankItem).tablesample(func.bernoulli(20)).where(QuestionBankItem.is_active == True)
-        else:
-            stmt = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
+        # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql dalı
+        # AttributeError ile patlıyordu. func.random() her iki dialect'te de
+        # çalışır, dialect ayrımına gerek yok (bkz offline_sync_service.py:112).
+        # func modül düzeyinde import edilmemiş (dosyanın kalıbı lokal import).
+        from sqlalchemy import func
+
+        stmt = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
 
         if subject_area:
             stmt = stmt.where(QuestionBankItem.subject_area == subject_area)
         if exam_type:
             stmt = stmt.where(QuestionBankItem.exam_type == exam_type)
 
-        if dialect == "postgresql":
-            stmt = stmt.limit(count)
-            result = await self.db.execute(stmt)
-            rows = list(result.scalars().all())
-            if len(rows) < count:
-                stmt_fallback = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
-                if subject_area:
-                    stmt_fallback = stmt_fallback.where(QuestionBankItem.subject_area == subject_area)
-                if exam_type:
-                    stmt_fallback = stmt_fallback.where(QuestionBankItem.exam_type == exam_type)
-                stmt_fallback = stmt_fallback.limit(count)
-                result = await self.db.execute(stmt_fallback)
-                rows = list(result.scalars().all())
-            return rows
         stmt = stmt.order_by(func.random()).limit(count)
         result = await self.db.execute(stmt)
         return list(result.scalars().all())

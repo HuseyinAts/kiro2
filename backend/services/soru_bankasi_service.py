@@ -29,6 +29,7 @@ from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
 
+
 # Convention v3 (12 Haz 2026) — student-facing seçim TEK doğruluk kaynağı
 # olarak v_safe_for_beta view'ini kullanır. View; is_active + status
 # (human_verified/auto_judged_high) + pipeline_metadata dışlamalarını
@@ -48,6 +49,7 @@ def _safe_for_beta_gate():
     çağıran tarafta Redis ile cache'lenir.
     """
     return Question.id.in_(text("SELECT id FROM v_safe_for_beta"))
+
 
 # Türkçe → UPPERCASE konu dönüşüm haritası (DRY: tek tanım)
 _KONU_MAP: dict[str, str] = {
@@ -279,33 +281,35 @@ class SoruBankasiServisi:
                     import re
 
                     # Clean question text
-                    cleaned_text = re.sub(r'<[^>]+>', '', soru_data["soru_metni"])
-                    for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
-                        cleaned_text = cleaned_text.replace(space_char, '')
-                    cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+                    cleaned_text = re.sub(r"<[^>]+>", "", soru_data["soru_metni"])
+                    for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
+                        cleaned_text = cleaned_text.replace(space_char, "")
+                    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
                     cleaned_text = cleaned_text.lower()
 
                     # Clean options (up to 5 options)
                     cleaned_opts = []
                     for opt in secenekler[:5]:
                         if isinstance(opt, str):
-                            opt_cleaned = re.sub(r'<[^>]+>', '', opt)
-                            for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
-                                opt_cleaned = opt_cleaned.replace(space_char, '')
-                            opt_cleaned = re.sub(r'\s+', ' ', opt_cleaned).strip()
+                            opt_cleaned = re.sub(r"<[^>]+>", "", opt)
+                            for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
+                                opt_cleaned = opt_cleaned.replace(space_char, "")
+                            opt_cleaned = re.sub(r"\s+", " ", opt_cleaned).strip()
                             opt_cleaned = opt_cleaned.lower()
-                            opt_cleaned = re.sub(r'^[a-e]\)\s*', '', opt_cleaned)
+                            opt_cleaned = re.sub(r"^[a-e]\)\s*", "", opt_cleaned)
                             cleaned_opts.append(opt_cleaned)
                         else:
                             cleaned_opts.append("")
 
                     hash_input = cleaned_text
                     for opt in cleaned_opts:
-                        hash_input += '|' + opt
+                        hash_input += "|" + opt
                     if len(cleaned_opts) < 5:
-                        hash_input += '|'
+                        hash_input += "|"
 
-                    soru_hash = hashlib.sha256(hash_input.encode('utf-8')).hexdigest()[:32]
+                    soru_hash = hashlib.sha256(hash_input.encode("utf-8")).hexdigest()[
+                        :32
+                    ]
 
                 # --- Build QuestionBankItem (no legacy topic/subtopic/difficulty) ---
                 yeni_soru = Question(
@@ -341,12 +345,11 @@ class SoruBankasiServisi:
                     logger.warning(
                         "Duplicate question detected (IntegrityError on soru_hash). "
                         "Returning existing question. Error: %s",
-                        ie
+                        ie,
                     )
                     # Fetch and return the existing record by soru_hash
                     stmt = select(Question).where(
-                        Question.soru_hash == soru_hash,
-                        Question.is_active == True
+                        Question.soru_hash == soru_hash, Question.is_active == True
                     )
                     res = await session.execute(stmt)
                     existing = res.scalar_one_or_none()
@@ -354,9 +357,7 @@ class SoruBankasiServisi:
                         return existing
 
                     # If it wasn't found under is_active=True, search without active status filter
-                    stmt_any = select(Question).where(
-                        Question.soru_hash == soru_hash
-                    )
+                    stmt_any = select(Question).where(Question.soru_hash == soru_hash)
                     res_any = await session.execute(stmt_any)
                     existing_any = res_any.scalar_one_or_none()
                     if existing_any:
@@ -443,6 +444,7 @@ class SoruBankasiServisi:
 
         # If cache is mocked in unit tests, use the mocked get path
         from unittest.mock import AsyncMock
+
         if isinstance(cache_manager.get, AsyncMock):
             cached_soru = await cache_manager.get(cache_key)
             if cached_soru:
@@ -508,6 +510,7 @@ class SoruBankasiServisi:
         )
 
         from unittest.mock import AsyncMock
+
         if isinstance(cache_manager.get, AsyncMock):
             cached = await cache_manager.get(cache_key)
             if cached is not None:
@@ -634,18 +637,15 @@ class SoruBankasiServisi:
 
                 # FIX N+1: Tek sorguda tüm konuların sorularını getir
                 sinav_upper = sinav_tipi.upper() if sinav_tipi else None
-                dialect = session.bind.dialect.name if session.bind else "sqlite"
-                sinav_upper = sinav_tipi.upper() if sinav_tipi else None
-                if dialect == "postgresql":
-                    stmt = select(Question).tablesample(func.bernoulli(20)).where(
-                        Question.is_active.is_(True),
-                        _safe_for_beta_gate(),
-                    )
-                else:
-                    stmt = select(Question).where(
-                        Question.is_active.is_(True),
-                        _safe_for_beta_gate(),
-                    )
+                # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql
+                # dalı AttributeError ile patlıyor ve bu blok dıştaki
+                # `except Exception: return []` tarafından yutuluyordu, yani sınav
+                # üretimi sessizce "soru yok" diyordu. func.random() her iki
+                # dialect'te de çalışır (bkz offline_sync_service.py:112).
+                stmt = select(Question).where(
+                    Question.is_active.is_(True),
+                    _safe_for_beta_gate(),
+                )
                 if sinav_upper:
                     stmt = stmt.where(Question.exam_type == sinav_upper)
 
@@ -653,27 +653,9 @@ class SoruBankasiServisi:
                 if konu_listesi:
                     stmt = stmt.where(Question.subject_area.in_(konu_listesi))
 
-                if dialect == "postgresql":
-                    stmt = stmt.limit(toplam_ihtiyac)
-                    result = await session.execute(stmt)
-                    tum_sorular = result.scalars().all()
-
-                    if len(tum_sorular) < toplam_ihtiyac:
-                        stmt_fallback = select(Question).where(
-                            Question.is_active.is_(True),
-                            _safe_for_beta_gate(),
-                        )
-                        if sinav_upper:
-                            stmt_fallback = stmt_fallback.where(Question.exam_type == sinav_upper)
-                        if konu_listesi:
-                            stmt_fallback = stmt_fallback.where(Question.subject_area.in_(konu_listesi))
-                        stmt_fallback = stmt_fallback.limit(toplam_ihtiyac)
-                        result = await session.execute(stmt_fallback)
-                        tum_sorular = result.scalars().all()
-                else:
-                    stmt = stmt.order_by(func.random()).limit(toplam_ihtiyac)
-                    result = await session.execute(stmt)
-                    tum_sorular = result.scalars().all()
+                stmt = stmt.order_by(func.random()).limit(toplam_ihtiyac)
+                result = await session.execute(stmt)
+                tum_sorular = result.scalars().all()
 
                 logger.debug(f"FIX N+1: Tek sorguda {len(tum_sorular)} soru getirildi")
 
@@ -817,45 +799,29 @@ class SoruBankasiServisi:
 
         async with db_manager.get_session() as session:
             try:
-                dialect = session.bind.dialect.name if session.bind else "sqlite"
-
-                def _base_stmt(et: str | None, use_tablesample: bool = False):
-                    if use_tablesample and dialect == "postgresql":
-                        s = select(Question).tablesample(func.bernoulli(20)).where(
-                            Question.is_active == True,
-                            Question.subject_area.in_(subjects_upper),
-                            _safe_for_beta_gate(),
-                            # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
-                            text(f"question_text !~* '{_img_required_pattern}'"),
-                        )
-                    else:
-                        s = select(Question).where(
-                            Question.is_active == True,
-                            Question.subject_area.in_(subjects_upper),
-                            _safe_for_beta_gate(),
-                            # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
-                            text(f"question_text !~* '{_img_required_pattern}'"),
-                        )
+                # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql
+                # dalı AttributeError ile patlıyordu (dıştaki
+                # `except Exception: return []` yutuyordu). func.random() her iki
+                # dialect'te de çalışır (bkz offline_sync_service.py:112), bu yüzden
+                # use_tablesample parametresi ve dialect dalları kaldırıldı.
+                def _base_stmt(et: str | None):
+                    s = select(Question).where(
+                        Question.is_active == True,
+                        Question.subject_area.in_(subjects_upper),
+                        _safe_for_beta_gate(),
+                        # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
+                        text(f"question_text !~* '{_img_required_pattern}'"),
+                    )
                     if et is not None:
                         s = s.where(Question.exam_type == et)
                     if difficulty_levels:
                         s = s.where(Question.difficulty_level.in_(difficulty_levels))
 
-                    if dialect == "postgresql":
-                        return s.limit(pool_size)
                     return s.order_by(func.random()).limit(pool_size)
 
                 # Önce exam_type ile dene
-                if dialect == "postgresql":
-                    result = await session.execute(_base_stmt(exam_type_upper, use_tablesample=True))
-                    pool: list[Question] = list(result.scalars().all())
-
-                    if len(pool) < pool_size:
-                        result = await session.execute(_base_stmt(exam_type_upper, use_tablesample=False))
-                        pool = list(result.scalars().all())
-                else:
-                    result = await session.execute(_base_stmt(exam_type_upper))
-                    pool: list[Question] = list(result.scalars().all())
+                result = await session.execute(_base_stmt(exam_type_upper))
+                pool: list[Question] = list(result.scalars().all())
 
                 # Edebiyat TYT yok gibi durumlar için fallback: exam_type kısıtını kaldır
                 if not pool:
@@ -863,15 +829,8 @@ class SoruBankasiServisi:
                         f"get_interleaved_questions: exam_type={exam_type_upper} "
                         f"havuz boş, fallback uygulanıyor (konular={subjects_upper})"
                     )
-                    if dialect == "postgresql":
-                        result = await session.execute(_base_stmt(None, use_tablesample=True))
-                        pool = list(result.scalars().all())
-                        if len(pool) < pool_size:
-                            result = await session.execute(_base_stmt(None, use_tablesample=False))
-                            pool = list(result.scalars().all())
-                    else:
-                        result = await session.execute(_base_stmt(None))
-                        pool = list(result.scalars().all())
+                    result = await session.execute(_base_stmt(None))
+                    pool = list(result.scalars().all())
 
                 logger.debug(
                     f"get_interleaved_questions: havuzdan {len(pool)} soru çekildi "
@@ -972,19 +931,14 @@ class SoruBankasiServisi:
                 # Topic normalization (Türkçe karakter desteği)
                 normalized_topic = _normalize_topic(topic) if topic else None
 
-                dialect = session.bind.dialect.name if session.bind else "sqlite"
-                if dialect == "postgresql":
-                    stmt = select(Question).tablesample(func.bernoulli(20)).where(
-                        Question.is_active == True,
-                        Question.subject_area == subject_upper,
-                        _safe_for_beta_gate(),
-                    )
-                else:
-                    stmt = select(Question).where(
-                        Question.is_active == True,
-                        Question.subject_area == subject_upper,
-                        _safe_for_beta_gate(),
-                    )
+                # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql
+                # dalı AttributeError ile patlıyordu (dıştaki except yutuyordu).
+                # func.random() her iki dialect'te de çalışır.
+                stmt = select(Question).where(
+                    Question.is_active == True,
+                    Question.subject_area == subject_upper,
+                    _safe_for_beta_gate(),
+                )
 
                 # Topic varsa exam_type filtresi uygulanmaz (Türev=AYT, Çarpan=TYT olabilir)
                 if not topic:
@@ -1053,33 +1007,9 @@ class SoruBankasiServisi:
                 if difficulty_levels:
                     stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))
 
-                if dialect == "postgresql":
-                    stmt = stmt.limit(count)
-                    result = await session.execute(stmt)
-                    questions: list[Question] = list(result.scalars().all())
-
-                    if len(questions) < count:
-                        stmt_no_sample = select(Question).where(
-                            Question.is_active == True,
-                            Question.subject_area == subject_upper,
-                            _safe_for_beta_gate(),
-                        )
-                        if not topic:
-                            stmt_no_sample = stmt_no_sample.where(Question.exam_type == exam_type_upper)
-                        if normalized_topic:
-                            if topic_id:
-                                stmt_no_sample = stmt_no_sample.where(Question.primary_topic_id == topic_id)
-                            elif keywords:
-                                stmt_no_sample = stmt_no_sample.where(or_(*conditions))
-                        if difficulty_levels:
-                            stmt_no_sample = stmt_no_sample.where(Question.difficulty_level.in_(difficulty_levels))
-                        stmt_no_sample = stmt_no_sample.limit(count)
-                        result = await session.execute(stmt_no_sample)
-                        questions = list(result.scalars().all())
-                else:
-                    stmt = stmt.order_by(func.random()).limit(count)
-                    result = await session.execute(stmt)
-                    questions: list[Question] = list(result.scalars().all())
+                stmt = stmt.order_by(func.random()).limit(count)
+                result = await session.execute(stmt)
+                questions: list[Question] = list(result.scalars().all())
 
                 # Fallback: Topic bulunamazsa, topic filtresiz tekrar dene
                 if use_topic_filter and len(questions) == 0 and normalized_topic:
@@ -1087,49 +1017,19 @@ class SoruBankasiServisi:
                         f"Konu '{topic}' için soru bulunamadı, fallback: sadece ders filtresi"
                     )
 
-                    if dialect == "postgresql":
-                        stmt_fallback = select(Question).tablesample(func.bernoulli(20)).where(
-                            Question.is_active == True,
-                            Question.subject_area == subject_upper,
-                            Question.exam_type == exam_type_upper,
-                            _safe_for_beta_gate(),
+                    stmt_fallback = select(Question).where(
+                        Question.is_active == True,
+                        Question.subject_area == subject_upper,
+                        Question.exam_type == exam_type_upper,
+                        _safe_for_beta_gate(),
+                    )
+                    if difficulty_levels:
+                        stmt_fallback = stmt_fallback.where(
+                            Question.difficulty_level.in_(difficulty_levels)
                         )
-                        if difficulty_levels:
-                            stmt_fallback = stmt_fallback.where(
-                                Question.difficulty_level.in_(difficulty_levels)
-                            )
-                        stmt_fallback = stmt_fallback.limit(count)
-                        result_fallback = await session.execute(stmt_fallback)
-                        questions = list(result_fallback.scalars().all())
-
-                        if len(questions) < count:
-                            stmt_fallback = select(Question).where(
-                                Question.is_active == True,
-                                Question.subject_area == subject_upper,
-                                Question.exam_type == exam_type_upper,
-                                _safe_for_beta_gate(),
-                            )
-                            if difficulty_levels:
-                                stmt_fallback = stmt_fallback.where(
-                                    Question.difficulty_level.in_(difficulty_levels)
-                                )
-                            stmt_fallback = stmt_fallback.limit(count)
-                            result_fallback = await session.execute(stmt_fallback)
-                            questions = list(result_fallback.scalars().all())
-                    else:
-                        stmt_fallback = select(Question).where(
-                            Question.is_active == True,
-                            Question.subject_area == subject_upper,
-                            Question.exam_type == exam_type_upper,
-                            _safe_for_beta_gate(),
-                        )
-                        if difficulty_levels:
-                            stmt_fallback = stmt_fallback.where(
-                                Question.difficulty_level.in_(difficulty_levels)
-                            )
-                        stmt_fallback = stmt_fallback.order_by(func.random()).limit(count)
-                        result_fallback = await session.execute(stmt_fallback)
-                        questions = list(result_fallback.scalars().all())
+                    stmt_fallback = stmt_fallback.order_by(func.random()).limit(count)
+                    result_fallback = await session.execute(stmt_fallback)
+                    questions = list(result_fallback.scalars().all())
 
                     logger.info(
                         f"Fallback: {len(questions)} soru (ders={subject_upper}, konu yok)"

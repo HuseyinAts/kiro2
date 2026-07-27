@@ -55,73 +55,30 @@ async def get_pretest_questions(
 
     subject_upper = subject.upper() if subject else "MATEMATIK"
 
-    dialect = db.bind.dialect.name if db.bind else "sqlite"
-    if dialect == "postgresql":
-        result = await db.execute(
-            select(
-                QuestionBankItem.id,
-                QuestionBankItem.question_text,
-                QuestionBankItem.option_a,
-                QuestionBankItem.option_b,
-                QuestionBankItem.option_c,
-                QuestionBankItem.option_d,
-                QuestionBankItem.option_e,
-                QuestionBankItem.correct_answer,
-                QuestionBankItem.difficulty_level,
-            )
-            .tablesample(func.bernoulli(20))
-            .where(
-                QuestionBankItem.is_active == True,  # noqa: E712
-                QuestionBankItem.subject_area == subject_upper,
-                QuestionBankItem.primary_topic_id == topic_id,
-            )
-            .limit(count)
+    # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql dalı
+    # AttributeError ile patlıyordu, yani bu uç üretimde HER ZAMAN 500 veriyordu.
+    # func.random() her iki dialect'te de çalışır (bkz offline_sync_service.py:112).
+    result = await db.execute(
+        select(
+            QuestionBankItem.id,
+            QuestionBankItem.question_text,
+            QuestionBankItem.option_a,
+            QuestionBankItem.option_b,
+            QuestionBankItem.option_c,
+            QuestionBankItem.option_d,
+            QuestionBankItem.option_e,
+            QuestionBankItem.correct_answer,
+            QuestionBankItem.difficulty_level,
         )
-        rows = result.all()
-
-        if len(rows) < count:
-            result = await db.execute(
-                select(
-                    QuestionBankItem.id,
-                    QuestionBankItem.question_text,
-                    QuestionBankItem.option_a,
-                    QuestionBankItem.option_b,
-                    QuestionBankItem.option_c,
-                    QuestionBankItem.option_d,
-                    QuestionBankItem.option_e,
-                    QuestionBankItem.correct_answer,
-                    QuestionBankItem.difficulty_level,
-                )
-                .where(
-                    QuestionBankItem.is_active == True,  # noqa: E712
-                    QuestionBankItem.subject_area == subject_upper,
-                    QuestionBankItem.primary_topic_id == topic_id,
-                )
-                .limit(count)
-            )
-            rows = result.all()
-    else:
-        result = await db.execute(
-            select(
-                QuestionBankItem.id,
-                QuestionBankItem.question_text,
-                QuestionBankItem.option_a,
-                QuestionBankItem.option_b,
-                QuestionBankItem.option_c,
-                QuestionBankItem.option_d,
-                QuestionBankItem.option_e,
-                QuestionBankItem.correct_answer,
-                QuestionBankItem.difficulty_level,
-            )
-            .where(
-                QuestionBankItem.is_active == True,  # noqa: E712
-                QuestionBankItem.subject_area == subject_upper,
-                QuestionBankItem.primary_topic_id == topic_id,
-            )
-            .order_by(func.random())
-            .limit(count)
+        .where(
+            QuestionBankItem.is_active == True,  # noqa: E712
+            QuestionBankItem.subject_area == subject_upper,
+            QuestionBankItem.primary_topic_id == topic_id,
         )
-        rows = result.all()
+        .order_by(func.random())
+        .limit(count)
+    )
+    rows = result.all()
 
     return [
         {
@@ -207,9 +164,7 @@ async def record_pretest_result(
     progress = progress_result.scalar_one_or_none()
 
     if not progress:
-        logger.warning(
-            f"No progress record for student {student_id}, topic {topic_id}"
-        )
+        logger.warning(f"No progress record for student {student_id}, topic {topic_id}")
         return {"stored": False, "reason": "no_progress_record"}
 
     # Store pretest data in the metadata/extra JSON field
