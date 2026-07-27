@@ -628,7 +628,11 @@ async def kullanici_kayit(
     # Bu kayıt olmadan: exam_sessions FK kırık, theta persist edemez,
     # learning path kişiselleştiremez, dashboard hep sıfır gösterir.
     if rol_str == "STUDENT":
-        profile_id = str(_uuid.uuid4())
+        # DEĞİŞMEZ: student_profiles.id == users.id. exam_sessions.student_id FK'sı
+        # student_profiles.id'ye bakar ama sınav yolu current_user.id yazar; bağımsız
+        # bir uuid4 vermek ForeignKeyViolation -> HTTP 500 üretir.
+        # Bkz parent_service.py:533 ve tests/e2e/test_student_profile_id_invariant.py
+        profile_id = user_id
         grade_level = getattr(kullanici_data, "sinif", 11)  # Default: 11. sınıf
         if not isinstance(grade_level, int) or grade_level < 9 or grade_level > 12:
             grade_level = 11
