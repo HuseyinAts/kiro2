@@ -32,19 +32,11 @@ from sqlalchemy.pool import NullPool
 
 from tests.e2e.pg_dsn import SKIP_REASON, resolve_pg_dsn
 
-pytestmark = [
-    pytest.mark.golden_flow,
-    # BEKLENEN KIRMIZI: #7'nin 3. adımı (gate yayılımı) henüz yapılmadı.
-    # strict=True → iş bitip testler geçmeye başladığında bu marker'ın
-    # KALDIRILMASI zorunlu olur; aksi halde paket "unexpectedly passing" ile
-    # kırmızıya döner. Yeşil görünen bir paketin içinde sessizce yaşayan
-    # bilinen-kırık test bırakmamak için.
-    pytest.mark.xfail(
-        reason="#7 adım 3: v_safe_for_beta kapısı cat_session/placement_service/"
-        "productive_failure/duel/osym_questions'a henüz yayılmadı",
-        strict=True,
-    ),
-]
+# xfail(strict) marker'ı 27 Tem 2026'da KALDIRILDI: #7 adım 3 (kapı yayılımı)
+# + mv_safe_for_beta migration'ı uygulandıktan sonra iki test de XPASS verdi,
+# yani strict marker paketi kırmızıya döndürdü — ölü-adam anahtarı amacına
+# uygun tetikledi. Bundan sonra bu dosyanın kırmızısı GERÇEK sızıntı demektir.
+pytestmark = [pytest.mark.golden_flow]
 
 # Sızıntıya en açık konu (27 Tem ölçümü: 8.591 aktif / 452 v_safe).
 # Kapı yoksa dönen soruların büyük çoğunluğu view dışıdır -> test kırmızı.
