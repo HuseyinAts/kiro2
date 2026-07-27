@@ -110,6 +110,12 @@ def include_object(object, name, type_, reflected, compare_to):
     # DB-only tabloları atla (DROP önerisini önle)
     if type_ == "table" and name in ALEMBIC_EXCLUDE_TABLES:
         return False
+    # DB'de var ama metadata'da karşılığı yok → autogenerate onu "fazlalık"
+    # sanıp DROP TABLE üretir. c555a10f4b93_sync_db_changes.py tam olarak böyle
+    # 145 DROP TABLE taşıdı ve 131 tabloyu sessizce düşürdü (27 Tem 2026).
+    # Liste tutmak yetmiyor — bu sınıf yapısal olarak kapatılmalı.
+    if type_ == "table" and reflected and compare_to is None:
+        return False
     # pgvector 'embedding' kolonunu atla (SQLAlchemy NullType → karşılaştırma hatası)
     if type_ == "column" and name == "embedding":
         return False
