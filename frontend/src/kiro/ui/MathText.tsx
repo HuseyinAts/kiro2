@@ -18,7 +18,6 @@ import * as React from 'react';
 
 import { MathText as PaylasilanMathText } from '@/components/ui/MathText';
 
-import './mathText.css';
 
 export interface MathTextProps {
   /** Ham metin — LaTeX içerebilir de içermeyebilir de. */

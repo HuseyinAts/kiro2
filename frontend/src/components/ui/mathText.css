@@ -1,0 +1,27 @@
+/* ============================================================================
+   KaTeX — erişilebilir ad temizliği (TÜM formül yüzeyleri).
+
+   KaTeX iki katman üretir:
+     .katex-html   → görsel, aria-hidden="true" (ekran okuyucuya KAPALI)
+     .katex-mathml → semantik MathML (ekran okuyucuya AÇIK — istenen budur)
+
+   Ama MathML'in içindeki <annotation encoding="application/x-tex"> ham LaTeX
+   kaynağını taşır ve tarayıcı bunu ERİŞİLEBİLİR ADA katar. Ölçüm (Chromium,
+   27 Tem 2026): bir şık butonunun adı
+     "27<5<π \frac{2}{7} < \sqrt{5} < \pi"
+   yani ekran okuyucu önce formülü, ARDINDAN ham TeX kaynağını karakter
+   karakter okuyor ("ters bölü frac açılış-süslü iki...").
+
+   display:none, accname algoritmasında alt ağacı dışlar — MathML semantiği
+   AT'ye kalır, ham kaynak addan düşer. MathML Core zaten <annotation>'ı
+   render-dışı sayar; bu kural o davranışı garanti altına alır.
+
+   Etkilenen yüzeyler (MathText tüketicileri): Exam/Interface/QuestionPanel,
+   Exam/Interface/AnswerPanel, Exam/ModernOSYMExamInterface,
+   Exam/OSYMExamInterface, LearningPath/ProductiveFailureFlow, kiro/ui/MathText.
+   Ayrıca KaTeX'i doğrudan kuran Chat/TurkishChatInterface bu dosyayı import eder.
+   ============================================================================ */
+
+.katex annotation {
+  display: none;
+}
