@@ -341,7 +341,9 @@ def _panel(state: CATState, soru: dict | None, *, done: bool) -> CatNextResponse
         se=round(state.se, 4),
         done=done,
         seviye=irt.ability_band(state.theta),
-        topPct=irt.theta_percentile(state.theta),
+        # SE geçilir: yüzdelik ölçüm hatasına göre %50'ye çekilsin
+        # (yerleştirmede SE~0.6-1.0; Φ(θ̂) aşırı özgüvenli olurdu).
+        topPct=irt.theta_percentile(state.theta, se=state.se),
         netTahmini=irt.expected_net(state.theta),
         madde=state.n_questions,
         kalanTahmini=kalan,

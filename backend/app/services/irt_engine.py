@@ -300,13 +300,27 @@ REF_ITEM_A = 1.0
 REF_ITEM_C = 0.20
 
 
-def theta_percentile(theta: float) -> int:
+def theta_percentile(theta: float, se: float = 0.0) -> int:
     """
-    θ'nın ÜST yüzdesi: "≈ üst %12" gibi. θ~N(0,1) varsayımı.
+    θ'nın ÜST yüzdesi: "≈ üst %12" gibi. Yetenek dağılımı θ~N(0,1).
 
-    Ekran ham basar, %0 anlamsız olur → [1, 99] aralığına kırpılır.
+    ÖLÇÜM HATASI HESABA KATILIR. θ̂ bir nokta tahmin değil, posterior
+    ortalamasıdır: θ|veri ~ N(θ̂, SE²). Öğrencinin yüzdeliği Φ(θ̂) DEĞİL,
+    onun posterior beklentisidir:
+
+        E[Φ(θ)] = Φ( θ̂ / √(1 + SE²) )
+
+    (Φ doğrusal olmadığı için Φ(E[θ]) ≠ E[Φ(θ)] — Jensen.) Bunu atlamak
+    gürültülü bir ölçümden aşırı özgüvenli bir iddia üretir: bu havuzda
+    12 maddede SE≈0.62 ve θ̂=+1.0 için Φ(θ̂) "üst %16" derken dürüst
+    cevap "üst %20"dir. SE büyüdükçe iddia %50'ye çekilir — istenen budur.
+
+    se=0.0 (varsayılan) kesin ölçüm demektir ve klasik Φ(θ)'ya indirger.
+
+    Ekran ham basar, %0/%100 anlamsız olur → [1, 99] aralığına kırpılır.
     """
-    pct = 100.0 * float(stats.norm.sf(theta))
+    olcek = math.sqrt(1.0 + float(se) ** 2)
+    pct = 100.0 * float(stats.norm.sf(float(theta) / olcek))
     return int(max(1, min(99, round(pct))))
 
 

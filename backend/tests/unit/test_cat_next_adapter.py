@@ -127,6 +127,39 @@ def test_ability_band_sadece_uc_kanonik_deger_uretir():
     assert ie.ability_band(1.0) == "guclu"
 
 
+def test_theta_percentile_olcum_hatasini_hesaba_katar():
+    """θ̂ nokta tahmin DEĞİL: θ|veri ~ N(θ̂, SE²).
+
+    Yüzdelik Φ(θ̂) değil E[Φ(θ)] = Φ(θ̂/√(1+SE²)) olmalı (Jensen).
+    SE büyüdükçe iddia ortaya (%50) çekilmeli — aksi halde gürültülü bir
+    ölçümden 'üst %16' gibi aşırı özgüvenli bir sonuç üretilir.
+    """
+    # Kesin ölçüm (SE→0): klasik Φ(θ) ile aynı
+    assert ie.theta_percentile(1.0, se=0.0) == 16
+
+    # Gerçek yerleştirme SE'si (12 maddede ~0.62): iddia zayıflamalı
+    gurultulu = ie.theta_percentile(1.0, se=0.62)
+    assert gurultulu > 16, "SE hesaba katılmadı — aşırı özgüven"
+    assert gurultulu == 20
+
+    # SE arttıkça monoton olarak %50'ye yaklaşmalı
+    assert (ie.theta_percentile(1.0, se=0.0)
+            < ie.theta_percentile(1.0, se=0.6)
+            < ie.theta_percentile(1.0, se=1.5) <= 50)
+
+
+def test_theta_percentile_dusuk_yetenekte_de_ortaya_cekilir():
+    """Simetri: negatif θ'da da SE arttıkça %50'ye yaklaşır (ama üstten)."""
+    assert (ie.theta_percentile(-1.0, se=0.0)
+            > ie.theta_percentile(-1.0, se=0.6)
+            > ie.theta_percentile(-1.0, se=1.5) >= 50)
+
+
+def test_theta_percentile_se_varsayilani_geriye_uyumlu():
+    """se verilmezse eski davranış (kesin ölçüm) korunur."""
+    assert ie.theta_percentile(0.0) == 50
+
+
 # ---------------------------------------------------------------------------
 # 2. HTTP adaptörü — sahte servis
 # ---------------------------------------------------------------------------
