@@ -35,6 +35,41 @@ def test_all_app_api_routers_registered():
     )
 
 
+def test_mapped_routers_are_importable():
+    """ROUTER_MAPPING'deki her modül GERÇEKTEN import edilebilmeli.
+
+    Dosya-adı kontrolü YETMEZ: loader.py bir modül import edilemediğinde
+    WARNING yazıp DEVAM eder (routers/loader.py). Router sessizce kayıtsız
+    kalır, tüm endpoint'leri 404 döner ve mevcut iki test bunu göremez —
+    ikisi de yalnız dosyanın VARLIĞINA bakıyor.
+
+    Bu sınıf 27 Tem 2026'da iki kez yakalandı, ikisi de farklı sebeple:
+      app.api.cat                    → FastAPI 0.103.2'de `-> None` + 204
+                                       assert'i (TÜM CAT router'ı 404'tü)
+      api.alternative_solutions_api  → defaultsuz parametre defaultludan
+                                       sonra (SyntaxError, 8 endpoint 404)
+    İkisi de canlı logdan tesadüfen fark edildi; test yakalamadı.
+    """
+    import importlib
+
+    from routers.loader import DISABLED_ROUTERS, ROUTER_MAPPING
+
+    hatalar = []
+    for eski_ad, (_kategori, modul) in sorted(ROUTER_MAPPING.items()):
+        if eski_ad in DISABLED_ROUTERS:
+            continue
+        try:
+            importlib.import_module(modul)
+        except Exception as exc:
+            hatalar.append(f"  {modul}\n      {type(exc).__name__}: {exc}")
+
+    assert not hatalar, (
+        f"{len(hatalar)} router import EDİLEMİYOR — endpoint'leri 404 döner:\n"
+        + "\n".join(hatalar)
+        + "\n\nloader.py bu hatayı WARNING'e çevirip geçer; sessiz 404 üretir."
+    )
+
+
 def test_registered_app_api_modules_exist():
     """ROUTER_MAPPING'deki app.api.* kayıtlarının dosyası mevcut olmalı."""
     missing = []

@@ -246,10 +246,19 @@ async def abandon_session(
     current_user: User = Depends(get_current_user),
     service: CATSessionService = Depends(get_cat_service),
 ):
-    # DİKKAT: `-> None` dönüş anotasyonu EKLEME. FastAPI 0.103.2 bunu
-    # response_model=NoneType'a çevirir, NoneType truthy olduğu için 204'ün
-    # "gövde yasak" assert'i modül import'unda patlar ve TÜM CAT router'ı
-    # kayıtsız kalır (/api/v1/cat/* → 404). Yeni sürümlerde None özel-durumlu.
+    # DİKKAT: `-> None` dönüş anotasyonu EKLEME.
+    #
+    # Hata İKİ koşulun BİRLİKTE olmasıyla çıkar (27 Tem 2026 ölçümü):
+    #   (a) `from __future__ import annotations` dosyanın başında VAR, ve
+    #   (b) bu fonksiyonda `-> None` dönüş anotasyonu VAR.
+    # (a) anotasyonu string'e çevirir; FastAPI 0.103.2 onu get_type_hints ile
+    # NoneType'a çözer, NoneType truthy olduğu için 204'ün "gövde yasak"
+    # assert'i modül import'unda patlar → TÜM CAT router'ı kayıtsız kalır
+    # (/api/v1/cat/* → 404). (a) YOKSA `-> None` düz None objesidir (falsy)
+    # ve sorun çıkmaz — ölçüldü. Yeni FastAPI sürümlerinde None özel-durumlu.
+    #
+    # Bu dosyada (a) zaten YASAK (bkz. dosya başı slowapi notu); yine de bu
+    # anotasyonu eklemeyin: iki yasak birbirini yedekler.
     state = await service.get_session_state(session_id)
     if not state or state.user_id != str(current_user.id):
         raise HTTPException(status_code=403, detail="Erişim reddedildi")
