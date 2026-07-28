@@ -1,3 +1,10 @@
+---
+name: audit-methodology
+description: Audit/olcum disiplini — varsayimi olcumden ayirma kurallari
+trigger: always
+priority: critical
+---
+
 # Audit Methodology
 
 Bu kural Faz 0.8 OCR truncation investigation (Session 156, 14 May 2026) sonrasi olusturuldu.
@@ -125,6 +132,40 @@ Sorgulanamıyorsa o sayı bir tahmindir — "ölçülmedi" diye işaretle, aksiy
 > Karpathy bağı: "61K garble → re-OCR → Gemini-bloke → çıkmaz" ezberi 3 oturum üst üste
 > yazıldı. Kullanıcı itince ölçüm yapıldı, ezber çürüdü. **Ezbere kategori-sayısı yazma.**
 
+### SEVERITY DE BİR ÖLÇÜMDÜR (28 Tem 2026 — kural yazılıydı ve yine ihlal edildi)
+
+Yukarıdaki bölüm **sayılar** üzerine kurulu ("şu kadar var"). Bu yüzden bir boşluk
+bıraktı ve o boşluktan düşüldü: **"acil", "P0", "kritik", "güvenli", "bloke edilmiş"
+de birer iddiadır ve çoğu doğrudan ölçülebilir.** Bunlar sayı gibi görünmediği için
+"varsayım ≠ ölçüm" deseni onlara eşleşmiyor.
+
+**Vaka:** Depo GitHub'da PUBLIC bulundu (auth'suz API 200) ve geçmişinde 14 anahtar
+vardı. Buradan **"rotasyon P0, acil"** sonucu çıkarıldı. Çıkarım mantıklıydı ama
+ölçüm değildi. Ölçünce (`backend/scripts/secret_inventory.py --check-live`):
+
+    10 Google -> 400   2 OpenAI -> 401   1 Anthropic -> 401   1 HF -> 401
+    HÂLÂ CANLI: 0 / 14
+
+Yani rotasyon fiilen ZATEN yapılmıştı; aciliyet yoktu. Aynı oturumda sayı iddiaları
+(367 auth'suz uç → gerçekte 89; "hassas" bulgu → `api_key_configured` boolean bayrağı)
+titizlikle doğrulanmıştı. Doğrulanmayan tek şey **severity** oldu.
+
+**Kural:** Bir riski/aciliyeti raporlamadan önce sor — *bu iddianın yanlış olduğunu
+gösterecek tek bir ölçüm var mı?* Varsa ONU YAP.
+
+| İddia | Onu çürütebilecek ölçüm |
+|---|---|
+| "Bu sızmış anahtar tehlikeli" | Anahtar hâlâ geçerli mi? (sağlayıcının en ucuz auth ucu) |
+| "Bu uç sızdırıyor" | Auth'suz/yetkisiz çağır, gövdeye bak |
+| "Bu kontrol bizi koruyor" | Atlatmayı DENE (bkz. mutasyon testi) |
+| "Bu kapı bloke ediyor" | Kapıyı kaldır, kırmızıya dönüyor mu? |
+| "Bu veri kaybolmuş/bozuk" | Satır-bazında sorgula, örneklem al |
+| "Bu kod ölü" | Import et / çağrı yerlerini say / canlı logdan bak |
+
+**Ve olumsuz yön de aynı:** "sorun yok", "temiz", "hepsi geçiyor" da ölçüm ister.
+Yeşil bir test, ölçtüğünü sandığın şeyi ölçmüyor olabilir — bu depo bunu bir günde
+üç kez yaşadı (sqlite'a düşen e2e, hiç koşmayan hook, 0 satır tarayan sır bekçisi).
+
 ## Metrik Doğrulama Gate (detector'a güvenmeden önce)
 
 Bir ölçüm metriği (garble skoru, kalite skoru, benzerlik) uygulamadan ÖNCE
@@ -178,6 +219,7 @@ Deterministik ucuz kural (regex, sözlük-yokluğu, char-yokluğu) ile içerik s
 | 14 May 2026 | C2 audit (Faz 0.2) | LEFT(question_text, 200) truncation | Sample size 30 LIMIT, full text |
 | 3 Haz 2026 | Garble efsanesi | "61K garble" = ölçülmemiş varsayım (unverified=incelenmemiş); word-DF metriği doğrulama geçemedi | Char-trigram LM (sentetik-bozma doğrulamalı); satır-bazında etiket şartı |
 | 3 Haz 2026 | Garble-tail silme | 3 ucuz filtre geçerli Türkçe STEM'i yanlış-pozitif sildi | Pozitif yabancı-kanıt + Türkçe-char guard |
+| 28 Tem 2026 | Sızmış anahtar aciliyeti | "public depo + geçmişte anahtar → P0 acil" ÇIKARIMDI; ölçünce 14/14 anahtar ölü. Kural yazılıydı ama yalnız SAYILARI kapsıyordu, severity'yi değil | `secret_inventory.py --check-live`; kurala "Severity de bir ölçümdür" bölümü |
 | ... | ... | ... | ... |
 
 ---

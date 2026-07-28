@@ -85,6 +85,10 @@ Her gorev tamamlanmadan once bu listeyi kontrol et:
 - [ ] Infra calisiyor mu? (ONCE health check, SONRA koda bak — detay asagida)
 - [ ] En basit cozum mu? (Daha basit alternatif varsa ONU sec — YAGNI)
 - [ ] Root Cause Analysis tablosu yazildi mi? (debugging-first.md gate)
+- [ ] **Severity/aciliyet iddiasi OLCULDU mu?** ("acil", "P0", "kritik", "guvenli",
+      "temiz" de birer iddiadir ve cogu tek komutla curutulebilir — audit-methodology.md
+      "Severity de bir olcumdur". 28 Tem: "sizmis anahtar P0 acil" cikarimi olcununce
+      14/14 anahtarin olu oldugu goruldu.)
 
 ## INFRA-FIRST HATA AYIKLAMA (Infrastructure Check First)
 
