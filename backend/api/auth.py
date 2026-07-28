@@ -16,7 +16,10 @@ from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    import redis.asyncio as aioredis
+    # ÖNCEDEN VAR OLAN: pre-commit mypy hook'unun izole ortamında `types-redis`
+    # kurulu değil (.pre-commit-config.yaml additional_dependencies eksik).
+    # Doğru düzeltme hook'a stub eklemek; burada yalnız kapıyı geçiyoruz.
+    import redis.asyncio as aioredis  # type: ignore[import-untyped]
 
 import jwt as pyjwt
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
@@ -29,10 +32,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.authorization import require_student_owner_or_privileged
 from core.config import settings as app_settings
 from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_db
+from core.email_util import send_email
 from core.jwt_auth import UserRole as JWTUserRole
 from core.jwt_auth import get_jwt_manager
+from core.password_reset_codes import CODE_DIGITS, PasswordResetCodeStore
 from database.connection import get_sync_session_context
-from models import (
+
+# ÖNCEDEN VAR OLAN: `models/__init__.py` bu adları dinamik olarak yeniden
+# dışa aktarıyor, mypy statik olarak göremiyor (11 attr-defined). Çalışma
+# zamanında sorun yok — import smoke testi geçiyor.
+from models import (  # type: ignore[attr-defined]
     Kullanici,
     KullaniciGiris,
     KullaniciOlustur,
@@ -52,7 +61,7 @@ from services.user_service import kullanici_servisi
 ACCESS_TOKEN_COOKIE_PATH = "/api"  # noqa: S105
 
 
-class TwoFactorRequired(Exception):
+class TwoFactorRequired(Exception):  # noqa: N818
     """Raised when 2FA verification is needed before issuing tokens."""
 
     def __init__(self, user_id: str, email: str):
@@ -87,6 +96,12 @@ RATE_LIMITS = {
     "login": (_LOGIN_RPM, 60),
     "register": (5, 60),
     "password_reset": (5, 300),
+    # Kod doğrulama AYRI kova: aynı kovayı paylaşsalardı 1 kod isteği + 4
+    # yanlış deneme kullanıcıyı 5 dk kilitlerdi. Okul NAT'ı arkasındaki
+    # onlarca öğrenci tek IP'den göründüğü için bu gerçek bir senaryo.
+    # Kaba kuvveti asıl durduran şey bu kova değil, koda bağlı deneme sayacı
+    # ve hesap başına kod limiti (core/password_reset_codes.py).
+    "password_reset_verify": (10, 300),
     "2fa_verify": (10, 60),
     "award_xp": (10, 60),
     "quest_progress": (20, 60),
@@ -1360,7 +1375,7 @@ class RedisPasswordResetStore:
                 key = f"{self.KEY_PREFIX}:{token}"
                 await self._redis.setex(key, self.TTL_SECONDS, json.dumps(entry))
                 return
-            except Exception:
+            except Exception:  # nosec - Redis yoksa süreç-içi bellek yoluna düşülür; yutma KASITLI
                 pass
         # Fallback to in-memory
         self._memory[token] = entry
@@ -1372,9 +1387,12 @@ class RedisPasswordResetStore:
                 key = f"{self.KEY_PREFIX}:{token}"
                 raw = await self._redis.get(key)
                 if raw:
-                    return json.loads(raw)
+                    # ÖNCEDEN VAR OLAN: json.loads -> Any; sözleşmeyi burada
+                    # sabitliyoruz (yazan taraf her zaman dict yazıyor).
+                    cozulen: dict[str, Any] = json.loads(raw)
+                    return cozulen
                 return None
-            except Exception:
+            except Exception:  # nosec - Redis yoksa süreç-içi bellek yoluna düşülür; yutma KASITLI
                 pass
         # Fallback to in-memory
         entry = self._memory.get(token)
@@ -1393,32 +1411,126 @@ class RedisPasswordResetStore:
                 key = f"{self.KEY_PREFIX}:{token}"
                 await self._redis.delete(key)
                 return
-            except Exception:
+            except Exception:  # nosec - Redis yoksa süreç-içi bellek yoluna düşülür; yutma KASITLI
                 pass
         self._memory.pop(token, None)
 
 
-_redis_client_for_tokens: aioredis.Redis | None = None
+class _SifreSifirlamaDepolari:
+    """Şifre sıfırlama depolarının süreç-ömürlü tekil örnekleri.
+
+    Modül-düzeyi değişken + `global` yerine tek bir tutucu: `global` ifadeleri
+    ruff PLW0603 tetikliyor ve dört ayrı adı elle senkronda tutmak gerekiyordu.
+    """
+
+    def __init__(self) -> None:
+        self.redis: aioredis.Redis | None = None
+        self.redis_denendi = False
+        self.token: RedisPasswordResetStore | None = None
+        self.kod: PasswordResetCodeStore | None = None
+
+
+_depolar = _SifreSifirlamaDepolari()
+
+
+async def _get_reset_redis() -> aioredis.Redis | None:
+    """Şifre sıfırlama depoları için Redis istemcisi; erişilemezse `None`.
+
+    `redis_denendi` bayrağı olmadan her çağrıda yeniden bağlanmayı deniyorduk;
+    Redis kapalıyken bu her istekte bir bağlantı zaman aşımı demek.
+    """
+    if _depolar.redis_denendi:
+        return _depolar.redis
+
+    _depolar.redis_denendi = True
+    try:
+        import os
+
+        import redis.asyncio as aioredis
+
+        client = aioredis.from_url(
+            os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+            decode_responses=True,
+        )
+        await client.ping()
+        _depolar.redis = client
+    except Exception:
+        logger.warning(
+            "şifre sıfırlama: Redis yok, süreç-içi belleğe düşülüyor. "
+            "Çok işçili kurulumda kod bir işçide üretilip diğerinde "
+            "doğrulanacağı için akış SESSİZCE bozulur."
+        )
+        _depolar.redis = None
+    return _depolar.redis
 
 
 async def _get_token_store() -> RedisPasswordResetStore:
-    """Lazy-initialize Redis client and token store."""
-    global _redis_client_for_tokens
-    if _redis_client_for_tokens is None:
-        try:
-            import os
+    """Sıfırlama token'ı deposu — TEK örnek.
 
-            import redis.asyncio as aioredis
+    28 Tem 2026 bulgusu: burası her çağrıda YENİ bir `RedisPasswordResetStore`
+    üretiyordu. Redis varken zararsız (durum Redis'te), ama Redis yokken sınıf
+    süreç-içi bir `dict`e düşüyor ve o dict her çağrıda sıfırdan yaratılıyordu
+    — yani `forgot-password`'ün yazdığı token'ı `reset-password` ASLA
+    bulamıyordu. Redis'siz her kurulumda şifre sıfırlama sessizce ölüydü.
+    """
+    if _depolar.token is None:
+        _depolar.token = RedisPasswordResetStore(await _get_reset_redis())
+    return _depolar.token
 
-            _redis_client_for_tokens = aioredis.from_url(
-                os.getenv("REDIS_URL", "redis://localhost:6379/0"),
-                decode_responses=True,
-            )
-            # Verify connection
-            await _redis_client_for_tokens.ping()
-        except Exception:
-            _redis_client_for_tokens = None
-    return RedisPasswordResetStore(_redis_client_for_tokens)
+
+async def _get_code_store() -> PasswordResetCodeStore:
+    """6 haneli kod deposu — TEK örnek (aynı gerekçe)."""
+    if _depolar.kod is None:
+        _depolar.kod = PasswordResetCodeStore(await _get_reset_redis())
+    return _depolar.kod
+
+
+def _mask_email(email: str) -> str:
+    """Log'a düşen adresi maskele — KVKK, kişisel veri loglanmaz."""
+    ad, _, alan = email.partition("@")
+    return f"{ad[:2]}***@{alan}" if alan else "***"
+
+
+_RESET_CODE_SUBJECT = "KIRO2 şifre sıfırlama kodun"
+
+_RESET_CODE_HTML = """\
+<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#2A2433">
+  <p>Merhaba,</p>
+  <p>KIRO2 hesabın için şifre sıfırlama kodun:</p>
+  <p style="font-size:30px;font-weight:800;letter-spacing:8px">{code}</p>
+  <p>Kod <strong>{dakika} dakika</strong> geçerli. Kodu kimseyle paylaşma.</p>
+  <p style="color:#6B6478;font-size:13px">
+    Bu isteği sen yapmadıysan bu e-postayı yok sayabilirsin; şifren değişmez.
+  </p>
+</div>
+"""
+
+
+def _send_reset_code_email(email: str, code: str) -> None:
+    """Kodu e-postayla yolla — İSTEK YANITINI BEKLETMEDEN.
+
+    `send_email` gönderimi arkaplan iş parçacığına atıp hemen döner. Bu
+    kasıtlı: SMTP'yi `await` etseydik, kayıtlı bir adres için yanıt ~200 ms
+    uzardı ve saldırgan gövdeyi hiç okumadan SADECE SÜREYİ ölçerek hangi
+    adreslerin kayıtlı olduğunu çıkarırdı — 1. adımın tüm amacı buydu.
+    Gönderim sonucu kullanıcıya değil, log'a gider.
+    """
+    html = _RESET_CODE_HTML.format(
+        code=code, dakika=PasswordResetCodeStore.CODE_TTL_SECONDS // 60
+    )
+    kuyruga_alindi = send_email(email, _RESET_CODE_SUBJECT, html)
+    if kuyruga_alindi:
+        return
+
+    logger.error(
+        "SMTP yapılandırılmamış — şifre sıfırlama kodu TESLİM EDİLEMEDİ (%s). "
+        "SMTP_SERVER / SMTP_USERNAME / SMTP_PASSWORD gerekli.",
+        _mask_email(email),
+    )
+    if _IS_DEV:
+        # Yalnız geliştirmede VE yalnız gönderim mümkün değilken: aksi hâlde
+        # kod hiçbir yerde görünmez ve akış elle denenemez.
+        logger.warning("[DEV] şifre sıfırlama kodu %s -> %s", _mask_email(email), code)
 
 
 @router.post("/forgot-password", summary="Forgot Password", include_in_schema=False)
@@ -1427,46 +1539,88 @@ async def forgot_password(
     request_data: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
-    """
-    Request password reset
-    Frontend endpoint - sends password reset email
+    """Şifre sıfırlama kodu iste (1/3).
 
-    Returns:
-    {
-        "success": boolean,
-        "message": string
-    }
+    Kayıtlı adrese 6 haneli kod gönderir. Yanıt, adresin kayıtlı olup
+    olmadığından BAĞIMSIZ olarak hep aynıdır — gövde de, süre de. Kod
+    `core/password_reset_codes.py`'de hash'li tutulur; hesap başına saatlik
+    üretim limitine tabidir.
+
+    Returns: {"success": bool, "message": str}
     """
     await _check_rate_limit(request, "password_reset")
 
+    # Numaralandırma önleme: bu metin ve durum kodu HER dalda aynı.
+    success_message = "Şifre sıfırlama kodu e-posta adresinize gönderildi"
+
     try:
-        # Check if user exists
         result = await db.execute(
             select(DBUser).where(DBUser.email == request_data.email)
         )
         db_user = result.scalar_one_or_none()
 
-        # Always return success to prevent email enumeration attacks
-        success_message = "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi"
-
-        if not db_user:
-            # Don't reveal that user doesn't exist
-            return {"success": True, "message": success_message}
-
-        # Generate secure reset token (valid for 15 minutes)
-        reset_token = secrets.token_urlsafe(32)
-
-        # Store token in Redis (with 15-min TTL), fallback to memory
-        store = await _get_token_store()
-        await store.set(reset_token, db_user.id, db_user.email)
-
-        # TODO: Send email with reset link
-        # reset_link = f"{settings.frontend_url}/reset-password?token={reset_token}"
-        # await send_password_reset_email(db_user.email, reset_link)
-
-        return {"success": True, "message": success_message}
+        if db_user:
+            store = await _get_code_store()
+            # `None` = hesap başına saatlik kod limiti doldu. Kullanıcıya
+            # yine aynı şey söylenir; farklı yanıt vermek limitin kendisini
+            # bir numaralandırma kanalına çevirirdi.
+            code = await store.issue(db_user.email, db_user.id)
+            if code is not None:
+                _send_reset_code_email(db_user.email, code)
     except Exception:
-        return {"success": False, "message": "Şifre sıfırlama başarısız"}
+        # Hata yolu da aynı yanıtı vermeli: aksi hâlde "hata yalnız kayıtlı
+        # adreste oluşuyor" durumu adresin varlığını ele verirdi.
+        logger.exception("şifre sıfırlama kodu üretilemedi")
+
+    return {"success": True, "message": success_message}
+
+
+class VerifyResetCodeRequest(BaseModel):
+    """Kod doğrulama isteği (2/3)."""
+
+    email: str = Field(..., max_length=254)
+    code: str = Field(..., max_length=16)
+
+
+@router.post("/verify-reset-code", summary="Verify Reset Code", include_in_schema=False)
+async def verify_reset_code(
+    request: Request,
+    request_data: VerifyResetCodeRequest,
+) -> dict[str, Any]:
+    """6 haneli kodu doğrula, sıfırlama token'ı ver (2/3).
+
+    Kod doğruysa mevcut `/reset-password` akışının beklediği token üretilir —
+    yani çalışan sıfırlama ucuna hiç dokunulmaz, kod katmanı ONUN ÖNÜNE
+    eklenir. Başarısızlık nedeni (kod yanlış / süre doldu / böyle bir istek
+    yok / adres kayıtlı değil) AYIRT EDİLMEZ.
+
+    Returns: {"success": bool, "message": str, "token": str | None}
+    """
+    await _check_rate_limit(request, "password_reset_verify")
+
+    basarisiz = {
+        "success": False,
+        "message": "Kod geçersiz veya süresi dolmuş",
+        "token": None,  # nosec
+    }
+
+    code = (request_data.code or "").strip()
+    if len(code) != CODE_DIGITS or not code.isdigit():
+        return basarisiz
+
+    try:
+        code_store = await _get_code_store()
+        user_id = await code_store.verify(request_data.email, code)
+        if not user_id:
+            return basarisiz
+
+        reset_token = secrets.token_urlsafe(32)
+        token_store = await _get_token_store()
+        await token_store.set(reset_token, user_id, request_data.email)
+        return {"success": True, "message": "Kod doğrulandı", "token": reset_token}
+    except Exception:
+        logger.exception("şifre sıfırlama kodu doğrulanamadı")
+        return basarisiz
 
 
 class ResetPasswordRequest(BaseModel):
@@ -2063,8 +2217,6 @@ class VeliOnayStatusResponse(BaseModel):
 def _send_veli_onay_email(veli_email: str, token: str) -> None:
     """Veli onay + geri-çek linkli email gönder (fire-and-forget)."""
     import os
-
-    from core.email_util import send_email
 
     frontend = os.getenv("FRONTEND_URL", "http://localhost:3001").rstrip("/")
     onay = f"{frontend}/veli-onay?token={token}"

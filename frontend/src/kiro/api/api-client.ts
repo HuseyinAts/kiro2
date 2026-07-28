@@ -536,10 +536,49 @@ export async function register(req: RegisterRequest): Promise<AuthTokens> {
   return live<AuthTokens>('/auth/register', { method: 'POST', body: JSON.stringify(req) });
 }
 
-/** 3 adımlı kurtarma: recover → verify (kod) → reset (Hesap Kurtarma ekranı birebir) */
+// 3 adımlı kurtarma: recover → verifyResetCode → resetPassword.
+// F4: `/auth/recover` backend'de HİÇ YOKTU (0 eşleşme) — ekran mock modda
+// sessizce ilerlediği için fark edilmemişti; live modda 404 alırdı. Gerçek
+// uçlar `/auth/forgot-password`, `/auth/verify-reset-code`, `/auth/reset-password`.
+
+/** 1/3 — kod iste. Sunucu adresin kayıtlı olup olmadığından BAĞIMSIZ olarak
+ *  aynı yanıtı verir (numaralandırma önleme), bu yüzden dönüş hep `ok:true`. */
 export async function recover(eposta: string): Promise<{ ok: boolean }> {
-  if (cfg.mode === 'mock') return { ok: true };
-  return live<{ ok: boolean }>('/auth/recover', { method: 'POST', body: JSON.stringify({ eposta }) });
+  if (cfg.mode === 'mock') { return { ok: true }; }
+  await live<{ success: boolean; message: string }>('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email: eposta }),
+  });
+  return { ok: true };
+}
+
+/** 2/3 — 6 haneli kodu doğrula; başarılıysa sıfırlama token'ı döner. */
+export async function verifyResetCode(
+  eposta: string,
+  kod: string,
+): Promise<{ ok: boolean; token: string | null }> {
+  if (cfg.mode === 'mock') {
+    const gecerli = /^\d{6}$/.test(kod);
+    return { ok: gecerli, token: gecerli ? 'mock-reset-token' : null };
+  }
+  const r = await live<{ success: boolean; token: string | null }>('/auth/verify-reset-code', {
+    method: 'POST',
+    body: JSON.stringify({ email: eposta, code: kod }),
+  });
+  return { ok: r?.success === true, token: r?.token ?? null };
+}
+
+/** 3/3 — token ile yeni şifreyi yaz. Politika sunucuda; mesaj kullanıcıya gösterilir. */
+export async function resetPassword(
+  token: string,
+  yeniSifre: string,
+): Promise<{ ok: boolean; mesaj: string }> {
+  if (cfg.mode === 'mock') { return { ok: true, mesaj: 'Şifre güncellendi' }; }
+  const r = await live<{ success: boolean; message: string }>('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, newPassword: yeniSifre }),
+  });
+  return { ok: r?.success === true, mesaj: r?.message ?? '' };
 }
 
 // ---------------------------------------------------------------------------

@@ -1,12 +1,24 @@
 // ============================================================================
 // KIRO2 — Hesap Kurtarma (SPRINT2 · KIRO2 Hesap Kurtarma.dc.html)
 // Tema = PAPER (Giriş ile aynı warm-radial + kart). Durum: eposta→kod→sifre→tamam.
-// Kopya SPRINT2_SPEC §B'den BİREBİR — istisna: e-posta hint absence-dili → "yarım" (kanon).
-// Veri: api-client recover() (mock {ok}); adımlar mock modda istemcide ilerler.
+// Kopya SPRINT2_SPEC §B'den BİREBİR — iki istisna, ikisi de gerçeğe uydurma:
+//   1) e-posta hint absence-dili → "yarım" (kanon)
+//   2) son adım CTA "Panele dön" → "Girişe dön": sıfırlamadan sonra oturum
+//      AÇILMIYOR, kullanıcı panele değil girişe düşüyor. Ekran gerçekte
+//      olmayan bir şeyi vaat etmemeli.
+//
+// F4 — CANLI. Önceden üç adım da MOCK'tu: kodu istemcide doğruluyor (kod.length
+// === 6), 3. adımda sunucuya HİÇ gitmiyor, "Panele dön" `() => undefined` idi.
+// Yani ekran çalışıyor görünüp şifreyi hiç değiştirmiyordu.
+// Sözleşme: recover → verifyResetCode(token) → resetPassword.
 // ============================================================================
 import * as React from 'react';
 
-import { recover as apiRecover } from '../api/api-client';
+import {
+  recover as apiRecover,
+  resetPassword as apiResetPassword,
+  verifyResetCode as apiVerifyResetCode,
+} from '../api/api-client';
 import { color, font, radius, space } from '../tokens';
 import { KiroThemeProvider } from '../ui/theme';
 import { Button } from '../ui/Button';
@@ -14,8 +26,15 @@ import '../tokens/tokens.css';
 
 type Adim = 'eposta' | 'kod' | 'sifre' | 'tamam';
 
-const HARF = /[a-zA-ZçğıöşüÇĞİÖŞÜ]/;
+// Şifre kuralları SUNUCUYLA BİREBİR (backend/api/auth.py `_validate_password`).
+// Önceden ekran 3 kural gösteriyordu (>=8 · harf+rakam · tahmini zor) ama sunucu
+// 5 uyguluyor; `abcd1234` üç tiki de yeşil yapıp reddediliyordu — hem de kullanıcı
+// e-postayı alıp kodu girdikten SONRA. Özel karakter kümesi sunucudaki listenin
+// AYNISI: değiştirirsen iki tarafı birlikte değiştir.
+const KUCUK_HARF = /[a-zçğıöşü]/;
+const BUYUK_HARF = /[A-ZÇĞİÖŞÜ]/;
 const RAKAM = /[0-9]/;
+const OZEL_KARAKTER = /[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/;
 const gecerliEposta = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
 const zayifOnek = /^(12345678|password|parola|sifre|şifre|1234|qwerty|abcabc)/i;
 
@@ -43,14 +62,21 @@ const T = {
   s3Alt: 'Hatırlaması kolay, tahmin etmesi zor bir şey iyi gider.',
   s3Cta: 'Şifreyi güncelle',
   t4Baslik: 'Hazırsın.',
-  t4Alt: 'Şifren güncellendi. Serin ve ilerlemen aynen yerinde — kaldığın yerden devam.',
-  t4Cta: 'Panele dön',
+  // "kaldığın yerden devam" korunuyor; ama giriş yapılmadığı için CTA panele
+  // değil GİRİŞE götürür — kopya bunu doğru söylemeli.
+  t4Alt: 'Şifren güncellendi. Serin ve ilerlemen aynen yerinde — yeni şifrenle gir, kaldığın yerden devam.',
+  t4Cta: 'Girişe dön',
   sayfaAlti: 'Takıldıysan destek ekibine yaz — gerçek bir insan, okul saatlerinde ~10 dk içinde döner.',
 } as const;
 
 const HINT = {
   eposta: 'Bu adres yarım görünüyor — bir kez daha bakar mısın?', // SPEC absence-dili → kanon "yarım"
   kod: 'Kod 6 haneli olmalı — acele yok.',
+  // Sunucu "kod yanlış" ile "süre doldu"yu AYIRT ETMEZ (ayırmak saldırgana
+  // bilgi verirdi), ekran da ayırmıyor. Yeni kod isteme yolu hemen altında.
+  kodGecersiz: 'Bu kod geçmiyor — süresi dolmuş olabilir. Yeni kod isteyebilirsin.',
+  sifirlanamadi: 'Şifre güncellenemedi. Yeni bir kod isteyip tekrar dener misin?',
+  ag: 'Bağlantı kurulamadı — birazdan tekrar dener misin?',
 } as const;
 
 function Kural({ ok, children }: { ok: boolean; children: React.ReactNode }) {
@@ -74,6 +100,8 @@ export function HesapKurtarmaPage(): React.ReactElement {
   const [goster, setGoster] = React.useState(false);
   const [hint, setHint] = React.useState<string | null>(null);
   const [yeniden, setYeniden] = React.useState(false);
+  const [token, setToken] = React.useState<string | null>(null);
+  const [mesgul, setMesgul] = React.useState(false);
   const baslikRef = React.useRef<HTMLHeadingElement>(null);
 
   // Adım değişince başlığa programatik odak (SR akışı — Erişilebilirlik satırları)
@@ -82,27 +110,71 @@ export function HesapKurtarmaPage(): React.ReactElement {
   }, [adim]);
 
   const uzunKarakter = sifre.length >= 8;
-  const harfRakam = HARF.test(sifre) && RAKAM.test(sifre);
+  const harfCesidi = KUCUK_HARF.test(sifre) && BUYUK_HARF.test(sifre);
+  const rakamOzel = RAKAM.test(sifre) && OZEL_KARAKTER.test(sifre);
   const tahminZor = sifre.length >= 8 && !zayifOnek.test(sifre);
-  const sifreGecerli = uzunKarakter && harfRakam && tahminZor;
+  const sifreGecerli = uzunKarakter && harfCesidi && rakamOzel && tahminZor;
 
   const kodGonder = async () => {
     if (!gecerliEposta(eposta)) { setHint(HINT.eposta); return; }
     setHint(null);
-    try { await apiRecover(eposta); } catch { /* mock: sessiz */ }
-    setAdim('kod');
+    setMesgul(true);
+    try {
+      await apiRecover(eposta);
+      setAdim('kod');
+    } catch {
+      // Sunucu adresin kayıtlı olup olmadığını ASLA söylemez; buraya ancak
+      // ağ/sunucu hatasıyla düşülür. Adım ilerletilmez.
+      setHint(HINT.ag);
+    } finally {
+      setMesgul(false);
+    }
   };
-  const dogrula = () => {
-    if (kod.replace(/\D/g, '').length !== 6) { setHint(HINT.kod); return; }
+
+  const dogrula = async () => {
+    const temiz = kod.replace(/\D/g, '');
+    if (temiz.length !== 6) { setHint(HINT.kod); return; }
     setHint(null);
-    setAdim('sifre');
+    setMesgul(true);
+    try {
+      const { ok, token: yeniToken } = await apiVerifyResetCode(eposta, temiz);
+      if (!ok || !yeniToken) { setHint(HINT.kodGecersiz); return; }
+      setToken(yeniToken);
+      setAdim('sifre');
+    } catch {
+      setHint(HINT.ag);
+    } finally {
+      setMesgul(false);
+    }
   };
-  const sifreGuncelle = () => {
-    if (!sifreGecerli) return;
-    setAdim('tamam');
+
+  const sifreGuncelle = async () => {
+    if (!sifreGecerli || !token) return;
+    setHint(null);
+    setMesgul(true);
+    try {
+      const { ok, mesaj } = await apiResetPassword(token, sifre);
+      if (!ok) { setHint(mesaj || HINT.sifirlanamadi); return; }
+      setAdim('tamam');
+    } catch {
+      setHint(HINT.ag);
+    } finally {
+      setMesgul(false);
+    }
   };
-  const adresiDegistir = () => { setKod(''); setYeniden(false); setHint(null); setAdim('eposta'); };
-  const kodYeniden = async () => { try { await apiRecover(eposta); } catch { /* */ } setYeniden(true); };
+
+  const adresiDegistir = () => {
+    setKod(''); setYeniden(false); setHint(null); setToken(null); setAdim('eposta');
+  };
+
+  const kodYeniden = async () => {
+    setMesgul(true);
+    try { await apiRecover(eposta); setYeniden(true); }
+    catch { setHint(HINT.ag); }
+    finally { setMesgul(false); }
+  };
+
+  const girise = () => { window.location.href = '/login'; };
 
   const kartStil: React.CSSProperties = {
     width: '100%', maxWidth: 460, margin: '0 auto', boxSizing: 'border-box',
@@ -128,7 +200,8 @@ export function HesapKurtarmaPage(): React.ReactElement {
             </div>
             <span style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.02em' }}>KIRO<span style={{ color: color.dawn.coralTextOnLight }}>2</span></span>
           </div>
-          <a href="/giris" style={{ ...linkStil }}>{T.ustLink}</a>
+          {/* /giris kayıtlı bir rota DEĞİL (App.tsx'te yalnız /login var) — ölü linkti. */}
+          <a href="/login" style={{ ...linkStil }}>{T.ustLink}</a>
         </div>
 
         <div style={{ padding: '8px 24px 48px' }}>
@@ -146,7 +219,7 @@ export function HesapKurtarmaPage(): React.ReactElement {
                 </div>
                 <h1 ref={baslikRef} tabIndex={-1} style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 30, fontWeight: 400, margin: 0, outline: 'none' }}>{T.t4Baslik}</h1>
                 <p style={{ marginTop: 10, fontSize: 14.5, lineHeight: 1.6, color: color.ink.secondary }}>{T.t4Alt}</p>
-                <div style={{ marginTop: space[5] }}><Button variant="primary" size="lg" onClick={() => undefined}>{T.t4Cta}</Button></div>
+                <div style={{ marginTop: space[5] }}><Button variant="primary" size="lg" onClick={girise}>{T.t4Cta}</Button></div>
               </div>
             ) : (
               <>
@@ -201,7 +274,8 @@ export function HesapKurtarmaPage(): React.ReactElement {
                     </div>
                     <div aria-live="polite" style={{ marginTop: 12, display: 'grid', gap: 7 }}>
                       <Kural ok={uzunKarakter}>En az 8 karakter</Kural>
-                      <Kural ok={harfRakam}>Harf ve rakam bir arada</Kural>
+                      <Kural ok={harfCesidi}>Büyük ve küçük harf bir arada</Kural>
+                      <Kural ok={rakamOzel}>Rakam ve özel karakter (! ? * # gibi)</Kural>
                       <Kural ok={tahminZor}>Tahmini zor</Kural>
                     </div>
                   </>
@@ -214,7 +288,12 @@ export function HesapKurtarmaPage(): React.ReactElement {
                 )}
 
                 <div style={{ marginTop: space[5] }}>
-                  <Button variant="primary" size="lg" disabled={adim === 'sifre' && !sifreGecerli} onClick={() => (adim === 'eposta' ? void kodGonder() : adim === 'kod' ? dogrula() : sifreGuncelle())}>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    disabled={mesgul || (adim === 'sifre' && !sifreGecerli)}
+                    onClick={() => (adim === 'eposta' ? void kodGonder() : adim === 'kod' ? void dogrula() : void sifreGuncelle())}
+                  >
                     {adim === 'eposta' ? T.e1Cta : adim === 'kod' ? T.k2Cta : T.s3Cta}
                   </Button>
                 </div>

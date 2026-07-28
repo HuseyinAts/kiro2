@@ -44,6 +44,7 @@ const SokratikAIPage = lazy(() => import('./kiro/routes/KiroSokratikRoute')); //
 const YerlestirmePage = lazy(() => import('./kiro/screens/AdaptifTestPage')); // F4: yeni rota — CAT yerlestirme (/cat ders-secimi DOKUNULMADI)
 const InteraktifCozumPage = lazy(() => import('./kiro/screens/InteraktifCozumPage')); // F4-S2: yeni rota — saf istemci-matematik, backend/store YOK
 const VeliPaneliPage = lazy(() => import('./kiro/screens/VeliPaneliPage')); // F4-S2: yeni rota — getVeliDashboard canlı, VeliBaglamaPage'den bağımsız (o mimari-blokeli, ayrı karar)
+const HesapKurtarmaPage = lazy(() => import('./kiro/screens/HesapKurtarmaPage')); // blocker #1: ekran + testleri vardı ama HİÇ mount edilmemişti — GirisPage'in "şifremi unuttum" linki ölüydü
 
 // Pages - Teacher (lazy-loaded)
 const TeacherDashboardPage = lazy(() => import('./pages/ModernTeacherDashboard'));
@@ -224,6 +225,12 @@ function AppContent() {
               <Route path="/login" element={<KiroLoginRoute />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/veli-onay" element={<VeliOnayPage />} />
+              {/* Şifre kurtarma (blocker #1). GirisPage:337 zaten buraya link
+                  veriyordu ama rota kayıtlı değildi. ModernLoginPage:430 ise
+                  /forgot-password diyor — o da ölü linkti, yönlendiriyoruz
+                  (bkz. /veli-takip deseni, .claude/rules/path-naming.md). */}
+              <Route path="/hesap-kurtarma" element={<HesapKurtarmaPage />} />
+              <Route path="/forgot-password" element={<Navigate to="/hesap-kurtarma" replace />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               <Route path="/404" element={<Modern404Page />} />
               <Route path="/error" element={<ModernErrorPage />} />
@@ -823,4 +830,3 @@ export function App() {
  *
  * Date: November 14, 2025
  */
-

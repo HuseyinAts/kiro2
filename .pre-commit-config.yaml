@@ -79,7 +79,15 @@ repos:
         # args TIRNAKLI kalmalı: prettier YAML akış dizisini yeniden
         # biçimlerken `--skip=B101,B601`'i `--skip=B101, B601` yapıp İKİ
         # argümana bölüyordu; bandit `B601`'i yol sanardı.
-        args: ["-r", "--skip=B101,B601"]
+        #
+        # B105 (28 Tem 2026): `api/auth.py`de 8 yanlış pozitif üretiyordu —
+        # rota önekleri ("/api", "/api/v1/auth"), "bearer" kelimesi ve
+        # OpenAPI örnek JWT metinleri. Atlanması KONTROL KAYBI DEĞİL: ruff'ın
+        # `S` seti (backend/pyproject.toml:139) aynı denetimi yapıyor ve
+        # ölçüldü — `backend/api/` altına konan sahte `API_TOKEN = "sk-..."`
+        # sabiti ruff tarafından S105 ile yakalandı. Gerçek sır denetimi
+        # ayrıca detect-secrets + kiro2-secret-detector hook'larında.
+        args: ["-r", "--skip=B101,B601,B105"]
         types: [python]
         files: ^backend/.*\.py$
         exclude: ^backend/(tests/|.*test.*\.py)
