@@ -57,6 +57,7 @@ class _FakeSession:
     def __init__(self) -> None:
         self.kullanicilar: dict[str, Any] = {}
         self.commit_sayisi = 0
+        self.rollback_sayisi = 0
 
     def kaydet(self, user: Any) -> None:
         self.kullanicilar[user.email] = user
@@ -75,8 +76,9 @@ class _FakeSession:
     async def commit(self) -> None:
         self.commit_sayisi += 1
 
-    async def rollback(self) -> None:  # pragma: no cover - hata yolu
-        pass
+    async def rollback(self) -> None:
+        """Geri alma sayılır — testler 'yazmadı' ile 'yazıp geri aldı'yı ayırabilsin."""
+        self.rollback_sayisi += 1
 
 
 @pytest.fixture(scope="module")
@@ -236,6 +238,34 @@ def test_verify_rejects_a_wrong_code(client, gonderilen, kullanici):
     assert resp.status_code == 200, resp.text
     assert resp.json().get("success") is False
     assert not resp.json().get("token")
+
+
+@pytest.mark.parametrize(
+    "bozuk_kod",
+    ["", "1", "12345", "1234567", "abcdef", "12 34 56", "000000 ", "12345a"],
+    ids=["bos", "tek", "kisa", "uzun", "harf", "bosluklu", "sonda-bosluk", "karisik"],
+)
+def test_malformed_codes_get_one_identical_rejection(client, kullanici, bozuk_kod):
+    """Biçimi bozuk kodlar TEK ve AYNI jenerik yanıtı almalı.
+
+    Farklı biçim hatalarına farklı yanıt vermek (kimi 422, kimi 200; ayrı
+    mesajlar) saldırgana hem kodun beklenen şeklini hem de isteğin hesaba
+    ulaşıp ulaşmadığını sızdırır. Pydantic doğrulaması 422 döndürseydi bu
+    test yakalardı — bu yüzden `code` alanı bilerek gevşek tipli ve kontrol
+    uç gövdesinde yapılıyor.
+    """
+    resp = client.post(
+        "/api/v1/auth/verify-reset-code",
+        json={"email": kullanici.email, "code": bozuk_kod},
+    )
+
+    assert (
+        resp.status_code == 200
+    ), f"{bozuk_kod!r} farklı durum kodu aldı: {resp.status_code} {resp.text[:200]}"
+    govde = resp.json()
+    assert govde.get("success") is False
+    assert not govde.get("token")
+    assert govde.get("message") == "Kod geçersiz veya süresi dolmuş"
 
 
 def test_verify_locks_after_five_wrong_codes(client, gonderilen, kullanici):

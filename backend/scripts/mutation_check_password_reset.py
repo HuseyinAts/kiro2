@@ -14,7 +14,7 @@ yani o güvenlik değişmezi test edilmiyor demektir.
 
 from __future__ import annotations
 
-import subprocess  # nosec
+import subprocess  # nosec - yalnız sabit pytest komutu koşturur, dış girdi yok
 import sys
 from pathlib import Path
 

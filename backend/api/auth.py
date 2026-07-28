@@ -1375,8 +1375,15 @@ class RedisPasswordResetStore:
                 key = f"{self.KEY_PREFIX}:{token}"
                 await self._redis.setex(key, self.TTL_SECONDS, json.dumps(entry))
                 return
-            except Exception:  # nosec - Redis yoksa süreç-içi bellek yoluna düşülür; yutma KASITLI
-                pass
+            except Exception as exc:
+                # Sessiz yutma DEĞİL: Redis hatası bellek yoluna düşürür ve
+                # bu, çok işçili kurulumda token'ın başka işçide aranmasına
+                # yol açar — 28 Tem'de tam olarak bu sessizce bozulmuştu.
+                logger.warning(
+                    "şifre sıfırlama token deposu (%s): Redis hatası, belleğe düşülüyor: %s",
+                    "set",
+                    exc,
+                )
         # Fallback to in-memory
         self._memory[token] = entry
 
@@ -1392,8 +1399,15 @@ class RedisPasswordResetStore:
                     cozulen: dict[str, Any] = json.loads(raw)
                     return cozulen
                 return None
-            except Exception:  # nosec - Redis yoksa süreç-içi bellek yoluna düşülür; yutma KASITLI
-                pass
+            except Exception as exc:
+                # Sessiz yutma DEĞİL: Redis hatası bellek yoluna düşürür ve
+                # bu, çok işçili kurulumda token'ın başka işçide aranmasına
+                # yol açar — 28 Tem'de tam olarak bu sessizce bozulmuştu.
+                logger.warning(
+                    "şifre sıfırlama token deposu (%s): Redis hatası, belleğe düşülüyor: %s",
+                    "get",
+                    exc,
+                )
         # Fallback to in-memory
         entry = self._memory.get(token)
         if entry:
@@ -1411,8 +1425,15 @@ class RedisPasswordResetStore:
                 key = f"{self.KEY_PREFIX}:{token}"
                 await self._redis.delete(key)
                 return
-            except Exception:  # nosec - Redis yoksa süreç-içi bellek yoluna düşülür; yutma KASITLI
-                pass
+            except Exception as exc:
+                # Sessiz yutma DEĞİL: Redis hatası bellek yoluna düşürür ve
+                # bu, çok işçili kurulumda token'ın başka işçide aranmasına
+                # yol açar — 28 Tem'de tam olarak bu sessizce bozulmuştu.
+                logger.warning(
+                    "şifre sıfırlama token deposu (%s): Redis hatası, belleğe düşülüyor: %s",
+                    "delete",
+                    exc,
+                )
         self._memory.pop(token, None)
 
 

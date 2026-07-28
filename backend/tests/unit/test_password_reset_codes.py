@@ -31,6 +31,8 @@ import asyncio
 import uuid
 
 import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from core.password_reset_codes import PasswordResetCodeStore, _code_digest
 
@@ -165,6 +167,30 @@ def test_code_digest_is_bound_to_email():
     assert kod not in a, "özet kodu sızdırıyor"
 
 
+@settings(max_examples=60, deadline=None)
+@given(
+    eposta=st.emails(),
+    kod=st.text(alphabet="0123456789", min_size=6, max_size=6),
+)
+def test_digest_properties_hold_for_arbitrary_inputs(eposta: str, kod: str):
+    """Özetin iki değişmezi RASTGELE girdide de tutmalı.
+
+    Yukarıdaki iki beyaz-kutu testi elle seçilmiş örneklerle çalışıyor; burada
+    Hypothesis aynı iddiaları geniş bir girdi uzayında sınıyor. Aradığımız şey
+    "unuttuğum bir e-posta biçiminde özet çakışıyor mu" — elle örneklemenin
+    yapısal olarak bulamayacağı sınıf.
+    """
+    ozet = _code_digest(eposta, kod)
+
+    # 1) Deterministik: aynı çift her zaman aynı özeti verir (yoksa kullanıcı
+    #    doğru kodu girse bile doğrulanamaz).
+    assert ozet == _code_digest(eposta, kod)
+    assert len(ozet) == 64  # sha256 hex
+
+    # 2) E-postaya bağlı: aynı kod, farklı adres => farklı özet.
+    assert ozet != _code_digest(eposta + "x", kod)
+
+
 def test_code_digest_ignores_email_case_and_spacing():
     """Kullanıcı 1. adımda 'Ayse@X.com', 2. adımda 'ayse@x.com ' yazarsa akış kırılmamalı."""
     kod = "123456"
@@ -181,12 +207,27 @@ async def test_code_is_single_use(store: PasswordResetCodeStore):
     assert await store.verify(email, code) is None, "kod ikinci kez kullanıldı"
 
 
-async def test_wrong_code_is_rejected(store: PasswordResetCodeStore):
+@pytest.mark.parametrize(
+    "yanlis_kod",
+    ["000000", "999999", "12345", "1234567", "abcdef", "", "  "],
+    ids=["sifirlar", "dokuzlar", "kisa", "uzun", "harf", "bos", "bosluk"],
+)
+async def test_wrong_or_malformed_code_is_rejected(
+    store: PasswordResetCodeStore, yanlis_kod: str
+):
+    """Yanlış VE biçimi bozuk kodlar aynı şekilde reddedilmeli.
+
+    Depo katmanı biçim doğrulaması yapmaz — kısa/uzun/harfli girdi de
+    yalnızca "eşleşmedi" sonucunu vermeli, istisna fırlatmamalı. Uç
+    katmanındaki uzunluk kontrolü kaldırılsa bile depo güvenli kalır.
+    """
     email = _email()
     code = await store.issue(email, "user-1")
-    yanlis = "000000" if code != "000000" else "111111"
+    if yanlis_kod == code:
+        # Üretilen kod parametreyle çakışırsa test anlamsızlaşır (~10^-6).
+        pytest.skip("üretilen kod parametreyle çakıştı")
 
-    assert await store.verify(email, yanlis) is None
+    assert await store.verify(email, yanlis_kod) is None
 
 
 async def test_correct_code_rejected_after_max_wrong_attempts(
