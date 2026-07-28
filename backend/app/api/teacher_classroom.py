@@ -19,8 +19,9 @@ Endpoints:
 
 from __future__ import annotations
 
+import contextlib
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
@@ -30,6 +31,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import User, get_current_user, get_db
+from models.database import User as DBUser
 from models.teacher_classroom import (
     TeacherAssignment,
     TeacherClassroom,
@@ -41,6 +43,30 @@ from models.teacher_classroom import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/teacher", tags=["teacher-classroom"])
+
+# 29 Tem 2026 ÖLÇÜMÜ: bu router'da HİÇ rol kapısı yoktu — `get_current_user`
+# yalnız kimlik doğruluyor. Yani herhangi bir öğrenci `POST /teacher/classes`
+# ile kendini "öğretmen" ilan edip sınıf açabiliyordu. Roster yazma uçları
+# BAŞKA İNSANLARIN ad/soyad/e-postasını döndürdüğü için o boşluk buraya
+# taşınmadı. Mevcut uçlara dokunulmadı (ayrı iş) — ama yenilerinin kapısı var.
+#
+# `core.auth_dependencies.require_role` KULLANILMADI: o bağımlılık isteği
+# ham `Request`ten yeniden doğruluyor, yani bu router'a İKİNCİ bir kimlik
+# yolu sokuyor. Aynı uçta iki auth yolu hem gereksiz hem de kapının
+# davranışını sürülebilir olmaktan çıkarıyor (rol kapısı testi gerçek JWT
+# üretmeden yazılamıyordu). Kapı burada, tek yol üzerinde ve açık.
+_STAFF_ROLLERI = {"teacher", "ogretmen", "öğretmen", "admin", "super_admin"}
+
+
+async def _require_staff(current_user: User = Depends(get_current_user)) -> None:
+    rol = str(getattr(current_user.role, "value", current_user.role)).lower()
+    if rol not in _STAFF_ROLLERI:
+        raise HTTPException(
+            status_code=403, detail="Bu işlem için öğretmen yetkisi gerekir"
+        )
+
+
+_STAFF_ONLY = Depends(_require_staff)
 
 
 # ---------------------------------------------------------------------------
@@ -56,6 +82,12 @@ class ClassCreate(BaseModel):
     name: str = Field(..., alias="sinif_adi")
     grade_level: str = Field(..., alias="seviye")
     subject_area: str = Field(..., alias="ders")
+
+
+class StudentAdd(BaseModel):
+    """Sınıfa öğrenci ekleme — e-posta ile."""
+
+    email: str = Field(..., max_length=254)
 
 
 class ExamCreate(BaseModel):
@@ -173,7 +205,12 @@ async def list_students(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
-    # Return students enrolled in this teacher's classrooms
+    """Öğretmenin sınıflarındaki öğrenciler — GERÇEK kimlikle.
+
+    29 Tem 2026'ya kadar `ad`/`soyad`/`email` sabit boş string dönüyordu
+    ("student service integration later"), yani öğretmen kimliksiz satırlar
+    görüyordu. Uç 200 döndüğü için "çalışıyor" sayılmıştı.
+    """
     classrooms_result = await db.execute(
         select(TeacherClassroom.id, TeacherClassroom.sinif_adi).where(
             TeacherClassroom.teacher_user_id == str(current_user.id)
@@ -192,6 +229,13 @@ async def list_students(
         .order_by(TeacherClassroomStudent.joined_at.desc())
     )
     rows = students_result.scalars().all()
+    if not rows:
+        return {"data": {"students": []}}
+
+    # Kimlikler AYRI ve tek sorguda çekiliyor (join yok): sorgu sayısı satır
+    # sayısıyla büyümüyor ve her sorgu tek varlık döndürdüğü için akış
+    # taklit edilebilir bir oturumla test edilebiliyor.
+    profiller = await _kullanici_profilleri({r.student_user_id for r in rows}, db)
 
     data = [
         {
@@ -199,10 +243,10 @@ async def list_students(
             "student_user_id": r.student_user_id,
             "sinif": classroom_names.get(str(r.classroom_id), ""),
             "joined_at": _fmt_dt(r.joined_at),
-            # Extended profile fields (filled by student service integration later)
-            "ad": "",
-            "soyad": "",
-            "email": "",
+            **profiller.get(
+                str(r.student_user_id), {"ad": "", "soyad": "", "email": ""}
+            ),
+            # Performans alanları ayrı iş (#5 pano): burada UYDURULMUYOR.
             "ortalama": 0,
             "tamamlanan_sinav": 0,
             "toplam_sinav": 0,
@@ -210,6 +254,151 @@ async def list_students(
         for r in rows
     ]
     return {"data": {"students": data}}
+
+
+async def _kullanici_profilleri(
+    user_ids: set[str], db: AsyncSession
+) -> dict[str, dict[str, str]]:
+    """id -> {ad, soyad, email}. Bulunamayan id sözlükte yer almaz."""
+    if not user_ids:
+        return {}
+    result = await db.execute(select(DBUser).where(DBUser.id.in_(list(user_ids))))
+    return {
+        str(u.id): {
+            "ad": u.first_name or "",
+            "soyad": u.last_name or "",
+            "email": u.email or "",
+        }
+        for u in result.scalars().all()
+    }
+
+
+async def _sahip_olunan_sinif(
+    class_id: str, teacher_user_id: str, db: AsyncSession
+) -> TeacherClassroom:
+    """Sınıfı getir ve ÖĞRETMENE AİT olduğunu doğrula.
+
+    Sahiplik kontrolü bilerek burada, açık bir `if` olarak duruyor —
+    `WHERE`e gömülmüş bir kontrol okunamaz ve sorguyu taklit eden hiçbir
+    testle doğrulanamaz. Sahip değilse 404 (403 değil): sınıf id'sinin var
+    olup olmadığını sızdırmamak için.
+    """
+    try:
+        anahtar = UUID(str(class_id))
+    except (ValueError, AttributeError) as exc:
+        raise HTTPException(status_code=404, detail="Sınıf bulunamadı") from exc
+
+    result = await db.execute(
+        select(TeacherClassroom).where(TeacherClassroom.id == anahtar)
+    )
+    classroom = result.scalar_one_or_none()
+    if classroom is None or str(classroom.teacher_user_id) != str(teacher_user_id):
+        raise HTTPException(status_code=404, detail="Sınıf bulunamadı")
+    return classroom
+
+
+@router.post("/classes/{class_id}/students", status_code=200)
+async def add_student_to_class(
+    class_id: str,
+    body: StudentAdd,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    _staff: None = _STAFF_ONLY,
+) -> dict[str, Any]:
+    """Sınıfa e-postayla öğrenci ekle.
+
+    Kapılar: personel rolü (`_STAFF_ONLY`) + sınıf sahipliği + hedefin
+    ÖĞRENCİ olması. Sonuncusu olmadan öğretmen bir admin'in e-postasını
+    yazıp adını soyadını listede okuyabilirdi.
+
+    NOT (bilinen, kabul edilmiş): kayıtlı/kayıtsız e-posta ayrımı bir
+    numaralandırma kanalıdır. Uç personele kapalı ve `_check_rate_limit`
+    kapsamına alınabilir; öğretmenin ekleyeceği adresi zaten bilmesi
+    beklendiği için ayrım korunuyor — aksi hâlde yanlış yazılan e-posta
+    sessizce kaybolurdu.
+    """
+    classroom = await _sahip_olunan_sinif(class_id, str(current_user.id), db)
+
+    eposta = (body.email or "").strip()
+    ogrenci_sonuc = await db.execute(select(DBUser).where(DBUser.email == eposta))
+    ogrenci = ogrenci_sonuc.scalar_one_or_none()
+    if ogrenci is None:
+        raise HTTPException(
+            status_code=404, detail="Bu e-postayla kayıtlı bir öğrenci yok"
+        )
+
+    rol = getattr(ogrenci.role, "value", ogrenci.role)
+    if str(rol).lower() not in {"student", "ogrenci", "öğrenci"}:
+        raise HTTPException(
+            status_code=400, detail="Yalnızca öğrenci hesapları sınıfa eklenebilir"
+        )
+
+    mevcut_sonuc = await db.execute(
+        select(TeacherClassroomStudent).where(
+            TeacherClassroomStudent.classroom_id == classroom.id,
+            TeacherClassroomStudent.student_user_id == str(ogrenci.id),
+        )
+    )
+    mevcut = mevcut_sonuc.scalar_one_or_none()
+    if mevcut is not None:
+        # Idempotent: tekrar eklemek satır çoğaltmaz, liste ve sayaçlar bozulmaz.
+        return {"success": True, "data": _uyelik_govdesi(mevcut, classroom, ogrenci)}
+
+    uyelik = TeacherClassroomStudent(
+        classroom_id=classroom.id, student_user_id=str(ogrenci.id)
+    )
+    db.add(uyelik)
+    await db.commit()
+    await db.refresh(uyelik)
+    logger.info(
+        "roster: sınıf=%s öğrenci eklendi (öğretmen=%s)", classroom.id, current_user.id
+    )
+    return {"success": True, "data": _uyelik_govdesi(uyelik, classroom, ogrenci)}
+
+
+@router.delete("/classes/{class_id}/students/{student_user_id}")
+async def remove_student_from_class(
+    class_id: str,
+    student_user_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    _staff: None = _STAFF_ONLY,
+) -> dict[str, Any]:
+    """Öğrenciyi sınıftan çıkar. Yalnız kendi sınıfından."""
+    classroom = await _sahip_olunan_sinif(class_id, str(current_user.id), db)
+
+    result = await db.execute(
+        select(TeacherClassroomStudent).where(
+            TeacherClassroomStudent.classroom_id == classroom.id,
+            TeacherClassroomStudent.student_user_id == str(student_user_id),
+        )
+    )
+    uyelik = result.scalar_one_or_none()
+    if uyelik is None:
+        raise HTTPException(status_code=404, detail="Öğrenci bu sınıfta değil")
+
+    await db.delete(uyelik)
+    await db.commit()
+    logger.info(
+        "roster: sınıf=%s öğrenci çıkarıldı (öğretmen=%s)",
+        classroom.id,
+        current_user.id,
+    )
+    return {"success": True}
+
+
+def _uyelik_govdesi(
+    uyelik: TeacherClassroomStudent, classroom: TeacherClassroom, ogrenci: Any
+) -> dict[str, Any]:
+    return {
+        "id": str(uyelik.id),
+        "student_user_id": str(ogrenci.id),
+        "ad": ogrenci.first_name or "",
+        "soyad": ogrenci.last_name or "",
+        "email": ogrenci.email or "",
+        "sinif": classroom.sinif_adi,
+        "joined_at": _fmt_dt(uyelik.joined_at),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -339,10 +528,11 @@ async def create_assignment(
 ) -> dict[str, Any]:
     teslim_tarihi: datetime | None = None
     if body.teslim_tarihi:
-        try:
+        # SIM105 (önceden vardı): sessiz `except: pass` yerine niyeti açık
+        # yazan suppress. Davranış aynı — bozuk tarih girdisi teslim tarihini
+        # boş bırakır, isteği reddetmez.
+        with contextlib.suppress(ValueError):
             teslim_tarihi = datetime.fromisoformat(body.teslim_tarihi)
-        except ValueError:
-            pass
 
     assignment = TeacherAssignment(
         teacher_user_id=str(current_user.id),
@@ -516,7 +706,9 @@ async def list_reports(
         )
     ).scalar_one()
 
-    now = datetime.utcnow().isoformat()
+    # DTZ003 (önceden vardı): naive `utcnow()` yerine aware `now(UTC)`.
+    # `tzinfo` düşürülüyor ki rapor metninin biçimi AYNI kalsın.
+    now = datetime.now(UTC).replace(tzinfo=None).isoformat()
     reports = [
         {
             "id": "rpt-classes",

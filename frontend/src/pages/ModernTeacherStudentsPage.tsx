@@ -48,77 +48,73 @@ export function ModernTeacherStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [hata, setHata] = useState<string | null>(null);
+  // Sınıfa öğrenci ekleme (blocker #6): bu ekranda hiç ekleme yolu yoktu.
+  const [siniflar, setSiniflar] = useState<{ sinif_id: string; sinif_adi: string }[]>([]);
+  const [seciliSinif, setSeciliSinif] = useState('');
+  const [yeniEposta, setYeniEposta] = useState('');
+  const [ekleniyor, setEkleniyor] = useState(false);
+  const [bilgi, setBilgi] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStudents();
+    fetchSiniflar();
   }, []);
+
+  const fetchSiniflar = async () => {
+    try {
+      const response = await apiClient.get('/api/v1/teacher/classes');
+      const liste = response?.data ?? [];
+      setSiniflar(liste);
+      if (liste.length > 0) setSeciliSinif(liste[0].sinif_id);
+    } catch (error) {
+      console.error('Sınıflar yüklenemedi:', error);
+      setSiniflar([]);
+    }
+  };
+
+  const ogrenciEkle = async () => {
+    const eposta = yeniEposta.trim();
+    if (!seciliSinif || !eposta) return;
+    setEkleniyor(true);
+    setHata(null);
+    setBilgi(null);
+    try {
+      const sonuc = await apiClient.post(
+        `/api/v1/teacher/classes/${seciliSinif}/students`,
+        { email: eposta },
+      );
+      const eklenen = sonuc?.data ?? {};
+      setBilgi(`${eklenen.ad ?? ''} ${eklenen.soyad ?? ''}`.trim() + ' sınıfa eklendi.');
+      setYeniEposta('');
+      await fetchStudents();
+    } catch (error) {
+      // Sunucu "bu e-postayla kayıtlı öğrenci yok" / "yalnızca öğrenci
+      // hesapları eklenebilir" ayrımını yapıyor; mesajı OLDUĞU GİBİ gösteriyoruz
+      // ki öğretmen yazım hatasıyla gerçek reddi ayırt edebilsin.
+      const mesaj =
+        (error as { response?: { data?: { detail?: string } } })?.response?.data
+          ?.detail ?? 'Öğrenci eklenemedi.';
+      setHata(mesaj);
+    } finally {
+      setEkleniyor(false);
+    }
+  };
 
   const fetchStudents = async () => {
     try {
       setLoading(true);
+      setHata(null);
       const response = await apiClient.get('/api/v1/teacher/students');
       setStudents(response?.data?.students || []);
     } catch (error) {
+      // 29 Tem 2026: burada 5 UYDURMA öğrenci vardı ("Ahmet Yılmaz", "Ayşe
+      // Demir"…). Sonuç: uç bozuk olduğunda öğretmen sahte bir sınıf listesi
+      // görüyor, eksiklik hiç fark edilmiyordu. Ekran gerçekte olmayan bir
+      // şeyi göstermez; hata hata olarak söylenir.
       console.error('Öğrenciler yüklenemedi:', error);
-      // Mock data for demo
-      setStudents([
-        {
-          id: '1',
-          ad: 'Ahmet',
-          soyad: 'Yılmaz',
-          email: 'ahmet.yilmaz@example.com',
-          telefon: '0555 123 4567',
-          sinif: '12-A',
-          ortalama: 85.5,
-          tamamlanan_sinav: 15,
-          toplam_sinav: 20,
-          son_giris: '2025-10-19T10:30:00',
-        },
-        {
-          id: '2',
-          ad: 'Ayşe',
-          soyad: 'Demir',
-          email: 'ayse.demir@example.com',
-          sinif: '12-A',
-          ortalama: 92.3,
-          tamamlanan_sinav: 18,
-          toplam_sinav: 20,
-          son_giris: '2025-10-19T09:15:00',
-        },
-        {
-          id: '3',
-          ad: 'Mehmet',
-          soyad: 'Kaya',
-          email: 'mehmet.kaya@example.com',
-          telefon: '0555 987 6543',
-          sinif: '12-B',
-          ortalama: 78.9,
-          tamamlanan_sinav: 12,
-          toplam_sinav: 20,
-          son_giris: '2025-10-18T16:45:00',
-        },
-        {
-          id: '4',
-          ad: 'Fatma',
-          soyad: 'Şahin',
-          email: 'fatma.sahin@example.com',
-          sinif: '11-A',
-          ortalama: 88.7,
-          tamamlanan_sinav: 16,
-          toplam_sinav: 20,
-        },
-        {
-          id: '5',
-          ad: 'Ali',
-          soyad: 'Öztürk',
-          email: 'ali.ozturk@example.com',
-          telefon: '0555 456 7890',
-          sinif: '11-B',
-          ortalama: 72.4,
-          tamamlanan_sinav: 10,
-          toplam_sinav: 20,
-        },
-      ]);
+      setStudents([]);
+      setHata('Öğrenci listesi yüklenemedi. Bağlantını kontrol edip tekrar dene.');
     } finally {
       setLoading(false);
     }
@@ -293,6 +289,73 @@ export function ModernTeacherStudentsPage() {
             </Grid>
           </Grid>
         </motion.div>
+
+        {/* Sınıfa öğrenci ekle — blocker #6: bu yol hiç yoktu */}
+        <GlassCard glassIntensity="medium" elevated sx={{ mb: 3 }}>
+          <Box
+            component="form"
+            onSubmit={(e: React.FormEvent) => {
+              e.preventDefault();
+              void ogrenciEkle();
+            }}
+            sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}
+          >
+            <TextField
+              select
+              label="Sınıf"
+              value={seciliSinif}
+              onChange={(e) => setSeciliSinif(e.target.value)}
+              SelectProps={{ native: true }}
+              sx={{ minWidth: 160 }}
+              InputLabelProps={{ shrink: true }}
+            >
+              {siniflar.length === 0 && <option value="">Önce sınıf oluştur</option>}
+              {siniflar.map((s) => (
+                <option key={s.sinif_id} value={s.sinif_id}>
+                  {s.sinif_adi}
+                </option>
+              ))}
+            </TextField>
+            <TextField
+              label="Öğrenci e-postası"
+              type="email"
+              placeholder="ogrenci@okul.tr"
+              value={yeniEposta}
+              onChange={(e) => setYeniEposta(e.target.value)}
+              sx={{ flex: 1, minWidth: 240 }}
+              InputLabelProps={{ shrink: true }}
+            />
+            <ModernButton
+              type="submit"
+              disabled={ekleniyor || !seciliSinif || !yeniEposta.trim()}
+            >
+              {ekleniyor ? 'Ekleniyor…' : 'Sınıfa ekle'}
+            </ModernButton>
+          </Box>
+        </GlassCard>
+
+        {bilgi && (
+          <Box role="status" sx={{ mb: 2, color: 'success.main' }}>
+            {bilgi}
+          </Box>
+        )}
+
+        {/* Yükleme hatası — sessizce sahte liste göstermek yerine söylenir */}
+        {hata && (
+          <Box
+            role="alert"
+            sx={{
+              mb: 3,
+              p: 2,
+              borderRadius: 2,
+              border: '1px solid rgba(217,119,6,0.35)',
+              background: 'rgba(217,119,6,0.08)',
+              color: modernColors.text?.primary ?? 'inherit',
+            }}
+          >
+            {hata}
+          </Box>
+        )}
 
         {/* Student Cards */}
         <AnimatePresence mode="wait">
