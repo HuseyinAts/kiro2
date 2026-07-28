@@ -97,6 +97,26 @@ def app_ve_oturum():
         app.dependency_overrides.pop(get_db, None)
 
 
+@pytest.fixture(autouse=True)
+def _temiz_depolar(app_ve_oturum):
+    """Her teste taze depo — süreç-ömürlü tekil, olay döngüsüne bağlı.
+
+    `api.auth._depolar` Redis istemcisini önbelleğe alır ve o istemci kendisini
+    yaratan olay döngüsüne bağlıdır. Üretimde işçi başına tek döngü olduğu için
+    bu doğru davranış; ama pytest her teste YENİ döngü açar, dolayısıyla
+    önbellekteki istemci ikinci testte "Event loop is closed" verir.
+
+    Bu fixture olmadan paketin sonucu ORTAM DEĞİŞKENİNE bağlıydı: `REDIS_URL`
+    erişilemez olduğunda (conftest varsayılanı 6380) depo bellek dalına düşüyor
+    ve her şey yeşil geçiyordu; gerçek Redis'e yönlendirildiğinde 3 test
+    düşüyordu. Yani "7/7 PASS" yalnız bellek yolunu ölçüyormuş.
+    """
+    import api.auth as auth_modulu
+
+    auth_modulu._depolar = auth_modulu._SifreSifirlamaDepolari()
+    yield
+
+
 @pytest.fixture
 def kullanici(app_ve_oturum):
     """HER TESTE KENDİ hesabı.
