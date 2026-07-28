@@ -1,9 +1,8 @@
 ## Session Handoff — 2026-07-28 (blocker #1)
 
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `65721e890` test(auth): şifre kurtarma paketi ortam değişkenine bağlıydı
-**Önceki:** `9275f84b0` feat(auth): şifre kurtarma uçtan uca çalışıyor — blocker #1
-**Uncommitted:** temiz · **Push: YAPILMADI** (2 commit bekliyor)
+**Son commit:** `b3609bdf1` fix(auth): sessiz Redis yutmaları loglanıyor + bekçinin 8 bulgusu
+**Push: TAMAM** (`9cf7d7e16..b3609bdf1`, 4 commit) · **Uncommitted:** temiz
 
 ### Yapilanlar
 
@@ -25,9 +24,21 @@
   farklıydı (3 vs 5, `Guclu2024` yeşil ama sunucu red) ve **test bu yanlış sözleşmeyi
   sabitlemişti**; `/giris` ölü rota; "Panele dön" CTA'sı yalandı.
 
+### Pre-push bekçisi 8 bulgu verdi — 3'ü GERÇEK eksikti
+
+- `auth.py`'de 3 `except Exception: pass` (ÖNCEDEN VARDI) artık `logger.warning`.
+  **Bu blokların sessizliği, aynı gün bulunan "Redis'siz kurulumda sıfırlama ölü"
+  hatasının görünmez kalmasının sebebiydi.** Bandit B110 nosec'leri gereksizleşti.
+- Bekçi 5+ testli dosyada parametrize, 10+ testli dosyada Hypothesis istiyor.
+  Heuristiği susturmak için test eğmek yerine **eksik kapsam eklendi**: biçimi
+  bozuk 8 kod şekli TEK ve AYNI jenerik yanıtı almalı (farklı yanıt kodun
+  beklenen şeklini sızdırırdı) + depo katmanı bozuk girdide istisna fırlatmamalı
+  + Hypothesis ile özetin iki değişmezi rastgele e-posta/kod uzayında.
+- `_FakeSession.rollback` boş gövdeydi → geri almaları sayıyor.
+
 ### Doğrulama
 
-- unit **26** (13×2 backend: gerçek Redis + bellek) · integration **7** → **33/33**,
+- unit + integration **54/54** (26 → 33 → 54; bekçi turu 21 test daha ekletti),
   iki ortam ve iki sırayla ayrı ayrı koşuldu.
 - **mutasyon 6/6 yakalandı** (`backend/scripts/mutation_check_password_reset.py`).
   Tur GERÇEK boşluk buldu: iki yedekli kontrol testte birbirini maskeliyordu →
