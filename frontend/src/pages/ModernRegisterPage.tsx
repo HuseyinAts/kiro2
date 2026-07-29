@@ -13,7 +13,6 @@ import {
   Person,
   Groups,
   ChildCare,
-  AdminPanelSettings,
   Email,
   Lock,
   Phone,
@@ -219,13 +218,10 @@ export const ModernRegisterPage: React.FC = () => {
       description: 'Çocuklarını takip et',
       gradient: modernColors.gradients.sunset,
     },
-    {
-      value: 'admin' as UserRole,
-      label: 'Admin',
-      icon: <AdminPanelSettings sx={{ fontSize: 32 }} />,
-      description: 'Sistem yönetimi',
-      gradient: modernColors.gradients.fire,
-    },
+    // Admin BİLEREK YOK: herkese açık kayıt ucu ayrıcalıklı rol üretmez
+    // (backend `_map_registration_role` 403 döner). Admin hesapları admin
+    // panelinden açılır: POST /admin/users. Bu kart 29 Tem'e kadar formda
+    // duruyordu ve seçildiğinde kullanıcı sessizce ÖĞRENCİ oluyordu.
   ];
 
   return (

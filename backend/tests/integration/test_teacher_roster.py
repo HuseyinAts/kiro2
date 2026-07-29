@@ -467,3 +467,74 @@ def test_cannot_remove_from_someone_elses_class(client, db, ogretmen):
         resp.json().get("detail") != "Not Found"
     ), "404 rotanın YOKLUĞUNDAN geliyor — silme yetkisi iddiası doğrulanmıyor"
     assert not db.silinen, "başkasının sınıfından silme yapıldı"
+
+
+# ---------------------------------------------------------------------------
+# Rol kapısı — TÜM yazma uçları (29 Tem 2026 gözden geçirmesi)
+#
+# 29 Tem'de roster uçları eklenirken bu router'a ilk kez rol kapısı kondu, ama
+# YALNIZ yeni iki uca. Gözden geçirmede ölçüldü: 15 uçtan 2'sinde kapı var.
+# Kapısız kalan 7 yazma ucu, herhangi bir ÖĞRENCİNİN sınıf/sınav/ödev/içerik
+# oluşturmasına ve silmesine izin veriyordu — `get_current_user` yalnız kimlik
+# doğruluyor, yetki doğrulamıyor.
+#
+# Bu tablo uçları TEK TEK sayar. Yeni bir yazma ucu eklenip buraya eklenmezse
+# test onu görmez; bu yüzden altta ayrıca "kapsam bekçisi" var: router'daki
+# yazma uçlarının sayısı burada listelenenle eşleşmezse kırmızıya döner.
+# ---------------------------------------------------------------------------
+
+_SINIF = "11111111-1111-1111-1111-111111111111"
+
+YAZMA_UCLARI = [
+    ("post", "/api/v1/teacher/classes", {"ad": "9-A"}),
+    ("post", "/api/v1/teacher/exams", {"baslik": "Deneme"}),
+    ("delete", f"/api/v1/teacher/exams/{_SINIF}", None),
+    ("post", "/api/v1/teacher/assignments", {"baslik": "Ödev"}),
+    ("delete", f"/api/v1/teacher/assignments/{_SINIF}", None),
+    ("post", "/api/v1/teacher/contents", {"baslik": "İçerik"}),
+    ("delete", f"/api/v1/teacher/contents/{_SINIF}", None),
+    ("post", f"/api/v1/teacher/classes/{_SINIF}/students", {"email": "x@y.test"}),
+    ("delete", f"/api/v1/teacher/classes/{_SINIF}/students/abc", None),
+]
+
+
+@pytest.mark.parametrize(("metot", "yol", "govde"), YAZMA_UCLARI)
+def test_ogrenci_hicbir_yazma_ucunu_kullanamaz(
+    client, db, ogrenci_kimligi, metot, yol, govde
+):
+    """Öğrenci rolü HİÇBİR yazma ucuna geçememeli.
+
+    422 KABUL EDİLMEZ: 422 "gövden hatalı" demektir, yani istek rol kapısına
+    hiç takılmadan gövde doğrulamasına ulaşmıştır — kapı yok demektir. Canlı
+    sistemde ölçülen tam olarak buydu.
+    """
+    resp = getattr(client, metot)(yol, **({"json": govde} if govde else {}))
+
+    assert resp.status_code in (401, 403), (
+        f"{metot.upper()} {yol} -> {resp.status_code}; öğrenci reddedilmeliydi. "
+        f"Gövde: {resp.text[:200]}"
+    )
+    assert not db.eklenen, f"{metot.upper()} {yol}: öğrenci kayıt oluşturdu"
+    assert not db.silinen, f"{metot.upper()} {yol}: öğrenci kayıt sildi"
+
+
+def test_yazma_uclarinin_tamami_bu_dosyada_listeli():
+    """Kapsam bekçisi: router'a yeni yazma ucu eklenip test edilmezse kırmızı.
+
+    Yukarıdaki tablo elle yazıldığı için kendiliğinden eskir. Bu test router
+    kaynağındaki POST/PUT/DELETE dekoratörlerini sayar ve tabloyla karşılaştırır.
+    """
+    import re
+    from pathlib import Path
+
+    kaynak = (
+        Path(__file__).resolve().parents[2] / "app" / "api" / "teacher_classroom.py"
+    )
+    dekorator = re.findall(
+        r'@router\.(post|put|patch|delete)\(\s*"([^"]+)"',
+        kaynak.read_text(encoding="utf-8"),
+    )
+    assert len(dekorator) == len(YAZMA_UCLARI), (
+        f"router'da {len(dekorator)} yazma ucu var, testte {len(YAZMA_UCLARI)} listeli. "
+        f"Yeni uç eklendiyse YAZMA_UCLARI'na da ekle. Router: {dekorator}"
+    )

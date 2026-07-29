@@ -170,6 +170,7 @@ async def list_classes(
 @router.post("/classes")
 async def create_class(
     body: ClassCreate,
+    _staff: None = _STAFF_ONLY,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -437,6 +438,7 @@ async def list_exams(
 @router.post("/exams", status_code=201)
 async def create_exam(
     body: ExamCreate,
+    _staff: None = _STAFF_ONLY,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -470,6 +472,7 @@ async def create_exam(
 @router.delete("/exams/{exam_id}")
 async def delete_exam(
     exam_id: UUID,
+    _staff: None = _STAFF_ONLY,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -523,6 +526,7 @@ async def list_assignments(
 @router.post("/assignments", status_code=201)
 async def create_assignment(
     body: AssignmentCreate,
+    _staff: None = _STAFF_ONLY,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -563,6 +567,7 @@ async def create_assignment(
 @router.delete("/assignments/{assignment_id}")
 async def delete_assignment(
     assignment_id: UUID,
+    _staff: None = _STAFF_ONLY,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -616,6 +621,7 @@ async def list_contents(
 @router.post("/contents", status_code=201)
 async def create_content(
     body: ContentCreate,
+    _staff: None = _STAFF_ONLY,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
@@ -648,6 +654,7 @@ async def create_content(
 @router.delete("/contents/{content_id}")
 async def delete_content(
     content_id: UUID,
+    _staff: None = _STAFF_ONLY,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
