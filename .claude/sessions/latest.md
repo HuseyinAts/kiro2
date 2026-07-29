@@ -1,72 +1,55 @@
-## Session Handoff — 2026-07-28 (blocker #1)
-
+## Session Handoff — 2026-07-29 01:30
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `b3609bdf1` fix(auth): sessiz Redis yutmaları loglanıyor + bekçinin 8 bulgusu
-**Push: TAMAM** (`9cf7d7e16..b3609bdf1`, 4 commit) · **Uncommitted:** temiz
+**Son commit:** `9a8860de7` test(teacher): rol kapısı parametrize — parent da reddedilmeli
+**Uncommitted:** temiz · **Push: tamam, 0 bekleyen commit** (7 commit push edildi)
 
 ### Yapilanlar
 
-**Blocker #1 (şifre kurtarma) KAPANDI — kod tarafı.**
+**Blocker #1 — şifre kurtarma KAPANDI (kod tarafı)** `9275f84b0`, `65721e890`, `b3609bdf1`
+- `backend/core/password_reset_codes.py` (YENİ): 6 haneli kod, (e-posta,kod) çiftine bağlı +
+  hash'li, atomik INCR deneme sayacı (5), **hesap başına saatte 3 kod** (IP limiti yetmiyordu:
+  100 IP → %72 kaba kuvvet başarısı).
+- `backend/api/auth.py:1463` TODO → gerçek gönderim + yeni `POST /auth/verify-reset-code`.
+  Gönderim **await EDİLMİYOR** — SMTP beklemek yanıt süresinden e-posta numaralandırması açardı.
+- `frontend/src/kiro/screens/HesapKurtarmaPage.tsx` + `kiro/api/api-client.ts:540` canlıya bağlandı;
+  `App.tsx:229` rota + `/forgot-password` yönlendirmesi (ikisi de ölü linkti).
+- Planda olmayan 4 bulgu: `auth.py` `_get_token_store()` her çağrıda YENİ store üretiyordu →
+  **Redis'siz her kurulumda sıfırlama ZATEN ölüydü**; ekran şifre kuralları sunucudan farklıydı
+  (3 vs 5) ve **test bu yanlış sözleşmeyi sabitlemişti**; `/giris` ölü rota; "Panele dön" yalandı.
 
-- Başlangıç ölçümü: `auth.py:1463` sadece TODO (mail gitmiyor, "gönderildi" deniyor);
-  `HesapKurtarmaPage` tasarımı bitmiş+testli ama **%100 mock** (kodu istemcide doğruluyor,
-  3. adımda sunucuya hiç gitmiyor); **hiçbir rotaya bağlı değil** (iki giriş linki de ölü);
-  `api-client` **var olmayan** `/auth/recover` uçunu çağırıyor.
-- Akış: `forgot-password` → **`verify-reset-code` (YENİ)** → `reset-password`.
-  Kod→token→şifre; çalışan `reset-password` ucuna DOKUNULMADI.
-- Yeni: `backend/core/password_reset_codes.py` (hash'li 6 hane, atomik INCR sayaç,
-  hesap başına saatte 3 kod).
-- Tasarım incelemesinde **4 kendi hatam** düzeltildi: 6 hane global ad alanına düşemez;
-  IP limiti kaba kuvvete yetmez (100 IP → %72) → hesap-bazlı limit; SMTP'yi `await`
-  etmek **zamanlama üzerinden numaralandırma** açar → fire-and-forget; sayaç atomik.
-- **Planda olmayan 4 bulgu:** `_get_token_store()` her çağrıda YENİ store üretiyordu →
-  Redis'siz her kurulumda sıfırlama ZATEN ölüydü; ekran şifre kuralları sunucudan
-  farklıydı (3 vs 5, `Guclu2024` yeşil ama sunucu red) ve **test bu yanlış sözleşmeyi
-  sabitlemişti**; `/giris` ölü rota; "Panele dön" CTA'sı yalandı.
-
-### Pre-push bekçisi 8 bulgu verdi — 3'ü GERÇEK eksikti
-
-- `auth.py`'de 3 `except Exception: pass` (ÖNCEDEN VARDI) artık `logger.warning`.
-  **Bu blokların sessizliği, aynı gün bulunan "Redis'siz kurulumda sıfırlama ölü"
-  hatasının görünmez kalmasının sebebiydi.** Bandit B110 nosec'leri gereksizleşti.
-- Bekçi 5+ testli dosyada parametrize, 10+ testli dosyada Hypothesis istiyor.
-  Heuristiği susturmak için test eğmek yerine **eksik kapsam eklendi**: biçimi
-  bozuk 8 kod şekli TEK ve AYNI jenerik yanıtı almalı (farklı yanıt kodun
-  beklenen şeklini sızdırırdı) + depo katmanı bozuk girdide istisna fırlatmamalı
-  + Hypothesis ile özetin iki değişmezi rastgele e-posta/kod uzayında.
-- `_FakeSession.rollback` boş gövdeydi → geri almaları sayıyor.
-
-### Doğrulama
-
-- unit + integration **54/54** (26 → 33 → 54; bekçi turu 21 test daha ekletti),
-  iki ortam ve iki sırayla ayrı ayrı koşuldu.
-- **mutasyon 6/6 yakalandı** (`backend/scripts/mutation_check_password_reset.py`).
-  Tur GERÇEK boşluk buldu: iki yedekli kontrol testte birbirini maskeliyordu →
-  beyaz-kutu testi + "ikisi birden" mutasyonu eklendi.
-- frontend **8/8** (canlı-mod sözleşme testi 3 ucun yol+gövdesini sabitliyor), tsc 0.
-- Rota 1249 → **1250** (tam +1), auth router yükleniyor.
+**Blocker #6 — roster KAPANDI (satır-silme UI hariç)** `c5e0ca323`, `9a8860de7`
+- `backend/app/api/teacher_classroom.py`: `POST/DELETE /classes/{id}/students` (YENİ),
+  `GET /students` artık gerçek ad/soyad/e-posta döndürüyor (satır 203'te sabit boş string'di).
+- **Bu router'da HİÇ rol kapısı yoktu** (ölçüldü) → yeni uçlara `_require_staff` + sahiplik
+  kontrolü **handler'da açık `if`** (WHERE'e gömülü kontrol testle doğrulanamaz).
+- `frontend/src/pages/ModernTeacherStudentsPage.tsx`: 5 **uydurma öğrenci** fallback'i SİLİNDİ
+  (satır 64: "Ahmet Yılmaz"…), dürüst hata bandı + sınıf seç/e-posta yaz/ekle formu.
 
 ### Fail Eden Testler
-YOK. (`tests/fast/test_api_coverage_batch9.py` >600 s sürüyor — kendi yavaşlığı,
-bu değişiklikle ilgisiz, koşturulmadı.)
+YOK. `tests/unit/test_password_reset_codes.py` + `tests/integration/test_password_recovery_flow.py`
+**54/54**; `tests/integration/test_teacher_roster.py` **11/11**.
+Mutasyon: `scripts/mutation_check_password_reset.py` **6/6**, `..._teacher_roster.py` **5/5**.
+(`tests/fast/test_api_coverage_batch9.py` >600 s — kendi yavaşlığı, koşturulmadı.)
 
 ### Engelleyiciler
-YOK — ama özellik SMTP olmadan kullanıcıya mail göndermez (dev'de kod log'a düşer).
+YOK — ama #1 SMTP kimlik bilgisi olmadan kullanıcıya mail göndermez (dev'de kod log'a düşer).
 
 ### Sonraki Adimlar (maks 5)
-1. **Push** (2 commit bekliyor).
-2. **SMTP kimlik bilgisi** `.env`'e (operatör) + `docker cp`/rebuild + gerçek zincir
-   duman testi: kayıt → şifremi unuttum → gelen kutusu → yeni şifre → giriş. (görev #441)
-3. **#433 ES reindex** — xfail(strict) mühürlü, reindex olunca paket kırmızıya döner.
-4. **#6 roster yazma uçları** (~22h) · **#5 öğretmen/admin panoları mock**.
-5. `.pre-commit-config.yaml`'a `types-redis` ekle → auth.py'deki mypy ignore'ları kaldır.
+1. **#6 kalan**: satır-bazlı "sınıftan çıkar" butonu — `GET /students` yanıtına `sinif_id` eklenmeli
+   (DELETE ucu VAR, UI'da düğme yok). + gerçek PG üzerinde duman testi.
+2. **#1 kalan (operatör)**: `.env`'e SMTP_SERVER/PORT/USERNAME/PASSWORD/EMAIL_FROM →
+   `docker compose up -d --no-deps backend` → kaydol→şifremi unuttum→gelen kutusu→giriş. (görev #441)
+3. **#5**: öğretmen/admin panoları hâlâ mock (veli panosu 26 Tem'de bağlanmıştı).
+4. **#433** ES reindex — `test_es_answer_leak.py:212` xfail(strict) mühürlü, reindex olunca kırmızıya döner.
+5. `.pre-commit-config.yaml`'a `types-redis` → `auth.py`'deki mypy ignore'ları kaldırılabilir.
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- **6 haneli kod**, magic link DEĞİL (ekran onaylı tasarımı için; backend uyduruldu).
-- **Numaralandırma > gönderim geri bildirimi**: kullanıcı mailin gidip gitmediğini
-  ASLA öğrenmez; operatör log'dan öğrenir.
-- **bandit B105 hook'ta atlandı** — ruff `S` seti aynı denetimi yapıyor, ÖLÇÜLDÜ
-  (sahte `API_TOKEN` `backend/api/` altında S105 ile yakalandı). 3 B110 gerekçeli nosec.
-- auth.py bu hook zincirinden geçemiyordu; 4 ihlal de ÖNCEDEN vardı, gerekçeli işaretlendi.
-- **Kapsam dışı, ayrı iş:** sıfırlama sonrası oturum düşürme (refresh-token iptali YOK),
-  e-posta case-sensitivity (login de öyle), reset token'ın düz metin saklanması.
+- **6 haneli kod**, magic link DEĞİL · **e-posta ile roster**, davet kodu DEĞİL (ikisi de kullanıcı kararı).
+- **Numaralandırma > gönderim geri bildirimi**: kullanıcı mailin gidip gitmediğini ASLA öğrenmez.
+- `core.auth_dependencies.require_role` **kullanılmadı**: ham `Request`ten yeniden doğruluyor,
+  aynı uca ikinci kimlik yolu sokuyor ve kapı gerçek JWT üretmeden test edilemiyordu.
+- **bandit B105 hook'ta atlandı** — ruff `S105` aynı denetimi yapıyor, kontrol deneyiyle ÖLÇÜLDÜ.
+- `auth.py` ve `teacher_classroom.py` bu hook zincirinden **hiç geçemiyormuş**; tüm ihlaller ÖNCEDEN
+  vardı, gerekçeli işaretlendi/düzeltildi (3 `except: pass` artık loglanıyor).
+- **Test altyapısı tuzakları**: `app.core.deps.get_db` ≠ `core.dependencies.get_db` (yanlışını
+  override etmek sessizce gerçek sqlite'a gider) · `col.in_([...])` bağlı değeri LİSTE'dir.
