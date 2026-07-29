@@ -11,6 +11,7 @@ Background task infrastructure for:
 """
 
 import os
+from typing import ClassVar
 
 from celery import Celery
 from celery.schedules import crontab
@@ -54,13 +55,19 @@ celery_app.conf.update(
         "tasks.bulk_tasks.*": {"queue": "bulk"},
         "tasks.claude_md_improvement_tasks.*": {"queue": "claude_md"},
         "tasks.mega_feature_tasks.*": {"queue": "features"},
-        # Kalite kapısı bakımı: rota ZORUNLU. task_default_queue set
-        # edilmemiş ve "default" adında bir Queue tanımlı değil; rotasız
-        # görev "celery" kuyruğuna düşer ve hiçbir worker onu tüketmez.
         "tasks.quality_gate_tasks.*": {"queue": "features"},
     },
+    # Rotası olmayan görevlerin varsayılan kuyruğu. Celery'nin kendi varsayılanı
+    # "celery"dir ve worker onu dinlemez (docker-compose: -Q default,emails,...),
+    # yani rotasız her görev sessizce çürürdü — 29 Tem 2026'da Redis'in "celery"
+    # kuyruğunda 3.367 tüketilmemiş mesaj ölçüldü. Sözleşme:
+    # tests/unit/test_celery_routing_contract.py
+    task_default_queue="default",
     # Task queues with priorities
     task_queues=(
+        Queue(
+            "default", Exchange("default"), routing_key="default", priority=5
+        ),  # task_default_queue hedefi — rotasız görevler buraya düşer
         Queue(
             "emails", Exchange("emails"), routing_key="email", priority=9
         ),  # High priority
@@ -206,13 +213,14 @@ celery_app.conf.update(
 
 
 # Task base class with common functionality
-class BaseTask(celery_app.Task):
+# `.Task` uygulama örneğine bağlı olarak çalışma anında üretilir; mypy statik olarak göremez.
+class BaseTask(celery_app.Task):  # type: ignore[name-defined]
     """Base task with retry and logging"""
 
     # Only retry transient failures — broad Exception retry causes non-recoverable
     # errors (bad data, validation errors) to waste retries before final failure
     autoretry_for = (ConnectionError, TimeoutError, OSError)
-    retry_kwargs = {"max_retries": 3, "countdown": 60}
+    retry_kwargs: ClassVar[dict[str, int]] = {"max_retries": 3, "countdown": 60}
     retry_backoff = True
     retry_backoff_max = 600
     retry_jitter = True
