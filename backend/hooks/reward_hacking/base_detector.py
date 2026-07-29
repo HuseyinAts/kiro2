@@ -13,6 +13,15 @@ from .config.patterns import REMEDIATION_SUGGESTIONS
 from .models.detection_result import DetectionResult, DetectorConfig
 from .models.enums import PatternType, SeverityLevel
 
+# Bu eşiğin ALTINDAKİ bulgular tavsiyedir (WARNING), commit/push'u bloklamaz.
+# Değer ÖLÇÜLDÜ, seçilmedi — dedektörlerdeki fiili confidence dağılımı:
+#   0.95x3 · 0.90 · 0.85 · 0.80x2 · 0.75 · 0.70  -> gerçek tespitler (bloklamalı)
+#   0.60 · 0.50                                   -> "Consider ..." tavsiyeleri
+# Yeni bir kural eklerken: bloklaması gereken bir tespite 0.7'nin ALTINDA değer
+# verirsen sessizce etkisiz kalır. Ölçümü tazele:
+#   grep -rn 'confidence=' backend/hooks/reward_hacking/detectors/
+ADVISORY_CONFIDENCE_THRESHOLD = 0.7
+
 
 class BaseDetector(ABC):
     """
@@ -68,11 +77,7 @@ class BaseDetector(ABC):
         """
 
     @abstractmethod
-    async def detect(
-        self,
-        file_path: str,
-        content: str
-    ) -> list[DetectionResult]:
+    async def detect(self, file_path: str, content: str) -> list[DetectionResult]:
         """
         Detect reward hacking patterns in file content.
 
@@ -98,14 +103,14 @@ class BaseDetector(ABC):
         """
         # Skip comments
         stripped = line.strip()
-        if stripped.startswith('#') and 'assert' not in stripped.lower():
+        if stripped.startswith("#") and "assert" not in stripped.lower():
             return True
 
         # Skip docstrings
-        lines = content.split('\n')
+        lines = content.split("\n")
         in_docstring = False
-        for i, l in enumerate(lines):
-            if '"""' in l or "'''" in l:
+        for i, satir in enumerate(lines):
+            if '"""' in satir or "'''" in satir:
                 in_docstring = not in_docstring
             if i == line_num - 1 and in_docstring:
                 return True
@@ -115,8 +120,7 @@ class BaseDetector(ABC):
     def _get_remediation(self) -> str:
         """Get remediation suggestion for this pattern type."""
         return REMEDIATION_SUGGESTIONS.get(
-            self.pattern_type.value,
-            "Review and fix the detected pattern."
+            self.pattern_type.value, "Review and fix the detected pattern."
         )
 
     def _create_result(
@@ -126,7 +130,7 @@ class BaseDetector(ABC):
         code_snippet: str,
         message: str,
         confidence: float = 0.95,
-        column_number: int | None = None
+        column_number: int | None = None,
     ) -> DetectionResult:
         """
         Create a DetectionResult object.
@@ -144,6 +148,16 @@ class BaseDetector(ABC):
         """
         severity = self.config.severity if self.config else self.default_severity
 
+        # Düşük güvenli bulgu TAVSİYEDİR, ihlal değil — commit/push'u bloklayamaz.
+        # 29 Tem 2026: "Consider Hypothesis for property-based testing" (confidence=0.5)
+        # CRITICAL sayılıp push'u durdurdu. `confidence` sonuca yazılıyordu ama severity'ye
+        # hiç etki etmiyordu, dolayısıyla 0.5'lik tavsiye 0.95'lik `assert True` ile aynı
+        # sınıfa düşüyordu. Eşik ÖLÇÜLDÜ, seçilmedi: dedektörlerdeki dağılım
+        # 0.95x3/0.90/0.85/0.80x2/0.75/0.70 (gerçek tespitler) vs 0.60/0.50 (iki tavsiye).
+        # Sözleşme + körleşme bekçisi: tests/hooks/reward_hacking/test_severity_from_confidence.py
+        if confidence < ADVISORY_CONFIDENCE_THRESHOLD:
+            severity = SeverityLevel.WARNING
+
         return DetectionResult(
             detector_name=self.name,
             pattern_type=self.pattern_type,
@@ -158,10 +172,7 @@ class BaseDetector(ABC):
         )
 
     def _regex_detect(
-        self,
-        file_path: str,
-        content: str,
-        message_template: str
+        self, file_path: str, content: str, message_template: str
     ) -> list[DetectionResult]:
         """
         Perform regex-based detection using compiled patterns.
@@ -179,10 +190,10 @@ class BaseDetector(ABC):
         for pattern in self._compiled_patterns:
             for match in pattern.finditer(content):
                 # Calculate line number
-                line_num = content[:match.start()].count('\n') + 1
+                line_num = content[: match.start()].count("\n") + 1
 
                 # Get the line content
-                lines = content.split('\n')
+                lines = content.split("\n")
                 if line_num <= len(lines):
                     line_content = lines[line_num - 1]
                 else:
@@ -196,14 +207,18 @@ class BaseDetector(ABC):
                 if self.config.min_confidence > 0.9:
                     continue
 
-                results.append(self._create_result(
-                    file_path=file_path,
-                    line_number=line_num,
-                    code_snippet=line_content,
-                    message=message_template.format(pattern=pattern.pattern),
-                    confidence=0.95,
-                    column_number=match.start() - content.rfind('\n', 0, match.start()) - 1
-                ))
+                results.append(
+                    self._create_result(
+                        file_path=file_path,
+                        line_number=line_num,
+                        code_snippet=line_content,
+                        message=message_template.format(pattern=pattern.pattern),
+                        confidence=0.95,
+                        column_number=match.start()
+                        - content.rfind("\n", 0, match.start())
+                        - 1,
+                    )
+                )
 
         return results
 
