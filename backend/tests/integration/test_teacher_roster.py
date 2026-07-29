@@ -245,6 +245,41 @@ def _kullanici(rol: str = "student", email: str | None = None):
 # ---------------------------------------------------------------------------
 
 
+# Gerçek rol kümesi: STUDENT / TEACHER / PARENT / ADMIN / SUPER_ADMIN.
+# Personel olmayan ikisi burada; "guest" diye bir rol YOK (uydurma rol
+# `AuthenticatedUser` doğrulamasından geçmiyor — kapı değil, şema reddediyor).
+@pytest.mark.parametrize("personel_disi_rol", ["student", "parent"])
+def test_non_staff_roles_cannot_add_anyone_to_a_class(
+    client, db, app_ve_db, personel_disi_rol
+):
+    """Personel OLMAYAN hiçbir rol bu ucu çağıramamalı.
+
+    Önceden yalnız "student" sınanıyordu; kapı `parent`/`guest` için de
+    tutmalı, aksi hâlde bir veli e-posta yazıp öğrenci adlarını okuyabilirdi.
+    """
+    app, _db = app_ve_db
+    _kimlik(app, personel_disi_rol, f"{personel_disi_rol}-42")
+    try:
+        sinif = _sinif()
+        hedef = _kullanici()
+        db.ekle(sinif, hedef)
+
+        resp = client.post(
+            f"/api/v1/teacher/classes/{sinif.id}/students",
+            json={"email": hedef.email},
+        )
+
+        assert resp.status_code == 403, (
+            f"{personel_disi_rol} rolü sınıfa öğrenci ekleyebiliyor: "
+            f"{resp.status_code} {resp.text[:200]}"
+        )
+        assert not db.eklenen, "yetkisiz istekte satır yazıldı"
+    finally:
+        from core.dependencies import get_current_user
+
+        app.dependency_overrides.pop(get_current_user, None)
+
+
 def test_student_role_cannot_add_anyone_to_a_class(client, db, ogrenci_kimligi):
     """Öğrenci rolü bu ucu HİÇ çağıramamalı.
 
@@ -294,7 +329,7 @@ def test_only_students_can_be_added(client, db, ogretmen):
     listede okuyabilirdi — kimlik ifşası, roster değil.
     """
     sinif = _sinif()
-    admin = _kullanici(rol="admin", email="admin@kiro2.test")
+    admin = _kullanici(rol="admin")  # e-posta fabrikadan — sabit adres yok
     db.ekle(sinif, admin)
 
     resp = client.post(
