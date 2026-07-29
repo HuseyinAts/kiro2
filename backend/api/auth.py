@@ -13,6 +13,7 @@ import time
 from collections import defaultdict
 from contextlib import contextmanager  # noqa: F401 -- kept for backward compat
 from datetime import UTC, datetime, timedelta
+from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -499,6 +500,41 @@ async def database_authenticate(
     }
 
 
+# Herkese açık kayıt ucundan alınabilecek roller (Türkçe + İngilizce takma ad).
+# ADMIN / SUPER_ADMIN BİLEREK YOK: ayrıcalıklı hesaplar yalnız admin panelinden
+# açılır (POST /admin/users). Buraya ayrıcalıklı rol eklemek, herkese açık bir uçtan
+# yetki yükseltme demektir.
+_SELF_REGISTERABLE_ROLES = {
+    "ogrenci": "STUDENT",
+    "student": "STUDENT",
+    "veli": "PARENT",
+    "parent": "PARENT",
+    "ogretmen": "TEACHER",
+    "teacher": "TEACHER",
+}
+
+
+def _map_registration_role(rol: Any) -> str:
+    """Kayıt isteğindeki rolü `users.role` değerine çevir.
+
+    `str(enum)` KULLANMA. Python 3.11+ `class X(str, Enum)` için `str(X.OGRETMEN)`
+    değeri değil `"KullaniciRolu.OGRETMEN"` üretir; Pydantic de `rol` alanını enum
+    üyesine çevirdiği için eski eşleştirme HİÇBİR anahtarı tutturamıyor ve herkesi
+    sessizce STUDENT yapıyordu — öğretmen ve veli kaydı fiilen çalışmıyordu.
+
+    Tanınmayan veya ayrıcalıklı rol **sessizce düşürülmez**, 403 ile reddedilir:
+    bu bug'ı aylarca gizleyen şey tam olarak sessiz düşürmeydi.
+    """
+    rol_key = (rol.value if isinstance(rol, Enum) else str(rol)).strip().lower()
+    mapped = _SELF_REGISTERABLE_ROLES.get(rol_key)
+    if mapped is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu rol herkese açık kayıt ile oluşturulamaz",
+        )
+    return mapped
+
+
 @router.post(
     "/kayit",
     summary="Kullanıcı Kaydı",
@@ -582,17 +618,7 @@ async def kullanici_kayit(
             detail="18 yaşından küçük kullanıcılar için veli e-postası zorunludur (KVKK)",
         )
 
-    # Rol eşleştirme: Türkçe → enum değeri
-    ROL_MAP = {
-        "ogrenci": "STUDENT",
-        "student": "STUDENT",
-        "veli": "PARENT",
-        "parent": "PARENT",
-        "ogretmen": "TEACHER",
-        "teacher": "TEACHER",
-        "admin": "ADMIN",
-    }
-    rol_str = ROL_MAP.get(str(kullanici_data.rol).lower(), "STUDENT")
+    rol_str = _map_registration_role(kullanici_data.rol)
 
     # E-posta benzersizlik kontrolü
     dup = await db.execute(
