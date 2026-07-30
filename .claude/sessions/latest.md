@@ -32,8 +32,7 @@ Bekçi kendi commit'inin dosyalarında exit 0.
 
 ### Sonraki Adimlar (maks 5)
 1. **#454** `reward_hacking_config.yaml` hiç okunmuyor (`--config` geçilmiyor,
-   `GlobalConfig().detectors == {}`) → karar: YAML'ı yükle / entry'ye ekle / sil.
-   Yüklenirse min_confidence 0.8→0.7 olur, bulgu sayısı artar — census yeniden koş.
+   `GlobalConfig().detectors == {}`) → karar: yükle / entry'ye ekle / sil (#454'te detay).
 2. **#455** mock oranı **%125 (5/4)** raporluyor — `count_mock_usage` aritmetiği.
 3. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
 4. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
