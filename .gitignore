@@ -233,7 +233,18 @@ veriseti/zkitap/*
 !veriseti/zkitap/screenshots_allowlist.txt
 qwen_extended_vocab/
 zemberek/
-models/
+# ANKRAJLI olmali (30 Tem 2026). Ankrajsiz `models/` HER derinlikte esler ve
+# git kurali geregi "ebeveyni haric tutulmus dosya yeniden dahil edilemez" —
+# yani `!backend/models/` yalnizca o tek yolu kurtariyordu. Sonradan dogan
+# her */models/ paketi SESSIZCE izlenmedi. Olculdu: 3 paket / 10 kaynak dosya
+# depoda yoktu ve taze checkout'ta ImportError veriyordu:
+#   backend/hooks/reward_hacking/models/      -> pre-push bekcisi hic kosamiyordu
+#   backend/app/guardrails/models/            -> guardrails/__init__.py:55 import ediyor
+#   backend/mcp_servers/zemberek_nlp/models/
+# Ankrajlamanin blast radius'u OLCULDU: `git status -uall` 3 -> 14, cop 0
+# (venv/site-packages/mypy_cache icindeki models/ dizinleri `.venv/`,
+# `venv/`, `.mypy_cache/` kurallariyla zaten kapsaniyor).
+/models/
 !backend/models/
 
 # Training data (large)

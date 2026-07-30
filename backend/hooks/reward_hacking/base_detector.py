@@ -177,7 +177,20 @@ class BaseDetector(ABC):
         Returns:
             DetectionResult object
         """
-        severity = self.config.severity if self.config else self.default_severity
+        # `self.config` ASLA falsy olamaz — bu yüzden eski
+        # `self.config.severity if self.config else self.default_severity`
+        # ifadesinde `default_severity` dalına ULAŞAN HİÇBİR GİRDİ YOKTU.
+        # Kaldırma deneyiyle ölçüldü (30 Tem 2026, #453):
+        #     bool(DetectorConfig())           -> True   (Pydantic BaseModel truthy)
+        #     MockAbuseDetector(config=None)   -> DetectorConfig  (__init__: config or ...)
+        # Sonuç: iki dedektörün `default_severity = WARNING` beyanı ölüydü ve
+        # 250 gerçek test dosyasında 474 CRITICAL'in 410'unu (%86,5) bu iki
+        # heuristik üretiyordu; 68/250 dosya tek başına push'u blokluyordu.
+        # `DetectorConfig.severity` artık None-varsayılanlı: None = "ezilmedi".
+        # Sözleşme: tests/hooks/reward_hacking/test_severity_calibration.py
+        severity = (
+            self.config.severity if self.config else None
+        ) or self.default_severity
 
         # Düşük güvenli bulgu TAVSİYEDİR, ihlal değil — commit/push'u bloklayamaz.
         # 29 Tem 2026: "Consider Hypothesis for property-based testing" (confidence=0.5)
