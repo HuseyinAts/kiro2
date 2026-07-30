@@ -1,50 +1,52 @@
-## Session Handoff — 2026-07-30 (öğle)
-**Branch:** feature/self-evolution-optimization
-**Son commit:** `7f99acc48` · **PUSH EDİLDİ** (`688e42377..7f99acc48`, origin senkron)
-**Uncommitted:** temiz
+## Session Handoff — 2026-07-30 (öğleden sonra)
+**Branch:** feature/self-evolution-optimization · **Son commit:** `a9429896b`
+**Push:** `688e42377..5cede288a` edildi; `a9429896b` push BEKLİYOR · **Uncommitted:** temiz
 
-### Yapilanlar — #453 KAPANDI
-- `base_detector.py:191` + `models/detection_result.py:96` — `DetectorConfig.severity`
-  varsayılanı **None** ("ezilmedi"); `_create_result` önce config'e, yoksa sınıf
-  beyanına bakar. Kök neden KALDIRMA DENEYİYLE ölçüldü: `bool(DetectorConfig())`
-  True, `config=None` bile model üretiyor → `default_severity` dalına ulaşan
-  **hiçbir girdi yoktu**, iki dedektörün `= WARNING` beyanı ölüydü. `b9d4fb967`
-- `tests/.../test_severity_calibration.py` (YENİ, 15 test) — RED→GREEN, **15/15
-  mutasyonla çivili**: M-a fix'i geri al→5 RED · M-b config yolunu yok say→1 RED ·
-  M-c hepsini INFO yap→12 RED. Vakum test 0.
-- `scripts/quality/guard_severity_census.py` (YENİ) — ONCE/SONRA ölçüm aleti,
-  korpus imzası basıyor (kollar aynı imzayı vermezse karşılaştırma geçersiz).
-- **.gitignore ankraj** `models/` → `/models/`: ankrajsız hali 3 paketi sessizce
-  izlemiyordu. Taze worktree'de ölçüldü → `ModuleNotFoundError ...reward_hacking.models`,
-  yani **bekçi hiçbir makinede koşamıyordu, yalnız bu diskte vardı**. +10 dosya
-  (guard models 3 · guardrails/models 4 · zemberek_nlp/models 3), çöp 0.
+### Yapilanlar
+- **#453 KAPANDI** `base_detector.py` + `models/detection_result.py` — `DetectorConfig.severity`
+  varsayılanı **None** ("ezilmedi"). Kök neden kaldırma deneyiyle: `bool(DetectorConfig())`
+  True, `config=None` bile model üretiyor → `default_severity` dalına ulaşan **hiçbir girdi
+  yoktu**, iki dedektörün `= WARNING` beyanı ölüydü. `b9d4fb967`
+- **.gitignore ankraj** `models/` → `/models/`: ankrajsız hali 3 paketi sessizce izlemiyordu.
+  Taze worktree'de `ModuleNotFoundError ...reward_hacking.models` → **bekçi hiçbir makinede
+  koşamıyordu**. +10 dosya (guard 3 · guardrails 4 · zemberek_nlp 3), çöp 0.
+- **#455 KAPANDI** `ast_analyzer.py` — `@patch(...)` çift sayılıyordu (zaten `ast.Call`,
+  `ast.walk` görüyor; ayrı `decorator_list` döngüsü tekrar sayıyordu). Ölçüm: 2 dekoratörlü
+  dosyada `mock_count=4/total=2` = **%200**. Döngü kaldırıldı + `_is_patch_decorator` öksüz
+  kaldığı için silindi. `5cede288a`
+- **#454 KAPANDI** ölü `reward_hacking_config.yaml` silindi — yüklemenin **no-op** olduğu
+  ölçüldü. `a9429896b`
+- 3 yeni test dosyası: `test_severity_calibration.py` (15) · `test_mock_ratio.py` (11)
 
-### Ölçüm (250 test dosyası, korpus imzası `a06814837a4f`, iki kolda AYNI)
+### Ölçümler
+`guard_severity_census.py`, 250 test dosyası, korpus imzası **iki kolda aynı**:
 CRITICAL **474→64** · WARNING **253→663** · bloklayan dosya **68/250→19/250**.
-Toplam bulgu 727 = 727 → hiçbir şey susturulmadı, yalnız sınıf değişti.
-mock_abuse 336 CRIT→336 WARN · hardcoded 74+253→0+327 · assert/empty_exc/placeholder
-(6/54/4) dokunulmadı. `assert True` ve bare `except:` hâlâ exit 2.
+Toplam bulgu 727=727 → susturma yok, yalnız sınıf değişti. `assert True` + bare
+`except:` hâlâ exit 2. YAML A/B (tek süreç, sabit korpus): 64/658/722 = 64/658/722, **fark 0**.
 
 ### Fail Eden Testler
-YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **294 passed,
-1 xfailed** (xfail = #451 işaretçisi). Ruff/mypy/bandit/detect-secrets: Passed.
-Bekçi kendi commit'inin dosyalarında exit 0.
+YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **305 passed, 1 xfailed**
+(xfail = #451 işaretçisi). Mutasyon: #453 **15/15**, #455 **10/11** (kalan 1 negatif kontrol).
 
 ### Sonraki Adimlar (maks 5)
-1. **#454** `reward_hacking_config.yaml` hiç okunmuyor (`--config` geçilmiyor,
-   `GlobalConfig().detectors == {}`) → karar: yükle / entry'ye ekle / sil (#454'te detay).
-2. **#455** mock oranı **%125 (5/4)** raporluyor — `count_mock_usage` aritmetiği.
+1. **`a9429896b` PUSH** (1 commit bekliyor).
+2. **#457** CLI `--max-files` dilimi non-deterministik (742/742/744 ölçüldü) —
+   `collect_files` `SUPPORTED_EXTENSIONS` **set**'i üzerinde dönüyor, `sorted()` gerek.
 3. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
 4. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
 5. **#452** `.claude/hooks/pre-tool-use.py` aynı literal kusurunu taşıyor.
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- **Mock/hardcoded WARNING'dir, CRITICAL değil** — ölçüldü: hardcoded dedektörü
-  `_is_test_file` kapısı yüzünden üretim kodunu HİÇ taramıyor (üretimde şifre
-  ataması → 0 bulgu), yani CRITICAL statüsü tek sır yakalamıyordu. mock dedektörü
-  de "collaborator mock'landı" ile "test edilen birim mock'landı" arasını ayırt
-  edemiyor; ayırt edemeyen sinyal bloklayıcı olamaz.
-- **Ölçüm aleti kendi kaymasını raporlamalı**: ilk A/B geçersizdi (yeni test dosyası
-  ilk-250 penceresini kaydırdı, 327→325) → census korpus imzası basıyor + kendi
-  ürettiği dosyaları hariç tutuyor.
-- `cd backend` İKİ KEZ koşarsa `backend/backend/`e kayar → mutlak yol kullan.
+- **Mock/hardcoded WARNING'dir** — ölçüldü: hardcoded dedektörü `_is_test_file` kapısı
+  yüzünden üretim kodunu HİÇ taramıyor (0 bulgu), yani CRITICAL statüsü tek sır bile
+  yakalamıyordu. mock dedektörü de "collaborator mock'landı" ile "test edilen birim
+  mock'landı" arasını ayırt edemiyor; ayırt edemeyen sinyal bloklayıcı olamaz.
+- **YANLIŞ ÇIKAN TAHMİN**: "YAML yüklenirse min_confidence 0.8→0.7 olur, bulgu artar"
+  denmişti; ölçünce **fark 0** — hiçbir bulgunun güveni [0.7,0.8) bandında değil.
+  Tahminle görev tanımı yazmak da bir iddiadır.
+- **Ruff SÜRÜM ÇATIŞMASI**: pre-commit ruff **0.7.1** pinli, yerel **0.14.13**; 0.7.1
+  UP038 istiyor, 0.14 o kuralı kaldırmış → per-file-ignores. Uzun `assert X, (f"...")`
+  satırını ikisi ZIT biçimlendirip commit'i salınıma sokuyor → mesajı değişkene al.
+- `cd backend` İKİ KEZ koşulursa `backend/backend/`e kayar (bu oturumda 4 kez, 3 ölçüm
+  geçersiz) → **daima mutlak yol**. Temizliği `;` değil `&&` ile başarıya bağla
+  (commit fail olsa bile `rm` koştu, commit mesajı dosyası silindi).
