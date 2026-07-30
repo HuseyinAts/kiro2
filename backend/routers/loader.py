@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # DISABLED ROUTERS — Yüklenmez ama kodda kalır (re-enable: setten çıkar)
 # Sebep: Eksik tablo, deprecated, veya henüz aktif değil
 # ============================================================================
-DISABLED_ROUTERS = {
+DISABLED_ROUTERS: dict[str, str] = {
     # RE-ENABLED (2026-04-06): 58 eksik tablo oluşturuldu, UUID->VARCHAR fix uygulandı
     # Tüm 13 router test edildi ve başarıyla import ediliyor
     # ChromaDB/YOLO yokluğunda graceful degradation ile çalışıyorlar
@@ -35,6 +35,8 @@ ROUTER_MAPPING = {
     "api.enhanced_auth_api": ("auth", "api.enhanced_auth_api"),
     "api.two_factor_auth_api": ("auth", "api.two_factor_auth_api"),
     "api.billing_api": ("security", "api.billing_api"),
+    # #447: frontend getMe() tek veri kaynagi. Kayitsiz router = 404 (testing.md #27).
+    "api.me": ("core", "api.me"),
     "api.kvkk_consent_api": ("security", "api.kvkk_consent_api"),
     "api.kvkk_privacy_api": ("security", "api.kvkk_privacy_api"),
     "api.kvkk_notice_api": ("security", "api.kvkk_notice_api"),  # KVKK Md.10 aydınlatma
@@ -304,7 +306,7 @@ class RouterLoader:
 
     def _register_to_app(self):
         """Tüm router'ları FastAPI app'e kaydet."""
-        for name, router, prefix in router_registry.get_all_routers():
+        for name, router, _prefix in router_registry.get_all_routers():
             try:
                 # P0 FIX: Don't strip /api prefix - routes need to be accessible at /api/...
                 # The router already defines its full prefix (e.g., /api/learning-path)

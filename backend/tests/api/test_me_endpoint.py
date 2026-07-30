@@ -69,14 +69,51 @@ def test_auth_yoksa_401(client):
     assert client.get("/api/v1/me").status_code == 401
 
 
-def test_satiri_olmayan_kullanici_404_verir(client, auth_headers):
-    """Gecerli JWT ama `users` satiri yok -> 404, 500 DEGIL.
+def test_satiri_olmayan_kullanici_404_verir(client, monkeypatch):
+    """Kimlik gecerli ama `users` satiri yok -> 404, 500 DEGIL.
 
-    `auth_headers` `user_id="1"` icin token uretiyor ve o kullanici canli DB'de
-    YOK (olculdu). Servis `.one()` kullansaydi `NoResultFound` -> 500 olurdu;
-    yani kimlik dogru ama veri yok durumu SUNUCU HATASI gibi gorunurdu.
+    NEDEN DB'YE BAGLANMIYORUZ: test ortami sqlite'a dusuyor ve orada `users`
+    tablosu YOK — ilk denemede `sqlite3.OperationalError: no such table: users`
+    alindi. Testi oraya baglamak, uretimde PostgreSQL kosan bir yolu SQLITE
+    uzerinden "dogrulamak" olurdu; bu depoda daha once tam bu tuzak yasandi
+    (tablesample vakasi: sqlite dali yesil, postgresql dali uretimde cokuyordu).
+
+    NEDEN `auth_headers` DEGIL OVERRIDE: gercek JWT ile istek ATILAMIYOR —
+    olculdu. `client` + `auth_headers` ile bu test 260 sn'de donmedi (SIGINT
+    ile kesildi), kimliksiz 401 testi ise ayni app uzerinde 48 sn'de gecti.
+    Fark auth yolunun DB erisimi. Bu depoda `client`+`auth_headers` ikilisini
+    GERCEKTEN kosturan baska test de yok (tek aday `test_osym_exam_api.py`,
+    31/31 skip) — yani bu bir depo kosulu, bu ucun kusuru degil. Ayri gorev.
+
+    Burada test edilen sey ROUTER MANTIGI: servis None dondugunde 404 uretiliyor
+    mu? Gercek auth KAPISI ustteki 401 testinde olculuyor; SQL'in kendisi canli
+    duman testiyle dogrulanir.
     """
-    assert client.get("/api/v1/me", headers=auth_headers).status_code == 404
+    from core.dependencies import get_current_user, get_db
+    from main import app
+    from services import persona_service
+
+    async def _bos(_oturum, _kullanici_id):
+        return None
+
+    monkeypatch.setattr("api.me.persona_getir", _bos)
+    assert persona_service.persona_getir is not _bos  # stub yalnizca router'da
+
+    # Yalnizca EKLEDIGIM anahtarlar geri alinir; conftest'in override'lari
+    # varsa onlari silmek testler arasi sessiz sizinti olurdu.
+    app.dependency_overrides[get_current_user] = lambda: _SahteKullanici()
+    app.dependency_overrides[get_db] = lambda: None
+    try:
+        assert client.get("/api/v1/me").status_code == 404
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+        app.dependency_overrides.pop(get_db, None)
+
+
+class _SahteKullanici:
+    """`get_current_user`in dondurdugu nesnenin router'in kullandigi tek alani."""
+
+    id = "1"
 
 
 # ---------------------------------------------------------------------------
