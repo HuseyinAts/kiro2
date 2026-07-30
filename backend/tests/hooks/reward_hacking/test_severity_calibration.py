@@ -29,10 +29,13 @@ KÖK NEDEN — kaldırma deneyiyle ölçüldü, kod okunarak değil:
     MockAbuseDetector beyan=WARNING     -> üretilen=CRITICAL   (dal ölü)
     HardcodedTestDataDetector beyan=WARNING -> üretilen=CRITICAL
 
-Aynı niyet İKİNCİ bir yerde de ölü: `config/reward_hacking_config.yaml` bu iki
-dedektöre `severity: WARNING` diyor, ama pre-push `--config` geçmiyor ve
-`GlobalConfig().detectors == {}` — YAML hiç okunmuyor. (Ayrı görev; bu dosya
-sınıf-düzeyi beyanı kablolar.)
+Aynı niyet İKİNCİ bir yerde de ölüydü: `config/reward_hacking_config.yaml` bu iki
+dedektöre `severity: WARNING` diyordu, ama pre-push `--config` geçmiyor ve
+`GlobalConfig().detectors == {}` — YAML hiç okunmuyordu. **#454'te SİLİNDİ**:
+elle yüklendiğinde sonuç birebir aynıydı (crit 64 / warn 658 / toplam 722, küme
+farkı 0), yani tam no-op. Artık tek doğruluk kaynağı aşağıdaki parametrik testin
+denetlediği sınıf beyanları. (`--config <yol>` yeteneği CI sıkılaştırması için
+duruyor.)
 
 NEDEN WARNING DOĞRU SEVİYE — ölçüldü: `hardcoded_test_data` dedektörü `_is_test_file`
 kapısı yüzünden üretim kodunu HİÇ taramıyor. Üretimde `password = "test1234"` -> 0

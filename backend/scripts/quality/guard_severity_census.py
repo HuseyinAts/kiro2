@@ -76,12 +76,14 @@ def m1_default_severity_erisilebilir_mi() -> None:
             f"  {'ESLESMIYOR (dal olu)' if sonuc.severity != det.default_severity else 'eslesiyor'}"
         )
 
-    # YAML yolu: pre-push `--config` GECMIYOR -> paketteki yaml hic okunmuyor
-    yaml_yolu = BACKEND / "hooks/reward_hacking/config/reward_hacking_config.yaml"
-    print(f"\n  paket yaml var mi                 : {yaml_yolu.exists()}")
+    # Paket YAML'i #454'te SILINDI. Gerekce olculdu: pre-push `--config`
+    # gecmiyordu (GlobalConfig().detectors bos), ve elle yuklendiginde sonuc
+    # birebir ayniydi (crit 64 / warn 658 / toplam 722, kume farki 0) — yani
+    # tam no-op. Ayni severity'nin iki yerde yazili kalmasi #453'te kapatilan
+    # "iki yerde yazili niyet, biri olu" kusurunun aynisiydi.
     print(
-        f"  GlobalConfig().detectors          : {GlobalConfig().detectors!r}"
-        "   <- bos = yaml yuklenmedi"
+        f"\n  GlobalConfig().detectors          : {GlobalConfig().detectors!r}"
+        "   <- bos: tek kaynak sinif beyani (#454)"
     )
     print()
 
