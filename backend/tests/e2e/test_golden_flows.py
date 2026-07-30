@@ -42,6 +42,7 @@ the feature ships. No exceptions.
 
 from __future__ import annotations
 
+import contextlib
 import os
 
 import httpx
@@ -830,13 +831,14 @@ def test_gf6w_admin_question_create_returns_success(client: httpx.Client):
         else rbody.get("id")
     )
     if new_id:
-        try:
+        # Temizlik BEST-EFFORT: basarisiz olmasi testi dusurmemeli, cunku bu
+        # testin iddiasi OLUSTURMA ucu, silme ucu degil. Ama ciplak
+        # `except: pass` her seyi yutar; `suppress` niyeti ACIKCA yaziyor.
+        with contextlib.suppress(Exception):
             client.delete(
                 f"/api/v1/admin/content/questions/{new_id}",
                 headers=_auth_headers(admin_token),
             )
-        except Exception:
-            pass
 
 
 # ===========================================================================

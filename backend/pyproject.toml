@@ -219,7 +219,7 @@ exclude = [
 # YANLIS POZITIF: SQL degil, icinde "SELECT ... FROM question_bank" gecen bir
 # ASSERTION MESAJI. SIM105/UP038 kozmetik ve dosya 4600+ satir; bu turun
 # konusu degil.
-"tests/e2e/test_golden_flows.py" = ["S608", "SIM105", "UP038"]
+"tests/e2e/test_golden_flows.py" = ["S608", "UP038"]
 "tests/**/*.py" = [
     "S101",    # assert allowed in tests
     "PLR2004", # magic value comparison in tests
