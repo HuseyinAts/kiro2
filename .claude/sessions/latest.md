@@ -32,8 +32,7 @@ YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **305 passe
    `collect_files` `SUPPORTED_EXTENSIONS` **set**'i üzerinde dönüyor, `sorted()` gerek.
 2. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
 3. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
-4. **#452** `.claude/hooks/pre-tool-use.py` aynı literal kusurunu taşıyor.
-5. **#449** bare-except politikası kendisiyle çelişiyor (loglanan bare except CRITICAL).
+4. **#452** pre-tool-use.py aynı literal kusuru · **#449** bare-except politika çelişkisi.
 
 ### Kararlar (gelecek session tekrar tartismasin)
 - **Mock/hardcoded WARNING'dir** — ölçüldü: hardcoded dedektörü `_is_test_file` kapısı
