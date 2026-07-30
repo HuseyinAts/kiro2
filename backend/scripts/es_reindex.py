@@ -104,15 +104,47 @@ ALANLAR = (
 
 YASAKLI_ALANLAR = frozenset({"correct_answer", "explanation", "is_active"})
 
+# Türkçe analiz zinciri — eski index'ten BİREBİR kopyalandı.
+# 31 Tem 2026'da neredeyse kaybediliyordu: ilk kurulan yeni index bu ayarlar
+# OLMADAN yazıldı ve fark ancak takas öncesi arama karşılaştırmasıyla görüldü:
+#     "hangi"  -> yeni 741 / eski 0    (eski index Türkçe durak kelimesini eliyor)
+#     "ister"  -> yeni  61 / eski 270  (eski index gövdeliyor)
+# Yani takas sessizce Türkçe arama kalitesini düşürecekti. Doküman sayısı
+# tutuyor diye "aynı" sanmak yeterli değil — ARAMA DAVRANIŞI da ölçülmeli.
+SETTINGS: dict[str, Any] = {
+    "analysis": {
+        "filter": {
+            "turkish_stemmer": {"type": "stemmer", "language": "turkish"},
+            "turkish_stop": {"type": "stop", "stopwords": "_turkish_"},
+        },
+        "analyzer": {
+            "turkish_analyzer": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": ["lowercase", "turkish_stop", "turkish_stemmer"],
+            },
+            "turkish_search_analyzer": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": ["lowercase", "turkish_stop"],
+            },
+        },
+    }
+}
+
 MAPPING: dict[str, Any] = {
     "properties": {
         "id": {"type": "keyword"},
-        "question_text": {"type": "text"},
-        "option_a": {"type": "text"},
-        "option_b": {"type": "text"},
-        "option_c": {"type": "text"},
-        "option_d": {"type": "text"},
-        "option_e": {"type": "text"},
+        "question_text": {
+            "type": "text",
+            "analyzer": "turkish_analyzer",
+            "search_analyzer": "turkish_search_analyzer",
+        },
+        "option_a": {"type": "text", "analyzer": "turkish_analyzer"},
+        "option_b": {"type": "text", "analyzer": "turkish_analyzer"},
+        "option_c": {"type": "text", "analyzer": "turkish_analyzer"},
+        "option_d": {"type": "text", "analyzer": "turkish_analyzer"},
+        "option_e": {"type": "text", "analyzer": "turkish_analyzer"},
         "subject_area": {"type": "keyword"},
         "primary_topic_id": {"type": "keyword"},
         "exam_type": {"type": "keyword"},
@@ -237,7 +269,9 @@ async def calistir(mod: str, onayla: bool, damga: str) -> int:
 
         yeni = _yeni_index_adi(damga)
         if mod == "build":
-            await istemci.indices.create(index=yeni, body={"mappings": MAPPING})
+            await istemci.indices.create(
+                index=yeni, body={"mappings": MAPPING, "settings": SETTINGS}
+            )
             await async_bulk(
                 istemci,
                 (

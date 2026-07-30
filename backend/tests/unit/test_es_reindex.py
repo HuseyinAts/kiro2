@@ -146,3 +146,40 @@ def test_senkron_kilidi_matview_kilidinden_farkli():
     from tasks.quality_gate_tasks import _REFRESH_LOCK_KEY
 
     assert _SENKRON_LOCK_KEY != _REFRESH_LOCK_KEY
+
+
+def test_turkce_analiz_zinciri_korunuyor():
+    """SESSİZ KALİTE KAYBI GUARD'I — 31 Tem 2026'da neredeyse yaşandı.
+
+    İlk kurulan yeni index Türkçe analiz ayarları OLMADAN yazıldı. Doküman
+    sayısı hedefle birebir tuttuğu için "doğru" görünüyordu; fark ancak takas
+    öncesi ARAMA DAVRANIŞI karşılaştırılınca çıktı:
+
+        "hangi" -> yeni 741 / eski 0    (eski index Türkçe durak kelimesini eler)
+        "ister" -> yeni  61 / eski 270  (eski index gövdeler)
+
+    Yani sayım eşitliği bir doğruluk kanıtı DEĞİLDİ. Bu test, ayarların ve
+    alan-analyzer atamalarının sessizce düşmesini engelliyor.
+    """
+    from es_reindex import MAPPING, SETTINGS
+
+    analiz = SETTINGS["analysis"]
+    assert analiz["filter"]["turkish_stemmer"]["language"] == "turkish"
+    assert analiz["filter"]["turkish_stop"]["stopwords"] == "_turkish_"
+    assert "turkish_analyzer" in analiz["analyzer"]
+    assert "turkish_search_analyzer" in analiz["analyzer"]
+
+    metin_alanlari = {
+        a: v for a, v in MAPPING["properties"].items() if v.get("type") == "text"
+    }
+    assert metin_alanlari, "hic text alani yok — mapping bozulmus"
+    for ad, tanim in metin_alanlari.items():
+        assert (
+            tanim.get("analyzer") == "turkish_analyzer"
+        ), f"'{ad}' Turkce analyzer TASIMIYOR — arama kalitesi sessizce duser"
+    # question_text ayrıca arama-zamanı analizörü taşır (eski index'le parite):
+    # sorguda gövdeleme YAPILMAZ, yalnız durak kelime elenir.
+    assert (
+        MAPPING["properties"]["question_text"]["search_analyzer"]
+        == "turkish_search_analyzer"
+    )
