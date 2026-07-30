@@ -24,6 +24,7 @@ from backend.hooks.reward_hacking.models.enums import PatternType, SeverityLevel
 # ASSERT TRUE DETECTOR TESTS
 # =============================================================================
 
+
 class TestAssertTrueDetector:
     """Tests for AssertTrueDetector."""
 
@@ -64,8 +65,14 @@ TEST(MyTest, TestCase) {
         assert len(results) >= 1
 
     @pytest.mark.asyncio
-    async def test_detects_self_assertTrue_True(self, detector):
-        """REQ-1.4: Detect self.assertTrue(True)."""
+    async def test_detects_self_assertTrue_True(self, detector):  # noqa: N802
+        """REQ-1.4: Detect self.assertTrue(True).
+
+        N802 bilinçli olarak susturuldu: ad, ölçtüğü unittest çağrısını
+        (`self.assertTrue(True)`) birebir yansıtıyor. Yeniden adlandırmak
+        okunurluğu düşürürdü. Bu satır bu commit'te ELE ALINDI çünkü ruff
+        kapısı dokunulan dosyada önceden var olan ihlali de bloklar.
+        """
         content = """
 class TestCase(unittest.TestCase):
     def test_something(self):
@@ -98,6 +105,7 @@ def test_user_creation():
 # =============================================================================
 # ECHO SUCCESS DETECTOR TESTS
 # =============================================================================
+
 
 class TestEchoSuccessDetector:
     """Tests for EchoSuccessDetector."""
@@ -137,6 +145,7 @@ fi
 # =============================================================================
 # PLACEHOLDER DETECTOR TESTS
 # =============================================================================
+
 
 class TestPlaceholderDetector:
     """Tests for PlaceholderDetector."""
@@ -202,6 +211,7 @@ def stub():
 # COVERAGE MANIPULATION DETECTOR TESTS
 # =============================================================================
 
+
 class TestCoverageManipulationDetector:
     """Tests for CoverageManipulationDetector."""
 
@@ -222,7 +232,10 @@ class TestCoverageManipulationDetector:
         content = "if DEBUG:  # pragma: no cover  # defensive code for race condition"
         results = await detector.detect("file.py", content)
         # Should be INFO, not CRITICAL
-        assert all(r.severity != SeverityLevel.CRITICAL for r in results) or len(results) == 0
+        assert (
+            all(r.severity != SeverityLevel.CRITICAL for r in results)
+            or len(results) == 0
+        )
 
     @pytest.mark.asyncio
     async def test_detects_type_ignore(self, detector):
@@ -239,6 +252,7 @@ z: bool = None  # type: ignore
 # =============================================================================
 # MOCK ABUSE DETECTOR TESTS
 # =============================================================================
+
 
 class TestMockAbuseDetector:
     """Tests for MockAbuseDetector."""
@@ -279,6 +293,7 @@ mock = Mock(return_value=True)
 # EMPTY EXCEPTION DETECTOR TESTS
 # =============================================================================
 
+
 class TestEmptyExceptionDetector:
     """Tests for EmptyExceptionDetector."""
 
@@ -313,20 +328,49 @@ except Exception:
 
     @pytest.mark.asyncio
     async def test_detects_bare_except(self, detector):
-        """REQ-6.4: Detect bare except:."""
+        """REQ-6.4: Detect bare except:.
+
+        30 Tem 2026 — bu test aylarca kırmızı koştu ve iki commit onu "önceden var
+        olan kırık" diye kapsam dışı bıraktı. Ölçüm: kırık olan DEDEKTÖR DEĞİLDİ.
+        Gövde `except Exception: handle_error()` idi — ne bare ne boş bir handler,
+        yani 0 bulgu DOĞRU cevaptı ve REQ-6.4 fiilen hiç ölçülmüyordu.
+        `_detect_bare_except` (empty_exception_detector.py:172) yeteneği taşıyor.
+        """
         content = """
 try:
     something()
-except Exception:
+except:
     handle_error()
 """
         results = await detector.detect("file.py", content)
-        assert len(results) >= 1
+        # Sayı değil KİMLİK: başka bir kural tesadüfen ateşlerse test yeşil kalmasın.
+        assert any(
+            "Bare except" in r.message for r in results
+        ), f"bare except: yakalanmadı -> {[r.message for r in results]}"
+
+    @pytest.mark.asyncio
+    async def test_specific_except_is_not_bare(self, detector):
+        """Negatif kontrol: aşırı-tespit yukarıdaki testi yeşile boyamasın.
+
+        `except ValueError: handle_error()` bir ihlal DEĞİL. Bu test olmadan
+        `any(...)` iddiası "her şeyi yakala" regresyonuyla da geçerdi.
+        """
+        content = """
+try:
+    something()
+except ValueError:
+    handle_error()
+"""
+        results = await detector.detect("file.py", content)
+        assert (
+            results == []
+        ), f"temiz handler bulgu üretti: {[r.message for r in results]}"
 
 
 # =============================================================================
 # HARDCODED TEST DATA DETECTOR TESTS
 # =============================================================================
+
 
 class TestHardcodedTestDataDetector:
     """Tests for HardcodedTestDataDetector."""
@@ -360,6 +404,7 @@ def test_login():
 # =============================================================================
 # CI/CD BYPASS DETECTOR TESTS
 # =============================================================================
+
 
 class TestCICDBypassDetector:
     """Tests for CICDBypassDetector."""
@@ -396,4 +441,7 @@ def test_external():
 """
         results = await detector.detect("test_file.py", content)
         # Should be INFO or no results
-        assert all(r.severity != SeverityLevel.CRITICAL for r in results) or len(results) == 0
+        assert (
+            all(r.severity != SeverityLevel.CRITICAL for r in results)
+            or len(results) == 0
+        )
