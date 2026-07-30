@@ -6,6 +6,7 @@
 import {
   Search,
   Person,
+  PersonRemove,
   Email,
   Phone,
   TrendingUp,
@@ -20,6 +21,7 @@ import {
   Chip,
   Avatar,
   Grid,
+  IconButton,
   LinearProgress,
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -32,7 +34,13 @@ import apiClient from '../services/apiClient';
 import modernColors from '../theme/modern-colors';
 
 interface Student {
+  /** ÜYELİK satırının kimliği — silme ucu bunu KABUL ETMEZ. */
   id: string
+  /** Öğrencinin kullanıcı kimliği — silme URL'inin son parçası. */
+  student_user_id: string
+  /** Sınıf kimliği. `sinif` insana görünen AD; ad benzersiz olmak zorunda
+   *  değil, o yüzden URL adtan türetilmez. */
+  classroom_id: string
   ad: string
   soyad: string
   email: string
@@ -55,6 +63,8 @@ export function ModernTeacherStudentsPage() {
   const [yeniEposta, setYeniEposta] = useState('');
   const [ekleniyor, setEkleniyor] = useState(false);
   const [bilgi, setBilgi] = useState<string | null>(null);
+  // Çıkarma sürerken YALNIZCA o satırın butonu kilitlenir; tüm liste değil.
+  const [cikarilan, setCikarilan] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStudents();
@@ -98,6 +108,36 @@ export function ModernTeacherStudentsPage() {
       setHata(mesaj);
     } finally {
       setEkleniyor(false);
+    }
+  };
+
+  const ogrenciCikar = async (student: Student) => {
+    // Geri alınabilir ama sessiz olmayan bir işlem: yanlış satıra tıklamak
+    // öğrenciyi listeden düşürür. Onay, kaydı silmediğini de açıkça söylüyor.
+    const onaylandi = window.confirm(
+      `${student.ad} ${student.soyad}, "${student.sinif}" sınıfından çıkarılsın mı?\n\n` +
+        'Öğrencinin hesabı ve çözdüğü sorular SİLİNMEZ; yalnızca bu sınıfla ilişiği kesilir.',
+    );
+    if (!onaylandi) {return;}
+
+    setCikarilan(student.id);
+    setHata(null);
+    setBilgi(null);
+    try {
+      await apiClient.delete(
+        `/api/v1/teacher/classes/${student.classroom_id}/students/${student.student_user_id}`,
+      );
+      setBilgi(`${student.ad} ${student.soyad} sınıftan çıkarıldı.`);
+      // Yerel state'ten satır düşürmek YETMEZ: sunucu reddi veya eşzamanlı
+      // değişiklikte ekran gerçekte duran bir kaydı yokmuş gibi gösterirdi.
+      await fetchStudents();
+    } catch (error) {
+      const mesaj =
+        (error as { response?: { data?: { detail?: string } } })?.response?.data
+          ?.detail ?? 'Öğrenci sınıftan çıkarılamadı.';
+      setHata(mesaj);
+    } finally {
+      setCikarilan(null);
     }
   };
 
@@ -393,6 +433,14 @@ export function ModernTeacherStudentsPage() {
                           </Typography>
                           <Chip label={student.sinif} size="small" />
                         </Box>
+                        <IconButton
+                          aria-label={`${student.ad} ${student.soyad} adlı öğrenciyi sınıftan çıkar`}
+                          onClick={() => ogrenciCikar(student)}
+                          disabled={cikarilan === student.id}
+                          size="small"
+                        >
+                          <PersonRemove fontSize="small" />
+                        </IconButton>
                       </Box>
 
                       {/* Contact Info */}

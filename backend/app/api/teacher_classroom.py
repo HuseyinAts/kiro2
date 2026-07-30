@@ -242,6 +242,11 @@ async def list_students(
         {
             "id": str(r.id),
             "student_user_id": r.student_user_id,
+            # `sinif` insana gorunen AD, `classroom_id` ise silme ucunun
+            # (`/classes/{id}/students/{student_user_id}`) istedigi kimlik.
+            # Ad benzersiz olmak zorunda degil; arayuz ada bakarak id
+            # turetirse yanlis siniftan silebilir.
+            "classroom_id": str(r.classroom_id),
             "sinif": classroom_names.get(str(r.classroom_id), ""),
             "joined_at": _fmt_dt(r.joined_at),
             **profiller.get(

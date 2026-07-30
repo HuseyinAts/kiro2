@@ -434,6 +434,37 @@ def test_list_students_returns_real_identity(client, db, ogretmen):
     assert kayit["sinif"] == "12-A"
 
 
+def test_list_students_satiri_silme_url_ini_kurabilmeli(client, db, ogretmen):
+    """Listedeki satır, DELETE ucunun İSTEDİĞİ İKİ kimliği de taşımalı.
+
+    Silme ucu `/classes/{classroom_id}/students/{student_user_id}`. Liste ise
+    sınıfı yalnızca ADIYLA ("12-A") döndürüyordu; `classroom_id` yoktu. Yani
+    öğretmen arayüzü bir satırdan silme isteğini KURAMIYORDU — uç 200 dönse de.
+
+    Ad üzerinden `classroom_id` aramak çözüm değil: sınıf adları benzersiz
+    olmak zorunda değil, yanlış sınıftan silme riski doğar.
+    """
+    from models.teacher_classroom import TeacherClassroomStudent
+
+    sinif = _sinif()
+    hedef = _kullanici()
+    db.ekle(
+        sinif,
+        hedef,
+        TeacherClassroomStudent(
+            id=uuid.uuid4(), classroom_id=sinif.id, student_user_id=hedef.id
+        ),
+    )
+
+    kayit = client.get("/api/v1/teacher/students").json()["data"]["students"][0]
+
+    assert kayit["classroom_id"] == str(sinif.id), f"classroom_id yok/yanlis: {kayit}"
+    assert kayit["student_user_id"] == hedef.id, f"student_user_id yanlis: {kayit}"
+    # Satirin `id`si UYELIK kimligi; silme ucu onu KABUL ETMEZ. Karistirilirsa
+    # arayuz 404 alir, bu yuzden ikisinin ayni OLMADIGI da civileniyor.
+    assert kayit["id"] != kayit["student_user_id"]
+
+
 def test_teacher_can_remove_a_student_from_own_class(client, db, ogretmen):
     from models.teacher_classroom import TeacherClassroomStudent
 
