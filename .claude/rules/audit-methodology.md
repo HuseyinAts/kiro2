@@ -276,6 +276,8 @@ arızası vardır.
 | 30 Tem 2026 | Bekçi kök nedeni (#451) | "Sebep şu dal" kodu OKUYARAK iddia edildi, kaldırma testi yapılmadı; sonra yapılınca `.pyc`+sarmalayıcı yüzünden ters yönde ikinci yanlış rapor | "Kök neden de bir ölçümdür" bölümü: kaldırma deneyi + `inspect.getsource` + en alt katman + tek-sebep varsaymama |
 | 30 Tem 2026 | Fix'in değeri ölçülmedi | Hole gerçekti ama kapatmanın kazancı **+0 bulgu**; docstring dalını kaldırmanın bedeli **+231 CRITICAL** (sıradan mock deyimleri). Hatalı heuristik bekçiyi kullanılabilir tutan yük taşıyan kazaydı | Karar: fix YAPILMADI, ölçüm koda yorum olarak yazıldı; asıl iş kalibrasyona devredildi (#453) |
 | 30 Tem 2026 | Ölçüm aleti geçersiz (4 kez) | `/tmp` kopyası (dosya-adı + per-file-ignores bağımlı), bayat `.pyc`, sarmalayıcıdan ölçüm, yanlış URL yolu | "Ölçüm aletini doğrula" bölümü: kontrol kolu bilinen sonucu vermeli, yoksa alet arızası |
+| 31 Tem 2026 | Mojibake "ikinci dosya" bulgusu | Desen-eşlemesi (`Ã\|Å\|Ä`) **kasıtlı fixture'ı** kusur saydı: `test_turkish_nlp.py`'deki iki dize encoding-onarımı testinin GİRDİSİ (`broken_text`). "Temizlemek" `assert fixes>0`'ı kıracaktı (ölçüldü: fixes 3 → 0) | Bozuk-görünen veriyi düzeltmeden önce **tüketicisine bak**: bir test onu ONARMAK için mi kullanıyor? Değişken adı (`broken_`, `invalid_`, `malformed_`) ilk ipucu |
+| 31 Tem 2026 | Bare süreçte `app.tasks` (celery) | Worker kayıt defteri sanıldı; `include` modüllerini **worker önyüklemesi** import ettiği için 15 beat girdisinin 14'ü "kayıtsız" göründü — ikisi o gece logda BAŞARIYLA koşmuştu | Kontrol kolu bilinen-iyi örnek içermeli; canlı `inspect registered` veya `loader.import_default_modules()` kullan |
 | ... | ... | ... | ... |
 
 ---

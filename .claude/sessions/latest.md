@@ -52,11 +52,33 @@
   Ilk supurmem bu yuzden bu gece basariyla kosmus 2 gorevi bile "kayitsiz"
   gosterdi. Kontrol kolu yakaladi. Test `import_default_modules()` kullaniyor.
 
+### 31 Tem 02:45 — #458 KAPANDI (a7e3971f9, 0fe82b2c3 — push edildi)
+- **#458b** `fix_validators.py` silindi. Silmeden ONCE isinin uygulandigi olculdu
+  (sanitize_url/integer/float = 1/1/1) → harcanmis tek-seferlik script.
+  `pyproject.toml` per-file-ignores girdisi de gitti. ruff 11.156 → 11.156
+  (HEAD~1 ile A/B, notr).
+- **#458a** `test_end_to_end_platform.py` (1.475 satir / 10 test) SILINDI.
+  Mojibake gercekti (127 satir) AMA dosya `skipif(True)` ile **2026-02-06'dan
+  beri (~6 ay) kosulsuz atlaniyordu** ve skip gerekcesi FANTOM:
+  "Multiple PointTransaction classes" -> tek tanim, `configure_mappers()` temiz.
+  Kosmayan dosyayi guzellestirmek = 0 davranis degeri (#451 dersi).
+  Gercek engel baska: canli `localhost:8000` + `ws://` ve depo WS→SSE'ye tasiniyor.
+  Dosyayi ADIYLA anan 2 bekci testi yalniz yorumda aniyor → silme SONRASI 6/6 PASS.
+- **#458a-2 YANLIS-POZITIF:** dunku audit'in "ikinci mojibake dosyasi"
+  (`test_turkish_nlp.py`) DOKUNULMADI. O 2 dize test edilen GIRDI
+  (`broken_text`); olculdu: mevcut hâli `fixes=3` (assert GECER), "duzeltilmis"
+  hâli `fixes=0` (**KIRILIR**). Detektor kasitli fixture'i kusur sanmis.
+  Kural `.claude/rules/audit-methodology.md` tablosuna islendi.
+- NOT: silinen dosyayi anan **4 dokuman + 1 .kiro hook** artik bayat
+  (END_TO_END_TEST_GUIDE.md, TASK_44_*.md x2, TASK_44 rapor,
+  `.kiro/hooks/04-osym-exam-validator.kiro.hook` silinen yola pytest komutu veriyor).
+  Silinmedi — ayri karar.
+
 ### Sonraki Adimlar (maks 5)
 1. 04:00 atisini gozle (beat'in KENDI tetiklemesi hala gorulmedi):
    `docker logs kiro2-celery-worker --since 8h | grep "ES senkronu"`
    Beklenen satir bicimi kanitlandi: `ES senkronu tamam: {...}`
-2. #458: `backend/tests/e2e/test_end_to_end_platform.py` cift-kodlanmis Turkce +
+2. #444 canli duman testi (ogretmen sinifa ekle/cikar, gercek hesapla) +
    referanssiz `backend/fix_validators.py`
 3. #444 canli duman testi (ogretmen sinifa ekle/cikar, gercek hesapla)
 4. `soru_bankasi_service.py` lint borcu: ONCE bu dosyayi kapsayan test, SONRA E712
