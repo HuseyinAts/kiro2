@@ -1,48 +1,53 @@
-# Oturum devri — 30-31 Tem 2026
+## Session Handoff — 2026-07-31 01:15
+**Branch:** feature/self-evolution-optimization
+**Son commit:** d2845c0a3 chore: oturum devri (50 satir)
+**Uncommitted:** temiz (origin ile senkron, 0/0)
 
-Branch: feature/self-evolution-optimization · HEAD `ad1236cad` (push edildi)
+### Yapilanlar
+- `docker-compose.yml:74,105-134` — redis+ES 127.0.0.1'e baglandi; ES compose'a
+  GERI kondu (9 aydir yetimdi), volume `external: true` (3f1a3a8b0, 4f1bf8042).
+  LAN'dan kimliksiz `correct_answer` cekilebiliyordu; artik ConnectionRefused.
+  ES 64.270/64.270 + redis 114/114 KORUNDU. `backend/tests/unit/test_compose_port_binding.py`
+- `.github/workflows/golden-flows.yml:172` + `quality-gate.yml:18` — 3,5 aydir
+  AYRISTIRILAMAYAN YAML; `backend/tests/unit/test_workflow_yaml.py` mukerrer-anahtar
+  farkindali (d304f19a9)
+- `backend/api/admin.py:425` DELETE 500 -> 200/404 (iki seri bagli bastirici) +
+  denetim kaydina admin.id (a30416f34); `:358` cakismada 409 (2d5d82f7e);
+  `backend/services/soru_bankasi_service.py:346,363,371` `zaten_mevcuttu` bayragi
+- `backend/core/es_index_schema.py` (YENI) + `backend/tasks/es_sync_tasks.py` +
+  `backend/core/celery_app.py:133` 04:00 beat (6bc1febec, e1034b454, 1664d9d36)
+- ES TAKASI CANLI: alias `turkiye_sinav_platform` -> `..._v20260731` (25.127 dok),
+  `correct_answer`=0 (once 64.270), yedek `..._yedek_20260731` (64.270) duruyor
+- `frontend/src/kiro/types/types.ts:47` Persona 12 alan nullable + 8 ekranda
+  durust "veri yok" (ad1236cad)
+- `docs/audits/2026-07-30_gercek_durum_olcumu.md` (1398 satir) — olcum + curutme turu
 
-## Canlıda ve doğrulandı
+### Fail Eden Testler
+- Bu oturumda yazilan 31 backend testi: **31/31 PASS** (29,9 sn)
+- 8 kiro ekrani **58/58 PASS**; `tsc --noEmit` **0 hata** (once 38)
+- TAM backend paketi KOSULAMIYOR (onceden var, bu oturumda degismedi):
+  `tests/unit/test_api_batch2.py` 336. testin teardown'unda pytest_asyncio deadlock
 
-- **Ağ açığı KAPALI.** LAN'dan kimliksiz cevap anahtarı çekilebiliyordu
-  (`192.168.8.2:9200` → 200 + `correct_answer`). ES+Redis 127.0.0.1'e bağlandı;
-  ES 64.270/64.270 doküman ve redis 114/114 anahtar KORUNDU, kesinti yok.
-  ES compose'a geri kondu (9 aydır yetimdi), volume `external: true`.
-- **ES kapı takası.** alias `turkiye_sinav_platform` → `..._v20260731` (25.127).
-  Servis edilen index'te `correct_answer` = **0** (önce 64.270).
-  Yedek `..._yedek_20260731` (64.270) duruyor; geri alım tek `_aliases`.
-  Gecelik senkron **04:00** beat'te ve ELLE KOŞTURULUP kanıtlandı:
-  `{'eklenen': 0, 'silinen': 0, 'kapi': 25127}`.
-- **CI YAML** (2 dosya 3,5 aydır ayrıştırılamıyordu), **admin DELETE 500→200/404**,
-  **çakışmada 409**, **`/api/v1/me` 401** (önce 404). 3 imaj rebuild + deploy.
+### Engelleyiciler
+- SMTP 6/6 env UNSET -> sifre kurtarma islevsiz (#441, operator)
+- `gh` CLI yok; 20 acik Dependabot PR, CVE ciddiyeti auth istiyor (#390/#436)
 
-## Ölçümler (iddia değil)
+### Sonraki Adimlar (maks 5)
+1. 04:00 beat kosumunu dogrula: `docker logs kiro2-celery-worker --since 6h | grep "ES senkronu"`
+2. #458: `backend/tests/e2e/test_end_to_end_platform.py` cift-kodlanmis Turkce +
+   referanssiz `backend/fix_validators.py`
+3. #444 canli duman testi (ogretmen sinifa ekle/cikar, gercek hesapla)
+4. `soru_bankasi_service.py` lint borcu: ONCE bu dosyayi kapsayan test, SONRA E712
+5. Operator: SMTP + GitHub faturalama + 73 STUDENT triyaji (#445)
 
-- question_bank **187.835** / aktif 110.858 / kapı 25.127. CLAUDE.md'nin
-  "77.336 in production" rakamı bir DOSYA SATIR SAYISI (d-dataset jsonl) —
-  ama 2026-03-04 ingest'i (77.327 satır) ile provenance zinciri KAPALI.
-- Persona: 15 alanın **6'sı 77/77 kullanıcıda null**, 2'si %95.
-- Gerçek öğrenci trafiği **0** (117 oturumun hepsi tek test hesabından).
-
-## Kalan — sadece operatör
-
-1. **#441 SMTP** — `.env.mvp`'ye `SMTP_HOST` VE `SMTP_SERVER` (farklı dosyalar
-   farklı adı okuyor). 6/6 değişken boş, şifre kurtarma işlevsiz.
-2. **#436/#390/#270 GitHub** — harcama limiti, 20 Dependabot PR'ı, `gh` yok.
-3. **#445** — 73 STUDENT hesabı triyajı.
-4. **Karar:** CI fix master'a gidince merge kapısı 7 ölçülmüş kalemle ilk PR'ı
-   bloklar. Feature dalında tetiklenmiyor, acele yok.
-
-## Kalan — kod
-
-- **#458** temizlik (149 çift-kodlanmış dizi + referanssız fix_validators.py)
-- **#444 canlı duman testi** (öğretmen ekle/çıkar, gerçek hesapla)
-- `soru_bankasi_service.py` lint borcu: E712 otomatik düzeltmesi PostgreSQL'de
-  FARKLI SQL üretiyor (ölçüldü) → BİLEREK ertelendi, pyproject'te gerekçeli.
-
-## Bu oturumun dersi
-
-Yeşil test doğruluk kanıtı değil — 6 kez kanıtlandı: `.dockerignore` `scripts/`i
-eliyordu (gecelik görev her gece çökerdi, testler host'ta yeşildi), ES analiz
-zinciri kaybolmuştu (doküman sayısı tutuyordu), `# nosec` f-string'in içine
-düşüp SQL'i bozmuştu, GF6w aylardır çakışma yolunu test ediyordu.
+### Kararlar (gelecek session tekrar tartismasin)
+- **E712 sweep YAPILMADI:** `Q.is_active == True` -> `Q.is_active` PostgreSQL'de
+  FARKLI SQL uretiyor (sqlite'ta ayni). Borc `backend/pyproject.toml` + kok
+  `pyproject.toml`'da GEREKCELI kayitli; `--no-verify` ile atlanmadi.
+- **GF6w yuku uuid4 ile benzersizlestirilmedi:** her CI kosumu uretim
+  question_bank'ina kalici satir yazardi. 200 VEYA 409 kabul ediliyor.
+- **ES'e cevap alanlari indekslenmiyor:** API beyaz listesi zaten istemiyor.
+- **Persona nullable isi mount EDILMEMIS 8 ekranda:** kullanici-gorunur kazanc
+  bugun yok; `tsc`yi kirik birakmamak + Faz 4 temeli icin yapildi (olculdu).
+- **ruff en yakin, mypy cwd'deki kok config'i kullanir** — ayni borc iki dosyada.
+- **CI fix master'a gidince** merge kapisi 7 olculmus kalemle ilk PR'i bloklar.
