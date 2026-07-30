@@ -79,8 +79,32 @@ Build (4 imaj) exit 0 → `docker compose down` + `up -d` → 5/5 container heal
   **403 "Bu rol herkese açık kayıt ile oluşturulamaz"** → 25784449d kapısı canlıda
 - sonda DB'ye satır YAZMADI (`users` LIKE 'sonda.%' = 0)
 
+### ÖZ-DENETİM + #450 KAPANDI (`eddd419a1`)
+
+Oturum sonunda kendi 6 commit'imi yeniden ölçtüm. Sağlam çıkanlar: paket testi,
+git durumu, imaj tazeliği, canlı 403, artık dosya yok. **Bulunan boşluklar
+benim eserimdi:**
+
+- **İki davranış değişikliği TESTSİZ gönderilmişti** (yorum kuralı + `BaseException`).
+  Kapatıldı: 5 test eklendi, **her biri ayrı mutasyonla çivilendi**. Üçüncü mutasyon
+  (`BaseException`→`Exception`) iddiayı bire bir gösterdi:
+  `TypeError: 'CancelledError' object is not iterable` (hook_manager.py:175).
+- **`tests/unit/test_hooks/` (179 test) push'tan önce hiç koşulmamıştı.** `base_detector`
+  8 dedektörün ortak yolu; bu paket artık her değişiklikte koşulmalı. Koşuldu: 179 passed.
+- **Abartılı çerçeleme**: c8792f022 "yorum bastırma desen bazlı" diyor ama etkisi
+  yalnız **satır-sonu** yorumlarla sınırlı. Tek başına `# pragma: no cover` → 0 bulgu
+  (önceden var olan hole, A/B doğrulandı) → **#451**. Yanlış davranışı çivilemek
+  yerine `xfail(strict=True)` ile işaretlendi: açık kapanınca test kırmızıya döner.
+- **Yeni bulgu (canlı yakalandı)**: `.claude/hooks/pre-tool-use.py` aynı kusuru
+  taşıyor — fixture literalini gerçek kod sanıp Edit'i blokladı → **#452**.
+
+Bekçi paketi: 96 → **100 passed + 1 xfailed**.
+
 ### Sonraki Adımlar (maks 5)
-1. **#449** bare-except politika çelişkisi: `_detect_bare_except` loglanan bare
+1. **#451** tek-başına yorum körlüğü — `_is_in_exception`'ın yorum dalı kaldırılmalı;
+   bekçi SIKILAŞIYOR, o yüzden ters yön kanıtı şart (bulgu artışı gerçek mi?)
+2. **#452** `.claude/hooks/pre-tool-use.py` literal farkındalığı
+3. **#449** bare-except politika çelişkisi: `_detect_bare_except` loglanan bare
    except'i de CRITICAL veriyor, oysa SAFE_PATTERNS onu güvenli listeliyor.
    Ölçüldü: 31 bare except, 9'u loglanmış (hepsi `_scripts/`), 18'i `pass`. P0 değil.
 3. **`user_item_fsrs`** — tablo YOK, `/fsrs-review` rotası 500.
