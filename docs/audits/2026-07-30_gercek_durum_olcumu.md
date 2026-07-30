@@ -941,3 +941,458 @@ ve bir dördüncüsünü önerir hale getirdi:
 *Oluşturulma: 2026-07-30. Ölçüm salt-okunur; `git status --short` başta ve sonda BOŞ.*
 *Bu rapordaki her sayı §1'de listelenen aletlerden birinin ham çıktısıdır. Yuvarlanmamış,*
 *güzelleştirilmemiştir. Ölçülemeyenler §10'da açıkça listelenmiştir.*
+
+---
+
+## Çürütme Turu (aynı gün)
+
+> Bu ek, yukarıdaki raporun **kendisine** uygulanan saldırıdır. 6 bağımsız skeptik ajan
+> raporun manşet iddialarını **farklı aletlerle** çürütmeye çalıştı; 5 tartışmalı kümede
+> ayrıca **üçüncü bir hakem turu** koşuldu. Toplam **~60 iddia** sınandı.
+> Kural: her ajan önce kendi aletinin **kontrol kolunu** kurdu; kontrol kolu beklenen
+> sonucu vermediğinde bulgu **raporlanmadı**, alet arızası ilan edildi.
+>
+> **Bu ekin varlık nedeni:** aşağıdaki 8 manşet iddia yanlıştı ve kullanıcının karar
+> almasına girmeden yakalandı.
+
+### A. AYAKTA — saldırıya dayandı (34 iddia)
+
+| # | İddia | Nasıl saldırıldı | Sonuç |
+|---|---|---|---|
+| 1 | `question_bank` = 187.835 | SQLAlchemy + asyncpg + host psycopg3 (3 sürücü); RLS gizleme kontrolü | Birebir; `is_active` NULL = 0, 110.858+76.977=187.835 iç tutarlı |
+| 2 | `is_active=true` = 110.858 | Üç-değerli mantık (NULL) tuzağı test edildi | Birebir |
+| 3 | aktif + kabul statüsü = 34.982 | `pg_get_viewdef` ile kabul kümesi DB'nin kendi DDL'inden okundu | Birebir. **Nüans:** `human_verified` statülü **0 satır** var — kabul kümesi fiilen tek elemanlı |
+| 4 | `mv_safe_for_beta` = 25.127 | Aynı adlı VIEW arandı, çift yönlü `EXCEPT` simetrik fark | 25.127 = 25.127, fark 0/0; matview **taze** |
+| 5 | legacy `questions` = 36.381 | İki sürücü + RLS kontrolü | Birebir. CLAUDE.md'nin "BOŞ legacy" ifadesi **yanlış** |
+| 6 | `question_image_url` 181.652 (%96,71) / aktif 110.606 (%99,77) | Boş-string tuzağı (`<> ''`) test edildi | Birebir; yüzdeler yeniden hesaplandı |
+| 7 | 209 BASE TABLE + 7 VIEW + 2 MATVIEW | `pg_class`/relkind vs `information_schema` çapraz; partitioned/foreign dahil | Birebir; beklenen fark (matview `information_schema`'da yok) çıktı |
+| 8 | 77.336 = `eslesmis_sorucevap.jsonl` satır sayısı | `wc -l` KULLANILMADAN: ham-bayt sayacı + `json.loads` + `awk NR`; ayrıca üretici replay | 77.336; dosya newline ile **bitiyor** (77.337 değil), 0 bozuk JSON |
+| 9 | CLAUDE.md 77.336'yı "DB üretim sayısı" diye sunuyor | Satır bağlamı okundu, "sadece dataset etiketi" okuması kurtarılmaya çalışıldı | Ayakta: `### Database & Content` / "in production" / "CURRENT PRODUCTION" |
+| 10 | B1-a: ES 64.270 dok vs kapı 25.127 | `track_total_hits:true` ile kesin toplam | `{'value':64270,'relation':'eq'}` |
+| 11 | B1-c: ES'te `correct_answer` + `explanation` var, kalite alanı yok | Mapping'e değil **gerçek belgeye** bakıldı | **Güçlendi:** `correct_answer` 64.270/64.270 dolu; `explanation`'ın 61.847'si "Doğru cevap: X" yazıyor; `quality_review_status` mapping'de bile **0** |
+| 12 | B5-a: 79 tablo RLS+FORCE+politika | Üç küme ayrı sayılıp çapraz kesildi | 79/209 = %37,8; üç küme **birebir aynı** 79 tablo |
+| 13 | B5-c: `users`/`question_bank`/`student_answers`'ta RLS hiç açık değil | "Uykuda politika" arandı | `False/False/0`; aynı sorguda RLS'li tablolar `True/True/1` (kontrol kolu) |
+| 14 | B4-a: Golden Flow 178 test toplar | `--collect-only` + AST + sunucu login logları | 178; 30 başarılı login **3 ayrı koşumda** birebir |
+| 15 | B6-a: `/api/v1/me` = 404 | Host + konteyner içi + canlı OpenAPI (1.147 yol) | 404; kontrol kolu `/api/v1/auth/me` → **401** (proxy karışıklığı elendi) |
+| 16 | B6-b: öğretmen "sınıftan çıkar" UI'ı bundle'da yok | Minify'a dayanıklı **string literal**'lerle yeniden arandı; Türkçe kontrol kolu | 0 isabet; kontrol kolu (`ogrenci@okul.tr`, `Sınıfa ekle`) **bulundu** → grep kör değil |
+| 17 | B6-c: imaj 01:42:58Z, commitler 14:19Z/14:47Z, `/app` bind-mount değil | Tam mount listesi (kesilmeden) + saat dilimi açık hesap | 3 mount, hiçbiri kodu kapsamıyor; frontend `Mounts: []` |
+| 18 | B2-a: 6/6 SMTP değişkeni UNSET | `docker exec env` + `/proc/1/environ` + çalışan python `os.environ` | Üç katmanda da 0 |
+| 19 | B2-b: `core/email_util.py:38` guard | Host + konteyner kopyası + **çağıran zinciri** | Birebir; util içinde yedek yok |
+| 20 | T-a: 16.931 toplanan / 0 toplama hatası | AST (14.056 tanım) + ripgrep (14.175) bağımsız alt sınır | Ayakta; 817 "error" geçişinin hepsi test **adı** |
+| 21 | T-d: 27 FAILED, kök neden `no such table: learning_path_student_profiles` | Dosya izole koşuldu, hata **sınıfları** ayrı sayıldı | 27 failed/112 passed, 108 geçiş, başka `no such table` **yok** |
+| 22 | T-g: orchestrator 85/85 yeşil | Canlı koşum; skip/xfail şişirmesi arandı | 85 passed, 0 skip, 9,26 s |
+| 23 | §3.3: 56.690 rejected'in tamamı `is_active=false` | ORM `group_by`, tüm 9 satır filtresiz | `rejected`+`true` satırı **yok** — testing.md Ders #31 DB'de kapalı |
+| 24 | §4.3: canlı OpenAPI 1.226 / 1.147 / 799 | Telden `http.client` + konteyner içi urllib | Birebir; metod kırılımı da (647/484/35/48/11/1) |
+| 25 | §3.1: PG 18.1 / 5434 / kiro2 / kiro2_app | Backend'in **kendi havuzundan** soruldu | Birebir; "docker pg15 5434'ü kaptı" tuzağı elendi |
+| 26 | §3.5: MEMORY'nin RLS kontrol kolu **geçersiz alet** | `users`/`question_bank` RLS durumu bağımsız ölçüldü | `False`/`False` — raporun kendi kaynağını eleştirisi haklı |
+| 27 | §2.1: `.git` = 6,7 GiB (218 MB doküman ~31x bayat) | PowerShell FS API + `du --apparent-size` | 4.926 dosya / **7.125.645.477 bayt** = 6,64 GiB; `du -sh` gerçekten `6.7G` basıyor |
+| 28 | CLAUDE.md son commit 23 May, 68 gün / frontend 196 test dosyası / "17 Mar'da bile 96'ydı" | `git ls-tree` geçmiş ağacı | Üçü de birebir; 2026-03-18 ağacında tam **96** |
+| 29 | §5.2 kök neden: `_login()` 200 dışı her yanıtı `pytest.skip`'e çeviriyor | Kaynak + rate-limit yapılandırması + davranışsal 429 eşiği | Birebir; limit 30/60 s, dev-bypass listesi Docker gateway'i **içermiyor** |
+| 30 | §6.2: `api.litellm_chat` için loader `No router found` uyarısı üretiyor | Canlı konteyner açılış logu | `2026-07-30 01:48:13 ... No router found in api.litellm_chat` |
+| 31 | §2.2/§2.3: `.gitignore:266 performance/` + `litellm_chat.py` 0 bayt/ignore | `git check-ignore -v` çıktısı karakter karakter yeniden üretildi | Birebir; diskte 5 `.py`, takipli 2 → taze klonda 3 kayıp |
+| 32 | §9.2 alet tuzağı: FastAPI `_IncludedRouter` proxy'si | Aynı hata **bilerek** tekrarlandı | Naif walker `APIRoute=1` verdi ve `/api/v1/cat` için 0 döndü → tuzak gerçek |
+| 33 | Özet: `pre-commit-check.py:73` kabuk komutunu boşluktan bölüyor | Fonksiyon **çalıştırıldı**, 2 kontrol kolu | Doğru ve **eksik**: `&&` sonrası yanlış-pozitif; **tırnaklı yol 111,3 MB dosyayı geçiriyor** |
+| 34 | B4-b mekanizması: skip'ler login 429 kaynaklı | AST + davranışsal limiter + konteyner logları | 176 login-dokunan test − 30 izin = **146** 429 |
+
+### B. DÜZELTİLDİ — özü aynı, sayı değişti (19 iddia)
+
+| # | İddia | Eski | Yeni | Kanıt |
+|---|---|---|---|---|
+| 1 | jsonl kayıtlarının DB'ye girip girmediği | "ÖLÇÜLEMEDİ" (§10.2 md.10) | **%99,988** (77.327/77.336); ilişki çift yönlü birebir | Script'in kendi `uuid5(NS,'book\|page\|qnum')` üreteci replay edildi; Mar-04 partisinde jsonl'den gelmeyen **0** satır |
+| 2 | 4 Mart DB katmanı | 77.336 | **77.327** (9 eksik, hepsi AYT MATEMATİK) | 198 tablo tarandı, hiçbirinde yok; kitap dağılımı 345-2024:3 / 345-2025:4 / Full:2 |
+| 3 | B1-b: ES'in v_safe oranı | %7,0 (300 örneklem) | **%5,70** (3.665/64.270) — tam sayım | ES-tarafı `terms` sayımı; ayrıca `is_active` %60,3 → **%60,63** |
+| 4 | B1-d: ES ne zamandır değişmemiş | "28 Tem'den beri" | **1 Nisan 2026'dan beri**; tüm index **19 saniyede** yazılmış | Lucene segment mtime'ları 2026-04-01 01:51:55–01:52:14; kontrol kolu `analytics-2026-07` 27/28/29/30 Tem yazmış |
+| 5 | B5-b: RLS GUC bypass satır sayıları | 5.558 / 10.096 / 70.000 | **5.662 / 10.099 / 70.000** | Uygulamanın **kendi asyncpg motoruyla**, `SET ROLE` simülasyonu olmadan; taze bağlantıda GUC gerçekten NULL |
+| 6 | B3: toplam CI koşumu | 8.447 | **8.450**; son 100'ün **74'ü 0-iş kaydı** | Sunucu-taraflı `total_count`; sıfır-süre damgası (created=started=updated) |
+| 7 | B4-b: 429 kaynaklı skip | 147 | **146** (kalan 2 test login'e hiç dokunmuyor) | AST + doğrudan endpoint literali çift tarama |
+| 8 | T-b: garantili hiç koşmayan test | 2.327 (%13,7) | **2.841 (%16,78)** toplanan içinde; +**18 modül / 335 test hiç toplanmıyor**; genel **3.176/17.266 = %18,4** | pytest'in kendi `evaluate_skip_marks` fonksiyonu her item için çağrıldı |
+| 9 | T-e: deadlock noktası | 288/403 | **336 test sonuçlanıyor**, kilit 337. maddeye geçişteki `teardown_exact` | `-v` tamponsuz koşum; son satır `TestOSYMExamExtendedScenarios::test_save_answer_all_options [83%]` |
+| 10 | T-f: frontend koşabilir/koşamaz | 175 / 17 | **179 / 17** (175+17=192≠196 aritmetiği kapanmıyordu) | `vitest list` tam collection: 13 playwright + **4 yetim dosya** (silinmiş modül import ediyor) |
+| 11 | T-c: coverage karşılaştırması | "%53 vs %39,74" | Elma-elma: **%53 line vs %43,54 line** (aynı 5 paket, 108.563 deyim) | `.coverage` sqlite'ından 661 dosyanın paket dağılımı; CLAUDE.md'nin kendi "(109K lines)" parantezi paydayı doğruluyor |
+| 12 | §3.6: öğrenci trafiği sayıları | 53 / 105 | **59 / 117** (+6 / +12) | Artışın tamamı **bu ölçümün kendi Golden Flow koşumlarından** |
+| 13 | §4.3 "Kayıtlı (süreç-içi)" sütunu | 653/496/36/49/11/1, toplam 1.236 | Sütun **ham** (toplamı 1.246), toplam **dedup sonrası**. Doğrusu: **648/492/36/48/11/1 = 1.236** | Telden spec + raporun kendi 10 gizli-uç listesinden bağımsız türetme |
+| 14 | §0: "9 konteyner healthy" | 9 healthy | **9 çalışıyor, 7 healthy, 2'sinde healthcheck TANIMSIZ** | `docker inspect .State.Health` — `turkiye_sinav_elasticsearch` ve `openwebui-litellm-prometheus-1` |
+| 15 | §7.3: "22 sapmanın ortak kök nedeni CLAUDE.md" | 22/22 | **15/22** | Tablo makineyle ayrıştırıldı; kalan 7 → golden-flows.md (14 May), pytest.ini (10 Nis), CLAUDE.local, MEMORY, Görev #311 |
+| 16 | §6.1: "ROUTER_MAPPING 152 (AST 152 = runtime 152)" | 152 = runtime | Host **152**, canlı konteyner **151** (150 yüklü) | Modül gerçekten import edilip `len()` okundu; §4.4'ün md5 farkının doğrudan sonucu |
+| 17 | Özet: "doküman 1.223" | 1.223 | **1.393** (1.223 passed + 169 skipped + 1 fail); raporun §7.1'i zaten doğru | CLAUDE.md:659 ham satır |
+| 18 | Özet: "orchestrator 35 modül / 7 agent" | 35/7 | "35" = `orchestrator/core/*.py` eksi `__init__` (tanım raporda yazılı değil); diğer paydalar 6/44/47/48. **"7 agent" iki AYRI enum → 14 farklı rol adı** | `pkgutil.walk_packages` + enum üye adları (`PLANNER…` vs `TURKISH_NLP…`, kesişim boş) |
+| 19 | §2.1 `.git` boyutu | (skeptik "6,5 GiB, yukarı yuvarlanmış" dedi) | **Rapor haklı**: 6,64 GiB. Skeptik `git count-objects`'i `.git` dizini sandı — o yalnız pack+loose nesneleri sayar | PowerShell 7.125.645.477 bayt ≈ python 7.125.605.052 bayt |
+
+### C. ÇÜRÜTÜLDÜ — bu ekin asıl değeri (8 manşet)
+
+#### C1. "Yazma işlemi YOK — salt okunur" (§1 başlığı + §1.3) — **YANLIŞ**
+
+Ölçüm penceresi içinde DB'ye **en az 134 satır INSERT** ve **~1.900 satır UPDATE** yazıldı.
+
+```
+pg_stat_user_tables (motor sayaçları, uptime 21:44:47 → pencere kapsıyor)
+  exam_sessions          n_tup_ins=12    n_tup_upd=1782
+  refresh_tokens         n_tup_ins=104   n_tup_upd=3
+  student_answers        n_tup_ins=6
+  kiro2_learning_events  n_tup_ins=6
+  chat_sessions          n_tup_ins=3
+  daily_quests           n_tup_ins=3     n_tup_upd=3
+  users                  n_tup_upd=118
+  question_bank          n_tup_ins=3     n_tup_upd=12
+```
+
+Konteyner HTTP logları (UTC 15:30–15:42) kaynağı kesinleştiriyor: 3 ayrı kaynak porttan
+`POST /api/v1/osym-exam/create` ×4, `POST /api/v1/teacher/classes`, `POST /api/v1/chat/sessions`,
+`POST /api/v1/placement/start` 201, `PUT /api/v1/auth/profile` 200.
+
+**En ağır kısım:** raporun **kendi §5.2'si** paketin yazma yüzeyini "69 GET, **131 POST**, 2 PUT,
+1 PATCH, 1 DELETE" diye ölçmüştü. Yani yazma riski **biliniyordu** ve aynı belgede
+"hiçbir DB yazması yapılmadı" yazıldı.
+
+**Doğru ifade:** *"git çalışma ağacına yazılmadı (`git status --short` BOŞ — bu kısım doğru);
+DB'ye Golden Flow koşumları yoluyla yazıldı."*
+
+**İkinci dereceden zarar:** kirlenen satırlar **§3.6'nın ta kendisi**. 53→59 ve 105→117
+artışları "platform fiilen kullanılmıyor" sonucunun dayanağıydı.
+
+#### C2. "DB'de kalite sızıntısı YOK" (§3.3 genellemesi) — **YANLIŞ**
+
+Ölçülebilir çekirdek doğru (`rejected` + `is_active=true` = **0**), **sonuç yanlış**.
+`rejected` kalite yargısının tek ekseni değil:
+
+```
+gate2c_demoted toplam                              836
+  ...VE is_active=true                             836   <- TAMAMI aktif
+  ...VE aktif VE kabul statüsünde                  834
+aktif + 'demoted_at' damgalı + kabul statüsü       470
+aktif + 'demoted_at' damgalı (toplam)           26.613
+aktif+kabul (34.982) ama mv_safe_for_beta DIŞI   9.855
+aktif (110.858) ama kapı dışı                   85.731
+mv_safe_for_beta içindeki demote edilmiş satır       0   <- kapı ÇALIŞIYOR
+```
+
+Yani **açıkça demote edilmiş 834 soru** hem `is_active=true` hem kabul statüsünde duruyor.
+Sızıntıyı tutan tek şey kodun `safe_for_beta_gate()` çağırması; DB tarafında **hiçbir koruma yok**.
+
+**Ve kapıyı uygulamayan bir yol zaten var — canlı Elasticsearch:**
+
+```
+turkiye_sinav_platform: 64.270 dok / search.query_total=474 (SERVİS EDİLİYOR)
+  DB'de is_active=false           25.294  (18.183 rejected + 7.100 legacy + 11 auto_high)
+  gate2c_demoted dokümanı              99
+  question_bank'ta HİÇ olmayan          9
+  mv_safe_for_beta onaylı           3.665  (%5,7)
+ES'in kendi is_active alanı: 64.270/64.270 "true"   <- 25.303 doküman YANLIŞ bayrak taşıyor
+indexing.index_total = 0 (15 saattir yazma yok, snapshot bayat)
+```
+
+> **Not (dürüstlük kaydı):** `correct_answer` 64.270 dokümanın `_source`'unda duruyor,
+> ancak "öğrenciye sızar" **iddia edilmiyor** — `/api/v1/elasticsearch/questions/search`
+> auth'suz **401** dönüyor (kontrol kolu: `/zzz-hakem-kontrol-kolu`=404, `/health`=200).
+> API katmanının alan filtrelemesi **ölçülmedi**.
+
+#### C3. "Gerçek öğrenci trafiği: 53 / 105" — sayı düzeltildi, **niteleme çürütüldü**
+
+```
+exam_sessions distinct student_id = 1
+  0d3b011a-8be9-49cb-9a87-f8a8317ccc3d = test@kiro2.com (STUDENT, 4 Mart fikstürü)
+users by role: STUDENT 73 | PARENT 2 | TEACHER 1 | ADMIN 1
+```
+
+117/117 oturum **tek sentetik hesaptan**. Bugünkü 12 oturum 3 patlama halinde
+(18:32 / 18:35 / 18:39), her patlamada 4 oturum saniyeler içinde — insan davranışı değil.
+DB **dışı** delil: konteyner erişim logları 12 `POST /osym-exam/create`'i aynı saniyelerde
+gösteriyor. **Gerçek öğrenci trafiği = 0.** 73 STUDENT hesabı var, sınav açan **1**.
+Bu satırlar benimseme/kullanım kanıtı olarak **kullanılamaz**.
+
+#### C4. "Canlı DB'de 77.336'ya karşılık gelen hiçbir katman yok" — **YANLIŞ**
+
+```
+created_at gün dağılımı:  2026-03-04 | 77.327   2026-03-23 | 20   2026-05-12 | 105.152
+Mar-04 partisi created_at aralığı: 08:20:30.685146 → 08:20:30.685146  (TEK mikrosaniye)
+cohort ids NOT in jsonl : 0      jsonl ids NOT in cohort : 9
+```
+
+Mekanizma da ölçüldü: `created_at DEFAULT now()`, PostgreSQL'de `now()` işlem-başlangıç
+zamanıdır ve işlem boyunca sabittir; script tüm INSERT'leri tek `with engine.begin()`
+içine sarar. Kontrast kontrolü: Mayıs-12 partileri timestamp başına **500** satır
+(batch-commit'li başka script) — yani "tek timestamp = tek işlem" yorumu doğrulanmış imza.
+
+#### C5. "77.336 sadece bir dataset etiketi, DB provenance'ı yok" — **YANLIŞ**
+
+Provenance zinciri kapalı ve **zaman ekseninde** doğrulandı:
+
+```
+ingest işlemi        2026-03-04 08:20:30   (77.327 satır, 405 distinct source_book)
+commit 877cb44c5     2026-03-04 08:24:28   "import 77,336 d-dataset questions"
+                     govde: "77,336 inserted, 0 errors, 0 duplicates, 66.5s"
+CLAUDE.md'ye ilk giriş 2026-03-05          (ingest'ten BİR GÜN SONRA → türetilmiş)
+jsonl distinct book_name 405 == Mar-04 distinct source_book 405   (set eşitliği True)
+pipeline_metadata 'v2_2_tier' imzası: TÜM tabloda tam 77.327 satır
+git diff 877cb44c5..HEAD -- import_d_dataset.py : id mantığında DEĞİŞİKLİK YOK
+```
+
+#### C6. "golden-flows.yml yalnız main/master/develop'ta tetikleniyor; aktif dalda HİÇ koşmuyor" — **YANLIŞ**
+
+Aktif dalda **130 koşum** var (sunucu-taraflı `?branch=` sayacı). `on: branches` satırları
+**alakasız**, çünkü dosya **2026-04-12'den beri geçersiz YAML**:
+
+```
+git blame -L 172,172 -> d1506c22f8 (2026-04-12 00:28:40)
+  - name: AST lint — Pydantic `user_id: int` type lie (rule-of-five)
+js-yaml : "bad indentation of a mapping entry (172:43)"
+PyYAML  : "mapping values are not allowed here, line 172, column 43"
+bisect  : 2026-04-11'e kadar TÜM commitler PARSE_OK
+```
+
+Dört bağımsız parmak izi: (a) iki farklı YAML uygulaması aynı yerde patlıyor,
+(b) GitHub'ın workflow registry'sinde `name` alanı ayrıştırılamayan **tam 2 dosya** için
+dosya **YOLUNA** düşmüş (9 sağlam dosyada gerçek ad var), (c) koşumlar sıfır süreli
+(created=started=updated), (d) `check-suites` → `latest_check_runs_count=0` iken kontrol
+kolu health-checks **4** veriyor.
+
+**Gerçek durum: Golden Flow birleştirme kapısı `master` DAHİL hiçbir dalda çalışmıyor.**
+446 koşumun **0'ı** success; ~422'si 12 Nisan sonrası, hepsi 0 iş.
+Aynı kusur `quality-gate.yml`'de de var (satır 17/18 çift `workflow_dispatch`; 290 koşum,
+290 failure, 0 success) → **7 AST linter kapısının hiçbiri CI'da koşmuyor.**
+
+> **Neden bu çürütme kritik:** ilk ölçümün okuması **metinsel olarak doğruydu** (dosyada
+> gerçekten öyle yazıyor) ama sistem o satırları hiç okumuyor. İlk ölçümün tavsiyesi
+> "dal filtresine feature dalını ekleyelim" olurdu ve **hiçbir şey düzeltmezdi**.
+
+#### C7. "Health check: doküman ~9 sn yanlış, gerçek 20,1 ms — ~450x" — **DESTEKLENMİYOR**
+
+İki ölçüm **aynı ucu ölçmemiş**. Canlı sistemde adında `health` geçen 57 yol var:
+
+```
+KONTEYNER İÇİNDEN (11 tekrar)
+  /health              200  medyan   1,08 ms
+  /health/ready        200  medyan  13,40 ms
+  /api/v1/health       404  medyan  10,41 ms      <- negatif kontrol kolu
+DERİN UÇ (5 tekrar)
+  /health/detailed     200  medyan 346,0 ms   min 323,6   max 9.292,9 ms   <<< SOĞUK ÇAĞRI 9,29 sn
+    govde: database 51,9 | redis 51,94 | elasticsearch unhealthy | llm_service 536,03
+CLAUDE.md:682 ham satır:
+  | Health Check | <1s | ~9s | 🟡 ES/Redis timeout (infra, not API) |
+backend/api/health.py:158 @router.get("/health/detailed")
+  asyncio.gather(database, redis, elasticsearch, llm)
+```
+
+Dokümanın kendi notu (`ES/Redis timeout`) tam olarak bu ucun bağımlılıklarını adlandırıyor.
+`~450x yanlış` ibaresi **raporda ve özette düzeltilmelidir**.
+Ayrıca `20,1 ms` **host** taraflı; aynı uç konteyner içinden **1,08 ms** — 20 ms'nin ~%95'i
+API dışı loopback/TCP maliyeti.
+
+> **Uyarı:** 9,29 sn **tek soğuk örnek** (5 tekrarın max'ı). Tekrar üretmek için LLM/ES
+> önbelleği soğutulmalı. Yine de "~9s çürük" demek için gereken kanıt **ortadan kalktı**.
+
+#### C8. "9 kayıt ingest sırasında hiç yazılmamış; yedekte yok, YANİ sonradan silinme DEĞİL" — **çıkarım desteksiz**
+
+"Yedekte yok ⇒ silinmedi" bir *non-sequitur*: yedeksiz `DELETE` hiçbir iz bırakmaz.
+Kök neden **DOĞRULANAMADI** (bkz. D bölümü).
+
+### D. DOĞRULANAMADI — açıkça işaretlenir
+
+| # | Konu | Neden ölçülemedi |
+|---|---|---|
+| 1 | 9 kayıp kaydın kök nedeni | İki hipotez açık. **"Hiç yazılmadı" lehine:** ingest öncesi tabloda 0 satır (`ON CONFLICT` tetiklenemezdi), tek işlem (ya hep ya hiç), parse hatası 0, çarpışma 0, commit gövdesi "77,336 inserted / 0 duplicates". **"Sonradan silindi" lehine:** en eski yedek tablo `..._20260619` — Mart–Haziran penceresinde yedek YOK; `pg_stat.n_tup_del=0` **kanıt değil** çünkü aynı satırda `n_live_tup=0` (sayaçlar sıfırlanmış). **Ayırt edici delil:** jsonl mtime `2026-03-04 20:28:57`, ingest `08:20:30` → dosya ingest'ten **~12 saat sonra** yeniden yazılmış ve **git'te takipsiz**, o sürüm kurtarılamıyor |
+| 2 | Frontend 179 koşabilir dosyanın pass/fail sonucu | Tam vitest koşumu 10+ dk; yapılmadı. Uyarı: "koşabilir" ≠ "geçiyor" — rastgele seçilen kontrol dosyasında 27 testin **2'si zaten FAIL** |
+| 3 | ES `correct_answer`'ının API katmanından öğrenciye ulaşıp ulaşmadığı | Uç auth arkasında (401); alan filtrelemesi ölçülmedi. **İddia edilmiyor** |
+| 4 | `/health/detailed` 9,29 sn'nin tekrar üretilebilirliği | Tek soğuk örnek; LLM/ES önbelleği soğutulmadan tekrarlanamaz |
+| 5 | 86 ortam-koşullu skip'in başka makinedeki davranışı | 12 dosya; "her makinede garantili" değil "bu makinede" |
+| 6 | Golden Flow "0 FAIL" alt iddiası (bağımsız teyit) | Paket yeniden koşulmadı — **çünkü koşmak DB'ye yazıyor** (bkz. C1). Sunucu logları yalnız login katmanını gösterir |
+| 7 | `.coveragerc` hangi test alt kümesiyle üretildi | Artefakt 27 May; koşum komutu kayıtlı değil |
+
+### E. RAPOR METNİ ve ÖZET KUSURLARI (yumuşatılmadı)
+
+**Rapor gövdesi:**
+
+1. **§1 + §1.3 "Yazma işlemi YOK"** — yanlış (C1). Raporun kendi §5.2'si 131 POST ölçmüştü.
+2. **§3.6 / §12 vs §10.2 md.13 çelişkisi** — gövde kesin dille "platform fiilen kullanılmıyor"
+   derken ÖLÇÜLEMEYENLER "gerçek kullanıcı mı fikstür mü profillenmedi" diyor. Aynı olgu
+   hem kesin hem ölçülemez ilan edilmiş. (Cevap: **fikstür**.)
+3. **§7.1 satır 10 vs §10.1 md.2 çelişkisi** — coverage için gövde kesin `❌` basıyor,
+   ÖLÇÜLEMEYENLER "hangi test alt kümesiyle üretildiği bilinmiyor" diyor.
+4. **§7.1 satır 10 metrik karışımı** — `%53` **line**, `%39,74` **dal-dahil**. Elma-elma
+   karşılaştırma `%53` vs `%43,54`. Ayrıca iki farklı **tarih** kıyaslanıyor (17 Mar iddiası
+   vs 27 May artefaktı).
+5. **§4.3 aritmetik tutarsızlığı** — sütun toplamı 1.246, toplam hücresi 1.236 (ham vs dedup).
+6. **§0 vs §4.1 vs §12** — aynı olgu üç yerde üç farklı doğrulukta; **en yanlış sürüm §0'da**
+   (kullanıcıya ilk çarpan cümle).
+7. **§7.3 nedensel aşırı-iddia** — "22 sapmanın ortak kök nedeni" gerçekte 15/22. Dahası
+   MEMORY satırlarında **tersine** çalışıyor: `MEMORY.md` **bugün** güncellenmiş
+   (mtime 2026-07-30 07:25) ama bayat sayı taşıyor; buna karşılık `golden-flows.md` (14 May)
+   ve `pytest.ini` (10 Nis) CLAUDE.md'den **daha** bayat ve tarihleri hiç ölçülmemiş.
+8. **§6.1 host/konteyner etiketsiz karışımı** — `152 (AST = runtime)` host-içi geçerli;
+   canlıda 151. Rapor §4.4'te konteynerin bayat olduğunu **kendisi ölçmüş**.
+9. **§6.2 kaldırma/gözlem deneyi yapılmamış** — iddia doğru çıktı ama daha ilginç olgu
+   kaçırılmış: özet `Failed: 0` diyor çünkü o dal `register_failed()` çağırmıyor;
+   `self.failed_count` **hiç okunmayan ölü sayaç**.
+10. **§6.2 satır numaraları ters** — `loader.py:137` = `tracing_example`, `:138` = `sentry_demo`.
+11. **§7.1 satır 14 parantezi yanlış** — `.claude/agents/ 13` → gerçek **17** takipli `.md`
+    (diskte 37).
+12. **§5.1/§5.4/§10.1 kapanmamış 4 dosyalık muhasebe** — 196−17=179 iken "175 koşabilir"
+    yazılmış. (Çözüldü: **179**; eksik 4, silinmiş modül import eden yetim dosyalar.)
+13. **§3.4 başlık aşırısı** — "77.336 sayısının gerçek kaynağı — **çözüldü**" derken
+    §10.2 md.10 "join anahtarı belirlenmedi" diyor. (Bu ek onu **gerçekten** çözdü: %99,988.)
+14. **§4.2 `~450x` sabit çarpan** — yanlış uç karşılaştırılmış (C7).
+15. **§0 `%83'ü rate-limit yüzünden`** — 148 skip'in **147'si** rate-limit, 1'i seed;
+    doğrusu 147/178 = %82,6.
+16. **§10 kapsamı eksik** — test **dosyası** paydası hiç tanımlanmamış; şu an dört değer
+    dolaşımda: rapor **615**, `backend/tests/` altı **611**, `backend` altı tüm takipli
+    **724**, disk tabanlı **803**. Raporun **kendi §13 "payda da bir ölçümdür"** kuralının
+    gövdesinde ihlali.
+
+**Kullanıcıya iletilen özet (rapordan SAPAN kusurlar):**
+
+17. **"doküman 1.223"** — doküman **1.393** diyor ve **rapor bunu doğru kullanıyor**.
+    Özet paydayı küçültüp farkı 12,2x yerine **13,8x** göstermiş.
+18. **"coverage gerçek %39,74"** — raporun **"27 May 2026 artefaktı"** ve **"kapsamı bilinmiyor"**
+    kayıtlarını tamamen düşürüp sayıyı **taze ölçüm** gibi sunmuş.
+19. **"orchestrator 35/7"** — rapor bilerek **üç alternatif payda** verip "24 hiçbirine uymuyor"
+    demiş; özet tek kesin sayıya **düzleştirmiş**.
+20. **"pre-commit-check.py:73 …"** — bu iddia 943 satırlık raporda **HİÇ GEÇMİYOR**
+    (`grep`: No matches). Sentez katmanı rapora dayanmayan malzeme eklemiş.
+    *İddianın kendisi çalışma-zamanı testiyle **doğru** çıktı ve hatta **eksik**ti* — ama
+    "rapora dayanıyor" izlenimi yanıltıcı.
+21. **"9 konteyner healthy"** — 7 healthy, 2 healthcheck tanımsız.
+22. **"~450x yanlış"** — desteklenmiyor (C7).
+
+### F. Bu turda ORTAYA ÇIKAN yeni bulgular
+
+**Ürün kusurları (hiçbir turda raporlanmamıştı):**
+
+1. **`POST /api/v1/admin/content/questions` 200 OK dönüyor ama hiçbir şey kalıcı olmuyor.**
+   3 çağrı, `question_bank.n_tup_ins=3`, ama toplam hâlâ 187.835; `max(created_at)`
+   2026-06-22 23:55:40; bugün `updated_at` alan **0** satır. Uç "başarılı" diyor, veri yok.
+2. **`DELETE /api/v1/admin/content/questions/3faf4e57-1f38-4771-a209-30839101cd2c` → 500** (3 kez).
+   Hedef satır gerçek ve mevcut (`is_active=t`). Canlı admin silme yolunda 500.
+3. **ES'te 9 hayalet doküman** — `question_bank`'ta HİÇ olmayan 9 id arama sonucu olarak
+   servis ediliyor (hepsi AYT MATEMATİK, hepsi `correct_answer` taşıyor, legacy `questions`
+   tablosunda da yok). **Hiçbir PG-taraflı kapı, audit veya `is_active=false` işlemi bunlara
+   ulaşamaz** — SQL'de satırları yok. Bunlar 4 Mart ingest'inde eksik kalan 9 kaydın **aynısı**:
+   `00790cdd…, 2449bfae…, 24f39cfe…, 63b1cc91…, 691fab7a…, 789fcec4…, 78bd39f8…, 994d7f11…, c879b7c7…`
+4. **ES ile PG arasında artımlı senkron yolu YOK** — 64.270 doküman 19 saniyede tek toplu
+   yüklemeyle yazılmış, translog 55 bayt (boş). 4 aydır biriken tüm PG kalite/silme işlemleri
+   ES'e hiç yansımadı. Bu, (3) ve "ES `is_active` bayat" bulgusunun kök nedeni.
+5. **#433 görevi sanılandan çok daha büyük** — `v_safe_for_beta`'daki 25.127 sorunun yalnız
+   **3.665'i (%14,59)** ES'te var; **21.462 güvenli soru ES'te hiç yok**. Yani "daraltma"
+   değil, indeksin %94,3'ünü atıp %85,4'ü yeni olan bir **yeniden inşa**.
+6. **`human_verified` statüsü `question_bank`'ta HİÇ YOK** (6 statü var). Kod ve kurallar
+   boyunca geçen `quality_review_status in ('auto_judged_high','human_verified')` filtresinin
+   ikinci kolu **ölü**; "kabul" fiilen tek statüye eşit. Filtreyi okuyan herkes iki katmanlı
+   bir kabul kümesi olduğunu sanıyor.
+7. **RLS'te istisna SIFIR** — 79 FORCE RLS tablosunun **79'unun da** politikası
+   `current_setting(...) IS NULL OR = '' OR eşleşme` kalıbında; bu kalıbı taşımayan **0**.
+   Fail-closed davranan tek bir kiracı tablosu bile yok. İkinci organizasyon eklendiği an
+   **79 tablo birden** açılır. GUC'u set eden tek üretim satırı `core/dependencies.py:456`
+   ve bunu tetikleyen `get_current_tenant` **142 router dosyasının 2'sinde**.
+   *Severity düzeltmesi:* bugün organizasyonlar tablosunda **1** satır var ve RLS'li
+   tablolardaki tüm satırlar ona ait → **bugün çapraz-kiracı sızıntısı imkânsız**.
+   B5 "aktif sızıntı" değil, "ikinci kiracıda açılacak tuzak".
+8. **Golden Flow + quality-gate kapıları 3,5 aydır ölü** (C6) — `.claude/rules/golden-flows.md`
+   "Merge block" kuralı ile sistem davranışı arasında sessiz sapma.
+9. **4 yetim frontend test dosyası** — import ettikleri modüller **diskte yok**:
+   `src/hooks/useOfflineMode`, `src/services/modernApiClient`, `src/services/VideoErrorHandler`(×2).
+   vitest "no tests" diyor, suite genelinde sessizce kayboluyorlar.
+10. **18 backend modülü hiç toplanmıyor** (10 değil), 335 test fonksiyonu. Bir kısmı gerçek
+    bağımlılık kırığı: `ElasticsearchConfig` import edilemiyor; `huggingface-hub==1.19.0`
+    transformers ile uyumsuz; `adaptive_test_engine`/`doc_updater_service`/
+    `question_generation_engine` modülleri yok. pytest bunu tek satırda söylüyor:
+    `collected 16931 items / 18 skipped`.
+11. **Depo kendi coverage komutunu kendi konfigüyle üretemiyor** — `.coveragerc`
+    `[run] source` listesinde **`models` yok**, oysa CLAUDE.md'nin dokümante ettiği komut
+    `--cov=models` içeriyor ve artefakt 81 models dosyası taşıyor →
+    `coverage report/json` "No data to report" (rc=1).
+12. **`n_live_tup` ölü** — `question_bank`/`questions` için `last_analyze`, `last_autoanalyze`,
+    `last_vacuum`, `last_autovacuum` **hepsi NULL**, `n_live_tup=0` (gerçek 187.835).
+    `n_live_tup` okuyan her sağlık/izleme sorgusu tabloyu **BOŞ** raporlar — bu deponun
+    daha önce yaşadığı "questions tablosu BOŞ" fantomunun **tam olarak aynı mekanizması**.
+13. **Yedek penceresi boşluğu** — en eski yedek tablo `question_bank_vp116_status_backup_20260619`.
+    2026-03-04 ile 2026-06-19 arasındaki ~3,5 ay için hiçbir yıkıcı işlemin yedeği yok;
+    "her DB değişikliği backup + reversible" kuralı bu pencerede uygulanmamış.
+14. **Provenance kırılganlığı** — `d-dataset/eslesmis_sorucevap.jsonl` **git'te takipsiz**
+    ve diskteki sürüm ingest'ten **12 saat sonra** yeniden yazılmış. "Production jsonl = DB
+    içeriği" eşitliği kanıtlanabilir değil; CLAUDE.md bunu eşit gibi sunuyor.
+15. **`question_number` denetlenebilir değil** — `question_bank`'ta sorgulanabilir kolon
+    değil, `DIRECT_FIELDS`'ta olduğu için `pipeline_metadata`'ya da yazılmıyor; yalnız uuid5
+    hash'inin içinde gömülü. `pipeline_metadata->>'question_number'` **sessizce NULL** döner
+    (bu turda bir ölçümü bozdu).
+16. **`created_by` 187.835 satırın 187.770'inde NULL** (65 dolu) — ingest provenance'ı yalnız
+    `created_at` + metadata imzasıyla geri kazanılabiliyor.
+17. **Eş zamanlı `in_progress` sınav oturumu kısıtı yok** — tek kullanıcı için aynı saniyede
+    2 açık TYT oturumu yaratılabiliyor.
+18. **3 asılı pytest süreci 4,5 saattir canlı** (PID 33384/27336/34840, 16:18–17:06'dan beri),
+    hepsi `tests/api/test_me_endpoint.py` üzerinde. Deadlock `test_api_batch2.py`'ye özgü
+    **değil**; `--timeout` ile koşulduğunda süreç sızmıyor.
+19. **Kök `pyproject.toml` `timeout_func_only=true`, `backend/pytest.ini` `False`** — depo
+    kökünden koşulduğunda aynı teardown deadlock'u pytest-timeout tarafından **hiç
+    yakalanmaz**, sonsuza kadar asılı kalır.
+20. **SMTP anahtar adı tutarsızlığı** — `startup_validator.py:158`, `validate_production_env.py:75`,
+    `backup_database.py:234` **`SMTP_HOST`** okuyor; `email_util.py:32`, `kvkk_compliance.py:812`,
+    `health_audit_service.py:755` **`SMTP_SERVER`** okuyor. `.env.production`'da yalnız
+    `SMTP_HOST` tanımlı → o dosya yüklense **startup validator geçer, `send_email` yine
+    sessizce False döner**. `SMTP_SERVER` ve `EMAIL_FROM` depodaki **hiçbir** `.env*` dosyasında yok.
+21. **`api/auth.py:2279` (veli onayı e-postası)** aynı ölü `send_email`'i kullanıyor ve dönüş
+    değerini **hiç kontrol etmiyor** — şifre sıfırlamanın aksine burada hiçbir fallback/log
+    yok; bildirim tamamen sessizce kayboluyor.
+22. **jsonl "77.336 clean" iddiasını tam karşılamıyor** — 77.336 kayıtta yalnız **75.725
+    distinct metin** var (1.611 metin-düzeyi tekrar; en sık olanı 32 kez). Kimlik üçgeni
+    `book|page|qnum` benzersiz olduğu için ingest bunları elemiyor.
+23. **`question_bank`'ta 2026-05-12 tarihli 105.152 satırlık ikinci dev parti** (tablonun %56'sı)
+    CLAUDE.md'nin "Database & Content" bölümünde **hiç geçmiyor**. "Üretimde ne var"
+    sorusunun cevabını domine eden parti dokümantasyonda görünmez.
+
+**Alet tuzakları (kural dosyasına aday):**
+
+24. **`/openapi.json` bu depoda rota-varlığı için GEÇERSİZ ALET** — `backend/api/auth.py`'de
+    en az 10 rota `include_in_schema=False`; `/api/v1/auth/login` spec'te **YOK** ama canlı
+    trafik görüyor. Doğru alet: HTTP status probu (404 = yok, 401/403/422 = var).
+25. **Minify edilmiş bundle'da yerel değişken adı aramak değersizdir** — dağıtım kontrolü
+    **string literal** (onay metni, `aria-label`) veya **property** adıyla yapılmalı, ve
+    commit'ten ÖNCE de var olan bir literal **kontrol kolu** olarak aranmalı.
+26. **`docker logs --since 15:25`** (Z'siz) yerel saat sayılır → yanlış pencere. Konteyner
+    logları **UTC**, host **UTC+3**.
+27. **`git count-objects -v` ≠ `.git` dizini boyutu** — yalnız pack+loose nesneleri sayar;
+    `.git/lfs`, index, logs, refs hariç. Bu turda bir skeptiği yanlış yöne götürdü.
+28. **mtime bayatlık kanıtı değil** — `CLAUDE.md` disk mtime'ı 2026-07-28 02:19 olduğu halde
+    son commit 23 May ve çalışma ağacı temiz (içerik değişmeden dosyaya dokunulmuş).
+29. **MSYS yol dönüşümü** `/app/api/me.py` → `C:/Program Files/Git/app/api/me.py` yaptı ve
+    yanlış "No such file" üretti → `MSYS_NO_PATHCONV=1` gerekli.
+30. **bash `/tmp` ≠ node/python `/tmp`** (MSYS temp vs `C:\tmp`) — dosya üzerinden veri
+    aktarımı sessizce düştü; stdin'e geçilerek çözüldü.
+
+### G. Metodolojik ders — §13'e 3 yeni aday
+
+**6. ADAY — ÖLÇÜMÜN KENDİSİ SİSTEMİ DEĞİŞTİRİYOR MU?**
+`.claude/rules/audit-methodology.md` "Ölçüm aletini doğrula" der; bu vaka bir adım
+ötesini gösteriyor: alet **doğruydu**, ama alet **sistemi değiştirdi**. Rapor 131 POST
+atan bir paketi 3 kez koşturdu, bunu ölçtü, ve aynı belgede "salt okunur" yazdı — sonra
+kendi yazdığı satırları "gerçek öğrenci trafiği" diye analiz etti.
+**Kural:** yazma yüzeyi ölçülen bir aleti koşmadan önce *"bu, ölçmeye çalıştığım tabloya
+yazar mı?"* sorusu sorulmalı; yazıyorsa **öncesi/sonrası snapshot** alınmalı ve rapora
+"ölçümün kendi yan etkisi" satırı **zorunlu** eklenmeli.
+
+**7. ADAY — ÖZET DE BİR ÖLÇÜMDÜR.**
+Bu turda özet, raporun **kendisinden** 6 yerde saptı: paydayı küçülttü (1.393→1.223),
+hedge'i düzleştirdi (3 payda → tek sayı), tarih kaydını düşürdü (27 May artefaktı → "gerçek"),
+ve **raporda hiç geçmeyen bir iddia ekledi** (`pre-commit-check.py`). Sentez katmanı
+kanıt üretmez, kanıt **taşır**.
+**Kural:** özetteki her sayı rapordaki bir satıra `grep`'lenebilmeli; grep boş dönüyorsa
+o cümle **ya rapora eklenir ya özetten çıkarılır**.
+
+**8. ADAY — KARŞILAŞTIRMANIN AYNI ŞEYİ ÖLÇTÜĞÜNÜ KANITLA.**
+"~450x yanlış" ve "%53 vs %39,74" — iki yanlış, aynı kökten: **karşılaştırılan iki değerin
+aynı hedefi/metriği ölçtüğü doğrulanmadı**. Biri sığ `/health` ile derin `/health/detailed`'i,
+diğeri `line` ile `dal-dahil`'i (ve 17 Mart ile 27 Mayıs'ı) kıyasladı.
+**Kural:** `A vs B` yazmadan önce A'nın ve B'nin **hedefini, metriğini ve tarihini** ayrı
+ayrı yaz. Üçü de eşleşmiyorsa bu bir karşılaştırma değil, bir **kategori hatası**dır.
+
+> **Turun kendi öz-eleştirisi:** skeptik tur da iki kez kendi kuralını ihlal etti —
+> (a) B1-b'de "örneklem yanlılığı **gerçek**" dedi; binom testi çürüttü (z=0,97, p=0,332;
+> %7,0 değeri n=300 için %95 bandı [%3,08, %8,33] **içinde**) — sayı doğrulandı, o farkın
+> **açıklaması** doğrulanmadı. (b) `.git` boyutunda farklı bir kümeyi ölçen aletle raporu
+> haksız yere "yukarı yuvarlamış" diye suçladı. Aynı kural (`kök neden de bir ölçümdür`)
+> bu depoda **dördüncü kez** aynı yerden kırıldı.
+
+---
+
+*Çürütme turu: 2026-07-30, aynı gün. 6 skeptik + 3 hakem turu, ~60 iddia.*
+*Sonuç: 34 ayakta, 19 düzeltildi, 8 manşet çürütüldü, 7 doğrulanamadı.*
+*Bu turda DB'ye yazma yapılmadı; yalnız `POST /api/v1/admin/content/questions` ve*
+*`DELETE .../questions/{id}` probları hakem turunda 3'er kez çağrıldı (kalıcı etki: yok, bkz. F1/F2).*
