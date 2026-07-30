@@ -10,6 +10,7 @@ import re
 from abc import ABC, abstractmethod
 
 from .config.patterns import REMEDIATION_SUGGESTIONS
+from .literal_spans import bulgu_bastirilmali
 from .models.detection_result import DetectionResult, DetectorConfig
 from .models.enums import PatternType, SeverityLevel
 
@@ -189,6 +190,16 @@ class BaseDetector(ABC):
 
         for pattern in self._compiled_patterns:
             for match in pattern.finditer(content):
+                # String literali TEST VERISIDIR, kod degil (30 Tem 2026).
+                # Bekci kendi fixture korpusunu ihlal sayip 3 test dosyasini
+                # push'ta blokluyordu. Karakter granulerligi ZORUNLU:
+                # `assert True, "aciklama"` gercek ihlaldir ve satirinda
+                # string de vardir. Bkz literal_spans.py
+                if bulgu_bastirilmali(
+                    file_path, content, match.start(), pattern.pattern
+                ):
+                    continue
+
                 # Calculate line number
                 line_num = content[: match.start()].count("\n") + 1
 

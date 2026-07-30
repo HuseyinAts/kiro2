@@ -11,6 +11,7 @@ import re
 from ..analyzers.context_analyzer import ContextAnalyzer
 from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
+from ..literal_spans import bulgu_bastirilmali
 from ..models.detection_result import DetectionResult
 from ..models.enums import PatternType, SeverityLevel
 
@@ -37,11 +38,7 @@ class HardcodedTestDataDetector(BaseDetector):
         """Get regex patterns for hardcoded test data detection."""
         return REWARD_HACKING_PATTERNS.get("hardcoded_test_data", [])
 
-    async def detect(
-        self,
-        file_path: str,
-        content: str
-    ) -> list[DetectionResult]:
+    async def detect(self, file_path: str, content: str) -> list[DetectionResult]:
         """
         Detect hardcoded test data patterns.
 
@@ -68,11 +65,13 @@ class HardcodedTestDataDetector(BaseDetector):
         regex_results = self._regex_detect(
             file_path=file_path,
             content=content,
-            message_template="Hardcoded test data detected: {pattern}"
+            message_template="Hardcoded test data detected: {pattern}",
         )
 
         for result in regex_results:
-            if context_analyzer.should_ignore(result.line_number, "hardcoded_test_data"):
+            if context_analyzer.should_ignore(
+                result.line_number, "hardcoded_test_data"
+            ):
                 continue
 
             modifier = context_analyzer.get_confidence_modifier(result.line_number)
@@ -96,9 +95,7 @@ class HardcodedTestDataDetector(BaseDetector):
         return results
 
     def _detect_magic_numbers(
-        self,
-        file_path: str,
-        content: str
+        self, file_path: str, content: str
     ) -> list[DetectionResult]:
         """
         Detect magic numbers in test assertions.
@@ -114,17 +111,19 @@ class HardcodedTestDataDetector(BaseDetector):
 
         # Patterns for suspicious magic numbers in test context
         magic_patterns = [
-            (r'\b(user_id|id)\s*=\s*(\d+)', 'Magic ID number'),
-            (r'\bassert.*==\s*(\d+)\s*$', 'Magic number in assertion'),
-            (r'\bcount\s*=\s*(\d+)', 'Magic count number'),
-            (r'\bindex\s*=\s*(\d+)', 'Magic index number'),
+            (r"\b(user_id|id)\s*=\s*(\d+)", "Magic ID number"),
+            (r"\bassert.*==\s*(\d+)\s*$", "Magic number in assertion"),
+            (r"\bcount\s*=\s*(\d+)", "Magic count number"),
+            (r"\bindex\s*=\s*(\d+)", "Magic index number"),
         ]
 
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         for pattern, message in magic_patterns:
             for match in re.finditer(pattern, content):
-                line_num = content[:match.start()].count('\n') + 1
+                if bulgu_bastirilmali(file_path, content, match.start(), pattern):
+                    continue
+                line_num = content[: match.start()].count("\n") + 1
                 line_content = lines[line_num - 1] if line_num <= len(lines) else ""
 
                 # Extract the number
@@ -132,20 +131,20 @@ class HardcodedTestDataDetector(BaseDetector):
                 if groups:
                     num = int(groups[-1]) if groups[-1].isdigit() else 0
                     if num <= self.MAGIC_NUMBER_THRESHOLD:
-                        results.append(self._create_result(
-                            file_path=file_path,
-                            line_number=line_num,
-                            code_snippet=line_content.strip(),
-                            message=f"{message}: {num} - use fixtures/factories",
-                            confidence=0.7
-                        ))
+                        results.append(
+                            self._create_result(
+                                file_path=file_path,
+                                line_number=line_num,
+                                code_snippet=line_content.strip(),
+                                message=f"{message}: {num} - use fixtures/factories",
+                                confidence=0.7,
+                            )
+                        )
 
         return results
 
     def _detect_hardcoded_credentials(
-        self,
-        file_path: str,
-        content: str
+        self, file_path: str, content: str
     ) -> list[DetectionResult]:
         """
         Detect hardcoded credentials in tests.
@@ -161,37 +160,39 @@ class HardcodedTestDataDetector(BaseDetector):
 
         # Credential patterns
         credential_patterns = [
-            (r'email\s*=\s*["\']test@test\.com["\']', 'Hardcoded test email'),
-            (r'email\s*=\s*["\']admin@', 'Hardcoded admin email'),
-            (r'password\s*=\s*["\']password["\']', 'Hardcoded weak password'),
-            (r'password\s*=\s*["\']123', 'Hardcoded numeric password'),
-            (r'password\s*=\s*["\']test', 'Hardcoded test password'),
-            (r'api_key\s*=\s*["\']test', 'Hardcoded test API key'),
-            (r'secret\s*=\s*["\']secret', 'Hardcoded secret'),
-            (r'token\s*=\s*["\']test', 'Hardcoded test token'),
+            (r'email\s*=\s*["\']test@test\.com["\']', "Hardcoded test email"),
+            (r'email\s*=\s*["\']admin@', "Hardcoded admin email"),
+            (r'password\s*=\s*["\']password["\']', "Hardcoded weak password"),
+            (r'password\s*=\s*["\']123', "Hardcoded numeric password"),
+            (r'password\s*=\s*["\']test', "Hardcoded test password"),
+            (r'api_key\s*=\s*["\']test', "Hardcoded test API key"),
+            (r'secret\s*=\s*["\']secret', "Hardcoded secret"),
+            (r'token\s*=\s*["\']test', "Hardcoded test token"),
         ]
 
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         for pattern, message in credential_patterns:
             for match in re.finditer(pattern, content, re.IGNORECASE):
-                line_num = content[:match.start()].count('\n') + 1
+                if bulgu_bastirilmali(file_path, content, match.start(), pattern):
+                    continue
+                line_num = content[: match.start()].count("\n") + 1
                 line_content = lines[line_num - 1] if line_num <= len(lines) else ""
 
-                results.append(self._create_result(
-                    file_path=file_path,
-                    line_number=line_num,
-                    code_snippet=line_content.strip(),
-                    message=f"{message} - use faker/factories",
-                    confidence=0.8
-                ))
+                results.append(
+                    self._create_result(
+                        file_path=file_path,
+                        line_number=line_num,
+                        code_snippet=line_content.strip(),
+                        message=f"{message} - use faker/factories",
+                        confidence=0.8,
+                    )
+                )
 
         return results
 
     def _check_test_variety(
-        self,
-        file_path: str,
-        content: str
+        self, file_path: str, content: str
     ) -> list[DetectionResult]:
         """
         Check if tests have sufficient data variety.
@@ -206,35 +207,39 @@ class HardcodedTestDataDetector(BaseDetector):
         results: list[DetectionResult] = []
 
         # Count test functions
-        test_count = len(re.findall(r'def test_\w+', content))
+        test_count = len(re.findall(r"def test_\w+", content))
 
         # Count @pytest.mark.parametrize
-        parametrize_count = len(re.findall(r'@pytest\.mark\.parametrize', content))
+        parametrize_count = len(re.findall(r"@pytest\.mark\.parametrize", content))
 
         # If many tests but no parametrize, suggest it
         if test_count > 5 and parametrize_count == 0:
-            results.append(self._create_result(
-                file_path=file_path,
-                line_number=1,
-                code_snippet=f"Tests: {test_count}, Parametrize: {parametrize_count}",
-                message="Consider using @pytest.mark.parametrize for test variety",
-                confidence=0.6
-            ))
+            results.append(
+                self._create_result(
+                    file_path=file_path,
+                    line_number=1,
+                    code_snippet=f"Tests: {test_count}, Parametrize: {parametrize_count}",
+                    message="Consider using @pytest.mark.parametrize for test variety",
+                    confidence=0.6,
+                )
+            )
 
         # Suggest Hypothesis for property-based testing
-        if 'hypothesis' not in content.lower() and test_count > 10:
-            results.append(self._create_result(
-                file_path=file_path,
-                line_number=1,
-                code_snippet=f"Test count: {test_count}",
-                message="Consider Hypothesis for property-based testing",
-                confidence=0.5
-            ))
+        if "hypothesis" not in content.lower() and test_count > 10:
+            results.append(
+                self._create_result(
+                    file_path=file_path,
+                    line_number=1,
+                    code_snippet=f"Test count: {test_count}",
+                    message="Consider Hypothesis for property-based testing",
+                    confidence=0.5,
+                )
+            )
 
         return results
 
     def _is_test_file(self, file_path: str) -> bool:
         """Check if file is a test file."""
         file_lower = file_path.lower()
-        test_indicators = ['test_', '_test.py', '/tests/', '/test/', 'conftest.py']
+        test_indicators = ["test_", "_test.py", "/tests/", "/test/", "conftest.py"]
         return any(indicator in file_lower for indicator in test_indicators)

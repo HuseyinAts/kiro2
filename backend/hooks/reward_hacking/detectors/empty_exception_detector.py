@@ -11,6 +11,7 @@ from ..analyzers.context_analyzer import ContextAnalyzer
 from ..base_detector import BaseDetector
 from ..config.patterns import REWARD_HACKING_PATTERNS
 from ..exceptions import ASTParseError
+from ..literal_spans import satir_bastirilmali
 from ..models.detection_result import DetectionResult
 from ..models.enums import PatternType, SeverityLevel
 
@@ -34,11 +35,7 @@ class EmptyExceptionDetector(BaseDetector):
         """Get regex patterns for empty exception detection."""
         return REWARD_HACKING_PATTERNS.get("empty_exception", [])
 
-    async def detect(
-        self,
-        file_path: str,
-        content: str
-    ) -> list[DetectionResult]:
+    async def detect(self, file_path: str, content: str) -> list[DetectionResult]:
         """
         Detect empty exception handler patterns.
 
@@ -61,7 +58,7 @@ class EmptyExceptionDetector(BaseDetector):
         regex_results = self._regex_detect(
             file_path=file_path,
             content=content,
-            message_template="Empty exception handler detected: {pattern}"
+            message_template="Empty exception handler detected: {pattern}",
         )
 
         for result in regex_results:
@@ -80,7 +77,7 @@ class EmptyExceptionDetector(BaseDetector):
                 results.append(result)
 
         # 2. AST-based detection for Python files
-        if file_path.endswith('.py'):
+        if file_path.endswith(".py"):
             ast_results = await self._ast_detect(file_path, content, context_analyzer)
             results.extend(ast_results)
 
@@ -91,10 +88,7 @@ class EmptyExceptionDetector(BaseDetector):
         return self._deduplicate(results)
 
     async def _ast_detect(
-        self,
-        file_path: str,
-        content: str,
-        context_analyzer: ContextAnalyzer
+        self, file_path: str, content: str, context_analyzer: ContextAnalyzer
     ) -> list[DetectionResult]:
         """
         Perform AST-based detection for empty exception handlers.
@@ -117,24 +111,30 @@ class EmptyExceptionDetector(BaseDetector):
                 if context_analyzer.should_ignore(match.line_number, "empty_exception"):
                     continue
 
-                confidence = match.confidence * context_analyzer.get_confidence_modifier(
-                    match.line_number
+                confidence = (
+                    match.confidence
+                    * context_analyzer.get_confidence_modifier(match.line_number)
                 )
 
                 if confidence >= self.config.min_confidence:
-                    results.append(self._create_result(
-                        file_path=file_path,
-                        line_number=match.line_number,
-                        code_snippet=match.code,
-                        message=f"AST analysis: {match.message}",
-                        confidence=confidence,
-                        column_number=match.column
-                    ))
+                    results.append(
+                        self._create_result(
+                            file_path=file_path,
+                            line_number=match.line_number,
+                            code_snippet=match.code,
+                            message=f"AST analysis: {match.message}",
+                            confidence=confidence,
+                            column_number=match.column,
+                        )
+                    )
 
-        except ASTParseError:
-            pass
-        except Exception:
-            pass
+        except ASTParseError as hata:
+            # 30 Tem 2026 (bandit B110): bekcinin KENDISI sessizce yutuyordu.
+            # Parse hatasi normaldir (kismi/bozuk dosya) ama GORUNMEZ olmamali:
+            # AST yolu duserse tespit sessizce zayiflar ve kimse fark etmez.
+            print(f"Warning: {self.name} AST parse edemedi {file_path}: {hata}")
+        except Exception as hata:
+            print(f"Warning: {self.name} AST analizi basarisiz {file_path}: {hata}")
 
         return results
 
@@ -149,16 +149,22 @@ class EmptyExceptionDetector(BaseDetector):
         Returns:
             True if logging or comment present
         """
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # Look at 3 lines after the except
         start = line_number
         end = min(len(lines), line_number + 4)
 
         logging_patterns = [
-            'logger.', 'logging.', 'log.', 'print(',
-            '# intentionally', '# silently', '# expected',
-            '# ignore', '# suppress'
+            "logger.",
+            "logging.",
+            "log.",
+            "print(",
+            "# intentionally",
+            "# silently",
+            "# expected",
+            "# ignore",
+            "# suppress",
         ]
 
         for i in range(start, end):
@@ -170,9 +176,7 @@ class EmptyExceptionDetector(BaseDetector):
         return False
 
     def _detect_bare_except(
-        self,
-        file_path: str,
-        content: str
+        self, file_path: str, content: str
     ) -> list[DetectionResult]:
         """
         Detect bare except: clauses without specific exception type.
@@ -185,21 +189,27 @@ class EmptyExceptionDetector(BaseDetector):
             List of DetectionResult for bare excepts
         """
         import re
+
         results: list[DetectionResult] = []
 
         # Pattern for bare except (not followed by Exception type)
-        pattern = r'^\s*except\s*:\s*$'
+        pattern = r"^\s*except\s*:\s*$"
 
-        lines = content.split('\n')
+        lines = content.split("\n")
         for i, line in enumerate(lines):
             if re.match(pattern, line):
-                results.append(self._create_result(
-                    file_path=file_path,
-                    line_number=i + 1,
-                    code_snippet=line.strip(),
-                    message="Bare except: - use specific exception type",
-                    confidence=0.95
-                ))
+                # Fixture string'i icindeki bare except TEST VERISIDIR (30 Tem 2026).
+                if satir_bastirilmali(file_path, content, i + 1, pattern):
+                    continue
+                results.append(
+                    self._create_result(
+                        file_path=file_path,
+                        line_number=i + 1,
+                        code_snippet=line.strip(),
+                        message="Bare except: - use specific exception type",
+                        confidence=0.95,
+                    )
+                )
 
         return results
 

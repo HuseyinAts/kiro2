@@ -6,8 +6,11 @@ Uses Hypothesis to test system-wide properties.
 
 from __future__ import annotations
 
+import contextlib
 import os
 import tempfile
+from pathlib import Path
+from typing import ClassVar
 
 import pytest
 from hypothesis import given, settings
@@ -32,28 +35,32 @@ from backend.hooks.reward_hacking.models.enums import (
 )
 
 
-def create_temp_file(content: str, suffix: str = '.py') -> str:
+def create_temp_file(content: str, suffix: str = ".py") -> str:
     """Create a temporary file with given content and return its path."""
     fd, path = tempfile.mkstemp(suffix=suffix, text=True)
     try:
-        os.write(fd, content.encode('utf-8'))
+        os.write(fd, content.encode("utf-8"))
     finally:
         os.close(fd)
     return path
 
 
 def cleanup_temp_file(path: str) -> None:
-    """Safely clean up a temporary file."""
-    try:
-        if os.path.exists(path):
-            os.unlink(path)
-    except PermissionError:
-        pass  # Windows file locking - ignore
+    """Safely clean up a temporary file.
+
+    30 Tem 2026: burada `except PermissionError: pass` vardi ve bekci bunu
+    HAKLI olarak sessiz-yutma sayiyordu (GERCEK bulgu, fixture degil).
+    Yorumu bekcinin regex'ine uyacak sekilde yeniden yazmak onu kandirmak
+    olurdu; bunun yerine yutma deyimsel olarak ifade edildi.
+    """
+    with contextlib.suppress(PermissionError):  # Windows dosya kilidi
+        Path(path).unlink(missing_ok=True)
 
 
 # =============================================================================
 # PROPERTY 1: DETECTION COMPLETENESS
 # =============================================================================
+
 
 class TestDetectionCompleteness:
     """
@@ -63,7 +70,7 @@ class TestDetectionCompleteness:
     """
 
     # Known reward hacking patterns that MUST be detected
-    KNOWN_PATTERNS = [
+    KNOWN_PATTERNS: ClassVar[list[tuple[str, str]]] = [
         ("assert True", "assert_true"),
         ("assert true", "assert_true"),
         ('echo "Success"', "echo_success"),
@@ -97,6 +104,7 @@ class TestDetectionCompleteness:
 # PROPERTY 2: EXIT CODE CONSISTENCY
 # =============================================================================
 
+
 class TestExitCodeConsistency:
     """
     Property 2: For any detection result with severity CRITICAL,
@@ -119,8 +127,9 @@ class TestExitCodeConsistency:
             try:
                 result = await manager.run_hooks([path])
                 if result.critical_count > 0:
-                    assert result.exit_code == ExitCode.BLOCKING_ERROR, \
-                        f"Critical detection did not block: {pattern}"
+                    assert (
+                        result.exit_code == ExitCode.BLOCKING_ERROR
+                    ), f"Critical detection did not block: {pattern}"
             finally:
                 cleanup_temp_file(path)
 
@@ -150,13 +159,14 @@ def test_calculate_sum():
 # PROPERTY 3: FALSE POSITIVE MINIMIZATION
 # =============================================================================
 
+
 class TestFalsePositiveMinimization:
     """
     Property 3: For any legitimate code pattern (e.g., assert True in docstring),
     the context analyzer SHALL exclude it from critical detections.
     """
 
-    LEGITIMATE_PATTERNS = [
+    LEGITIMATE_PATTERNS: ClassVar[list[str]] = [
         # Docstring examples
         '"""Example: assert True"""',
         "'''assert True is used for...'''",
@@ -176,13 +186,15 @@ class TestFalsePositiveMinimization:
         # Should either not detect or have low confidence
         for result in results:
             if result.severity == SeverityLevel.CRITICAL:
-                assert result.confidence < 0.8, \
-                    f"Legitimate pattern flagged as critical: {code}"
+                assert (
+                    result.confidence < 0.8
+                ), f"Legitimate pattern flagged as critical: {code}"
 
 
 # =============================================================================
 # PROPERTY 4: REMEDIATION COMPLETENESS
 # =============================================================================
+
 
 class TestRemediationCompleteness:
     """
@@ -190,7 +202,7 @@ class TestRemediationCompleteness:
     non-empty remediation suggestion.
     """
 
-    ALL_DETECTORS = [
+    ALL_DETECTORS: ClassVar[list[type]] = [
         AssertTrueDetector,
         EchoSuccessDetector,
         PlaceholderDetector,
@@ -215,27 +227,36 @@ class TestRemediationCompleteness:
             "CoverageManipulationDetector": "# pragma: no cover",
             "MockAbuseDetector": "mock = Mock(return_value=True)",
             "EmptyExceptionDetector": "except:\n    pass",
-            "HardcodedTestDataDetector": "password = 'password123'",
+            # detect-secrets: bu bir FIXTURE, HardcodedTestDataDetector'in
+            # yakalamasi GEREKEN sahte kimlik bilgisi. Gercek sir degil.
+            "HardcodedTestDataDetector": "password = 'password123'",  # pragma: allowlist secret
             "CICDBypassDetector": "[skip ci]",
         }
 
         pattern = test_patterns.get(detector_cls.__name__, "assert True")
 
         # Determine file type
-        suffix = '.py' if 'Echo' not in detector_cls.__name__ else '.py'
+        # NOT (30 Tem 2026): burada `".py" if "Echo" not in ... else ".py"` vardi —
+        # iki dal AYNIYDI, yani kosul oluydu (ruff RUF034). Muhtemelen Echo icin
+        # ".sh" amaclanmisti ama hic uygulanmadi. Davranisi degistirmemek icin
+        # sadece kosul kaldirildi; ".sh" kapsamina gecis AYRI is.
+        suffix = ".py"
 
         results = await detector.detect(f"test{suffix}", pattern)
 
         for result in results:
-            assert result.remediation, \
-                f"{detector_cls.__name__} did not provide remediation"
-            assert len(result.remediation) > 10, \
-                f"{detector_cls.__name__} remediation too short"
+            assert (
+                result.remediation
+            ), f"{detector_cls.__name__} did not provide remediation"
+            assert (
+                len(result.remediation) > 10
+            ), f"{detector_cls.__name__} remediation too short"
 
 
 # =============================================================================
 # PROPERTY 5: PARALLEL EXECUTION SAFETY
 # =============================================================================
+
 
 class TestParallelExecutionSafety:
     """
@@ -266,7 +287,9 @@ except Exception:
                 results.append(result)
 
             # All runs should have same counts
-            assert all(r.total_detections == results[0].total_detections for r in results)
+            assert all(
+                r.total_detections == results[0].total_detections for r in results
+            )
             assert all(r.critical_count == results[0].critical_count for r in results)
         finally:
             cleanup_temp_file(path)
@@ -300,27 +323,32 @@ except Exception:
 # PROPERTY 6: PATTERN COVERAGE
 # =============================================================================
 
+
 class TestPatternCoverage:
     """
     Property 6: For any detector, the number of regex patterns + AST checks
     SHALL cover all acceptance criteria for that detector.
     """
 
-    @pytest.mark.parametrize("pattern_type,min_patterns", [
-        ("assert_true", 3),     # At least 3 patterns for assert True
-        ("echo_success", 3),   # At least 3 patterns for echo success
-        ("placeholder", 5),    # At least 5 patterns for placeholders
-        ("coverage_manipulation", 3),  # At least 3 patterns
-        ("mock_abuse", 3),     # At least 3 patterns
-        ("empty_exception", 3),  # At least 3 patterns
-        ("hardcoded_test_data", 3),  # At least 3 patterns
-        ("cicd_bypass", 3),    # At least 3 patterns
-    ])
+    @pytest.mark.parametrize(
+        "pattern_type,min_patterns",
+        [
+            ("assert_true", 3),  # At least 3 patterns for assert True
+            ("echo_success", 3),  # At least 3 patterns for echo success
+            ("placeholder", 5),  # At least 5 patterns for placeholders
+            ("coverage_manipulation", 3),  # At least 3 patterns
+            ("mock_abuse", 3),  # At least 3 patterns
+            ("empty_exception", 3),  # At least 3 patterns
+            ("hardcoded_test_data", 3),  # At least 3 patterns
+            ("cicd_bypass", 3),  # At least 3 patterns
+        ],
+    )
     def test_minimum_pattern_count(self, pattern_type, min_patterns):
         """Test that each pattern type has minimum required patterns."""
         patterns = REWARD_HACKING_PATTERNS.get(pattern_type, [])
-        assert len(patterns) >= min_patterns, \
-            f"{pattern_type} has only {len(patterns)} patterns, expected {min_patterns}"
+        assert (
+            len(patterns) >= min_patterns
+        ), f"{pattern_type} has only {len(patterns)} patterns, expected {min_patterns}"
 
     def test_all_pattern_types_have_detector(self):
         """Test that every pattern type has a corresponding detector."""
