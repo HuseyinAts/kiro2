@@ -18,11 +18,10 @@
   ölçüldü. `a9429896b`
 - 3 yeni test dosyası: `test_severity_calibration.py` (15) · `test_mock_ratio.py` (11)
 
-### Ölçümler
-`guard_severity_census.py`, 250 test dosyası, korpus imzası **iki kolda aynı**:
-CRITICAL **474→64** · WARNING **253→663** · bloklayan dosya **68/250→19/250**.
-Toplam bulgu 727=727 → susturma yok, yalnız sınıf değişti. `assert True` + bare
-`except:` hâlâ exit 2. YAML A/B (tek süreç, sabit korpus): 64/658/722 = 64/658/722, **fark 0**.
+### Ölçümler (`guard_severity_census.py`, 250 dosya, imza iki kolda aynı)
+CRITICAL **474→64** · WARNING **253→663** · bloklayan dosya **68/250→19/250**. Toplam
+bulgu 727=727 → susturma yok, yalnız sınıf değişti; `assert True` + bare `except:` hâlâ
+exit 2. YAML A/B (tek süreç): 64/658/722 = 64/658/722, **fark 0**.
 
 ### Fail Eden Testler
 YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **305 passed, 1 xfailed**
