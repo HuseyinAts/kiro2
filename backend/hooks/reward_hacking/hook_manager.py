@@ -8,6 +8,7 @@ Boris Cherny Standards - Verification Feedback Loops
 from __future__ import annotations
 
 import asyncio
+import sys
 import time
 from pathlib import Path
 from typing import ClassVar
@@ -89,7 +90,10 @@ class HookManager:
                 self.detectors.append(detector)
             except Exception as e:
                 # Log but don't fail - other detectors can still work
-                print(f"Warning: Failed to initialize {detector_name}: {e}")
+                print(
+                    f"Warning: Failed to initialize {detector_name}: {e}",
+                    file=sys.stderr,
+                )
 
     async def run_hooks(self, file_paths: list[str]) -> HookResult:
         """
@@ -130,7 +134,7 @@ class HookManager:
 
             except Exception as e:
                 # Don't fail the entire run for one file
-                print(f"Warning: Error analyzing {file_path}: {e}")
+                print(f"Warning: Error analyzing {file_path}: {e}", file=sys.stderr)
 
         # Calculate execution time
         execution_time_ms = (time.perf_counter() - start_time) * 1000
@@ -195,10 +199,12 @@ class HookManager:
                 detector.detect(file_path, content), timeout=self.config.timeout_seconds
             )
         except TimeoutError:
-            print(f"Warning: {detector.name} timed out on {file_path}")
+            print(f"Warning: {detector.name} timed out on {file_path}", file=sys.stderr)
             return []
         except Exception as e:
-            print(f"Warning: {detector.name} failed on {file_path}: {e}")
+            print(
+                f"Warning: {detector.name} failed on {file_path}: {e}", file=sys.stderr
+            )
             return []
 
     def _should_analyze(self, file_path: str) -> bool:

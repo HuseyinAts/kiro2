@@ -7,6 +7,7 @@ Validates: Requirements 5.1, 5.2, 5.3, 5.4, 5.5, 5.6
 from __future__ import annotations
 
 import re
+import sys
 
 from ..analyzers.ast_analyzer import ASTAnalyzer
 from ..analyzers.context_analyzer import ContextAnalyzer
@@ -128,9 +129,15 @@ class MockAbuseDetector(BaseDetector):
 
         except ASTParseError as hata:
             # 30 Tem 2026 (bandit B110): bekcinin KENDISI sessizce yutuyordu.
-            print(f"Warning: {self.name} AST parse edemedi {file_path}: {hata}")
+            print(
+                f"Warning: {self.name} AST parse edemedi {file_path}: {hata}",
+                file=sys.stderr,
+            )
         except Exception as hata:
-            print(f"Warning: {self.name} AST analizi basarisiz {file_path}: {hata}")
+            print(
+                f"Warning: {self.name} AST analizi basarisiz {file_path}: {hata}",
+                file=sys.stderr,
+            )
 
         return results
 

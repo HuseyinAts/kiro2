@@ -117,8 +117,17 @@ def collect_files(paths: list[str]) -> list[str]:
     Args:
         paths: List of file/directory paths
 
+    Çıktı SIRALIDIR ve bu bir sözleşmedir (#457). Aşağıdaki döngü
+    `SUPPORTED_EXTENSIONS` **set**'i üzerinde dönüyor; `str` hash'i süreçler
+    arası randomize olduğu için grup sırası her koşumda değişebiliyordu ve
+    `run_hooks`'un `valid_files[:max_files]` dilimi FARKLI bir alt küme
+    seçiyordu. Ölçüldü (30 Tem 2026): aynı korpus/aynı komut üç koşumda
+    742 · 742 · 744 bulgu; altı farklı `PYTHONHASHSEED` ile **beş farklı sıra**.
+
+    Sözleşme: tests/hooks/reward_hacking/test_collect_files_determinism.py
+
     Returns:
-        List of file paths
+        List of file paths, sorted
     """
     files: list[str] = []
 
@@ -140,7 +149,7 @@ def collect_files(paths: list[str]) -> list[str]:
                         continue
                     files.append(str(file.absolute()))
 
-    return files
+    return sorted(files)
 
 
 def load_config(config_path: str | None) -> GlobalConfig:

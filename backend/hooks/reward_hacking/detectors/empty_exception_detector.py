@@ -6,6 +6,8 @@ Validates: Requirements 6.1, 6.2, 6.3, 6.4, 6.5, 6.6
 
 from __future__ import annotations
 
+import sys
+
 from ..analyzers.ast_analyzer import ASTAnalyzer
 from ..analyzers.context_analyzer import ContextAnalyzer
 from ..base_detector import BaseDetector
@@ -132,9 +134,15 @@ class EmptyExceptionDetector(BaseDetector):
             # 30 Tem 2026 (bandit B110): bekcinin KENDISI sessizce yutuyordu.
             # Parse hatasi normaldir (kismi/bozuk dosya) ama GORUNMEZ olmamali:
             # AST yolu duserse tespit sessizce zayiflar ve kimse fark etmez.
-            print(f"Warning: {self.name} AST parse edemedi {file_path}: {hata}")
+            print(
+                f"Warning: {self.name} AST parse edemedi {file_path}: {hata}",
+                file=sys.stderr,
+            )
         except Exception as hata:
-            print(f"Warning: {self.name} AST analizi basarisiz {file_path}: {hata}")
+            print(
+                f"Warning: {self.name} AST analizi basarisiz {file_path}: {hata}",
+                file=sys.stderr,
+            )
 
         return results
 
