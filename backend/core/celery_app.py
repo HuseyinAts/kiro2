@@ -36,6 +36,7 @@ celery_app = Celery(
         "tasks.daily_plan_tasks",  # Günlük plan yenileme
         "tasks.push_tasks",  # Streak retention push (P0.1)
         "tasks.quality_gate_tasks",  # mv_safe_for_beta yenileme
+        "tasks.es_sync_tasks",  # 04:00 ES ↔ kalite kapısı senkronu
     ],
 )
 

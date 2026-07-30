@@ -14,6 +14,18 @@ task" diye logluyordu, o yüzden zamanlama doğru görünüyordu; eksik olan tü
 Bu testler config'i AYNALAMAZ. Celery'nin gerçek router'ını
 (`celery_app.amqp.router.route`) ve docker-compose'daki gerçek `-Q` listesini okur.
 İkisinden biri değişip diğeri değişmezse test kırmızıya döner.
+
+31 Tem 2026 — teslim zincirinin İKİNCİ halkası eklendi. Yukarıdaki testler mesajın
+doğru kuyruğa düştüğünü kanıtlar; görevin o kuyruktan alınınca ÇALIŞABİLECEĞİNİ
+kanıtlamaz. `tasks.es_sync_tasks` `include=[...]` listesine eklenmemişti: worker
+modülü hiç import etmiyor, görev kayıt defterine hiç girmiyordu. Canlı ölçüm
+(`inspect registered`) 36 görev döndü, gecelik ES senkronu içlerinde YOKTU — yani
+04:00'te beat gönderecek, worker "unregistered task" ile reddedecekti.
+
+Görev elle koşturulduğunda ÇALIŞIYORDU; çünkü elle koşum modülü doğrudan import
+eder ve modül kendini import anında kaydeder. Elle koşum tam da kırık olan halkayı
+atlar. Bu yüzden aşağıdaki test worker önyüklemesini taklit eder (`include`/`imports`
+modüllerini yükler), kayıt defterini elle kurmaz.
 """
 
 import re
@@ -67,6 +79,56 @@ def test_scheduled_task_lands_in_a_queue_the_worker_consumes(task_name):
     assert target in consumed, (
         f"'{task_name}' ({entry['task']}) -> '{target}' kuyruğuna yönlendiriliyor "
         f"ama worker sadece {sorted(consumed)} dinliyor. Görev hiç koşmaz."
+    )
+
+
+def _registered_tasks() -> set[str]:
+    """Worker önyüklemesini taklit et ve kayıt defterini döndür.
+
+    Worker açılışta `app.loader.import_default_modules()` çağırır; `include` ve
+    `imports` altındaki modüller ancak o an import edilir. Bu yüzden sıradan bir
+    Python sürecinde `celery_app.tasks` worker'ın defterini YANSITMAZ — ölçüm
+    aleti olarak kullanılırsa bu gece başarıyla koşmuş görevleri bile "kayıtsız"
+    gösterir (31 Tem'de tam olarak bu yanlış ölçüm alındı).
+
+    Canlı worker'a `inspect registered` ile sorulan sonuçla birebir aynı kümeyi
+    üretir; ikisi 31 Tem 2026'da karşılaştırılarak doğrulandı.
+    """
+    celery_app.loader.import_default_modules()
+    return set(celery_app.tasks)
+
+
+def test_worker_bootstrap_actually_imports_task_modules():
+    """Sözleşmenin bu ucu da okunabilir olmalı — yoksa aşağıdaki test anlamsızlaşır.
+
+    `import_default_modules()` sessizce hiçbir şey yapmazsa aşağıdaki parametrik
+    test topluca kırmızıya döner ve gerçek eksiği gizler. Bu çapa, "alet çalışıyor"
+    ile "bir görev eksik" durumlarını ayırır.
+    """
+    registered = _registered_tasks()
+    assert "tasks.bulk_tasks.cleanup_expired_cache_entries" in registered, (
+        "Worker önyüklemesi taklit edilemedi: `include` listesindeki bilinen bir "
+        f"görev bile kayıt defterinde yok (defterde {len(registered)} görev var)."
+    )
+
+
+@pytest.mark.parametrize("task_name", sorted(celery_app.conf.beat_schedule or {}))
+def test_scheduled_task_is_registered_in_the_worker(task_name):
+    """Beat'in gönderdiği HER görev worker'ın kayıt defterinde olmalı.
+
+    Bu testin yakaladığı arıza sınıfı: görev doğru kuyruğa düşer, worker mesajı
+    alır, ama adı defterde olmadığı için `unregistered task` diye reddeder. Beat
+    "Sending due task" loglar — zamanlama sağlıklı görünür, iş asla yapılmaz.
+
+    Yeni bir görev modülü yazmak yetmez; `core/celery_app.py` içindeki `include`
+    listesine eklenmesi gerekir. Bu insan kontrolü bu depoda başarısız oldu.
+    """
+    entry = celery_app.conf.beat_schedule[task_name]
+    registered = _registered_tasks()
+    assert entry["task"] in registered, (
+        f"'{task_name}' -> '{entry['task']}' zamanlanmış ama worker'ın kayıt "
+        f"defterinde yok. `core/celery_app.py` içindeki `include` listesine görevin "
+        f"modülü eklenmemiş olabilir. Beat gönderir, worker reddeder, iş koşmaz."
     )
 
 
