@@ -23,8 +23,8 @@ YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **279 passe
 1 xfailed** (xfail = #451 açığının yaşayan işaretçisi, strict).
 
 ### Engelleyiciler
-- SMTP kimlik bilgisi yok (3 compose dosyasında da) → şifre kurtarma canlı çalışmaz (#441)
-- `user_item_fsrs` tablosu YOK → `/fsrs-review` rotası 500
+- SMTP kimliği yok (3 compose'da da) → şifre kurtarma canlı çalışmaz (#441) ·
+  `user_item_fsrs` tablosu YOK → `/fsrs-review` rotası 500
 
 ### Sonraki Adimlar (maks 5)
 1. **#453 bekçi desen kalibrasyonu** — mock/hardcoded idiyomları CRITICAL sayıyor
