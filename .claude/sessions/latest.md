@@ -1,50 +1,50 @@
-## Session Handoff — 2026-07-30 (öğleden sonra)
-**Branch:** feature/self-evolution-optimization · **Son commit:** `a9429896b`
-**Push:** `688e42377..a9429896b` + handoff commit'leri edildi, origin SENKRON · **Uncommitted:** temiz
+## Session Handoff — 2026-07-30 (akşam)
+**Branch:** feature/self-evolution-optimization · **Son commit:** `9d373730c`
+**Push:** `688e42377..9d373730c` edildi, origin SENKRON · **Uncommitted:** temiz
 
-### Yapilanlar
-- **#453 KAPANDI** `base_detector.py` + `models/detection_result.py` — `DetectorConfig.severity`
-  varsayılanı **None** ("ezilmedi"). Kök neden kaldırma deneyiyle: `bool(DetectorConfig())`
-  True, `config=None` bile model üretiyor → `default_severity` dalına ulaşan **hiçbir girdi
-  yoktu**, iki dedektörün `= WARNING` beyanı ölüydü. `b9d4fb967`
-- **.gitignore ankraj** `models/` → `/models/`: ankrajsız hali 3 paketi sessizce izlemiyordu.
-  Taze worktree'de `ModuleNotFoundError ...reward_hacking.models` → **bekçi hiçbir makinede
-  koşamıyordu**. +10 dosya (guard 3 · guardrails 4 · zemberek_nlp 3), çöp 0.
-- **#455 KAPANDI** `ast_analyzer.py` — `@patch(...)` çift sayılıyordu (zaten `ast.Call`,
-  `ast.walk` görüyor; ayrı `decorator_list` döngüsü tekrar sayıyordu). Ölçüm: 2 dekoratörlü
-  dosyada `mock_count=4/total=2` = **%200**. Döngü kaldırıldı + `_is_patch_decorator` öksüz
-  kaldığı için silindi. `5cede288a`
-- **#454 KAPANDI** ölü `reward_hacking_config.yaml` silindi — yüklemenin **no-op** olduğu
-  ölçüldü. `a9429896b`
-
-### Ölçümler (`guard_severity_census.py`, 250 dosya, imza iki kolda aynı)
-CRITICAL **474→64** · WARNING **253→663** · bloklayan dosya **68/250→19/250**. Toplam
-bulgu 727=727 → susturma yok, yalnız sınıf değişti; `assert True` + bare `except:` hâlâ
-exit 2. YAML A/B (tek süreç): 64/658/722 = 64/658/722, **fark 0**.
+### Kapatilanlar (hepsi ölçümle, hepsi push'lu)
+- **#453** `DetectorConfig.severity` varsayılanı **None**. Kaldırma deneyi:
+  `bool(DetectorConfig())` True, `config=None` bile model üretiyor → `default_severity`
+  dalına ulaşan **hiçbir girdi yoktu**, iki dedektörün `=WARNING` beyanı ölüydü.
+  250 dosya: CRITICAL **474→64**, bloklayan dosya **68/250→19/250**, toplam bulgu 727=727
+  (susturma yok). 15/15 mutasyonla çivili. `b9d4fb967`
+- **.gitignore ankraj** `models/`→`/models/`: ankrajsız hali 3 paketi izlemiyordu; taze
+  worktree'de `ModuleNotFoundError ...reward_hacking.models` → **bekçi hiçbir makinede
+  koşamıyordu**. +10 dosya, çöp 0.
+- **#455** `@patch(...)` çift sayımı (zaten `ast.Call`, ayrı `decorator_list` döngüsü
+  tekrar sayıyordu). 2 dekoratörlü dosyada **%200** ölçüldü. 11 test, 10'u çivili. `5cede288a`
+- **#454** ölü `reward_hacking_config.yaml` silindi — yüklemek **no-op** (64/658/722 =
+  64/658/722, küme farkı 0). Görev notundaki "min_confidence 0.8→0.7 bulguyu artırır"
+  tahmini YANLIŞ çıktı. `a9429896b`
+- **#457** `collect_files` → `sorted()`; **6 PYTHONHASHSEED → 5 farklı sıra** ölçüldü.
+  Sıralama BOM'lu dosyayı dilime deterministik soktu ve `--json`'ın hiç ayrıştırılamadığı
+  ortaya çıktı → 8 uyarı `stderr`'e. 4 test, **4/4** çivili. `0b7c6b6ee`+`6b30c6f60`
+- **#456** 2 BOM silindi + `test_source_hygiene.py` bekçisi. **BOM gerçek bir ihlali
+  örtüyormuş**: kalkınca `except Exception: pass` çıktı (exit 2), düzeltildi. `36d2b4685`
+  Ayrıca `backend/backend/` **6592 izlenen dosya** takipten çıktı (6590'ı BOŞ metrics
+  JSON, 9.8 MB, 0 referans) + ankrajlı ignore. `9d373730c`
 
 ### Fail Eden Testler
-YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **305 passed, 1 xfailed**
-(xfail=#451). Yeni 26 test (calibration 15 + mock_ratio 11). Mutasyon: #453 **15/15**,
-#455 **10/11** (kalan 1 yapısal negatif kontrol — `mocksuz` invaryantı 0≤0).
+YOK. 3 paket (reward_hacking + test_hooks + source_hygiene) → **311 passed, 1 xfailed** (xfail=#451); 30 yeni test.
 
-### Sonraki Adimlar (maks 5)
-1. **#457** CLI `--max-files` dilimi non-deterministik (742/742/744 ölçüldü) —
-   `collect_files` `SUPPORTED_EXTENSIONS` **set**'i üzerinde dönüyor, `sorted()` gerek.
-2. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
-3. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
-4. **#452** pre-tool-use.py aynı literal kusuru · **#449** bare-except politika çelişkisi.
+### Sonraki Adimlar (plan sırası korunuyor)
+1. **#449** bare-except politika çelişkisi — önce 9 vakayı ölç, sonra karar.
+2. **#452** `.claude/hooks/pre-tool-use.py` literal farkındalığı yok (ölçüldü: 0 referans);
+   `literal_spans`'i iki ağaç arasında paylaşma kararı var.
+3. **#447** `getMe` — 40 dosya, `/api/v1/me` **404 doğrulandı**. Karar + uygulama.
+4. **#444** Öğretmen Öğrenciler UI (backend hazır) · **#458** 2 temizlik adayı ·
+   **#433** ES index (docker ps'te **elasticsearch YOK** → fiilen bloklu).
+**Operatör-bloklu:** #270 · #390 · #436 · #441 · #445.
 
-### Kararlar (gelecek session tekrar tartismasin)
-- **Mock/hardcoded WARNING'dir** — ölçüldü: hardcoded dedektörü `_is_test_file` kapısı
-  yüzünden üretim kodunu HİÇ taramıyor (0 bulgu), yani CRITICAL statüsü tek sır bile
-  yakalamıyordu. mock dedektörü de "collaborator mock'landı" ile "test edilen birim
-  mock'landı" arasını ayırt edemiyor; ayırt edemeyen sinyal bloklayıcı olamaz.
-- **YANLIŞ ÇIKAN TAHMİN**: "YAML yüklenirse min_confidence 0.8→0.7 olur, bulgu artar"
-  denmişti; ölçünce **fark 0** — hiçbir bulgunun güveni [0.7,0.8) bandında değil.
-  Tahminle görev tanımı yazmak da bir iddiadır.
-- **Ruff SÜRÜM ÇATIŞMASI**: pre-commit ruff **0.7.1** pinli, yerel **0.14.13**; 0.7.1
-  UP038 istiyor, 0.14 o kuralı kaldırmış → per-file-ignores. Uzun `assert X, (f"...")`
-  satırını ikisi ZIT biçimlendirip commit'i salınıma sokuyor → mesajı değişkene al.
-- `cd backend` İKİ KEZ koşulursa `backend/backend/`e kayar (bu oturumda 4 kez, 3 ölçüm
-  geçersiz) → **daima mutlak yol**. Temizliği `;` değil `&&` ile başarıya bağla
-  (commit fail olsa bile `rm` koştu, commit mesajı dosyası silindi).
+### Kararlar (tekrar tartışılmasın)
+- **Mock/hardcoded WARNING'dir** — hardcoded dedektörü `_is_test_file` kapısı yüzünden
+  üretim kodunu HİÇ taramıyor (0 bulgu), yani CRITICAL tek sır yakalamıyordu.
+- **Ruff SÜRÜM ÇATIŞMASI**: pre-commit **0.7.1** pinli, yerel **0.14.13**. 0.7.1 UP038
+  istiyor, 0.14 kaldırmış → per-file-ignore. Uzun `assert X, (f"...")` satırını ikisi ZIT
+  biçimlendirip commit'i salınıma sokuyor → mesajı ayrı değişkene al.
+- **`cmd | grep | tail && rm` KALINI YASAK**: `&&` git'in değil **tail'in** çıkış kodunu
+  görür; commit mesajı dosyası 3 kez silindi. Doğrusu: `oncesi=$(git rev-parse HEAD)` …
+  `[ "$oncesi" != "$sonrasi" ]` ile HEAD'in kıpırdadığını doğrula.
+- **Daima mutlak `cd`**: `cd backend` iki kez koşulunca `backend/backend`e kayıyordu
+  (5 kez oldu, 3 ölçümü geçersiz kıldı). O dizin artık silindi ama kural kalıcı.
+- **`ruff format <dizin>` YASAK**: 5 ilgisiz dosyayı (306 satır) biçimlendirdi, geri alındı.
