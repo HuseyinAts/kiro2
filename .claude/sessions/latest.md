@@ -1,6 +1,6 @@
 ## Session Handoff — 2026-07-30 (akşam)
-**Branch:** feature/self-evolution-optimization · **Son commit:** `9d373730c`
-**Push:** `688e42377..9d373730c` edildi, origin SENKRON · **Uncommitted:** temiz
+**Branch:** feature/self-evolution-optimization · **Son commit:** `d9e5c8f58`
+**Push:** `688e42377..d9e5c8f58` edildi, origin SENKRON · **Uncommitted:** temiz
 
 ### Kapatilanlar (hepsi ölçümle, hepsi push'lu)
 - **#453** `DetectorConfig.severity` varsayılanı **None**. Kaldırma deneyi:
@@ -16,23 +16,23 @@
 - **#454** ölü `reward_hacking_config.yaml` silindi — yüklemek **no-op** (64/658/722 =
   64/658/722, küme farkı 0). Görev notundaki "min_confidence 0.8→0.7 bulguyu artırır"
   tahmini YANLIŞ çıktı. `a9429896b`
-- **#457** `collect_files` → `sorted()`; **6 PYTHONHASHSEED → 5 farklı sıra** ölçüldü.
-  Sıralama BOM'lu dosyayı dilime deterministik soktu ve `--json`'ın hiç ayrıştırılamadığı
-  ortaya çıktı → 8 uyarı `stderr`'e. 4 test, **4/4** çivili. `0b7c6b6ee`+`6b30c6f60`
+- **#457** `collect_files`→`sorted()`; **6 seed → 5 farklı sıra** ölçüldü. Sıralama BOM'lu
+  dosyayı dilime soktu → `--json` hiç ayrışmıyordu → 8 uyarı `stderr`'e. 4/4 çivili. `0b7c6b6ee`
+- **#449** iki yönlü çelişki: loglu bare→CRITICAL (yanlış-poz), `pass`+yakın log→INFO
+  (yanlış-**negatif**). Log taraması artık handler gövdesiyle sınırlı; loglu bare→WARNING.
+  5/5 çivili; 31 bare except var, üretimde 0. `d9e5c8f58`
 - **#456** 2 BOM silindi + `test_source_hygiene.py` bekçisi. **BOM gerçek bir ihlali
   örtüyormuş**: kalkınca `except Exception: pass` çıktı (exit 2), düzeltildi. `36d2b4685`
   Ayrıca `backend/backend/` **6592 izlenen dosya** takipten çıktı (6590'ı BOŞ metrics
   JSON, 9.8 MB, 0 referans) + ankrajlı ignore. `9d373730c`
 
 ### Fail Eden Testler
-YOK. 3 paket (reward_hacking + test_hooks + source_hygiene) → **311 passed, 1 xfailed** (xfail=#451); 30 yeni test.
+YOK. 3 paket (reward_hacking + test_hooks + source_hygiene) → **316 passed, 1 xfailed** (xfail=#451); 35 yeni test.
 
 ### Sonraki Adimlar (plan sırası korunuyor)
-1. **#449** bare-except politika çelişkisi — önce 9 vakayı ölç, sonra karar.
-2. **#452** `.claude/hooks/pre-tool-use.py` literal farkındalığı yok (ölçüldü: 0 referans);
-   `literal_spans`'i iki ağaç arasında paylaşma kararı var.
-3. **#447** `getMe` — 40 dosya, `/api/v1/me` **404 doğrulandı**. Karar + uygulama.
-4. **#444** Öğretmen Öğrenciler UI (backend hazır) · **#458** 2 temizlik adayı ·
+1. **#452** `.claude/hooks/pre-tool-use.py` literal farkındalığı yok (ölçüldü: 0 referans).
+2. **#447** `getMe` — 40 dosya, `/api/v1/me` **404 doğrulandı**. Karar + uygulama.
+3. **#444** Öğretmen Öğrenciler UI (backend hazır) · **#458** 2 temizlik adayı ·
    **#433** ES index (docker ps'te **elasticsearch YOK** → fiilen bloklu).
 **Operatör-bloklu:** #270 · #390 · #436 · #441 · #445.
 
