@@ -84,7 +84,7 @@ async def kullanicilari_listele(
             FROM users {where_sql}
             ORDER BY created_at DESC
             LIMIT :limit OFFSET :offset
-        """),
+        """),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             params,
         )
         return [dict(r) for r in result.mappings().all()]
@@ -154,7 +154,8 @@ async def kullanici_guncelle(
 ) -> dict[str, Any]:
     """Kullanici is_active / role guncelle. Diger alanlar ignora edilir."""
     try:
-        updates, params = [], {"uid": kullanici_id}
+        updates: list[str] = []
+        params: dict[str, Any] = {"uid": kullanici_id}
         if "is_active" in kullanici_data:
             updates.append("is_active = :is_active")
             params["is_active"] = bool(kullanici_data["is_active"])
@@ -167,7 +168,8 @@ async def kullanici_guncelle(
         if not updates:
             raise HTTPException(400, detail="Guncellenecek alan yok")
         await db.execute(
-            _sql_text(f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"), params
+            _sql_text(f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"),  # noqa: S608  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
+            params,
         )
         await db.commit()
         result = await db.execute(
@@ -293,7 +295,8 @@ async def soru_bankasi_listesi(
 ) -> dict[str, Any]:
     """Soru bankasini listele — dogrudan question_bank DB sorgusu."""
     try:
-        clauses, params = [], {}
+        clauses: list[str] = []
+        params: dict[str, Any] = {}
         if konu:
             clauses.append("LOWER(subject_area) = LOWER(:konu)")
             params["konu"] = konu
@@ -310,11 +313,11 @@ async def soru_bankasi_listesi(
             FROM question_bank {where}
             ORDER BY created_at DESC
             LIMIT :limit OFFSET :offset
-        """),
+        """),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             params,
         )
         cnt = await db.execute(
-            _sql_text(f"SELECT COUNT(*) FROM question_bank {where}"),
+            _sql_text(f"SELECT COUNT(*) FROM question_bank {where}"),  # noqa: S608  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             {k: v for k, v in params.items() if k not in ("limit", "offset")},
         )
         return {
@@ -416,19 +419,34 @@ async def soru_guncelle(
 
 @router.delete("/content/questions/{soru_id}", summary="Soru Sil")
 async def soru_sil(
-    soru_id: str, _: Kullanici = Depends(admin_kullanici_getir)
+    soru_id: str, admin: Kullanici = Depends(admin_kullanici_getir)
 ) -> dict[str, Any]:
     """
-    Soruyu sil (Admin yetkisi gerekli)
+    Soruyu sil (Admin yetkisi gerekli) — soft delete, is_active=False.
     """
     try:
-        basarili = await admin_servisi.soru_sil(soru_id)
+        # admin_kullanici_getir yetki doğrulamasını zaten yapıyor (403).
+        # admin_servisi.soru_sil ÇAĞRILAMIYOR: oradaki @admin_required
+        # pozisyonel çağrıda args[0]'ı — yani soru_id'yi — current_user sanıp
+        # deprecated in-memory KullaniciServisi'nde arıyor; sonuç her zaman
+        # AdminAuthorizationError -> 500 (30 Tem 2026'da canlıda 3/3 ölçüldü).
+        # Aynı desen soru_ekle'de (satır 349) zaten uygulanmıştı, DELETE
+        # geride kalmış.
+        from services.soru_bankasi_service import soru_bankasi_servisi
 
-        if basarili:
-            return {"success": True, "message": "Soru başarıyla silindi"}
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+        basarili = await soru_bankasi_servisi.soru_sil(soru_id)
+
+        if not basarili:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+            )
+
+        # Denetim kaydı: eski kod current_user'ı hiç geçirmediği için admin_id
+        # None kalıyordu. Yıkıcı bir admin işlemi kimliksiz loglanmamalı.
+        await admin_servisi.admin_aktivite_kaydet(
+            admin.id, "soru_sil", hedef_id=soru_id
         )
+        return {"success": True, "message": "Soru başarıyla silindi"}
     except HTTPException:
         raise
     except Exception:
