@@ -32,8 +32,30 @@
 - SMTP 6/6 env UNSET -> sifre kurtarma islevsiz (#441, operator)
 - `gh` CLI yok; 20 acik Dependabot PR, CVE ciddiyeti auth istiyor (#390/#436)
 
+### 31 Tem 02:20 — #459 KAPANDI (commit 0b92301a5)
+- 04:00 beat DOGRULAMASI: beat saglikli, siradaki atis **2026-07-31 04:00:00+03**
+  (olculdu). Bos grep bir ariza DEGILDI — konteynerler 00:43'te yeniden
+  olusturuldu, 04:00 henuz gelmemisti.
+- AMA ucuncu bir halka kirikti: **beat gonderir != worker calistirir.**
+  `core/celery_app.py` `include=[]` icinde `tasks.es_sync_tasks` YOKTU; canli
+  `inspect registered` 36 gorev donuyor, hedef gorev icinde yok -> 04:00'te
+  "unregistered task" ile reddedilecekti. Dunku ELLE kosum modulu dogrudan
+  import ettigi icin tam da bu halkayi atliyordu.
+- Fix: include'a 1 satir + `test_celery_routing_contract.py`'ye kayit invaryanti
+  (RED 1/32 -> GREEN 33; mutasyonla civili). Tuketici kapsami 54/54.
+- Deploy: `docker compose build` + `up -d --no-deps celery-worker celery-beat`.
+  Canli: 36->37 kayitli, 15 beat girdisinden KAYITSIZ **0** (onceden 1).
+- Uctan uca broker kosumu: `{'eklenen': 0, 'silinen': 0, 'kapi': 25127}`.
+  Blast radius ONCEDEN salt-okunur olculdu (0/0) — veri degismedi.
+- ARIZALI OLCUM (kayit icin): bare `python -c` surecinde `app.tasks` worker
+  defterini YANSITMIYOR; `include` modullerini worker onyuklemesi import eder.
+  Ilk supurmem bu yuzden bu gece basariyla kosmus 2 gorevi bile "kayitsiz"
+  gosterdi. Kontrol kolu yakaladi. Test `import_default_modules()` kullaniyor.
+
 ### Sonraki Adimlar (maks 5)
-1. 04:00 beat kosumunu dogrula: `docker logs kiro2-celery-worker --since 6h | grep "ES senkronu"`
+1. 04:00 atisini gozle (beat'in KENDI tetiklemesi hala gorulmedi):
+   `docker logs kiro2-celery-worker --since 8h | grep "ES senkronu"`
+   Beklenen satir bicimi kanitlandi: `ES senkronu tamam: {...}`
 2. #458: `backend/tests/e2e/test_end_to_end_platform.py` cift-kodlanmis Turkce +
    referanssiz `backend/fix_validators.py`
 3. #444 canli duman testi (ogretmen sinifa ekle/cikar, gercek hesapla)
