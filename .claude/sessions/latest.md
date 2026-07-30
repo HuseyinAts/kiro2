@@ -56,10 +56,31 @@ detect-secrets ×1 fixture (`pragma: allowlist secret`).
    Seçenekler: (a) agregasyon ucu, (b) istemcide birleştir, (c) hibrit. **Tasarım kararı.**
 2. 12-oturum gözden geçirme raporu docs/audits altına yazılsın mı?
 
+### REBUILD YAPILDI (30 Tem 04:43) — stack canlı ve healthy
+
+PC kapanmasından beri Docker daemon duruyordu (`com.docker.service` Stopped);
+başlatıldı → 29.5.3. Native PG18 5434 cevap veriyordu (docker kapalı olduğu için
+kesin olarak native, docker pg15 değil).
+
+**Handoff'un "son 3 commit canlıda yok" iddiası KISMEN FANTOMDU.** Ölçüm:
+imaj 29 Tem 16:30:47 build edilmiş; celery fix'i 15:51, auth fix'i 16:22 →
+İKİSİ DE imajdaydı. Yalnız teacher fix'i (d7f80175b, 18:27) eksikti.
+Tahmin yerine **hash karşılaştırması** kullanıldı (bind-mount YOK, kod imajdan
+geliyor): build sonrası değişen çalışma-zamanı dosyası tam olarak 2 —
+`app/api/teacher_classroom.py` (hash farklı) + `ModernRegisterPage.tsx`.
+
+Build (4 imaj) exit 0 → `docker compose down` + `up -d` → 5/5 container healthy.
+
+**Rebuild sonrası doğrulama:**
+- `teacher_classroom.py` hash: yerel=container=`1842dadf` → **imaj taze**
+- `GET /health` → **200** (`/api/v1/health` YOK — ilk ölçümüm yanlış yoldaydı)
+- frontend `/` ve `/healthz` → 200
+- **canlı sonda**: `POST /api/v1/auth/kayit` rol=admin ve super_admin →
+  **403 "Bu rol herkese açık kayıt ile oluşturulamaz"** → 25784449d kapısı canlıda
+- sonda DB'ye satır YAZMADI (`users` LIKE 'sonda.%' = 0)
+
 ### Sonraki Adımlar (maks 5)
-1. **Rebuild** — son 6 commit canlıda YOK (imajlar 29 Tem 13:30'dan):
-   `docker compose build backend frontend celery-worker celery-beat && docker compose up -d`
-2. **#449** bare-except politika çelişkisi: `_detect_bare_except` loglanan bare
+1. **#449** bare-except politika çelişkisi: `_detect_bare_except` loglanan bare
    except'i de CRITICAL veriyor, oysa SAFE_PATTERNS onu güvenli listeliyor.
    Ölçüldü: 31 bare except, 9'u loglanmış (hepsi `_scripts/`), 18'i `pass`. P0 değil.
 3. **`user_item_fsrs`** — tablo YOK, `/fsrs-review` rotası 500.
