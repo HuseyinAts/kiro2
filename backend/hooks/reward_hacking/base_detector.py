@@ -102,6 +102,36 @@ class BaseDetector(ABC):
         Returns:
             True if this is a legitimate use (should be ignored)
         """
+        # UYARI (30 Tem 2026, #451): asagidaki iki dal KABA ve bilinen hatalari
+        # var, ama TEMIZLIK DIYE KALDIRMAYIN. Ikisi de olculdu:
+        #
+        # 1) Yorum dali — tek basina yorum satirindaki bulgulari atiyor
+        #    (`# pragma: no cover`, `# noqa`, `# TODO: implement` kor kaliyor;
+        #    satir-sonu bicimleri yakalaniyor). Bu bir HOLE, ama kaldirmanin
+        #    250 gercek dosyada kazanci: +0 bulgu (845 -> 845). Yani pratik
+        #    etkisi SIFIR; risk almaya deger bir kazanc yok.
+        #
+        # 2) Docstring dali — sayac hatali: `if '"""' in satir` satirdaki
+        #    ADEDE bakmaz, bir kez donderir. Tek satirlik docstring'den sonra
+        #    durum "icindeyim"de takilip kalabilir. Buna ragmen KALDIRILAMAZ:
+        #    olculdu, kaldirinca 250 dosyada +232 bulgu / 231'i CRITICAL ve
+        #    ornekler GERCEK kod satirlari — `except Exception:`, `MagicMock()`,
+        #    `@patch(...)`, `AsyncMock(return_value=None)`, `email="test@..."`.
+        #    Bunlar siradan test deyimleri. Bloklamaya baslamak mock kullanan
+        #    her test dosyasini push edilemez yapar ve `--no-verify`'i
+        #    aliskanliga cevirir (bkz .pre-commit-config.yaml'daki ayni uyari).
+        #
+        # Yani bu dal HATALI OLDUGU HALDE YUK TASIYOR: bekciyi kullanilabilir
+        # tutan sey o. Gercek is bu dali silmek degil, desen kumesinin
+        # confidence/severity kalibrasyonunu duzeltmek (mock/hardcoded-data
+        # kurallari CRITICAL olmamali). O ayri gorev.
+        #
+        # Yasayan isaretci: test_string_literal_immunity.py icindeki
+        # xfail(strict=True) testi — davranis degisirse kirmiziya doner.
+        #
+        # NOT: string literalleri artik BURADA degil literal_spans.py'de,
+        # karakter-dogru ve desen-bazli olarak ele aliniyor.
+
         # Skip comments
         stripped = line.strip()
         if stripped.startswith("#") and "assert" not in stripped.lower():
