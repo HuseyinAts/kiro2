@@ -1,50 +1,50 @@
-## Session Handoff — 2026-07-30 05:57
+## Session Handoff — 2026-07-30 (öğle)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `38c116764` docs(rules): 30 Tem hatalarından 4 kalıcı kural
-**Uncommitted:** temiz · origin ile 0 fark (8 commit push edildi: `c690854c5`..`38c116764`)
+**Son commit:** `730259d1a` (öncesi `b9d4fb967`) · **PUSH EDİLMEDİ** (origin 2 commit geride)
+**Uncommitted:** temiz
 
-### Yapilanlar
-- `backend/hooks/reward_hacking/hook_manager.py:251` — uyarı dalı kaldırıldı; exit 1
-  push'u blokluyordu (pre-commit sıfır olmayan her kodu fail sayar). `c690854c5`
-- `backend/tests/hooks/reward_hacking/test_detectors.py:315` — bare-except testinin
-  gövdesi `except Exception:` idi, REQ-6.4 hiç ölçülmüyordu. `20e5057e0`
-- `backend/hooks/reward_hacking/literal_spans.py` (YENİ) — tokenize tabanlı
-  literal+yorum span'i; `base_detector.py:198` + 3 dedektörde 6 tarama noktası.
-  `ast` değil: `col_offset` UTF-8 bayt (Türkçe'de kayar). `c8792f022`
-- `.../test_string_literal_immunity.py` (YENİ, 13 test) — 8 literal/körleşme +
-  3 yorum kuralı + 1 `CancelledError` + 1 xfail(strict). `c8792f022`+`eddd419a1`
-- `backend/hooks/reward_hacking/base_detector.py:105` — #451 ölçümü yorum olarak
-  yazıldı (kod değişmedi): kaba docstring sayacı yük taşıyor, kaldırılamaz. `19e317549`
-- `.claude/rules/audit-methodology.md` + `verification.md` — 4 kalıcı kural. `38c116764`
-- Docker rebuild: 4 imaj, `down` + `up -d`, 5/5 healthy. `553b60e09`
+### Yapilanlar — #453 KAPANDI
+- `base_detector.py:191` + `models/detection_result.py:96` — `DetectorConfig.severity`
+  varsayılanı **None** ("ezilmedi"); `_create_result` önce config'e, yoksa sınıf
+  beyanına bakar. Kök neden KALDIRMA DENEYİYLE ölçüldü: `bool(DetectorConfig())`
+  True, `config=None` bile model üretiyor → `default_severity` dalına ulaşan
+  **hiçbir girdi yoktu**, iki dedektörün `= WARNING` beyanı ölüydü. `b9d4fb967`
+- `tests/.../test_severity_calibration.py` (YENİ, 15 test) — RED→GREEN, **15/15
+  mutasyonla çivili**: M-a fix'i geri al→5 RED · M-b config yolunu yok say→1 RED ·
+  M-c hepsini INFO yap→12 RED. Vakum test 0.
+- `scripts/quality/guard_severity_census.py` (YENİ) — ONCE/SONRA ölçüm aleti,
+  korpus imzası basıyor (kollar aynı imzayı vermezse karşılaştırma geçersiz).
+- **.gitignore ankraj** `models/` → `/models/`: ankrajsız hali 3 paketi sessizce
+  izlemiyordu. Taze worktree'de ölçüldü → `ModuleNotFoundError ...reward_hacking.models`,
+  yani **bekçi hiçbir makinede koşamıyordu, yalnız bu diskte vardı**. +10 dosya
+  (guard models 3 · guardrails/models 4 · zemberek_nlp/models 3), çöp 0.
+
+### Ölçüm (250 test dosyası, korpus imzası `a06814837a4f`, iki kolda AYNI)
+CRITICAL **474→64** · WARNING **253→663** · bloklayan dosya **68/250→19/250**.
+Toplam bulgu 727 = 727 → hiçbir şey susturulmadı, yalnız sınıf değişti.
+mock_abuse 336 CRIT→336 WARN · hardcoded 74+253→0+327 · assert/empty_exc/placeholder
+(6/54/4) dokunulmadı. `assert True` ve bare `except:` hâlâ exit 2.
 
 ### Fail Eden Testler
-YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **279 passed,
-1 xfailed** (xfail = #451 açığının yaşayan işaretçisi, strict).
-
-### Engelleyiciler
-- SMTP kimliği yok (3 compose'da da) → şifre kurtarma canlı çalışmaz (#441) ·
-  `user_item_fsrs` tablosu YOK → `/fsrs-review` rotası 500
+YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **294 passed,
+1 xfailed** (xfail = #451 işaretçisi). Ruff/mypy/bandit/detect-secrets: Passed.
+Bekçi kendi commit'inin dosyalarında exit 0.
 
 ### Sonraki Adimlar (maks 5)
-1. **#453 bekçi desen kalibrasyonu** — mock/hardcoded idiyomları CRITICAL sayıyor
-   (231 ölçüldü). Sıra: kalibrasyon ÖNCE, docstring dalı kaldırma SONRA.
-2. **#447 `getMe` tasarım kararı** — 31 dosya kullanıyor, `/api/v1/me` 404,
-   `DuelloPage.tsx:155` hata veriyor. Fix değil, karar: agregasyon ucu / istemcide
-   birleştirme / hibrit.
-3. **#452** `.claude/hooks/pre-tool-use.py` literal farkındalığı (fixture yazmayı bloklıyor)
-4. **#449** bare-except politika çelişkisi (9 loglanmış bare except, hepsi `_scripts/`)
-5. **#433** ES indeksini `v_safe_for_beta`'dan kur (ES kapıyı tanımıyor)
+1. **PUSH** (2 commit) — kullanıcı onayı bekliyor.
+2. **#454** `reward_hacking_config.yaml` hiç okunmuyor (`--config` geçilmiyor,
+   `GlobalConfig().detectors == {}`) → karar: YAML'ı yükle / entry'ye ekle / sil.
+3. **#455** mock oranı **%125 (5/4)** raporluyor — `count_mock_usage` aritmetiği.
+4. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
+5. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- **#451 UYGULANMADI, ölçümle**: yorum dalını kaldırmanın kazancı 250 dosyada +0;
-  docstring dalını kaldırmanın bedeli +231 CRITICAL (sıradan test deyimleri).
-  Hatalı heuristik bekçiyi kullanılabilir tutuyor. Asıl iş kalibrasyon (#453).
-- **Yanlış davranış teste çivilenmez**: bilinen açık `xfail(strict=True)` ile
-  işaretlenir; kapanınca test kırmızıya döner ve güncellemeye zorlar.
-- **Geri alım**: `git checkout HEAD -- <yol>` + `git status` (aynı komutta doğrula).
-  `cp /tmp` YASAK — bash `/tmp` (MSYS) ≠ Python `/tmp` (`C:\tmp`), veri kaybı oldu.
-- **Commit mesajı**: `` ` ``/`$` içeren mesajlarda `-F <dosya>`; inline `-m`
-  komut ikamesi tetikleyip mesajı sessizce bozdu.
-- **Ortak tabana dokununca** (`base_detector` = 8 dedektörün yolu) tüketici test
-  paketi de koşulur: `tests/unit/test_hooks/` (179 test).
+- **Mock/hardcoded WARNING'dir, CRITICAL değil** — ölçüldü: hardcoded dedektörü
+  `_is_test_file` kapısı yüzünden üretim kodunu HİÇ taramıyor (üretimde şifre
+  ataması → 0 bulgu), yani CRITICAL statüsü tek sır yakalamıyordu. mock dedektörü
+  de "collaborator mock'landı" ile "test edilen birim mock'landı" arasını ayırt
+  edemiyor; ayırt edemeyen sinyal bloklayıcı olamaz.
+- **Ölçüm aleti kendi kaymasını raporlamalı**: ilk A/B geçersizdi (yeni test dosyası
+  ilk-250 penceresini kaydırdı, 327→325) → census korpus imzası basıyor + kendi
+  ürettiği dosyaları hariç tutuyor.
+- `cd backend` İKİ KEZ koşarsa `backend/backend/`e kayar → mutlak yol kullan.
