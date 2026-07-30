@@ -9,11 +9,10 @@
 - `backend/tests/hooks/reward_hacking/test_detectors.py:315` — bare-except testinin
   gövdesi `except Exception:` idi, REQ-6.4 hiç ölçülmüyordu. `20e5057e0`
 - `backend/hooks/reward_hacking/literal_spans.py` (YENİ) — tokenize tabanlı
-  literal+yorum span'i; `base_detector.py:198` + 3 dedektörde 6 tarama noktası
-  bağlandı. `ast` değil çünkü `col_offset` UTF-8 bayt (Türkçe'de kayar). `c8792f022`
-- `backend/tests/hooks/reward_hacking/test_string_literal_immunity.py` (YENİ, 13 test)
-  — 8 literal/körleşme + 3 yorum kuralı + 1 `CancelledError` + 1 xfail(strict).
-  `c8792f022` + `eddd419a1`
+  literal+yorum span'i; `base_detector.py:198` + 3 dedektörde 6 tarama noktası.
+  `ast` değil: `col_offset` UTF-8 bayt (Türkçe'de kayar). `c8792f022`
+- `.../test_string_literal_immunity.py` (YENİ, 13 test) — 8 literal/körleşme +
+  3 yorum kuralı + 1 `CancelledError` + 1 xfail(strict). `c8792f022`+`eddd419a1`
 - `backend/hooks/reward_hacking/base_detector.py:105` — #451 ölçümü yorum olarak
   yazıldı (kod değişmedi): kaba docstring sayacı yük taşıyor, kaldırılamaz. `19e317549`
 - `.claude/rules/audit-methodology.md` + `verification.md` — 4 kalıcı kural. `38c116764`
