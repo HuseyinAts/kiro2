@@ -1,49 +1,45 @@
-## Session Handoff — 2026-07-30 (akşam)
-**Branch:** feature/self-evolution-optimization · **Son commit:** `eb34b6fb8`
-**Push:** `688e42377..eb34b6fb8` edildi, origin SENKRON · **Uncommitted:** temiz
+# Oturum devri — 30 Tem 2026
 
-### Kapatilanlar (hepsi ölçümle, hepsi push'lu)
-- **#453** `DetectorConfig.severity`→**None**. Kaldırma deneyi: `bool(DetectorConfig())`
-  True, `config=None` bile model üretiyor → `default_severity` dalına ulaşan **girdi yoktu**.
-  250 dosya: CRITICAL **474→64**, bloklayan **68/250→19/250**, bulgu 727=727. 15/15. `b9d4fb967`
-- **.gitignore ankraj** `models/`→`/models/`: ankrajsız hali 3 paketi izlemiyordu; taze
-  worktree'de `ModuleNotFoundError ...reward_hacking.models` → **bekçi hiçbir makinede
-  koşamıyordu**. +10 dosya, çöp 0.
-- **#455** `@patch(...)` çift sayımı (zaten `ast.Call`, ayrı `decorator_list` döngüsü
-  tekrar sayıyordu). 2 dekoratörlü dosyada **%200** ölçüldü. 11 test, 10'u çivili. `5cede288a`
-- **#454** ölü `reward_hacking_config.yaml` silindi — yüklemek **no-op** (64/658/722 =
-  64/658/722, küme farkı 0). Görev notundaki "min_confidence 0.8→0.7 bulguyu artırır"
-  tahmini YANLIŞ çıktı. `a9429896b`
-- **#457** `collect_files`→`sorted()`; **6 seed → 5 farklı sıra** ölçüldü. Sıralama BOM'lu
-  dosyayı dilime soktu → `--json` hiç ayrışmıyordu → 8 uyarı `stderr`'e. 4/4 çivili. `0b7c6b6ee`
-- **#452** PreToolUse **bloklayıcısı** fixture'ı kod sanıyordu; `literal_spans` kopyalanmadan
-  (importlib) bağlandı, iki tarama noktası da. Kanıt: kusur kendi testinin yazılmasını
-  blokladı. 6/6 çivili. `eb34b6fb8`
-- **#449** iki yönlü çelişki: loglu bare→CRITICAL (yanlış-poz), `pass`+yakın log→INFO
-  (yanlış-**negatif**). Log taraması artık handler gövdesiyle sınırlı; loglu bare→WARNING.
-  5/5 çivili; 31 bare except var, üretimde 0. `d9e5c8f58`
-- **#456** 2 BOM silindi + hijyen bekçisi; **BOM gerçek bir ihlali örtüyormuş** (kalkınca
-  `except Exception: pass` çıktı). Ayrıca `backend/backend/` **6592 izlenen dosya** takipten
-  çıktı (6590'ı BOŞ metrics JSON, 9.8 MB, 0 referans). `36d2b4685`+`9d373730c`
+Branch: feature/self-evolution-optimization · HEAD `c92ca057b` (push edildi)
 
-### Fail Eden Testler
-YOK. 3 paket (reward_hacking + test_hooks + source_hygiene) → **322 passed, 1 xfailed** (xfail=#451); 41 yeni test.
+## Bu turda kapanan
 
-### Sonraki Adimlar (plan sırası korunuyor)
-1. **#447** `getMe` — 40 dosya, `/api/v1/me` **404 doğrulandı**. Karar + uygulama.
-2. **#444** Öğretmen Öğrenciler UI (backend hazır) · **#458** 2 temizlik adayı ·
-   **#433** ES index (docker ps'te **elasticsearch YOK** → fiilen bloklu).
-**Operatör-bloklu:** #270 · #390 · #436 · #441 · #445.
+**#447 GET /api/v1/me (A3)** — `8d9f6738a`
+- `services/persona_service.py`: users+streaks+student_profiles TEK sorgu
+  (LEFT JOIN, N+1 yok); `guncelSiralama` RANK() ile gerçek veriden.
+  Eşleme `_persona_kur()` SAF fonksiyonunda (DB'siz testlenir).
+- Kaynağı olmayan alan `None` — 0/"" DEĞİL. Ölçüm: streaks 4/77,
+  target_university 0/74, günlük saat 0/74. 3 alan (hedefSiralama,
+  yksTarihi, bugunCozulenDk) için besleyecek kolon HİÇ yok.
+- 7/7; 404 dalı mutasyonla çivili (dal kaldırıldı → test FAILED).
 
-### Kararlar (tekrar tartışılmasın)
-- **Mock/hardcoded WARNING'dir** — hardcoded dedektörü `_is_test_file` kapısı yüzünden
-  üretim kodunu HİÇ taramıyor (0 bulgu), yani CRITICAL tek sır yakalamıyordu.
-- **Ruff SÜRÜM ÇATIŞMASI**: pre-commit **0.7.1** pinli, yerel **0.14.13**. 0.7.1 UP038
-  istiyor, 0.14 kaldırmış → per-file-ignore. Uzun `assert X, (f"...")` satırını ikisi ZIT
-  biçimlendirip commit'i salınıma sokuyor → mesajı ayrı değişkene al.
-- **`cmd | grep | tail && rm` KALINI YASAK**: `&&` git'in değil **tail'in** çıkış kodunu
-  görür; commit mesajı dosyası 3 kez silindi. Doğrusu: `oncesi=$(git rev-parse HEAD)` …
-  `[ "$oncesi" != "$sonrasi" ]` ile HEAD'in kıpırdadığını doğrula.
-- **Daima mutlak `cd`**: `cd backend` iki kez koşulunca `backend/backend`e kayıyordu
-  (5 kez oldu, 3 ölçümü geçersiz kıldı). O dizin artık silindi ama kural kalıcı.
-- **`ruff format <dizin>` YASAK**: 5 ilgisiz dosyayı (306 satır) biçimlendirdi, geri alındı.
+**#444 Öğretmen roster silme (B)** — `c92ca057b`
+- İş yalnız frontend DEĞİLDİ: liste `classroom_id` döndürmüyordu, arayüz
+  DELETE URL'ini kuramıyordu. Ad→id türetmek reddedildi (ad benzersiz değil).
+- 3 kimlik: `id`(üyelik, uç KABUL ETMEZ) / `student_user_id` / `classroom_id`.
+  Karıştırma → sessiz 404. İki testte de açıkça çivilendi.
+- backend 22/22 (452 sn), frontend 3/3; URL mutasyonu öldürücü.
+
+## Ölçümler (iddia değil)
+
+- **Depoda koşan authed HTTP testi YOKTU.** `client`+`auth_headers` ile istek
+  260 sn'de dönmedi; aynı app'te kimliksiz 401 testi 48 sn'de geçti → fark
+  auth yolunun DB erişimi. Kontrol kolu sinyal vermedi (tek aday
+  `test_osym_exam_api.py` 31/31 skip). **Ayrı görev — teşhis edilmedi.**
+- `from main import app` = 54 sn, 1253 rota (asılma import'ta değil).
+
+## Yarım bırakılan — bilerek
+
+**A4 Persona nullability.** Backend 15 alanın **12'sini** nullable yapıyor;
+frontend tipi hepsini non-null sanıyor. Genişletince `tsc` **38 hata / 8 ekran**
+verdi (BasarimlarPage, GeriSayimPage, KutlamaPage, LigPage, MolaPage,
+PanelPage, SeriDondurmaPage). Düzeltmesi ekran başına görüntüleme kararı
+istiyor (`?? 0` XP'de "0 XP" yazar = uydurma). `tsc`'yi kırık bırakmamak için
+GERİ ALINDI, doğrulandı (0 hata). Ayrı iş.
+
+## Sıradaki
+
+1. A4 (yukarıdaki 8 ekran, null → '—')
+2. #444 kalan: canlı duman testi (ekle+çıkar, gerçek öğretmen hesabı)
+3. #458 temizlik · #433 ES kapı bypass
+4. Operatör: #441 SMTP · #445 STUDENT triyajı · #270/#390 CI
