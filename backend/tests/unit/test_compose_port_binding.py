@@ -111,20 +111,29 @@ def test_veri_deposu_lan_e_acilmiyor(ad: str, servis: dict):
         )
 
 
-def test_elasticsearch_compose_disi_boslugu_belgeli():
-    """Bilinen bosluk: ES bu testin ulasabilecegi yerde DEGIL.
+BEKLENEN_VERI_DEPOLARI = {"redis", "elasticsearch"}
 
-    Bu test bir 'yapilmadi' isaretidir, bir dogrulama degil. ES konteyneri
-    hicbir compose dosyasinda tanimli olmadigi icin baglamasi burada
-    denetlenemiyor. Biri ES'i compose'a eklerse bu test kirmiziya doner ve
-    o kisi ES'i de ustteki denetime dahil etmis olur.
+
+def test_bilinen_veri_depolarinin_hepsi_denetleniyor():
+    """Her BILINEN veri deposu denetim kumesinde olmali.
+
+    NEDEN AYRI BIR TEST: ustteki parametrize denetim yalnizca BULABILDIGI
+    servisleri denetler. Bir servis compose'dan silinir, yeniden adlandirilir
+    veya imaji degisirse denetim onu SESSIZCE atlar ve paket yesil kalir.
+    Burada beklenen kume ACIKCA yaziliyor.
+
+    BU TESTIN KENDI GECMISI (durustluk notu): burada once "ES compose'da
+    tanimli DEGIL" diyen bir isaret testi vardi ve metni `split("elasticsearch:")`
+    ile arıyordu. ES compose'a eklendiginde KIRMIZIYA DONMESI gerekirken
+    GECTI — cunku desen once yorumdaki `turkiye_sinav_elasticsearch:9200`
+    ifadesine takiliyordu. Yani bekci yesil gorunuyor ama olctugunu iddia
+    ettigi seyi olcmuyordu. Metin arama yerine YAML ayristirmasi kullaniliyor.
     """
-    icerik = COMPOSE.read_text(encoding="utf-8")
-    assert (
-        "elasticsearch:" not in icerik
-        or "image" not in icerik.split("elasticsearch:")[1][:200]
-    ), (
-        "Elasticsearch artik compose'da tanimli — port baglamasini "
-        "test_veri_deposu_lan_e_acilmiyor kapsamina aldigini dogrula ve "
-        "bu isaret testini SIL."
+    bulunan = {ad for ad, _ in _veri_depolari()}
+    eksik = BEKLENEN_VERI_DEPOLARI - bulunan
+    assert not eksik, (
+        f"Bu veri depolari denetim disinda kaldi: {sorted(eksik)}. "
+        f"Compose'da bulunan servisler: {sorted(_servisler())}. "
+        "Servis silindiyse beklenen kumeyi guncelle; yeniden adlandirildiysa "
+        "VERI_DEPOSU_IMZALARI listesini guncelle."
     )

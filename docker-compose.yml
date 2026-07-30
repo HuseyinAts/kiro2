@@ -89,6 +89,50 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+
+  # 30 Tem 2026'da compose'a GERİ KONDU. Konteyner 2025-10-18'de yaratılmış ve
+  # o günden beri hiçbir compose dosyası tarafından yönetilmiyordu — ama kendi
+  # etiketleri hâlâ project=kiro2 / service=elasticsearch diyordu, yani compose
+  # onu kendi servisi sayıyor, sadece dosyadan silinmişti. Geri koymak ikisini
+  # birleştirir ve port bağlaması artık test edilebilir hâle gelir
+  # (backend/tests/unit/test_compose_port_binding.py).
+  #
+  # Aşağıdaki değerlerin TAMAMI çalışan konteynerden okundu, tahmin DEĞİL:
+  #   docker inspect turkiye_sinav_elasticsearch
+  # `bootstrap.memory_lock=true` + `ulimits.memlock=-1` birlikte zorunlu —
+  # ulimit olmadan ES açılmaz. İki ağ alias'ı da korunuyor: backend
+  # ELASTICSEARCH_URL=http://turkiye_sinav_elasticsearch:9200 kullanıyor.
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: turkiye_sinav_elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      # NOT: kimlik doğrulama HÂLÂ kapalı. Bu bir savunma katmanı değil;
+      # açığı kapatan şey aşağıdaki 127.0.0.1 bağlamasıdır. xpack'i açmak
+      # backend'e kimlik bilgisi geçirmeyi gerektirir — ayrı iş.
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    # 127.0.0.1: 30 Tem 2026 ölçümü — 0.0.0.0'dayken LAN'dan (192.168.8.2:9200)
+    # kimliksiz olarak cevap anahtarı çekilebiliyordu (64.270/64.270 doküman
+    # correct_answer taşıyor). Konteynerler birbirine docker ağı üzerinden
+    # konuştuğu için bu kısıtlama uygulamayı etkilemez.
+    ports:
+      - "127.0.0.1:9200:9200"
+      - "127.0.0.1:9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      turkiye_sinav_network:
+        aliases:
+          - turkiye_sinav_elasticsearch
+          - elasticsearch
+
   celery-worker:
     build:
       context: ./backend
@@ -195,6 +239,14 @@ volumes:
   redis-data:
     external: true
     name: kiro2_redis-data
+
+  # external + açık ad: bu volume 2025-10-18'de yaratıldı ve 64.270 dokümanlık
+  # arama index'ini tutuyor. `external: true` compose'un onu YENİDEN YARATMASINI
+  # veya `down -v` ile SİLMESİNİ engeller. Ad birebir mevcut volume'ün adı
+  # (etiketleri doğruladı: project=kiro2, volume=elasticsearch_data).
+  elasticsearch_data:
+    external: true
+    name: kiro2_elasticsearch_data
 networks:
   default:
     driver: bridge
