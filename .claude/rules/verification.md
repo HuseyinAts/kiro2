@@ -183,6 +183,44 @@ Ayni sorun 2+ session'da gorulurse ROOT CAUSE cozulmeli, patch yapilmamali.
 - 2. kez: ROOT CAUSE coz + enforcement ekle (lint/hook)
 - 3. kez: ASLA olmasin - CI/CD'de blokla
 
+## GERI ALIM BIR IDDIADIR (30 Tem 2026 — iki veri kaybi)
+
+Mutasyon/olcum icin dosya gecici degistirildiginde **geri aldigini SANMAK** iki kez
+veri kaybina yol acti. Ikisi de sessizdi; biri ancak dev bir diff ciktisindan,
+digeri `git status` ile fark edildi.
+
+| Vaka | Sessiz basarisizlik | Kural |
+|---|---|---|
+| `stash push --staged` + `pop` sonrasi `git checkout -- <dosya>` | `pop` index'e DEGIL calisma agacina koyar; checkout HEAD'den geri yukler ve staged fix'i siler | Mutasyondan ONCE commit et. Commit'siz isi mutasyona sokma |
+| bash `cp` ile yedek + Python `shutil.copy` ile geri alim | bash `/tmp` = MSYS (`AppData\Local\Temp`), Python `/tmp` = `C:\tmp` — iki namespace; geri alim "dosya yok" ile dustu | Yedegi tek araçla yaz+oku, yolu **depo icinde** tut |
+
+**Tek guvenilir yordam (commit'li dosya):**
+```bash
+# mutasyonu uygula -> olc -> geri al -> DOGRULA (ayni komutta)
+git checkout HEAD -- <yol> && git status --short   # cikti BOS olmali
+```
+Bu oturumda 3 kez kullanildi, 3 kez calisti. `diff` veya `git status` ile
+dogrulanmayan hicbir geri alim "yapildi" sayilmaz.
+
+**Ilgili:** `.claude/rules/audit-methodology.md` — "Olcum aletini dogrula".
+
+## DOGRULAMA KAPSAMI = DEGISIKLIGIN KAPSAMI (30 Tem 2026)
+
+`base_detector.py` (8 dedektorun ortak yolu) degistirildi ve yalnizca kendi test
+paketi kosuldu; `tests/unit/test_hooks/` (179 test, `hooks/orchestrator.py`
+uzerinden ayni kodu tuketiyor) push'tan ONCE hic kosulmadi. Sonradan kosuldu,
+regresyon yoktu — **ama bu sans, disiplin degil.**
+
+**Kural:** Test kapsamini dizin yakinligiyla degil **grep ile** belirle:
+
+```bash
+# degistirilen sembolun/paketin TUKETICILERINI bul, onlarin testlerini de kosur
+grep -rl "<degisen_paket>" backend/ --include="*.py" | grep -v "^backend/<degisen_paket>"
+```
+
+Ortak taban sinifa (base/abstract/mixin) veya paylasilan yardimciya dokunuldugunda
+bu adim ATLANAMAZ.
+
 ## FIX/SKIP METRIK TAKIBI
 
 Her session sonunda hesapla ve raporla:

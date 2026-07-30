@@ -203,6 +203,59 @@ Deterministik ucuz kural (regex, sözlük-yokluğu, char-yokluğu) ile içerik s
 
 ---
 
+## KÖK NEDEN DE BİR ÖLÇÜMDÜR (30 Tem 2026 — kural üçüncü kez aynı yerden kırıldı)
+
+Bu dosya "sayılar ölçüm ister" (Haz) ve "severity ölçüm ister" (28 Tem) diyor.
+Üçüncü boşluk: **"X'in sebebi Y'dir" de bir iddiadır ve tek bir deneyle
+çürütülebilir — Y'yi KALDIR, X kayboluyor mu?**
+
+**Vaka.** Bir bekçinin tek-başına yorum satırlarını kaçırdığı ölçüldü (doğru).
+Sebep olarak `_is_in_exception`'daki `startswith("#")` dalı gösterildi — kodu
+okuyup "bu kesin" denerek, kaldırma testi yapılmadan. Görev bu iddiayla açıldı.
+Sonra kaldırıldı ve semptom **sürdü** → "teşhis yanlış" denildi. O da yanlıştı:
+`.pyc` bayat + ölçüm `detect()` üzerinden yapılmıştı. `inspect.getsource` ile
+yüklenen sürüm kanıtlanınca gerçek tablo çıktı — dal gerçekten sebeplerden
+**biriydi**, ama **seri bağlı ikinci** bir bastırıcı daha vardı
+(`ContextAnalyzer.should_ignore`). Yani aynı soruda iki kez, iki zıt yönde
+yanlış rapor verildi.
+
+**Kural.** Bir kök neden raporlamadan önce:
+
+| Adım | Somut kontrol |
+|---|---|
+| 1. Kaldırma deneyi | Y'yi devre dışı bırak; X kayboluyor mu? Kaybolmuyorsa Y sebep DEĞİL (veya tek sebep değil) |
+| 2. Yüklenen sürümü kanıtla | `inspect.getsource(fn)` içinde işaretçi ara; Python'da `.pyc` sil. "Düzenledim" ≠ "koştu" |
+| 3. En alt katmanda ölç | `detect()` gibi sarmalayıcı yerine kusurun olduğu fonksiyonu (`_regex_detect`) doğrudan çağır — arada başka filtre olabilir |
+| 4. Tek sebep varsayma | Semptom sürüyorsa ikinci bastırıcıyı ara; "seri bağlı filtre" bu depoda gerçek bir desen |
+| 5. Fix'in DEĞERİNİ ölç | Y kaldırılınca kaç bulgu değişiyor? **+0 ise fix yapılmaz** |
+
+**5. adım bu vakada kararı tersine çevirdi:** yorum dalını kaldırmanın kazancı
+250 gerçek dosyada **+0 bulgu**; docstring dalını kaldırmanın bedeli ise **+231
+CRITICAL** ve hepsi sıradan test deyimi (`MagicMock()`, `@patch(...)`,
+`except Exception:`). Yani hatalı heuristik bekçiyi kullanılabilir tutan **yük
+taşıyan kaza**ydı. Doğru karar fix YAPMAMAK oldu. Bir hole'un varlığı onu
+kapatmak için yeterli gerekçe değildir — **kapatmanın bedeli de ölçülür.**
+
+---
+
+## ÖLÇÜM ALETİNİ DOĞRULA (aynı gün, 4 geçersiz ölçüm)
+
+Bulguları titizlikle doğrulayıp **ölçüm aletini** doğrulamamak bu oturumda 4 kez
+yanlış sonuç üretti. Alet sessizce ölçtüğü şeyi değiştirdi:
+
+| Geçersiz ölçüm | Neden geçersiz | Doğrusu |
+|---|---|---|
+| A/B için dosyayı `/tmp`'ye kopyalamak (2 kez) | Dedektörler dosya adına bakıyor (`test_` öneki), ruff'ta `per-file-ignores` var → kopya farklı davranıyor | A/B'yi **gerçek yolda** yap, geri alımı doğrula |
+| Kod düzenleyip ölçmek | `.pyc` bayat kalabilir; ayrıca ölçüm sarmalayıcıdan yapılırsa arada filtre var | `.pyc` sil + `inspect.getsource` ile işaretçi kanıtla |
+| Yeni testlerin ilk sürümü | 8 testin 6'sı fix'ten ÖNCE de geçiyordu (vakum test) | Her testi **mutasyonla** çivile; geçmeyen mutasyon = değersiz test |
+| Bir uca 404 deyip bulgu sanmak | Yol yanlıştı (`/api/v1/health` yok, `/health` 200) | Bulgu bildirmeden önce aracın kendi doğruluğunu sına |
+
+**Kural:** Bir A/B'ye güvenmeden önce **kontrol kolunun bilinen sonucu ürettiğini**
+göster. Kontrol kolu beklediğini vermiyorsa ölçüm bitmiştir — bulgu değil, alet
+arızası vardır.
+
+---
+
 ## İlişkili Kurallar
 
 - `.claude/rules/systematic-debugging.md` — Phantom sorun filtresi (gercek/fake ayrimi)
@@ -220,6 +273,9 @@ Deterministik ucuz kural (regex, sözlük-yokluğu, char-yokluğu) ile içerik s
 | 3 Haz 2026 | Garble efsanesi | "61K garble" = ölçülmemiş varsayım (unverified=incelenmemiş); word-DF metriği doğrulama geçemedi | Char-trigram LM (sentetik-bozma doğrulamalı); satır-bazında etiket şartı |
 | 3 Haz 2026 | Garble-tail silme | 3 ucuz filtre geçerli Türkçe STEM'i yanlış-pozitif sildi | Pozitif yabancı-kanıt + Türkçe-char guard |
 | 28 Tem 2026 | Sızmış anahtar aciliyeti | "public depo + geçmişte anahtar → P0 acil" ÇIKARIMDI; ölçünce 14/14 anahtar ölü. Kural yazılıydı ama yalnız SAYILARI kapsıyordu, severity'yi değil | `secret_inventory.py --check-live`; kurala "Severity de bir ölçümdür" bölümü |
+| 30 Tem 2026 | Bekçi kök nedeni (#451) | "Sebep şu dal" kodu OKUYARAK iddia edildi, kaldırma testi yapılmadı; sonra yapılınca `.pyc`+sarmalayıcı yüzünden ters yönde ikinci yanlış rapor | "Kök neden de bir ölçümdür" bölümü: kaldırma deneyi + `inspect.getsource` + en alt katman + tek-sebep varsaymama |
+| 30 Tem 2026 | Fix'in değeri ölçülmedi | Hole gerçekti ama kapatmanın kazancı **+0 bulgu**; docstring dalını kaldırmanın bedeli **+231 CRITICAL** (sıradan mock deyimleri). Hatalı heuristik bekçiyi kullanılabilir tutan yük taşıyan kazaydı | Karar: fix YAPILMADI, ölçüm koda yorum olarak yazıldı; asıl iş kalibrasyona devredildi (#453) |
+| 30 Tem 2026 | Ölçüm aleti geçersiz (4 kez) | `/tmp` kopyası (dosya-adı + per-file-ignores bağımlı), bayat `.pyc`, sarmalayıcıdan ölçüm, yanlış URL yolu | "Ölçüm aletini doğrula" bölümü: kontrol kolu bilinen sonucu vermeli, yoksa alet arızası |
 | ... | ... | ... | ... |
 
 ---
