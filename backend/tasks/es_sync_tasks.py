@@ -25,7 +25,7 @@ NEDEN WATERMARK DEĞİL KÜME FARKI
 `updated_at` watermark'ı yalnız DEĞİŞEN kaydı yakalar. Oysa asıl tehlike
 kapıdan DÜŞEN kayıt: bir soru `rejected` olduğunda `mv_safe_for_beta`den
 çıkar, ama ES'te satırı DURUR ve watermark onu asla göstermez. Bu yüzden
-plan küme farkıyla kuruluyor (`es_reindex.esitleme_plani`).
+plan küme farkıyla kuruluyor (`core.es_index_schema.esitleme_plani`).
 
 NEDEN AYRI ADVISORY LOCK ANAHTARI
 ---------------------------------
@@ -44,18 +44,13 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-import sys
-from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger(__name__)
 
-# `scripts/` paket değil; saf mantığı (belge kurma + küme farkı) tek yerde
-# tutmak için yol ekleniyor. Kopyalamak iki uygulamanın sessizce ayrışması
-# demekti — bu depoda hash mantığının kopyalanması tam da bu yüzden reddedildi.
-_SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
-if str(_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS))
+# Paylasilan mantik core/ icinde. ONCE `scripts/`ten import ediliyordu ve bu
+# KONTEYNERDE COKERDI: backend/.dockerignore:82 `scripts/`i imajdan eliyor,
+# /app/scripts HIC YOK. Host'ta test yesil, uretimde her gece ImportError.
 
 # quality_gate_tasks._REFRESH_LOCK_KEY (727_20260727) ile ÇAKIŞMAMALI.
 _SENKRON_LOCK_KEY = 731_20260731
@@ -67,10 +62,15 @@ INDEX = os.environ.get("ELASTICSEARCH_INDEX", "turkiye_sinav_platform")
 async def _senkronla() -> dict[str, Any]:
     from elasticsearch import AsyncElasticsearch
     from elasticsearch.helpers import async_bulk
-    from es_reindex import SORGU, _belge_kur, _es_kimlikleri, esitleme_plani
     from sqlalchemy import text
 
     from core.database import db_manager
+    from core.es_index_schema import (
+        SORGU,
+        _belge_kur,
+        _es_kimlikleri,
+        esitleme_plani,
+    )
 
     async with db_manager.get_session() as oturum:
         kilit = await oturum.execute(

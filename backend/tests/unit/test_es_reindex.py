@@ -23,22 +23,17 @@ bayat `is_active` var. Bu yüzden küme farkı kullanılıyor.
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
 import pytest
 
-pytestmark = [pytest.mark.unit, pytest.mark.security]
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-
-from es_reindex import (  # noqa: E402
+from core.es_index_schema import (
     ALANLAR,
     YASAKLI_ALANLAR,
     _belge_kur,
     _yeni_index_adi,
     esitleme_plani,
 )
+
+pytestmark = [pytest.mark.unit, pytest.mark.security]
 
 
 def _satir(**degisiklik):
@@ -107,7 +102,7 @@ def test_mapping_ve_alanlar_tutarli():
     Biri ALANLAR'a alan ekleyip MAPPING'i unutursa ES o alanı dinamik olarak
     eşler ve tip sessizce yanlış olabilir (ör. sayı alanı `text`).
     """
-    from es_reindex import MAPPING
+    from core.es_index_schema import MAPPING
 
     assert set(MAPPING["properties"]) == set(ALANLAR)
 
@@ -161,7 +156,7 @@ def test_turkce_analiz_zinciri_korunuyor():
     Yani sayım eşitliği bir doğruluk kanıtı DEĞİLDİ. Bu test, ayarların ve
     alan-analyzer atamalarının sessizce düşmesini engelliyor.
     """
-    from es_reindex import MAPPING, SETTINGS
+    from core.es_index_schema import MAPPING, SETTINGS
 
     analiz = SETTINGS["analysis"]
     assert analiz["filter"]["turkish_stemmer"]["language"] == "turkish"
