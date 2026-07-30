@@ -69,6 +69,14 @@ class EmptyExceptionDetector(BaseDetector):
 
             # Check if exception is being logged or documented
             if self._has_logging_or_comment(content, result.line_number):
+                # NOT: enum atanir (alan `SeverityLevel` tipinde, mypy oyle
+                # ister) ama `use_enum_values=True` yuzunden _create_result
+                # yolu duz string sakliyor. Yani severity'nin RUNTIME tipi
+                # yola gore degisir ve `str()` biri icin "INFO", digeri icin
+                # "SeverityLevel.INFO" uretir. Karsilastiran her kod bunu
+                # normalize ETMEK ZORUNDA — test dosyasindaki `_sev()` bunu
+                # yapiyor; ilk surumde yapmadigi icin bir iddia sessizce
+                # gecmisti (#449).
                 result.severity = SeverityLevel.INFO
                 result.message = "Exception handler with logging/comment"
 
@@ -154,14 +162,35 @@ class EmptyExceptionDetector(BaseDetector):
             content: File content
             line_number: Line number of except clause
 
+        Tarama HANDLER GOVDESIYLE SINIRLIDIR — eskiden `except` satirindan
+        sonraki UC SATIRA bakiyordu ve blok sinirini gormuyordu. Sonuc: `try`
+        blogu bittikten SONRAKI alakasiz bir `log.info()` bile "bu handler
+        logluyor" sayiliyor, gercek bir `except: pass` yutmasi INFO'ya
+        indirilip GORUNMEZ oluyordu. Olculdu (30 Tem 2026, #449):
+
+            def f():
+                try:
+                    g()
+                except:
+                    pass
+                log.info("devam")     # <- handler'in DISINDA
+            -> tek bulgu, severity INFO
+
+        Yakinlik sezgisi kapsam bilgisinin yerini tutmuyor. Artik govde,
+        `except` satirindan DAHA GIRINTILI satirlarla sinirli; ilk dedent'te
+        tarama biter.
+
+        Sozlesme: tests/hooks/reward_hacking/test_bare_except_policy.py
+
         Returns:
             True if logging or comment present
         """
         lines = content.split("\n")
+        if not 1 <= line_number <= len(lines):
+            return False
 
-        # Look at 3 lines after the except
-        start = line_number
-        end = min(len(lines), line_number + 4)
+        except_satiri = lines[line_number - 1]
+        govde_girintisi = len(except_satiri) - len(except_satiri.lstrip())
 
         logging_patterns = [
             "logger.",
@@ -175,11 +204,13 @@ class EmptyExceptionDetector(BaseDetector):
             "# suppress",
         ]
 
-        for i in range(start, end):
-            if i < len(lines):
-                line_lower = lines[i].lower()
-                if any(pattern in line_lower for pattern in logging_patterns):
-                    return True
+        for satir in lines[line_number:]:
+            if not satir.strip():
+                continue
+            if len(satir) - len(satir.lstrip()) <= govde_girintisi:
+                break  # dedent -> handler govdesi bitti
+            if any(desen in satir.lower() for desen in logging_patterns):
+                return True
 
         return False
 
@@ -209,15 +240,30 @@ class EmptyExceptionDetector(BaseDetector):
                 # Fixture string'i icindeki bare except TEST VERISIDIR (30 Tem 2026).
                 if satir_bastirilmali(file_path, content, i + 1, pattern):
                     continue
-                results.append(
-                    self._create_result(
-                        file_path=file_path,
-                        line_number=i + 1,
-                        code_snippet=line.strip(),
-                        message="Bare except: - use specific exception type",
-                        confidence=0.95,
-                    )
+
+                # #449: bare except LOGLANMIS ise CRITICAL olamaz. Eskiden bu
+                # yol log kontrolu HIC yapmiyordu, dolayisiyla
+                # `except: log.warning(...)` ile `except: pass` AYNI sinifa
+                # dusuyordu — dosyanin kendi `_has_logging_or_comment`
+                # niyetiyle celisiyordu. Ama INFO'ya da indirilmez: bare
+                # `except:` loglansa bile KeyboardInterrupt/SystemExit
+                # yakalar, yani gerçek ama daha hafif bir kusurdur -> WARNING.
+                loglu = self._has_logging_or_comment(content, i + 1)
+                sonuc = self._create_result(
+                    file_path=file_path,
+                    line_number=i + 1,
+                    code_snippet=line.strip(),
+                    message=(
+                        "Bare except: (loglanmis) - yine de "
+                        "KeyboardInterrupt/SystemExit yakaliyor"
+                        if loglu
+                        else "Bare except: - use specific exception type"
+                    ),
+                    confidence=0.95,
                 )
+                if loglu:
+                    sonuc.severity = SeverityLevel.WARNING
+                results.append(sonuc)
 
         return results
 
