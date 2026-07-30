@@ -129,6 +129,17 @@ celery_app.conf.update(
             "task": "tasks.quality_gate_tasks.refresh_safe_pool",
             "schedule": crontab(hour=3, minute=30),
         },
+        # Arama index'ini kalite kapısıyla eşitle (04:00).
+        # SIRA KRİTİK: 03:30 matview yenilemesinden SONRA. Ters sıra bir gün
+        # eski havuzu indeksler.
+        # 31 Tem 2026'da ölçüldü: PG↔ES arasında hiç senkron yolu yoktu; index
+        # 1 Nis'ta tek toplu yüklemeyle yazılmış ve o günden beri hiç
+        # değişmemişti. Sonuç: ES'te 60.605 kayıt kapıdan geçmiyordu, kapıdaki
+        # 21.462 kayıt ise ES'te hiç yoktu.
+        "sync-search-index-nightly": {
+            "task": "tasks.es_sync_tasks.sync_search_index",
+            "schedule": crontab(hour=4, minute=0),
+        },
         # Cache cleanup (every hour)
         "cleanup-expired-cache": {
             "task": "tasks.bulk_tasks.cleanup_expired_cache_entries",
