@@ -151,5 +151,16 @@ def test_json_ciktisi_ast_parse_hatasina_ragmen_gecerli_kalir(tmp_path, capsys):
             f"{yakalanan.out[:120]!r}"
         )
     assert "total_detections" in veri
-    # Tani mesaji kaybolmamali, sadece dogru akisa gitmeli
-    assert "AST parse" in yakalanan.err, "uyari stderr'e de basilmali (susturma degil)"
+
+    # Tani mesaji KAYBOLMAMALI, sadece dogru akisa gitmeli. BOM'lu dosya AST
+    # tabanli IKI dedektoru de dusurur; ikisinin de adi stderr'de gorunmeli.
+    #
+    # NEDEN iki ad ayri ayri araniyor: ilk surum yalnizca "AST parse" arıyordu
+    # ve mutasyon testi bunun ZAYIF oldugunu gosterdi — bir dedektorun uyarisi
+    # tamamen silindiginde kardes dedektor iddiayi tek basina karsiliyor ve
+    # test yesil kaliyordu (mutasyon p-d hicbir testi dusurmedi).
+    for dedektor in ("MockAbuseDetector", "EmptyExceptionDetector"):
+        assert dedektor in yakalanan.err, (
+            f"{dedektor} uyarisi stderr'de yok — susturulmus olabilir.\n"
+            f"stderr: {yakalanan.err[:300]!r}"
+        )
