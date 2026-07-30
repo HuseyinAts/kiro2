@@ -266,11 +266,23 @@ export function GeriSayimPage(
             </div>
           ) : (
             (() => {
+              // yksTarihi'ni besleyecek kolon YOK (31 Tem ölçümü) — bu ekranın tamamı
+              // sınav tarihine dayalı bir geri sayım. Tarih yokken uydurma bir gün
+              // sayısı göstermek yerine ne olduğunu söylüyoruz.
+              if (persona.yksTarihi === null) {
+                return (
+                  <p style={{ margin: 0, fontSize: 14, color: color.ink.muted }}>
+                    Sınav tarihin henüz kayıtlı değil. Ayarlar&apos;dan ekleyince geri sayım burada başlar.
+                  </p>
+                );
+              }
               const tarih = fmtTarih(persona.yksTarihi);
               const gun = gunKalan(persona.yksTarihi);
               const hafta = haftaKalan(persona.yksTarihi);
-              const hedefSira = trBin(persona.hedefSiralama);
-              const guncelSira = trBin(persona.guncelSiralama);
+              // hedefSiralama'yi besleyen kolon YOK, guncelSiralama ise 0/77 null.
+              // Bilinmeyen sirayi 0 gostermek "1. sirada" gibi okunurdu.
+              const hedefSira = persona.hedefSiralama !== null ? trBin(persona.hedefSiralama) : '—';
+              const guncelSira = persona.guncelSiralama !== null ? trBin(persona.guncelSiralama) : '—';
               const gunlukDk = persona.gunlukHedefDk;
 
               return (

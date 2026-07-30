@@ -158,7 +158,10 @@ export function BasarimlarPage(): React.ReactElement {
  *  (renderVals: tierBadges.length + earned). İstemci türetim; açık-nokta 4 → üretimde /achievements özeti. */
 function kazanilanRozet(v: Veri): number {
   const rozetler = v.subjects.length; // her dersin bir hâkimiyet kademesi rozeti var
-  const acilanTas = MILESTONES.filter((m) => v.persona.seriRekor >= m).length;
+  // seriRekor null ise seri kilometre taslari BILINMIYOR — 0 acilmis saymak
+  // "hicbirini acmadin" iddiasidir. Yalniz ders rozetleri sayilir.
+  const rekor = v.persona.seriRekor;
+  const acilanTas = rekor === null ? 0 : MILESTONES.filter((m) => rekor >= m).length;
   return rozetler + acilanTas;
 }
 
@@ -169,8 +172,12 @@ function Icerik({ veri, reduced }: { veri: Veri; reduced: boolean }): React.Reac
   // DC varsayılan sıralaması: hâkimiyet azalan.
   const sirali = [...subjects].sort((a, b) => b.hakimiyet - a.hakimiyet);
 
-  const rekorKala = Math.max(0, seriRekor - seri);
-  const progressPct = Math.min(100, Math.round((seri / Math.max(1, seriRekor)) * 100));
+  // Seri verisi yoksa ilerleme yuzdesi uretilemez; null -> '—' gosterilir.
+  const rekorKala = seri !== null && seriRekor !== null ? Math.max(0, seriRekor - seri) : null;
+  const progressPct =
+    seri !== null && seriRekor !== null
+      ? Math.min(100, Math.round((seri / Math.max(1, seriRekor)) * 100))
+      : null;
 
   return (
     <>
@@ -231,7 +238,7 @@ function Icerik({ veri, reduced }: { veri: Veri; reduced: boolean }): React.Reac
             Seviye {seviye}
           </div>
           <div style={{ fontSize: 20, fontWeight: 800, color: '#F6EFF7', marginTop: 2 }}>
-            <span style={numText}>{xp.toLocaleString('tr-TR')}</span> XP toplandı
+            <span style={numText}>{xp !== null ? xp.toLocaleString('tr-TR') : '—'}</span> XP toplandı
           </div>
         </div>
         <div style={{ flex: 1 }} />
@@ -319,18 +326,18 @@ function Icerik({ veri, reduced }: { veri: Veri; reduced: boolean }): React.Reac
             Aktif seri <strong style={{ color: '#FFB570' }}>{seri} gün</strong>
           </span>
           <span style={{ color: 'rgba(241,233,242,0.55)' }}>
-            rekora <strong style={{ color: '#F6EFF7' }}>{rekorKala} gün</strong>
+            rekora <strong style={{ color: '#F6EFF7' }}>{rekorKala !== null ? `${rekorKala} gün` : '—'}</strong>
           </span>
         </div>
         <div style={{ height: 9, borderRadius: 99, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-          <div style={{ width: `${progressPct}%`, height: '100%', borderRadius: 99, background: 'linear-gradient(90deg,#FF8A5B,#FFB570)' }} />
+          <div style={{ width: `${progressPct ?? 0}%`, height: '100%', borderRadius: 99, background: 'linear-gradient(90deg,#FF8A5B,#FFB570)' }} />
         </div>
       </div>
 
       {/* Kilometre taşı karoları */}
       <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
         {MILESTONES.map((m) => {
-          const earned = seriRekor >= m;
+          const earned = seriRekor !== null && seriRekor >= m;
           return (
             <div
               key={m}

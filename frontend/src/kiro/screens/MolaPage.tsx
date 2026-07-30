@@ -327,8 +327,14 @@ export function MolaPage(): React.ReactElement {
           {/* Onaylama + dönüş */}
           <div style={{ textAlign: 'center', borderTop: '1px solid #241C30', paddingTop: 24 }}>
             {persona ? (
+              // bugunCozulenDk 77/77 null (31 Tem ölçümü). Veri yokken "Bugün null
+              // çalıştın" yazmak yerine süre iddiası OLMAYAN bir cümle gösteriliyor.
               <p style={{ margin: '0 0 4px', fontSize: 14, color: '#C7B6D0' }}>
-                Bugün <strong style={{ ...numText, color: '#F0E7D8' }}>{fmtDk(persona.bugunCozulenDk)}</strong> çalıştın — bu molayı hak ettin.
+                {persona.bugunCozulenDk !== null ? (
+                  <>Bugün <strong style={{ ...numText, color: '#F0E7D8' }}>{fmtDk(persona.bugunCozulenDk)}</strong> çalıştın — bu molayı hak ettin.</>
+                ) : (
+                  <>Bu molayı hak ettin.</>
+                )}
               </p>
             ) : !hata ? (
               <div aria-hidden style={{ maxWidth: 240, margin: '0 auto 6px' }}>

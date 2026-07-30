@@ -256,7 +256,7 @@ export function buildMockPlanWeek(d: MockData): PlanWeek {
     { gun: 'Cmt', tarih: '4 Tem', bugun: false, bloklar: [deneme] },
     { gun: 'Paz', tarih: '5 Tem', bugun: false, bloklar: [analiz, mola] },
   ];
-  return { gunler, aralik: '29 Haz – 5 Tem', gunlukHedefDk: d.persona.gunlukHedefDk };
+  return { gunler, aralik: '29 Haz – 5 Tem', gunlukHedefDk: d.persona.gunlukHedefDk ?? 0 };
 }
 
 export async function getPlanWeek(): Promise<PlanWeek> {
@@ -282,7 +282,8 @@ export async function getLastExam(): Promise<LastExam> {
 export async function getLevel(): Promise<SeviyeBilgi> {
   if (cfg.mode === 'mock') {
     const d = await mock();
-    return seviyeBilgiFrom(d.seviyeEsik, d.persona.xp);
+    // mock persona xp'yi DOLU tutar; ?? yalniz tip kapatici (uretim yolu degil).
+    return seviyeBilgiFrom(d.seviyeEsik, d.persona.xp ?? 0);
   }
   return live<SeviyeBilgi>('/level');
 }
@@ -994,8 +995,10 @@ export async function postFriendCongrats(id: string): Promise<{ gonderildi: bool
  *  seri/rekor persona'dan (sunucu; mock persona ile birebir). */
 export function buildMockStreak(p: Persona): StreakData {
   return {
-    seri: p.seri,
-    rekor: p.seriRekor,
+    // Mock kurucu: persona bu iki alani DOLU tutar. `?? 0` yalniz Persona
+    // tipi nullable oldugu icin var; uretimde bu yol kullanilmiyor.
+    seri: p.seri ?? 0,
+    rekor: p.seriRekor ?? 0,
     dondurmaHak: 2,
     hafta: [
       { label: 'Pzt', durum: 'done' },

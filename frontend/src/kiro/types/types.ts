@@ -44,22 +44,41 @@ export interface Engine {
 
 // ---------- GET /me ----------
 
+/**
+ * GET /api/v1/me yanıtı.
+ *
+ * `null` = "bu veri sistemde YOK" — 0 veya '' DEĞİL. İkisini karıştırmak
+ * uydurma veri üretir; #444'te tam bu desen (5 sahte öğrenci) bilinçle
+ * silinmişti.
+ *
+ * 31 TEM 2026 ÖLÇÜMÜ (77 kullanıcının TAMAMI, canlı DB):
+ *   hedefBolum / hedefUni / gunlukHedefDk        -> 77/77 null (%100)
+ *   hedefSiralama / yksTarihi / bugunCozulenDk   -> kaynak kolon YOK, hep null
+ *   seri / seriRekor                             -> 73/77 null (%95)
+ *   sinif                                        -> 3/77 null (%4)
+ *   ad / xp / seviye / guncelSiralama            -> 0/77 null
+ *
+ * Yani 15 alanın 6'sı HER kullanıcı için null. Ekranlar bunu istisna değil
+ * NORMAL durum olarak ele almalı: sayısal hesapta 0 kabul edilebilir ama
+ * kullanıcıya gösterilen değer '—' olmalı — "0 XP" ile "XP bilinmiyor" aynı
+ * şey değildir.
+ */
 export interface Persona {
   ad: string;
   adKisa: string;
   bas: string; // baş harfler, avatar
-  sinif: string;
-  seri: number;
-  seriRekor: number;
-  xp: number;
-  seviye: number;
-  hedefBolum: string;
-  hedefUni: string;
-  hedefSiralama: number;
-  guncelSiralama: number;
-  yksTarihi: string; // ISO 'YYYY-MM-DD'
-  gunlukHedefDk: number;
-  bugunCozulenDk: number;
+  sinif: string | null;
+  seri: number | null;
+  seriRekor: number | null;
+  xp: number | null;
+  seviye: number | null;
+  hedefBolum: string | null;
+  hedefUni: string | null;
+  hedefSiralama: number | null;
+  guncelSiralama: number | null;
+  yksTarihi: string | null; // ISO 'YYYY-MM-DD'
+  gunlukHedefDk: number | null;
+  bugunCozulenDk: number | null;
 }
 
 // ---------- GET /subjects ----------

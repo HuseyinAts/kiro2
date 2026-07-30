@@ -277,11 +277,11 @@ export function LigPage({ sakinMod = true, siralamaGizli, leveledUp = false }: L
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, height: 38, padding: '0 12px', background: color.semantic.riskBgSoft, border: `1px solid ${color.semantic.riskBorderSoft}`, borderRadius: 10, boxSizing: 'border-box' }}>
                   <Flame c={AMBER_TEXT} />
-                  <span style={{ ...numText, fontWeight: 800, fontSize: 14, color: AMBER_TEXT }}>{trNum(veri.persona.seri)}</span>
+                  <span style={{ ...numText, fontWeight: 800, fontSize: 14, color: AMBER_TEXT }}>{veri.persona.seri !== null ? trNum(veri.persona.seri) : '—'}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9, height: 38, padding: '0 12px', background: color.paper.card, border: `1px solid ${color.paper.border}`, borderRadius: 10, boxSizing: 'border-box' }}>
                   <span aria-hidden style={{ width: 22, height: 22, borderRadius: 7, background: CORAL_TEXT, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 11 }}>{veri.level.seviye}</span>
-                  <span style={{ ...numText, fontWeight: 700, fontSize: 13 }}>{trNum(veri.persona.xp)}</span>
+                  <span style={{ ...numText, fontWeight: 700, fontSize: 13 }}>{veri.persona.xp !== null ? trNum(veri.persona.xp) : '—'}</span>
                   <span style={{ fontSize: 11.5, color: color.ink.muted, fontWeight: 600 }}>XP</span>
                 </div>
               </>

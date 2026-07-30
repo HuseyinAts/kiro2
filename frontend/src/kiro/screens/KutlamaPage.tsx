@@ -242,17 +242,19 @@ export function KutlamaPage(): React.ReactElement {
             const per = data.persona;
             const gecerliXp = urlXp != null && urlXp !== '' && !Number.isNaN(Number(urlXp));
             const xpNum = gecerliXp ? Number(urlXp) : per.xp;
-            const seri = urlSeri != null && urlSeri !== '' && !Number.isNaN(Number(urlSeri)) ? Number(urlSeri) : per.seri;
+            // 31 Tem olcumu: seri 73/77, bugunCozulenDk 77/77 null. Kutlama ekrani
+            // bir BASARIYI anlatiyor; sayilar yoksa uydurma 0 yerine '—' gosterilir.
+            const seri = urlSeri != null && urlSeri !== '' && !Number.isNaN(Number(urlSeri)) ? Number(urlSeri) : (per.seri ?? 0);
             // Seviye kutlamasında URL xp'sinden yeniden türet (DC birebir; başlık↔xp tutarlı)
             const seviyeNo = tur === 'seviye' && gecerliXp
-              ? seviyeBilgiFrom((kiroData as unknown as MockData).seviyeEsik, xpNum).seviye
+              ? seviyeBilgiFrom((kiroData as unknown as MockData).seviyeEsik, xpNum ?? 0).seviye
               : per.seviye;
             const deg: Degerler = {
-              bugunDk: per.bugunCozulenDk,
-              xp: xpNum.toLocaleString('tr-TR'),
-              seviye: seviyeNo,
+              bugunDk: per.bugunCozulenDk ?? 0,
+              xp: (xpNum ?? 0).toLocaleString('tr-TR'),
+              seviye: seviyeNo ?? 0,
               seri,
-              rekorKalan: Math.max(0, per.seriRekor - seri),
+              rekorKalan: Math.max(0, (per.seriRekor ?? 0) - seri),
               konu: data.konu,
             };
             const ic = icerikOlustur(tur, deg);

@@ -201,6 +201,18 @@ export function SeriDondurmaPage(): React.ReactElement {
 function Icerik({ veri, reduced, dar }: { veri: Veri; reduced: boolean; dar: boolean }): React.ReactElement {
   const { seri, seriRekor: rekor } = veri.persona;
   const { dondurmaHak, hafta } = veri.streak;
+
+  // 31 Tem 2026 ölçümü: seri/seriRekor 73/77 kullanıcıda null (%95). Bu ekranın
+  // TAMAMI seri merdiveni üzerine kurulu — veri yokken her değeri '—' yapmak
+  // merdiveni anlamsız bir iskelete çevirirdi. Onun yerine dürüst boş-durum.
+  if (seri === null || rekor === null) {
+    return (
+      <p style={{ margin: 0, fontSize: 14, color: color.ink.muted }}>
+        Seri bilgin henüz oluşmadı. Çalışmaya başladığında burada görünecek.
+      </p>
+    );
+  }
+
   const seriNext = seri + 1;
   const kaldi = (t: number) => Math.max(0, t - seri);
   const donmusGun = hafta.find((d) => d.durum === 'freeze')?.label;

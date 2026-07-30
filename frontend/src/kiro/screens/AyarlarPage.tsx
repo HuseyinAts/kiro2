@@ -365,8 +365,12 @@ export function AyarlarPage(): React.ReactElement {
     flash();
   };
 
-  const yksYil = persona ? new Date(persona.yksTarihi).getFullYear() : '';
-  const yksKalan = persona ? Math.max(0, Math.round((new Date(persona.yksTarihi).getTime() - Date.now()) / 86_400_000)) : 0;
+  // yksTarihi'ni besleyen kolon YOK (31 Tem olcumu). new Date(null) -> 1970,
+  // yani tarih yokken ekranda "1970" ve devasa bir gun sayisi cikardi.
+  const yksYil = persona?.yksTarihi ? new Date(persona.yksTarihi).getFullYear() : null;
+  const yksKalan = persona?.yksTarihi
+    ? Math.max(0, Math.round((new Date(persona.yksTarihi).getTime() - Date.now()) / 86_400_000))
+    : null;
   const premium = abonelik?.mevcutTier === 'premium';
 
   let icerik: React.ReactNode;
@@ -431,18 +435,18 @@ export function AyarlarPage(): React.ReactElement {
           </div>
           <div style={{ flex: 1, minWidth: 150 }}>
             <div style={{ fontSize: 21, fontWeight: 800, letterSpacing: '-0.01em' }}>{persona.ad}</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,240,232,0.85)', marginTop: 2 }}>{persona.sinif}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,240,232,0.85)', marginTop: 2 }}>{persona.sinif ?? '—'}</div>
             <div style={{ display: 'flex', gap: 18, marginTop: 13, flexWrap: 'wrap' }}>
               <div>
-                <span style={{ ...numText, fontSize: 17, fontWeight: 800 }}>{persona.seviye}</span>
+                <span style={{ ...numText, fontSize: 17, fontWeight: 800 }}>{persona.seviye ?? '—'}</span>
                 <span style={{ fontSize: 12, color: 'rgba(255,240,232,0.8)', marginLeft: 5 }}>seviye</span>
               </div>
               <div>
-                <span style={{ ...numText, fontSize: 17, fontWeight: 800 }}>{trSayi(persona.xp)}</span>
+                <span style={{ ...numText, fontSize: 17, fontWeight: 800 }}>{persona.xp !== null ? trSayi(persona.xp) : '—'}</span>
                 <span style={{ fontSize: 12, color: 'rgba(255,240,232,0.8)', marginLeft: 5 }}>XP</span>
               </div>
               <div>
-                <span style={{ ...numText, fontSize: 17, fontWeight: 800 }}>{persona.seri}</span>
+                <span style={{ ...numText, fontSize: 17, fontWeight: 800 }}>{persona.seri ?? '—'}</span>
                 <span style={{ fontSize: 12, color: 'rgba(255,240,232,0.8)', marginLeft: 5 }}>gün seri</span>
               </div>
             </div>
@@ -524,18 +528,22 @@ export function AyarlarPage(): React.ReactElement {
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', margin: '16px 0 4px' }}>
             <div style={{ boxSizing: 'border-box', flex: 1, minWidth: 150, background: color.paper.subtle2, borderRadius: 13, padding: 15 }}>
               <div style={{ fontSize: 11.5, fontWeight: 700, color: color.ink.muted, marginBottom: 6 }}>Hedef bölüm</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: color.ink.primary }}>{persona.hedefBolum}</div>
-              <div style={{ fontSize: 12.5, color: color.ink.muted, marginTop: 2 }}>{persona.hedefUni}</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: color.ink.primary }}>{persona.hedefBolum ?? '—'}</div>
+              <div style={{ fontSize: 12.5, color: color.ink.muted, marginTop: 2 }}>{persona.hedefUni ?? '—'}</div>
             </div>
             <div style={{ boxSizing: 'border-box', flex: 1, minWidth: 150, background: color.paper.subtle2, borderRadius: 13, padding: 15 }}>
               <div style={{ fontSize: 11.5, fontWeight: 700, color: color.ink.muted, marginBottom: 6 }}>Hedef sıralama</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ ...numText, fontSize: 19, fontWeight: 800, color: color.ink.primary }}>{trSayi(persona.hedefSiralama)}</span>
-                <span style={{ ...numText, fontSize: 12, color: color.ink.muted }}>şu an ~{trSayi(persona.guncelSiralama)}</span>
+                <span style={{ ...numText, fontSize: 19, fontWeight: 800, color: color.ink.primary }}>{persona.hedefSiralama !== null ? trSayi(persona.hedefSiralama) : '—'}</span>
+                <span style={{ ...numText, fontSize: 12, color: color.ink.muted }}>şu an ~{persona.guncelSiralama !== null ? trSayi(persona.guncelSiralama) : '—'}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, fontSize: 12.5, color: color.ink.secondary }}>
                 <CalendarIcon />
-                <span style={numText}>{yksYil} YKS'ye {trSayi(yksKalan)} gün</span>
+                <span style={numText}>
+                  {yksYil !== null && yksKalan !== null
+                    ? `${yksYil} YKS'ye ${trSayi(yksKalan)} gün`
+                    : 'Sınav tarihi kayıtlı değil'}
+                </span>
               </div>
             </div>
           </div>

@@ -135,7 +135,13 @@ export function PanelPage(): React.ReactElement {
     };
   }, [yeniden]);
 
-  const hedefPct = persona ? Math.min(100, Math.round((persona.bugunCozulenDk / Math.max(1, persona.gunlukHedefDk)) * 100)) : 0;
+  // 31 Tem 2026 ölçümü: bugunCozulenDk ve gunlukHedefDk 77/77 kullanıcıda null.
+  // Veri yokken %0'lık halka "hedefinin sıfırını yaptın" der — oysa HEDEF YOK.
+  // null => halka yerine '—' gösterilir; uydurma yüzde üretilmez.
+  const hedefPct =
+    persona && persona.bugunCozulenDk !== null && persona.gunlukHedefDk !== null
+      ? Math.min(100, Math.round((persona.bugunCozulenDk / Math.max(1, persona.gunlukHedefDk)) * 100))
+      : null;
   const gunAdi = new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
   const gunOnce = sinav ? Math.max(0, Math.round((Date.now() - new Date(sinav.tarih).getTime()) / 86400000)) : 0;
   const tamamGorev = GOREVLER.filter((g) => g.ok).length;
@@ -181,7 +187,7 @@ export function PanelPage(): React.ReactElement {
                   <div>
                     <h1 style={{ fontSize: 29, fontWeight: 800, margin: 0 }}>Merhaba, {persona.adKisa}</h1>
                     <p style={{ marginTop: 6, fontSize: 14, color: color.ink.secondary }}>
-                      Bugün <strong>2 görevin</strong> kaldı — serini <strong><span style={numText}>{persona.seri + 1}</span>. güne</strong> taşımana 1 çalışma kaldı.
+                      Bugün <strong>2 görevin</strong> kaldı — {persona.seri !== null ? (<>serini <strong><span style={numText}>{persona.seri + 1}</span>. güne</strong> taşımana 1 çalışma kaldı.</>) : null}
                     </p>
                   </div>
                   <span style={{ fontSize: 13, color: color.ink.muted }}>{gunAdi}</span>
@@ -201,8 +207,12 @@ export function PanelPage(): React.ReactElement {
                     </div>
                   </div>
                   <div style={{ ...kartStil, background: color.paper.subtle, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                    <ProgressRing pct={hedefPct} size={128} ringColor={color.dawn.coralCtaBg} sublabel="günlük hedef" />
-                    <div style={{ ...numText, marginTop: 12, fontSize: 12.5, color: color.ink.muted }}>{persona.bugunCozulenDk} dk çalıştın · hedef {persona.gunlukHedefDk} dk</div>
+                    {hedefPct !== null ? (
+                      <ProgressRing pct={hedefPct} size={128} ringColor={color.dawn.coralCtaBg} sublabel="günlük hedef" />
+                    ) : (
+                      <div style={{ ...numText, fontSize: 28, color: color.ink.muted }} aria-label="günlük hedef verisi yok">—</div>
+                    )}
+                    <div style={{ ...numText, marginTop: 12, fontSize: 12.5, color: color.ink.muted }}>{persona.bugunCozulenDk ?? '—'} dk çalıştın · hedef {persona.gunlukHedefDk ?? '—'} dk</div>
                   </div>
                 </div>
 

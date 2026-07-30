@@ -62,7 +62,7 @@ export const kiroHandlers = [
 
   // --- SPRINT8 · Grup 6 Oyunlaştırma uçları ---
   // /level — Lig kompozisyonu getLevel() için (getLeague live → /me + /level).
-  http.get('*/level', () => HttpResponse.json(seviyeBilgiFrom(D.seviyeEsik, D.persona.xp))),
+  http.get('*/level', () => HttpResponse.json(seviyeBilgiFrom(D.seviyeEsik, D.persona.xp ?? 0))),
 
   // Lig — backend snake_case DTO (client snake→camel + /me/level ile map eder).
   http.get('*/api/v1/leagues/current', () =>
