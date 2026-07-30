@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import time
 from pathlib import Path
+from typing import ClassVar
 
 from .base_detector import BaseDetector
 
@@ -41,7 +42,7 @@ class HookManager:
     """
 
     # All available detector classes
-    DETECTOR_CLASSES: list[type[BaseDetector]] = [
+    DETECTOR_CLASSES: ClassVar[list[type[BaseDetector]]] = [
         AssertTrueDetector,
         EchoSuccessDetector,
         PlaceholderDetector,
@@ -53,7 +54,15 @@ class HookManager:
     ]
 
     # Supported file extensions
-    SUPPORTED_EXTENSIONS = {'.py', '.sh', '.yml', '.yaml', '.js', '.ts', '.tsx'}
+    SUPPORTED_EXTENSIONS: ClassVar[set[str]] = {
+        ".py",
+        ".sh",
+        ".yml",
+        ".yaml",
+        ".js",
+        ".ts",
+        ".tsx",
+    }
 
     def __init__(self, config: GlobalConfig | None = None):
         """
@@ -73,10 +82,7 @@ class HookManager:
         for detector_cls in self.DETECTOR_CLASSES:
             # Get detector-specific config if available
             detector_name = detector_cls.__name__
-            detector_config = self.config.detectors.get(
-                detector_name,
-                DetectorConfig()
-            )
+            detector_config = self.config.detectors.get(detector_name, DetectorConfig())
 
             try:
                 detector = detector_cls(config=detector_config)
@@ -97,8 +103,7 @@ class HookManager:
         """
         if not self.config.enabled:
             return HookResult(
-                exit_code=ExitCode.SUCCESS,
-                summary="Reward hacking detection disabled"
+                exit_code=ExitCode.SUCCESS, summary="Reward hacking detection disabled"
             )
 
         start_time = time.perf_counter()
@@ -106,10 +111,9 @@ class HookManager:
         files_analyzed = 0
 
         # Filter to supported files
-        valid_files = [
-            f for f in file_paths
-            if self._should_analyze(f)
-        ][:self.config.max_files]
+        valid_files = [f for f in file_paths if self._should_analyze(f)][
+            : self.config.max_files
+        ]
 
         # Process each file
         for file_path in valid_files:
@@ -132,16 +136,10 @@ class HookManager:
         execution_time_ms = (time.perf_counter() - start_time) * 1000
 
         # Aggregate results
-        return self._aggregate_results(
-            all_results,
-            execution_time_ms,
-            files_analyzed
-        )
+        return self._aggregate_results(all_results, execution_time_ms, files_analyzed)
 
     async def _run_detectors(
-        self,
-        file_path: str,
-        content: str
+        self, file_path: str, content: str
     ) -> list[DetectionResult]:
         """
         Run all enabled detectors on a single file.
@@ -159,9 +157,7 @@ class HookManager:
         tasks = []
         for detector in self.detectors:
             if detector.is_enabled():
-                task = self._run_detector_with_timeout(
-                    detector, file_path, content
-                )
+                task = self._run_detector_with_timeout(detector, file_path, content)
                 tasks.append(task)
 
         # Run all detectors concurrently
@@ -169,7 +165,10 @@ class HookManager:
             detector_results = await asyncio.gather(*tasks, return_exceptions=True)
 
             for result in detector_results:
-                if isinstance(result, Exception):
+                # BaseException, Exception DEĞİL: gather(return_exceptions=True)
+                # CancelledError'ı da döndürür ve o Exception'ın alt sınıfı değil —
+                # `Exception` ile daraltmak onu listeye extend etmeye çalışıyordu.
+                if isinstance(result, BaseException):
                     # Log but don't fail
                     continue
                 if result:
@@ -178,10 +177,7 @@ class HookManager:
         return results
 
     async def _run_detector_with_timeout(
-        self,
-        detector: BaseDetector,
-        file_path: str,
-        content: str
+        self, detector: BaseDetector, file_path: str, content: str
     ) -> list[DetectionResult]:
         """
         Run a single detector with timeout.
@@ -196,8 +192,7 @@ class HookManager:
         """
         try:
             return await asyncio.wait_for(
-                detector.detect(file_path, content),
-                timeout=self.config.timeout_seconds
+                detector.detect(file_path, content), timeout=self.config.timeout_seconds
             )
         except TimeoutError:
             print(f"Warning: {detector.name} timed out on {file_path}")
@@ -230,7 +225,7 @@ class HookManager:
             File content or None if error
         """
         try:
-            return Path(file_path).read_text(encoding='utf-8')
+            return Path(file_path).read_text(encoding="utf-8")
         except Exception:
             return None
 
@@ -238,7 +233,7 @@ class HookManager:
         self,
         results: list[DetectionResult],
         execution_time_ms: float,
-        files_analyzed: int
+        files_analyzed: int,
     ) -> HookResult:
         """
         Aggregate detection results into HookResult.
@@ -257,15 +252,23 @@ class HookManager:
         info_count = sum(1 for r in results if r.severity == SeverityLevel.INFO)
 
         # Determine exit code
+        #
+        # UYARI SIFIR OLMAYAN KOD DÖNDÜREMEZ (29 Tem 2026). pre-commit/pre-push
+        # çerçevesi sıfır olmayan HER kodu başarısızlık sayar; bu yüzden eski
+        # `elif warning_count > 0: WARNING(1)` dalı uyarıyı fiilen bloklayıcı
+        # yapıyordu ve `--fail-on-warning` bayrağını anlamsız kılıyordu — bayrağın
+        # var olması, uyarının varsayılanda BLOKLAMAMASI gerektiğinin kanıtı.
+        # Uyarılar yine yazdırılır; sadece çıkışı kirletmez.
+        # Sözleşme: tests/hooks/reward_hacking/test_severity_from_confidence.py
         if critical_count > 0 or (warning_count > 0 and self.config.fail_on_warning):
             exit_code = ExitCode.BLOCKING_ERROR
-        elif warning_count > 0:
-            exit_code = ExitCode.WARNING
         else:
             exit_code = ExitCode.SUCCESS
 
         # Generate summary
-        summary = self._generate_summary(results, critical_count, warning_count, info_count)
+        summary = self._generate_summary(
+            results, critical_count, warning_count, info_count
+        )
 
         return HookResult(
             exit_code=exit_code,
@@ -276,7 +279,7 @@ class HookManager:
             results=results,
             summary=summary,
             execution_time_ms=execution_time_ms,
-            files_analyzed=files_analyzed
+            files_analyzed=files_analyzed,
         )
 
     def _generate_summary(
@@ -284,7 +287,7 @@ class HookManager:
         results: list[DetectionResult],
         critical_count: int,
         warning_count: int,
-        info_count: int
+        info_count: int,
     ) -> str:
         """
         Generate human-readable summary.
@@ -304,7 +307,9 @@ class HookManager:
         lines = []
 
         if critical_count > 0:
-            lines.append(f"❌ REWARD HACKING DETECTED - {critical_count} critical issue(s)")
+            lines.append(
+                f"❌ REWARD HACKING DETECTED - {critical_count} critical issue(s)"
+            )
         elif warning_count > 0:
             lines.append(f"⚠️ Warnings found - {warning_count} issue(s)")
         else:
@@ -329,7 +334,9 @@ class HookManager:
                     SeverityLevel.INFO: "🔵",
                 }.get(result.severity, "⚪")
 
-                lines.append(f"  {severity_icon} Line {result.line_number}: {result.message}")
+                lines.append(
+                    f"  {severity_icon} Line {result.line_number}: {result.message}"
+                )
                 lines.append(f"     Code: {result.code_snippet[:60]}...")
                 lines.append(f"     Fix: {result.remediation[:60]}...")
             lines.append("")
@@ -358,8 +365,7 @@ class HookManager:
 
 
 async def run_reward_hacking_detection(
-    file_paths: list[str],
-    config: GlobalConfig | None = None
+    file_paths: list[str], config: GlobalConfig | None = None
 ) -> HookResult:
     """
     Convenience function to run reward hacking detection.

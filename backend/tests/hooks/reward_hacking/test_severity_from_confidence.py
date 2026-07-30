@@ -34,7 +34,7 @@ from __future__ import annotations
 import pytest
 
 from hooks.reward_hacking.base_detector import BaseDetector
-from hooks.reward_hacking.models.enums import PatternType, SeverityLevel
+from hooks.reward_hacking.models.enums import ExitCode, PatternType, SeverityLevel
 
 pytestmark = [pytest.mark.unit, pytest.mark.security]
 
@@ -108,3 +108,50 @@ def test_esik_dedektorlerdeki_gercek_degerlerle_tutarli():
         "Eşik değişiyorsa dedektörlerdeki confidence dağılımı YENİDEN ÖLÇÜLMELİ: "
         "grep -rn 'confidence=' backend/hooks/reward_hacking/detectors/"
     )
+
+
+# ---------------------------------------------------------------------------
+# Çıkış kodu sözleşmesi — severity düzeltmesi tek başına yetmedi
+#
+# 29 Tem: severity WARNING'e indi ama pre-commit çerçevesi SIFIR OLMAYAN her kodu
+# başarısızlık sayar, dolayısıyla exit 1 de push'u bloklamaya devam etti.
+#
+# hook_manager.py:260-265
+#     if critical > 0 or (warning > 0 and fail_on_warning): exit = 2
+#     elif warning > 0:                                     exit = 1
+#
+# CLI'nin kendi yardım metni "Exit codes: 0=clean, 1=warning, 2=critical (blocks commit)"
+# diyor ve ayrıca `--fail-on-warning` diye OPT-IN bir bayrak sunuyor. Eğer exit 1 zaten
+# blokluyorsa o bayrak anlamsızdır. Bayrağın varlığı niyetin kanıtı: uyarı varsayılanda
+# bloklamaz, isteyen CI --fail-on-warning ile sıkılaştırır.
+# ---------------------------------------------------------------------------
+
+
+def _cli(tmp_path, icerik: str, *ek_arg: str) -> int:
+    from hooks.reward_hacking.cli import main
+
+    dosya = tmp_path / "test_ornek.py"
+    dosya.write_text(icerik, encoding="utf-8")
+    return main([str(dosya), *ek_arg])
+
+
+# 12'den fazla test + 'hypothesis' geçmeyen içerik -> yalnızca advisory bulgu üretir
+_SADECE_UYARI = "\n".join(
+    f"def test_{i}():\n    x = {i}\n    assert x == {i}\n" for i in range(13)
+)
+_GERCEK_IHLAL = "def test_sahte():\n    assert True\n"
+
+
+def test_sadece_uyari_varsa_cikis_kodu_bloklamaz(tmp_path):
+    """Yalnız advisory bulgu -> exit 0. pre-commit sıfır olmayan HER kodu bloklar."""
+    assert _cli(tmp_path, _SADECE_UYARI) == ExitCode.SUCCESS
+
+
+def test_fail_on_warning_ile_uyari_bloklar(tmp_path):
+    """`--fail-on-warning` bayrağı anlamını korumalı: sıkı modda uyarı bloklar."""
+    assert _cli(tmp_path, _SADECE_UYARI, "--fail-on-warning") == ExitCode.BLOCKING_ERROR
+
+
+def test_gercek_ihlal_varsayilanda_da_bloklar(tmp_path):
+    """MUTASYON GÜVENCESİ: `assert True` bayraksız da exit 2 vermeli."""
+    assert _cli(tmp_path, _GERCEK_IHLAL) == ExitCode.BLOCKING_ERROR

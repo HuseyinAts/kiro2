@@ -39,7 +39,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="reward-hacking-check",
         description="Detect reward hacking patterns in code files",
-        epilog="Exit codes: 0=clean, 1=warning, 2=critical (blocks commit)",
+        epilog=(
+            "Exit codes: 0=clean or advisory-only, 2=critical (blocks push). "
+            "Advisories are printed but never block; use --fail-on-warning to "
+            "make them blocking. Code 1 is reserved for the tool itself failing "
+            "(interrupt/crash), never for a finding."
+        ),
     )
 
     parser.add_argument("files", nargs="+", help="Files or directories to analyze")
