@@ -37,7 +37,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: postgres  # pragma: allowlist secret
           POSTGRES_DB: kiro2
         ports:
           - 5434:5432
@@ -58,9 +58,9 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2  # pragma: allowlist secret
       REDIS_URL: redis://localhost:6379/0
-      JWT_SECRET: test-jwt-secret-for-golden-flows-ci-not-for-production-use-only
+      JWT_SECRET: test-jwt-secret-for-golden-flows-ci-not-for-production-use-only  # pragma: allowlist secret
       BACKEND_URL: http://localhost:8000
       PYTHONIOENCODING: utf-8
 
@@ -169,7 +169,7 @@ jobs:
           # Baseline: 0 risky blocks across backend/api/**/*.py.
           python scripts/audit_httpexception_guard.py --fail
 
-      - name: AST lint — Pydantic `user_id: int` type lie (rule-of-five)
+      - name: "AST lint — Pydantic `user_id: int` type lie (rule-of-five)"
         working-directory: backend
         run: |
           # Session 148 CI gate (seventh linter in the family):

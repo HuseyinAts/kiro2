@@ -15,7 +15,6 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
-  workflow_dispatch:
 
 env:
   PYTHON_VERSION: "3.11"
