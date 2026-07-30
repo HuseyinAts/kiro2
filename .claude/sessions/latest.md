@@ -1,6 +1,6 @@
 ## Session Handoff — 2026-07-30 (öğle)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `730259d1a` (öncesi `b9d4fb967`) · **PUSH EDİLMEDİ** (origin 2 commit geride)
+**Son commit:** `7f99acc48` · **PUSH EDİLDİ** (`688e42377..7f99acc48`, origin senkron)
 **Uncommitted:** temiz
 
 ### Yapilanlar — #453 KAPANDI
@@ -31,12 +31,13 @@ YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **294 passe
 Bekçi kendi commit'inin dosyalarında exit 0.
 
 ### Sonraki Adimlar (maks 5)
-1. **PUSH** (2 commit) — kullanıcı onayı bekliyor.
-2. **#454** `reward_hacking_config.yaml` hiç okunmuyor (`--config` geçilmiyor,
+1. **#454** `reward_hacking_config.yaml` hiç okunmuyor (`--config` geçilmiyor,
    `GlobalConfig().detectors == {}`) → karar: YAML'ı yükle / entry'ye ekle / sil.
-3. **#455** mock oranı **%125 (5/4)** raporluyor — `count_mock_usage` aritmetiği.
-4. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
-5. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
+   Yüklenirse min_confidence 0.8→0.7 olur, bulgu sayısı artar — census yeniden koş.
+2. **#455** mock oranı **%125 (5/4)** raporluyor — `count_mock_usage` aritmetiği.
+3. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
+4. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
+5. **#452** `.claude/hooks/pre-tool-use.py` aynı literal kusurunu taşıyor.
 
 ### Kararlar (gelecek session tekrar tartismasin)
 - **Mock/hardcoded WARNING'dir, CRITICAL değil** — ölçüldü: hardcoded dedektörü
