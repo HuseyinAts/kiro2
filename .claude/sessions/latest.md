@@ -1,6 +1,6 @@
 ## Session Handoff — 2026-07-30 (öğleden sonra)
 **Branch:** feature/self-evolution-optimization · **Son commit:** `a9429896b`
-**Push:** `688e42377..5cede288a` edildi; `a9429896b` push BEKLİYOR · **Uncommitted:** temiz
+**Push:** `688e42377..a9429896b` + handoff commit'leri edildi, origin SENKRON · **Uncommitted:** temiz
 
 ### Yapilanlar
 - **#453 KAPANDI** `base_detector.py` + `models/detection_result.py` — `DetectorConfig.severity`
@@ -16,7 +16,6 @@
   kaldığı için silindi. `5cede288a`
 - **#454 KAPANDI** ölü `reward_hacking_config.yaml` silindi — yüklemenin **no-op** olduğu
   ölçüldü. `a9429896b`
-- 3 yeni test dosyası: `test_severity_calibration.py` (15) · `test_mock_ratio.py` (11)
 
 ### Ölçümler (`guard_severity_census.py`, 250 dosya, imza iki kolda aynı)
 CRITICAL **474→64** · WARNING **253→663** · bloklayan dosya **68/250→19/250**. Toplam
@@ -25,15 +24,16 @@ exit 2. YAML A/B (tek süreç): 64/658/722 = 64/658/722, **fark 0**.
 
 ### Fail Eden Testler
 YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **305 passed, 1 xfailed**
-(xfail = #451 işaretçisi). Mutasyon: #453 **15/15**, #455 **10/11** (kalan 1 negatif kontrol).
+(xfail=#451). Yeni 26 test (calibration 15 + mock_ratio 11). Mutasyon: #453 **15/15**,
+#455 **10/11** (kalan 1 yapısal negatif kontrol — `mocksuz` invaryantı 0≤0).
 
 ### Sonraki Adimlar (maks 5)
-1. **`a9429896b` PUSH** (1 commit bekliyor).
-2. **#457** CLI `--max-files` dilimi non-deterministik (742/742/744 ölçüldü) —
+1. **#457** CLI `--max-files` dilimi non-deterministik (742/742/744 ölçüldü) —
    `collect_files` `SUPPORTED_EXTENSIONS` **set**'i üzerinde dönüyor, `sorted()` gerek.
-3. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
-4. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
-5. **#452** `.claude/hooks/pre-tool-use.py` aynı literal kusurunu taşıyor.
+2. **#447** `getMe` tasarım kararı (31 dosya, `/api/v1/me` 404).
+3. **#456** `backend/backend/` dizini + BOM'lu `test_end_to_end_platform.py`.
+4. **#452** `.claude/hooks/pre-tool-use.py` aynı literal kusurunu taşıyor.
+5. **#449** bare-except politikası kendisiyle çelişiyor (loglanan bare except CRITICAL).
 
 ### Kararlar (gelecek session tekrar tartismasin)
 - **Mock/hardcoded WARNING'dir** — ölçüldü: hardcoded dedektörü `_is_test_file` kapısı
