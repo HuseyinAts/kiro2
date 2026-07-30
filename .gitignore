@@ -247,6 +247,13 @@ zemberek/
 /models/
 !backend/models/
 
+# 30 Tem 2026 (#456): backend/backend/ — kok dizinde `backend/...` yazan bir
+# yol hatasi yuzunden olusmus artik dizini. 6592 dosya IZLENIYORDU (6590'i
+# BOS metrics JSON'u: {"metrics": {}, "performance": {}, "recent_errors": []},
+# Eyl 2025) ve hicbir kod referansi yoktu. Takipten cikarildi + silindi.
+# Ankrajli: yalnizca bu yol, `backend` adli baska dizinler etkilenmez.
+/backend/backend/
+
 # Training data (large)
 ai_training_data/
 osym_extracted/
