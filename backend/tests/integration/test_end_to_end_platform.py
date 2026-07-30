@@ -1,4 +1,3 @@
-﻿
 """
 End-to-End Platform Test Suite
 KapsamlÄ± platform entegrasyon testleri
@@ -24,7 +23,9 @@ import pytest
 import websockets
 
 # Module skip: SQLAlchemy registry conflict - Multiple classes for "PointTransaction"
-pytestmark = pytest.mark.skipif(True, reason="SQLAlchemy registry conflict: Multiple PointTransaction classes")
+pytestmark = pytest.mark.skipif(
+    True, reason="SQLAlchemy registry conflict: Multiple PointTransaction classes"
+)
 
 # Model imports
 from models import Question, Student
@@ -155,7 +156,7 @@ class TestFullExamWorkflow:
             f"http://localhost:8000/api/v1/exam/{session_id}/finish", headers=headers
         )
         assert finish_response.status == 200
-        finish_data = await finish_response.json()
+        await finish_response.json()  # govdeyi tuket; deger kullanilmiyor (F841)
 
         # 6. SonuÃ§larÄ± alma
         results_response = await test_client.get(
@@ -418,8 +419,11 @@ class TestWebSocketRealTimeCommunication:
         for connection in connections:
             try:
                 await connection.send(json.dumps(test_complete_message))
-            except Exception:
-                pass
+            except Exception as hata:
+                # 30 Tem 2026: burada `pass` vardi ve dosyanin BOM'u yuzunden
+                # ast.parse duştugu icin bekci bu yutmayi HIC gormuyordu (#456).
+                # Baglantinin kapali olmasi beklenen bir durum, ama sessiz degil.
+                print(f"test_complete gonderilemedi (baglanti kapali olabilir): {hata}")
 
         # Client task'larÄ± tamamla
         await asyncio.gather(*client_tasks, return_exceptions=True)
@@ -1317,7 +1321,7 @@ class TestOfflineOnlineSynchronization:
             assert results_response.status == 200
             results = await results_response.json()
             assert "total_score" in results
-            assert results["completed_offline"] == True
+            assert results["completed_offline"] is True
 
             # 6. Offline progress verilerini senkronize etme
             progress_data = {

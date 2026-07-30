@@ -205,6 +205,21 @@ exclude = [
 "conftest.py" = [
     "E402",    # Module level import not at top (common in conftest)
 ]
+"tests/integration/test_end_to_end_platform.py" = [
+    # 30 Tem 2026 (#456): `pytestmark = pytest.mark.skipif(...)` BILINCLI olarak
+    # import'lardan ONCE duruyor — testing.md dersi #9: pytestmark bir modul
+    # degiskenidir, modul tam yuklenmeden atlama gerceklesmez, dolayisiyla
+    # sorunlu import'lardan once gelmesi gerekir. Yani E402 burada duzeltilecek
+    # bir kusur degil, kastedilen desen. Dosya BOM silinirken kapiya ilk kez girdi.
+    "E402",
+]
+"fix_validators.py" = [
+    # 30 Tem 2026 (#456): kok dizinde duran tek-seferlik bakim script'i; koda
+    # HICBIR referansi yok (grep ile dogrulandi) ve `print` onun arayuzu.
+    # BOM silinirken kapiya ilk kez girdi. Silinmeye aday, ayri karar.
+    "T201",    # print — script arayuzu
+    "PTH123",  # open() yerine Path.open() — tek-seferlik script, dokunulmadi
+]
 "scripts/**/*.py" = [
     "T201",    # print statements allowed in CLI scripts
     "S608",    # SQL string build from internal boolean flags (no user input)
