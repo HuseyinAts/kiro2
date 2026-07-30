@@ -43,9 +43,8 @@ YOK. `pytest tests/hooks/reward_hacking/ tests/unit/test_hooks/` → **279 passe
 - **Yanlış davranış teste çivilenmez**: bilinen açık `xfail(strict=True)` ile
   işaretlenir; kapanınca test kırmızıya döner ve güncellemeye zorlar.
 - **Geri alım**: `git checkout HEAD -- <yol>` + `git status` (aynı komutta doğrula).
-  `cp /tmp` YASAK — bash `/tmp` (MSYS) ≠ Python `/tmp` (`C:\tmp`), bu oturumda
-  sessiz veri kaybına yol açtı.
-- **Commit mesajı**: çok satırlı veya `` ` ``/`$` içeren mesajlarda `-F <dosya>`;
-  inline `-m` komut ikamesi tetikleyip mesajı sessizce bozdu.
+  `cp /tmp` YASAK — bash `/tmp` (MSYS) ≠ Python `/tmp` (`C:\tmp`), veri kaybı oldu.
+- **Commit mesajı**: `` ` ``/`$` içeren mesajlarda `-F <dosya>`; inline `-m`
+  komut ikamesi tetikleyip mesajı sessizce bozdu.
 - **Ortak tabana dokununca** (`base_detector` = 8 dedektörün yolu) tüketici test
   paketi de koşulur: `tests/unit/test_hooks/` (179 test).
