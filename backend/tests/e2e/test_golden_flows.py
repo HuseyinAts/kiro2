@@ -113,9 +113,9 @@ def test_gf1_login_and_me(client: httpx.Client):
     body = resp.json()
     # /auth/me returns {"user": {...}} — accept both flat and nested shapes
     user = body.get("user") if isinstance(body.get("user"), dict) else body
-    assert user.get("email") == STUDENT["email"], (
-        f"GF1 regression: /auth/me did not return expected email. Body: {body}"
-    )
+    assert (
+        user.get("email") == STUDENT["email"]
+    ), f"GF1 regression: /auth/me did not return expected email. Body: {body}"
 
 
 # ---------------------------------------------------------------------------
@@ -135,9 +135,9 @@ def test_gf2_dag_topics_lowercase_and_uppercase(client: httpx.Client):
 
     for subject in ("MATEMATIK", "matematik"):
         resp = client.get(f"/api/v1/dag/topics?subject_id={subject}", headers=headers)
-        assert resp.status_code == 200, (
-            f"dag/topics {subject} HTTP {resp.status_code}: {resp.text[:300]}"
-        )
+        assert (
+            resp.status_code == 200
+        ), f"dag/topics {subject} HTTP {resp.status_code}: {resp.text[:300]}"
         body = resp.json()
         # Accept either {"topics":[...]} or a raw list
         topics = body.get("topics") if isinstance(body, dict) else body
@@ -191,9 +191,9 @@ def test_gf3b_osym_subjects_reachable(client: httpx.Client):
     )
     body = resp.json()
     assert body.get("success") is True, f"GF3b expected success, got: {body!r}"
-    assert "data" in body and isinstance(body["data"], list), (
-        f"GF3b expected data list: {body!r}"
-    )
+    assert "data" in body and isinstance(
+        body["data"], list
+    ), f"GF3b expected data list: {body!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -207,9 +207,9 @@ def test_gf4_review_queue_reachable(client: httpx.Client):
     resp = client.get(
         "/api/v1/learning-path/review-queue?limit=5", headers=_auth_headers(token)
     )
-    assert resp.status_code < 500, (
-        f"GF4 review-queue crashed: {resp.status_code} {resp.text[:300]}"
-    )
+    assert (
+        resp.status_code < 500
+    ), f"GF4 review-queue crashed: {resp.status_code} {resp.text[:300]}"
 
 
 # ---------------------------------------------------------------------------
@@ -249,9 +249,9 @@ def test_gf6_admin_question_bank_reachable(client: httpx.Client):
         "/api/v1/admin/content/questions?limit=1",
         headers=_auth_headers(token),
     )
-    assert resp.status_code < 500, (
-        f"GF6 admin questions crashed: {resp.status_code} {resp.text[:300]}"
-    )
+    assert (
+        resp.status_code < 500
+    ), f"GF6 admin questions crashed: {resp.status_code} {resp.text[:300]}"
 
 
 # ---------------------------------------------------------------------------
@@ -275,9 +275,9 @@ def test_gf7_video_fallback_both_cases(client: httpx.Client):
         resp = client.get(
             f"/api/v1/learning-path/fallback-videos/{subject}", headers=headers
         )
-        assert resp.status_code == 200, (
-            f"GF7 {subject} HTTP {resp.status_code}: {resp.text[:300]}"
-        )
+        assert (
+            resp.status_code == 200
+        ), f"GF7 {subject} HTTP {resp.status_code}: {resp.text[:300]}"
         body = resp.json()
         assert body.get("success") is True, (
             f"GF7 regression: fallback-videos returned success=false for "
@@ -299,9 +299,9 @@ def test_gf8_parent_children_reachable(client: httpx.Client):
     resp = client.get("/api/v1/parent/children", headers=_auth_headers(token))
     if resp.status_code == 404:
         resp = client.get("/api/v1/veli/cocuklar", headers=_auth_headers(token))
-    assert resp.status_code < 500, (
-        f"GF8 parent children crashed: {resp.status_code} {resp.text[:300]}"
-    )
+    assert (
+        resp.status_code < 500
+    ), f"GF8 parent children crashed: {resp.status_code} {resp.text[:300]}"
 
 
 # ===========================================================================
@@ -393,9 +393,9 @@ def test_gf3c_exam_session_save_answer_smoke(client: httpx.Client):
             "response_time": 5.0,
         },
     )
-    assert save_resp.status_code == 200, (
-        f"GF3c save-answer {save_resp.status_code}: {save_resp.text[:300]}"
-    )
+    assert (
+        save_resp.status_code == 200
+    ), f"GF3c save-answer {save_resp.status_code}: {save_resp.text[:300]}"
     save_body = save_resp.json()
     assert save_body.get("success") is True, f"GF3c save-answer: {save_body!r}"
 
@@ -416,13 +416,13 @@ def test_gf3d_exam_session_complete_smoke(client: httpx.Client):
         f"/api/v1/osym-exam/{session_id}/complete",
         headers=headers,
     )
-    assert comp.status_code == 200, (
-        f"GF3d complete HTTP {comp.status_code}: {comp.text[:400]}"
-    )
+    assert (
+        comp.status_code == 200
+    ), f"GF3d complete HTTP {comp.status_code}: {comp.text[:400]}"
     body = comp.json()
-    assert "total_questions" in body or "net_score" in body, (
-        f"GF3d unexpected body keys: {list(body.keys())[:20]}"
-    )
+    assert (
+        "total_questions" in body or "net_score" in body
+    ), f"GF3d unexpected body keys: {list(body.keys())[:20]}"
 
 
 # ---------------------------------------------------------------------------
@@ -441,9 +441,9 @@ def test_gf1x_logout_invalidates_bearer_token(client: httpx.Client):
     assert lo.status_code == 200, f"GF1x logout: {lo.status_code} {lo.text[:200]}"
 
     me2 = client.get("/api/v1/auth/me", headers=headers)
-    assert me2.status_code == 401, (
-        f"GF1x post-logout /me expected 401, got {me2.status_code}: {me2.text[:200]}"
-    )
+    assert (
+        me2.status_code == 401
+    ), f"GF1x post-logout /me expected 401, got {me2.status_code}: {me2.text[:200]}"
 
 
 # ---------------------------------------------------------------------------
@@ -467,9 +467,9 @@ def test_gf1y_profile_put_smoke(client: httpx.Client):
         headers=headers,
         json={"ad": ad, "soyad": soyad},
     )
-    assert put.status_code == 200, (
-        f"GF1y PUT profile HTTP {put.status_code}: {put.text[:400]}"
-    )
+    assert (
+        put.status_code == 200
+    ), f"GF1y PUT profile HTTP {put.status_code}: {put.text[:400]}"
     pbody = put.json()
     assert pbody.get("success") is True, f"GF1y profile success=False: {pbody!r}"
     u2 = pbody.get("user")
@@ -490,16 +490,16 @@ def test_gf1z_refresh_token_json_returns_usable_access(client: httpx.Client):
     token JSON'da döner — bu test o yolu kilitler.
     """
     login = client.post("/api/v1/auth/login", json=STUDENT)
-    assert login.status_code == 200, (
-        f"GF1z login HTTP {login.status_code}: {login.text[:300]}"
-    )
+    assert (
+        login.status_code == 200
+    ), f"GF1z login HTTP {login.status_code}: {login.text[:300]}"
     lj = login.json()
     rt = lj.get("refreshToken") or lj.get("refresh_token")
     assert rt, f"GF1z login missing refreshToken, keys={list(lj.keys())}"
     ref = client.post("/api/v1/auth/refresh", json={"refreshToken": rt})
-    assert ref.status_code == 200, (
-        f"GF1z refresh HTTP {ref.status_code}: {ref.text[:400]}"
-    )
+    assert (
+        ref.status_code == 200
+    ), f"GF1z refresh HTTP {ref.status_code}: {ref.text[:400]}"
     rj = ref.json()
     new_access = rj.get("access_token") or rj.get("token")
     assert new_access, f"GF1z refresh missing access: {rj!r}"
@@ -566,13 +566,13 @@ def test_gf1w_save_answer_updates_mastery(client: httpx.Client):
             "response_time": 5.0,
         },
     )
-    assert save_resp.status_code == 200, (
-        f"GF1w save-answer HTTP {save_resp.status_code}: {save_resp.text[:300]}"
-    )
+    assert (
+        save_resp.status_code == 200
+    ), f"GF1w save-answer HTTP {save_resp.status_code}: {save_resp.text[:300]}"
     save_body = save_resp.json()
-    assert save_body.get("success") is True, (
-        f"GF1w save-answer success=False: {save_body}"
-    )
+    assert (
+        save_body.get("success") is True
+    ), f"GF1w save-answer success=False: {save_body}"
 
     # 4. State-change assertion. This is the core of the test.
     algorithm = save_body.get("algorithm")
@@ -687,16 +687,16 @@ def test_gf4w1_register_wrong_answer_accepts_valid_id(client: httpx.Client):
         headers=_auth_headers(student_token),
         json={"question_ids": [str(q_id)]},
     )
-    assert resp.status_code == 200, (
-        f"GF4w.1 register-wrong-answers HTTP {resp.status_code}: {resp.text[:300]}"
-    )
+    assert (
+        resp.status_code == 200
+    ), f"GF4w.1 register-wrong-answers HTTP {resp.status_code}: {resp.text[:300]}"
     rbody = resp.json()
-    assert rbody.get("success") is True, (
-        f"GF4w.1 register-wrong-answers success=False: {rbody}"
-    )
-    assert rbody.get("created", 0) >= 0, (
-        f"GF4w.1 register-wrong-answers missing 'created' field: {rbody}"
-    )
+    assert (
+        rbody.get("success") is True
+    ), f"GF4w.1 register-wrong-answers success=False: {rbody}"
+    assert (
+        rbody.get("created", 0) >= 0
+    ), f"GF4w.1 register-wrong-answers missing 'created' field: {rbody}"
 
 
 # ---------------------------------------------------------------------------
@@ -737,9 +737,9 @@ def test_gf4w2_submit_review_if_due_card_exists(client: httpx.Client):
         headers=headers,
         json={"card_id": str(card_id), "grade": 3},
     )
-    assert resp.status_code == 200, (
-        f"GF4w.2 submit-review HTTP {resp.status_code}: {resp.text[:300]}"
-    )
+    assert (
+        resp.status_code == 200
+    ), f"GF4w.2 submit-review HTTP {resp.status_code}: {resp.text[:300]}"
     rbody = resp.json()
     assert rbody.get("success") is True, f"GF4w.2 submit-review success=False: {rbody}"
     assert rbody.get("next_due"), (
@@ -792,7 +792,19 @@ def test_gf6w_admin_question_create_returns_success(client: httpx.Client):
         headers=_auth_headers(admin_token),
         json=payload,
     )
-    assert resp.status_code == 200, (
+    # 200 = olusturuldu, 409 = ayni soru zaten kayitli.
+    #
+    # NEDEN 409 KABUL EDILIYOR (30 Tem 2026'da olculdu): yukaridaki `payload`
+    # SABIT. Ayni metin -> ayni soru_hash -> ILK basarili kosumdan sonra HER
+    # kosum bir cakismadir. Eskiden uc bu durumda da 200 + "basariyla eklendi"
+    # donuyordu, yani bu golden flow aylardir OLUSTURMAYI degil cakisma yolunu
+    # test ediyordu ve 200 aldigi icin sessizce yesildi. Uc artik dogruyu
+    # soyluyor (409 + mevcut kayit id'si).
+    #
+    # Yuku benzersizlestirmek (uuid4) alternatifti ve REDDEDILDI: her CI kosumu
+    # uretim question_bank tablosuna kalici bir satir yazardi. golden-flows.md
+    # kurali zaten "semantik durum, asla 500" diyor.
+    assert resp.status_code in (200, 409), (
         f"GF6w admin question create HTTP {resp.status_code}: "
         f"{resp.text[:300]}. Likely dual-trap: "
         f"soru_bankasi_service.py:183 passes legacy kwargs "
@@ -800,9 +812,16 @@ def test_gf6w_admin_question_create_returns_success(client: httpx.Client):
         f"primary_topic_id NOT NULL FK constraint."
     )
     rbody = resp.json()
-    assert rbody.get("success") is True, (
-        f"GF6w admin question create success=False: {rbody}"
-    )
+    if resp.status_code == 409:
+        # Cakisma yanitinin ISE YARAR olmasi sart: hangi kaydin cakistigi
+        # soylenmezse admin sorunu ayirt edemez.
+        assert "id" in rbody.get(
+            "detail", ""
+        ), f"GF6w cakisma yaniti mevcut kaydin id'sini icermiyor: {rbody}"
+        return
+    assert (
+        rbody.get("success") is True
+    ), f"GF6w admin question create success=False: {rbody}"
 
     # Best-effort cleanup — never fail the test on cleanup issues.
     new_id = (
@@ -855,9 +874,9 @@ def test_gf2w_gamification_points_award_advances_balance(client: httpx.Client):
             f"{before_resp.text[:200]}"
         )
     before_total = (before_resp.json().get("data") or {}).get("total_points")
-    assert before_total is not None, (
-        f"GF2w gamification points: no total_points in response {before_resp.json()}"
-    )
+    assert (
+        before_total is not None
+    ), f"GF2w gamification points: no total_points in response {before_resp.json()}"
 
     # `reason` MUST be a whitelisted system source — the award endpoint rejects
     # arbitrary reasons with 403 reason_not_allowed (only system-generated points
@@ -876,9 +895,9 @@ def test_gf2w_gamification_points_award_advances_balance(client: httpx.Client):
 
     # State-change assertion.
     after_resp = client.get("/api/v1/gamification/points", headers=headers)
-    assert after_resp.status_code == 200, (
-        f"GF2w post-award balance query HTTP {after_resp.status_code}"
-    )
+    assert (
+        after_resp.status_code == 200
+    ), f"GF2w post-award balance query HTTP {after_resp.status_code}"
     after_total = (after_resp.json().get("data") or {}).get("total_points")
     assert after_total is not None and after_total > before_total, (
         f"GF2w gamification silent failure: award returned success but "
@@ -961,9 +980,9 @@ def test_gf5w_teacher_class_create_canonical_schema(client: httpx.Client):
         f"regression."
     )
     body = resp.json()
-    assert body.get("success") is True or body.get("id") or body.get("data"), (
-        f"GF5w teacher class create unexpected body: {body}"
-    )
+    assert (
+        body.get("success") is True or body.get("id") or body.get("data")
+    ), f"GF5w teacher class create unexpected body: {body}"
 
 
 # ---------------------------------------------------------------------------
@@ -1039,9 +1058,10 @@ def test_gf2wb_placement_start_returns_session_and_question(client: httpx.Client
         headers=_auth_headers(token),
         json={"exam_type": "TYT"},
     )
-    assert resp.status_code in (200, 201), (
-        f"GF2wB placement/start HTTP {resp.status_code}: {resp.text[:300]}"
-    )
+    assert resp.status_code in (
+        200,
+        201,
+    ), f"GF2wB placement/start HTTP {resp.status_code}: {resp.text[:300]}"
     body = resp.json()
     session_id = body.get("session_id")
     question = body.get("question")
@@ -1095,17 +1115,17 @@ def test_gf5wb_daily_quest_progress_advances(client: httpx.Client):
         headers=headers,
         json={"progress": 1},
     )
-    assert post_resp.status_code == 200, (
-        f"GF5wB quest progress HTTP {post_resp.status_code}: {post_resp.text[:300]}"
-    )
+    assert (
+        post_resp.status_code == 200
+    ), f"GF5wB quest progress HTTP {post_resp.status_code}: {post_resp.text[:300]}"
 
     after_resp = client.get("/api/v1/daily-quests/today", headers=headers)
     assert after_resp.status_code == 200
     quests_after = (after_resp.json().get("data") or {}).get("quests") or []
     target_after = next((q for q in quests_after if q.get("id") == quest_id), None)
-    assert target_after is not None, (
-        f"GF5wB quest {quest_id} disappeared after progress: {quests_after}"
-    )
+    assert (
+        target_after is not None
+    ), f"GF5wB quest {quest_id} disappeared after progress: {quests_after}"
     after_value = int(target_after.get("current_value") or 0)
     assert after_value > before_value or target_after.get("completed") is True, (
         f"GF5wB silent failure: quest {quest_id} progress POST returned 200 "
@@ -1295,9 +1315,9 @@ def test_gf1wb_auth_refresh_token_is_persisted():
             f"cannot find it)."
         )
         new_token = refresh_resp.json().get("access_token")
-        assert new_token, (
-            f"GF1wB auth/refresh returned no access_token: {refresh_resp.json()}"
-        )
+        assert (
+            new_token
+        ), f"GF1wB auth/refresh returned no access_token: {refresh_resp.json()}"
 
 
 # ===========================================================================
@@ -1785,9 +1805,9 @@ def test_gf24_enhanced_chat_message_not_500(client: httpx.Client):
             "available_time": 60,
         },
     )
-    assert prof.status_code != 500, (
-        f"GF24 prerequisite create-profile failed: {prof.text[:300]}"
-    )
+    assert (
+        prof.status_code != 500
+    ), f"GF24 prerequisite create-profile failed: {prof.text[:300]}"
     try:
         body = prof.json()
     except Exception:
@@ -4966,12 +4986,13 @@ def test_gf150_public_journey_health_probes_not_500(client: httpx.Client):
             f"{resp.text[:300]}. Check get_db_session_context + route mount."
         )
         data = resp.json()
-        assert data.get("status") in ("ok", "degraded"), (
-            f"GF150 {path} missing status: {data!r}"
-        )
-        assert data.get("service") == expected_service, (
-            f"GF150 {path} service mismatch: {data!r}"
-        )
+        assert data.get("status") in (
+            "ok",
+            "degraded",
+        ), f"GF150 {path} missing status: {data!r}"
+        assert (
+            data.get("service") == expected_service
+        ), f"GF150 {path} service mismatch: {data!r}"
         assert "database" in data, f"GF150 {path} missing database flag: {data!r}"
 
     chroma_paths = (
@@ -4993,9 +5014,9 @@ def test_gf150_public_journey_health_probes_not_500(client: httpx.Client):
             "healthy",
             "unhealthy",
         ), f"GF150 {path} unexpected status: {data!r}"
-        assert data.get("service") == expected_service, (
-            f"GF150 {path} service mismatch: {data!r}"
-        )
+        assert (
+            data.get("service") == expected_service
+        ), f"GF150 {path} service mismatch: {data!r}"
         assert data.get("chroma_connection_mode") in (
             "http",
             "embedded",
@@ -5007,9 +5028,10 @@ def test_gf150_public_journey_health_probes_not_500(client: httpx.Client):
         f"{r_push.text[:300]}."
     )
     push_data = r_push.json()
-    assert push_data.get("status") in ("ok", "degraded"), (
-        f"GF150 push/health: {push_data!r}"
-    )
+    assert push_data.get("status") in (
+        "ok",
+        "degraded",
+    ), f"GF150 push/health: {push_data!r}"
     assert push_data.get("service") == "pwa_push", push_data
     assert "subscribe_implemented" in push_data, push_data
 
@@ -5024,12 +5046,13 @@ def test_gf_veli_onay_verify_invalid(client: httpx.Client):
     resp = client.post(
         "/api/v1/auth/veli-onay/verify", json={"token": "gf-gecersiz-token"}
     )
-    assert resp.status_code < 500, (
-        f"GF veli-onay crashed: {resp.status_code} {resp.text[:300]}"
-    )
-    assert resp.status_code in (400, 422), (
-        f"GF veli-onay beklenen 400/422, gelen: {resp.status_code} {resp.text[:200]}"
-    )
+    assert (
+        resp.status_code < 500
+    ), f"GF veli-onay crashed: {resp.status_code} {resp.text[:300]}"
+    assert resp.status_code in (
+        400,
+        422,
+    ), f"GF veli-onay beklenen 400/422, gelen: {resp.status_code} {resp.text[:200]}"
 
 
 # ---------------------------------------------------------------------------
@@ -5046,9 +5069,9 @@ def test_gf_curator_flagged_bridge(client: httpx.Client):
         "/api/v1/curator/flagged?page=1&per_page=5",
         headers=_auth_headers(token),
     )
-    assert resp.status_code < 500, (
-        f"GF curator/flagged crashed: {resp.status_code} {resp.text[:300]}"
-    )
+    assert (
+        resp.status_code < 500
+    ), f"GF curator/flagged crashed: {resp.status_code} {resp.text[:300]}"
     if resp.status_code == 200:
         body = resp.json()
         assert "items" in body and "total" in body, f"şema eksik: {body}"
@@ -5071,9 +5094,9 @@ def test_gf_org_members_tenant_scoped(client: httpx.Client):
     """
     token = _login(client, ADMIN)
     resp = client.get("/api/v1/org/members", headers=_auth_headers(token))
-    assert resp.status_code < 500, (
-        f"GF org/members crashed: {resp.status_code} {resp.text[:300]}"
-    )
+    assert (
+        resp.status_code < 500
+    ), f"GF org/members crashed: {resp.status_code} {resp.text[:300]}"
     if resp.status_code == 200:
         members = resp.json()
         assert isinstance(members, list), f"liste bekleniyor: {members}"
@@ -5087,6 +5110,7 @@ def test_gf_org_members_role_gated(client: httpx.Client):
     token = _login(client, STUDENT)
     resp = client.get("/api/v1/org/members", headers=_auth_headers(token))
     # 403 (rol guard) beklenen; asla 500
-    assert resp.status_code in (403, 404), (
-        f"GF org/members rol guard: beklenen 403/404, gelen {resp.status_code}"
-    )
+    assert resp.status_code in (
+        403,
+        404,
+    ), f"GF org/members rol guard: beklenen 403/404, gelen {resp.status_code}"

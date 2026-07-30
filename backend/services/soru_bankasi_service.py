@@ -340,6 +340,10 @@ class SoruBankasiServisi:
                         session.add(yeni_soru)
                     await session.commit()
                     await session.refresh(yeni_soru)
+                    # Geçici (map'lenmemiş) bayrak: çağıran GERÇEKTEN oluşturuldu
+                    # mu yoksa mevcut kayıt mı döndü, ayırt edebilsin. DB'ye
+                    # yazılmaz. Aşağıdaki IntegrityError dalı bunu True yapar.
+                    yeni_soru.zaten_mevcuttu = False
                     return yeni_soru
                 except IntegrityError as ie:
                     # Savepoint is rolled back automatically by context manager.
@@ -356,6 +360,7 @@ class SoruBankasiServisi:
                     res = await session.execute(stmt)
                     existing = res.scalar_one_or_none()
                     if existing:
+                        existing.zaten_mevcuttu = True
                         return existing
 
                     # If it wasn't found under is_active=True, search without active status filter
@@ -363,6 +368,7 @@ class SoruBankasiServisi:
                     res_any = await session.execute(stmt_any)
                     existing_any = res_any.scalar_one_or_none()
                     if existing_any:
+                        existing_any.zaten_mevcuttu = True
                         return existing_any
 
                     # If still not found, propagate exception
@@ -393,7 +399,7 @@ class SoruBankasiServisi:
 
         return {
             "difficulty": base_difficulty + konu_bonus,
-            "discrimination": random.uniform(
+            "discrimination": random.uniform(  # nosec B311 - kriptografik degil: IRT/soru secimi icin istatistiksel rastgelelik
                 0.8, 2.0
             ),  # Gerçek verilerle kalibre edilecek
             "guessing": 0.25,  # 4 seçenekli sorular için
@@ -622,7 +628,7 @@ class SoruBankasiServisi:
 
                     # Yeterli soru varsa rastgele seç, yoksa tümünü döndür
                     if len(tum_sorular) >= soru_sayisi:
-                        return random.sample(tum_sorular, soru_sayisi)
+                        return random.sample(tum_sorular, soru_sayisi)  # nosec B311 - kriptografik degil: IRT/soru secimi icin istatistiksel rastgelelik
                     logger.debug(
                         f"İstenen: {soru_sayisi}, Mevcut: {len(tum_sorular)} - Tümü döndürülüyor"
                     )
@@ -681,7 +687,7 @@ class SoruBankasiServisi:
 
                     if len(konu_sorulari) >= sayi:
                         # Rastgele seçim yap
-                        secilen = random.sample(konu_sorulari, sayi)
+                        secilen = random.sample(konu_sorulari, sayi)  # nosec B311 - kriptografik degil: IRT/soru secimi icin istatistiksel rastgelelik
                         secilen_sorular.extend(secilen)
                     else:
                         # Yeterli soru yoksa mevcut tümünü al

@@ -168,7 +168,7 @@ async def kullanici_guncelle(
         if not updates:
             raise HTTPException(400, detail="Guncellenecek alan yok")
         await db.execute(
-            _sql_text(f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"),  # noqa: S608  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
+            _sql_text(f"UPDATE users SET {', '.join(updates)} WHERE id = :uid"),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             params,
         )
         await db.commit()
@@ -317,7 +317,7 @@ async def soru_bankasi_listesi(
             params,
         )
         cnt = await db.execute(
-            _sql_text(f"SELECT COUNT(*) FROM question_bank {where}"),  # noqa: S608  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
+            _sql_text(f"SELECT COUNT(*) FROM question_bank {where}"),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             {k: v for k, v in params.items() if k not in ("limit", "offset")},
         )
         return {
@@ -358,6 +358,23 @@ async def soru_ekle(
         soru = await soru_bankasi_servisi.soru_ekle(
             {**soru_data, "created_by": admin.id}
         )
+
+        # Servis, soru_hash çakışmasında MEVCUT satırı döndürüyor (bilinçli:
+        # toplu içe-aktarma yolu için idempotentlik). Burada koşulsuz
+        # "başarıyla eklendi" demek SAHTE SAHİPLİK üretiyordu: çağıran,
+        # başkasının sorusunun kimliğini kendi oluşturduğu sanıyordu. DELETE
+        # ucu çalışır hâle geldiği için (aynı gün, A-1) bu artık bir veri
+        # kaybı yoluna bağlanıyor.
+        # `getattr` varsayılanı False: bayrağı taşımayan bir dönüş çakışma
+        # SAYILMAZ, aksi halde sağlam oluşturma yolları 409 ile kırılırdı.
+        if getattr(soru, "zaten_mevcuttu", False):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    f"Bu soru zaten kayıtlı (id: {soru.id}). Yeni kayıt oluşturulmadı."
+                ),
+            )
+
         return {
             "success": True,
             "data": {
