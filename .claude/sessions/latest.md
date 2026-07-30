@@ -1,45 +1,48 @@
-# Oturum devri — 30 Tem 2026
+# Oturum devri — 30-31 Tem 2026
 
-Branch: feature/self-evolution-optimization · HEAD `c92ca057b` (push edildi)
+Branch: feature/self-evolution-optimization · HEAD `ad1236cad` (push edildi)
 
-## Bu turda kapanan
+## Canlıda ve doğrulandı
 
-**#447 GET /api/v1/me (A3)** — `8d9f6738a`
-- `services/persona_service.py`: users+streaks+student_profiles TEK sorgu
-  (LEFT JOIN, N+1 yok); `guncelSiralama` RANK() ile gerçek veriden.
-  Eşleme `_persona_kur()` SAF fonksiyonunda (DB'siz testlenir).
-- Kaynağı olmayan alan `None` — 0/"" DEĞİL. Ölçüm: streaks 4/77,
-  target_university 0/74, günlük saat 0/74. 3 alan (hedefSiralama,
-  yksTarihi, bugunCozulenDk) için besleyecek kolon HİÇ yok.
-- 7/7; 404 dalı mutasyonla çivili (dal kaldırıldı → test FAILED).
-
-**#444 Öğretmen roster silme (B)** — `c92ca057b`
-- İş yalnız frontend DEĞİLDİ: liste `classroom_id` döndürmüyordu, arayüz
-  DELETE URL'ini kuramıyordu. Ad→id türetmek reddedildi (ad benzersiz değil).
-- 3 kimlik: `id`(üyelik, uç KABUL ETMEZ) / `student_user_id` / `classroom_id`.
-  Karıştırma → sessiz 404. İki testte de açıkça çivilendi.
-- backend 22/22 (452 sn), frontend 3/3; URL mutasyonu öldürücü.
+- **Ağ açığı KAPALI.** LAN'dan kimliksiz cevap anahtarı çekilebiliyordu
+  (`192.168.8.2:9200` → 200 + `correct_answer`). ES+Redis 127.0.0.1'e bağlandı;
+  ES 64.270/64.270 doküman ve redis 114/114 anahtar KORUNDU, kesinti yok.
+  ES compose'a geri kondu (9 aydır yetimdi), volume `external: true`.
+- **ES kapı takası.** alias `turkiye_sinav_platform` → `..._v20260731` (25.127).
+  Servis edilen index'te `correct_answer` = **0** (önce 64.270).
+  Yedek `..._yedek_20260731` (64.270) duruyor; geri alım tek `_aliases`.
+  Gecelik senkron **04:00** beat'te ve ELLE KOŞTURULUP kanıtlandı:
+  `{'eklenen': 0, 'silinen': 0, 'kapi': 25127}`.
+- **CI YAML** (2 dosya 3,5 aydır ayrıştırılamıyordu), **admin DELETE 500→200/404**,
+  **çakışmada 409**, **`/api/v1/me` 401** (önce 404). 3 imaj rebuild + deploy.
 
 ## Ölçümler (iddia değil)
 
-- **Depoda koşan authed HTTP testi YOKTU.** `client`+`auth_headers` ile istek
-  260 sn'de dönmedi; aynı app'te kimliksiz 401 testi 48 sn'de geçti → fark
-  auth yolunun DB erişimi. Kontrol kolu sinyal vermedi (tek aday
-  `test_osym_exam_api.py` 31/31 skip). **Ayrı görev — teşhis edilmedi.**
-- `from main import app` = 54 sn, 1253 rota (asılma import'ta değil).
+- question_bank **187.835** / aktif 110.858 / kapı 25.127. CLAUDE.md'nin
+  "77.336 in production" rakamı bir DOSYA SATIR SAYISI (d-dataset jsonl) —
+  ama 2026-03-04 ingest'i (77.327 satır) ile provenance zinciri KAPALI.
+- Persona: 15 alanın **6'sı 77/77 kullanıcıda null**, 2'si %95.
+- Gerçek öğrenci trafiği **0** (117 oturumun hepsi tek test hesabından).
 
-## Yarım bırakılan — bilerek
+## Kalan — sadece operatör
 
-**A4 Persona nullability.** Backend 15 alanın **12'sini** nullable yapıyor;
-frontend tipi hepsini non-null sanıyor. Genişletince `tsc` **38 hata / 8 ekran**
-verdi (BasarimlarPage, GeriSayimPage, KutlamaPage, LigPage, MolaPage,
-PanelPage, SeriDondurmaPage). Düzeltmesi ekran başına görüntüleme kararı
-istiyor (`?? 0` XP'de "0 XP" yazar = uydurma). `tsc`'yi kırık bırakmamak için
-GERİ ALINDI, doğrulandı (0 hata). Ayrı iş.
+1. **#441 SMTP** — `.env.mvp`'ye `SMTP_HOST` VE `SMTP_SERVER` (farklı dosyalar
+   farklı adı okuyor). 6/6 değişken boş, şifre kurtarma işlevsiz.
+2. **#436/#390/#270 GitHub** — harcama limiti, 20 Dependabot PR'ı, `gh` yok.
+3. **#445** — 73 STUDENT hesabı triyajı.
+4. **Karar:** CI fix master'a gidince merge kapısı 7 ölçülmüş kalemle ilk PR'ı
+   bloklar. Feature dalında tetiklenmiyor, acele yok.
 
-## Sıradaki
+## Kalan — kod
 
-1. A4 (yukarıdaki 8 ekran, null → '—')
-2. #444 kalan: canlı duman testi (ekle+çıkar, gerçek öğretmen hesabı)
-3. #458 temizlik · #433 ES kapı bypass
-4. Operatör: #441 SMTP · #445 STUDENT triyajı · #270/#390 CI
+- **#458** temizlik (149 çift-kodlanmış dizi + referanssız fix_validators.py)
+- **#444 canlı duman testi** (öğretmen ekle/çıkar, gerçek hesapla)
+- `soru_bankasi_service.py` lint borcu: E712 otomatik düzeltmesi PostgreSQL'de
+  FARKLI SQL üretiyor (ölçüldü) → BİLEREK ertelendi, pyproject'te gerekçeli.
+
+## Bu oturumun dersi
+
+Yeşil test doğruluk kanıtı değil — 6 kez kanıtlandı: `.dockerignore` `scripts/`i
+eliyordu (gecelik görev her gece çökerdi, testler host'ta yeşildi), ES analiz
+zinciri kaybolmuştu (doküman sayısı tutuyordu), `# nosec` f-string'in içine
+düşüp SQL'i bozmuştu, GF6w aylardır çakışma yolunu test ediyordu.
