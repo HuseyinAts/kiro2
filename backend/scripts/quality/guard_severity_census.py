@@ -112,7 +112,7 @@ async def m2_korpus(corpus: str, limit: int) -> None:
 
     print("=" * 72)
     print(f"M2  KORPUS SAYIMI  corpus={corpus}  dosya={len(dosyalar)}")
-    print(f"    korpus imzasi: sha1={imza}  (kollar arasi AYNI olmali)")
+    print(f"    korpus imzasi: sha256[:12]={imza}  (kollar arasi AYNI olmali)")
     print("=" * 72)
 
     yonetici = HookManager(config=GlobalConfig(max_files=len(dosyalar) + 1))
