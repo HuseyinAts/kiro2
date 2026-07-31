@@ -85,15 +85,40 @@ def client() -> httpx.Client:
     c.close()
 
 
+# Rol basina TEK login. 178 test ayri ayri login atinca 31.'den sonrasi HTTP 429
+# aliyordu ve _login hepsini skip'e ceviriyordu -> 148/178 SKIP, kapi yesil ama
+# BOS (30 Tem 2026 olcumu, #462/B4). Onbellek rate-limit basincini YAPISAL olarak
+# kaldirir; asagidaki 429 dali yalnizca yalani gorunur kilar.
+# Sozlesme testi: tests/unit/test_golden_flow_login_gate.py
+_TOKEN_ONBELLEGI: dict[str, str] = {}
+
+
 def _login(client: httpx.Client, creds: dict[str, str]) -> str:
-    """Return access_token or skip the test with a clear message."""
+    """Return access_token; skip only when the ENVIRONMENT is genuinely missing.
+
+    429 is NOT an environment problem — it means this gate is throttling itself.
+    Converting it to skip produced a green suite that proved nothing.
+    """
+    email = creds["email"]
+    onbellekli = _TOKEN_ONBELLEGI.get(email)
+    if onbellekli:
+        return onbellekli
+
     resp = client.post("/api/v1/auth/login", json=creds)
-    if resp.status_code != 200:
-        pytest.skip(
-            f"login failed for {creds['email']}: {resp.status_code} {resp.text[:200]}"
+
+    if resp.status_code == 429:
+        pytest.fail(
+            f"login rate-limited for {email} (HTTP 429). Bu bir ORTAM eksikligi "
+            "DEGIL — kapi kendini bogyor. Token onbellegi devre disi kalmis "
+            "olabilir veya LOGIN_RATE_LIMIT_PER_MINUTE cok dusuk. "
+            "Skip'e cevirmek 148/178 SKIP yalanini geri getirir (#462)."
         )
+    if resp.status_code != 200:
+        pytest.skip(f"login failed for {email}: {resp.status_code} {resp.text[:200]}")
+
     token = resp.json().get("access_token")
     assert token, f"no access_token in login response: {resp.json()}"
+    _TOKEN_ONBELLEGI[email] = token
     return token
 
 
