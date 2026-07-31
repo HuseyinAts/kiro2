@@ -24,6 +24,22 @@ gerçekten kapandığı **ölçülmemişti**. Bu belge o ölçümdür.
 
 ---
 
+## 0.5 İLERLEME KAYDI
+
+> Her kapanış bir ANKRAJ taşır. Ankrajsız satır eklenmez.
+
+| Tarih | Görev | Sonuç | Commit |
+|---|---|---|---|
+| 1 Ağu | **#460** Canlı ölçüm turu | 5/6 komut koşuldu (6.'sı `gh` gerektiriyor). Sonuçlar §3.2-SONUÇ | — |
+| 1 Ağu | **#463** Hızlı kazanç paketi | 9 kalem + `.gitignore` Y6. Kendi yanlış alarmımı da düzelttim (kök `performance/` "kayıp" değildi — takipliydi) | `962f7d4c9` |
+| 1 Ağu | **#461** K1 `user_item_fsrs` | ✅ **KAPANDI.** Tablo restore + GRANT; sınıf bekçisi testi (5/5, 3'ü aleti doğruluyor). Uçlar 500 → 401 | `3773b3d42` |
+| 1 Ağu | **B1-canlı** | ✅ ES alias 25.127, `correct_answer` **0** | ölçüm |
+| 1 Ağu | **DEPLOY / B6-be / #447** | ✅ Backend imajı taze, `/api/v1/me` → 401 | ölçüm |
+
+**Açık P0 sayısı: 7 → 4** (`B4`+`B4-x`, `B5`, `F1`, `B2/#441 operatör`)
+
+---
+
 ## 1. Metodoloji
 
 **Aletler:** 13 paralel doğrulama ajanı (11 küme + 2 skeptik tur) + 1 bağımsız ajan (29 Tem
@@ -98,7 +114,15 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
 
 ### 3.1 P0 — beta/satış blokerleri
 
-- [ ] **K1 · `user_item_fsrs` tablosu yok, ama `/api/v1/fsrs` canlıda kayıtlı**
+- [x] ✅ **K1 · `user_item_fsrs` tablosu yok, ama `/api/v1/fsrs` canlıda kayıtlı**
+  → **KAPANDI 1 Ağu, `3773b3d42`.** Restore migration `restore_uif_20260801` +
+  `kiro2_app` GRANT (SELECT/INSERT/UPDATE/DELETE, `information_schema` teyidi).
+  Sınıf bekçisi `tests/integration/test_fsrs_schema_contract.py` 5/5 — 3'ü *aleti*
+  doğruluyor. Gerçek rolle (`SET ROLE kiro2_app`) servisin gerçek SQL'i koşuldu.
+  Uçlar 500 → **401**; kontrol kolu `/api/v1/fsrs/zzz` → 404.
+  *Alt-ajanın "env.py düzeltilmezse yine düşer" iddiası ÇÜRÜTÜLDÜ:*
+  `include_object()` çağrılarak ölçüldü, `env.py:117-118` yapısal kapısı zaten
+  koruyor → exclude satırı +0 değer, #451 gereği eklenmedi.
   `fsrs_service.py`'deki 5 raw SQL sabiti (satır 42/81/119/129/153) bu tabloya vuruyor.
   `c555a10f4b93_sync_db_changes.py:182` DROP ediyor; 27 Tem restore migration 6 tablo
   getirirken bunu **almadı**. `cat_session.py:1015` FSRS yazma hatasını `except Exception`
