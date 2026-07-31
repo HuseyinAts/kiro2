@@ -74,6 +74,25 @@
   `.kiro/hooks/04-osym-exam-validator.kiro.hook` silinen yola pytest komutu veriyor).
   Silinmedi — ayri karar.
 
+### 31 Tem 03:10 — #444 CANLI DOGRULANDI (kod degisikligi YOK, dagitim isi)
+- Dunku "konteynerde classroom_id YOK" satiri BAYAT: backend 00:43'te yeniden
+  kuruldu, roster uclarinin 4'u de canli openapi'de.
+- Frontend BAYATTI ve tarihle kanitlandi: kaynak `c92ca057b` **30 Tem 17:47**,
+  dagitilan imaj **30 Tem 04:43** → cikarma ozelliginden ~13 saat ONCE kurulmus.
+  `docker compose build frontend` + `up -d --no-deps frontend` yapildi.
+- Yeni chunk `ModernTeacherStudentsPage-cr80cNEB.js` (9.149 B; onceki 8.466 B):
+  `classroom_id`=1, `student_user_id`=1, `.delete(`=1, onay metni
+  "yalnizca bu sinifla" VAR. (`ogrenciCikar`/`DELETE` igneleri ISE YARAMAZ —
+  biri minify'da mangle olur, digeri `apiClient.delete()` metod cagrisi.)
+- BACKEND CANLI DONGU (gercek hesap `ogretmen@kiro2.com`):
+  roster 0 → POST ekle **200** → 1 → DELETE cikar **200** → 0, hedef kayit yok.
+- **YAN ETKI (benim hatam):** ayristiricim `{success,data}` sarmalini atlayip
+  "sinif yok" sandi ve `DUMAN-444` adli GERCEK bir sinif olusturdu
+  (`362bb437-e573-42ec-a79e-4c6a78d902fc`). Sinif silme UCU YOK (openapi:
+  /teacher/classes sadece GET,POST) → temizlik karari kullanicida.
+- **BULGU:** DB'de **30 adet "GF Golden Flow Class"** birikmis — golden-flow CI
+  her kosumda sinif yaratiyor, temizlemiyor. Ogretmen ekraninda gorunur kirlilik.
+
 ### Sonraki Adimlar (maks 5)
 1. 04:00 atisini gozle (beat'in KENDI tetiklemesi hala gorulmedi):
    `docker logs kiro2-celery-worker --since 8h | grep "ES senkronu"`
