@@ -264,6 +264,11 @@ coverage_reports/
 raporlar/
 test_results/
 performance/
+# Ankrajsiz `performance/` her derinlikte esliyor ve TEST KAYNAGINI de eliyordu:
+# backend/tests/performance/{__init__,test_chromadb_latency,test_elk_performance}.py
+# taze klonda kayboluyordu (31 Tem 2026 olcumu, Y6). Kural "uretilen raporlar"
+# icin; test kaynagi geri alinir.
+!backend/tests/performance/
 
 # Additional caches
 *.pickle

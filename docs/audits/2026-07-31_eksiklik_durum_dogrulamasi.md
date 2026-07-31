@@ -103,9 +103,38 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
   `c555a10f4b93_sync_db_changes.py:182` DROP ediyor; 27 Tem restore migration 6 tablo
   getirirken bunu **almadı**. `cat_session.py:1015` FSRS yazma hatasını `except Exception`
   ile yutuyor → tekrar sistemi **sessizce** çökük olabilir.
-  → Önce §3.2'deki `to_regclass` ölçümü. Tablo yoksa: restore migration
-  (`20260410_create_user_item_fsrs.py` DDL'inden) + `c555a10f4b93.upgrade()` gövdesini
-  no-op'a çevir (revision id korunarak).
+  **ÖLÇÜLDÜ (1 Ağu): tablo YOK, doğrulandı.** Ve kök neden bulundu — **sadece restore etmek
+  YETMEZ:**
+
+  > `backend/alembic/env.py:83` → `# "user_item_fsrs",` **yorumda.** Tablonun ORM modeli yok
+  > (kontrol kolu: `fsrs_cards` → `models/fsrs_models.py:37` isabet, bu → 0). Exclude
+  > listesinden çıkarılınca autogenerate onu "modelde yok, fazlalık" gördü ve
+  > `c555a10f4b93:183` `DROP TABLE ... CASCADE` üretti. Dosyanın **kendi uyarısı satır 79'da:**
+  > *"Bu listeye EKLE, çıkarma — çıkarmak DROP riskine yol açar."* Kural yazılıydı ve ihlal edildi.
+  > **env.py düzeltilmeden tabloyu geri getirirsen bir sonraki `--autogenerate` yine düşürür.**
+
+  **Ayrıca verdict (A) değil (C):** `fsrs_cards` üzerinde **tam ve çalışan ikinci bir**
+  tekrar döngüsü var (yazan `question_review_adapter.py:88` + `bkt_service.py:418`, okuyan
+  `learning_path_v2.py:1948/1987/2036`, frontend `ReviewQueuePanel.tsx:52`, **golden-flow
+  kapısı** `test_golden_flows.py:205/649/708`). İki paralel implementasyon öğrenciye iki ayrı
+  yüzeyden sunuluyor (`/fsrs-review` vs `ReviewQueuePanel`) — hangisinin kanonik olacağı
+  **ürün kararı**, restore bunu çözmez (`.claude/rules/path-naming.md` "duplicate implementasyon
+  yasak" buraya birebir uyuyor).
+
+  **Bugün 5 uç 500 veriyor:** `/due`, `/due?mercy=true`, `/review`, `/due-count`, `/stats`.
+  **Daha kötüsü sessiz kayıp:** `cat_session.py:1035` + `fsrs_service.py:362` her review'ı
+  tek tek yutuyor → her CAT oturumunun FSRS çıktısı sessizce çöpe gidiyor, dışarı istisna çıkmıyor.
+  **Ve DROP'tan sonra bu ölü koda iki kez özellik shiplendi** (mercy `ac4936f8b` 21 Tem
+  "TDD" etiketli, kalite kapısı `7ede1fcf9` 27 Tem) — sıfır test olduğu için fark edilmedi.
+
+  **TDD sırası:** RED-1 `test_alembic_exclude_guard.py` (`"user_item_fsrs" in
+  ALEMBIC_EXCLUDE_TABLES` — bugün FAIL, mutasyon: satırı tekrar yoruma al → kırmızı) →
+  env.py:83 yorumdan çıkar → RED-2 gerçek-DB `to_regclass IS NOT NULL` + `/due-count` < 500 →
+  yeni restore migration (`20260410_create_user_item_fsrs.py:18-36` DDL'i, `IF NOT EXISTS`).
+  **Tuzak:** uygulama `kiro2_app` non-superuser bağlanıyor —
+  `GRANT SELECT,INSERT,UPDATE,DELETE ... TO kiro2_app` eklenmezse 500 sürer, sadece
+  `UndefinedTable` yerine `InsufficientPrivilege` olur. `organization_id` kolonu yok →
+  RLS deseni uygulanamaz, "kapsam dışı" gerekçesini migration docstring'ine yaz.
 
 - [ ] **B4 · Golden Flow rate-limit skip'i kodda ele alınmadı — merge kapısı boş**
   `tests/e2e/test_golden_flows.py:88-97` hâlâ 200 dışı her yanıtı (429 dahil)
@@ -180,6 +209,38 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
   ```
   gh run list --workflow=golden-flows.yml --limit 5 --json conclusion,createdAt,event,headBranch
   ```
+
+### 3.2-SONUÇ · Ölçüm turu KOŞULDU (1 Ağu 2026)
+
+> Beş komut da koşuldu, altıncısı (`gh`) kurulu değil. **Her ölçüme kontrol kolu kondu.**
+
+| # | Ölçüm | Sonuç | Verdict değişimi |
+|---|---|---|---|
+| 1 | `to_regclass('public.user_item_fsrs')` | **NULL** — tablo YOK. Kontrol kolu: `question_bank`→ad döndü, `zzz_olmayan_tablo`→boş. İkinci alet `information_schema`: 6 `fsrs_*` tablo var, bu yok | **K1 DOĞRULANDI, P0** |
+| 2 | ES alias `_count` | **25.127** = kapı boyutuyla birebir. `correct_answer` exists → **0**. Kontrol kolu `question_text` exists → 25.127 (sorgu çalışıyor) | **B1-canlı → ✅ KAPANDI** |
+| 3 | Backend imajı | `soru_bankasi_servisi.soru_sil` = 1, `zaten_mevcuttu` = 1. `/app/api/me.py` mevcut | **DEPLOY → ✅ KAPANDI**, **B6-be → ✅ KAPANDI** |
+| 4 | SMTP env | `SMTP_SERVER/HOST/USERNAME/PASSWORD/PORT/EMAIL_FROM` **6/6 False** | **B2/#441 AÇIK doğrulandı, P0** |
+| 5 | `organizations` | **1 satır** | **N5:** bugün çapraz-kiracı sızıntısı imkânsız; B5/F7 "ikinci kiracıda açılacak tuzak" olarak kalıyor |
+| + | `/api/v1/me` HTTP probu | **401** (kontrol kolu `/zzz_olmayan` → 404) | **#447 → ✅ CANLI KAPANDI** |
+| + | Health yolu | `/health` → **200**, `/api/v1/health` → **404** | **D7-3 doğrulandı → düzeltildi** |
+| + | `question_bank` | **187.835 toplam / 110.858 aktif** | D1/D9 için kaynak |
+| + | `/openapi.json` | **1.226 operasyon / 1.148 yol / 800 schema** | D3 için kaynak |
+| + | PostgreSQL | **18.1** | D4 için kaynak |
+
+**Ölçüm turunda ORTAYA ÇIKAN iki yeni şey:**
+
+1. **ES yedek indeksi** `turkiye_sinav_platform_yedek_20260731` — 64.270 doküman, **hepsi
+   `correct_answer` taşıyor**, alias bağlı değil. Sızıntı riski **ÖLÇÜLDÜ: YOK** — hiçbir soru
+   sorgusu joker/`_all` kullanmıyor (kontrol kolu: aynı grep `analytics-*` ve `kiro2-*`
+   jokerlerini **buldu**, yani alet çalışıyor), üstelik API katmanında index'ten bağımsız ikinci
+   bir beyaz liste var (`api/elasticsearch.py:167,219,285`). **Ama retention YOK**
+   (`es_reindex.py` yedeği hiç silmiyor, `delete_index()` sıfır çağıranlı) → her cutover'da
+   birikir. Aksiyon: yedeği sil.
+2. **`Y3` sanılandan ağır.** `api/elasticsearch.py:353-491` `/admin/reindex/questions`
+   **canlı alias'a `correct_answer` (satır 399,453) + `explanation` (400,454) yazıyor.**
+   Bugün çalışmıyor çünkü `create_index(mapping=...)` yerine `mappings=` olmalı → `TypeError`
+   → 500. Yani orijinal sızıntıyı üreten kod yolu **duruyor ve onu kapatan tek şey bir kwarg
+   hatası**. Biri "düzeltirse" cevap anahtarı canlı indekse geri döner. P1 → **P0'a yakın**.
 
 ### 3.3 Hızlı kazanç — depo-kanıtlı, canlı ölçüm gerekmez
 

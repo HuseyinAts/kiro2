@@ -80,7 +80,8 @@ Her gorev tamamlanmadan once bu listeyi kontrol et:
 - [ ] Reward hacking pattern yok mu?
 - [ ] Guvenlik kontrolleri gecti mi?
 - [ ] Coverage dusmus mu?
-- [ ] Dogru tablo mu? (`question_bank` = 77K production, `questions` = BOS legacy)
+- [ ] Dogru tablo mu? (`question_bank` = production ~187K, `questions` = **36.381 satirlik
+      legacy — BOS DEGIL**. "BOS legacy" ifadesi 30 Tem 2026 olcumunde curutuldu.)
 - [ ] `is_active == True` filtresi var mi? (soru sorgularinda ZORUNLU)
 - [ ] Infra calisiyor mu? (ONCE health check, SONRA koda bak — detay asagida)
 - [ ] En basit cozum mu? (Daha basit alternatif varsa ONU sec — YAGNI)
@@ -98,7 +99,10 @@ Endpoint/servis hatasi goruldugunde ONCE altyapiyi kontrol et:
 2. PostgreSQL (port 5434 — native Windows): `pg_isready -p 5434`
    - Docker ise: `docker exec kiro2_postgres pg_isready`
 3. Redis: `redis-cli ping` veya `docker exec kiro2_redis redis-cli ping`
-4. Backend health: `curl -s http://localhost:8000/api/v1/health`
+4. Backend health: `curl -s http://localhost:8000/health`
+   - **`/api/v1/health` DEGIL** — `api/health.py:29` router'inda prefix YOK.
+     Olculdu (1 Agu 2026): `/health` -> 200, `/api/v1/health` -> **404**.
+     Yanlis yol saglikli backend'i "coktu" diye teshis ettirir.
 
 Kural: 503/500 donuyorsa %75 ihtimalle altyapi sorunu.
 ONCE altyapi kontrolu yap, SONRA koda bak.

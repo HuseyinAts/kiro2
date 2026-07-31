@@ -24,7 +24,15 @@ merge.
 
 Detailed per-wave probe tables, root-cause analyses, and hit-rate trailing
 indicator are archived in `docs/audits/golden-flows-history.md`. Current
-distribution as of Session 152: **166 tests → 164 PASS / 0 FAIL / 2 SKIP**.
+distribution as of Session 152: ~~**166 tests → 164 PASS / 0 FAIL / 2 SKIP**~~.
+
+> ⚠️ **BAYAT — 31 Tem 2026 ölçümü (`docs/audits/2026-07-31_eksiklik_durum_dogrulamasi.md`, D6):**
+> Gerçek **178 test** (`grep -c 'def test_' backend/tests/e2e/test_golden_flows.py`).
+> Canlı koşum **30 PASS / 148 SKIP / 0 FAIL** — 147 skip rate-limit, 1 seed.
+> **Aşağıdaki "Merge block" kuralı bu yüzden fiilen çalışmıyor:** `_login()`
+> (`test_golden_flows.py:88-97`) 429'u `pytest.skip`'e çeviriyor ve skip ASLA FAIL
+> üretmez; ayrıca `golden-flows.yml`'in `on:` bloğu `[main,master,develop]` iken aktif
+> dal 318 commit önde, yani kapı hiç tetiklenmiyor. Görev **#462**.
 
 ## Suite saturation (Session 152)
 
