@@ -18,12 +18,12 @@ KIRO2'nin **ölçülmüş** eksikliklerinin tek envanteri. Üç kaynağın birle
 | 29 Tem 12-oturum gözden geçirmesi | 12 | K5/K4.5 kapandı, kalanı açık |
 | **1 Ağu öz-denetim** (kapatılan işlere saldırı) | **49** | **hepsi açık** |
 
-**Toplam açık: 98 kalem.**
+**Toplam açık: 97 kalem.**
 *(Açılış 99 · S201'de `A.1`+`A.1b` kapandı `2d68e4811` · doğrulama turunda `T2b`
 eklendi = 98 · S202'de `A.4`+`A.4b`+`A.4c` kapandı `75c70dab5`+`2e439f40a` = 95 ·
 `A.2` kapandı `d5f07039d` = 94, ama onun canlı ölçümü **12 kırık Golden Flow**
 ortaya çıkardı → `GF-K1`/`GF-K2`/`GF-K3` eklendi = 97 · `GF-K1-b` kapandı
-`5bbdaa401`, altından `GF-K4` çıktı = **98**)*
+`5bbdaa401`, altından `GF-K4` çıktı = 98 · `GF-K1` kapandı `2f31b0c3a` = **97**)*
 
 > Sayaç bu turda **arttı**. Bu bir gerileme değil: `A.2` zaten "eşik hiç
 > ölçülmedi" diyordu; ölçüldüğünde ölçüm bütünlüğü kusuru kapandı ve altından
@@ -225,7 +225,17 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
 > değişmemiş; ayrıca 6 tablonun yokluğu `to_regclass` ile doğrulandı ve
 > trigram araması alias bulmadı.
 
-- [ ] **GF-K1** **ORM↔DB şema kayması — 6 tablo yok** (baskın sınıf, `UndefinedTable`
+- [x] **GF-K1** ✅ **KAPANDI** `2f31b0c3a` — **ölçülen değer: 12 kırık akış → 5**
+      (7 akış yeşile döndü: `gf27` `gf36` `gf49` `gf50` `gf59` `gf94` `gf137`).
+      Geçişli kapanış **6 değil 7 tablo** çıkardı: `appointments.availability_slot_id`
+      → `teacher_availability.id` FK'si vardı ve o tablo da yoktu; ölçülmeseydi
+      migration FK hatasıyla patlardı. DDL elle yazılmadı, ORM modellerinden
+      `render_python_code` ile üretildi. **8 PG enum tipi canlıda zaten vardı**
+      (`DROP TABLE` enum'u düşürmez) → hepsi `create_type=False`; düz `sa.Enum`
+      "type already exists" ile patlardı (CLAUDE.md sert kuralı, ölçümle yakalandı).
+      Test varlık **ve** ORM kolon eşitliği arıyor (GF106 dersi). RED 8/1 → GREEN 9/9.
+      *(orijinal bulgu aşağıda)*
+      ~~**ORM↔DB şema kayması — 6 tablo yok**~~ (baskın sınıf, `UndefinedTable`
       log'da **74 kez**). `A.1`/`K1`'deki `user_item_fsrs` vakasının aynısı:
       | tablo | düşen test |
       |---|---|
