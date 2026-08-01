@@ -18,9 +18,16 @@ KIRO2'nin **ölçülmüş** eksikliklerinin tek envanteri. Üç kaynağın birle
 | 29 Tem 12-oturum gözden geçirmesi | 12 | K5/K4.5 kapandı, kalanı açık |
 | **1 Ağu öz-denetim** (kapatılan işlere saldırı) | **49** | **hepsi açık** |
 
-**Toplam açık: 95 kalem.**
+**Toplam açık: 97 kalem.**
 *(Açılış 99 · S201'de `A.1`+`A.1b` kapandı `2d68e4811` · doğrulama turunda `T2b`
-eklendi = 98 · S202'de `A.4`+`A.4b`+`A.4c` kapandı `75c70dab5`+`2e439f40a` = 95)*
+eklendi = 98 · S202'de `A.4`+`A.4b`+`A.4c` kapandı `75c70dab5`+`2e439f40a` = 95 ·
+`A.2` kapandı `d5f07039d` = 94, ama onun canlı ölçümü **12 kırık Golden Flow**
+ortaya çıkardı → `GF-K1`/`GF-K2`/`GF-K3` eklendi = **97**)*
+
+> Sayaç bu turda **arttı**. Bu bir gerileme değil: `A.2` zaten "eşik hiç
+> ölçülmedi" diyordu; ölçüldüğünde ölçüm bütünlüğü kusuru kapandı ve altından
+> gerçek ürün kusurları çıktı. **Ölçmeyen bir kapı, kalem sayısını düşük
+> gösterir** — FAZ 0'ın önce gelme sebebi tam olarak budur.
 
 ### Nasıl kullanılır
 
@@ -134,8 +141,23 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       **üretilemez** → runtime'da çivilenemeyen bir assert olurdu. Mutasyon M3
       → doğru test düştü. Mutasyon M4 (fixture kaldır + DB'siz simülasyon) →
       `OperationalError` ile FAILED, fixture'lı hâlde 2 passed / 6 skipped.
-- [ ] **A.2** GF eşiği **150 hiç ölçülmedi** — 178 testin 150'si gerçekten
-      geçebilir mi bilinmiyor. Eşik yanlışsa kapı kalıcı kırmızı olur.
+- [x] **A.2** ✅ **KAPANDI** `d5f07039d` — eşik **ilk kez ölçüldü**. Canlı koşum
+      (`pytest tests/e2e/test_golden_flows.py -m golden_flow --junitxml=…`, 94 sn):
+      **178 test → 164 GEÇTİ / 12 DÜŞTÜ / 2 ATLANDI**. Atlanan ikisi de belgeli
+      (`gf4w2` seed'e bağlı due-card, `gf1wb` Bearer-only deploy). Yani
+      `ESIK = 150` **ulaşılabilirdi** — "kapı kalıcı kırmızı olur" endişesi
+      **çürüdü**. Kusur başka yerdeydi ve üçü de RED testle üretildi:
+      **(1)** sabit eşik suite büyüdükçe **gevşer** (250 testte `gecen>=150`
+      kuralı 90 skip'i yeşil geçirir — golden-flows.md "yeni özellik → yeni GF"
+      diyor); **(2)** `hata` hesaplanıyor ama **assert edilmiyordu** — gerçek
+      raporda ölçüldü: *eski kural 12 kırık akışa rağmen YEŞİL, yeni kural
+      KIRMIZI*; **(3)** mantık YAML içi heredoc'tu, **hiçbir testi yoktu**.
+      Fix: `backend/scripts/gf_esik_kapisi.py` + `tests/unit/test_gf_esik_kapisi.py`
+      (11 test, 3 alet-doğrulama), kural `toplam>=170 · hata==0 · atlanan<=5`
+      (mutlak geçen-sayısına bağlı değil → bayatlamaz). `-x` kaldırıldı: kapı
+      artık `hata`yı kendi ölçüyor ve rapor ilk hatada kesilmiyor.
+      **Mutasyon 5/5** (M4 ilk denemede syntax hatası verdi = geçersiz ölçüm,
+      tekrarlandı). Ölçümün yan ürünü aşağıdaki `GF-K1..K3`.
 - [ ] **A.3** 4 TDD testinden biri **vakum**: dekoratör kaynak metninde substring
       arıyor, fix'ten önce de sonra da geçer.
 - [ ] **A.5** F21-yeni'nin 503'ü **hiçbir testte çivili değil** (AST testi
@@ -189,6 +211,37 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       önce öldürüyor, sonra 503 diyor.
 - [ ] **YENI-8** `soru_guncelle` "bulunamadı" ve "istisna" için aynı `None` →
       DB arızası 404 "Soru bulunamadı" diye raporlanıyor.
+
+#### GF-K · 12 Golden Flow CANLIDA KIRIK (1 Ağu 2026 ölçümü, `A.2`'nin yan ürünü)
+
+> Ölçüm: 178 GF testinin **12'si düşüyor** — 10× HTTP 500, 1× ReadTimeout (30 sn),
+> 1× "Server disconnected". `golden-flows.md` bunları **merge-blocker** sayar.
+> **Fantom değil:** o uçların modülleri konteyner imajından (30 Tem 21:40) beri
+> değişmemiş; ayrıca 6 tablonun yokluğu `to_regclass` ile doğrulandı ve
+> trigram araması alias bulmadı.
+
+- [ ] **GF-K1** **ORM↔DB şema kayması — 6 tablo yok** (baskın sınıf, `UndefinedTable`
+      log'da **74 kez**). `A.1`/`K1`'deki `user_item_fsrs` vakasının aynısı:
+      | tablo | düşen test |
+      |---|---|
+      | `video_watch_sessions` | `gf59` video-analytics/sessions/start |
+      | `video_notes` | `gf94` video-analytics/notes |
+      | `emotional_states` | `gf49` diary/emotional |
+      | `appointments` | `gf137` teachers/my-appointments |
+      | `live_sessions` | `gf36` live-sessions create |
+      | `reasoning_cache` | (uç eşlemesi yapılmadı) |
+      Karar gerekiyor: migration ile **tabloları geri getir** mi, yoksa uçlar
+      ölü mü? (`user_item_fsrs`'te "geri getir" seçilmişti — `#461`.)
+- [ ] **GF-K2** **Kod kusuru ×2** — (a) `AttributeError: 'LearningStyleService'
+      object has no attribute 'update_behavioral_data'` (`gf82`); (b)
+      `AttributeError: 'AsyncSession' object has no attribute 'query'` — **senkron
+      ORM API'si async oturumda** (testing.md #25 sınıfı, uç eşlemesi yapılmadı).
+- [ ] **GF-K3** **Altyapı/performans ×2** — `gf27` content-management question
+      create **30 sn ReadTimeout** (suitedeki en yavaş test), `gf50` xp/awards
+      `RemoteProtocolError: Server disconnected` (worker çökmesi şüphesi).
+      Kalan 500'ler (`gf25` coaching/signals, `gf26` diary/goals, `gf88`
+      reports/exam/generate-pdf, `gf130` fsrs/flashcards/due) log ankrajıyla
+      henüz eşlenmedi — triyajın ikinci turu.
 
 ### FAZ 4 — Test altyapısı
 
