@@ -25,7 +25,14 @@ Politika kalibi (79/79, fail-closed 0):
 
 Ilk iki dal, GUC set edilmeyen her istegi TUM satirlara aciyor.
 GUC'u set eden tek uretim satiri `core/dependencies.py:456`, ona ulasan
-`get_current_tenant` ise 163 router dosyasinin 2'sinde.
+`get_current_tenant` ise **2** router dosyasinda (`api/org_api.py`,
+`api/org_billing_api.py`). Olcum komutlari (1 Agu 2026, backend/ icinden):
+
+    ls api/*.py app/api/*.py | wc -l                    -> 153
+    grep -rl 'APIRouter(' api/ app/api/ routers/ | wc -l -> 155
+    grep -rl 'get_current_tenant' api/ app/api/          -> 2 (+2 .pyc artefakti)
+
+Onceki surumde yazan "163 router" hicbir sayma yonteminden cikmiyordu (A.4).
 
 BU DOSYANIN TASARIMI — NEDEN BUGUN YESIL
 -----------------------------------------
@@ -41,8 +48,24 @@ icin bloke ederdi. Onun yerine bu dosya bir **TUZAK DEDEKTORU**:
   - **Ikinci organizasyon eklendigi an KIRMIZIYA doner.** O an permissive
     dal artik "zararsiz borc" degil, AKTIF sizintidir.
 
-Yani "ileride patlayacak" iddiasi, patlamanin GERCEKLESTIGI anda CI'i
-durduran bir olcume cevrilmis oluyor.
+Yani "ileride patlayacak" iddiasi, patlamanin GERCEKLESTIGI anda olculebilir
+hale gelmis oluyor.
+
+BU BEKCI NEREDE FIILEN KOSUYOR (A.4 — iddia duzeltmesi)
+--------------------------------------------------------
+Onceki surum "CI'i durdurur / is durur" diyordu. Olculdu, DOGRU DEGILDI:
+
+  - `ci.yml:281` testleri marker filtresiz kosuyor, yani bu dosya TOPLANIR —
+    ama `ci.yml` `on:` = [main, master, develop]; aktif dal master'dan 334
+    commit onde ve PR yok, dolayisiyla is HIC tetiklenmedi (#468 / F8-b).
+  - `deploy.yml:225` `-m integration` bacagina sahip, ama tetigi
+    `push: tags: v*.*.*` ve eslesen tag sayisi **0** -> hic kosmadi.
+  - Kosarsa bile `psycopg2` CI'da kurulu degildi; artik `importorskip` ile
+    ERROR yerine SKIP'e dusuyor (bkz. tests/test_ci_collection_guard.py).
+
+Yani bugun bu dosya **yalniz PG:5434'e erisebilen ortamlarda** (gelistirici
+makinesi, DB'li bir is) kirmiziya donebilir. Merge kapisi olmasi #468'e bagli.
+Bu bir eksiklik degil, BILINEN ve olculmus bir kapsam sinniridir.
 """
 
 from __future__ import annotations
@@ -63,6 +86,58 @@ DSN = "postgresql://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist
 # RLS + FORCE RLS tasidigi 1 Agu 2026'da dogrulanan ornek tablo.
 ORNEK_TABLO = "refresh_tokens"
 OLMAYAN_ORG = "00000000-0000-0000-0000-000000000000"
+
+# 1 Agu 2026 canli olcumu (psql -p 5434 -d kiro2):
+#   pg_policies (public)                        -> 79
+#   permissive kalip (IS NULL + = '')           -> 79
+#   relrowsecurity / relforcerowsecurity tablo  -> 79 / 79
+#
+# TABAN neden gerekli (A.4b): onceki surum yalniz `toplam == permissive`
+# assert ediyordu — bu bir ORAN esitligi. 79 politikadan 78'i DROP edilse
+# `toplam=1, permissive=1` olur ve test YESIL kalirdi; yani RLS kapsaminin
+# neredeyse tamamen kaldirilmasi fark edilmeden gecerdi.
+# Bu sabiti dusurmek BILINCLI bir karar olmali (#464 durum tablosuna yaz).
+POLITIKA_TABANI = 79
+
+
+def _kiracilik_yargisi(org_sayisi: int) -> str:
+    """`organizations` sayimini yoruma cevirir: 'kor' | 'tek' | 'cok'.
+
+    Saf fonksiyon olmasinin sebebi (A.4c): canli DB'de org sayisi 1'dir ve
+    0 URETILEMEZ, dolayisiyla korluk dali calisma zamaninda hic tetiklenemez —
+    civilenmemis bir assert olurdu. Ayrilinca uc dal da sinanabiliyor
+    (`test_alet_dogrulamasi_sifir_organizasyon_korluk_sayilir`).
+
+    Onceki surum `org_sayisi <= 1` yaziyordu ve 0 ile 1'i AYNI kefeye koyuyordu:
+    sayim RLS/rol yuzunden susturulsa dedektor sessizce "tek kiraci" der,
+    "sizinti yok" sonucu anlamsiz olurdu.
+    """
+    if org_sayisi < 1:
+        return "kor"
+    if org_sayisi == 1:
+        return "tek"
+    return "cok"
+
+
+def _kalip_ihlali(toplam: int, permissive: int, taban: int) -> str | None:
+    """Politika kalibi ihlalini aciklar; ihlal yoksa None.
+
+    Saf fonksiyon olmasinin sebebi: "78 politika silinirse yesil kalir"
+    vakumu canli DB'de UYGULANAMAZ (79 politikayi silip geri koymak yikici).
+    Mantik ayrildigi icin ayni senaryo sentetik girdiyle SINANABILIR —
+    bkz. `test_alet_dogrulamasi_oran_esitligi_tek_basina_yetmiyor`.
+    """
+    if toplam < taban:
+        return (
+            f"Politika sayisi {toplam}, taban {taban}. RLS kapsami daraltilmis "
+            "olabilir — oran esitligi bunu GIZLER (A.4b)."
+        )
+    if toplam != permissive:
+        return (
+            f"{toplam - permissive} politika artik permissive kalipta DEGIL. "
+            "Fail-closed'a gecis basladiysa #464 plani ve bu dosya guncellenmeli."
+        )
+    return None
 
 
 def _sorgula(
@@ -162,18 +237,52 @@ def test_permissive_dal_bugunku_davranisi_belgelenir(taban_satir: int) -> None:
     ), f"Bos-GUC gorunumu degisti: {guc_bos} != taban {taban_satir}."
 
 
-def test_ikinci_organizasyon_permissive_dali_aktif_sizintiya_cevirir() -> None:
+def test_alet_dogrulamasi_sifir_organizasyon_korluk_sayilir() -> None:
+    """A.4c KORLUGU SENTETIK OLARAK URETILIR.
+
+    Canli DB'de `organizations` 1 satir ve 0 uretilemez; bu yuzden korluk
+    dali calisma zamaninda hic tetiklenemez. Yargi ayrildigi icin uc dal da
+    burada sinanir — ozellikle 0 ile 1'in AYRI yargilar oldugu.
+    """
+    assert _kiracilik_yargisi(0) == "kor", (
+        "0 organizasyon 'kor' sayilmadi -> onceki `<= 1` davranisi geri gelmis; "
+        "susturulmus bir sayim sessizce 'tek kiraci' diye gecer"
+    )
+    assert (
+        _kiracilik_yargisi(1) == "tek"
+    ), "1 organizasyon 'tek' sayilmadi -> tek-kiracili kurulum yanlis raporlanir"
+    assert (
+        _kiracilik_yargisi(2) == "cok"
+    ), "2 organizasyon 'cok' sayilmadi -> tuzak dedektoru hic atesleyemez"
+
+
+def test_ikinci_organizasyon_permissive_dali_aktif_sizintiya_cevirir(
+    db_hazir: None,
+) -> None:
     """TUZAK DEDEKTORU — bu dosyanin varlik sebebi.
 
     Permissive dal bugun zararsiz cunku TEK organizasyon var. Ikinci
-    organizasyon eklendigi an, GUC set etmeyen 161 router dosyasindan gelen
-    her istek DIGER kiracinin satirlarini da gorur.
+    organizasyon eklendigi an, GUC set etmeyen 151 router dosyasindan
+    (153'un 2'si haric) gelen her istek DIGER kiracinin satirlarini da gorur.
 
-    O an bu test KIRMIZIYA doner ve is durur. "Ileride patlayacak" iddiasi
-    boylece patlamanin gerceklestigi anda olculebilir hale gelir.
+    O an bu test KIRMIZIYA doner. Nerede kirmiziya donebilecegi icin modul
+    docstring'indeki "BU BEKCI NEREDE FIILEN KOSUYOR" bolumune bak — "is
+    durur" iddiasi olculdu ve duzeltildi (A.4).
+
+    `db_hazir` fixture'i A.4 icin eklendi: onceki surum HICBIR fixture
+    almiyordu, dolayisiyla PG:5434 erisilemeyen ortamda (CI runner'i, ikinci
+    gelistirici makinesi) SKIP degil `OperationalError` -> ERROR veriyordu.
+    Dosyadaki diger bes test zaten korunuyordu; yalniz bu biri aciktaydi.
     """
     org_sayisi = _sorgula("SELECT count(*) FROM organizations")
-    if org_sayisi <= 1:
+    yargi = _kiracilik_yargisi(org_sayisi)
+
+    # KONTROL KOLU (A.4c): 0 saglikli bir kurulumda imkansizdir.
+    assert yargi != "kor", (
+        "organizations 0 satir gorundu — dedektor kor. Sayim RLS/rol yuzunden "
+        "susturulmus olabilir; 'sizinti yok' sonucu ANLAMSIZ."
+    )
+    if yargi == "tek":
         # Tek kiracili kurulum: permissive dal kabul edilebilir borc.
         return
 
@@ -188,25 +297,44 @@ def test_ikinci_organizasyon_permissive_dali_aktif_sizintiya_cevirir() -> None:
         "YAPILACAK: (a) politikalarin ilk iki dalini kaldir (fail-closed), VE\n"
         "           (b) GUC'u router-basina Depends yerine tek bir middleware/\n"
         "               session katmaninda set et (bugun yalniz\n"
-        "               core/dependencies.py:456, 163 router'in 2'sinde)."
+        "               core/dependencies.py:456; get_current_tenant 153\n"
+        "               router dosyasinin 2'sinde)."
     )
 
 
-def test_politika_kalibi_tek_tip_kaldi(db_hazir: None) -> None:
-    """F7: 79/79 politika ayni permissive kalipta, fail-closed SIFIR.
+def test_alet_dogrulamasi_oran_esitligi_tek_basina_yetmiyor() -> None:
+    """A.4b VAKUMU SENTETIK OLARAK URETILIR.
 
-    Bir tablo fail-closed yapilirsa bu test kirmiziya doner — o da iyi bir
-    sey: kismi gecis fark edilmeden ilerlememeli.
+    Onceki bekci yalnizca `toplam == permissive` bakiyordu. Asagidaki
+    (1, 1) girdisi tam olarak "79 politikadan 78'i silindi" durumudur:
+    oran esit, kapsam yok edilmis. Taban assert'i olmadan YESIL kalirdi.
+    """
+    assert _kalip_ihlali(1, 1, POLITIKA_TABANI) is not None, (
+        "78 politika silinmis senaryo (toplam=1, permissive=1) ihlal SAYILMADI "
+        "-> taban assert'i yuk tasimiyor, bekci vakum"
+    )
+    assert (
+        _kalip_ihlali(POLITIKA_TABANI, POLITIKA_TABANI, POLITIKA_TABANI) is None
+    ), "Saglikli taban ihlal sayildi -> bekci yanlis-pozitif uretir"
+    assert _kalip_ihlali(
+        POLITIKA_TABANI, POLITIKA_TABANI - 1, POLITIKA_TABANI
+    ), "Fail-closed'a gecen 1 politika yakalanmadi -> kalip kontrolu kayboldu"
+
+
+def test_politika_kalibi_tek_tip_kaldi(db_hazir: None) -> None:
+    """F7: politika sayisi TABANIN altina dusmedi VE hepsi permissive kalipta.
+
+    Iki ayri sey olculur (A.4b):
+      - KAPSAM: `toplam >= POLITIKA_TABANI` — politikalar sessizce silinmesin
+      - KALIP : `toplam == permissive`      — fail-closed'a kismi gecis olmasin
     """
     toplam = _sorgula("SELECT count(*) FROM pg_policies WHERE schemaname='public'")
     permissive = _sorgula(
         "SELECT count(*) FROM pg_policies WHERE schemaname='public' "
         "AND qual LIKE '%IS NULL%' AND qual LIKE '%= ''''%'"
     )
-    assert toplam == permissive, (
-        f"{toplam - permissive} politika artik permissive kalipta DEGIL. "
-        "Fail-closed'a gecis basladiysa #464 planı ve bu dosya guncellenmeli."
-    )
+    ihlal = _kalip_ihlali(toplam, permissive, POLITIKA_TABANI)
+    assert ihlal is None, ihlal
 
 
 def test_kritik_tablolarin_rls_disinda_oldugu_belgelenir(db_hazir: None) -> None:
