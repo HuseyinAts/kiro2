@@ -218,47 +218,25 @@ jobs:
           exit 1
 
       - name: Run Golden Flow tests
+        continue-on-error: true
         working-directory: backend
         run: |
-          # `-x` yalniz FAIL'de durur; SKIP exit 0 uretir. 30 Tem 2026'da
-          # 178 testin 148'i skip'ti ve is YESIL bitiyordu (#462/B4-x).
-          # Bu yuzden kosum sonrasi MINIMUM-GECEN esigi uygulaniyor.
-          pytest tests/e2e/test_golden_flows.py -m golden_flow -v --tb=short -x \
+          # `-x` KALDIRILDI (A.2): kapi artik `hata == 0` sartini KENDI olcuyor
+          # (scripts/gf_esik_kapisi.py), dolayisiyla ilk hatada durmaya gerek yok.
+          # `-x` ile rapor tek hatada kesiliyordu ve gercek tablo gorulmuyordu —
+          # 1 Agu 2026 canli kosumu 12 ayri kirik akis oldugunu gosterdi (94 sn).
+          # Adim `continue-on-error`: karar tek yerde, asagidaki kapida verilir.
+          pytest tests/e2e/test_golden_flows.py -m golden_flow -v --tb=short \
             --junitxml=gf-results.xml
 
-      - name: Enforce minimum passed threshold
+      - name: Enforce Golden Flow gate
         if: always()
         working-directory: backend
         run: |
-          # Skip'i yesil saymayi engelleyen asil bekci. Rapor yoksa da DUS —
-          # "0 satir tarandi, sorun yok" sahte yesili bu depoda yasandi
-          # (push_secret_guard vakasi, docs/audits/2026-07-29).
-          python - <<'PY'
-          import sys, xml.etree.ElementTree as ET
-          from pathlib import Path
-
-          ESIK = 150  # 178 testin buyuk cogunlugu GERCEKTEN kosmali
-
-          rapor = Path("gf-results.xml")
-          if not rapor.exists():
-              sys.exit("::error::gf-results.xml YOK — kosum raporu uretilmedi, kapi dogrulanamaz")
-
-          kok = ET.parse(rapor).getroot()
-          paketler = [kok] if kok.tag == "testsuite" else list(kok)
-          toplam = sum(int(p.get("tests", 0)) for p in paketler)
-          hata = sum(int(p.get("failures", 0)) + int(p.get("errors", 0)) for p in paketler)
-          atlanan = sum(int(p.get("skipped", 0)) for p in paketler)
-          gecen = toplam - hata - atlanan
-
-          print(f"toplam={toplam} gecen={gecen} atlanan={atlanan} hata={hata}")
-          if toplam == 0:
-              sys.exit("::error::0 test kosuldu — kapi bos, yesil sayilamaz")
-          if gecen < ESIK:
-              sys.exit(
-                  f"::error::yalniz {gecen} test GECTI (esik {ESIK}); {atlanan} atlandi. "
-                  "Skip FAIL uretmez, bu yuzden esik olmadan is yanlislikla yesil biterdi."
-              )
-          PY
+          # Mantik ARTIK BURADA DEGIL — inline heredoc'un testi yoktu (A.2).
+          # Sozlesme: tests/unit/test_gf_esik_kapisi.py (11 test, mutasyonla civili)
+          # Kural: toplam >= 170 · hata == 0 · atlanan <= 5
+          python scripts/gf_esik_kapisi.py gf-results.xml
 
       - name: Backend log on failure
         if: failure()
