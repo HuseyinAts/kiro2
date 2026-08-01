@@ -36,7 +36,35 @@ gerçekten kapandığı **ölçülmemişti**. Bu belge o ölçümdür.
 | 1 Ağu | **B1-canlı** | ✅ ES alias 25.127, `correct_answer` **0** | ölçüm |
 | 1 Ağu | **DEPLOY / B6-be / #447** | ✅ Backend imajı taze, `/api/v1/me` → 401 | ölçüm |
 
-**Açık P0 sayısı: 7 → 4** (`B4`+`B4-x`, `B5`, `F1`, `B2/#441 operatör`)
+| 1 Ağu | **#462** B4+B4-x Golden Flow kapısı | ✅ **KAPANDI.** Token önbelleği (178 login→4), 429→FAIL, seed `\|\| echo` kaldırıldı + minimum-geçen eşiği. 2 mutasyonla çivili | `c5a4f2c98` |
+| 1 Ağu | **#465** Admin uçları | ✅ **KAPANDI.** PUT'ta **ÜÇÜNCÜ** bastırıcı bulundu (ham ORM → `PydanticSerializationError`). 5 bayat test (1'i vakum) onarıldı | `b93cfcd3c`, `0d0dfd069` |
+| 1 Ağu | **#464** B5/RLS | 🟡 **ÖLÇÜLEBİLİR HALE GETİRİLDİ** (kapatılmadı). Atlatma canlıda kanıtlandı; tuzak dedektörü mutasyonla çivili | `64d6452be` |
+
+**Açık P0 sayısı: 7 → 2** (`B2/#441` operatör · `B5` mimari sprint)
+
+### #464 — ne yapıldı, ne yapılmadı
+
+**Canlı ölçüm (atlatma denendi, kod okunmadı):**
+
+| Senaryo | Görünen satır |
+|---|---:|
+| superuser (taban) | 5.664 |
+| `kiro2_app`, GUC **yok** | **5.664** ← tam atlatma |
+| `kiro2_app`, GUC **boş** | **5.664** ← tam atlatma |
+| `kiro2_app`, GUC **yanlış org** | **0** ← izolasyon çalışıyor |
+
+Yani **mekanizma sağlam**; eksik olan GUC'un her istekte set edilmesi.
+79/79 politika permissive, fail-closed **0**. `users`/`question_bank`/`student_answers`
+hiç RLS taşımıyor (`relrowsecurity=f`).
+
+**Yapılan:** `tests/integration/test_rls_tenant_isolation_guard.py` — 6 test.
+Kritik olanı **tuzak dedektörü**: bugün `organizations`=1 olduğu için sessiz,
+**ikinci organizasyon eklendiği an CI kırmızıya döner**. Mutasyonla kanıtlandı
+(eşik düşürülünce gerçek veriyle ateşledi: `5664 satır görüyor`).
+
+**Yapılmayan (bilinçli):** politikaları fail-closed yapmak + GUC'u middleware'e
+taşımak. 163 router dosyasını ilgilendiren mimari iş; tek oturumda güvenle
+yapılamaz. Bu commit riski **ölçülebilir** kıldı, **kapatmadı**.
 
 ---
 
