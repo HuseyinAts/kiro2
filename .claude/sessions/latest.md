@@ -1,8 +1,8 @@
 ## Session Handoff — 2026-08-01 (S202 · FAZ 0)
 
-**Branch:** feature/self-evolution-optimization · **Son commit:** `d5f07039d`
-**TEK AKTİF REFERANS:** `docs/audits/2026-08-01_eksiklik_master.md` — **97 açık kalem**
-**Push:** YAPILMADI (4 commit yerelde bekliyor)
+**Branch:** feature/self-evolution-optimization · **Son commit:** `5bbdaa401`
+**TEK AKTİF REFERANS:** `docs/audits/2026-08-01_eksiklik_master.md` — **98 açık kalem**
+**Push:** `862d11509..b1a73a17a` yapıldı; sonrasındaki 2 commit yerelde
 
 ---
 
@@ -48,9 +48,27 @@ modülleri 30 Tem'den beri değişmemiş). Düzeltme ayrı tur — kullanıcı k
 
 > Sayaç 95 → 97 **arttı**: ölçmeyen kapı kalem sayısını düşük gösteriyordu.
 
-## 3. Sıradaki (master FAZ 0 kalanı)
+### GF-K1 kök nedeni ✅ `5bbdaa401` (GF-K1-b) — ama önce yanlış ölçtüm
 
-`A.3` → `A.5` → `A.6` → `A.6b`
+`c555a10f4b93_sync_db_changes.py` `upgrade()` **145 `DROP TABLE IF EXISTS`**
+taşıyor (`drop_table` grep'i boş döner — raw SQL). Sebep: `env.py:22` yalnız
+`models.database` import ediyor → `Base.metadata` **123**, canlı şema **210**
+→ **87 tablo yönetilmiyor**, autogenerate farkı "sil" sanıyor.
+
+**Ölçüm düzeltmesi:** "87 tablo DROP edilir" dedim — YANLIŞ. `compare_metadata`'yı
+alembic'in **hiç kullanmadığı** filtresiz konfigürasyonla koşturmuştum.
+Gerçek yol: `filtresiz 86/134` · `önceki kural 0/65` · `yeni kural 0/0`.
+Açık **index tarafındaydı** (`type_ == "table"` sınırı). Kural
+`core/alembic_autogen_guard.py`'ye alındı (env.py import edilemez → yüklem test
+edilemezdi), 9 test, **mutasyon 3/3**, `alembic current` çıkış 0.
+
+**Yeni kalem `GF-K4`:** 87 tablonun metadata kaydı (asıl düzeltme, riskli).
+GF-K1'in 6 tablosu **hâlâ yok** — geri getirme yapılmadı.
+
+## 3. Sıradaki
+
+Kullanıcı kararı: `GF-K1` (6 tablo restore) mi, FAZ 0 kalanı mı
+(`A.3` → `A.5` → `A.6` → `A.6b`)?
 
 ## 4. Alet dersleri (bu oturumda canlı tekrarlandı)
 

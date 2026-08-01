@@ -18,16 +18,21 @@ KIRO2'nin **ölçülmüş** eksikliklerinin tek envanteri. Üç kaynağın birle
 | 29 Tem 12-oturum gözden geçirmesi | 12 | K5/K4.5 kapandı, kalanı açık |
 | **1 Ağu öz-denetim** (kapatılan işlere saldırı) | **49** | **hepsi açık** |
 
-**Toplam açık: 97 kalem.**
+**Toplam açık: 98 kalem.**
 *(Açılış 99 · S201'de `A.1`+`A.1b` kapandı `2d68e4811` · doğrulama turunda `T2b`
 eklendi = 98 · S202'de `A.4`+`A.4b`+`A.4c` kapandı `75c70dab5`+`2e439f40a` = 95 ·
 `A.2` kapandı `d5f07039d` = 94, ama onun canlı ölçümü **12 kırık Golden Flow**
-ortaya çıkardı → `GF-K1`/`GF-K2`/`GF-K3` eklendi = **97**)*
+ortaya çıkardı → `GF-K1`/`GF-K2`/`GF-K3` eklendi = 97 · `GF-K1-b` kapandı
+`5bbdaa401`, altından `GF-K4` çıktı = **98**)*
 
 > Sayaç bu turda **arttı**. Bu bir gerileme değil: `A.2` zaten "eşik hiç
 > ölçülmedi" diyordu; ölçüldüğünde ölçüm bütünlüğü kusuru kapandı ve altından
 > gerçek ürün kusurları çıktı. **Ölçmeyen bir kapı, kalem sayısını düşük
 > gösterir** — FAZ 0'ın önce gelme sebebi tam olarak budur.
+>
+> Aynı desen bir kez daha: `GF-K1`'in kök nedeni araştırılırken `GF-K1-b`
+> (autogenerate index açığı) kapandı ama altından `GF-K4` (87 tablo
+> metadata'da kayıtsız) çıktı → **98**.
 
 ### Nasıl kullanılır
 
@@ -232,6 +237,27 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       | `reasoning_cache` | (uç eşlemesi yapılmadı) |
       Karar gerekiyor: migration ile **tabloları geri getir** mi, yoksa uçlar
       ölü mü? (`user_item_fsrs`'te "geri getir" seçilmişti — `#461`.)
+      **KÖK NEDEN ÖLÇÜLDÜ (1 Ağu):** `c555a10f4b93_sync_db_changes.py`
+      `upgrade()` **145 adet** `op.execute('DROP TABLE IF EXISTS … CASCADE')`
+      taşıyor (grep'te `drop_table` aramak boş döner — raw SQL). Sebep:
+      `alembic/env.py:22` yalnız `models.database` import ediyor →
+      `Base.metadata` **123 tablo** tanırken canlı şema **210** → **87 tablo
+      yönetilmiyor**, autogenerate farkı "sil" diye yorumluyor.
+- [x] **GF-K1-b** ✅ **KAPANDI** `5bbdaa401` — autogenerate emniyeti. **Önce
+      yanlış ölçtüm:** "87 tablo DROP edilir" dedim, oysa `compare_metadata`'yı
+      alembic'in **hiç kullanmadığı** filtresiz konfigürasyonla koşturmuştum;
+      env.py 27 Tem'den beri tabloları koruyordu. Gerçek yol:
+      `filtre yok → 86/134` · `önceki kural → 0/65` · `yeni kural → 0/0`
+      (remove_table / remove_index). Açık **index tarafındaydı** — kural
+      `type_ == "table"` ile sınırlıydı. Kural `core/alembic_autogen_guard.py`'ye
+      alındı (env.py import EDİLEMEZ → yüklem test edilemezdi), 9 test,
+      **mutasyon 3/3**. Fix'in değeri ayrı testle çivili.
+- [ ] **GF-K4** **87 tablo `Base.metadata`'da kayıtlı değil** — asıl düzeltme.
+      `billing_subscriptions` `invoices` `kvkk_consents` `kvkk_audit_logs`
+      `chat_messages` … Model modülleri `models.database` zincirine import
+      edilmeli. RİSK: karışık import stili "Table already defined" verebilir
+      (testing.md #6). `GF-K1-b` o güne kadar emniyet kilidi; ilerleme ölçüsü
+      `tests/integration/test_alembic_autogen_guard.py`.
 - [ ] **GF-K2** **Kod kusuru ×2** — (a) `AttributeError: 'LearningStyleService'
       object has no attribute 'update_behavioral_data'` (`gf82`); (b)
       `AttributeError: 'AsyncSession' object has no attribute 'query'` — **senkron
