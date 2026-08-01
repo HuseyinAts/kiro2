@@ -135,6 +135,82 @@ def test_farkli_roller_ayri_onbellek() -> None:
     assert istemci.cagri_sayisi == 2
 
 
+def test_cikis_yapan_test_onbellegi_kullanmamali() -> None:
+    """SINIF BEKCISI — #462'nin YARATTIGI regresyonu civiler.
+
+    Onbellek eklendiginde GF1x (`/auth/cikis`) PAYLASILAN token'i blacklist'ledi;
+    ondan sonraki **148** test olu token aldi ve `-x` yuzunden kapi 13. testte
+    KALICI KIRMIZI oldu. Yani fix, duzeltmeye calistigi yalani baska bir
+    kiliga soktu.
+
+    KURAL: token'i gecersiz kilan (`/auth/cikis`) her test `_login_taze`
+    kullanmali — onbellege hic girmeyen kendi token'ini almali. Boylece
+    zehirlenme YAPISAL olarak imkansiz; temizlik adimina veya test sirasina
+    bagli degil.
+
+    MUTASYON: GF1x'i `_login`e geri cevir -> bu test DUSER.
+    """
+    import ast
+    from pathlib import Path
+
+    kaynak = Path(gf.__file__).read_text(encoding="utf-8")
+    agac = ast.parse(kaynak)
+
+    def _cagrilan_adlar(dugum: ast.AST) -> set[str]:
+        return {
+            d.func.id
+            for d in ast.walk(dugum)
+            if isinstance(d, ast.Call) and isinstance(d.func, ast.Name)
+        }
+
+    def _metin(dugum: ast.AST) -> str:
+        return " ".join(
+            d.value
+            for d in ast.walk(dugum)
+            if isinstance(d, ast.Constant) and isinstance(d.value, str)
+        )
+
+    suclular: list[str] = []
+    cikis_yapan = 0
+    for d in ast.walk(agac):
+        if not isinstance(d, ast.FunctionDef) or not d.name.startswith("test_"):
+            continue
+        if "auth/cikis" not in _metin(d):
+            continue
+        cikis_yapan += 1
+        if "_login" in _cagrilan_adlar(d):
+            suclular.append(f"{d.name} (satir {d.lineno})")
+
+    # ALET DOGRULAMASI: hic cikis yapan test bulunamazsa bekci BOS kume
+    # uzerinde sessizce gecerdi (bu depoda "0 satir tarandi, sorun yok"
+    # sahte yesili yasandi).
+    assert cikis_yapan > 0, (
+        "`auth/cikis` cagiran hicbir test bulunamadi -> bekci hicbir sey "
+        "olcmuyor. Desen degistiyse bu test guncellenmeli."
+    )
+    assert not suclular, (
+        "Token'i gecersiz kilan test PAYLASILAN onbellegi kullaniyor -> "
+        f"sonraki testler olu token alir (#462 regresyonu): {suclular}. "
+        "`_login_taze` kullan."
+    )
+
+    # KENDI BOSLUGUM (1 Agu, 4. kez ayni tuzak): bu bekcinin ilk surumu yalnizca
+    # CAGRI adlarina bakiyordu. `git checkout HEAD --` `_login_taze` TANIMINI
+    # sildi, elle geri alimim yalniz CAGRIYI geri koydu -> dosyada tanimsiz
+    # fonksiyona cagri kaldi (178 test NameError) ve bekci 7/7 YESIL dondu.
+    # Yesil test, kendi yarattigim kirilmayi GIZLEDI. Cozumleme kontrolu sart.
+    tanimli = {
+        n.name
+        for n in ast.walk(agac)
+        if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
+    }
+    for yardimci in ("_login", "_login_taze", "_auth_headers"):
+        assert yardimci in tanimli, (
+            f"`{yardimci}` CAGRILIYOR ama TANIMLI DEGIL -> paket toplanirken "
+            "NameError verir. (Bu kontrol olmadan bekci yesil kalip kirilmayi gizler.)"
+        )
+
+
 def test_token_yoksa_assert_duser() -> None:
     """200 ama govdede token yok -> sessiz gecmemeli."""
     istemci = _SahteIstemci(_SahteYanit(200, {}))

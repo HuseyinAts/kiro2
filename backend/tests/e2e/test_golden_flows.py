@@ -93,6 +93,34 @@ def client() -> httpx.Client:
 _TOKEN_ONBELLEGI: dict[str, str] = {}
 
 
+def _login_taze(client: httpx.Client, creds: dict[str, str]) -> str:
+    """Onbellegi ATLAYAN login — token'i ONBELLEGE DE YAZMAZ.
+
+    NEDEN VAR (#462'nin YARATTIGI regresyon, 1 Agu oz-denetiminde yakalandi):
+    Onbellek eklendiginde GF1x (`/auth/cikis`) PAYLASILAN token'i blacklist'ledi.
+    GF1x collection sirasinda 12. test; ondan SONRA `_login(client, STUDENT)`
+    cagiran **148** test daha var ve hepsi olu token aliyordu. Ilk kurban
+    hemen ardindaki `test_gf1y_profile_put_smoke` (`assert 200` -> 401).
+    CI'da `-x` oldugu icin kosum 13. testte durur, gecen ~12 < esik 150 ->
+    kapi KALICI KIRMIZI. Yani "148 SKIP yalani"nin yerine "165 test hic
+    kosmuyor" gecmisti.
+
+    KURAL: token'i GECERSIZ KILAN her test bu fonksiyonu kullanmali. Boylece
+    zehirlenme YAPISAL olarak imkansiz — temizlik adimina, test sirasina veya
+    "test basarili biterse" varsayimina bagli degil.
+    Civi: `tests/unit/test_golden_flow_login_gate.py`
+          ::test_cikis_yapan_test_onbellegi_kullanmamali
+    """
+    resp = client.post("/api/v1/auth/login", json=creds)
+    if resp.status_code == 429:
+        pytest.fail(f"login rate-limited (taze) for {creds['email']} (HTTP 429)")
+    if resp.status_code != 200:
+        pytest.skip(f"login failed for {creds['email']}: {resp.status_code}")
+    token = resp.json().get("access_token")
+    assert token, f"no access_token in login response: {resp.json()}"
+    return token
+
+
 def _login(client: httpx.Client, creds: dict[str, str]) -> str:
     """Return access_token; skip only when the ENVIRONMENT is genuinely missing.
 
@@ -458,7 +486,7 @@ def test_gf3d_exam_session_complete_smoke(client: httpx.Client):
 
 def test_gf1x_logout_invalidates_bearer_token(client: httpx.Client):
     """Logout (/cikis) token'ı blacklist'ler; aynı Bearer ile /me reddedilir."""
-    token = _login(client, STUDENT)
+    token = _login_taze(client, STUDENT)
     headers = _auth_headers(token)
     me = client.get("/api/v1/auth/me", headers=headers)
     assert me.status_code == 200, f"GF1x pre-logout /me: {me.text[:200]}"
