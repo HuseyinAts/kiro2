@@ -18,7 +18,8 @@ KIRO2'nin **ölçülmüş** eksikliklerinin tek envanteri. Üç kaynağın birle
 | 29 Tem 12-oturum gözden geçirmesi | 12 | K5/K4.5 kapandı, kalanı açık |
 | **1 Ağu öz-denetim** (kapatılan işlere saldırı) | **49** | **hepsi açık** |
 
-**Toplam açık: 99 kalem.**
+**Toplam açık: 98 kalem.**
+*(Açılış 99 · S201'de `A.1`+`A.1b` kapandı `2d68e4811` · doğrulama turunda `T2b` eklendi = 98)*
 
 ### Nasıl kullanılır
 
@@ -89,12 +90,21 @@ Yanlış iddia 11 · Regresyon 8.
 
 Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri onarır.
 
-- [ ] **A.1** FSRS bekçisi `mv_safe_for_beta`'yı **hiç görmüyor** — `/due`'nun
-      gerçek SQL'i f-string ile birleşiyor, tablo adı `quality_gate.py`'den
-      geliyor, AST'de string olarak yok. Docstring "HER tablo" diyor → overclaim.
-- [ ] **A.1b** Ölçüm aleti **matview göremiyor** (`information_schema.tables`
-      matview listelemez). **A.1 ile birlikte düzeltilmeli** — tek başına A.1
-      düzeltilirse test *yanlış-kırmızıya* döner. İki hata birbirini maskeliyor.
+- [x] **A.1** ✅ **KAPANDI** `2d68e4811` — çıkarıcı artık AST ∪ **çalışma-zamanı**
+      birleşimi (`test_fsrs_schema_contract.py:125-132`). `/due`'nun gerçek SQL'i
+      f-string ile birleşiyor, ad `quality_gate.py:69`'dan geliyor ve
+      `fsrs_service.py` kaynak metninde **hiç geçmiyor** → salt-AST yapısal olarak
+      kör. Ölçüm: çıkarılan `['question_bank','user_item_fsrs']` · çalışma-zamanı
+      `str(_FETCH_DUE_SQL)` içinde `mv_safe_for_beta` → **True**.
+- [x] **A.1b** ✅ **KAPANDI** `2d68e4811` — `_canli_tablolar()` artık
+      `pg_class relkind IN ('r','p','v','m','f')` + şema filtresi
+      (`test_fsrs_schema_contract.py:135-156`); bağlantı da kapatılıyor.
+      Ölçüm: `to_regclass('mv_safe_for_beta')` VAR · `information_schema` (217 ad)
+      içinde YOK · `pg_matviews` → 2 matview.
+      **Maskeleme empirik olarak üretildi** (mutasyon M1): A.1b tek başına geri
+      alınınca sınıf bekçisi *yanlış-kırmızıya* döndü — belgenin öngörüsü doğrulandı.
+      RED 2 fail → GREEN 9/9 · mutasyon **4/4** (M1 A.1b-geri · M2 salt-AST ·
+      M3 salt-çalışma · M4 çalışma-yarımı-boş). Üretim kodu değişmedi.
 - [ ] **A.4** RLS tuzak dedektörü **hiçbir CI işinde koşmuyor** → "CI'ı kırmızıya
       çevirir" iddiam **yanlıştı**. Ayrıca `psycopg2` CI'da kurulu değil.
 - [ ] **A.4b** Politika bekçisi **oran** assert ediyor, **taban** değil —
@@ -163,6 +173,14 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       deneyi:** `backend/conftest.py:124-135` `event_loop` fixture'ını devre dışı
       bırak, kilitlenme kayboluyor mu?
 - [ ] **T2** 27 kırık test (`test_analytics_api.py`).
+- [ ] **T2b** *(YENİ, 1 Ağu — S201 doğrulama turunda ölçüldü)* `test_fsrs_system.py:567`
+      hâlâ `patch("services.fsrs_service.DBFSRSStudySession")` diyor; o modül
+      `_deprecated`'e taşındı → `AttributeError`, izole koşumda da düşüyor.
+      **Eksik fix**: aynı dosyada `:379` `services._deprecated...` diye güncellenmiş,
+      `:567` kaçmış (`93f10f7fe` "update patch path after fsrs_service → _deprecated move").
+      Yol düzeltmek **deprecated uygulamaya test diriltmek** demek → önce
+      "iki paralel FSRS implementasyonu" kanonik seçimi (bkz. §Kararlar) yapılmalı;
+      alternatif: testi sil. Karar verilmeden dokunulmadı.
 - [ ] **T3** 99 modül `skipif(True)` — gerekçelerini triyaj et (#458a dersi:
       silinen dosyanın gerekçesi **fantom** çıkmıştı).
 - [ ] **T4** Coverage eşiği 60.0; `source` listesinde `models` yok.
