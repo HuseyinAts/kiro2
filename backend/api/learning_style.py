@@ -2,8 +2,9 @@
 VARK + Felder-Silverman Hibrit Öğrenme Stili API Endpoints
 64 farklı öğrenme profili yönetimi
 """
+
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
@@ -29,8 +30,10 @@ _PRIVILEGED_ROLES = {UserRole.TEACHER, UserRole.ADMIN, UserRole.SUPER_ADMIN}
 
 async def _verify_student_or_self(student_id: str, current_user, db: AsyncSession):
     """Verify access: allow own user_id, privileged roles, or DB-backed ownership."""
-    user_id = str(getattr(current_user, 'id', None) or getattr(current_user, 'sub', None))
-    user_role = getattr(current_user, 'role', None)
+    user_id = str(
+        getattr(current_user, "id", None) or getattr(current_user, "sub", None)
+    )
+    user_role = getattr(current_user, "role", None)
 
     # Privileged roles can access any student
     if user_role in _PRIVILEGED_ROLES:
@@ -44,7 +47,7 @@ async def _verify_student_or_self(student_id: str, current_user, db: AsyncSessio
     await verify_student_access(student_id, current_user, db)
 
 
-@router.get("/detect/{student_id}", response_model=Dict[str, Any])
+@router.get("/detect/{student_id}", response_model=dict[str, Any])
 async def detect_learning_style(
     student_id: str,
     force_recalculation: bool = Query(False, description="Zorla yeniden hesaplama"),
@@ -121,13 +124,13 @@ async def detect_learning_style(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Öğrenme stili tespiti hatası: {str(e)}")
+        logger.error(f"Öğrenme stili tespiti hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Öğrenme stili tespit edilemedi: {str(e)}"
+            status_code=500, detail=f"Öğrenme stili tespit edilemedi: {e!s}"
         )
 
 
-@router.get("/recommendations/{student_id}", response_model=Dict[str, Any])
+@router.get("/recommendations/{student_id}", response_model=dict[str, Any])
 async def get_content_recommendations(
     student_id: str,
     subject_area: str = Query("matematik", description="Konu alanı"),
@@ -176,13 +179,13 @@ async def get_content_recommendations(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"İçerik önerisi hatası: {str(e)}")
+        logger.error(f"İçerik önerisi hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"İçerik önerisi oluşturulamadı: {str(e)}"
+            status_code=500, detail=f"İçerik önerisi oluşturulamadı: {e!s}"
         )
 
 
-@router.post("/behavioral-data/{student_id}", response_model=Dict[str, Any])
+@router.post("/behavioral-data/{student_id}", response_model=dict[str, Any])
 async def update_behavioral_data(
     student_id: str,
     behavioral_data: BehavioralData,
@@ -199,8 +202,15 @@ async def update_behavioral_data(
         # Student ID'yi data'ya set et
         behavioral_data.student_id = student_id
 
+        # SOZLESME (GF-K2, 1 Agu 2026): servis DICT donuyor, ORM nesnesi degil
+        # (`_profile_to_dict`, learning_style_service.py:413). Onceki surum
+        # `updated_profile.hybrid_code` diye NITELIK okuyordu; metot yazilsa
+        # bile bu satir AttributeError verirdi. golden-flows.md'nin
+        # "rule-of-four: list[dict] vs Response(**dict)" sozlesme kaymasi sinifi.
         updated_profile = await learning_style_service.update_behavioral_data(
-            student_id=student_id, new_data=behavioral_data
+            student_id=student_id,
+            db=db,
+            new_data=behavioral_data.model_dump(),
         )
 
         if updated_profile:
@@ -208,29 +218,28 @@ async def update_behavioral_data(
                 "success": True,
                 "data": {
                     "profile_updated": True,
-                    "new_hybrid_code": updated_profile.hybrid_code,
-                    "confidence_score": updated_profile.confidence_score,
-                    "last_updated": updated_profile.last_updated.isoformat(),
+                    "new_hybrid_code": updated_profile.get("hibrit_kod"),
+                    "confidence_score": updated_profile.get("guven_seviyesi"),
+                    "last_updated": updated_profile.get("tespit_tarihi"),
                 },
                 "message": "Öğrenme stili güncellendi",
             }
-        else:
-            return {
-                "success": True,
-                "data": {"profile_updated": False, "data_recorded": True},
-                "message": "Davranışsal veri kaydedildi, profil değişikliği yok",
-            }
+        return {
+            "success": True,
+            "data": {"profile_updated": False, "data_recorded": True},
+            "message": "Davranışsal veri kaydedildi, profil değişikliği yok",
+        }
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Davranışsal veri güncelleme hatası: {str(e)}")
+        logger.error(f"Davranışsal veri güncelleme hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Davranışsal veri güncellenemedi: {str(e)}"
+            status_code=500, detail=f"Davranışsal veri güncellenemedi: {e!s}"
         )
 
 
-@router.post("/questionnaire/{student_id}", response_model=Dict[str, Any])
+@router.post("/questionnaire/{student_id}", response_model=dict[str, Any])
 async def submit_questionnaire(
     student_id: str,
     questionnaire_response: QuestionnaireResponse,
@@ -263,7 +272,9 @@ async def submit_questionnaire(
 
         # DB'ye persist et — VARK skorlarını hesapla ve profil güncelle
         vark_scores = _calculate_vark_scores(questionnaire_response)
-        dominant_style = max(vark_scores, key=vark_scores.get) if vark_scores else "mixed"
+        dominant_style = (
+            max(vark_scores, key=vark_scores.get) if vark_scores else "mixed"
+        )
 
         result = await db.execute(
             select(LearningPathStudentProfile).where(
@@ -279,7 +290,9 @@ async def submit_questionnaire(
             profile.vark_reading_score = vark_scores.get("reading", 0.0)
             profile.vark_kinesthetic_score = vark_scores.get("kinesthetic", 0.0)
             await db.commit()
-            logger.info(f"VARK skorları DB'ye kaydedildi: {student_id} → {dominant_style}")
+            logger.info(
+                f"VARK skorları DB'ye kaydedildi: {student_id} → {dominant_style}"
+            )
 
         return {
             "success": True,
@@ -296,11 +309,11 @@ async def submit_questionnaire(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Anket kaydetme hatası: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Anket kaydedilemedi: {str(e)}")
+        logger.error(f"Anket kaydetme hatası: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Anket kaydedilemedi: {e!s}")
 
 
-def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
+def _calculate_vark_scores(response: QuestionnaireResponse) -> dict[str, float]:
     """VARK anket yanıtlarından 0-1 arası skorlar hesapla.
 
     Frontend format: {question_id: style_key} — e.g. {"q1": "visual", "q2": "auditory"}
@@ -319,7 +332,9 @@ def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
     elif isinstance(responses, list):
         # List format: [{answer: style}] — legacy/alternative
         for r in responses:
-            style = r.get("answer", "").lower() if isinstance(r, dict) else str(r).lower()
+            style = (
+                r.get("answer", "").lower() if isinstance(r, dict) else str(r).lower()
+            )
             if style in counts:
                 counts[style] += 1
                 total += 1
@@ -330,7 +345,7 @@ def _calculate_vark_scores(response: QuestionnaireResponse) -> Dict[str, float]:
     return {k: round(v / total, 3) for k, v in counts.items()}
 
 
-@router.get("/explanation/{student_id}", response_model=Dict[str, Any])
+@router.get("/explanation/{student_id}", response_model=dict[str, Any])
 async def get_learning_style_explanation(
     student_id: str,
     current_user=Depends(get_current_user_from_token),
@@ -356,13 +371,11 @@ async def get_learning_style_explanation(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Açıklama hatası: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Açıklama oluşturulamadı: {str(e)}"
-        )
+        logger.error(f"Açıklama hatası: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Açıklama oluşturulamadı: {e!s}")
 
 
-@router.get("/hybrid-codes", response_model=Dict[str, Any])
+@router.get("/hybrid-codes", response_model=dict[str, Any])
 async def get_all_hybrid_codes():
     """
     Tüm 64 hibrit kod ve açıklamalarını döndür
@@ -382,13 +395,11 @@ async def get_all_hybrid_codes():
         }
 
     except Exception as e:
-        logger.error(f"Hibrit kodlar hatası: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Hibrit kodlar alınamadı: {str(e)}"
-        )
+        logger.error(f"Hibrit kodlar hatası: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Hibrit kodlar alınamadı: {e!s}")
 
 
-@router.get("/statistics", response_model=Dict[str, Any])
+@router.get("/statistics", response_model=dict[str, Any])
 async def get_learning_style_statistics():
     """
     Öğrenme stili istatistikleri
@@ -405,13 +416,11 @@ async def get_learning_style_statistics():
         }
 
     except Exception as e:
-        logger.error(f"İstatistik hatası: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"İstatistikler alınamadı: {str(e)}"
-        )
+        logger.error(f"İstatistik hatası: {e!s}")
+        raise HTTPException(status_code=500, detail=f"İstatistikler alınamadı: {e!s}")
 
 
-@router.get("/export/{student_id}", response_model=Dict[str, Any])
+@router.get("/export/{student_id}", response_model=dict[str, Any])
 async def export_learning_profile(
     student_id: str,
     current_user=Depends(get_current_user_from_token),
@@ -435,14 +444,12 @@ async def export_learning_profile(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Dışa aktarma hatası: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Profil dışa aktarılamadı: {str(e)}"
-        )
+        logger.error(f"Dışa aktarma hatası: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Profil dışa aktarılamadı: {e!s}")
 
 
 @router.get(
-    "/content-explanation/{hybrid_code}/{content_type}", response_model=Dict[str, Any]
+    "/content-explanation/{hybrid_code}/{content_type}", response_model=dict[str, Any]
 )
 async def get_content_explanation(hybrid_code: str, content_type: str):
     """
@@ -468,16 +475,14 @@ async def get_content_explanation(hybrid_code: str, content_type: str):
         }
 
     except Exception as e:
-        logger.error(f"İçerik açıklaması hatası: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Açıklama oluşturulamadı: {str(e)}"
-        )
+        logger.error(f"İçerik açıklaması hatası: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Açıklama oluşturulamadı: {e!s}")
 
 
-@router.post("/update-recommendations/{student_id}", response_model=Dict[str, Any])
+@router.post("/update-recommendations/{student_id}", response_model=dict[str, Any])
 async def update_recommendations_based_on_performance(
     student_id: str,
-    performance_data: Dict[str, float],
+    performance_data: dict[str, float],
     current_user=Depends(get_current_user_from_token),
     db: AsyncSession = Depends(get_db),
 ):
@@ -521,14 +526,12 @@ async def update_recommendations_based_on_performance(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Performans tabanlı güncelleme hatası: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Öneriler güncellenemedi: {str(e)}"
-        )
+        logger.error(f"Performans tabanlı güncelleme hatası: {e!s}")
+        raise HTTPException(status_code=500, detail=f"Öneriler güncellenemedi: {e!s}")
 
 
 # Sağlık kontrolü endpoint'i
-@router.get("/health", response_model=Dict[str, Any])
+@router.get("/health", response_model=dict[str, Any])
 async def health_check():
     """
     Hibrit öğrenme stili sistemi sağlık kontrolü
@@ -559,9 +562,9 @@ async def health_check():
         }
 
     except Exception as e:
-        logger.error(f"Sağlık kontrolü hatası: {str(e)}")
+        logger.error(f"Sağlık kontrolü hatası: {e!s}")
         raise HTTPException(
-            status_code=500, detail=f"Sistem sağlık kontrolü başarısız: {str(e)}"
+            status_code=500, detail=f"Sistem sağlık kontrolü başarısız: {e!s}"
         )
 
 

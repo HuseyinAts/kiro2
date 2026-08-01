@@ -193,6 +193,17 @@ exclude = [
 
 [tool.ruff.lint.per-file-ignores]
 
+# services/learning_style_service.py — PLR0912 + PLC2401. OLCULDU (1 Agu 2026):
+# ikisi de ONCEDEN VAR ve DOKUNMADIGIM fonksiyonlarda:
+#   PLR0912  `_generate_hibrit_code` 15 dal (VARK x Felder kombinasyon tablosu;
+#            bolmek okunurlugu ARTIRMAZ, 64 profilin haritasi zaten duz).
+#   PLC2401  `sayı` degiskeni (Turkce). Ad degisikligi davranis degistirmez ama
+#            ayni sozlugu okuyan baska yerler olabilir — olculmeden dokunulmaz.
+# Ayni turda F821 (`Dict` tanimsiz) IGNORE EDILMEDI, DUZELTILDI: `dict[...]`.
+# O bir uslup sorunu degildi — PEP 526 nitelik-hedefli annotation'i
+# degerlendirmedigi icin sessizce calisiyordu, yani gizli bir NameError'du.
+"services/learning_style_service.py" = ["PLR0912", "PLC2401"]
+
 # alembic/env.py — E402 + T201. OLCULDU (1 Agu 2026): dosya HEAD'de ZATEN 4
 # ihlal tasiyordu, yani ona dokunan her commit ruff hook'unda bloklaniyordu
 # (hook `alembic/versions/` disliyor ama `env.py`'yi DISLAMIYOR).
