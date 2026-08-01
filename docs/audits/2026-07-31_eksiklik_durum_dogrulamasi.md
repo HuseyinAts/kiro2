@@ -40,7 +40,29 @@ gerçekten kapandığı **ölçülmemişti**. Bu belge o ölçümdür.
 | 1 Ağu | **#465** Admin uçları | ✅ **KAPANDI.** PUT'ta **ÜÇÜNCÜ** bastırıcı bulundu (ham ORM → `PydanticSerializationError`). 5 bayat test (1'i vakum) onarıldı | `b93cfcd3c`, `0d0dfd069` |
 | 1 Ağu | **#464** B5/RLS | 🟡 **ÖLÇÜLEBİLİR HALE GETİRİLDİ** (kapatılmadı). Atlatma canlıda kanıtlandı; tuzak dedektörü mutasyonla çivili | `64d6452be` |
 
+| 1 Ağu | **#466** SMTP zinciri F20/F21/F21-yeni | ✅ **KAPANDI.** 3 mutasyonun 3'ü çivili | `4ddd74383`, `ef6bafe47` |
+
 **Açık P0 sayısı: 7 → 2** (`B2/#441` operatör · `B5` mimari sprint)
+
+### Bu oturumun denetimde DÜZELTTİĞİ sayılar
+
+Denetim doğruydu ama bazı sayıları eksik/fazlaydı. Ölçüldü:
+
+| Denetim ne dedi | Ölçüm ne dedi | Nerede |
+|---|---|---|
+| `@admin_required` **14** metotta bozuk | **17** metot korumalı, ama üretimden çağrılan **tek** metot (`admin.py:421`). Kalan 16 ölü kod → dekoratör düzeltilmedi (+0 değer, #451) | `#465` |
+| `YENI-4`: **1** bayat test | **4** bayat + **1 vakum** test. Atribüsyon `HEAD~1` koşularak ölçüldü: 2'si önceki fix'lerden, 2'si bu oturumdan | `#465` |
+| PUT'ta **2** bastırıcı | **3.** Üçüncüsü: `"data": soru` ham ORM → `PydanticSerializationError`. İlk ikisi aşılsa **bile** 500 sürerdi. Kod okunarak görülmezdi, testin sahte nesnesi ortaya çıkardı | `#465` |
+| `K1`: env.py düzeltilmezse yine DROP eder | **ÇÜRÜDÜ.** `include_object()` çağrılarak ölçüldü: `env.py:117-118` yapısal kapısı zaten koruyor. Exclude satırı +0 değer → eklenmedi | `#461` |
+| `Y6`: `.gitignore` 3 dosya kaybı | Doğru. Ama benim "kök `performance/` 281K kayıp" alarmım **yanlıştı** — `git check-ignore` takipli dosyayı raporlamaz | `#463` |
+
+### Bu oturumda ORTAYA ÇIKAN yeni bulgular
+
+| # | Bulgu | Durum |
+|---|---|---|
+| `YENI-8` | `soru_bankasi_servisi.soru_guncelle` "bulunamadı" ve "istisna" için **aynı `None`'ı** dönüyor (`:1265-1270`). Gerçek bir DB hatası 404 görünebilir. Servis değiştirilmedi — ikinci üretim çağıranı var (`api/soru_bankasi.py:845`) | 🔴 AÇIK, P2 |
+| `YENI-9` | `.env.mvp.example`'da **hiç SMTP anahtarı yok** — operatörün şablonu bile yok. CLAUDE.md `.env*`'ı salt-okunur ilan ettiği için **kod tarafından eklenemez**; operatör elle girmeli | 🔵 OPERATÖR |
+| `YENI-10` | ES yedek indeksi `turkiye_sinav_platform_yedek_20260731` (64.270 dok, hepsi `correct_answer`'lı) — sızıntı riski **ölçüldü: YOK**, ama **retention da yok** → her cutover'da birikir | 🔴 AÇIK, P2 |
 
 ### #464 — ne yapıldı, ne yapılmadı
 
@@ -120,6 +142,37 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
 
 ## 3. KONTROL LİSTESİ
 
+> **Durum (1 Ağu 2026 sonu): 21 kutucuk kapalı · 51 açık.**
+> Açık P0 = 2 (`B2/#441` operatör · `B5` mimari sprint).
+
+### 3.0-SONRAKI · Bir sonraki oturum buradan başlar
+
+**Kural:** Bu belgeyi aç, aşağıdaki sıradan ilk açık kalemi al, kapat, kutucuğu
+işaretle + **ankraj yaz** (commit + `dosya:satır`). Ankrajsız kapanış kabul edilmez.
+
+| Sıra | Görev | Neden bu sıra |
+|---|---|---|
+| **1** | **#467** ES `Y3` | En yüksek risk: `api/elasticsearch.py:353-491` **canlı alias'a `correct_answer` + `explanation` yazıyor**. Bugün onu kapatan tek şey bir kwarg hatası (`mapping=` yerine `mappings=` olmalı → `TypeError` → 500). Biri "düzeltirse" cevap anahtarı canlı indekse geri döner. Ayrıca `Y1` (senkron gövdesi testsiz), `Y2` (advisory kilit erken düşüyor), `Y4` (`/similar` yapısal 0 sonuç), `YENI-10` (yedek indeks retention'sız) |
+| **2** | **#468** CI tetikleme | `F8-b`: ayrıştırma düzeldi ama **kapı aktif dalda hiç tetiklenmiyor** (`on: push` → `[main,master,develop]`, aktif dal 318 commit önde). #462'de kapıyı gerçek yaptım ama **koşmuyor** → değeri sıfır. Ayrıca `T1` deadlock kaldırma deneyi, `T2` 27 kırık test, `T3` 99 `skipif(True)` triyajı |
+| **3** | **#470** Sınav oturumu kısıtı | `F17` üç katmanda da yok + `F17b` **ölü 409 bekçisini 3 test yeşil doğruluyor** (yanıltıcı yeşil, bu deponun en tehlikeli deseni) |
+| **4** | **#469** Kiro yüzey uyumu | `K3`: 70 `live()` yolundan ~43'ü backend'de yok · `K4.6` veli tek satırlık takas · `K2` route sözleşme kapısı |
+| **5** | **#471** P2/P3 hijyen | P0/P1 kapanmadan buraya geçme |
+
+**Operatör kuyruğu (kod işi değil):**
+`#441` SMTP kimlik bilgisi → `.env.mvp` + `docker compose up -d --no-deps backend` ·
+`#390`/`#436` `gh` CLI + faturalama · `#445` 73 STUDENT triyajı ·
+`OTURUM-1` DB'deki 31 çöp sınıf (silme ucu yok, SQL + onay gerek)
+
+**Yöntem — bu oturumda işe yarayan sıra:**
+1. İddiayı **ölç** (kod okuma değil: atlatmayı dene, uç çağır, `include_object()` çağır)
+2. Kontrol kolu kur — bilinen-VAR/bilinen-YOK beklendiği gibi mi
+3. RED test yaz, **düştüğünü gör**
+4. Fix
+5. Tüketici testlerini koş (`git grep` ile bul, dizin yakınlığıyla değil)
+6. **Mutasyon**: fix'i geri al, testin düştüğünü gör
+7. Geri alımı **ölç** (`git status` boş mu) — bu oturumda 3 kez sessizce başarısız oldu
+8. Commit + push + belgeyi güncelle
+
 ### 3.0 Görev eşlemesi
 
 | Görev | Kapsam | Belge bölümü | Öncelik |
@@ -188,13 +241,13 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
   `UndefinedTable` yerine `InsufficientPrivilege` olur. `organization_id` kolonu yok →
   RLS deseni uygulanamaz, "kapsam dışı" gerekçesini migration docstring'ine yaz.
 
-- [ ] **B4 · Golden Flow rate-limit skip'i kodda ele alınmadı — merge kapısı boş**
+- [x] ✅ **B4 · Golden Flow rate-limit skip'i kodda ele alınmadı — merge kapısı boş**
   `tests/e2e/test_golden_flows.py:88-97` hâlâ 200 dışı her yanıtı (429 dahil)
   `pytest.skip`'e çeviriyor. Bloğun tek commit'i 10 Nis; denetimden sonra değişmedi.
   → Üç seçenekten biri: modül-kapsamlı token önbelleği (rol başına 1 login) ·
   CI'da `LOGIN_RATE_LIMIT_PER_MINUTE` yükseltme · `_login`'de 429'u skip değil **FAIL** sayma.
 
-- [ ] **B4-x · Kapı komutu skip'i yeşil sayıyor + seed hatası yutuluyor**
+- [x] ✅ **B4-x · Kapı komutu skip'i yeşil sayıyor + seed hatası yutuluyor**
   *(Ek A'da P1 ölçüldü; burada B4'ün **yükselticisi** olduğu için P0 bloğuna alındı — bu bir
   editoryal terfi, ölçüm değil.)*
   `golden-flows.yml:196` `python scripts/seed_mvp_data.py || echo "::warning::…"` —
@@ -207,7 +260,7 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
   `B5-a` ölçümü alternatif yol **olmadığını** kanıtladı (16 satırın 15'i migration metni).
   → GUC'u middleware/session katmanında tek yerde bağla, VEYA 79 politikayı fail-closed yap.
 
-- [ ] **F1 · Admin POST "200 ama kalıcı değil" — okuma-yazma testi yok**
+- [x] ✅ **F1 · Admin POST "200 ama kalıcı değil" — okuma-yazma testi yok**
   Kök neden **çakışma** çıktı (`soru_bankasi_service.py:349-372` IntegrityError'ı yutup
   mevcut satırı dönüyordu), router artık dürüstçe 409 veriyor. Ama benzersiz yükle
   ekleyip **ayrı oturumdan SELECT** ile doğrulayan test yok.
@@ -221,14 +274,14 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
 
 > Bunların hepsi salt okunur. Çıktıları bu belgeye işlenecek.
 
-- [ ] **1. `user_item_fsrs` var mı** (K1'i kesinleştirir)
+- [x] ✅ **1. `user_item_fsrs` var mı** (K1'i kesinleştirir)
   ```
   "C:/Program Files/PostgreSQL/18/bin/psql.exe" -p 5434 -U postgres -d kiro2 \
     -c "SELECT to_regclass('public.user_item_fsrs');"
   ```
   `NULL` → K1 P0 onaylandı.
 
-- [ ] **2. ES takası duruyor mu** (B1-canlı)
+- [x] ✅ **2. ES takası duruyor mu** (B1-canlı)
   ```
   curl -s localhost:9200/turkiye_sinav_platform/_count
   curl -s -H 'Content-Type: application/json' \
@@ -237,20 +290,20 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
   ```
   Beklenen: ~25.127 ve **0**. İkinci sayı >0 ise takas geri alınmış/yeniden kırılmış.
 
-- [ ] **3. Backend imajı taze mi** (DEPLOY)
+- [x] ✅ **3. Backend imajı taze mi** (DEPLOY)
   ```
   docker exec kiro2-backend grep -n "soru_bankasi_servisi.soru_sil\|zaten_mevcuttu" /app/api/admin.py
   ```
   İki satır da gelmiyorsa imaj bayat → `docker compose build backend && docker compose up -d --no-deps backend`.
 
-- [ ] **4. SMTP env dolu mu** (B2/#441)
+- [x] ✅ **4. SMTP env dolu mu** (B2/#441)
   ```
   docker exec kiro2-backend python -c "import os;print({k:bool(os.getenv(k)) for k in ['SMTP_SERVER','SMTP_USERNAME','SMTP_PASSWORD','SMTP_HOST']})"
   ```
   Hepsi `False` ise bulgu açık. **Not:** `SMTP_HOST` dolu + `SMTP_SERVER` boş ise F20 aktif
   hasar veriyor demektir (validator geçer, gönderim sessizce ölür).
 
-- [ ] **5. İkinci organizasyon eklendi mi** (N5 — B5/F7'nin severity'sini belirler)
+- [x] ✅ **5. İkinci organizasyon eklendi mi** (N5 — B5/F7'nin severity'sini belirler)
   ```
   "C:/Program Files/PostgreSQL/18/bin/psql.exe" -p 5434 -U postgres -d kiro2 \
     -c "SELECT count(*) AS org_sayisi FROM organizations;"
@@ -298,26 +351,26 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
 
 > Hepsi tek satırlık veya birkaç satırlık. Toplam ~1 saat.
 
-- [ ] **D7-3 · `verification.md:101` operatörü 404'e yolluyor**
+- [x] ✅ **D7-3 · `verification.md:101` operatörü 404'e yolluyor**
   Preflight `curl http://localhost:8000/api/v1/health` diyor; `api/health.py:29` router'ın
   **prefix'i yok**, gerçek yol `/health`. Bu hâliyle **sağlıklı backend'i "çöktü" diye
   teşhis ettirir**. En acil doküman kusuru.
-- [ ] **D7-1 · `verification.md:83` + `debugging-first.md:18` "questions = BOŞ legacy"**
+- [x] ✅ **D7-1 · `verification.md:83` + `debugging-first.md:18` "questions = BOŞ legacy"**
   → `36.381 satır legacy` (CLAUDE.md:258 zaten doğru diyor; iki kural dosyası yanlış).
-- [ ] **D2 · Orchestrator 71 → **85**, frontend test dosyası 86 → **197**
+- [x] ✅ **D2 · Orchestrator 71 → **85**, frontend test dosyası 86 → **197**
   İkisi de depodan kanıtlandı (`grep -rh 'def test_' orchestrator/tests/*.py` = 85;
   `git ls-files … | grep -E '\.(test\|spec)\.'` = 197). Canlı koşum gerekmez.
-- [ ] **D6 · `golden-flows.md:27` "166 test → 164 PASS"** → 178 test.
+- [x] ✅ **D6 · `golden-flows.md:27` "166 test → 164 PASS"** → 178 test.
   `pytest.ini:36` "8 critical user journeys" → 178. **Bu bir KURAL dosyası ve "merge block"
   yetkisi iddia ediyor** — gerçeklikle uyumlu olmadan o yetki sahte.
-- [ ] **D1 · CLAUDE.md kendi içinde çelişiyor:** satır 258 "192K prod" vs satır 272
+- [x] ✅ **D1 · CLAUDE.md kendi içinde çelişiyor:** satır 258 "192K prod" vs satır 272
   "77,336 in production". İkisi aynı anda doğru olamaz. Ayrıca `77.336` bir **soru sayısı
   değil, jsonl satır sayısı** (kategori hatası) — bu not eklenmeli.
-- [ ] **D4 · CLAUDE.md:269 (PG 18.1) vs :332 (PG 15.x)** — aynı dosya, iki sürüm.
-- [ ] **Y6 · `.gitignore:266` ankrajsız `performance/`** → `/performance/` yap +
+- [x] ✅ **D4 · CLAUDE.md:269 (PG 18.1) vs :332 (PG 15.x)** — aynı dosya, iki sürüm.
+- [x] ✅ **Y6 · `.gitignore:266` ankrajsız `performance/`** → `/performance/` yap +
   `git add -f backend/tests/performance/{__init__.py,test_chromadb_latency.py,test_elk_performance.py}`
   (3 dosya taze klonda kayıp).
-- [ ] **#458a-hook · `.kiro/hooks/04-osym-exam-validator.kiro.hook`** silinmiş dosyaya
+- [x] ✅ **#458a-hook · `.kiro/hooks/04-osym-exam-validator.kiro.hook`** silinmiş dosyaya
   pytest veriyor. Kırık hook.
 - [ ] **#458a-ref · Silinen e2e dosyasına 14 bayat referans** (2'si sahte alarm).
 
@@ -332,9 +385,9 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
 - [ ] `Y4` `/similar` ucu takas sonrası **yapısal olarak 0 sonuç** döner (MLT alanları index'te yok).
 
 **SMTP**
-- [ ] `F20` `SMTP_HOST` (3 doğrulayıcı) vs `SMTP_SERVER` (3 tüketici) ayrışması. Tek ada kilitle.
-- [ ] `F21` Veli onay e-postasında dönüş değeri kontrol edilmiyor (`auth.py:2279`).
-- [ ] `F21-yeni` **`/veli-onay/resend` gönderim ölüyken "gönderildi" diyor** —
+- [x] ✅ `F20` `SMTP_HOST` (3 doğrulayıcı) vs `SMTP_SERVER` (3 tüketici) ayrışması. Tek ada kilitle.
+- [x] ✅ `F21` Veli onay e-postasında dönüş değeri kontrol edilmiyor (`auth.py:2279`).
+- [x] ✅ `F21-yeni` **`/veli-onay/resend` gönderim ölüyken "gönderildi" diyor** —
   admin tarafında 2d5d82f7e ile kapatılan yanlış-başarı sınıfının aynısı.
 
 **CI**
@@ -348,7 +401,7 @@ Yani doğrulama turu, doğruladığı kadar **yeni kusur da buldu**.
   Migration docstring'i yanlış gerekçe taşıyor.
 - [ ] `F7` 79/79 politika aynı permissive kalıpta; desen **26 Tem'de eklenen yeni tabloda da** sürüyor.
 - [ ] `B5-c` `users` / `student_answers` hiçbir RLS listesinde değil (gerekçe de yazılmamış).
-- [ ] `N3` **Hiçbir test GUC/RLS davranışını sınamıyor** → F7 tuzağı CI'da yakalanmaz.
+- [x] ✅ `N3` **Hiçbir test GUC/RLS davranışını sınamıyor** → F7 tuzağı CI'da yakalanmaz.
 
 **Admin içerik**
 - [ ] `YENI-1` **PUT `/admin/content/questions/{id}` aynı iki bastırıcıyla hâlâ 500** —
