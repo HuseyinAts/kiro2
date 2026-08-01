@@ -25,11 +25,15 @@ donmesi beklenir. O test gecmezse bu dosyadaki yesil sonuclar anlamsizdir.
 from __future__ import annotations
 
 import ast
+import importlib
 import re
 from pathlib import Path
 
 import psycopg2
 import pytest
+from sqlalchemy.sql.elements import TextClause
+
+from core.quality_gate import SAFE_POOL_RELATION
 
 pytestmark = [pytest.mark.integration]
 
@@ -40,10 +44,10 @@ DSN = "postgresql://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist
 _BACKEND = Path(__file__).resolve().parents[2]
 
 # Ham SQL tasiyan uretim dosyalari (router loader'da KAYITLI olanlar)
-SQL_KAYNAKLARI = (
-    _BACKEND / "app" / "services" / "fsrs_service.py",
-    _BACKEND / "app" / "api" / "fsrs.py",
-)
+FSRS_SERVICE = _BACKEND / "app" / "services" / "fsrs_service.py"
+FSRS_API = _BACKEND / "app" / "api" / "fsrs.py"
+
+SQL_KAYNAKLARI = (FSRS_SERVICE, FSRS_API)
 
 # SQL'de tablo adinin gelebilecegi konumlar
 _TABLO_DESENI = re.compile(
@@ -58,38 +62,98 @@ _TABLO_OLMAYAN = {"select", "lateral", "unnest", "generate_series", "only", "set
 _SQL_GORUNUMLU = re.compile(r"\b(SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM)\b", re.I)
 
 
-def _sql_tablolari(yol: Path) -> set[str]:
-    """Dosyadaki ham SQL'den tablo adlarini cikarir.
+def _govdeden_tablolar(govde: str) -> set[str]:
+    """Tek bir SQL govdesinden tablo adlarini cikarir."""
+    if not _SQL_GORUNUMLU.search(govde):
+        return set()
+    return {
+        ad.lower()
+        for ad in _TABLO_DESENI.findall(govde)
+        if ad.lower() not in _TABLO_OLMAYAN
+    }
+
+
+def _ast_sql_tablolari(yol: Path) -> set[str]:
+    """KAYNAK METINDEKI string literallerden tablo adlarini cikarir.
 
     YALNIZ string literalleri taranir. Ilk surum tum dosya metnine bakiyordu ve
     Python'un `from X import Y` satirlarini SQL `FROM X` sandi (`__future__`,
     `sqlalchemy`, `datetime` ... yanlis-pozitif). Alet duzeltildi;
     `test_cikartici_python_importlarini_yakalamaz` bunu civiliyor.
+
+    Bu yarim FONKSIYON ICI `text("...")` cagrilarini yakalar (modul duzeyinde
+    sabit degiller, calisma-zamani yarimi onlari GOREMEZ). Ornek:
+    app/api/fsrs.py:237 `get_stats` icindeki inline SELECT.
+    `test_cikartici_fonksiyon_ici_sqli_kacirmiyor` bu yarimi civiliyor.
     """
     agac = ast.parse(yol.read_text(encoding="utf-8"))
     bulunan: set[str] = set()
     for dugum in ast.walk(agac):
-        if not isinstance(dugum, ast.Constant) or not isinstance(dugum.value, str):
-            continue
-        govde = dugum.value
-        if not _SQL_GORUNUMLU.search(govde):
-            continue
-        bulunan |= {
-            ad.lower()
-            for ad in _TABLO_DESENI.findall(govde)
-            if ad.lower() not in _TABLO_OLMAYAN
-        }
+        if isinstance(dugum, ast.Constant) and isinstance(dugum.value, str):
+            bulunan |= _govdeden_tablolar(dugum.value)
     return bulunan
 
 
+def _modul_adi(yol: Path) -> str:
+    """backend/app/services/fsrs_service.py -> app.services.fsrs_service"""
+    return ".".join(yol.relative_to(_BACKEND).with_suffix("").parts)
+
+
+def _calisma_zamani_sql_tablolari(yol: Path) -> set[str]:
+    """MODUL DUZEYI SQL sabitlerini CALISMA ZAMANINDA okur (A.1).
+
+    Neden gerekli: `_FETCH_DUE_SQL` (app/services/fsrs_service.py:42-79) duz
+    literal + `f"AND {safe_for_beta_sql('q.id')}"` birlesimiyle kuruluyor.
+    Tablo adi `core/quality_gate.py:69` sabitinden gelir ve fsrs_service.py'nin
+    KAYNAK METNINDE hic gecmez — AST yarimi yapisal olarak kordur
+    (f-string `ast.JoinedStr`'dir, cagriyi statik cozmek imkansiz).
+
+    Bu yarim modulu import edip `text()` nesnelerinin DERLENMIS metnini tarar,
+    yani ucun uretimde calistirdigi SQL'i. `test_cikartici_calisma_zamani_
+    sqlini_okuyor` bu yarimi civiliyor.
+    """
+    modul = importlib.import_module(_modul_adi(yol))
+    bulunan: set[str] = set()
+    for deger in vars(modul).values():
+        if isinstance(deger, TextClause):
+            bulunan |= _govdeden_tablolar(str(deger))
+        elif isinstance(deger, str):
+            bulunan |= _govdeden_tablolar(deger)
+    return bulunan
+
+
+def _sql_tablolari(yol: Path) -> set[str]:
+    """Ham SQL'de gecen tablo adlari — IKI yarimin BIRLESIMI.
+
+    Ikisi de yuk tasiyor, hicbiri tek basina yetmiyor (1 Agu 2026 olcumu):
+      - salt-AST      -> f-string ile birlestirilen `mv_safe_for_beta`'yi kacirir
+      - salt-calisma  -> fonksiyon ici `text(...)` sabitlerini kacirir
+    """
+    return _ast_sql_tablolari(yol) | _calisma_zamani_sql_tablolari(yol)
+
+
 def _canli_tablolar() -> set[str]:
-    """Canli semadaki tablo + view adlari."""
-    with psycopg2.connect(DSN) as baglanti, baglanti.cursor() as imlec:
-        imlec.execute(
-            "SELECT table_name FROM information_schema.tables "
-            "WHERE table_schema = 'public'"
-        )
-        return {satir[0].lower() for satir in imlec.fetchall()}
+    """Canli semadaki tablo + view + MATVIEW adlari.
+
+    `information_schema.tables` MATVIEW LISTELEMEZ (A.1b). Canli olcum
+    (1 Agu 2026): `to_regclass('mv_safe_for_beta')` VAR ama information_schema
+    icinde YOK. Bu yuzden kapi iliskisi "eksik tablo" gibi raporlanirdi —
+    sema arizasi degil, ALET arizasi.
+
+    relkind: r=tablo · p=bolumlenmis tablo · v=view · m=matview · f=yabanci tablo
+    """
+    baglanti = psycopg2.connect(DSN)
+    try:
+        with baglanti, baglanti.cursor() as imlec:
+            imlec.execute(
+                "SELECT c.relname FROM pg_class c "
+                "JOIN pg_namespace n ON n.oid = c.relnamespace "
+                "WHERE n.nspname = 'public' "
+                "AND c.relkind IN ('r', 'p', 'v', 'm', 'f')"
+            )
+            return {satir[0].lower() for satir in imlec.fetchall()}
+    finally:
+        baglanti.close()
 
 
 @pytest.fixture(scope="module")
@@ -100,7 +164,7 @@ def canli_tablolar() -> set[str]:
     except psycopg2.OperationalError as hata:
         pytest.skip(f"PostgreSQL :5434 erisilemez ({hata.__class__.__name__})")
     if not tablolar:
-        pytest.skip("information_schema bos dondu — olcum aleti supheli")
+        pytest.skip("pg_class bos dondu — olcum aleti supheli")
     return tablolar
 
 
@@ -153,6 +217,78 @@ def test_cikartici_python_importlarini_yakalamaz() -> None:
     assert not (
         hepsi & kirletenler
     ), f"Cikartici Python import'larini SQL sandi: {sorted(hepsi & kirletenler)}"
+
+
+def test_cikartici_calisma_zamani_sqlini_okuyor() -> None:
+    """CIVI (A.1): calisma-zamani yarimi YUK TASIYOR.
+
+    `mv_safe_for_beta` fsrs_service.py'nin kaynak metninde HIC gecmez ama
+    modul yuklendiginde `_FETCH_DUE_SQL`'in derlenmis metninde VARDIR.
+    Iki iddiayi ayni anda civiler:
+      1. ad gercekten kaynakta yok  -> AST yarimi onu bulamaz (kor oldugu ispat)
+      2. ad calisma-zamaninda var   -> yeni yarim gercekten SQL okuyor
+
+    MUTASYON: `_sql_tablolari` salt-AST'ye dondurulurse bu test DUSER.
+    """
+    kaynak = FSRS_SERVICE.read_text(encoding="utf-8")
+    assert SAFE_POOL_RELATION not in kaynak, (
+        "Onkosul degisti: ad artik kaynak metinde geciyor. Bu test'in "
+        "civiledigi kor nokta kalkmis olabilir — testi yeniden tasarla."
+    )
+    assert SAFE_POOL_RELATION in _calisma_zamani_sql_tablolari(
+        FSRS_SERVICE
+    ), "Calisma-zamani yarimi kapi iliskisini gormuyor -> A.1 geri geldi"
+
+
+def test_cikartici_fonksiyon_ici_sqli_kacirmiyor() -> None:
+    """CIVI: AST yarimi da YUK TASIYOR — salt-calisma yeterli DEGIL.
+
+    app/api/fsrs.py:237 `get_stats` icindeki `text("... FROM user_item_fsrs")`
+    modul duzeyi bir sabit degil; `vars(modul)` uzerinden ASLA gorunmez.
+
+    MUTASYON: `_sql_tablolari` salt-calisma-zamanina cevrilirse bu test DUSER.
+    """
+    assert "user_item_fsrs" in _sql_tablolari(FSRS_API), (
+        "Fonksiyon ici ham SQL kacti -> AST yarimi kaldirilmis olabilir; "
+        "birlesimin iki yarimi da gereklidir"
+    )
+
+
+def test_alet_dogrulamasi_matview_gorunuyor(canli_tablolar: set[str]) -> None:
+    """KONTROL KOLU (A.1b): olcum aleti MATVIEW'leri de goruyor mu.
+
+    `information_schema.tables` matview LISTELEMEZ (yalniz relkind 'r' ve 'v').
+    Kalite kapisi `mv_safe_for_beta` bir matview oldugu icin, bu ad canli
+    kumede yoksa asagidaki sinif bekcisi onu "eksik tablo" diye raporlar —
+    yani ALET arizasi, sema arizasi degil.
+
+    Canli olcum (1 Agu 2026): to_regclass -> 'mv_safe_for_beta' VAR;
+    information_schema.tables icinde -> YOK.
+    """
+    assert SAFE_POOL_RELATION in canli_tablolar, (
+        f"Bilinen-VAR matview '{SAFE_POOL_RELATION}' canli kumede gorunmuyor -> "
+        "olcum aleti matview kor. information_schema.tables yerine "
+        "pg_class(relkind IN 'r','p','v','m','f') kullanilmali."
+    )
+
+
+def test_kalite_kapisi_iliskisi_ham_sqlden_cikariliyor() -> None:
+    """A.1: /due'nun GERCEK SQL'indeki kalite kapisi iliskisi gorulmeli.
+
+    `_FETCH_DUE_SQL` duz literal + f-string birlesimi ile kuruluyor
+    (app/services/fsrs_service.py:75). Tablo adi `core/quality_gate.py:69`
+    sabitinden geliyor; fsrs_service.py'nin KAYNAK METNINDE string olarak
+    HIC gecmiyor. Salt-AST cikarici bu yuzden kordur.
+
+    Kontrol kolu: calisma-zamani `str(_FETCH_DUE_SQL)` icinde ad VAR
+    (1 Agu 2026 olcumu) — yani eksik olan SQL degil, cikarici.
+    """
+    bulunan = _sql_tablolari(FSRS_SERVICE)
+    assert SAFE_POOL_RELATION in bulunan, (
+        f"Kapi iliskisi '{SAFE_POOL_RELATION}' ham SQL'den cikarilamadi "
+        f"(cikarilan: {sorted(bulunan)}). Bekci /due'nun gercek SQL'ini "
+        "gormuyor -> 'ham SQL'de gecen HER tablo' iddiasi overclaim."
+    )
 
 
 def test_fsrs_ham_sql_tablolari_canli_semada_var(canli_tablolar: set[str]) -> None:
