@@ -47,8 +47,13 @@ durduran bir olcume cevrilmis oluyor.
 
 from __future__ import annotations
 
-import psycopg2
 import pytest
+
+# `psycopg2-binary` CI'da KURULU DEGIL (requirements.txt psycopg v3 kuruyor;
+# sqlalchemy'de psycopg2 yalniz [postgresql*] extra'sinda). ci.yml:281 testleri
+# marker filtresiz + `-x` ile kostugu icin korumasiz import TUM job'u dusururdu.
+# Bekci: tests/test_ci_collection_guard.py
+psycopg2 = pytest.importorskip("psycopg2")
 
 pytestmark = [pytest.mark.integration, pytest.mark.security]
 
