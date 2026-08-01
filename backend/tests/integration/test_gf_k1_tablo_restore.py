@@ -47,7 +47,8 @@ MODEL_MODULLERI = [
     "models.reasoning_models",
 ]
 
-# Bagimlilik sirasi (migration da bu sirayi kullanir)
+# Bagimlilik sirasi (migration'lar da bu sirayi kullanir)
+# GF-K1 dalgasi — gfk1_restore_20260801
 BEKLENEN_TABLOLAR = [
     "reasoning_cache",
     "video_watch_sessions",
@@ -56,6 +57,15 @@ BEKLENEN_TABLOLAR = [
     "video_notes",
     "live_sessions",
     "appointments",
+    # GF-K2 dalgasi — gfk2_diary_20260801. KACAN KARDES: ayni sinif, ilk turda
+    # gorunmedi cunku istek once `emotional_states` yoklugunda patliyordu.
+    "diary_entries",
+    "diary_exports",
+    "goals",
+    "learning_entries",
+    "peer_comparisons",
+    "insights",
+    "reflections",
 ]
 
 
