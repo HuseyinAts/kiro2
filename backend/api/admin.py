@@ -412,14 +412,49 @@ async def soru_ekle(
 async def soru_guncelle(
     soru_id: str,
     soru_data: dict[str, Any],
-    _: Kullanici = Depends(admin_kullanici_getir),
+    admin: Kullanici = Depends(admin_kullanici_getir),
 ) -> dict[str, Any]:
     """
     Mevcut soruyu güncelle (Admin yetkisi gerekli)
     """
     try:
-        soru = await admin_servisi.soru_guncelle(soru_id, soru_data)
-        return {"success": True, "data": soru, "message": "Soru başarıyla güncellendi"}
+        # `admin_servisi.soru_guncelle` POZISYONEL cagrildigi icin
+        # @admin_required soru_id'yi kullanici saniyor -> AdminAuthorizationError
+        # -> asagidaki ciplak except -> 500. DELETE (a30416f34) ve POST (:349)
+        # bu desenden coktan cikmisti, PUT geride kalmisti (#465/YENI-1).
+        # Yetki kaybi YOK: `Depends(admin_kullanici_getir)` kapisi ustte duruyor
+        # ve ADMIN/SUPER_ADMIN disina 403 veriyor (:42).
+        from services.soru_bankasi_service import soru_bankasi_servisi
+
+        soru = await soru_bankasi_servisi.soru_guncelle(soru_id, soru_data)
+
+        if soru is None:
+            # DIKKAT: servis "bulunamadi" ve "istisna" icin AYNI None'i donuyor
+            # (soru_bankasi_service.py:1265-1270). Yani gercek bir DB hatasi
+            # burada 404 gorunebilir. Servis DEGISTIRILMEDI cunku ikinci bir
+            # uretim cagirani var (api/soru_bankasi.py:845). Belirsizlik durum
+            # tablosunda YENI-8 olarak kayitli.
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Soru bulunamadı"
+            )
+
+        await admin_servisi.admin_aktivite_kaydet(
+            admin.id, "soru_guncelle", hedef_id=soru_id
+        )
+        # UCUNCU BASTIRICI: eski kod `"data": soru` ile HAM ORM nesnesi
+        # donduruyordu. Pydantic SQLAlchemy modelini serialize edemez
+        # (PydanticSerializationError) -> dekorator atlansa BILE 500 surerdi.
+        # Kardes uclar bu tuzagi coktan asmis: POST (:379) ve
+        # api/soru_bankasi.py:857 ikisi de ACIK sozluk kuruyor. Ayni desen.
+        return {
+            "success": True,
+            "data": {
+                "id": str(soru.id),
+                "soru_metni": soru.question_text,
+                "guncellenen_alanlar": sorted(soru_data.keys()),
+            },
+            "message": "Soru başarıyla güncellendi",
+        }
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
