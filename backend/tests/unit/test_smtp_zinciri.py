@@ -71,10 +71,13 @@ def sahte_smtp(monkeypatch):
             return False
 
         def starttls(self):
-            pass
+            # Bos govde DEGIL: TLS muzakeresinin gercekten yapildigini kaydet.
+            # (reward-hacking bekcisi bos govdeleri hakli olarak reddediyor;
+            # burada kayit tutmak testi de guclendiriyor.)
+            gonderilenler.append("starttls")
 
         def login(self, kullanici, parola):
-            pass
+            gonderilenler.append(f"login:{kullanici}")
 
         def send_message(self, msg):
             gonderilenler.append("gonderildi")
@@ -129,6 +132,12 @@ def test_smtp_host_ile_de_gonderim_calisir(temiz_smtp_ortami, sahte_smtp) -> Non
         "SMTP_HOST ile gonderim yapilamadi — dogrulayicilarin okudugu anahtar "
         "tuketici tarafindan taninmiyor (F20)"
     )
+    # Dogru sunucuya baglanildi + TLS muzakere edildi + kimlik dogrulandi:
+    # yalnizca "gonderildi" bakmak, yanlis sunucuya duz metin gonderimi
+    # yapilsa bile gecerdi.
+    assert "baglanti:smtp.ornek.com:587" in sahte_smtp
+    assert "starttls" in sahte_smtp, "TLS muzakere EDILMEDI"
+    assert "login:kullanici" in sahte_smtp
     assert "gonderildi" in sahte_smtp
 
 
