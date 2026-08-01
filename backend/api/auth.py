@@ -2261,8 +2261,18 @@ class VeliOnayStatusResponse(BaseModel):
     status: str
 
 
-def _send_veli_onay_email(veli_email: str, token: str) -> None:
-    """Veli onay + geri-çek linkli email gönder (fire-and-forget)."""
+def _send_veli_onay_email(veli_email: str, token: str) -> bool:
+    """Veli onay + geri-çek linkli email gönder.
+
+    F21 (#466): eskiden `None` dönüyor ve `send_email`in sonucunu hiç
+    okumuyordu — çağıran taraf gönderimin olup olmadığını bilemiyordu.
+    Şifre sıfırlama yolu (`:1568`) sonucu zaten yakalıyordu; KVKK açık
+    rızası daha kritik olmasına rağmen geride kalmıştı.
+
+    Returns:
+        True  — mesaj gönderim kuyruğuna alındı
+        False — SMTP yapılandırılmamış, e-posta GİTMEDİ
+    """
     import os
 
     frontend = os.getenv("FRONTEND_URL", "http://localhost:3001").rstrip("/")
@@ -2276,7 +2286,14 @@ def _send_veli_onay_email(veli_email: str, token: str) -> None:
         f'<p style="font-size:12px;color:#888">Onayı geri çekmek için: '
         f'<a href="{geri}">tıklayın</a></p>'
     )
-    send_email(veli_email, "KIRO2 — Veli Onayı Gerekiyor", html)
+    kuyruga_alindi = send_email(veli_email, "KIRO2 — Veli Onayı Gerekiyor", html)
+    if not kuyruga_alindi:
+        logger.error(
+            "Veli onay e-postası GÖNDERİLEMEDİ (SMTP yapılandırılmamış): %s. "
+            "KVKK açık rızası bu e-postaya bağlı — öğrenci onaysız kalır.",
+            veli_email,
+        )
+    return bool(kuyruga_alindi)
 
 
 @router.post("/veli-onay/verify", response_model=VeliOnayResponse)
@@ -2347,7 +2364,18 @@ async def veli_onay_resend(
         raise HTTPException(status_code=400, detail="Kayıtlı veli e-postası yok")
     veli_email = row[0]
     token = await svc.resend(str(mevcut_kullanici.id), veli_email)
-    _send_veli_onay_email(veli_email, token)
+    # F21-yeni (#466): eskiden gönderim ölse bile koşulsuz "tekrar gönderildi"
+    # deniyordu — `2d5d82f7e`de admin tarafında kapatılan yanlış-başarı sınıfı.
+    # Token ÜRETİLDİ (geri alınmıyor), ama kullanıcıya doğrusu söyleniyor.
+    kuyruga_alindi = _send_veli_onay_email(veli_email, token)
+    if not kuyruga_alindi:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Onay e-postası şu anda gönderilemiyor (e-posta servisi "
+                "yapılandırılmamış). Lütfen daha sonra tekrar deneyin."
+            ),
+        )
     return VeliOnayResponse(
         status="pending", message="Onay e-postası tekrar gönderildi"
     )

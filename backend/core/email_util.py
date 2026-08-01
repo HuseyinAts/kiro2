@@ -29,7 +29,12 @@ def _build_message(
 
 def send_email(to: str, subject: str, html_body: str, blocking: bool = False) -> bool:
     """Email gönder. Config yoksa False (uyarı loglar). blocking=True testte senkron."""
-    smtp_server = os.getenv("SMTP_SERVER")
+    # F20 (#466): dogrulayicilar `SMTP_HOST`, tuketiciler `SMTP_SERVER` okuyordu.
+    # Operator dokumante edilen SMTP_HOST'u doldurdugunda startup validator
+    # GECIYOR ama gonderim burada sessizce False donuyordu — yanlis pozitif
+    # saglik sinyali. Iki ad da kabul ediliyor; SMTP_HOST tercih edilir cunku
+    # dogrulayicilarin ve .env sablonunun kullandigi ad odur.
+    smtp_server = os.getenv("SMTP_HOST") or os.getenv("SMTP_SERVER")
     smtp_port = os.getenv("SMTP_PORT", "587")
     smtp_username = os.getenv("SMTP_USERNAME")
     smtp_password = os.getenv("SMTP_PASSWORD")
