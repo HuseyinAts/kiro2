@@ -18,8 +18,9 @@ KIRO2'nin **ölçülmüş** eksikliklerinin tek envanteri. Üç kaynağın birle
 | 29 Tem 12-oturum gözden geçirmesi | 12 | K5/K4.5 kapandı, kalanı açık |
 | **1 Ağu öz-denetim** (kapatılan işlere saldırı) | **49** | **hepsi açık** |
 
-**Toplam açık: 98 kalem.**
-*(Açılış 99 · S201'de `A.1`+`A.1b` kapandı `2d68e4811` · doğrulama turunda `T2b` eklendi = 98)*
+**Toplam açık: 95 kalem.**
+*(Açılış 99 · S201'de `A.1`+`A.1b` kapandı `2d68e4811` · doğrulama turunda `T2b`
+eklendi = 98 · S202'de `A.4`+`A.4b`+`A.4c` kapandı `75c70dab5`+`2e439f40a` = 95)*
 
 ### Nasıl kullanılır
 
@@ -105,12 +106,34 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       alınınca sınıf bekçisi *yanlış-kırmızıya* döndü — belgenin öngörüsü doğrulandı.
       RED 2 fail → GREEN 9/9 · mutasyon **4/4** (M1 A.1b-geri · M2 salt-AST ·
       M3 salt-çalışma · M4 çalışma-yarımı-boş). Üretim kodu değişmedi.
-- [ ] **A.4** RLS tuzak dedektörü **hiçbir CI işinde koşmuyor** → "CI'ı kırmızıya
-      çevirir" iddiam **yanlıştı**. Ayrıca `psycopg2` CI'da kurulu değil.
-- [ ] **A.4b** Politika bekçisi **oran** assert ediyor, **taban** değil —
-      79'un 78'i silinse test yeşil kalır.
-- [ ] **A.4c** Dedektör kör kalabilir: `org_sayisi == 0` sessizce "tek kiracı"
-      sayılıyor, kontrol kolu yok.
+- [x] **A.4** ✅ **KAPANDI** `75c70dab5` + `2e439f40a` — iddia düzeltildi **ve**
+      bu kalemin kendi ifadesi de yanlış çıktı. Ölçüm: `ci.yml:281`
+      `pytest tests/ … -x` **marker filtresiz** koşuyor → dosya **TOPLANIYOR**;
+      koşmamasının sebebi işin *tetiklenmemesi* (dal master'dan **334** commit
+      önde, `on:` = [main,master,develop]). `deploy.yml:225` `-m integration`
+      bacağına sahip ama tetiği `push: tags: v*.*.*` ve eşleşen tag **0**.
+      Yani "hiç koşmuyor" ≠ "toplanmıyor" — ikisi ayrı şey ve ikincisi
+      **merge-anı mayınıydı**: `psycopg2-binary` CI kurulum kümesinde yok
+      (`requirements.txt:10` psycopg **v3**; sqlalchemy'de psycopg2 yalnız
+      `[postgresql*]` extra'sında) → collection ERROR, `-x` ile tüm test job'u.
+      Fix: `pytest.importorskip` (2 dosya) + **yeni sınıf bekçisi**
+      `tests/test_ci_collection_guard.py` (3 kontrol kolu + 633 dosya taban).
+      Ayrıca "163 router" sayısı hiçbir sayma yönteminden çıkmıyordu → ölçüldü
+      (**153** dosya / **155** `APIRouter(` / **2** `get_current_tenant`) ve
+      ölçüm komutları docstring'e yazıldı. Tuzak dedektörüne `db_hazir`
+      fixture'ı eklendi (tek fixture'sız testti → DB'siz ortamda ERROR).
+      A/B: psycopg2 gölgelenmiş → korumasız **ERROR**, korumalı **2 skipped**.
+- [x] **A.4b** ✅ **KAPANDI** `2e439f40a` — `POLITIKA_TABANI = 79` + saf
+      `_kalip_ihlali()`. Vakum **sentetik olarak üretildi**: `(toplam=1,
+      permissive=1)` girdisi tam olarak "78 politika silindi" senaryosudur ve
+      eski oran-eşitliği bunu YEŞİL geçiriyordu. Mutasyon M1/M2 → doğru test
+      düştü.
+- [x] **A.4c** ✅ **KAPANDI** `2e439f40a` — `_kiracilik_yargisi()` 0/1/2'yi üç
+      ayrı yargıya böler (`kor` | `tek` | `cok`); eski `<= 1` dalı 0 ile 1'i
+      aynı kefeye koyuyordu. Saf fonksiyon, çünkü canlı DB'de `organizations=0`
+      **üretilemez** → runtime'da çivilenemeyen bir assert olurdu. Mutasyon M3
+      → doğru test düştü. Mutasyon M4 (fixture kaldır + DB'siz simülasyon) →
+      `OperationalError` ile FAILED, fixture'lı hâlde 2 passed / 6 skipped.
 - [ ] **A.2** GF eşiği **150 hiç ölçülmedi** — 178 testin 150'si gerçekten
       geçebilir mi bilinmiyor. Eşik yanlışsa kapı kalıcı kırmızı olur.
 - [ ] **A.3** 4 TDD testinden biri **vakum**: dekoratör kaynak metninde substring
