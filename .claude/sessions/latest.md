@@ -1,111 +1,116 @@
-## Session Handoff — 2026-08-01 (S200 · doğrulama + 7 görev kapatma)
+## Session Handoff — 2026-08-01 (S200 · 7 görev + öz-denetim + P0 regresyon)
 
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `ef6bafe47` · origin ile **senkron** · çalışma ağacı **temiz**
+**Son commit:** `b57be1ace` · origin ile **senkron** · çalışma ağacı **temiz**
 
 ---
 
-## ⚠️ SONRAKI OTURUM BURADAN BAŞLAR
+## ⚠️ TEK AKTİF REFERANS
 
-**`docs/audits/2026-07-31_eksiklik_durum_dogrulamasi.md`** — 30-31 Tem denetiminin
-113 bulgusu + 29 Tem'in 12 kalemi, hepsi canlı kodda doğrulanmış durum tablosu.
-**Bu belge, kalemler kapanana kadar TEK REFERANSTIR.**
+**`docs/audits/2026-08-01_eksiklik_master.md`** — KIRO2'nin ölçülmüş
+eksikliklerinin tek envanteri. **99 açık kalem**, 7 faza ayrılmış kontrol listesi.
 
-**§3.0-SONRAKI** bölümünde sıra yazılı. Aç, ilk açık kalemi al, kapat,
-kutucuğu işaretle + **ankraj yaz** (commit + `dosya:satır`). Ankrajsız kapanış yok.
+Diğer denetim belgeleri **kanıt arşivi**; yeni iş için master'ı kullan.
 
-**Durum: 21 kutucuk kapalı · 51 açık · Açık P0 = 2**
+### Sonraki oturum: FAZ 0'dan başla
 
-### Sıra
+> **Sıralama ilkesi: önce ÖLÇÜM BÜTÜNLÜĞÜ.** Bekçiler yalan söylüyorsa
+> diğer hiçbir doğrulama anlam taşımaz.
 
-| # | Görev | Neden |
+| Faz | İçerik | Neden bu sıra |
 |---|---|---|
-| **1** | **#467** ES `Y3` | `api/elasticsearch.py:353-491` **canlı alias'a `correct_answer` yazıyor**; onu bugün kapatan tek şey bir kwarg hatası (`mapping=` vs `mappings=`). Biri "düzeltirse" cevap anahtarı canlı indekse döner. + `Y1`/`Y2`/`Y4`/`YENI-10` |
-| **2** | **#468** CI tetikleme | `F8-b`: kapı **aktif dalda hiç tetiklenmiyor** (`[main,master,develop]`, dal 318 commit önde). #462'de kapıyı gerçek yaptım ama koşmuyor → değeri sıfır. + `T1`/`T2`/`T3` |
-| **3** | **#470** Sınav oturumu | `F17` üç katmanda yok + `F17b` **ölü bekçiyi 3 test yeşil doğruluyor** |
-| **4** | **#469** Kiro yüzey | `K3` 70 yoldan ~43'ü backend'de yok · `K4.6` tek satırlık takas |
-| **5** | **#471** P2/P3 hijyen | P0/P1 bitmeden geçme |
+| **0** | Ölçüm bütünlüğü (10 kalem) | Yeşil rapor veren ama hiçbir şey ölçmeyen bekçiler. **A.1 + A.1b BİRLİKTE** düzeltilmeli — iki hata birbirini maskeliyor |
+| **1** | Yarım kalan fix'ler (9) | Bağlam taze, en yüksek ROI |
+| **2** | Kaçan kardeşler (4) | Sınıf kapatma |
+| **3** | Ürün kusurları (7) | Kullanıcıya dokunan |
+| **4** | Test altyapısı (7) | |
+| **5** | CI (3) | `F8-b`: kapı aktif dalda tetiklenmiyor → #462'nin değeri bugün **sıfır** |
+| **6** | Doküman/hijyen | |
 
 ---
 
-## Bu oturumda kapananlar (7 görev)
+## Bu oturumda ne oldu
 
-| Görev | Sonuç | Commit |
-|---|---|---|
-| **#460** canlı ölçüm turu | 5 komut, hepsi kontrol kollu | — |
-| **#463** hızlı kazanç (9 kalem + Y6) | doküman sayıları canlı ölçümle senkron | `962f7d4c9` |
-| **#461** K1 `user_item_fsrs` **P0** | tablo restore + GRANT + sınıf bekçisi (5/5) | `3773b3d42` |
-| **#462** Golden Flow kapısı **P0** | 178 login→4, 429→FAIL, CI eşiği; 2 mutasyon çivili | `c5a4f2c98` |
-| **#465** Admin uçları **P0** | **3.** bastırıcı bulundu; 5 bayat test (1 vakum) onarıldı | `b93cfcd3c`, `0d0dfd069` |
-| **#464** RLS | 🟡 kapatılmadı, **ölçülebilir** yapıldı; tuzak dedektörü çivili | `64d6452be` |
-| **#466** SMTP zinciri | F20+F21+F21-yeni; 3 mutasyon çivili | `4ddd74383`, `ef6bafe47` |
+### Kapatılan 7 görev (#460-#466)
 
-**Açık P0: 7 → 2** — `#441` SMTP (operatör) · `B5` RLS (mimari sprint)
+| Görev | Commit |
+|---|---|
+| #460 canlı ölçüm turu (5 komut, kontrol kollu) | — |
+| #461 `user_item_fsrs` restore **P0** | `3773b3d42` |
+| #462 GF merge kapısı **P0** | `c5a4f2c98` |
+| #463 hızlı kazanç (9 kalem) | `962f7d4c9` |
+| #464 RLS **ölçülebilir** yapıldı (kapatılmadı) | `64d6452be` |
+| #465 admin PUT — **3.** bastırıcı bulundu **P0** | `b93cfcd3c`, `0d0dfd069` |
+| #466 SMTP F20/F21/F21-yeni (**kısmi**, bkz. A.5b/A.5c) | `4ddd74383`, `ef6bafe47` |
+
+### Sonra o işlere SALDIRILDI (7 skeptik + 2 hakem)
+
+**49 teyitli kusur · 1 fantom · 13 "dayandı".**
+Türler: kaçan kardeş 10 · vakum test 10 · eksik fix 10 · yanlış iddia 11 · regresyon 8.
+
+> Kusurların **%41'i** doğrulama katmanının kendisinde. Ölçüm aletleri,
+> ölçtükleri şeyden daha güvenilmez durumda.
+
+### Kendi yarattığım P0 regresyon (düzeltildi, `b57be1ace`)
+
+#462'nin token önbelleği, GF1x'in (`/auth/cikis`) **paylaşılan token'ı
+blacklist'lemesine** yol açtı → sonraki **148 test** ölü token alıyordu →
+`-x` ile koşum 13. testte duruyor → **kapı kalıcı kırmızı**.
+"148 SKIP yalanı"nı "165 test hiç koşmuyor" ile değiştirmiştim.
+
+**Neden kaçtı:** #462'nin doğrulama bölümü 6 birim testi + 2 YAML listeliyordu,
+**e2e paketi hiç koşulmadı**.
+
+**Fix:** `_login_taze()` — önbelleği atlar, önbelleğe yazmaz. Token'ı geçersiz
+kılan test kendi token'ını alır → zehirlenme **yapısal olarak imkânsız**.
+AST bekçisiyle çivili (mutasyon: GF1x'i `_login`e çevir → düşer).
 
 ---
 
 ## Fail Eden Testler
 
-**YOK.** Bu oturumda koşulanlar: FSRS şema sözleşmesi 5/5 · GF login kapısı 6/6 ·
-workflow YAML 12/12 · admin paketi 56/56 · RLS bekçisi 6/6 · SMTP zinciri 6/6 ·
-email_util tüketicileri 23/23 · `tests/performance/` 20 test temiz toplanıyor.
+**YOK.** Koşulanlar: GF login kapısı 7/7 · GF e2e **178 test toplanıyor**
+(NameError yok) · FSRS şema 5/5 · workflow YAML 12/12 · admin 56/56 ·
+RLS bekçisi 6/6 · SMTP 6/6 · email_util tüketicileri 23/23.
 
-**Önceden var, değişmedi:** TAM backend paketi koşamıyor (`pytest_asyncio` teardown
-deadlock, `T1`). Bu #468'in kapsamında.
-
----
-
-## Engelleyiciler
-
-- **SMTP** 6/6 env UNSET (canlı ölçüldü). **Kod tarafında yapılacak şey KALMADI.**
-  Operatör: `.env.mvp`'ye `SMTP_HOST`+`SMTP_USERNAME`+`SMTP_PASSWORD`+`EMAIL_FROM`,
-  sonra `docker compose up -d --no-deps backend` (**restart YETMEZ**).
-  Not: `.env.mvp.example`'da şablon **yok** ve CLAUDE.md `.env*`'ı salt-okunur
-  ilan ettiği için **kod tarafından eklenemez** (`YENI-9`).
-- `gh` CLI yok → CI koşum durumu doğrulanamıyor (#390/#436).
+**Önceden var (değişmedi):** tam backend paketi koşamıyor — FAZ 4 / `T1`.
 
 ---
 
-## Kararlar (gelecek oturum tekrar tartışmasın)
+## Kararlar (tekrar tartışılmasın)
 
-- **`alembic/env.py` exclude listesine `user_item_fsrs` EKLENMEDİ.** `include_object()`
-  doğrudan çağrılarak ölçüldü: `env.py:117-118` yapısal kapısı zaten koruyor
-  (kontrol kolları: `question_bank`→DAHİL, yeni tablo→DAHİL). +0 değer → #451 gereği.
-- **`@admin_required` dekoratörü DÜZELTİLMEDİ.** 17 metot korumalı ama üretimden
-  çağrılan **tek** metot vardı (düzeltildi); kalan 16 ölü kod → +0 değer.
-- **İki paralel FSRS implementasyonu var** (`user_item_fsrs` vs `fsrs_cards`).
-  Restore ikisini de çalışır yaptı; **kanonik seçimi ürün kararı**, yapılmadı.
-- **RLS politikaları fail-closed YAPILMADI.** 163 router'ı ilgilendiren mimari iş.
-  Bunun yerine tuzak dedektörü kondu: 2. org eklendiği an CI kırmızıya döner.
-- **`soru_bankasi_servisi.soru_guncelle` DEĞİŞTİRİLMEDİ** (`YENI-8`): "bulunamadı"
-  ve "istisna" için aynı `None`'ı dönüyor, ama ikinci üretim çağıranı var
-  (`api/soru_bankasi.py:845`) — cerrahi müdahale kuralı.
-- **Fantom listesi (§5) 8 kalem — uğraşılmaz.** Özellikle `#458a-2` (kasıtlı fixture)
-  ve `#447-schema` (`backend/schemas/persona.py` hiç olmadı).
+- **`alembic/env.py` exclude satırı EKLENMEDİ** — `include_object()` çağrılarak
+  ölçüldü, yapısal kapı zaten koruyor (+0 değer, #451).
+- **`@admin_required` DÜZELTİLMEDİ** — 17 metottan 16'sının üretim çağıranı yok.
+- **RLS fail-closed YAPILMADI** — 163 router'lık mimari iş; yerine tuzak dedektörü.
+  *(Ama A.4: dedektör CI'da koşmuyor — iddiam yanlıştı.)*
+- **`soru_guncelle` DEĞİŞTİRİLMEDİ** (`YENI-8`) — ikinci üretim çağıranı var.
+- **İki paralel FSRS implementasyonu** — kanonik seçimi **ürün kararı**, yapılmadı.
+- **Fantom listesi (master §5) 8 kalem — uğraşılmaz.**
 
 ---
 
-## Bu oturumun ALET DERSLERİ (tekrarlanmasın)
+## Alet dersleri (11)
 
-1. **`cd` kalıcı → geri alım sessizce başarısız oluyor.** 3 kez oldu.
-   `git checkout HEAD -- <yol>` yanlış dizinden koşunca "pathspec did not match"
-   verip **hiçbir şey yapmıyor**, ve `git status` da yanlış dizinden koşulunca
-   "boş" görünüyor. **Her geri alımı repo kökünden ölç.**
-2. **`git checkout -- X` YETMEZ** — index'ten geri yükler. `git add` yapıldıysa
+1. **`cd` kalıcı** → geri alım bu oturumda **4 kez** sessizce başarısız oldu.
+   `git checkout HEAD --` yanlış dizinden "pathspec did not match" verip hiçbir
+   şey yapmıyor; `git status` da yanlış dizinden "boş" görünüyor. **Kökten ölç.**
+2. **`git checkout -- X` yetmez** — index'ten yükler. `git add` yapıldıysa
    `git checkout HEAD -- X` gerekir.
-3. **Biçimlendirici `# pragma`/`# noqa` yorumlarını satırdan kaydırıyor.**
-   detect-secrets/ruff **satır bazlı** bakıyor. Pragma değerin kendi satırında olmalı.
-4. **Biçimlendirici kullanılmayan import'u siliyor** (F401 autofix) → `NameError`.
+3. **Commit'siz işi mutasyona sokma** — `checkout HEAD` fix'i de siler.
+   (Bu oturumda `_login_taze` tanımını böyle kaybettim.)
+4. **Yeşil test kırılmayı gizleyebilir** — bekçi AST adlarına bakıyordu,
+   çözümleme yapmıyordu; tanımsız fonksiyona çağrı varken 7/7 yeşildi.
+5. **Biçimlendirici `# pragma`/`# noqa`'yı satırdan kaydırır** — detect-secrets
+   ve ruff **satır bazlı**. Pragma değerin kendi satırında olmalı.
+6. **Biçimlendirici kullanılmayan import'u siler** (F401) → `NameError`.
    Kullanımı ÖNCE yaz, import'u SONRA.
-5. **`pytest.fail`/`skip` `BaseException` türetir** — `pytest.raises(Exception)`
-   onları yakalamaz; test kendisi "skipped" olur ve hiçbir şey ölçmez.
-   `_pytest.outcomes.{Failed,Skipped}` kullan.
-6. **detect-secrets sadece DEĞİŞEN dosyaları tarar.** Bir dosyaya dokununca
-   tamamı denetime girer ve **önceden var olan** satırlar commit'i bloklar.
-7. **`git check-ignore` TAKİPLİ dosyayı raporlamaz** — boş çıktı "ignore edilmiyor"
-   demek değil, "zaten takipli" de olabilir. (Bu yüzden yanlış alarm verdim.)
-8. **reward-hacking bekçisi boş gövdeli test double'ı reddediyor** (exit 2, push
-   bloklanır). Susturma — gövde ver, kayıt tut; test de güçlenir.
-9. Git Bash'te **`git grep` deseni `/` içerirse** MSYS yol dönüşümüne takılıp
-   var olan metne **0 isabet** döner. Kontrol kolu koymadan olumsuz bulgu raporlama.
-10. **`.env*` salt-okunurdur** (CLAUDE.md). İzin sistemi haklı olarak bloklar.
+7. **`pytest.fail`/`skip` = `BaseException`** — `pytest.raises(Exception)`
+   yakalamaz, test kendisi "skipped" olur ve hiçbir şey ölçmez.
+8. **detect-secrets sadece DEĞİŞEN dosyaları tarar** — dosyaya dokununca tamamı
+   denetime girer, önceden var olan satırlar commit'i bloklar.
+9. **`git check-ignore` TAKİPLİ dosyayı raporlamaz** — boş çıktı "ignore
+   edilmiyor" demek değil.
+10. **reward-hacking bekçisi boş gövdeli test double'ı reddeder** (exit 2).
+    Susturma — gövde ver, kayıt tut; test de güçlenir.
+11. **`.env*` salt-okunurdur** (CLAUDE.md) — izin sistemi haklı olarak bloklar.

@@ -1,4 +1,15 @@
 
+> ## ⚠️ BU BELGE ARTIK AKTİF REFERANS DEĞİL
+>
+> **Aktif referans: [`2026-08-01_eksiklik_master.md`](2026-08-01_eksiklik_master.md)**
+>
+> 1 Ağu öz-denetimi bu belgede "kapandı" işaretlenen işlere saldırdı ve
+> **49 kusur** buldu (biri kendi yaratılmış P0 regresyon). Master belge üç
+> kaynağı birleştirir ve **fazlara ayrılmış kontrol listesi** içerir.
+>
+> Bu dosya **kanıt arşivi** olarak kalıyor: 113 bulgunun ankrajlı envanteri
+> (Ek A) ve 1 Ağu öncesi ölçümler burada. Yeni iş için master'ı kullan.
+
 # KIRO2 Eksiklik Durum Doğrulaması — 31 Temmuz 2026
 
 **Kapsam:** 30 Tem 2026 "Gerçek Durum Ölçümü" denetiminin (`2026-07-30_gercek_durum_olcumu.md`,
