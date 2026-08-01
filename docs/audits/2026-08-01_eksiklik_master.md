@@ -18,12 +18,13 @@ KIRO2'nin **ölçülmüş** eksikliklerinin tek envanteri. Üç kaynağın birle
 | 29 Tem 12-oturum gözden geçirmesi | 12 | K5/K4.5 kapandı, kalanı açık |
 | **1 Ağu öz-denetim** (kapatılan işlere saldırı) | **49** | **hepsi açık** |
 
-**Toplam açık: 97 kalem.**
+**Toplam açık: 98 kalem.**
 *(Açılış 99 · S201'de `A.1`+`A.1b` kapandı `2d68e4811` · doğrulama turunda `T2b`
 eklendi = 98 · S202'de `A.4`+`A.4b`+`A.4c` kapandı `75c70dab5`+`2e439f40a` = 95 ·
 `A.2` kapandı `d5f07039d` = 94, ama onun canlı ölçümü **12 kırık Golden Flow**
 ortaya çıkardı → `GF-K1`/`GF-K2`/`GF-K3` eklendi = 97 · `GF-K1-b` kapandı
-`5bbdaa401`, altından `GF-K4` çıktı = 98 · `GF-K1` kapandı `2f31b0c3a` = **97**)*
+`5bbdaa401`, altından `GF-K4` çıktı = 98 · `GF-K1` kapandı `2f31b0c3a` = 97 · sistemik tarama `GF-K5`'i (67 tablo)
+ortaya çıkardı = **98**)*
 
 > Sayaç bu turda **arttı**. Bu bir gerileme değil: `A.2` zaten "eşik hiç
 > ölçülmedi" diyordu; ölçüldüğünde ölçüm bütünlüğü kusuru kapandı ve altından
@@ -268,7 +269,32 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       edilmeli. RİSK: karışık import stili "Table already defined" verebilir
       (testing.md #6). `GF-K1-b` o güne kadar emniyet kilidi; ilerleme ölçüsü
       `tests/integration/test_alembic_autogen_guard.py`.
-- [ ] **GF-K2** **Kod kusuru ×2** — (a) `AttributeError: 'LearningStyleService'
+- [ ] **GF-K2** **KISMEN KAPANDI** — 5 akıştan **2'si** düzeldi.
+      ✅ `gf26` diary/goals `232a80472`: `relation "goals" does not exist` —
+      **kaçan kardeş**, ilk turda görünmedi çünkü istek önce `emotional_states`
+      yokluğunda patlıyordu (katmanlı hata). diary modülünün **7 tablosu** geri
+      geldi.
+      ✅ `gf82` learning-style `4ab90f809`: `update_behavioral_data` **hiç
+      yazılmamıştı**; ayrıca uç `updated_profile.hybrid_code` diye NİTELİK
+      okuyordu, servis ise DICT dönüyor (rule-of-four). Asıl incelik önbellek:
+      temizlenmezse "güncelleme" eski profili döndürüp **200 ile sessizce yalan**
+      söylerdi. Sıra testle çivili.
+      ⏳ **KALAN 3:** `gf25` coaching/signals (`null value in column
+      "recorded_at" of relation "student_engagement_signals"`) · `gf88`
+      reports/exam/pdf (**logda istisna YOK** — sessizce yutulmuş, ayrı kazı) ·
+      `gf130` fsrs/flashcards/due (`'AsyncSession' object has no attribute
+      'query'` — senkron ORM API'si async oturumda, testing.md #25 sınıfı).
+- [ ] **GF-K5** **67 tablo ORM'de tanımlı ama DB'de YOK** (1 Ağu ölçümü:
+      `models/*.py` 83 modül → 228 ORM tablosu · canlı şema 217 tablo).
+      Modül dağılımı: study_room 7 · student_review 6 · teacher_pool 5 ·
+      university_info 5 · department_info 5 · university 5 · khan_content 3 ·
+      osym_question 3 · reasoning_models 3 · video_analytics 3 …
+      **Uç uç keşfetmek kaybeden strateji** — bu turda 7 tablo restore edildi,
+      sonra `goals` çıktı, sonra sistemik tarama 67 gösterdi. **ÜRÜN KARARI
+      gerekiyor:** hepsi canlı özellik değil; bir kısmı hiç shiplenmemiş model
+      olabilir. Modül-bazlı triyaj + "hangi router bu modeli tüketiyor" ölçümü.
+      `GF-K4` (87 tablo DB'de var / metadata'da yok) bunun **ikiz yarısı**.
+- [ ] **GF-K2-eski** **Kod kusuru ×2** — (a) `AttributeError: 'LearningStyleService'
       object has no attribute 'update_behavioral_data'` (`gf82`); (b)
       `AttributeError: 'AsyncSession' object has no attribute 'query'` — **senkron
       ORM API'si async oturumda** (testing.md #25 sınıfı, uç eşlemesi yapılmadı).
