@@ -1,0 +1,502 @@
+# KIRO2 DERS KAYDI — tek kayit defteri. Sema ve yasam dongusu: README.md
+# Bekci: backend/tests/unit/test_ders_kaydi.py
+- id: L-test-01
+  baslik: Fixture/Scope Kurali
+  kaynak: .claude/rules/testing.md#1
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-02
+  baslik: Hibrit Yaklasim (DRY + Guvenlik)
+  kaynak: .claude/rules/testing.md#2
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-03
+  baslik: Adim Adim Ilerleme
+  kaynak: .claude/rules/testing.md#3
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-04
+  baslik: Geri Alma Stratejisi
+  kaynak: .claude/rules/testing.md#4
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-05
+  baslik: Test Sonrasi Dogrulama Zorunlu
+  kaynak: .claude/rules/testing.md#5
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-06
+  baslik: Karma Import Stili SQLAlchemy Cakismasi (Session 11)
+  kaynak: .claude/rules/testing.md#6
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-07
+  baslik: Session-Scoped Fixture Graceful Degradation (Session 11)
+  kaynak: .claude/rules/testing.md#7
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-08
+  baslik: Turkce Enum Adlari (Session 11, KIRO2 Spesifik)
+  kaynak: .claude/rules/testing.md#8
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-09
+  baslik: pytestmark MODULE DEGISKENIDIR, Preprocessor Direktifi DEGIL (Session 17)
+  kaynak: .claude/rules/testing.md#9
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-10
+  baslik: Toplu Dosya Modifikasyonunda IDEMPOTENT Script Kullan (Session 17)
+  kaynak: .claude/rules/testing.md#10
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-11
+  baslik: Metin Isleme Python Blok Yapisini Anlayamaz (Session 17)
+  kaynak: .claude/rules/testing.md#11
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-12
+  baslik: Toplu Islemden Once 2-3 Dosyada Sample Dogrulama Yap (Session 17)
+  kaynak: .claude/rules/testing.md#12
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-13
+  baslik: Fix/Skip Oranini Takip Et (Session 6-19 Analizi)
+  kaynak: .claude/rules/testing.md#13
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-14
+  baslik: Tekrarlayan Sorunlari ROOT CAUSE'dan Coz (Session 6-19 Analizi)
+  kaynak: .claude/rules/testing.md#14
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-15
+  baslik: Ogrenilen Dersleri ENFORCE Et (Session 6-19 Analizi)
+  kaynak: .claude/rules/testing.md#15
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-16
+  baslik: Model/ORM Degisiklikleri En Yuksek Oncelik (Session 19)
+  kaynak: .claude/rules/testing.md#16
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-17
+  baslik: Yeni Service/Agent Olusturdugunda Test ZORUNLU (Session 9)
+  kaynak: .claude/rules/testing.md#17
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-18
+  baslik: Session Notu Standart Formati (Session 6-19 Analizi)
+  kaynak: .claude/rules/testing.md#18
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-19
+  baslik: Toplu Script Dry-Run ZORUNLU (Session 17)
+  kaynak: .claude/rules/testing.md#19
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-20
+  baslik: httpx ASGITransport Toplu Migration (Session 8, 12)
+  kaynak: .claude/rules/testing.md#20
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-21
+  baslik: Windows Path Replace Hatasi (Session 48)
+  kaynak: .claude/rules/testing.md#21
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-22
+  baslik: Empirical > Platt Scaling (Session 48)
+  kaynak: .claude/rules/testing.md#22
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-23
+  baslik: Dual Table Trap — Yanlis Model Import (Session 78)
+  kaynak: .claude/rules/testing.md#23
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-24
+  baslik: Devre Disi Birakma Sonrasi is_active Audit (Session 78)
+  kaynak: .claude/rules/testing.md#24
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-25
+  baslik: async generator vs context manager Karistirma (Session 78)
+  kaynak: .claude/rules/testing.md#25
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-26
+  baslik: Case Convention Tutarliligi (Session 78)
+  kaynak: .claude/rules/testing.md#26
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-27
+  baslik: Yeni Router = loader.py Kaydı ZORUNLU (Session 120)
+  kaynak: .claude/rules/testing.md#27
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-28
+  baslik: Migration SQL ↔ DB Şema Doğrulaması ZORUNLU (Session 120)
+  kaynak: .claude/rules/testing.md#28
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-29
+  baslik: Phantom Sorun Filtresi — Raporu Dogrula ONCE (Session 121)
+  kaynak: .claude/rules/testing.md#29
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-30
+  baslik: Docker Image Staleness — Container vs Local Farki (Session 121)
+  kaynak: .claude/rules/testing.md#30
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-test-31
+  baslik: Status Yargisi ≠ Servis Disi — is_active Sizinti Tuzagi (3 Haz 2026)
+  kaynak: .claude/rules/testing.md#31
+  sinif: test
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: null
+- id: L-olcum-c2-audit-faz-0-2
+  baslik: C2 audit (Faz 0.2)
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 14 May 2026 olcumu (tablo satiri)
+- id: L-olcum-garble-efsanesi
+  baslik: Garble efsanesi
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 3 Haz 2026 olcumu (tablo satiri)
+- id: L-olcum-garble-tail-silme
+  baslik: Garble-tail silme
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 3 Haz 2026 olcumu (tablo satiri)
+- id: L-olcum-s-zm-anahtar-aciliyeti
+  baslik: Sızmış anahtar aciliyeti
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 28 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-bek-i-k-k-nedeni-451
+  baslik: Bekçi kök nedeni (#451)
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 30 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-fix-in-de-eri-l-lmedi
+  baslik: Fix'in değeri ölçülmedi
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 30 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-l-m-aleti-ge-ersiz-4-kez
+  baslik: Ölçüm aleti geçersiz (4 kez)
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 30 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-bare-s-re-te-app-tasks-celer
+  baslik: Bare süreçte `app.tasks` (celery)
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 31 Tem 2026 olcumu (tablo satiri)
+- id: L-olcum-mutasyon-kabuk-t-rna-nda-boz
+  baslik: Mutasyon kabuk tırnağında bozuldu
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 1 Ağu 2026 olcumu (tablo satiri)
+- id: L-olcum-bu-bek-i-ci-da-ko-muyor
+  baslik: '"Bu bekçi CI''da koşmuyor"'
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 1 Ağu 2026 olcumu (tablo satiri)
+- id: L-olcum-sabit-e-ik-l-ld-san-ld
+  baslik: Sabit eşik "ölçüldü" sanıldı
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: dogrulanmadi
+  zorlayici: null
+  kanit: 1 Ağu 2026 olcumu (tablo satiri)
+- id: L-tekrar-health-503
+  baslik: Health 503
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 7, 12, 19 — kok neden: Test ortaminda Redis/DB yok"
+- id: L-tekrar-httpx-asyncclient
+  baslik: httpx AsyncClient
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 8, 12 — kok neden: 0.27+ deprecated"
+- id: L-tekrar-sqlalchemy-import
+  baslik: SQLAlchemy import
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 11, 19 — kok neden: absolute vs relative"
+- id: L-tekrar-password-validator
+  baslik: Password validator
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 7, 8 — kok neden: Sequential char rejection"
+- id: L-tekrar-duplicatetable
+  baslik: DuplicateTable
+  kaynak: .claude/rules/verification.md#tekrarlayan-sorun
+  sinif: tekrarlayan
+  durum: aktif
+  zorlayici: null
+  kanit: "session 12 — kok neden: PostgreSQL index conflict"
+- id: L-s202-geri-alim-try-finally
+  baslik:
+    Mutasyon uygulayan script geri alimi try/finally'ye almali; surec olurse depo sessizce yalan
+    soyler
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "1 Agu 2026: PC kapanmasi M2 mutasyonunu calisma agacinda birakti; git status ile yakalandi"
+- id: L-s202-ci-kosuyor-iki-olcum
+  baslik:
+    "'CI'da kosuyor mu' IKI ayri olcum ister: (a) is tetikleniyor mu (on: + dal/PR), (b) dosya
+    toplaniyor mu (pytest marker filtresi)"
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/test_ci_collection_guard.py
+  kanit: 75c70dab5 — ci.yml:281 marker filtresiz -> dosya TOPLANIYOR; kosmama sebebi dal tetiklenmemesi
+- id: L-s202-korumasiz-opsiyonel-import
+  baslik:
+    Toplanan test modulunde korumasiz opsiyonel-bagimlilik import'u `-x` ile TUM test job'unu dusurur;
+    pytest.importorskip sart
+  kaynak: .claude/sessions/latest.md
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/test_ci_collection_guard.py
+  kanit: "75c70dab5 — A/B: golgelenmis psycopg2 ile korumasiz ERROR, korumali 2 skipped"
+- id: L-s202-vakum-saf-fonksiyon
+  baslik:
+    Canli sistemde URETILEMEYEN vakum (79 politika silme, organizations=0) saf fonksiyona ayrilip
+    sentetik girdiyle civilenmeli
+  kaynak: .claude/sessions/latest.md
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/integration/test_rls_tenant_isolation_guard.py
+  kanit: 2e439f40a — _kalip_ihlali(1,1,79) ve _kiracilik_yargisi(0) sentetik olarak uretildi
+- id: L-s202-dagitim-adi-modul-adi
+  baslik:
+    "Pozitif kanit ara: dagitim adi != modul adi ve yerel modul ayni adi golgeleyebilir (websocket
+    -> backend/websocket.py)"
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: 75c70dab5 — `websocket` bekci listesine ALINMADI, yanlis fix onlendi
+- id: L-s202-mutasyon-error-gecersiz
+  baslik:
+    Mutasyon 'failed' degil 'error' (collection) veriyorsa olcum GECERSIZ — syntax hatasi testin
+    yuk tasidigini kanitlamaz
+  kaynak: .claude/rules/audit-methodology.md#bilinen-hatalar
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "1 Agu 2026 M4: kabuk tirnaklamasi dosyaya syntax hatasi yazdi, mutasyon Python ile tekrarlandi"
+- id: L-s202-sabit-esik-gevser
+  baslik:
+    Mutlak sayiya bagli esik, olculen evren buyudukce SESSIZCE gevser; orana/farka bagla (hata==0
+    . atlanan<=N . toplam>=taban)
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/unit/test_gf_esik_kapisi.py
+  kanit: d5f07039d — 178 testte ESIK=150 dogru, 250 testte 90 skip'i yesil gecirirdi
+- id: L-s202-fiilen-kullanilan-konfig
+  baslik:
+    Kontrol kolu secmeden once sistemin FIILEN kullandigi konfigurasyonu kanitla; alembic env.py
+    filtresi olmadan olcum '86 tablo dusecek' dedi, gercek 65 index'ti
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/integration/test_alembic_autogen_guard.py
+  kanit: 5bbdaa401 — filtresiz 86/134 vs env.py gercek filtresi 0/65
+- id: L-s202-ddl-orm-den-render
+  baslik:
+    Restore migration DDL'i ELLE yazilmaz; ORM modellerinden alembic.autogenerate.render_python_code
+    ile uretilir (transkripsiyon hatasi = tablo var ama uc yine 500)
+  kaynak: .claude/sessions/latest.md
+  sinif: sema
+  durum: aktif
+  zorlayici: null
+  kanit: 2f31b0c3a — 179 satir DDL uretildi
+- id: L-s202-drop-table-enum-birakir
+  baslik:
+    DROP TABLE PG enum TIPINI dusurmez; restore'da duz sa.Enum 'type already exists' ile patlar
+    -> postgresql.ENUM(create_type=False)
+  kaynak: .claude/sessions/latest.md
+  sinif: sema
+  durum: aktif
+  zorlayici: null
+  kanit: 2f31b0c3a (8/8 tip) + 232a80472 (4/4 tip) — hepsi canlida ZATEN VARDI
+- id: L-s202-fk-gecisli-kapanis
+  baslik:
+    Tablo restore'unda FK GECISLI KAPANISI olculmeden migration yazilmaz; hedef 6 tabloydu, kapanis
+    7 cikardi
+  kaynak: .claude/sessions/latest.md
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/integration/test_gf_k1_tablo_restore.py
+  kanit: 2f31b0c3a — appointments -> teacher_availability (o da yoktu)
+- id: L-s202-varlik-yetmez-kolon
+  baslik:
+    "Tablo VARLIGI yetmez: ORM modelinin HER kolonu canli tabloda aranmali; tablo var/kolon eksik
+    uc yine 500 verir (GF106)"
+  kaynak: .claude/sessions/latest.md
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/integration/test_gf_k1_tablo_restore.py
+  kanit: 2f31b0c3a — parametrize kolon esitligi testi
+- id: L-s202-katmanli-hata-sistemik-tara
+  baslik:
+    "Katmanli hata: ilk engel kalkinca ikincisi gorunur. Uc uca kesfetmek kaybeden strateji — model/DB
+    farkini SISTEMIK tara"
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: 232a80472 — 7 tablo restore -> goals cikti -> tam tarama 67 tablo gosterdi
+- id: L-s202-onbellek-sira-civile
+  baslik:
+    Onbellek gecersizlestirme SIRASI testle civilenmeli; temizlenmezse 'guncelleme' eski degeri
+    donup 200 ile SESSIZCE yalan soyler (500'den kotu)
+  kaynak: .claude/sessions/latest.md
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/unit/test_learning_style_update.py
+  kanit: 4ab90f809 — delete -> detect sirasi assert ediliyor
+- id: L-s202-ruff-mypy-config-konumu
+  baslik:
+    ruff dosyaya EN YAKIN config'i, mypy ise cwd'deki KOK config'i okur; override yanlis dosyaya
+    yazilirsa sessizce tutmaz
+  kaynak: .claude/sessions/latest.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: 4ab90f809 — once backend/pyproject.toml'a yazildi, tutmadi; kok pyproject.toml'a tasindi
+- id: L-s202-msys-path-conv
+  baslik:
+    Git Bash `/app/...` gibi mutlak yollari Windows yoluna cevirir; docker exec argumanlarinda MSYS_NO_PATHCONV=1
+    sart
+  kaynak: .claude/sessions/latest.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "1 Agu 2026 deploy adimi: find /app/services -> 'C:/Program Files/Git/app/services' hatasi"
+- id: L-s202-pep526-gizli-nameerror
+  baslik:
+    "PEP 526 nitelik-hedefli annotation'i (self.x: T) degerlendirmez; import edilmemis tip SESSIZCE
+    calisir — gizli NameError"
+  kaynak: .claude/sessions/latest.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: 4ab90f809 — Dict 4 yerde kullaniliyordu, import YOKTU; dict[...] yapildi
+- id: L-s202-onceden-var-borc
+  baslik:
+    Onceden var olan lint/tip borcu dosyaya dokunan her commit'i bloklar; --no-verify ile ATLANMAZ,
+    olculup gerekceli per-file-ignore ile GORUNUR kilinir
+  kaynak: .claude/sessions/latest.md
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: 4ab90f809 + 5bbdaa401 — hicbiri yazilan satirlarda degildi, kanitlandi
+- id: L-s202-olcmeyen-kapi-sayaci-dusurur
+  baslik:
+    Olcmeyen bir kapi acik kalem sayisini DUSUK gosterir; olcum sonrasi sayacin ARTMASI gerileme
+    degil
+  kaynak: .claude/sessions/latest.md
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: 645055e07 — A.2 kapaninca 12 kirik Golden Flow ortaya cikti, sayac 95->97
