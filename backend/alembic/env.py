@@ -19,6 +19,7 @@ load_dotenv(env_file, override=False)
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import your models
+from core.alembic_autogen_guard import yonetilmeyeni_disla
 from models.database import Base
 
 # this is the Alembic Config object, which provides
@@ -110,16 +111,17 @@ def include_object(object, name, type_, reflected, compare_to):
     # DB-only tabloları atla (DROP önerisini önle)
     if type_ == "table" and name in ALEMBIC_EXCLUDE_TABLES:
         return False
-    # DB'de var ama metadata'da karşılığı yok → autogenerate onu "fazlalık"
-    # sanıp DROP TABLE üretir. c555a10f4b93_sync_db_changes.py tam olarak böyle
-    # 145 DROP TABLE taşıdı ve 131 tabloyu sessizce düşürdü (27 Tem 2026).
-    # Liste tutmak yetmiyor — bu sınıf yapısal olarak kapatılmalı.
-    if type_ == "table" and reflected and compare_to is None:
-        return False
     # pgvector 'embedding' kolonunu atla (SQLAlchemy NullType → karşılaştırma hatası)
     if type_ == "column" and name == "embedding":
         return False
-    return True
+    # "DB'de var ama metadata'da karşılığı yok → DROP" sınıfı. Kural 27 Tem
+    # 2026'da burada `type_ == "table"` ile sınırlı yazılmıştı; ölçüldüğünde
+    # (1 Ağu 2026) tablo tarafının kapalı ama **index tarafının açık** olduğu
+    # görüldü: remove_table=0 ama remove_index=65.
+    # Kural core/alembic_autogen_guard.py'ye taşındı — env.py import EDİLEMEZ,
+    # dolayısıyla burada kalsaydı test edilemezdi. Sözleşme:
+    # tests/integration/test_alembic_autogen_guard.py
+    return yonetilmeyeni_disla(object, name, type_, reflected, compare_to)
 
 
 def run_migrations_offline() -> None:

@@ -193,6 +193,18 @@ exclude = [
 
 [tool.ruff.lint.per-file-ignores]
 
+# alembic/env.py — E402 + T201. OLCULDU (1 Agu 2026): dosya HEAD'de ZATEN 4
+# ihlal tasiyordu, yani ona dokunan her commit ruff hook'unda bloklaniyordu
+# (hook `alembic/versions/` disliyor ama `env.py`'yi DISLAMIYOR).
+# Ikisi de YAPISAL, uslup degil:
+#   E402 — `sys.path.insert(...)` model import'undan ONCE kosmali; alembic
+#          env.py'yi depo kokunden degil kendi dizininden yukler. Import'lari
+#          "duzeltmek" `from models.database import Base`'i kirar.
+#   T201 — `print(f"[ALEMBIC] Using database: {safe_url}")` operatore hangi
+#          DB'ye goc uygulandigini gosteren KASITLI cikti (parola maskeli).
+#          Bu depoda yanlis DB'ye yazma vakasi yasandi; satir bilerek duruyor.
+"alembic/env.py" = ["E402", "T201"]
+
 # soru_bankasi_service.py (1823 satir) 31 ONCEDEN VAR OLAN ihlal tasiyor ve
 # dosyaya dokunan HER commit'i blokluyordu. 30 Tem 2026'da OLCULDU: E712'nin
 # "guvenli" otomatik duzeltmesi PostgreSQL'de FARKLI SQL uretiyor —
