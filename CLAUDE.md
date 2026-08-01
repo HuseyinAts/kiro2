@@ -843,7 +843,21 @@ Configure in: Repository Settings → Secrets and variables → Actions
 
 ## 📚 Lessons Learned
 
-See `.claude/rules/testing.md` (26 lessons) and `.claude/rules/verification.md` for detailed patterns and anti-patterns.
+**Tek defter: `.claude/lessons/ders_kaydi.yaml`** — 66 ders, her biri kimlik +
+kaynak ankrajı + durum + kanıt + (varsa) zorlayıcı test taşır.
+Yordam: `.claude/lessons/README.md` · Bekçi: `backend/tests/unit/test_ders_kaydi.py`
+
+- `aktif` = **ÖLÇÜLDÜ** (kanıtsız `aktif` bekçide düşer)
+- `dogrulanmadi` = defterde var ama bu turda doğrulanmadı (göç edilen 42 ders)
+- `curutuldu` / `devredildi` = **sessiz silme yok**, kanıt zorunlu
+
+Uzun anlatım hâlâ `.claude/rules/*.md` içinde (testing.md **31** numaralı ders,
+audit-methodology.md ölçüm-hatası tablosu, verification.md tekrarlayan sorunlar).
+Defter onların yerine geçmez; üstlerinde yaşam döngüsü katmanıdır.
+
+**Yeni ders çıkarsan:** prose'a yaz → deftere satır ekle (`aktif` + kanıt) →
+koruyan test varsa `zorlayici` alanına yolunu koy, yoksa `null` bırak (boşluk
+görünür kalsın).
 
 ## 🧠 Brainstorming
 
