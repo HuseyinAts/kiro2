@@ -18,7 +18,11 @@ KIRO2'nin **ölçülmüş** eksikliklerinin tek envanteri. Üç kaynağın birle
 | 29 Tem 12-oturum gözden geçirmesi | 12 | K5/K4.5 kapandı, kalanı açık |
 | **1 Ağu öz-denetim** (kapatılan işlere saldırı) | **49** | **hepsi açık** |
 
-**Toplam açık: 98 kalem.**
+**Toplam açık: 97 kalem.** *(2 Ağu S203: `GF-K2` kapandı — kalan 3 akış
+`gf88`/`gf25`/`gf130` — ve listede hiç olmayan bir **P0** ölçülüp kapatıldı
+(`FSRS-P0`). Yerine 2 yeni kalem açıldı: `FSRS-K1` (7 uçtan 3'ü hâlâ 500,
+biri frontend'in) ve `GF-K6` (`gf82` yeniden düştü). 98 − 1 + 2 − 2 = 97.
+Canlı Golden Flow: **175 geçti / 1 düştü / 2 atlandı**.)*
 *(Açılış 99 · S201'de `A.1`+`A.1b` kapandı `2d68e4811` · doğrulama turunda `T2b`
 eklendi = 98 · S202'de `A.4`+`A.4b`+`A.4c` kapandı `75c70dab5`+`2e439f40a` = 95 ·
 `A.2` kapandı `d5f07039d` = 94, ama onun canlı ölçümü **12 kırık Golden Flow**
@@ -269,7 +273,27 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       edilmeli. RİSK: karışık import stili "Table already defined" verebilir
       (testing.md #6). `GF-K1-b` o güne kadar emniyet kilidi; ilerleme ölçüsü
       `tests/integration/test_alembic_autogen_guard.py`.
-- [ ] **GF-K2** **KISMEN KAPANDI** — 5 akıştan **2'si** düzeldi.
+- [x] **GF-K2** ✅ **KAPANDI** (2 Ağu, `295f34d9d` `9ea03d8c9` `ee6d7c820`) —
+      kalan 3 akış da kapandı. **Canlı tam paket ölçümü: 178 → 175 geçti /
+      1 düştü / 2 atlandı** (oturum başı 164/12/2). Düşen tek akış `gf82`,
+      aşağıda `GF-K6` olarak açıldı.
+      ✅ `gf88` `295f34d9d` — `osym_exam_engine.py:1080` `finally:` bloğu
+      koşulsuz `session.status` okuyordu; üç katman da boş dönerse `session`
+      **None** kalır. `finally` içindeki istisna **normal dönüşün yerine
+      geçer** → fonksiyon `None` döndüremez, çağıranın `if not session_data:
+      404` dalı **ölü** kalır. Yarıçap: **28 çağrı yeri** (16'sı `api/sinav.py`)
+      — yani var olmayan HER oturum kimliği 404 yerine 500 üretiyordu.
+      ✅ `gf25` `9ea03d8c9` — **üç seri bağlı sebep**, her biri öncekini
+      maskeliyordu: (1) ORM `server_default` diyor, DB'de DEFAULT **yok** →
+      `NotNullViolationError`; (2) 5 kolonda tz kayması (`coaching_events`'in
+      dördü **kaçan kardeş**); (3) `RecordSignalResponse.id: int` ama kimlik
+      **VARCHAR** → satır YAZILDIKTAN sonra 500 (8 istek → 8 satır yazıldı,
+      28→37 ölçüldü, sekizi de 500). Kardeş süpürmesi `audit_logs_api.py:24`'ü
+      de yakaladı; `oba_api.py:40` ölçülünce **doğru** çıktı (yanlış fix önlendi).
+      ✅ `gf130` `ee6d7c820` — legacy flashcard katmanı **410 Gone**. Üç uç da
+      500'dü; frontend tüketicisi **yok** (ölçüldü).
+      *(orijinal kayıt aşağıda)*
+      ~~**KISMEN KAPANDI** — 5 akıştan **2'si** düzeldi.~~
       ✅ `gf26` diary/goals `232a80472`: `relation "goals" does not exist` —
       **kaçan kardeş**, ilk turda görünmedi çünkü istek önce `emotional_states`
       yokluğunda patlıyordu (katmanlı hata). diary modülünün **7 tablosu** geri
@@ -298,7 +322,47 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       object has no attribute 'update_behavioral_data'` (`gf82`); (b)
       `AttributeError: 'AsyncSession' object has no attribute 'query'` — **senkron
       ORM API'si async oturumda** (testing.md #25 sınıfı, uç eşlemesi yapılmadı).
-- [ ] **GF-K3** **Altyapı/performans ×2** — `gf27` content-management question
+- [x] **FSRS-P0** ✅ **KAPANDI** `ee6d7c820` — *(kontrol listesinde HİÇ YOKTU,
+      2 Ağu'da ölçüldü)* `GET /api/v1/fsrs/due` canlıda 500:
+      `operator does not exist: character varying = uuid`.
+      `app/services/fsrs_service.py:66` `JOIN question_bank q ON q.id =
+      f.question_id` — `question_id` **uuid**, `question_bank.id` **varchar**.
+      PostgreSQL'de bu operatör yok → sorgu tablonun kurulduğu günden
+      (`20260410_create_user_item_fsrs.py:20`) beri **hiç çalışmadı**; `#461`
+      restore aynı DDL'i tekrarlayınca kaymayı da taşıdı.
+      **Neden 164 yeşilin arkasında saklandı:** bu ucu kapsayan GF **yok**
+      (yalnız `/fsrs/review` için GF12) **ve** `test_fsrs_schema_contract.py`
+      "tablolar şemada var mı" diye sorup yeşil dönüyordu — **tip uyumunu
+      ölçmüyordu**. Frontend bu ucu doğrudan çağırıyor (`FSRSReviewPage.tsx:46`).
+      Fix: migration `question_id` UUID→VARCHAR + FK `NOT VALID` (tek satır
+      yetim bir ölçüm artefaktı; onaysız veri silme yapılmadı).
+      **Bekçi güçlendirildi:** artık SQL sabitleri canlıya karşı **koşturuluyor**
+      (`test_fsrs_okuma_sorgulari_canli_semada_gercekten_kosuyor`) + 2 kontrol
+      kolu. `::text` cast'ini parametre sanan ilk sürüm **yanlış kırmızı**
+      verdi — o bir **alet arızasıydı**, bulgu değil.
+- [ ] **FSRS-K1** *(YENİ, 2 Ağu)* **Aynı deprecated servis 3 değil YEDİ uçta.**
+      Ölçüldü: `/recommendations` → 500 · `/statistics` → 500 ·
+      `/study-sessions/start` → **500 ve FRONTEND ÇAĞIRIYOR**
+      (`useLearningPath.ts:395,412`). `gf130` kararı "frontend tüketicisi yok"
+      premisiyle alınmıştı; bu üçü o premise **uymuyor** → tek taraflı
+      silinmedi. Karar gerekiyor: async porta çevir mi, kaldır mı?
+      Hiçbiri Golden Flow kapsamında **değil**.
+- [ ] **GF-K6** *(YENİ, 2 Ağu)* **`gf82` yeniden düştü** — dün `4ab90f809` ile
+      kapatılmıştı. `can't subtract offset-naive and offset-aware datetimes`.
+      **Fantom değil, benim regresyonum da değil** (ölçüldü: konteynerde dünkü
+      fix VAR — `update_behavioral_data` 2 isabet; `learning_style` coaching
+      tablolarına dokunmuyor, yani 2 Ağu tz migration'ı ile ilgisi yok).
+      **Kısmi kök neden:** `HybridLearningProfile.updated_at` Pydantic
+      varsayılanı **naive** (`models/learning_style_models.py:221`
+      `default_factory=datetime.now`), servis ise **aware** atıyor
+      (`services/learning_style_service.py:145` `datetime.now(UTC)`).
+      Çıkarma satırı **bulunamadı** → kaldırma testi yapılmadan kök neden
+      ilan EDİLMEDİ (audit-methodology.md).
+      **Hipotez (ölçülmedi):** veriye bağlı — ilk çağrı satırı yaratır, ikinci
+      çağrı geri okuyup çıkarır. Doğruysa dünkü yeşil bir **ilk-koşum
+      artefaktıydı** ve "kapandı" iddiası erken verilmişti.
+- [ ] **GF-K3** **Altyapı/performans ×2** — ⚠️ **BAYAT:** 2 Ağu tam paket
+      koşumunda `gf27` ve `gf50` **geçti**; bu satır 1 Ağu ölçümünü yansıtıyor. `gf27` content-management question
       create **30 sn ReadTimeout** (suitedeki en yavaş test), `gf50` xp/awards
       `RemoteProtocolError: Server disconnected` (worker çökmesi şüphesi).
       Kalan 500'ler (`gf25` coaching/signals, `gf26` diary/goals, `gf88`

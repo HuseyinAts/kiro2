@@ -1,54 +1,80 @@
-## Session Handoff — 2026-08-01 (S202)
+## Session Handoff — 2026-08-02 (S203)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `1dbd2ebbd` docs: CLAUDE.md ders isaretcisi ders kaydina baglandi
-**Uncommitted:** temiz · origin ile senkron (13 commit push edildi)
+**Son commit:** `ee6d7c820` fix(fsrs): /due tip uyumsuzlugu (YENI P0) + gf130 410 Gone
+**Uncommitted:** temiz · **push EDILMEDI** (3 commit yerelde)
 
-### Yapilanlar
-- **PC kapanmasi kurtarmasi:** `backend/tests/integration/test_fsrs_schema_contract.py`
-  calisma agacinda M2 mutasyonu uygulanmis bulundu; `git checkout HEAD --` + status BOS
-  ile geri alindi, 9/9 PASS. 4 hurda dosya silindi. Kayip: workflow `wf_1bcfa871-4d1`.
-- **A.4/A.4b/A.4c** `75c70dab5` `2e439f40a` — `backend/tests/test_ci_collection_guard.py`
-  (YENI, korumasiz `psycopg2` = CI'da collection ERROR + `-x` ile tum job),
-  `test_rls_tenant_isolation_guard.py` taban+korluk. Mutasyon 4/4.
-- **A.2** `d5f07039d` — `backend/scripts/gf_esik_kapisi.py` (YENI) + 11 test.
-  Esik ILK KEZ olculdu: 178 test -> 164/12/2. `.github/workflows/golden-flows.yml`
-  betigi cagiriyor, `-x` kaldirildi. Mutasyon 5/5.
-- **GF-K1** `2f31b0c3a` — `backend/alembic/versions/20260801_gfk1_restore_7_tablo.py`
-  (7 tablo) + `tests/integration/test_gf_k1_tablo_restore.py`.
-- **GF-K1-b** `5bbdaa401` — `backend/core/alembic_autogen_guard.py` (YENI) + env.py
-  delege; autogenerate 65 index DROP'u uretiyordu. Mutasyon 3/3.
-- **GF-K2 kismi** `232a80472` (diary 7 tablo) + `4ab90f809`
-  (`services/learning_style_service.py` `update_behavioral_data` YOKTU +
-  `api/learning_style.py` dict/nesne sozlesme kaymasi + onbellek sirasi).
-- **Ders kaydi mekanizmasi** `e7a665cf5` — `.claude/lessons/ders_kaydi.yaml` (66 ders),
-  `README.md`, `backend/tests/unit/test_ders_kaydi.py`. Mutasyon 7/7.
+### Yapilanlar — Golden Flow 3 kirik -> 1, listede olmayan 1 P0 kapandi
+- **gf88** `295f34d9d` — `core/osym_exam_engine.py:1080` `finally:` blogu kosulsuz
+  `session.status` okuyordu; uc katman (L1/L2/L3) da bos donerse `session` None
+  kalir. `finally` icindeki istisna NORMAL DONUSUN YERINE GECER -> fonksiyon
+  None dondurEMEZ, caginin `if not session_data: 404` dali OLU kalir.
+  **Yaricap 28 cagri yeri** (16'si `api/sinav.py`). RED 3 -> GREEN 4/4.
+  Mutasyon M1 (kapiyi kaldir) -> 3 failed = dogru sinyal.
+- **gf25** `9ea03d8c9` — **UC SERI BAGLI SEBEP**, her biri oncekini maskeliyordu:
+  1. `student_engagement_signals.recorded_at` DB'de DEFAULT YOK ama ORM
+     `server_default` saniyor -> NotNullViolationError
+  2. 5 kolonda tz kaymasi (`coaching_events`'in DORDU **kacan kardes**)
+  3. `RecordSignalResponse.id: int` ama kimlik VARCHAR -> satir YAZILDIKTAN
+     sonra 500 (8 istek -> 8 satir, 28->37 olculdu, sekizi de 500)
+  Kardes supurmesi `audit_logs_api.py:24`'u de yakaladi; `oba_api.py:40`
+  olculunce DOGRU cikti (yanlis fix onlendi).
+- **gf130** `ee6d7c820` — legacy `/fsrs/flashcards*` (3 uc) **410 Gone**.
+  Frontend tuketicisi YOK (olculdu). `fsrs_cards` (122 satir) DB'de KALIR.
+- **FSRS-P0 (listede HIC YOKTU)** `ee6d7c820` — `GET /api/v1/fsrs/due` 500:
+  `operator does not exist: character varying = uuid`. `question_id` uuid,
+  `question_bank.id` varchar -> sorgu **hic calismamis**. Frontend bu ucu
+  dogrudan cagiriyor (`FSRSReviewPage.tsx:46`). Migration UUID->VARCHAR +
+  FK `NOT VALID` (yetim satir var, onaysiz veri silme YAPILMADI).
+
+### Bekci guclendirmeleri (asil kalici deger)
+- `test_fsrs_schema_contract.py` artik SQL sabitlerini **canliya karsi
+  KOSTURUYOR** (rollback'li) — "tablo var" bir VEKIL olcumdu, bu yuzden
+  tip uyumsuzlugu 164 yesilin arkasinda saklandi.
+- `test_coaching_schema_contract.py` (YENI) — modul butunu: ORM
+  `server_default` -> DB DEFAULT var mi · ORM tz-aware -> DB timestamptz mi.
+- `test_kimlik_tipi_sozlesmesi.py` (YENI) — VARCHAR kimlik `int` tiplenmez.
+- `test_exam_session_lookup.py` (YENI) — bilinmeyen oturum None doner.
+- Hepsinde **alet dogrulama kollari** var.
 
 ### Fail Eden Testler
-- Golden Flow **3 kirik** (oturum basi 12 idi):
-  - `gf25` coaching/signals — `null value in column "recorded_at" of relation
-    "student_engagement_signals"` (NOT NULL ihlali)
-  - `gf88` reports/exam/generate-pdf — **logda istisna YOK**, sessizce yutulmus
-  - `gf130` fsrs/flashcards/due — `'AsyncSession' object has no attribute 'query'`
-    (senkron ORM API'si async oturumda, testing.md #25 sinifi)
-- Bu oturumda yazilan 8 bekci dosyasi: **68/68 PASS**
+- Golden Flow **1 kirik** (oturum basi 3, bundan onceki olcum 12):
+  `gf82` learning-style — `can't subtract offset-naive and offset-aware
+  datetimes`. **Dun `4ab90f809` ile kapatilmisti.** Benim regresyonum DEGIL
+  (olculdu: konteynerde dunku fix VAR; learning_style coaching tablolarina
+  dokunmuyor). Kismi kok neden: `HybridLearningProfile.updated_at` Pydantic
+  varsayilani **naive** (`models/learning_style_models.py:221`), servis
+  **aware** atiyor (`services/learning_style_service.py:145`). Cikarma
+  satiri BULUNAMADI -> kaldirma testi olmadan kok neden ILAN EDILMEDI.
+  Hipotez (olculmedi): veriye bagli, ilk cagri yesil / ikinci cagri kirmizi.
 
 ### Engelleyiciler
-- `#468` CI tetiklenmiyor: dal master'dan 334+ commit onde, `on: [main,master,develop]`.
-  Yazilan kapilarin CI degeri bu kapanana kadar SIFIR (yerelde calisiyorlar).
+- `#468` CI tetiklenmiyor: dal master'dan 334+ commit onde,
+  `on: [main,master,develop]`. Yazilan kapilarin CI degeri SIFIR.
+- **3 commit push EDILMEDI.**
 
 ### Sonraki Adimlar (maks 5)
-1. `gf130` — `AsyncSession.query` async porta cevir (kok neden net)
-2. `gf25` — `recorded_at` NOT NULL: servis alani doldurmuyor
-3. `gf88` — sessiz yutma; once istisnayi gorunur kil, sonra teshis
-4. `GF-K5` — 67 tablo ORM'de var/DB'de yok; **urun karari** + modul-bazli triyaj
-5. FAZ 0 kalani: `A.3` -> `A.5` -> `A.6` -> `A.6b`
+1. `GF-K6` — `gf82`: cikarma satirini bul (kaldirma testi), sonra fix
+2. `FSRS-K1` — deprecated servis 7 ucta; `/recommendations` `/statistics`
+   `/study-sessions/start` hala 500 ve **sonuncusunu frontend cagiriyor**
+   (`useLearningPath.ts:395,412`) -> **urun karari** gerek
+3. `GF-K4`/`GF-K5` — 87 tablo metadata'da yok / 67 tablo DB'de yok
+4. FAZ 0 kalani: `A.3` -> `A.5` -> `A.6` -> `A.6b`
+5. Push + `#468` CI tetikleme
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- **Tablo restore modul butunu olarak yapilir**, uc uca degil: uc kovalamak
-  katmanli hatada kaybeder (7 tablo -> `goals` -> sistemik tarama 67 gosterdi).
-- **DDL elle yazilmaz**, ORM'den `render_python_code` ile uretilir.
-- **PG enum tipleri `DROP TABLE` ile dusmez** -> restore'da `create_type=False`.
-- **Onceden var olan lint/tip borcu** `--no-verify` ile atlanmaz; olculup gerekceli
-  per-file-ignore/override ile gorunur kilinir (ruff: en yakin config, mypy: KOK config).
-- **Ders kaydinda `aktif` = OLCULDU.** Gocurulen 42 ders bilerek `dogrulanmadi`;
-  hepsini `aktif` yapmak 23 May meta-denetimindeki %87 fantom hatasini tekrarlardi.
+- **"Tablo var" bir VEKIL olcumdur.** Sema bekcisi ad karsilastirmasiyla
+  yetinmez; sorguyu canliya karsi KOSTURUR. Tip uyumsuzlugu ad kontrolune
+  yapisal olarak gorunmez.
+- **Tek sebep varsayma.** gf25'te UC sebep seri bagliydi; her biri ancak
+  onceki kapaninca gorundu.
+- **Onaysiz veri silme yok.** FK dogrulanamiyorsa `NOT VALID` ile ekle,
+  yetimi silme.
+- **Bicimlendirici import siler** (F401, kullanim henuz yokken). Kullanimi
+  ONCE yaz, import'u SONRA. Bu oturumda IKI KEZ dustu.
+- **Pre-commit'in ruff surumu yereldekinden farkli bicimlendiriyor** — hook
+  ciktisini esas al, uzerine yerel `ruff format` calistirma (dongu olur).
+- **Geri alimi HER ZAMAN depo kokunden yap.** `cd backend` icindeyken
+  `git checkout HEAD -- backend/...` "pathspec did not match" ile SESSIZCE
+  dustu ve mutasyon dosyada kaldi (deponun kayitli tuzagi, yine yasandi).
+- **`MSYS_NO_PATHCONV=1`** olmadan `docker exec ... /app` yolu MSYS tarafindan
+  Windows yoluna cevrilir (`C:/Program Files/Git/app`).
