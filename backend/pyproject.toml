@@ -193,6 +193,19 @@ exclude = [
 
 [tool.ruff.lint.per-file-ignores]
 
+# core/multi_layer_cache.py — 5 ONCEDEN VAR OLAN ihlal (2 Agu 2026).
+# KONTROL KOLU (gercek yol adiyla, /tmp kopyasi DEGIL):
+#   git show HEAD:backend/core/multi_layer_cache.py #     | ruff check --stdin-filename backend/core/multi_layer_cache.py -
+#   -> "Found 5 errors" == fix sonrasi sayi. Bu turda eklenen TEK ihlal
+#   (UP038) DUZELTILDI, ignore EDILMEDI.
+#   S311   :483 TTL jitter icin `random.uniform` — kripto degil, thundering
+#          herd onleme. Kripto-RNG'ye gecmek her cache yazimini yavaslatir.
+#   SIM118 :584 `.keys()` — desen eslemeli L1 invalidasyonu
+#   SIM105 :687 try/except/pass — L1 boyut olcumu, hata yutmasi KASITLI
+#   PLW0603/PLW0602 :781,:799 modul-duzeyi singleton (`get_cache_instance`)
+# Borc BURADA GORUNUR, `--no-verify` ile atlanmadi. Temizlik ayri gorev.
+"core/multi_layer_cache.py" = ["S311", "SIM118", "SIM105", "PLW0603", "PLW0602"]
+
 # core/osym_exam_engine.py — 8 ONCEDEN VAR OLAN ihlal (2 Agu 2026 olcumu, gf88).
 # KONTROL KOLU (olcum aleti dogrulandi — /tmp kopyasi DEGIL, gercek yol adiyla):
 #   git show HEAD:backend/core/osym_exam_engine.py \

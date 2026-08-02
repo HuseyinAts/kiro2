@@ -44,6 +44,46 @@ from core.structured_logger import get_logger
 logger = get_logger(__name__)
 
 
+def _json_varsayilan(deger: object) -> object:
+    """L2 (Redis) yazarken JSON'un serilestiremedigi degerler icin.
+
+    NEDEN VAR (2 Agu 2026 — canli olcumle bulundu)
+    ----------------------------------------------
+    Onceki hali `default=str` idi. Bu SESSIZ bir yakalayicidir: `json` bir
+    Pydantic modelini serilestiremeyince onu `str(model)`e cevirir ve Redis'e
+    su sekilde yazar:
+
+        "ogrenci_id='0d3b011a-...' sinif_seviyesi=12 hedef_sinav=<SinavTipi.TYT...>"
+
+    Okuma yolunda `json.loads` bu DIZEYI geri dondurur; FastAPI
+    `response_model` dogrulamasi `model_attributes_type` ile duser -> 500.
+
+    Gozlenen davranis (kaldirma testiyle kanitlandi):
+        L1 (bellek) sicak            -> 200
+        L1 soguk + L2 (Redis) sicak  -> 500   (backend restart / TTL sonrasi)
+
+    Yani ekran ilk acilista calisiyor, backend yeniden baslayinca patliyor —
+    bir demoda "tikla calisir, tekrar tikla patlar" gorunumu.
+    `MultiLayerCache` yedi dosyada kullaniliyor; hepsi ayni sinifa acikti.
+
+    Sira ONEMLI: once model donusumleri, en sonda `str` geri cekilisi.
+    `str` tamamen kaldirilamaz — bilinmeyen bir tip TypeError firlatip
+    onbellegi yazilamaz hale getirirdi.
+    """
+    donusturucu = getattr(deger, "model_dump", None)  # pydantic v2
+    if callable(donusturucu):
+        return donusturucu(mode="json")
+
+    donusturucu = getattr(deger, "dict", None)  # pydantic v1
+    if callable(donusturucu):
+        return donusturucu()
+
+    if isinstance(deger, set | frozenset):
+        return list(deger)
+
+    return str(deger)
+
+
 class CacheLayer(str, Enum):
     """Cache katmanları"""
 
@@ -440,7 +480,7 @@ class MultiLayerCache:
         # Add Jitter to TTL to prevent Cache Stampede from simultaneous expiration
         if ttl:
             # KESİNLİKLE ±%10 Jitter: random.uniform(0.90, 1.10)
-            ttl = int(ttl * random.uniform(0.90, 1.10))
+            ttl = int(ttl * random.uniform(0.90, 1.10))  # nosec B311  # TTL jitter, kripto degil
 
         self.metrics.sets += 1
 
@@ -470,7 +510,9 @@ class MultiLayerCache:
         if self._redis_enabled and self._redis:
             try:
                 # Serialize
-                value_bytes = json.dumps(value, ensure_ascii=False, default=str)
+                value_bytes = json.dumps(
+                    value, ensure_ascii=False, default=_json_varsayilan
+                )
 
                 # Set with TTL
                 await self._redis.setex(full_key, ttl, value_bytes)

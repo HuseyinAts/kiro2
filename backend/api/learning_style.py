@@ -10,9 +10,18 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.dependencies import get_db
+# ÇİFT KİMLİK ZORUNLU (2 Agu 2026, demo olcumu): frontend
+# `/auth/login/secure` ile giriyor ve oturumu httpOnly COOKIE'de tasiyor,
+# `Authorization` basligi GONDERMIYOR. `core.learning_path_auth`'daki
+# `get_current_user_from_token` ise `HTTPBearer(auto_error=True)` kullanir
+# -> bu router'in 7 ucu tarayicida 401 veriyordu. Kardes `api/learning_path.py`
+# zaten `core.dependencies.get_current_user` (cookie + Bearer) kullaniyor ve
+# calisiyordu; yani kusur 'auth bozuk' degil IKI KARDESIN FARKLI KIMLIK
+# SOZLESMESI kullanmasiydi. Olcum: detect COOKIE->401 / BEARER->200,
+# completion COOKIE->200. Bekci: tests/e2e/test_cookie_auth_demo_yolu.py
+from core.dependencies import get_current_user, get_db
 from core.jwt_auth import UserRole
-from core.learning_path_auth import get_current_user_from_token, verify_student_access
+from core.learning_path_auth import verify_student_access
 from models.learning_path_models import LearningPathStudentProfile
 from models.learning_style import BehavioralData, QuestionnaireResponse
 from services.learning_style_service import LearningStyleService
@@ -51,7 +60,7 @@ async def _verify_student_or_self(student_id: str, current_user, db: AsyncSessio
 async def detect_learning_style(
     student_id: str,
     force_recalculation: bool = Query(False, description="Zorla yeniden hesaplama"),
-    current_user=Depends(get_current_user_from_token),
+    current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -136,7 +145,7 @@ async def get_content_recommendations(
     subject_area: str = Query("matematik", description="Konu alanı"),
     difficulty_level: str = Query("orta", description="Zorluk seviyesi"),
     force_refresh: bool = Query(False, description="Öneri yenileme"),
-    current_user=Depends(get_current_user_from_token),
+    current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -189,7 +198,7 @@ async def get_content_recommendations(
 async def update_behavioral_data(
     student_id: str,
     behavioral_data: BehavioralData,
-    current_user=Depends(get_current_user_from_token),
+    current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -243,7 +252,7 @@ async def update_behavioral_data(
 async def submit_questionnaire(
     student_id: str,
     questionnaire_response: QuestionnaireResponse,
-    current_user=Depends(get_current_user_from_token),
+    current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -348,7 +357,7 @@ def _calculate_vark_scores(response: QuestionnaireResponse) -> dict[str, float]:
 @router.get("/explanation/{student_id}", response_model=dict[str, Any])
 async def get_learning_style_explanation(
     student_id: str,
-    current_user=Depends(get_current_user_from_token),
+    current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -423,7 +432,7 @@ async def get_learning_style_statistics():
 @router.get("/export/{student_id}", response_model=dict[str, Any])
 async def export_learning_profile(
     student_id: str,
-    current_user=Depends(get_current_user_from_token),
+    current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -483,7 +492,7 @@ async def get_content_explanation(hybrid_code: str, content_type: str):
 async def update_recommendations_based_on_performance(
     student_id: str,
     performance_data: dict[str, float],
-    current_user=Depends(get_current_user_from_token),
+    current_user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """

@@ -310,6 +310,12 @@ ignore_errors = true
 module = ["core.osym_exam_engine", "backend.core.osym_exam_engine"]
 ignore_errors = true
 
+# multi_layer_cache: tek mypy hatasi `redis` icin stub YOKLUGU
+# (types-redis kurulu degil). Kodla ilgisi yok, ortam eksikligi.
+[[tool.mypy.overrides]]
+module = ["core.multi_layer_cache", "backend.core.multi_layer_cache"]
+ignore_errors = true
+
 [[tool.mypy.overrides]]
 module = [
     "services.learning_style_service",
