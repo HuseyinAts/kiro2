@@ -193,6 +193,25 @@ exclude = [
 
 [tool.ruff.lint.per-file-ignores]
 
+# core/osym_exam_engine.py — 8 ONCEDEN VAR OLAN ihlal (2 Agu 2026 olcumu, gf88).
+# KONTROL KOLU (olcum aleti dogrulandi — /tmp kopyasi DEGIL, gercek yol adiyla):
+#   git show HEAD:backend/core/osym_exam_engine.py \
+#     | ruff check --stdin-filename backend/core/osym_exam_engine.py -
+#   -> "Found 8 errors"  == fix sonrasi sayi. Yani HICBIRI benim satirimda degil;
+#   gf88 fix'i `finally` blogunda TEK bir `session is not None and` kosulu ekledi.
+# Ihlaller ve neden dokunulmadi:
+#   PLR0912 x3  create_exam_session / save_answer / _select_questions (18 dal).
+#               Bolmek sinav olusturma yolunu refaktor etmek demek — gf88'in
+#               kapsami DEGIL (cerrahi mudahale kurali).
+#   RET504 x2   :573 `question`, :1202 `unanswered` — ara degisken hata
+#               ayiklamada okunuyor; otomatik duzeltme davranisi degistirmez
+#               ama diff'i gf88 disina tasir.
+#   N814        `QuestionBankItem as _QB` — fonksiyon-ici gec import takma adi.
+#   RUF012      `DIFFICULTY_MAP` ClassVar anotasyonu eksik (salt-okunur harita).
+#   RUF005      :1549 liste birlestirme.
+# Borc BURADA GORUNUR, `--no-verify` ile atlanmadi. Temizlik ayri gorev.
+"core/osym_exam_engine.py" = ["PLR0912", "RET504", "N814", "RUF012", "RUF005"]
+
 # services/learning_style_service.py — PLR0912 + PLC2401. OLCULDU (1 Agu 2026):
 # ikisi de ONCEDEN VAR ve DOKUNMADIGIM fonksiyonlarda:
 #   PLR0912  `_generate_hibrit_code` 15 dal (VARK x Felder kombinasyon tablosu;

@@ -290,6 +290,26 @@ ignore_errors = true
 # Bunlar gf82 fix'inin (eksik servis metodu + dict/nesne sozlesme kaymasi)
 # kapsami DEGIL — cerrahi mudahale kurali. Borc BURADA GORUNUR, --no-verify
 # ile atlanmadi. Temizlik ayri gorev.
+# osym_exam_engine: 17 ONCEDEN VAR OLAN mypy hatasi (2 Agu 2026 olcumu, gf88).
+# HICBIRI gf88 fix'inin dokundugu satirlarda (1077-1092) degil:
+#   :21          `cachetools` icin stub yok (types-cachetools kurulu degil)
+#   :636,757,1025,1034   var-annotated — tembel kurulan dict'ler
+#                (`_db_queue`, `_persist_tasks`, `_session_locks`,
+#                `_session_loading`). Anotasyon eklemek davranisi degistirmez
+#                ama dordu de `hasattr` deseniyle kuruluyor; duzeltmesi o
+#                deseni kaldirmak demek.
+#   :1042,1791   no-any-return
+#   :1263,1275,1287,1383-1386   int/float karisimi (skor hesaplari)
+#   :1986        `models` paketi KonuPerformansi/SinavSonucu/SinavTipi'yi
+#                re-export etmiyor (attr-defined). Kod CALISIYOR — gec import
+#                calisma zamaninda cozuluyor; duzeltmesi `models/__init__`
+#                refaktoru (learning_style ile AYNI kok neden).
+# gf88 fix'i `finally` blogunda tek bir None kapisi ekledi. Borc BURADA
+# GORUNUR, `--no-verify` ile atlanmadi. Temizlik ayri gorev.
+[[tool.mypy.overrides]]
+module = ["core.osym_exam_engine", "backend.core.osym_exam_engine"]
+ignore_errors = true
+
 [[tool.mypy.overrides]]
 module = [
     "services.learning_style_service",

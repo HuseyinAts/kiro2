@@ -1075,9 +1075,15 @@ class OSYMExamEngine:
             self._session_loading.pop(session_id, None)
 
             # Restore auto_complete timer for IN_PROGRESS sessions (EX-12)
+            # `session` UC katmanin (L1/L2/L3) ucu de bos donerse None kalir.
+            # None kapisi ZORUNLU: `finally` icinde firlayan istisna normal
+            # donusun YERINE gecer, yani fonksiyon `None` dondurEMEZ ve
+            # cagiranin `if not session_data: 404` dali olu kalir -> 28 cagri
+            # yerinin hepsi 404 yerine 500 uretirdi (gf88, 2 Agu 2026 olcumu).
             autoclose_key = f"autoclose:{session_id}"
             if (
-                session.status == ExamStatus.IN_PROGRESS
+                session is not None
+                and session.status == ExamStatus.IN_PROGRESS
                 and autoclose_key not in self.auto_save_tasks
             ):
                 self.auto_save_tasks[autoclose_key] = asyncio.create_task(
@@ -1439,7 +1445,12 @@ class OSYMExamEngine:
             logger.warning("Beta clean havuzu boş — beta pratik soru seçilemedi")
             return []
 
-        sampled_ids = random.sample(pool, min(count, len(pool)))
+        # nosec B311 gerekcesi (3 cagri yeri: burasi, _select_questions ve
+        # fallback dali): `random` soru HAVUZUNDAN ornekleme icin kullaniliyor,
+        # kimlik/jeton/parola uretimi icin DEGIL. Tahmin edilebilirligi bir
+        # yetki kazanci vermez — sorular zaten ogrenciye servis ediliyor.
+        # Kripto-guclu RNG'ye gecmek sinav olusturmayi olcusuz yavaslatir.
+        sampled_ids = random.sample(pool, min(count, len(pool)))  # nosec B311
         async with get_db_session_context() as db_session:
             result = await db_session.execute(
                 select(Question).where(
@@ -1576,7 +1587,7 @@ class OSYMExamEngine:
                         self._question_pool_cache[cache_key] = pool
 
                 if len(pool) >= count:
-                    sampled_ids = random.sample(pool, count)
+                    sampled_ids = random.sample(pool, count)  # nosec B311
                     result = await db_session.execute(
                         select(Question).where(
                             Question.id.in_(sampled_ids),
@@ -1612,7 +1623,7 @@ class OSYMExamEngine:
                             self._question_pool_cache[fallback_key] = fallback_pool
 
                     if len(fallback_pool) >= count:
-                        sampled_ids = random.sample(fallback_pool, count)
+                        sampled_ids = random.sample(fallback_pool, count)  # nosec B311
                         fb_q = await db_session.execute(
                             select(Question).where(
                                 Question.id.in_(sampled_ids),
