@@ -18,7 +18,9 @@ KIRO2'nin **ölçülmüş** eksikliklerinin tek envanteri. Üç kaynağın birle
 | 29 Tem 12-oturum gözden geçirmesi | 12 | K5/K4.5 kapandı, kalanı açık |
 | **1 Ağu öz-denetim** (kapatılan işlere saldırı) | **49** | **hepsi açık** |
 
-**Toplam açık: 97 kalem.** *(2 Ağu S203: `GF-K2` kapandı — kalan 3 akış
+**Toplam açık: 95 kalem.** *(2 Ağu S203 demo turu: `GF-K6` ve `FSRS-K1-a`
+kapandı. **Golden Flow ilk kez 0 kırık: 176 geçti / 0 düştü / 2 atlandı.**)*
+*(önceki)* *(2 Ağu S203: `GF-K2` kapandı — kalan 3 akış
 `gf88`/`gf25`/`gf130` — ve listede hiç olmayan bir **P0** ölçülüp kapatıldı
 (`FSRS-P0`). Yerine 2 yeni kalem açıldı: `FSRS-K1` (7 uçtan 3'ü hâlâ 500,
 biri frontend'in) ve `GF-K6` (`gf82` yeniden düştü). 98 − 1 + 2 − 2 = 97.
@@ -340,7 +342,26 @@ Bu fazın tamamı **yeşil rapor veren ama hiçbir şey ölçmeyen** bekçileri 
       (`test_fsrs_okuma_sorgulari_canli_semada_gercekten_kosuyor`) + 2 kontrol
       kolu. `::text` cast'ini parametre sanan ilk sürüm **yanlış kırmızı**
       verdi — o bir **alet arızasıydı**, bulgu değil.
-- [ ] **FSRS-K1** *(YENİ, 2 Ağu)* **Aynı deprecated servis 3 değil YEDİ uçta.**
+- [x] **GF-K6** ✅ **KAPANDI** `40f68ca8a` — `gf82`. Kök neden `models/
+      student_learning_profile.py`: `:113` `updated_at` **naive**
+      (`DateTime` + `utcnow`), `:153` **aware** ile çıkarıyor →
+      `TypeError`. Kolonun kendisi `timestamptz` yapılmadı (migration +
+      canlı veri dönüşümü, demo günü risk alınmadı) — karşılaştırma
+      savunmaya alındı. RED 2/5 → GREEN 5/5.
+      **Bu kusuru bugün iki kez arayıp bulamamıştım** (yanlış model
+      dosyasında grep); ancak testin gönderdiği girdiyle yeniden üretip
+      canlı traceback alınca çıktı. *Kök neden okuyarak değil koşturarak
+      bulunur.*
+- [x] **FSRS-K1-a** ✅ **KAPANDI** `eba3981fe` — `/fsrs/study-sessions/start`
+      + `/end`. **Frontend çağırıyor** (`useLearningPath.ts:395,412`).
+      Kök neden **şema uyuşmazlığı**, senkron/async DEĞİL: servis
+      `session_type` `session_start` `session_end` `cards_learned`
+      alanlarına yazıyordu, **hiçbiri modelde yok**. İki uç gerçek modele
+      karşı async yeniden yazıldı (+ sahiplik kapısı: başkasının oturumu → 404).
+- [ ] **FSRS-K1-b** *(kalan)* `/fsrs/recommendations` + `/fsrs/statistics`
+      hâlâ 500 (senkron ORM). **Frontend tüketicisi 0** (ölçüldü, kontrol
+      kollu). Demo yolunda değil.
+      *(orijinal kayıt)* ~~**Aynı deprecated servis 3 değil YEDİ uçta.**~~
       Ölçüldü: `/recommendations` → 500 · `/statistics` → 500 ·
       `/study-sessions/start` → **500 ve FRONTEND ÇAĞIRIYOR**
       (`useLearningPath.ts:395,412`). `gf130` kararı "frontend tüketicisi yok"

@@ -69,8 +69,11 @@ Tohum hesaplar (`backend/scripts/seed_mvp_data.py`), şifre hepsinde
 | `/parent/dashboard` | **656 satır sabit veri** (mock). §1'deki `/parent/children` gerçek — onu göster. |
 | `/content-management/questions` | Tamamen mock |
 | `/api/v1/fsrs/flashcards*` | 2 Ağu'da kaldırıldı → **410 Gone** (kanonik karşılık: `/fsrs/due`) |
-| `/fsrs/recommendations`, `/fsrs/statistics`, `/fsrs/study-sessions/start` | **500** — deprecated senkron servis, async porta çevrilmedi (`FSRS-K1`) |
-| Öğrenme stili "davranışsal veri" yazma | **500** (`GF-K6`) — arka plan telemetrisi, ekranda görünmez ama tetiklenmesin |
+| `/fsrs/recommendations`, `/fsrs/statistics` | **500** — deprecated senkron servis. Frontend tüketicisi **yok** (ölçüldü), demo yolunda değil (`FSRS-K1`) |
+
+> ✅ **Bu ikisi 17:20'de DÜZELDİ, artık gösterilebilir:**
+> `/fsrs/study-sessions/start` + `/end` (öğrenme yolu akışı) ve
+> öğrenme stili "davranışsal veri" yazma (`gf82`).
 
 > Bu kalemler `docs/audits/2026-08-01_eksiklik_master.md` içinde ankrajlı.
 > "Mock" olan hiçbir şeyi **gerçek veri diye sunma** — soru gelirse
@@ -87,8 +90,11 @@ Tohum hesaplar (`backend/scripts/seed_mvp_data.py`), şifre hepsinde
 | **`/fsrs/due` → 500** | Frontend tekrar sayfası; `varchar = uuid` yüzünden **hiç çalışmamış** | `ee6d7c820` |
 | Öğrenme stili tarayıcıda 401 | 7 uç yalnız Bearer kabul ediyordu, frontend cookie kullanıyor | `9035ad854` |
 | **Önbellek modeli dizeye çeviriyordu** | "İlk açılışta çalışır, backend yeniden başlayınca patlar" | `9035ad854` |
+| Çalışma oturumu başlat/bitir → 500 | Frontend'in öğrenme yolu akışı; servis **var olmayan 4 alana** yazıyordu | `eba3981fe` |
+| Profil yaşı hesabı → 500 | Aynı sınıfın bir yarısı naive, diğeri tz-aware | `40f68ca8a` |
 
-Golden Flow: **oturum başı 164 geçti / 12 düştü → şimdi 175 / 1**.
+**Golden Flow: oturum başı 164 geçti / 12 düştü → şimdi 176 geçti / 0 düştü / 2 atlandı.**
+Deponun kendi kapısı: `toplam=178 gecen=176 atlanan=2 hata=0` — GEÇİYOR.
 
 ---
 
