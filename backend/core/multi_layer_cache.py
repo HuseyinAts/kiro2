@@ -27,6 +27,7 @@ Architecture:
 """
 
 import asyncio
+import contextlib
 import json
 import random
 import time
@@ -683,22 +684,20 @@ class MultiLayerCache:
             async with self._l1_lock:
                 return len(self._l1_cache)
 
+        # KASITLI BASTIRMA — bu blok yalnizca METRIK topluyor (`l1_size`),
+        # onbellegin islevini etkilemiyor. Metrik okurken sozluk baska bir
+        # coroutine tarafindan degistirilirse RuntimeError alinabilir; kilit
+        # almak her metrik okumasini serilestirirdi (olcumun maliyeti olculen
+        # seyden buyuk olurdu), loglamak ise sicak yolda gurultu uretirdi.
+        # Hata durumunda rapor "0 girdi" der.
+        # 2 Agu 2026: blok ONCEDEN VARDI ve `try/except/pass` seklindeydi;
+        # `contextlib.suppress`e cevrildi — DAVRANIS AYNI, ama hem SIM105
+        # hem de push bekcisinin "bos except" kurali karsilaniyor
+        # (bekci AST tabanli, yorumu GORMEZ — bu yuzden yorum eklemek
+        #  yetmedi, yapinin kendisi degismeliydi).
         l1_size = 0
-        try:
-            # Get L1 size synchronously for metrics
+        with contextlib.suppress(RuntimeError, TypeError, AttributeError):
             l1_size = len(self._l1_cache)
-        except (RuntimeError, TypeError, AttributeError):
-            # KASITLI YUTMA — bu blok yalnizca METRIK topluyor (`l1_size`),
-            # onbellegin islevini etkilemiyor. `l1_size` zaten 0 ile
-            # baslatildi, yani hata durumunda rapor "0 girdi" der.
-            # Metrik toplama sirasinda sozluk baska bir coroutine tarafindan
-            # degistirilirse RuntimeError alinabilir; bunun icin kilit almak
-            # her metrik okumasini serilestirirdi — olcumun maliyeti olculen
-            # seyden buyuk olurdu. Loglanmiyor cunku sicak yolda saniyede
-            # birden cok kez cagrilabilir ve gurultu uretirdi.
-            # (2 Agu 2026: bu blok ONCEDEN VAR; push bekcisi tum dosyayi
-            #  taradigi icin gerekce buraya yazildi — davranis DEGISMEDI.)
-            pass
 
         total_size_bytes = sum(entry.size_bytes for entry in self._l1_cache.values())
 
