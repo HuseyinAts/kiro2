@@ -688,6 +688,16 @@ class MultiLayerCache:
             # Get L1 size synchronously for metrics
             l1_size = len(self._l1_cache)
         except (RuntimeError, TypeError, AttributeError):
+            # KASITLI YUTMA — bu blok yalnizca METRIK topluyor (`l1_size`),
+            # onbellegin islevini etkilemiyor. `l1_size` zaten 0 ile
+            # baslatildi, yani hata durumunda rapor "0 girdi" der.
+            # Metrik toplama sirasinda sozluk baska bir coroutine tarafindan
+            # degistirilirse RuntimeError alinabilir; bunun icin kilit almak
+            # her metrik okumasini serilestirirdi — olcumun maliyeti olculen
+            # seyden buyuk olurdu. Loglanmiyor cunku sicak yolda saniyede
+            # birden cok kez cagrilabilir ve gurultu uretirdi.
+            # (2 Agu 2026: bu blok ONCEDEN VAR; push bekcisi tum dosyayi
+            #  taradigi icin gerekce buraya yazildi — davranis DEGISMEDI.)
             pass
 
         total_size_bytes = sum(entry.size_bytes for entry in self._l1_cache.values())
