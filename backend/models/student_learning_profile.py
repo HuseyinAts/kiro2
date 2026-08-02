@@ -150,7 +150,26 @@ class StudentLearningProfile(Base):
         """Check if profile is older than 30 days and should be recalculated"""
         if self.updated_at is None:
             return True
-        age = datetime.now(UTC) - self.updated_at
+
+        # NAIVE/AWARE KARISIMI (gf82, 2 Agu 2026 — canli 500)
+        # Bu sinifin iki yarisi celisiyordu:
+        #   :113  updated_at = Column(DateTime, default=datetime.utcnow)
+        #         -> tz-BILGISIZ (DateTime timezone=True DEGIL, utcnow naive)
+        #   burasi datetime.now(UTC) ile cikariyor -> tz-BILGILI
+        # DB'den okunan nesnede `updated_at` naive gelir ve cikarma
+        # `TypeError: can't subtract offset-naive and offset-aware` atar.
+        # Zincir: api/learning_style.py:219 -> service:451 -> service:89 -> burasi
+        #
+        # Naive deger UTC kabul edilir — kolonun varsayilani `datetime.utcnow`,
+        # yani zaten UTC uretiyor; yalniz etiketi eksik.
+        # KOLONUN KENDISI duzeltilmedi (timestamptz'e cevirmek migration +
+        # canli veri donusumu demek, demo gunu risk alinmadi) — `GF-K6`
+        # altinda acik kalem. Bekci: tests/unit/test_ogrenme_stili_profil_yasi.py
+        guncelleme = self.updated_at
+        if guncelleme.tzinfo is None:
+            guncelleme = guncelleme.replace(tzinfo=UTC)
+
+        age = datetime.now(UTC) - guncelleme
         return bool(age > timedelta(days=30))
 
     def to_canonical(self) -> "LearningPathStudentProfile":
