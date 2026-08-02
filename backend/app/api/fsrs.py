@@ -13,13 +13,14 @@ Bu dosya ayrıca eski FSRS API uyumluluğunu da korur.
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
@@ -38,6 +39,7 @@ from app.services.fsrs_service import FSRSService
 from core.dependencies import get_current_user as get_current_user_old
 from core.dependencies import get_db as get_db_old
 from models.database import User as DBUser
+from models.fsrs_models import FSRSStudySession
 from services._deprecated.fsrs_service import FSRSService as DeprecatedFSRSService
 
 logger = logging.getLogger(__name__)
@@ -367,28 +369,52 @@ async def get_student_statistics(
         )
 
 
+# ==================== CALISMA OTURUMU (gercek modele karsi yeniden yazildi) ====
+#
+# 2 Agu 2026: bu iki uc `services/_deprecated/fsrs_service.py`ye gidiyordu ve
+# POST /study-sessions/start canlida 500 veriyordu:
+#     TypeError: 'session_type' is an invalid keyword argument for FSRSStudySession
+#
+# KOK NEDEN sema uyusmazligi — senkron/async DEGIL. Deprecated servis su
+# alanlara yaziyordu: `session_type` `session_start` `session_end`
+# `cards_learned`. Gercek model (models/fsrs_models.py:231) ve canli tablo
+# `fsrs_study_sessions` (ikisi birebir uyumlu, olculdu) yalniz sunlari tasiyor:
+#     id · student_id · session_date · duration_minutes · cards_reviewed
+#     correct_reviews · average_response_time · cultural_context · organization_id
+# Yani dort alanin HICBIRI yok -> "async'e port et" yetmezdi.
+#
+# Frontend bu ikisini ogrenme yolu ekraninda cagiriyor:
+#     frontend/src/hooks/useLearningPath.ts:395  (start)
+#     frontend/src/hooks/useLearningPath.ts:412  (end)
+# Bekci: backend/tests/e2e/test_fsrs_calisma_oturumu.py
+# ==============================================================================
+
+
 @router.post("/study-sessions/start", response_model=dict[str, Any])
 async def start_study_session(
-    session_type: str = Query(
-        "regular", description="Oturum türü (regular, exam_prep, review)"
-    ),
     current_user: DBUser = Depends(get_current_user_old),
-    db: Session = Depends(get_db_old),
+    db: AsyncSession = Depends(get_db_old),
 ):
+    """Yeni FSRS calisma oturumu baslatir ve oturum kimligini dondurur."""
     try:
-        session_id = await fsrs_service.start_study_session(
-            student_id=current_user.id, session_type=session_type, db=db
+        oturum = FSRSStudySession(
+            student_id=current_user.id,
+            session_date=datetime.now(UTC),
         )
+        db.add(oturum)
+        await db.commit()
+        await db.refresh(oturum)
+
         return {
             "success": True,
             "message": "Çalışma oturumu başlatıldı",
             "data": {
-                "session_id": session_id,
-                "session_type": session_type,
-                "started_at": datetime.now().isoformat(),
+                "session_id": oturum.id,
+                "started_at": oturum.session_date.isoformat(),
             },
         }
     except Exception as e:
+        await db.rollback()
         logger.error(f"Çalışma oturumu başlatma hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -400,21 +426,52 @@ async def start_study_session(
 async def end_study_session(
     session_id: str,
     current_user: DBUser = Depends(get_current_user_old),
-    db: Session = Depends(get_db_old),
+    db: AsyncSession = Depends(get_db_old),
 ):
+    """Oturumu sonlandirir: sureyi hesaplar ve ozeti dondurur.
+
+    IDOR kapisi: yalnizca oturumun SAHIBI sonlandirabilir. Baskasinin
+    oturumu icin 404 doner (403 degil — oturum kimliginin varligini
+    sizdirmamak icin).
+    """
     try:
-        summary = await fsrs_service.end_study_session(session_id=session_id, db=db)
+        sonuc = await db.execute(
+            select(FSRSStudySession).where(FSRSStudySession.id == session_id)
+        )
+        oturum = sonuc.scalar_one_or_none()
+
+        if oturum is None or oturum.student_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Çalışma oturumu bulunamadı",
+            )
+
+        bitis = datetime.now(UTC)
+        baslangic = oturum.session_date
+        if baslangic.tzinfo is None:
+            # Savunma: kolon timestamptz ama eski satirlar naive olabilir.
+            baslangic = baslangic.replace(tzinfo=UTC)
+
+        oturum.duration_minutes = max(0, int((bitis - baslangic).total_seconds() // 60))
+        await db.commit()
+        await db.refresh(oturum)
+
         return {
             "success": True,
             "message": "Çalışma oturumu sonlandırıldı",
-            "data": summary,
+            "data": {
+                "session_id": oturum.id,
+                "duration_minutes": oturum.duration_minutes,
+                "cards_reviewed": oturum.cards_reviewed,
+                "correct_reviews": oturum.correct_reviews,
+                "average_response_time": oturum.average_response_time,
+                "ended_at": bitis.isoformat(),
+            },
         }
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
+    except HTTPException:
+        raise
     except Exception as e:
+        await db.rollback()
         logger.error(f"Çalışma oturumu sonlandırma hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
