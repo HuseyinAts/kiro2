@@ -45,8 +45,7 @@ class RecordSignalRequest(BaseModel):
         min_length=1,
         max_length=50,
         description=(
-            "Sinyal türü"
-            " (session_duration, post_error_pause, answer_speed_trend)"
+            "Sinyal türü (session_duration, post_error_pause, answer_speed_trend)"
         ),
     )
     value: float = Field(
@@ -56,7 +55,12 @@ class RecordSignalRequest(BaseModel):
 
 
 class RecordSignalResponse(BaseModel):
-    id: int | None = None
+    # VARCHAR kimlik — `int` DEGIL. models/coaching.py:63 `String` birincil
+    # anahtar + `default=lambda: str(uuid.uuid4())`. `int` iken uc, satir
+    # YAZILDIKTAN sonra sema dogrulamasinda patliyordu (gf25, 2 Agu 2026):
+    # 8 istek -> 8 satir yazildi (28->37) ve 8'i de 500 dondu.
+    # CLAUDE.md sert kurali: bu depoda kimlikler VARCHAR.
+    id: str | None = None
     student_id: str
     signal_type: str
     value: float
@@ -114,9 +118,7 @@ async def get_suggestions(
 
     try:
         async with get_db_session_context() as db:
-            suggestions = await generate_suggestions(
-                db=db, student_id=current_user.id
-            )
+            suggestions = await generate_suggestions(db=db, student_id=current_user.id)
 
         return [CoachingSuggestionItem(**s) for s in suggestions]
 
@@ -163,9 +165,7 @@ async def check_burnout(
 
     try:
         async with get_db_session_context() as db:
-            result = await detect_burnout_signals(
-                db=db, student_id=current_user.id
-            )
+            result = await detect_burnout_signals(db=db, student_id=current_user.id)
 
         return BurnoutCheckResponse(**result)
 
@@ -248,8 +248,7 @@ async def record_signal(
     status_code=status.HTTP_200_OK,
     summary="Öneri etkileşimi kaydet",
     description=(
-        "Öğrencinin bir koçluk önerisine tıklama veya"
-        " reddetme eylemini kaydeder."
+        "Öğrencinin bir koçluk önerisine tıklama veya reddetme eylemini kaydeder."
     ),
 )
 async def interact_with_suggestion(

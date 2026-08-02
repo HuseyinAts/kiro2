@@ -4,9 +4,10 @@ TASK 48.5: Audit log viewer and export
 
 Admin-only endpoints for viewing and exporting audit logs.
 """
+
 from datetime import UTC, datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
@@ -21,7 +22,10 @@ router = APIRouter(prefix="/admin/audit-logs", tags=["Admin - Audit Logs"])
 class AuditLogResponse(BaseModel):
     """Audit log response model"""
 
-    id: int
+    # VARCHAR kimlik — `int` DEGIL (canli olcum 2 Agu 2026:
+    # information_schema audit_logs.id = character varying). gf25'in
+    # kacan kardesi; ayni sinif, ayni sonuc: ilk gercek satirda 500.
+    id: str
     timestamp: datetime
     event_type: str
     severity: str
@@ -88,7 +92,7 @@ async def get_audit_logs(
         - search: Search in description and user email
     """
     from fastapi.concurrency import run_in_threadpool
-    
+
     def fetch_data():
         query = db.query(AuditLog)
 
@@ -116,7 +120,10 @@ async def get_audit_logs(
         # Apply pagination
         offset = (page - 1) * per_page
         logs = (
-            query.order_by(AuditLog.timestamp.desc()).offset(offset).limit(per_page).all()
+            query.order_by(AuditLog.timestamp.desc())
+            .offset(offset)
+            .limit(per_page)
+            .all()
         )
         return total, logs
 
