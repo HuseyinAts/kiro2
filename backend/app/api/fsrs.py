@@ -269,108 +269,58 @@ async def get_stats(
 # ==================== ESKİ API ENDPOINT'LERİ (UYUMLULUK KATMANI) ====================
 
 
-@router.post("/flashcards", response_model=dict[str, Any])
-async def create_flashcard(
-    request: CreateFlashcardRequest,
-    current_user: DBUser = Depends(get_current_user_old),
-    db: Session = Depends(get_db_old),
-):
-    try:
-        card = await fsrs_service.create_flashcard(
-            student_id=current_user.id,
-            subject=request.subject,
-            topic=request.topic,
-            content=request.content,
-            answer=request.answer,
-            db=db,
-        )
-        return {
-            "success": True,
-            "message": "Flashcard başarıyla oluşturuldu",
-            "data": {
-                "id": card.id,
-                "subject": card.subject,
-                "topic": card.topic,
-                "content": card.content,
-                "answer": card.answer,
-                "due_date": card.due_date.isoformat() if card.due_date else None,
-                "state": card.state,
-            },
-        }
-    except Exception as e:
-        logger.error(f"Flashcard oluşturma hatası: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
+# ==================== KALDIRILAN FLASHCARD UYUMLULUK KATMANI ====================
+#
+# Uc uc (POST /flashcards · GET /flashcards/due · POST /flashcards/{id}/review)
+# 2 Agu 2026'da 410 Gone'a cevrildi. OLCUM (canli, ayni gun):
+#   POST /api/v1/fsrs/flashcards              -> 500
+#   GET  /api/v1/fsrs/flashcards/due          -> 500   (gf130)
+#   POST /api/v1/fsrs/flashcards/{id}/review  -> 500
+# Ucu de `services/_deprecated/fsrs_service.py`e gidiyordu; o modul SENKRON
+# ORM API'si kullaniyor (16 adet `db.query`, `await`siz commit/rollback) ama
+# uclar AsyncSession aliyor:
+#   AttributeError: 'AsyncSession' object has no attribute 'query'
+#   (_deprecated/fsrs_service.py:253)
+#
+# TUKETICI OLCUMU: frontend'de bu uc uca yapilan TEK BIR cagri yok
+# (`grep -rn "fsrs/flashcards" frontend/src` -> 0). Frontend yalniz kanonik
+# uclari kullaniyor: /due /review /stats /due-count (FSRSReviewPage.tsx,
+# services/fsrsService.ts). Bu yuzden ISLEVSEL kayip yok.
+#
+# 404 yerine 410: "burada bir sey vardi, kalici olarak kaldirildi" bilgisini
+# tasir; sessiz 404 istemciye yanlis-yol izlenimi verirdi.
+# `fsrs_cards` tablosu (122 satir) DB'de KALIR — veri silinmedi.
+#
+# NOT: `fsrs_service` (deprecated) hala /recommendations, /statistics,
+# /study-sessions/* ve /health tarafindan kullaniliyor. Bunlarin UCU de
+# ayni sinif yuzunden 500 veriyor ve /study-sessions/* FRONTEND TARAFINDAN
+# CAGRILIYOR (useLearningPath.ts:395,412) — ayri gorev, ayri karar.
+# ================================================================================
+
+_FLASHCARD_KALDIRILDI = (
+    "Bu uc kaldirildi. FSRS tekrar akisi icin kanonik uclari kullanin: "
+    "GET /api/v1/fsrs/due · POST /api/v1/fsrs/review · GET /api/v1/fsrs/stats"
+)
 
 
-@router.get("/flashcards/due", response_model=dict[str, Any])
-async def get_due_flashcards(
-    limit: int = Query(20, ge=1, le=100, description="Maksimum kart sayısı"),
-    current_user: DBUser = Depends(get_current_user_old),
-    db: Session = Depends(get_db_old),
-):
-    try:
-        due_cards = await fsrs_service.get_due_cards(
-            student_id=current_user.id, limit=limit, db=db
-        )
-        return {
-            "success": True,
-            "message": f"{len(due_cards)} vadesi gelen kart bulundu",
-            "data": {"cards": due_cards, "total_count": len(due_cards)},
-        }
-    except Exception as e:
-        logger.error(f"Vadesi gelen kartları getirme hatası: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
+@router.post("/flashcards", response_model=dict[str, Any], deprecated=True)
+async def create_flashcard() -> dict[str, Any]:
+    """KALDIRILDI (2 Agu 2026) — 410 Gone."""
+    raise HTTPException(status_code=status.HTTP_410_GONE, detail=_FLASHCARD_KALDIRILDI)
 
 
-@router.post("/flashcards/{card_id}/review", response_model=dict[str, Any])
-async def review_flashcard(
-    card_id: str,
-    request: ReviewFlashcardRequest,
-    current_user: DBUser = Depends(get_current_user_old),
-    db: Session = Depends(get_db_old),
-):
-    try:
-        result = await fsrs_service.review_flashcard(
-            card_id=card_id,
-            grade=request.grade,
-            response_time_ms=request.response_time_ms,
-            student_id=current_user.id,
-            db=db,
-        )
-        grade_descriptions = {
-            1: "Tekrar et (Again) - Kartı hatırlamadınız",
-            2: "Zor (Hard) - Kartı zorlanarak hatırladınız",
-            3: "İyi (Good) - Kartı başarıyla hatırladınız",
-            4: "Kolay (Easy) - Kartı çok kolay hatırladınız",
-        }
-        result["grade_description"] = grade_descriptions.get(
-            request.grade, "Bilinmeyen"
-        )
-        result["message"] = (
-            f"Kart incelendi. Sonraki tekrar: {result['interval_days']} gün sonra"
-        )
-        return {
-            "success": True,
-            "message": "Flashcard başarıyla incelendi",
-            "data": result,
-        }
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
-    except Exception as e:
-        logger.error(f"Flashcard inceleme hatası: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
+@router.get("/flashcards/due", response_model=dict[str, Any], deprecated=True)
+async def get_due_flashcards() -> dict[str, Any]:
+    """KALDIRILDI (2 Agu 2026) — 410 Gone. Kanonik karsilik: GET /fsrs/due."""
+    raise HTTPException(status_code=status.HTTP_410_GONE, detail=_FLASHCARD_KALDIRILDI)
+
+
+@router.post(
+    "/flashcards/{card_id}/review", response_model=dict[str, Any], deprecated=True
+)
+async def review_flashcard(card_id: str) -> dict[str, Any]:
+    """KALDIRILDI (2 Agu 2026) — 410 Gone. Kanonik karsilik: POST /fsrs/review."""
+    raise HTTPException(status_code=status.HTTP_410_GONE, detail=_FLASHCARD_KALDIRILDI)
 
 
 @router.get("/recommendations", response_model=dict[str, Any])

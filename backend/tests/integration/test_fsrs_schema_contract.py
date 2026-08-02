@@ -313,3 +313,132 @@ def test_fsrs_ham_sql_tablolari_canli_semada_var(canli_tablolar: set[str]) -> No
             f"  {dosya}: {sorted(tablolar)}" for dosya, tablolar in eksikler.items()
         )
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TABLO VARLIGI YETMEZ: SORGU CALISIYOR MU?  (2 Agu 2026)
+#
+# Yukaridaki bekci "ham SQL'de gecen her tablo semada var mi" diye sorar ve
+# 1 Agu'da YESILDI. Ayni gun `GET /api/v1/fsrs/due` canlida 500 veriyordu:
+#
+#   asyncpg.exceptions.UndefinedFunctionError:
+#   operator does not exist: character varying = uuid
+#
+# Sebep `_FETCH_DUE_SQL`'in JOIN'i (app/services/fsrs_service.py:66):
+#   JOIN question_bank q ON q.id = f.question_id
+#   user_item_fsrs.question_id = UUID   ·   question_bank.id = VARCHAR
+# PostgreSQL'de bu iki tip icin `=` operatoru YOK -> sorgu ASLA calismadi.
+# Tablolar VARDI; tip uyumu YOKTU. Ad-bazli bekci bu sinifa yapisal olarak kor.
+#
+# Bu uc, frontend'in tekrar sayfasinin ta kendisi
+# (frontend/src/pages/FSRSReviewPage.tsx:46) ve HICBIR Golden Flow testi
+# kapsamiyordu — 164 yesilin arkasinda saklanabilmesinin sebebi bu.
+#
+# Ders: "tablo var" bir vekil olcumdur. Asil sorulacak sey SORGUNUN KOSMASI.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# `(?<!:)` ZORUNLU: PostgreSQL cast sozdizimi `::text` iki nokta ustuste
+# tasir ve naif `:(ad)` deseni onun IKINCI iki noktasindan eslesiyordu
+# (`f.question_id::text` -> `f.question_id:%(text)s` -> SyntaxError).
+# Ilk surum tam olarak boyle KIRMIZI verdi ve bu bir ALET arizasiydi,
+# aranan kusur DEGIL (audit-methodology.md — "olcum aletini dogrula").
+# `test_alet_dogrulamasi_cast_parametre_sanilmaz` bunu civiliyor.
+_PARAM_DESENI = re.compile(r"(?<!:):([a-z_][a-z0-9_]*)", re.IGNORECASE)
+
+# Sorgu ayristirma/planlama asamasini gecmek icin yeterli kukla degerler.
+# Amac VERI dondurmek DEGIL — tip/kolon uyumsuzluklarini yuzeye cikarmak.
+_KUKLA_PARAMETRELER = {
+    "user_id": "olcum-kullanicisi-yok",
+    "uid": "olcum-kullanicisi-yok",
+    "limit": 1,
+    "qid": "00000000-0000-0000-0000-000000000000",
+    "question_id": "00000000-0000-0000-0000-000000000000",
+}
+
+
+def _modul_duzeyi_select_sabitleri(yol: Path) -> dict[str, str]:
+    """Modul duzeyindeki `text(...)` SELECT sabitleri {ad: sql}.
+
+    Yalniz SELECT alinir: INSERT/UPDATE calistirmak canli veriyi degistirir.
+    (Yazma yolu ayrica `FOR UPDATE`/`ON CONFLICT` tasiyor.)
+    """
+    modul = importlib.import_module(_modul_adi(yol))
+    return {
+        ad: str(deger)
+        for ad, deger in vars(modul).items()
+        if isinstance(deger, TextClause)
+        and str(deger).lstrip().upper().startswith(("SELECT", "WITH"))
+    }
+
+
+def _sorguyu_dene(sql: str) -> None:
+    """SQL'i canliya karsi kosar ve ISLEMI GERI ALIR (salt-okunur garanti)."""
+    parametreler = {
+        ad: _KUKLA_PARAMETRELER.get(ad, "0") for ad in set(_PARAM_DESENI.findall(sql))
+    }
+    # psycopg2 `:ad` degil `%(ad)s` bekler — SQLAlchemy sozdizimini cevir.
+    psql_sql = _PARAM_DESENI.sub(lambda e: f"%({e.group(1)})s", sql)
+
+    baglanti = psycopg2.connect(DSN)
+    try:
+        with baglanti.cursor() as imlec:
+            imlec.execute(psql_sql, parametreler)
+            imlec.fetchall()
+        baglanti.rollback()
+    finally:
+        baglanti.close()
+
+
+def test_fsrs_okuma_sorgulari_canli_semada_gercekten_kosuyor(
+    canli_tablolar: set[str],
+) -> None:
+    """Her modul-duzeyi SELECT sabiti canli semaya karsi kosabilmeli.
+
+    Fix'ten ONCE KIRMIZI: `_FETCH_DUE_SQL` + `_FETCH_DUE_MERCY_SQL`
+    `operator does not exist: character varying = uuid` ile duser.
+    """
+    assert canli_tablolar, "sema bos — olcum gecersiz"
+
+    sorgular = _modul_duzeyi_select_sabitleri(FSRS_SERVICE)
+    assert sorgular, (
+        "Modul duzeyinde hic SELECT sabiti bulunamadi — cikarici arizali, "
+        "bu testin yesili anlamsiz olurdu (alet dogrulamasi)."
+    )
+
+    hatalar: dict[str, str] = {}
+    for ad, sql in sorgular.items():
+        try:
+            _sorguyu_dene(sql)
+        except psycopg2.Error as hata:
+            hatalar[ad] = f"{hata.__class__.__name__}: {str(hata).strip()[:160]}"
+
+    assert not hatalar, (
+        "Ham SQL canli semaya karsi KOSMUYOR (tablolar var ama sorgu patliyor):\n"
+        + "\n".join(f"  {ad}\n    {mesaj}" for ad, mesaj in hatalar.items())
+    )
+
+
+def test_alet_dogrulamasi_bozuk_sorgu_yakalaniyor() -> None:
+    """KONTROL KOLU — kosucu gercekten hata yakaliyor mu?
+
+    Bilerek bozuk bir sorgu KIRMIZI vermeli. Vermezse yukaridaki testin
+    yesili "sorgu calisiyor" degil "hicbir sey olculmedi" demektir.
+    """
+    with pytest.raises(psycopg2.Error):
+        _sorguyu_dene("SELECT * FROM kesinlikle_olmayan_tablo_xyz")
+
+
+def test_alet_dogrulamasi_cast_parametre_sanilmaz() -> None:
+    """KONTROL KOLU — `::text` cast'i baglama parametresi sanilmamali.
+
+    Bu testin ilk surumu tam olarak bu yuzden yanlis KIRMIZI verdi:
+    `f.question_id::text` -> `f.question_id:%(text)s` -> SyntaxError.
+    Yani "sorgu patliyor" raporlaniyordu ama sebep ARANAN KUSUR DEGIL,
+    olcum aletinin kendisiydi.
+    """
+    bulunan = set(_PARAM_DESENI.findall("SELECT f.question_id::text WHERE a = :uid"))
+
+    assert bulunan == {"uid"}, (
+        f"Parametre cikarici cast'i yanlis okudu -> {sorted(bulunan)}. "
+        "`text` bir parametre DEGIL, tip adidir."
+    )
