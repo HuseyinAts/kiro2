@@ -1,6 +1,6 @@
 # DEMO RUNBOOK — 2 Ağustos 2026, 20:00 Yatırımcı Sunumu
 
-**Hazırlık oturumu:** S203 · **Kod dondurma:** 19:00
+**Hazırlık oturumu:** S203 · **Kod dondurma:** 17:35 (erken donduruldu — hedef karşılandı)
 **Geri dönüş noktası:** `git tag demo-baslangic-20260802`
 
 ---
@@ -19,7 +19,7 @@ curl -s -o /dev/null -w "backend %{http_code}\n" http://localhost:8000/health
 curl -s -o /dev/null -w "frontend %{http_code}\n" http://localhost:3000/
 #    ikisi de 200 olmalı
 
-# 3) DEMO YOLU PROVASI — tek komut, 22 uç
+# 3) DEMO YOLU PROVASI — tek komut, 23 uç
 python backend/scripts/demo_yolu_probu.py --kisa
 #    beklenen son satır: "SONUC: 5xx YOK."
 #    5xx varsa AŞAĞIDAKİ §4 KURTARMA'ya git
@@ -46,7 +46,7 @@ Tohum hesaplar (`backend/scripts/seed_mvp_data.py`), şifre hepsinde
 
 ### Akış (yaklaşık 8-10 dk)
 
-| # | Adım | Ne söylenir | Kanıt (2 Ağu 18:15 ölçümü) |
+| # | Adım | Ne söylenir | Kanıt (2 Ağu son prova) |
 |---|---|---|---|
 | 1 | Ana sayfa | Ürün konumlandırma | HTTP 200, 2 ms |
 | 2 | Öğrenci girişi | Çift kimlik (cookie + Bearer) | `/auth/me` 200, 1 ms |
@@ -123,7 +123,7 @@ docker compose down && docker compose up -d && sleep 40
 
 ### D) Konuşarak devam et
 Ekran patlarsa **tıklamayı bırak**, `docs/audits/2026-08-01_eksiklik_master.md`
-üzerinden mühendislik disiplinini anlat: 97 ölçülmüş kalem, her biri
+üzerinden mühendislik disiplinini anlat: 95 ölçülmüş kalem, her biri
 `dosya:satır` ankrajlı, kapanış iddiaları bağımsız doğrulanıyor. Bu, çoğu
 erken aşama ekipte olmayan bir olgunluk göstergesidir.
 
