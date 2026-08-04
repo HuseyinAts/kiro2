@@ -70,7 +70,6 @@ import asyncio as _asyncio
 _orig_create_task = _asyncio.create_task
 _asyncio.create_task = MagicMock()  # suppress at module load
 
-sys.modules["yaml"] = MagicMock()
 
 # ============================================================
 # Now import the modules under test

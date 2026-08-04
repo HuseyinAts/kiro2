@@ -98,6 +98,8 @@ export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.React
   const [oturum, setOturum] = React.useState<SohbetOturum | null>(null);
   const [messages, setMessages] = React.useState<SohbetMesaj[]>([]);
   const [input, setInput] = React.useState('');
+  const [file, setFile] = React.useState<File | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [streaming, setStreaming] = React.useState(false);
   const [hata, setHata] = React.useState(false);
   const [yeniden, setYeniden] = React.useState(0);
@@ -146,22 +148,24 @@ export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.React
   const gonder = React.useCallback(
     (raw: string) => {
       const metin = raw.trim();
-      if (!metin || streaming || oturum === null || hata) return;
+      if ((!metin && !file) || streaming || oturum === null || hata) return;
       // Yeni mesaj → önceki akışı kapat (cleanup sözleşmesi).
       if (unsubRef.current) { unsubRef.current(); unsubRef.current = null; }
 
       const damga = Date.now();
       const pendingId = 'p-' + damga;
+      const imageUrl = file ? URL.createObjectURL(file) : undefined;
       setMessages((prev) => [
         ...prev,
-        { id: 'u-' + damga, rol: 'ben', metin },
+        { id: 'u-' + damga, rol: 'ben', metin, image: imageUrl },
         { id: pendingId, rol: 'ai', metin: '', pending: true },
       ]);
       setInput('');
+      setFile(null);
       setStreaming(true);
 
       unsubRef.current = streamSohbet(
-        { oturumId: oturumIdRef.current, metin, teaching: 'direct', studentId },
+        { oturumId: oturumIdRef.current, metin, teaching: 'direct', studentId, file: file || undefined },
         {
           // Sunucu bağlanınca gerçek session_id'yi benimse (sonraki gönderiler bunu kullanır).
           onConnected: (id) => { oturumIdRef.current = id; },
@@ -194,12 +198,19 @@ export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.React
   );
 
   const yeniSohbet = React.useCallback(() => setYeniden((n) => n + 1), []);
-  const gonderilebilir = !!input.trim() && !streaming && oturum !== null && !hata;
+  const gonderilebilir = (!!input.trim() || !!file) && !streaming && oturum !== null && !hata;
 
   return (
     <KiroThemeProvider theme="paper">
       <div
         className="k-paper"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            setFile(e.dataTransfer.files[0]);
+          }
+        }}
         style={{
           minHeight: '100vh', boxSizing: 'border-box', background: color.paper.bg,
           display: 'flex', fontFamily: font.sans, color: color.ink.primary,
@@ -303,6 +314,7 @@ export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.React
                     role={m.rol === 'ben' ? 'me' : 'ai'}
                     tag={m.tag}
                     pending={m.pending}
+                    image={m.image}
                   >
                     {m.pending && m.metin === '' ? (
                       <>
@@ -325,10 +337,55 @@ export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.React
               <div style={{ maxWidth: 760, margin: '0 auto', boxSizing: 'border-box' }}>
                 <div
                   style={{
-                    display: 'flex', alignItems: 'flex-end', gap: 10, background: color.paper.card,
+                    display: 'flex', flexDirection: 'column', gap: 8, background: color.paper.card,
                     border: `1px solid ${color.paper.borderStrong}`, borderRadius: 15, padding: '8px 8px 8px 14px', boxSizing: 'border-box',
                   }}
                 >
+                  {file && (
+                    <div style={{ position: 'relative', width: 64, height: 64, borderRadius: 8, overflow: 'hidden', border: `1px solid ${color.paper.border}` }}>
+                      <img src={URL.createObjectURL(file)} alt="Seçilen görsel" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button
+                        type="button"
+                        onClick={() => setFile(null)}
+                        aria-label="Görseli Kaldır"
+                        style={{
+                          position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: '50%',
+                          background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                        }}
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </button>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setFile(e.target.files[0]);
+                      }
+                    }}
+                    style={{ display: 'none' }} 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    aria-label="Görsel Yükle"
+                    style={{
+                      width: 44, height: 44, flexShrink: 0, border: 'none', borderRadius: 11,
+                      background: file ? color.dawn.coralCtaBg : color.paper.borderFaint,
+                      color: file ? '#fff' : color.ink.faded3,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', boxSizing: 'border-box',
+                    }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </button>
                   <label htmlFor="k-chat-input" style={srOnly}>Soru yaz</label>
                   <textarea
                     id="k-chat-input"
@@ -365,6 +422,7 @@ export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.React
                       <line x1="12" y1="19" x2="12" y2="5" /><polyline points="6 11 12 5 18 11" />
                     </svg>
                   </button>
+                  </div>
                 </div>
                 <p style={{ margin: '9px 0 0', textAlign: 'center', fontSize: 11, color: color.ink.muted }}>
                   KIRO AI hata yapabilir — önemli sonuçları kontrol et.

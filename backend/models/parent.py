@@ -7,6 +7,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import (
+    String,
     Boolean,
     Column,
     DateTime,
@@ -50,8 +51,8 @@ class ParentNotification(Base):
     read_at = Column(DateTime, nullable=True)
 
     # İlişkiler
-    parent = relationship("User", foreign_keys=[parent_id])
-    child = relationship("User", foreign_keys=[child_id])
+    parent = relationship("User", foreign_keys=[parent_id], lazy="selectin")
+    child = relationship("User", foreign_keys=[child_id], lazy="selectin")
 
 
 class WeeklyReport(Base):
@@ -78,7 +79,7 @@ class WeeklyReport(Base):
     sent_to_parents = Column(Boolean, default=False)
 
     # İlişkiler
-    child = relationship("User", foreign_keys=[child_id])
+    child = relationship("User", foreign_keys=[child_id], lazy="selectin")
 
 
 # Pydantic modelleri

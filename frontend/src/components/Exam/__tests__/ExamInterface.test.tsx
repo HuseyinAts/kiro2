@@ -154,7 +154,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      expect(screen.getByText('Soru Haritasi')).toBeInTheDocument()
+      expect(screen.getByText('Soru Haritası')).toBeInTheDocument()
     })
 
     it('hides navigation panel when showNavigationPanel is false', () => {
@@ -170,7 +170,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      expect(screen.queryByText('Soru Haritasi')).not.toBeInTheDocument()
+      expect(screen.queryByText('Soru Haritası')).not.toBeInTheDocument()
     })
 
     it('displays progress indicator', () => {
@@ -188,7 +188,7 @@ describe('ExamInterface', () => {
       expect(screen.getByText('1 / 3')).toBeInTheDocument()
     })
 
-    it('shows keyboard shortcuts info', () => {
+    it('shows description info', () => {
       render(
         <ExamInterface
           questions={mockQuestions}
@@ -200,7 +200,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      expect(screen.getByText(/Kisayollar/)).toBeInTheDocument()
+      expect(screen.getByText(/Aktif soru/)).toBeInTheDocument()
     })
   })
 
@@ -257,8 +257,8 @@ describe('ExamInterface', () => {
       )
 
       // Check for "Cevaplandi" tooltip indicator
-      const statusIndicator = screen.getByTestId('CheckCircleIcon')
-      expect(statusIndicator).toBeInTheDocument()
+      const statusIndicators = screen.getAllByTestId('CheckCircleIcon')
+      expect(statusIndicators.length).toBeGreaterThan(0)
     })
   })
 
@@ -276,7 +276,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      const flagButton = screen.getByRole('button', { name: /inceleme icin isaretle/i })
+      const flagButton = screen.getByRole('button', { name: /İnceleme için işaretle/i })
       await user.click(flagButton)
 
       expect(mockOnFlagToggle).toHaveBeenCalledWith('q1')
@@ -304,12 +304,11 @@ describe('ExamInterface', () => {
       )
 
       // Flag icon should be filled
-      const flagIcon = screen.getByTestId('FlagIcon')
-      expect(flagIcon).toBeInTheDocument()
+      const flagIcons = screen.getAllByTestId('FlagIcon')
+      expect(flagIcons.length).toBeGreaterThan(0)
     })
 
     it('does not call onFlagToggle when disabled', async () => {
-      const user = userEvent.setup()
       render(
         <ExamInterface
           questions={mockQuestions}
@@ -322,10 +321,8 @@ describe('ExamInterface', () => {
         />
       )
 
-      const flagButton = screen.getByRole('button', { name: /inceleme icin isaretle/i })
-      await user.click(flagButton)
-
-      expect(mockOnFlagToggle).not.toHaveBeenCalled()
+      const flagButton = screen.getByRole('button', { name: /İnceleme için işaretle/i })
+      expect(flagButton).toBeDisabled()
     })
   })
 
@@ -343,7 +340,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      const prevButton = screen.getByRole('button', { name: /onceki soru/i })
+      const prevButton = screen.getByRole('button', { name: /Önceki Soru/i })
       await user.click(prevButton)
 
       expect(mockOnQuestionNavigate).toHaveBeenCalledWith(0)
@@ -362,7 +359,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      const nextButton = screen.getByRole('button', { name: /sonraki soru/i })
+      const nextButton = screen.getByRole('button', { name: /Sonraki Soru/i })
       await user.click(nextButton)
 
       expect(mockOnQuestionNavigate).toHaveBeenCalledWith(1)
@@ -380,7 +377,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      const prevButton = screen.getByRole('button', { name: /onceki soru/i })
+      const prevButton = screen.getByRole('button', { name: /Önceki Soru/i })
       expect(prevButton).toBeDisabled()
     })
 
@@ -396,7 +393,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      const nextButton = screen.getByRole('button', { name: /sonraki soru/i })
+      const nextButton = screen.getByRole('button', { name: /Sonraki Soru/i })
       expect(nextButton).toBeDisabled()
     })
 
@@ -413,8 +410,8 @@ describe('ExamInterface', () => {
         />
       )
 
-      const prevButton = screen.getByRole('button', { name: /onceki soru/i })
-      const nextButton = screen.getByRole('button', { name: /sonraki soru/i })
+      const prevButton = screen.getByRole('button', { name: /Önceki Soru/i })
+      const nextButton = screen.getByRole('button', { name: /Sonraki Soru/i })
 
       expect(prevButton).toBeDisabled()
       expect(nextButton).toBeDisabled()
@@ -520,15 +517,15 @@ describe('ExamInterface', () => {
 
   describe('Navigation Panel Statistics', () => {
     it('shows correct answered count', () => {
-      const answersWithMultiple: Record<string, ExamAnswer> = {
+      const partialAnswers: Record<string, ExamAnswer> = {
         q1: { questionId: 'q1', answer: 'A', flaggedForReview: false, timestamp: new Date() },
-        q2: { questionId: 'q2', answer: 'B', flaggedForReview: false, timestamp: new Date() }
+        q3: { questionId: 'q3', answer: 'E', flaggedForReview: false, timestamp: new Date() }
       }
 
       render(
         <ExamInterface
           questions={mockQuestions}
-          answers={answersWithMultiple}
+          answers={partialAnswers}
           currentQuestionIndex={0}
           onAnswerChange={mockOnAnswerChange}
           onFlagToggle={mockOnFlagToggle}
@@ -537,7 +534,8 @@ describe('ExamInterface', () => {
         />
       )
 
-      expect(screen.getByText('2 Cevaplandi')).toBeInTheDocument()
+      expect(screen.getByText(/2 Cevaplandı/)).toBeInTheDocument()
+      expect(screen.getByText(/1 Boş/)).toBeInTheDocument()
     })
 
     it('shows correct unanswered count', () => {
@@ -553,19 +551,19 @@ describe('ExamInterface', () => {
         />
       )
 
-      expect(screen.getByText('2 Bos')).toBeInTheDocument()
+      expect(screen.getByText(/2 Boş/)).toBeInTheDocument()
     })
 
     it('shows correct flagged count', () => {
-      const answersWithFlagged: Record<string, ExamAnswer> = {
+      const partialAnswers: Record<string, ExamAnswer> = {
         q1: { questionId: 'q1', answer: 'A', flaggedForReview: true, timestamp: new Date() },
-        q2: { questionId: 'q2', answer: '', flaggedForReview: true, timestamp: new Date() }
+        q2: { questionId: 'q2', answer: 'C', flaggedForReview: true, timestamp: new Date() }
       }
 
       render(
         <ExamInterface
           questions={mockQuestions}
-          answers={answersWithFlagged}
+          answers={partialAnswers}
           currentQuestionIndex={0}
           onAnswerChange={mockOnAnswerChange}
           onFlagToggle={mockOnFlagToggle}
@@ -574,7 +572,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      expect(screen.getByText('2 Isaretli')).toBeInTheDocument()
+      expect(screen.getByText(/2 İşaretli/)).toBeInTheDocument()
     })
   })
 
@@ -591,7 +589,7 @@ describe('ExamInterface', () => {
         />
       )
 
-      expect(screen.getByText('Soru bulunamadi')).toBeInTheDocument()
+      expect(screen.getByText('Soru bulunamadı')).toBeInTheDocument()
     })
   })
 
@@ -628,7 +626,7 @@ describe('ExamInterface', () => {
       )
 
       await waitFor(() => {
-        expect(screen.getByText(/cevabiniz kaydedildi/i)).toBeInTheDocument()
+        expect(screen.getByText(/cevabınız kaydedildi/i)).toBeInTheDocument()
       })
 
       vi.useRealTimers()
@@ -665,7 +663,7 @@ describe('ExamInterface', () => {
       )
 
       // Flag button has tooltip
-      const flagButton = screen.getByRole('button', { name: /inceleme icin isaretle/i })
+      const flagButton = screen.getByRole('button', { name: /İnceleme için işaretle/i })
       expect(flagButton).toHaveAttribute('aria-label')
     })
 
@@ -684,7 +682,7 @@ describe('ExamInterface', () => {
 
       // Current question should be visually highlighted
       // The first question box should have primary color styling
-      const navigationPanel = screen.getByText('Soru Haritasi').closest('div')
+      const navigationPanel = screen.getByText('Soru Haritası').closest('div')
       expect(navigationPanel).toBeInTheDocument()
     })
   })

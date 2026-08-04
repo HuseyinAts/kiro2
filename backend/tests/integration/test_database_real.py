@@ -15,8 +15,6 @@ from sqlalchemy.orm import Session
 from models.database import (
     ExamSession,
     ExamType,
-    Question,
-    QuestionDifficulty,
     StudentProfile,
     SubjectArea,
     User,
@@ -70,22 +68,7 @@ def create_exam_session(student_profile_id, exam_type, exam_name=None, **kwargs)
     )
 
 
-def create_question(question_text, correct_answer, **kwargs):
-    """Helper to create question with required fields"""
-    defaults = {
-        "exam_type": ExamType.TYT,
-        "subject_area": SubjectArea.MATEMATIK,
-        "topic": "Test Topic",
-        "difficulty": QuestionDifficulty.MEDIUM,
-        "option_a": "A şıkkı",
-        "option_b": "B şıkkı",
-        "option_c": "C şıkkı",
-        "option_d": "D şıkkı",
-    }
-    defaults.update(kwargs)
-    return Question(
-        question_text=question_text, correct_answer=correct_answer, **defaults
-    )
+
 
 
 # ==============================================================================
@@ -495,105 +478,7 @@ class TestExamSession:
         assert before <= exam.created_at <= after
 
 
-# ==============================================================================
-# QUESTION OPERATIONS (15 tests)
-# ==============================================================================
 
-
-class TestQuestion:
-    """Test Question model operations"""
-
-    def test_create_question(self, sync_db_session: Session):
-        """Create question"""
-        question = create_question(
-            question_text="2+2 kaçtır?",
-            correct_answer="A",
-            subject_area=SubjectArea.MATEMATIK,
-            difficulty=QuestionDifficulty.MEDIUM,
-        )
-        sync_db_session.add(question)
-        sync_db_session.commit()
-
-        assert question.id is not None
-        assert question.subject_area == SubjectArea.MATEMATIK
-        assert question.difficulty == QuestionDifficulty.MEDIUM
-
-    def test_create_easy_question(self, sync_db_session: Session):
-        """Create easy difficulty question"""
-        question = create_question(
-            question_text="Test soru",
-            correct_answer="A",
-            subject_area=SubjectArea.TURKCE,
-            difficulty=QuestionDifficulty.EASY,
-        )
-        sync_db_session.add(question)
-        sync_db_session.commit()
-
-        assert question.difficulty == QuestionDifficulty.EASY
-
-    def test_create_hard_question(self, sync_db_session: Session):
-        """Create hard difficulty question"""
-        question = create_question(
-            question_text="Zor fizik sorusu",
-            correct_answer="A",
-            subject_area=SubjectArea.FEN,
-            difficulty=QuestionDifficulty.HARD,
-        )
-        sync_db_session.add(question)
-        sync_db_session.commit()
-
-        assert question.difficulty == QuestionDifficulty.HARD
-
-    def test_filter_questions_by_subject(self, sync_db_session: Session):
-        """Filter questions by subject"""
-        sync_db_session.add_all(
-            [
-                create_question(
-                    "Q1",
-                    "A",
-                    subject_area=SubjectArea.MATEMATIK,
-                    difficulty=QuestionDifficulty.EASY,
-                ),
-                create_question(
-                    "Q2",
-                    "B",
-                    subject_area=SubjectArea.MATEMATIK,
-                    difficulty=QuestionDifficulty.MEDIUM,
-                ),
-                create_question(
-                    "Q3",
-                    "C",
-                    subject_area=SubjectArea.FEN,
-                    difficulty=QuestionDifficulty.HARD,
-                ),
-            ]
-        )
-        sync_db_session.commit()
-
-        math_questions = (
-            sync_db_session.query(Question)
-            .filter_by(subject_area=SubjectArea.MATEMATIK)
-            .all()
-        )
-        assert len(math_questions) >= 2
-
-    def test_filter_questions_by_difficulty(self, sync_db_session: Session):
-        """Filter questions by difficulty"""
-        sync_db_session.add_all(
-            [
-                create_question("Q1", "A", difficulty=QuestionDifficulty.EASY),
-                create_question("Q2", "B", difficulty=QuestionDifficulty.EASY),
-                create_question("Q3", "C", difficulty=QuestionDifficulty.HARD),
-            ]
-        )
-        sync_db_session.commit()
-
-        easy_questions = (
-            sync_db_session.query(Question)
-            .filter_by(difficulty=QuestionDifficulty.EASY)
-            .all()
-        )
-        assert len(easy_questions) >= 2
 
 
 # ==============================================================================

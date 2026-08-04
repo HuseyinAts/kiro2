@@ -275,6 +275,7 @@ def build_row(entry: dict, subject: str, exam_type: str) -> dict:
         "source_book": entry.get("book_name"),
         "source_page": entry.get("page_number"),
         "pipeline_metadata": json.dumps(metadata, ensure_ascii=False),
+        "soru_hash": __import__("hashlib").md5(entry.get("text", "").encode("utf-8")).hexdigest(),
     }
 
 
@@ -342,7 +343,8 @@ INSERT_SQL = """
         exam_type, subject_area, grade_level,
         quality_score, quality_review_status, osym_format_compliant,
         is_active, is_public,
-        source_book, source_page, pipeline_metadata
+        source_book, source_page, pipeline_metadata,
+        soru_hash
     ) VALUES (
         :id, :question_text, :option_a, :option_b, :option_c, :option_d, :option_e,
         :correct_answer, :primary_topic_id,
@@ -357,7 +359,8 @@ INSERT_SQL = """
         :exam_type, :subject_area, :grade_level,
         :quality_score, :quality_review_status, :osym_format_compliant,
         :is_active, :is_public,
-        :source_book, :source_page, CAST(:pipeline_metadata AS jsonb)
+        :source_book, :source_page, CAST(:pipeline_metadata AS jsonb),
+        :soru_hash
     )
     ON CONFLICT (id) DO NOTHING
 """
@@ -463,6 +466,7 @@ def main() -> None:
     from sqlalchemy import create_engine, text
 
     engine = create_engine(db_url)
+    seen_hashes: set[str] = set()
 
     with engine.begin() as conn:
         # Ensure columns exist
@@ -474,6 +478,10 @@ def main() -> None:
         print("Creating default topics...")
         ensure_topics(conn)
         print(f"  {len(DEFAULT_TOPICS)} topics ensured")
+        
+        # Load existing hashes to prevent cross-batch duplicates if resuming
+        existing_hashes = {r[0] for r in conn.execute(text("SELECT soru_hash FROM question_bank WHERE is_active = true")).fetchall()}
+        seen_hashes.update(existing_hashes)
 
         # Batch insert
         print(f"\nInserting {len(rows):,} questions (batch={args.batch_size})...")
@@ -483,6 +491,13 @@ def main() -> None:
         for i in range(0, len(rows), args.batch_size):
             batch = rows[i : i + args.batch_size]
             for row in batch:
+                # Prevent duplicate hashes
+                h = row["soru_hash"]
+                if h in seen_hashes:
+                    skipped += 1
+                    continue
+                seen_hashes.add(h)
+
                 result = conn.execute(text(INSERT_SQL), row)
                 if result.rowcount > 0:
                     inserted += 1

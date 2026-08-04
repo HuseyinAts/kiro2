@@ -261,7 +261,7 @@ export function buildMockPlanWeek(d: MockData): PlanWeek {
 
 export async function getPlanWeek(): Promise<PlanWeek> {
   if (cfg.mode === 'mock') return buildMockPlanWeek(await mock());
-  return live<PlanWeek>('/plan/week');
+  return live<PlanWeek>('/api/v1/plan/week');
 }
 
 export async function getReviewDue(): Promise<ReviewItem[]> {
@@ -1830,8 +1830,55 @@ export function streamSohbet(args: SohbetStreamArgs, h: SohbetStreamHandlers): (
   const controller = new AbortController();
   let acc = '';
   let connectedSent = false;
+  
   void (async () => {
     const f = cfg.fetchImpl ?? fetch;
+
+    if (args.file) {
+      // File upload uses message-with-attachment (non-streaming, simulated stream for UI)
+      const formData = new FormData();
+      formData.append('file', args.file);
+      formData.append('message', args.metin);
+      formData.append('teaching_mode', teaching);
+      if (args.oturumId) formData.append('session_id', args.oturumId);
+      if (args.studentId) formData.append('student_id', args.studentId);
+
+      const res = await f(esBase() + apiPath('/enhanced-chat/message-with-attachment'), {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+        signal: controller.signal,
+      });
+
+      if (!res.ok) { h.onError?.(new KiroApiError(res.status, '/enhanced-chat/message-with-attachment')); return; }
+      const data = await res.json();
+      if (!data.success) { h.onError?.(new Error(data.error || 'Upload failed')); return; }
+      
+      const session_id = data.data?.session_id;
+      const message = data.data?.message || '';
+      
+      if (session_id) h.onConnected?.(session_id);
+      
+      // Simulate token streaming for the UI
+      const tokens = message.split(/(\s+)/);
+      for (const token of tokens) {
+        if (controller.signal.aborted) break;
+        h.onToken?.(token);
+        await new Promise(r => setTimeout(r, 10)); // tiny delay for visual effect
+      }
+      
+      if (!controller.signal.aborted) {
+        h.onFinished?.({
+          id: 'msg-live-' + Date.now(),
+          rol: 'ai',
+          metin: message,
+          ...(teaching === 'socratic' ? { tag: 'Sokratik' } : {}),
+        });
+      }
+      return;
+    }
+
+    // Normal text message (streaming)
     const headers: Record<string, string> = { 'Content-Type': 'application/json', Accept: 'text/event-stream' };
     const res = await f(esBase() + apiPath('/enhanced-chat/stream'), {
       method: 'POST',

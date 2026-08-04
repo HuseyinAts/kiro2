@@ -1195,6 +1195,7 @@ class TestYoutubeRoutesCoverage:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.skip(reason="Deleted redundant API file content_api.py")
 class TestContentApiCoverage:
     """Cover content_api.py — uses in-memory stores (no DB dependency)."""
 
@@ -1552,6 +1553,7 @@ class TestEnhancedUserManagementCoverage:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.skip(reason="Deleted redundant API file question_crud_api.py")
 class TestQuestionCrudApiCoverage:
     """Cover question_crud_api.py via mocked service."""
 

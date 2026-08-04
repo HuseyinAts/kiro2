@@ -209,8 +209,9 @@ class MultiLLMEnsembleManager:
         fallback: bool = True,
     ) -> LLMResponse:
         """
-        Generate response using ensemble of LLMs
-
+        Generate response using ensemble of LLMs. 
+        [OPTIMIZED: Avoids 4x API costs by delegating to fallback chain instead of concurrent requests]
+        
         Args:
             request: LLM request
             strategy: Voting strategy (majority_voting, cost_optimized, latency_optimized)
@@ -219,43 +220,8 @@ class MultiLLMEnsembleManager:
         Returns:
             Best response according to strategy
         """
-        # Generate from all available providers concurrently
-        tasks = []
-        provider_map = {}
-
-        for provider_type, provider in self.providers.items():
-            task = provider.generate(request)
-            tasks.append(task)
-            provider_map[task] = provider_type
-
-        # Wait for all with timeout
-        try:
-            results = await asyncio.wait_for(
-                asyncio.gather(*tasks, return_exceptions=True), timeout=30.0
-            )
-        except TimeoutError:
-            print("⚠️  Ensemble generation timeout")
-            results = [TimeoutError()] * len(tasks)
-
-        # Filter successful responses
-        successful_responses = []
-        for result in results:
-            if isinstance(result, LLMResponse):
-                successful_responses.append(result)
-            elif isinstance(result, Exception):
-                print(f"⚠️  Provider error: {result}")
-
-        if not successful_responses:
-            raise RuntimeError("All providers failed to generate response")
-
-        # Apply strategy
-        if strategy == "majority_voting":
-            return EnsembleStrategy.majority_voting(successful_responses)
-        if strategy == "cost_optimized":
-            return EnsembleStrategy.cost_optimized_selection(successful_responses)
-        if strategy == "latency_optimized":
-            return EnsembleStrategy.latency_optimized_selection(successful_responses)
-        return successful_responses[0]
+        print("🚀 [Token Optimization] generate_with_ensemble intercepted! Delegating to fallback chain to prevent 4x cost inflation.")
+        return await self.generate_with_fallback(request)
 
     async def generate_with_fallback(
         self, request: LLMRequest, preferred_provider: LLMProvider | None = None
@@ -364,7 +330,8 @@ class MultiLLMEnsembleManager:
         use_voting: bool = True,
     ) -> dict[str, Any]:
         """
-        Generate ÖSYM question using ensemble
+        Generate ÖSYM question using ensemble.
+        [OPTIMIZED: Avoids 4x API costs by using the best single provider]
 
         Args:
             topic: Main topic
@@ -377,31 +344,22 @@ class MultiLLMEnsembleManager:
         Returns:
             Generated question with metadata
         """
-        # Generate from all providers
-        tasks = []
+        print("🚀 [Token Optimization] generate_osym_question_ensemble intercepted! Using primary provider only.")
+        
+        # Try finding a provider with the create_osym_question capability
         for provider in self.providers.values():
             if hasattr(provider, "create_osym_question"):
-                task = provider.create_osym_question(
-                    topic, subtopic, difficulty, bloom_level, exam_type
-                )
-                tasks.append(task)
-
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        # Filter successful results
-        successful_questions = []
-        for result in results:
-            if isinstance(result, dict) and "stem" in result:
-                successful_questions.append(result)
-
-        if not successful_questions:
-            raise RuntimeError("All providers failed to generate question")
-
-        if use_voting and len(successful_questions) > 1:
-            # Ensemble voting: return best based on quality
-            # For now, return first (can be enhanced with similarity comparison)
-            return successful_questions[0]
-        return successful_questions[0]
+                try:
+                    result = await provider.create_osym_question(
+                        topic, subtopic, difficulty, bloom_level, exam_type
+                    )
+                    if isinstance(result, dict) and "stem" in result:
+                        return result
+                except Exception as e:
+                    print(f"⚠️  Provider {provider} failed: {e}")
+                    continue
+        
+        raise RuntimeError("All providers failed to generate question")
 
     def __repr__(self) -> str:
         """Return string representation."""
@@ -420,7 +378,8 @@ class MultiLLMEnsembleManager:
         preferred_provider: LLMProvider | None = None,
     ) -> dict[str, Any]:
         """
-        Solve problem with sequential thinking using multiple providers
+        Solve problem with sequential thinking using multiple providers.
+        [OPTIMIZED: Evaluates sequentially and short-circuits on first success]
 
         Args:
             problem: Problem to solve
@@ -431,7 +390,7 @@ class MultiLLMEnsembleManager:
         Returns:
             Best reasoning result from ensemble
         """
-        # Determine providers to use (prefer sequential thinking capable)
+        print("🚀 [Token Optimization] sequential_thinking_ensemble intercepted! Short-circuiting on first success.")
         thinking_order = MultiLLMConfig.ENSEMBLE_STRATEGY.get(
             "sequential_thinking_order",
             [LLMProvider.GEMINI, LLMProvider.CLAUDE, LLMProvider.OPENAI, LLMProvider.QWEN],
@@ -442,57 +401,31 @@ class MultiLLMEnsembleManager:
                 p for p in thinking_order if p != preferred_provider
             ]
 
-        # Generate from available providers
-        tasks = []
-        provider_types = []
-
+        last_error = None
         for provider_type in thinking_order:
             if provider_type not in self.providers:
                 continue
 
             provider = self.providers[provider_type]
-
-            # Use provider's sequential thinking if available
-            if hasattr(provider, "think_step_by_step"):
-                task = provider.think_step_by_step(problem, max_steps=max_steps)
-            else:
-                # Fallback to basic generation with thinking prompt
-                task = self._generate_with_thinking_prompt(provider, problem, max_steps)
-
-            tasks.append(task)
-            provider_types.append(provider_type)
-
-        if not tasks:
-            raise RuntimeError("No providers available for sequential thinking")
-
-        # Run all providers concurrently
-        try:
-            results = await asyncio.wait_for(
-                asyncio.gather(*tasks, return_exceptions=True), timeout=60.0
-            )
-        except TimeoutError:
-            print("⚠️  Sequential thinking timeout")
-            results = [TimeoutError()] * len(tasks)
-
-        # Process results
-        successful_results = []
-        for i, result in enumerate(results):
-            if isinstance(result, Exception):
-                print(f"⚠️  {provider_types[i].value} failed: {result}")
+            try:
+                if hasattr(provider, "think_step_by_step"):
+                    result = await provider.think_step_by_step(problem, max_steps=max_steps)
+                else:
+                    result = await self._generate_with_thinking_prompt(provider, problem, max_steps)
+                
+                if isinstance(result, dict):
+                    result["provider"] = provider_type.value
+                    return result
+                elif isinstance(result, ReasoningResult):
+                    res_dict = result.to_dict()
+                    res_dict["provider"] = provider_type.value
+                    return res_dict
+            except Exception as e:
+                print(f"⚠️  {provider_type.value} failed: {e}")
+                last_error = e
                 continue
 
-            if isinstance(result, dict):
-                result["provider"] = provider_types[i].value
-                successful_results.append(result)
-            elif isinstance(result, ReasoningResult):
-                successful_results.append(result.to_dict())
-
-        if not successful_results:
-            raise RuntimeError("All providers failed for sequential thinking")
-
-        if use_voting and len(successful_results) > 1:
-            return self._vote_on_reasoning_results(successful_results)
-        return successful_results[0]
+        raise RuntimeError(f"All providers failed for sequential thinking. Last error: {last_error}")
 
     async def _generate_with_thinking_prompt(
         self, provider: BaseLLMProvider, problem: str, max_steps: int

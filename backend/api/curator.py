@@ -519,7 +519,10 @@ async def post_verdict(
 
     # Mevcut soruyu yükle (FOR UPDATE ile concurrent verdict'i önleyebiliriz
     # ama şimdilik basit bir SELECT yeterli)
-    fetch_stmt = select(QuestionBankItem).where(QuestionBankItem.id == body.question_id)
+    fetch_stmt = select(QuestionBankItem).where(
+        QuestionBankItem.id == body.question_id,
+        QuestionBankItem.is_active.is_(True)
+    )
     row_result = await db.execute(fetch_stmt)
     row: QuestionBankItem | None = row_result.scalar_one_or_none()
     if row is None:

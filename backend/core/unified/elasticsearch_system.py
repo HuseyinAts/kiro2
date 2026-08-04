@@ -55,7 +55,7 @@ class ElasticsearchConfig(BaseModel):
         return cls(
             host=os.getenv("ELASTICSEARCH_HOST", "localhost"),
             port=int(os.getenv("ELASTICSEARCH_PORT", "9200")),
-            username=os.getenv("ELASTICSEARCH_USERNAME"),
+            username=os.getenv("ELASTICSEARCH_USER"),
             password=os.getenv("ELASTICSEARCH_PASSWORD"),
             use_ssl=os.getenv("ELASTICSEARCH_USE_SSL", "false").lower() == "true",
             verify_certs=os.getenv("ELASTICSEARCH_VERIFY_CERTS", "false").lower()

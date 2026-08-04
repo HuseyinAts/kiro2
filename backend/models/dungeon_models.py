@@ -1,6 +1,7 @@
 """Dungeon Learning Path ORM Models."""
 
 from sqlalchemy import (
+    String,
     Boolean,
     Column,
     DateTime,

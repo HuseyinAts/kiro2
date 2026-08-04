@@ -303,9 +303,15 @@ async def semantic_search(
     try:
         rag_service = get_rag_service()
 
+        is_admin = getattr(current_user, "role", "") in ("ADMIN", "admin")
+        
+        # Enforce IDOR protection: Users can only search their own documents
+        user_filter = {} if is_admin else {"user_id": current_user.id}
+        filter_dict = {**(request.filter_metadata or {}), **user_filter}
+
         # Perform search
         results = await rag_service.search(
-            query=request.query, k=request.k, filter_dict=request.filter_metadata
+            query=request.query, k=request.k, filter_dict=filter_dict
         )
 
         # Format results
@@ -358,8 +364,13 @@ async def get_llm_context(
     try:
         rag_service = get_rag_service()
 
+        is_admin = getattr(current_user, "role", "") in ("ADMIN", "admin")
+        
+        # Enforce IDOR protection: Users can only retrieve context from their own documents
+        user_filter = None if is_admin else {"user_id": current_user.id}
+
         # Search for relevant documents
-        results = await rag_service.search(query=request.query, k=request.k)
+        results = await rag_service.search(query=request.query, k=request.k, filter_dict=user_filter)
 
         # Build context string
         context_parts = []
@@ -426,15 +437,23 @@ async def list_documents(
         # Get documents from vector store
         documents = []
         total_count = 0
+        is_admin = getattr(current_user, "role", "") in ("ADMIN", "admin")
 
         try:
             # Get document registry from RAG service
             if hasattr(rag_service, "_document_registry"):
                 registry = rag_service._document_registry
-                total_count = len(registry)
+                
+                filtered_registry = {}
+                for doc_id, doc_info in registry.items():
+                    owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get("user_id")
+                    if is_admin or owner_id == current_user.id:
+                        filtered_registry[doc_id] = doc_info
+                        
+                total_count = len(filtered_registry)
 
                 # Convert registry to document list
-                for doc_id, doc_info in registry.items():
+                for doc_id, doc_info in filtered_registry.items():
                     documents.append(
                         {
                             "id": doc_id,
@@ -447,7 +466,7 @@ async def list_documents(
                     )
 
                 # Sort by indexed_at descending
-                documents.sort(key=lambda x: x.get("indexed_at", ""), reverse=True)
+                documents.sort(key=lambda x: str(x.get("indexed_at", "")), reverse=True)
 
                 # Apply pagination
                 start_idx = skip
@@ -460,32 +479,35 @@ async def list_documents(
                     # Try to get collection info from Chroma
                     collection = rag_service.vector_store._collection
                     if collection:
-                        count = collection.count()
-                        total_count = count
-
-                        # Get sample documents (Chroma doesn't have easy listing)
-                        if count > 0:
+                        where_clause = None if is_admin else {"user_id": current_user.id}
+                        
+                        try:
                             results = collection.get(
-                                limit=min(limit, count), offset=skip
+                                where=where_clause,
+                                limit=limit, offset=skip
                             )
 
-                            for i, (doc_id, metadata) in enumerate(
-                                zip(
-                                    results.get("ids", []), results.get("metadatas", [])
-                                )
-                            ):
-                                documents.append(
-                                    {
-                                        "id": doc_id,
-                                        "title": metadata.get(
-                                            "title", f"Document {i + 1}"
-                                        ),
-                                        "source": metadata.get("source", "unknown"),
-                                        "indexed_at": metadata.get("indexed_at", ""),
-                                        "chunk_count": 1,
-                                        "metadata": metadata,
-                                    }
-                                )
+                            if results and results.get("ids"):
+                                for i, (doc_id, metadata) in enumerate(
+                                    zip(
+                                        results.get("ids", []), results.get("metadatas", [])
+                                    )
+                                ):
+                                    documents.append(
+                                        {
+                                            "id": doc_id,
+                                            "title": metadata.get(
+                                                "title", f"Document {i + 1}"
+                                            ),
+                                            "source": metadata.get("source", "unknown"),
+                                            "indexed_at": metadata.get("indexed_at", ""),
+                                            "chunk_count": 1,
+                                            "metadata": metadata,
+                                        }
+                                    )
+                                total_count = len(documents) # Note: page size count
+                        except Exception as e:
+                            logger.warning(f"Error filtering chroma results: {e}")
                 except Exception as e:
                     logger.warning(f"Could not get documents from vector store: {e}")
 
@@ -519,10 +541,22 @@ async def delete_document(
     try:
         rag_service = get_rag_service()
 
+        is_admin = getattr(current_user, "role", "") in ("ADMIN", "admin")
+
         # Delete from document registry
         deleted = False
         if hasattr(rag_service, "_document_registry"):
             if document_id in rag_service._document_registry:
+                doc_info = rag_service._document_registry[document_id]
+                
+                # Check ownership
+                owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get("user_id")
+                if not is_admin and owner_id != current_user.id:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Not authorized to delete this document",
+                    )
+                
                 del rag_service._document_registry[document_id]
                 deleted = True
 
@@ -532,10 +566,23 @@ async def delete_document(
                 # Get collection
                 collection = rag_service.vector_store._collection
                 if collection:
+                    # Check ownership in vector store if not already checked in registry
+                    if not deleted and not is_admin:
+                        results = collection.get(where={"document_id": document_id})
+                        if results and results.get("metadatas") and len(results["metadatas"]) > 0:
+                            doc_meta = results["metadatas"][0]
+                            if doc_meta.get("user_id") != current_user.id:
+                                raise HTTPException(
+                                    status_code=status.HTTP_403_FORBIDDEN,
+                                    detail="Not authorized to delete this document",
+                                )
+                    
                     # Delete documents with matching IDs
                     # Chroma uses filter-based deletion
                     collection.delete(where={"document_id": document_id})
                     deleted = True
+            except HTTPException:
+                raise
             except Exception as e:
                 logger.warning(f"Could not delete from vector store: {e}")
 

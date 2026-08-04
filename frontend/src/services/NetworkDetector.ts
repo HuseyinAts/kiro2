@@ -360,7 +360,11 @@ export class NetworkDetector {
     this.subscribers.add(callback);
 
     // Immediately call with current state
-    callback(this.state);
+    try {
+      callback(this.state);
+    } catch (error) {
+      console.error('❌ NetworkDetector: Error in subscriber callback during subscribe', error);
+    }
 
     // Return unsubscribe function
     return () => {

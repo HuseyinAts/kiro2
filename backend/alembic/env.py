@@ -111,9 +111,7 @@ def include_object(object, name, type_, reflected, compare_to):
     # DB-only tabloları atla (DROP önerisini önle)
     if type_ == "table" and name in ALEMBIC_EXCLUDE_TABLES:
         return False
-    # pgvector 'embedding' kolonunu atla (SQLAlchemy NullType → karşılaştırma hatası)
-    if type_ == "column" and name == "embedding":
-        return False
+    # pgvector 'embedding' kolonu artık pgvector kütüphanesiyle takip ediliyor
     # "DB'de var ama metadata'da karşılığı yok → DROP" sınıfı. Kural 27 Tem
     # 2026'da burada `type_ == "table"` ile sınırlı yazılmıştı; ölçüldüğünde
     # (1 Ağu 2026) tablo tarafının kapalı ama **index tarafının açık** olduğu

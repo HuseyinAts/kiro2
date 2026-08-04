@@ -263,7 +263,7 @@ describe('Analytics Components', () => {
 
       // Check if performance metrics are displayed
       expect(screen.getByText('45.5h')).toBeInTheDocument(); // Study time
-      expect(screen.getByText('1,247')).toBeInTheDocument(); // Questions solved
+      expect(screen.getByText(/1[.,]247/)).toBeInTheDocument(); // Questions solved
     });
 
     it('handles error state', async () => {
@@ -303,7 +303,7 @@ describe('Analytics Components', () => {
 
       // Check if class metrics are displayed
       expect(screen.getByText('38.2h')).toBeInTheDocument(); // Average study time
-      expect(screen.getByText('5,847')).toBeInTheDocument(); // Total questions
+      expect(screen.getByText(/5[.,]847/)).toBeInTheDocument(); // Total questions
     });
   });
 

@@ -4,10 +4,12 @@ database.py'den ayrıştırıldı (2026-01-10)
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import date, datetime
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import (
+    String,
     JSON,
     Boolean,
     CheckConstraint,
@@ -66,13 +68,9 @@ class User(Base):
         {"extend_existing": True},
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
     # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
@@ -94,7 +92,7 @@ class User(Base):
     )
     backup_codes_hashed: Mapped[dict | None] = mapped_column(
         JSON, nullable=True, comment="Hashed backup codes for 2FA recovery"
-    )
+    , deferred=True)
 
     # Sprint 6: Premium/Tier fields for rate limiting
     is_premium: Mapped[bool] = mapped_column(
@@ -121,7 +119,7 @@ class User(Base):
     last_level_up_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # System fields
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -211,16 +209,11 @@ class StudentProfile(Base):
         Index("idx_student_user_grade", "user_id", "grade_level"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    user_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
     # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
@@ -248,10 +241,10 @@ class StudentProfile(Base):
     correct_answers: Mapped[int] = mapped_column(Integer, default=0)
 
     # Devrimsel özellikler
-    vark_profile: Mapped[dict | None] = mapped_column(JSON)
-    zpd_range: Mapped[dict | None] = mapped_column(JSON)
+    vark_profile: Mapped[dict | None] = mapped_column(JSON, deferred=True)
+    zpd_range: Mapped[dict | None] = mapped_column(JSON, deferred=True)
     irt_ability: Mapped[float] = mapped_column(Float, default=0.0)
-    fsrs_parameters: Mapped[dict | None] = mapped_column(JSON)
+    fsrs_parameters: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -263,13 +256,13 @@ class StudentProfile(Base):
 
     # Relationships
     user: Mapped["User"] = relationship(
-        "User", back_populates="student_profile", lazy="selectin"
+        "User", back_populates="student_profile"
     )
     exam_sessions: Mapped[list["ExamSession"]] = relationship(
-        "ExamSession", back_populates="student", lazy="selectin"
+        "ExamSession", back_populates="student"
     )
     learning_analytics: Mapped[list["LearningAnalytics"]] = relationship(
-        "LearningAnalytics", back_populates="student", lazy="selectin"
+        "LearningAnalytics", back_populates="student"
     )
 
     def to_canonical(self) -> "LearningPathStudentProfile":
@@ -289,16 +282,11 @@ class TeacherProfile(Base):
 
     __tablename__ = "teacher_profiles"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    user_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
     # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
@@ -306,7 +294,7 @@ class TeacherProfile(Base):
 
     # Professional information
     school_name: Mapped[str] = mapped_column(String(200), nullable=False)
-    subject_areas: Mapped[dict | None] = mapped_column(JSON)
+    subject_areas: Mapped[dict | None] = mapped_column(JSON, deferred=True)
     experience_years: Mapped[int] = mapped_column(Integer, default=0)
     education_level: Mapped[str | None] = mapped_column(String(100))
 
@@ -330,23 +318,18 @@ class ParentProfile(Base):
 
     __tablename__ = "parent_profiles"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    user_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
     # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
 
     # Children information (JSON array of student IDs)
-    children_ids: Mapped[dict | None] = mapped_column(JSON)
+    children_ids: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # Notification preferences
     email_notifications: Mapped[bool] = mapped_column(Boolean, default=True)

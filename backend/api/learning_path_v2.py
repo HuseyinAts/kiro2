@@ -65,6 +65,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas.learning_path_schemas import LearningPathCreateRequest
 from core.circuit_breaker import CircuitBreakerHalfOpenError, CircuitBreakerOpenError
+from core.cqrs.bus import get_command_bus
+from application.commands.learning_path import CreateStudentProfileCommand
 from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from core.learning_path_auth import (
     verify_student_access,
@@ -192,7 +194,7 @@ class StudentProfileCreate(BaseModel):
     """Student profile creation request."""
 
     name: str = Field(..., description="Öğrenci adı")
-    grade: int = Field(..., ge=9, le=12, description="Sınıf seviyesi (9-12)")
+    grade: int = Field(..., ge=5, le=12, description="Sınıf seviyesi (5-12)")
     subjects: list[str] = Field(..., description="İlgili dersler")
     goals: list[str] = Field(..., description="Hedefler")
     learning_style: str | None = Field(None, description="Öğrenme stili")
@@ -426,94 +428,25 @@ async def create_student_profile(
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> dict[str, Any]:
     """
-    Öğrenci profili oluştur
-
-    Öğrenci için öğrenme yolu oluşturmak üzere profil bilgilerini kaydeder.
-    Veritabanına kaydeder ve gerçek student_id döner.
+    Öğrenci profili oluştur (CQRS Refactored)
     """
     try:
-        # Check for existing profile — return it instead of creating duplicate
-        existing = await db.execute(
-            select(LearningPathStudentProfile).where(
-                LearningPathStudentProfile.user_id == str(current_user.id)
-            )
-        )
-        existing_profile = existing.scalars().first()
-        if existing_profile:
-            logger.info(
-                f"Returning existing profile for user {current_user.id}: {existing_profile.student_id}"
-            )
-            return {
-                "success": True,
-                "student_id": existing_profile.student_id,
-                "profile": {
-                    "name": existing_profile.name,
-                    "grade": int(existing_profile.grade)
-                    if existing_profile.grade
-                    else None,
-                    "subjects": existing_profile.interests,
-                    "goals": existing_profile.goals,
-                    "learning_style": existing_profile.learning_style,
-                    "available_time": existing_profile.available_time,
-                    "exam_target": existing_profile.exam_target,
-                    "created_at": existing_profile.created_at.isoformat()
-                    if existing_profile.created_at
-                    else None,
-                },
-                "message": "Mevcut profil döndürüldü",
-            }
-
-        logger.info(f"Creating student profile: {profile.name}, grade {profile.grade}")
-
-        # Generate unique student ID
-        import uuid
-
-        student_id = f"STU_{uuid.uuid4().hex[:12]}"
-
-        # Determine exam target based on grade
-        exam_target = "LGS" if profile.grade <= 8 else "YKS"
-
-        # Create database record
-        new_profile = LearningPathStudentProfile(
-            student_id=student_id,
+        command = CreateStudentProfileCommand(
+            db=db,
             user_id=str(current_user.id),
             name=profile.name,
-            grade=str(profile.grade),
-            exam_target=exam_target,
-            learning_style=profile.learning_style or "mixed",
-            knowledge_level="beginner",
-            interests=profile.subjects,
+            grade=profile.grade,
+            subjects=profile.subjects,
             goals=profile.goals,
-            available_time=profile.available_time or 60,
-            metadata_json={"created_via": "learning_path_api_v2"},
+            learning_style=profile.learning_style,
+            available_time=profile.available_time
         )
-
-        db.add(new_profile)
-        await db.commit()
-        await db.refresh(new_profile)
-
-        logger.info(f"Student profile created successfully: {student_id}")
-
-        return {
-            "success": True,
-            "student_id": student_id,
-            "profile": {
-                "name": new_profile.name,
-                "grade": int(new_profile.grade),
-                "subjects": new_profile.interests,
-                "goals": new_profile.goals,
-                "learning_style": new_profile.learning_style,
-                "available_time": new_profile.available_time,
-                "exam_target": new_profile.exam_target,
-                "created_at": new_profile.created_at.isoformat(),
-            },
-            "message": "Öğrenci profili başarıyla oluşturuldu",
-        }
-
+        command_bus = get_command_bus()
+        result = await command_bus.execute(command)
+        return result
     except HTTPException:
         raise
     except Exception as e:
-        await db.rollback()  # FIX: Add rollback on error
         logger.error(f"Error creating student profile: {e}")
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
@@ -535,109 +468,17 @@ async def assess_knowledge(
     Quiz geçmişinden gerçek performans hesaplar.
     """
     try:
-        # IDOR protection: verify ownership
         await verify_student_access(assessment.student_id, current_user, db)
-
-        logger.info(
-            f"Assessing knowledge for student {assessment.student_id}, subject: {assessment.subject}"
+        from application.commands.learning_path import AssessKnowledgeCommand
+        from core.cqrs.bus import get_command_bus
+        
+        command = AssessKnowledgeCommand(
+            db=db,
+            student_id=assessment.student_id,
+            subject=assessment.subject,
+            questions=assessment.questions
         )
-
-        # Get student profile - ASYNC FIX
-        result = await db.execute(
-            select(LearningPathStudentProfile).filter(
-                LearningPathStudentProfile.student_id == assessment.student_id
-            )
-        )
-        profile = result.scalars().first()
-
-        if not profile:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Student profile not found: {assessment.student_id}",
-            )
-
-        # Get quiz history - ASYNC FIX + SQL injection prevention
-        result = await db.execute(
-            select(QuizSubmissionModel).filter(
-                QuizSubmissionModel.student_id == assessment.student_id,
-                QuizSubmissionModel.quiz_id.startswith(assessment.subject),
-            )
-        )
-        quiz_results = result.scalars().all()
-
-        # Calculate average score from quizzes
-        if quiz_results and len(quiz_results) > 0:
-            avg_score = sum(q.score for q in quiz_results) / len(quiz_results)
-
-            # Determine knowledge level based on average score
-            if avg_score >= 85:
-                knowledge_level = "expert"
-            elif avg_score >= 70:
-                knowledge_level = "advanced"
-            elif avg_score >= 55:
-                knowledge_level = "intermediate"
-            elif avg_score >= 40:
-                knowledge_level = "elementary"
-            else:
-                knowledge_level = "beginner"
-
-            # Generate feedback based on score
-            strengths = []
-            weaknesses = []
-            recommendations = []
-
-            if avg_score >= 70:
-                strengths.append("Konuyu iyi kavramışsınız")
-                strengths.append("Temel kavramlar güçlü")
-                recommendations.append("İleri seviye problemlere odaklanın")
-            elif avg_score >= 55:
-                strengths.append("Temel kavramları anlayabiliyorsunuz")
-                weaknesses.append("İleri seviye konularda zorluk yaşıyorsunuz")
-                recommendations.append("Daha fazla pratik yapın")
-                recommendations.append("Zayıf konuları tekrar edin")
-            else:
-                weaknesses.append("Temel kavramlarda eksiklikler var")
-                weaknesses.append("Daha fazla çalışma gerekiyor")
-                recommendations.append("Temel konulardan başlayın")
-                recommendations.append("Düzenli tekrar yapın")
-
-            score = int(avg_score)
-        else:
-            # No quiz history
-            knowledge_level = profile.knowledge_level
-            score = 50
-
-            strengths = ["Henüz yeterli veri yok"]
-            weaknesses = ["Daha fazla değerlendirme gerekiyor"]
-            recommendations = [
-                "Quiz'lere katılarak bilgi seviyenizi ölçün",
-                "Düzenli pratik yapın",
-            ]
-
-        # Update profile
-        profile.knowledge_level = knowledge_level
-        profile.updated_at = datetime.now()
-        await db.commit()
-
-        logger.info(
-            f"Knowledge assessed: {knowledge_level} (score: {score}) "
-            f"for student {assessment.student_id}"
-        )
-
-        return {
-            "success": True,
-            "assessment": {
-                "student_id": assessment.student_id,
-                "subject": assessment.subject,
-                "level": knowledge_level,
-                "score": score,
-                "quiz_count": len(quiz_results),
-                "strengths": strengths,
-                "weaknesses": weaknesses,
-                "recommendations": recommendations,
-                "assessed_at": datetime.now().isoformat(),
-            },
-        }
+        return await get_command_bus().execute(command)
 
     except HTTPException:
         raise
@@ -669,134 +510,22 @@ async def create_learning_path(
         method="POST",
         status_code=200,
     )
-
-    start_time = time.time()
-
+    
     try:
-        # Verify ownership
+        start_time = time.time()
         await verify_student_access(path_request.student_id, current_user, db)
-
-        logger.info(
-            f"Creating learning path for student {path_request.student_id}, "
-            f"subject: {path_request.subject}"
-        )
-
-        # Use facade with circuit breaker
-        try:
-            target_level = _map_difficulty_to_knowledge_level(
-                path_request.difficulty_level or "medium"
-            )
-
-            result = await ai_agent_circuit_breaker.call(
-                facade.create_path_for_student,
-                student_id=path_request.student_id,
-                subject=path_request.subject,
-                topics=None,
-                target_level=target_level,
-            )
-
-        except (CircuitBreakerOpenError, CircuitBreakerHalfOpenError) as cb_error:
-            logger.warning(f"Circuit breaker triggered: {cb_error.message}")
-            return await ai_agent_fallback_handler(
-                cb_error, path_request.student_id, path_request.subject
-            )
-
-        # Convert result to API response format
-        modules = []
-        for idx, node in enumerate(result.nodes, start=1):
-            module = {
-                "module_id": f"MOD{idx}",
-                "title": node.topic,
-                "order": idx,
-                "estimated_duration": f"{node.estimated_time} dakika",
-                "prerequisite": f"MOD{idx - 1}" if idx > 1 else None,
-                "topics": [
-                    {
-                        "topic_id": node.node_id,
-                        "name": node.topic,
-                        "duration_minutes": node.estimated_time,
-                        "resources": [
-                            {
-                                "resource_id": r.id,
-                                "title": r.title,
-                                "url": r.url,
-                                "type": r.resource_type,
-                            }
-                            for r in node.resources
-                        ],
-                        "quiz": {
-                            "quiz_id": f"QZ_{node.node_id}",
-                            "question_count": 10,
-                            "passing_score": 70,
-                        },
-                    }
-                ],
-            }
-            modules.append(module)
-
-        # Generate path_id from student_id + subject + timestamp
-        import uuid
-
-        path_id = f"LP_{path_request.student_id[:8]}_{int(time.time())}_{uuid.uuid4().hex[:4]}"
-
-        learning_path = {
-            "path_id": path_id,
-            "student_id": path_request.student_id,
-            "subject": path_request.subject,
-            "difficulty_level": path_request.difficulty_level,
-            "target_date": path_request.target_date,
-            "modules": modules,
-            "progress": {
-                "completed_modules": 0,
-                "total_modules": len(modules),
-                "completed_topics": 0,
-                "total_topics": len(modules),
-                "overall_progress": 0,
-            },
-            "total_time": result.total_duration_minutes,
-            "created_at": datetime.now().isoformat(),
-            "ai_generated": True,
-        }
-
-        # Persist to DB so path survives page refresh
-        db_path = LearningPath(
-            path_id=path_id,
+        from application.commands.learning_path import CreateLearningPathCommand
+        from core.cqrs.bus import get_command_bus
+        
+        command = CreateLearningPathCommand(
+            db=db,
+            facade=facade,
             student_id=path_request.student_id,
             subject=path_request.subject,
-            difficulty_level=path_request.difficulty_level or "intermediate",
-            target_date=datetime.fromisoformat(path_request.target_date)
-            if path_request.target_date
-            else None,
-            modules=modules,
-            ai_generated=True,
-            total_modules=len(modules),
-            completed_modules=0,
-            total_topics=len(modules),
-            completed_topics=0,
-            overall_progress=0.0,
-            total_time=result.total_duration_minutes or 0,
+            target_date=path_request.target_date,
+            difficulty_level=path_request.difficulty_level
         )
-        db.add(db_path)
-        await db.commit()
-
-        # Record metrics
-        duration_seconds = time.time() - start_time
-        metrics.record_learning_path_creation(
-            subject=path_request.subject,
-            duration_seconds=duration_seconds,
-            success=True,
-        )
-
-        logger.info(
-            f"Learning path created and persisted ({path_id}) for "
-            f"{path_request.student_id} in {duration_seconds:.2f}s"
-        )
-
-        return {
-            "success": True,
-            "learning_path": learning_path,
-            "message": "Öğrenme yolu başarıyla oluşturuldu",
-        }
+        return await get_command_bus().execute(command)
 
     except HTTPException:
         raise
@@ -824,6 +553,7 @@ async def search_resources(
     search: ResourceSearch,
     facade: LearningPathFacade = Depends(_get_facade),
     current_user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
     Eğitim kaynaklarını ara
@@ -835,148 +565,26 @@ async def search_resources(
         endpoint="/search-resources", method="POST", status_code=200
     )
 
-    start_time = time.time()
-
     try:
-        logger.info(
-            f"Searching resources: subject='{search.subject}', "
-            f"topic='{search.topic}', difficulty='{search.difficulty}'"
-        )
-
         if not search.subject or not search.subject.strip():
             raise HTTPException(
                 status_code=400, detail="Ders (subject) alanı zorunludur"
             )
 
-        # Extract learning_style from student_profile (VARK personalization)
-        learning_style = None
-        if search.student_profile:
-            learning_style = search.student_profile.get("learning_style")
-
-        # Use facade to search resources
-        try:
-            resources = await facade.search_resources(
-                query=f"{search.subject} {search.topic or ''}".strip(),
-                subject=search.subject,
-                difficulty=search.difficulty,
-                limit=search.max_results or 10,
-            )
-
-            # Convert LearningResource → API response format
-            # Field mapping: LearningResource → VideoResponse (frontend)
-            response_resources = []
-            for resource in resources:
-                metadata = resource.metadata or {}
-                diff_val = (
-                    resource.difficulty_level.value
-                    if hasattr(resource.difficulty_level, "value")
-                    else str(resource.difficulty_level)
-                )
-                response_resources.append(
-                    {
-                        "resource_id": resource.resource_id,
-                        "video_id": resource.resource_id,
-                        "type": resource.resource_type,
-                        "title": resource.title,
-                        "description": resource.description or "",
-                        "url": resource.url,
-                        "thumbnail": metadata.get("thumbnail", ""),
-                        "duration_minutes": resource.estimated_time,
-                        "duration": metadata.get(
-                            "duration_iso", f"PT{resource.estimated_time}M"
-                        ),
-                        "difficulty": diff_val,
-                        "platform": resource.source,
-                        "channel": metadata.get("channel", resource.source),
-                        "channel_id": metadata.get("channel_id", ""),
-                        "view_count": int(metadata.get("view_count", 0)),
-                        "upload_date": metadata.get("published_at", ""),
-                        "subject": search.subject,
-                        "exam_type": metadata.get("exam_type", "TYT"),
-                        "quality_score": (resource.rating or 3.0) / 5.0,
-                        "is_accessible": True,
-                        "is_turkish": resource.language == "tr",
-                        "definition": metadata.get("definition", "sd"),
-                        "caption_available": metadata.get("caption_available", False),
-                        "scores": {
-                            "relevance_score": _compute_relevance(resource, search),
-                            "quality_score": (resource.rating or 3.0) / 5.0,
-                            "turkish_score": (
-                                1.0 if resource.language == "tr" else 0.3
-                            ),
-                            "final_score": _compute_final_score(
-                                resource, search, learning_style
-                            ),
-                        },
-                    }
-                )
-
-            response = {
-                "success": True,
-                "resources": response_resources,
-                "total": len(response_resources),
-                "filters": {
-                    "subject": search.subject,
-                    "topic": search.topic,
-                    "difficulty": search.difficulty,
-                    "resource_type": search.resource_type,
-                    "max_results": search.max_results or 10,
-                },
-                "metadata": {
-                    "engine": "LearningPathFacade",
-                    "version": "2.0",
-                    "features": [
-                        "multi_strategy_search",
-                        "youtube_integration",
-                        "khan_integration",
-                        "oer_integration",
-                        "rag_semantic_search",
-                    ],
-                },
-            }
-
-            # Record metrics
-            duration_seconds = time.time() - start_time
-            metrics.record_resource_search(
-                subject=search.subject,
-                duration_seconds=duration_seconds,
-                result_count=len(response_resources),
-            )
-
-            logger.info(
-                f"Returning {len(response_resources)} resources for "
-                f"{search.subject}/{search.topic} in {duration_seconds:.2f}s"
-            )
-            return response
-
-        except Exception as engine_error:
-            logger.error(
-                f"Resource discovery error: {engine_error!s}",
-                exc_info=True,
-            )
-
-            duration_seconds = time.time() - start_time
-            metrics.record_resource_search(
-                subject=search.subject,
-                duration_seconds=duration_seconds,
-                result_count=0,
-            )
-
-            return {
-                "success": False,
-                "resources": [],
-                "total": 0,
-                "filters": {
-                    "subject": search.subject,
-                    "topic": search.topic,
-                    "difficulty": search.difficulty,
-                    "resource_type": search.resource_type,
-                },
-                "error": {
-                    "message": "Kaynaklar şu anda alınamıyor. Lütfen daha sonra tekrar deneyin.",
-                    "code": "DISCOVERY_ERROR",
-                },
-            }
+        from application.commands.learning_path import SearchResourcesCommand
+        from core.cqrs.bus import get_command_bus
+        
+        command = SearchResourcesCommand(
+            db=db,
+            facade=facade,
+            subject=search.subject,
+            topic=search.topic,
+            difficulty=search.difficulty,
+            resource_type=search.resource_type,
+            max_results=search.max_results,
+            student_profile=search.student_profile
+        )
+        return await get_command_bus().execute(command)
 
     except HTTPException:
         raise
@@ -1006,54 +614,18 @@ async def adapt_learning_path(
     FIX: JWT authentication eklendi (önceden eksikti)
     """
     try:
-        # FIX: Verify ownership
         await verify_student_access(adaptation.student_id, current_user, db)
-
-        logger.info(
-            f"Adapting learning path {adaptation.path_id} for "
-            f"student {adaptation.student_id}"
-        )
-
-        # Use facade for adaptation
-        # FIX: Method is adapt_student_path, not adapt_path
-        # FIX: Response field is actions_taken, not adaptations
-        performance_metrics = [
-            PerformanceMetrics(
-                topic=adaptation.performance_data.get("topic_id", ""),
-                quiz_score=adaptation.performance_data.get("score"),
-                completion_time_minutes=adaptation.performance_data.get("time_spent"),
-                attempts=adaptation.performance_data.get("attempts", 1),
-            )
-        ]
-
-        result = await facade.adapt_student_path(
+        from application.commands.learning_path import AdaptLearningPathCommand
+        from core.cqrs.bus import get_command_bus
+        
+        command = AdaptLearningPathCommand(
+            db=db,
+            facade=facade,
             student_id=adaptation.student_id,
-            performance=performance_metrics,
+            path_id=adaptation.path_id,
+            performance_data=adaptation.performance_data
         )
-
-        return {
-            "success": True,
-            "adaptations": [
-                {
-                    "type": a.adaptation_type.value,
-                    "action": a.description,
-                    "recommendation": a.reason,
-                }
-                for a in result.actions_taken  # FIX: was 'adaptations'
-            ],
-            "updated_path": {
-                "path_id": adaptation.path_id,
-                "student_id": adaptation.student_id,
-                "current_difficulty": result.new_difficulty or "maintained",
-                "next_steps": result.next_steps,
-                "adapted_at": datetime.now().isoformat(),
-            },
-            "message": (
-                f"{len(result.actions_taken)} uyarlama yapıldı"
-                if result.actions_taken
-                else "Yol değişikliği gerekmiyor"
-            ),
-        }
+        return await get_command_bus().execute(command)
 
     except HTTPException:
         raise
@@ -1063,6 +635,39 @@ async def adapt_learning_path(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
 
+
+@router.get("/paths/{student_id}")
+@rate_limit("profile_read")
+async def get_student_paths(
+    request: Request,
+    student_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict[str, Any]:
+    """
+    Get all learning paths for a student
+    """
+    await verify_student_access(student_id, current_user, db)
+    
+    from models.learning_path_models import LearningPath
+    from sqlalchemy import select
+    
+    result = await db.execute(
+        select(LearningPath).where(LearningPath.student_id == student_id)
+    )
+    paths = result.scalars().all()
+    
+    return {
+        "success": True,
+        "paths": [
+            {
+                "path_id": p.path_id,
+                "subject": p.subject,
+                "difficulty_level": p.difficulty_level,
+            }
+            for p in paths
+        ]
+    }
 
 @router.get("/completion/{student_id}")
 @rate_limit("completion_read")
@@ -1152,64 +757,21 @@ async def update_completion_status(
     """
     try:
         await verify_student_access(student_id, current_user, db)
-
-        logger.info(f"Updating completion status for student {student_id}")
-
         if completion_update.student_id != student_id:
             raise HTTPException(
                 status_code=400,
                 detail="Student ID mismatch",
             )
-
-        # Update database - ASYNC FIX
-        for node_id, completed in completion_update.completions.items():
-            result = await db.execute(
-                select(TopicCompletion).filter(
-                    TopicCompletion.student_id == student_id,
-                    TopicCompletion.node_id == node_id,
-                    # is_active column not in DB yet - commented out
-                    # TopicCompletion.is_active == True
-                )
-            )
-            existing = result.scalars().first()
-
-            if existing:
-                existing.completed = completed
-                existing.updated_at = datetime.now()
-            else:
-                new_completion = TopicCompletion(
-                    student_id=student_id,
-                    node_id=node_id,
-                    completed=completed,
-                )
-                db.add(new_completion)
-
-        await db.commit()
-
-        # Invalidate cache
-        cache = _get_cache()
-        if cache._initialized:
-            cache_key = f"completion:{student_id}"
-            await cache.delete(cache_key)
-            logger.info(f"Completion cache invalidated for student {student_id}")
-
-        updated_count = len(completion_update.completions)
-
-        # Record metrics
-        for _ in range(updated_count):
-            metrics.record_topic_completion(success=True)
-
-        metrics.record_learning_path_api_request(
-            endpoint="/completion", method="PUT", status_code=200
+            
+        from application.commands.learning_path import UpdateCompletionStatusCommand
+        from core.cqrs.bus import get_command_bus
+        
+        command = UpdateCompletionStatusCommand(
+            db=db,
+            student_id=student_id,
+            completions=completion_update.completions
         )
-
-        return {
-            "success": True,
-            "student_id": student_id,
-            "updated_count": updated_count,
-            "completions": completion_update.completions,
-            "timestamp": datetime.now().isoformat(),
-        }
+        return await get_command_bus().execute(command)
 
     except HTTPException:
         raise
@@ -1236,233 +798,20 @@ async def submit_quiz(
     FIX: Uses database instead of mock data for quiz answers.
     """
     try:
-        # student_id: current_user'dan türet (IDOR koruması)
-        student_id = submission.student_id or str(current_user.id)
-        await verify_student_access(student_id, current_user, db)
-
-        logger.info(
-            f"Processing quiz submission for quiz {quiz_id} from student {student_id}"
-        )
-
-        # Query quiz configuration from database
-        # Note: is_active column not in DB yet - removed filter
-        result = await db.execute(select(Quiz).filter(Quiz.id == quiz_id))
-        quiz = result.scalars().first()
-
-        # Build correct_answers map from database
-        correct_answers: dict[str, str] = {}
-        q_meta: dict[str, dict] = {}
-        passing_score = 70.0  # Default
-
-        if quiz:
-            # Quiz exists - get questions via QuizQuestion join
-            passing_score = quiz.passing_score
-            quiz_questions_result = await db.execute(
-                select(QuizQuestion, Question)
-                .join(Question, QuizQuestion.question_id == Question.id)
-                .filter(
-                    QuizQuestion.quiz_id == quiz_id,
-                    Question.is_active == True,  # noqa: E712
-                )
-                .order_by(QuizQuestion.order_number)
-            )
-            for quiz_question, question in quiz_questions_result.all():
-                correct_answers[question.id] = question.correct_answer
-                q_meta[question.id] = {
-                    "topic_id": question.primary_topic_id,
-                    "subject": (question.subject_area or "matematik").lower(),
-                    # S179 fix (B-P0-31): pass real IRT params so EAP
-                    # doesn't degenerate to count-correct minus count-wrong.
-                    "irt_a": float(getattr(question, "irt_discrimination", 1.0) or 1.0),
-                    "irt_b": float(getattr(question, "irt_difficulty", 0.0) or 0.0),
-                    "irt_c": float(getattr(question, "irt_guessing", 0.2) or 0.2),
-                }
-
-            logger.info(
-                f"Quiz {quiz_id} found with {len(correct_answers)} questions, "
-                f"passing score: {passing_score}%"
-            )
-        else:
-            # Quiz not found - try direct question lookup (fallback for dynamic quizzes)
-            question_ids = [a.question_id for a in submission.answers]
-            if question_ids:
-                questions_result = await db.execute(
-                    select(
-                        Question.id,
-                        Question.correct_answer,
-                        Question.primary_topic_id,
-                        Question.subject_area,
-                        # S179 fix (B-P0-31): include IRT params here too.
-                        Question.irt_discrimination,
-                        Question.irt_difficulty,
-                        Question.irt_guessing,
-                    ).filter(
-                        Question.id.in_(question_ids),
-                        Question.is_active == True,  # noqa: E712
-                    )
-                )
-                for question in questions_result.fetchall():
-                    correct_answers[question.id] = question.correct_answer
-                    q_meta[question.id] = {
-                        "topic_id": question.primary_topic_id,
-                        "subject": (question.subject_area or "matematik").lower(),
-                        "irt_a": float(question.irt_discrimination or 1.0),
-                        "irt_b": float(question.irt_difficulty or 0.0),
-                        "irt_c": float(question.irt_guessing or 0.2),
-                    }
-
-            logger.info(
-                f"Quiz {quiz_id} not in database, using direct question lookup. "
-                f"Found {len(correct_answers)} questions."
-            )
-
-        logger.info(
-            f"Quiz {quiz_id} submission received with {len(submission.answers)} answers"
-        )
-
-        # Calculate score using real correct answers from database
-        correct_count = 0
-        question_results = []
-
-        for answer in submission.answers:
-            correct_answer = correct_answers.get(answer.question_id)
-            is_correct = correct_answer is not None and answer.answer == correct_answer
-
-            if is_correct:
-                correct_count += 1
-
-            question_results.append(
-                {
-                    "question_id": answer.question_id,
-                    "student_answer": answer.answer,
-                    "correct_answer": correct_answer or "N/A",
-                    "is_correct": is_correct,
-                    "time_spent": answer.time_spent,
-                }
-            )
-
-        # Calculate total questions from quiz or submission
-        if correct_answers:
-            quiz_question_count = len(correct_answers)
-        else:
-            quiz_question_count = len(submission.answers)
-        total_questions = max(quiz_question_count, len(submission.answers), 1)
-        score = (correct_count / total_questions) * 100
-        passed = score >= passing_score
-
-        total_time = sum(a.time_spent or 0 for a in submission.answers)
-
-        # Save submission to database
-        quiz_submission_record = QuizSubmissionModel(
-            student_id=student_id,
+        actual_student_id = submission.student_id or str(current_user.id)
+        await verify_student_access(actual_student_id, current_user, db)
+        
+        from application.commands.learning_path import SubmitQuizCommand, QuizAnswerModel
+        from core.cqrs.bus import get_command_bus
+        
+        answers = [QuizAnswerModel(question_id=a.question_id, answer=a.answer, time_spent=a.time_spent) for a in submission.answers]
+        command = SubmitQuizCommand(
+            db=db,
             quiz_id=quiz_id,
-            question_count=total_questions,
-            passing_score=passing_score,
-            score=score,
-            correct_count=correct_count,
-            passed=passed,
-            answers=[
-                {
-                    "question_id": r["question_id"],
-                    "answer": r["student_answer"],
-                    "correct": r["is_correct"],
-                }
-                for r in question_results
-            ],
-            total_time_seconds=total_time,
-            submitted_at=datetime.now(),
+            student_id=actual_student_id,
+            answers=answers
         )
-        db.add(quiz_submission_record)
-        await db.commit()
-
-        # Mastery sync comes from the quiz event pipeline; Daily truth source reads StudentAbility/theta.
-        event_report: dict[str, Any] = {"bkt": None, "xp": None, "streak": None}
-        mastery_sync_status = "ok"
-        mastery_sync_error = None
-
-        try:
-            from services.learning_event_service import LearningEventService
-
-            event_report = await LearningEventService.on_quiz_completed(
-                student_id=student_id,
-                question_results=question_results,
-                q_meta=q_meta,
-                score=score,
-                passed=passed,
-                db=db,
-            )
-            logger.info("Quiz event report: %s", event_report)
-
-            bkt_result = event_report.get("bkt")
-            if bkt_result != "ok":
-                mastery_sync_status = "pending"
-                mastery_sync_error = str(bkt_result)
-                logger.error(
-                    "Quiz mastery sync incomplete for student %s quiz %s: %s",
-                    student_id,
-                    quiz_id,
-                    bkt_result,
-                )
-        except Exception as event_err:
-            mastery_sync_status = "pending"
-            mastery_sync_error = str(event_err)
-            event_report = {"bkt": f"error: {event_err}", "xp": None, "streak": None}
-            logger.error(
-                "Quiz mastery sync failed for student %s quiz %s: %s",
-                student_id,
-                quiz_id,
-                event_err,
-                exc_info=True,
-            )
-
-        logger.info(f"Quiz {quiz_id} results - Score: {score:.1f}%, Passed: {passed}")
-
-        # Record metrics
-        subject = "genel"
-        quiz_id_lower = quiz_id.lower()
-        known_subjects = [
-            "matematik",
-            "turkce",
-            "fizik",
-            "kimya",
-            "biyoloji",
-            "tarih",
-            "cografya",
-            "geometri",
-            "edebiyat",
-            "ingilizce",
-        ]
-        for known_subject in known_subjects:
-            if known_subject in quiz_id_lower:
-                subject = known_subject
-                break
-
-        metrics.record_quiz_submission(subject=subject, score=score, passed=passed)
-        metrics.record_learning_path_api_request(
-            endpoint="/quiz/submit", method="POST", status_code=200
-        )
-
-        return {
-            "success": True,
-            "quiz_id": quiz_id,
-            "student_id": student_id,
-            "score": round(score, 2),
-            "correct_count": correct_count,
-            "total_questions": total_questions,
-            "passing_score": passing_score,
-            "passed": passed,
-            "total_time_seconds": total_time,
-            "question_results": question_results,
-            "timestamp": datetime.now().isoformat(),
-            "feedback": (
-                "Tebrikler! Quiz'i başarıyla tamamladınız."
-                if passed
-                else f"Quiz'i geçemediniz. Geçme notu: {passing_score}%"
-            ),
-            "event_report": event_report,
-            "mastery_sync_status": mastery_sync_status,
-            "mastery_sync_error": mastery_sync_error,
-        }
+        return await get_command_bus().execute(command)
 
     except HTTPException:
         raise
@@ -1495,89 +844,23 @@ async def update_progress(
     """
     try:
         await verify_student_access(student_id, current_user, db)
-
-        logger.info(f"Updating progress for student {student_id}, node {node_id}")
-
         if not 0 <= progress_update.progress <= 100:
             raise HTTPException(
                 status_code=400, detail="Progress must be between 0 and 100"
             )
-
-        # Update or create progress record - ASYNC FIX
-        # Note: is_active column not in DB yet - removed filter
-        result = await db.execute(
-            select(TopicProgress).filter(
-                TopicProgress.student_id == student_id, TopicProgress.node_id == node_id
-            )
+            
+        from application.commands.learning_path import UpdateProgressCommand
+        from core.cqrs.bus import get_command_bus
+        
+        command = UpdateProgressCommand(
+            db=db,
+            student_id=student_id,
+            node_id=node_id,
+            progress=progress_update.progress,
+            completed=progress_update.completed,
+            time_spent=progress_update.time_spent
         )
-        existing = result.scalars().first()
-
-        if existing:
-            existing.progress = progress_update.progress
-            existing.completed = progress_update.completed
-            existing.time_spent = progress_update.time_spent or 0
-            existing.updated_at = datetime.now()
-        else:
-            new_record = TopicProgress(
-                student_id=student_id,
-                node_id=node_id,
-                progress=progress_update.progress,
-                completed=progress_update.completed,
-                time_spent=progress_update.time_spent or 0,
-            )
-            db.add(new_record)
-
-        # Also update completion status in TopicCompletion - ASYNC FIX
-        # Note: is_active column not in DB yet - removed filter
-        result = await db.execute(
-            select(TopicCompletion).filter(
-                TopicCompletion.student_id == student_id,
-                TopicCompletion.node_id == node_id,
-            )
-        )
-        completion_existing = result.scalars().first()
-
-        if completion_existing:
-            completion_existing.completed = progress_update.completed
-            if progress_update.completed:
-                completion_existing.completion_date = datetime.now()
-            completion_existing.updated_at = datetime.now()
-        elif progress_update.completed:
-            new_completion = TopicCompletion(
-                student_id=student_id,
-                node_id=node_id,
-                completed=True,
-                completion_date=datetime.now(),
-            )
-            db.add(new_completion)
-
-        await db.commit()
-
-        logger.info(
-            f"[update_progress] Interaction state updated - "
-            f"Student: {student_id}, Node: {node_id}, "
-            f"Progress: {progress_update.progress}%, Completed: {progress_update.completed}, "
-            f"Source: update_progress_endpoint (NOT a mastery signal)"
-        )
-
-        return {
-            "success": True,
-            "student_id": student_id,
-            "node_id": node_id,
-            "progress": progress_update.progress,
-            "completed": progress_update.completed,
-            "time_spent": progress_update.time_spent,
-            "timestamp": datetime.now().isoformat(),
-            "message": (
-                "Topic ilerleme durumu kaydedildi (mastery pipeline etkilenmez)."
-                if progress_update.completed
-                else f"İlerleme %{progress_update.progress} olarak kaydedildi (mastery pipeline etkilenmez)."
-            ),
-            "is_mastery_signal": False,
-            "mastery_source": "quiz_submissions",
-            "progress_source": "update_progress_endpoint",
-            "completion_source": "update_progress_endpoint",
-        }
+        return await get_command_bus().execute(command)
 
     except HTTPException:
         raise
@@ -1804,8 +1087,45 @@ async def health_check(request: Request) -> dict[str, Any]:
 # ============================================================================
 
 
+@router.get("/profile/{student_id}")
+@rate_limit("profile_read")
+async def get_student_profile(
+    request: Request,
+    student_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> dict[str, Any]:
+    """
+    Get student profile by ID
+    """
+    await verify_student_access(student_id, current_user, db)
+    
+    from models.learning_path_models import LearningPathStudentProfile
+    from sqlalchemy import select
+    
+    result = await db.execute(
+        select(LearningPathStudentProfile)
+        .where(LearningPathStudentProfile.student_id == student_id)
+    )
+    profile = result.scalars().first()
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Öğrenci profili bulunamadı")
+        
+    return {
+        "success": True,
+        "student_id": profile.student_id,
+        "name": profile.name,
+        "grade": int(profile.grade) if profile.grade else None,
+        "exam_target": profile.exam_target,
+        "interests": profile.interests,
+        "goals": profile.goals,
+        "learning_style": profile.learning_style,
+    }
+
+
 @router.get("/my-profile")
-@rate_limit("my_profile")
+@rate_limit("profile_read")
 async def get_my_profile(
     db: AsyncSession = Depends(get_db),
     current_user: AuthenticatedUser = Depends(get_current_user),

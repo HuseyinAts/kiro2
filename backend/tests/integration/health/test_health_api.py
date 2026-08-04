@@ -8,7 +8,7 @@ import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
 
-# conftest.py handles sys.path setup
+from app.core.deps import get_current_user
 from app.health.dashboard_api import router as health_router
 
 
@@ -18,6 +18,10 @@ def create_test_app():
     app = FastAPI()
     # Router zaten /api/v1/health prefix'ine sahip, ek prefix ekleme
     app.include_router(health_router)
+    
+    # Mock authentication
+    app.dependency_overrides[get_current_user] = lambda: {"id": "test", "role": "admin"}
+    
     return app
 
 

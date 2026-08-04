@@ -9,9 +9,11 @@ Kullanıcı başarı takip modeli
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import UTC, datetime
 
 from sqlalchemy import (
+    String,
     JSON,
     Boolean,
     Column,
@@ -85,7 +87,7 @@ class UserAchievement(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # İlişkiler
-    user = relationship("User", back_populates="achievements")
+    user = relationship("User", back_populates="achievements", lazy="selectin")
 
     def __repr__(self):
         return f"<UserAchievement(user_id={self.user_id}, achievement={self.achievement_id}, progress={self.progress_percentage}%)>"

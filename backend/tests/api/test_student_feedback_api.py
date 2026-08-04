@@ -209,6 +209,8 @@ def test_rate_limit_after_10_per_minute(
     duplicate guard rate-limit testini bozar. Bu yüzden 11 farklı note kullan.
     """
     statuses: list[int] = []
+    headers = _auth(beta_token)
+    headers["X-Forwarded-For"] = "127.0.0.12"
     for i in range(11):
         r = client.post(
             f"{FEEDBACK}/flag",
@@ -217,7 +219,7 @@ def test_rate_limit_after_10_per_minute(
                 "flag_type": "other",
                 "note": f"TEST_rate_{i}",
             },
-            headers=_auth(beta_token),
+            headers=headers,
         )
         statuses.append(r.status_code)
 

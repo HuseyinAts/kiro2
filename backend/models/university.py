@@ -6,9 +6,11 @@ Models for universities, departments, base scores, and quotas
 
 import enum
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
+    String,
     Boolean,
     Column,
     DateTime,
@@ -20,6 +22,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy import (
+    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
@@ -121,7 +124,7 @@ class University(Base):
     # Use university.programs to access associated programs, which have department references
     programs = relationship(
         "UniversityProgram", back_populates="university", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
     def __repr__(self):
         return f"<University {self.name} ({self.city})>"
@@ -186,7 +189,7 @@ class Department(Base):
     # Relationships
     programs = relationship(
         "UniversityProgram", back_populates="department", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
     def __repr__(self):
         return f"<Department {self.name} ({self.degree_type})>"
@@ -270,11 +273,11 @@ class UniversityProgram(Base):
     )
 
     # Relationships
-    university = relationship("University", back_populates="programs")
-    department = relationship("Department", back_populates="programs")
+    university = relationship("University", back_populates="programs", lazy="selectin")
+    department = relationship("Department", back_populates="programs", lazy="selectin")
     score_history = relationship(
         "ProgramScoreHistory", back_populates="program", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
     __table_args__ = (
         Index(
@@ -334,7 +337,7 @@ class ProgramScoreHistory(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now)
 
     # Relationships
-    program = relationship("UniversityProgram", back_populates="score_history")
+    program = relationship("UniversityProgram", back_populates="score_history", lazy="selectin")
 
     __table_args__ = (Index("idx_history_year", "program_id", "year"),)
 
@@ -388,7 +391,7 @@ class UserUniversityPreference(Base):
     )
 
     # Relationships
-    user = relationship("User")
+    user = relationship("User", lazy="selectin")
 
     def __repr__(self):
         return f"<UserUniversityPreference {self.user_id}>"

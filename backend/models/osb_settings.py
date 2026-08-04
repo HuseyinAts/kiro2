@@ -4,9 +4,10 @@ OSB (Otizm Spektrum Bozukluğu) kullanıcı tercihlerini saklayan model
 """
 
 from datetime import datetime
+from uuid6 import uuid7
 from uuid import uuid4
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
+from sqlalchemy import String, Boolean, Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 
 from .base import Base

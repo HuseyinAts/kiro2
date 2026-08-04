@@ -112,7 +112,7 @@ class DepartmentCurriculum(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now)
 
     # Relationships
-    department = relationship("Department")
+    department = relationship("Department", lazy="selectin")
 
     def __repr__(self):
         return f"<DepartmentCurriculum {self.department_id}>"
@@ -169,7 +169,7 @@ class CareerOpportunity(Base):
     )
 
     # Relationships
-    department = relationship("Department")
+    department = relationship("Department", lazy="selectin")
 
     def __repr__(self):
         return f"<CareerOpportunity {self.job_title}>"
@@ -237,8 +237,8 @@ class SalaryExpectation(Base):
     )
 
     # Relationships
-    department = relationship("Department")
-    career_opportunity = relationship("CareerOpportunity")
+    department = relationship("Department", lazy="selectin")
+    career_opportunity = relationship("CareerOpportunity", lazy="selectin")
 
     __table_args__ = (
         Index("idx_salary_dept_exp", "department_id", "experience_level", "year"),
@@ -393,7 +393,7 @@ class DepartmentStatistics(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now)
 
     # Relationships
-    department = relationship("Department")
+    department = relationship("Department", lazy="selectin")
 
     def __repr__(self):
         return f"<DepartmentStatistics {self.department_id} ({self.year})>"

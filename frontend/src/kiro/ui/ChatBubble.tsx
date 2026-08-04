@@ -14,14 +14,17 @@ export interface ChatBubbleProps {
   tagFg?: string;
   /** "düşünüyor…" durumu için soluk stil */
   pending?: boolean;
+  /** Opsiyonel görsel URL'i veya DataURI */
+  image?: string;
 }
 
-export function ChatBubble({ role, children, tag, tagBg = '#FFF3EE', tagFg = '#C2452B', pending }: ChatBubbleProps) {
+export function ChatBubble({ role, children, tag, tagBg = '#FFF3EE', tagFg = '#C2452B', pending, image }: ChatBubbleProps) {
   if (role === 'me') {
     return (
       <div style={{ alignSelf: 'flex-end', maxWidth: '78%', background: '#C2452B', color: '#fff',
         borderRadius: '14px 4px 14px 14px', padding: '12px 16px', fontFamily: font.sans,
         fontSize: 14, lineHeight: 1.55, fontWeight: 500, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+        {image && <img src={image} alt="Kullanıcı görseli" style={{ maxWidth: '100%', borderRadius: 8, marginBottom: children ? 8 : 0, display: 'block' }} />}
         {children}
       </div>
     );
@@ -39,6 +42,7 @@ export function ChatBubble({ role, children, tag, tagBg = '#FFF3EE', tagFg = '#C
         <div style={{ background: '#fff', border: '1px solid #ECE6DD', borderRadius: '4px 14px 14px 14px',
           padding: '13px 16px', fontFamily: font.sans, fontSize: 14, color: '#2A2433',
           lineHeight: 1.6, opacity: pending ? 0.65 : 1, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+          {image && <img src={image} alt="AI görseli" style={{ maxWidth: '100%', borderRadius: 8, marginBottom: children ? 8 : 0, display: 'block' }} />}
           {children}
         </div>
         {tag ? (

@@ -360,10 +360,16 @@ def get_elasticsearch_client() -> ElasticsearchClient:
     global _elasticsearch_client  # noqa: PLW0603 — modül-tekil istemci, bilinçli
 
     if _elasticsearch_client is None:
-        import os
+        from core.config import settings
 
-        es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
-        _elasticsearch_client = ElasticsearchClient(hosts=[es_url])
+        es_url = settings.elasticsearch_url
+        es_user = settings.elasticsearch_user
+        es_pass = settings.elasticsearch_password
+        _elasticsearch_client = ElasticsearchClient(
+            hosts=[es_url],
+            username=es_user,
+            password=es_pass
+        )
 
     return _elasticsearch_client
 

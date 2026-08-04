@@ -21,6 +21,18 @@ from core.osym_exam_engine import ExamStatus, osym_exam_engine
 from core.structured_logger import get_logger
 from models.database import ExamType
 
+from core.cqrs.bus import CommandBus, get_command_bus
+from application.commands.sinav import (
+    CreateExamCommand,
+    CreateBetaPracticeCommand,
+    StartExamCommand,
+    SaveAnswerCommand,
+    NavigateQuestionCommand,
+    FlagQuestionCommand,
+    CompleteExamCommand,
+    CancelExamCommand,
+)
+
 router = APIRouter(prefix="/api/v1/osym-exam", tags=["ÖSYM Sınav Sistemi"])
 security = HTTPBearer()
 logger = get_logger("osym_exam_api")
@@ -380,6 +392,7 @@ async def get_exam_configs(
 async def create_exam(
     request: CreateExamRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> ExamSessionResponse:
     """
     Yeni ÖSYM formatında sınav oturumu oluştur
@@ -392,68 +405,9 @@ async def create_exam(
     - **AYT**: 160 soru, 210 dakika (Matematik: 40, Fizik: 14, Kimya: 13, Biyoloji: 13, vb.)
     - **YDT**: 80 soru, 180 dakika (İngilizce: 80)
     """
-    try:
-        session_id = await osym_exam_engine.create_exam_session(
-            student_id=current_user.id,
-            exam_type=request.exam_type,
-            custom_config=request.custom_config,
-        )
-
-        session_data = await osym_exam_engine.get_session_data(session_id)
-
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Sınav oturumu oluşturulamadı",
-            )
-
-        logger.info(
-            "ÖSYM sınavı oluşturuldu",
-            extra_data={
-                "session_id": session_id,
-                "student_id": current_user.id,
-                "exam_type": request.exam_type.value,
-            },
-        )
-
-        return ExamSessionResponse(
-            session_id=session_data.session_id,
-            student_id=session_data.student_id,
-            exam_type=session_data.exam_config.exam_type.value,
-            status=session_data.status.value,
-            total_questions=session_data.exam_config.total_questions,
-            duration_minutes=session_data.exam_config.duration_minutes,
-            current_question_index=session_data.current_question_index,
-            started_at=session_data.started_at,
-            completed_at=session_data.completed_at,
-        )
-
-    except ValueError as e:
-        logger.error(
-            f"Sınav oluşturma hatası: {e}",
-            extra_data={
-                "student_id": current_user.id,
-                "exam_type": request.exam_type.value,
-            },
-        )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Beklenmeyen sınav oluşturma hatası: {e}",
-            extra_data={
-                "student_id": current_user.id,
-                "exam_type": request.exam_type.value,
-            },
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Sınav oluşturulurken beklenmeyen bir hata oluştu",
-        )
+    command = CreateExamCommand(student_id=str(current_user.id), exam_type=request.exam_type, custom_config=request.custom_config)
+    res = await command_bus.execute(command)
+    return ExamSessionResponse(**res)
 
 
 @router.post(
@@ -464,6 +418,7 @@ async def create_exam(
 async def create_beta_practice(
     current_user: AuthenticatedUser = Depends(get_current_user),
     num_questions: int = 20,
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> ExamSessionResponse:
     """
     Beta pratik testi oluştur.
@@ -473,64 +428,9 @@ async def create_beta_practice(
     dağılımını (TYT 120 / AYT 160) zorlamaz — beta için doğrulanmış
     havuzdan rastgele ``num_questions`` soru seçilir.
     """
-    num = max(1, min(int(num_questions), 50))
-    try:
-        session_id = await osym_exam_engine.create_exam_session(
-            student_id=current_user.id,
-            exam_type=ExamType.TYT,  # taşıyıcı; beta dalı dağılımı yok sayar
-            custom_config={
-                "beta_practice": True,
-                "question_count": num,
-                "duration_minutes": 120,
-            },
-        )
-        session_data = await osym_exam_engine.get_session_data(session_id)
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Beta pratik oturumu oluşturulamadı",
-            )
-
-        logger.info(
-            "Beta pratik testi oluşturuldu",
-            extra_data={
-                "session_id": session_id,
-                "student_id": current_user.id,
-                "num_questions": num,
-            },
-        )
-
-        return ExamSessionResponse(
-            session_id=session_data.session_id,
-            student_id=session_data.student_id,
-            exam_type=session_data.exam_config.exam_type.value,
-            status=session_data.status.value,
-            total_questions=session_data.exam_config.total_questions,
-            duration_minutes=session_data.exam_config.duration_minutes,
-            current_question_index=session_data.current_question_index,
-            started_at=session_data.started_at,
-            completed_at=session_data.completed_at,
-        )
-    except ValueError as e:
-        logger.error(
-            f"Beta pratik oluşturma hatası: {e}",
-            extra_data={"student_id": current_user.id},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Beta pratik testi oluşturulamadı. Lütfen tekrar deneyin.",
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Beklenmeyen beta pratik hatası: {e}",
-            extra_data={"student_id": current_user.id},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Beta pratik testi oluşturulurken beklenmeyen bir hata oluştu",
-        )
+    command = CreateBetaPracticeCommand(student_id=str(current_user.id), num_questions=num_questions)
+    res = await command_bus.execute(command)
+    return ExamSessionResponse(**res)
 
 
 @router.post(
@@ -539,7 +439,9 @@ async def create_beta_practice(
     summary="ÖSYM Sınavını Başlat",
 )
 async def start_exam(
-    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> ExamSessionResponse:
     """
     ÖSYM sınavını başlat ve zaman sayacını çalıştır
@@ -548,71 +450,9 @@ async def start_exam(
     - Sınav süresi sonunda otomatik tamamlanır
     - Gerçek zamanlı WebSocket güncellemeleri başlar
     """
-    try:
-        # Oturum kontrolü
-        session_data = await osym_exam_engine.get_session_data(session_id)
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
-            )
-
-        # Kullanıcı kontrolü
-        if str(session_data.student_id) != str(current_user.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Bu sınava erişim yetkiniz yok",
-            )
-
-        # Sınavı başlat
-        updated_session = await osym_exam_engine.start_exam(session_id)
-
-        logger.info(
-            "ÖSYM sınavı başlatıldı",
-            extra_data={
-                "session_id": session_id,
-                "student_id": current_user.id,
-                "exam_type": updated_session.exam_config.exam_type.value,
-            },
-        )
-
-        return ExamSessionResponse(
-            session_id=updated_session.session_id,
-            student_id=updated_session.student_id,
-            exam_type=updated_session.exam_config.exam_type.value,
-            status=updated_session.status.value,
-            total_questions=updated_session.exam_config.total_questions,
-            duration_minutes=updated_session.exam_config.duration_minutes,
-            current_question_index=updated_session.current_question_index,
-            started_at=updated_session.started_at,
-            completed_at=updated_session.completed_at,
-        )
-
-    except ValueError as e:
-        logger.error(
-            f"Sınav başlatma hatası: {e}",
-            extra_data={
-                "session_id": session_id,
-                "student_id": current_user.id,
-            },
-        )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Beklenmeyen sınav başlatma hatası: {e}",
-            extra_data={
-                "session_id": session_id,
-                "student_id": current_user.id,
-            },
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Sınav başlatılırken beklenmeyen bir hata oluştu",
-        )
+    command = StartExamCommand(student_id=str(current_user.id), session_id=session_id)
+    res = await command_bus.execute(command)
+    return ExamSessionResponse(**res)
 
 
 @router.get(
@@ -696,350 +536,17 @@ async def save_answer(
     session_id: str,
     request: SaveAnswerRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> dict[str, Any]:
-    import time
-
-    t0 = time.perf_counter()
-    try:
-        # Oturum kontrolü
-        session_data = await osym_exam_engine.get_session_data(session_id)
-        t1 = time.perf_counter()
-
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
-            )
-
-        # Kullanıcı kontrolü
-        if str(session_data.student_id) != str(current_user.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Bu sınava erişim yetkiniz yok",
-            )
-        t2 = time.perf_counter()
-
-        # Cevabı kaydet
-        success = await osym_exam_engine.save_answer(
-            session_id=session_id,
-            question_id=request.question_id,
-            selected_answer=request.selected_answer,
-            response_time=request.response_time,
-        )
-        t3 = time.perf_counter()
-
-        if not success:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Cevap kaydedilemedi"
-            )
-
-        logger.debug(
-            "Cevap kaydedildi",
-            extra_data={
-                "session_id": session_id,
-                "question_id": request.question_id,
-                "answer": request.selected_answer,
-                "response_time": request.response_time,
-            },
-        )
-
-        # BKT/IRT/FSRS/ZPD pipeline — fire-and-forget (hata sinavi engellemez)
-        # Re-enabled (GF1w): was hard-disabled with `if False:` in a 2026-06-11
-        # chore commit, silently dropping all mastery updates. The block is
-        # failure-isolated (fire-and-forget task + outer try/except + NULL
-        # primary_topic_id guard) so it can never 500 the save-answer path.
-        bkt_result = None
-        if True:
-            try:
-                import asyncio as _asyncio
-                import os as _os
-
-                if _os.environ.get("ALGO_FIRE_AND_FORGET", "yes").lower() in (
-                    "1",
-                    "true",
-                    "yes",
-                ):
-                    if not hasattr(_asyncio, "_bkt_semaphore"):
-                        _asyncio._bkt_semaphore = _asyncio.Semaphore(10)
-
-                    async def _background_bkt_full(
-                        student_id_val,
-                        session_id_val,
-                        question_id_val,
-                        selected_answer_val,
-                        rating_input,
-                    ):
-                        from sqlalchemy import select
-
-                        from core.database import get_db_session_context
-                        from models.exam_db import StudentAnswer
-                        from models.question_bank import QuestionBankItem as Question
-                        from services.bkt_service import BKTService
-
-                        async with _asyncio._bkt_semaphore:
-                            async with get_db_session_context() as bg_db:
-                                try:
-                                    q = await bg_db.execute(
-                                        select(
-                                            Question.correct_answer,
-                                            Question.primary_topic_id,
-                                            Question.subject_area,
-                                            Question.irt_discrimination,
-                                            Question.irt_difficulty,
-                                            Question.irt_guessing,
-                                        ).where(Question.id == question_id_val)
-                                    )
-                                    row = q.first()
-                                    if not (row and row.primary_topic_id):
-                                        return
-
-                                    correct = bool(
-                                        row.correct_answer
-                                        and selected_answer_val.strip().upper()
-                                        == row.correct_answer.strip().upper()
-                                    )
-                                    rating = rating_input or (3 if correct else 1)
-                                    subject_slug = (
-                                        row.subject_area or "matematik"
-                                    ).lower()
-
-                                    answered_questions = []
-                                    responses = []
-                                    try:
-                                        prev = await bg_db.execute(
-                                            select(
-                                                StudentAnswer.question_id,
-                                                StudentAnswer.is_correct,
-                                            ).where(
-                                                StudentAnswer.exam_session_id
-                                                == session_id_val,
-                                                StudentAnswer.is_correct.isnot(None),
-                                            )
-                                        )
-                                        prev_rows = prev.all()
-                                        if prev_rows:
-                                            prev_qids = [
-                                                r.question_id for r in prev_rows
-                                            ]
-                                            prev_correct_map = {
-                                                r.question_id: r.is_correct
-                                                for r in prev_rows
-                                            }
-                                            irt_q = await bg_db.execute(
-                                                select(
-                                                    Question.id,
-                                                    Question.irt_discrimination,
-                                                    Question.irt_difficulty,
-                                                    Question.irt_guessing,
-                                                ).where(Question.id.in_(prev_qids))
-                                            )
-                                            for irt_row in irt_q.all():
-                                                answered_questions.append(
-                                                    {
-                                                        "irt_a": float(
-                                                            irt_row.irt_discrimination
-                                                            or 1.0
-                                                        ),
-                                                        "irt_b": float(
-                                                            irt_row.irt_difficulty
-                                                            or 0.0
-                                                        ),
-                                                        "irt_c": float(
-                                                            irt_row.irt_guessing or 0.2
-                                                        ),
-                                                    }
-                                                )
-                                                responses.append(
-                                                    bool(
-                                                        prev_correct_map.get(irt_row.id)
-                                                    )
-                                                )
-                                    except Exception as irt_err:
-                                        logger.debug(
-                                            "IRT history fetch skipped: %s", irt_err
-                                        )
-
-                                    answered_questions.append(
-                                        {
-                                            "irt_a": float(
-                                                row.irt_discrimination or 1.0
-                                            ),
-                                            "irt_b": float(row.irt_difficulty or 0.0),
-                                            "irt_c": float(row.irt_guessing or 0.2),
-                                        }
-                                    )
-                                    responses.append(correct)
-
-                                    await BKTService.record_answer(
-                                        student_id=student_id_val,
-                                        topic_id=str(row.primary_topic_id),
-                                        subject_slug=subject_slug,
-                                        correct=correct,
-                                        rating=rating,
-                                        db=bg_db,
-                                        answered_questions=answered_questions,
-                                        responses=responses,
-                                    )
-                                    await bg_db.commit()
-                                except Exception:
-                                    logger.exception(
-                                        "BKT pipeline FAILED session=%s qid=%s — degraded mode",
-                                        session_id_val,
-                                        question_id_val,
-                                    )
-
-                    _task = _asyncio.create_task(
-                        _background_bkt_full(
-                            str(current_user.id),
-                            session_id,
-                            request.question_id,
-                            request.selected_answer,
-                            request.rating,
-                        )
-                    )
-
-                    def _on_done(t, sid=str(session_id), qid=str(request.question_id)):
-                        exc = t.exception()
-                        if exc is None:
-                            return
-                        try:
-                            from services.bkt_service import _ALGO_ERRORS
-
-                            _ALGO_ERRORS["bkt_write"] = (
-                                _ALGO_ERRORS.get("bkt_write", 0) + 1
-                            )
-                        except Exception:
-                            pass
-                        logger.exception(
-                            "BKT fire-and-forget FAILED session=%s qid=%s",
-                            sid,
-                            qid,
-                            exc_info=exc,
-                        )
-
-                    _task.add_done_callback(_on_done)
-                    bkt_result = {"deferred": True}
-                else:
-                    from sqlalchemy import select
-
-                    from core.database import get_db_session_context
-                    from models.exam_db import StudentAnswer
-                    from models.question_bank import QuestionBankItem as Question
-                    from services.bkt_service import BKTService
-
-                    async with get_db_session_context() as db:
-                        q = await db.execute(
-                            select(
-                                Question.correct_answer,
-                                Question.primary_topic_id,
-                                Question.subject_area,
-                                Question.irt_discrimination,
-                                Question.irt_difficulty,
-                                Question.irt_guessing,
-                            ).where(Question.id == request.question_id)
-                        )
-                        row = q.first()
-                        if row and row.primary_topic_id:
-                            correct = bool(
-                                row.correct_answer
-                                and request.selected_answer.strip().upper()
-                                == row.correct_answer.strip().upper()
-                            )
-                            rating = request.rating or (3 if correct else 1)
-                            subject_slug = (row.subject_area or "matematik").lower()
-
-                            answered_questions = []
-                            responses = []
-                            try:
-                                prev = await db.execute(
-                                    select(
-                                        StudentAnswer.question_id,
-                                        StudentAnswer.is_correct,
-                                    ).where(
-                                        StudentAnswer.exam_session_id == session_id,
-                                        StudentAnswer.is_correct.isnot(None),
-                                    )
-                                )
-                                prev_rows = prev.all()
-                                if prev_rows:
-                                    prev_qids = [r.question_id for r in prev_rows]
-                                    prev_correct_map = {
-                                        r.question_id: r.is_correct for r in prev_rows
-                                    }
-                                    irt_q = await db.execute(
-                                        select(
-                                            Question.id,
-                                            Question.irt_discrimination,
-                                            Question.irt_difficulty,
-                                            Question.irt_guessing,
-                                        ).where(Question.id.in_(prev_qids))
-                                    )
-                                    for irt_row in irt_q.all():
-                                        answered_questions.append(
-                                            {
-                                                "irt_a": float(
-                                                    irt_row.irt_discrimination or 1.0
-                                                ),
-                                                "irt_b": float(
-                                                    irt_row.irt_difficulty or 0.0
-                                                ),
-                                                "irt_c": float(
-                                                    irt_row.irt_guessing or 0.2
-                                                ),
-                                            }
-                                        )
-                                        responses.append(
-                                            bool(prev_correct_map.get(irt_row.id))
-                                        )
-                            except Exception as irt_err:
-                                logger.debug("IRT history fetch skipped: %s", irt_err)
-
-                            answered_questions.append(
-                                {
-                                    "irt_a": float(row.irt_discrimination or 1.0),
-                                    "irt_b": float(row.irt_difficulty or 0.0),
-                                    "irt_c": float(row.irt_guessing or 0.2),
-                                }
-                            )
-                            responses.append(correct)
-
-                            bkt_result = await BKTService.record_answer(
-                                student_id=str(current_user.id),
-                                topic_id=str(row.primary_topic_id),
-                                subject_slug=subject_slug,
-                                correct=correct,
-                                rating=rating,
-                                db=db,
-                                answered_questions=answered_questions,
-                                responses=responses,
-                            )
-                            await db.commit()
-            except Exception:
-                logger.exception(
-                    "BKT pipeline FAILED session=%s qid=%s — degraded mode",
-                    session_id,
-                    request.question_id,
-                )
-
-        algorithm_degraded = bkt_result is None
-        return {
-            "success": True,
-            "message": "Cevap başarıyla kaydedildi",
-            "auto_saved": True,
-            "algorithm": bkt_result,
-            "algorithm_degraded": algorithm_degraded,
-        }
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Cevap kaydetme hatası: {e}",
-            extra_data={"session_id": session_id, "question_id": request.question_id},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Cevap kaydedilirken beklenmeyen bir hata oluştu",
-        )
+    command = SaveAnswerCommand(
+        student_id=str(current_user.id),
+        session_id=session_id,
+        question_id=request.question_id,
+        selected_answer=request.selected_answer,
+        response_time=request.response_time,
+        rating=request.rating
+    )
+    return await command_bus.execute(command)
 
 
 @router.post(
@@ -1049,6 +556,7 @@ async def navigate_to_question(
     session_id: str,
     request: NavigateQuestionRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> QuestionResponse:
     """
     Belirli bir soruya git (soru navigasyonu)
@@ -1057,68 +565,9 @@ async def navigate_to_question(
     - Direkt soru numarasına atlama
     - Soru haritası desteği
     """
-    try:
-        # Oturum kontrolü
-        session_data = await osym_exam_engine.get_session_data(session_id)
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
-            )
-
-        # Kullanıcı kontrolü
-        if str(session_data.student_id) != str(current_user.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Bu sınava erişim yetkiniz yok",
-            )
-
-        # Soruya git
-        question = await osym_exam_engine.navigate_to_question(
-            session_id, request.question_index
-        )
-
-        if not question:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Hedef soru bulunamadı veya geçersiz soru indeksi",
-            )
-
-        return QuestionResponse(
-            id=question.id,
-            question_text=question.question_text,
-            question_image_url=question.question_image_url,
-            image_alt_text=question.image_ocr_text[:200]
-            if question.image_ocr_text
-            else None,
-            image_width=question.image_width,
-            image_height=question.image_height,
-            option_a=question.option_a,
-            option_b=question.option_b,
-            option_c=question.option_c,
-            option_d=question.option_d,
-            option_e=question.option_e,
-            subject_area=question.subject_area,
-            topic=question.primary_topic_id or question.subject_area,
-            difficulty=question.difficulty_level.value
-            if question.difficulty_level
-            else "medium",
-            question_order=request.question_index + 1,
-        )
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Soru navigasyon hatası: {e}",
-            extra_data={
-                "session_id": session_id,
-                "question_index": request.question_index,
-            },
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Soru navigasyonunda beklenmeyen bir hata oluştu",
-        )
+    command = NavigateQuestionCommand(student_id=str(current_user.id), session_id=session_id, question_index=request.question_index)
+    res = await command_bus.execute(command)
+    return QuestionResponse(**res)
 
 
 @router.post("/{session_id}/flag-question", summary="Soru İşaretleme")
@@ -1126,6 +575,7 @@ async def flag_question(
     session_id: str,
     request: FlagQuestionRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> dict[str, Any]:
     """
     Soruyu işaretle veya işareti kaldır
@@ -1134,51 +584,8 @@ async def flag_question(
     - İşaretli soruların listesi tutulur
     - Sınav sonunda işaretli sorular gösterilir
     """
-    try:
-        # Oturum kontrolü
-        session_data = await osym_exam_engine.get_session_data(session_id)
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
-            )
-
-        # Kullanıcı kontrolü
-        if str(session_data.student_id) != str(current_user.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Bu sınava erişim yetkiniz yok",
-            )
-
-        # Soruyu işaretle
-        success = await osym_exam_engine.flag_question(
-            session_id=session_id,
-            question_id=request.question_id,
-            flagged=request.flagged,
-        )
-
-        if not success:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Soru işaretleme işlemi başarısız",
-            )
-
-        return {
-            "success": True,
-            "message": "Soru işaretleme durumu güncellendi",
-            "flagged": request.flagged,
-        }
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Soru işaretleme hatası: {e}",
-            extra_data={"session_id": session_id, "question_id": request.question_id},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Soru işaretleme sırasında beklenmeyen bir hata oluştu",
-        )
+    command = FlagQuestionCommand(student_id=str(current_user.id), session_id=session_id, question_id=request.question_id, flagged=request.flagged)
+    return await command_bus.execute(command)
 
 
 @router.get("/{session_id}/remaining-time", summary="Kalan Süre")
@@ -1257,7 +664,9 @@ async def get_remaining_time(
     summary="Sınavı Tamamla",
 )
 async def complete_exam(
-    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> PerformanceResponse:
     """
     Sınavı manuel olarak tamamla ve performans analizi yap
@@ -1267,105 +676,9 @@ async def complete_exam(
     - IRT tabanlı yetenek tahmini
     - ÖSYM benzeri puanlama sistemi
     """
-    try:
-        # Oturum kontrolü
-        session_data = await osym_exam_engine.get_session_data(session_id)
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
-            )
-
-        # Kullanıcı kontrolü
-        if str(session_data.student_id) != str(current_user.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Bu sınava erişim yetkiniz yok",
-            )
-
-        # Sınavı tamamla
-        performance_metrics = await osym_exam_engine.complete_exam(
-            session_id, manual_completion=True
-        )
-
-        logger.info(
-            "ÖSYM sınavı tamamlandı",
-            extra_data={
-                "session_id": session_id,
-                "student_id": current_user.id,
-                "net_score": performance_metrics.net_score,
-                "raw_score": performance_metrics.raw_score,
-            },
-        )
-
-        # Trigger event service: XP + Streak (best-effort)
-        try:
-            from core.database import get_db_session_context
-            from services.learning_event_service import LearningEventService
-
-            async with get_db_session_context() as db:
-                event_report = await LearningEventService.on_exam_completed(
-                    student_id=str(current_user.id),
-                    correct_answers=performance_metrics.correct_answers,
-                    total_questions=performance_metrics.total_questions,
-                    net_score=performance_metrics.net_score,
-                    db=db,
-                )
-                logger.info(
-                    "Exam event report",
-                    extra_data={"report": str(event_report)},
-                )
-        except Exception as event_err:
-            logger.warning("Exam event processing skipped: %s", event_err)
-
-        # Konu performanslarını ekle (EX-10: frontend results page bunu bekliyor)
-        subject_perfs = await osym_exam_engine.get_subject_performance(session_id)
-        konu_data = [
-            {
-                "subject": p.subject,
-                "total_questions": p.total_questions,
-                "correct_answers": p.correct_answers,
-                "wrong_answers": p.wrong_answers,
-                "empty_answers": p.empty_answers,
-                "success_rate": p.success_rate,
-                "average_response_time": p.average_response_time,
-                "difficulty_level": p.difficulty_level,
-            }
-            for p in subject_perfs
-        ]
-
-        return PerformanceResponse(
-            total_questions=performance_metrics.total_questions,
-            answered_questions=performance_metrics.answered_questions,
-            correct_answers=performance_metrics.correct_answers,
-            wrong_answers=performance_metrics.wrong_answers,
-            empty_answers=performance_metrics.empty_answers,
-            net_score=performance_metrics.net_score,
-            raw_score=performance_metrics.raw_score,
-            percentile=performance_metrics.percentile,
-            estimated_ability=performance_metrics.estimated_ability,
-            confidence_level=performance_metrics.confidence_level,
-            konu_performanslari=konu_data,
-        )
-
-    except ValueError as e:
-        logger.error(
-            f"Sınav tamamlama hatası: {e}", extra_data={"session_id": session_id}
-        )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Islem basarisiz. Lutfen tekrar deneyin.",
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Beklenmeyen sınav tamamlama hatası: {e}",
-            extra_data={"session_id": session_id},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Sınav tamamlanırken beklenmeyen bir hata oluştu",
-        )
+    command = CompleteExamCommand(student_id=str(current_user.id), session_id=session_id)
+    res = await command_bus.execute(command)
+    return PerformanceResponse(**res)
 
 
 @router.get(
@@ -1616,7 +929,9 @@ async def get_subject_performance(
 
 @router.delete("/{session_id}", summary="Sınavı İptal Et")
 async def cancel_exam(
-    session_id: str, current_user: AuthenticatedUser = Depends(get_current_user)
+    session_id: str,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    command_bus: CommandBus = Depends(get_command_bus),
 ) -> dict[str, Any]:
     """
     Sınavı iptal et (sadece başlatılmamış sınavlar için)
@@ -1625,70 +940,8 @@ async def cancel_exam(
     - Otomatik kaydetme durdurulur
     - Oturum temizlenir
     """
-    try:
-        session_data = await osym_exam_engine.get_session_data(session_id)
-        if not session_data:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
-            )
-
-        # Kullanıcı kontrolü
-        if str(session_data.student_id) != str(current_user.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Bu sınava erişim yetkiniz yok",
-            )
-
-        # Sadece başlatılmamış veya devam eden sınavlar iptal edilebilir
-        if session_data.status not in [ExamStatus.NOT_STARTED, ExamStatus.IN_PROGRESS]:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Tamamlanmış veya iptal edilmiş sınavlar tekrar iptal edilemez",
-            )
-
-        # Sınavı iptal et
-        session_data.status = ExamStatus.ABANDONED
-        session_data.completed_at = datetime.now()
-
-        # Otomatik kaydetme task'ını durdur
-        if session_id in osym_exam_engine.auto_save_tasks:
-            osym_exam_engine.auto_save_tasks[session_id].cancel()
-            del osym_exam_engine.auto_save_tasks[session_id]
-
-        # Otomatik tamamlama task'ını durdur
-        autoclose_key = f"autoclose:{session_id}"
-        if autoclose_key in osym_exam_engine.auto_save_tasks:
-            osym_exam_engine.auto_save_tasks[autoclose_key].cancel()
-            del osym_exam_engine.auto_save_tasks[autoclose_key]
-
-        # L1 eviction — prevent memory leak
-        if session_id in osym_exam_engine.active_sessions:
-            del osym_exam_engine.active_sessions[session_id]
-
-        logger.info(
-            "ÖSYM sınavı iptal edildi",
-            extra_data={
-                "session_id": session_id,
-                "student_id": current_user.id,
-            },
-        )
-
-        return {
-            "success": True,
-            "message": "Sınav başarıyla iptal edildi",
-            "session_id": session_id,
-        }
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(
-            f"Sınav iptal etme hatası: {e}", extra_data={"session_id": session_id}
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Sınav iptal edilirken beklenmeyen bir hata oluştu",
-        )
+    command = CancelExamCommand(student_id=str(current_user.id), session_id=session_id)
+    return await command_bus.execute(command)
 
 
 # Task 69.2: Boş bırakma (Empty answer handling) - REQ-1.6

@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Any
+from collections import deque
+from cachetools import LRUCache
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -105,14 +107,14 @@ class BaseAgent(ABC):
         self.status = AgentStatus.IDLE
         self.capabilities: list[AgentCapability] = []
         self.metrics = AgentMetrics(agent_id=agent_id)
-        self.message_queue: list[AgentMessage] = []
+        self.message_queue: deque = deque(maxlen=1000)
         self.blackboard_subscriptions: list[str] = []
         self.coordination_handlers: dict[str, callable] = {}
         self.error_handlers: dict[str, callable] = {}
 
         # Agent-specific configuration
         self.config: dict[str, Any] = {}
-        self.cache: dict[str, Any] = {}
+        self.cache: LRUCache = LRUCache(maxsize=1000)
 
         # Blackboard integration
         self.blackboard = None

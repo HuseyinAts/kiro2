@@ -101,7 +101,7 @@ describe('Leaderboard - Entries', () => {
 
   it('displays avatar when available', () => {
     render(<Leaderboard />);
-    const avatar = screen.getByAlt('TopPlayer');
+    const avatar = screen.getByAltText('TopPlayer');
     expect(avatar).toHaveAttribute('src', 'avatar1.jpg');
   });
 

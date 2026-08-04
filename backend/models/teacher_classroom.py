@@ -7,9 +7,10 @@ Bu modül classroom management içindir.
 """
 
 from datetime import datetime
+from uuid6 import uuid7
 from uuid import uuid4
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import String, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
 from .database import Base

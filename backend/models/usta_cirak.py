@@ -17,9 +17,10 @@ Kurallar:
 from __future__ import annotations
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String, Text
+from sqlalchemy import String, DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -35,9 +36,7 @@ class MentorPair(Base):
 
     __tablename__ = "mentor_pairs"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
     mentor_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     mentee_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     subject_area: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
@@ -68,9 +67,7 @@ class MentorSession(Base):
 
     __tablename__ = "mentor_sessions"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
     pair_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     # Hangi soru/konu uzerinde
     question_bank_id: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -102,9 +99,7 @@ class MentorFeedback(Base):
 
     __tablename__ = "mentor_feedback"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     giver_id: Mapped[str] = mapped_column(String, nullable=False)
     receiver_id: Mapped[str] = mapped_column(String, nullable=False)
@@ -112,7 +107,7 @@ class MentorFeedback(Base):
     rating: Mapped[int] = mapped_column(Integer, nullable=False)  # 1-5
     tags: Mapped[str | None] = mapped_column(
         Text, nullable=True
-    )  # comma-separated: "helpful,patient,clear"
+    , deferred=True)  # comma-separated: "helpful,patient,clear"
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

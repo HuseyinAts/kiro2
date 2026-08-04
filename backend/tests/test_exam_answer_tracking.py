@@ -82,7 +82,7 @@ async def test_exam_session(db_session: AsyncSession, test_student):
 @pytest.fixture
 async def test_exam_questions(db_session: AsyncSession, test_exam_session):
     """Test sınav soruları oluştur"""
-    from models.database import Question, QuestionDifficulty, SubjectArea
+    from models.question_bank import QuestionBankItem as Question, QuestionDifficultyLevel
 
     questions = []
     exam_questions = []
@@ -90,16 +90,16 @@ async def test_exam_questions(db_session: AsyncSession, test_exam_session):
     for i in range(10):  # 10 soruluk küçük test sınavı
         # Soru oluştur
         question = Question(
+            id=str(uuid.uuid4()),
             question_text=f"Test sorusu {i+1}",
             option_a="A şıkkı",
             option_b="B şıkkı",
             option_c="C şıkkı",
             option_d="D şıkkı",
             correct_answer="A",
-            exam_type=ExamType.TYT,
-            subject_area=SubjectArea.MATEMATIK,
-            topic="Test Konusu",
-            difficulty=QuestionDifficulty.MEDIUM,
+            primary_topic_id="test-topic-123",
+            difficulty_level=QuestionDifficultyLevel.MEDIUM,
+            is_active=True
         )
         db_session.add(question)
         questions.append(question)

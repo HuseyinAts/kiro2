@@ -5,10 +5,12 @@ RefreshToken, APIKey, SystemConfiguration, AuditLog, Session
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    String,
     JSON,
     Boolean,
     DateTime,
@@ -43,18 +45,13 @@ class RefreshToken(Base):
         Index("idx_refresh_token_user_device", "user_id", "device_id"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    user_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
     # Token information
@@ -111,18 +108,13 @@ class APIKey(Base):
         Index("idx_api_key_expires", "expires_at"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    user_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
     # API Key information
@@ -135,11 +127,11 @@ class APIKey(Base):
     name: Mapped[str] = mapped_column(
         String(200), nullable=False
     )  # Human-readable name
-    description: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Permissions and scopes
-    scopes: Mapped[dict | None] = mapped_column(JSON)  # List of allowed permissions
-    allowed_ips: Mapped[dict | None] = mapped_column(JSON)  # IP whitelist (optional)
+    scopes: Mapped[dict | None] = mapped_column(JSON, deferred=True)  # List of allowed permissions
+    allowed_ips: Mapped[dict | None] = mapped_column(JSON, deferred=True)  # IP whitelist (optional)
     rate_limit: Mapped[int] = mapped_column(Integer, default=1000)  # Requests per hour
 
     # Status
@@ -174,17 +166,15 @@ class SystemConfiguration(Base):
     __tablename__ = "system_configurations"
     __table_args__ = (Index("idx_config_key", "config_key"),)
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
 
     # Configuration
     config_key: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    config_value: Mapped[str] = mapped_column(Text, nullable=False)
+    config_value: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     config_type: Mapped[str] = mapped_column(
         String(50), nullable=False
     )  # string, integer, float, boolean, json
-    description: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -206,28 +196,23 @@ class AuditLog(Base):
         Index("idx_audit_created", "created_at"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
 
     # Audit information
-    user_id: Mapped[str | None] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE")
+    user_id: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE")
     )
     action: Mapped[str] = mapped_column(String(100), nullable=False)
     resource_type: Mapped[str] = mapped_column(String(100), nullable=False)
     resource_id: Mapped[str | None] = mapped_column(String)
 
     # Details
-    old_values: Mapped[dict | None] = mapped_column(JSON)
-    new_values: Mapped[dict | None] = mapped_column(JSON)
+    old_values: Mapped[dict | None] = mapped_column(JSON, deferred=True)
+    new_values: Mapped[dict | None] = mapped_column(JSON, deferred=True)
     ip_address: Mapped[str | None] = mapped_column(String(45))
     user_agent: Mapped[str | None] = mapped_column(String(500))
 
@@ -247,18 +232,13 @@ class Session(Base):
         Index("idx_session_active", "is_active", "expires_at"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    user_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     token: Mapped[str] = mapped_column(
         String(64), unique=True, nullable=False, index=True
@@ -267,9 +247,9 @@ class Session(Base):
     # Device & location info
     device_info: Mapped[dict | None] = mapped_column(
         JSON, comment="Device/browser info"
-    )
+    , deferred=True)
     ip_address: Mapped[str | None] = mapped_column(String(45))
-    user_agent: Mapped[str | None] = mapped_column(Text)
+    user_agent: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
@@ -281,7 +261,7 @@ class Session(Base):
     last_activity_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
 
     # Relationships
-    user: Mapped["User"] = relationship("User")
+    user: Mapped["User"] = relationship("User", lazy="selectin")

@@ -4,9 +4,10 @@ Ardışık doğru cevap takibi
 """
 
 from datetime import datetime
+from uuid6 import uuid7
 from uuid import uuid4
 
-from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import String, JSON, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -18,7 +19,7 @@ class StreakTracking(Base):
 
     __tablename__ = "streak_tracking"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     organization_id = Column(
         String,
         ForeignKey("organizations.id", ondelete="RESTRICT"),
@@ -44,7 +45,7 @@ class StreakTracking(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    user = relationship("User", backref="streak_tracking")
+    user = relationship("User", backref="streak_tracking", lazy="selectin")
 
     def __repr__(self):
         return f"<StreakTracking(user_id={self.user_id}, current={self.current_streak}, best={self.best_streak})>"
@@ -99,7 +100,7 @@ class PerformanceHistory(Base):
     recorded_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     # Relationships
-    user = relationship("User", backref="performance_history")
+    user = relationship("User", backref="performance_history", lazy="selectin")
 
     def __repr__(self):
         return f"<PerformanceHistory(user_id={self.user_id}, score={self.score})>"

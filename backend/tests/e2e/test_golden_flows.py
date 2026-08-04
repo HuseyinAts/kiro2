@@ -1957,7 +1957,7 @@ def test_gf26_diary_goals_create_not_500(client: httpx.Client):
 
 def test_gf27_content_management_question_create_not_500(client: httpx.Client):
     """
-    POST /api/v1/content-management/questions must return a semantic status.
+    POST /api/v1/admin/content/questions must return a semantic status.
 
     Admin/teacher question add (mock impl). STUDENT token should get 403,
     not 500. A 500 here means the role guard itself is broken — which
@@ -1965,7 +1965,7 @@ def test_gf27_content_management_question_create_not_500(client: httpx.Client):
     """
     token = _login(client, STUDENT)
     resp = client.post(
-        "/api/v1/content-management/questions",
+        "/api/v1/admin/content/questions",
         headers=_auth_headers(token),
         json={
             "soru_metni": "GF27 probe question",

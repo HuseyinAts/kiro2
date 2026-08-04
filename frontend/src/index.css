@@ -1,4 +1,5 @@
 /* Ana CSS dosyası - Accessibility stilleri dahil */
+@import 'tailwindcss';
 @import './styles/accessibility.css';
 
 /* Temel reset ve normalize */
@@ -157,4 +158,60 @@ img {
 .warning {
   color: #ed6c02;
   border-color: #ed6c02;
+}
+
+/* =========================================================
+   MODERN UI & AESTHETICS (2026 Ultra Lens UX Improvements)
+   ========================================================= */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(12px);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow);
+}
+
+/* Micro Animations */
+.hover-lift {
+  transition: var(--transition-smooth);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.hover-grow {
+  transition: var(--transition-bounce);
+}
+.hover-grow:hover {
+  transform: scale(1.05);
+}
+
+.pulse-soft {
+  animation: pulse-soft 2s infinite ease-in-out alternate;
+}
+
+@keyframes pulse-soft {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.02); opacity: 1; }
 }

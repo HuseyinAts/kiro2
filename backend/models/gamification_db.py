@@ -7,6 +7,7 @@ Task 87.9: REQ-51.101-51.105
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    String,
     JSON,
     Boolean,
     Column,
@@ -67,7 +68,7 @@ class ManipulativeProgress(Base):
     last_activity_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
-    user = relationship("User", back_populates="manipulative_progress")
+    user = relationship("User", back_populates="manipulative_progress", lazy="selectin")
 
 
 class ManipulativeActivity(Base):
@@ -104,7 +105,7 @@ class ManipulativeActivity(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
 
     # Relationships
-    user = relationship("User", back_populates="manipulative_activities")
+    user = relationship("User", back_populates="manipulative_activities", lazy="selectin")
 
 
 class WeeklyProgress(Base):
@@ -146,4 +147,4 @@ class WeeklyProgress(Base):
     )
 
     # Relationships
-    user = relationship("User", back_populates="weekly_progress")
+    user = relationship("User", back_populates="weekly_progress", lazy="selectin")

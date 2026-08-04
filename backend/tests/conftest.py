@@ -8,8 +8,10 @@ Pytest configuration and fixtures for testing
 # ============================================================================
 # collect_ignore is now empty - all tests properly mocked
 
+import asyncio
 import os
 import sys
+import secrets
 
 # Note: WindowsSelectorEventLoopPolicy is set in root conftest.py (before collection)
 # Generator import removed - not used in this file
@@ -100,7 +102,12 @@ else:
 
 os.environ["SQLALCHEMY_WARN_20"] = "false"  # Suppress SQLAlchemy warnings
 
-# Import test database setup
+# Patch SQLite to accept PostgreSQL JSONB
+from sqlalchemy.dialects.sqlite.base import SQLiteTypeCompiler
+def visit_JSONB(self, type_, **kw):
+    return "JSON"
+SQLiteTypeCompiler.visit_JSONB = visit_JSONB
+
 try:
     from tests.fixtures.test_database import setup_test_environment
 
@@ -135,10 +142,35 @@ def create_async_test_client(app):
     return AsyncClient(transport=transport, base_url="http://test")
 
 
+@pytest.fixture(autouse=True)
+def override_database_manager(test_async_engine):
+    """Override DatabaseManager engine to use the shared test engine."""
+    from core.database import db_manager
+    from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+    
+    original_engine = db_manager.engine
+    original_maker = db_manager.async_session_maker
+    original_initialized = db_manager._initialized
+    
+    db_manager.engine = test_async_engine
+    db_manager.async_session_maker = async_sessionmaker(
+        test_async_engine, class_=AsyncSession, expire_on_commit=False
+    )
+    db_manager._initialized = True
+    
+    yield
+    
+    db_manager.engine = original_engine
+    db_manager.async_session_maker = original_maker
+    db_manager._initialized = original_initialized
+
 @pytest.fixture
-async def async_client():
+async def async_client(setup_database):
     """Create an async test client for the FastAPI app"""
     from main import app
+    from application.bootstrap import bootstrap_cqrs
+    
+    bootstrap_cqrs()
 
     async with create_async_test_client(app) as client:
         yield client
@@ -190,9 +222,14 @@ async def learning_agent():
     except ImportError:
         pytest.skip("simple_agents module removed")
     agent = LearningAgent()
-    yield agent
-    if hasattr(agent, "llm_client"):
-        await agent.llm_client.close()
+    try:
+        yield agent
+    finally:
+        if hasattr(agent, "llm_client"):
+            try:
+                await agent.llm_client.close()
+            except Exception:
+                pass
 
 
 @pytest.fixture
@@ -203,9 +240,14 @@ async def study_agent():
     except ImportError:
         pytest.skip("simple_agents module removed")
     agent = StudyAgent()
-    yield agent
-    if hasattr(agent, "llm_client"):
-        await agent.llm_client.close()
+    try:
+        yield agent
+    finally:
+        if hasattr(agent, "llm_client"):
+            try:
+                await agent.llm_client.close()
+            except Exception:
+                pass
 
 
 @pytest.fixture
@@ -216,9 +258,14 @@ async def exam_agent():
     except ImportError:
         pytest.skip("simple_agents module removed")
     agent = ExamAgent()
-    yield agent
-    if hasattr(agent, "llm_client"):
-        await agent.llm_client.close()
+    try:
+        yield agent
+    finally:
+        if hasattr(agent, "llm_client"):
+            try:
+                await agent.llm_client.close()
+            except Exception:
+                pass
 
 
 @pytest.fixture
@@ -278,6 +325,13 @@ def setup_test_database(test_database_url, worker_id):
                 os.remove(db_file)
             except Exception as e:
                 print(f"Warning: Could not remove test database {db_file}: {e}")
+
+@pytest.fixture(scope="session", autouse=True)
+async def global_db_manager_cleanup():
+    """Ensure db_manager is closed to prevent hanging aiosqlite threads in pytest-asyncio teardown."""
+    yield
+    from core.database import db_manager
+    await db_manager.close()
 
 
 @pytest.fixture
@@ -492,6 +546,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 # Import database models to ensure they're registered
+import models
 
 # Test database configuration
 TEST_DATABASE_URL = os.getenv(
@@ -534,6 +589,7 @@ async def setup_database(test_async_engine: AsyncEngine):
 
         async with test_async_engine.begin() as conn:
             # checkfirst=True is default but explicit for clarity
+            print("Registered tables:", Base.metadata.tables.keys())
             await conn.run_sync(Base.metadata.create_all, checkfirst=True)
     except Exception as e:
         err_msg = str(e).lower()
@@ -570,21 +626,26 @@ async def db_session(
     """
     # Create a connection
     async with test_async_engine.connect() as connection:
-        # Start a transaction
-        async with connection.begin() as transaction:
-            # Create session bound to the transaction
-            async_session_factory = async_sessionmaker(
-                bind=connection,
-                class_=AsyncSession,
-                expire_on_commit=False,
-            )
-            session = async_session_factory()
+        # Start a transaction manually to avoid context manager double-rollback deadlocks
+        transaction = await connection.begin()
+        # Create session bound to the transaction
+        async_session_factory = async_sessionmaker(
+            bind=connection,
+            class_=AsyncSession,
+            expire_on_commit=False,
+            join_transaction_mode="create_savepoint",
+        )
+        session = async_session_factory()
 
+        try:
             yield session
-
-            # Rollback transaction after test
+        finally:
+            # Rollback transaction cleanly
+            if transaction.is_active:
+                await transaction.rollback()
             await session.close()
-            await transaction.rollback()
+            # Allow event loop to process connection close callbacks to prevent deadlock
+            await asyncio.sleep(0)
 
 
 @pytest_asyncio.fixture
@@ -605,7 +666,11 @@ async def db_session_autocommit(
     )
 
     async with async_session_factory() as session:
-        yield session
+        try:
+            yield session
+        finally:
+            await session.close()
+            await asyncio.sleep(0)
 
 
 # ============================================================================
@@ -1111,8 +1176,12 @@ def client():
     are defined earlier in this file (lines 368-404).
     """
     from main import app
+    from application.bootstrap import bootstrap_cqrs
+    
+    bootstrap_cqrs()
 
     c = TestClient(app, raise_server_exceptions=True)
     c.headers.pop("Authorization", None)
-    yield c
-    c.close()
+    
+    with c:
+        yield c

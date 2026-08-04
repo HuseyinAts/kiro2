@@ -135,6 +135,14 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.info("✅ AI agents initialized")
     except Exception as e:
         logger.warning(f"⚠️ Agent initialization failed (non-fatal): {e}")
+        
+    # Initialize CQRS Handlers
+    try:
+        from application.bootstrap import bootstrap_cqrs
+        bootstrap_cqrs()
+        logger.info("✅ CQRS Handlers initialized")
+    except Exception as e:
+        logger.warning(f"⚠️ CQRS initialization failed (non-fatal): {e}")
 
     # Register blackboard subscribers
     try:
@@ -234,19 +242,6 @@ def setup_middleware(app: FastAPI) -> None:
 
     Requirements: REQ-2.1.2, REQ-4.1.3, REQ-6.1.1
     """
-    # 1. Timing Middleware (en dışta - tüm request süresini ölçer)
-    try:
-        from core.middleware.timing import TimingMiddleware, get_timing_stats_manager
-
-        # app.add_middleware(
-        #     TimingMiddleware,
-        #     stats_manager=get_timing_stats_manager(),
-        #     exclude_paths=["/health", "/metrics", "/docs", "/redoc", "/openapi.json"],
-        # )
-        logger.info("✅ Timing middleware added (DISABLED FOR LOAD TEST)")
-    except ImportError as e:
-        logger.warning(f"⚠️ Timing middleware not available: {e}")
-
     # 2. CORS Middleware
     # SECURITY: Validate production origins are configured
     localhost_only = all(
@@ -273,66 +268,20 @@ def setup_middleware(app: FastAPI) -> None:
     )
     logger.info(f"✅ CORS middleware added (origins: {len(settings.allowed_origins)})")
 
-    # 2.5. CSRF Protection Middleware
-    # ANALIZ (02.04.2026): Phase 2 (X-CSRF-Token) GEREKSIZ.
-    # Neden: auth cookie'ler samesite="lax" + httponly=True kullanıyor.
-    # SameSite=Lax: cross-site POST/AJAX isteklerinde cookie gönderilmez
-    #   → CSRF saldırıları zaten başarısız olur.
-    # API JSON tabanlı (form submit değil) → klasik CSRF de geçersiz.
-    # 80+ dosya X-CSRF-Token göndermek için değiştirilmek zorunda kalmaz.
-    # Middleware devrede ama /api/v1/ exempt — bu yeterli.
+    # 3. Advanced Rate Limiters
     try:
-        from core.csrf_protection import CSRFProtectionMiddleware
-
-        # app.add_middleware(
-        #     CSRFProtectionMiddleware,
-        #     exempt_paths=[
-        #         "/api/v1/",  # SameSite=Lax zaten koruyor — exempt kalabilir
-        #         "/api/pwa-sync-api/",  # PWA sync endpoints — JSON API, CSRF gereksiz
-        #         "/docs",
-        #         "/redoc",
-        #         "/openapi.json",
-        #         "/health",
-        #     ],
-        # )
-        logger.info("✅ CSRF middleware aktif (SameSite=Lax birincil koruma) (DISABLED)")
+        from core.auth_rate_limiting import AuthRateLimitMiddleware
+        app.add_middleware(AuthRateLimitMiddleware)
+        logger.info("✅ Auth Rate Limiting middleware added")
     except ImportError as e:
-        logger.warning(f"⚠️ CSRF middleware not available: {e}")
+        logger.warning(f"⚠️ Auth rate limiter not available: {e}")
 
-    # 3. Cache Headers Middleware (ETag, If-None-Match)
     try:
-        from core.middleware.cache_headers import CacheMiddleware
-
-        # app.add_middleware(
-        #     CacheMiddleware,
-        #     skip_paths=["/health", "/metrics", "/docs", "/api/v1/auth"],
-        #     enable_metrics=True,
-        # )
-        logger.info("✅ Cache headers middleware added (DISABLED)")
+        from core.rate_limit_middleware import RateLimitMiddleware
+        app.add_middleware(RateLimitMiddleware)
+        logger.info("✅ Advanced Rate Limiting middleware added")
     except ImportError as e:
-        logger.warning(f"⚠️ Cache headers middleware not available: {e}")
-
-    # 4. GZip Compression Middleware
-    try:
-        from core.middleware.compression import GZipMiddleware
-
-        # app.add_middleware(
-        #     GZipMiddleware,
-        #     minimum_size=1000,  # 1KB minimum
-        #     compression_level=6,  # Balance speed/size
-        # )
-        logger.info("✅ GZip compression middleware added (DISABLED)")
-    except ImportError as e:
-        logger.warning(f"⚠️ Compression middleware not available: {e}")
-
-    # 5. Version Redirect Middleware (legacy /api/xxx → /api/v1/xxx)
-    try:
-        from core.middleware.version_redirect import VersionRedirectMiddleware
-
-        # app.add_middleware(VersionRedirectMiddleware)
-        logger.info("✅ Version redirect middleware added (DISABLED)")
-    except ImportError as e:
-        logger.warning(f"⚠️ Version redirect middleware not available: {e}")
+        logger.warning(f"⚠️ Advanced rate limiter not available: {e}")
 
     logger.info("✅ Middleware setup complete")
 

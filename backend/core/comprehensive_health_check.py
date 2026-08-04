@@ -301,19 +301,16 @@ class HealthChecker:
         start_time = time.time()
 
         try:
-            import os
-
-            from elasticsearch import AsyncElasticsearch
-            _es_url = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
-            es = AsyncElasticsearch(
-                [_es_url],
-                request_timeout=2,
-                retry_on_timeout=False,
-            )
+            from core.elasticsearch_client import get_elasticsearch_client
+            
+            es_wrapper = get_elasticsearch_client()
+            await es_wrapper._ensure_connected()
+            es = es_wrapper._client
+            
             try:
-                health = await es.cluster.health()
-            finally:
-                await es.close()
+                health = await es.cluster.health(request_timeout=2.0)
+            except Exception:
+                pass
 
             duration_ms = (time.time() - start_time) * 1000
             cluster_status = health.get("status", "unknown")

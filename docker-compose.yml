@@ -49,6 +49,8 @@ services:
       - CHROMADB_HOST=${CHROMADB_HOST:-}
       - CHROMADB_PORT=${CHROMADB_PORT:-8000}
       - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
+      - ELASTICSEARCH_USER=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
     restart: unless-stopped
     networks:
       - default
@@ -108,10 +110,10 @@ services:
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      # NOT: kimlik doğrulama HÂLÂ kapalı. Bu bir savunma katmanı değil;
-      # açığı kapatan şey aşağıdaki 127.0.0.1 bağlamasıdır. xpack'i açmak
-      # backend'e kimlik bilgisi geçirmeyi gerektirir — ayrı iş.
-      - xpack.security.enabled=false
+      # NOT: kimlik doğrulama AÇIK.
+      # xpack.security.enabled=true ile ağ üzerinden gelen isteklere şifre sorulur.
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
@@ -132,6 +134,12 @@ services:
         aliases:
           - turkiye_sinav_elasticsearch
           - elasticsearch
+    healthcheck:
+      test: ["CMD-SHELL", "curl -u elastic:${ELASTIC_PASSWORD:-Kiro2Elastic2026!} -s http://localhost:9200/_cluster/health | grep -vq '\"status\":\"red\"'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   celery-worker:
     build:
@@ -146,6 +154,8 @@ services:
       - CHROMADB_HOST=${CHROMADB_HOST:-}
       - CHROMADB_PORT=${CHROMADB_PORT:-8000}
       - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
+      - ELASTICSEARCH_USER=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -188,6 +198,8 @@ services:
       - CHROMADB_HOST=${CHROMADB_HOST:-}
       - CHROMADB_PORT=${CHROMADB_PORT:-8000}
       - CHROMADB_PERSIST_DIR=${CHROMADB_PERSIST_DIR:-/app/vector_db}
+      - ELASTICSEARCH_USER=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-Kiro2Elastic2026!}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

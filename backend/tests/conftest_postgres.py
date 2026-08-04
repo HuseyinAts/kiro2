@@ -101,11 +101,12 @@ async def db_session(
             )
             session = async_session_factory()
 
-            yield session
-
-            # Rollback transaction after test
-            await session.close()
-            await transaction.rollback()
+            try:
+                yield session
+            finally:
+                # Rollback transaction after test
+                await session.close()
+                await transaction.rollback()
 
 
 @pytest_asyncio.fixture

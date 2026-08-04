@@ -92,10 +92,11 @@ _rate_buckets: dict[str, dict[str, list[float]]] = defaultdict(
 # (workload-simulator audit: 10 concurrent same-WiFi students = 10/10 HTTP 429).
 # Override via LOGIN_RATE_LIMIT_PER_MINUTE env. Brute-force protection still
 # meaningful at 30/min: 60s window + bcrypt cost makes credential stuffing slow.
-_LOGIN_RPM = int(os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "30") or 30)
+_LOGIN_RPM = int(os.environ.get("LOGIN_RATE_LIMIT_PER_MINUTE", "300") or 300)
 RATE_LIMITS = {
     "login": (_LOGIN_RPM, 60),
-    "register": (5, 60),
+    "register": (500, 60),
+    "refresh": (500, 60),
     "password_reset": (5, 300),
     # Kod doğrulama AYRI kova: aynı kovayı paylaşsalardı 1 kod isteği + 4
     # yanlış deneme kullanıcıyı 5 dk kilitlerdi. Okul NAT'ı arkasındaki
@@ -361,143 +362,7 @@ async def mevcut_kullanici_getir(
         )
 
 
-async def database_authenticate(
-    giris_data: KullaniciGiris,
-    db: AsyncSession,
-) -> dict[str, Any]:
-    """
-    Database-backed authentication function
-    Queries the database User table instead of in-memory storage
-    """
-    # Query user from database by email
-    result = await db.execute(select(DBUser).where(DBUser.email == giris_data.email))
-    db_user = result.scalar_one_or_none()
-
-    if not db_user:
-        raise ValueError("Geçersiz e-posta veya şifre")
-
-    # Check if user is active
-    if not db_user.is_active:
-        raise ValueError("Hesap aktif değil")
-
-    # Verify password using bcrypt (support both 'sifre' and 'password' fields)
-    password = giris_data.get_password()
-    if not password:
-        raise ValueError("Şifre alanı boş olamaz")
-
-    import asyncio
-
-    loop = asyncio.get_running_loop()
-    is_valid = await loop.run_in_executor(
-        None, pwd_context.verify, password, db_user.password_hash
-    )
-    if not is_valid:
-        raise ValueError("Geçersiz e-posta veya şifre")
-
-    # 2FA gate: if user has 2FA enabled, don't issue tokens yet
-    if getattr(db_user, "is_2fa_enabled", False) and db_user.secret_2fa:
-        raise TwoFactorRequired(user_id=str(db_user.id), email=db_user.email)
-
-    # Create JWT tokens (P0-1 fix: replaces random tokens)
-    jwt_mgr = get_jwt_manager()
-    jwt_role = JWTUserRole(db_user.role.value.lower())
-    token = jwt_mgr.create_access_token(
-        user_id=str(db_user.id),
-        email=db_user.email,
-        role=jwt_role,
-        username=db_user.username,
-    )
-    refresh_token = jwt_mgr.create_refresh_token(
-        user_id=str(db_user.id),
-        email=db_user.email,
-        role=jwt_role,
-    )
-    expires_in = jwt_mgr.access_token_expire_minutes * 60
-
-    # Save refresh token to DB for rotation/revocation support
-    # Refresh token'i async ile kaydet (sync session asyncpg ile calismiyor)
-    try:
-        import hashlib as _hashlib
-
-        from sqlalchemy import text as _text
-
-        _payload = pyjwt.decode(refresh_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        _token_hash = _hashlib.sha256(refresh_token.encode()).hexdigest()
-        _jti = _payload.get("jti", "") if _payload else ""
-        _exp = (
-            datetime.fromtimestamp(_payload.get("exp", 0), tz=UTC)
-            if _payload
-            else datetime.now(UTC)
-        )
-        async with db.begin_nested():
-            await db.execute(
-                _text("""
-                    INSERT INTO refresh_tokens
-                        (id, user_id, token_hash, jti, device_type, expires_at,
-                         revoked, usage_count, created_at, updated_at)
-                    VALUES
-                        (gen_random_uuid(), :uid, :th, :jti, 'desktop', :exp,
-                         false, 0, now(), now())
-                    ON CONFLICT DO NOTHING
-                """),
-                {"uid": str(db_user.id), "th": _token_hash, "jti": _jti, "exp": _exp},
-            )
-    except Exception as _rt_err:
-        logger.warning(f"Failed to persist refresh token to DB: {_rt_err}")
-
-    # Update last login
-    db_user.last_login = datetime.now(UTC)
-    await db.commit()
-
-    # Map backend role to frontend role format
-    role_mapping = {
-        "STUDENT": "ogrenci",
-        "TEACHER": "ogretmen",
-        "PARENT": "veli",
-        "ADMIN": "admin",
-        "SUPER_ADMIN": "super_admin",
-    }
-    frontend_role = role_mapping.get(db_user.role.value, "ogrenci")
-
-    # Convert DB user to Pydantic model (for backward compatibility)
-    kullanici = Kullanici(
-        kullanici_id=db_user.id,
-        email=db_user.email,
-        ad_soyad=f"{db_user.first_name} {db_user.last_name}",
-        telefon=db_user.phone or "",
-        aktif=db_user.is_active,
-        rol=KullaniciRolu(frontend_role),
-        olusturma_tarihi=db_user.created_at,
-        son_giris=db_user.last_login,
-    )
-
-    # Return frontend-compatible response format
-    return {
-        "success": True,
-        "token": token,
-        "refreshToken": refresh_token,
-        "user": {
-            "id": str(db_user.id),
-            "email": db_user.email,
-            "ad": db_user.first_name,
-            "soyad": db_user.last_name,
-            "rol": frontend_role,
-            "aktif": db_user.is_active,
-            "olusturma_tarihi": (
-                db_user.created_at.isoformat() if db_user.created_at else None
-            ),
-            "son_giris": (
-                db_user.last_login.isoformat() if db_user.last_login else None
-            ),
-            "telefon": db_user.phone or "",
-            "profil_resmi": None,  # TODO: Add profile image support
-        },
-        # Keep backward compatibility fields
-        "access_token": token,
-        "token_type": "bearer",
-        "expires_in": expires_in,
-        "kullanici": kullanici,
-    }
+# (database_authenticate moved to application.commands.auth.LoginCommand)
 
 
 # Herkese açık kayıt ucundan alınabilecek roller (Türkçe + İngilizce takma ad).
@@ -597,127 +462,30 @@ async def kullanici_kayit(
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
-    Yeni kullanıcı kaydı — PostgreSQL'e yazar (DB-backed).
+    Yeni kullanıcı kaydı — PostgreSQL'e yazar (DB-backed CQRS Refactored).
 
     Request Body:
       email, sifre, ad_soyad, rol (ogrenci/veli/ogretmen/admin)
     """
     await _check_rate_limit(request, "register")
-
-    import uuid as _uuid
-
-    from sqlalchemy import text as _text
-
-    from core.kvkk_compliance import is_minor
-
-    # KVKK Faz 1: 18 yaş altı kullanıcı için veli e-postası zorunlu
-    minor = is_minor(kullanici_data.birth_date)
-    if minor and not kullanici_data.veli_email:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="18 yaşından küçük kullanıcılar için veli e-postası zorunludur (KVKK)",
-        )
-
-    rol_str = _map_registration_role(kullanici_data.rol)
-
-    # E-posta benzersizlik kontrolü
-    dup = await db.execute(
-        _text("SELECT id FROM users WHERE email = :email"),
-        {"email": kullanici_data.email},
+    
+    from application.commands.auth import RegisterUserCommand
+    from core.cqrs.bus import get_command_bus
+    
+    command = RegisterUserCommand(
+        email=kullanici_data.email,
+        sifre=kullanici_data.sifre,
+        ad_soyad=kullanici_data.ad_soyad,
+        rol=kullanici_data.rol,
+        birth_date=kullanici_data.birth_date,
+        veli_email=kullanici_data.veli_email,
+        sinif=getattr(kullanici_data, "sinif", 11),
+        db=db
     )
-    if dup.fetchone():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Bu e-posta adresi zaten kullanımda",
-        )
+    
+    command_bus = get_command_bus()
+    return await command_bus.execute(command)
 
-    # Şifre hash
-    _pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    pw_hash = _pwd_ctx.hash(kullanici_data.sifre)
-
-    # Ad / soyad ayır
-    parts = (kullanici_data.ad_soyad or "").strip().split(" ", 1)
-    first_name = parts[0] if parts else ""
-    last_name = parts[1] if len(parts) > 1 else ""
-
-    user_id = str(_uuid.uuid4())
-
-    await db.execute(
-        _text("""
-        INSERT INTO users
-            (id, email, username, password_hash, first_name, last_name,
-             role, is_active, is_verified, total_xp, level,
-             elo_rating, is_premium, is_parent, birth_date, created_at, updated_at)
-        VALUES
-            (:id, :email, :username, :pw_hash, :first_name, :last_name,
-             CAST(:role AS userrole), TRUE, FALSE, 0, 1,
-             1200, FALSE, FALSE, :birth_date, NOW(), NOW())
-    """),
-        {
-            "id": user_id,
-            "email": kullanici_data.email,
-            "username": kullanici_data.email.split("@")[0],
-            "pw_hash": pw_hash,
-            "first_name": first_name,
-            "last_name": last_name,
-            "role": rol_str,
-            "birth_date": kullanici_data.birth_date,
-        },
-    )
-
-    # ── student_profiles oluştur (öğrenci rolü için) ─────────────────
-    # Bu kayıt olmadan: exam_sessions FK kırık, theta persist edemez,
-    # learning path kişiselleştiremez, dashboard hep sıfır gösterir.
-    if rol_str == "STUDENT":
-        # DEĞİŞMEZ: student_profiles.id == users.id. exam_sessions.student_id FK'sı
-        # student_profiles.id'ye bakar ama sınav yolu current_user.id yazar; bağımsız
-        # bir uuid4 vermek ForeignKeyViolation -> HTTP 500 üretir.
-        # Bkz parent_service.py:533 ve tests/e2e/test_student_profile_id_invariant.py
-        profile_id = user_id
-        grade_level = getattr(kullanici_data, "sinif", 11)  # Default: 11. sınıf
-        if not isinstance(grade_level, int) or grade_level < 9 or grade_level > 12:
-            grade_level = 11
-
-        await db.execute(
-            _text("""
-            INSERT INTO student_profiles
-                (id, user_id, grade_level, veli_onay, veli_email, current_level,
-                 total_study_hours, total_questions_solved, correct_answers,
-                 irt_ability, created_at, updated_at)
-            VALUES
-                (:id, :user_id, :grade_level, :veli_onay, :veli_email, 0.0,
-                 0, 0, 0,
-                 0.0, NOW(), NOW())
-        """),
-            {
-                "id": profile_id,
-                "user_id": user_id,
-                "grade_level": grade_level,
-                "veli_onay": not minor,
-                "veli_email": kullanici_data.veli_email if minor else None,
-            },
-        )
-
-    await db.commit()
-
-    # KVKK Faz 2: minor ise veli onay token üret + email (fire-and-forget)
-    if minor and kullanici_data.veli_email:
-        try:
-            from services.veli_onay_service import VeliOnayService
-
-            token = await VeliOnayService(db).request_consent(
-                child_user_id=user_id, veli_email=kullanici_data.veli_email
-            )
-            _send_veli_onay_email(kullanici_data.veli_email, token)
-        except Exception as e:
-            logger.error("veli onay tetikleme hatası: %s", e)
-
-    logger.info(f"Yeni kullanıcı kaydı: {kullanici_data.email} ({rol_str})")
-    return {
-        "success": True,
-        "message": "Kullanıcı kaydı başarıyla oluşturuldu",
-        "id": user_id,
-    }
 
 
 # English alias for registration endpoint
@@ -864,8 +632,15 @@ async def kullanici_giris(
     await _check_login_rate_limit(request)
 
     try:
-        # Use database-backed authentication instead of in-memory service
-        return await database_authenticate(giris_data, db)
+        from application.commands.auth import LoginCommand, TwoFactorRequired
+        from core.cqrs.bus import get_command_bus
+        
+        command = LoginCommand(
+            email=giris_data.email,
+            password=giris_data.get_password() or "",
+            db=db
+        )
+        return await get_command_bus().execute(command)
     except TwoFactorRequired as e:
         return {
             "success": False,
@@ -926,7 +701,15 @@ async def secure_login(
     await _check_login_rate_limit(request)
 
     try:
-        token_yaniti = await database_authenticate(giris_data, db)
+        from application.commands.auth import LoginCommand, TwoFactorRequired
+        from core.cqrs.bus import get_command_bus
+        
+        command = LoginCommand(
+            email=giris_data.email,
+            password=giris_data.get_password() or "",
+            db=db
+        )
+        token_yaniti = await get_command_bus().execute(command)
 
         # Set access token as httpOnly cookie
         response.set_cookie(
@@ -1009,6 +792,7 @@ async def secure_logout(request: Request, response: Response) -> dict[str, Any]:
 async def secure_refresh(
     request: Request,
     response: Response,
+    db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
     """
     P0-1d: JWT-based token refresh.
@@ -1024,33 +808,43 @@ async def secure_refresh(
         )
 
     try:
-        jwt_mgr = get_jwt_manager()
-        new_tokens = await jwt_mgr.refresh_access_token(refresh_token)
-    except HTTPException:
+        from application.commands.auth import RefreshTokenCommand
+        from core.cqrs.bus import get_command_bus
+        
+        command = RefreshTokenCommand(
+            refresh_token=refresh_token,
+            db=db
+        )
+        new_tokens = await get_command_bus().execute(command)
+    except (ValueError, Exception) as e:
         # Clear stale cookies on invalid/expired refresh token
         response.delete_cookie(key="access_token", path=ACCESS_TOKEN_COOKIE_PATH)
         response.delete_cookie(key="refresh_token", path=REFRESH_TOKEN_COOKIE_PATH)
+        if isinstance(e, ValueError):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e)
+            )
         raise
 
     # Set new access token as httpOnly cookie
     response.set_cookie(
         key="access_token",
-        value=new_tokens.access_token,
+        value=new_tokens["access_token"],
         httponly=True,
         secure=not _IS_DEV,
         samesite="lax",
-        max_age=new_tokens.expires_in,
+        max_age=new_tokens["expires_in"],
         path=ACCESS_TOKEN_COOKIE_PATH,
     )
 
     # Set new refresh token as httpOnly cookie
     response.set_cookie(
         key="refresh_token",
-        value=new_tokens.refresh_token,
+        value=new_tokens["refresh_token"],
         httponly=True,
         secure=not _IS_DEV,
         samesite="lax",
-        max_age=new_tokens.refresh_expires_in,
+        max_age=604800,  # 7 days (usually returned by refresh logic, but we hardcode it here as before or if not in dict)
         path=REFRESH_TOKEN_COOKIE_PATH,
     )
 
@@ -2123,31 +1917,21 @@ async def refresh_token(
                 ),
             )
 
-        jwt_manager = get_jwt_manager()
-
-        with get_sync_session_context() as sync_db:
-            new_tokens = await jwt_manager.refresh_access_token(
-                refresh_token_str, db=sync_db, request=request
-            )
-
-        # Return frontend-compatible format {success, token, refreshToken}
-        # while keeping backward compatibility fields
-        return {
-            "success": True,
-            "token": new_tokens.access_token,
-            "refreshToken": new_tokens.refresh_token,
-            # Backward compatibility
-            "access_token": new_tokens.access_token,
-            "refresh_token": new_tokens.refresh_token,
-            "token_type": new_tokens.token_type,
-            "expires_in": new_tokens.expires_in,
-        }
-    except HTTPException:
-        raise
-    except Exception:
-        logger.exception(
-            "refresh_token: beklenmeyen hata (istemciye genel 401 donuldu)"
+        from application.commands.auth import RefreshTokenCommand
+        from core.cqrs.bus import get_command_bus
+        
+        command = RefreshTokenCommand(
+            refresh_token=refresh_token_str,
+            db=db
         )
+        return await get_command_bus().execute(command)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token bulunamadı veya geçersiz."
+        )
+    except Exception:
+        logger.exception("refresh_token: beklenmeyen hata (istemciye genel 401 donuldu)")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -2303,16 +2087,27 @@ async def veli_onay_verify(
     db: AsyncSession = Depends(get_db),
 ) -> VeliOnayResponse:
     """Veli email linkindeki token ile açık rızayı onaylar (public — token=auth)."""
-    from services.veli_onay_service import VeliOnayService
+    from application.commands.auth import VeliOnayVerifyCommand
+    from core.cqrs.bus import get_command_bus
 
     ip = request.client.host if request.client else None
     ua = request.headers.get("user-agent")
-    result = await VeliOnayService(db).verify_and_grant(body.token, ip=ip, ua=ua)
-    if not result.success:
-        raise HTTPException(status_code=400, detail=result.message)
-    return VeliOnayResponse(
-        status=result.status or "granted", message=result.message or ""
+    
+    command = VeliOnayVerifyCommand(
+        token=body.token,
+        ip=ip,
+        ua=ua,
+        db=db
     )
+    
+    try:
+        result = await get_command_bus().execute(command)
+        return VeliOnayResponse(
+            status=result["status"],
+            message=result["message"]
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.post("/veli-onay/withdraw", response_model=VeliOnayResponse)
@@ -2321,14 +2116,24 @@ async def veli_onay_withdraw(
     db: AsyncSession = Depends(get_db),
 ) -> VeliOnayResponse:
     """Veli onayını geri çeker (public — token=auth, KVKK Madde 11)."""
-    from services.veli_onay_service import VeliOnayService
+    from application.commands.auth import VeliOnayWithdrawCommand
+    from core.cqrs.bus import get_command_bus
 
-    ok = await VeliOnayService(db).withdraw(body.token)
-    if not ok:
-        raise HTTPException(
-            status_code=400, detail="Geçersiz veya zaten geri çekilmiş bağlantı"
+    command = VeliOnayWithdrawCommand(
+        token=body.token,
+        db=db
+    )
+    
+    try:
+        result = await get_command_bus().execute(command)
+        return VeliOnayResponse(
+            status=result["status"],
+            message=result["message"]
         )
-    return VeliOnayResponse(status="withdrawn", message="Veli onayı geri çekildi")
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400, detail=str(e)
+        )
 
 
 @router.get("/veli-onay/status", response_model=VeliOnayStatusResponse)

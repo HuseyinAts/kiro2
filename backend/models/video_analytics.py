@@ -5,9 +5,11 @@ Models for video watch tracking, notes, and bookmarks
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
+    String,
     Boolean,
     Column,
     DateTime,
@@ -68,13 +70,13 @@ class VideoWatchSession(Base):
     )
 
     # Relationships
-    user = relationship("User")
+    user = relationship("User", lazy="selectin")
     notes = relationship(
         "VideoNote", back_populates="session", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     bookmarks = relationship(
         "VideoBookmark", back_populates="session", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
     def __repr__(self):
         return f"<VideoWatchSession {self.id}: {self.video_id} - {self.completion_percentage}%>"
@@ -107,7 +109,7 @@ class VideoCompletionMilestone(Base):
     badge_id = Column(String, ForeignKey("user_badges.id"), nullable=True)
 
     # Relationships
-    user = relationship("User")
+    user = relationship("User", lazy="selectin")
 
     __table_args__ = (
         Index(
@@ -166,8 +168,8 @@ class VideoNote(Base):
     )
 
     # Relationships
-    user = relationship("User")
-    session = relationship("VideoWatchSession", back_populates="notes")
+    user = relationship("User", lazy="selectin")
+    session = relationship("VideoWatchSession", back_populates="notes", lazy="selectin")
 
     def __repr__(self):
         return f"<VideoNote {self.id}: {self.video_id}@{self.timestamp}s>"
@@ -217,8 +219,8 @@ class VideoBookmark(Base):
     )
 
     # Relationships
-    user = relationship("User")
-    session = relationship("VideoWatchSession", back_populates="bookmarks")
+    user = relationship("User", lazy="selectin")
+    session = relationship("VideoWatchSession", back_populates="bookmarks", lazy="selectin")
 
     def __repr__(self):
         return f"<VideoBookmark {self.id}: {self.title}@{self.timestamp}s>"
@@ -267,7 +269,7 @@ class VideoAnalyticsSummary(Base):
     )
 
     # Relationships
-    user = relationship("User")
+    user = relationship("User", lazy="selectin")
 
     __table_args__ = (
         Index("idx_user_period", "user_id", "period_type", "period_start", unique=True),

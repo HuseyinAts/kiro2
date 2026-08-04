@@ -39,23 +39,23 @@ class AuthRateLimiter:
     def __init__(self):
         # Rate limit rules per endpoint
         self.rules: dict[str, RateLimitRule] = {
-            # Login: 5 attempts per minute
+            # Login: 300 attempts per minute
             "/api/v1/auth/login": RateLimitRule(
-                max_attempts=5,
+                max_attempts=300,
                 window_seconds=60,
                 block_duration=300,  # 5 minutes block
             ),
             "/api/v1/auth/giris": RateLimitRule(
-                max_attempts=5, window_seconds=60, block_duration=300
+                max_attempts=300, window_seconds=60, block_duration=300
             ),
-            # Register: 3 attempts per minute
+            # Register: 300 attempts per minute
             "/api/v1/auth/register": RateLimitRule(
-                max_attempts=3,
+                max_attempts=300,
                 window_seconds=60,
                 block_duration=600,  # 10 minutes block
             ),
             "/api/v1/auth/kayit": RateLimitRule(
-                max_attempts=3, window_seconds=60, block_duration=600
+                max_attempts=300, window_seconds=60, block_duration=600
             ),
             # Password reset: 3 attempts per hour
             "/api/v1/auth/password-reset": RateLimitRule(

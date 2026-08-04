@@ -231,10 +231,15 @@ describe('NetworkDetector', () => {
     it('should handle failed connection check', async () => {
       // Mock fetch failure
       global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+      
+      // Mock navigator.onLine to be false so the fallback doesn't treat it as a backend-only failure
+      navigator.onLine = false;
 
       const result = await detector.checkConnection();
       
       expect(result).toBe(false);
+      
+      navigator.onLine = true;
     });
   });
 
@@ -320,9 +325,10 @@ describe('NetworkDetector', () => {
     });
 
     it('should handle subscriber errors gracefully', () => {
-      const errorCallback = vi.fn(() => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const errorCallback = () => {
         throw new Error('Subscriber error');
-      });
+      };
       const normalCallback = vi.fn();
 
       detector.subscribe(errorCallback);
@@ -332,7 +338,8 @@ describe('NetworkDetector', () => {
       expect(() => {
         window.dispatchEvent(new Event('online'));
       }).not.toThrow();
-
+      
+      consoleSpy.mockRestore();
       expect(normalCallback).toHaveBeenCalled();
     });
   });

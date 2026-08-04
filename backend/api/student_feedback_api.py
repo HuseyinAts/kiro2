@@ -102,6 +102,16 @@ async def create_flag(
     db: AsyncSession = Depends(get_async_session),
 ) -> FlagResponse:
     """Öğrenci soru hata raporu gönderir."""
+    from models.question_bank import QuestionBankItem
+    
+    question = await db.get(QuestionBankItem, payload.question_id)
+    print(f"DEBUG_QUESTION: payload.question_id={payload.question_id}, question={question}")
+    if not question:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="question_id not found or constraint violation",
+        )
+
     flag = StudentQuestionFlag(
         id=str(uuid.uuid4()),
         user_id=str(current_user.id),
@@ -119,6 +129,7 @@ async def create_flag(
         if (
             "uq_student_flags_user_question_type" in err_str
             or "duplicate key" in err_str
+            or "unique constraint" in err_str
         ):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,

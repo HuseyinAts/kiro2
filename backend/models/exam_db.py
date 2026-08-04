@@ -4,10 +4,13 @@ database.py'den ayrıştırıldı (2026-01-10)
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 from typing import TYPE_CHECKING
+import sqlalchemy as sa
 
 from sqlalchemy import (
+    String,
     Boolean,
     CheckConstraint,
     DateTime,
@@ -43,18 +46,13 @@ class ExamSession(Base):
         Index("idx_exam_session_created", "created_at"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(
-        String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
     )
 
     # Exam information
@@ -95,12 +93,12 @@ class ExamSession(Base):
     # Relationships
     student: Mapped["StudentProfile"] = relationship(
         "StudentProfile", back_populates="exam_sessions"
-    )
+    , lazy="selectin")
     exam_questions: Mapped[list["ExamQuestion"]] = relationship(
-        "ExamQuestion", back_populates="exam_session"
+        "ExamQuestion", back_populates="exam_session", cascade="all, delete-orphan", lazy="selectin"
     )
     student_answers: Mapped[list["StudentAnswer"]] = relationship(
-        "StudentAnswer", back_populates="exam_session"
+        "StudentAnswer", back_populates="exam_session", cascade="all, delete-orphan", lazy="selectin"
     )
 
 
@@ -114,16 +112,13 @@ class ExamQuestion(Base):
         ),
         Index("idx_exam_question_session", "exam_session_id"),
         Index("idx_exam_question_order", "question_order"),
+        Index("idx_exam_question_question", "question_id"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    exam_session_id: Mapped[str] = mapped_column(String, ForeignKey("exam_sessions.id", ondelete="CASCADE"), nullable=False
     )
-    exam_session_id: Mapped[str] = mapped_column(
-        String, ForeignKey("exam_sessions.id", ondelete="CASCADE"), nullable=False
-    )
-    question_id: Mapped[str] = mapped_column(
-        String, ForeignKey("question_bank.id"), nullable=False
+    question_id: Mapped[str] = mapped_column(String, ForeignKey("question_bank.id"), nullable=False
     )
 
     question_order: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -131,7 +126,7 @@ class ExamQuestion(Base):
     # Relationships
     exam_session: Mapped["ExamSession"] = relationship(
         "ExamSession", back_populates="exam_questions"
-    )
+    , lazy="selectin")
     question: Mapped["QuestionBankItem"] = relationship(
         "QuestionBankItem",
         foreign_keys=[question_id],
@@ -151,16 +146,18 @@ class StudentAnswer(Base):
         ),
         Index("idx_student_answer_session", "exam_session_id"),
         Index("idx_student_answer_question", "question_id"),
+        Index(
+            "idx_student_answer_incorrect",
+            "is_correct",
+            postgresql_where=sa.text("is_correct = false")
+        ),
+        Index("idx_student_answer_answered_at", "answered_at"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    exam_session_id: Mapped[str] = mapped_column(String, ForeignKey("exam_sessions.id", ondelete="CASCADE"), nullable=False
     )
-    exam_session_id: Mapped[str] = mapped_column(
-        String, ForeignKey("exam_sessions.id", ondelete="CASCADE"), nullable=False
-    )
-    question_id: Mapped[str] = mapped_column(
-        String, ForeignKey("question_bank.id"), nullable=False
+    question_id: Mapped[str] = mapped_column(String, ForeignKey("question_bank.id"), nullable=False
     )
 
     # Answer information
@@ -186,7 +183,7 @@ class StudentAnswer(Base):
     # Relationships
     exam_session: Mapped["ExamSession"] = relationship(
         "ExamSession", back_populates="student_answers"
-    )
+    , lazy="selectin")
     question: Mapped["QuestionBankItem"] = relationship(
         "QuestionBankItem",
         foreign_keys=[question_id],

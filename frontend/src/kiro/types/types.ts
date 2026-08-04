@@ -923,6 +923,8 @@ export interface SohbetMesaj {
   id: string;
   rol: SohbetRol;
   metin: string;
+  /** Opsiyonel görsel (base64 veya URL) */
+  image?: string;
   /** AI balonu altı küçük etiket (örn. 'Sokratik') — opsiyonel */
   tag?: string;
   /** "düşünüyor…" token akışı sürerken soluk balon (stream pending) */
@@ -947,6 +949,7 @@ export interface SohbetStreamArgs {
   /** Backend ChatMessageRequest.student_id (zorunlu alan) — App-side route wrapper
    *  authStore.user.id'den enjekte eder (mevcut chatService.ts sözleşmesiyle aynı). */
   studentId?: string;
+  file?: File;
 }
 
 /** Çift-kollu akış geri çağrıları — onConnected(session_id) → onToken(t)×N → onFinished(mesaj) */

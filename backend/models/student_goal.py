@@ -5,7 +5,7 @@ Part of Mock Data Cleanup Phase 2
 
 from datetime import UTC, datetime
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, String, Text
+from sqlalchemy import String, Column, DateTime, Float, ForeignKey, String, Text
 
 from .base import Base
 
@@ -52,7 +52,7 @@ class StudentGoal(Base):
     )
 
     # Relationships (optional - if User model exists)
-    # user = relationship("User", back_populates="goals")
+    # user = relationship("User", back_populates="goals", lazy="selectin")
 
     def __repr__(self):
         return f"<StudentGoal(id={self.id}, user={self.user_id}, title={self.title}, status={self.status})>"

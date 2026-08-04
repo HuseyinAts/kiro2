@@ -349,15 +349,16 @@ async def check_elasticsearch_health() -> dict[str, Any]:
     start_time = time.time()
 
     try:
-        from elasticsearch import AsyncElasticsearch
-
-        es = AsyncElasticsearch(
-            ["http://localhost:9200"],
-            request_timeout=2,
-            retry_on_timeout=False,
-        )
-        health = await es.cluster.health()
-        await es.close()
+        from core.elasticsearch_client import get_elasticsearch_client
+        
+        es_wrapper = get_elasticsearch_client()
+        await es_wrapper._ensure_connected()
+        es = es_wrapper._client
+        
+        try:
+            health = await es.cluster.health(request_timeout=2.0)
+        except Exception:
+            health = {}
 
         duration_ms = (time.time() - start_time) * 1000
         cluster_status = health.get("status", "unknown")

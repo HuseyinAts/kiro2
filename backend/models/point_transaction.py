@@ -5,9 +5,10 @@ Bu model, kullanıcıların puan kazanma işlemlerini kaydeder.
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 
-from sqlalchemy import JSON, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import String, JSON, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -34,7 +35,7 @@ class PointTransaction(Base):
     timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     # Relationships
-    user = relationship("User", back_populates="point_transactions")
+    user = relationship("User", back_populates="point_transactions", lazy="selectin")
 
     def __repr__(self):
         return f"<PointTransaction(id={self.id}, user_id={self.user_id}, points={self.points}, reason='{self.reason}')>"

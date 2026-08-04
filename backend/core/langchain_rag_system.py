@@ -299,6 +299,11 @@ class VectorStoreManager:
             return
 
         try:
+            from core.turkish_nlp_utils import normalize_tr
+            # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
+            for doc in documents:
+                doc.page_content = normalize_tr(doc.page_content)
+
             vector_store = self.vector_stores[store_name]
             vector_store.add_documents(documents)
             logger.info(f"Added {len(documents)} documents to '{store_name}'")
@@ -316,6 +321,10 @@ class VectorStoreManager:
             return []
 
         try:
+            from core.turkish_nlp_utils import normalize_tr
+            # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
+            query = normalize_tr(query)
+
             vector_store = self.vector_stores[store_name]
 
             if filter:
@@ -343,6 +352,10 @@ class VectorStoreManager:
             return []
 
         try:
+            from core.turkish_nlp_utils import normalize_tr
+            # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
+            query = normalize_tr(query)
+
             vector_store = self.vector_stores[store_name]
             results = vector_store.max_marginal_relevance_search(
                 query, k=k, fetch_k=fetch_k, lambda_mult=lambda_mult

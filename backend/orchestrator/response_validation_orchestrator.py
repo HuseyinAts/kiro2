@@ -59,7 +59,7 @@ class ResponseValidationOrchestrator:
         fact_checker: FactChecker | None = None,
         consistency_checker: ConsistencyChecker | None = None,
         confidence_scorer: ConfidenceScorer | None = None,
-        parallel_validation: bool = True,
+        parallel_validation: bool = False,
     ):
         """
         Args:
@@ -138,16 +138,36 @@ class ResponseValidationOrchestrator:
             fact_result = self._handle_result(results[1], "fact_checking")
             consistency_result = self._handle_result(results[2], "consistency")
         else:
-            # Sıralı çalıştır
+            # Sıralı çalıştır - Token tasarrufu için Short-circuit mantığı
             agent_result = await self._safe_validate(
                 agent_validator.validate(response), "agent_specific"
             )
-            fact_result = await self._safe_validate(
-                self.fact_checker.check_facts(response), "fact_checking"
-            )
-            consistency_result = await self._safe_validate(
-                self.consistency_checker.check_consistency(response), "consistency"
-            )
+            
+            # Eğer agent_specific doğrulama çok düşükse (fail), fact_checking'i atla
+            if agent_result.score < 0.6:
+                logger.info(f"[{response.response_id}] Short-circuiting fact_checking due to low agent score ({agent_result.score})")
+                fact_result = ValidationResult(
+                    is_valid=False, score=agent_result.score, errors=[], 
+                    warnings=["Fact-checking skipped to save tokens due to early failure"], 
+                    suggestions=[], metadata={}
+                )
+            else:
+                fact_result = await self._safe_validate(
+                    self.fact_checker.check_facts(response), "fact_checking"
+                )
+            
+            # Eğer fact_checking veya agent fail ise consistency'i atla
+            if agent_result.score < 0.6 or fact_result.score < 0.6:
+                logger.info(f"[{response.response_id}] Short-circuiting consistency due to low earlier scores")
+                consistency_result = ValidationResult(
+                    is_valid=False, score=min(agent_result.score, fact_result.score), errors=[], 
+                    warnings=["Consistency skipped to save tokens due to early failure"], 
+                    suggestions=[], metadata={}
+                )
+            else:
+                consistency_result = await self._safe_validate(
+                    self.consistency_checker.check_consistency(response), "consistency"
+                )
 
         # Confidence score hesapla
         confidence, action = self.scorer.calculate_and_determine(

@@ -6,9 +6,11 @@ On kosul DAG'i ve ogrenci hakimiyet katmani.
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
+    String,
     JSON,
     Boolean,
     DateTime,
@@ -30,9 +32,7 @@ class KnowledgePoint(Base):
 
     __tablename__ = "knowledge_points"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
     topic_id: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
     code: Mapped[str] = mapped_column(
         String(50), nullable=False, unique=True, index=True
@@ -40,14 +40,14 @@ class KnowledgePoint(Base):
     name_tr: Mapped[str] = mapped_column(String(200), nullable=False)
     name: Mapped[str | None] = mapped_column(String(300), nullable=True)
     subject: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
     prerequisite_ids: Mapped[list | None] = mapped_column(
         JSON, nullable=True, default=list
-    )
+    , deferred=True)
     difficulty_range: Mapped[list | None] = mapped_column(
         JSON, nullable=True, default=lambda: [0.0, 1.0]
-    )
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    , deferred=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -64,13 +64,9 @@ class QuestionKnowledgeMapping(Base):
 
     __tablename__ = "question_knowledge_mappings"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
     question_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
-    knowledge_point_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("knowledge_points.id", ondelete="CASCADE"),
+    knowledge_point_id: Mapped[str] = mapped_column(String, ForeignKey("knowledge_points.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -98,18 +94,13 @@ class StudentKnowledgeState(Base):
 
     __tablename__ = "student_knowledge_states"
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     knowledge_point_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     subject: Mapped[str] = mapped_column(String(50), nullable=False)

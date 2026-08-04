@@ -6,9 +6,10 @@ Database models for study rooms, members, chat, and file sharing.
 
 from datetime import datetime
 from enum import Enum
-from uuid import uuid4
+from uuid6 import uuid7
 
 from sqlalchemy import (
+    String,
     ARRAY,
     Boolean,
     Column,
@@ -20,6 +21,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy import (
+    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
@@ -107,7 +109,7 @@ class StudyRoom(Base):
 
     __tablename__ = "study_rooms"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     organization_id = Column(
         String,
         ForeignKey("organizations.id", ondelete="RESTRICT"),
@@ -169,16 +171,16 @@ class StudyRoom(Base):
     # Relationships
     members = relationship(
         "RoomMember", back_populates="room", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     messages = relationship(
         "RoomChatMessage", back_populates="room", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     files = relationship(
         "SharedFile", back_populates="room", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     invitations = relationship(
         "RoomInvitation", back_populates="room", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
 
 # ============================================================
@@ -195,7 +197,7 @@ class RoomMember(Base):
 
     __tablename__ = "room_members"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -237,7 +239,7 @@ class RoomMember(Base):
     )
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="members")
+    room = relationship("StudyRoom", back_populates="members", lazy="selectin")
 
 
 # ============================================================
@@ -254,7 +256,7 @@ class RoomInvitation(Base):
 
     __tablename__ = "room_invitations"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
 
     # Inviter & Invitee
@@ -280,7 +282,7 @@ class RoomInvitation(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="invitations")
+    room = relationship("StudyRoom", back_populates="invitations", lazy="selectin")
 
 
 # ============================================================
@@ -297,7 +299,7 @@ class RoomChatMessage(Base):
 
     __tablename__ = "room_chat_messages"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -338,7 +340,7 @@ class RoomChatMessage(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="messages")
+    room = relationship("StudyRoom", back_populates="messages", lazy="selectin")
 
 
 # ============================================================
@@ -355,7 +357,7 @@ class SharedFile(Base):
 
     __tablename__ = "shared_files"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     uploaded_by = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -407,10 +409,10 @@ class SharedFile(Base):
     )
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="files")
+    room = relationship("StudyRoom", back_populates="files", lazy="selectin")
     versions = relationship(
         "FileVersion", back_populates="file", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
 
 # ============================================================
@@ -427,7 +429,7 @@ class FileVersion(Base):
 
     __tablename__ = "file_versions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     file_id = Column(String, ForeignKey("shared_files.id"), nullable=False)
 
     # Version Details
@@ -451,7 +453,7 @@ class FileVersion(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    file = relationship("SharedFile", back_populates="versions")
+    file = relationship("SharedFile", back_populates="versions", lazy="selectin")
 
 
 # ============================================================
@@ -467,7 +469,7 @@ class StudySession(Base):
     __tablename__ = "study_sessions"
     __table_args__ = {"extend_existing": True}
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -499,7 +501,7 @@ class RoomAnalytics(Base):
 
     __tablename__ = "room_analytics"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False, unique=True)
 
     # Member Statistics
@@ -553,7 +555,7 @@ class RoomSettings(Base):
 
     __tablename__ = "room_settings"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     room_id = Column(String, ForeignKey("study_rooms.id"), nullable=False, unique=True)
 
     # Chat Settings

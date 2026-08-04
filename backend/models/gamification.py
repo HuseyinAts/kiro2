@@ -12,8 +12,10 @@ KRITIK: BKTState SADECE BURADA tanimlanir.
 from __future__ import annotations
 
 import uuid
+from uuid6 import uuid7
 
 from sqlalchemy import (
+    String,
     JSON,
     Boolean,
     Column,
@@ -85,7 +87,7 @@ class Realm(Base):
     order_index = Column(Integer)
     is_active = Column(Boolean, default=True)
 
-    progress_records = relationship("RealmProgress", back_populates="realm")
+    progress_records = relationship("RealmProgress", back_populates="realm", lazy="selectin")
 
 
 class RealmProgress(Base):
@@ -109,7 +111,7 @@ class RealmProgress(Base):
     completed_at = Column(DateTime(timezone=True), nullable=True)
     unlocked_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    realm = relationship("Realm", back_populates="progress_records")
+    realm = relationship("Realm", back_populates="progress_records", lazy="selectin")
 
     __table_args__ = (UniqueConstraint("student_id", "realm_id"),)
 
@@ -182,7 +184,7 @@ class Oba(Base):
     max_members = Column(Integer, default=20)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    members = relationship("ObaUye", back_populates="oba")
+    members = relationship("ObaUye", back_populates="oba", lazy="selectin")
 
 
 class ObaUye(Base):
@@ -203,7 +205,7 @@ class ObaUye(Base):
     role = Column(String(10), default="toycu")  # toycu|noker|bey
     joined_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    oba = relationship("Oba", back_populates="members")
+    oba = relationship("Oba", back_populates="members", lazy="selectin")
 
     __table_args__ = (UniqueConstraint("user_id"),)
 
@@ -233,7 +235,7 @@ class UserBadge(Base):
 
     __tablename__ = "user_badges"
 
-    id = Column(String, primary_key=True)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     organization_id = Column(
         String,
         ForeignKey("organizations.id", ondelete="RESTRICT"),
@@ -247,7 +249,7 @@ class UserBadge(Base):
     auto_awarded = Column(Boolean, default=True)
 
     # Relationships
-    user = relationship("User", back_populates="badges")
+    user = relationship("User", back_populates="badges", lazy="selectin")
 
     __table_args__ = (
         UniqueConstraint("user_id", "badge_id"),

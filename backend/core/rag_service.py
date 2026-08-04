@@ -236,8 +236,11 @@ class RAGService:
     @lru_cache(maxsize=100)
     def _preprocess_text(self, text: str) -> str:
         """Preprocess text for better search results - cached"""
-        # Basic text preprocessing
-        text = text.strip().lower()
+        from core.turkish_nlp_utils import normalize_tr
+        
+        # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
+        text = normalize_tr(text)
+        
         # Remove extra whitespace
         text = " ".join(text.split())
         return text

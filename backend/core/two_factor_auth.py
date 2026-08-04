@@ -14,6 +14,9 @@ import base64
 import hashlib
 import io
 import secrets
+import json
+import os
+import redis
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
@@ -106,10 +109,9 @@ class TwoFactorAuthService:
             app_name: Authenticator uygulamasinda gorunecek uygulama adi
         """
         self.app_name = app_name
-        # Recovery token deposu (production'da Redis kullanilmali)
-        self._recovery_tokens: dict[str, RecoveryToken] = {}
-        # Kullanici MFA durumu deposu (production'da veritabaninda saklanmali)
-        self._user_mfa_status: dict[int, bool] = {}
+        # Redis connection setup for production scale
+        redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+        self._redis = redis.Redis.from_url(redis_url, decode_responses=True)
 
     def generate_secret(self) -> str:
         """
@@ -354,8 +356,21 @@ class TwoFactorAuthService:
             used=False,
         )
 
-        # Token'i depola
-        self._recovery_tokens[token] = recovery
+        # Token'i Redis'te depola
+        data = {
+            "token": recovery.token,
+            "user_email": recovery.user_email,
+            "email_code": recovery.email_code,
+            "created_at": recovery.created_at.isoformat(),
+            "expires_at": recovery.expires_at.isoformat(),
+            "verified": recovery.verified,
+            "used": recovery.used
+        }
+        self._redis.setex(
+            f"mfa_recovery:{token}",
+            timedelta(minutes=RECOVERY_TOKEN_EXPIRY_MINUTES),
+            json.dumps(data)
+        )
 
         logger.info(
             "mfa_recovery_initiated",
@@ -387,7 +402,7 @@ class TwoFactorAuthService:
             >>> if is_valid:
             ...     two_factor_auth.complete_mfa_recovery(token)
         """
-        recovery = self._recovery_tokens.get(token)
+        recovery = self.get_recovery_token_info(token)
 
         # Token bulunamadi
         if not recovery:
@@ -403,7 +418,7 @@ class TwoFactorAuthService:
                 expired_at=recovery.expires_at.isoformat(),
             )
             # Suresi dolmus token'i temizle
-            del self._recovery_tokens[token]
+            self._redis.delete(f"mfa_recovery:{token}")
             return False
 
         # Token zaten kullanilmis
@@ -425,6 +440,19 @@ class TwoFactorAuthService:
 
         # Dogrulama basarili
         recovery.verified = True
+        
+        # Redis'te guncelle
+        data = {
+            "token": recovery.token,
+            "user_email": recovery.user_email,
+            "email_code": recovery.email_code,
+            "created_at": recovery.created_at.isoformat(),
+            "expires_at": recovery.expires_at.isoformat(),
+            "verified": recovery.verified,
+            "used": recovery.used
+        }
+        remaining_ttl = max(1, int((recovery.expires_at - now).total_seconds()))
+        self._redis.setex(f"mfa_recovery:{token}", remaining_ttl, json.dumps(data))
 
         logger.info(
             "mfa_recovery_verified",
@@ -457,7 +485,7 @@ class TwoFactorAuthService:
             Bu islem MFA'yi tamamen devre disi birakir.
             Kullanici yeniden MFA kurmalidir.
         """
-        recovery = self._recovery_tokens.get(token)
+        recovery = self.get_recovery_token_info(token)
 
         # Token bulunamadi
         if not recovery:
@@ -482,7 +510,7 @@ class TwoFactorAuthService:
         recovery.used = True
 
         # Token'i depolardan kaldir
-        del self._recovery_tokens[token]
+        self._redis.delete(f"mfa_recovery:{token}")
 
         logger.info(
             "mfa_recovery_completed",
@@ -505,7 +533,19 @@ class TwoFactorAuthService:
         Returns:
             RecoveryToken veya None (bulunamadiysa)
         """
-        return self._recovery_tokens.get(token)
+        data_str = self._redis.get(f"mfa_recovery:{token}")
+        if not data_str:
+            return None
+        data = json.loads(data_str)
+        return RecoveryToken(
+            token=data["token"],
+            user_email=data["user_email"],
+            email_code=data["email_code"],
+            created_at=datetime.fromisoformat(data["created_at"]),
+            expires_at=datetime.fromisoformat(data["expires_at"]),
+            verified=data["verified"],
+            used=data["used"]
+        )
 
     def cleanup_expired_recovery_tokens(self) -> int:
         """
@@ -514,22 +554,8 @@ class TwoFactorAuthService:
         Returns:
             int: Temizlenen token sayisi
         """
-        now = datetime.now(UTC)
-        expired_tokens = [
-            token for token, recovery in self._recovery_tokens.items()
-            if now > recovery.expires_at
-        ]
-
-        for token in expired_tokens:
-            del self._recovery_tokens[token]
-
-        if expired_tokens:
-            logger.info(
-                "mfa_recovery_tokens_cleaned",
-                count=len(expired_tokens),
-            )
-
-        return len(expired_tokens)
+        # TTL handles cleanup automatically
+        return 0
 
     # ==================== MFA ADMIN ENFORCEMENT (REQ-1.6) ====================
 
@@ -573,7 +599,7 @@ class TwoFactorAuthService:
             user_id: Kullanici ID
             enabled: MFA aktif mi?
         """
-        self._user_mfa_status[user_id] = enabled
+        self._redis.set(f"mfa_status:{user_id}", str(enabled).lower())
         logger.info("mfa_status_updated", user_id=user_id, enabled=enabled)
 
     def get_user_mfa_status(self, user_id: int) -> bool:
@@ -586,7 +612,10 @@ class TwoFactorAuthService:
         Returns:
             bool: MFA aktif mi?
         """
-        return self._user_mfa_status.get(user_id, False)
+        val = self._redis.get(f"mfa_status:{user_id}")
+        if val is None:
+            return False
+        return val.lower() == "true"
 
     def enforce_mfa_for_admin(self, user_id: int, role: str) -> EnforcementResult:
         """

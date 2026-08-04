@@ -142,22 +142,22 @@ class LearningPathStudentProfile(Base):
     # Relationships
     learning_paths = relationship(
         "LearningPath", back_populates="student", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     completion_statuses = relationship(
         "TopicCompletion", back_populates="student", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     quiz_submissions = relationship(
         "QuizSubmission", back_populates="student", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     progress_updates = relationship(
         "TopicProgress", back_populates="student", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
     # Table configuration
     __table_args__ = (
         Index("idx_student_grade", "grade"),
         Index("idx_student_exam_target", "exam_target"),
-        Index("idx_student_learning_style", "learning_style"),
+        Index("idx_lp_student_learning_style", "learning_style"),
         Index("idx_student_user_id", "user_id"),
         Index("idx_student_last_activity", "last_activity_at"),
         {"extend_existing": True},
@@ -284,7 +284,7 @@ class LearningPath(Base):
     # Relationships
     student = relationship(
         "LearningPathStudentProfile", back_populates="learning_paths"
-    )
+    , lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -332,7 +332,7 @@ class TopicCompletion(Base):
     # Relationships
     student = relationship(
         "LearningPathStudentProfile", back_populates="completion_statuses"
-    )
+    , lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -376,7 +376,7 @@ class TopicProgress(Base):
     # Relationships
     student = relationship(
         "LearningPathStudentProfile", back_populates="progress_updates"
-    )
+    , lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -428,7 +428,7 @@ class QuizSubmission(Base):
     # Relationships
     student = relationship(
         "LearningPathStudentProfile", back_populates="quiz_submissions"
-    )
+    , lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -473,7 +473,7 @@ class Quiz(Base):
     # Relationships
     questions = relationship(
         "QuizQuestion", back_populates="quiz", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
     __table_args__ = (Index("idx_quiz_subject_topic", "subject", "topic"),)
 
@@ -509,7 +509,7 @@ class QuizQuestion(Base):
     points = Column(Float, nullable=False, default=1.0)  # Points for this question
 
     # Relationships
-    quiz = relationship("Quiz", back_populates="questions")
+    quiz = relationship("Quiz", back_populates="questions", lazy="selectin")
 
     __table_args__ = (Index("idx_quiz_question_order", "quiz_id", "order_number"),)
 

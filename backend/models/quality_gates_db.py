@@ -12,10 +12,12 @@ Models:
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    String,
     JSON,
     Boolean,
     DateTime,
@@ -52,9 +54,7 @@ class QualityGatesRun(Base):
         Index("idx_qg_run_triggered_by", "triggered_by"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
 
     # Pipeline info
     pipeline_name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -86,11 +86,11 @@ class QualityGatesRun(Base):
 
     # Override info
     overridden: Mapped[bool] = mapped_column(Boolean, default=False)
-    override_reason: Mapped[str | None] = mapped_column(Text)
+    override_reason: Mapped[str | None] = mapped_column(Text, deferred=True)
     override_approver: Mapped[str | None] = mapped_column(String(255))
 
     # Configuration used
-    config_snapshot: Mapped[dict | None] = mapped_column(JSON)
+    config_snapshot: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # Timestamps
     started_at: Mapped[datetime] = mapped_column(
@@ -106,7 +106,7 @@ class QualityGatesRun(Base):
         "GateResultRecord",
         back_populates="run",
         cascade="all, delete-orphan",
-    )
+        lazy="selectin")
 
 
 class GateResultRecord(Base):
@@ -125,13 +125,9 @@ class GateResultRecord(Base):
         Index("idx_qg_result_run_gate", "run_id", "gate_name"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
 
-    run_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("quality_gates_runs.id", ondelete="CASCADE"),
+    run_id: Mapped[str] = mapped_column(String, ForeignKey("quality_gates_runs.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -148,14 +144,14 @@ class GateResultRecord(Base):
     blocking: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Result
-    message: Mapped[str] = mapped_column(Text, nullable=False)
+    message: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     issues_count: Mapped[int] = mapped_column(Integer, default=0)
     auto_fixed: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Detailed data stored as JSON
-    issues: Mapped[list | None] = mapped_column(JSON)  # List of issue objects
-    metrics: Mapped[dict | None] = mapped_column(JSON)  # Gate-specific metrics
-    details: Mapped[dict | None] = mapped_column(JSON)  # Additional details
+    issues: Mapped[list | None] = mapped_column(JSON, deferred=True)  # List of issue objects
+    metrics: Mapped[dict | None] = mapped_column(JSON, deferred=True)  # Gate-specific metrics
+    details: Mapped[dict | None] = mapped_column(JSON, deferred=True)  # Additional details
 
     # Execution
     execution_time_ms: Mapped[float] = mapped_column(Float, nullable=False)
@@ -171,7 +167,7 @@ class GateResultRecord(Base):
     # Relationships
     run: Mapped["QualityGatesRun"] = relationship(
         "QualityGatesRun", back_populates="gate_results"
-    )
+    , lazy="selectin")
 
 
 class OverrideAuditLog(Base):
@@ -190,20 +186,16 @@ class OverrideAuditLog(Base):
         Index("idx_qg_override_created", "created_at"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
 
     # Request info
     gate_name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    run_id: Mapped[str | None] = mapped_column(
-        String,
-        ForeignKey("quality_gates_runs.id", ondelete="SET NULL"),
+    run_id: Mapped[str | None] = mapped_column(String, ForeignKey("quality_gates_runs.id", ondelete="SET NULL"),
     )
 
     # Requestor
     requestor: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     ticket_id: Mapped[str | None] = mapped_column(String(100))
 
     # Status
@@ -213,7 +205,7 @@ class OverrideAuditLog(Base):
 
     # Approval
     approver: Mapped[str | None] = mapped_column(String(255))
-    approver_comments: Mapped[str | None] = mapped_column(Text)
+    approver_comments: Mapped[str | None] = mapped_column(Text, deferred=True)
     approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Expiration

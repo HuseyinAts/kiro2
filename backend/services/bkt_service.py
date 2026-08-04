@@ -237,7 +237,7 @@ class BKTService:
             stmt = select(BKTState).where(
                 BKTState.student_id == student_id,
                 BKTState.topic_id == topic_id,
-            )
+            ).with_for_update()
             result = await db.execute(stmt)
             bkt_state = result.scalar_one_or_none()
         except Exception as e:
@@ -392,7 +392,7 @@ class BKTService:
             fsrs_stmt = sa_select(FSRSCard).where(
                 FSRSCard.student_id == student_id,
                 FSRSCard.topic == topic_id,
-            )
+            ).with_for_update()
             fsrs_row = await db.execute(fsrs_stmt)
             fsrs_card = fsrs_row.scalar_one_or_none()
 

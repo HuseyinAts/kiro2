@@ -10,6 +10,7 @@ import uuid
 from datetime import datetime
 from enum import Enum as PyEnum
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -78,6 +79,7 @@ class ReasoningSession(Base):
     problem_type = Column(
         String(50), nullable=True, comment="Problem type: math, logic, etc."
     )
+    problem_embedding = Column(Vector(768), nullable=True, comment="Embedding of the problem text")
     context = Column(Text, nullable=True, comment="Additional context")
 
     # Provider info
@@ -143,6 +145,13 @@ class ReasoningSession(Base):
 
     # Indexes
     __table_args__ = (
+        Index(
+            "ix_rs_problem_embedding_hnsw",
+            "problem_embedding",
+            postgresql_using="hnsw",
+            postgresql_with={"m": 16, "ef_construction": 64},
+            postgresql_ops={"problem_embedding": "vector_cosine_ops"}
+        ),
         Index("idx_reasoning_sessions_user", "user_id"),
         Index("idx_reasoning_sessions_status", "status"),
         Index("idx_reasoning_sessions_provider", "provider"),
@@ -348,7 +357,7 @@ class ReasoningCache(Base):
 
     # Problem embedding key
     problem_hash = Column(String(64), unique=True, nullable=False, index=True)
-    problem_embedding = Column(ARRAY(Float), nullable=True)
+    problem_embedding = Column(Vector(1536), nullable=True)
 
     # Cached data
     problem_text = Column(Text, nullable=False)
@@ -369,6 +378,13 @@ class ReasoningCache(Base):
 
     # Indexes
     __table_args__ = (
+        Index(
+            "ix_rc_problem_embedding_hnsw",
+            "problem_embedding",
+            postgresql_using="hnsw",
+            postgresql_with={"m": 16, "ef_construction": 64},
+            postgresql_ops={"problem_embedding": "vector_cosine_ops"}
+        ),
         Index("idx_reasoning_cache_hash", "problem_hash"),
         Index("idx_reasoning_cache_expires", "expires_at"),
     )

@@ -5,7 +5,7 @@ Part of Mock Data Cleanup Phase 2
 
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Text
+from sqlalchemy import String, Boolean, Column, DateTime, ForeignKey, String, Text
 
 from .base import Base
 
@@ -46,7 +46,7 @@ class Notification(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
 
     # Relationships (optional - if User model exists)
-    # user = relationship("User", back_populates="notifications")
+    # user = relationship("User", back_populates="notifications", lazy="selectin")
 
     def __repr__(self):
         return f"<Notification(id={self.id}, user={self.user_id}, type={self.notification_type}, read={self.is_read})>"

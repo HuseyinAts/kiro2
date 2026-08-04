@@ -117,6 +117,10 @@ const LearningPathMapPage   = lazy(() => import('./pages/LearningPathMapPage'));
 const ObaPage               = lazy(() => import('./pages/ObaPage'));
 const DailyQuestPage        = lazy(() => import('./pages/DailyQuestPage'));
 const BossFightPage         = lazy(() => import('./pages/BossFightPage'));
+
+// Yeni Eklenen Rotalar
+const HaftalikPlanPage      = lazy(() => import('./kiro/screens/HaftalikPlanPage'));
+const SoruCozmePage         = lazy(() => import('./kiro/screens/SoruCozmePage'));
 // Social Features (F0-F6)
 const SocialHubPage         = lazy(() => import('./pages/SocialHubPage'));
 const SoruMeydaniPage       = lazy(() => import('./pages/SoruMeydaniPage'));
@@ -391,6 +395,22 @@ function AppContent() {
                 element={
                   <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
                     <DailyPlanPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/weekly-plan"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <HaftalikPlanPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/soru-cozme"
+                element={
+                  <ProtectedRoute requiredRoles={['ogrenci', 'admin']}>
+                    <SoruCozmePage />
                   </ProtectedRoute>
                 }
               />

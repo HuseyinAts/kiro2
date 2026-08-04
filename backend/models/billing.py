@@ -11,9 +11,11 @@ Hard rules: VARCHAR PK (users.id deseni), String enum, FK String.
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
+    String,
     JSON,
     DateTime,
     ForeignKey,
@@ -40,9 +42,7 @@ class Plan(Base):
     __tablename__ = "plans"
     __table_args__ = ({"extend_existing": True},)
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
     code: Mapped[str] = mapped_column(String(40), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     price_try: Mapped[float] = mapped_column(
@@ -52,8 +52,8 @@ class Plan(Base):
         String(12), nullable=False, server_default="yearly"
     )
     seat_limit: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    features: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+    features: Mapped[dict | None] = mapped_column(JSON, nullable=True, deferred=True)
+    is_active: Mapped[bool] = mapped_column(default=True, nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -69,17 +69,12 @@ class OrganizationLicense(Base):
         {"extend_existing": True},
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
-    plan_id: Mapped[str] = mapped_column(
-        String, ForeignKey("plans.id", ondelete="RESTRICT"), nullable=False
+    plan_id: Mapped[str] = mapped_column(String, ForeignKey("plans.id", ondelete="RESTRICT"), nullable=False
     )
     seat_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
     status: Mapped[str] = mapped_column(
@@ -114,12 +109,8 @@ class DataProcessingAgreement(Base):
         {"extend_existing": True},
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -151,18 +142,12 @@ class Invoice(Base):
         {"extend_existing": True},
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
-    license_id: Mapped[str | None] = mapped_column(
-        String,
-        ForeignKey("organization_licenses.id", ondelete="SET NULL"),
+    license_id: Mapped[str | None] = mapped_column(String, ForeignKey("organization_licenses.id", ondelete="SET NULL"),
         nullable=True,
     )
     invoice_no: Mapped[str] = mapped_column(String(40), nullable=False)
@@ -188,4 +173,4 @@ class Invoice(Base):
 
     organization: Mapped["object"] = relationship(
         "Organization", viewonly=True, foreign_keys=[organization_id]
-    )
+    , lazy="selectin")

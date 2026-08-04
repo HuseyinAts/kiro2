@@ -191,6 +191,10 @@ class ContentRecommendationService:
 
     def _embed_text(self, text: str) -> list[float]:
         """Metin için embedding oluştur."""
+        # 2026 Ultra Expert NLP Lens Fix: Normalize Turkish text before embedding
+        from core.turkish_nlp_utils import normalize_tr
+        text = normalize_tr(text)
+
         if self._embedding_model is None:
             import hashlib
             hash_bytes = hashlib.sha256(text.encode()).digest()

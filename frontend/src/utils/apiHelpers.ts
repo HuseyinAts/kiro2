@@ -16,12 +16,28 @@ interface ApiResponse<T = any> {
 
 class ApiHelpers {
   /**
+   * Yanıtı standardize et: Backend eğer zaten {success, data, message} dönüyorsa aynen bırak,
+   * eğer doğrudan raw data dönüyorsa (CQRS endpoint'leri gibi), sahte bir {success, data} sarmalayıcısı ekle
+   * ki servisler .data çağırırken undefined yemesin.
+   */
+  private normalizeResponse<T>(data: any): ApiResponse<T> {
+    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+      return data as ApiResponse<T>;
+    }
+    return {
+      success: true,
+      data: data as T,
+      message: 'Success'
+    };
+  }
+
+  /**
    * GET isteği gönder
    */
   async get<T = any>(url: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.get(url, { params });
-      return response.data;
+      const response: AxiosResponse = await apiClient.get(url, { params });
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -32,8 +48,8 @@ class ApiHelpers {
    */
   async post<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.post(url, data);
-      return response.data;
+      const response: AxiosResponse = await apiClient.post(url, data);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -44,8 +60,8 @@ class ApiHelpers {
    */
   async put<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.put(url, data);
-      return response.data;
+      const response: AxiosResponse = await apiClient.put(url, data);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -56,8 +72,8 @@ class ApiHelpers {
    */
   async delete<T = any>(url: string): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.delete(url);
-      return response.data;
+      const response: AxiosResponse = await apiClient.delete(url);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -68,8 +84,8 @@ class ApiHelpers {
    */
   async patch<T = any>(url: string, data?: any): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.patch(url, data);
-      return response.data;
+      const response: AxiosResponse = await apiClient.patch(url, data);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }
@@ -80,8 +96,8 @@ class ApiHelpers {
    */
   async uploadFile<T = any>(url: string, file: File, onProgress?: (progress: number) => void): Promise<ApiResponse<T>> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await apiClient.uploadFile(url, file, onProgress);
-      return response.data;
+      const response: AxiosResponse = await apiClient.uploadFile(url, file, onProgress);
+      return this.normalizeResponse<T>(response.data);
     } catch (error) {
       throw this.handleError(error);
     }

@@ -6,9 +6,10 @@ Database models for video conferencing, screen sharing, whiteboard, and recordin
 
 from datetime import datetime
 from enum import Enum
-from uuid import uuid4
+from uuid6 import uuid7
 
 from sqlalchemy import (
+    String,
     ARRAY,
     Boolean,
     Column,
@@ -20,6 +21,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy import (
+    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
@@ -111,7 +113,7 @@ class LiveSession(Base):
 
     __tablename__ = "live_sessions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
 
     # Basic Information
     title = Column(String(255), nullable=False)
@@ -182,19 +184,19 @@ class LiveSession(Base):
     # Relationships
     participants = relationship(
         "SessionParticipant", back_populates="session", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     recordings = relationship(
         "SessionRecording", back_populates="session", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     whiteboard_sessions = relationship(
         "WhiteboardSession", back_populates="session", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     screen_shares = relationship(
         "ScreenShare", back_populates="session", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     chat_messages = relationship(
         "SessionChatMessage", back_populates="session", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
 
 # ============================================================
@@ -209,7 +211,7 @@ class SessionParticipant(Base):
 
     __tablename__ = "session_participants"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -246,7 +248,7 @@ class SessionParticipant(Base):
     )
 
     # Relationships
-    session = relationship("LiveSession", back_populates="participants")
+    session = relationship("LiveSession", back_populates="participants", lazy="selectin")
 
 
 # ============================================================
@@ -263,7 +265,7 @@ class ScreenShare(Base):
 
     __tablename__ = "screen_shares"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -285,7 +287,7 @@ class ScreenShare(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    session = relationship("LiveSession", back_populates="screen_shares")
+    session = relationship("LiveSession", back_populates="screen_shares", lazy="selectin")
 
 
 # ============================================================
@@ -302,7 +304,7 @@ class WhiteboardSession(Base):
 
     __tablename__ = "whiteboard_sessions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
 
     # Whiteboard Info
@@ -326,13 +328,13 @@ class WhiteboardSession(Base):
     )
 
     # Relationships
-    session = relationship("LiveSession", back_populates="whiteboard_sessions")
+    session = relationship("LiveSession", back_populates="whiteboard_sessions", lazy="selectin")
     strokes = relationship(
         "WhiteboardStroke", back_populates="whiteboard", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     equations = relationship(
         "WhiteboardEquation", back_populates="whiteboard", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
 
 class WhiteboardStroke(Base):
@@ -344,7 +346,7 @@ class WhiteboardStroke(Base):
 
     __tablename__ = "whiteboard_strokes"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     whiteboard_id = Column(String, ForeignKey("whiteboard_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -380,7 +382,7 @@ class WhiteboardStroke(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    whiteboard = relationship("WhiteboardSession", back_populates="strokes")
+    whiteboard = relationship("WhiteboardSession", back_populates="strokes", lazy="selectin")
 
 
 class WhiteboardEquation(Base):
@@ -392,7 +394,7 @@ class WhiteboardEquation(Base):
 
     __tablename__ = "whiteboard_equations"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     whiteboard_id = Column(String, ForeignKey("whiteboard_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -427,7 +429,7 @@ class WhiteboardEquation(Base):
     )
 
     # Relationships
-    whiteboard = relationship("WhiteboardSession", back_populates="equations")
+    whiteboard = relationship("WhiteboardSession", back_populates="equations", lazy="selectin")
 
 
 # ============================================================
@@ -444,7 +446,7 @@ class SessionRecording(Base):
 
     __tablename__ = "session_recordings"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
 
     # Recording Info
@@ -504,13 +506,13 @@ class SessionRecording(Base):
     )
 
     # Relationships
-    session = relationship("LiveSession", back_populates="recordings")
+    session = relationship("LiveSession", back_populates="recordings", lazy="selectin")
     views = relationship(
         "RecordingView", back_populates="recording", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     bookmarks = relationship(
         "RecordingBookmark", back_populates="recording", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
 
 class RecordingView(Base):
@@ -520,7 +522,7 @@ class RecordingView(Base):
 
     __tablename__ = "recording_views"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     recording_id = Column(String, ForeignKey("session_recordings.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"))
 
@@ -545,7 +547,7 @@ class RecordingView(Base):
     )
 
     # Relationships
-    recording = relationship("SessionRecording", back_populates="views")
+    recording = relationship("SessionRecording", back_populates="views", lazy="selectin")
 
 
 class RecordingBookmark(Base):
@@ -555,7 +557,7 @@ class RecordingBookmark(Base):
 
     __tablename__ = "recording_bookmarks"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     recording_id = Column(String, ForeignKey("session_recordings.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -567,7 +569,7 @@ class RecordingBookmark(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    recording = relationship("SessionRecording", back_populates="bookmarks")
+    recording = relationship("SessionRecording", back_populates="bookmarks", lazy="selectin")
 
 
 # ============================================================
@@ -582,7 +584,7 @@ class SessionChatMessage(Base):
 
     __tablename__ = "session_chat_messages"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(String, ForeignKey("live_sessions.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
@@ -606,7 +608,7 @@ class SessionChatMessage(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    session = relationship("LiveSession", back_populates="chat_messages")
+    session = relationship("LiveSession", back_populates="chat_messages", lazy="selectin")
 
 
 # ============================================================
@@ -621,7 +623,7 @@ class SessionAnalytics(Base):
 
     __tablename__ = "session_analytics"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     session_id = Column(
         String,
         ForeignKey("live_sessions.id"),

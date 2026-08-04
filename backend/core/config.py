@@ -82,6 +82,8 @@ class Settings:
         self.redis_db = int(os.getenv('REDIS_DB', '0'))
         self.redis_password = os.getenv('REDIS_PASSWORD')
         self.elasticsearch_url = os.getenv('ELASTICSEARCH_URL', 'http://localhost:9200')
+        self.elasticsearch_user = os.getenv('ELASTICSEARCH_USER', 'elastic')
+        self.elasticsearch_password = os.getenv('ELASTICSEARCH_PASSWORD', 'Kiro2Elastic2026!')
         self.elasticsearch_index = os.getenv('ELASTICSEARCH_INDEX', 'turkiye_sinav_platform')
         self.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-change-in-production')
         self.algorithm = 'HS256'

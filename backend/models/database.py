@@ -26,7 +26,6 @@ from .content_db import (
     ClassRoom,
     EducationalContent,
     EgitimIcerigi,  # Legacy alias
-    Question,
 )
 
 # Re-export Curriculum models
@@ -140,7 +139,6 @@ __all__ = [
     "TeacherProfile",
     "ParentProfile",
     # Content models
-    "Question",
     "EducationalContent",
     "EgitimIcerigi",
     "ClassRoom",

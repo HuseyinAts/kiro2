@@ -5,9 +5,10 @@ SQLAlchemy model for video_cache table
 
 from datetime import UTC, datetime
 from typing import Any
-from uuid import uuid4
+from uuid6 import uuid7
 
 from sqlalchemy import (
+    String,
     BigInteger,
     CheckConstraint,
     Column,
@@ -34,7 +35,7 @@ class VideoCache(Base):
     __tablename__ = "video_cache"
 
     # Primary key
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
 
     # Video identification
     video_id = Column(String(100), nullable=False, unique=True, index=True)

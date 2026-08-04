@@ -60,7 +60,6 @@ from .database import (
     LearningStyle,
     ParentProfile,
     # Question and Exam models
-    Question,
     QuestionDifficulty,
     StudentAnswer,
     StudentProfile,
@@ -259,7 +258,6 @@ __all__ = [
     "TeacherProfile",
     "ParentProfile",
     # Question and Exam models
-    "Question",
     "ExamSession",
     "ExamQuestion",
     "StudentAnswer",

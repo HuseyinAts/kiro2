@@ -166,11 +166,10 @@ class FourParameterIRTModel:
 
                 exp_val = np.exp(np.clip(-self.D * item.discrimination * (theta - item.difficulty), -20, 20))
                 P_prime = (item.upper_asymptote - item.guessing) * self.D * item.discrimination * exp_val / ((1 + exp_val) ** 2)
-                P_double_prime = -(item.upper_asymptote - item.guessing) * (self.D * item.discrimination) ** 2 * exp_val * (exp_val - 1) / ((1 + exp_val) ** 3)
-
+                P_double_prime = (item.upper_asymptote - item.guessing) * (self.D * item.discrimination) ** 2 * exp_val * (exp_val - 1) / ((1 + exp_val) ** 3)
                 u = response.response
                 first_deriv += (u - P) * P_prime / (P * Q)
-                second_deriv += (P_prime ** 2 * (Q - P) - P * Q * P_double_prime) / (P * Q) ** 2
+                second_deriv += ((u - P) * P_double_prime - (P_prime ** 2)) / (P * Q)
 
             if abs(second_deriv) < 1e-10:
                 break

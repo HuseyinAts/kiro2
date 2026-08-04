@@ -37,6 +37,7 @@ except ImportError:
     REDIS_AVAILABLE = False
 
 from core.config import EmbeddingConfig
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
 
@@ -224,6 +225,7 @@ class EmbeddingService:
         if not self._initialize():
             return self._fallback_embedding(text)
 
+        text = normalize_tr(text)
         start_time = time.time()
         self._stats.total_requests += 1
 
@@ -284,6 +286,8 @@ class EmbeddingService:
 
         if not texts:
             return []
+
+        texts = [normalize_tr(t) for t in texts]
 
         results: list[list[float]] = [None] * len(texts)  # type: ignore
         uncached_indices: list[int] = []

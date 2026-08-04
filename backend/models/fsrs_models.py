@@ -4,10 +4,12 @@ database.py'den ayrıştırıldı (2026-01-10)
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import date, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    String,
     JSON,
     CheckConstraint,
     Date,
@@ -42,23 +44,18 @@ class FSRSCard(Base):
         Index("idx_fsrs_card_state", "state"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Kart içeriği
-    front_text: Mapped[str] = mapped_column(Text, nullable=False)
-    back_text: Mapped[str] = mapped_column(Text, nullable=False)
+    front_text: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
+    back_text: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
     subject_area: Mapped[SubjectArea] = mapped_column(Enum(SubjectArea), nullable=False)
     topic: Mapped[str] = mapped_column(String(200), nullable=False)
 
@@ -76,7 +73,7 @@ class FSRSCard(Base):
     last_review: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Türk öğrenci özel faktörleri
-    cultural_factors: Mapped[dict | None] = mapped_column(JSON)
+    cultural_factors: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # Sistem alanları
     created_at: Mapped[datetime] = mapped_column(
@@ -87,10 +84,10 @@ class FSRSCard(Base):
     )
 
     # İlişkiler
-    student: Mapped["User"] = relationship("User", back_populates="fsrs_cards")
+    student: Mapped["User"] = relationship("User", back_populates="fsrs_cards", lazy="selectin")
     reviews: Mapped[list["FSRSReview"]] = relationship(
         "FSRSReview", back_populates="card"
-    )
+    , lazy="selectin")
 
 
 class FSRSReview(Base):
@@ -104,21 +101,15 @@ class FSRSReview(Base):
         Index("idx_fsrs_review_date", "review_date"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    card_id: Mapped[str] = mapped_column(
-        String, ForeignKey("fsrs_cards.id", ondelete="CASCADE"), nullable=False
+    card_id: Mapped[str] = mapped_column(String, ForeignKey("fsrs_cards.id", ondelete="CASCADE"), nullable=False
     )
-    student_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Review bilgileri
@@ -138,8 +129,8 @@ class FSRSReview(Base):
     cultural_adjustment: Mapped[float] = mapped_column(Float, default=1.0)
 
     # İlişkiler
-    card: Mapped["FSRSCard"] = relationship("FSRSCard", back_populates="reviews")
-    student: Mapped["User"] = relationship("User", back_populates="fsrs_reviews")
+    card: Mapped["FSRSCard"] = relationship("FSRSCard", back_populates="reviews", lazy="selectin")
+    student: Mapped["User"] = relationship("User", back_populates="fsrs_reviews", lazy="selectin")
 
 
 class FSRSSchedule(Base):
@@ -152,18 +143,13 @@ class FSRSSchedule(Base):
         Index("idx_fsrs_schedule_date", "schedule_date"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Zamanlama bilgileri
@@ -182,7 +168,7 @@ class FSRSSchedule(Base):
     adjustment_factor: Mapped[float] = mapped_column(Float, default=1.0)
 
     # İlişkiler
-    student: Mapped["User"] = relationship("User", back_populates="fsrs_schedules")
+    student: Mapped["User"] = relationship("User", back_populates="fsrs_schedules", lazy="selectin")
 
 
 class FSRSStudentProfile(Base):
@@ -191,25 +177,20 @@ class FSRSStudentProfile(Base):
     __tablename__ = "fsrs_student_profiles"
     __table_args__ = (Index("idx_fsrs_profile_student", "student_id"),)
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
 
     # FSRS parametreleri (17 parametre)
-    fsrs_parameters: Mapped[dict] = mapped_column(JSON, nullable=False)
+    fsrs_parameters: Mapped[dict] = mapped_column(JSON, nullable=False, deferred=True)
 
     # Türk öğrenci özel parametreleri
-    cultural_parameters: Mapped[dict] = mapped_column(JSON, nullable=False)
+    cultural_parameters: Mapped[dict] = mapped_column(JSON, nullable=False, deferred=True)
 
     # İstatistikler
     total_reviews: Mapped[int] = mapped_column(Integer, default=0)
@@ -225,7 +206,7 @@ class FSRSStudentProfile(Base):
     )
 
     # İlişkiler
-    student: Mapped["User"] = relationship("User", back_populates="fsrs_profile")
+    student: Mapped["User"] = relationship("User", back_populates="fsrs_profile", lazy="selectin")
 
 
 class FSRSStudySession(Base):
@@ -237,18 +218,13 @@ class FSRSStudySession(Base):
         Index("idx_fsrs_session_date", "session_date"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Oturum bilgileri
@@ -263,10 +239,10 @@ class FSRSStudySession(Base):
     average_response_time: Mapped[float] = mapped_column(Float, default=0.0)
 
     # Kültürel bağlam
-    cultural_context: Mapped[dict | None] = mapped_column(JSON)
+    cultural_context: Mapped[dict | None] = mapped_column(JSON, deferred=True)
 
     # İlişkiler
-    student: Mapped["User"] = relationship("User", back_populates="fsrs_study_sessions")
+    student: Mapped["User"] = relationship("User", back_populates="fsrs_study_sessions", lazy="selectin")
 
 
 class FSRSSubjectStats(Base):
@@ -279,18 +255,13 @@ class FSRSSubjectStats(Base):
         Index("idx_fsrs_stats_subject", "subject_area"),
     )
 
-    id: Mapped[str] = mapped_column(
-        String, primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    organization_id: Mapped[str] = mapped_column(
-        String,
-        ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(
-        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     subject_area: Mapped[SubjectArea] = mapped_column(Enum(SubjectArea), nullable=False)
 
@@ -307,4 +278,4 @@ class FSRSSubjectStats(Base):
     )
 
     # İlişkiler
-    student: Mapped["User"] = relationship("User", back_populates="fsrs_subject_stats")
+    student: Mapped["User"] = relationship("User", back_populates="fsrs_subject_stats", lazy="selectin")

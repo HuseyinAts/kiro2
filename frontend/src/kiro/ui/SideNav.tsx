@@ -64,7 +64,7 @@ export const NAV_ICONS = {
 export const STUDENT_NAV: SideNavSection[] = [
   { title: 'Çalışma', items: [
     { id: 'panel', label: 'Panel', href: '/panel', icon: NAV_ICONS.panel },
-    { id: 'plan', label: 'Haftalık Plan', href: '/plan', icon: NAV_ICONS.plan },
+    { id: 'plan', label: 'Haftalık Plan', href: '/weekly-plan', icon: NAV_ICONS.plan },
     { id: 'odev', label: 'Ödevlerim', href: '/odevlerim', icon: NAV_ICONS.odev },
     { id: 'path', label: 'Öğrenme Yolu', href: '/ogrenme-yolu', icon: NAV_ICONS.path },
     { id: 'solve', label: 'Soru Çözme', href: '/soru-cozme', icon: NAV_ICONS.solve },

@@ -7,9 +7,10 @@ REQ-1 ile REQ-8 arasindaki gereksinimleri destekler.
 
 from datetime import datetime
 from enum import Enum
-from uuid import uuid4
+from uuid6 import uuid7
 
 from sqlalchemy import (
+    String,
     Boolean,
     Column,
     Date,
@@ -21,6 +22,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy import (
+    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
@@ -86,7 +88,7 @@ class DiaryEntry(Base):
 
     __tablename__ = "diary_entries"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Tarih (benzersiz - gun basina tek kayit)
@@ -124,10 +126,10 @@ class DiaryEntry(Base):
     # Relationships
     insights = relationship(
         "Insight", back_populates="diary_entry", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     reflections = relationship(
         "Reflection", back_populates="diary_entry", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -164,7 +166,7 @@ class Insight(Base):
 
     __tablename__ = "insights"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     diary_entry_id = Column(
         String, ForeignKey("diary_entries.id", ondelete="CASCADE"), nullable=False
     )
@@ -196,7 +198,7 @@ class Insight(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
-    diary_entry = relationship("DiaryEntry", back_populates="insights")
+    diary_entry = relationship("DiaryEntry", back_populates="insights", lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -226,7 +228,7 @@ class Reflection(Base):
 
     __tablename__ = "reflections"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     diary_entry_id = Column(
         String, ForeignKey("diary_entries.id", ondelete="CASCADE"), nullable=False
     )
@@ -259,7 +261,7 @@ class Reflection(Base):
     )
 
     # Relationships
-    diary_entry = relationship("DiaryEntry", back_populates="reflections")
+    diary_entry = relationship("DiaryEntry", back_populates="reflections", lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -288,7 +290,7 @@ class LearningEntry(Base):
 
     __tablename__ = "learning_entries"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Content (REQ-4.1)
@@ -358,7 +360,7 @@ class EmotionalState(Base):
 
     __tablename__ = "emotional_states"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Timestamp
@@ -421,7 +423,7 @@ class Goal(Base):
 
     __tablename__ = "goals"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Goal info (REQ-6.1 - SMART)
@@ -522,7 +524,7 @@ class PeerComparison(Base):
 
     __tablename__ = "peer_comparisons"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Comparison period
@@ -585,7 +587,7 @@ class DiaryExport(Base):
 
     __tablename__ = "diary_exports"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String, primary_key=True, default=lambda: str(uuid7()))
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # Export info

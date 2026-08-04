@@ -82,9 +82,9 @@ def _model_tablolari() -> dict[str, sa.Table]:
             # icin ilgisiz; loglamak yuzlerce satir gurultu uretir.
             try:
                 nesne = getattr(mod, ad)
+                tablo = getattr(nesne, "__table__", None)
             except Exception:  # noqa: S112
                 continue
-            tablo = getattr(nesne, "__table__", None)
             if isinstance(tablo, sa.Table):
                 bulunan.setdefault(tablo.name, tablo)
     return bulunan

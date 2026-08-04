@@ -343,6 +343,14 @@ describe('LevelDisplay - Milestones', () => {
 describe('LevelDisplay - Level Up Animation', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    mockedUseGamification.useLevel = vi.fn().mockReturnValue({
+      levelProgress: mockLevelProgress,
+      loading: false,
+      error: null,
+      refresh: vi.fn(),
+      getLevelLeaderboard: vi.fn(),
+      getMilestones: vi.fn().mockResolvedValue([]),
+    });
   });
 
   afterEach(() => {

@@ -35,9 +35,11 @@ Additional fixes:
 """
 
 from enum import Enum
+from uuid6 import uuid7
 from uuid import uuid4
 
 from sqlalchemy import (
+    String,
     Boolean,
     Column,
     Float,
@@ -196,13 +198,13 @@ class StudentReview(Base):
     # Relationships
     ratings = relationship(
         "ReviewRating", back_populates="review", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     votes = relationship(
         "ReviewVote", back_populates="review", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
     reports = relationship(
         "ReviewReport", back_populates="review", cascade="all, delete-orphan"
-    )
+    , lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -253,7 +255,7 @@ class ReviewRating(Base):
     )
 
     # Relationship
-    review = relationship("StudentReview", back_populates="ratings")
+    review = relationship("StudentReview", back_populates="ratings", lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -294,7 +296,7 @@ class ReviewVote(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationship
-    review = relationship("StudentReview", back_populates="votes")
+    review = relationship("StudentReview", back_populates="votes", lazy="selectin")
 
     # Indexes
     __table_args__ = (
@@ -345,7 +347,7 @@ class ReviewReport(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationship
-    review = relationship("StudentReview", back_populates="reports")
+    review = relationship("StudentReview", back_populates="reports", lazy="selectin")
 
     # Indexes
     __table_args__ = (

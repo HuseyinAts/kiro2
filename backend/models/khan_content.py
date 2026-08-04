@@ -4,9 +4,11 @@ Content catalog, progress tracking, and certificates
 """
 
 import uuid
+from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
+    String,
     Boolean,
     Column,
     DateTime,
@@ -66,7 +68,7 @@ class KhanContent(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now)
 
     # Relationships
-    user_progress = relationship("KhanUserProgress", back_populates="content")
+    user_progress = relationship("KhanUserProgress", back_populates="content", lazy="selectin")
 
     def __repr__(self):
         return f"<KhanContent {self.khan_content_id}: {self.title}>"
@@ -119,8 +121,8 @@ class KhanUserProgress(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now)
 
     # Relationships
-    content = relationship("KhanContent", back_populates="user_progress")
-    user = relationship("User")
+    content = relationship("KhanContent", back_populates="user_progress", lazy="selectin")
+    user = relationship("User", lazy="selectin")
 
     def __repr__(self):
         return f"<KhanUserProgress user={self.user_id} content={self.khan_content_id} progress={self.proficiency_level}>"
@@ -159,7 +161,7 @@ class KhanCertificate(Base):
     last_synced_at = Column(DateTime(timezone=True), default=datetime.now)
 
     # Relationships
-    user = relationship("User")
+    user = relationship("User", lazy="selectin")
 
     def __repr__(self):
         return f"<KhanCertificate user={self.user_id} badge={self.badge_name}>"
@@ -218,7 +220,7 @@ class KhanOAuthToken(Base):
     )
 
     # Relationships
-    user = relationship("User")
+    user = relationship("User", lazy="selectin")
 
     def __repr__(self):
         return f"<KhanOAuthToken user={self.user_id} expires={self.expires_at}>"

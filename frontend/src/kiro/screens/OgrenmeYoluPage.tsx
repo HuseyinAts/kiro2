@@ -14,6 +14,7 @@ import { getMe, getSubjects, getCurriculum, getTopics, getTopicAtoms } from '../
 import { color, font } from '../tokens';
 import type { AtomKirilim, CurriculumDers, Persona, Subject, SubjectKey, Topic } from '../types';
 import { KiroThemeProvider, numText } from '../ui/theme';
+import { Link, useNavigate } from 'react-router-dom';
 import { SideNav } from '../ui/SideNav';
 import { MasteryBadge } from '../ui/MasteryBadge';
 import { ProgressRing } from '../ui/ProgressRing';
@@ -93,6 +94,7 @@ export function OgrenmeYoluPage(): React.ReactElement {
   const tek = useMedia('(max-width: 1024px)');
   const daralt = useMedia('(max-width: 390px)');
   const reduced = useReducedMotion();
+  const navigate = useNavigate();
 
   const [persona, setPersona] = React.useState<Persona | null>(null);
   const [subjects, setSubjects] = React.useState<Subject[] | null>(null);
@@ -325,7 +327,7 @@ export function OgrenmeYoluPage(): React.ReactElement {
                                   type="button"
                                   className="ky-node"
                                   aria-label={n.ad}
-                                  {...(n.locked ? { 'aria-disabled': true } : { onClick: () => undefined /* → Soru Çözme (portlu; app-shell rota bağlar) */ })}
+                                  {...(n.locked ? { 'aria-disabled': true } : { onClick: () => navigate('/soru-cozme') })}
                                   style={{ position: 'relative', width: 72, height: 72, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, cursor: n.locked ? 'default' : 'pointer', transition: 'transform 0.08s ease', ...n.nodeStyle }}
                                 >
                                   {n.isCurrentFirst && (
@@ -397,15 +399,15 @@ export function OgrenmeYoluPage(): React.ReactElement {
                           ~<span style={numText}>{curriculum!.next.min}</span> dk
                         </span>
                       </div>
-                      <a href="/soru-cozme" style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, height: 50, borderRadius: 14, background: ACCENT, color: '#fff', fontFamily: font.sans, fontSize: 15, fontWeight: 800, textDecoration: 'none', boxSizing: 'border-box', boxShadow: `0 5px 0 ${ACCENT_LEDGE}` }}>
+                      <Link to="/soru-cozme" style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, height: 50, borderRadius: 14, background: ACCENT, color: '#fff', fontFamily: font.sans, fontSize: 15, fontWeight: 800, textDecoration: 'none', boxSizing: 'border-box', boxShadow: `0 5px 0 ${ACCENT_LEDGE}` }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden><path d="M7 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 7 5.5Z" /></svg>
                         Konuya başla
-                      </a>
+                      </Link>
                       {atoms && (
-                        <a href={`/atomlar?konu=${encodeURIComponent(enZayif?.ad ?? '')}`} style={{ marginTop: 10, width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, padding: '9px 14px', border: `1px solid ${color.paper.border}`, borderRadius: 13, background: color.paper.subtle2, color: '#9A5D0D', fontFamily: font.sans, fontSize: 13, fontWeight: 700, textDecoration: 'none', lineHeight: 1.35, textAlign: 'center', boxSizing: 'border-box' }}>
+                        <Link to={`/atomlar?konu=${encodeURIComponent(enZayif?.ad ?? '')}`} style={{ marginTop: 10, width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, padding: '9px 14px', border: `1px solid ${color.paper.border}`, borderRadius: 13, background: color.paper.subtle2, color: '#9A5D0D', fontFamily: font.sans, fontSize: 13, fontWeight: 700, textDecoration: 'none', lineHeight: 1.35, textAlign: 'center', boxSizing: 'border-box' }}>
                           <svg width="15" height="15" style={{ flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><circle cx="12" cy="12" r="2.2" /><ellipse cx="12" cy="12" rx="10" ry="4.4" /><ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(60 12 12)" /><ellipse cx="12" cy="12" rx="10" ry="4.4" transform="rotate(120 12 12)" /></svg>
                           Atomlara in · en zayıf: {zayifAtom}
-                        </a>
+                        </Link>
                       )}
                     </div>
 

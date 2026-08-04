@@ -111,7 +111,7 @@ async def _db_satirlari() -> list[dict[str, Any]]:
 
 
 async def calistir(mod: str, onayla: bool, damga: str) -> int:
-    from elasticsearch import AsyncElasticsearch
+    from core.elasticsearch_client import get_elasticsearch_client
     from elasticsearch.helpers import async_bulk
 
     satirlar = await _db_satirlari()
@@ -120,7 +120,10 @@ async def calistir(mod: str, onayla: bool, damga: str) -> int:
     belgeler = [_belge_kur(s) for s in satirlar]
     print(f"belge kuruldu: {len(belgeler)} (bos doc_id / yasakli alan: 0)")
 
-    istemci = AsyncElasticsearch(ES_URL)
+    es_wrapper = get_elasticsearch_client()
+    await es_wrapper._ensure_connected()
+    istemci = es_wrapper._client
+    
     try:
         if await istemci.indices.exists(index=CANLI_INDEX):
             canli = (await istemci.count(index=CANLI_INDEX))["count"]

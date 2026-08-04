@@ -7,6 +7,7 @@ Requirements: REQ-48.1-48.16
 from datetime import datetime
 
 from sqlalchemy import (
+    String,
     JSON,
     Boolean,
     Column,
@@ -98,10 +99,10 @@ class OSYMQuestion(Base):
     source_url = Column(String(500))  # Kaynak URL
 
     # Relationships
-    reviewer = relationship("User", foreign_keys=[reviewed_by])
+    reviewer = relationship("User", foreign_keys=[reviewed_by], lazy="selectin")
     student_responses = relationship(
         "StudentQuestionResponse", back_populates="question"
-    )
+    , lazy="selectin")
 
     # Indexes for performance
     __table_args__ = (
@@ -166,8 +167,8 @@ class StudentQuestionResponse(Base):
     answered_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
-    student = relationship("User", foreign_keys=[student_id])
-    question = relationship("OSYMQuestion", back_populates="student_responses")
+    student = relationship("User", foreign_keys=[student_id], lazy="selectin")
+    question = relationship("OSYMQuestion", back_populates="student_responses", lazy="selectin")
 
     # Indexes
     __table_args__ = (
