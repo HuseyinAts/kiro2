@@ -511,6 +511,80 @@ async def send_message(
     }
 
 
+@router.post("/socratic-dialogue")
+@limiter.limit("10/minute")
+async def socratic_dialogue(
+    request: Request,
+    response: Response,
+    payload: ChatMessageRequest,
+    current_user: Any = _auth_dep,
+    db: AsyncSession = _db_dep,
+) -> dict[str, Any]:
+    """Sokratik diyalog ve pedagojik yönlendirme ucu."""
+    await _verify_enhanced_chat_student_context(
+        payload.student_id, current_user, db
+    )
+
+    payload.teaching_mode = "socratic"
+    llm_response = await _call_llm(
+        payload.message, payload.subject, teaching_mode="socratic"
+    )
+
+    socratic_eval = socratic_rag_guardrail_service.validate_socratic_compliance(
+        llm_response.message
+    )
+    latex_eval = socratic_rag_guardrail_service.validate_latex_formatting(
+        llm_response.message
+    )
+
+    now = datetime.now(UTC).isoformat()
+    resp_id = f"soc-{uuid4().hex[:8]}"
+
+    session_id = payload.session_id
+    if db is not None and await _verify_chat_tables(db):
+        try:
+            user_id = (
+                str(getattr(current_user, "id", "anonymous"))
+                if current_user
+                else "anonymous"
+            )
+            session_id = await _get_or_create_session(
+                db,
+                user_id,
+                payload.session_id,
+                payload.subject,
+            )
+            await _save_message(db, session_id, "user", payload.message)
+            await _save_message(
+                db,
+                session_id,
+                "assistant",
+                llm_response.message,
+                model=os.getenv("OLLAMA_MODEL", "qwen3:8b"),
+                confidence=socratic_eval["socratic_score"],
+            )
+        except Exception as e:
+            logger.warning(f"Socratic DB persist failed: {e}")
+
+    return {
+        "success": True,
+        "data": {
+            "response_id": resp_id,
+            "message": llm_response.message,
+            "session_id": session_id,
+            "socratic_score": socratic_eval["socratic_score"],
+            "direct_answer_detected": socratic_eval["direct_answer_detected"],
+            "latex_formatting_valid": latex_eval["is_valid"],
+            "suggestions": socratic_eval["suggestions"],
+        },
+        "response": llm_response.message,
+        "agent": "socratic_tutor",
+        "timestamp": now,
+        "session_id": session_id,
+        "confidence_score": socratic_eval["socratic_score"],
+    }
+
+
 # ---------------------------------------------------------------------------
 # SSE Streaming endpoint
 # ---------------------------------------------------------------------------

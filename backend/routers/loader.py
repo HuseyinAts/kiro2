@@ -118,7 +118,6 @@ DISABLED_ROUTERS: dict[str, str] = {
     # AI & Misc Redundant
     "api.cultural_adaptation_api": "Over-engineering / AI",
     "api.sequential_reasoning_api": "Over-engineering / AI",
-    "api.enhanced_chat": "Over-engineering / AI",
     "api.multi_agent": "Over-engineering / AI",
     "api.vision_api": "Over-engineering / AI",
     "api.yolo_detection_api": "Over-engineering / AI",
