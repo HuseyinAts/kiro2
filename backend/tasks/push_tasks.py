@@ -52,8 +52,9 @@ _DEFAULT_DB_URL = (
 
 _INSERT_NOTIFICATION_SQL = """
     INSERT INTO notifications
-        (id, user_id, title, message, notification_type, is_read, action_url, created_at)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        (id, user_id, title, message, notification_type, is_read, action_url,
+         created_at, organization_id)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 
 
@@ -65,11 +66,12 @@ def build_streak_reminder_notifications(rows):
     listeyi TRUNCATE ETMEZ (eski `users[:10]` bug'i giderildi).
     """
     notifications = []
-    for user_id, streak in rows:
+    for user_id, streak, organization_id in rows:
         notifications.append(
             {
                 "id": uuid.uuid4().hex,
                 "user_id": user_id,
+                "organization_id": organization_id,
                 "title": "Serini koru! \U0001f525",
                 "message": (
                     f"{streak} gunluk serini kaybetmek uzeresin. "
@@ -113,7 +115,7 @@ def _send_streak_reminders_impl(connect=None, db_url=None):
         with connect(db_url) as conn, conn.cursor() as cur:
             cur.execute(
                 """
-                    SELECT u.id, s.current_streak
+                    SELECT u.id, s.current_streak, u.organization_id
                     FROM users u
                     JOIN streaks s ON s.user_id = u.id
                     WHERE s.current_streak > 0
@@ -138,6 +140,7 @@ def _send_streak_reminders_impl(connect=None, db_url=None):
                         False,
                         n["action_url"],
                         now,
+                        n["organization_id"],
                     ),
                 )
 
