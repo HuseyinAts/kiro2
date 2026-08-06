@@ -12,6 +12,8 @@ Kapsam:
 
 from __future__ import annotations
 
+import logging
+
 from tasks.push_tasks import (
     _send_streak_reminders_impl,
     build_streak_reminder_notifications,
@@ -108,3 +110,59 @@ def test_streak_reminders_registered_in_beat_and_include():
     beat_tasks = {v["task"] for v in celery_app.conf.beat_schedule.values()}
     assert "tasks.push_tasks.send_streak_reminders" in beat_tasks
     assert "tasks.push_tasks" in celery_app.conf.include
+
+
+# --- DSN çözümleme + sır sızıntısı (6 Ağu 2026, canlı log'dan ölçüldü) ---
+#
+# Yukarıdaki testlerin HEPSİ `db_url="x"` + sahte connect enjekte ediyor, yani
+# env'den DSN çözümleme yolu hiç koşulmuyordu. Sonuç: görev üretimde 4 gün
+# boyunca her koşuda patladı (`sent: 0, status: error`) ve psycopg2'nin hata
+# metni DSN'i gömdüğü için `kiro2_app` parolası worker log'una 14 kez düştü.
+
+
+def test_sqlalchemy_driver_suffix_stripped_before_psycopg2(monkeypatch):
+    """DATABASE_URL SQLAlchemy formatındaysa psycopg2'ye ham libpq DSN gitmeli.
+
+    Container'da DATABASE_URL = postgresql+asyncpg://... psycopg2 '+asyncpg'
+    ekini anlamaz, dizeyi key=value sanır ve `invalid dsn` atar.
+    """
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://kiro2_app:gizli@host.docker.internal:5434/kiro2",  # pragma: allowlist secret
+    )
+    gorulen: dict[str, str] = {}
+
+    def _spy(url):
+        gorulen["url"] = url
+        return _FakeConn([])
+
+    _send_streak_reminders_impl(connect=_spy)
+
+    assert "+asyncpg" not in gorulen["url"], (
+        "psycopg2'ye SQLAlchemy DSN'i verildi: "
+        + gorulen["url"].replace("gizli", "***")
+    )
+    assert gorulen["url"].startswith("postgresql://")
+
+
+def test_connection_error_does_not_leak_password(caplog):
+    """psycopg2 hata metni DSN'i gömer; parola ne log'a ne sonuca sızmalı.
+
+    Dönen sözlük Celery sonuç backend'ine de yazıldığı için iki ayrı sızıntı
+    yüzeyi var — ikisi de assert ediliyor.
+    """
+    parola = "sup3r-gizli-parola"
+
+    def _patlayan_connect(url):
+        raise RuntimeError(
+            'invalid dsn: missing "=" after '
+            f'"postgresql+asyncpg://kiro2_app:{parola}@host.docker.internal:5434/kiro2"'
+            " in connection info string"
+        )
+
+    with caplog.at_level(logging.ERROR):
+        sonuc = _send_streak_reminders_impl(connect=_patlayan_connect, db_url="x")
+
+    assert sonuc["status"] == "error"
+    assert parola not in sonuc["error"], "Parola dönüş değerinde sızdı"
+    assert parola not in caplog.text, "Parola log kaydında sızdı"
