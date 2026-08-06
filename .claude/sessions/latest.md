@@ -1,55 +1,50 @@
-## Session Handoff — 2026-08-02 (S203)
-**Branch:** feature/self-evolution-optimization
-**Geri donus noktasi:** `git tag demo-baslangic-20260802`
-**Demo:** 2 Agu 20:00 yatirimci sunumu — `docs/DEMO_RUNBOOK_20260802.md`
+## Session Handoff — 2026-08-07 (S205: FAZ 0 içerik kurtarma — TAMAMLANDI)
 
-### Demo durumu (18:25 olcumu)
-- **Demo yolu: 22 uc, 0 adet 5xx, 0 adet 4xx.** Iki prova ayni sonucu verdi
-  (biri restart sonrasi = L1 soguk). Tum uclar <= 11 ms.
-- **Golden Flow: 175 gecti / 1 dustu / 2 atlandi** (oturum basi 164/12/2).
-- Prova komutu: `python backend/scripts/demo_yolu_probu.py --kisa` (exit 1 = 5xx var)
+**Dal:** feature/self-evolution-optimization · **Son commit:** `b84bdc503`
+**Önceki:** S204 uçtan uca denetim (`docs/audits/2026-08-06_uctan_uca_durum_tespiti.md`)
 
-### Bu oturumda kapananlar
-- **gf88** `295f34d9d` — `finally:` blogu None'a dokunuyordu; **28 cagri yeri**
-  var olmayan oturum icin 404 yerine 500 veriyordu.
-- **gf25** `9ea03d8c9` — UC SERI BAGLI sebep: DB DEFAULT yok · tz kaymasi
-  (5 kolon, `coaching_events` kacan kardes) · VARCHAR kimlik `int` tiplenmis
-  (8 istek 8 satir yazdi ve 8'i de 500 dondu).
-- **gf130 + FSRS-P0** `ee6d7c820` — legacy flashcard katmani 410 Gone;
-  `/fsrs/due` `varchar = uuid` yuzunden HIC calismamisti (frontend tekrar
-  sayfasi). Bekci artik SQL'i canliya karsi KOSTURUYOR.
-- **Cookie kimlik paritesi + L2 onbellek** `9035ad854` —
-  (a) `learning_style` 7 ucu yalniz Bearer kabul ediyordu, frontend cookie
-      kullaniyor -> tarayicida 401.
-  (b) `json.dumps(..., default=str)` Pydantic modelini repr DIZESINE
-      ceviriyordu -> L1 sicak 200 / L1 soguk + L2 sicak 500. "Tikla calisir,
-      tekrar tikla patlar". `MultiLayerCache` 7 dosyada kullaniliyor.
+### ✅ FAZ 0 kapandı (5 commit)
+| Commit | İş |
+|---|---|
+| `1091db7ab` | Tohum script'i mühürlendi + hacim/çeşitlilik invaryant testi |
+| `6f3380072` | Celery DSN çözümlemesi + parola maskeleme |
+| `eb40cb30d` | Streak bildirimi `organization_id` taşımıyordu |
+| `d5bf6c339` | Takipsiz `fa067642bdfe` migration'ı sürüm kontrolüne alındı |
+| `b84bdc503` | 22 scratch script `.gitignore`'a (glob değil açık liste) |
 
-### Fail Eden Testler
-- `gf82` learning-style/behavioral-data — **1 kirik**. Iki ayri kusur:
-  `users.id` gonderilince `can't subtract offset-naive and offset-aware
-  datetimes`; gecerli `STU_` ile `ForeignKeyViolationError`. Cikarma satiri
-  BULUNAMADI -> kok neden ILAN EDILMEDI. Demo ekraninda degil (arka plan
-  telemetrisi), runbook'ta GOSTERME listesinde.
+### İçerik kurtarma — canlı ölçüm
+`question_bank` **2.304 satır / 21 benzersiz → 187.835 / 182.519** (oran 0,97), aktif 110.858.
+Öğrenci kapısı `mv_safe_for_beta` **2.200 → 25.127**. Fizik/Biyoloji/Kimya 1'er → **11.071 /
+5.251 / 13.096**. Sentetik satırlar `qb_synthetic_backup_20260806`'da. HNSW tek-thread
+yeniden kuruldu (`indisvalid=t`, 695 MB); kopya ikinci HNSW geri getirilmedi (22→21 index).
+İnvaryant testi **RED→GREEN** kanıtlı (2.304<150.000 ve 0,009<0,90 düşüyordu).
 
-### Sonraki Adimlar (maks 5)
-1. `GF-K6` gf82 — iki kusur, ikisi de ayri: datetime naive/aware + FK ihlali
-2. `FSRS-K1` — `/recommendations` `/statistics` `/study-sessions/start` 500;
-   sonuncusunu **frontend cagiriyor** (`useLearningPath.ts:395,412`) -> urun karari
-3. `GF-K4`/`GF-K5` — 87 tablo metadata'da yok / 67 tablo DB'de yok
-4. FAZ 0 kalani: `A.3` -> `A.5` -> `A.6` -> `A.6b`
-5. `#468` CI tetikleme (dal master'dan 334+ commit onde)
+### Celery zinciri — üç seri bağlı kusur
+1. `psycopg2.connect`'e SQLAlchemy DSN'i (`+asyncpg`) ham veriliyordu → görev **4 gündür ölü**
+2. Hata metni DSN'i gömüyordu → `kiro2_app` parolası worker log'una **14 kez** düştü
+   (log + Celery sonuç backend'i = iki sızıntı yüzeyi)
+3. (1) düzelince ortaya çıktı: INSERT `organization_id` taşımıyordu (NOT NULL)
 
-### Kararlar (gelecek session tekrar tartismasin)
-- **Bearer'la olcum tarayiciyi TEMSIL ETMEZ.** Frontend `/auth/login/secure`
-  ile cookie kullaniyor. Demo/e2e olcumleri cookie ile yapilir.
-- **"Tablo var" bir VEKIL olcumdur.** Sema bekcisi sorguyu canliya karsi
-  KOSTURUR; tip uyumsuzlugu ad kontrolune yapisal olarak gorunmez.
-- **Tek sebep varsayma.** gf25'te uc, gf82'de iki sebep seri bagliydi.
-- **Onaysiz veri silme yok.** FK dogrulanamiyorsa `NOT VALID` ile ekle.
-- **Olcum aletini once dogrula.** Bu oturumda 6 "bulgu" alet hatasi cikti
-  (4 yanlis yol/metot · `users.id` vs `STU_` · `::text` cast'i parametre sanma).
-- **`git checkout HEAD --` commit'siz fix'i siler** — mutasyondan ONCE commit.
-- **`MSYS_NO_PATHCONV=1`** olmadan `docker exec ... /app` Windows yoluna cevrilir.
-- **Pre-commit ruff surumu yerelden FARKLI bicimlendiriyor** — hook ciktisini
-  esas al, uzerine yerel `ruff format` calistirma (dongu olur).
+Canlı doğrulama: `{'sent': 4, 'status': 'sent'}` — DB'de 4 satır, 4'ünde org dolu.
+Konteynerler yeniden oluşturulup sızmış log'lar imha edildi (14 → **0**).
+Testler 9/9; iki kritik test **mutasyonla çivili** (`1 failed`, `error` değil).
+
+### ⚠️ Açık kalemler
+- **Rebuild YAPILMADI**: fix konteynere `docker cp` ile konuldu, imajda yok. Çalışma ağacında
+  ~300 commit'siz dosya olduğu için imaja gömmek istenmedi. Sonraki gerçek deploy'da rebuild şart.
+- `questions` legacy tablosu **silik kalacak** (karar verildi). Yedekte mevcut; migration'ın
+  `downgrade()`'i `pass` — geri alınabilirmiş gibi görünüyor ama değil.
+- `tests/db/test_indexes.py` **vakum test** — sabitleri kendine assert ediyor, DB'ye bakmıyor.
+- `push_tasks.py:107` `date.today()` naive/aware karışımı (gf82 sınıfı), `noqa` ile işaretlendi.
+
+### Sonraki adımlar
+1. FAZ 1: CI'yı aktif dalda tetikle (#468) · `quality-gate.yml` no-op GF adımı · xdist çöküşü
+2. FAZ 2: 4 KVKK router'ını aç + SMTP kimlik bilgisi (#441)
+3. FAZ 3: PSP (iyzico/PayTR 3DS) + TLS
+4. FAZ 4: 167 kırık yol için ürün kararı
+5. Beklemede: 6 Cursor planı (vite code-split, pytest-xdist, socratic_guard,
+   teacher_copilot, PWA sync, alembic round-trip) — 18:00–19:00 işi, commit'siz duruyor
+
+### Çalışma şekli değişikliği
+Kullanıcı: "bana iş verme, tümünü sen yapacaksın her zaman" → `psql`/`docker`/`pytest` dahil
+tüm komutları Claude çalıştırır. CLAUDE.md'nin "İnsan Döngüsünde" bölümü **geçersiz**.
