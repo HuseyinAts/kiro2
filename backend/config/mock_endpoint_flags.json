@@ -19,5 +19,7 @@
   "analytics.content_usage": false,
   "content_management.questions_create": false,
   "content_management.questions_detail": false,
-  "content_management.search": false
+  "content_management.search": false,
+  "teacher_copilot.dashboard_analytics": false,
+  "teacher_copilot.misconception_alerts": false
 }
