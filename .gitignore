@@ -405,3 +405,31 @@ backend/scripts/quality/_calib_fazA/preds.json
 
 # poolA retag scratch SQL output
 backend/scripts/quality/_poolA_retag/export_*.sql
+
+# Tek kullanimlik hata-ayiklama artiklari (6 Agu 2026, S205 temizligi).
+# ACIK LISTE, glob DEGIL: backend/(check|debug|fix|scratch)_*.py desenine
+# ZATEN TAKIPLI 6 dosya uyuyor (debug_stub.py, fix_syntax_errors.py,
+# fix_test_api_batch2*.py). Glob yazmak, o dosyalar silinip yeniden
+# eklendiginde sessizce yok sayilmalarina yol acardi.
+backend/check_cols.py
+backend/check_db.py
+backend/check_db2.py
+backend/check_q.py
+backend/check_qrs.py
+backend/check_unfiltered_def.py
+backend/check_v_unfiltered.py
+backend/check_vdef.py
+backend/check_views.py
+backend/debug_500.py
+backend/debug_beta_cmd.py
+backend/debug_lp.py
+backend/debug_lp2.py
+backend/fix_all_org.py
+backend/fix_extra.py
+backend/fix_org_id.py
+backend/fix_passwords.py
+backend/fix_q_gate.py
+backend/fix_wc.py
+backend/scratch_check_alembic.py
+backend/scratch_check_db_type.py
+backend/scratch_test_gf5w.py
