@@ -1,60 +1,46 @@
-## Session Handoff — 2026-08-07 (S205: FAZ 0 + Cursor planları + loader/App kararları)
+## Session Handoff — 2026-08-07 02:00
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `2c845b736` docs: Gemini devir plani — durum, tuzaklar, 17 kalemlik oncelikli is listesi
+**Uncommitted:** 249 dosya (218 changed, +7061/-5918) — **TRIYAJ EDILMEDI, P0 risk**
 
-**Dal:** feature/self-evolution-optimization · **Son commit:** `af99079c2`
+### Yapilanlar
+- `backend/scripts/clean_import_question_bank.py` — TRUNCATE script'i mühürlendi, env-override + exit 2 (`1091db7ab`)
+- `backend/tests/db/test_question_bank_invariants.py` — hacim+benzersizlik invaryantı, RED→GREEN kanıtlı (`1091db7ab`)
+- `question_bank` **2.304/21 → 187.835/182.519 benzersiz** restore; kapı `mv_safe_for_beta` 2.200 → **25.127** (DB, commit yok)
+- `backend/tasks/push_tasks.py` — 3 seri bağlı kusur: DSN çözümü + parola maskeleme (`6f3380072`), `organization_id` (`eb40cb30d`)
+- `backend/alembic/versions/fa067642bdfe_force_drop_questions.py` — takipsizdi, sürüm kontrolüne alındı (`d5bf6c339`)
+- `.gitignore` — 22 scratch script, glob değil açık liste (`b84bdc503`)
+- `backend/api/teacher_copilot_api.py` + `frontend/src/components/Teacher/TeacherCoPilotDashboard.tsx` — mock olarak etiketlendi, bayrak true iken 501 (`d9f6953f6`)
+- `docs/audits/2026-08-07_disabled_routers_envanteri.md` — 110/110 router frontend'ce çağrılıyor, hiçbiri ölü değil (`0fb271e97`)
+- `backend/routers/loader.py` — 6 yasal/ticari kritik router açıldı, 104 kapalı (`0d17f924f`)
+- `frontend/src/App.tsx` — `/login` regresyonu geri alındı + `/teacher/copilot` mount (`af99079c2`)
+- `docs/HANDOFF_2026-08-07_gemini.md` — Gemini devir planı (`2c845b736`)
 
-### ✅ Tamamlanan iş (9 commit bu oturumda)
-`1091db7ab` question_bank mühür+invaryant · `6f3380072` celery DSN+parola ·
-`eb40cb30d` streak organization_id · `d5bf6c339` takipsiz migration ·
-`b84bdc503` scratch gitignore · `d9f6953f6` teacher-copilot mock-etiketli ·
-`0fb271e97` DISABLED_ROUTERS envanteri · `0d17f924f` 6 router açıldı ·
-`af99079c2` /login regresyon geri alımı + copilot rotası mount
+### Fail Eden Testler
+- **Backend (dokunulanlar): 18 passed, 2 skipped** — skip'ler `test_question_bank_invariants.py`;
+  `KVKK_VERIFY_DSN` yoksa sessizce atlanıyor. ⚠️ Yani bekçi CI'da **fiilen kapalı**.
+- 🔴 **Frontend: 28 dosya / 111 test KIRIK** — kök neden bilinmiyor. `git stash` ile
+  `App.tsx` çıkarılıp tekrar koşuldu, aynı kırık → bu oturumun regresyonu DEĞİL, önceden var.
+  Örnek: `frontend/src/test/components/LearningPath/VideoResourceGrid.test.tsx:164`
+- 🔴 **Backend uçtan uca ÖLÇÜLEMİYOR** — `pytest_asyncio` teardown deadlock (önceden var)
 
-### İçerik kurtarma
-`question_bank` **2.304/21 → 187.835/182.519** (aktif 110.858), kapı **25.127**.
-Celery: 3 seri bağlı kusur (DSN çözümü, parola sızıntısı, organization_id) çözüldü,
-görev ilk kez çalıştı (`sent: 4`).
+### Engelleyiciler
+- **249 commit'siz dosya** — bu ağaçta 3 regresyon bulundu (S204: 2, ben: `/login`). Daha olabilir.
+- **Celery fix imajda YOK** — `docker cp` ile kondu. Konteyner yeniden oluşturulursa
+  görev yine ölür + `kiro2_app` parolası tekrar log'a düşer (14 kayıt temizlenmişti).
+- **SMTP 6/6 değişken tanımsız** (`.env.mvp`) → şifremi-unuttum akışı ölü (kod hazır, 54/54 test).
 
-### loader.py kararı — UYGULANDI
-110 router'ın 110'unu da frontend çağırıyor (envanter: `docs/audits/2026-08-07_disabled_routers_envanteri.md`).
-6 yasal/ticari kritik açıldı: kvkk_consent/privacy/notice, org_billing, audit,
-ferpa_coppa_compliance. **Doğrulandı** (create_app() canlı route tablosu): 6/6 yüklendi,
-toplam yol 318→369. `test_router_registration.py` 3/3.
-**Kalan 104 router kasıtlı kapalı** — açılış maliyeti (import süresi/bellek) ölçülmedi.
+### Sonraki Adimlar (maks 5)
+1. **İş #1** — 249 dosyayı küme küme diff okuyarak triyaj + commit (`docs/HANDOFF_2026-08-07_gemini.md` §3)
+2. **İş #2** — İş #1 sonrası `docker compose build celery-worker celery-beat` (fix'i imaja al)
+3. **İş #3** — SMTP kimlik bilgisi + gerçek e-postayla uçtan uca doğrulama
+4. **İş #6** — 111 kırık frontend testinin kök nedeni (test paketi şu an karar aracı değil)
+5. **İş #7** — Kalan 104 router: açılış maliyetini ölç, sonra kademeli aç
 
-### App.tsx kararı — UYGULANDI
-`/login` regresyonu (KiroLoginRoute→ModernLoginPage) geri alındı (görev #419 emsali).
-`/teacher/copilot` rotası mount edildi. tsc + build geçti. `git stash` ile App.tsx
-çıkarılıp aynı kırık test tekrar koşuldu — **aynı şekilde kırık**, yani 28 dosya/111
-test kırığı App.tsx'ten bağımsız, önceden var olan durum.
-
-### 6 Cursor planı — nihai durum
-| Plan | Durum |
-|---|---|
-| P4 PWA offline sync | BİTMİŞ — 26/26 test |
-| P2 CI paralelleştirme | BİTMİŞ — pytest.ini + vite pool zaten yeterli |
-| P6 Teacher Co-Pilot | TESLİM — mock etiketli, rota mount edildi |
-| P3 Code-splitting | YARIM — `vendor-mui-core` 794 kB + `vendor-prism` 619 kB kalıyor |
-| P1 Alembic round-trip | YARIM — 9 test statik denetim, gerçek upgrade→downgrade→upgrade YOK |
-| P5 Sokratik AI | KISMEN AÇILDI — `enhanced_chat` artık açık ama guard hâlâ bağlanmadı |
-
-### ⚠️ Doğrulanmamış — dokunulmadı, açıkça işaretlendi
-`AnimatedRoutes`, `GlobalCognitiveWrapper`, `SocraticAIAvatar` (App.tsx'te mount
-edilen 3 yeni bileşen, Cursor 5 Ağu) — kendi test dosyaları YOK. tsc+build geçiyor
-ama runtime davranışı doğrulanmadı.
-
-### Önceden var olan kırıklık (yeni bulundu, bu oturumun kapsamı dışı)
-Frontend: 28 test dosyası / 111 test App.tsx'ten bağımsız olarak kırık
-(`VideoResourceGrid.test.tsx` örneğiyle kanıtlandı — App.tsx stash'lense de aynı).
-Kök neden araştırılmadı.
-
-### Sonraki adımlar
-1. P5: guard'ı `enhanced_chat.py`'ye bağla (router artık açık)
-2. Önceden var olan 111 test kırığının kök nedeni (ayrı, büyük iş — belki deep-audit)
-3. P1: gerçek `alembic upgrade head && downgrade -1 && upgrade head` testi
-4. P3: `vendor-mui-core`/`vendor-prism` opsiyonel bölme
-5. Kalan 104 router: açılış maliyeti ölçümü, sonra kademeli açma kararı
-
-### Açık kalemler (FAZ 0'dan, henüz kapanmadı)
-- Celery fix konteynere `docker cp` ile kondu, **imajda yok** — sonraki deploy'da rebuild şart
-- `kiro2_app` parola rotasyonu kararı kullanıcıda
-- `questions` legacy tablosu silik kalacak (karar verildi)
+### Kararlar (gelecek session tekrar tartismasin)
+- `questions` legacy tablosu **geri yüklenmeyecek** — çift-tablo tuzağını (testing.md #23) diriltmemek için. Yedek: `backups/kiro2_pre_schema_restore_20260727.dump`
+- Teacher Co-Pilot **mock kalacak, etiketli** — gerçek veri yok (`user_item_fsrs`=1, `student_learning_profiles`=2, `student_question_flags`=0). Bağlansa pano boş görünürdü.
+- Kalan 104 router **kapalı bırakıldı** — kapatma gerekçesi (açılış performansı) hiç ölçülmedi; ölçmeden açmak da kapatmak kadar dayanaksız olurdu.
+- HNSW **tek** index kuruldu — `ix_question_embedding_hnsw` birebir kopyaydı, geri getirilmedi (22→21 index).
+- İkinci HNSW ve `loader.py`'nin 104 kalemi dışında **çalışma ağacına dokunulmadı** — kapsamı diff'le ölçmeden commit etmemek için.
+- Proje **Gemini'ye devrediliyor**: `docs/HANDOFF_2026-08-07_gemini.md` kendi kendine yeterli.
