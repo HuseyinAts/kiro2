@@ -1,0 +1,114 @@
+"""question_bank hacim + benzersizlik invaryantı — 5 Ağu 2026 içerik kaybının bekçisi.
+
+NEDEN VAR
+---------
+5 Ağu 2026'da `backend/scripts/clean_import_question_bank.py` (takipsiz, o gün hiç
+commit yok) `TRUNCATE TABLE question_bank CASCADE` çalıştırıp yerine 21 sentetik
+tohum sorusu yazdı. Tablo 187.835 satırdan 2.304 satıra düştü. Öğrenci kapısı
+`mv_safe_for_beta` 2.200 satır göstermeye devam etti — ama o 2.200 satırın altında
+**19 benzersiz soru** vardı. Fizik, Biyoloji ve Kimya birer soruya inmişti.
+
+Kayıp bir gün fark edilmedi, çünkü hiçbir kontrol ÇEŞİTLİLİĞE bakmıyordu:
+
+  - satır sayısı (2.304) "veri var" gibi görünüyordu;
+  - benzersizlik kısıtı `uq_qb_soru_hash_active` ölü DEĞİLDİ, çalışıyordu — ama
+    script `soru_hash`'i kimlik-tuzlu (`soru_id + metin`) ürettiği için her kopya
+    farklı hash aldı ve kısıtın ETRAFINDAN dolaşıldı.
+
+Bu yüzden iki ayrı eşik var ve ikisi birbirinden bağımsız düşer:
+
+    hacim tabanı       :   2.304  <  150.000   -> DÜŞER
+    benzersizlik oranı :   0,009  <  0,90      -> DÜŞER
+
+Tek eşik yetmezdi:
+
+  - yalnız hacim  -> 150.000 satırın hepsi aynı metnin kopyası olsa GEÇERDİ;
+  - yalnız oran   -> 187.835'ten 20.000'e meşru görünümlü bir küçülme KAÇARDI.
+
+Ders: **hacim ≠ çeşitlilik.** Sağlıklı görünen bir satır sayısı, arkasında kaç
+farklı soru olduğunu söylemez.
+
+Bu test gerçek PostgreSQL'e karşı koşar. Vekil ölçüm (tablo var mı, kolon var mı)
+kasıtlı olarak kullanılmadı: S203'te "tablo var" vekili aylarca yeşil kalırken
+`/fsrs/due` canlıda 500 dönüyordu.
+"""
+
+from __future__ import annotations
+
+import pytest
+import pytest_asyncio
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
+
+from tests.e2e.pg_dsn import SKIP_REASON, resolve_pg_dsn
+
+pytestmark = pytest.mark.db_invariant
+
+# 187.835'in ~%80'i. Meşru kalite elemesi için pay bırakır, felaketi yakalar.
+MIN_SATIR = 150_000
+
+# benzersiz / satır. Sağlıklı havuzda ~0,99; 5 Ağu'da 0,009 idi.
+MIN_BENZERSIZLIK = 0.90
+
+
+@pytest_asyncio.fixture
+async def db_session():
+    dsn = resolve_pg_dsn()
+    if not dsn:
+        pytest.skip(SKIP_REASON)
+
+    engine = create_async_engine(dsn, poolclass=NullPool)
+    try:
+        conn = await engine.connect()
+    except Exception as exc:
+        await engine.dispose()
+        pytest.skip(f"DB erişilemiyor: {type(exc).__name__}")
+
+    maker = async_sessionmaker(bind=conn, class_=AsyncSession, expire_on_commit=False)
+    session = maker()
+    try:
+        yield session
+    finally:
+        await session.close()
+        await conn.close()
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_question_bank_hacim_tabani(db_session):
+    """question_bank toplu bir silmeyle boşaltılmamış olmalı."""
+    satir = (
+        await db_session.execute(text("SELECT count(*) FROM question_bank"))
+    ).scalar_one()
+
+    assert satir >= MIN_SATIR, (
+        f"question_bank {satir:,} satır — taban {MIN_SATIR:,}. "
+        "Toplu silme/TRUNCATE şüphesi. Kurtarma: "
+        "backups/kiro2_pre_schema_restore_20260727.dump (pg_restore -a -t question_bank). "
+        "Mühürlü script: backend/scripts/clean_import_question_bank.py"
+    )
+
+
+@pytest.mark.asyncio
+async def test_question_bank_benzersizlik_orani(db_session):
+    """Satırların ezici çoğunluğu birbirinden farklı soru metni olmalı.
+
+    Hacim tabanını tek başına geçen bir kopya-doldurma (aynı metnin N kopyası)
+    bu kapıda düşer — 5 Ağu'daki başarısızlık tam olarak buydu.
+    """
+    satir, benzersiz = (
+        await db_session.execute(
+            text("SELECT count(*), count(DISTINCT question_text) FROM question_bank")
+        )
+    ).one()
+
+    assert satir > 0, "question_bank BOŞ — hacim testi de düşmüş olmalı."
+
+    oran = benzersiz / satir
+    assert oran >= MIN_BENZERSIZLIK, (
+        f"question_bank {satir:,} satır ama yalnız {benzersiz:,} benzersiz metin "
+        f"(oran {oran:.3f}, taban {MIN_BENZERSIZLIK}). "
+        "Hacim sağlıklı görünse bile içerik çeşitliliği çökmüş. "
+        "5 Ağu 2026: 2.304 satır / 21 benzersiz."
+    )
