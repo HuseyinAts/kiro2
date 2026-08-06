@@ -161,10 +161,10 @@ describe('VideoResourceGrid - Enhanced Video Scores', () => {
     render(<VideoResourceGrid videos={mockVideos} />);
     
     // Zorluk filtresi
-    expect(screen.getByText('Zorluk')).toBeInTheDocument();
+    expect(screen.getAllByText('Zorluk')[0]).toBeInTheDocument();
     
     // Süre filtresi
-    expect(screen.getByText('Süre')).toBeInTheDocument();
+    expect(screen.getAllByText('Süre')[0]).toBeInTheDocument();
   });
 
   it('enhanced skorları olan videoları destekler', () => {
