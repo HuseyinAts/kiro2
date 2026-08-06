@@ -1,7 +1,9 @@
 ## Session Handoff — 2026-08-07 02:00
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `2c845b736` docs: Gemini devir plani — durum, tuzaklar, 17 kalemlik oncelikli is listesi
-**Uncommitted:** 249 dosya (218 changed, +7061/-5918) — **TRIYAJ EDILMEDI, P0 risk**
+**Son commit:** `54e5016d8` docs(plans): save feature implementation plans... (paralel araç)
+**Uncommitted:** **temiz** — 249 dosya oturum sonunda Hüseyin/paralel araçça 4 commit'te kapatıldı
+(`b3be80686`,`f83fc9978`,`a77e660cc`,`54e5016d8`; 178 dosya). Doğrulandı: S205 dosyalarına dokunmadılar.
+⚠️ **20 commit push edilmemiş** — depo tek kopya.
 
 ### Yapilanlar
 - `backend/scripts/clean_import_question_bank.py` — TRUNCATE script'i mühürlendi, env-override + exit 2 (`1091db7ab`)
@@ -25,17 +27,18 @@
 - 🔴 **Backend uçtan uca ÖLÇÜLEMİYOR** — `pytest_asyncio` teardown deadlock (önceden var)
 
 ### Engelleyiciler
-- **249 commit'siz dosya** — bu ağaçta 3 regresyon bulundu (S204: 2, ben: `/login`). Daha olabilir.
+- **20 commit push edilmemiş** — uzakta yedek yok, disk arızası = tüm oturum kaybı.
+- **178 dosyalık 4 toplu commit denetlenmedi** — bu ağaçta 3 regresyon bulunmuştu (S204: 2, S205: `/login`).
 - **Celery fix imajda YOK** — `docker cp` ile kondu. Konteyner yeniden oluşturulursa
   görev yine ölür + `kiro2_app` parolası tekrar log'a düşer (14 kayıt temizlenmişti).
 - **SMTP 6/6 değişken tanımsız** (`.env.mvp`) → şifremi-unuttum akışı ölü (kod hazır, 54/54 test).
 
 ### Sonraki Adimlar (maks 5)
-1. **İş #1** — 249 dosyayı küme küme diff okuyarak triyaj + commit (`docs/HANDOFF_2026-08-07_gemini.md` §3)
-2. **İş #2** — İş #1 sonrası `docker compose build celery-worker celery-beat` (fix'i imaja al)
+1. **push** — 20 commit uzağa gitsin (tek kopya riski)
+2. **İş #2** — `docker compose build celery-worker celery-beat` (artık engelsiz, ağaç temiz)
 3. **İş #3** — SMTP kimlik bilgisi + gerçek e-postayla uçtan uca doğrulama
-4. **İş #6** — 111 kırık frontend testinin kök nedeni (test paketi şu an karar aracı değil)
-5. **İş #7** — Kalan 104 router: açılış maliyetini ölç, sonra kademeli aç
+4. **İş #1b** — 4 toplu commit'i regresyon açısından tara
+5. **İş #6** — 111 kırık frontend testinin kök nedeni (test paketi şu an karar aracı değil)
 
 ### Kararlar (gelecek session tekrar tartismasin)
 - `questions` legacy tablosu **geri yüklenmeyecek** — çift-tablo tuzağını (testing.md #23) diriltmemek için. Yedek: `backups/kiro2_pre_schema_restore_20260727.dump`

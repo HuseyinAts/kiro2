@@ -45,10 +45,17 @@ Detay: `docs/audits/2026-08-06_uctan_uca_durum_tespiti.md`
 | Ölçüm | Değer |
 |---|---|
 | Aktif dal | `feature/self-evolution-optimization` |
-| `master`'dan ileri | **375 commit** |
-| Push edilmemiş | **13 commit** |
-| **Commit'siz dosya** | **249** (218 değiştirilmiş + 37 takipsiz) ← **P0 RİSK** |
+| `master`'dan ileri | ~379 commit |
+| **Push edilmemiş** | **20 commit** ← tek kopya, yedeksiz |
+| **Commit'siz dosya** | **0 — çalışma ağacı TEMİZ** ✅ |
 | Kayıtlı API yolu | **369** (`create_app()` ile ölçüldü) |
+
+> **02:40 güncellemesi:** Devir planı yazıldığında 249 commit'siz dosya vardı.
+> Hüseyin (veya paralel bir araç) bunları 4 commit'te kapattı:
+> `b3be80686`, `f83fc9978`, `a77e660cc`, `54e5016d8` (178 dosya, +8586/-5859).
+> **Doğrulandı:** bu commit'ler `loader.py`, `push_tasks.py`, `App.tsx`,
+> `clean_import_question_bank.py`'ye **dokunmadı** (diff boş) — S205 işi ezilmedi.
+> Dolayısıyla **İş #1 KAPANDI**, İş #2 (celery rebuild) artık engelsiz.
 
 ### 1.3 Konteynerler
 
@@ -178,26 +185,24 @@ Ayrıca **formatlayıcı commit sırasında dosyayı değiştirir** → commit d
 
 ---
 
-#### İş #1 — 249 commit'siz dosyayı triyaj et ve commit'le
+#### ~~İş #1 — 249 commit'siz dosyayı triyaj et ve commit'le~~ ✅ KAPANDI (02:40)
 
-**Neden P0:** Tek bir kaza (disk, yanlış `git checkout`, `stash` hatası) bu işi
-yok eder. Ayrıca hangi değişikliğin ne olduğu bilinmiyor — S204 denetimi bu
-ağaçta **2 regresyon** buldu, ben 3.'sünü (`/login`) buldum. Daha var olabilir.
+Hüseyin/paralel araç 4 commit'te kapattı. `git status` **temiz**.
 
-**Nasıl:**
-1. Dosyaları kümelere ayır: `backend/models/*` (218'in büyük kısmı), `frontend/src/*`,
-   testler, config.
-2. **Her küme için diff oku** (§2.3). Özellikle ara:
-   - Silinen/geri alınan özellik (regresyon)
-   - Kapatılan router / devre dışı bırakılan kontrol
-   - Sabitlenmiş (hardcoded) veri
-3. Küme küme commit'le, her commit'te ne ölçtüğünü yaz.
+**Ama iki takip kalemi doğdu:**
 
-**Kabul kriteri:** `git status --short | wc -l` → **0**, ve her commit mesajı
-o commit'in neyi değiştirdiğini ölçümle açıklıyor.
+**1a — Push edilmemiş 20 commit.** Depo tek kopya, uzakta yedeği yok.
+Disk arızası = 20 commit'lik iş kaybı. `.claude/rules/security.md` >2GB pack
+uyarısına dikkat ederek push et.
+**Kabul kriteri:** `git log origin/feature/self-evolution-optimization..HEAD` → boş.
 
-**Uyarı:** `backend/semantic_cache.pkl` gibi ikili dosyalar var — bunlar
-`.gitignore`'a mı gitmeli, karar ver.
+**1b — 178 dosyalık toplu commit'ler denetlenmedi.** Bu ağaçta daha önce
+**3 regresyon** bulundu (S204: 2, S205: `/login`). Dört commit
+(`b3be80686`, `f83fc9978`, `a77e660cc`, `54e5016d8`) tek seferde 178 dosya
+taşıdı; her biri kendi içinde diff okunarak mı hazırlandı bilinmiyor.
+**Kabul kriteri:** Bu 4 commit'in diff'i regresyon açısından tarandı —
+özellikle: geri alınan özellik, kapatılan router/kontrol, sabitlenmiş veri.
+S205 dosyalarına dokunmadıkları **doğrulandı**; gerisi denetlenmedi.
 
 ---
 
