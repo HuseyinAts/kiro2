@@ -1,50 +1,50 @@
-## Session Handoff — 2026-08-07 (S205: FAZ 0 içerik kurtarma — TAMAMLANDI)
+## Session Handoff — 2026-08-07 (S205: FAZ 0 + Cursor planları)
 
-**Dal:** feature/self-evolution-optimization · **Son commit:** `b84bdc503`
-**Önceki:** S204 uçtan uca denetim (`docs/audits/2026-08-06_uctan_uca_durum_tespiti.md`)
+**Dal:** feature/self-evolution-optimization · **Son commit:** `d9f6953f6`
 
-### ✅ FAZ 0 kapandı (5 commit)
-| Commit | İş |
+### ✅ FAZ 0 kapandı (6 commit)
+`1091db7ab` mühür + invaryant testi · `6f3380072` celery DSN + parola maskeleme ·
+`eb40cb30d` streak `organization_id` · `d5bf6c339` takipsiz migration ·
+`b84bdc503` scratch gitignore · `0a7653911` oturum durumu
+
+`question_bank` **2.304/21 → 187.835/182.519** (aktif 110.858), kapı **25.127**.
+Celery zincirinde 3 seri bağlı kusur çözüldü; görev ilk kez çalıştı (`sent: 4`).
+
+### 6 Cursor planı — ölçülmüş durum
+| Plan | Durum |
 |---|---|
-| `1091db7ab` | Tohum script'i mühürlendi + hacim/çeşitlilik invaryant testi |
-| `6f3380072` | Celery DSN çözümlemesi + parola maskeleme |
-| `eb40cb30d` | Streak bildirimi `organization_id` taşımıyordu |
-| `d5bf6c339` | Takipsiz `fa067642bdfe` migration'ı sürüm kontrolüne alındı |
-| `b84bdc503` | 22 scratch script `.gitignore`'a (glob değil açık liste) |
+| P4 PWA offline sync | **BİTMİŞ** — 26/26 test |
+| P2 CI paralelleştirme | **BİTMİŞ** — pytest.ini + vite `pool:'forks'`; ci.yml değişikliği **gereksiz** (ayarlar config'de, CI zaten okuyor) |
+| P6 Teacher Co-Pilot | **TESLİM** (`d9f6953f6`) — mock olarak kayıtlı + etiketli |
+| P3 Code-splitting | **YARIM** — granüler chunk'lar oldu, ama `vendor-mui-core` 794 kB + `vendor-prism` 619 kB → planın "sıfır 500+ kB" kriteri tutmuyor |
+| P1 Alembic round-trip | **YARIM** — 9 test var ama hepsi statik dosya denetimi; planın istediği gerçek `upgrade→downgrade→upgrade` koşumu YOK. `test_migration_has_downgrade_function` `pass` gövdeli downgrade'i geçiriyor (fa067642bdfe kanıt) |
+| P5 Sokratik AI | **BAĞLANMAMIŞ** — service+guard+8 test var, `enhanced_chat.py`'de **0 referans**. Guard ölü kod |
 
-### İçerik kurtarma — canlı ölçüm
-`question_bank` **2.304 satır / 21 benzersiz → 187.835 / 182.519** (oran 0,97), aktif 110.858.
-Öğrenci kapısı `mv_safe_for_beta` **2.200 → 25.127**. Fizik/Biyoloji/Kimya 1'er → **11.071 /
-5.251 / 13.096**. Sentetik satırlar `qb_synthetic_backup_20260806`'da. HNSW tek-thread
-yeniden kuruldu (`indisvalid=t`, 695 MB); kopya ikinci HNSW geri getirilmedi (22→21 index).
-İnvaryant testi **RED→GREEN** kanıtlı (2.304<150.000 ve 0,009<0,90 düşüyordu).
+### 🔴 ENGELLEYİCİ — karar bekliyor
+`backend/routers/loader.py` ve `frontend/src/App.tsx` commit'siz ve **geniş kapsamlı**:
 
-### Celery zinciri — üç seri bağlı kusur
-1. `psycopg2.connect`'e SQLAlchemy DSN'i (`+asyncpg`) ham veriliyordu → görev **4 gündür ölü**
-2. Hata metni DSN'i gömüyordu → `kiro2_app` parolası worker log'una **14 kez** düştü
-   (log + Celery sonuç backend'i = iki sızıntı yüzeyi)
-3. (1) düzelince ortaya çıktı: INSERT `organization_id` taşımıyordu (NOT NULL)
+- **loader.py**: HEAD'de `DISABLED_ROUTERS` **boş**; çalışma ağacında **110 router kapalı**
+  ("Over-engineering / Phase 3"). İçinde `api.kvkk_consent_api`, `api.kvkk_privacy_api`,
+  `api.kvkk_notice_api` (KVKK yasal uyum), `api.org_billing_api`, `api.audit_api`,
+  `api.analytics`, `api.advanced_reports` ve **`api.enhanced_chat`** var.
+  → S204'ün "236 frontend yolundan 167'si 404" ve "KVKK 23 ucu kapalı" bulgularının kaynağı bu.
+- **App.tsx**: `/login` rotası `KiroLoginRoute` → `ModernLoginPage`'e **geri alınmış**.
+  Bu, `05ccfae1f` ile gelen tamamlanmış görev #419'un (A2.2b kademeli-swap) regresyonu.
 
-Canlı doğrulama: `{'sent': 4, 'status': 'sent'}` — DB'de 4 satır, 4'ünde org dolu.
-Konteynerler yeniden oluşturulup sızmış log'lar imha edildi (14 → **0**).
-Testler 9/9; iki kritik test **mutasyonla çivili** (`1 failed`, `error` değil).
+Bu yüzden P6'nın rota kaydı (`loader.py`) ve `/teacher/copilot` rotası (`App.tsx`)
+commit'e **alınmadı** — pano kodu inmiş ama henüz mount edilmemiş durumda.
 
-### ⚠️ Açık kalemler
-- **Rebuild YAPILMADI**: fix konteynere `docker cp` ile konuldu, imajda yok. Çalışma ağacında
-  ~300 commit'siz dosya olduğu için imaja gömmek istenmedi. Sonraki gerçek deploy'da rebuild şart.
-- `questions` legacy tablosu **silik kalacak** (karar verildi). Yedekte mevcut; migration'ın
-  `downgrade()`'i `pass` — geri alınabilirmiş gibi görünüyor ama değil.
-- `tests/db/test_indexes.py` **vakum test** — sabitleri kendine assert ediyor, DB'ye bakmıyor.
-- `push_tasks.py:107` `date.today()` naive/aware karışımı (gf82 sınıfı), `noqa` ile işaretlendi.
+**P5 de buna bağlı:** guardrail'i `enhanced_chat.py`'ye bağlamak, çalışma ağacında
+kapalı olan bir router'a bağlamak demek. Önce loader.py kararı gerekiyor.
 
 ### Sonraki adımlar
-1. FAZ 1: CI'yı aktif dalda tetikle (#468) · `quality-gate.yml` no-op GF adımı · xdist çöküşü
-2. FAZ 2: 4 KVKK router'ını aç + SMTP kimlik bilgisi (#441)
-3. FAZ 3: PSP (iyzico/PayTR 3DS) + TLS
-4. FAZ 4: 167 kırık yol için ürün kararı
-5. Beklemede: 6 Cursor planı (vite code-split, pytest-xdist, socratic_guard,
-   teacher_copilot, PWA sync, alembic round-trip) — 18:00–19:00 işi, commit'siz duruyor
+1. **loader.py kararı** — 110 router kapatma kasıtlı mı? KVKK uçları kapalı kalacak mı?
+2. **App.tsx kararı** — `/login` regresyonu geri alınsın mı (KiroLoginRoute'a dönüş)?
+3. Karar sonrası: P5 guard bağlama + P6 rota mount
+4. P1 gerçek round-trip testi (kolay, bağımsız)
+5. P3 `vendor-mui-core` 794 kB (opsiyonel perf)
 
-### Çalışma şekli değişikliği
-Kullanıcı: "bana iş verme, tümünü sen yapacaksın her zaman" → `psql`/`docker`/`pytest` dahil
-tüm komutları Claude çalıştırır. CLAUDE.md'nin "İnsan Döngüsünde" bölümü **geçersiz**.
+### Açık kalemler (FAZ 0'dan)
+- Celery fix konteynere `docker cp` ile kondu, **imajda yok** — sonraki deploy'da rebuild şart
+- `kiro2_app` parola rotasyonu: karar kullanıcıda
+- `questions` legacy tablosu silik kalacak (karar verildi)
