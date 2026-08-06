@@ -74,7 +74,9 @@ def beta_question_id() -> str:
             "asyncio.run(main())\n"
         ),
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    result = subprocess.run(
+        cmd, capture_output=True, text=True, timeout=30, check=False
+    )
     qid = result.stdout.strip().splitlines()[-1] if result.stdout else ""
     if not qid or qid == "None":
         pytest.skip(
@@ -104,7 +106,7 @@ def _cleanup_flags() -> None:
             "asyncio.run(main())\n"
         ),
     ]
-    subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    subprocess.run(cmd, capture_output=True, text=True, timeout=30, check=False)
 
 
 @pytest.fixture(autouse=True)
@@ -157,9 +159,9 @@ def test_duplicate_flag_rejected(
     r1 = client.post(f"{FEEDBACK}/flag", json=body, headers=_auth(beta_token))
     assert r1.status_code == 201, r1.text
     r2 = client.post(f"{FEEDBACK}/flag", json=body, headers=_auth(beta_token))
-    assert r2.status_code == 409, (
-        f"Duplicate flag should be rejected (S1.1). Got {r2.status_code}: {r2.text}"
-    )
+    assert (
+        r2.status_code == 409
+    ), f"Duplicate flag should be rejected (S1.1). Got {r2.status_code}: {r2.text}"
 
 
 # ------------------------------------------------------------------
@@ -229,6 +231,6 @@ def test_rate_limit_after_10_per_minute(
     # reject the 2nd onwards as 409 — so this test pattern expects EITHER:
     # - 1 success + 10 conflicts, then 11th 429 (post Task 2+3) — last is still 429
     # - 10 success + 11th 429 (Task 3 only, S1.1 not yet enforced for same flag_type)
-    assert 429 in statuses, (
-        f"Rate limit should reject 11th+ request (S1.2). Got: {statuses}"
-    )
+    assert (
+        429 in statuses
+    ), f"Rate limit should reject 11th+ request (S1.2). Got: {statuses}"

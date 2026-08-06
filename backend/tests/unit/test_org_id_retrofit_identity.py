@@ -26,7 +26,7 @@ def _engine():
     if not raw.startswith("postgresql"):
         pytest.skip("gerçek postgres DATABASE_URL yok")
     return create_engine(
-        make_url(raw).set(host="localhost", port=5434, database="kiro2")
+        make_url(raw).set(host="127.0.0.1", port=5434, database="kiro2")
     )
 
 

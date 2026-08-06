@@ -18,10 +18,10 @@ def create_test_app():
     app = FastAPI()
     # Router zaten /api/v1/health prefix'ine sahip, ek prefix ekleme
     app.include_router(health_router)
-    
+
     # Mock authentication
     app.dependency_overrides[get_current_user] = lambda: {"id": "test", "role": "admin"}
-    
+
     return app
 
 
@@ -87,7 +87,9 @@ class TestHealthDashboardAPI:
     @pytest.mark.asyncio
     async def test_get_health_history_with_days(self, client):
         """Test: /history days parametresi ile calisabilmeli."""
-        response = await client.get("/api/v1/health/history?endpoint=/api/v1/users&days=7")
+        response = await client.get(
+            "/api/v1/health/history?endpoint=/api/v1/users&days=7"
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -174,7 +176,9 @@ class TestHealthDashboardErrors:
     @pytest.mark.asyncio
     async def test_history_invalid_days(self, client):
         """Test: Gecersiz days parametresi hata vermeli."""
-        response = await client.get("/api/v1/health/history?endpoint=/api/v1/users&days=-1")
+        response = await client.get(
+            "/api/v1/health/history?endpoint=/api/v1/users&days=-1"
+        )
 
         # FastAPI validation error
         assert response.status_code == 422

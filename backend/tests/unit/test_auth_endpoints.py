@@ -159,6 +159,7 @@ def app_client():
     app.include_router(auth_router)
 
     from application.bootstrap import bootstrap_cqrs
+
     bootstrap_cqrs()
 
     mock_db = AsyncMock()
@@ -262,7 +263,11 @@ class TestLogin:
         """
         import asyncio
 
-        from application.commands.auth import TwoFactorRequired, LoginCommandHandler, LoginCommand
+        from application.commands.auth import (
+            LoginCommand,
+            LoginCommandHandler,
+            TwoFactorRequired,
+        )
         from models.user import KullaniciGiris
 
         db_user = _make_mock_db_user(is_2fa_enabled=True)
@@ -276,7 +281,13 @@ class TestLogin:
         with patch("application.commands.auth.CryptContext") as mock_pwd:
             mock_pwd.return_value.verify.return_value = True
             with pytest.raises(TwoFactorRequired) as exc_info:
-                asyncio.run(LoginCommandHandler().handle(LoginCommand(email=giris.email, password=giris.get_password(), db=mock_db)))
+                asyncio.run(
+                    LoginCommandHandler().handle(
+                        LoginCommand(
+                            email=giris.email, password=giris.get_password(), db=mock_db
+                        )
+                    )
+                )
 
         assert exc_info.value.email == _TEST_EMAIL
         assert exc_info.value.user_id == _TEST_USER_ID
@@ -1015,4 +1026,3 @@ class TestSafeUserDetail:
 
         err = ValueError("Kullanıcı bulunamadı")
         assert _safe_user_detail(err) == str(err)
-

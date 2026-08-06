@@ -3,10 +3,13 @@ Real Database Integration Tests
 NO MOCKS - Uses real PostgreSQL via Testcontainers
 Tests database operations, transactions, relationships, and constraints
 """
+
 import pytest
 
 # Module skip: Requires clean PostgreSQL (DuplicateTable idx_student_learning_style)
-pytestmark = pytest.mark.skipif(True, reason="Requires clean PostgreSQL via Testcontainers (DuplicateTable errors)")
+pytestmark = pytest.mark.skipif(
+    True, reason="Requires clean PostgreSQL via Testcontainers (DuplicateTable errors)"
+)
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.exc import IntegrityError
@@ -16,7 +19,6 @@ from models.database import (
     ExamSession,
     ExamType,
     StudentProfile,
-    SubjectArea,
     User,
     UserRole,
 )
@@ -66,9 +68,6 @@ def create_exam_session(student_profile_id, exam_type, exam_name=None, **kwargs)
         exam_name=exam_name,
         **defaults,
     )
-
-
-
 
 
 # ==============================================================================
@@ -476,9 +475,6 @@ class TestExamSession:
 
         assert exam.created_at is not None
         assert before <= exam.created_at <= after
-
-
-
 
 
 # ==============================================================================

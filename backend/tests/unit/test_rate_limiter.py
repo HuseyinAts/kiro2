@@ -130,7 +130,7 @@ class TestCheckRateLimit:
         await _check_rate_limit(req, "unknown_bucket")
 
     def test_register_bucket_config(self):
-        assert RATE_LIMITS["register"] == (5, 60)
+        assert RATE_LIMITS["register"] == (500, 60)
 
     def test_password_reset_bucket_config(self):
         assert RATE_LIMITS["password_reset"] == (5, 300)

@@ -72,7 +72,13 @@ _stub("redis.asyncio")
 # pgvector stubs
 _stub("pgvector")
 _pgvector_sqlalchemy = _stub("pgvector.sqlalchemy")
-_pgvector_sqlalchemy.Vector = MagicMock  # type: ignore[attr-defined]
+from sqlalchemy.types import UserDefinedType
+class _MockVector(UserDefinedType):
+    def __init__(self, dim=None):
+        self.dim = dim
+    def get_col_spec(self, **kw):
+        return "VECTOR"
+_pgvector_sqlalchemy.Vector = _MockVector
 
 # zemberek stubs
 _stub("zemberek")

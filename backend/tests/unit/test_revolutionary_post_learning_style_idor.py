@@ -8,9 +8,12 @@ from unittest.mock import AsyncMock, patch
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
+from api.revolutionary_features import router as revolutionary_router
 from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from main import app
 from models.enums_db import UserRole
+
+app.include_router(revolutionary_router)
 
 
 def _student_user() -> AuthenticatedUser:

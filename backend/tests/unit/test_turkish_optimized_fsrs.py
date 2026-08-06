@@ -134,8 +134,8 @@ class TestTurkishOptimizedFSRSInitialization:
         """Test FSRS initializes with correct parameters"""
         fsrs = TurkishOptimizedFSRS()
 
-        # Check 17 Turkish-optimized parameters
-        assert len(fsrs.turkish_params) == 17
+        # Check 19 Turkish-optimized parameters
+        assert len(fsrs.turkish_params) == 19
         assert fsrs.turkish_params[0] == 0.4072  # Initial stability
         assert fsrs.turkish_params[2] == 2.4063  # Good grade factor
         assert fsrs.turkish_params[3] == 5.8145  # Easy grade factor

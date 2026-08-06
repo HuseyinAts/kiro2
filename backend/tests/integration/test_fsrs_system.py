@@ -564,7 +564,8 @@ class TestFSRSService:
         self.mock_db.refresh.return_value = None
 
         with patch(
-            "services._deprecated.fsrs_service.DBFSRSStudySession", return_value=mock_session
+            "services._deprecated.fsrs_service.DBFSRSStudySession",
+            return_value=mock_session,
         ):
             result = await self.fsrs_service.start_study_session(
                 student_id="test_student", session_type="exam_prep", db=self.mock_db

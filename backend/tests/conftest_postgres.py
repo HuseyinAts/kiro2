@@ -91,21 +91,24 @@ async def db_session(
     """
     # Create a connection
     async with test_engine.connect() as connection:
-        # Start a transaction
-        async with connection.begin() as transaction:
-            # Create session bound to the transaction
-            async_session_factory = async_sessionmaker(
-                bind=connection,
-                class_=AsyncSession,
-                expire_on_commit=False,
-            )
-            session = async_session_factory()
+        # Start a transaction manually to avoid context manager double-rollback deadlocks
+        transaction = await connection.begin()
+        
+        # Create session bound to the transaction
+        async_session_factory = async_sessionmaker(
+            bind=connection,
+            class_=AsyncSession,
+            expire_on_commit=False,
+            join_transaction_mode="create_savepoint",
+        )
+        session = async_session_factory()
 
-            try:
-                yield session
-            finally:
-                # Rollback transaction after test
-                await session.close()
+        try:
+            yield session
+        finally:
+            await session.close()
+            # Rollback transaction after test
+            if transaction.is_active:
                 await transaction.rollback()
 
 

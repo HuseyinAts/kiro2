@@ -77,8 +77,9 @@ def _setup_overrides(app: FastAPI, role: str = "admin") -> MagicMock:
     """Wire up common dependency overrides."""
     mock_db = _mock_db()
     user = _mock_user(role)
-    
+
     from application.bootstrap import bootstrap_cqrs
+
     bootstrap_cqrs()
 
     try:
@@ -1083,7 +1084,8 @@ class TestSinavCoverage:
         engine.active_sessions = {}
 
         with (
-            patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine),
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
             patch(
                 "core.exam_session_store.get_student_sessions",
                 new_callable=AsyncMock,
@@ -1098,7 +1100,10 @@ class TestSinavCoverage:
         engine, session = self._mock_engine()
         engine.active_sessions = {"SESSION1": session}
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.get("/api/v1/osym-exam/my-exams")
         assert r.status_code in (200, 500)
 
@@ -1110,7 +1115,10 @@ class TestSinavCoverage:
         engine, _ = self._mock_engine()
         engine.exam_configs = {ExamType.TYT: engine.exam_configs}
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.get("/api/v1/osym-exam/exam-configs")
         assert r.status_code in (200, 500)
 
@@ -1119,7 +1127,10 @@ class TestSinavCoverage:
         """Create new exam session."""
         engine, session = self._mock_engine()
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.post(
                 "/api/v1/osym-exam/create",
                 json={"exam_type": "TYT"},
@@ -1139,7 +1150,10 @@ class TestSinavCoverage:
         """Start an existing exam session."""
         engine, session = self._mock_engine()
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.post("/api/v1/osym-exam/SESSION1/start")
         assert r.status_code in (200, 400, 403, 404, 500)
 
@@ -1148,7 +1162,10 @@ class TestSinavCoverage:
         engine, _ = self._mock_engine()
         engine.get_session_data = AsyncMock(return_value=None)
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.post("/api/v1/osym-exam/NONEXISTENT/start")
         assert r.status_code in (404, 500)
 
@@ -1157,7 +1174,10 @@ class TestSinavCoverage:
         engine, session = self._mock_engine()
         session.student_id = "OTHER-USER"
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.post("/api/v1/osym-exam/SESSION1/start")
         assert r.status_code in (403, 500)
 
@@ -1167,7 +1187,10 @@ class TestSinavCoverage:
         engine, _ = self._mock_engine()
         engine.get_session_data = AsyncMock(return_value=None)
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.get("/api/v1/osym-exam/BADID/current-question")
         assert r.status_code in (404, 500)
 
@@ -1176,7 +1199,10 @@ class TestSinavCoverage:
         engine, session = self._mock_engine()
         engine.get_current_question = AsyncMock(return_value=None)
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.get("/api/v1/osym-exam/SESSION1/current-question")
         assert r.status_code in (404, 500)
 
@@ -1203,7 +1229,10 @@ class TestSinavCoverage:
 
         engine.get_current_question = AsyncMock(return_value=question)
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.get("/api/v1/osym-exam/SESSION1/current-question")
         assert r.status_code in (200, 403, 500)
 
@@ -1213,7 +1242,10 @@ class TestSinavCoverage:
         engine, _ = self._mock_engine()
         engine.get_session_data = AsyncMock(return_value=None)
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.post(
                 "/api/v1/osym-exam/BADID/save-answer",
                 json={"question_id": str(uuid4()), "selected_answer": "A"},
@@ -1225,7 +1257,8 @@ class TestSinavCoverage:
         engine, session = self._mock_engine()
 
         with (
-            patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine),
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
             patch("core.database.get_db_session_context") as mock_ctx,
         ):
             mock_inner_db = _mock_db()
@@ -1261,7 +1294,10 @@ class TestSinavCoverage:
         engine.complete_exam = AsyncMock(return_value=perf)
         engine.get_subject_performance = AsyncMock(return_value=[])
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.post("/api/v1/osym-exam/SESSION1/complete")
         assert r.status_code in (200, 400, 403, 404, 500)
 
@@ -1284,7 +1320,10 @@ class TestSinavCoverage:
         engine.get_performance = AsyncMock(return_value=perf)
         engine.get_subject_performance = AsyncMock(return_value=[])
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.get("/api/v1/osym-exam/SESSION1/performance")
         assert r.status_code in (200, 400, 403, 404, 500)
 
@@ -1293,7 +1332,10 @@ class TestSinavCoverage:
         """Navigate to specific question index."""
         engine, session = self._mock_engine()
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.post(
                 "/api/v1/osym-exam/SESSION1/navigate",
                 json={"question_index": 5},
@@ -1305,7 +1347,10 @@ class TestSinavCoverage:
         """Flag a question."""
         engine, session = self._mock_engine()
 
-        with patch("application.commands.sinav.osym_exam_engine", engine), patch("api.sinav.osym_exam_engine", engine):
+        with (
+            patch("application.commands.sinav.osym_exam_engine", engine),
+            patch("api.sinav.osym_exam_engine", engine),
+        ):
             r = self.client.post(
                 "/api/v1/osym-exam/SESSION1/flag",
                 json={"question_id": str(uuid4()), "flagged": True},

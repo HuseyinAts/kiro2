@@ -53,9 +53,11 @@ async def test_oauth2_callback_returns_real_decodable_jwt() -> None:
             db=AsyncMock(),
         )
 
-    settings = get_settings()
+    from core.jwt_auth import get_jwt_manager
+
+    jwt_mgr = get_jwt_manager()
     payload = jwt.decode(
-        result["token"], settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
+        result["token"], jwt_mgr.secret_key, algorithms=[jwt_mgr.algorithm]
     )
     assert payload["sub"] == fake_user.id
     assert payload["email"] == fake_user.email
@@ -63,8 +65,8 @@ async def test_oauth2_callback_returns_real_decodable_jwt() -> None:
 
     refresh_payload = jwt.decode(
         result["refreshToken"],
-        settings.jwt_secret_key,
-        algorithms=[settings.jwt_algorithm],
+        jwt_mgr.secret_key,
+        algorithms=[jwt_mgr.algorithm],
     )
     assert refresh_payload["sub"] == fake_user.id
     assert refresh_payload["type"] == "refresh"

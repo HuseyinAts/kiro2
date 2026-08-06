@@ -10,6 +10,7 @@ def test_dungeon_progress_table_name():
 def test_dungeon_progress_columns():
     cols = {c.name for c in DungeonProgress.__table__.columns}
     expected = {
+        "organization_id",
         "user_id",
         "topic_id",
         "attempt_count",

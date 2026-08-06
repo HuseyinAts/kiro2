@@ -30,7 +30,7 @@ def _pg():
     )
     if "postgresql" not in raw:
         pytest.skip("gerçek postgres yok")
-    return make_url(raw).set(host="localhost", port=5434, database="kiro2")
+    return make_url(raw).set(host="127.0.0.1", port=5434, database="kiro2")
 
 
 def test_tables_and_seed():
@@ -107,7 +107,16 @@ async def seeded():
     yield {"sm": sm, "org": org, "tag": tag}
     async with sm() as s:
         await s.execute(
+            text("DELETE FROM org_memberships WHERE organization_id=:o"), {"o": org}
+        )
+        await s.execute(
+            text("DELETE FROM data_processing_agreements WHERE organization_id=:o"), {"o": org}
+        )
+        await s.execute(
             text("DELETE FROM users WHERE email LIKE :p"), {"p": f"billu_{tag}_%"}
+        )
+        await s.execute(
+            text("DELETE FROM organization_licenses WHERE organization_id=:o"), {"o": org}
         )
         await s.execute(text("DELETE FROM organizations WHERE id=:o"), {"o": org})
         await s.commit()

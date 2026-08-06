@@ -3,9 +3,10 @@ Elasticsearch Logger Test Modülü
 Elasticsearch tabanlı log yönetimi sistemi testleri
 """
 
-import pytest
 from datetime import UTC, datetime
 from unittest.mock import MagicMock
+
+import pytest
 
 from core.elasticsearch_logger import (
     ElasticsearchLogger,
@@ -31,7 +32,7 @@ class TestLogEntry:
             user_id="user_123",
             request_id="req_456",
             source="test_source",
-            metadata={"key": "value"}
+            metadata={"key": "value"},
         )
 
         assert entry.timestamp == timestamp
@@ -61,10 +62,7 @@ class TestElasticsearchLogger:
     @pytest.fixture
     def logger(self):
         """Test için logger fixture"""
-        return ElasticsearchLogger(
-            index_prefix="test-logs",
-            enabled=True
-        )
+        return ElasticsearchLogger(index_prefix="test-logs", enabled=True)
 
     def test_logger_initialization(self, logger):
         """Logger başlatma testi"""
@@ -85,7 +83,9 @@ class TestElasticsearchLogger:
         assert entries[0].metadata == {"key": "value"}
 
         # Error log
-        await logger.error("Error mesajı", category=LogCategory.DATABASE, error_code=500)
+        await logger.error(
+            "Error mesajı", category=LogCategory.DATABASE, error_code=500
+        )
         entries = await logger.get_entries()
         assert len(entries) == 2
         assert entries[1].level == LogLevel.ERROR
@@ -114,7 +114,7 @@ class TestElasticsearchLogger:
         await logger.info("Test")
         entries = await logger.get_entries()
         assert len(entries) == 1
-        
+
         await logger.clear()
         entries = await logger.get_entries()
         assert len(entries) == 0
@@ -127,17 +127,18 @@ class TestElasticsearchLoggingMiddleware:
     async def test_middleware_call(self):
         """Middleware request testi"""
         app = MagicMock()
+
         # Mock as an async function
         async def mock_app(scope, receive, send):
             app(scope, receive, send)
 
         logger = ElasticsearchLogger()
         middleware = ElasticsearchLoggingMiddleware(mock_app, logger)
-        
+
         scope = {"type": "http"}
         receive = MagicMock()
         send = MagicMock()
-        
+
         await middleware(scope, receive, send)
         app.assert_called_once_with(scope, receive, send)
 
@@ -152,6 +153,7 @@ class TestSingletonLogger:
 
         assert logger1 is logger2
         assert isinstance(logger1, ElasticsearchLogger)
+
 
 class TestLogLevelsAndCategories:
     """Log seviyeleri ve kategorileri testleri"""

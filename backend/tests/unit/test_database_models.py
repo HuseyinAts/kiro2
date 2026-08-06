@@ -49,7 +49,6 @@ from models.database import (
     LearningStyle,
     ParentProfile,
     # Question and Exam Models
-
     QuestionDifficulty,
     StudentAnswer,
     StudentProfile,

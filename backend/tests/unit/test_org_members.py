@@ -130,8 +130,10 @@ async def seeded():
     }
     async with sm() as s:
         await s.execute(
-            text("DELETE FROM org_memberships WHERE organization_id IN (:o,:o2)"),
-            {"o": org, "o2": org2},
+            text(
+                "DELETE FROM org_memberships WHERE organization_id IN (:o,:o2) OR user_id LIKE :p"
+            ),
+            {"o": org, "o2": org2, "p": f"onbu_{tag}_%"},
         )
         await s.execute(
             text("DELETE FROM organization_licenses WHERE organization_id=:o"),

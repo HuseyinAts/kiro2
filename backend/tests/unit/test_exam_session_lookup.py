@@ -19,6 +19,7 @@ attribute 'status'".
 
 from __future__ import annotations
 
+import core.exam_session_store
 import pytest
 
 from core.osym_exam_engine import ExamStatus, osym_exam_engine
@@ -41,7 +42,7 @@ def uc_katman_bos(monkeypatch: pytest.MonkeyPatch) -> None:
         return None
 
     # L2: modül içi `from core.exam_session_store import load_session`
-    monkeypatch.setattr("core.exam_session_store.load_session", _bos)
+    monkeypatch.setattr(core.exam_session_store, "load_session", _bos)
     # L3: DB yeniden kurulumu
     monkeypatch.setattr(osym_exam_engine, "_reconstruct_session_from_db", _bos)
 

@@ -11,7 +11,6 @@ Pytest configuration and fixtures for testing
 import asyncio
 import os
 import sys
-import secrets
 
 # Note: WindowsSelectorEventLoopPolicy is set in root conftest.py (before collection)
 # Generator import removed - not used in this file
@@ -104,8 +103,12 @@ os.environ["SQLALCHEMY_WARN_20"] = "false"  # Suppress SQLAlchemy warnings
 
 # Patch SQLite to accept PostgreSQL JSONB
 from sqlalchemy.dialects.sqlite.base import SQLiteTypeCompiler
+
+
 def visit_JSONB(self, type_, **kw):
     return "JSON"
+
+
 SQLiteTypeCompiler.visit_JSONB = visit_JSONB
 
 try:
@@ -145,31 +148,33 @@ def create_async_test_client(app):
 @pytest.fixture(autouse=True)
 def override_database_manager(test_async_engine):
     """Override DatabaseManager engine to use the shared test engine."""
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
     from core.database import db_manager
-    from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
-    
+
     original_engine = db_manager.engine
     original_maker = db_manager.async_session_maker
     original_initialized = db_manager._initialized
-    
+
     db_manager.engine = test_async_engine
     db_manager.async_session_maker = async_sessionmaker(
         test_async_engine, class_=AsyncSession, expire_on_commit=False
     )
     db_manager._initialized = True
-    
+
     yield
-    
+
     db_manager.engine = original_engine
     db_manager.async_session_maker = original_maker
     db_manager._initialized = original_initialized
 
+
 @pytest.fixture
 async def async_client(setup_database):
     """Create an async test client for the FastAPI app"""
-    from main import app
     from application.bootstrap import bootstrap_cqrs
-    
+    from main import app
+
     bootstrap_cqrs()
 
     async with create_async_test_client(app) as client:
@@ -326,11 +331,13 @@ def setup_test_database(test_database_url, worker_id):
             except Exception as e:
                 print(f"Warning: Could not remove test database {db_file}: {e}")
 
+
 @pytest.fixture(scope="session", autouse=True)
 async def global_db_manager_cleanup():
     """Ensure db_manager is closed to prevent hanging aiosqlite threads in pytest-asyncio teardown."""
     yield
     from core.database import db_manager
+
     await db_manager.close()
 
 
@@ -546,7 +553,6 @@ from sqlalchemy.ext.asyncio import (
 )
 
 # Import database models to ensure they're registered
-import models
 
 # Test database configuration
 TEST_DATABASE_URL = os.getenv(
@@ -640,12 +646,10 @@ async def db_session(
         try:
             yield session
         finally:
+            await session.close()
             # Rollback transaction cleanly
             if transaction.is_active:
                 await transaction.rollback()
-            await session.close()
-            # Allow event loop to process connection close callbacks to prevent deadlock
-            await asyncio.sleep(0)
 
 
 @pytest_asyncio.fixture
@@ -670,7 +674,6 @@ async def db_session_autocommit(
             yield session
         finally:
             await session.close()
-            await asyncio.sleep(0)
 
 
 # ============================================================================
@@ -1175,13 +1178,13 @@ def client():
     The auth_headers, auth_headers_admin, auth_headers_teacher fixtures
     are defined earlier in this file (lines 368-404).
     """
-    from main import app
     from application.bootstrap import bootstrap_cqrs
-    
+    from main import app
+
     bootstrap_cqrs()
 
     c = TestClient(app, raise_server_exceptions=True)
     c.headers.pop("Authorization", None)
-    
+
     with c:
         yield c
