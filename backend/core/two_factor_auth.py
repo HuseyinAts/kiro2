@@ -10,18 +10,19 @@ Implements TOTP-based 2FA with:
 - MFA recovery with email verification (REQ-1.5)
 - Admin MFA enforcement (REQ-1.6)
 """
+
 import base64
 import hashlib
 import io
-import secrets
 import json
 import os
-import redis
+import secrets
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
 import pyotp
 import qrcode
+import redis
 
 from core.structured_logger import get_logger
 
@@ -48,6 +49,7 @@ class RecoveryToken:
         verified: Email dogrulandi mi?
         used: Kullanildi mi?
     """
+
     token: str
     user_email: str
     email_code: str
@@ -72,6 +74,7 @@ class EnforcementResult:
         role: Kullanici rolu
         message: Aciklama mesaji
     """
+
     mfa_required: bool
     mfa_enabled: bool
     enforcement_needed: bool
@@ -116,10 +119,10 @@ class TwoFactorAuthService:
     def generate_secret(self) -> str:
         """
         Generate a new TOTP secret key
-        
+
         Returns:
             Base32 encoded secret key
-            
+
         Example:
             "JBSWY3DPEHPK3PXP"
         """
@@ -128,50 +131,43 @@ class TwoFactorAuthService:
         return secret
 
     def get_provisioning_uri(
-        self,
-        secret: str,
-        user_email: str,
-        issuer: str | None = None
+        self, secret: str, user_email: str, issuer: str | None = None
     ) -> str:
         """
         Generate provisioning URI for authenticator apps
-        
+
         Args:
             secret: TOTP secret key
             user_email: User's email address
             issuer: Optional issuer name
-            
+
         Returns:
             otpauth:// URI for QR code
-            
+
         Example:
             "otpauth://totp/Kiro2:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Kiro2"
         """
         totp = pyotp.TOTP(secret)
         uri = totp.provisioning_uri(
-            name=user_email,
-            issuer_name=issuer or self.app_name
+            name=user_email, issuer_name=issuer or self.app_name
         )
         logger.info("2fa_provisioning_uri_generated", email=user_email)
         return uri
 
     def generate_qr_code(
-        self,
-        secret: str,
-        user_email: str,
-        issuer: str | None = None
+        self, secret: str, user_email: str, issuer: str | None = None
     ) -> str:
         """
         Generate QR code image as base64 string
-        
+
         Args:
             secret: TOTP secret key
             user_email: User's email
             issuer: Optional issuer name
-            
+
         Returns:
             Base64 encoded PNG image
-            
+
         Usage:
             <img src="data:image/png;base64,{qr_code}" />
         """
@@ -193,9 +189,9 @@ class TwoFactorAuthService:
 
         # Convert to base64
         buffer = io.BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer, format="PNG")
         buffer.seek(0)
-        qr_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+        qr_base64 = base64.b64encode(buffer.read()).decode("utf-8")
 
         logger.info("2fa_qr_code_generated", email=user_email)
         return qr_base64
@@ -203,15 +199,15 @@ class TwoFactorAuthService:
     def verify_token(self, secret: str, token: str, window: int = 1) -> bool:
         """
         Verify TOTP token
-        
+
         Args:
             secret: User's TOTP secret key
             token: 6-digit token from authenticator app
             window: Time window (±30 seconds per window)
-            
+
         Returns:
             True if token is valid
-            
+
         Window explanation:
             - window=0: Only current time
             - window=1: ±30 seconds (recommended)
@@ -235,10 +231,10 @@ class TwoFactorAuthService:
     def get_current_token(self, secret: str) -> str:
         """
         Get current TOTP token (for testing)
-        
+
         Args:
             secret: TOTP secret key
-            
+
         Returns:
             Current 6-digit token
         """
@@ -248,13 +244,13 @@ class TwoFactorAuthService:
     def generate_backup_codes(self, count: int = 10) -> list[str]:
         """
         Generate backup recovery codes
-        
+
         Args:
             count: Number of backup codes to generate
-            
+
         Returns:
             List of 8-character alphanumeric codes
-            
+
         Example:
             ["A1B2C3D4", "E5F6G7H8", ...]
         """
@@ -270,19 +266,17 @@ class TwoFactorAuthService:
     def hash_backup_code(self, code: str) -> str:
         """
         Hash backup code for secure storage
-        
+
         Args:
             code: Plain backup code
-            
+
         Returns:
             SHA-256 hashed code
         """
         return hashlib.sha256(code.encode()).hexdigest()
 
     def verify_backup_code(
-        self,
-        code: str,
-        hashed_codes: list[str]
+        self, code: str, hashed_codes: list[str]
     ) -> tuple[bool, str | None]:
         """
         Verify backup code against hashed codes
@@ -313,7 +307,7 @@ class TwoFactorAuthService:
         Returns:
             6 haneli numerik kod
         """
-        return ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+        return "".join([str(secrets.randbelow(10)) for _ in range(6)])
 
     def initiate_mfa_recovery(self, user_email: str) -> RecoveryToken:
         """
@@ -364,12 +358,12 @@ class TwoFactorAuthService:
             "created_at": recovery.created_at.isoformat(),
             "expires_at": recovery.expires_at.isoformat(),
             "verified": recovery.verified,
-            "used": recovery.used
+            "used": recovery.used,
         }
         self._redis.setex(
             f"mfa_recovery:{token}",
             timedelta(minutes=RECOVERY_TOKEN_EXPIRY_MINUTES),
-            json.dumps(data)
+            json.dumps(data),
         )
 
         logger.info(
@@ -440,7 +434,7 @@ class TwoFactorAuthService:
 
         # Dogrulama basarili
         recovery.verified = True
-        
+
         # Redis'te guncelle
         data = {
             "token": recovery.token,
@@ -449,7 +443,7 @@ class TwoFactorAuthService:
             "created_at": recovery.created_at.isoformat(),
             "expires_at": recovery.expires_at.isoformat(),
             "verified": recovery.verified,
-            "used": recovery.used
+            "used": recovery.used,
         }
         remaining_ttl = max(1, int((recovery.expires_at - now).total_seconds()))
         self._redis.setex(f"mfa_recovery:{token}", remaining_ttl, json.dumps(data))
@@ -489,7 +483,9 @@ class TwoFactorAuthService:
 
         # Token bulunamadi
         if not recovery:
-            logger.warning("mfa_recovery_complete_token_not_found", token_prefix=token[:8])
+            logger.warning(
+                "mfa_recovery_complete_token_not_found", token_prefix=token[:8]
+            )
             return False
 
         # Token dogrulanmamis
@@ -544,7 +540,7 @@ class TwoFactorAuthService:
             created_at=datetime.fromisoformat(data["created_at"]),
             expires_at=datetime.fromisoformat(data["expires_at"]),
             verified=data["verified"],
-            used=data["used"]
+            used=data["used"],
         )
 
     def cleanup_expired_recovery_tokens(self) -> int:
@@ -655,7 +651,9 @@ class TwoFactorAuthService:
         elif mfa_enabled:
             message = "MFA zaten aktif, zorunluluk karsilaniyor"
         else:
-            message = f"UYARI: '{role}' rolu icin MFA zorunludur. Lutfen MFA'yi aktif edin"
+            message = (
+                f"UYARI: '{role}' rolu icin MFA zorunludur. Lutfen MFA'yi aktif edin"
+            )
 
         result = EnforcementResult(
             mfa_required=mfa_required,

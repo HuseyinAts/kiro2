@@ -104,7 +104,16 @@ class PlagiarismModelSetup:
                 raise RuntimeError("Failed to load BERT model")
 
         # Extract question texts
-        texts = [q["text"] for q in questions]
+        try:
+            import sys
+            from pathlib import Path
+            backend_dir = Path(__file__).parent.parent
+            if str(backend_dir) not in sys.path:
+                sys.path.insert(0, str(backend_dir))
+            from core.turkish_nlp_utils import normalize_tr
+            texts = [normalize_tr(q["text"]) for q in questions]
+        except ImportError:
+            texts = [q["text"] for q in questions]
 
         print(f"🧠 Generating embeddings for {len(texts)} questions...")
 

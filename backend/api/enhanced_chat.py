@@ -33,6 +33,7 @@ from core.learning_path_auth import (
     verify_student_access,
 )
 from core.turkish_nlp_utils import normalize_tr
+from services.socratic_rag_guardrail_service import socratic_rag_guardrail_service
 
 logger = logging.getLogger(__name__)
 
@@ -328,12 +329,17 @@ SUBJECT_CHAT_PROMPTS: dict[str, str] = {
 }
 
 
-def _get_system_prompt(subject: str, teaching_mode: str = "direct") -> str:
-    """Build system prompt based on subject and teaching mode."""
+def _get_system_prompt(subject: str, teaching_mode: str = "direct", user_query: str = "") -> str:
+    """Build system prompt with RAG curriculum grounding based on subject and teaching mode."""
     base = SOCRATIC_SYSTEM_PROMPT if teaching_mode == "socratic" else SYSTEM_PROMPT
     subject_addition = SUBJECT_CHAT_PROMPTS.get(normalize_tr(subject), "")
     if subject_addition:
         base += "\n\n" + subject_addition
+
+    if user_query and subject:
+        rag_data = socratic_rag_guardrail_service.get_curriculum_grounding(subject, user_query)
+        base += "\n\n" + rag_data["rag_context_text"]
+
     return base
 
 
@@ -352,13 +358,21 @@ def _generate_fallback(message: str, subject: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# LLM call with fallback chain
+# LLM call with fallback chain and Guardrail validation
 # ---------------------------------------------------------------------------
 async def _call_llm(
     message: str, subject: str, teaching_mode: str = "direct"
 ) -> EnhancedChatResponse:
-    """Try LLM backends in order: LiteLLM → Ollama → fallback."""
-    system_prompt = _get_system_prompt(subject, teaching_mode)
+    """Try LLM backends in order: LiteLLM → Ollama → fallback, with Guardrail checks."""
+    safety_check = socratic_rag_guardrail_service.inspect_input_safety(message)
+    if not safety_check["is_safe"]:
+        return EnhancedChatResponse(
+            message=safety_check["reason"] or "Güvenlik Uyarısı: Girdi engellendi.",
+            confidence_score=0.0,
+            suggestions=["Lütfen müfredata uygun eğitim soruları sorun."],
+        )
+
+    system_prompt = _get_system_prompt(subject, teaching_mode, user_query=message)
 
     # --- Try 1: LiteLLM proxy ---
     if os.getenv("LLM_BACKEND") == "litellm":
@@ -370,12 +384,15 @@ async def _call_llm(
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": message},
             ]
-            response = await client.chat_completion(
-                messages=messages,
-                stream=False,
-            )
+            response = await client.acreate(messages=messages)
             content = response.choices[0].message.content
-            return EnhancedChatResponse(message=content, confidence_score=0.9)
+            if content:
+                eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(content)
+                return EnhancedChatResponse(
+                    message=content,
+                    confidence_score=eval_res["socratic_score"],
+                    suggestions=eval_res["suggestions"],
+                )
         except Exception as e:
             logger.warning(f"LiteLLM failed: {e}")
 
@@ -401,17 +418,20 @@ async def _call_llm(
                 data = resp.json()
                 content = data.get("message", {}).get("content", "")
                 if content:
+                    eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(content)
                     return EnhancedChatResponse(
                         message=content,
-                        confidence_score=0.85,
+                        confidence_score=eval_res["socratic_score"],
+                        suggestions=eval_res["suggestions"],
                     )
     except Exception as e:
         logger.debug(f"Ollama not available: {e}")
 
     # --- Fallback: smart placeholder ---
+    fallback_text = _generate_fallback(message, subject)
     return EnhancedChatResponse(
-        message=_generate_fallback(message, subject),
-        confidence_score=0.3,
+        message=fallback_text,
+        confidence_score=0.5,
         suggestions=["Konuyu belirtin", "Soruyu detaylandirin"],
     )
 

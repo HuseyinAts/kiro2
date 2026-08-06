@@ -810,19 +810,19 @@ class MultiAgentBlackboard:
         try:
             import os
             from dataclasses import asdict
-            
+
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            
+
             data_to_save = {}
             for k, v in self.blackboard.items():
                 data_dict = asdict(v)
-                if isinstance(data_dict.get('subscribers'), set):
-                    data_dict['subscribers'] = list(data_dict['subscribers'])
+                if isinstance(data_dict.get("subscribers"), set):
+                    data_dict["subscribers"] = list(data_dict["subscribers"])
                 data_to_save[k] = data_dict
-                
-            with open(filepath, 'w', encoding='utf-8') as f:
+
+            with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(data_to_save, f, default=str)
-                
+
             logger.info(f"Blackboard checkpoint saved to {filepath}")
             return True
         except Exception as e:
@@ -834,23 +834,23 @@ class MultiAgentBlackboard:
         try:
             import os
             from datetime import datetime
-            
+
             if not os.path.exists(filepath):
                 return False
-                
-            with open(filepath, 'r', encoding='utf-8') as f:
+
+            with open(filepath, encoding="utf-8") as f:
                 data = json.load(f)
-                
+
             for k, v_dict in data.items():
-                if v_dict.get('timestamp') and isinstance(v_dict['timestamp'], str):
-                    v_dict['timestamp'] = datetime.fromisoformat(v_dict['timestamp'])
-                if v_dict.get('ttl') and isinstance(v_dict['ttl'], str):
-                    v_dict['ttl'] = datetime.fromisoformat(v_dict['ttl'])
-                if v_dict.get('subscribers'):
-                    v_dict['subscribers'] = set(v_dict['subscribers'])
-                    
+                if v_dict.get("timestamp") and isinstance(v_dict["timestamp"], str):
+                    v_dict["timestamp"] = datetime.fromisoformat(v_dict["timestamp"])
+                if v_dict.get("ttl") and isinstance(v_dict["ttl"], str):
+                    v_dict["ttl"] = datetime.fromisoformat(v_dict["ttl"])
+                if v_dict.get("subscribers"):
+                    v_dict["subscribers"] = set(v_dict["subscribers"])
+
                 self.blackboard[k] = BlackboardData(**v_dict)
-                
+
             logger.info(f"Blackboard checkpoint loaded from {filepath}")
             return True
         except Exception as e:

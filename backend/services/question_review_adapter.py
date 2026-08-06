@@ -17,6 +17,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import or_, select
+from sqlalchemy.orm import undefer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.quality_gate import safe_for_beta_gate
@@ -132,6 +133,7 @@ class QuestionReviewAdapter:
         # Vadesi gelen kartları getir
         cards_result = await db.execute(
             select(DBFSRSCard)
+            .options(undefer(DBFSRSCard.cultural_factors))
             .where(
                 DBFSRSCard.student_id == student_id,
                 or_(

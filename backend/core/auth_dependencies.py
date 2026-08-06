@@ -326,7 +326,11 @@ def require_role(*roles: str) -> AuthorizationDependency:
     büyük harf değerler otomatik küçültülür.
     """
     normalized = [str(r).strip().lower() for r in roles if str(r).strip()]
-    return AuthorizationDependency(required_roles=normalized or ["admin"])
+    if not normalized:
+        normalized = ["admin", "super_admin"]
+    elif "admin" in normalized and "super_admin" not in normalized:
+        normalized.append("super_admin")
+    return AuthorizationDependency(required_roles=normalized)
 
 
 def require_permission(*permissions: str) -> AuthorizationDependency:

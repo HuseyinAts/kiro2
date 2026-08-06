@@ -302,11 +302,11 @@ class HealthChecker:
 
         try:
             from core.elasticsearch_client import get_elasticsearch_client
-            
+
             es_wrapper = get_elasticsearch_client()
             await es_wrapper._ensure_connected()
             es = es_wrapper._client
-            
+
             try:
                 health = await es.cluster.health(request_timeout=2.0)
             except Exception:

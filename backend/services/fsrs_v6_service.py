@@ -112,9 +112,9 @@ class FSRSService:
         card = Card()
 
         # Mevcut kart durumunu restore et
-        if stability is not None:
+        if stability is not None and stability > 0:
             card.stability = stability
-        if difficulty is not None:
+        if difficulty is not None and difficulty > 0:
             card.difficulty = difficulty
         if due_date is not None:
             card.due = due_date

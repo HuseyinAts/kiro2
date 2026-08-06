@@ -256,6 +256,7 @@ class DomainBlackboard:
         """Redis'e mesaj gonder"""
         channel = f"blackboard:domain:{message.target_agent or 'broadcast'}"
         await self._redis.lpush(channel, message.to_json())
+        await self._redis.ltrim(channel, 0, self.max_messages - 1)
         await self._redis.expire(channel, self.message_ttl)
 
     async def _post_message_fallback(self, message: BlackboardMessage):
@@ -265,10 +266,10 @@ class DomainBlackboard:
             self._message_queue[target] = []
         self._message_queue[target].append(message)
 
-        # Cleanup expired messages
+        # Cleanup expired messages and enforce size limit
         self._message_queue[target] = [
             m for m in self._message_queue[target] if not m.is_expired()
-        ]
+        ][:self.max_messages]
 
     async def get_messages(
         self,
@@ -398,6 +399,7 @@ class DomainBlackboard:
         target = context.target_agent or "all"
         list_key = f"blackboard:contexts:{target}"
         await self._redis.lpush(list_key, context.context_id)
+        await self._redis.ltrim(list_key, 0, self.max_messages - 1)
         await self._redis.expire(list_key, self.context_ttl)
 
     async def _share_context_fallback(self, context: SharedContext):

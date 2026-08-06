@@ -216,6 +216,8 @@ class JWTManager:
                 permissions=payload.get("permissions", []),
             )
 
+        except HTTPException:
+            raise
         except jwt.ExpiredSignatureError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"

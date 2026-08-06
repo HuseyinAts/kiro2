@@ -123,8 +123,8 @@ class AdvancedRateLimiter:
 
         # Endpoint-specific limits (overrides tier defaults)
         self.endpoint_limits = {
-            "/api/v1/auth/login": {"limit": 300, "window": 60},
-            "/api/v1/auth/register": {"limit": 300, "window": 60},
+            "/api/v1/auth/login": {"limit": 5, "window": 60},
+            "/api/v1/auth/register": {"limit": 5, "window": 60},
             "/api/v1/kvkk/privacy/export": {"limit": 2, "window": 3600},
             "/api/v1/ai/chat": {"limit": 20, "window": 60},
         }

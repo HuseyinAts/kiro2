@@ -34,7 +34,6 @@ from core.authorization import require_student_owner_or_privileged
 from core.config import settings as app_settings
 from core.dependencies import JWT_ALGORITHM, JWT_SECRET, get_db
 from core.email_util import send_email
-from core.jwt_auth import UserRole as JWTUserRole
 from core.jwt_auth import get_jwt_manager
 from core.password_reset_codes import CODE_DIGITS, PasswordResetCodeStore
 from database.connection import get_sync_session_context
@@ -468,10 +467,10 @@ async def kullanici_kayit(
       email, sifre, ad_soyad, rol (ogrenci/veli/ogretmen/admin)
     """
     await _check_rate_limit(request, "register")
-    
+
     from application.commands.auth import RegisterUserCommand
     from core.cqrs.bus import get_command_bus
-    
+
     command = RegisterUserCommand(
         email=kullanici_data.email,
         sifre=kullanici_data.sifre,
@@ -480,12 +479,11 @@ async def kullanici_kayit(
         birth_date=kullanici_data.birth_date,
         veli_email=kullanici_data.veli_email,
         sinif=getattr(kullanici_data, "sinif", 11),
-        db=db
+        db=db,
     )
-    
+
     command_bus = get_command_bus()
     return await command_bus.execute(command)
-
 
 
 # English alias for registration endpoint
@@ -634,11 +632,9 @@ async def kullanici_giris(
     try:
         from application.commands.auth import LoginCommand, TwoFactorRequired
         from core.cqrs.bus import get_command_bus
-        
+
         command = LoginCommand(
-            email=giris_data.email,
-            password=giris_data.get_password() or "",
-            db=db
+            email=giris_data.email, password=giris_data.get_password() or "", db=db
         )
         return await get_command_bus().execute(command)
     except TwoFactorRequired as e:
@@ -703,11 +699,9 @@ async def secure_login(
     try:
         from application.commands.auth import LoginCommand, TwoFactorRequired
         from core.cqrs.bus import get_command_bus
-        
+
         command = LoginCommand(
-            email=giris_data.email,
-            password=giris_data.get_password() or "",
-            db=db
+            email=giris_data.email, password=giris_data.get_password() or "", db=db
         )
         token_yaniti = await get_command_bus().execute(command)
 
@@ -810,20 +804,15 @@ async def secure_refresh(
     try:
         from application.commands.auth import RefreshTokenCommand
         from core.cqrs.bus import get_command_bus
-        
-        command = RefreshTokenCommand(
-            refresh_token=refresh_token,
-            db=db
-        )
+
+        command = RefreshTokenCommand(refresh_token=refresh_token, db=db)
         new_tokens = await get_command_bus().execute(command)
     except (ValueError, Exception) as e:
         # Clear stale cookies on invalid/expired refresh token
         response.delete_cookie(key="access_token", path=ACCESS_TOKEN_COOKIE_PATH)
         response.delete_cookie(key="refresh_token", path=REFRESH_TOKEN_COOKIE_PATH)
         if isinstance(e, ValueError):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e)
-            )
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
         raise
 
     # Set new access token as httpOnly cookie
@@ -1919,19 +1908,18 @@ async def refresh_token(
 
         from application.commands.auth import RefreshTokenCommand
         from core.cqrs.bus import get_command_bus
-        
-        command = RefreshTokenCommand(
-            refresh_token=refresh_token_str,
-            db=db
-        )
+
+        command = RefreshTokenCommand(refresh_token=refresh_token_str, db=db)
         return await get_command_bus().execute(command)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token bulunamadı veya geçersiz."
+            detail="Refresh token bulunamadı veya geçersiz.",
         )
     except Exception:
-        logger.exception("refresh_token: beklenmeyen hata (istemciye genel 401 donuldu)")
+        logger.exception(
+            "refresh_token: beklenmeyen hata (istemciye genel 401 donuldu)"
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Islem basarisiz. Lutfen tekrar deneyin.",
@@ -2092,20 +2080,12 @@ async def veli_onay_verify(
 
     ip = request.client.host if request.client else None
     ua = request.headers.get("user-agent")
-    
-    command = VeliOnayVerifyCommand(
-        token=body.token,
-        ip=ip,
-        ua=ua,
-        db=db
-    )
-    
+
+    command = VeliOnayVerifyCommand(token=body.token, ip=ip, ua=ua, db=db)
+
     try:
         result = await get_command_bus().execute(command)
-        return VeliOnayResponse(
-            status=result["status"],
-            message=result["message"]
-        )
+        return VeliOnayResponse(status=result["status"], message=result["message"])
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -2119,21 +2099,13 @@ async def veli_onay_withdraw(
     from application.commands.auth import VeliOnayWithdrawCommand
     from core.cqrs.bus import get_command_bus
 
-    command = VeliOnayWithdrawCommand(
-        token=body.token,
-        db=db
-    )
-    
+    command = VeliOnayWithdrawCommand(token=body.token, db=db)
+
     try:
         result = await get_command_bus().execute(command)
-        return VeliOnayResponse(
-            status=result["status"],
-            message=result["message"]
-        )
+        return VeliOnayResponse(status=result["status"], message=result["message"])
     except ValueError as e:
-        raise HTTPException(
-            status_code=400, detail=str(e)
-        )
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/veli-onay/status", response_model=VeliOnayStatusResponse)

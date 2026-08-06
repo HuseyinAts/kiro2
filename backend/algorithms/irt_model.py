@@ -43,8 +43,8 @@ class IRTItem:
 
     item_id: str
     discrimination: float  # a parameter [0.2, 4.0]
-    difficulty: float      # b parameter [-4.0, 4.0]
-    guessing: float        # c parameter [0.0, 0.35]
+    difficulty: float  # b parameter [-4.0, 4.0]
+    guessing: float  # c parameter [0.0, 0.35]
     upper_asymptote: float = 1.0  # d parameter [0.0, 1.0]
 
     subject: str = ""
@@ -89,6 +89,7 @@ class IRTItem:
 @dataclass
 class StudentAbility:
     """Ogrenci yetenek tahmini"""
+
     student_id: str
     ability: float
     se: float
@@ -102,6 +103,7 @@ class StudentAbility:
 @dataclass
 class IRTResponse:
     """Ogrenci cevap kaydi"""
+
     student_id: str
     item_id: str
     response: int
@@ -119,18 +121,28 @@ class FourParameterIRTModel:
         self.responses: list[IRTResponse] = []
 
     def probability(self, theta: float, item: IRTItem) -> float:
-        a, b, c, d = item.discrimination, item.difficulty, item.guessing, item.upper_asymptote
+        a, b, c, d = (
+            item.discrimination,
+            item.difficulty,
+            item.guessing,
+            item.upper_asymptote,
+        )
         exponent = np.clip(-self.D * a * (theta - b), -20, 20)
         prob = c + (d - c) / (1 + np.exp(exponent))
         return np.clip(prob, 1e-10, 1 - 1e-10)
 
     def information(self, theta: float, item: IRTItem) -> float:
-        a, b, c, d = item.discrimination, item.difficulty, item.guessing, item.upper_asymptote
+        a, b, c, d = (
+            item.discrimination,
+            item.difficulty,
+            item.guessing,
+            item.upper_asymptote,
+        )
         P = self.probability(theta, item)
         Q = 1 - P
         exp_val = np.exp(np.clip(-self.D * a * (theta - b), -20, 20))
         P_prime = (d - c) * self.D * a * exp_val / ((1 + exp_val) ** 2)
-        return (P_prime ** 2) / (P * Q) if P * Q >= 1e-10 else 0.0
+        return (P_prime**2) / (P * Q) if P * Q >= 1e-10 else 0.0
 
     def test_information(self, theta: float, items: list[IRTItem]) -> float:
         return sum(self.information(theta, item) for item in items)
@@ -140,8 +152,11 @@ class FourParameterIRTModel:
         return 1.0 / np.sqrt(info) if info >= 1e-10 else 999.0
 
     def estimate_ability_mle(
-        self, responses: list[IRTResponse], initial_theta: float = 0.0,
-        max_iterations: int = 50, convergence_threshold: float = 0.001
+        self,
+        responses: list[IRTResponse],
+        initial_theta: float = 0.0,
+        max_iterations: int = 50,
+        convergence_threshold: float = 0.001,
     ) -> StudentAbility:
         if not responses:
             return StudentAbility(
@@ -154,22 +169,35 @@ class FourParameterIRTModel:
 
         theta = initial_theta
         for _ in range(max_iterations):
-            items = [self.items[r.item_id] for r in responses if r.item_id in self.items]
+            items = [
+                self.items[r.item_id] for r in responses if r.item_id in self.items
+            ]
             if not items:
                 break
 
             first_deriv, second_deriv = 0.0, 0.0
-            for response, item in zip(responses, items):
+            for response, item in zip(responses, items, strict=False):
                 P, Q = self.probability(theta, item), 1 - self.probability(theta, item)
                 if P < 1e-10 or Q < 1e-10:
                     continue
 
-                exp_val = np.exp(np.clip(-self.D * item.discrimination * (theta - item.difficulty), -20, 20))
-                P_prime = (item.upper_asymptote - item.guessing) * self.D * item.discrimination * exp_val / ((1 + exp_val) ** 2)
-                P_double_prime = (item.upper_asymptote - item.guessing) * (self.D * item.discrimination) ** 2 * exp_val * (exp_val - 1) / ((1 + exp_val) ** 3)
+                exp_val = np.exp(
+                    np.clip(
+                        -self.D * item.discrimination * (theta - item.difficulty),
+                        -20,
+                        20,
+                    )
+                )
+                P_prime = (
+                    (item.upper_asymptote - item.guessing)
+                    * self.D
+                    * item.discrimination
+                    * exp_val
+                    / ((1 + exp_val) ** 2)
+                )
                 u = response.response
                 first_deriv += (u - P) * P_prime / (P * Q)
-                second_deriv += ((u - P) * P_double_prime - (P_prime ** 2)) / (P * Q)
+                second_deriv -= (P_prime**2) / (P * Q)
 
             if abs(second_deriv) < 1e-10:
                 break
@@ -180,13 +208,18 @@ class FourParameterIRTModel:
                 break
             theta = theta_new
 
-        items_used = [self.items[r.item_id] for r in responses if r.item_id in self.items]
+        items_used = [
+            self.items[r.item_id] for r in responses if r.item_id in self.items
+        ]
         se = self.standard_error(theta, items_used)
         return StudentAbility(
-            student_id=responses[0].student_id, ability=theta, se=se,
-            estimation_method="MLE", n_items=len(responses),
+            student_id=responses[0].student_id,
+            ability=theta,
+            se=se,
+            estimation_method="MLE",
+            n_items=len(responses),
             yks_predicted_score=300 + theta * 66.67,
-            confidence_interval_95=(theta - 1.96 * se, theta + 1.96 * se)
+            confidence_interval_95=(theta - 1.96 * se, theta + 1.96 * se),
         )
 
     def select_next_item_cat(
@@ -207,7 +240,11 @@ class FourParameterIRTModel:
             En yuksek bilgi degerine sahip soru veya None.
         """
         candidates = [i for i in available_items if i.item_id not in answered_items]
-        return max(candidates, key=lambda i: self.information(current_theta, i)) if candidates else None
+        return (
+            max(candidates, key=lambda i: self.information(current_theta, i))
+            if candidates
+            else None
+        )
 
     def add_item(self, item: IRTItem) -> None:
         """
@@ -242,6 +279,16 @@ class FourParameterIRTModel:
 
 class TurkishIRTUtils:
     YKS_ITEM_DEFAULTS = {
-        "TYT": {"discrimination_range": (0.8, 2.0), "difficulty_range": (-2.0, 2.0), "guessing": 0.25, "upper_asymptote": 0.97},
-        "AYT-SAY": {"discrimination_range": (1.0, 2.5), "difficulty_range": (-1.5, 3.0), "guessing": 0.20, "upper_asymptote": 0.98}
+        "TYT": {
+            "discrimination_range": (0.8, 2.0),
+            "difficulty_range": (-2.0, 2.0),
+            "guessing": 0.25,
+            "upper_asymptote": 0.97,
+        },
+        "AYT-SAY": {
+            "discrimination_range": (1.0, 2.5),
+            "difficulty_range": (-1.5, 3.0),
+            "guessing": 0.20,
+            "upper_asymptote": 0.98,
+        },
     }

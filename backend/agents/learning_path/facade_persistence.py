@@ -25,11 +25,13 @@ def _domain_path_to_row(
     path: Any, subject: str, extra_metadata: dict[str, Any] | None = None
 ) -> dict[str, Any]:
     """Map domain LearningPath + subject to `learning_paths` insert dict."""
-    now = datetime.now(UTC)
+    now = datetime.now(UTC).replace(tzinfo=None)
     created = path.created_at
     if isinstance(created, str):
-        created = datetime.fromisoformat(created.replace("Z", "+00:00"))
-    elif not isinstance(created, datetime):
+        created = datetime.fromisoformat(created.replace("Z", "")).replace(tzinfo=None)
+    elif isinstance(created, datetime):
+        created = created.replace(tzinfo=None)
+    else:
         created = now
 
     phases_payload = [p.to_dict() for p in path.phases]

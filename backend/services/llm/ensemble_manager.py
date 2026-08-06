@@ -159,6 +159,7 @@ class MultiLLMEnsembleManager:
         if enable_gemini:
             try:
                 from services.llm.gemini_provider import GeminiProvider
+
                 self.providers[LLMProvider.GEMINI] = GeminiProvider(
                     MultiLLMConfig.GEMINI_CONFIG, thinking_mode=gemini_thinking_mode
                 )
@@ -170,6 +171,7 @@ class MultiLLMEnsembleManager:
         if enable_openai:
             try:
                 from services.llm.openai_provider import OpenAIProvider
+
                 self.providers[LLMProvider.OPENAI] = OpenAIProvider(
                     MultiLLMConfig.OPENAI_CONFIG
                 )
@@ -180,6 +182,7 @@ class MultiLLMEnsembleManager:
         if enable_claude:
             try:
                 from services.llm.claude_provider import ClaudeProvider
+
                 self.providers[LLMProvider.CLAUDE] = ClaudeProvider(
                     MultiLLMConfig.CLAUDE_CONFIG
                 )
@@ -190,6 +193,7 @@ class MultiLLMEnsembleManager:
         if enable_qwen:
             try:
                 from services.llm.qwen_provider import QwenProvider
+
                 self.providers[LLMProvider.QWEN] = QwenProvider(
                     MultiLLMConfig.QWEN_CONFIG, use_local=qwen_use_local
                 )
@@ -209,9 +213,9 @@ class MultiLLMEnsembleManager:
         fallback: bool = True,
     ) -> LLMResponse:
         """
-        Generate response using ensemble of LLMs. 
+        Generate response using ensemble of LLMs.
         [OPTIMIZED: Avoids 4x API costs by delegating to fallback chain instead of concurrent requests]
-        
+
         Args:
             request: LLM request
             strategy: Voting strategy (majority_voting, cost_optimized, latency_optimized)
@@ -220,7 +224,9 @@ class MultiLLMEnsembleManager:
         Returns:
             Best response according to strategy
         """
-        print("🚀 [Token Optimization] generate_with_ensemble intercepted! Delegating to fallback chain to prevent 4x cost inflation.")
+        print(
+            "🚀 [Token Optimization] generate_with_ensemble intercepted! Delegating to fallback chain to prevent 4x cost inflation."
+        )
         return await self.generate_with_fallback(request)
 
     async def generate_with_fallback(
@@ -281,7 +287,7 @@ class MultiLLMEnsembleManager:
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        for provider_type, result in zip(provider_types, results):
+        for provider_type, result in zip(provider_types, results, strict=False):
             if isinstance(result, bool):
                 health_status[provider_type] = result
             else:
@@ -344,8 +350,10 @@ class MultiLLMEnsembleManager:
         Returns:
             Generated question with metadata
         """
-        print("🚀 [Token Optimization] generate_osym_question_ensemble intercepted! Using primary provider only.")
-        
+        print(
+            "🚀 [Token Optimization] generate_osym_question_ensemble intercepted! Using primary provider only."
+        )
+
         # Try finding a provider with the create_osym_question capability
         for provider in self.providers.values():
             if hasattr(provider, "create_osym_question"):
@@ -358,7 +366,7 @@ class MultiLLMEnsembleManager:
                 except Exception as e:
                     print(f"⚠️  Provider {provider} failed: {e}")
                     continue
-        
+
         raise RuntimeError("All providers failed to generate question")
 
     def __repr__(self) -> str:
@@ -390,10 +398,17 @@ class MultiLLMEnsembleManager:
         Returns:
             Best reasoning result from ensemble
         """
-        print("🚀 [Token Optimization] sequential_thinking_ensemble intercepted! Short-circuiting on first success.")
+        print(
+            "🚀 [Token Optimization] sequential_thinking_ensemble intercepted! Short-circuiting on first success."
+        )
         thinking_order = MultiLLMConfig.ENSEMBLE_STRATEGY.get(
             "sequential_thinking_order",
-            [LLMProvider.GEMINI, LLMProvider.CLAUDE, LLMProvider.OPENAI, LLMProvider.QWEN],
+            [
+                LLMProvider.GEMINI,
+                LLMProvider.CLAUDE,
+                LLMProvider.OPENAI,
+                LLMProvider.QWEN,
+            ],
         )
 
         if preferred_provider:
@@ -409,14 +424,18 @@ class MultiLLMEnsembleManager:
             provider = self.providers[provider_type]
             try:
                 if hasattr(provider, "think_step_by_step"):
-                    result = await provider.think_step_by_step(problem, max_steps=max_steps)
+                    result = await provider.think_step_by_step(
+                        problem, max_steps=max_steps
+                    )
                 else:
-                    result = await self._generate_with_thinking_prompt(provider, problem, max_steps)
-                
+                    result = await self._generate_with_thinking_prompt(
+                        provider, problem, max_steps
+                    )
+
                 if isinstance(result, dict):
                     result["provider"] = provider_type.value
                     return result
-                elif isinstance(result, ReasoningResult):
+                if isinstance(result, ReasoningResult):
                     res_dict = result.to_dict()
                     res_dict["provider"] = provider_type.value
                     return res_dict
@@ -425,7 +444,9 @@ class MultiLLMEnsembleManager:
                 last_error = e
                 continue
 
-        raise RuntimeError(f"All providers failed for sequential thinking. Last error: {last_error}")
+        raise RuntimeError(
+            f"All providers failed for sequential thinking. Last error: {last_error}"
+        )
 
     async def _generate_with_thinking_prompt(
         self, provider: BaseLLMProvider, problem: str, max_steps: int
@@ -480,7 +501,11 @@ Cozum:"""
             # Provider weight
             provider = result.get("provider", "unknown")
             weights = MultiLLMConfig.ENSEMBLE_STRATEGY["voting"]["weights"]
-            provider_enum = LLMProvider(provider) if provider in [p.value for p in LLMProvider] else None
+            provider_enum = (
+                LLMProvider(provider)
+                if provider in [p.value for p in LLMProvider]
+                else None
+            )
             if provider_enum:
                 score += weights.get(provider_enum, 0.2) * 10
 
@@ -520,7 +545,9 @@ Cozum:"""
         return best_result
 
     async def solve_with_best_provider(
-        self, problem: str, capability: LLMCapability = LLMCapability.SEQUENTIAL_THINKING
+        self,
+        problem: str,
+        capability: LLMCapability = LLMCapability.SEQUENTIAL_THINKING,
     ) -> dict[str, Any]:
         """
         Solve problem with best available provider for capability
@@ -569,9 +596,7 @@ Cozum:"""
             "latency_ms": response.latency_ms,
         }
 
-    async def compare_providers(
-        self, problem: str
-    ) -> dict[str, Any]:
+    async def compare_providers(self, problem: str) -> dict[str, Any]:
         """
         Compare all providers on same problem
 

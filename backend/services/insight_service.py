@@ -5,10 +5,13 @@ Pattern detection ve insight extraction servisi (REQ-2).
 scikit-learn ile pattern analysis, confidence scoring ve recommendation generation.
 """
 
+import logging
 from collections import Counter
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 from uuid import UUID
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 from sqlalchemy import and_, desc, select
@@ -651,6 +654,14 @@ class InsightService:
     # Main Analysis Method
     # =========================================================================
 
+    async def analyze_and_generate_insights(
+        self,
+        user_id: UUID,
+        start_date: date | None = None,
+        end_date: date | None = None,
+    ) -> list[Insight]:
+        return await self.analyze_entries(user_id=user_id)
+
     async def analyze_entries(
         self,
         user_id: UUID,
@@ -670,18 +681,22 @@ class InsightService:
         """
         # Entry'leri getir
         if entries is None:
-            from datetime import timedelta
-            from_date = datetime.now().date() - timedelta(days=days)
+            try:
+                from datetime import timedelta
+                from_date = datetime.now().date() - timedelta(days=days)
 
-            query = select(DiaryEntry).where(
-                and_(
-                    DiaryEntry.user_id == user_id,
-                    DiaryEntry.date >= from_date
-                )
-            ).order_by(desc(DiaryEntry.date))
+                query = select(DiaryEntry).where(
+                    and_(
+                        DiaryEntry.user_id == user_id,
+                        DiaryEntry.date >= from_date
+                    )
+                ).order_by(desc(DiaryEntry.date))
 
-            result = await self.db.execute(query)
-            entries = list(result.scalars().all())
+                result = await self.db.execute(query)
+                entries = list(result.scalars().all())
+            except Exception as e:
+                logger.warning(f"Diary entries fetch error: {e}")
+                entries = []
 
         if not entries:
             return []

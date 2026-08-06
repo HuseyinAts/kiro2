@@ -64,15 +64,13 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas.learning_path_schemas import LearningPathCreateRequest
-from core.circuit_breaker import CircuitBreakerHalfOpenError, CircuitBreakerOpenError
-from core.cqrs.bus import get_command_bus
 from application.commands.learning_path import CreateStudentProfileCommand
+from core.cqrs.bus import get_command_bus
 from core.dependencies import AuthenticatedUser, get_current_user, get_db
 from core.learning_path_auth import (
     verify_student_access,
 )
 from core.learning_path_circuit_breakers import (
-    ai_agent_fallback_handler,
     get_ai_agent_circuit_breaker,
     get_resource_search_circuit_breaker,
 )
@@ -82,13 +80,8 @@ from core.youtube_channels import is_trusted_channel
 from models.learning_path_models import (
     LearningPath,
     LearningPathStudentProfile,
-    Quiz,
-    QuizQuestion,
     TopicCompletion,
     TopicProgress,
-)
-from models.learning_path_models import (
-    QuizSubmission as QuizSubmissionModel,
 )
 from models.question_bank import QuestionBankItem as Question
 
@@ -439,7 +432,7 @@ async def create_student_profile(
             subjects=profile.subjects,
             goals=profile.goals,
             learning_style=profile.learning_style,
-            available_time=profile.available_time
+            available_time=profile.available_time,
         )
         command_bus = get_command_bus()
         result = await command_bus.execute(command)
@@ -471,12 +464,12 @@ async def assess_knowledge(
         await verify_student_access(assessment.student_id, current_user, db)
         from application.commands.learning_path import AssessKnowledgeCommand
         from core.cqrs.bus import get_command_bus
-        
+
         command = AssessKnowledgeCommand(
             db=db,
             student_id=assessment.student_id,
             subject=assessment.subject,
-            questions=assessment.questions
+            questions=assessment.questions,
         )
         return await get_command_bus().execute(command)
 
@@ -510,20 +503,20 @@ async def create_learning_path(
         method="POST",
         status_code=200,
     )
-    
+
     try:
         start_time = time.time()
         await verify_student_access(path_request.student_id, current_user, db)
         from application.commands.learning_path import CreateLearningPathCommand
         from core.cqrs.bus import get_command_bus
-        
+
         command = CreateLearningPathCommand(
             db=db,
             facade=facade,
             student_id=path_request.student_id,
             subject=path_request.subject,
             target_date=path_request.target_date,
-            difficulty_level=path_request.difficulty_level
+            difficulty_level=path_request.difficulty_level,
         )
         return await get_command_bus().execute(command)
 
@@ -573,7 +566,7 @@ async def search_resources(
 
         from application.commands.learning_path import SearchResourcesCommand
         from core.cqrs.bus import get_command_bus
-        
+
         command = SearchResourcesCommand(
             db=db,
             facade=facade,
@@ -582,7 +575,7 @@ async def search_resources(
             difficulty=search.difficulty,
             resource_type=search.resource_type,
             max_results=search.max_results,
-            student_profile=search.student_profile
+            student_profile=search.student_profile,
         )
         return await get_command_bus().execute(command)
 
@@ -617,13 +610,13 @@ async def adapt_learning_path(
         await verify_student_access(adaptation.student_id, current_user, db)
         from application.commands.learning_path import AdaptLearningPathCommand
         from core.cqrs.bus import get_command_bus
-        
+
         command = AdaptLearningPathCommand(
             db=db,
             facade=facade,
             student_id=adaptation.student_id,
             path_id=adaptation.path_id,
-            performance_data=adaptation.performance_data
+            performance_data=adaptation.performance_data,
         )
         return await get_command_bus().execute(command)
 
@@ -648,15 +641,14 @@ async def get_student_paths(
     Get all learning paths for a student
     """
     await verify_student_access(student_id, current_user, db)
-    
-    from models.learning_path_models import LearningPath
+
     from sqlalchemy import select
-    
+
     result = await db.execute(
         select(LearningPath).where(LearningPath.student_id == student_id)
     )
     paths = result.scalars().all()
-    
+
     return {
         "success": True,
         "paths": [
@@ -666,8 +658,9 @@ async def get_student_paths(
                 "difficulty_level": p.difficulty_level,
             }
             for p in paths
-        ]
+        ],
     }
+
 
 @router.get("/completion/{student_id}")
 @rate_limit("completion_read")
@@ -762,14 +755,12 @@ async def update_completion_status(
                 status_code=400,
                 detail="Student ID mismatch",
             )
-            
+
         from application.commands.learning_path import UpdateCompletionStatusCommand
         from core.cqrs.bus import get_command_bus
-        
+
         command = UpdateCompletionStatusCommand(
-            db=db,
-            student_id=student_id,
-            completions=completion_update.completions
+            db=db, student_id=student_id, completions=completion_update.completions
         )
         return await get_command_bus().execute(command)
 
@@ -800,16 +791,21 @@ async def submit_quiz(
     try:
         actual_student_id = submission.student_id or str(current_user.id)
         await verify_student_access(actual_student_id, current_user, db)
-        
-        from application.commands.learning_path import SubmitQuizCommand, QuizAnswerModel
+
+        from application.commands.learning_path import (
+            QuizAnswerModel,
+            SubmitQuizCommand,
+        )
         from core.cqrs.bus import get_command_bus
-        
-        answers = [QuizAnswerModel(question_id=a.question_id, answer=a.answer, time_spent=a.time_spent) for a in submission.answers]
+
+        answers = [
+            QuizAnswerModel(
+                question_id=a.question_id, answer=a.answer, time_spent=a.time_spent
+            )
+            for a in submission.answers
+        ]
         command = SubmitQuizCommand(
-            db=db,
-            quiz_id=quiz_id,
-            student_id=actual_student_id,
-            answers=answers
+            db=db, quiz_id=quiz_id, student_id=actual_student_id, answers=answers
         )
         return await get_command_bus().execute(command)
 
@@ -848,17 +844,17 @@ async def update_progress(
             raise HTTPException(
                 status_code=400, detail="Progress must be between 0 and 100"
             )
-            
+
         from application.commands.learning_path import UpdateProgressCommand
         from core.cqrs.bus import get_command_bus
-        
+
         command = UpdateProgressCommand(
             db=db,
             student_id=student_id,
             node_id=node_id,
             progress=progress_update.progress,
             completed=progress_update.completed,
-            time_spent=progress_update.time_spent
+            time_spent=progress_update.time_spent,
         )
         return await get_command_bus().execute(command)
 
@@ -1099,19 +1095,21 @@ async def get_student_profile(
     Get student profile by ID
     """
     await verify_student_access(student_id, current_user, db)
-    
-    from models.learning_path_models import LearningPathStudentProfile
+
     from sqlalchemy import select
-    
+
+    from models.learning_path_models import LearningPathStudentProfile
+
     result = await db.execute(
-        select(LearningPathStudentProfile)
-        .where(LearningPathStudentProfile.student_id == student_id)
+        select(LearningPathStudentProfile).where(
+            LearningPathStudentProfile.student_id == student_id
+        )
     )
     profile = result.scalars().first()
-    
+
     if not profile:
         raise HTTPException(status_code=404, detail="Öğrenci profili bulunamadı")
-        
+
     return {
         "success": True,
         "student_id": profile.student_id,

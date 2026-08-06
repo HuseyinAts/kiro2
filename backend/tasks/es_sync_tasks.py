@@ -60,11 +60,11 @@ INDEX = os.environ.get("ELASTICSEARCH_INDEX", "turkiye_sinav_platform")
 
 
 async def _senkronla() -> dict[str, Any]:
-    from core.elasticsearch_client import get_elasticsearch_client
     from elasticsearch.helpers import async_bulk
     from sqlalchemy import text
 
     from core.database import db_manager
+    from core.elasticsearch_client import get_elasticsearch_client
     from core.es_index_schema import (
         SORGU,
         _belge_kur,
@@ -87,7 +87,7 @@ async def _senkronla() -> dict[str, Any]:
     es_wrapper = get_elasticsearch_client()
     await es_wrapper._ensure_connected()
     istemci = es_wrapper._client
-    
+
     try:
         if not await istemci.indices.exists(index=INDEX):
             logger.warning("Index yok, senkron atlandi: %s", INDEX)

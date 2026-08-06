@@ -309,6 +309,17 @@ class ChromaDBService:
 
     def embed_text(self, text: str) -> list[float]:
         """Generate embedding for text."""
+        try:
+            import sys
+            from pathlib import Path
+            backend_dir = Path(__file__).parent.parent
+            if str(backend_dir) not in sys.path:
+                sys.path.insert(0, str(backend_dir))
+            from core.turkish_nlp_utils import normalize_tr
+            text = normalize_tr(text)
+        except ImportError:
+            pass
+
         if self.embedding_model is None:
             # Fallback: return simple hash-based embedding
             import hashlib

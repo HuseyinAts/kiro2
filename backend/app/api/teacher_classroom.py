@@ -174,15 +174,21 @@ async def create_class(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, Any]:
-    classroom = TeacherClassroom(
-        teacher_user_id=str(current_user.id),
-        sinif_adi=body.name,
-        seviye=body.grade_level,
-        ders=body.subject_area,
-    )
-    db.add(classroom)
-    await db.commit()
-    await db.refresh(classroom)
+    import traceback
+    try:
+        classroom = TeacherClassroom(
+            teacher_user_id=str(current_user.id),
+            sinif_adi=body.name,
+            seviye=body.grade_level,
+            ders=body.subject_area,
+        )
+        db.add(classroom)
+        await db.commit()
+        await db.refresh(classroom)
+    except Exception as e:
+        print("EXCEPTION IN create_class:")
+        traceback.print_exc()
+        raise e
     return {
         "success": True,
         "data": {

@@ -101,9 +101,7 @@ class ResponseValidationOrchestrator:
 
         self.parallel_validation = parallel_validation
 
-    async def validate_response(
-        self, response: AgentResponse
-    ) -> dict[str, Any]:
+    async def validate_response(self, response: AgentResponse) -> dict[str, Any]:
         """
         AI yanıtını tam doğrulama pipeline'ından geçir.
 
@@ -120,7 +118,7 @@ class ResponseValidationOrchestrator:
         if not agent_validator:
             raise AgentTypeError(
                 f"Unknown agent type: {response.agent_type}",
-                validator_name="Orchestrator"
+                validator_name="Orchestrator",
             )
 
         # Doğrulama görevlerini hazırla
@@ -142,27 +140,41 @@ class ResponseValidationOrchestrator:
             agent_result = await self._safe_validate(
                 agent_validator.validate(response), "agent_specific"
             )
-            
+
             # Eğer agent_specific doğrulama çok düşükse (fail), fact_checking'i atla
             if agent_result.score < 0.6:
-                logger.info(f"[{response.response_id}] Short-circuiting fact_checking due to low agent score ({agent_result.score})")
+                logger.info(
+                    f"[{response.response_id}] Short-circuiting fact_checking due to low agent score ({agent_result.score})"
+                )
                 fact_result = ValidationResult(
-                    is_valid=False, score=agent_result.score, errors=[], 
-                    warnings=["Fact-checking skipped to save tokens due to early failure"], 
-                    suggestions=[], metadata={}
+                    is_valid=False,
+                    score=agent_result.score,
+                    errors=[],
+                    warnings=[
+                        "Fact-checking skipped to save tokens due to early failure"
+                    ],
+                    suggestions=[],
+                    metadata={},
                 )
             else:
                 fact_result = await self._safe_validate(
                     self.fact_checker.check_facts(response), "fact_checking"
                 )
-            
+
             # Eğer fact_checking veya agent fail ise consistency'i atla
             if agent_result.score < 0.6 or fact_result.score < 0.6:
-                logger.info(f"[{response.response_id}] Short-circuiting consistency due to low earlier scores")
+                logger.info(
+                    f"[{response.response_id}] Short-circuiting consistency due to low earlier scores"
+                )
                 consistency_result = ValidationResult(
-                    is_valid=False, score=min(agent_result.score, fact_result.score), errors=[], 
-                    warnings=["Consistency skipped to save tokens due to early failure"], 
-                    suggestions=[], metadata={}
+                    is_valid=False,
+                    score=min(agent_result.score, fact_result.score),
+                    errors=[],
+                    warnings=[
+                        "Consistency skipped to save tokens due to early failure"
+                    ],
+                    suggestions=[],
+                    metadata={},
                 )
             else:
                 consistency_result = await self._safe_validate(
@@ -176,21 +188,17 @@ class ResponseValidationOrchestrator:
 
         # Tüm hata ve uyarıları topla
         all_errors = (
-            agent_result.errors +
-            fact_result.errors +
-            consistency_result.errors
+            agent_result.errors + fact_result.errors + consistency_result.errors
         )
 
         all_warnings = (
-            agent_result.warnings +
-            fact_result.warnings +
-            consistency_result.warnings
+            agent_result.warnings + fact_result.warnings + consistency_result.warnings
         )
 
         all_suggestions = (
-            agent_result.suggestions +
-            fact_result.suggestions +
-            consistency_result.suggestions
+            agent_result.suggestions
+            + fact_result.suggestions
+            + consistency_result.suggestions
         )
 
         # Süre hesapla
@@ -301,9 +309,7 @@ class ResponseValidationOrchestrator:
                 metadata={"error": str(e)},
             )
 
-    def to_validation_report(
-        self, result: dict[str, Any]
-    ) -> ValidationReport:
+    def to_validation_report(self, result: dict[str, Any]) -> ValidationReport:
         """
         Dict sonucunu ValidationReport modeline dönüştür.
 

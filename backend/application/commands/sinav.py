@@ -1,18 +1,24 @@
-import logging
-import time
 import asyncio
-from typing import Any, Optional
+import logging
 from datetime import datetime
+from typing import Any
 
-from pydantic import ConfigDict
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from pydantic import ConfigDict
 
 from core.cqrs.base import Command, CommandHandler
-from core.osym_exam_engine import osym_exam_engine, ExamStatus
+from core.osym_exam_engine import ExamStatus, osym_exam_engine
 from models.database import ExamType
 
 logger = logging.getLogger(__name__)
+
+
+def _get_engine():
+    import sys
+    if "api.sinav" in sys.modules:
+        return getattr(sys.modules["api.sinav"], "osym_exam_engine", osym_exam_engine)
+    return osym_exam_engine
+
 
 class CreateExamCommand(Command):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -20,23 +26,25 @@ class CreateExamCommand(Command):
     exam_type: Any
     custom_config: dict[str, Any] | None = None
 
+
 class CreateExamCommandHandler(CommandHandler[CreateExamCommand, dict[str, Any]]):
     async def handle(self, command: CreateExamCommand) -> dict[str, Any]:
+        engine = _get_engine()
         try:
-            session_id = await osym_exam_engine.create_exam_session(
+            session_id = await engine.create_exam_session(
                 student_id=command.student_id,
                 exam_type=command.exam_type,
                 custom_config=command.custom_config,
             )
 
-            session_data = await osym_exam_engine.get_session_data(session_id)
+            session_data = await engine.get_session_data(session_id)
 
             if not session_data:
-                raise ValueError("Sınav oturumu oluşturulamadı")
+                raise RuntimeError("Sınav oturumu oluşturulamadı")
 
             logger.info(
                 "ÖSYM sınavı oluşturuldu",
-                extra_data={
+                extra={
                     "session_id": session_id,
                     "student_id": command.student_id,
                     "exam_type": command.exam_type.value,
@@ -57,7 +65,7 @@ class CreateExamCommandHandler(CommandHandler[CreateExamCommand, dict[str, Any]]
         except ValueError as e:
             logger.error(
                 f"Sınav oluşturma hatası: {e}",
-                extra_data={
+                extra={
                     "student_id": command.student_id,
                     "exam_type": command.exam_type.value,
                 },
@@ -69,7 +77,7 @@ class CreateExamCommandHandler(CommandHandler[CreateExamCommand, dict[str, Any]]
         except Exception as e:
             logger.error(
                 f"Beklenmeyen sınav oluşturma hatası: {e}",
-                extra_data={
+                extra={
                     "student_id": command.student_id,
                     "exam_type": command.exam_type.value,
                 },
@@ -85,11 +93,15 @@ class CreateBetaPracticeCommand(Command):
     student_id: str
     num_questions: int
 
-class CreateBetaPracticeCommandHandler(CommandHandler[CreateBetaPracticeCommand, dict[str, Any]]):
+
+class CreateBetaPracticeCommandHandler(
+    CommandHandler[CreateBetaPracticeCommand, dict[str, Any]]
+):
     async def handle(self, command: CreateBetaPracticeCommand) -> dict[str, Any]:
         num = max(1, min(int(command.num_questions), 50))
+        engine = _get_engine()
         try:
-            session_id = await osym_exam_engine.create_exam_session(
+            session_id = await engine.create_exam_session(
                 student_id=command.student_id,
                 exam_type=ExamType.TYT,
                 custom_config={
@@ -98,13 +110,13 @@ class CreateBetaPracticeCommandHandler(CommandHandler[CreateBetaPracticeCommand,
                     "duration_minutes": 120,
                 },
             )
-            session_data = await osym_exam_engine.get_session_data(session_id)
+            session_data = await engine.get_session_data(session_id)
             if not session_data:
                 raise ValueError("Beta pratik oturumu oluşturulamadı")
 
             logger.info(
                 "Beta pratik testi oluşturuldu",
-                extra_data={
+                extra={
                     "session_id": session_id,
                     "student_id": command.student_id,
                     "num_questions": num,
@@ -125,7 +137,7 @@ class CreateBetaPracticeCommandHandler(CommandHandler[CreateBetaPracticeCommand,
         except ValueError as e:
             logger.error(
                 f"Beta pratik oluşturma hatası: {e}",
-                extra_data={"student_id": command.student_id},
+                extra={"student_id": command.student_id},
             )
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -134,7 +146,7 @@ class CreateBetaPracticeCommandHandler(CommandHandler[CreateBetaPracticeCommand,
         except Exception as e:
             logger.error(
                 f"Beklenmeyen beta pratik hatası: {e}",
-                extra_data={"student_id": command.student_id},
+                extra={"student_id": command.student_id},
             )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -147,13 +159,16 @@ class StartExamCommand(Command):
     student_id: str
     session_id: str
 
+
 class StartExamCommandHandler(CommandHandler[StartExamCommand, dict[str, Any]]):
     async def handle(self, command: StartExamCommand) -> dict[str, Any]:
+        engine = _get_engine()
         try:
-            session_data = await osym_exam_engine.get_session_data(command.session_id)
+            session_data = await engine.get_session_data(command.session_id)
             if not session_data:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Sınav oturumu bulunamadı",
                 )
 
             if str(session_data.student_id) != str(command.student_id):
@@ -162,11 +177,11 @@ class StartExamCommandHandler(CommandHandler[StartExamCommand, dict[str, Any]]):
                     detail="Bu sınava erişim yetkiniz yok",
                 )
 
-            updated_session = await osym_exam_engine.start_exam(command.session_id)
+            updated_session = await engine.start_exam(command.session_id)
 
             logger.info(
                 "ÖSYM sınavı başlatıldı",
-                extra_data={
+                extra={
                     "session_id": command.session_id,
                     "student_id": command.student_id,
                     "exam_type": updated_session.exam_config.exam_type.value,
@@ -187,7 +202,7 @@ class StartExamCommandHandler(CommandHandler[StartExamCommand, dict[str, Any]]):
         except ValueError as e:
             logger.error(
                 f"Sınav başlatma hatası: {e}",
-                extra_data={
+                extra={
                     "session_id": command.session_id,
                     "student_id": command.student_id,
                 },
@@ -201,7 +216,7 @@ class StartExamCommandHandler(CommandHandler[StartExamCommand, dict[str, Any]]):
         except Exception as e:
             logger.error(
                 f"Beklenmeyen sınav başlatma hatası: {e}",
-                extra_data={
+                extra={
                     "session_id": command.session_id,
                     "student_id": command.student_id,
                 },
@@ -221,13 +236,16 @@ class SaveAnswerCommand(Command):
     response_time: float | None = None
     rating: int | None = None
 
+
 class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]):
     async def handle(self, command: SaveAnswerCommand) -> dict[str, Any]:
+        engine = _get_engine()
         try:
-            session_data = await osym_exam_engine.get_session_data(command.session_id)
+            session_data = await engine.get_session_data(command.session_id)
             if not session_data:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Sınav oturumu bulunamadı",
                 )
 
             if str(session_data.student_id) != str(command.student_id):
@@ -236,7 +254,7 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                     detail="Bu sınava erişim yetkiniz yok",
                 )
 
-            success = await osym_exam_engine.save_answer(
+            success = await engine.save_answer(
                 session_id=command.session_id,
                 question_id=command.question_id,
                 selected_answer=command.selected_answer,
@@ -245,12 +263,13 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
 
             if not success:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Cevap kaydedilemedi"
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Cevap kaydedilemedi",
                 )
 
             logger.debug(
                 "Cevap kaydedildi",
-                extra_data={
+                extra={
                     "session_id": command.session_id,
                     "question_id": command.question_id,
                     "answer": command.selected_answer,
@@ -262,7 +281,12 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
             if True:
                 try:
                     import os as _os
-                    if _os.environ.get("ALGO_FIRE_AND_FORGET", "yes").lower() in ("1", "true", "yes"):
+
+                    if _os.environ.get("ALGO_FIRE_AND_FORGET", "yes").lower() in (
+                        "1",
+                        "true",
+                        "yes",
+                    ):
                         if not hasattr(asyncio, "_bkt_semaphore"):
                             asyncio._bkt_semaphore = asyncio.Semaphore(10)
 
@@ -274,9 +298,12 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                             rating_input,
                         ):
                             from sqlalchemy import select
+
                             from core.database import get_db_session_context
                             from models.exam_db import StudentAnswer
-                            from models.question_bank import QuestionBankItem as Question
+                            from models.question_bank import (
+                                QuestionBankItem as Question,
+                            )
                             from services.bkt_service import BKTService
 
                             async with asyncio._bkt_semaphore:
@@ -316,7 +343,9 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                                 ).where(
                                                     StudentAnswer.exam_session_id
                                                     == session_id_val,
-                                                    StudentAnswer.is_correct.isnot(None),
+                                                    StudentAnswer.is_correct.isnot(
+                                                        None
+                                                    ),
                                                 )
                                             )
                                             prev_rows = prev.all()
@@ -348,13 +377,16 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                                                 or 0.0
                                                             ),
                                                             "irt_c": float(
-                                                                irt_row.irt_guessing or 0.2
+                                                                irt_row.irt_guessing
+                                                                or 0.2
                                                             ),
                                                         }
                                                     )
                                                     responses.append(
                                                         bool(
-                                                            prev_correct_map.get(irt_row.id)
+                                                            prev_correct_map.get(
+                                                                irt_row.id
+                                                            )
                                                         )
                                                     )
                                         except Exception as irt_err:
@@ -367,7 +399,9 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                                 "irt_a": float(
                                                     row.irt_discrimination or 1.0
                                                 ),
-                                                "irt_b": float(row.irt_difficulty or 0.0),
+                                                "irt_b": float(
+                                                    row.irt_difficulty or 0.0
+                                                ),
                                                 "irt_c": float(row.irt_guessing or 0.2),
                                             }
                                         )
@@ -401,7 +435,9 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                             )
                         )
 
-                        def _on_done(t, sid=command.session_id, qid=command.question_id):
+                        def _on_done(
+                            t, sid=command.session_id, qid=command.question_id
+                        ):
                             try:
                                 exc = t.exception()
                             except asyncio.CancelledError:
@@ -410,6 +446,7 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                 return
                             try:
                                 from services.bkt_service import _ALGO_ERRORS
+
                                 _ALGO_ERRORS["bkt_write"] = (
                                     _ALGO_ERRORS.get("bkt_write", 0) + 1
                                 )
@@ -426,6 +463,7 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                         bkt_result = {"deferred": True}
                     else:
                         from sqlalchemy import select
+
                         from core.database import get_db_session_context
                         from models.exam_db import StudentAnswer
                         from models.question_bank import QuestionBankItem as Question
@@ -460,7 +498,8 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                             StudentAnswer.question_id,
                                             StudentAnswer.is_correct,
                                         ).where(
-                                            StudentAnswer.exam_session_id == command.session_id,
+                                            StudentAnswer.exam_session_id
+                                            == command.session_id,
                                             StudentAnswer.is_correct.isnot(None),
                                         )
                                     )
@@ -468,7 +507,8 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                     if prev_rows:
                                         prev_qids = [r.question_id for r in prev_rows]
                                         prev_correct_map = {
-                                            r.question_id: r.is_correct for r in prev_rows
+                                            r.question_id: r.is_correct
+                                            for r in prev_rows
                                         }
                                         irt_q = await db.execute(
                                             select(
@@ -482,7 +522,8 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                             answered_questions.append(
                                                 {
                                                     "irt_a": float(
-                                                        irt_row.irt_discrimination or 1.0
+                                                        irt_row.irt_discrimination
+                                                        or 1.0
                                                     ),
                                                     "irt_b": float(
                                                         irt_row.irt_difficulty or 0.0
@@ -496,7 +537,9 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                                 bool(prev_correct_map.get(irt_row.id))
                                             )
                                 except Exception as irt_err:
-                                    logger.debug("IRT history fetch skipped: %s", irt_err)
+                                    logger.debug(
+                                        "IRT history fetch skipped: %s", irt_err
+                                    )
 
                                 answered_questions.append(
                                     {
@@ -538,7 +581,10 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
         except Exception as e:
             logger.error(
                 f"Cevap kaydetme hatası: {e}",
-                extra_data={"session_id": command.session_id, "question_id": command.question_id},
+                extra={
+                    "session_id": command.session_id,
+                    "question_id": command.question_id,
+                },
             )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -552,13 +598,18 @@ class NavigateQuestionCommand(Command):
     session_id: str
     question_index: int
 
-class NavigateQuestionCommandHandler(CommandHandler[NavigateQuestionCommand, dict[str, Any]]):
+
+class NavigateQuestionCommandHandler(
+    CommandHandler[NavigateQuestionCommand, dict[str, Any]]
+):
     async def handle(self, command: NavigateQuestionCommand) -> dict[str, Any]:
+        engine = _get_engine()
         try:
-            session_data = await osym_exam_engine.get_session_data(command.session_id)
+            session_data = await engine.get_session_data(command.session_id)
             if not session_data:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Sınav oturumu bulunamadı",
                 )
 
             if str(session_data.student_id) != str(command.student_id):
@@ -567,7 +618,7 @@ class NavigateQuestionCommandHandler(CommandHandler[NavigateQuestionCommand, dic
                     detail="Bu sınava erişim yetkiniz yok",
                 )
 
-            question = await osym_exam_engine.navigate_to_question(
+            question = await engine.navigate_to_question(
                 command.session_id, command.question_index
             )
 
@@ -603,7 +654,7 @@ class NavigateQuestionCommandHandler(CommandHandler[NavigateQuestionCommand, dic
         except Exception as e:
             logger.error(
                 f"Soru navigasyon hatası: {e}",
-                extra_data={
+                extra={
                     "session_id": command.session_id,
                     "question_index": command.question_index,
                 },
@@ -621,13 +672,16 @@ class FlagQuestionCommand(Command):
     question_id: str
     flagged: bool
 
+
 class FlagQuestionCommandHandler(CommandHandler[FlagQuestionCommand, dict[str, Any]]):
     async def handle(self, command: FlagQuestionCommand) -> dict[str, Any]:
+        engine = _get_engine()
         try:
-            session_data = await osym_exam_engine.get_session_data(command.session_id)
+            session_data = await engine.get_session_data(command.session_id)
             if not session_data:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Sınav oturumu bulunamadı",
                 )
 
             if str(session_data.student_id) != str(command.student_id):
@@ -636,7 +690,7 @@ class FlagQuestionCommandHandler(CommandHandler[FlagQuestionCommand, dict[str, A
                     detail="Bu sınava erişim yetkiniz yok",
                 )
 
-            success = await osym_exam_engine.flag_question(
+            success = await engine.flag_question(
                 session_id=command.session_id,
                 question_id=command.question_id,
                 flagged=command.flagged,
@@ -658,7 +712,10 @@ class FlagQuestionCommandHandler(CommandHandler[FlagQuestionCommand, dict[str, A
         except Exception as e:
             logger.error(
                 f"Soru işaretleme hatası: {e}",
-                extra_data={"session_id": command.session_id, "question_id": command.question_id},
+                extra={
+                    "session_id": command.session_id,
+                    "question_id": command.question_id,
+                },
             )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -671,13 +728,16 @@ class CompleteExamCommand(Command):
     student_id: str
     session_id: str
 
+
 class CompleteExamCommandHandler(CommandHandler[CompleteExamCommand, dict[str, Any]]):
     async def handle(self, command: CompleteExamCommand) -> dict[str, Any]:
+        engine = _get_engine()
         try:
-            session_data = await osym_exam_engine.get_session_data(command.session_id)
+            session_data = await engine.get_session_data(command.session_id)
             if not session_data:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Sınav oturumu bulunamadı",
                 )
 
             if str(session_data.student_id) != str(command.student_id):
@@ -686,13 +746,13 @@ class CompleteExamCommandHandler(CommandHandler[CompleteExamCommand, dict[str, A
                     detail="Bu sınava erişim yetkiniz yok",
                 )
 
-            performance_metrics = await osym_exam_engine.complete_exam(
+            performance_metrics = await engine.complete_exam(
                 command.session_id, manual_completion=True
             )
 
             logger.info(
                 "ÖSYM sınavı tamamlandı",
-                extra_data={
+                extra={
                     "session_id": command.session_id,
                     "student_id": command.student_id,
                     "net_score": performance_metrics.net_score,
@@ -714,12 +774,14 @@ class CompleteExamCommandHandler(CommandHandler[CompleteExamCommand, dict[str, A
                     )
                     logger.info(
                         "Exam event report",
-                        extra_data={"report": str(event_report)},
+                        extra={"report": str(event_report)},
                     )
             except Exception as event_err:
                 logger.warning("Exam event processing skipped: %s", event_err)
 
-            subject_perfs = await osym_exam_engine.get_subject_performance(command.session_id)
+            subject_perfs = await engine.get_subject_performance(
+                command.session_id
+            )
             konu_data = [
                 {
                     "subject": p.subject,
@@ -749,7 +811,8 @@ class CompleteExamCommandHandler(CommandHandler[CompleteExamCommand, dict[str, A
             }
         except ValueError as e:
             logger.error(
-                f"Sınav tamamlama hatası: {e}", extra_data={"session_id": command.session_id}
+                f"Sınav tamamlama hatası: {e}",
+                extra={"session_id": command.session_id},
             )
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -760,7 +823,7 @@ class CompleteExamCommandHandler(CommandHandler[CompleteExamCommand, dict[str, A
         except Exception as e:
             logger.error(
                 f"Beklenmeyen sınav tamamlama hatası: {e}",
-                extra_data={"session_id": command.session_id},
+                extra={"session_id": command.session_id},
             )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -773,13 +836,16 @@ class CancelExamCommand(Command):
     student_id: str
     session_id: str
 
+
 class CancelExamCommandHandler(CommandHandler[CancelExamCommand, dict[str, Any]]):
     async def handle(self, command: CancelExamCommand) -> dict[str, Any]:
+        engine = _get_engine()
         try:
-            session_data = await osym_exam_engine.get_session_data(command.session_id)
+            session_data = await engine.get_session_data(command.session_id)
             if not session_data:
                 raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail="Sınav oturumu bulunamadı"
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Sınav oturumu bulunamadı",
                 )
 
             if str(session_data.student_id) != str(command.student_id):
@@ -788,7 +854,10 @@ class CancelExamCommandHandler(CommandHandler[CancelExamCommand, dict[str, Any]]
                     detail="Bu sınava erişim yetkiniz yok",
                 )
 
-            if session_data.status not in [ExamStatus.NOT_STARTED, ExamStatus.IN_PROGRESS]:
+            if session_data.status not in [
+                ExamStatus.NOT_STARTED,
+                ExamStatus.IN_PROGRESS,
+            ]:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Tamamlanmış veya iptal edilmiş sınavlar tekrar iptal edilemez",
@@ -797,21 +866,21 @@ class CancelExamCommandHandler(CommandHandler[CancelExamCommand, dict[str, Any]]
             session_data.status = ExamStatus.ABANDONED
             session_data.completed_at = datetime.now()
 
-            if command.session_id in osym_exam_engine.auto_save_tasks:
-                osym_exam_engine.auto_save_tasks[command.session_id].cancel()
-                del osym_exam_engine.auto_save_tasks[command.session_id]
+            if command.session_id in engine.auto_save_tasks:
+                engine.auto_save_tasks[command.session_id].cancel()
+                del engine.auto_save_tasks[command.session_id]
 
             autoclose_key = f"autoclose:{command.session_id}"
-            if autoclose_key in osym_exam_engine.auto_save_tasks:
-                osym_exam_engine.auto_save_tasks[autoclose_key].cancel()
-                del osym_exam_engine.auto_save_tasks[autoclose_key]
+            if autoclose_key in engine.auto_save_tasks:
+                engine.auto_save_tasks[autoclose_key].cancel()
+                del engine.auto_save_tasks[autoclose_key]
 
-            if command.session_id in osym_exam_engine.active_sessions:
-                del osym_exam_engine.active_sessions[command.session_id]
+            if command.session_id in engine.active_sessions:
+                del engine.active_sessions[command.session_id]
 
             logger.info(
                 "ÖSYM sınavı iptal edildi",
-                extra_data={
+                extra={
                     "session_id": command.session_id,
                     "student_id": command.student_id,
                 },
@@ -826,7 +895,8 @@ class CancelExamCommandHandler(CommandHandler[CancelExamCommand, dict[str, Any]]
             raise
         except Exception as e:
             logger.error(
-                f"Sınav iptal etme hatası: {e}", extra_data={"session_id": command.session_id}
+                f"Sınav iptal etme hatası: {e}",
+                extra={"session_id": command.session_id},
             )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

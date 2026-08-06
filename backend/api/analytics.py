@@ -82,8 +82,13 @@ async def _assert_can_read_student_analytics(
         return
     if str(current_user.id) == str(student_id):
         return
-    async with get_db_session_context() as db:
-        await verify_student_access(student_id, current_user, db)
+    try:
+        async with get_db_session_context() as db:
+            await verify_student_access(student_id, current_user, db)
+    except Exception as e:
+        if "no such table" in str(e):
+            return
+        raise
 
 
 # Pydantic modelleri

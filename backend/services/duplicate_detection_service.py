@@ -22,12 +22,14 @@ from enum import Enum
 
 try:
     import chromadb
+
     CHROMADB_AVAILABLE = True
 except ImportError:
     CHROMADB_AVAILABLE = False
 
 try:
     from sentence_transformers import SentenceTransformer
+
     EMBEDDINGS_AVAILABLE = True
 except ImportError:
     EMBEDDINGS_AVAILABLE = False
@@ -40,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 class DuplicateStatus(str, Enum):
     """Duplicate tespit durumları."""
+
     UNIQUE = "unique"  # Benzeri yok
     NEAR_DUPLICATE = "near_duplicate"  # Yüksek benzerlik (0.90-0.95)
     DUPLICATE = "duplicate"  # Çok yüksek benzerlik (0.95-0.99)
@@ -50,6 +53,7 @@ class DuplicateStatus(str, Enum):
 @dataclass
 class DuplicateCheckResult:
     """Duplicate kontrol sonucu."""
+
     status: DuplicateStatus
     is_duplicate: bool
     similarity_score: float
@@ -62,6 +66,7 @@ class DuplicateCheckResult:
 @dataclass
 class MergeResult:
     """Metadata merge sonucu."""
+
     success: bool
     merged_id: str
     merged_metadata: dict
@@ -85,7 +90,7 @@ class DuplicateDetectionService:
     def __init__(
         self,
         persist_directory: str | None = None,
-        collection_name: str = "kiro2_questions"
+        collection_name: str = "kiro2_questions",
     ):
         """
         DuplicateDetectionService başlat.
@@ -120,8 +125,7 @@ class DuplicateDetectionService:
             )
 
             self._collection = self._client.get_or_create_collection(
-                name=self.collection_name,
-                metadata={"hnsw:space": "cosine"}
+                name=self.collection_name, metadata={"hnsw:space": "cosine"}
             )
 
             if EMBEDDINGS_AVAILABLE:
@@ -140,6 +144,7 @@ class DuplicateDetectionService:
         """Metin için embedding oluştur."""
         # 2026 Ultra Expert NLP Lens Fix: Normalize Turkish text before embedding
         from core.turkish_nlp_utils import normalize_tr
+
         text = normalize_tr(text)
 
         if self._embedding_model is None:
@@ -148,6 +153,7 @@ class DuplicateDetectionService:
             import random
 
             from core.config import EmbeddingConfig
+
             dim = EmbeddingConfig.get_model_dimension()
             seed_int = int(hashlib.sha256(text.encode()).hexdigest(), 16)
             rng = random.Random(seed_int)
@@ -160,7 +166,7 @@ class DuplicateDetectionService:
         self,
         content: str,
         check_paraphrase: bool = True,
-        similarity_threshold: float | None = None
+        similarity_threshold: float | None = None,
     ) -> DuplicateCheckResult:
         """
         Soru içeriğinin duplicate olup olmadığını kontrol et.
@@ -181,7 +187,7 @@ class DuplicateDetectionService:
                 is_duplicate=False,
                 similarity_score=0.0,
                 recommendation="ChromaDB initialization failed",
-                can_add=False
+                can_add=False,
             )
 
         threshold = similarity_threshold or self.DUPLICATE_THRESHOLD
@@ -194,7 +200,7 @@ class DuplicateDetectionService:
             results = self._collection.query(
                 query_embeddings=[query_embedding],
                 n_results=10,
-                include=["documents", "metadatas", "distances"]
+                include=["documents", "metadatas", "distances"],
             )
 
             similar_questions = []
@@ -203,39 +209,47 @@ class DuplicateDetectionService:
 
             if results and results.get("documents"):
                 for i, doc in enumerate(results["documents"][0]):
-                    distance = results["distances"][0][i] if results.get("distances") else 1.0
+                    distance = (
+                        results["distances"][0][i] if results.get("distances") else 1.0
+                    )
                     similarity = 1 - distance
 
                     max_similarity = max(max_similarity, similarity)
 
                     doc_id = results["ids"][0][i] if results.get("ids") else None
-                    metadata = results["metadatas"][0][i] if results.get("metadatas") else {}
+                    metadata = (
+                        results["metadatas"][0][i] if results.get("metadatas") else {}
+                    )
 
                     if similarity >= self.NEAR_DUPLICATE_THRESHOLD:
-                        similar_questions.append({
-                            "id": doc_id,
-                            "content_preview": doc[:200] + "..." if len(doc) > 200 else doc,
-                            "similarity": round(similarity, 4),
-                            "metadata": metadata
-                        })
+                        similar_questions.append(
+                            {
+                                "id": doc_id,
+                                "content_preview": doc[:200] + "..."
+                                if len(doc) > 200
+                                else doc,
+                                "similarity": round(similarity, 4),
+                                "metadata": metadata,
+                            }
+                        )
 
                         if similarity >= self.DUPLICATE_THRESHOLD:
                             merge_candidates.append(doc_id)
 
             # Durum belirle
             status, recommendation, can_add = self._determine_status(
-                max_similarity,
-                check_paraphrase
+                max_similarity, check_paraphrase
             )
 
             return DuplicateCheckResult(
                 status=status,
-                is_duplicate=status in [DuplicateStatus.DUPLICATE, DuplicateStatus.EXACT_MATCH],
+                is_duplicate=status
+                in [DuplicateStatus.DUPLICATE, DuplicateStatus.EXACT_MATCH],
                 similarity_score=round(max_similarity, 4),
                 similar_questions=similar_questions,
                 recommendation=recommendation,
                 can_add=can_add,
-                merge_candidates=merge_candidates
+                merge_candidates=merge_candidates,
             )
 
         except Exception as e:
@@ -245,13 +259,11 @@ class DuplicateDetectionService:
                 is_duplicate=False,
                 similarity_score=0.0,
                 recommendation=f"Error: {e!s}",
-                can_add=False
+                can_add=False,
             )
 
     def _determine_status(
-        self,
-        similarity: float,
-        check_paraphrase: bool
+        self, similarity: float, check_paraphrase: bool
     ) -> tuple[DuplicateStatus, str, bool]:
         """
         Benzerlik skoruna göre durum belirle.
@@ -264,7 +276,7 @@ class DuplicateDetectionService:
             return (
                 DuplicateStatus.EXACT_MATCH,
                 "ENGELLENDI: Bu soru zaten veritabanında mevcut (exact match).",
-                False
+                False,
             )
 
         if similarity >= self.DUPLICATE_THRESHOLD:
@@ -272,7 +284,7 @@ class DuplicateDetectionService:
             return (
                 DuplicateStatus.DUPLICATE,
                 "UYARI: Çok benzer soru tespit edildi. Manuel inceleme önerilir.",
-                False
+                False,
             )
 
         if similarity >= self.NEAR_DUPLICATE_THRESHOLD:
@@ -280,7 +292,7 @@ class DuplicateDetectionService:
             return (
                 DuplicateStatus.NEAR_DUPLICATE,
                 "DİKKAT: Benzer soru bulundu. Ekleme mümkün ama kontrol önerilir.",
-                True
+                True,
             )
 
         if check_paraphrase and similarity >= self.PARAPHRASE_THRESHOLD:
@@ -288,21 +300,17 @@ class DuplicateDetectionService:
             return (
                 DuplicateStatus.PARAPHRASE,
                 "BİLGİ: Semantik olarak benzer soru bulundu (paraphrase).",
-                True
+                True,
             )
 
-        return (
-            DuplicateStatus.UNIQUE,
-            "Benzersiz soru - ekleme güvenli.",
-            True
-        )
+        return (DuplicateStatus.UNIQUE, "Benzersiz soru - ekleme güvenli.", True)
 
     async def add_with_duplicate_check(
         self,
         content: str,
         metadata: dict | None = None,
         question_id: str | None = None,
-        force: bool = False
+        force: bool = False,
     ) -> tuple[bool, str, DuplicateCheckResult]:
         """
         Duplicate kontrolü ile soru ekle.
@@ -329,6 +337,7 @@ class DuplicateDetectionService:
             # ID oluştur
             if question_id is None:
                 import uuid
+
                 question_id = str(uuid.uuid4())
 
             # Embedding oluştur
@@ -345,10 +354,12 @@ class DuplicateDetectionService:
                 ids=[question_id],
                 documents=[content],
                 metadatas=[meta],
-                embeddings=[embedding]
+                embeddings=[embedding],
             )
 
-            logger.info(f"Question added: {question_id} (similarity: {check_result.similarity_score})")
+            logger.info(
+                f"Question added: {question_id} (similarity: {check_result.similarity_score})"
+            )
             return True, question_id, check_result
 
         except Exception as e:
@@ -360,7 +371,7 @@ class DuplicateDetectionService:
         self,
         primary_id: str,
         secondary_ids: list[str],
-        merge_strategy: str = "keep_primary"
+        merge_strategy: str = "keep_primary",
     ) -> MergeResult:
         """
         Duplicate soruları birleştir.
@@ -383,14 +394,13 @@ class DuplicateDetectionService:
                 success=False,
                 merged_id="",
                 merged_metadata={},
-                message="ChromaDB initialization failed"
+                message="ChromaDB initialization failed",
             )
 
         try:
             # Primary soruyu al
             primary = self._collection.get(
-                ids=[primary_id],
-                include=["documents", "metadatas"]
+                ids=[primary_id], include=["documents", "metadatas"]
             )
 
             if not primary or not primary.get("documents"):
@@ -398,7 +408,7 @@ class DuplicateDetectionService:
                     success=False,
                     merged_id=primary_id,
                     merged_metadata={},
-                    message=f"Primary question not found: {primary_id}"
+                    message=f"Primary question not found: {primary_id}",
                 )
 
             primary_doc = primary["documents"][0]
@@ -406,22 +416,16 @@ class DuplicateDetectionService:
 
             # Secondary soruları al
             secondaries = self._collection.get(
-                ids=secondary_ids,
-                include=["documents", "metadatas"]
+                ids=secondary_ids, include=["documents", "metadatas"]
             )
 
             # Metadata birleştir
             merged_metadata = self._merge_metadata(
-                primary_meta,
-                secondaries.get("metadatas", []),
-                merge_strategy
+                primary_meta, secondaries.get("metadatas", []), merge_strategy
             )
 
             # Primary'yi güncelle
-            self._collection.update(
-                ids=[primary_id],
-                metadatas=[merged_metadata]
-            )
+            self._collection.update(ids=[primary_id], metadatas=[merged_metadata])
 
             # Secondary'leri arşivle (sil)
             archived_ids = []
@@ -437,7 +441,7 @@ class DuplicateDetectionService:
                 merged_id=primary_id,
                 merged_metadata=merged_metadata,
                 archived_ids=archived_ids,
-                message=f"Merged {len(archived_ids)} duplicates into {primary_id}"
+                message=f"Merged {len(archived_ids)} duplicates into {primary_id}",
             )
 
         except Exception as e:
@@ -446,14 +450,11 @@ class DuplicateDetectionService:
                 success=False,
                 merged_id=primary_id,
                 merged_metadata={},
-                message=f"Merge error: {e!s}"
+                message=f"Merge error: {e!s}",
             )
 
     def _merge_metadata(
-        self,
-        primary: dict,
-        secondaries: list[dict],
-        strategy: str
+        self, primary: dict, secondaries: list[dict], strategy: str
     ) -> dict:
         """
         Metadata birleştirme stratejisini uygula.
@@ -515,7 +516,9 @@ class DuplicateDetectionService:
                     newest_date = sec_date
 
             result = dict(newest)
-            result["merged_from"] = [primary.get("id")] + [s.get("id") for s in secondaries if s.get("id")]
+            result["merged_from"] = [primary.get("id")] + [
+                s.get("id") for s in secondaries if s.get("id")
+            ]
             return result
 
         # Default: keep_primary
@@ -540,7 +543,7 @@ class DuplicateDetectionService:
                 return {
                     "total_questions": 0,
                     "potential_duplicates": 0,
-                    "duplicate_rate": 0.0
+                    "duplicate_rate": 0.0,
                 }
 
             sample = self._collection.peek(limit=sample_size)
@@ -551,7 +554,7 @@ class DuplicateDetectionService:
                 for meta in sample["metadatas"]:
                     if meta.get("duplicate_check_status") in [
                         DuplicateStatus.DUPLICATE.value,
-                        DuplicateStatus.EXACT_MATCH.value
+                        DuplicateStatus.EXACT_MATCH.value,
                     ]:
                         duplicate_count += 1
 
@@ -559,13 +562,15 @@ class DuplicateDetectionService:
                 "total_questions": count,
                 "sample_size": sample_size,
                 "potential_duplicates": duplicate_count,
-                "duplicate_rate": round(duplicate_count / sample_size * 100, 2) if sample_size > 0 else 0.0,
+                "duplicate_rate": round(duplicate_count / sample_size * 100, 2)
+                if sample_size > 0
+                else 0.0,
                 "thresholds": {
                     "exact_match": self.EXACT_MATCH_THRESHOLD,
                     "duplicate": self.DUPLICATE_THRESHOLD,
                     "near_duplicate": self.NEAR_DUPLICATE_THRESHOLD,
-                    "paraphrase": self.PARAPHRASE_THRESHOLD
-                }
+                    "paraphrase": self.PARAPHRASE_THRESHOLD,
+                },
             }
 
         except Exception as e:
@@ -578,8 +583,7 @@ _duplicate_service: DuplicateDetectionService | None = None
 
 
 def get_duplicate_service(
-    persist_directory: str = "./vector_db",
-    collection_name: str = "kiro2_questions"
+    persist_directory: str = "./vector_db", collection_name: str = "kiro2_questions"
 ) -> DuplicateDetectionService:
     """
     Singleton DuplicateDetectionService instance döndür.
@@ -594,7 +598,6 @@ def get_duplicate_service(
     global _duplicate_service
     if _duplicate_service is None:
         _duplicate_service = DuplicateDetectionService(
-            persist_directory=persist_directory,
-            collection_name=collection_name
+            persist_directory=persist_directory, collection_name=collection_name
         )
     return _duplicate_service

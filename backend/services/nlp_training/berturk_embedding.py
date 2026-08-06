@@ -76,6 +76,7 @@ class BERTurkEmbeddingService:
 
         # Embedding cache - LRU Cache to prevent OOM
         from collections import OrderedDict
+
         self.embedding_cache: OrderedDict[str, np.ndarray] = OrderedDict()
         self.max_cache_size = 10000
 
@@ -227,7 +228,7 @@ class BERTurkEmbeddingService:
             embeddings_np = embeddings.cpu().numpy()
 
             # Results oluştur
-            for text, embedding in zip(batch_texts, embeddings_np):
+            for text, embedding in zip(batch_texts, embeddings_np, strict=False):
                 results.append(
                     EmbeddingResult(
                         text=text,
@@ -357,7 +358,7 @@ class BERTurkEmbeddingService:
 
         # Cluster'ları organize et
         clusters: dict[int, list[str]] = {i: [] for i in range(n_clusters)}
-        for text, label in zip(texts, cluster_labels):
+        for text, label in zip(texts, cluster_labels, strict=False):
             clusters[int(label)].append(text)
 
         logger.info(f"Clustered {len(texts)} texts into {n_clusters} clusters")

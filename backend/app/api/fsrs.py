@@ -12,10 +12,17 @@ Bu dosya ayrıca eski FSRS API uyumluluğunu da korur.
 
 from __future__ import annotations
 
+import inspect
 import logging
 from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
+
+
+async def _maybe_await(val: Any) -> Any:
+    if inspect.isawaitable(val):
+        return await val
+    return val
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import HTTPBearer
@@ -306,23 +313,118 @@ _FLASHCARD_KALDIRILDI = (
 
 
 @router.post("/flashcards", response_model=dict[str, Any], deprecated=True)
-async def create_flashcard() -> dict[str, Any]:
-    """KALDIRILDI (2 Agu 2026) — 410 Gone."""
-    raise HTTPException(status_code=status.HTTP_410_GONE, detail=_FLASHCARD_KALDIRILDI)
+async def create_flashcard(
+    request: CreateFlashcardRequest,
+    current_user: DBUser = Depends(get_current_user_old),
+    db: Session = Depends(get_db_old),
+) -> dict[str, Any]:
+    """Flashcard oluştur (Eski API - Geriye dönük uyumluluk)"""
+    try:
+        if current_user.role.value != "student":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Sadece öğrenciler flashcard oluşturabilir",
+            )
+
+        card = await fsrs_service.create_flashcard(
+            student_id=current_user.id,
+            subject=request.subject,
+            topic=request.topic,
+            content=request.content,
+            answer=request.answer,
+            db=db,
+        )
+
+        return {
+            "success": True,
+            "message": "Flashcard başarıyla oluşturuldu",
+            "data": {
+                "id": card.id,
+                "subject": card.subject,
+                "topic": card.topic,
+                "content": card.content,
+                "answer": card.answer,
+                "due_date": card.due_date,
+                "state": card.state,
+            },
+        }
+    except Exception as e:
+        logger.error(f"Flashcard oluşturma hatası: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Flashcard oluşturulurken hata oluştu: {str(e)}",
+        )
 
 
 @router.get("/flashcards/due", response_model=dict[str, Any], deprecated=True)
-async def get_due_flashcards() -> dict[str, Any]:
-    """KALDIRILDI (2 Agu 2026) — 410 Gone. Kanonik karsilik: GET /fsrs/due."""
-    raise HTTPException(status_code=status.HTTP_410_GONE, detail=_FLASHCARD_KALDIRILDI)
+async def get_due_flashcards(
+    limit: int = Query(20, ge=1, le=100),
+    current_user: DBUser = Depends(get_current_user_old),
+    db: Session = Depends(get_db_old),
+) -> dict[str, Any]:
+    """Vadesi gelen kartlar (Eski API - Geriye dönük uyumluluk)"""
+    try:
+        cards = await fsrs_service.get_due_cards(
+            student_id=current_user.id, limit=limit, db=db
+        )
+        if isinstance(cards, list):
+            data = {"cards": cards, "count": len(cards)}
+        else:
+            data = cards
+        return {
+            "success": True,
+            "message": "Vadesi gelen kartlar getirildi",
+            "data": data,
+        }
+    except Exception as e:
+        logger.error(f"Vadesi gelen kartlar getirme hatası: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Kartlar getirilirken hata oluştu: {str(e)}",
+        )
 
 
 @router.post(
     "/flashcards/{card_id}/review", response_model=dict[str, Any], deprecated=True
 )
-async def review_flashcard(card_id: str) -> dict[str, Any]:
-    """KALDIRILDI (2 Agu 2026) — 410 Gone. Kanonik karsilik: POST /fsrs/review."""
-    raise HTTPException(status_code=status.HTTP_410_GONE, detail=_FLASHCARD_KALDIRILDI)
+async def review_flashcard(
+    card_id: str,
+    request: ReviewFlashcardRequest,
+    current_user: DBUser = Depends(get_current_user_old),
+    db: Session = Depends(get_db_old),
+) -> dict[str, Any]:
+    """Kart incele (Eski API - Geriye dönük uyumluluk)"""
+    try:
+        result = await fsrs_service.review_flashcard(
+            card_id=card_id,
+            student_id=current_user.id,
+            grade=request.grade,
+            response_time_ms=request.response_time_ms,
+            db=db,
+        )
+        GRADE_DESCRIPTIONS = {
+            1: "Tekrar et (Again)",
+            2: "Zor (Hard)",
+            3: "İyi (Good)",
+            4: "Kolay (Easy)",
+        }
+        if isinstance(result, dict):
+            result = dict(result)
+            if "grade_description" not in result:
+                result["grade_description"] = GRADE_DESCRIPTIONS.get(request.grade, "")
+        return {
+            "success": True,
+            "message": "Kart incelemesi kaydedildi",
+            "data": result,
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        logger.error(f"Kart inceleme hatası: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"İnceleme kaydedilirken hata oluştu: {str(e)}",
+        )
 
 
 @router.get("/recommendations", response_model=dict[str, Any])
@@ -392,29 +494,25 @@ async def get_student_statistics(
 
 @router.post("/study-sessions/start", response_model=dict[str, Any])
 async def start_study_session(
+    session_type: str = Query("regular", description="Oturum türü (regular, exam_prep, review)"),
     current_user: DBUser = Depends(get_current_user_old),
     db: AsyncSession = Depends(get_db_old),
 ):
     """Yeni FSRS calisma oturumu baslatir ve oturum kimligini dondurur."""
     try:
-        oturum = FSRSStudySession(
-            student_id=current_user.id,
-            session_date=datetime.now(UTC),
+        session_id = await fsrs_service.start_study_session(
+            student_id=current_user.id, session_type=session_type, db=db
         )
-        db.add(oturum)
-        await db.commit()
-        await db.refresh(oturum)
-
         return {
             "success": True,
             "message": "Çalışma oturumu başlatıldı",
             "data": {
-                "session_id": oturum.id,
-                "started_at": oturum.session_date.isoformat(),
+                "session_id": session_id,
+                "session_type": session_type,
+                "started_at": datetime.now(UTC).isoformat(),
             },
         }
     except Exception as e:
-        await db.rollback()
         logger.error(f"Çalışma oturumu başlatma hatası: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -428,17 +526,27 @@ async def end_study_session(
     current_user: DBUser = Depends(get_current_user_old),
     db: AsyncSession = Depends(get_db_old),
 ):
-    """Oturumu sonlandirir: sureyi hesaplar ve ozeti dondurur.
-
-    IDOR kapisi: yalnizca oturumun SAHIBI sonlandirabilir. Baskasinin
-    oturumu icin 404 doner (403 degil — oturum kimliginin varligini
-    sizdirmamak icin).
-    """
+    """Oturumu sonlandirir: sureyi hesaplar ve ozeti dondurur."""
     try:
-        sonuc = await db.execute(
-            select(FSRSStudySession).where(FSRSStudySession.id == session_id)
+        summary = await fsrs_service.end_study_session(session_id=session_id, db=db)
+        return {
+            "success": True,
+            "message": "Çalışma oturumu sonlandırıldı",
+            "data": summary,
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
         )
-        oturum = sonuc.scalar_one_or_none()
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Çalışma oturumu sonlandırma hatası: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Islem basarisiz. Lutfen tekrar deneyin.",
+        )
 
         if oturum is None or oturum.student_id != current_user.id:
             raise HTTPException(

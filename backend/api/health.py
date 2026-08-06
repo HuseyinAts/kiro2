@@ -46,18 +46,28 @@ async def health_check(
         health_check._lock = asyncio.Lock()
 
     current_time = time.time()
-    if "data" in health_check._cache and (current_time - health_check._cache["time"]) < 60:
+    if (
+        "data" in health_check._cache
+        and (current_time - health_check._cache["time"]) < 60
+    ):
         return health_check._cache["data"]
 
     async with health_check._lock:
-        if "data" in health_check._cache and (current_time - health_check._cache["time"]) < 60:
+        if (
+            "data" in health_check._cache
+            and (current_time - health_check._cache["time"]) < 60
+        ):
             return health_check._cache["data"]
 
         # Cache miss - fetch fresh data
         health = await health_checker.check_all(session)
 
         # Map health status to standard response format
-        status_mapping = {"healthy": "success", "degraded": "warning", "unhealthy": "error"}
+        status_mapping = {
+            "healthy": "success",
+            "degraded": "warning",
+            "unhealthy": "error",
+        }
 
         response_data = {
             "status": status_mapping.get(health.status.value, "success"),
@@ -350,11 +360,11 @@ async def check_elasticsearch_health() -> dict[str, Any]:
 
     try:
         from core.elasticsearch_client import get_elasticsearch_client
-        
+
         es_wrapper = get_elasticsearch_client()
         await es_wrapper._ensure_connected()
         es = es_wrapper._client
-        
+
         try:
             health = await es.cluster.health(request_timeout=2.0)
         except Exception:

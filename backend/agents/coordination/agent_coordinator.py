@@ -10,13 +10,14 @@ LangGraph Agent Orkestrasyonu:
 """
 
 import logging
-import time
-from dataclasses import dataclass, field
-from typing import Any, TypedDict, Annotated, Sequence
 import operator
+import time
+from dataclasses import dataclass
+from typing import Annotated, Any, TypedDict
 
-from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import END, StateGraph
+
 from ..domain_experts.base_domain_agent import (
     BaseDomainAgent,
     DomainResponse,
@@ -41,6 +42,7 @@ class CoordinationResult:
 
 class GraphState(TypedDict):
     """LangGraph State Object"""
+
     question: str
     student_id: str | None
     preferred_domain: DomainType | None
@@ -100,37 +102,37 @@ class AgentCoordinator:
                 )
             else:
                 classification = self.classifier.classify(state["question"])
-            
+
             domains_to_call = [classification.primary_domain]
             if classification.is_multi_domain and classification.secondary_domain:
                 domains_to_call.append(classification.secondary_domain)
-            
+
             return {
                 "classification": classification,
                 "domains_to_call": domains_to_call,
                 "current_agent_index": 0,
-                "shared_context": {}
+                "shared_context": {},
             }
 
         # 2. Agent Çalıştırma Nodu
         async def agent_execution_node(state: GraphState):
             idx = state["current_agent_index"]
             if idx >= len(state["domains_to_call"]):
-                return {} # Bitti
-            
+                return {}  # Bitti
+
             domain = state["domains_to_call"][idx]
             agent = self.agents.get(domain)
-            
+
             if not agent:
                 logger.warning(f"No agent registered for domain: {domain.value}")
                 return {"current_agent_index": idx + 1}
-            
+
             shared_ctx = state["shared_context"]
             if self.blackboard and shared_ctx:
                 await agent.update_context_from_blackboard(shared_ctx)
 
             response = await agent.solve_question(state["question"], shared_ctx)
-            
+
             new_ctx = dict(shared_ctx)
             if state["classification"].is_multi_domain and response.context_additions:
                 new_ctx.update(response.context_additions)
@@ -139,12 +141,12 @@ class AgentCoordinator:
                         source_agent=domain.value,
                         data=response.context_additions,
                     )
-            
+
             return {
                 "responses": [response],
                 "agents_called": [domain.value],
                 "shared_context": new_ctx,
-                "current_agent_index": idx + 1
+                "current_agent_index": idx + 1,
             }
 
         # 3. Yönlendirme (Edge)
@@ -161,10 +163,7 @@ class AgentCoordinator:
         workflow.add_conditional_edges(
             "execute_agent",
             route_next_agent,
-            {
-                "execute_agent": "execute_agent",
-                "end": END
-            }
+            {"execute_agent": "execute_agent", "end": END},
         )
 
         return workflow.compile(checkpointer=self.memory)
@@ -190,12 +189,12 @@ class AgentCoordinator:
             "shared_context": {},
             "current_agent_index": 0,
             "domains_to_call": [],
-            "start_time": start_time
+            "start_time": start_time,
         }
 
         # Set thread_id for checkpointing (resumable state)
         config = {"configurable": {"thread_id": student_id or "anonymous"}}
-        
+
         # LangGraph çalıştır
         final_state = await self.graph.ainvoke(initial_state, config=config)
 
@@ -238,5 +237,5 @@ class AgentCoordinator:
             "multi_domain_questions": self.multi_domain_questions,
             "registered_agents": [d.value for d in self.agents.keys()],
             "agent_count": len(self.agents),
-            "orchestration_engine": "LangGraph StateGraph (Ultra)"
+            "orchestration_engine": "LangGraph StateGraph (Ultra)",
         }

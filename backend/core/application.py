@@ -57,10 +57,13 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # docs/compliance/AGPL_LICENSE_EXPOSURE.md. ultralytics + PyMuPDF
     # are AGPL-3.0; commercial production deployment without a
     import anyio
+
     try:
         limiter = anyio.to_thread.current_default_thread_limiter()
         limiter.total_tokens = 5000
-        logger.info(f"✅ AnyIO thread pool expanded to {limiter.total_tokens} for high CCU sync endpoints")
+        logger.info(
+            f"✅ AnyIO thread pool expanded to {limiter.total_tokens} for high CCU sync endpoints"
+        )
     except Exception as e:
         logger.warning(f"⚠️ AnyIO thread pool expansion failed: {e}")
     # licensing decision risks copyleft trigger.
@@ -135,10 +138,11 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.info("✅ AI agents initialized")
     except Exception as e:
         logger.warning(f"⚠️ Agent initialization failed (non-fatal): {e}")
-        
+
     # Initialize CQRS Handlers
     try:
         from application.bootstrap import bootstrap_cqrs
+
         bootstrap_cqrs()
         logger.info("✅ CQRS Handlers initialized")
     except Exception as e:
@@ -171,6 +175,7 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Start IRT Daemon
     try:
         from core.irt_daemon import irt_daemon
+
         # DISABLED FOR LOAD TESTING: This daemon spawns heavy NLP threads
         # that hold the GIL and starve the asyncio event loop for HTTP requests.
         # await irt_daemon.start()
@@ -189,6 +194,7 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Stop IRT Daemon
     try:
         from core.irt_daemon import irt_daemon
+
         await irt_daemon.stop()
         logger.info("✅ IRT Daemon stopped")
     except Exception as e:
@@ -222,6 +228,7 @@ async def app_lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # SRE Bulkhead: Shutdown worker pools
     try:
         from core.worker_pools import shutdown_pools
+
         shutdown_pools()
     except Exception as e:
         logger.error(f"Error shutting down SRE worker pools: {e}")
@@ -271,6 +278,7 @@ def setup_middleware(app: FastAPI) -> None:
     # 3. Advanced Rate Limiters
     try:
         from core.auth_rate_limiting import AuthRateLimitMiddleware
+
         app.add_middleware(AuthRateLimitMiddleware)
         logger.info("✅ Auth Rate Limiting middleware added")
     except ImportError as e:
@@ -278,6 +286,7 @@ def setup_middleware(app: FastAPI) -> None:
 
     try:
         from core.rate_limit_middleware import RateLimitMiddleware
+
         app.add_middleware(RateLimitMiddleware)
         logger.info("✅ Advanced Rate Limiting middleware added")
     except ImportError as e:
@@ -346,10 +355,11 @@ def create_app() -> FastAPI:
     async def _unhandled_exception_handler(request: Request, exc: Exception):
         import sys
         import traceback
+
         sys.stderr.write("!!! EXCEPTION CAUGHT BY GLOBAL HANDLER !!!\n")
         sys.stderr.write(traceback.format_exc())
         sys.stderr.write("!!! END OF EXCEPTION !!!\n")
-        
+
         # B-P0-52: Exception Swallowing. Bypass default HTTP & validation errors
         from fastapi.exception_handlers import (
             http_exception_handler,
@@ -359,7 +369,9 @@ def create_app() -> FastAPI:
         from starlette.exceptions import HTTPException as StarletteHTTPException
 
         if isinstance(exc, StarletteHTTPException):
-            sys.stderr.write(f"!!! HTTP EXCEPTION CAUGHT: {exc.status_code} {exc.detail} !!!\n")
+            sys.stderr.write(
+                f"!!! HTTP EXCEPTION CAUGHT: {exc.status_code} {exc.detail} !!!\n"
+            )
             sys.stderr.write(traceback.format_exc() + "\n")
             return await http_exception_handler(request, exc)
         if isinstance(exc, RequestValidationError):

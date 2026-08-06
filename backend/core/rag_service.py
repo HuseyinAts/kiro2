@@ -237,10 +237,10 @@ class RAGService:
     def _preprocess_text(self, text: str) -> str:
         """Preprocess text for better search results - cached"""
         from core.turkish_nlp_utils import normalize_tr
-        
+
         # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
         text = normalize_tr(text)
-        
+
         # Remove extra whitespace
         text = " ".join(text.split())
         return text
@@ -451,7 +451,9 @@ class RAGService:
                     all_docs = [
                         Document(page_content=text, metadata=meta)
                         for text, meta in zip(
-                            all_docs_data["documents"], all_docs_data["metadatas"]
+                            all_docs_data["documents"],
+                            all_docs_data["metadatas"],
+                            strict=False,
                         )
                     ]
                 except Exception:
@@ -693,7 +695,9 @@ class RAGService:
 
                         # Calculate max similarity to already selected
                         max_sim_to_selected = 0.0
-                        candidate_emb = self.embeddings.embed_query(candidate["content"])
+                        candidate_emb = self.embeddings.embed_query(
+                            candidate["content"]
+                        )
 
                         for sel in selected:
                             sel_emb = self.embeddings.embed_query(sel["content"])
@@ -789,8 +793,11 @@ class RAGService:
                             age_days = (current_time - created_at) / 86400
                         else:
                             from datetime import datetime
+
                             if isinstance(created_at, str):
-                                created_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+                                created_dt = datetime.fromisoformat(
+                                    created_at.replace("Z", "+00:00")
+                                )
                             else:
                                 created_dt = created_at
                             age_days = (datetime.now() - created_dt).days
@@ -809,7 +816,10 @@ class RAGService:
 
                 # Normalize popularity (log scale)
                 import math
-                popularity_score = math.log1p(popularity_raw) / 10 if popularity_raw > 0 else 0.0
+
+                popularity_score = (
+                    math.log1p(popularity_raw) / 10 if popularity_raw > 0 else 0.0
+                )
                 popularity_score = min(1.0, popularity_score)  # Cap at 1.0
 
                 # Calculate hybrid score
@@ -960,6 +970,103 @@ Cevap:"""
         return await self.search(
             query=query, k=k, filter=filter_dict if filter_dict else None
         )
+
+    async def list_documents(
+        self, user_id: str, is_admin: bool = False, limit: int = 50, offset: int = 0
+    ) -> tuple[list[dict[str, Any]], int]:
+        """
+        List indexed documents with RLS/ownership checks.
+        """
+        documents = []
+        total_count = 0
+
+        try:
+            filtered_registry = {}
+            for doc_id, doc_info in self._document_registry.items():
+                owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get("user_id")
+                if is_admin or str(owner_id) == str(user_id):
+                    filtered_registry[doc_id] = doc_info
+
+            total_count = len(filtered_registry)
+
+            for doc_id, doc_info in filtered_registry.items():
+                documents.append({
+                    "id": doc_id,
+                    "title": doc_info.get("title", "Untitled"),
+                    "source": doc_info.get("source", "unknown"),
+                    "indexed_at": doc_info.get("indexed_at", ""),
+                    "chunk_count": doc_info.get("chunk_count", 0),
+                    "metadata": doc_info.get("metadata", {}),
+                })
+
+            documents.sort(key=lambda x: str(x.get("indexed_at", "")), reverse=True)
+            documents = documents[offset:offset + limit]
+
+            # Fallback to vector store if registry is empty
+            if not documents and total_count == 0 and self.vector_store:
+                collection = getattr(self.vector_store, "_collection", None)
+                if collection:
+                    where_clause = None if is_admin else {"user_id": user_id}
+                    results = collection.get(where=where_clause, limit=limit, offset=offset)
+                    if results and results.get("ids"):
+                        for i, (doc_id, metadata) in enumerate(zip(results.get("ids", []), results.get("metadatas", []), strict=False)):
+                            documents.append({
+                                "id": doc_id,
+                                "title": metadata.get("title", f"Document {i + 1}"),
+                                "source": metadata.get("source", "unknown"),
+                                "indexed_at": metadata.get("indexed_at", ""),
+                                "chunk_count": 1,
+                                "metadata": metadata,
+                            })
+                        total_count = len(documents)
+        except Exception as e:
+            logger.error(f"Error listing documents: {e}")
+
+        return documents, total_count
+
+    async def delete_document(self, document_id: str, user_id: str, is_admin: bool = False) -> bool:
+        """
+        Delete a document with RLS/ownership checks.
+        Raises ValueError if not found, or PermissionError if unauthorized.
+        """
+        deleted = False
+
+        # 1. Check & delete from registry
+        if document_id in self._document_registry:
+            doc_info = self._document_registry[document_id]
+            owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get("user_id")
+            
+            if not is_admin and str(owner_id) != str(user_id):
+                raise PermissionError("Not authorized to delete this document")
+                
+            del self._document_registry[document_id]
+            deleted = True
+
+        # 2. Check & delete from vector store
+        if self.vector_store:
+            collection = getattr(self.vector_store, "_collection", None)
+            if collection:
+                if not deleted and not is_admin:
+                    results = collection.get(where={"document_id": document_id})
+                    if not results or not results.get("metadatas") or len(results["metadatas"]) == 0:
+                        raise ValueError(f"Document {document_id} not found")
+                    
+                    doc_meta = results["metadatas"][0]
+                    if str(doc_meta.get("user_id")) != str(user_id):
+                        raise PermissionError("Not authorized to delete this document")
+
+                collection.delete(where={"document_id": document_id})
+                deleted = True
+
+        # 3. Clear from cache
+        keys_to_remove = [k for k in self._search_cache.keys() if document_id in str(k)]
+        for k in keys_to_remove:
+            del self._search_cache[k]
+
+        if not deleted:
+            raise ValueError(f"Document {document_id} not found")
+
+        return True
 
     def get_statistics(self) -> dict[str, Any]:
         """Get RAG service statistics"""

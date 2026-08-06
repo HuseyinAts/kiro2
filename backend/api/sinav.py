@@ -16,22 +16,21 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field, field_validator
 
+from application.commands.sinav import (
+    CancelExamCommand,
+    CompleteExamCommand,
+    CreateBetaPracticeCommand,
+    CreateExamCommand,
+    FlagQuestionCommand,
+    NavigateQuestionCommand,
+    SaveAnswerCommand,
+    StartExamCommand,
+)
+from core.cqrs.bus import CommandBus, get_command_bus
 from core.dependencies import AuthenticatedUser, get_current_user
-from core.osym_exam_engine import ExamStatus, osym_exam_engine
+from core.osym_exam_engine import osym_exam_engine
 from core.structured_logger import get_logger
 from models.database import ExamType
-
-from core.cqrs.bus import CommandBus, get_command_bus
-from application.commands.sinav import (
-    CreateExamCommand,
-    CreateBetaPracticeCommand,
-    StartExamCommand,
-    SaveAnswerCommand,
-    NavigateQuestionCommand,
-    FlagQuestionCommand,
-    CompleteExamCommand,
-    CancelExamCommand,
-)
 
 router = APIRouter(prefix="/api/v1/osym-exam", tags=["ÖSYM Sınav Sistemi"])
 security = HTTPBearer()
@@ -386,6 +385,12 @@ async def get_exam_configs(
         )
 
 
+def _resolve_command_bus(bus: CommandBus) -> CommandBus:
+    if not hasattr(bus, "execute"):
+        return get_command_bus()
+    return bus
+
+
 @router.post(
     "/create", response_model=ExamSessionResponse, summary="ÖSYM Sınavı Oluştur"
 )
@@ -394,18 +399,12 @@ async def create_exam(
     current_user: AuthenticatedUser = Depends(get_current_user),
     command_bus: CommandBus = Depends(get_command_bus),
 ) -> ExamSessionResponse:
-    """
-    Yeni ÖSYM formatında sınav oturumu oluştur
-
-    - **exam_type**: TYT, AYT veya YDT
-    - **custom_config**: Özel sınav konfigürasyonları (opsiyonel)
-
-    ÖSYM Formatları:
-    - **TYT**: 120 soru, 165 dakika (Türkçe: 40, Matematik: 40, Fen: 20, Sosyal: 20)
-    - **AYT**: 160 soru, 210 dakika (Matematik: 40, Fizik: 14, Kimya: 13, Biyoloji: 13, vb.)
-    - **YDT**: 80 soru, 180 dakika (İngilizce: 80)
-    """
-    command = CreateExamCommand(student_id=str(current_user.id), exam_type=request.exam_type, custom_config=request.custom_config)
+    command_bus = _resolve_command_bus(command_bus)
+    command = CreateExamCommand(
+        student_id=str(current_user.id),
+        exam_type=request.exam_type,
+        custom_config=request.custom_config,
+    )
     res = await command_bus.execute(command)
     return ExamSessionResponse(**res)
 
@@ -428,7 +427,9 @@ async def create_beta_practice(
     dağılımını (TYT 120 / AYT 160) zorlamaz — beta için doğrulanmış
     havuzdan rastgele ``num_questions`` soru seçilir.
     """
-    command = CreateBetaPracticeCommand(student_id=str(current_user.id), num_questions=num_questions)
+    command = CreateBetaPracticeCommand(
+        student_id=str(current_user.id), num_questions=num_questions
+    )
     res = await command_bus.execute(command)
     return ExamSessionResponse(**res)
 
@@ -443,13 +444,7 @@ async def start_exam(
     current_user: AuthenticatedUser = Depends(get_current_user),
     command_bus: CommandBus = Depends(get_command_bus),
 ) -> ExamSessionResponse:
-    """
-    ÖSYM sınavını başlat ve zaman sayacını çalıştır
-
-    - Otomatik kaydetme başlatılır (30 saniye aralıklarla)
-    - Sınav süresi sonunda otomatik tamamlanır
-    - Gerçek zamanlı WebSocket güncellemeleri başlar
-    """
+    command_bus = _resolve_command_bus(command_bus)
     command = StartExamCommand(student_id=str(current_user.id), session_id=session_id)
     res = await command_bus.execute(command)
     return ExamSessionResponse(**res)
@@ -538,13 +533,14 @@ async def save_answer(
     current_user: AuthenticatedUser = Depends(get_current_user),
     command_bus: CommandBus = Depends(get_command_bus),
 ) -> dict[str, Any]:
+    command_bus = _resolve_command_bus(command_bus)
     command = SaveAnswerCommand(
         student_id=str(current_user.id),
         session_id=session_id,
         question_id=request.question_id,
         selected_answer=request.selected_answer,
         response_time=request.response_time,
-        rating=request.rating
+        rating=request.rating,
     )
     return await command_bus.execute(command)
 
@@ -558,14 +554,12 @@ async def navigate_to_question(
     current_user: AuthenticatedUser = Depends(get_current_user),
     command_bus: CommandBus = Depends(get_command_bus),
 ) -> QuestionResponse:
-    """
-    Belirli bir soruya git (soru navigasyonu)
-
-    - İleri/geri navigasyon
-    - Direkt soru numarasına atlama
-    - Soru haritası desteği
-    """
-    command = NavigateQuestionCommand(student_id=str(current_user.id), session_id=session_id, question_index=request.question_index)
+    command_bus = _resolve_command_bus(command_bus)
+    command = NavigateQuestionCommand(
+        student_id=str(current_user.id),
+        session_id=session_id,
+        question_index=request.question_index,
+    )
     res = await command_bus.execute(command)
     return QuestionResponse(**res)
 
@@ -577,14 +571,13 @@ async def flag_question(
     current_user: AuthenticatedUser = Depends(get_current_user),
     command_bus: CommandBus = Depends(get_command_bus),
 ) -> dict[str, Any]:
-    """
-    Soruyu işaretle veya işareti kaldır
-
-    - Daha sonra dönülecek sorular için işaretleme
-    - İşaretli soruların listesi tutulur
-    - Sınav sonunda işaretli sorular gösterilir
-    """
-    command = FlagQuestionCommand(student_id=str(current_user.id), session_id=session_id, question_id=request.question_id, flagged=request.flagged)
+    command_bus = _resolve_command_bus(command_bus)
+    command = FlagQuestionCommand(
+        student_id=str(current_user.id),
+        session_id=session_id,
+        question_id=request.question_id,
+        flagged=request.flagged,
+    )
     return await command_bus.execute(command)
 
 
@@ -668,15 +661,10 @@ async def complete_exam(
     current_user: AuthenticatedUser = Depends(get_current_user),
     command_bus: CommandBus = Depends(get_command_bus),
 ) -> PerformanceResponse:
-    """
-    Sınavı manuel olarak tamamla ve performans analizi yap
-
-    - Detaylı performans metrikleri
-    - Konu bazlı analiz
-    - IRT tabanlı yetenek tahmini
-    - ÖSYM benzeri puanlama sistemi
-    """
-    command = CompleteExamCommand(student_id=str(current_user.id), session_id=session_id)
+    command_bus = _resolve_command_bus(command_bus)
+    command = CompleteExamCommand(
+        student_id=str(current_user.id), session_id=session_id
+    )
     res = await command_bus.execute(command)
     return PerformanceResponse(**res)
 
@@ -933,13 +921,7 @@ async def cancel_exam(
     current_user: AuthenticatedUser = Depends(get_current_user),
     command_bus: CommandBus = Depends(get_command_bus),
 ) -> dict[str, Any]:
-    """
-    Sınavı iptal et (sadece başlatılmamış sınavlar için)
-
-    - Sınav durumu 'abandoned' olarak işaretlenir
-    - Otomatik kaydetme durdurulur
-    - Oturum temizlenir
-    """
+    command_bus = _resolve_command_bus(command_bus)
     command = CancelExamCommand(student_id=str(current_user.id), session_id=session_id)
     return await command_bus.execute(command)
 

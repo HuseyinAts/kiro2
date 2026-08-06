@@ -133,8 +133,12 @@ async def get_current_user(
         from core.jwt_auth import get_jwt_manager
 
         jwt_mgr = get_jwt_manager()
-        await jwt_mgr.is_blacklisted_async(token)
-        t1 = time.perf_counter()
+        if await jwt_mgr.is_blacklisted_async(token):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has been revoked",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
         # JWT token'ı decode et
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])

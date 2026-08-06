@@ -1,32 +1,33 @@
 import logging
-import uuid
 import time
-from typing import Any
+import uuid
 from datetime import datetime
+from typing import Any
 
-from pydantic import ConfigDict, BaseModel, Field
+from fastapi import HTTPException
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException
 
 from core.cqrs.base import Command, CommandHandler
 from models.learning_path_models import (
-    LearningPathStudentProfile,
-    QuizSubmission as QuizSubmissionModel,
     LearningPath,
-    TopicCompletion,
+    LearningPathStudentProfile,
     Quiz,
     QuizQuestion,
-    TopicProgress
+    TopicCompletion,
+    TopicProgress,
 )
+from models.learning_path_models import QuizSubmission as QuizSubmissionModel
 from models.question_bank import QuestionBankItem as Question
 
 logger = logging.getLogger(__name__)
 
+
 # --- Existing CreateStudentProfile ---
 class CreateStudentProfileCommand(Command):
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    
+
     user_id: str
     name: str
     grade: int
@@ -36,10 +37,13 @@ class CreateStudentProfileCommand(Command):
     available_time: int | None = None
     db: Any  # AsyncSession
 
-class CreateStudentProfileCommandHandler(CommandHandler[CreateStudentProfileCommand, dict[str, Any]]):
+
+class CreateStudentProfileCommandHandler(
+    CommandHandler[CreateStudentProfileCommand, dict[str, Any]]
+):
     async def handle(self, command: CreateStudentProfileCommand) -> dict[str, Any]:
         db: AsyncSession = command.db
-        
+
         try:
             existing = await db.execute(
                 select(LearningPathStudentProfile).where(
@@ -56,22 +60,28 @@ class CreateStudentProfileCommandHandler(CommandHandler[CreateStudentProfileComm
                     "student_id": existing_profile.student_id,
                     "profile": {
                         "name": existing_profile.name,
-                        "grade": int(existing_profile.grade) if existing_profile.grade else None,
+                        "grade": int(existing_profile.grade)
+                        if existing_profile.grade
+                        else None,
                         "subjects": existing_profile.interests,
                         "goals": existing_profile.goals,
                         "learning_style": existing_profile.learning_style,
                         "available_time": existing_profile.available_time,
                         "exam_target": existing_profile.exam_target,
-                        "created_at": existing_profile.created_at.isoformat() if existing_profile.created_at else None,
+                        "created_at": existing_profile.created_at.isoformat()
+                        if existing_profile.created_at
+                        else None,
                     },
                     "message": "Mevcut profil döndürüldü",
                 }
 
-            logger.info(f"Creating student profile: {command.name}, grade {command.grade}")
-            
+            logger.info(
+                f"Creating student profile: {command.name}, grade {command.grade}"
+            )
+
             student_id = f"STU_{uuid.uuid4().hex[:12]}"
             exam_target = "LGS" if command.grade <= 8 else "YKS"
-            
+
             new_profile = LearningPathStudentProfile(
                 student_id=student_id,
                 user_id=command.user_id,
@@ -109,7 +119,10 @@ class CreateStudentProfileCommandHandler(CommandHandler[CreateStudentProfileComm
         except Exception as e:
             await db.rollback()
             logger.error(f"Error creating student profile: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
+
 
 # --- Assess Knowledge ---
 class AssessKnowledgeCommand(Command):
@@ -119,12 +132,17 @@ class AssessKnowledgeCommand(Command):
     questions: list[str] | None = None
     db: Any
 
-class AssessKnowledgeCommandHandler(CommandHandler[AssessKnowledgeCommand, dict[str, Any]]):
+
+class AssessKnowledgeCommandHandler(
+    CommandHandler[AssessKnowledgeCommand, dict[str, Any]]
+):
     async def handle(self, command: AssessKnowledgeCommand) -> dict[str, Any]:
         db: AsyncSession = command.db
-        
+
         try:
-            logger.info(f"Assessing knowledge for student {command.student_id}, subject: {command.subject}")
+            logger.info(
+                f"Assessing knowledge for student {command.student_id}, subject: {command.subject}"
+            )
 
             result = await db.execute(
                 select(LearningPathStudentProfile).filter(
@@ -134,7 +152,10 @@ class AssessKnowledgeCommandHandler(CommandHandler[AssessKnowledgeCommand, dict[
             profile = result.scalars().first()
 
             if not profile:
-                raise HTTPException(status_code=404, detail=f"Student profile not found: {command.student_id}")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Student profile not found: {command.student_id}",
+                )
 
             result = await db.execute(
                 select(QuizSubmissionModel).filter(
@@ -192,7 +213,9 @@ class AssessKnowledgeCommandHandler(CommandHandler[AssessKnowledgeCommand, dict[
             profile.updated_at = datetime.now()
             await db.commit()
 
-            logger.info(f"Knowledge assessed: {knowledge_level} (score: {score}) for student {command.student_id}")
+            logger.info(
+                f"Knowledge assessed: {knowledge_level} (score: {score}) for student {command.student_id}"
+            )
 
             return {
                 "success": True,
@@ -213,7 +236,10 @@ class AssessKnowledgeCommandHandler(CommandHandler[AssessKnowledgeCommand, dict[
         except Exception as e:
             await db.rollback()
             logger.error(f"Error assessing knowledge: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
+
 
 # --- Create Learning Path ---
 class CreateLearningPathCommand(Command):
@@ -225,16 +251,24 @@ class CreateLearningPathCommand(Command):
     db: Any
     facade: Any
 
-class CreateLearningPathCommandHandler(CommandHandler[CreateLearningPathCommand, dict[str, Any]]):
+
+class CreateLearningPathCommandHandler(
+    CommandHandler[CreateLearningPathCommand, dict[str, Any]]
+):
     async def handle(self, command: CreateLearningPathCommand) -> dict[str, Any]:
+        from core.circuit_breaker import (
+            CircuitBreakerHalfOpenError,
+            CircuitBreakerOpenError,
+        )
         from core.learning_path_circuit_breakers import (
             ai_agent_fallback_handler,
             get_ai_agent_circuit_breaker,
         )
         from core.metrics_collector import get_metrics_collector
-        from core.circuit_breaker import CircuitBreakerHalfOpenError, CircuitBreakerOpenError
+
         try:
             from agents.learning_path.models import KnowledgeLevel
+
             def _map_difficulty_to_knowledge_level(difficulty: str) -> KnowledgeLevel:
                 mapping = {
                     "easy": KnowledgeLevel.BEGINNER,
@@ -246,6 +280,7 @@ class CreateLearningPathCommandHandler(CommandHandler[CreateLearningPathCommand,
                 }
                 return mapping.get(difficulty.lower(), KnowledgeLevel.INTERMEDIATE)
         except ImportError:
+
             def _map_difficulty_to_knowledge_level(difficulty: str) -> Any:
                 return None
 
@@ -255,8 +290,10 @@ class CreateLearningPathCommandHandler(CommandHandler[CreateLearningPathCommand,
         db: AsyncSession = command.db
 
         try:
-            target_level = _map_difficulty_to_knowledge_level(command.difficulty_level or "medium")
-            
+            target_level = _map_difficulty_to_knowledge_level(
+                command.difficulty_level or "medium"
+            )
+
             try:
                 result = await ai_agent_circuit_breaker.call(
                     command.facade.create_path_for_student,
@@ -303,7 +340,9 @@ class CreateLearningPathCommandHandler(CommandHandler[CreateLearningPathCommand,
                 }
                 modules.append(module)
 
-            path_id = f"LP_{command.student_id[:8]}_{int(time.time())}_{uuid.uuid4().hex[:4]}"
+            path_id = (
+                f"LP_{command.student_id[:8]}_{int(time.time())}_{uuid.uuid4().hex[:4]}"
+            )
 
             learning_path = {
                 "path_id": path_id,
@@ -329,7 +368,9 @@ class CreateLearningPathCommandHandler(CommandHandler[CreateLearningPathCommand,
                 student_id=command.student_id,
                 subject=command.subject,
                 difficulty_level=command.difficulty_level or "intermediate",
-                target_date=datetime.fromisoformat(command.target_date) if command.target_date else None,
+                target_date=datetime.fromisoformat(command.target_date)
+                if command.target_date
+                else None,
                 modules=modules,
                 ai_generated=True,
                 total_modules=len(modules),
@@ -362,7 +403,10 @@ class CreateLearningPathCommandHandler(CommandHandler[CreateLearningPathCommand,
                 success=False,
             )
             logger.error(f"Error creating learning path: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
+
 
 # --- Search Resources ---
 class SearchResourcesCommand(Command):
@@ -375,34 +419,48 @@ class SearchResourcesCommand(Command):
     student_profile: dict[str, Any] | None = None
     facade: Any
 
-class SearchResourcesCommandHandler(CommandHandler[SearchResourcesCommand, dict[str, Any]]):
+
+class SearchResourcesCommandHandler(
+    CommandHandler[SearchResourcesCommand, dict[str, Any]]
+):
     async def handle(self, command: SearchResourcesCommand) -> dict[str, Any]:
-        from core.metrics_collector import get_metrics_collector
         import unicodedata
+
+        from core.metrics_collector import get_metrics_collector
         from core.youtube_channels import is_trusted_channel
-        
+
         def _normalize_turkish(text: str) -> str:
             text = unicodedata.normalize("NFC", text)
             return text.replace("İ", "i").replace("I", "ı").lower().strip()
-            
+
         def _compute_relevance(resource: Any, search: Any) -> float:
             score = 0.0
             subject = _normalize_turkish(search.subject)
             topic = _normalize_turkish(search.topic or "")
             title_lower = _normalize_turkish(resource.title)
-            desc_lower = _normalize_turkish(resource.description) if resource.description else ""
-            if subject and subject in title_lower: score += 0.2
-            if topic and len(topic) > 2 and topic in title_lower: score += 0.3
-            elif topic and any(w in title_lower for w in topic.split() if len(w) > 2): score += 0.15
-            if topic and desc_lower and topic in desc_lower: score += 0.1
-            if resource.language == "tr": score += 0.2
+            desc_lower = (
+                _normalize_turkish(resource.description) if resource.description else ""
+            )
+            if subject and subject in title_lower:
+                score += 0.2
+            if topic and len(topic) > 2 and topic in title_lower:
+                score += 0.3
+            elif topic and any(w in title_lower for w in topic.split() if len(w) > 2):
+                score += 0.15
+            if topic and desc_lower and topic in desc_lower:
+                score += 0.1
+            if resource.language == "tr":
+                score += 0.2
             metadata = getattr(resource, "metadata", None)
             if isinstance(metadata, dict):
                 channel = metadata.get("channel", "")
-                if channel and is_trusted_channel(channel): score += 0.1
+                if channel and is_trusted_channel(channel):
+                    score += 0.1
             return min(score, 1.0)
-            
-        def _compute_final_score(resource: Any, search: Any, learning_style: str | None = None) -> float:
+
+        def _compute_final_score(
+            resource: Any, search: Any, learning_style: str | None = None
+        ) -> float:
             relevance = _compute_relevance(resource, search)
             metadata = getattr(resource, "metadata", None) or {}
             if resource.rating and resource.rating > 0:
@@ -413,17 +471,27 @@ class SearchResourcesCommandHandler(CommandHandler[SearchResourcesCommand, dict[
                 if view_count > 0 and like_count > 0:
                     like_ratio = min(like_count / view_count, 0.1) / 0.1
                     quality = 0.5 + like_ratio * 0.5
-                elif view_count > 100_000: quality = 0.7
-                elif view_count > 10_000: quality = 0.6
-                else: quality = 0.5
+                elif view_count > 100_000:
+                    quality = 0.7
+                elif view_count > 10_000:
+                    quality = 0.6
+                else:
+                    quality = 0.5
             view_count = int(metadata.get("view_count", 0) or 0)
-            if view_count >= 1_000_000: popularity = 1.0
-            elif view_count >= 100_000: popularity = 0.7
-            elif view_count >= 10_000: popularity = 0.4
-            elif view_count >= 1_000: popularity = 0.2
-            else: popularity = 0.1
+            if view_count >= 1_000_000:
+                popularity = 1.0
+            elif view_count >= 100_000:
+                popularity = 0.7
+            elif view_count >= 10_000:
+                popularity = 0.4
+            elif view_count >= 1_000:
+                popularity = 0.2
+            else:
+                popularity = 0.1
             turkish = 1.0 if resource.language == "tr" else 0.3
-            score = relevance * 0.35 + quality * 0.25 + popularity * 0.15 + turkish * 0.25
+            score = (
+                relevance * 0.35 + quality * 0.25 + popularity * 0.15 + turkish * 0.25
+            )
             if learning_style and resource.resource_type:
                 rt = resource.resource_type.lower()
                 style_match = {
@@ -433,7 +501,8 @@ class SearchResourcesCommandHandler(CommandHandler[SearchResourcesCommand, dict[
                     "kinesthetic": ["quiz", "practice", "interactive", "exercise"],
                 }
                 preferred = style_match.get(learning_style, [])
-                if any(p in rt for p in preferred): score = min(score + 0.05, 1.0)
+                if any(p in rt for p in preferred):
+                    score = min(score + 0.05, 1.0)
             if isinstance(metadata, dict):
                 rank_pos = metadata.get("discovery_rank", 50)
                 score += max(0.0, 0.05 - rank_pos * 0.005)
@@ -441,7 +510,7 @@ class SearchResourcesCommandHandler(CommandHandler[SearchResourcesCommand, dict[
 
         metrics = get_metrics_collector()
         start_time = time.time()
-        
+
         try:
             learning_style = None
             if command.student_profile:
@@ -462,36 +531,44 @@ class SearchResourcesCommandHandler(CommandHandler[SearchResourcesCommand, dict[
                     if hasattr(resource.difficulty_level, "value")
                     else str(resource.difficulty_level)
                 )
-                response_resources.append({
-                    "resource_id": resource.resource_id,
-                    "video_id": resource.resource_id,
-                    "type": resource.resource_type,
-                    "title": resource.title,
-                    "description": resource.description or "",
-                    "url": resource.url,
-                    "thumbnail": metadata.get("thumbnail", ""),
-                    "duration_minutes": resource.estimated_time,
-                    "duration": metadata.get("duration_iso", f"PT{resource.estimated_time}M"),
-                    "difficulty": diff_val,
-                    "platform": resource.source,
-                    "channel": metadata.get("channel", resource.source),
-                    "channel_id": metadata.get("channel_id", ""),
-                    "view_count": int(metadata.get("view_count", 0)),
-                    "upload_date": metadata.get("published_at", ""),
-                    "subject": command.subject,
-                    "exam_type": metadata.get("exam_type", "TYT"),
-                    "quality_score": (resource.rating or 3.0) / 5.0,
-                    "is_accessible": True,
-                    "is_turkish": resource.language == "tr",
-                    "definition": metadata.get("definition", "sd"),
-                    "caption_available": metadata.get("caption_available", False),
-                    "scores": {
-                        "relevance_score": _compute_relevance(resource, command),
+                response_resources.append(
+                    {
+                        "resource_id": resource.resource_id,
+                        "video_id": resource.resource_id,
+                        "type": resource.resource_type,
+                        "title": resource.title,
+                        "description": resource.description or "",
+                        "url": resource.url,
+                        "thumbnail": metadata.get("thumbnail", ""),
+                        "duration_minutes": resource.estimated_time,
+                        "duration": metadata.get(
+                            "duration_iso", f"PT{resource.estimated_time}M"
+                        ),
+                        "difficulty": diff_val,
+                        "platform": resource.source,
+                        "channel": metadata.get("channel", resource.source),
+                        "channel_id": metadata.get("channel_id", ""),
+                        "view_count": int(metadata.get("view_count", 0)),
+                        "upload_date": metadata.get("published_at", ""),
+                        "subject": command.subject,
+                        "exam_type": metadata.get("exam_type", "TYT"),
                         "quality_score": (resource.rating or 3.0) / 5.0,
-                        "turkish_score": (1.0 if resource.language == "tr" else 0.3),
-                        "final_score": _compute_final_score(resource, command, learning_style),
-                    },
-                })
+                        "is_accessible": True,
+                        "is_turkish": resource.language == "tr",
+                        "definition": metadata.get("definition", "sd"),
+                        "caption_available": metadata.get("caption_available", False),
+                        "scores": {
+                            "relevance_score": _compute_relevance(resource, command),
+                            "quality_score": (resource.rating or 3.0) / 5.0,
+                            "turkish_score": (
+                                1.0 if resource.language == "tr" else 0.3
+                            ),
+                            "final_score": _compute_final_score(
+                                resource, command, learning_style
+                            ),
+                        },
+                    }
+                )
 
             duration_seconds = time.time() - start_time
             metrics.record_resource_search(
@@ -513,13 +590,23 @@ class SearchResourcesCommandHandler(CommandHandler[SearchResourcesCommand, dict[
                 "metadata": {
                     "engine": "LearningPathFacade",
                     "version": "2.0",
-                    "features": ["multi_strategy_search", "youtube_integration", "khan_integration", "oer_integration", "rag_semantic_search"],
+                    "features": [
+                        "multi_strategy_search",
+                        "youtube_integration",
+                        "khan_integration",
+                        "oer_integration",
+                        "rag_semantic_search",
+                    ],
                 },
             }
         except Exception as engine_error:
             logger.error(f"Resource discovery error: {engine_error!s}", exc_info=True)
             duration_seconds = time.time() - start_time
-            metrics.record_resource_search(subject=command.subject, duration_seconds=duration_seconds, result_count=0)
+            metrics.record_resource_search(
+                subject=command.subject,
+                duration_seconds=duration_seconds,
+                result_count=0,
+            )
             return {
                 "success": False,
                 "resources": [],
@@ -536,6 +623,7 @@ class SearchResourcesCommandHandler(CommandHandler[SearchResourcesCommand, dict[
                 },
             }
 
+
 # --- Adapt Learning Path ---
 class AdaptLearningPathCommand(Command):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -544,10 +632,14 @@ class AdaptLearningPathCommand(Command):
     performance_data: dict[str, Any]
     facade: Any
 
-class AdaptLearningPathCommandHandler(CommandHandler[AdaptLearningPathCommand, dict[str, Any]]):
+
+class AdaptLearningPathCommandHandler(
+    CommandHandler[AdaptLearningPathCommand, dict[str, Any]]
+):
     async def handle(self, command: AdaptLearningPathCommand) -> dict[str, Any]:
         try:
             from agents.learning_path.services.path_adaptation import PerformanceMetrics
+
             performance_metrics = [
                 PerformanceMetrics(
                     topic=command.performance_data.get("topic_id", ""),
@@ -585,7 +677,10 @@ class AdaptLearningPathCommandHandler(CommandHandler[AdaptLearningPathCommand, d
             }
         except Exception as e:
             logger.error(f"Error adapting learning path: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
+
 
 # --- Update Completion Status ---
 class UpdateCompletionStatusCommand(Command):
@@ -594,9 +689,13 @@ class UpdateCompletionStatusCommand(Command):
     completions: dict[str, bool]
     db: Any
 
-class UpdateCompletionStatusCommandHandler(CommandHandler[UpdateCompletionStatusCommand, dict[str, Any]]):
+
+class UpdateCompletionStatusCommandHandler(
+    CommandHandler[UpdateCompletionStatusCommand, dict[str, Any]]
+):
     async def handle(self, command: UpdateCompletionStatusCommand) -> dict[str, Any]:
         from core.metrics_collector import get_metrics_collector
+
         db: AsyncSession = command.db
         metrics = get_metrics_collector()
         try:
@@ -620,10 +719,11 @@ class UpdateCompletionStatusCommandHandler(CommandHandler[UpdateCompletionStatus
                     )
                     db.add(new_completion)
             await db.commit()
-            
-            # Cache invalidation should happen here or outside? 
+
+            # Cache invalidation should happen here or outside?
             # Best handled here by doing nothing and letting caller deal with it, or import cache
             from api.learning_path_v2 import _get_cache
+
             cache = _get_cache()
             if cache._initialized:
                 await cache.delete(f"completion:{command.student_id}")
@@ -642,13 +742,17 @@ class UpdateCompletionStatusCommandHandler(CommandHandler[UpdateCompletionStatus
         except Exception as e:
             await db.rollback()
             logger.error(f"Error updating completion status: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
+
 
 # --- Submit Quiz ---
 class QuizAnswerModel(BaseModel):
     question_id: str
     answer: str
     time_spent: int | None = None
+
 
 class SubmitQuizCommand(Command):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -657,12 +761,14 @@ class SubmitQuizCommand(Command):
     answers: list[QuizAnswerModel]
     db: Any
 
+
 class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]):
     async def handle(self, command: SubmitQuizCommand) -> dict[str, Any]:
         db: AsyncSession = command.db
         from core.metrics_collector import get_metrics_collector
+
         metrics = get_metrics_collector()
-        
+
         try:
             result = await db.execute(select(Quiz).filter(Quiz.id == command.quiz_id))
             quiz = result.scalars().first()
@@ -687,7 +793,9 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
                     q_meta[question.id] = {
                         "topic_id": question.primary_topic_id,
                         "subject": (question.subject_area or "matematik").lower(),
-                        "irt_a": float(getattr(question, "irt_discrimination", 1.0) or 1.0),
+                        "irt_a": float(
+                            getattr(question, "irt_discrimination", 1.0) or 1.0
+                        ),
                         "irt_b": float(getattr(question, "irt_difficulty", 0.0) or 0.0),
                         "irt_c": float(getattr(question, "irt_guessing", 0.2) or 0.2),
                     }
@@ -696,9 +804,13 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
                 if question_ids:
                     questions_result = await db.execute(
                         select(
-                            Question.id, Question.correct_answer, Question.primary_topic_id,
-                            Question.subject_area, Question.irt_discrimination,
-                            Question.irt_difficulty, Question.irt_guessing,
+                            Question.id,
+                            Question.correct_answer,
+                            Question.primary_topic_id,
+                            Question.subject_area,
+                            Question.irt_discrimination,
+                            Question.irt_difficulty,
+                            Question.irt_guessing,
                         ).filter(
                             Question.id.in_(question_ids), Question.is_active == True
                         )
@@ -717,18 +829,25 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
             question_results = []
             for answer in command.answers:
                 correct_answer = correct_answers.get(answer.question_id)
-                is_correct = correct_answer is not None and answer.answer == correct_answer
-                if is_correct: correct_count += 1
-                question_results.append({
-                    "question_id": answer.question_id,
-                    "student_answer": answer.answer,
-                    "correct_answer": correct_answer or "N/A",
-                    "is_correct": is_correct,
-                    "time_spent": answer.time_spent,
-                })
+                is_correct = (
+                    correct_answer is not None and answer.answer == correct_answer
+                )
+                if is_correct:
+                    correct_count += 1
+                question_results.append(
+                    {
+                        "question_id": answer.question_id,
+                        "student_answer": answer.answer,
+                        "correct_answer": correct_answer or "N/A",
+                        "is_correct": is_correct,
+                        "time_spent": answer.time_spent,
+                    }
+                )
 
-            if correct_answers: quiz_question_count = len(correct_answers)
-            else: quiz_question_count = len(command.answers)
+            if correct_answers:
+                quiz_question_count = len(correct_answers)
+            else:
+                quiz_question_count = len(command.answers)
             total_questions = max(quiz_question_count, len(command.answers), 1)
             score = (correct_count / total_questions) * 100
             passed = score >= passing_score
@@ -742,11 +861,14 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
                 score=score,
                 correct_count=correct_count,
                 passed=passed,
-                answers=[{
-                    "question_id": r["question_id"],
-                    "answer": r["student_answer"],
-                    "correct": r["is_correct"],
-                } for r in question_results],
+                answers=[
+                    {
+                        "question_id": r["question_id"],
+                        "answer": r["student_answer"],
+                        "correct": r["is_correct"],
+                    }
+                    for r in question_results
+                ],
                 total_time_seconds=total_time,
                 submitted_at=datetime.now(),
             )
@@ -758,6 +880,7 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
             mastery_sync_error = None
             try:
                 from services.learning_event_service import LearningEventService
+
                 event_report = await LearningEventService.on_quiz_completed(
                     student_id=command.student_id,
                     question_results=question_results,
@@ -772,11 +895,26 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
             except Exception as event_err:
                 mastery_sync_status = "pending"
                 mastery_sync_error = str(event_err)
-                event_report = {"bkt": f"error: {event_err}", "xp": None, "streak": None}
+                event_report = {
+                    "bkt": f"error: {event_err}",
+                    "xp": None,
+                    "streak": None,
+                }
 
             subject = "genel"
             quiz_id_lower = command.quiz_id.lower()
-            for known_subject in ["matematik", "turkce", "fizik", "kimya", "biyoloji", "tarih", "cografya", "geometri", "edebiyat", "ingilizce"]:
+            for known_subject in [
+                "matematik",
+                "turkce",
+                "fizik",
+                "kimya",
+                "biyoloji",
+                "tarih",
+                "cografya",
+                "geometri",
+                "edebiyat",
+                "ingilizce",
+            ]:
                 if known_subject in quiz_id_lower:
                     subject = known_subject
                     break
@@ -794,7 +932,11 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
                 "total_time_seconds": total_time,
                 "question_results": question_results,
                 "timestamp": datetime.now().isoformat(),
-                "feedback": ("Tebrikler! Quiz'i başarıyla tamamladınız." if passed else f"Quiz'i geçemediniz. Geçme notu: {passing_score}%"),
+                "feedback": (
+                    "Tebrikler! Quiz'i başarıyla tamamladınız."
+                    if passed
+                    else f"Quiz'i geçemediniz. Geçme notu: {passing_score}%"
+                ),
                 "event_report": event_report,
                 "mastery_sync_status": mastery_sync_status,
                 "mastery_sync_error": mastery_sync_error,
@@ -802,7 +944,10 @@ class SubmitQuizCommandHandler(CommandHandler[SubmitQuizCommand, dict[str, Any]]
         except Exception as e:
             await db.rollback()
             logger.error(f"Error processing quiz submission: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
+
 
 # --- Update Progress ---
 class UpdateProgressCommand(Command):
@@ -814,13 +959,17 @@ class UpdateProgressCommand(Command):
     time_spent: int | None
     db: Any
 
-class UpdateProgressCommandHandler(CommandHandler[UpdateProgressCommand, dict[str, Any]]):
+
+class UpdateProgressCommandHandler(
+    CommandHandler[UpdateProgressCommand, dict[str, Any]]
+):
     async def handle(self, command: UpdateProgressCommand) -> dict[str, Any]:
         db: AsyncSession = command.db
         try:
             result = await db.execute(
                 select(TopicProgress).filter(
-                    TopicProgress.student_id == command.student_id, TopicProgress.node_id == command.node_id
+                    TopicProgress.student_id == command.student_id,
+                    TopicProgress.node_id == command.node_id,
                 )
             )
             existing = result.scalars().first()
@@ -848,7 +997,8 @@ class UpdateProgressCommandHandler(CommandHandler[UpdateProgressCommand, dict[st
             completion_existing = result.scalars().first()
             if completion_existing:
                 completion_existing.completed = command.completed
-                if command.completed: completion_existing.completion_date = datetime.now()
+                if command.completed:
+                    completion_existing.completion_date = datetime.now()
                 completion_existing.updated_at = datetime.now()
             elif command.completed:
                 new_completion = TopicCompletion(
@@ -881,7 +1031,10 @@ class UpdateProgressCommandHandler(CommandHandler[UpdateProgressCommand, dict[st
         except Exception as e:
             await db.rollback()
             logger.error(f"Error updating progress: {e}")
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
+
 
 # --- Submit Review ---
 class SubmitReviewCommand(Command):
@@ -891,17 +1044,21 @@ class SubmitReviewCommand(Command):
     student_id: str
     db: Any
 
+
 class SubmitReviewCommandHandler(CommandHandler[SubmitReviewCommand, dict[str, Any]]):
     async def handle(self, command: SubmitReviewCommand) -> dict[str, Any]:
         db: AsyncSession = command.db
         try:
             from services.question_review_adapter import QuestionReviewAdapter
+
             adapter = QuestionReviewAdapter()
             card = await adapter.submit_review(
                 command.card_id, command.grade, db, student_id=command.student_id
             )
             if not card:
-                raise HTTPException(status_code=404, detail="Kart bulunamadi veya gecersiz grade")
+                raise HTTPException(
+                    status_code=404, detail="Kart bulunamadi veya gecersiz grade"
+                )
             await db.commit()
             return {
                 "success": True,
@@ -916,7 +1073,10 @@ class SubmitReviewCommandHandler(CommandHandler[SubmitReviewCommand, dict[str, A
         except Exception as e:
             logger.error(f"Error submitting review: {e}")
             await db.rollback()
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )
+
 
 # --- Register Wrong Answers ---
 class RegisterWrongAnswersCommand(Command):
@@ -927,11 +1087,15 @@ class RegisterWrongAnswersCommand(Command):
     is_timeout: bool = False
     db: Any
 
-class RegisterWrongAnswersCommandHandler(CommandHandler[RegisterWrongAnswersCommand, dict[str, Any]]):
+
+class RegisterWrongAnswersCommandHandler(
+    CommandHandler[RegisterWrongAnswersCommand, dict[str, Any]]
+):
     async def handle(self, command: RegisterWrongAnswersCommand) -> dict[str, Any]:
         db: AsyncSession = command.db
         try:
             from services.question_review_adapter import QuestionReviewAdapter
+
             adapter = QuestionReviewAdapter()
             created = await adapter.register_wrong_answers(
                 command.student_id,
@@ -950,5 +1114,6 @@ class RegisterWrongAnswersCommandHandler(CommandHandler[RegisterWrongAnswersComm
         except Exception as e:
             logger.error(f"Error registering wrong answers: {e}")
             await db.rollback()
-            raise HTTPException(status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin.")
-
+            raise HTTPException(
+                status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
+            )

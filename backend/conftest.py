@@ -4,8 +4,8 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
-sys.modules.setdefault('chromadb', MagicMock())
-sys.modules.setdefault('chromadb.config', MagicMock())
+sys.modules.setdefault("chromadb", MagicMock())
+sys.modules.setdefault("chromadb.config", MagicMock())
 
 # CRITICAL: Prevent HuggingFace model downloads during tests (MUST be before any imports)
 os.environ["HF_HUB_OFFLINE"] = "1"
@@ -19,7 +19,8 @@ if sys.platform == "win32":
 # This is the absolute earliest point - before pytest, before any test collection
 os.environ["TESTING"] = "true"
 os.environ["DATABASE_URL"] = os.getenv(
-    "TEST_DATABASE_URL", "sqlite+aiosqlite:///file:testdb?mode=memory&cache=shared&uri=true"
+    "TEST_DATABASE_URL",
+    "sqlite+aiosqlite:///file:testdb?mode=memory&cache=shared&uri=true",
 )
 os.environ["REDIS_URL"] = os.getenv("TEST_REDIS_URL", "redis://localhost:6380/1")
 os.environ["JWT_SECRET_KEY"] = "test-secret-key-for-testing-only-32-chars"
@@ -113,33 +114,34 @@ SYNC_DATABASE_URL = os.getenv("SYNC_TEST_DATABASE_URL")
 # Validate that required test database URLs are set
 if not TEST_DATABASE_URL:
     # Use in-memory SQLite as fallback for fast tests
-    TEST_DATABASE_URL = "sqlite+aiosqlite:///file:testdb?mode=memory&cache=shared&uri=true"
+    TEST_DATABASE_URL = (
+        "sqlite+aiosqlite:///file:testdb?mode=memory&cache=shared&uri=true"
+    )
     print("WARNING: TEST_DATABASE_URL not set, using in-memory SQLite")
 
 if not SYNC_DATABASE_URL:
     SYNC_DATABASE_URL = "sqlite:///file:testdb?mode=memory&cache=shared&uri=true"
     print("WARNING: SYNC_TEST_DATABASE_URL not set, using in-memory SQLite")
 
+
 # Session-scoped engine for performance
 @pytest.fixture(scope="session")
 async def test_async_engine():
     """Create async engine once per test session (PERFORMANCE FIX)"""
+    from sqlalchemy.pool import NullPool, StaticPool
     # SQLite doesn't support pool_size/max_overflow - only use for PostgreSQL
     if "sqlite" in TEST_DATABASE_URL.lower():
-        from sqlalchemy.pool import StaticPool
         engine = create_async_engine(
             TEST_DATABASE_URL,
             echo=False,
             poolclass=StaticPool,
-            connect_args={"check_same_thread": False}
+            connect_args={"check_same_thread": False},
         )
     else:
         engine = create_async_engine(
             TEST_DATABASE_URL,
             echo=False,
-            pool_pre_ping=True,
-            pool_size=5,
-            max_overflow=10,
+            poolclass=NullPool,  # Prevent connection pool deadlocks in tests
         )
     yield engine
     await engine.dispose()
@@ -148,15 +150,22 @@ async def test_async_engine():
 @pytest.fixture(scope="function")
 async def async_db_session(test_async_engine):
     """Create async database session for tests (OPTIMIZED)"""
-    # Use session-scoped engine (not creating new engine each time)
-    async_session_maker = async_sessionmaker(
-        test_async_engine, class_=AsyncSession, expire_on_commit=False
-    )
-
-    # Session with transaction rollback
-    async with async_session_maker() as session, session.begin():
-        yield session
-        await session.rollback()  # Test sonrasi rollback
+    async with test_async_engine.connect() as connection:
+        transaction = await connection.begin()
+        async_session_maker = async_sessionmaker(
+            bind=connection, 
+            class_=AsyncSession, 
+            expire_on_commit=False,
+            join_transaction_mode="create_savepoint"
+        )
+        session = async_session_maker()
+        
+        try:
+            yield session
+        finally:
+            await session.close()
+            if transaction.is_active:
+                await transaction.rollback()
 
 
 @pytest.fixture(scope="function")
@@ -625,6 +634,7 @@ def pytest_sessionfinish(session, exitstatus):
     """
     try:
         from core.worker_pools import shutdown_pools
+
         shutdown_pools()
     except Exception:
         pass

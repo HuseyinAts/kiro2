@@ -51,8 +51,22 @@ from langchain_community.vectorstores import FAISS, Chroma
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import OpenAIEmbeddings
+from core.turkish_nlp_utils import normalize_tr
 
 logger = logging.getLogger(__name__)
+
+class TurkishNormalizedEmbeddings:
+    """Wrapper to normalize Turkish text (e.g. ı->i, ğ->g) before embedding to fix recall drops."""
+    def __init__(self, base_embeddings):
+        self.base_embeddings = base_embeddings
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        normalized_texts = [normalize_tr(t) for t in texts]
+        return self.base_embeddings.embed_documents(normalized_texts)
+
+    def embed_query(self, text: str) -> list[float]:
+        return self.base_embeddings.embed_query(normalize_tr(text))
+
 
 
 class DocumentProcessor:
@@ -192,21 +206,23 @@ class VectorStoreManager:
         """Initialize embeddings model"""
 
         if embeddings_type == "openai" and os.getenv("OPENAI_API_KEY"):
-            return OpenAIEmbeddings(
+            base = OpenAIEmbeddings(
                 model="text-embedding-ada-002",
                 openai_api_key=os.getenv("OPENAI_API_KEY"),
             )
-        if embeddings_type == "cohere" and os.getenv("COHERE_API_KEY"):
-            return CohereEmbeddings(
+        elif embeddings_type == "cohere" and os.getenv("COHERE_API_KEY"):
+            base = CohereEmbeddings(
                 model="embed-multilingual-v2.0",
                 cohere_api_key=os.getenv("COHERE_API_KEY"),
             )
-        # Default to free HuggingFace embeddings
-        return HuggingFaceEmbeddings(
-            model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": True},
-        )
+        else:
+            # Default to free HuggingFace embeddings
+            base = HuggingFaceEmbeddings(
+                model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+                model_kwargs={"device": "cpu"},
+                encode_kwargs={"normalize_embeddings": True},
+            )
+        return TurkishNormalizedEmbeddings(base)
 
     def create_vector_store(
         self, documents: list[Document], store_name: str, store_type: str = "faiss"
@@ -300,6 +316,7 @@ class VectorStoreManager:
 
         try:
             from core.turkish_nlp_utils import normalize_tr
+
             # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
             for doc in documents:
                 doc.page_content = normalize_tr(doc.page_content)
@@ -322,6 +339,7 @@ class VectorStoreManager:
 
         try:
             from core.turkish_nlp_utils import normalize_tr
+
             # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
             query = normalize_tr(query)
 
@@ -353,6 +371,7 @@ class VectorStoreManager:
 
         try:
             from core.turkish_nlp_utils import normalize_tr
+
             # 2026 Ultra Expert NLP Lens Fix: Apply Turkish NLP Normalization
             query = normalize_tr(query)
 
@@ -637,10 +656,10 @@ class EducationalRAG:
         edu_prompt = """You are an educational assistant helping students learn {subject}.
         Use the following context to answer the question in a clear, educational manner.
         Include examples when helpful.
-        
+
         Context: {context}
         Question: {question}
-        
+
         Educational Answer:"""
 
         self.rag_system.create_custom_qa_chain(store_name, edu_prompt)

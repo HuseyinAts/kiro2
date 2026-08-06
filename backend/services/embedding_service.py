@@ -20,18 +20,21 @@ from dataclasses import dataclass
 
 try:
     import numpy as np
+
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
 
 try:
     from sentence_transformers import SentenceTransformer
+
     SENTENCE_TRANSFORMERS_AVAILABLE = True
 except ImportError:
     SENTENCE_TRANSFORMERS_AVAILABLE = False
 
 try:
     import redis
+
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False
@@ -45,6 +48,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class EmbeddingStats:
     """Embedding istatistikleri."""
+
     total_requests: int = 0
     cache_hits: int = 0
     cache_misses: int = 0
@@ -94,7 +98,10 @@ class EmbeddingService:
 
         # Redis URL
         import os
-        self._redis_url = redis_url or os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
+        self._redis_url = redis_url or os.getenv(
+            "REDIS_URL", "redis://localhost:6379/0"
+        )
 
     def _initialize(self) -> bool:
         """
@@ -113,7 +120,9 @@ class EmbeddingService:
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Model loaded successfully: {self.model_name}")
             except Exception as e:
-                logger.error(f"Failed to load model {self.model_name}: {e}", exc_info=True)
+                logger.error(
+                    f"Failed to load model {self.model_name}: {e}", exc_info=True
+                )
                 return False
         else:
             logger.warning("sentence-transformers not available, using hash fallback")
@@ -123,7 +132,7 @@ class EmbeddingService:
             try:
                 self._redis = redis.from_url(
                     self._redis_url,
-                    decode_responses=False  # Binary for embeddings
+                    decode_responses=False,  # Binary for embeddings
                 )
                 # Bağlantı testi
                 self._redis.ping()
@@ -200,6 +209,7 @@ class EmbeddingService:
             else:
                 # Fallback: JSON
                 import json
+
                 data = json.dumps(embedding).encode()
 
             self._redis.setex(key, self.cache_ttl, data)
@@ -263,10 +273,7 @@ class EmbeddingService:
         return embedding_list
 
     def embed_batch(
-        self,
-        texts: list[str],
-        use_cache: bool = True,
-        show_progress: bool = False
+        self, texts: list[str], use_cache: bool = True, show_progress: bool = False
     ) -> list[list[float]]:
         """
         Batch metin için embedding oluştur.
@@ -319,7 +326,7 @@ class EmbeddingService:
                     batch_embeddings = self._model.encode(
                         batch_texts,
                         convert_to_numpy=True,
-                        show_progress_bar=show_progress
+                        show_progress_bar=show_progress,
                     )
 
                     for j, embedding in enumerate(batch_embeddings):
@@ -334,11 +341,11 @@ class EmbeddingService:
             except Exception as e:
                 logger.error(f"Batch embedding failed: {e}", exc_info=True)
                 # Fallback
-                for i, text in zip(uncached_indices, uncached_texts):
+                for i, text in zip(uncached_indices, uncached_texts, strict=False):
                     results[i] = self._fallback_embedding(text)
         else:
             # Model yok, fallback
-            for i, text in zip(uncached_indices, uncached_texts):
+            for i, text in zip(uncached_indices, uncached_texts, strict=False):
                 results[i] = self._fallback_embedding(text)
 
         self._stats.total_requests += len(texts)
@@ -365,7 +372,7 @@ class EmbeddingService:
             all_bytes += hash_bytes
 
         # Normalize to [-1, 1]
-        embedding = [float(b) / 127.5 - 1.0 for b in all_bytes[:self.dimension]]
+        embedding = [float(b) / 127.5 - 1.0 for b in all_bytes[: self.dimension]]
 
         # L2 normalize
         if NUMPY_AVAILABLE:
@@ -400,7 +407,7 @@ class EmbeddingService:
 
             return float(np.dot(a, b) / (norm_a * norm_b))
         # Fallback
-        dot = sum(a * b for a, b in zip(vec1, vec2))
+        dot = sum(a * b for a, b in zip(vec1, vec2, strict=False))
         norm1 = sum(a * a for a in vec1) ** 0.5
         norm2 = sum(b * b for b in vec2) ** 0.5
 
@@ -437,8 +444,7 @@ class EmbeddingService:
             EmbeddingStats
         """
         self._stats.avg_latency_ms = (
-            sum(self._latencies) / len(self._latencies)
-            if self._latencies else 0.0
+            sum(self._latencies) / len(self._latencies) if self._latencies else 0.0
         )
         return self._stats
 

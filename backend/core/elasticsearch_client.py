@@ -366,9 +366,7 @@ def get_elasticsearch_client() -> ElasticsearchClient:
         es_user = settings.elasticsearch_user
         es_pass = settings.elasticsearch_password
         _elasticsearch_client = ElasticsearchClient(
-            hosts=[es_url],
-            username=es_user,
-            password=es_pass
+            hosts=[es_url], username=es_user, password=es_pass
         )
 
     return _elasticsearch_client
