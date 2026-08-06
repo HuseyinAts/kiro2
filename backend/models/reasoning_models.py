@@ -79,7 +79,9 @@ class ReasoningSession(Base):
     problem_type = Column(
         String(50), nullable=True, comment="Problem type: math, logic, etc."
     )
-    problem_embedding = Column(Vector(768), nullable=True, comment="Embedding of the problem text")
+    problem_embedding = Column(
+        Vector(768), nullable=True, comment="Embedding of the problem text"
+    )
     context = Column(Text, nullable=True, comment="Additional context")
 
     # Provider info
@@ -150,7 +152,7 @@ class ReasoningSession(Base):
             "problem_embedding",
             postgresql_using="hnsw",
             postgresql_with={"m": 16, "ef_construction": 64},
-            postgresql_ops={"problem_embedding": "vector_cosine_ops"}
+            postgresql_ops={"problem_embedding": "vector_cosine_ops"},
         ),
         Index("idx_reasoning_sessions_user", "user_id"),
         Index("idx_reasoning_sessions_status", "status"),
@@ -383,7 +385,7 @@ class ReasoningCache(Base):
             "problem_embedding",
             postgresql_using="hnsw",
             postgresql_with={"m": 16, "ef_construction": 64},
-            postgresql_ops={"problem_embedding": "vector_cosine_ops"}
+            postgresql_ops={"problem_embedding": "vector_cosine_ops"},
         ),
         Index("idx_reasoning_cache_hash", "problem_hash"),
         Index("idx_reasoning_cache_expires", "expires_at"),

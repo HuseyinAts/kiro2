@@ -4,13 +4,12 @@ Duel Models
 DuelSession, DuelMatch ve DuelRating modelleri — ogrenciler arasi soru duelolari.
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
-from sqlalchemy import String, Boolean, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -20,10 +19,14 @@ class DuelSession(Base):
 
     __tablename__ = "duel_sessions"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    player1_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
     )
-    player2_id: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    player1_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    player2_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     subject: Mapped[str] = mapped_column(String(50), nullable=False)
     question_count: Mapped[int] = mapped_column(Integer, default=5)
@@ -56,8 +59,11 @@ class DuelMatch(Base):
 
     __tablename__ = "duel_matches"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    session_id: Mapped[str] = mapped_column(String, ForeignKey("duel_sessions.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    session_id: Mapped[str] = mapped_column(
+        String, ForeignKey("duel_sessions.id", ondelete="CASCADE"), nullable=False
     )
     question_id: Mapped[str] = mapped_column(String, nullable=False)
     question_order: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -83,13 +89,19 @@ class DuelRating(Base):
 
     __tablename__ = "duel_ratings"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"),
+    student_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("users.id", ondelete="CASCADE"),
         unique=True,
         nullable=False,
     )

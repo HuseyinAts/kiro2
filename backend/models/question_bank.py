@@ -10,14 +10,11 @@ Task 70: Soru Veritabanı Tasarımı
 """
 
 import enum
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 from typing import Optional
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
-    String,
     JSON,
     Boolean,
     CheckConstraint,
@@ -35,6 +32,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -66,13 +64,16 @@ class TopicHierarchy(Base):
 
     __tablename__ = "topic_hierarchy"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Hiyerarşi bilgileri
     level: Mapped[int] = mapped_column(
         Integer, nullable=False
     )  # 1: Ana konu, 2: Alt konu, 3: Detay konu
-    parent_id: Mapped[str | None] = mapped_column(String, ForeignKey("topic_hierarchy.id", ondelete="CASCADE")
+    parent_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("topic_hierarchy.id", ondelete="CASCADE")
     )
 
     # Konu bilgileri
@@ -151,7 +152,9 @@ class QuestionTag(Base):
 
     __tablename__ = "question_tags"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Etiket bilgileri
     tag_name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
@@ -193,8 +196,11 @@ class IRTCalibrationHistory(Base):
 
     __tablename__ = "irt_calibration_history"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    question_id: Mapped[str] = mapped_column(String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    question_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
     )
 
     # Kalibrasyon bilgileri
@@ -272,7 +278,9 @@ class QuestionBankItem(Base):
 
     __tablename__ = "question_bank"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # ========================================================================
     # Soru İçeriği
@@ -309,7 +317,8 @@ class QuestionBankItem(Base):
     # ========================================================================
     # TASK 70.2: Konu Etiketleme
     # ========================================================================
-    primary_topic_id: Mapped[str] = mapped_column(String, ForeignKey("topic_hierarchy.id"), nullable=False
+    primary_topic_id: Mapped[str] = mapped_column(
+        String, ForeignKey("topic_hierarchy.id"), nullable=False
     )
     secondary_topics: Mapped[dict | None] = mapped_column(
         JSON
@@ -482,9 +491,11 @@ class QuestionBankItem(Base):
     # ========================================================================
     # Sistem Alanları
     # ========================================================================
-    created_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE")
+    created_by: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE")
     )
-    reviewed_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE")
+    reviewed_by: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE")
     )
 
     soru_hash: Mapped[str] = mapped_column(
@@ -591,25 +602,25 @@ class QuestionBankItem(Base):
         Index(
             "idx_qb_primary_topic",
             "primary_topic_id",
-            postgresql_where=text("primary_topic_id IS NOT NULL")
+            postgresql_where=text("primary_topic_id IS NOT NULL"),
         ),
         Index(
             "idx_qb_calib_pool",
             "is_calib_pool",
-            postgresql_where=text("is_calib_pool = true")
+            postgresql_where=text("is_calib_pool = true"),
         ),
         Index(
             "idx_qb_cat_subject_active",
             func.lower(text("subject_area")),
             "is_active",
-            postgresql_where=text("is_active = true")
+            postgresql_where=text("is_active = true"),
         ),
         Index("idx_qb_soru_hash", "soru_hash"),
         Index(
             "uq_qb_soru_hash_active",
             "soru_hash",
             unique=True,
-            postgresql_where=text("is_active = true")
+            postgresql_where=text("is_active = true"),
         ),
     )
 
@@ -621,10 +632,14 @@ class QuestionTagAssociation(Base):
 
     __tablename__ = "question_tag_associations"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    question_id: Mapped[str] = mapped_column(String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
     )
-    tag_id: Mapped[str] = mapped_column(String, ForeignKey("question_tags.id", ondelete="CASCADE"), nullable=False
+    question_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
+    )
+    tag_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_tags.id", ondelete="CASCADE"), nullable=False
     )
 
     # Etiket ağırlığı (bazı etiketler daha önemli olabilir)
@@ -658,8 +673,11 @@ class QuestionPerformanceAnalytics(Base):
 
     __tablename__ = "question_performance_analytics"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    question_id: Mapped[str] = mapped_column(String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    question_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
     )
 
     # Analiz dönemi

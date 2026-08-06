@@ -160,3 +160,6 @@ setuptools>=78.1.1
 # Security (Additional)
 bcrypt>=4.0.0,<4.1.0  # passlib uyumluluğu için (4.1.0+ 72-byte limit enforce ediyor)
 pgvector>=0.2.1
+uuid6>=2024.1.1
+
+pgvector>=0.2.1

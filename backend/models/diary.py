@@ -7,10 +7,8 @@ REQ-1 ile REQ-8 arasindaki gereksinimleri destekler.
 
 from datetime import datetime
 from enum import Enum
-from uuid6 import uuid7
 
 from sqlalchemy import (
-    String,
     Boolean,
     Column,
     Date,
@@ -22,13 +20,13 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy import (
-    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -125,11 +123,15 @@ class DiaryEntry(Base):
 
     # Relationships
     insights = relationship(
-        "Insight", back_populates="diary_entry", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "Insight",
+        back_populates="diary_entry",
+        cascade="all, delete-orphan",
+    )
     reflections = relationship(
-        "Reflection", back_populates="diary_entry", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "Reflection",
+        back_populates="diary_entry",
+        cascade="all, delete-orphan",
+    )
 
     # Indexes
     __table_args__ = (
@@ -198,7 +200,7 @@ class Insight(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
-    diary_entry = relationship("DiaryEntry", back_populates="insights", lazy="selectin")
+    diary_entry = relationship("DiaryEntry", back_populates="insights")
 
     # Indexes
     __table_args__ = (
@@ -261,7 +263,7 @@ class Reflection(Base):
     )
 
     # Relationships
-    diary_entry = relationship("DiaryEntry", back_populates="reflections", lazy="selectin")
+    diary_entry = relationship("DiaryEntry", back_populates="reflections")
 
     # Indexes
     __table_args__ = (

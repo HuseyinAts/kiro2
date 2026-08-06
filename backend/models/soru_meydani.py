@@ -16,12 +16,9 @@ Kurallar:
 
 from __future__ import annotations
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
-    String,
     Boolean,
     DateTime,
     ForeignKey,
@@ -32,6 +29,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -45,8 +43,12 @@ class ForumQuestion(Base):
 
     __tablename__ = "forum_questions"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
@@ -94,7 +96,9 @@ class ForumSolution(Base):
 
     __tablename__ = "forum_solutions"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     question_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     solver_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     # Cozum icerigi
@@ -126,7 +130,9 @@ class ForumVote(Base):
         UniqueConstraint("voter_id", "solution_id", name="uq_forum_vote"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     voter_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     solution_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     vote_type: Mapped[str] = mapped_column(

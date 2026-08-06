@@ -6,10 +6,8 @@ Database models for study rooms, members, chat, and file sharing.
 
 from datetime import datetime
 from enum import Enum
-from uuid6 import uuid7
 
 from sqlalchemy import (
-    String,
     ARRAY,
     Boolean,
     Column,
@@ -21,11 +19,11 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy import (
-    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -47,7 +45,7 @@ class RoomVisibility(str, Enum):
 
     PUBLIC = "public"  # Anyone can join
     PRIVATE = "private"  # Invitation only
-    PASSWORD = "password"  # Requires password
+    PASSWORD = "password"  # Requires password  # pragma: allowlist secret
 
 
 class MemberRole(str, Enum):
@@ -170,17 +168,25 @@ class StudyRoom(Base):
 
     # Relationships
     members = relationship(
-        "RoomMember", back_populates="room", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "RoomMember",
+        back_populates="room",
+        cascade="all, delete-orphan",
+    )
     messages = relationship(
-        "RoomChatMessage", back_populates="room", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "RoomChatMessage",
+        back_populates="room",
+        cascade="all, delete-orphan",
+    )
     files = relationship(
-        "SharedFile", back_populates="room", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "SharedFile",
+        back_populates="room",
+        cascade="all, delete-orphan",
+    )
     invitations = relationship(
-        "RoomInvitation", back_populates="room", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "RoomInvitation",
+        back_populates="room",
+        cascade="all, delete-orphan",
+    )
 
 
 # ============================================================
@@ -239,7 +245,7 @@ class RoomMember(Base):
     )
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="members", lazy="selectin")
+    room = relationship("StudyRoom", back_populates="members")
 
 
 # ============================================================
@@ -282,7 +288,7 @@ class RoomInvitation(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="invitations", lazy="selectin")
+    room = relationship("StudyRoom", back_populates="invitations")
 
 
 # ============================================================
@@ -340,7 +346,7 @@ class RoomChatMessage(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="messages", lazy="selectin")
+    room = relationship("StudyRoom", back_populates="messages")
 
 
 # ============================================================
@@ -409,10 +415,12 @@ class SharedFile(Base):
     )
 
     # Relationships
-    room = relationship("StudyRoom", back_populates="files", lazy="selectin")
+    room = relationship("StudyRoom", back_populates="files")
     versions = relationship(
-        "FileVersion", back_populates="file", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "FileVersion",
+        back_populates="file",
+        cascade="all, delete-orphan",
+    )
 
 
 # ============================================================
@@ -453,7 +461,7 @@ class FileVersion(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    file = relationship("SharedFile", back_populates="versions", lazy="selectin")
+    file = relationship("SharedFile", back_populates="versions")
 
 
 # ============================================================

@@ -10,11 +10,9 @@ Date: 2025-01
 """
 
 import uuid
-from uuid6 import uuid7
 from enum import Enum
 
 from sqlalchemy import (
-    String,
     Boolean,
     Column,
     Date,
@@ -87,8 +85,8 @@ class FERPAConsent(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     # Relationships
-    student = relationship("User", foreign_keys=[student_id], lazy="selectin")
-    parent = relationship("User", foreign_keys=[parent_id], lazy="selectin")
+    student = relationship("User", foreign_keys=[student_id])
+    parent = relationship("User", foreign_keys=[parent_id])
 
 
 class COPPAParentalConsent(Base):
@@ -135,8 +133,8 @@ class COPPAParentalConsent(Base):
     last_modified = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     # Relationships
-    child = relationship("User", foreign_keys=[child_id], lazy="selectin")
-    parent = relationship("User", foreign_keys=[parent_id], lazy="selectin")
+    child = relationship("User", foreign_keys=[child_id])
+    parent = relationship("User", foreign_keys=[parent_id])
 
 
 class EducationalRecordAccess(Base):
@@ -166,8 +164,8 @@ class EducationalRecordAccess(Base):
     consent_id = Column(String(36), nullable=True)  # Reference to FERPAConsent
 
     # Relationships
-    student = relationship("User", foreign_keys=[student_id], lazy="selectin")
-    accessor = relationship("User", foreign_keys=[accessor_id], lazy="selectin")
+    student = relationship("User", foreign_keys=[student_id])
+    accessor = relationship("User", foreign_keys=[accessor_id])
 
 
 class DataRetentionPolicy(Base):

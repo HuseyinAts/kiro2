@@ -3,13 +3,10 @@ SQLAlchemy ORM Analytics Models
 database.py'den ayrıştırıldı (2026-01-10)
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import date, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    String,
     Date,
     DateTime,
     Enum,
@@ -22,6 +19,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 from .enums_db import SubjectArea
@@ -43,13 +41,18 @@ class LearningAnalytics(Base):
         Index("idx_learning_analytics_subject", "subject_area"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(
+        String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
     )
 
     # Analytics data
@@ -80,4 +83,4 @@ class LearningAnalytics(Base):
     # Relationships
     student: Mapped["StudentProfile"] = relationship(
         "StudentProfile", back_populates="learning_analytics"
-    , lazy="selectin")
+    )

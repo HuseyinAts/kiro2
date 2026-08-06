@@ -3,13 +3,10 @@ SQLAlchemy ORM Content Models
 database.py'den ayrıştırıldı (2026-01-10)
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    String,
     JSON,
     Boolean,
     CheckConstraint,
@@ -24,9 +21,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
-from .enums_db import ExamType, QuestionDifficulty, SubjectArea
+from .enums_db import QuestionDifficulty, SubjectArea
 
 if TYPE_CHECKING:
     from .user_models import TeacherProfile
@@ -53,7 +51,9 @@ class EducationalContent(Base):
         Index("idx_content_platform", "source_platform"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Content information
     title: Mapped[str] = mapped_column(String(300), nullable=False)
@@ -111,13 +111,18 @@ class ClassRoom(Base):
         Index("idx_classroom_subject", "subject_area"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    teacher_id: Mapped[str] = mapped_column(String, ForeignKey("teacher_profiles.id", ondelete="CASCADE"), nullable=False
+    teacher_id: Mapped[str] = mapped_column(
+        String, ForeignKey("teacher_profiles.id", ondelete="CASCADE"), nullable=False
     )
 
     # Class information
@@ -144,4 +149,4 @@ class ClassRoom(Base):
     # Relationships
     teacher: Mapped["TeacherProfile"] = relationship(
         "TeacherProfile", back_populates="classes"
-    , lazy="selectin")
+    )

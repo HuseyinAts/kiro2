@@ -4,11 +4,9 @@ Video catalog and watch tracking models
 """
 
 import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
-    String,
     Boolean,
     Column,
     DateTime,
@@ -75,8 +73,8 @@ class EBAVideoWatch(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.now)
 
     # Relationships
-    video = relationship("EBAVideo", lazy="selectin")
-    user = relationship("User", lazy="selectin")
+    video = relationship("EBAVideo")
+    user = relationship("User")
 
     def __repr__(self):
         return f"<EBAVideoWatch user={self.user_id} video={self.eba_video_id} progress={self.watch_percentage:.1f}%>"

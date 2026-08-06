@@ -1,91 +1,136 @@
 import asyncio
 import logging
-from datetime import datetime, timezone
 import re
-from sqlalchemy import select, delete, update, func
-from sqlalchemy.ext.asyncio import AsyncSession
-from core.database import get_db_session_context
-from models.user_models import User
-from models.question_bank import QuestionBankItem
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
-logging.basicConfig(level=logging.INFO)
+# Backend modüllerini import edebilmek için path ekle
+sys.path.append(str(Path(__file__).parent.parent))
+
+from sqlalchemy import delete, select, text
+
+from core.database import db_manager, get_db_session_context
+from models.database import User
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
-async def purge_toxic_users(session: AsyncSession):
-    # L6: Dummy data ("test", "asdf")
-    logger.info("Soft-deleting toxic/dummy user data (L6)...")
-    toxic_patterns = ['test%', '%asdf%']
-    deleted_count = 0
-    for pattern in toxic_patterns:
-        stmt = update(User).where(User.username.ilike(pattern) | User.email.ilike(pattern)).values(is_active=False)
-        result = await session.execute(stmt)
-        deleted_count += result.rowcount
-    
-    # L14: Invalid password hashes (less than 30 chars, usually bcrypt is 60)
-    logger.info("Soft-deleting invalid password hashes (L14)...")
-    stmt2 = update(User).where(func.length(User.password_hash) < 30).values(is_active=False)
-    result2 = await session.execute(stmt2)
-    deleted_count += result2.rowcount
-    
-    # L9: Future-dated users
-    logger.info("Soft-deleting future-dated users (L9)...")
-    now_utc = datetime.now(timezone.utc)
-    stmt3 = update(User).where(User.created_at > now_utc).values(is_active=False)
-    result3 = await session.execute(stmt3)
-    deleted_count += result3.rowcount
-    
-    logger.info(f"Total soft-deleted users: {deleted_count}")
 
-async def clean_questions(session: AsyncSession):
-    # L8: Semantic Plausibility (option_a == option_b)
-    logger.info("Deactivating questions with identical options (L8)...")
-    stmt = update(QuestionBankItem).where(
-        QuestionBankItem.option_a == QuestionBankItem.option_b
-    ).values(is_active=False)
-    result = await session.execute(stmt)
-    logger.info(f"Deactivated {result.rowcount} questions with identical options.")
+async def purge_future_profiles():
+    """L9 (Future Dates) çöp datalarını temizle"""
+    async with get_db_session_context() as session:
+        now = datetime.now(UTC)
 
-    # L2: HTML leaks in question text
-    logger.info("Cleaning HTML leaks from question text (L2)...")
-    # Fetch all questions containing '<div', '<html', 'href='
-    q_stmt = select(QuestionBankItem).where(
-        QuestionBankItem.question_text.ilike('%<div%') |
-        QuestionBankItem.question_text.ilike('%<html%') |
-        QuestionBankItem.question_text.ilike('%href=%')
-    )
-    result_q = await session.execute(q_stmt)
-    questions = result_q.scalars().all()
-    cleaned = 0
-    for q in questions:
-        # Simple regex to strip HTML tags
-        if q.question_text:
-            clean_text = re.sub(r'<[^>]+>', '', q.question_text)
-            q.question_text = clean_text
-            cleaned += 1
-    logger.info(f"Cleaned HTML tags from {cleaned} questions.")
+        # 1. Gelecek tarihli kayıt tarihine sahip Users tespit ve sil
+        future_users = await session.execute(
+            select(User.id).where(User.created_at > now)
+        )
+        future_user_ids = [u[0] for u in future_users.all()]
 
-    # L10: Broken LaTeX (missing $ for \sum)
-    logger.info("Fixing broken LaTeX (L10)...")
-    latex_stmt = select(QuestionBankItem).where(
-        QuestionBankItem.question_text.like('%\\sum%') &
-        ~QuestionBankItem.question_text.like('%$%')
-    )
-    result_latex = await session.execute(latex_stmt)
-    latex_questions = result_latex.scalars().all()
-    fixed_latex = 0
-    for q in latex_questions:
-        if q.question_text:
-            # Wrap \sum expression in $ (simplified patch)
-            q.question_text = q.question_text.replace(r'\sum', r'$\sum$')
-            fixed_latex += 1
-    logger.info(f"Fixed LaTeX in {fixed_latex} questions.")
+        if future_user_ids:
+            logger.info(
+                f"Gelecek tarihli {len(future_user_ids)} User bulundu. Siliniyor..."
+            )
+            await session.execute(delete(User).where(User.id.in_(future_user_ids)))
+
+        # 2. L6 (Dummy Data) - test_, dummy_ vb ile başlayan e-postalar
+        dummy_users = await session.execute(
+            select(User.id)
+            .where(User.email.ilike("test_%"))
+            .where(User.email.ilike("dummy_%"))
+        )
+        dummy_user_ids = [u[0] for u in dummy_users.all()]
+
+        # Daha geniş dummy taraması
+        dummy_users2 = await session.execute(
+            select(User.id).where(
+                User.email.like("test@%")
+                | User.email.like("dummy@%")
+                | User.username.like("testuser%")
+            )
+        )
+        dummy_user_ids.extend([u[0] for u in dummy_users2.all()])
+
+        dummy_user_ids = list(set(dummy_user_ids))
+        if dummy_user_ids:
+            logger.info(f"Test/Çöp {len(dummy_user_ids)} User bulundu. Siliniyor...")
+            # Cleanup foreign keys before deleting user
+            await session.execute(
+                text("DELETE FROM api_keys WHERE user_id = ANY(:user_ids)"),
+                {"user_ids": dummy_user_ids},
+            )
+            await session.execute(
+                text("DELETE FROM refresh_tokens WHERE user_id = ANY(:user_ids)"),
+                {"user_ids": dummy_user_ids},
+            )
+            await session.execute(
+                text(
+                    "DELETE FROM fsrs_study_sessions WHERE student_id = ANY(:user_ids)"
+                ),
+                {"user_ids": dummy_user_ids},
+            )
+            await session.execute(
+                text("DELETE FROM student_profiles WHERE user_id = ANY(:user_ids)"),
+                {"user_ids": dummy_user_ids},
+            )
+            await session.execute(delete(User).where(User.id.in_(dummy_user_ids)))
+
+        await session.commit()
+        logger.info("Kullanıcı temizliği tamamlandı.")
+
+
+async def patch_html_leaks():
+    """L2 (HTML Leak) soru metinlerindeki HTML sızıntılarını temizle"""
+    async with get_db_session_context() as session:
+        # Basit HTML tag'leri olan soruları bul
+        # Not: Gerçek uygulamada daha karmaşık regex veya BeautifulSoup kullanılabilir,
+        # burada SQL tarafında like ile basit tagleri tespit edip Python'da temizleyeceğiz.
+
+        # Soru bankasını çek
+        from models.question_bank import QuestionBankItem
+
+        result = await session.execute(
+            select(QuestionBankItem).where(
+                QuestionBankItem.soru_metni.like("%<p>%")
+                | QuestionBankItem.soru_metni.like("%<br>%")
+                | QuestionBankItem.soru_metni.like("%<b>%")
+                | QuestionBankItem.soru_metni.like("%<span>%")
+            )
+        )
+        questions = result.scalars().all()
+
+        cleaned_count = 0
+        html_cleaner = re.compile("<.*?>")
+
+        for q in questions:
+            if q.soru_metni:
+                clean_text = re.sub(html_cleaner, "", q.soru_metni)
+                if clean_text != q.soru_metni:
+                    q.soru_metni = clean_text
+                    cleaned_count += 1
+
+        if cleaned_count > 0:
+            logger.info(f"{cleaned_count} sorudaki HTML sızıntıları temizlendi.")
+            await session.commit()
+        else:
+            logger.info("HTML sızıntısı bulunan soru tespit edilmedi.")
+
 
 async def main():
-    async with get_db_session_context() as session:
-        await purge_toxic_users(session)
-        await clean_questions(session)
-        await session.commit()
-        logger.info("Data purging and cleansing complete.")
+    await db_manager.initialize()
+    try:
+        logger.info("Veritabanı temizleme (Purge & Patch) işlemi başlıyor...")
+        await purge_future_profiles()
+        await patch_html_leaks()
+        logger.info("Veritabanı temizleme işlemi başarıyla tamamlandı.")
+    except Exception as e:
+        logger.error(f"Hata oluştu: {e}")
+    finally:
+        await db_manager.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

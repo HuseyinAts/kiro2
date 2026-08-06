@@ -10,15 +10,14 @@ Models for:
 - Audit logging
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import String, JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy import String, Enum as SQLEnum
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -186,13 +185,18 @@ class KVKKConsent(Base):
 
     __tablename__ = "kvkk_consents"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
     # Consent details
@@ -206,7 +210,9 @@ class KVKKConsent(Base):
     )
 
     # Consent metadata
-    consent_text: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)  # Shown to user
+    consent_text: Mapped[str] = mapped_column(
+        Text, nullable=False, deferred=True
+    )  # Shown to user
     privacy_policy_version: Mapped[str] = mapped_column(String(20), nullable=False)
 
     # Timestamps
@@ -238,7 +244,9 @@ class KVKKPrivacyPolicyVersion(Base):
 
     __tablename__ = "kvkk_privacy_policy_versions"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     version: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
@@ -269,13 +277,18 @@ class KVKKDataExportRequest(Base):
 
     __tablename__ = "kvkk_data_export_requests"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
     # Request details
@@ -290,7 +303,9 @@ class KVKKDataExportRequest(Base):
     export_format: Mapped[str] = mapped_column(
         String(20), nullable=False, default="json"
     )  # json, csv, pdf
-    data_categories: Mapped[dict | None] = mapped_column(JSON, deferred=True)  # Which data to export
+    data_categories: Mapped[dict | None] = mapped_column(
+        JSON, deferred=True
+    )  # Which data to export
 
     # File details
     file_path: Mapped[str | None] = mapped_column(String(500))
@@ -320,8 +335,11 @@ class KVKKDataDeletionRequest(Base):
 
     __tablename__ = "kvkk_data_deletion_requests"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
     # Request details
@@ -366,12 +384,16 @@ class KVKKAuditLog(Base):
 
     __tablename__ = "kvkk_audit_logs"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Who accessed data
-    user_id: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"), index=True
+    user_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id"), index=True
     )  # User whose data was accessed
-    accessed_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id"), index=True
+    accessed_by: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id"), index=True
     )  # Who accessed (admin, system, etc.)
 
     # What was accessed

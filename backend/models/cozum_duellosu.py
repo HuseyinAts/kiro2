@@ -16,12 +16,9 @@ Kurallar:
 
 from __future__ import annotations
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
-    String,
     Boolean,
     DateTime,
     ForeignKey,
@@ -32,6 +29,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -45,7 +43,9 @@ class SolutionDuel(Base):
 
     __tablename__ = "solution_duels"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     # Soru
     question_bank_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     subject_area: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
@@ -88,8 +88,12 @@ class SolutionDuelSubmission(Base):
 
     __tablename__ = "solution_duel_submissions"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
@@ -119,7 +123,9 @@ class SolutionDuelVote(Base):
     __tablename__ = "solution_duel_votes"
     __table_args__ = (UniqueConstraint("duel_id", "voter_id", name="uq_duel_vote"),)
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     duel_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     voter_id: Mapped[str] = mapped_column(String, nullable=False)
     voted_for_id: Mapped[str] = mapped_column(String, nullable=False)  # submission_id

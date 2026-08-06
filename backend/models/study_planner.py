@@ -7,7 +7,6 @@ StudyPlan ve WeeklyGoal modelleri — ogrenci calisma plani takibi.
 from datetime import date, datetime
 
 from sqlalchemy import (
-    String,
     JSON,
     Boolean,
     Date,
@@ -30,12 +29,15 @@ class StudyPlan(Base):
     __tablename__ = "study_plans"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     yks_date: Mapped[date] = mapped_column(Date, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
@@ -60,7 +62,7 @@ class StudyPlan(Base):
         back_populates="plan",
         cascade="all, delete-orphan",
         order_by="WeeklyGoal.week_number",
-        lazy="selectin")
+    )
 
     def __repr__(self) -> str:
         return f"<StudyPlan id={self.id} student_id={self.student_id}>"
@@ -76,7 +78,7 @@ class WeeklyGoal(Base):
         Integer, ForeignKey("study_plans.id", ondelete="CASCADE"), nullable=False
     )
     week_number: Mapped[int] = mapped_column(Integer, nullable=False)
-    plan: Mapped["StudyPlan"] = relationship("StudyPlan", back_populates="weekly_goals", lazy="selectin")
+    plan: Mapped["StudyPlan"] = relationship("StudyPlan", back_populates="weekly_goals")
     topics: Mapped[dict | None] = mapped_column(JSON, nullable=True, deferred=True)
     target_questions: Mapped[int] = mapped_column(Integer, default=0)
     target_reviews: Mapped[int] = mapped_column(Integer, default=0)

@@ -28,6 +28,7 @@ from .base import Base
 
 class SubjectTypeDB(str):
     """Subject type enum values for database"""
+
     MATEMATIK = "matematik"
     TURKCE = "turkce"
     FEN_BILIMLERI = "fen_bilimleri"
@@ -44,6 +45,7 @@ class SubjectTypeDB(str):
 
 class ExamTypeDB(str):
     """Exam type enum values for database"""
+
     TYT = "tyt"
     AYT = "ayt"
     YDT = "ydt"
@@ -52,6 +54,7 @@ class ExamTypeDB(str):
 
 class GradeLevelDB(str):
     """Grade level enum values for database"""
+
     GRADE_9 = "9"
     GRADE_10 = "10"
     GRADE_11 = "11"
@@ -78,11 +81,17 @@ class MEBCurriculumStandardDB(Base):
     topic_name: Mapped[str] = mapped_column(String(200), nullable=False)
 
     # JSON fields for list data
-    learning_outcomes: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
+    learning_outcomes: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
     key_concepts: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
     skills: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
-    prerequisites: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
-    assessment_criteria: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
+    prerequisites: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
+    assessment_criteria: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
 
     duration_hours: Mapped[int] = mapped_column(Integer, default=0)
 
@@ -98,10 +107,10 @@ class MEBCurriculumStandardDB(Base):
     # Relationships
     learning_outcomes_rel: Mapped[list["LearningOutcomeDB"]] = relationship(
         "LearningOutcomeDB", back_populates="meb_standard"
-    , lazy="selectin")
+    )
     curriculum_alignments: Mapped[list["CurriculumAlignmentDB"]] = relationship(
         "CurriculumAlignmentDB", back_populates="meb_standard"
-    , lazy="selectin")
+    )
 
 
 class OSYMStandardDB(Base):
@@ -125,9 +134,15 @@ class OSYMStandardDB(Base):
     priority_level: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # JSON fields for complex data
-    question_count_range: Mapped[dict | None] = mapped_column(JSON, default=dict, deferred=True)
-    difficulty_distribution: Mapped[dict | None] = mapped_column(JSON, default=dict, deferred=True)
-    cognitive_levels: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
+    question_count_range: Mapped[dict | None] = mapped_column(
+        JSON, default=dict, deferred=True
+    )
+    difficulty_distribution: Mapped[dict | None] = mapped_column(
+        JSON, default=dict, deferred=True
+    )
+    cognitive_levels: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
 
     exam_frequency: Mapped[float] = mapped_column(Float, default=0.0)
     last_exam_appearance: Mapped[str | None] = mapped_column(String(50))
@@ -144,7 +159,7 @@ class OSYMStandardDB(Base):
     # Relationships
     curriculum_alignments: Mapped[list["CurriculumAlignmentDB"]] = relationship(
         "CurriculumAlignmentDB", back_populates="osym_standard"
-    , lazy="selectin")
+    )
 
 
 class LearningOutcomeDB(Base):
@@ -167,12 +182,18 @@ class LearningOutcomeDB(Base):
     cognitive_level: Mapped[str] = mapped_column(String(50), nullable=False)
     bloom_taxonomy: Mapped[str] = mapped_column(String(20), nullable=False)
     meb_standard_id: Mapped[str] = mapped_column(
-        String(100), ForeignKey("meb_curriculum_standards.id", ondelete="CASCADE"), nullable=False
+        String(100),
+        ForeignKey("meb_curriculum_standards.id", ondelete="CASCADE"),
+        nullable=False,
     )
 
     # JSON fields for list data
-    assessment_methods: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
-    sample_activities: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
+    assessment_methods: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
+    sample_activities: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
 
     # System fields
     created_at: Mapped[datetime] = mapped_column(
@@ -184,8 +205,9 @@ class LearningOutcomeDB(Base):
 
     # Relationships
     meb_standard: Mapped["MEBCurriculumStandardDB"] = relationship(
-        "MEBCurriculumStandardDB", back_populates="learning_outcomes_rel"
-    , lazy="selectin")
+        "MEBCurriculumStandardDB",
+        back_populates="learning_outcomes_rel",
+    )
 
 
 class CurriculumAlignmentDB(Base):
@@ -195,7 +217,7 @@ class CurriculumAlignmentDB(Base):
     __table_args__ = (
         CheckConstraint(
             "alignment_score >= 0.0 AND alignment_score <= 1.0",
-            name="check_alignment_score"
+            name="check_alignment_score",
         ),
         Index("idx_alignment_meb", "meb_standard_id"),
         Index("idx_alignment_osym", "osym_standard_id"),
@@ -206,7 +228,9 @@ class CurriculumAlignmentDB(Base):
         String(100), primary_key=True, default=lambda: str(uuid.uuid4())
     )
     meb_standard_id: Mapped[str] = mapped_column(
-        String(100), ForeignKey("meb_curriculum_standards.id", ondelete="CASCADE"), nullable=False
+        String(100),
+        ForeignKey("meb_curriculum_standards.id", ondelete="CASCADE"),
+        nullable=False,
     )
     osym_standard_id: Mapped[str] = mapped_column(
         String(100), ForeignKey("osym_standards.id", ondelete="CASCADE"), nullable=False
@@ -215,8 +239,12 @@ class CurriculumAlignmentDB(Base):
     alignment_type: Mapped[str] = mapped_column(String(50), nullable=False)
 
     # JSON fields for list data
-    gaps_identified: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
-    recommendations: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
+    gaps_identified: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
+    recommendations: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
 
     verified_by: Mapped[str | None] = mapped_column(String(100))
     verification_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -231,11 +259,12 @@ class CurriculumAlignmentDB(Base):
 
     # Relationships
     meb_standard: Mapped["MEBCurriculumStandardDB"] = relationship(
-        "MEBCurriculumStandardDB", back_populates="curriculum_alignments"
-    , lazy="selectin")
+        "MEBCurriculumStandardDB",
+        back_populates="curriculum_alignments",
+    )
     osym_standard: Mapped["OSYMStandardDB"] = relationship(
         "OSYMStandardDB", back_populates="curriculum_alignments"
-    , lazy="selectin")
+    )
 
 
 class CurriculumUpdateRequestDB(Base):
@@ -255,9 +284,13 @@ class CurriculumUpdateRequestDB(Base):
     subject: Mapped[str] = mapped_column(String(50), nullable=False)
 
     # JSON fields for list data
-    affected_standards: Mapped[dict | None] = mapped_column(JSON, default=list, deferred=True)
+    affected_standards: Mapped[dict | None] = mapped_column(
+        JSON, default=list, deferred=True
+    )
 
-    changes_description: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
+    changes_description: Mapped[str] = mapped_column(
+        Text, nullable=False, deferred=True
+    )
     source_document: Mapped[str | None] = mapped_column(String(500))
     requested_by: Mapped[str] = mapped_column(String(100), nullable=False)
     requested_at: Mapped[datetime] = mapped_column(
@@ -266,5 +299,7 @@ class CurriculumUpdateRequestDB(Base):
     status: Mapped[str] = mapped_column(String(50), default="pending")
     reviewed_by: Mapped[str | None] = mapped_column(String(100))
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    implementation_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    implementation_date: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
     notes: Mapped[str | None] = mapped_column(Text, deferred=True)

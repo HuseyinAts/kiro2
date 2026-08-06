@@ -9,13 +9,12 @@ API: api/student_feedback_api.py
 
 from __future__ import annotations
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
-from sqlalchemy import String, DateTime, ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import DateTime, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -32,10 +31,14 @@ class StudentQuestionFlag(Base):
             name="uq_student_flags_user_question_type",
         ),
     )
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
     )
-    question_id: Mapped[str] = mapped_column(String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    question_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
     )
     flag_type: Mapped[str] = mapped_column(String(32), nullable=False)
     note: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)

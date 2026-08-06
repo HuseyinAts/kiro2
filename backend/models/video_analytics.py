@@ -5,11 +5,9 @@ Models for video watch tracking, notes, and bookmarks
 """
 
 import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
-    String,
     Boolean,
     Column,
     DateTime,
@@ -38,9 +36,7 @@ class VideoWatchSession(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # Session info
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)  # youtube, eba, khan, vimeo
 
@@ -70,13 +66,17 @@ class VideoWatchSession(Base):
     )
 
     # Relationships
-    user = relationship("User", lazy="selectin")
+    user = relationship("User")
     notes = relationship(
-        "VideoNote", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "VideoNote",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
     bookmarks = relationship(
-        "VideoBookmark", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "VideoBookmark",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self):
         return f"<VideoWatchSession {self.id}: {self.video_id} - {self.completion_percentage}%>"
@@ -94,9 +94,7 @@ class VideoCompletionMilestone(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
 
@@ -109,7 +107,7 @@ class VideoCompletionMilestone(Base):
     badge_id = Column(String, ForeignKey("user_badges.id"), nullable=True)
 
     # Relationships
-    user = relationship("User", lazy="selectin")
+    user = relationship("User")
 
     __table_args__ = (
         Index(
@@ -137,16 +135,12 @@ class VideoNote(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
 
     # Session reference
-    session_id = Column(
-        String, ForeignKey("video_watch_sessions.id"), nullable=True
-    )
+    session_id = Column(String, ForeignKey("video_watch_sessions.id"), nullable=True)
 
     # Note content
     content = Column(Text, nullable=False)
@@ -168,8 +162,8 @@ class VideoNote(Base):
     )
 
     # Relationships
-    user = relationship("User", lazy="selectin")
-    session = relationship("VideoWatchSession", back_populates="notes", lazy="selectin")
+    user = relationship("User")
+    session = relationship("VideoWatchSession", back_populates="notes")
 
     def __repr__(self):
         return f"<VideoNote {self.id}: {self.video_id}@{self.timestamp}s>"
@@ -187,16 +181,12 @@ class VideoBookmark(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and video
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     video_id = Column(String(100), nullable=False, index=True)
     video_source = Column(String(20), nullable=False)
 
     # Session reference
-    session_id = Column(
-        String, ForeignKey("video_watch_sessions.id"), nullable=True
-    )
+    session_id = Column(String, ForeignKey("video_watch_sessions.id"), nullable=True)
 
     # Bookmark info
     timestamp = Column(Integer, nullable=False)  # Video position (seconds)
@@ -219,8 +209,8 @@ class VideoBookmark(Base):
     )
 
     # Relationships
-    user = relationship("User", lazy="selectin")
-    session = relationship("VideoWatchSession", back_populates="bookmarks", lazy="selectin")
+    user = relationship("User")
+    session = relationship("VideoWatchSession", back_populates="bookmarks")
 
     def __repr__(self):
         return f"<VideoBookmark {self.id}: {self.title}@{self.timestamp}s>"
@@ -238,9 +228,7 @@ class VideoAnalyticsSummary(Base):
     id = Column(String, primary_key=True, default=uuid.uuid4)
 
     # User and period
-    user_id = Column(
-        String, ForeignKey("users.id"), nullable=False, index=True
-    )
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
     period_type = Column(String(10), nullable=False)  # daily, weekly, monthly
     period_start = Column(DateTime(timezone=True), nullable=False, index=True)
     period_end = Column(DateTime(timezone=True), nullable=False)
@@ -269,7 +257,7 @@ class VideoAnalyticsSummary(Base):
     )
 
     # Relationships
-    user = relationship("User", lazy="selectin")
+    user = relationship("User")
 
     __table_args__ = (
         Index("idx_user_period", "user_id", "period_type", "period_start", unique=True),

@@ -1,15 +1,22 @@
 import asyncio
 import logging
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
-import os
-from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger("varchar_restorer")
 
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
-DATABASE_URL = os.getenv("DATABASE_URL") or "postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2"
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+DATABASE_URL = (
+    os.getenv("DATABASE_URL")
+    or "postgresql+asyncpg://postgres:postgres@localhost:5434/kiro2"  # pragma: allowlist secret
+)
+
 
 async def run_migration():
     logger.info("Initializing VARCHAR Restorer Engine...")
@@ -17,7 +24,7 @@ async def run_migration():
 
     async with engine.connect() as conn:
         fks_query = text("""
-            SELECT 
+            SELECT
                 c.conname AS constraint_name,
                 conrelid::regclass::text AS table_name,
                 a.attname AS column_name,
@@ -36,15 +43,15 @@ async def run_migration():
         cols_query = text("""
             SELECT table_name, column_name, is_nullable
             FROM information_schema.columns
-            WHERE table_schema = 'public' 
+            WHERE table_schema = 'public'
               AND data_type = 'uuid'
               AND (column_name = 'id' OR column_name LIKE '%_id');
         """)
         cols_results = await conn.execute(cols_query)
         cols = cols_results.fetchall()
-        
+
         target_columns = [(row[0], row[1]) for row in cols]
-        
+
         logger.info(f"Found {len(fks)} foreign keys.")
         logger.info(f"Found {len(target_columns)} UUID columns to revert.")
 
@@ -52,8 +59,12 @@ async def run_migration():
             constraint_name = fk[0]
             table_name = fk[1]
             try:
-                await conn.execute(text(f'ALTER TABLE "{table_name}" DROP CONSTRAINT IF EXISTS "{constraint_name}";'))
-            except Exception as e:
+                await conn.execute(
+                    text(
+                        f'ALTER TABLE "{table_name}" DROP CONSTRAINT IF EXISTS "{constraint_name}";'
+                    )
+                )
+            except Exception:
                 pass
 
         for table_name, column_name in target_columns:
@@ -64,30 +75,39 @@ async def run_migration():
             except Exception as e:
                 logger.error(f"Error reverting {table_name}.{column_name}: {e}")
 
-        action_map = {'a': 'NO ACTION', 'r': 'RESTRICT', 'c': 'CASCADE', 'n': 'SET NULL', 'd': 'SET DEFAULT'}
+        action_map = {
+            "a": "NO ACTION",
+            "r": "RESTRICT",
+            "c": "CASCADE",
+            "n": "SET NULL",
+            "d": "SET DEFAULT",
+        }
         for fk in fks:
             constraint_name = fk[0]
             table_name = fk[1]
             column_name = fk[2]
             ref_table = fk[3]
             ref_col = fk[4]
-            upd = action_map.get(fk[5], 'NO ACTION')
-            del_ = action_map.get(fk[6], 'NO ACTION')
-            
-            create_fk = f'''
-                ALTER TABLE "{table_name}" 
-                ADD CONSTRAINT "{constraint_name}" 
-                FOREIGN KEY ("{column_name}") 
+            upd = action_map.get(fk[5], "NO ACTION")
+            del_ = action_map.get(fk[6], "NO ACTION")
+
+            create_fk = f"""
+                ALTER TABLE "{table_name}"
+                ADD CONSTRAINT "{constraint_name}"
+                FOREIGN KEY ("{column_name}")
                 REFERENCES "{ref_table}" ("{ref_col}")
                 ON UPDATE {upd} ON DELETE {del_};
-            '''
+            """
             try:
                 await conn.execute(text(create_fk))
                 logger.info(f"Recreated FK {constraint_name} on {table_name}")
             except Exception as e:
-                logger.error(f"Error recreating FK {constraint_name} on {table_name}: {e}")
+                logger.error(
+                    f"Error recreating FK {constraint_name} on {table_name}: {e}"
+                )
 
     await engine.dispose()
+
 
 if __name__ == "__main__":
     asyncio.run(run_migration())

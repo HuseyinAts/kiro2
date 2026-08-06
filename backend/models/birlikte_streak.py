@@ -14,13 +14,12 @@ Kurallar:
 
 from __future__ import annotations
 
-import uuid
-from uuid6 import uuid7
 from datetime import date, datetime
 
-from sqlalchemy import String, Boolean, Date, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -34,7 +33,9 @@ class StreakPair(Base):
 
     __tablename__ = "streak_pairs"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     student_a_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     student_b_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     # Durum
@@ -64,8 +65,12 @@ class StreakDailyLog(Base):
 
     __tablename__ = "streak_daily_log"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,

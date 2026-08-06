@@ -6,10 +6,8 @@ Database models for video conferencing, screen sharing, whiteboard, and recordin
 
 from datetime import datetime
 from enum import Enum
-from uuid6 import uuid7
 
 from sqlalchemy import (
-    String,
     ARRAY,
     Boolean,
     Column,
@@ -21,11 +19,11 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy import (
-    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -183,20 +181,30 @@ class LiveSession(Base):
 
     # Relationships
     participants = relationship(
-        "SessionParticipant", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "SessionParticipant",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
     recordings = relationship(
-        "SessionRecording", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "SessionRecording",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
     whiteboard_sessions = relationship(
-        "WhiteboardSession", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "WhiteboardSession",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
     screen_shares = relationship(
-        "ScreenShare", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "ScreenShare",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
     chat_messages = relationship(
-        "SessionChatMessage", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "SessionChatMessage",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
 
 
 # ============================================================
@@ -248,7 +256,7 @@ class SessionParticipant(Base):
     )
 
     # Relationships
-    session = relationship("LiveSession", back_populates="participants", lazy="selectin")
+    session = relationship("LiveSession", back_populates="participants")
 
 
 # ============================================================
@@ -287,7 +295,7 @@ class ScreenShare(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    session = relationship("LiveSession", back_populates="screen_shares", lazy="selectin")
+    session = relationship("LiveSession", back_populates="screen_shares")
 
 
 # ============================================================
@@ -328,13 +336,17 @@ class WhiteboardSession(Base):
     )
 
     # Relationships
-    session = relationship("LiveSession", back_populates="whiteboard_sessions", lazy="selectin")
+    session = relationship("LiveSession", back_populates="whiteboard_sessions")
     strokes = relationship(
-        "WhiteboardStroke", back_populates="whiteboard", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "WhiteboardStroke",
+        back_populates="whiteboard",
+        cascade="all, delete-orphan",
+    )
     equations = relationship(
-        "WhiteboardEquation", back_populates="whiteboard", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "WhiteboardEquation",
+        back_populates="whiteboard",
+        cascade="all, delete-orphan",
+    )
 
 
 class WhiteboardStroke(Base):
@@ -382,7 +394,7 @@ class WhiteboardStroke(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    whiteboard = relationship("WhiteboardSession", back_populates="strokes", lazy="selectin")
+    whiteboard = relationship("WhiteboardSession", back_populates="strokes")
 
 
 class WhiteboardEquation(Base):
@@ -429,7 +441,7 @@ class WhiteboardEquation(Base):
     )
 
     # Relationships
-    whiteboard = relationship("WhiteboardSession", back_populates="equations", lazy="selectin")
+    whiteboard = relationship("WhiteboardSession", back_populates="equations")
 
 
 # ============================================================
@@ -506,13 +518,17 @@ class SessionRecording(Base):
     )
 
     # Relationships
-    session = relationship("LiveSession", back_populates="recordings", lazy="selectin")
+    session = relationship("LiveSession", back_populates="recordings")
     views = relationship(
-        "RecordingView", back_populates="recording", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "RecordingView",
+        back_populates="recording",
+        cascade="all, delete-orphan",
+    )
     bookmarks = relationship(
-        "RecordingBookmark", back_populates="recording", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "RecordingBookmark",
+        back_populates="recording",
+        cascade="all, delete-orphan",
+    )
 
 
 class RecordingView(Base):
@@ -547,7 +563,7 @@ class RecordingView(Base):
     )
 
     # Relationships
-    recording = relationship("SessionRecording", back_populates="views", lazy="selectin")
+    recording = relationship("SessionRecording", back_populates="views")
 
 
 class RecordingBookmark(Base):
@@ -569,7 +585,7 @@ class RecordingBookmark(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    recording = relationship("SessionRecording", back_populates="bookmarks", lazy="selectin")
+    recording = relationship("SessionRecording", back_populates="bookmarks")
 
 
 # ============================================================
@@ -608,7 +624,7 @@ class SessionChatMessage(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    session = relationship("LiveSession", back_populates="chat_messages", lazy="selectin")
+    session = relationship("LiveSession", back_populates="chat_messages")
 
 
 # ============================================================

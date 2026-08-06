@@ -8,13 +8,10 @@ NOTE: StudentGoal and Notification were moved to their canonical files:
 - Notification -> notification.py
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import date, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    String,
     JSON,
     Boolean,
     Date,
@@ -28,6 +25,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -45,10 +43,14 @@ class ParentReport(Base):
         Index("idx_parent_report_period", "report_period"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    parent_user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
     )
-    student_user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    parent_user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    student_user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     student_name: Mapped[str] = mapped_column(String(200), nullable=False)
 
@@ -67,12 +69,16 @@ class ParentReport(Base):
     )
 
     # Performance arrays
-    strong_subjects: Mapped[list[str]] = mapped_column(JSON, default=list, deferred=True)
+    strong_subjects: Mapped[list[str]] = mapped_column(
+        JSON, default=list, deferred=True
+    )
     weak_subjects: Mapped[list[str]] = mapped_column(JSON, default=list, deferred=True)
     weekly_progress_description: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Recommendations
-    parent_recommendations: Mapped[list[str]] = mapped_column(JSON, default=list, deferred=True)
+    parent_recommendations: Mapped[list[str]] = mapped_column(
+        JSON, default=list, deferred=True
+    )
     support_areas: Mapped[list[str]] = mapped_column(JSON, default=list, deferred=True)
 
     # Metadata
@@ -82,8 +88,8 @@ class ParentReport(Base):
     is_read: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Relationships (dual FK - both point to User)
-    parent: Mapped["User"] = relationship("User", foreign_keys=[parent_user_id], lazy="selectin")
-    student: Mapped["User"] = relationship("User", foreign_keys=[student_user_id], lazy="selectin")
+    parent: Mapped["User"] = relationship("User", foreign_keys=[parent_user_id])
+    student: Mapped["User"] = relationship("User", foreign_keys=[student_user_id])
 
 
 class ParentApproval(Base):
@@ -95,10 +101,14 @@ class ParentApproval(Base):
         Index("idx_approval_student", "student_user_id"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    student_user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
     )
-    parent_user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    student_user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    parent_user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Request details
@@ -107,7 +117,9 @@ class ParentApproval(Base):
         nullable=False,
         comment="ekstra_ders_izni, sinav_kayit, ozel_egitim",
     )
-    request_description: Mapped[str] = mapped_column(Text, nullable=False, deferred=True)
+    request_description: Mapped[str] = mapped_column(
+        Text, nullable=False, deferred=True
+    )
     status: Mapped[str] = mapped_column(
         String(20), default="beklemede", comment="beklemede, onaylandi, reddedildi"
     )
@@ -120,8 +132,8 @@ class ParentApproval(Base):
     parent_note: Mapped[str | None] = mapped_column(Text, deferred=True)
 
     # Relationships (dual FK - both point to User)
-    student: Mapped["User"] = relationship("User", foreign_keys=[student_user_id], lazy="selectin")
-    parent: Mapped["User"] = relationship("User", foreign_keys=[parent_user_id], lazy="selectin")
+    student: Mapped["User"] = relationship("User", foreign_keys=[student_user_id])
+    parent: Mapped["User"] = relationship("User", foreign_keys=[parent_user_id])
 
 
 class StudentGrade(Base):
@@ -134,10 +146,14 @@ class StudentGrade(Base):
         Index("idx_grade_academic_year", "academic_year", "semester"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    teacher_user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
     )
-    student_user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    teacher_user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    student_user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Grade details
@@ -166,8 +182,8 @@ class StudentGrade(Base):
     semester: Mapped[int] = mapped_column(Integer, nullable=False, comment="1 or 2")
 
     # Relationships (dual FK - both point to User)
-    teacher: Mapped["User"] = relationship("User", foreign_keys=[teacher_user_id], lazy="selectin")
-    student: Mapped["User"] = relationship("User", foreign_keys=[student_user_id], lazy="selectin")
+    teacher: Mapped["User"] = relationship("User", foreign_keys=[teacher_user_id])
+    student: Mapped["User"] = relationship("User", foreign_keys=[student_user_id])
 
 
 class ClassReport(Base):
@@ -179,8 +195,11 @@ class ClassReport(Base):
         Index("idx_class_report_period", "report_period"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    teacher_user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    teacher_user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # Class info
@@ -202,18 +221,22 @@ class ClassReport(Base):
 
     # Performance distribution
     grade_distribution: Mapped[dict | None] = mapped_column(
-        JSON, comment='{"90-100": 5, "80-90": 10, ...}'
-    , deferred=True)
+        JSON, comment='{"90-100": 5, "80-90": 10, ...}', deferred=True
+    )
     top_students: Mapped[list[str]] = mapped_column(JSON, default=list, deferred=True)
-    struggling_students: Mapped[list[str]] = mapped_column(JSON, default=list, deferred=True)
+    struggling_students: Mapped[list[str]] = mapped_column(
+        JSON, default=list, deferred=True
+    )
 
     # Recommendations
     teacher_notes: Mapped[str | None] = mapped_column(Text, deferred=True)
-    recommendations: Mapped[list[str]] = mapped_column(JSON, default=list, deferred=True)
+    recommendations: Mapped[list[str]] = mapped_column(
+        JSON, default=list, deferred=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
 
     # Relationships
-    teacher: Mapped["User"] = relationship("User", lazy="selectin")
+    teacher: Mapped["User"] = relationship("User")

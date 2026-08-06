@@ -11,13 +11,10 @@ Models:
 - OverrideAuditLog: Override history
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
-    String,
     JSON,
     Boolean,
     DateTime,
@@ -30,6 +27,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -54,7 +52,9 @@ class QualityGatesRun(Base):
         Index("idx_qg_run_triggered_by", "triggered_by"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Pipeline info
     pipeline_name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -106,7 +106,7 @@ class QualityGatesRun(Base):
         "GateResultRecord",
         back_populates="run",
         cascade="all, delete-orphan",
-        lazy="selectin")
+    )
 
 
 class GateResultRecord(Base):
@@ -125,9 +125,13 @@ class GateResultRecord(Base):
         Index("idx_qg_result_run_gate", "run_id", "gate_name"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
-    run_id: Mapped[str] = mapped_column(String, ForeignKey("quality_gates_runs.id", ondelete="CASCADE"),
+    run_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("quality_gates_runs.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -149,9 +153,15 @@ class GateResultRecord(Base):
     auto_fixed: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Detailed data stored as JSON
-    issues: Mapped[list | None] = mapped_column(JSON, deferred=True)  # List of issue objects
-    metrics: Mapped[dict | None] = mapped_column(JSON, deferred=True)  # Gate-specific metrics
-    details: Mapped[dict | None] = mapped_column(JSON, deferred=True)  # Additional details
+    issues: Mapped[list | None] = mapped_column(
+        JSON, deferred=True
+    )  # List of issue objects
+    metrics: Mapped[dict | None] = mapped_column(
+        JSON, deferred=True
+    )  # Gate-specific metrics
+    details: Mapped[dict | None] = mapped_column(
+        JSON, deferred=True
+    )  # Additional details
 
     # Execution
     execution_time_ms: Mapped[float] = mapped_column(Float, nullable=False)
@@ -167,7 +177,7 @@ class GateResultRecord(Base):
     # Relationships
     run: Mapped["QualityGatesRun"] = relationship(
         "QualityGatesRun", back_populates="gate_results"
-    , lazy="selectin")
+    )
 
 
 class OverrideAuditLog(Base):
@@ -186,11 +196,15 @@ class OverrideAuditLog(Base):
         Index("idx_qg_override_created", "created_at"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Request info
     gate_name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    run_id: Mapped[str | None] = mapped_column(String, ForeignKey("quality_gates_runs.id", ondelete="SET NULL"),
+    run_id: Mapped[str | None] = mapped_column(
+        String,
+        ForeignKey("quality_gates_runs.id", ondelete="SET NULL"),
     )
 
     # Requestor

@@ -5,10 +5,8 @@ SQLAlchemy model for video_cache table
 
 from datetime import UTC, datetime
 from typing import Any
-from uuid6 import uuid7
 
 from sqlalchemy import (
-    String,
     BigInteger,
     CheckConstraint,
     Column,
@@ -21,6 +19,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base
+from uuid6 import uuid7
 
 Base = declarative_base()
 

@@ -5,12 +5,9 @@ NanoSkill, QMatrix, DINAParameter ve StudentNanoSkillMastery modelleri.
 DINA (Deterministic Input Noisy AND-gate) bilişsel tanı modeli.
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
-    String,
     Boolean,
     DateTime,
     Float,
@@ -23,6 +20,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -32,7 +30,9 @@ class NanoSkill(Base):
 
     __tablename__ = "nano_skills"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     knowledge_point_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
@@ -50,9 +50,12 @@ class QMatrix(Base):
 
     __tablename__ = "q_matrix"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     question_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
-    nano_skill_id: Mapped[str] = mapped_column(String, ForeignKey("nano_skills.id", ondelete="CASCADE"), nullable=False
+    nano_skill_id: Mapped[str] = mapped_column(
+        String, ForeignKey("nano_skills.id", ondelete="CASCADE"), nullable=False
     )
     is_required: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -78,7 +81,9 @@ class DINAParameter(Base):
 
     __tablename__ = "dina_parameters"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     question_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     slip: Mapped[float] = mapped_column(Float, default=0.1)
     guess: Mapped[float] = mapped_column(Float, default=0.2)
@@ -98,15 +103,21 @@ class StudentNanoSkillMastery(Base):
 
     __tablename__ = "student_nano_skill_mastery"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    student_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    nano_skill_id: Mapped[str] = mapped_column(String, ForeignKey("nano_skills.id", ondelete="CASCADE"), nullable=False
+    nano_skill_id: Mapped[str] = mapped_column(
+        String, ForeignKey("nano_skills.id", ondelete="CASCADE"), nullable=False
     )
     mastery: Mapped[float] = mapped_column(Float, default=0.5)
     confidence: Mapped[float] = mapped_column(Float, default=0.0)

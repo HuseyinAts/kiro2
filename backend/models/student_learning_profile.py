@@ -14,7 +14,7 @@ import warnings
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String, JSON, Column, DateTime, Float, ForeignKey, String, Text
+from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, String, Text
 
 from .base import Base
 
@@ -115,7 +115,7 @@ class StudentLearningProfile(Base):
     )
 
     # Relationships (optional)
-    # student = relationship("User", back_populates="learning_profile", lazy="selectin")
+    # student = relationship("User", back_populates="learning_profile")
 
     def __repr__(self):
         return f"<StudentLearningProfile(student={self.student_id}, code={self.hybrid_code}, confidence={self.confidence_score:.2f})>"

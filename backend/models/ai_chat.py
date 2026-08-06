@@ -5,10 +5,8 @@ Database models for enhanced chat system with image upload and OCR
 """
 
 from enum import Enum
-from uuid6 import uuid7
 
 from sqlalchemy import (
-    String,
     Boolean,
     Column,
     Float,
@@ -19,13 +17,13 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy import (
-    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -134,11 +132,15 @@ class ChatSession(Base):
 
     # Relationships
     messages = relationship(
-        "ChatMessage", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "ChatMessage",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
     images = relationship(
-        "ImageUpload", back_populates="session", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "ImageUpload",
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
 
     # Indexes
     __table_args__ = (
@@ -199,8 +201,8 @@ class ChatMessage(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationship
-    session = relationship("ChatSession", back_populates="messages", lazy="selectin")
-    image = relationship("ImageUpload", lazy="selectin")
+    session = relationship("ChatSession", back_populates="messages")
+    image = relationship("ImageUpload")
 
     # Indexes
     __table_args__ = (
@@ -285,7 +287,7 @@ class ImageUpload(Base):
     processed_at = Column(DateTime(timezone=True))
 
     # Relationship
-    session = relationship("ChatSession", back_populates="images", lazy="selectin")
+    session = relationship("ChatSession", back_populates="images")
 
     # Indexes
     __table_args__ = (

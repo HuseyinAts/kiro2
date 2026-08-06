@@ -3,12 +3,9 @@ SQLAlchemy ORM EBA TV Content Models
 database.py'den ayrıştırıldı (2026-01-10)
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import date, datetime
 
 from sqlalchemy import (
-    String,
     JSON,
     Boolean,
     CheckConstraint,
@@ -25,6 +22,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 from .enums_db import (
@@ -56,7 +54,9 @@ class EBAVideo(Base):
         Index("idx_eba_video_created", "created_at"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Video bilgileri
     title: Mapped[str] = mapped_column(String(300), nullable=False)
@@ -107,7 +107,8 @@ class EBAVideo(Base):
 
     # Moderasyon
     moderation_status: Mapped[str] = mapped_column(String(50), default="pending")
-    moderated_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE")
+    moderated_by: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE")
     )
     moderation_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     moderation_notes: Mapped[str | None] = mapped_column(Text, deferred=True)
@@ -124,10 +125,10 @@ class EBAVideo(Base):
     # İlişkiler
     usage_analytics: Mapped[list["EBAVideoUsage"]] = relationship(
         "EBAVideoUsage", back_populates="video"
-    , lazy="selectin")
+    )
     recommendations: Mapped[list["EBAVideoRecommendation"]] = relationship(
         "EBAVideoRecommendation", back_populates="video"
-    , lazy="selectin")
+    )
 
 
 class EBAVideoUsage(Base):
@@ -151,15 +152,21 @@ class EBAVideoUsage(Base):
         ),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    video_id: Mapped[str] = mapped_column(String, ForeignKey("eba_videos.id", ondelete="CASCADE"), nullable=False
+    video_id: Mapped[str] = mapped_column(
+        String, ForeignKey("eba_videos.id", ondelete="CASCADE"), nullable=False
     )
-    student_id: Mapped[str] = mapped_column(String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(
+        String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
     )
 
     # Kullanım bilgileri
@@ -187,7 +194,7 @@ class EBAVideoUsage(Base):
     # İlişkiler
     video: Mapped["EBAVideo"] = relationship(
         "EBAVideo", back_populates="usage_analytics"
-    , lazy="selectin")
+    )
 
 
 class EBAVideoRecommendation(Base):
@@ -205,15 +212,21 @@ class EBAVideoRecommendation(Base):
         Index("idx_eba_rec_created", "created_at"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
     )
-    video_id: Mapped[str] = mapped_column(String, ForeignKey("eba_videos.id", ondelete="CASCADE"), nullable=False
+    video_id: Mapped[str] = mapped_column(
+        String, ForeignKey("eba_videos.id", ondelete="CASCADE"), nullable=False
     )
-    student_id: Mapped[str] = mapped_column(String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
+    student_id: Mapped[str] = mapped_column(
+        String, ForeignKey("student_profiles.id", ondelete="CASCADE"), nullable=False
     )
 
     # Öneri bilgileri
@@ -241,7 +254,7 @@ class EBAVideoRecommendation(Base):
     # İlişkiler
     video: Mapped["EBAVideo"] = relationship(
         "EBAVideo", back_populates="recommendations"
-    , lazy="selectin")
+    )
 
 
 class EBAContentCollection(Base):
@@ -254,7 +267,9 @@ class EBAContentCollection(Base):
         Index("idx_eba_collection_featured", "is_featured"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Koleksiyon bilgileri
     name: Mapped[str] = mapped_column(String(200), nullable=False)
@@ -279,7 +294,8 @@ class EBAContentCollection(Base):
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Sistem alanları
-    created_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE")
+    created_by: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE")
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -302,7 +318,9 @@ class EBAContentAnalytics(Base):
         Index("idx_eba_analytics_grade", "grade_level"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # Analiz dönemi
     analysis_date: Mapped[date] = mapped_column(Date, nullable=False)

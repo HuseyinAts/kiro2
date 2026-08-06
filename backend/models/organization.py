@@ -9,12 +9,9 @@ Hard rules (CLAUDE.md): VARCHAR PK (users.id deseni), org_type/status/org_role S
 Bu STEP additive — mevcut tablolara dokunmaz; organization_id FK retrofit'i Step 2.
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
-    String,
     DateTime,
     ForeignKey,
     Index,
@@ -24,6 +21,7 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -43,7 +41,9 @@ class Organization(Base):
         {"extend_existing": True},
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     name: Mapped[str] = mapped_column(String(300), nullable=False)
     org_type: Mapped[str] = mapped_column(
         String(30),
@@ -84,8 +84,10 @@ class Organization(Base):
     )
 
     memberships: Mapped[list["OrgMembership"]] = relationship(
-        "OrgMembership", back_populates="organization", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "OrgMembership",
+        back_populates="organization",
+        cascade="all, delete-orphan",
+    )
 
 
 class OrgMembership(Base):
@@ -101,10 +103,14 @@ class OrgMembership(Base):
         {"extend_existing": True},
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
     )
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    organization_id: Mapped[str] = mapped_column(
+        String, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     org_role: Mapped[str] = mapped_column(
         String(20),
@@ -119,4 +125,4 @@ class OrgMembership(Base):
 
     organization: Mapped["Organization"] = relationship(
         "Organization", back_populates="memberships"
-    , lazy="selectin")
+    )

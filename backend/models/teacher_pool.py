@@ -6,10 +6,8 @@ Database models for teacher registration, expertise, availability, and appointme
 
 from datetime import datetime
 from enum import Enum
-from uuid6 import uuid7
 
 from sqlalchemy import (
-    String,
     ARRAY,
     Boolean,
     Column,
@@ -23,11 +21,11 @@ from sqlalchemy import (
     Time,
 )
 from sqlalchemy import (
-    String,
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
+from uuid6 import uuid7
 
 from .database import Base
 
@@ -213,20 +211,30 @@ class TeacherPoolProfile(Base):
 
     # Relationships
     expertise = relationship(
-        "TeacherExpertise", back_populates="teacher", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "TeacherExpertise",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
+    )
     certifications = relationship(
-        "TeacherCertification", back_populates="teacher", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "TeacherCertification",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
+    )
     availability = relationship(
-        "TeacherAvailability", back_populates="teacher", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "TeacherAvailability",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
+    )
     appointments = relationship(
-        "Appointment", back_populates="teacher", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "Appointment",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
+    )
     reviews = relationship(
-        "TeacherReview", back_populates="teacher", cascade="all, delete-orphan"
-    , lazy="selectin")
+        "TeacherReview",
+        back_populates="teacher",
+        cascade="all, delete-orphan",
+    )
 
 
 # ============================================================
@@ -272,7 +280,7 @@ class TeacherExpertise(Base):
     )
 
     # Relationships
-    teacher = relationship("TeacherPoolProfile", back_populates="expertise", lazy="selectin")
+    teacher = relationship("TeacherPoolProfile", back_populates="expertise")
 
 
 # ============================================================
@@ -324,7 +332,7 @@ class TeacherCertification(Base):
     )
 
     # Relationships
-    teacher = relationship("TeacherPoolProfile", back_populates="certifications", lazy="selectin")
+    teacher = relationship("TeacherPoolProfile", back_populates="certifications")
 
 
 # ============================================================
@@ -371,7 +379,7 @@ class TeacherAvailability(Base):
     )
 
     # Relationships
-    teacher = relationship("TeacherPoolProfile", back_populates="availability", lazy="selectin")
+    teacher = relationship("TeacherPoolProfile", back_populates="availability")
 
 
 # ============================================================
@@ -454,12 +462,12 @@ class Appointment(Base):
     )
 
     # Relationships
-    teacher = relationship("TeacherPoolProfile", back_populates="appointments", lazy="selectin")
+    teacher = relationship("TeacherPoolProfile", back_populates="appointments")
     reminders = relationship(
         "AppointmentReminder",
         back_populates="appointment",
         cascade="all, delete-orphan",
-        lazy="selectin")
+    )
 
 
 # ============================================================
@@ -502,7 +510,7 @@ class AppointmentReminder(Base):
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
     # Relationships
-    appointment = relationship("Appointment", back_populates="reminders", lazy="selectin")
+    appointment = relationship("Appointment", back_populates="reminders")
 
 
 # ============================================================
@@ -552,7 +560,7 @@ class TeacherReview(Base):
     )
 
     # Relationships
-    teacher = relationship("TeacherPoolProfile", back_populates="reviews", lazy="selectin")
+    teacher = relationship("TeacherPoolProfile", back_populates="reviews")
 
 
 # ============================================================

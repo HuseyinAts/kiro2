@@ -275,7 +275,9 @@ def build_row(entry: dict, subject: str, exam_type: str) -> dict:
         "source_book": entry.get("book_name"),
         "source_page": entry.get("page_number"),
         "pipeline_metadata": json.dumps(metadata, ensure_ascii=False),
-        "soru_hash": __import__("hashlib").md5(entry.get("text", "").encode("utf-8")).hexdigest(),
+        "soru_hash": __import__("hashlib")
+        .md5(entry.get("text", "").encode("utf-8"))
+        .hexdigest(),
     }
 
 
@@ -402,7 +404,7 @@ def main() -> None:
 
     db_url = os.getenv(
         "DATABASE_URL",
-        "postgresql://postgres:changeme@localhost:5434/kiro2",
+        "postgresql://postgres:changeme@localhost:5434/kiro2",  # pragma: allowlist secret
     )
     # Force sync driver (psycopg2) — strip asyncpg if present in .env
     db_url = db_url.replace("postgresql+asyncpg://", "postgresql://")
@@ -478,9 +480,14 @@ def main() -> None:
         print("Creating default topics...")
         ensure_topics(conn)
         print(f"  {len(DEFAULT_TOPICS)} topics ensured")
-        
+
         # Load existing hashes to prevent cross-batch duplicates if resuming
-        existing_hashes = {r[0] for r in conn.execute(text("SELECT soru_hash FROM question_bank WHERE is_active = true")).fetchall()}
+        existing_hashes = {
+            r[0]
+            for r in conn.execute(
+                text("SELECT soru_hash FROM question_bank WHERE is_active = true")
+            ).fetchall()
+        }
         seen_hashes.update(existing_hashes)
 
         # Batch insert

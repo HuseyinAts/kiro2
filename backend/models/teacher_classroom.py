@@ -7,11 +7,9 @@ Bu modül classroom management içindir.
 """
 
 from datetime import datetime
-from uuid6 import uuid7
 from uuid import uuid4
 
-from sqlalchemy import String, Column, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 
 from .database import Base
 
@@ -21,7 +19,7 @@ class TeacherClassroom(Base):
 
     __tablename__ = "teacher_classrooms"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     teacher_user_id = Column(String, nullable=False, index=True)
     sinif_adi = Column(String(100), nullable=False)
     seviye = Column(String(10), nullable=False)  # "9", "10", "11", "12"
@@ -34,9 +32,9 @@ class TeacherClassroomStudent(Base):
 
     __tablename__ = "teacher_classroom_students"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     classroom_id = Column(
-        PGUUID(as_uuid=True),
+        String,
         ForeignKey("teacher_classrooms.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
@@ -50,7 +48,7 @@ class TeacherExamConfig(Base):
 
     __tablename__ = "teacher_exam_configs"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     teacher_user_id = Column(String, nullable=False, index=True)
     baslik = Column(String(200), nullable=False)
     aciklama = Column(Text, nullable=True)
@@ -68,7 +66,7 @@ class TeacherAssignment(Base):
 
     __tablename__ = "teacher_assignments"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     teacher_user_id = Column(String, nullable=False, index=True)
     baslik = Column(String(200), nullable=False)
     aciklama = Column(Text, nullable=True)
@@ -85,7 +83,7 @@ class TeacherContent(Base):
 
     __tablename__ = "teacher_contents"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     teacher_user_id = Column(String, nullable=False, index=True)
     baslik = Column(String(200), nullable=False)
     aciklama = Column(Text, nullable=True)

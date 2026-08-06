@@ -3,13 +3,10 @@ SQLAlchemy ORM User Models
 database.py'den ayrıştırıldı (2026-01-10)
 """
 
-import uuid
-from uuid6 import uuid7
 from datetime import date, datetime
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import (
-    String,
     JSON,
     Boolean,
     CheckConstraint,
@@ -24,6 +21,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 from .enums_db import LearningStyle, UserRole
@@ -68,9 +66,13 @@ class User(Base):
         {"extend_existing": True},
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
     # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
@@ -91,8 +93,11 @@ class User(Base):
         Boolean, default=False, nullable=False, comment="2FA enabled status"
     )
     backup_codes_hashed: Mapped[dict | None] = mapped_column(
-        JSON, nullable=True, comment="Hashed backup codes for 2FA recovery"
-    , deferred=True)
+        JSON,
+        nullable=True,
+        comment="Hashed backup codes for 2FA recovery",
+        deferred=True,
+    )
 
     # Sprint 6: Premium/Tier fields for rate limiting
     is_premium: Mapped[bool] = mapped_column(
@@ -209,11 +214,16 @@ class StudentProfile(Base):
         Index("idx_student_user_grade", "user_id", "grade_level"),
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
     # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
@@ -255,9 +265,7 @@ class StudentProfile(Base):
     )
 
     # Relationships
-    user: Mapped["User"] = relationship(
-        "User", back_populates="student_profile"
-    )
+    user: Mapped["User"] = relationship("User", back_populates="student_profile")
     exam_sessions: Mapped[list["ExamSession"]] = relationship(
         "ExamSession", back_populates="student"
     )
@@ -282,11 +290,16 @@ class TeacherProfile(Base):
 
     __tablename__ = "teacher_profiles"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
     # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,
@@ -318,11 +331,16 @@ class ParentProfile(Base):
 
     __tablename__ = "parent_profiles"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    user_id: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
     )
     # Faz 0 multi-tenancy: kurum bağı (Step 2 retrofit)
-    organization_id: Mapped[str] = mapped_column(String, ForeignKey("organizations.id", ondelete="RESTRICT"),
+    organization_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("organizations.id", ondelete="RESTRICT"),
         nullable=False,
         server_default="org_legacy_default",
         index=True,

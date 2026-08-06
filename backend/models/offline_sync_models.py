@@ -12,10 +12,9 @@ autogenerate'in onu bir daha yetim sanmasini onler.
 from __future__ import annotations
 
 import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
-from sqlalchemy import String, Column, DateTime, ForeignKey, String
+from sqlalchemy import Column, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import JSONB
 
 from .database import Base

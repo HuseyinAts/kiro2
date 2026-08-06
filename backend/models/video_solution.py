@@ -12,12 +12,9 @@ Requirements: REQ-14.1, REQ-14.2, REQ-14.3, REQ-14.4, REQ-14.5, REQ-14.6
 """
 
 import enum
-import uuid
-from uuid6 import uuid7
 from datetime import datetime
 
 from sqlalchemy import (
-    String,
     JSON,
     Boolean,
     CheckConstraint,
@@ -32,6 +29,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from uuid6 import uuid7
 
 from .base import Base
 
@@ -97,14 +95,18 @@ class VideoSolution(Base):
 
     __tablename__ = "video_solutions"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
 
     # ========================================================================
     # İlişkiler
     # ========================================================================
-    question_id: Mapped[str] = mapped_column(String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
+    question_id: Mapped[str] = mapped_column(
+        String, ForeignKey("question_bank.id", ondelete="CASCADE"), nullable=False
     )
-    uploaded_by: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    uploaded_by: Mapped[str] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
     # ========================================================================
@@ -145,8 +147,8 @@ class VideoSolution(Base):
 
     # Adaptive bitrate variants
     available_qualities: Mapped[dict | None] = mapped_column(
-        JSON
-    , deferred=True)  # {quality: url} mapping
+        JSON, deferred=True
+    )  # {quality: url} mapping
 
     # Streaming istatistikleri
     total_views: Mapped[int] = mapped_column(Integer, default=0)  # REQ-14.4
@@ -201,7 +203,8 @@ class VideoSolution(Base):
     # ========================================================================
     quality_score: Mapped[float] = mapped_column(Float, default=0.0)  # 0-100 arası
     is_approved: Mapped[bool] = mapped_column(Boolean, default=False)
-    approved_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="SET NULL")
+    approved_by: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="SET NULL")
     )
     approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
@@ -232,10 +235,10 @@ class VideoSolution(Base):
     # ========================================================================
     transcripts: Mapped[list["VideoTranscript"]] = relationship(
         "VideoTranscript", back_populates="video"
-    , lazy="selectin")
+    )
     analytics: Mapped[list["VideoAnalytics"]] = relationship(
         "VideoAnalytics", back_populates="video"
-    , lazy="selectin")
+    )
 
     # ========================================================================
     # Indexes and Constraints
@@ -273,8 +276,11 @@ class VideoTranscript(Base):
 
     __tablename__ = "video_transcripts"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    video_id: Mapped[str] = mapped_column(String, ForeignKey("video_solutions.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
+    )
+    video_id: Mapped[str] = mapped_column(
+        String, ForeignKey("video_solutions.id", ondelete="CASCADE"), nullable=False
     )
 
     # ========================================================================
@@ -287,7 +293,9 @@ class VideoTranscript(Base):
 
     # Zaman damgalı transkript (JSON format)
     # [{"start": 0.0, "end": 5.2, "text": "Merhaba..."}, ...]
-    timestamped_segments: Mapped[dict] = mapped_column(JSON, nullable=False, deferred=True)
+    timestamped_segments: Mapped[dict] = mapped_column(
+        JSON, nullable=False, deferred=True
+    )
 
     # ========================================================================
     # Generation Information
@@ -300,23 +308,19 @@ class VideoTranscript(Base):
     auto_generated_by: Mapped[str | None] = mapped_column(
         String(100)
     )  # Whisper, Google Speech, vb.
-    auto_generation_confidence: Mapped[float | None] = mapped_column(
-        Float
-    )  # 0-1 arası
-    auto_generated_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True)
-    )
+    auto_generation_confidence: Mapped[float | None] = mapped_column(Float)  # 0-1 arası
+    auto_generated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     # Manual editing bilgileri
-    manually_edited_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="SET NULL")
+    manually_edited_by: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="SET NULL")
     )
-    manually_edited_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True)
-    )
+    manually_edited_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     edit_count: Mapped[int] = mapped_column(Integer, default=0)
 
     # Verification bilgileri
-    verified_by: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="SET NULL")
+    verified_by: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="SET NULL")
     )
     verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
@@ -355,7 +359,7 @@ class VideoTranscript(Base):
     # ========================================================================
     video: Mapped["VideoSolution"] = relationship(
         "VideoSolution", back_populates="transcripts"
-    , lazy="selectin")
+    )
 
     # ========================================================================
     # Indexes and Constraints
@@ -389,10 +393,14 @@ class VideoAnalytics(Base):
 
     __tablename__ = "video_analytics"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid7()))
-    video_id: Mapped[str] = mapped_column(String, ForeignKey("video_solutions.id", ondelete="CASCADE"), nullable=False
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid7())
     )
-    user_id: Mapped[str | None] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE")
+    video_id: Mapped[str] = mapped_column(
+        String, ForeignKey("video_solutions.id", ondelete="CASCADE"), nullable=False
+    )
+    user_id: Mapped[str | None] = mapped_column(
+        String, ForeignKey("users.id", ondelete="CASCADE")
     )
 
     # ========================================================================
@@ -463,7 +471,7 @@ class VideoAnalytics(Base):
     # ========================================================================
     video: Mapped["VideoSolution"] = relationship(
         "VideoSolution", back_populates="analytics"
-    , lazy="selectin")
+    )
 
     # ========================================================================
     # Indexes and Constraints

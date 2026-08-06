@@ -77,7 +77,6 @@ logger = logging.getLogger("es_reindex")
 from core.es_index_schema import (  # noqa: E402
     ALANLAR,
     CANLI_INDEX,
-    ES_URL,
     MAPPING,
     SETTINGS,
     SORGU,
@@ -111,8 +110,9 @@ async def _db_satirlari() -> list[dict[str, Any]]:
 
 
 async def calistir(mod: str, onayla: bool, damga: str) -> int:
-    from core.elasticsearch_client import get_elasticsearch_client
     from elasticsearch.helpers import async_bulk
+
+    from core.elasticsearch_client import get_elasticsearch_client
 
     satirlar = await _db_satirlari()
     print(f"kapidan gecen kayit (mv_safe_for_beta JOIN question_bank): {len(satirlar)}")
@@ -123,7 +123,7 @@ async def calistir(mod: str, onayla: bool, damga: str) -> int:
     es_wrapper = get_elasticsearch_client()
     await es_wrapper._ensure_connected()
     istemci = es_wrapper._client
-    
+
     try:
         if await istemci.indices.exists(index=CANLI_INDEX):
             canli = (await istemci.count(index=CANLI_INDEX))["count"]
