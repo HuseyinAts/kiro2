@@ -135,7 +135,11 @@ services:
           - turkiye_sinav_elasticsearch
           - elasticsearch
     healthcheck:
-      test: ["CMD-SHELL", "curl -u elastic:${ELASTIC_PASSWORD:-Kiro2Elastic2026!} -s http://localhost:9200/_cluster/health | grep -vq '\"status\":\"red\"'"]
+      test:
+        [
+          "CMD-SHELL",
+          'curl -u elastic:${ELASTIC_PASSWORD:-Kiro2Elastic2026!} -s http://localhost:9200/_cluster/health | grep -vq ''"status":"red"''',
+        ]
       interval: 30s
       timeout: 10s
       retries: 5

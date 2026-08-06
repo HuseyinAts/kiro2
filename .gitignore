@@ -433,3 +433,4 @@ backend/fix_wc.py
 backend/scratch_check_alembic.py
 backend/scratch_check_db_type.py
 backend/scratch_test_gf5w.py
+scratch/
