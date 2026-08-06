@@ -1830,7 +1830,7 @@ export function streamSohbet(args: SohbetStreamArgs, h: SohbetStreamHandlers): (
   const controller = new AbortController();
   let acc = '';
   let connectedSent = false;
-  
+
   void (async () => {
     const f = cfg.fetchImpl ?? fetch;
 
@@ -1853,12 +1853,12 @@ export function streamSohbet(args: SohbetStreamArgs, h: SohbetStreamHandlers): (
       if (!res.ok) { h.onError?.(new KiroApiError(res.status, '/enhanced-chat/message-with-attachment')); return; }
       const data = await res.json();
       if (!data.success) { h.onError?.(new Error(data.error || 'Upload failed')); return; }
-      
+
       const session_id = data.data?.session_id;
       const message = data.data?.message || '';
-      
+
       if (session_id) h.onConnected?.(session_id);
-      
+
       // Simulate token streaming for the UI
       const tokens = message.split(/(\s+)/);
       for (const token of tokens) {
@@ -1866,7 +1866,7 @@ export function streamSohbet(args: SohbetStreamArgs, h: SohbetStreamHandlers): (
         h.onToken?.(token);
         await new Promise(r => setTimeout(r, 10)); // tiny delay for visual effect
       }
-      
+
       if (!controller.signal.aborted) {
         h.onFinished?.({
           id: 'msg-live-' + Date.now(),

@@ -132,7 +132,7 @@ export default function FSRSReviewPage() {
         <CardContent sx={{ p: 3 }}>
           <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={1} mb={3}>
             <Typography variant="h6" fontWeight={600} sx={{ lineHeight: 1.6, flex: 1 }}>
-              {card.stem ?? 'Soru metni yükleniyor...'}
+              {card.stem}
             </Typography>
             <FlagButton questionId={card.question_id} />
           </Stack>
@@ -142,9 +142,6 @@ export default function FSRSReviewPage() {
             <Stack spacing={1.5}>
               {Object.entries(card.options).filter(([, v]) => v).map(([key, val]) => {
                 const isSelected = selected === key;
-                const _isCorrectOpt = revealed && selected && key === Object.entries(card.options!)
-                  .find(() => false)?.[ 0]; // correct_answer gizli — seçim sonrası revealed
-                void _isCorrectOpt; // TODO: implement correct answer highlighting
                 return (
                   <Button
                     key={key}

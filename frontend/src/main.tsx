@@ -12,8 +12,11 @@ import * as ReactDOM from 'react-dom/client';
 import { App } from './App';
 import { configureKiroApi } from './kiro/api/api-client';
 import { registerOnlineSync } from './db/kiro2DB';
+import 'katex/dist/katex.min.css';
 import './styles/fonts.css';
 import './styles.css';
+import './kiro/tokens/tokens.css';
+import './pages/DyscalculiaSupportPage.css';
 
 // Global axios defaults — ensures all direct axios calls send cookies
 axios.defaults.withCredentials = true;

@@ -24,17 +24,19 @@ import {
 import { GlassCard } from '../ui/GlassCard';
 import { apiRequest } from '../../utils/apiHelpers';
 
-import { 
-  duelReducer, 
+import {
+  duelReducer,
   initialDuelState,
   DuelRating,
   DuelQuestion,
   RoundResult
 } from './duelReducer';
 
-import DuelArena from './DuelArena';
-import DuelHud from './DuelHud';
-import DuelResults from './DuelResults';
+import { lazy, Suspense } from 'react';
+
+const DuelArena = lazy(() => import('./DuelArena'));
+const DuelHud = lazy(() => import('./DuelHud'));
+const DuelResults = lazy(() => import('./DuelResults'));
 
 // --- AI Bot Mock Data ---
 const AI_BOT_QUESTIONS: DuelQuestion[] = [
@@ -257,10 +259,10 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
       const isCorrect = answer !== null && answer === correct;
       const botAnswer = aiBotAnswer(currentQ.id);
       const botCorrect = botAnswer === correct;
-      
+
       const newMyScore = state.myScore + (isCorrect ? 1 : 0);
       const newOppScore = state.opponentScore + (botCorrect ? 1 : 0);
-      
+
       const result: RoundResult = {
         questionOrder: state.currentQIndex,
         myAnswer: answer ?? '',
@@ -282,7 +284,7 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
           body: JSON.stringify({ question_order: state.currentQIndex, answer: answer ?? 'A', time_ms: elapsed }),
         },
       );
-      
+
       const result: RoundResult = {
         questionOrder: state.currentQIndex,
         myAnswer: answer ?? '',
@@ -398,40 +400,42 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
       {state.phase === 'idle' && renderIdle()}
       {state.phase === 'matchmaking' && renderMatchmaking()}
       {state.phase === 'waiting' && renderWaiting()}
-      
-      {(state.phase === 'playing' || state.phase === 'ai_playing') && currentQuestion && (
-        <Box>
-          <DuelHud myScore={state.myScore} opponentScore={state.opponentScore} isBot={state.useAiBot} timeLeft={timeLeft} currentRound={state.currentQIndex + 1} totalRounds={totalRounds} />
-          <DuelArena question={currentQuestion} selectedAnswer={state.selectedAnswer} isSubmitting={state.answerSubmitting} onAnswer={handleSubmitAnswer} opponentAnswered={state.opponentAnswered} isBot={state.useAiBot} />
-        </Box>
-      )}
-      
-      {state.phase === 'round_result' && state.roundResult && currentQuestion && (
-        <DuelResults 
-          type="round"
-          roundResult={state.roundResult} 
-          correctAnswer={AI_BOT_CORRECT[currentQuestion.id]} 
-          myScore={state.myScore}
-          opponentScore={state.opponentScore}
-          isBot={state.useAiBot}
-          totalRounds={totalRounds}
-          onNextRound={handleNextRound} 
-          onFinish={() => dispatch({ type: 'FINISH_DUEL', payload: { myScore: state.myScore, opponentScore: state.opponentScore } })} 
-        />
-      )}
-      
-      {state.phase === 'finished' && (
-        <DuelResults
-          type="final"
-          myScore={state.myScore}
-          opponentScore={state.opponentScore}
-          isBot={state.useAiBot}
-          totalRounds={totalRounds}
-          rating={state.rating}
-          roundHistory={state.roundHistory}
-          onReset={handleReset}
-        />
-      )}
+
+      <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>}>
+        {(state.phase === 'playing' || state.phase === 'ai_playing') && currentQuestion && (
+          <Box>
+            <DuelHud myScore={state.myScore} opponentScore={state.opponentScore} isBot={state.useAiBot} timeLeft={timeLeft} currentRound={state.currentQIndex + 1} totalRounds={totalRounds} />
+            <DuelArena question={currentQuestion} selectedAnswer={state.selectedAnswer} isSubmitting={state.answerSubmitting} onAnswer={handleSubmitAnswer} opponentAnswered={state.opponentAnswered} isBot={state.useAiBot} />
+          </Box>
+        )}
+
+        {state.phase === 'round_result' && state.roundResult && currentQuestion && (
+          <DuelResults
+            type="round"
+            roundResult={state.roundResult}
+            correctAnswer={AI_BOT_CORRECT[currentQuestion.id]}
+            myScore={state.myScore}
+            opponentScore={state.opponentScore}
+            isBot={state.useAiBot}
+            totalRounds={totalRounds}
+            onNextRound={handleNextRound}
+            onFinish={() => dispatch({ type: 'FINISH_DUEL', payload: { myScore: state.myScore, opponentScore: state.opponentScore } })}
+          />
+        )}
+
+        {state.phase === 'finished' && (
+          <DuelResults
+            type="final"
+            myScore={state.myScore}
+            opponentScore={state.opponentScore}
+            isBot={state.useAiBot}
+            totalRounds={totalRounds}
+            rating={state.rating}
+            roundHistory={state.roundHistory}
+            onReset={handleReset}
+          />
+        )}
+      </Suspense>
     </GlassCard>
   );
 }

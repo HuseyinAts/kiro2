@@ -19,7 +19,6 @@ import {
   Box,
   Container,
   Grid,
-  Paper,
   Typography,
   Card,
   CardContent,
@@ -31,6 +30,8 @@ import {
 } from '@mui/material';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { GlassCard } from '../ui/GlassCard';
 
 import { useAuthStore } from '../../store/authStore';
 
@@ -211,31 +212,39 @@ const StudentDashboard: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       {/* Başlık */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Hoş Geldin, {profile?.name || 'Öğrenci'}! 👋
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Günlük çalışma planın ve önerilerinin bir arada
-        </Typography>
-      </Box>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="800" sx={{ background: 'linear-gradient(90deg, #6366f1, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }} gutterBottom>
+            Hoş Geldin, {profile?.name || 'Öğrenci'}! 👋
+          </Typography>
+          <Typography variant="body1" color="text.secondary" fontWeight={500}>
+            Günlük çalışma planın ve kişiselleştirilmiş önerilerin
+          </Typography>
+        </Box>
+      </motion.div>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={4}>
         {/* Sol Kolon - Profil ve Performans */}
         <Grid item xs={12} md={4}>
-          {/* Öğrenme Profili */}
-          <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Avatar
-                sx={{
-                  width: 60,
-                  height: 60,
-                  bgcolor: getHibridKodColor(profile?.hibrit_kod || 'V-ASVS'),
-                  mr: 2,
-                }}
-              >
-                <SchoolIcon fontSize="large" />
-              </Avatar>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+            {/* Öğrenme Profili */}
+            <GlassCard glassIntensity="medium" hoverable sx={{ mb: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar
+                  sx={{
+                    width: 60,
+                    height: 60,
+                    bgcolor: getHibridKodColor(profile?.hibrit_kod || 'V-ASVS'),
+                    mr: 2,
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <SchoolIcon fontSize="large" />
+                </Avatar>
               <Box>
                 <Typography variant="h6" fontWeight="bold">
                   Öğrenme Profilin
@@ -258,21 +267,23 @@ const StudentDashboard: React.FC = () => {
 
             {renderVarkScores()}
 
-            <Box sx={{ mt: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
-              <Typography variant="caption" color="text.secondary">
-                Güven Seviyesi
+            <Box sx={{ mt: 3, p: 2, bgcolor: 'rgba(255,255,255,0.4)', borderRadius: 3, border: '1px solid rgba(255,255,255,0.6)' }}>
+              <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                Sistem Güven Seviyesi
               </Typography>
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="h5" fontWeight="800" sx={{ color: '#4f46e5' }}>
                 {((profile?.guven_seviyesi || 0.82) * 100).toFixed(0)}%
               </Typography>
             </Box>
-          </Paper>
+          </GlassCard>
+          </motion.div>
 
-          {/* Sınav İstatistikleri */}
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Sınav Performansın
-            </Typography>
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+            {/* Sınav İstatistikleri */}
+            <GlassCard glassIntensity="light" hoverable sx={{ mb: 2 }}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom>
+                Sınav Performansın
+              </Typography>
 
             <Box sx={{ mb: 2 }}>
               <Typography variant="body2" color="text.secondary">
@@ -297,32 +308,36 @@ const StudentDashboard: React.FC = () => {
               </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ display: 'flex', gap: 1, mt: 2, flexWrap: 'wrap' }}>
               <Chip
                 icon={<TrendingUpIcon />}
                 label={`En İyi: ${examStats?.best_subject || 'Matematik'}`}
                 color="success"
                 size="small"
+                sx={{ fontWeight: 600 }}
               />
               <Chip
-                label={`Çalışılacak: ${examStats?.weak_subject || 'Fizik'}`}
+                label={`Odaklan: ${examStats?.weak_subject || 'Fizik'}`}
                 color="warning"
                 size="small"
+                sx={{ fontWeight: 600 }}
               />
             </Box>
-          </Paper>
+          </GlassCard>
+          </motion.div>
         </Grid>
 
         {/* Sağ Kolon - Öneriler ve Planlama */}
         <Grid item xs={12} md={8}>
-          {/* Bugünkü Plan */}
-          <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <CalendarIcon sx={{ mr: 1, color: 'primary.main' }} />
-              <Typography variant="h6" fontWeight="bold">
-                Bugünkü Çalışma Planın
-              </Typography>
-            </Box>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+            {/* Bugünkü Plan */}
+            <GlassCard gradient="linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))" hoverable sx={{ mb: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <CalendarIcon sx={{ mr: 1, color: '#6366f1', fontSize: 28 }} />
+                <Typography variant="h5" fontWeight="bold">
+                  Bugünkü Çalışma Planın
+                </Typography>
+              </Box>
 
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
@@ -351,27 +366,29 @@ const StudentDashboard: React.FC = () => {
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="body2" color="text.secondary">
+                  <CardContent sx={{ p: '16px !important' }}>
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
                       Hedef Net
                     </Typography>
-                    <Typography variant="h5" fontWeight="bold">
+                    <Typography variant="h5" fontWeight="800" sx={{ color: '#10b981' }}>
                       25 net
                     </Typography>
                   </CardContent>
                 </Card>
               </Grid>
             </Grid>
-          </Paper>
+          </GlassCard>
+          </motion.div>
 
-          {/* Kişiselleştirilmiş Öneriler */}
-          <Paper elevation={3} sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <LightbulbIcon sx={{ mr: 1, color: 'warning.main' }} />
-              <Typography variant="h6" fontWeight="bold">
-                Senin İçin Öneriler
-              </Typography>
-            </Box>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
+            {/* Kişiselleştirilmiş Öneriler */}
+            <GlassCard hoverable>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <LightbulbIcon sx={{ mr: 1, color: '#f59e0b', fontSize: 28 }} />
+                <Typography variant="h5" fontWeight="bold">
+                  Sana Özel Yapay Zeka Önerileri
+                </Typography>
+              </Box>
 
             {recommendations.length > 0 ? (
               <Grid container spacing={2}>
@@ -394,16 +411,16 @@ const StudentDashboard: React.FC = () => {
                             </Typography>
                             {rec.duration && (
                               <Chip
-                                label={`${rec.duration} dakika`}
+                                label={`${rec.duration} dk`}
                                 size="small"
-                                sx={{ mt: 1 }}
+                                sx={{ mt: 1, fontWeight: 600, bgcolor: 'rgba(99,102,241,0.1)', color: '#6366f1' }}
                               />
                             )}
                           </Box>
                           <Chip
-                            label={`${(rec.match_score * 100).toFixed(0)}% uyum`}
-                            color="primary"
+                            label={`%${(rec.match_score * 100).toFixed(0)} Uyum`}
                             size="small"
+                            sx={{ fontWeight: 800, background: 'linear-gradient(135deg, #10b981, #34d399)', color: 'white' }}
                           />
                         </Box>
                       </CardContent>
@@ -412,20 +429,28 @@ const StudentDashboard: React.FC = () => {
                 ))}
               </Grid>
             ) : (
-              <Alert severity="info">
+              <Alert severity="info" sx={{ borderRadius: 3, mb: 3 }}>
                 Henüz önerin yok. Biraz daha çalışma yaptıkça sana özel öneriler göreceğiz!
               </Alert>
             )}
 
             <Button
-              variant="outlined"
+              variant="contained"
               fullWidth
-              sx={{ mt: 2 }}
+              sx={{ 
+                mt: 3, 
+                py: 1.5, 
+                borderRadius: 3, 
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                '&:hover': { background: 'linear-gradient(135deg, #4f46e5, #7c3aed)' }
+              }}
               startIcon={<AssignmentIcon />}
             >
-              Tüm Önerileri Gör
+              Tüm Önerileri Görüntüle
             </Button>
-          </Paper>
+          </GlassCard>
+          </motion.div>
         </Grid>
       </Grid>
     </Container>

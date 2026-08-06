@@ -13,7 +13,7 @@ interface MarkdownRendererProps {
 export default function MarkdownRenderer({ text, inline }: MarkdownRendererProps) {
   return (
     <ReactMarkdown
-      remarkPlugins={[[remarkMath, { singleDollarTextMath: true }]]}
+      remarkPlugins={[remarkMath]}
       rehypePlugins={[[rehypeKatex, { strict: false, trust: true, throwOnError: false }]]}
       components={{
         p: ({ children: c }) => (inline ? <span>{c}</span> : <p style={{ margin: 0 }}>{c}</p>),

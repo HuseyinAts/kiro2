@@ -78,6 +78,7 @@ export default defineConfig({
       },
       devOptions: {
         enabled: false,
+        suppressWarnings: true,
       },
     }),
     // Bundle analyzer (only in build mode)
@@ -92,6 +93,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    isolate: false,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        maxForks: process.env.CI ? 4 : undefined,
+        minForks: 1,
+      },
+    },
     setupFiles: ['./src/test/setup.ts'],
     coverage: {
       provider: 'v8',
@@ -150,22 +159,44 @@ export default defineConfig({
         // breaks createContext order. Hence no react/react-dom group.
         manualChunks: (id: string) => {
           if (id.includes('node_modules/@mui/icons-material')) {
-            return 'mui-icons';
+            return 'vendor-mui-icons';
           }
-          if (id.includes('node_modules/@mui')) {
-            return 'mui-core';
+          if (id.includes('node_modules/@mui') || id.includes('node_modules/@emotion')) {
+            return 'vendor-mui-core';
           }
           if (
             id.includes('node_modules/recharts') ||
             id.includes('node_modules/d3-')
           ) {
-            return 'charts';
+            return 'vendor-charts';
           }
           if (
             id.includes('node_modules/react-router') ||
             id.includes('node_modules/@remix-run')
           ) {
-            return 'router';
+            return 'vendor-router';
+          }
+          if (id.includes('node_modules/framer-motion')) {
+            return 'vendor-motion';
+          }
+          if (id.includes('node_modules/katex') || id.includes('node_modules/react-katex')) {
+            return 'vendor-katex';
+          }
+          if (id.includes('node_modules/highlight.js')) {
+            return 'vendor-highlight';
+          }
+          if (
+            id.includes('node_modules/refractor') ||
+            id.includes('node_modules/prismjs')
+          ) {
+            return 'vendor-prism';
+          }
+          if (
+            id.includes('node_modules/axios') ||
+            id.includes('node_modules/react-query') ||
+            id.includes('node_modules/dayjs')
+          ) {
+            return 'vendor-utils';
           }
           return undefined;
         },
@@ -204,10 +235,7 @@ export default defineConfig({
       '@mui/icons-material',
       'axios',
       'dayjs',
-      'react-query'
-    ],
-    exclude: [
-      // Büyük kütüphaneleri exclude et
+      'react-query',
       'recharts',
       'framer-motion'
     ]

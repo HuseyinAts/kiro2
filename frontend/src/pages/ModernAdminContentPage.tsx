@@ -23,7 +23,6 @@ import {
   Search,
 } from '@mui/icons-material';
 import {
-  Container,
   Typography,
   Box,
   Grid,
@@ -46,7 +45,7 @@ import { useState, useEffect } from 'react';
 
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
-import { ModernLoader } from '../components/ui/ModernLoader';
+import { DashboardScaffold } from '../components/Layout/DashboardScaffold';
 import apiClient from '../services/apiClient';
 import modernColors from '../theme/modern-colors';
 
@@ -82,71 +81,8 @@ export function ModernAdminContentPage() {
       const response = await apiClient.get('/api/v1/admin/content');
       setContents(response?.data?.contents || []);
     } catch (error) {
-      console.error('İçerikler yüklenemedi:', error);
-      // Mock data
-      setContents([
-        {
-          id: '1',
-          baslik: 'Matematik TYT Soru Seti - Türev',
-          aciklama: '50 adet türev sorusu içeren kapsamlı soru seti',
-          tip: 'soru',
-          kullanici: 'Ahmet Öğretmen',
-          kullanici_id: '101',
-          tarih: '2025-11-21T10:30:00',
-          durum: 'beklemede',
-        },
-        {
-          id: '2',
-          baslik: 'Fizik Video Dersi - Elektrik',
-          aciklama: 'Elektrik konusu detaylı video anlatım',
-          tip: 'video',
-          kullanici: 'Ayşe Öğretmen',
-          kullanici_id: '102',
-          tarih: '2025-11-20T14:20:00',
-          durum: 'beklemede',
-        },
-        {
-          id: '3',
-          baslik: 'Kimya Ders Notu - Asit Baz',
-          aciklama: 'Asit-baz dengesi özet notları',
-          tip: 'dokuman',
-          kullanici: 'Mehmet Öğretmen',
-          kullanici_id: '103',
-          tarih: '2025-11-19T09:15:00',
-          durum: 'onaylandi',
-        },
-        {
-          id: '4',
-          baslik: 'Biyoloji Quiz - Genetik',
-          aciklama: 'Genetik konusu test soruları',
-          tip: 'quiz',
-          kullanici: 'Fatma Öğretmen',
-          kullanici_id: '104',
-          tarih: '2025-11-18T16:45:00',
-          durum: 'beklemede',
-        },
-        {
-          id: '5',
-          baslik: 'Edebiyat Ders Notları',
-          aciklama: 'Divan edebiyatı özet',
-          tip: 'dokuman',
-          kullanici: 'Ali Öğretmen',
-          kullanici_id: '105',
-          tarih: '2025-11-17T11:00:00',
-          durum: 'reddedildi',
-          neden: 'İçerik standartlara uygun değil',
-        },
-        {
-          id: '6',
-          baslik: 'Tarih Video Dersi - Osmanlı',
-          aciklama: 'Osmanlı tarihi anlatımı',
-          tip: 'video',
-          kullanici: 'Zeynep Öğretmen',
-          kullanici_id: '106',
-          tarih: '2025-11-16T13:30:00',
-          durum: 'onaylandi',
-        },
-      ]);
+      setContents([]);
+      // ErrorBoundary or Empty State will handle the missing items
     } finally {
       setLoading(false);
     }
@@ -159,7 +95,7 @@ export function ModernAdminContentPage() {
         prev.map((c) => (c.id === contentId ? { ...c, durum: 'onaylandi' as const } : c)),
       );
     } catch (error) {
-      console.error('İçerik onaylanamadı:', error);
+      throw error;
     }
   };
 
@@ -173,7 +109,7 @@ export function ModernAdminContentPage() {
       );
       setRejectReason('');
     } catch (error) {
-      console.error('İçerik reddedilemedi:', error);
+      throw error;
     }
   };
 
@@ -266,73 +202,17 @@ export function ModernAdminContentPage() {
     return contents.filter((c) => c.durum === durum).length;
   };
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: modernColors.gradients.mesh,
-        }}
-      >
-        <ModernLoader message="İçerikler yükleniyor..." size="large" />
-      </Box>
-    );
-  }
-
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: modernColors.gradients.mesh,
-        py: 4,
-      }}
+    <DashboardScaffold
+      loading={loading}
+      loadingMessage="İçerikler yükleniyor..."
+      icon={<Folder />}
+      iconGradient={modernColors.gradients.fire}
+      title="İçerik Moderasyonu"
+      titleGradient={modernColors.gradients.fire}
+      subtitle="Platform içeriklerini yönetin ve onaylayın"
+      maxWidth="lg"
     >
-      <Container maxWidth="lg">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Box
-                sx={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 3,
-                  background: modernColors.gradients.fire,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Folder sx={{ fontSize: 32, color: 'white' }} />
-              </Box>
-              <Box>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    fontWeight: 900,
-                    background: modernColors.gradients.fire,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  İçerik Moderasyonu
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Platform içeriklerini yönetin ve onaylayın
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </motion.div>
-
         {/* Tabs */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -674,16 +554,15 @@ export function ModernAdminContentPage() {
                   </Box>
                 </Box>
               </DialogContent>
-              <DialogActions>
-                <ModernButton variant="glass" onClick={() => setViewDialogOpen(false)}>
+              <DialogActions sx={{ px: 3, pb: 3 }}>
+                <ModernButton onClick={() => setViewDialogOpen(false)} variant="outlined">
                   Kapat
                 </ModernButton>
               </DialogActions>
             </>
           )}
         </Dialog>
-      </Container>
-    </Box>
+    </DashboardScaffold>
   );
 }
 

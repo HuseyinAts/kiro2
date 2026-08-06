@@ -13,12 +13,23 @@ export function KiroThemeProvider(props: { theme: KiroTheme; children: React.Rea
   // <html>'e .k-calm eklenince tokens.css'teki blok CSS-ambient motion'ı da etkisizler.
   // ADDITIVE: calmMode default false → sınıf yok → mevcut davranış değişmez.
   const calmMode = useAyar((s) => s.calmMode);
+  const kulturelTema = useAyar((s) => s.kulturelTema);
   React.useEffect(() => {
     if (typeof document === 'undefined') return undefined;
     const root = document.documentElement;
     root.classList.toggle('k-calm', calmMode);
-    return () => root.classList.remove('k-calm');
-  }, [calmMode]);
+    
+    // Temizle ve yeni temayı ekle
+    const toRemove: string[] = [];
+    root.classList.forEach((cls) => {
+      if (cls.startsWith('k-') && cls !== 'k-calm') toRemove.push(cls);
+    });
+    if (toRemove.length > 0) root.classList.remove(...toRemove);
+    
+    root.classList.add(`k-${kulturelTema}`);
+
+    return () => root.classList.remove('k-calm', `k-${kulturelTema}`);
+  }, [calmMode, kulturelTema]);
   return React.createElement(ThemeCtx.Provider, { value: props.theme }, props.children);
 }
 

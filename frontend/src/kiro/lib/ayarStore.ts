@@ -1,8 +1,7 @@
 // ============================================================================
 // KIRO2 — Kullanıcı Ayar Store'u (SPRINT10-C)
 // Ayarlar ekranının tek durum kaynağı. Zustand + persist (localStorage).
-// Tema store'da DEĞİL: çalışma ekranları göz konforu için hep aydınlık kalır
-// (themeLocked=true ekran sabiti, kullanıcı toggle'ı yok).
+// Kültürel Tema Motoru (Theme Engine) eklendi: Zihinsel gelişim evreleri.
 // ============================================================================
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -21,8 +20,16 @@ export interface BildirimAyar {
   basarim: boolean;
 }
 
+export type KulturelTema = 'varsayilan' | 'cezeri' | 'harezmi' | 'fergani' | 'killigil' | 'ebru'
+  | 'ibnisina' | 'farabi' | 'biruni' | 'pirireis' | 'evliyacelebi' | 'sairnabi' | 'alikuscu' | 'vecihi'
+  | 'mimarsinan' | 'bayraktar' | 'azizsancar' | 'cahitarf' | 'oktaysinanoglu' | 'hulusibehcet' | 'canandagdeviren'
+  | 'feryalozel' | 'bilgedemirkoz' | 'meteatature' | 'gaziyasargil' | 'behramkursunoglu' | 'nuzhetgokdogan'
+  | 'halilinalcik' | 'ilberortayli' | 'ulugbey' | 'elbuzcani' | 'cemsid' | 'hazini' | 'cabirbinhayyan'
+  | 'errazi' | 'seydialireis' | 'lagari' | 'hezarfen' | 'yusufhashacib' | 'asikpasazade' | 'yanyaliesad';
+
 /** Ayar durumu (veri) + eylemler (setter'lar). */
 export interface KullaniciAyar {
+  kulturelTema: KulturelTema;
   dailyGoalMinutes: number;
   bildirim: BildirimAyar;
   calmMode: boolean;
@@ -31,16 +38,18 @@ export interface KullaniciAyar {
   toggleBildirim: (key: keyof BildirimAyar) => void;
   setCalmMode: (v: boolean) => void;
   setHideRanking: (v: boolean) => void;
+  setKulturelTema: (t: KulturelTema) => void;
 }
 
 /** Yalnız veri alanları (setter'lar hariç). */
-type AyarVeri = Pick<KullaniciAyar, 'dailyGoalMinutes' | 'bildirim' | 'calmMode' | 'hideRanking'>;
+type AyarVeri = Pick<KullaniciAyar, 'kulturelTema' | 'dailyGoalMinutes' | 'bildirim' | 'calmMode' | 'hideRanking'>;
 
 const STORAGE_KEY = 'kiro-ayar';
 
 /** Her çağrıda taze default nesne (paylaşılan referans sızıntısı yok). */
 function varsayilanVeri(): AyarVeri {
   return {
+    kulturelTema: 'varsayilan',
     dailyGoalMinutes: 30,
     bildirim: { fsrs: true, zayifKonu: true, seri: true, duello: true, basarim: true },
     calmMode: false,
@@ -60,10 +69,12 @@ export const useAyar = create<KullaniciAyar>()(
         set((s) => ({ bildirim: { ...s.bildirim, [key]: !s.bildirim[key] } })),
       setCalmMode: (v) => set({ calmMode: v }),
       setHideRanking: (v) => set({ hideRanking: v }),
+      setKulturelTema: (t) => set({ kulturelTema: t }),
     }),
     {
       name: STORAGE_KEY,
       partialize: (s): AyarVeri => ({
+        kulturelTema: s.kulturelTema,
         dailyGoalMinutes: s.dailyGoalMinutes,
         bildirim: s.bildirim,
         calmMode: s.calmMode,

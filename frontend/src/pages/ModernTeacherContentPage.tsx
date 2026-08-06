@@ -21,7 +21,6 @@ import {
   Subject,
 } from '@mui/icons-material';
 import {
-  Container,
   Typography,
   Box,
   Grid,
@@ -46,7 +45,7 @@ import { useState, useEffect } from 'react';
 
 import { GlassCard } from '../components/ui/GlassCard';
 import { ModernButton } from '../components/ui/ModernButton';
-import { ModernLoader } from '../components/ui/ModernLoader';
+import { DashboardScaffold } from '../components/Layout/DashboardScaffold';
 import apiClient from '../services/apiClient';
 import modernColors from '../theme/modern-colors';
 import { useAuthStore } from '@/store/authStore';
@@ -302,73 +301,17 @@ export function ModernTeacherContentPage() {
 
   const uniqueSubjects = Array.from(new Set(contents.map((c) => c.konu)));
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: modernColors.gradients.mesh,
-        }}
-      >
-        <ModernLoader message="İçerikler yükleniyor..." size="large" />
-      </Box>
-    );
-  }
-
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: modernColors.gradients.mesh,
-        py: 4,
-      }}
+    <DashboardScaffold
+      loading={loading}
+      loadingMessage="İçerikler yükleniyor..."
+      icon={<Folder />}
+      iconGradient={modernColors.gradients.forest}
+      title="İçerik Yönetimi"
+      titleGradient={modernColors.gradients.forest}
+      subtitle="Eğitim içeriklerinizi yönetin ve paylaşın"
+      maxWidth="lg"
     >
-      <Container maxWidth="lg">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Box
-                sx={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: 3,
-                  background: modernColors.gradients.forest,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Folder sx={{ fontSize: 32, color: 'white' }} />
-              </Box>
-              <Box>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    fontWeight: 900,
-                    background: modernColors.gradients.forest,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  İçerik Yönetimi
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Eğitim içeriklerinizi yönetin ve paylaşın
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </motion.div>
-
         {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -816,8 +759,7 @@ export function ModernTeacherContentPage() {
             </ModernButton>
           </DialogActions>
         </Dialog>
-      </Container>
-    </Box>
+    </DashboardScaffold>
   );
 }
 

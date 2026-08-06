@@ -355,7 +355,7 @@ class BackgroundSyncService {
    * Service Worker ile background sync kaydet
    */
   async registerBackgroundSync(tag: string): Promise<void> {
-    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+    if ('serviceWorker' in navigator && window.ServiceWorkerRegistration && 'sync' in window.ServiceWorkerRegistration.prototype) {
       try {
         const registration = await navigator.serviceWorker.ready;
         await registration.sync.register(tag);

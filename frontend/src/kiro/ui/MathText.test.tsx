@@ -8,19 +8,20 @@
  * sarmalayıcının `inline` prop'unu HİÇ dışarı açmaması + bu testler.
  */
 
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { MathText } from './MathText';
 
 describe('kiro/ui MathText', () => {
-  it('LaTeX içeren metni KaTeX ile render eder', () => {
+  it('LaTeX içeren metni KaTeX ile render eder', async () => {
     const { container } = render(<MathText>{'$\\frac{2}{7}$ oranı'}</MathText>);
-    expect(container.querySelector('.katex')).not.toBeNull();
+    await waitFor(() => expect(container.querySelector('.katex')).not.toBeNull(), { timeout: 4000 });
   });
 
-  it('blok öğe ÜRETMEZ — <p> içine güvenle konur', () => {
+  it('blok öğe ÜRETMEZ — <p> içine güvenle konur', async () => {
     const { container } = render(<MathText>{'$x_1 + x_2 = 5$'}</MathText>);
+    await waitFor(() => expect(container.querySelector('.katex')).not.toBeNull(), { timeout: 4000 });
     expect(container.querySelector('p')).toBeNull();
     expect(container.querySelector('div')).toBeNull();
   });

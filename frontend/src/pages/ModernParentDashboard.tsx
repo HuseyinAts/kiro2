@@ -156,7 +156,7 @@ export const ModernParentDashboard: React.FC = () => {
             width: '500px',
             height: '500px',
             borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.1)',
+            background: 'var(--k-surface)',
             top: '-200px',
             right: '-150px',
             filter: 'blur(80px)',
@@ -184,7 +184,7 @@ export const ModernParentDashboard: React.FC = () => {
                   sx={{
                     width: 80,
                     height: 80,
-                    border: '4px solid rgba(255,255,255,0.3)',
+                    border: '4px solid var(--k-border)',
                     boxShadow: modernColors.shadow.modern,
                     background: modernColors.gradients.primary,
                     fontWeight: 800,
@@ -208,7 +208,7 @@ export const ModernParentDashboard: React.FC = () => {
                 <Typography
                   variant="body1"
                   sx={{
-                    color: 'rgba(255,255,255,0.9)',
+                    color: 'var(--k-text-muted)',
                     mt: 0.5,
                   }}
                 >
@@ -223,7 +223,7 @@ export const ModernParentDashboard: React.FC = () => {
                 role="status"
                 aria-label={`${teacherMessages.filter(m => m.unread).length} yeni mesaj`}
                 sx={{
-                  background: 'rgba(255,255,255,0.2)',
+                  background: 'var(--k-surface)',
                   backdropFilter: 'blur(10px)',
                   borderRadius: '16px',
                   p: 2,
@@ -237,7 +237,7 @@ export const ModernParentDashboard: React.FC = () => {
                   <Typography variant="h4" sx={{ fontWeight: 800, color: 'white' }}>
                     {teacherMessages.filter(m => m.unread).length}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+                  <Typography variant="caption" sx={{ color: 'var(--k-text-muted)' }}>
                     Yeni Mesaj
                   </Typography>
                 </Box>
@@ -289,7 +289,7 @@ export const ModernParentDashboard: React.FC = () => {
                           boxShadow:
                             selectedChild === index ? modernColors.shadow.glow : 'none',
                           '&:focus': {
-                            outline: '2px solid rgba(249, 115, 22, 0.5)',
+                            outline: '2px solid var(--k-coral)',
                             outlineOffset: '2px',
                           },
                         }}
@@ -321,7 +321,7 @@ export const ModernParentDashboard: React.FC = () => {
                               sx={{
                                 color:
                                   selectedChild === index
-                                    ? 'rgba(255,255,255,0.9)'
+                                    ? 'var(--k-text-muted)'
                                     : 'text.secondary',
                               }}
                             >
@@ -344,7 +344,7 @@ export const ModernParentDashboard: React.FC = () => {
                               sx={{
                                 color:
                                   selectedChild === index
-                                    ? 'rgba(255,255,255,0.9)'
+                                    ? 'var(--k-text-muted)'
                                     : 'text.secondary',
                               }}
                             >

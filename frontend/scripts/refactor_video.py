@@ -168,10 +168,10 @@ const AccessibleVideoPlayer: React.FC<AccessibleVideoPlayerProps> = ({
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
     if (event.target !== containerRef.current) return;
-    
+
     // Default hook handles basic keys
     hookHandleKeyDown(event);
-    
+
     // Add additional specialized keys
     switch (event.key) {
       case 'ArrowUp':

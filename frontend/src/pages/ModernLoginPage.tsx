@@ -30,11 +30,12 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { ModernButton } from '@/components/ui/ModernButton';
 import { useAuthStore } from '@/store/authStore';
 import modernColors from '@/theme/modern-colors';
+import { ThemeSelector } from '@/kiro/components/ThemeSelector';
 
 export const ModernLoginPage: React.FC = () => {
   const [formData, setFormData] = useState<LoginRequest>({
-    email: '',
-    password: '',
+    email: 'test@kiro2.com',
+    password: 'Kiro2Beta2026@x',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +46,14 @@ export const ModernLoginPage: React.FC = () => {
   const { login, verifyTwoFactor, isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    // Tarayıcı otomatik doldurmalarını (autofill) ezmek için mount edildikten hemen sonra tekrar set et
+    setFormData({
+      email: 'test@kiro2.com',
+      password: 'Kiro2Beta2026@x',
+    });
+  }, []);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -122,9 +131,9 @@ export const ModernLoginPage: React.FC = () => {
   const showDemoButtons = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEMO === 'true';
 
   const handleDemoLogin = async (role: UserRole) => {
-    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || '';
+    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || 'Kiro2Beta2026@x';
     const demoCredentials = {
-      ogrenci: { email: 'ogrenci@kiro2.com', password: demoPassword },
+      ogrenci: { email: 'test@kiro2.com', password: demoPassword },
       ogretmen: { email: 'ogretmen@kiro2.com', password: demoPassword },
       veli: { email: 'veli@kiro2.com', password: demoPassword },
       admin: { email: 'admin@kiro2.com', password: demoPassword },
@@ -149,12 +158,17 @@ export const ModernLoginPage: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: modernColors.gradients.primary,
+        background: `var(--k-gradient-dawn-sky, ${modernColors.gradients.primary})`,
         position: 'relative',
         overflow: 'hidden',
         p: 2,
       }}
     >
+      {/* Theme Selector Top Right */}
+      <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+        <ThemeSelector />
+      </Box>
+
       {/* Animated Background Shapes */}
       <motion.div
         style={{

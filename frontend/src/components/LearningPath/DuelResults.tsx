@@ -2,6 +2,7 @@ import { Box, Typography, Button, Divider, Chip } from '@mui/material';
 import { CheckCircle, Cancel, EmojiEvents } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { RoundResult, DuelRating } from './duelReducer';
+import modernColors from '../../theme/modern-colors';
 
 interface DuelResultsProps {
   type: 'round' | 'final';
@@ -43,31 +44,38 @@ export default function DuelResults({
           style={{ marginBottom: '16px' }}
         >
           {roundResult.isCorrect ? (
-            <CheckCircle sx={{ fontSize: 72, color: '#22c55e', filter: 'drop-shadow(0 0 12px rgba(34,197,94,0.4))' }} />
+            <CheckCircle sx={{ fontSize: 80, color: modernColors.success[500], filter: 'drop-shadow(0 0 16px rgba(34,197,94,0.5))' }} />
           ) : (
-            <Cancel sx={{ fontSize: 72, color: '#ef4444', filter: 'drop-shadow(0 0 12px rgba(239,68,68,0.4))' }} />
+            <Cancel sx={{ fontSize: 80, color: modernColors.error[500], filter: 'drop-shadow(0 0 16px rgba(239,68,68,0.5))' }} />
           )}
         </motion.div>
-        
-        <Typography variant="h4" fontWeight={900} sx={{ mt: 0.5, mb: 1, color: roundResult.isCorrect ? '#16a34a' : '#dc2626' }}>
-          {roundResult.isCorrect ? 'Mükemmel!' : 'Yanlış Cevap'}
+
+        <Typography variant="h4" fontWeight={900} sx={{ mt: 0.5, mb: 1, color: roundResult.isCorrect ? modernColors.success[500] : modernColors.error[500], textShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+          {roundResult.isCorrect ? 'MÜKEMMEL!' : 'YANLIŞ CEVAP'}
         </Typography>
-        
+
         {!roundResult.isCorrect && correctAnswer && (
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-            Doğru cevap: <strong style={{ color: '#1e293b' }}>{correctAnswer}</strong>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 4, fontWeight: 500 }}>
+            Doğru cevap: <strong style={{ color: '#1e293b', fontSize: '1.1em' }}>{correctAnswer}</strong>
           </Typography>
         )}
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', p: 3, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(12px)', mb: 4, border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 8px 32px rgba(0,0,0,0.06)' }}>
+        <Box sx={{ 
+          display: 'flex', justifyContent: 'space-around', alignItems: 'center', 
+          p: 3, borderRadius: 4, 
+          background: 'linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5))', 
+          backdropFilter: 'blur(20px)', mb: 4, 
+          border: '1px solid rgba(255,255,255,0.8)', 
+          boxShadow: '0 10px 40px rgba(0,0,0,0.08), inset 0 2px 4px rgba(255,255,255,0.8)' 
+        }}>
           <Box sx={{ textAlign: 'center', flex: 1 }}>
-            <Typography variant="h3" fontWeight={900} sx={{ color: '#6366f1' }}>{roundResult.myScore}</Typography>
-            <Typography variant="subtitle2" color="text.secondary" fontWeight={700} textTransform="uppercase" letterSpacing={1}>Ben</Typography>
+            <Typography variant="h3" fontWeight={900} sx={{ color: modernColors.primary[500] }}>{roundResult.myScore}</Typography>
+            <Typography variant="subtitle2" color="text.secondary" fontWeight={800} textTransform="uppercase" letterSpacing={1.5}>Ben</Typography>
           </Box>
-          <Divider orientation="vertical" flexItem sx={{ opacity: 0.6, mx: 2 }} />
+          <Divider orientation="vertical" flexItem sx={{ opacity: 0.6, mx: 2, borderColor: 'rgba(0,0,0,0.1)' }} />
           <Box sx={{ textAlign: 'center', flex: 1 }}>
-            <Typography variant="h3" fontWeight={900} sx={{ color: '#f59e0b' }}>{roundResult.opponentScore}</Typography>
-            <Typography variant="subtitle2" color="text.secondary" fontWeight={700} textTransform="uppercase" letterSpacing={1}>{isBot ? 'Bot' : 'Rakip'}</Typography>
+            <Typography variant="h3" fontWeight={900} sx={{ color: modernColors.error[500] }}>{roundResult.opponentScore}</Typography>
+            <Typography variant="subtitle2" color="text.secondary" fontWeight={800} textTransform="uppercase" letterSpacing={1.5}>{isBot ? 'Bot' : 'Rakip'}</Typography>
           </Box>
         </Box>
 
@@ -80,13 +88,13 @@ export default function DuelResults({
             borderRadius: 3,
             px: 6,
             py: 1.5,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-            boxShadow: '0 8px 20px rgba(99,102,241,0.4)',
-            transition: 'all 0.2s',
+            background: modernColors.gradients.primary,
+            boxShadow: '0 8px 25px rgba(99,102,241,0.4)',
+            transition: 'all 0.3s ease',
             '&:hover': {
-              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 12px 25px rgba(99,102,241,0.5)',
+              background: modernColors.gradients.primary,
+              transform: 'translateY(-3px)',
+              boxShadow: '0 15px 35px rgba(99,102,241,0.5)',
             }
           }}
         >
@@ -101,74 +109,88 @@ export default function DuelResults({
     const draw = myScore === opponentScore;
 
     return (
-      <Box sx={{ textAlign: 'center', py: 3 }} component={motion.div} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+      <Box sx={{ textAlign: 'center', py: 3 }} component={motion.div} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', damping: 20 }}>
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: 'spring', bounce: 0.5, delay: 0.2 }}
+          transition={{ type: 'spring', bounce: 0.6, delay: 0.2 }}
         >
-          <Typography variant="h1" sx={{ mb: 2, filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))', fontSize: '5rem' }}>
+          <Typography variant="h1" sx={{ mb: 2, filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.15))', fontSize: '6rem' }}>
             {won ? '🏆' : draw ? '🤝' : '😔'}
           </Typography>
         </motion.div>
 
-        <Typography variant="h3" fontWeight={900} sx={{ mb: 1, background: won ? 'linear-gradient(135deg, #22c55e, #10b981)' : draw ? 'linear-gradient(135deg, #f59e0b, #fbbf24)' : 'linear-gradient(135deg, #ef4444, #f43f5e)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          {won ? 'Zafer Senin!' : draw ? 'Kıyasıya Beraberlik!' : 'Kaybettin'}
+        <Typography variant="h2" fontWeight={900} sx={{ 
+          mb: 1, 
+          background: won ? modernColors.gradients.success : draw ? modernColors.gradients.sunset : modernColors.gradients.error, 
+          WebkitBackgroundClip: 'text', 
+          WebkitTextFillColor: 'transparent',
+          filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))'
+        }}>
+          {won ? 'ZAFER SENİN!' : draw ? 'KIYASIYA BERABERLİK!' : 'KAYBETTİN'}
         </Typography>
 
-        <Typography variant="h6" color="text.secondary" fontWeight={700} sx={{ mb: 4 }}>
-          Skor: {myScore} – {opponentScore} <span style={{ opacity: 0.6, fontSize: '0.9em' }}>({totalRounds} Soru)</span>
+        <Typography variant="h6" color="text.secondary" fontWeight={800} sx={{ mb: 5, letterSpacing: 1 }}>
+          SKOR: {myScore} – {opponentScore} <span style={{ opacity: 0.5, fontSize: '0.85em' }}>({totalRounds} Soru)</span>
         </Typography>
 
         {rating && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5, type: 'spring' }}>
             <Chip
-              icon={<EmojiEvents sx={{ fontSize: 20 }} />}
-              label={`Yeni ELO: ${Math.round(rating.elo_rating)}`}
+              icon={<EmojiEvents sx={{ fontSize: 24 }} />}
+              label={`YENİ ELO: ${Math.round(rating.elo_rating)}`}
               sx={{
-                mb: 5,
-                px: 2,
-                py: 3,
-                fontSize: 16,
+                mb: 6,
+                px: 3,
+                py: 4,
+                fontSize: 20,
                 fontWeight: 900,
-                backgroundColor: 'rgba(99,102,241,0.1)',
-                color: '#6366f1',
-                border: '1px solid rgba(99,102,241,0.2)',
-                boxShadow: '0 4px 15px rgba(99,102,241,0.15)'
+                background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(99,102,241,0.05))',
+                color: modernColors.primary[600],
+                border: `2px solid ${modernColors.primary[200]}`,
+                boxShadow: '0 8px 30px rgba(99,102,241,0.2)',
+                borderRadius: 4
               }}
             />
           </motion.div>
         )}
 
         {roundHistory && roundHistory.length > 0 && (
-          <Box sx={{ mb: 5, textAlign: 'left', backgroundColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(12px)', borderRadius: 4, p: 3, border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 8px 32px rgba(0,0,0,0.04)' }}>
-            <Typography variant="overline" fontWeight={900} color="text.secondary" sx={{ display: 'block', mb: 2, letterSpacing: 1.5, fontSize: '0.85rem' }}>
-              Maç Özeti
+          <Box sx={{ 
+            mb: 6, textAlign: 'left', 
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4))', 
+            backdropFilter: 'blur(20px)', borderRadius: 4, p: 4, 
+            border: '1px solid rgba(255,255,255,0.9)', 
+            boxShadow: '0 12px 40px rgba(0,0,0,0.06)' 
+          }}>
+            <Typography variant="overline" fontWeight={900} color="#64748b" sx={{ display: 'block', mb: 3, letterSpacing: 2, fontSize: '0.9rem' }}>
+              MAÇ ÖZETİ
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {roundHistory.map((r, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, x: -15 }}
+                  initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 + i * 0.1 }}
+                  transition={{ delay: 0.6 + i * 0.1, type: 'spring' }}
                 >
                   <Box
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 2,
-                      p: 2,
+                      gap: 2.5,
+                      p: 2.5,
                       borderRadius: 3,
-                      backgroundColor: r.isCorrect ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                      border: `1px solid ${r.isCorrect ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}`,
+                      background: r.isCorrect ? 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05))' : 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05))',
+                      border: `1px solid ${r.isCorrect ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                      boxShadow: 'inset 0 2px 5px rgba(255,255,255,0.5)'
                     }}
                   >
-                    {r.isCorrect ? <CheckCircle sx={{ fontSize: 20, color: '#22c55e' }} /> : <Cancel sx={{ fontSize: 20, color: '#ef4444' }} />}
-                    <Typography variant="body1" fontWeight={700} sx={{ flex: 1, color: '#1e293b' }}>
+                    {r.isCorrect ? <CheckCircle sx={{ fontSize: 24, color: modernColors.success[500] }} /> : <Cancel sx={{ fontSize: 24, color: modernColors.error[500] }} />}
+                    <Typography variant="body1" fontWeight={800} sx={{ flex: 1, color: '#1e293b', letterSpacing: 0.5 }}>
                       Soru {r.questionOrder + 1}
                     </Typography>
-                    <Typography variant="body1" fontWeight={800} sx={{ color: r.isCorrect ? '#16a34a' : '#dc2626' }}>
+                    <Typography variant="body1" fontWeight={900} sx={{ color: r.isCorrect ? modernColors.success[500] : modernColors.error[500], fontSize: '1.1rem' }}>
                       {r.myAnswer || 'Cevapsız'}
                     </Typography>
                   </Box>
@@ -183,21 +205,21 @@ export default function DuelResults({
           onClick={onReset}
           sx={{
             fontWeight: 800,
-            fontSize: '16px',
-            borderRadius: 3,
-            px: 6,
-            py: 2,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-            boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
-            transition: 'all 0.2s',
+            fontSize: '18px',
+            borderRadius: 4,
+            px: 8,
+            py: 2.5,
+            background: modernColors.gradients.primary,
+            boxShadow: '0 10px 30px rgba(99,102,241,0.4)',
+            transition: 'all 0.3s ease',
             '&:hover': {
-              background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 12px 30px rgba(99,102,241,0.5)',
+              background: modernColors.gradients.primary,
+              transform: 'translateY(-4px)',
+              boxShadow: '0 20px 40px rgba(99,102,241,0.6)',
             }
           }}
         >
-          Yeni Düello Başlat
+          YENİ DÜELLO BAŞLAT
         </Button>
       </Box>
     );

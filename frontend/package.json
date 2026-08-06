@@ -101,7 +101,7 @@
     "build:fast": "vite build",
     "preview": "vite preview",
     "serve": "vite preview --port 3000",
-    "test": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vitest --run",
+    "test": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest --run",
     "test:watch": "cross-env NODE_OPTIONS=--max-old-space-size=2048 vitest",
     "test:coverage": "cross-env NODE_OPTIONS=--max-old-space-size=6144 vitest --coverage --reporter=default --reporter=json --reporter=html",
     "test:ui": "vitest --ui",

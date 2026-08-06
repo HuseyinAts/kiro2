@@ -40,6 +40,7 @@ import { ModernLoader } from '../components/ui/ModernLoader';
 import modernColors from '../theme/modern-colors';
 import { User, UserRole } from '../types';
 import { useAuthStore } from '@/store/authStore';
+import { ProfileStatsPanel } from '../components/Profile/ProfileStatsPanel';
 
 export function ModernProfilePage() {
   const { user, updateProfile } = useAuthStore();
@@ -255,6 +256,8 @@ export function ModernProfilePage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {user.rol === 'ogrenci' && <ProfileStatsPanel />}
 
         <Grid container spacing={3}>
           {/* Profile Avatar & Summary */}

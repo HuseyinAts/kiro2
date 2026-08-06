@@ -359,8 +359,8 @@ export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.React
                     </div>
                   )}
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>
-                  <input 
-                    type="file" 
+                  <input
+                    type="file"
                     accept="image/*"
                     ref={fileInputRef}
                     onChange={(e) => {
@@ -368,7 +368,7 @@ export function AISohbetPage({ studentId }: AISohbetPageProps = {}): React.React
                         setFile(e.target.files[0]);
                       }
                     }}
-                    style={{ display: 'none' }} 
+                    style={{ display: 'none' }}
                   />
                   <button
                     type="button"

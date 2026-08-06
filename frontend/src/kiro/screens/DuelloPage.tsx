@@ -25,6 +25,7 @@ import type { DuelMatch, DuelQuestion, DuelResult, DuelTurSonucu } from '../api/
 import type { Persona } from '../types';
 import { color, font } from '../tokens';
 import { KiroThemeProvider, numText } from '../ui/theme';
+import { ThemeSelector } from '../components/ThemeSelector';
 import { ConfettiDawn, useReducedMotion } from '../ui/ConfettiDawn';
 import { Skeleton } from '../ui/Skeleton';
 import { ErrorState } from '../ui/ErrorState';
@@ -32,19 +33,19 @@ import '../tokens/tokens.css';
 
 const HARF = ['A', 'B', 'C', 'D', 'E'];
 
-// --- Arena-lacivert paleti (inline · token DEĞİL — oyun-sahnesi istisnası) ---
+// --- Arena-lacivert paleti (inline · Tema Motoru ile entegre) ---
 const ARENA = {
-  radial: 'radial-gradient(1200px 500px at 50% -5%, #16203B 0%, #0A0E1B 60%)',
-  card: '#141A2C',
-  border: '#252C44',
-  border2: '#2A3350',
-  opt: '#1B2236',
+  radial: 'var(--k-gradient-dawn-sky, radial-gradient(1200px 500px at 50% -5%, #16203B 0%, #0A0E1B 60%))',
+  card: 'var(--k-surface, #141A2C)',
+  border: 'var(--k-border, #252C44)',
+  border2: 'var(--k-border-strong, #2A3350)',
+  opt: 'var(--k-surface-subtle, #1B2236)',
   correctBg: '#10231C',
   wrongBg: '#2A1620',
-  ringTrack: '#1E2540',
-  dotDim: '#1E2540',
-  neutralBadge: '#2A3350',
-  darkInk: '#0A0E1B', // parlak rozet üstünde koyu harf (beyaz AA'yı geçemez → koyu harf)
+  ringTrack: 'var(--k-border-strong, #1E2540)',
+  dotDim: 'var(--k-border-strong, #1E2540)',
+  neutralBadge: 'var(--k-border-strong, #2A3350)',
+  darkInk: '#0A0E1B', // parlak rozet üstünde koyu harf
   meGrad: 'linear-gradient(135deg,#2A2433,#4A4456)',
   oppGrad: 'linear-gradient(135deg,#9A3520,#C2452B)',
 } as const;
@@ -445,6 +446,7 @@ export function DuelloPage(): React.ReactElement {
                     {(MOD_LABEL[match.mod] ?? 'Matematik')} · Hızlı
                   </span>
                   <div style={{ flex: 1 }} />
+                  <ThemeSelector />
                   <span style={{ ...numText, fontSize: 12.5, fontWeight: 700, color: MUT }}>
                     En iyi {match.toplamTur} · şu an <strong style={{ color: TXT }}>Tur {Math.min(soru.order + 1, match.toplamTur)}</strong>
                   </span>

@@ -31,8 +31,8 @@ import {
 import { GlassCard } from '../ui/GlassCard';
 import { apiRequest } from '../../utils/apiHelpers';
 
-import { 
-  duelReducer, 
+import {
+  duelReducer,
   initialDuelState,
   DuelRating,
   DuelQuestion,
@@ -296,10 +296,10 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
       const isCorrect = answer !== null && answer === correct;
       const botAnswer = aiBotAnswer(currentQ.id);
       const botCorrect = botAnswer === correct;
-      
+
       const newMyScore = state.myScore + (isCorrect ? 1 : 0);
       const newOppScore = state.opponentScore + (botCorrect ? 1 : 0);
-      
+
       const result: RoundResult = {
         questionOrder: state.currentQIndex,
         myAnswer: answer ?? '',
@@ -320,7 +320,7 @@ export function DuelMode({ subject = 'MATEMATIK' }: DuelModeProps) {
           body: JSON.stringify({ question_order: state.currentQIndex, answer: answer ?? 'A', time_ms: elapsed }),
         },
       );
-      
+
       const result: RoundResult = {
         questionOrder: state.currentQIndex,
         myAnswer: answer ?? '',

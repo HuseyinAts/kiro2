@@ -94,7 +94,7 @@ export function ParentDashboard() {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Box sx={{ textAlign: 'center' }}>
-          <School sx={{ fontSize: 48, color: '#6366f1', mb: 2 }} />
+          <School sx={{ fontSize: 48, color: 'var(--k-coral)', mb: 2 }} />
           <Typography variant="h6" color="text.secondary">Yükleniyor...</Typography>
           <LinearProgress sx={{ mt: 2, width: 200 }} />
         </Box>
@@ -119,7 +119,7 @@ export function ParentDashboard() {
   return (
     <Box sx={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fff7ed 100%)',
+      background: 'var(--k-surface)',
       py: 4,
     }}>
       <Container maxWidth="md">
@@ -129,7 +129,7 @@ export function ParentDashboard() {
             width: 64,
             height: 64,
             borderRadius: 3,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: 'var(--k-coral)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -150,9 +150,9 @@ export function ParentDashboard() {
         <GlassCard glassIntensity="medium" elevated sx={{ mb: 3 }}>
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
             {/* Streak */}
-            <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#f97316' + '10', textAlign: 'center' }}>
-              <LocalFireDepartment sx={{ fontSize: 28, color: '#f97316', mb: 0.5 }} />
-              <Typography variant="h5" fontWeight={800} sx={{ color: '#f97316' }}>
+            <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'color-mix(in srgb, var(--k-coral) 10%, transparent)', textAlign: 'center' }}>
+              <LocalFireDepartment sx={{ fontSize: 28, color: 'var(--k-coral)', mb: 0.5 }} />
+              <Typography variant="h5" fontWeight={800} sx={{ color: 'var(--k-coral)' }}>
                 {data.streak}
               </Typography>
               <Typography variant="caption" fontWeight={600} color="text.secondary">
@@ -161,9 +161,9 @@ export function ParentDashboard() {
             </Box>
 
             {/* Today study */}
-            <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#3b82f6' + '10', textAlign: 'center' }}>
-              <Timer sx={{ fontSize: 28, color: '#3b82f6', mb: 0.5 }} />
-              <Typography variant="h5" fontWeight={800} sx={{ color: '#3b82f6' }}>
+            <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'color-mix(in srgb, var(--k-text) 10%, transparent)', textAlign: 'center' }}>
+              <Timer sx={{ fontSize: 28, color: 'var(--k-text)', mb: 0.5 }} />
+              <Typography variant="h5" fontWeight={800} sx={{ color: 'var(--k-text)' }}>
                 {data.todayStudyMinutes} dk
               </Typography>
               <Typography variant="caption" fontWeight={600} color="text.secondary">
@@ -172,9 +172,9 @@ export function ParentDashboard() {
             </Box>
 
             {/* Completed */}
-            <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#22c55e' + '10', textAlign: 'center' }}>
-              <CheckCircle sx={{ fontSize: 28, color: '#22c55e', mb: 0.5 }} />
-              <Typography variant="h5" fontWeight={800} sx={{ color: '#22c55e' }}>
+            <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'color-mix(in srgb, var(--k-success) 10%, transparent)', textAlign: 'center' }}>
+              <CheckCircle sx={{ fontSize: 28, color: 'var(--k-success)', mb: 0.5 }} />
+              <Typography variant="h5" fontWeight={800} sx={{ color: 'var(--k-success)' }}>
                 {data.completedTopics}
               </Typography>
               <Typography variant="caption" fontWeight={600} color="text.secondary">
@@ -183,9 +183,9 @@ export function ParentDashboard() {
             </Box>
 
             {/* Progress */}
-            <Box sx={{ p: 2, borderRadius: 2, bgcolor: '#8b5cf6' + '10', textAlign: 'center' }}>
-              <TrendingUp sx={{ fontSize: 28, color: '#8b5cf6', mb: 0.5 }} />
-              <Typography variant="h5" fontWeight={800} sx={{ color: '#8b5cf6' }}>
+            <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'color-mix(in srgb, var(--k-coral-2) 10%, transparent)', textAlign: 'center' }}>
+              <TrendingUp sx={{ fontSize: 28, color: 'var(--k-coral-2)', mb: 0.5 }} />
+              <Typography variant="h5" fontWeight={800} sx={{ color: 'var(--k-coral-2)' }}>
                 %{progressPercent}
               </Typography>
               <Typography variant="caption" fontWeight={600} color="text.secondary">
@@ -199,7 +199,7 @@ export function ParentDashboard() {
         {data.weaknesses.length > 0 && (
           <GlassCard glassIntensity="light" sx={{ mb: 3 }}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Warning sx={{ color: '#f59e0b' }} />
+              <Warning sx={{ color: 'var(--k-risk)' }} />
               Güçlendirilmesi Gereken Konular
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -215,8 +215,8 @@ export function ParentDashboard() {
                         height: 22,
                         fontSize: 10,
                         fontWeight: 700,
-                        color: w.trend === 'improving' ? '#22c55e' : w.trend === 'declining' ? '#ef4444' : '#94a3b8',
-                        bgcolor: w.trend === 'improving' ? '#22c55e10' : w.trend === 'declining' ? '#ef444410' : '#94a3b810',
+                        color: w.trend === 'improving' ? 'var(--k-success)' : w.trend === 'declining' ? 'var(--k-risk)' : 'var(--k-text-muted)',
+                        bgcolor: w.trend === 'improving' ? 'color-mix(in srgb, var(--k-success) 10%, transparent)' : w.trend === 'declining' ? 'color-mix(in srgb, var(--k-risk) 10%, transparent)' : 'color-mix(in srgb, var(--k-text-muted) 10%, transparent)',
                       }}
                     />
                   </Box>
@@ -228,7 +228,7 @@ export function ParentDashboard() {
                       borderRadius: 3,
                       bgcolor: 'rgba(239,68,68,0.1)',
                       '& .MuiLinearProgress-bar': {
-                        bgcolor: w.avg_score < 40 ? '#ef4444' : '#f59e0b',
+                        bgcolor: w.avg_score < 40 ? 'var(--k-risk)' : 'var(--k-warning)',
                         borderRadius: 3,
                       },
                     }}
@@ -256,7 +256,7 @@ export function ParentDashboard() {
         {data.recentQuizScores.length > 0 && (
           <GlassCard glassIntensity="light" sx={{ mb: 3 }}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <CalendarToday sx={{ color: '#3b82f6' }} />
+              <CalendarToday sx={{ color: 'var(--k-text)' }} />
               Son Quiz Sonuçları
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -266,8 +266,8 @@ export function ParentDashboard() {
                   label={`%${score}`}
                   sx={{
                     fontWeight: 700,
-                    bgcolor: score >= 70 ? '#22c55e15' : score >= 50 ? '#f59e0b15' : '#ef444415',
-                    color: score >= 70 ? '#22c55e' : score >= 50 ? '#f59e0b' : '#ef4444',
+                    bgcolor: score >= 70 ? 'color-mix(in srgb, var(--k-success) 15%, transparent)' : score >= 50 ? 'color-mix(in srgb, var(--k-warning) 15%, transparent)' : 'color-mix(in srgb, var(--k-risk) 15%, transparent)',
+                    color: score >= 70 ? 'var(--k-success)' : score >= 50 ? 'var(--k-warning)' : 'var(--k-risk)',
                   }}
                 />
               ))}

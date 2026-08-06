@@ -299,11 +299,14 @@ describe('PWA Install Helper', () => {
   });
 
   it('should detect installed state', () => {
-    windowMock.matchMedia = vi.fn(() => ({
-      matches: true,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
-    }));
+    Object.defineProperty(window, 'matchMedia', {
+      value: vi.fn(() => ({
+        matches: true,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn()
+      })),
+      writable: true
+    });
 
     const isInstalled = installHelper.isInstalled();
     
@@ -321,6 +324,8 @@ describe('PWA Network Manager', () => {
       onOffline: vi.fn(),
       onSlowConnection: vi.fn()
     };
+
+    windowMock.addEventListener.mockClear();
 
     Object.defineProperty(window, 'addEventListener', {
       value: windowMock.addEventListener,
@@ -343,8 +348,8 @@ describe('PWA Network Manager', () => {
   });
 
   it('should handle online event', () => {
-    const onlineHandler = (windowMock.addEventListener as any).mock.calls
-      .find((call: any) => call[0] === 'online')[1];
+    const onlineCalls = (windowMock.addEventListener as any).mock.calls.filter((c: any) => c[0] === 'online');
+    const onlineHandler = onlineCalls[onlineCalls.length - 1][1];
 
     onlineHandler();
     
@@ -352,8 +357,8 @@ describe('PWA Network Manager', () => {
   });
 
   it('should handle offline event', () => {
-    const offlineHandler = (windowMock.addEventListener as any).mock.calls
-      .find((call: any) => call[0] === 'offline')[1];
+    const offlineCalls = (windowMock.addEventListener as any).mock.calls.filter((c: any) => c[0] === 'offline');
+    const offlineHandler = offlineCalls[offlineCalls.length - 1][1];
 
     offlineHandler();
     

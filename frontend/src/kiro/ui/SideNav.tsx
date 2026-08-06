@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { font } from '../tokens';
+import { ThemeSelector } from '../components/ThemeSelector';
 
 // Kaynak: KIRO Kenar.dc.html (+ Kenar Veli / Kenar Ogretmen varyantları).
 // - Tema: SideNav HER ZAMAN açık (paper) — çalışma yüzeyi.
@@ -63,24 +64,24 @@ export const NAV_ICONS = {
 /* ---- Rol preset'leri — href'leri kendi rotalarınızla değiştirin ---- */
 export const STUDENT_NAV: SideNavSection[] = [
   { title: 'Çalışma', items: [
-    { id: 'panel', label: 'Panel', href: '/panel', icon: NAV_ICONS.panel },
+    { id: 'panel', label: 'Panel', href: '/dashboard', icon: NAV_ICONS.panel },
     { id: 'plan', label: 'Haftalık Plan', href: '/weekly-plan', icon: NAV_ICONS.plan },
     { id: 'odev', label: 'Ödevlerim', href: '/odevlerim', icon: NAV_ICONS.odev },
-    { id: 'path', label: 'Öğrenme Yolu', href: '/ogrenme-yolu', icon: NAV_ICONS.path },
+    { id: 'path', label: 'Öğrenme Yolu', href: '/learning-path', icon: NAV_ICONS.path },
     { id: 'solve', label: 'Soru Çözme', href: '/soru-cozme', icon: NAV_ICONS.solve },
-    { id: 'cat', label: 'Adaptif Test', href: '/adaptif-test', icon: NAV_ICONS.cat },
+    { id: 'cat', label: 'Adaptif Test', href: '/cat', icon: NAV_ICONS.cat },
     { id: 'review', label: 'Tekrar', href: '/tekrar', icon: NAV_ICONS.review },
-    { id: 'deneme', label: 'Harmanlanmış Deneme', href: '/deneme', icon: NAV_ICONS.deneme },
+    { id: 'deneme', label: 'Harmanlanmış Deneme', href: '/exam/start', icon: NAV_ICONS.deneme },
   ]},
   { title: 'AI & Çözüm', items: [
-    { id: 'assistant', label: 'AI Sohbet', href: '/ai-sohbet', icon: NAV_ICONS.assistant },
+    { id: 'assistant', label: 'AI Sohbet', href: '/chat', icon: NAV_ICONS.assistant },
     { id: 'ai', label: 'Sokratik AI', href: '/sokratik', icon: NAV_ICONS.ai },
     { id: 'interaktif', label: 'İnteraktif Çözüm', href: '/interaktif-cozum', icon: NAV_ICONS.interaktif },
     { id: 'practice', label: 'Neden Geri Bildirim', href: '/neden', icon: NAV_ICONS.practice },
   ]},
   { title: 'Yarışma & Seri', items: [
-    { id: 'league', label: 'Lig Sıralaması', href: '/lig', icon: NAV_ICONS.league },
-    { id: 'duel', label: '1v1 Düello', href: '/duello', icon: NAV_ICONS.duel },
+    { id: 'league', label: 'Lig Sıralaması', href: '/league', icon: NAV_ICONS.league },
+    { id: 'duel', label: '1v1 Düello', href: '/duel', icon: NAV_ICONS.duel },
     { id: 'boss', label: 'Boss Savaşı', href: '/boss', icon: NAV_ICONS.boss },
     { id: 'arkadas', label: 'Arkadaş Serisi', href: '/arkadas-serisi', icon: NAV_ICONS.arkadas },
     { id: 'seri', label: 'Seri & Nudge', href: '/seri', icon: NAV_ICONS.seri },
@@ -178,10 +179,10 @@ export function SideNav({
   };
 
   return (
-    <aside style={{ width: collapsed ? 64 : 250, flexShrink: 0, background: '#FFFFFF',
-      borderRight: '1px solid #ECE6DD', display: 'flex', flexDirection: 'column',
+    <aside style={{ width: collapsed ? 64 : 250, flexShrink: 0, background: 'var(--k-surface, #FFFFFF)',
+      borderRight: '1px solid var(--k-border, #ECE6DD)', display: 'flex', flexDirection: 'column',
       height: '100vh', position: 'sticky', top: 0, overflow: 'hidden',
-      fontFamily: font.sans, fontSize: 14, color: '#2A2433' }}>
+      fontFamily: font.sans, fontSize: 14, color: 'var(--k-text, #2A2433)' }}>
 
       {/* Logo */}
       <div style={{ flexShrink: 0, padding: collapsed ? '18px 0 12px' : '18px 16px 12px',
@@ -195,10 +196,10 @@ export function SideNav({
           </div>
           {!collapsed && (
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.02em', color: '#2A2433' }}>
+              <span style={{ fontWeight: 800, fontSize: 17, letterSpacing: '-0.02em', color: 'var(--k-text, #2A2433)' }}>
                 KIRO<span style={{ color: accent }}>2</span>
               </span>
-              <span style={{ fontSize: 10.5, fontWeight: 600, color: '#6B6478', letterSpacing: '0.02em' }}>YKS Hazırlık</span>
+              <span style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--k-text-muted, #6B6478)', letterSpacing: '0.02em' }}>YKS Hazırlık</span>
             </div>
           )}
         </div>
@@ -210,7 +211,7 @@ export function SideNav({
         {secs.map((sec, i) => (
           <React.Fragment key={sec.title}>
             {!collapsed && (
-              <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.07em', color: '#6B6478',
+              <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--k-text-muted, #6B6478)',
                 textTransform: 'uppercase', padding: '0 10px', margin: i === 0 ? '4px 0 6px' : '16px 0 6px' }}>
                 {sec.title}
               </div>
@@ -228,12 +229,17 @@ export function SideNav({
 
       {/* Footer */}
       <div style={{ flexShrink: 0, padding: collapsed ? '8px 8px 14px' : '8px 14px 14px' }}>
+        {!collapsed && (
+          <div style={{ marginBottom: 12, padding: '0 8px' }}>
+             <ThemeSelector />
+          </div>
+        )}
         {onAssistant && (
           <button type="button" onClick={onAssistant} aria-label="KIRO Asistan"
             style={{ display: 'flex', alignItems: 'center', width: '100%', border: 'none',
               gap: collapsed ? 0 : 11, justifyContent: collapsed ? 'center' : undefined,
               padding: collapsed ? '11px 0' : '11px 12px', minHeight: 44, borderRadius: 12,
-              background: '#2A2433', color: '#fff', fontFamily: font.sans, fontSize: 14,
+              background: 'var(--k-coral, #2A2433)', color: '#fff', fontFamily: font.sans, fontSize: 14,
               fontWeight: 700, cursor: 'pointer', marginBottom: 8 }}>
             <svg width="18" height="18" style={{ flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" /><path d="m11 8 1 2 2 1-2 1-1 2-1-2-2-1 2-1Z" />
@@ -247,7 +253,7 @@ export function SideNav({
           </button>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 8px',
-          justifyContent: collapsed ? 'center' : undefined, borderTop: '1px solid #ECE6DD' }}>
+          justifyContent: collapsed ? 'center' : undefined, borderTop: '1px solid var(--k-border, #ECE6DD)' }}>
           <div aria-hidden style={{ width: 34, height: 34, flexShrink: 0, borderRadius: 10,
             background: 'linear-gradient(135deg,#2A2433,#4A4456)', color: '#fff', display: 'flex',
             alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13 }}>
@@ -255,8 +261,8 @@ export function SideNav({
           </div>
           {!collapsed && (
             <div style={{ lineHeight: 1.2, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, fontSize: 13, color: '#2A2433', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userName}</div>
-              <div style={{ fontSize: 11, color: '#6B6478' }}>{userSub}</div>
+              <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--k-text, #2A2433)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userName}</div>
+              <div style={{ fontSize: 11, color: 'var(--k-text-muted, #6B6478)' }}>{userSub}</div>
             </div>
           )}
         </div>
