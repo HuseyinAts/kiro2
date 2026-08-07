@@ -1,7 +1,7 @@
 /**
  * Teknofest 2025 Eğitim Eylemci Platformu
  * Test Setup Configuration
- * 
+ *
  * Bu dosya tüm testler için gerekli setup'ları içerir
  */
 
@@ -60,25 +60,27 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-// Mock localStorage
+// Mock localStorage with functional in-memory store
+let localStore: Record<string, string> = {}
 const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn()
+  getItem: vi.fn((key: string) => localStore[key] ?? null),
+  setItem: vi.fn((key: string, value: string) => { localStore[key] = String(value); }),
+  removeItem: vi.fn((key: string) => { delete localStore[key]; }),
+  clear: vi.fn(() => { localStore = {}; }),
+  get length() { return Object.keys(localStore).length; },
+  key: vi.fn((index: number) => Object.keys(localStore)[index] ?? null)
 } as Storage
 global.localStorage = localStorageMock
 
-// Mock sessionStorage
+// Mock sessionStorage with functional in-memory store
+let sessionStore: Record<string, string> = {}
 const sessionStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn()
+  getItem: vi.fn((key: string) => sessionStore[key] ?? null),
+  setItem: vi.fn((key: string, value: string) => { sessionStore[key] = String(value); }),
+  removeItem: vi.fn((key: string) => { delete sessionStore[key]; }),
+  clear: vi.fn(() => { sessionStore = {}; }),
+  get length() { return Object.keys(sessionStore).length; },
+  key: vi.fn((index: number) => Object.keys(sessionStore)[index] ?? null)
 } as Storage
 global.sessionStorage = sessionStorageMock
 

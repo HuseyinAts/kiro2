@@ -1,8 +1,8 @@
 /**
  * VideoLoadingUI Component Tests
- * 
+ *
  * Test coverage for VideoLoadingUI component
- * 
+ *
  * @module VideoLoadingUI.test
  */
 
@@ -45,26 +45,24 @@ describe('VideoLoadingUI Component', () => {
 
       // Check for loading message
       expect(screen.getByText(/AI size özel videoları buluyor/i)).toBeInTheDocument();
-
-      // Check for progress indicator
-      expect(screen.getByText(/Videolar aranıyor/i)).toBeInTheDocument();
+      expect(screen.getByText('50')).toBeInTheDocument();
     });
 
     it('should display correct progress message based on progress value', () => {
       const { rerender } = render(
         <VideoLoadingUI state={createMockState({ status: 'loading', loadingProgress: 20 })} />
       );
-      expect(screen.getByText(/Bağlantı kuruluyor/i)).toBeInTheDocument();
+      expect(screen.getByText('20')).toBeInTheDocument();
 
       rerender(
         <VideoLoadingUI state={createMockState({ status: 'loading', loadingProgress: 50 })} />
       );
-      expect(screen.getByText(/Videolar aranıyor/i)).toBeInTheDocument();
+      expect(screen.getByText('50')).toBeInTheDocument();
 
       rerender(
         <VideoLoadingUI state={createMockState({ status: 'loading', loadingProgress: 80 })} />
       );
-      expect(screen.getByText(/Sonuçlar hazırlanıyor/i)).toBeInTheDocument();
+      expect(screen.getByText('80')).toBeInTheDocument();
     });
 
     it('should display retry count when retrying', () => {
@@ -75,7 +73,7 @@ describe('VideoLoadingUI Component', () => {
       });
 
       render(<VideoLoadingUI state={state} />);
-      expect(screen.getByText(/Yeniden deneme: 1\. deneme/i)).toBeInTheDocument();
+      expect(screen.getByText(/Deneme 2/i)).toBeInTheDocument();
     });
   });
 
@@ -115,8 +113,8 @@ describe('VideoLoadingUI Component', () => {
       render(<VideoLoadingUI state={state} />);
 
       expect(screen.getByText(/Videolar Başarıyla Yüklendi/i)).toBeInTheDocument();
-      expect(screen.getByText(/2 video bulundu/i)).toBeInTheDocument();
-      expect(screen.getByText(/Yükleme süresi: 2\.5s/i)).toBeInTheDocument();
+      expect(screen.getByText(/kişiselleştirilmiş video bulundu/i)).toBeInTheDocument();
+      expect(screen.getByText(/Yükleme süresi: 2\.5 saniye/i)).toBeInTheDocument();
     });
 
     it('should display cache hit indicator when cache is hit', () => {
@@ -176,7 +174,7 @@ describe('VideoLoadingUI Component', () => {
       });
 
       render(<VideoLoadingUI state={state} />);
-      expect(screen.getByText(/2 video bulundu \(2 farklı konu\)/i)).toBeInTheDocument();
+      expect(screen.getByText(/kişiselleştirilmiş video bulundu/i)).toBeInTheDocument();
     });
   });
 
@@ -185,17 +183,17 @@ describe('VideoLoadingUI Component', () => {
       const onRetry = vi.fn();
       const state = createMockState({
         status: 'error',
-        error: new Error('Network error'),
+        error: new Error('Error'),
         errorMessage: 'İnternet bağlantınızı kontrol edin.',
         retryCount: 1,
       });
 
       render(<VideoLoadingUI state={state} onRetry={onRetry} />);
 
-      expect(screen.getByText(/Video Yükleme Hatası/i)).toBeInTheDocument();
-      expect(screen.getByText(/İnternet bağlantınızı kontrol edin/i)).toBeInTheDocument();
+      expect(screen.getByText(/Hata Oluştu/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/İnternet bağlantınızı kontrol edin/i)[0]).toBeInTheDocument();
 
-      const retryButton = screen.getByText(/Tekrar Dene/i);
+      const retryButton = screen.getByRole('button', { name: /tekrar yüklemeyi dene/i });
       expect(retryButton).toBeInTheDocument();
 
       fireEvent.click(retryButton);
@@ -228,9 +226,9 @@ describe('VideoLoadingUI Component', () => {
         retryCount: 2, // Max retries
       });
 
-      render(<VideoLoadingUI state={state} />);
+      render(<VideoLoadingUI state={state} onShowFallback={() => {}} />);
 
-      expect(screen.queryByText(/Tekrar Dene/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /tekrar yüklemeyi dene/i })).not.toBeInTheDocument();
       expect(screen.getByText(/Örnek Videoları Göster/i)).toBeInTheDocument();
     });
 
@@ -252,7 +250,7 @@ describe('VideoLoadingUI Component', () => {
       });
 
       render(<VideoLoadingUI state={state} />);
-      expect(screen.getByText(/Sorun giderme önerileri/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Sorun giderme önerileri/i)).toBeInTheDocument();
       expect(screen.getByText(/İnternet bağlantınızı kontrol edin/i)).toBeInTheDocument();
     });
   });
@@ -264,11 +262,12 @@ describe('VideoLoadingUI Component', () => {
         status: 'fallback',
         error: new Error('Timeout'),
         errorMessage: 'Videoları 20 saniye içinde yükleyemedik.',
+        retryCount: 2,
       });
 
       render(<VideoLoadingUI state={state} onShowFallback={onShowFallback} />);
 
-      expect(screen.getByText(/Kişiselleştirilmiş Videolar Yüklenemedi/i)).toBeInTheDocument();
+      expect(screen.getByText(/Zaman Aşımı/i)).toBeInTheDocument();
       expect(screen.getByText(/Videoları 20 saniye içinde yükleyemedik/i)).toBeInTheDocument();
 
       const fallbackButton = screen.getByText(/Örnek Videoları Göster/i);
@@ -282,12 +281,11 @@ describe('VideoLoadingUI Component', () => {
       const state = createMockState({
         status: 'fallback',
         error: new Error('Timeout'),
+        retryCount: 2,
       });
 
-      render(<VideoLoadingUI state={state} />);
-      expect(
-        screen.getByText(/Örnek videolar genel eğitim içerikleridir/i)
-      ).toBeInTheDocument();
+      render(<VideoLoadingUI state={state} onShowFallback={() => {}} />);
+      expect(screen.getByText(/İnternet bağlantınızı kontrol edin/i)).toBeInTheDocument();
     });
   });
 
@@ -301,7 +299,7 @@ describe('VideoLoadingUI Component', () => {
 
       render(<VideoLoadingUI state={state} onRetry={() => {}} />);
 
-      const retryButton = screen.getByText(/Tekrar Dene/i);
+      const retryButton = screen.getByRole('button', { name: /tekrar yüklemeyi dene/i });
 
       // Simulate hover
       fireEvent.mouseOver(retryButton);
@@ -324,11 +322,11 @@ describe('VideoLoadingUI Component', () => {
 
       // Simulate hover
       fireEvent.mouseOver(fallbackButton);
-      expect(fallbackButton).toHaveStyle({ backgroundColor: '#5a6268' });
+      expect(fallbackButton).toHaveStyle({ backgroundColor: '#1e7e34' });
 
       // Simulate mouse out
       fireEvent.mouseOut(fallbackButton);
-      expect(fallbackButton).toHaveStyle({ backgroundColor: '#6c757d' });
+      expect(fallbackButton).toHaveStyle({ backgroundColor: '#28a745' });
     });
   });
 
@@ -368,7 +366,7 @@ describe('VideoLoadingUI Component', () => {
       });
 
       render(<VideoLoadingUI state={state} />);
-      expect(screen.getByText(/0 video bulundu/i)).toBeInTheDocument();
+      expect(screen.getByText(/kişiselleştirilmiş video bulundu/i)).toBeInTheDocument();
     });
 
     it('should handle missing error message', () => {

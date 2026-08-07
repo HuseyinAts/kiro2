@@ -1,6 +1,7 @@
 """Enhanced Chat API - AI sohbet sistemi."""
 
 import base64
+import contextlib
 import json
 import logging
 import os
@@ -108,7 +109,7 @@ _chat_tables_verified = False
 
 async def _verify_chat_tables(db: AsyncSession) -> bool:
     """Check chat tables exist on first call. Logs error once if missing."""
-    global _chat_tables_verified
+    global _chat_tables_verified  # noqa: PLW0603
     if _chat_tables_verified:
         return True
     try:
@@ -122,10 +123,8 @@ async def _verify_chat_tables(db: AsyncSession) -> bool:
             "Run: python backend/_scripts/create_chat_tables.py"
         )
         # Rollback the failed transaction so the connection is usable
-        try:
+        with contextlib.suppress(Exception):
             await db.rollback()
-        except Exception:
-            pass
         return False
 
 
@@ -148,10 +147,16 @@ async def _get_or_create_session(
     title = subject.capitalize() if subject else "Yeni Sohbet"
     await db.execute(
         text(
-            "INSERT INTO chat_sessions (id, user_id, title, subject_type) "
-            "VALUES (:id, :uid, :title, :subj)"
+            "INSERT INTO chat_sessions (id, user_id, title, subject_type, organization_id) "
+            "VALUES (:id, :uid, :title, :subj, :org_id)"
         ),
-        {"id": new_id, "uid": user_id, "title": title, "subj": subject or "general"},
+        {
+            "id": new_id,
+            "uid": user_id,
+            "title": title,
+            "subj": subject or "general",
+            "org_id": "org_legacy_default",
+        },
     )
     await db.commit()
     return new_id
@@ -329,7 +334,9 @@ SUBJECT_CHAT_PROMPTS: dict[str, str] = {
 }
 
 
-def _get_system_prompt(subject: str, teaching_mode: str = "direct", user_query: str = "") -> str:
+def _get_system_prompt(
+    subject: str, teaching_mode: str = "direct", user_query: str = ""
+) -> str:
     """Build system prompt with RAG curriculum grounding based on subject and teaching mode."""
     base = SOCRATIC_SYSTEM_PROMPT if teaching_mode == "socratic" else SYSTEM_PROMPT
     subject_addition = SUBJECT_CHAT_PROMPTS.get(normalize_tr(subject), "")
@@ -337,7 +344,9 @@ def _get_system_prompt(subject: str, teaching_mode: str = "direct", user_query: 
         base += "\n\n" + subject_addition
 
     if user_query and subject:
-        rag_data = socratic_rag_guardrail_service.get_curriculum_grounding(subject, user_query)
+        rag_data = socratic_rag_guardrail_service.get_curriculum_grounding(
+            subject, user_query
+        )
         base += "\n\n" + rag_data["rag_context_text"]
 
     return base
@@ -384,12 +393,13 @@ async def _call_llm(
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": message},
             ]
-            response = await client.acreate(messages=messages)
-            content = response.choices[0].message.content
-            if content:
-                eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(content)
+            response_text = await client.chat(messages=messages)
+            if response_text:
+                eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(
+                    response_text
+                )
                 return EnhancedChatResponse(
-                    message=content,
+                    message=response_text,
                     confidence_score=eval_res["socratic_score"],
                     suggestions=eval_res["suggestions"],
                 )
@@ -418,7 +428,11 @@ async def _call_llm(
                 data = resp.json()
                 content = data.get("message", {}).get("content", "")
                 if content:
-                    eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(content)
+                    eval_res = (
+                        socratic_rag_guardrail_service.validate_socratic_compliance(
+                            content
+                        )
+                    )
                     return EnhancedChatResponse(
                         message=content,
                         confidence_score=eval_res["socratic_score"],
@@ -457,9 +471,7 @@ async def send_message(
     The bug only surfaces when the upstream LLM responds fast enough that the
     request doesn't time out first (GF24 was previously a state-dependent skip).
     """
-    await _verify_enhanced_chat_student_context(
-        payload.student_id, current_user, db
-    )
+    await _verify_enhanced_chat_student_context(payload.student_id, current_user, db)
 
     llm_response = await _call_llm(
         payload.message, payload.subject, payload.teaching_mode
@@ -521,9 +533,7 @@ async def socratic_dialogue(
     db: AsyncSession = _db_dep,
 ) -> dict[str, Any]:
     """Sokratik diyalog ve pedagojik yönlendirme ucu."""
-    await _verify_enhanced_chat_student_context(
-        payload.student_id, current_user, db
-    )
+    await _verify_enhanced_chat_student_context(payload.student_id, current_user, db)
 
     payload.teaching_mode = "socratic"
     llm_response = await _call_llm(
@@ -599,8 +609,9 @@ async def _stream_ollama(
     system_prompt = _get_system_prompt(subject, teaching_mode)
 
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            async with client.stream(
+        async with (
+            httpx.AsyncClient(timeout=120.0) as client,
+            client.stream(
                 "POST",
                 f"{ollama_url}/api/chat",
                 json={
@@ -611,16 +622,17 @@ async def _stream_ollama(
                     ],
                     "stream": True,
                 },
-            ) as resp:
-                async for line in resp.aiter_lines():
-                    if not line:
-                        continue
-                    data = json.loads(line)
-                    content = data.get("message", {}).get("content", "")
-                    if content:
-                        yield f"data: {json.dumps({'content': content}, ensure_ascii=False)}\n\n"
-                    if data.get("done"):
-                        break
+            ) as resp,
+        ):
+            async for line in resp.aiter_lines():
+                if not line:
+                    continue
+                data = json.loads(line)
+                content = data.get("message", {}).get("content", "")
+                if content:
+                    yield f"data: {json.dumps({'content': content}, ensure_ascii=False)}\n\n"
+                if data.get("done"):
+                    break
     except Exception as e:
         logger.warning(f"Ollama stream failed: {e}")
         fallback = _generate_fallback(message, subject)
@@ -639,9 +651,7 @@ async def stream_message(
 ) -> StreamingResponse:
     """Stream AI response as Server-Sent Events."""
 
-    await _verify_enhanced_chat_student_context(
-        payload.student_id, current_user, db
-    )
+    await _verify_enhanced_chat_student_context(payload.student_id, current_user, db)
 
     # Resolve session before streaming starts
     session_id = payload.session_id
@@ -667,11 +677,9 @@ async def stream_message(
         ):
             # Collect content for DB persistence
             if chunk.startswith("data: ") and "[DONE]" not in chunk:
-                try:
+                with contextlib.suppress(Exception):
                     chunk_data = json.loads(chunk[6:].strip())
                     accumulated += chunk_data.get("content", "")
-                except Exception:
-                    pass
             # Inject session_id in first chunk
             yield chunk
 
@@ -856,7 +864,7 @@ async def _extract_text_from_pdf(file_bytes: bytes) -> str:
         return f"PDF okuma hatasi: {e}"
 
 
-async def _fetch_url_content(url: str) -> str:
+async def _fetch_url_content(url: str) -> str:  # noqa: PLR0911
     """Fetch and extract readable text from a URL (SSRF-safe)."""
     import ipaddress
     import socket
@@ -904,8 +912,8 @@ async def _fetch_url_content(url: str) -> str:
                 text_content = re.sub(r"\s+", " ", text_content).strip()
                 return text_content[:5000]  # max 5000 chars
             if "application/json" in content_type:
-                return resp.text[:5000]
-            return resp.text[:5000]
+                return str(resp.text)[:5000]
+            return str(resp.text)[:5000]
     except Exception as e:
         logger.warning(f"URL fetch failed: {e}")
         return f"URL icerigi alinamadi: {e}"
@@ -934,7 +942,7 @@ async def _analyze_image_with_vision(
         client = get_litellm_client()
         result = await client.analyze_image(image_b64, prompt)
         if result:
-            return result
+            return str(result)
     except Exception as e:
         logger.debug(f"LiteLLM vision not available: {e}")
 
@@ -959,7 +967,7 @@ async def _analyze_image_with_vision(
                 data = resp.json()
                 content = data.get("message", {}).get("content", "")
                 if content:
-                    return content
+                    return str(content)
     except Exception as e:
         logger.debug(f"Ollama vision not available: {e}")
 
@@ -970,7 +978,7 @@ async def _analyze_image_with_vision(
 
 @router.post("/message-with-attachment")
 @limiter.limit("10/minute")
-async def message_with_attachment(
+async def message_with_attachment(  # noqa: PLR0912
     request: Request,
     current_user: Any = _auth_dep,
     db: AsyncSession = _db_dep,
@@ -1128,7 +1136,10 @@ async def bionic_reading_enhanced_chat(
     from core.cache import cache_manager
 
     svc = BionicReadingService(cache_service=cache_manager)
-    user_id = str(getattr(current_user, "id", "anonymous") if current_user else "anonymous")
-    return await svc.process_text(
+    user_id = str(
+        getattr(current_user, "id", "anonymous") if current_user else "anonymous"
+    )
+    res = await svc.process_text(
         text=str(text).strip(), user_id=user_id, use_cache=True
     )
+    return dict(res) if isinstance(res, dict) else {}
