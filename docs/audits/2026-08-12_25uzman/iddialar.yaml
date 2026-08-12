@@ -959,10 +959,15 @@ iddialar:
     gorev: "Model seçimini güncelle veya kaldır (varsayılana bırak)."
     severity_iddia: P2
     severity_olculen: P2
-    durum: dogrulandi
+    durum: uygulandi
     kanit: 'sed -n ''61p'' .claude/settings.json -> "model": "claude-sonnet-4-6" (12 Ağu 2026 ölçümü). Rapor §B.1: Sonnet 4.6 $3/$15, Sonnet 5 $2/$10 aynı bağlamla.'
-    commit: null
-    zorlayici_test: null
+    fix_degeri: |
+      Commit baf59b23e model alanını "claude-sonnet-5"e çevirdi. 13 Ağu doğrulama
+      turunda kütük güncellenirken canlı dosya tekrar kontrol edildi: satır 75
+      "claude-sonnet-5". Regresyon testi mutasyonla çivilendi (bayat ID'ye
+      döndürüldü -> FAIL, geri alındı -> PASS).
+    commit: "baf59b23e"
+    zorlayici_test: "backend/tests/audit/test_claude_settings_hardening.py::test_model_bayat_id_degil"
 
   - id: X02
     uzman: "12 Ağu araç-zinciri ölçümü"
@@ -990,10 +995,16 @@ iddialar:
     gorev: "Ağır dizinlere `Read()` deny ekle (rapor §E12 + large-codebases deseni)."
     severity_iddia: P1
     severity_olculen: P1
-    durum: dogrulandi
+    durum: uygulandi
     kanit: "deny listesinde 31 girdi var, hepsi Bash()/Read(.env)/Write()/Edit(). Ağır dizin Read() denysi 0 adet."
-    commit: null
-    zorlayici_test: null
+    fix_degeri: |
+      Commit baf59b23e permissions.deny'e 13 Read() kuralı ekledi (.archive,
+      node_modules ×2, venv, .venv, coverage, htmlcov, __pycache__,
+      .pytest_cache, .mypy_cache, .ruff_cache, dist, build). 13 Ağu doğrulama
+      turunda canlı dosyada tekrar sayıldı: satır 60-72, 13 girdi mevcut.
+      Regresyon testi mutasyonla çivilendi.
+    commit: "baf59b23e"
+    zorlayici_test: "backend/tests/audit/test_claude_settings_hardening.py::test_agir_dizinler_read_deny_ile_korunuyor"
 
   - id: X04
     uzman: "12 Ağu araç-zinciri ölçümü"
@@ -1246,8 +1257,18 @@ iddialar:
       skip edemez" kuralını zorlayıcı yap — ör. `db_invariant` marker'lı
       testlerde skip'i yasaklayan bir conftest kancası + CI'da DSN zorunlu.
       Bu, yukarıdaki 3 örneğin de kök nedenini kapatır.
-    commit: null
-    zorlayici_test: null
+
+      UYGULANDI (commit 27c8fff02): STRICT mod eklendi
+      (KIRO2_STRICT_DB_INVARIANTS=1). Bu bayrak açıkken DSN yoksa
+      test_invaryant_olculebilir_olmali skip yerine FAIL verir — 13 Ağu
+      doğrulama turunda tekrar koşuldu: gevşek modda 3 skipped (beklenen,
+      taze/içeriksiz makinede meşru), KIRO2_STRICT_DB_INVARIANTS=1 ile
+      DSN yokken 1 failed (skip DEĞİL). DESEN SEVİYESİ fix (conftest-geneli
+      skip yasağı, CI zorunlu DSN) kapsam dışı bırakıldı — bu, üçüncü örneği
+      kapatır ama 1. ve 2. örneği (Golden Flow login, test_migrations.py)
+      etkilemez; onlar ayrı kalemler.
+    commit: "27c8fff02"
+    zorlayici_test: "backend/tests/db/test_question_bank_invariants.py::test_invaryant_olculebilir_olmali"
 
   # --- Tur 3'te U14 doğrulanırken hakemin YAN BULGU olarak çıkardığı kalem --
   # Panelde yoktu. U14'ü çürütmek için dağıtım katmanına bakan hakem,
