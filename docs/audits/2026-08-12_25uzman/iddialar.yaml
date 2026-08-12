@@ -1,0 +1,640 @@
+# 25 Uzman Denetimi — Makine-Okunur İddia Kütüğü
+#
+# NEDEN BU DOSYA VAR
+# -----------------
+# Bu, `docs/research/2026-08-12_claude_code_opus5_arastirma_raporu.md` §C.2.8
+# (Anthropic kod-migrasyon metodolojisi) adım 3'ün uygulamasıdır:
+#   "İş kuyruğunu MEKANİK ve DEVAM ETTİRİLEBİLİR yap. 'Bitti' = çıktı diskte var."
+#
+# Ve §C.1.10 + CLAUDE.md "Mega Audit Lock (S197)" gereği: raporlanan P0'ların
+# %30-70'i fantom olabilir. 12 Ağu 2026 ön ölçümünde, RAPORUN KENDİ §E'sinde
+# 3 bulgu fantom/bayat çıktı (E2, E12, E14). Bu yüzden hiçbir iddia
+# `durum: dogrulandi` olmadan uygulanmaz.
+#
+# DURUM MAKİNESİ (tek yönlü, geri dönüş kanıt ister)
+#   beklemede    -> hiç ölçülmedi
+#   dogrulandi   -> canlı kodda/DB'de KANIT var (kanit alanı dolu)
+#   fantom       -> iddia canlı sistemde YOK veya zaten kapalı (kanit zorunlu)
+#   abartili     -> var ama beyan edilen severity ölçümle düşüyor
+#   uygulandi    -> fix commit'li + test yeşil (commit + test alanı dolu)
+#
+# ZORUNLU ALANLAR (bekçi: tests/audit/test_iddia_kutugu.py)
+#   id, uzman, ankraj, iddia, severity_iddia, durum
+#   durum != beklemede ise -> kanit ZORUNLU
+#   durum == uygulandi     ise -> commit + zorlayici_test ZORUNLU
+#
+# SEVERITY DE BİR ÖLÇÜMDÜR (.claude/rules/audit-methodology.md, 28 Tem 2026):
+#   severity_iddia  = kullanıcı/uzmanın beyanı
+#   severity_olculen = ölçümden sonra bizim atadığımız  (null = henüz ölçülmedi)
+#   İkisi farklıysa GEREKÇE yazılır.
+
+meta:
+  kaynak: "25 uzman paneli, kullanıcı beyanı, 12 Ağu 2026"
+  metodoloji: "docs/research/2026-08-12_claude_code_opus5_arastirma_raporu.md §C.2.8 + §D.1/#13,#14,#16"
+  on_olcum_tarihi: "2026-08-12"
+  on_olcum_bulgusu: "25/25 ankraj dosyası mevcut — dosya seviyesinde fantom yok. Satır/davranış seviyesi ÖLÇÜLMEDİ."
+  yargic_stakes_dili: |
+    SABİT. Değiştirilmesi yasak (rapor §C.6.1: aynı transkript, yalnız sonuç dili
+    değişince %85,6 ↔ %16,7 yanlış etiketleniyor). Doğrulayıcı promptunda
+    KULLANILACAK TEK STAKES CÜMLESİ:
+      "Bu bir envanter doğrulamasıdır. Bulgun ne olursa olsun kimse cezalandırılmaz
+       ve hiçbir şey silinmez; yalnızca kütüğe yazılır."
+    Bu cümle her doğrulama turunda AYNEN geçer.
+
+# ---------------------------------------------------------------------------
+# BÖLÜM 1 — Psikometri, öğrenme algoritmaları, veri modelleri
+# ---------------------------------------------------------------------------
+
+iddialar:
+  - id: U01
+    uzman: "Mark Birnbaum — IRT 3PL / CAT"
+    alan: psikometri
+    ankraj: "backend/core/osym_exam_engine.py:25 (TTLCache 3600) + backend/models/question_bank.py:234-237 (3PL alanları)"
+    iddia: "IRT kalibrasyonu sonrası güncellenen soru, TTLCache(TTL=3600) yüzünden 1 saate kadar bayat servis edilir."
+    gorev: "Kalibrasyon bitince ilgili soru düğümlerini geçersiz kılan Redis Pub/Sub invalidation."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "sed -n '1,60p' backend/core/osym_exam_engine.py   # TTLCache gerçekten var mı, TTL kaç"
+      - "grep -rn 'irt_discrimination\\|irt_guessing\\|irt_upper_asymptote' backend/models/question_bank.py"
+      - "grep -rn 'publish\\|subscribe\\|invalidate' backend/core/irt_daemon.py backend/core/osym_exam_engine.py"
+    curutme_sorusu: "Kalibrasyon zaten cache'i temizliyor olabilir mi? irt_daemon içinde cache.clear()/pop çağrısı var mı?"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U02
+    uzman: "Piotr Woźniak — FSRS-6"
+    alan: hafiza
+    ankraj: "frontend/src/pages/FSRSReviewPage.tsx + FSRS aralık hesabı (backend)"
+    iddia: "'Çok Kolay' işaretlenince aralık 180 günü aşıp YKS tarihini geçebiliyor."
+    gorev: "min(calculated_interval, days_until_yks) cap."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "grep -rn 'interval' backend/algorithms/fsrs*.py backend/services/*fsrs* 2>/dev/null | head -30"
+      - "grep -rn 'maximum_interval\\|max_interval\\|MAX_INTERVAL' backend/ --include=*.py | head"
+      - "# ÖLÇÜM: gerçek bir kartta 'easy' seçilince dönen interval kaç gün?"
+    curutme_sorusu: "FSRS'in kendi maximum_interval parametresi zaten cap koyuyor olabilir — varsayılan 36500 mü, yoksa daha düşük mü ayarlanmış?"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U03
+    uzman: "Albert Corbett — BKT"
+    alan: ogrenci_modelleme
+    ankraj: "backend/models/question_bank.py:62 (TopicHierarchy.subject_area)"
+    iddia: "subject_area bazı legacy satırlarda NULL, jenerik fallback'e düşüyor; Tarih/Felsefe 'Sosyal' altında birleşme riski."
+    gorev: "NULL subject_area'ları 14 YKS alt dalına bağlayan Alembic migrasyonu."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - 'psql -p 5434 -d kiro2 -c "SELECT subject_area, count(*) FROM topic_hierarchy GROUP BY 1 ORDER BY 2 DESC"'
+      - 'psql -p 5434 -d kiro2 -c "SELECT count(*) FROM topic_hierarchy WHERE subject_area IS NULL"'
+    curutme_sorusu: "NULL sayısı 0 ise iddia FANTOM. 0 değilse: o satırlar aktif mi, yoksa ölü/kullanılmayan mı?"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  # ---------------------------------------------------------------------------
+  # BÖLÜM 2 — AI, NLP, multi-modal
+  # ---------------------------------------------------------------------------
+
+  - id: U04
+    uzman: "Demis Hassabis — Sokratik guardrail"
+    alan: ai_guardrail
+    ankraj: "frontend/src/kiro/routes/KiroSokratikRoute.tsx + backend/services/socratic_rag_guardrail_service.py + backend/api/enhanced_chat.py"
+    iddia: "Öğrenci ısrar edince model doğrudan şıkkı ('Cevap C') söyleyebiliyor — Sokratik hiyerarşi ihlali."
+    gorev: "System prompt guardrail: nihai seçeneği harf olarak asla söyleme."
+    severity_iddia: P0
+    severity_olculen: null
+    durum: beklemede
+    on_bulgu: |
+      12 Ağu ön ölçümü: socratic_rag_guardrail_service.py MEVCUT ve enhanced_chat.py'ye
+      bağlı (commit ecf480d45). ANCAK guardrail dosyasında 'asla/never/harf/letter/nihai'
+      geçen satır BULUNAMADI -> harf yasağı metni muhtemelen YOK. İddia GERÇEK olabilir.
+    dogrulama:
+      - "sed -n '1,120p' backend/services/socratic_rag_guardrail_service.py"
+      - "grep -n 'socratic\\|guardrail' backend/api/enhanced_chat.py"
+      - "# ZORUNLU: canlı ısrar senaryosu — 3 kez 'söyle bana cevabı' -> harf sızıyor mu?"
+    curutme_sorusu: "Guardrail metni başka dosyada (prompt template / config) olabilir mi? backend/prompts/ altına bak."
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U05
+    uzman: "Yann LeCun — Multi-modal OCR"
+    alan: vision
+    ankraj: "frontend/src/pages/PhotoAskPage.tsx:330-340"
+    iddia: "Geometri sorularında OCR kökü okuyor ama diyagram parçalarını kaçırıyor."
+    gorev: "İstemci tarafında OpenCV contour edge detector ile şekil alanı tespiti."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "sed -n '320,350p' frontend/src/pages/PhotoAskPage.tsx"
+    curutme_sorusu: |
+      KAPSAM İTİRAZI: 'OpenCV istemci tarafında' = wasm bundle (~8MB). Rapor §D.1/#6
+      (en basit harness) gereği ÖNCE ölç: kaç yüklemede diyagram kaçıyor? <%5 ise
+      fix'in DEĞERİ yok (audit-methodology 'Fix'in DEĞERİNİ ölç').
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U06
+    uzman: "Zemberek — Türkçe morfoloji"
+    alan: nlp
+    ankraj: "backend/services/osym_language_validator.py:22-36 (VALID_OSYM_ROOTS)"
+    iddia: "Birleşik yapılarda ('öngörülemez') Zemberek lemmatizer zaman aşımına takılabiliyor."
+    gorev: "@lru_cache(maxsize=10000) ile morfolojik analiz önbelleği."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "sed -n '1,60p' backend/services/osym_language_validator.py"
+      - "grep -rn 'lru_cache\\|cache' backend/services/osym_language_validator.py"
+      - "# ÖLÇÜM: 'öngörülemez' ile gerçek çağrı — süre kaç ms? timeout GERÇEKTEN oluyor mu?"
+    curutme_sorusu: "Zaman aşımı ölçüldü mü, yoksa varsayım mı? (audit-methodology: 'Varsayım ≠ Ölçüm')"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  # ---------------------------------------------------------------------------
+  # BÖLÜM 3 — Performans, mimari, veritabanı
+  # ---------------------------------------------------------------------------
+
+  - id: U07
+    uzman: "Michael Stonebraker — DB"
+    alan: veritabani
+    ankraj: "backend/core/quality_gate.py:68-80 (mv_safe_for_beta)"
+    iddia: "REFRESH MATERIALIZED VIEW CONCURRENTLY yoğun saatte lock contention yaratabilir."
+    gorev: "Yenilemeyi gece 03:00'a çek, gündüz delta izle."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    on_bulgu: "Görev #428 'celery-beat matview yenileme görevi' TAMAMLANMIŞ — mevcut cron ne? Muhtemelen ZATEN zamanlanmış."
+    dogrulama:
+      - "grep -rn 'mv_safe_for_beta\\|refresh' backend/tasks/*.py backend/celery*.py | head -20"
+      - "grep -rn 'crontab\\|schedule' backend/ --include=*.py | grep -i matview"
+    curutme_sorusu: "CONCURRENTLY zaten yazıcıları bloklamaz — 'lock contention' iddiası PostgreSQL semantiğiyle çelişiyor olabilir. Gerçek bekleme ölçüldü mü?"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U08
+    uzman: "Guido van Rossum — asyncio"
+    alan: eszamanlilik
+    ankraj: "backend/core/irt_daemon.py:27-38 (NLP_POOL, sync_calibrate_wrapper)"
+    iddia: "Thread içinde asyncio.new_event_loop() yerine asyncio.to_thread kullanılmalı."
+    gorev: "sync_calibrate_wrapper -> asyncio.to_thread refactor."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "sed -n '1,60p' backend/core/irt_daemon.py"
+      - "grep -n 'new_event_loop\\|to_thread\\|run_in_executor' backend/core/irt_daemon.py"
+    curutme_sorusu: |
+      SEVERITY İTİRAZI: Bu bir MODERNİZASYON, kusur değil. new_event_loop bozuk
+      davranış üretiyor mu (ölçülmüş)? Hayır ise severity P1 DEĞİL, P3.
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U09
+    uzman: "Martin Thompson — WebSocket"
+    alan: realtime
+    ankraj: "frontend/src/kiro/screens/DuelloPage.tsx"
+    iddia: "Ping > 200ms'te rakip işaretlemesi geriden geliyor."
+    gorev: "NTP epoch timestamp + client-side prediction & interpolation."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    curutme_sorusu: |
+      MİMARİ ÇELİŞKİ: CLAUDE.md 'WebSockets deprecated, SSE'ye migrasyon' diyor.
+      Deprecated bir katmana interpolation yatırımı yapmak doğru mu? ÖNCE mimari karar.
+    dogrulama:
+      - "grep -rn 'WebSocket\\|socket.io\\|ws://' frontend/src/kiro/screens/DuelloPage.tsx | head"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  # ---------------------------------------------------------------------------
+  # BÖLÜM 4 — UI/UX, erişilebilirlik, mobil
+  # ---------------------------------------------------------------------------
+
+  - id: U10
+    uzman: "Dan Abramov — React"
+    alan: frontend_perf
+    ankraj: "frontend/src/App.tsx:53-147 (React.lazy) + ModernStudentDashboard.tsx (ThemeSelector)"
+    iddia: "ThemeSelector inline position:fixed — kaydırmada re-render tetikliyor."
+    gorev: "React.createPortal ile App köküne taşı."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "grep -n 'ThemeSelector' frontend/src/pages/ModernStudentDashboard.tsx frontend/src/App.tsx"
+      - "# ÖLÇÜM: React Profiler — kaydırmada gerçekten re-render var mı?"
+    curutme_sorusu: "position:fixed TEK BAŞINA re-render tetiklemez (CSS'tir). Gerçek sebep state/context olabilir — profiler kanıtı yoksa iddia yanlış teşhis."
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U11
+    uzman: "Marcy Sutton — a11y"
+    alan: erisilebilirlik
+    ankraj: "frontend/src/components/Common/AccessibilityProvider.tsx + soru çözme radyo butonları"
+    iddia: "Şık radyo butonlarında aria-label dinamik metinle çakışıyor."
+    gorev: 'aria-label="A seçeneği: [Şık Metni]" formatı.'
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "grep -rn 'aria-label' frontend/src/kiro/screens/SoruCozmePage.tsx frontend/src/pages/*Soru*.tsx 2>/dev/null | head -20"
+    curutme_sorusu: "Görev #415 (a11y: AccessibilityProvider mount + aria-invalid/label) TAMAMLANMIŞ. Bu iddia o işten SONRA mı ölçüldü?"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U12
+    uzman: "Luke Wroblewski — mobil"
+    alan: mobil_ux
+    ankraj: "frontend/src/styles/touch-optimized.css + CalibrationStatusPage.tsx"
+    iddia: "Admin/öğretmen tablolarında mobil buton 36px (WCAG min 44px)."
+    gorev: "minHeight/minWidth 44px zırhı."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    on_bulgu: "MEMORY: Faz 3 tasarım-portu kanon derslerinde 'minHeight>=44' zaten var — kısmen uygulanmış olabilir."
+    dogrulama:
+      - "grep -rn 'minHeight\\|min-height' frontend/src/pages/CalibrationStatusPage.tsx"
+      - "find frontend/src -name 'touch-optimized.css'"
+    curutme_sorusu: "44px kuralı design-system token'ında merkezîleştirilmiş olabilir; sayfa-sayfa yama gerekmeyebilir."
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  # ---------------------------------------------------------------------------
+  # BÖLÜM 5 — Güvenlik, SRE
+  # ---------------------------------------------------------------------------
+
+  - id: U13
+    uzman: "Troy Hunt — OWASP"
+    alan: guvenlik
+    ankraj: "frontend/src/components/Auth/ProtectedRoute.tsx + backend/api/admin.py"
+    iddia: "/admin/* istemcide korunuyor ama /api/v1/admin/* doğrudan cURL ile IDOR riski."
+    gorev: "Tüm /api/v1/admin/* rotalarına zorunlu rol kapısı."
+    severity_iddia: P0
+    severity_olculen: null
+    durum: beklemede
+    on_bulgu: |
+      12 Ağu ön ölçümü: rol kapısı yardımcıları MEVCUT ama **5+ farklı implementasyon**
+      var (core/auth_dependencies.py:324 require_role, core/authorization.py:66
+      require_admin, core/jwt_auth.py:937 require_admin, core/enhanced_authentication.py:370,
+      core/learning_path_auth.py:259). Parçalı auth KENDİ BAŞINA bulgudur.
+      ASIL SORU: admin rotaları bunlardan BİRİNİ kullanıyor mu?
+    dogrulama:
+      - "grep -rn 'router = APIRouter' backend/api/admin.py"
+      - "grep -c 'Depends' backend/api/admin.py"
+      - "# ZORUNLU KANIT (atlatmayı DENE): curl -i http://localhost:8000/api/v1/admin/... (token YOK) -> 401/403 mü 200 mü?"
+    curutme_sorusu: "Auth global middleware'de olabilir. Token'sız çağrı gerçekten 200 dönüyor mu — ÖLÇ, kod okuyarak karar verme."
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U14
+    uzman: "Werner Vogels — SRE / PWA"
+    alan: offline
+    ankraj: "frontend/src/kiro/screens/CevrimdisiPage.tsx + backend/services/offline_sync_service.py"
+    iddia: "Çevrimdışı çözümler senkronda çakışırsa veri kaybolabiliyor."
+    gorev: "Idempotent event log + vector clock çakışma çözücü."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "grep -n 'idempot\\|conflict\\|version\\|clock' backend/services/offline_sync_service.py"
+      - "# ÖLÇÜM: aynı client_event_id iki kez POST -> ikinci istek ne yapıyor?"
+    curutme_sorusu: |
+      ÖLÇEK İTİRAZI: Vector clock, ÇOK YAZARLI sistemler içindir. Burada tek yazar
+      (öğrencinin kendi cihazı) var. Idempotency key YETERLİ olabilir — vector clock
+      over-engineering (rapor §D.1/#6 + KISS).
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  # ---------------------------------------------------------------------------
+  # BÖLÜM 6 — Müfredat, oyunlaştırma, ölçme
+  # ---------------------------------------------------------------------------
+
+  - id: U15
+    uzman: "ÖSYM Ölçme Komisyonu"
+    alan: mufredat
+    ankraj: "TopicHierarchy.meb_code + YKSEstimateEngine"
+    iddia: "Din Kültürü muafiyeti AYT Sosyal-2 katsayısında ayrı izlenmiyor."
+    gorev: "Muaf öğrenciler için alternatif puan simülasyonu."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "grep -rn 'din_kultur\\|dinkultur\\|muaf\\|felsefe' backend/ --include=*.py -i | head -20"
+      - "grep -rln 'YKSEstimate\\|yks_estimate' backend/ frontend/src | head"
+    curutme_sorusu: "Puan motoru gerçek ÖSYM katsayılarını uyguluyor mu, yoksa zaten yaklaşık mı? Yaklaşıksa muafiyet marjinal."
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U16
+    uzman: "Yu-kai Chou — Octalysis"
+    alan: oyunlastirma
+    ankraj: "frontend/src/pages/ObaPage.tsx"
+    iddia: "Günlük soru çözmeyince XP kaybı (loss aversion) motivasyonu aşırı düşürüyor."
+    gorev: "XP kaybı yerine 'Oba Kalkanı' (streak freeze) eşyası."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      - "grep -rn 'xp\\|XP' frontend/src/pages/ObaPage.tsx | grep -i 'kay\\|lose\\|minus\\|-' | head"
+      - "grep -rn 'penalty\\|ceza\\|decay' backend/services/*gamif* backend/api/gamification*.py 2>/dev/null | head"
+    curutme_sorusu: "XP kaybı GERÇEKTEN implement edilmiş mi, yoksa sadece UI'da mı gösteriliyor? Backend'de decay job var mı?"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  # ---------------------------------------------------------------------------
+  # BÖLÜM 7 — Özet matristen gelen 9 ek kalem (17-25)
+  # Bunlar kullanıcının aksiyon matrisinde var ama gövde metninde detaylandırılmadı.
+  # Ankraj + görev var, gerekçe YOK -> doğrulama yükü daha yüksek.
+  # ---------------------------------------------------------------------------
+
+  - id: U17
+    uzman: "Donald Knuth"
+    alan: matematik_render
+    ankraj: "SoruCozmePage.tsx"
+    iddia: "MathJax SVG render'ı önbelleklenmiyor."
+    gorev: "MathJax SVG caching."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    curutme_sorusu: "Proje KaTeX kullanıyor olabilir (MEMORY: 'KaTeX' geçiyor). MathJax hiç yoksa iddia FANTOM."
+    dogrulama:
+      [
+        "grep -rn 'mathjax\\|MathJax\\|katex\\|KaTeX' frontend/src --include=*.tsx --include=*.ts | head",
+      ]
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U18
+    uzman: "Guillermo Rauch"
+    alan: e2e
+    ankraj: "frontend tests: all-pages-coverage.spec.ts"
+    iddia: "8-worker paralel koşumda flakiness kontrolü yok."
+    gorev: "Paralel flakiness check."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    on_bulgu: "MEMORY (7 Ağu): '111 frontend testi kırık' — flakiness değil, DÜZ KIRIK olabilir. Önce onu ölç."
+    dogrulama:
+      [
+        "find frontend -name 'all-pages-coverage.spec.ts'",
+        "cd frontend && npx vitest run --reporter=dot 2>&1 | tail -20",
+      ]
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U19
+    uzman: "Manu Kapur"
+    alan: pedagoji
+    ankraj: "frontend/src/kiro/screens/InteraktifCozumPage.tsx"
+    iddia: "Productive failure scaffolding yok."
+    gorev: "Kademeli ipucu / üretken başarısızlık iskelesi."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    curutme_sorusu: "MEMORY: 'İnteraktifÇözümPage backend-hazırlık kontrolü + mount' (#425) tamamlanmış. Sayfa canlı mı, yoksa mount edilmemiş mi?"
+    dogrulama: ["grep -n 'InteraktifCozum' frontend/src/App.tsx"]
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U20
+    uzman: "Tanner Linsley"
+    alan: state
+    ankraj: "frontend/src/store/authStore.ts"
+    iddia: "Cross-tab localStorage event listener yok — sekmeler arası oturum tutarsız."
+    gorev: "storage event listener."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      [
+        "grep -n 'storage\\|addEventListener\\|persist' frontend/src/store/authStore.ts",
+      ]
+    curutme_sorusu: "Auth cookie tabanlıysa (CLAUDE.md: 'Cookie (frontend) + Bearer (API) dual auth') localStorage senkronu gereksiz olabilir."
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U21
+    uzman: "Jeffrey Dean"
+    alan: vektor_arama
+    ankraj: "backend/repositories/question_repository.py (pgvector HNSW)"
+    iddia: "HNSW index parametreleri ince ayarlı değil."
+    gorev: "HNSW fine-tuning (m, ef_construction, ef_search)."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    on_bulgu: "CLAUDE.md: vektör arama ZATEN 21ms (hedef <100ms). Fix'in DEĞERİ ölçülmeli — %79 marj varken tuning gereksiz olabilir."
+    dogrulama:
+      [
+        "psql -p 5434 -d kiro2 -c \"\\di+ *hnsw*\"",
+        "grep -rn 'ef_search\\|ef_construction\\|hnsw' backend/ --include=*.py | head",
+      ]
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U22
+    uzman: "Ann Masten"
+    alan: veli
+    ankraj: "frontend/src/pages/ModernParentDashboard.tsx"
+    iddia: "Veli haftalık özet telemetrisi yok."
+    gorev: "Haftalık özet telemetri."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    dogrulama:
+      [
+        "grep -rn 'weekly\\|haftalik\\|summary' frontend/src/pages/ModernParentDashboard.tsx | head",
+      ]
+    curutme_sorusu: "KVKK: veli telemetrisi çocuk verisi işler. KVKK Faz B tamamlanmış — yeni telemetri aydınlatma metnine ekleme GEREKTİRİR. Bu bir ön koşul."
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U23
+    uzman: "Benjamin Bloom"
+    alan: taksonomi
+    ankraj: "OSYMQuestionGeneratorPage.tsx"
+    iddia: "Bloom taksonomisi 6 seviye filtresi yok."
+    gorev: "6-level Bloom filtresi."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    on_bulgu: "Skill mevcut: .claude/skills/taxonomy-validate/ — backend'de SOLO/Marzano/Bloom entegrasyonu CLAUDE.md'de anılıyor. Kısmen VAR olabilir."
+    dogrulama:
+      [
+        "grep -rn 'bloom\\|Bloom' backend/ --include=*.py -l | head",
+        "find frontend/src -name 'OSYMQuestionGenerator*'",
+      ]
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U24
+    uzman: "Steve Schoger"
+    alan: tasarim
+    ankraj: "frontend/src/theme/modern-theme.ts"
+    iddia: "HSL glassmorphism token'ları yok."
+    gorev: "HSL tokenization."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    curutme_sorusu: |
+      KAPSAM: MEMORY 'Faz 3 tasarım-portu 42/42 TAMAM, kanon dersleri belgede
+      (coral CTA, faded->ink.muted)'. Yeni bir tasarım dili eklemek TAMAMLANMIŞ
+      portu bozabilir. Bu bir İYİLEŞTİRME talebi, kusur değil -> P3.
+    dogrulama:
+      [
+        "find frontend/src -name 'modern-theme.ts'",
+        "grep -c 'hsl' frontend/src/theme/modern-theme.ts 2>/dev/null",
+      ]
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: U25
+    uzman: "Kelsey Hightower"
+    alan: devops
+    ankraj: "backend/alembic/versions/"
+    iddia: "Migration geri-alınabilirlik otomatik test edilmiyor."
+    gorev: "Migration reversibility auto-test."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: beklemede
+    degerlendirme: |
+      EN YÜKSEK KALDIRAÇ ADAYI. Rapor §D.1/#14 'doğrulamayı mekanik yap' + §C.2.8
+      'mekanik hakem'. Bu, tek tek bir bug değil — bir DOĞRULAMA DÖNGÜSÜ.
+      Ayrıca CLAUDE.md 'Migration Kuralları' bunu zaten talep ediyor ama
+      ZORLAYICI testi yok (kural #4: tavsiye vs zorlama).
+    dogrulama:
+      - "ls backend/alembic/versions/*.py | wc -l"
+      - "grep -L 'def downgrade' backend/alembic/versions/*.py | wc -l   # downgrade'i OLMAYAN migration sayısı"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  # ---------------------------------------------------------------------------
+  # BÖLÜM 8 — Panelde OLMAYAN, 12 Ağu ölçümünde BULUNAN kalemler
+  # (Kullanıcı "eksikliklerin tümü bunlar değil" dedi — bunlar ölçülmüş eklemeler)
+  # ---------------------------------------------------------------------------
+
+  - id: X01
+    uzman: "12 Ağu araç-zinciri ölçümü"
+    alan: claude_kurulum
+    ankraj: ".claude/settings.json:61"
+    iddia: '"model": "claude-sonnet-4-6" — BAYAT. Sonnet 5 (1M, $2/$10) ve Opus 5 (varsayılan Opus) mevcut.'
+    gorev: "Model seçimini güncelle veya kaldır (varsayılana bırak)."
+    severity_iddia: P2
+    severity_olculen: P2
+    durum: dogrulandi
+    kanit: 'sed -n ''61p'' .claude/settings.json -> "model": "claude-sonnet-4-6" (12 Ağu 2026 ölçümü). Rapor §B.1: Sonnet 4.6 $3/$15, Sonnet 5 $2/$10 aynı bağlamla.'
+    commit: null
+    zorlayici_test: null
+
+  - id: X02
+    uzman: "12 Ağu araç-zinciri ölçümü"
+    alan: claude_kurulum
+    ankraj: ".claude/rules/*.md"
+    iddia: "13 rule dosyasının 9'unda `paths:` yok -> 1.782 satır HER oturumda bağlama giriyor."
+    gorev: "Yol-kapsamlı yükleme (`paths:` frontmatter)."
+    severity_iddia: P1
+    severity_olculen: P1
+    durum: dogrulandi
+    kanit: |
+      Ölçüm (12 Ağu): audit-methodology 288, testing 671, verification 247,
+      systematic-debugging 175, security 160, golden-flows 153, deprecation-guard 39,
+      debugging-first 26, plan-before-execute 23 = 1.782 satır, paths=0.
+      paths VAR olanlar: case-convention, middleware, path-naming, windows-hnsw-build.
+      NOT: Raporun §E2'si "8 dosya, hiçbirinde yok" diyordu -> KISMEN FANTOM, düzeltildi.
+    commit: null
+    zorlayici_test: null
+
+  - id: X03
+    uzman: "12 Ağu araç-zinciri ölçümü"
+    alan: claude_kurulum
+    ankraj: ".claude/settings.json permissions.deny"
+    iddia: "`Read(...)` deny kuralı YOK -> CLAUDE.md'deki 'ripgrep root taraması 30dk timeout' uyarısı yalnızca TAVSİYE."
+    gorev: "Ağır dizinlere `Read()` deny ekle (rapor §E12 + large-codebases deseni)."
+    severity_iddia: P1
+    severity_olculen: P1
+    durum: dogrulandi
+    kanit: "deny listesinde 31 girdi var, hepsi Bash()/Read(.env)/Write()/Edit(). Ağır dizin Read() denysi 0 adet."
+    commit: null
+    zorlayici_test: null
+
+  - id: X04
+    uzman: "12 Ağu araç-zinciri ölçümü"
+    alan: claude_kurulum
+    ankraj: "CLAUDE.md (883 satır) + CLAUDE.local.md (371 satır)"
+    iddia: "Belgelenen sınır <200 satır; 883 satır uyum oranını düşürüyor."
+    gorev: "Path-scoped rule/skill'e taşıyarak ~200 satıra indir."
+    severity_iddia: P1
+    severity_olculen: P1
+    durum: dogrulandi
+    kanit: "wc -l CLAUDE.md = 883 (12 Ağu). Rapor §A.4 + §D.1/#3."
+    commit: null
+    zorlayici_test: null
+
+  - id: X05
+    uzman: "12 Ağu araç-zinciri ölçümü"
+    alan: claude_kurulum
+    ankraj: ".claude/settings.json: excludePatterns, contextManagement"
+    iddia: "Bu iki anahtar Claude Code'un belgelenmiş ayar listesinde YOK — sessizce ölü olabilir."
+    gorev: "Doğrula; ölüyse sil, değilse dokunma."
+    severity_iddia: P2
+    severity_olculen: null
+    durum: beklemede
+    on_bulgu: |
+      ⚠️ ÖLÇÜM GEÇERSİZ — ALET ARIZASI. Binary string grep denendi (2.1.228):
+        excludePatterns=0, contextManagement=0  ama  advisorModel=0 DE ÇIKTI.
+      advisorModel BELGELENMİŞ bir anahtar. Yani "binary'de string yok" =>
+      "anahtar yok" ÇIKARIMI GEÇERSİZ (kontrol kolu beklenen sonucu vermedi).
+      Rapor §D.1/#16: "Kontrol kolu bilinen sonucu vermiyorsa ölçüm bitmiştir."
+      KARAR: SİLME. Doğru alet: canlı `claude doctor` veya settings.md'ye
+      tekil ("bu anahtar var mı?") sorgu.
+    dogrulama:
+      - "claude doctor   # setup checkup, bilinmeyen anahtar uyarısı verir mi?"
+    kanit: null
+    commit: null
+    zorlayici_test: null
+
+  - id: X06
+    uzman: "12 Ağu araç-zinciri ölçümü"
+    alan: guvenlik_mimari
+    ankraj: "backend/core/{auth_dependencies,authorization,jwt_auth,enhanced_authentication,learning_path_auth}.py"
+    iddia: "Rol kontrolü için 5+ AYRI implementasyon var (require_role ×3, require_admin ×2). Parçalı auth = tutarsız kapı riski."
+    gorev: "Kanonik tek kapı belirle; diğerlerini ona delege et veya kaldır."
+    severity_iddia: P1
+    severity_olculen: null
+    durum: dogrulandi
+    kanit: |
+      grep (12 Ağu): auth_dependencies.py:324 require_role · authorization.py:66 require_admin
+      · authorization.py:19 require_roles · jwt_auth.py:860 require_role · jwt_auth.py:937
+      require_admin · enhanced_authentication.py:370 require_role · learning_path_auth.py:259
+      require_role. U13'ün (Troy Hunt P0) ARKASINDAKİ yapısal neden bu olabilir.
+    commit: null
+    zorlayici_test: null

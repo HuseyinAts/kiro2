@@ -55,10 +55,24 @@
       "Edit(d-dataset/eslesmis_sorucevap.jsonl)",
       "Write(d-dataset/ocr_output/**)",
       "Write(d-dataset/answer_keys/**)",
-      "Write(d-dataset/eslesmis_sorucevap.jsonl)"
+      "Write(d-dataset/eslesmis_sorucevap.jsonl)",
+
+      "Read(./.archive/**)",
+      "Read(./node_modules/**)",
+      "Read(./**/node_modules/**)",
+      "Read(./venv/**)",
+      "Read(./.venv/**)",
+      "Read(./frontend/coverage/**)",
+      "Read(./backend/htmlcov/**)",
+      "Read(./**/__pycache__/**)",
+      "Read(./**/.pytest_cache/**)",
+      "Read(./**/.mypy_cache/**)",
+      "Read(./**/.ruff_cache/**)",
+      "Read(./**/dist/**)",
+      "Read(./**/build/**)"
     ]
   },
-  "model": "claude-sonnet-4-6",
+  "model": "claude-sonnet-5",
   "hooks": {
     "PreToolUse": [
       {

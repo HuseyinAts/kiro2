@@ -1,3 +1,11 @@
+---
+paths:
+  - "backend/tests/e2e/**"
+  - "backend/tests/**/test_golden*"
+  - ".github/workflows/golden-flows.yml"
+  - "backend/api/**"
+---
+
 # Golden Flow CI Gate
 
 The Golden Flows are the user-validated set of critical journeys the platform

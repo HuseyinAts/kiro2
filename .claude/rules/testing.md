@@ -3,6 +3,17 @@ name: testing-rules
 description: KIRO2 test standartlari ve kalite gereksinimleri
 trigger: when-testing
 priority: high
+paths:
+  - "**/test_*.py"
+  - "**/*_test.py"
+  - "**/tests/**"
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "**/conftest.py"
+  - "**/pytest.ini"
+  - "**/vitest.config.*"
+  - "backend/.coveragerc"
 ---
 
 # Testing Rules - KIRO2 Standards

@@ -1,3 +1,12 @@
+---
+paths:
+  - "**/_deprecated/**"
+  - "frontend/src/pages/**"
+  - "frontend/src/components/**"
+  - "backend/api/**"
+  - "backend/app/api/**"
+---
+
 # Deprecation Guard
 
 Dosya `_deprecated/` klasorune tasinmadan ONCE asagidaki adimlari ZORUNLU uygula.
