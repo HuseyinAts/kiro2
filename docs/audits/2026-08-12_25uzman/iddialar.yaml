@@ -288,14 +288,57 @@ iddialar:
     iddia: "REFRESH MATERIALIZED VIEW CONCURRENTLY yoğun saatte lock contention yaratabilir."
     gorev: "Yenilemeyi gece 03:00'a çek, gündüz delta izle."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
     on_bulgu: "Görev #428 'celery-beat matview yenileme görevi' TAMAMLANMIŞ — mevcut cron ne? Muhtemelen ZATEN zamanlanmış."
     dogrulama:
       - "grep -rn 'mv_safe_for_beta\\|refresh' backend/tasks/*.py backend/celery*.py | head -20"
       - "grep -rn 'crontab\\|schedule' backend/ --include=*.py | grep -i matview"
     curutme_sorusu: "CONCURRENTLY zaten yazıcıları bloklamaz — 'lock contention' iddiası PostgreSQL semantiğiyle çelişiyor olabilir. Gerçek bekleme ölçüldü mü?"
-    kanit: null
+    severity_olculen: yok
+    durum: fantom
+    kanit: |
+      TUR 3 (wf_797a2327-67f). İki çürütücü OLGULARDA anlaşıyor, yalnız
+      ETİKETTE ayrıldı (fantom vs abartılı P3) -> 3. HAKEM karar verdi: fantom.
+
+      🔴 HAKEMİN BAĞIMSIZ DENEY KOLU (ikisinin de yapmadığı): canlı DB'de
+      CONCURRENTLY'Lİ ve CONCURRENTLI'SIZ refresh'i AYRI AYRI tetikleyip
+      kilitleri ölçtü:
+        CONCURRENTLY'Lİ (gerçek fonksiyon): ExclusiveLock alıyor.
+          SET lock_timeout='2s'; SELECT count(*) FROM mv_safe_for_beta
+          -> BAŞARILI, reader_saw=0 (BLOKLANMADI)
+        CONCURRENTLY'SİZ (kontrol kolu, bilinen-kötü hâl):
+          REFRESH MATERIALIZED VIEW mv_safe_for_beta (CONCURRENTLY YOK)
+          -> AccessExclusiveLock, okuyucu "ERROR: canceling statement due to
+             lock timeout"
+        Kontrol kolu iki hâli AYIRT ETTİ -> ölçüm geçerli, alet arızası değil.
+
+      Migration'ın kendi docstring'i (20260727_mv_safe_for_beta.py:29-31)
+      CONCURRENTLY'nin SEÇİLME GEREKÇESİNİ zaten şöyle açıklıyor:
+        "CONCURRENTLY olmadan yenileme matview'i AccessExclusive kilitler,
+         yenileme süresince tüm soru servisi durur."
+      Yani iddia, sistemin CONCURRENTLY'yi seçme SEBEBİNİ kusur sanıyor.
+
+      GÖREV TARAFI ZATEN KAPALI: celery_app.py:129-131 beat_schedule
+      "refresh-safe-pool-nightly" crontab(hour=3, minute=30) — KOŞAN
+      kiro2-celery-beat imajında canlı (docker exec ile doğrulandı, çalışma
+      ağacında değil), modül include'da, beat adı ile @shared_task adı
+      birebir eşleşiyor. Görev #428'de zaten tamamlanmış (27 Tem 2026).
+
+      Advisory lock (quality_gate_tasks.py:29-35): gündüz küratör-tetikli
+      refresh'ler pg_try_advisory_xact_lock ile zaten tekilleştiriliyor;
+      self-contention koddan önlenmiş.
+
+      Ankraj yanlış dosyayı gösteriyor: quality_gate.py:68-80'de hiç
+      REFRESH/CONCURRENTLY yok.
+
+      YAN ÖLÇÜM (U07'yi değiştirmez, sonraki iddiaları etkiler):
+      question_bank 12 sütun, quality_review_status sütunu YOK, questions
+      tablosu YOK — bu ortamda hacme/süreye bağlı hiçbir iddia ölçülemez.
+    fix_degeri: |
+      SIFIRIN ALTINDA. Kilit kazancı ölçülen olarak 0 (CONCURRENTLY zaten
+      okuyucuyu bloklamıyor); bedeli var (kapı bayatlığının artması —
+      quality_gate.py docstring'i "matview bayatlığı + 1 saat" diye zaten
+      uyarıyor). Görev tarafı da zaten kapalı. Önerilen değişikliğin hem
+      teknik gerekçesi hem de aksiyon kısmı geçersiz.
     commit: null
     zorlayici_test: null
 
@@ -306,15 +349,49 @@ iddialar:
     iddia: "Thread içinde asyncio.new_event_loop() yerine asyncio.to_thread kullanılmalı."
     gorev: "sync_calibrate_wrapper -> asyncio.to_thread refactor."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
     dogrulama:
       - "sed -n '1,60p' backend/core/irt_daemon.py"
       - "grep -n 'new_event_loop\\|to_thread\\|run_in_executor' backend/core/irt_daemon.py"
     curutme_sorusu: |
       SEVERITY İTİRAZI: Bu bir MODERNİZASYON, kusur değil. new_event_loop bozuk
       davranış üretiyor mu (ölçülmüş)? Hayır ise severity P1 DEĞİL, P3.
-    kanit: null
+    severity_olculen: P3
+    durum: abartili
+    kanit: |
+      TUR 3 (wf_797a2327-67f), iki çürütücü MUTABIK.
+
+      Ankraj birebir doğru: irt_daemon.py:27-38 sync_calibrate_wrapper,
+      asyncio.new_event_loop() + run_until_complete() + close(); çağrı yeri
+      _run_loop:113-121 `await loop.run_in_executor(NLP_POOL,
+      sync_calibrate_wrapper, ...)` — main event loop'u BLOKLAMAMA amacı
+      ZATEN bu satırda karşılanıyor.
+
+      🔴 KOD OKUYARAK DEĞİL TETİKLEYEREK ölçüldü: aynı deseni (ThreadPoolExecutor
+      + her çağrıda new_event_loop+run_until_complete+close, 2 thread'de
+      tekrar kullanım, 20 eşzamanlı görev) izole ortamda çalıştırdı:
+        RESULTS: [0,2,4,...,38]  — 0/20 hata, deterministik doğru sonuç.
+      Desen TETİKLENEBİLİR BOZUKLUK ÜRETMİYOR.
+
+      "asyncio.to_thread refactor" LİTERAL OLARAK UYGULANAMAZ: to_thread
+      SYNC fonksiyonu ASYNC koddan çağırmak içindir (await zorunlu). İhtiyaç
+      TERS yönde: ASYNC coroutine'i (calibrate_question_irt, doğrulandı:
+      "async def calibrate_question_irt") SYNC bağlamdan (thread-pool worker)
+      çalıştırmak. to_thread bu yöne uygulanamaz.
+
+      Cross-loop risk kontrolü: IRTCalibrationService.__init__ yalnız saf
+      string/numpy state taşıyor; DB session, asyncio.Lock/Queue/Event YOK
+      -> "Future/Task attached to different loop" hata sınıfı yapısal olarak
+      mümkün değil.
+
+      Codebase'de to_thread GERÇEKTEN var ve DOĞRU yönde kullanılıyor
+      (irt_service.py:479-489, sync fonksiyonu async'ten çağırıyor) — yani
+      geliştirici deseni biliyor, burada kasıtlı olarak farklı yöne ihtiyaç var.
+    fix_degeri: |
+      Yakın sıfır / davranışsal kazanç yok. Desen zaten hatasız (0/20 hata,
+      kontrol kolu). Literal "to_thread refactor" tarif edildiği yerde
+      uygulanamaz. En fazla kozmetik sadeleştirme (new_event_loop+run_until
+      _complete+close -> asyncio.run(), 4 satır->1 satır), davranış değişmez,
+      defekt düzeltmesi değil.
     commit: null
     zorlayici_test: null
 
@@ -463,8 +540,6 @@ iddialar:
     iddia: "Çevrimdışı çözümler senkronda çakışırsa veri kaybolabiliyor."
     gorev: "Idempotent event log + vector clock çakışma çözücü."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
     dogrulama:
       - "grep -n 'idempot\\|conflict\\|version\\|clock' backend/services/offline_sync_service.py"
       - "# ÖLÇÜM: aynı client_event_id iki kez POST -> ikinci istek ne yapıyor?"
@@ -472,7 +547,51 @@ iddialar:
       ÖLÇEK İTİRAZI: Vector clock, ÇOK YAZARLI sistemler içindir. Burada tek yazar
       (öğrencinin kendi cihazı) var. Idempotency key YETERLİ olabilir — vector clock
       over-engineering (rapor §D.1/#6 + KISS).
-    kanit: null
+    severity_olculen: yok
+    durum: fantom
+    kanit: |
+      TUR 3 (wf_797a2327-67f). İki çürütücü OLGULARDA anlaşıyor
+      (idempotency guard zaten var), yalnız hangi katmanın belirleyici
+      olduğunda ayrıldı -> 3. HAKEM karar verdi: fantom.
+
+      İDEMPOTENCY GUARD ZATEN VAR (20 Nis 2026, b642f91cf):
+        offline_sync_service.py:226-263 process_sync_results():
+          consumed_at dolu paket -> "already_consumed" reddi, commit YOK.
+        Canlı test: test_sync_results_s4_replay_rejected_as_batch PASSED
+        (6/6 passed).
+
+      🔴 HAKEMİN BAĞIMSIZ ÖLÇÜMÜ — İKİ ÇÜRÜTÜCÜNÜN DE BAKMADIĞI DAĞITIM
+      KATMANI:
+        curl /api/v1/offline/sync-results (host)     -> 404
+        curl /api/v1/offline/sync-status (host)       -> 404
+        docker exec kiro2-backend: import api.offline_sync_api
+          -> ModuleNotFoundError: No module named 'api.offline_sync_api'
+        docker exec kiro2-backend ls /app/api | wc -l -> 42  (host: 148)
+        host çalışma ağacında: import api.offline_sync_api OK, 4 yol var
+        -> KAYNAK ÇALIŞMA AĞACINDA VAR, DAĞITILAN İMAJDA YOK.
+
+      EVREN-SEVİYESİ ÖLÇÜM:
+        SELECT count(*) FROM offline_sync_packages -> 0
+        -> üretimde bugüne dek TEK bir senkron paketi bile üretilmemiş.
+
+      FRONTEND'DE YAKALAMA YOLU YOK:
+        grep "addToSyncQueue|enqueue|offlineQueue" frontend/src -> 0 sonuç
+        examStore.ts:400 hata olunca set({saveStatus:'error'}) — kuyruğa
+        YAZMA yok. Çakışacak "olay" hiç üretilmiyor.
+
+      Hakemin kendi runtime probe'u (test dosyasını kullanmadan doğrudan
+      çağrı): taze paket -> synced=0/failed=1; tekrar -> already_consumed,
+      commit_awaited=0. Guard'ın kendisi çalışıyor.
+
+      3 ön-koşulun ÜÇÜ DE yok: yakalama (0) + dağıtılan uç (404) + gerçek
+      paket (0 satır). "Çakışma -> veri kaybı" senaryosu şu an ürünün
+      hiçbir yerinde tetiklenemez.
+    fix_degeri: |
+      SIFIR. Vector clock veya SELECT FOR UPDATE eklemek hiçbir kullanıcı-
+      görünür davranışı değiştirmez — özellik dağıtılmamış (404) ve hiç
+      kullanılmamış (0 paket). Yeniden gündeme gelirse tek belirleyici ölçüm:
+      offline_sync_packages > 0 VE canlı openapi'de /api/v1/offline/sync-
+      results yolu görünmesi. İkisi birden olmadan bu iddia semptom değiştirmez.
     commit: null
     zorlayici_test: null
 
@@ -527,14 +646,47 @@ iddialar:
     iddia: "MathJax SVG render'ı önbelleklenmiyor."
     gorev: "MathJax SVG caching."
     severity_iddia: P2
-    severity_olculen: null
-    durum: beklemede
     curutme_sorusu: "Proje KaTeX kullanıyor olabilir (MEMORY: 'KaTeX' geçiyor). MathJax hiç yoksa iddia FANTOM."
-    dogrulama:
-      [
-        "grep -rn 'mathjax\\|MathJax\\|katex\\|KaTeX' frontend/src --include=*.tsx --include=*.ts | head",
-      ]
-    kanit: null
+    severity_olculen: yok
+    durum: fantom
+    kanit: |
+      TUR 3 (wf_797a2327-67f), iki çürütücü MUTABIK. curutme_sorusu'nun
+      kendi hipotezi birebir doğrulandı.
+
+      Ankraj dosyasında (SoruCozmePage.tsx) sıfır isabet:
+        grep "mathjax|MathJax|katex|KaTeX|MathText" SoruCozmePage.tsx -> 0
+      QuestionCard.tsx (SoruCozmePage'in tek render bileşeni) soruyu/şıkları
+      HAM METİN basıyor: <p>{soru}</p>, <span>{sec}</span> — math render
+      katmanı hiç devrede değil.
+
+      Canlı matematik render zinciri KaTeX, MathJax DEĞİL:
+        MathText.tsx: "KaTeX ile $...$ ve $$...$$ render eder"
+        MarkdownRenderer.tsx: remark-math + rehype-katex
+        MathText zaten React.memo ile sarılı (içerik değişmedikçe yeniden
+        hesaplama YOK) — "caching yok" iddiası bu bileşen için de yanlış.
+      7 canlı ekran (OSYMExamInterface, DiagnosticTestInterface, AnswerPanel,
+      QuestionPanel, ProductiveFailureFlow, AdaptifTestPage, ...) MathText
+      kullanıyor. SoruCozmePage bunlardan biri DEĞİL.
+
+      MathJax'i GERÇEKTEN çağıran tek dosya (Questions/QuestionBank.tsx)
+      hiçbir yerden import edilmiyor -> ölü/orphan kod.
+      MathJax'in FİİLEN ÇALIŞTIĞI tek yer: MathFormula.tsx
+      (/accessibility-demo rotası, soru çözme akışı DEĞİL) — VE bu dosyanın
+      kendi init kodu SVG font-cache'i ZATEN AÇIYOR: `svg: {fontCache:
+      'global'}`. Yani "MathJax SVG önbelleklenmiyor" iddiası, MathJax'in
+      fiilen çalıştığı TEK yerde teknik olarak da YANLIŞ.
+
+      Git tarihi: SoruCozmePage.tsx'in 4 commit'lik geçmişinde MathJax/KaTeX
+      hiç geçmedi; math-render geliştirme çizgisi tamamen KaTeX üzerinden
+      ilerlemiş (e5b889aff, 53c9c3762, 6a97a5c17, 4e77cadd8, 30f6752a5).
+
+      KONTROL KOLU: aynı grep bilinen-var (MarkdownRenderer.tsx, MathText.tsx)
+      ve bilinen-yok (SoruCozmePage.tsx) örneklerini doğru ayırt etti.
+    fix_degeri: |
+      Sıfıra yakın. Önerilen görev canlı bir yüzey bulamaz — SoruCozmePage
+      hiç MathJax kullanmıyor. Gerçek teknoloji (KaTeX) zaten React.memo ile
+      önbellekli. Kaygı KaTeX render maliyetiyse bu AYRI ve ÖLÇÜLMEMİŞ bir
+      konu (formül-başına süre bilinmiyor) — U17'nin kapsamı değil.
     commit: null
     zorlayici_test: null
 
@@ -615,14 +767,49 @@ iddialar:
     iddia: "Cross-tab localStorage event listener yok — sekmeler arası oturum tutarsız."
     gorev: "storage event listener."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
     dogrulama:
       [
         "grep -n 'storage\\|addEventListener\\|persist' frontend/src/store/authStore.ts",
       ]
     curutme_sorusu: "Auth cookie tabanlıysa (CLAUDE.md: 'Cookie (frontend) + Bearer (API) dual auth') localStorage senkronu gereksiz olabilir."
-    kanit: null
+    severity_olculen: P2
+    durum: abartili
+    kanit: |
+      TUR 3 (wf_797a2327-67f). İki çürütücü İKİSİ DE "abartılı" dedi ama
+      farklı severity'de (P3 vs P2) -> 3. HAKEM karar verdi: P2.
+
+      Teknik çekirdek doğrulandı: authStore.ts + repo geneli grep'te
+      addEventListener('storage'), BroadcastChannel, onstorage -> 0 sonuç.
+      initializeAuth() (AuthProvider.tsx:18-22) sekme başına TEK sefer,
+      visibilitychange/interval yok. zustand v4 persist'in bilinen
+      sınırlaması (manuel eklenmesi gerekir).
+
+      🔴 HAKEMİN BAĞIMSIZ ÖLÇÜMÜ — İKİ ÇÜRÜTÜCÜNÜN DE MODELLEMEDİĞİ
+      SENARYO: her ikisi de yalnız "aynı kullanıcı başka sekmede logout"
+      senaryosunu inceledi ve 401-interceptor'ün kendiliğinden düzelttiğini
+      söyledi. Ama PAYLAŞIMLI CİHAZDA "başka sekmede FARKLI KULLANICI ile
+      LOGIN" senaryosunda: cookie değişir, istekler 200 döner, 401 HİÇ
+      OLUŞMAZ (apiClient.ts:83, 403'ü yönlendirmeye bağlamaz) — açık sekme
+      yanlış kimliği/rolü sayfa yenilenene kadar KENDİLİĞİNDEN DÜZELMEZ.
+
+      KULLANICIYA ÇIKAN GERÇEK KATMAN (ProtectedRoute.tsx:23):
+        useAuthStore() BELLEK-İÇİ store'u okuyor, localStorage'ı DEĞİL.
+        `loading` kapısı (satır 26-38) "persisted isAuthenticated'a
+        güvenme, cookie süresi dolmuş olabilir" yorumuyla YENİ mount'ta
+        sunucu gerçeğini bekliyor — ama AÇIK KALAN sekmede bu kapı
+        tetiklenmiyor.
+
+      KONTROL KOLU: filtresiz addEventListener grep'i 40+ bilinen-iyi
+      eşleşme döndürdü (api.ts SSE, App.tsx 'load', kiro2DB.ts 'online')
+      -> 'storage' yokluğu alet arızası değil, gerçek yokluk.
+    fix_degeri: |
+      P1 DEĞİL: yetkilendirmeyi sunucu her istekte cookie'den zorluyor,
+      erişim bypass'ı ölçülmedi. P3 DE DEĞİL: kendiliğinden düzelmeyen
+      yanlış-kimlik gösterimi + 403 ile kırılan rol-bazlı sayfalar salt
+      görsel cila değil. Fix scope küçük: authStore.ts'e
+      `window.addEventListener('storage', ...)` + `persist.rehydrate()`
+      eklemek; aynı sistemik boşluk cognitiveStore/examStore/settingsStore'u
+      da etkiliyor, tek noktadan (persist config helper) kapatılabilir.
     commit: null
     zorlayici_test: null
 
@@ -1059,5 +1246,56 @@ iddialar:
       skip edemez" kuralını zorlayıcı yap — ör. `db_invariant` marker'lı
       testlerde skip'i yasaklayan bir conftest kancası + CI'da DSN zorunlu.
       Bu, yukarıdaki 3 örneğin de kök nedenini kapatır.
+    commit: null
+    zorlayici_test: null
+
+  # --- Tur 3'te U14 doğrulanırken hakemin YAN BULGU olarak çıkardığı kalem --
+  # Panelde yoktu. U14'ü çürütmek için dağıtım katmanına bakan hakem,
+  # kaynak/imaj kaymasının kendisiyle karşılaştı — offline özelliği hiç
+  # dağıtılmamış.
+
+  - id: X11
+    uzman: "12 Ağu Tur 3 U14 doğrulama turu (hakem yan bulgusu)"
+    alan: dagitim_kaymasi
+    ankraj: "backend/api/offline_sync_api.py (host çalışma ağacı) vs kiro2-backend imajı /app/api/"
+    iddia: "offline_sync_api.py host çalışma ağacında var (4 yol, import OK) ama DAĞITILAN imajda YOK (ModuleNotFoundError). Ayrıca offline_sync_service.py:207 docstring 'student_answers'a yazdığını söylüyor, kod yalnız FSRS kartı (db.add(card)) yazıyor — StudentAnswer HİÇ oluşturulmuyor."
+    gorev: "İKİ AYRI FIX: (1) imajı yeniden build et VEYA router'ı bilerek dışarıda tutma kararını belgele. (2) docstring'i koda uydur (ya student_answers yazımını ekle ya da yalanı sil)."
+    severity_iddia: P1
+    severity_olculen: P2
+    durum: dogrulandi
+    kanit: |
+      DAĞITIM KAYMASI (hakem, U14 doğrulaması sırasında):
+        curl /api/v1/offline/sync-results (host, backend:8000)  -> 404
+        curl /api/v1/offline/sync-status                        -> 404
+        docker exec kiro2-backend: import api.offline_sync_api
+          -> ModuleNotFoundError: No module named 'api.offline_sync_api'
+        docker exec kiro2-backend ls /app/api | wc -l -> 42   (host: 148)
+        host çalışma ağacı: import api.offline_sync_api OK, prefix=/api/v1/offline, 4 yol
+        DISABLED_ROUTERS = {} (host'ta da boş) -> yasak DEĞİL, imajda dosya
+        fiziksel olarak YOK. Bu, kasıtlı bir routing kararı değil, imaj
+        bayatlığı.
+        openapi.json (canlı): toplam 326 yol, 'offline' geçen 0 yol.
+
+      DOCSTRING YALANI (hakem, U14 kanıtının 5. maddesi):
+        offline_sync_service.py:207 docstring: "Inserts a record into
+        student_answers"
+        grep "student_answers|StudentAnswer" offline_sync_service.py
+          -> yalnız 207. satırdaki docstring'de geçiyor.
+        Gerçek yazma: yalnız db.add(card) (FSRS kartı). Yol CANLI OLSAYDI
+        bile (imaj güncellense bile), synced_count artacak ama öğrenci
+        cevabı HİÇ KALICILAŞMAYACAKTI — iddianın (U14) anlattığı çakışma
+        mekanizmasından TAMAMEN FARKLI, ayrı bir kusur.
+    fix_degeri: |
+      ÖLÇÜLEBİLİR ve iki parçalı:
+        (1) İmaj kaymasının kazancı: `docker compose build --no-cache backend`
+            sonrası aynı curl'ler 404 yerine gerçek response dönmeli
+            (var/yok, tek komutla doğrulanır).
+        (2) Docstring/kod uyuşmazlığının kazancı: (1) uygulandıktan SONRA
+            gerçek bir sync isteği atılıp `SELECT * FROM student_answers
+            WHERE ...` ile satır oluşup oluşmadığı görülür. Şu an (1) kapalı
+            olduğu için (2) tetiklenemez — sıralı bağımlılık var, (1) önce.
+      severity_iddia P1 -> P2: özellik zaten kullanılmıyor (0 paket, X09/U14
+      ile aynı ortam), acil değil ama sessizce yanlış davranacak bir kod
+      yolu üretim imajına girmeden önce yakalanmalı.
     commit: null
     zorlayici_test: null
