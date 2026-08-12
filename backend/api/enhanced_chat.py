@@ -5,7 +5,7 @@ import contextlib
 import json
 import logging
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
@@ -228,6 +228,19 @@ SOCRATIC_SYSTEM_PROMPT = (
     "ayni sayiyi cikarabilir miyiz? Hangi sayiyi cikarmaliyiz ve neden?'"
 )
 
+# U04 (12 Ağu 2026) — çıktı-tarafı zorlama sabitleri. Kanıt: canlı tetiklemede
+# tek ısrar sonrası model TÜM yanıtı "C) 4" / "C" olarak üretti.
+STRENGTHENED_REMINDER = (
+    "\n\nÖNEMLİ UYARI: Az önce cevabı doğrudan söyledin. Bunu KESİNLİKLE YAPMA. "
+    "Öğrenciye asla nihai cevabı veya şıkkı harf/sayı olarak verme — yalnızca "
+    "yönlendirici bir soru sor."
+)
+
+SOCRATIC_FALLBACK_MESSAGE = (
+    "Cevabı doğrudan söyleyemem, ama beraber bulalım: bu sorudaki ilk adımı "
+    "birlikte düşünelim mi? Sence hangi işlemi yapmalıyız?"
+)
+
 
 # ---------------------------------------------------------------------------
 # Models
@@ -364,6 +377,47 @@ def _generate_fallback(message: str, subject: str) -> str:
         "Sorunuzu aldim. Su anda AI motoru baglantisi kuruluyor. "
         "Lutfen biraz sonra tekrar deneyin veya sorunuzu daha detayli yazin."
     )
+
+
+# ---------------------------------------------------------------------------
+# U04: Sokratik guardrail çıktı-tarafı zorlaması
+# ---------------------------------------------------------------------------
+async def enforce_socratic_output(
+    response_text: str,
+    teaching_mode: str,
+    regenerate: Callable[[], Awaitable[str]],
+) -> str:
+    """Sokratik modda dogrudan-cevap sizintisini zorlayici sekilde engeller.
+
+    teaching_mode != "socratic" ise dokunmadan doner (direct mod ogrencisi
+    bilerek dogrudan cevap istiyor, bu bir ihlal degil).
+    Sizinti varsa `regenerate()` ile BIR KEZ yeniden dener; retry sonucu da
+    AYNI dedektorle yeniden kontrol edilir. O da sizarsa (veya bossa) sabit
+    yonlendirme sablonuna duser -- sizinti HICBIR dalda client'a ulasmaz.
+    """
+    if teaching_mode != "socratic":
+        return response_text
+
+    eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(
+        response_text
+    )
+    if not eval_res["direct_answer_detected"]:
+        return response_text
+
+    logger.warning(
+        "Sokratik sizinti tespit edildi, guclendirilmis prompt ile yeniden deneniyor"
+    )
+    retried_text = await regenerate()
+    retried_eval = socratic_rag_guardrail_service.validate_socratic_compliance(
+        retried_text
+    )
+    if retried_text and not retried_eval["direct_answer_detected"]:
+        return retried_text
+
+    logger.warning(
+        "Sokratik sizinti yeniden deneme sonrasi da tespit edildi, sabit sablona dusuluyor"
+    )
+    return SOCRATIC_FALLBACK_MESSAGE
 
 
 # ---------------------------------------------------------------------------
