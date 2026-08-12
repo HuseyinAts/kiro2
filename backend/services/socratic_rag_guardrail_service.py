@@ -20,6 +20,22 @@ DIRECT_ANSWER_PATTERNS = [
     r"bu sorunun cevabı\b",
 ]
 
+# X08 (12 Ağu 2026): modelin GERÇEKTE ürettiği çıplak-harf sızıntısı ("C", "C) 4")
+# mevcut regex'lerin ("cevap C" gibi kelime-bağımlı) YAKALAYAMADIĞI biçim.
+# fullmatch kullanılır (search DEĞİL) — "C vitamini alman lazım" gibi cümle
+# İÇİNDE geçen harfleri YANLIŞ-POZİTİF olarak yakalamamak için: gerçek Sokratik
+# yanıt asla SADECE bir harf/şıktan ibaret olmaz, her zaman açıklayıcı/soru
+# metni taşır. (audit-methodology.md "Ucuz Filtre Tuzağı": pozitif kanıt ara,
+# yokluk değil — burada pozitif kanıt "yanıtın TAMAMI bu kalıba uyuyor mu".)
+_BARE_ANSWER_RE = re.compile(r"^[A-E]\)?(\s*-?\d+(?:[.,]\d+)?)?$", re.IGNORECASE)
+
+
+def _is_bare_answer_leak(response_text: str) -> bool:
+    """Yanıtın TAMAMI yalnız bir şık harfi (+ opsiyonel sayı) mı?"""
+    stripped = response_text.strip().rstrip(".!")
+    return bool(_BARE_ANSWER_RE.fullmatch(stripped))
+
+
 PROMPT_INJECTION_PATTERNS = [
     r"ignore (all )?previous instructions",
     r"bütün talimatları unut",
@@ -121,11 +137,12 @@ class SocraticRAGGuardrailService:
             }
 
         # Direct answer check
-        direct_answer_detected = False
-        for regex in self.direct_answer_regexes:
-            if regex.search(response_text):
-                direct_answer_detected = True
-                break
+        direct_answer_detected = _is_bare_answer_leak(response_text)
+        if not direct_answer_detected:
+            for regex in self.direct_answer_regexes:
+                if regex.search(response_text):
+                    direct_answer_detected = True
+                    break
 
         # Question ratio evaluation
         questions = [q for q in response_text.split("?") if q.strip()]
@@ -161,9 +178,7 @@ class SocraticRAGGuardrailService:
         single_dollar_count = text.count("$") - (text.count("$$") * 2)
         double_dollar_count = text.count("$$")
 
-        is_balanced = (single_dollar_count % 2 == 0) and (
-            double_dollar_count % 2 == 0
-        )
+        is_balanced = (single_dollar_count % 2 == 0) and (double_dollar_count % 2 == 0)
         return {
             "is_valid": is_balanced,
             "single_dollar_count": single_dollar_count,
@@ -179,7 +194,9 @@ class SocraticRAGGuardrailService:
         subj_data = CURRICULUM_KNOWLEDGE_BASE.get(subj_clean, {})
 
         for topic, concepts in subj_data.items():
-            if topic in query_clean or any(word in query_clean for word in topic.split("_")):
+            if topic in query_clean or any(
+                word in query_clean for word in topic.split("_")
+            ):
                 matched_concepts.extend(concepts)
 
         if not matched_concepts and subj_data:
@@ -191,7 +208,8 @@ class SocraticRAGGuardrailService:
             "subject": subject,
             "grounded_concepts": matched_concepts[:5],
             "rag_context_text": (
-                f"MEB Müfredat Bağlamı ({subject.upper()}): " + "; ".join(matched_concepts[:5])
+                f"MEB Müfredat Bağlamı ({subject.upper()}): "
+                + "; ".join(matched_concepts[:5])
                 if matched_concepts
                 else f"{subject.upper()} Genel YKS Müfredat İlkeleri."
             ),
