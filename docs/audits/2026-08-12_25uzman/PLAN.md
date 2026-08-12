@@ -80,10 +80,10 @@ okunduktan sonra yüklenirler — yani kapı, kapatması gereken andan **sonra**
 
 ---
 
-## 3. FAZ 2 — 25 iddianın ölçümü ⏳ **KUYRUKTA**
+## 3. FAZ 2 — 25 iddianın ölçümü 🔄 **SÜRÜYOR (2/26 bitti)**
 
 **Koşturma:** Claude'a `use a workflow: iddia-dogrulama` de.
-Alt küme: `args: {ids: ["U04","U13"]}` (önce iki P0).
+Alt küme: `args: {ids: ["U04","U13"]}`.
 
 **Beklenen çıktı:** her iddia için `dogrulandi | fantom | abartili | olculemedi`
 + kanıt + `severity_olculen` + `fix_degeri`.
@@ -92,16 +92,69 @@ Alt küme: `args: {ids: ["U04","U13"]}` (önce iki P0).
 %10'un altındaysa **çürütücüler yeterince agresif değil** demektir — prompt
 kalibre edilir, tur tekrarlanır (§C.1.5 *"evaluator ayarlaması gerekir"*).
 
+### 3.0 Tur 1 sonucu ✅ (12 Ağu, `wf_afc7dcf4-cf3`, commit `ff592f15f`)
+
+4 ajan · 0 hata · **fantom oranı %50** → bant içinde, kalibrasyon **sağlıklı**.
+İki çürütücü ikisinde de mutabık → hakem gerekmedi.
+
+| ID | Yargı | Ölçülen | Belirleyici kanıt |
+|---|---|---|---|
+| **U04** | 🔴 `dogrulandi` | **P0** | **Canlı tetiklendi.** Gerçek `qwen3:8b` + gerçek system prompt, 3 turlu diyalog: T2 → `"C) 4"`, T3 → `"C"`. İddia *"ısrar edince"* diyordu; **tek ısrar yetti** |
+| **U13** | ⚪ `fantom` | **yok** | **Atlatma denendi.** 4 admin ucu token'sız + geçersiz token → hepsi **401**. Kontrol kolu `/health` → 200. 17/17 uç aynı kapı altında; `test_admin_api.py` 46 passed |
+
+**Kalibrasyonun asıl kanıtı U13'tür:** çürütücü bir P0'ı gerçekten çürüttü, yani
+onaylamaya değil çürütmeye çalıştığı **ölçüldü**. Dört çürütme yolunun dördü de
+her iki iddiada sonuçlu raporlandı.
+
+**U04'ün kök nedeni tek değil, üç katmanlı ve seri bağlı:**
+1. Guardrail **yalnız system prompt**'ta (`enhanced_chat.py:213-231`) — çıktı-tarafı zorlama yok
+2. Frontend'in çağırdığı gerçek uç `/enhanced-chat/stream` guardrail servisini **hiç çağırmıyor**
+3. `direct_answer_detected` hesaplanıyor ama **mesajı değiştirmiyor** (sadece metadata)
+
+Bu, `audit-methodology.md`'nin *"seri bağlı filtre bu depoda gerçek bir desen"*
+uyarısının bir örneği daha: yalnız (1)'i düzeltmek yetmez.
+
+**Turda kendi ön bulgum çürütüldü:** U04 için *"ASLA metni yok"* demiştim; metin
+**var**, başka dosyada. Kusur metnin yokluğu değil **tek katman olması**. Ön bulgu
+bir hipotezdir — kütükte `on_bulgu` alanı bu yüzden `kanit`'ten ayrı tutuluyor.
+
+### 3.0.1 Turdan çıkan iki yeni kalem
+
+U04'ün doğrulaması **ayrılabilir** iki kusur ortaya çıkardı. Ayrı kalem açıldı,
+çünkü U04 `uygulandi` işaretlenince bunlar kaybolurdu:
+
+| ID | Kusur | Neden ayrı |
+|---|---|---|
+| **X07** | `SocraticGuard` `guard_mapping`'e kayıtlı değil, çağıran yok → **ölü kod**. Kayıtlı olsa bile `WARNING`/`should_stop=False` | **Silinerek de kapanabilir** — U04'ten farklı bir karar |
+| **X08** | Dedektör regex'i *"cevap/doğru"* kelimesine bağımlı: `'Cevap C'`→True ama `'C) 4'`→**False**, `'C'`→**False** | Kapanmazsa "düzeltilmiş" dedektör **gerçek** sızıntı biçimini yine kaçırır |
+
+**X08'e fix yazarken:** tek harf `"C"` meşru metinde de geçer (*"C vitamini"*,
+*"C dili"*). Türkçe bağlam guard'ı + bilinen-iyi kümede yanlış-pozitif ölçümü
+**zorunlu** — `audit-methodology.md` "Ucuz Filtre Tuzağı" (3 ucuz filtre geçerli
+Türkçe STEM'i çöpe attı).
+
+### 3.0.2 X06 güncellendi
+
+U13 fantom çıkınca, parçalı auth'un (5+ rol-kontrol implementasyonu) **admin
+yüzeyinde zarar üretmediği** ölçüldü. Bulgu ayakta ama severity düşürülmeli.
+Kalan ölçüm: diğer 5 implementasyonu **kim çağırıyor** ve o uçlar atlatılabiliyor mu.
+
 ### Ölçüm sırası (P0 → P1 → P2)
 
-| Sıra | ID | Neden bu sırada |
-|---|---|---|
-| 1 | **U04** Sokratik guardrail | P0. Ön ölçüm: servis VAR, ama içinde harf-yasağı metni **bulunamadı** → iddia gerçek olabilir |
-| 2 | **U13** admin RBAC | P0. Ön ölçüm: **5+ ayrı rol-kontrol implementasyonu** var (X06). Asıl soru: admin rotaları hangisini kullanıyor — ve token'sız cURL **gerçekten** 200 mü dönüyor |
-| 3 | **U25** migration reversibility | P1 ama **en yüksek kaldıraç**: tek bug değil, bir **doğrulama döngüsü** (§D.1/#14). Diğer 24'ün regresyonunu da yakalar |
-| 4 | **U18** frontend test durumu | P1. MEMORY: "111 frontend testi kırık" — flakiness değil düz kırık olabilir. FAZ 3'ün hakemi buna bağlı |
-| 5-9 | U01, U03, U07, U08, U14 | P1 grubu |
-| 10-25 | kalanlar | P2/P3 |
+| Sıra | ID | Durum | Neden bu sırada |
+|---|---|---|---|
+| 1 | **U04** Sokratik guardrail | ✅ `dogrulandi` P0 | P0. Canlı tetiklendi |
+| 2 | **U13** admin RBAC | ✅ `fantom` | P0. Atlatma denendi → 401 |
+| 3 | **U25** migration reversibility | 🔄 tur 2 | P1 ama **en yüksek kaldıraç**: tek bug değil, bir **doğrulama döngüsü** (§D.1/#14). Diğer 24'ün regresyonunu da yakalar |
+| 4 | **U18** frontend test durumu | 🔄 tur 2 | P1. MEMORY: "111 frontend testi kırık" — flakiness değil düz kırık olabilir. **FAZ 3'ün hakemi buna bağlı** |
+| 5 | **U01** IRT cache invalidation | 🔄 tur 2 | P1. Bayat kalibrasyon öğrenciye servis ediliyorsa doğruluk kusuru |
+| 6 | **U03** BKT `subject_area` NULL | 🔄 tur 2 | P1. Tek SQL ile kesin cevap; ucuz ve kesin |
+| 7-9 | U07, U08, U14 | ⏳ tur 3 | P1 grubu |
+| 10-25 | kalanlar | ⏳ | P2/P3 |
+
+**Tur 2 (`wf_285d1d38-c12`):** U25, U18, U01, U03 — 8 ajan + en fazla 4 hakem.
+Parti büyüklüğü 2'den 4'e çıkarıldı çünkü tur 1 kalibrasyonu sağlıklı çıktı.
+Üst sınır: `medium` workflow kılavuzu (<15 ajan) → tur başına **maks 6 iddia**.
 
 ### Ön ölçümde şimdiden şüpheli olanlar (çürütücü buraya bakacak)
 
@@ -166,6 +219,10 @@ halleder; kararı veren kişi **sistemik desene** bakar.
 | Kütük bekçisi | yok | **10 test, 6/6 mutasyonla çivili** |
 | Adversarial doğrulama makinesi | yok | 2 subagent + 1 skill + 1 workflow |
 | `CLAUDE.md` | 883 satır | 883 (**FAZ 4**) |
+| **Ölçülen iddia** | 0/26 | **2/26** (tur 2'de +4) |
+| **Ölçülen fantom oranı** | — | **%50** (bant %30-70 ✓) |
+| **Canlı tetiklenmiş P0** | — | **1** (U04) |
+| **Sıfır-değerli görev elendi** | — | **1** (U13, fix değeri 0) |
 
 ---
 
