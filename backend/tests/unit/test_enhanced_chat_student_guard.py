@@ -41,11 +41,13 @@ async def test_send_message_awaits_verify_student_access() -> None:
     res = JSONResponse({})
     user, db = MagicMock(), AsyncMock()
 
-    with patch.object(mod.limiter, "enabled", False), patch.object(
-        mod, "_verify_enhanced_chat_student_context", new_callable=AsyncMock
-    ) as vctx, patch.object(
-        mod, "_verify_chat_tables", new_callable=AsyncMock
-    ) as vtbl:
+    with (
+        patch.object(mod.limiter, "enabled", False),
+        patch.object(
+            mod, "_verify_enhanced_chat_student_context", new_callable=AsyncMock
+        ) as vctx,
+        patch.object(mod, "_verify_chat_tables", new_callable=AsyncMock) as vtbl,
+    ):
         vtbl.return_value = False
         with patch.object(mod, "_call_llm", new_callable=AsyncMock) as llm:
             llm.return_value = MagicMock(
@@ -62,3 +64,49 @@ async def test_send_message_awaits_verify_student_access() -> None:
             )
             vctx.assert_awaited_once_with("STU_probe", user, db)
             assert out["success"] is True
+
+
+@pytest.mark.asyncio
+async def test_call_llm_ollama_leak_triggers_regenerate_and_uses_clean_retry():
+    from api import enhanced_chat as mod
+
+    leak_resp = MagicMock(status_code=200)
+    leak_resp.json.return_value = {"message": {"content": "C) 4"}}
+    clean_resp = MagicMock(status_code=200)
+    clean_resp.json.return_value = {
+        "message": {"content": "Once dusunelim: esitligin iki tarafinda ne yapmaliyiz?"}
+    }
+
+    mock_client = AsyncMock()
+    mock_client.post = AsyncMock(side_effect=[leak_resp, clean_resp])
+    mock_client.__aenter__.return_value = mock_client
+    mock_client.__aexit__.return_value = False
+
+    with patch("httpx.AsyncClient", return_value=mock_client):
+        result = await mod._call_llm(
+            "2x+5=13 ise x kactir? A)2 B)3 C)4 D)5 E)6", "matematik", "socratic"
+        )
+
+    assert result.message == "Once dusunelim: esitligin iki tarafinda ne yapmaliyiz?"
+    assert mock_client.post.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_call_llm_clean_response_never_regenerates():
+    from api import enhanced_chat as mod
+
+    clean_resp = MagicMock(status_code=200)
+    clean_resp.json.return_value = {
+        "message": {"content": "Guzel soru! Once neyi bildigimizi listeleyelim mi?"}
+    }
+
+    mock_client = AsyncMock()
+    mock_client.post = AsyncMock(return_value=clean_resp)
+    mock_client.__aenter__.return_value = mock_client
+    mock_client.__aexit__.return_value = False
+
+    with patch("httpx.AsyncClient", return_value=mock_client):
+        result = await mod._call_llm("2x+5=13 nasil cozulur?", "matematik", "socratic")
+
+    assert result.message == "Guzel soru! Once neyi bildigimizi listeleyelim mi?"
+    assert mock_client.post.call_count == 1

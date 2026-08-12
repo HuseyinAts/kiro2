@@ -449,6 +449,20 @@ async def _call_llm(
             ]
             response_text = await client.chat(messages=messages)
             if response_text:
+
+                async def _regenerate_litellm() -> str:
+                    retry_messages = [
+                        {
+                            "role": "system",
+                            "content": system_prompt + STRENGTHENED_REMINDER,
+                        },
+                        {"role": "user", "content": message},
+                    ]
+                    return await client.chat(messages=retry_messages) or ""
+
+                response_text = await enforce_socratic_output(
+                    response_text, teaching_mode, _regenerate_litellm
+                )
                 eval_res = socratic_rag_guardrail_service.validate_socratic_compliance(
                     response_text
                 )
@@ -482,6 +496,31 @@ async def _call_llm(
                 data = resp.json()
                 content = data.get("message", {}).get("content", "")
                 if content:
+
+                    async def _regenerate_ollama() -> str:
+                        retry_resp = await client.post(
+                            f"{ollama_url}/api/chat",
+                            json={
+                                "model": model,
+                                "messages": [
+                                    {
+                                        "role": "system",
+                                        "content": system_prompt
+                                        + STRENGTHENED_REMINDER,
+                                    },
+                                    {"role": "user", "content": message},
+                                ],
+                                "stream": False,
+                            },
+                        )
+                        if retry_resp.status_code == 200:
+                            retry_data = retry_resp.json()
+                            return str(retry_data.get("message", {}).get("content", ""))
+                        return ""
+
+                    content = await enforce_socratic_output(
+                        content, teaching_mode, _regenerate_ollama
+                    )
                     eval_res = (
                         socratic_rag_guardrail_service.validate_socratic_compliance(
                             content
