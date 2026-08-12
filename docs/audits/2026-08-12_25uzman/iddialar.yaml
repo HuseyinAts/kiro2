@@ -53,14 +53,44 @@ iddialar:
     iddia: "IRT kalibrasyonu sonrası güncellenen soru, TTLCache(TTL=3600) yüzünden 1 saate kadar bayat servis edilir."
     gorev: "Kalibrasyon bitince ilgili soru düğümlerini geçersiz kılan Redis Pub/Sub invalidation."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
     dogrulama:
       - "sed -n '1,60p' backend/core/osym_exam_engine.py   # TTLCache gerçekten var mı, TTL kaç"
       - "grep -rn 'irt_discrimination\\|irt_guessing\\|irt_upper_asymptote' backend/models/question_bank.py"
       - "grep -rn 'publish\\|subscribe\\|invalidate' backend/core/irt_daemon.py backend/core/osym_exam_engine.py"
     curutme_sorusu: "Kalibrasyon zaten cache'i temizliyor olabilir mi? irt_daemon içinde cache.clear()/pop çağrısı var mı?"
-    kanit: null
+    severity_olculen: yok
+    durum: fantom
+    kanit: |
+      TUR 2 (wf_285d1d38-c12), iki çürütücü MUTABIK. İDDİA ÇÜRÜTÜLDÜ.
+
+      1) Ankraj satırı YANLIŞ: osym_exam_engine.py:25 TTLCache DEĞİL,
+         `from core.structured_logger import get_logger`.
+         Gerçek TTLCache satırları: 147 (_question_pool_cache, ttl=3600)
+         ve 149 (_performance_cache).
+
+      2) 🔴 BELİRLEYİCİ: cache SORU SATIRI tutmuyor, yalnız ÇIPLAK ID LİSTESİ:
+           1429-1442: cache_key="BETA:verified_provisional:all"
+                      pool = [row[0] for row in id_result.all()]
+         IRT parametreleri (irt_discrimination/difficulty/guessing) taşıyan
+         Question satırı HER çağrıda TAZE SELECT ile geliyor:
+           select(Question).where(Question.id.in_(sampled_ids),
+                                  Question.is_active == True)   (1621-1624)
+         -> Kalibre edilen parametre bayat servis EDİLMİYOR.
+         Cache'in bayatlattığı tek şey: havuza YENİ eklenen/çıkarılan soru
+         kimlikleri (1 saate kadar) — iddianın anlattığı kusur bu değil.
+
+      3) Ankrajın diğer yarısı DOĞRU: question_bank.py:234-237
+         irt_discrimination / irt_difficulty / irt_guessing(0.25) /
+         irt_upper_asymptote(1.0) alanları var.
+
+      4) curutme_sorusu'nun hipotezi de YANLIŞ çıktı: irt_daemon içinde
+         invalidate/publish/subscribe YOK — yani kalibrasyon cache'i
+         temizlemiyor. Ama (2) yüzünden temizlemesine GEREK de yok.
+    fix_degeri: |
+      SIFIR (iddia edilen kusur için). Redis Pub/Sub invalidation eklemek,
+      olmayan bir bayatlığı çözer. Kalan gerçek etki — havuz üyeliğinin
+      1 saate kadar bayat kalması — ayrı ve çok daha küçük bir konu;
+      ölçülmeden aksiyon alınmamalı (yeni soru eklenme sıklığı nedir?).
     commit: null
     zorlayici_test: null
 
@@ -89,13 +119,47 @@ iddialar:
     iddia: "subject_area bazı legacy satırlarda NULL, jenerik fallback'e düşüyor; Tarih/Felsefe 'Sosyal' altında birleşme riski."
     gorev: "NULL subject_area'ları 14 YKS alt dalına bağlayan Alembic migrasyonu."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
     dogrulama:
       - 'psql -p 5434 -d kiro2 -c "SELECT subject_area, count(*) FROM topic_hierarchy GROUP BY 1 ORDER BY 2 DESC"'
       - 'psql -p 5434 -d kiro2 -c "SELECT count(*) FROM topic_hierarchy WHERE subject_area IS NULL"'
     curutme_sorusu: "NULL sayısı 0 ise iddia FANTOM. 0 değilse: o satırlar aktif mi, yoksa ölü/kullanılmayan mı?"
-    kanit: null
+    severity_olculen: yok
+    durum: fantom
+    kanit: |
+      TUR 2 (wf_285d1d38-c12), iki çürütücü MUTABIK. Kütüğün KENDİ kriteri
+      ("NULL sayısı 0 ise iddia FANTOM") tam olarak karşılandı.
+
+      psql -p 5434 -d kiro2 -U postgres:
+        SELECT subject_area, count(*) FROM topic_hierarchy GROUP BY 1  -> (0 satır)
+        SELECT count(*) FROM topic_hierarchy WHERE subject_area IS NULL -> 0
+        SELECT count(*) FROM topic_hierarchy                            -> 0
+      KONTROL KOLU: users -> 3, refresh_tokens -> 10 (sıfır DEĞİL)
+        -> sorgu mekanizması dolu/boş ayırt edebiliyor, alet arızası değil.
+
+      ZATEN KAPALI (kısmi): commit c96a2d3c0 (9 Nis 2026)
+        backend/scripts/seed_dungeon_topics.py docstring:
+        "1. Fix subject_area=NULL on MAT.xxx topics (-> MATEMATIK)"
+        idempotent UPDATE ... WHERE subject_area IS NULL. Kapsam yalnız MAT.*
+
+      BAŞKA KATMAN: soru sunumunda kullanılan alan question_metadata.subject_area
+        (question_bank.py:195) DB'de is_nullable='NO' — NOT NULL kısıtlı.
+        TopicHierarchy.subject_area (satır 62, nullable) DAG/prereq amaçlı,
+        ayrı katman.
+
+      SEMANTİK: iddia iki farklı şeyi birleştiriyor. "Tarih/Felsefe Sosyal
+        altında birleşme" bir NULL-veri hatası değil, KASITLI tasarım:
+        agents/coordination/question_classifier.py:416-421 tarih/coğrafya/
+        felsefe/din kültürü -> DomainType.SOSYAL (agent yönlendirme granülerliği).
+
+      ⚠️ ÖLÇÜM BAĞLAMI: topic_hierarchy 0 satır çünkü canlı DB'nin İÇERİK
+      tablolarının tamamı boş — bkz. X09. Bu, iddianın fantomluğunu
+      değiştirmez (kriter NULL sayısıydı) ama tekrar-ölçüm gerektirir:
+      tablo yeniden doldurulursa MAT.* dışındaki 13 alt dal için boşluk
+      tekrar açılabilir.
+    fix_degeri: |
+      Şu anki veriyle SIFIR: önerilen migrasyon 0 satır günceller.
+      X09 çözülüp tablo dolduktan SONRA yeniden ölçülmeli — o zamana kadar
+      P1 aksiyon gerekçesi yok.
     commit: null
     zorlayici_test: null
 
@@ -481,15 +545,51 @@ iddialar:
     iddia: "8-worker paralel koşumda flakiness kontrolü yok."
     gorev: "Paralel flakiness check."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
     on_bulgu: "MEMORY (7 Ağu): '111 frontend testi kırık' — flakiness değil, DÜZ KIRIK olabilir. Önce onu ölç."
-    dogrulama:
-      [
-        "find frontend -name 'all-pages-coverage.spec.ts'",
-        "cd frontend && npx vitest run --reporter=dot 2>&1 | tail -20",
-      ]
-    kanit: null
+    severity_olculen: P3
+    durum: abartili
+    kanit: |
+      TUR 2 (wf_285d1d38-c12). İki çürütücü ANLAŞAMADI (P3 vs P2)
+      -> 3. HAKEM (opus) karar verdi: abartili / P3.
+      anlasmazlik_tipi: severity  (varlıkta değil, önemde ayrılık)
+
+      İDDİANIN ÇEKİRDEĞİ DOĞRU (fantom değil):
+        playwright.config.ts:16-18  fullyParallel: true, retries: CI ? 2 : 0
+        grep "repeatEach|repeat-each|quarantine|flaky" frontend -> 0 sonuç
+        -> flakiness mekanizması gerçekten YOK.
+
+      AMA HAKEMİN BAĞIMSIZ ÖLÇÜMÜ (iki çürütücünün de yapmadığı deney):
+        vitest ile koşunca hata veriyor (yanlış runner):
+          "Playwright Test did not expect test.describe() to be called here"
+        DOĞRU runner ile:
+          npx playwright test ... --project=chromium
+            actualWorkers 8, retries 0 -> 44/44 PASS (20,9 sn)
+          --repeat-each=3
+            -> 132/132 PASS, flaky 0 (66,1 sn)
+        8 worker altında 3 tekrarda SIFIR varyans. Yani "paralel flakiness"
+        şu an ölçülebilir bir problem ÜRETMİYOR.
+
+      SEVERITY'Yİ P3'E ÇİVİLEYEN BAĞLAM:
+        git log --all -- <ankraj dosya> -> BOŞ  (dosya hiç commit edilmemiş)
+        git status --short -> ?? untracked (11 Ağu 21:44)
+        ci.yml:7-13 on: push/PR [main, master, develop]
+        git rev-list --count master..HEAD -> 391
+        -> Dosya hiçbir merge'ü etkilemiyor VE CI bu dalı zaten dinlemiyor.
+
+      YAN BULGU (assertion yüzeyi zayıf, ayrı kalem değil ama kayda geçti):
+        spec:70-92 yalnız body görünür + "Fatal Application Crash" yok
+        -> boş sayfa / error boundary / SPA 404 fallback bu testten YEŞİL geçer.
+    fix_degeri: |
+      YAKIN SIFIR, ölçülebilir. Fix'in tetiklenebileceği hiçbir gerçek akış yok:
+      (a) ankraj dosya commit'siz, (b) commit edilse bile ci.yml aktif dalı
+      dinlemiyor (391 commit fark), (c) CI zaten retries=2 ile temel flake
+      azaltması yapıyor. Gerçek kazanç ancak dosya commit edilir VE dal CI'ya
+      bağlanırsa doğar. Ondan önce "8-worker flakiness check" eklemek, hiç
+      çalışmayan bir borunun contasını değiştirmektir.
+
+      ÖNCE YAPILACAK (bu iddiadan bağımsız, daha yüksek kaldıraç):
+      dosyayı commit et + ci.yml'i aktif dala bağla. FAZ 3'ün mekanik hakemi
+      bunlar olmadan zaten yok.
     commit: null
     zorlayici_test: null
 
@@ -611,8 +711,6 @@ iddialar:
     iddia: "Migration geri-alınabilirlik otomatik test edilmiyor."
     gorev: "Migration reversibility auto-test."
     severity_iddia: P1
-    severity_olculen: null
-    durum: beklemede
     degerlendirme: |
       EN YÜKSEK KALDIRAÇ ADAYI. Rapor §D.1/#14 'doğrulamayı mekanik yap' + §C.2.8
       'mekanik hakem'. Bu, tek tek bir bug değil — bir DOĞRULAMA DÖNGÜSÜ.
@@ -621,7 +719,43 @@ iddialar:
     dogrulama:
       - "ls backend/alembic/versions/*.py | wc -l"
       - "grep -L 'def downgrade' backend/alembic/versions/*.py | wc -l   # downgrade'i OLMAYAN migration sayısı"
-    kanit: null
+    severity_olculen: P1
+    durum: dogrulandi
+    kanit: |
+      TUR 2 (wf_285d1d38-c12), iki çürütücü MUTABIK.
+      115 migration, 0'ında downgrade() eksik -> AMA bu VAR-YOK kontrolü,
+      İŞLEVSELLİK değil.
+
+      Dedektörün kaçırdığı somut vaka:
+        alembic/versions/fa067642bdfe_force_drop_questions.py
+          def upgrade():   op.execute("DROP TABLE IF EXISTS questions CASCADE")
+          def downgrade(): pass          <- GERÇEKTEN geri alınamaz
+        tests/db/test_migrations.py:96-112 yalnız ast.walk ile "downgrade adlı
+        fonksiyon var mı" bakıyor; gövdeyi denetlemiyor -> testi GEÇİRİYOR.
+        Canlı: pytest tests/db/test_migrations.py -> 9 passed (bu test dahil).
+
+      Gerçek round-trip testleri VAR ama KOŞULSUZ atlanıyor:
+        tests/test_migrations.py:37-40
+          pytestmark = pytest.mark.skipif(True, reason="Migration tests require
+                                          real PostgreSQL, 1F + 10E")
+        Canlı: pytest tests/test_migrations.py -> 16 skipped
+        (test_full_upgrade_downgrade_cycle, test_stepwise_upgrade_downgrade,
+         test_partial_downgrade, test_downgrade_preserves_base_schema DAHİL)
+        skipif(True) DB varlığına bakmıyor — koşulsuz.
+
+      CI'da downgrade adımı YOK: ci.yml:269 yalnız "alembic upgrade head".
+      scripts/ci/test_migrations.py (DryRunTester ile GERÇEK upgrade+downgrade
+      yapan script) HİÇBİR workflow'dan çağrılmıyor -> yazılmış ama bağlı değil.
+
+      BAĞIMSIZ TEYİT: docs/HANDOFF_2026-08-07_gemini.md:352-366 "İş #9 — Alembic
+      round-trip testi gerçek değil", AYNI bulgu, AYNI örnek (fa067642bdfe), P1.
+      git log --since=2026-08-07 -- <bu dosyalar> -> BOŞ. 5 gündür açık.
+    fix_degeri: |
+      ÖLÇÜLEBİLİR ve mutasyonla çivilenebilir: gerçek round-trip test
+      (upgrade head -> downgrade -1 -> upgrade head, tek-kullanımlık DB)
+      eklenirse fa067642bdfe gibi boş-pass downgrade'i olan HER migration
+      derhal FAIL verir. Mutasyon: sahte boş-downgrade migration ekle ->
+      yeni test düşmeli, mevcut AST testi DÜŞMEMELİ (ikisinin farkı budur).
     commit: null
     zorlayici_test: null
 
@@ -786,5 +920,123 @@ iddialar:
       de geçebilir (örn. "C vitamini", "C dili"). Fix'e Türkçe bağlam guard'ı
       eklenmeli ve bilinen-iyi kümede yanlış-pozitif ölçülmeli
       (audit-methodology "Ucuz Filtre Tuzağı").
+    commit: null
+    zorlayici_test: null
+
+  # --- Tur 2'de U03 doğrulanırken YAN BULGU olarak çıkan iki kalem ----------
+  # Hiçbiri 25 uzman panelinde yoktu. Bir P1 "NULL kolon" iddiasını kovalayan
+  # çürütücü, kovaladığı şeyden çok daha büyük bir şeye çarptı.
+  # Bu, adversarial doğrulama makinesinin kendi varlık gerekçesidir.
+
+  - id: X09
+    uzman: "12 Ağu U03 doğrulama turu (yan bulgu) + Claude bağımsız ölçümü"
+    alan: veri_durumu
+    ankraj: "PostgreSQL 18, port 5434, db kiro2 (CLAUDE.md: 'gerçek backend')"
+    iddia: "Canlı DB'nin İÇERİK tabloları tamamen boş: question_bank=0, topic_hierarchy=0, question_metadata=0. Şema sağlam (243 tablo) ama içerik yok."
+    gorev: "ÖNCE SINIFLANDIR: veri kaybı mı, yoksa farklı/taze ortam mı? Sınıflandırma olmadan hiçbir kurtarma aksiyonu alınamaz."
+    severity_iddia: P0
+    severity_olculen: null
+    durum: dogrulandi
+    kanit: |
+      BAĞIMSIZ ÖLÇÜM (Claude, çürütücüden ayrı, 12 Ağu):
+        psql -p 5434 -d kiro2 -U postgres
+          question_bank      -> 0
+          topic_hierarchy    -> 0
+          question_metadata  -> 0
+          users              -> 3
+        en dolu 8 tablo: refresh_tokens 10, users 3, student_profiles 3,
+                         organizations 1, alembic_version 1, geri kalan 0
+        pg_database_size(kiro2) -> 32 MB
+          (187.835 soru metni+şıkları yüzlerce MB olurdu -> boyut TEK BAŞINA
+           içeriğin orada olmadığını gösteriyor)
+        'questions' (legacy) tablosu -> relation does not exist
+          (MEMORY ile TUTARLI: "legacy questions hâlâ silik, geri yüklememe kararı")
+        MEMORY'nin bahsettiği yedek tablo qb_synthetic_backup_20260806 -> YOK
+        port 5434'te DB'ler: kiro2 32MB, kiro2_test 24MB, postgres 8MB
+        kiro2_test'te question_bank -> relation does not exist
+
+      ÇÜRÜTÜCÜNÜN KONTROL KOLU (bağımsız): backend container DATABASE_URL
+        postgresql+asyncpg://kiro2_app:...@host.docker.internal:5434/kiro2
+        -> ölçülen DB, canlı backend'in KULLANDIĞI DB. /health: tables 243,
+        "database":"healthy". Sorgu mekanizması dolu/boş ayırt ediyor.
+
+      ORTAM TUTARSIZLIĞI (MEMORY / .claude/sessions/latest.md ile):
+        MEMORY (7 Ağu): question_bank 187.835 / 182.519 benzersiz,
+                        mv_safe_for_beta 25.127, users 77
+        ÖLÇÜLEN (12 Ağu): 0 / 0 / -, users 3
+        d-dataset/ DİZİNİ HİÇ YOK (eslesmis_sorucevap.jsonl dahil)
+        backups/ dizini YOK
+        git: 7 Ağu'dan 12 Ağu'ya kadar HİÇ commit yok (8e6c91532 -> baf59b23e)
+    fix_degeri: |
+      SINIFLANDIRMA ÖNCESİ AKSİYON ALINMAZ. İki hipotez, henüz ayrılmadı:
+
+        H1 — VERİ KAYBI: 7 Ağu'daki ortamda içerik silindi.
+             Aksiyon: pg_restore, kaynak jsonl'den yeniden import, kök neden.
+        H2 — FARKLI/TAZE ORTAM: bu makine/checkout MEMORY'nin anlattığı ortam
+             DEĞİL (yeni kurulum, reset, ya da belgelenen durum başka hostta).
+             Aksiyon: hiçbiri — MEMORY güncellenir, alarm iptal.
+
+      H2 LEHİNE GÜÇLÜ KANIT: d-dataset/ dizini hiç yok. Bu dizin .gitignore'da
+      ve "manuel yedek gerekir" diye işaretli — yani taze bir checkout'ta
+      DOĞAL OLARAK yoktur. Bir silme olayı d-dataset'i ve users'ı (77->3)
+      ve backups/'ı AYNI ANDA götürmüş olmalıydı.
+
+      ⚠️ BU SORUYU ÖLÇÜMLE ÇÖZEMEM: "bu makine 7 Ağu'daki makine mi" bilgisi
+      bende yok. Kullanıcı girdisi ZORUNLU. severity_olculen bu yüzden null.
+
+      HANGİ HİPOTEZ DOĞRU OLURSA OLSUN X10 GEÇERLİ ve P0.
+    commit: null
+    zorlayici_test: null
+
+  - id: X10
+    uzman: "12 Ağu U03 doğrulama turu (yan bulgu) + Claude bağımsız ölçümü"
+    alan: dogrulama_kapisi
+    ankraj: "backend/tests/db/test_question_bank_invariants.py:57-66 (db_session fixture)"
+    iddia: "5 Ağu içerik kaybı için YAZILAN bekçi, tam da alarm vermesi gereken durumda SKIP veriyor. Skip asla FAIL üretmez -> bekçi yapısal olarak alarm veremez."
+    gorev: "DSN yokken skip yerine FAIL et, VEYA CI'da DSN'i zorunlu kıl. Bekçinin sessizce atlanabilmesi bekçiyi yok sayar."
+    severity_iddia: P0
+    severity_olculen: P0
+    durum: dogrulandi
+    kanit: |
+      CANLI KOŞUM (12 Ağu, question_bank GERÇEKTEN 0 satırken):
+        cd backend && pytest tests/db/test_question_bank_invariants.py -v
+        -> SKIPPED test_question_bank_hacim_tabani
+           SKIPPED test_question_bank_benzersizlik_orani
+           2 skipped in 7.19s
+        FAIL YOK. Bekçi, korumak için yazıldığı felaketin TAM ORTASINDA sustu.
+
+      KÖK NEDEN (test_question_bank_invariants.py:57-60):
+        dsn = resolve_pg_dsn()
+        if not dsn:
+            pytest.skip(SKIP_REASON)
+      DSN ortam değişkeni yoksa atlar. Yerel varsayılan koşumda DSN yok
+      -> bekçi HİÇBİR ZAMAN alarm veremez.
+
+      İRONİ (dosyanın kendi docstring'i, satır 1-33): eşikleri
+      MIN_SATIR=150_000 ve MIN_BENZERSIZLIK=0.90 olarak titizlikle
+      gerekçelendiriyor, "hacim ≠ çeşitlilik" dersini yazıyor, hatta
+      "Vekil ölçüm kasıtlı olarak kullanılmadı: S203'te 'tablo var' vekili
+      aylarca yeşil kalırken /fsrs/due canlıda 500 dönüyordu" diyor.
+      Eşikler DOĞRU. Ama eşiğe HİÇ VARILMIYOR.
+
+      🔴 AYNI YAPISAL KUSURUN BU DEPODA ÜÇÜNCÜ ÖRNEĞİ:
+        1. Golden Flow _login: 429 -> pytest.skip  (#462'de onarıldı)
+        2. tests/test_migrations.py:37 pytestmark = skipif(True, ...) KOŞULSUZ
+           (bu turda U25'te ölçüldü, 16 skipped)
+        3. test_question_bank_invariants.py: DSN yoksa skip  (BU KALEM)
+      Rapor §D.1/#16 + golden-flows.md: "skip ASLA FAIL üretmez."
+      Bu artık tek tek hata değil, bir DESEN -> düzeltme dosya değil KURAL
+      seviyesinde olmalı (rapor §D.1/#13: döngüyü düzelt, çıktıyı değil).
+    fix_degeri: |
+      ÖLÇÜLEBİLİR ve mutasyonla çivilenebilir:
+        Fix sonrası, question_bank 0 satırken pytest KOŞUMU FAIL vermeli
+        (şu an 2 skipped). Bu var/yok bir davranış değişikliği.
+      Mutasyon: DSN'i kaldır -> test yine FAIL vermeli (skip DEĞİL),
+        çünkü "ölçemedim" de bir alarm sebebidir, sessiz geçiş değil.
+
+      DESEN SEVİYESİ FIX (asıl kaldıraç): "kritik invaryant bekçileri
+      skip edemez" kuralını zorlayıcı yap — ör. `db_invariant` marker'lı
+      testlerde skip'i yasaklayan bir conftest kancası + CI'da DSN zorunlu.
+      Bu, yukarıdaki 3 örneğin de kök nedenini kapatır.
     commit: null
     zorlayici_test: null
