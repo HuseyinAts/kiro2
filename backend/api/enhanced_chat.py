@@ -692,14 +692,23 @@ async def socratic_dialogue(
 # SSE Streaming endpoint
 # ---------------------------------------------------------------------------
 async def _stream_ollama(
-    message: str, subject: str, teaching_mode: str = "direct"
+    message: str,
+    subject: str,
+    teaching_mode: str = "direct",
+    strengthen: bool = False,
 ) -> AsyncIterator[str]:
-    """Stream Ollama response as SSE events."""
+    """Stream Ollama response as SSE events.
+
+    strengthen=True: U04 retry yolu -- guardrail sizintisi tespit edildikten
+    sonra guclendirilmis hatirlatmayla YENIDEN uretim icin kullanilir.
+    """
     import httpx
 
     ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
     model = os.getenv("OLLAMA_MODEL", "qwen3:8b")
     system_prompt = _get_system_prompt(subject, teaching_mode)
+    if strengthen:
+        system_prompt += STRENGTHENED_REMINDER
 
     try:
         async with (
@@ -734,6 +743,21 @@ async def _stream_ollama(
     yield "data: [DONE]\n\n"
 
 
+async def _collect_stream_text(
+    message: str, subject: str, teaching_mode: str, strengthen: bool = False
+) -> str:
+    """`_stream_ollama`'yi tuketip TAM metni dondurur; client'a hicbir sey gondermez."""
+    accumulated = ""
+    async for chunk in _stream_ollama(
+        message, subject, teaching_mode, strengthen=strengthen
+    ):
+        if chunk.startswith("data: ") and "[DONE]" not in chunk:
+            with contextlib.suppress(Exception):
+                chunk_data = json.loads(chunk[6:].strip())
+                accumulated += chunk_data.get("content", "")
+    return accumulated
+
+
 @router.post("/stream")
 @limiter.limit("10/minute")
 async def stream_message(
@@ -763,27 +787,48 @@ async def stream_message(
             logger.warning(f"Chat DB persist (stream-pre) failed: {e}")
 
     async def _stream_and_persist() -> AsyncIterator[str]:
-        """Wrap streaming to collect full response and persist after."""
-        accumulated = ""
-        async for chunk in _stream_ollama(
-            payload.message, payload.subject, payload.teaching_mode
-        ):
-            # Collect content for DB persistence
-            if chunk.startswith("data: ") and "[DONE]" not in chunk:
-                with contextlib.suppress(Exception):
-                    chunk_data = json.loads(chunk[6:].strip())
-                    accumulated += chunk_data.get("content", "")
-            # Inject session_id in first chunk
-            yield chunk
+        """Direct mod: gercek zamanli akis (degismedi).
+        Socratic mod: biriktir -> guardrail kontrolu -> SONRA gonder (U04)."""
+        if payload.teaching_mode != "socratic":
+            accumulated = ""
+            async for chunk in _stream_ollama(
+                payload.message, payload.subject, payload.teaching_mode
+            ):
+                # Collect content for DB persistence
+                if chunk.startswith("data: ") and "[DONE]" not in chunk:
+                    with contextlib.suppress(Exception):
+                        chunk_data = json.loads(chunk[6:].strip())
+                        accumulated += chunk_data.get("content", "")
+                # Inject session_id in first chunk
+                yield chunk
+            final_text = accumulated
+        else:
+            raw_text = await _collect_stream_text(
+                payload.message, payload.subject, payload.teaching_mode
+            )
+
+            async def _regenerate() -> str:
+                return await _collect_stream_text(
+                    payload.message,
+                    payload.subject,
+                    payload.teaching_mode,
+                    strengthen=True,
+                )
+
+            final_text = await enforce_socratic_output(
+                raw_text, payload.teaching_mode, _regenerate
+            )
+            yield f"data: {json.dumps({'content': final_text}, ensure_ascii=False)}\n\n"
+            yield "data: [DONE]\n\n"
 
         # Persist AI response after stream completes
-        if db is not None and accumulated and session_id:
+        if db is not None and final_text and session_id:
             try:
                 await _save_message(
                     db,
                     session_id,
                     "assistant",
-                    accumulated,
+                    final_text,
                     model=os.getenv("OLLAMA_MODEL", "qwen3:8b"),
                 )
             except Exception as e:
