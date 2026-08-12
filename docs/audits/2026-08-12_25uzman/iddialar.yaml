@@ -175,7 +175,7 @@ iddialar:
     gorev: "System prompt guardrail: nihai seçeneği harf olarak asla söyleme."
     severity_iddia: P0
     severity_olculen: P0
-    durum: dogrulandi
+    durum: uygulandi
     on_bulgu: |
       ⚠️ BU ÖN BULGU KISMEN YANLIŞTI (doğrulama turunda düzeltildi):
       "harf yasağı metni YOK" dedim. Metin VAR — ama başka dosyada:
@@ -237,8 +237,8 @@ iddialar:
       Fix üç katman ister: (a) /enhanced-chat/stream'e çıktı-tarafı kontrol,
       (b) regex'i "cevap/doğru" bağımlılığından kurtar + bare-letter ekle,
       (c) SocraticGuard'ı guard_mapping'e kaydet VEYA sil (şu an ölü kod).
-    commit: null
-    zorlayici_test: null
+    commit: "96e0564702,b9645ba0a9,37ce2468d4"
+    zorlayici_test: "backend/tests/unit/test_enhanced_chat_socratic_enforcement.py + backend/tests/unit/test_enhanced_chat_student_guard.py::test_stream_message_socratic_leak_regenerates_before_sending"
 
   - id: U05
     uzman: "Yann LeCun — Multi-modal OCR"
@@ -1067,7 +1067,7 @@ iddialar:
     gorev: "Ya guard_mapping'e kaydet ve GuardStatus'u bloklayıcı yap, YA DA sil. İkisi arası durum yanlış güven veriyor."
     severity_iddia: P1
     severity_olculen: P1
-    durum: dogrulandi
+    durum: uygulandi
     kanit: |
       socratic_guard.py:51-63 -> direct_answer_detected ise
         self._create_result(GuardStatus.WARNING, ..., should_stop=False)
@@ -1081,8 +1081,8 @@ iddialar:
       çağıran sayısı 0 doğrulanır). Kaydedilirse: U04 kanıt-4 senaryosunda
       T2/T3 bloklanmalı — davranış değişikliği gözlemlenebilir.
       "Ne kaydet ne sil" seçeneği ölçülebilir hiçbir şey değiştirmez.
-    commit: null
-    zorlayici_test: null
+    commit: "a978ae86a"
+    zorlayici_test: "backend/tests/unit/test_socratic_rag_guardrails.py (SocraticGuard testleri silindi, grep -rn SocraticGuard backend -> 0 satır)"
 
   - id: X08
     uzman: "12 Ağu U04 doğrulama turu"
@@ -1092,7 +1092,7 @@ iddialar:
     gorev: "Bare-letter / bare-option pattern ekle; kelime bağımlılığını kaldır."
     severity_iddia: P1
     severity_olculen: P1
-    durum: dogrulandi
+    durum: uygulandi
     kanit: |
       Canlı çağrı (docker exec kiro2-backend), kontrol kolu DAHİL:
         'Cevap C'       -> True   ✓ bilinen-doğru pozitif (alet çalışıyor)
@@ -1107,8 +1107,8 @@ iddialar:
       de geçebilir (örn. "C vitamini", "C dili"). Fix'e Türkçe bağlam guard'ı
       eklenmeli ve bilinen-iyi kümede yanlış-pozitif ölçülmeli
       (audit-methodology "Ucuz Filtre Tuzağı").
-    commit: null
-    zorlayici_test: null
+    commit: "51fd034ee"
+    zorlayici_test: "backend/tests/unit/test_socratic_rag_guardrails.py::test_bare_and_keyword_answer_leaks_detected + test_bare_answer_detector_no_false_positive_on_legit_text"
 
   # --- Tur 2'de U03 doğrulanırken YAN BULGU olarak çıkan iki kalem ----------
   # Hiçbiri 25 uzman panelinde yoktu. Bir P1 "NULL kolon" iddiasını kovalayan
