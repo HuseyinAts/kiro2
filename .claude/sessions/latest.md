@@ -1,49 +1,40 @@
-## Session Handoff — 2026-08-07 02:00
+## Session Handoff — 2026-08-13 00:19
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `54e5016d8` docs(plans): save feature implementation plans... (paralel araç)
-**Uncommitted:** **temiz** — 249 dosya oturum sonunda Hüseyin/paralel araçça 4 commit'te kapatıldı
-(`b3be80686`,`f83fc9978`,`a77e660cc`,`54e5016d8`; 178 dosya). Doğrulandı: S205 dosyalarına dokunmadılar.
-⚠️ **20 commit push edilmemiş** — depo tek kopya.
+**Son commit:** `f15af06f6` docs(audit): U04/X07/X08 durumu uygulandi
+**Uncommitted:** ⚠️ **3736 dosya kirli, bu oturumdan DEĞİL** — `.archive/`, `scripts/validate_*.py`,
+`tests/test_database_*.py` vb. `git diff --stat` = 3635 dosya, +30104/-358133 satır. Önceden
+var olan, ilişkisiz bir temizlik/silme işi (bu oturum başlamadan önceki git status'ta da vardı).
+**DOKUNULMADI, COMMIT EDİLMEDİ** — 358K satır silme riskli, sahibi belirsiz.
 
 ### Yapilanlar
-- `backend/scripts/clean_import_question_bank.py` — TRUNCATE script'i mühürlendi, env-override + exit 2 (`1091db7ab`)
-- `backend/tests/db/test_question_bank_invariants.py` — hacim+benzersizlik invaryantı, RED→GREEN kanıtlı (`1091db7ab`)
-- `question_bank` **2.304/21 → 187.835/182.519 benzersiz** restore; kapı `mv_safe_for_beta` 2.200 → **25.127** (DB, commit yok)
-- `backend/tasks/push_tasks.py` — 3 seri bağlı kusur: DSN çözümü + parola maskeleme (`6f3380072`), `organization_id` (`eb40cb30d`)
-- `backend/alembic/versions/fa067642bdfe_force_drop_questions.py` — takipsizdi, sürüm kontrolüne alındı (`d5bf6c339`)
-- `.gitignore` — 22 scratch script, glob değil açık liste (`b84bdc503`)
-- `backend/api/teacher_copilot_api.py` + `frontend/src/components/Teacher/TeacherCoPilotDashboard.tsx` — mock olarak etiketlendi, bayrak true iken 501 (`d9f6953f6`)
-- `docs/audits/2026-08-07_disabled_routers_envanteri.md` — 110/110 router frontend'ce çağrılıyor, hiçbiri ölü değil (`0fb271e97`)
-- `backend/routers/loader.py` — 6 yasal/ticari kritik router açıldı, 104 kapalı (`0d17f924f`)
-- `frontend/src/App.tsx` — `/login` regresyonu geri alındı + `/teacher/copilot` mount (`af99079c2`)
-- `docs/HANDOFF_2026-08-07_gemini.md` — Gemini devir planı (`2c845b736`)
+- Adversarial doğrulama makinesi: `docs/audits/2026-08-12_25uzman/iddialar.yaml` (36 iddia, 3 tur)
+  + `.claude/agents/iddia-dogrulayici.md` + `kanit-hakemi.md` + `.claude/workflows/iddia-dogrulama.js`
+- Zorlayıcı katman: `.claude/settings.json` (14 `Read()` deny, model→`claude-sonnet-5`);
+  5/13 rule dosyasına `paths:` eklendi (`baf59b23e`) — **4/13 hâlâ eksik** (X02 kısmi)
+- U04 Sokratik guardrail sızıntısı — 6 task, hepsi merge:
+  `51fd034ee`(X08 dedektör) `a978ae86a`(X07 sil) `96e0564702`(enforce_socratic_output)
+  `b9645ba0a9`(_call_llm wiring) `37ce2468d4`(stream wiring) `f15af06f6`(kütük+regresyon)
+- `docs/superpowers/specs/2026-08-12-u04-socratic-guardrail-design.md` + `plans/2026-08-12-u04-*.md`
+- Kütük durumu düzeltildi: X01/X03/X10 kodda fix vardı ama kütükte `dogrulandi` kalmıştı —
+  kullanıcıya bildirildi, henüz kütüğe yazılmadı (bir sonraki adım)
 
 ### Fail Eden Testler
-- **Backend (dokunulanlar): 18 passed, 2 skipped** — skip'ler `test_question_bank_invariants.py`;
-  `KVKK_VERIFY_DSN` yoksa sessizce atlanıyor. ⚠️ Yani bekçi CI'da **fiilen kapalı**.
-- 🔴 **Frontend: 28 dosya / 111 test KIRIK** — kök neden bilinmiyor. `git stash` ile
-  `App.tsx` çıkarılıp tekrar koşuldu, aynı kırık → bu oturumun regresyonu DEĞİL, önceden var.
-  Örnek: `frontend/src/test/components/LearningPath/VideoResourceGrid.test.tsx:164`
-- 🔴 **Backend uçtan uca ÖLÇÜLEMİYOR** — `pytest_asyncio` teardown deadlock (önceden var)
+- YOK (U04'e ait: 28/28 pass, `test_iddia_kutugu.py` 9/10 — 1 fail pre-existing/ilişkisiz, doğrulandı)
 
 ### Engelleyiciler
-- **20 commit push edilmemiş** — uzakta yedek yok, disk arızası = tüm oturum kaybı.
-- **178 dosyalık 4 toplu commit denetlenmedi** — bu ağaçta 3 regresyon bulunmuştu (S204: 2, S205: `/login`).
-- **Celery fix imajda YOK** — `docker cp` ile kondu. Konteyner yeniden oluşturulursa
-  görev yine ölür + `kiro2_app` parolası tekrar log'a düşer (14 kayıt temizlenmişti).
-- **SMTP 6/6 değişken tanımsız** (`.env.mvp`) → şifremi-unuttum akışı ölü (kod hazır, 54/54 test).
+- 3736 dosyalık ilişkisiz kirli ağaç (yukarıda) — kaynağı/sahibi belirsiz, kullanıcıya sorulmalı
+- 4 stash: OCR-sanitizer WIP (kırık `services.ocr_sanitizer_service` import, 3 parça) +
+  `stash@{4}` master'da "pre-yolo checkpoint" — hiçbiri geri yüklenmedi, `git stash list`'te duruyor
 
 ### Sonraki Adimlar (maks 5)
-1. **push** — 20 commit uzağa gitsin (tek kopya riski)
-2. **İş #2** — `docker compose build celery-worker celery-beat` (artık engelsiz, ağaç temiz)
-3. **İş #3** — SMTP kimlik bilgisi + gerçek e-postayla uçtan uca doğrulama
-4. **İş #1b** — 4 toplu commit'i regresyon açısından tara
-5. **İş #6** — 111 kırık frontend testinin kök nedeni (test paketi şu an karar aracı değil)
+1. Kütüğü güncelle: X01/X03/X10 → `uygulandi` (commit refs: settings.json diff, `27c8fff02`)
+2. 15 `beklemede` iddia için Tur 4 (istenirse) veya 8 `dogrulandi`+`X02`/`X04` için fix planı
+3. 3736 dosyalık kirli ağacın kaynağını kullanıcıyla netleştir — commit mi, discard mı, ayrı mı
+4. U25 (migration reversibility, P1) kendi brainstorming→spec→plan döngüsü — henüz başlamadı
+5. Push durumu kontrol edilmedi bu oturumda — uzağa gitti mi doğrula
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- `questions` legacy tablosu **geri yüklenmeyecek** — çift-tablo tuzağını (testing.md #23) diriltmemek için. Yedek: `backups/kiro2_pre_schema_restore_20260727.dump`
-- Teacher Co-Pilot **mock kalacak, etiketli** — gerçek veri yok (`user_item_fsrs`=1, `student_learning_profiles`=2, `student_question_flags`=0). Bağlansa pano boş görünürdü.
-- Kalan 104 router **kapalı bırakıldı** — kapatma gerekçesi (açılış performansı) hiç ölçülmedi; ölçmeden açmak da kapatmak kadar dayanaksız olurdu.
-- HNSW **tek** index kuruldu — `ix_question_embedding_hnsw` birebir kopyaydı, geri getirilmedi (22→21 index).
-- İkinci HNSW ve `loader.py`'nin 104 kalemi dışında **çalışma ağacına dokunulmadı** — kapsamı diff'le ölçmeden commit etmemek için.
-- Proje **Gemini'ye devrediliyor**: `docs/HANDOFF_2026-08-07_gemini.md` kendi kendine yeterli.
+- 25-uzman panel bulguları KÖRÜ KÖRÜNE uygulanmadı — önce doğrulama makinesi kuruldu (%50-60
+  fantom oranı ölçüldü, projenin kendi audit-methodology.md deseniyle tutarlı)
+- Pre-existing kirli dosyalar (OCR WIP, 3736 dosyalık ağaç) hiçbir U04 task'ına sweep edilmedi —
+  her seferinde stash'lenip iş sonrası restore edildi, commit'ler cerrahi kaldı
