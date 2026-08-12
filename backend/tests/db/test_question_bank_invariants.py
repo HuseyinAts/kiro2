@@ -35,6 +35,8 @@ kasıtlı olarak kullanılmadı: S203'te "tablo var" vekili aylarca yeşil kalı
 
 from __future__ import annotations
 
+import os
+
 import pytest
 import pytest_asyncio
 from sqlalchemy import text
@@ -50,6 +52,64 @@ MIN_SATIR = 150_000
 
 # benzersiz / satır. Sağlıklı havuzda ~0,99; 5 Ağu'da 0,009 idi.
 MIN_BENZERSIZLIK = 0.90
+
+
+# ---------------------------------------------------------------------------
+# SIKI MOD — 12 Ağu 2026, X10
+#
+# ÖLÇÜLEN KUSUR: 12 Ağu'da question_bank GERÇEKTEN 0 satırken bu dosya koşuldu
+# ve `2 skipped` verdi. FAIL yok. Bekçi, korumak için yazıldığı felaketin tam
+# ortasında sustu. Sebep basit: DSN ortam değişkeni yoktu, fixture skip etti.
+#
+# Kanıt (aynı gün, aynı DB):
+#     pytest tests/db/test_question_bank_invariants.py            -> 2 skipped
+#     KVKK_VERIFY_DSN=postgresql://...:5434/kiro2 pytest ...      -> 2 failed
+#                     "question_bank 0 satır < taban 150.000"
+# Yani eşikler DOĞRU; eşiğe HİÇ VARILMIYORDU.
+#
+# Bu, bu depoda aynı yapısal kusurun ÜÇÜNCÜ örneği:
+#   1. Golden Flow _login: 429 -> pytest.skip            (#462'de onarıldı)
+#   2. tests/test_migrations.py:37 skipif(True) KOŞULSUZ  (U25, 16 skipped)
+#   3. bu dosya                                           (X10)
+# golden-flows.md ve rapor §D.1/#16: "skip ASLA FAIL üretmez."
+#
+# NEDEN VARSAYILAN AÇIK DEĞİL: taze bir geliştirme makinesinde içeriğin
+# olmaması MEŞRUDUR (12 Ağu ortam ölçümü: question_bank 0, d-dataset/ yok,
+# users 3 -> kullanıcı "farklı/taze ortam" diye sınıflandırdı). Orada her
+# koşumu kırmak gürültü olur. Sıkı mod, içeriğin OLMASI GEREKEN ortamlar
+# içindir: CI, staging, üretim-yakını.
+#
+# AÇMAK İÇİN:  KIRO2_STRICT_DB_INVARIANTS=1 pytest tests/db/ -m db_invariant
+# ---------------------------------------------------------------------------
+STRICT = os.getenv("KIRO2_STRICT_DB_INVARIANTS") == "1"
+
+
+def test_invaryant_olculebilir_olmali():
+    """SIKI modda bekçi ÖLÇEBİLİR olmalı — ölçememek de bir alarmdır.
+
+    NEDEN AYRI (ve fixture'sız) BİR TEST:
+    Sıkı kontrolü `db_session` fixture'ının içine koymak denendi; `pytest.fail()`
+    bir fixture içinde ERROR üretiyor, FAILED değil. `.claude/rules/
+    audit-methodology.md` (1 Ağu 2026): "Mutasyon sonucu `failed` DEĞİL `error`
+    ise ölçüm GEÇERSİZ." Aynı titizlik üretim kapısı için de geçerli: ERROR,
+    altyapı arızasıyla karışır — ki bu belirsizlik zaten bu hata sınıfının
+    kaynağı. Bu yüzden kontrol, bağımlılığı olmayan düz bir teste taşındı:
+    temiz FAILED üretir.
+
+    ÖLÇÜLDÜ (12 Ağu): fixture içinde -> `2 errors`; burada -> `1 failed`.
+    """
+    if not STRICT:
+        pytest.skip(
+            "Gevşek mod. Sıkı kontrol için: KIRO2_STRICT_DB_INVARIANTS=1 "
+            "(içeriğin bulunması GEREKEN ortamlarda: CI, staging, üretim-yakını)"
+        )
+    assert resolve_pg_dsn(), (
+        "SIKI MOD: question_bank invaryant bekçisi ÖLÇEMEDİ — gerçek PostgreSQL "
+        f"DSN'i yok.\n{SKIP_REASON}\n"
+        "Bu ortam içerik taşımıyorsa KIRO2_STRICT_DB_INVARIANTS'ı set etme; "
+        "taşıyorsa DSN ver. Sessiz skip yasak: 12 Ağu 2026'da question_bank "
+        "0 satırken bu paket '2 skipped' verdi ve hiçbir alarm çalmadı."
+    )
 
 
 @pytest_asyncio.fixture

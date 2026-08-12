@@ -935,8 +935,29 @@ iddialar:
     iddia: "Canlı DB'nin İÇERİK tabloları tamamen boş: question_bank=0, topic_hierarchy=0, question_metadata=0. Şema sağlam (243 tablo) ama içerik yok."
     gorev: "ÖNCE SINIFLANDIR: veri kaybı mı, yoksa farklı/taze ortam mı? Sınıflandırma olmadan hiçbir kurtarma aksiyonu alınamaz."
     severity_iddia: P0
-    severity_olculen: null
-    durum: dogrulandi
+    severity_olculen: P3
+    durum: abartili
+    siniflandirma: |
+      ✅ ÇÖZÜLDÜ — 12 Ağu, KULLANICI GİRDİSİ: "Farklı/taze ortam."
+      H2 doğrulandı. Bu makine, MEMORY'nin anlattığı 7 Ağu ortamı DEĞİL.
+      Veri kaybı YOK. severity_iddia P0 -> severity_olculen P3.
+
+      P3'e düşürüldü ama SIFIRLANMADI, çünkü iki gerçek sonucu var:
+
+      1) MEMORY BAYAT. `MEMORY.md` bu makine için yanlış sayılar taşıyor
+         (187.835 / 25.127 / 77 users). Sonraki her oturum bu sayılara
+         güvenip yanlış karar verir. -> MEMORY güncellenmeli.
+
+      2) 🔴 ÖLÇÜM KISITI (bu turun en önemli türev bulgusu):
+         Kütükteki iddiaların bir kısmı İÇERİK VERİSİ olmadan ölçülemez.
+         U03 bu yüzden "0 satır" gördü ve fantom yargısı teknik olarak
+         doğru ama EKSİK bağlamlı çıktı.
+         Aynı kısıt sıradaki iddiaları da etkiler:
+           U02 (FSRS aralık) · U15 (ÖSYM puan) · U16 (XP/gamification)
+           U21 (pgvector HNSW) · U23 (Bloom filtresi)
+         Bunlar "içerik gerektiren" olarak işaretlenmeli ve ya veri
+         yüklendikten sonra ölçülmeli, ya da `olculemedi` yazılmalı —
+         boş DB'de "fantom" demek YANLIŞ olur.
     kanit: |
       BAĞIMSIZ ÖLÇÜM (Claude, çürütücüden ayrı, 12 Ağu):
         psql -p 5434 -d kiro2 -U postgres
