@@ -47,11 +47,14 @@ def main() -> int:
 
         etiket = kayit.get("label") or kayit.get("agentId") or "?"
         deger = kayit.get("result")
-        if isinstance(deger, str):
+        # Sonuc cogu zaman duz metin (JSON zorunlu degil); JSON-benzer
+        # gorunmeyen string'ler icin parse'i hic denemeyerek gereksiz
+        # istisna-tabanli akistan kacinilir.
+        if isinstance(deger, str) and deger.strip()[:1] in ("{", "["):
             try:
                 deger = json.loads(deger)
-            except json.JSONDecodeError:
-                pass
+            except json.JSONDecodeError as e:
+                print(f"# uyari: {etiket} JSON-benzer ama parse edilemedi: {e}", file=sys.stderr)
 
         kimlik = deger.get("id") if isinstance(deger, dict) else None
         if filtre and filtre not in str(etiket) and filtre != kimlik:

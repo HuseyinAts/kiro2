@@ -209,6 +209,9 @@ repos:
         entry: python -m backend.hooks.reward_hacking.cli
         language: system
         types: [python]
+        # 13 Ağu 2026: .archive/ arşivlenmiş/ölü kod — aktif standarda tutulmaz
+        # (bkz. .archive/root_cleanup_20260402/*.py, 26 pre-existing bulgu).
+        exclude: ^\.archive/
         pass_filenames: true
         always_run: false
         stages: [pre-push]

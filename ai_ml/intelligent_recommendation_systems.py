@@ -277,7 +277,10 @@ class CollaborativeFilteringRecommender:
             item2_factors = self.model.qi[self.model.trainset.to_inner_iid(item2_id)]
             similarity = np.dot(item1_factors, item2_factors)
             return float(similarity)
-        except:
+        except (ValueError, IndexError, KeyError) as e:
+            # to_inner_iid raises ValueError for unseen ids; qi indexing can
+            # raise IndexError/KeyError. Item not in trainset -> no similarity.
+            logging.debug(f"get_item_similarity fallback for ({item1_id}, {item2_id}): {e}")
             return 0.0
 
 
@@ -383,7 +386,9 @@ class ContentBasedRecommender:
         # Öğe index'ini bul
         try:
             item_idx = self.items_df[self.items_df['item_id'] == item_id].index[0]
-        except:
+        except IndexError:
+            # item_id not found in items_df -> no similar items to return.
+            logging.debug(f"get_similar_items: item_id {item_id} not found")
             return []
 
         # Benzerlik hesapla

@@ -456,8 +456,10 @@ class RAGService:
                             strict=False,
                         )
                     ]
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug(
+                        f"BM25 doc fetch failed, skipping keyword retriever: {e}"
+                    )
 
             if all_docs:
                 # Keyword retriever
@@ -1114,8 +1116,8 @@ Cevap:"""
                     elif hasattr(self.vector_store, "index"):
                         # FAISS
                         stats["total_chunks"] = self.vector_store.index.ntotal
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug(f"Vector store count unavailable: {e}")
 
             return stats
         except Exception as e:
