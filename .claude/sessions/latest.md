@@ -1,48 +1,48 @@
-## Session Handoff — 2026-08-13 19:06
-**Branch:** feature/self-evolution-optimization (origin ile SENKRON)
-**Son commit:** 320eb6a8f fix(rag): rag_service lint/tip/guvenlik borcunu kapat (26 -> 0)
-**Uncommitted:** 3460 modified + 290 untracked (kasıtlı — Gemini 7-11 Ağu devri, S206'da karar verildi; bu oturumda DOKUNULMADI)
+## Session Handoff — 2026-08-14 01:40
+**Branch:** feature/self-evolution-optimization (origin ile SENKRON, push edildi)
+**Son commit:** 5976671e0 fix(db): baseline downgrade RuntimeError kullansin
+**Uncommitted:** 3544 dosya — **kasıtlı** (Gemini 7-11 Ağu commit'siz devri, S206 kararı; bu oturumda DOKUNULMADI)
 
-### Yapılanlar
-- `backend/core/rag_service.py` — S206 handoff #1 kapandı. Ölçüldü: ruff 10 +
-  mypy 16 + bandit 1 = **26 → 0** (`320eb6a8f`, pushed).
-  - `__init__:45-47` → `X | None` anotasyonu; 16 mypy hatasının **12'si** bu tek
-    kökün gölgesiydi (`_initialize()` TESTING=true'da erken dönüyor).
-  - `_require_ready()` eklendi (satır ~192), daraltılmış ikili döner.
-  - `_generate_search_cache_key:180` md5 → `usedforsecurity=False`.
-  - `_preprocess_text_cached` modül düzeyine taşındı (B019: `@lru_cache` metotta
-    `self`'i cache anahtarına koyup örneği süresiz canlı tutuyordu).
-  - `search():~640` `has_scores` bayrağı → `isinstance(item, tuple)`.
-  - `search_with_mmr:682` boşa giden `embed_query(query)` silindi (F841).
-- `backend/tests/unit/test_rag_service_guards.py` — YENİ, 7 test.
-- `.pre-commit-config.yaml:105` — mypy hook'una `redis==6.4.0` (types-redis DEĞİL;
-  redis>=5 py.typed taşır). `backend/core` altında 16 dosyayı bloklayan boşluk.
+### Yapilanlar
+- `backend/tests/db/test_alembic_from_scratch.py` — YENİ bekçi. Boş DB'de
+  `alembic upgrade head` koşturur, 244 tablo + `users` bekler. (`42ee0baba` RED → `e002f550b` GREEN)
+- `backend/alembic/versions/0001_baseline_squash.py` + `backend/alembic/baseline/0001_baseline_schema.sql`
+  — squash tabanı: 243 tablo + 637 index + **79 RLS policy**. (`e002f550b`)
+- `backend/alembic/versions_archive/` — eski **117 revizyon** taşındı (silinmedi). (`e002f550b`)
+- `backend/scripts/generate_alembic_baseline.py` — baseline üreteci + 3 tuzağın belgesi. (`e002f550b`)
+- `backend/scripts/audit_{sql_vs_alembic,orm_vs_livedb,missing_table_consumers}.py` — ölçüm aletleri. (`42ee0baba`)
+- `.pre-commit-config.yaml:10` — `versions_archive/` global exclude. `.gitignore:439` — `backend/backups/`. (`e002f550b`)
+- Canlı DB: `alembic stamp --purge 0001_baseline` (cdea871deea9 → 0001_baseline, 244 tablo değişmedi).
 
 ### Fail Eden Testler
-YOK — 62 passed / 28 skipped, pre-commit 17/17 Passed.
-`tests/unit/test_core_partial_batch2.py`'de 6 fail görülüyor ama **kontrol kolu
-ile çürütüldü**: değişiklik olmadan da oluşuyor (çapraz-dosya kirliliği); dosya
-tek başına 162/162 geçiyor. Benim değişikliğimle ilgisi YOK.
+YOK. `tests/db/test_alembic_from_scratch.py` **1 passed**.
+Parite ölçüldü: taze-kurulan **244 tablo / 936 index / 79 policy / 2 view** = canlı ile birebir.
 
 ### Engelleyiciler
-YOK
+YOK. Push tamam (`3f7c1341a..5976671e0`), pre-push bekçileri geçti.
 
-### Sonraki Adımlar (maks 5)
-1. `backend/migrations/*.sql` taraması — alembic'e HİÇ entegre değil; S206'daki 3
-   hayalet tabloyu doğuran klasör. **Kalan en riskli iş.**
-2. Kalan ~109 `.py` dosyasını (Gemini kirli ağacı) sınıflandır.
-3. `frontend`/`scripts`/`docs`/`orchestrator` D'leri import-referans kontrolü.
+### Sonraki Adimlar (maks 5)
+1. Denek DB'leri düşür: `kiro2_migaudit`, `kiro2_migaudit2`, `kiro2_migaudit3` (DROP proje kuralında yasak — operatör).
+2. **Bekçi kalibrasyonu (ölçülmedi):** `backend/hooks/reward_hacking/config/patterns.py:52-53` KASITLI olarak
+   yalnız argümansız `NotImplementedError`'ı hedefler, ama `analyzers/ast_analyzer.py:301` argümana bakmaz →
+   mesajlı olanlar da placeholder sayılır. #451 dersi: düzeltmeden önce kazanç/bedel ölç.
+3. Kalan ~109 `.py` Gemini kirli ağaç sınıflandırması.
 4. #444 Öğretmen Öğrenciler sayfası UI (roster backend hazır).
-5. `search_with_mmr` O(k²) embed kusuru (bu oturumda ölçüldü, kapsam dışı bırakıldı).
+5. `backend/core/rag_service.py:682` `search_with_mmr` O(k²) embed kusuru (S207'de ölçüldü, kapsam dışı).
 
-### Kararlar (gelecek session tekrar tartışmasın)
-- **Bare `ruff`/`mypy` pre-commit kapısının aleti DEĞİLDİR** — farklı CWD farklı
-  `pyproject.toml` seçer. Bu oturumda bare araçlar "0" derken kapı 2 kalem daha
-  düşürdü (UP038 + no-any-return). Kapıyı `pre-commit run --files <yol>` ile ölç.
-- Biçimlendirici hook **kullanılmayan import'u siler** → kullanımı ÖNCE yaz,
-  import'u SONRA ekle (`Embeddings`/`VectorStore` bir kez uçtu).
-- Guard'lar **çağrı-yeri bazında** konur, metot başına DEĞİL: `add_documents`
-  içindeki `vector_store is None` dalı KASITLI lazy-init yoludur.
-- Regresyon bekçileri (fix'ten önce de geçen testler) **mutasyonla çivilenir**;
-  bu oturumda 2/2 mutasyon hedefini vurdu (`failed`, `error` değil).
-- Kirli ağacı topluca commit'leme kasıtlı (S206 kararı, değişmedi).
+### Kararlar (gelecek session tekrar tartismasin)
+- **Kök neden sıralama değil BOŞ TABAN**: `60e185cfcca9_unified_schema` (down_revision=None) ve
+  `f822e22c28c6` ikisi de `upgrade(): pass` idi — `--autogenerate` ZATEN DOLU DB'ye karşı koşturulmuş.
+  Şemayı fiilen `backend/migrations/*.sql` kuruyordu; o klasör legacy borç DEĞİL, tabanın eksik parçası.
+- **İki onarım tasarımı da ÖLÇÜMLE elendi** (tekrar denenmesin):
+  (i) `001-009*.sql` porte → bayat; `001`'in `users.id UUID`'si canlıya (`character varying`) uymuyor,
+  probe: *"FK cannot be implemented — incompatible types: character varying and uuid"*.
+  (ii) pg_dump tabanı + mevcut zincir → 1. revizyonda `DuplicateTable kvkk_consents`; revizyonlar
+  tutarsız idempotent (`d7a10d07b648` savunmacı, `kvkk_compliance_001` değil).
+- **BREAKING:** `alembic downgrade` ile eski sürümlere inilemez. Pratikte zaten inilemiyordu.
+- Baseline üretiminde 3 tuzak: PG17+ pg_dump psql meta-komutu yazar (SQLAlchemy çalıştıramaz) ·
+  `search_path`'i boşaltır (alembic `alembic_version`'a niteliksiz erişir) · `alembic_version` dump
+  DIŞINDA olmalı (alembic onu migration'dan ÖNCE kendi yaratır).
+- Reward-hacking bekçisi push'u blokladı; **bekçi değiştirilmedi**, kod semantik düzeltildi
+  (`RuntimeError` = desteklenmiyor; `NotImplementedError` = henüz yazılmadı). Kendi push'unu geçirmek
+  için güvenlik kapısı gevşetilmez.
