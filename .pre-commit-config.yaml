@@ -102,6 +102,12 @@ repos:
           - pydantic==2.5.0
           - sqlalchemy==2.0.23
           - fastapi==0.104.1
+          # `types-redis` DEĞİL: redis>=5 kendi py.typed'ini taşır ve
+          # types-redis kullanımdan kalktı. mypy'ın verdiği "pip install
+          # types-redis" ipucu bayat. Ölçüldü: redis 6.4.0, py.typed=True.
+          # backend/core altında 16 dosya redis import ediyor; bu satır
+          # olmadan hook o dosyalara her dokunuşta commit'i bloklar.
+          - redis==6.4.0
           - types-requests
           - types-passlib
           - types-PyYAML
