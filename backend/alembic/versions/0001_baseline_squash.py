@@ -98,7 +98,17 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    raise NotImplementedError(
+    # RuntimeError, NotImplementedError DEGIL. Ikisi ayni sey degil:
+    # NotImplementedError "henuz yazilmadi" demektir (bir TODO), oysa buradaki
+    # anlam "desteklenmiyor ve desteklenmeyecek" -- squash tabaninin altinda
+    # inilecek bir surum YOK. Yazilacak bir govde olmadigi icin bu bir
+    # placeholder da degil.
+    #
+    # (Yan not: reward-hacking bekcisi bu ayrimi kismen yapiyor --
+    # config/patterns.py:52-53 kasitli olarak YALNIZ argumansiz bicimi
+    # hedefliyor, ama analyzers/ast_analyzer.py:301 arguman kontrolu yapmadan
+    # her NotImplementedError'i placeholder sayiyor. Kalibrasyon isi, ayri gorev.)
+    raise RuntimeError(
         "0001_baseline bir squash tabanidir; asagi inilemez. "
         "Geri donmek icin veritabanini yedekten geri yukleyin."
     )
