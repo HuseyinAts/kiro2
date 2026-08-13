@@ -1,52 +1,57 @@
-## Session Handoff — 2026-08-13 (RLS fix izolasyonu)
+## Session Handoff — 2026-08-13 (RLS P0: fantom sıfırdan gerçek RLS restore)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `68f0783a1` fix(rls): ALTER POLICY yazma yolunu da fail-closed yap (WITH CHECK)
-**Uncommitted:** 3558 dosya (2021 M · 1437 D · 100 ??) — Gemini 7-11 Agu devri, KASITLI commit'siz
+**Son commit:** `0702567cc` fix(rls): forward-fix migration — DB'de tamamen eksik olan RLS'i geri yükle
+**Önceki commit:** `68f0783a1` fix(rls): ALTER POLICY yazma yolunu da fail-closed yap (WITH CHECK)
+**Uncommitted:** 3557 dosya — Gemini 7-11 Ağu devri, KASITLI commit'siz (değişmedi)
 
-### Yapilanlar
-- **"Commit'siz RLS fix'i" fix DEGILDI (olculdu):** `faz1_rls_20260704:49` +
-  `faz1_rls2_20260704:21` `_PRED` edit'leri, DB revizyonu `51b325d6ff41` o
-  migration'larin **83 ata ilerisinde** oldugu icin hicbir mevcut DB'de etkisiz.
-  Kullanici karariyla GERI ALINDI (`git checkout HEAD --`; scoped status BOS,
-  kirli sayac 3560->3558; revert oncesi kapsam dogrulandi: iki dosyada tek hunk).
-- **Gercek acik bulundu + kapatildi** (`68f0783a1`):
-  `backend/alembic/versions/ad6ba3bbe485_fix_rls_fail_closed_policy.py:120` —
-  `ALTER POLICY ... USING(...)` PostgreSQL'de `WITH CHECK`'e DOKUNMAZ.
-  Canli kanit (psql :5434): `SET ROLE kiro2_app` + GUC yok ->
-  `INSERT ... 'ORG-FOREIGN'` GECTI (`INSERT 0 1`), sonra kendi satirini goremedi
-  (superuser gordu). Yaz-serbest/oku-kapali sizinti. Fix: `alter_policy_sql()`
-  cikarildi, `USING` + `WITH CHECK` birlikte yaziliyor.
-- Test: `backend/tests/integration/test_rls_fail_closed_with_check.py` (5 test,
-  uretim tablosuna dokunmaz — sentetik tablo + rollback). RED->GREEN kanitli
-  (3 dustu -> 5/5), mutasyon 3/3 tam beklenen testleri dusurdu, geri alim sha256.
-- ruff check + ruff format --check: temiz.
+### Yapılanlar (bu oturum)
+- **Kök neden ölçüldü (latest.md'nin bıraktığı P0):** Bu makinede `alembic_version`
+  zaten head'de (`51b325d6ff41`) ama `pg_policies=0`, `relrowsecurity=0/241`.
+  Transactional DDL kanıtı: RLS migrasyonları hata verseydi zincir orada durur,
+  sonraki onlarca migration (mv_safe_for_beta matview dahil) hiç çalışmazdı —
+  ama hepsi mevcut. Yani RLS büyük ihtimalle çalıştı, SONRA alembic dışında
+  söküldü; `alembic_version` head'de kaldı. `alembic upgrade head` bu yüzden
+  **no-op** olurdu (zaten head'de) — "mutating, önce karar" endişesi bu komut
+  için geçersizdi, asıl mutasyon yeni bir forward-fix migration gerektiriyordu.
+- **Migration `041a9181271c` yazıldı + uygulandı:** 79 tabloya RLS+policy
+  yeniden kuruldu. `ad6ba3bbe485`'in (68f0783a1) fail-closed kapsamıyla
+  (73 tablo) birebir aynı ayrım korundu: 73 fail-closed, 6 permissive-when-unset
+  (billing 4 + organizations + parent_link_codes). Çalışma-zamanında introspect
+  eder; bu ortamda eksik 3 tablo (`daily_plans`, `learning_progress_daily`,
+  `yks_exam_goals`) + 1 kolon (`data_processing_agreements.organization_id`)
+  için RLS'i atlar ve açıkça UYARI yazdırır (ayrı, önce-var-olan bir eksiklik —
+  bu migration'ın kapsamı DEĞİL, ayrı bir görev olarak backlog'a düşebilir).
+- **`test_rls_tenant_isolation_guard.py` güncellendi:** 3 önceden-kırmızı test
+  artık geçiyor. `ORNEK_TABLO` (refresh_tokens) permissive'den fail-closed'a
+  geçtiği için 2 test yeniden yazıldı (davranış kaydı + trap-detector koşulu).
+  Taban/permissive sayıları artık bu ortamın GERÇEK (drift düşülmüş) durumuna
+  göre hesaplanıyor, sabit 79/6 değil.
+- **Doğrulama:** RED (4/8 fail) → migration apply → GREEN (8/8) → downgrade →
+  RED (4/8, aynı sebep) → upgrade → GREEN (8/8). ruff check+format temiz.
+  `test_rls_fail_closed_with_check.py` (önceki P0 fix) regresyonsuz.
 
-### Fail Eden Testler
-- `backend/tests/integration/test_rls_tenant_isolation_guard.py` -> **3 failed /
-  5 passed** (ONCEDEN VAR, bu oturumun degisikligi DEGIL). Bekci dogru calisiyor:
-  `:192` refresh_tokens RLS tasimiyor · `:210` yanlis-org GUC'u ile 10 satir
-  goruluyor · `:337` politika sayisi 0 (taban 79).
+### Yeni bulgu (ayrı görev, bu oturumda KAPATILMADI)
+- **3 tablo bu DB'de hiç yok:** `daily_plans`, `learning_progress_daily`,
+  `yks_exam_goals` — muhtemelen `c555a10f4b93`'ün düşürdüğü ve GF-K1/K2/
+  mv_safe_for_beta/parent_link_codes restore dalgalarının kapsamadığı kalıntı.
+- **1 tablo scope kolonu eksik:** `data_processing_agreements.organization_id`.
+- Bu iki drift `041a9181271c`'nin migration çıktısındaki UYARI satırlarından
+  görülür; başka bir ortamda restore/upgrade edilirse aynı komutla tekrar
+  ölçülmeli — sabit sayı olarak (3, 1) güvenilmesin.
 
-### Engelleyiciler
-- **P0:** Bu DB'de RLS **hic yok** — 241 tablonun 0'inda `rowsecurity`, semada
-  **0 policy**. Ama alembic 4 RLS migration'inin da atasinda. Yani stamp'lenmis
-  ama DDL kosmamis VEYA downgrade edilmis (ikisi ayni izi birakir).
-  `mv_safe_for_beta` matview'i VAR -> bazi migration'lar kosmus, celiski.
-- 6 Agu makinesindeki 79 canli permissive policy buradan ULASILAMAZ;
-  `ad6ba3bbe485` orada henuz kosmamis olabilir (9 Agu'da yazildi).
+### Sonraki Adımlar (maks 5)
+1. Yeni bulgu: 3 eksik tablo + 1 eksik kolonun kaynağını araştır (hangi
+   migration/restore dalgası atlamış) — istenirse ayrı bir forward-fix.
+2. Kalan 109 .py dosyasını (RLS + kvkk_compliance dışı) tek tek sınıflandır.
+3. `frontend`/`scripts`/`docs`/`orchestrator` D'lerini import-referans kontrolü.
+4. 22 commit'i push et (0 behind).
 
-### Sonraki Adimlar (maks 5)
-1. **P0:** RLS'in neden hic olmadigini coz (stamp mi, downgrade mi) —
-   `alembic upgrade` DB-mutating, once karar.
-2. Kalan 109 .py dosyasini (RLS + kvkk_compliance disi) tek tek siniflandir.
-3. `frontend`/`scripts`/`docs`/`orchestrator` D'lerini import-referans kontrolu.
-4. 21 commit'i push et (0 behind).
-
-### Kararlar (gelecek session tekrar tartismasin)
-- Kirli agaci topluca commit'lememe **kasitli** ("M=kozmetik" 4 kez yanlis cikti).
-- Uygulanmis migration'i YERINDE degistirme; forward-fix migration yaz.
-  `ad6ba3bbe485` artik hem taze hem mevcut kurulumu fail-closed yapiyor.
-- `--no-verify` commit kullanici onayli: 3558 dosyalik agacta pre-commit'in
-  stash/restore adimi gecen oturumda veri kaybina yol acmisti.
-- Mutasyon kosumunda `-p no:xdist` KULLANMA: `pytest.ini` addopts `-n auto
-  --dist=loadscope` ile catisir, usage error uretir, "0 test dustu" gibi gorunur.
+### Kararlar (gelecek session tekrar tartışmasın)
+- Kirli ağacı topluca commit'leme **kasıtlı** ("M=kozmetik" 4 kez yanlış çıktı).
+- Uygulanmış migration'ı YERİNDE değiştirme; forward-fix migration yaz —
+  `041a9181271c` bu deseni ikinci kez uyguladı (`ad6ba3bbe485`'ten sonra).
+- RLS predicate seçimi kullanıcıya soruldu (permissive vs fail-closed
+  replay) — fail-closed + bekçi testi güncellemesi onaylandı.
+- 3 eksik tablo/1 eksik kolon SESSİZCE atlanmadı: migration çalışma-zamanında
+  introspect edip UYARI yazdırıyor, bekçi testi de aynı sayıyı düşüyor —
+  ikisi drift edip birbirinden kopmasın diye tek kaynaktan (canlı ölçüm).
