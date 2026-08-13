@@ -370,15 +370,14 @@ def test_alet_dogrulamasi_oran_esitligi_tek_basina_yetmiyor() -> None:
     ), "Bir fail-closed politika permissive'e geri sokulmus -> kalip kontrolu kayboldu"
 
 
-# 13 Agu 2026 - 041a9181271c'nin UYARI ciktisiyla ayni drift: bu ortamda 3 hedef
-# tablo hic yok (daily_plans, learning_progress_daily, yks_exam_goals) + 1 tablo
-# (permissive grupta) scope kolonu eksik (data_processing_agreements.organization_id).
-# Migration bunlari calisma-zamaninda atlar; bekci de AYNI SAYIDA dusurmezse
-# "kapsam daraldi" YANLIS alarmi verir. Bu sayilar buyurse (baska ortamda baska
-# tablo/kolon eksikse) `alembic upgrade head` ciktisindaki UYARI satirlarindan
+# 13 Agu 2026 - 041a9181271c 3 tablo (daily_plans, learning_progress_daily,
+# yks_exam_goals) + 1 kolonun (data_processing_agreements.organization_id) bu
+# ortamda eksik oldugunu UYARI ile bildirmisti. cdea871deea9 hepsini yaratti/
+# ekledi (bkz. test_learning_path_daily_tables.py) -- drift KAPANDI. Bu sayilar
+# yeniden pozitif olursa `alembic upgrade head` ciktisindaki UYARI satirlarindan
 # guncelle -- tahmin etme.
-BILINEN_EKSIK_TABLO_SAYISI = 3
-BILINEN_EKSIK_KOLON_SAYISI = 1
+BILINEN_EKSIK_TABLO_SAYISI = 0
+BILINEN_EKSIK_KOLON_SAYISI = 0
 
 
 def test_politika_kalibi_korundu(db_hazir: None) -> None:
