@@ -97,7 +97,14 @@ OLMAYAN_ORG = "00000000-0000-0000-0000-000000000000"
 # `toplam=1, permissive=1` olur ve test YESIL kalirdi; yani RLS kapsaminin
 # neredeyse tamamen kaldirilmasi fark edilmeden gecerdi.
 # Bu sabiti dusurmek BILINCLI bir karar olmali (#464 durum tablosuna yaz).
-POLITIKA_TABANI = 79
+#
+# 041a9181271c (13 Agu 2026) ile kalip TEK TIP OLMAKTAN CIKTI: ad6ba3bbe485
+# kapsamindaki 73 tablo fail-closed, kapsam disindaki 6 tablo (billing 4 +
+# organizations + parent_link_codes) permissive-when-unset kaldi. Asagidaki
+# iki sabit bu bilincli ayrimi sabitler.
+FAIL_CLOSED_TABAN = 73
+PERMISSIVE_TABAN = 6
+POLITIKA_TABANI = FAIL_CLOSED_TABAN + PERMISSIVE_TABAN
 
 
 def _kiracilik_yargisi(org_sayisi: int) -> str:
@@ -119,23 +126,34 @@ def _kiracilik_yargisi(org_sayisi: int) -> str:
     return "cok"
 
 
-def _kalip_ihlali(toplam: int, permissive: int, taban: int) -> str | None:
+def _kalip_ihlali(
+    toplam: int, permissive: int, taban: int, beklenen_permissive: int
+) -> str | None:
     """Politika kalibi ihlalini aciklar; ihlal yoksa None.
 
     Saf fonksiyon olmasinin sebebi: "78 politika silinirse yesil kalir"
     vakumu canli DB'de UYGULANAMAZ (79 politikayi silip geri koymak yikici).
     Mantik ayrildigi icin ayni senaryo sentetik girdiyle SINANABILIR —
     bkz. `test_alet_dogrulamasi_oran_esitligi_tek_basina_yetmiyor`.
+
+    041a9181271c'den (13 Agu 2026) itibaren kalip TEK TIP DEGIL: bir kismi
+    permissive-when-unset, geri kalani fail-closed. Bu yuzden "hepsi permissive
+    olmali" yerine "permissive SAYISI TAM beklenen_permissive olmali" kontrol
+    edilir — ne fail-closed'a fazladan gecis (permissive azalir) ne de
+    fail-closed'in geri sokulmesi (permissive artar) fark edilmeden gecsin.
+    `taban`/`beklenen_permissive` caller'dan gelir (bkz. test_politika_kalibi_korundu
+    -- bu ortamdaki bilinen tablo/kolon eksikligine gore ayarlanir).
     """
     if toplam < taban:
         return (
             f"Politika sayisi {toplam}, taban {taban}. RLS kapsami daraltilmis "
             "olabilir — oran esitligi bunu GIZLER (A.4b)."
         )
-    if toplam != permissive:
+    if permissive != beklenen_permissive:
         return (
-            f"{toplam - permissive} politika artik permissive kalipta DEGIL. "
-            "Fail-closed'a gecis basladiysa #464 plani ve bu dosya guncellenmeli."
+            f"Permissive politika sayisi {permissive}, beklenen "
+            f"{beklenen_permissive}. Fail-closed/permissive ayrimi degismis "
+            "(041a9181271c kapsamini kontrol et)."
         )
     return None
 
@@ -213,11 +231,16 @@ def test_dogru_guc_ile_izolasyon_calisiyor(taban_satir: int) -> None:
     )
 
 
-def test_permissive_dal_bugunku_davranisi_belgelenir(taban_satir: int) -> None:
-    """GUC set EDILMEZSE politika her satiri geciriyor — OLCULEN olgu.
+def test_fail_closed_dal_bugunku_davranisi_belgelenir(taban_satir: int) -> None:
+    """041a9181271c'den itibaren ORNEK_TABLO FAIL-CLOSED — OLCULEN olgu.
+
+    Onceki surum burada PERMISSIVE davranisi belgeliyordu (GUC yok/bos ->
+    tum satirlar gorunur); ad6ba3bbe485'in ALL_RLS_TABLES kapsamindaki 73
+    tablo (ORNEK_TABLO=refresh_tokens dahil) artik FAIL-CLOSED: GUC yok/bos
+    ise HICBIR satir gorunmez, sadece DOGRU org GUC'u satirlari acar.
 
     Bu bir "gecmeli" test degil, bir KAYIT. Davranis degisirse (ornegin biri
-    politikalari fail-closed yaparsa) bu test kirmiziya doner ve degisikligin
+    permissive'e geri donerse) bu test kirmiziya doner ve degisikligin
     bilincli olup olmadigi sorulur.
     """
     guc_yok = _sorgula(
@@ -228,13 +251,22 @@ def test_permissive_dal_bugunku_davranisi_belgelenir(taban_satir: int) -> None:
         f"SELECT count(*) FROM {ORNEK_TABLO}",  # noqa: S608
         kurulum=["SET ROLE kiro2_app", "SET LOCAL app.current_org_id = ''"],
     )
-    assert guc_yok == taban_satir, (
-        f"GUC'suz gorunum degisti: {guc_yok} != taban {taban_satir}. "
-        "Politikalar fail-closed yapildiysa bu dosya guncellenmeli (#464)."
+    assert guc_yok == 0, (
+        f"GUC'suz gorunum {guc_yok} satir gosterdi (0 bekleniyordu) — "
+        "fail-closed politika artik uygulanmiyor olabilir."
     )
-    assert (
-        guc_bos == taban_satir
-    ), f"Bos-GUC gorunumu degisti: {guc_bos} != taban {taban_satir}."
+    assert guc_bos == 0, f"Bos-GUC gorunumu {guc_bos} satir gosterdi (0 bekleniyordu)."
+
+    dogru_org = _sorgula(f"SELECT organization_id FROM {ORNEK_TABLO} LIMIT 1")  # noqa: S608
+    guc_dogru = _sorgula(
+        f"SELECT count(*) FROM {ORNEK_TABLO}",  # noqa: S608
+        kurulum=["SET ROLE kiro2_app", f"SET LOCAL app.current_org_id = '{dogru_org}'"],
+    )
+    assert guc_dogru == taban_satir, (
+        f"Dogru org GUC'u ile {guc_dogru} satir goruldu (taban {taban_satir} "
+        "bekleniyordu) — fail-closed politika 'hepsini engelle' ile 'dogru "
+        "filtrele' arasinda farkli davraniyor olabilir."
+    )
 
 
 def test_alet_dogrulamasi_sifir_organizasyon_korluk_sayilir() -> None:
@@ -290,6 +322,11 @@ def test_ikinci_organizasyon_permissive_dali_aktif_sizintiya_cevirir(
         f"SELECT count(*) FROM {ORNEK_TABLO}",  # noqa: S608
         kurulum=["SET ROLE kiro2_app"],
     )
+    # 041a9181271c'den itibaren ORNEK_TABLO (refresh_tokens) fail-closed —
+    # GUC'suz sorgu 0 satir gorur, gercek sizinti YOK. Kosulsuz fail() burada
+    # yanlis-pozitif uretirdi; artik gercekten sizan (guc_yok>0) durumda tetiklenir.
+    if guc_yok == 0:
+        return
     pytest.fail(
         f"{org_sayisi} organizasyon var ve GUC'suz sorgu {guc_yok} satir goruyor.\n"
         "Permissive RLS dali artik 'zararsiz borc' DEGIL, AKTIF capraz-kiraci "
@@ -303,37 +340,68 @@ def test_ikinci_organizasyon_permissive_dali_aktif_sizintiya_cevirir(
 
 
 def test_alet_dogrulamasi_oran_esitligi_tek_basina_yetmiyor() -> None:
-    """A.4b VAKUMU SENTETIK OLARAK URETILIR.
+    """A.4b VAKUMU SENTETIK OLARAK URETILIR (73 fail-closed + 6 permissive kalibi).
 
-    Onceki bekci yalnizca `toplam == permissive` bakiyordu. Asagidaki
-    (1, 1) girdisi tam olarak "79 politikadan 78'i silindi" durumudur:
-    oran esit, kapsam yok edilmis. Taban assert'i olmadan YESIL kalirdi.
+    (1, 1) girdisi "73 fail-closed politika silinmis, sadece 1 permissive
+    kalmis" durumudur: taban asilmiyor. Ayrica saglikli kalipta (79, 6) VE
+    permissive sayisi bir yonde de kaysa (5 veya 7) ihlal yakalanmali —
+    "hepsi ayni olmali" degil "TAM 6 permissive olmali" kontrolu.
     """
-    assert _kalip_ihlali(1, 1, POLITIKA_TABANI) is not None, (
-        "78 politika silinmis senaryo (toplam=1, permissive=1) ihlal SAYILMADI "
-        "-> taban assert'i yuk tasimiyor, bekci vakum"
-    )
     assert (
-        _kalip_ihlali(POLITIKA_TABANI, POLITIKA_TABANI, POLITIKA_TABANI) is None
-    ), "Saglikli taban ihlal sayildi -> bekci yanlis-pozitif uretir"
-    assert _kalip_ihlali(
-        POLITIKA_TABANI, POLITIKA_TABANI - 1, POLITIKA_TABANI
-    ), "Fail-closed'a gecen 1 politika yakalanmadi -> kalip kontrolu kayboldu"
+        _kalip_ihlali(1, 1, POLITIKA_TABANI, PERMISSIVE_TABAN) is not None
+    ), "Taban altina dusen senaryo ihlal SAYILMADI -> taban assert'i yuk tasimiyor"
+    assert (
+        _kalip_ihlali(
+            POLITIKA_TABANI, PERMISSIVE_TABAN, POLITIKA_TABANI, PERMISSIVE_TABAN
+        )
+        is None
+    ), "Saglikli 73 fail-closed + 6 permissive kalibi ihlal sayildi -> yanlis-pozitif"
+    assert (
+        _kalip_ihlali(
+            POLITIKA_TABANI, PERMISSIVE_TABAN - 1, POLITIKA_TABANI, PERMISSIVE_TABAN
+        )
+        is not None
+    ), "Bir permissive politika fail-closed'a kaymis -> kalip kontrolu kayboldu"
+    assert (
+        _kalip_ihlali(
+            POLITIKA_TABANI, PERMISSIVE_TABAN + 1, POLITIKA_TABANI, PERMISSIVE_TABAN
+        )
+        is not None
+    ), "Bir fail-closed politika permissive'e geri sokulmus -> kalip kontrolu kayboldu"
 
 
-def test_politika_kalibi_tek_tip_kaldi(db_hazir: None) -> None:
-    """F7: politika sayisi TABANIN altina dusmedi VE hepsi permissive kalipta.
+# 13 Agu 2026 - 041a9181271c'nin UYARI ciktisiyla ayni drift: bu ortamda 3 hedef
+# tablo hic yok (daily_plans, learning_progress_daily, yks_exam_goals) + 1 tablo
+# (permissive grupta) scope kolonu eksik (data_processing_agreements.organization_id).
+# Migration bunlari calisma-zamaninda atlar; bekci de AYNI SAYIDA dusurmezse
+# "kapsam daraldi" YANLIS alarmi verir. Bu sayilar buyurse (baska ortamda baska
+# tablo/kolon eksikse) `alembic upgrade head` ciktisindaki UYARI satirlarindan
+# guncelle -- tahmin etme.
+BILINEN_EKSIK_TABLO_SAYISI = 3
+BILINEN_EKSIK_KOLON_SAYISI = 1
+
+
+def test_politika_kalibi_korundu(db_hazir: None) -> None:
+    """F7: politika sayisi bu ortamin GERCEK tabaninin altina dusmedi VE kalip korundu.
 
     Iki ayri sey olculur (A.4b):
-      - KAPSAM: `toplam >= POLITIKA_TABANI` — politikalar sessizce silinmesin
-      - KALIP : `toplam == permissive`      — fail-closed'a kismi gecis olmasin
+      - KAPSAM: `toplam >= beklenen_taban`          — politikalar sessizce silinmesin
+      - KALIP : `permissive == beklenen_permissive` — ayrim kaymasin
+
+    `beklenen_taban`/`beklenen_permissive` sabit 79/6 DEGIL -- bu ortamdaki
+    bilinen tablo/kolon eksikligi (BILINEN_EKSIK_*) dusulerek hesaplanir,
+    041a9181271c'nin kendi introspeksiyonuyla TUTARLI kalsin diye.
     """
     toplam = _sorgula("SELECT count(*) FROM pg_policies WHERE schemaname='public'")
     permissive = _sorgula(
         "SELECT count(*) FROM pg_policies WHERE schemaname='public' "
         "AND qual LIKE '%IS NULL%' AND qual LIKE '%= ''''%'"
     )
-    ihlal = _kalip_ihlali(toplam, permissive, POLITIKA_TABANI)
+    beklenen_taban = (
+        POLITIKA_TABANI - BILINEN_EKSIK_TABLO_SAYISI - BILINEN_EKSIK_KOLON_SAYISI
+    )
+    beklenen_permissive = PERMISSIVE_TABAN - BILINEN_EKSIK_KOLON_SAYISI
+    ihlal = _kalip_ihlali(toplam, permissive, beklenen_taban, beklenen_permissive)
     assert ihlal is None, ihlal
 
 
