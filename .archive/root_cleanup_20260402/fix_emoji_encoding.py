@@ -94,7 +94,7 @@ class EmojiFixTool:
             # Skip certain directories
             skip_dirs = {'.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv'}
             dirs[:] = [d for d in dirs if d not in skip_dirs]
-            
+
             for file in files:
                 if file.endswith('.py'):
                     python_files.append(os.path.join(root, file))
@@ -115,13 +115,13 @@ class EmojiFixTool:
     def fix_emojis_in_text(self, text: str) -> Tuple[str, int]:
         """Replace emojis in text with ASCII alternatives"""
         replacement_count = 0
-        
+
         for emoji, replacement in EMOJI_REPLACEMENTS.items():
             if emoji in text:
                 count = text.count(emoji)
                 text = text.replace(emoji, replacement)
                 replacement_count += count
-                
+
         return text, replacement_count
 
     def fix_file(self, file_path: str) -> bool:
@@ -131,7 +131,7 @@ class EmojiFixTool:
             encodings = ['utf-8', 'latin-1', 'cp1252']
             content = None
             used_encoding = None
-            
+
             for encoding in encodings:
                 try:
                     with open(file_path, 'r', encoding=encoding) as f:
@@ -140,32 +140,32 @@ class EmojiFixTool:
                     break
                 except UnicodeDecodeError:
                     continue
-            
+
             if content is None:
                 print(f"[ERROR] Could not read file: {file_path}")
                 self.error_files.append(file_path)
                 return False
-            
+
             # Check if file contains emojis
             if not self.contains_emojis(content):
                 return True  # No emojis, nothing to fix
-            
+
             # Fix emojis
             fixed_content, replacement_count = self.fix_emojis_in_text(content)
-            
+
             if replacement_count > 0:
                 # Write back the fixed content
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(fixed_content)
-                
+
                 print(f"[FIXED] {file_path}: {replacement_count} emoji replacements")
                 self.fixed_files.append((file_path, replacement_count))
                 self.stats['files_with_emojis'] += 1
                 self.stats['total_replacements'] += replacement_count
                 return True
-            
+
             return True
-            
+
         except Exception as e:
             print(f"[ERROR] Failed to fix {file_path}: {str(e)}")
             self.error_files.append(file_path)
@@ -176,13 +176,13 @@ class EmojiFixTool:
         print(f"[START] Scanning for Python files in: {directory}")
         python_files = self.find_python_files(directory)
         self.stats['total_files'] = len(python_files)
-        
+
         print(f"[INFO] Found {len(python_files)} Python files")
-        
+
         for i, file_path in enumerate(python_files, 1):
             print(f"[PROGRESS] {i}/{len(python_files)}: Processing {file_path}")
             self.fix_file(file_path)
-        
+
         self.print_summary()
 
     def print_summary(self):
@@ -194,26 +194,26 @@ class EmojiFixTool:
         print(f"Files with emojis fixed: {self.stats['files_with_emojis']}")
         print(f"Total emoji replacements: {self.stats['total_replacements']}")
         print(f"Error files: {len(self.error_files)}")
-        
+
         if self.fixed_files:
             print(f"\n[SUCCESS] Fixed files:")
             for file_path, count in self.fixed_files:
                 relative_path = os.path.relpath(file_path)
                 print(f"  - {relative_path}: {count} replacements")
-        
+
         if self.error_files:
             print(f"\n[ERROR] Failed files:")
             for file_path in self.error_files:
                 relative_path = os.path.relpath(file_path)
                 print(f"  - {relative_path}")
-        
+
         print("\n[COMPLETE] Emoji encoding fix completed!")
         print("="*70)
 
 def main():
     """Main function"""
     fixer = EmojiFixTool()
-    
+
     # Fix emojis in current directory and all subdirectories
     fixer.fix_all_files(".")
 

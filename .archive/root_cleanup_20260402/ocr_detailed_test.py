@@ -28,55 +28,55 @@ total_answers = 0
 for book in book_dirs:
     book_path = CROPS_DIR / book
     pngs = [f for f in os.listdir(str(book_path)) if f.endswith('.png')][:3]
-    
+
     if not pngs:
         continue
-    
+
     results.append(f"\n{'─' * 60}")
     results.append(f"📚 {book[:50]}")
     results.append(f"{'─' * 60}")
-    
+
     for png in pngs:
         img_path = book_path / png
         total_crops += 1
-        
+
         try:
             img = Image.open(str(img_path))
             img_array = np.array(img)
             w, h = img.size
-            
+
             # OCR
             ocr_result = reader.readtext(img_array, detail=0)
             raw_text = ' '.join(ocr_result)
-            
+
             results.append(f"\n  📄 {png}")
             results.append(f"     Boyut: {w}x{h} px")
             results.append(f"     OCR: '{raw_text}'")
-            
+
             if raw_text.strip():
                 total_text_found += 1
-            
+
             # Regex test
             text_upper = raw_text.upper()
-            
+
             # Pattern 1: 1.A, 1-A, 1:A formatı
             p1 = re.findall(r'(\d{1,3})\s*[.\-:\s)]\s*([A-E])\b', text_upper)
-            
+
             # Pattern 2: Sadece harfler
             p2 = re.findall(r'\b([A-E])\b', text_upper)
-            
+
             # Pattern 3: Tablo formatı (1 A 2 B)
             p3 = re.findall(r'(\d+)\s+([A-E])\b', text_upper)
-            
+
             results.append(f"     Pattern1 (1.A): {p1}")
             results.append(f"     Pattern2 (harfler): {p2}")
             results.append(f"     Pattern3 (tablo): {p3}")
-            
+
             if p1:
                 total_answers += len(p1)
             elif p3:
                 total_answers += len(p3)
-            
+
         except Exception as e:
             results.append(f"  {png}: HATA - {e}")
 

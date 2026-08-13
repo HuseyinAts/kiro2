@@ -17,7 +17,6 @@ Faz 4.1 vision findings'den türetilen flag_type'lar:
 - other: serbest metin
 """
 
-
 import uuid
 from datetime import datetime
 from typing import Literal
@@ -103,9 +102,11 @@ async def create_flag(
 ) -> FlagResponse:
     """Öğrenci soru hata raporu gönderir."""
     from models.question_bank import QuestionBankItem
-    
+
     question = await db.get(QuestionBankItem, payload.question_id)
-    print(f"DEBUG_QUESTION: payload.question_id={payload.question_id}, question={question}")
+    print(
+        f"DEBUG_QUESTION: payload.question_id={payload.question_id}, question={question}"
+    )
     if not question:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

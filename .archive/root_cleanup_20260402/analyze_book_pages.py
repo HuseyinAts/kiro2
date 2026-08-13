@@ -77,7 +77,7 @@ def preprocess_image(img):
 def looks_like_answer_key(text):
     """Bu metin cevap anahtarına benziyor mu?"""
     text_upper = text.upper()
-    
+
     # Cevap pattern'leri
     patterns = [
         r'\d+\s*[.\-:)]\s*[A-E]',  # 1.A, 1-A, 1:A, 1)A
@@ -86,42 +86,42 @@ def looks_like_answer_key(text):
         r'ANSWER',
         r'YANITLAR',
     ]
-    
+
     for pattern in patterns:
         if re.search(pattern, text_upper):
             return True
-    
+
     # Sadece A-E harflerinin yoğunluğu
     letters = re.findall(r'[A-E]', text_upper)
     if len(letters) >= 5 and len(letters) / max(1, len(text)) > 0.3:
         return True
-    
+
     return False
 
 def analyze_book(book_name):
     """Bir kitabın ilk ve son 25 sayfasını analiz et"""
     book_path = CROPS_DIR / book_name
-    
+
     try:
-        all_files = sorted([f for f in os.listdir(book_path) if f.endswith('.png')], 
+        all_files = sorted([f for f in os.listdir(book_path) if f.endswith('.png')],
                           key=extract_page_num)
     except:
         return None
-    
+
     if len(all_files) < 10:
         return None
-    
+
     # İlk 25 ve son 25
     first_25 = all_files[:25]
     last_25 = all_files[-25:] if len(all_files) > 25 else []
-    
+
     results = {
         'book': book_name,
         'total_crops': len(all_files),
         'first_25': [],
         'last_25': []
     }
-    
+
     # İlk 25 sayfayı analiz et
     for f in first_25:
         try:
@@ -129,10 +129,10 @@ def analyze_book(book_name):
             img_proc = preprocess_image(img)
             ocr_result = reader.readtext(np.array(img_proc), detail=0)
             text = ' '.join(ocr_result)
-            
+
             is_answer = looks_like_answer_key(text)
             page_num = extract_page_num(f)
-            
+
             results['first_25'].append({
                 'file': f,
                 'page': page_num,
@@ -141,7 +141,7 @@ def analyze_book(book_name):
             })
         except:
             pass
-    
+
     # Son 25 sayfayı analiz et
     for f in last_25:
         try:
@@ -149,10 +149,10 @@ def analyze_book(book_name):
             img_proc = preprocess_image(img)
             ocr_result = reader.readtext(np.array(img_proc), detail=0)
             text = ' '.join(ocr_result)
-            
+
             is_answer = looks_like_answer_key(text)
             page_num = extract_page_num(f)
-            
+
             results['last_25'].append({
                 'file': f,
                 'page': page_num,
@@ -161,7 +161,7 @@ def analyze_book(book_name):
             })
         except:
             pass
-    
+
     return results
 
 # Her kitabı analiz et
@@ -171,31 +171,31 @@ for i, book in enumerate(selected_books):
     print(f"\n{'='*70}")
     print(f"📖 [{i+1}/5] {book[:55]}")
     print('='*70)
-    
+
     result = analyze_book(book)
     if not result:
         print("   ❌ Analiz edilemedi")
         continue
-    
+
     all_results.append(result)
-    
+
     print(f"   Toplam crop: {result['total_crops']}")
-    
+
     # İlk 25
     first_answers = [r for r in result['first_25'] if r['is_answer_key']]
     print(f"\n   📄 İLK 25 SAYFA ({len(result['first_25'])} crop):")
     print(f"      Cevap benzeri: {len(first_answers)}")
-    
+
     for r in result['first_25'][:8]:
         marker = "✅" if r['is_answer_key'] else "  "
         text_preview = r['text'][:50].replace('\n', ' ')
         print(f"      {marker} Sayfa {r['page']:03d}: '{text_preview}...'")
-    
+
     # Son 25
     last_answers = [r for r in result['last_25'] if r['is_answer_key']]
     print(f"\n   📄 SON 25 SAYFA ({len(result['last_25'])} crop):")
     print(f"      Cevap benzeri: {len(last_answers)}")
-    
+
     for r in result['last_25'][-8:]:
         marker = "✅" if r['is_answer_key'] else "  "
         text_preview = r['text'][:50].replace('\n', ' ')

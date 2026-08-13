@@ -50,7 +50,7 @@ print(f"   Toplam kitap: {len(all_books)}")
 PUBLISHERS = [
     'ACİL', 'Acil', 'ACIL',
     'Apotemi', 'APOTEMI',
-    '345', 
+    '345',
     'Esen', 'ESEN',
     'Palme', 'PALME',
     'Karekök', 'KAREKÖK', 'Karekok',
@@ -117,14 +117,14 @@ def extract_answers(text):
     """Metinden cevap anahtarı çıkar"""
     answers = {}
     text_upper = text.upper()
-    
+
     # Pattern'ler
     patterns = [
         r'(\d{1,3})\s*[.\-:)]\s*([A-E])\b',   # 1.A, 1-A, 1:A, 1)A
         r'(\d{1,3})\s+([A-E])\b',              # 1 A
         r'\b([A-E])\s*(\d{1,3})\b',            # A1 (ters format)
     ]
-    
+
     for pattern in patterns:
         matches = re.findall(pattern, text_upper)
         for match in matches:
@@ -138,17 +138,17 @@ def extract_answers(text):
                     answers[q] = a
             except:
                 pass
-    
+
     return answers
 
 def is_answer_key_page(text, answers):
     """Bu sayfa cevap anahtarı sayfası mı?"""
     text_upper = text.upper()
-    
+
     # Cevap anahtarı ipuçları
     keywords = ['CEVAP', 'YANITLAR', 'ANSWER', 'ÇÖZÜM', 'COZUM', 'ANAHTARI', 'ANAHTAR']
     has_keyword = any(kw in text_upper for kw in keywords)
-    
+
     # En az 5 cevap ve ardışık numaralar
     if len(answers) >= 5:
         nums = sorted(answers.keys())
@@ -156,44 +156,44 @@ def is_answer_key_page(text, answers):
         consecutive = sum(1 for i in range(len(nums)-1) if nums[i+1] - nums[i] <= 2)
         if consecutive >= 3:
             return True
-    
+
     if has_keyword and len(answers) >= 3:
         return True
-    
+
     return False
 
 def analyze_book(book_path, book_idx, total):
     """Bir kitabın ilk 30 ve son 30 sayfasını analiz et"""
     book_name = book_path.name
-    
+
     # Sayfa dosyalarını al
     pages = sorted(book_path.glob("*.png")) + sorted(book_path.glob("*.jpg"))
     pages = sorted(pages, key=lambda x: x.name)
-    
+
     if len(pages) < 10:
         return None
-    
+
     result = {
         'book': book_name,
         'total_pages': len(pages),
         'first_30': {'pages_analyzed': 0, 'answer_pages': [], 'total_answers': 0},
         'last_30': {'pages_analyzed': 0, 'answer_pages': [], 'total_answers': 0},
     }
-    
+
     # İLK 30 SAYFA
     first_pages = pages[:30]
     for page_path in first_pages:
         try:
             img = Image.open(page_path)
             img = preprocess_page(img)
-            
+
             ocr_result = reader.readtext(np.array(img), detail=0)
             text = ' '.join(ocr_result)
-            
+
             answers = extract_answers(text)
-            
+
             result['first_30']['pages_analyzed'] += 1
-            
+
             if is_answer_key_page(text, answers):
                 result['first_30']['answer_pages'].append({
                     'page': page_path.name,
@@ -204,21 +204,21 @@ def analyze_book(book_path, book_idx, total):
                 result['first_30']['total_answers'] += len(answers)
         except Exception as e:
             pass
-    
+
     # SON 30 SAYFA
     last_pages = pages[-30:] if len(pages) > 30 else []
     for page_path in last_pages:
         try:
             img = Image.open(page_path)
             img = preprocess_page(img)
-            
+
             ocr_result = reader.readtext(np.array(img), detail=0)
             text = ' '.join(ocr_result)
-            
+
             answers = extract_answers(text)
-            
+
             result['last_30']['pages_analyzed'] += 1
-            
+
             if is_answer_key_page(text, answers):
                 result['last_30']['answer_pages'].append({
                     'page': page_path.name,
@@ -229,7 +229,7 @@ def analyze_book(book_path, book_idx, total):
                 result['last_30']['total_answers'] += len(answers)
         except Exception as e:
             pass
-    
+
     return result
 
 # Ana analiz
@@ -241,21 +241,21 @@ all_results = []
 
 for idx, book in enumerate(selected_books):
     print(f"\n[{idx+1}/20] 📖 {book.name[:50]}...")
-    
+
     result = analyze_book(book, idx, len(selected_books))
-    
+
     if result:
         all_results.append(result)
-        
+
         first_ans = len(result['first_30']['answer_pages'])
         last_ans = len(result['last_30']['answer_pages'])
         first_total = result['first_30']['total_answers']
         last_total = result['last_30']['total_answers']
-        
+
         print(f"   📄 Toplam sayfa: {result['total_pages']}")
         print(f"   🔹 İLK 30: {first_ans} cevap sayfası, {first_total} cevap")
         print(f"   🔸 SON 30: {last_ans} cevap sayfası, {last_total} cevap")
-        
+
         # Örnek göster
         if result['first_30']['answer_pages']:
             sample = result['first_30']['answer_pages'][0]

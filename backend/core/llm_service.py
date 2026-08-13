@@ -35,7 +35,6 @@ class OllamaError(Exception):
     """Ollama API error."""
 
 
-
 class LLMService:
     """
     LLM Service with Ollama Integration.
@@ -63,7 +62,9 @@ class LLMService:
         self.model: str = os.getenv("OLLAMA_MODEL", "qwen3:14b")
         self.vision_model: str = os.getenv("OLLAMA_VISION_MODEL", "qwen3-vl:8b")
         self.timeout: int = int(os.getenv("OLLAMA_TIMEOUT", "120"))
-        self.thinking_mode: bool = os.getenv("OLLAMA_THINKING_MODE", "true").lower() == "true"
+        self.thinking_mode: bool = (
+            os.getenv("OLLAMA_THINKING_MODE", "true").lower() == "true"
+        )
 
         # Provider info
         self.provider: str = "ollama"
@@ -102,9 +103,7 @@ class LLMService:
                 temperature=0.7,
             )
 
-            logger.info(
-                f"LangChain Ollama models initialized: {self.model}"
-            )
+            logger.info(f"LangChain Ollama models initialized: {self.model}")
 
         except ImportError:
             # Try older langchain_community package
@@ -207,7 +206,7 @@ class LLMService:
             # Prompt injection mitigation: Sanitize and encapsulate
             sanitized = prompt.replace("```", "").replace("System:", "User:")
             safe_prompt = f"```user_input\n{sanitized}\n```"
-            
+
             # Build prompt with thinking mode
             final_prompt = safe_prompt
             if use_thinking and "/think" not in safe_prompt.lower():
@@ -238,7 +237,9 @@ class LLMService:
                 if key not in payload:
                     payload["options"][key] = value
 
-            logger.debug(f"Ollama generate: model={use_model}, prompt_len={len(prompt)}")
+            logger.debug(
+                f"Ollama generate: model={use_model}, prompt_len={len(prompt)}"
+            )
 
             response = await client.post("/api/generate", json=payload)
             response.raise_for_status()
@@ -374,20 +375,25 @@ Kurallar:
             has_system = False
             for msg in messages:
                 if msg.get("role") == "user":
-                    sanitized = str(msg.get("content", "")).replace("```", "").replace("System:", "User:")
-                    safe_messages.append({
-                        "role": "user",
-                        "content": f"```user_input\n{sanitized}\n```"
-                    })
+                    sanitized = (
+                        str(msg.get("content", ""))
+                        .replace("```", "")
+                        .replace("System:", "User:")
+                    )
+                    safe_messages.append(
+                        {"role": "user", "content": f"```user_input\n{sanitized}\n```"}
+                    )
                 elif msg.get("role") == "system":
-                    safe_messages.append({
-                        "role": "system",
-                        "content": f"{msg.get('content', '')}\n\n{anti_injection}"
-                    })
+                    safe_messages.append(
+                        {
+                            "role": "system",
+                            "content": f"{msg.get('content', '')}\n\n{anti_injection}",
+                        }
+                    )
                     has_system = True
                 else:
                     safe_messages.append(msg)
-            
+
             if not has_system:
                 safe_messages.insert(0, {"role": "system", "content": anti_injection})
 
@@ -508,7 +514,9 @@ Kurallar:
 
             if response.status_code == 404:
                 # Model not found, return zero vector
-                logger.warning(f"Embedding model {embed_model} not found, using fallback")
+                logger.warning(
+                    f"Embedding model {embed_model} not found, using fallback"
+                )
                 return [0.0] * 768
 
             response.raise_for_status()
@@ -629,6 +637,7 @@ def _get_llm_service() -> LLMService:
         if backend == "litellm":
             try:
                 from core.litellm.client import LiteLLMClient
+
                 _llm_service = LiteLLMClient()  # type: ignore[assignment]
             except Exception as e:
                 logger.critical(

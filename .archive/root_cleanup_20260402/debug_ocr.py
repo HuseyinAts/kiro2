@@ -36,69 +36,69 @@ ocr_outputs = []
 
 for book_name in book_dirs:
     book_path = CROPS_DIR / book_name
-    
+
     try:
         png_files = [f for f in os.listdir(str(book_path)) if f.endswith('.png')][:3]  # Her kitaptan 3 crop
     except:
         continue
-    
+
     if not png_files:
         continue
-    
+
     print(f"\n📚 KİTAP: {book_name[:50]}...")
-    
+
     for png_file in png_files:
         crop_path = book_path / png_file
         total_crops_tested += 1
-        
+
         try:
             # PIL ile yükle
             img = Image.open(str(crop_path))
             img_array = np.array(img)
-            
+
             # Görüntü boyutu
             h, w = img_array.shape[:2]
-            
+
             # OCR yap - detaylı sonuç
             result_detailed = reader.readtext(img_array, detail=1)
             result_simple = reader.readtext(img_array, detail=0)
-            
+
             raw_text = ' '.join(result_simple)
-            
+
             print(f"\n   📄 {png_file}")
             print(f"      Boyut: {w}x{h} px")
             print(f"      OCR Çıktısı: '{raw_text[:100]}{'...' if len(raw_text) > 100 else ''}'")
-            
+
             # Detaylı sonuçları göster
             if result_detailed:
                 print(f"      Tespit edilen metin kutuları: {len(result_detailed)}")
                 for i, (bbox, text, conf) in enumerate(result_detailed[:5]):
                     print(f"         [{i+1}] '{text}' (güven: {conf:.2f})")
-            
+
             # Mevcut regex pattern'i test et
             text_upper = raw_text.upper()
             pattern1 = r'(\d{1,3})\s*[.\-:\s)]\s*([A-E])\b'
             matches = re.findall(pattern1, text_upper)
-            
+
             if matches:
                 print(f"      ✅ Eşleşen cevaplar: {matches[:10]}")
                 total_answers_found += len(matches)
             else:
                 print(f"      ❌ Regex eşleşmesi YOK")
-                
+
                 # Alternatif pattern'leri dene
                 # Pattern: Sadece harfler (A B C D E formatı)
                 pattern_letters = r'\b([A-E])\b'
                 letters = re.findall(pattern_letters, text_upper)
                 if letters:
                     print(f"      💡 Sadece harfler: {letters[:20]}")
-                
+
                 # Pattern: Tablo formatı (1 A 2 B 3 C)
                 pattern_table = r'(\d+)\s+([A-E])'
                 table_matches = re.findall(pattern_table, text_upper)
                 if table_matches:
                     print(f"      💡 Tablo formatı: {table_matches[:10]}")
-            
+
             ocr_outputs.append({
                 "file": png_file,
                 "book": book_name,
@@ -106,7 +106,7 @@ for book_name in book_dirs:
                 "raw_text": raw_text,
                 "matches": matches
             })
-            
+
         except Exception as e:
             print(f"      ❌ Hata: {e}")
 

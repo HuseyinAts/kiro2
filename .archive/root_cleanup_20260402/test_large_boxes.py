@@ -28,18 +28,18 @@ book_dirs = [d for d in os.listdir(str(DETECTIONS_DIR)) if os.path.isdir(DETECTI
 for book_name in book_dirs:
     book_path = DETECTIONS_DIR / book_name
     json_files = [f for f in os.listdir(str(book_path)) if f.endswith('.json')]
-    
+
     for json_file in json_files:
         try:
             with open(book_path / json_file, 'r', encoding='utf-8') as f:
                 detections = json.load(f)
-            
+
             for det in detections:
                 if det.get('class_name') == 'cevaplar':
                     w = det['x2'] - det['x1']
                     h = det['y2'] - det['y1']
                     area = w * h
-                    
+
                     if area > 20000:  # Büyük kutular
                         large_boxes.append({
                             'book': book_name,
@@ -66,7 +66,7 @@ for i, box in enumerate(large_boxes[:10]):
     results.append(f"    Sayfa: {box['page']}")
     results.append(f"    Boyut: {box['size']} ({box['area']:,} px²)")
     results.append(f"    Güven: {box['confidence']:.2f}")
-    
+
     # Görüntüyü bul ve crop et
     book_img_dir = IMAGES_DIR / box['book']
     if book_img_dir.exists():
@@ -83,28 +83,28 @@ for i, box in enumerate(large_boxes[:10]):
                 y1 = max(0, y1 - pad)
                 x2 = min(img.width, x2 + pad)
                 y2 = min(img.height, y2 + pad)
-                
+
                 crop = img.crop((x1, y1, x2, y2))
                 crop_array = np.array(crop)
-                
+
                 # OCR
                 ocr_result = reader.readtext(crop_array, detail=0)
                 raw_text = ' '.join(ocr_result)
-                
+
                 results.append(f"    OCR: '{raw_text[:150]}{'...' if len(raw_text) > 150 else ''}'")
-                
+
                 # Cevap pattern'i ara
                 text_upper = raw_text.upper()
                 p1 = re.findall(r'(\d{1,3})\s*[.\-:\s)]\s*([A-E])\b', text_upper)
                 p2 = re.findall(r'(\d+)\s+([A-E])\b', text_upper)
-                
+
                 if p1:
                     results.append(f"    ✅ CEVAP BULUNDU (Pattern1): {p1[:15]}")
                 elif p2:
                     results.append(f"    ✅ CEVAP BULUNDU (Pattern2): {p2[:15]}")
                 else:
                     results.append(f"    ❌ Cevap pattern'i bulunamadı")
-                    
+
             except Exception as e:
                 results.append(f"    HATA: {e}")
 

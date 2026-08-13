@@ -23,10 +23,10 @@ def upgrade() -> None:
     # Commit the transaction started by env.py first to allow changing isolation level
     if bind.in_transaction():
         bind.commit()
-        
+
     # D. Migration dosyasındaki upgrade fonksiyonuna op.get_bind().execution_options(isolation_level="AUTOCOMMIT") ekle.
     op.get_bind().execution_options(isolation_level="AUTOCOMMIT")
-    
+
     # İndeks oluşturma satırına postgresql_concurrently=True parametresini dahil et.
     # 1. idx_qb_primary_topic
     try:
@@ -98,33 +98,33 @@ def downgrade() -> None:
     bind = op.get_bind()
     if bind.in_transaction():
         bind.commit()
-        
+
     op.get_bind().execution_options(isolation_level="AUTOCOMMIT")
-    
+
     try:
         op.drop_index('uq_qb_soru_hash_active', table_name='question_bank', postgresql_concurrently=True)
         print("Dropped index uq_qb_soru_hash_active concurrently.")
     except Exception as e:
         print(f"Skipping drop uq_qb_soru_hash_active: {e}")
-        
+
     try:
         op.drop_index('idx_qb_soru_hash', table_name='question_bank', postgresql_concurrently=True)
         print("Dropped index idx_qb_soru_hash concurrently.")
     except Exception as e:
         print(f"Skipping drop idx_qb_soru_hash: {e}")
-        
+
     try:
         op.drop_index('idx_qb_cat_subject_active', table_name='question_bank', postgresql_concurrently=True)
         print("Dropped index idx_qb_cat_subject_active concurrently.")
     except Exception as e:
         print(f"Skipping drop idx_qb_cat_subject_active: {e}")
-        
+
     try:
         op.drop_index('idx_qb_calib_pool', table_name='question_bank', postgresql_concurrently=True)
         print("Dropped index idx_qb_calib_pool concurrently.")
     except Exception as e:
         print(f"Skipping drop idx_qb_calib_pool: {e}")
-        
+
     try:
         op.drop_index('idx_qb_primary_topic', table_name='question_bank', postgresql_concurrently=True)
         print("Dropped index idx_qb_primary_topic concurrently.")

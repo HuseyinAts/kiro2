@@ -29,7 +29,7 @@ if response.status_code == 200:
     result = response.json()
     if result.get("success"):
         student_id = result["profile"]["student_id"]
-        
+
         # Create learning path
         path_url = "http://localhost:8000/api/learning-path/create-path"
         path_payload = {
@@ -39,7 +39,7 @@ if response.status_code == 200:
             "topic": "LGS Matematik Hazırlık",
             "duration_weeks": 4
         }
-        
+
         try:
             path_response = requests.post(path_url, json=path_payload, headers=headers)
             print(f"\nLearning Path Status: {path_response.status_code}")

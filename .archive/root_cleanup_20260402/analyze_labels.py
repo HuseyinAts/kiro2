@@ -24,7 +24,7 @@ for item in sorted(BASE_DIR.iterdir()):
         png_count = len(list(item.rglob("*.png")))
         jpg_count = len(list(item.rglob("*.jpg")))
         json_count = len(list(item.rglob("*.json")))
-        
+
         if txt_count + yaml_count + png_count + jpg_count + json_count > 0:
             print(f"\n   {item.name}/")
             print(f"      TXT: {txt_count}, YAML: {yaml_count}, PNG: {png_count}, JPG: {jpg_count}, JSON: {json_count}")
@@ -41,7 +41,7 @@ for yaml_file in yaml_files[:10]:
         with open(yaml_file, 'r', encoding='utf-8') as f:
             content = f.read()
             print(content[:500])
-            
+
             # YAML parse et
             try:
                 data = yaml.safe_load(content)
@@ -70,7 +70,7 @@ for labels_dir in labels_dirs:
     if labels_dir.exists():
         print(f"\n📁 {labels_dir}")
         txt_files = list(labels_dir.rglob("*.txt"))[:1000]
-        
+
         for txt_file in txt_files:
             try:
                 with open(txt_file, 'r') as f:
@@ -101,7 +101,7 @@ else:
                             class_counts[class_id] += 1
             except:
                 pass
-    
+
     if class_counts:
         print(f"\n   Class ID Dağılımı:")
         for class_id, count in class_counts.most_common():

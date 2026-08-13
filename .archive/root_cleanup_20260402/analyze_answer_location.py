@@ -67,32 +67,32 @@ print("=" * 70)
 
 for book_idx, book_name in enumerate(selected_books):
     book_path = CROPS_DIR / book_name
-    
+
     # Tüm PNG'leri al ve sayfa numarasına göre sırala
     try:
         all_pngs = sorted([f for f in os.listdir(book_path) if f.endswith('.png')])
     except:
         continue
-    
+
     if not all_pngs:
         continue
-    
+
     # Sayfa numaralarını çıkar
     def get_page_num(filename):
         import re
         match = re.search(r'sayfa_(\d+)', filename)
         return int(match.group(1)) if match else 0
-    
+
     all_pngs_sorted = sorted(all_pngs, key=get_page_num)
-    
+
     # İlk 25 ve son 25
     ilk_25 = all_pngs_sorted[:25]
     son_25 = all_pngs_sorted[-25:] if len(all_pngs_sorted) > 25 else []
-    
+
     print(f"\n{'─'*70}")
     print(f"📚 [{book_idx+1}/12] {book_name[:55]}")
     print(f"   Toplam crop: {len(all_pngs)}, İlk 25: {len(ilk_25)}, Son 25: {len(son_25)}")
-    
+
     # İLK 25 SAYFA
     print(f"\n   📖 İLK 25 SAYFA:")
     ilk_25_ocr = []
@@ -103,17 +103,17 @@ for book_idx, book_name in enumerate(selected_books):
             result = reader.readtext(img_array, detail=0)
             text = ' '.join(result).upper()
             ilk_25_ocr.append({"file": png, "text": text, "size": img.size})
-            
+
             # Cevap pattern kontrolü
             has_answer = any(c in text for c in ['1.A', '1-A', '1)A', '1 A', '2.B', '3.C', 'CEVAP'])
             status = "✅ CEVAP?" if has_answer else "📝"
             print(f"      {status} {png}: '{text[:50]}...' " if len(text) > 50 else f"      {status} {png}: '{text}'")
-            
+
             if has_answer:
                 results["cevap_pattern"]["ilk_25"] += 1
         except Exception as e:
             pass
-    
+
     # SON 25 SAYFA
     if son_25:
         print(f"\n   📖 SON 25 SAYFA:")
@@ -125,20 +125,20 @@ for book_idx, book_name in enumerate(selected_books):
                 result = reader.readtext(img_array, detail=0)
                 text = ' '.join(result).upper()
                 son_25_ocr.append({"file": png, "text": text, "size": img.size})
-                
+
                 # Cevap pattern kontrolü - daha geniş
                 import re
                 has_answer = bool(re.search(r'\d+\s*[.\-)\s:]\s*[A-E]', text)) or 'CEVAP' in text
                 status = "✅ CEVAP?" if has_answer else "📝"
                 print(f"      {status} {png}: '{text[:50]}...' " if len(text) > 50 else f"      {status} {png}: '{text}'")
-                
+
                 if has_answer:
                     results["cevap_pattern"]["son_25"] += 1
             except Exception as e:
                 pass
-        
+
         results["son_25"][book_name] = son_25_ocr
-    
+
     results["ilk_25"][book_name] = ilk_25_ocr
 
 # ÖZET

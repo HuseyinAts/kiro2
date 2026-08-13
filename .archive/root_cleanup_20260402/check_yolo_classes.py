@@ -32,11 +32,11 @@ else:
     # Model yükle
     print("\n🔄 Model yükleniyor...")
     model = YOLO(str(MODEL_PATH))
-    
+
     # Class isimlerini al
     print("\n🏷️ CLASS İSİMLERİ:")
     print("-" * 50)
-    
+
     if hasattr(model, 'names'):
         names = model.names
         for class_id, class_name in names.items():

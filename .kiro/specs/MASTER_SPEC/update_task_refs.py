@@ -14,23 +14,23 @@ replacements = {
     # Task 53-58: Change REQ-26.X to REQ-48.X
     r'_Requirements: 26\.(\d+)-26\.(\d+)_': r'_Requirements: 48.\1-48.\2_',
     r'_Requirements: 26\.(\d+)_': r'_Requirements: 48.\1_',
-    
+
     # Task 59-64: Change REQ-27.X to REQ-49.X
     r'_Requirements: 27\.(\d+)-27\.(\d+)_': r'_Requirements: 49.\1-49.\2_',
     r'_Requirements: 27\.(\d+)_': r'_Requirements: 49.\1_',
-    
+
     # Task 76-82: Change REQ-30.X to REQ-50.X (Disleksi)
     r'_Requirements: 30\.(\d+)-30\.(\d+)_': r'_Requirements: 50.\1-50.\2_',
     r'_Requirements: 30\.(\d+)_': r'_Requirements: 50.\1_',
-    
+
     # Task 83-87: Change REQ-31.X to REQ-51.X (Diskalkuli)
     r'_Requirements: 31\.(\d+)-31\.(\d+)_': r'_Requirements: 51.\1-51.\2_',
     r'_Requirements: 31\.(\d+)_': r'_Requirements: 51.\1_',
-    
+
     # Task 88-92: Change REQ-32.X to REQ-52.X (DEHB)
     r'_Requirements: 32\.(\d+)-32\.(\d+)_': r'_Requirements: 52.\1-52.\2_',
     r'_Requirements: 32\.(\d+)_': r'_Requirements: 52.\1_',
-    
+
     # Task 93-96: Change REQ-33.X to REQ-53.X (OSB)
     r'_Requirements: 33\.(\d+)-33\.(\d+)_': r'_Requirements: 53.\1-53.\2_',
     r'_Requirements: 33\.(\d+)_': r'_Requirements: 53.\1_',

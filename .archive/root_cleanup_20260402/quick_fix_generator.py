@@ -15,17 +15,17 @@ from typing import Dict, List, Any
 
 class QuickFixGenerator:
     """Generate quick fixes for security and deployment issues"""
-    
+
     def __init__(self):
         self.project_root = Path(__file__).parent
         self.backend_path = self.project_root / 'backend'
         self.frontend_path = self.project_root / 'frontend'
         self.fixes_applied = []
-        
+
     def check_security_issues(self) -> List[Dict]:
         """Check for common security issues"""
         issues = []
-        
+
         # Check for exposed secrets
         secret_patterns = [
             'SECRET_KEY',
@@ -34,18 +34,18 @@ class QuickFixGenerator:
             'TOKEN',
             'PRIVATE_KEY'
         ]
-        
+
         for root, dirs, files in os.walk(self.project_root):
             if any(skip in root for skip in ['venv', 'node_modules', '.git', '__pycache__']):
                 continue
-                
+
             for file in files:
                 if file.endswith(('.py', '.js', '.ts', '.env', '.yml', '.yaml')):
                     filepath = os.path.join(root, file)
                     try:
                         with open(filepath, 'r', encoding='utf-8') as f:
                             content = f.read()
-                            
+
                             for pattern in secret_patterns:
                                 if pattern in content and not file.startswith('.env'):
                                     issues.append({
@@ -57,20 +57,20 @@ class QuickFixGenerator:
                                     })
                     except Exception:
                         continue
-        
+
         return issues
-    
+
     def check_deployment_issues(self) -> List[Dict]:
         """Check for deployment configuration issues"""
         issues = []
-        
+
         # Check for missing Docker files
         required_docker_files = [
             'Dockerfile',
             'docker-compose.yml',
             '.dockerignore'
         ]
-        
+
         for docker_file in required_docker_files:
             if not (self.project_root / docker_file).exists():
                 issues.append({
@@ -80,7 +80,7 @@ class QuickFixGenerator:
                     'issue': f'Missing {docker_file}',
                     'solution': f'create_{docker_file.replace(".", "_").replace("-", "_")}'
                 })
-        
+
         # Check for missing environment files
         env_files = ['.env.example', '.env.production']
         for env_file in env_files:
@@ -92,9 +92,9 @@ class QuickFixGenerator:
                     'issue': f'Missing {env_file}',
                     'solution': f'create_env_file'
                 })
-        
+
         return issues
-    
+
     def create_dockerfile(self) -> bool:
         """Create basic Dockerfile"""
         try:
@@ -143,17 +143,17 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \\
 # Start application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 '''
-            
+
             with open(self.project_root / 'Dockerfile', 'w') as f:
                 f.write(dockerfile_content)
-            
+
             self.fixes_applied.append('Created production Dockerfile')
             return True
-            
+
         except Exception as e:
             print(f"[ERROR] Failed to create Dockerfile: {e}")
             return False
-    
+
     def create_docker_compose_yml(self) -> bool:
         """Create docker-compose.yml"""
         try:
@@ -211,17 +211,17 @@ volumes:
   postgres_data:
   redis_data:
 '''
-            
+
             with open(self.project_root / 'docker-compose.yml', 'w') as f:
                 f.write(compose_content)
-            
+
             self.fixes_applied.append('Created docker-compose.yml')
             return True
-            
+
         except Exception as e:
             print(f"[ERROR] Failed to create docker-compose.yml: {e}")
             return False
-    
+
     def create_dockerignore(self) -> bool:
         """Create .dockerignore file"""
         try:
@@ -273,17 +273,17 @@ temp/
 tmp/
 *.tmp
 '''
-            
+
             with open(self.project_root / '.dockerignore', 'w') as f:
                 f.write(dockerignore_content)
-            
+
             self.fixes_applied.append('Created .dockerignore')
             return True
-            
+
         except Exception as e:
             print(f"[ERROR] Failed to create .dockerignore: {e}")
             return False
-    
+
     def create_env_example(self) -> bool:
         """Create .env.example file"""
         try:
@@ -333,17 +333,17 @@ SMTP_PASSWORD=your-app-password
 UPLOAD_DIR=./uploads
 MAX_FILE_SIZE=10485760
 '''
-            
+
             with open(self.project_root / '.env.example', 'w') as f:
                 f.write(env_content)
-            
+
             self.fixes_applied.append('Created .env.example')
             return True
-            
+
         except Exception as e:
             print(f"[ERROR] Failed to create .env.example: {e}")
             return False
-    
+
     def create_nginx_config(self) -> bool:
         """Create nginx configuration"""
         try:
@@ -401,60 +401,60 @@ http {
     }
 }
 '''
-            
+
             with open(self.project_root / 'nginx.conf', 'w') as f:
                 f.write(nginx_content)
-            
+
             self.fixes_applied.append('Created nginx.conf')
             return True
-            
+
         except Exception as e:
             print(f"[ERROR] Failed to create nginx.conf: {e}")
             return False
-    
+
     def fix_security_issues(self, issues: List[Dict]) -> List[str]:
         """Apply fixes for security issues"""
         fixed_issues = []
-        
+
         for issue in issues:
             if issue['type'] == 'security':
                 # For now, just log the issue
                 print(f"[WARN] Security issue found in {issue['file']}: {issue['issue']}")
                 print("[INFO] Manual review required for security issues")
                 fixed_issues.append(f"Logged security issue: {issue['issue']}")
-        
+
         return fixed_issues
-    
+
     def fix_deployment_issues(self, issues: List[Dict]) -> List[str]:
         """Apply fixes for deployment issues"""
         fixed_issues = []
-        
+
         for issue in issues:
             if issue['type'] == 'deployment':
                 solution = issue.get('solution')
-                
+
                 if solution == 'create_Dockerfile':
                     if self.create_dockerfile():
                         fixed_issues.append('Created Dockerfile')
-                
+
                 elif solution == 'create_docker_compose_yml':
                     if self.create_docker_compose_yml():
                         fixed_issues.append('Created docker-compose.yml')
-                
+
                 elif solution == 'create__dockerignore':
                     if self.create_dockerignore():
                         fixed_issues.append('Created .dockerignore')
-                
+
                 elif solution == 'create_env_file':
                     if self.create_env_example():
                         fixed_issues.append('Created .env.example')
-        
+
         return fixed_issues
-    
+
     def run_security_audit(self) -> Dict[str, Any]:
         """Run security audit"""
         print("[SECURE] Running security audit...")
-        
+
         try:
             # Try to run pip audit
             os.chdir(self.backend_path)
@@ -463,40 +463,40 @@ http {
                 capture_output=True,
                 text=True
             )
-            
+
             return {
                 'success': result.returncode == 0,
                 'output': result.stdout,
                 'errors': result.stderr
             }
-            
+
         except Exception as e:
             return {
                 'success': False,
                 'error': str(e)
             }
-    
+
     def generate_fixes(self) -> Dict[str, Any]:
         """Generate and apply quick fixes"""
         print("[START] Starting quick fix generation...")
-        
+
         # Check for issues
         security_issues = self.check_security_issues()
         deployment_issues = self.check_deployment_issues()
-        
+
         print(f"[INFO] Found {len(security_issues)} security issues")
         print(f"[INFO] Found {len(deployment_issues)} deployment issues")
-        
+
         # Apply fixes
         security_fixes = self.fix_security_issues(security_issues)
         deployment_fixes = self.fix_deployment_issues(deployment_issues)
-        
+
         # Create additional deployment files
         self.create_nginx_config()
-        
+
         # Run security audit
         audit_result = self.run_security_audit()
-        
+
         return {
             'success': True,
             'security_issues': len(security_issues),
@@ -506,7 +506,7 @@ http {
             'fixes_applied': self.fixes_applied,
             'audit_result': audit_result
         }
-    
+
     def generate_report(self, results: Dict) -> str:
         """Generate quick fix report"""
         report = []
@@ -515,62 +515,62 @@ http {
         report.append("=" * 70)
         report.append(f"Generated: {datetime.now().isoformat()}")
         report.append("")
-        
+
         if results['success']:
             report.append("[OK] Quick fix generation completed")
-            
+
             report.append(f"[INFO] Security issues found: {results['security_issues']}")
             report.append(f"[INFO] Deployment issues found: {results['deployment_issues']}")
             report.append("")
-            
+
             if results['fixes_applied']:
                 report.append("[OK] Fixes applied:")
                 for fix in results['fixes_applied']:
                     report.append(f"  - {fix}")
                 report.append("")
-            
+
             if results['security_fixes']:
                 report.append("[SECURE] Security fixes:")
                 for fix in results['security_fixes']:
                     report.append(f"  - {fix}")
                 report.append("")
-            
+
             if results['deployment_fixes']:
                 report.append("[DEPLOY] Deployment fixes:")
                 for fix in results['deployment_fixes']:
                     report.append(f"  - {fix}")
                 report.append("")
-        
+
         report.append("[NEXT] Recommended next steps:")
         report.append("1. Review generated Docker files")
         report.append("2. Update .env.example with actual values")
         report.append("3. Set up SSL certificates for production")
         report.append("4. Run 'docker-compose up -d' to test deployment")
         report.append("5. Configure production secrets securely")
-        
+
         report.append("")
         report.append("=" * 70)
-        
+
         return "\n".join(report)
 
 def main():
     """Main function"""
     fixer = QuickFixGenerator()
-    
+
     # Generate fixes
     results = fixer.generate_fixes()
-    
+
     # Generate and display report
     report = fixer.generate_report(results)
     print(report)
-    
+
     # Save report
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     report_file = f'quick_fix_report_{timestamp}.txt'
-    
+
     with open(report_file, 'w', encoding='utf-8') as f:
         f.write(report)
-    
+
     print(f"\n[OK] Report saved to: {report_file}")
 
 if __name__ == "__main__":

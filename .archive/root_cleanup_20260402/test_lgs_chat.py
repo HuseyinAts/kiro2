@@ -24,7 +24,7 @@ try:
         print(response_text[:1000] + '...' if len(response_text) > 1000 else response_text)
         print('=' * 50)
         print(f'Response length: {len(response_text)} characters')
-        
+
         # Check if response contains LGS specific content
         if 'LGS' in response_text and 'matematik' in response_text.lower():
             print('\n[CHECK] VERIFIED: Response contains LGS-specific matematik content!')

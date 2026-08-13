@@ -983,48 +983,64 @@ Cevap:"""
         try:
             filtered_registry = {}
             for doc_id, doc_info in self._document_registry.items():
-                owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get("user_id")
+                owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get(
+                    "user_id"
+                )
                 if is_admin or str(owner_id) == str(user_id):
                     filtered_registry[doc_id] = doc_info
 
             total_count = len(filtered_registry)
 
             for doc_id, doc_info in filtered_registry.items():
-                documents.append({
-                    "id": doc_id,
-                    "title": doc_info.get("title", "Untitled"),
-                    "source": doc_info.get("source", "unknown"),
-                    "indexed_at": doc_info.get("indexed_at", ""),
-                    "chunk_count": doc_info.get("chunk_count", 0),
-                    "metadata": doc_info.get("metadata", {}),
-                })
+                documents.append(
+                    {
+                        "id": doc_id,
+                        "title": doc_info.get("title", "Untitled"),
+                        "source": doc_info.get("source", "unknown"),
+                        "indexed_at": doc_info.get("indexed_at", ""),
+                        "chunk_count": doc_info.get("chunk_count", 0),
+                        "metadata": doc_info.get("metadata", {}),
+                    }
+                )
 
             documents.sort(key=lambda x: str(x.get("indexed_at", "")), reverse=True)
-            documents = documents[offset:offset + limit]
+            documents = documents[offset : offset + limit]
 
             # Fallback to vector store if registry is empty
             if not documents and total_count == 0 and self.vector_store:
                 collection = getattr(self.vector_store, "_collection", None)
                 if collection:
                     where_clause = None if is_admin else {"user_id": user_id}
-                    results = collection.get(where=where_clause, limit=limit, offset=offset)
+                    results = collection.get(
+                        where=where_clause, limit=limit, offset=offset
+                    )
                     if results and results.get("ids"):
-                        for i, (doc_id, metadata) in enumerate(zip(results.get("ids", []), results.get("metadatas", []), strict=False)):
-                            documents.append({
-                                "id": doc_id,
-                                "title": metadata.get("title", f"Document {i + 1}"),
-                                "source": metadata.get("source", "unknown"),
-                                "indexed_at": metadata.get("indexed_at", ""),
-                                "chunk_count": 1,
-                                "metadata": metadata,
-                            })
+                        for i, (doc_id, metadata) in enumerate(
+                            zip(
+                                results.get("ids", []),
+                                results.get("metadatas", []),
+                                strict=False,
+                            )
+                        ):
+                            documents.append(
+                                {
+                                    "id": doc_id,
+                                    "title": metadata.get("title", f"Document {i + 1}"),
+                                    "source": metadata.get("source", "unknown"),
+                                    "indexed_at": metadata.get("indexed_at", ""),
+                                    "chunk_count": 1,
+                                    "metadata": metadata,
+                                }
+                            )
                         total_count = len(documents)
         except Exception as e:
             logger.error(f"Error listing documents: {e}")
 
         return documents, total_count
 
-    async def delete_document(self, document_id: str, user_id: str, is_admin: bool = False) -> bool:
+    async def delete_document(
+        self, document_id: str, user_id: str, is_admin: bool = False
+    ) -> bool:
         """
         Delete a document with RLS/ownership checks.
         Raises ValueError if not found, or PermissionError if unauthorized.
@@ -1034,11 +1050,13 @@ Cevap:"""
         # 1. Check & delete from registry
         if document_id in self._document_registry:
             doc_info = self._document_registry[document_id]
-            owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get("user_id")
-            
+            owner_id = doc_info.get("user_id") or doc_info.get("metadata", {}).get(
+                "user_id"
+            )
+
             if not is_admin and str(owner_id) != str(user_id):
                 raise PermissionError("Not authorized to delete this document")
-                
+
             del self._document_registry[document_id]
             deleted = True
 
@@ -1048,9 +1066,13 @@ Cevap:"""
             if collection:
                 if not deleted and not is_admin:
                     results = collection.get(where={"document_id": document_id})
-                    if not results or not results.get("metadatas") or len(results["metadatas"]) == 0:
+                    if (
+                        not results
+                        or not results.get("metadatas")
+                        or len(results["metadatas"]) == 0
+                    ):
                         raise ValueError(f"Document {document_id} not found")
-                    
+
                     doc_meta = results["metadatas"][0]
                     if str(doc_meta.get("user_id")) != str(user_id):
                         raise PermissionError("Not authorized to delete this document")

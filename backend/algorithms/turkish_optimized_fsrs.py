@@ -440,7 +440,7 @@ class TurkishOptimizedFSRS:
             else:  # EASY
                 new_card.stability = self.turkish_params[3]
                 new_card.difficulty = 2.0
-            
+
             new_card.state = "learning" if grade == FSRSGrade.AGAIN else "review"
             new_card.retrievability = 1.0
             return new_card
@@ -452,15 +452,19 @@ class TurkishOptimizedFSRS:
             new_card.state = "relearning"
 
             # Difficulty artır (Mean reversion to 10)
-            new_card.difficulty = min(10.0, card.difficulty + (10.0 - card.difficulty) * 0.3)
+            new_card.difficulty = min(
+                10.0, card.difficulty + (10.0 - card.difficulty) * 0.3
+            )
 
             # Stability exponential decay upon failure
-            new_card.stability = max(0.1, card.stability * min(0.3, self.turkish_params[9]))
+            new_card.stability = max(
+                0.1, card.stability * min(0.3, self.turkish_params[9])
+            )
 
         else:
             # Başarılı - stability artır
             new_card.state = "review"
-            
+
             # Difficulty mean reversion (Zorluk zamanla hedef grade'e yaklaşır)
             if grade == FSRSGrade.HARD:
                 new_card.difficulty = min(10.0, card.difficulty + 1.0)
@@ -470,26 +474,33 @@ class TurkishOptimizedFSRS:
             # S_new = S_old * (1 + growth_factor * decay_multiplier)
             # R (Retrievability) düştükçe hatırlamanın "büyüme" etkisi (growth_factor) artar (spacing effect)
             R = card.retrievability if (0 < card.retrievability < 1.0) else 0.85
-            forgetting_factor = max(0.15, (2.718 ** (self.turkish_params[10] * (1 - R))) - 1)
-            
+            forgetting_factor = max(
+                0.15, (2.718 ** (self.turkish_params[10] * (1 - R))) - 1
+            )
+
             # Difficulty arttıkça büyüme yavaşlar
             difficulty_factor = (11 - new_card.difficulty) / 10.0
-            
+
             # S_old arttıkça büyüme yavaşlar (stability decay)
-            decay_factor = (card.stability ** -0.1) if card.stability > 0 else 1.0
+            decay_factor = (card.stability**-0.1) if card.stability > 0 else 1.0
 
             growth = 1.5 * difficulty_factor * decay_factor * forgetting_factor
 
             if grade == FSRSGrade.HARD:
-                growth *= 0.5  # Hard penalizes growth but doesn't shrink absolute stability
+                growth *= (
+                    0.5  # Hard penalizes growth but doesn't shrink absolute stability
+                )
             elif grade == FSRSGrade.EASY:
                 growth *= 1.8  # Easy boosts growth
 
             # Stabiliteyi artır
             new_card.stability = min(36500.0, card.stability * (1 + growth))
-            
+
             # Kritik Hata Düzeltmesi: Stability Asla Başarılı Hatırlamada Küçülemez
-            new_card.stability = max(new_card.stability, card.stability * (1.15 if grade == FSRSGrade.EASY else 1.05))
+            new_card.stability = max(
+                new_card.stability,
+                card.stability * (1.15 if grade == FSRSGrade.EASY else 1.05),
+            )
 
         # Retrievability hesapla (Power-Law Decay for FSRS)
         if new_card.stability > 0:

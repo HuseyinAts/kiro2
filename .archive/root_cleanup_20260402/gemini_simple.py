@@ -43,33 +43,33 @@ while True:
     try:
         # Kullanicidan mesaj al
         user_input = input("\nSiz: ").strip()
-        
+
         if not user_input:
             continue
-        
+
         # Komutlar
         if user_input.lower() in ["exit", "quit", "cikis"]:
             print("\nGorusmek uzere!")
             break
-        
+
         if user_input.lower() in ["help", "yardim"]:
             print("\nKomutlar:")
             print("  exit, quit, cikis - Programdan cik")
             print("  help, yardim - Yardim mesaji")
             continue
-        
+
         # Gemini'ye gonder
         print("\nGemini dusunuyor...")
-        
+
         # Thinking mode ekle
         full_prompt = "Lutfen adim adim dusun ve detayli yanit ver.\n\n" + user_input
-        
+
         response = model.generate_content(full_prompt)
         result = response.text
-        
+
         print(f"\nGemini:\n{result}")
         print("-" * 60)
-        
+
     except KeyboardInterrupt:
         print("\n\nGorusmek uzere!")
         break

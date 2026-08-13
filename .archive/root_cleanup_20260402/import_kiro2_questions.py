@@ -54,14 +54,14 @@ async def check_topic_exists(conn, topic_code: str) -> str:
     )
     if result:
         return result['id']
-    
+
     # Default topic_hierarchy kontrolü
     result = await conn.fetchrow(
         "SELECT id FROM topic_hierarchy LIMIT 1"
     )
     if result:
         return result['id']
-    
+
     return None
 
 
@@ -73,24 +73,24 @@ async def create_default_topic(conn) -> str:
         VALUES ($1, 1, 'GENEL', 'Genel', true, NOW(), NOW())
         ON CONFLICT (code) DO NOTHING
     """, topic_id)
-    
+
     result = await conn.fetchrow("SELECT id FROM topic_hierarchy WHERE code = 'GENEL'")
     return result['id'] if result else topic_id
 
 
 async def import_questions(input_file: str):
     """Soruları PostgreSQL'e aktar"""
-    
+
     print(f"📂 Dosya okunuyor: {input_file}")
-    
+
     # JSONL dosyasını oku
     questions = []
     with open(input_file, 'r', encoding='utf-8') as f:
         for line in f:
             questions.append(json.loads(line))
-    
+
     print(f"📊 Toplam {len(questions)} soru bulundu")
-    
+
     # Veritabanına bağlan
     print(f"🔌 PostgreSQL'e bağlanılıyor...")
     try:
@@ -99,29 +99,29 @@ async def import_questions(input_file: str):
     except Exception as e:
         print(f"❌ Bağlantı hatası: {e}")
         return
-    
+
     try:
         # Mevcut soru sayısını kontrol et
         existing_count = await conn.fetchval("SELECT COUNT(*) FROM question_bank")
         print(f"📊 Mevcut soru sayısı: {existing_count}")
-        
+
         # Default topic ID al veya oluştur
         default_topic_id = await create_default_topic(conn)
         print(f"📁 Varsayılan konu ID: {default_topic_id}")
-        
+
         # Batch insert için hazırlık
         inserted = 0
         skipped = 0
         errors = 0
         batch_size = 100
-        
+
         for i in range(0, len(questions), batch_size):
             batch = questions[i:i+batch_size]
-            
+
             for q in batch:
                 try:
                     question_id = str(uuid.uuid4())
-                    
+
                     # Seçenekleri parse et
                     options = q.get('options', {})
                     option_a = options.get('A', '')
@@ -129,13 +129,13 @@ async def import_questions(input_file: str):
                     option_c = options.get('C', '')
                     option_d = options.get('D', '')
                     option_e = options.get('E', None)
-                    
+
                     # Subject area
                     subject = SUBJECT_MAPPING.get(q.get('subject', 'Genel'), 'genel')
-                    
+
                     # Exam type
                     exam_type = q.get('exam_type', 'TYT')
-                    
+
                     # Insert query
                     await conn.execute("""
                         INSERT INTO question_bank (
@@ -174,28 +174,28 @@ async def import_questions(input_file: str):
                         'medium'  # difficulty_level
                     )
                     inserted += 1
-                    
+
                 except Exception as e:
                     errors += 1
                     if errors <= 5:
                         print(f"⚠️ Hata (soru {i}): {e}")
-            
+
             # Progress
             if (i + batch_size) % 1000 == 0 or i + batch_size >= len(questions):
                 print(f"📈 İlerleme: {min(i + batch_size, len(questions))}/{len(questions)} ({inserted} eklendi, {errors} hata)")
-        
+
         # Final count
         final_count = await conn.fetchval("SELECT COUNT(*) FROM question_bank")
         print(f"\n✅ Import tamamlandı!")
         print(f"📊 Toplam eklenen: {inserted}")
         print(f"📊 Hata: {errors}")
         print(f"📊 Veritabanındaki toplam soru: {final_count}")
-        
+
     except Exception as e:
         print(f"❌ Import hatası: {e}")
         import traceback
         traceback.print_exc()
-    
+
     finally:
         await conn.close()
         print("🔌 Bağlantı kapatıldı")
@@ -206,16 +206,16 @@ async def main():
     print("=" * 60)
     print("🚀 KIRO2 Soru Veritabanı Import")
     print("=" * 60)
-    
+
     # Input dosyası
     input_file = Path(__file__).parent / "d-dataset" / "output" / "kiro2_questions.jsonl"
-    
+
     # Alternatif konumlar
     alt_locations = [
         Path(__file__).parent / "kiro2_questions.jsonl",
         Path.home() / "Downloads" / "kiro2_questions.jsonl",
     ]
-    
+
     if not input_file.exists():
         print(f"⚠️ Dosya bulunamadı: {input_file}")
         for alt in alt_locations:
@@ -223,14 +223,14 @@ async def main():
                 input_file = alt
                 print(f"✅ Alternatif dosya bulundu: {input_file}")
                 break
-    
+
     if not input_file.exists():
         print("❌ kiro2_questions.jsonl dosyası bulunamadı!")
         print("📁 Lütfen dosyayı şu konumlardan birine kopyalayın:")
         print(f"   - {Path(__file__).parent / 'd-dataset' / 'output' / 'kiro2_questions.jsonl'}")
         print(f"   - {Path(__file__).parent / 'kiro2_questions.jsonl'}")
         return
-    
+
     await import_questions(str(input_file))
 
 

@@ -59,41 +59,41 @@ for class_name in classes_to_check:
     class_dir = CROPS_DIR / class_name
     if not class_dir.exists():
         continue
-    
+
     print(f"\n{'='*70}")
     print(f"📂 {class_name.upper()} CLASS ANALİZİ")
     print('='*70)
-    
+
     # Kitapları say
     books = [d for d in class_dir.iterdir() if d.is_dir()]
     total_pngs = sum(len(list(b.glob("*.png"))) for b in books)
-    
+
     print(f"   Kitap: {len(books)}, Toplam crop: {total_pngs}")
-    
+
     # Rastgele 20 örnek analiz et
     samples = []
     answer_like = 0
-    
+
     for book in books[:10]:
         try:
             pngs = sorted([f for f in os.listdir(book) if f.endswith('.png')])[:5]
         except:
             continue
-        
+
         for png in pngs:
             if len(samples) >= 20:
                 break
-            
+
             try:
                 img = Image.open(book / png)
                 img_proc = preprocess(img)
                 result = reader.readtext(np.array(img_proc), detail=0)
                 text = ' '.join(result)
-                
+
                 is_answer = has_answer_pattern(text)
                 if is_answer:
                     answer_like += 1
-                
+
                 samples.append({
                     'book': book.name[:30],
                     'file': png,
@@ -103,10 +103,10 @@ for class_name in classes_to_check:
                 })
             except:
                 pass
-    
+
     print(f"\n   📊 ÖRNEK ANALİZ ({len(samples)} crop):")
     print(f"   Cevap benzeri: {answer_like} ({answer_like/max(1,len(samples))*100:.0f}%)")
-    
+
     print(f"\n   Örnekler:")
     for s in samples[:15]:
         marker = "✅" if s['is_answer'] else "  "

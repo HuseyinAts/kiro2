@@ -62,13 +62,13 @@ def main():
     except Exception as e:
         print(f"      HATA: {e}")
         return
-    
+
     # 2. Mevcut durum
     print("\n[2/5] Mevcut durum kontrol ediliyor...")
     cur.execute("SELECT COUNT(*) FROM question_bank")
     count_before = cur.fetchone()[0]
     print(f"      Mevcut soru sayisi: {count_before}")
-    
+
     # 3. Topic'leri oluştur ve ID'lerini al
     print("\n[3/5] Topic'ler olusturuluyor...")
     topics = [
@@ -77,7 +77,7 @@ def main():
         ('EDB', 'Edebiyat'), ('TAR', 'Tarih'), ('COG', 'Cografya'),
         ('PAR', 'Paragraf'), ('GEN', 'Genel')
     ]
-    
+
     topic_ids = {}
     for code, name in topics:
         cur.execute("""
@@ -90,13 +90,13 @@ def main():
         if result:
             topic_ids[code] = result[0]
     conn.commit()
-    
+
     # Eksik topic ID'leri al
     cur.execute("SELECT code, id FROM topic_hierarchy")
     for row in cur.fetchall():
         topic_ids[row[0]] = row[1]
     print(f"      {len(topic_ids)} topic hazir")
-    
+
     # 4. JSONL oku
     print(f"\n[4/5] JSONL okunuyor...")
     print(f"      Dosya: {JSONL_PATH}")
@@ -108,10 +108,10 @@ def main():
             except:
                 pass
     print(f"      {len(questions)} soru yuklendi")
-    
+
     # 5. Soruları ekle
     print("\n[5/5] Sorular ekleniyor...")
-    
+
     insert_sql = """
         INSERT INTO question_bank (
             id, question_text, option_a, option_b, option_c, option_d, option_e,
@@ -120,19 +120,19 @@ def main():
         ) VALUES %s
         ON CONFLICT (id) DO NOTHING
     """
-    
+
     batch = []
     inserted = 0
     batch_size = 500
-    
+
     for i, q in enumerate(questions):
         book_name = q.get('book_name', '')
         subject_code, subject_name = detect_subject(book_name)
         exam_type = 'AYT' if 'ayt' in book_name.lower() else 'TYT'
-        
+
         topic_id = topic_ids.get(subject_code, topic_ids.get('GEN'))
         options = q.get('options', {})
-        
+
         data = (
             str(uuid.uuid4()),                              # id
             str(q.get('text', ''))[:5000],                  # question_text
@@ -154,7 +154,7 @@ def main():
             'NOW()'                                          # updated_at (placeholder)
         )
         batch.append(data)
-        
+
         if len(batch) >= batch_size:
             try:
                 execute_values(cur, insert_sql, batch, template="""(
@@ -167,10 +167,10 @@ def main():
                 print(f"      Batch hatasi: {str(e)[:100]}")
                 conn.rollback()
             batch = []
-            
+
             if (i + 1) % 5000 == 0:
                 print(f"      Ilerleme: {i+1}/{len(questions)} ({100*(i+1)/len(questions):.0f}%)")
-    
+
     # Kalan batch
     if batch:
         try:
@@ -182,11 +182,11 @@ def main():
             inserted += len(batch)
         except Exception as e:
             print(f"      Son batch hatasi: {str(e)[:100]}")
-    
+
     # Sonuç
     cur.execute("SELECT COUNT(*) FROM question_bank")
     count_after = cur.fetchone()[0]
-    
+
     print("\n" + "=" * 60)
     print("  IMPORT TAMAMLANDI!")
     print("=" * 60)
@@ -194,7 +194,7 @@ def main():
     print(f"  Yeni soru sayisi   : {count_after}")
     print(f"  Eklenen            : {count_after - count_before}")
     print("=" * 60)
-    
+
     cur.close()
     conn.close()
 
