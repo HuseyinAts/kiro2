@@ -434,3 +434,6 @@ backend/scratch_check_alembic.py
 backend/scratch_check_db_type.py
 backend/scratch_test_gf5w.py
 scratch/
+
+# Sema yedekleri (alembic squash artefaktlari) - baseline SQL zaten repoda
+backend/backups/

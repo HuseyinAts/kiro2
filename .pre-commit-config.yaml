@@ -2,6 +2,13 @@
 # Run: pre-commit install
 # Manual run: pre-commit run --all-files
 
+# Arsivlenmis alembic revizyonlari (14 Agu 2026 squash, bkz.
+# alembic/versions/0001_baseline_squash.py). Bunlar TARIHSEL kayittir ve
+# alembic tarafindan YUKLENMEZ -- formatlamak/duzeltmek kaydin sadakatini
+# bozar, hicbir sey de kazandirmaz. Yeni revizyonlar versions/ altinda
+# yazilir ve tum hook'lardan gecer.
+exclude: "^backend/alembic/versions_archive/"
+
 repos:
   # General hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
