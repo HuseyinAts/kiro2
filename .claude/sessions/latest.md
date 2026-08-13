@@ -1,40 +1,45 @@
-## Session Handoff — 2026-08-13 00:19
+## Session Handoff — 2026-08-13 (kapanış)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `f15af06f6` docs(audit): U04/X07/X08 durumu uygulandi
-**Uncommitted:** ⚠️ **3736 dosya kirli, bu oturumdan DEĞİL** — `.archive/`, `scripts/validate_*.py`,
-`tests/test_database_*.py` vb. `git diff --stat` = 3635 dosya, +30104/-358133 satır. Önceden
-var olan, ilişkisiz bir temizlik/silme işi (bu oturum başlamadan önceki git status'ta da vardı).
-**DOKUNULMADI, COMMIT EDİLMEDİ** — 358K satır silme riskli, sahibi belirsiz.
+**Son commit:** `43c3e4413` fix(audit): X01/X03/X10 kutuk durumu dogrulandi->uygulandi
+**Uncommitted:** 3627 dosya (1437 D, 2089 M, 101 ??) — Gemini'nin 7-11 Ağu devir
+çalışmasından kalma, bu oturumda **kasıtlı olarak commit edilmedi** (bkz. Kararlar).
 
 ### Yapilanlar
-- Adversarial doğrulama makinesi: `docs/audits/2026-08-12_25uzman/iddialar.yaml` (36 iddia, 3 tur)
-  + `.claude/agents/iddia-dogrulayici.md` + `kanit-hakemi.md` + `.claude/workflows/iddia-dogrulama.js`
-- Zorlayıcı katman: `.claude/settings.json` (14 `Read()` deny, model→`claude-sonnet-5`);
-  5/13 rule dosyasına `paths:` eklendi (`baf59b23e`) — **4/13 hâlâ eksik** (X02 kısmi)
-- U04 Sokratik guardrail sızıntısı — 6 task, hepsi merge:
-  `51fd034ee`(X08 dedektör) `a978ae86a`(X07 sil) `96e0564702`(enforce_socratic_output)
-  `b9645ba0a9`(_call_llm wiring) `37ce2468d4`(stream wiring) `f15af06f6`(kütük+regresyon)
-- `docs/superpowers/specs/2026-08-12-u04-socratic-guardrail-design.md` + `plans/2026-08-12-u04-*.md`
-- Kütük durumu düzeltildi: X01/X03/X10 kodda fix vardı ama kütükte `dogrulandi` kalmıştı —
-  kullanıcıya bildirildi, henüz kütüğe yazılmadı (bir sonraki adım)
+- `docs/audits/2026-08-12_25uzman/iddialar.yaml`: X01/X03/X10 `dogrulandi`→`uygulandi`,
+  commit ref eklendi (`43c3e4413`)
+- `backend/tests/audit/test_claude_settings_hardening.py`: X01/X03 için YENİ
+  regresyon testi (bu ikisinin daha önce hiç testi yoktu), mutasyonla çivilendi
+- `backend/services/`, `backend/tests/`: `git checkout HEAD --` ile geri yüklendi
+  (working-tree-only, commit gerekmedi). Sebep: 72+38 "silinmiş" dosyanın en az
+  biri (`bkt_service.py`) hâlâ 12 canlı dosyadan import ediliyordu; taşınmamış,
+  gerçekten kaybolmuştu. Image rebuild edilseydi backend çökerdi.
+- `docs/HANDOFF_2026-08-07_gemini.md` çapraz okundu: 3736→3627 dosyalık kirli
+  ağacın kaynağı netleşti (Gemini'nin commit'lemediği 4 günlük iş)
 
 ### Fail Eden Testler
-- YOK (U04'e ait: 28/28 pass, `test_iddia_kutugu.py` 9/10 — 1 fail pre-existing/ilişkisiz, doğrulandı)
+- YOK (`test_iddia_kutugu.py` 11/12 — 1 pre-existing/ilgisiz, X07 dosyası fix
+  kapsamında silindiği için ankraj yok, değişmedi)
 
 ### Engelleyiciler
-- 3736 dosyalık ilişkisiz kirli ağaç (yukarıda) — kaynağı/sahibi belirsiz, kullanıcıya sorulmalı
-- 4 stash: OCR-sanitizer WIP (kırık `services.ocr_sanitizer_service` import, 3 parça) +
-  `stash@{4}` master'da "pre-yolo checkpoint" — hiçbiri geri yüklenmedi, `git stash list`'te duruyor
+- 3627 dosyalık kirli ağaç hâlâ commit'siz: `frontend/` (334 D), `scripts/`
+  `docs/` `orchestrator/` D'leri HİÇ doğrulanmadı; 1243 `.json`+268 `.jsonl` M
+  homojen değil (çoğu gerçek pipeline veri mutasyonu — LFS pointer SHA değişmiş
+  — 1 anomali: `batch_108.jsonl` boşalmış, 9941B→0)
 
 ### Sonraki Adimlar (maks 5)
-1. Kütüğü güncelle: X01/X03/X10 → `uygulandi` (commit refs: settings.json diff, `27c8fff02`)
-2. 15 `beklemede` iddia için Tur 4 (istenirse) veya 8 `dogrulandi`+`X02`/`X04` için fix planı
-3. 3736 dosyalık kirli ağacın kaynağını kullanıcıyla netleştir — commit mi, discard mı, ayrı mı
-4. U25 (migration reversibility, P1) kendi brainstorming→spec→plan döngüsü — henüz başlamadı
-5. Push durumu kontrol edilmedi bu oturumda — uzağa gitti mi doğrula
+1. `.py` reformat (197 dosya) için dar kapsamlı ayrı commit değerlendir (yüksek
+   güven, örneklendi: tırnak stili + boşluk)
+2. `frontend`(334 D)/`scripts`/`docs`/`orchestrator` D'lerini backend/services
+   deseniyle (canlı import-referans kontrolü) doğrula, sonra karar ver
+3. Kategori C (11 migration + ~90 yeni dosya): kullanıcı "commit'le, migration
+   ÇALIŞTIRMA" dedi, henüz yapılmadı
+4. U25 (migration reversibility, P1) brainstorming→spec→plan — başlanmadı
+5. 16 commit'i push et — uzak durum kontrol edilmedi
 
 ### Kararlar (gelecek session tekrar tartismasin)
-- 25-uzman panel bulguları KÖRÜ KÖRÜNE uygulanmadı — önce doğrulama makinesi kuruldu (%50-60
-  fantom oranı ölçüldü, projenin kendi audit-methodology.md deseniyle tutarlı)
-- Pre-existing kirli dosyalar (OCR WIP, 3736 dosyalık ağaç) hiçbir U04 task'ına sweep edilmedi —
-  her seferinde stash'lenip iş sonrası restore edildi, commit'ler cerrahi kaldı
+- Kirli ağacı topluca commit'lememe **kasıtlı**: "M=kozmetik" varsayımı bu
+  turda 3 kez yanlış çıktı (LFS pointer mutasyonu, load-bearing servis silme,
+  script_mezarligi taşıma-değil). Granüler doğrulama olmadan commit YAPILMAZ.
+- Kullanıcı açık onay verdi: "burada dur" — kalan sınıflandırma ayrı bir
+  oturuma/göreve bırakıldı, aciliyet yok (hiçbir şey commit'lenmediği için
+  hiçbir şey daha kötüye gitmiyor).
