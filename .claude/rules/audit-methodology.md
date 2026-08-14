@@ -281,7 +281,38 @@ arızası vardır.
 | 1 Ağu 2026 | Mutasyon kabuk tırnağında bozuldu | M4 mutasyonu `1 error` (collection) verdi, `1 failed` değil — kabuk tırnaklaması dosyaya **syntax hatası** yazmıştı. Syntax hatası veren mutasyon testin yük taşıdığını KANITLAMAZ; sadece dosyanın bozulduğunu gösterir | Mutasyon sonucu `failed` DEĞİL `error` ise ölçüm **geçersiz**; mutasyonu Python ile (kabuk tırnağı olmadan) tekrar uygula. Ankraj `assert eski in t` ile doğrulanmalı |
 | 1 Ağu 2026 | "Bu bekçi CI'da koşmuyor" | Yalnız `on:` bloğuna bakıldı. Ölçünce: `ci.yml:281` **marker filtresiz** koşuyor → dosya **TOPLANIYOR**; koşmama sebebi dalın tetiklenmemesi. İkisi ayrı şey ve fark kritikti: toplanma, eksik `psycopg2` yüzünden **merge-anı collection ERROR** demekti (`-x` ile tüm job) | "CI'da koşuyor mu" iki ayrı ölçüm ister: **(a)** iş tetikleniyor mu (`on:` + dal/PR durumu), **(b)** dosya toplanıyor mu (`pytest` çağrısının **marker filtresi**). Yalnız (a)'ya bakmak mayını zararsız gösterir |
 | 1 Ağu 2026 | Sabit eşik "ölçüldü" sanıldı | `ESIK = 150` yorumunda "178 testin büyük çoğunluğu koşmalı" yazıyordu ama **hiç canlı koşum yapılmamıştı**. Ölçünce 164/12/2 çıktı: eşik doğruydu, asıl kusur eşiğin **suite büyüdükçe gevşemesi** ve `hata`nın assert edilmemesiydi | Bir eşiği doğrulamak = eşiği aşan/aşmayan **gerçek koşumu** üretmek. Ayrıca mutlak sayıya bağlı eşik, ölçülen evren büyüdükçe sessizce gevşer — orana/farka bağla |
+| 14 Ağu 2026 | "`tsc` temiz → eksik dosya yok" | Silinen dosyaları `tsc`'nin `TS2307`'siyle sabit-noktaya kadar geri yükledim, **0 eksik modül** dedi. Sonra `npm run build` **5 CSS** istedi; ayrıca 19 `ImportMeta.env` hatasının tek kaynağı silinmiş `vite-env.d.ts`'ti — import edilmediği için import-grafiği onu **yapısal olarak** göremez | "Eksik dosya" sorusu **her derleyiciye ayrı** sorulur: tip grafiği (`tsc`) ≠ paketleyici grafiği (`vite`). Ambient `.d.ts`, CSS, resim, worker tip grafiğinde YOK |
+| 14 Ağu 2026 | mypy "0 hata" artefaktı | `QuestionBankItem has no attribute` taraması **0** verdi. Kontrol kolu: mypy `errors prevented further checking` ile numpy stub syntax hatasında durmuş, gövdeleri hiç analiz etmemişti. `--python-version 3.13` ile 1363 satır çıktı — **yine 0**, çünkü `question = await self.get_question(...)` anotasyonsuz → `Any` | mypy'ı dedektör sayarken iki kontrol: (a) `errors prevented` var mı, (b) hedef değişken **anotasyonlu** mu. Tipsiz servis katmanında mypy'ın 0'ı hiçbir şey ölçmez |
+| 14 Ağu 2026 | `git status` `D` = "silinmiş" sanıldı | 142 silinen `.py`'nin **75'i** `script_mezarligi/`'na birebir **taşınmış**, 7'si taşınmış+düzenlenmiş; yalnız 60'ı gerçek silme (ve hiçbiri import edilmiyor) | Silme raporlamadan önce **aynı basename'i depoda ara** + içeriği (satır sonu normalize ederek) karşılaştır. Taşıma, `D` + `??` çifti olarak görünür |
+| 15 Ağu 2026 | Göç hacmi toplamla ölçüldü | 69 alanlık şema split'i "2542 erişim / 340 dosya" göründü → repo-geneli göç sanıldı, iş bloke edildi. Ayrıştırınca **yalnız 108'i sınıf düzeyi** (`Model.alan`, SQL ifadesi, gerçek kolon şart) / 17 dosya; gerisi örnek düzeyi ve devrediciyle karşılanabilir | Göçün boyutu **toplam kullanım** değil, **karşılanamayan alt küme**. Bunu ayırmadan strateji seçme: ayrım strangler'ı uygulanabilir kıldı ve işi 340 dosyadan 17'ye indirdi |
 | ... | ... | ... | ... |
+
+---
+
+## GRAFİĞİ, SORDUĞUN DERLEYİCİ KADAR GÖRÜRSÜN (14 Ağu 2026)
+
+"Hangi silinmiş dosya gerekli?" sorusunu **tek bir araca** sormak eksik cevap verir.
+Aynı depoda üç ayrı bağımlılık grafiği var ve hiçbiri diğerini kapsamaz:
+
+| Grafik | Aracı | Gördüğü | KAÇIRDIĞI |
+|---|---|---|---|
+| Tip | `tsc` | `.ts/.tsx` import'ları | ambient `.d.ts`, CSS, resim, worker |
+| Paketleyici | `vite build` | import edilen her varlık | tip-only import, ambient bildirim |
+| Çalışma-zamanı | test / canlı | fiilen çağrılan yollar | hiç çağrılmayan ölü dal |
+
+**Yordam:** sabit-noktaya kadar döngüyü **her araç için ayrı** koştur; biri "temiz"
+dediğinde bitmiş sayma. 14 Ağu'da `tsc` 0 dedikten sonra `vite` 5 dosya daha istedi,
+ve en pahalı bulgu (19 hata) hiçbir import grafiğinde görünmeyen `vite-env.d.ts`'ti.
+
+## UYUMLULUK KATMANI YARDIM EDEMEDİĞİ YERDE SESSİZ KALMAMALI (15 Ağu 2026)
+
+Strangler/shim yazarken asıl risk, kapsayamadığı durumda **makul görünen bir değer**
+döndürmesidir. 69 alanlık split'te devrediciler örnek düzeyini karşılıyor ama sınıf
+düzeyini (SQL ifadesi) karşılayamıyor. Orada `None` dönmek, JOIN'e çevrilmesi gereken
+**108 yeri görünmez** kılardı — borç ölçülemez hale gelirdi.
+
+**Kural:** shim'in kör noktası **açık ve yol gösteren hata** vermeli, sessiz varsayılan
+değil. Bu davranışın kendisi testle çivilenmeli (mutasyon: korumayı kaldır → test düşmeli).
 
 ---
 

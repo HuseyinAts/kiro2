@@ -500,3 +500,66 @@
   durum: aktif
   zorlayici: null
   kanit: 645055e07 — A.2 kapaninca 12 kirik Golden Flow ortaya cikti, sayac 95->97
+- id: L-alet-tip-vs-paketleyici
+  baslik: Eksik-dosya sorusu her derleyiciye ayri sorulur (tip grafigi != paketleyici grafigi)
+  kaynak: .claude/rules/audit-methodology.md#grafigi-sordugun-derleyici-kadar-gorursun
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — tsc sabit-noktada '0 eksik modul' dedi; vite 5 CSS daha istedi. 19 ImportMeta.env hatasinin kaynagi silinmis vite-env.d.ts idi (import edilmez, import-grafiginde gorunmez)"
+- id: L-alet-mypy-bailout
+  baslik: mypy 'errors prevented further checking' ile durursa 0 sonuc artefakttir
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — numpy stub syntax hatasi govdeleri hic analiz ettirmedi; --python-version 3.13 ile 1363 satir cikti"
+- id: L-alet-mypy-anotasyonsuz-kor
+  baslik: Tipsiz kodda mypy attr dedektoru KORDUR; 0 sonucu olcum degildir
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — question = await self.get_question(...) anotasyonsuz -> Any; pozitif kontrol ayni kosuda LearningPath icin hata uretiyordu"
+- id: L-alet-read-son-satir
+  baslik: newline'siz son satiri bash 'while read' yutar
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — Python '\n'.join() sondaki newline'i yazmaz; geri-yukleme dongusunde her turda tam 1 dosya sessizce dustu (tur4: '1 bulundu, 0 geri alindi')"
+- id: L-alet-crlf-pathspec
+  baslik: Windows'ta Python'un yazdigi CRLF git pathspec'i bozar
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — open(...,'w') CRLF yazdi, git checkout 'App.tsx\r' pathspec'ini reddetti; newline='\n' + tr -d '\r' ile cozuldu"
+- id: L-alet-hasattr-descriptor
+  baslik: Sinif duzeyinde hata firlatan descriptor'u hasattr GOREMEZ
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_bank_compat.py
+  kanit: "S210 — compat dedup guard'i hasattr'a dayaniyordu; kurulan devredici sinif erisiminde AttributeError firlattigi icin hasattr False donuyor -> sessiz 'son kazanir'. 71 alanda cakisma olmadigi olculdu, yine de acik kume eklendi"
+- id: L-olcum-tasima-silme-degil
+  baslik: git status 'D' silme degil TASIMA da olabilir
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — 142 silinen .py'nin 75'i script_mezarligi/'na birebir tasinmis, 7'si tasinmis+duzenlenmis, 60'i gercek silme (hicbiri import edilmiyor)"
+- id: L-olcum-sert-cekirdek
+  baslik: Gocun boyutu toplam kullanim degil KARSILANAMAYAN alt kumedir
+  kaynak: .claude/rules/audit-methodology.md#bilinen-audit-methodology-hatalari
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S210 — 69 alanlik split '2542 erisim / 340 dosya' gorundu; ayrisinca yalniz 108'i sinif duzeyi (SQL ifadesi) / 17 dosya cikti, strangler uygulanabilir oldu"
+- id: L-sema-shim-sessiz-none-yasak
+  baslik: Uyumluluk katmani kor noktasinda ACIK hata vermeli, sessiz varsayilan degil
+  kaynak: .claude/rules/audit-methodology.md#uyumluluk-katmani-yardim-edemedigi-yerde-sessiz-kalmamali
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_bank_compat.py
+  kanit: "S210 0fd9b8413 — sinif duzeyi erisim AttributeError veriyor; sessiz None JOIN'e cevrilecek 108 yeri gorunmez kilardi. M3 mutasyonu (korumayi kaldir) 4 testi oldurdu"
