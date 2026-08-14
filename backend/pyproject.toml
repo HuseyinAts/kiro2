@@ -297,6 +297,13 @@ exclude = [
 "scripts/**/*.py" = [
     "T201",    # print statements allowed in CLI scripts
     "S608",    # SQL string build from internal boolean flags (no user input)
+    # 14 Agu 2026: denetim aletleri (audit_*.py) `git` alt sureci cagirir --
+    # calisma agacinin durumunu okumanin baska yolu yok. Argumanlar sabit,
+    # kullanici girdisi yok. Gerekce yukaridaki "tests/**" blokuyla ayni;
+    # satir-ici `# noqa` orada RUF100 <-> S603 salinimi yaptigi icin
+    # kullanilmiyor.
+    "S603",    # subprocess call (sabit arguman)
+    "S607",    # kismi yol ile surec baslatma ("git")
 ]
 "hooks/**/*.py" = [
     # 27 Tem 2026: pre-commit hook'ları git'e stdout üzerinden konuşur —
