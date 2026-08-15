@@ -1,50 +1,46 @@
-# Session S210 — Gemini turu devralma + question_bank model split
-
+## Session Handoff — 2026-08-15 (S211)
 **Branch:** feature/self-evolution-optimization
-**Commit'ler:** `dbf06794c` (frontend) · `99cda20a4` (backend modüller) · `0fd9b8413` (model split, P0-B)
-**Önceki:** `015e11123` (S209)
-**📄 Detaylı handoff:** `docs/audits/2026-08-15_s210_gemini_devir_model_split.md`
+**Son commit:** `18f4ea613` fix(backend): question_crud_service — 108-set JOIN çevirisi (dosya 1/17) + pre-existing lint borcu
+**Uncommitted:** 3390 dosya kirli — **hepsi pre-existing** (Gemini S210 devir kalıntısı,
+`docs/audits/2026-08-15_s210_gemini_devir_model_split.md` + MEMORY `project_kirli-agac-gemini-devir-20260813.md`'de
+"ayrı triyaj" olarak zaten işaretli). Bu session'ın kendi işi commit'li, bu dosyalara dokunulmadı.
 
-## ✅ Yapılanlar
+### Yapılanlar
+- `backend/services/question_crud_service.py` — #485 kapsamında 42/108 class-düzeyi
+  `QuestionBankItem.<alan>` sorgusu `QuestionContent`/`QuestionMetadata`/`QuestionStatistics`
+  JOIN'lerine çevrildi (search_questions, _calculate_facets, get_question_statistics,
+  get_random_questions, list_source_books, get_archived_questions).
+- Aynı dosyada `create_question` düzeltildi: split şema sonrası kurucuya delegeli alan
+  geçmek (`content` ilişkisi henüz yokken) `AttributeError` atıyordu — artık
+  `QuestionContent`/`QuestionMetadata`/`QuestionStatistics` ayrı nesnelerle atanıp cascade
+  ile ekleniyor.
+- Pre-existing pre-commit borcu (21 ruff + 6 mypy, HEAD'le bire bir aynı satırlar —
+  doğrulandı) kullanıcı onayıyla aynı commit'te temizlendi: E712→SQLAlchemy-güvenli
+  (`~kolon`, `not X` DEĞİL), PTH122 fix, PTH123 **bilerek atlandı** (`Path.open()`
+  `test_upload_question_image`'ın `patch("builtins.open")` mock'unu bypass edip test
+  kırıyordu — ölçüldü), PLR0912 → `_apply_search_filters` helper'a bölündü, RET504, mypy 6x.
+- 11 yeniden yazılmış sorgu şekli postgres dialect'e karşı derlendi (cartesian-product yok).
 
-1. **Gemini turu ölçüldü.** 3522 kirli dosya → 2020 `M`'nin **1345'i yalnız CRLF**;
-   142 silinen `.py`'nin **75'i `script_mezarligi/`'na taşınmış** (60'ı gerçek silme,
-   hiçbiri import edilmiyor). `git status`'ta `D` = silme DEĞİL, taşıma da olabilir.
-2. **Frontend kurtarıldı** (`dbf06794c`). `package.json`/`index.html`/`vite.config.ts`
-   dahil 334 dosya diskte yoktu; **120'si geri yüklendi** (115 `tsc` + 5 CSS `vite`
-   istedi), 219'u ölü kod. `mockExamService.ts` yeni `/api/v1/exams` sözleşmesine
-   bağlandı — `examService.ts`'e dokunulmadı (ad çatışması vardı).
-   **tsc 17→0, `npm run build` exit 0.**
-3. **Backend modüller** (`99cda20a4`). `leaderboard_service` `dict[str, any]` yüzünden
-   hiç import edilemiyordu.
-4. **P0-B KAPANDI** (`0fd9b8413`). HEAD modeli 84 kolon, canlı DB 12 — **HEAD zaten
-   çalışmıyordu**. 69 alan taşınmış (AST farkı). 2542 erişim/340 dosya göründü ama
-   **sert çekirdek 108/17** → strangler uygulanabilir oldu. Devrediciler alan listesini
-   kolonlardan **türetiyor**; sınıf düzeyi **kasıtlı açık hata** (sessiz `None` 108 JOIN
-   yerini gizlerdi). `exams.py` de indi + 3 gizli kusur (`avg_time` UnboundLocalError,
-   `SubjectArea["MAT"]` KeyError, `and_(..., True)`).
+### Fail Eden Testler
+YOK — koşulan 50 test (question_crud_service + test_question_bank_compat) PASS.
+**Not:** tam backend suite bu session'da koşulmadı, sadece etkilenen dosya.
 
-**Doğrulama:** 27/27 PASS · pre-commit 0 fail (import smoke 154 modül) · uygulama
-1224 yol · **mutasyon 4/4 öldürdü** (M1/M2 exams, M3/M4 compat).
+### Engelleyiciler
+YOK
 
-## ⏳ Sıradaki
+### Sonraki Adımlar (maks 5)
+1. #485 devamı: 66/108, 16 dosya kaldı. Yoğunluk: `question_bank_service.py` (13),
+   `duel_api.py` (12), `curator.py` (10), `productive_failure_service.py` (9).
+   Bul: `grep -rn 'QuestionBankItem\.' backend/services backend/api backend/core`
+2. Her dosya = ayrı turn + ayrı commit (subagent disiplini — fat-turn riski).
+3. Her dosya sonrası pre-commit'i BEKLE — bare ruff/mypy yetmez (bu turda 2 kez yanıldı).
+4. Kirli ağaç (3390 dosya, Gemini kalıntısı) hâlâ triyaj bekliyor — ayrı görev.
+5. #444 (Öğretmen Öğrenciler UI) ve #467-471 (S200 backlog) bekliyor.
 
-- **#485** — 108 sınıf-düzeyi `QuestionBankItem.<alan>` sorgusunu JOIN'e çevir (17 dosya).
-  Bloke etmiyor, açık hata veriyor. Yoğun: `question_crud_service.py` (42),
-  `question_bank_service.py` (13), `duel_api.py` (12), `curator.py` (10).
-- **#444** — Öğretmen Öğrenciler sayfası UI (roster backend hazır)
-- `core/rag_service.py:682` `search_with_mmr` O(k²) embed kusuru
-- Kirli ağaç ~3280 dosya (Gemini'nin kasıtlı commit'siz işi) — ayrı triyaj
-
-## ⚠️ Ortam
-- Bu makine **taze**: `question_bank` **0 satır**, 246 tablo, DB 32 MB.
-  DB ölçümünden önce satır sayısına bak.
-- `DISABLED_ROUTERS` artık **boş** — 154 router yükleniyor. MEMORY.md'deki
-  "110 router kapalı / 167 yol 404" tablosu bu ağaçta **geçersiz** (düzeltildi).
-
-## 🧰 Alet dersleri (defterde 9 satır, `aktif`)
-- Tip grafiği ≠ paketleyici grafiği — `tsc` "temiz" dedikten sonra `vite` 5 dosya
-  daha istedi; ambient `.d.ts` hiçbir import grafiğinde görünmez
-- mypy iki sebeple 0 verir: bail-out (`errors prevented`) ve anotasyonsuz kod (`Any`)
-- Göçün boyutu **toplam kullanım değil, karşılanamayan alt küme**
-- Uyumluluk katmanı kör noktasında **açık hata** vermeli, sessiz varsayılan değil
+### Kararlar (gelecek session tekrar tartışmasın)
+- Pre-commit'in bulduğu pre-existing borcu, dokunduğumuz dosyada aynı commit'te
+  temizlemek — kullanıcı onayı gerektirir (AskUserQuestion ile soruldu, "evet" alındı).
+  ruff'ın "not X" E712 önerisi SQLAlchemy `ColumnElement`de `TypeError` fırlatır —
+  KÖRÜ KÖRÜNE `ruff --fix --unsafe-fixes` çalıştırma.
+- 3390 kirli dosya session-handoff commit'ine KARIŞTIRILMADI — pre-existing + zaten
+  dokümante (ayrı triyaj konusu).
