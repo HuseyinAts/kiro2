@@ -7,9 +7,14 @@ from __future__ import annotations
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from core.structured_logger import get_logger
-from models.question_bank import QuestionBankItem
+from models.question_bank import (
+    QuestionBankItem,
+    QuestionContent,
+    QuestionMetadata,
+)
 
 logger = get_logger("mnemonic_service")
 
@@ -25,9 +30,13 @@ async def get_mnemonic(
     result = await db.execute(
         select(
             QuestionBankItem.id,
-            QuestionBankItem.question_text,
-            QuestionBankItem.subject_area,
-        ).where(
+            QuestionContent.question_text,
+            QuestionMetadata.subject_area,
+        )
+        .select_from(QuestionBankItem)
+        .join(QuestionContent, QuestionContent.id == QuestionBankItem.id)
+        .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+        .where(
             QuestionBankItem.id == question_id,
         )
     )
@@ -54,9 +63,17 @@ async def generate_mnemonic(
 
     Only generates if question doesn't already have one (unless force=True).
     """
-    # Get the question
+    # Get the question.
+    # #485 split: aşağıda `question.question_text` / `.correct_answer` (content)
+    # ve `.subject_area` (metadata_info) ÖRNEK düzeyinde okunuyor. Bu ilişkiler
+    # lazy='select' — async oturumda eager-load'suz erişim MissingGreenlet atar.
     result = await db.execute(
-        select(QuestionBankItem).where(
+        select(QuestionBankItem)
+        .options(
+            selectinload(QuestionBankItem.content),
+            selectinload(QuestionBankItem.metadata_info),
+        )
+        .where(
             QuestionBankItem.id == question_id,
             QuestionBankItem.is_active == True,  # noqa: E712
         )
@@ -145,8 +162,10 @@ async def batch_generate_mnemonics(
     # (bkz offline_sync_service.py:112).
     result = await db.execute(
         select(QuestionBankItem.id)
+        .select_from(QuestionBankItem)
+        .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
         .where(
-            QuestionBankItem.subject_area == subject.upper(),
+            QuestionMetadata.subject_area == subject.upper(),
         )
         .order_by(sa_func.random())
         .limit(limit)
@@ -156,10 +175,12 @@ async def batch_generate_mnemonics(
     generated = 0
     failed = 0
     for qid in question_ids:
-        result = await generate_mnemonic(db=db, question_id=str(qid))
-        if result.get("generated"):
+        # Ayrı ad: `result` yukarıda SQLAlchemy `Result`; aynı adı dict ile
+        # ezmek mypy'da 3 hata üretiyordu (HEAD'de de vardı).
+        outcome = await generate_mnemonic(db=db, question_id=str(qid))
+        if outcome.get("generated"):
             generated += 1
-        elif result.get("error"):
+        elif outcome.get("error"):
             failed += 1
 
     return {
