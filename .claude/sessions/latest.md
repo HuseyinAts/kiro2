@@ -1,6 +1,28 @@
 ## Session Handoff — 2026-08-15 (S212)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `666155dfa` test(backend): coverage_final_50 stub — QuestionMetadata/QuestionStatistics
+**Son commit:** `f91470250` fix(backend): question_crud_service — split ilişkileri eager-load (S211 geriye dönük denetimi)
+**Bu turdaki zincir:** `904f9579a` (JOIN 13/13) → `666155dfa` (stub) → `8d5ebe761` (select_from bug) →
+`44924c574` (create_question + eager-load + 15 test) → `96c3b16d1` (stub) → `f91470250` (S211 retro)
+**PUSH BEKLİYOR: 10 commit.**
+
+### ⚠️ EN ÖNEMLİ DERS (bu tur 4 kusur bu yüzden kaçtı)
+"JOIN'e çevirdim + testler yeşil" **yetersiz bir kabul kriteri.** #485'in geri kalan
+15 dosyasında ZORUNLU 4 adım:
+1. **Sorguyu DERLE** — `stmt.compile(dialect=postgresql.dialect(), literal_binds)`.
+   Gözle okumak yakalamıyor: `select(func.avg(SplitTablo.x)).join(SplitTablo, ...)`
+   sol tarafı split tablo sanıp kendine JOIN etmeye çalışır → `InvalidRequestError`,
+   sorgu çalışma anında değil **derleme anında** patlar. `.select_from(QuestionBankItem)` şart.
+2. **Kartezyen kontrolünü `get_final_froms()` ile yap**, metinle DEĞİL. "FROM'da virgül var mı"
+   `SELECT count(*) FROM (SELECT a, b ...)` şeklinde yanlış-pozitif verir (bir kez verdi).
+3. **Delege okuyan her yol eager-load etmeli.** content/metadata_info/statistics hepsi
+   `lazy='select'` → async'te yüklenmemiş erişim `MissingGreenlet`. JOIN yalnız SQL katmanını
+   düzeltir. Beteri: bu servislerde çıplak `except Exception` var → hata YUTULUR, kusur
+   "soru bulunamadı" / "versiyon oluşmadı" diye sessizce görünür.
+4. **Gerçek modele karşı test yaz.** `tests/unit/test_coverage_final_50.py` sahte
+   `models.question_bank` stub'ı kullanıyor — kırık kodda da yeşil kalıyor
+   (`test_create_question` tam olarak bunu yaptı). Örnek: `tests/fast/test_question_bank_service_split.py`,
+   `tests/fast/test_question_crud_service_split.py`.
+
 **Önceki:** `904f9579a` fix(backend): question_bank_service — 108-set JOIN çevirisi (dosya 2/17)
 **Uncommitted:** 3390 dosya kirli — **hepsi pre-existing** (Gemini S210 devir kalıntısı,
 zaten dokümante, "ayrı triyaj" konusu). Bu session'ın kendi işi commit'li, bu dosyalara dokunulmadı.
@@ -35,15 +57,23 @@ pgvector gerektiriyor, pre-existing skip).
 YOK
 
 ### Sonraki Adımlar (maks 5)
-1. #485 devamı: 53/108, 15 dosya kaldı. Yoğunluk: `duel_api.py` (12), `curator.py` (10),
+1. **PUSH** (10 commit bekliyor) — pre-push bekçisi var, commit'siz iş yok.
+2. #485 devamı: 53/108, 15 dosya. Yoğunluk: `duel_api.py` (12), `curator.py` (10),
    `productive_failure_service.py` (9), ...
    Bul: `grep -rn 'QuestionBankItem\.' backend/services backend/api backend/core`
-2. Her dosya = ayrı turn + ayrı commit (subagent disiplini — fat-turn riski).
-3. Her dosya sonrası pre-commit'i BEKLE — bare ruff/mypy yetmez. mypy "Failed" görünce
-   pre-existing mı yeni mi diye HEAD ile satır sayısı karşılaştır — mypy hook'un exit
-   code'u pre-existing/yeni ayrımı YAPMAZ, her ikisi de commit'i bloklar.
-4. Kirli ağaç (3390 dosya, Gemini kalıntısı) hâlâ triyaj bekliyor — ayrı görev.
+   **Yukarıdaki 4 adımlı kabul kriterini uygula** — 2 dosyada da kusur çıktı, 3. de çıkar.
+3. Her dosya = ayrı turn + ayrı commit. pre-commit'i BEKLE (bare ruff/mypy yetmez);
+   mypy "Failed" görünce pre-existing mi yeni mi diye HEAD ile karşılaştır — hook ayrım YAPMAZ.
+4. Kirli ağaç (3390 dosya, Gemini kalıntısı) triyaj bekliyor — ayrı görev.
 5. #444 (Öğretmen Öğrenciler UI) ve #467-471 (S200 backlog) bekliyor.
+
+### Ölçülen ama DÜZELTİLMEYEN (bilinçli)
+- `tests/fast` genelinde **22 fail + 43 error PRE-EXISTING** — pathspec'li stash ile HEAD'e
+  karşı ölçüldü, aynı 22. Ürün kırık DEĞİL: `subject_db` doğrudan import'ta var; testler
+  `core.turkish_nlp_utils`'i `sys.modules`'te stub'layıp gölgeliyor = **test kirliliği**.
+  Dosyalar tek başına koşunca geçiyor (`batch14` 63 passed). Ayrı görev.
+- `tests/unit/test_coverage_final_50.py` — 40 pre-existing ruff + 1 secrets false-positive.
+  İki commit `--no-verify` ile geçti (kullanıcı onaylı, `666155dfa` + `96c3b16d1`).
 
 ### Kararlar (gelecek session tekrar tartışmasın)
 - Pre-commit'in bulduğu pre-existing borcu, dokunduğumuz dosyada aynı commit'te
