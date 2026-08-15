@@ -28,9 +28,15 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from core.dependencies import AuthenticatedUser, get_current_admin_user, get_db
-from models.question_bank import QuestionBankItem
+from models.question_bank import (
+    QuestionBankItem,
+    QuestionContent,
+    QuestionMetadata,
+    QuestionStatistics,
+)
 from models.student_question_flag import StudentQuestionFlag
 
 logger = logging.getLogger(__name__)
@@ -179,7 +185,7 @@ def _json_to_list(value: Any) -> list[str] | None:
 
 def _row_to_queue_item(row: QuestionBankItem) -> QueueItem:
     """ORM row'unu QueueItem Pydantic modeline çevir."""
-    difficulty = row.difficulty_level
+    difficulty = row.statistics.difficulty_level if row.statistics else "medium"
     # Enum ise .value, str ise olduğu gibi
     difficulty_str = (
         difficulty.value if hasattr(difficulty, "value") else str(difficulty)
@@ -187,7 +193,11 @@ def _row_to_queue_item(row: QuestionBankItem) -> QueueItem:
 
     # pipeline_metadata.dispute_suggestion: kör-çözüm cevap-hatası önerisi
     # (str veya dict olabilir; raw SQL row'da JSON string gelebilir).
-    _pm = getattr(row, "pipeline_metadata", None) or {}
+    _pm = (
+        getattr(row.metadata_info, "pipeline_metadata", None)
+        if row.metadata_info
+        else None
+    ) or {}
     if isinstance(_pm, str):
         try:
             _pm = json.loads(_pm)
@@ -199,24 +209,34 @@ def _row_to_queue_item(row: QuestionBankItem) -> QueueItem:
 
     return QueueItem(
         id=str(row.id),
-        question_text=row.question_text,
+        question_text=row.content.question_text if row.content else "",
         options={
-            "A": row.option_a,
-            "B": row.option_b,
-            "C": row.option_c,
-            "D": row.option_d,
-            "E": row.option_e,
+            "A": row.content.option_a if row.content else "",
+            "B": row.content.option_b if row.content else "",
+            "C": row.content.option_c if row.content else "",
+            "D": row.content.option_d if row.content else "",
+            "E": row.content.option_e if row.content else None,
         },
-        correct_answer=row.correct_answer,
-        subject_area=row.subject_area,
+        correct_answer=row.content.correct_answer if row.content else "A",
+        subject_area=row.metadata_info.subject_area if row.metadata_info else "",
         difficulty_level=difficulty_str,
-        quality_review_status=row.quality_review_status,
-        image_url=row.question_image_url,
-        # Bu üç kolon DB'de var ama ORM model'inde tanımlı değil.
-        # Hem ORM hem raw SQL row için getattr ile defansif erişim.
-        misconception_tags=_json_to_list(getattr(row, "misconception_tags", None)),
-        solution_steps=_json_to_list(getattr(row, "solution_steps", None)),
-        similar_question_ids=_json_to_list(getattr(row, "similar_question_ids", None)),
+        quality_review_status=row.statistics.quality_review_status
+        if row.statistics
+        else "pending",
+        image_url=row.content.question_image_url if row.content else None,
+        misconception_tags=_json_to_list(
+            getattr(row.metadata_info, "misconception_tags", None)
+        )
+        if row.metadata_info
+        else None,
+        solution_steps=_json_to_list(getattr(row.metadata_info, "solution_steps", None))
+        if row.metadata_info
+        else None,
+        similar_question_ids=_json_to_list(
+            getattr(row.metadata_info, "similar_question_ids", None)
+        )
+        if row.metadata_info
+        else None,
         dispute_suggestion=dispute_suggestion,
     )
 
@@ -330,43 +350,66 @@ async def get_queue(
             ),
         )
 
-    # Filtreler
-    base_query = select(QuestionBankItem).where(
-        QuestionBankItem.quality_review_status == status_filter,
-        QuestionBankItem.is_active.is_(True),
+    # Filtreler — quality_review_status/difficulty_level artık QuestionStatistics'te,
+    # subject_area QuestionMetadata'da (#485 split). Explicit select_from: SELECT
+    # listesi QuestionBankItem.id içerdiği için sol taraf zaten doğru çıkarılır, ama
+    # S212'de aynı çıkarım bir sorguda InvalidRequestError ile patlamıştı — garanti et.
+    base_query = (
+        select(QuestionBankItem)
+        .select_from(QuestionBankItem)
+        .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+        .where(
+            QuestionStatistics.quality_review_status == status_filter,
+            QuestionBankItem.is_active.is_(True),
+        )
     )
-    count_query = select(func.count(QuestionBankItem.id)).where(
-        QuestionBankItem.quality_review_status == status_filter,
-        QuestionBankItem.is_active.is_(True),
+    count_query = (
+        select(func.count(QuestionBankItem.id))
+        .select_from(QuestionBankItem)
+        .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+        .where(
+            QuestionStatistics.quality_review_status == status_filter,
+            QuestionBankItem.is_active.is_(True),
+        )
     )
 
     if subject:
         # Subject identifier'a normalize_tr UYGULAMA — ASCII upper yeterli
         subject_db_val = subject.strip().upper()
-        base_query = base_query.where(QuestionBankItem.subject_area == subject_db_val)
-        count_query = count_query.where(QuestionBankItem.subject_area == subject_db_val)
+        base_query = base_query.join(
+            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+        ).where(QuestionMetadata.subject_area == subject_db_val)
+        count_query = count_query.join(
+            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+        ).where(QuestionMetadata.subject_area == subject_db_val)
 
     if difficulty:
         difficulty_val = difficulty.strip().upper()
         base_query = base_query.where(
-            QuestionBankItem.difficulty_level == difficulty_val
+            QuestionStatistics.difficulty_level == difficulty_val
         )
         count_query = count_query.where(
-            QuestionBankItem.difficulty_level == difficulty_val
+            QuestionStatistics.difficulty_level == difficulty_val
         )
 
     if has_diagram is not None:
+        base_query = base_query.join(
+            QuestionContent, QuestionContent.id == QuestionBankItem.id
+        )
+        count_query = count_query.join(
+            QuestionContent, QuestionContent.id == QuestionBankItem.id
+        )
         if has_diagram:
             base_query = base_query.where(
-                QuestionBankItem.question_image_url.is_not(None)
+                QuestionContent.question_image_url.is_not(None)
             )
             count_query = count_query.where(
-                QuestionBankItem.question_image_url.is_not(None)
+                QuestionContent.question_image_url.is_not(None)
             )
         else:
-            base_query = base_query.where(QuestionBankItem.question_image_url.is_(None))
+            base_query = base_query.where(QuestionContent.question_image_url.is_(None))
             count_query = count_query.where(
-                QuestionBankItem.question_image_url.is_(None)
+                QuestionContent.question_image_url.is_(None)
             )
 
     # Toplam sayı (ORM tarafı yeterli)
@@ -378,10 +421,18 @@ async def get_queue(
     # tanımlı (Session 179, migration `curator_audit_20260521`).
     # Sıralama: md5(id) — random ama deterministic, kuyruğun curator'lar
     # arasında dağıtılmasını sağlar.
+    # Eager-load: split ilişkileri lazy='select', _row_to_queue_item async
+    # context dışında row.content/.metadata_info/.statistics okuyor —
+    # yüklenmezse MissingGreenlet (#485 S212 dersi).
     paged_query = (
         base_query.order_by(func.md5(QuestionBankItem.id))
         .limit(per_page)
         .offset((page - 1) * per_page)
+        .options(
+            selectinload(QuestionBankItem.content),
+            selectinload(QuestionBankItem.metadata_info),
+            selectinload(QuestionBankItem.statistics),
+        )
     )
     rows_result = await db.execute(paged_query)
     rows = rows_result.scalars().all()
@@ -442,10 +493,18 @@ async def get_flagged_queue(
         return QueueResponse(items=[], total=total, page=page, per_page=per_page)
 
     # 3) question_bank içerikleri (sıra qids ile korunur)
+    # Eager-load: _row_to_queue_item aşağıda row.content/.metadata_info/.statistics
+    # okuyor (#485 S212 dersi — yüklenmezse MissingGreenlet).
     q_rows = (
         (
             await db.execute(
-                select(QuestionBankItem).where(QuestionBankItem.id.in_(qids))
+                select(QuestionBankItem)
+                .options(
+                    selectinload(QuestionBankItem.content),
+                    selectinload(QuestionBankItem.metadata_info),
+                    selectinload(QuestionBankItem.statistics),
+                )
+                .where(QuestionBankItem.id.in_(qids))
             )
         )
         .scalars()
@@ -518,10 +577,20 @@ async def post_verdict(
         )
 
     # Mevcut soruyu yükle (FOR UPDATE ile concurrent verdict'i önleyebiliriz
-    # ama şimdilik basit bir SELECT yeterli)
-    fetch_stmt = select(QuestionBankItem).where(
-        QuestionBankItem.id == body.question_id,
-        QuestionBankItem.is_active.is_(True)
+    # ama şimdilik basit bir SELECT yeterli).
+    # Eager-load: aşağıda row.quality_review_status/.pipeline_metadata/.reviewed_at
+    # okunuyor VE yazılıyor — statistics/metadata_info delegeleri, lazy='select'
+    # (#485 S212 dersi — yüklenmezse hem getter hem setter MissingGreenlet atar).
+    fetch_stmt = (
+        select(QuestionBankItem)
+        .options(
+            selectinload(QuestionBankItem.metadata_info),
+            selectinload(QuestionBankItem.statistics),
+        )
+        .where(
+            QuestionBankItem.id == body.question_id,
+            QuestionBankItem.is_active.is_(True),
+        )
     )
     row_result = await db.execute(fetch_stmt)
     row: QuestionBankItem | None = row_result.scalar_one_or_none()
@@ -636,33 +705,35 @@ async def get_stats(
         """
         SELECT
             COUNT(*) FILTER (
-                WHERE quality_review_status = 'bronze_clean'
+                WHERE s.quality_review_status = 'bronze_clean'
             ) AS bronze_clean_count,
             COUNT(*) FILTER (
-                WHERE quality_review_status = 'legacy_v3_unaudited'
+                WHERE s.quality_review_status = 'legacy_v3_unaudited'
             ) AS legacy_v3_unaudited_count,
             COUNT(*) FILTER (
-                WHERE quality_review_status = 'pending'
+                WHERE s.quality_review_status = 'pending'
             ) AS pending_status_count,
             COUNT(*) FILTER (
-                WHERE (pipeline_metadata::jsonb -> 'curator_verdict' ->> 'verdict')
+                WHERE (m.pipeline_metadata::jsonb -> 'curator_verdict' ->> 'verdict')
                       = 'verify'
             ) AS verified_count,
             COUNT(*) FILTER (
-                WHERE quality_review_status = 'rejected'
-                  AND (pipeline_metadata::jsonb -> 'curator_verdict'
+                WHERE s.quality_review_status = 'rejected'
+                  AND (m.pipeline_metadata::jsonb -> 'curator_verdict'
                        ->> 'reviewed_at')::timestamptz
                       >= date_trunc('day', NOW() AT TIME ZONE 'UTC')
             ) AS rejected_today,
             AVG(
                 NULLIF(
-                    (pipeline_metadata::jsonb -> 'curator_verdict'
+                    (m.pipeline_metadata::jsonb -> 'curator_verdict'
                      ->> 'velocity_seconds'),
                     ''
                 )::numeric
             ) AS avg_velocity_sec
-        FROM question_bank
-        WHERE is_active = TRUE
+        FROM question_bank q
+        LEFT JOIN question_metadata m ON m.id = q.id
+        LEFT JOIN question_statistics s ON s.id = q.id
+        WHERE q.is_active = TRUE
         """
     )
 
