@@ -127,17 +127,31 @@ async def matchmake(
                 detail="Redis bağlantısı yok",
             )
 
-        # Get or create ELO rating
+        # Get or create ELO rating and IRT Theta
         async with get_db_session_context() as db:
             rating = await get_or_create_rating(db=db, student_id=current_user.id)
             elo = rating.elo_rating
 
+            from sqlalchemy import select as sa_select
+
+            from models.cat_models import UserTheta
+
+            theta_res = await db.execute(
+                sa_select(UserTheta.theta_estimate).where(
+                    UserTheta.user_id == str(current_user.id),
+                    UserTheta.subject_area == request.subject.upper(),
+                )
+            )
+            theta_row = theta_res.scalar_one_or_none()
+            theta_estimate = float(theta_row) if theta_row is not None else 0.0
+
         # Try matchmaking
         session_id = await enqueue_matchmaking(
             redis,
-            student_id=current_user.id,
+            student_id=str(current_user.id),
             subject=request.subject,
             elo_rating=elo,
+            theta_estimate=theta_estimate,
         )
 
         if session_id:
@@ -148,9 +162,10 @@ async def matchmake(
             if match_data:
                 match_info = json.loads(match_data)
 
-                # Select 5 questions for the duel (IRT-calibrated for fair play)
+                # Select 5 questions for the duel (IRT-calibrated based on shared ZPD)
+                shared_theta = match_info.get("shared_theta", 0.0)
                 question_ids = await _select_duel_questions(
-                    subject=request.subject, count=5
+                    subject=request.subject, count=5, target_theta=shared_theta
                 )
 
                 async with get_db_session_context() as db:
@@ -264,7 +279,10 @@ async def submit_answer(
                                         json.dumps({"type": "finished", **final}),
                                     )
         except Exception:
-            pass  # SSE notification is best-effort
+            # SSE bildirimi best-effort — cevap kaydını bozmasın diye kasıtlı
+            # yutuluyor, ama iz bırakarak (sessiz yutma düellonun neden
+            # "bitti" event'i göndermediğini görünmez kılıyordu; bandit B110).
+            logger.debug("Düello SSE bildirimi gönderilemedi", exc_info=True)
 
         return DuelAnswerResponse(**result)
 
@@ -306,8 +324,13 @@ async def duel_stream(
     except HTTPException:
         raise
     except Exception:
-        # If session not found, let the stream return empty
-        pass
+        # Oturum bulunamadıysa akış boş dönsün — kontrol akışı kasıtlı olarak
+        # yutuyor, ama sessizce değil: iz bırakmadan yutmak bu akışın neden
+        # boş döndüğünü hata ayıklanamaz hale getiriyordu (bandit B110).
+        logger.debug(
+            "Düello SSE yetki ön-kontrolü atlandı (oturum okunamadı)",
+            exc_info=True,
+        )
 
     async def event_generator():
         from core.database import get_redis_client
@@ -442,7 +465,7 @@ async def get_current_question(
     from sqlalchemy import select as sa_select
 
     from models.duel import DuelMatch, DuelSession
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import QuestionBankItem, QuestionContent
 
     async with get_db_session_context() as db:
         session = (
@@ -488,17 +511,20 @@ async def get_current_question(
                 answered=True,
             )
 
+        # Soru metni ve şıklar question_content'e taşındı (#485).
         q_row = (
             await db.execute(
                 sa_select(
                     QuestionBankItem.id,
-                    QuestionBankItem.question_text,
-                    QuestionBankItem.option_a,
-                    QuestionBankItem.option_b,
-                    QuestionBankItem.option_c,
-                    QuestionBankItem.option_d,
-                    QuestionBankItem.option_e,
-                ).where(QuestionBankItem.id == next_match.question_id)
+                    QuestionContent.question_text,
+                    QuestionContent.option_a,
+                    QuestionContent.option_b,
+                    QuestionContent.option_c,
+                    QuestionContent.option_d,
+                    QuestionContent.option_e,
+                )
+                .join(QuestionContent, QuestionContent.id == QuestionBankItem.id)
+                .where(QuestionBankItem.id == next_match.question_id)
             )
         ).first()
 
@@ -617,7 +643,7 @@ async def _check_answer_correctness(
     from sqlalchemy import select
 
     from models.duel import DuelMatch
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import QuestionContent
 
     async with get_db_session_context() as db:
         # Get the question ID for this round
@@ -632,8 +658,10 @@ async def _check_answer_correctness(
             return False
 
         # Get the correct answer from question bank
+        # correct_answer question_content'e taşındı (#485). question_content.id
+        # question_bank.id'nin ta kendisi (FK+PK), o yüzden JOIN gerekmiyor.
         q_result = await db.execute(
-            select(QuestionBankItem.correct_answer).where(QuestionBankItem.id == row[0])
+            select(QuestionContent.correct_answer).where(QuestionContent.id == row[0])
         )
         q_row = q_result.first()
         if not q_row or not q_row[0]:
@@ -644,22 +672,28 @@ async def _check_answer_correctness(
         # Handle "A) ..." format
         if len(correct) > 1:
             correct = correct[0]
-        return answer.upper() == correct
+        return bool(answer.upper() == correct)
 
 
-async def _select_duel_questions(subject: str, count: int = 5) -> list[str]:
+async def _select_duel_questions(
+    subject: str, count: int = 5, target_theta: float = 0.0
+) -> list[str]:
     """Select IRT-calibrated questions for fair duel play.
 
     S179 fix (B-P1-12): pre-fix docstring claimed "IRT-calibrated"
     but body was just `ORDER BY random()`. True IRT bracket pick:
-    questions with `irt_difficulty` between [-1.0, +1.0] (≈ middle 70%
-    of the calibrated pool) so neither player has a runaway advantage.
+    questions with `irt_difficulty` around the target_theta (shared ZPD).
     Falls back to random over the full pool only if the calibrated
     band is empty.
     """
     from sqlalchemy import func, select
+    from sqlalchemy import true as sa_true
 
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import (
+        QuestionBankItem,
+        QuestionMetadata,
+        QuestionStatistics,
+    )
 
     async with get_db_session_context() as db:
         # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql dalı
@@ -668,15 +702,19 @@ async def _select_duel_questions(subject: str, count: int = 5) -> list[str]:
         # (bkz offline_sync_service.py:112).
         result = await db.execute(
             select(QuestionBankItem.id)
+            # subject_area -> question_metadata, irt_difficulty ->
+            # question_statistics (#485).
+            .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
             .where(
-                QuestionBankItem.is_active == True,  # noqa: E712
+                QuestionBankItem.is_active,
                 # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
                 # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
                 safe_for_beta_gate(QuestionBankItem.id),
-                QuestionBankItem.subject_area == subject.upper(),
-                QuestionBankItem.irt_difficulty.isnot(None),
-                QuestionBankItem.irt_difficulty >= -1.0,
-                QuestionBankItem.irt_difficulty <= 1.0,
+                QuestionMetadata.subject_area == subject.upper(),
+                QuestionStatistics.irt_difficulty.isnot(None),
+                QuestionStatistics.irt_difficulty >= target_theta - 0.75,
+                QuestionStatistics.irt_difficulty <= target_theta + 0.75,
             )
             .order_by(func.random())
             .limit(count)
@@ -688,13 +726,17 @@ async def _select_duel_questions(subject: str, count: int = 5) -> list[str]:
             need = count - len(ids)
             extra = await db.execute(
                 select(QuestionBankItem.id)
+                # subject_area -> question_metadata (#485)
+                .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
                 .where(
-                    QuestionBankItem.is_active == True,  # noqa: E712
+                    QuestionBankItem.is_active,
                     # Kalite kapısı — top-up fallback da kapılı olmalı, aksi
                     # halde IRT bandı ince olduğunda sızıntı buradan geri gelir.
                     safe_for_beta_gate(QuestionBankItem.id),
-                    QuestionBankItem.subject_area == subject.upper(),
-                    QuestionBankItem.id.notin_(ids) if ids else True,
+                    QuestionMetadata.subject_area == subject.upper(),
+                    # sa_true(): çıplak Python `True` SQLAlchemy'nin where()
+                    # tip sözleşmesini bozuyordu (mypy arg-type).
+                    QuestionBankItem.id.notin_(ids) if ids else sa_true(),
                 )
                 .order_by(func.random())
                 .limit(need)
