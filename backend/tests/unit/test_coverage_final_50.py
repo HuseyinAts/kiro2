@@ -55,6 +55,7 @@ for k in _STUB_KEYS:
     if k in sys.modules:
         _ORIG_SYS_MODULES[k] = sys.modules[k]
 
+
 def _make_stub(name: str, **attrs):
     m = types.ModuleType(name)
     for k, v in attrs.items():
@@ -312,12 +313,22 @@ class _QDiffLevel(metaclass=_OrmMeta):
     pass
 
 
+class _QMetadata(metaclass=_OrmMeta):
+    """question_bank split (#485): question_metadata stub (class-level attrs -> MagicMock)."""
+
+
+class _QStatistics(metaclass=_OrmMeta):
+    """question_bank split (#485): question_statistics stub (class-level attrs -> MagicMock)."""
+
+
 qb_mod.QuestionBankItem = _QBI
 qb_mod.TopicHierarchy = _TopicHierarchy
 qb_mod.QuestionTag = _QTag
 qb_mod.QuestionTagAssociation = _QTagAssoc
 qb_mod.IRTCalibrationHistory = _IRTCalHist
 qb_mod.QuestionDifficultyLevel = _QDiffLevel
+qb_mod.QuestionMetadata = _QMetadata
+qb_mod.QuestionStatistics = _QStatistics
 qb_mod.calculate_irt_based_difficulty = lambda v: float(v or 5)
 qb_mod.should_update_difficulty = lambda *a: True
 sys.modules["models.question_bank"] = qb_mod
