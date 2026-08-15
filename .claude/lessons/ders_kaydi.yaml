@@ -563,3 +563,52 @@
   durum: aktif
   zorlayici: backend/tests/fast/test_question_bank_compat.py
   kanit: "S210 0fd9b8413 — sinif duzeyi erisim AttributeError veriyor; sessiz None JOIN'e cevrilecek 108 yeri gorunmez kilardi. M3 mutasyonu (korumayi kaldir) 4 testi oldurdu"
+- id: L-s212-sorgu-derlenmeli
+  baslik: Sema gocunde sorguyu DERLE — gozle okumak ve yesil test yakalamaz
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_bank_service_split.py
+  kanit: "S212 8d5ebe761 — get_topic_statistics'te select(func.avg(QuestionStatistics.x)).join(QuestionStatistics,...) sol tarafi split tablo sanip kendine JOIN ediyordu: InvalidRequestError, sorgu DERLEME aninda patliyordu. Gozle okuma kacirdi (diger 3 sorgu ayni gorunuyordu), 212 yesil test de o metoda hic dokunmuyordu. .select_from(QuestionBankItem) ile kapandi"
+- id: L-s212-kartezyen-yapisal
+  baslik: Kartezyen kontrolunu get_final_froms() ile yap — METIN ile degil
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_crud_service_split.py
+  kanit: "S212 — metinsel 'FROM'da virgul' kontrolu search_questions'i YANLIS bayrakladi (virgul count(*) alt-sorgusunun SELECT listesindeydi). Dahasi ilk surum sql.split(' from ') kullaniyordu ve SQLAlchemy FROM'u yeni satira koydugu icin HIC eslesmiyordu: 'temiz' ciktisi bosluktaydi. get_final_froms() semantik; kontrol kolu testle civili (gercek kartezyen 2, alt-sorgu 1)"
+- id: L-s212-split-eager-load
+  baslik: JOIN yalniz SQL katmanini duzeltir — delege okuyan yol EAGER-LOAD etmeli
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_crud_service_split.py
+  kanit: "S212 44924c574 + f91470250 — content/metadata_info/statistics hepsi lazy='select' (olculdu); async'te yuklenmemis erisim MissingGreenlet atar. Iki serviste 4 gercek kusur, hepsi SESSIZ: update_question -> _create_question_version 10 delege okuyor -> versiyon gecmisi sessizce kayboluyordu; get_question_by_id'nin 'except Exception: return None' sarmalayicisi kusuru 'soru bulunamadi'ya ceviriyordu"
+- id: L-s212-stub-model-testi-kor
+  baslik: Sahte-model stub'iyla yazilmis test KIRIK kodda da yesil kalir
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_question_bank_service_split.py
+  kanit: "S212 44924c574 — create_question split sonrasi KOSULSUZ kirikti (taze nesnede statistics yok -> AttributeError, girdiden bagimsiz), ama tests/unit/test_coverage_final_50.py'deki test_create_question GECIYORDU: o dosya sys.modules'e kendi models.question_bank stub'ini koyuyor, gercek modeli hic gormuyor"
+- id: L-s212-kolon-vs-entity
+  baslik: Eager-load gerekliligini KOLON/ENTITY ayrimiyla olc, varsayma
+  kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_duel_api_split.py
+  kanit: "S212 2fb518b1e — duel_api'nin 12 erisiminin hepsi kolon secimiydi (select(Model.alan,...)), Row doner, lazy-load riski YOK -> eager-load N/A. Varsayilmadi, olculdu: grep 'select(QuestionBankItem)' api/duel_api.py = 0 sonuc. Kardes dosyalarda ayni sinif 4 kusur uretmisti"
+- id: L-s212-bicimlendirici-import-siler
+  baslik: Alan tasirken bicimlendirici kullanilmayan import'u siler — yenisi eklenmeyi bekler
+  kaynak: .claude/rules/audit-methodology.md#alan-tasirken-bicimlendirici-importu-siler
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S212 2fb518b1e — correct_answer erisimi QuestionContent'e cevrilince QuestionBankItem o fonksiyonda kullanilmaz kaldi ve import OTOMATIK silindi; QuestionContent import'u ise henuz eklenmemisti -> NameError olacakti. grep ile yakalandi (import satirlari yeniden sayildi)"
+- id: L-s212-stash-pathspec
+  baslik: Kirli agacta pathspec'siz git stash kullanma
+  kaynak: .claude/rules/audit-methodology.md#kirli-agacta-pathspecsiz-git-stash-kullanma
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S212 near-miss — baseline olcumu icin pathspec'siz git stash 3390 pre-existing kirli dosyayi da aldi; arada pre-commit baseline'i bicimlendirdi; git stash pop CONFLICT verip durdu, stash KEPT kaldi. Kurtarma: git checkout HEAD -- <dosya> sonra pop. Ayni turda pathspec'li form (git stash push -- <dosya>) 2 kez kullanildi, 2 kez sorunsuz dondu"

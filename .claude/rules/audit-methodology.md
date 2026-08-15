@@ -316,4 +316,110 @@ değil. Bu davranışın kendisi testle çivilenmeli (mutasyon: korumayı kaldı
 
 ---
 
+## ŞEMA GÖÇÜNDE "ÇEVİRDİM + TESTLER YEŞİL" BİR ÖLÇÜM DEĞİLDİR (15 Ağu 2026, S212)
+
+69 alanlık split'in JOIN göçünde **3 dosyanın 3'ünde de** kusur çıktı — ve hiçbirini
+"testler geçiyor" yakalamadı. Kabul kriteri dört ayrı ölçüm ister; biri atlanırsa
+o sınıftaki kusur sessizce commit'e girer.
+
+| # | Ölçüm | Neden gözle/testle yakalanmaz |
+|---|---|---|
+| 1 | Sorguyu **derle** (`compile(dialect=postgresql, literal_binds)`) | Aşağıdaki A |
+| 2 | Kartezyeni **`get_final_froms()`** ile kontrol et | Aşağıdaki B |
+| 3 | Delege okuyan yolu **eager-load** et | Aşağıdaki C |
+| 4 | **Gerçek modele** karşı test yaz | Aşağıdaki D |
+
+### A. Sorgu ÇALIŞMA anında değil, KURULURKEN patlar
+
+`select(func.avg(SplitTablo.x)).join(SplitTablo, ...)` — SELECT listesinde yalnız
+split tablo olduğu için SQLAlchemy **sol tarafı o tablo sanar** ve kendisine JOIN
+etmeye çalışır:
+
+    InvalidRequestError: Don't know how to join to <Mapper QuestionStatistics>.
+    Please use the .select_from() method to establish an explicit left side.
+
+`.select_from(QuestionBankItem)` şart. Gözle okuma bunu **kaçırdı**: diğer 3 sorgu
+(`select(Entity).join(...)`) aynı görünüyordu ve gerçekten doğruydu; kırık olan tek
+sorgu SELECT listesi farklı olandı. Ayrıca o metodun **hiç testi yoktu**, yani
+"212 test yeşil" o sorgu hakkında sıfır bilgi taşıyordu.
+
+Kolon seçiminde ise devredici sınıf düzeyinde `AttributeError` fırlatır — sorgu hiç
+kurulamaz. `duel_api`'de düello akışının **üç yolu da** bu yüzden üretimde kırıktı.
+
+### B. Metinsel kartezyen kontrolü yanlış-pozitif verir
+
+"FROM yan tümcesinde virgül var mı" kontrolü `SELECT count(*) FROM (SELECT a, b ...)`
+şeklinde takılır — virgül **alt-sorgunun SELECT listesindedir**. Bu bir kez gerçek bir
+sorguyu (`search_questions`) yanlış yere bayrakladı.
+
+Beteri: aynı kontrolün ilk sürümü `sql.split(" from ")` kullanıyordu ve SQLAlchemy
+`FROM`'u **yeni satıra** koyduğu için hiç eşleşmiyordu → kontrol sessizce boşa
+düşüyordu, yani "temiz" çıktısı **boşlukta ölçümdü**.
+
+    froms = stmt.get_final_froms()
+    assert len(froms) == 1        # semantik; alt-sorguya takılmaz
+
+Kontrol kolu zorunlu: gerçek kartezyen (`select(A, B)`) → 2, alt-sorgu → 1.
+
+### C. JOIN yalnız SQL katmanını düzeltir — instance katmanı ayrı
+
+Split ilişkileri `lazy='select'` (ölçüldü: `content`/`metadata_info`/`statistics`).
+Async oturumda yüklenmemiş ilişkiye erişmek **`MissingGreenlet`** atar. Sorgu JOIN'li
+olsa bile, dönen nesneden delege okuyan satır patlar.
+
+Bu iki serviste **4 gerçek kusur** üretti ve hepsi **sessizdi**, çünkü o kod yollarında
+çıplak `except Exception` var:
+- `update_question` → `_create_question_version` 10 delege okuyor → versiyon geçmişi
+  sessizce kayboluyordu.
+- `get_question_by_id` → `except Exception: return None` → kusur **"soru bulunamadı"**
+  gibi görünüyordu.
+
+### D. Sahte-model stub'ıyla yazılmış test, KIRIK kodda da yeşil kalır
+
+`tests/unit/test_coverage_final_50.py` kendi `models.question_bank` stub'ını
+`sys.modules`'e koyuyor. `create_question` split sonrası **koşulsuz kırıktı**
+(taze nesnede `statistics` yok → `AttributeError`), ama o dosyadaki
+`test_create_question` **geçiyordu** — gerçek modeli hiç görmüyor.
+
+Örnek doğru testler: `backend/tests/fast/test_question_bank_service_split.py`,
+`test_question_crud_service_split.py`, `test_duel_api_split.py`.
+
+### Yan ölçüm: eager-load gerekliliğini KOLON/ENTITY ayrımıyla belirle
+
+Her dosyaya `selectinload` eklemek yanlış. `duel_api`'nin 12 erişiminin hepsi **kolon
+seçimiydi** (`select(Model.alan, ...)`) — `Row` döner, ORM nesnesi değil, lazy-load
+riski **yok**. Varsaymak yerine ölçüldü:
+
+    grep 'select(QuestionBankItem)' api/duel_api.py   # 0 sonuc -> eager-load N/A
+
+---
+
+## ALAN TAŞIRKEN BİÇİMLENDİRİCİ IMPORT'U SİLER (15 Ağu 2026, S212)
+
+`correct_answer` erişimi `QuestionBankItem` → `QuestionContent`'e çevrilince o
+fonksiyonda `QuestionBankItem` kullanılmaz kaldı ve import **otomatik silindi** —
+ama `QuestionContent` import'u henüz eklenmemişti. Sonuç `NameError` olacaktı;
+`grep` ile yakalandı.
+
+**Kural:** alan taşımadan sonra dosyadaki **import satırlarını yeniden say**; "silinen
+bir import" ile "eklenmesi unutulan bir import" aynı diff'te yan yana durabilir.
+İlgili: `reference_formatter-import-stripping` (kullanımı önce yaz, sonra import'u doğrula).
+
+---
+
+## KİRLİ AĞAÇTA PATHSPEC'SİZ `git stash` KULLANMA (15 Ağu 2026, S212 — near-miss)
+
+Baseline ölçmek için `git stash` (pathspec'siz) çalıştırıldı. Ağaçta 3390 pre-existing
+kirli dosya olduğu için stash **hepsini** aldı; arada `pre-commit run --files` baseline'a
+küçük bir biçimlendirme uyguladı; `git stash pop` **conflict** verip durdu ve stash
+KEPT olarak kaldı. İş kaybolmadı ama kurtarma gerekti (`git checkout HEAD -- <dosya>`
+ile çakışan dosyayı temizle → `pop` tekrar).
+
+**Kural:** kirli ağaçta baseline ölçümü için **daima** `git stash push -- <dosya>`
+(pathspec'li). Bu oturumda pathspec'li form 2 kez kullanıldı, 2 kez sorunsuz döndü.
+İlgili: `verification.md#GERI ALIM BIR IDDIADIR` — geri alım `git status` ile
+doğrulanmadan "yapıldı" sayılmaz.
+
+---
+
 *Oluşturulma: 14 May 2026 (Session 156, Faz 0.8). Bir sonraki audit hatasında bu tablo güncellenir.*
