@@ -612,3 +612,24 @@
   durum: aktif
   zorlayici: null
   kanit: "S212 near-miss — baseline olcumu icin pathspec'siz git stash 3390 pre-existing kirli dosyayi da aldi; arada pre-commit baseline'i bicimlendirdi; git stash pop CONFLICT verip durdu, stash KEPT kaldi. Kurtarma: git checkout HEAD -- <dosya> sonra pop. Ayni turda pathspec'li form (git stash push -- <dosya>) 2 kez kullanildi, 2 kez sorunsuz dondu"
+- id: L-s214-where-iddiasi-whereclause
+  baslik: Entity secen sorguda WHERE iddiasini tam SQL'de arama — whereclause derle
+  kaynak: .claude/rules/audit-methodology.md#entity-secen-sorguda-where-iddiasini-tam-sqlde-arama
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_mnemonic_service_split.py
+  kanit: "S214 3c2580332 — test_is_active_filter_preserved tam SQL'de 'question_bank.is_active' aliyordu. select(QuestionBankItem) TUM kolonlari SELECT listesine koydugu icin filtre WHERE'den TAMAMEN silinse bile eslesiyordu (olculdu: filtresiz sorguda True, whereclause sadece question_bank.id). Mutasyon M5 HAYATTA kaldi; testin degersizligi ancak mutasyonla gorundu. Duzeltme sonrasi 8/8 oldurüldu"
+- id: L-s214-select-from-kosullu
+  baslik: select_from SELECT listesi split-only ise ZORUNLU, degilse sus
+  kaynak: .claude/rules/audit-methodology.md#select_from-her-yerde-degil--select-listesi-split-only-ise
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_mnemonic_service_split.py
+  kanit: "S214 3c2580332 — S212'den 'sart' diye tasindi ama kosullu. advanced_reports'ta yuk tasiyordu (M1 mutasyonu 5 test dusurdu, SELECT listesi yalniz QuestionStatistics kolonlariydi). mnemonic'te listede QuestionBankItem.id var: derlenmis SQL select_from'lu ve'suz BIREBIR AYNI, mutasyon hayatta kaldi -> kaldirildi. Kapatilan riski 'FROM question_bank JOIN' assert'i karsiliyor"
+- id: L-s214-sayac-ornek-duzeyini-gormez
+  baslik: Goc sayaci sinif duzeyini sayar — ornek duzeyi kusur sayacta gorunmez
+  kaynak: .claude/rules/audit-methodology.md#sayac-sinif-duzeyini-sayar-ornek-duzeyini-gormez
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_mnemonic_service_split.py
+  kanit: "S214 8713ab8e3 — #485 sayaci QuestionBankItem.<alan> deseniyle mnemonic_service'te 3 saydi. Asil riski tasiyan kusur sayacta 0 gorundu: generate_mnemonic select(QuestionBankItem) ile entity secip question.question_text/.correct_answer/.subject_area okuyordu (lazy='select', async -> MissingGreenlet). Kalan sayisi ALT SINIR; dosya basina grep 'select(QuestionBankItem)' sart"

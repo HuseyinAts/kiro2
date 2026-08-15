@@ -284,6 +284,9 @@ arızası vardır.
 | 14 Ağu 2026 | "`tsc` temiz → eksik dosya yok" | Silinen dosyaları `tsc`'nin `TS2307`'siyle sabit-noktaya kadar geri yükledim, **0 eksik modül** dedi. Sonra `npm run build` **5 CSS** istedi; ayrıca 19 `ImportMeta.env` hatasının tek kaynağı silinmiş `vite-env.d.ts`'ti — import edilmediği için import-grafiği onu **yapısal olarak** göremez | "Eksik dosya" sorusu **her derleyiciye ayrı** sorulur: tip grafiği (`tsc`) ≠ paketleyici grafiği (`vite`). Ambient `.d.ts`, CSS, resim, worker tip grafiğinde YOK |
 | 14 Ağu 2026 | mypy "0 hata" artefaktı | `QuestionBankItem has no attribute` taraması **0** verdi. Kontrol kolu: mypy `errors prevented further checking` ile numpy stub syntax hatasında durmuş, gövdeleri hiç analiz etmemişti. `--python-version 3.13` ile 1363 satır çıktı — **yine 0**, çünkü `question = await self.get_question(...)` anotasyonsuz → `Any` | mypy'ı dedektör sayarken iki kontrol: (a) `errors prevented` var mı, (b) hedef değişken **anotasyonlu** mu. Tipsiz servis katmanında mypy'ın 0'ı hiçbir şey ölçmez |
 | 14 Ağu 2026 | `git status` `D` = "silinmiş" sanıldı | 142 silinen `.py`'nin **75'i** `script_mezarligi/`'na birebir **taşınmış**, 7'si taşınmış+düzenlenmiş; yalnız 60'ı gerçek silme (ve hiçbiri import edilmiyor) | Silme raporlamadan önce **aynı basename'i depoda ara** + içeriği (satır sonu normalize ederek) karşılaştır. Taşıma, `D` + `??` çifti olarak görünür |
+| 15 Ağu 2026 | WHERE iddiası tam SQL'de arandı (S214) | `select(Entity)` TÜM kolonları SELECT'e koyar → `is_active` filtresi WHERE'den silinse bile alt-metin eşleşiyordu. Test kördü; **mutasyon hayatta kaldı** ve ancak o gösterdi | WHERE iddiası için **yalnız `stmt.whereclause`** derle. Tam SQL sadece JOIN/FROM sınamak için |
+| 15 Ağu 2026 | `select_from` ezbere eklendi (S214) | S212'den "şart" diye taşındı ama **koşulluydu**. SELECT listesinde `QuestionBankItem.id` varken derlenmiş SQL onunla/onsuz birebir aynı → kazanç 0, hiçbir mutasyonla çivilenemez | SELECT listesi split-only ise ZORUNLU, değilse ekleme. Riski `FROM question_bank JOIN` assert'i karşılıyor |
+| 15 Ağu 2026 | Göç sayacı örnek düzeyini görmedi (S214) | Sayaç `QuestionBankItem.<alan>` (sınıf düzeyi) sayar; `mnemonic_service`'in asıl kusuru `select(QuestionBankItem)` → `question.alan` (örnek düzeyi, `MissingGreenlet`) idi ve sayaçta **0** göründü | Sayacın çıktısı **alt sınır**. Dosya başına ayrıca `grep 'select(QuestionBankItem)'` |
 | 15 Ağu 2026 | Göç hacmi toplamla ölçüldü | 69 alanlık şema split'i "2542 erişim / 340 dosya" göründü → repo-geneli göç sanıldı, iş bloke edildi. Ayrıştırınca **yalnız 108'i sınıf düzeyi** (`Model.alan`, SQL ifadesi, gerçek kolon şart) / 17 dosya; gerisi örnek düzeyi ve devrediciyle karşılanabilir | Göçün boyutu **toplam kullanım** değil, **karşılanamayan alt küme**. Bunu ayırmadan strateji seçme: ayrım strangler'ı uygulanabilir kıldı ve işi 340 dosyadan 17'ye indirdi |
 | ... | ... | ... | ... |
 
@@ -393,6 +396,62 @@ riski **yok**. Varsaymak yerine ölçüldü:
     grep 'select(QuestionBankItem)' api/duel_api.py   # 0 sonuc -> eager-load N/A
 
 ---
+
+## ENTITY SEÇEN SORGUDA WHERE İDDİASINI TAM SQL'DE ARAMA (15 Ağu 2026, S214)
+
+Yukarıdaki B maddesi "kartezyeni metinle ölçme" diyor. Aynı tuzağın ikinci
+ağzı **WHERE iddialarında** ve bu oturumda ısırdı — kural yazılıydı, yine
+düşüldü.
+
+`select(QuestionBankItem)` **tüm** tablo kolonlarını SELECT listesine koyar.
+Dolayısıyla `is_active` filtresi WHERE'den **tamamen silinse bile** derlenmiş
+SQL'de `question_bank.is_active` dizesi durur — SELECT listesinde. Test yeşil
+kalır. Ölçüldü:
+
+    filtre YOKKEN 'question_bank.is_active' in sql   -> True
+    stmt.whereclause                                 -> question_bank.id = 'q-1'
+
+Mutasyon (filtreyi sil) **hayatta kaldı**; testin değersiz olduğu ancak
+mutasyonla görüldü.
+
+**Kural:** bir WHERE koşulunu iddia ediyorsan **yalnız `stmt.whereclause`**
+derle. Tam SQL yalnız JOIN/FROM/ORDER BY gibi yapıları sınamak için.
+
+```python
+where_sql = str(stmt.whereclause.compile(
+    dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+assert "question_bank.is_active" in where_sql
+```
+
+## `select_from` HER YERDE DEĞİL — SELECT LİSTESİ SPLIT-ONLY İSE (15 Ağu 2026, S214)
+
+S212'de `.select_from(QuestionBankItem)` "şart" diye kaydedildi. Doğru, ama
+**koşullu**: SQLAlchemy sol tarafı SELECT listesinden çıkarır.
+
+| SELECT listesi | `select_from` | Ölçüm |
+|---|---|---|
+| Yalnız split tablo kolonları (`func.avg(QuestionStatistics.x)`) | **ZORUNLU** | Yoksa `InvalidRequestError`; S214 M1 mutasyonu 5 test düşürdü |
+| `QuestionBankItem.id` de içeriyor | **SÜS** | Derlenmiş SQL onunla ve onsuz **birebir aynı**; mutasyon hayatta kaldı |
+
+Kazancı ölçmeden ekleme: #451 deseninin tersi — *bir hole'un varlığı kapatmak
+için yeterli gerekçe değildir* kadar *kodun var olması gerekli olduğunu
+kanıtlamaz* da doğru. Süs `select_from` hiçbir mutasyonla çivilenemez, yani
+test edilemez ağırlıktır.
+
+Kapattığı riski **test** karşılasın: `assert "FROM question_bank JOIN" in sql`
+— SELECT listesinden `QuestionBankItem.id` düşerse sorgu zaten kurulamaz.
+
+## SAYAÇ SINIF DÜZEYİNİ SAYAR, ÖRNEK DÜZEYİNİ GÖRMEZ (15 Ağu 2026, S214)
+
+`#485` göç sayacı `QuestionBankItem.<alan>` deseniyle **sınıf düzeyi** erişim
+sayar. `mnemonic_service`'te asıl riski taşıyan kusur bu desende **hiç
+görünmedi**: `select(QuestionBankItem)` ile entity seçilip sonra
+`question.question_text` okunuyordu — örnek düzeyi, `lazy='select'`, async'te
+`MissingGreenlet`.
+
+**Kural:** göç kalanını raporlarken sayacın çıktısı **alt sınırdır**. Her
+dosyada ayrıca `grep 'select(QuestionBankItem)'` koş; >0 ise okunan (ve
+YAZILAN) alanları çıkar, eager-load gerekliliğini oradan belirle.
 
 ## ALAN TAŞIRKEN BİÇİMLENDİRİCİ IMPORT'U SİLER (15 Ağu 2026, S212)
 
