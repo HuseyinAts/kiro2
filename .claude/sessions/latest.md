@@ -1,39 +1,47 @@
-## Session Handoff — 2026-08-15 (S211)
+## Session Handoff — 2026-08-15 (S212)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `18f4ea613` fix(backend): question_crud_service — 108-set JOIN çevirisi (dosya 1/17) + pre-existing lint borcu
+**Son commit:** `666155dfa` test(backend): coverage_final_50 stub — QuestionMetadata/QuestionStatistics
+**Önceki:** `904f9579a` fix(backend): question_bank_service — 108-set JOIN çevirisi (dosya 2/17)
 **Uncommitted:** 3390 dosya kirli — **hepsi pre-existing** (Gemini S210 devir kalıntısı,
-`docs/audits/2026-08-15_s210_gemini_devir_model_split.md` + MEMORY `project_kirli-agac-gemini-devir-20260813.md`'de
-"ayrı triyaj" olarak zaten işaretli). Bu session'ın kendi işi commit'li, bu dosyalara dokunulmadı.
+zaten dokümante, "ayrı triyaj" konusu). Bu session'ın kendi işi commit'li, bu dosyalara dokunulmadı.
 
 ### Yapılanlar
-- `backend/services/question_crud_service.py` — #485 kapsamında 42/108 class-düzeyi
-  `QuestionBankItem.<alan>` sorgusu `QuestionContent`/`QuestionMetadata`/`QuestionStatistics`
-  JOIN'lerine çevrildi (search_questions, _calculate_facets, get_question_statistics,
-  get_random_questions, list_source_books, get_archived_questions).
-- Aynı dosyada `create_question` düzeltildi: split şema sonrası kurucuya delegeli alan
-  geçmek (`content` ilişkisi henüz yokken) `AttributeError` atıyordu — artık
-  `QuestionContent`/`QuestionMetadata`/`QuestionStatistics` ayrı nesnelerle atanıp cascade
-  ile ekleniyor.
-- Pre-existing pre-commit borcu (21 ruff + 6 mypy, HEAD'le bire bir aynı satırlar —
-  doğrulandı) kullanıcı onayıyla aynı commit'te temizlendi: E712→SQLAlchemy-güvenli
-  (`~kolon`, `not X` DEĞİL), PTH122 fix, PTH123 **bilerek atlandı** (`Path.open()`
-  `test_upload_question_image`'ın `patch("builtins.open")` mock'unu bypass edip test
-  kırıyordu — ölçüldü), PLR0912 → `_apply_search_filters` helper'a bölündü, RET504, mypy 6x.
-- 11 yeniden yazılmış sorgu şekli postgres dialect'e karşı derlendi (cartesian-product yok).
+- `backend/services/question_bank_service.py` — #485 kapsamında 13/13 class-düzeyi
+  `QuestionBankItem.<alan>` sorgusu `QuestionMetadata`/`QuestionStatistics` JOIN'lerine
+  çevrildi (batch_update_difficulties, get_questions_needing_calibration, search_questions,
+  get_topic_statistics).
+- Pre-existing borç temizlendi: 6x E712, 1x PLC0414 (kasıtlı re-export alias, `# noqa` ile
+  korundu). **Yeni ders:** `self.db: Session` (sync tip) → `AsyncSession` — dosya zaten
+  `await self.db.execute/commit/...` kullanıyordu (question_crud_service.py'nin konvansiyonu),
+  tek satır 31 mypy hatasının 25'ini çözdü. Kalan 5'i `list(...)` sarmalama + 1 anotasyon ile
+  kapandı. Pre-commit TAMAMEN yeşil (ilk kez, ruff+format+bandit+mypy+secrets).
+- `tests/unit/test_coverage_final_50.py`: dosyanın fake `models.question_bank` stub'ı
+  (metaclass tabanlı, ~satır 265-330) QuestionMetadata/QuestionStatistics tanımlamıyordu →
+  ImportError → 202 test collection'ı düşüyordu. 2 minimal stub sınıfı eklendi.
+  **--no-verify ile ayrı commit** (kullanıcı onayı, AskUserQuestion): dosyanın kalanında
+  40 pre-existing ruff bulgusu + 1 secrets false-positive var, #485 kapsamı dışı.
+- **Near-miss veri kaybı (kurtarıldı):** `git stash` (pathspec'siz, TÜM 3390 kirli dosyayı da
+  içeren) + `pre-commit run --files` arada baseline'a trivial formatter-fix uyguladı +
+  `git stash pop` conflict'te durdu, stash KEPT. `git checkout HEAD -- <dosya>` ile
+  conflict'i temizleyip pop tekrar denendi, başarılı — diff stat ile doğrulandı. Ders:
+  **asla pathspec'siz `git stash` kullanma** kirli bir ağaçta; `git stash -- <dosya>`
+  veya commit-önce kullan.
 
 ### Fail Eden Testler
-YOK — koşulan 50 test (question_crud_service + test_question_bank_compat) PASS.
-**Not:** tam backend suite bu session'da koşulmadı, sadece etkilenen dosya.
+YOK — question_bank + compat + coverage_final_50 = 212 passed, 27 skipped (DB-model,
+pgvector gerektiriyor, pre-existing skip).
 
 ### Engelleyiciler
 YOK
 
 ### Sonraki Adımlar (maks 5)
-1. #485 devamı: 66/108, 16 dosya kaldı. Yoğunluk: `question_bank_service.py` (13),
-   `duel_api.py` (12), `curator.py` (10), `productive_failure_service.py` (9).
+1. #485 devamı: 53/108, 15 dosya kaldı. Yoğunluk: `duel_api.py` (12), `curator.py` (10),
+   `productive_failure_service.py` (9), ...
    Bul: `grep -rn 'QuestionBankItem\.' backend/services backend/api backend/core`
 2. Her dosya = ayrı turn + ayrı commit (subagent disiplini — fat-turn riski).
-3. Her dosya sonrası pre-commit'i BEKLE — bare ruff/mypy yetmez (bu turda 2 kez yanıldı).
+3. Her dosya sonrası pre-commit'i BEKLE — bare ruff/mypy yetmez. mypy "Failed" görünce
+   pre-existing mı yeni mi diye HEAD ile satır sayısı karşılaştır — mypy hook'un exit
+   code'u pre-existing/yeni ayrımı YAPMAZ, her ikisi de commit'i bloklar.
 4. Kirli ağaç (3390 dosya, Gemini kalıntısı) hâlâ triyaj bekliyor — ayrı görev.
 5. #444 (Öğretmen Öğrenciler UI) ve #467-471 (S200 backlog) bekliyor.
 
@@ -42,5 +50,10 @@ YOK
   temizlemek — kullanıcı onayı gerektirir (AskUserQuestion ile soruldu, "evet" alındı).
   ruff'ın "not X" E712 önerisi SQLAlchemy `ColumnElement`de `TypeError` fırlatır —
   KÖRÜ KÖRÜNE `ruff --fix --unsafe-fixes` çalıştırma.
+- **Ölçek ayrımı (S212, yeni):** dosyanın DOĞRUDAN #485 kapsamındaki borcu (küçük,
+  mekanik, dokunduğumuz satırlara yakın) aynı commit'te temizlenir. Yan-etki olarak
+  dokunmak zorunda kaldığımız TAMAMEN ilgisiz bir dosyadaki büyük pre-existing borç
+  (örn. 40 bulgu, test niyetini bozma riski) İÇİN AYRI karar/onay gerekir — `--no-verify`
+  + commit mesajında gerekçe, kullanıcı onayıyla kabul edilebilir.
 - 3390 kirli dosya session-handoff commit'ine KARIŞTIRILMADI — pre-existing + zaten
   dokümante (ayrı triyaj konusu).
