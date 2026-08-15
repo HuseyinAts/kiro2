@@ -696,6 +696,7 @@ class QuestionBankService:
         # Ortalama zorluk hesapla — irt_difficulty question_statistics'e taşındı (#485)
         result = await self.db.execute(
             select(func.avg(QuestionStatistics.irt_difficulty))
+            .select_from(QuestionBankItem)
             .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
             .where(
                 and_(
