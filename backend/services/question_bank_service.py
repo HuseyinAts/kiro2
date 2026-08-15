@@ -13,10 +13,15 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from sqlalchemy import and_, func, or_, select
-from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload, selectinload
 
-# Note: IRTValidationError is raised by validators - re-exported for external use
-from core.irt_validators import IRTValidationError as IRTValidationError
+# Note: IRTValidationError is raised by validators - re-exported for external use.
+# "as IRTValidationError" self-alias is the PEP 484 explicit-reexport marker —
+# removing it can make mypy treat this name as private for importers elsewhere.
+from core.irt_validators import (
+    IRTValidationError as IRTValidationError,  # noqa: PLC0414
+)
 from core.irt_validators import (
     validate_irt_difficulty,
     validate_irt_discrimination,
@@ -28,6 +33,8 @@ from models.question_bank import (
     IRTCalibrationHistory,
     QuestionBankItem,
     QuestionDifficultyLevel,
+    QuestionMetadata,
+    QuestionStatistics,
     QuestionTag,
     QuestionTagAssociation,
     TopicHierarchy,
@@ -39,7 +46,7 @@ from models.question_bank import (
 class QuestionBankService:
     """Soru bankası yönetim servisi"""
 
-    def __init__(self, db: Session):
+    def __init__(self, db: AsyncSession):
         self.db = db
 
     # ========================================================================
@@ -177,7 +184,7 @@ class QuestionBankService:
         query = query.order_by(TopicHierarchy.code)
 
         result = await self.db.execute(query)
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def get_topic_path(self, topic_id: str) -> list[TopicHierarchy]:
         """
@@ -236,7 +243,7 @@ class QuestionBankService:
         except Exception:
             # Fallback: CTE desteklenmeyen DB'ler için (SQLite gibi)
             # Basit iteratif yaklaşım
-            path = []
+            path: list[TopicHierarchy] = []
             current_id = topic_id
             max_depth = 5
 
@@ -366,14 +373,17 @@ class QuestionBankService:
             int: Güncellenen soru sayısı
         """
         # Güncellenmesi gereken soruları bul
+        # times_asked/last_difficulty_update question_statistics'e taşındı (#485)
         result = await self.db.execute(
-            select(QuestionBankItem).where(
+            select(QuestionBankItem)
+            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+            .where(
                 and_(
-                    QuestionBankItem.is_active == True,
-                    QuestionBankItem.times_asked >= min_attempts,
+                    QuestionBankItem.is_active,
+                    QuestionStatistics.times_asked >= min_attempts,
                     or_(
-                        QuestionBankItem.last_difficulty_update.is_(None),
-                        QuestionBankItem.last_difficulty_update
+                        QuestionStatistics.last_difficulty_update.is_(None),
+                        QuestionStatistics.last_difficulty_update
                         < datetime.now() - timedelta(days=30),
                     ),
                 )
@@ -516,7 +526,7 @@ class QuestionBankService:
             .order_by(IRTCalibrationHistory.calibration_date.desc())
             .limit(limit)
         )
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def get_questions_needing_calibration(
         self, min_attempts: int = 200, days_since_calibration: int = 90
@@ -533,19 +543,23 @@ class QuestionBankService:
         """
         cutoff_date = datetime.now() - timedelta(days=days_since_calibration)
 
+        # times_asked/is_calibrated/last_calibration_date question_statistics'e
+        # taşındı (#485)
         result = await self.db.execute(
-            select(QuestionBankItem).where(
+            select(QuestionBankItem)
+            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+            .where(
                 and_(
-                    QuestionBankItem.is_active == True,
-                    QuestionBankItem.times_asked >= min_attempts,
+                    QuestionBankItem.is_active,
+                    QuestionStatistics.times_asked >= min_attempts,
                     or_(
-                        QuestionBankItem.is_calibrated == False,
-                        QuestionBankItem.last_calibration_date < cutoff_date,
+                        ~QuestionStatistics.is_calibrated,
+                        QuestionStatistics.last_calibration_date < cutoff_date,
                     ),
                 )
             )
         )
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     # ========================================================================
     # Search and Filter Operations
@@ -581,38 +595,43 @@ class QuestionBankService:
             List[QuestionBankItem]: Bulunan sorular
         """
         # FIX N+1: Eager loading ile ilişkili verileri tek sorguda getir
+        # exam_type/subject_area question_metadata'ya, difficulty_level/
+        # quality_score/is_calibrated question_statistics'e taşındı (#485).
+        # Sıralama da quality_score kullandığı için JOIN'ler koşulsuz kurulur.
         query = (
             select(QuestionBankItem)
+            .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
             .options(
                 joinedload(QuestionBankItem.primary_topic),
                 selectinload(QuestionBankItem.tag_associations),
             )
-            .where(QuestionBankItem.is_active == True)
+            .where(QuestionBankItem.is_active)
         )
 
         if exam_type:
-            query = query.where(QuestionBankItem.exam_type == exam_type)
+            query = query.where(QuestionMetadata.exam_type == exam_type)
 
         if subject_area:
-            query = query.where(QuestionBankItem.subject_area == subject_area)
+            query = query.where(QuestionMetadata.subject_area == subject_area)
 
         if topic_id:
             query = query.where(QuestionBankItem.primary_topic_id == topic_id)
 
         if difficulty_level:
-            query = query.where(QuestionBankItem.difficulty_level == difficulty_level)
+            query = query.where(QuestionStatistics.difficulty_level == difficulty_level)
 
         if min_quality_score > 0:
-            query = query.where(QuestionBankItem.quality_score >= min_quality_score)
+            query = query.where(QuestionStatistics.quality_score >= min_quality_score)
 
         if is_calibrated is not None:
-            query = query.where(QuestionBankItem.is_calibrated == is_calibrated)
+            query = query.where(QuestionStatistics.is_calibrated == is_calibrated)
 
-        query = query.order_by(QuestionBankItem.quality_score.desc())
+        query = query.order_by(QuestionStatistics.quality_score.desc())
         query = query.limit(limit).offset(offset)
 
         result = await self.db.execute(query)
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     # ========================================================================
     # Analytics and Statistics
@@ -668,18 +687,20 @@ class QuestionBankService:
             select(func.count(QuestionBankItem.id)).where(
                 and_(
                     QuestionBankItem.primary_topic_id == topic_id,
-                    QuestionBankItem.is_active == True,
+                    QuestionBankItem.is_active,
                 )
             )
         )
         total_questions = result.scalar()
 
-        # Ortalama zorluk hesapla
+        # Ortalama zorluk hesapla — irt_difficulty question_statistics'e taşındı (#485)
         result = await self.db.execute(
-            select(func.avg(QuestionBankItem.irt_difficulty)).where(
+            select(func.avg(QuestionStatistics.irt_difficulty))
+            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+            .where(
                 and_(
                     QuestionBankItem.primary_topic_id == topic_id,
-                    QuestionBankItem.is_active == True,
+                    QuestionBankItem.is_active,
                 )
             )
         )
