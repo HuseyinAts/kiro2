@@ -32,6 +32,7 @@ from core.resilience import db_retry
 from models.question_bank import (
     IRTCalibrationHistory,
     QuestionBankItem,
+    QuestionContent,
     QuestionDifficultyLevel,
     QuestionMetadata,
     QuestionStatistics,
@@ -41,6 +42,33 @@ from models.question_bank import (
     calculate_irt_based_difficulty,
     should_update_difficulty,
 )
+
+
+def split_question_fields(
+    question_data: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
+    """question_data'yı (temel, content, metadata, statistics) olarak ayır.
+
+    69 alan question_bank'ten üç split tablosuna taşındı (#485); bu alanları
+    `QuestionBankItem(**data)` kurucusuna geçmek TypeError atar. Hangi alanın
+    hangi tabloya ait olduğu ELLE TUTULMAZ — hedef sınıfların kolonlarından
+    türetilir, böylece şema değişince kendini günceller (modeldeki
+    `_install_compat_delegates` ile aynı yaklaşım).
+
+    Tanınmayan anahtarlar temelde bırakılır: sessizce yutmak yerine
+    kurucunun açık TypeError'ı çağıran koda geri dönsün.
+    """
+    buckets: list[dict[str, Any]] = [{}, {}, {}, {}]
+    targets = (QuestionContent, QuestionMetadata, QuestionStatistics)
+    for key, value in question_data.items():
+        for offset, target in enumerate(targets, start=1):
+            # 'id' üç tablonun da PK'si (FK) — delegeli alan değil, temelde kalır.
+            if key != "id" and key in target.__table__.columns:
+                buckets[offset][key] = value
+                break
+        else:
+            buckets[0][key] = value
+    return buckets[0], buckets[1], buckets[2], buckets[3]
 
 
 class QuestionBankService:
@@ -67,13 +95,27 @@ class QuestionBankService:
         Returns:
             QuestionBankItem: Oluşturulan soru
         """
-        question = QuestionBankItem(
-            **question_data, created_by=created_by, created_at=datetime.now()
-        )
+        # Split şema (#485): delegeli alanlar kurucuya geçemez, ilgili
+        # kayıtlar ayrı kurulup cascade ile eklenir.
+        base, content, meta, stats = split_question_fields(question_data)
 
-        # IRT bazlı zorluk hesapla
-        question.irt_based_difficulty = calculate_irt_based_difficulty(
-            question.irt_difficulty
+        question = QuestionBankItem(
+            **base, created_by=created_by, created_at=datetime.now()
+        )
+        if content:
+            question.content = QuestionContent(**content)
+        if meta:
+            question.metadata_info = QuestionMetadata(**meta)
+
+        # statistics KOŞULSUZ kurulur: irt_based_difficulty aşağıda her zaman
+        # yazılıyor ve ilişkili kayıt yoksa devredici AttributeError atar.
+        question.statistics = QuestionStatistics(**stats)
+
+        # IRT bazlı zorluk hesapla. Kolon varsayılanı (0.0) INSERT anında
+        # uygulanır, yani flush öncesi alan None olabilir — helper None'da
+        # TypeError atar, bu yüzden varsayılan burada da veriliyor.
+        question.statistics.irt_based_difficulty = calculate_irt_based_difficulty(
+            question.statistics.irt_difficulty or 0.0
         )
 
         self.db.add(question)
@@ -90,6 +132,13 @@ class QuestionBankService:
                 joinedload(QuestionBankItem.primary_topic),
                 selectinload(QuestionBankItem.tag_associations),
                 selectinload(QuestionBankItem.calibration_history),
+                # Split ilişkileri (#485) lazy='select' — async oturumda
+                # yüklenmemiş erişim MissingGreenlet atar. Bu metodun
+                # çağıranları (update_question_difficulty, calibrate_question_irt,
+                # get_question_statistics) delegeli alanları yoğun okuyor.
+                selectinload(QuestionBankItem.content),
+                selectinload(QuestionBankItem.metadata_info),
+                selectinload(QuestionBankItem.statistics),
             )
             .where(QuestionBankItem.id == question_id)
         )
@@ -377,6 +426,9 @@ class QuestionBankService:
         result = await self.db.execute(
             select(QuestionBankItem)
             .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+            # JOIN yalnız filtreler için; aşağıdaki döngü delegeli alanları
+            # okuyup yazıyor, o yüzden ilişki ayrıca eager-load edilmeli.
+            .options(selectinload(QuestionBankItem.statistics))
             .where(
                 and_(
                     QuestionBankItem.is_active,
@@ -548,6 +600,8 @@ class QuestionBankService:
         result = await self.db.execute(
             select(QuestionBankItem)
             .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+            # Çağıran taraf kalibrasyon alanlarını (delege) okuyor — eager-load şart.
+            .options(selectinload(QuestionBankItem.statistics))
             .where(
                 and_(
                     QuestionBankItem.is_active,
@@ -605,6 +659,11 @@ class QuestionBankService:
             .options(
                 joinedload(QuestionBankItem.primary_topic),
                 selectinload(QuestionBankItem.tag_associations),
+                # Sonuçları tüketen taraf soru metnini/metadata'sını okuyor;
+                # JOIN filtreler için, eager-load MissingGreenlet'i önlemek için.
+                selectinload(QuestionBankItem.content),
+                selectinload(QuestionBankItem.metadata_info),
+                selectinload(QuestionBankItem.statistics),
             )
             .where(QuestionBankItem.is_active)
         )
