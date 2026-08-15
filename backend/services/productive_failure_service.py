@@ -11,7 +11,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
-from models.question_bank import QuestionBankItem
+from models.question_bank import (
+    QuestionBankItem,
+    QuestionContent,
+    QuestionMetadata,
+    QuestionStatistics,
+)
 
 logger = get_logger("productive_failure_service")
 
@@ -59,24 +64,30 @@ async def get_pretest_questions(
     # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql dalı
     # AttributeError ile patlıyordu, yani bu uç üretimde HER ZAMAN 500 veriyordu.
     # func.random() her iki dialect'te de çalışır (bkz offline_sync_service.py:112).
+    # question_text/option_a-e/correct_answer -> QuestionContent, difficulty_level
+    # -> QuestionStatistics, subject_area -> QuestionMetadata (#485 split).
     result = await db.execute(
         select(
             QuestionBankItem.id,
-            QuestionBankItem.question_text,
-            QuestionBankItem.option_a,
-            QuestionBankItem.option_b,
-            QuestionBankItem.option_c,
-            QuestionBankItem.option_d,
-            QuestionBankItem.option_e,
-            QuestionBankItem.correct_answer,
-            QuestionBankItem.difficulty_level,
+            QuestionContent.question_text,
+            QuestionContent.option_a,
+            QuestionContent.option_b,
+            QuestionContent.option_c,
+            QuestionContent.option_d,
+            QuestionContent.option_e,
+            QuestionContent.correct_answer,
+            QuestionStatistics.difficulty_level,
         )
+        .select_from(QuestionBankItem)
+        .join(QuestionContent, QuestionContent.id == QuestionBankItem.id)
+        .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+        .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
         .where(
             QuestionBankItem.is_active == True,  # noqa: E712
             # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
             # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
             safe_for_beta_gate(QuestionBankItem.id),
-            QuestionBankItem.subject_area == subject_upper,
+            QuestionMetadata.subject_area == subject_upper,
             QuestionBankItem.primary_topic_id == topic_id,
         )
         .order_by(func.random())
