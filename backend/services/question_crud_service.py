@@ -349,8 +349,18 @@ class QuestionCRUDService:
             QuestionBankItem: Güncellenmiş soru
         """
         try:
-            # Soruyu getir
-            stmt = select(QuestionBankItem).where(QuestionBankItem.id == question_id)
+            # Soruyu getir. Split ilişkileri (#485) lazy='select' — async
+            # oturumda yüklenmemiş erişim MissingGreenlet atar ve aşağıdaki
+            # _create_question_version 10 delegeli alan okuyor.
+            stmt = (
+                select(QuestionBankItem)
+                .options(
+                    selectinload(QuestionBankItem.content),
+                    selectinload(QuestionBankItem.metadata_info),
+                    selectinload(QuestionBankItem.statistics),
+                )
+                .where(QuestionBankItem.id == question_id)
+            )
             result = await self.db.execute(stmt)
             question = result.scalar_one_or_none()
 
@@ -1014,9 +1024,23 @@ class QuestionCRUDService:
             QuestionBankItem: Soru nesnesi
         """
         try:
-            stmt = select(QuestionBankItem).where(
-                QuestionBankItem.id == question_id,
-                QuestionBankItem.is_active,
+            # Split ilişkileri (#485) include_relations'tan BAĞIMSIZ yüklenir:
+            # bunlar kavramsal olarak sorunun kendi kolonları (question_text,
+            # seçenekler, exam_type...), isteğe bağlı ağır koleksiyon değil.
+            # Yüklenmezse çağıran taraf okurken MissingGreenlet alır — üstelik
+            # aşağıdaki `except Exception` onu yutup None döndürür, yani kusur
+            # "soru bulunamadı" gibi görünür.
+            stmt = (
+                select(QuestionBankItem)
+                .options(
+                    selectinload(QuestionBankItem.content),
+                    selectinload(QuestionBankItem.metadata_info),
+                    selectinload(QuestionBankItem.statistics),
+                )
+                .where(
+                    QuestionBankItem.id == question_id,
+                    QuestionBankItem.is_active,
+                )
             )
 
             if include_relations:
