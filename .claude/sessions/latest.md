@@ -1,9 +1,14 @@
 ## Session Handoff — 2026-08-15 (S212)
 **Branch:** feature/self-evolution-optimization
-**Son commit:** `f91470250` fix(backend): question_crud_service — split ilişkileri eager-load (S211 geriye dönük denetimi)
+**Son commit:** `2fb518b1e` fix(backend): duel_api — 108-set JOIN çevirisi (dosya 3/17)
 **Bu turdaki zincir:** `904f9579a` (JOIN 13/13) → `666155dfa` (stub) → `8d5ebe761` (select_from bug) →
-`44924c574` (create_question + eager-load + 15 test) → `96c3b16d1` (stub) → `f91470250` (S211 retro)
-**PUSH BEKLİYOR: 10 commit.**
+`44924c574` (create_question + eager-load + 15 test) → `96c3b16d1` (stub) → `f91470250` (S211 retro) →
+`d731de9b4` (handoff, **buraya kadar PUSH EDİLDİ**) → `2fb518b1e` (duel_api)
+**PUSH BEKLİYOR: 2 commit** (`2fb518b1e` + bu handoff).
+**Not:** push `--no-verify` gerektirdi — pre-push bekçisi `test_coverage_final_50.py`'deki
+3 PRE-EXISTING bulguyu (meşru async test double'ları, satır 342/399/426) bloklayıcı sayıyor.
+Kullanıcı onaylı. Bekçi "dokunulan dosyadaki pre-existing bulgu" ayrımı yapmıyor — kalan
+dosyalarda tekrar çıkacak.
 
 ### ⚠️ EN ÖNEMLİ DERS (bu tur 4 kusur bu yüzden kaçtı)
 "JOIN'e çevirdim + testler yeşil" **yetersiz bir kabul kriteri.** #485'in geri kalan
@@ -58,14 +63,27 @@ YOK
 
 ### Sonraki Adımlar (maks 5)
 1. **PUSH** (10 commit bekliyor) — pre-push bekçisi var, commit'siz iş yok.
-2. #485 devamı: 53/108, 15 dosya. Yoğunluk: `duel_api.py` (12), `curator.py` (10),
+2. #485 devamı: **41/108, 14 dosya.** Yoğunluk: `curator.py` (10),
    `productive_failure_service.py` (9), ...
    Bul: `grep -rn 'QuestionBankItem\.' backend/services backend/api backend/core`
-   **Yukarıdaki 4 adımlı kabul kriterini uygula** — 2 dosyada da kusur çıktı, 3. de çıkar.
+   **Yukarıdaki 4 adımlı kabul kriterini uygula** — 3 dosyanın 3'ünde de kusur çıktı.
+   Bugüne kadarki skor: dosya 1 (crud) 2 kusur · dosya 2 (bank) 3 kusur ·
+   dosya 3 (duel) sorgu HİÇ kurulamıyordu.
 3. Her dosya = ayrı turn + ayrı commit. pre-commit'i BEKLE (bare ruff/mypy yetmez);
    mypy "Failed" görünce pre-existing mi yeni mi diye HEAD ile karşılaştır — hook ayrım YAPMAZ.
 4. Kirli ağaç (3390 dosya, Gemini kalıntısı) triyaj bekliyor — ayrı görev.
 5. #444 (Öğretmen Öğrenciler UI) ve #467-471 (S200 backlog) bekliyor.
+
+### duel_api'den çıkan iki ek ders
+- **Kolon seçimi vs entity seçimi ayrımı yap.** duel_api'nin 12 erişiminin hepsi
+  `select(QuestionBankItem.question_text, ...)` biçimindeydi — entity yok, Row dönüyor,
+  yani **eager-load N/A**. Bunu varsaymak yerine ölçtüm:
+  `grep 'select(QuestionBankItem)' api/duel_api.py` → 0. Her dosyada bu ayrımı yap,
+  yoksa gereksiz `selectinload` eklersin.
+- **Biçimlendirici import siliyor.** `correct_answer`'ı `QuestionContent`'e çevirince
+  `QuestionBankItem` o fonksiyonda kullanılmaz kaldı → import OTOMATİK silindi, ama
+  `QuestionContent` import'u yoktu → `NameError` olacaktı. Alan taşırken **kullanımı
+  önce yaz, sonra import'u doğrula** (MEMORY: `reference_formatter-import-stripping`).
 
 ### Ölçülen ama DÜZELTİLMEYEN (bilinçli)
 - `tests/fast` genelinde **22 fail + 43 error PRE-EXISTING** — pathspec'li stash ile HEAD'e
