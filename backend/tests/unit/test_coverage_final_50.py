@@ -313,12 +313,30 @@ class _QDiffLevel(metaclass=_OrmMeta):
     pass
 
 
+class _QContent(metaclass=_OrmMeta):
+    """question_bank split (#485): question_content stub (class-level attrs -> MagicMock)."""
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
 class _QMetadata(metaclass=_OrmMeta):
     """question_bank split (#485): question_metadata stub (class-level attrs -> MagicMock)."""
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 
 class _QStatistics(metaclass=_OrmMeta):
     """question_bank split (#485): question_statistics stub (class-level attrs -> MagicMock)."""
+
+    irt_difficulty = 0.0
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 
 qb_mod.QuestionBankItem = _QBI
@@ -327,6 +345,7 @@ qb_mod.QuestionTag = _QTag
 qb_mod.QuestionTagAssociation = _QTagAssoc
 qb_mod.IRTCalibrationHistory = _IRTCalHist
 qb_mod.QuestionDifficultyLevel = _QDiffLevel
+qb_mod.QuestionContent = _QContent
 qb_mod.QuestionMetadata = _QMetadata
 qb_mod.QuestionStatistics = _QStatistics
 qb_mod.calculate_irt_based_difficulty = lambda v: float(v or 5)
