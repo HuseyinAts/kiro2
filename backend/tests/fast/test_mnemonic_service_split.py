@@ -16,6 +16,14 @@ Bu dosya seride **iki kusur sınıfını birlikte** taşıyan ilk dosyaydı:
    dosyada N/A'ydı, burada değil.
 
 Testler GERÇEK `models.question_bank` modeline karşı koşar.
+
+**`select_from` neden yok:** advanced_reports/curator'da explicit
+`.select_from(QuestionBankItem)` ZORUNLUYDU (SELECT listesi yalnız split
+kolonlarıydı). Burada her iki sorgunun SELECT listesinde `QuestionBankItem.id`
+zaten var → sol taraf doğru çıkarılıyor. Ölçüldü: derlenmiş SQL `select_from`'lu
+ve'suz **birebir aynı** (mutasyon hayatta kaldı, kazanç 0) → eklenmedi.
+Riski `test_joins_both_split_tables` / `..._joins_metadata` karşılıyor: SELECT
+listesinden `QuestionBankItem.id` düşerse sorgu kurulamaz ve o testler düşer.
 """
 
 from unittest.mock import AsyncMock, MagicMock
@@ -162,12 +170,26 @@ class TestGenerateMnemonicEagerLoad:
 
     @pytest.mark.asyncio
     async def test_is_active_filter_preserved(self):
+        """is_active kapısı WHERE'de kalmalı.
+
+        ⚠️ Tam SQL'de alt-metin aramak burada KÖR: `select(QuestionBankItem)`
+        tüm question_bank kolonlarını SELECT listesine koyar, `is_active` dahil.
+        Filtre tamamen silinse bile alt-metin eşleşiyordu (mutasyon M5 hayatta
+        kaldı, ölçüldü). Bu yüzden yalnız WHERE yan tümcesi derleniyor.
+        """
         from services.mnemonic_service import generate_mnemonic
 
         db = _CaptureDB(scalar=_real_question())
         await generate_mnemonic(db=db, question_id="q-1")
 
-        assert "question_bank.is_active" in _compiled_sql(db.stmt)
+        where_sql = str(
+            db.stmt.whereclause.compile(
+                dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
+            )
+        )
+        assert (
+            "question_bank.is_active" in where_sql
+        ), f"is_active kapısı WHERE'den düşmüş:\n{where_sql}"
 
     @pytest.mark.asyncio
     async def test_returns_error_when_missing(self):

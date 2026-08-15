@@ -33,7 +33,6 @@ async def get_mnemonic(
             QuestionContent.question_text,
             QuestionMetadata.subject_area,
         )
-        .select_from(QuestionBankItem)
         .join(QuestionContent, QuestionContent.id == QuestionBankItem.id)
         .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
         .where(
@@ -162,7 +161,6 @@ async def batch_generate_mnemonics(
     # (bkz offline_sync_service.py:112).
     result = await db.execute(
         select(QuestionBankItem.id)
-        .select_from(QuestionBankItem)
         .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
         .where(
             QuestionMetadata.subject_area == subject.upper(),
