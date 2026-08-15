@@ -20,7 +20,10 @@ from sqlalchemy.orm import selectinload
 from core.quality_gate import safe_for_beta_gate
 from models.question_bank import (
     QuestionBankItem,
+    QuestionContent,
     QuestionDifficultyLevel,
+    QuestionMetadata,
+    QuestionStatistics,
     QuestionTag,
     QuestionTagAssociation,
     TopicHierarchy,
@@ -101,15 +104,21 @@ class QuestionCRUDService:
             option_d = secenekler[3] if len(secenekler) > 3 else ""
             option_e = secenekler[4] if len(secenekler) > 4 else None
 
-            # Soru nesnesini oluştur
+            # Soru nesnesini oluştur (split şema: content/metadata/statistics
+            # artık ayrı tablolarda — QuestionBankItem kurucusuna devredilmiş
+            # alan geçmek başarısız olur, ilişkili kayıt henüz yok)
             new_question = QuestionBankItem(
                 id=str(uuid.uuid4()),
-                # Soru içeriği
+                primary_topic_id=topic_id,
+                created_by=created_by,
+                is_active=True,
+                is_public=question_data.get("genel_erisim", False),
+            )
+            new_question.content = QuestionContent(
                 question_text=question_data.get("soru_metni", ""),
                 question_html=question_data.get("soru_html"),  # Rich text HTML
                 question_latex=question_data.get("soru_latex"),  # LaTeX matematik
                 question_image_url=image_url,
-                # Seçenekler
                 option_a=option_a.replace("A) ", "").replace("A)", "").strip(),
                 option_b=option_b.replace("B) ", "").replace("B)", "").strip(),
                 option_c=option_c.replace("C) ", "").replace("C)", "").strip(),
@@ -118,31 +127,24 @@ class QuestionCRUDService:
                 if option_e
                 else None,
                 correct_answer=question_data.get("dogru_cevap", "A").upper(),
-                # Açıklamalar
                 explanation=question_data.get("cozum_aciklamasi"),
                 explanation_video_url=question_data.get("cozum_video_url"),
                 alternative_solutions=question_data.get("alternatif_cozumler"),
-                # Konu ve etiketleme
-                primary_topic_id=topic_id,
+            )
+            new_question.metadata_info = QuestionMetadata(
                 secondary_topics=question_data.get("ikincil_konular"),
                 bloom_level=question_data.get("bloom_seviyesi", 1),
                 bloom_category=question_data.get("bloom_kategorisi", "knowledge"),
-                # Zorluk
-                difficulty_level=difficulty,
-                # Metadata
                 exam_type=question_data.get("sinav_tipi", "TYT"),
                 subject_area=question_data.get("konu", "Matematik"),
                 grade_level=question_data.get("sinif_seviyesi", 12),
-                # ÖSYM uyumu
                 osym_format_compliant=question_data.get("osym_uyumlu", True),
                 osym_year=question_data.get("osym_yili"),
-                # Kalite
+            )
+            new_question.statistics = QuestionStatistics(
+                difficulty_level=difficulty,
                 quality_score=question_data.get("kalite_skoru", 0.0),
                 quality_review_status="pending",
-                # Sistem
-                created_by=created_by,
-                is_active=True,
-                is_public=question_data.get("genel_erisim", False),
             )
 
             # Veritabanına ekle
@@ -176,7 +178,6 @@ class QuestionCRUDService:
             str: Yüklenen görselin URL'i
         """
         try:
-            import os
             from pathlib import Path
 
             # Upload dizinini oluştur
@@ -184,12 +185,13 @@ class QuestionCRUDService:
             upload_dir.mkdir(parents=True, exist_ok=True)
 
             # Benzersiz dosya adı oluştur
-            file_extension = os.path.splitext(filename)[1]
+            file_extension = Path(filename).suffix
             unique_filename = f"{uuid.uuid4()}{file_extension}"
             file_path = upload_dir / unique_filename
 
-            # Dosyayı kaydet
-            with open(file_path, "wb") as f:
+            # Dosyayı kaydet — builtins.open (Path.open değil): mevcut testler
+            # (test_upload_question_image) `patch("builtins.open")` ile mock'luyor.
+            with open(file_path, "wb") as f:  # noqa: PTH123
                 f.write(image_file)
 
             # URL'i döndür
@@ -220,7 +222,7 @@ class QuestionCRUDService:
                 and_(
                     TopicHierarchy.name_tr == topic_name,
                     TopicHierarchy.level == 1,
-                    TopicHierarchy.is_active == True,
+                    TopicHierarchy.is_active,
                 )
             )
             result = await self.db.execute(stmt)
@@ -245,7 +247,7 @@ class QuestionCRUDService:
                     and_(
                         TopicHierarchy.name_tr == subtopic_name,
                         TopicHierarchy.parent_id == topic.id,
-                        TopicHierarchy.is_active == True,
+                        TopicHierarchy.is_active,
                     )
                 )
                 result = await self.db.execute(stmt)
@@ -264,9 +266,9 @@ class QuestionCRUDService:
                     await self.db.commit()
                     await self.db.refresh(subtopic)
 
-                return subtopic.id
+                return str(subtopic.id)
 
-            return topic.id
+            return str(topic.id)
 
         except Exception as e:
             logger.error(f"Konu oluşturma hatası: {e!s}", exc_info=True)
@@ -612,10 +614,11 @@ class QuestionCRUDService:
         try:
             stmt = (
                 select(QuestionBankItem)
+                .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
                 .where(
                     and_(
-                        QuestionBankItem.is_active == False,
-                        QuestionBankItem.quality_review_status == "archived",
+                        ~QuestionBankItem.is_active,
+                        QuestionStatistics.quality_review_status == "archived",
                     )
                 )
                 .limit(limit)
@@ -660,9 +663,17 @@ class QuestionCRUDService:
             # Base query
             # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
             # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
-            stmt = select(QuestionBankItem).where(
-                QuestionBankItem.is_active == True,
-                safe_for_beta_gate(QuestionBankItem.id),
+            # content/metadata/statistics JOIN'i her zaman kurulur: arama ve
+            # filtreler bu üç tablodan herhangi birine değebilir.
+            stmt = (
+                select(QuestionBankItem)
+                .join(QuestionContent, QuestionContent.id == QuestionBankItem.id)
+                .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+                .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+                .where(
+                    QuestionBankItem.is_active,
+                    safe_for_beta_gate(QuestionBankItem.id),
+                )
             )
 
             # Full-text search (PostgreSQL için)
@@ -676,76 +687,18 @@ class QuestionCRUDService:
                 search_pattern = f"%{escaped}%"
                 stmt = stmt.where(
                     or_(
-                        QuestionBankItem.question_text.ilike(search_pattern),
-                        QuestionBankItem.explanation.ilike(search_pattern),
-                        QuestionBankItem.option_a.ilike(search_pattern),
-                        QuestionBankItem.option_b.ilike(search_pattern),
-                        QuestionBankItem.option_c.ilike(search_pattern),
-                        QuestionBankItem.option_d.ilike(search_pattern),
+                        QuestionContent.question_text.ilike(search_pattern),
+                        QuestionContent.explanation.ilike(search_pattern),
+                        QuestionContent.option_a.ilike(search_pattern),
+                        QuestionContent.option_b.ilike(search_pattern),
+                        QuestionContent.option_c.ilike(search_pattern),
+                        QuestionContent.option_d.ilike(search_pattern),
                     )
                 )
 
             # Filtreler uygula
             if filters:
-                if "exam_type" in filters:
-                    stmt = stmt.where(
-                        QuestionBankItem.exam_type == filters["exam_type"]
-                    )
-
-                if "subject_area" in filters:
-                    stmt = stmt.where(
-                        QuestionBankItem.subject_area == filters["subject_area"]
-                    )
-
-                if "difficulty" in filters:
-                    difficulty_str = filters["difficulty"].lower()
-                    difficulty_map = {
-                        "very_easy": QuestionDifficultyLevel.VERY_EASY,
-                        "easy": QuestionDifficultyLevel.EASY,
-                        "medium": QuestionDifficultyLevel.MEDIUM,
-                        "hard": QuestionDifficultyLevel.HARD,
-                        "very_hard": QuestionDifficultyLevel.VERY_HARD,
-                    }
-                    if difficulty_str in difficulty_map:
-                        stmt = stmt.where(
-                            QuestionBankItem.difficulty_level
-                            == difficulty_map[difficulty_str]
-                        )
-
-                if "grade_level" in filters:
-                    stmt = stmt.where(
-                        QuestionBankItem.grade_level == filters["grade_level"]
-                    )
-
-                if "topic_id" in filters:
-                    stmt = stmt.where(
-                        QuestionBankItem.primary_topic_id == filters["topic_id"]
-                    )
-
-                if "min_quality" in filters:
-                    stmt = stmt.where(
-                        QuestionBankItem.quality_score >= filters["min_quality"]
-                    )
-
-                if "irt_difficulty_range" in filters:
-                    min_diff, max_diff = filters["irt_difficulty_range"]
-                    stmt = stmt.where(
-                        and_(
-                            QuestionBankItem.irt_difficulty >= min_diff,
-                            QuestionBankItem.irt_difficulty <= max_diff,
-                        )
-                    )
-
-                if "osym_compliant" in filters:
-                    stmt = stmt.where(
-                        QuestionBankItem.osym_format_compliant
-                        == filters["osym_compliant"]
-                    )
-
-                if "source_book" in filters:
-                    stmt = stmt.where(
-                        QuestionBankItem.source_book == filters["source_book"]
-                    )
+                stmt = self._apply_search_filters(stmt, filters)
 
             # Sayfalama
             count_stmt = stmt
@@ -786,6 +739,59 @@ class QuestionCRUDService:
                 "facets": {},
             }
 
+    def _apply_search_filters(self, stmt, filters: dict[str, Any]):
+        """search_questions filtrelerini stmt'e uygular (branch sayısını düşürmek için ayrıldı)."""
+        if "exam_type" in filters:
+            stmt = stmt.where(QuestionMetadata.exam_type == filters["exam_type"])
+
+        if "subject_area" in filters:
+            stmt = stmt.where(QuestionMetadata.subject_area == filters["subject_area"])
+
+        if "difficulty" in filters:
+            difficulty_str = filters["difficulty"].lower()
+            difficulty_map = {
+                "very_easy": QuestionDifficultyLevel.VERY_EASY,
+                "easy": QuestionDifficultyLevel.EASY,
+                "medium": QuestionDifficultyLevel.MEDIUM,
+                "hard": QuestionDifficultyLevel.HARD,
+                "very_hard": QuestionDifficultyLevel.VERY_HARD,
+            }
+            if difficulty_str in difficulty_map:
+                stmt = stmt.where(
+                    QuestionStatistics.difficulty_level
+                    == difficulty_map[difficulty_str]
+                )
+
+        if "grade_level" in filters:
+            stmt = stmt.where(QuestionMetadata.grade_level == filters["grade_level"])
+
+        if "topic_id" in filters:
+            stmt = stmt.where(QuestionBankItem.primary_topic_id == filters["topic_id"])
+
+        if "min_quality" in filters:
+            stmt = stmt.where(
+                QuestionStatistics.quality_score >= filters["min_quality"]
+            )
+
+        if "irt_difficulty_range" in filters:
+            min_diff, max_diff = filters["irt_difficulty_range"]
+            stmt = stmt.where(
+                and_(
+                    QuestionStatistics.irt_difficulty >= min_diff,
+                    QuestionStatistics.irt_difficulty <= max_diff,
+                )
+            )
+
+        if "osym_compliant" in filters:
+            stmt = stmt.where(
+                QuestionMetadata.osym_format_compliant == filters["osym_compliant"]
+            )
+
+        if "source_book" in filters:
+            stmt = stmt.where(QuestionMetadata.source_book == filters["source_book"])
+
+        return stmt
+
     async def _calculate_facets(
         self, facet_fields: list[str], filters: dict[str, Any] | None = None
     ) -> dict[str, dict[str, int]]:
@@ -808,41 +814,59 @@ class QuestionCRUDService:
                 if field == "exam_type":
                     stmt = (
                         select(
-                            QuestionBankItem.exam_type,
+                            QuestionMetadata.exam_type,
                             func.count(QuestionBankItem.id).label("count"),
                         )
-                        .where(QuestionBankItem.is_active == True)
-                        .group_by(QuestionBankItem.exam_type)
+                        .join(
+                            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+                        )
+                        .where(QuestionBankItem.is_active)
+                        .group_by(QuestionMetadata.exam_type)
                     )
 
                 elif field == "subject_area":
                     stmt = (
                         select(
-                            QuestionBankItem.subject_area,
+                            QuestionMetadata.subject_area,
                             func.count(QuestionBankItem.id).label("count"),
                         )
-                        .where(QuestionBankItem.is_active == True)
-                        .group_by(QuestionBankItem.subject_area)
+                        .join(
+                            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+                        )
+                        .where(QuestionBankItem.is_active)
+                        .group_by(QuestionMetadata.subject_area)
                     )
 
                 elif field == "difficulty":
+                    # Metadata da JOIN'lenir: aşağıdaki filtre bloğu exam_type/
+                    # subject_area (Metadata alanları) uygulayabilir.
                     stmt = (
                         select(
-                            QuestionBankItem.difficulty_level,
+                            QuestionStatistics.difficulty_level,
                             func.count(QuestionBankItem.id).label("count"),
                         )
-                        .where(QuestionBankItem.is_active == True)
-                        .group_by(QuestionBankItem.difficulty_level)
+                        .join(
+                            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+                        )
+                        .join(
+                            QuestionStatistics,
+                            QuestionStatistics.id == QuestionBankItem.id,
+                        )
+                        .where(QuestionBankItem.is_active)
+                        .group_by(QuestionStatistics.difficulty_level)
                     )
 
                 elif field == "grade_level":
                     stmt = (
                         select(
-                            QuestionBankItem.grade_level,
+                            QuestionMetadata.grade_level,
                             func.count(QuestionBankItem.id).label("count"),
                         )
-                        .where(QuestionBankItem.is_active == True)
-                        .group_by(QuestionBankItem.grade_level)
+                        .join(
+                            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+                        )
+                        .where(QuestionBankItem.is_active)
+                        .group_by(QuestionMetadata.grade_level)
                     )
 
                 else:
@@ -854,11 +878,11 @@ class QuestionCRUDService:
                         if filter_key != field:
                             if filter_key == "exam_type":
                                 stmt = stmt.where(
-                                    QuestionBankItem.exam_type == filter_value
+                                    QuestionMetadata.exam_type == filter_value
                                 )
                             elif filter_key == "subject_area":
                                 stmt = stmt.where(
-                                    QuestionBankItem.subject_area == filter_value
+                                    QuestionMetadata.subject_area == filter_value
                                 )
 
                 result = await self.db.execute(stmt)
@@ -897,7 +921,7 @@ class QuestionCRUDService:
             es_client = get_elasticsearch_client()
 
             # Elasticsearch sorgusu oluştur
-            es_query = {
+            es_query: dict[str, Any] = {
                 "query": {
                     "bool": {
                         "must": [
@@ -950,7 +974,7 @@ class QuestionCRUDService:
             if question_ids:
                 stmt = select(QuestionBankItem).where(
                     QuestionBankItem.id.in_(question_ids),
-                    QuestionBankItem.is_active == True,
+                    QuestionBankItem.is_active,
                     # Kalite kapısı — ES yolu da kapılı olmalı. Aksi hâlde
                     # sızıntı ALTYAPI DURUMUNA bağlı olurdu: ES ayaktayken bu
                     # dal (kapısız) koşar, ES düşünce except-fallback kapılı
@@ -970,7 +994,7 @@ class QuestionCRUDService:
             search_result = await self.search_questions(
                 search_query=search_query, filters=filters, limit=limit
             )
-            return search_result["questions"]
+            return list(search_result["questions"])
 
     # ========================================================================
     # Yardımcı Metodlar
@@ -992,7 +1016,7 @@ class QuestionCRUDService:
         try:
             stmt = select(QuestionBankItem).where(
                 QuestionBankItem.id == question_id,
-                QuestionBankItem.is_active == True,
+                QuestionBankItem.is_active,
             )
 
             if include_relations:
@@ -1003,9 +1027,7 @@ class QuestionCRUDService:
                 )
 
             result = await self.db.execute(stmt)
-            question = result.scalar_one_or_none()
-
-            return question
+            return result.scalar_one_or_none()
 
         except Exception as e:
             logger.error(f"Soru getirme hatası: {e!s}", exc_info=True)
@@ -1063,7 +1085,7 @@ class QuestionCRUDService:
 
             # Toplam soru sayısı
             total_stmt = select(func.count(QuestionBankItem.id)).where(
-                QuestionBankItem.is_active == True
+                QuestionBankItem.is_active
             )
             total_result = await self.db.execute(total_stmt)
             total_count = total_result.scalar()
@@ -1071,11 +1093,12 @@ class QuestionCRUDService:
             # Sınav türüne göre dağılım
             exam_type_stmt = (
                 select(
-                    QuestionBankItem.exam_type,
+                    QuestionMetadata.exam_type,
                     func.count(QuestionBankItem.id).label("count"),
                 )
-                .where(QuestionBankItem.is_active == True)
-                .group_by(QuestionBankItem.exam_type)
+                .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+                .where(QuestionBankItem.is_active)
+                .group_by(QuestionMetadata.exam_type)
             )
             exam_type_result = await self.db.execute(exam_type_stmt)
             exam_type_dist = {row[0]: row[1] for row in exam_type_result.all()}
@@ -1083,11 +1106,12 @@ class QuestionCRUDService:
             # Zorluk dağılımı
             difficulty_stmt = (
                 select(
-                    QuestionBankItem.difficulty_level,
+                    QuestionStatistics.difficulty_level,
                     func.count(QuestionBankItem.id).label("count"),
                 )
-                .where(QuestionBankItem.is_active == True)
-                .group_by(QuestionBankItem.difficulty_level)
+                .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+                .where(QuestionBankItem.is_active)
+                .group_by(QuestionStatistics.difficulty_level)
             )
             difficulty_result = await self.db.execute(difficulty_stmt)
             difficulty_dist = {
@@ -1095,10 +1119,14 @@ class QuestionCRUDService:
             }
 
             # Kalibrasyon durumu
-            calibrated_stmt = select(func.count(QuestionBankItem.id)).where(
-                and_(
-                    QuestionBankItem.is_active == True,
-                    QuestionBankItem.is_calibrated == True,
+            calibrated_stmt = (
+                select(func.count(QuestionBankItem.id))
+                .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+                .where(
+                    and_(
+                        QuestionBankItem.is_active,
+                        QuestionStatistics.is_calibrated,
+                    )
                 )
             )
             calibrated_result = await self.db.execute(calibrated_stmt)
@@ -1137,15 +1165,19 @@ class QuestionCRUDService:
 
         # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
         # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
-        stmt = select(QuestionBankItem).where(
-            QuestionBankItem.is_active == True,
-            safe_for_beta_gate(QuestionBankItem.id),
+        stmt = (
+            select(QuestionBankItem)
+            .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+            .where(
+                QuestionBankItem.is_active,
+                safe_for_beta_gate(QuestionBankItem.id),
+            )
         )
 
         if subject_area:
-            stmt = stmt.where(QuestionBankItem.subject_area == subject_area)
+            stmt = stmt.where(QuestionMetadata.subject_area == subject_area)
         if exam_type:
-            stmt = stmt.where(QuestionBankItem.exam_type == exam_type)
+            stmt = stmt.where(QuestionMetadata.exam_type == exam_type)
 
         stmt = stmt.order_by(func.random()).limit(count)
         result = await self.db.execute(stmt)
@@ -1161,27 +1193,28 @@ class QuestionCRUDService:
 
         stmt = (
             select(
-                QuestionBankItem.source_book,
-                QuestionBankItem.subject_area,
-                QuestionBankItem.exam_type,
+                QuestionMetadata.source_book,
+                QuestionMetadata.subject_area,
+                QuestionMetadata.exam_type,
                 func.count(QuestionBankItem.id).label("question_count"),
             )
+            .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
             .where(
-                QuestionBankItem.is_active == True,
-                QuestionBankItem.source_book.isnot(None),
+                QuestionBankItem.is_active,
+                QuestionMetadata.source_book.isnot(None),
             )
             .group_by(
-                QuestionBankItem.source_book,
-                QuestionBankItem.subject_area,
-                QuestionBankItem.exam_type,
+                QuestionMetadata.source_book,
+                QuestionMetadata.subject_area,
+                QuestionMetadata.exam_type,
             )
             .order_by(func.count(QuestionBankItem.id).desc())
         )
 
         if subject_area:
-            stmt = stmt.where(QuestionBankItem.subject_area == subject_area)
+            stmt = stmt.where(QuestionMetadata.subject_area == subject_area)
         if exam_type:
-            stmt = stmt.where(QuestionBankItem.exam_type == exam_type)
+            stmt = stmt.where(QuestionMetadata.exam_type == exam_type)
 
         result = await self.db.execute(stmt)
         rows = result.fetchall()
