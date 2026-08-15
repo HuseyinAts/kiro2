@@ -23,7 +23,13 @@ from fastapi.responses import FileResponse
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.osym_exam_engine import session_to_sinav_sonucu
 from core.turkish_nlp_utils import normalize_tr
-from models import SinavSonucu, SinavTipi
+
+# Aşağıdaki ignore bir ÖLÇÜM ALETİ artefaktıdır, kod kusuru değil: pre-commit
+# mypy depo KÖKÜNDEN koşuyor ve orada bir YOLO ağırlık klasörü (`kiro2/models/`,
+# sadece .pt dosyaları) var. `models` o namespace paketine çözülüyor → 0
+# attribute. Çalışma zamanında CWD=backend olduğu için gerçek `backend/models`
+# yükleniyor ve isimler `__all__`'da mevcut.
+from models import SinavSonucu, SinavTipi  # type: ignore[attr-defined]
 from services.irt_morfoloji_service import IRTMorfolojiService
 from services.learning_style_service import LearningStyleService
 from services.zpd_maarif_service import ZPDMaarifService
@@ -38,6 +44,9 @@ irt_morfoloji_service = IRTMorfolojiService()
 zpd_maarif_service = ZPDMaarifService()
 learning_style_service = LearningStyleService()
 pdf_generator = PDFReportGenerator()
+
+# Arka plan PDF görevlerine güçlü referans (bkz. generate_pdf_report / RUF006).
+_BACKGROUND_PDF_TASKS: set[asyncio.Task[None]] = set()
 
 
 def _mock_report_guard(endpoint_name: str) -> None:
@@ -94,19 +103,21 @@ async def get_advanced_exam_report(
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        # Sonuçları işle
-        irt_analizi = results[0] if not isinstance(results[0], Exception) else None
-        zpd_analizi = results[1] if not isinstance(results[1], Exception) else None
+        # Sonuçları işle. `return_exceptions=True` BaseException de döndürebilir
+        # (CancelledError vb.); `Exception` ile daraltmak onları veri sanıp rapora
+        # gömerdi — bu yüzden BaseException ile daraltılıyor.
+        irt_analizi = results[0] if not isinstance(results[0], BaseException) else None
+        zpd_analizi = results[1] if not isinstance(results[1], BaseException) else None
         ogrenme_stili_analizi = (
-            results[2] if not isinstance(results[2], Exception) else None
+            results[2] if not isinstance(results[2], BaseException) else None
         )
         osym_ets_karsilastirma = (
-            results[3] if not isinstance(results[3], Exception) else None
+            results[3] if not isinstance(results[3], BaseException) else None
         )
 
         # Hataları logla
         for i, result in enumerate(results):
-            if isinstance(result, Exception):
+            if isinstance(result, BaseException):
                 logger.error(f"Gelişmiş analiz hatası {i}: {result!s}")
 
         # Kapsamlı rapor oluştur
@@ -309,6 +320,7 @@ async def generate_pdf_report(
 
         # SRE Bulkhead: Run PDF generation in the custom PDF_POOL executor
         import asyncio
+
         from core.worker_pools import PDF_POOL
 
         async def generate_pdf_in_background():
@@ -318,12 +330,16 @@ async def generate_pdf_report(
                     PDF_POOL,
                     pdf_generator.generate_advanced_exam_report,
                     gelismis_rapor,
-                    pdf_filename
+                    pdf_filename,
                 )
             except Exception as e:
                 logger.error(f"Background PDF generation error: {e}")
 
-        asyncio.create_task(generate_pdf_in_background())
+        # RUF006: create_task'ın dönüşüne güçlü referans tut. Referanssız task
+        # event loop tarafından koşarken toplanabilir → PDF sessizce üretilmez.
+        task = asyncio.create_task(generate_pdf_in_background())
+        _BACKGROUND_PDF_TASKS.add(task)
+        task.add_done_callback(_BACKGROUND_PDF_TASKS.discard)
 
         return {
             "message": "PDF rapor oluşturuluyor",
@@ -393,26 +409,37 @@ async def _get_subject_irt_aggregate(subject_area: str) -> dict[str, float | int
 
     from core.cache import cache_manager
     from core.database import get_db_session_context
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import (
+        QuestionBankItem,
+        QuestionMetadata,
+        QuestionStatistics,
+    )
 
     canonical = subject_area.upper()
     cache_key = f"irt_aggregate:{canonical}"
 
-    cached = await cache_manager.get(cache_key)
+    cached: dict[str, float | int] | None = await cache_manager.get(cache_key)
     if cached is not None:
         return cached
 
     async with get_db_session_context() as session:
+        # #485 split: irt_* artık QuestionStatistics'te, subject_area
+        # QuestionMetadata'da. SELECT listesinde yalnız QuestionStatistics
+        # kolonları olduğu için explicit select_from ZORUNLU — yoksa SQLAlchemy
+        # sol tarafı o tablo sanıp kendisine JOIN etmeye çalışır.
         stmt = (
             select(
-                func.avg(QuestionBankItem.irt_difficulty).label("avg_difficulty"),
-                func.avg(QuestionBankItem.irt_discrimination).label(
+                func.avg(QuestionStatistics.irt_difficulty).label("avg_difficulty"),
+                func.avg(QuestionStatistics.irt_discrimination).label(
                     "avg_discrimination"
                 ),
-                func.avg(QuestionBankItem.irt_guessing).label("avg_guessing"),
+                func.avg(QuestionStatistics.irt_guessing).label("avg_guessing"),
                 func.count().label("sample_size"),
             )
-            .where(QuestionBankItem.subject_area == canonical)
+            .select_from(QuestionBankItem)
+            .join(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+            .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+            .where(QuestionMetadata.subject_area == canonical)
             .where(QuestionBankItem.is_active.is_(True))
         )
         row = (await session.execute(stmt)).one()
@@ -1117,14 +1144,14 @@ async def _get_osym_ets_karsilastirmasi_real(
     — a different domain than exam-level IRT benchmark comparison. Forcing
     it would break frontend contract. See S196 Day 3 design discussion.
     """
-    osym_standartlari = {
+    osym_standartlari: dict[str, Any] = {
         "ayirt_edicilik_min": 0.3,
         "ayirt_edicilik_ideal": 1.0,
         "zorluk_araligi": (-2.0, 2.0),
         "sans_faktoru_max": 0.25,
         "guvenilirlik_min": 0.8,
     }
-    ets_standartlari = {
+    ets_standartlari: dict[str, Any] = {
         "ayirt_edicilik_min": 0.4,
         "ayirt_edicilik_ideal": 1.2,
         "zorluk_araligi": (-2.5, 2.5),
@@ -1160,7 +1187,7 @@ async def _get_osym_ets_karsilastirmasi_real(
             "morfoloji_avantaji": 0.15,
         }
 
-    osym_karsilastirma = {
+    osym_karsilastirma: dict[str, Any] = {
         "ayirt_edicilik_durumu": _karsilastir_parametre(
             sinav_parametreleri["ortalama_ayirt_edicilik"],
             osym_standartlari["ayirt_edicilik_min"],
@@ -1176,7 +1203,7 @@ async def _get_osym_ets_karsilastirmasi_real(
         ),
         "genel_uyum_skoru": 0.0,
     }
-    ets_karsilastirma = {
+    ets_karsilastirma: dict[str, Any] = {
         "ayirt_edicilik_durumu": _karsilastir_parametre(
             sinav_parametreleri["ortalama_ayirt_edicilik"],
             ets_standartlari["ayirt_edicilik_min"],
@@ -1242,7 +1269,7 @@ async def _get_osym_ets_karsilastirmasi_mock(
     """ÖSYM/ETS karsilastirma — mock path (S180 fallback)."""
     try:
         # ÖSYM standartları
-        osym_standartlari = {
+        osym_standartlari: dict[str, Any] = {
             "ayirt_edicilik_min": 0.3,
             "ayirt_edicilik_ideal": 1.0,
             "zorluk_araligi": (-2.0, 2.0),
@@ -1251,7 +1278,7 @@ async def _get_osym_ets_karsilastirmasi_mock(
         }
 
         # ETS standartları
-        ets_standartlari = {
+        ets_standartlari: dict[str, Any] = {
             "ayirt_edicilik_min": 0.4,
             "ayirt_edicilik_ideal": 1.2,
             "zorluk_araligi": (-2.5, 2.5),
@@ -1269,7 +1296,7 @@ async def _get_osym_ets_karsilastirmasi_mock(
         }
 
         # ÖSYM karşılaştırması
-        osym_karsilastirma = {
+        osym_karsilastirma: dict[str, Any] = {
             "ayirt_edicilik_durumu": _karsilastir_parametre(
                 sinav_parametreleri["ortalama_ayirt_edicilik"],
                 osym_standartlari["ayirt_edicilik_min"],
@@ -1287,7 +1314,7 @@ async def _get_osym_ets_karsilastirmasi_mock(
         }
 
         # ETS karşılaştırması
-        ets_karsilastirma = {
+        ets_karsilastirma: dict[str, Any] = {
             "ayirt_edicilik_durumu": _karsilastir_parametre(
                 sinav_parametreleri["ortalama_ayirt_edicilik"],
                 ets_standartlari["ayirt_edicilik_min"],
@@ -1444,9 +1471,9 @@ def _karsilastir_sans_faktoru(deger: float, maksimum: float) -> dict[str, Any]:
     return {"durum": durum, "skor": skor, "deger": deger}
 
 
-def _hesapla_genel_uyum_skoru(karsilastirma: dict) -> float:
+def _hesapla_genel_uyum_skoru(karsilastirma: dict[str, Any]) -> float:
     """Genel uyum skorunu hesapla"""
-    skorlar = [
+    skorlar: list[float] = [
         karsilastirma["ayirt_edicilik_durumu"]["skor"],
         karsilastirma["zorluk_durumu"]["skor"],
         karsilastirma["sans_faktoru_durumu"]["skor"],
@@ -1490,9 +1517,9 @@ def _generate_improvement_suggestions(osym: dict, _: dict, params: dict) -> list
 async def _generate_personalized_recommendations(
     ogrenci_id: str,
     temel_sonuc: SinavSonucu,
-    irt_analizi: dict,
-    zpd_analizi: dict,
-    ogrenme_stili_analizi: dict,
+    irt_analizi: dict[str, Any] | None,
+    zpd_analizi: dict[str, Any] | None,
+    ogrenme_stili_analizi: dict[str, Any] | None,
 ) -> list[dict[str, Any]]:
     """Kişiselleştirilmiş öneriler oluştur"""
     oneriler = []
@@ -1636,7 +1663,10 @@ async def _get_performance_trend_mock(
 
 
 async def _generate_development_suggestions(
-    ogrenci_id: str, temel_sonuc: SinavSonucu, irt_analizi: dict, zpd_analizi: dict
+    ogrenci_id: str,
+    temel_sonuc: SinavSonucu,
+    irt_analizi: dict[str, Any] | None,
+    zpd_analizi: dict[str, Any] | None,
 ) -> list[str]:
     """Gelişim önerileri oluştur"""
     oneriler = []
