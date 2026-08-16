@@ -37,6 +37,39 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-16 (S218)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** 7febaeac9 fix(backend): placement_assessment_api.py _check_correctness — QuestionContent'e çevrildi (#485)
+**Uncommitted:** temiz (bu session'ın dosyaları). 3388 dosyalık pre-existing kirli ağaç (S210 Gemini devri) var, bu session'a ait değil — ayrı triyaj görevi. **Push edilmedi — kullanıcı onayı bekliyor.**
+
+### Yapılanlar
+- `backend/api/placement_assessment_api.py:281-302` — `_check_correctness`'taki `QuestionBankItem.correct_answer` (kolon-select) `QuestionContent`'e çevrildi (`7febaeac9`, #485). JOIN gerekmedi: dosyada `QuestionBankItem`'ın başka kolonu kullanılmıyordu, `QuestionContent.id` `question_bank.id` ile aynı paylaşılan PK.
+- `backend/tests/fast/test_placement_assessment_api_split.py` — 7 yeni test, mutasyonla çivili (`git stash push -- <dosya>` ile eski kod geri konunca 7/7 aynı AttributeError'la düştü, sonra geri alındı)
+- Yan bulgu — dosyada pre-existing pre-commit borcu (dokunulmayan kod): `_store_session`/`_load_session` pickle kullanımı (bandit B403×2 + B301) + mypy no-any-return (satır 301, `row[0]: Any`). Kontrol kolu: `pre-commit run bandit/mypy --files` stash'lenmiş HEAD'e karşı çalıştırıldı, ikisi de zaten vardı. Inline `# nosec`/`# type: ignore` ile işaretlendi, davranış değiştirilmedi.
+- `SKIP=kiro2-api-import-smoke` (kullanıcı onayıyla) — değişen dosyayla ilgisiz WinError 127 ortam kusuru (`api.rag`/`api.youtube_routes`/`api.v1.semantic_search`, S211'den beri bilinen)
+
+### Fail Eden Testler
+YOK — yeni 7 test + `tests/unit/test_exam_event_wiring.py` (6 test, aynı modülü tüketiyor) hepsi PASS
+
+### Engelleyiciler
+- `pytest-fast` FK fixture kırığı (S215'ten devir) — backend commit'leri hâlâ `SKIP=` zorunda, bu turda dokunulmadı
+- `kiro2-api-import-smoke` WinError 127 — S211'den beri her `api/` commit'inde SKIP gerektiriyor, kök neden hâlâ açık
+- 3388 dosyalık kirli ağaç (S210 Gemini devri) — bu session'a ait değil, ayrı triyaj bekliyor
+
+### Sonraki Adımlar (maks 5)
+1. #485 devamı — `core/osym_exam_engine.py` (1 erişim) veya 4'lü grup (`difficulty_classification_service.py` · `placement_assessment_service.py` · `core/irt_daemon.py` · `tasks/mega_feature_tasks.py`, 2 erişim/dosya)
+2. `git push` bekliyor (kullanıcı onayı gerekir)
+3. `pytest-fast` FK fixture kırığı — ayrı görev, birikmeden kapatılmalı
+4. `kiro2-api-import-smoke` WinError 127 kök nedeni — ayrı görev, her `api/` commit'ini SKIP'e zorluyor
+5. Kirli ağaç triyajı (3388 dosya)
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- 5 adımlı kabul kriteri değişmedi (derle → `get_final_froms` → eager-load ölçümü → gerçek model testi → mutasyon)
+- Kolon-select sorgularda (entity-select değil), JOIN'e ihtiyaç YOKSA (başka split-tablo kolonu kullanılmıyorsa) doğrudan split tabloya filtrelemek yeterli — JOIN eklemek gereksiz karmaşıklık olurdu
+- pre-commit borcu (bandit/mypy) keşfedilirse aynı dosyada: kontrol kolu (`pre-commit run <hook> --files`, stash'li) ile HEAD'de zaten var olduğu doğrulanmadan işaretleme yapılmaz
+
+---
+
 ## Session Handoff — 2026-08-16 07:53
 **Branch:** feature/self-evolution-optimization
 **Son commit:** f5b1f5a6c chore: S217 handoff — parent_service.py 1/1 kapandı; kalan 10/6 ÖLÇÜLDÜ
