@@ -66,8 +66,17 @@ stmt = select({alias}.irt_difficulty)
 
 
 def test_parent_kolonu_borc_olarak_sayilmaz(tmp_path: Path) -> None:
-    """I4 guard: `is_active` parent'ta duruyor, erişimi GEÇERLİ. Guard olmasaydı
-    bir ad çakışmasında 95 geçerli erişim borç gibi raporlanırdı."""
+    """I4 guard: `is_active` parent'ta duruyor, erişimi GEÇERLİ.
+
+    İddia PREDİKAT üzerinden kuruluyor, türetilmiş `SPLIT_FIELDS` kümesi üzerinden
+    değil. Sebebi ölçüldü: `"is_active" not in SPLIT_FIELDS` biçimindeki iddia
+    guard silinse bile geçiyordu (mutasyon hayatta kaldı), çünkü `is_active` zaten
+    bir yavru tablo kolonu değil — küme onu hiçbir koşulda içermiyor.
+    """
+    assert scanner._is_moved_field("is_active") is False
+    assert scanner._is_moved_field("irt_difficulty") is True  # kontrol kolu
+    assert "is_active" not in scanner.SPLIT_FIELDS
+
     src = """
 from models.question_bank import QuestionBankItem
 
@@ -75,13 +84,19 @@ stmt = select(QuestionBankItem).where(QuestionBankItem.is_active == True)
 """
     cls, ent, kws = scanner.scan(_probe(tmp_path, src))
     assert cls == [], f"parent kolonu borc sayildi: {cls}"
-    assert "is_active" not in scanner.SPLIT_FIELDS
 
 
 def test_id_split_alan_sayilmaz(tmp_path: Path) -> None:
-    """`id` paylaşılan PK; her yavru tabloda var. Hariç tutulmasaydı tek başına
-    yüzlerce yanlış-pozitif üretirdi."""
+    """`id` paylaşılan PK; her yavru tabloda VAR (ölçüldü). Sayılsaydı tek başına
+    yüzlerce yanlış-pozitif üretirdi.
+
+    Not: `name != "id"` ve `hasattr` dalları burada üst üste biniyor — `id` parent'ta
+    da bulunduğu için hasattr dalı tek başına yetiyor. Bu yüzden iddia ikisini
+    BİRLİKTE sınar: yalnız birini silen mutasyon davranışı değiştirmez (ölçüldü).
+    """
+    assert scanner._is_moved_field("id") is False
     assert "id" not in scanner.SPLIT_FIELDS
+
     src = """
 from models.question_bank import QuestionBankItem
 

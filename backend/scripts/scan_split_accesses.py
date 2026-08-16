@@ -51,16 +51,32 @@ from models.question_bank import (
     QuestionStatistics,
 )
 
-# Yalnizca GERCEKTEN tasinmis alanlar sayilir. `hasattr` guard'i shim'den
-# devralindi (models/question_bank.py:596): bir yavru tablo ileride bir PARENT
-# kolon adiyla cakisirsa shim parent'in gercek kolonunu korur, yani o erisim
-# gecerli kalir -- sayac onu "kalan is" diye raporlamamalidir. Cakisma bugun YOK
-# (olculdu), ama guard olmasaydi ornegin `is_active` cakismasi 95 gecerli erisimi
-# borc gibi gosterirdi.
+
+def _is_moved_field(name: str) -> bool:
+    """Bu alan GERÇEKTEN taşındı mı (yani sayaçta borç sayılmalı mı)?
+
+    `hasattr` guard'ı shim'den devralındı (models/question_bank.py:596): bir yavru
+    tablo ileride bir PARENT kolon adıyla çakışırsa shim parent'ın gerçek kolonunu
+    korur, yani o erişim GEÇERLİ kalır — sayaç onu "kalan iş" diye raporlamamalıdır.
+    Çakışma bugün yok (ölçüldü: guard'lı 71 alan, guard'sız 71), ama guard olmasaydı
+    örneğin bir `is_active` çakışması 95 geçerli erişimi borç gibi gösterirdi.
+
+    Ayrı fonksiyon olmasının sebebi ÖLÇÜM: türetilmiş `SPLIT_FIELDS` kümesi üzerinden
+    yapılan iddialar bu guard'ı sınayamıyordu (mutasyon hayatta kaldı), çünkü
+    `is_active` zaten bir yavru kolonu değil. Predikat doğrudan çağrılabilince
+    guard mutasyonla çivilenebilir hale geldi.
+
+    NOT (ölçüldü): `name != "id"` şu an FAZLALIK — `hasattr(QuestionBankItem, "id")`
+    True olduğu için hasattr dalı onu zaten eliyor. Tek başına hiçbir mutasyonla
+    öldürülemez; açıklayıcı olduğu için bırakıldı, ama testi ikisini BİRLİKTE sınar.
+    """
+    return name != "id" and not hasattr(QuestionBankItem, name)
+
+
 SPLIT_FIELDS: dict[str, str] = {}
 for table in (QuestionContent, QuestionMetadata, QuestionStatistics):
     for col in table.__table__.columns:
-        if col.name != "id" and not hasattr(QuestionBankItem, col.name):
+        if _is_moved_field(col.name):
             SPLIT_FIELDS[col.name] = table.__name__
 
 # `.values(alan=...)` / `.filter_by(alan=...)` -- alan adinin keyword olarak gectigi cagrilar.
