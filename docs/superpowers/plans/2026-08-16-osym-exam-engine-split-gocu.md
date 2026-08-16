@@ -787,21 +787,21 @@ Mutasyon 2/2 oldurudu (is_active filtresi, JOIN)."
 
 **Neden gerekli:** Sorgu kurulur (yalnız `id`/`is_active` kullanıyor) ama dönen nesneden `api/sinav.py:493-508` **12 split alan** okuyor. İlişkiler `lazy='select'` → async'te `MissingGreenlet`. `navigate_to_question:817` aynı fonksiyona delege ediyor.
 
-- [ ] **Step 1: RED doğrula**
+- [x] **Step 1: RED doğrula**
 
 ```bash
 python -m pytest "tests/fast/test_osym_exam_engine_split.py::TestEntityQueriesEagerLoad::test_get_current_question_eager_loads_all_three" -q --no-cov
 ```
 Beklenen: FAILED (`{} != {...}` — hiç `.options()` yok).
 
-- [ ] **Step 2: Import ekle**
+- [x] **Step 2: Import ekle**
 
 Dosya başındaki SQLAlchemy import'una ekle:
 ```python
 from sqlalchemy.orm import selectinload
 ```
 
-- [ ] **Step 3: Fix'i uygula**
+- [x] **Step 3: Fix'i uygula**
 
 `565-571` bloğunu bul:
 
@@ -831,20 +831,20 @@ from sqlalchemy.orm import selectinload
                 )
 ```
 
-- [ ] **Step 4: GREEN doğrula**
+- [x] **Step 4: GREEN doğrula**
 
 ```bash
 python -m pytest "tests/fast/test_osym_exam_engine_split.py::TestEntityQueriesEagerLoad::test_get_current_question_eager_loads_all_three" -q --no-cov
 ```
 Beklenen: `1 passed`.
 
-- [ ] **Step 5: Mutasyon M5 — bir eager-load'ı sil**
+- [x] **Step 5: Mutasyon M5 — bir eager-load'ı sil**
 
 `selectinload(Question.content),` satırını sil, koştur.
 Beklenen: **FAILED** (test sözlüğü yapıdan okuyor, metinden değil).
 Geri al + `git status --short`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 pre-commit run --files core/osym_exam_engine.py

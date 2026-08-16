@@ -37,6 +37,16 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Checkpoint — 2026-08-16 (S220, devam)
+
+**Son commit:** `a189c4a344` fix(osym): get_current_question uc split iliskiyi eager-load ediyor (#485)
+**Yapılan:** Plan Task 4 kapandı (implementer → spec review → kalite review, üçü de temiz). `get_current_question` (`:568`) artık `content`/`metadata_info`/`statistics` için `selectinload` kullanıyor. Test: `test_osym_exam_engine_split.py` 5→**6 passed / 12 failed** (kalan 12, Task 5-7 kapsamı, beklenen). Mutasyon M5 öldürüldü (spec reviewer bağımsız tekrar etti).
+**Bekleyen:** Task 5 (`get_subject_performance` eager-load, `:1313`), sonra Task 6, Task 7 (TEHLİKE bloğunu oku). Plan dosyasında Task 4 checkbox'ları işaretlendi.
+**Test durumu:** Hedeflenen 6/18 yeşil (plan kapsamı). Diğer testler bu turda koşulmadı.
+**Push:** Yapılmadı (kullanıcı onayı bekleniyor, önceki S219 gibi).
+
+---
+
 ## Session Handoff — 2026-08-16 (S219)
 
 **Branch:** `feature/self-evolution-optimization` · **HEAD:** `05148d0ee` · **Push:** ✅ edildi (`74c8f9d80..05148d0ee`, 11 commit)
