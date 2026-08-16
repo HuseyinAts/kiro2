@@ -864,14 +864,24 @@ Mutasyon 1/1 oldurudu."
 
 **Neden gerekli:** Döngüde üç ayrı yavru tablodan okuma var — `:1329` `subject_area` (metadata), `:1346` `irt_difficulty` (statistics), `:1351` `correct_answer` (content). `:1396` çıplak `except` → `return []` → HTTP 200 ile **boş ders kırılımı**.
 
-- [ ] **Step 1: RED doğrula**
+> **ÖLÇÜM DÜZELTMESİ (16 Ağu, Task 5 yürütülürken):** aşağıdaki test adları/sayıları
+> **bayat**. `TestEntityQueriesEagerLoad` sınıfında 3 değil **2** test var — Task 1'in
+> yazarı `..._eager_loads_three` ile `test_subject_read_from_real_orm_instance`'ı tek
+> teste birleştirmiş (`test_get_subject_performance_eager_loads_and_reads_real_orm`).
+> Birleşik test iki iddiayı da tutuyor, üstelik `_eager_loaded(...) == {...}` sözlük
+> eşitliği taslaktaki `.get()` zincirinden **daha sıkı** (mutasyonu öldüren de bu).
+> Dolayısıyla Step 1 beklentisi `1 failed / 1 passed`, Step 3 beklentisi **`2 passed`**.
+> Satır numaraları da 16 satır kaymış: gerçek konum `:1320-1332`, döngüdeki okumalar
+> `:1345`/`:1362`/`:1367`, çıplak `except` `:1412`.
+
+- [x] **Step 1: RED doğrula**
 
 ```bash
 python -m pytest "tests/fast/test_osym_exam_engine_split.py::TestEntityQueriesEagerLoad" -q --no-cov
 ```
 Beklenen: 2 failed (`test_get_current_question...` Task 4'ten geçiyor olmalı).
 
-- [ ] **Step 2: Fix'i uygula**
+- [x] **Step 2: Fix'i uygula**
 
 `1312-1324` bloğunu bul:
 
@@ -899,20 +909,28 @@ Beklenen: 2 failed (`test_get_current_question...` Task 4'ten geçiyor olmalı).
 
 Gerisi (outerjoin/where/order_by) **aynen kalır**.
 
-- [ ] **Step 3: GREEN doğrula**
+- [x] **Step 3: GREEN doğrula**
 
 ```bash
 python -m pytest "tests/fast/test_osym_exam_engine_split.py::TestEntityQueriesEagerLoad" -q --no-cov
 ```
-Beklenen: `3 passed`.
+Beklenen: `3 passed`. → **Ölçülen: `2 passed`** (yukarıdaki düzeltme: sınıfta 2 test var).
 
-- [ ] **Step 4: Mutasyon M6 — metadata eager-load'ını sil**
+- [x] **Step 4: Mutasyon M6 — metadata eager-load'ını sil**
 
 `selectinload(Question.metadata_info),` (bu bloktaki) satırını sil, koştur.
 Beklenen: `test_get_subject_performance_eager_loads_three` **FAILED**.
 Geri al + doğrula.
 
-- [ ] **Step 5: Commit**
+> **Ölçüldü:** `1 failed, 1 passed` — `Right contains 1 more item: {'metadata_info': 'selectin'}`,
+> gerçek assertion hatası (`error` DEĞİL). Geri alım `git status --short` boş çıktıyla
+> doğrulandı. Reviewer mutasyonu **bağımsız tekrar etti** ve ayrıca 4 mutasyon daha
+> koştu (blok tümü · `content` tek · `statistics` tek) — **5/5 öldürüldü**.
+> Mutasyon uygulanırken `selectinload(Question.metadata_info)` dosyada **iki kez**
+> geçiyor (Task 4 bloğu `:571`, Task 5 bloğu `:1327`) — yalnız ikincisi silinmeli,
+> yoksa ölçülen şey Task 5 değil Task 4 olur.
+
+- [x] **Step 5: Commit**
 
 ```bash
 pre-commit run --files core/osym_exam_engine.py

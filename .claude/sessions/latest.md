@@ -37,6 +37,81 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-16 (S221)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `ed07d7fb0` fix(osym): get_subject_performance uc split iliskiyi eager-load ediyor (#485)
+**Push:** ⏳ commit'li, **push edilmedi** — kullanıcı onayı bekliyor
+**Uncommitted:** bu işin dosyaları temiz. Ağaçtaki ~3387 kirli dosya = S210 Gemini devri, bu session'a ait değil.
+
+### Yapılanlar
+- `backend/core/osym_exam_engine.py:1320-1330` — Plan **Task 5** kapandı (`ed07d7fb0`, +8/-0).
+  `get_subject_performance` sorgusu üç split ilişkiyi `selectinload` ile eager-load ediyor.
+  Kusur Task 4 ile aynı sınıfta: sorgu **kuruluyordu** (sınıf düzeyinde taşınmış alan yok),
+  ölen şey dönen **örnek** idi. Döngü `:1345` `subject_area`(metadata) · `:1362`
+  `irt_difficulty`(statistics) · `:1367` `correct_answer`(content) okuyor; `:1412`
+  `except Exception` `MissingGreenlet`'i yutup `return []` yapıyordu → **HTTP 200 +
+  boş ders kırılımı** (500 değil, bu yüzden aylardır görünmedi).
+- **Yürütme:** subagent-driven (implementer → spec reviewer → kalite reviewer). Üçü de temiz.
+
+### Ölçümler (bu turda üretildi, varsayım değil)
+- **Eager-load fiilen çalışıyor mu:** `.options()` yokken döngü 3 lazy-load tetikliyor
+  (`inspect(q).unloaded` = üç ilişki); varken fetch sonrası `unloaded` **boş**.
+- **Maliyet (120 soruluk TYT, aynı sorgu şekli):** eager-load yok → **361** SELECT (N+1) ·
+  `selectinload` → **4** · `joinedload` → **1**. İlişkiler `uselist=False`, `LIMIT` yok →
+  `joinedload` satır çoğaltmıyor ve `ORDER BY`'ı bozmuyor, yani gerçekten 3 gidiş-dönüş ucuz.
+  **Yine de `selectinload` seçildi:** 3 fazla sorgu satır başına değil **ekran başına**, ve
+  Task 4 + #485'in geri kalanı bu kalıpta. Kalıp değişikliği ayrı kararın konusu.
+- **Mutasyon 5/5 öldürüldü:** blok tümü · `content` tek · `metadata_info` tek · `statistics`
+  tek + kontrol kolu yeşil. Hepsi `failed`, hiçbiri `error`.
+
+### Fail Eden Testler
+`tests/fast/test_osym_exam_engine_split.py` → **7 passed / 11 failed** (önce 6/12).
+11 FAIL **kasıtlı**: `TestAnalyzePerformance` 4 (Task 6) · `TestSelectQuestions` 6 fonksiyon
+/ 7 örnek (Task 7; `test_query_builds_and_compiles` ×2 parametrize). Yeni kırık YOK — spec
+reviewer düşen kümeyi **test-test** karşılaştırdı, agrega değil.
+
+### Engelleyiciler
+- **`question_bank` = 0 satır (bu makine)** — uçtan uca doğrulama YAPILAMIYOR. Kabul kriteri
+  sorgu-yapısı düzeyinde kalıyor (S219'dan devam).
+- ~3387 dosyalık pre-existing kirli ağaç (S210 Gemini devri) — ayrı triyaj.
+
+### Sonraki Adımlar (maks 5)
+1. **Task 6** — `_analyze_performance`: `:1716` SELECT→JOIN + `:1779`/`:1785` iki UPDATE →
+   `QuestionStatistics`. **TEK COMMIT** (seri bağlı: sadece SELECT düzelirse kullanıcı-görünür
+   kazanç 0). M8'in naif hâli `AttributeError` = `error` üretir → plandaki **alternatif**
+   mutasyonu kullan (`update(QuestionContent)` + `.values(question_text=...)`).
+2. **Task 7** — `_select_questions` 3-yollu JOIN (37 erişim). **Plandaki "TASK 7 TEHLİKELERİ"
+   bloğunu OKUMADAN BAŞLAMA.** H1 (boş-havuz koşulsuz cache) → DÜZELT, guard geri gelecek +
+   test YAZ. H2 (%15 IRT-ankraj kotası) → `anchor_target = 0`, kod silinmez, gerekçe yorumla.
+   Kullanıcı onaylı (16 Ağu).
+3. **Task 8** — handoff düzeltmesi + `ders_kaydi.yaml` satırı.
+4. `application/commands/sinav.py` için ayrı plan (16 erişim, **BKT hiç çalışmıyor**).
+5. Kalan P0: `soru_bankasi_service` 41+15 · `irt_daemon` KWARG'ları (her IRT kalibrasyon
+   yazımı `CompileError`) · `question_repository` 16+5 (sıfır tüketici → SİLME).
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- **Plandaki Task 5 test adları/sayıları BAYATTI, kod değil.** `TestEntityQueriesEagerLoad`'da
+  3 değil **2** test var: Task 1'in yazarı iki assert'i tek testte birleştirmiş
+  (`test_get_subject_performance_eager_loads_and_reads_real_orm`, RED commit `e32ab0ace`'ten
+  beri bayt-birebir aynı). Birleşik test **daha sıkı** — `_eager_loaded(...) == {...}` sözlük
+  eşitliği eksik/fazla anahtarı da reddediyor; mutasyonu öldüren tam bu. Plana düzeltme
+  satırı yazıldı, sessiz silme yok.
+- **Mutasyon uygularken `selectinload(Question.metadata_info)` dosyada İKİ kez geçiyor**
+  (Task 4 bloğu `:571`, Task 5 bloğu `:1327`). Yalnız ikincisi silinmeli, yoksa ölçülen şey
+  Task 5 değil Task 4 olur.
+- `SKIP=` **gerekmedi**, kapı kökten koşuldu, tüm hook'lar Passed
+  (`kiro2-api-import-smoke` doğru şekilde Skipped — `api/**` dosyası yok).
+- 5 adımlı kabul kriteri değişmedi.
+
+### Açık iş olarak düşen yeni kalem
+- `tests/fast/test_osym_exam_engine_split.py:430` docstring'i **bayat satır ankrajı**
+  taşıyor (`:1329`/`:1346`/`:1351` → gerçek `:1345`/`:1362`/`:1367`; iki commit'te 16 satır
+  kaydı). Kod yorumları bu turda güncellendi, test docstring'i güncellenmedi — **#485 sonunda
+  tek süpürmede** düzeltilecek (şimdi dokunmak cerrahi kapsamı bozardı). Task 6 (`~:1716`) ve
+  Task 7 (`~:1486`) bu satırların altında, yani #485 içinde daha fazla kaymayacak.
+
+---
+
 ## Session Handoff — 2026-08-16 (S220)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** 9098975bc docs: S220 checkpoint — Task 4 plan checkboxlari + handoff
