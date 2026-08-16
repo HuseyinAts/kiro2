@@ -14,6 +14,7 @@ from typing import Any
 
 from sqlalchemy import and_, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
@@ -53,7 +54,7 @@ async def build_sync_package(
         Dict matching SyncPackageResponse schema.
     """
     from models.fsrs_models import FSRSCard
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import QuestionBankItem, QuestionMetadata
 
     now = datetime.now(UTC)
     package_id = str(uuid.uuid4())
@@ -114,15 +115,26 @@ async def build_sync_package(
     # eklenmedi) — postgresql dalı bu API'yi kullanmaya çalışıyordu ve HER ZAMAN
     # 500 ile patlıyordu (canlı doğrulandı). func.random() her iki dialect'te de
     # (postgresql RANDOM(), sqlite RANDOM()) çalışır — dialect ayrımına gerek yok.
+    # #485 split: asagida q.question_text/.option_*/.correct_answer (content),
+    # q.subject_area (metadata_info) ve q.difficulty_level (statistics) ORNEK
+    # duzeyinde okunuyor. Uc iliski de lazy='select' -> async oturumda
+    # eager-load'suz erisim MissingGreenlet atar.
     q_query = (
         select(QuestionBankItem)
+        .options(
+            selectinload(QuestionBankItem.content),
+            selectinload(QuestionBankItem.metadata_info),
+            selectinload(QuestionBankItem.statistics),
+        )
         .where(QuestionBankItem.is_active == True)  # noqa: E712
         # Kalite kapısı — tanım core/quality_gate.py.
         .where(safe_for_beta_gate(QuestionBankItem.id))
     )
 
     if subject:
-        q_query = q_query.where(QuestionBankItem.subject_area == subject.upper())
+        q_query = q_query.join(
+            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+        ).where(QuestionMetadata.subject_area == subject.upper())
 
     q_query = q_query.order_by(func.random()).limit(remaining_slots)
 
@@ -131,7 +143,7 @@ async def build_sync_package(
 
     questions: list[dict[str, Any]] = []
     for q in questions_db:
-        # QuestionBankItem ORM has option_a..option_e columns (Text).
+        # option_a..option_e artik QuestionContent'te (delegate ile okunuyor).
         # Compose into a dict for the OfflineQuestion.options payload.
         raw_options: dict[str, str] = {
             "A": q.option_a or "",
