@@ -73,7 +73,12 @@ reviewer düşen kümeyi **test-test** karşılaştırdı, agrega değil.
 ### Engelleyiciler
 - **`question_bank` = 0 satır (bu makine)** — uçtan uca doğrulama YAPILAMIYOR. Kabul kriteri
   sorgu-yapısı düzeyinde kalıyor (S219'dan devam).
-- ~3387 dosyalık pre-existing kirli ağaç (S210 Gemini devri) — ayrı triyaj.
+- ~3387 dosyalık pre-existing kirli ağaç (S210 Gemini devri) — ayrı triyaj. **Bunun 9'u
+  `backend/tests/fast/` altında takipsiz test dosyası** (`test_growth_mindset` ·
+  `test_irt_equating` · `test_isomorphic_generator` · `test_motivation_generator` ·
+  `test_osym_pdf_pipeline` · `test_osym_validator` · `test_turkish_readability` ·
+  `test_yks_jargon_service` · `test_yks_trend_analyzer`) — #485'e ait DEĞİL, bu dizinde
+  çalışan bir sonraki ajan bunları kendi işi sanmasın.
 
 ### Sonraki Adımlar (maks 5)
 1. **Task 6** — `_analyze_performance`: `:1716` SELECT→JOIN + `:1779`/`:1785` iki UPDATE →
