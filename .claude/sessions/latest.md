@@ -37,13 +37,55 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
-## Checkpoint — 2026-08-16 (S220, devam)
+## Session Handoff — 2026-08-16 (S220)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** 9098975bc docs: S220 checkpoint — Task 4 plan checkboxlari + handoff
+**Push:** ✅ `3e3163fb4..9098975bc` (2 commit), push-secret-guard + reward-hacking-check PASS
+**Uncommitted:** bu işin dosyaları **temiz**. Ağaçtaki 3387 kirli dosya = S210 Gemini devri, bu session'a ait değil.
 
-**Son commit:** `a189c4a344` fix(osym): get_current_question uc split iliskiyi eager-load ediyor (#485)
-**Yapılan:** Plan Task 4 kapandı (implementer → spec review → kalite review, üçü de temiz). `get_current_question` (`:568`) artık `content`/`metadata_info`/`statistics` için `selectinload` kullanıyor. Test: `test_osym_exam_engine_split.py` 5→**6 passed / 12 failed** (kalan 12, Task 5-7 kapsamı, beklenen). Mutasyon M5 öldürüldü (spec reviewer bağımsız tekrar etti).
-**Bekleyen:** Task 5 (`get_subject_performance` eager-load, `:1313`), sonra Task 6, Task 7 (TEHLİKE bloğunu oku). Plan dosyasında Task 4 checkbox'ları işaretlendi.
-**Test durumu:** Hedeflenen 6/18 yeşil (plan kapsamı). Diğer testler bu turda koşulmadı.
-**Push:** Yapılmadı (kullanıcı onayı bekleniyor, önceki S219 gibi).
+### Yapılanlar
+- `backend/core/osym_exam_engine.py:22-23,560-577` — Plan **Task 4** kapandı (`a189c4a34`).
+  `get_current_question` sorgusu üç split ilişkiyi (`content`/`metadata_info`/`statistics`)
+  `selectinload` ile eager-load ediyor. `api/sinav.py:493-508` dönen nesneden 12 split alan
+  okuyor; `lazy='select'` + async = `MissingGreenlet` idi. `navigate_to_question:817` aynı
+  fonksiyona delege ettiği için o yol da düzeldi. Diff +11/-2, tek dosya, süpürme yok.
+- `docs/superpowers/plans/2026-08-16-osym-exam-engine-split-gocu.md` — Task 4'ün 6 adımı
+  işaretlendi (`9098975bc`).
+- **Yürütme:** subagent-driven (implementer → spec reviewer → kalite reviewer). Üçü de temiz;
+  spec reviewer mutasyonu **bağımsız tekrar etti** (kendi silip koştu, `1 failed` aldı, geri aldı).
+
+### Fail Eden Testler
+`tests/fast/test_osym_exam_engine_split.py` → **6 passed / 12 failed** (önce 5/13).
+12 FAIL **kasıtlı**: `TestEntityQueriesEagerLoad` 2 (Task 5) · `TestAnalyzePerformance` 4 (Task 6)
+· `TestSelectQuestions` 5+1 (Task 7). Hepsi `AttributeError: ... sinif duzeyinde kullanilamaz`.
+Yeni kırık YOK — spec reviewer geçen/düşen testleri tek tek karşılaştırdı, sadece agregayı değil.
+
+### Engelleyiciler
+- **`question_bank` = 0 satır (bu makine)** — uçtan uca doğrulama YAPILAMIYOR. Kabul kriteri
+  sorgu-yapısı düzeyinde kalıyor (S219'dan devam).
+- 3387 dosyalık pre-existing kirli ağaç (S210 Gemini devri) — ayrı triyaj.
+
+### Sonraki Adımlar (maks 5)
+1. **Task 5** — `get_subject_performance` eager-load (`:1313`), üç ilişki birden. `:1396` çıplak
+   `except` → `return []` → HTTP 200 ile boş ders kırılımı. Mutasyon M6 hazır.
+2. **Task 6** — `_analyze_performance` (`:1716` SELECT→JOIN + `:1779`/`:1785` iki UPDATE →
+   `QuestionStatistics`), **tek commit** (seri bağlı).
+3. **Task 7** — `_select_questions` 3-yollu JOIN (37 erişim). **Plandaki "TASK 7 TEHLİKELERİ"
+   bloğunu OKUMADAN BAŞLAMA** — H1/H2 kararları alınmış (kullanıcı onaylı, 16 Ağu).
+4. **Task 8** — handoff düzeltmesi + `application/commands/sinav.py` için ayrı plan.
+5. Kalan P0 dosyalar: `soru_bankasi_service` 41+15 · `irt_daemon` KWARG'ları (her IRT
+   kalibrasyon yazımı `CompileError`) · `question_repository` 16+5 (sıfır tüketici → SİLME).
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- **`SKIP=pytest-fast` FANTOM** (S219'da ölçüldü) — hook `git commit`'te hiç yüklenmiyor.
+  Bu turda doğrulandı: kapı çıktısında adı bile geçmiyor. `kiro2-api-import-smoke` ise
+  `files: ^backend/api/.*\.py$` filtresiyle `core/` değişikliğinde zaten Skipped.
+- **`pre-commit run --files`'ı `backend/` içinden ÇALIŞTIRMA** — yanlış config, `black` süpürmesi.
+  Kökten koş (S219 kararı, bu turda uygulandı, temiz geçti).
+- 5 adımlı kabul kriteri değişmedi (derle → `get_final_froms()` → eager-load **yapıdan** ölç →
+  gerçek ORM modeline karşı test → mutasyon). Mutasyon `error` verirse ölçüm **geçersiz**.
+- Task 4'te JOIN gerekmedi: sorgu yalnız `id`/`is_active` (bölünmemiş kolonlar) filtreliyor;
+  kusur sorguda değil **dönen örnekte** idi → çözüm `.options()`, `.join()` değil.
 
 ---
 
