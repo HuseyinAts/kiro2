@@ -475,6 +475,15 @@ class TestAnalyzePerformance:
         assert "question_content" in cols, cols
         assert cols <= {"question_bank", "question_content"}, cols
         _assert_single_from(session.statements[0])
+        # `is_active` KORUNMALI (plan: "filtre KALDIRILMAYACAK"). Gocurmek
+        # ("JOIN'e cevirdim") ile KORUMAK ayri seylerdir — S219 dersi.
+        # Olculdu: bu satir yokken `Question.is_active.is_(True)` SILINDIGINDE
+        # dosyadaki 18 testin HICBIRI dusmuyordu (7 failed/11 passed =
+        # mutasyonsuz HEAD ile birebir ayni).
+        # S214: iddia YALNIZ `whereclause` uzerinde aranir, tam SQL'de degil.
+        assert "question_bank.is_active" in _compiled_where(
+            session.statements[0]
+        ), _compiled_where(session.statements[0])
 
     @pytest.mark.asyncio
     async def test_correct_answer_scores_one_net(self, wired, engine):
@@ -532,6 +541,18 @@ class TestAnalyzePerformance:
         )
         assert sum("times_asked" in u for u in stat_updates) == 1, stat_updates
         assert sum("times_correct" in u for u in stat_updates) == 1, stat_updates
+        # EVRENSEL iddia. Yukaridaki SAYI iddiasi VARLIKSAL: dogru iki UPDATE
+        # dururken UCUNCU bir yanlis-tablo UPDATE'i eklemek ondan KACIYOR.
+        # Olculdu (M-EXTRA: `update(QuestionContent).values(
+        # question_text="times_asked")` eklendi) -> yalniz sayi iddiasiyla
+        # "4 passed". Eski testin evrensel hali bunu yakaliyordu; ikisi de
+        # gerekli.
+        assert not [
+            u
+            for u in updates
+            if ("times_asked" in u or "times_correct" in u)
+            and not u.startswith("UPDATE question_statistics")
+        ], updates
         # Motor UPDATE'lerden sonra :1790'da commit ediyor. Commit edilmeyen
         # UPDATE hic yazilmamis demektir — kurulmus olmasi yetmez.
         assert session.committed, "UPDATE'ler kuruldu ama commit edilmedi"
