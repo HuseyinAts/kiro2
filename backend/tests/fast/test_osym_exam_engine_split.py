@@ -81,9 +81,22 @@ def _eager_loaded(stmt) -> dict[str, str | None]:
     Olculdu (SQLAlchemy 2.0.45): `selectinload(X.rel)` bir `Load` uretir;
     `opt.path[1].key` iliski adini, `dict(opt.context[0].strategy)["lazy"]`
     stratejiyi verir. Secenek yoksa `_with_options` bos demettir → {}.
+
+    GUARD (olculdu): iliski-YOLU OLMAYAN secenekler var ve bunlar yardimciyi
+    opak bicimde carpitirdi:
+
+        raiseload("*")     -> `_WildcardLoad`, `.context` YOK -> AttributeError
+        load_only(Q.id)    -> path uzunlugu 1 -> IndexError: tuple index
+
+    `raiseload("*")` "hic lazy-load kalmadi"yi KANITLAMANIN kanonik yolu, yani
+    Task 4/5 ajaninin ekleyecegi tam olarak bu olabilir. Guard olmadan ajan
+    fix'i degil bu yardimciyi hata ayiklardi. Atlanan secenekler zaten bir
+    iliskiye eager-load ATAMAZ, dolayisiyla iddia kaybi yok.
     """
     loaded: dict[str, str | None] = {}
     for opt in stmt._with_options:
+        if len(getattr(opt, "path", ())) < 2 or not hasattr(opt, "context"):
+            continue
         strategy = dict(opt.context[0].strategy) if opt.context else {}
         loaded[opt.path[1].key] = strategy.get("lazy")
     return loaded
@@ -123,8 +136,12 @@ class _CaptureSession:
     async def commit(self):
         self.committed = True
 
-    def add(self, obj):  # pragma: no cover - motor bu yolda kullanmiyor
-        pass
+    def add(self, obj):
+        """Motor `create_exam_session`'da `db_session.add` cagiriyor (:435, :444).
+
+        Bu turun testleri o yola girmiyor; sahte oturumun sozlesmesi eksik
+        kalmasin diye duruyor (spekulatif degil, olculmus bir kullanim).
+        """
 
 
 class _Ctx:
@@ -177,13 +194,17 @@ def engine():
     return OSYMExamEngine()
 
 
-def _config(engine, *, subject="MATEMATIK", count=3, difficulty=None, beta=False):
+def _config(engine, *, subject="MATEMATIK", count=3, difficulty=None):
     """`difficulty` SADECE `DIFFICULTY_MAP` anahtari olabilir (:1405).
 
     Olculdu: `{"kolay", "orta", "zor", "cok_zor"}`. "medium" gibi gecersiz bir
     anahtar `.get()` ile `None` doner → hem zorluk filtresi hem de fallback
     dali (:1625 `and difficulty_levels`) SESSIZCE devre disi kalir ve test
     yanlis-kirmizi olur.
+
+    `beta_practice` parametresi YOK (YAGNI): `_select_questions` beta dalinda
+    (:1475) hemen `_select_beta_questions`'a devrediyor ve o dogrudan test
+    ediliyor — buradan gecirmenin olculmus bir kazanci yok.
     """
     from models.database import ExamType
 
@@ -191,7 +212,6 @@ def _config(engine, *, subject="MATEMATIK", count=3, difficulty=None, beta=False
     cfg.subject_distribution = {subject: count}
     cfg.total_questions = count
     cfg.difficulty = difficulty
-    cfg.beta_practice = beta
     return cfg
 
 
@@ -243,6 +263,22 @@ def _real_question(qid="q-1", *, text="Soru metni?", answer="A", subject="MATEMA
 # Task 2: save_answer notlandirma sorgusu (:697)
 # ===========================================================================
 class TestSaveAnswerGrading:
+    """INSERT'in senkron ve yakalanabilir olmasinin TEK sebebi `TESTING=true`.
+
+    `save_answer` (:707) `os.environ["TESTING"] == "true"` iken `_sync_save()`
+    cagirir; aksi halde satiri `self._db_queue`'ya atar ve HICBIR statement
+    kurulmaz. Degeri kok `conftest.py:20` modul duzeyinde set ediyor. Bu env
+    kaybolursa buradaki iki INSERT iddiasi sessizce olcumsuz kalir.
+    """
+
+    @staticmethod
+    def _inserts(session):
+        return [
+            st
+            for st in session.statements
+            if "student_answers" in str(st) and "INSERT" in str(st).upper()
+        ]
+
     @pytest.mark.asyncio
     async def test_grading_query_selects_from_question_content(self, wired, engine):
         """`_QB.correct_answer` sinif duzeyi → AttributeError → :703 yutuyor.
@@ -261,22 +297,52 @@ class TestSaveAnswerGrading:
             if str(st).lstrip().upper().startswith("SELECT")
         ]
         assert selects, "notlandirma sorgusu hic kurulmadi (:703 except yutuyor)"
-        assert selects[0].selected_columns[0].table.name == "question_content"
+        # Kume formu — konumsal `[0]` degil (dosya ici tutarlilik, bkz. :412).
+        cols = {c.table.name for c in selects[0].selected_columns}
+        assert cols == {"question_content"}, cols
 
     @pytest.mark.asyncio
     async def test_is_correct_written_true_for_matching_answer(self, wired, engine):
+        """Dogru cevap → `is_correct=True` (NULL degil, False degil)."""
         session = wired(scalar_per_call=["A"])
         engine.active_sessions["s-1"] = _session_data(engine, answers={})
 
         await engine.save_answer("s-1", "q-1", "a")  # normalize edilmeli
 
-        inserts = [
-            st
-            for st in session.statements
-            if "student_answers" in str(st) and "INSERT" in str(st).upper()
-        ]
+        inserts = self._inserts(session)
         assert inserts, "INSERT hic kurulmadi"
-        assert inserts[0].compile().params.get("is_correct") is True
+        is_correct = inserts[0].compile().params.get("is_correct")
+        assert is_correct is True, (
+            f"dogru cevap 'True' yazilmali, yazilan: {is_correct!r} "
+            "(None = notlandirma sorgusu hic kurulmadi)"
+        )
+
+    @pytest.mark.asyncio
+    async def test_is_correct_written_false_for_wrong_answer(self, wired, engine):
+        """Yanlis cevap → `is_correct=False`.
+
+        Bu test olmadan `is_correct_val = True` diye SABITLEYEN bir fix her iki
+        pozitif testi de gecerdi: birinci test yalnizca bir SELECT'in
+        varligini, ikincisi yalnizca `True` yazildigini istiyor. O zaman
+        uretimde her cevap "dogru" isaretlenir ve mastery hatti bunu tuketir.
+
+        `None` DEGIL `False` bekleniyor: `None` "notlandirma yapilamadi",
+        `False` "notlandirildi ve yanlis" demek; ikisi ayri veri.
+        """
+        session = wired(scalar_per_call=["A"])
+        engine.active_sessions["s-3"] = _session_data(
+            engine, session_id="s-3", answers={}
+        )
+
+        await engine.save_answer("s-3", "q-1", "B")
+
+        inserts = self._inserts(session)
+        assert inserts, "INSERT hic kurulmadi"
+        is_correct = inserts[0].compile().params.get("is_correct")
+        assert is_correct is False, (
+            f"yanlis cevap 'False' yazilmali, yazilan: {is_correct!r} "
+            "(True = notlandirma sabitlenmis; None = sorgu hic kurulmadi)"
+        )
 
 
 # ===========================================================================
@@ -438,17 +504,37 @@ class TestAnalyzePerformance:
         assert stat_updates, "times_asked/times_correct UPDATE'i hic kurulmadi"
         for sql in stat_updates:
             assert sql.startswith("UPDATE question_statistics"), sql
+        # Motor UPDATE'lerden sonra :1790'da commit ediyor. Commit edilmeyen
+        # UPDATE hic yazilmamis demektir — kurulmus olmasi yetmez.
+        assert session.committed, "UPDATE'ler kuruldu ama commit edilmedi"
 
 
 # ===========================================================================
 # Task 7: _select_questions — 3-yollu JOIN (:1486-1570, 37 erisim)
 # ===========================================================================
 class TestSelectQuestions:
+    # TURKCE parametresi SUS DEGIL: :1564 `if subject in ("TURKCE", "EDEBIYAT",
+    # "TARIH", "COGRAFYA", "SOSYAL")` dali `filters.extend([...])` ile DORT ek
+    # sinif-duzeyi `Question.question_text` erisimi ekliyor (LaTeX suzgeci,
+    # :1567-1570). Yalniz MATEMATIK/FIZIK ile kosan bir paket o dali HIC
+    # calistirmaz: `base_filters`'i gocurup `filters.extend` blogunu kaciran
+    # bir fix 15/15 yesil gorur, uretimde TYT TURKCE (40 soru — en buyuk ders)
+    # `AttributeError` atar ve `create_exam_session` (:468) uzerinden sinav
+    # olusturma 500 doner.
+    #
+    # Dalin gercekten kosuldugu OLCULDU (`eng.Question` alias'i, her alani
+    # dogru split sinifina yollayan kayit-tutan bir vekille degistirilerek):
+    #     MATEMATIK  toplam erisim 36 · question_text 12
+    #     TURKCE     toplam erisim 40 · question_text 16   -> tam +4 (LaTeX)
+    # Ayni olcum bir yan bulgu daha verdi: "alanlar gocurulmus ama JOIN
+    # EKLENMEMIS" halinde `get_final_froms()` = 4, yani asagidaki
+    # `_assert_single_from` o fix'i de yakaliyor (derleme testi degil).
     @pytest.mark.asyncio
-    async def test_query_builds_and_compiles(self, wired, engine):
+    @pytest.mark.parametrize("subject", ["MATEMATIK", "TURKCE"])
+    async def test_query_builds_and_compiles(self, wired, engine, subject):
         session = wired([[]])
 
-        await engine._select_questions(_config(engine))
+        await engine._select_questions(_config(engine, subject=subject))
 
         assert session.statements
         for stmt in session.statements:
@@ -501,15 +587,43 @@ class TestSelectQuestions:
 
         `difficulty` DIFFICULTY_MAP anahtari OLMALI ("orta"); "medium" verilirse
         `difficulty_levels` None kalir ve fallback dalina HIC girilmez.
+
+        Fallback sorgusu hakkinda iddia ZORUNLU: onu kalite kapisi olmadan
+        yeniden kuran bir fix, yalniz `statements[0]`'a bakan bir testte YESIL
+        gecerdi. Motorun kendi yorumu (:1490-1494) tam bu regresyonu anlatiyor:
+        "kapisiz havuz 85.731 yargilanmamis/reddedilmis soruyu ogrenciye servis
+        ediyordu". `base_filters`'in fallback'te de yasadigi boylece civilenir.
         """
         session = wired([[], []])
 
         await engine._select_questions(_config(engine, count=5, difficulty="orta"))
 
-        assert len(session.statements) >= 2, "fallback sorgusu hic kurulmadi"
+        # Bos havuz + bos fallback havuzu → TAM 2 sorgu (entity sorgulari
+        # `if sampled_ids:` / `if fb_sampled_ids:` altinda, ikisi de bos).
+        assert len(session.statements) == 2, (
+            f"beklenen 2 sorgu (zorluk havuzu + fallback), "
+            f"kurulan {len(session.statements)}"
+        )
         for stmt in session.statements:
             _compiled_sql(stmt)
             _assert_single_from(stmt)
-        assert "question_statistics.difficulty_level" in _compiled_where(
-            session.statements[0]
+
+        difficulty_where = _compiled_where(session.statements[0])
+        fallback_where = _compiled_where(session.statements[1])
+
+        # Zorluk sorgusu: filtre statistics uzerinde olmali.
+        assert (
+            "question_statistics.difficulty_level" in difficulty_where
+        ), difficulty_where
+        # Fallback: kalite kapisi + is_active KORUNMALI (base_filters aynen).
+        assert "question_bank.is_active" in fallback_where, fallback_where
+        assert "mv_safe_for_beta" in fallback_where, fallback_where
+        assert (
+            "question_metadata.subject_area = 'MATEMATIK'" in fallback_where
+        ), fallback_where
+        # Fallback'in AMACI zorlugu gevsetmek — zorluk filtresi ORADA OLMAMALI.
+        # (Kodda `and_(*base_filters)` kullaniliyor, `filters` degil: :1639.)
+        assert "question_statistics.difficulty_level" not in fallback_where, (
+            "fallback zorluk filtresini tasiyor — gevsetme amaci bozulmus: "
+            f"{fallback_where}"
         )
