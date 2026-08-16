@@ -37,6 +37,38 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-16 (S217)
+**Branch:** `feature/self-evolution-optimization` · **HEAD:** `a74755a43` · **Push:** ⏳ commit'li, henüz push edilmedi
+**Ana iş:** #485 devamı — `services/parent_service.py` (1/1 kapandı)
+
+`a74755a43` — **`get_child_performance`**: sınıf-düzeyi `QuestionBankItem.subject_area`
+(kolon-select `answers_stmt` içinde, entity-select DEĞİL) `QuestionMetadata` JOIN'ine
+çevrildi. Eager-load N/A (ölçüldü: sorgu `StudentAnswer.*` + `subject_area` kolonlarını
+tek satırda unpack ediyor, instance-level lazy-load riski yok — offline_sync/osym_routes'tan
+farklı olarak bu dosyada örnek-düzeyi risk YOK). `tests/fast/test_parent_service_split.py`
+(6 test: derleme + tek FROM + SELECT kolonunun `question_metadata`'ya ait olduğu + JOIN
+yapısı + WHERE + subject_area→subject_progress unpacking doğruluğu). Mutasyon: `git stash
+push -- services/parent_service.py` ile eski kod geri konunca 6/6 test aynı AttributeError
+ile düştü, sonra geri alındı (git status ile doğrulandı).
+
+**Yan bulgu — dosyada pre-existing pre-commit borcu (dokunulmayan fonksiyon):**
+`get_parent_dashboard_data`'daki `except Exception: continue` (S112/bandit B112),
+kontrol kolu `git show HEAD:...| ruff check -` → 1 hata (HEAD'de zaten vardı). Ruff
+tarafı `pyproject.toml` per-file-ignore, bandit tarafı inline `# nosec B112` ile
+işaretlendi — davranış değiştirilmedi, sadece görünür kılındı.
+
+**Kalan: 10 erişim / 6 dosya** (S216 sonu: 11/7).
+
+### Sonraki Adımlar
+1. #485 devamı — sıradaki: `api/placement_assessment_api.py` (1 erişim, `correct_answer`
+   → muhtemelen `QuestionContent`), veya 4'lü grup (`difficulty_classification_service.py`
+   · `placement_assessment_service.py` · `core/irt_daemon.py` · `tasks/mega_feature_tasks.py`,
+   2 erişim/dosya). Aynı 5 adımlı süreç.
+2. `pytest-fast` FK fixture kırığı — S215'ten devir, hâlâ açık.
+3. `git push` — S215+S216+S217 birlikte bekliyor (kullanıcı onayı gerekir).
+
+---
+
 ## Session Handoff — 2026-08-16 (S216)
 **Branch:** `feature/self-evolution-optimization` · **HEAD:** `22aedbf40` · **Push:** ⏳ commit'li, henüz push edilmedi
 **Ana iş:** #485 devamı — `services/offline_sync_service.py` (1/1 kapandı)
