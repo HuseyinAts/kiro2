@@ -37,6 +37,33 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-16 (S216)
+**Branch:** `feature/self-evolution-optimization` · **HEAD:** `22aedbf40` · **Push:** ⏳ commit'li, henüz push edilmedi
+**Ana iş:** #485 devamı — `services/offline_sync_service.py` (1/1 kapandı)
+
+`22aedbf40` — **`build_sync_package`**: sınıf-düzeyi `QuestionBankItem.subject_area` WHERE'i
+`QuestionMetadata` JOIN'ine çevrildi. **Ayrıca** sayaç görmediği bir örnek-düzeyi risk ölçüldü
+(S214 dersiyle aynı desen): `select(QuestionBankItem)` ile entity seçilip döngüde
+`q.question_text`/`.option_a-e`/`.correct_answer` (content), `.subject_area` (metadata_info),
+`.difficulty_level` (statistics) okunuyordu — üçü de `lazy='select'`, async oturumda
+eager-load'suz erişim `MissingGreenlet` atardı. 3 ilişki için `selectinload` eklendi.
+`tests/fast/test_offline_sync_service_split.py` (7 test); mutasyon: eski kod geri konunca
+**3/7 test düştü** (eager-load yapısı, JOIN, subject WHERE) — 4 test (compile, is_active,
+business-logic mock, empty-list) subject=None olduğu için eski koda karşı da geçiyordu,
+bu beklenen (mnemonic testindeki business-logic testiyle aynı sınırlama: mock session lazy-load
+tetiklemiyor). Ruff clean. `process_sync_results`/diğer offline_sync testleri (9+6) regresyonsuz.
+
+**Kalan: 11 erişim / 7 dosya** (S215 sonu: 12/8).
+
+### Sonraki Adımlar
+1. #485 devamı — sıradaki en küçük: `services/parent_service.py` veya `api/placement_assessment_api.py`
+   (1 erişim), veya 4'lü grup (`difficulty_classification_service.py` · `placement_assessment_service.py`
+   · `irt_daemon.py` · `mega_feature_tasks.py`, 2 erişim). Aynı 5 adımlı süreç.
+2. `pytest-fast` FK fixture kırığı — S215'ten devir, hâlâ açık.
+3. `git push` — S215 + S216 birlikte bekliyor (kullanıcı onayı gerekir).
+
+---
+
 ## Session Handoff — 2026-08-16 (S215)
 **Branch:** `feature/self-evolution-optimization` · **HEAD:** `3a1aabd0d` · **Push:** ⏳ commit'li, henüz push edilmedi
 **Ana iş:** #485 — `question_bank` 69-alan split'inin JOIN göçü (S210-S214 devamı)
