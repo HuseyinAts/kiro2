@@ -617,6 +617,72 @@ class TestAnalyzePerformance:
 # ===========================================================================
 # Task 7: _select_questions — 3-yollu JOIN (:1486-1570, 37 erisim)
 # ===========================================================================
+
+
+def _normalized_where(stmt) -> str:
+    """WHERE'i bosluktan bagimsiz tek satira indirger.
+
+    SQLAlchemy'nin satir kaydirmasi bir SOZLESME DEGIL; golden'i ona
+    bagimli kilmak testi bicimlendirme degisikliklerinde kirar.
+    `" ".join(s.split())` her bosluk dizisini tek bosluga cevirir
+    (`re` import'u gerekmiyor).
+    """
+    return " ".join(_compiled_where(stmt).split())
+
+
+# `_select_questions` Task 7'ye kadar OLU KODDU (`:1512` sinif duzeyinde
+# `AttributeError`). Simdi ogrenciye CANLI gidiyor ve yuklem listesinin
+# altinda hicbir regresyon agi yoktu: mevcut testler sorgunun SEKLINI
+# (derleniyor mu · tek FROM · uc JOIN · kalite kapisi · ders/exam_type
+# metadata'da · LaTeX sayisi) civiliyordu ama 31 `QuestionContent`
+# yukleminin ICERIGINI hic iddia etmiyordu. Olculdu: yedi ayri mutasyon
+# 24 testin hepsini yesil birakiyordu, en keskini
+# `option_a != option_a` (her zaman yanlis -> HER dersin havuzu bos ->
+# HER sinav bos) ve `~` dusurulmesi (pasaj suzgecinin TERSINE donmesi:
+# yalnizca paragrafi eksik olan sorular servis edilir).
+#
+# Bu bir KARAKTERIZASYON (golden) testidir; tasarimi dogrulamaz, mevcut
+# davranisi dondurur. `base_filters` bilerek degistirilirse golden AYNI
+# commit'te guncellenir ve diff hangi ogrenciye-donuk suzgecin degistigini
+# tam olarak gosterir — testin butun amaci bu gorunurluk.
+#
+# MATEMATIK secildi: LaTeX dali (`:1597`) yalniz sozel derslerde calisir,
+# yani golden 0 LaTeX kosuluyla sabit kalir. TURKCE'nin 4 kosulu zaten
+# `test_query_builds_and_compiles` + sizinti testinde civili.
+# `difficulty=None` oldugu icin `question_statistics.difficulty_level`
+# golden'da YOK (zorluk dali ayrica fallback testinde civili).
+#
+# Golden ELLE YAZILMADI: dogru kodun derledigi WHERE'den uretildi, sonra
+# okunup dogrulandi (option_a != option_b · >= 50 / >= 500 esikleri ·
+# 'parcaya gore' + 'parçaya göre' iki formu · IN ('GEOMETRI', 'FIZIK')).
+_GOLDEN_MATEMATIK_WHERE = (
+    "question_metadata.exam_type = 'TYT' AND "
+    "question_metadata.subject_area = 'MATEMATIK' AND "
+    "question_bank.is_active = true AND "
+    "question_bank.id IN (SELECT id FROM mv_safe_for_beta) AND "
+    "question_content.question_text IS NOT NULL AND "
+    "length(question_content.question_text) >= 50 AND "
+    "question_content.option_a IS NOT NULL AND "
+    "length(question_content.option_a) > 0 AND "
+    "question_content.option_b IS NOT NULL AND "
+    "length(question_content.option_b) > 0 AND "
+    "question_content.option_c IS NOT NULL AND "
+    "length(question_content.option_c) > 0 AND "
+    "question_content.option_d IS NOT NULL AND "
+    "length(question_content.option_d) > 0 AND "
+    "question_content.option_a != question_content.option_b AND "
+    "length(question_content.option_a) >= 2 AND "
+    "length(question_content.option_b) >= 2 AND "
+    "length(question_content.option_c) >= 2 AND "
+    "length(question_content.option_d) >= 2 AND "
+    "((lower(question_content.question_text) NOT LIKE '%%' || 'parcaya gore' || '%%') AND (lower(question_content.question_text) NOT LIKE '%%' || 'parçaya göre' || '%%') OR length(question_content.question_text) >= 300) AND "
+    "((lower(question_content.question_text) NOT LIKE '%%' || 'metne gore' || '%%') AND (lower(question_content.question_text) NOT LIKE '%%' || 'metne göre' || '%%') OR length(question_content.question_text) >= 300) AND "
+    "((lower(question_content.question_text) NOT LIKE '%%' || 'bu parcada' || '%%') AND (lower(question_content.question_text) NOT LIKE '%%' || 'bu parçada' || '%%') OR length(question_content.question_text) >= 300) AND "
+    "((question_metadata.subject_area NOT IN ('GEOMETRI', 'FIZIK')) OR question_content.question_image_url IS NOT NULL OR length(question_content.question_text) >= 500) AND "
+    "(question_statistics.quality_review_status IS NULL OR question_statistics.quality_review_status != 'rejected')"
+)
+
+
 class TestSelectQuestions:
     # TURKCE parametresi SUS DEGIL: :1564 `if subject in ("TURKCE", "EDEBIYAT",
     # "TARIH", "COGRAFYA", "SOSYAL")` dali `filters.extend([...])` ile DORT ek
@@ -938,3 +1004,29 @@ class TestSelectQuestions:
             "bu satir korumanin NEDEN gerektigini civiliyor: oran 0 olsa bile "
             "max(1, ...) 1 dondurur"
         )
+
+    # ------------------------------------------------------------------
+    # KARAKTERIZASYON: base_filters'in ICERIGI (yukarindaki golden notu)
+    # ------------------------------------------------------------------
+
+    @pytest.mark.asyncio
+    async def test_base_filters_golden_where(self, wired, engine):
+        """`base_filters`'in 24 ust-duzey yuklemi birebir dondurulur.
+
+        Sekil testleri (derleme · tek FROM · JOIN'ler · kapi · LaTeX sayisi)
+        yuklemlerin ICERIGINE kordu. Olculdu: esik degisimi (`>= 50` -> `> 50`),
+        `~` dusurulmesi (pasaj suzgeci TERSINE doner), kolon karismasi
+        (`option_c` -> `option_d`), sabit degismesi ('metne gore' -> 'metne
+        XXXX'), listeden 'FIZIK' dusmesi ve `option_a != option_a` (HER sinav
+        BOS) mutasyonlarinin HEPSI 24 testi yesil birakiyordu.
+
+        Golden'i guncellemek YASAK DEGIL — `base_filters` bilerek
+        degistiginde ayni commit'te guncellenir. Amac degisimi engellemek
+        degil, GORUNUR kilmak: diff hangi ogrenciye-donuk suzgecin degistigini
+        satir satir gosterir.
+        """
+        session = wired([[]])
+
+        await engine._select_questions(_config(engine))
+
+        assert _normalized_where(session.statements[0]) == _GOLDEN_MATEMATIK_WHERE
