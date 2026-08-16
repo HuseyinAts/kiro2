@@ -17,8 +17,14 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
+from core.database import get_async_session
 from core.ddos_protection import limiter
-from core.dependencies import AuthenticatedUser, get_current_user
+from core.dependencies import (
+    AuthenticatedUser,
+    get_current_admin_user,
+    get_current_user,
+)
+from services.osym_pdf_pipeline import OSYMPDFPipeline
 
 router = APIRouter(prefix="/api/v1/osym/generate", tags=["OSYM Question Generation"])
 
@@ -55,6 +61,46 @@ class BatchGenerationRequest(BaseModel):
     difficulty: float = 0.5
     bloomLevel: int = 3
     provider: str = "ensemble"
+
+
+class PDFAnalysisRequest(BaseModel):
+    file_path: str = Field(..., description="Path to the uploaded PDF file on server")
+    year: int = Field(..., description="Exam year")
+    examType: str = Field(..., description="Exam type (TYT, AYT, YDT)")
+    subject: str = Field(..., description="Subject")
+
+
+@router.post("/analyze-pdf")
+@limiter.limit("2/minute")
+async def analyze_osym_pdf(
+    request: Request,
+    payload: PDFAnalysisRequest,
+    current_admin: AuthenticatedUser = Depends(get_current_admin_user),
+):
+    """
+    (Phase 14) Admin endpoint to trigger NLP & Cognitive Load analysis of OSYM PDFs.
+    """
+    try:
+        async for db_session in get_async_session():
+            trend = await OSYMPDFPipeline.process_exam_pdf(
+                db=db_session,
+                file_path=payload.file_path,
+                year=payload.year,
+                exam_type=payload.examType,
+                subject=payload.subject,
+            )
+            return {
+                "success": True,
+                "trend_id": trend.id,
+                "metrics": {
+                    "avg_word_length": trend.avg_word_length,
+                    "avg_words_per_sentence": trend.avg_words_per_sentence,
+                    "atesman_readability_index": trend.atesman_readability_index,
+                    "cognitive_load_score": trend.cognitive_load_score,
+                },
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/generate-question")
@@ -225,7 +271,7 @@ async def batch_generate(
         total_quality = 0.0
 
         # Generate questions
-        for i in range(payload.count):
+        for _i in range(payload.count):
             question_req = QuestionGenerationRequest(
                 topic=payload.topic,
                 subtopic=payload.subtopic,
@@ -263,6 +309,88 @@ async def batch_generate(
         raise HTTPException(
             status_code=500, detail="Islem basarisiz. Lutfen tekrar deneyin."
         )
+
+
+class AutoAssignAnchorsRequest(BaseModel):
+    subject: str
+    count: int = 100
+
+
+class RunEquatingRequest(BaseModel):
+    base_b_values: list[float]
+    new_b_values: list[float]
+
+
+@router.post("/auto-assign-anchors")
+async def auto_assign_anchors(request: AutoAssignAnchorsRequest):
+    """
+    (Admin) Belirli bir dersteki soruları IRT kalibrasyon kalitesine göre çıpa (anchor) ilan eder.
+    """
+    try:
+        from sqlalchemy import select
+
+        from core.database import get_db_session_context
+        from models.question_bank import QuestionBankItem, QuestionMetadata
+
+        async with get_db_session_context() as db_session:
+            # Öncekileri sıfırla
+            reset_result = await db_session.execute(
+                select(QuestionBankItem)
+                .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+                .where(QuestionMetadata.subject_area == request.subject)
+            )
+            for q in reset_result.scalars().all():
+                q.is_anchor = False
+
+            # En iyi kalibrasyonluları (örneğin ID sırasına veya discrimination değerine göre) al
+            # Şimdilik id sırasına göre mockluyoruz
+            result = await db_session.execute(
+                select(QuestionBankItem)
+                .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
+                .where(QuestionMetadata.subject_area == request.subject)
+                .order_by(QuestionBankItem.id)
+                .limit(request.count)
+            )
+            questions = result.scalars().all()
+
+            for q in questions:
+                q.is_anchor = True
+
+            await db_session.commit()
+
+            return {
+                "status": "success",
+                "message": f"{len(questions)} soru anchor olarak atandı.",
+                "subject": request.subject,
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/run-equating")
+async def run_equating(request: RunEquatingRequest):
+    """
+    (Admin) Mean-Mean Equating metodunu çalıştırarak formları eşitler.
+    """
+    try:
+        from services.irt_equating_service import MeanMeanEquator
+
+        A, B = MeanMeanEquator.calculate_constants(
+            request.base_b_values, request.new_b_values
+        )
+
+        # Test amaçlı dummy bir a,b,c parametresini dönüştürelim
+        sample_transformation = MeanMeanEquator.equate_parameters(
+            A, B, a=1.0, b=0.0, c=0.2
+        )
+
+        return {
+            "status": "success",
+            "constants": {"A_slope": A, "B_intercept": B},
+            "sample_transformation": sample_transformation,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/health")

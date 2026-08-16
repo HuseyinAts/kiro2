@@ -270,6 +270,19 @@ exclude = [
 # bandit icin satir-ici `# nosec B608` KALDI, ruff icin buraya alindi.
 "api/admin.py" = ["S608"]
 
+# api/osym_routes.py — 6 ONCEDEN VAR OLAN ihlal (#485 JOIN gocu, S215, dokunulmayan
+# fonksiyonlarda). Dosya hicbir zaman commit edilmemisti (S210 devrinden kalma
+# calisan-agac icerigi); #485 icin sadece auto_assign_anchors() JOIN'e cevrildi.
+#   N815 x4  examType/bloomLevel (QuestionGenerationRequest, BatchGenerationRequest,
+#            PDFAnalysisRequest) — frontend JS/TS camelCase JSON sozlesmesiyle
+#            eslesiyor. snake_case'e cevirmek API kirar; alan adi degistirmek
+#            #485'in kapsami degil (cerrahi mudahale kurali).
+#   RET504 x2  generate_question:163, validate_question:195 — ayni gerekce
+#            osym_exam_engine.py'de yukarida: ara degisken hata ayiklamada
+#            okunuyor, dokunulmayan fonksiyon.
+# Borc BURADA GORUNUR, --no-verify ile atlanmadi. Temizlik (varsa) ayri gorev.
+"api/osym_routes.py" = ["N815", "RET504"]
+
 # test_golden_flows.py — onceden var olan 3 ihlal. S608 (satir 4580) SAF
 # YANLIS POZITIF: SQL degil, icinde "SELECT ... FROM question_bank" gecen bir
 # ASSERTION MESAJI. SIM105/UP038 kozmetik ve dosya 4600+ satir; bu turun
