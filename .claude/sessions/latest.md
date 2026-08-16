@@ -1,35 +1,80 @@
-## Session Handoff — 2026-08-15 (S214)
-**Branch:** `feature/self-evolution-optimization`
-**Son commit:** `34e68da23` chore: S214 handoff — mnemonic 3/3 + eager-load; kalan 14/9 ÖLÇÜLDÜ
-**Uncommitted:** bu işin dosyaları **temiz**, hepsi pushed. (Ağaçtaki 3388 kirli dosya = Gemini S210 devri, ayrı görev.)
+## Session Handoff — 2026-08-16 (S215)
+**Branch:** `feature/self-evolution-optimization` · **HEAD:** `3a1aabd0d` · **Push:** ⏳ commit'li, henüz push edilmedi
+**Ana iş:** #485 — `question_bank` 69-alan split'inin JOIN göçü (S210-S214 devamı)
+**Uncommitted:** bu işin dosyaları **temiz**. (Ağaçtaki 3388 kirli dosya = Gemini S210 devri, ayrı görev.)
 
-### Yapılanlar — #485 JOIN göçü, 2 dosya (6/17 ve 7/17)
-- `backend/api/advanced_reports.py:410` — `_get_subject_irt_aggregate` 4 erişim JOIN'e (`9488196cf`). Sorgu **kurulma anında** patlıyordu; SELECT listesi split-only olduğu için `.select_from()` ZORUNLU. Eager-load N/A (ölçüldü: `select(QuestionBankItem)` = 0). + `backend/tests/fast/test_advanced_reports_split.py` 8 test, 6/6 mutasyon.
-- Aynı commit'te kapı borcu 0'landı (HEAD'de de vardı: 1 ruff + 29 mypy). **RUF006 gerçek kusurdu:** `asyncio.create_task` dönüşü tutulmuyordu → arka plan PDF görevi toplanabilir, PDF sessizce üretilmez (`advanced_reports.py:334` `_BACKGROUND_PDF_TASKS`). Ayrıca `gather(return_exceptions=True)` daraltması `Exception`→`BaseException` (eskisi CancelledError'ı veri sanıp rapora gömerdi).
-- `backend/services/mnemonic_service.py` — 3 sınıf-düzeyi JOIN **+ eager-load** (`8713ab8e3`). Seride iki kusur sınıfını birlikte taşıyan ilk dosya: `generate_mnemonic:70` entity seçip `question.question_text/.correct_answer/.subject_area` okuyordu → `selectinload(content, metadata_info)`. + `backend/tests/fast/test_mnemonic_service_split.py` 10 test, 8/8 mutasyon.
-- `3c2580332` — mutasyon **2 testimi çürüttü**, ikisi de düzeltildi (aşağıda Kararlar).
-- `.claude/rules/audit-methodology.md` + `.claude/lessons/ders_kaydi.yaml` — 3 yeni ders (82→85), bekçi 9/9 PASS.
+### İlerleme — ÖLÇÜLDÜ (aynı script, kontrol kolu S213'te doğrulanmıştı)
+
+**Kalan: 12 erişim / 8 dosya** (S214 sonu: 14/9 — bu turda 2 erişim/1 dosya kapandı, arithmetik ile birebir örtüştü).
+
+```
+python -c "import re,sys;sys.path.insert(0,'.');from models.question_bank import QuestionContent,QuestionMetadata,QuestionStatistics;
+d={c.name for t in (QuestionContent,QuestionMetadata,QuestionStatistics) for c in t.__table__.columns if c.name!='id'};
+from pathlib import Path;[print(len([m for m in re.finditer(r'QuestionBankItem\.(\w+)',p.read_text(encoding='utf-8')) if m.group(1) in d]),p) for x in ('services','api','core','app','tasks') for p in Path(x).rglob('*.py') if '__pycache__' not in p.parts and any(m.group(1) in d for m in re.finditer(r'QuestionBankItem\.(\w+)',p.read_text(encoding='utf-8',errors='ignore')))]"
+```
+
+| # | Dosya | Erişim |
+|---|---|---|
+| 1 | `services/difficulty_classification_service.py` · `services/placement_assessment_service.py` · `core/irt_daemon.py` · `tasks/mega_feature_tasks.py` | 2 ×4 |
+| 2 | `services/offline_sync_service.py` · `services/parent_service.py` · `api/placement_assessment_api.py` · `core/osym_exam_engine.py` | 1 ×4 |
+
+### Yapılanlar
+
+`3a1aabd0d` — **`backend/api/osym_routes.py` (8/17)** — `auto_assign_anchors()`'daki 2 sınıf-düzeyi
+`QuestionBankItem.subject_area` erişimi (alan artık `QuestionMetadata`'da) JOIN'e çevrildi.
+`id`/`is_anchor` split edilmedi, dokunulmadı — order_by ve `q.is_anchor = ...` aynen kaldı.
+Eager-load **N/A** (ölçüldü: 2 `select(QuestionBankItem)`, ikisi de yalnız `is_anchor` yazıyor,
+instance-level, split tabloya dokunmuyor). + `tests/fast/test_osym_routes_split.py` (6 test),
+mutasyon **3/3 öldürüldü** (WHERE reverti → AttributeError, JOIN'siz kartezyen → `get_final_froms()==2`,
+`order_by` kaybı).
+
+**Yan bulgu — dosya HEAD'de hiç commit edilmemişti** (S210 Gemini devrinden kalma çalışan-ağaç
+içeriği: `analyze_osym_pdf`/`auto_assign_anchors`/`run_equating` hiçbiri git'te yoktu). Bu yüzden
+`pre-commit run --files` baseline'ı S211-S214'ten farklı bir sınıf borç çıkardı:
+- mypy: `bloomLevel: int = 3` iki kez tanımlıydı (no-redef) — silindi.
+- ruff B007: `batch_generate`'te kullanılmayan döngü değişkeni `i` — `_i`'ye çevrildi (dokunulmayan fonksiyon, tek-karakter, sıfır risk).
+- ruff N815 ×4 (`examType`/`bloomLevel` — frontend camelCase JSON sözleşmesi) + RET504 ×2
+  (`generate_question`/`validate_question`, ara değişken) — **dokunulmayan fonksiyonlarda,
+  pre-existing.** `pyproject.toml` `per-file-ignores`'a `"api/osym_routes.py" = ["N815", "RET504"]`
+  eklendi (5 emsal aynı desende zaten var: `multi_layer_cache.py`, `osym_exam_engine.py`,
+  `soru_bankasi_service.py`, `admin.py`, `test_golden_flows.py`).
 
 ### Fail Eden Testler
-- Yeni testler: **18/18 PASS** (8 advanced_reports + 10 mnemonic). Mutasyon **14/14 öldürüldü**.
-- Tüketiciler: `tests/unit/test_advanced_reports_schema_parity.py` 4/4, `test_mock_endpoint_flags.py` PASS.
-- ⚠️ **PRE-EXISTING, dokunulmadı:** `tests/fast/test_api_coverage_batch14.py::TestYoutubeRoutesCoverage` 5 setup ERROR — `import api.youtube_routes` → `OSError: [WinError 127]` (eksik native DLL).
+- **Yeni testler: 6/6 PASS.** Mutasyon 3/3.
+- ⚠️ **PRE-EXISTING, dokunulmadı, YENİ BULGU:** `pytest-fast` pre-commit hook'u (`pass_filenames:
+  false`, `files:` filtresi yok → her backend commit'inde koşuyor) şu an KIRIK —
+  `tests/unit/test_fsrs_card_persistence.py::test_fsrs_card_insert_persists_core_fields`
+  FK ihlaliyle düşüyor (`bkt_states.student_id` → `users` tablosunda yok), ardından aynı
+  worker'daki `test_bkt_record_answer_batch1b*.py` `PendingRollbackError` ile ERROR veriyor
+  (aynı transaction'ın devamı). #485/`question_bank` ile **ilgisi yok** — BKT/FSRS test
+  fixture'ında eksik `users` seed satırı. Kullanıcı onayıyla `SKIP=pytest-fast` ile commit'e
+  devam edildi. **Bu turda çözülmedi, ayrı görev gerekiyor.**
+- `kiro2-api-import-smoke` — bilinen ortam kusuru (WinError 127), kontrol kolu değişmedi.
 
 ### Engelleyiciler
-- **`kiro2-api-import-smoke` hook'u bu makinede KIRIK.** Kontrol kolu: dokunulmayan `api/curator.py`'de de aynı 3 hata (`api.rag`, `api.youtube_routes`, `api.v1.semantic_search` → `WinError 127`). `api/**` dosyalarını commit ederken `SKIP=kiro2-api-import-smoke` gerekiyor. Ortam kusuru.
-- **Kökte `models/` = YOLO ağırlık klasörü** (`.pt` dosyaları, Python değil). pre-commit mypy kökten koştuğu için `from models import X` ORAYA çözülüyor (namespace paketi, 0 attribute). `models`'tan import eden her dosyada tekrar edecek; `advanced_reports.py:27`'de gerekçeli `type: ignore` var.
+- **Yeni:** `pytest-fast` hook'u kırık — yukarıya bkz. Backend'e dokunan HER commit bunu
+  SKIP etmek zorunda kalacak ta ki fixture düzelene kadar.
+- Kökte `models/` = YOLO ağırlık klasörü, `kiro2-api-import-smoke` kırık — değişmedi (S211-S214).
 
 ### Sonraki Adımlar
-1. **#485 devamı — `backend/api/osym_routes.py`** (2 sınıf + **2 entity** → eager-load gerekecek). Sonra: `services/offline_sync_service.py` (1+**2**), `services/placement_assessment_service.py` (2+**1**), `core/irt_daemon.py` (2+**1**), `services/difficulty_classification_service.py` (2), `tasks/mega_feature_tasks.py` (2), `services/parent_service.py` (1), `api/placement_assessment_api.py` (1), `core/osym_exam_engine.py` (1).
-2. Her dosyada sırayla: `pre-commit run --files <dosya>` ile **taban ölç** (borçluysa kullanıcıya sun) → `grep 'select(QuestionBankItem)' <dosya>` → derle + `get_final_froms()` → gerçek modele test → mutasyon.
-3. `tests/test_curator_api.py`'nin 2 pre-existing kusuru (stale mock + celery hang) — S213'ten devir.
-4. Kirli ağaç triyajı (3388 dosya) · `#444` Öğretmen Öğrenciler UI · `#467-471`.
+1. **#485 devamı — `services/offline_sync_service.py` (1 erişim) veya `services/difficulty_classification_service.py` (2 erişim).** Aynı 5 adımlı zorunlu sıra (S214 handoff'undaki liste).
+2. **YENİ: `pytest-fast` FK fixture kırığı.** `test_fsrs_card_persistence.py` + `test_bkt_record_answer_batch1b*.py` — `users` tablosuna eksik seed satırı ekle veya fixture'ı `users` FK'sini karşılayacak şekilde düzelt. #485 kapsamı DIŞINDA, ayrı görev — ama her backend commit'i şu an bunu SKIP etmek zorunda, biriktirmeden kapatılmalı.
+3. `git push` bekliyor (kullanıcı onayı gerekir).
+4. `tests/test_curator_api.py`'nin 2 pre-existing kusuru (stale mock + celery hang) — S213'ten devir.
+5. Kirli ağaç triyajı (3388 dosya) · `#444` Öğretmen Öğrenciler UI · `#467-471`.
 
 ### Kararlar (gelecek session tekrar tartışmasın)
-- **Kalan sayısı: 14 erişim / 9 dosya — ÖLÇÜLDÜ** (tur başında 21/11). Alet kontrol koluyla doğrulandı (`HEAD~1`'de advanced_reports → 4, beklenen). Ölçüm komutu bu dosyanın git geçmişinde (`0edb593df`).
-- ⚠️ **Sayaç örnek düzeyini GÖRMEZ** → "14" bir **alt sınır**. `mnemonic_service`'in en riskli kusuru sayaçta 0 göründü. Ders: `L-s214-sayac-ornek-duzeyini-gormez`.
-- **WHERE iddiasını tam SQL'de arama** — `select(Entity)` tüm kolonları SELECT'e koyar, filtre silinse bile alt-metin eşleşir. Yalnız `stmt.whereclause` derle. Ders: `L-s214-where-iddiasi-whereclause`.
-- **`select_from` koşulludur** — SELECT listesi split-only ise ZORUNLU, `QuestionBankItem.id` içeriyorsa SÜS (mnemonic'te kaldırıldı; derlenmiş SQL birebir aynıydı). Ders: `L-s214-select-from-kosullu`.
-- **Kapı borcu politikası:** dosya HEAD'de de kapıyı geçmiyorsa kullanıcıya sun, onay alıp temizle (S211/S214 precedent). Sessizce `--no-verify` YOK.
-- 4 adımlı kabul kriteri değişmedi. **Skor: elden geçen 7 dosyanın 7'sinde kusur** — kriter gevşetilmiyor.
-- Biçimlendirici, gövdesi yazılmamış import'u siler: **önce gövde → sonra import → sonra Read ile doğrula.**
+- **Dosya hiç commit edilmemiş olabilir** (S210 devri) — bu durumda `pre-commit run --files`
+  baseline'ı HEAD'e karşı değil, çalışan ağaca karşı ölçer; "kontrol kolu HEAD'de de var mı"
+  sorusu bazı bulgular için (yeni eklenen fonksiyonlardaki N815 gibi) anlamsız hale gelir.
+  Yine de karar aynı kalır: dokunulmayan fonksiyondaki borç per-file-ignore'a gider, dokunulan
+  fonksiyondaki borç düzeltilir.
+- **pytest-fast gibi unconditional pre-commit hook'ları** (`pass_filenames: false`, `files:`
+  filtresiz) #485 dosyalarıyla hiç ilgisi olmayan bir hatayla kırılabilir. Kırıksa ve konu
+  dışıysa `SKIP=` ile geç (kullanıcı onayı ile), ama görev listesine YENİ madde olarak düş —
+  sessizce biriktirme.
+- 5 adımlı kabul kriteri değişmedi (bkz. S214 handoff). **Skor: elden geçen 8 dosyanın 8'inde kusur.**
+
+### Kalıcı kayıt nerede
+- **Uzun anlatım:** `.claude/rules/audit-methodology.md`
+- **Bellek:** `memory/MEMORY.md` S214 satırı → bu session S215 olarak eklenecek (ayrı adım)
