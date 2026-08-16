@@ -37,6 +37,128 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-17 (S222)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `07eb98d8a` test(osym): _analyze_performance UPDATE WHERE kapsamini civile (#485)
+**Push:** ⏳ **EDİLMEDİ** — 4 commit bekliyor (`173cf62da..` + bu turun checkpoint'i)
+**Uncommitted:** bu işin dosyaları temiz. ~3387 kirli dosya = S210 Gemini devri, bu session'a ait değil.
+
+### Yapılanlar — Plan **Task 6 KAPANDI** (3 commit, motor 1 kez dokunuldu)
+- `69ee2566b` — `core/osym_exam_engine.py::_analyze_performance` (+16/-8): SELECT
+  `select(Question.id, Question.correct_answer)` → `QuestionContent`'e JOIN; iki UPDATE
+  (`times_asked`/`times_correct`) → `QuestionStatistics` (**hedef + `.where()` + `.values()`
+  sağ tarafı**, üçü birden). `is_active` korundu, `select_from` EKLENMEDİ (S214).
+- `c59326863` — test sertleştirme (+21/-0): `is_active` iddiası + evrensel UPDATE iddiası.
+- `07eb98d8a` — test (+69/-13): UPDATE WHERE kapsamı testi + sayı iddiasının ölçümü.
+- **Yürütme:** subagent-driven (implementer → spec reviewer → kalite reviewer → 2 düzeltme turu).
+
+### Ölçümler (bu turda üretildi, varsayım değil)
+- **Plandaki M8 bir VAKUM MUTASYONUYDU.** M8 iki UPDATE'ten yalnız birini bozuyor; testin o
+  günkü hâli varlık iddia ettiği için hayatta kalan diğer UPDATE assert'i doyuruyordu.
+  Ölçüldü (düzeltilmiş motor + eski test): **M8a ve M8b ikisi de `4 passed` — HAYATTA KALDI.**
+  Spec reviewer bunu **bağımsız harness'le tekrar üretti**. Test sayıya bağlandı → ikisi de `failed`.
+- **`is_active` hiçbir şey tarafından çivilenmiyordu.** Filtre silinince **18 testin HİÇBİRİ**
+  düşmüyordu (`7 failed/11 passed` = mutasyonsuz HEAD ile birebir). İddia `_compiled_where()`
+  üzerine yazıldı (S214), tam SQL'e DEĞİL.
+- **`.where(all_answered_ids)` → `correct_ids` swap'i 18 testin hepsinden kaçıyordu** — fixture'ın
+  tek sorusu doğru cevaplandığı için iki liste eşitti (S219 "test paketi de bir dilim ölçer").
+  Yeni test iki soruyla (biri doğru biri yanlış) çiviledi.
+- **Sayı iddiası (`len(stat_updates)==2`) YÜK TAŞIYOR** — kalite reviewer "tamamen gereksiz, sil"
+  dedi; ölçüldü ve **yanlış çıktı**. M-SPURIOUS (üçüncü `question_statistics` UPDATE'i,
+  `times_asked`/`times_correct` içermeyen): sayı iddiası varken `1 failed`, silinince **`4 passed`
+  kaçıyor**. Reviewer'ın mutasyon kümesi o sınıfı içermiyordu. Silinmedi; yanıltıcı yorum düzeltildi.
+- **Nihai mutasyon bataryası 8/8** (M7·M8a·M8b·M-EXTRA·M-SPURIOUS·M-WHERESWAP·M-ISACTIVE·M-JOIN),
+  hepsi `failed`, hiçbiri `error`, her geri alım boş `git status --short` ile doğrulandı.
+- **M-JOIN'e yeni iddia EKLENMEDİ** — mevcut `_assert_single_from` kartezyeni zaten yakalıyor
+  (öncesi de sonrası da `failed`). Çivilenemeyen ağırlık eklenmedi (S214).
+
+### Fail Eden Testler
+`tests/fast/test_osym_exam_engine_split.py` → **12 passed / 7 failed** (önce 7/11).
+7 FAIL **kasıtlı**: hepsi `TestSelectQuestions` (Task 7). Baseline ile **test-test**
+karşılaştırıldı (agrega değil) — yeni kırık YOK.
+
+### 🔴 YENİ BULGU — `question_statistics` 1:1 GARANTİ DEĞİL (Task 6'nın kazancını tehdit ediyor)
+Task 6'nın iki UPDATE'i, satırı olmayan bir soruda **sessiz no-op**. Ölçüldü:
+- **`INSERT INTO question_statistics` depoda HİÇBİR YERDE yok** — backfill yok, **split
+  migration'ı da yok**. Aktif zincir tek revizyon (`0001_baseline_squash.py`) ve
+  `pg_dump --schema-only` çıktısı, yani backfill İÇEREMEZ. Split commit'i `0fd9b8413`
+  **sıfır** migration dosyasına dokunmuş → DDL **alembic dışı** uygulanmış.
+- **FK yönü ters:** `question_statistics_id_fkey` çocuk→ebeveyn (`ON DELETE CASCADE`).
+  Yetim **çocuğu** yasaklar; her ebeveynin çocuğu olmasını **şart koşmaz**. DB'de **0 trigger**.
+  `cascade="all, delete-orphan"` atanmış çocuğu kalıcılaştırır, **üretmez**.
+- **`rowcount` hiçbir yazım noktasında kontrol edilmiyor.**
+- Bu makinede `qb=0 / qs=0` → **canlı yetim sayısı ÖLÇÜLEMEDİ** ("sıfır" değil).
+- Kapı normalde korurdu (`mv_safe_for_beta` `quality_review_status`'ü `question_statistics`'ten
+  LEFT JOIN'liyor → yetim NULL → elenir), ama **`_select_beta_questions` o kapıyı uygulamıyor**
+  (docstring: "Standart `base_filters` UYGULANMAZ") → yetim o yoldan servis EDİLEBİLİR.
+- **Operatör için tek komut** (salt-okunur, dolu DB'de meseleyi bitirir):
+  `SELECT count(*) FROM question_bank qb LEFT JOIN question_statistics qs ON qs.id=qb.id WHERE qs.id IS NULL;`
+- **Backfill YAPILMADI ve yapılmamalı-diye-karar-verilmedi** — 20 kolon `NOT NULL` ve
+  defaultsuz; bunların biri `quality_review_status` ve **öğrenci kapısını besliyor**.
+  `auto_judged_high` ile doldurmak denetlenmemiş soruyu havuza sokar. `'pending'` şart.
+  **Kullanıcı kararı gerekiyor.**
+
+### 🔴 Blast radius — parent'ı hedefleyen 5 göç edilmemiş `QuestionStatistics` yazımı (#485 backlog)
+| Yer | Sonuç |
+|---|---|
+| `core/irt_daemon.py:210-222` | `CompileError: Unconsumed column names` → **her IRT kalibrasyon yazımı düşüyor**, `:227` `except` yutuyor |
+| `services/irt_analysis_service.py:234-243` | aynı (alias `as Soru`) |
+| `api/orchestrator_api.py:151-160` | raw SQL `UPDATE question_bank SET irt_difficulty=...` → `column does not exist`, `debug` seviyesinde loglanıyor |
+| `repositories/question_repository.py:202-207` | okuma shim'den (çocuk), **yazma parent'a** — asimetrik. Sıfır tüketici → SİLME adayı |
+| `services/soru_bankasi_service.py:330-333` | constructor kwarg → `AttributeError` |
+
+Ayrıca latent: `migrations/015_question_bank_stats_triggers.sql:14-19` hâlâ
+`UPDATE question_bank SET times_asked = ...` trigger'ı tanımlıyor ve `EXCEPTION WHEN OTHERS
+THEN RAISE WARNING` ile sarılı — split şemasına karşı koşulursa **kalıcı sessiz hata** kurar.
+Canlıda YOK (0 trigger, ölçüldü).
+
+### Engelleyiciler
+- **`question_bank` = 0 satır (bu makine)** — uçtan uca doğrulama YAPILAMIYOR (S219'dan devam).
+  Kabul kriteri sorgu-yapısı düzeyinde kalıyor.
+- ~3387 dosyalık pre-existing kirli ağaç (S210 devri) — ayrı triyaj.
+
+### Sonraki Adımlar (maks 5)
+1. **Task 7** — `_select_questions` 3-yollu JOIN (37 erişim). **Plandaki "TASK 7 TEHLİKELERİ"
+   bloğunu OKUMADAN BAŞLAMA.** H1 (boş-havuz koşulsuz cache) → DÜZELT + test YAZ.
+   H2 (%15 IRT-ankraj kotası) → `anchor_target = 0`, kod silinmez, gerekçe yorumla.
+   ⚠️ **Uyarı (bu turda ölçüldü):** PostToolUse formatter hook'u kapının ruff'undan **farklı**
+   bir ruff koşuyor; kullanımdan ÖNCE yazılan import'u F401 diye siliyor ve **ilgisiz assert
+   bloklarını yeniden biçimlendiriyor** (bu turda ikisi `TestSelectQuestions` içindeydi).
+   Kullanımı önce yaz, import'u sonra; commit öncesi `git diff -w` ile `git diff`'i karşılaştır.
+2. **`question_statistics` yetim ölçümü** — yukarıdaki tek SQL'i dolu bir DB'de koştur.
+   Sonra karar: (a) `rowcount` logu (bedava, sessizliği sinyale çevirir), (b) `'pending'`
+   ile backfill migration'ı (**ek onay şart** — kapıyı besleyen kolon).
+3. **Task 8** — handoff düzeltmesi + `ders_kaydi.yaml` satırı.
+4. `application/commands/sinav.py` ayrı plan (16 erişim, **BKT hiç çalışmıyor**).
+5. Kalan P0: `soru_bankasi_service` 41+15 · `irt_daemon` KWARG'ları · `question_repository`
+   16+5 (sıfır tüketici → SİLME).
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- **Bir mutasyonun "gereksiz" olduğu iddiası da bir ölçümdür.** Kalite reviewer sayı iddiasını
+  "tamamen gereksiz, sil, kesin iyileştirme" diye raporladı; ölçünce yanlış çıktı (M-SPURIOUS).
+  Gerekçesi "koştuğum mutasyonların hiçbirini öldürmüyor" idi — bu, **iddianın erişimi hakkında
+  değil koşulan kümenin kapsamı hakkında** bir olgudur. Bir assert'i silmeden önce onu **tek
+  başına** öldüren bir mutasyon ara.
+- **Plandaki mutasyon reçetesi yanlış olabilir.** M8 planda yazılıydı ve vakumdu. Mutasyonun
+  `failed` vermesi yetmez — **hangi assert'in** öldürdüğünü ve o assert'in tek başına yük taşıyıp
+  taşımadığını da ölç.
+- Plan satır ankrajları **her task'ta yeniden ölçülmeli**; Task 4+5 dosyayı +17 kaydırdı.
+- Modül düzeyi import eklerken **kullanımı önce yaz** — ruff F401 aksi hâlde siliyor (2 kez ölçüldü).
+- `SKIP=` gerekmedi; `pre-commit` depo **kökünden** koşuldu, tüm hook'lar Passed.
+
+### Açık iş olarak düşen yeni kalemler
+- `save_answer:705` notlandırma sorgusu `is_active` **filtrelemiyor**, `_analyze_performance:1753`
+  filtreliyor → aynı cevabı notlandıran iki yol, soru sınav ortasında pasifleşirse **çelişebilir**.
+  Pre-existing (BASE'de de vardı), bu turda dokunulmadı.
+- `save_answer`'daki `_select`/`_QC` fonksiyon-gövdesi import'ları artık **saf duplikasyon**
+  (ikisi de modül düzeyinde var). Kapsam dışıydı, tek satırlık ayrı commit.
+- `tests/fast/test_osym_exam_engine_split.py:459` ve `:556` docstring'leri **bayat satır
+  ankrajı** taşıyor (bu tur +8 daha kaydırdı) — #485 sonunda tek süpürmede.
+- Planda **34 işaretsiz checkbox** kaldı; Task 0-3 S219'da bitti ama kutuları hiç işaretlenmedi
+  → sayının çoğu "bayat", "açık" değil. Task 8'de tek geçişte doğrula.
+
+---
+
 ## Session Handoff — 2026-08-16 (S221)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `ed07d7fb0` fix(osym): get_subject_performance uc split iliskiyi eager-load ediyor (#485)

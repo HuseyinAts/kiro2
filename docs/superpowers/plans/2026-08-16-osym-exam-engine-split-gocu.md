@@ -951,14 +951,44 @@ HTTP 200 ile bos ders kirilimi. Mutasyon 1/1 oldurudu."
 
 **Neden tek commit:** Seri bağlı. `:1716` düzelirse sıradaki hata `:1779` olur ve kullanıcı-görünür kazanç **0** kalır. `:1827` çıplak `except` ikisini de yutuyor → sınav sonucu HTTP 200 ile `correct=0 / net=0.0`.
 
-- [ ] **Step 1: RED doğrula**
+> **ÖLÇÜM DÜZELTMESİ (17 Ağu 2026, Task 6 yürütülürken) — üç kalem.**
+>
+> **1. Satır ankrajları BAYAT.** Task 4 (+9) ve Task 5 (+8) dosyayı kaydırdı. Gerçek
+> konumlar: `_analyze_performance` **`:1718`** · SELECT **`:1746-1751`** · iki UPDATE
+> **`:1808-1819`** · yutan `except Exception as e:` **`:1858`** (plandaki `:1716`/`:1779`/
+> `:1785`/`:1827` değil).
+>
+> **2. IMPORT BOŞLUĞU — plandaki kod olduğu gibi `NameError` verirdi.** Aşağıdaki bloklar
+> `QuestionContent` ve `QuestionStatistics`'i modül düzeyinde varsayıyor; **değillerdi.**
+> `:28-30` yalnız `QuestionBankItem as Question` + `QuestionMetadata` içeriyordu
+> (Task 3'ün uygulayıcısı doğru biçimde yalnız ihtiyacı olanı eklemişti); `QuestionContent`
+> ise sadece `save_answer` **gövdesinde** `_QC` takma adıyla (`:700`) vardı. Modül düzeyine
+> eklendi. Yan ders: **kullanımı ÖNCE yaz, import'u SONRA** — ruff F401 kullanılmayan
+> import'u siliyor (bu turda iki kez ölçüldü).
+>
+> **3. Step 6'daki M8 bir VAKUM MUTASYONUYDU — ölçüldü, plan yanlıştı.** M8 iki UPDATE'ten
+> yalnız **birini** bozuyor. Testin o günkü hâli `[u for u in updates if "times_asked" in u
+> or "times_correct" in u]` ile süzüp yalnız **varlık** iddia ediyordu; hayatta kalan diğer
+> UPDATE hem listeyi dolu hem prefix'i doğru tutuyor. Ölçüldü (düzeltilmiş motor + o günkü
+> test): **M8a ve M8b'nin ikisi de `4 passed` — mutasyon HAYATTA KALDI.** Kontrol kolu
+> (`4 passed`) beklendiği gibi çalıştığı için ölçüm geçerli. Test S219 dersi gereği
+> **varlık yerine sayıya** bağlandı; sonrasında ikisi de `failed`. Bağımsız spec reviewer
+> bunu kendi harness'iyle tekrar üretti.
+>
+> Sonuç: Task 6 **üç commit** — `69ee2566b` (fix, motor) · `c59326863` (test: `is_active` +
+> evrensel UPDATE iddiası) · `07eb98d8a` (test: UPDATE WHERE kapsamı + sayı iddiasının
+> ölçümü). Son ikisi **yalnız test**; motor bir kez dokunuldu. Nihai mutasyon bataryası
+> **8/8** (M7 · M8a · M8b · M-EXTRA · M-SPURIOUS · M-WHERESWAP · M-ISACTIVE · M-JOIN),
+> hepsi `failed`, hiçbiri `error`.
+
+- [x] **Step 1: RED doğrula**
 
 ```bash
 python -m pytest tests/fast/test_osym_exam_engine_split.py::TestAnalyzePerformance -q --no-cov
 ```
-Beklenen: 4 failed.
+Beklenen: 4 failed. → **Ölçülen: `4 failed`.**
 
-- [ ] **Step 2: SELECT'i JOIN'e çevir**
+- [x] **Step 2: SELECT'i JOIN'e çevir**
 
 `1715-1721` bloğunu bul:
 
@@ -986,7 +1016,7 @@ Beklenen: 4 failed.
                     )
 ```
 
-- [ ] **Step 3: İki UPDATE'i `QuestionStatistics`'e çevir**
+- [x] **Step 3: İki UPDATE'i `QuestionStatistics`'e çevir**
 
 `1777-1789` bloğunu bul:
 
@@ -1024,26 +1054,30 @@ Beklenen: 4 failed.
                         )
 ```
 
-- [ ] **Step 4: GREEN doğrula**
+- [x] **Step 4: GREEN doğrula**
 
 ```bash
 python -m pytest tests/fast/test_osym_exam_engine_split.py::TestAnalyzePerformance -q --no-cov
 ```
-Beklenen: `4 passed`.
+Beklenen: `4 passed`. → **Ölçülen: `4 passed`.** Dosya geneli `7 passed/11 failed` →
+`11 passed/7 failed`; kalan 7 = `TestSelectQuestions` (Task 7), baseline ile **test-test**
+karşılaştırıldı, yeni kırık YOK.
 
-- [ ] **Step 5: Mutasyon M7 — cevabı sabitle**
+- [x] **Step 5: Mutasyon M7 — cevabı sabitle**
 
 `QuestionContent.correct_answer` → `sa_literal("A").label("correct_answer")` yerine daha basit: SELECT'te `QuestionContent.correct_answer` → `Question.id.label("correct_answer")` yap, koştur.
 Beklenen: `test_correct_answer_selected_from_question_content` **FAILED**.
 Geri al + doğrula.
 
-- [ ] **Step 6: Mutasyon M8 — UPDATE hedefini boz**
+- [x] **Step 6: Mutasyon M8 — UPDATE hedefini boz** ⚠️ **bkz. yukarıdaki ÖLÇÜM
+DÜZELTMESİ #3: plandaki M8 vakum mutasyonuydu, hayatta kaldı; test sayıya bağlandı.**
 
 İlk `update(QuestionStatistics)` → `update(Question)` yap (ve `.where`/`.values`'ı da `Question`'a çevir ki kurulabilsin — `times_asked` sınıf düzeyinde patlayacağı için bu mutasyon `AttributeError` verir; o durumda mutasyonu şöyle yap: `update(QuestionStatistics)` → `update(QuestionContent)` ve `.values(times_asked=...)` → `.values(question_text="x")`).
 Beklenen: `test_times_asked_update_targets_question_statistics` **FAILED** (`error` değil).
 Geri al + doğrula.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit** — `SKIP=` **kullanılmadı** (fantom, S219'da ölçüldü); `pre-commit`
+depo **kökünden** koşuldu, tüm hook'lar Passed.
 
 ```bash
 pre-commit run --files core/osym_exam_engine.py
