@@ -1042,8 +1042,18 @@ Task 2'nin kusuru DEĞİL — ama senin commit'inde canlanacak ve sana yazılaca
 | H1 | **Boş havuz artık koşulsuz cache'leniyor.** HEAD~1'de `if pool:` guard vardı; süpürülen blok `[]`'i de yazıyor. | `:1592-1593`, `:1645-1646` | `question_bank` boşken (taze checkout — bu makinede 0 satır — veya import ortası) `anchor_pool`/`normal_pool` `[]` cache'lenir; sonraki her çağrıda `is None` False olur, DB bir daha sorgulanmaz. `TTLCache(ttl=3600)` → **60 dakikaya kadar sessizce boş sınav**. Eski kod bir sonraki istekte kendini onarıyordu. |
 | H2 | **Her sınava %15 IRT-ankraj kotası zorlanıyor.** `anchor_target = max(1, round(count*0.15)) if count >= 5 else 0`, hem ana hem fallback yolda. | `:1595`, `:1649` | Ankraj maddeleri IRT eşitleme (equating) için var. Üretilen her sınavın ~%15'ine servis etmek ankraj setini yakar ve gelecekteki equating koşumlarını kirletebilir. **Psikometrik ürün kararı** — kod kararı değil. |
 
-**Yordam:** H1'i JOIN'den ÖNCE veya ONUNLA BİRLİKTE ayrı bir karar olarak ele al; görünmez
-bir yan etki olarak shipleme. H2 için kullanıcı onayı gerekir (equating politikası).
+**KARARLAR (16 Ağu 2026, kullanıcı onayı alındı — tekrar tartışma):**
+
+- **H1 → DÜZELT.** Boş-havuz cache'leme guard'ı geri gelecek. Task 7 commit'inde
+  `if anchor_pool:` / `if normal_pool:` (veya eşdeğeri) ile koşullu yazım. Bu bir kod
+  kararı, kullanıcı onayı gerekmiyor. Mutasyonla çivile: guard'ı kaldır → boş-havuz
+  testi düşmeli. (Test yok — Task 7'de YAZ.)
+- **H2 → ŞİMDİLİK KAPAT.** `anchor_target = 0` yap (kotayı devre dışı bırak), motor eski
+  davranışına dönsün. **Kodu silme** — kotayı hesaplayan satırı koru ama etkisiz kıl ve
+  neden kapatıldığını yorumla yaz, ki ankraj/equating stratejisi ele alınırken bulunabilsin.
+  Gerekçe: bu psikometrik bir ürün kararı ve S210 devrinden gelme; görünmez bir yan etki
+  olarak shiplenmemeli. Ayrı oturumda ele alınacak (ankraj seti büyüklüğü, kullanım
+  geçmişi, equating durumu ölçülmeden karar verilemez).
 
 **Diğer ölçülmüş notlar:**
 - `is_anchor` **taşınmadı** — parent'ta (`models/question_bank.py:175`, canlı şemada
