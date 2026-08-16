@@ -75,10 +75,31 @@ python -m pytest tests/fast/test_osym_exam_engine_split.py -q --no-cov
 ```
 `-p no:xdist` **KULLANMA** — usage error üretir, mutasyon "0 test düştü" gibi görünür (`reference_pytest-xdist-mutasyon-tuzagi`).
 
-**Commit:** `pytest-fast` ve `kiro2-api-import-smoke` hook'ları bu depoda kırık (S215/S211'den devir, konu dışı). Commit komutu:
+**Commit:** `SKIP=` **GEREKMİYOR** (16 Ağu ölçümü — önceki handoff'ların "SKIP zorunlu"
+maddesi fantom). Kurulu kanca kök config'i sabitliyor:
+`.git/hooks/pre-commit` → `ARGS=(hook-impl --config=.pre-commit-config.yaml ...)`.
+`pytest-fast` ise `backend/.pre-commit-config.yaml`'da ve o config `git commit`'te
+**hiç yüklenmiyor**. Düz `git commit` kullan; bir hook GERÇEKTEN kırılırsa raporla.
+
+⚠️ **`pre-commit run --files`'ı `backend/` içinden ÇALIŞTIRMA** (16 Ağu, Task 3'te ölçüldü).
+O dizinden **yanlış config** yüklenir (`backend/.pre-commit-config.yaml`) ve gerçek kapıda
+**olmayan** hook'lar devreye girer:
+- `black` — kök config'te YOK (satır 35: "Ruff (replaces black, isort, flake8)"). Dokunulmamış
+  satırları yeniden biçimlendirir → Task 2'de eleştirilen **süpürme** hatasını üretir. Ayrıca
+  `random.sample(...)  # nosec B311` satırlarında yorumu kapanış parantezine taşıyor →
+  **bandit bastırmasını kırabilir**.
+- `bandit` (backend config) — bozuk ortam, `ModuleNotFoundError: No module named 'pbr'`.
+  Kök config'in bandit'i geçiyor.
+- `pytest-fast` — S215 FK fixture kırığı, #485 ile ilgisiz.
+
+**Doğru kullanım** (kapının gerçekten koştuğu şeyi ölçer):
 ```bash
-SKIP=pytest-fast,kiro2-api-import-smoke git commit -m "..."
+cd /c/Users/husey/kiro2 && pre-commit run --files backend/core/osym_exam_engine.py
 ```
+veya `backend/`'den kalarak: `pre-commit run --config ../.pre-commit-config.yaml --files ...`
+
+**Kapı çıktısını `tail`/`head` ile KIRPMA** — bu turda bir commit sessizce başarısız oldu
+çünkü çıktı kırpılmıştı ve Ruff hatası görünmedi. `git log -1` ile commit'i doğrula.
 
 **Mutasyon kuralı:** sonuç `failed` olmalı. `error` (collection) görürsen ölçüm **geçersizdir** — mutasyonu kabuk tırnağıyla değil Python ile uygula. Geri alım:
 ```bash
