@@ -525,13 +525,21 @@ class TestAnalyzePerformance:
             for st in session.statements
             if str(st).lstrip().upper().startswith("UPDATE")
         ]
-        # SAYI iddiasi (S219 dersi) — "en az bir tane var" YETMEZ. Ilk surum
-        # `[u for u in updates if "times_asked" in u or "times_correct" in u]`
-        # ile suzup sadece VARLIK iddia ediyordu; iki UPDATE'ten YALNIZ BIRINI
-        # yanlis tabloya cevirmek testi HAYATTA BIRAKIYORDU, cunku hayatta kalan
-        # digeri hem listeyi dolu hem prefix'i dogru tutuyordu. Olculdu
-        # (M8a = 1. UPDATE, M8b = 2. UPDATE): ikisi de "4 passed" veriyordu.
-        # Sayiya baglandiktan sonra ikisi de dusuyor.
+        # Asagidaki UC iddia UC AYRI mutasyon sinifini yakaliyor. Hicbiri
+        # digerinin yerine GECMIYOR — ucu de ayri ayri olculdu:
+        #   * sum(...) == 1 (x2) -> M8a / M8b: dogru iki UPDATE'ten BIRINI
+        #     yanlis tabloya cevirmek. Testin ilk hali yalnizca VARLIK iddia
+        #     ediyordu ve bu ikisi KACIYORDU ("4 passed").
+        #   * len(...) == 2      -> M-SPURIOUS: dogru ikisi dururken UCUNCU
+        #     bir question_statistics UPDATE'i eklemek; times_asked/
+        #     times_correct'ten HIC bahsetmeyen bir kolon (orn.
+        #     average_response_time). Evrensel iddianin suzgecine TAKILMAZ,
+        #     sum(...) sayilarini da BOZMAZ. Olculdu: bu satir silinince
+        #     M-SPURIOUS "4 passed" ile kaciyor, duruyorken "assert 3 == 2".
+        #     Yani sayi iddiasi YUK TASIYOR; digerlerinin golgesi degil.
+        #   * evrensel iddia     -> M-EXTRA: times_asked'i DEGER olarak tasiyan
+        #     ama baska tabloyu hedefleyen fazladan UPDATE. Sayi iddiasi bunu
+        #     GORMEZ (suzgeci question_statistics prefix'ine bakar).
         stat_updates = [
             u for u in updates if u.startswith("UPDATE question_statistics")
         ]
@@ -541,12 +549,8 @@ class TestAnalyzePerformance:
         )
         assert sum("times_asked" in u for u in stat_updates) == 1, stat_updates
         assert sum("times_correct" in u for u in stat_updates) == 1, stat_updates
-        # EVRENSEL iddia. Yukaridaki SAYI iddiasi VARLIKSAL: dogru iki UPDATE
-        # dururken UCUNCU bir yanlis-tablo UPDATE'i eklemek ondan KACIYOR.
-        # Olculdu (M-EXTRA: `update(QuestionContent).values(
-        # question_text="times_asked")` eklendi) -> yalniz sayi iddiasiyla
-        # "4 passed". Eski testin evrensel hali bunu yakaliyordu; ikisi de
-        # gerekli.
+        # EVRENSEL iddia — M-EXTRA'yi yakalayan TEK iddia (yukaridaki
+        # muhasebeye bak). Sayi iddiasi onu gormez.
         assert not [
             u
             for u in updates
@@ -556,6 +560,58 @@ class TestAnalyzePerformance:
         # Motor UPDATE'lerden sonra :1790'da commit ediyor. Commit edilmeyen
         # UPDATE hic yazilmamis demektir — kurulmus olmasi yetmez.
         assert session.committed, "UPDATE'ler kuruldu ama commit edilmedi"
+
+    @pytest.mark.asyncio
+    async def test_times_asked_covers_all_answered_not_only_correct(
+        self, wired, engine
+    ):
+        """`times_asked` TUM cevaplananlari, `times_correct` YALNIZ dogrulari.
+
+        S219 "test paketi de bir dilim olcer": bu siniftaki diger testlerde
+        TEK soru var ve o da DOGRU cevaplaniyor, yani `all_answered_ids` ile
+        `correct_ids` AYNI listeye esit. O dilimde ikisini birbirine
+        degistirmek hicbir seyi bozmaz — olculdu: `all_answered_ids` ->
+        `correct_ids` mutasyonu 18 testin 18'inde de hayatta kaliyordu
+        (7 failed/11 passed = mutasyonsuz HEAD ile birebir ayni). Ayirt
+        edici senaryo iki soru ister: biri dogru, biri yanlis.
+
+        Uretimdeki bedeli: `times_asked` yalniz DOGRU cevaplarda artardi ->
+        exposure_rate ve IRT kalibrasyonuna giden gozlem sayisi sistematik
+        olarak sapardi.
+        """
+        session = wired(
+            [
+                [
+                    SimpleNamespace(id="q-1", correct_answer="A"),
+                    SimpleNamespace(id="q-2", correct_answer="B"),
+                ]
+            ]
+        )
+
+        await engine._analyze_performance(
+            _session_data(
+                engine,
+                questions=["q-1", "q-2"],
+                answers={"q-1": "A", "q-2": "C"},
+            )
+        )
+
+        wheres: dict[str, str] = {}
+        for st in session.statements:
+            sql = _compiled_sql(st)
+            if not sql.startswith("UPDATE question_statistics"):
+                continue
+            wheres["times_asked" if "times_asked" in sql else "times_correct"] = (
+                _compiled_where(st)
+            )
+
+        assert set(wheres) == {"times_asked", "times_correct"}, wheres
+        # times_asked: cevaplanan HER IKI soru.
+        assert "'q-1'" in wheres["times_asked"], wheres
+        assert "'q-2'" in wheres["times_asked"], wheres
+        # times_correct: YALNIZ dogru cevaplanan.
+        assert "'q-1'" in wheres["times_correct"], wheres
+        assert "'q-2'" not in wheres["times_correct"], wheres
 
 
 # ===========================================================================
