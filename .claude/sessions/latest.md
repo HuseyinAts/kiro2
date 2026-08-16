@@ -37,6 +37,112 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-16 (S219)
+
+**Branch:** `feature/self-evolution-optimization` · **HEAD:** `05148d0ee` · **Push:** ✅ edildi (`74c8f9d80..05148d0ee`, 11 commit)
+**Ana iş:** #485 — `core/osym_exam_engine.py` göçü. Ama asıl bulgu: **göç sayacı %94 kördü.**
+
+### ⚠️ ÖNCE BUNU OKU — "kalan 9/5" rakamı GEÇERSİZ
+
+S211-S218'in ilerleme ölçütü olan regex sayacı iki yönde birden yanılıyordu (ölçüldü):
+- **FAZLA:** yorum satırını erişim sayıyordu (`osym_exam_engine.py:1327`, `models/question_bank.py:528` → 10 kalemin 2'si fantom)
+- **EKSİK:** alias'lı import'ları göremiyordu (15 alias import / 11 dosya: `as Question` ×13, `as Soru`, `as _QB`)
+
+**Gerçek kapsam (AST, alias-farkında):** `SINIF=146 · KWARG=12 · ENTITY=69 · 26 dosya`.
+Alet: `backend/scripts/scan_split_accesses.py` (10 test + kontrol kolu ile çivili).
+Ölçüm çıktısı: `docs/audits/2026-08-16_485_ast_olcum.txt`.
+
+**İyi haber:** S211-S218'in kapanış ilanları FANTOM DEĞİL — 11 ilanın 10'u dosya okunarak
+doğrulandı, gerçekten kapalı. Tek istisna `question_crud_service.py` `archive/restore`
+(eager-load atlanmış, API tüketicisi yok). Sorun "yanlış kapatma" değil, **hiç açılmama**.
+
+### Kalan iş (ölçülmüş, öncelik sırasıyla)
+
+| Dosya | SINIF+KWARG+ENTITY | Not |
+|---|---|---|
+| `core/osym_exam_engine.py` | 42+2+5 | **bu planın konusu**, 2/7 task kapandı |
+| `services/soru_bankasi_service.py` | 41+0+15 | canlı, P0 — ayrı plan |
+| `application/commands/sinav.py` | 16+0+0 | canlı, P0 — **BKT hiç çalışmıyor**, ayrı plan |
+| `repositories/question_repository.py` | 16+5 | **sıfır tüketici** → göç değil, SİLME kararı |
+| `services/exam_performance_service.py` | 11+0+0 | P1 |
+| `core/irt_daemon.py` | 2+6+1 | **KWARG'lar: her IRT kalibrasyon yazımı `CompileError`** |
+| `services/irt_analysis_service.py` | 1+4+3 | alias `as Soru` |
+| diğer 6 dosya | ~10 | P2 |
+
+### Yapılanlar (11 commit, hepsi push edildi)
+
+- `bdc84e9bc` · `2222337fb` · `224303eff` — **Task 0:** AST sayacı + KWARG/`db.query` sınıfları + 10 test (2 vakum test yakalandı ve düzeltildi)
+- `f7f39c2bc` · `fc276b35d` · `e32ab0ace` — **Task 1:** `tests/fast/test_osym_exam_engine_split.py`, **18 RED test**. Bağımsız reviewer kendi fix'ini yazıp 15/15 geçirdi → aşırı-kısıt yok
+- `d7eaeb3b1` — **Task 2:** `save_answer` notlandırma → `QuestionContent` (JOIN gerekmedi, paylaşılan PK). 3 mutasyon öldürüldü
+- `398a6a5de` — **Task 3:** `_select_beta_questions` `pipeline_metadata` → `QuestionMetadata` JOIN. 2 mutasyon öldürüldü. Diff 12/2, süpürme yok
+- `12a35b7b5` · `b46f6ffda` · `05148d0ee` — plan + Task 7 tehlike bloğu + H1/H2 kararları + pre-commit CWD uyarısı
+
+**Test durumu:** `tests/fast/test_osym_exam_engine_split.py` → **5 passed / 13 failed** (13'ü Task 4-7 kapsamı, beklenen).
+
+### Fail Eden Testler
+
+13 FAIL **kasıtlı** (Task 4-7 henüz yapılmadı): `TestEntityQueriesEagerLoad` 2 ·
+`TestAnalyzePerformance` 4 · `TestSelectQuestions` 7. Hepsi `AttributeError: ... sinif
+duzeyinde kullanilamaz`. Yeni kırık YOK.
+
+### Engelleyiciler
+
+- **`question_bank` = 0 satır (bu makine).** Uçtan uca doğrulama YAPILAMIYOR. Kabul kriteri
+  sorgu-yapısı düzeyinde; hiçbir task "öğrenci akışı çalışıyor" kanıtı üretmiyor.
+- **3389 dosyalık pre-existing kirli ağaç** (S210 Gemini devri) — ayrı triyaj.
+- ~~`SKIP=pytest-fast` zorunlu~~ **FANTOM, ÇÜRÜTÜLDÜ** (aşağıya bak).
+
+### Sonraki Adımlar (maks 5)
+
+1. **Task 4** — `get_current_question` eager-load (`:567`). Sorgu kuruluyor ama `.options()` yok;
+   `api/sinav.py:493-508` **12 split alan** okuyor → `MissingGreenlet` → HTTP 500.
+   `navigate_to_question:817` aynı fonksiyona delege ediyor. 1 test, 1 mutasyon hazır.
+2. **Task 5** — `get_subject_performance` eager-load (`:1313`), üç ilişki birden.
+3. **Task 6** — `_analyze_performance` (`:1716` + iki `update()`), **tek commit** (seri bağlı).
+4. **Task 7** — `_select_questions` 3-yollu JOIN (37 erişim). **Plandaki TEHLİKE BLOĞUNU
+   OKUMADAN BAŞLAMA** — H1/H2 kararları orada.
+5. **Task 8** — handoff düzeltmesi + `application/commands/sinav.py` ayrı plan.
+
+Plan: `docs/superpowers/plans/2026-08-16-osym-exam-engine-split-gocu.md`
+
+### Kararlar (gelecek session tekrar tartışmasın)
+
+- **`SKIP=` GEREKMİYOR — ölçüldü.** `.git/hooks/pre-commit` kök config'i sabitliyor
+  (`--config=.pre-commit-config.yaml`); `pytest-fast` `backend/.pre-commit-config.yaml`'da
+  ve o config `git commit`'te **hiç yüklenmiyor**. S215-S218'den taşınan engelleyici fantom.
+- **`pre-commit run --files`'ı `backend/` içinden ÇALIŞTIRMA** — yanlış config yüklenir,
+  kapıda olmayan `black` devreye girer, dokunulmamış satırları süpürür ve `# nosec B311`
+  yorumunu kapanış parantezine taşıyıp bandit bastırmasını kırabilir. Kökten koş.
+- **H1 (boş havuz koşulsuz cache) → Task 7'de DÜZELT** (kod kararı, guard geri gelecek).
+- **H2 (%15 IRT-ankraj kotası) → Task 7'de KAPAT** (`anchor_target = 0`), kod silinmez,
+  gerekçe yorumla yazılır. Psikometrik ürün kararı, ayrı oturumda ele alınacak.
+  **Kullanıcı onayı alındı (16 Ağu).**
+- Mutasyon harness'lerinde **`read_bytes()`/`write_bytes()`** kullan — `write_text()`
+  Windows'ta LF→CRLF çevirip geri-alım doğrulamasını yanlış-pozitif bozuyor.
+- Commit ayırma: "ağaç kirli" gerekçe değil, `git stash push -- <dosya>` tek komut.
+
+### Bu oturumun dersleri (kalıcı kayıt)
+
+`.claude/lessons/ders_kaydi.yaml` → **8 yeni ders** (`L-s219-*`), hepsi `aktif` + kanıtlı,
+bekçi 9/9 geçiyor. Uzun anlatım: `.claude/rules/audit-methodology.md` (5 yeni bölüm).
+
+Özet: ilerleme sayacı da bir ölçüm aletidir · yanlış-**sıfır** tek kabul edilemez hata
+türü · test paketi de bir dilim ölçer · "göç ettin mi" ≠ "koruduun mu" · **yorum CI'da
+düşmez** · `pre-commit` yanlış CWD'den kapının ölçümü değil · `write_text()` geri alımı
+bozar · "ağaç kirli" süpürme gerekçesi değil.
+
+### Açık iş olarak düşen yeni kalemler
+
+- `tests/integration/test_beta_practice_selection.py:32` — canlı `Question.pipeline_metadata`
+  erişimi, `except Exception: return False` içinde → beta-havuz hazırlık kontrolü **sonsuza
+  dek `False`**
+- `backend/.pre-commit-config.yaml` commit anında **ölü** — tanımladığı her hook sessizce
+  yüklenmiyor (gerçek `pytest-fast` kapısı dahil). Ya köke taşınmalı ya ölü işaretlenmeli
+- Sayaçta 5 minor kalem (sıralama, KWARG satır numarası zincir başını gösteriyor, iki
+  docstring satırı) — hiçbiri yanlış-sıfır üretemez
+
+---
+
 ## Session Handoff — 2026-08-16 (S218)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** 7febaeac9 fix(backend): placement_assessment_api.py _check_correctness — QuestionContent'e çevrildi (#485)

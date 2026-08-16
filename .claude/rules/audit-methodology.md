@@ -530,4 +530,155 @@ sebeple kırıldığında iki ayrı karar var, ikisi de gerekli:
 
 ---
 
+## İLERLEME SAYACI DA BİR ÖLÇÜM ALETİDİR (16 Ağu 2026, S219)
+
+Bu dosya "ölçüm aletini doğrula" diyor ve bunu **bulgu üreten** aletlere uyguluyordu.
+Boşluk: **ilerlemeyi** ölçen alet hiç doğrulanmamıştı. `#485` göçünde sekiz oturum
+(S211-S218) tek satırlık bir regex sayacını ilerleme ölçütü olarak kullandı:
+
+    re.finditer(r'QuestionBankItem\.(\w+)')
+
+Sayaç **iki yönde birden** yanılıyordu ve ikisi de ölçüldü:
+
+| Yön | Ne oluyor | Ölçüm |
+|---|---|---|
+| **FAZLA** | Yorum/docstring metnini erişim sayıyor | `osym_exam_engine.py:1327` ve `models/question_bank.py:528` birer **yorum satırı**; sayacın 10 kaleminin 2'si fantomdu |
+| **EKSİK** | Alias'lı import'ları göremiyor | 15 alias'lı import / 11 dosya (`as Question` ×13, `as Soru`, `as _QB`). S214'ün yedek kontrolü `grep 'select(QuestionBankItem)'` de aynı körlükte |
+
+Gerçek kapsam AST ile ölçüldü: **146 SINIF / 12 KWARG / 69 ENTITY / 26 dosya** —
+sayacın gösterdiği 8 gerçek kalemin ~20 katı. En büyük üç dosya (`osym_exam_engine` 42,
+`soru_bankasi_service` 41, `exam_performance_service` 11) **hiç görünmüyordu**; üçü de
+alias kullanıyor. Alias takibi yükün %94,5'ini taşıyor (146 SINIF'in 138'i).
+
+**Kural:** "Kalan N" bir ölçümdür. Doğrulanmamış bir aletten gelen N bir **tahmindir**.
+Bir sayacı ilerleme ölçütü yapmadan önce:
+1. **Kontrol kolu:** bilinen-iyi bir dosyanın bilinen sayısı birebir üremeli.
+2. **Bilinen-kötü:** kasıtlı bir fantom (yorum satırı) elenmeli.
+3. Sayaç **AST tabanlı** olmalı — regex yorum/docstring/alias ayrımını yapamaz.
+
+Alet: `backend/scripts/scan_split_accesses.py` · Bekçi: `backend/tests/fast/test_scan_split_accesses.py`
+
+### Bir ölçüm aletinde YANLIŞ-SIFIR tek kabul edilemez hata türüdür
+
+AST'ye geçmek yetmedi. İlk AST sürümü de iki kör noktayla **sıfır** raporluyordu:
+
+- `update(X).values(<taşınmış_alan>=...)` — taşınmış alan **keyword argüman ADI** olarak
+  geçiyor, AST'de `Attribute` düğümü yok. **12 kalem / 3 dosya.**
+- `db.query(<alias>)` — eski ORM biçimi; `select(...)` aranıyordu. **3 kalem.**
+
+Neden ölümcül: sayaç `core/irt_daemon.py [SINIF=2]` diyordu. O 2'yi göç ettiren biri
+dosyanın çıktıdan kaybolduğunu görüp **"bitti"** derdi. Oysa `irt_daemon.py:211` altı
+taşınmış alanı `update(QuestionBankItem).values(...)`'a geçiriyor → **her IRT kalibrasyon
+yazımı `CompileError`**. Ölçüldü:
+
+    CompileError : Unconsumed column names: morphology_complexity, irt_difficulty
+
+**Kural:** "Ne kadar iş kaldı" sorusunu yanıtlayan bir alette **yanlış-sıfır**, işi
+sessizce bitirir. Aletin kör noktaları docstring'de **açıkça yazılmalı** (sessiz
+varsayılan değil), parse edilemeyen dosya **gürültülü** olmalı (`except SyntaxError:
+return 0` işi "bitmiş" gösterir), ve alet **kendi testine** sahip olmalı.
+
+## TEST PAKETİ DE BİR DİLİM ÖLÇER (16 Ağu 2026, S219)
+
+Sayaç körlüğünün aynısı **testlerde** çıktı. `osym_exam_engine` için yazılan 15 RED
+testin hepsi `MATEMATIK`/`FIZIK` kullanıyordu. Ama `:1564-1572` dört ek sınıf-düzeyi
+erişimi **yalnızca** `subject in ("TURKCE","EDEBIYAT","TARIH","COGRAFYA","SOSYAL")`
+iken ekliyor (LaTeX süzgeci).
+
+Ayırt edici mutasyonla ölçüldü — tüm alanları doğru göç ettiren ama `question_text`'in
+12. erişiminden sonrasını reddeden bir vekil (= "base_filters göçürüldü, `filters.extend`
+kaçırıldı" fix'inin birebir simülasyonu):
+
+    MUTASYONLU fix · MATEMATIK : KURULDU   <- mutasyon KACAR (satirlar hic kosmuyor)
+    MUTASYONLU fix · TURKCE    : DUSTU
+    TAM fix        · her ikisi : KURULDU
+
+Erişim sayısı: MATEMATIK 36 / `question_text` 12; TURKCE 40 / 16 → tam **+4**, satır
+atfıyla `1567-1570`. Parametrize edilmeseydi bu mutasyon **hayatta kalırdı** ve TYT
+Türkçe (40 soru, en büyük ders) üretimde kırık kalırdı.
+
+### "Göç ettin mi" ≠ "koruduun mu"
+
+Parametrize etmek yetmedi. Test yalnız *sorgu kuruluyor mu* diyordu. Bir ajan
+`AttributeError`'dan kurtulmak için `filters.extend` bloğunu **silebilirdi** — iki
+parametre de yeşil kalır, Türkçe sınavlar sessizce LaTeX formüllü soru servis ederdi.
+
+**Kural:** bir filtreyi/kontrolü göç ettiren test, o filtrenin **hâlâ etkili olduğunu**
+da iddia etmeli. Ölçülebilir hâli: doğru fix'in ürettiği koşul **sayısını** assert et
+(`where.count("question_content.question_text NOT LIKE") == 4`), sadece "sorgu kuruldu"
+değil. Sayının ayırt ediciliği de doğrulanmalı — burada pasaj süzgeçleri
+`question_text)` NOT LIKE üretiyor (arada parantez), o yüzden 6 tanesi sayıma girmiyor.
+
+### Yorum CI'da düşmez
+
+Aliasing tehlikesi (`filters = base_filters` **aynı nesne**, sonra `filters.extend(...)`
+`base_filters`'ı mutasyona uğratıyor) ölçüldü ve önce yalnız bir **handoff mesajında**
+duruyordu. Mesajı sonraki ajan görmeyecek; dosyayı görecek.
+
+**Kural, üç kademe:** mesajdaki bilgi **kaybolur** → yorumdaki bilgi **silinebilir** →
+yalnız **test** CI'da düşer. Ölçülmüş bir tehlikeyi kaydederken üçünü de sor: bu bilgi
+nerede yaşamalı? Load-bearing ise **test yaz**, yoruma güvenme.
+
+## `pre-commit run` YANLIŞ CWD'DEN KAPININ ÖLÇÜMÜ DEĞİLDİR (16 Ağu 2026, S219)
+
+`reference_precommit-vs-bare-linter` "farklı CWD → farklı `pyproject.toml`" diyor.
+Daha kötüsü ölçüldü: **farklı CWD → tamamen farklı `pre-commit` config'i.**
+
+Kurulu kanca kök config'i sabitliyor:
+
+    .git/hooks/pre-commit -> ARGS=(hook-impl --config=.pre-commit-config.yaml ...)
+
+Git kancaları depo kökünden koşar, dolayısıyla `backend/.pre-commit-config.yaml`
+`git commit`'te **hiç yüklenmiyor**. `backend/` içinden `pre-commit run --files`
+koşmak, kapının çalıştırmadığı hook'ları devreye sokar:
+
+| Hook | Kök config'te | Zararı |
+|---|---|---|
+| `black` | **YOK** (satır 35: "Ruff (replaces black, isort, flake8)") | Dokunulmamış satırları yeniden biçimlendirir (= süpürme). Ayrıca `random.sample(...)  # nosec B311`'de yorumu kapanış parantezine taşıyor → **bandit bastırmasını kırabilir** |
+| `bandit` (backend) | Ayrı, bozuk ortam | `ModuleNotFoundError: No module named 'pbr'`; kök config'in bandit'i geçiyor |
+| `pytest-fast` | **YOK** | S215 FK fixture kırığı; konu dışı kırmızı |
+
+**Doğrudan sonuç — S215-S218'in `SKIP=pytest-fast` engelleyicisi FANTOM.** Hook
+`git commit`'te hiç koşmuyor; SKIP aylardır boşuna taşınıyordu. (Kaynak kafa karışıklığı:
+kök config'teki `KALDIRILDI (28 Tem 2026)` bloğu **başka** bir hook'a ait —
+pre-push tam-paket `pytest`. `git log -S "pytest-fast" -- .pre-commit-config.yaml` boş:
+o dize kök config'in geçmişinde hiç bulunmadı.)
+
+**Kural:** kapıyı ölçmek için **depo kökünden** koş, veya `--config` ver:
+
+    cd <repo-root> && pre-commit run --files backend/<dosya>
+
+## `Path.write_text()` GERİ ALIM DOĞRULAMASINI BOZAR (16 Ağu 2026, S219)
+
+`verification.md#GERI ALIM BIR IDDIADIR` geri alımın doğrulanmasını şart koşuyor.
+Yeni tuzak: doğrulama **yanlış-pozitif** verebilir.
+
+Windows'ta `Path.read_text()` CRLF'i LF'e çevirir, `write_text()` geri yazarken LF'i
+CRLF yapar. Sonuç: içerik **birebir aynı**, ama `git status` dosyayı **kirli** gösterir
+ve mutasyon harness'i "geri alım başarısız" diye durur. Ölçüldü: `git diff --stat` boş,
+yalnız `CRLF will be replaced by LF` uyarısı.
+
+**Kural:** mutasyon/geçici düzenleme harness'lerinde **`read_bytes()`/`write_bytes()`**
+kullan. Bayt düzeyinde çalış, metin düzeyinde değil.
+
+## "AĞAÇ KİRLİ" SÜPÜRME GEREKÇESİ DEĞİLDİR (16 Ağu 2026, S219)
+
+Bir fix commit'ine ilgisiz, commit'siz bir blok (S210 devri) süpürüldü ve gerekçe
+"ağaçta 3389 kirli dosya var, temizlemek küçük iş değil" oldu. Gerekçe **ölçüme
+dayanmıyordu**: gereken ağacı temizlemek değil, **tek dosyayı** ayırmaktı.
+
+    git stash push -- <dosya>     # bu dosyada bu kurulu, S212'de iki kez calisti
+
+Bedeli: `73/40` satırlık bir "save_answer sorgusu düzeltildi" commit'i, içinde **iki
+bildirilmemiş davranış değişikliği** taşıdı (boş-havuz koşulsuz cache'lenmesi; her sınava
+%15 IRT-ankraj kotası). İkisi de o an **ulaşılamaz** koddaydı, yani sonraki task'ın
+JOIN işi onları ilk kez canlandıracak ve suç **o task'a** yazılacaktı.
+
+**Kural:** commit kapsamı bir iddiadır. "Ayıramadım" demeden önce `git stash push --
+<dosya>`yı DENE. Süpürme kaçınılmazsa, süpürülen içeriğin **davranış değiştirip
+değiştirmediğini** ölç ve commit mesajına yaz — "aynı dosyada olduğu için girdi" yeterli
+değil.
+
+---
+
 *Oluşturulma: 14 May 2026 (Session 156, Faz 0.8). Bir sonraki audit hatasında bu tablo güncellenir.*

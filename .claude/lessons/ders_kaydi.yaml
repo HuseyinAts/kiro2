@@ -646,4 +646,60 @@
   sinif: alet
   durum: aktif
   zorlayici: null
-  kanit: "S215 — pytest-fast hook'u (pass_filenames:false, files: filtresiz) api/osym_routes.py commit'inde kirildi; kok neden #485 ile ilgisizdi (test_fsrs_card_persistence.py bkt_states.student_id -> users FK ihlali, ardindan ayni worker'da 2 test PendingRollbackError ile cascading ERROR verdi). Kullanici onayiyla SKIP=pytest-fast ile gecildi VE latest.md'ye ayri acik is olarak duzuldu (kiro2-api-import-smoke S211'den beri sessizce tasiniyor olmasi emsal alindi)"
+  kanit: "S215 — pytest-fast hook'u (pass_filenames:false, files: filtresiz) api/osym_routes.py commit'inde kirildi; kok neden #485 ile ilgisizdi (test_fsrs_card_persistence.py bkt_states.student_id -> users FK ihlali, ardindan ayni worker'da 2 test PendingRollbackError ile cascading ERROR verdi). Kullanici onayiyla SKIP=pytest-fast ile gecildi VE latest.md'ye ayri acik is olarak duzuldu (kiro2-api-import-smoke S211'den beri sessizce tasiniyor olmasi emsal alindi). ** S219 DUZELTMESI: bu dersin genel kurali (kosulsuz hook konu-disi kirilir -> SKIP + ayri gorev) gecerli, ama 'pytest-fast git commit'te kosar' varsayimi CURUTULDU — bkz. L-s219-precommit-yanlis-cwd **"
+- id: L-s219-ilerleme-sayaci-da-alet
+  baslik: Ilerleme sayaci da bir olcum aletidir — regex sayac iki yonde birden yanilir
+  kaynak: .claude/rules/audit-methodology.md#ilerleme-sayaci-da-bir-olcum-aletidir-16-agu-2026-s219
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_scan_split_accesses.py
+  kanit: "S219 bdc84e9bc — #485'in sekiz oturumluk ilerleme olcutu re.finditer(r'QuestionBankItem\\.(\\w+)') idi. FAZLA sayiyordu: osym_exam_engine.py:1327 ve models/question_bank.py:528 birer YORUM satiri (10 kalemin 2'si fantom). EKSIK sayiyordu: 15 alias'li import / 11 dosya (as Question x13, as Soru, as _QB) gorunmuyordu; S214'un yedegi grep 'select(QuestionBankItem)' de ayni kor. AST ile gercek kapsam: 146 SINIF / 12 KWARG / 69 ENTITY / 26 dosya. En buyuk uc dosya (42+41+11=94, %90) tamamen gorunmezdi. Kontrol kolu: irt_daemon=2, mega_feature_tasks=2 eski sayacla birebir ortustu"
+- id: L-s219-yanlis-sifir-tek-kabul-edilemez-hata
+  baslik: Olcum aletinde YANLIS-SIFIR tek kabul edilemez hata turudur
+  kaynak: .claude/rules/audit-methodology.md#bir-olcum-aletinde-yanlis-sifir-tek-kabul-edilemez-hata-turudur
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_scan_split_accesses.py
+  kanit: "S219 2222337fb — AST'ye gecmek YETMEDI. Ilk AST surumu iki kor noktayla sifir raporluyordu: update(X).values(<tasinmis>=...) (kwarg ADI, Attribute dugumu yok) 12 kalem / 3 dosya; db.query(<alias>) 3 kalem. Olumcul senaryo olculdu: sayac irt_daemon.py [SINIF=2] diyordu; o 2 goc edilince dosya ciktidan kaybolur ve 'bitti' denir, ama irt_daemon.py:211 alti tasinmis alani update(QuestionBankItem).values(...)'a geciriyor -> her IRT kalibrasyon yazimi 'CompileError: Unconsumed column names: morphology_complexity, irt_difficulty'. Ayrica sessiz 'except SyntaxError: return 0' isi bitmis gosterir (BOM ornegi: dosya [1,1] -> [0,0]) -> gurultulu yapildi"
+- id: L-s219-test-paketi-dilim-olcer
+  baslik: Test paketi de bir dilim olcer — ayirt edici mutasyon olmadan kapsama kordur
+  kaynak: .claude/rules/audit-methodology.md#test-paketi-de-bir-dilim-olcer-16-agu-2026-s219
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S219 fc276b35d — 15 RED testin hepsi MATEMATIK/FIZIK kullaniyordu; osym_exam_engine.py:1564-1572 dort ek sinif-duzeyi erisimi YALNIZ TURKCE/EDEBIYAT/TARIH/COGRAFYA/SOSYAL'de ekliyor. Ayirt edici mutasyon (tum alanlari dogru goc ettiren ama question_text'in 12. erisiminden sonrasini reddeden vekil = 'base_filters gocuruldu, filters.extend kacirildi' fix'i): MATEMATIK KURULDU (mutasyon KACAR, satirlar hic kosmuyor) / TURKCE DUSTU. Erisim: MATEMATIK 36-12, TURKCE 40-16 -> +4, satir atfiyla 1567-1570. Parametrize edilmeseydi TYT Turkce (40 soru, en buyuk ders) uretimde kirik kalirdi"
+- id: L-s219-goc-ettin-mi-vs-korudun-mu
+  baslik: Bir filtreyi goc ettiren test o filtrenin HALA ETKILI oldugunu da iddia etmeli
+  kaynak: .claude/rules/audit-methodology.md#goc-ettin-mi--korudun-mu
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S219 e32ab0ace — parametrize etmek YETMEDI: test yalniz 'sorgu kuruluyor mu' diyordu. Bir ajan AttributeError'dan kurtulmak icin filters.extend blogunu SILEBILIRDI; iki parametre de yesil kalir, Turkce sinavlar sessizce LaTeX formullu soru servis ederdi. Cozum: dogru fix'in urettigi kosul SAYISINI assert et (where.count('question_content.question_text NOT LIKE') == 4, MATEMATIK'te 0). Sayinin ayirt ediciligi de dogrulandi: pasaj suzgecleri 'question_text) NOT LIKE' uretiyor (arada parantez), TURKCE'deki 6 tanesi sayima girmiyor. Mutasyon (blogu sil) testi dusurdu"
+- id: L-s219-yorum-cida-dusmez
+  baslik: Mesajdaki bilgi kaybolur, yorumdaki silinebilir, yalniz TEST CI'da duser
+  kaynak: .claude/rules/audit-methodology.md#yorum-cida-dusmez
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S219 e32ab0ace — 'filters = base_filters AYNI NESNE, sonra filters.extend(...) base_filters'i mutasyona ugratiyor' tehlikesi olculdu (bugun zararsiz: ders dongusu icinde :1486'da yeniden kuruluyor) ama once yalniz bir handoff MESAJINDA duruyordu. Sonraki ajan mesaji gormeyecek, dosyayi gorecek. Hem yorum hem test yazildi: test_latex_filter_does_not_leak_to_next_subject ({TURKCE:3, MATEMATIK:3}) — mutasyon 'base_filters dongu disinda' -> 'MATEMATIK'e sizmis: 4 kosul' ile dustu. Implementer'in formulasyonu: 'bir yorum CI'da dusmez'"
+- id: L-s219-precommit-yanlis-cwd
+  baslik: pre-commit run yanlis CWD'den kapinin olcumu degildir — farkli config yuklenir
+  kaynak: .claude/rules/audit-methodology.md#pre-commit-run-yanlis-cwdden-kapinin-olcumu-degildir-16-agu-2026-s219
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S219 05148d0ee — .git/hooks/pre-commit kok config'i sabitliyor (ARGS=(hook-impl --config=.pre-commit-config.yaml ...)) ve git kancalari depo kokunden kosar, dolayisiyla backend/.pre-commit-config.yaml git commit'te HIC yuklenmiyor. backend/ icinden 'pre-commit run --files' kosmak kapida OLMAYAN hook'lari devreye sokuyor: black (kok config satir 35: 'Ruff (replaces black, isort, flake8)') dokunulmamis satirlari yeniden bicimlendirdi = supurme, ayrica random.sample(...) # nosec B311'de yorumu kapanis parantezine tasiyor -> bandit bastirmasini kirabilir; backend bandit'i ModuleNotFoundError: pbr. DOGRUDAN SONUC: S215-S218'in SKIP=pytest-fast engelleyicisi FANTOM. git log -S 'pytest-fast' -- .pre-commit-config.yaml BOS (dize kok config gecmisinde hic bulunmadi); koktaki 'KALDIRILDI (28 Tem)' blogu baska bir hook'a (pre-push tam-paket pytest) ait. Task 2 ve Task 3 SKIP'siz commit edildi, kapi tam yesil"
+- id: L-s219-write-text-geri-alimi-bozar
+  baslik: Path.write_text() Windows'ta geri alim dogrulamasini YANLIS-POZITIF bozar
+  kaynak: .claude/rules/audit-methodology.md#pathwrite_text-geri-alim-dogrulamasini-bozar-16-agu-2026-s219
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S219 — Task 2 mutasyon harness'inin ilk surumu Path.read_text()/write_text() kullandi. Windows'ta read LF'e cevirir, write geri yazarken CRLF yapar: icerik BIREBIR AYNI ama git status dosyayi KIRLI gosterir ve harness 'geri alim basarisiz' diye durur. Olculdu: git diff --stat BOS, yalniz 'CRLF will be replaced by LF' uyarisi. read_bytes()/write_bytes()'a cevrilince M2/M3 temiz kostu (geri alim: TEMIZ). verification.md#GERI-ALIM-BIR-IDDIADIR'in yanlis-pozitif tarafi"
+- id: L-s219-agac-kirli-supurme-gerekcesi-degil
+  baslik: "'Agac kirli' supurme gerekcesi degildir — git stash push -- <dosya> tek komut"
+  kaynak: .claude/rules/audit-methodology.md#agac-kirli-supurme-gerekcesi-degildir-16-agu-2026-s219
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S219 d7eaeb3b1 — 2 satirlik bir fix commit'i 73/40 satir oldu; fark S210 devrinden commit'siz bir bloktu. Gerekce 'agacta 3389 kirli dosya var' idi ve OLCUME DAYANMIYORDU: gereken agaci temizlemek degil TEK DOSYAYI ayirmakti (git stash push -- <dosya>, audit-methodology.md'de zaten yazili, S212'de iki kez calismis). Bedel: commit iki BILDIRILMEMIS davranis degisikligi tasidi — bos havuzun kosulsuz cache'lenmesi (HEAD~1'de 'if pool:' guard vardi; TTL 3600 -> 60 dk sessizce bos sinav) ve her sinava %15 IRT-ankraj kotasi. Ikisi de o an ULASILAMAZ koddaydi, yani sonraki task'in JOIN isi onlari ilk kez canlandiracak ve suc O TASK'a yazilacakti. Task 3'te ayirma uygulandi: diff 12/2, supurme yok"
