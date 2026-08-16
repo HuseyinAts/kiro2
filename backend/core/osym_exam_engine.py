@@ -26,6 +26,7 @@ from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
 from models.database import ExamQuestion, ExamSession, ExamType, StudentAnswer
 from models.question_bank import QuestionBankItem as Question
+from models.question_bank import QuestionMetadata
 
 logger = get_logger("osym_exam_engine")
 
@@ -1429,9 +1430,18 @@ class OSYMExamEngine:
         if pool is None:
             async with get_db_session_context() as db_session:
                 id_result = await db_session.execute(
-                    select(Question.id).where(
+                    # #485: pipeline_metadata artik QuestionMetadata'da.
+                    # SELECT listesinde Question.id (parent kolonu) var -> SQLAlchemy
+                    # sol tarafi cikarir, select_from() GEREKMEZ (S214 dersi: SELECT
+                    # listesi split-only degilse select_from SUS olur ve hicbir
+                    # mutasyonla civilenemez).
+                    select(Question.id)
+                    .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+                    .where(
                         Question.is_active.is_(True),
-                        Question.pipeline_metadata.op("->>")("verified_provisional")
+                        QuestionMetadata.pipeline_metadata.op("->>")(
+                            "verified_provisional"
+                        )
                         == "true",
                     )
                 )
