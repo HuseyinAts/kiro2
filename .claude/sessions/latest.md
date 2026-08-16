@@ -1,3 +1,42 @@
+## KIRO2 Nedir, Şu An Nerede, Nereye Gidiyor (teknik olmayan özet — 16 Ağustos 2026)
+
+**Nedir:** KIRO2, Türkiye'de üniversite giriş sınavına (YKS/TYT/AYT) hazırlanan
+öğrenciler için bir çalışma platformu. Amaç her öğrenciye tam ona göre bir
+çalışma deneyimi sunmak: çok kolay soruyla zaman kaybettirmemek, çok zor
+soruyla moralini bozmamak, unutmaya başladığı konuyu tam zamanında hatırlatmak.
+
+**Elde ne var:**
+- ~188 bin soru — bunların ~111 bini şu an aktif kullanılabilir, ~25 bini de
+  ayrıca kalite kontrolünden geçip "öğrenciye güvenle gösterilebilir" diye
+  işaretlenmiş bir havuzda.
+- 405 kaynak kitaptan derlenmiş içerik.
+- Öğrencinin hangi konuda zayıf olduğunu tahmin eden, ne zaman tekrar etmesi
+  gerektiğini hatırlatan, kişiye özel çalışma planı çıkaran bir motor.
+- Öğretmen sınıfını takip edebiliyor, veli çocuğunun ilerlemesini görebiliyor.
+
+**Şu an neyle uğraşıyoruz:** Platform aylardır büyüyor; bir ara hız kazanmak
+için kısayollar alındı — geçen ay bir yapay zekâ aracının devraldığı bir
+dönemde, kod tabanına gözden geçirilmeden ve test edilmeden çok fazla
+değişiklik girdi. Şu anki iş bunun temizliği: soru veritabanının iç yapısını
+daha sağlam bir şekle sokuyoruz (tek büyük, hantal bir tabloyu yönetilebilir
+parçalara ayırdık) ve bu ayırmanın her yerde doğru çalıştığını, tek tek test
+yazarak kanıtlıyoruz. Sıkıcı ama gerekli bir iş — atlanırsa öğrenciye yanlış
+soru gitmesi veya sistemin sessizce çökmesi gibi fark edilmesi zor hatalar
+üretir.
+
+**Nereye gidiyor:** Hedef, platformu öğrencilere doğrudan abonelik olarak
+sunmak (okul/kurum üzerinden değil, öğrencinin kendisinin abone olduğu bir
+model). Bunun için önce birkaç güvenlik ve sağlamlık kapısının kapanması
+gerekiyor: kimin neyi görebileceğinin sıkılaştırılması, verinin tutarlılığının
+garanti altına alınması, testlerin platformun büyük bölümünü kapsıyor olması.
+Bu kapıların çoğu ya kapandı ya da kapanmak üzere.
+
+**Özetle:** İçerik ve zekâ tarafı zengin ve büyük ölçüde hazır; şu anki emek
+bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlanınca
+öğrencilere açılış için teknik bir engel kalmayacak.
+
+---
+
 ## Session Handoff — 2026-08-16 (S215)
 **Branch:** `feature/self-evolution-optimization` · **HEAD:** `3a1aabd0d` · **Push:** ⏳ commit'li, henüz push edilmedi
 **Ana iş:** #485 — `question_bank` 69-alan split'inin JOIN göçü (S210-S214 devamı)

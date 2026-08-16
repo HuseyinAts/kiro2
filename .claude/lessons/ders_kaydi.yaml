@@ -633,3 +633,17 @@
   durum: aktif
   zorlayici: backend/tests/fast/test_mnemonic_service_split.py
   kanit: "S214 8713ab8e3 — #485 sayaci QuestionBankItem.<alan> deseniyle mnemonic_service'te 3 saydi. Asil riski tasiyan kusur sayacta 0 gorundu: generate_mnemonic select(QuestionBankItem) ile entity secip question.question_text/.correct_answer/.subject_area okuyordu (lazy='select', async -> MissingGreenlet). Kalan sayisi ALT SINIR; dosya basina grep 'select(QuestionBankItem)' sart"
+- id: L-s215-dosya-hic-commit-edilmemis-olabilir
+  baslik: Kapi borcu kontrol kolu HEAD'e karsi anlamsizlasabilir — dosya hic commit edilmemis olabilir
+  kaynak: .claude/rules/audit-methodology.md#dosya-hic-commit-edilmemis-olabilir-15-16-agu-2026-s215
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S215 3a1aabd0d — api/osym_routes.py'de git diff alininca auto_assign_anchors/run_equating/analyze_osym_pdf fonksiyonlarinin HICBIRI HEAD'de yoktu (S210 devrinden kalma commit'siz calisan-agac icerigi). 'HEAD'de de var miydi' kontrol kolu bu kisim icin anlamsizdi; karar olcutu (dokunulan/dokunulmayan fonksiyon) degismedi ama gerekce metni yanlis sorulunca zaman kaybettirdi"
+- id: L-s215-kosulsuz-hook-konu-disi-kirilir
+  baslik: Dosya-filtresiz pre-commit hook'u konu-disi sebeple kirilabilir — SKIP ayri gorev olarak dusmeli
+  kaynak: .claude/rules/audit-methodology.md#kosulsuz-pre-commit-hooku-konu-disi-sebeple-kirilabilir-16-agu-2026-s215
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S215 — pytest-fast hook'u (pass_filenames:false, files: filtresiz) api/osym_routes.py commit'inde kirildi; kok neden #485 ile ilgisizdi (test_fsrs_card_persistence.py bkt_states.student_id -> users FK ihlali, ardindan ayni worker'da 2 test PendingRollbackError ile cascading ERROR verdi). Kullanici onayiyla SKIP=pytest-fast ile gecildi VE latest.md'ye ayri acik is olarak duzuldu (kiro2-api-import-smoke S211'den beri sessizce tasiniyor olmasi emsal alindi)"

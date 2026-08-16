@@ -481,4 +481,53 @@ doğrulanmadan "yapıldı" sayılmaz.
 
 ---
 
+## DOSYA HİÇ COMMIT EDİLMEMİŞ OLABİLİR (15-16 Ağu 2026, S215)
+
+`#485` göçünde dosya-başına akış hep şunu varsaydı: "dosya HEAD'de zaten var,
+`pre-commit run --files` baseline'ı HEAD'e karşı ölçülen bir borcu gösterir".
+`api/osym_routes.py`'de bu varsayım kırıldı: `git diff` alınınca `auto_assign_anchors`,
+`run_equating`, `analyze_osym_pdf` fonksiyonlarının **hiçbiri HEAD'de yoktu** — S210
+Gemini devrinden kalma, hiç commit edilmemiş çalışan-ağaç içeriğiydi (3388 kirli
+dosyanın biri, ayrı ayrı fark edilmemişti). `git stash push -- <dosya>` ile HEAD'e
+dönünce dosya 130 satır kısaldı ve import edilen sınıflar (`AutoAssignAnchorsRequest`)
+tamamen kayboldu.
+
+**Sonuç:** "kontrol kolu HEAD'de de var mı" sorusu (S211-S214'ün kapı-borcu
+politikası) bu dosyanın bir kısmı için **anlamsız** oldu — orada karşılaştırılacak
+bir HEAD hali yoktu. Örnek: `PDFAnalysisRequest.examType` alanındaki N815 ihlali
+HEAD'de "önceden var" değildi, çünkü sınıfın kendisi HEAD'de yoktu; yine de aynı
+karar geçerliydi (dokunulmayan koda ait, API sözleşmesi kasıtlı camelCase).
+
+**Kural:** Bir dosyada pre-commit baseline borcu bulunduğunda ÖNCE
+`git diff -- <dosya>` (veya `git log --oneline -1 -- <dosya>`) ile dosyanın HEAD'de
+**gerçekten var olup olmadığını** doğrula. Yoksa/kısmen yoksa, "HEAD'de de var mıydı"
+sorusunu sorma — karar ölçütü aynı kalır (dokunulan fonksiyon mu, dokunulmayan mı) ama
+gerekçe metninde "önceden var olan" yerine "bu turda ilk kez commit edilen, dokunulmayan
+kod" yazılmalı. Yanlış gerekçe (`git show HEAD:...` ile kontrol kolu aranması) sonuçsuz
+kalır ve zaman kaybettirir.
+
+---
+
+## KOŞULSUZ PRE-COMMIT HOOK'U KONU-DIŞI SEBEPLE KIRILABİLİR (16 Ağu 2026, S215)
+
+`pytest-fast` hook'u (`pass_filenames: false`, `files:` filtresi yok → değişen
+dosyadan bağımsız her backend commit'inde koşar, sabit 6 test dosyasını çalıştırır)
+`api/osym_routes.py` commit'inde **kırmızı** çıktı. Kök neden `#485`/`question_bank`
+ile **hiç ilgisizdi**: `test_fsrs_card_persistence.py` bir `bkt_states` satırı INSERT
+ediyor, `student_id` `users` tablosunda yok → `ForeignKeyViolationError` →
+transaction abort → aynı worker'daki iki `test_bkt_record_answer_batch1b*.py`
+`PendingRollbackError` ile ERROR veriyor (cascading failure, tek kök neden).
+
+**Kural:** Dosya-filtresiz/`always_run` tipi bir pre-commit hook'u konu-dışı bir
+sebeple kırıldığında iki ayrı karar var, ikisi de gerekli:
+1. **Şimdi:** kullanıcı onayıyla `SKIP=<hook_id>` — `kiro2-api-import-smoke`
+   emsaliyle aynı muamele.
+2. **Sonra:** bu SKIP'i handoff'ta **yeni, ayrı bir açık iş** olarak kaydet — "zaten
+   biliniyordu" diye mevcut bir maddeye gömme. Aksi halde hook'un ne zaman kırıldığı,
+   kaç commit'in onu atladığı iz kaybeder ve düzeltme sonsuza kadar ertelenir. Bu
+   depoda `kiro2-api-import-smoke` tam bu şekilde S211'den beri "bilinen ortam
+   kusuru" diye taşınıyor — henüz kimse kök nedenini kapatmadı.
+
+---
+
 *Oluşturulma: 14 May 2026 (Session 156, Faz 0.8). Bir sonraki audit hatasında bu tablo güncellenir.*
