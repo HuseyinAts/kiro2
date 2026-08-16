@@ -137,6 +137,26 @@ class OSYMExamEngine:
     - IRT tabanlı soru seçimi ve analizi
     """
 
+    # H2 (#485, 16 Agu 2026 kullanici onayi): %15 IRT-ankraj kotasi KAPALI.
+    #
+    # Ankraj maddeleri IRT esitleme (equating) icin ayrilmistir; her sinavin
+    # ~%15'ine servis etmek ankraj setini yakar ve gelecekteki equating
+    # kosumlarini kirletebilir. Kota S210 devrinden geldi ve `_select_questions`
+    # o tarihten beri OLU KOD oldugu icin (`:1512` sinif-duzeyi `AttributeError`)
+    # bir kez bile kosmadi — yani bu bir davranis geri alma DEGIL, hic
+    # etkinlesmemis bir davranisin devreye girmesini onleme.
+    #
+    # Psikometrik urun karari: ayri bir oturumda (ankraj seti buyuklugu +
+    # kullanim gecmisi + equating durumu olculerek) yeniden acilacak. Oran 0
+    # iken kota tamamen devre disi; tek geri alinabilir dugme olmasi icin
+    # sabit olarak tutuldu (deger iki ayri yerde kullaniliyor ve o iki kopya
+    # gecmiste bir kez birbirinden ayrismisti).
+    #
+    # DIKKAT: kullanim yerindeki `> 0` korumasi ZORUNLU — `max(1, round(n*0.0))`
+    # 0 DEGIL 1 dondurur (olculdu: count=3/5/10/40 icin hepsinde 1). Naif bir
+    # oran degisimi kotayi kismen ACIK birakirdi.
+    ANCHOR_QUOTA_RATIO: float = 0.0
+
     def __init__(self):
         self.active_sessions: dict[str, ExamSessionData] = {}
         self.auto_save_tasks: dict[str, asyncio.Task] = {}
@@ -1645,7 +1665,13 @@ class OSYMExamEngine:
                         self._question_pool_cache[anchor_cache_key] = anchor_pool
                         self._question_pool_cache[normal_cache_key] = normal_pool
 
-                anchor_target = max(1, round(count * 0.15)) if count >= 5 else 0
+                # H2: kota kapali (ANCHOR_QUOTA_RATIO). `> 0` korumasi sart:
+                # `max(1, round(n*0.0))` 0 degil 1 dondurur.
+                anchor_target = (
+                    max(1, round(count * self.ANCHOR_QUOTA_RATIO))
+                    if count >= 5 and self.ANCHOR_QUOTA_RATIO > 0
+                    else 0
+                )
                 normal_target = count - anchor_target
 
                 sampled_ids = []
@@ -1706,7 +1732,12 @@ class OSYMExamEngine:
                             self._question_pool_cache[fb_normal_key] = fb_normal_pool
 
                     fb_sampled_ids = []
-                    anchor_target = max(1, round(count * 0.15)) if count >= 5 else 0
+                    # H2: kota kapali (ANCHOR_QUOTA_RATIO), ana dalla ayni.
+                    anchor_target = (
+                        max(1, round(count * self.ANCHOR_QUOTA_RATIO))
+                        if count >= 5 and self.ANCHOR_QUOTA_RATIO > 0
+                        else 0
+                    )
                     normal_target = count - anchor_target
 
                     if len(fb_anchor_pool) >= anchor_target:

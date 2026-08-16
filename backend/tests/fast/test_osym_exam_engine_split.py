@@ -883,3 +883,58 @@ class TestSelectQuestions:
             "bos havuz cache'lenmis (zorluk ve/veya fallback dali) — "
             f"kurulan havuz sorgusu: {len(self._pool_queries(session))}"
         )
+
+    # ------------------------------------------------------------------
+    # H2: %15 IRT-ankraj kotasi KAPALI (16 Agu 2026 kullanici onayi)
+    # ------------------------------------------------------------------
+
+    @pytest.mark.asyncio
+    async def test_irt_anchor_quota_is_disabled(self, engine, wired):
+        """Ankraj maddeleri RUTIN sinavlara servis EDILMEZ.
+
+        Ankrajlar IRT esitleme (equating) icin ayrilmis; her sinavin ~%15'ine
+        koymak ankraj setini yakar ve gelecekteki equating kosumlarini
+        kirletebilir. Kota S210 devrinden geldi, `_select_questions` olu kod
+        oldugu icin hic kosmadi; Task 7 bu kodu calistirilabilir yaptigi icin
+        ayni commit serisinde kapatildi.
+
+        Olcum dogrudan `anchor_target` uzerinden degil, DAVRANIS uzerinden:
+        havuzda uc ankraj VARKEN entity sorgusunun `IN (...)` listesine
+        hicbiri girmemeli.
+
+        Sayilar secilerek ayirt edici: count=10 → kota acikken
+        `max(1, round(10*0.15))` = 2 ankraj sizardi. `ANCHOR_QUOTA_RATIO`
+        0.15'e geri alinirsa (M-H2) bu test duser.
+        """
+        anchors = [("a-1", True), ("a-2", True), ("a-3", True)]
+        normals = [(f"n-{i}", False) for i in range(10)]
+        session = wired([anchors + normals, []])
+
+        await engine._select_questions(_config(engine, count=10))
+
+        assert len(session.statements) == 2, (
+            "beklenen 2 sorgu (havuz + entity); entity sorgusu kurulmadiysa "
+            "test bosluga bakiyor demektir"
+        )
+        entity_where = _compiled_where(session.statements[1])
+
+        for anchor_id in ("a-1", "a-2", "a-3"):
+            assert f"'{anchor_id}'" not in entity_where, (
+                f"ankraj maddesi {anchor_id} rutin sinava sizmis — "
+                f"ANCHOR_QUOTA_RATIO tekrar acilmis mi?\n{entity_where}"
+            )
+        # Vakum testi degil: normal havuzdan gercekten secim yapilmis olmali.
+        assert "'n-0'" in entity_where, entity_where
+
+    def test_anchor_quota_ratio_zero_guard(self, engine):
+        """`> 0` korumasi ZORUNLU — `max(1, ...)` orani 0 yapmakla sifirlanmaz.
+
+        Olculdu: `max(1, round(count * 0.0))` count=3/5/10/40 icin **1**
+        dondurur, 0 degil. Yani orani 0'a cekip korumayi yazmayan naif bir
+        degisim kotayi KISMEN ACIK birakirdi (her derse 1 ankraj).
+        """
+        assert engine.ANCHOR_QUOTA_RATIO == 0.0
+        assert max(1, round(10 * engine.ANCHOR_QUOTA_RATIO)) == 1, (
+            "bu satir korumanin NEDEN gerektigini civiliyor: oran 0 olsa bile "
+            "max(1, ...) 1 dondurur"
+        )
