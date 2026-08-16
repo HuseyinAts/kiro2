@@ -24,12 +24,7 @@ from sqlalchemy import and_, func, or_, select, update
 from core.database import get_db_session_context
 from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
-from models.database import (
-    ExamQuestion,
-    ExamSession,
-    ExamType,
-    StudentAnswer,
-)
+from models.database import ExamQuestion, ExamSession, ExamType, StudentAnswer
 from models.question_bank import QuestionBankItem as Question
 
 logger = get_logger("osym_exam_engine")
@@ -689,12 +684,15 @@ class OSYMExamEngine:
                 try:
                     from sqlalchemy import select as _select
 
-                    from models.question_bank import QuestionBankItem as _QB
+                    # #485: correct_answer artik QuestionContent'te.
+                    # Paylasilan PK (id) sayesinde JOIN gerekmez — dogrudan
+                    # yavru tabloya filtrelemek yeterli.
+                    from models.question_bank import QuestionContent as _QC
 
                     async with get_db_session_context() as _grade_db:
                         _ca = (
                             await _grade_db.execute(
-                                _select(_QB.correct_answer).where(_QB.id == question_id)
+                                _select(_QC.correct_answer).where(_QC.id == question_id)
                             )
                         ).scalar_one_or_none()
                     if _ca:
@@ -1577,28 +1575,43 @@ class OSYMExamEngine:
                 )
                 cache_key = f"{exam_config.exam_type.value}:{subject}:{difficulty_key}"
 
-                pool = self._question_pool_cache.get(cache_key)
-                if pool is None:
-                    id_result = await db_session.execute(
-                        select(Question.id).where(and_(*filters))
-                    )
-                    pool = [row[0] for row in id_result.all()]
-                    if pool:
-                        self._question_pool_cache[cache_key] = pool
+                anchor_cache_key = f"{cache_key}:anchor"
+                normal_cache_key = f"{cache_key}:normal"
 
-                if len(pool) >= count:
-                    sampled_ids = random.sample(pool, count)  # nosec B311
+                anchor_pool = self._question_pool_cache.get(anchor_cache_key)
+                normal_pool = self._question_pool_cache.get(normal_cache_key)
+
+                if anchor_pool is None or normal_pool is None:
+                    id_result = await db_session.execute(
+                        select(Question.id, Question.is_anchor).where(and_(*filters))
+                    )
+                    rows = id_result.all()
+                    anchor_pool = [row[0] for row in rows if row[1] is True]
+                    normal_pool = [row[0] for row in rows if not row[1]]
+
+                    self._question_pool_cache[anchor_cache_key] = anchor_pool
+                    self._question_pool_cache[normal_cache_key] = normal_pool
+
+                anchor_target = max(1, round(count * 0.15)) if count >= 5 else 0
+                normal_target = count - anchor_target
+
+                sampled_ids = []
+
+                if len(anchor_pool) >= anchor_target:
+                    sampled_ids.extend(random.sample(anchor_pool, anchor_target))  # nosec B311
+                else:
+                    sampled_ids.extend(anchor_pool)
+                    normal_target += anchor_target - len(anchor_pool)
+
+                if len(normal_pool) >= normal_target:
+                    sampled_ids.extend(random.sample(normal_pool, normal_target))  # nosec B311
+                else:
+                    sampled_ids.extend(normal_pool)
+
+                if sampled_ids:
                     result = await db_session.execute(
                         select(Question).where(
                             Question.id.in_(sampled_ids),
-                            Question.is_active.is_(True),
-                        )
-                    )
-                    questions = result.scalars().all()
-                elif pool:
-                    result = await db_session.execute(
-                        select(Question).where(
-                            Question.id.in_(pool),
                             Question.is_active.is_(True),
                         )
                     )
@@ -1613,28 +1626,48 @@ class OSYMExamEngine:
                         f"({len(questions)}/{count}), filtre kaldırılıyor"
                     )
                     fallback_key = f"{exam_config.exam_type.value}:{subject}:all"
-                    fallback_pool = self._question_pool_cache.get(fallback_key)
-                    if fallback_pool is None:
-                        fb_result = await db_session.execute(
-                            select(Question.id).where(and_(*base_filters))
-                        )
-                        fallback_pool = [row[0] for row in fb_result.all()]
-                        if fallback_pool:
-                            self._question_pool_cache[fallback_key] = fallback_pool
+                    fb_anchor_key = f"{fallback_key}:anchor"
+                    fb_normal_key = f"{fallback_key}:normal"
 
-                    if len(fallback_pool) >= count:
-                        sampled_ids = random.sample(fallback_pool, count)  # nosec B311
-                        fb_q = await db_session.execute(
-                            select(Question).where(
-                                Question.id.in_(sampled_ids),
-                                Question.is_active.is_(True),
+                    fb_anchor_pool = self._question_pool_cache.get(fb_anchor_key)
+                    fb_normal_pool = self._question_pool_cache.get(fb_normal_key)
+
+                    if fb_anchor_pool is None or fb_normal_pool is None:
+                        fb_result = await db_session.execute(
+                            select(Question.id, Question.is_anchor).where(
+                                and_(*base_filters)
                             )
                         )
-                        questions = fb_q.scalars().all()
-                    elif fallback_pool:
+                        fb_rows = fb_result.all()
+                        fb_anchor_pool = [row[0] for row in fb_rows if row[1] is True]
+                        fb_normal_pool = [row[0] for row in fb_rows if not row[1]]
+
+                        self._question_pool_cache[fb_anchor_key] = fb_anchor_pool
+                        self._question_pool_cache[fb_normal_key] = fb_normal_pool
+
+                    fb_sampled_ids = []
+                    anchor_target = max(1, round(count * 0.15)) if count >= 5 else 0
+                    normal_target = count - anchor_target
+
+                    if len(fb_anchor_pool) >= anchor_target:
+                        fb_sampled_ids.extend(
+                            random.sample(fb_anchor_pool, anchor_target)  # nosec B311
+                        )
+                    else:
+                        fb_sampled_ids.extend(fb_anchor_pool)
+                        normal_target += anchor_target - len(fb_anchor_pool)
+
+                    if len(fb_normal_pool) >= normal_target:
+                        fb_sampled_ids.extend(
+                            random.sample(fb_normal_pool, normal_target)  # nosec B311
+                        )
+                    else:
+                        fb_sampled_ids.extend(fb_normal_pool)
+
+                    if fb_sampled_ids:
                         fb_q = await db_session.execute(
                             select(Question).where(
-                                Question.id.in_(fallback_pool),
+                                Question.id.in_(fb_sampled_ids),
                                 Question.is_active.is_(True),
                             )
                         )
