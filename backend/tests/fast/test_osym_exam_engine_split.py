@@ -801,3 +801,85 @@ class TestSelectQuestions:
             "fallback zorluk filtresini tasiyor — gevsetme amaci bozulmus: "
             f"{fallback_where}"
         )
+
+    # ------------------------------------------------------------------
+    # H1: bos havuz KOSULSUZ cache'leniyordu (S210 devrinden, olu koddaydi)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _pool_queries(session) -> list:
+        """Havuz (id) sorgulari — entity sorgularindan JOIN ile ayrilir.
+
+        Entity sorgusu (`select(Question).where(id.in_(...))`) hicbir JOIN
+        icermez; havuz sorgusu uc split tablosuna da JOIN atar. Sayimi
+        statement SIRASINA gore yapmak kirilgan olurdu: entity sorgusu
+        `if sampled_ids:` altinda KOSULLU, yani havuz bosken hic kurulmuyor.
+        """
+        return [
+            s for s in session.statements if "JOIN question_content" in _compiled_sql(s)
+        ]
+
+    @pytest.mark.asyncio
+    async def test_empty_pool_is_not_cached(self, wired, engine):
+        """H1: bos sorgu sonucu cache'lenirse 60 dakika BOS sinav uretilir.
+
+        `_question_pool_cache` bir `TTLCache(ttl=3600)`. Bos ya da yarim-import
+        bir `question_bank`'a karsi kosan TEK sorgu, koruma olmadan iki bos
+        havuzu cache'e yazar; sonraki her istek `is None` kontrolunu GECER
+        (`[] is not None`) ve bir saat boyunca hic sorgu kurulmaz. HEAD~1'de
+        `if pool:` korumasi vardi ve eski kod bir sonraki istekte kendini
+        onariyordu; S210 devrinde supuruldu.
+
+        Bu test o oz-onarimi civiliyor: ikinci cagri HALA sorgu kurmali.
+        """
+        session = wired([[], [], []])
+        cfg = _config(engine)
+
+        await engine._select_questions(cfg)
+        await engine._select_questions(cfg)
+
+        assert len(self._pool_queries(session)) == 2, (
+            "bos havuz cache'lenmis — ikinci cagri sorgu kurmadi, yani "
+            "motor 60 dakikaya kadar sessizce BOS sinav uretir "
+            f"(kurulan havuz sorgusu: {len(self._pool_queries(session))})"
+        )
+
+    @pytest.mark.asyncio
+    async def test_non_empty_pool_is_still_cached(self, wired, engine):
+        """H1 korumasi cache'i OLDURMEMELI — karsi yon.
+
+        `if rows:` yerine `if anchor_pool:` yazmak bu testi dusurur: bos bir
+        ankraj alt kumesi MESRUDUR (bir dersin hic ankraj maddesi olmayabilir),
+        dolayisiyla havuz-basina koruma saglikli veride sonsuza kadar yeniden
+        sorgulardi. Asagidaki satirlar tam o durumu kuruyor — sorgu bir satir
+        donuyor ama ankraj havuzu BOS.
+        """
+        session = wired([[("q-1", False)], [], []])
+        cfg = _config(engine)
+
+        await engine._select_questions(cfg)
+        await engine._select_questions(cfg)
+
+        assert len(self._pool_queries(session)) == 1, (
+            "dolu havuz cache'lenmemis — koruma `rows` yerine havuz basina mi "
+            f"kuruldu? (kurulan havuz sorgusu: {len(self._pool_queries(session))})"
+        )
+
+    @pytest.mark.asyncio
+    async def test_empty_fallback_pool_is_not_cached(self, wired, engine):
+        """H1 korumasi fallback dalinda da olmali (kopya-yapistir ikizi).
+
+        Iki dal ayri ayri sayiliyor: her cagri once zorluk havuzunu, sonra
+        (yetersiz kaldigi icin) fallback havuzunu sorgular → iki cagri = 4
+        havuz sorgusu. Yalniz `if fb_rows:` korumasi silinirse bu 3'e duser.
+        """
+        session = wired([[], [], [], []])
+        cfg = _config(engine, count=5, difficulty="orta")
+
+        await engine._select_questions(cfg)
+        await engine._select_questions(cfg)
+
+        assert len(self._pool_queries(session)) == 4, (
+            "bos havuz cache'lenmis (zorluk ve/veya fallback dali) — "
+            f"kurulan havuz sorgusu: {len(self._pool_queries(session))}"
+        )

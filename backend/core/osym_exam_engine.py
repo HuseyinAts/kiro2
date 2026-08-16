@@ -1509,8 +1509,8 @@ class OSYMExamEngine:
             for subject, count in exam_config.subject_distribution.items():
                 # Base quality filters
                 base_filters = [
-                    Question.exam_type == exam_config.exam_type.value.upper(),
-                    Question.subject_area == subject,
+                    QuestionMetadata.exam_type == exam_config.exam_type.value.upper(),
+                    QuestionMetadata.subject_area == subject,
                     Question.is_active == True,  # noqa: E712
                     # Kalite kapısı (core/quality_gate.py) — is_active'in YANINA
                     # gelir, yerine DEĞİL. Kapısız havuz 85.731 yargılanmamış/
@@ -1518,66 +1518,74 @@ class OSYMExamEngine:
                     # konuldu: hem id-havuzu cache'e YAZILMADAN önce, hem de
                     # zorluk-fallback havuzu bu listeyi kullandığı için otomatik kapanır.
                     safe_for_beta_gate(Question.id),
-                    Question.question_text.isnot(None),
-                    func.length(Question.question_text) >= 50,
-                    Question.option_a.isnot(None),
-                    func.length(Question.option_a) > 0,
-                    Question.option_b.isnot(None),
-                    func.length(Question.option_b) > 0,
-                    Question.option_c.isnot(None),
-                    func.length(Question.option_c) > 0,
-                    Question.option_d.isnot(None),
-                    func.length(Question.option_d) > 0,
-                    Question.option_a != Question.option_b,
+                    QuestionContent.question_text.isnot(None),
+                    func.length(QuestionContent.question_text) >= 50,
+                    QuestionContent.option_a.isnot(None),
+                    func.length(QuestionContent.option_a) > 0,
+                    QuestionContent.option_b.isnot(None),
+                    func.length(QuestionContent.option_b) > 0,
+                    QuestionContent.option_c.isnot(None),
+                    func.length(QuestionContent.option_c) > 0,
+                    QuestionContent.option_d.isnot(None),
+                    func.length(QuestionContent.option_d) > 0,
+                    QuestionContent.option_a != QuestionContent.option_b,
                     # P1-3: Seçenek minimum uzunluğu
-                    func.length(Question.option_a) >= 2,
-                    func.length(Question.option_b) >= 2,
-                    func.length(Question.option_c) >= 2,
-                    func.length(Question.option_d) >= 2,
+                    func.length(QuestionContent.option_a) >= 2,
+                    func.length(QuestionContent.option_b) >= 2,
+                    func.length(QuestionContent.option_c) >= 2,
+                    func.length(QuestionContent.option_d) >= 2,
                     # P0-2: Passage kontrolü — kısa metin + passage referansı = paragraf eksik
                     # Her iki form: diacritics'siz (OCR) ve Türkçe karakterli
                     or_(
                         and_(
-                            ~func.lower(Question.question_text).contains(
+                            ~func.lower(QuestionContent.question_text).contains(
                                 "parcaya gore"
                             ),
-                            ~func.lower(Question.question_text).contains(
+                            ~func.lower(QuestionContent.question_text).contains(
                                 "parçaya göre"
                             ),
                         ),
-                        func.length(Question.question_text) >= 300,
+                        func.length(QuestionContent.question_text) >= 300,
                     ),
                     or_(
                         and_(
-                            ~func.lower(Question.question_text).contains("metne gore"),
-                            ~func.lower(Question.question_text).contains("metne göre"),
+                            ~func.lower(QuestionContent.question_text).contains(
+                                "metne gore"
+                            ),
+                            ~func.lower(QuestionContent.question_text).contains(
+                                "metne göre"
+                            ),
                         ),
-                        func.length(Question.question_text) >= 300,
+                        func.length(QuestionContent.question_text) >= 300,
                     ),
                     or_(
                         and_(
-                            ~func.lower(Question.question_text).contains("bu parcada"),
-                            ~func.lower(Question.question_text).contains("bu parçada"),
+                            ~func.lower(QuestionContent.question_text).contains(
+                                "bu parcada"
+                            ),
+                            ~func.lower(QuestionContent.question_text).contains(
+                                "bu parçada"
+                            ),
                         ),
-                        func.length(Question.question_text) >= 300,
+                        func.length(QuestionContent.question_text) >= 300,
                     ),
                     # P0-3: Geometri/Fizik görsel bağımlılık filtresi
                     or_(
-                        ~Question.subject_area.in_(["GEOMETRI", "FIZIK"]),
-                        Question.question_image_url.isnot(None),
-                        func.length(Question.question_text) >= 500,
+                        ~QuestionMetadata.subject_area.in_(["GEOMETRI", "FIZIK"]),
+                        QuestionContent.question_image_url.isnot(None),
+                        func.length(QuestionContent.question_text) >= 500,
                     ),
                     # P2-3: Reddedilen sorular hariç
                     or_(
-                        Question.quality_review_status.is_(None),
-                        Question.quality_review_status != "rejected",
+                        QuestionStatistics.quality_review_status.is_(None),
+                        QuestionStatistics.quality_review_status != "rejected",
                     ),
                 ]
 
                 # Difficulty filter (if specified)
                 if difficulty_levels:
                     filters = base_filters + [
-                        Question.difficulty_level.in_(difficulty_levels),
+                        QuestionStatistics.difficulty_level.in_(difficulty_levels),
                     ]
                 else:
                     filters = base_filters
@@ -1589,10 +1597,10 @@ class OSYMExamEngine:
                 if subject in ("TURKCE", "EDEBIYAT", "TARIH", "COGRAFYA", "SOSYAL"):
                     filters.extend(
                         [
-                            ~Question.question_text.contains("$\\frac"),
-                            ~Question.question_text.contains("$\\sqrt"),
-                            ~Question.question_text.contains("x^2"),
-                            ~Question.question_text.contains("2x +"),
+                            ~QuestionContent.question_text.contains("$\\frac"),
+                            ~QuestionContent.question_text.contains("$\\sqrt"),
+                            ~QuestionContent.question_text.contains("x^2"),
+                            ~QuestionContent.question_text.contains("2x +"),
                         ]
                     )
 
@@ -1610,14 +1618,32 @@ class OSYMExamEngine:
 
                 if anchor_pool is None or normal_pool is None:
                     id_result = await db_session.execute(
-                        select(Question.id, Question.is_anchor).where(and_(*filters))
+                        select(Question.id, Question.is_anchor)
+                        .join(QuestionContent, QuestionContent.id == Question.id)
+                        .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+                        .join(QuestionStatistics, QuestionStatistics.id == Question.id)
+                        .where(and_(*filters))
                     )
                     rows = id_result.all()
                     anchor_pool = [row[0] for row in rows if row[1] is True]
                     normal_pool = [row[0] for row in rows if not row[1]]
 
-                    self._question_pool_cache[anchor_cache_key] = anchor_pool
-                    self._question_pool_cache[normal_cache_key] = normal_pool
+                    # H1 (#485): BOS sorgu sonucu cache'e YAZILMAZ.
+                    # `_question_pool_cache` bir `TTLCache(ttl=3600)`; bos ya da
+                    # yarim-import bir `question_bank`'a karsi kosan TEK sorgu
+                    # cache'i 60 dakikaya kadar zehirler ve o sure boyunca
+                    # sessizce BOS sinav uretilir. HEAD~1'de `if pool:` korumasi
+                    # vardi (eski kod bir sonraki istekte kendini onariyordu),
+                    # S210 devrinde supuruldu.
+                    #
+                    # Koruma HAVUZ BASINA DEGIL, SORGU SONUCU (`rows`) uzerine
+                    # kurulu: tek sorgu iki havuz uretiyor ve BOS bir ankraj alt
+                    # kumesi MESRUDUR (bir dersin hic ankraj maddesi olmayabilir).
+                    # `if anchor_pool:` denseydi saglikli veride her istekte
+                    # yeniden sorgulanir, cache'in amaci yok olurdu.
+                    if rows:
+                        self._question_pool_cache[anchor_cache_key] = anchor_pool
+                        self._question_pool_cache[normal_cache_key] = normal_pool
 
                 anchor_target = max(1, round(count * 0.15)) if count >= 5 else 0
                 normal_target = count - anchor_target
@@ -1661,16 +1687,23 @@ class OSYMExamEngine:
 
                     if fb_anchor_pool is None or fb_normal_pool is None:
                         fb_result = await db_session.execute(
-                            select(Question.id, Question.is_anchor).where(
-                                and_(*base_filters)
+                            select(Question.id, Question.is_anchor)
+                            .join(QuestionContent, QuestionContent.id == Question.id)
+                            .join(QuestionMetadata, QuestionMetadata.id == Question.id)
+                            .join(
+                                QuestionStatistics, QuestionStatistics.id == Question.id
                             )
+                            .where(and_(*base_filters))
                         )
                         fb_rows = fb_result.all()
                         fb_anchor_pool = [row[0] for row in fb_rows if row[1] is True]
                         fb_normal_pool = [row[0] for row in fb_rows if not row[1]]
 
-                        self._question_pool_cache[fb_anchor_key] = fb_anchor_pool
-                        self._question_pool_cache[fb_normal_key] = fb_normal_pool
+                        # H1 (#485): ana daldaki koruma ile ayni gerekce —
+                        # bos fallback havuzu 60 dakika boyunca cache'lenmez.
+                        if fb_rows:
+                            self._question_pool_cache[fb_anchor_key] = fb_anchor_pool
+                            self._question_pool_cache[fb_normal_key] = fb_normal_pool
 
                     fb_sampled_ids = []
                     anchor_target = max(1, round(count * 0.15)) if count >= 5 else 0
