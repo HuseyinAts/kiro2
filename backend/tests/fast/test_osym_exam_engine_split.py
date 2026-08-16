@@ -516,12 +516,22 @@ class TestAnalyzePerformance:
             for st in session.statements
             if str(st).lstrip().upper().startswith("UPDATE")
         ]
+        # SAYI iddiasi (S219 dersi) — "en az bir tane var" YETMEZ. Ilk surum
+        # `[u for u in updates if "times_asked" in u or "times_correct" in u]`
+        # ile suzup sadece VARLIK iddia ediyordu; iki UPDATE'ten YALNIZ BIRINI
+        # yanlis tabloya cevirmek testi HAYATTA BIRAKIYORDU, cunku hayatta kalan
+        # digeri hem listeyi dolu hem prefix'i dogru tutuyordu. Olculdu
+        # (M8a = 1. UPDATE, M8b = 2. UPDATE): ikisi de "4 passed" veriyordu.
+        # Sayiya baglandiktan sonra ikisi de dusuyor.
         stat_updates = [
-            u for u in updates if "times_asked" in u or "times_correct" in u
+            u for u in updates if u.startswith("UPDATE question_statistics")
         ]
-        assert stat_updates, "times_asked/times_correct UPDATE'i hic kurulmadi"
-        for sql in stat_updates:
-            assert sql.startswith("UPDATE question_statistics"), sql
+        assert len(stat_updates) == 2, (
+            "question_statistics'e giden TAM IKI UPDATE bekleniyordu "
+            f"(times_asked + times_correct); kurulan UPDATE'ler: {updates}"
+        )
+        assert sum("times_asked" in u for u in stat_updates) == 1, stat_updates
+        assert sum("times_correct" in u for u in stat_updates) == 1, stat_updates
         # Motor UPDATE'lerden sonra :1790'da commit ediyor. Commit edilmeyen
         # UPDATE hic yazilmamis demektir — kurulmus olmasi yetmez.
         assert session.committed, "UPDATE'ler kuruldu ama commit edilmedi"

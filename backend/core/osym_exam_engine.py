@@ -27,7 +27,7 @@ from core.quality_gate import safe_for_beta_gate
 from core.structured_logger import get_logger
 from models.database import ExamQuestion, ExamSession, ExamType, StudentAnswer
 from models.question_bank import QuestionBankItem as Question
-from models.question_bank import QuestionMetadata
+from models.question_bank import QuestionContent, QuestionMetadata, QuestionStatistics
 
 logger = get_logger("osym_exam_engine")
 
@@ -1744,7 +1744,11 @@ class OSYMExamEngine:
                 question_ids = list(session_data.answers.keys())
                 if question_ids:
                     result = await db_session.execute(
-                        select(Question.id, Question.correct_answer).where(
+                        # #485: correct_answer QuestionContent'te; id ana tabloda
+                        # kaldigi icin JOIN sart (iki tablodan da kolon seciliyor).
+                        select(Question.id, QuestionContent.correct_answer)
+                        .join(QuestionContent, QuestionContent.id == Question.id)
+                        .where(
                             Question.id.in_(question_ids),
                             Question.is_active.is_(True),
                         )
@@ -1805,17 +1809,21 @@ class OSYMExamEngine:
 
                     # --- times_asked / times_correct batch update ---
 
+                    # #485: times_asked / times_correct QuestionStatistics'e
+                    # tasindi. Ana tabloya yazan bir UPDATE yavru tabloyu
+                    # guncelleyemez — hedef, WHERE ve values'in ucu de
+                    # question_statistics olmali (PK paylasildigi icin id ayni).
                     if all_answered_ids:
                         await db_session.execute(
-                            update(Question)
-                            .where(Question.id.in_(all_answered_ids))
-                            .values(times_asked=Question.times_asked + 1)
+                            update(QuestionStatistics)
+                            .where(QuestionStatistics.id.in_(all_answered_ids))
+                            .values(times_asked=QuestionStatistics.times_asked + 1)
                         )
                     if correct_ids:
                         await db_session.execute(
-                            update(Question)
-                            .where(Question.id.in_(correct_ids))
-                            .values(times_correct=Question.times_correct + 1)
+                            update(QuestionStatistics)
+                            .where(QuestionStatistics.id.in_(correct_ids))
+                            .values(times_correct=QuestionStatistics.times_correct + 1)
                         )
 
                     await db_session.commit()
