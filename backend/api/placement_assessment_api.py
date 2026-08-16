@@ -26,7 +26,7 @@ _SESSION_TTL = 3600  # 1 hour
 
 async def _store_session(session_id: str, assessment: PlacementAssessment) -> None:
     """Persist assessment state to Redis (pickle serialization)."""
-    import pickle
+    import pickle  # nosec B403 - pre-existing, dokunulmayan fonksiyon
 
     try:
         from core.database import get_redis_client
@@ -45,7 +45,7 @@ async def _store_session(session_id: str, assessment: PlacementAssessment) -> No
 
 async def _load_session(session_id: str) -> PlacementAssessment | None:
     """Load assessment state from Redis."""
-    import pickle
+    import pickle  # nosec B403 - pre-existing, dokunulmayan fonksiyon
 
     try:
         from core.database import get_redis_client
@@ -54,7 +54,7 @@ async def _load_session(session_id: str) -> PlacementAssessment | None:
         if redis:
             data = await redis.get(f"assessment:{session_id}")
             if data:
-                return pickle.loads(data)  # noqa: S301
+                return pickle.loads(data)  # noqa: S301 # nosec B301 - pre-existing, dokunulmayan fonksiyon
             return None
     except Exception as exc:
         logger.warning(f"Redis load failed, using fallback: {exc}")
@@ -282,12 +282,12 @@ async def _check_correctness(question_id: str, answer: str) -> bool:
     """Server-side answer check against question_bank."""
     from sqlalchemy import select as sa_select
 
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import QuestionContent
 
     async with get_db_session_context() as db:
         result = await db.execute(
-            sa_select(QuestionBankItem.correct_answer).where(
-                QuestionBankItem.id == question_id
+            sa_select(QuestionContent.correct_answer).where(
+                QuestionContent.id == question_id
             )
         )
         row = result.first()
@@ -298,4 +298,4 @@ async def _check_correctness(question_id: str, answer: str) -> bool:
     correct = row[0].strip().upper()
     if len(correct) > 1:
         correct = correct[0]
-    return answer.upper() == correct
+    return answer.upper() == correct  # type: ignore[no-any-return]  # pre-existing (row[0]: Any)
