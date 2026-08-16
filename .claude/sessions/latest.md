@@ -40,7 +40,7 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 ## Session Handoff — 2026-08-16 (S221)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `ed07d7fb0` fix(osym): get_subject_performance uc split iliskiyi eager-load ediyor (#485)
-**Push:** ⏳ commit'li, **push edilmedi** — kullanıcı onayı bekliyor
+**Push:** ✅ `887af3774..63fd61c87` (2 commit), push-secret-guard + reward-hacking-check PASS
 **Uncommitted:** bu işin dosyaları temiz. Ağaçtaki ~3387 kirli dosya = S210 Gemini devri, bu session'a ait değil.
 
 ### Yapılanlar
