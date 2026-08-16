@@ -29,7 +29,7 @@ from models.parent import (
     WeeklyReport,
     WeeklyReportData,
 )
-from models.question_bank import QuestionBankItem
+from models.question_bank import QuestionBankItem, QuestionMetadata
 from models.study_planner import StudyPlan
 
 # ---------------------------------------------------------------------------
@@ -569,13 +569,14 @@ class ParentService:
         # cevapların çoğunu (unverified/pending) düşürüp doğruluğu çarpıtırdı.
         answers_stmt = (
             select(
-                QuestionBankItem.subject_area,
+                QuestionMetadata.subject_area,
                 StudentAnswer.selected_answer,
                 StudentAnswer.is_correct,
                 StudentAnswer.answered_at,
             )
             .join(ExamSession, StudentAnswer.exam_session_id == ExamSession.id)
             .join(QuestionBankItem, StudentAnswer.question_id == QuestionBankItem.id)
+            .join(QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id)
             .where(ExamSession.student_id == child_id)
         )
         answer_rows = (await self.db.execute(answers_stmt)).all()
@@ -850,7 +851,7 @@ class ParentService:
                     parent_id, relation.child_id
                 )
                 children_performance.append(performance)
-            except Exception:
+            except Exception:  # nosec B112 - tek cocugun sorgu hatasi tum paneli dusurmemeli
                 continue
 
         unread_notifications = await self.get_parent_notifications(

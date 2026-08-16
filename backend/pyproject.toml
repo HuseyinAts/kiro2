@@ -342,6 +342,16 @@ exclude = [
     "UP038",
 ]
 
+# services/parent_service.py — S112 (bandit try/except/continue). OLCULDU
+# (16 Agu 2026, #485): kontrol kolu `git show HEAD:...| ruff check -` ->
+# "Found 1 error", yani ONCEDEN VAR ve #485'in dokundugu `get_child_performance`
+# metodunun DISINDA (`get_parent_dashboard_data`, cocuk listesi toplama dongusu).
+# Bir cocugun performans sorgusu hata verirse dongu devam eder — kasitli:
+# veli paneli tum kayitlari degil sadece basarili olanlari gostermeli, tek
+# cocugun hatasi tum paneli 500'e dusurmemeli. #485 kapsami sadece
+# `answers_stmt` JOIN'i, bu davranisi degistirmek ayri bir konu olurdu.
+"services/parent_service.py" = ["S112"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["core", "models", "services", "api", "algorithms"]
 split-on-trailing-comma = true
