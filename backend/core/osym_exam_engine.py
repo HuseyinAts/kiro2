@@ -1319,6 +1319,14 @@ class OSYMExamEngine:
                 # Sınav sorularını ve cevapları getir
                 result = await db_session.execute(
                     select(Question, StudentAnswer)
+                    # #485: dongude :1345 subject_area(metadata) · :1362
+                    # irt_difficulty(statistics) · :1367 correct_answer(content)
+                    # okunuyor; lazy='select' -> eager-load sart.
+                    .options(
+                        selectinload(Question.content),
+                        selectinload(Question.metadata_info),
+                        selectinload(Question.statistics),
+                    )
                     .join(ExamQuestion, Question.id == ExamQuestion.question_id)
                     .outerjoin(
                         StudentAnswer,
