@@ -20,6 +20,7 @@ from typing import Any
 
 from cachetools import TTLCache
 from sqlalchemy import and_, func, or_, select, update
+from sqlalchemy.orm import selectinload
 
 from core.database import get_db_session_context
 from core.quality_gate import safe_for_beta_gate
@@ -560,9 +561,17 @@ class OSYMExamEngine:
 
             async with get_db_session_context() as db_session:
                 result = await db_session.execute(
-                    select(Question).where(
-                        Question.id == question_id, Question.is_active.is_(True)
+                    # #485: donen nesneden api/sinav.py:493-508 12 split alan okuyor
+                    # (content 10 + metadata 1 + statistics 1). Iliskiler lazy='select'
+                    # (models/question_bank.py:201-218) -> eager-load olmadan
+                    # async oturumda MissingGreenlet.
+                    select(Question)
+                    .options(
+                        selectinload(Question.content),
+                        selectinload(Question.metadata_info),
+                        selectinload(Question.statistics),
                     )
+                    .where(Question.id == question_id, Question.is_active.is_(True))
                 )
                 question = result.scalar_one_or_none()
 
