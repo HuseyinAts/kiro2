@@ -1,5 +1,5 @@
 
-services\alternative_solutions_service.py  [SINIF=0 ENTITY=6]
+services\alternative_solutions_service.py  [SINIF=0 KWARG=0 ENTITY=6]
     ENTITY  :76    select(QuestionBankItem)
     ENTITY  :162   select(QuestionBankItem)
     ENTITY  :245   select(QuestionBankItem)
@@ -7,11 +7,13 @@ services\alternative_solutions_service.py  [SINIF=0 ENTITY=6]
     ENTITY  :1758  select(QuestionBankItem)
     ENTITY  :2175  select(QuestionBankItem)
 
-services\difficulty_classification_service.py  [SINIF=2 ENTITY=0]
+services\difficulty_classification_service.py  [SINIF=2 KWARG=0 ENTITY=2]
     SINIF   :610   .irt_difficulty  -> QuestionStatistics
     SINIF   :611   .irt_difficulty  -> QuestionStatistics
+    ENTITY  :642   query(QuestionBankItem)
+    ENTITY  :287   query(QuestionBankItem)
 
-services\exam_performance_service.py  [SINIF=11 ENTITY=0]
+services\exam_performance_service.py  [SINIF=11 KWARG=0 ENTITY=0]
     SINIF   :356   .subject_area  -> QuestionMetadata
     SINIF   :371   .subject_area  -> QuestionMetadata
     SINIF   :371   .difficulty_level  -> QuestionStatistics
@@ -24,31 +26,35 @@ services\exam_performance_service.py  [SINIF=11 ENTITY=0]
     SINIF   :327   .correct_answer  -> QuestionContent
     SINIF   :336   .correct_answer  -> QuestionContent
 
-services\irt_analysis_service.py  [SINIF=1 ENTITY=3]
+services\irt_analysis_service.py  [SINIF=1 KWARG=4 ENTITY=3]
     SINIF   :288   .subject_area  -> QuestionMetadata
+    KWARG   :235   .values(irt_discrimination=...)  -> QuestionStatistics
+    KWARG   :235   .values(irt_difficulty=...)  -> QuestionStatistics
+    KWARG   :235   .values(irt_guessing=...)  -> QuestionStatistics
+    KWARG   :235   .values(is_calibrated=...)  -> QuestionStatistics
     ENTITY  :74    select(Soru)
     ENTITY  :204   select(Soru)
     ENTITY  :288   select(Soru)
 
-services\mnemonic_service.py  [SINIF=0 ENTITY=1]
+services\mnemonic_service.py  [SINIF=0 KWARG=0 ENTITY=1]
     ENTITY  :70    select(QuestionBankItem)
 
-services\offline_sync_service.py  [SINIF=0 ENTITY=2]
+services\offline_sync_service.py  [SINIF=0 KWARG=0 ENTITY=2]
     ENTITY  :284   select(QuestionBankItem)
     ENTITY  :123   select(QuestionBankItem)
 
-services\placement_assessment_service.py  [SINIF=2 ENTITY=1]
+services\placement_assessment_service.py  [SINIF=2 KWARG=0 ENTITY=1]
     SINIF   :203   .difficulty_level  -> QuestionStatistics
     SINIF   :211   .subject_area  -> QuestionMetadata
     ENTITY  :201   select(QuestionBankItem)
 
-services\question_bank_service.py  [SINIF=0 ENTITY=4]
+services\question_bank_service.py  [SINIF=0 KWARG=0 ENTITY=4]
     ENTITY  :130   select(QuestionBankItem)
     ENTITY  :427   select(QuestionBankItem)
     ENTITY  :601   select(QuestionBankItem)
     ENTITY  :656   select(QuestionBankItem)
 
-services\question_crud_service.py  [SINIF=0 ENTITY=11]
+services\question_crud_service.py  [SINIF=0 KWARG=0 ENTITY=11]
     ENTITY  :453   select(QuestionBankItem)
     ENTITY  :480   select(QuestionBankItem)
     ENTITY  :517   select(QuestionBankItem)
@@ -61,14 +67,14 @@ services\question_crud_service.py  [SINIF=0 ENTITY=11]
     ENTITY  :626   select(QuestionBankItem)
     ENTITY  :679   select(QuestionBankItem)
 
-services\question_review_adapter.py  [SINIF=0 ENTITY=2]
+services\question_review_adapter.py  [SINIF=0 KWARG=0 ENTITY=2]
     ENTITY  :68    select(QuestionBankItem)
     ENTITY  :167   select(QuestionBankItem)
 
-services\solutions\base.py  [SINIF=0 ENTITY=1]
+services\solutions\base.py  [SINIF=0 KWARG=0 ENTITY=1]
     ENTITY  :33    select(QuestionBankItem)
 
-services\soru_bankasi_service.py  [SINIF=41 ENTITY=15]
+services\soru_bankasi_service.py  [SINIF=41 KWARG=0 ENTITY=15]
     SINIF   :1472  .difficulty_level  -> QuestionStatistics
     SINIF   :1362  .exam_type  -> QuestionMetadata
     SINIF   :1374  .subject_area  -> QuestionMetadata
@@ -126,34 +132,43 @@ services\soru_bankasi_service.py  [SINIF=41 ENTITY=15]
     ENTITY  :367   select(Question)
     ENTITY  :1567  select(Question)
 
-services\student_dashboard_service.py  [SINIF=2 ENTITY=0]
+services\student_dashboard_service.py  [SINIF=2 KWARG=0 ENTITY=0]
     SINIF   :296   .subject_area  -> QuestionMetadata
     SINIF   :286   .subject_area  -> QuestionMetadata
 
-services\video_solution_service.py  [SINIF=0 ENTITY=1]
+services\video_solution_service.py  [SINIF=0 KWARG=0 ENTITY=1]
     ENTITY  :148   select(QuestionBankItem)
 
-api\curator.py  [SINIF=0 ENTITY=3]
+api\curator.py  [SINIF=0 KWARG=0 ENTITY=3]
     ENTITY  :585   select(QuestionBankItem)
     ENTITY  :358   select(QuestionBankItem)
     ENTITY  :501   select(QuestionBankItem)
 
-api\elasticsearch.py  [SINIF=0 ENTITY=1]
+api\difficulty_classification_api.py  [SINIF=0 KWARG=0 ENTITY=1]
+    ENTITY  :407   query(QuestionBankItem)
+
+api\elasticsearch.py  [SINIF=0 KWARG=0 ENTITY=1]
     ENTITY  :435   select(Question)
 
-api\osym_routes.py  [SINIF=0 ENTITY=2]
+api\osym_routes.py  [SINIF=0 KWARG=0 ENTITY=2]
     ENTITY  :338   select(QuestionBankItem)
     ENTITY  :348   select(QuestionBankItem)
 
-api\photo_ask_api.py  [SINIF=0 ENTITY=1]
+api\photo_ask_api.py  [SINIF=0 KWARG=0 ENTITY=1]
     ENTITY  :147   select(QuestionBankItem)
 
-core\irt_daemon.py  [SINIF=2 ENTITY=1]
+core\irt_daemon.py  [SINIF=2 KWARG=6 ENTITY=1]
     SINIF   :168   .is_calibrated  -> QuestionStatistics
     SINIF   :169   .irt_difficulty  -> QuestionStatistics
+    KWARG   :211   .values(irt_difficulty=...)  -> QuestionStatistics
+    KWARG   :211   .values(irt_discrimination=...)  -> QuestionStatistics
+    KWARG   :211   .values(irt_guessing=...)  -> QuestionStatistics
+    KWARG   :211   .values(morphology_complexity=...)  -> QuestionMetadata
+    KWARG   :211   .values(readability_score=...)  -> QuestionMetadata
+    KWARG   :211   .values(is_calibrated=...)  -> QuestionStatistics
     ENTITY  :165   select(QuestionBankItem)
 
-core\osym_exam_engine.py  [SINIF=42 ENTITY=5]
+core\osym_exam_engine.py  [SINIF=42 KWARG=2 ENTITY=5]
     SINIF   :1487  .exam_type  -> QuestionMetadata
     SINIF   :1488  .subject_area  -> QuestionMetadata
     SINIF   :1506  .option_a  -> QuestionContent
@@ -196,23 +211,25 @@ core\osym_exam_engine.py  [SINIF=42 ENTITY=5]
     SINIF   :1781  .times_asked  -> QuestionStatistics
     SINIF   :1787  .times_correct  -> QuestionStatistics
     SINIF   :697   .correct_answer  -> QuestionContent
+    KWARG   :1779  .values(times_asked=...)  -> QuestionStatistics
+    KWARG   :1785  .values(times_correct=...)  -> QuestionStatistics
     ENTITY  :1456  select(Question)
     ENTITY  :567   select(Question)
     ENTITY  :1615  select(Question)
     ENTITY  :1665  select(Question)
     ENTITY  :1313  select(Question)
 
-tasks\mega_feature_tasks.py  [SINIF=2 ENTITY=0]
+tasks\mega_feature_tasks.py  [SINIF=2 KWARG=0 ENTITY=0]
     SINIF   :393   .subject_area  -> QuestionMetadata
     SINIF   :371   .subject_area  -> QuestionMetadata
 
-analytics\exam_results_reporting.py  [SINIF=4 ENTITY=0]
+analytics\exam_results_reporting.py  [SINIF=4 KWARG=0 ENTITY=0]
     SINIF   :534   .subject_area  -> QuestionMetadata
     SINIF   :529   .irt_difficulty  -> QuestionStatistics
     SINIF   :1457  .subject_area  -> QuestionMetadata
     SINIF   :1518  .subject_area  -> QuestionMetadata
 
-application\commands\learning_path.py  [SINIF=5 ENTITY=1]
+application\commands\learning_path.py  [SINIF=5 KWARG=0 ENTITY=1]
     SINIF   :826   .correct_answer  -> QuestionContent
     SINIF   :828   .subject_area  -> QuestionMetadata
     SINIF   :829   .irt_discrimination  -> QuestionStatistics
@@ -220,7 +237,7 @@ application\commands\learning_path.py  [SINIF=5 ENTITY=1]
     SINIF   :831   .irt_guessing  -> QuestionStatistics
     ENTITY  :801   select(Question)
 
-application\commands\sinav.py  [SINIF=16 ENTITY=0]
+application\commands\sinav.py  [SINIF=16 KWARG=0 ENTITY=0]
     SINIF   :475   .correct_answer  -> QuestionContent
     SINIF   :477   .subject_area  -> QuestionMetadata
     SINIF   :478   .irt_discrimination  -> QuestionStatistics
@@ -238,7 +255,7 @@ application\commands\sinav.py  [SINIF=16 ENTITY=0]
     SINIF   :364   .irt_difficulty  -> QuestionStatistics
     SINIF   :365   .irt_guessing  -> QuestionStatistics
 
-repositories\question_repository.py  [SINIF=16 ENTITY=5]
+repositories\question_repository.py  [SINIF=16 KWARG=0 ENTITY=5]
     SINIF   :110   .exam_type  -> QuestionMetadata
     SINIF   :111   .subject_area  -> QuestionMetadata
     SINIF   :101   .exam_type  -> QuestionMetadata
@@ -262,4 +279,4 @@ repositories\question_repository.py  [SINIF=16 ENTITY=5]
     ENTITY  :149   select(Question)
 
 ============================================================
-TOPLAM  SINIF=146  ENTITY=66
+TOPLAM  SINIF=146  KWARG=12  ENTITY=69  (parse edilemeyen dosya: 0)
