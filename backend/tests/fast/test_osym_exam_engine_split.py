@@ -85,21 +85,32 @@ def _eager_loaded(stmt) -> dict[str, str | None]:
     GUARD (olculdu): iliski-YOLU OLMAYAN secenekler var ve bunlar yardimciyi
     opak bicimde carpitirdi:
 
-        raiseload("*")     -> `_WildcardLoad`, `.context` YOK -> AttributeError
-        load_only(Q.id)    -> path uzunlugu 1 -> IndexError: tuple index
+        raiseload("*")      -> `_WildcardLoad`, `.context` YOK -> AttributeError
+        load_only(Q.id)     -> path uzunlugu 1 -> IndexError: tuple index
+        defaultload(Q.rel)  -> path 3, context VAR, ama `strategy is None`
+                               -> `dict(None)` -> TypeError
 
     `raiseload("*")` "hic lazy-load kalmadi"yi KANITLAMANIN kanonik yolu, yani
     Task 4/5 ajaninin ekleyecegi tam olarak bu olabilir. Guard olmadan ajan
-    fix'i degil bu yardimciyi hata ayiklardi. Atlanan secenekler zaten bir
-    iliskiye eager-load ATAMAZ, dolayisiyla iddia kaybi yok.
+    fix'i degil bu yardimciyi hata ayiklardi. Atlanan/bos gecilen secenekler
+    zaten bir iliskiye eager-load ATAMAZ, dolayisiyla iddia kaybi yok
+    (14 secenek biciminde olculdu: hicbir gercek eager-load yutulmuyor).
     """
     loaded: dict[str, str | None] = {}
     for opt in stmt._with_options:
         if len(getattr(opt, "path", ())) < 2 or not hasattr(opt, "context"):
             continue
-        strategy = dict(opt.context[0].strategy) if opt.context else {}
+        strategy = dict(opt.context[0].strategy or {}) if opt.context else {}
         loaded[opt.path[1].key] = strategy.get("lazy")
     return loaded
+
+
+# `~Question.question_text.contains(...)` bu sekilde render oluyor (olculdu).
+# Pasaj suzgecleri (`~func.lower(Question.question_text).contains(...)`)
+# `question_content.question_text) NOT LIKE` uretiyor — arada `)` var, bu
+# yuzden asagidaki desene TAKILMIYORLAR (olculdu: TURKCE'de 6 tane var,
+# sayima girmiyorlar).
+_LATEX_FILTER_NEEDLE = "question_content.question_text NOT LIKE"
 
 
 class _CaptureSession:
@@ -297,7 +308,14 @@ class TestSaveAnswerGrading:
             if str(st).lstrip().upper().startswith("SELECT")
         ]
         assert selects, "notlandirma sorgusu hic kurulmadi (:703 except yutuyor)"
-        # Kume formu — konumsal `[0]` degil (dosya ici tutarlilik, bkz. :412).
+        # Kume formu — konumsal `[0]` degil (dosya ici tutarlilik; ayni desen
+        # `test_correct_answer_selected_from_question_content` icinde).
+        #
+        # Bu iddia kardesinden DAHA SIKI (`==` vs `<=`) ve sebebi var:
+        # notlandirma sorgusu YALNIZ `correct_answer` istiyor, `id` bile
+        # gerekmiyor (`WHERE id == question_id` ile zaten biliniyor). Kardes
+        # iddia `_analyze_performance` icin gevsek, cunku orada `row.id`
+        # OKUNUYOR ve paylasilan PK iki tablodan da secilebilir.
         cols = {c.table.name for c in selects[0].selected_columns}
         assert cols == {"question_content"}, cols
 
@@ -529,9 +547,35 @@ class TestSelectQuestions:
     # Ayni olcum bir yan bulgu daha verdi: "alanlar gocurulmus ama JOIN
     # EKLENMEMIS" halinde `get_final_froms()` = 4, yani asagidaki
     # `_assert_single_from` o fix'i de yakaliyor (derleme testi degil).
+    #
+    # ALIASING TUZAGI (olculdu, BUGUN zararsiz — Task 7 ajani icin uyari):
+    # `difficulty` yokken `:1558` `filters = base_filters` AYNI NESNEYI baglar,
+    # `:1565` `filters.extend(...)` bu yuzden `base_filters`'i MUTASYONA
+    # ugratir. Bugun zararsiz, cunku `base_filters` ders dongusunun ICINDE
+    # (:1486) her ders icin yeniden kuruluyor — olculdu: {TURKCE, MATEMATIK}
+    # ve ters sirada {MATEMATIK, TURKCE} icin LaTeX kosulu sirasiyla 4/0 ve
+    # 0/4, yani sizinti YOK. TEHLIKE: uc JOIN eklenirken `base_filters`'i
+    # dongunun DISINA cikarmak cok dogal bir hamledir; o an TURKCE kendinden
+    # sonraki HER dersi kirletir ve `~contains("x^2")` MATEMATIK havuzunu
+    # bicer. `test_latex_filter_does_not_leak_to_next_subject` bunu civiliyor.
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("subject", ["MATEMATIK", "TURKCE"])
-    async def test_query_builds_and_compiles(self, wired, engine, subject):
+    @pytest.mark.parametrize(
+        ("subject", "latex_conditions"), [("MATEMATIK", 0), ("TURKCE", 4)]
+    )
+    async def test_query_builds_and_compiles(
+        self, wired, engine, subject, latex_conditions
+    ):
+        """Yalniz "goc ettin mi" degil, "KORUDUN mu" da civilenir.
+
+        Derleme + tek-FROM iddiasi tek basina yetmez: Task 7 ajani
+        :1567-1570'teki `AttributeError`'dan kurtulmak icin `filters.extend`
+        blogunu SILEBILIR ve her iki parametre de yesil kalir — Turkce
+        sinavlar sessizce LaTeX formullu soru servis etmeye baslar.
+
+        Beklenen sayi OLCULDU (varsayilmadi): blok dort desen iceriyor
+        (`$\\frac`, `$\\sqrt`, `x^2`, `2x +`) ve dogru gocurulmus kod
+        TURKCE icin tam 4, MATEMATIK icin 0 kosul uretiyor.
+        """
         session = wired([[]])
 
         await engine._select_questions(_config(engine, subject=subject))
@@ -540,6 +584,49 @@ class TestSelectQuestions:
         for stmt in session.statements:
             _compiled_sql(stmt)
             _assert_single_from(stmt)
+
+        where_sql = _compiled_where(session.statements[0])
+        assert where_sql.count(_LATEX_FILTER_NEEDLE) == latex_conditions, (
+            f"{subject}: beklenen {latex_conditions} LaTeX kosulu, "
+            f"bulunan {where_sql.count(_LATEX_FILTER_NEEDLE)} "
+            "(0 = filters.extend blogu silinmis; MATEMATIK'te >0 = "
+            f"filtre yanlis derse sizmis)\n{where_sql}"
+        )
+
+    @pytest.mark.asyncio
+    async def test_latex_filter_does_not_leak_to_next_subject(self, wired, engine):
+        """LaTeX suzgeci YALNIZ kendi dersinin sorgusunda olmali.
+
+        `filters.extend` `base_filters`'i mutasyona ugratiyor (yukaridaki
+        ALIASING TUZAGI). Bugun zararsiz; `base_filters` ders dongusunun
+        icinde kuruldugu icin her ders temiz basliyor. Bu test o
+        invaryanti civiliyor: uc JOIN eklerken `base_filters` dongunun
+        disina cikarilirsa MATEMATIK sorgusu TURKCE'nin LaTeX kosullarini
+        devralir ve asagidaki `== 0` duser.
+        """
+        from models.database import ExamType
+
+        cfg = copy.deepcopy(engine.exam_configs[ExamType.TYT])
+        cfg.subject_distribution = {"TURKCE": 3, "MATEMATIK": 3}
+        cfg.total_questions = 6
+        cfg.difficulty = None
+        session = wired([[], []])
+
+        await engine._select_questions(cfg)
+
+        assert (
+            len(session.statements) == 2
+        ), f"iki ders = iki havuz sorgusu, kurulan {len(session.statements)}"
+        turkce_where = _compiled_where(session.statements[0])
+        matematik_where = _compiled_where(session.statements[1])
+        assert "question_metadata.subject_area = 'TURKCE'" in turkce_where
+        assert "question_metadata.subject_area = 'MATEMATIK'" in matematik_where
+
+        assert turkce_where.count(_LATEX_FILTER_NEEDLE) == 4, turkce_where
+        assert matematik_where.count(_LATEX_FILTER_NEEDLE) == 0, (
+            "TURKCE'nin LaTeX suzgeci MATEMATIK'e sizmis — `base_filters` "
+            f"ders dongusunun disina mi cikti?\n{matematik_where}"
+        )
 
     @pytest.mark.asyncio
     async def test_all_three_split_tables_joined(self, wired, engine):
