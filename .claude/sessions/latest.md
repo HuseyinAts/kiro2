@@ -40,7 +40,11 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 ## Session Handoff — 2026-08-17 (S225)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `6f7c5dec3` test(soru-bankasi): mukerrer dali + strangler-bagimsizligi civilendi (#485)
-**Push:** ❌ **EDILMEDI** — 3 commit bekliyor (`346150a00`, `efe632828`, `6f7c5dec3`).
+**Push:** ✅ `6b87d2a95..1fffbd007` — **5 commit** (S224 handoff `7286a3032` de bekliyormuş).
+push-secret-guard 1195 satır taradı, sır yok; reward-hacking-check PASS (1 bloklamayan
+uyarı: "Test count: 11" — dedektör heuristiği, dosyada 12 test var).
+⚠️ Raporda önce "4 commit" dendi, **ölçünce 5**. Sayı bir ölçümdür:
+`git log --oneline origin/<dal>..HEAD | wc -l` — elle sayılmamalı (S223 dersi).
 **Uncommitted:** bu işin dosyaları temiz. ~3399 kirli dosya = S210 devri, ait değil.
 
 ### Yapılanlar — Adım 2 KAPANDI (`toplu_soru_ekle` + API tüketici)
