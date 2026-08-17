@@ -149,3 +149,87 @@ class TestCompiledQueryShapes:
                 compile_kwargs={"literal_binds": True},
             )
             self._assert_single_from(stmt)
+
+
+# ---------------------------------------------------------------------------
+# create_question — NOT NULL / kanon alanlari (S226)
+# ---------------------------------------------------------------------------
+
+
+def _soru_verisi(metin: str = "Iki kere iki kactir?") -> dict:
+    return {
+        "soru_metni": metin,
+        "secenekler": ["A) 3", "B) 4", "C) 5", "D) 6", "E) 7"],
+        "dogru_cevap": "b",
+        "konu": "Matematik",
+        "sinav_tipi": "tyt",
+        "zorluk_seviyesi": "orta",
+    }
+
+
+class TestCreateQuestionZorunluAlanlar:
+    """`create_question` DB'ye giden nesneyi eksiksiz kurmali.
+
+    NEDEN MOCK OTURUMLA OLCULUYOR: bu servis uretimden ULASILAMAZ (olculdu
+    17 Agu — `QuestionCRUDService` yalnizca 3 TEST dosyasinda geciyor, ne
+    `routers/loader.py`de ne `main.py`de ne de baska bir serviste). Yani
+    canli DB'ye yazan bir uctan uca test yazmak orantisiz olurdu; bunun
+    yerine `db.add(...)`e VERILEN nesne dogrudan denetleniyor. Bu, NOT NULL
+    kusurunu flush'a hic gitmeden deterministik yakalar.
+
+    Kusur GERCEK ama LATENT: biri bu servisi kablolarsa ilk cagride
+    `NotNullViolationError: null value in column "soru_hash"` alir
+    (`question_bank.soru_hash` NOT NULL, DB-default YOK — olculdu).
+    """
+
+    async def _eklenen(self, svc, db, veri):
+        await svc.create_question(veri, created_by="test-user")
+        assert db.add.called, "db.add hic cagrilmadi (sessiz except?)"
+        return db.add.call_args[0][0]
+
+    async def test_soru_hash_dolduruluyor(self):
+        """`soru_hash` NOT NULL — bugun HIC set edilmiyor."""
+        svc, db, _ = _make_service()
+
+        eklenen = await self._eklenen(svc, db, _soru_verisi())
+
+        assert eklenen.soru_hash, "soru_hash bos/None -> NOT NULL ihlali"
+        assert (
+            len(eklenen.soru_hash) == 32
+        ), f"soru_hash uzunlugu {len(eklenen.soru_hash)}; kolon String(32)"
+
+    async def test_soru_hash_icerige_bagli(self):
+        """Farkli sorular FARKLI hash almali.
+
+        AYIRT EDICI: sabit bir dize dondurmek yukaridaki testi yesil yapar ama
+        `uq_qb_soru_hash_active` kismi benzersizlik indeksini ise yaramaz kilar
+        (ikinci soru catisir). Bu test o naif fix'i reddeder.
+        """
+        svc1, db1, _ = _make_service()
+        svc2, db2, _ = _make_service()
+
+        bir = await self._eklenen(svc1, db1, _soru_verisi("Birinci soru?"))
+        iki = await self._eklenen(svc2, db2, _soru_verisi("Ikinci soru?"))
+
+        assert (
+            bir.soru_hash != iki.soru_hash
+        ), f"iki farkli soru ayni hash aldi: {bir.soru_hash}"
+
+    async def test_subject_area_kanonik_buyuk_harf(self):
+        """`subject_area` canli kanona uymali (BUYUK harf).
+
+        Olculdu: `question_metadata.subject_area` canli degerleri MATEMATIK /
+        GEOMETRI / FIZIK ... Bugun bu servis girdiyi (veya 'Matematik'
+        varsayilanini) DUZ geciriyor -> satir `subject_area='Matematik'` olur
+        ve `subject_area='MATEMATIK'` filtreleyen sorgulardan DUSER.
+        """
+        svc, db, _ = _make_service()
+
+        eklenen = await self._eklenen(svc, db, _soru_verisi())
+
+        assert (
+            eklenen.metadata_info.subject_area == "MATEMATIK"
+        ), f"kanonik degil: {eklenen.metadata_info.subject_area!r}"
+        assert (
+            eklenen.metadata_info.exam_type == "TYT"
+        ), f"kanonik degil: {eklenen.metadata_info.exam_type!r}"

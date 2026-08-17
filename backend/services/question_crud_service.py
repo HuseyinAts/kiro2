@@ -18,6 +18,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from core.quality_gate import safe_for_beta_gate
+
+# Yazma yolu KANONU tek yerde tanimli (S225). Bu servis ucuncu cagri yeri, o
+# yuzden kopyalanmiyor — kopyalanan normalizasyon `soru_bankasi_service`de
+# tam olarak 5 kusur uretmisti. Alt cizgili adlar modul-ici sayilir ama burada
+# BILEREK paylasiliyor: alternatif, ayni mantigi ucuncu kez yazmak olurdu.
+#
+# `subject_db` TEK BASINA YETMEZ (olculdu): subject_db("Türkçe") -> "TÜRKÇE",
+# canli kanon ise ASCII "TURKCE" (1.543 satir). `_KONU_MAP` hem takma adlari
+# ("Mat") hem Turkce->ASCII esleme'yi yapar; bilesim `soru_ekle` ile ayni.
+from core.turkish_nlp_utils import subject_db
 from models.question_bank import (
     QuestionBankItem,
     QuestionContent,
@@ -28,6 +38,7 @@ from models.question_bank import (
     QuestionTagAssociation,
     TopicHierarchy,
 )
+from services.soru_bankasi_service import _KONU_MAP, _soru_hash_uret
 
 logger = logging.getLogger(__name__)
 
@@ -107,12 +118,24 @@ class QuestionCRUDService:
             # Soru nesnesini oluştur (split şema: content/metadata/statistics
             # artık ayrı tablolarda — QuestionBankItem kurucusuna devredilmiş
             # alan geçmek başarısız olur, ilişkili kayıt henüz yok)
+            # `soru_hash`: NOT NULL, DB-default YOK. Set EDILMIYORDU -> bu servis
+            # kablolandigi an ilk cagride
+            #   NotNullViolationError: null value in column "soru_hash"
+            # alirdi. Kusur bugun LATENT (olculdu 17 Agu: QuestionCRUDService'in
+            # uretimde SIFIR tuketicisi var — yalnizca 3 test dosyasi kullaniyor,
+            # routers/loader.py ve main.py'de adi gecmiyor), ama mayin olarak
+            # birakilmadi. Hash ICERIGE bagli olmali: `uq_qb_soru_hash_active`
+            # kismi benzersizlik indeksini besliyor.
+            konu_ham = question_data.get("konu", "Genel")
             new_question = QuestionBankItem(
                 id=str(uuid.uuid4()),
                 primary_topic_id=topic_id,
                 created_by=created_by,
                 is_active=True,
                 is_public=question_data.get("genel_erisim", False),
+                soru_hash=_soru_hash_uret(
+                    question_data.get("soru_metni", ""), secenekler
+                ),
             )
             new_question.content = QuestionContent(
                 question_text=question_data.get("soru_metni", ""),
@@ -135,8 +158,14 @@ class QuestionCRUDService:
                 secondary_topics=question_data.get("ikincil_konular"),
                 bloom_level=question_data.get("bloom_seviyesi", 1),
                 bloom_category=question_data.get("bloom_kategorisi", "knowledge"),
-                exam_type=question_data.get("sinav_tipi", "TYT"),
-                subject_area=question_data.get("konu", "Matematik"),
+                # KANON: canli `question_metadata` degerleri ASCII BUYUK harf
+                # (olculdu: MATEMATIK 7.816 / TURKCE 1.543 / FIZIK 2.307 ...).
+                # Onceden girdi DUZ geciriliyordu -> 'Matematik' yazilir ve
+                # `subject_area='MATEMATIK'` filtreleyen sorgulardan DUSERDI.
+                # `subject_db` TEK BASINA yetmez ("Türkçe" -> "TÜRKÇE"); `_KONU_MAP`
+                # hem takma adi hem Turkce->ASCII eslemeyi yapar (`soru_ekle` ile ayni).
+                exam_type=question_data.get("sinav_tipi", "TYT").strip().upper(),
+                subject_area=subject_db(_KONU_MAP.get(konu_ham, konu_ham)),
                 grade_level=question_data.get("sinif_seviyesi", 12),
                 osym_format_compliant=question_data.get("osym_uyumlu", True),
                 osym_year=question_data.get("osym_yili"),
