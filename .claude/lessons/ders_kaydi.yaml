@@ -575,14 +575,14 @@
   kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
   sinif: alet
   durum: aktif
-  zorlayici: backend/tests/fast/test_question_crud_service_split.py
+  zorlayici: backend/tests/fast/test_duel_api_split.py
   kanit: "S212 — metinsel 'FROM'da virgul' kontrolu search_questions'i YANLIS bayrakladi (virgul count(*) alt-sorgusunun SELECT listesindeydi). Dahasi ilk surum sql.split(' from ') kullaniyordu ve SQLAlchemy FROM'u yeni satira koydugu icin HIC eslesmiyordu: 'temiz' ciktisi bosluktaydi. get_final_froms() semantik; kontrol kolu testle civili (gercek kartezyen 2, alt-sorgu 1)"
 - id: L-s212-split-eager-load
   baslik: JOIN yalniz SQL katmanini duzeltir — delege okuyan yol EAGER-LOAD etmeli
   kaynak: .claude/rules/audit-methodology.md#sema-gocunde-cevirdim-testler-yesil-bir-olcum-degildir
   sinif: sema
   durum: aktif
-  zorlayici: backend/tests/fast/test_question_crud_service_split.py
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
   kanit: "S212 44924c574 + f91470250 — content/metadata_info/statistics hepsi lazy='select' (olculdu); async'te yuklenmemis erisim MissingGreenlet atar. Iki serviste 4 gercek kusur, hepsi SESSIZ: update_question -> _create_question_version 10 delege okuyor -> versiyon gecmisi sessizce kayboluyordu; get_question_by_id'nin 'except Exception: return None' sarmalayicisi kusuru 'soru bulunamadi'ya ceviriyordu"
 - id: L-s212-stub-model-testi-kor
   baslik: Sahte-model stub'iyla yazilmis test KIRIK kodda da yesil kalir
@@ -766,3 +766,24 @@
   durum: aktif
   zorlayici: null
   kanit: "S224 — bir pre-commit hook'u dosyayi degistirip 1 dondurunce `git commit --amend` CALISMAZ, ama `git log --oneline -1` AYNI HASH'i gosterir (eski commit hala orada). Ciktiya bakan 'amend oldu' sanir ve eski icerigi push etmeye calisir; bu oturumda 2 kez dusuldu, 3. denemede cikis kodu olculunce goruldu. Ikinci tuzak ayni yerde: hook basarisiz olunca pre-commit geri alma icin `git checkout -- .` kosuyor; 3399 kirli dosyali agacta bu ILGISIZ bir dosyada NTFS `Invalid argument` ile patliyor ve hata mesaji YANLIS dosyayi (_blindsolve/w22batches/g28.json) isaret ediyor -> teshis oradan baslarsa saatler kaybediliyor. Kural: amend/commit sonrasi `git log --oneline -1` hash'inin DEGISTIGINI dogrula. verification.md#GERI-ALIM-BIR-IDDIADIR'in commit tarafi"
+- id: L-s228-precommit-run-yazma-yapar
+  baslik: "`pre-commit run` SALT-OKUNUR bir olcum araci degildir — kontrol kolu dosyayi degistirir"
+  kaynak: .claude/rules/audit-methodology.md#ama-pre-commit-run-salt-okunur-bir-olcum-araci-da-degildir-17-agu-2026-s228
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S228 — 'HEAD'de de ayni ruff kalemleri var miydi' kontrol kolu icin `git stash push -- <dosya>` -> `pre-commit run ruff --files <dosya>` -> `git stash pop` dizisi kuruldu. Olcum GECERLIYDI (HEAD 19 kalem, benim surumum 14 -> silme borcu azaltti) ama orta adim yan etkiliydi: kok config ruff hook'una `--fix --exit-non-zero-on-fix` veriyor (.pre-commit-config.yaml:39), HEAD surumu 1747->1745 satira dustu, `pop` 'Your local changes would be overwritten' ile REDDETTI ve stash SAKLI kaldi. Agacta ne HEAD ne benim surumum olan ucuncu bir hal vardi (1745 satir, QCS bloklari GERI GELMIS: grep -c = 37). Kurtarma olculdu: `git checkout HEAD -- <dosya>` (yan etkiyi at) -> `git status --short` BOS -> `git stash pop` -> 1428 satir, QCS atfi 0. S212 near-miss'inin ayni sinifi, farkli tetikleyici. Genel hali: bir aracin CIKTISINI okumak, o aracin GIRDIYI degistirmedigi anlamina gelmez"
+- id: L-s228-autofix-kapsam-disi-supurmeyi-stageler
+  baslik: "Auto-fix'li kanca, silme-only commit'e kapsam-disi bicimlendirmeyi SESSIZCE bindirir"
+  kaynak: .claude/rules/audit-methodology.md#ama-pre-commit-run-salt-okunur-bir-olcum-araci-da-degildir-17-agu-2026-s228
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S228 — ayni koşumda `ruff-format` dokunulmadigim koda +21/-4 satir uyguladi (bos satir ekleme, `class MockRateLimitExceeded(Exception): pass` bolme, `with patch(...)` satir sarma). Bunlar staged silmenin USTUNE bindi (`git status` MM) ve fark edilmeden 'silme-only' diye commit'lenebilirdi; `git diff --numstat` ile yakalandi. Geri alim ARACI KRITIK: `git checkout -- <dosya>` (INDEX'ten geri yukler, silme korunur) DOGRU; `git checkout HEAD -- <dosya>` silmeyi de geri getirirdi. Yan olcum: numstat 'final.py 2 eklenen' dedi ama `grep -E '^\\+[^+]'` 0 verdi -> celiski degil, iki satir da BOS (`^\\+$`), ruff-format'in `class _MockVector` oncesine koydugu E302 ayrimi. audit-methodology.md#AGAC-KIRLI-SUPURME-GEREKCESI-DEGILDIR'in alet tarafi"
+- id: L-s228-detect-secrets-yeni-bulgu-yeni-degil
+  baslik: "`detect-secrets`in 'yeni sir' bulgusu, dosyaya ilk kez dokundugun icin cikmis olabilir"
+  kaynak: .claude/rules/audit-methodology.md#ama-pre-commit-run-salt-okunur-bir-olcum-araci-da-degildir-17-agu-2026-s228
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S228 — silme-only bir commit'te (0 icerik satiri eklendi) detect-secrets 3 kalem dusurdu: test_api_coverage_batch14.py:951/1542/1627. Ilk hipotez 'baseline satir-numarasi tutuyor, silme satirlari kaydirdi' idi ve OLCULUNCE CURUDU: baseline'da o dosya icin kayit sayisi 0. Gercek sebep kancanin yalniz DEGISEN dosyalari taramasi -> dosya ilk kez taraniyor. Ucu de HEAD'de birebir mevcut (`git show HEAD:<dosya> | grep -cF` = 1,1,1) ve ucu de test literali (user.secret_2fa = 'SECRET', 'ValidPass1!', 'Admin1Pass!'). Ayrim iki olcumle yapilir: (a) satir HEAD'de var mi, (b) baseline'da o dosya icin kayit sayisi (0 = hic taranmamis, >0 = kayma olabilir). Ikisi olmadan 'yeni sir' ile 'eski borc' ayrilamaz"

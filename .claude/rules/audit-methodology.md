@@ -289,6 +289,9 @@ arızası vardır.
 | 15 Ağu 2026 | Göç sayacı örnek düzeyini görmedi (S214) | Sayaç `QuestionBankItem.<alan>` (sınıf düzeyi) sayar; `mnemonic_service`'in asıl kusuru `select(QuestionBankItem)` → `question.alan` (örnek düzeyi, `MissingGreenlet`) idi ve sayaçta **0** göründü | Sayacın çıktısı **alt sınır**. Dosya başına ayrıca `grep 'select(QuestionBankItem)'` |
 | 15 Ağu 2026 | Göç hacmi toplamla ölçüldü | 69 alanlık şema split'i "2542 erişim / 340 dosya" göründü → repo-geneli göç sanıldı, iş bloke edildi. Ayrıştırınca **yalnız 108'i sınıf düzeyi** (`Model.alan`, SQL ifadesi, gerçek kolon şart) / 17 dosya; gerisi örnek düzeyi ve devrediciyle karşılanabilir | Göçün boyutu **toplam kullanım** değil, **karşılanamayan alt küme**. Bunu ayırmadan strateji seçme: ayrım strangler'ı uygulanabilir kıldı ve işi 340 dosyadan 17'ye indirdi |
 | 17 Ağu 2026 | `ruff --version` kapının sürümü sanıldı (S224) | Makinede **üç** ruff var: kabuk+PostToolUse kancası **0.14.13**, `git commit` kapısı **0.7.1** (kök config `:37`), ölü `backend/` config **0.13.2**. Kanca her Edit sonrası 0.14.13 ile biçimlendiriyor, kapı 0.7.1 ile yeniden biçimlendirip EXIT 1 veriyor → `--amend` **sessizce iptal**, `git log` aynı hash'i gösterdiği için "oldu" sanıldı (2 kez). Geri alma `git checkout -- .` kirli ağaçta **ilgisiz** dosyada NTFS hatası verip yanlış teşhise yönlendirdi | "Aynı aracın üç sürümü var ve kapıyı en eskisi tutuyor" bölümü: kapının sürümüyle biçimlendir (`pre-commit run ruff-format --files`), sabit nokta doğrula, amend sonrası **hash'in değiştiğini** ölç |
+| 17 Ağu 2026 | Kapı ölçümü dosyayı değiştirdi (S228) | Kontrol kolu için `git stash push` → `pre-commit run ruff` → `pop` dizisi kuruldu. Orta adım `--fix` ile HEAD sürümünü değiştirdi (1747→1745), `pop` reddetti, **stash saklı kaldı**. Ölçüm geçerliydi (19 kalem) ama aracın yan etkisi ağaçta üçüncü bir hâl bıraktı | `git checkout HEAD -- <dosya>` (yan etkiyi at, `status` boş olmalı) sonra `pop`. Kural: auto-fix'li kancayı kontrol kolu yaparken yazdığını varsay |
+| 17 Ağu 2026 | Silme-only commit'e sessiz süpürme (S228) | Aynı koşumda `ruff-format` dokunulmamış koda +21/−4 satır uyguladı ve staged'ın üstüne bindi | `git diff --numstat` ile yakala; **`git checkout --`** (index'ten) ile geri al — `git checkout HEAD --` silmeyi de geri getirir |
+| 17 Ağu 2026 | "Yeni sır bulundu" (S228) | `detect-secrets` 3 kalem bildirdi; kanca yalnız DEĞİŞEN dosyaları tarar, dosya ilk kez taranıyordu. 3'ü de HEAD'de birebir mevcut, baseline'da o dosya için **0 kayıt** | `git show HEAD:<dosya> \| grep -cF "<satır>"` + baseline kayıt sayısı. İkisi birlikte "yeni mi / hiç taranmamış mı" ayrımını verir |
 | ... | ... | ... | ... |
 
 ---
@@ -648,6 +651,54 @@ o dize kök config'in geçmişinde hiç bulunmadı.)
 **Kural:** kapıyı ölçmek için **depo kökünden** koş, veya `--config` ver:
 
     cd <repo-root> && pre-commit run --files backend/<dosya>
+
+## …AMA `pre-commit run` SALT-OKUNUR BİR ÖLÇÜM ARACI DA DEĞİL (17 Ağu 2026, S228)
+
+Bir üstteki kural "kapıyı doğru **yerden** ölç" diyor. Eksik kalan yarısı: o ölçüm
+**dosyayı değiştirir**. Kök config `ruff` hook'una `--fix --exit-non-zero-on-fix`
+veriyor (`.pre-commit-config.yaml:39`) ve `ruff-format` zaten biçimlendirici.
+Yani `pre-commit run` bir *gözlem* değil, bir *müdahale*.
+
+Bu, S212'nin stash near-miss'ini birebir tekrarlattı. Kontrol kolu şu diziydi:
+
+    git stash push -- <dosya>              # silmemi kaldır, HEAD'e dön
+    pre-commit run ruff --files <dosya>    # HEAD'de kaç kalem vardı? -> 19
+    git stash pop                          # silmemi geri koy
+
+Üçüncü adım **düştü**: ikinci adım HEAD sürümünü auto-fix'lemişti (1747→1745
+satır), dolayısıyla `pop` "Your local changes would be overwritten" ile reddetti
+ve **stash SAKLI kaldı** — iş stash'te, çalışma ağacında ise ne HEAD ne benim
+sürümüm olan üçüncü bir hâl vardı.
+
+**Kurtarma (ölçüldü, çalıştı):**
+
+    git checkout HEAD -- <dosya>   # ölçümün YAN ETKİSİNİ at
+    git status --short <dosya>     # BOŞ olmalı
+    git stash pop                  # artık temiz, uygular
+
+**Kural:** biçimlendirici/auto-fix içeren bir kancayı kontrol kolu olarak
+kullanacaksan, ölçüm adımının **yazdığını varsay**. Ya ölçümü ayrı bir çalışma
+kopyasında yap, ya da `pop`'tan önce ölçülen dosyayı `git checkout HEAD --` ile
+sıfırla. Genel hâli: *bir aracın çıktısını okumak, o aracın girdiyi değiştirmediği
+anlamına gelmez.*
+
+### Yan sonuç: auto-fix, kapsam dışı süpürmeyi SESSİZCE stage'ler
+
+Aynı koşumda `ruff-format` dokunmadığım koda **+21/−4 satır** uyguladı (boş satır
+ekleme, `class X(Exception): pass` bölme, satır sarma). Silme-only bir commit'e
+bunlar fark edilmeden girebilirdi; `git diff --numstat` ile yakalandı ve geri
+alındı — **`git checkout -- <dosya>`** ile, yani *index'ten*. `git checkout HEAD --`
+kullanmak silmeyi de geri getirirdi; ikisinin farkı burada yük taşıyor. Bkz. bu
+dosyada "AĞAÇ KİRLİ SÜPÜRME GEREKÇESİ DEĞİLDİR".
+
+### Yan sonuç: `detect-secrets`in "yeni bulgusu" yeni olmayabilir
+
+Kanca yalnız **değişen** dosyaları tarar. Yıllardır duran bir test literali,
+dosyaya ilk kez dokunduğun commit'te "yeni sır" gibi düşer. Ayırt etmek iki
+ölçüm: `git show HEAD:<dosya> | grep -cF "<satır>"` (>0 ise önceden var) ve
+`.secrets.baseline`te o dosya için kayıt sayısı (**0** ise satır-kayması değil,
+dosya hiç taranmamış). S228'de 3 kalemin 3'ü de HEAD'de birebir mevcuttu ve
+baseline'da 0 kayıt vardı.
 
 ## AYNI ARACIN ÜÇ SÜRÜMÜ VAR VE KAPIYI EN ESKİSİ TUTUYOR (17 Ağu 2026, S224)
 

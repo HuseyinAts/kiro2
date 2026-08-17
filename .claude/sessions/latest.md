@@ -918,3 +918,58 @@ içeriği: `analyze_osym_pdf`/`auto_assign_anchors`/`run_equating` hiçbiri git'
 ### Kalıcı kayıt nerede
 - **Uzun anlatım:** `.claude/rules/audit-methodology.md`
 - **Bellek:** `memory/MEMORY.md` S214 satırı → bu session S215 olarak eklenecek (ayrı adım)
+
+---
+
+## S228 (17 Ağu 2026) — `QuestionCRUDService` SİLİNDİ + ölçüm aleti dersleri
+
+**Commit:** `764b225b4` (6 dosya, **2.681 silme / 2 ekleme**) · dal `feature/self-evolution-optimization`
+
+### Yapılan
+- `services/question_crud_service.py` (1283 satır), `services/README_QUESTION_CRUD.md`,
+  `tests/fast/test_question_crud_service_split.py` **silindi**.
+- Üç çok-servisli eski test dosyasından yalnız QCS blokları çıkarıldı
+  (`final.py` 672-988 / `batch2.py` 1188-1588 / `batch14.py` 1551-1708 = 317+401+158).
+- Gerekçe satır satır ölçüldü: üretimde **sıfır tüketici**; "kaybolur" denen 9 işlevin
+  **7'si canlı DB'de zaten çalışmıyor** (versiyon geçmişi kolon değil → commit yazmıyor;
+  archive/restore `MissingGreenlet` → koşulsuz `False`; ES araması üç bağımsız kırık;
+  `source_book` 36.967/36.967 NULL). Saklamanın bedeli **3 aktif açık**: beyaz-listesiz
+  `setattr` (correct_answer/is_active yazılabiliyor), kapısız `permanent=True` sert silme,
+  taksonomiye kontrolsüz kök satır yazan `_get_or_create_topic`.
+- Regresyon **öngörülen delta ile birebir**: 205/15/88 → **165/8/88** (−40 passed = 16+24 QCS
+  testi, −7 skipped = zaten sınıf-düzeyi skip'li batch14 blokları, **88 error DEĞİŞMEDİ**).
+  Süre 384s → 54s.
+
+### Ölçüm aleti kusurları (3 yeni ders: `ders_kaydi.yaml` 104 → **107**)
+1. **`pre-commit run` salt-okunur değil** — kök config `ruff`'a `--fix` veriyor. Kontrol kolu
+   (`stash push` → `run` → `pop`) bu yüzden düştü: orta adım HEAD'i değiştirdi, `pop` reddetti,
+   **stash saklı kaldı**. Kurtarma: `git checkout HEAD -- <dosya>` → `status` boş → `pop`.
+   *Ölçümün kendisi geçerliydi (HEAD 19 kalem vs benim 14) — yan etkisi zararlıydı.*
+2. **Auto-fix kapsam-dışı süpürmeyi sessizce stage'ler** — `ruff-format` dokunulmamış koda
+   +21/−4 uyguladı. Geri alım **`git checkout --`** (index'ten); `git checkout HEAD --`
+   silmeyi de geri getirirdi.
+3. **`detect-secrets` "yeni bulgusu" yeni değil** — kanca yalnız değişen dosyaları tarar;
+   3 kalem de HEAD'de birebir var, baseline'da **0 kayıt** (kayma değil, hiç taranmamış).
+
+Kural dosyası: `.claude/rules/audit-methodology.md` yeni bölüm + 3 tablo satırı.
+
+### Bekçi çalıştı
+`test_ders_kaydi.py` sildiğim test dosyasına ankrajlı **2 S212 dersini** yakaladı
+(`L-s212-kartezyen-yapisal`, `L-s212-split-eager-load`). Körlemesine yeniden ankrajlanmadı:
+aday testlerin iddiayı **fiilen assert ettiği** ölçüldü (`test_duel_api_split.py:44`
+`stmt.get_final_froms()`; `test_osym_exam_engine_split.py:78` `_eager_loaded()` →
+`_with_options` stratejisi). 9/9 yeşil.
+
+### Atlanan kancalar (hepsi ölçülerek)
+`SKIP=ruff,ruff-format,detect-secrets,kiro2-api-import-smoke` — diff **0 içerik satırı**
+ekliyor (numstat'ın "2 eklenen"i iki **boş satır**, ruff-format'ın E302 ayrımı), kalan 42
+ruff kalemi dokunulmamış koda ait ve HEAD'de de vardı.
+
+### Açık kalan
+- **Facet'li arama gerçek boşluk** — 9 filtre + facet yalnız QCS'te vardı. Admin yüzeyi
+  ele alınırken `sorular_listele` üzerine temiz sürüm yazılmalı (1283 satırı 15 ölçülmüş
+  kusurla taşımak orantısızdı).
+- S224 devri: `repositories/question_repository.py` silmesi commit'siz + `_scripts/test_database_repository.py:15` temizliği.
+- Yeni P0'lar: `api/admin.py:252/311` ve `api/osym_questions_api.py:155` — split'te silinen
+  kolonlara ham SQL, koşulsuz çöküyor.
+- `models/question_bank.py` `is_active` ORM `default=False` duruyor; diğer yazma yolları ölçülmedi.
