@@ -247,12 +247,14 @@ async def dashboard_istatistikleri(
         q = await db.execute(
             _sql_text("""
             SELECT
-                COUNT(*)                                                    AS toplam_soru,
-                SUM(CASE WHEN is_active THEN 1 ELSE 0 END)                 AS aktif_soru,
-                SUM(CASE WHEN is_calibrated THEN 1 ELSE 0 END)             AS kalibre_soru,
-                SUM(CASE WHEN is_calib_pool THEN 1 ELSE 0 END)             AS calib_pool,
-                COUNT(DISTINCT subject_area)                                AS ders_sayisi
-            FROM question_bank
+                COUNT(*)                                        AS toplam_soru,
+                SUM(CASE WHEN qb.is_active THEN 1 ELSE 0 END)   AS aktif_soru,
+                SUM(CASE WHEN qs.is_calibrated THEN 1 ELSE 0 END) AS kalibre_soru,
+                SUM(CASE WHEN qs.is_calib_pool THEN 1 ELSE 0 END) AS calib_pool,
+                COUNT(DISTINCT qm.subject_area)                 AS ders_sayisi
+            FROM question_bank qb
+            LEFT JOIN question_statistics qs ON qs.id = qb.id
+            LEFT JOIN question_metadata qm ON qm.id = qb.id
         """)
         )
         s = dict(q.mappings().one())
@@ -298,26 +300,32 @@ async def soru_bankasi_listesi(
         clauses: list[str] = []
         params: dict[str, Any] = {}
         if konu:
-            clauses.append("LOWER(subject_area) = LOWER(:konu)")
+            clauses.append("LOWER(qm.subject_area) = LOWER(:konu)")
             params["konu"] = konu
         if zorluk:
-            clauses.append("difficulty_level = :zorluk")
+            clauses.append("qs.difficulty_level = :zorluk")
             params["zorluk"] = zorluk
         where = ("WHERE " + " AND ".join(clauses)) if clauses else ""
         params.update({"limit": sayfa_boyutu, "offset": (sayfa - 1) * sayfa_boyutu})
+        joins = (
+            "FROM question_bank qb "
+            "JOIN question_content qc ON qc.id = qb.id "
+            "JOIN question_metadata qm ON qm.id = qb.id "
+            "JOIN question_statistics qs ON qs.id = qb.id"
+        )
         rows = await db.execute(
             _sql_text(f"""
-            SELECT id, question_text, subject_area, difficulty_level,
-                   correct_answer, is_calibrated, is_calib_pool,
-                   irt_difficulty, irt_discrimination
-            FROM question_bank {where}
-            ORDER BY created_at DESC
+            SELECT qb.id, qc.question_text, qm.subject_area, qs.difficulty_level,
+                   qc.correct_answer, qs.is_calibrated, qs.is_calib_pool,
+                   qs.irt_difficulty, qs.irt_discrimination
+            {joins} {where}
+            ORDER BY qb.created_at DESC
             LIMIT :limit OFFSET :offset
         """),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             params,
         )
         cnt = await db.execute(
-            _sql_text(f"SELECT COUNT(*) FROM question_bank {where}"),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
+            _sql_text(f"SELECT COUNT(*) {joins} {where}"),  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor ("role = :rol" vb.); tum kullanici degerleri bagli parametre
             {k: v for k, v in params.items() if k not in ("limit", "offset")},
         )
         return {
@@ -592,21 +600,28 @@ async def icerik_ara(
         }
         rows = await db.execute(
             _sql_text("""
-            SELECT id, question_text, subject_area, difficulty_level, correct_answer
-            FROM question_bank
-            WHERE is_active=TRUE
-              AND (LOWER(question_text) LIKE LOWER(:q)
-                   OR LOWER(subject_area) LIKE LOWER(:q))
-            ORDER BY id LIMIT :limit OFFSET :offset
+            SELECT qb.id, qc.question_text, qm.subject_area,
+                   qs.difficulty_level, qc.correct_answer
+            FROM question_bank qb
+            JOIN question_content qc ON qc.id = qb.id
+            JOIN question_metadata qm ON qm.id = qb.id
+            JOIN question_statistics qs ON qs.id = qb.id
+            WHERE qb.is_active=TRUE
+              AND (LOWER(qc.question_text) LIKE LOWER(:q)
+                   OR LOWER(qm.subject_area) LIKE LOWER(:q))
+            ORDER BY qb.id LIMIT :limit OFFSET :offset
         """),
             params,
         )
         cnt = await db.execute(
             _sql_text("""
-            SELECT COUNT(*) FROM question_bank
-            WHERE is_active=TRUE
-              AND (LOWER(question_text) LIKE LOWER(:q)
-                   OR LOWER(subject_area) LIKE LOWER(:q))
+            SELECT COUNT(*)
+            FROM question_bank qb
+            JOIN question_content qc ON qc.id = qb.id
+            JOIN question_metadata qm ON qm.id = qb.id
+            WHERE qb.is_active=TRUE
+              AND (LOWER(qc.question_text) LIKE LOWER(:q)
+                   OR LOWER(qm.subject_area) LIKE LOWER(:q))
         """),
             {"q": f"%{q}%"},
         )

@@ -37,8 +37,10 @@ async def get_osym_statistics(
             (
                 await db.execute(
                     text(
-                        "SELECT exam_type, COUNT(*) as count FROM question_bank "
-                        "WHERE exam_type IS NOT NULL AND is_active = TRUE GROUP BY exam_type"
+                        "SELECT qm.exam_type, COUNT(*) as count FROM question_bank qb "
+                        "JOIN question_metadata qm ON qm.id = qb.id "
+                        "WHERE qm.exam_type IS NOT NULL AND qb.is_active = TRUE "
+                        "GROUP BY qm.exam_type"
                     )
                 )
             )
@@ -50,9 +52,11 @@ async def get_osym_statistics(
             (
                 await db.execute(
                     text(
-                        "SELECT subject_area, COUNT(*) as count FROM question_bank "
-                        "WHERE subject_area IS NOT NULL AND is_active = TRUE "
-                        "GROUP BY subject_area ORDER BY count DESC"
+                        "SELECT qm.subject_area, COUNT(*) as count "
+                        "FROM question_bank qb "
+                        "JOIN question_metadata qm ON qm.id = qb.id "
+                        "WHERE qm.subject_area IS NOT NULL AND qb.is_active = TRUE "
+                        "GROUP BY qm.subject_area ORDER BY count DESC"
                     )
                 )
             )
@@ -64,9 +68,10 @@ async def get_osym_statistics(
             (
                 await db.execute(
                     text(
-                        "SELECT osym_year, COUNT(*) as count FROM question_bank "
-                        "WHERE osym_year IS NOT NULL AND is_active = TRUE "
-                        "GROUP BY osym_year ORDER BY osym_year DESC"
+                        "SELECT qm.osym_year, COUNT(*) as count FROM question_bank qb "
+                        "JOIN question_metadata qm ON qm.id = qb.id "
+                        "WHERE qm.osym_year IS NOT NULL AND qb.is_active = TRUE "
+                        "GROUP BY qm.osym_year ORDER BY qm.osym_year DESC"
                     )
                 )
             )
@@ -77,8 +82,9 @@ async def get_osym_statistics(
         with_answers = (
             await db.execute(
                 text(
-                    "SELECT COUNT(*) FROM question_bank "
-                    "WHERE correct_answer IS NOT NULL AND is_active = TRUE"
+                    "SELECT COUNT(*) FROM question_bank qb "
+                    "JOIN question_content qc ON qc.id = qb.id "
+                    "WHERE qc.correct_answer IS NOT NULL AND qb.is_active = TRUE"
                 )
             )
         ).scalar()
@@ -121,18 +127,21 @@ async def get_available_subjects(
         if exam_type:
             result = await db.execute(
                 text(
-                    "SELECT subject_area, COUNT(*) as count FROM question_bank "
-                    "WHERE exam_type = :exam_type AND subject_area IS NOT NULL AND is_active = TRUE "
-                    "GROUP BY subject_area ORDER BY count DESC"
+                    "SELECT qm.subject_area, COUNT(*) as count FROM question_bank qb "
+                    "JOIN question_metadata qm ON qm.id = qb.id "
+                    "WHERE qm.exam_type = :exam_type AND qm.subject_area IS NOT NULL "
+                    "AND qb.is_active = TRUE "
+                    "GROUP BY qm.subject_area ORDER BY count DESC"
                 ),
                 {"exam_type": exam_type.upper()},
             )
         else:
             result = await db.execute(
                 text(
-                    "SELECT subject_area, COUNT(*) as count FROM question_bank "
-                    "WHERE subject_area IS NOT NULL AND is_active = TRUE "
-                    "GROUP BY subject_area ORDER BY count DESC"
+                    "SELECT qm.subject_area, COUNT(*) as count FROM question_bank qb "
+                    "JOIN question_metadata qm ON qm.id = qb.id "
+                    "WHERE qm.subject_area IS NOT NULL AND qb.is_active = TRUE "
+                    "GROUP BY qm.subject_area ORDER BY count DESC"
                 )
             )
 
@@ -163,33 +172,39 @@ async def get_random_questions(
 ):
     """Get random OSYM questions for practice"""
     try:
-        conditions = ["is_active = TRUE"]
+        conditions = ["qb.is_active = TRUE"]
         # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
         # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
-        conditions.append(safe_for_beta_sql("id"))
+        conditions.append(safe_for_beta_sql("qb.id"))
         params: dict = {}
 
         if subject:
-            conditions.append("subject_area = :subject")
+            conditions.append("qm.subject_area = :subject")
             params["subject"] = subject.upper()
 
         if exam_type:
-            conditions.append("exam_type = :exam_type")
+            conditions.append("qm.exam_type = :exam_type")
             params["exam_type"] = exam_type.upper()
 
         if difficulty:
-            conditions.append("difficulty_level = :difficulty")
+            conditions.append("qs.difficulty_level = :difficulty")
             params["difficulty"] = difficulty
 
         where_clause = " AND ".join(conditions)
 
         query = text(f"""
-            SELECT id, subject_area, difficulty_level, exam_type,
-                   question_text, option_a, option_b, option_c, option_d, option_e,
-                   correct_answer, osym_year, quality_score
-            FROM question_bank
+            SELECT qb.id, qm.subject_area, qs.difficulty_level, qm.exam_type,
+                   qc.question_text, qc.option_a, qc.option_b, qc.option_c,
+                   qc.option_d, qc.option_e,
+                   qc.correct_answer, qm.osym_year, qs.quality_score
+            FROM question_bank qb
+            JOIN question_content qc ON qc.id = qb.id
+            JOIN question_metadata qm ON qm.id = qb.id
+            JOIN question_statistics qs ON qs.id = qb.id
             WHERE {where_clause}
-        """)
+        """)  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor
+        # (conditions listesi hardcoded kolon/operator dizeleri); tum kullanici
+        # degerleri bagli parametre (:subject, :exam_type, vb.)
 
         rows = (await db.execute(query, params)).mappings().all()
 
@@ -284,28 +299,40 @@ async def generate_practice_exam(
 
             # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
             # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
-            _gate = f"AND {safe_for_beta_sql('id')}"
+            _gate = f"AND {safe_for_beta_sql('qb.id')}"
+            _joins = (
+                "FROM question_bank qb "
+                "JOIN question_content qc ON qc.id = qb.id "
+                "JOIN question_metadata qm ON qm.id = qb.id "
+                "JOIN question_statistics qs ON qs.id = qb.id "
+            )
 
             if year:
                 params["year"] = year
                 result = await db.execute(
                     text(
-                        # _gate sabit kod parçası, kullanıcı girdisi yok
-                        "SELECT id, question_text, option_a, option_b, option_c, option_d, option_e, "  # noqa: S608
-                        "difficulty_level, osym_year FROM question_bank "
-                        "WHERE exam_type = :exam_type AND subject_area = :subject "
-                        "AND osym_year = :year AND is_active = TRUE " + _gate
+                        # _gate/_joins sabit kod parçası, kullanıcı girdisi yok
+                        "SELECT qb.id, qc.question_text, "
+                        "qc.option_a, qc.option_b, qc.option_c, "
+                        "qc.option_d, qc.option_e, qs.difficulty_level, qm.osym_year "
+                        + _joins
+                        + "WHERE qm.exam_type = :exam_type "
+                        + "AND qm.subject_area = :subject "
+                        "AND qm.osym_year = :year AND qb.is_active = TRUE " + _gate
                     ),
                     params,
                 )
             else:
                 result = await db.execute(
                     text(
-                        # _gate sabit kod parçası, kullanıcı girdisi yok
-                        "SELECT id, question_text, option_a, option_b, option_c, option_d, option_e, "  # noqa: S608
-                        "difficulty_level, osym_year FROM question_bank "
-                        "WHERE exam_type = :exam_type AND subject_area = :subject AND is_active = TRUE "
-                        + _gate
+                        # _gate/_joins sabit kod parçası, kullanıcı girdisi yok
+                        "SELECT qb.id, qc.question_text, "
+                        "qc.option_a, qc.option_b, qc.option_c, "
+                        "qc.option_d, qc.option_e, qs.difficulty_level, qm.osym_year "
+                        + _joins
+                        + "WHERE qm.exam_type = :exam_type "
+                        + "AND qm.subject_area = :subject "
+                        "AND qb.is_active = TRUE " + _gate
                     ),
                     params,
                 )
@@ -365,38 +392,44 @@ async def get_questions(
 ):
     """Get OSYM questions with filters"""
     try:
-        conditions = ["is_active = TRUE"]
+        conditions = ["qb.is_active = TRUE"]
         # Kalite kapısı (core/quality_gate.py) — kapısız sorgu 85.731
         # yargılanmamış/reddedilmiş soruyu öğrenciye servis ediyordu.
-        conditions.append(safe_for_beta_sql("id"))
+        conditions.append(safe_for_beta_sql("qb.id"))
         params: dict = {"limit": limit, "offset": offset}
 
         if subject:
-            conditions.append("subject_area = :subject")
+            conditions.append("qm.subject_area = :subject")
             params["subject"] = subject.upper()
 
         if exam_type:
-            conditions.append("exam_type = :exam_type")
+            conditions.append("qm.exam_type = :exam_type")
             params["exam_type"] = exam_type.upper()
 
         if year:
-            conditions.append("osym_year = :year")
+            conditions.append("qm.osym_year = :year")
             params["year"] = year
 
         if difficulty:
-            conditions.append("difficulty_level = :difficulty")
+            conditions.append("qs.difficulty_level = :difficulty")
             params["difficulty"] = difficulty
 
         where_clause = " AND ".join(conditions)
 
         query = text(f"""
-            SELECT id, subject_area, difficulty_level, exam_type,
-                   question_text, option_a, option_b, option_c, option_d, option_e,
-                   correct_answer, osym_year, quality_score
-            FROM question_bank
+            SELECT qb.id, qm.subject_area, qs.difficulty_level, qm.exam_type,
+                   qc.question_text, qc.option_a, qc.option_b, qc.option_c,
+                   qc.option_d, qc.option_e,
+                   qc.correct_answer, qm.osym_year, qs.quality_score
+            FROM question_bank qb
+            JOIN question_content qc ON qc.id = qb.id
+            JOIN question_metadata qm ON qm.id = qb.id
+            JOIN question_statistics qs ON qs.id = qb.id
             WHERE {where_clause}
             LIMIT :limit OFFSET :offset
-        """)
+        """)  # nosec B608 - f-string'e YALNIZCA kodun kendi sabit parcalari giriyor
+        # (conditions listesi hardcoded kolon/operator dizeleri); tum kullanici
+        # degerleri bagli parametre (:subject, :exam_type, vb.)
 
         rows = (await db.execute(query, params)).mappings().all()
 
