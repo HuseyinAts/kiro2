@@ -1035,8 +1035,8 @@ Kardeş bilinen kusur: `kiro2-api-import-smoke` (S211'den beri açık).
 ---
 
 ## Session Handoff — 2026-08-18 (S229 · #485 Task 1 KAPANDI)
-**Branch:** feature/self-evolution-optimization (origin'in **2 commit ÖNÜNDE** — push edilmedi)
-**Son commit:** `e0a823131` fix: admin.py + osym_questions_api.py JOIN'e cevir (#485 devami)
+**Branch:** feature/self-evolution-optimization (**origin ile EŞİT**, `git rev-list --left-right --count` = `0 0`)
+**Son commit:** `da804f199` test: gereksiz `# pragma: no cover` kaldirildi (#485) — 4 commit pushed: `5673ef0e9`, `e0a823131`, `483d9065c`, `da804f199`
 **Uncommitted:** takipli değişiklik **YOK** (`git diff --stat` boş). 88 takipsiz dosya S205-S210 devrinden, bu oturumun ürünü DEĞİL.
 
 ### Yapilanlar
@@ -1052,19 +1052,21 @@ Kardeş bilinen kusur: `kiro2-api-import-smoke` (S211'den beri açık).
 - Tüketici tarama (`test_admin_api` + `test_admin_content_{create,update,delete}` + `test_api_coverage_batch14`): **47 passed / 8 skipped / 97 error**. 97'nin **97'si** `ERROR at setup of` (ölçüldü: `grep -c`) → fixture aşaması, uç koduna hiç ulaşmıyor. Kök neden `tests/conftest.py:1186` + `test_api_coverage_batch14.py:2122` `TestClient(app=...)` → `TypeError: Client.__init__() got an unexpected keyword argument 'app'` (starlette/httpx sürüm uyumsuzluğu, bu işle ilgisiz).
 
 ### Engelleyiciler
-- **Push YAPILMADI** — 2 commit yerelde bekliyor (kullanıcı onayı alınmadı).
+- Push **YAPILDI** (4 commit, `94e013f47..da804f199`). Yol boyunca `reward-hacking-check` bir kez blokladı ve **haklıydı** — bulgu bu oturumun kendi kodundaydı, SKIP değil **fix** edildi (aşağıda).
 - `bandit` pre-commit hook'unun cache'li venv'i **bağımsız olarak kırık**: `ModuleNotFoundError: No module named 'pbr'` (HEAD sürümünde de düşüyor, yani kontrol kolu da kırmızı). Bu yüzden HEAD baseline'ı bu hook'la ölçülemedi.
 - `SKIP=bandit,mypy` kullanıldı. Kalan kalemler: B311 `random.sample` ×2 (`osym_questions_api.py:220,343`) + mypy `min()` / `Sequence[str].append` ×2 (`:342,:365`) — **4'ünün 4'ü `git diff` ile dokunmadığım satırlarda** doğrulandı.
 
 ### Sonraki Adimlar (maks 5)
-1. **Push** (`git push`) — 2 commit bekliyor. `reward-hacking-check` pre-push bekçisi bu oturumda dokunulan dosyaları taramadı, temiz geçmesi beklenir ama ÖLÇÜLMEDİ.
-2. `backend/models/question_bank.py` — `is_active` ORM `default=False` DURUYOR, `server_default="true"`ı eziyor. Diğer yazma yolları ölçülmedi (#485 Task 2).
-3. Facet'li arama: 9 filtre + facet yalnız silinen `QuestionCRUDService`'te vardı. `soru_bankasi_service.sorular_listele` üzerine temiz sürüm (#485 Task 3). Silinen sürümün kusurları: kapısız facet, `option_e` aranmıyor, ORDER BY'siz sayfalama — tekrarlanmasın.
-4. `tests/conftest.py:1186` `TestClient(app=...)` onarımı — 97 hatanın tek kök nedeni, backend paketinin uçtan uca koşamamasının da sebebi. Tek satırlık sürüm uyumu olabilir.
-5. `reward-hacking-check`i test dosyaları için kalibre et (S228 devri, hâlâ açık).
+1. `backend/models/question_bank.py` — `is_active` ORM `default=False` DURUYOR, `server_default="true"`ı eziyor. Diğer yazma yolları ölçülmedi (#485 Task 2).
+2. Facet'li arama: 9 filtre + facet yalnız silinen `QuestionCRUDService`'te vardı. `soru_bankasi_service.sorular_listele` üzerine temiz sürüm (#485 Task 3). Silinen sürümün kusurları: kapısız facet, `option_e` aranmıyor, ORDER BY'siz sayfalama — tekrarlanmasın.
+3. `tests/conftest.py:1186` `TestClient(app=...)` onarımı — 97 hatanın tek kök nedeni, backend paketinin uçtan uca koşamamasının da sebebi. Tek satırlık sürüm uyumu olabilir.
+4. `reward-hacking-check`i test dosyaları için kalibre et (S228 devri, hâlâ açık). **Not:** bu oturumda bekçi bir kez HAKLI çıktı — "hep fantom" varsayımı yanlış.
+5. S224 devri ölçüldü: `backend/repositories/question_repository.py` **siliNMEMİŞ, HEAD ile birebir aynı** (`git log --diff-filter=D` boş). Devir notu "silmesi commit'siz" diyordu — o cümle yanlış; iş ya hiç başlamadı ya da gereksiz.
 
 ### Kararlar (gelecek session tekrar tartismasin)
 - **Kapsam genişletildi, "sadece 2 satır" yapılmadı:** 8 ucun 8'i aynı kök nedene (split) bağlı ve aynı kalıpla düzeliyor; 2'sini düzeltip 6'sını bırakmak yarım fix olurdu. Kullanıcı `AskUserQuestion` ile "tümünü bu turda düzelt" dedi.
 - **Test gerçek DB'ye karşı yazıldı, mock'la değil:** `test_admin_api.py`'nin `AsyncMock` DB'si bu bug sınıfını **hiçbir koşulda** yakalayamaz (S228'in "mock dalı hep koşuyordu" dersi). Yeni dosya `live_db` fixture'ı kullanıyor, DSN erişilemezse `pytest.skip`.
 - **`is_active` ve `LEFT` vs `INNER` ayrımı bilinçli:** `dashboard_istatistikleri` istatistik ucudur → `LEFT JOIN` (yetim `question_bank` satırı sayımdan düşmesin). Öğrenciye/admin'e satır servis eden 7 uç → `INNER JOIN` (eksik içerikli soru servis edilmesin). S223'ün "`question_statistics` 1:1 GARANTİ DEĞİL" ölçümüyle uyumlu.
+- **Bekçi HAKLI çıktığında SKIP edilmedi, FIX edildi:** `reward-hacking-check` push'u blokladı (`# pragma: no cover` CRITICAL) ve bulgu **bu oturumun kendi kodundaydı** — S228'in "20/20 önceden var" durumunun tersi. Bekçinin meşru-istisna regex'i (`patterns.py:189`) ikinci bir `#` istiyor; ifadeyi regex'i geçsin diye yeniden yazmak **oyunlamak** olurdu. Ölçüldü: `.coveragerc:8-10` `*/tests/*` + `*/test_*` omit ediyor → o dosyada pragma **kanıtlanabilir no-op**. Doğru fix silmek (`da804f199`). **Ders: bekçi bazen haklıdır; "hep fantom" varsayımı bir ölçüm değil.**
+- **`cd` kalıcıdır, "0 collected" alet arızasıydı:** pragma silindikten sonra test `collected 0 items` verdi. Panik sebebi yok — Bash cwd'si önceki bir komuttan depo köküne kaymıştı, yol kök `pytest.ini`'ye çözülüyordu. `backend/`'den koşunca 8/8 PASS. **Kırmızıyı bulgu saymadan önce aletin doğru yerden koştuğunu doğrula** (audit-methodology "ölçüm aletini doğrula" ile aynı sınıf).
 - **İlk commit sessizce yarım gitti, `git show --stat` yakaladı:** `SKIP=...` ile commit ettiğimde pre-commit'in stash-restore adımı `api/*.py`'yi unstaged bıraktı → `5673ef0e9` yalnız test dosyasını aldı. S228'de kayıtlı desenin aynısı. `e0a823131` asıl fix'i taşıyor. **Ders: commit sonrası `git show --stat` ile ne girdiğini ölç, çıkış kodu 0 yeterli değil.**
