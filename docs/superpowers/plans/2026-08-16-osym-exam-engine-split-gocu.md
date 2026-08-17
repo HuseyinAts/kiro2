@@ -1142,14 +1142,63 @@ Task 2'nin kusuru DEĞİL — ama senin commit'inde canlanacak ve sana yazılaca
 - `:1448`'deki `# nosec B311` gerekçe yorumu **bayat**: "3 cagri yeri" diyor, süpürülen blok
   sonrası 5 oldu (`:1451, :1601, :1607, :1654, :1662`).
 
-- [ ] **Step 1: RED doğrula**
+> **ÖLÇÜM DÜZELTMESİ (17 Ağu 2026, Task 7 yürütülürken) — yedi kalem.**
+>
+> **1. Satır ankrajları bayat (+26).** Gerçek: `_select_questions` **`:1488`** · `base_filters`
+> **`:1511-1575`** (döngü **içinde**, `:1509`) · LaTeX bloğu **`:1589-1597`** · ana havuz
+> sorgusu **`:1612-1614`** · H1 ana **`:1619-1620`** · H2 ana **`:1622`** · fallback sorgusu
+> **`:1663-1667`** · H1 fallback **`:1672-1673`** · H2 fallback **`:1676`**.
+>
+> **2. 37'nin dağılımı ÖLÇÜLDÜ** (AST sayacı): `QuestionContent` **31** (`question_text` ×16,
+> `option_a` ×4, `option_b` ×4, `option_c` ×3, `option_d` ×3, `question_image_url` ×1) ·
+> `QuestionMetadata` **3** (`exam_type`, `subject_area` ×2) · `QuestionStatistics` **3**
+> (`quality_review_status` ×2, `difficulty_level`). Plandaki 31/3/3 tahmini **doğru çıktı**.
+>
+> **3. Eager-load N/A — ÖLÇÜLDÜ, varsayılmadı.** İki `select(Question)` entity sorgusu
+> (`:1640`/`:1696`) `create_exam_session:403`'e dönüyor ve orada **yalnız** `len(questions)`
+> ile `q.id` okunuyor (`:418`, `:437`). Task 4/5'ten farklı olarak örnek-düzeyi risk YOK →
+> `selectinload` **eklenmedi** (çivilenemez ağırlık olurdu).
+>
+> **4. Step 9'un beklentisi eksik: `KWARG=2` KALIYOR ve bu DOĞRU.** `:1818`/`:1824` Task 6'nın
+> **doğru** `update(QuestionStatistics).values(times_asked=...)` satırları; sayaç kwarg **adına**
+> bakıyor, UPDATE hedefine değil. Sayaç sınırı — kalan iş DEĞİL. Doğru beklenti:
+> `SINIF=0 KWARG=2 ENTITY=5`.
+>
+> **5. H1 guard'ı POOL-BAZLI OLAMAZ.** Tek sorgu iki havuz üretiyor; boş **anchor** alt kümesi
+> **meşru** (bir dersin hiç ankraj maddesi olmayabilir), o yüzden `if anchor_pool:` sağlıklı
+> veride sonsuza dek yeniden sorgulardı. Patolojik olan boş **sorgu sonucu** → guard `rows` /
+> `fb_rows` üzerine kuruldu ve **iki cache yazımını birden** sarıyor (yarım zehirlenme imkânsız).
+>
+> **6. H2'de `> 0` guard'ı ZORUNLU — ölçüldü.** `max(1, round(count * 0.0))` **1** döner, 0
+> değil (count=3/5/10/20/40/120 için doğrulandı). Naif oran değişimi kotayı sessizce "her derse
+> 1 ankraj"a indirirdi. `ANCHOR_QUOTA_RATIO = 0.0` (`:158`) + `and ... > 0` guard'ı, iki sitede.
+>
+> **7. Mutasyon tuzakları (üç geçersiz ölçüm yakalandı ve ATILDI).** M11'in bayt-ankraj'ı **3**
+> yere uyuyor (24-boşluklu satır 28-boşluklu fallback kopyasının alt dizesi + Task 6'nın
+> `:1783`'ü) → yazımdan önce **tekil-eşleşme assert'i** şart. M12'nin gövdesini silmek
+> `IndentationError` → `2 errors` → **geçersiz** (`error ≠ failed`); tüm `if` deyimi silinmeli.
+> M13'ün birebir hoist'i **imkânsız** (`subject` döngüden önce tanımsız → `NameError` → geçersiz)
+> → iki sadık varyantla koşuldu.
+>
+> **8. Test gücü boşluğu — spec reviewer 7 mutasyonun HAYATTA KALDIĞINI ölçtü.** Paket sorgunun
+> **şeklini** çiviliyordu, `base_filters`'ın **içeriğini** değil: `>= 50`→`> 50`, `~` düşürme,
+> `option_c`→`option_d`, `>= 500`→`>= 300`, `"FIZIK"` düşürme, `option_a != option_a` (→ **her
+> sınav boş**) ve dize değişimi 24/24 yeşil kalıyordu. Kapatıldı: normalize edilmiş derlenmiş
+> WHERE üzerinde **golden karakterizasyon testi** (ayrı commit).
+>
+> Sonuç: Task 7 **tek commit değil ÜÇ commit** — `f2428eb81` (JOIN + H1; H1 ayrılmadı çünkü
+> JOIN onu erişilebilir yapıyor, tek başına shiplemek bilinen bir hatayı aktive etmek olurdu) ·
+> `b5fe75a5f` (H2 tek başına — psikometri oturumu **yalnız onu** geri alabilsin) · golden test.
+
+- [x] **Step 1: RED doğrula**
 
 ```bash
 python -m pytest tests/fast/test_osym_exam_engine_split.py::TestSelectQuestions -q --no-cov
 ```
-Beklenen: 5 failed.
+Beklenen: 5 failed. → **Ölçülen: `7 failed`** (6 fonksiyon; `test_query_builds_and_compiles`
+parametrize ×2). Hepsi `AttributeError: QuestionBankItem.exam_type ...`.
 
-- [ ] **Step 2: `base_filters` içindeki alan referanslarını göç ettir**
+- [x] **Step 2: `base_filters` içindeki alan referanslarını göç ettir**
 
 `1486-1550` arasındaki `base_filters` listesinde şu değişiklikleri yap (yalnız tablo öneki değişir, mantık **aynen kalır**):
 
@@ -1165,7 +1214,7 @@ Beklenen: 5 failed.
 
 **Değişmeyecekler:** `Question.is_active`, `safe_for_beta_gate(Question.id)`, `Question.id`, `Question.is_anchor`.
 
-- [ ] **Step 3: Her iki sorgu dalına üçlü JOIN ekle**
+- [x] **Step 3: Her iki sorgu dalına üçlü JOIN ekle**
 
 `:1588` ve `:1639` civarındaki iki `select(...)` çağrısının her birine ekle (`.where(and_(*filters))`'dan **önce**):
 
@@ -1177,39 +1226,43 @@ Beklenen: 5 failed.
 
 `.select_from(...)` **EKLEME** — SELECT listesinde `Question.id`/`Question.is_anchor` var, dolayısıyla süs olur ve hiçbir mutasyonla çivilenemez (S214 dersi). Riski `test_all_three_split_tables_joined` karşılıyor.
 
-- [ ] **Step 4: GREEN doğrula**
+- [x] **Step 4: GREEN doğrula**
 
 ```bash
 python -m pytest tests/fast/test_osym_exam_engine_split.py::TestSelectQuestions -q --no-cov
 ```
-Beklenen: `5 passed`.
+Beklenen: `5 passed`. → **Ölçülen: 7 örneğin tümü passed.**
 
-- [ ] **Step 5: Tüm dosyayı koştur (regresyon)**
+- [x] **Step 5: Tüm dosyayı koştur (regresyon)** → **`19 passed`**, test-test karşılaştırıldı,
+regresyon YOK. (H1/H2/golden testleri sonrası nihai sayı daha yüksek.)
 
 ```bash
 python -m pytest tests/fast/test_osym_exam_engine_split.py -q --no-cov
 ```
 Beklenen: **hepsi passed** (Task 2-6 dahil).
 
-- [ ] **Step 6: Mutasyon M9 — metadata filtresini sil**
+- [x] **Step 6: Mutasyon M9 — metadata filtresini sil**
 
 `QuestionMetadata.exam_type == ...` satırını `base_filters`'tan sil, koştur.
 Beklenen: `test_subject_and_exam_type_filter_on_metadata` **FAILED**.
 Geri al + doğrula.
 
-- [ ] **Step 7: Mutasyon M10 — kalite kapısını sil**
+- [x] **Step 7: Mutasyon M10 — kalite kapısını sil**
 
 `safe_for_beta_gate(Question.id),` satırını sil, koştur.
 Beklenen: `test_quality_gate_and_is_active_preserved` **FAILED**.
 Geri al + doğrula.
 
-- [ ] **Step 8: Mutasyon M11 — bir JOIN'i sil**
+- [x] **Step 8: Mutasyon M11 — bir JOIN'i sil** ⚠️ **Ankraj çakışması:** bayt-ankraj 3 yere
+uyuyor (24-boşluklu satır 28-boşluklu fallback kopyasının alt dizesi). Yazımdan önce
+**tekil-eşleşme assert'i** zorunlu; spec reviewer bunu bağımsız olarak tekrar üretti.
 
 `.join(QuestionContent, ...)` satırını sil, koştur.
 Beklenen: `test_all_three_split_tables_joined` **FAILED** (ve muhtemelen kartezyen → `_assert_single_from` da düşer).
 Geri al + doğrula.
 
-- [ ] **Step 9: Sayacı yeniden koştur**
+- [x] **Step 9: Sayacı yeniden koştur** → **Ölçülen: `SINIF=0 KWARG=2 ENTITY=5`.** `KWARG=2`
+beklenen çıktıda YAZMIYORDU ama **doğru** — bkz. ÖLÇÜM DÜZELTMESİ #4 (sayaç artefaktı).
 
 ```bash
 python scripts/scan_split_accesses.py 2>&1 | grep osym_exam_engine
@@ -1217,7 +1270,8 @@ python scripts/scan_split_accesses.py 2>&1 | grep osym_exam_engine
 Beklenen: `core\osym_exam_engine.py  [SINIF=0 ENTITY=5]`
 (ENTITY=5 **kalır** — `:1456`/`:1615`/`:1665` yalnız `.id` okuyor, eager-load N/A; `:567`/`:1313` artık `.options()`'lı ama sayaç bunu ayırt etmiyor.)
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit** — tek değil **üç** commit (bkz. ÖLÇÜM DÜZELTMESİ sonu). `SKIP=`
+kullanılmadı, `pre-commit` kökten koşuldu, tüm hook'lar Passed.
 
 ```bash
 pre-commit run --files core/osym_exam_engine.py

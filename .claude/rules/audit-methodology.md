@@ -681,4 +681,59 @@ değil.
 
 ---
 
+## MUTASYONUN KENDİSİ DE BİR ÖLÇÜM ALETİDİR (17 Ağu 2026, S223)
+
+Bu dosya "ölçüm aletini doğrula" diyor ve bunu **bulgu üreten** ve **ilerleme ölçen**
+aletlere uyguluyordu. Üçüncü boşluk: **mutasyonun kendisi bir alettir ve o da yanılır.**
+`failed` almak, testin yük taşıdığını kanıtlamaz — yalnız *o mutasyonun* yakalandığını
+kanıtlar.
+
+**Vaka 1 — planda yazılı mutasyon vakumdu.** Task 6'nın M8'i iki UPDATE'ten yalnız
+**birini** bozuyordu. Test o gün varlık iddia ediyordu (`[u for u in updates if
+"times_asked" in u or ...]`), dolayısıyla hayatta kalan diğer UPDATE hem listeyi dolu
+hem prefix'i doğru tutuyordu. Ölçüldü: **M8a ve M8b'nin ikisi de `4 passed`** — mutasyon
+hayatta kaldı. Kontrol kolu beklendiği gibi çalıştığı için ölçüm geçerliydi.
+
+**Vaka 2 — "bu assert gereksiz" iddiası da ölçüm ister.** Bir kalite incelemesi
+`len(stat_updates) == 2`'yi "tamamen subsumed, silmek kesin iyileştirme" diye raporladı.
+Gerekçe: *"koştuğum mutasyonların hiçbirini öldürmüyor."* Bu, iddianın **erişimi** hakkında
+değil **koşulan kümenin kapsamı** hakkında bir olgudur. `M-SPURIOUS` (üçüncü bir
+`question_statistics` UPDATE'i, `times_asked`/`times_correct` **içermeyen**) ile ölçüldü:
+assert varken `1 failed`, silininceye `4 passed` — kaçıyor. Assert korundu.
+
+**Vaka 3 — golden testin KAPSAMI da bir iddiadır.** Task 7'de 7 hayatta kalan mutasyonu
+öldüren bir golden WHERE testi yazıldı, ama MATEMATIK + zorluksuz dala kuruldu ve commit
+mesajı LaTeX/zorluk dallarının "başka testlerle çivili" olduğunu **ölçmeden** yazdı.
+Ölçünce yanlış: her iki ikame assert de **içerik-kör** (`count(needle) == 4` bir sayıdır,
+iğne dizesi serbestçe değişir; `"...difficulty_level" in sql` bir kolon adıdır, yerine her
+predicate gelebilir). Üç mutasyon hayatta kaldı; en ağırı `contains("x^2")` →
+`contains("")`, beş sözel dersin havuzunu **her sınavda boşaltıyor**.
+
+| Adım | Somut kontrol |
+|---|---|
+| 1 | Mutasyon `failed` mi, `error` mi? `error` = ölçüm **geçersiz** |
+| 2 | **Hangi assert** öldürdü? Sayıyı değil, adı kaydet |
+| 3 | O assert **tek başına** yük taşıyor mu? Diğerlerini geçici sil, tekrar koş |
+| 4 | Mutasyon kümesi **hangi dalları** hiç dokunmuyor? Kapsanmayan dal = ölçülmemiş dal |
+| 5 | Ankraj **tekil mi**? Yakın-aynı kopyalar (24 vs 28 boşluk girinti, `>= 50` ⊂ `>= 500`) sessizce yanlış yeri ölçtürür |
+
+**Yan kural — golden'ın başarısızlık çıktısı da tasarımdır.** Tek dize karşılaştırması
+pytest'te `Skipping N identical leading characters` + kırpma verir; hangi koşulun değiştiği
+anlaşılmaz. `.split(" AND ")` ile liste karşılaştırması `At index 5 diff: ...` verir. Aynı
+kesinlik, kullanılabilir çıktı.
+
+**Yan kural — sayaçta yanlış-POZİTİF de "kalan iş" okumasını bozar.** S219 yanlış-sıfırı
+tek kabul edilemez hata türü ilan etmişti; tersi de zarar veriyor. `scan_split_accesses.py`
+`.values(alan=...)` kwarg'ını **UPDATE hedefinden bağımsız** sayar, yani göç edilmiş DOĞRU
+kod da raporlanır. Bu dosyada doğru bitiş koşulu `KWARG=0` değil, `SINIF=0` + KWARG'ların
+hedef-doğruluğunun elle teyidi.
+
+**Yan kural — eager-load gerekliliği sorgudan değil TÜKETİCİDEN ölçülür.** Aynı dosyada
+aynı desen (`select(Question)`) iki zıt sonuç verdi: Tasks 4/5'te dönen örnekten 12 ve 3
+split alan okunuyordu (`selectinload` şart), Task 7'de tek tüketici yalnız `len()` ve `.id`
+okuyor (eager-load N/A — eklemek çivilenemez ağırlık olurdu). Sayaç ikisini de `ENTITY`
+diye aynı etiketle raporlar; ayrımı yapan şey **tüketici tarafını okumaktır**.
+
+---
+
 *Oluşturulma: 14 May 2026 (Session 156, Faz 0.8). Bir sonraki audit hatasında bu tablo güncellenir.*

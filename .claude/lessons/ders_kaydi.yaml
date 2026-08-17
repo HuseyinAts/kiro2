@@ -703,3 +703,52 @@
   durum: aktif
   zorlayici: null
   kanit: "S219 d7eaeb3b1 — 2 satirlik bir fix commit'i 73/40 satir oldu; fark S210 devrinden commit'siz bir bloktu. Gerekce 'agacta 3389 kirli dosya var' idi ve OLCUME DAYANMIYORDU: gereken agaci temizlemek degil TEK DOSYAYI ayirmakti (git stash push -- <dosya>, audit-methodology.md'de zaten yazili, S212'de iki kez calismis). Bedel: commit iki BILDIRILMEMIS davranis degisikligi tasidi — bos havuzun kosulsuz cache'lenmesi (HEAD~1'de 'if pool:' guard vardi; TTL 3600 -> 60 dk sessizce bos sinav) ve her sinava %15 IRT-ankraj kotasi. Ikisi de o an ULASILAMAZ koddaydi, yani sonraki task'in JOIN isi onlari ilk kez canlandiracak ve suc O TASK'a yazilacakti. Task 3'te ayirma uygulandi: diff 12/2, supurme yok"
+- id: L-s223-mutasyon-recetesi-vakum-olabilir
+  baslik: Plandaki mutasyon recetesi VAKUM olabilir — failed almak yetmez, hangi assert oldurdugunu olc
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 69ee2566b/c59326863 — plan Task 6 Step 6'daki M8 mutasyonu iki UPDATE'ten YALNIZ BIRINI bozuyordu. Test o gun `[u for u in updates if 'times_asked' in u or 'times_correct' in u]` ile suzup sadece VARLIK iddia ediyordu; hayatta kalan digeri hem listeyi dolu hem prefix'i dogru tutuyor. OLCULDU (duzeltilmis motor + o gunku test): M8a ve M8b'nin IKISI DE '4 passed' — mutasyon HAYATTA KALDI. Kontrol kolu beklendigi gibi calistigi icin olcum gecerliydi. Bagimsiz spec reviewer kendi harness'iyle tekrar uretti. Test S219 dersi geregi SAYIYA baglandi; sonrasinda ikisi de failed"
+- id: L-s223-assert-gereksiz-iddiasi-da-olcumdur
+  baslik: "'Bu assert gereksiz, sil' de bir iddiadir — silmeden once onu TEK BASINA olduren mutasyon ara"
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 07eb98d8a — kalite reviewer `len(stat_updates) == 2` icin 'tamamen subsumed, silmek KESIN iyilestirme' raporladi; gerekcesi 'kostugum mutasyonlarin hicbirini oldurmuyor' idi. Bu, iddianin ERISIMI hakkinda degil KOSULAN KUMENIN KAPSAMI hakkinda bir olgu. M-SPURIOUS ile olculdu (ucuncu bir question_statistics UPDATE'i, times_asked/times_correct ICERMEYEN): sayi iddiasi VARKEN '1 failed', SILININCE '4 passed' — kaciyor. Evrensel iddia onu hic incelemiyor (suzgeci times_asked/times_correct sarti ariyor), iki sum(...)==1 de doyuyor. Assert KORUNDU, yaniltici yorum duzeltildi"
+- id: L-s223-golden-kapsami-da-iddiadir
+  baslik: Karakterizasyon (golden) testinin KAPSAMI da bir iddiadir — 'diger testler kapsiyor' olculmeden yazilmaz
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 340b1e2d9 -> 5b709a802 — golden WHERE testi 7 hayatta kalan mutasyonu oldurdu ama MATEMATIK + zorluksuz dala kuruldu; commit mesaji LaTeX ve zorluk dallarinin 'baska testlerle civili' oldugunu yazdi. Kalite reviewer OLCTU, iddia YANLIS: her iki ikame assert de ICERIK-KORU — where.count(_LATEX_FILTER_NEEDLE) == 4 bir SAYI (igne dizesi serbestce degisir), 'question_statistics.difficulty_level' in where bir KOLON ADI (yerine her predicate gelebilir). Uc mutasyon hayatta kaldi: difficulty_level.in_() -> .isnot(None) (zorluk secimi sessiz no-op) · contains('x^2') -> contains('y^2') · contains('x^2') -> contains('') her satiri eslestirir, negatiflenir -> TURKCE/EDEBIYAT/TARIH/COGRAFYA/SOSYAL havuzu HER SINAVDA BOS (TYT'de TURKCE tek basina 40 soru, en buyuk blok). Golden 3 parametreye genisletildi, ucu de dustu"
+- id: L-s223-golden-hata-ciktisi-tasarim-konusudur
+  baslik: Golden testin BASARISIZLIK ciktisi da tasarimdir — tek dize karsilastirmasi okunamaz
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 5b709a802 — golden'i tek dize olarak assert etmek pytest'te 'Skipping 259 identical leading characters' + yalniz '-' tarafi + 'Full output truncated' veriyor; -vv iki adet ~2100 karakterlik tek satir SQL duvari basiyor ve 24 kosuldan HANGISININ degistigi anlasilmiyor (MX1 uygulanarak olculdu). split(' AND ') ile liste karsilastirmasina cevrilince ayni kesinlik, okunur cikti: 'At index 5 diff: length(question_content.question_text) > 50 != ... >= 50'. Yan bulgu: golden'i OKUMAK gercek bir hata yakaladi — uretilen SQL cift ters bolu tasiyor, elle yazilan tekti (kabuk heredoc'u ayrica collapse etmisti); ayrica onceki commit'in docstring'indeki '24 predicate' sayisi yanlisti, split 27 veriyor (uc pasaj filtresi ic AND tasiyor)"
+- id: L-s223-sayac-kwarg-hedef-korudur
+  baslik: Goc sayaci .values(alan=...) kwarg'ini UPDATE HEDEFINDEN bagimsiz sayar — DOGRU kod da raporlanir
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/fast/test_scan_split_accesses.py
+  kanit: "S223 — Task 7 sonrasi scan_split_accesses.py 'core/osym_exam_engine.py [SINIF=0 KWARG=2 ENTITY=5]' veriyor. KWARG=2 (:1882 times_asked, :1888 times_correct) Task 6'nin DOGRU update(QuestionStatistics).values(...) satirlari; sayac kwarg ADINA bakiyor, UPDATE hedefine degil. S219'un 'yanlis-SIFIR tek kabul edilemez hata turudur' dersinin ters yonu: yanlis-POZITIF de 'kalan is' okumasini bozar. Bu dosyada dogru bitis kosulu KWARG=0 DEGIL, SINIF=0 + KWARG'larin hedef-dogrulugunun elle teyidi"
+- id: L-s223-eager-load-tuketiciden-olculur
+  baslik: Entity sorgusunda eager-load gerekliligi SORGUDAN degil TUKETICIDEN olculur
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: sema
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 — ayni dosyada ayni desen (select(Question)) iki zit sonuc verdi. Task 4/5 (:568, :1321): donen ornekten api/sinav.py:493-508 12 split alan, get_subject_performance dongusu 3 split alan okuyor -> lazy='select' + async = MissingGreenlet -> selectinload SART. Task 7 (:1640, :1696): tek uretim tuketicisi create_exam_session:403 ve yalniz len(questions) ile q.id okuyor (:418 liste-kavrama, :437 dongu) -> eager-load N/A, EKLENMEDI (civilenemez agirlik olurdu, S214). Sayac ikisini de 'ENTITY' diye ayni etiketle raporluyor; ayrimi yapan sey tuketici tarafini OKUMAK"
+- id: L-s223-guard-katmani-sorgu-sonucuna-konur
+  baslik: Tek sorgu iki havuz uretiyorsa guard HAVUZA degil SORGU SONUCUNA konur
+  kaynak: .claude/rules/audit-methodology.md#mutasyonun-kendisi-de-bir-olcum-aletidir-17-agu-2026-s223
+  sinif: kod
+  durum: aktif
+  zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
+  kanit: "S223 f2428eb81 (H1) — bos havuz TTLCache(ttl=3600)'e kosulsuz yaziliyordu: bos/import-ortasi question_bank'a karsi tek sorgu 60 dakikaya kadar sessizce bos sinav uretir (pre-split kod 295f34d9d'de 'if pool:' ile kendini onariyordu). Naif duzeltme 'if anchor_pool:' OLURDU ve YANLIS olurdu: tek sorgu iki havuz uretiyor, bos ANCHOR alt kumesi MESRU (bir dersin hic ankraj maddesi olmayabilir) -> saglikli veride sonsuza dek yeniden sorgu. Patolojik olan bos SORGU SONUCU -> guard 'if rows:' / 'if fb_rows:' uzerine kuruldu ve iki cache yazimini birden sariyor (yarim zehirlenme imkansiz). Iki yonde de civili: M-H1 guard'in varligini, M-H1b (if False:) cache'i yok etmedigini olduruyor"

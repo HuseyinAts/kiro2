@@ -37,6 +37,95 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-17 (S223)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `5b709a802` test(osym): golden'i TURKCE + zorluk dallarina genislet (#485)
+**Push:** ⏳ **EDİLMEDİ** — 7 commit bekliyor (`173cf62da..` + bu turun checkpoint'i)
+**Uncommitted:** bu işin dosyaları temiz. ~3387 kirli dosya = S210 Gemini devri, ait değil.
+
+### Yapılanlar — Plan **Task 7 KAPANDI**; `osym_exam_engine.py` `SINIF=42 → 0`
+- `f2428eb81` — **37 sınıf-düzeyi erişim JOIN'e** (content 31 / metadata 3 / statistics 3) +
+  iki id-havuzu sorgusuna **üçlü JOIN** (ana + zorluk-fallback) + **H1** (boş havuz cache'i).
+- `b5fe75a5f` — **H2**: %15 IRT-ankraj kotası devre dışı (`ANCHOR_QUOTA_RATIO = 0.0`, `:158`).
+  **Ayrı commit** — psikometri oturumu yalnız bunu geri alabilsin.
+- `340b1e2d9` — golden WHERE karakterizasyon testi (7 hayatta kalan mutasyonu öldürdü).
+- `5b709a802` — golden'ı TURKCE + zorluk dallarına genişletti + fark çıktısını okunur yaptı.
+- **Yürütme:** subagent-driven (implementer → spec reviewer → kalite reviewer → 2 düzeltme turu).
+
+### Ölçümler (bu turda üretildi)
+- **`_select_questions` ÖLÜ KODDU** — `:1512` sınıf düzeyinde patlıyordu, altındaki ~200 satır
+  hiç koşmamıştı. Bu commit onu **ilk kez** çalıştırılabilir yaptı.
+- **Spec reviewer 37'yi TOKEN DÜZEYİNDE kanıtladı:** fonksiyonu iki revizyondan AST ile çıkardı,
+  ikisini tokenize etti, HEAD akışında üç yavru sınıf adını `Question`'a geri çevirdi ve diff
+  aldı → **273 satırda tek fark, üç kasıtlı düzenleme.** Bu, 37'sini birden operatör/eşik/`~`/
+  `or_` sırası değişmemiş diye kanıtlar.
+- **Eager-load N/A — ÖLÇÜLDÜ:** iki `select(Question)` sorgusunun tek üretim tüketicisi
+  `create_exam_session:403` ve yalnız `len(questions)` + `q.id` okuyor → `selectinload`
+  **eklenmedi** (Task 4/5'in tersi; ayrımı yapan şey tüketiciyi okumak).
+- **INNER JOIN havuz-nötr, ama KOŞULLU:** üç yetim sınıfından ikisi zaten pre-split
+  predicate'lerce eleniyordu; üçüncüsünü (`question_statistics` yetimi) **kalite kapısı**
+  yakalıyor (`v_safe_for_beta` LEFT JOIN + `status IN (...)` → yetim NULL → elenir). Yani
+  havuz boyutu değişmiyor — **`safe_for_beta_gate(Question.id)` `:1536`'da kaldığı sürece.**
+- **H1 guard'ı `rows` üzerine kuruldu, havuz üzerine DEĞİL.** Tek sorgu iki havuz üretiyor;
+  boş **anchor** alt kümesi meşru → `if anchor_pool:` sağlıklı veride sonsuza dek yeniden
+  sorgulardı. Pre-split kodda (`295f34d9d`) `if pool:` vardı — bu bir **geri getirme**.
+- **H2'de `> 0` guard'ı ZORUNLU:** `max(1, round(count * 0.0))` **1** döner, 0 değil
+  (3/5/10/20/40/120 için doğrulandı) — naif oran değişimi kotayı "her derse 1 ankraj"da bırakırdı.
+- **Golden testi İKİ turda doğru oldu.** İlk hâli MATEMATIK'e kuruldu ve "LaTeX/zorluk dalları
+  başka testlerle çivili" diye **ölçülmemiş** bir gerekçe yazdı. Kalite reviewer ölçtü, yanlıştı:
+  ikame assert'ler **içerik-kör** → 3 mutasyon hayatta, en ağırı `contains("x^2")` →
+  `contains("")` = **TURKCE/EDEBIYAT/TARIH/COGRAFYA/SOSYAL havuzu her sınavda boş** (TYT'de
+  TURKCE tek başına 40 soru). Golden 3 parametreye genişletildi.
+- **Mutasyon toplamı: 10 (JOIN/H1/H2) + 7 (golden) + 3 (golden genişletme) = 20**, hepsi
+  `failed`, hiçbiri `error`. **3 geçersiz ölçüm yakalandı ve ATILDI** (ankraj 3 yere uydu ·
+  `IndentationError` → `error` · `base_filters` hoist'i `NameError` veriyor, iki sadık varyantla koşuldu).
+
+### Fail Eden Testler
+YOK. `tests/fast/test_osym_exam_engine_split.py` → **27 passed / 0 failed** (tur başında 12/7).
+Sayaç: `core/osym_exam_engine.py [SINIF=0 KWARG=2 ENTITY=5]`.
+⚠️ **`KWARG=2` GÜRÜLTÜ, kalan iş DEĞİL** — `:1882`/`:1888` Task 6'nın **doğru**
+`update(QuestionStatistics).values(...)` satırları; sayaç kwarg **adına** bakıyor, UPDATE
+hedefine değil. `ENTITY=5` de beklenen (2'si eager-load'lu, 3'ü N/A).
+
+### Engelleyiciler
+- **`question_bank` = 0 satır (bu makine)** — uçtan uca doğrulama YAPILAMIYOR.
+- ~3387 dosyalık pre-existing kirli ağaç (S210 devri) — ayrı triyaj.
+
+### Sonraki Adımlar (maks 5)
+1. **Push** — 7 commit bekliyor (kullanıcı onayı).
+2. **`question_statistics` yetim ölçümü** (S222'den devir, KAPANMADI): dolu DB'de
+   `SELECT count(*) FROM question_bank qb LEFT JOIN question_statistics qs ON qs.id=qb.id WHERE qs.id IS NULL;`
+   Sonra karar: (a) `rowcount` logu, (b) `'pending'` ile backfill — **ek onay şart**
+   (`quality_review_status` öğrenci kapısını besliyor).
+3. `services/soru_bankasi_service.py` (41+15) — ayrı plan, P0.
+4. `application/commands/sinav.py` (16) — **BKT hiç çalışmıyor**, ayrı plan.
+5. `core/irt_daemon.py` KWARG'ları (her IRT kalibrasyon yazımı `CompileError`) ·
+   `repositories/question_repository.py` (sıfır tüketici → SİLME).
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- **`filters = base_filters` aliasing'i BİLEREK BIRAKILDI.** `list()` kopyası bugün 0 hata
+  önlüyor; bedeli `test_latex_filter_does_not_leak_to_next_subject`'i **yapısal olarak
+  düşemez** hâle getirmek = vakum test. Çalışan bir dedektörü feda etme (#451 deseni).
+- H2 geri alınırken: `git revert b5fe75a5f` **1 çakışma** verir, yalnız **test** dosyasında
+  (golden hemen H2 testlerinden sonra eklendi). **Motor hunk'ı temiz döner.** Çözüm mekanik:
+  iki H2 testini düşür, golden'ı koru.
+- Ana/fallback ~40 satır kopya-yapıştır artık **üç** kavram paylaşıyor (JOIN üçlüsü, H1, H2) ve
+  metinsel olarak zaten ayrışmış → **ayrı follow-up görevi hak ediyor** (bu planda yasaktı).
+
+### Açık iş olarak düşen yeni kalemler (kalite incelemesinden, ertelendi)
+- INNER JOIN havuz-nötrlüğü kalite kapısına bağlı — `:1532-1535` yorumuna tek cümle.
+- `ANCHOR_QUOTA_RATIO` `services/irt_equating_service.py`'den **keşfedilemiyor** (o dosyada
+  `is_anchor` hiç geçmiyor) — modül docstring'ine tek satır işaretçi.
+- Sabitin yorumu `0.0`'ın etkisini **hafife alıyor**: kota "zorlanmıyor" değil, ankraj
+  **hiç servis edilmiyor**.
+- Golden `'%%'` paramstyle artefaktına bağlı (`pyformat`) — `postgresql.dialect(paramstyle=...)`
+  ile sabitlenmeli veya yoruma yazılmalı.
+- `_LATEX_FILTER_NEEDLE` sayımı ve `difficulty_level in where_sql` artık golden ile içerik
+  bakımından **fazlalık**; şekil iddiası olarak duruyorlar.
+- `:1493` `# nosec B311` yorumu "3 cagri yeri" diyor, **5** oldu (pre-existing).
+
+---
+
 ## Session Handoff — 2026-08-17 (S222)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `07eb98d8a` test(osym): _analyze_performance UPDATE WHERE kapsamini civile (#485)
