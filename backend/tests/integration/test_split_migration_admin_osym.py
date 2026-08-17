@@ -25,7 +25,7 @@ import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession
 
 _backend_dir = str(Path(__file__).parent.parent.parent)
 if _backend_dir not in sys.path:
@@ -39,8 +39,8 @@ from core.dependencies import AuthenticatedUser, get_current_user  # noqa: E402
 from core.dependencies import get_db as admin_get_db  # noqa: E402
 from models.enums_db import UserRole  # noqa: E402
 
-LIVE_DSN = "postgresql+asyncpg://kiro2_app:kiro2_app_rls_2026@localhost:5434/kiro2"
-
+# `live_db` fixture'i tests/integration/conftest.py'de — DSN kaynak koda
+# GOMULMEZ (parola git'e girmesin), ortam degiskeni veya backend/.env'den cozulur.
 pytestmark = pytest.mark.asyncio
 
 
@@ -57,22 +57,6 @@ def _make_student_user() -> AuthenticatedUser:
         role=UserRole.STUDENT,
         email="student@test.com",
     )
-
-
-@pytest_asyncio.fixture
-async def live_db() -> AsyncGenerator[AsyncSession, None]:
-    engine = create_async_engine(LIVE_DSN)
-    try:
-        async with engine.connect():
-            pass
-    except Exception as exc:
-        await engine.dispose()
-        pytest.skip(f"live Postgres {LIVE_DSN} ulasilamiyor: {exc}")
-
-    maker = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-    async with maker() as session:
-        yield session
-    await engine.dispose()
 
 
 @pytest_asyncio.fixture

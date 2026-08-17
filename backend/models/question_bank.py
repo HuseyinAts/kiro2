@@ -167,8 +167,17 @@ class QuestionBankItem(Base):
         String, ForeignKey("topic_hierarchy.id", ondelete="CASCADE"), nullable=False
     )
 
+    # `default` (Python-side) ve `server_default` (DDL) AYNI yone bakmali.
+    # S229'da olculdu: SQLAlchemy Python-side `default`'u INSERT'e kolonu DAHIL
+    # ETTIGI icin `server_default` HIC atesLenmez -> `default=False` iken
+    # `is_active` verilmeden olusturulan her soru DB'ye False iniyordu (ogrenciye
+    # gorunmez + `uq_qb_soru_hash_active` kismi indeksi -- WHERE is_active=true --
+    # o satirlar icin sessizce olu). Ayrica `server_default="true"` canli DDL'de
+    # HIC YOKTU (information_schema.column_default IS NULL); migration
+    # `0002_is_active_server_default` onu gercek yapiyor.
+    # Civi: tests/integration/test_question_bank_defaults.py
     is_active: Mapped[bool] = mapped_column(
-        Boolean, default=False, server_default="true"
+        Boolean, default=True, server_default="true"
     )
     is_public: Mapped[bool] = mapped_column(Boolean, default=False)
 
