@@ -288,6 +288,7 @@ arızası vardır.
 | 15 Ağu 2026 | `select_from` ezbere eklendi (S214) | S212'den "şart" diye taşındı ama **koşulluydu**. SELECT listesinde `QuestionBankItem.id` varken derlenmiş SQL onunla/onsuz birebir aynı → kazanç 0, hiçbir mutasyonla çivilenemez | SELECT listesi split-only ise ZORUNLU, değilse ekleme. Riski `FROM question_bank JOIN` assert'i karşılıyor |
 | 15 Ağu 2026 | Göç sayacı örnek düzeyini görmedi (S214) | Sayaç `QuestionBankItem.<alan>` (sınıf düzeyi) sayar; `mnemonic_service`'in asıl kusuru `select(QuestionBankItem)` → `question.alan` (örnek düzeyi, `MissingGreenlet`) idi ve sayaçta **0** göründü | Sayacın çıktısı **alt sınır**. Dosya başına ayrıca `grep 'select(QuestionBankItem)'` |
 | 15 Ağu 2026 | Göç hacmi toplamla ölçüldü | 69 alanlık şema split'i "2542 erişim / 340 dosya" göründü → repo-geneli göç sanıldı, iş bloke edildi. Ayrıştırınca **yalnız 108'i sınıf düzeyi** (`Model.alan`, SQL ifadesi, gerçek kolon şart) / 17 dosya; gerisi örnek düzeyi ve devrediciyle karşılanabilir | Göçün boyutu **toplam kullanım** değil, **karşılanamayan alt küme**. Bunu ayırmadan strateji seçme: ayrım strangler'ı uygulanabilir kıldı ve işi 340 dosyadan 17'ye indirdi |
+| 17 Ağu 2026 | `ruff --version` kapının sürümü sanıldı (S224) | Makinede **üç** ruff var: kabuk+PostToolUse kancası **0.14.13**, `git commit` kapısı **0.7.1** (kök config `:37`), ölü `backend/` config **0.13.2**. Kanca her Edit sonrası 0.14.13 ile biçimlendiriyor, kapı 0.7.1 ile yeniden biçimlendirip EXIT 1 veriyor → `--amend` **sessizce iptal**, `git log` aynı hash'i gösterdiği için "oldu" sanıldı (2 kez). Geri alma `git checkout -- .` kirli ağaçta **ilgisiz** dosyada NTFS hatası verip yanlış teşhise yönlendirdi | "Aynı aracın üç sürümü var ve kapıyı en eskisi tutuyor" bölümü: kapının sürümüyle biçimlendir (`pre-commit run ruff-format --files`), sabit nokta doğrula, amend sonrası **hash'in değiştiğini** ölç |
 | ... | ... | ... | ... |
 
 ---
@@ -647,6 +648,59 @@ o dize kök config'in geçmişinde hiç bulunmadı.)
 **Kural:** kapıyı ölçmek için **depo kökünden** koş, veya `--config` ver:
 
     cd <repo-root> && pre-commit run --files backend/<dosya>
+
+## AYNI ARACIN ÜÇ SÜRÜMÜ VAR VE KAPIYI EN ESKİSİ TUTUYOR (17 Ağu 2026, S224)
+
+Bir üstteki bölüm "yanlış CWD → yanlış **config**" diyor. Bir adım daha var ve
+bu oturumda iki commit'i sessizce yuttu: **yanlış giriş noktası → yanlış SÜRÜM.**
+`ruff --version` yazıp gördüğün sayı, `git commit`'in çalıştırdığı sayı değil.
+
+Bu makinede ölçüldü (`ruff.exe --version`, üç ayrı ikili):
+
+| Giriş noktası | ruff | Ankraj |
+|---|---|---|
+| Kabuk (`ruff format x.py`) **ve** PostToolUse kancası | **0.14.13** | PATH → `Python313/Scripts/ruff`; kanca `.claude/hooks/post-edit-format.py:48,53` **çıplak `ruff`** çağırıyor |
+| **`git commit` KAPISI** | **0.7.1** | kök `.pre-commit-config.yaml:37` `rev: v0.7.1`, izole venv (`~/.cache/pre-commit/repobiv5dj3f`) |
+| `backend/.pre-commit-config.yaml:7` (`rev: v0.13.2`) | **0.13.2** | commit anında **HİÇ YÜKLENMİYOR** (S219) — kurulu ama ölü |
+
+Yani kararı veren sürüm, başka hiçbir giriş noktasının kullanmadığı **en eski**
+olanı. Ve PostToolUse kancası her `Edit`/`Write` sonrası dosyayı 0.14.13 ile
+biçimlendirdiği için döngü kendi kendine kuruluyor:
+
+    Edit -> kanca 0.14.13 ile bicimlendirir -> kapi 0.7.1 ile ayni dosyayi
+    YENIDEN bicimlendirir -> "files were modified by this hook" -> EXIT 1
+
+### Sinsi kısım: `--amend` sessizce iptal olur
+
+Hook dosyayı değiştirip 1 döndürünce `git commit --amend` **çalışmaz**, ama
+`git log --oneline -1` **aynı hash'i** gösterir — çünkü eski commit hâlâ
+oradadır. Çıktıya bakan "amend oldu" sanır ve eski içeriği push etmeye çalışır.
+Bu oturumda **2 kez** düşüldü; 3. denemede çıkış kodu ölçülünce görüldü.
+
+İkinci tuzak aynı yerde: hook başarısız olunca pre-commit geri alma için
+`git checkout -- .` çalıştırır. 3399 kirli dosyalı bir ağaçta bu, konuyla
+**ilgisiz** bir dosyada NTFS `Invalid argument` ile patlar ve hata mesajı
+**yanlış dosyayı** işaret eder (`_blindsolve/w22batches/g28.json`). Teşhis
+oradan başlarsa saatler kaybedilir.
+
+### Yordam (ölçüldü, çalıştı)
+
+```bash
+git checkout -- <dosya>                          # calisan agac = index
+pre-commit run ruff-format --files <dosya>       # KAPININ surumuyle bicimlendir
+pre-commit run ruff-format --files <dosya>       # sabit nokta mi? -> "Passed"
+git add <dosya> && git commit --amend --no-edit
+git log --oneline -1                             # HASH DEGISMELI
+```
+
+**Kural:** bir commit/amend'i "oldu" saymadan önce **hash'in değiştiğini**
+doğrula. Çıkış kodu 0 mı, onu ölç — hook çıktısının son satırına güvenme.
+Ve bir dosyayı "biçim temiz" ilan etmeden önce **kapının sürümüyle** biçimlendir;
+`ruff --version`'ın söylediği sürüm bu depoda kapının sürümü **değildir**.
+
+İlgili: [[reference_precommit-vs-bare-linter]] (aynı sınıfın CWD/config ayağı) ·
+[[reference_formatter-import-stripping]] (kanca kullanılmayan import'u siler) ·
+`verification.md#GERI ALIM BIR IDDIADIR`.
 
 ## `Path.write_text()` GERİ ALIM DOĞRULAMASINI BOZAR (16 Ağu 2026, S219)
 

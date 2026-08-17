@@ -752,3 +752,17 @@
   durum: aktif
   zorlayici: backend/tests/fast/test_osym_exam_engine_split.py
   kanit: "S223 f2428eb81 (H1) — bos havuz TTLCache(ttl=3600)'e kosulsuz yaziliyordu: bos/import-ortasi question_bank'a karsi tek sorgu 60 dakikaya kadar sessizce bos sinav uretir (pre-split kod 295f34d9d'de 'if pool:' ile kendini onariyordu). Naif duzeltme 'if anchor_pool:' OLURDU ve YANLIS olurdu: tek sorgu iki havuz uretiyor, bos ANCHOR alt kumesi MESRU (bir dersin hic ankraj maddesi olmayabilir) -> saglikli veride sonsuza dek yeniden sorgu. Patolojik olan bos SORGU SONUCU -> guard 'if rows:' / 'if fb_rows:' uzerine kuruldu ve iki cache yazimini birden sariyor (yarim zehirlenme imkansiz). Iki yonde de civili: M-H1 guard'in varligini, M-H1b (if False:) cache'i yok etmedigini olduruyor"
+- id: L-s224-arac-surumu-giris-noktasina-bagli
+  baslik: "`ruff --version` KAPININ surumu degildir — ayni aracin uc surumu var ve kapiyi EN ESKISI tutuyor"
+  kaynak: .claude/rules/audit-methodology.md#ayni-aracin-uc-surumu-var-ve-kapiyi-en-eskisi-tutuyor-17-agu-2026-s224
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S224 — reference_precommit-vs-bare-linter'in (yanlis CWD -> yanlis CONFIG) bir adim otesi: yanlis GIRIS NOKTASI -> yanlis SURUM. Uc ayri ruff ikilisi `--version` ile olculdu: (a) kabuk PATH'i ve PostToolUse kancasi (.claude/hooks/post-edit-format.py:48,53 CIPLAK `ruff` cagiriyor) -> 0.14.13; (b) `git commit` KAPISI, kok .pre-commit-config.yaml:37 `rev: v0.7.1`, izole venv ~/.cache/pre-commit/repobiv5dj3f -> 0.7.1; (c) backend/.pre-commit-config.yaml:7 `rev: v0.13.2` -> 0.13.2 ama commit aninda HIC YUKLENMIYOR (S219). Karari veren surum, baska hicbir giris noktasinin kullanmadigi EN ESKI olani. Kanca her Edit/Write sonrasi 0.14.13 ile bicimlendirdigi icin dongu kendi kendine kuruluyor: kapi 0.7.1 ile YENIDEN bicimlendirip 'files were modified by this hook' + EXIT 1 veriyor. Yordam: `pre-commit run ruff-format --files <dosya>` (kapinin surumu) -> ikinci kez kos, 'Passed' = sabit nokta -> `git add` + amend"
+- id: L-s224-amend-sessizce-iptal-olur
+  baslik: "commit/amend 'oldu' bir IDDIADIR — cikti degil, HASH'in degistigi olculur"
+  kaynak: .claude/rules/audit-methodology.md#ayni-aracin-uc-surumu-var-ve-kapiyi-en-eskisi-tutuyor-17-agu-2026-s224
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S224 — bir pre-commit hook'u dosyayi degistirip 1 dondurunce `git commit --amend` CALISMAZ, ama `git log --oneline -1` AYNI HASH'i gosterir (eski commit hala orada). Ciktiya bakan 'amend oldu' sanir ve eski icerigi push etmeye calisir; bu oturumda 2 kez dusuldu, 3. denemede cikis kodu olculunce goruldu. Ikinci tuzak ayni yerde: hook basarisiz olunca pre-commit geri alma icin `git checkout -- .` kosuyor; 3399 kirli dosyali agacta bu ILGISIZ bir dosyada NTFS `Invalid argument` ile patliyor ve hata mesaji YANLIS dosyayi (_blindsolve/w22batches/g28.json) isaret ediyor -> teshis oradan baslarsa saatler kaybediliyor. Kural: amend/commit sonrasi `git log --oneline -1` hash'inin DEGISTIGINI dogrula. verification.md#GERI-ALIM-BIR-IDDIADIR'in commit tarafi"
