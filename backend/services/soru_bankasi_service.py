@@ -16,6 +16,7 @@ from datetime import datetime
 from sqlalchemy import and_, func, or_, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 # PERFORMANCE: Redis cache integration
 from core.cache import cache_manager
@@ -25,7 +26,13 @@ from core.turkish_nlp_utils import subject_db
 from models import SinavTipi
 from models.database import ExamType, QuestionDifficulty, SubjectArea
 from models.question_bank import QuestionBankItem as Question
-from models.question_bank import QuestionDifficultyLevel, TopicHierarchy
+from models.question_bank import (
+    QuestionContent,
+    QuestionDifficultyLevel,
+    QuestionMetadata,
+    QuestionStatistics,
+    TopicHierarchy,
+)
 from services.irt_analysis_service import IRTAnalysisService
 
 logger = logging.getLogger(__name__)
@@ -315,6 +322,11 @@ class SoruBankasiServisi:
 
                 # --- Build QuestionBankItem (no legacy topic/subtopic/difficulty) ---
                 yeni_soru = Question(
+                    primary_topic_id=primary_topic_id,
+                    created_by=soru_data.get("created_by"),
+                    soru_hash=soru_hash,
+                )
+                yeni_soru.content = QuestionContent(
                     question_text=soru_data["soru_metni"],
                     option_a=secenekler[0].replace("A) ", ""),
                     option_b=secenekler[1].replace("B) ", ""),
@@ -323,16 +335,17 @@ class SoruBankasiServisi:
                     option_e=option_e,
                     correct_answer=soru_data["dogru_cevap"],
                     explanation=soru_data.get("cozum_aciklamasi"),
+                )
+                yeni_soru.metadata_info = QuestionMetadata(
                     exam_type=exam_type_str,
                     subject_area=subject_area_str,
                     grade_level=grade_level,
-                    primary_topic_id=primary_topic_id,
+                )
+                yeni_soru.statistics = QuestionStatistics(
                     difficulty_level=difficulty_level,
                     irt_difficulty=irt_params["difficulty"],
                     irt_discrimination=irt_params["discrimination"],
                     irt_guessing=irt_params["guessing"],
-                    created_by=soru_data.get("created_by"),
-                    soru_hash=soru_hash,
                 )
 
                 try:
@@ -461,9 +474,17 @@ class SoruBankasiServisi:
 
             async with db_manager.get_session() as session:
                 try:
-                    stmt = select(Question).where(
-                        Question.id == soru_id,
-                        Question.is_active == True,
+                    stmt = (
+                        select(Question)
+                        .options(
+                            joinedload(Question.content),
+                            joinedload(Question.metadata_info),
+                            joinedload(Question.statistics),
+                        )
+                        .where(
+                            Question.id == soru_id,
+                            Question.is_active == True,
+                        )
                     )
                     result = await session.execute(stmt)
                     soru = result.scalar_one_or_none()
@@ -479,9 +500,17 @@ class SoruBankasiServisi:
             # Production: get_or_compute with Cache Stampede & Penetration protections
             async def fetch_db() -> Question | None:
                 async with db_manager.get_session() as session:
-                    stmt = select(Question).where(
-                        Question.id == soru_id,
-                        Question.is_active == True,
+                    stmt = (
+                        select(Question)
+                        .options(
+                            joinedload(Question.content),
+                            joinedload(Question.metadata_info),
+                            joinedload(Question.statistics),
+                        )
+                        .where(
+                            Question.id == soru_id,
+                            Question.is_active == True,
+                        )
                     )
                     result = await session.execute(stmt)
                     return result.scalar_one_or_none()
@@ -526,20 +555,34 @@ class SoruBankasiServisi:
 
             async with db_manager.get_session() as session:
                 try:
-                    stmt = select(Question).where(
-                        Question.is_active.is_(True),
-                        _safe_for_beta_gate(),
+                    stmt = (
+                        select(Question)
+                        .join(Question.metadata_info)
+                        .join(Question.statistics)
+                        .options(
+                            joinedload(Question.content),
+                            joinedload(Question.metadata_info),
+                            joinedload(Question.statistics),
+                        )
+                        .where(
+                            Question.is_active.is_(True),
+                            _safe_for_beta_gate(),
+                        )
                     )
                     if sinav_tipi:
-                        stmt = stmt.where(Question.exam_type == sinav_tipi.upper())
+                        stmt = stmt.where(
+                            QuestionMetadata.exam_type == sinav_tipi.upper()
+                        )
                     if konu:
                         subject = _KONU_MAP.get(
                             konu, _KONU_MAP.get(konu.lower(), konu.upper())
                         )
-                        stmt = stmt.where(Question.subject_area == subject)
+                        stmt = stmt.where(QuestionMetadata.subject_area == subject)
                     if zorluk_seviyesi:
                         zorluk_lower = zorluk_seviyesi.lower()
-                        stmt = stmt.where(Question.difficulty_level == zorluk_lower)
+                        stmt = stmt.where(
+                            QuestionStatistics.difficulty_level == zorluk_lower
+                        )
                     stmt = (
                         stmt.order_by(Question.created_at.desc())
                         .offset(offset)
@@ -560,23 +603,37 @@ class SoruBankasiServisi:
             # Production: get_or_compute with Cache Stampede & Penetration protections
             async def fetch_db() -> list[Question]:
                 async with db_manager.get_session() as session:
-                    stmt = select(Question).where(
-                        Question.is_active.is_(True),
-                        _safe_for_beta_gate(),
+                    stmt = (
+                        select(Question)
+                        .join(Question.metadata_info)
+                        .join(Question.statistics)
+                        .options(
+                            joinedload(Question.content),
+                            joinedload(Question.metadata_info),
+                            joinedload(Question.statistics),
+                        )
+                        .where(
+                            Question.is_active.is_(True),
+                            _safe_for_beta_gate(),
+                        )
                     )
 
                     if sinav_tipi:
-                        stmt = stmt.where(Question.exam_type == sinav_tipi.upper())
+                        stmt = stmt.where(
+                            QuestionMetadata.exam_type == sinav_tipi.upper()
+                        )
 
                     if konu:
                         subject = _KONU_MAP.get(
                             konu, _KONU_MAP.get(konu.lower(), konu.upper())
                         )
-                        stmt = stmt.where(Question.subject_area == subject)
+                        stmt = stmt.where(QuestionMetadata.subject_area == subject)
 
                     if zorluk_seviyesi:
                         zorluk_lower = zorluk_seviyesi.lower()
-                        stmt = stmt.where(Question.difficulty_level == zorluk_lower)
+                        stmt = stmt.where(
+                            QuestionStatistics.difficulty_level == zorluk_lower
+                        )
 
                     stmt = (
                         stmt.order_by(Question.created_at.desc())
@@ -650,16 +707,25 @@ class SoruBankasiServisi:
                 # `except Exception: return []` tarafından yutuluyordu, yani sınav
                 # üretimi sessizce "soru yok" diyordu. func.random() her iki
                 # dialect'te de çalışır (bkz offline_sync_service.py:112).
-                stmt = select(Question).where(
-                    Question.is_active.is_(True),
-                    _safe_for_beta_gate(),
+                stmt = (
+                    select(Question)
+                    .join(Question.metadata_info)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
+                    .where(
+                        Question.is_active.is_(True),
+                        _safe_for_beta_gate(),
+                    )
                 )
                 if sinav_upper:
-                    stmt = stmt.where(Question.exam_type == sinav_upper)
+                    stmt = stmt.where(QuestionMetadata.exam_type == sinav_upper)
 
                 # Konu filtresi - IN clause ile tek sorgu
                 if konu_listesi:
-                    stmt = stmt.where(Question.subject_area.in_(konu_listesi))
+                    stmt = stmt.where(QuestionMetadata.subject_area.in_(konu_listesi))
 
                 stmt = stmt.order_by(func.random()).limit(toplam_ihtiyac)
                 result = await session.execute(stmt)
@@ -813,17 +879,32 @@ class SoruBankasiServisi:
                 # dialect'te de çalışır (bkz offline_sync_service.py:112), bu yüzden
                 # use_tablesample parametresi ve dialect dalları kaldırıldı.
                 def _base_stmt(et: str | None):
-                    s = select(Question).where(
-                        Question.is_active == True,
-                        Question.subject_area.in_(subjects_upper),
-                        _safe_for_beta_gate(),
-                        # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
-                        text(f"question_text !~* '{_img_required_pattern}'"),
+                    s = (
+                        select(Question)
+                        .join(Question.metadata_info)
+                        .join(Question.content)
+                        .join(Question.statistics)
+                        .options(
+                            joinedload(Question.content),
+                            joinedload(Question.metadata_info),
+                            joinedload(Question.statistics),
+                        )
+                        .where(
+                            Question.is_active == True,
+                            QuestionMetadata.subject_area.in_(subjects_upper),
+                            _safe_for_beta_gate(),
+                            # Bug #11: image-required sample'ları HARIÇ (solution leak mitigation)
+                            text(
+                                f"question_content.question_text !~* '{_img_required_pattern}'"
+                            ),
+                        )
                     )
                     if et is not None:
-                        s = s.where(Question.exam_type == et)
+                        s = s.where(QuestionMetadata.exam_type == et)
                     if difficulty_levels:
-                        s = s.where(Question.difficulty_level.in_(difficulty_levels))
+                        s = s.where(
+                            QuestionStatistics.difficulty_level.in_(difficulty_levels)
+                        )
 
                     return s.order_by(func.random()).limit(pool_size)
 
@@ -942,15 +1023,26 @@ class SoruBankasiServisi:
                 # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql
                 # dalı AttributeError ile patlıyordu (dıştaki except yutuyordu).
                 # func.random() her iki dialect'te de çalışır.
-                stmt = select(Question).where(
-                    Question.is_active == True,
-                    Question.subject_area == subject_upper,
-                    _safe_for_beta_gate(),
+                stmt = (
+                    select(Question)
+                    .join(Question.metadata_info)
+                    .join(Question.content)
+                    .join(Question.statistics)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
+                    .where(
+                        Question.is_active == True,
+                        QuestionMetadata.subject_area == subject_upper,
+                        _safe_for_beta_gate(),
+                    )
                 )
 
                 # Topic varsa exam_type filtresi uygulanmaz (Türev=AYT, Çarpan=TYT olabilir)
                 if not topic:
-                    stmt = stmt.where(Question.exam_type == exam_type_upper)
+                    stmt = stmt.where(QuestionMetadata.exam_type == exam_type_upper)
 
                 # Konu bazlı filtre: topic_hierarchy tablosundan ID bul
                 if normalized_topic:
@@ -1008,12 +1100,16 @@ class SoruBankasiServisi:
                                 # Kök bazlı arama: kelimenin ilk 4+ harfini kullan
                                 stem = kw[: max(4, len(kw) - 2)]
                                 pattern = f"%{stem}%"
-                                conditions.append(Question.question_text.ilike(pattern))
+                                conditions.append(
+                                    QuestionContent.question_text.ilike(pattern)
+                                )
                             # En az bir kelime eşleşmesi yeterli
                             stmt = stmt.where(or_(*conditions))
 
                 if difficulty_levels:
-                    stmt = stmt.where(Question.difficulty_level.in_(difficulty_levels))
+                    stmt = stmt.where(
+                        QuestionStatistics.difficulty_level.in_(difficulty_levels)
+                    )
 
                 stmt = stmt.order_by(func.random()).limit(count)
                 result = await session.execute(stmt)
@@ -1025,15 +1121,25 @@ class SoruBankasiServisi:
                         f"Konu '{topic}' için soru bulunamadı, fallback: sadece ders filtresi"
                     )
 
-                    stmt_fallback = select(Question).where(
-                        Question.is_active == True,
-                        Question.subject_area == subject_upper,
-                        Question.exam_type == exam_type_upper,
-                        _safe_for_beta_gate(),
+                    stmt_fallback = (
+                        select(Question)
+                        .join(Question.metadata_info)
+                        .join(Question.statistics)
+                        .options(
+                            joinedload(Question.content),
+                            joinedload(Question.metadata_info),
+                            joinedload(Question.statistics),
+                        )
+                        .where(
+                            Question.is_active == True,
+                            QuestionMetadata.subject_area == subject_upper,
+                            QuestionMetadata.exam_type == exam_type_upper,
+                            _safe_for_beta_gate(),
+                        )
                     )
                     if difficulty_levels:
                         stmt_fallback = stmt_fallback.where(
-                            Question.difficulty_level.in_(difficulty_levels)
+                            QuestionStatistics.difficulty_level.in_(difficulty_levels)
                         )
                     stmt_fallback = stmt_fallback.order_by(func.random()).limit(count)
                     result_fallback = await session.execute(stmt_fallback)
@@ -1090,16 +1196,18 @@ class SoruBankasiServisi:
             for soru in tum_sorular:
                 bilgi_degeri = await self._hesapla_bilgi_fonksiyonu(
                     ogrenci_yetenek,
-                    soru.irt_difficulty,
-                    soru.irt_discrimination,
-                    soru.irt_guessing,
+                    soru.statistics.irt_difficulty,
+                    soru.statistics.irt_discrimination,
+                    soru.statistics.irt_guessing,
                 )
 
                 soru_bilgi_listesi.append(
                     {
                         "soru": soru,
                         "bilgi_degeri": bilgi_degeri,
-                        "zorluk_farki": abs(soru.irt_difficulty - ogrenci_yetenek),
+                        "zorluk_farki": abs(
+                            soru.statistics.irt_difficulty - ogrenci_yetenek
+                        ),
                     }
                 )
 
@@ -1112,7 +1220,11 @@ class SoruBankasiServisi:
 
             for item in soru_bilgi_listesi:
                 soru = item["soru"]
-                konu = str(soru.subject_area)
+                konu = (
+                    str(soru.metadata_info.subject_area)
+                    if soru.metadata_info
+                    else "Genel"
+                )
 
                 # Konu dağılımını kontrol et
                 if konu not in konu_sayaclari:
@@ -1224,9 +1336,17 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # Mevcut soruyu getir
-                stmt = select(Question).where(
-                    Question.id == soru_id,
-                    Question.is_active == True,
+                stmt = (
+                    select(Question)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
+                    .where(
+                        Question.id == soru_id,
+                        Question.is_active == True,
+                    )
                 )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
@@ -1317,7 +1437,9 @@ class SoruBankasiServisi:
             try:
                 # Base query
                 stmt = (
-                    select(Question.subject_area)
+                    select(QuestionMetadata.subject_area)
+                    .select_from(Question)
+                    .join(QuestionMetadata, Question.id == QuestionMetadata.id)
                     .distinct()
                     .where(Question.is_active == True)
                 )
@@ -1327,13 +1449,13 @@ class SoruBankasiServisi:
                     exam_type, _, _ = await self._enum_donusturucu(
                         sinav_tipi, "orta", "Matematik"
                     )
-                    stmt = stmt.where(Question.exam_type == exam_type)
+                    stmt = stmt.where(QuestionMetadata.exam_type == exam_type)
 
                 result = await session.execute(stmt)
                 subject_areas = result.scalars().all()
 
-                # Enum değerlerini string'e çevir
-                return sorted([subject.value for subject in subject_areas])
+                # subject_area split sonrasi String kolon — .value YOK
+                return sorted(subject_areas)
 
             except Exception as e:
                 logger.error(f"Konu listesi getirme hatası: {e}", exc_info=True)
@@ -1357,32 +1479,30 @@ class SoruBankasiServisi:
 
                 # Sınav tipi dağılımı
                 sinav_tipi_stmt = (
-                    select(Question.exam_type, func.count(Question.id))
+                    select(QuestionMetadata.exam_type, func.count(Question.id))
+                    .join(QuestionMetadata, Question.id == QuestionMetadata.id)
                     .where(Question.is_active == True)
-                    .group_by(Question.exam_type)
+                    .group_by(QuestionMetadata.exam_type)
                 )
                 sinav_tipi_result = await session.execute(sinav_tipi_stmt)
-                sinav_tipi_dagilimi = {
-                    exam_type.value: count
-                    for exam_type, count in sinav_tipi_result.all()
-                }
+                sinav_tipi_dagilimi = dict(sinav_tipi_result.all())
 
                 # Konu dağılımı
                 konu_stmt = (
-                    select(Question.subject_area, func.count(Question.id))
+                    select(QuestionMetadata.subject_area, func.count(Question.id))
+                    .join(QuestionMetadata, Question.id == QuestionMetadata.id)
                     .where(Question.is_active == True)
-                    .group_by(Question.subject_area)
+                    .group_by(QuestionMetadata.subject_area)
                 )
                 konu_result = await session.execute(konu_stmt)
-                konu_dagilimi = {
-                    subject.value: count for subject, count in konu_result.all()
-                }
+                konu_dagilimi = dict(konu_result.all())
 
                 # Zorluk dağılımı
                 zorluk_stmt = (
-                    select(Question.difficulty_level, func.count(Question.id))
+                    select(QuestionStatistics.difficulty_level, func.count(Question.id))
+                    .join(QuestionStatistics, Question.id == QuestionStatistics.id)
                     .where(Question.is_active == True)
-                    .group_by(Question.difficulty_level)
+                    .group_by(QuestionStatistics.difficulty_level)
                 )
                 zorluk_result = await session.execute(zorluk_stmt)
                 zorluk_dagilimi = {
@@ -1390,14 +1510,32 @@ class SoruBankasiServisi:
                 }
 
                 # IRT parametreleri istatistikleri
-                irt_stmt = select(
-                    func.avg(Question.irt_difficulty).label("avg_difficulty"),
-                    func.min(Question.irt_difficulty).label("min_difficulty"),
-                    func.max(Question.irt_difficulty).label("max_difficulty"),
-                    func.avg(Question.irt_discrimination).label("avg_discrimination"),
-                    func.avg(Question.morphology_complexity).label("avg_morphology"),
-                    func.avg(Question.readability_score).label("avg_readability"),
-                ).where(Question.is_active == True)
+                irt_stmt = (
+                    select(
+                        func.avg(QuestionStatistics.irt_difficulty).label(
+                            "avg_difficulty"
+                        ),
+                        func.min(QuestionStatistics.irt_difficulty).label(
+                            "min_difficulty"
+                        ),
+                        func.max(QuestionStatistics.irt_difficulty).label(
+                            "max_difficulty"
+                        ),
+                        func.avg(QuestionStatistics.irt_discrimination).label(
+                            "avg_discrimination"
+                        ),
+                        func.avg(QuestionMetadata.morphology_complexity).label(
+                            "avg_morphology"
+                        ),
+                        func.avg(QuestionMetadata.readability_score).label(
+                            "avg_readability"
+                        ),
+                    )
+                    .select_from(Question)
+                    .join(QuestionStatistics)
+                    .join(QuestionMetadata)
+                    .where(Question.is_active == True)
+                )
                 irt_result = await session.execute(irt_stmt)
                 irt_stats = irt_result.first()
 
@@ -1452,8 +1590,15 @@ class SoruBankasiServisi:
             if toplam == 0:
                 return 0.0
 
-            yuksek_stmt = select(func.count(Question.id)).where(
-                and_(Question.is_active == True, Question.irt_discrimination >= 1.5)
+            yuksek_stmt = (
+                select(func.count(Question.id))
+                .join(QuestionStatistics)
+                .where(
+                    and_(
+                        Question.is_active == True,
+                        QuestionStatistics.irt_discrimination >= 1.5,
+                    )
+                )
             )
             yuksek_result = await session.execute(yuksek_stmt)
             yuksek = yuksek_result.scalar()
@@ -1467,9 +1612,10 @@ class SoruBankasiServisi:
         """Zorluk dağılımının dengesini hesapla (0-100 arası)"""
         try:
             zorluk_stmt = (
-                select(Question.difficulty_level, func.count(Question.id))
+                select(QuestionStatistics.difficulty_level, func.count(Question.id))
+                .join(QuestionStatistics)
                 .where(Question.is_active == True)
-                .group_by(Question.difficulty_level)
+                .group_by(QuestionStatistics.difficulty_level)
             )
             zorluk_result = await session.execute(zorluk_stmt)
             zorluk_counts = dict(zorluk_result.all())
@@ -1521,11 +1667,15 @@ class SoruBankasiServisi:
 
             kapsam_sayisi = 0
             for min_val, max_val, _ in seviyeler:
-                seviye_stmt = select(func.count(Question.id)).where(
-                    and_(
-                        Question.is_active == True,
-                        Question.morphology_complexity >= min_val,
-                        Question.morphology_complexity < max_val,
+                seviye_stmt = (
+                    select(func.count(Question.id))
+                    .join(QuestionMetadata)
+                    .where(
+                        and_(
+                            Question.is_active == True,
+                            QuestionMetadata.morphology_complexity >= min_val,
+                            QuestionMetadata.morphology_complexity < max_val,
+                        )
                     )
                 )
                 seviye_result = await session.execute(seviye_stmt)
@@ -1565,16 +1715,23 @@ class SoruBankasiServisi:
 
                 stmt = (
                     select(Question)
+                    .join(Question.metadata_info)
+                    .join(Question.statistics)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
+                    )
                     .where(
                         and_(
                             Question.is_active == True,
-                            Question.exam_type == exam_type,
-                            Question.irt_difficulty >= min_zorluk,
-                            Question.irt_difficulty <= max_zorluk,
+                            QuestionMetadata.exam_type == exam_type,
+                            QuestionStatistics.irt_difficulty >= min_zorluk,
+                            QuestionStatistics.irt_difficulty <= max_zorluk,
                             _safe_for_beta_gate(),
                         )
                     )
-                    .order_by(Question.irt_discrimination.desc())
+                    .order_by(QuestionStatistics.irt_discrimination.desc())
                 )
 
                 result = await session.execute(stmt)
@@ -1618,6 +1775,9 @@ class SoruBankasiServisi:
 
                     # Question object oluştur
                     yeni_soru = Question(
+                        created_by=soru_data.get("created_by"),
+                    )
+                    yeni_soru.content = QuestionContent(
                         question_text=soru_data["soru_metni"],
                         option_a=soru_data["secenekler"][0].replace("A) ", ""),
                         option_b=soru_data["secenekler"][1].replace("B) ", ""),
@@ -1628,21 +1788,22 @@ class SoruBankasiServisi:
                         else None,
                         correct_answer=soru_data["dogru_cevap"],
                         explanation=soru_data.get("cozum_aciklamasi"),
+                    )
+                    yeni_soru.metadata_info = QuestionMetadata(
                         exam_type=exam_type,
                         subject_area=subject_area,
-                        topic=soru_data.get("konu", "Genel"),
-                        subtopic=soru_data.get("alt_konu"),
-                        difficulty=difficulty,
-                        irt_difficulty=irt_params["difficulty"],
-                        irt_discrimination=irt_params["discrimination"],
-                        irt_guessing=irt_params["guessing"],
                         morphology_complexity=await self._hesapla_morfoloji_karmasikligi(
                             soru_data["soru_metni"]
                         ),
                         readability_score=await self._hesapla_okunabilirlik(
                             soru_data["soru_metni"]
                         ),
-                        created_by=soru_data.get("created_by"),
+                    )
+                    yeni_soru.statistics = QuestionStatistics(
+                        difficulty_level=difficulty,
+                        irt_difficulty=irt_params["difficulty"],
+                        irt_discrimination=irt_params["discrimination"],
+                        irt_guessing=irt_params["guessing"],
                     )
                     questions_to_add.append(yeni_soru)
                     basarili += 1
@@ -1686,30 +1847,35 @@ class SoruBankasiServisi:
         """
         async with db_manager.get_session() as session:
             try:
-                stmt = select(Question).where(
-                    Question.id == soru_id,
-                    Question.is_active == True,
+                stmt = (
+                    select(Question)
+                    .options(joinedload(Question.statistics))
+                    .where(
+                        Question.id == soru_id,
+                        Question.is_active == True,
+                    )
                 )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 
-                if not soru:
+                if not soru or not soru.statistics:
                     return False
 
                 # İstatistikleri güncelle
-                soru.times_asked += 1
+                soru.statistics.times_asked += 1
                 if dogru_cevap:
-                    soru.times_correct += 1
+                    soru.statistics.times_correct += 1
 
                 # Ortalama cevap süresini güncelle
-                if soru.average_response_time == 0:
-                    soru.average_response_time = cevap_suresi
+                if soru.statistics.average_response_time == 0:
+                    soru.statistics.average_response_time = cevap_suresi
                 else:
                     # Hareketli ortalama
-                    soru.average_response_time = (
-                        soru.average_response_time * (soru.times_asked - 1)
+                    soru.statistics.average_response_time = (
+                        soru.statistics.average_response_time
+                        * (soru.statistics.times_asked - 1)
                         + cevap_suresi
-                    ) / soru.times_asked
+                    ) / soru.statistics.times_asked
 
                 await session.commit()
                 return True
@@ -1731,18 +1897,26 @@ class SoruBankasiServisi:
         """
         async with db_manager.get_session() as session:
             try:
-                stmt = select(Question).where(
-                    Question.id == soru_id,
-                    Question.is_active == True,
+                stmt = (
+                    select(Question)
+                    .options(joinedload(Question.statistics))
+                    .where(
+                        Question.id == soru_id,
+                        Question.is_active == True,
+                    )
                 )
                 result = await session.execute(stmt)
                 soru = result.scalar_one_or_none()
 
-                if not soru or soru.times_asked < 10:  # Minimum 10 cevap gerekli
+                if (
+                    not soru or not soru.statistics or soru.statistics.times_asked < 10
+                ):  # Minimum 10 cevap gerekli
                     return False
 
                 # Başarı oranına göre zorluk parametresini ayarla
-                basari_orani = soru.times_correct / soru.times_asked
+                basari_orani = (
+                    soru.statistics.times_correct / soru.statistics.times_asked
+                )
 
                 # Logit dönüşümü ile zorluk hesapla
                 if basari_orani <= 0.01:
@@ -1753,15 +1927,17 @@ class SoruBankasiServisi:
                 yeni_zorluk = -math.log(basari_orani / (1 - basari_orani))
 
                 # Zorluk parametresini güncelle
-                soru.irt_difficulty = max(-3.0, min(3.0, yeni_zorluk))
+                soru.statistics.irt_difficulty = max(-3.0, min(3.0, yeni_zorluk))
 
                 # Ayırıcılık parametresini cevap süresi varyansına göre ayarla
-                if soru.average_response_time > 0:
+                if soru.statistics.average_response_time > 0:
                     # Hızlı cevaplanan sorular daha az ayırıcı olabilir
                     sure_faktoru = min(
-                        2.0, soru.average_response_time / 60
+                        2.0, soru.statistics.average_response_time / 60
                     )  # 60 saniye referans
-                    soru.irt_discrimination = max(0.5, min(2.5, sure_faktoru))
+                    soru.statistics.irt_discrimination = max(
+                        0.5, min(2.5, sure_faktoru)
+                    )
 
                 await session.commit()
                 return True
