@@ -37,6 +37,87 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-17 (S225)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `6f7c5dec3` test(soru-bankasi): mukerrer dali + strangler-bagimsizligi civilendi (#485)
+**Push:** ❌ **EDILMEDI** — 3 commit bekliyor (`346150a00`, `efe632828`, `6f7c5dec3`).
+**Uncommitted:** bu işin dosyaları temiz. ~3399 kirli dosya = S210 devri, ait değil.
+
+### Yapılanlar — Adım 2 KAPANDI (`toplu_soru_ekle` + API tüketici)
+- `346150a00` — **ders kaydı**: `audit-methodology.md`'ye "aynı aracın üç ruff sürümü"
+  bölümü + `ders_kaydi.yaml` 102 → **104** (`L-s224-*`), bekçi 9/9.
+- `efe632828` — **kod fix'i** (+906/−176): `toplu_soru_ekle` 4 seri kusur + casing,
+  `soru_ekle` topic ValueError'ı, API tüketici göçü, HTTP sözleşmesi + sızıntı.
+- `6f7c5dec3` — mükerrer dalı + strangler-bağımsızlığı testleri (+81).
+
+### Ölçümler (bu turda üretildi, varsayım değil)
+- **4 kusur SERİ**, kümülatif aşamayla birebir doğrulandı: `soru_hash` →
+  `primary_topic_id` → `grade_level` → `difficulty_level` enum. Batch **%100**
+  düşüyordu; uç **HTTP 201 + success:true + "0/3 eklendi"** dönüyordu.
+- **Kusur 4 `LookupError` DEĞİL**: `enums_db.QuestionDifficulty` bir `str` alt sınıfı
+  + kolonun `validate_strings=False` → SQLAlchemy ham dize sanıp geçiriyor, PG
+  `invalid input value for enum questiondifficultylevel: "medium"` diyor.
+- **Casing kusuru BUGÜN ULAŞILAMAZDI** (bir ajan kendi brifingini çürüttü): canlı
+  DB'de 0 küçük-harf satır, çünkü batch zaten `soru_hash`'te ölüyordu. 1-4
+  düzelince aktifleşirdi → aynı commit'te kapatıldı (S219 deseni).
+- **`soru_ekle` KOŞULSUZ kırıktı**: `topic_hierarchy`'nin 12 satırının 12'sinde
+  `subject_area` NULL → iki lookup da 0 satır → `ValueError` → HTTP 500.
+  Çözüm **GEN sabit fallback** (kullanıcı kararı); 36.967 sorunun 36.967'si zaten GEN'de.
+- 🔴 **YENİ: `is_active` ORM varsayılanı `False`, `server_default="true"`'yu EZİYOR.**
+  İki sonucu ölçüldü: `uq_qb_soru_hash_active` **kısmi** indeksi (`WHERE is_active
+  = true`) yeni satırlara uygulanmıyor → **mükerrer engelleme ÖLÜ**; ve yeni soru
+  öğrenciye görünmüyor. Kullanıcı kararı: modele dokunmadan iki yazma yolunda
+  açıkça `is_active=True`. **Model varsayılanı hâlâ `False` — diğer yazma yolları
+  (scriptler, pipeline, `question_bank_service`, `question_crud_service`) AYNI
+  kusuru taşıyor, ölçülmedi.**
+- **Mutasyon 12/12** öldü (hiçbiri `error`, her geri alım `git status` ile boş).
+- **Regresyon test-test karşılaştırıldı**: 90 önce / 90 sonra, küme **bayt-birebir
+  aynı** → yeni kırık 0. (87 ERROR `TestClient(app=...)` httpx uyumsuzluğu, 3 FAILED
+  dokunulmayan `soru_performans_guncelle`/`irt_yeniden_hesapla` — ikisi de önceden.)
+
+### Fail Eden Testler
+YOK. `test_toplu_soru_ekle_split.py` **12 passed**, iki split dosyası **20/20**.
+
+### Engelleyiciler
+- `kiro2-api-import-smoke` — `SKIP=` **kullanıcı onayıyla** (2 commit'te). Kontrol
+  koluyla ölçüldü: dokunulmayan `api/health.py` ile de düşüyor (`WinError 127`,
+  api.rag/youtube_routes/v1.semantic_search). **Kök neden S211'den beri açık.**
+- Commit kanca zinciri **2 dk'yı aşıyor** → kısa timeout'ta commit sessizce düşüyor;
+  `git log` hash'i ile doğrulanmalı (bu turda 1 kez yaşandı).
+
+### Sonraki Adımlar (maks 5)
+1. **PUSH** — 3 commit bekliyor (kullanıcı onayı).
+2. 🔴 **`CacheManager.get_or_compute` YOK** (bağımsız doğrulandı; sınıfta `get_or_set` var).
+   `soru_bankasi_service.py:519` ve `:648` → `AttributeError` → çıplak `except` →
+   **`GET /soru/{id}` gerçek soruda 404, `GET /sorular` 36.967 aktif soruyla
+   200+boş liste.** Testler görmüyor çünkü `:466` `isinstance(cache_manager.get,
+   AsyncMock)` ile **teste özel dala** sapıyor. **Kapsam dışıydı, ayrı TDD turu.**
+3. 🔴 **`QuestionCRUDService.create_question` ÜÇÜNCÜ yazma yolu** aynı `soru_hash`
+   NOT NULL kusuruyla düşüyor (hakem kolu ölçtü). `soru_hash` tek kök neden, 2 çağrı yeri.
+4. **Adım 3** (S224'ten devir): `repositories/question_repository.py` silmesini
+   commit'le + `_scripts/test_database_repository.py:15` import'unu temizle.
+5. `application/commands/sinav.py` (16 erişim, BKT ölü) — ayrı plan.
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- **`monkeypatch.delattr` strangler devredicisinde KULLANILAMAZ** — pytest onu
+  içeride `hasattr()` ile koruyor, devredici sınıf düzeyinde `AttributeError`
+  fırlattığı için `hasattr` **her zaman False** → `raising=False` ile çağrı sessizce
+  no-op. Testin ilk sürümü tam bu yüzden **vakumdu** ve kontrol kolu aynı bozuk
+  yordamı kullandığı için göremedi. Doğru araç **`vars(cls)`**.
+- **API'de parent→yavru göçü BUGÜN çivilenemiyordu** (M10 kaçtı): `refresh()`
+  daraltmasından sonra ilişkiler yüklü kaldığı için devredici doğru değeri
+  döndürüyor. Değeri **devredici silindiğinde** ortaya çıkıyor → o günü simüle eden
+  test yazıldı, M10 artık ölüyor. (S214: çivilenemeyen kod test edilemez ağırlıktır.)
+- **`efe632828` mesajı "10 test" diyor, doğrusu 11** — `6f7c5dec3` mesajında
+  düzeltildi. Sayı bir ölçümdür, elle sayılmamalı.
+- Kapı borcu (dokunulmayan kod, davranış nötr, hepsi HEAD'de vardı): `logger`
+  import'ların altına (10× E402), iki md5 cache anahtarına `usedforsecurity=False`,
+  1× E402 + 1× SIM102 gerekçeli `# noqa`. Biçimlendirici `SoruEkleRequest`'i de
+  süpürdü — **AST ile ölçüldü** (kontrol kollu): import sırası normalize edilince
+  fark YOK → davranış nötr.
+
+---
+
 ## Session Handoff — 2026-08-17 (S224)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `6b87d2a95` fix(soru-bankasi): split gocu + split sonrasi 3 sessiz kusur (#485)
