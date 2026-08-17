@@ -1031,3 +1031,40 @@ Kardeş bilinen kusur: `kiro2-api-import-smoke` (S211'den beri açık).
 - **Servis silindi, "belki lazım olur" diye tutulmadı:** 9 yetenekten 7'sinin canlı DB'de çalışmadığı ölçüldü; tek gerçek kayıp facet'li arama ve o da kusurluydu (kapısız facet → aynı yanıtta facet 36.967 vs total 27.073).
 - **Silme deletion-only tutuldu:** `ruff-format`ın dokunulmamış koda uyguladığı +21/−4 süpürme `git checkout --` ile (index'ten) geri alındı; 42 ruff + 3 detect-secrets kalemi dokunulmamış koda ait ve HEAD'de de vardı → sweep yerine ölçülmüş SKIP.
 - **`pre-commit run` artık kontrol kolu olarak "salt-okunur" sayılmıyor:** `--fix` veriyor; `stash push` → `run` → `pop` dizisi bu yüzden düştü. Yordam kural dosyasında.
+
+---
+
+## Session Handoff — 2026-08-18 (S229 · #485 Task 1 KAPANDI)
+**Branch:** feature/self-evolution-optimization (origin'in **2 commit ÖNÜNDE** — push edilmedi)
+**Son commit:** `e0a823131` fix: admin.py + osym_questions_api.py JOIN'e cevir (#485 devami)
+**Uncommitted:** takipli değişiklik **YOK** (`git diff --stat` boş). 88 takipsiz dosya S205-S210 devrinden, bu oturumun ürünü DEĞİL.
+
+### Yapilanlar
+- **Kapsam handoff'takinin 4 katı çıktı.** Devir "2 satır" diyordu (`admin.py:252/311` + `osym_questions_api.py:155`); canlı psql ile ölçünce **8 uç** kırıktı — iki dosyanın `question_bank`'a giden **her** ham SQL'i.
+- `backend/api/admin.py` — 3 uç JOIN'e çevrildi: `dashboard_istatistikleri` (:247 `LEFT JOIN` qs+qm), `soru_bankasi_listesi` (:308 `joins` değişkeni, 3 tablo INNER), `icerik_ara` (:601). Filtreler niteliklendi: `qm.subject_area`, `qs.difficulty_level`.
+- `backend/api/osym_questions_api.py` — 5 uç: `/statistics` (:36-84), `/subjects` (:121), `/random-questions` (:166), `/practice-exam` (:296 `_joins`), `/questions` (:387). **`safe_for_beta_sql("id")` → `("qb.id")`** — çok-tablo JOIN'de niteliksiz `id` ambiguous olurdu.
+- `backend/tests/integration/test_split_migration_admin_osym.py` (YENİ, 168 satır) — **gerçek Postgres'e** karşı 8 test (mock DB DEĞİL; `test_admin_api.py`'nin `AsyncMock`'u bu bug'ı yapısal olarak göremez).
+- Canlıya deploy: `docker cp` ×2 → `find /app/api -name "*.pyc" -delete` → `restart` → `sleep 22` → `/health` 200.
+
+### Fail Eden Testler
+- `tests/integration/test_split_migration_admin_osym.py` — fix ÖNCESİ **8/8 FAIL** (`UndefinedColumnError: column "subject_area" does not exist`), fix SONRASI **8/8 PASS** (2 kez koşuldu).
+- `tests/e2e/test_golden_flows.py::test_gf3b_osym_subjects_reachable` — ÖNCE **500**, deploy SONRASI **PASS** (canlı container'a karşı).
+- Tüketici tarama (`test_admin_api` + `test_admin_content_{create,update,delete}` + `test_api_coverage_batch14`): **47 passed / 8 skipped / 97 error**. 97'nin **97'si** `ERROR at setup of` (ölçüldü: `grep -c`) → fixture aşaması, uç koduna hiç ulaşmıyor. Kök neden `tests/conftest.py:1186` + `test_api_coverage_batch14.py:2122` `TestClient(app=...)` → `TypeError: Client.__init__() got an unexpected keyword argument 'app'` (starlette/httpx sürüm uyumsuzluğu, bu işle ilgisiz).
+
+### Engelleyiciler
+- **Push YAPILMADI** — 2 commit yerelde bekliyor (kullanıcı onayı alınmadı).
+- `bandit` pre-commit hook'unun cache'li venv'i **bağımsız olarak kırık**: `ModuleNotFoundError: No module named 'pbr'` (HEAD sürümünde de düşüyor, yani kontrol kolu da kırmızı). Bu yüzden HEAD baseline'ı bu hook'la ölçülemedi.
+- `SKIP=bandit,mypy` kullanıldı. Kalan kalemler: B311 `random.sample` ×2 (`osym_questions_api.py:220,343`) + mypy `min()` / `Sequence[str].append` ×2 (`:342,:365`) — **4'ünün 4'ü `git diff` ile dokunmadığım satırlarda** doğrulandı.
+
+### Sonraki Adimlar (maks 5)
+1. **Push** (`git push`) — 2 commit bekliyor. `reward-hacking-check` pre-push bekçisi bu oturumda dokunulan dosyaları taramadı, temiz geçmesi beklenir ama ÖLÇÜLMEDİ.
+2. `backend/models/question_bank.py` — `is_active` ORM `default=False` DURUYOR, `server_default="true"`ı eziyor. Diğer yazma yolları ölçülmedi (#485 Task 2).
+3. Facet'li arama: 9 filtre + facet yalnız silinen `QuestionCRUDService`'te vardı. `soru_bankasi_service.sorular_listele` üzerine temiz sürüm (#485 Task 3). Silinen sürümün kusurları: kapısız facet, `option_e` aranmıyor, ORDER BY'siz sayfalama — tekrarlanmasın.
+4. `tests/conftest.py:1186` `TestClient(app=...)` onarımı — 97 hatanın tek kök nedeni, backend paketinin uçtan uca koşamamasının da sebebi. Tek satırlık sürüm uyumu olabilir.
+5. `reward-hacking-check`i test dosyaları için kalibre et (S228 devri, hâlâ açık).
+
+### Kararlar (gelecek session tekrar tartismasin)
+- **Kapsam genişletildi, "sadece 2 satır" yapılmadı:** 8 ucun 8'i aynı kök nedene (split) bağlı ve aynı kalıpla düzeliyor; 2'sini düzeltip 6'sını bırakmak yarım fix olurdu. Kullanıcı `AskUserQuestion` ile "tümünü bu turda düzelt" dedi.
+- **Test gerçek DB'ye karşı yazıldı, mock'la değil:** `test_admin_api.py`'nin `AsyncMock` DB'si bu bug sınıfını **hiçbir koşulda** yakalayamaz (S228'in "mock dalı hep koşuyordu" dersi). Yeni dosya `live_db` fixture'ı kullanıyor, DSN erişilemezse `pytest.skip`.
+- **`is_active` ve `LEFT` vs `INNER` ayrımı bilinçli:** `dashboard_istatistikleri` istatistik ucudur → `LEFT JOIN` (yetim `question_bank` satırı sayımdan düşmesin). Öğrenciye/admin'e satır servis eden 7 uç → `INNER JOIN` (eksik içerikli soru servis edilmesin). S223'ün "`question_statistics` 1:1 GARANTİ DEĞİL" ölçümüyle uyumlu.
+- **İlk commit sessizce yarım gitti, `git show --stat` yakaladı:** `SKIP=...` ile commit ettiğimde pre-commit'in stash-restore adımı `api/*.py`'yi unstaged bıraktı → `5673ef0e9` yalnız test dosyasını aldı. S228'de kayıtlı desenin aynısı. `e0a823131` asıl fix'i taşıyor. **Ders: commit sonrası `git show --stat` ile ne girdiğini ölç, çıkış kodu 0 yeterli değil.**
