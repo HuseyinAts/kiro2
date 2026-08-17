@@ -570,62 +570,40 @@ class SoruBankasiServisi:
         cache_key = f"soru:{soru_id}"
 
         # If cache is mocked in unit tests, use the mocked get path
-        from unittest.mock import AsyncMock
-
-        if isinstance(cache_manager.get, AsyncMock):
-            cached_soru = await cache_manager.get(cache_key)
-            if cached_soru:
-                logger.debug(f"Soru cache hit (mock): {soru_id}")
-                return cached_soru
-
+        async def fetch_db() -> Question | None:
             async with db_manager.get_session() as session:
-                try:
-                    stmt = (
-                        select(Question)
-                        .options(
-                            joinedload(Question.content),
-                            joinedload(Question.metadata_info),
-                            joinedload(Question.statistics),
-                        )
-                        .where(
-                            Question.id == soru_id,
-                            Question.is_active == True,
-                        )
+                stmt = (
+                    select(Question)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
                     )
-                    result = await session.execute(stmt)
-                    soru = result.scalar_one_or_none()
-
-                    if soru:
-                        await cache_manager.set(cache_key, soru, ttl=7200)
-
-                    return soru
-                except Exception as e:
-                    logger.error(f"Soru getirme hatası: {e}", exc_info=True)
-                    return None
-        else:
-            # Production: get_or_compute with Cache Stampede & Penetration protections
-            async def fetch_db() -> Question | None:
-                async with db_manager.get_session() as session:
-                    stmt = (
-                        select(Question)
-                        .options(
-                            joinedload(Question.content),
-                            joinedload(Question.metadata_info),
-                            joinedload(Question.statistics),
-                        )
-                        .where(
-                            Question.id == soru_id,
-                            Question.is_active == True,
-                        )
+                    .where(
+                        Question.id == soru_id,
+                        Question.is_active == True,
                     )
-                    result = await session.execute(stmt)
-                    return result.scalar_one_or_none()
+                )
+                result = await session.execute(stmt)
+                return result.scalar_one_or_none()
 
-            try:
-                return await cache_manager.get_or_compute(cache_key, fetch_db, ttl=7200)
-            except Exception as e:
-                logger.error(f"Soru getirme hatası: {e}", exc_info=True)
-                return None
+        try:
+            # `get_or_set` — `CacheManager`in GERCEK metodu. Eskiden burada
+            # `get_or_compute` cagriliyordu ve o metot bu sinifta HIC YOKTU:
+            # `AttributeError` asagidaki ciplak `except` tarafindan yutuluyor,
+            # metot `None` donuyordu -> uc, VAR OLAN bir soru icin HTTP 404
+            # veriyordu (olculdu: 36.967 aktif soru, gercek id ile None).
+            #
+            # NOT: eski cagrinin yorumu 'Cache Stampede & Penetration protections'
+            # diyordu; `get_or_set`te ikisi de YOK (olculdu). O korumalar
+            # `MultiLayerCache.get_or_compute`ta var, ama bu servis 12 yerde
+            # `cache_manager` kullaniyor — yalniz bu 2'sini baska bir cache
+            # nesnesine cevirmek SPLIT-BRAIN yaratirdi (yazma bir store'a, okuma
+            # digerine). Kapsamli gecis ayri bir isin konusu.
+            return await cache_manager.get_or_set(cache_key, fetch_db, ttl=7200)
+        except Exception as e:
+            logger.error(f"Soru getirme hatası: {e}", exc_info=True)
+            return None
 
     async def sorular_listele(
         self,
@@ -652,109 +630,56 @@ class SoruBankasiServisi:
             f"sorular_liste:{sinav_tipi}:{konu}:{zorluk_seviyesi}:{limit}:{offset}"
         )
 
-        from unittest.mock import AsyncMock
-
-        if isinstance(cache_manager.get, AsyncMock):
-            cached = await cache_manager.get(cache_key)
-            if cached is not None:
-                return cached
-
+        async def fetch_db() -> list[Question]:
             async with db_manager.get_session() as session:
-                try:
-                    stmt = (
-                        select(Question)
-                        .join(Question.metadata_info)
-                        .join(Question.statistics)
-                        .options(
-                            joinedload(Question.content),
-                            joinedload(Question.metadata_info),
-                            joinedload(Question.statistics),
-                        )
-                        .where(
-                            Question.is_active.is_(True),
-                            _safe_for_beta_gate(),
-                        )
+                stmt = (
+                    select(Question)
+                    .join(Question.metadata_info)
+                    .join(Question.statistics)
+                    .options(
+                        joinedload(Question.content),
+                        joinedload(Question.metadata_info),
+                        joinedload(Question.statistics),
                     )
-                    if sinav_tipi:
-                        stmt = stmt.where(
-                            QuestionMetadata.exam_type == sinav_tipi.upper()
-                        )
-                    if konu:
-                        subject = _KONU_MAP.get(
-                            konu, _KONU_MAP.get(konu.lower(), konu.upper())
-                        )
-                        stmt = stmt.where(QuestionMetadata.subject_area == subject)
-                    if zorluk_seviyesi:
-                        zorluk_lower = zorluk_seviyesi.lower()
-                        stmt = stmt.where(
-                            QuestionStatistics.difficulty_level == zorluk_lower
-                        )
-                    stmt = (
-                        stmt.order_by(Question.created_at.desc())
-                        .offset(offset)
-                        .limit(limit)
+                    .where(
+                        Question.is_active.is_(True),
+                        _safe_for_beta_gate(),
+                    )
+                )
+
+                if sinav_tipi:
+                    stmt = stmt.where(QuestionMetadata.exam_type == sinav_tipi.upper())
+
+                if konu:
+                    subject = _KONU_MAP.get(
+                        konu, _KONU_MAP.get(konu.lower(), konu.upper())
+                    )
+                    stmt = stmt.where(QuestionMetadata.subject_area == subject)
+
+                if zorluk_seviyesi:
+                    zorluk_lower = zorluk_seviyesi.lower()
+                    stmt = stmt.where(
+                        QuestionStatistics.difficulty_level == zorluk_lower
                     )
 
-                    result = await session.execute(stmt)
-                    questions = result.scalars().all()
+                stmt = (
+                    stmt.order_by(Question.created_at.desc())
+                    .offset(offset)
+                    .limit(limit)
+                )
 
-                    if questions:
-                        await cache_manager.set(cache_key, questions, ttl=300)
+                result = await session.execute(stmt)
+                return list(result.scalars().all())
 
-                    return list(questions)
-                except Exception as e:
-                    logger.error(f"Soru listeleme hatası: {e}", exc_info=True)
-                    return []
-        else:
-            # Production: get_or_compute with Cache Stampede & Penetration protections
-            async def fetch_db() -> list[Question]:
-                async with db_manager.get_session() as session:
-                    stmt = (
-                        select(Question)
-                        .join(Question.metadata_info)
-                        .join(Question.statistics)
-                        .options(
-                            joinedload(Question.content),
-                            joinedload(Question.metadata_info),
-                            joinedload(Question.statistics),
-                        )
-                        .where(
-                            Question.is_active.is_(True),
-                            _safe_for_beta_gate(),
-                        )
-                    )
-
-                    if sinav_tipi:
-                        stmt = stmt.where(
-                            QuestionMetadata.exam_type == sinav_tipi.upper()
-                        )
-
-                    if konu:
-                        subject = _KONU_MAP.get(
-                            konu, _KONU_MAP.get(konu.lower(), konu.upper())
-                        )
-                        stmt = stmt.where(QuestionMetadata.subject_area == subject)
-
-                    if zorluk_seviyesi:
-                        zorluk_lower = zorluk_seviyesi.lower()
-                        stmt = stmt.where(
-                            QuestionStatistics.difficulty_level == zorluk_lower
-                        )
-
-                    stmt = (
-                        stmt.order_by(Question.created_at.desc())
-                        .offset(offset)
-                        .limit(limit)
-                    )
-
-                    result = await session.execute(stmt)
-                    return list(result.scalars().all())
-
-            try:
-                return await cache_manager.get_or_compute(cache_key, fetch_db, ttl=300)
-            except Exception as e:
-                logger.error(f"Soru listeleme hatası: {e}", exc_info=True)
-                return []
+        try:
+            # `soru_getir` ile ayni kusur, ayni gerekce (oradaki uzun nota bak):
+            # `get_or_compute` bu sinifta yok -> `AttributeError` -> ciplak
+            # `except` -> `[]`. Uc HTTP 200 + BOS liste donuyordu (olculdu:
+            # 36.967 aktif soru varken).
+            return await cache_manager.get_or_set(cache_key, fetch_db, ttl=300)
+        except Exception as e:
+            logger.error(f"Soru listeleme hatası: {e}", exc_info=True)
+            return []
 
     async def rastgele_sorular_sec(
         self,

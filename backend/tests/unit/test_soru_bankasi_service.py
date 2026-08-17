@@ -119,9 +119,36 @@ def patches(mock_session):
     mock_cache.get = AsyncMock(return_value=None)  # cache miss by default
     mock_cache.set = AsyncMock()
 
+    # `get_or_set` ISLEVSEL olmali — ciplak `AsyncMock()` factory'yi HIC
+    # cagirmaz, bir AsyncMock dondurur ve testler DB yolunu hic olcmez.
+    #
+    # NEDEN GEREKLI (olculdu 17 Agu): uretim kodu eskiden
+    # `isinstance(cache_manager.get, AsyncMock)` ile TEST DOUBLE'INA bakip ayri
+    # bir dala sapiyordu ve bu dosyadaki testler hep O dali kosuyordu. Uretim
+    # dalindaki `cache_manager.get_or_compute(...)` cagrisi — o metot
+    # `CacheManager`da HIC YOK — bu yuzden hicbir testte gorunmedi; canlida
+    # `AttributeError` ciplak `except`e dusup `GET /soru/{id}`yi 404,
+    # `GET /sorular`i BOS liste yapiyordu. Dal silindi; bu sahte artik uretim
+    # yolunu besliyor.
+    #
+    # Davranis `CacheManager.get_or_set` ile birebir: once `get`, miss ise
+    # factory, sonra `set`.
+    async def _get_or_set(key, factory_func, ttl=300):
+        cached = await mock_cache.get(key)
+        if cached is not None:
+            return cached
+        result = await factory_func()
+        await mock_cache.set(key, result, ttl)
+        return result
+
+    mock_cache.get_or_set = AsyncMock(side_effect=_get_or_set)
+
     with (
-        patch("services.soru_bankasi_service.db_manager", mock_db) as p_db,
-        patch("services.soru_bankasi_service.cache_manager", mock_cache) as p_cache,
+        # `as p_db` / `as p_cache` KALDIRILDI: kullanilmiyorlardi (F841, HEAD'de
+        # de vardi — kapi bu dosyaya ilk kez bu turda bakti). Mock nesnelerine
+        # zaten asagidaki `yield` sozlugu uzerinden erisiliyor. Davranis notr.
+        patch("services.soru_bankasi_service.db_manager", mock_db),
+        patch("services.soru_bankasi_service.cache_manager", mock_cache),
         patch("services.soru_bankasi_service.IRTAnalysisService"),
     ):
         yield {"db": mock_db, "cache": mock_cache, "session": mock_session}
