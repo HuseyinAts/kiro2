@@ -37,6 +37,47 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-17 (S227)
+**Branch:** feature/self-evolution-optimization · **Son commit:** `7becf0ae9` · **Push:** ⏳
+
+### Yapılanlar — `QuestionCRUDService.create_question` mayını temizlendi
+`soru_hash` NOT NULL hiç set edilmiyordu + `subject_area` girdiyi düz geçiriyordu.
+`_soru_hash_uret` + `_KONU_MAP` (S225'te çıkarılan ortak kanon) yeniden kullanıldı —
+kopyalanmadı; bu **üçüncü** çağrı yeri ve kopyalanan normalizasyon `soru_bankasi_service`'te
+tam olarak 5 kusur üretmişti.
+
+### ⚠️ ÖNCE ULAŞILABİLİRLİK ÖLÇÜLDÜ — kusur GERÇEK ama LATENT
+`QuestionCRUDService`'in üretimde **sıfır tüketicisi** var: sınıf yalnız **3 test dosyasında**
+geçiyor (77 referans), `routers/loader.py` ve `main.py`'de adı **hiç geçmiyor**, başka hiçbir
+servis/uç import etmiyor. Tek iç tüketici aynı dosyadaki `bulk_create_questions`.
+Yani hakem kolunun "düşüyor" ölçümü doğruydu (doğrudan çağırınca) ama **aktif P0 değil, mayın**.
+Kullanıcı kararı: mayını temizle, **silme kararı ayrı** (77 test referansının triyajı gerekir).
+
+### Ölçümler
+- RED 3/3 doğru sebeple (soru_hash `None`, subject_area `'Matematik'`) → GREEN 15/15.
+- **Mutasyon 5/5** (önce 4/5; kaçan M4 gerçek boşluktu, aşağıya bak).
+- Regresyon **test-test**: 88 ERROR önce de sonra da **aynı küme** (hepsi
+  `Client.__init__() got an unexpected keyword argument 'app'` — httpx/starlette fixture
+  uyumsuzluğu, kodum çalışmadan önce patlıyor). Yeni kırık 0.
+- **`subject_db` TEK BAŞINA YETMEZ:** `subject_db("Türkçe")` → `"TÜRKÇE"`, canlı kanon ASCII
+  `"TURKCE"` (1.543 satır). `_KONU_MAP` hem takma adı ("Mat") hem Türkçe→ASCII eşlemeyi yapıyor.
+
+### Ders (S219'un birebir tekrarı)
+M4 (`_KONU_MAP` atlanıp yalnız `subject_db`) ilk turda **kaçtı**: testim tek dilim
+(`Matematik`) ölçüyordu ve `subject_db("Matematik")` zaten doğru sonucu veriyor.
+`_KONU_MAP`'in yükü **Türkçe-karakter** ve **takma ad** dallarında. Test 3 parametreye
+genişletildi → 5/5. **"Test paketi de bir dilim ölçer."**
+
+### Sonraki Adımlar
+1. **Push** (2 commit: `8733b579a`, `7becf0ae9`).
+2. `is_active` ORM varsayılanı modelde hâlâ `False`; diğer yazma yolları ölçülmedi.
+3. **KARAR BEKLİYOR:** `QuestionCRUDService` (1100+ satır) ölü kod — silinsin mi?
+   S224'ten `question_repository` için de aynı karar bekliyor.
+4. `is_active` okuma-yolu invaryantını çivileyen test (pasif satır fixture'ı gerekir).
+5. Adım 3 (S224 devri): `repositories/question_repository.py` silmesini commit'le.
+
+---
+
 ## Session Handoff — 2026-08-17 (S226)
 **Branch:** feature/self-evolution-optimization · **Son commit:** `9dd24dec9` (+not commit'i)
 **Push:** ⏳ bekliyor
