@@ -215,21 +215,37 @@ class TestCreateQuestionZorunluAlanlar:
             bir.soru_hash != iki.soru_hash
         ), f"iki farkli soru ayni hash aldi: {bir.soru_hash}"
 
-    async def test_subject_area_kanonik_buyuk_harf(self):
-        """`subject_area` canli kanona uymali (BUYUK harf).
+    @pytest.mark.parametrize(
+        ("konu", "beklenen"),
+        [("Matematik", "MATEMATIK"), ("Türkçe", "TURKCE"), ("Mat", "MATEMATIK")],
+        ids=["ascii", "turkce_karakter", "takma_ad"],
+    )
+    async def test_subject_area_kanonik_buyuk_harf(self, konu, beklenen):
+        """`subject_area` canli kanona uymali: ASCII BUYUK harf.
 
-        Olculdu: `question_metadata.subject_area` canli degerleri MATEMATIK /
-        GEOMETRI / FIZIK ... Bugun bu servis girdiyi (veya 'Matematik'
-        varsayilanini) DUZ geciriyor -> satir `subject_area='Matematik'` olur
-        ve `subject_area='MATEMATIK'` filtreleyen sorgulardan DUSER.
+        Olculdu: canli `question_metadata.subject_area` degerleri
+        MATEMATIK 7.816 / TURKCE 1.543 / FIZIK 2.307 ... Bu servis girdiyi DUZ
+        geciriyordu -> `subject_area='Matematik'` yazilir ve
+        `subject_area='MATEMATIK'` filtreleyen sorgulardan DUSERDI.
+
+        UC PARAMETRE ZORUNLU — MUTASYONLA OLCULDU: tek `Matematik` dali,
+        "`_KONU_MAP`siz yalniz `subject_db`" mutasyonunu YAKALAYAMIYOR, cunku
+        `subject_db("Matematik")` zaten "MATEMATIK" veriyor (mutasyon hayatta
+        kaldi). `_KONU_MAP`in yuku diger iki dalda:
+          * `subject_db("Türkçe")` -> "TÜRKÇE"  (Turkce karakterli; canli
+            kanon ASCII "TURKCE", yani sorgulardan DUSER)
+          * "Mat" takma adi `subject_db` tarafindan HIC cozulmez -> "MAT"
+        S219 dersi: "test paketi de bir dilim olcer".
         """
         svc, db, _ = _make_service()
+        veri = _soru_verisi()
+        veri["konu"] = konu
 
-        eklenen = await self._eklenen(svc, db, _soru_verisi())
+        eklenen = await self._eklenen(svc, db, veri)
 
         assert (
-            eklenen.metadata_info.subject_area == "MATEMATIK"
-        ), f"kanonik degil: {eklenen.metadata_info.subject_area!r}"
+            eklenen.metadata_info.subject_area == beklenen
+        ), f"{konu!r} -> {eklenen.metadata_info.subject_area!r}, beklenen {beklenen!r}"
         assert (
             eklenen.metadata_info.exam_type == "TYT"
         ), f"kanonik degil: {eklenen.metadata_info.exam_type!r}"
