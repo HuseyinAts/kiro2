@@ -1056,8 +1056,14 @@ Kardeş bilinen kusur: `kiro2-api-import-smoke` (S211'den beri açık).
 - `bandit` pre-commit hook'unun cache'li venv'i **bağımsız olarak kırık**: `ModuleNotFoundError: No module named 'pbr'` (HEAD sürümünde de düşüyor, yani kontrol kolu da kırmızı). Bu yüzden HEAD baseline'ı bu hook'la ölçülemedi.
 - `SKIP=bandit,mypy` kullanıldı. Kalan kalemler: B311 `random.sample` ×2 (`osym_questions_api.py:220,343`) + mypy `min()` / `Sequence[str].append` ×2 (`:342,:365`) — **4'ünün 4'ü `git diff` ile dokunmadığım satırlarda** doğrulandı.
 
+### Task 2 (#485) — `is_active` KAPANDI (`79bf4dd3f`)
+- **Devir notu iki yerde yanlıştı.** (a) "`server_default`'ı eziyor" → ölçünce DB'de o varsayılan **HİÇ YOKTU** (`column_default IS NULL`); ezme değil, **DDL'e girmemiş fantom beyan** — kolonu atlayan ham INSERT `NotNullViolation` veriyordu. (b) "P0" → ölçülen canlı etki **0**: AST ile 5 üretim kurucu çağrısı (alias dahil), 4'ü `is_active=` veriyor, 1'i (`question_bank_service.py:102`) `**kwargs` ile çağırana bağlı ve **o fonksiyonun hiç üretim çağıranı yok**. DB'de `is_active=false` satır **0/36.967**. Gerçek ama **latent mayın** (`tasks/bulk_tasks.py:64` onu kablolayacağını yazıyor).
+- Fix iki parçalı: ORM `default=True` + alembic `0002_is_active_default` (`ALTER COLUMN ... SET DEFAULT true`). `information_schema` NULL→`true`; satırlar **değişmedi** 36.967/36.967; container'a deploy edildi.
+- **Mutasyon 4/4, ayırt edici çift:** M1 (ORM `True→False`) → test 1-2 ölür, 3-4 yaşar. M2 (alembic `downgrade` ile DDL default düşür) → test 3-4 ölür, 1-2 yaşar. Yani ORM ve DDL katmanları **bağımsız** ölçülüyor, hiçbir test gereksiz değil. M2 ayrıca `downgrade()` yolunu sınadı.
+- ⚠️ **M2'nin ilk denemesi GEÇERSİZ ölçümdü:** `psql -U kiro2_app` ile `ALTER` denedim, `ERROR: must be owner of table` verdi ama echo'm koşulsuz "uygulandı" yazdı → "4 passed" anlamsızdı. Alembic'in yetkisi var; mutasyonu **uygulandığını `information_schema` ile doğrulayarak** (`true`→`YOK`) tekrarladım.
+
 ### Sonraki Adimlar (maks 5)
-1. `backend/models/question_bank.py` — `is_active` ORM `default=False` DURUYOR, `server_default="true"`ı eziyor. Diğer yazma yolları ölçülmedi (#485 Task 2).
+1. **`review_status` kardeş kusuru** (Task 2'den devredildi): ORM `default="PENDING"` / DDL `server_default='APPROVED'` / canlı veri **`'approved'` (küçük harf)** — üç yönlü uyuşmazlık. Burada ezme GERÇEK (yeni satır `'PENDING'` alıyor). Hangi değerin doğru olduğu **ürün kararı**: yeni soru incelemeden geçmiş mi sayılacak?
 2. Facet'li arama: 9 filtre + facet yalnız silinen `QuestionCRUDService`'te vardı. `soru_bankasi_service.sorular_listele` üzerine temiz sürüm (#485 Task 3). Silinen sürümün kusurları: kapısız facet, `option_e` aranmıyor, ORDER BY'siz sayfalama — tekrarlanmasın.
 3. `tests/conftest.py:1186` `TestClient(app=...)` onarımı — 97 hatanın tek kök nedeni, backend paketinin uçtan uca koşamamasının da sebebi. Tek satırlık sürüm uyumu olabilir.
 4. `reward-hacking-check`i test dosyaları için kalibre et (S228 devri, hâlâ açık). **Not:** bu oturumda bekçi bir kez HAKLI çıktı — "hep fantom" varsayımı yanlış.
