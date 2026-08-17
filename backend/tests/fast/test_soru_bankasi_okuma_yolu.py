@@ -33,6 +33,18 @@ ayni sorguyu tasidigi icin sorgu degisiklikleri de iki kez yapilmak zorundaydi.
 Bu dosyadaki testler GERCEK `cache_manager` ile kosar (mock yok), bu yuzden
 dal silinse de silinmese de URETIM yolunu olcerler.
 
+CIVILENEMEYEN INVARYANT (olculdu, kapatilmadi)
+-----------------------------------------------
+`soru_getir`in `Question.is_active == True` filtresi bu dosyadaki hicbir testle
+CIVILENMIYOR: mutasyonla olculdu (filtre silindi -> 3 passed, mutasyon HAYATTA).
+Sebep yapisal — canli DB'de `is_active` dagilimi **36.967 / 36.967 TRUE**, yani
+filtreyi ayirt edecek pasif satir YOK. Civilemek icin testin gecici bir pasif
+soru YAZMASI gerekirdi; bu dosya bilincli olarak salt-okunur tutuldu.
+
+Filtre bu turda DEGISTIRILMEDI (onceden var olan kod), yani bu bir regresyon
+riski degil bir KAPSAM bosluğu. `.claude/rules/testing.md` #24/#31 bu invaryanti
+repo genelinde zorunlu kiliyor — kapatilmasi ayri bir isin konusu.
+
 KAPSAM DISI (bilincli): `get_or_set`te cache-stampede kilidi ve penetrasyon
 (None'i cache'leme) korumasi YOK; `MultiLayerCache.get_or_compute`ta VAR
 (olculdu). Servisin 12 `cache_manager.*` cagrisindan yalniz 2'sini baska bir

@@ -37,6 +37,46 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-17 (S226)
+**Branch:** feature/self-evolution-optimization · **Son commit:** `9dd24dec9` (+not commit'i)
+**Push:** ⏳ bekliyor
+
+### Yapılanlar — OKUMA YOLU P0 KAPANDI
+`soru_getir` / `sorular_listele` `cache_manager.get_or_compute(...)` çağırıyordu; o metot
+`CacheManager`'da **yok** (`get_or_set` var). Gerçek traceback + çıplak `except` →
+`soru_getir(gerçek_id)` **None → HTTP 404**, `sorular_listele()` **[] → HTTP 200 + boş liste**
+(36.967 aktif soru varken). Ad değişimi yeterli (`inspect.signature` ile konumsal uyum ölçüldü).
+
+**Asıl kusur neden görünmediydi:** üretim kodu `unittest.mock.AsyncMock` **import edip**
+`isinstance(cache_manager.get, AsyncMock)` ile dallanıyordu; birim testleri hep MOCK dalını
+koşuyordu. İki dal **aynı sorgunun kopyasını** taşıyordu (81 satır). Dallar silindi, mock
+fixture'ı `get_or_set` için **işlevsel** sahteyle beslendi → 71 birim testi artık üretim yolunu ölçüyor.
+
+### Ölçümler
+- RED 2/3 doğru sebeple düştü → GREEN 3/3. Birim: 71 passed, başarısızlık kümesi baseline ile
+  **bayt-birebir aynı** (yeni kırık 0).
+- **Mutasyon 4/5.** Kaçan M3 (`is_active` filtresi) **yapısal olarak çivilenemez**: canlı
+  `is_active` dağılımı **36.967/36.967 TRUE**, ayırt edici pasif satır yok. Filtre bu turda
+  değiştirilmedi (önceden var olan kod) → regresyon riski değil, **kapsam boşluğu**. Test
+  docstring'ine yazıldı.
+
+### 🔴 BU TURDA VERİ KAYBI YAŞANDI (ders)
+Mutasyon harness'i `git checkout HEAD -- <dosya>` ile geri alım yapıyor; işim **commit'siz**
+olduğu için servis + fixture düzenlemelerim **silindi** ve yeniden yapıldı (~20 dk kayıp).
+`verification.md#GERI ALIM BIR IDDIADIR` bunu zaten yazıyor: **"Mutasyondan ÖNCE commit et.
+Commit'siz işi mutasyona sokma."** Kural kayıtlıydı, yine ihlal edildi.
+Ayrıca ilk harness'in M4/M5 sonucu bu yüzden **geçersizdi** (baseline zaten bozulmuştu);
+commit sonrası tekrar koşulunca M5 `17 failed` ile öldü. **Bozuk harness yanlış "KAÇTI" üretir.**
+
+### Sonraki Adımlar
+1. **Push** (2 commit).
+2. `QuestionCRUDService.create_question` — üçüncü yazma yolu, aynı `soru_hash` NOT NULL kusuru.
+3. `is_active` ORM varsayılanı modelde hâlâ `False`; diğer yazma yolları aynı kusurda (ölçülmedi).
+4. `is_active` okuma-yolu invaryantını çivileyen test (pasif satır fixture'ı gerekir).
+5. Adım 3 (S224 devri): `repositories/question_repository.py` silmesini commit'le.
+
+---
+
 ## Session Handoff — 2026-08-17 (S225)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `6f7c5dec3` test(soru-bankasi): mukerrer dali + strangler-bagimsizligi civilendi (#485)
