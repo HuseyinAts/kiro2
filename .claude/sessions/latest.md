@@ -37,6 +37,65 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 
 ---
 
+## Session Handoff — 2026-08-17 (S224)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `6b87d2a95` fix(soru-bankasi): split gocu + split sonrasi 3 sessiz kusur (#485)
+**Push:** ✅ `e2a1ef177..6b87d2a95` (origin ile fark 0)
+**Uncommitted:** bu işin dosyaları temiz. Açık: ` D repositories/question_repository.py` (Adım 3).
+3399 kirli dosya = S210 devri, ait değil.
+
+### Yapılanlar
+- **DB ölçümü:** `question_bank`/`content`/`metadata`/`statistics` = **36.967 her biri, YETİM 0**,
+  `mv_safe_for_beta` **27.073** (`auto_judged_high` 27.073 / `pending` 9.894). S223'ün P0'ı KAPANDI.
+  Veri oturum içinde 3 kez değişti (0 → 36.967 qb+qc → 4 tablo tam); her brifingde yeniden ölçüldü.
+- **`services/soru_bankasi_service.py`** (`6b87d2a95`, +297/−121) — göç (SINIF 41→0) + 3 sessiz kusur:
+  `:1441`/`:1534` `.select_from(Question)` (S214 koşullu kuralı, dosyada `select_from` HİÇ yoktu) ·
+  `:1458`/`:1488`/`:1498` String kolonda `.value` kaldırıldı (`:1509` **gerçek Enum, KORUNDU**) ·
+  `soru_guncelle:1342-1344` `joinedload ×3`.
+- **`tests/fast/test_soru_bankasi_service_split.py`** — 8 test, 2'si canlı PG'ye vuruyor.
+- **Doğrulama denetimi (26 ajan):** 18 doğrulanmış / 3 fantom bulgu. Fix'lenen 6 P0'ın dışındakiler
+  Adım 2-3'e taşındı.
+
+### Fail Eden Testler
+YOK. `tests/fast/test_soru_bankasi_service_split.py` → **8 passed**. Regresyon 738 test, test-test
+karşılaştırıldı, yeni kırık 0. Mutasyon **9/9 öldü** (hiçbiri `error`). Sayaç `SINIF 102 → 45`.
+
+### Engelleyiciler
+- Push 2 kez düştü, **ikisi de ortam kusuru** (aşağıdaki Kararlar'a bak).
+- `_blindsolve/w22batches/g28.json` → `git checkout -- .` sırasında NTFS `Invalid argument`;
+  pre-commit rollback'i bu yüzden patlıyor. Ayrı triyaj.
+
+### Sonraki Adımlar (maks 5)
+1. **Adım 2** — `toplu_soru_ekle` 4 seri kusur (`soru_hash`+`primary_topic_id`+`grade_level` NOT NULL
+   doldurulmuyor · `'medium'` vs PG `'MEDIUM'` · `exam_type`/`subject_area` küçük harf) +
+   `api/soru_bankasi.py:776` tüketici göçü. **Gövde hiçbir testte koşmuyor (mock'lu).**
+2. **Adım 3** — `repositories/question_repository.py` silmesini commit'le +
+   `_scripts/test_database_repository.py:15` import'unu temizle (**"sıfır tüketici" iddiası YANLIŞ**,
+   `pytest _scripts/` şu an collection error + exit 2).
+3. `application/commands/sinav.py` (16 erişim, BKT ölü) — ayrı plan.
+4. P2: `_enum_donusturucu` küçük-harf `exam_type` üretiyor → `sinav_tipi` dallı sorgular canlıda 0 satır.
+5. PRE-EXISTING: `api/soru_bankasi.py:843` `"difficulty"` anahtarı ↔ kolon `difficulty_level` →
+   alan sessizce atlanıyor, uç `200 + updated_fields:["difficulty"]` dönüyor ama zorluk değişmiyor.
+
+### Kararlar (gelecek session tekrar tartışmasın)
+- **İKİ FARKLI RUFF SÜRÜMÜ var** — yerel `0.14.13`, pre-commit `v0.7.1` (izole venv,
+  `.pre-commit-config.yaml:37`). Yerelde biçimlendirilen dosyayı kapı yeniden biçimlendirir →
+  `files were modified by this hook` → **amend sessizce EXIT=1 ile iptal olur ve `git log` aynı
+  hash'i gösterir**. Yordam: çalışan ağacı index'le eşitle → `pre-commit run ruff-format --files`
+  (KAPININ sürümü) → sabit nokta doğrula → `git add` + amend.
+  `reference_precommit-vs-bare-linter`'ın bir adım ötesi: farklı CWD değil, **farklı SÜRÜM**.
+- **`# pragma: no cover` gerekçesi İKİNCİ BİR `#` yorumu olmalı** — bekçi
+  `r"#\s*pragma:\s*no\s*cover(?!\s*#\s*\w)"` ile ölçüyor; tire (`- gerekçe`) yakalanır.
+- **`select_from` koşulludur** (S214): kardeş sorgulara eklenmedi — derlenmiş SQL birebir aynı
+  kalıyor, süs olurdu. Ölçüldü, eklenmedi.
+- **`.value`'ların hepsi kaldırılamaz:** `QuestionStatistics.difficulty_level` gerçek `Enum`;
+  "tümünü sil" aşırı-fix'i M5 mutasyonuyla çivili.
+- Bir vakum test **ölçülüp silindi** (fix'ten önce de geçiyordu, servis dosyasından bağımsızdı).
+- E2E testleri önce SQLite ölçüyordu (`conftest.py:100` `DATABASE_URL`'i ezliyor) → DSN `.env`'den
+  okunuyor + fixture'da ">1000 aktif satır" kontrol kolu.
+
+---
+
 ## Session Handoff — 2026-08-17 (S223)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `5b709a802` test(osym): golden'i TURKCE + zorluk dallarina genislet (#485)
