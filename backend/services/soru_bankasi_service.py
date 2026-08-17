@@ -132,6 +132,128 @@ def _normalize_topic(topic: str) -> str:
     return text
 
 
+# ---------------------------------------------------------------------------
+# YAZMA YOLU — iki cagri yerinin ORTAK normalizasyonu (#485)
+# ---------------------------------------------------------------------------
+# `soru_ekle` ve `toplu_soru_ekle` ayni satiri kurar ama split sonrasi AYRI
+# AYRI evrildiler ve toplu yol 5 kusur biriktirdi (olculdu 17 Agu, canli PG):
+# soru_hash/primary_topic_id/grade_level hic doldurulmuyordu, difficulty icin
+# YANLIS enum ailesi kullaniliyordu ve exam_type/subject_area kucuk harf
+# yaziliyordu. Kok neden tek: normalizasyonun KOPYALANMIS olmasi. Asagidaki iki
+# yardimci onu tek dogruluk kaynagina indirir.
+
+
+# 5 seviyeli `QuestionDifficultyLevel` (question_bank.py:41). PG enum etiketleri
+# BUYUK harf (VERY_EASY|EASY|MEDIUM|HARD|VERY_HARD) ve SQLAlchemy uyenin ADINI
+# yazar. `enums_db.QuestionDifficulty` (3 seviyeli) buraya GECIRILMEZ: o bir
+# `str` alt sinifidir, kolonun `validate_strings` degeri False oldugu icin
+# SQLAlchemy onu ham dize sanip aynen gecirir ve PG
+# `invalid input value for enum questiondifficultylevel: "medium"` der (olculdu).
+_ZORLUK_MAP: dict[str, QuestionDifficultyLevel] = {
+    "cok_kolay": QuestionDifficultyLevel.VERY_EASY,
+    "very_easy": QuestionDifficultyLevel.VERY_EASY,
+    "kolay": QuestionDifficultyLevel.EASY,
+    "easy": QuestionDifficultyLevel.EASY,
+    "orta": QuestionDifficultyLevel.MEDIUM,
+    "medium": QuestionDifficultyLevel.MEDIUM,
+    "zor": QuestionDifficultyLevel.HARD,
+    "hard": QuestionDifficultyLevel.HARD,
+    "cok_zor": QuestionDifficultyLevel.VERY_HARD,
+    "very_hard": QuestionDifficultyLevel.VERY_HARD,
+}
+
+# `topic_hierarchy` icinde ders-ustu genel konu. Bu DB'de 12 topic satirinin
+# 12'sinde de `subject_area` NULL (olculdu), yani ders-bazli arama SONUC
+# VERMEZ; ayrica mevcut 36.967 sorunun 36.967'si zaten bu topic'e bagli.
+# Ders bilgisi `question_metadata.subject_area`da yasiyor, topic'te degil.
+_GENEL_TOPIC_KODU = "GEN"
+
+
+def _soru_hash_uret(soru_metni: str, secenekler: list) -> str:
+    """`question_bank.soru_hash` (NOT NULL, DB-default YOK) icin icerik hash'i.
+
+    `uq_qb_soru_hash_active` kismi benzersizlik indeksini besler, yani ayni
+    soru iki kez aktif eklenemez. Bu yuzden hash ICERIGE bagli olmali —
+    sabit/rastgele bir deger benzersizlik kapisini sessizce ise yaramaz kilardi.
+
+    Normalizasyon: HTML etiketleri, sifir-genislikli karakterler ve tekrarli
+    bosluklar atilir, kucuk harfe cevrilir, secenek on ekleri (`A)`) silinir.
+    Alan sinirini (String(32)) asmamak icin sha256'nin ilk 32 hanesi alinir.
+    """
+    import hashlib
+    import re
+
+    cleaned_text = re.sub(r"<[^>]+>", "", soru_metni)
+    for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
+        cleaned_text = cleaned_text.replace(space_char, "")
+    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip().lower()
+
+    cleaned_opts = []
+    for opt in secenekler[:5]:
+        if isinstance(opt, str):
+            opt_cleaned = re.sub(r"<[^>]+>", "", opt)
+            for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
+                opt_cleaned = opt_cleaned.replace(space_char, "")
+            opt_cleaned = re.sub(r"\s+", " ", opt_cleaned).strip().lower()
+            opt_cleaned = re.sub(r"^[a-e]\)\s*", "", opt_cleaned)
+            cleaned_opts.append(opt_cleaned)
+        else:
+            cleaned_opts.append("")
+
+    hash_input = cleaned_text
+    for opt in cleaned_opts:
+        hash_input += "|" + opt
+    if len(cleaned_opts) < 5:
+        hash_input += "|"
+
+    return hashlib.sha256(hash_input.encode("utf-8")).hexdigest()[:32]
+
+
+def _yazma_alanlarini_normalize_et(soru_data: dict) -> dict:
+    """Girdi sozlugunu 4 yavru tablonun BEKLEDIGI kanonik sekle cevirir.
+
+    Tek dogruluk kaynagi: her iki yazma yolu da burayi cagirir.
+
+    Kanon (canli DB'den olculdu, `.claude/rules/case-convention.md`):
+      * `exam_type`    -> BUYUK harf duz `str`  (TYT 28.204 / AYT 8.763)
+      * `subject_area` -> BUYUK harf duz `str`  (`subject_db` ile)
+      * `difficulty_level` -> `QuestionDifficultyLevel` UYESI (str DEGIL)
+      * `grade_level`  -> int, `check_grade_level` geregi 9..12
+
+    `ExamType`/`SubjectArea` (enums_db) uyeleri BURADAN GECMEZ: `str` alt sinifi
+    olduklari icin String kolona kucuk harf (`'tyt'`) yazilir ve
+    `exam_type='TYT'` filtreleyen gercek sorgulardan DUSERLER. `str(uye)` ile
+    "duzeltmek" ucuncu bir bozulmadir — Python 3.13'te `'ExamType.TYT'` yazar.
+    """
+    konu_raw = soru_data.get("konu") or "Matematik"
+    subject_area_str = subject_db(_KONU_MAP.get(konu_raw, konu_raw))
+    exam_type_str = (soru_data.get("sinav_tipi") or "TYT").strip().upper()
+
+    difficulty_input = (soru_data.get("zorluk_seviyesi") or "orta").strip().lower()
+    difficulty_level = _ZORLUK_MAP.get(difficulty_input, QuestionDifficultyLevel.MEDIUM)
+
+    # grade_level: int NOT NULL, DB-default YOK. YKS icin 11 varsayilan.
+    try:
+        grade_level = int(soru_data.get("sinif_seviyesi") or 11)
+    except (TypeError, ValueError):
+        grade_level = 11
+    grade_level = min(12, max(9, grade_level))
+
+    secenekler = soru_data["secenekler"]
+
+    return {
+        "konu_raw": konu_raw,
+        "subject_area": subject_area_str,
+        "exam_type": exam_type_str,
+        "difficulty_level": difficulty_level,
+        "grade_level": grade_level,
+        "secenekler": secenekler,
+        "option_e": secenekler[4].replace("E) ", "") if len(secenekler) > 4 else None,
+        "soru_hash": soru_data.get("soru_hash")
+        or _soru_hash_uret(soru_data["soru_metni"], secenekler),
+    }
+
+
 class SoruBankasiServisi:
     """
     Gelişmiş soru bankası yönetimi servisi
@@ -192,6 +314,67 @@ class SoruBankasiServisi:
             subject_map.get(subject, SubjectArea.MATEMATIK),
         )
 
+    async def _primary_topic_id_cozumle(
+        self, session: AsyncSession, subject_area_str: str, alt_konu: str | None
+    ) -> str:
+        """`question_bank.primary_topic_id` (NOT NULL FK) icin topic id uretir.
+
+        Uc kademe, en ozelden en genele:
+          1. `alt_konu` adiyla birebir eslesen topic (ders icinde)
+          2. dersin (subject_area) ilk topic'i
+          3. GENEL topic (`code='GEN'`) — SABIT FALLBACK
+
+        3. kademe neden var (olculdu 17 Agu, canli DB): `topic_hierarchy`in 12
+        satirinin **12'sinde de** `subject_area` NULL, yani 1. ve 2. kademe
+        HER ZAMAN bos doner. Fallback yokken bu fonksiyonun eski hali
+        `ValueError` atiyordu ve `POST /soru-ekle` ucu KOSULSUZ HTTP 500
+        veriyordu — yani tekil ekleme yolu tamamen kirikti.
+
+        GEN'e dusmek veri kaybi DEGIL: ders bilgisi `question_metadata.
+        subject_area`da yasiyor, `primary_topic_id`de degil. Mevcut 36.967
+        sorunun 36.967'si zaten GEN'e bagli, yani yeni satirlar evrenin geri
+        kalaniyla TUTARLI oluyor.
+
+        `topic_hierarchy` ileride ders bazinda seed edilirse 1./2. kademe
+        kendiliginden devreye girer; bu yuzden onlar korundu.
+        """
+        alt_konu = (alt_konu or "").strip()
+
+        if alt_konu:
+            row = await session.execute(
+                select(TopicHierarchy.id)
+                .where(
+                    TopicHierarchy.subject_area == subject_area_str,
+                    func.lower(TopicHierarchy.name_tr) == alt_konu.lower(),
+                )
+                .limit(1)
+            )
+            if topic_id := row.scalar_one_or_none():
+                return topic_id
+
+        row = await session.execute(
+            select(TopicHierarchy.id)
+            .where(TopicHierarchy.subject_area == subject_area_str)
+            .order_by(TopicHierarchy.level.asc())
+            .limit(1)
+        )
+        if topic_id := row.scalar_one_or_none():
+            return topic_id
+
+        row = await session.execute(
+            select(TopicHierarchy.id)
+            .where(TopicHierarchy.code == _GENEL_TOPIC_KODU)
+            .limit(1)
+        )
+        if topic_id := row.scalar_one_or_none():
+            return topic_id
+
+        # Buraya dusmek sema/seed arizasidir: NOT NULL FK doldurulamaz.
+        raise ValueError(
+            f"topic_hierarchy'de ne '{subject_area_str}' ne de genel "
+            f"'{_GENEL_TOPIC_KODU}' topic'i var. Once TopicHierarchy seed edilmeli."
+        )
+
     async def soru_ekle(self, soru_data: dict) -> Question:
         """
         Yeni soru ekle - Database entegrasyonu ile
@@ -205,126 +388,36 @@ class SoruBankasiServisi:
         async with db_manager.get_session() as session:
             try:
                 # --- Normalize inputs to QuestionBankItem schema ---
-                # Canonical UPPERCASE string for subject_area + exam_type
-                # (question_bank.py:431-433 — plain String, not Enum).
-                konu_raw = soru_data.get("konu") or "Matematik"
-                subject_area_str = subject_db(_KONU_MAP.get(konu_raw, konu_raw))
-                exam_type_str = (soru_data.get("sinav_tipi") or "TYT").strip().upper()
-
-                # 5-level difficulty Enum (question_bank.QuestionDifficultyLevel)
-                # Input "kolay/orta/zor" (Turkish) or "easy/medium/hard" (ASCII).
-                difficulty_input = (
-                    (soru_data.get("zorluk_seviyesi") or "orta").strip().lower()
-                )
-                difficulty_level_map = {
-                    "cok_kolay": QuestionDifficultyLevel.VERY_EASY,
-                    "very_easy": QuestionDifficultyLevel.VERY_EASY,
-                    "kolay": QuestionDifficultyLevel.EASY,
-                    "easy": QuestionDifficultyLevel.EASY,
-                    "orta": QuestionDifficultyLevel.MEDIUM,
-                    "medium": QuestionDifficultyLevel.MEDIUM,
-                    "zor": QuestionDifficultyLevel.HARD,
-                    "hard": QuestionDifficultyLevel.HARD,
-                    "cok_zor": QuestionDifficultyLevel.VERY_HARD,
-                    "very_hard": QuestionDifficultyLevel.VERY_HARD,
-                }
-                difficulty_level = difficulty_level_map.get(
-                    difficulty_input, QuestionDifficultyLevel.MEDIUM
-                )
+                # ORTAK yardimci: `toplu_soru_ekle` de ayni cagriyi yapar, yani
+                # iki yazma yolu artik TEK kanondan besleniyor (#485). Kopyalanmis
+                # normalizasyon bu dosyada 5 kusur uretmisti (olculdu 17 Agu).
+                alanlar = _yazma_alanlarini_normalize_et(soru_data)
+                secenekler = alanlar["secenekler"]
 
                 # IRT parametrelerini hesapla (legacy helper uses easy/medium/hard)
                 irt_params = await self._hesapla_irt_parametreleri(
-                    difficulty_level.value.replace("very_", "").replace("_", " "),
-                    konu_raw,
+                    alanlar["difficulty_level"]
+                    .value.replace("very_", "")
+                    .replace("_", " "),
+                    alanlar["konu_raw"],
                 )
 
-                # --- primary_topic_id lookup (NOT NULL FK → topic_hierarchy) ---
-                # Strategy: match by subject_area + (sub_topic name or subject fallback).
-                # Prefer the most specific topic; fall back to any root topic of the subject.
-                alt_konu = (soru_data.get("alt_konu") or "").strip()
-                primary_topic_id: str | None = None
-
-                if alt_konu:
-                    row = await session.execute(
-                        select(TopicHierarchy.id)
-                        .where(
-                            TopicHierarchy.subject_area == subject_area_str,
-                            func.lower(TopicHierarchy.name_tr) == alt_konu.lower(),
-                        )
-                        .limit(1)
-                    )
-                    primary_topic_id = row.scalar_one_or_none()
-
-                if not primary_topic_id:
-                    # Fallback: first topic of the subject (any level).
-                    row = await session.execute(
-                        select(TopicHierarchy.id)
-                        .where(TopicHierarchy.subject_area == subject_area_str)
-                        .order_by(TopicHierarchy.level.asc())
-                        .limit(1)
-                    )
-                    primary_topic_id = row.scalar_one_or_none()
-
-                if not primary_topic_id:
-                    raise ValueError(
-                        f"topic_hierarchy'de '{subject_area_str}' için kayıt yok "
-                        f"(alt_konu={alt_konu!r}). Önce TopicHierarchy seed edilmeli."
-                    )
-
-                # grade_level: int NOT NULL (question_bank.py:434) — default 11 for YKS.
-                try:
-                    grade_level = int(soru_data.get("sinif_seviyesi") or 11)
-                except (TypeError, ValueError):
-                    grade_level = 11
-
-                # --- Options (Text NOT NULL a..d, option_e nullable) ---
-                secenekler = soru_data["secenekler"]
-                option_e = (
-                    secenekler[4].replace("E) ", "") if len(secenekler) > 4 else None
+                primary_topic_id = await self._primary_topic_id_cozumle(
+                    session, alanlar["subject_area"], soru_data.get("alt_konu")
                 )
-
-                # --- soru_hash calculation fallback (if not provided by API/schema) ---
-                soru_hash = soru_data.get("soru_hash")
-                if not soru_hash:
-                    import hashlib
-                    import re
-
-                    # Clean question text
-                    cleaned_text = re.sub(r"<[^>]+>", "", soru_data["soru_metni"])
-                    for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
-                        cleaned_text = cleaned_text.replace(space_char, "")
-                    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
-                    cleaned_text = cleaned_text.lower()
-
-                    # Clean options (up to 5 options)
-                    cleaned_opts = []
-                    for opt in secenekler[:5]:
-                        if isinstance(opt, str):
-                            opt_cleaned = re.sub(r"<[^>]+>", "", opt)
-                            for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
-                                opt_cleaned = opt_cleaned.replace(space_char, "")
-                            opt_cleaned = re.sub(r"\s+", " ", opt_cleaned).strip()
-                            opt_cleaned = opt_cleaned.lower()
-                            opt_cleaned = re.sub(r"^[a-e]\)\s*", "", opt_cleaned)
-                            cleaned_opts.append(opt_cleaned)
-                        else:
-                            cleaned_opts.append("")
-
-                    hash_input = cleaned_text
-                    for opt in cleaned_opts:
-                        hash_input += "|" + opt
-                    if len(cleaned_opts) < 5:
-                        hash_input += "|"
-
-                    soru_hash = hashlib.sha256(hash_input.encode("utf-8")).hexdigest()[
-                        :32
-                    ]
 
                 # --- Build QuestionBankItem (no legacy topic/subtopic/difficulty) ---
                 yeni_soru = Question(
                     primary_topic_id=primary_topic_id,
                     created_by=soru_data.get("created_by"),
-                    soru_hash=soru_hash,
+                    soru_hash=alanlar["soru_hash"],
+                    # `toplu_soru_ekle` ile ayni gerekce — oradaki uzun yoruma bak.
+                    # Ozetle: ORM `default=False` INSERT'te `server_default="true"`i
+                    # eziyor; sonucu `uq_qb_soru_hash_active` kismi indeksinin
+                    # uygulanmamasi (mukerrer engelleme olu) ve yeni sorunun
+                    # ogrenciye gorunmemesi. Bu satir olmadan asagidaki
+                    # IntegrityError dali HIC tetiklenmez (olculdu).
+                    is_active=True,
                 )
                 yeni_soru.content = QuestionContent(
                     question_text=soru_data["soru_metni"],
@@ -332,17 +425,17 @@ class SoruBankasiServisi:
                     option_b=secenekler[1].replace("B) ", ""),
                     option_c=secenekler[2].replace("C) ", ""),
                     option_d=secenekler[3].replace("D) ", ""),
-                    option_e=option_e,
+                    option_e=alanlar["option_e"],
                     correct_answer=soru_data["dogru_cevap"],
                     explanation=soru_data.get("cozum_aciklamasi"),
                 )
                 yeni_soru.metadata_info = QuestionMetadata(
-                    exam_type=exam_type_str,
-                    subject_area=subject_area_str,
-                    grade_level=grade_level,
+                    exam_type=alanlar["exam_type"],
+                    subject_area=alanlar["subject_area"],
+                    grade_level=alanlar["grade_level"],
                 )
                 yeni_soru.statistics = QuestionStatistics(
-                    difficulty_level=difficulty_level,
+                    difficulty_level=alanlar["difficulty_level"],
                     irt_difficulty=irt_params["difficulty"],
                     irt_discrimination=irt_params["discrimination"],
                     irt_guessing=irt_params["guessing"],
@@ -352,7 +445,17 @@ class SoruBankasiServisi:
                     async with session.begin_nested():
                         session.add(yeni_soru)
                     await session.commit()
-                    await session.refresh(yeni_soru)
+                    # SADECE sunucu-uretimli PARENT kolonlari tazelenir.
+                    # Argumansiz `refresh()` uc split iliskisini de `__dict__`ten
+                    # SILER (olculdu); cagiran oturum kapandiktan sonra
+                    # `soru.content.question_text` okudugunda lazy-load'a duser
+                    # ve `DetachedInstanceError` alir (oturum aciksa
+                    # `MissingGreenlet`). `api/soru_bankasi.py` tam bunu yapiyordu
+                    # ve `except Exception` yutup HTTP 500 donduruyordu — soru ise
+                    # ZATEN yazilmis oluyordu.
+                    await session.refresh(
+                        yeni_soru, attribute_names=["created_at", "updated_at"]
+                    )
                     # Geçici (map'lenmemiş) bayrak: çağıran GERÇEKTEN oluşturuldu
                     # mu yoksa mevcut kayıt mı döndü, ayırt edebilsin. DB'ye
                     # yazılmaz. Aşağıdaki IntegrityError dalı bunu True yapar.
@@ -368,7 +471,8 @@ class SoruBankasiServisi:
                     )
                     # Fetch and return the existing record by soru_hash
                     stmt = select(Question).where(
-                        Question.soru_hash == soru_hash, Question.is_active == True
+                        Question.soru_hash == alanlar["soru_hash"],
+                        Question.is_active == True,
                     )
                     res = await session.execute(stmt)
                     existing = res.scalar_one_or_none()
@@ -377,7 +481,9 @@ class SoruBankasiServisi:
                         return existing
 
                     # If it wasn't found under is_active=True, search without active status filter
-                    stmt_any = select(Question).where(Question.soru_hash == soru_hash)
+                    stmt_any = select(Question).where(
+                        Question.soru_hash == alanlar["soru_hash"]
+                    )
                     res_any = await session.execute(stmt_any)
                     existing_any = res_any.scalar_one_or_none()
                     if existing_any:
@@ -1761,37 +1867,64 @@ class SoruBankasiServisi:
 
             for i, soru_data in enumerate(sorular_listesi):
                 try:
-                    # Enum dönüştürmeleri
-                    exam_type, difficulty, subject_area = await self._enum_donusturucu(
-                        soru_data.get("sinav_tipi", "TYT"),
-                        soru_data.get("zorluk_seviyesi", "orta"),
-                        soru_data.get("konu", "Matematik"),
+                    # ORTAK normalizasyon — `soru_ekle` ile TEK kanon (#485).
+                    # Onceki hali `_enum_donusturucu` kullaniyordu ve o, `enums_db`
+                    # ailesinden KUCUK HARF `str` alt-sinifi uyeler donduruyordu:
+                    #   * `difficulty` -> 3 seviyeli QuestionDifficulty; 5 seviyeli
+                    #     PG enum'una yazilinca `invalid input value for enum
+                    #     questiondifficultylevel: "medium"` (olculdu)
+                    #   * `exam_type`/`subject_area` -> String kolona 'tyt'/'matematik'
+                    #     yazilirdi ve `exam_type='TYT'` filtreleyen sorgulardan DUSERDI
+                    alanlar = _yazma_alanlarini_normalize_et(soru_data)
+                    secenekler = alanlar["secenekler"]
+
+                    # IRT parametrelerini hesapla (helper easy/medium/hard bekler)
+                    irt_params = await self._hesapla_irt_parametreleri(
+                        alanlar["difficulty_level"]
+                        .value.replace("very_", "")
+                        .replace("_", " "),
+                        alanlar["konu_raw"],
                     )
 
-                    # IRT parametrelerini hesapla
-                    irt_params = await self._hesapla_irt_parametreleri(
-                        difficulty.value, soru_data.get("konu", "Matematik")
+                    # `soru_hash` ve `primary_topic_id` NOT NULL + DB-default'suz;
+                    # ikisi de doldurulmadigi icin batch TAMAMEN dusuyordu.
+                    primary_topic_id = await self._primary_topic_id_cozumle(
+                        session, alanlar["subject_area"], soru_data.get("alt_konu")
                     )
 
                     # Question object oluştur
                     yeni_soru = Question(
+                        primary_topic_id=primary_topic_id,
                         created_by=soru_data.get("created_by"),
+                        soru_hash=alanlar["soru_hash"],
+                        # ACIKCA True: model `default=False, server_default="true"`
+                        # tanimliyor ve INSERT'te ORM varsayilani KAZANIYOR ->
+                        # yeni satir `is_active=False` yaziliyordu. Iki sonucu
+                        # olculdu: (1) `uq_qb_soru_hash_active` KISMI indeksi
+                        # (`WHERE is_active = true`) uygulanmiyor, yani mukerrer
+                        # engelleme OLU; (2) yeni soru ogrenciye gorunmuyor (tum
+                        # ogrenci sorgulari `is_active == True` filtreliyor).
+                        # Canli 36.967 satirin 36.967'si `is_active=true`.
+                        # Inceleme kapisi `review_status`/`quality_review_status`
+                        # + `mv_safe_for_beta`, `is_active` DEGIL.
+                        is_active=True,
                     )
                     yeni_soru.content = QuestionContent(
                         question_text=soru_data["soru_metni"],
-                        option_a=soru_data["secenekler"][0].replace("A) ", ""),
-                        option_b=soru_data["secenekler"][1].replace("B) ", ""),
-                        option_c=soru_data["secenekler"][2].replace("C) ", ""),
-                        option_d=soru_data["secenekler"][3].replace("D) ", ""),
-                        option_e=soru_data["secenekler"][4].replace("E) ", "")
-                        if len(soru_data["secenekler"]) > 4
-                        else None,
+                        option_a=secenekler[0].replace("A) ", ""),
+                        option_b=secenekler[1].replace("B) ", ""),
+                        option_c=secenekler[2].replace("C) ", ""),
+                        option_d=secenekler[3].replace("D) ", ""),
+                        option_e=alanlar["option_e"],
                         correct_answer=soru_data["dogru_cevap"],
                         explanation=soru_data.get("cozum_aciklamasi"),
                     )
                     yeni_soru.metadata_info = QuestionMetadata(
-                        exam_type=exam_type,
-                        subject_area=subject_area,
+                        exam_type=alanlar["exam_type"],
+                        subject_area=alanlar["subject_area"],
+                        # grade_level: int NOT NULL, DB-default YOK -> eksikligi
+                        # butun batch'i dusuruyordu.
+                        grade_level=alanlar["grade_level"],
                         morphology_complexity=await self._hesapla_morfoloji_karmasikligi(
                             soru_data["soru_metni"]
                         ),
@@ -1800,7 +1933,7 @@ class SoruBankasiServisi:
                         ),
                     )
                     yeni_soru.statistics = QuestionStatistics(
-                        difficulty_level=difficulty,
+                        difficulty_level=alanlar["difficulty_level"],
                         irt_difficulty=irt_params["difficulty"],
                         irt_discrimination=irt_params["discrimination"],
                         irt_guessing=irt_params["guessing"],

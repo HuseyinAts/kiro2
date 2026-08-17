@@ -9,18 +9,22 @@ import logging
 import os
 from typing import Any
 
-logger = logging.getLogger(__name__)
-
-from fastapi import APIRouter, Depends, HTTPException, Query, status, Request, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db_session
+from core.ddos_protection import limiter
 from core.dependencies import AuthenticatedUser, get_current_user
 from core.multi_layer_cache import MultiLayerCache
 from models.enums_db import UserRole
 from services.soru_bankasi_service import soru_bankasi_servisi
-from core.ddos_protection import limiter
+
+# `logger` atamasi ONCEDEN import'larin ARASINDA duruyordu ve 10 adet E402
+# uretiyordu (kapi borcu; hook yalniz DEGISEN dosyaya baktigi icin bu turda
+# gorunur oldu). Asagi tasindi: modul duzeyinde import'lardan once HIC
+# kullanilmiyor (olculdu), yani davranis notr.
+logger = logging.getLogger(__name__)
 
 PATTERN_UUID_OR_TEST = r"^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[a-zA-Z0-9_-]{1,36})$"
 
@@ -75,6 +79,8 @@ async def sorular_listele(
     """
     try:
         # Generate cache key from query parameters
+        # `usedforsecurity=False`: bu bir CACHE ANAHTARI, guvenlik ozeti degil.
+        # Kapi borcu (S324/B324), dokunulmayan kod — davranis notr, hash ayni.
         cache_key = hashlib.md5(
             json.dumps(
                 {
@@ -85,7 +91,8 @@ async def sorular_listele(
                     "offset": offset,
                 },
                 sort_keys=True,
-            ).encode()
+            ).encode(),
+            usedforsecurity=False,
         ).hexdigest()
 
         # Initialize cache if needed
@@ -290,7 +297,10 @@ async def rastgele_sorular_sec(
         cache_key_parts = [sinav_tipi, str(soru_sayisi)]
         if konu_dagilimi:
             # Hash the konu_dagilimi for cache key
-            konu_hash = hashlib.md5(konu_dagilimi.encode()).hexdigest()[:8]
+            # Cache anahtari, guvenlik ozeti degil (bkz. yukaridaki not).
+            konu_hash = hashlib.md5(
+                konu_dagilimi.encode(), usedforsecurity=False
+            ).hexdigest()[:8]
             cache_key_parts.append(konu_hash)
         cache_key = f"random_questions:{':'.join(cache_key_parts)}"
 
@@ -313,7 +323,11 @@ async def rastgele_sorular_sec(
 
         # Response formatına dönüştür - Soru modeli için Turkish column mapping
         secilen_sorular = []
-        konu_sayaclari = {}
+        # Anotasyon ONCEDEN VAR OLAN kapi borcu (HEAD'de bayt-birebir ayni satir);
+        # mypy hook'u yalniz DEGISEN dosyalara baktigi icin bu turda gorunur oldu.
+        # Davranis DEGISMIYOR: deger `.get(konu, 0) + 1` ile int sayac, anahtar
+        # `soru.konu` (konu adi, str). Dokunulmayan koda ait tek satirlik anotasyon.
+        konu_sayaclari: dict[str, int] = {}
 
         for soru in sorular:
             soru_dict = {
@@ -642,7 +656,9 @@ async def zorluk_seviyesi_filtrele(
 
 # Servisle tam uyumlu ek endpoint'ler
 
-from pydantic import BaseModel, Field, model_validator
+
+# duruyor ve yukari tasimak dosyanin bolum duzenini bozar. Dokunulmayan kod.
+from pydantic import BaseModel, Field, model_validator  # noqa: E402
 
 
 class SoruEkleRequest(BaseModel):
@@ -669,52 +685,54 @@ class SoruEkleRequest(BaseModel):
     )
     soru_hash: str | None = Field(None, description="Soru hash değeri")
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     @classmethod
     def calculate_canonical_hash(cls, data: Any) -> Any:
         if isinstance(data, dict):
             soru_metni = data.get("soru_metni", "")
             secenekler = data.get("secenekler", [])
-            
+
             if soru_metni and isinstance(secenekler, list):
-                import re
                 import hashlib
-                
+                import re
+
                 # Canonicalize question text
                 # 1. Clean HTML tags (preserving LaTeX formulas)
-                cleaned_text = re.sub(r'<[^>]+>', '', soru_metni)
+                cleaned_text = re.sub(r"<[^>]+>", "", soru_metni)
                 # 2. Clean ZWSP and invisible spaces
-                for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
-                    cleaned_text = cleaned_text.replace(space_char, '')
+                for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
+                    cleaned_text = cleaned_text.replace(space_char, "")
                 # 3. Normalize consecutive whitespaces to a single space
-                cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+                cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
                 # 4. Convert to lowercase
                 cleaned_text = cleaned_text.lower()
-                
+
                 # Canonicalize options (up to 5 options)
                 cleaned_opts = []
                 for opt in secenekler[:5]:
                     if isinstance(opt, str):
-                        opt_cleaned = re.sub(r'<[^>]+>', '', opt)
-                        for space_char in ['\u200b', '\u200c', '\u200d', '\ufeff']:
-                            opt_cleaned = opt_cleaned.replace(space_char, '')
-                        opt_cleaned = re.sub(r'\s+', ' ', opt_cleaned).strip()
+                        opt_cleaned = re.sub(r"<[^>]+>", "", opt)
+                        for space_char in ["\u200b", "\u200c", "\u200d", "\ufeff"]:
+                            opt_cleaned = opt_cleaned.replace(space_char, "")
+                        opt_cleaned = re.sub(r"\s+", " ", opt_cleaned).strip()
                         opt_cleaned = opt_cleaned.lower()
                         # Strip standard option prefix like 'a) ', 'b) ' if any
-                        opt_cleaned = re.sub(r'^[a-e]\)\s*', '', opt_cleaned)
+                        opt_cleaned = re.sub(r"^[a-e]\)\s*", "", opt_cleaned)
                         cleaned_opts.append(opt_cleaned)
                     else:
                         cleaned_opts.append("")
-                
+
                 # Construct canonical hash input
                 hash_input = cleaned_text
                 for opt in cleaned_opts:
-                    hash_input += '|' + opt
+                    hash_input += "|" + opt
                 if len(cleaned_opts) < 5:
-                    hash_input += '|'
-                
+                    hash_input += "|"
+
                 # Compute SHA-256 hash and slice to 32 chars to fit VARCHAR(32)
-                data["soru_hash"] = hashlib.sha256(hash_input.encode('utf-8')).hexdigest()[:32]
+                data["soru_hash"] = hashlib.sha256(
+                    hash_input.encode("utf-8")
+                ).hexdigest()[:32]
         return data
 
 
@@ -770,20 +788,28 @@ async def soru_ekle(
             content={
                 "success": True,
                 "data": {
+                    # #485 — alanlar PARENT'tan DEGIL yavru tablolardan okunur.
+                    # Parent uzerinden okumak (`yeni_soru.question_text`) strangler
+                    # devredicisine duser; oturum kapandigi icin lazy-load
+                    # `DetachedInstanceError` verir, `except Exception` yutar ve
+                    # kullanici HTTP 500 gorur — soru ise ZATEN yazilmis olur.
+                    # `str(...)` de kaldirildi: exam_type/subject_area split sonrasi
+                    # duz `str`; `str()` bir enum uyesine uygulanirsa Python 3.13'te
+                    # 'ExamType.TYT' uretir (olculdu).
                     "id": yeni_soru.id,
-                    "question_text": yeni_soru.question_text,
-                    "exam_type": str(yeni_soru.exam_type),
-                    "subject_area": str(yeni_soru.subject_area),
-                    "difficulty": yeni_soru.difficulty_level.value
-                    if yeni_soru.difficulty_level
+                    "question_text": yeni_soru.content.question_text,
+                    "exam_type": yeni_soru.metadata_info.exam_type,
+                    "subject_area": yeni_soru.metadata_info.subject_area,
+                    "difficulty": yeni_soru.statistics.difficulty_level.name
+                    if yeni_soru.statistics.difficulty_level
                     else "MEDIUM",
                     "irt_parameters": {
-                        "difficulty": yeni_soru.irt_difficulty,
-                        "discrimination": yeni_soru.irt_discrimination,
-                        "guessing": yeni_soru.irt_guessing,
+                        "difficulty": yeni_soru.statistics.irt_difficulty,
+                        "discrimination": yeni_soru.statistics.irt_discrimination,
+                        "guessing": yeni_soru.statistics.irt_guessing,
                     },
-                    "morphology_complexity": yeni_soru.morphology_complexity,
-                    "readability_score": yeni_soru.readability_score,
+                    "morphology_complexity": yeni_soru.metadata_info.morphology_complexity,
+                    "readability_score": yeni_soru.metadata_info.readability_score,
                 },
                 "message": "Soru başarıyla eklendi",
             },
@@ -825,7 +851,10 @@ async def soru_guncelle(
 
         if request.soru_metni:
             guncelleme_verisi["question_text"] = request.soru_metni
-        if request.secenekler:
+
+        # `and`e indirgenebilir ama bu blok bu turda DEGISTIRILMEDI; birlestirmek
+        # dokunulmayan kodda gereksiz risk olurdu (cerrahi mudahale kurali).
+        if request.secenekler:  # noqa: SIM102
             if len(request.secenekler) >= 4:
                 guncelleme_verisi["option_a"] = request.secenekler[0].replace("A) ", "")
                 guncelleme_verisi["option_b"] = request.secenekler[1].replace("B) ", "")
@@ -943,11 +972,33 @@ async def toplu_soru_ekle(
         # Cache invalidation
         await invalidate_question_cache()
 
+        # Ham hata dizeleri istemciye GITMEZ. Servisin `hatalar` listesi
+        # SQLAlchemy'nin tam istisna metnini tasiyor: INSERT deyiminin kendisi,
+        # bind parametreleri ve `created_by` kullanici kimligi dahil (olculdu —
+        # 0 soru eklenen bir cagrida hepsi govdede dondu). Tam metin sunucu
+        # log'una yazilir, istemci yalnizca SAYIYI gorur.
+        if sonuc.get("hatalar"):
+            logger.error(
+                "toplu_soru_ekle %d/%d basarisiz (kullanici=%s): %s",
+                sonuc["basarisiz"],
+                sonuc["toplam"],
+                current_user.id,
+                sonuc["hatalar"],
+            )
+        istemci_sonucu = {k: v for k, v in sonuc.items() if k != "hatalar"}
+        istemci_sonucu["hata_sayisi"] = len(sonuc.get("hatalar") or [])
+
+        # Hicbir soru eklenmediyse 201 CREATED YANLIS: hicbir kaynak
+        # yaratilmadi. Onceki hali 0 soru eklenirken de 201 + "success": true
+        # donuyordu, yani cagiran basarisizligi FARK EDEMIYORDU.
+        tumu_basarisiz = sonuc["toplam"] > 0 and sonuc["basarili"] == 0
         return JSONResponse(
-            status_code=status.HTTP_201_CREATED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
+            if tumu_basarisiz
+            else status.HTTP_201_CREATED,
             content={
-                "success": True,
-                "data": sonuc,
+                "success": not tumu_basarisiz,
+                "data": istemci_sonucu,
                 "message": f"{sonuc['basarili']}/{sonuc['toplam']} soru başarıyla eklendi",
             },
         )
