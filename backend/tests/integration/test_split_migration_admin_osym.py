@@ -65,7 +65,7 @@ async def live_db() -> AsyncGenerator[AsyncSession, None]:
     try:
         async with engine.connect():
             pass
-    except Exception as exc:  # pragma: no cover - env guard
+    except Exception as exc:
         await engine.dispose()
         pytest.skip(f"live Postgres {LIVE_DSN} ulasilamiyor: {exc}")
 
