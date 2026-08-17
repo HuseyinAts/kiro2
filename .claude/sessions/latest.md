@@ -973,3 +973,26 @@ ruff kalemi dokunulmamış koda ait ve HEAD'de de vardı.
 - Yeni P0'lar: `api/admin.py:252/311` ve `api/osym_questions_api.py:155` — split'te silinen
   kolonlara ham SQL, koşulsuz çöküyor.
 - `models/question_bank.py` `is_active` ORM `default=False` duruyor; diğer yazma yolları ölçülmedi.
+
+### S228 push — YENİ AÇIK İŞ: `SKIP=reward-hacking-check`
+
+Push `reward-hacking-check` pre-push bekçisiyle bloklandı (exit 2, "20 critical").
+Kullanıcı onayıyla `SKIP=reward-hacking-check git push` ile geçildi; **sır bekçisi
+(`push-secret-guard`) aktif kaldı ve Passed** — `--no-verify` KULLANILMADI.
+
+**Ölçüm (iki bağımsız kontrol, 20/20 önceden var, 0'ı bu commit'in):**
+- 20 kalemin 20'si `except Exception:` , hepsi `tests/fast/test_api_coverage_batch14.py`'de.
+- Hiçbiri kestiğim 1551-1708 aralığında değil.
+- Her biri `HEAD~2`de **bağlamıyla birebir** bulundu (önceki satır + satır eşleşmesi).
+- Dosya farkı tam **158 satır** = kestiğim satır sayısı → diff silme-only doğrulandı.
+- İlk `head -40` çıktısı yanıltıcıydı: yalnız 🟡'leri gösteriyordu, 🔴'lar aşağıdaydı.
+  Bayrak sayımı: **20 🔴 / 129 🟡**.
+
+**Neden fix değil SKIP:** #451 bu dedektör sınıfını zaten ölçmüştü — `except Exception:`
+/ `MagicMock()` test dosyalarında kalibre edilmedi ve kapatmanın bedeli +231 CRITICAL
+ölçülmüştü. 20 satırı düzeltmek dokunmadığım koda müdahale olurdu (cerrahi müdahale ihlali).
+
+**Açık iş (bu satır kaybolmasın):** `reward-hacking-check` bekçisi test dosyalarındaki
+`except Exception:` için kalibre edilmeli VEYA test dosyaları için ayrı severity profili
+almalı. Aksi halde bu dosyalara dokunan her commit aynı SKIP'i taşıyacak.
+Kardeş bilinen kusur: `kiro2-api-import-smoke` (S211'den beri açık).
