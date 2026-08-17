@@ -682,6 +682,49 @@ _GOLDEN_MATEMATIK_WHERE = (
     "(question_statistics.quality_review_status IS NULL OR question_statistics.quality_review_status != 'rejected')"
 )
 
+# MATEMATIK golden'in DISLADIGI iki dal — ikisi de OLCULEREK eklendi, cunku
+# "zaten baska testte civili" iddiasi YANLIS cikti. Uc mutasyon 25 testin
+# hepsini yesil biraktı:
+#   difficulty_level.in_(levels) -> .isnot(None)  : zorluk secimi NO-OP olur
+#                                                   ("kolay" isteyen ogrenci
+#                                                   her zorlugu alir)
+#   contains("x^2") -> contains("y^2")            : suzgec yanlis desene bakar
+#   contains("x^2") -> contains("")               : `NOT LIKE '%%'` her satiri
+#                                                   eler -> TURKCE/EDEBIYAT/
+#                                                   TARIH/COGRAFYA/SOSYAL
+#                                                   havuzlari BOS (TYT TURKCE
+#                                                   40 soru, en buyuk blok)
+# Kok neden: yedek sandigim iddialar ICERIK-KOR idi — biri LaTeX kosullarini
+# SAYIYOR (`count(...) == 4`, needle dizesi serbestce degisebilir), digeri
+# yalnizca KOLON ADI ariyor (`"...difficulty_level" in where`, yuklem serbest).
+#
+# Ikisi de MATEMATIK golden'inden TURETILIYOR (ikinci bir SQL duvari
+# yapistirmak yerine): boylece diff'te yalnizca GERCEK fark gorunur.
+
+# Uretim kodundaki (`:1619-1622`) DEGERLER birebir. Ters bolu iceren desenler
+# PostgreSQL literal render'inda IKILENIR ('$\frac' -> '$\\frac'); kural elle
+# yazilmis bir dize yerine asagida ACIKCA uygulaniyor, boylece kacis-karakteri
+# belirsizligi kalmiyor (elle yazma denendi ve bir ters bolu kaybedildi).
+_LATEX_NEEDLES = ("$\\frac", "$\\sqrt", "x^2", "2x +")
+
+_GOLDEN_TURKCE_WHERE = _GOLDEN_MATEMATIK_WHERE.replace(
+    "'MATEMATIK'", "'TURKCE'"
+) + "".join(
+    " AND (question_content.question_text NOT LIKE '%%' || '"
+    + needle.replace("\\", "\\\\")
+    + "' || '%%')"
+    for needle in _LATEX_NEEDLES
+)
+
+# `difficulty` DIFFICULTY_MAP anahtari OLMALI; "medium" gibi gecersiz bir deger
+# `None` doner ve zorluk dalini SESSIZCE devre disi birakir — o zaman bu golden
+# MATEMATIK golden'ina esitlenir ve test hicbir sey olcmez.
+# DIFFICULTY_MAP["orta"] == ["EASY", "MEDIUM"] (olculdu).
+_GOLDEN_MATEMATIK_ORTA_WHERE = (
+    _GOLDEN_MATEMATIK_WHERE
+    + " AND question_statistics.difficulty_level IN ('EASY', 'MEDIUM')"
+)
+
 
 class TestSelectQuestions:
     # TURKCE parametresi SUS DEGIL: :1564 `if subject in ("TURKCE", "EDEBIYAT",
@@ -1010,23 +1053,53 @@ class TestSelectQuestions:
     # ------------------------------------------------------------------
 
     @pytest.mark.asyncio
-    async def test_base_filters_golden_where(self, wired, engine):
-        """`base_filters`'in 24 ust-duzey yuklemi birebir dondurulur.
+    @pytest.mark.parametrize(
+        ("subject", "difficulty", "golden"),
+        [
+            ("MATEMATIK", None, _GOLDEN_MATEMATIK_WHERE),
+            ("TURKCE", None, _GOLDEN_TURKCE_WHERE),
+            ("MATEMATIK", "orta", _GOLDEN_MATEMATIK_ORTA_WHERE),
+        ],
+        ids=["matematik", "turkce-latex", "matematik-orta"],
+    )
+    async def test_base_filters_golden_where(
+        self, wired, engine, subject, difficulty, golden
+    ):
+        """Uretilen WHERE'i yuklem yuklem dondurur (karakterizasyon).
 
-        Sekil testleri (derleme · tek FROM · JOIN'ler · kapi · LaTeX sayisi)
+        Sekil testleri (derleme · tek FROM · JOIN'ler · kapi · LaTeX SAYISI)
         yuklemlerin ICERIGINE kordu. Olculdu: esik degisimi (`>= 50` -> `> 50`),
         `~` dusurulmesi (pasaj suzgeci TERSINE doner), kolon karismasi
         (`option_c` -> `option_d`), sabit degismesi ('metne gore' -> 'metne
         XXXX'), listeden 'FIZIK' dusmesi ve `option_a != option_a` (HER sinav
-        BOS) mutasyonlarinin HEPSI 24 testi yesil birakiyordu.
+        BOS) mutasyonlarinin HEPSI paketi yesil birakiyordu.
+
+        SAYILAR: `base_filters` 24 UST-DUZEY yuklem iceriyor, ama
+        `.split(" AND ")` uc pasaj suzgecinin IC `AND`'lerini de boldugu icin
+        27 parca uretir (MATEMATIK). TURKCE +4 LaTeX = 31, zorluk dali +1 = 28.
+
+        Parametreler dalları ayirir (hicbiri sus degil, ucu de mutasyonla
+        civilendi): MATEMATIK yalin base_filters'i, TURKCE `:1619` LaTeX
+        blogunu (yalniz sozel derslerde kosuyor), "orta" ise `:1608` zorluk
+        yuklemini kapsar.
 
         Golden'i guncellemek YASAK DEGIL — `base_filters` bilerek
         degistiginde ayni commit'te guncellenir. Amac degisimi engellemek
         degil, GORUNUR kilmak: diff hangi ogrenciye-donuk suzgecin degistigini
         satir satir gosterir.
         """
-        session = wired([[]])
+        session = wired([[], []])
 
-        await engine._select_questions(_config(engine))
+        await engine._select_questions(
+            _config(engine, subject=subject, difficulty=difficulty)
+        )
 
-        assert _normalized_where(session.statements[0]) == _GOLDEN_MATEMATIK_WHERE
+        # `.split(" AND ")` SUS DEGIL, OKUNABILIRLIK ICIN OLCULDU: tek dize
+        # karsilastirmasinda pytest "Skipping 259 identical leading characters"
+        # deyip yalnizca `-` tarafini basiyor ve `...Full output truncated` ile
+        # kesiyor; `-vv` iki adet ~2100 karakterlik tek satir SQL duvari
+        # veriyor. Liste karsilastirmasinda ise dogrudan
+        # "At index 3 diff: '... > 50' != '... >= 50'" yaziyor.
+        assert _normalized_where(session.statements[0]).split(" AND ") == golden.split(
+            " AND "
+        )
