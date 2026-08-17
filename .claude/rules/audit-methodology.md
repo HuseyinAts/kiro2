@@ -841,4 +841,113 @@ diye aynı etiketle raporlar; ayrımı yapan şey **tüketici tarafını okumakt
 
 ---
 
+## BEKÇİ HAKLI OLABİLİR — "HEP FANTOM" BİR ÖLÇÜM DEĞİLDİR (18 Ağu 2026, S229)
+
+S228 bir bekçiyi ölçüp SKIP etti ve haklıydı (20/20 bulgu HEAD'de zaten vardı). Bu,
+sonraki turda sessiz bir alışkanlığa dönüştü: *bekçi kırmızıysa muhtemelen fantomdur.*
+S229'da **iki ayrı bekçi** kırmızı verdi ve **ikisi de haklıydı** — çünkü bulgular bu
+turun KENDİ kodundaydı:
+
+| Bekçi | Bulgu | Doğru aksiyon |
+|---|---|---|
+| `reward-hacking-check` | Yeni testte `# pragma: no cover` | **Fix** — ölçüldü ki `.coveragerc:8-10` `*/tests/*` omit ediyor, pragma **kanıtlanabilir no-op**; regex'i geçsin diye yeniden yazmak oyunlamak olurdu |
+| `detect-secrets` | Yeni testte DB parolası | **Fix** — DSN `conftest.py`'ye taşındı, env/`.env`'den çözülüyor |
+
+**Ayrım ölçütü tek soru:** *bulgu benim bu turda yazdığım satırda mı?* Evetse SKIP
+tartışması yok. Hayırsa (dokunulmamış kod) S228'in ölçülmüş SKIP'i geçerli.
+
+### Bir kez geçmiş olmak güvenlik kanıtı değildir
+
+Aynı DSN satırı **bir önceki commit'te repoya GİRDİ** ve `detect-secrets` onu
+görmedi. Sebep ölçüldü: formatter satırı üç satıra sarmıştı, `BasicAuthDetector`'ın
+regex'i tek satıra bakıyor. Sonraki turda satır tek satır kalınca yakalandı.
+
+**Kural:** bir sırrın dedektörden geçmiş olması onu güvenli yapmaz — dedektörün o
+biçimi görmediğini gösterir. Sır tespiti "geçti mi" ile değil, **grep ile** doğrulanır:
+`grep -rn "<sır>" <yol>` ve `git show HEAD:<dosya> | grep -c`.
+
+---
+
+## COMMIT ÇIKIŞ KODU 0 + YENİ HASH ≠ HER ŞEY GİRDİ (18 Ağu 2026, S229)
+
+`L-s224-amend-sessizce-iptal-olur` "amend sessizce iptal olur, HASH'i ölç" diyor.
+S229 bir adım ötesini gösterdi: **hash DEĞİŞİR, commit BAŞARILI görünür, ama staged
+dosyaların bir kısmı düşmüş olabilir.** Pre-commit'in `[WARNING] Unstaged files
+detected` → stash → restore dizisi, bir hook başarısız olduktan sonra dosyaları
+**unstaged** bırakıyor; ikinci deneme yalnız kalanları alıyor.
+
+Bu oturumda **iki kez** oldu. İlkinde `5673ef0e9` yalnız test dosyasını aldı, asıl
+JOIN fix'i (`api/*.py`) dışarıda kaldı — ve `git log` yepyeni bir hash gösterdiği
+için "oldu" sanıldı. Yakalayan şey `git show --stat HEAD` oldu.
+
+**Kural:** commit'ten sonra çıkış kodu VE hash yetmez; **`git show --stat HEAD` ile
+NE girdiğini** oku. Beklediğin dosya listesi değilse commit yarımdır.
+
+---
+
+## MUTASYON REDDEDİLMİŞ OLABİLİR — "uygulandı" YAZDIRMAK ÖLÇÜM DEĞİLDİR (18 Ağu 2026, S229)
+
+`L-s223-*` mutasyonun kendisinin bir alet olduğunu söylüyor. Yeni kör nokta:
+**mutasyon hiç uygulanmamış olabilir ve harness bunu fark etmez.**
+
+DDL mutasyonu `psql -U kiro2_app -c "ALTER TABLE ... DROP DEFAULT"` ile denendi;
+Postgres `ERROR: must be owner of table question_bank` döndü. Script'in bir sonraki
+satırı **koşulsuz** `echo "M2 uygulandi"` yazıyordu. Sonuç `4 passed` göründü ve bu
+"testler yük taşımıyor" diye okunabilirdi — oysa mutasyon hiç olmamıştı.
+
+**Kural:** mutasyonun uygulandığını **bağımsız olarak ölç**, uygulayan komutun
+çıktısına güvenme. Burada doğru ölçüm `information_schema.column_default`
+(`true` → `YOK`) idi. Yetki gerektiren mutasyonlarda yetkisi olan yolu kullan —
+alembic `downgrade`/`upgrade` hem yetkiliydi hem `downgrade()` yolunu da sınadı.
+
+---
+
+## `server_default` BEYANI DDL'DE OLMAYABİLİR (18 Ağu 2026, S229)
+
+ORM'de `mapped_column(..., server_default="true")` yazması, canlı DB'de o
+varsayılanın **var olduğu anlamına gelmez**. `server_default` yalnızca DDL
+üretilirken (create_all / migration) kullanılır; tablo onu içermeyen bir yoldan
+oluştuysa beyan **fantom** kalır.
+
+`question_bank.is_active` yıllardır `server_default="true"` beyan ediyordu;
+ölçünce `information_schema.column_default IS NULL` çıktı ve kolonu atlayan ham
+INSERT `NotNullViolationError` verdi. Yani ORM'i atlayan her yazma yolu kırıktı.
+
+**Kural:** bir DB-tarafı varsayılana dayanmadan önce iki ölçüm yap —
+(a) `information_schema.columns.column_default`, (b) davranış: kolonu **atlayan**
+bir INSERT. Kardeş tuzak: Python-side `default=` INSERT'e kolonu **dahil eder**,
+bu yüzden `server_default` gerçek olsa bile hiç ateşlenmez; ikisi aynı yöne bakmalı.
+
+---
+
+## TEST DSN'İ `DATABASE_URL`'E GÜVENEMEZ — SESSİZCE SQLITE'A DÜŞER (18 Ağu 2026, S229)
+
+Canlı-DB testleri için DSN'i env'den çözen bir yardımcı yazıldı ve sırası
+`KIRO2_TEST_DSN → KVKK_VERIFY_DSN → DATABASE_URL` idi. **11 test düştü**:
+`no such table: information_schema.columns`. Sebep — test koşum ortamı
+(`tests/conftest.py` ve bazı test modülleri) `DATABASE_URL`'i
+`sqlite+aiosqlite:///:memory:` yapıyor.
+
+Bu, deponun kayıtlı **"testler sqlite `else` dalını koştuğu için yeşildi"**
+dersinin aynı sınıfı; orada sessiz (yeşil) hali üretimde ay boyu kırık kod
+taşımıştı. Burada kırmızı verdiği için görünür oldu — şans, disiplin değil.
+
+**Kural:** canlı-DB testinin DSN çözücüsü **postgres olmayan DSN'i REDDETMELİ** ve
+`pytest.skip` etmeli; sessizce sqlite'a düşmemeli. Alet:
+`backend/tests/integration/conftest.py::canli_dsn_cozumle`.
+
+---
+
+## KABUK `cd`'Sİ KALICIDIR — "0 collected" BULGU DEĞİL ALET ARIZASI (18 Ağu 2026, S229)
+
+Bir düzenlemeden sonra `pytest tests/integration/... ` **`collected 0 items`**
+verdi. İlk okuma "dosyayı bozdum" idi. Gerçek sebep: önceki bir komutta
+`cd /c/Users/husey/kiro2` çalıştırılmıştı ve Bash oturumunun cwd'si **kalıcı**;
+yol depo kökünün `pytest.ini`'sine çözülüyordu. `backend/`'den koşunca 8/8 PASS.
+
+**Kural:** beklenmedik "0 test / 0 bulgu" gördüğünde önce `pwd`. Bu, bu dosyadaki
+"ölçüm aletini doğrula" ailesinin en ucuz üyesi — ve kontrol kolu tek komut.
+
+---
+
 *Oluşturulma: 14 May 2026 (Session 156, Faz 0.8). Bir sonraki audit hatasında bu tablo güncellenir.*

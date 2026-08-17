@@ -1076,3 +1076,117 @@ Kardeş bilinen kusur: `kiro2-api-import-smoke` (S211'den beri açık).
 - **Bekçi HAKLI çıktığında SKIP edilmedi, FIX edildi:** `reward-hacking-check` push'u blokladı (`# pragma: no cover` CRITICAL) ve bulgu **bu oturumun kendi kodundaydı** — S228'in "20/20 önceden var" durumunun tersi. Bekçinin meşru-istisna regex'i (`patterns.py:189`) ikinci bir `#` istiyor; ifadeyi regex'i geçsin diye yeniden yazmak **oyunlamak** olurdu. Ölçüldü: `.coveragerc:8-10` `*/tests/*` + `*/test_*` omit ediyor → o dosyada pragma **kanıtlanabilir no-op**. Doğru fix silmek (`da804f199`). **Ders: bekçi bazen haklıdır; "hep fantom" varsayımı bir ölçüm değil.**
 - **`cd` kalıcıdır, "0 collected" alet arızasıydı:** pragma silindikten sonra test `collected 0 items` verdi. Panik sebebi yok — Bash cwd'si önceki bir komuttan depo köküne kaymıştı, yol kök `pytest.ini`'ye çözülüyordu. `backend/`'den koşunca 8/8 PASS. **Kırmızıyı bulgu saymadan önce aletin doğru yerden koştuğunu doğrula** (audit-methodology "ölçüm aletini doğrula" ile aynı sınıf).
 - **İlk commit sessizce yarım gitti, `git show --stat` yakaladı:** `SKIP=...` ile commit ettiğimde pre-commit'in stash-restore adımı `api/*.py`'yi unstaged bıraktı → `5673ef0e9` yalnız test dosyasını aldı. S228'de kayıtlı desenin aynısı. `e0a823131` asıl fix'i taşıyor. **Ders: commit sonrası `git show --stat` ile ne girdiğini ölç, çıkış kodu 0 yeterli değil.**
+
+---
+
+## DURUM TESPİTİ — 18 Ağustos 2026 (S229 sonu, canlı ölçüm)
+
+> Yöntem notu: CLAUDE.md **Mega Audit Lock** gereği yeni mega audit AÇILMADI.
+> Aşağıdakiler tek turda alınmış **canlı ölçümlerdir**; her satır komutla üretildi.
+
+### 🔴 EN BÜYÜK AÇIK SORU — API yüzeyi 1.224 değil **326**
+| Ölçüm | Değer |
+|---|---|
+| Canlı `/openapi.json` | **326 yol · 349 operasyon · 212 şema** |
+| MEMORY kaydı (14 Ağu) | 1.224 yol · (1 Ağu) 1.226 operasyon / 800 şema |
+| `routers/loader.py` ROUTER_MAPPING | **150 girdi** |
+| Başlangıçta fiilen yüklenen | **40 router** (health 2, auth 3, exam 4, learning 10, content 5, ai 6, admin 5, a11y 1, security 2, misc 2) |
+| Import edilemeyen | **106 benzersiz modül** |
+
+Örneklenen 3 eksik modül (`api.kvkk_consent_api`, `api.kvkk_privacy_api`,
+`api.kvkk_notice_api`) **host'ta da yok** ve `git log --diff-filter=A` ile
+bakıldığında **git geçmişinde hiç var olmamışlar**. `loader.py`'nin son commit'i
+`c66691fbe feat(backend): enable all 104 routers` — yani mapping, yazılmamış
+modülleri haritalıyor. Bu container senkron sorunu DEĞİL, bu oturumun restart'ından
+da kaynaklanmıyor.
+
+**Karar gerektiren:** ya platform API yüzeyinin ~%73'ünü kaybetti, ya da MEMORY'deki
+1.224 rakamı hiç doğru değildi (farklı yöntemle sayılmış olabilir). İkisi de ciddi;
+**bu sorunun cevaplanması sıradaki en yüksek öncelikli iş.**
+
+### 🟢 Sağlam olanlar (ölçüldü)
+- **Veri**: `question_bank` 36.967 (hepsi `is_active`), öğrenci kapısı `mv_safe_for_beta` **27.073**, `pending` 9.894. Yetim satır yok.
+- **Altyapı**: backend/frontend/redis/celery(worker+beat)/ollama/ES tümü Up + healthy; `/health` 200.
+- **Migration zinciri**: `0001_baseline` → `0002_is_active_default`, alembic head DB ile eşit.
+- **Bu oturumun işi**: 8 kırık uç onarıldı + `is_active` mayını kapatıldı, 12 entegrasyon testi gerçek Postgres'e karşı yeşil, 4/4 mutasyon çivili.
+
+### 🟡 Bilinen, ölçülmüş borç
+- **IRT kalibrasyonu YOK**: `is_calibrated` = 0 / **1 farklı `irt_difficulty` değeri**. Yani adaptif zorluk motoru bugün gerçek veriyle çalışmıyor; ZPD/CAT kararları sabit bir prior üzerinden veriliyor.
+- **Backend test paketi uçtan uca koşamıyor**: `tests/conftest.py:1186` `TestClient(app=...)` → `TypeError` (starlette/httpx sürüm uyumsuzluğu). Bu oturumda 97/97 hatanın **tamamı** bu tek kök nedene bağlandı (`ERROR at setup of`).
+- **`review_status` üç yönlü uyuşmazlık**: ORM `'PENDING'` / DDL `'APPROVED'` / veri `'approved'`.
+- **Ağaç kirli**: ~88 takipsiz dosya (S205-S210 Gemini devrinden), hâlâ triyaj edilmedi.
+- **CI**: 11 workflow'un hiçbiri bu dalda tetiklenmiyor (S200'den beri açık, #468).
+
+---
+
+## GELECEK VİZYON ÖNERİLERİ (öncelik sırası — gerekçeleri ölçüme dayalı)
+
+### V1 · "Neyi servis ediyoruz" sorusunu kapat (1-2 oturum) — ÖNCE BU
+326 vs 1.224 çelişkisi çözülmeden hiçbir yol haritası güvenilir değil; ürün kapsamı
+bilinmiyor demektir. Somut adım: `loader.py`'nin 150 girdisini üçe ayır — (a) yüklenen 40,
+(b) modülü hiç yazılmamış ~106, (c) yazılmış ama hata veren. (b) mapping'den **silinmeli**
+(ölü haritalama, her başlangıçta 106 uyarı üretiyor ve gerçek hatayı gizliyor).
+Kazanç: başlangıç logu okunabilir olur, gerçek kapsam belgelenir.
+
+### V2 · Test paketini ayağa kaldır (1 oturum, tek satırlık olabilir)
+`conftest.py:1186` tek kök neden; kapanınca **97 hata birden** düşer ve backend ilk kez
+uçtan uca ölçülebilir hale gelir. Coverage/kalite hedefleri ancak ondan sonra anlamlı.
+Bu, yatırım/getiri oranı en yüksek kalem.
+
+### V3 · IRT kalibrasyonunu gerçek yap (2-3 oturum)
+Bugün `irt_difficulty` **tek değer**. Platformun ana vaadi (kişiselleştirme) bu alana
+dayanıyor; kalibrasyonsuz ZPD/CAT bir heuristik. 27.073 soruluk kapı + öğrenci yanıtı
+biriktikçe `empirical_irt_calibrator` devreye alınmalı. **Ön koşul:** yeterli yanıt verisi
+— yoksa cold-start prior'u belgelenip "kalibre değil" olarak işaretlenmeli (şu an sessizce
+kalibre gibi duruyor).
+
+### V4 · Şema-ORM sözleşmesini bekçiye bağla (1 oturum)
+S229 iki kez aynı sınıfı gösterdi: ORM'de yazan (`server_default`) DB'de yok. Bir bekçi
+testi tüm modelleri gezip `information_schema` ile karşılaştırmalı — bu oturumdaki
+`test_question_bank_defaults.py` deseninin genelleştirilmişi. Aksi halde her split/migration
+turunda aynı fantom yeniden doğuyor.
+
+### V5 · Ürün yönü (B2C öğrenci aboneliği) için kapanması gerekenler
+MEMORY'deki 16 kriterin 11'i BLOKE (6 Ağu ölçümü, **doğrulanması gerekiyor** — 12 gün eski).
+V1-V2 kapanmadan bu listenin yeniden ölçülmesi anlamsız; ölçüm aleti (test paketi) çalışmıyor.
+
+### Yapılmaması önerilenler
+- **Yeni mega audit AÇMA** — CLAUDE.md kilidi zaten şart koşuyor; üstelik ölçüm aleti (test paketi) kırıkken üretilecek bulguların çoğu doğrulanamaz.
+- **Yeni özellik yazma** — 106 ölü router mapping'i dururken yeni yüzey eklemek kapsamı daha da bulanıklaştırır.
+
+---
+
+## Session Handoff — 2026-08-18 (S229 KAPANIŞ)
+**Branch:** feature/self-evolution-optimization (origin ile EŞİT)
+**Uncommitted:** takipli değişiklik YOK · ~88 takipsiz dosya S205-S210 devrinden (bu oturumun ürünü değil)
+
+### Bu oturumda kapananlar
+- **#485 Task 1** — split sonrası 8 kırık uç JOIN'e çevrildi (`admin.py` 3 + `osym_questions_api.py` 5). Hepsi koşulsuz 500 veriyordu. `5673ef0e9`+`e0a823131`
+- **#485 Task 2** — `is_active` ORM `default=False` → `True` + alembic `0002` ile DDL varsayılanı **gerçek** yapıldı. `79bf4dd3f`
+- **Güvenlik** — iki test dosyasından DB parolası çıkarıldı; DSN artık `conftest.py::canli_dsn_cozumle` ile env/`.env`'den çözülüyor. `79bf4dd3f`
+- **Dersler** — `.claude/lessons/ders_kaydi.yaml` 107 → **114**; `audit-methodology.md`'ye 6 yeni bölüm
+
+### Test durumu (ölçüldü)
+- `tests/integration/test_split_migration_admin_osym.py` **8/8 PASS** (gerçek Postgres)
+- `tests/integration/test_question_bank_defaults.py` **4/4 PASS**, **4/4 mutasyonla çivili** (M1 ORM / M2 DDL — tam tümleyen çift)
+- `tests/unit/test_ders_kaydi.py` **9/9 PASS**
+- Canlı GF3b e2e **PASS** (deploy sonrası)
+- ⚠️ Tüketici taraması 47 passed / 8 skipped / **97 error** — 97/97'si `ERROR at setup of`, tek kök neden `tests/conftest.py:1186`, bu işle ilgisiz
+
+### Engelleyiciler
+- `bandit` pre-commit venv'i **bağımsız kırık** (`ModuleNotFoundError: pbr`) — HEAD'de de düşüyor, baseline ölçülemedi
+- `SKIP=bandit,mypy` kullanıldı; kalan 4 kalem `git diff` ile dokunulmayan satırlarda doğrulandı
+- `kiro2-api-import-smoke` S211'den beri kırık (devralınan)
+
+### Sonraki Adımlar (öncelik sırası — gerekçesi "Durum Tespiti" bölümünde)
+1. **V1: 326 vs 1.224 API yüzeyi çelişkisini çöz** — `loader.py` 150 girdi / 40 yüklü / **106 modülü hiç yazılmamış**. Ölü mapping silinmeli. Bu kapanmadan yol haritası güvenilir değil.
+2. **V2: `tests/conftest.py:1186` `TestClient(app=...)`** — tek satır olabilir, 97 hatayı birden düşürür ve backend ilk kez uçtan uca ölçülebilir olur.
+3. **`review_status` üç yönlü uyuşmazlık** (Task 2'den devredildi) — ORM `'PENDING'` / DDL `'APPROVED'` / veri `'approved'`. Ürün kararı gerektiriyor.
+4. **Facet'li arama** (#485 Task 3) — silinen `QuestionCRUDService`'in kusurları `latest.md`'de kayıtlı, tekrarlanmasın.
+5. **V4: ORM↔DDL sözleşme bekçisi** — `test_question_bank_defaults.py` desenini tüm modellere genelleştir.
+
+### Kararlar (gelecek oturum tekrar tartışmasın)
+- **`is_active` için `default=True` + migration seçildi** (kullanıcı kararı): beyan edilen niyet, canlı verinin %100'ü ve `uq_qb_soru_hash_active` kısmi indeksi bu yönde. `is_active=True` öğrenciye servis DEMEK DEĞİL — onu `mv_safe_for_beta` kapısı belirliyor.
+- **`review_status` bilinçli ERTELENDİ** — aynı kalıp ama ürün anlamı taşıyor; `is_active` commit'ine sıkıştırmak cerrahi müdahale ihlali olurdu.
+- **Devir notlarının severity'si iki kez yanlış çıktı** ("P0" → latent, "eziyor" → fantom). Devralınan etiketi ölçmeden aktarma.
+- **Bekçi haklı olabilir:** bu oturumda 2 bekçi kırmızı verdi, 2'si de haklıydı çünkü bulgu bu turun kendi kodundaydı. Ayrım ölçütü: *bulgu benim yazdığım satırda mı?*

@@ -787,3 +787,52 @@
   durum: aktif
   zorlayici: null
   kanit: "S228 — silme-only bir commit'te (0 icerik satiri eklendi) detect-secrets 3 kalem dusurdu: test_api_coverage_batch14.py:951/1542/1627. Ilk hipotez 'baseline satir-numarasi tutuyor, silme satirlari kaydirdi' idi ve OLCULUNCE CURUDU: baseline'da o dosya icin kayit sayisi 0. Gercek sebep kancanin yalniz DEGISEN dosyalari taramasi -> dosya ilk kez taraniyor. Ucu de HEAD'de birebir mevcut (`git show HEAD:<dosya> | grep -cF` = 1,1,1) ve ucu de test literali (user.secret_2fa = 'SECRET', 'ValidPass1!', 'Admin1Pass!'). Ayrim iki olcumle yapilir: (a) satir HEAD'de var mi, (b) baseline'da o dosya icin kayit sayisi (0 = hic taranmamis, >0 = kayma olabilir). Ikisi olmadan 'yeni sir' ile 'eski borc' ayrilamaz"
+- id: L-s229-bekci-hakli-olabilir
+  baslik: "Bekci kirmizi verdiginde ayrim tek soru: bulgu BENIM bu turda yazdigim satirda mi?"
+  kaynak: .claude/rules/audit-methodology.md#bekci-hakli-olabilir-hep-fantom-bir-olcum-degildir-18-agu-2026-s229
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — S228 bir bekciyi olcup SKIP etmisti ve HAKLIYDI (20/20 bulgu HEAD'de zaten vardi); bu sessizce 'bekci kirmiziysa muhtemelen fantomdur' aliskanligina donustu. S229'da IKI ayri bekci kirmizi verdi ve IKISI DE HAKLIYDI, cunku bulgular bu turun KENDI kodundaydi: (a) reward-hacking-check -> yeni testte `# pragma: no cover`; olculdu ki .coveragerc:8-10 `*/tests/*` ve `*/test_*` omit ediyor -> pragma KANITLANABILIR no-op, dogru fix SILMEK (regex'i gecsin diye yeniden yazmak oyunlamak olurdu, patterns.py:189 ikinci bir `#` istiyor). (b) detect-secrets -> yeni testte DB parolasi; DSN conftest'e tasinip env/.env'den cozuldu. Ayrim olcutu: bulgu bu turda yazilan satirda ise SKIP tartismasi YOK; dokunulmamis kodda ise S228'in olculmus SKIP'i gecerli"
+- id: L-s229-bir-kez-gecmis-olmak-guvenlik-kaniti-degil
+  baslik: "Sir dedektorden gecmis olabilir cunku BICIMI gormedi — 'gecti' guvenli demek degil"
+  kaynak: .claude/rules/audit-methodology.md#bekci-hakli-olabilir-hep-fantom-bir-olcum-degildir-18-agu-2026-s229
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — ayni DSN satiri (parola iceren) bir ONCEKI commit'te (5673ef0e9) repoya GIRDI ve detect-secrets 'Passed' dedi. Sonraki turda ayni satir bloklandi. Sebep olculdu: formatter ilk turda satiri uc satira sarmisti, BasicAuthDetector'in regex'i TEK satira bakiyor; ikinci turda satir tek satir kalinca eslesti. Yani dedektorden gecmek sirri guvenli yapmaz, yalnizca dedektorün o BICIMI gormedigini gosterir. Dogrulama dedektore degil grep'e dayanmali: `grep -rn '<sir>' <yol>` + `git show HEAD:<dosya> | grep -c`. Iki dosyadan da kaldirildi (test_split_migration_admin_osym.py, test_question_bank_defaults.py)"
+- id: L-s229-commit-yarim-gidebilir
+  baslik: "Commit cikis kodu 0 + YENI hash, yine de staged dosyalarin bir kismi DUSMUS olabilir"
+  kaynak: .claude/rules/audit-methodology.md#commit-cikis-kodu-0-yeni-hash-her-sey-girdi-18-agu-2026-s229
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — L-s224-amend-sessizce-iptal-olur 'hash'i olc' diyordu; burada hash DEGISTI ve commit BASARILI gorundu ama icerik yarimdi. Pre-commit'in '[WARNING] Unstaged files detected' -> stash -> restore dizisi, bir hook basarisiz olduktan sonra dosyalari UNSTAGED birakiyor; ikinci deneme yalniz kalanlari aliyor. Bu oturumda IKI kez oldu: `5673ef0e9` yalniz test dosyasini aldi, asil JOIN fix'i (api/admin.py + api/osym_questions_api.py) disarida kaldi; `git log` yepyeni hash gosterdigi icin 'oldu' sanildi. Yakalayan olcum `git show --stat HEAD` oldu -> beklenen dosya listesi degilse commit yarimdir. Duzeltme ayri commit'te (e0a823131)"
+- id: L-s229-mutasyon-reddedilmis-olabilir
+  baslik: "Mutasyon hic uygulanmamis olabilir — 'uygulandi' yazdirmak olcum degildir"
+  kaynak: .claude/rules/audit-methodology.md#mutasyon-reddedilmis-olabilir-uygulandi-yazdirmak-olcum-degildir-18-agu-2026-s229
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — L-s223 mutasyonun kendisinin bir alet oldugunu soyluyor; yeni kor nokta mutasyonun HIC UYGULANMAMASI. DDL mutasyonu (M2) `psql -U kiro2_app -c 'ALTER TABLE question_bank ALTER COLUMN is_active DROP DEFAULT'` ile denendi, Postgres `ERROR: must be owner of table question_bank` dondu; script'in sonraki satiri KOSULSUZ `echo 'M2 uygulandi'` yazdi. Sonuc `4 passed` gorundu ve 'DDL testleri yuk tasimiyor' diye okunabilirdi — oysa mutasyon hic olmamisti. Dogru olcum: information_schema.column_default (`true` -> `YOK`). Yetki gerektiren mutasyonda yetkisi olan yolu kullan: `alembic downgrade` hem yetkiliydi hem downgrade() yolunu da sinadi. Tekrar edilince gercek sonuc cikti: M2 test 3-4'u oldurdu, 1-2'yi yasatti (M1'in tam tumleyeni)"
+- id: L-s229-server-default-fantom-olabilir
+  baslik: "ORM'de `server_default` yazmasi DDL'de VAR oldugu anlamina gelmez"
+  kaynak: .claude/rules/audit-methodology.md#server_default-beyani-ddlde-olmayabilir-18-agu-2026-s229
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/integration/test_question_bank_defaults.py
+  kanit: 'S229 — models/question_bank.py `is_active` yillardir `server_default="true"` beyan ediyordu. Olculdu: `SELECT column_default FROM information_schema.columns WHERE table_name=''question_bank'' AND column_name=''is_active''` -> NULL. Davranisla dogrulandi: kolonu ATLAYAN ham INSERT `NotNullViolationError` verdi, yani ORM''i atlayan her yazma yolu kirikti. server_default yalnizca DDL uretilirken (create_all/migration) kullanilir; tablo onu icermeyen bir yoldan olustuysa beyan FANTOM kalir. Kardes tuzak ayni satirda: Python-side `default=` INSERT''e kolonu DAHIL ETTIGI icin server_default gercek olsa bile hic ateslenmez -> `default=False` her yeni soruyu gorunmez yapiyordu. Ikisi ayni yone bakmali. Fix: ORM default=True + alembic 0002_is_active_default (SET DEFAULT true); information_schema NULL->true, satirlar degismedi 36.967/36.967'
+- id: L-s229-test-dsn-sessizce-sqlite-olur
+  baslik: "Canli-DB testinin DSN cozucusu `DATABASE_URL`'e guvenemez — test ortami onu sqlite yapar"
+  kaynak: .claude/rules/audit-methodology.md#test-dsni-database_urle-guvenemez-sessizce-sqlitea-duser-18-agu-2026-s229
+  sinif: alet
+  durum: aktif
+  zorlayici: backend/tests/integration/test_question_bank_defaults.py
+  kanit: "S229 — sirri kaynak koddan cikarmak icin DSN'i env'den cozen yardimci yazildi (sira: KIRO2_TEST_DSN -> KVKK_VERIFY_DSN -> DATABASE_URL). 11 test dustu: `sqlite3.OperationalError: no such table: information_schema.columns`. Sebep: test kosum ortami (tests/conftest.py ve bazi test modulleri `os.environ.setdefault` ile) DATABASE_URL'i `sqlite+aiosqlite:///:memory:` yapiyor ve cozucu ona guvendi. Bu, deponun kayitli 'testler sqlite else dalini kostugu icin yesildi' dersinin ayni sinifi; orada SESSIZ (yesil) hali uretimde ay boyu kirik kod tasimisti — burada kirmizi verdigi icin gorunur oldu, sans/disiplin degil. Guard: postgres olmayan DSN REDDEDILIR + pytest.skip, sessizce sqlite'a DUSULMEZ. Alet: backend/tests/integration/conftest.py::canli_dsn_cozumle"
+- id: L-s229-cd-kalici-sifir-collected
+  baslik: "Beklenmedik '0 collected / 0 bulgu' gordugunde ONCE `pwd` — kabuk cd'si kalicidir"
+  kaynak: .claude/rules/audit-methodology.md#kabuk-cdsi-kalicidir-0-collected-bulgu-degil-alet-arizasi-18-agu-2026-s229
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — bir duzenlemeden sonra `pytest tests/integration/test_question_bank_defaults.py` `collected 0 items` verdi; ilk okuma 'dosyayi bozdum' idi. Gercek sebep: onceki bir komutta `cd /c/Users/husey/kiro2` kosulmustu ve Bash oturumunun cwd'si KALICI, yol depo kokunun pytest.ini'sine cozuluyordu (cikti farkliydi: 'timeout func_only: True', xdist worker satiri yok). `backend/`'den kosunca 8/8 PASS. Bu dosyadaki 'olcum aletini dogrula' ailesinin en ucuz uyesi — kontrol kolu tek komut: `pwd`"
