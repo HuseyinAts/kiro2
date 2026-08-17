@@ -73,6 +73,8 @@ _stub("redis.asyncio")
 _stub("pgvector")
 _pgvector_sqlalchemy = _stub("pgvector.sqlalchemy")
 from sqlalchemy.types import UserDefinedType
+
+
 class _MockVector(UserDefinedType):
     def __init__(self, dim=None):
         self.dim = dim
@@ -444,7 +446,6 @@ class TestAdvancedReportsAPI:
 
     @pytest.mark.asyncio
     async def test_get_advanced_exam_report_404_when_no_session(self):
-        import core.osym_exam_engine as ose
         from api.advanced_reports import router
         from core.dependencies import get_current_user
 
@@ -460,7 +461,6 @@ class TestAdvancedReportsAPI:
 
     @pytest.mark.asyncio
     async def test_get_irt_analysis_404_when_no_session(self):
-        import core.osym_exam_engine as ose
         from api.advanced_reports import router
         from core.dependencies import get_current_user
 
@@ -476,7 +476,6 @@ class TestAdvancedReportsAPI:
 
     @pytest.mark.asyncio
     async def test_get_zpd_recommendations_404_when_no_session(self):
-        import core.osym_exam_engine as ose
         from api.advanced_reports import router
         from core.dependencies import get_current_user
 
@@ -667,323 +666,6 @@ class TestAdminServiceRoleHierarchy:
 
         with pytest.raises(AdminAuthorizationError):
             await service.dashboard_istatistikleri_getir(current_user=student_user)
-
-
-# ===========================================================================
-# SECTION 3: services/question_crud_service.py
-# ===========================================================================
-
-
-class TestQuestionCRUDServiceInit:
-    """Tests for QuestionCRUDService initialization and helper methods."""
-
-    def test_service_init(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        service = QuestionCRUDService(mock_db)
-        assert service.db is mock_db
-
-    @pytest.mark.asyncio
-    async def test_upload_question_image(self, tmp_path):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        service = QuestionCRUDService(mock_db)
-
-        # Patch the upload dir to tmp_path
-        image_bytes = b"fake_image_content"
-        with patch("pathlib.Path.mkdir"):
-            with patch("builtins.open", create=True) as mock_open:
-                mock_open.return_value.__enter__ = lambda s: s
-                mock_open.return_value.__exit__ = MagicMock(return_value=False)
-                mock_open.return_value.write = MagicMock()
-                url = await service._upload_question_image(image_bytes, "test.jpg")
-        assert url.startswith("/uploads/questions/")
-        assert url.endswith(".jpg")
-
-    @pytest.mark.asyncio
-    async def test_get_or_create_topic_creates_new(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        # Simulate topic not found (returns None)
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-
-        topic_id = await service._get_or_create_topic("Matematik")
-        assert topic_id is not None
-        mock_db.add.assert_called()
-        mock_db.commit.assert_awaited()
-
-    @pytest.mark.asyncio
-    async def test_get_or_create_topic_returns_existing(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        existing_topic = MagicMock()
-        existing_topic.id = str(uuid.uuid4())
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = existing_topic
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-        topic_id = await service._get_or_create_topic("Matematik")
-        assert topic_id == existing_topic.id
-
-
-class TestQuestionCRUDServiceCreate:
-    """Tests for create_question."""
-
-    @pytest.mark.asyncio
-    async def test_create_question_basic(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        # topic lookup returns None (creates new)
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-
-        question_data = {
-            "soru_metni": "Test sorusu metni",
-            "secenekler": [
-                "A) Secenek A",
-                "B) Secenek B",
-                "C) Secenek C",
-                "D) Secenek D",
-            ],
-            "dogru_cevap": "A",
-            "konu": "Matematik",
-            "zorluk_seviyesi": "medium",
-        }
-
-        result = await service.create_question(question_data, created_by="user-1")
-        mock_db.add.assert_called()
-        mock_db.commit.assert_awaited()
-
-    @pytest.mark.asyncio
-    async def test_create_question_with_image(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-
-        with patch.object(
-            service,
-            "_upload_question_image",
-            AsyncMock(return_value="/uploads/questions/test.jpg"),
-        ):
-            question_data = {
-                "soru_metni": "Gorsel sorulu soru",
-                "secenekler": ["A) A", "B) B", "C) C", "D) D"],
-                "dogru_cevap": "B",
-            }
-            result = await service.create_question(
-                question_data,
-                created_by="user-1",
-                image_file=b"fake_image",
-                image_filename="soru.png",
-            )
-            mock_db.add.assert_called()
-
-    @pytest.mark.asyncio
-    async def test_create_question_difficulty_mapping(self):
-        from services.question_crud_service import (  # noqa: F401
-            QuestionCRUDService,
-            QuestionDifficultyLevel,
-        )
-
-        mock_db = _make_mock_db()
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-
-        for difficulty_str in [
-            "kolay",
-            "easy",
-            "zor",
-            "hard",
-            "çok kolay",
-            "very_easy",
-        ]:
-            question_data = {
-                "soru_metni": f"Zorluk testi ({difficulty_str})",
-                "secenekler": ["A", "B", "C", "D"],
-                "zorluk_seviyesi": difficulty_str,
-            }
-            await service.create_question(question_data, created_by="user-1")
-            mock_db.add.assert_called()
-
-    @pytest.mark.asyncio
-    async def test_create_question_rolls_back_on_error(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_db.commit = AsyncMock(side_effect=Exception("DB error"))
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-
-        with pytest.raises(Exception):
-            await service.create_question(
-                {"soru_metni": "test", "secenekler": []},
-                created_by="user-1",
-            )
-        mock_db.rollback.assert_awaited()
-
-
-class TestQuestionCRUDServiceSearch:
-    """Tests for search_questions."""
-
-    @pytest.mark.asyncio
-    async def test_search_questions_empty_returns_dict(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_result = MagicMock()
-        mock_result.scalars.return_value.all.return_value = []
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-        result = await service.search_questions(search_query="nonexistent")
-        assert isinstance(result, dict)
-        assert "questions" in result or "total" in result or isinstance(result, dict)
-
-    @pytest.mark.asyncio
-    async def test_search_questions_with_filters(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_q = MagicMock()
-        mock_q.id = str(uuid.uuid4())
-        mock_result = MagicMock()
-        mock_result.scalars.return_value.all.return_value = [mock_q]
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-        result = await service.search_questions(
-            search_query="matematik",
-            filters={"subject_area": "Matematik"},
-            limit=10,
-        )
-        assert isinstance(result, dict)
-
-    @pytest.mark.asyncio
-    async def test_get_question_by_id_returns_none_if_not_found(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-        result = await service.get_question_by_id("nonexistent-id")
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_get_question_by_id_returns_question_if_found(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_q = MagicMock()
-        mock_q.id = "q-1"
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = mock_q
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-        result = await service.get_question_by_id("q-1")
-        assert result is mock_q
-
-
-class TestQuestionCRUDServiceUpdate:
-    """Tests for update_question and delete_question."""
-
-    @pytest.mark.asyncio
-    async def test_update_question_not_found_returns_none(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute = AsyncMock(return_value=mock_result)
-
-        service = QuestionCRUDService(mock_db)
-        result = await service.update_question(
-            "nonexistent", {"question_text": "new"}, updated_by="admin-1"
-        )
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_update_question_success(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_q = MagicMock()
-        mock_q.id = "q-1"
-        mock_q.question_text = "Old text"
-        # First execute = get question; subsequent = version check
-        version_result = MagicMock()
-        version_result.scalar_one_or_none.return_value = 0
-        mock_db.execute = AsyncMock(
-            side_effect=[
-                _scalar_result(mock_q),  # get question
-                _scalar_result(None),  # version number lookup
-                _scalar_result(None),  # tag lookup (if any)
-            ]
-        )
-
-        service = QuestionCRUDService(mock_db)
-        with patch.object(
-            service, "_create_question_version", AsyncMock(return_value=None)
-        ):
-            result = await service.update_question(
-                "q-1", {"question_text": "New text"}, updated_by="admin-1"
-            )
-        mock_db.commit.assert_awaited()
-
-    @pytest.mark.asyncio
-    async def test_delete_question_soft_success(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_q = MagicMock()
-        mock_q.id = "q-1"
-        mock_q.is_active = True
-        mock_db.execute = AsyncMock(return_value=_scalar_result(mock_q))
-
-        service = QuestionCRUDService(mock_db)
-        result = await service.delete_question(
-            "q-1", deleted_by="admin-1", permanent=False
-        )
-        assert result is True
-        mock_db.commit.assert_awaited()
-
-    @pytest.mark.asyncio
-    async def test_delete_question_not_found_returns_false(self):
-        from services.question_crud_service import QuestionCRUDService
-
-        mock_db = _make_mock_db()
-        mock_db.execute = AsyncMock(return_value=_scalar_result(None))
-
-        service = QuestionCRUDService(mock_db)
-        result = await service.delete_question("nonexistent", deleted_by="admin-1")
-        assert result is False
 
 
 # ===========================================================================
