@@ -488,6 +488,87 @@ async def test_uc_soru_ekle_201_ve_yavru_alanlari_donuyor(canli_pg, uc_ortami):
     assert veri["readability_score"] is not None
 
 
+async def test_uc_soru_ekle_strangler_devredicisine_bagimli_degil(
+    canli_pg, uc_ortami, monkeypatch
+):
+    """Yanit blogu PARENT devredicisi OLMADAN da calismali.
+
+    NEDEN AYRI BIR TEST: mutasyonla olculdu (M10) — yanit alanlarini
+    `yeni_soru.content.question_text` yerine `yeni_soru.question_text` yapmak
+    yukaridaki testlerin HICBIRINI dusurmuyor. Sebep: `session.refresh(...)`
+    daraltmasindan sonra uc iliski de `__dict__`te YUKLU kaliyor, dolayisiyla
+    strangler devredicisi lazy-load'a DUSMEDEN dogru degeri donduruyor.
+
+    Yani parent->yavru gocunun degeri BUGUN degil, devredici SILINDIGINDE
+    ortaya cikiyor (devredici `models/question_bank.py`de "STRANGLER — gecici"
+    olarak isaretli). Bu test tam o gunu simule eder: devrediciyi kaldirir ve
+    ucun hala 201 dondugunu iddia eder. Parent'tan okuyan bir uc burada
+    `AttributeError` alir, `except Exception` yutar ve HTTP 500 doner.
+
+    S214 dersi geregi: civilenemeyen kod test edilemez agirliktir — bu test onu
+    civiler.
+    """
+    from models.question_bank import QuestionBankItem
+
+    ALANLAR = (
+        "question_text",
+        "exam_type",
+        "subject_area",
+        "difficulty_level",
+        "irt_difficulty",
+        "irt_discrimination",
+        "irt_guessing",
+        "morphology_complexity",
+        "readability_score",
+    )
+
+    # `monkeypatch.delattr` BURADA KULLANILAMAZ (olculdu): pytest onu iceride
+    # `hasattr(target, name)` ile koruyor, ve bu devredici SINIF duzeyinde
+    # `AttributeError` firlattigi icin `hasattr` HER ZAMAN False doner
+    # (`models/question_bank.py` bunu zaten not etmis). Sonuc: `raising=False`
+    # ile cagri SESSIZCE hicbir sey yapmaz ve test vakuma doner.
+    # Dogru arac `vars(cls)` — devrediciyi gercekten gorur.
+    yedek = {
+        a: vars(QuestionBankItem)[a] for a in ALANLAR if a in vars(QuestionBankItem)
+    }
+
+    # KONTROL KOLU: 9 devredicinin 9'u da bulunmali. Bulunmazsa asagidaki
+    # "kaldirdim" iddiasi anlamsizdir.
+    assert len(yedek) == len(
+        ALANLAR
+    ), f"devredici bulunamadi: {sorted(set(ALANLAR) - set(yedek))} -> test vakum"
+
+    istek = uc_ortami.SoruEkleRequest(
+        soru_metni=f"{MARKER}-nostrangler-{uuid.uuid4().hex[:12]} Olcum sorusu?",
+        secenekler=["A) bir", "B) iki", "C) uc", "D) dort", "E) bes"],
+        dogru_cevap="A",
+        sinav_tipi="TYT",
+        konu="Matematik",
+        zorluk_seviyesi="orta",
+    )
+
+    for alan in yedek:
+        delattr(QuestionBankItem, alan)
+    try:
+        # 2. KONTROL KOLU: kaldirma GERCEKTEN etkili mi? (ilk surumde degildi)
+        assert "question_text" not in vars(QuestionBankItem)
+        yanit = await uc_ortami.soru_ekle(
+            request=istek, current_user=_sahte_kullanici(), db=None
+        )
+    finally:
+        # Sinif GLOBAL: geri alim sart, yoksa ayni surecteki sonraki testler
+        # devredicisiz kalir ve sebebi bu dosyada gorunmez.
+        for alan, deger in yedek.items():
+            setattr(QuestionBankItem, alan, deger)
+        assert "question_text" in vars(QuestionBankItem), "devredici GERI ALINAMADI"
+
+    govde = json.loads(bytes(yanit.body))
+    assert yanit.status_code == 201, govde
+    assert govde["data"]["question_text"].startswith(f"{MARKER}-nostrangler-")
+    assert govde["data"]["exam_type"] == "TYT"
+    assert govde["data"]["difficulty"] == "MEDIUM"
+
+
 async def test_uc_toplu_soru_ekle_201_ve_ekliyor(canli_pg, uc_ortami):
     """`POST /toplu-soru-ekle` gercekten eklemeli ve 201 donmeli."""
     sorular = [_soru_verisi("uc2") for _ in range(2)]
