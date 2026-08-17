@@ -996,3 +996,38 @@ Kullanıcı onayıyla `SKIP=reward-hacking-check git push` ile geçildi; **sır 
 `except Exception:` için kalibre edilmeli VEYA test dosyaları için ayrı severity profili
 almalı. Aksi halde bu dosyalara dokunan her commit aynı SKIP'i taşıyacak.
 Kardeş bilinen kusur: `kiro2-api-import-smoke` (S211'den beri açık).
+
+---
+
+## Session Handoff — 2026-08-17 (S228 kapanış)
+**Branch:** feature/self-evolution-optimization (origin ile EŞİT)
+**Son commit:** `a3cfc15fb` docs: S228 push kaydi — reward-hacking SKIP olculdu (20/20 onceden var), yeni acik is (#485)
+**Uncommitted:** takipli değişiklik **YOK** (temiz). 88 takipsiz dosya var — hepsi S205-S210 Gemini devrinden kalma, bu oturumun ürünü DEĞİL.
+
+### Yapilanlar
+- `backend/services/question_crud_service.py` (1283 satır) + `backend/services/README_QUESTION_CRUD.md` + `backend/tests/fast/test_question_crud_service_split.py` **silindi** (`764b225b4`). Gerekçe satır satır ölçüldü: üretimde 0 tüketici, "kaybolur" denen 9 işlevin 7'si canlı DB'de zaten çalışmıyor, saklamanın bedeli 3 aktif açık (beyaz-listesiz `setattr`, kapısız `permanent=True`, taksonomiye kontrolsüz yazan `_get_or_create_topic`).
+- Çok-servisli 3 eski test dosyasından yalnız QCS blokları çıkarıldı: `backend/tests/unit/test_api_coverage_final.py` 672-988, `backend/tests/unit/test_services_batch2.py` 1188-1588, `backend/tests/fast/test_api_coverage_batch14.py` 1551-1708.
+- `.claude/rules/audit-methodology.md` — yeni bölüm "…AMA `pre-commit run` SALT-OKUNUR BİR ÖLÇÜM ARACI DA DEĞİL (S228)" + bilinen-hatalar tablosuna 3 satır (`63cfed884`).
+- `.claude/lessons/ders_kaydi.yaml` 104 → **107** (`L-s228-precommit-run-yazma-yapar`, `L-s228-autofix-kapsam-disi-supurmeyi-stageler`, `L-s228-detect-secrets-yeni-bulgu-yeni-degil`).
+- Aynı dosyada 2 ölü ankraj onarıldı: `L-s212-kartezyen-yapisal` → `backend/tests/fast/test_duel_api_split.py:44`, `L-s212-split-eager-load` → `backend/tests/fast/test_osym_exam_engine_split.py:78`.
+
+### Fail Eden Testler
+- `backend/tests/unit/test_api_coverage_final.py` + `test_services_batch2.py` + `tests/fast/test_api_coverage_batch14.py`: **165 passed / 8 skipped / 88 ERROR**.
+  88 error **ÖNCEDEN VARDI ve değişmedi** (silme öncesi de 88) — kök neden httpx/starlette `app` kwarg uyumsuzluğu, bu işle ilgisiz.
+- `backend/tests/unit/test_ders_kaydi.py` 9/9 PASS · `test_duel_api_split.py`+`test_osym_exam_engine_split.py` 32/32 PASS.
+
+### Engelleyiciler
+- `reward-hacking-check` pre-push bekçisi `tests/fast/test_api_coverage_batch14.py`'yi bloklar (20 🔴, hepsi `except Exception:`). **20/20'si HEAD~2'de birebir mevcut, 0'ı bu commit'in.** Şimdilik `SKIP=reward-hacking-check` (kullanıcı onaylı, sır bekçisi aktif kaldı).
+- `kiro2-api-import-smoke` S211'den beri kırık (WinError 127) — kontrol kolu dokunulmamış `api/health.py`'de de düşüyor.
+
+### Sonraki Adimlar (maks 5)
+1. `backend/api/admin.py:252` ve `:311` + `backend/api/osym_questions_api.py:155` — split'te silinen kolonlara ham SQL, uçlar **koşulsuz çöküyor** (P0).
+2. `backend/models/question_bank.py` `is_active` ORM `default=False` DURUYOR; `server_default="true"`ı eziyor. Diğer yazma yolları ölçülmedi — yeni soru görünmez olabilir.
+3. Facet'li arama: 9 filtre + facet yalnız silinen serviste vardı. `soru_bankasi_service.sorular_listele` üzerine temiz sürüm (admin yüzeyi ile birlikte).
+4. S224 devri: `backend/repositories/question_repository.py` silmesi hâlâ commit'siz + `_scripts/test_database_repository.py:15` temizliği.
+5. `reward-hacking-check`i test dosyaları için kalibre et (ayrı severity profili) — aksi halde bu dosyalara dokunan her commit SKIP taşır.
+
+### Kararlar (gelecek session tekrar tartismasin)
+- **Servis silindi, "belki lazım olur" diye tutulmadı:** 9 yetenekten 7'sinin canlı DB'de çalışmadığı ölçüldü; tek gerçek kayıp facet'li arama ve o da kusurluydu (kapısız facet → aynı yanıtta facet 36.967 vs total 27.073).
+- **Silme deletion-only tutuldu:** `ruff-format`ın dokunulmamış koda uyguladığı +21/−4 süpürme `git checkout --` ile (index'ten) geri alındı; 42 ruff + 3 detect-secrets kalemi dokunulmamış koda ait ve HEAD'de de vardı → sweep yerine ölçülmüş SKIP.
+- **`pre-commit run` artık kontrol kolu olarak "salt-okunur" sayılmıyor:** `--fix` veriyor; `stash push` → `run` → `pop` dizisi bu yüzden düştü. Yordam kural dosyasında.
