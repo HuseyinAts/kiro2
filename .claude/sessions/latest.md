@@ -1084,7 +1084,25 @@ Kardeş bilinen kusur: `kiro2-api-import-smoke` (S211'den beri açık).
 > Yöntem notu: CLAUDE.md **Mega Audit Lock** gereği yeni mega audit AÇILMADI.
 > Aşağıdakiler tek turda alınmış **canlı ölçümlerdir**; her satır komutla üretildi.
 
-### 🔴 EN BÜYÜK AÇIK SORU — API yüzeyi 1.224 değil **326**
+### ⛔ BU BÖLÜM YANLIŞTI — DÜZELTME AŞAĞIDA (18 Ağu, aynı gün)
+> Aşağıdaki teşhis (**"106 modül git geçmişinde hiç var olmamış / yüzeyin %73'ü kayıp"**)
+> **ÇÜRÜTÜLDÜ.** Hatayı Gemini oturumu yakaladı, sonra bağımsız olarak ölçtüm.
+> **Gerçek:** `MAPPING=150 · DOSYA_YOK=0 · IMPORT_OK=150 · ROUTER_VAR=150 · HATA=0 ·
+> TOPLAM_ROUTE=1206`. Kod tabanında kayıp YOK; MEMORY'nin 1.224 rakamı **doğruydu**.
+> **Kök neden:** `kiro2-backend` imajı **6 Ağu** tarihli ve ~106 modül dosyası imajda
+> fiziksel olarak YOK. Kanıt: `api.rag`/`api.agents` container'da VAR→IMPORT_OK;
+> `api.analytics`/`api.diary_api`/`api.duel_api`/`api.curator`/`api.kvkk_consent_api`
+> → dosya YOK → ModuleNotFoundError. Ağır-bağımlılık hipotezi de çürük (`api.rag` OK).
+> **Benim hatamın mekanizması (3 ayrı alet arızası, hepsi aynı sınıf):**
+> (a) `git log --diff-filter=A` yanlış pathspec (`backend/api/...` iken cwd zaten `backend/`),
+> (b) `ls backend/api/...` aynı cwd hatası, (c) probe çıktısı Python `/tmp`=`C:	mp` vs
+> bash `/tmp`=MSYS temp ayrımı yüzünden okunamadı ve "sonuç yok" sanıldı.
+> **Ders:** `L-s229-cd-kalici-sifir-collected` + `verification.md`'deki `/tmp` iki-isim-alanı
+> dersi ZATEN yazılıydı; yine düşüldü. Bu bölüm tarihsel kayıt olarak bırakıldı.
+
+<details><summary>Çürütülen özgün metin (açmak için tıkla)</summary>
+
+### ~~🔴 EN BÜYÜK AÇIK SORU — API yüzeyi 1.224 değil 326~~
 | Ölçüm | Değer |
 |---|---|
 | Canlı `/openapi.json` | **326 yol · 349 operasyon · 212 şema** |
@@ -1103,6 +1121,8 @@ da kaynaklanmıyor.
 **Karar gerektiren:** ya platform API yüzeyinin ~%73'ünü kaybetti, ya da MEMORY'deki
 1.224 rakamı hiç doğru değildi (farklı yöntemle sayılmış olabilir). İkisi de ciddi;
 **bu sorunun cevaplanması sıradaki en yüksek öncelikli iş.**
+
+</details>
 
 ### 🟢 Sağlam olanlar (ölçüldü)
 - **Veri**: `question_bank` 36.967 (hepsi `is_active`), öğrenci kapısı `mv_safe_for_beta` **27.073**, `pending` 9.894. Yetim satır yok.
