@@ -40,7 +40,11 @@ bu zenginliğin üzerine sağlam ve güvenilir bir temel inşa etmek. O tamamlan
 ## Session Handoff — 2026-08-17 (S223)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `5b709a802` test(osym): golden'i TURKCE + zorluk dallarina genislet (#485)
-**Push:** ⏳ **EDİLMEDİ** — 7 commit bekliyor (`173cf62da..` + bu turun checkpoint'i)
+**Push:** ✅ `173cf62da..310cd39d5` — **9 commit** (S222'nin 4'ü + S223'ün 5'i).
+push-secret-guard (962 satır, sır yok) + reward-hacking-check PASS. Son 4 uyarı test
+dosyasındaki "magic count" (`count=3`/`count=5`), bloklamıyor.
+⚠️ Bu satır ilk yazıldığında **"7 commit" diyordu; yanlıştı** (gerçek 9). Sayı bir ölçümdür —
+`git log --oneline origin/<dal>..HEAD | wc -l` ile üretilmeli, elle sayılmamalı.
 **Uncommitted:** bu işin dosyaları temiz. ~3387 kirli dosya = S210 Gemini devri, ait değil.
 
 ### Yapılanlar — Plan **Task 7 KAPANDI**; `osym_exam_engine.py` `SINIF=42 → 0`
@@ -129,7 +133,7 @@ hedefine değil. `ENTITY=5` de beklenen (2'si eager-load'lu, 3'ü N/A).
 ## Session Handoff — 2026-08-17 (S222)
 **Branch:** feature/self-evolution-optimization
 **Son commit:** `07eb98d8a` test(osym): _analyze_performance UPDATE WHERE kapsamini civile (#485)
-**Push:** ⏳ **EDİLMEDİ** — 4 commit bekliyor (`173cf62da..` + bu turun checkpoint'i)
+**Push:** ✅ S223 ile birlikte gönderildi (`173cf62da..310cd39d5`).
 **Uncommitted:** bu işin dosyaları temiz. ~3387 kirli dosya = S210 Gemini devri, bu session'a ait değil.
 
 ### Yapılanlar — Plan **Task 6 KAPANDI** (3 commit, motor 1 kez dokunuldu)
