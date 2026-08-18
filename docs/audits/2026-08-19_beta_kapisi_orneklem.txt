@@ -1,0 +1,383 @@
+# KONTROL KOLU: mv_safe_for_beta = 27073 satir
+
+==============================================================================
+### DERS: MATEMATIK  (8 soru)
+==============================================================================
+
+--- [MATEMATIK-1] id=5949f37a-bd40-405a-81bc-224f37b50c2d  kitap=None  uzunluk=168
+SORU: Lokomotifin hızı h km/s'dir. Bu lokomotifin 1000 kg'lık yükü 10 km uzunluğunda 100 cm yükseklikteki bir tüne taşımak için 100 s sürenin en az kaç saniyesi gerekecektir?
+  A) 100
+  B) 1000
+  C) 10000
+  D) 100000
+  E) 1000000
+DOGRU: B
+
+--- [MATEMATIK-2] id=a4439836-ba91-48da-a51a-9243e6b26b8a  kitap=None  uzunluk=149
+SORU: Aşağıdaki şekilde verilen dikdörtgen ABCD'nin dik açıları A, B, C, D olsun. Aşağıdaki ifadelerden hangisi dikdörtgenin alanı için doğru bir ifadedir?
+  A) AB + CD
+  B) AB × CD
+  C) AB + BC
+  D) AB × BC
+  E) AB + AD
+DOGRU: A
+
+--- [MATEMATIK-3] id=4236b5ea-18ac-4d97-8e1e-8e0d0be9a5ad  kitap=None  uzunluk=20
+SORU: Parabol (Kısmi Özet)
+  A) Parabol
+  B) Kesir
+  C) Karekök
+  D) Alt indis
+  E) Toplam
+DOGRU: A
+
+--- [MATEMATIK-4] id=dad1e5ef-7044-4fbe-b5e8-75eb16673b6d  kitap=None  uzunluk=37
+SORU: aşağıdaki gibi, eşitkenler hangileri?
+  A) x + y = 0
+  B) x - y = 0
+  C) x + y = 1
+  D) x - y = 1
+  E) x + y = 2
+DOGRU: D
+
+--- [MATEMATIK-5] id=f59f004f-829a-4f93-a078-567ca2b1a9a2  kitap=None  uzunluk=49
+SORU: 10 karekök, 2 karekök top karekökten biri kaçtır?
+  A) 10
+  B) 2
+  C) 1
+  D) 0
+  E) 100
+DOGRU: B
+
+--- [MATEMATIK-6] id=093a0af8-bcb3-4d52-86e2-5cc14409ce6c  kitap=None  uzunluk=129
+SORU: 1. Aşağıdaki tabloda bazı sayıların kareköklerinin değerleri verilmiştir. Bu tabloda verilen herhangi bir sayıın karekökü kaçtır?
+  A) 2
+  B) 3
+  C) 4
+  D) 5
+  E) 6
+DOGRU: E
+
+--- [MATEMATIK-7] id=4312af8e-03a7-43ea-99b1-312736162c05  kitap=None  uzunluk=62
+SORU: f : R → R olmak üzere, f(x) = x^2 + 2x + 1 ise, f(x) + f(-x) =
+  A) 2x^2 + 2
+  B) 2x^2
+  C) 2x^2 + 4x + 2
+  D) 2x^2 + 4x
+  E) 2x^2 + 4x + 4
+DOGRU: D
+
+--- [MATEMATIK-8] id=f01fa6d5-9be8-4167-bd62-4f457c447fdb  kitap=None  uzunluk=214
+SORU: Aşağıdaki tabloda iki tane asitin pH değerleri verilmiştir. Ayır yayağı ameliyatı her tane asitte 1 cm³ kadar, ayır yayağı çözeltisi ise her tane asitte 10 cm³ kadar eklenmiştir. Hangi asitin pH değeri değişmiştir?
+  A) Asit 1
+  B) Asit 2
+  C) Her ikisi de
+  D) Her ikisi de değil
+  E) Verilen bilgi yeterli değildir
+DOGRU: D
+
+==============================================================================
+### DERS: TURKCE  (8 soru)
+==============================================================================
+
+--- [TURKCE-1] id=83b46c58-c515-465e-ab79-1cf9715a2a44  kitap=None  uzunluk=239
+SORU: Yazılı sınavlamadan sonra, sınavın sonuna kadar: A) Yüzde hesaplaması tercih edilir B) Kesir hesaplaması tercih edilir C) Dört işlem hesaplaması tercih edilir D) İkinci dereceden denklemler tercih edilir E) Toplam hesaplaması tercih edilir
+  A) Yüzde hesaplaması tercih edilirir
+  B) Kesir hesaplaması tercih edilirir
+  C) Dört işlem hesaplaması tercih edilir
+  D) İkinci dereceden denklemler tercih edilir
+  E) Toplam hesaplaması tercih edilir
+DOGRU: A
+
+--- [TURKCE-2] id=de895c8d-1457-402e-88f1-6a2a8f8f5809  kitap=None  uzunluk=191
+SORU: Sarıya renkli cimri klasik şapka giymiş bir genç adam portresi. Şapka, cimri, gözlük, koyu renkli ceket ve koyu renkli pantolon giymiş. Arka planda bir kare şeklinde bir pencere ve bir duvar.
+  A) Klasik şapka giymiş bir genç adam portresi
+  B) Klasik şapka giymiş bir yaşlı adam portresi
+  C) Klasik şapka giymiş bir çocuk portresi
+  D) Klasik şapka giymiş bir kadın portresi
+  E) Klasik şapka giymiş bir erkek portresi
+DOGRU: B
+
+--- [TURKCE-3] id=30f8127a-6aa9-4096-8356-7efaf113bbe9  kitap=None  uzunluk=289
+SORU: 1. Sınıf öğrencileri porselen gümüş çöpçülerini bir araya getiriyor. Bu çöplerin %10'unda plastik parçalar bulunuyor. Bu durumda, bir sınıfın %20'si plastik parçaları içeren çöpleri topluyor. Bu durumda, toplulukta toplanan çöplerin %10'unda plastik parçaları içeren çöplerin oranı kaçtır?
+  A) 10%
+  B) 20%
+  C) 30%
+  D) 40%
+  E) 50%
+DOGRU: A
+
+--- [TURKCE-4] id=ba232e8b-72e2-4654-b6da-c364d90ca7c1  kitap=None  uzunluk=58
+SORU: Aşağıdaki cümlelerden ilkiyle ilgili olarak hangisi doğru?
+  A) Açıkça bir hata içerir.
+  B) Açıkça bir hata içermez.
+  C) Açıkça bir hata içerir ve aynı zamanda bir hata içerir.
+  D) Açıkça bir hata içerir ve aynı zamanda bir hata içermez.
+  E) Açıkça bir hata içermez ve aynı zamanda bir hata içerir.
+DOGRU: B
+
+--- [TURKCE-5] id=e34085d1-8612-475b-acc9-3e1bd44d5ac2  kitap=None  uzunluk=271
+SORU: 4. Tıbbi gazetelerde pazarlık için 10-15 yaşlar arası çocuklara yönelik reklamlar yapılmaz. Çocukların bu reklamlara maruz kalması, çocukların psikolojik ve fiziksel gelişimlerini olumsuz etkileyebilir. Bu nedenle, çocuklara yönelik reklamların yapılmaması gerekmektedir.
+  A) Reklamlar çocuklara zarar vermez
+  B) Reklamlar çocuklara zarar verir
+  C) Reklamlar çocuklara zarar vermez, çocuklara yarar sağlar
+  D) Reklamlar çocuklara zarar vermez, çocukların gelişimini olumsuz etkiler
+  E) Reklamlar çocuklara zarar verir, çocukların gelişimini olumsuz etkiler
+DOGRU: D
+
+--- [TURKCE-6] id=b69a761a-dd4d-4f73-96bb-86ef508d564e  kitap=None  uzunluk=60
+SORU: Paragrafta verilen bilgileri kullanarak doğru yanıt seçınız.
+  A) Telekomünikasyon, protokol ve veri girişimleri
+  B) Akıllı telefonlar, internet, veri girişimleri ve protokoller
+  C) Akıllı telefonlar, internet ve veri girişimleri
+  D) Akıllı telefonlar, internet ve protokoller
+  E) Akıllı telefonlar, veri girişimleri ve protokoller
+DOGRU: B
+
+--- [TURKCE-7] id=4e00b6cc-a85c-4315-b74d-23c124080dfe  kitap=None  uzunluk=220
+SORU: 13. Dörtçiftte bir nesnede dört farklı boyutun var. Bu boyutların uzunlukları sırasıyla 12 cm, 15 cm, 18 cm ve 20 cm'dir. Bu boyutların en küçük iki boyutunun toplamı en büyük iki boyutunun toplamından kaç cm daha azdır?
+  A) 2
+  B) 3
+  C) 4
+  D) 5
+  E) 6
+DOGRU: E
+
+--- [TURKCE-8] id=3346925f-2d5f-4351-8d53-a075bee1210c  kitap=None  uzunluk=372
+SORU: RİALİTİ ŞOWLARININ DEPREMLEŞİMLİ TAKİMLARINA 1. İstifa etmeleri nedeniyle takımın performansı düşer. 2. Takımın performansı düşerse depremleşmiş oyuncular istifa etmez. 3. Takımın performansı düşerse depremleşmiş oyuncular istifa eder. 4. Takımın performansı düşmezse depremleşmiş oyuncular istifa etmez. 5. Takımın performansı düşmezse depremleşmiş oyuncular istifa eder.
+  A) 1 ve 2
+  B) 1 ve 3
+  C) 2 ve 4
+  D) 3 ve 5
+  E) 4 ve 5
+DOGRU: C
+
+==============================================================================
+### DERS: FIZIK  (8 soru)
+==============================================================================
+
+--- [FIZIK-1] id=452861c1-6874-4aea-86f2-a7d97f717d61  kitap=None  uzunluk=89
+SORU: Dünya'nın 4 farklı kıtanın yüzey alanları (km²) verilmiştir. Bu alanların toplamı kaçtır?
+  A) 148.9
+  B) 148.90
+  C) 148.900
+  D) 148.9000
+  E) 148.90000
+DOGRU: D
+
+--- [FIZIK-2] id=ad144c5f-e259-41ac-9400-c8d139c1154d  kitap=None  uzunluk=155
+SORU: Eksantrik yolu K, L, M olan bir yolu, yuva K çaprazında bir şekilde kesen bir yolu keser. Bu kesimde yolu kesen yuva platosu aşağıdaki hangi objeden geçer?
+  A) Yol
+  B) K
+  C) L
+  D) M
+  E) Yuva
+DOGRU: C
+
+--- [FIZIK-3] id=962b79f8-40cd-4cbc-81ab-ed4381461857  kitap=None  uzunluk=69
+SORU: Bir gazda, sıcaklık arttığında, gazın hacmi ve basıncı nasıl değişir?
+  A) Hacim artar, basıncı da artar
+  B) Hacim azalır, basıncı da azalır
+  C) Hacim artar, basıncı da azalır
+  D) Hacim azalır, basıncı da artar
+  E) Hacim ve basıncı sabit kalmıştır
+DOGRU: B
+
+--- [FIZIK-4] id=2ce3fbb0-8601-4459-b89a-9f1815f27a36  kitap=None  uzunluk=122
+SORU: Dışarıdaki yazılı sistem referanslarına göre, AYT ve Folk matematik sorularında hangi konular daha sık karşılaşılmaktadır?
+  A) A. Diferansiyel denklemler
+  B) B. Logaritma ve üs fonksiyonları
+  C) C. Diferansiyel denklemler
+  D) D. Logaritma ve üs fonksiyonları
+  E) E. Diferansiyel denklemler
+DOGRU: C
+
+--- [FIZIK-5] id=af8effa1-585e-44b5-8b51-aafa647208fb  kitap=None  uzunluk=123
+SORU: MANİYETİZMA  MELER ÖĞRENİCİGİZ?  MANİYETİK ALAN MANİYETİK KUVVET ELEKTROMANİYETİK İNDÜKSİYON ALTERNATİF AKIM  TRANSFORMATÖR
+  A) MANİYETİK ALAN
+  B) MANİYETİK KUVVET
+  C) ELEKTROMANİYETİK İNDÜKSİYON
+  D) ALTERNATİF AKIM
+  E) TRANSFORMATÖR
+DOGRU: D
+
+--- [FIZIK-6] id=7ad19a3b-aa6a-4f9a-b96a-426daa101208  kitap=None  uzunluk=155
+SORU: 13. Präzesente vla. oğur for evet çöse servosu nesneler elektronik çöpün çöpüne atar. Bu durumda, çöpün çöpüne atılması kaç kat daha fazla çöp atılmasıdır?
+  A) 1 kat daha fazla
+  B) 2 kat daha fazla
+  C) 3 kat daha fazla
+  D) 4 kat daha fazla
+  E) 5 kat daha fazla
+DOGRU: D
+
+--- [FIZIK-7] id=9ccd73c4-6d6d-4849-ab34-3ce0c25506f6  kitap=None  uzunluk=175
+SORU: Bir şeride seriye bağlı 3 adet dirençin toplamı 100 ohm'dır. Bu şeride paralel bağlı 2 adet dirençin toplamı 50 ohmdır. Bu şeride paralel bağlı dirençlerin toplamı kaç ohmdır?
+  A) 150
+  B) 100
+  C) 50
+  D) 25
+  E) 20
+DOGRU: E
+
+--- [FIZIK-8] id=c273bfcf-0503-4038-a24d-3f22789ce087  kitap=None  uzunluk=204
+SORU: Bir üçgenin üçgeni çevrilmiş paralelkenarın yüksekliği ve taban uzunluğu veriliyor. Bu üçgenin yüksekliği ve taban uzunluğu birbirine eşit olduğuna göre, bu üçgenin çevrilmiş paralelkenar ait alan kaçtır?
+  A) 20
+  B) 25
+  C) 30
+  D) 35
+  E) 40
+DOGRU: C
+
+==============================================================================
+### DERS: EDEBIYAT  (8 soru)
+==============================================================================
+
+--- [EDEBIYAT-1] id=8ee979f4-31b8-4cd4-a66f-198e33271b74  kitap=None  uzunluk=68
+SORU: 7. Aşağıdaki cümlelerden hangisinin verimi doğru bir cümle değildir?
+  A) A) Aşır bir şekilde
+  B) B) Aşırı bir şekilde
+  C) C) Aşırı bir şekilde
+  D) D) Aşırı bir şekilde
+  E) E) Aşırı bir şekilde
+DOGRU: E
+
+--- [EDEBIYAT-2] id=6518011c-224b-421e-8979-b633ba1dd3a2  kitap=None  uzunluk=195
+SORU: 1. Deneme, öğrencilerin matematik bilgilerini ölçmek için yapılan bir testdir. Bu testin sonucu öğrencilerin matematik bilgilerinin ne kadar iyi olduğunu gösterir. Bu prosedür ne zaman uygulanır?
+  A) A) Öğrencilerin matematik bilgilerini ölçmek için
+  B) B) Öğrencilerin matematik bilgilerini ölçmek için
+  C) C) Öğrencilerin matematik bilgilerini ölçmek için
+  D) D) Öğrencilerin matematik bilgilerini ölçmek için
+  E) E) Öğrencilerin matematik bilgilerini ölçmek için
+DOGRU: B
+
+--- [EDEBIYAT-3] id=daeded37-ad47-40b1-bc4b-167b39f8e931  kitap=None  uzunluk=77
+SORU: Aşağıdaki cümlelerden hangisinin cümle içindeki hatalarksiz bir cümle olamaz?
+  A) A. Sembolik ifadelerdeki değişkenlerin değerleri belirtilmezse
+  B) B. Sembolik ifadelerdeki değişkenlerin değerleri belirtilmezse
+  C) C. Bir cinsel görsel data bir neye olmazsa
+  D) D. Bir cinsel görsel data bir neye olmazsa
+  E) E. Bir cinsel görsel data bir neye olmazsa
+DOGRU: C
+
+--- [EDEBIYAT-4] id=57b3a528-0cce-4766-b8fe-e822fb15d41c  kitap=None  uzunluk=224
+SORU: Bir dörtgenin bir köşesinden diğer köşesine doğru bir çizgi çizildiğinde, bu çizgi dörtgeni iki eşit üçgen haline getirir. Bu durumda dört genin köşelerinin koordinatları veriliyor. Hangi koordinatlar için bu koşul sağlanır?
+  A) x = 0, y = 0
+  B) x = 0, y = 1
+  C) x = 1, y = 0
+  D) x = 1, y = 1
+  E) x = 2, y = 0
+DOGRU: D
+
+--- [EDEBIYAT-5] id=221774e7-8417-4ce9-a294-59f5d698a7bc  kitap=None  uzunluk=61
+SORU: Aşağıdaki cümlelerin hangisinde sansür en çok kullanılmıştır?
+  A) A. Sansür metinlerinde sansür en çok kayıp yerlerin tamamı
+  B) B. Sansür metinlerinde sansür en çok kayıp yerlerin bir kısmı
+  C) C. Sansür metinlerinde sansür en çok kayıp yerlerin bir kısmı
+  D) D. Sansür metinlerinde sansür en çok kayıp yerlerin bir kısmı
+  E) E. Sansür metinlerinde sansür en çok kayıp yerlerin bir kısmı
+DOGRU: C
+
+--- [EDEBIYAT-6] id=f024fce4-2a9c-48e5-9cf4-087a9e726dc9  kitap=None  uzunluk=174
+SORU: 1. Sınavda Tıpkı Aşağıdaki Şekilde Dikdörtgenin Dört Köşesindeki Noktaları Birbirine Bağlayan Uzunlukları Bulmak İstiyorsanız, Hangi Şekildeki Uzunlukları Toplamı En Az Olur?
+  A) Şekil A
+  B) Şekil B
+  C) Şekil C
+  D) Şekil D
+  E) Şekil E
+DOGRU: E
+
+--- [EDEBIYAT-7] id=07480b8a-91f5-49c6-a0a3-4ef9ed4784c2  kitap=None  uzunluk=143
+SORU: Bu soru 2018 TYT sınavından libretanı. Her yıl bir soru tipinde sorular verilmektedir. Öğrencilerin bu soru tipine alışması için 2020'de geldi.
+  A) 2018
+  B) 2019
+  C) 2020
+  D) 2021
+  E) 2022
+DOGRU: C
+
+--- [EDEBIYAT-8] id=1e9a9462-5e5a-42cc-bbd8-964ce033055c  kitap=None  uzunluk=202
+SORU: 1. Bir öğrencinin, aynı dersi iki farklı öğretmen tarafından verildiği iki dersi bir arada değerlendirmesi gerekiyor. Bu öğrencinin iki dersi bir arada değerlendirmesi için hangi yöntem kullanılmalıdır?
+  A) Her dersin notunu toplayarak ortalamasını bulmak
+  B) Her dersin notunu toplayarak toplamını bulmak
+  C) Her dersin notunu toplayarak toplamını ve bu toplamı ders sayısına bölmek
+  D) Her dersin notunu toplayarak toplamını ve bu toplamı ders sayısına bölmek ve bu sonucu ders sayısına bölmek
+  E) Her dersin notunu toplayarak toplamını ve bu toplamı ders sayısına bölmek ve bu sonucu ders sayısına bölmek ve bu sonucu ders sayısına bölmek
+DOGRU: E
+
+==============================================================================
+### DERS: GEOMETRI  (8 soru)
+==============================================================================
+
+--- [GEOMETRI-1] id=8ebdaa00-5376-4756-b7e0-837e9d295eac  kitap=None  uzunluk=90
+SORU: Bir kutu, diğer kutudan daha uzun bir kenarı vardır. Bu kenarı kaçı cm daha uzun olabilir?
+  A) 1 cm
+  B) 2 cm
+  C) 3 cm
+  D) 4 cm
+  E) 5 cm
+DOGRU: B
+
+--- [GEOMETRI-2] id=caef5dd6-954d-43b4-8dce-817b70a1b9f4  kitap=None  uzunluk=160
+SORU: Bir dairede, merkez A'dır. A noktasında bir pencerenin açısı 90° ve bu pencerenin açısı 60° olduğuna göre, A noktasında yer alan pencerenin açısı kaç derecedir?
+  A) 20°
+  B) 30°
+  C) 40°
+  D) 50°
+  E) 60°
+DOGRU: A
+
+--- [GEOMETRI-3] id=8ebc37c4-778e-4bd9-a234-0452eb5cb285  kitap=None  uzunluk=51
+SORU: Bir gölün, suyunun yüzeyinin yüksekliği kaç cm'dir?
+  A) 10
+  B) 15
+  C) 20
+  D) 25
+  E) 30
+DOGRU: B
+
+--- [GEOMETRI-4] id=7a29f53f-6d5d-4f8a-8a46-26c34b9f02d1  kitap=None  uzunluk=146
+SORU: Şekilde verilen dikdörtgenin çevresi 24 cm'dir. Bu dikdörtgenin bir kenarının uzunluğu 4 cm ise, dikdörtgenin diğer kenarının uzunluğu kaç cm'dir?
+  A) 4 cm
+  B) 5 cm
+  C) 6 cm
+  D) 7 cm
+  E) 8 cm
+DOGRU: D
+
+--- [GEOMETRI-5] id=c835adfc-fd2f-4b17-b2f9-4b391762297f  kitap=None  uzunluk=171
+SORU: Verilen gibi, ABC üçgeni dik üçgendir. ABD üçgeni dik üçgendir. AB = 10 cm, ABD açısının ölçüsü 360° - 90° - 36° = 135° dir. Verilen göre, ABD üçgeninin alanı kaç cm² dir?
+  A) 100 cm²
+  B) 50 cm²
+  C) 25 cm²
+  D) 10 cm²
+  E) 5 cm²
+DOGRU: C
+
+--- [GEOMETRI-6] id=f3e112d5-4879-425e-915c-9b25154a8960  kitap=None  uzunluk=136
+SORU: Analitik düzlemde denklem x^2 + y^2 - 4x - 2y + 5 = 0 verilmiştir. Denklemi normal koordinatlar koordinat sisteminde nasıl yazılmalıdır?
+  A) x^2 + y^2 - 4x - 2y + 5 = 0
+  B) x^2 + y^2 + 4x + 2y + 5 = 0
+  C) x^2 + y^2 - 4x + 2y + 5 = 0
+  D) x^2 + y^2 + 4x - 2y + 5 = 0
+  E) x^2 + y^2 + 4x + 2y - 5 = 0
+DOGRU: E
+
+--- [GEOMETRI-7] id=980b42d7-2a69-4703-a248-e1295d94ce65  kitap=None  uzunluk=142
+SORU: ABC dik üçgeninde A, B, C köşeleri sırasıyla 30°, 60°, 90° açıları oluşturuyor. ABC üçgeninin iç açılarının ölçülerinin toplamı kaç derecedir?
+  A) 180°
+  B) 270°
+  C) 360°
+  D) 450°
+  E) 540°
+DOGRU: C
+
+--- [GEOMETRI-8] id=904179e7-31d0-4e65-b977-b132b6fa6f44  kitap=None  uzunluk=130
+SORU: ABC üçgenünde verilen göre, A = 30° ve a = 20 cm verilmiştir. Bu verilere göre, A açısının karşısındaki kenar uzunluğu kaç cm'dir?
+  A) 10 cm
+  B) 15 cm
+  C) 20 cm
+  D) 25 cm
+  E) 30 cm
+DOGRU: E
+
+# TOPLAM ORNEKLEM: 40
