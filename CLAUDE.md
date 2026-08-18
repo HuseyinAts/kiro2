@@ -95,7 +95,10 @@ Bu kurallar canlı sistemden defalarca doğrulandı. İhlal edilirse veri bozulu
   2. `docker cp [dosya] kiro2-backend:/app/[yol]`
   3. `docker exec kiro2-backend find /app/[dizin] -name "*.pyc" -delete`
   4. `docker restart kiro2-backend`
-  5. `Start-Sleep 22`
+  5. `Start-Sleep 90` — **22 DEĞİL.** 18 Ağu 2026'da ölçüldü: imaj yenilendikten sonra
+     backend 40 değil **150 router** yüklüyor ve açılış **~60-85 sn** sürüyor. 22 sn'de
+     `curl` boş yanıt (`000`) döner ve "backend çöktü" yanlış teşhisi üretilir.
+     Compose healthcheck `start_period: 60s` de sınırda.
   6. Health check
 - **Env değişkeni değişikliği:** `docker compose up -d --no-deps backend` (restart yetmez).
 - **Kalıcı değişiklik için:** `docker compose build backend` + `up -d --no-deps backend`.
@@ -117,7 +120,7 @@ KIRO2'de Claude **otonom yürütücü değildir**. Pattern:
 
 Onaysız `bash`, `docker exec`, `psql` çalıştırma. Her bulgu **gerçek çıktıyla** desteklenmeli. Tek istisna: salt-okunur keşif (dosya görüntüleme).
 
-**Bu kurallar işe yarıyor demektir:** diff'lerde gereksiz değişiklik azaldıysa, hatalı tabloya yazan kod commit'e girmediyse, açıklayıcı sorular **uygulamadan önce** geliyorsa ve `Start-Sleep 22` atlanmadıysa.
+**Bu kurallar işe yarıyor demektir:** diff'lerde gereksiz değişiklik azaldıysa, hatalı tabloya yazan kod commit'e girmediyse, açıklayıcı sorular **uygulamadan önce** geliyorsa ve restart sonrası bekleme (`Start-Sleep 90`) atlanmadıysa.
 
 ---
 
