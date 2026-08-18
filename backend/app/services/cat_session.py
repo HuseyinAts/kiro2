@@ -487,7 +487,26 @@ class CATSessionService:
         )
 
         if not candidates:
-            # Warm-up sorusu yoksa normal havuza geç
+            # Warm-up sorusu yoksa normal havuza geç.
+            #
+            # 19 Agu 2026 (Y4) — BU DAL SESSIZ OLMAMALI. Olculdu: warm_up
+            # havuzunun DORT dalinin DORDU de bu veride bos donuyor
+            #   - Oncelik 1/2/3 -> `is_calib_pool = TRUE` sarti; canli DB'de
+            #     is_calib_pool TRUE=0 / FALSE=36.967
+            #   - Son care -> `irt_difficulty < max(theta-1.0, -0.5)`; tum
+            #     satirlarda irt_difficulty=0.0 oldugu icin theta=0'da
+            #     `0.0 < -0.5` FALSE -> 0 satir
+            # Yani "kolay ilk soru" tasarim niyeti fiilen OLU: ogrencinin ilk
+            # sorusu rastgele bir ZPD maddesi oluyor. Fallback dogru davranis
+            # (oturum yine baslar) ama SESSIZ olmasi kusuru gorunmez kiliyordu.
+            # Bu uyari, prior'lar yazilana kadar (Y4 Adim 3) tek sinyaldir.
+            logger.warning(
+                "CAT warm-up havuzu BOS (ders=%s, theta=%.2f) -> core havuzuna "
+                "dusuluyor; 'kolay ilk soru' garantisi YOK. Beklenen sebep: "
+                "is_calib_pool=FALSE ve irt_difficulty kalibre edilmemis.",
+                subject_id,
+                placement_theta,
+            )
             candidates = await self._get_candidate_questions(
                 subject_id, placement_theta, warm_up=False
             )
