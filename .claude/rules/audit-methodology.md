@@ -951,3 +951,60 @@ yol depo kökünün `pytest.ini`'sine çözülüyordu. `backend/`'den koşunca 8
 ---
 
 *Oluşturulma: 14 May 2026 (Session 156, Faz 0.8). Bir sonraki audit hatasında bu tablo güncellenir.*
+
+---
+
+## GIT BASH MUTLAK YOLU YENİDEN YAZAR — "dosya yok" bir bulgu değil (18 Ağu 2026, S229-B)
+
+`verification.md` "bash `/tmp` = MSYS temp, Python `/tmp` = `C:\tmp`" diyor. Aynı
+mekanizmanın **container/uzak-sistem** ayağı bu turda ısırdı:
+
+    docker exec kiro2-backend grep -n '...' /app/core/advanced_rate_limiter.py
+    -> grep: C:/Program Files/Git/app/core/advanced_rate_limiter.py: No such file
+
+MSYS, `/` ile başlayan argümanı **Windows yoluna çevirdi** ve container'a hiç
+ulaşmayan bir yol gönderdi. Hata mesajı "dosya yok" diyor — `docker cp` başarısız
+sanılabilirdi; oysa cp başarılıydı.
+
+**Kural:** Git Bash'te **mutlak yol içeren her dış-araç çağrısında**
+(`docker exec`, `docker run -v`, `psql -f`, `wsl`) yol dönüşümünü sorgula.
+Çözüm `MSYS_NO_PATHCONV=1 <komut>`. Container yolu içeren bir komuttan gelen
+"dosya yok" **önce yol-dönüşümü kontrolü** ister, sonra teşhis.
+
+## SKIP BİR MUAFİYET DEĞİL, ÖLÇÜLMÜŞ BİR ERTELEMEDİR (18 Ağu 2026, S229-B)
+
+Pre-commit kapısı kırmızı verdiğinde `SKIP=<hook>` yazmak ucuzdur ve bu depoda
+sessizce alışkanlığa dönüşebilir (S215 bunu "sonra ayrı iş olarak kaydet" diye
+kısmen ele almıştı). Eksik olan şey **kararın kendisinin bir ölçüm olduğu**.
+
+Üç ölçüm, hepsi gerekli:
+
+| # | Soru | Komut |
+|---|---|---|
+| 1 | **Benim kodum** temiz mi? | Kapının sürümüyle, **gerçek yolda**, ihlali `--ignore` ile dışlayarak koş → "All checks passed" olmalı |
+| 2 | **Kontrol kolu**: ben mi getirdim? | `git show HEAD:<dosya> \| grep -n '<ihlal>'` → HEAD'de de varsa dokunulmayan borç |
+| 3 | **Yaygınlık**: doğru katman hangisi? | `ruff check --select <kural> backend/{core,api,services}` → sistemikse dosya-başına kapatmak yanlış |
+
+S229-B'de sırasıyla: temiz · `HEAD:369`'da birebir var · **132 kalem** → karar
+`SKIP=ruff` + gerekçe commit mesajında + ayrı açık iş (Y8).
+
+Biri eksik olsaydı karar savunulamazdı: (1) yoksa kendi borcunu gizlersin,
+(2) yoksa "ben mi getirdim" bilinemez, (3) yoksa tek dosyayı düzeltip sistemik
+borcu görmezden gelirsin.
+
+## YARIM COMMIT'İN ARTIĞI ÇALIŞAN AĞAÇTA SESSİZCE BEKLER (18 Ağu 2026, S229-B)
+
+`L-s229-commit-yarim-gidebilir` "commit anında `git show --stat` ile ölç" diyor.
+Eksik yarısı: o an **kaçırılırsa** artık dosya kalıcı olarak çalışan ağaçta kalır.
+
+Vaka: `1dd12579d` (A1, sürüm matrisi) yalnız `backend/requirements-minimal.txt`'i
+commit'ledi; `backend/requirements.txt` aynı pinlerle **kirli kaldı** ve günler
+sonra, tamamen başka bir işin push'undan sonra fark edildi.
+
+Neden görünmedi: bu depoda **~3400 takipsiz dosya** var, `git status` çıplak
+haliyle kullanılamaz — artık dosya gürültüde kaybolur.
+
+**Kural:** oturum kapanışında takipsiz gürültüyü **filtreleyerek** takipli-kirli
+sayısını ölç (porcelain çıktısında baş harfi `M` olan satırlar). 0 değilse her
+birinin sahibini bul: ya bu turun işi, ya devralınan, ya da bir yarım commit'in
+artığı.

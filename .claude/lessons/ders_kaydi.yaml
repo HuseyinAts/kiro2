@@ -857,3 +857,24 @@
   durum: aktif
   zorlayici: null
   kanit: "S229 — login limitini 5'ten 300'e cikarmak, yuzeyde 'bir guvenlik sertlestirmesini geri almak' gibi gorunuyordu; bu haliyle kullaniciya sorulmasi gereken bir karar olurdu. Olculdu: degeri dusuren `b3be80686` (7 Agu) toplu bir 'update core services, guardrails, algorithms...' commit'i ve GOVDESI BOS; `git log -p` ile o commit'ten ONCEKI hale bakilinca advanced_rate_limiter'daki deger de 300'du -- yani iki taraf hizaliydi ve supurme ikisini BIRDEN dusurdu. Test yok, yorum yok, gerekce yok. Karsi tarafta ise api/auth.py:90-93 OLCUME dayali bir yorum tasiyor. Boylece 'geri alma' degil 'kazayla dusurulen degeri iade' oldugu kanitlandi ve is onay beklemeden ilerledi. Kural: bir degeri degistirmeden once `git log -S '<deger>'` + commit govdesi oku; gerekcesiz toplu supurme bir tasarim karari DEGILDIR"
+- id: L-s229-msys-yol-yeniden-yazimi
+  baslik: "Git Bash `docker exec`'e verilen /app/... yolunu YENIDEN YAZAR — MSYS_NO_PATHCONV=1 sart"
+  kaynak: .claude/rules/audit-methodology.md#olcum-aletini-dogrula-ayni-gun-4-gecersiz-olcum
+  sinif: alet
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — deploy dogrulamasi icin `docker exec kiro2-backend grep -n '/api/v1/auth/login' /app/core/advanced_rate_limiter.py` kosuldu. Cikti: `grep: C:/Program Files/Git/app/core/advanced_rate_limiter.py: No such file or directory`. Yani MSYS, / ile baslayan argumani WINDOWS yoluna cevirdi ve container'a hic ulasmayan bir yol gonderdi. Hata mesaji dosyanin YOK oldugunu soyluyor -- 'docker cp basarisiz oldu' diye okunabilirdi; gercekte cp basariliydi. Fix: `MSYS_NO_PATHCONV=1 docker exec ...` (ayni komut sonra 3 satiri dogru dondurdu). Bu, verification.md'deki 'bash /tmp = MSYS temp, Python /tmp = C:\tmp' dersinin kardesi: Git Bash'te MUTLAK YOL iceren her dis-arac cagrisinda (docker exec, docker run -v, psql -f, wsl) yol donusumu sorgulanmali. Genel kural: container/uzak sistem yolu iceren komutta 'dosya yok' hatasi bir BULGU degil, once yol-donusumu kontrolu ister"
+- id: L-s229-kapi-borcu-karari-uc-olcum-ister
+  baslik: "Pre-commit kapisi kirmiziysa SKIP mi FIX mi -- karar UC olcume dayanir, sezgiye degil"
+  kaynak: .claude/rules/audit-methodology.md#ayni-aracin-uc-surumu-var-ve-kapiyi-en-eskisi-tutuyor-17-agu-2026-s224
+  sinif: surec
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — Y1 commit'inde ruff kancasi `PLW0603` ile kirmizi verdi. Ucu de olculdu, sonra karar verildi: (1) BENIM KODUM temiz mi? kapinin surumuyle (0.7.1) GERCEK YOLDA kosuldu -- test dosyasi 'All checks passed', limiter'da ihlali haric tutunca 'All checks passed' => yeni borc yok. (2) KONTROL KOLU: ayni ifade HEAD'de var mi? `git show HEAD:<dosya> | grep -n 'global _rate_limiter'` -> HEAD:369, dokunmadigim fonksiyon => onceden var olan borc. (3) YAYGINLIK: `ruff check --select PLW0603 backend/{core,api,services}` -> 132 kalem => sistemik, dosya-basina kapatmak yanlis katman. Karar: SKIP=ruff + gerekceyi commit mesajina yaz + AYRI acik is (Y8). Uc olcumden biri eksik olsaydi karar savunulamazdi: (1) yoksa kendi borcunu gizlemis olurdun, (2) yoksa 'ben mi getirdim' bilinemez, (3) yoksa tek dosyayi duzeltip sistemik borcu gormezden gelirdin. Kural: SKIP bir MUAFIYET degil, OLCULMUS bir ertelemedir"
+- id: L-s229-yarim-commitin-artigi-sessiz-kalir
+  baslik: "Yarim kalan commit'in artigi calisan agacta SESSIZCE bekler — oturum sonunda takipli-kirliyi supur"
+  kaynak: .claude/sessions/latest.md
+  sinif: surec
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — [[L-s229-commit-yarim-gidebilir]] 'commit aninda `git show --stat` ile olc' diyor. Eksik kalan yarisi: o an KACIRILIRSA artik dosya kalici olarak calisan agacta kalir ve fark edilmez. Somut vaka: `1dd12579d` (A1, surum matrisi) yalniz `backend/requirements-minimal.txt`'i commit'ledi; `backend/requirements.txt` ayni pinlerle KIRLI kaldi ve gunler sonra, tamamen baska bir isin push'undan sonra `git status --short --branch` ciktisinda goruldu. Bu depoda ~3400 TAKIPSIZ dosya oldugu icin `git status` ciplak haliyle kullanilamaz -- artik gorunmez olur. Isleyen filtre: `git status --porcelain` ciktisinda yalniz TAKIPLI-degismis satirlari (bas harfi M olanlari) say. S229 sonunda bu sayi 1 idi ve o 1 dosya gercek bir eksikti. Kural: oturum kapanisinda takipsiz gurultuyu FILTRELEYEREK takipli-kirli sayisini olc; 0 degilse her birinin sahibini bul"
