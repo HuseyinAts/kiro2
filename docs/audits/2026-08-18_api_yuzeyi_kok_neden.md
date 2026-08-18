@@ -207,3 +207,96 @@ ve tercihen **iki farklı araçla** ölç. Aynı aracın iki koşumu aynı arız
 *Kaynak ölçümler bu oturumun transkriptinde; her tablo satırı bir komut çıktısına dayanır.
 Paralel araştırma (`wf_2d726569-ebd`) tamamlandığında bu rapor tam envanter + frontend etki
 analizi ile güncellenecektir.*
+
+---
+
+# EK: PLANIN UYGULANMASI (aynı gün, S229 devamı)
+
+Yukarıdaki A1–A5 planı **uygulandı**. Aşağıdaki her satır canlı ölçümdür.
+
+## A1 — Sürüm matrisi sabitlendi ✅
+
+Plan "hangi yöne hizalayalım" diye açık uçluydu; **ölçüm kararı verdi**: repo zaten
+cevabı yazmıştı.
+
+```
+requirements.txt : fastapi==0.141.1  starlette==1.4.1  httpx==0.28.1
+CONTAINER        : 0.141.1 / 1.4.1 / 0.28.1   ← requirements ile UYUMLU
+HOST (önce)      : 0.103.2 / 0.27.0 / 0.28.1  ← kendi requirements'ına AYKIRI
+```
+
+Yani bu bir tasarım kararı değil, **sapma onarımı**ydı. Host yükseltildi.
+
+**İkinci kusur (planda yoktu, ölçümde çıktı):** `Dockerfile.minimal`,
+`requirements-minimal.txt` kuruyor ve o dosya `fastapi>=0.104.1` diyordu,
+**starlette pin'i hiç yoktu** → her build farklı sürüm çekebilirdi. Üçü de kesin
+sürüme pin'lendi (commit `1dd12579d`).
+
+| Kabul kriteri | Sonuç |
+|---|---|
+| host == container sürümleri | `HOST 0.141.1 1.4.1 0.28.1` / `CONT 0.141.1 1.4.1 0.28.1` ✅ |
+| regresyon (test_admin_api.py) | 46 passed → **46 passed** ✅ |
+| TestClient probe | `TypeError` → **SORUN YOK** (kontrol kolu ile: önce de koşuldu, düştü) |
+
+**Açık kalan:** `schemathesis 3.36.3` metadata'sı `starlette<1` istiyor, artık ihlal.
+Sözleşme testi bugün 10/10 geçiyor — yani **ihlal edilmiş kısıt altında ölçülen bir
+başarı**, garanti değil. Ayrı iş. `requirements-test.txt` de bu matrise pin'li değil.
+
+## A2 — Kod yazılmadı, gerek kalmadı ✅
+
+Plan `conftest.py:1186`'ya shim yazmayı öngörüyordu. **A1'den sonra ölçüldü:**
+
+| 4 dosyalık set | A1 öncesi | A1 sonrası |
+|---|---|---|
+| error | **97** | **0** ✅ |
+| passed | 1 | **73** |
+
+`conftest.py` semptomdu; kök neden sürüm sapmasıydı. Shim yazmak, ölçülmemiş bir
+soruna kod eklemek olurdu — yazılmadı.
+
+## A3 — Rebuild: yüzey geri geldi ✅
+
+```
+Eski imaj: b7b4b866d1fa (2026-08-06)   ← geri dönüş için, artık dangling
+Yeni imaj: 2a445de6397d (2026-08-18)   ← build 10 dk 02 sn, exit 0
+```
+
+| Kabul kriteri | ÖNCE | SONRA |
+|---|---|---|
+| `Failed to import` (benzersiz) | **111** | **0** ✅ |
+| Yüklenen router | 40 | **150** ✅ |
+| openapi **yol** | 326 | **1119** |
+| openapi **operasyon** | 349 | **1184** |
+| şema | 212 | **793** |
+| başlangıçta ERROR/CRITICAL | — | **0** |
+
+Nokta kontrol: `analytics · diary_api · duel_api · curator · kvkk_consent_api · org_api`
+→ rebuild öncesi **6/6 YOK**, sonrası **6/6 VAR** ve uçları canlı (duel 12 yol, diary 40,
+curator 4, kvkk 17, org 9, analytics 28).
+
+**Birim uyarısı korundu:** 1.206 sayısı *route* (router.routes toplamı); openapi *yol*
+1119. İkisi aynı şey değil — aynı yolun birden çok metodu tek yol sayılır, WS/mount
+route'ları openapi'ye girmez. "1206 yol bekle" kriteri kurulsaydı doğru rebuild'de bile
+"başarısız" görünürdü.
+
+## A5 riski ÇÜRÜDÜ (Gemini haklıydı)
+
+Bu raporun ilk sürümü *"rebuild `docker cp` yamalarını siler"* diyordu. **Yanlış.**
+3 dosyanın 3'ü de commit'liydi, rebuild onları git'ten aldı — imajda doğrulandı:
+`admin.py` JOIN **3**, `question_bank.py` `default=True, server_default` **1**,
+alembic `0002` migration **1**. Elle kopyalamaya gerek kalmadı.
+
+## YENİ BULGU — açılış süresi 3 katına çıktı
+
+40 router yerine 150 yüklendiği için uygulama açılışı **~25 sn → ~60-85 sn**.
+Compose healthcheck `start_period: 60s` artık **sınırda**; ilk `curl` boş yanıt (000) döndü.
+
+⚠️ **CLAUDE.md'deki kanonik deploy döngüsü `Start-Sleep 22` diyor — bu imaj için
+YETERSİZ.** Deploy script'leri ve o kural güncellenmeli, aksi halde her deploy'da
+"backend çöktü" yanlış teşhisi üretilir.
+
+## Kalan (bu ek yazılırken ölçülüyordu)
+
+- **A4** rebuild sonrası regresyon (12 entegrasyon testi + Golden Flow + canlı uç kontrolü)
+- **A5** IRT cold-start ön ölçümü: `irt_difficulty`'yi CAT/ZPD/BKT/sınav motoru gerçekten
+  okuyor mu? (FSRS için ölçüldü: **hayır** — 0 referans)
