@@ -257,7 +257,7 @@ soruna kod eklemek olurdu — yazılmadı.
 ## A3 — Rebuild: yüzey geri geldi ✅
 
 ```
-Eski imaj: b7b4b866d1fa (2026-08-06)   ← geri dönüş için, artık dangling
+Eski imaj: b7b4b866d1fa (2026-08-06)   ← ⚠️ ARTIK YOK, aşağıdaki düzeltmeye bak
 Yeni imaj: 2a445de6397d (2026-08-18)   ← build 10 dk 02 sn, exit 0
 ```
 
@@ -300,3 +300,122 @@ YETERSİZ.** Deploy script'leri ve o kural güncellenmeli, aksi halde her deploy
 - **A4** rebuild sonrası regresyon (12 entegrasyon testi + Golden Flow + canlı uç kontrolü)
 - **A5** IRT cold-start ön ölçümü: `irt_difficulty`'yi CAT/ZPD/BKT/sınav motoru gerçekten
   okuyor mu? (FSRS için ölçüldü: **hayır** — 0 referans)
+
+---
+
+## A4 — Regresyon: rebuild BİR ŞEYİ KIRDI (ölçüldü, commit'e kadar çivilendi)
+
+| Ölçüm | Sonuç |
+|---|---|
+| 12 entegrasyon testi (gerçek Postgres) | **12 passed** ✅ |
+| Ders defteri bekçisi | **9 passed** ✅ |
+| A2 seti kalıcılığı | **73 passed / 33 skipped / 0 error** ✅ (değişmedi) |
+| Canlı uç kontrolü | 5 uç mount (200/401); 1 "404" **probun kendi hatası** (`duel_api`'de `/health` rotası yok; duel'in 12 yolu canlı ve 401 dönüyor) |
+| **Golden Flow** | **124 passed / 39 failed / 15 skipped** ❌ |
+
+Paralellik şüphesi **kontrol koluyla elendi**: seri koşum (`-n 0`) **daha kötü** (123/42/13),
+yani xdist sebep değil.
+
+### Kök neden: login rate limit 300 → 5
+
+Canlı ölçüm: 5 istekte 429; başlıklar `x-ratelimit-limit: 5`, `x-ratelimit-window: 60`
+(başarısız değil, **tüm** istekleri sayıyor). Git ile çivilendi:
+
+```
+b3be80686  2026-08-07  feat(backend): update core services, guardrails, algorithms...
+-  "/api/v1/auth/login": {"limit": 300, "window": 60},
++  "/api/v1/auth/login": {"limit": 5,   "window": 60},
+```
+`backend/core/advanced_rate_limiter.py:126`. Commit **7 Ağu**, eski imaj **6 Ağu** →
+değişiklik eski imajda yoktu, rebuild ile **ilk kez canlıya çıktı**. 42 GF hatasının 15'i bu.
+
+**Üretim etkisi test hatasından büyük:** `backend/api/auth.py:94` hâlâ `_LOGIN_RPM = 300`
+ve yorumunda *"shared-NAT sınıflar 10/10 429 alıyordu, o yüzden yükseltildi"* yazıyor.
+`advanced_rate_limiter` bu değeri **eziyor** → o audit'in düzeltmesi fiilen geri alınmış.
+**Aynı IP'den (okul/NAT) 6. öğrenci giriş yapamaz.**
+
+Yan bulgu: `core/rate_limit_config.py::ENDPOINT_RATE_LIMITS` (login=5) **hiçbir yerde
+tüketilmiyor** (0 tüketici) — ölü kod. İlk teşhis oydu, ölçünce düştü.
+
+### 24 × HTTP 500 — ilişkisi ÖLÇÜLEMEDİ (ve artık ölçülemez)
+
+Çöken 15 router dosyasının 13'ü 6 Ağu'dan beri commit almamış → **handler kodu iki imajda
+aynı**. GF `not_500` testleri `assert status != 500` kullandığı için **404 GEÇER**; bu uçlar
+rebuild öncesi mount edilmemiş olsaydı 404 döner ve test geçerdi. Yani güçlü hipotez:
+**kırma değil, maskenin kalkması.**
+
+**Ama bu ÖLÇÜLEMEDİ.** Kontrol kolu iki kez denendi, ikisi de alet arızası verdi:
+1. Eski imajdan rota dökümü → 6 yol; aynı komut YENİ imajda da 6 yol (beklenen 1119)
+   → router'lar import'ta değil startup'ta mount ediliyor, alet hiçbir şey ölçmüyor.
+2. Eski imajı geçici konteynerde ayağa kaldırma → **imaj artık YOK**
+   (`docker images -a --filter dangling=true` → boş; `b7b4b866` bulunamadı).
+
+### ⚠️ DÜZELTME — geri dönüş yolu artık YOK
+
+Bu raporun A3 bölümü *"eski imaj dangling, geri dönüş için duruyor"* diyordu. **Yanlış:**
+`docker compose build` sonrası eski imaj **silinmiş**. Rollback ancak eski bir commit'ten
+**yeniden build** ile mümkün. Bir güvenlik iddiasının yanlış olması, hiç olmamasından
+kötüdür — bu yüzden ayrıca işaretlendi.
+
+## A5 — YAPILMADI (ölçüldü: değeri sıfır)
+
+Plan "cold-start IRT prior'u bas" diyordu. İki bağımsız sebeple **iptal**:
+
+**(a) Prior'un türetildiği iki proxy de tek değerli.** `services/irt_bootstrap.py` zaten
+yazılmış ve `difficulty_level` + `bloom_level`'dan türetiyor. Kontrol koluyla koşturuldu:
+
+```
+Farkli girdilerle : VERY_EASY -1.8 / EASY -0.9 / MEDIUM 0.0 / HARD +0.9 / VERY_HARD +1.8
+Canli DB girdisiyle: 36967/36967 -> b = -0.30      ← URETILEN FARKLI b DEGERI: 1
+```
+Yani `0.0` sabitini `-0.30` sabitiyle değiştirir. **Varyans kazancı sıfır.**
+
+Bağımsız doğrulandı: `difficulty_level` **1 farklı değer (MEDIUM → 36.967)**,
+`bloom_level` 1 farklı değer, `student_answers` **0 satır**.
+
+**(b) Karar noktalarının 5/8'i zaten çöküyor** — Task 1'de düzeltilenle **aynı hata sınıfı**
+(`question_bank`'ta `irt_*` kolonu YOK; ölçüldü: 12 kolon, 0 irt):
+
+| Yer | Hata |
+|---|---|
+| `app/services/cat_session.py:260,306` | `UndefinedColumn: irt_discrimination does not exist` |
+| `app/services/placement_service.py:293-295,419` | aynı |
+| `application/commands/sinav.py:361-365` | `AttributeError` (θ tahmini) |
+| `services/difficulty_classification_service.py:610-611` | `AttributeError` |
+| `core/irt_daemon.py:157,196-198` | `AttributeError` / `CompileError: Unconsumed column names` |
+
+Çalışan 3 uç (`/irt-parametreli-sorular`, `/zorluk-filtrele`, `/duel/matchmake`) ise tüm
+b=0 olduğu için θ≠0'da **0 soru** döndürüyor. `irt_discrimination >= 1.5` kalite metriği
+**daima %0**.
+
+| Motor | irt_difficulty okuyor mu? | Cold-start kazancı |
+|---|---|---|
+| FSRS | HAYIR (0 referans) | yok |
+| ZPD | HAYIR (0 hit, `current_level` istemciden) | yok |
+| BKT | HAYIR (sabit `SUBJECT_PARAMS`, `p_guess` literal 0.20) | yok |
+| Sınav motoru | HAYIR (seçim `difficulty_level` enum) | yok |
+| CAT | kodda EVET, çalışma anında ÇÖKÜYOR | yok (önce göç şart) |
+| 3 canlı uç | EVET | **0** — uniform prior sıralamayı değiştirmez |
+
+**Cold-start IRT prior'u yazmak şu an 0 karar noktasını iyileştirir.**
+
+### ASIL MANŞET: havuzda hiç zorluk ayrımı yok
+
+`difficulty_level` **36.967 sorunun hepsinde MEDIUM**. Sorun "IRT kalibre değil" değil —
+**fallback proxy'nin kendisi sabit**. Adaptif motorun hiçbir katmanında ayrıştırıcı sinyal
+yok. İş IRT yazımında değil **yukarı akışta** bloke: önce sorular gerçekten sınıflandırılmalı
+ya da yanıt verisi toplanmalı (şu an 0 satır).
+
+---
+
+## YENİ AÇIK İŞLER (bu uygulamadan doğdu)
+
+| # | İş | Öncelik | Gerekçe |
+|---|---|---|---|
+| Y1 | `advanced_rate_limiter.py:126` login limitini gözden geçir (5 → ?) | **P0** | Okul/NAT'ta 6. öğrenci giremiyor; `auth.py:94`'teki 300 eziliyor, eski audit fix'i geri alınmış |
+| Y2 | 5 kırık IRT karar noktasını split şemasına göç ettir | **P0** | Task 1 ile aynı sınıf; CAT/placement/θ-tahmini koşulsuz çöküyor |
+| Y3 | 24 × HTTP 500'ü triyaj et | P1 | Muhtemelen "maske kalktı", ama ölçülemedi; artık canlı ve görünür |
+| Y4 | `difficulty_level` sınıflandırması (36.967 satır hepsi MEDIUM) | **P0-içerik** | Adaptif motorun tek girdisi; bu olmadan IRT/ZPD/CAT anlamsız |
+| Y5 | `Start-Sleep 22` → ~90 sn (CLAUDE.md + deploy script) | P1 | Açılış 25→60-85 sn; yoksa her deploy'da yanlış "çöktü" teşhisi |
+| Y6 | `schemathesis` starlette<1 ihlali + `requirements-test.txt` pin | P2 | Ihlal edilmiş kısıt altında geçen test garanti değil |
+| Y7 | Rollback imajı yok — sürümlü imaj etiketleme politikası | P2 | `latest` üzerine build eskisini siliyor |
