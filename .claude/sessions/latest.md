@@ -1213,10 +1213,15 @@ V1-V2 kapanmadan bu listenin yeniden ölçülmesi anlamsız; ölçüm aleti (tes
 
 ---
 
-## Session Handoff — 2026-08-18 (S229-B · Y1 + Y5 KAPANDI)
-**Branch:** feature/self-evolution-optimization
-**Son commit:** `813a8ac9b` fix: login hiz siniri 5 -> 300 (uretim regresyonu)
-**Uncommitted:** `docs/audits/2026-08-18_api_yuzeyi_kok_neden.md` + bu dosya (bu turda yazıldı)
+## Session Handoff — 2026-08-18 (S229-B · Y1 + Y5 KAPANDI) ✅ KAPANIŞ
+**Branch:** feature/self-evolution-optimization — **origin ile EŞİT**
+**Commit aralığı:** `9f276a19e..bfa7396c4` (4 commit, hepsi pushed)
+- `813a8ac9b` fix: login hız sınırı 5 → 300 + 3 bekçi testi + `CLAUDE.md` Start-Sleep 90
+- `07360ca15` docs: Y1/Y5 canlı doğrulama + Y8/Y9 açık iş + 3 ders
+- `68e408223` chore: `requirements.txt` sürüm pinleri (A1'in yarım kalan yarısı)
+- `bfa7396c4` docs: 3 ders daha + `audit-methodology.md` 3 bölüm
+
+**Uncommitted:** takipli-kirli **0**. (~3400 takipsiz dosya S205-S210 devrinden — bu turun ürünü değil.)
 
 ### Yapılanlar
 - **Y1 KAPANDI** — `backend/core/advanced_rate_limiter.py:31,148` login 5→**300** (env: `LOGIN_RATE_LIMIT_PER_MINUTE`), register 5→**500**. `api/auth.py::RATE_LIMITS` ile aynı env + aynı varsayılan.
@@ -1259,3 +1264,55 @@ Sebep `test_golden_flows.py:137-145`: 429→`fail`, diğer non-200→`skip`. O 1
 ### Kararlar
 - **Y1 bilinçli sertleştirme değildi (ölçüldü):** `b3be80686` gövdesi **boş**, toplu süpürme; o commit'ten önce iki taraf da **300**'dü. Bu yüzden "güvenlik kararını geri alıyor muyum?" sorusu düştü.
 - **Maskenin altından maske çıkar:** `failed` düşüşüne bakmak "11 test düzeldi" yanılsaması verirdi. Y1'in ürüne ne kazandırdığını ölçen tek sayı `passed`'ti ve **değişmedi**. Bir fix'in değerini ölçerken *hangi sayının* değişmesi gerektiğini önceden söyle.
+
+### Ders defteri — 114 → **120** (6 yeni, hepsi bu turda ölçüldü)
+`.claude/lessons/ders_kaydi.yaml` · bekçi `test_ders_kaydi.py` **9/9 PASS** · prose `audit-methodology.md`'de
+
+| ders | özü |
+|---|---|
+| `L-s229-maskenin-altinda-maske` | Fix'in değerini ölçen sayıyı **önceden** ilan et. 429 sıfırlandı ama `passed` değişmedi |
+| `L-s229-esitlik-testi-tek-basina-yetmez` | `A == B` **ortak kaymayı** yakalamaz; kaynaktan bağımsız **alt sınır** assert'i ekle |
+| `L-s229-toplu-commit-gerekce-tasimaz` | Boş gövdeli süpürme tasarım kararı değil → "geri alma" değil **iade**; `git log -S` + gövde oku |
+| `L-s229-msys-yol-yeniden-yazimi` | Git Bash `docker exec /app/...` yolunu Windows'a çevirir → "dosya yok" bulgu değil. `MSYS_NO_PATHCONV=1` |
+| `L-s229-kapi-borcu-karari-uc-olcum-ister` | SKIP muafiyet değil **ölçülmüş erteleme**: (1) benim kodum (2) kontrol kolu HEAD (3) repo-geneli yaygınlık |
+| `L-s229-yarim-commitin-artigi-sessiz-kalir` | Yarım commit'in artığı 3400 takipsiz dosya arasında görünmez; kapanışta **takipli-kirliyi filtreleyerek** say |
+
+### İPTAL EDİLDİ — 6 boyutlu durum tespiti turu
+Kullanıcı isteğiyle durduruldu (`wf_271a99cd-968`). Journal: **6 ajan başladı, 0 tamamlandı** →
+kurtarılabilir kısmi sonuç YOK. **Bu oturum yeni bir uçtan uca durum tespiti ÜRETMEDİ;**
+en son geçerli tam tablo `docs/audits/2026-08-06_uctan_uca_durum_tespiti.md` (6 Ağu) ve
+`docs/audits/2026-08-18_api_yuzeyi_kok_neden.md` (18 Ağu, yalnız API yüzeyi + A1-A5 + Y1/Y5).
+Sonraki oturum "güncel durum" iddiası kurmadan önce bunu bilsin.
+
+### Bu oturumda GERÇEKTEN ölçülenler (taze, 18 Ağu)
+| Ölçüm | Değer | Nasıl |
+|---|---|---|
+| Canlı login limiti | **300/60sn** | 8 ardışık login, `x-ratelimit-limit` başlığı |
+| GF | **124 passed / 28 failed / 26 skipped**, 429 = **0** | `pytest tests/e2e/test_golden_flows.py` |
+| `users` | **3 satır, hepsi STUDENT** | asyncpg, `role` GROUP BY |
+| `PLW0603` | **132** (`backend/{core,api,services}`) | kapı ruff 0.7.1, `--select PLW0603` |
+| Backend açılış | **90 sn**'de `/health` 200 | restart + sleep + curl |
+| Takipli-kirli dosya | **0** | `git status --porcelain`, takipsiz filtrelenmiş |
+
+### Bilinen açık işler (ölçülmüş, öncelik sırası)
+| # | İş | Öncelik | Ankraj |
+|---|---|---|---|
+| **Y2** | 5 kırık IRT karar noktasını split şemasına göç ettir | **P0** | `cat_session.py:260,306` · `placement_service.py:293-295` · `application/commands/sinav.py:361-365` · `difficulty_classification_service.py:610` · `core/irt_daemon.py:157,196` |
+| **Y4** | `difficulty_level` sınıflandırması — 36.967 satırın **hepsi MEDIUM** | **P0-içerik** | `question_statistics.difficulty_level`; `irt_difficulty` de **1 farklı değer** |
+| **Y9** | GF'de admin/öğretmen/veli seed hesabı yok → 11 test sessiz SKIP | **P1** | `test_golden_flows.py:144`; `users` = 3 satır |
+| **Y3** | 28 × HTTP 500 GF hatasını triyaj et | P1 | 429 maskesi kalktı, artık görünür |
+| **Y6** | `schemathesis` `starlette<1` ihlali + `requirements-test.txt` pin | P2 | ihlal edilmiş kısıt altında geçen test garanti değil |
+| **Y7** | Rollback imajı yok — sürümlü imaj etiketleme | P2 | `latest` üzerine build eskisini siliyor |
+| **Y8** | 132 × `PLW0603` — sistemik lint borcu | P3 | politika kararı ister (kural kapat / toplu göç) |
+| **#485-T3** | Facet'li arama yeniden yazımı | P1 | silinen `QuestionCRUDService`'in kusurları bu dosyada kayıtlı |
+
+### Devralınan / doğrulanmamış engelleyiciler
+- `kiro2-api-import-smoke` kancası S211'den beri kırık (kök neden hiç kapatılmadı)
+- `bandit` pre-commit venv'i bağımsız kırık (`ModuleNotFoundError: pbr`) — HEAD'de de düşüyor
+- Host `pytest` uçtan uca koşamıyor: 97 test `ERROR at setup of`, tek kök neden `tests/conftest.py:1186` (`TestClient(app=)`); **coverage bu yüzden ölçülemiyor**
+- `.claude/rules/database.md` "36.967 tam konsolide" diyor; `mv_safe_for_beta` **27.073** — kapı ile toplam farkı karıştırma
+
+### Sonraki oturum için ilk 3 hamle
+1. **Y2** — Task 1 ile aynı sınıf, ankrajlar hazır. Yordam: gerçek Postgres'e RED test → JOIN göçü → mutasyon → `docker cp` + 90 sn + canlı doğrulama.
+2. **Y9** — seed hesap (admin/öğretmen/veli) oluştur; sonra GF'yi tekrar koş ve **`passed`'in arttığını** ölç (`failed` düşüşü yeterli değil — `L-s229-maskenin-altinda-maske`).
+3. **Y4** — Y2 bittikten sonra: zorluk sınıflandırması olmadan IRT/ZPD/CAT çıktısı anlamsız kalır.
