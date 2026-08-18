@@ -1433,3 +1433,146 @@ S229 dersinin metni düzeltildi + `L-s231` eklendi.
 | **#485-T3** | Facet'li arama yeniden yazımı | P1 |
 | Y6 · Y7 · **Y8 (genişledi)** · **Y10 (yeni)** | schemathesis pin · rollback imajı · lint borcu (PLW0603 132 + RET504 38 + PLR0912 16 + SIM103 4 + B110) · **mypy alet arızası** | P2/P3 |
 | #485 kalan göç | `question_repository` 16 · `exam_performance_service` 11 · `learning_path` 5 · `exam_results_reporting` 4 · +4 dosya | P2 |
+
+---
+
+## Session Handoff — 2026-08-19 (S231) ✅ KAPANIŞ
+
+**Branch:** feature/self-evolution-optimization
+**Commit'ler:** `3f6633c1d` · `ebdb7ad87` · `9015ba42b` · (+bu kapanış) —
+**hepsi YEREL, PUSH EDİLMEDİ** (kullanıcı onayı bekliyor)
+
+- `3f6633c1d` docs: S230 kapanış kaydı (geriye dönük) + 5 ders
+- `ebdb7ad87` fix(Y4/Adım1): CAT warm-up havuzu boşken sessiz kalmıyor
+- `9015ba42b` docs(P0): beta kapısı 40 soruluk okuma — **0/40 servis edilebilir**
+- (bu commit) docs: S231 kapanış + 5 ders (125 → 130) + ders-etkinliği ölçümü
+
+**Takipli-kirli:** 1 — devralınan `backend/semantic_cache.pkl` (`b3be80686` sweep'i,
+`.gitignore`'da **değil** → ayrı triyaj).
+
+### Bu oturum ne yaptı
+
+1. **S230'un eksik kapanış kaydı yazıldı** (PC kapanmasıyla kesilmişti). Kod zaten
+   commit+push'luydu; kaybolan yalnız kayıttı. S230'un canlı doğrulaması **tekrar
+   üretilmedi** → handoff'ta "hâlâ 200 dönüyor" iddiası **YOKTUR**.
+2. **Y4 Adım 1 KAPANDI** — `start_session:489` warm-up fallback'i artık ölçülmüş
+   sebeple `logger.warning` bırakıyor. **5/5 PASS** (gerçek Postgres, mock DB yok).
+   **Mutasyon geçerli:** kontrol kolu `1 passed` → uyarı bloğunu sil → `1 failed`
+   (`error` DEĞİL) → geri alım `git status` boş.
+3. **Y4 Adım 2 pilotu zorluğu ölçmedi — içerik geçersizliği buldu.**
+4. **"Dersler etkin mi yoksa yazılı mı" ÖLÇÜLDÜ.**
+
+### 🔴 EN AĞIR BULGU — beta kapısının içeriği servis edilebilir değil
+
+Kapıdan (`mv_safe_for_beta`, 27.073) **40 soru** çekildi (5 ders × 8, `md5` sıralaması,
+**truncate yok**) ve 40'ı tek tek okundu:
+
+| Sınıf | Adet |
+|---|---|
+| Yanıtlanabilir **ve** anahtarı doğru | **0** (%0) |
+| Yanıtlanabilir ama anahtarı **YANLIŞ** | 5 (%12,5) |
+| Yanıtlanamaz / bozuk / soru değil | 35 (%87,5) |
+
+Anahtar yanlışları aritmetikle doğrulandı: f(x)+f(-x)=2x²+2 (DB "D") · üçgenin iç
+açıları 180° (DB "360°") · çevre 24 & kenar 4 → 8 (DB "7") · a zaten karşı kenar =20
+(DB "30") · gaz ısıtılınca hacim/basınç artar (DB "ikisi de azalır").
+
+**Örneklem şansı değil, kapı sistematik** (tek sorgu):
+`source_book` NULL = **27.073/27.073** · `auto_imported=true` = **36.967/36.967** ·
+`student_coherent=true` = **27.073/27.073**. Yani CLAUDE.md'nin anlattığı **405-kitap
+korpusu bu DB'de değil** ve `student_coherent` bayrağı **toptan basılmış**.
+
+**Gerçek korpus KAYIP DEĞİL:** `d-dataset/eslesmis_sorucevap.jsonl` = 116 MB /
+**77.336 satır** (`book_name` + `page_number` + `answer` + `options`). Ayrıca
+`backups/kiro2_pre_schema_restore_20260727.dump` (976 MB, pre-split).
+→ **Kurtarma** sorunu, yeniden-üretme sorunu değil.
+
+**Kanıt:** `docs/audits/2026-08-19_beta_kapisi_icerik_gecerliligi.md` + ham örneklem
+`docs/audits/2026-08-19_beta_kapisi_orneklem.txt` (`9015ba42b`).
+
+### Öncelik etkisi (DEĞİŞTİ)
+
+| Kalem | Yeni durum |
+|---|---|
+| **Y4** (zorluk kalibrasyonu) | **ASKIDA** — 0/40 havuzun zorluğunu kalibre etmek değer üretmez |
+| **Y2** (CAT/yerleştirme göçü) | Kod doğru ve gerekli ama **çöp servis ediyor** → değeri içerik düzelene kadar 0 |
+| **B2C açılışı** | Bu havuzla **açılamaz** |
+| **YENİ P0 — Y11** | Kapıyı gerçek korpustan yeniden kur + hak edilmemiş bayrakları geçersiz kıl |
+| **YENİ P1 — Y12** | İçerik-geçerliliği bekçisi (bu sınıfı CI'da kırmızıya çevirir) |
+
+### 📏 "Dersler etkin kullanılıyor mu?" — ÖLÇÜLDÜ
+
+**Defter:** 130 ders · `aktif` **83** (%66) / `dogrulanmadi` 42 · `zorlayici` VAR
+**36 (%29)** / YOK **89 (%71)** · `aktif` ama zorlayıcısız **47**.
+
+**Asıl soru — o 36 zorlayıcı fiilen koşuyor mu?** İki ayrı ölçüm (`L-s219`):
+
+| Kanal | Ölçüm |
+|---|---|
+| pre-commit | Kök config'de test koşan hook **YOK**; tek `pytest` hook'u `:211`de **"KALDIRILDI (28 Tem 2026)"** yorumu → commit anında **hiçbir test koşmuyor** |
+| CI | Dal listesi olan her workflow (`ci.yml`, `golden-flows.yml`, `quality-gate.yml`, `security.yml`) yalnız `main`/`master`; dal `feature/self-evolution-optimization` → **0 workflow tetikleniyor** |
+
+→ **Zorlayıcıların %0'ı otomatik koşuyor.** Yalnız elle `pytest` çağrılırsa.
+
+**Ama dersler ölü DEĞİL** — karşı taraf da ölçüldü. Bu oturumda **14 ders fiilen
+uygulandı**: kabuk `cd` kalıcılığı · `-p no:xdist` usage-error tuzağı · mutasyondan
+önce commit · `git show --stat` ile ne girdiğini ölçmek · `read_bytes` CRLF tuzağı ·
+her ölçümde kontrol kolu · truncate'siz örneklem · SKIP öncesi üç ölçüm · mock yerine
+gerçek Postgres · vakum testi tespit+silme · `failed` vs `error` ayrımı · `n_live_tup`
+tahmin → gerçek `COUNT(*)` · SQL'i yeniden yazmak yerine üretim fonksiyonunu çağırmak ·
+mutasyon ankrajının tekilliğini doğrulamak.
+
+**3 ihlal oldu, üçü de farklı sebepten:**
+1. `git status --porcelain | grep '^[MAD]'` → **dersin KENDİ yordamı yanlıştı** (baş
+   harf index sütunu; unstaged ` M`). Metin düzeltildi + yeni ders.
+2. Commit mesajında **ters tırnak** → ders **YOKTU** → yeni ders.
+3. Kusur kapsamını gürültülü yolları saymadan geniş ilan etmek → ders **VARDI**
+   (`SEVERITY DE BİR ÖLÇÜMDÜR`), **tekrar ihlal** → yeni ders (daha keskin biçim).
+
+**Sonuç:** dersler **ajan bağlamı** üzerinden işliyor, **araç zinciri** üzerinden değil.
+Bağlam kaybında / farklı ajanda / insan unuttuğunda **sessizce** bozulur.
+
+### Ders defteri — 125 → **130** · bekçi `test_ders_kaydi.py` **9/9 PASS**
+
+| ders | özü |
+|---|---|
+| `L-s231-hacim-vekil-olcum-icerik-degil` | Invaryantlar yeşilken içerik tamamen geçersiz olabilir; **örneklemi OKU** |
+| `L-s231-bayrak-tasidigi-iddiayi-kanitlamaz` | Tek-değerli bayrak yargı değil **varsayımdır** |
+| `L-s231-ters-tirnak-commit-mesajinda-komut-kosar` | Mesajı `git commit -F <dosya>` ile ver; bozuk doğrulayıcı "sorun yok" der |
+| `L-s231-zorlayici-var-ama-otomatik-kosmuyor` | %29 zorlayıcı, **%0 otomatik**; enforcement "alan dolu" ile ölçülmez |
+| `L-s231-kusur-kapsamini-gurultulu-yollari-sayarak-ilan-et` | "Sessizce başarısız" demeden önce log/exception/HTTP üretenleri **SAY** |
+
+### Fail eden testler
+YOK. `test_cat_warmup_bos_havuz.py` **5/5** · `test_ders_kaydi.py` **9/9** ·
+`test_scan_split_accesses.py` **10/10** · Y2 testleri **36/36** (bu turda yeniden koşuldu).
+
+### Engelleyiciler
+- **4 commit push edilmedi** — kullanıcı onayı bekliyor.
+- `SKIP=bandit,mypy` iki commit'te; üç ölçümle gerekçelendirildi (bandit B608 5 bulgu /
+  1 dosya, hepsi HEAD'de mevcut; mypy **alet arızası**: `numpy/__init__.pyi:737` →
+  `errors prevented further checking`).
+- Devralınan: `kiro2-api-import-smoke` S211'den beri kırık · host `pytest` uçtan uca
+  koşamıyor (97 `ERROR at setup of`, `tests/conftest.py:1186` `TestClient(app=)`).
+
+### Sonraki oturum için ilk 3 hamle
+1. **KARAR: Y11 mi Y12 mi?** Y11 (kapıyı `eslesmis_sorucevap.jsonl`'den yeniden kur)
+   ürünü kurtaran asıl iş ama **riskli** — 5 Ağu içerik kaybı tam bu alanda yaşandı;
+   geri alınabilir + backup'lı + pilotlu olmalı. **Öneri: Y12 önce** (ucuz, Y11'in
+   kabul kriterini de o üretir), sonra Y11.
+2. **Y11 kabul kriterini ÖNCEDEN ilan et** (bu deponun kuralı): yeni 40 örneklem →
+   "yanıtlanabilir ve anahtarı doğru" **≥ 38/40** · `source_book` NULL oranı **< %5** ·
+   `student_coherent` dağılımı **tek değer OLMAYACAK**.
+3. **Enforcement boşluğu** (politika kararı, kullanıcıya ait): ya bu dala CI tetiği
+   ekle, ya pre-commit'e dar bir `pytest` hook'u geri koy (28 Tem'de kaldırılmış).
+   Aksi halde 36 zorlayıcı test kâğıt üzerinde kalır.
+
+### Kararlar (gelecek oturum tekrar tartışmasın)
+- **Y4 içerikten ÖNCE gelmez.** Kalibrasyon, kalibre edilecek şey geçerliyse anlamlı.
+  Y4 Adım 1 (sessiz yolu kapatmak) yine de değerliydi ve durur.
+- **Y4 Adım 3 kabul kriteri ölçülü ve duruyor:** `warm_up` havuzu > 0 **VE**
+  `b ∈ [1.6, 3.0]` havuzu > 0 (bugün ikisi de 0). Y11'den sonra anlam kazanır.
+- **`irt_bootstrap.py` kablolamak tek başına +0 kazanç:** eşlemesi `MEDIUM → b=0.0`,
+  `difficulty_level` 36.967/36.967 MEDIUM → bugün **no-op**. Ölçüldü, uygulanmadı
+  (#451 deseni).
+- **CAT'in gürültülü yolları zaten vardı:** `pool_exhausted` termination + HTTP 422.
+  "Motor sessizce anlamsız çıktı üretiyor" çerçevesi ölçümle **1/3'e** indirildi.
