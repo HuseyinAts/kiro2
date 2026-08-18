@@ -412,10 +412,102 @@ ya da yanıt verisi toplanmalı (şu an 0 satır).
 
 | # | İş | Öncelik | Gerekçe |
 |---|---|---|---|
-| Y1 | `advanced_rate_limiter.py:126` login limitini gözden geçir (5 → ?) | **P0** | Okul/NAT'ta 6. öğrenci giremiyor; `auth.py:94`'teki 300 eziliyor, eski audit fix'i geri alınmış |
+| ~~Y1~~ | ~~`advanced_rate_limiter.py:126` login limitini gözden geçir (5 → ?)~~ | ~~**P0**~~ | ✅ **KAPANDI** `813a8ac9b` — 300'e döndü, 3 bekçi testi, canlı doğrulandı (aşağıda) |
 | Y2 | 5 kırık IRT karar noktasını split şemasına göç ettir | **P0** | Task 1 ile aynı sınıf; CAT/placement/θ-tahmini koşulsuz çöküyor |
 | Y3 | 24 × HTTP 500'ü triyaj et | P1 | Muhtemelen "maske kalktı", ama ölçülemedi; artık canlı ve görünür |
 | Y4 | `difficulty_level` sınıflandırması (36.967 satır hepsi MEDIUM) | **P0-içerik** | Adaptif motorun tek girdisi; bu olmadan IRT/ZPD/CAT anlamsız |
-| Y5 | `Start-Sleep 22` → ~90 sn (CLAUDE.md + deploy script) | P1 | Açılış 25→60-85 sn; yoksa her deploy'da yanlış "çöktü" teşhisi |
+| ~~Y5~~ | ~~`Start-Sleep 22` → ~90 sn (CLAUDE.md + deploy script)~~ | ~~P1~~ | ✅ **KAPANDI** `813a8ac9b` — CLAUDE.md iki yerde 90 sn |
 | Y6 | `schemathesis` starlette<1 ihlali + `requirements-test.txt` pin | P2 | Ihlal edilmiş kısıt altında geçen test garanti değil |
 | Y7 | Rollback imajı yok — sürümlü imaj etiketleme politikası | P2 | `latest` üzerine build eskisini siliyor |
+| Y8 | `PLW0603` (`global` deyimi) — `backend/{core,api,services}` içinde **132 kalem** | P3 | Y1 commit'inde `SKIP=ruff` gerektirdi. Sistemik borç; dosya-başına kapatmak yerine politika kararı ister (ya kural devre dışı, ya toplu göç) |
+| Y9 | **GF'de admin/öğretmen/veli akışları HİÇ ÖLÇÜLMÜYOR** — 11 test sessizce SKIP | **P1** | Y1 429 maskesini kaldırınca ortaya çıktı (aşağıda ölçüldü). `users` tablosunda **3 satır, hepsi STUDENT**; `admin@`/`ogretmen@`/`veli@kiro2.com` **yok** → `_login()` 401'i `pytest.skip`'e çeviriyor. Kapı bu 11 akış hakkında sıfır bilgi taşıyor |
+
+---
+
+## Y1 + Y5 UYGULANDI — `813a8ac9b` (18 Ağu 2026)
+
+### Kök neden, ölçümle daraltıldı
+
+`b3be80686`'nın **bilinçli bir sertleştirme olmadığı** ölçüldü: commit gövdesi **boş**,
+başlık toplu ("update core services, guardrails, algorithms..."), ve o commit'ten **önce**
+`advanced_rate_limiter`'daki değer de **300**'dü — yani iki taraf hizalıydı, süpürme ikisini
+birden 5'e düşürdü. Gerekçe/test/yorum yok.
+
+### Fix
+
+`_LOGIN_RPM` artık `api/auth.py` ile **aynı env değişkenini ve aynı varsayılanı** okuyor
+(`LOGIN_RATE_LIMIT_PER_MINUTE`, varsayılan 300); register 500'e hizalandı.
+
+### Çivi: `backend/tests/fast/test_rate_limit_tutarliligi.py` (3 test)
+
+İki bağımsız iddia — biri diğerini kapsamıyor:
+
+1. **Eşitlik** (login + register, parametrize): `advanced_rate_limiter` limiti
+   `api/auth.py::RATE_LIMITS` ile aynı olmalı.
+2. **Alt sınır**: `login >= 30`. Eşitlik testinden **bağımsız**, çünkü ikisi birden 5
+   olsaydı eşitlik testi **GEÇERDİ** ama ürün hâlâ kırık olurdu.
+
+Mutasyon (ölçüldü): `_LOGIN_RPM → 5` ⇒ **2 test düşer** (eşitlik + alt sınır); register
+testi doğru şekilde **hayatta kalır** (o değer mutasyona uğratılmadı). Geri alım
+reverse-byte ile yapıldı — dosya o an commit'siz olduğu için `git checkout` **işi yok
+ederdi** (bkz. `verification.md#GERI ALIM BIR IDDIADIR`).
+
+### Canlı doğrulama (kontrol kolu + deney)
+
+| Aşama | Ölçüm |
+|---|---|
+| **Kontrol kolu** (deploy öncesi) | 7 ardışık login → 1-5: `401`, **6-7: `429`** |
+| Deploy | `docker cp` + `.pyc` sil + restart + **90 sn** + `/health` → **200** |
+| Container içi | `login {'limit': 300}` · `register {'limit': 500}` |
+| **Deney** (deploy sonrası) | 8 ardışık login → **8/8 `401`, 429 YOK**; başlık `x-ratelimit-limit: 300` |
+
+### Golden Flow: 429 sıfırlandı — ama `passed` ARTMADI
+
+| | passed | failed | skipped |
+|---|---|---|---|
+| Öncesi (A4) | 124 | 39 | 15 |
+| Sonrası | **124** | **28** | **26** |
+
+Çıktıda `429` / `rate.?limit` / `too many` geçen satır sayısı: **0** (öncesinde 15 hata bu
+sınıftaydı). Yani Y1'in hedefi tutturuldu.
+
+**Ama dürüst okuma şu: 11 test `failed` → `skipped` oldu, `passed` HİÇ değişmedi.**
+Bu bir başarı değil, bir **maskenin altından ikinci maske çıkması**.
+
+Sebep `test_golden_flows.py:137-145`'te açıkça kodlanmış (#462'nin bilinçli kararı):
+
+```
+429      -> pytest.fail   ("bu bir ORTAM eksikligi DEGIL - kapi kendini bogyor")
+diger !200 -> pytest.skip ("login failed for {email}: {status}")
+```
+
+Bu 11 test artık **401** alıyor ve skip'e düşüyor. Nedeni ölçüldü:
+
+```
+users toplam : 3 satir
+rol dagilimi : STUDENT=3
+admin@kiro2.com / ogretmen@kiro2.com / veli@kiro2.com  -> HIC BULUNAMADI
+```
+
+Yani **admin, öğretmen ve veli akışları merge kapısında hiç ölçülmüyor** ve bu, Y1'den
+önce de böyleydi — 429 sadece semptomu `fail` gösterdiği için görünüyordu. → **Y9**.
+
+> Ders (bu dosyaya özgü değil, genel): *bir maskeyi kaldırmak bulguyu çözmez, bir
+> sonraki maskeyi gösterir.* `passed` sayısının değişmemesi, "429 gitti" iddiasının
+> ürün açısından **ne kadarını satın aldığını** ölçen tek sayıydı. Yalnızca `failed`
+> düşüşüne bakmak "11 test düzeldi" yanılsaması verirdi.
+
+### Y5
+
+`CLAUDE.md` deploy döngüsü `Start-Sleep 22` → **`Start-Sleep 90`** (iki geçtiği yerde).
+Bu turda ölçüldü: 150 router'lı backend restart sonrası **90 sn**'de `/health` 200.
+
+### SKIP=ruff gerekçesi (ölçüldü)
+
+Kapının sürümüyle (`ruff 0.7.1`, **gerçek yolda** — `/tmp` kopyası per-file-ignores'ı
+bozar, bkz. S224):
+
+- `test_rate_limit_tutarliligi.py` → **All checks passed**
+- `advanced_rate_limiter.py` → **tek** hata: `PLW0603` (`:391 global _rate_limiter`)
+- **Kontrol kolu**: aynı ifade `HEAD:369`'da birebir var, dokunmadığım fonksiyonda
+- Repo geneli: **132** `PLW0603` → sistemik borç, bu commit'e gömülmedi → **Y8**

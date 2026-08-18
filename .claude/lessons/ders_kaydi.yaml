@@ -836,3 +836,24 @@
   durum: aktif
   zorlayici: null
   kanit: "S229 — bir duzenlemeden sonra `pytest tests/integration/test_question_bank_defaults.py` `collected 0 items` verdi; ilk okuma 'dosyayi bozdum' idi. Gercek sebep: onceki bir komutta `cd /c/Users/husey/kiro2` kosulmustu ve Bash oturumunun cwd'si KALICI, yol depo kokunun pytest.ini'sine cozuluyordu (cikti farkliydi: 'timeout func_only: True', xdist worker satiri yok). `backend/`'den kosunca 8/8 PASS. Bu dosyadaki 'olcum aletini dogrula' ailesinin en ucuz uyesi — kontrol kolu tek komut: `pwd`"
+- id: L-s229-maskenin-altinda-maske
+  baslik: "Bir fix'in degerini olcerken HANGI sayinin degismesi gerektigini ONCEDEN soyle"
+  kaynak: docs/audits/2026-08-18_api_yuzeyi_kok_neden.md#y1--y5-uygulandi--813a8ac9b-18-agu-2026
+  sinif: olcum
+  durum: aktif
+  zorlayici: backend/tests/fast/test_rate_limit_tutarliligi.py
+  kanit: "S229 — Y1 (login hiz siniri 5->300) icin kabul kriteri 'GF'deki 15x429 dusmeli' diye konmustu ve TUTTU: cikti da 429/rate-limit gecen satir 15 -> 0. Ama tam tablo baska sey soyledi: passed 124 -> 124 (DEGISMEDI), failed 39 -> 28, skipped 15 -> 26. Yani 11 test duzelmedi, `failed`den `skipped`e gecti. Sebep test_golden_flows.py:137-145'te kodlu (429 -> pytest.fail, diger non-200 -> pytest.skip): o 11 test artik 401 aliyor cunku `users` tablosunda 3 satir var ve HEPSI STUDENT; admin@/ogretmen@/veli@kiro2.com HIC YOK. Yalniz `failed` dususune bakmak '11 test duzeldi' yanilsamasi verirdi. Kural: fix'in urune ne kazandirdigini olcen sayiyi (burada `passed`) fix'ten ONCE ilan et; maskeyi kaldirmak bulguyu cozmez, bir sonraki maskeyi gosterir. Yan bulgu bagimsiz bir acik is oldu (Y9): admin/ogretmen/veli akislari merge kapisinda SIFIR bilgi tasiyor"
+- id: L-s229-esitlik-testi-tek-basina-yetmez
+  baslik: "Iki kaynagi hizalayan test, ikisi BIRDEN yanlis olunca yesil kalir — ayrica ALT SINIR assert et"
+  kaynak: docs/audits/2026-08-18_api_yuzeyi_kok_neden.md#civi-backendtestsfasttest_rate_limit_tutarliligipy-3-test
+  sinif: test
+  durum: aktif
+  zorlayici: backend/tests/fast/test_rate_limit_tutarliligi.py
+  kanit: "S229 — login hiz siniri iki yerde tanimliydi (api/auth.py=300, advanced_rate_limiter=5) ve middleware once kostugu icin KUCUK olan sessizce kazaniyordu. Ilk refleks 'ikisinin esit oldugunu assert eden bir bekci' yazmakti. O bekci tek basina YETERSIZ: `b3be80686` ikisini BIRDEN 5'e dusurmustu, yani esitlik testi o regresyonda GECERDI ve urun yine kirik olurdu (paylasimli NAT'ta 6. ogrenci giremiyor). Ikinci, kaynaktan BAGIMSIZ assert eklendi: `login >= 30` (olculmus vaka: 10 esszamanli ayni-WiFi ogrenci = 10/10 HTTP 429). Mutasyonla ayirt edildi: _LOGIN_RPM -> 5 => 2 test duser (esitlik + alt sinir); register testi dogru sekilde hayatta kalir. Genel kural: 'A == B' testi yalniz AYRISMAYI yakalar, ORTAK KAYMAYI yakalamaz"
+- id: L-s229-toplu-commit-gerekce-tasimaz
+  baslik: "Bir degeri geri almadan once o degisiklige GEREKCE var miydi diye olc — bos govdeli toplu commit karar degildir"
+  kaynak: docs/audits/2026-08-18_api_yuzeyi_kok_neden.md#kok-neden-olcumle-daraltildi
+  sinif: olcum
+  durum: aktif
+  zorlayici: null
+  kanit: "S229 — login limitini 5'ten 300'e cikarmak, yuzeyde 'bir guvenlik sertlestirmesini geri almak' gibi gorunuyordu; bu haliyle kullaniciya sorulmasi gereken bir karar olurdu. Olculdu: degeri dusuren `b3be80686` (7 Agu) toplu bir 'update core services, guardrails, algorithms...' commit'i ve GOVDESI BOS; `git log -p` ile o commit'ten ONCEKI hale bakilinca advanced_rate_limiter'daki deger de 300'du -- yani iki taraf hizaliydi ve supurme ikisini BIRDEN dusurdu. Test yok, yorum yok, gerekce yok. Karsi tarafta ise api/auth.py:90-93 OLCUME dayali bir yorum tasiyor. Boylece 'geri alma' degil 'kazayla dusurulen degeri iade' oldugu kanitlandi ve is onay beklemeden ilerledi. Kural: bir degeri degistirmeden once `git log -S '<deger>'` + commit govdesi oku; gerekcesiz toplu supurme bir tasarim karari DEGILDIR"

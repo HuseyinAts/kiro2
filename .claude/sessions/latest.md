@@ -1210,3 +1210,52 @@ V1-V2 kapanmadan bu listenin yeniden ölçülmesi anlamsız; ölçüm aleti (tes
 - **`review_status` bilinçli ERTELENDİ** — aynı kalıp ama ürün anlamı taşıyor; `is_active` commit'ine sıkıştırmak cerrahi müdahale ihlali olurdu.
 - **Devir notlarının severity'si iki kez yanlış çıktı** ("P0" → latent, "eziyor" → fantom). Devralınan etiketi ölçmeden aktarma.
 - **Bekçi haklı olabilir:** bu oturumda 2 bekçi kırmızı verdi, 2'si de haklıydı çünkü bulgu bu turun kendi kodundaydı. Ayrım ölçütü: *bulgu benim yazdığım satırda mı?*
+
+---
+
+## Session Handoff — 2026-08-18 (S229-B · Y1 + Y5 KAPANDI)
+**Branch:** feature/self-evolution-optimization
+**Son commit:** `813a8ac9b` fix: login hiz siniri 5 -> 300 (uretim regresyonu)
+**Uncommitted:** `docs/audits/2026-08-18_api_yuzeyi_kok_neden.md` + bu dosya (bu turda yazıldı)
+
+### Yapılanlar
+- **Y1 KAPANDI** — `backend/core/advanced_rate_limiter.py:31,148` login 5→**300** (env: `LOGIN_RATE_LIMIT_PER_MINUTE`), register 5→**500**. `api/auth.py::RATE_LIMITS` ile aynı env + aynı varsayılan.
+- **Çivi** — `backend/tests/fast/test_rate_limit_tutarliligi.py` **3/3 PASS**. İki bağımsız iddia: (a) iki limitleyicinin **eşitliği**, (b) `login >= 30` **alt sınırı**. (b) olmadan ikisi birden 5 olsa (a) geçerdi.
+- **Mutasyon** — `_LOGIN_RPM → 5` ⇒ **2 test düşer**, register testi doğru şekilde hayatta kalır. Geri alım reverse-byte (dosya o an commit'siz; `git checkout` işi yok ederdi).
+- **Y5 KAPANDI** — `CLAUDE.md:98` + kapanış paragrafı `Start-Sleep 22` → **90** (ölçüldü: 150 router'lı backend 90 sn'de `/health` 200).
+- `get_rate_limiter()` içindeki fonksiyon-içi `import os` kaldırıldı (kendi değişikliğimin artığı).
+
+### Canlı doğrulama (kontrol kolu + deney)
+- **Deploy öncesi**: 7 login → 1-5 `401`, **6-7 `429`**
+- **Deploy sonrası**: 8 login → **8/8 `401`, 429 YOK**; `x-ratelimit-limit: 300`
+- Container içi: `login {'limit': 300}` · `register {'limit': 500}`
+
+### Golden Flow — hedef tuttu ama `passed` ARTMADI (dürüst okuma)
+| | passed | failed | skipped |
+|---|---|---|---|
+| Öncesi | 124 | 39 | 15 |
+| Sonrası | **124** | **28** | **26** |
+
+Çıktıda `429`/`rate.?limit` geçen satır: **0**. Ama 11 test `failed`→**`skipped`** oldu, `passed` **değişmedi**.
+Sebep `test_golden_flows.py:137-145`: 429→`fail`, diğer non-200→`skip`. O 11 test artık **401** alıyor çünkü
+`users` tablosunda **3 satır var ve hepsi STUDENT**; `admin@`/`ogretmen@`/`veli@kiro2.com` **yok**. → **Y9**.
+
+### Fail Eden Testler
+- GF **28 failed** — hepsi HTTP 500 sınıfı (Y3), 429 kalmadı
+- `tests/fast/test_rate_limit_tutarliligi.py` 3/3 PASS
+
+### Engelleyiciler
+- `SKIP=ruff` kullanıldı. Gerekçe **ölçüldü** (kapı sürümü 0.7.1, gerçek yolda): test dosyası temiz;
+  limiter'da **tek** hata `PLW0603 :391`, aynı ifade `HEAD:369`'da birebir var (dokunmadığım fonksiyon);
+  repo geneli **132 kalem** → **Y8** olarak ayrı kaydedildi, commit'e gömülmedi.
+
+### Sonraki Adımlar
+1. **Y9 (P1)** — admin/öğretmen/veli seed hesapları yok → 11 GF akışı **sessizce ölçülmüyor**. Merge kapısı bu roller hakkında sıfır bilgi taşıyor.
+2. **Y2 (P0)** — 5 kırık IRT karar noktasını split şemasına göç ettir (`cat_session.py:260,306` · `placement_service.py:293-295` · `sinav.py:361-365` · `difficulty_classification_service.py:610` · `irt_daemon.py:157,196`).
+3. **Y3 (P1)** — 28 × HTTP 500 GF hatasını triyaj et (429 maskesi kalktı, artık görünür).
+4. **Y4 (P0-içerik)** — `difficulty_level` 36.967 satırın **hepsi MEDIUM**; adaptif motorun tek girdisi.
+5. **#485 Task 3** — facet'li arama yeniden yazımı.
+
+### Kararlar
+- **Y1 bilinçli sertleştirme değildi (ölçüldü):** `b3be80686` gövdesi **boş**, toplu süpürme; o commit'ten önce iki taraf da **300**'dü. Bu yüzden "güvenlik kararını geri alıyor muyum?" sorusu düştü.
+- **Maskenin altından maske çıkar:** `failed` düşüşüne bakmak "11 test düzeldi" yanılsaması verirdi. Y1'in ürüne ne kazandırdığını ölçen tek sayı `passed`'ti ve **değişmedi**. Bir fix'in değerini ölçerken *hangi sayının* değişmesi gerektiğini önceden söyle.
