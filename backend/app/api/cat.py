@@ -489,13 +489,15 @@ async def _check_answer(db, question_id: str, selected_option: str) -> bool:
     try:
         result = await db.execute(
             text(
-                "SELECT correct_answer FROM question_bank WHERE id = :qid AND is_active = TRUE"
+                "SELECT qc.correct_answer FROM question_bank qb "
+                "LEFT JOIN question_content qc ON qc.id = qb.id "
+                "WHERE qb.id = :qid AND qb.is_active = TRUE"
             ),
             {"qid": question_id},
         )
         row = result.fetchone()
-        if not row:
-            # Logla ama False dön — soru yoksa yanlış cevap say
+        if not row or not row.correct_answer:
+            # Logla ama False dön — soru (veya içeriği) yoksa yanlış cevap say
             return False
         return row.correct_answer.upper() == selected_option.upper()
     except Exception as e:

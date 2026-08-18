@@ -127,7 +127,9 @@ async def answer_placement(
 
     row = await svc.db.execute(
         text(
-            "SELECT correct_answer FROM question_bank WHERE id = :qid AND is_active = TRUE"
+            "SELECT qc.correct_answer FROM question_bank qb "
+            "JOIN question_content qc ON qc.id = qb.id "
+            "WHERE qb.id = :qid AND qb.is_active = TRUE"
         ),
         {"qid": body.question_id},
     )

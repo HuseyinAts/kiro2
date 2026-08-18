@@ -257,39 +257,45 @@ class CATSessionService:
             #   3. Normal kolay sorular (fallback)
             stmt = text(
                 r"""
-                SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
-                FROM question_bank
-                WHERE LOWER(subject_area) = LOWER(:subject_id)
-                  AND is_active = TRUE
+                SELECT qb.id::text,
+                       qs.irt_discrimination AS a,
+                       qs.irt_difficulty AS b,
+                       qs.irt_guessing AS c
+                FROM question_bank qb
+                LEFT JOIN question_content qc ON qc.id = qb.id
+                LEFT JOIN question_metadata qm ON qm.id = qb.id
+                LEFT JOIN question_statistics qs ON qs.id = qb.id
+                WHERE LOWER(qm.subject_area) = LOWER(:subject_id)
+                  AND qb.is_active = TRUE
                   -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
-                  AND quality_review_status IN ('human_verified', 'auto_judged_high')
+                  AND qs.quality_review_status IN ('human_verified', 'auto_judged_high')
                   -- Kalite kapısı (core/quality_gate.py) — status-only filtre 34.982 satır
                   -- görüyor, kapı 25.127; aradaki 9.855 demoted/tek-sinyal/bozuk soru
                   -- öğrenciye servis ediliyordu. Status satırı savunma katmanı olarak kalır.
                   AND """  # noqa: S608 (kapı sabiti, kullanıcı girdisi değil)
-                + safe_for_beta_sql("id")
+                + safe_for_beta_sql("qb.id")
                 + r"""
                   -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ
                   -- Vision audit: tüm image'lar options leak içeriyor, text-self-contained dar
                   -- Bug #11 v3: PostgreSQL C locale fix — [şŞ] char class her Türkçe ilk-harf için
-                  AND question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
+                  AND qc.question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
                   AND (
                       -- Oncelik 1: Gercek IRT kalibrasyonu olan calib_pool sorulari
-                      (is_calib_pool = TRUE AND is_calibrated = TRUE AND irt_difficulty BETWEEN -1.0 AND 1.0)
+                      (qs.is_calib_pool = TRUE AND qs.is_calibrated = TRUE AND qs.irt_difficulty BETWEEN -1.0 AND 1.0)
                       OR
                       -- Oncelik 2: Kalibreli ama b araligi disinda
-                      (is_calib_pool = TRUE AND is_calibrated = TRUE)
+                      (qs.is_calib_pool = TRUE AND qs.is_calibrated = TRUE)
                       OR
                       -- Oncelik 3: Kalibrasyon havuzunda ama is_calibrated=FALSE (default parametreler)
-                      (is_calib_pool = TRUE)
+                      (qs.is_calib_pool = TRUE)
                       OR
                       -- Son care: kolay normal sorular
-                      (irt_difficulty < :b_max)
+                      (qs.irt_difficulty < :b_max)
                   )
                 ORDER BY
                     -- is_calibrated=TRUE olanlar her zaman once gelir
-                    CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
-                         WHEN is_calib_pool = TRUE THEN 1
+                    CASE WHEN qs.is_calibrated = TRUE AND qs.is_calib_pool = TRUE THEN 0
+                         WHEN qs.is_calib_pool = TRUE THEN 1
                          ELSE 2 END ASC,
                     RANDOM()
                 LIMIT 30
@@ -300,27 +306,33 @@ class CATSessionService:
             # Kalibrasyon havuzundaki sorulari tercih et
             stmt = text(
                 r"""
-                SELECT id::text, irt_discrimination AS a, irt_difficulty AS b, irt_guessing AS c
-                FROM question_bank
-                WHERE LOWER(subject_area) = LOWER(:subject_id)
-                  AND irt_difficulty BETWEEN :b_min AND :b_max
-                  AND is_active = TRUE
+                SELECT qb.id::text,
+                       qs.irt_discrimination AS a,
+                       qs.irt_difficulty AS b,
+                       qs.irt_guessing AS c
+                FROM question_bank qb
+                LEFT JOIN question_content qc ON qc.id = qb.id
+                LEFT JOIN question_metadata qm ON qm.id = qb.id
+                LEFT JOIN question_statistics qs ON qs.id = qb.id
+                WHERE LOWER(qm.subject_area) = LOWER(:subject_id)
+                  AND qs.irt_difficulty BETWEEN :b_min AND :b_max
+                  AND qb.is_active = TRUE
                   -- 15 May 2026: Convention v2 — bkz: docs/quality_review_status_convention.md
-                  AND quality_review_status IN ('human_verified', 'auto_judged_high')
+                  AND qs.quality_review_status IN ('human_verified', 'auto_judged_high')
                   -- Kalite kapısı (core/quality_gate.py) — status-only filtre 34.982 satır
                   -- görüyor, kapı 25.127; aradaki 9.855 demoted/tek-sinyal/bozuk soru
                   -- öğrenciye servis ediliyordu. Status satırı savunma katmanı olarak kalır.
                   AND """  # noqa: S608 (kapı sabiti, kullanıcı girdisi değil)
-                + safe_for_beta_sql("id")
+                + safe_for_beta_sql("qb.id")
                 + r"""
                   -- 18 May 2026: Bug #11 fix — IMAGE-REQUIRED soruları HARIÇ
                   -- Vision audit: tüm image'lar options leak içeriyor, text-self-contained dar
                   -- Bug #11 v3: PostgreSQL C locale fix — [şŞ] char class her Türkçe ilk-harf için
-                  AND question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
+                  AND qc.question_text !~* '[şŞ]ekil|[yY]ukarıda|[aA]şağıda|verilen graf|verilen tablo|[tT]abloda|[gG]rafikte|[şŞ]emada|[hH]aritada|[vV]erilenler|aşağıdaki şek|[gG]örsel|[kK]avram harita|[dD]eney düzene|numaraland.* özelli|şekildeki kap|[cC]am boru|[pP]aralelkenar|şek\.|şek |[dD]ik üçgen|[eE]şkenar üçgen|[iI]kizkenar üçgen'
                 ORDER BY
                     -- is_calibrated=TRUE olanlar ZPD icinde de one alinir
-                    CASE WHEN is_calibrated = TRUE AND is_calib_pool = TRUE THEN 0
-                         WHEN is_calib_pool = TRUE THEN 1
+                    CASE WHEN qs.is_calibrated = TRUE AND qs.is_calib_pool = TRUE THEN 0
+                         WHEN qs.is_calib_pool = TRUE THEN 1
                          ELSE 2 END ASC,
                     RANDOM()
                 LIMIT 100
@@ -356,26 +368,32 @@ class CATSessionService:
 
         stmt = text("""
             SELECT qb.id::text,
-                   qb.question_text AS stem,
+                   qc.question_text AS stem,
                    CASE
-                       WHEN qb.option_e IS NOT NULL AND qb.option_e != ''
-                       THEN json_build_object('A', qb.option_a, 'B', qb.option_b,
-                                             'C', qb.option_c, 'D', qb.option_d, 'E', qb.option_e)
-                       ELSE json_build_object('A', qb.option_a, 'B', qb.option_b,
-                                             'C', qb.option_c, 'D', qb.option_d)
+                       WHEN qc.option_e IS NOT NULL AND qc.option_e != ''
+                       THEN json_build_object('A', qc.option_a, 'B', qc.option_b,
+                                             'C', qc.option_c, 'D', qc.option_d, 'E', qc.option_e)
+                       ELSE json_build_object('A', qc.option_a, 'B', qc.option_b,
+                                             'C', qc.option_c, 'D', qc.option_d)
                    END AS options,
-                   qb.correct_answer AS correct_option,
-                   qb.irt_difficulty AS difficulty,
-                   qb.irt_discrimination AS discrimination,
-                   qb.irt_guessing AS guessing,
+                   qc.correct_answer AS correct_option,
+                   -- COALESCE: cocuk satiri yoksa LEFT JOIN NULL dondurur; asagidaki
+                   -- float() cagrilari patlar. Varsayilanlar ORM ile ayni
+                   -- (models/question_bank.py:371-373).
+                   COALESCE(qs.irt_difficulty, 0.0) AS difficulty,
+                   COALESCE(qs.irt_discrimination, 1.0) AS discrimination,
+                   COALESCE(qs.irt_guessing, 0.25) AS guessing,
                    qb.primary_topic_id::text AS topic_id,
                    th.name_tr AS konu,
-                   qb.subject_area AS subject_id,
-                   qb.question_image_url,
-                   qb.image_width,
-                   qb.image_height,
-                   qb.image_ocr_text
+                   qm.subject_area AS subject_id,
+                   qc.question_image_url,
+                   qc.image_width,
+                   qc.image_height,
+                   qc.image_ocr_text
             FROM question_bank qb
+            LEFT JOIN question_content qc ON qc.id = qb.id
+            LEFT JOIN question_metadata qm ON qm.id = qb.id
+            LEFT JOIN question_statistics qs ON qs.id = qb.id
             LEFT JOIN topic_hierarchy th ON th.id = qb.primary_topic_id
             WHERE qb.id = :qid AND qb.is_active = TRUE
         """)
@@ -920,7 +938,9 @@ class CATSessionService:
         )
 
         # Her yanıtı learning_events'e yaz
-        for i, (q_id, resp) in enumerate(zip(state.answered_ids, state.responses)):
+        for i, (q_id, resp) in enumerate(
+            zip(state.answered_ids, state.responses, strict=False)
+        ):
             _params_raw = state.item_params[i] if i < len(state.item_params) else {}
             event_stmt = text("""
                 INSERT INTO kiro2_learning_events (
@@ -1029,7 +1049,7 @@ class CATSessionService:
                     else None,
                 }
                 for i, (q_id, resp) in enumerate(
-                    zip(state.answered_ids, state.responses)
+                    zip(state.answered_ids, state.responses, strict=False)
                 )
             ]
             await fsrs_svc.apply_batch_reviews(reviews)

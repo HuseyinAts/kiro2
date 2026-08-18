@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 def _get_engine():
     import sys
+
     if "api.sinav" in sys.modules:
         return getattr(sys.modules["api.sinav"], "osym_exam_engine", osym_exam_engine)
     return osym_exam_engine
@@ -304,6 +305,11 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                             from models.question_bank import (
                                 QuestionBankItem as Question,
                             )
+                            from models.question_bank import (
+                                QuestionContent,
+                                QuestionMetadata,
+                                QuestionStatistics,
+                            )
                             from services.bkt_service import BKTService
 
                             async with asyncio._bkt_semaphore:
@@ -311,13 +317,26 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                     try:
                                         q = await bg_db.execute(
                                             select(
-                                                Question.correct_answer,
+                                                QuestionContent.correct_answer,
                                                 Question.primary_topic_id,
-                                                Question.subject_area,
-                                                Question.irt_discrimination,
-                                                Question.irt_difficulty,
-                                                Question.irt_guessing,
-                                            ).where(Question.id == question_id_val)
+                                                QuestionMetadata.subject_area,
+                                                QuestionStatistics.irt_discrimination,
+                                                QuestionStatistics.irt_difficulty,
+                                                QuestionStatistics.irt_guessing,
+                                            )
+                                            .outerjoin(
+                                                QuestionContent,
+                                                QuestionContent.id == Question.id,
+                                            )
+                                            .outerjoin(
+                                                QuestionMetadata,
+                                                QuestionMetadata.id == Question.id,
+                                            )
+                                            .outerjoin(
+                                                QuestionStatistics,
+                                                QuestionStatistics.id == Question.id,
+                                            )
+                                            .where(Question.id == question_id_val)
                                         )
                                         row = q.first()
                                         if not (row and row.primary_topic_id):
@@ -360,10 +379,16 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                                 irt_q = await bg_db.execute(
                                                     select(
                                                         Question.id,
-                                                        Question.irt_discrimination,
-                                                        Question.irt_difficulty,
-                                                        Question.irt_guessing,
-                                                    ).where(Question.id.in_(prev_qids))
+                                                        QuestionStatistics.irt_discrimination,
+                                                        QuestionStatistics.irt_difficulty,
+                                                        QuestionStatistics.irt_guessing,
+                                                    )
+                                                    .outerjoin(
+                                                        QuestionStatistics,
+                                                        QuestionStatistics.id
+                                                        == Question.id,
+                                                    )
+                                                    .where(Question.id.in_(prev_qids))
                                                 )
                                                 for irt_row in irt_q.all():
                                                     answered_questions.append(
@@ -466,19 +491,37 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
 
                         from core.database import get_db_session_context
                         from models.exam_db import StudentAnswer
-                        from models.question_bank import QuestionBankItem as Question
+                        from models.question_bank import (
+                            QuestionBankItem as Question,
+                        )
+                        from models.question_bank import (
+                            QuestionContent,
+                            QuestionMetadata,
+                            QuestionStatistics,
+                        )
                         from services.bkt_service import BKTService
 
                         async with get_db_session_context() as db:
                             q = await db.execute(
                                 select(
-                                    Question.correct_answer,
+                                    QuestionContent.correct_answer,
                                     Question.primary_topic_id,
-                                    Question.subject_area,
-                                    Question.irt_discrimination,
-                                    Question.irt_difficulty,
-                                    Question.irt_guessing,
-                                ).where(Question.id == command.question_id)
+                                    QuestionMetadata.subject_area,
+                                    QuestionStatistics.irt_discrimination,
+                                    QuestionStatistics.irt_difficulty,
+                                    QuestionStatistics.irt_guessing,
+                                )
+                                .outerjoin(
+                                    QuestionContent, QuestionContent.id == Question.id
+                                )
+                                .outerjoin(
+                                    QuestionMetadata, QuestionMetadata.id == Question.id
+                                )
+                                .outerjoin(
+                                    QuestionStatistics,
+                                    QuestionStatistics.id == Question.id,
+                                )
+                                .where(Question.id == command.question_id)
                             )
                             row = q.first()
                             if row and row.primary_topic_id:
@@ -513,10 +556,15 @@ class SaveAnswerCommandHandler(CommandHandler[SaveAnswerCommand, dict[str, Any]]
                                         irt_q = await db.execute(
                                             select(
                                                 Question.id,
-                                                Question.irt_discrimination,
-                                                Question.irt_difficulty,
-                                                Question.irt_guessing,
-                                            ).where(Question.id.in_(prev_qids))
+                                                QuestionStatistics.irt_discrimination,
+                                                QuestionStatistics.irt_difficulty,
+                                                QuestionStatistics.irt_guessing,
+                                            )
+                                            .outerjoin(
+                                                QuestionStatistics,
+                                                QuestionStatistics.id == Question.id,
+                                            )
+                                            .where(Question.id.in_(prev_qids))
                                         )
                                         for irt_row in irt_q.all():
                                             answered_questions.append(
@@ -779,9 +827,7 @@ class CompleteExamCommandHandler(CommandHandler[CompleteExamCommand, dict[str, A
             except Exception as event_err:
                 logger.warning("Exam event processing skipped: %s", event_err)
 
-            subject_perfs = await engine.get_subject_performance(
-                command.session_id
-            )
+            subject_perfs = await engine.get_subject_performance(command.session_id)
             konu_data = [
                 {
                     "subject": p.subject,

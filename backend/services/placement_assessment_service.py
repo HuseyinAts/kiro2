@@ -22,6 +22,7 @@ from typing import Any
 import numpy as np
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from algorithms.irt_model import FourParameterIRTModel, IRTItem, IRTResponse
 from core.quality_gate import safe_for_beta_gate
@@ -191,25 +192,45 @@ async def load_assessment_items(
 
     Selects questions with IRT parameters, balanced across subjects.
     """
-    from models.question_bank import QuestionBankItem
+    from models.question_bank import (
+        QuestionBankItem,
+        QuestionMetadata,
+        QuestionStatistics,
+    )
 
     limit_val = max_per_subject * len(subjects or SUBJECT_AREAS)
     # NOT: select(...).tablesample() SQLAlchemy 2.0'da YOK — postgresql dalı
     # AttributeError ile patlıyordu. func.random() her iki dialect'te de çalışır,
     # dolayısıyla dialect ayrımına ve "az geldiyse tekrar sor" fallback'ine gerek
     # kalmadı (bkz offline_sync_service.py:112).
-    query = select(QuestionBankItem).where(
-        QuestionBankItem.is_active == True,  # noqa: E712
-        QuestionBankItem.difficulty_level.isnot(None),
-        # Kalite kapısı — tanım core/quality_gate.py. is_active-only sorgu
-        # 94K unverified/pending soruyu sızdırıyordu.
-        safe_for_beta_gate(QuestionBankItem.id),
+    #
+    # 18 Ağu 2026 (#485): difficulty_level/subject_area question_statistics ve
+    # question_metadata'ya taşındı; sınıf düzeyinde okumak devredicinin KASITLI
+    # AttributeError'ını tetikliyor ve sorgu HİÇ kurulamıyordu. JOIN koşulu `id`
+    # üzerinde (çocuk tabloların PK'si question_bank.id'ye FK).
+    # `selectinload` ZORUNLU: aşağıdaki döngü dönen ÖRNEKTEN split alanı okuyor;
+    # lazy='select' + async = MissingGreenlet, ve o hata `except Exception:
+    # continue` tarafından yutulup havuzu SESSİZCE boşaltır.
+    query = (
+        select(QuestionBankItem)
+        .options(
+            selectinload(QuestionBankItem.statistics),
+            selectinload(QuestionBankItem.metadata_info),
+        )
+        .outerjoin(QuestionStatistics, QuestionStatistics.id == QuestionBankItem.id)
+        .where(
+            QuestionBankItem.is_active == True,  # noqa: E712
+            QuestionStatistics.difficulty_level.isnot(None),
+            # Kalite kapısı — tanım core/quality_gate.py. is_active-only sorgu
+            # 94K unverified/pending soruyu sızdırıyordu.
+            safe_for_beta_gate(QuestionBankItem.id),
+        )
     )
 
     if subjects:
-        query = query.where(
-            QuestionBankItem.subject_area.in_([s.upper() for s in subjects])
-        )
+        query = query.outerjoin(
+            QuestionMetadata, QuestionMetadata.id == QuestionBankItem.id
+        ).where(QuestionMetadata.subject_area.in_([s.upper() for s in subjects]))
 
     query = query.order_by(func.random()).limit(limit_val)
 
