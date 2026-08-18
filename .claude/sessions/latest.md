@@ -1316,3 +1316,120 @@ Sonraki oturum "güncel durum" iddiası kurmadan önce bunu bilsin.
 1. **Y2** — Task 1 ile aynı sınıf, ankrajlar hazır. Yordam: gerçek Postgres'e RED test → JOIN göçü → mutasyon → `docker cp` + 90 sn + canlı doğrulama.
 2. **Y9** — seed hesap (admin/öğretmen/veli) oluştur; sonra GF'yi tekrar koş ve **`passed`'in arttığını** ölç (`failed` düşüşü yeterli değil — `L-s229-maskenin-altinda-maske`).
 3. **Y4** — Y2 bittikten sonra: zorluk sınıflandırması olmadan IRT/ZPD/CAT çıktısı anlamsız kalır.
+
+---
+
+## Session Handoff — 2026-08-18 (S230 · Y2 KAPANDI) — ⚠️ GERİYE DÖNÜK YAZILDI
+
+**Branch:** feature/self-evolution-optimization — **origin ile EŞİT**
+**Commit:** `ee62c6d34` fix(#485/Y2): CAT + yerlestirme + sinav yollarini split semasina gocur
+**Push:** ✅ **0 bekleyen commit**
+
+### ⚠️ BU BÖLÜM S230 TARAFINDAN YAZILMADI
+S230 oturumu **PC kapanmasıyla kesildi**: kod commit'lendi ve push'landı, ama kapanış
+kaydı (bu bölüm + ders defteri + kapı borcu kalemleri) yazılamadı. Bu bölüm **S231'de
+geriye dönük** yazıldı. Ayrım kritik:
+
+| Kaynak | Ne |
+|---|---|
+| **S230 ölçümü** (commit mesajından alındı, yeniden üretilmedi) | canlı 500→200 doğrulamaları, `docker cp` + 90 sn turu, kapı borcu 3 ölçümü, mutasyon sonucu |
+| **S231 ölçümü** (bu turda taze koşuldu) | test 36/36 · sayaç SINIF=45 · DB satırları · Y4/Y9 canlı değerleri · takipli-kirli 0 |
+
+S230'un canlı doğrulaması **tekrar üretilmedi** — container o günden beri yeniden
+başlatıldı. "Canlıda hâlâ 200 dönüyor" iddiası bu handoff'ta **YOKTUR**.
+
+### Yapılanlar — 3 P0/P1 karar noktası split şemasına göçürüldü
+`question_bank`'ın 69 alanı S210'da (`0fd9b8413`) çocuk tablolara taşınmıştı; bu üç yol
+eski şemayı varsayıyordu:
+- **ham SQL** (`cat_session.py`, `placement_service.py`) → `asyncpg.UndefinedColumnError`
+- **ORM sınıf düzeyi** (`placement_assessment_service.py`, `application/commands/sinav.py`) → devredici `AttributeError`
+
+6 üretim + 3 yeni entegrasyon test dosyası, **+1808/−97**.
+
+### Ölçümler
+- **S230 (canlı, fix'ten ÖNCE hedef ilan edilerek):** `/api/v1/cat/next` 500→200 ·
+  `/cat/sessions` 500→201 · `/placement/start` 500→201 · `/assessment/start` 500→200 ·
+  container logunda `does not exist`: **0**
+- **S231 (taze):** `test_split_migration_{cat_session,placement,sinav_commands}.py` →
+  **36/36 PASS** (31.8 sn, gerçek Postgres, mock DB yok)
+- **Mutasyon:** JOIN anahtarı `qc.id → qb.created_by` ⇒ **9 test düşer** (iki uç testi dahil)
+- **Sayaç:** `SINIF` 63 → **45** (18 kalem düştü) · KWARG=12 · ENTITY=56
+
+### 🔴 NEDEN HİÇBİR TARAMADA GÖRÜNMEDİ (bu turun en pahalı dersi)
+İki P0'ın **ikisi de ham SQL**'di. `scan_split_accesses.py` bir AST aracıdır; string
+literal içinde `Attribute` düğümü yoktur → **yanlış-sıfır**. Üstüne devrin `scan.txt`
+dosyası **bayattı** (45 diyordu, taze 63). İki hata birleşince "göç neredeyse bitti"
+okuması çıkıyordu. Kör nokta artık sayacın docstring'inde **ayrı ve öne çıkan bir
+paragraf** (listedeki diğerleri "bugün 0 kalem" diyor; bu kalem 0 **değildi**).
+→ `L-s230-ast-sayaci-ham-sql-goremez` · zorlayıcı **YOK**, boşluk bilinçli görünür.
+
+### Y2 TAM KAPANMADI — 5 ankrajdan 2'si duruyor
+| Ankraj | Durum |
+|---|---|
+| `cat_session.py` · `placement_service.py` · `sinav.py` | ✅ göçürüldü |
+| `core/irt_daemon.py` [SINIF=2 KWARG=6] | Gerekçeli **P3**: `:51 async def start()` var ama `main.py`'de **hiç referans yok** → ölü kod (S231 doğruladı) |
+| `services/difficulty_classification_service.py` [SINIF=2] | 🔴 **GEREKÇESİZ KALAN** — Y2 ankraj listesindeydi (`:610`), göçürülmedi ve commit'in "kapsam dışı" listesinde de **yok** |
+
+### Kapı borcu — SKIP=ruff,bandit,mypy (üçü de üç ölçümle gerekçelendirildi)
+`L-s229-kapi-borcu-karari-uc-olcum-ister` yordamı uygulandı: (1) benim kodum temiz,
+(2) kontrol kolu HEAD'de desenler mevcut, (3) yaygınlık sistemik.
+- **ruff 0.7.1** (kapının sürümü; kabuktaki 0.14.13 "All checks passed" diyordu):
+  60 servis dosyasında `RET504=38 · PLR0912=16 · SIM103=4` → **Y8 kapsamına eklendi**
+- **bandit:** B110 (try/except/pass), Low, dokunulmayan kod → **Y8**
+- **mypy:** 9 hatanın 9'u dokunulmayan satırlarda. ⚠️ **Yaygınlık ÖLÇÜLEMEDİ** — çıplak
+  mypy iki ayrı sebeple erken duruyor (`services/nlp_training/...` UTF-8 değil; numpy
+  stub "3.12+" sözdizimi), ikisi de `errors prevented further checking`. Önceki "0 hata"
+  okuması **bulgu değil ALET ARIZASIYDI** → **Y10 (YENİ)**
+
+### Ölçüm aletinin yan etkisi (S228 dersi tekrar yaşandı)
+Yaygınlık ölçümü için koşulan `pre-commit run ruff` **salt-okunur değil** (`--fix` taşıyor)
+ve dokunulmayan 3 dosyayı değiştirdi (`bertscore_evaluator`, `bkt_service`,
+`error_detection_service`). `git checkout HEAD --` ile geri alındı, `git status` ile temiz
+olduğu **doğrulandı**; commit'e girmediler.
+
+### Fail Eden Testler
+YOK. 36/36 PASS.
+
+### Kapsam dışı (dokunulmadı, raporlanır)
+- `sinav.py` `algorithm_degraded` görev sonucundan **bağımsız FALSE** dönüyor
+- `repositories/question_repository.py` [SINIF=16 ENTITY=5] — bu turda keşfedildi;
+  silme/göç kararı bekliyor (S224: "sıfır tüketici" iddiası **YANLIŞ**,
+  `_scripts/test_database_repository.py:15` import ediyor)
+
+### Ders defteri — 120 → **125** (4'ü S230'da ölçüldü + 1'i bu kapanış turunda)
+| ders | özü |
+|---|---|
+| `L-s230-ast-sayaci-ham-sql-goremez` | AST sayacında `SINIF=0` "göç bitti" değil "alet bakamadı" olabilir |
+| `L-s230-yavru-tablonun-pk-si-id` | Yavru PK'si `id` ve aynı zamanda FK; `question_id` kolonu **YOK** |
+| `L-s230-hayatta-kalan-mutasyon-gecersiz-olabilir` | Mutasyonun **hayatta kalması** da testin zayıflığını kanıtlamaz |
+| `L-s230-limiter-deposu-import-aninda-baglanir` | Limiter deposu import anında bağlanır → konu-dışı 500 |
+| **`L-s231-porcelain-bas-harfi-staged-sutunudur`** | 🔴 **Defterin kendi yordamı yanlış-sıfır üretiyordu** (aşağıda) |
+
+### 🔴 Bu kapanış turunda defterin KENDİSİNDE kusur bulundu
+`L-s229-yarim-commitin-artigi-sessiz-kalir` "takipli-kirliyi say" derken yordamı
+**"baş harfi M olanları say"** diye tarif ediyordu. `git status --porcelain` çıktısı
+iki sütunludur (`XY`): X = **index**, Y = **çalışma ağacı**. Stage'lenmemiş değişiklik
+` M` (baş karakter **boşluk**) olarak çıkar → `grep '^[MAD]'` hiçbir şey `git add`
+edilmemişken **her zaman 0** döner. Bu tur o yordamı izledi ve "takipli-kirli 0"
+bildirdi; **gerçek değer 4'tü.** Doğru filtre: `git status --porcelain | grep -v '^??'`.
+S229 dersinin metni düzeltildi + `L-s231` eklendi.
+
+### Canlı durum (S231 taze ölçümü, 18 Ağu)
+| Ölçüm | Değer |
+|---|---|
+| Docker | 9 container Up/healthy · PG :5434 OK · `/health` **200** |
+| DB | `question_bank`/`content`/`metadata`/`statistics` = **36.967** her biri · `mv_safe_for_beta` **27.073** |
+| **Y4** | `difficulty_level` → **36.967/36.967 MEDIUM** · `irt_difficulty` → **1 distinct, 0 null** |
+| **Y9** | `users` = **7 satır, 7'si STUDENT** (S229-B'de 3'tü — arttı, ama hâlâ admin/öğretmen/veli **YOK**) |
+| Takipli-kirli | **4** = bu kapanışın 3 dosyası + **1 devralınan** (`backend/semantic_cache.pkl`, `b3be80686` sweep'inden, `.gitignore`'da **değil** — takipli çalışma-zamanı artefaktı, ayrı triyaj) |
+
+### Açık iş sırası (güncellendi)
+| # | İş | Öncelik |
+|---|---|---|
+| **Y4** | Zorluk sınıflandırması — tek değer, adaptif motorun tek ayrıştırıcı girdisi | **P0-içerik** |
+| **Y9** | admin/öğretmen/veli seed hesabı → 11 GF akışı sessiz SKIP | **P1** |
+| **Y3** | 28 × HTTP 500 GF triyajı | P1 |
+| **Y2-kalan** | `difficulty_classification_service.py` [SINIF=2] gerekçesiz kalan | P1 |
+| **#485-T3** | Facet'li arama yeniden yazımı | P1 |
+| Y6 · Y7 · **Y8 (genişledi)** · **Y10 (yeni)** | schemathesis pin · rollback imajı · lint borcu (PLW0603 132 + RET504 38 + PLR0912 16 + SIM103 4 + B110) · **mypy alet arızası** | P2/P3 |
+| #485 kalan göç | `question_repository` 16 · `exam_performance_service` 11 · `learning_path` 5 · `exam_results_reporting` 4 · +4 dosya | P2 |

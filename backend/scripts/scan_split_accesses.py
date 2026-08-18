@@ -19,6 +19,19 @@ Bu script AST kullanır: yorum/docstring otomatik elenir, alias'lar takip edilir
   ENTITY  — `select(<alias>)` / `<db>.query(<alias>)` (entity-select → lazy='select'
             ilişkilere örnek-düzeyi erişim async'te MissingGreenlet riski)
 
+🔴 EN AĞIR KÖR NOKTA — HAM SQL (bu kalem 0 DEĞİLDİ, iki canlı P0'ı gizledi):
+  Bu bir AST aracıdır; `QuestionBankItem.<alan>` bir `Attribute` düğümüdür. Taşınmış
+  alan bir SQL DİZESİNİN içinde geçtiğinde (`text("SELECT irt_difficulty FROM
+  question_bank")`, asyncpg `conn.fetch("...")`) AST'de hiçbir düğüm yoktur → alet
+  0 raporlar. Ölçüldü (S230, 18 Ağu): `services/cat_session.py` ve
+  `services/placement_service.py` ham SQL kullanıyordu; sayaç ikisini de temiz
+  gösterirken üretimde `asyncpg.UndefinedColumnError` → `/api/v1/cat/next` ve
+  `/placement/start` **HTTP 500** dönüyordu. Yani "SINIF=0" o dosyalar için
+  "göç bitti" DEĞİL, "alet bakamadı" demekti.
+  Yedek kontrol (AST'nin yerine geçmez, yanına konur):
+      grep -rn "question_bank" backend/{services,api,core} --include="*.py" \
+        | grep -i "select\\|update\\|insert\\|text("
+
 Kör noktalar (ÖLÇÜLDÜ — bugün hepsi bu depoda 0 kalem, ama alet bunları GÖREMEZ):
   - `sa.select(X)` / `sqlalchemy.select(X)` — modül-nitelikli çağrı biçimi.
   - `aliased(QuestionBankItem)` — ORM alias nesnesi üzerinden erişim.
